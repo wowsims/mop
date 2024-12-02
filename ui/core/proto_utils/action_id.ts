@@ -696,8 +696,200 @@ export class ActionId {
 				break;
 		}
 
-		const iconOverrideId = this.spellTooltipOverride || this.spellIconOverride;
 		let iconUrl = ActionId.makeIconUrl(tooltipData['icon']);
+
+		if (this.spellId === 116781) {
+			name = 'Legacy of the White Tiger';
+			iconUrl = ActionId.makeIconUrl('ability_monk_prideofthetiger');
+		} else if (this.spellId === 115921) {
+			name = 'Legacy of the Emperor';
+			iconUrl = ActionId.makeIconUrl('ability_monk_legacyoftheemperor');
+		} else if (this.spellId === 115073) {
+			name = 'Spinning Fire Blossom';
+			iconUrl = ActionId.makeIconUrl('ability_monk_explodingjadeblossom');
+		} else if (this.spellId === 117952 || this.spellId === 123333) {
+			name = 'Crackling Jade Lightning';
+			iconUrl = ActionId.makeIconUrl('ability_monk_cracklingjadelightning');
+		} else if (this.spellId === 126456) {
+			name = 'Fortifying Brew';
+			iconUrl = ActionId.makeIconUrl('ability_monk_fortifyingale_new');
+		} else if (this.spellId === 129914) {
+			name = 'Power Strikes';
+			iconUrl = ActionId.makeIconUrl('ability_monk_powerstrikes');
+		} else if (this.spellId === 121283) {
+			name = 'Chi Sphere (Use)';
+			iconUrl = ActionId.makeIconUrl('warlock_-healthstone');
+		} else if (this.spellId === 121286) {
+			name = 'Chi Sphere';
+			iconUrl = ActionId.makeIconUrl('ability_monk_healthsphere');
+		} else if (this.spellId === 125671) {
+			name = 'Glyph of Fists of Fury';
+			iconUrl = ActionId.makeIconUrl('monk_ability_fistoffury');
+		} else if (this.spellId === 115072 || this.spellId === 115129) {
+			name = 'Expel Harm';
+			if (this.spellId === 115072) {
+				name += ' (Heal)';
+			} else {
+				name += ' (Damage)';
+			}
+			iconUrl = ActionId.makeIconUrl('ability_monk_expelharm');
+		} else if (this.spellId === 120277) {
+			name = 'Way of the Monk';
+			iconUrl = ActionId.makeIconUrl('ability_monk_dpsstance');
+		} else if (this.spellId === 123980) {
+			name = 'Brewing: Tigereye Brew';
+			iconUrl = ActionId.makeIconUrl('spell_brew_dark');
+		} else if (this.spellId === 116740) {
+			name = 'Tigereye Brew (Buff)';
+			iconUrl = ActionId.makeIconUrl('ability_monk_tigereyebrandy');
+		} else if (this.spellId === 125195) {
+			name = 'Tigereye Brew (Stacks)';
+			iconUrl = ActionId.makeIconUrl('spell_brew_dark');
+		} else if (this.spellId === 115288) {
+			name = 'Energizing Brew';
+			iconUrl = ActionId.makeIconUrl('ability_monk_energizingwine');
+		} else if (this.spellId === 137384) {
+			name = 'Combo Breaker';
+			iconUrl = ActionId.makeIconUrl('pandarenracial_bouncy');
+		} else if (this.spellId === 116768) {
+			name = 'Combo Breaker: Blackout Kick';
+			iconUrl = ActionId.makeIconUrl('ability_monk_roundhousekick');
+		} else if (this.spellId === 118864) {
+			name = 'Combo Breaker: Tiger Palm';
+			iconUrl = ActionId.makeIconUrl('ability_monk_palmstrike');
+		} else if (this.spellId === 115069) {
+			name = 'Stance of the Sturdy Ox';
+			iconUrl = ActionId.makeIconUrl('monk_stance_drunkenox');
+		} else if (this.spellId === 136336) {
+			name = 'Stance of the Wise Serpent';
+			iconUrl = ActionId.makeIconUrl('monk_stance_wiseserpent');
+		} else if (this.spellId === 103985) {
+			name = 'Stance of the Fierce Tiger';
+			iconUrl = ActionId.makeIconUrl('monk_stance_whitetiger');
+		} else if (this.spellId === 100780) {
+			name = 'Jab';
+			iconUrl = ActionId.makeIconUrl('ability_monk_jab');
+		} else if (this.spellId === 100787) {
+			if (tag === 2) {
+				name = 'Tiger Power';
+			} else {
+				name = 'Tiger Palm';
+			}
+			iconUrl = ActionId.makeIconUrl('ability_monk_tigerpalm');
+		} else if (this.spellId === 101546) {
+			name = 'Spinning Crane Kick (Cast)';
+			iconUrl = ActionId.makeIconUrl('ability_monk_cranekick_new');
+		} else if (this.spellId === 107270) {
+			name = 'Spinning Crane Kick (Hit)';
+			iconUrl = ActionId.makeIconUrl('ability_monk_cranekick_new');
+		} else if (this.spellId === 113656) {
+			name = 'Fists of Fury (Cast)';
+			iconUrl = ActionId.makeIconUrl('monk_ability_fistoffury');
+		} else if (this.spellId === 117418) {
+			name = 'Fists of Fury (Hit)';
+			iconUrl = ActionId.makeIconUrl('monk_ability_fistoffury');
+		} else if (this.spellId === 130320) {
+			name = 'Rising Sun Kick';
+			iconUrl = ActionId.makeIconUrl('ability_monk_risingsunkick');
+		} else if (this.spellId === 100784) {
+			name = 'Blackout Kick';
+			if (tag === 2) {
+				name += ' (DoT)';
+			}
+			iconUrl = ActionId.makeIconUrl('ability_monk_roundhousekick');
+		} else if (this.spellId === 120272 || this.spellId === 120273) {
+			name = 'Tiger Strikes';
+			iconUrl = ActionId.makeIconUrl('ability_ghoulfrenzy');
+		} else if (this.spellId === 120274 || this.spellId === 120278) {
+			name = 'Tiger Strikes';
+			if (this.spellId === 120274) {
+				name += ' (Main Hand)';
+			} else {
+				name += ' (Off Hand)';
+			}
+			iconUrl = ActionId.makeIconUrl('spell_nature_cyclone');
+		} else if (this.spellId === 128595) {
+			name = 'Combat Conditioning';
+			iconUrl = ActionId.makeIconUrl('spell_misc_hellifrepvpcombatmorale');
+		} else if (this.spellId === 115173) {
+			name = 'Celerity';
+			iconUrl = ActionId.makeIconUrl('ability_monk_quipunch');
+		} else if (this.spellId === 116841) {
+			name = "Tiger's Lust";
+			iconUrl = ActionId.makeIconUrl('ability_monk_tigerslust');
+		} else if (this.spellId === 115174) {
+			name = 'Momentum';
+			iconUrl = ActionId.makeIconUrl('ability_monk_standingkick');
+		} else if (this.spellId === 115098 || this.spellId === 132463 || this.spellId === 132467) {
+			name = 'Chi Wave';
+			if (this.spellId === 132463) {
+				name += ' (Heal)';
+			} else if (this.spellId === 132467) {
+				name += ' (Damage)';
+			}
+			iconUrl = ActionId.makeIconUrl('ability_monk_chiwave');
+		} else if (this.spellId === 124081 || this.spellId === 124098 || this.spellId === 124101 || this.spellId === 125033) {
+			name = 'Zen Sphere';
+			if (this.spellId === 124081) {
+				name += ' (Heal)';
+			} else if (this.spellId === 124098) {
+				name += ' (Damage)';
+			} else if (this.spellId === 124101) {
+				name += ': Detonate (Heal)';
+			} else if (this.spellId === 125033) {
+				name += ': Detonate (Damage)';
+			}
+			iconUrl = ActionId.makeIconUrl('ability_monk_forcesphere');
+		} else if (this.spellId === 123986 || this.spellId === 148135 || this.spellId === 130654) {
+			name = 'Chi Burst';
+			if (this.spellId === 130654) {
+				name += ' (Heal)';
+			} else if (this.spellId === 148135) {
+				name += ' (Damage)';
+			}
+			iconUrl = ActionId.makeIconUrl('spell_arcane_arcanetorrent');
+		} else if (this.spellId === 121817) {
+			name = 'Power Strikes';
+			iconUrl = ActionId.makeIconUrl('ability_monk_powerstrikes');
+		} else if (this.spellId === 115396) {
+			name = 'Ascension';
+			iconUrl = ActionId.makeIconUrl('ability_monk_ascension');
+		} else if (this.spellId === 115399) {
+			name = 'Chi Brew';
+			iconUrl = ActionId.makeIconUrl('ability_monk_chibrew');
+		} else if (this.spellId === 116844) {
+			name = 'Ring of Peace';
+			iconUrl = ActionId.makeIconUrl('spell_monk_ringofpeace');
+		} else if (this.spellId === 119392) {
+			name = 'Charging Ox Wave';
+			iconUrl = ActionId.makeIconUrl('ability_monk_chargingoxwave');
+		} else if (this.spellId === 119381) {
+			name = 'Leg Sweep';
+			iconUrl = ActionId.makeIconUrl('ability_monk_legsweep');
+		} else if (this.spellId === 122280) {
+			name = 'Healing Elixirs';
+			iconUrl = ActionId.makeIconUrl('ability_monk_jasmineforcetea');
+		} else if (this.spellId === 122278) {
+			name = 'Dampen Harm';
+			iconUrl = ActionId.makeIconUrl('ability_monk_dampenharm');
+		} else if (this.spellId === 122783) {
+			name = 'Diffuse Magic';
+			iconUrl = ActionId.makeIconUrl('spell_monk_diffusemagic');
+		} else if (this.spellId === 116847 || this.spellId === 148187) {
+			name = 'Rushing Jade Wind';
+			if (this.spellId === 148187) {
+				name += ' (Hit)';
+			}
+			iconUrl = ActionId.makeIconUrl('ability_monk_rushingjadewind');
+		} else if (this.spellId === 123904) {
+			name = 'Invoke Xuen, the White Tiger';
+			iconUrl = ActionId.makeIconUrl('ability_monk_summontigerstatue');
+		} else if (this.spellId === 115008) {
+			name = 'Chi Torpedo';
+			iconUrl = ActionId.makeIconUrl('ability_monk_quitornado');
+		}
+
+		const iconOverrideId = this.spellTooltipOverride || this.spellIconOverride;
 		if (iconOverrideId) {
 			const overrideTooltipData = await ActionId.getTooltipData(iconOverrideId);
 			iconUrl = ActionId.makeIconUrl(overrideTooltipData['icon']);
@@ -1002,6 +1194,7 @@ export const resourceTypeToIcon: Record<ResourceType, string> = {
 	[ResourceType.ResourceTypeMana]: 'https://wow.zamimg.com/images/wow/icons/medium/inv_elemental_mote_mana.jpg',
 	[ResourceType.ResourceTypeEnergy]: 'https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_shadowworddominate.jpg',
 	[ResourceType.ResourceTypeRage]: 'https://wow.zamimg.com/images/wow/icons/medium/spell_misc_emotionangry.jpg',
+	[ResourceType.ResourceTypeChi]: 'https://wow.zamimg.com/images/wow/icons/medium/ability_monk_healthsphere.jpg',
 	[ResourceType.ResourceTypeComboPoints]: 'https://wow.zamimg.com/images/wow/icons/medium/inv_mace_2h_pvp410_c_01.jpg',
 	[ResourceType.ResourceTypeFocus]: 'https://wow.zamimg.com/images/wow/icons/medium/ability_hunter_focusfire.jpg',
 	[ResourceType.ResourceTypeRunicPower]: 'https://wow.zamimg.com/images/wow/icons/medium/inv_sword_62.jpg',
