@@ -1,11 +1,13 @@
 package dbc
 
-import "github.com/wowsims/mop/sim/core/proto"
+import (
+	"github.com/wowsims/mop/sim/core/proto"
+)
 
 type Spell struct {
 	NameLang              string
 	ID                    int32
-	SchoolMask            int32
+	SchoolMask            DamageClass
 	Speed                 float32
 	LaunchDelay           float32
 	MinDuration           float32
@@ -58,6 +60,7 @@ func (s *Spell) ToProto() *proto.Spell {
 	spell.MinRange = int32(s.MinRange)
 	spell.MaxRange = int32(s.MaxRange)
 	spell.SpellEffects = ConvertInts[int32](s.SpellEffects)
+	spell.School = int32(s.SchoolMask.ToSpellSchool())
 	return spell
 }
 

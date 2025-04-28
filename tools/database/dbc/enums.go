@@ -1,6 +1,7 @@
 package dbc
 
 import (
+	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
@@ -27,6 +28,51 @@ const (
 	ITEM_SPELLTRIGGER_ON_NO_DELAY_USE int = 5 // no equip cooldown
 	ITEM_SPELLTRIGGER_LEARN_SPELL_ID  int = 6
 )
+
+type DamageClass uint8
+
+const (
+	Physical DamageClass = 1 << iota // 0x01
+	Holy                             // 0x02
+	Fire                             // 0x04
+	Nature                           // 0x08
+	Frost                            // 0x10
+	Shadow                           // 0x20
+	Arcane                           // 0x40
+)
+
+func (d DamageClass) Has(flag DamageClass) bool {
+	return d&flag == flag
+}
+
+func (d DamageClass) ToSpellSchool() core.SpellSchool {
+	var s core.SpellSchool
+
+	if d.Has(Physical) {
+		s |= core.SpellSchoolPhysical
+	}
+	if d.Has(Holy) {
+		s |= core.SpellSchoolHoly
+	}
+	if d.Has(Fire) {
+		s |= core.SpellSchoolFire
+	}
+	if d.Has(Nature) {
+		s |= core.SpellSchoolNature
+	}
+	if d.Has(Frost) {
+		s |= core.SpellSchoolFrost
+	}
+	if d.Has(Shadow) {
+		s |= core.SpellSchoolShadow
+	}
+	if d.Has(Arcane) {
+		s |= core.SpellSchoolArcane
+	}
+
+	// if nothing matched, s will be zero = SpellSchoolNone
+	return s
+}
 
 type SpellEffectType int
 

@@ -18,6 +18,7 @@ message Spell {
 	bool direct_damage = 10;
 	bool periodic_damage = 11;
 	repeated int32 spell_effects = 12;
+	int32 school = 13;
 }
 
 message SpellEffect {
@@ -39,8 +40,11 @@ enum EffectType {
 	EffectTypeDamage = 2;
 	EffectTypeAura = 6;
 	EffectTypeHeal = 10;
+	EffectTypePersistentAoE = 27;
 	EffectTypeResourceGain = 30;
 	EffectTypeModWeaponPercent = 31;
+	EffectTypeNormalizedWeaponDamage = 121;
+
 }
 
 enum ResourceType {
