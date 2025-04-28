@@ -38,6 +38,13 @@ function serveExternalAssets() {
 
 					serveFile(res, requestedPath);
 					return;
+				} else if (url.includes('/mop/locales')) {
+					const localesPath = path.resolve(__dirname, './ui/i18n/locales');
+					const localeRelativePath = url.split('/mop/locales')[1];
+					const requestedPath = path.join(localesPath, localeRelativePath);
+
+					serveFile(res, requestedPath);
+					return;
 				} else {
 					next();
 				}
@@ -85,6 +92,36 @@ function determineContentType(filePath: string) {
 	}
 }
 
+function copyLocales() {
+	return {
+		name: 'copy-locales',
+		buildStart() {
+			const localesPath = path.resolve(__dirname, 'ui/i18n/locales');
+			const targetPath = path.resolve(__dirname, 'dist/mop/assets/locales');
+
+			// Create target directory if it doesn't exist
+			if (!fs.existsSync(targetPath)) {
+				fs.mkdirSync(targetPath, { recursive: true });
+			}
+
+			// Copy all locale files
+			const localeFiles = glob.sync('**/*.json', { cwd: localesPath });
+			localeFiles.forEach(file => {
+				const source = path.join(localesPath, file);
+				const target = path.join(targetPath, file);
+
+				// Create parent directory if it doesn't exist
+				const targetDir = path.dirname(target);
+				if (!fs.existsSync(targetDir)) {
+					fs.mkdirSync(targetDir, { recursive: true });
+				}
+
+				fs.copyFileSync(source, target);
+			});
+		},
+	} satisfies PluginOption;
+}
+
 export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 	({
 		base: '/mop/',
@@ -101,8 +138,14 @@ export default defineConfig(({ command, mode }) => {
 	const baseConfig = getBaseConfig({ command, mode });
 	return {
 		...baseConfig,
+		resolve: {
+			alias: {
+				'/mop/home_localization.js': path.resolve(__dirname, 'ui/i18n/home_localization.ts'),
+			},
+		},
 		plugins: [
 			serveExternalAssets(),
+			copyLocales(),
 			checker({
 				root: path.resolve(__dirname, 'ui'),
 				typescript: true,

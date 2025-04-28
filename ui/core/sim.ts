@@ -1,6 +1,6 @@
+import { getLanguageCode, setLanguageCode } from '../i18n/language_service';
 import { hasTouch } from '../shared/bootstrap_overrides';
 import { SimRequest } from '../worker/types';
-import { getBrowserLanguageCode, setLanguageCode } from './constants/lang';
 import * as OtherConstants from './constants/other';
 import { Encounter } from './encounter';
 import { getCurrentLang, setCurrentLang } from './locale_service';
@@ -186,6 +186,12 @@ export class Sim {
 		TypedEvent.onAny([this.raid.changeEmitter, this.encounter.changeEmitter]).on(eventID => this.updateCharacterStats(eventID));
 
 		this.language = getCurrentLang();
+
+		// Set language from browser
+		const browserLang = getLanguageCode();
+		if (browserLang) {
+			setLanguageCode(browserLang);
+		}
 	}
 
 	waitForInit(): Promise<void> {
@@ -729,7 +735,7 @@ export class Sim {
 		return this.language;
 	}
 	setLanguage(eventID: EventID, newLanguage: string) {
-		newLanguage = newLanguage || getBrowserLanguageCode();
+		newLanguage = newLanguage || getLanguageCode();
 		if (newLanguage != this.language) {
 			this.language = newLanguage;
 			setCurrentLang(this.language);

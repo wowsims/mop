@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "Bienvenue sur WoWSims MOP",
+    "description": "Un puissant outil de simulation pour World of Warcraft: Mists of Pandaria",
+    "startSimulation": "Démarrer la Simulation",
+    "browseSimulations": "Parcourir les Simulations",
+    "documentation": "Documentation",
+    "github": "GitHub"
+  }
+}

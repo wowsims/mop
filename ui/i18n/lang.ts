@@ -1,4 +1,4 @@
-import { getCurrentLang, setCurrentLang } from '../locale_service';
+import { getCurrentLang, setCurrentLang } from '../core/locale_service';
 
 export const wowheadSupportedLanguages: Record<string, string> = {
 	'en': 'English',

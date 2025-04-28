@@ -1,4 +1,4 @@
-import { getWowheadLanguagePrefix } from '../constants/lang';
+import { getWowheadLanguagePrefix } from '../../i18n/language_service';
 import { CHARACTER_LEVEL } from '../constants/mechanics';
 import { ResourceType } from '../proto/api';
 import { ActionID as ActionIdProto, ItemRandomSuffix, OtherAction, ReforgeStat } from '../proto/common';

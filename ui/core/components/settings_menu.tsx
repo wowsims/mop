@@ -1,8 +1,7 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { wowheadSupportedLanguages } from '../constants/lang.js';
-import { setCurrentLang } from '../locale_service';
+import { setLanguageCode , wowheadSupportedLanguages } from '../../i18n/language_service';
 import { Sim } from '../sim.js';
 import { SimUI } from '../sim_ui.js';
 import { EventID, TypedEvent } from '../typed_event.js';
@@ -121,7 +120,7 @@ export class SettingsMenu extends BaseModal {
 				},
 				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 					sim.setLanguage(eventID, langs[newValue] || 'en');
-					setCurrentLang(langs[newValue] || 'en');
+					setLanguageCode(langs[newValue] || 'en');
 				},
 			});
 			// Refresh page after language change, to apply the changes.

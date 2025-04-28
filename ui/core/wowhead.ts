@@ -1,4 +1,4 @@
-import { getLanguageCode } from './constants/lang';
+import { getLanguageCode,getWowheadLanguagePrefix } from '../i18n/language_service';
 import { CHARACTER_LEVEL } from './constants/mechanics';
 import { Database } from './proto_utils/database';
 
