@@ -96,27 +96,16 @@ function copyLocales() {
 	return {
 		name: 'copy-locales',
 		buildStart() {
-			const localesPath = path.resolve(__dirname, 'ui/i18n/locales');
-			const targetPath = path.resolve(__dirname, 'dist/mop/assets/locales');
-
-			// Create target directory if it doesn't exist
-			if (!fs.existsSync(targetPath)) {
-				fs.mkdirSync(targetPath, { recursive: true });
+			const locales = ['en.json', 'fr.json'];
+			const srcDir = path.resolve(__dirname, 'ui/i18n/locales');
+			const destDir = path.resolve(__dirname, 'dist/mop/assets/locales');
+			if (!fs.existsSync(destDir)) {
+				fs.mkdirSync(destDir, { recursive: true });
 			}
-
-			// Copy all locale files
-			const localeFiles = glob.sync('**/*.json', { cwd: localesPath });
-			localeFiles.forEach(file => {
-				const source = path.join(localesPath, file);
-				const target = path.join(targetPath, file);
-
-				// Create parent directory if it doesn't exist
-				const targetDir = path.dirname(target);
-				if (!fs.existsSync(targetDir)) {
-					fs.mkdirSync(targetDir, { recursive: true });
-				}
-
-				fs.copyFileSync(source, target);
+			locales.forEach(file => {
+				const src = path.join(srcDir, file);
+				const dest = path.join(destDir, file);
+				fs.copyFileSync(src, dest);
 			});
 		},
 	} satisfies PluginOption;

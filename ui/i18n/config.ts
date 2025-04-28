@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 
-import { getLanguageCode } from '../lang';
+import { getLanguageCode } from './language_service';
 
 i18n
   .use(Backend)
@@ -15,10 +15,8 @@ i18n
       escapeValue: false,
     },
     backend: {
-      loadPath: '/mop/assets/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/mop/assets/locales/{{lng}}.json',
     },
-    ns: ['common'],
-    defaultNS: 'common',
   });
 
 export default i18n;

@@ -187,10 +187,10 @@ export class Sim {
 
 		this.language = getCurrentLang();
 
-		// Set language from browser
-		const browserLang = getLanguageCode();
-		if (browserLang) {
-			setLanguageCode(browserLang);
+		// Initialize language code
+		const langCode = getLanguageCode();
+		if (!langCode) {
+			setLanguageCode('en');
 		}
 	}
 

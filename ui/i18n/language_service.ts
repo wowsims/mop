@@ -1,4 +1,4 @@
-import { getCurrentLang, setCurrentLang } from '../core/locale_service';
+import { getCurrentLang } from '../core/locale_service';
 
 export const wowheadSupportedLanguages: Record<string, string> = {
 	'en': 'English',
@@ -12,16 +12,6 @@ export const wowheadSupportedLanguages: Record<string, string> = {
 	'ru': 'Русский',
 };
 
-// Returns a 2-letter language code if it is a wowhead-supported language, or '' otherwise.
-export function getBrowserLanguageCode(): string {
-	const browserLang = (navigator.language || '').substring(0, 2);
-	if (Object.keys(wowheadSupportedLanguages).includes(browserLang)) {
-		return browserLang;
-	} else {
-		return '';
-	}
-}
-
 export function getLanguageCode(): string {
 	return getCurrentLang();
 }
@@ -31,6 +21,6 @@ export function getWowheadLanguagePrefix(): string {
 	return lang === 'en' ? '' : `${lang}/`;
 }
 
-export function setLanguageCode(newLang: string) {
-	setCurrentLang(newLang);
+export function setLanguageCode(lang: string) {
+	localStorage.setItem('lang', lang);
 }
