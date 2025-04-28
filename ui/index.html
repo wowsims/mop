@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="" data-i18n-lang>
 	<head>
-		<title id="title">Welcome to WoWSims MOP</title>
+		<title id="title" data-i18n="home.title">Welcome to WoWSims MOP</title>
 		<meta charset="utf-8">
 
 		<link rel="icon" type="image/x-icon" href="/mop/assets/favicon_io/favicon.ico">
 
-		<meta name="description" content="Simulations for World of Warcraft® Mists of Pandaria Classic.">
+		<meta name="description" content="" data-i18n="home.description">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="/scss/homepage/index.scss">
@@ -22,17 +22,17 @@
 							<a href="#" class="navbar-brand d-flex align-items-center p-0 m-0">
 								<img class="wowsims-logo" src="/mop/assets/img/WoW-Simulator-Icon.png">
 								<div class="d-flex flex-column">
-									<h2 class="wowsims-title">WoWSims</h2>
-									<h3 class="expansion-title w-100">Mists of Pandaria</h2>
+									<h2 class="wowsims-title" data-i18n="header.wowsims"></h2>
+									<h3 class="expansion-title w-100" data-i18n="header.expansion"></h3>
 								</div>
 							</a>
-							<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="Toggle navigation">
+							<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="" data-i18n="navigation.toggle">
 								<i class="fas fa-bars fa-2x"></i>
 							</button>
 						</div>
 						<div id="homepageHeaderCollapse" class="collapse navbar-collapse homepage-header-collapse order-2 order-md-1">
 							<div class="navbar-nav">
-								<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="Toggle navigation">
+								<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="" data-i18n="navigation.toggle">
 									<i class="fas fa-times fa-2x"></i>
 								</button>
 								<a href="https://discord.gg/p3DgvmnDCS" target="_blank" class="nav-link link-alt">
@@ -43,8 +43,17 @@
 								</a>
 								<a href="https://patreon.com/wowsims" target="_blank" class="nav-link link-alt">
 									<i class="patreon-link fab fa-patreon fa-2x me-2"></i>
-									<span class="fs-4 d-md-none d-lg-block">Support our devs</span>
+									<span class="fs-4 d-md-none d-lg-block" data-i18n="header.supportDevs"></span>
 								</a>
+								<div class="nav-item dropdown">
+									<button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="languageDropdown">
+										<i class="fas fa-globe fa-2x"></i>
+									</button>
+									<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+										<li><a class="dropdown-item" href="#" data-lang="en">English</a></li>
+										<li><a class="dropdown-item" href="#" data-lang="fr">Français</a></li>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</nav>
@@ -60,7 +69,7 @@
 							<a href="/mop/raid/" class="sim-link raid-sim-link text-white">
 								<div class="sim-link-content">
 									<img src="/mop/assets/img/raid_icon.png" class="sim-link-icon">
-									<span class="sim-link-title">Full Raid Sim</span>
+									<span class="sim-link-title" data-i18n="simulations.full_raid">Full Raid Sim</span>
 								</div>
 							</a>
 						</div> -->

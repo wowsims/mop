@@ -1,19 +1,28 @@
 {
-  "welcome": "Welcome to WoWSims MOP",
+  "welcome": "Welcome to WoWSims - Mists of Pandaria",
   "description": "A powerful simulation tool for World of Warcraft: Mists of Pandaria",
   "navigation": {
     "home": "Home",
     "simulations": "Simulations",
-    "about": "About"
+    "about": "About",
+    "toggle": "Toggle navigation"
+  },
+  "simulations": {
+    "full_raid": "Full Raid Sim"
   },
   "home": {
-    "title": "Welcome to WoWSims MOP",
+    "title": "WoWSims - Mists of Pandaria",
     "description": "A powerful simulation tool for World of Warcraft: Mists of Pandaria",
     "startSimulation": "Start Simulation",
     "browseSimulations": "Browse Simulations",
     "documentation": "Documentation",
     "github": "GitHub",
     "welcomeDescription": "Welcome to WoWSims - Mists of Pandaria! This is a community-driven project to provide class and raid simulations for World of Warcraft® Mists of Pandaria Classic together with the leading theorycrafters and class representatives."
+  },
+  "header": {
+    "wowsims": "WoWSims",
+    "expansion": "Mists of Pandaria",
+    "supportDevs": "Support our devs"
   },
   "classes": {
     "death_knight": "Death Knight",

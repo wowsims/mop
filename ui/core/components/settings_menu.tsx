@@ -1,7 +1,7 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { setLanguageCode , wowheadSupportedLanguages } from '../../i18n/language_service';
+import { setLanguageCode, wowheadSupportedLanguages } from '../../i18n/locale_service';
 import { Sim } from '../sim.js';
 import { SimUI } from '../sim_ui.js';
 import { EventID, TypedEvent } from '../typed_event.js';

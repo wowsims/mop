@@ -1,9 +1,8 @@
-import { getLanguageCode, setLanguageCode } from '../i18n/language_service';
+import { getCurrentLang, setLanguageCode } from '../i18n/locale_service';
 import { hasTouch } from '../shared/bootstrap_overrides';
 import { SimRequest } from '../worker/types';
 import * as OtherConstants from './constants/other';
 import { Encounter } from './encounter';
-import { getCurrentLang, setCurrentLang } from './locale_service';
 import { Player, UnitMetadata } from './player';
 import {
 	BulkSettings,
@@ -187,9 +186,8 @@ export class Sim {
 
 		this.language = getCurrentLang();
 
-		// Initialize language code
-		const langCode = getLanguageCode();
-		if (!langCode) {
+		// Initialize language code if not set
+		if (!this.language) {
 			setLanguageCode('en');
 		}
 	}
@@ -735,10 +733,9 @@ export class Sim {
 		return this.language;
 	}
 	setLanguage(eventID: EventID, newLanguage: string) {
-		newLanguage = newLanguage || getLanguageCode();
+		newLanguage = newLanguage || 'en';
 		if (newLanguage != this.language) {
 			this.language = newLanguage;
-			setCurrentLang(this.language);
 			setLanguageCode(this.language);
 			this.languageChangeEmitter.emit(eventID);
 		}
