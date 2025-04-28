@@ -4,10 +4,11 @@ node_modules
 ui/core/index.ts
 ui/*/*/index.html
 .dirstamp
-.vscode/launch.json
+
 # IDE folders
 .idea
 .history
+.vscode
 
 # binaries
 dist
