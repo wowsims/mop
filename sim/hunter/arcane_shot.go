@@ -1,46 +1,22 @@
 package hunter
 
 import (
-	"time"
-
 	"github.com/wowsims/mop/sim/core"
 )
 
 func (hunter *Hunter) registerArcaneShotSpell() {
-	hunter.ArcaneShot = hunter.RegisterSpell(core.SpellConfig{
-		ActionID:       core.ActionID{SpellID: 3044},
-		SpellSchool:    core.SpellSchoolArcane,
-		ClassSpellMask: HunterSpellArcaneShot,
-		ProcMask:       core.ProcMaskRangedSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
-		MissileSpeed:   40,
-		MinRange:       5,
-		MaxRange:       40,
-		FocusCost: core.FocusCostOptions{
-			Cost: 25,
-		},
-		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: time.Second,
-			},
-			IgnoreHaste: true,
-		},
+	spellConfig := *hunter.SpellConfigFromProto(3044)
 
-		BonusCritPercent:         0,
-		DamageMultiplierAdditive: 1,
-		DamageMultiplier:         1,
-		CritMultiplier:           hunter.CritMultiplier(true, true, false),
-		ThreatMultiplier:         1,
+	spellConfig.ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		wepDmg := hunter.AutoAttacks.Ranged().CalculateNormalizedWeaponDamage(sim, spell.RangedAttackPower(target))
+		minEffectSize, _ := spell.GetBaseDamage() // Second is spread so if set should roll
+		baseDamage := wepDmg + minEffectSize
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			wepDmg := hunter.AutoAttacks.Ranged().CalculateNormalizedWeaponDamage(sim, spell.RangedAttackPower(target))
-			baseDamage := wepDmg + (0.0483 * spell.RangedAttackPower(target)) + 290
+		result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeRangedHitAndCrit)
 
-			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeRangedHitAndCrit)
-
-			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-				spell.DealDamage(sim, result)
-			})
-		},
-	})
+		spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+			spell.DealDamage(sim, result)
+		})
+	}
+	hunter.ArcaneShot = hunter.RegisterSpell(spellConfig)
 }

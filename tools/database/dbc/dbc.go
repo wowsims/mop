@@ -25,6 +25,7 @@ type DBC struct {
 	SpellScalings          map[int]SpellScaling
 	Consumables            map[int]Consumable // Item ID
 	ItemEffects            map[int]ItemEffect // Parent Item ID
+	SpellPowerBySpell      map[int]SpellPower
 }
 
 func NewDBC() *DBC {
@@ -46,6 +47,7 @@ func NewDBC() *DBC {
 		Consumables:            make(map[int]Consumable),
 		ItemEffects:            make(map[int]ItemEffect),
 		SpellScalings:          make(map[int]SpellScaling),
+		SpellPowerBySpell:      make(map[int]SpellPower),
 	}
 }
 
@@ -102,6 +104,10 @@ func InitDBC() error {
 	if err := dbcInstance.loadSpells("./assets/db_inputs/dbc/spells.json"); err != nil {
 		return fmt.Errorf("loading spells: %w", err)
 	}
+	if err := dbcInstance.loadSpellpower("./assets/db_inputs/dbc/spellpower.json"); err != nil {
+		return fmt.Errorf("loading spells: %w", err)
+	}
+	dbcInstance.LoadSpellScaling()
 	return nil
 }
 
@@ -162,6 +168,28 @@ func (d *DBC) loadSpells(filename string) error {
 	for i := range spells {
 		spell := spells[i]
 		d.Spells[int(spell.ID)] = spell
+	}
+	return nil
+}
+
+func (d *DBC) loadSpellpower(filename string) error {
+	data, err := readGzipFile(filename)
+	if err != nil {
+		return err
+	}
+
+	var spellpowers map[int]SpellPower
+	if err = json.Unmarshal(data, &spellpowers); err != nil {
+		return ParseError{
+			Source: filename,
+			Field:  "SpellPower",
+			Reason: err.Error(),
+		}
+	}
+
+	for i := range spellpowers {
+		spell := spellpowers[i]
+		d.SpellPowerBySpell[int(spell.ID)] = spell
 	}
 	return nil
 }

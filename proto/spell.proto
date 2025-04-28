@@ -5,6 +5,22 @@ option go_package = "./proto";
 
 import "common.proto";
 
+message Spell {
+	int32 id = 1;
+	ResourceType resource = 2;
+	double base_cost = 3;
+	double missile_speed = 4;
+	int32 min_range = 5;
+	int32 max_range = 6;
+	int32 base_cast_time = 7;
+	int32 gcd = 8;
+	int32 cooldown = 9;
+	bool direct_damage = 10;
+	bool periodic_damage = 11;
+	repeated int32 spell_effects = 12;
+	int32 school = 13;
+}
+
 message SpellEffect {
     int32 id = 1;
     int32 spell_id = 2;
@@ -21,8 +37,14 @@ message SpellEffect {
 
 enum EffectType {
 	EffectTypeUnknown = 0;
+	EffectTypeDamage = 2;
+	EffectTypeAura = 6;
 	EffectTypeHeal = 10;
+	EffectTypePersistentAoE = 27;
 	EffectTypeResourceGain = 30;
+	EffectTypeModWeaponPercent = 31;
+	EffectTypeNormalizedWeaponDamage = 121;
+
 }
 
 enum ResourceType {
@@ -43,3 +65,4 @@ enum ResourceType {
 	ResourceTypeHolyPower = 14;
 	ResourceTypeChi = 15;
 }
+

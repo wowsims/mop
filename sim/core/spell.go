@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
@@ -156,6 +157,81 @@ type Spell struct {
 	RelatedAuraArrays LabeledAuraArrays
 	RelatedDotSpell   *Spell
 	RelatedSelfBuff   *Aura
+}
+
+func (unit *Unit) SpellConfigFromProto(spellId int) *SpellConfig {
+
+	spell := SpellsById[int32(spellId)]
+	if spell == nil {
+		panic(fmt.Sprintf("Spell %v not found in Database", spellId))
+	}
+
+	config := &SpellConfig{
+		ActionID:     ActionID{SpellID: 3044},
+		MinRange:     float64(spell.MinRange),
+		MaxRange:     float64(spell.MaxRange),
+		SpellSchool:  SpellSchool(spell.School),
+		BaseCost:     spell.BaseCost,
+		MissileSpeed: spell.MissileSpeed,
+		Cast: CastConfig{
+			DefaultCast: Cast{
+				GCD:      time.Duration(spell.Gcd),
+				CastTime: time.Duration(spell.BaseCastTime),
+			},
+			CD: Cooldown{
+				Timer:    unit.NewTimer(),
+				Duration: time.Duration(spell.Cooldown),
+			},
+		},
+	}
+	switch spell.Resource {
+	case proto.ResourceType_ResourceTypeFocus:
+		config.FocusCost = FocusCostOptions{
+			Cost: int32(spell.BaseCost),
+		}
+	case proto.ResourceType_ResourceTypeEnergy:
+		config.EnergyCost = EnergyCostOptions{
+			Cost: int32(spell.BaseCost),
+		}
+	}
+
+	spellEffects := spell.GetSpellEffects()
+	for _, effectId := range spellEffects {
+		spellEffect := SpellEffectsById[effectId]
+		switch spellEffect.Type {
+		case proto.EffectType_EffectTypeModWeaponPercent:
+			config.DamageMultiplier = spellEffect.MinEffectSize
+		}
+	}
+	return config
+}
+
+func (spell *Spell) GetProtoSpell() *proto.Spell {
+	return SpellsById[spell.SpellID]
+}
+
+func (spell *Spell) GetBaseDamage() (float64, float64) {
+	protoSpell := SpellsById[spell.SpellID]
+	for _, effectId := range protoSpell.SpellEffects {
+		spellEffect := SpellEffectsById[effectId]
+		switch spellEffect.Type {
+		case proto.EffectType_EffectTypeDamage,
+			proto.EffectType_EffectTypeNormalizedWeaponDamage:
+			return spellEffect.MinEffectSize, spellEffect.EffectSpread
+		}
+	}
+	return 0, 0
+}
+
+func (spell *Spell) EffectN(number int32) *proto.SpellEffect {
+	protoSpell := SpellsById[spell.SpellID]
+	for _, effectId := range protoSpell.SpellEffects {
+		spellEffect := SpellEffectsById[effectId]
+		if spellEffect.Index == number {
+			return spellEffect
+		}
+	}
+	return nil
 }
 
 func (unit *Unit) OnSpellRegistered(handler SpellRegisteredHandler) {
