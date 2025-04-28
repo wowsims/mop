@@ -992,7 +992,7 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 	var stringAuraIFlags string            //2
 	var stringChannelInterruptFlags string // 2
 	var stringShapeShift string            //2
-
+	var stringEffects string
 	err := rows.Scan(
 		&spell.NameLang,
 		&spell.ID,
@@ -1031,6 +1031,9 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 		&stringAuraIFlags,
 		&stringChannelInterruptFlags,
 		&stringShapeShift,
+		&stringEffects,
+		&spell.MinRange,
+		&spell.MaxRange,
 	)
 	if err != nil {
 		return spell, fmt.Errorf("scanning spell data: %w", err)
@@ -1061,13 +1064,29 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 	if err != nil {
 		return spell, fmt.Errorf("parsing stringShapeShift args for spell %d (%s): %w", spell.ID, stringShapeShift, err)
 	}
-
+	if stringEffects == "" {
+		spell.SpellEffects = []int{}
+	} else {
+		parts := strings.Split(stringEffects, ",")
+		effects := make([]int, 0, len(parts))
+		for _, part := range parts {
+			token := strings.TrimSpace(part)
+			num, err := strconv.Atoi(token)
+			if err != nil {
+				fmt.Printf("Warning: parsing spell effects for spell  %d (%s): %v\n", spell.ID, token, err)
+				effects = []int{}
+				break
+			}
+			effects = append(effects, num)
+		}
+		spell.SpellEffects = effects
+	}
 	return spell, nil
 }
 
 func LoadSpells(dbHelper *DBHelper) ([]dbc.Spell, error) {
 	query := `
-		SELECT DISTINCT
+SELECT DISTINCT
 		sn.Name_lang,
 		sn.ID,
 		sm.SchoolMask,
@@ -1104,7 +1123,10 @@ func LoadSpells(dbHelper *DBHelper) ([]dbc.Spell, error) {
 		COALESCE(sco.SpellClassSet, 0),
 		COALESCE(si.AuraInterruptFlags, ""),
 		COALESCE(si.ChannelInterruptFlags, ""),
-		COALESCE(ssp.ShapeshiftMask, "")
+		COALESCE(ssp.ShapeshiftMask, ""),
+		COALESCE(se_list.EffectIDs,    '')   AS SpellEffectIDs,
+		COALESCE(ssr.RangeMin_0, 0),
+		COALESCE(ssr.RangeMax_0, 0)
 		FROM Spell s
 		LEFT JOIN SpellName sn ON s.ID = sn.ID
 		LEFT JOIN SpellEffect se ON s.ID = se.SpellID
@@ -1122,6 +1144,16 @@ func LoadSpells(dbHelper *DBHelper) ([]dbc.Spell, error) {
 		LEFT JOIN SpellAuraOptions sao ON sao.SpellID = s.ID
 		LEFT JOIN SpellClassOptions sco ON s.ID = sco.SpellID
 		LEFT JOIN SpellShapeshift ssp ON ssp.SpellID = s.ID
+		LEFT JOIN SpellRange ssr ON ssr.ID = sm.RangeIndex
+		  LEFT JOIN (
+			SELECT
+			SpellID,
+			GROUP_CONCAT(ID, ',')   AS EffectIDs
+			FROM SpellEffect
+			GROUP BY SpellID
+		) AS se_list
+			ON se_list.SpellID = s.ID
+
 		WHERE sco.SpellClassSet is not null
 		GROUP BY s.ID
 `
@@ -1197,4 +1229,89 @@ func LoadDropSources(dbHelper *DBHelper) (map[int][]*proto.DropSource, error) {
 	}
 
 	return sourcesByItem, nil
+}
+
+func ScanSpellPowerRow(rows *sql.Rows) (int, *dbc.SpellPower, error) {
+	var (
+		sp                  dbc.SpellPower
+		powerDisplayID      sql.NullInt64
+		powerType           sql.NullInt64
+		requiredAuraSpellID sql.NullInt64
+		spellID             sql.NullInt64
+	)
+
+	err := rows.Scan(
+		&sp.ID,
+		&sp.OrderIndex,
+		&sp.ManaCost,
+		&sp.ManaCostPerLevel,
+		&sp.ManaPerSecond,
+		&powerDisplayID,
+		&sp.AltPowerBarID,
+		&sp.PowerCostPct,
+		&sp.PowerCostMaxPct,
+		&sp.PowerPctPerSecond,
+		&powerType,
+		&requiredAuraSpellID,
+		&sp.OptionalCost,
+		&spellID,
+	)
+	if err != nil {
+		return 0, &sp, fmt.Errorf("scanning spell power row: %w", err)
+	}
+
+	if powerDisplayID.Valid {
+		sp.PowerDisplayID = int(powerDisplayID.Int64)
+	}
+	if powerType.Valid {
+		sp.PowerType = int(powerType.Int64)
+	}
+	if requiredAuraSpellID.Valid {
+		sp.RequiredAuraSpellID = int(requiredAuraSpellID.Int64)
+	}
+	if spellID.Valid {
+		sp.SpellID = int(spellID.Int64)
+	}
+
+	return sp.SpellID, &sp, nil
+}
+
+func LoadSpellPowers(dbHelper *DBHelper) (map[int]*dbc.SpellPower, error) {
+	const query = `
+        SELECT
+            ID,
+            OrderIndex,
+            ManaCost,
+            ManaCostPerLevel,
+            ManaPerSecond,
+            PowerDisplayID,
+            AltPowerBarID,
+            PowerCostPct,
+            PowerCostMaxPct,
+            PowerPctPerSecond,
+            PowerType,
+            RequiredAuraSpellID,
+            OptionalCost,
+            SpellID
+        FROM SpellPower;
+    `
+	rows, err := dbHelper.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("querying spell powers: %w", err)
+	}
+	defer rows.Close()
+
+	powersBySpell := make(map[int]*dbc.SpellPower)
+	for rows.Next() {
+		spellID, sp, err := ScanSpellPowerRow(rows)
+		if err != nil {
+			return nil, err
+		}
+		powersBySpell[spellID] = sp
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating spell power rows: %w", err)
+	}
+
+	return powersBySpell, nil
 }

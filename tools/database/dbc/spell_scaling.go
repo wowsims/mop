@@ -3,6 +3,7 @@ package dbc
 import (
 	"bufio"
 	_ "embed"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -57,7 +58,7 @@ func (dbc *DBC) LoadSpellScaling() error {
 	if err := scanner.Err(); err != nil {
 		return err
 	}
-
+	fmt.Println("Loaded spell scalings", len(dbc.SpellScalings))
 	return nil
 }
 

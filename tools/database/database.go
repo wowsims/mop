@@ -45,6 +45,7 @@ type WowDatabase struct {
 
 	Consumables map[int32]*proto.Consumable
 	Effects     map[int32]*proto.SpellEffect
+	Spells      map[int32]*proto.Spell
 }
 
 func NewWowDatabase() *WowDatabase {
@@ -247,6 +248,7 @@ func (db *WowDatabase) ToUIProto() *proto.UIDatabase {
 		ReforgeStats:   mapToSlice(db.ReforgeStats),
 		Consumables:    mapToSlice(db.Consumables),
 		SpellEffects:   mapToSlice(db.Effects),
+		Spells:         mapToSlice(db.Spells),
 	}
 }
 
@@ -280,6 +282,7 @@ func ReadDatabaseFromJson(jsonStr string) *WowDatabase {
 		ReforgeStats:   sliceToMap(dbProto.ReforgeStats),
 		Consumables:    sliceToMap(dbProto.Consumables),
 		Effects:        sliceToMap(dbProto.SpellEffects),
+		Spells:         sliceToMap(dbProto.Spells),
 	}
 }
 
@@ -330,6 +333,8 @@ func (db *WowDatabase) WriteJson(jsonFilePath string) {
 	tools.WriteProtoArrayToBuffer(uidb.GlyphIds, buffer, "glyphIds")
 	buffer.WriteString(",\n")
 	tools.WriteProtoArrayToBuffer(uidb.Consumables, buffer, "consumables")
+	buffer.WriteString(",\n")
+	tools.WriteProtoArrayToBuffer(uidb.Spells, buffer, "spells")
 	buffer.WriteString(",\n")
 	tools.WriteProtoArrayToBuffer(uidb.SpellEffects, buffer, "spellEffects")
 	buffer.WriteString("\n")

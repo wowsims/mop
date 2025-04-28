@@ -30,6 +30,7 @@ message UIDatabase {
 
 	repeated Consumable consumables = 13;
 	repeated SpellEffect spell_effects = 14;
+	repeated Spell spells = 15;
 }
 
 message UIZone {

@@ -14,7 +14,7 @@ message SimDatabase {
 
 	repeated Consumable consumables = 7;
 	repeated SpellEffect spell_effects = 8;
-
+	repeated Spell spells = 9;
 }
 
 // Contains only the Item info needed by the sim.

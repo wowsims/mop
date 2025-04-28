@@ -1,5 +1,7 @@
 package dbc
 
+import "github.com/wowsims/mop/sim/core/proto"
+
 type Spell struct {
 	NameLang              string
 	ID                    int32
@@ -38,6 +40,25 @@ type Spell struct {
 	AuraInterruptFlags    []int
 	ChannelInterruptFlags []int
 	ShapeshiftMask        []int
+	SpellEffects          []int
+	MinRange              int
+	MaxRange              int
+}
+
+func (s *Spell) ToProto() *proto.Spell {
+	spell := &proto.Spell{}
+	spellPower := dbcInstance.SpellPowerBySpell[int(s.ID)]
+	spell.BaseCost = spellPower.GetCost()
+	spell.MissileSpeed = float64(s.Speed)
+	spell.Id = s.ID
+	spell.Cooldown = s.Cooldown
+	spell.Gcd = s.GCD
+	spell.BaseCastTime = int32(s.CastTimeMin)
+	spell.Resource = spellPower.GetPowerType()
+	spell.MinRange = int32(s.MinRange)
+	spell.MaxRange = int32(s.MaxRange)
+	spell.SpellEffects = ConvertInts[int32](s.SpellEffects)
+	return spell
 }
 
 func (s *Spell) HasAttributeFlag(attr uint) bool {

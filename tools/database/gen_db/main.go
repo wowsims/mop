@@ -205,6 +205,17 @@ func main() {
 			log.Fatalf("Error writing file: %v", err)
 		}
 	}
+
+	spellPowers, err := database.LoadSpellPowers(helper)
+	if err == nil {
+		json, _ := json.Marshal(spellPowers)
+		if err := writeGzipFile(fmt.Sprintf("%s/dbc/spellpower.json", inputsDir), json); err != nil {
+			log.Fatalf("Error writing file: %v", err)
+		}
+	} else {
+		log.Fatalf("Error %v", err)
+	}
+
 	spells, err := database.LoadSpells(helper)
 	if err == nil {
 		json, _ := json.Marshal(spells)
@@ -237,6 +248,7 @@ func main() {
 
 	iconsMap, _ := database.LoadArtTexturePaths("./tools/DB2ToSqlite/listfile.csv")
 	var instance = dbc.GetDBC()
+	instance.LoadSpellScaling()
 
 	for _, item := range instance.Items {
 		parsed := item.ToUIItem()
@@ -261,6 +273,15 @@ func main() {
 		}
 		db.MergeEnchant(parsed)
 	}
+	db.Spells = make(map[int32]*proto.Spell)
+	for _, spell := range instance.Spells {
+
+		// We want to preload all class spells
+		if spell.SpellClassSet != 0 {
+			db.Spells[spell.ID] = spell.ToProto()
+		}
+
+	}
 
 	for _, item := range atlaslootDB.Items {
 		if _, ok := db.Items[item.Id]; ok {
@@ -276,7 +297,6 @@ func main() {
 	for _, consumable := range database.ConsumableOverrides {
 		db.MergeConsumable(consumable)
 	}
-
 	db.MergeItems(database.ItemOverrides)
 	db.MergeGems(database.GemOverrides)
 	db.MergeEnchants(database.EnchantOverrides)
@@ -300,6 +320,15 @@ func main() {
 	for _, consume := range db.Consumables {
 		if len(consume.EffectIds) > 0 {
 			for _, se := range consume.EffectIds {
+				effect := instance.SpellEffectsById[int(se)]
+				db.MergeEffect(effect.ToProto())
+			}
+		}
+	}
+
+	for _, spell := range db.Spells {
+		if len(spell.SpellEffects) > 0 {
+			for _, se := range spell.SpellEffects {
 				effect := instance.SpellEffectsById[int(se)]
 				db.MergeEffect(effect.ToProto())
 			}

@@ -9,7 +9,7 @@ import (
 )
 
 const MAX_SCALING_LEVEL = 100
-const BASE_LEVEL = 85
+const BASE_LEVEL = 90
 
 type SpellEffect struct {
 	ID                             int
@@ -101,12 +101,13 @@ func (s *SpellEffect) ScalingClass() proto.Class {
 	}
 }
 func (s *SpellEffect) Delta(pLevel int, level int) float64 {
-	if level > 85 {
-		level = 85
+	if level > 90 {
+		level = 90
 	}
 
 	var mScale float64
 	spell := dbcInstance.Spells[s.SpellID]
+
 	if s.Variance != 0 && s.ScalingClass() != 0 {
 		scalingLevel := level
 		if scalingLevel == 0 {

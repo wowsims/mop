@@ -21,6 +21,7 @@ var EnchantsByEffectID = map[int32]Enchant{}
 var ReforgeStatsByID = map[int32]ReforgeStat{}
 var ConsumablesByID = map[int32]Consumable{}
 var SpellEffectsById = map[int32]*proto.SpellEffect{}
+var SpellsById = map[int32]*proto.Spell{}
 
 var mutex = &sync.Mutex{}
 
@@ -67,6 +68,11 @@ func addToDatabase(newDB *proto.SimDatabase) {
 	for _, v := range newDB.SpellEffects {
 		if _, ok := SpellEffectsById[v.Id]; !ok {
 			SpellEffectsById[v.Id] = v
+		}
+	}
+	for _, v := range newDB.Spells {
+		if _, ok := SpellsById[v.Id]; !ok {
+			SpellsById[v.Id] = v
 		}
 	}
 }

@@ -1060,3 +1060,33 @@ const (
 	BANDAGE
 	OTHER
 )
+
+type Power int
+
+const (
+	POWER_HEALTH       Power = -2
+	POWER_MANA               = 0
+	POWER_RAGE               = 1
+	POWER_FOCUS              = 2
+	POWER_ENERGY             = 3
+	POWER_HAPPINESS          = 4
+	POWER_RUNE               = 5
+	POWER_RUNIC_POWER        = 6
+	POWER_SOUL_SHARDS        = 7
+	POWER_ASTRAL_POWER       = 8
+	POWER_HOLY_POWER         = 9
+	POWER_MAELSTROM          = 11
+	POWER_CHI                = 12
+	POWER_INSANITY           = 13
+	POWER_COMBO_POINT        = 14
+	POWER_DEMONIC_FURY       = 15
+	POWER_FURY               = 17
+	POWER_PAIN               = 18
+	POWER_ESSENSE            = 19
+	POWER_BLOOD_RUNE         = 20
+	POWER_FROST_RUNE         = 21
+	POWER_UNHOLY_RUNE        = 22
+	POWER_MAX                = 23
+	POWER_NONE         Power = 0xFFFFFFFF // To handle the 0xFFFFFFFF value
+	POWER_OFFSET             = 2
+)
