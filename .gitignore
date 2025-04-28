@@ -39,3 +39,12 @@ tmp/
 wowsimmop*.so
 wowsimmop*.dll
 wowsimmop*.h
+
+# vscode
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
