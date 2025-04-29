@@ -1,4 +1,4 @@
-import { getWowheadLanguagePrefix, wowheadSupportedLanguages } from '../i18n/locale_service';
+import { getWowheadLanguagePrefix, supportedLanguages } from '../i18n/locale_service';
 import { CHARACTER_LEVEL } from './constants/mechanics';
 import { Database } from './proto_utils/database';
 

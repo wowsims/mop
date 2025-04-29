@@ -185,11 +185,6 @@ export class Sim {
 		TypedEvent.onAny([this.raid.changeEmitter, this.encounter.changeEmitter]).on(eventID => this.updateCharacterStats(eventID));
 
 		this.language = getCurrentLang();
-
-		// Initialize language code if not set
-		if (!this.language) {
-			setLanguageCode('en');
-		}
 	}
 
 	waitForInit(): Promise<void> {

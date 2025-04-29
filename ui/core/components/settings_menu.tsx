@@ -1,7 +1,7 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { setLanguageCode, wowheadSupportedLanguages } from '../../i18n/locale_service';
+import { setLanguageCode, supportedLanguages } from '../../i18n/locale_service';
 import { Sim } from '../sim.js';
 import { SimUI } from '../sim_ui.js';
 import { EventID, TypedEvent } from '../typed_event.js';
@@ -101,7 +101,7 @@ export class SettingsMenu extends BaseModal {
 		}
 
 		if (language.value) {
-			const langs = Object.keys(wowheadSupportedLanguages);
+			const langs = Object.keys(supportedLanguages);
 			const defaultLang = langs.indexOf('en');
 			const languagePicker = new EnumPicker(language.value, this.simUI.sim, {
 				id: 'simui-language-picker',
@@ -109,7 +109,7 @@ export class SettingsMenu extends BaseModal {
 				labelTooltip: 'Controls the language for Wowhead tooltips.',
 				values: langs.map((lang, i) => {
 					return {
-						name: wowheadSupportedLanguages[lang],
+						name: supportedLanguages[lang],
 						value: i,
 					};
 				}),

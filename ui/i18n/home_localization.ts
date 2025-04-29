@@ -73,21 +73,12 @@ function localizeHomePage() {
     i18n.init();
   }
 
-  // Set initial language if not set
-  if (!localStorage.getItem('lang')) {
-    setLanguageCode('en');
-  }
-
   // Handle language selector
   document.querySelectorAll('[data-lang]').forEach(element => {
     element.addEventListener('click', e => {
       e.preventDefault();
-      const lang = element.getAttribute('data-lang');
-      if (lang) {
-        setLanguageCode(lang);
-        // Force a page reload to ensure all components update properly
-        window.location.reload();
-      }
+      getCurrentLang();
+      window.location.reload();
     });
   });
 

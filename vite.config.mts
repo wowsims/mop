@@ -39,7 +39,7 @@ function serveExternalAssets() {
 					serveFile(res, requestedPath);
 					return;
 				} else if (url.includes('/mop/locales')) {
-					const localesPath = path.resolve(__dirname, './ui/i18n/locales');
+					const localesPath = path.resolve(__dirname, './assets/locales');
 					const localeRelativePath = url.split('/mop/locales')[1];
 					const requestedPath = path.join(localesPath, localeRelativePath);
 
@@ -97,7 +97,7 @@ function copyLocales() {
 		name: 'copy-locales',
 		buildStart() {
 			const locales = ['en.json', 'fr.json'];
-			const srcDir = path.resolve(__dirname, 'ui/i18n/locales');
+			const srcDir = path.resolve(__dirname, 'assets/locales');
 			const destDir = path.resolve(__dirname, 'dist/mop/assets/locales');
 			if (!fs.existsSync(destDir)) {
 				fs.mkdirSync(destDir, { recursive: true });

@@ -3,7 +3,7 @@
 
 const STORAGE_KEY = 'lang';
 
-export const wowheadSupportedLanguages: Record<string, string> = {
+export const supportedLanguages: Record<string, string> = {
 	'en': 'English',
 	'cn': '简体中文',
 	'de': 'Deutsch',
@@ -16,19 +16,17 @@ export const wowheadSupportedLanguages: Record<string, string> = {
 };
 
 export function getCurrentLang(): string {
-	const lang = localStorage.getItem(STORAGE_KEY);
-	return lang || 'en';
+	const storedLang = localStorage.getItem(STORAGE_KEY);
+	if (storedLang && storedLang in supportedLanguages) {
+		return storedLang;
+	}
+	setLanguageCode('en');
+	return 'en';
 }
 
 export function setLanguageCode(lang: string) {
-	// Store the language code directly
 	localStorage.setItem(STORAGE_KEY, lang);
-
-	// Update HTML lang attribute
 	document.documentElement.lang = lang;
-
-	// Force i18next to use our language setting
-	// This is needed because i18next maintains its own storage
 	if (window.i18next) {
 		window.i18next.changeLanguage(lang);
 	}
