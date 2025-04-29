@@ -1,4 +1,4 @@
-import { getWowheadLanguagePrefix } from '../../i18n/locale_service';
+import { getLang } from '../../i18n/locale_service';
 import { CHARACTER_LEVEL } from '../constants/mechanics';
 import { ResourceType } from '../proto/api';
 import { ActionID as ActionIdProto, ItemRandomSuffix, OtherAction, ReforgeStat } from '../proto/common';
@@ -8,6 +8,11 @@ import { Database } from './database';
 
 // If true uses wotlkdb.com, else uses wowhead.com.
 export const USE_WOTLK_DB = false;
+
+export function getWowheadLanguagePrefix(): string {
+	const lang = getLang();
+	return lang === 'en' ? '' : `${lang}/`;
+}
 
 // Uniquely identifies a specific item / spell / thing in WoW. This object is immutable.
 export class ActionId {

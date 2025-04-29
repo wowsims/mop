@@ -1,4 +1,4 @@
-import { getCurrentLang, setLanguageCode } from '../i18n/locale_service';
+import { getLang } from '../i18n/locale_service';
 import { hasTouch } from '../shared/bootstrap_overrides';
 import { SimRequest } from '../worker/types';
 import * as OtherConstants from './constants/other';
@@ -184,7 +184,7 @@ export class Sim {
 
 		TypedEvent.onAny([this.raid.changeEmitter, this.encounter.changeEmitter]).on(eventID => this.updateCharacterStats(eventID));
 
-		this.language = getCurrentLang();
+		this.language = getLang();
 	}
 
 	waitForInit(): Promise<void> {
@@ -731,7 +731,6 @@ export class Sim {
 		newLanguage = newLanguage || 'en';
 		if (newLanguage != this.language) {
 			this.language = newLanguage;
-			setLanguageCode(this.language);
 			this.languageChangeEmitter.emit(eventID);
 		}
 	}
@@ -801,7 +800,7 @@ export class Sim {
 			this.setShowEPValues(eventID, proto.showEpValues);
 			this.setUseCustomEPValues(eventID, proto.useCustomEpValues);
 			this.setUseSoftCapBreakpoints(eventID, proto.useSoftCapBreakpoints);
-			this.setLanguage(eventID, proto.language);
+			// this.setLanguage(eventID, proto.language);
 			this.setFaction(eventID, proto.faction || Faction.Alliance);
 
 			const filters = proto.filters || Sim.defaultFilters();

@@ -1,15 +1,5 @@
 import i18n from './config';
-import { getCurrentLang, setLanguageCode } from './locale_service';
-
-// Elements that need translation
-const TRANSLATION_KEYS = {
-  'title': 'home.title',
-  'description': 'home.description',
-  'start-simulation': 'home.startSimulation',
-  'browse-simulations': 'home.browseSimulations',
-  'documentation': 'home.documentation',
-  'github': 'home.github'
-};
+import { getLang, setLang, supportedLanguages } from './locale_service';
 
 // Function to translate class names
 function translateClass(className: string): string {
@@ -33,9 +23,33 @@ function extractClassAndSpecFromLink(link: HTMLAnchorElement): { className?: str
   return {};
 }
 
+function updateLanguageDropdown() {
+  const dropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="languageDropdown"]');
+  if (!dropdownMenu) return;
+
+  const currentLang = getLang();
+  dropdownMenu.innerHTML = '';
+
+  Object.entries(supportedLanguages).forEach(([code, name]) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.className = `dropdown-item ${code === currentLang ? 'active' : ''}`;
+    a.href = '#';
+    a.dataset.lang = code;
+    a.textContent = name;
+    a.onclick = e => {
+      e.preventDefault();
+      setLang(code);
+      window.location.reload();
+    };
+    li.appendChild(a);
+    dropdownMenu.appendChild(li);
+  });
+}
+
 function updateTranslations() {
   // Set HTML lang attribute
-  document.documentElement.lang = getCurrentLang();
+  document.documentElement.lang = getLang();
 
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.getAttribute('data-i18n');
@@ -65,6 +79,9 @@ function updateTranslations() {
       }
     }
   });
+
+  // Update language dropdown
+  updateLanguageDropdown();
 }
 
 function localizeHomePage() {
@@ -72,15 +89,6 @@ function localizeHomePage() {
   if (!i18n.isInitialized) {
     i18n.init();
   }
-
-  // Handle language selector
-  document.querySelectorAll('[data-lang]').forEach(element => {
-    element.addEventListener('click', e => {
-      e.preventDefault();
-      getCurrentLang();
-      window.location.reload();
-    });
-  });
 
   // Update translations when language changes
   i18n.on('languageChanged', () => {

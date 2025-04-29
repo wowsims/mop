@@ -1,12 +1,12 @@
 import i18n from 'i18next';
 import Backend from 'i18next-http-backend';
 
-import { getCurrentLang } from './locale_service';
+import { getLang } from './locale_service';
 
 i18n
   .use(Backend)
   .init({
-    lng: getCurrentLang(),
+    lng: getLang(),
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
     interpolation: {

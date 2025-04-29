@@ -15,26 +15,23 @@ export const supportedLanguages: Record<string, string> = {
 	'ru': 'Русский',
 };
 
-export function getCurrentLang(): string {
+export function getLang(): string {
 	const storedLang = localStorage.getItem(STORAGE_KEY);
 	if (storedLang && storedLang in supportedLanguages) {
 		return storedLang;
 	}
-	setLanguageCode('en');
-	return 'en';
+	return setLang('en');
 }
 
-export function setLanguageCode(lang: string) {
-	localStorage.setItem(STORAGE_KEY, lang);
-	document.documentElement.lang = lang;
-	if (window.i18next) {
-		window.i18next.changeLanguage(lang);
+export function setLang(lang: string): string {
+	if (lang in supportedLanguages) {
+		localStorage.setItem(STORAGE_KEY, lang);
+		document.documentElement.lang = lang;
+		if (window.i18next) {
+			window.i18next.changeLanguage(lang);
+		}
 	}
-}
-
-export function getWowheadLanguagePrefix(): string {
-	const lang = getCurrentLang();
-	return lang === 'en' ? '' : `${lang}/`;
+	return lang;
 }
 
 // Add TypeScript interface for i18next on window
