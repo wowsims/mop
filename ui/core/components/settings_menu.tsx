@@ -124,7 +124,7 @@ export class SettingsMenu extends BaseModal {
 				},
 			});
 			// Refresh page after language change, to apply the changes.
-			languagePicker.changeEmitter.on(() => setTimeout(() => location.reload(), 100));
+			languagePicker.changeEmitter.on(() => setTimeout(() => location.reload(), 300));
 		}
 
 		if (showThreatMetrics.value)

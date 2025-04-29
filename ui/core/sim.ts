@@ -800,7 +800,7 @@ export class Sim {
 			this.setShowEPValues(eventID, proto.showEpValues);
 			this.setUseCustomEPValues(eventID, proto.useCustomEpValues);
 			this.setUseSoftCapBreakpoints(eventID, proto.useSoftCapBreakpoints);
-			// this.setLanguage(eventID, proto.language);
+			this.setLanguage(eventID, proto.language);
 			this.setFaction(eventID, proto.faction || Faction.Alliance);
 
 			const filters = proto.filters || Sim.defaultFilters();
