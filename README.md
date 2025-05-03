@@ -27,4 +27,4 @@ Alternatively, you can choose from a specific relase on the [Releases](https://g
 - [Installation Guide](docs/installation.md)
 - [Development Commands](docs/commands.md)
 - [Adding a New Sim](docs/adding_sim.md)
-- [Internationalization](docs/i18n.md)
+- [Internationalization](docs/i18n_guide.md)
