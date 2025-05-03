@@ -21,7 +21,7 @@ func (monk *Monk) registerCracklingJadeLightning() {
 	energyMetrics := monk.NewEnergyMetrics(actionID)
 	manaMetrics := monk.NewManaMetrics(actionID)
 	chiMetrics := monk.NewChiMetrics(core.ActionID{SpellID: 123333})
-	avgScaling := monk.ClassSpellScaling * 0.1800000072
+	avgScaling := monk.CalcScalingSpellDmg(0.1800000072)
 
 	monk.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -32,8 +32,7 @@ func (monk *Monk) registerCracklingJadeLightning() {
 		MaxRange:       40,
 
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: core.TernaryInt32(monk.StanceMatches(WiseSerpent), 157, 0),
-			PercentModifier: core.TernaryInt32(monk.StanceMatches(WiseSerpent), 1, 0), // 1% of 157 = 1.57%
+			BaseCostPercent: core.TernaryFloat64(monk.StanceMatches(WiseSerpent), 1.57, 0),
 		},
 
 		Cast: core.CastConfig{
@@ -86,7 +85,7 @@ func (monk *Monk) registerCracklingJadeLightning() {
 
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
-		CritMultiplier:   monk.DefaultSpellCritMultiplier(),
+		CritMultiplier:   monk.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			result := spell.CalcOutcome(sim, target, spell.OutcomeMagicHitNoHitCounter)

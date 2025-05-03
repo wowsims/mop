@@ -22,7 +22,7 @@ func (monk *Monk) registerExpelHarm() {
 
 		DamageMultiplier: 0.5,
 		ThreatMultiplier: 1,
-		CritMultiplier:   monk.DefaultSpellCritMultiplier(),
+		CritMultiplier:   monk.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			spell.CalcAndDealDamage(sim, target, healingDone, spell.OutcomeMagicHitAndCrit)
@@ -41,8 +41,7 @@ func (monk *Monk) registerExpelHarm() {
 			Refund: 0.8,
 		},
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: core.TernaryInt32(monk.StanceMatches(WiseSerpent), 250, 0),
-			PercentModifier: core.TernaryInt32(monk.StanceMatches(WiseSerpent), 1, 0), // 1% of 250 = 2.5%
+			BaseCostPercent: core.TernaryFloat64(monk.StanceMatches(WiseSerpent), 2.5, 0),
 		},
 
 		Cast: core.CastConfig{
@@ -58,7 +57,7 @@ func (monk *Monk) registerExpelHarm() {
 
 		DamageMultiplier: 7,
 		ThreatMultiplier: 1.0,
-		CritMultiplier:   monk.DefaultSpellCritMultiplier(),
+		CritMultiplier:   monk.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)

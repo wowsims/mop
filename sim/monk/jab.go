@@ -40,7 +40,7 @@ func (monk *Monk) registerJab() {
 			Refund: 0.8,
 		},
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: core.TernaryInt32(monk.StanceMatches(WiseSerpent), 8, 0),
+			BaseCostPercent: core.TernaryFloat64(monk.StanceMatches(WiseSerpent), 8, 0),
 		},
 
 		Cast: core.CastConfig{
@@ -52,7 +52,7 @@ func (monk *Monk) registerJab() {
 
 		DamageMultiplier: 1.5,
 		ThreatMultiplier: 1,
-		CritMultiplier:   monk.DefaultMeleeCritMultiplier(),
+		CritMultiplier:   monk.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)
