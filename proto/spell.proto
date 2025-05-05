@@ -40,6 +40,6 @@ enum ResourceType {
 	ResourceTypeDeathRune = 11;
 	ResourceTypeSolarEnergy = 12;
 	ResourceTypeLunarEnergy = 13;
-	ResourceTypeHolyPower = 14;
-	ResourceTypeChi = 15;
+	ResourceTypeChi = 14;
+	ResourceTypeGenericResource = 15;
 }

@@ -122,6 +122,8 @@ type Unit struct {
 	focusBar
 	runicPowerBar
 
+	SecondaryResourceBar SecondaryResourceBar
+
 	// All spells that can be cast by this unit.
 	Spellbook                 []*Spell
 	spellRegistrationHandlers []SpellRegisteredHandler
@@ -587,6 +589,10 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 	unit.energyBar.reset(sim)
 	unit.rageBar.reset(sim)
 	unit.runicPowerBar.reset(sim)
+
+	if unit.SecondaryResourceBar != nil {
+		unit.SecondaryResourceBar.Reset(sim)
+	}
 
 	unit.AutoAttacks.reset(sim)
 
