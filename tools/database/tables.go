@@ -1139,10 +1139,10 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 		SELECT DISTINCT
 		sn.Name_lang,
 		sn.ID,
-		sm.SchoolMask,
-		sm.Speed,
-		sm.LaunchDelay,
-		sm.MinDuration,
+		COALESCE(sm.SchoolMask,0),
+		COALESCE(sm.Speed,0),
+		COALESCE(sm.LaunchDelay,0),
+		COALESCE(sm.MinDuration,0),
 		COALESCE(ss.MaxScalingLevel, 0),
 		COALESCE(ss.MinScalingLevel, 0),
 		COALESCE(ss.ScalesFromItemLevel, 0),
@@ -1191,7 +1191,6 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 		LEFT JOIN SpellAuraOptions sao ON sao.SpellID = s.ID
 		LEFT JOIN SpellClassOptions sco ON s.ID = sco.SpellID
 		LEFT JOIN SpellShapeshift ssp ON ssp.SpellID = s.ID
-		WHERE sco.SpellClassSet is not null
 		GROUP BY s.ID
 `
 

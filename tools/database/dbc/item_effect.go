@@ -1,6 +1,8 @@
 package dbc
 
 import (
+	"maps"
+
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
 )
@@ -19,7 +21,6 @@ type ItemEffect struct {
 	ParentItemID         int // Parent item ID
 }
 
-// ToMap converts the ItemEffect to a map representation.
 func (e *ItemEffect) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"ID":                   e.ID,
@@ -39,95 +40,150 @@ func GetItemEffect(effectId int) ItemEffect {
 	return dbcInstance.ItemEffects[effectId]
 }
 
-// collectSpellStats walks through all SpellEffects for a given spellID,
-// summing any direct stats, and—if an effect has EffectAura == A_PROC_TRIGGER_SPELL—
-// recurses into the triggered spell exactly once (guarded by visited).
-func collectSpellStats(spellID int, visited map[int]bool) stats.Stats {
-	if visited[spellID] {
-		return stats.Stats{}
-	}
-	visited[spellID] = true
+var emptyStats = stats.Stats{}
 
-	var total stats.Stats
-	for _, se := range dbcInstance.SpellEffects[spellID] {
-		// 1) Direct stat effects
-		if s := se.ParseStatEffect(); s != nil {
-			total.Add(*s)
-			continue
-		}
+func (e *ItemEffect) ToProto(itemLevel int, levelState proto.ItemLevelState) *proto.ItemEffect {
+	pe := newProtoShell(e)
 
-		// 2) If this effect “triggers” another spell, follow it
-		if se.EffectAura == A_PROC_TRIGGER_SPELL {
-			// se.TriggerSpellID holds the ID of the spell to recurse into
-			total.Add(collectSpellStats(se.EffectTriggerSpell, visited))
-		}
+	statsSpellID := applyTrigger(e, pe)
 
-		// 3) (Optional) you could handle A_PROC_TRIGGER_DAMAGE here if needed
-	}
-	return total
+	pe.ScalingOptions[int32(levelState)] = buildScalingProps(statsSpellID, itemLevel)
+	return pe
 }
 
-// ToProto converts this ItemEffect into a *proto.ItemEffect.
-// It sets Name, ItemId, Type, Stats (including any recursive proc‑spell stats),
-// and the correct oneof Proc/OnUse/Rppm sub‑message.
-func (e *ItemEffect) ToProto() *proto.ItemEffect {
-	pe := &proto.ItemEffect{
-		Name:           "", // TODO: pull human name from dbcInstance.Spells[e.SpellID]
-		ItemId:         int32(e.ParentItemID),
-		EffectDuration: 0, // TODO: set from your spell’s duration field (in seconds)
-		MaxStacks:      int32(e.Charges),
-		StackInterval:  int32(e.CategoryCoolDownMSec / 1000),
-		Stats:          make(map[int32]float64),
+func newProtoShell(e *ItemEffect) *proto.ItemEffect {
+	sp := dbcInstance.Spells[e.SpellID]
+	return &proto.ItemEffect{
+		SpellId:        int32(e.SpellID),
+		Type:           proto.ItemEffectType_NONE,
+		EffectDuration: int32(sp.Duration),
+		MaxStacks:      int32(sp.MaxCharges),
+		StackInterval:  int32(e.CoolDownMSec / 1000),
+		ScalingOptions: make(map[int32]*proto.ScalingItemEffectProperties),
 	}
+}
 
-	// Accumulate stats from this effect’s spell (including any triggered spells)
-	statsMap := collectSpellStats(e.SpellID, make(map[int]bool))
-	for statIdx, val := range statsMap {
-		pe.Stats[int32(statIdx)] = val
-	}
+func applyTrigger(e *ItemEffect, pe *proto.ItemEffect) int {
+	trig, statsSpellID := resolveTrigger(e.TriggerType, e.SpellID)
 
-	// Map DBC trigger → protobuf oneof + enum
-	switch e.TriggerType {
+	switch trig {
 	case ITEM_SPELLTRIGGER_ON_USE:
 		pe.Type = proto.ItemEffectType_ON_USE
 		pe.Effect = &proto.ItemEffect_OnUse{
 			OnUse: &proto.OnUseEffect{
-				Cooldown: int32(e.CoolDownMSec / 1000),
+				Cooldown:         int32(e.CoolDownMSec / 1000),
+				CategoryId:       int32(e.SpellCategoryID),
+				CategoryCooldown: int32(e.CategoryCoolDownMSec / 1000),
 			},
 		}
 
-	case ITEM_SPELLTRIGGER_CHANCE_ON_HIT,
-		ITEM_SPELLTRIGGER_ON_EQUIP:
-		// If the spell itself has a procChance, treat it as a ProcEffect
-		sp := dbcInstance.Spells[e.SpellID]
+	case ITEM_SPELLTRIGGER_CHANCE_ON_HIT:
+		// For procchance and ICD we always use the original spell id
+		spTop := dbcInstance.Spells[e.SpellID]
 		pe.Type = proto.ItemEffectType_PROC
 		pe.Effect = &proto.ItemEffect_Proc{
 			Proc: &proto.ProcEffect{
-				ProcChance: float64(sp.ProcChance) / 100,
-				Icd:        int32(sp.ProcCategoryRecovery / 1000),
-			},
-		}
-
-	case ITEM_SPELLTRIGGER_RPPM:
-		pe.Type = proto.ItemEffectType_RPPM
-		pe.Effect = &proto.ItemEffect_Rppm{
-			Rppm: &proto.RPPMEffect{
-				Rppm: 0, // TODO: fill in real PPM from sp.SpellProcsPerMinute
+				ProcChance: float64(spTop.ProcChance) / 100,
+				Icd:        int32(spTop.ProcCategoryRecovery / 1000),
 			},
 		}
 
 	default:
-		pe.Type = proto.ItemEffectType_NONE
+		// leave as NONE
 	}
 
-	return pe
+	return statsSpellID
 }
 
-// ParseItemEffects returns all ItemEffects for itemID as protobufs.
-func ParseItemEffects(itemID int) []*proto.ItemEffect {
-	res := make([]*proto.ItemEffect, 0, len(dbcInstance.ItemEffectsByParentID[itemID]))
-	for _, ie := range dbcInstance.ItemEffectsByParentID[itemID] {
-		res = append(res, ie.ToProto())
+func resolveTrigger(topType, spellID int) (triggerType, statsSpellID int) {
+	if topType == ITEM_SPELLTRIGGER_ON_USE || topType == ITEM_SPELLTRIGGER_CHANCE_ON_HIT {
+		return topType, spellID
 	}
-	return res
+	for _, se := range dbcInstance.SpellEffects[spellID] {
+		if se.EffectAura == A_PROC_TRIGGER_SPELL {
+			// stats come from the triggered spell
+			return resolveTrigger(ITEM_SPELLTRIGGER_CHANCE_ON_HIT, se.EffectTriggerSpell)
+		}
+	}
+	return topType, spellID
+}
+
+func buildScalingProps(spellID, itemLevel int) *proto.ScalingItemEffectProperties {
+	total := collectStats(spellID, itemLevel)
+	src := total.ToProtoMap()
+
+	m := make(map[int32]float64, len(src))
+	maps.Copy(m, src)
+
+	return &proto.ScalingItemEffectProperties{Stats: m}
+}
+
+func collectStats(spellID, itemLevel int) stats.Stats {
+	var total stats.Stats
+	visited := make(map[int]bool)
+
+	var recurse func(int)
+	recurse = func(id int) {
+		if visited[id] {
+			return
+		}
+		visited[id] = true
+
+		sp := dbcInstance.Spells[id]
+		for _, se := range dbcInstance.SpellEffects[id] {
+			if s := se.ParseStatEffect(sp.HasAttributeAt(11, 0x4), itemLevel); s != &emptyStats {
+				total.AddInplace(s)
+			} else if se.EffectAura == A_PROC_TRIGGER_SPELL {
+				recurse(se.EffectTriggerSpell)
+			}
+		}
+	}
+
+	recurse(spellID)
+	return total
+}
+
+func ParseItemEffects(itemID, itemLevel int, levelState proto.ItemLevelState) []*proto.ItemEffect {
+	raw := dbcInstance.ItemEffectsByParentID[itemID]
+	out := make([]*proto.ItemEffect, 0, len(raw))
+	for _, ie := range raw {
+		out = append(out, ie.ToProto(itemLevel, levelState))
+	}
+	return out
+}
+
+func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
+	itemID := int(parsed.Id)
+	raws := dbcInstance.ItemEffectsByParentID[itemID]
+	var merged []*proto.ItemEffect
+
+	for idx := range raws {
+		var base *proto.ItemEffect
+
+		for key, props := range parsed.ScalingOptions {
+			state := proto.ItemLevelState(key)
+			ilvl := int(props.Ilvl)
+			slice := ParseItemEffects(itemID, ilvl, state)
+			eff := slice[idx]
+
+			if base == nil {
+				base = eff
+			} else {
+				base.ScalingOptions[key] = eff.ScalingOptions[key]
+			}
+		}
+		if base == nil {
+			continue
+		}
+
+		for k, props := range base.ScalingOptions {
+			if props == nil || len(props.Stats) == 0 {
+				delete(base.ScalingOptions, k)
+			}
+		}
+		if len(base.ScalingOptions) > 0 {
+			merged = append(merged, base)
+		}
+	}
+	return merged
 }
