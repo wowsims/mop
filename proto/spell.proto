@@ -3,7 +3,63 @@ package proto;
 
 option go_package = "./proto";
 
+import "google/protobuf/duration.proto";
+
 import "common.proto";
+enum ItemEffectType {
+	NONE   = 0;
+	PROC   = 1;
+	ON_USE = 2;
+	RPPM   = 3;
+  }
+
+  enum TriggerType {
+	TRIGGER_NONE              = 0;
+	ON_ATTACK_HIT             = 1;
+	ON_ATTACK_CRIT            = 2;
+	ON_SPELL_CAST             = 3;
+	ON_SPELL_HIT              = 4;
+	ON_SPELL_CRIT             = 5;
+	ON_HARMFUL_SPELL_CAST     = 6;
+	ON_SPELL_MISS             = 7;
+	ON_SPELL_TICK_DAMAGE      = 8;
+	ON_DAMAGE                 = 9;
+	ON_DAMAGE_HEAL_SPELL_CAST = 10;
+	ON_HEAL                   = 11;
+	ON_HEAL_CAST              = 12;
+	ON_DIRECT_DAMAGE          = 13;
+  }
+
+  message ItemEffect {
+	string           name            = 1;
+	int32            item_id         = 2;
+	ItemEffectType   type            = 3;
+	int32            effect_duration = 4;  // seconds
+
+	// keys are the numeric values of proto.common.Stat
+	map<int32, double> stats        = 5;
+	int32 max_stacks = 9;
+	int32 stack_interval = 10;
+
+	oneof effect {
+	  ProcEffect  proc   = 6;
+	  OnUseEffect on_use = 7;
+	  RPPMEffect  rppm   = 8;
+	}
+  }
+
+  message ProcEffect {
+	double      proc_chance = 1;  // e.g. 0.20 = 20%
+	int32       icd         = 2;  // internal cooldown in seconds
+  }
+
+  message OnUseEffect {
+	int32 cooldown = 1;  // seconds between uses
+  }
+
+  message RPPMEffect {
+	double      rppm     = 1;  // real procs per minute
+  }
 
 message SpellEffect {
     int32 id = 1;
