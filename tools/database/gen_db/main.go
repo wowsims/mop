@@ -150,6 +150,8 @@ func main() {
 			parsed.Icon = strings.ToLower(database.GetIconName(iconsMap, item.FDID))
 		}
 
+		parsed.ItemEffects = dbc.MergeItemEffectsForAllStates(parsed)
+
 		db.MergeItem(parsed)
 	}
 
@@ -163,6 +165,7 @@ func main() {
 
 	for _, enchant := range instance.Enchants {
 		parsed := enchant.ToProto()
+
 		if parsed.Icon == "" {
 			parsed.Icon = strings.ToLower(database.GetIconName(iconsMap, enchant.FDID))
 		}
