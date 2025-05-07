@@ -1100,6 +1100,9 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 		&stringAuraIFlags,
 		&stringChannelInterruptFlags,
 		&stringShapeShift,
+		&spell.MaxStacks,
+		&spell.Rppm,
+		&spell.RppmModifier,
 	)
 	if err != nil {
 		return spell, fmt.Errorf("scanning spell data: %w", err)
@@ -1173,7 +1176,10 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 		COALESCE(sco.SpellClassSet, 0),
 		COALESCE(si.AuraInterruptFlags, ""),
 		COALESCE(si.ChannelInterruptFlags, ""),
-		COALESCE(ssp.ShapeshiftMask, "")
+		COALESCE(ssp.ShapeshiftMask, ""),
+		COALESCE(sao.CumulativeAura, 0),
+		COALESCE(sppm.BaseProcRate, 0) AS base_rppm_rate,
+		COALESCE(sppmm.Coeff, 0)
 		FROM Spell s
 		LEFT JOIN SpellName sn ON s.ID = sn.ID
 		LEFT JOIN SpellEffect se ON s.ID = se.SpellID
@@ -1191,6 +1197,8 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 		LEFT JOIN SpellAuraOptions sao ON sao.SpellID = s.ID
 		LEFT JOIN SpellClassOptions sco ON s.ID = sco.SpellID
 		LEFT JOIN SpellShapeshift ssp ON ssp.SpellID = s.ID
+		LEFT JOIN SpellProcsPerMinute sppm ON sppm.ID = sao.SpellProcsPerMinuteID
+		LEFT JOIN SpellProcsPerMinuteMod sppmm ON sppmm.SpellProcsPerMinuteID = sao.SpellProcsPerMinuteID
 		GROUP BY s.ID
 `
 

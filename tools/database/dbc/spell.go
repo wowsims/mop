@@ -38,6 +38,9 @@ type Spell struct {
 	AuraInterruptFlags    []int
 	ChannelInterruptFlags []int
 	ShapeshiftMask        []int
+	MaxStacks             int32
+	Rppm                  float64
+	RppmModifier          float64
 }
 
 func (s *Spell) HasAttributeAt(index int, flag int) bool {
