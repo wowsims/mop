@@ -14,15 +14,15 @@ enum ItemEffectType {
 message ScalingItemEffectProperties {
 	// keys are the numeric values of proto.common.Stat
 	map<int32, double> stats = 1;
+	double rppm_ilvl_modifier = 2;
 }
   message ItemEffect {
 	int32            spell_id         = 1;
+	string label = 9;
 	ItemEffectType   type            = 2;
 	int32            effect_duration = 3;  // seconds
 
 	map<int32, ScalingItemEffectProperties> scaling_options        = 4;
-	int32 max_stacks = 5;
-	int32 stack_interval = 6;
 
 	oneof effect {
 	  ProcEffect  proc   = 7;
@@ -33,6 +33,8 @@ message ScalingItemEffectProperties {
   message ProcEffect {
 	double      proc_chance = 1;  // e.g. 0.20 = 20%
 	double 		rppm = 3;
+	int32 rppm_scale = 4;
+	map<int32, double> spec_modifiers = 5;
 	int32       icd         = 2;  // internal cooldown in seconds
   }
 

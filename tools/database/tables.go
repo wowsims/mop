@@ -1061,7 +1061,7 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 	var stringAuraIFlags string            //2
 	var stringChannelInterruptFlags string // 2
 	var stringShapeShift string            //2
-
+	var rppmModsJSON string
 	err := rows.Scan(
 		&spell.NameLang,
 		&spell.ID,
@@ -1102,7 +1102,7 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 		&stringShapeShift,
 		&spell.MaxStacks,
 		&spell.Rppm,
-		&spell.RppmModifier,
+		&rppmModsJSON,
 	)
 	if err != nil {
 		return spell, fmt.Errorf("scanning spell data: %w", err)
@@ -1133,7 +1133,12 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 	if err != nil {
 		return spell, fmt.Errorf("parsing stringShapeShift args for spell %d (%s): %w", spell.ID, stringShapeShift, err)
 	}
-
+	if err := json.Unmarshal([]byte(rppmModsJSON), &spell.RppmModifiers); err != nil {
+		return spell, fmt.Errorf(
+			"parsing RPPM modifiers for spell %d (%s): %w",
+			spell.ID, rppmModsJSON, err,
+		)
+	}
 	return spell, nil
 }
 
@@ -1179,7 +1184,16 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 		COALESCE(ssp.ShapeshiftMask, ""),
 		COALESCE(sao.CumulativeAura, 0),
 		COALESCE(sppm.BaseProcRate, 0) AS base_rppm_rate,
-		COALESCE(sppmm.Coeff, 0)
+		  COALESCE(
+			json_group_array(
+			json_object(
+				'ModifierType', sppmm.Type,
+				'Coeff',        sppmm.Coeff,
+				'Param',        sppmm.Param
+			)
+			),
+			'[]'
+		) AS RppmModifiersJson
 		FROM Spell s
 		LEFT JOIN SpellName sn ON s.ID = sn.ID
 		LEFT JOIN SpellEffect se ON s.ID = se.SpellID

@@ -40,7 +40,13 @@ type Spell struct {
 	ShapeshiftMask        []int
 	MaxStacks             int32
 	Rppm                  float64
-	RppmModifier          float64
+	RppmModifiers         []RPPMModifier
+}
+
+type RPPMModifier struct {
+	ModifierType RPPMModifierType
+	Coeff        float64
+	Param        int32
 }
 
 func (s *Spell) HasAttributeAt(index int, flag int) bool {
