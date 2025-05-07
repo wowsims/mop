@@ -28,7 +28,8 @@ func NewBrewmasterMonk(character *core.Character, options *proto.Player) *Brewma
 	monkOptions := options.GetBrewmasterMonk()
 
 	bm := &BrewmasterMonk{
-		Monk: monk.NewMonk(character, monkOptions.Options.ClassOptions, options.TalentsString),
+		Monk:      monk.NewMonk(character, monkOptions.Options.ClassOptions, options.TalentsString),
+		vengeance: &core.VengeanceTracker{},
 	}
 
 	bm.AddStatDependency(stats.Strength, stats.AttackPower, 1)
@@ -42,6 +43,18 @@ func NewBrewmasterMonk(character *core.Character, options *proto.Player) *Brewma
 
 type BrewmasterMonk struct {
 	*monk.Monk
+
+	vengeance *core.VengeanceTracker
+
+	Stagger        *core.Spell
+	RefreshStagger func(sim *core.Simulation, target *core.Unit, damagePerTick float64)
+
+	// Auras
+	PowerGuardAura *core.Aura
+	ShuffleAura    *core.Aura
+	AvertHarmAura  *core.Aura
+
+	DizzyingHazeAuras core.AuraArray
 }
 
 func (bm *BrewmasterMonk) GetMonk() *monk.Monk {
@@ -56,8 +69,7 @@ func (bm *BrewmasterMonk) Initialize() {
 func (bm *BrewmasterMonk) ApplyTalents() {
 	bm.Monk.ApplyTalents()
 	bm.ApplyArmorSpecializationEffect(stats.Stamina, proto.ArmorType_ArmorTypeLeather, 120225)
-
-	bm.registerGuard()
+	// core.ApplyVengeanceEffect(&bm.Character, bm.vengeance, 120267)
 }
 
 func (bm *BrewmasterMonk) Reset(sim *core.Simulation) {
@@ -66,7 +78,20 @@ func (bm *BrewmasterMonk) Reset(sim *core.Simulation) {
 
 func (bm *BrewmasterMonk) RegisterSpecializationEffects() {
 	bm.RegisterMastery()
+	bm.registerPassives()
+
+	bm.registerAvertHarm()
+	bm.registerPurifyingBrew()
+	bm.registerKegSmash()
+	bm.registerBreathOfFire()
+	bm.registerGuard()
+	bm.registerDizzyingHaze()
 }
 
 func (bm *BrewmasterMonk) RegisterMastery() {
+	bm.registerStagger()
+}
+
+func (bm *BrewmasterMonk) GetMasteryBonus() float64 {
+	return 0.2 + (0.05 + 0.0625*bm.GetMasteryPoints())
 }

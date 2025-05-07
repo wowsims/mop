@@ -688,6 +688,8 @@ export class ActionId {
 					name += ' (Off Hand)';
 				}
 				break;
+
+			// Monk
 			case 'Tiger Strikes':
 				if (this.spellId === 12274) {
 					name += ' (Main Hand)';
@@ -735,6 +737,25 @@ export class ActionId {
 			case 'Rushing Jade Wind':
 				if (this.spellId === 148187) {
 					name += ' (Hit)';
+				}
+				break;
+			case 'Stagger':
+				if (this.tag === 1) {
+					name += ' (Dot)';
+				}
+				break;
+			case 'Dampen Harm':
+				break;
+			case 'Healing Sphere':
+				if (this.spellId === 115460) {
+					if (tag === 1) {
+						name += ' (Stacks)';
+					} else {
+						name += ' (Cast)';
+					}
+				}
+				if (this.spellId === 115464) {
+					name += ' (Heal)';
 				}
 				break;
 			default:
@@ -991,6 +1012,7 @@ const petNameToActionId: Record<string, ActionId> = {
 	'Tentacle of the Old Ones': ActionId.fromSpellId(107818),
 	Treant: ActionId.fromSpellId(33831),
 	'Water Elemental': ActionId.fromSpellId(31687),
+	'Xuen, The White Tiger': ActionId.fromSpellId(123904),
 };
 
 // https://wowhead.com/mop-classic/hunter-pets

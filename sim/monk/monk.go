@@ -30,9 +30,23 @@ type Monk struct {
 
 	Stance Stance
 
+	onStanceChanged OnStanceChanged
+	onChiSpent      OnChiSpent
+	onNewBrewStacks OnNewBrewStacks
+	chiBrewRecharge *core.PendingAction
+
 	StanceOfTheSturdyOx    *core.Spell
 	StanceOfTheWiseSerpent *core.Spell
 	StanceOfTheFierceTiger *core.Spell
+
+	HealingSphereSummon *core.Spell
+
+	// Brewmaster
+	ElusiveBrewAura   *core.Aura
+	ElusiveBrewStacks int32
+
+	XuenAura *core.Aura
+	XuenPet  *Xuen
 
 	StanceOfTheFierceTigerAura *core.Aura
 	StanceOfTheSturdyOxAura    *core.Aura
@@ -42,13 +56,18 @@ type Monk struct {
 	ComboBreakerTigerPalmAura    *core.Aura
 
 	ChiSphereAura          *core.Aura
+	DampenHarmAura         *core.Aura
+	FortifyingBrewAura     *core.Aura
 	PowerStrikesAura       *core.Aura
 	PowerStrikesChiMetrics *core.ResourceMetrics
 
-	onStanceChanged OnStanceChanged
-	onChiSpent      OnChiSpent
-	onNewBrewStacks OnNewBrewStacks
-	chiBrewRecharge *core.PendingAction
+	// Set Bonuses
+	T14Brewmaster4P *core.Aura
+	T15Windwalker4P *core.Aura
+	T15Brewmaster2P *core.Aura
+	T15Brewmaster4P *core.Aura
+	T16Windwalker4P *core.Aura
+	T16Brewmaster4P *core.Aura
 }
 
 func (monk *Monk) ChangeStance(sim *core.Simulation, newStance Stance) {
@@ -88,6 +107,9 @@ func (monk *Monk) SpendChi(sim *core.Simulation, chiToSpend int32, metrics *core
 	if monk.onChiSpent != nil {
 		monk.onChiSpent(sim, chiToSpend)
 	}
+}
+func (monk *Monk) GetChi() int32 {
+	return monk.ComboPoints()
 }
 
 func (monk *Monk) RegisterOnChiSpent(onChiSpent OnChiSpent) {
@@ -137,6 +159,7 @@ func (monk *Monk) Initialize() {
 }
 
 func (monk *Monk) registerSpells() {
+	monk.registerHealingSphere()
 	monk.registerBlackoutKick()
 	monk.registerExpelHarm()
 	monk.registerJab()
@@ -144,10 +167,12 @@ func (monk *Monk) registerSpells() {
 	monk.registerTigerPalm()
 	monk.registerCracklingJadeLightning()
 	monk.registerFortifyingBrew()
+	monk.registerTouchOfDeath()
 }
 
 func (monk *Monk) Reset(sim *core.Simulation) {
 	monk.ChangeStance(sim, monk.Stance)
+	monk.ElusiveBrewStacks = 0
 }
 
 func (monk *Monk) GetHandType() proto.HandType {
@@ -178,6 +203,7 @@ func NewMonk(character *core.Character, options *proto.MonkOptions, talents stri
 	core.FillTalentsProto(monk.Talents.ProtoReflect(), talents)
 
 	monk.PseudoStats.CanParry = true
+	monk.XuenPet = monk.NewXuen()
 
 	monk.EnableEnergyBar(core.EnergyBarOptions{
 		MaxComboPoints: 4,
@@ -215,6 +241,8 @@ const (
 	MonkSpellTigerPalm
 	MonkSpellCracklingJadeLightning
 	MonkSpellFortifyingBrew
+	MonkSpellHealingSphere
+	MonkSpellTouchOfDeath
 
 	// -- Talents
 	// Level 15
@@ -239,6 +267,7 @@ const (
 	//Level 90
 	MonkSpellRushingJadeWind
 	MonkSpellInvokeXuenTheWhiteTiger
+	MonkSpellInvokeXuenTheWhiteTigerPet
 	MonkSpellChiTorpedo
 	// -- Talents
 
@@ -251,7 +280,17 @@ const (
 	MonkSpellSpinningFireBlossom
 
 	// Brewmaster
+	MonkSpellElusiveBrew
+	MonkSpellDizzyingHaze
+	MonkSpellDizzyingHazeProjectile
+
+	MonkSpellBreathOfFire
+	MonkSpellKegSmash
 	MonkSpellGuard
+	MonkSpellStagger
+	MonkSpellAvertHarm
+	MonkSpellPurifyingBrew
+	MonkSpellGiftOfTheOx
 
 	MonkSpellLast
 	MonkSpellsAll = MonkSpellLast<<1 - 1

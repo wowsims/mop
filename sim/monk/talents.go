@@ -4,39 +4,35 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
 func (monk *Monk) ApplyTalents() {
-	if monk.Level >= 15 {
-		monk.registerCelerity()
-		monk.registerTigersLust()
-		monk.registerMomentum()
-	}
+	// Level 15
+	monk.registerCelerity()
+	monk.registerTigersLust()
+	monk.registerMomentum()
 
-	if monk.Level >= 30 {
-		monk.registerChiWave()
-		monk.registerZenSphere()
-		monk.registerChiBurst()
-	}
+	// Level 30
+	monk.registerChiWave()
+	monk.registerZenSphere()
+	monk.registerChiBurst()
 
-	if monk.Level >= 45 {
-		monk.registerPowerStrikes()
-		monk.registerAscension()
-		monk.registerChiBrew()
-	}
+	// Level 45
+	monk.registerPowerStrikes()
+	monk.registerAscension()
+	monk.registerChiBrew()
 
-	if monk.Level >= 75 {
-		monk.registerHealingElixirs()
-		monk.registerDampenHarm()
-		monk.registerDiffuseMagic()
-	}
+	// Level 75
+	monk.registerHealingElixirs()
+	monk.registerDampenHarm()
+	monk.registerDiffuseMagic()
 
-	if monk.Level >= 90 {
-		monk.registerRushingJadeWind()
-		monk.registerInvokeXuenTheWhiteTiger()
-		monk.registerChiTorpedo()
-	}
+	// Level 90
+	monk.registerRushingJadeWind()
+	monk.registerInvokeXuenTheWhiteTiger()
+	monk.registerChiTorpedo()
 }
 
 func (monk *Monk) registerCelerity() {
@@ -74,6 +70,7 @@ func (monk *Monk) registerChiWave() {
 		ProcMask:       core.ProcMaskSpellDamage,
 		Flags:          core.SpellFlagPassiveSpell,
 		ClassSpellMask: MonkSpellChiWave,
+		MaxRange:       40,
 		MissileSpeed:   8,
 
 		DamageMultiplier: 1.0,
@@ -83,18 +80,19 @@ func (monk *Monk) registerChiWave() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := avgScaling + spell.MeleeAttackPower()*0.45
 
-			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+			result := spell.CalcOutcome(sim, target, spell.OutcomeMeleeSpecialNoBlockDodgeParryNoCritNoHitCounter)
 
-			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-				spell.DealDamage(sim, result)
+			if result.Landed() {
+				spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+					spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicCrit)
+					if tickIndex < 7 {
+						tickIndex++
 
-				if tickIndex < 7 {
-					tickIndex++
-
-					nextTarget = nextTarget.Env.NextTargetUnit(nextTarget)
-					chiWaveHealingSpell.Cast(sim, &monk.Unit)
-				}
-			})
+						nextTarget = nextTarget.Env.NextTargetUnit(nextTarget)
+						chiWaveHealingSpell.Cast(sim, &monk.Unit)
+					}
+				})
+			}
 		},
 	})
 
@@ -175,8 +173,6 @@ func (monk *Monk) registerZenSphere() {
 		return
 	}
 
-	numTargets := monk.Env.GetNumTargets()
-
 	avgTickScaling := monk.CalcScalingSpellDmg(0.1040000021)
 	// The 15% extra is from a hotfix not represented in the tooltip.
 	avgTickBonusCoefficient := 0.09 * 1.15
@@ -204,16 +200,15 @@ func (monk *Monk) registerZenSphere() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := avgDetonateDmgScaling + spell.MeleeAttackPower()*avgDetonateDmgBonusCoefficient
 
-			results := make([]*core.SpellResult, numTargets)
+			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+				for _, target := range sim.Encounter.TargetUnits {
+					result := spell.CalcOutcome(sim, target, spell.OutcomeMeleeSpecialNoBlockDodgeParryNoCritNoHitCounter)
 
-			for idx := int32(0); idx < numTargets; idx++ {
-				currentTarget := sim.Environment.GetTargetUnit(idx)
-				results[idx] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
-
-			for idx := int32(0); idx < numTargets; idx++ {
-				spell.DealDamage(sim, results[idx])
-			}
+					if result.Landed() {
+						spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicCrit)
+					}
+				}
+			})
 		},
 	})
 
@@ -346,7 +341,6 @@ func (monk *Monk) registerChiBurst() {
 		return
 	}
 
-	numTargets := monk.Env.GetNumTargets()
 	avgDmgScaling := monk.CalcScalingSpellDmg(1.2100000381)
 
 	chiBurstDamageSpell := monk.RegisterSpell(core.SpellConfig{
@@ -356,6 +350,7 @@ func (monk *Monk) registerChiBurst() {
 		Flags:          core.SpellFlagPassiveSpell,
 		ClassSpellMask: MonkSpellChiBurst,
 		MissileSpeed:   30,
+		MaxRange:       40,
 
 		DamageMultiplier: 1.0,
 		ThreatMultiplier: 1.0,
@@ -364,18 +359,16 @@ func (monk *Monk) registerChiBurst() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := avgDmgScaling + spell.MeleeAttackPower()*1.21
 
-			results := make([]*core.SpellResult, numTargets)
-
-			for idx := int32(0); idx < numTargets; idx++ {
-				currentTarget := sim.Environment.GetTargetUnit(idx)
-				results[idx] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
-
 			spell.WaitTravelTime(sim, func(simulation *core.Simulation) {
-				for idx := int32(0); idx < numTargets; idx++ {
-					spell.DealDamage(sim, results[idx])
+				for _, target := range sim.Encounter.TargetUnits {
+					result := spell.CalcOutcome(sim, target, spell.OutcomeMeleeSpecialNoBlockDodgeParryNoCritNoHitCounter)
+
+					if result.Landed() {
+						spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicCrit)
+					}
 				}
 			})
+
 		},
 	})
 
@@ -446,10 +439,13 @@ func (monk *Monk) registerPowerStrikes() {
 	chiSphereSpellActionID := core.ActionID{SpellID: 121283}
 	chiSphereChiMetrics := monk.NewChiMetrics(chiSphereSpellActionID)
 
+	hasGlyph := monk.HasMajorGlyph(proto.MonkMajorGlyph_GlyphOfEnduringHealingSphere)
+	chiSphereduration := time.Minute*2 + core.TernaryDuration(hasGlyph, time.Minute*3, 0)
+
 	monk.ChiSphereAura = monk.RegisterAura(core.Aura{
 		Label:     "Chi Sphere" + monk.Label,
 		ActionID:  core.ActionID{SpellID: 121286},
-		Duration:  time.Minute * 2,
+		Duration:  time.Minute * chiSphereduration,
 		MaxStacks: 10,
 	})
 
@@ -642,12 +638,68 @@ func (monk *Monk) registerChiBrew() {
 }
 
 func (monk *Monk) registerHealingElixirs() {
+	if !monk.Talents.HealingElixirs {
+		return
+	}
 }
 
 func (monk *Monk) registerDampenHarm() {
+	if !monk.Talents.DampenHarm {
+		return
+	}
+
+	actionId := core.ActionID{SpellID: 122278}
+
+	monk.DampenHarmAura = monk.RegisterAura(core.Aura{
+		Label:     "Dampen Harm" + monk.Label,
+		ActionID:  actionId.WithTag(1),
+		MaxStacks: 3,
+		Duration:  time.Second * 45,
+	})
+
+	// Dampen Harms Damage Reduction for BRM is implemented in stagger.go
+	if monk.Spec != proto.Spec_SpecBrewmasterMonk {
+		monk.AddDynamicDamageTakenModifier(func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			if !monk.DampenHarmAura.IsActive() || !result.Landed() || result.Damage < result.Target.MaxHealth()*0.2 {
+				return
+			}
+
+			monk.DampenHarmAura.RemoveStack(sim)
+			result.Damage /= 2
+		})
+	}
+
+	spell := monk.RegisterSpell(core.SpellConfig{
+		ActionID:       actionId,
+		SpellSchool:    core.SpellSchoolPhysical,
+		ClassSpellMask: MonkSpellDampenHarm,
+
+		Cast: core.CastConfig{
+			DefaultCast: core.Cast{
+				GCD: time.Second,
+			},
+			CD: core.Cooldown{
+				Timer:    monk.NewTimer(),
+				Duration: 90 * time.Second,
+			},
+		},
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			monk.DampenHarmAura.Activate(sim)
+			monk.DampenHarmAura.SetStacks(sim, 3)
+		},
+	})
+
+	monk.AddMajorCooldown(core.MajorCooldown{
+		Spell: spell,
+		Type:  core.CooldownTypeSurvival,
+	})
 }
 
 func (monk *Monk) registerDiffuseMagic() {
+	if !monk.Talents.DiffuseMagic {
+		return
+	}
 }
 
 /*
@@ -670,6 +722,7 @@ func (monk *Monk) registerRushingJadeWind() {
 	actionID := core.ActionID{SpellID: 116847}
 	debuffActionID := core.ActionID{SpellID: 148187}
 	chiMetrics := monk.NewChiMetrics(actionID)
+
 	numTargets := monk.Env.GetNumTargets()
 
 	rushingJadeWindTickSpell := monk.RegisterSpell(core.SpellConfig{
@@ -685,16 +738,9 @@ func (monk *Monk) registerRushingJadeWind() {
 		CritMultiplier:   monk.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			results := make([]*core.SpellResult, numTargets)
-
-			for idx := int32(0); idx < numTargets; idx++ {
-				currentTarget := sim.Environment.GetTargetUnit(idx)
-				baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)
-				results[idx] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-			}
-
-			for idx := int32(0); idx < numTargets; idx++ {
-				spell.DealDamage(sim, results[idx])
+			baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)
+			for _, target := range sim.Encounter.TargetUnits {
+				spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 			}
 		},
 	})
@@ -775,6 +821,49 @@ func (monk *Monk) registerRushingJadeWind() {
 }
 
 func (monk *Monk) registerInvokeXuenTheWhiteTiger() {
+	if !monk.Talents.InvokeXuenTheWhiteTiger {
+		return
+	}
+
+	actionID := core.ActionID{SpellID: 123904}
+
+	// For timeline only
+	monk.XuenAura = monk.RegisterAura(core.Aura{
+		ActionID: actionID,
+		Label:    "Xuen, the White Tiger",
+		Duration: time.Second * 45.0,
+	})
+
+	spell := monk.RegisterSpell(core.SpellConfig{
+		ActionID:       actionID,
+		SpellSchool:    core.SpellSchoolNature,
+		ProcMask:       core.ProcMaskEmpty,
+		Flags:          core.SpellFlagAPL,
+		ClassSpellMask: MonkSpellInvokeXuenTheWhiteTiger,
+
+		MaxRange: 40,
+
+		Cast: core.CastConfig{
+			DefaultCast: core.Cast{
+				GCD: core.GCDDefault,
+			},
+			CD: core.Cooldown{
+				Timer:    monk.NewTimer(),
+				Duration: time.Minute * 3,
+			},
+		},
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			monk.XuenPet.EnableWithTimeout(sim, monk.XuenPet, time.Second*45.0)
+			monk.XuenAura.Activate(sim)
+		},
+	})
+
+	monk.AddMajorCooldown(core.MajorCooldown{
+		Spell: spell,
+		Type:  core.CooldownTypeDPS,
+	})
+
 }
 
 func (monk *Monk) registerChiTorpedo() {
