@@ -56,16 +56,19 @@ func newProtoShell(e *ItemEffect) *proto.ItemEffect {
 	return &proto.ItemEffect{
 		SpellId:        int32(e.SpellID),
 		Type:           proto.ItemEffectType_NONE,
-		EffectDuration: int32(sp.Duration),
+		EffectDuration: int32(sp.Duration) / 1000,
 		MaxStacks:      int32(sp.MaxCharges),
-		StackInterval:  int32(e.CoolDownMSec / 1000),
+		//StackInterval:  int32(e.CoolDownMSec / 1000),
 		ScalingOptions: make(map[int32]*proto.ScalingItemEffectProperties),
 	}
 }
 
 func applyTrigger(e *ItemEffect, pe *proto.ItemEffect) int {
 	trig, statsSpellID := resolveTrigger(e.TriggerType, e.SpellID)
-
+	sp := dbcInstance.Spells[statsSpellID]
+	if sp.Duration > 0 {
+		pe.EffectDuration = sp.Duration / 1000
+	}
 	switch trig {
 	case ITEM_SPELLTRIGGER_ON_USE:
 		pe.Type = proto.ItemEffectType_ON_USE
