@@ -4,7 +4,15 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
-	"github.com/wowsims/mop/sim/core/proto"
+)
+
+const (
+	MoonfireBonusCoeff = 2.388
+
+	MoonfireDotCoeff = 0.24
+
+	MoonfireImpactCoeff    = 0.571
+	MoonfireImpactVariance = 0.2
 )
 
 func (druid *Druid) registerMoonfireSpell() {
@@ -18,7 +26,7 @@ func (druid *Druid) registerMoonfireDoTSpell() {
 		SpellSchool:    core.SpellSchoolArcane,
 		ProcMask:       core.ProcMaskSpellDamage,
 		ClassSpellMask: DruidSpellMoonfireDoT,
-		Flags:          SpellFlagOmenTrigger | core.SpellFlagPassiveSpell,
+		Flags:          core.SpellFlagPassiveSpell,
 
 		DamageMultiplier: 1,
 		CritMultiplier:   druid.DefaultCritMultiplier(),
@@ -27,15 +35,19 @@ func (druid *Druid) registerMoonfireDoTSpell() {
 		Dot: core.DotConfig{
 			Aura: core.Aura{
 				Label: "Moonfire",
+				OnSpellHitTaken: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					if result.Landed() && result.DidCrit() && spell.Matches(DruidSpellStarfire|DruidSpellStarsurge) {
+						druid.Moonfire.Dot(aura.Unit).AddTick()
+					}
+				},
 			},
-			NumberOfTicks:       6,
+			NumberOfTicks:       7,
 			TickLength:          time.Second * 2,
 			AffectedByCastSpeed: true,
-			BonusCoefficient:    0.18,
+			BonusCoefficient:    MoonfireBonusCoeff,
 
 			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, isRollover bool) {
-				baseDamage := core.CalcScalingSpellAverageEffect(proto.Class_ClassDruid, 0.095)
-				dot.Snapshot(target, baseDamage)
+				dot.Snapshot(target, druid.CalcScalingSpellDmg(MoonfireDotCoeff))
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
 				dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
@@ -52,14 +64,13 @@ func (druid *Druid) registerMoonfireDoTSpell() {
 }
 
 func (druid *Druid) registerMoonfireImpactSpell() {
-	druid.SetSpellEclipseEnergy(DruidSpellMoonfire, MoonfireBaseEnergyGain, MoonfireBaseEnergyGain)
 
 	druid.Moonfire = druid.RegisterSpell(Humanoid|Moonkin, core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 8921},
 		SpellSchool:    core.SpellSchoolArcane,
 		ProcMask:       core.ProcMaskSpellDamage,
 		ClassSpellMask: DruidSpellMoonfire,
-		Flags:          core.SpellFlagAPL | SpellFlagOmenTrigger,
+		Flags:          core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 9,
@@ -75,19 +86,13 @@ func (druid *Druid) registerMoonfireImpactSpell() {
 
 		CritMultiplier:   druid.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
-		BonusCoefficient: 0.18,
+		BonusCoefficient: MoonfireBonusCoeff,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			min, max := core.CalcScalingSpellEffectVarianceMinMax(proto.Class_ClassDruid, 0.221, 0.2)
-			baseDamage := sim.Roll(min, max)
+			baseDamage := druid.CalcAndRollDamageRange(sim, MoonfireImpactCoeff, MoonfireImpactVariance)
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 
 			if result.Landed() {
-				if druid.Sunfire.Dot(target).IsActive() {
-					druid.Sunfire.Dot(target).Deactivate(sim)
-				}
-
-				druid.ExtendingMoonfireStacks = 3
 				druid.Moonfire.RelatedDotSpell.Cast(sim, target)
 			}
 
