@@ -755,6 +755,21 @@ export class ActionId {
 					name += ' (Hit)';
 				}
 				break;
+			case 'Holy Prism':
+				if (this.spellId === 114852) {
+					if (tag === 1) {
+						name += ' (Damage)';
+					} else if (tag === 2) {
+						name += ' (Aoe heal)';
+					}
+				} else if (this.spellId === 114871) {
+					if (tag === 1) {
+						name += ' (Heal)';
+					} else if (tag === 2) {
+						name += ' (Aoe damage)';
+					}
+				}
+				break;
 			default:
 				if (tag) {
 					name += ' (??)';
