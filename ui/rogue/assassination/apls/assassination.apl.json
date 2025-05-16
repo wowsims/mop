@@ -6,7 +6,6 @@
       ],
       "priorityList": [
         {"action":{"castSpell":{"spellId":{"spellId":2825,"tag":-1}}}},
-        {"action":{"condition":{"or":{"vals":[{"auraIsActive":{"auraId":{"spellId":121471}}},{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":79140}}}]}},"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}}},
         {"action":{"condition":{"cmp":{"op":"OpLe","lhs":{"dotRemainingTime":{"spellId":{"spellId":1943}}},"rhs":{"const":{"val":"2"}}}},"castSpell":{"spellId":{"spellId":1943}}}},
         {"action":{"condition":{"not":{"val":{"auraIsActive":{"auraId":{"spellId":5171}}}}},"castSpell":{"spellId":{"spellId":5171}}}},
         {"action":{"condition":{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":79140}}},"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}}},
