@@ -4,25 +4,13 @@ import { PriestMajorGlyph as MajorGlyph, PriestMinorGlyph as MinorGlyph, PriestO
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
-import P4T134PCApl from './apls/p4.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
-import P4Gear from './gear_sets/p4.gear.json';
-import ItemSwapP4 from './gear_sets/p4_item_swap.gear.json';
-import PreRaidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
-export const PRE_RAID = PresetUtils.makePresetGear('Pre Raid', PreRaidGear);
 export const P1_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
-export const P4_PRESET = PresetUtils.makePresetGear('P4 Preset', P4Gear);
-
-export const P4_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P4', ItemSwapP4);
-
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
-export const P4_T13_4PC_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('T13 - 4PC', P4T134PCApl);
 
 // Preset options for EP weights
 export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -122,7 +110,7 @@ export const SHADOW_BREAKPOINTS: UnitStatPresets[] = [
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '',
+		talentsString: '223113',
 		glyphs: Glyphs.create({
 			major1: MajorGlyph.GlyphOfFade,
 			major2: MajorGlyph.GlyphOfInnerFire,
@@ -164,15 +152,3 @@ export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
 };
-
-export const P3_PRESET_BUILD = PresetUtils.makePresetBuild('P3 - Default', {
-	race: Race.RaceTroll,
-	gear: P3_PRESET,
-	rotation: ROTATION_PRESET_DEFAULT,
-});
-
-export const P4_PRESET_BUILD = PresetUtils.makePresetBuild('P4 - Default', {
-	race: Race.RaceTroll,
-	gear: P4_PRESET,
-	rotation: P4_T13_4PC_PRESET_DEFAULT,
-});
