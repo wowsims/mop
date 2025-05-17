@@ -72,6 +72,8 @@ func (mw *MistweaverMonk) Reset(sim *core.Simulation) {
 
 func (mw *MistweaverMonk) RegisterSpecializationEffects() {
 	mw.RegisterMastery()
+	mw.registerRenewingMist()
+	mw.registerSurgingMist()
 }
 
 func (mw *MistweaverMonk) RegisterMastery() {
