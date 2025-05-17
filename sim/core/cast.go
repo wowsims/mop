@@ -114,6 +114,10 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 			}
 		}
 
+		if spell.MaxCharges > 0 && spell.charges == 0 {
+			return spell.castFailureHelper(sim, "not enough charges")
+		}
+
 		if !config.IgnoreHaste {
 			spell.CurCast.GCD = max(0, spell.Unit.ApplyCastSpeed(spell.CurCast.GCD)).Round(time.Millisecond)
 			spell.CurCast.CastTime = spell.Unit.ApplyCastSpeedForSpell(spell.CurCast.CastTime, spell).Round(time.Millisecond)
@@ -176,8 +180,17 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 						spell.Cost.SpendCost(sim, spell)
 					}
 
-					if config.CD.Timer != nil {
-						spell.CD.Set(sim.CurrentTime + time.Duration(float64(spell.CD.Duration)*spell.CdMultiplier))
+					if spell.charges > 0 {
+						spell.ConsumeCharge(sim)
+					}
+
+					if config.CD.Timer != nil && spell.charges == 0 {
+						if spell.MaxCharges > 0 {
+							// spell.CdMultiplier would be concidered within the the recharge time if we ever need that
+							spell.CD.Set(sim.CurrentTime + spell.NextChargeIn(sim))
+						} else {
+							spell.CD.Set(sim.CurrentTime + time.Duration(float64(spell.CD.Duration)*spell.CdMultiplier))
+						}
 					}
 
 					if config.SharedCD.Timer != nil {
@@ -208,8 +221,17 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 			spell.Cost.SpendCost(sim, spell)
 		}
 
-		if config.CD.Timer != nil {
-			spell.CD.Set(sim.CurrentTime + time.Duration(float64(spell.CD.Duration)*spell.CdMultiplier))
+		if spell.charges > 0 {
+			spell.ConsumeCharge(sim)
+		}
+
+		if config.CD.Timer != nil && spell.charges == 0 {
+			if spell.MaxCharges > 0 {
+				// spell.CdMultiplier would be concidered within the the recharge time if we ever need that
+				spell.CD.Set(sim.CurrentTime + spell.NextChargeIn(sim))
+			} else {
+				spell.CD.Set(sim.CurrentTime + time.Duration(float64(spell.CD.Duration)*spell.CdMultiplier))
+			}
 		}
 
 		if config.SharedCD.Timer != nil {
@@ -258,8 +280,17 @@ func (spell *Spell) makeCastFuncSimple() CastSuccessFunc {
 			spell.Unit.Log(sim, "Completed cast %s", spell.ActionID)
 		}
 
-		if spell.CD.Timer != nil {
-			spell.CD.Set(sim.CurrentTime + time.Duration(float64(spell.CD.Duration)*spell.CdMultiplier))
+		if spell.charges > 0 {
+			spell.ConsumeCharge(sim)
+		}
+
+		if spell.CD.Timer != nil && spell.charges == 0 {
+			if spell.MaxCharges > 0 {
+				// spell.CdMultiplier would be concidered within the the recharge time if we ever need that
+				spell.CD.Set(sim.CurrentTime + spell.NextChargeIn(sim))
+			} else {
+				spell.CD.Set(sim.CurrentTime + time.Duration(float64(spell.CD.Duration)*spell.CdMultiplier))
+			}
 		}
 
 		if spell.SharedCD.Timer != nil {
