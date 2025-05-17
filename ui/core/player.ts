@@ -401,7 +401,7 @@ export class Player<SpecType extends Spec> {
 	}
 
 	canEnableTargetDummies(): boolean {
-		const healingSpellClasses: Class[] = [Class.ClassDruid, Class.ClassPaladin, Class.ClassPriest, Class.ClassShaman];
+		const healingSpellClasses: Class[] = [Class.ClassDruid, Class.ClassPaladin, Class.ClassPriest, Class.ClassShaman, Class.ClassMonk];
 		return healingSpellClasses.includes(this.getClass());
 	}
 
