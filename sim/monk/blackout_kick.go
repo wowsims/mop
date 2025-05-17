@@ -43,7 +43,7 @@ func (monk *Monk) registerBlackoutKick() {
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagIncludeTargetBonusDamage | SpellFlagSpender | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | SpellFlagSpender | core.SpellFlagAPL,
 		ClassSpellMask: MonkSpellBlackoutKick,
 		MaxRange:       core.MaxMeleeRange,
 
@@ -59,7 +59,7 @@ func (monk *Monk) registerBlackoutKick() {
 		CritMultiplier:   monk.DefaultCritMultiplier(),
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return monk.ComboPoints() >= 2 || monk.ComboBreakerBlackoutKickAura.IsActive()
+			return monk.GetChi() >= 2 || monk.ComboBreakerBlackoutKickAura.IsActive()
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {

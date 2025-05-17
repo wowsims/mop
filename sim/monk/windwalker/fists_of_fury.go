@@ -26,7 +26,7 @@ func (ww *WindwalkerMonk) registerFistsOfFury() {
 		ActionID:       debuffActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagIncludeTargetBonusDamage | core.SpellFlagPassiveSpell,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell,
 		ClassSpellMask: monk.MonkSpellFistsOfFury,
 		MaxRange:       core.MaxMeleeRange,
 
@@ -92,7 +92,7 @@ func (ww *WindwalkerMonk) registerFistsOfFury() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return !ww.Moving && ww.ComboPoints() >= 3
+			return !ww.Moving && ww.GetChi() >= 3
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {

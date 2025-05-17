@@ -106,18 +106,14 @@ func NewHunter(character *core.Character, options *proto.Player, hunterOptions *
 	rangedWeapon := hunter.WeaponFromRanged(0)
 
 	hunter.EnableAutoAttacks(hunter, core.AutoAttackOptions{
-		// We don't know crit multiplier until later when we see the target so just
-		// use 0 for now.
-		MainHand: hunter.WeaponFromMainHand(0),
-		OffHand:  hunter.WeaponFromOffHand(0),
-		Ranged:   rangedWeapon,
+		Ranged: rangedWeapon,
 		//ReplaceMHSwing:  hunter.TryRaptorStrike, //Todo: Might be weaving
 		AutoSwingRanged: true,
-		AutoSwingMelee:  true,
+		AutoSwingMelee:  false,
 	})
 
 	hunter.AutoAttacks.RangedConfig().ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-		baseDamage := hunter.RangedWeaponDamage(sim, spell.RangedAttackPower(target))
+		baseDamage := hunter.RangedWeaponDamage(sim, spell.RangedAttackPower())
 
 		result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeRangedHitAndCrit)
 
@@ -181,13 +177,6 @@ func (hunter *Hunter) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 
 	if hunter.Options.PetType == proto.HunterOptions_CoreHound {
 		raidBuffs.Bloodlust = true
-	}
-	if hunter.Options.PetType == proto.HunterOptions_Silithid {
-		raidBuffs.BloodPact = true
-	}
-
-	if hunter.Options.PetType == proto.HunterOptions_Cat {
-		raidBuffs.StrengthOfEarthTotem = true
 	}
 
 	if hunter.Options.PetType == proto.HunterOptions_ShaleSpider {

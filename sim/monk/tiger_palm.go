@@ -51,7 +51,7 @@ func (monk *Monk) registerTigerPalm() {
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagIncludeTargetBonusDamage | SpellFlagSpender | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | SpellFlagSpender | core.SpellFlagAPL,
 		ClassSpellMask: MonkSpellTigerPalm,
 		MaxRange:       core.MaxMeleeRange,
 
@@ -67,7 +67,7 @@ func (monk *Monk) registerTigerPalm() {
 		CritMultiplier:   monk.DefaultCritMultiplier(),
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return monk.ComboPoints() >= 1 || monk.ComboBreakerTigerPalmAura.IsActive()
+			return isBrewmaster || monk.GetChi() >= 1 || monk.ComboBreakerTigerPalmAura.IsActive()
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {

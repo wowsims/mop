@@ -73,9 +73,6 @@ type Unit struct {
 	moveSpell               *Spell
 	movementAction          *MovementAction
 
-	// How much uptime of Dark Intent the unit will have
-	DarkIntentUptimePercent float64
-
 	// Environment in which this Unit exists. This will be nil until after the
 	// construction phase.
 	Env *Environment
@@ -122,6 +119,8 @@ type Unit struct {
 	focusBar
 	runicPowerBar
 
+	secondaryResourceBar SecondaryResourceBar
+
 	// All spells that can be cast by this unit.
 	Spellbook                 []*Spell
 	spellRegistrationHandlers []SpellRegisteredHandler
@@ -131,6 +130,7 @@ type Unit struct {
 
 	DynamicStatsPets      []*Pet
 	DynamicMeleeSpeedPets []*Pet
+	DynamicCastSpeedPets  []*Pet
 
 	// AutoAttacks is the manager for auto attack swings.
 	// Must be enabled to use, with "EnableAutoAttacks()".
@@ -190,9 +190,7 @@ type Unit struct {
 }
 
 func (unit *Unit) getSpellpowerValueImpl(spell *Spell) float64 {
-	return unit.stats[stats.SpellPower] +
-		spell.BonusSpellPower +
-		spell.Unit.PseudoStats.MobTypeSpellPower
+	return unit.stats[stats.SpellPower] + spell.BonusSpellPower
 }
 
 // Units can be disabled for several reasons:
@@ -425,6 +423,11 @@ func (unit *Unit) updateCastSpeed() {
 }
 func (unit *Unit) MultiplyCastSpeed(amount float64) {
 	unit.PseudoStats.CastSpeedMultiplier *= amount
+
+	for _, pet := range unit.DynamicCastSpeedPets {
+		pet.dynamicCastSpeedInheritance(amount)
+	}
+
 	unit.updateCastSpeed()
 }
 
@@ -587,6 +590,10 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 	unit.energyBar.reset(sim)
 	unit.rageBar.reset(sim)
 	unit.runicPowerBar.reset(sim)
+
+	if unit.secondaryResourceBar != nil {
+		unit.secondaryResourceBar.Reset(sim)
+	}
 
 	unit.AutoAttacks.reset(sim)
 
