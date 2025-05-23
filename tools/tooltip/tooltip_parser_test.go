@@ -42,6 +42,10 @@ func Test_WhenGivenDurationLongerThan2Hours_ThenRnderHrs(t *testing.T) {
 	SimpleTooltipTest(56382, "When cast on critters, your Polymorph spells now last 24hrs and can be cast on multiple targets.", t)
 }
 
+func Test_WhenWeaponDamageWithPercentDamage_ThenApplyPercentDamage(t *testing.T) {
+	SimpleTooltipTest(33876, "Mangle the target for 500% normal damage plus 390 and reduce the target's movement speed by 50% for 12s. Awards 1 combo point.", t)
+}
+
 func SimpleTooltipTest(spellId int, expectedDescription string, t *testing.T) {
 	spell := db.Spells[spellId]
 	tp, error := ParseTooltip(spell.Description,
@@ -54,7 +58,7 @@ func SimpleTooltipTest(spellId int, expectedDescription string, t *testing.T) {
 	}
 
 	if tp.String() != expectedDescription {
-		t.Fail()
+		t.Errorf("Wrong tooltip!\n\tExpected: %s\n\tActual:   %s", expectedDescription, tp.String())
 	}
 }
 

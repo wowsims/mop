@@ -233,10 +233,36 @@ func (d DBCTooltipDataProvider) GetClass(spellId int64) proto.Class {
 	}
 }
 
+func (d DBCTooltipDataProvider) internalCalcEffectBaseValue(effect *dbc.SpellEffect) float64 {
+	class := d.GetClass(int64(effect.SpellID))
+
+	baseDamage := 0.0
+	// using class scaling
+	if effect.Coefficient > 0 && d.ShouldUseBaseScaling(int64(effect.SpellID)) {
+		baseValue := 0.0
+
+		// for now use generic unk13 scaling for level 90
+		if class == proto.Class_ClassUnknown {
+			baseValue = 1710.000000
+		} else {
+			baseValue = core.ClassBaseScaling[class]
+		}
+
+		baseDamage += baseValue * effect.Coefficient
+	} else {
+		baseDamage += float64(effect.EffectBasePoints)
+		spell := d.DBC.Spells[int(effect.SpellID)]
+		if spell.MaxScalingLevel > 0 {
+			baseDamage += effect.EffectRealPointsPerLevel * math.Min(float64(spell.MaxScalingLevel), core.CharacterLevel)
+		}
+	}
+
+	return baseDamage
+}
+
 // GetEffectBaseDamage implements TooltipDataProvider.
 func (d DBCTooltipDataProvider) GetEffectScaledValue(spellId int64, effectIdx int64) float64 {
 	effectEntries, ok := d.DBC.SpellEffects[int(spellId)]
-	class := d.GetClass(spellId)
 
 	if !ok {
 		return 1
@@ -252,27 +278,7 @@ func (d DBCTooltipDataProvider) GetEffectScaledValue(spellId int64, effectIdx in
 		return 1
 	}
 
-	baseDamage := 0.0
-
-	// using class scaling
-	if effect.Coefficient > 0 && d.ShouldUseBaseScaling(spellId) {
-		baseValue := 0.0
-
-		// for now use generic unk13 scaling for level 90
-		if class == proto.Class_ClassUnknown {
-			baseValue = 1710.000000
-		} else {
-			baseValue = core.ClassBaseScaling[class]
-		}
-
-		baseDamage += baseValue * effect.Coefficient
-	} else {
-		baseDamage += float64(effect.EffectBasePoints)
-		spell := d.DBC.Spells[int(spellId)]
-		if spell.MaxScalingLevel > 0 {
-			baseDamage += effect.EffectRealPointsPerLevel * math.Min(float64(spell.MaxScalingLevel), core.CharacterLevel)
-		}
-	}
+	baseDamage := d.internalCalcEffectBaseValue(effect)
 
 	shouldScale := false
 	switch effect.EffectType {
@@ -341,7 +347,20 @@ func (d DBCTooltipDataProvider) GetEffectBaseValue(spellId int64, effectIdx int6
 		return 0
 	}
 
-	return float64(effect.EffectBasePoints)
+	base := d.internalCalcEffectBaseValue(effect)
+	switch effect.EffectType {
+	case dbc.E_WEAPON_DAMAGE:
+		for idx := int(effectIdx) + 1; idx < len(effectEntries); idx++ {
+			effectAtIndex := GetEffectByIndex(effectEntries, idx)
+			if effectAtIndex != nil && effectAtIndex.EffectType == dbc.E_WEAPON_PERCENT_DAMAGE {
+				// base damage is rounded before multiplication, are %m values always rounded first?
+				base = math.Round(base)
+				base *= d.internalCalcEffectBaseValue(effectAtIndex) / 100
+			}
+		}
+	}
+
+	return base
 }
 
 // GetEffectPeriod implements TooltipDataProvider.
