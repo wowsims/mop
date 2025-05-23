@@ -1,6 +1,9 @@
 package warlock
 
 import (
+	"math"
+	"time"
+
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
@@ -13,7 +16,6 @@ type Warlock struct {
 
 	BaneOfAgony          *core.Spell
 	BaneOfDoom           *core.Spell
-	BurningEmbers        *core.Spell
 	Corruption           *core.Spell
 	CurseOfElementsAuras core.AuraArray
 	CurseOfTonguesAuras  core.AuraArray
@@ -26,22 +28,22 @@ type Warlock struct {
 	Shadowburn           *core.Spell
 	UnstableAffliction   *core.Spell
 
-	// ActivePet *WarlockPet
-	// Felhunter *WarlockPet
+	ActivePet *WarlockPet
+	Felhunter *WarlockPet
 	// Felguard  *WarlockPet
-	// Imp       *WarlockPet
-	// Succubus  *WarlockPet
+	Imp        *WarlockPet
+	Succubus   *WarlockPet
+	Voidwalker *WarlockPet
 
-	// Doomguard *DoomguardPet
-	// Infernal  *InfernalPet
+	Doomguard *DoomguardPet
+	Infernal  *InfernalPet
 	// EbonImp   *EbonImpPet
-	// FieryImp  *FieryImpPet
-
-	SoulShards   *core.Aura
-	SoulBurnAura *core.Aura
+	FieryImp *FieryImpPet
 
 	// Item sets
 	T13_4pc *core.Aura
+	T15_2pc *core.Aura
+	T15_4pc *core.Aura
 }
 
 func (warlock *Warlock) GetCharacter() *core.Character {
@@ -53,16 +55,20 @@ func (warlock *Warlock) GetWarlock() *Warlock {
 }
 
 func (warlock *Warlock) ApplyTalents() {
-	warlock.ApplyArmorSpecializationEffect(stats.Intellect, proto.ArmorType_ArmorTypeCloth, 86091)
-
-	// warlock.ApplyAfflictionTalents()
-	// warlock.ApplyDemonologyTalents()
-	// warlock.ApplyDestructionTalents()
-
-	// warlock.ApplyGlyphs()
+	warlock.registerHarvestLife()
+	warlock.registerArchimondesDarkness()
+	warlock.registerKilJaedensCunning()
+	warlock.registerMannarothsFury()
+	warlock.registerGrimoireOfSupremacy()
+	warlock.registerGrimoireOfSacrifice()
 }
 
 func (warlock *Warlock) Initialize() {
+
+	warlock.registerDarkSoulInstability()
+	warlock.registerCurseOfElements()
+	warlock.registerDrainLife()
+
 	// warlock.registerBaneOfAgony()
 	// warlock.registerBaneOfDoom()
 	// warlock.registerCorruption()
@@ -76,46 +82,30 @@ func (warlock *Warlock) Initialize() {
 	// warlock.registerImmolate()
 	// warlock.registerIncinerate()
 	// warlock.registerLifeTap()
-	warlock.registerSearingPain()
+	// warlock.registerSearingPain()
 	// warlock.registerSeed()
 	// warlock.registerShadowBolt()
-	warlock.registerShadowflame()
+	// warlock.registerShadowflame()
 	// warlock.registerSoulFire()
-	warlock.registerSoulHarvest()
-	warlock.registerSoulburn()
+	// warlock.registerSoulHarvest()
+	// warlock.registerSoulburn()
 	// warlock.registerSummonDemon()
 
-	// doomguardInfernalTimer := warlock.NewTimer()
-	// warlock.registerSummonDoomguard(doomguardInfernalTimer)
-	// warlock.registerSummonInfernal(doomguardInfernalTimer)
+	doomguardInfernalTimer := warlock.NewTimer()
+	warlock.registerSummonDoomguard(doomguardInfernalTimer)
+	warlock.registerSummonInfernal(doomguardInfernalTimer)
 
-	// TODO: vile hack to make the APLs work for now ...
-	// if !warlock.CouldHaveSetBonus(ItemSetMaleficRaiment, 4) {
-	// 	warlock.RegisterAura(core.Aura{
-	// 		Label:    "Fel Spark",
-	// 		ActionID: core.ActionID{SpellID: 89937},
-	// 	})
-	// }
-
+	// Fel Armor 10% Stamina
 	core.MakePermanent(
 		warlock.RegisterAura(core.Aura{
 			Label:    "Fel Armor",
-			ActionID: core.ActionID{SpellID: 28176},
+			ActionID: core.ActionID{SpellID: 104938},
 		}))
+	warlock.MultiplyStat(stats.Stamina, 1.1)
+	warlock.MultiplyStat(stats.Health, 1.1)
 
-	warlock.SoulShards = core.MakePermanent(
-		warlock.RegisterAura(core.Aura{
-			Label:     "Soul Shards",
-			ActionID:  core.ActionID{ItemID: 6265},
-			MaxStacks: 3,
-			OnGain: func(aura *core.Aura, sim *core.Simulation) {
-				aura.SetStacks(sim, 3)
-			},
-		}))
-
-	// warlock.registerPetAbilities()
-
-	// warlock.registerBlackBook()
+	// 5% int passive
+	warlock.MultiplyStat(stats.Intellect, 1.05)
 }
 
 func (warlock *Warlock) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
@@ -133,18 +123,15 @@ func NewWarlock(character *core.Character, options *proto.Player, warlockOptions
 	}
 	core.FillTalentsProto(warlock.Talents.ProtoReflect(), options.TalentsString)
 	warlock.EnableManaBar()
-
 	warlock.AddStatDependency(stats.Strength, stats.AttackPower, 1)
 
-	// Add Fel Armor SP by default
-	warlock.AddStat(stats.SpellPower, 638)
-
 	// warlock.EbonImp = warlock.NewEbonImp()
-	// warlock.Infernal = warlock.NewInfernalPet()
-	// warlock.Doomguard = warlock.NewDoomguardPet()
-	// warlock.FieryImp = warlock.NewFieryImp()
+	warlock.Infernal = warlock.NewInfernalPet()
+	warlock.Doomguard = warlock.NewDoomguardPet()
+	warlock.FieryImp = warlock.NewFieryImp()
 
-	// warlock.registerPets()
+	warlock.registerPets()
+	warlock.registerGrimoireOfService()
 
 	return warlock
 }
@@ -165,11 +152,13 @@ func (warlock *Warlock) HasMinorGlyph(glyph proto.WarlockMinorGlyph) bool {
 const (
 	WarlockSpellFlagNone    int64 = 0
 	WarlockSpellConflagrate int64 = 1 << iota
+	WarlockSpellFaBConflagrate
 	WarlockSpellShadowBolt
 	WarlockSpellChaosBolt
 	WarlockSpellImmolate
 	WarlockSpellImmolateDot
 	WarlockSpellIncinerate
+	WarlockSpellFaBIncinerate
 	WarlockSpellSoulFire
 	WarlockSpellShadowBurn
 	WarlockSpellLifeTap
@@ -188,6 +177,7 @@ const (
 	WarlockSpellSeedOfCorruptionExposion
 	WarlockSpellHandOfGuldan
 	WarlockSpellImmolationAura
+	WarlockSpellHellfire
 	WarlockSpellSearingPain
 	WarlockSpellSummonDoomguard
 	WarlockSpellDoomguardDoomBolt
@@ -200,6 +190,7 @@ const (
 	WarlockSpellFelHunterShadowBite
 	WarlockSpellSummonSuccubus
 	WarlockSpellSuccubusLashOfPain
+	WarlockSpellVoidwalkerTorment
 	WarlockSpellSummonInfernal
 	WarlockSpellDemonSoul
 	WarlockSpellShadowflame
@@ -207,6 +198,14 @@ const (
 	WarlockSpellSoulBurn
 	WarlockSpellFelFlame
 	WarlockSpellBurningEmbers
+	WarlockSpellEmberTap
+	WarlockSpellRainOfFire
+	WarlockSpellFireAndBrimstone
+	WarlockSpellDarkSoulInsanity
+	WarlockSpellMaleficGrasp
+	WarlockSpellDemonicSlash
+	WarlockSpellTouchOfChaos
+	WarlockSpellAll int64 = 1<<iota - 1
 
 	WarlockShadowDamage = WarlockSpellCorruption | WarlockSpellUnstableAffliction | WarlockSpellHaunt |
 		WarlockSpellDrainSoul | WarlockSpellDrainLife | WarlockSpellBaneOfDoom | WarlockSpellBaneOfAgony |
@@ -218,7 +217,8 @@ const (
 
 	WarlockFireDamage = WarlockSpellConflagrate | WarlockSpellImmolate | WarlockSpellIncinerate | WarlockSpellSoulFire |
 		WarlockSpellImmolationAura | WarlockSpellHandOfGuldan | WarlockSpellSearingPain | WarlockSpellImmolateDot |
-		WarlockSpellShadowflameDot | WarlockSpellFelFlame | WarlockSpellChaosBolt | WarlockSpellShadowBurn
+		WarlockSpellShadowflameDot | WarlockSpellFelFlame | WarlockSpellChaosBolt | WarlockSpellShadowBurn | WarlockSpellFaBConflagrate |
+		WarlockSpellFaBIncinerate
 
 	WarlockDoT = WarlockSpellCorruption | WarlockSpellUnstableAffliction | WarlockSpellDrainSoul |
 		WarlockSpellDrainLife | WarlockSpellBaneOfDoom | WarlockSpellBaneOfAgony | WarlockSpellImmolateDot |
@@ -226,8 +226,33 @@ const (
 
 	WarlockSummonSpells = WarlockSpellSummonImp | WarlockSpellSummonSuccubus | WarlockSpellSummonFelhunter |
 		WarlockSpellSummonFelguard
+
+	WarlockDarkSoulSpell             = WarlockSpellDarkSoulInsanity
+	WarlockAllSummons                = WarlockSummonSpells | WarlockSpellSummonInfernal | WarlockSpellSummonDoomguard
+	WarlockSpellsChaoticEnergyDestro = WarlockSpellAll &^ WarlockAllSummons
 )
 
-const (
-	PetExpertiseScale = 1.53 * core.ExpertisePerQuarterPercentReduction
-)
+// Pandemic - For now a Warlock only ability. Might be moved into core support in late expansions
+func (warlock *Warlock) ApplyDotWithPandemic(dot *core.Dot, sim *core.Simulation) {
+
+	// if DoT was not active before, there is nothing we need to do for pandemic
+	if !dot.IsActive() {
+		dot.Apply(sim)
+		return
+	}
+
+	// MoP Pandemic is a warlock only ability
+	// It allows for the extension of up to 50% of the unhasted base duration
+	// So we need to determine which is shorter base + remaining or base + maxExtend
+	remaining := dot.RemainingDuration(sim)
+	extend := time.Duration(math.Min(
+		float64(dot.BaseDuration()+remaining),
+		float64(dot.BaseDuration()+dot.BaseDuration()/2),
+	))
+
+	// First do usual dot carry over
+	dot.Apply(sim)
+	for dot.RemainingDuration(sim)+dot.TickPeriod() < extend {
+		dot.AddTick()
+	}
+}

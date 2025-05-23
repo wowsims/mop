@@ -1065,6 +1065,23 @@ const petNameToActionId: Record<string, ActionId> = {
 	'Tentacle of the Old Ones': ActionId.fromSpellId(107818),
 	Treant: ActionId.fromSpellId(33831),
 	'Water Elemental': ActionId.fromSpellId(31687),
+	'Felhunter': ActionId.fromSpellId(691),
+	'Imp': ActionId.fromSpellId(688),
+	'Succubus': ActionId.fromSpellId(712),
+	'Voidwalker': ActionId.fromSpellId(697),
+	'Doomguard': ActionId.fromSpellId(18540),
+	'Infernal': ActionId.fromSpellId(1122),
+	'Fel Imp': ActionId.fromSpellId(112866),
+	'Shivarra': ActionId.fromSpellId(112868),
+	'Observer': ActionId.fromSpellId(112869),
+	'Voidlord': ActionId.fromSpellId(112867),
+	'Terrorguard': ActionId.fromSpellId(112927),
+	'Abyssal': ActionId.fromSpellId(112921),
+	'Grimoire: Imp': ActionId.fromSpellId(111859),
+	'Grimoire: Voidwalker': ActionId.fromSpellId(111895),
+	'Grimoire: Felhunter': ActionId.fromSpellId(111897),
+	'Grimoire: Succubus': ActionId.fromSpellId(111896),
+	'Felguard': ActionId.fromSpellId(30146),
 };
 
 // https://wowhead.com/mop-classic/hunter-pets
