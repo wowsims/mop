@@ -84,7 +84,7 @@ func (character *Character) RegisterVengeance(spellID int32, requiredAura *Aura)
 			// TODO: Does this also need the 2.5x multiplier for spells and the 0.5x AoE multiplier in it?
 			inferredEquilibriumVengeance := VengeanceScaling * rawDamage * buffAura.Duration.Seconds() / inferredAttackInterval.Seconds()
 
-			if newVengeance < 0.5 * inferredEquilibriumVengeance {
+			if newVengeance < 0.5*inferredEquilibriumVengeance {
 				if sim.Log != nil {
 					result.Target.Log(sim, "Triggered Vengeance ramp-up mechanism because newVengeance = %.1f and inferredEquilibriumVengeance = %.1f .", newVengeance, inferredEquilibriumVengeance)
 				}
