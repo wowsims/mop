@@ -411,6 +411,11 @@ export class Player<SpecType extends Spec> {
 			return true;
 		}
 
+		// Monks use a target dummy for Zen Sphere (max targets of 2)
+		if (this.getClass() == Class.ClassMonk){
+			return true
+		}
+
 		if (!this.itemSwapSettings.getEnableItemSwap()) {
 			return false;
 		}
@@ -567,6 +572,7 @@ export class Player<SpecType extends Spec> {
 			// By default only value DPS EP
 			defaultRatios[0] = 1;
 		}
+
 		return defaultRatios;
 	}
 
@@ -1379,7 +1385,7 @@ export class Player<SpecType extends Spec> {
 				if (!filters.weaponTypes.includes(item.weaponType) && item.handType > HandType.HandTypeUnknown) {
 					return false;
 				}
-				
+
 				if (!filters.oneHandedWeapons && item.handType != HandType.HandTypeTwoHand) {
 					return false;
 				}
