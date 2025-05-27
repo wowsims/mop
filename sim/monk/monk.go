@@ -253,6 +253,9 @@ const (
 	// Brewmaster
 	MonkSpellGuard
 
+	//Mistweaver
+	MonkSpellRenewingMist
+
 	MonkSpellLast
 	MonkSpellsAll = MonkSpellLast<<1 - 1
 )
