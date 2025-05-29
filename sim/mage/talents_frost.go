@@ -1,8 +1,6 @@
 package mage
 
 import (
-	//"github.com/wowsims/mop/sim/core/proto"
-
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -66,71 +64,6 @@ func (mage *Mage) ApplyFrostTalents() {
 
 	//Ice Shards inside blizzard
 
-}
-
-func (mage *Mage) registerIcyVeinsCD() {
-	if !mage.Talents.IcyVeins {
-		return
-	}
-
-	icyVeinsMod := mage.AddDynamicMod(core.SpellModConfig{
-		ClassMask:  MageSpellsAll,
-		FloatValue: -0.2,
-		Kind:       core.SpellMod_CastTime_Pct,
-	})
-
-	actionID := core.ActionID{SpellID: 12472}
-	icyVeinsAura := mage.RegisterAura(core.Aura{
-		Label:    "Icy Veins",
-		ActionID: actionID,
-		Duration: time.Second * 20,
-		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			icyVeinsMod.Activate()
-		},
-		OnExpire: func(_ *core.Aura, sim *core.Simulation) {
-			icyVeinsMod.Deactivate()
-			if mage.t13ProcAura != nil {
-				mage.t13ProcAura.Deactivate(sim)
-			}
-		},
-	})
-
-	mage.IcyVeins = mage.RegisterSpell(core.SpellConfig{
-		ActionID:       actionID,
-		ClassSpellMask: MageSpellIcyVeins,
-		Flags:          core.SpellFlagNoOnCastComplete,
-
-		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: 3,
-		},
-
-		Cast: core.CastConfig{
-			CD: core.Cooldown{
-				Timer:    mage.NewTimer(),
-				Duration: time.Second * time.Duration(180*[]float64{1, .93, .86, .80}[mage.Talents.IceFloes]),
-			},
-			DefaultCast: core.Cast{
-				NonEmpty: true,
-			},
-		},
-
-		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			// Need to check for icy veins already active in case Cold Snap is used right after.
-			return !icyVeinsAura.IsActive() && !mage.frostfireOrb.IsEnabled()
-		},
-
-		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			icyVeinsAura.Activate(sim)
-			if mage.T13_4pc.IsActive() {
-				spell.CD.Reduce(time.Second * time.Duration(15*mage.t13ProcAura.GetStacks()))
-			}
-		},
-	})
-
-	mage.AddMajorCooldown(core.MajorCooldown{
-		Spell: mage.IcyVeins,
-		Type:  core.CooldownTypeDPS,
-	})
 }
 
 func (mage *Mage) applyFingersOfFrost() {

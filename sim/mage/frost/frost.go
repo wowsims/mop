@@ -3,6 +3,7 @@ package frost
 import (
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/stats"
 	"github.com/wowsims/mop/sim/mage"
 )
 
@@ -26,7 +27,10 @@ func RegisterFrostMage() {
 type FrostMage struct {
 	*mage.Mage
 
-	waterElemental *WaterElemental
+	waterElemental             *WaterElemental
+	frozenOrb                  *core.Spell
+	frostfireFrozenCritBuffMod *core.SpellMod
+	iceLanceFrozenCritBuffMod  *core.SpellMod
 }
 
 func NewFrostMage(character *core.Character, options *proto.Player) *FrostMage {
@@ -35,7 +39,7 @@ func NewFrostMage(character *core.Character, options *proto.Player) *FrostMage {
 	frostMage := &FrostMage{
 		Mage: mage.NewMage(character, options, frostOptions.ClassOptions),
 	}
-	frostMage.waterElemental = frostMage.NewWaterElemental(0.20)
+	frostMage.waterElemental = frostMage.NewWaterElemental()
 
 	return frostMage
 }
@@ -52,53 +56,35 @@ func (frostMage *FrostMage) Initialize() {
 	frostMage.Mage.Initialize()
 
 	frostMage.registerSummonWaterElementalSpell()
+	frostMage.registerFingersOfFrost()
+	frostMage.registerBrainFreeze()
 }
 
 func (frostMage *FrostMage) ApplyTalents() {
 	frostMage.Mage.ApplyTalents()
 
-	// Frost  Specialization Bonus
-	frostMage.Mage.AddStaticMod(core.SpellModConfig{
-		School:     core.SpellSchoolFrost,
-		FloatValue: 0.25,
+	frostMage.frostfireFrozenCritBuffMod = frostMage.Mage.AddDynamicMod(core.SpellModConfig{
+		FloatValue: frostMage.GetStat(stats.SpellCritPercent)*2 + 50,
+		ClassMask:  mage.MageSpellFrostfireBolt,
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})
 
-	frostMage.waterElemental.AddStaticMod(core.SpellModConfig{
-		School:     core.SpellSchoolFrost,
-		FloatValue: 0.25,
+	frostMage.iceLanceFrozenCritBuffMod = frostMage.Mage.AddDynamicMod(core.SpellModConfig{
+		FloatValue: frostMage.GetStat(stats.SpellCritPercent)*2 + 50,
+		ClassMask:  mage.MageSpellIceLance,
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})
 
-	frostMage.Mage.AddStaticMod(core.SpellModConfig{
-		ClassMask:  mage.MageSpellFrostbolt,
-		FloatValue: 0.15,
-		Kind:       core.SpellMod_DamageDone_Flat,
+	frostMage.AddOnTemporaryStatsChange(func(sim *core.Simulation, buffAura *core.Aura, statsChangeWithoutDeps stats.Stats) {
+		frostMage.frostfireFrozenCritBuffMod.UpdateFloatValue(frostMage.GetStat(stats.SpellCritPercent)*2 + 50)
+		frostMage.iceLanceFrozenCritBuffMod.UpdateFloatValue(frostMage.GetStat(stats.SpellCritPercent)*2 + 50)
 	})
-
-	// Frost Mastery Bonus
 
 	frostMasteryMod := frostMage.Mage.AddDynamicMod(core.SpellModConfig{
-		ClassMask:  mage.MageSpellIceLance | mage.MageSpellDeepFreeze,
+		ClassMask:  mage.MageSpellIceLance, //TODO: I need to learn more about ClassMask so that I can place in the water elemental Water Bolt spell here.
 		FloatValue: frostMage.GetMasteryBonus(),
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})
-
-	core.MakePermanent(frostMage.Mage.GetOrRegisterAura(core.Aura{
-		Label:    "Frostburn",
-		ActionID: core.ActionID{SpellID: 76595},
-		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			frostMasteryMod.UpdateFloatValue(frostMage.GetMasteryBonus())
-		},
-		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			frostMasteryMod.Deactivate()
-		},
-		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
-			if frostMage.Mage.FingersOfFrostAura.IsActive() {
-				frostMasteryMod.Activate()
-			}
-		},
-	}))
 
 	frostMage.AddOnMasteryStatChanged(func(sim *core.Simulation, oldMastery, newMastery float64) {
 		frostMasteryMod.UpdateFloatValue(frostMage.GetMasteryBonus())
@@ -106,5 +92,5 @@ func (frostMage *FrostMage) ApplyTalents() {
 }
 
 func (frostMage *FrostMage) GetMasteryBonus() float64 {
-	return (.05 + 0.025*frostMage.Mage.GetMasteryPoints())
+	return (.16 + 0.02*frostMage.Mage.GetMasteryPoints())
 }
