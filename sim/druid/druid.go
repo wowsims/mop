@@ -9,21 +9,17 @@ import (
 )
 
 const (
-	SpellFlagNaturesGrace = core.SpellFlagAgentReserved1
-	SpellFlagOmenTrigger  = core.SpellFlagAgentReserved2
+	SpellFlagOmenTrigger = core.SpellFlagAgentReserved1
 )
 
 type Druid struct {
 	core.Character
 	SelfBuffs
-	// eclipseEnergyBar
 	Talents *proto.DruidTalents
 
 	ClassSpellScaling float64
 
 	StartingForm DruidForm
-
-	EclipseEnergyMap EclipseEnergyMap
 
 	RebirthUsed       bool
 	RebirthTiming     float64
@@ -41,12 +37,11 @@ type Druid struct {
 	FerociousBite         *DruidSpell
 	ForceOfNature         *DruidSpell
 	FrenziedRegeneration  *DruidSpell
+	HealingTouch          *DruidSpell
 	Hurricane             *DruidSpell
 	HurricaneTickSpell    *DruidSpell
-	InsectSwarm           *DruidSpell
 	GiftOfTheWild         *DruidSpell
 	Lacerate              *DruidSpell
-	Languish              *DruidSpell
 	MangleBear            *DruidSpell
 	MangleCat             *DruidSpell
 	Maul                  *DruidSpell
@@ -58,10 +53,6 @@ type Druid struct {
 	Rip                   *DruidSpell
 	SavageRoar            *DruidSpell
 	Shred                 *DruidSpell
-	Starfire              *DruidSpell
-	Starfall              *DruidSpell
-	Starsurge             *DruidSpell
-	Sunfire               *DruidSpell
 	SurvivalInstincts     *DruidSpell
 	SwipeBear             *DruidSpell
 	SwipeCat              *DruidSpell
@@ -98,10 +89,7 @@ type Druid struct {
 
 	ProcOoc func(sim *core.Simulation)
 
-	ExtendingMoonfireStacks int
-
-	Treants       *Treants
-	BurningTreant *BurningTreant
+	Treants *Treants
 
 	form         DruidForm
 	disabledMCDs []*core.MajorCooldown
@@ -115,35 +103,18 @@ type Druid struct {
 }
 
 const (
-	WrathBaseEnergyGain     float64 = 13 + 1.0/3
-	StarsurgeBaseEnergyGain float64 = 15
-	StarfireBaseEnergyGain  float64 = 20
-	MoonfireBaseEnergyGain  float64 = 0
-	SunfireBaseEnergyGain   float64 = 0
-
-	MoonfireLunarShowerEnergyGain float64 = MoonfireBaseEnergyGain + 8
-	SunfireLunarShowerEnergyGain  float64 = SunfireBaseEnergyGain + 8
-
-	Wrath4PT12EnergyGain    float64 = WrathBaseEnergyGain + 3
-	Starfire4PT12EnergyGain float64 = StarfireBaseEnergyGain + 5
-)
-
-const (
 	DruidSpellFlagNone int64 = 0
 	DruidSpellBarkskin int64 = 1 << iota
-	DruidSpellCyclone
-	DruidSpellEntanglingRoots
 	DruidSpellFearieFire
-	DruidSpellHibernate
 	DruidSpellHurricane
+	DruidSpellAstralStorm
+	DruidSpellAstralCommunion
 	DruidSpellInnervate
-	DruidSpellInsectSwarm
 	DruidSpellMangleBear
 	DruidSpellMangleCat
 	DruidSpellMaul
 	DruidSpellMoonfire
 	DruidSpellMoonfireDoT
-	DruidSpellNaturesGrasp
 	DruidSpellRavage
 	DruidSpellShred
 	DruidSpellStarfall
@@ -151,8 +122,6 @@ const (
 	DruidSpellStarsurge
 	DruidSpellSunfire
 	DruidSpellSunfireDoT
-	DruidSpellThorns
-	DruidSpellTyphoon
 	DruidSpellWildMushroom
 	DruidSpellWildMushroomDetonate
 	DruidSpellWrath
@@ -169,12 +138,12 @@ const (
 
 	DruidSpellLast
 	DruidSpellsAll      = DruidSpellLast<<1 - 1
-	DruidSpellDoT       = DruidSpellInsectSwarm | DruidSpellMoonfireDoT | DruidSpellSunfireDoT
+	DruidSpellDoT       = DruidSpellMoonfireDoT | DruidSpellSunfireDoT
 	DruidSpellHoT       = DruidSpellRejuvenation | DruidSpellLifebloom | DruidSpellRegrowth | DruidSpellWildGrowth
-	DruidSpellInstant   = DruidSpellBarkskin | DruidSpellInsectSwarm | DruidSpellMoonfire | DruidSpellStarfall | DruidSpellSunfire | DruidSpellFearieFire | DruidSpellBarkskin
+	DruidSpellInstant   = DruidSpellBarkskin | DruidSpellMoonfire | DruidSpellStarfall | DruidSpellSunfire | DruidSpellFearieFire | DruidSpellBarkskin
 	DruidSpellMangle    = DruidSpellMangleBear | DruidSpellMangleCat
 	DruidArcaneSpells   = DruidSpellMoonfire | DruidSpellMoonfireDoT | DruidSpellStarfire | DruidSpellStarsurge | DruidSpellStarfall
-	DruidNatureSpells   = DruidSpellWrath | DruidSpellInsectSwarm | DruidSpellStarsurge | DruidSpellSunfire | DruidSpellSunfireDoT | DruidSpellTyphoon | DruidSpellHurricane
+	DruidNatureSpells   = DruidSpellWrath | DruidSpellStarsurge | DruidSpellSunfire | DruidSpellSunfireDoT | DruidSpellHurricane
 	DruidHealingSpells  = DruidSpellHealingTouch | DruidSpellRegrowth | DruidSpellRejuvenation | DruidSpellLifebloom | DruidSpellNourish | DruidSpellSwiftmend
 	DruidDamagingSpells = DruidArcaneSpells | DruidNatureSpells
 )
@@ -199,10 +168,6 @@ func (druid *Druid) GetCharacter() *core.Character {
 // 	raidBuffs.MarkOfTheWild = true
 // }
 
-func (druid *Druid) BalanceCritMultiplier() float64 {
-	return druid.CritMultiplier(1, 0)
-}
-
 func (druid *Druid) HasMajorGlyph(glyph proto.DruidMajorGlyph) bool {
 	return druid.HasGlyph(int32(glyph))
 }
@@ -210,10 +175,6 @@ func (druid *Druid) HasMajorGlyph(glyph proto.DruidMajorGlyph) bool {
 func (druid *Druid) HasMinorGlyph(glyph proto.DruidMinorGlyph) bool {
 	return druid.HasGlyph(int32(glyph))
 }
-
-// func (druid *Druid) TryMaul(sim *core.Simulation, mhSwingSpell *core.Spell) *core.Spell {
-// 	return druid.MaulReplaceMH(sim, mhSwingSpell)
-// }
 
 func (druid *Druid) RegisterSpell(formMask DruidForm, config core.SpellConfig) *DruidSpell {
 	prev := config.ExtraCastCondition
@@ -263,6 +224,9 @@ func (druid *Druid) Initialize() {
 		}
 	})
 
+	druid.RegisterBaselineSpells()
+	druid.ApplyTalents()
+
 	druid.WeakenedBlowsAuras = druid.NewEnemyAuraArray(func(target *core.Unit) *core.Aura {
 		return core.WeakenedBlowsAura(target)
 	})
@@ -273,18 +237,10 @@ func (druid *Druid) Initialize() {
 	druid.registerTranquilityCD()
 }
 
-func (druid *Druid) RegisterBalanceSpells() {
-	druid.registerHurricaneSpell()
-	druid.registerInsectSwarmSpell()
+func (druid *Druid) RegisterBaselineSpells() {
 	druid.registerMoonfireSpell()
-	druid.registerSunfireSpell()
-	// druid.registerStarfireSpell()
 	druid.registerWrathSpell()
-	// druid.registerStarfallSpell()
-	// druid.registerTyphoonSpell()
-	// druid.registerForceOfNature()
-	druid.registerStarsurgeSpell()
-	druid.registerWildMushrooms()
+	druid.registerHealingTouchSpell()
 }
 
 func (druid *Druid) RegisterFeralCatSpells() {
@@ -342,7 +298,6 @@ func New(char *core.Character, form DruidForm, selfBuffs SelfBuffs, talents stri
 		StartingForm:      form,
 		form:              form,
 		ClassSpellScaling: core.GetClassSpellScalingCoefficient(proto.Class_ClassDruid),
-		EclipseEnergyMap:  make(EclipseEnergyMap),
 	}
 
 	core.FillTalentsProto(druid.Talents.ProtoReflect(), talents)
@@ -353,10 +308,18 @@ func New(char *core.Character, form DruidForm, selfBuffs SelfBuffs, talents stri
 	druid.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[char.Class])
 
 	// Druids get roughly 1% Dodge per 951.16 Agi at level 90
-	druid.AddStatDependency(stats.Agility, stats.DodgeRating, 0.00105135 * core.DodgeRatingPerDodgePercent)
+	druid.AddStatDependency(stats.Agility, stats.DodgeRating, 0.00105135*core.DodgeRatingPerDodgePercent)
 
 	// Base dodge is unaffected by Diminishing Returns
 	druid.PseudoStats.BaseDodgeChance += 0.03
+
+	// if druid.Talents.ForceOfNature {
+	// 	druid.Treants = &Treants{
+	// 		Treant1: druid.NewTreant(),
+	// 		Treant2: druid.NewTreant(),
+	// 		Treant3: druid.NewTreant(),
+	// 	}
+	// }
 
 	return druid
 }
