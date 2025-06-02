@@ -32,7 +32,7 @@ export const priestGlyphsConfig: GlyphsConfig = {
 		},
 		[PriestMajorGlyph.GlyphOfHolyNova]: {
 			name: "Glyph of Holy Nova",
-			description: "Teaches you the ability Holy Nova.\u000D\u000A\u000D\u000A Causes an explosion of holy light around the caster, causing 2477 Holy damage to all enemy targets within 10 yards and healing up to 5 targets within 10 yards for 525.\u000D\u000A\u000D\u000A Healing is divided among the number of targets healed. These effects cause no threat.",
+			description: "Teaches you the ability Holy Nova.\u000D\u000A\u000D\u000ACauses an explosion of holy light around the caster, causing 2477 Holy damage to all enemy targets within 10 yards and healing up to 5 targets within 10 yards for 525. \u000D\u000A\u000D\u000AHealing is divided among the number of targets healed.  These effects cause no threat.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holynova.jpg",
 		},
 		[PriestMajorGlyph.GlyphOfInnerFire]: {
@@ -52,7 +52,7 @@ export const priestGlyphsConfig: GlyphsConfig = {
 		},
 		[PriestMajorGlyph.GlyphOfPsychicHorror]: {
 			name: "Glyph of Psychic Horror",
-			description: "Reduces the cooldown of your Psychic Horror by -10.0 sec.",
+			description: "Reduces the cooldown of your Psychic Horror by 10.0 sec.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_psychichorrors.jpg",
 		},
 		[PriestMajorGlyph.GlyphOfHolyFire]: {
@@ -117,7 +117,7 @@ export const priestGlyphsConfig: GlyphsConfig = {
 		},
 		[PriestMajorGlyph.GlyphOfReflectiveShield]: {
 			name: "Glyph of Reflective Shield",
-			description: "Causes 70% of the damage you absorb with Power Word: Shield to reflect back at the attacker. This damage causes no threat.",
+			description: "Causes 70% of the damage you absorb with Power Word: Shield to reflect back at the attacker.  This damage causes no threat.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_priest_reflectiveshield.jpg",
 		},
 		[PriestMajorGlyph.GlyphOfDispersion]: {
@@ -152,12 +152,12 @@ export const priestGlyphsConfig: GlyphsConfig = {
 		},
 		[PriestMajorGlyph.GlyphOfMindFlay]: {
 			name: "Glyph of Mind Flay",
-			description: "Your Mind Flay spell no longer slows your victim\'s movement speed. Instead, each time Mind Flay deals damage you will be granted 15% increased movement speed for 5s, stacking up to 3 times.",
+			description: "Your Mind Flay spell no longer slows your victim\'s movement speed.  Instead, each time Mind Flay deals damage you will be granted 15% increased movement speed for 5s, stacking up to 3 times.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_siphonmana.jpg",
 		},
 		[PriestMajorGlyph.GlyphOfShadowWordDeath]: {
 			name: "Glyph of Shadow Word: Death",
-			description: "Your Shadow Word: Death can now be cast at any time, but deals 25% damage against targets above 20% health and does not generate a Shadow Orb when used against them.\u000D\u000A\u000D\u000A Casting Shadow Word: Death now also does damage to you equivalent to the damage it would do to an enemy above 20% health.",
+			description: "Your Shadow Word: Death can now be cast at any time, but deals 25% damage against targets above 20% health and does not generate a Shadow Orb when used against them.  \u000D\u000A\u000D\u000ACasting Shadow Word: Death now also does damage to you equivalent to the damage it would do to an enemy above 20% health.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_demonicfortitude.jpg",
 		},
 		[PriestMajorGlyph.GlyphOfVampiricEmbrace]: {
@@ -209,7 +209,7 @@ export const priestGlyphsConfig: GlyphsConfig = {
 		},
 		[PriestMinorGlyph.GlyphOfConfession]: {
 			name: "Glyph of Confession",
-			description: "Teaches you the ability Confession.\u000D\u000A\u000D\u000A Compels a friendly target to confess a secret.",
+			description: "Teaches you the ability Confession.\u000D\u000A\u000D\u000ACompels a friendly target to confess a secret.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_soothingkiss.jpg",
 		},
 		[PriestMinorGlyph.GlyphOfHolyResurrection]: {
@@ -239,7 +239,7 @@ export const priestGlyphsConfig: GlyphsConfig = {
 		},
 		[PriestMinorGlyph.GlyphOfShiftedAppearances]: {
 			name: "Glyph of Shifted Appearances",
-			description: "Void Shift causes you and your target to exchange appearances for several seconds.\u000D\u000A\u000D\u000A Does not affect mounted players.",
+			description: "Void Shift causes you and your target to exchange appearances for several seconds.\u000D\u000A\u000D\u000ADoes not affect mounted players.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_priest_voidshift.jpg",
 		},
 		[PriestMinorGlyph.GlyphOfInspiredHymns]: {

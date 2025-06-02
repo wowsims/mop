@@ -22,7 +22,7 @@ export const warlockGlyphsConfig: GlyphsConfig = {
 		},
 		[WarlockMajorGlyph.GlyphOfDemonTraining]: {
 			name: "Glyph of Demon Training",
-			description: "Improves your demon\'s special abilities:\u000D\u000A\u000D\u000A Your Fel Imp \'s Firebolt cast time is reduced by 50% and fires in bursts of three.\u000D\u000A\u000D\u000A Increases your Voidlord \'s total armor by 10%.\u000D\u000A\u000D\u000A Your Shivarra \'s Mesmerizes ability also removes all damage over time effects from the target.\u000D\u000A\u000D\u000A When your Observer uses Clone Magic, you will also be healed for that amount.\u000D\u000A\u000D\u000A Increases your Wrathguard \'s total health by 20%.",
+			description: "Improves your demon\'s special abilities:\u000D\u000A\u000D\u000AYour Fel Imp\'s Firebolt cast time is reduced by 50% and fires in bursts of three.\u000D\u000A\u000D\u000AIncreases your Voidlord\'s total armor by 10%.\u000D\u000A\u000D\u000AYour Shivarra\'s Mesmerizes ability also removes all damage over time effects from the target.\u000D\u000A\u000D\u000AWhen your Observer uses Clone Magic, you will also be healed for that amount.\u000D\u000A\u000D\u000AIncreases your Wrathguard\'s total health by 20%.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_summonfelhunter.jpg",
 		},
 		[WarlockMajorGlyph.GlyphOfHealthstone]: {
@@ -37,7 +37,7 @@ export const warlockGlyphsConfig: GlyphsConfig = {
 		},
 		[WarlockMajorGlyph.GlyphOfImpSwarm]: {
 			name: "Glyph of Imp Swarm",
-			description: "Teaches you the ability Imp Swarm.\u000D\u000A Requires Demonology.\u000D\u000A\u000D\u000A |Tinterface/icons/ability_warlock_impoweredimp.blp:24|t Imp Swarm\u000D\u000A Summons 4 Wild Imps from the Twisting Nether to attack the target.\u000D\u000A\u000D\u000A The Wild Imps passive effect is disabled while Imp Swarm is on cooldown. Imp Swarm\'s cooldown is reduced by spell haste. Also increases Wild Imp\'s cooldown by 4 sec.",
+			description: "Teaches you the ability Imp Swarm. \u000D\u000ARequires Demonology.\u000D\u000A\u000D\u000A|Tinterface/icons/ability_warlock_impoweredimp.blp:24|t Imp Swarm\u000D\u000ASummons 4 Wild Imps from the Twisting Nether to attack the target. \u000D\u000A\u000D\u000AThe Wild Imps passive effect is disabled while Imp Swarm is on cooldown. Imp Swarm\'s cooldown is reduced by spell haste. Also increases Wild Imp\'s cooldown by 4 sec.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_warlock_impoweredimp.jpg",
 		},
 		[WarlockMajorGlyph.GlyphOfHavoc]: {
@@ -57,7 +57,7 @@ export const warlockGlyphsConfig: GlyphsConfig = {
 		},
 		[WarlockMajorGlyph.GlyphOfSoulConsumption]: {
 			name: "Glyph of Soul Consumption",
-			description: "Your Drain Soul restores 20% of your total health after you kill a target that yields experience or honor. You restore 20% of your total health after you kill a target in Demon Form that yields experience or honor. You restore 20% of your total health after you kill a target with Chaos Bolt that yields experience or honor.",
+			description: "Your Drain Soul restores 20% of your total health after you kill a target that yields experience or honor. You restore 20% of your total health after you kill a target in Demon Form that yields experience or honor. You restore 20% of your total health after you kill a target with Chaos Bolt that yields experience or honor. ",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_warlock_soulsiphon.jpg",
 		},
 		[WarlockMajorGlyph.GlyphOfCurseOfExhaustion]: {
@@ -72,7 +72,7 @@ export const warlockGlyphsConfig: GlyphsConfig = {
 		},
 		[WarlockMajorGlyph.GlyphOfDemonHunting]: {
 			name: "Glyph of Demon Hunting",
-			description: "Requires Demonology.\u000D\u000A\u000D\u000A Teaches you the ability Dark Apotheosis.\u000D\u000A\u000D\u000A Dark Apotheosis\u000D\u000A You imbue yourself with demonic energies, reducing physical damage taken by 10.00%, reduces magic damage taken by 15%, and allows the use of various demonic abilities.\u000D\u000A\u000D\u000A In addition, Soulshatter becomes Provocation which taunts your target, Twilight Ward becomes Fury Ward which will absorb all schools of damage, Shadow Bolt becomes Demonic Slash, and Fear becomes Sleep.",
+			description: "Requires Demonology.\u000D\u000A\u000D\u000ATeaches you the ability Dark Apotheosis. \u000D\u000A\u000D\u000ADark Apotheosis\u000D\u000AYou imbue yourself with demonic energies, reducing physical damage taken by 10.00%, reduces magic damage taken by 15%, and allows the use of various demonic abilities.\u000D\u000A\u000D\u000AIn addition, Soulshatter becomes Provocation which taunts your target, Twilight Ward becomes Fury Ward which will absorb all schools of damage, Shadow Bolt becomes Demonic Slash, and Fear becomes Sleep.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_metamorphosis.jpg",
 		},
 		[WarlockMajorGlyph.GlyphOfEmberTap]: {
@@ -92,7 +92,7 @@ export const warlockGlyphsConfig: GlyphsConfig = {
 		},
 		[WarlockMajorGlyph.GlyphOfLifeTap]: {
 			name: "Glyph of Life Tap",
-			description: "Your Life Tap no longer consumes health, but instead absorbs 0 healing received. This effect stacks.\u000D\u000A\u000D\u000A The absorb lasts 30 sec.",
+			description: "Your Life Tap no longer consumes health, but instead absorbs 0 healing received. This effect stacks.\u000D\u000A\u000D\u000AThe absorb lasts 30 sec.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_burningspirit.jpg",
 		},
 		[WarlockMajorGlyph.GlyphOfEternalResolve]: {
@@ -159,7 +159,7 @@ export const warlockGlyphsConfig: GlyphsConfig = {
 		},
 		[WarlockMinorGlyph.GlyphOfEyeOfKilrogg]: {
 			name: "Glyph of Eye of Kilrogg",
-			description: "Your Eye of Kilrogg is no longer stealthed and can now place your Demonic Circle. The casting Warlock must be within line of sight of the Eye of Kilrogg to place the Demonic Circle.\u000D\u000A\u000D\u000A In addition, the movement speed of your Eye of Kilrogg is increased by 50% and allows it to fly in areas where flying mounts are enabled.",
+			description: "Your Eye of Kilrogg is no longer stealthed and can now place your Demonic Circle.  The casting Warlock must be within line of sight of the Eye of Kilrogg to place the Demonic Circle.\u000D\u000A\u000D\u000AIn addition, the movement speed of your Eye of Kilrogg is increased by 50% and allows it to fly in areas where flying mounts are enabled.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_evileye.jpg",
 		},
 		[WarlockMinorGlyph.GlyphOfSubjugateDemon]: {

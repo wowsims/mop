@@ -97,7 +97,7 @@ export const deathKnightGlyphsConfig: GlyphsConfig = {
 		},
 		[DeathKnightMajorGlyph.GlyphOfDeathCoil]: {
 			name: "Glyph of Death Coil",
-			description: "Your Death Coil spell is now usable on all allies. When cast on a non-undead ally, Death Coil shrouds them with a protective barrier that absorbs up to 1133 damage.",
+			description: "Your Death Coil spell is now usable on all allies.  When cast on a non-undead ally, Death Coil shrouds them with a protective barrier that absorbs up to 1133 damage.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_deathcoil.jpg",
 		},
 		[DeathKnightMajorGlyph.GlyphOfDarkSuccor]: {

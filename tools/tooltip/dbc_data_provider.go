@@ -336,7 +336,7 @@ func (d DBCTooltipDataProvider) GetDescriptionVariableString(spellId int64) stri
 }
 
 // GetEffectBaseValue implements TooltipDataProvider.
-func (d DBCTooltipDataProvider) GetEffectBaseValue(spellId int64, effectIdx int64) float64 {
+func (d DBCTooltipDataProvider) GetEffectBaseValue(spellId int64, effectIdx int64, upperValue bool) float64 {
 	effectEntries, ok := d.DBC.SpellEffects[int(spellId)]
 	if !ok {
 		return 0
@@ -348,6 +348,13 @@ func (d DBCTooltipDataProvider) GetEffectBaseValue(spellId int64, effectIdx int6
 	}
 
 	base := d.internalCalcEffectBaseValue(effect)
+	variance := effect.Variance
+	if upperValue {
+		base += variance / 2 * base
+	} else {
+		base -= variance / 2 * base
+	}
+
 	switch effect.EffectType {
 	case dbc.E_WEAPON_DAMAGE:
 		for idx := int(effectIdx) + 1; idx < len(effectEntries); idx++ {

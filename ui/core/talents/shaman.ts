@@ -12,7 +12,7 @@ export const shamanGlyphsConfig: GlyphsConfig = {
 		},
 		[ShamanMajorGlyph.GlyphOfChainLightning]: {
 			name: "Glyph of Chain Lightning",
-			description: "",
+			description: "Your Chain Lightning spell now strikes 2 additional targets, but deals 10% less damage.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_chainlightning.jpg",
 		},
 		[ShamanMajorGlyph.GlyphOfSpiritWalk]: {
@@ -52,7 +52,7 @@ export const shamanGlyphsConfig: GlyphsConfig = {
 		},
 		[ShamanMajorGlyph.GlyphOfHealingStreamTotem]: {
 			name: "Glyph of Healing Stream Totem",
-			description: "When your Healing Stream Totem heals an ally, it also reduces their Fire, Frost, and Nature damage taken by 10% for 0ms.",
+			description: "When your Healing Stream Totem heals an ally, it also reduces their Fire, Frost, and Nature damage taken by 10% for 6s.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_spear_04.jpg",
 		},
 		[ShamanMajorGlyph.GlyphOfHealingWave]: {
@@ -152,7 +152,7 @@ export const shamanGlyphsConfig: GlyphsConfig = {
 		},
 		[ShamanMajorGlyph.GlyphOfEternalEarth]: {
 			name: "Glyph of Eternal Earth",
-			description: "Your Lightning Bolt has a chance to add a charge to your currently active Earth Shield. This cannot cause Earth Shield to exceed 9 charges.",
+			description: "Your Lightning Bolt has a chance to add a charge to your currently active Earth Shield.  This cannot cause Earth Shield to exceed 9 charges.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_shaman_improvedearthshield.jpg",
 		},
 	},
@@ -184,7 +184,7 @@ export const shamanGlyphsConfig: GlyphsConfig = {
 		},
 		[ShamanMinorGlyph.GlyphOfTotemicEncirclement]: {
 			name: "Glyph of Totemic Encirclement",
-			description: "When you cast a totem spell, you also place unempowered totems for any elements that are not currently active. These totems have 5 health and produce no other effects.",
+			description: "When you cast a totem spell, you also place unempowered totems for any elements that are not currently active.  These totems have 5 health and produce no other effects.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_shaman_totemrelocation.jpg",
 		},
 		[ShamanMinorGlyph.GlyphOfThunderstorm]: {
@@ -224,7 +224,7 @@ export const shamanGlyphsConfig: GlyphsConfig = {
 		},
 		[ShamanMinorGlyph.GlyphOfElementalFamiliars]: {
 			name: "Glyph of Elemental Familiars",
-			description: "Summons a random Fire, Water, or Nature familiar. Familiars of different types have a tendency to fight each other.",
+			description: "Summons a random Fire, Water, or Nature familiar.  Familiars of different types have a tendency to fight each other.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_pet_pandarenelemental.jpg",
 		},
 		[ShamanMinorGlyph.GlyphOfAstralFixation]: {

@@ -87,7 +87,7 @@ export const monkGlyphsConfig: GlyphsConfig = {
 		},
 		[MonkMajorGlyph.GlyphOfLeerOfTheOx]: {
 			name: "Glyph of Leer of the Ox",
-			description: "Teaches you the spell Leer of the Ox.\u000D\u000A\u000D\u000A |CFFFFFFFFLeer of the Ox|R\u000D\u000A Your Ox Statue stirs hatred in the target, reducing their movement speed by 50% and causing them to attack your Black Ox Statue for 8s. The statue must be within 40 yards of the target.\u000D\u000A\u000D\u000A Requires Black Ox Statue to be active.",
+			description: "Teaches you the spell Leer of the Ox.\u000D\u000A\u000D\u000A|CFFFFFFFFLeer of the Ox|R\u000D\u000AYour Ox Statue stirs hatred in the target, reducing their movement speed by 50% and causing them to attack your Black Ox Statue for 8s. The statue must be within 40 yards of the target.\u000D\u000A\u000D\u000ARequires Black Ox Statue to be active.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_monk_leeroftheox.jpg",
 		},
 		[MonkMajorGlyph.GlyphOfLifeCocoon]: {
@@ -97,7 +97,7 @@ export const monkGlyphsConfig: GlyphsConfig = {
 		},
 		[MonkMajorGlyph.GlyphOfFortuitousSpheres]: {
 			name: "Glyph of Fortuitous Spheres",
-			description: "Falling below 25% health will automatically summon a healing sphere near you at no cost. This effect cannot occur more often than once every 30 seconds.",
+			description: "Falling below 25% health will automatically summon a healing sphere near you at no cost.  This effect cannot occur more often than once every 30 seconds.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_monk_healthsphere.jpg",
 		},
 		[MonkMajorGlyph.GlyphOfParalysis]: {
@@ -174,7 +174,7 @@ export const monkGlyphsConfig: GlyphsConfig = {
 		},
 		[MonkMinorGlyph.GlyphOfZenFlight]: {
 			name: "Glyph of Zen Flight",
-			description: "Teaches you the spell Zen Flight. Zen Flight requires a Flight Master\'s License in order to be cast.\u000D\u000A\u000D\u000A |CFFFFFFFFZen Flight|R\u000D\u000A You fly through the air at a quick speed on a meditative cloud.",
+			description: "Teaches you the spell Zen Flight. Zen Flight requires a Flight Master\'s License in order to be cast.\u000D\u000A\u000D\u000A|CFFFFFFFFZen Flight|R\u000D\u000AYou fly through the air at a quick speed on a meditative cloud.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_monk_zenflight.jpg",
 		},
 		[MonkMinorGlyph.GlyphOfBlackoutKick]: {

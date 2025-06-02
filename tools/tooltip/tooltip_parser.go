@@ -18,7 +18,7 @@ type TooltipDataProvider interface {
 	GetDescriptionVariableString(spellId int64) string
 	GetEffectAmplitude(spellId int64, effectIdx int64) float64
 	GetEffectScaledValue(spellId int64, effectIdx int64) float64
-	GetEffectBaseValue(spellId int64, effectIdx int64) float64 // basePoints + ?
+	GetEffectBaseValue(spellId int64, effectIdx int64, maxValue bool) float64 // basePoints + ?, // maxValue = true -> return upper value for variance
 	GetEffectChainAmplitude(spellId int64, effectidx int64) float64
 	GetEffectMaxTargets(spellId int64, effectIdx int64) int64
 	GetEffectPeriod(spellId int64, effectIdx int64) time.Duration
@@ -486,7 +486,7 @@ type ComplexValue struct {
 	Terniary           *Ternary            `parser:"|'$?'@@"`
 	ShortTernary       *ShortTernary       `parser:"|@@"`
 	ComputedValue      *ComputedValue      `parser:"|@@"`
-	Word               *string             `parser:"|@(Ident|Int|Op|Float)"`
+	Word               *string             `parser:"|@(Ident|Int|Op|Float|Space)"`
 	Punctuation        *string             `parser:"|@Punct"`
 	DescriptionRef     *DescriptionRef     `parser:"|DescLookup @@"`
 	SpellNameRef       *SpellNameRef       `parser:"|'$@spellname'@@"`
@@ -614,26 +614,22 @@ func (v VariableRef) String(ctx *TooltipContext) string {
 func (s SimpleCompute) Eval(ctx *TooltipContext) float64 {
 	switch s.Op {
 	case "/":
-		return s.Value.Eval(ctx) / float64(s.Num)
+		return math.Abs(s.Value.Eval(ctx)) / float64(s.Num)
 	case "*":
-		return s.Value.Eval(ctx) / float64(s.Num)
+		return math.Abs(s.Value.Eval(ctx)) / float64(s.Num)
 	default:
 		panic("OP not implemented")
 	}
 }
 
 func (s SimpleCompute) String(ctx *TooltipContext) string {
-	right := s.Value.Eval(ctx)
-	ctx.LastEval = right
-	if s.Op == "/" {
-		return fmt.Sprintf("%.1f", right/float64(s.Num))
-	} else {
-		return fmt.Sprintf("%.1f", right*float64(s.Num))
-	}
+	val := s.Eval(ctx)
+	ctx.LastEval = val
+	return fmt.Sprintf("%.1f", val)
 }
 
 func (s SimpleSpellValue) Eval(ctx *TooltipContext) float64 {
-	switch strings.ToLower(s.Selector.EffectColumn) {
+	switch s.Selector.EffectColumn {
 	case "e":
 		return ctx.DataProvider.GetEffectAmplitude(s.getSpellId(ctx), s.Selector.EffectIndex-1)
 	case "h":
@@ -645,12 +641,14 @@ func (s SimpleSpellValue) Eval(ctx *TooltipContext) float64 {
 		// i.E. the actual stamina buffed by a priester to display it correctly client side
 		// So for Buff Tooltip rendering we want to treat at probably the same as scaled effect value
 		fallthrough
+	case "S":
+		fallthrough
 	case "s":
 		return ctx.DataProvider.GetEffectScaledValue(s.getSpellId(ctx), s.Selector.EffectIndex-1)
 	case "M":
-		fallthrough
+		return ctx.DataProvider.GetEffectBaseValue(s.getSpellId(ctx), s.Selector.EffectIndex-1, true)
 	case "m":
-		return ctx.DataProvider.GetEffectBaseValue(s.getSpellId(ctx), s.Selector.EffectIndex-1)
+		return ctx.DataProvider.GetEffectBaseValue(s.getSpellId(ctx), s.Selector.EffectIndex-1, false)
 	case "T":
 		fallthrough
 	case "t":
@@ -803,18 +801,19 @@ func (t TooltipAST) String(ctx *TooltipContext) string {
 		return ""
 	}
 
-	for _, val := range *t.Values {
+	for idx := 0; idx < len(*t.Values); idx++ {
+		val := (*t.Values)[idx]
 		value := val.String(ctx)
 		if len(value) > 0 {
 			if len(tooltip) > 0 && !val.isPunctuation() {
-				lastChar := tooltip[len(tooltip)-1:]
+				// lastChar := tooltip[len(tooltip)-1:]
 
-				// for now do not render a space after + or -
-				// might want to change lexing behaviour in root context
-				// later on if we find unaccaptable inconsistencies
-				if lastChar != "+" && lastChar != "-" {
-					tooltip += " "
-				}
+				// // for now do not render a space after + or -
+				// // might want to change lexing behaviour in root context
+				// // later on if we find unaccaptable inconsistencies
+				// if lastChar != "+" && lastChar != "-" {
+				// 	tooltip += " "
+				// }
 
 			}
 
@@ -920,6 +919,7 @@ func getLexer() *lexer.StatefulDefinition {
 			{Name: "SpellLookup", Pattern: `\$@spellname`, Action: nil},
 			{Name: "IconLookup", Pattern: `\$@spellicon`, Action: nil},
 			lexer.Include("Shared"),
+			{Name: "Space", Pattern: `[ ]+`, Action: nil},
 			{Name: "Ident", Pattern: `[#a-zA-Z'0-9|()"&][a-zA-Z'0-9"#|()-\\_&]*`, Action: nil},
 			{Name: "Tok", Pattern: `[\[\]\{\}=?\<\>]`, Action: nil},
 			{Name: "Punct", Pattern: `[.,:\!?%;\]\r\n]`},
@@ -943,7 +943,7 @@ func getLexer() *lexer.StatefulDefinition {
 			lexer.Include("Shared"),
 		},
 		"Shared": {
-			{Name: `Whitespace`, Pattern: `[ \t]+`, Action: nil},
+			{Name: `Whitespace`, Pattern: `[\t]+`, Action: nil},
 			{Name: "MathStart", Pattern: `\$\{`, Action: lexer.Push("Math")},
 			{Name: "ShortTern", Pattern: `\$\d*[lgLG][a-zA-Z0-9 ]+:`, Action: lexer.Push("ShortTern")},
 			{Name: "Float", Pattern: `-?(\d+)?\.\d+`, Action: nil},

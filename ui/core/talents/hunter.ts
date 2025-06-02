@@ -42,7 +42,7 @@ export const hunterGlyphsConfig: GlyphsConfig = {
 		},
 		[HunterMajorGlyph.GlyphOfFreezingTrap]: {
 			name: "Glyph of Freezing Trap",
-			description: "When your Freezing Trap breaks, the victim\'s movement speed is reduced by 70% for 0ms.",
+			description: "When your Freezing Trap breaks, the victim\'s movement speed is reduced by 70% for 4s.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_frost_chainsofice.jpg",
 		},
 		[HunterMajorGlyph.GlyphOfIceTrap]: {
@@ -139,7 +139,7 @@ export const hunterGlyphsConfig: GlyphsConfig = {
 	minorGlyphs: {
 		[HunterMinorGlyph.GlyphOfAspects]: {
 			name: "Glyph of Aspects",
-			description: "Each time you activate a new Aspect, an animal companion representing that Aspect will follow you for 0ms.",
+			description: "Each time you activate a new Aspect, an animal companion representing that Aspect will follow you for 15s.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_aspectmastery.jpg",
 		},
 		[HunterMinorGlyph.GlyphOfTameBeast]: {
@@ -159,7 +159,7 @@ export const hunterGlyphsConfig: GlyphsConfig = {
 		},
 		[HunterMinorGlyph.GlyphOfFireworks]: {
 			name: "Glyph of Fireworks",
-			description: "Teaches you the ability Fireworks.\u000D\u000A\u000D\u000A Launch fireworks from your gun, bow or crossbow.",
+			description: "Teaches you the ability Fireworks.\u000D\u000A\u000D\u000ALaunch fireworks from your gun, bow or crossbow.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_misc_missilelargecluster_red.jpg",
 		},
 		[HunterMinorGlyph.GlyphOfAspectOfThePack]: {
@@ -174,12 +174,12 @@ export const hunterGlyphsConfig: GlyphsConfig = {
 		},
 		[HunterMinorGlyph.GlyphOfAspectOfTheCheetah]: {
 			name: "Glyph of Aspect of the Cheetah",
-			description: "Your Aspect of the Cheetah no longer causes you to be dazed when struck. Instead, the effect is cancelled and all your Aspects are placed on a 4 sec cooldown.",
+			description: "Your Aspect of the Cheetah no longer causes you to be dazed when struck.  Instead, the effect is cancelled and all your Aspects are placed on a 4 sec cooldown.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_mount_jungletiger.jpg",
 		},
 		[HunterMinorGlyph.GlyphOfAspectOfTheBeast]: {
 			name: "Glyph of Aspect of the Beast",
-			description: "Teaches you the ability Aspect of the Beast.\u000D\u000A\u000D\u000A The Hunter takes on the aspects of a beast, becoming untrackable. Only one Aspect can be active at a time.",
+			description: "Teaches you the ability Aspect of the Beast.\u000D\u000A\u000D\u000AThe Hunter takes on the aspects of a beast, becoming untrackable.  Only one Aspect can be active at a time.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_mount_pinktiger.jpg",
 		},
 		[HunterMinorGlyph.GlyphOfDirection]: {
@@ -194,7 +194,7 @@ export const hunterGlyphsConfig: GlyphsConfig = {
 		},
 		[HunterMinorGlyph.GlyphOfFetch]: {
 			name: "Glyph of Fetch",
-			description: "Teaches you the ability Fetch.\u000D\u000A\u000D\u000A Command your pet to retrieve the loot from a nearby corpse within 40 yards.",
+			description: "Teaches you the ability Fetch.\u000D\u000A\u000D\u000ACommand your pet to retrieve the loot from a nearby corpse within 40 yards.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_misc_bone_01.jpg",
 		},
 		[HunterMinorGlyph.GlyphOfFocusedFire]: {

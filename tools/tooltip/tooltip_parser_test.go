@@ -33,7 +33,7 @@ func Test_WhenLConditionGiven_ThenProperlyEvaluate(t *testing.T) {
 
 func Test_WhenGivenDurationShorter60_ThenRenderSeconds(t *testing.T) {
 	SimpleTooltipTest(54810,
-		"For 6s after activating Frenzied Regeneration, healing effects on you are 40% more powerful. However, your Frenzied Regeneration now always costs 50 Rage and no longer converts Rage into health.",
+		"For 6s after activating Frenzied Regeneration, healing effects on you are 40% more powerful.  However, your Frenzied Regeneration now always costs 50 Rage and no longer converts Rage into health.",
 		t,
 	)
 }
@@ -43,13 +43,29 @@ func Test_WhenGivenDurationLongerThan2Hours_ThenRnderHrs(t *testing.T) {
 }
 
 func Test_WhenWeaponDamageWithPercentDamage_ThenApplyPercentDamage(t *testing.T) {
-	SimpleTooltipTest(33876, "Mangle the target for 500% normal damage plus 390 and reduce the target's movement speed by 50% for 12s. Awards 1 combo point.", t)
+	SimpleTooltipTest(33876, "Mangle the target for 500% normal damage plus 390 and reduce the target's movement speed by 50% for 12s.  Awards 1 combo point.", t)
 }
 
-func SimpleTooltipTest(spellId int, expectedDescription string, t *testing.T) {
+func Test_When_b_ReferenceGiven_ThenProperlyRender(t *testing.T) {
+	TooltipTestWithConfig(2098,
+		"Finishing move that causes damage per combo point:\r\n   1 point  : 518-1183 damage\r\n   2 points: 703-1368 damage\r\n   3 points: 888-1553 damage\r\n   4 points: 1073-1738 damage\r\n   5 points: 1258-1923 damage",
+		CharacterConfig{AttackPower: 1000},
+		t,
+	)
+}
+
+func Test_WhenShortDivisionGiven_ThenProperlyRender(t *testing.T) {
+	SimpleTooltipTest(55688, "Reduces the cooldown of your Psychic Horror by 10.0 sec.", t)
+}
+
+func Test_WhenDurationGiven_ThenRenderProperly(t *testing.T) {
+	SimpleTooltipTest(63092, "Teaches you the ability Illusion.\u000D\u000A\u000D\u000ATransforms the Mage to look like someone else for 2m.", t)
+}
+
+func TooltipTestWithConfig(spellId int, expectedDescription string, config CharacterConfig, t *testing.T) {
 	spell := db.Spells[spellId]
 	tp, error := ParseTooltip(spell.Description,
-		NewTestDataProvider(CharacterConfig{}),
+		NewTestDataProvider(config),
 		int64(spellId),
 	)
 
@@ -60,6 +76,10 @@ func SimpleTooltipTest(spellId int, expectedDescription string, t *testing.T) {
 	if tp.String() != expectedDescription {
 		t.Errorf("Wrong tooltip!\n\tExpected: %s\n\tActual:   %s", expectedDescription, tp.String())
 	}
+}
+
+func SimpleTooltipTest(spellId int, expectedDescription string, t *testing.T) {
+	TooltipTestWithConfig(spellId, expectedDescription, CharacterConfig{}, t)
 }
 
 func NewTestDataProvider(config CharacterConfig) *TestDataProvider {
@@ -73,7 +93,8 @@ func NewTestDataProvider(config CharacterConfig) *TestDataProvider {
 
 // add here over time to overwrite fixed values for tests
 type CharacterConfig struct {
-	SpellPower float64
+	SpellPower  float64
+	AttackPower float64
 }
 
 type TestDataProvider struct {
@@ -83,4 +104,8 @@ type TestDataProvider struct {
 
 func (t TestDataProvider) GetSpellPower() float64 {
 	return t.Character.SpellPower
+}
+
+func (t TestDataProvider) GetAttackPower() float64 {
+	return t.Character.AttackPower
 }

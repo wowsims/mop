@@ -42,7 +42,7 @@ export const warriorGlyphsConfig: GlyphsConfig = {
 		},
 		[WarriorMajorGlyph.GlyphOfGagOrder]: {
 			name: "Glyph of Gag Order",
-			description: "Your Pummel and Heroic Throw also silence the target for 3s. Does not work against players.",
+			description: "Your Pummel and Heroic Throw also silence the target for 3s.  Does not work against players.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_axe_66.jpg",
 		},
 		[WarriorMajorGlyph.GlyphOfBlitz]: {
@@ -92,7 +92,7 @@ export const warriorGlyphsConfig: GlyphsConfig = {
 		},
 		[WarriorMajorGlyph.GlyphOfVictoryRush]: {
 			name: "Glyph of Victory Rush",
-			description: "Increases the total healing provided by your Victory Rush by 50%.\u000D\u000A This glyph has no effect if combined with the Impending Victory talent.",
+			description: "Increases the total healing provided by your Victory Rush by 50%.  \u000D\u000AThis glyph has no effect if combined with the Impending Victory talent.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_devastate.jpg",
 		},
 		[WarriorMajorGlyph.GlyphOfRagingWind]: {
@@ -147,7 +147,7 @@ export const warriorGlyphsConfig: GlyphsConfig = {
 		},
 		[WarriorMajorGlyph.GlyphOfImpalingThrows]: {
 			name: "Glyph of Impaling Throws",
-			description: "Heroic Throw now leaves an axe in the target, which can be retrieved by moving within 5 yards of the target to finish the cooldown of Heroic Throw. This effect will only occur when Heroic Throw is cast from more than 10 yards away from the target.",
+			description: "Heroic Throw now leaves an axe in the target, which can be retrieved by moving within 5 yards of the target to finish the cooldown of Heroic Throw.  This effect will only occur when Heroic Throw is cast from more than 10 yards away from the target.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_axe_05.jpg",
 		},
 		[WarriorMajorGlyph.GlyphOfTheExecutor]: {
@@ -224,7 +224,7 @@ export const warriorGlyphsConfig: GlyphsConfig = {
 		},
 		[WarriorMinorGlyph.GlyphOfTheWeaponmaster]: {
 			name: "Glyph of the Weaponmaster",
-			description: "Your Shout abilities cause the appearance of your weapon to change to that of a random weapon from your primary bag for 0ms.",
+			description: "Your Shout abilities cause the appearance of your weapon to change to that of a random weapon from your primary bag for 10min.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_weaponmastery.jpg",
 		},
 	},

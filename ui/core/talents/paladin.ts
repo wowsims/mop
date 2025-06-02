@@ -52,7 +52,7 @@ export const paladinGlyphsConfig: GlyphsConfig = {
 		},
 		[PaladinMajorGlyph.GlyphOfBlindingLight]: {
 			name: "Glyph of Blinding Light",
-			description: "Your Blinding Light now knocks down targets for 0ms instead of Blinding them.",
+			description: "Your Blinding Light now knocks down targets for 3s instead of Blinding them.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_paladin_blindinglight.jpg",
 		},
 		[PaladinMajorGlyph.GlyphOfFinalWrath]: {
@@ -72,7 +72,7 @@ export const paladinGlyphsConfig: GlyphsConfig = {
 		},
 		[PaladinMajorGlyph.GlyphOfHarshWords]: {
 			name: "Glyph of Harsh Words",
-			description: "Your Word of Glory can now also be used on enemy targets, causing Holy damage approximately equal to the amount it would have healed.\u000D\u000A\u000D\u000A Does not work with Eternal Flame.",
+			description: "Your Word of Glory can now also be used on enemy targets, causing Holy damage approximately equal to the amount it would have healed.\u000D\u000A\u000D\u000ADoes not work with Eternal Flame.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_helmet_96.jpg",
 		},
 		[PaladinMajorGlyph.GlyphOfDivinity]: {
@@ -87,7 +87,7 @@ export const paladinGlyphsConfig: GlyphsConfig = {
 		},
 		[PaladinMajorGlyph.GlyphOfBlessedLife]: {
 			name: "Glyph of Blessed Life",
-			description: "You have a 50% chance to gain a charge of Holy Power whenever you are affected by a Stun, Fear or Immobilize effect.\u000D\u000A\u000D\u000A This effect cannot occur more than once every 20 sec.",
+			description: "You have a 50% chance to gain a charge of Holy Power whenever you are affected by a Stun, Fear or Immobilize effect.\u000D\u000A\u000D\u000AThis effect cannot occur more than once every 20 sec.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_holy_healingaura.jpg",
 		},
 		[PaladinMajorGlyph.GlyphOfFlashOfLight]: {
@@ -162,7 +162,7 @@ export const paladinGlyphsConfig: GlyphsConfig = {
 		},
 		[PaladinMajorGlyph.GlyphOfDivineShield]: {
 			name: "Glyph of Divine Shield",
-			description: "Removing harmful effects with Divine Shield heals you for 10% for each effect removed. This heal cannot exceed 50% of your maximum health.",
+			description: "Removing harmful effects with Divine Shield heals you for 10% for each effect removed.  This heal cannot exceed 50% of your maximum health.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_holy_divineshield.jpg",
 		},
 		[PaladinMajorGlyph.GlyphOfHandOfSacrifice]: {
@@ -184,7 +184,7 @@ export const paladinGlyphsConfig: GlyphsConfig = {
 		},
 		[PaladinMinorGlyph.GlyphOfContemplation]: {
 			name: "Glyph of Contemplation",
-			description: "Teaches you the ability Contemplation.\u000D\u000A\u000D\u000A Allows you a moment of peace as you kneel in quiet contemplation to ponder the nature of the Light.",
+			description: "Teaches you the ability Contemplation.\u000D\u000A\u000D\u000AAllows you a moment of peace as you kneel in quiet contemplation to ponder the nature of the Light.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_relics_libramofhope.jpg",
 		},
 		[PaladinMinorGlyph.GlyphOfWingedVengeance]: {

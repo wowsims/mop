@@ -7,7 +7,7 @@ export const druidGlyphsConfig: GlyphsConfig = {
 	majorGlyphs: {
 		[DruidMajorGlyph.GlyphOfFrenziedRegeneration]: {
 			name: "Glyph of Frenzied Regeneration",
-			description: "For 6s after activating Frenzied Regeneration, healing effects on you are 40% more powerful. However, your Frenzied Regeneration now always costs 50 Rage and no longer converts Rage into health.",
+			description: "For 6s after activating Frenzied Regeneration, healing effects on you are 40% more powerful.  However, your Frenzied Regeneration now always costs 50 Rage and no longer converts Rage into health.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_bullrush.jpg",
 		},
 		[DruidMajorGlyph.GlyphOfMaul]: {
@@ -67,7 +67,7 @@ export const druidGlyphsConfig: GlyphsConfig = {
 		},
 		[DruidMajorGlyph.GlyphOfEfflorescence]: {
 			name: "Glyph of Efflorescence",
-			description: "The Efflorescence effect is now caused by your Wild Mushroom instead of by Swiftmend, and lasts as long as the Wild Mushroom is active. Additionally, increases the healing done by Swiftmend by 20%.",
+			description: "The Efflorescence effect is now caused by your Wild Mushroom instead of by Swiftmend, and lasts as long as the Wild Mushroom is active.  Additionally, increases  the healing done by Swiftmend by 20%.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_nature_healingtouch.jpg",
 		},
 		[DruidMajorGlyph.GlyphOfGuidedStars]: {
@@ -169,7 +169,7 @@ export const druidGlyphsConfig: GlyphsConfig = {
 	minorGlyphs: {
 		[DruidMinorGlyph.GlyphOfTheStag]: {
 			name: "Glyph of the Stag",
-			description: "Your Travel Form can now be used as a mount by party members. This glyph is disabled while Glyph of the Cheetah is active.",
+			description: "Your Travel Form can now be used as a mount by party members.  This glyph is disabled while Glyph of the Cheetah is active.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/trade_archaeology_antleredcloakclasp.jpg",
 		},
 		[DruidMinorGlyph.GlyphOfTheOrca]: {
@@ -194,7 +194,7 @@ export const druidGlyphsConfig: GlyphsConfig = {
 		},
 		[DruidMinorGlyph.GlyphOfCharmWoodlandCreature]: {
 			name: "Glyph of Charm Woodland Creature",
-			description: "Teaches you the ability Charm Woodland Creature.\u000D\u000A\u000D\u000A Allows the Druid to befriend an ambient creature, which will follow the Druid for 0ms.",
+			description: "Teaches you the ability Charm Woodland Creature.\u000D\u000A\u000D\u000AAllows the Druid to befriend an ambient creature, which will follow the Druid for 1hr.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/inv_misc_rabbit.jpg",
 		},
 		[DruidMinorGlyph.GlyphOfStars]: {
@@ -209,12 +209,12 @@ export const druidGlyphsConfig: GlyphsConfig = {
 		},
 		[DruidMinorGlyph.GlyphOfTheTreant]: {
 			name: "Glyph of the Treant",
-			description: "Teaches you the ability Treant Form.\u000D\u000A\u000D\u000A Shapeshift into Treant Form.",
+			description: "Teaches you the ability Treant Form.\u000D\u000A\u000D\u000AShapeshift into Treant Form.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_druid_treeoflife.jpg",
 		},
 		[DruidMinorGlyph.GlyphOfTheCheetah]: {
 			name: "Glyph of the Cheetah",
-			description: "Your Travel Form appears as a Cheetah. This glyph will prevent Glyph of the Stag from functioning.",
+			description: "Your Travel Form appears as a Cheetah.  This glyph will prevent Glyph of the Stag from functioning.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_catlikereflexes.jpg",
 		},
 		[DruidMinorGlyph.GlyphOfFocus]: {
