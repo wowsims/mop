@@ -33,6 +33,7 @@ import {
 	Profession,
 	PseudoStat,
 	Race,
+	RangedWeaponType,
 	ReforgeStat,
 	Spec,
 	Stat,
@@ -334,7 +335,7 @@ export class Player<SpecType extends Spec> {
 		}
 		this.hiddenMCDs = specConfig.hiddenMCDs || new Array<number>();
 
-		for (let i = 0; i < ItemSlot.ItemSlotRanged + 1; ++i) {
+		for (let i = 0; i < ItemSlot.ItemSlotOffHand + 1; ++i) {
 			this.itemEPCache[i] = new Map();
 		}
 
@@ -401,7 +402,7 @@ export class Player<SpecType extends Spec> {
 	}
 
 	canEnableTargetDummies(): boolean {
-		const healingSpellClasses: Class[] = [Class.ClassDruid, Class.ClassPaladin, Class.ClassPriest, Class.ClassShaman];
+		const healingSpellClasses: Class[] = [Class.ClassDruid, Class.ClassPaladin, Class.ClassPriest, Class.ClassShaman, Class.ClassMonk];
 		return healingSpellClasses.includes(this.getClass());
 	}
 
@@ -518,7 +519,7 @@ export class Player<SpecType extends Spec> {
 		this.enchantEPCache = new Map();
 		this.randomSuffixEPCache = new Map();
 		this.upgradeEPCache = new Map();
-		for (let i = 0; i < ItemSlot.ItemSlotRanged + 1; ++i) {
+		for (let i = 0; i < ItemSlot.ItemSlotOffHand + 1; ++i) {
 			this.itemEPCache[i] = new Map();
 		}
 	}
@@ -566,6 +567,7 @@ export class Player<SpecType extends Spec> {
 			// By default only value DPS EP
 			defaultRatios[0] = 1;
 		}
+
 		return defaultRatios;
 	}
 
@@ -1371,9 +1373,14 @@ export class Player<SpecType extends Spec> {
 			});
 		} else if (Player.WEAPON_SLOTS.includes(slot)) {
 			itemData = filterItems(itemData, item => {
-				if (!filters.weaponTypes.includes(item.weaponType)) {
+				if (item.handType == HandType.HandTypeUnknown && item.rangedWeaponType == RangedWeaponType.RangedWeaponTypeUnknown) {
 					return false;
 				}
+
+				if (!filters.weaponTypes.includes(item.weaponType) && item.handType > HandType.HandTypeUnknown) {
+					return false;
+				}
+
 				if (!filters.oneHandedWeapons && item.handType != HandType.HandTypeTwoHand) {
 					return false;
 				}
@@ -1381,25 +1388,18 @@ export class Player<SpecType extends Spec> {
 					return false;
 				}
 
-				const minSpeed = slot == ItemSlot.ItemSlotMainHand ? filters.minMhWeaponSpeed : filters.minOhWeaponSpeed;
-				const maxSpeed = slot == ItemSlot.ItemSlotMainHand ? filters.maxMhWeaponSpeed : filters.maxOhWeaponSpeed;
-				if (minSpeed > 0 && item.weaponSpeed < minSpeed) {
-					return false;
-				}
-				if (maxSpeed > 0 && item.weaponSpeed > maxSpeed) {
+				// Ranged weapons are equiped in MH slot from MoP onwards
+				if (!filters.rangedWeaponTypes.includes(item.rangedWeaponType) && item.rangedWeaponType > RangedWeaponType.RangedWeaponTypeUnknown) {
 					return false;
 				}
 
-				return true;
-			});
-		} else if (slot == ItemSlot.ItemSlotRanged) {
-			itemData = filterItems(itemData, item => {
-				if (!filters.rangedWeaponTypes.includes(item.rangedWeaponType)) {
-					return false;
+				let minSpeed = slot == ItemSlot.ItemSlotMainHand ? filters.minMhWeaponSpeed : filters.minOhWeaponSpeed;
+				let maxSpeed = slot == ItemSlot.ItemSlotMainHand ? filters.maxMhWeaponSpeed : filters.maxOhWeaponSpeed;
+				if (item.rangedWeaponType > 0) {
+					minSpeed = filters.minRangedWeaponSpeed;
+					maxSpeed = filters.maxRangedWeaponSpeed;
 				}
 
-				const minSpeed = filters.minRangedWeaponSpeed;
-				const maxSpeed = filters.maxRangedWeaponSpeed;
 				if (minSpeed > 0 && item.weaponSpeed < minSpeed) {
 					return false;
 				}
@@ -1410,6 +1410,7 @@ export class Player<SpecType extends Spec> {
 				return true;
 			});
 		}
+
 		return itemData;
 	}
 

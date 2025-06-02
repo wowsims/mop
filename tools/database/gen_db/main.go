@@ -40,7 +40,13 @@ func main() {
 	inputsDir := fmt.Sprintf("%s/db_inputs", *outDir)
 
 	if *genAsset == "atlasloot" {
-		db := database.ReadAtlasLootData()
+		helper, err := database.NewDBHelper()
+		if err != nil {
+			log.Fatalf("failed to initialize database: %v", err)
+		}
+		defer helper.Close()
+
+		db := database.ReadAtlasLootData(helper)
 		db.WriteJson(fmt.Sprintf("%s/atlasloot_db.json", inputsDir))
 		return
 	} else if *genAsset == "reforge-stats" {
@@ -136,14 +142,13 @@ func main() {
 
 	db := database.NewWowDatabase()
 	db.Encounters = core.PresetEncounters
-	db.GlyphIDs = getGlyphIDsFromJson(fmt.Sprintf("%s/glyph_id_map.json", inputsDir))
 	db.ReforgeStats = reforgeStats.ToProto()
 
 	iconsMap, _ := database.LoadArtTexturePaths("./tools/DB2ToSqlite/listfile.csv")
 	var instance = dbc.GetDBC()
 	instance.LoadSpellScaling()
 
-	database.GenerateProtos(instance)
+	database.GenerateProtos(instance, db)
 
 	for _, item := range instance.Items {
 		parsed := item.ToUIItem()
@@ -198,7 +203,7 @@ func main() {
 			db.AddItemIcon(enchant.ItemId, enchant.Icon, enchant.Name)
 		}
 		if enchant.SpellId != 0 {
-			db.AddSpellIcon(enchant.ItemId, enchant.Icon, enchant.Name)
+			db.AddSpellIcon(enchant.SpellId, enchant.Icon, enchant.Name)
 		}
 	}
 
@@ -444,6 +449,11 @@ func ApplyGlobalFilters(db *database.WowDatabase) {
 	})
 
 	db.Enchants = core.FilterMap(db.Enchants, func(_ database.EnchantDBKey, enchant *proto.UIEnchant) bool {
+		// MoP no longer has head enchants, so filter them.
+		if enchant.Type == proto.ItemType_ItemTypeHead {
+			return false
+		}
+
 		for _, pattern := range database.DenyListNameRegexes {
 			if pattern.MatchString(enchant.Name) {
 				return false

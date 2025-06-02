@@ -33,13 +33,8 @@ const (
 	AttackPower
 	RangedAttackPower
 	SpellPower
-	SpellPenetration
-	ResilienceRating
-	ArcaneResistance
-	FireResistance
-	FrostResistance
-	NatureResistance
-	ShadowResistance
+	PvpResilienceRating
+	PvpPowerRating
 	Armor
 	BonusArmor
 	Health
@@ -140,20 +135,10 @@ func (s Stat) StatName() string {
 		return "RangedAttackPower"
 	case SpellPower:
 		return "SpellPower"
-	case SpellPenetration:
-		return "SpellPenetration"
-	case ResilienceRating:
-		return "ResilienceRating"
-	case ArcaneResistance:
-		return "ArcaneResistance"
-	case FireResistance:
-		return "FireResistance"
-	case FrostResistance:
-		return "FrostResistance"
-	case NatureResistance:
-		return "NatureResistance"
-	case ShadowResistance:
-		return "ShadowResistance"
+	case PvpResilienceRating:
+		return "PvpResilienceRating"
+	case PvpPowerRating:
+		return "PvpPowerRating"
 	case Armor:
 		return "Armor"
 	case BonusArmor:
@@ -407,7 +392,6 @@ type PseudoStats struct {
 
 	DisableDWMissPenalty bool    // Used by Heroic Strike and Cleave
 	IncreasedMissChance  float64 // Insect Swarm and Scorpid Sting
-	DodgeReduction       float64 // Used by Warrior talent 'Weapon Mastery' and SWP boss auras.
 
 	ThreatMultiplier float64 // Modulates the threat generated. Affected by things like salv.
 
@@ -437,7 +421,7 @@ type PseudoStats struct {
 	// probabilities (between 0 and 1).
 	BaseDodgeChance float64
 	BaseParryChance float64
-	//BaseMiss is not needed, this is always 5%
+	BaseBlockChance float64
 
 	ReducedCritTakenChance float64 // Reduces chance to be crit.
 

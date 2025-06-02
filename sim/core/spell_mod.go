@@ -259,7 +259,7 @@ const (
 	// Uses TimeValue
 	SpellMod_Cooldown_Flat
 
-	// Increases or decreases spell.CD.Multiplier by flat amount
+	// Will multiply the spell CD multiplier. -5% = 0.95
 	// Uses FloatValue
 	SpellMod_Cooldown_Multiplier
 
@@ -321,6 +321,10 @@ const (
 	// User-defined implementation
 	// Uses: ApplyCustom | RemoveCustom
 	SpellMod_Custom
+
+	// Used to modify the amount of charges a spell has
+	// Uses: IntValue
+	SpellMod_ModCharges_Flat
 )
 
 var spellModMap = map[SpellModType]*SpellModFunctions{
@@ -432,6 +436,11 @@ var spellModMap = map[SpellModType]*SpellModFunctions{
 	SpellMod_Custom: {
 		// Doesn't have dedicated Apply/Remove functions as ApplyCustom/RemoveCustom is handled in buildMod()
 	},
+
+	SpellMod_ModCharges_Flat: {
+		Apply:  applyModChargesFlat,
+		Remove: removeModChargesFlat,
+	},
 }
 
 func applyDamageDonePercent(mod *SpellMod, spell *Spell) {
@@ -503,11 +512,11 @@ func removeCooldownFlat(mod *SpellMod, spell *Spell) {
 }
 
 func applyCooldownMultiplier(mod *SpellMod, spell *Spell) {
-	spell.CdMultiplier += mod.floatValue
+	spell.CdMultiplier *= mod.floatValue
 }
 
 func removeCooldownMultiplier(mod *SpellMod, spell *Spell) {
-	spell.CdMultiplier -= mod.floatValue
+	spell.CdMultiplier /= mod.floatValue
 }
 
 func applyCritMultiplierFlat(mod *SpellMod, spell *Spell) {
@@ -676,4 +685,34 @@ func applyBuffDurationFlat(mod *SpellMod, spell *Spell) {
 
 func removeBuffDurationFlat(mod *SpellMod, spell *Spell) {
 	spell.RelatedSelfBuff.Duration -= mod.timeValue
+}
+
+func applyModChargesFlat(mod *SpellMod, spell *Spell) {
+	spell.MaxCharges += int(mod.GetIntValue())
+	if spell.MaxCharges < 0 {
+		panic("Reducing the charges below 0 is not supported. Something seems wrong.")
+	}
+
+	if mod.GetIntValue() > 0 {
+		spell.charges += int(mod.GetIntValue())
+	}
+
+	if spell.charges > spell.MaxCharges {
+		spell.charges = spell.MaxCharges
+	}
+}
+
+func removeModChargesFlat(mod *SpellMod, spell *Spell) {
+	spell.MaxCharges -= int(mod.GetIntValue())
+	if spell.MaxCharges < 0 {
+		panic("Reducing the charges below 0 is not supported. Something seems wrong.")
+	}
+
+	if mod.GetIntValue() < 0 {
+		spell.charges -= int(mod.GetIntValue())
+	}
+
+	if spell.charges > spell.MaxCharges {
+		spell.charges = spell.MaxCharges
+	}
 }

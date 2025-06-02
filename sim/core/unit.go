@@ -11,7 +11,7 @@ import (
 type UnitType int
 type SpellRegisteredHandler func(spell *Spell)
 type OnMasteryStatChanged func(sim *Simulation, oldMasteryRating float64, newMasteryRating float64)
-type OnCastSpeedChanged func(oldSpeed float64, newSpeed float64)
+type OnSpeedChanged func(oldSpeed float64, newSpeed float64)
 type OnTemporaryStatsChange func(sim *Simulation, buffAura *Aura, statsChangeWithoutDeps stats.Stats)
 
 const (
@@ -30,7 +30,7 @@ const (
 	FocusBar
 )
 
-type DynamicDamageTakenModifier func(sim *Simulation, spell *Spell, result *SpellResult)
+type DynamicDamageTakenModifier func(sim *Simulation, spell *Spell, result *SpellResult, isPeriodic bool)
 
 type GetSpellpowerValue func(spell *Spell) float64
 
@@ -146,6 +146,7 @@ type Unit struct {
 	AttackTables                []*AttackTable
 	DynamicDamageTakenModifiers []DynamicDamageTakenModifier
 	Blockhandler                func(sim *Simulation, spell *Spell, result *SpellResult)
+	avoidanceParams             DiminishingReturnsConstants
 
 	GCD *Timer
 
@@ -165,7 +166,9 @@ type Unit struct {
 	manaTickWhileCombat    float64
 	manaTickWhileNotCombat float64
 
-	CastSpeed float64
+	CastSpeed         float64
+	meleeAttackSpeed  float64
+	rangedAttackSpeed float64
 
 	CurrentTarget   *Unit
 	defaultTarget   *Unit
@@ -181,7 +184,13 @@ type Unit struct {
 	OnMasteryStatChanged []OnMasteryStatChanged
 
 	// Used for reacting to cast speed changes if a spec needs it (e.g. for cds reduced by haste)
-	OnCastSpeedChanged []OnCastSpeedChanged
+	OnCastSpeedChanged []OnSpeedChanged
+
+	// Used for reacting to melee attack speed changes if a spec needs it (e.g. for cds reduced by haste)
+	OnMeleeAttackSpeedChanged []OnSpeedChanged
+
+	// Used for reacting to ranged attack speed changes if a spec needs it (e.g. for cds reduced by haste)
+	OnRangedAttackSpeedChanged []OnSpeedChanged
 
 	// Used for reacting to transient stat changes if a spec needs if (e.g. for caching snapshotting calculations)
 	OnTemporaryStatsChanges []OnTemporaryStatsChange
@@ -270,11 +279,18 @@ func (unit *Unit) AddOnMasteryStatChanged(omsc OnMasteryStatChanged) {
 	unit.OnMasteryStatChanged = append(unit.OnMasteryStatChanged, omsc)
 }
 
-func (unit *Unit) AddOnCastSpeedChanged(ocsc OnCastSpeedChanged) {
+func (unit *Unit) AddOnCastSpeedChanged(ocsc OnSpeedChanged) {
 	if unit.Env != nil && unit.Env.IsFinalized() {
 		panic("Already finalized, cannot add on casting speed changed callback!")
 	}
 	unit.OnCastSpeedChanged = append(unit.OnCastSpeedChanged, ocsc)
+}
+
+func (unit *Unit) AddOnMeleeAttackSpeedChanged(ocsc OnSpeedChanged) {
+	if unit.Env != nil && unit.Env.IsFinalized() {
+		panic("Already finalized, cannot add on melee attack speed changed callback!")
+	}
+	unit.OnMeleeAttackSpeedChanged = append(unit.OnMeleeAttackSpeedChanged, ocsc)
 }
 
 func (unit *Unit) AddOnTemporaryStatsChange(otsc OnTemporaryStatsChange) {
@@ -321,6 +337,7 @@ func (unit *Unit) processDynamicBonus(sim *Simulation, bonus stats.Stats) {
 		}
 	}
 	if bonus[stats.HasteRating] != 0 {
+		unit.updateAttackSpeed()
 		unit.AutoAttacks.UpdateSwingTimers(sim)
 		unit.runicPowerBar.updateRegenTimes(sim)
 		unit.energyBar.processDynamicHasteRatingChange(sim)
@@ -360,6 +377,21 @@ func (unit *Unit) DisableDynamicStatDep(sim *Simulation, dep *stats.StatDependen
 
 		if sim.Log != nil {
 			unit.Log(sim, "Dynamic dep disabled (%s): %s", dep.String(), unit.stats.Subtract(oldStats).FlatString())
+		}
+	}
+}
+
+func (unit *Unit) UpdateDynamicStatDep(sim *Simulation, dep *stats.StatDependency, newAmount float64) {
+	dep.UpdateValue(newAmount)
+
+	if unit.Env.IsFinalized() {
+		oldStats := unit.stats
+		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps)
+		statsChange := unit.stats.Subtract(oldStats)
+		unit.processDynamicBonus(sim, statsChange)
+
+		if sim.Log != nil {
+			unit.Log(sim, "Dynamic dep updated (%s): %s", dep.String(), statsChange.FlatString())
 		}
 	}
 }
@@ -454,9 +486,20 @@ func (unit *Unit) RangedSwingSpeed() float64 {
 	return unit.PseudoStats.RangedSpeedMultiplier * (1 + (unit.stats[stats.HasteRating] / (HasteRatingPerHastePercent * 100)))
 }
 
+func (unit *Unit) updateMeleeAttackSpeed() {
+	oldMeleeAttackSpeed := unit.meleeAttackSpeed
+	unit.meleeAttackSpeed = unit.SwingSpeed()
+
+	for i := range unit.OnMeleeAttackSpeedChanged {
+		unit.OnMeleeAttackSpeedChanged[i](oldMeleeAttackSpeed, unit.meleeAttackSpeed)
+	}
+}
+
 // MultiplyMeleeSpeed will alter the attack speed multiplier and change swing speed of all autoattack swings in progress.
 func (unit *Unit) MultiplyMeleeSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.MeleeSpeedMultiplier *= amount
+
+	unit.updateMeleeAttackSpeed()
 
 	for _, pet := range unit.DynamicMeleeSpeedPets {
 		pet.dynamicMeleeSpeedInheritance(amount)
@@ -464,15 +507,43 @@ func (unit *Unit) MultiplyMeleeSpeed(sim *Simulation, amount float64) {
 	unit.AutoAttacks.UpdateSwingTimers(sim)
 }
 
+func (unit *Unit) updateRangedAttackSpeed() {
+	oldRangedAttackSpeed := unit.rangedAttackSpeed
+	unit.rangedAttackSpeed = unit.RangedSwingSpeed()
+
+	for i := range unit.OnRangedAttackSpeedChanged {
+		unit.OnRangedAttackSpeedChanged[i](oldRangedAttackSpeed, unit.rangedAttackSpeed)
+	}
+}
+
 func (unit *Unit) MultiplyRangedSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.RangedSpeedMultiplier *= amount
+	unit.updateRangedAttackSpeed()
 	unit.AutoAttacks.UpdateSwingTimers(sim)
+}
+
+func (unit *Unit) updateAttackSpeed() {
+	oldMeleeAttackSpeed := unit.meleeAttackSpeed
+	oldRangedAttackSpeed := unit.rangedAttackSpeed
+
+	unit.meleeAttackSpeed = unit.SwingSpeed()
+	unit.rangedAttackSpeed = unit.RangedSwingSpeed()
+
+	for i := range unit.OnMeleeAttackSpeedChanged {
+		unit.OnMeleeAttackSpeedChanged[i](oldMeleeAttackSpeed, unit.meleeAttackSpeed)
+	}
+
+	for i := range unit.OnRangedAttackSpeedChanged {
+		unit.OnRangedAttackSpeedChanged[i](oldRangedAttackSpeed, unit.rangedAttackSpeed)
+	}
 }
 
 // Helper for when both MultiplyMeleeSpeed and MultiplyRangedSpeed are needed.
 func (unit *Unit) MultiplyAttackSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.MeleeSpeedMultiplier *= amount
 	unit.PseudoStats.RangedSpeedMultiplier *= amount
+
+	unit.updateAttackSpeed()
 
 	for _, pet := range unit.DynamicMeleeSpeedPets {
 		pet.dynamicMeleeSpeedInheritance(amount)
@@ -519,6 +590,7 @@ func (unit *Unit) GetCurrentPowerBar() PowerBarType {
 func (unit *Unit) addUniversalStatDependencies() {
 	unit.AddStatDependency(stats.HitRating, stats.PhysicalHitPercent, 1/PhysicalHitRatingPerHitPercent)
 	unit.AddStatDependency(stats.HitRating, stats.SpellHitPercent, 1/SpellHitRatingPerHitPercent)
+	unit.AddStatDependency(stats.ExpertiseRating, stats.SpellHitPercent, 1/SpellHitRatingPerHitPercent)
 	unit.AddStatDependency(stats.CritRating, stats.PhysicalCritPercent, 1/CritRatingPerCritPercent)
 	unit.AddStatDependency(stats.CritRating, stats.SpellCritPercent, 1/CritRatingPerCritPercent)
 }
@@ -540,6 +612,7 @@ func (unit *Unit) finalize() {
 	unit.defaultTarget = unit.CurrentTarget
 	unit.applyParryHaste()
 	unit.updateCastSpeed()
+	unit.updateAttackSpeed()
 	unit.initMovement()
 
 	// All stats added up to this point are part of the 'initial' stats.
@@ -699,14 +772,14 @@ func (unit *Unit) GetTotalParryChanceAsDefender(atkTable *AttackTable) float64 {
 
 func (unit *Unit) GetTotalChanceToBeMissedAsDefender(atkTable *AttackTable) float64 {
 	chance := atkTable.BaseMissChance +
-		unit.GetDiminishedMissChance() +
 		unit.PseudoStats.ReducedPhysicalHitTakenChance
 	return math.Max(chance, 0.0)
 }
 
 func (unit *Unit) GetTotalBlockChanceAsDefender(atkTable *AttackTable) float64 {
-	chance := atkTable.BaseBlockChance +
-		unit.GetStat(stats.BlockPercent)/100
+	chance := unit.PseudoStats.BaseBlockChance +
+		atkTable.BaseBlockChance +
+		unit.GetDiminishedBlockChance()
 	return math.Max(chance, 0.0)
 }
 

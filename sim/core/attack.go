@@ -47,19 +47,6 @@ func newWeaponFromUnarmed(critMultiplier float64) Weapon {
 	}
 }
 
-func getWeaponMinRange(item *Item) float64 {
-	switch item.RangedWeaponType {
-	case proto.RangedWeaponType_RangedWeaponTypeThrown:
-	case proto.RangedWeaponType_RangedWeaponTypeUnknown:
-	case proto.RangedWeaponType_RangedWeaponTypeWand:
-		return 0.
-	default:
-		return 5
-	}
-
-	return 0
-}
-
 func getWeaponMaxRange(item *Item) float64 {
 	switch item.RangedWeaponType {
 	case proto.RangedWeaponType_RangedWeaponTypeUnknown:
@@ -91,7 +78,7 @@ func newWeaponFromItem(item *Item, critMultiplier float64, bonusDps float64) Wea
 		NormalizedSwingSpeed: normalizedWeaponSpeed,
 		CritMultiplier:       critMultiplier,
 		AttackPowerPerDPS:    DefaultAttackPowerPerDPS,
-		MinRange:             getWeaponMinRange(item),
+		MinRange:             0, // no more deadzone in MoP
 		MaxRange:             getWeaponMaxRange(item),
 	}
 }
@@ -116,7 +103,8 @@ func (character *Character) WeaponFromOffHand(critMultiplier float64) Weapon {
 
 // Returns weapon stats using the ranged equipped weapon.
 func (character *Character) WeaponFromRanged(critMultiplier float64) Weapon {
-	if weapon := character.GetRangedWeapon(); weapon != nil {
+	weapon := character.Ranged()
+	if weapon != nil {
 		return newWeaponFromItem(weapon, critMultiplier, character.PseudoStats.BonusRangedDps)
 	} else {
 		return Weapon{}
@@ -736,6 +724,19 @@ func (aa *AutoAttacks) UpdateSwingTimers(sim *Simulation) {
 	}
 }
 
+// Desyncss the offhand swing
+func (aa *AutoAttacks) DesyncOffHand(sim *Simulation, readyAt time.Duration) {
+	if !aa.AutoSwingMelee { // if not auto swinging, don't auto restart.
+		return
+	}
+
+	if aa.IsDualWielding {
+		aa.oh.swingAt = readyAt + aa.oh.curSwingDuration
+		aa.oh.swingAt += aa.oh.curSwingDuration / 2
+		sim.rescheduleWeaponAttack(aa.oh.swingAt)
+	}
+}
+
 // StopMeleeUntil should be used whenever a non-melee spell is cast. It stops melee, then restarts it
 // at end of cast, but with a reset swing timer (as if swings had just landed).
 func (aa *AutoAttacks) StopMeleeUntil(sim *Simulation, readyAt time.Duration, desyncOH bool) {
@@ -747,14 +748,10 @@ func (aa *AutoAttacks) StopMeleeUntil(sim *Simulation, readyAt time.Duration, de
 	sim.rescheduleWeaponAttack(aa.mh.swingAt)
 
 	if aa.IsDualWielding {
-		aa.oh.swingAt = readyAt + aa.oh.curSwingDuration
-		if desyncOH {
-			// Used by warrior to desync offhand after unglyphed Shattering Throw.
-			aa.oh.swingAt += aa.oh.curSwingDuration / 2
-		}
-		sim.rescheduleWeaponAttack(aa.oh.swingAt)
+		aa.DesyncOffHand(sim, readyAt)
 	}
 }
+
 func (aa *AutoAttacks) StopRangedUntil(sim *Simulation, readyAt time.Duration) {
 	if !aa.AutoSwingRanged { // if not auto swinging, don't auto restart.
 		return

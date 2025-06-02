@@ -33,9 +33,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 		Stat.StatBonusArmor,
 		Stat.StatDodgeRating,
 		Stat.StatParryRating,
-		Stat.StatNatureResistance,
-		Stat.StatShadowResistance,
-		Stat.StatFrostResistance,
 		Stat.StatMasteryRating,
 	],
 	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps],
@@ -131,7 +128,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 		ItemSlot.ItemSlotTrinket2,
 		ItemSlot.ItemSlotMainHand,
 		ItemSlot.ItemSlotOffHand,
-		ItemSlot.ItemSlotRanged,
 	],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.

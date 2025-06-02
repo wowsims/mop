@@ -80,6 +80,7 @@ import {
 	MistweaverMonk,
 	MistweaverMonk_Options,
 	MistweaverMonk_Rotation,
+	MonkOptions,
 	MonkTalents,
 	WindwalkerMonk,
 	WindwalkerMonk_Options,
@@ -240,6 +241,8 @@ export type ClassSpecs<T extends Class> = T extends Class.ClassDeathKnight
 	? HunterSpecs
 	: T extends Class.ClassMage
 	? MageSpecs
+	: T extends Class.ClassMonk
+	? MonkSpecs
 	: T extends Class.ClassPaladin
 	? PaladinSpecs
 	: T extends Class.ClassPriest
@@ -266,6 +269,9 @@ export type SpecClasses<T extends Spec> = T extends DeathKnightSpecs
 	: // Mage
 	T extends MageSpecs
 	? Class.ClassMage
+	: // Monk
+	T extends MonkSpecs
+	? Class.ClassMonk
 	: // Paladin
 	T extends PaladinSpecs
 	? Class.ClassPaladin
@@ -284,9 +290,6 @@ export type SpecClasses<T extends Spec> = T extends DeathKnightSpecs
 	: // Warrior
 	T extends WarriorSpecs
 	? Class.ClassWarrior
-	: // Monk
-	T extends MonkSpecs
-	? Class.ClassMonk
 	: // Should never reach this case
 	  Class.ClassUnknown;
 
@@ -386,6 +389,9 @@ export type SpecTalents<T extends Spec> =
 		: // Mage
 		T extends MageSpecs
 		? MageTalents
+		: // Monk
+		T extends MonkSpecs
+		? MonkTalents
 		: // Paladin
 		T extends PaladinSpecs
 		? PaladinTalents
@@ -420,6 +426,9 @@ export type ClassOptions<T extends Spec> =
 		: // Mage
 		T extends MageSpecs
 		? MageOptions
+		: // Monk
+		T extends MonkSpecs
+		? MonkOptions
 		: // Paladin
 		T extends PaladinSpecs
 		? PaladinOptions
@@ -1862,7 +1871,7 @@ const itemTypeToSlotsMap: Partial<Record<ItemType, Array<ItemSlot>>> = {
 	[ItemType.ItemTypeFeet]: [ItemSlot.ItemSlotFeet],
 	[ItemType.ItemTypeFinger]: [ItemSlot.ItemSlotFinger1, ItemSlot.ItemSlotFinger2],
 	[ItemType.ItemTypeTrinket]: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
-	[ItemType.ItemTypeRanged]: [ItemSlot.ItemSlotRanged],
+	[ItemType.ItemTypeRanged]: [ItemSlot.ItemSlotMainHand],
 };
 
 export function getEligibleItemSlots(item: Item, isFuryWarrior?: boolean): Array<ItemSlot> {
@@ -1953,13 +1962,17 @@ export function enchantAppliesToItem(enchant: Enchant, item: Item): boolean {
 	)
 		return false;
 
-	if (sharedSlots.includes(ItemSlot.ItemSlotRanged)) {
+	if (enchant.type == ItemType.ItemTypeRanged) {
 		if (
 			![RangedWeaponType.RangedWeaponTypeBow, RangedWeaponType.RangedWeaponTypeCrossbow, RangedWeaponType.RangedWeaponTypeGun].includes(
 				item.rangedWeaponType,
 			)
 		)
 			return false;
+	}
+
+	if (item.rangedWeaponType > 0 && enchant.type != ItemType.ItemTypeRanged) {
+		return false;
 	}
 
 	return true;

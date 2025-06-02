@@ -148,6 +148,9 @@ func init() {
 					Timer:    sharedTimer,
 				},
 			},
+			ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+				return character.HasManaBar()
+			},
 			ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 				for _, aoeTarget := range sim.Encounter.TargetUnits {
 					spell.CalcAndDealDamage(sim, aoeTarget, storedMana, spell.OutcomeMagicHitAndCrit)
@@ -276,7 +279,7 @@ func init() {
 			},
 		})
 
-		character.AddDynamicDamageTakenModifier(func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+		character.AddDynamicDamageTakenModifier(func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult, isPeriodic bool) {
 			if absorbAura.IsActive() && result.Damage > 0 && totalAbsorbed < maxShieldStrength {
 				remainingAbsorb := maxShieldStrength - totalAbsorbed
 				absorbedDamage := min(result.Damage*0.2, remainingAbsorb)
@@ -476,6 +479,9 @@ func init() {
 						Timer:    character.NewTimer(),
 						Duration: time.Minute * 2,
 					},
+				},
+				ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+					return character.HasManaBar()
 				},
 				ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 					procAura.Deactivate(sim)

@@ -28,7 +28,6 @@ export const rangedWeaponTypeNames: Map<RangedWeaponType, string> = new Map([
 	[RangedWeaponType.RangedWeaponTypeBow, 'Bow'],
 	[RangedWeaponType.RangedWeaponTypeCrossbow, 'Crossbow'],
 	[RangedWeaponType.RangedWeaponTypeGun, 'Gun'],
-	[RangedWeaponType.RangedWeaponTypeRelic, 'Relic'],
 	[RangedWeaponType.RangedWeaponTypeThrown, 'Thrown'],
 	[RangedWeaponType.RangedWeaponTypeWand, 'Wand'],
 ]);
@@ -193,7 +192,6 @@ export const slotNames: Map<ItemSlot, string> = new Map([
 	[ItemSlot.ItemSlotTrinket2, 'Trinket 2'],
 	[ItemSlot.ItemSlotMainHand, 'Main Hand'],
 	[ItemSlot.ItemSlotOffHand, 'Off Hand'],
-	[ItemSlot.ItemSlotRanged, 'Ranged'],
 ]);
 
 export const resourceNames: Map<ResourceType, string> = new Map([
@@ -334,7 +332,7 @@ export const masterySpellNames: Map<Spec, string> = new Map([
 	[Spec.SpecUnholyDeathKnight, 'Dreadblade'],
 	[Spec.SpecBalanceDruid, 'Total Eclipse'],
 	[Spec.SpecFeralDruid, 'Razor Claws'],
-	[Spec.SpecGuardianDruid, 'Savage Defender'],
+	[Spec.SpecGuardianDruid, "Nature's Guardian"],
 	[Spec.SpecRestorationDruid, 'Harmony'],
 	[Spec.SpecHolyPaladin, 'Illuminated Healing'],
 	[Spec.SpecProtectionPaladin, 'Divine Bulwark'],
