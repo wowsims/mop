@@ -6,7 +6,7 @@ import (
 	"github.com/wowsims/mop/sim/core"
 )
 
-func (warrior *Warrior) RegisterRevengeSpell() {
+func (warrior *Warrior) registerRevengeSpell() {
 	actionID := core.ActionID{SpellID: 6572}
 
 	revengeReadyAura := warrior.RegisterAura(core.Aura{
@@ -33,7 +33,7 @@ func (warrior *Warrior) RegisterRevengeSpell() {
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
-		ClassSpellMask: SpellMaskRevenge | SpellMaskSpecialAttack,
+		ClassSpellMask: SpellMaskRevenge,
 		MaxRange:       core.MaxMeleeRange,
 
 		RageCost: core.RageCostOptions{

@@ -1166,7 +1166,7 @@ func init() {
 			actionID := core.ActionID{SpellID: []int32{109828, 108022, 109831}[version]}
 			label := fmt.Sprintf("Drain Life Trigger %s", labelSuffix)
 			hpModifier := []float64{0.013, 0.015, 0.017}[version]
-			meleeWeaponSlots := core.MeleeWeaponSlots()
+			meleeWeaponSlots := core.AllWeaponSlots()
 
 			var damageDealt float64
 			drainLifeHeal := character.RegisterSpell(core.SpellConfig{
@@ -1492,7 +1492,7 @@ type IgniteConfig struct {
 	SpellSchool        core.SpellSchool
 	NumberOfTicks      int32
 	TickLength         time.Duration
-	SetBonusAura       *core.Aura
+	ParentAura         *core.Aura
 }
 
 func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
@@ -1615,8 +1615,8 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 		}
 	}
 
-	if config.SetBonusAura != nil {
-		config.SetBonusAura.AttachProcTrigger(procTrigger)
+	if config.ParentAura != nil {
+		config.ParentAura.AttachProcTrigger(procTrigger)
 	} else {
 		core.MakeProcTriggerAura(unit, procTrigger)
 	}

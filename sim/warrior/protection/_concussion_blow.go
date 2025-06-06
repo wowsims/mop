@@ -7,7 +7,7 @@ import (
 	"github.com/wowsims/mop/sim/warrior"
 )
 
-func (war *ProtectionWarrior) RegisterConcussionBlow() {
+func (war *ProtectionWarrior) registerConcussionBlow() {
 	if !war.Talents.ConcussionBlow {
 		return
 	}
@@ -17,7 +17,7 @@ func (war *ProtectionWarrior) RegisterConcussionBlow() {
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
-		ClassSpellMask: warrior.SpellMaskConcussionBlow | warrior.SpellMaskSpecialAttack,
+		ClassSpellMask: warrior.SpellMaskConcussionBlow,
 		MaxRange:       core.MaxMeleeRange,
 
 		RageCost: core.RageCostOptions{

@@ -9,7 +9,7 @@ import (
 	"github.com/wowsims/mop/sim/warrior"
 )
 
-func (war *FuryWarrior) RegisterDeathWish() {
+func (war *FuryWarrior) registerDeathWish() {
 	hasGlyph := war.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfDeathWish)
 	var bonusSnapshot float64
 	dwAura := war.RegisterAura(core.Aura{
@@ -18,7 +18,7 @@ func (war *FuryWarrior) RegisterDeathWish() {
 		Tag:      warrior.EnrageTag,
 		Duration: 30 * time.Second,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			bonusSnapshot = 1.0 + (0.2 * war.EnrageEffectMultiplier)
+			bonusSnapshot = 1.0 + (0.2 * war.EnrageMasteryMultiplier)
 
 			war.PseudoStats.SchoolDamageDealtMultiplier[stats.SchoolIndexPhysical] *= bonusSnapshot
 			if !hasGlyph {

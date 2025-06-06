@@ -7,7 +7,7 @@ import (
 	"github.com/wowsims/mop/sim/warrior"
 )
 
-func (war *FuryWarrior) RegisterRagingBlow() {
+func (war *FuryWarrior) registerRagingBlow() {
 
 	ragingBlowActionID := core.ActionID{SpellID: 85288}
 
@@ -15,7 +15,7 @@ func (war *FuryWarrior) RegisterRagingBlow() {
 		ActionID:       ragingBlowActionID.WithTag(2),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeOHSpecial,
-		ClassSpellMask: warrior.SpellMaskRagingBlow | warrior.SpellMaskSpecialAttack,
+		ClassSpellMask: warrior.SpellMaskRagingBlow,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete,
 
 		DamageMultiplier: 1.0,
@@ -24,7 +24,7 @@ func (war *FuryWarrior) RegisterRagingBlow() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			ohBaseDamage := spell.Unit.OHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 
-			spell.CalcAndDealDamage(sim, target, ohBaseDamage*war.EnrageEffectMultiplier, spell.OutcomeMeleeSpecialBlockAndCrit)
+			spell.CalcAndDealDamage(sim, target, ohBaseDamage*war.EnrageMasteryMultiplier, spell.OutcomeMeleeSpecialBlockAndCrit)
 		},
 	})
 
@@ -33,7 +33,7 @@ func (war *FuryWarrior) RegisterRagingBlow() {
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
-		ClassSpellMask: warrior.SpellMaskRagingBlow | warrior.SpellMaskSpecialAttack,
+		ClassSpellMask: warrior.SpellMaskRagingBlow,
 		MaxRange:       core.MaxMeleeRange,
 
 		RageCost: core.RageCostOptions{
@@ -70,7 +70,7 @@ func (war *FuryWarrior) RegisterRagingBlow() {
 
 			// 1 hit roll then 2 damage events
 			mhBaseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-			spell.CalcAndDealDamage(sim, target, mhBaseDamage*war.EnrageEffectMultiplier, spell.OutcomeMeleeSpecialBlockAndCrit)
+			spell.CalcAndDealDamage(sim, target, mhBaseDamage*war.EnrageMasteryMultiplier, spell.OutcomeMeleeSpecialBlockAndCrit)
 
 			ohRagingBlow.Cast(sim, result.Target)
 		},
