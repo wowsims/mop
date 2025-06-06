@@ -1,9 +1,8 @@
 package mistweaver
 
 import (
-	"time"
-
 	"fmt"
+	"time"
 
 	"github.com/wowsims/mop/sim/core"
 )
@@ -12,15 +11,34 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 	actionID := core.ActionID{SpellID: 115151}
 	chiMetrics := mw.NewChiMetrics(actionID)
 	spellCoeff := 0.19665 //Will have to verify this
-	targets := mw.Env.Raid.GetFirstNPlayersOrPets(int32(mw.Env.Raid.NumTargetDummies))
-	maxStacks := 3
+	//targets := mw.Env.Raid.GetFirstNPlayersOrPets(int32(mw.Env.Raid.NumTargetDummies))
+	charges := 3
 
+	mistHandler := func(sim *core.Simulation, hot *core.Spell) bool {
+		success := false
+		for _, player := range sim.Raid.AllUnits {
+			hot := hot.Hot(player)
+
+			if !hot.IsActive() {
+
+				hot.Apply(sim)
+				hot.TakeSnapshot(sim, false)
+				success = true
+				break
+			}
+		}
+		return success
+	}
+
+	//var renewingMistSpread *core.Spell
 	var renewingMist *core.Spell
-	renewingMist = mw.RegisterSpell(core.SpellConfig{
+	fmt.Print(renewingMist)
+
+	mw.renewingMist = mw.RegisterSpell(core.SpellConfig{
 		ActionID:    actionID,
 		SpellSchool: core.SpellSchoolNature,
 		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
+		Flags:       core.SpellFlagHelpful,
 		//ClassSpellMask: monk.MonkSpellRenewingMist,
 
 		ManaCost: core.ManaCostOptions{BaseCostPercent: 5.85},
@@ -39,8 +57,7 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 
 		Hot: core.DotConfig{
 			Aura: core.Aura{
-				Label:     "Renewing Mist",
-				MaxStacks: 3,
+				Label: "Renewing Mist",
 			},
 			NumberOfTicks:        9,
 			TickLength:           2 * time.Second,
@@ -55,19 +72,12 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 				dot.CalcAndDealPeriodicSnapshotHealing(sim, target, dot.OutcomeTick)
 				//Has to jump to two more targets after initial cast
 
-				if maxStacks > 1 {
+				if charges > 1 {
+					fmt.Print("Checking\n")
+					success := mistHandler(sim, dot.Spell)
 
-					for _, element := range targets {
-						hot := renewingMist.Hot(element)
-
-						if !hot.IsActive() {
-							fmt.Print("Here")
-
-							hot.Apply(sim)
-							//renewingMist.Cast(sim, target)
-							maxStacks = maxStacks - 1
-							break
-						}
+					if success {
+						charges = charges - 1
 					}
 
 				}
@@ -75,14 +85,13 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			fmt.Print("Renew\n")
+			success := mistHandler(sim, spell)
 
-			for _, element := range targets {
-				hot := spell.Hot(element)
-
-				if !hot.IsActive() {
-					hot.Apply(sim)
-					break
-				}
+			if success {
+				charges = 3
+				chiGain := int32(1) //core.TernaryInt32(monk.StanceMatches(FierceTiger), 2, 1)
+				mw.AddChi(sim, spell, chiGain, chiMetrics)
 			}
 
 			//hot := spell.Hot(target)
@@ -90,12 +99,8 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 			//if !hot.IsActive() { //Error?
 			//	hot.Apply(sim)
 			//}
-			chiGain := int32(1) //core.TernaryInt32(monk.StanceMatches(FierceTiger), 2, 1)
-			mw.AddChi(sim, spell, chiGain, chiMetrics)
 
 		},
 	})
-
-	mw.RegisterSpell(core.SpellConfig{})
 
 }

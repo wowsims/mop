@@ -50,6 +50,9 @@ func NewMistweaverMonk(character *core.Character, options *proto.Player) *Mistwe
 
 type MistweaverMonk struct {
 	*monk.Monk
+
+	renewingMist    *core.Spell
+	enevelopingMist *core.Spell
 }
 
 func (mw *MistweaverMonk) GetMonk() *monk.Monk {
@@ -74,6 +77,8 @@ func (mw *MistweaverMonk) RegisterSpecializationEffects() {
 	mw.RegisterMastery()
 	mw.registerRenewingMist()
 	mw.registerSurgingMist()
+	mw.registerSoothingMist()
+	mw.registerEnvelopingMist()
 }
 
 func (mw *MistweaverMonk) RegisterMastery() {

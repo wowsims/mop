@@ -328,6 +328,9 @@ const (
 
 	//Mistweaver
 	MonkSpellRenewingMist
+	MonkSpellSoothingMist
+	MonkSpellSurgingMist
+	MonkSpellEnvelopingMist
 
 	MonkSpellLast
 	MonkSpellsAll = MonkSpellLast<<1 - 1

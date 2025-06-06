@@ -559,7 +559,7 @@ func (spell *Spell) CanCast(sim *Simulation, target *Unit) bool {
 	}
 
 	// While casting or channeling, no other action is possible
-	if spell.Unit.Hardcast.Expires > sim.CurrentTime {
+	if (spell.Unit.Hardcast.Expires > sim.CurrentTime) && !spell.Flags.Matches(SpellFlagCastWhileChanneling) {
 		//if sim.Log != nil {
 		//	sim.Log("Cant cast because already casting/channeling")
 		//}
