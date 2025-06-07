@@ -187,6 +187,9 @@ var ItemOverrides = []*proto.UIItem{
 var ItemAllowList = map[int32]struct{}{
 	2140: {},
 	2505: {},
+
+	12590: {}, // Felstriker
+
 	//Shaman Dungeon Set 3 Tidefury
 	27510: {}, // Tidefury Gauntlets
 	27802: {}, // Tidefury Shoulderguards
@@ -195,6 +198,8 @@ var ItemAllowList = map[int32]struct{}{
 	28349: {}, // Tidefury Helm
 
 	29309: {}, // Band of the Eternal Restorer
+
+	29996: {}, // Rod of the Sun King
 
 	31026: {}, // Slayer's Handguards
 	31027: {}, // Slayer's Helm

@@ -17,7 +17,7 @@ func init() {
 	core.NewItemEffect(76888, core.ApplyMetaGemCriticalDamageEffect)
 
 	// Austere Primal Diamond
-	core.NewItemEffect(76895, func (agent core.Agent) {
+	core.NewItemEffect(76895, func(agent core.Agent) {
 		character := agent.GetCharacter()
 		character.ApplyEquipScaling(stats.Armor, 1.02)
 	})
