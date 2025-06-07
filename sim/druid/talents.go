@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/stats"
 )
 
 func (druid *Druid) ApplyTalents() {
@@ -12,6 +13,63 @@ func (druid *Druid) ApplyTalents() {
 	druid.registerCenarionWard()
 
 	druid.registerForceOfNature()
+
+	druid.registerHeartOfTheWild()
+	druid.registerNaturesVigil()
+}
+
+func (druid *Druid) registerHeartOfTheWild() {
+	if !druid.Talents.HeartOfTheWild {
+		return
+	}
+
+	// Apply 6% increase to Stamina, Agility, and Intellect
+	statMultiplier := 1.06
+	druid.MultiplyStat(stats.Stamina, statMultiplier)
+	druid.MultiplyStat(stats.Agility, statMultiplier)
+	druid.MultiplyStat(stats.Intellect, statMultiplier)
+
+	// The activation spec specific effects are not implemented - most likely irrelevant for the sim unless proven otherwise
+}
+
+func (druid *Druid) registerNaturesVigil() {
+	if !druid.Talents.NaturesVigil {
+		return
+	}
+
+	actionID := core.ActionID{SpellID: 124974}
+
+	naturesVigilAura := druid.RegisterAura(core.Aura{
+		Label:    "Nature's Vigil",
+		ActionID: actionID,
+		Duration: time.Second * 30,
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			druid.PseudoStats.DamageDealtMultiplier *= 1.12
+		},
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			druid.PseudoStats.DamageDealtMultiplier /= 1.12
+		},
+	})
+
+	druid.RegisterSpell(Humanoid|Moonkin|Cat|Bear, core.SpellConfig{
+		ActionID: actionID,
+		Flags:    core.SpellFlagAPL,
+
+		Cast: core.CastConfig{
+			DefaultCast: core.Cast{
+				GCD: 0,
+			},
+			IgnoreHaste: true,
+			CD: core.Cooldown{
+				Timer:    druid.NewTimer(),
+				Duration: time.Second * 90,
+			},
+		},
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			naturesVigilAura.Activate(sim)
+		},
+	})
 }
 
 func (druid *Druid) registerYserasGift() {
@@ -29,7 +87,7 @@ func (druid *Druid) registerYserasGift() {
 		CritMultiplier:   druid.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			spell.CalcAndDealHealing(sim, target, 0.05 * spell.Unit.MaxHealth(), spell.OutcomeHealing) 
+			spell.CalcAndDealHealing(sim, target, 0.05*spell.Unit.MaxHealth(), spell.OutcomeHealing)
 		},
 	})
 
@@ -66,7 +124,7 @@ func (druid *Druid) registerRenewal() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			spell.CalcAndDealHealing(sim, spell.Unit, 0.3 * spell.Unit.MaxHealth(), spell.OutcomeHealing)
+			spell.CalcAndDealHealing(sim, spell.Unit, 0.3*spell.Unit.MaxHealth(), spell.OutcomeHealing)
 		},
 	})
 
@@ -105,7 +163,7 @@ func (druid *Druid) registerCenarionWard() {
 			TickLength:    time.Second * 2,
 
 			OnSnapshot: func(_ *core.Simulation, _ *core.Unit, dot *core.Dot, _ bool) {
-				dot.SnapshotBaseDamage = baseTickDamage + spSnapshot * 1.04
+				dot.SnapshotBaseDamage = baseTickDamage + spSnapshot*1.04
 				dot.SnapshotAttackerMultiplier = dot.Spell.CasterHealingMultiplier()
 				dot.SnapshotCritChance = dot.Spell.HealingCritChance()
 			},
