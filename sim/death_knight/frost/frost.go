@@ -14,7 +14,7 @@ func RegisterFrostDeathKnight() {
 		func(character *core.Character, options *proto.Player) core.Agent {
 			return NewFrostDeathKnight(character, options)
 		},
-		func(player *proto.Player, spec interface{}) {
+		func(player *proto.Player, spec any) {
 			playerSpec, ok := spec.(*proto.Player_FrostDeathKnight)
 			if !ok {
 				panic("Invalid spec value for Frost Death Knight!")
@@ -34,9 +34,7 @@ func NewFrostDeathKnight(character *core.Character, player *proto.Player) *Frost
 	fdk := &FrostDeathKnight{
 		DeathKnight: death_knight.NewDeathKnight(character, death_knight.DeathKnightInputs{
 			StartingRunicPower: frostOptions.ClassOptions.StartingRunicPower,
-			PetUptime:          frostOptions.ClassOptions.PetUptime,
 			IsDps:              true,
-			UseAMS:             false,
 		}, player.TalentsString, 0),
 	}
 
@@ -55,6 +53,9 @@ func (fdk *FrostDeathKnight) Initialize() {
 	fdk.DeathKnight.Initialize()
 
 	// fdk.registerFrostStrikeSpell()
+	// fdk.registerHowlingBlastSpell()
+	// fdk.registerObliterateSpell()
+	// fdk.registerPillarOfFrostSpell()
 }
 
 func (fdk *FrostDeathKnight) ApplyTalents() {

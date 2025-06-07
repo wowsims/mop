@@ -16,7 +16,7 @@ func RegisterBloodDeathKnight() {
 		func(character *core.Character, options *proto.Player) core.Agent {
 			return NewBloodDeathKnight(character, options)
 		},
-		func(player *proto.Player, spec interface{}) {
+		func(player *proto.Player, spec any) {
 			playerSpec, ok := spec.(*proto.Player_BloodDeathKnight)
 			if !ok {
 				panic("Invalid spec value for Blood Death Knight!")
@@ -41,6 +41,13 @@ func NewBloodDeathKnight(character *core.Character, options *proto.Player) *Bloo
 		}, options.TalentsString, 50034),
 	}
 
+	// bdk.RuneWeapon = bdk.NewRuneWeapon()
+
+	bdk.Bloodworm = make([]*death_knight.BloodwormPet, 5)
+	for i := range 5 {
+		bdk.Bloodworm[i] = bdk.NewBloodwormPet(i)
+	}
+
 	return bdk
 }
 
@@ -51,7 +58,13 @@ func (bdk *BloodDeathKnight) GetDeathKnight() *death_knight.DeathKnight {
 func (bdk *BloodDeathKnight) Initialize() {
 	bdk.DeathKnight.Initialize()
 
+	bdk.registerBloodParasite()
+	// bdk.registerBoneShieldSpell()
+	// bdk.registerDancingRuneWeaponSpell()
 	// bdk.registerHeartStrikeSpell()
+	// bdk.registerRuneStrikeSpell()
+	// bdk.registerRuneTapSpell()
+	// bdk.registerVampiricBloodSpell()
 
 	// TODO: Fix this to work with the new talent system.
 	// if bdk.Talents.DancingRuneWeapon {
