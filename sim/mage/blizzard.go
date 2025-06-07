@@ -7,43 +7,26 @@ import (
 )
 
 func (mage *Mage) registerBlizzardSpell() {
-	var iceShardsProcApplication *core.Spell
-	if mage.Talents.IceShards > 0 {
-		auras := mage.NewEnemyAuraArray(func(unit *core.Unit) *core.Aura {
-			return unit.GetOrRegisterAura(core.Aura{
-				ActionID: core.ActionID{SpellID: 12488},
-				Label:    "Ice Shards",
-				Duration: time.Millisecond * 1500,
-			})
-		})
-		iceShardsProcApplication = mage.RegisterSpell(core.SpellConfig{
-			ActionID:       core.ActionID{SpellID: 12488},
-			ProcMask:       core.ProcMaskSpellProc,
-			Flags:          core.SpellFlagNoLogs,
-			ClassSpellMask: MageSpellChill,
-			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				auras.Get(target).Activate(sim)
-			},
-		})
-	}
 
+	// https://wago.tools/db2/SpellEffect?build=5.5.0.60802&filter%5BSpellID%5D=42208
+	var blizzardCoefficient = 0.367
+	var blizzardScaling = 0.323
+	var blizzardVariance = 0.0
 	blizzardTickSpell := mage.RegisterSpell(core.SpellConfig{
-		ActionID:       core.ActionID{SpellID: 42208},
-		SpellSchool:    core.SpellSchoolFrost,
-		ProcMask:       core.SpellFlagAoE | core.ProcMaskSpellDamage,
-		ClassSpellMask: MageSpellBlizzard,
-
+		ActionID:         core.ActionID{SpellID: 42208},
+		SpellSchool:      core.SpellSchoolFrost,
+		ProcMask:         core.ProcMaskSpellDamage,
+		ClassSpellMask:   MageSpellBlizzard,
+		Flags:            core.SpellFlagAoE,
 		DamageMultiplier: 1,
 		CritMultiplier:   mage.DefaultCritMultiplier(),
-		BonusCoefficient: 0.162,
+		BonusCoefficient: blizzardCoefficient,
 		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			damage := 0.542 * mage.ClassSpellScaling
+			baseDamage := mage.CalcAndRollDamageRange(sim, blizzardScaling, blizzardVariance)
+			baseDamage *= sim.Encounter.AOECapMultiplier()
 			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, aoeTarget, damage, spell.OutcomeMagicHitAndCrit)
-				if iceShardsProcApplication != nil {
-					iceShardsProcApplication.Cast(sim, aoeTarget)
-				}
+				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
 			}
 		},
 	})
@@ -55,7 +38,7 @@ func (mage *Mage) registerBlizzardSpell() {
 		Flags:          core.SpellFlagChanneled | core.SpellFlagAPL,
 		ClassSpellMask: MageSpellBlizzard,
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: 74,
+			BaseCostPercent: 5,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
