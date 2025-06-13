@@ -1,9 +1,6 @@
 package guardian
 
 import (
-	"time"
-
-	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/stats"
 	"github.com/wowsims/mop/sim/druid"
 )
@@ -43,9 +40,4 @@ func (bear *GuardianDruid) registerTreants() {
 	for idx := range bear.Treants {
 		bear.Treants[idx] = bear.newTreant()
 	}
-}
-
-func (treant *GuardianTreant) Enable(sim *core.Simulation) {
-	treant.DefaultTreantImpl.Enable(sim)
-	treant.ExtendGCDUntil(sim, sim.CurrentTime + time.Second * 15)
 }
