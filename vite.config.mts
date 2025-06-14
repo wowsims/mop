@@ -96,7 +96,10 @@ function copyLocales() {
 	return {
 		name: 'copy-locales',
 		buildStart() {
-			const locales = ['en.json', 'fr.json'];
+			const locales = [
+				'en.json',
+				'fr.json'
+			];
 			const srcDir = path.resolve(__dirname, 'assets/locales');
 			const destDir = path.resolve(__dirname, 'dist/mop/assets/locales');
 			if (!fs.existsSync(destDir)) {

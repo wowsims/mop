@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 
 import en from '../../assets/locales/en.json';
+import fr from '../../assets/locales/fr.json';
 import { getLang } from './locale_service';
 
 // eslint-disable-next-line import/no-named-as-default-member
@@ -15,6 +16,9 @@ i18n.init({
     en: {
       translation: en
     },
+    fr: {
+      translation: fr
+    }
   }
 });
 
