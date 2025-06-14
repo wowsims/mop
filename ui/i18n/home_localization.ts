@@ -3,12 +3,12 @@ import { getLang, setLang, supportedLanguages } from './locale_service';
 
 // Function to translate class names
 function translateClass(className: string): string {
-  return i18n.t(`classes.${className.toLowerCase().replace(/ /g, '_')}`);
+  return i18n.t(`common.classes.${className.toLowerCase().replace(/ /g, '_')}`);
 }
 
 // Function to translate spec names
 function translateSpec(className: string, specName: string): string {
-  return i18n.t(`specs.${className.toLowerCase()}.${specName.toLowerCase().replace(/ /g, '_')}`);
+  return i18n.t(`common.specs.${className.toLowerCase()}.${specName.toLowerCase().replace(/ /g, '_')}`);
 }
 
 // Function to extract class and spec names from a link
