@@ -1,105 +1,124 @@
 {
-  "welcome": "Welcome to WoWSims - Mists of Pandaria",
-  "description": "A powerful simulation tool for World of Warcraft: Mists of Pandaria",
-  "navigation": {
-    "home": "Home",
-    "simulations": "Simulations",
-    "about": "About",
-    "toggle": "Toggle navigation"
-  },
-  "simulations": {
-    "full_raid": "Full Raid Sim"
-  },
-  "home": {
-    "title": "WoWSims - Mists of Pandaria",
-    "description": "A powerful simulation tool for World of Warcraft: Mists of Pandaria",
-    "startSimulation": "Start Simulation",
-    "browseSimulations": "Browse Simulations",
-    "documentation": "Documentation",
-    "github": "GitHub",
-    "welcomeDescription": "Welcome to WoWSims - Mists of Pandaria! This is a community-driven project to provide class and raid simulations for World of Warcraft® Mists of Pandaria Classic together with the leading theorycrafters and class representatives."
-  },
-  "header": {
-    "wowsims": "WoWSims",
-    "expansion": "Mists of Pandaria",
-    "supportDevs": "Support our devs"
-  },
-  "classes": {
-    "death_knight": "Death Knight",
-    "druid": "Druid",
-    "hunter": "Hunter",
-    "mage": "Mage",
-    "monk": "Monk",
-    "paladin": "Paladin",
-    "priest": "Priest",
-    "rogue": "Rogue",
-    "shaman": "Shaman",
-    "warlock": "Warlock",
-    "warrior": "Warrior"
-  },
-  "specs": {
-    "death_knight": {
-      "blood": "Blood",
-      "frost": "Frost",
-      "unholy": "Unholy"
-    },
-    "druid": {
-      "balance": "Balance",
-      "feral": "Feral",
-      "guardian": "Guardian",
-      "restoration": "Restoration"
-    },
-    "hunter": {
-      "beast_mastery": "Beast Mastery",
-      "marksmanship": "Marksmanship",
-      "survival": "Survival"
-    },
-    "mage": {
-      "arcane": "Arcane",
-      "fire": "Fire",
-      "frost": "Frost"
-    },
-    "monk": {
-      "brewmaster": "Brewmaster",
-      "mistweaver": "Mistweaver",
-      "windwalker": "Windwalker"
-    },
-    "paladin": {
-      "holy": "Holy",
-      "protection": "Protection",
-      "retribution": "Retribution"
-    },
-    "priest": {
-      "discipline": "Discipline",
-      "holy": "Holy",
-      "shadow": "Shadow"
-    },
-    "rogue": {
-      "assassination": "Assassination",
-      "combat": "Combat",
-      "subtlety": "Subtlety"
-    },
-    "shaman": {
-      "elemental": "Elemental",
-      "enhancement": "Enhancement",
-      "restoration": "Restoration"
-    },
-    "warlock": {
-      "affliction": "Affliction",
-      "demonology": "Demonology",
-      "destruction": "Destruction"
-    },
-    "warrior": {
-      "arms": "Arms",
-      "fury": "Fury",
-      "protection": "Protection"
-    }
-  },
-  "status": {
-    "launched": "Launched",
-    "not_supported": "Not Supported",
-    "alpha": "Alpha",
-    "beta": "Beta",
-    "not_yet_supported": "Not Yet Supported"
-  }
+	"landing": {
+		"navigation": {
+			"home": "Home",
+			"simulations": "Simulations",
+			"about": "About",
+			"toggle": "Toggle navigation"
+		},
+		"simulations": {
+			"full_raid": "Full Raid Sim"
+		},
+		"home": {
+			"title": "WoWSims - Mists of Pandaria",
+			"description": "A powerful simulation tool for World of Warcraft: Mists of Pandaria",
+			"welcomeDescription": "Welcome to WoWSims - Mists of Pandaria! This is a community-driven project to provide class and raid simulations for World of Warcraft® Mists of Pandaria Classic together with the leading theorycrafters and class representatives."
+		},
+		"header": {
+			"wowsims": "WoWSims",
+			"expansion": "Mists of Pandaria",
+			"supportDevs": "Support our devs"
+		},
+		"status": {
+			"launched": "Launched",
+			"not_supported": "Not Supported",
+			"alpha": "Alpha",
+			"beta": "Beta",
+			"not_yet_supported": "Not Yet Supported"
+		}
+	},
+	"common": {
+		"classes": {
+			"death_knight": "Death Knight",
+			"druid": "Druid",
+			"hunter": "Hunter",
+			"mage": "Mage",
+			"monk": "Monk",
+			"paladin": "Paladin",
+			"priest": "Priest",
+			"rogue": "Rogue",
+			"shaman": "Shaman",
+			"warlock": "Warlock",
+			"warrior": "Warrior"
+		},
+		"specs": {
+			"death_knight": {
+				"blood": "Blood",
+				"frost": "Frost",
+				"unholy": "Unholy"
+			},
+			"druid": {
+				"balance": "Balance",
+				"feral": "Feral",
+				"guardian": "Guardian",
+				"restoration": "Restoration"
+			},
+			"hunter": {
+				"beast_mastery": "Beast Mastery",
+				"marksmanship": "Marksmanship",
+				"survival": "Survival"
+			},
+			"mage": {
+				"arcane": "Arcane",
+				"fire": "Fire",
+				"frost": "Frost"
+			},
+			"monk": {
+				"brewmaster": "Brewmaster",
+				"mistweaver": "Mistweaver",
+				"windwalker": "Windwalker"
+			},
+			"paladin": {
+				"holy": "Holy",
+				"protection": "Protection",
+				"retribution": "Retribution"
+			},
+			"priest": {
+				"discipline": "Discipline",
+				"holy": "Holy",
+				"shadow": "Shadow"
+			},
+			"rogue": {
+				"assassination": "Assassination",
+				"combat": "Combat",
+				"subtlety": "Subtlety"
+			},
+			"shaman": {
+				"elemental": "Elemental",
+				"enhancement": "Enhancement",
+				"restoration": "Restoration"
+			},
+			"warlock": {
+				"affliction": "Affliction",
+				"demonology": "Demonology",
+				"destruction": "Destruction"
+			},
+			"warrior": {
+				"arms": "Arms",
+				"fury": "Fury",
+				"protection": "Protection"
+			}
+		}
+	},
+	"gear": {
+		"title": "Gear"
+	},
+	"settings": {
+		"title": "Settings"
+	},
+	"talents": {
+		"title": "Talents"
+	},
+	"rotation": {
+		"title": "Rotation"
+	},
+	"results": {
+		"title": "Results"
+	},
+	"import": {
+		"title": "Import"
+	},
+	"export": {
+		"title": "Export"
+	}
 }
