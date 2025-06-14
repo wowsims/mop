@@ -1,4 +1,4 @@
-import { getWowheadLanguagePrefix } from '../constants/lang';
+import { getLang } from '../../i18n/locale_service';
 import { CHARACTER_LEVEL, MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
 import { ActionID as ActionIdProto, ItemLevelState, ItemRandomSuffix, OtherAction, ReforgeStat } from '../proto/common';
 import { ResourceType } from '../proto/spell';
@@ -8,6 +8,11 @@ import { Database } from './database';
 
 // If true uses wotlkdb.com, else uses wowhead.com.
 export const USE_WOTLK_DB = false;
+
+export function getWowheadLanguagePrefix(): string {
+	const lang = getLang();
+	return lang === 'en' ? '' : `${lang}/`;
+}
 
 type ActionIdOptions = {
 	itemId?: number;
