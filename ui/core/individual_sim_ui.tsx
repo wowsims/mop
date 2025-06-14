@@ -471,7 +471,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 
 	private addDetailedResultsTab() {
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
-		this.addTab('Results', 'detailed-results-tab', detailedResults);
+
 
 		new EmbeddedDetailedResults(detailedResults, this, this.raidSimResultsManager!);
 	}
