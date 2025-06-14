@@ -42,12 +42,9 @@ type Mage struct {
 	IciclesAura        *core.Aura
 
 	arcaneMissileCritSnapshot float64
-	baseHotStreakProcChance   float64
+	ClassSpellScaling         float64
 
-	combustionDotEstimate int32
-
-	ClassSpellScaling float64
-	Icicles           []float64
+	Icicles []float64
 
 	// Item sets
 	T12_4pc *core.Aura
@@ -96,23 +93,16 @@ func (mage *Mage) registerPassives() {
 func (mage *Mage) registerSpells() {
 	mage.registerArmorSpells()
 
-	// mage.registerArcaneBlastSpell()
 	// mage.registerArcaneExplosionSpell()
 	mage.registerBlizzardSpell()
 	mage.registerConeOfColdSpell()
 	mage.registerDeepFreezeSpell()
-	mage.registerFireballSpell()
-	mage.registerFireBlastSpell()
 	mage.registerFlamestrikeSpell()
 	mage.registerIceLanceSpell()
-	mage.registerScorchSpell()
 	mage.registerFrostfireBoltSpell()
 	mage.registerEvocation()
 	// mage.registerManaGemsCD()
 	mage.registerMirrorImageCD()
-	// mage.registerCombustionSpell()
-	// mage.registerBlastWaveSpell()
-	mage.registerDragonsBreathSpell()
 	mage.registerfrostNovaSpell()
 	mage.registerIceLanceSpell()
 	mage.registerIcyVeinsCD()
@@ -172,6 +162,7 @@ const (
 	MageSpellFireBlast
 	MageSpellFireball
 	MageSpellFlamestrike
+	MageSpellFlamestrikeDot
 	MageSpellFlameOrb
 	MageSpellFocusMagic
 	MageSpellFreeze
@@ -189,6 +180,7 @@ const (
 	MageSpellIceLance
 	MageSpellIcyVeins
 	MageSpellIgnite
+	MageSpellInfernoBlast
 	MageSpellLivingBombExplosion
 	MageSpellLivingBombDot
 	MageSpellMageArmor
@@ -209,7 +201,7 @@ const (
 	MageSpellsAll        = MageSpellLast<<1 - 1
 	MageSpellLivingBomb  = MageSpellLivingBombDot | MageSpellLivingBombExplosion
 	MageSpellFireMastery = MageSpellLivingBombDot | MageSpellPyroblastDot | MageSpellCombustion // Ignite done manually in spell due to unique mechanic
-	MageSpellFire        = MageSpellBlastWave | MageSpellCombustionApplication | MageSpellDragonsBreath | MageSpellFireball |
+	MageSpellFire        = MageSpellCombustionApplication | MageSpellDragonsBreath | MageSpellFireball |
 		MageSpellFireBlast | MageSpellFlamestrike | MageSpellFrostfireBolt | MageSpellIgnite |
 		MageSpellLivingBomb | MageSpellPyroblast | MageSpellScorch
 	MageSpellChill        = MageSpellFrostbolt | MageSpellFrostfireBolt
