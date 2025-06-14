@@ -200,13 +200,6 @@ func applyBuffEffects(agent Agent, raidBuffs *proto.RaidBuffs, _ *proto.PartyBuf
 		if raidBuffs.Bloodlust {
 			registerBloodlustCD(agent, 2825)
 		}
-		if raidBuffs.Heroism {
-			registerBloodlustCD(agent, 32182)
-		}
-
-		if raidBuffs.TimeWarp {
-			registerBloodlustCD(agent, 80353)
-		}
 
 		// Other individual CDs
 		registerUnholyFrenzyCD(agent, individual.UnholyFrenzyCount)
@@ -360,10 +353,12 @@ func BattleShoutAura(unit *Unit, asExternal bool) *Aura {
 func registerExclusiveMeleeHaste(aura *Aura, value float64) {
 	aura.NewExclusiveEffect("AttackSpeed%", false, ExclusiveEffect{
 		OnGain: func(ee *ExclusiveEffect, s *Simulation) {
-			ee.Aura.Unit.MultiplyAttackSpeed(s, value)
+			ee.Aura.Unit.MultiplyMeleeSpeed(s, value)
+			ee.Aura.Unit.MultiplyRangedSpeed(s, value)
 		},
 		OnExpire: func(ee *ExclusiveEffect, s *Simulation) {
-			ee.Aura.Unit.MultiplyAttackSpeed(s, 1/value)
+			ee.Aura.Unit.MultiplyMeleeSpeed(s, 1/value)
+			ee.Aura.Unit.MultiplyRangedSpeed(s, 1/value)
 		},
 	})
 }
@@ -678,14 +673,13 @@ func BloodlustAura(character *Character, actionTag int32) *Aura {
 		Duration: BloodlustDuration,
 		OnGain: func(aura *Aura, sim *Simulation) {
 			aura.Unit.MultiplyAttackSpeed(sim, 1.3)
-			aura.Unit.MultiplyResourceRegenSpeed(sim, 1.3)
 			sated.Activate(sim)
 		},
 		OnExpire: func(aura *Aura, sim *Simulation) {
 			aura.Unit.MultiplyAttackSpeed(sim, 1/1.3)
-			aura.Unit.MultiplyResourceRegenSpeed(sim, 1/1.3)
 		},
 	})
+
 	multiplyCastSpeedEffect(aura, 1.3)
 	return aura
 }
@@ -793,11 +787,9 @@ func UnholyFrenzyAura(character *Unit, actionTag int32) *Aura {
 		Duration: UnholyFrenzyDuration,
 		OnGain: func(aura *Aura, sim *Simulation) {
 			aura.Unit.MultiplyAttackSpeed(sim, 1.2)
-			aura.Unit.MultiplyResourceRegenSpeed(sim, 1.2)
 		},
 		OnExpire: func(aura *Aura, sim *Simulation) {
 			aura.Unit.MultiplyAttackSpeed(sim, 1/1.2)
-			aura.Unit.MultiplyResourceRegenSpeed(sim, 1/1.2)
 		},
 	})
 
@@ -1220,7 +1212,7 @@ func registerStormLashCD(agent Agent, numStormLashes int32) {
 
 var StormLashSpellExceptions = map[int32]float64{
 	1120:   2.0, // Drain Soul
-	45284:  2.0, // Lightning Bolt
+	403:    2.0, // Lightning Bolt
 	51505:  2.0, // Lava Burst
 	103103: 2.0, // Malefic Grasp
 	15407:  1.0, // Mind Flay
@@ -1229,6 +1221,7 @@ var StormLashSpellExceptions = map[int32]float64{
 
 // Source: https://www.wowhead.com/mop-classic/spell=120668/stormlash-totem#comments
 func StormLashAura(character *Character, actionTag int32) *Aura {
+	actionId := ActionID{SpellID: 120687, Tag: actionTag}
 	for _, pet := range character.Pets {
 		if !pet.IsGuardian() {
 			StormLashAura(&pet.Character, actionTag)
@@ -1238,7 +1231,7 @@ func StormLashAura(character *Character, actionTag int32) *Aura {
 	damage := 0.0
 
 	stormlashSpell := character.RegisterSpell(SpellConfig{
-		ActionID:    ActionID{SpellID: 120687, Tag: actionTag},
+		ActionID:    actionId,
 		Flags:       SpellFlagNoOnCastComplete | SpellFlagPassiveSpell,
 		SpellSchool: SpellSchoolNature,
 		ProcMask:    ProcMaskEmpty,
@@ -1318,8 +1311,8 @@ func StormLashAura(character *Character, actionTag int32) *Aura {
 		aura.Icd.Use(sim)
 	}
 
-	return character.RegisterAura(Aura{
-		Label:    "Stormlash Totem",
+	return character.GetOrRegisterAura(Aura{
+		Label:    "Stormlash Totem-" + actionId.String(),
 		Tag:      StormLashAuraTag,
 		ActionID: ActionID{SpellID: 120668, Tag: actionTag},
 		Duration: StormLashDuration,

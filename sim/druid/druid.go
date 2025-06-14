@@ -16,12 +16,14 @@ const (
 type Druid struct {
 	core.Character
 	SelfBuffs
-	// eclipseEnergyBar
+
 	Talents *proto.DruidTalents
 
 	ClassSpellScaling float64
 
 	StartingForm DruidForm
+
+	Treants TreantAgents
 
 	EclipseEnergyMap EclipseEnergyMap
 
@@ -36,7 +38,6 @@ type Druid struct {
 	Barkskin              *DruidSpell
 	Berserk               *DruidSpell
 	CatCharge             *DruidSpell
-	DemoralizingRoar      *DruidSpell
 	FaerieFire            *DruidSpell
 	FerociousBite         *DruidSpell
 	ForceOfNature         *DruidSpell
@@ -44,14 +45,13 @@ type Druid struct {
 	Hurricane             *DruidSpell
 	HurricaneTickSpell    *DruidSpell
 	InsectSwarm           *DruidSpell
-	GiftOfTheWild         *DruidSpell
 	Lacerate              *DruidSpell
-	Languish              *DruidSpell
 	MangleBear            *DruidSpell
 	MangleCat             *DruidSpell
 	Maul                  *DruidSpell
 	MightOfUrsoc          *DruidSpell
 	Moonfire              *DruidSpell
+	Prowl                 *DruidSpell
 	Rebirth               *DruidSpell
 	Rake                  *DruidSpell
 	Ravage                *DruidSpell
@@ -77,7 +77,6 @@ type Druid struct {
 	BearForm *DruidSpell
 
 	BarkskinAura             *core.Aura
-	BlazeOfGloryAura         *core.Aura
 	BearFormAura             *core.Aura
 	BerserkBearAura          *core.Aura
 	BerserkCatAura           *core.Aura
@@ -90,7 +89,7 @@ type Druid struct {
 	MightOfUrsocAura         *core.Aura
 	NaturesGraceProcAura     *core.Aura
 	OwlkinFrenzyAura         *core.Aura
-	SavageDefenseAura        *core.DamageAbsorptionAura
+	ProwlAura                *core.Aura
 	SolarEclipseProcAura     *core.Aura
 	SurvivalInstinctsAura    *core.Aura
 
@@ -99,9 +98,6 @@ type Druid struct {
 	ProcOoc func(sim *core.Simulation)
 
 	ExtendingMoonfireStacks int
-
-	Treants       *Treants
-	BurningTreant *BurningTreant
 
 	form         DruidForm
 	disabledMCDs []*core.MajorCooldown
@@ -211,10 +207,6 @@ func (druid *Druid) HasMinorGlyph(glyph proto.DruidMinorGlyph) bool {
 	return druid.HasGlyph(int32(glyph))
 }
 
-// func (druid *Druid) TryMaul(sim *core.Simulation, mhSwingSpell *core.Spell) *core.Spell {
-// 	return druid.MaulReplaceMH(sim, mhSwingSpell)
-// }
-
 func (druid *Druid) RegisterSpell(formMask DruidForm, config core.SpellConfig) *DruidSpell {
 	prev := config.ExtraCastCondition
 	prevModify := config.Cast.ModifyCast
@@ -247,11 +239,9 @@ func (druid *Druid) RegisterSpell(formMask DruidForm, config core.SpellConfig) *
 
 func (druid *Druid) Initialize() {
 	druid.form = druid.StartingForm
-	//druid.BleedCategories = druid.GetEnemyExclusiveCategories(core.BleedEffectCategory)
 
 	druid.Env.RegisterPostFinalizeEffect(func() {
 		druid.MHAutoSpell = druid.AutoAttacks.MHAuto()
-		druid.BlazeOfGloryAura = druid.GetAura("Blaze of Glory")
 	})
 
 	druid.RegisterItemSwapCallback([]proto.ItemSlot{proto.ItemSlot_ItemSlotMainHand}, func(sim *core.Simulation, slot proto.ItemSlot) {
@@ -289,7 +279,7 @@ func (druid *Druid) RegisterBalanceSpells() {
 
 func (druid *Druid) RegisterFeralCatSpells() {
 	druid.registerBearFormSpell()
-	// druid.registerBerserkCD()
+	druid.registerBerserkCD()
 	// druid.registerCatCharge()
 	druid.registerCatFormSpell()
 	druid.registerFerociousBiteSpell()
@@ -297,8 +287,9 @@ func (druid *Druid) RegisterFeralCatSpells() {
 	druid.registerMangleBearSpell()
 	druid.registerMangleCatSpell()
 	druid.registerMaulSpell()
+	druid.registerProwlSpell()
 	druid.registerRakeSpell()
-	// druid.registerRavageSpell()
+	druid.registerRavageSpell()
 	druid.registerRipSpell()
 	// druid.registerSavageRoarSpell()
 	// druid.registerShredSpell()
@@ -312,16 +303,13 @@ func (druid *Druid) RegisterFeralCatSpells() {
 func (druid *Druid) RegisterFeralTankSpells() {
 	druid.registerBarkskinCD()
 	druid.registerBearFormSpell()
-	// druid.registerBerserkCD()
-	//druid.registerDemoralizingRoarSpell()
-	// druid.registerEnrageSpell()
+	druid.registerBerserkCD()
 	druid.registerFrenziedRegenerationSpell()
 	druid.registerMangleBearSpell()
 	druid.registerMaulSpell()
 	druid.registerMightOfUrsocCD()
 	druid.registerLacerateSpell()
-	//druid.registerSavageDefensePassive()
-	// druid.registerSurvivalInstinctsCD()
+	druid.registerSurvivalInstinctsCD()
 	druid.registerSwipeBearSpell()
 	druid.registerThrashBearSpell()
 }
