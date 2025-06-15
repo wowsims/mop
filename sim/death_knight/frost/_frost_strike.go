@@ -7,18 +7,18 @@ import (
 
 var frostStrikeActionID = core.ActionID{SpellID: 49143}
 
-func (dk *FrostDeathKnight) registerFrostStrikeSpell() {
-	ohSpell := dk.GetOrRegisterSpell(core.SpellConfig{
-		ActionID:       frostStrikeActionID.WithTag(2),
+// Instantly strike the enemy, causing 115% weapon damage as Frost damage.
+func (fdk *FrostDeathKnight) registerFrostStrikeSpell() {
+	ohSpell := fdk.RegisterSpell(core.SpellConfig{
+		ActionID:       frostStrikeActionID.WithTag(2), // Actually 66196
 		SpellSchool:    core.SpellSchoolFrost,
 		ProcMask:       core.ProcMaskMeleeOHSpecial,
 		Flags:          core.SpellFlagMeleeMetrics,
 		ClassSpellMask: death_knight.DeathKnightSpellFrostStrike,
 
-		DamageMultiplier:         1.3,
-		DamageMultiplierAdditive: 1,
-		CritMultiplier:           dk.DefaultCritMultiplier(),
-		ThreatMultiplier:         1,
+		DamageMultiplier: 1.3,
+		CritMultiplier:   dk.DefaultCritMultiplier(),
+		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := dk.ClassSpellScaling*0.12399999797 +
@@ -28,7 +28,7 @@ func (dk *FrostDeathKnight) registerFrostStrikeSpell() {
 		},
 	})
 
-	dk.GetOrRegisterSpell(core.SpellConfig{
+	fdk.RegisterSpell(core.SpellConfig{
 		ActionID:       frostStrikeActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolFrost,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
@@ -47,10 +47,9 @@ func (dk *FrostDeathKnight) registerFrostStrikeSpell() {
 			IgnoreHaste: true,
 		},
 
-		DamageMultiplier:         1.3,
-		DamageMultiplierAdditive: 1,
-		CritMultiplier:           dk.DefaultCritMultiplier(),
-		ThreatMultiplier:         1,
+		DamageMultiplier: 1.3,
+		CritMultiplier:   dk.DefaultCritMultiplier(),
+		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := dk.ClassSpellScaling*0.24699999392 +
@@ -59,7 +58,10 @@ func (dk *FrostDeathKnight) registerFrostStrikeSpell() {
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
 
 			spell.SpendRefundableCost(sim, result)
-			dk.ThreatOfThassarianProc(sim, result, ohSpell)
+
+			if result.Landed() {
+				ohSpell.Cast(sim, target)
+			}
 
 			spell.DealDamage(sim, result)
 		},

@@ -14,7 +14,7 @@ func RegisterUnholyDeathKnight() {
 		func(character *core.Character, options *proto.Player) core.Agent {
 			return NewUnholyDeathKnight(character, options)
 		},
-		func(player *proto.Player, spec interface{}) {
+		func(player *proto.Player, spec any) {
 			playerSpec, ok := spec.(*proto.Player_UnholyDeathKnight)
 			if !ok {
 				panic("Invalid spec value for Unholy Death Knight!")
@@ -38,15 +38,11 @@ func NewUnholyDeathKnight(character *core.Character, player *proto.Player) *Unho
 			Spec: proto.Spec_SpecUnholyDeathKnight,
 
 			StartingRunicPower: unholyOptions.ClassOptions.StartingRunicPower,
-			PetUptime:          unholyOptions.ClassOptions.PetUptime,
 			IsDps:              true,
-
-			UseAMS:            unholyOptions.UseAms,
-			AvgAMSSuccessRate: unholyOptions.AvgAmsSuccessRate,
-			AvgAMSHit:         unholyOptions.AvgAmsHit,
 		}, player.TalentsString, 56835),
 	}
 
+	uhdk.Gargoyle = uhdk.NewGargoyle()
 	uhdk.Inputs.UnholyFrenzyTarget = unholyOptions.UnholyFrenzyTarget
 
 	return uhdk
@@ -63,12 +59,20 @@ func (uhdk *UnholyDeathKnight) GetDeathKnight() *death_knight.DeathKnight {
 func (uhdk *UnholyDeathKnight) Initialize() {
 	uhdk.DeathKnight.Initialize()
 
-	// uhdk.registerScourgeStrikeSpell()
+	// uhdk.registerBloodStrike()
+	uhdk.registerDarkTransformation()
+	uhdk.registerEbonPlaguebringer()
+	// uhdk.registerFesteringStrike()
+	// uhdk.registerScourgeStrike()
+	uhdk.registerShadowInfusion()
+	uhdk.registerSuddenDoom()
+	uhdk.registerSummonGargoyle()
+	// uhdk.registerUnholyFrenzy()
 }
 
 func (uhdk *UnholyDeathKnight) ApplyTalents() {
 	uhdk.DeathKnight.ApplyTalents()
-	uhdk.ApplyArmorSpecializationEffect(stats.Strength, proto.ArmorType_ArmorTypePlate, 86524)
+	uhdk.ApplyArmorSpecializationEffect(stats.Strength, proto.ArmorType_ArmorTypePlate, 86536)
 
 	// Mastery: Dreadblade
 	masteryMod := uhdk.AddDynamicMod(core.SpellModConfig{
