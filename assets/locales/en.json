@@ -17,17 +17,23 @@
 		"header": {
 			"wowsims": "WoWSims",
 			"expansion": "Mists of Pandaria",
-			"supportDevs": "Support our devs"
-		},
-		"status": {
-			"launched": "Launched",
-			"not_supported": "Not Supported",
-			"alpha": "Alpha",
-			"beta": "Beta",
-			"not_yet_supported": "Not Yet Supported"
+						"supportDevs": "Support our devs"
 		}
 	},
 	"common": {
+		"phases": {
+			"1": "1",
+			"2": "2",
+			"3": "3",
+			"4": "4",
+			"5": "5"
+		},
+		"status": {
+			"unlaunched": "Not Yet Supported",
+			"alpha": "Alpha",
+			"beta": "Beta",
+			"launched": "Launched"
+		},
 		"classes": {
 			"death_knight": "Death Knight",
 			"druid": "Druid",
@@ -124,5 +130,17 @@
 	},
 	"export": {
 		"title": "Export"
+	},
+	"sidebar": {
+		"iterations": "Iterations",
+		"buttons": {
+			"simulate": "Simulate",
+			"stat_weights": "Stat Weights",
+			"suggest_reforges": "Suggest Reforges"
+		},
+		"header": {
+			"title": "WoWSims - Mists of Pandaria",
+			"phase": "Phase {{number}} - {{status}}"
+		}
 	}
 }

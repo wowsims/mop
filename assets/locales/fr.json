@@ -28,6 +28,19 @@
 		}
 	},
 	"common": {
+		"phases": {
+			"1": "1",
+			"2": "2",
+			"3": "3",
+			"4": "4",
+			"5": "5"
+		},
+		"status": {
+			"unlaunched": "Pas Encore Supporté",
+			"alpha": "Alpha",
+			"beta": "Bêta",
+			"launched": "Lancé"
+		},
 		"classes": {
 			"death_knight": "Chevalier de la mort",
 			"druid": "Druide",
@@ -124,5 +137,17 @@
 	},
 	"export": {
 		"title": "Exporter"
+	},
+	"sidebar": {
+		"iterations": "Itérations",
+		"buttons": {
+			"simulate": "Simuler",
+			"stat_weights": "Poids des Statistiques",
+			"suggest_reforges": "Suggérer des Reforges"
+		},
+		"header": {
+			"title": "WoWSims - Mists of Pandaria",
+			"phase": "Phase {{number}} - {{status}}"
+		}
 	}
 }

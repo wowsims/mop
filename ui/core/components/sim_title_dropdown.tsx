@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config.js';
 import { LaunchStatus, raidSimStatus, simLaunchStatuses } from '../launched_sims.js';
 import { PlayerClass } from '../player_class.js';
 import { PlayerClasses } from '../player_classes/index.js';
@@ -95,7 +96,7 @@ export class SimTitleDropdown extends Component {
 				<div className="sim-link-content">
 					<img src={this.getSimIconPath(data)} className="sim-link-icon" />
 					<div className="d-flex flex-column">
-						<span className="sim-link-label text-white">WoWSims - Mists of Pandaria</span>
+						<span className="sim-link-label text-white">{i18n.t('sidebar.header.title')}</span>
 						<span className="sim-link-title">
 							{data.type === 'Raid' && raidSimLabel}
 							{data.type === 'Spec' && PlayerSpecs.getFullSpecName(data.spec)}
@@ -164,11 +165,12 @@ export class SimTitleDropdown extends Component {
 		return (
 			<span className="launch-status-label text-brand">
 				{status === LaunchStatus.Unlaunched ? (
-					<>Not Yet Supported</>
+					i18n.t('common.status.unlaunched')
 				) : (
-					<>
-						Phase {phase} - {LaunchStatus[status]}
-					</>
+					i18n.t('sidebar.header.phase', {
+						number: i18n.t(`common.phases.${phase}`),
+						status: i18n.t(`common.status.${LaunchStatus[status].toLowerCase()}`)
+					})
 				)}
 			</span>
 		);
