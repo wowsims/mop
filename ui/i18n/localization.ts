@@ -1,20 +1,20 @@
 import i18n from './config';
 import { getLang, setLang, supportedLanguages } from './locale_service';
 
-export function translateClass(className: string): string {
+export const translateClass = (className: string): string => {
 	const normalizedClassName = className.toLowerCase().replace(/_/g, '');
 	const i18nKey = normalizedClassName === 'deathknight' ? 'death_knight' : normalizedClassName;
 	return i18n.t(`common.classes.${i18nKey}`);
-}
+};
 
-export function translateSpec(className: string, specName: string): string {
+export const translateSpec = (className: string, specName: string): string => {
 	const normalizedClassName = className.toLowerCase().replace(/_/g, '');
 	const classKey = normalizedClassName === 'deathknight' ? 'death_knight' : normalizedClassName;
 	const specKey = specName.toLowerCase();
 	return i18n.t(`common.specs.${classKey}.${specKey}`);
-}
+};
 
-export function extractClassAndSpecFromLink(link: HTMLAnchorElement): { className?: string; specName?: string } {
+export const extractClassAndSpecFromLink = (link: HTMLAnchorElement): { className?: string; specName?: string } => {
 	const parts = link.pathname.split('/').filter(Boolean);
 	if (parts.length >= 2) {
 		return {
@@ -23,9 +23,9 @@ export function extractClassAndSpecFromLink(link: HTMLAnchorElement): { classNam
 		};
 	}
 	return {};
-}
+};
 
-export function extractClassAndSpecFromDataAttributes(): { className: string; specName: string } | null {
+export const extractClassAndSpecFromDataAttributes = (): { className: string; specName: string } | null => {
 	const titleElement = document.querySelector('title');
 	if (titleElement) {
 		const className = titleElement.getAttribute('data-class');
@@ -44,9 +44,9 @@ export function extractClassAndSpecFromDataAttributes(): { className: string; sp
 		}
 	}
 	return null;
-}
+};
 
-export function updateLanguageDropdown(): void {
+export const updateLanguageDropdown = (): void => {
 	const dropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="languageDropdown"]');
 	if (!dropdownMenu) return;
 
@@ -68,18 +68,18 @@ export function updateLanguageDropdown(): void {
 		li.appendChild(a);
 		dropdownMenu.appendChild(li);
 	});
-}
+};
 
-export function updateDataI18nElements(): void {
+export const updateDataI18nElements = (): void => {
 	document.querySelectorAll('[data-i18n]').forEach(element => {
 		const key = element.getAttribute('data-i18n');
 		if (key) {
 			element.textContent = i18n.t(key);
 		}
 	});
-}
+};
 
-export function updateSimPageMetadata(): void {
+export const updateSimPageMetadata = (): void => {
 	const classSpecInfo = extractClassAndSpecFromDataAttributes();
 	if (!classSpecInfo) return;
 
@@ -103,9 +103,9 @@ export function updateSimPageMetadata(): void {
 			.replace('{class}', translatedClass)
 			.replace('{spec}', translatedSpec);
 	}
-}
+};
 
-export function updateSimLinks(): void {
+export const updateSimLinks = (): void => {
 	document.querySelectorAll('.sim-link-content').forEach(content => {
 		const classLabel = content.querySelector('.sim-link-label');
 		const specTitle = content.querySelector('.sim-link-title');
@@ -124,7 +124,7 @@ export function updateSimLinks(): void {
 			}
 		}
 	});
-}
+};
 
 export interface LocalizationOptions {
 	updateSimMetadata?: boolean;
@@ -132,7 +132,7 @@ export interface LocalizationOptions {
 	updateLanguageDropdown?: boolean;
 }
 
-export function updateTranslations(options: LocalizationOptions = {}): void {
+export const updateTranslations = (options: LocalizationOptions = {}): void => {
 	document.documentElement.lang = getLang();
 	updateDataI18nElements();
 
@@ -147,9 +147,9 @@ export function updateTranslations(options: LocalizationOptions = {}): void {
 	if (options.updateLanguageDropdown) {
 		updateLanguageDropdown();
 	}
-}
+};
 
-export function initLocalization(options?: LocalizationOptions): void {
+export const initLocalization = (options?: LocalizationOptions): void => {
 	const finalOptions = options || (
 		document.querySelector('title[data-class]') || document.querySelector('meta[data-class]')
 			? { updateSimMetadata: true }
@@ -173,4 +173,4 @@ export function initLocalization(options?: LocalizationOptions): void {
 	} else {
 		initialize();
 	}
-}
+};
