@@ -149,39 +149,28 @@ export function updateTranslations(options: LocalizationOptions = {}): void {
 	}
 }
 
-export function initializeLocalization(options: LocalizationOptions = {}): void {
-	if (!i18n.isInitialized) {
-		i18n.init();
-	}
+export function initLocalization(options?: LocalizationOptions): void {
+	const finalOptions = options || (
+		document.querySelector('title[data-class]') || document.querySelector('meta[data-class]')
+			? { updateSimMetadata: true }
+			: { updateSimLinks: true, updateLanguageDropdown: true }
+	);
 
-	i18n.on('languageChanged', () => {
-		updateTranslations(options);
-	});
+	const initialize = () => {
+		if (!i18n.isInitialized) {
+			i18n.init();
+		}
 
-	updateTranslations(options);
-}
+		i18n.on('languageChanged', () => {
+			updateTranslations(finalOptions);
+		});
 
-export function localizeHomePage(): void {
-	const homeOptions: LocalizationOptions = {
-		updateSimLinks: true,
-		updateLanguageDropdown: true
+		updateTranslations(finalOptions);
 	};
 
 	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', () => initializeLocalization(homeOptions));
+		document.addEventListener('DOMContentLoaded', initialize);
 	} else {
-		initializeLocalization(homeOptions);
-	}
-}
-
-export function localizeSimPage(): void {
-	const simOptions: LocalizationOptions = {
-		updateSimMetadata: true
-	};
-
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', () => initializeLocalization(simOptions));
-	} else {
-		initializeLocalization(simOptions);
+		initialize();
 	}
 }
