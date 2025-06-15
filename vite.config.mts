@@ -132,8 +132,9 @@ export default defineConfig(({ command, mode }) => {
 		...baseConfig,
 		resolve: {
 			alias: {
-				'/mop/home_localization.js': path.resolve(__dirname, 'ui/i18n/home_localization.ts'),
-				'/mop/sim_localization.js': path.resolve(__dirname, 'ui/i18n/sim_localization.ts'),
+				'/mop/home_localization.js': path.resolve(__dirname, 'ui/i18n/localization.ts'),
+				'/mop/sim_localization.js': path.resolve(__dirname, 'ui/i18n/localization.ts'),
+				'/mop/localization.js': path.resolve(__dirname, 'ui/i18n/localization.ts'),
 			},
 		},
 		plugins: [

@@ -647,6 +647,9 @@
 			gtag('js', new Date());
 			gtag('config', 'G-YEJ8MEHGV2');
 		</script>
-		<script type="module" src="/mop/home_localization.js"></script>
+		<script type="module">
+			import { localizeHomePage } from '/mop/localization.js';
+			localizeHomePage();
+		</script>
 	</body>
 </html>

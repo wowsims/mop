@@ -41,6 +41,9 @@
 			const whTooltips = { colorLinks: true };
 		</script>
 		<script src="https://wow.zamimg.com/js/tooltips.js"></script>
-		<script type="module" src="/mop/sim_localization.js"></script>
+		<script type="module">
+			import { localizeSimPage } from '/mop/localization.js';
+			localizeSimPage();
+		</script>
 	</body>
 </html>
