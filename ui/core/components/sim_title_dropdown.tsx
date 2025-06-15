@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
+import { translatePlayerClass, translatePlayerSpec } from '../../i18n/localization.js';
 import { LaunchStatus, raidSimStatus, simLaunchStatuses } from '../launched_sims.js';
 import { PlayerClass } from '../player_class.js';
 import { PlayerClasses } from '../player_classes/index.js';
@@ -131,7 +132,7 @@ export class SimTitleDropdown extends Component {
 				<div className="sim-link-content">
 					<img src={this.getSimIconPath({ type: 'Class', class: klass })} className="sim-link-icon" />
 					<div className="d-flex flex-column">
-						<span className="sim-link-title">{klass.friendlyName}</span>
+						<span className="sim-link-title">{translatePlayerClass(klass)}</span>
 					</div>
 				</div>
 			</button>
@@ -144,8 +145,8 @@ export class SimTitleDropdown extends Component {
 				<div className="sim-link-content">
 					<img src={this.getSimIconPath({ type: 'Spec', spec: spec })} className="sim-link-icon" />
 					<div className="d-flex flex-column">
-						<span className="sim-link-label">{PlayerSpecs.getPlayerClass(spec).friendlyName}</span>
-						<span className="sim-link-title">{spec.friendlyName}</span>
+						<span className="sim-link-label">{translatePlayerClass(PlayerSpecs.getPlayerClass(spec))}</span>
+						<span className="sim-link-title">{translatePlayerSpec(spec)}</span>
 						{this.launchStatusLabel({ type: 'Spec', spec: spec })}
 					</div>
 				</div>
