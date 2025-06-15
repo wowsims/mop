@@ -11,10 +11,11 @@ export function translateClass(className: string): string {
 
 // Function to translate spec names
 export function translateSpec(className: string, specName: string): string {
-	// Handle special case where URL has underscores but i18n keys don't
+	// Handle special case where URL has underscores but i18n keys don't for class names
 	const normalizedClassName = className.toLowerCase().replace(/_/g, '');
 	const classKey = normalizedClassName === 'deathknight' ? 'death_knight' : normalizedClassName;
-	const specKey = specName.toLowerCase().replace(/_/g, '');
+	// Spec names should keep underscores as they match the i18n key structure
+	const specKey = specName.toLowerCase();
 	return i18n.t(`common.specs.${classKey}.${specKey}`);
 }
 
@@ -213,22 +214,3 @@ export function localizeSimPage(): void {
 		initializeLocalization(simOptions);
 	}
 }
-
-// Auto-detect page type and initialize accordingly
-export function autoInitializeLocalization(): void {
-	// Check if we're on a sim page (has data attributes) or home page (has sim links)
-	const hasSimMetadata = document.querySelector('title[data-class]') || document.querySelector('meta[data-class]');
-	const hasSimLinks = document.querySelector('.sim-link-content');
-
-	if (hasSimMetadata) {
-		localizeSimPage();
-	} else if (hasSimLinks) {
-		localizeHomePage();
-	} else {
-		// Fallback to basic localization
-		initializeLocalization();
-	}
-}
-
-// Default export for backward compatibility
-export default autoInitializeLocalization;
