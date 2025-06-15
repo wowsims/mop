@@ -388,6 +388,7 @@ export class ActionId {
 					name += ' (Fan of Knives)';
 				}
 				break;
+			case 'Bladestorm':
 			case 'Fan of Knives':
 			case 'Killing Spree':
 				if (tag == 1) {
@@ -569,8 +570,14 @@ export class ActionId {
 				}
 				break;
 			case 'Raging Blow':
+				if (tag == 2) {
+					name += ' (Main Hand)';
+				} else if (tag == 3) {
+					name += ' (Off Hand)';
+				}
+				break;
 			case 'Whirlwind':
-			case 'Slam':
+			case 'Storm Bolt':
 			case 'Frost Strike':
 			case 'Plague Strike':
 			case 'Blood Strike':
@@ -585,10 +592,6 @@ export class ActionId {
 					name += ' (Main Hand)';
 				} else if (tag == 2) {
 					name += ' (Off Hand)';
-				}
-				// Warrior - T12 4P proc
-				if (baseName === 'Raging Blow' && tag === 3) {
-					name = 'Fiery attack';
 				}
 				// Death Knight - T12 4P proc
 				if (baseName === 'Obliterate' && tag === 3) {
@@ -672,6 +675,11 @@ export class ActionId {
 			case 'Mortal Strike':
 				if (tag === 3) {
 					name = 'Fiery attack (T12 4P)';
+				}
+				break;
+			case 'Slam':
+				if (tag == 1) {
+					name += ' (Sweeping Strikes)';
 				}
 				break;
 			// Hunter - T12 2P proc
@@ -1152,7 +1160,6 @@ const spellIdTooltipOverrides: Map<string, ActionIdOverride> = new Map([
 	[JSON.stringify({ spellId: 47897, tag: 1 }), { spellId: 47960 }], // Shadowflame Dot
 	[JSON.stringify({ spellId: 55090, tag: 1 }), { spellId: 70890 }], // Shadowflame Dot
 	[JSON.stringify({ spellId: 12294, tag: 3 }), { spellId: 99237 }], // Warrior - T12 4P Fiery Attack - Mortal Strike
-	[JSON.stringify({ spellId: 85288, tag: 3 }), { spellId: 99237 }], // Warrior - T12 4P Fiery Attack - Raging Blow
 	[JSON.stringify({ spellId: 23922, tag: 3 }), { spellId: 99240 }], // Warrior - T12 2P Combust - Shield Slam
 	[JSON.stringify({ spellId: 77767, tag: 3 }), { spellId: 99058 }], // Hunter - T12 2P Flaming Arrow - Cobra shot
 	[JSON.stringify({ spellId: 56641, tag: 3 }), { spellId: 99058 }], // Hunter - T12 2P Flaming Arrow - Steady shot
@@ -1173,9 +1180,10 @@ const spellIdTooltipOverrides: Map<string, ActionIdOverride> = new Map([
 	[JSON.stringify({ spellId: 56815, tag: 2 }), { spellId: 66217 }], // Death Knight - Rune Strike Off-Hand
 	[JSON.stringify({ spellId: 1329, tag: 2 }), { spellId: 27576 }], // Rogue - Mutilate Off-Hand
 	[JSON.stringify({ spellId: 17364, tag: 2 }), { spellId: 32176 }], // Shaman - Stormstrike Off-Hand
-	[JSON.stringify({ spellId: 85288, tag: 2 }), { spellId: 85384 }], // Warrior - Raging Blow Off-Hand
-	[JSON.stringify({ spellId: 1464, tag: 2 }), { spellId: 97992 }], // Warrior - Slam Off-Hand
+	[JSON.stringify({ spellId: 85288, tag: 2 }), { spellId: 96103 }], // Warrior - Raging Blow Main-Hand
+	[JSON.stringify({ spellId: 85288, tag: 3 }), { spellId: 85384 }], // Warrior - Raging Blow Off-Hand
 	[JSON.stringify({ spellId: 1680, tag: 2 }), { spellId: 44949 }], // Warrior - Whirlwind Off-Hand
+	[JSON.stringify({ spellId: 107570, tag: 2 }), { spellId: 145585 }], // Warrior - Storm Bolt Off-Hand
 
 	// Monk - Zen Sphere
 	[JSON.stringify({ spellId: 124081, tag: 3 }), { spellId: 124098 }],
