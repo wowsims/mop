@@ -96,6 +96,7 @@ function copyLocales() {
 	return {
 		name: 'copy-locales',
 		buildStart() {
+			// add locales here to enable them in the UI
 			const locales = [
 				'en.json',
 				'fr.json'
@@ -132,8 +133,6 @@ export default defineConfig(({ command, mode }) => {
 		...baseConfig,
 		resolve: {
 			alias: {
-				'/mop/home_localization.js': path.resolve(__dirname, 'ui/i18n/localization.ts'),
-				'/mop/sim_localization.js': path.resolve(__dirname, 'ui/i18n/localization.ts'),
 				'/mop/localization.js': path.resolve(__dirname, 'ui/i18n/localization.ts'),
 			},
 		},

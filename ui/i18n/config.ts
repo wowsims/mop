@@ -12,6 +12,7 @@ i18n.init({
   interpolation: {
     escapeValue: false,
   },
+  // add locales here to enable them in the UI
   resources: {
     en: {
       translation: en
