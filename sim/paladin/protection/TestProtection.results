@@ -67,6 +67,60 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestProtection-AllItems-AssuranceofConsequence-102292"
+ value: {
+  dps: 123015.1079
+  tps: 851261.25921
+  dtps: 84916.61672
+  hps: 67277.34021
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-AssuranceofConsequence-104476"
+ value: {
+  dps: 123038.20407
+  tps: 851422.93246
+  dtps: 84916.61672
+  hps: 67277.34021
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-AssuranceofConsequence-104725"
+ value: {
+  dps: 123015.1079
+  tps: 851261.25921
+  dtps: 84916.61672
+  hps: 67277.34021
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-AssuranceofConsequence-104974"
+ value: {
+  dps: 122989.44823
+  tps: 851081.64158
+  dtps: 84916.61672
+  hps: 67277.34021
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-AssuranceofConsequence-105223"
+ value: {
+  dps: 123033.71897
+  tps: 851391.53669
+  dtps: 84916.61672
+  hps: 67277.34021
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-AssuranceofConsequence-105472"
+ value: {
+  dps: 123038.20407
+  tps: 851422.93246
+  dtps: 84916.61672
+  hps: 67277.34021
+ }
+}
+dps_results: {
  key: "TestProtection-AllItems-AusterePrimalDiamond"
  value: {
   dps: 130945.90946
@@ -865,6 +919,60 @@ dps_results: {
   tps: 908559.1332
   dtps: 76315.7493
   hps: 74010.93712
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-EvilEyeofGalakras-102298"
+ value: {
+  dps: 123515.30267
+  tps: 854186.17839
+  dtps: 83990.42849
+  hps: 67782.63295
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-EvilEyeofGalakras-104495"
+ value: {
+  dps: 123722.04549
+  tps: 855562.04534
+  dtps: 83825.74102
+  hps: 67871.49755
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-EvilEyeofGalakras-104744"
+ value: {
+  dps: 123506.8289
+  tps: 854190.38011
+  dtps: 84105.1342
+  hps: 67697.96987
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-EvilEyeofGalakras-104993"
+ value: {
+  dps: 123423.62661
+  tps: 853732.68707
+  dtps: 84248.97985
+  hps: 67726.68886
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-EvilEyeofGalakras-105242"
+ value: {
+  dps: 123574.34133
+  tps: 854567.79996
+  dtps: 83924.93658
+  hps: 67812.52586
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-EvilEyeofGalakras-105491"
+ value: {
+  dps: 123798.02674
+  tps: 856057.81012
+  dtps: 83826.1554
+  hps: 67919.81683
  }
 }
 dps_results: {

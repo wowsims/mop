@@ -85,6 +85,60 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBrewmaster-AllItems-AssuranceofConsequence-102292"
+ value: {
+  dps: 118853.09058
+  tps: 831971.63403
+  dtps: 45351.09553
+  hps: 4804.03723
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-AssuranceofConsequence-104476"
+ value: {
+  dps: 119023.57298
+  tps: 833165.01084
+  dtps: 45350.72142
+  hps: 4809.28533
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-AssuranceofConsequence-104725"
+ value: {
+  dps: 118463.99555
+  tps: 829247.96887
+  dtps: 45446.6188
+  hps: 4797.69882
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-AssuranceofConsequence-104974"
+ value: {
+  dps: 118406.62291
+  tps: 828846.36038
+  dtps: 45422.06944
+  hps: 4793.87718
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-AssuranceofConsequence-105223"
+ value: {
+  dps: 118923.92601
+  tps: 832467.48209
+  dtps: 45350.92858
+  hps: 4806.37918
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-AssuranceofConsequence-105472"
+ value: {
+  dps: 118833.14889
+  tps: 831832.04225
+  dtps: 45802.00914
+  hps: 4818.5971
+ }
+}
+dps_results: {
  key: "TestBrewmaster-AllItems-AusterePrimalDiamond"
  value: {
   dps: 117059.26622
@@ -892,6 +946,60 @@ dps_results: {
   tps: 819473.40451
   dtps: 43731.75674
   hps: 6417.19813
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-EvilEyeofGalakras-102298"
+ value: {
+  dps: 117468.95846
+  tps: 822282.70923
+  dtps: 46059.40402
+  hps: 4783.13381
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-EvilEyeofGalakras-104495"
+ value: {
+  dps: 117523.5128
+  tps: 822664.58957
+  dtps: 46059.40402
+  hps: 4785.92869
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-EvilEyeofGalakras-104744"
+ value: {
+  dps: 117420.71163
+  tps: 821944.98138
+  dtps: 46059.40402
+  hps: 4780.66207
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-EvilEyeofGalakras-104993"
+ value: {
+  dps: 117380.98545
+  tps: 821666.89813
+  dtps: 46059.40402
+  hps: 4778.62686
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-EvilEyeofGalakras-105242"
+ value: {
+  dps: 117493.3032
+  tps: 822453.12237
+  dtps: 46059.40402
+  hps: 4784.38102
+ }
+}
+dps_results: {
+ key: "TestBrewmaster-AllItems-EvilEyeofGalakras-105491"
+ value: {
+  dps: 117551.06661
+  tps: 822857.46626
+  dtps: 46059.40402
+  hps: 4787.3403
  }
 }
 dps_results: {

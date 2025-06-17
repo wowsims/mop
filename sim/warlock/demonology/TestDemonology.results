@@ -59,6 +59,48 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestDemonology-AllItems-AssuranceofConsequence-102292"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-AssuranceofConsequence-104476"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-AssuranceofConsequence-104725"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-AssuranceofConsequence-104974"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-AssuranceofConsequence-105223"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-AssuranceofConsequence-105472"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
  key: "TestDemonology-AllItems-AusterePrimalDiamond"
  value: {
   dps: 72603.27826
@@ -679,6 +721,48 @@ dps_results: {
  value: {
   dps: 72633.14023
   tps: 45755.87675
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-EvilEyeofGalakras-102298"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-EvilEyeofGalakras-104495"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-EvilEyeofGalakras-104744"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-EvilEyeofGalakras-104993"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-EvilEyeofGalakras-105242"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
+ }
+}
+dps_results: {
+ key: "TestDemonology-AllItems-EvilEyeofGalakras-105491"
+ value: {
+  dps: 68490.31923
+  tps: 42998.15301
  }
 }
 dps_results: {
