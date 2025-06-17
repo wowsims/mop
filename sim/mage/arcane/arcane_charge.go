@@ -14,9 +14,9 @@ func (arcane *ArcaneMage) registerArcaneCharges() {
 		Kind:       core.SpellMod_DamageDone_Flat,
 	})
 	abCostMod := arcane.AddDynamicMod(core.SpellModConfig{
-		ClassMask: mage.MageSpellArcaneBlast,
-		IntValue:  150,
-		Kind:      core.SpellMod_PowerCost_Pct,
+		ClassMask:  mage.MageSpellArcaneBlast,
+		FloatValue: 1.5,
+		Kind:       core.SpellMod_PowerCost_Pct,
 	})
 
 	arcane.arcaneChargesAura = arcane.GetOrRegisterAura(core.Aura{
@@ -34,7 +34,8 @@ func (arcane *ArcaneMage) registerArcaneCharges() {
 		},
 		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
 			abDamageMod.UpdateFloatValue(.5 * float64(newStacks))
-			abCostMod.UpdateIntValue(150 * newStacks)
+			abCostMod.UpdateFloatValue(1.5 * float64(newStacks))
+			arcane.EvocationManaPercentPerTick = arcane.EvocationBaseManaPercentPerTick * (1 + (.25 * float64(newStacks)))
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
 			if spell.Matches(mage.MageSpellArcaneBarrage | mage.MageSpellEvocation) {

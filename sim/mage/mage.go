@@ -41,8 +41,10 @@ type Mage struct {
 	iceFloesfAura      *core.Aura
 	IciclesAura        *core.Aura
 
-	arcaneMissileCritSnapshot float64
-	baseHotStreakProcChance   float64
+	arcaneMissileCritSnapshot       float64
+	baseHotStreakProcChance         float64
+	EvocationBaseManaPercentPerTick float64
+	EvocationManaPercentPerTick     float64
 
 	combustionDotEstimate int32
 

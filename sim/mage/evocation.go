@@ -15,7 +15,8 @@ func (mage *Mage) registerEvocation() {
 	actionID := core.ActionID{SpellID: 12051}
 	manaMetrics := mage.NewManaMetrics(actionID)
 	manaPerTick := 0.0
-	manaPercent := core.Ternary(mage.Spec == proto.Spec_SpecArcaneMage, .10, .15)
+	mage.EvocationBaseManaPercentPerTick = core.Ternary(mage.Spec == proto.Spec_SpecArcaneMage, .10, .15)
+	mage.EvocationManaPercentPerTick = mage.EvocationBaseManaPercentPerTick
 
 	evocation := mage.GetOrRegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -51,7 +52,7 @@ func (mage *Mage) registerEvocation() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			manaPerTick = mage.MaxMana() * manaPercent
+			manaPerTick = mage.MaxMana() * mage.EvocationManaPercentPerTick
 			spell.SelfHot().Apply(sim)
 			spell.SelfHot().TickOnce(sim)
 		},
