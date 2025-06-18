@@ -278,8 +278,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-Golad,TwilightofAspects-77949"
  value: {
-  dps: 70479.92516
-  tps: 49502.84391
+  dps: 70480.08833
+  tps: 49502.95976
  }
 }
 dps_results: {
@@ -509,8 +509,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-TheSleeper-77947"
  value: {
-  dps: 69790.32936
-  tps: 48989.97118
+  dps: 69802.35304
+  tps: 48998.50799
  }
 }
 dps_results: {
@@ -537,8 +537,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-Average-Default"
  value: {
-  dps: 80125.2691
-  tps: 56292.62091
+  dps: 80125.11519
+  tps: 56292.51163
  }
 }
 dps_results: {

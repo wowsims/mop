@@ -253,6 +253,31 @@ func (env *Environment) setupAttackTables() {
 	}
 }
 
+func (env *Environment) setupStatsInheritanceHeartbeat(sim *Simulation) {
+	t := time.Millisecond * time.Duration((1000 * sim.RollWithLabel(0, 5, "Pet Stats Inheritance Heartbeat")))
+
+	period := time.Second * 5
+
+	options := PeriodicActionOptions{
+		Period:          period,
+		NumTicks:        0,
+		TickImmediately: false,
+		Priority:        ActionPriorityGCD,
+		OnAction: func(s *Simulation) {
+			for _, parties := range env.Raid.Parties {
+				for _, petAgent := range parties.Pets {
+					pet := petAgent.GetPet()
+					if pet.IsEnabled() {
+						pet.updateOwnerStats(sim)
+					}
+				}
+			}
+		},
+	}
+
+	StartPeriodicActionAt(sim, options, env.PrepullStartTime()+t-period)
+}
+
 func (env *Environment) IsFinalized() bool {
 	return env.State >= Finalized
 }
@@ -266,6 +291,8 @@ func (env *Environment) reset(sim *Simulation) {
 	for _, target := range env.Encounter.Targets {
 		target.Reset(sim)
 	}
+
+	env.setupStatsInheritanceHeartbeat(sim)
 
 	env.Raid.reset(sim)
 }

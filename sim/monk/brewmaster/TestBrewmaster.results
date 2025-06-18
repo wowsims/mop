@@ -3039,10 +3039,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-Average-Default"
  value: {
-  dps: 119388.08924
-  tps: 835716.62469
-  dtps: 43301.25609
-  hps: 6474.79496
+  dps: 119388.10586
+  tps: 835716.74105
+  dtps: 43301.93411
+  hps: 6473.70658
  }
 }
 dps_results: {

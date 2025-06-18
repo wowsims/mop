@@ -195,10 +195,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-CharmofTenSongs-84071"
  value: {
-  dps: 86609.07842
-  tps: 600330.9505
-  dtps: 55560.19806
-  hps: 23116.99779
+  dps: 86608.19734
+  tps: 600324.78296
+  dtps: 55552.95401
+  hps: 23116.86639
  }
 }
 dps_results: {
@@ -519,10 +519,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-DarkmistVortex-87172"
  value: {
-  dps: 87216.71697
-  tps: 604432.82194
+  dps: 87218.36766
+  tps: 604444.35972
   dtps: 55332.01142
-  hps: 23749.65334
+  hps: 23732.14
  }
 }
 dps_results: {
@@ -753,10 +753,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-EmblemofKypariZar-84077"
  value: {
-  dps: 86717.63118
-  tps: 600879.19997
-  dtps: 55823.65207
-  hps: 24732.36052
+  dps: 86717.51147
+  tps: 600878.36198
+  dtps: 55823.6294
+  hps: 24732.54898
  }
 }
 dps_results: {
@@ -834,10 +834,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 89560.79405
-  tps: 620076.853
-  dtps: 54295.37849
-  hps: 25033.5338
+  dps: 89568.90861
+  tps: 620133.67115
+  dtps: 54327.14897
+  hps: 25048.60199
  }
 }
 dps_results: {
@@ -870,9 +870,9 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-FearwurmBadge-84074"
  value: {
-  dps: 86673.58517
-  tps: 600568.44489
-  dtps: 55781.47138
+  dps: 86673.61883
+  tps: 600568.68056
+  dtps: 55781.29354
   hps: 24554.40016
  }
 }
@@ -2328,8 +2328,8 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-SigiloftheCatacombs-83732"
  value: {
-  dps: 86459.92355
-  tps: 599147.96336
+  dps: 86459.93321
+  tps: 599148.03101
   dtps: 55711.19997
   hps: 23756.27237
  }
@@ -2364,10 +2364,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-SpringrainIdolofDestruction-101023"
  value: {
-  dps: 85485.9967
-  tps: 592558.32609
-  dtps: 54957.86502
-  hps: 22979.6745
+  dps: 85516.21962
+  tps: 592769.76331
+  dtps: 55147.73531
+  hps: 23002.57934
  }
 }
 dps_results: {
@@ -2562,46 +2562,46 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-TalismanofBloodlust-94522"
  value: {
-  dps: 88693.981
-  tps: 615056.90857
-  dtps: 54386.82805
-  hps: 24599.03072
+  dps: 88728.37635
+  tps: 615297.71027
+  dtps: 54362.67556
+  hps: 24524.98684
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-TalismanofBloodlust-95748"
  value: {
-  dps: 88112.91242
-  tps: 611123.98806
-  dtps: 54965.94918
-  hps: 23729.08519
+  dps: 88140.09352
+  tps: 611314.30575
+  dtps: 54852.89081
+  hps: 23766.11205
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-TalismanofBloodlust-96120"
  value: {
-  dps: 88953.95033
-  tps: 616942.32162
-  dtps: 54455.64541
-  hps: 24524.4141
+  dps: 88950.00904
+  tps: 616914.71633
+  dtps: 54425.52224
+  hps: 24508.64198
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-TalismanofBloodlust-96492"
  value: {
-  dps: 89349.33843
-  tps: 619631.99505
-  dtps: 54283.33381
-  hps: 24609.50951
+  dps: 89397.22984
+  tps: 619967.31552
+  dtps: 54294.729
+  hps: 24635.47503
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-TalismanofBloodlust-96864"
  value: {
-  dps: 89572.64986
-  tps: 621342.56963
-  dtps: 54560.01011
-  hps: 25020.99502
+  dps: 89475.90944
+  tps: 620665.161
+  dtps: 54410.13532
+  hps: 24857.66997
  }
 }
 dps_results: {
@@ -2625,10 +2625,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Thousand-YearPickledEgg-87573"
  value: {
-  dps: 85942.74046
-  tps: 595611.23862
-  dtps: 56052.25596
-  hps: 23304.20772
+  dps: 85938.67148
+  tps: 595582.73951
+  dtps: 56021.73523
+  hps: 23288.34713
  }
 }
 dps_results: {
@@ -3066,7 +3066,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-Default-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.73168355308e+06
+  dps: 1.73120877797e+06
   tps: 1.1991996782e+07
   dtps: 1.11144652067e+06
   hps: 82839.62463
@@ -3075,7 +3075,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-Default-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 95240.77919
+  dps: 95177.95637
   tps: 640169.58066
   dtps: 55978.17869
   hps: 22123.35765
@@ -3084,7 +3084,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-Default-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 95433.69344
+  dps: 95151.30995
   tps: 601470.2621
   dtps: 51893.3678
   hps: 18302.45064
@@ -3093,7 +3093,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-Default-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.29706462206e+06
+  dps: 1.29691083738e+06
   tps: 9.03217965544e+06
   dtps: 1.18656696966e+06
   hps: 51222.41425
@@ -3102,7 +3102,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-Default-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 78129.39088
+  dps: 78101.31009
   tps: 533250.32168
   dtps: 60457.74463
   hps: 15888.62522
@@ -3111,7 +3111,7 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-Default-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 69627.14008
+  dps: 69495.09091
   tps: 469720.22073
   dtps: 59180.45241
   hps: 12938.75987

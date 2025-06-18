@@ -52,6 +52,7 @@ type Pet struct {
 	statInheritance        PetStatInheritance
 	dynamicStatInheritance PetStatInheritance
 	inheritedStats         stats.Stats
+	nextHeartbeatStats     stats.Stats
 	inheritanceDelay       time.Duration
 
 	// In MoP pets inherit their owners melee speed and cast speed
@@ -127,12 +128,17 @@ func (pet *Pet) Initialize() {
 
 // Updates the stats for this pet in response to a stat change on the owner.
 // addedStats is the amount of stats added to the owner (will be negative if the
-// owner lost stats).
-func (pet *Pet) addOwnerStats(sim *Simulation, addedStats stats.Stats) {
-	inheritedChange := pet.dynamicStatInheritance(addedStats)
+// owner lost stats). Will be reflected on the pet stats in the next heartbeat
+func (pet *Pet) addOwnerStats(_ *Simulation, addedStats stats.Stats) {
+	pet.nextHeartbeatStats.AddInplace(&addedStats)
+}
+
+func (pet *Pet) updateOwnerStats(sim *Simulation) {
+	inheritedChange := pet.dynamicStatInheritance(pet.nextHeartbeatStats)
 
 	pet.inheritedStats.AddInplace(&inheritedChange)
 	pet.AddStatsDynamic(sim, inheritedChange)
+	pet.nextHeartbeatStats = stats.Stats{}
 }
 
 func (pet *Pet) reset(sim *Simulation, agent PetAgent) {
@@ -191,6 +197,8 @@ func (pet *Pet) Enable(sim *Simulation, petAgent PetAgent) {
 
 	pet.Owner.DynamicStatsPets = append(pet.Owner.DynamicStatsPets, pet)
 	pet.dynamicStatInheritance = pet.statInheritance
+
+	pet.nextHeartbeatStats = stats.Stats{}
 
 	//reset current mana after applying stats
 	pet.manaBar.reset()

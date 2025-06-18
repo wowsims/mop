@@ -101,3 +101,11 @@ func StartPeriodicAction(sim *Simulation, options PeriodicActionOptions) *Pendin
 	sim.AddPendingAction(pa)
 	return pa
 }
+
+// Convenience for immediately creating and starting a delayed periodic action.
+func StartPeriodicActionAt(sim *Simulation, options PeriodicActionOptions, startAt time.Duration) *PendingAction {
+	pa := NewPeriodicAction(sim, options)
+	pa.NextActionAt = startAt + options.Period
+	sim.AddPendingAction(pa)
+	return pa
+}
