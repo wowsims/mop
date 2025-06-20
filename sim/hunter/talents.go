@@ -20,13 +20,13 @@ func (hunter *Hunter) applyThrillOfTheHunt() {
 		Duration:  time.Second * 12,
 		MaxStacks: 2,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			hunter.MultiShot.Cost.PercentModifier -= 50
-			hunter.ArcaneShot.Cost.PercentModifier -= 50
+			hunter.MultiShot.Cost.FlatModifier -= 20
+			hunter.ArcaneShot.Cost.FlatModifier -= 20
 
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			hunter.MultiShot.Cost.PercentModifier += 50
-			hunter.ArcaneShot.Cost.PercentModifier += 50
+			hunter.MultiShot.Cost.FlatModifier += 20
+			hunter.ArcaneShot.Cost.FlatModifier += 20
 
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
@@ -51,7 +51,7 @@ func (hunter *Hunter) applyThrillOfTheHunt() {
 
 			if sim.RandomFloat("Thrill of the Hunt") < procChance {
 				tothAura.Activate(sim)
-				tothAura.SetStacks(sim, 2)
+				tothAura.SetStacks(sim, 3)
 			}
 		},
 	})
