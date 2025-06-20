@@ -254,7 +254,7 @@ func (env *Environment) setupAttackTables() {
 }
 
 func (env *Environment) setupStatsInheritanceHeartbeat(sim *Simulation) {
-	t := time.Millisecond * time.Duration((1000 * sim.RollWithLabel(0, 5, "Pet Stats Inheritance Heartbeat")))
+	t := 2 * time.Second //time.Millisecond * time.Duration((1000 * sim.RollWithLabel(0, 5, "Pet Stats Inheritance Heartbeat")))
 
 	period := time.Second * 5
 

@@ -180,8 +180,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 77577.28193
-  tps: 54696.93714
+  dps: 77594.35752
+  tps: 54709.0608
  }
 }
 dps_results: {
@@ -530,8 +530,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-Average-Default"
  value: {
-  dps: 79500.67264
-  tps: 56022.07889
+  dps: 79501.36716
+  tps: 56022.56598
  }
 }
 dps_results: {
@@ -621,7 +621,7 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 27640.94459
-  tps: 19625.07066
+  dps: 27639.45503
+  tps: 19624.01307
  }
 }

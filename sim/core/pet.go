@@ -52,13 +52,21 @@ type Pet struct {
 	statInheritance        PetStatInheritance
 	dynamicStatInheritance PetStatInheritance
 	inheritedStats         stats.Stats
-	nextHeartbeatStats     stats.Stats
 	inheritanceDelay       time.Duration
+
+	//Stores the stats to be added on next heartbeat
+	nextHeartbeatStats      stats.Stats
+	nextHeartbeatMeleeSpeed float64
+	nextHeartbeatCastSpeed  float64
+	nextHeartbeatRegenSpeed float64
 
 	// In MoP pets inherit their owners melee speed and cast speed
 	// rather than having auras such as Heroism being applied to them.
 	dynamicMeleeSpeedInheritance PetMeleeSpeedInheritance
 	dynamicCastSpeedInheritance  PetMeleeSpeedInheritance
+
+	userMeleeSpeedInheritance PetMeleeSpeedInheritance
+	userCastSpeedInheritance  PetMeleeSpeedInheritance
 
 	// If true the pet will automatically inherit the owner's melee speed
 	hasDynamicMeleeSpeedInheritance bool
@@ -126,6 +134,13 @@ func (pet *Pet) Initialize() {
 	}
 }
 
+func (pet *Pet) resetHeartbeatStat() {
+	pet.nextHeartbeatStats = stats.Stats{}
+	pet.nextHeartbeatMeleeSpeed = 1
+	pet.nextHeartbeatCastSpeed = 1
+	pet.nextHeartbeatRegenSpeed = 1
+}
+
 // Updates the stats for this pet in response to a stat change on the owner.
 // addedStats is the amount of stats added to the owner (will be negative if the
 // owner lost stats). Will be reflected on the pet stats in the next heartbeat
@@ -134,11 +149,27 @@ func (pet *Pet) addOwnerStats(_ *Simulation, addedStats stats.Stats) {
 }
 
 func (pet *Pet) updateOwnerStats(sim *Simulation) {
-	inheritedChange := pet.dynamicStatInheritance(pet.nextHeartbeatStats)
+	if pet.dynamicStatInheritance != nil {
+		inheritedChange := pet.dynamicStatInheritance(pet.nextHeartbeatStats)
 
-	pet.inheritedStats.AddInplace(&inheritedChange)
-	pet.AddStatsDynamic(sim, inheritedChange)
-	pet.nextHeartbeatStats = stats.Stats{}
+		pet.inheritedStats.AddInplace(&inheritedChange)
+		pet.AddStatsDynamic(sim, inheritedChange)
+	}
+
+	if pet.dynamicMeleeSpeedInheritance != nil {
+		pet.userMeleeSpeedInheritance(pet.nextHeartbeatMeleeSpeed)
+	}
+	if pet.dynamicCastSpeedInheritance != nil {
+		pet.userCastSpeedInheritance(pet.nextHeartbeatCastSpeed)
+	}
+
+	pet.MultiplyResourceRegenSpeed(sim, pet.nextHeartbeatRegenSpeed)
+
+	pet.resetHeartbeatStat()
+}
+
+func (pet *Pet) multiplyResourceRegenSpeed(_ *Simulation, amount float64) {
+	pet.nextHeartbeatRegenSpeed *= amount
 }
 
 func (pet *Pet) reset(sim *Simulation, agent PetAgent) {
@@ -198,7 +229,7 @@ func (pet *Pet) Enable(sim *Simulation, petAgent PetAgent) {
 	pet.Owner.DynamicStatsPets = append(pet.Owner.DynamicStatsPets, pet)
 	pet.dynamicStatInheritance = pet.statInheritance
 
-	pet.nextHeartbeatStats = stats.Stats{}
+	pet.resetHeartbeatStat()
 
 	//reset current mana after applying stats
 	pet.manaBar.reset()
@@ -301,7 +332,10 @@ func (pet *Pet) enableDynamicMeleeSpeed(inheritance PetMeleeSpeedInheritance) {
 		inheritance(pet.Owner.PseudoStats.MeleeSpeedMultiplier)
 		inheritance(pet.Owner.PseudoStats.AttackSpeedMultiplier)
 	}
-	pet.dynamicMeleeSpeedInheritance = inheritance
+	pet.userMeleeSpeedInheritance = inheritance
+	pet.dynamicMeleeSpeedInheritance = func(amount float64) {
+		pet.nextHeartbeatMeleeSpeed *= amount
+	}
 }
 
 // Enables and possibly updates how the pet inherits its owner's cast speed.
@@ -317,7 +351,10 @@ func (pet *Pet) enableDynamicCastSpeed(inheritance PetMeleeSpeedInheritance) {
 		pet.Owner.DynamicCastSpeedPets = append(pet.Owner.DynamicCastSpeedPets, pet)
 		inheritance(pet.Owner.PseudoStats.CastSpeedMultiplier)
 	}
-	pet.dynamicCastSpeedInheritance = inheritance
+	pet.userCastSpeedInheritance = inheritance
+	pet.dynamicCastSpeedInheritance = func(amount float64) {
+		pet.nextHeartbeatCastSpeed *= amount
+	}
 }
 
 func (pet *Pet) enableResourceRegenInheritance() {
@@ -340,6 +377,8 @@ func (pet *Pet) Disable(sim *Simulation) {
 		return
 	}
 
+	pet.updateOwnerStats(sim)
+
 	pet.AddStatsDynamic(sim, pet.inheritedStats.Invert())
 	pet.inheritedStats = stats.Stats{}
 
@@ -356,8 +395,8 @@ func (pet *Pet) Disable(sim *Simulation) {
 		}
 
 		// reset melee speed inheritance here so pets that get enabled later to not keep it
-		pet.dynamicMeleeSpeedInheritance(1 / pet.Owner.PseudoStats.MeleeSpeedMultiplier)
-		pet.dynamicMeleeSpeedInheritance(1 / pet.Owner.PseudoStats.AttackSpeedMultiplier)
+		pet.userMeleeSpeedInheritance(1 / pet.Owner.PseudoStats.MeleeSpeedMultiplier)
+		pet.userMeleeSpeedInheritance(1 / pet.Owner.PseudoStats.AttackSpeedMultiplier)
 		pet.dynamicMeleeSpeedInheritance = nil
 	}
 
@@ -367,7 +406,7 @@ func (pet *Pet) Disable(sim *Simulation) {
 		}
 
 		// reset cast speed inheritance here so pets that get enabled later to not keep it
-		pet.dynamicCastSpeedInheritance(1 / pet.Owner.PseudoStats.CastSpeedMultiplier)
+		pet.userCastSpeedInheritance(1 / pet.Owner.PseudoStats.CastSpeedMultiplier)
 		pet.dynamicCastSpeedInheritance = nil
 	}
 
