@@ -606,7 +606,7 @@ func (unit *Unit) MultiplyResourceRegenSpeed(sim *Simulation, amount float64) {
 	}
 
 	for _, pet := range unit.RegenInheritancePets {
-		pet.MultiplyResourceRegenSpeed(sim, amount)
+		pet.multiplyResourceRegenSpeed(sim, amount)
 	}
 }
 

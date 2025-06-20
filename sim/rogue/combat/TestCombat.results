@@ -467,36 +467,36 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-TalismanofBloodlust-94522"
  value: {
-  dps: 85209.1916
-  tps: 59856.35645
+  dps: 85037.96991
+  tps: 59734.78905
  }
 }
 dps_results: {
  key: "TestCombat-AllItems-TalismanofBloodlust-95748"
  value: {
-  dps: 83787.04286
-  tps: 58843.16209
+  dps: 83675.48756
+  tps: 58763.95782
  }
 }
 dps_results: {
  key: "TestCombat-AllItems-TalismanofBloodlust-96120"
  value: {
-  dps: 85756.88162
-  tps: 60248.18814
+  dps: 85678.75144
+  tps: 60192.71571
  }
 }
 dps_results: {
  key: "TestCombat-AllItems-TalismanofBloodlust-96492"
  value: {
-  dps: 86419.41177
-  tps: 60726.98147
+  dps: 86521.13529
+  tps: 60799.20517
  }
 }
 dps_results: {
  key: "TestCombat-AllItems-TalismanofBloodlust-96864"
  value: {
-  dps: 86443.89374
-  tps: 60790.59077
+  dps: 86510.97517
+  tps: 60838.21859
  }
 }
 dps_results: {
@@ -537,8 +537,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-Average-Default"
  value: {
-  dps: 80264.20379
-  tps: 56391.26454
+  dps: 80263.8985
+  tps: 56391.04779
  }
 }
 dps_results: {
