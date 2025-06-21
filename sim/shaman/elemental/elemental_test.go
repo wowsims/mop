@@ -92,6 +92,7 @@ var PlayerOptionsFireElemental = &proto.Player_ElementalShaman{
 					AutocastImmolate:  true,
 					AutocastEmpower:   false,
 				},
+				ImbueMhSwap: proto.ShamanImbue_WindfuryWeapon,
 			},
 		},
 	},

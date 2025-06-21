@@ -30,9 +30,11 @@ func NewEnhancementShaman(character *core.Character, options *proto.Player) *Enh
 	enhOptions := options.GetEnhancementShaman().Options
 
 	selfBuffs := shaman.SelfBuffs{
-		Shield:  enhOptions.ClassOptions.Shield,
-		ImbueMH: enhOptions.ClassOptions.ImbueMh,
-		ImbueOH: enhOptions.ImbueOh,
+		Shield:      enhOptions.ClassOptions.Shield,
+		ImbueMH:     enhOptions.ClassOptions.ImbueMh,
+		ImbueOH:     enhOptions.ImbueOh,
+		ImbueMHSwap: enhOptions.ClassOptions.ImbueMh,
+		ImbueOHSwap: enhOptions.ImbueOh,
 	}
 
 	enh := &EnhancementShaman{
@@ -47,7 +49,6 @@ func NewEnhancementShaman(character *core.Character, options *proto.Player) *Enh
 	})
 
 	enh.ApplySyncType(enhOptions.SyncType)
-	enh.ApplyFlametongueImbue(enh.getImbueProcMask(proto.ShamanImbue_FlametongueWeapon))
 
 	if !enh.HasMHWeapon() {
 		enh.SelfBuffs.ImbueMH = proto.ShamanImbue_NoImbue
@@ -65,17 +66,6 @@ func NewEnhancementShaman(character *core.Character, options *proto.Player) *Enh
 	enh.PseudoStats.CanParry = true
 
 	return enh
-}
-
-func (enh *EnhancementShaman) getImbueProcMask(imbue proto.ShamanImbue) core.ProcMask {
-	var mask core.ProcMask
-	if enh.SelfBuffs.ImbueMH == imbue {
-		mask |= core.ProcMaskMeleeMH
-	}
-	if enh.SelfBuffs.ImbueOH == imbue {
-		mask |= core.ProcMaskMeleeOH
-	}
-	return mask
 }
 
 type EnhancementShaman struct {
@@ -104,12 +94,11 @@ func (enh *EnhancementShaman) ApplyTalents() {
 func (enh *EnhancementShaman) Initialize() {
 	enh.Shaman.Initialize()
 	// In the Initialize due to frost brand adding the aura to the enemy
-	enh.RegisterFrostbrandImbue(enh.getImbueProcMask(proto.ShamanImbue_FrostbrandWeapon))
-	enh.RegisterFlametongueImbue(enh.getImbueProcMask(proto.ShamanImbue_FlametongueWeapon))
-	enh.RegisterWindfuryImbue(enh.getImbueProcMask(proto.ShamanImbue_WindfuryWeapon))
+	enh.RegisterFrostbrandImbue(enh.GetImbueProcMask(proto.ShamanImbue_FrostbrandWeapon))
+	enh.RegisterFlametongueImbue(enh.GetImbueProcMask(proto.ShamanImbue_FlametongueWeapon))
+	enh.RegisterWindfuryImbue(enh.GetImbueProcMask(proto.ShamanImbue_WindfuryWeapon))
 
 	if enh.ItemSwap.IsEnabled() {
-		enh.ApplyFlametongueImbueSwap(enh.getImbueProcMask(proto.ShamanImbue_FlametongueWeapon))
 		enh.RegisterItemSwapCallback(core.AllWeaponSlots(), func(_ *core.Simulation, slot proto.ItemSlot) {
 			enh.ApplySyncType(proto.ShamanSyncType_Auto)
 		})

@@ -100,6 +100,16 @@ func (swap *ItemSwap) initialize(character *Character) {
 	swap.character = character
 }
 
+// Used by shaman imbues because itemswap is setup before Imbue spells registers
+func (swap *ItemSwap) AddTempEnchant(enchantID int32, slot proto.ItemSlot, swapped bool) {
+	if swapped {
+		swap.unEquippedItems[slot].TempEnchant = enchantID
+		swap.swapEquip[slot].TempEnchant = enchantID
+	} else {
+		swap.originalEquip[slot].TempEnchant = enchantID
+	}
+}
+
 func (character *Character) RegisterItemSwapCallback(slots []proto.ItemSlot, callback OnItemSwap) {
 	if character == nil || !character.ItemSwap.IsEnabled() || len(slots) == 0 {
 		return
@@ -393,10 +403,9 @@ func (swap *ItemSwap) swapItem(sim *Simulation, slot proto.ItemSlot, isPrepull b
 		// depending on the updated DW status after the swap.
 		if character.AutoAttacks.AutoSwingMelee {
 			weapon := character.WeaponFromOffHand(swap.ohCritMultiplier)
-			isCurrentlyDualWielding := character.AutoAttacks.IsDualWielding
 			character.AutoAttacks.SetOH(weapon)
-			if !isPrepull && !isCurrentlyDualWielding {
-				character.AutoAttacks.IsDualWielding = weapon.SwingSpeed != 0
+			character.AutoAttacks.IsDualWielding = weapon.SwingSpeed != 0
+			if !isReset {
 				character.AutoAttacks.EnableMeleeSwing(sim)
 			}
 			character.PseudoStats.CanBlock = character.OffHand().WeaponType == proto.WeaponType_WeaponTypeShield

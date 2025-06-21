@@ -237,24 +237,26 @@ func (shaman *Shaman) ApplyUnleashedFury() {
 		ClassSpellMask: SpellMaskUnleashElements,
 		ProcChance:     1.0,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			switch shaman.SelfBuffs.ImbueMH {
-			case proto.ShamanImbue_FlametongueWeapon:
+			mh := shaman.GetMHWeapon()
+			switch mh.TempEnchant {
+			case flametongueEnchantID:
 				flametongueDebuffAura.Get(result.Target).Activate(sim)
-			case proto.ShamanImbue_WindfuryWeapon:
+			case windfuryEnchantID:
 				windfuryProcAura.Activate(sim)
-			case proto.ShamanImbue_EarthlivingWeapon:
-			case proto.ShamanImbue_FrostbrandWeapon:
-			case proto.ShamanImbue_RockbiterWeapon:
+			case earthlivingEnchantID:
+			case frostbrandEnchantID:
+			case rockbiterEnchantID:
 			}
-			if shaman.SelfBuffs.ImbueOH != proto.ShamanImbue_NoImbue && shaman.SelfBuffs.ImbueOH != shaman.SelfBuffs.ImbueMH {
-				switch shaman.SelfBuffs.ImbueOH {
-				case proto.ShamanImbue_FlametongueWeapon:
+			oh := shaman.GetOHWeapon()
+			if oh != nil && oh.TempEnchant != mh.TempEnchant {
+				switch oh.TempEnchant {
+				case flametongueEnchantID:
 					flametongueDebuffAura.Get(result.Target).Activate(sim)
-				case proto.ShamanImbue_WindfuryWeapon:
+				case windfuryEnchantID:
 					windfuryProcAura.Activate(sim)
-				case proto.ShamanImbue_EarthlivingWeapon:
-				case proto.ShamanImbue_FrostbrandWeapon:
-				case proto.ShamanImbue_RockbiterWeapon:
+				case earthlivingEnchantID:
+				case frostbrandEnchantID:
+				case rockbiterEnchantID:
 				}
 			}
 		},

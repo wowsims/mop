@@ -74,6 +74,13 @@ func (character *Character) NewDynamicLegacyProcForEnchant(effectID int32, ppm f
 	})
 }
 
+// Dynamic Proc Manager for dynamic ProcMasks on weapon temp enchants
+func (character *Character) NewDynamicLegacyProcForTempEnchant(effectID int32, ppm float64, fixedProcChanceFn func(ProcMask) float64) *DynamicProcManager {
+	return character.newDynamicProcManagerWithDynamicProcMaskDynamicProcChance(ppm, fixedProcChanceFn, func() ProcMask {
+		return character.getCurrentProcMaskForWeaponTempEnchant(effectID)
+	})
+}
+
 // Dynamic Proc Manager for dynamic ProcMasks on weapon effects
 func (character *Character) NewDynamicLegacyProcForWeapon(itemID int32, ppm float64, fixedProcChance float64) *DynamicProcManager {
 	return character.newDynamicProcManagerWithDynamicProcMask(ppm, fixedProcChance, func() ProcMask {
@@ -85,6 +92,17 @@ func (character *Character) newDynamicProcManagerWithDynamicProcMask(ppm float64
 	dpm := character.newDynamicWeaponProcManager(ppm, fixedProcChance, procMaskFn())
 	character.RegisterItemSwapCallback(AllWeaponSlots(), func(sim *Simulation, slot proto.ItemSlot) {
 		dpm = character.newDynamicWeaponProcManager(ppm, fixedProcChance, procMaskFn())
+	})
+
+	return &dpm
+}
+
+func (character *Character) newDynamicProcManagerWithDynamicProcMaskDynamicProcChance(ppm float64, fixedProcChanceFn func(ProcMask) float64, procMaskFn func() ProcMask) *DynamicProcManager {
+	procMask := procMaskFn()
+	dpm := character.newDynamicWeaponProcManager(ppm, fixedProcChanceFn(procMask), procMask)
+	character.RegisterItemSwapCallback(AllWeaponSlots(), func(sim *Simulation, slot proto.ItemSlot) {
+		procMask := procMaskFn()
+		dpm = character.newDynamicWeaponProcManager(ppm, fixedProcChanceFn(procMask), procMask)
 	})
 
 	return &dpm

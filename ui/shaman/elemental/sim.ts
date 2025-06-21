@@ -58,7 +58,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		}),
 	},
 	// IconInputs to include in the 'Player' section on the settings tab.
-	playerIconInputs: [ShamanInputs.ShamanShieldInput()],
+	playerIconInputs: [ShamanInputs.ShamanShieldInput(), ShamanInputs.ShamanImbueMHSwap()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
 	includeBuffDebuffInputs: [AttackSpeedBuff],
 	excludeBuffDebuffInputs: [],

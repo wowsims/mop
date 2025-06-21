@@ -555,6 +555,12 @@ func (character *Character) getCurrentProcMaskForWeaponEnchant(effectID int32) P
 	})
 }
 
+func (character *Character) getCurrentProcMaskForWeaponTempEnchant(effectID int32) ProcMask {
+	return character.getCurrentProcMaskFor(func(weapon *Item) bool {
+		return weapon.TempEnchant == effectID
+	})
+}
+
 func (character *Character) GetDynamicProcMaskForWeaponEffect(itemID int32) *ProcMask {
 	return character.getDynamicProcMaskPointer(func() ProcMask {
 		return character.getCurrentProcMaskForWeaponEffect(itemID)
