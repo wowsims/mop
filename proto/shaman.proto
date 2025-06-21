@@ -158,6 +158,7 @@ message FeleAutocastSettings {
 message ShamanOptions {
 	ShamanShield shield = 1;
 	ShamanImbue imbue_mh = 2;
+    ShamanImbue imbue_mh_swap = 4;
 
     FeleAutocastSettings fele_autocast = 3;
 }

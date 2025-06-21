@@ -33,6 +33,18 @@ export const ShamanImbueMH = <SpecType extends ShamanSpecs>() =>
 		],
 	});
 
+export const ShamanImbueMHSwap = <SpecType extends ShamanSpecs>() =>
+	InputHelpers.makeClassOptionsEnumIconInput<SpecType, ShamanImbue>({
+		fieldName: 'imbueMhSwap',
+		values: [
+			{ value: ShamanImbue.NoImbue, tooltip: 'No Main Hand Swap Enchant' },
+			{ actionId: ActionId.fromSpellId(8232), value: ShamanImbue.WindfuryWeapon },
+			{ actionId: ActionId.fromSpellId(8024), value: ShamanImbue.FlametongueWeapon },
+	    ],
+		showWhen: (player: Player<SpecType>) => player.itemSwapSettings.getEnableItemSwap(),
+		changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.specOptionsChangeEmitter, player.itemSwapSettings.changeEmitter]),
+});
+
 export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<any>): ContentBlock {
 	const contentBlock = new ContentBlock(parentElem, 'totems-settings', {
 		header: { title: 'Totems' },

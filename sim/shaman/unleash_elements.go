@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
-	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func (shaman *Shaman) registerUnleashFlame() {
@@ -188,25 +187,27 @@ func (shaman *Shaman) registerUnleashElements() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			switch shaman.SelfBuffs.ImbueMH {
-			case proto.ShamanImbue_FlametongueWeapon:
+			mh := shaman.GetMHWeapon()
+			switch mh.TempEnchant {
+			case flametongueEnchantID:
 				shaman.UnleashFlame.Cast(sim, target)
-			case proto.ShamanImbue_WindfuryWeapon:
+			case windfuryEnchantID:
 				shaman.UnleashWind.Cast(sim, target)
-			case proto.ShamanImbue_EarthlivingWeapon:
+			case earthlivingEnchantID:
 				shaman.UnleashLife.Cast(sim, target)
-			case proto.ShamanImbue_FrostbrandWeapon:
+			case frostbrandEnchantID:
 				shaman.UnleashFrost.Cast(sim, target)
 			}
-			if shaman.SelfBuffs.ImbueOH != proto.ShamanImbue_NoImbue && shaman.SelfBuffs.ImbueOH != shaman.SelfBuffs.ImbueMH {
-				switch shaman.SelfBuffs.ImbueOH {
-				case proto.ShamanImbue_FlametongueWeapon:
+			oh := shaman.GetOHWeapon()
+			if oh != nil && oh.TempEnchant != mh.TempEnchant {
+				switch oh.TempEnchant {
+				case flametongueEnchantID:
 					shaman.UnleashFlame.Cast(sim, target)
-				case proto.ShamanImbue_WindfuryWeapon:
+				case windfuryEnchantID:
 					shaman.UnleashWind.Cast(sim, target)
-				case proto.ShamanImbue_EarthlivingWeapon:
+				case earthlivingEnchantID:
 					shaman.UnleashLife.Cast(sim, target)
-				case proto.ShamanImbue_FrostbrandWeapon:
+				case frostbrandEnchantID:
 					shaman.UnleashFrost.Cast(sim, target)
 				}
 			}

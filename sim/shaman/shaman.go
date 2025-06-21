@@ -71,11 +71,24 @@ func NewShaman(character *core.Character, talents string, selfBuffs SelfBuffs, t
 	return shaman
 }
 
+func (shaman *Shaman) GetImbueProcMask(imbue proto.ShamanImbue) core.ProcMask {
+	var mask core.ProcMask
+	if shaman.SelfBuffs.ImbueMH == imbue || shaman.SelfBuffs.ImbueMHSwap == imbue {
+		mask |= core.ProcMaskMeleeMH
+	}
+	if shaman.SelfBuffs.ImbueOH == imbue {
+		mask |= core.ProcMaskMeleeOH
+	}
+	return mask
+}
+
 // Which buffs this shaman is using.
 type SelfBuffs struct {
-	Shield  proto.ShamanShield
-	ImbueMH proto.ShamanImbue
-	ImbueOH proto.ShamanImbue
+	Shield      proto.ShamanShield
+	ImbueMH     proto.ShamanImbue
+	ImbueOH     proto.ShamanImbue
+	ImbueMHSwap proto.ShamanImbue
+	ImbueOHSwap proto.ShamanImbue
 }
 
 // Indexes into NextTotemDrops for self buffs
