@@ -3,13 +3,14 @@ package retribution
 import (
 	"testing"
 
-	_ "github.com/wowsims/mop/sim/common" // imported to get item effects included.
+	"github.com/wowsims/mop/sim/common" // imported to get item effects included.
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func init() {
 	RegisterRetributionPaladin()
+	common.RegisterAllEffects()
 }
 
 func TestRetribution(t *testing.T) {
@@ -17,7 +18,10 @@ func TestRetribution(t *testing.T) {
 		Class: proto.Class_ClassPaladin,
 		Race:  proto.Race_RaceBloodElf,
 
-		GearSet:     core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p1"),
+		GearSet: core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p1"),
+		OtherGearSets: []core.GearSetCombo{
+			core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "preraid"),
+		},
 		Talents:     StandardTalents,
 		Glyphs:      StandardGlyphs,
 		Consumables: FullConsumesSpec,
@@ -124,9 +128,8 @@ var SealOfTruth = &proto.Player_RetributionPaladin{
 }
 
 var FullConsumesSpec = &proto.ConsumesSpec{
-	FlaskId:  76088,  // Flask of Winter's Bite
-	FoodId:   74646,  // Black Pepper Ribs and Shrimp
-	PotId:    76095,  // Potion of Mogu Power
-	PrepotId: 76095,  // Potion of Mogu Power
-	TinkerId: 126734, // Synapse Springs Mark II
+	FlaskId:  76088, // Flask of Winter's Bite
+	FoodId:   74646, // Black Pepper Ribs and Shrimp
+	PotId:    76095, // Potion of Mogu Power
+	PrepotId: 76095, // Potion of Mogu Power
 }

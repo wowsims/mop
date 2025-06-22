@@ -30,6 +30,7 @@ message ProtoVersion {
 	// The actual field value is only used within unit tests.
 	int32 saved_version_number = 1;
 }
+
 enum ItemLevelState {
     Base = 0;
     ChallengeMode = -1;
@@ -38,6 +39,7 @@ enum ItemLevelState {
     UpgradeStepThree = 3;
     UpgradeStepFour = 4;
 }
+
 message ScalingItemProperties {
     int32 rand_prop_points = 1;
     double weapon_damage_min = 2;
@@ -45,6 +47,7 @@ message ScalingItemProperties {
     map<int32, double> stats = 4; // for compactness
 	int32 ilvl = 6;
 }
+
 enum Spec {
 	SpecUnknown = 0;
 
@@ -118,19 +121,27 @@ enum Faction {
 	Horde = 2;
 }
 
+// Should aways be in order of dbc class file to properly match class masks
+// Found at https://wago.tools/db2/ChrClasses?build=5.5.0.61217&sort%5BID%5D=asc
 enum Class {
 	ClassUnknown = 0;
-	ClassDruid = 1;
-	ClassHunter = 2;
-	ClassMage = 3;
-	ClassPaladin = 4;
+	ClassWarrior = 1;
+	ClassPaladin = 2;
+	ClassHunter = 3;
+	ClassRogue = 4;
 	ClassPriest = 5;
-	ClassRogue = 6;
+	ClassDeathKnight = 6;
 	ClassShaman = 7;
-	ClassWarlock = 8;
-	ClassWarrior = 9;
-	ClassDeathKnight = 10;
-	ClassMonk = 11;
+	ClassMage = 8;
+	ClassWarlock = 9;
+	ClassMonk = 10;
+	ClassDruid = 11;
+	ClassExtra1 = 12;
+	ClassExtra2 = 13;
+	ClassExtra3 = 14;
+	ClassExtra4 = 15;
+	ClassExtra5 = 16;
+	ClassExtra6 = 17;
 }
 
 enum Profession {
@@ -553,8 +564,6 @@ message ConsumesSpec {
 	int32 food_id = 6;
 	int32 explosive_id = 7;
 	int32 conjured_id = 9;
-
-	int32 tinker_id = 10;
 }
 
 enum MobType {
@@ -642,6 +651,9 @@ message Encounter {
 	// Same as execute_proportion but for 35%.
 	double execute_proportion_35 = 4;
 
+	// Same as execute_proportion but for 45%.
+	double execute_proportion_45 = 10;
+
 	// Same as execute_proportion but for > 90%.
 	double execute_proportion_90 = 8;
 
@@ -676,6 +688,7 @@ message ItemSpec {
 	int32 reforging = 5; //reforging id
 	ItemLevelState upgrade_step = 7;
 	bool challenge_mode = 8;
+	int32 tinker = 9;
 }
 
 
@@ -706,20 +719,6 @@ enum EnchantType {
 	EnchantTypeKit = 3;
 	EnchantTypeStaff = 4;
 	EnchantTypeOffHand = 5;
-}
-
-// Contains only the Enchant info needed by the sim.
-message SimEnchant {
-	int32 effect_id = 1;
-	repeated double stats = 2;
-}
-
-// Contains only the Gem info needed by the sim.
-message SimGem {
-	int32 id = 1;
-	string name = 2;
-	GemColor color = 3;
-	repeated double stats = 4;
 }
 
 message UnitReference {

@@ -29,7 +29,6 @@ func NewHolyPaladin(character *core.Character, options *proto.Player) *HolyPalad
 
 	holy := &HolyPaladin{
 		Paladin: paladin.NewPaladin(character, options.TalentsString, holyOptions.Options.ClassOptions),
-		Options: holyOptions.Options,
 	}
 
 	return holy
@@ -37,8 +36,6 @@ func NewHolyPaladin(character *core.Character, options *proto.Player) *HolyPalad
 
 type HolyPaladin struct {
 	*paladin.Paladin
-
-	Options *proto.HolyPaladin_Options
 }
 
 func (holy *HolyPaladin) GetPaladin() *paladin.Paladin {
@@ -52,6 +49,8 @@ func (holy *HolyPaladin) ApplyTalents() {
 
 func (holy *HolyPaladin) Initialize() {
 	holy.Paladin.Initialize()
+
+	holy.registerHotfixPassive()
 }
 
 func (holy *HolyPaladin) Reset(sim *core.Simulation) {

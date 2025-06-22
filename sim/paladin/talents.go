@@ -184,11 +184,11 @@ func (paladin *Paladin) registerSelflessHealer() {
 		FloatValue: castTimePerStack[0],
 	})
 
-	costPerStack := []int32{0, -35, -70, -100}
+	costPerStack := castTimePerStack
 	costMod := paladin.AddDynamicMod(core.SpellModConfig{
-		Kind:      core.SpellMod_PowerCost_Pct,
-		ClassMask: classMask,
-		IntValue:  costPerStack[0],
+		Kind:       core.SpellMod_PowerCost_Pct,
+		ClassMask:  classMask,
+		FloatValue: costPerStack[0],
 	})
 
 	paladin.SelflessHealerAura = paladin.RegisterAura(core.Aura{
@@ -202,7 +202,7 @@ func (paladin *Paladin) registerSelflessHealer() {
 		},
 		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
 			castTimeMod.UpdateFloatValue(castTimePerStack[newStacks])
-			costMod.UpdateIntValue(costPerStack[newStacks])
+			costMod.UpdateFloatValue(costPerStack[newStacks])
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			castTimeMod.Deactivate()
@@ -333,13 +333,25 @@ func (paladin *Paladin) registerSacredShield() {
 	baseHealing := paladin.CalcScalingSpellDmg(core.TernaryFloat64(isHoly, 0.30000001192, 0.20999999344))
 	spCoef := core.TernaryFloat64(isHoly, 1.17, 0.819)
 	absorbAuras = paladin.NewAllyDamageAbsorptionAuraArray(func(unit *core.Unit) *core.DamageAbsorptionAura {
-		return unit.NewDamageAbsorptionAura(
-			"Sacred Shield (Absorb)",
-			core.ActionID{SpellID: 65148},
-			absorbDuration,
-			func(unit *core.Unit) float64 {
-				return baseHealing + sacredShield.SpellPower()*spCoef
-			})
+		return unit.NewDamageAbsorptionAura(core.AbsorptionAuraConfig{
+			Aura: core.Aura{
+				Label:    "Sacred Shield (Absorb)" + unit.Label,
+				ActionID: core.ActionID{SpellID: 65148},
+				Duration: absorbDuration,
+			},
+			ShieldStrengthCalculator: func(unit *core.Unit) float64 {
+				absorbAmount := baseHealing + sacredShield.SpellPower()*spCoef
+				// Beta changes 2025-06-13: https://www.wowhead.com/mop-classic/news/some-warlords-of-draenor-pre-patch-class-changes-coming-to-mists-of-pandaria-377239
+				// - The shielding on Sacred Shield has been raised by 43%. 5.4 Revert
+				// The tooltip now reads: The shield absorbs up to $?!a137029[${($m1+0.819*$SPH)/0.7} ][${$m1+0.819*$SPH}] damage
+				// 137029 is the Holy specific Hotfix Passive, tested ingame and it applies for Retribution as well
+				if !isHoly {
+					absorbAmount /= 0.7
+				}
+
+				return absorbAmount
+			},
+		})
 	})
 }
 

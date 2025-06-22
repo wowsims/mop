@@ -9,12 +9,12 @@ import (
 func (hunter *Hunter) registerCobraShotSpell() {
 
 	csMetrics := hunter.NewFocusMetrics(core.ActionID{SpellID: 77767})
-	hunter.CobraShot = hunter.RegisterSpell(core.SpellConfig{
+	hunter.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 77767},
 		SpellSchool:    core.SpellSchoolNature,
 		ProcMask:       core.ProcMaskRangedSpecial,
 		ClassSpellMask: HunterSpellCobraShot,
-		Flags:          core.SpellFlagAPL,
+		Flags:          core.SpellFlagAPL | core.SpellFlagRanged,
 		FocusCost: core.FocusCostOptions{
 			Cost: 0,
 		},
@@ -31,7 +31,7 @@ func (hunter *Hunter) registerCobraShotSpell() {
 				cast.CastTime = spell.CastTime()
 			},
 			CastTime: func(spell *core.Spell) time.Duration {
-				ss := hunter.RangedSwingSpeed()
+				ss := hunter.TotalRangedHasteMultiplier()
 				return time.Duration(float64(spell.DefaultCast.CastTime) / ss)
 			},
 		},

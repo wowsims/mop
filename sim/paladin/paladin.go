@@ -1,7 +1,6 @@
 package paladin
 
 import (
-	"github.com/wowsims/mop/sim/common/cata"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
@@ -18,12 +17,10 @@ type Paladin struct {
 	// Used for CS/HotR
 	sharedBuilderTimer *core.Timer
 
-	CurrentSeal       *core.Aura
-	StartingHolyPower int32
+	CurrentSeal *core.Aura
 
 	// Pets
-	AncientGuardian    *AncientGuardianPet
-	GurthalakTentacles []*cata.TentacleOfTheOldOnesPet
+	AncientGuardian *AncientGuardianPet
 
 	AvengersShield *core.Spell
 	Exorcism       *core.Spell
@@ -62,16 +59,6 @@ type Paladin struct {
 	ShieldOfTheRighteousMultiplicativeMultiplier float64
 }
 
-func (paladin *Paladin) GetTentacles() []*cata.TentacleOfTheOldOnesPet {
-	return paladin.GurthalakTentacles
-}
-
-func (paladin *Paladin) NewTentacleOfTheOldOnesPet() *cata.TentacleOfTheOldOnesPet {
-	pet := cata.NewTentacleOfTheOldOnesPet(&paladin.Character)
-	paladin.AddPet(pet)
-	return pet
-}
-
 // Implemented by each Paladin spec.
 type PaladinAgent interface {
 	GetPaladin() *Paladin
@@ -101,7 +88,6 @@ func (paladin *Paladin) AddPartyBuffs(_ *proto.PartyBuffs) {
 func (paladin *Paladin) Initialize() {
 	paladin.registerGlyphs()
 	paladin.registerSpells()
-	paladin.addCataclysmPvpGloves()
 	paladin.addMistsPvpGloves()
 }
 
@@ -121,8 +107,6 @@ func (paladin *Paladin) registerSpells() {
 	paladin.registerSealOfInsight()
 	paladin.registerSealOfRighteousness()
 	paladin.registerSealOfTruth()
-	paladin.registerShieldOfTheRighteous()
-	paladin.registerTemplarsVerdict()
 	paladin.registerWordOfGlory()
 }
 
@@ -159,7 +143,7 @@ func NewPaladin(character *core.Character, talentsStr string, options *proto.Pal
 		DefaultSecondaryResourceBarImpl: paladin.NewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
 			Type:    proto.SecondaryResourceType_SecondaryResourceTypeHolyPower,
 			Max:     5,
-			Default: paladin.StartingHolyPower,
+			Default: options.StartingHolyPower,
 		}),
 		paladin: paladin,
 	}
@@ -188,14 +172,6 @@ func NewPaladin(character *core.Character, talentsStr string, options *proto.Pal
 
 	// Bonus Armor and Armor are treated identically for Paladins
 	paladin.AddStatDependency(stats.BonusArmor, stats.Armor, 1)
-
-	if mh := paladin.MainHand(); mh.Name == "Gurthalak, Voice of the Deeps" {
-		paladin.GurthalakTentacles = make([]*cata.TentacleOfTheOldOnesPet, 10)
-
-		for i := range 10 {
-			paladin.GurthalakTentacles[i] = paladin.NewTentacleOfTheOldOnesPet()
-		}
-	}
 
 	return paladin
 }

@@ -30,7 +30,6 @@ func NewRetributionPaladin(character *core.Character, options *proto.Player) *Re
 	ret := &RetributionPaladin{
 		Paladin: paladin.NewPaladin(character, options.TalentsString, retOptions.Options.ClassOptions),
 	}
-	ret.StartingHolyPower = retOptions.Options.StartingHolyPower
 
 	return ret
 }
@@ -53,10 +52,12 @@ func (ret *RetributionPaladin) Initialize() {
 	ret.registerArtOfWar()
 	ret.registerDivineStorm()
 	ret.registerExorcism()
+	ret.registerHotfixPassive()
 	ret.registerInquisition()
 	ret.registerJudgmentsOfTheBold()
 	ret.registerSealOfJustice()
 	ret.registerSwordOfLight()
+	ret.registerTemplarsVerdict()
 }
 
 func (ret *RetributionPaladin) ApplyTalents() {
