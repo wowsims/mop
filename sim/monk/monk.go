@@ -346,6 +346,10 @@ const (
 	MonkSpellSoothingMist
 	MonkSpellSurgingMist
 	MonkSpellEnvelopingMist
+	MonkSpellUplift
+	MonkSpellRevival
+	MonkSpellSummonJadeSerpentStatue
+	MonkSpellManaTea
 
 	MonkSpellLast
 	MonkSpellsAll = MonkSpellLast<<1 - 1
