@@ -7,7 +7,7 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-func (hunter *Hunter) registerExplosiveTrapSpell(timer *core.Timer) {
+func (hunter *Hunter) registerExplosiveTrapSpell() {
 	bonusPeriodicDamageMultiplier := core.TernaryFloat64(hunter.Spec == proto.Spec_SpecSurvivalHunter, 0.30, 0)
 
 	hunter.ExplosiveTrap = hunter.RegisterSpell(core.SpellConfig{
@@ -25,7 +25,7 @@ func (hunter *Hunter) registerExplosiveTrapSpell(timer *core.Timer) {
 				GCD: time.Second,
 			},
 			CD: core.Cooldown{
-				Timer:    timer,
+				Timer:    hunter.NewTimer(),
 				Duration: time.Second * 30,
 			},
 		},
@@ -43,10 +43,10 @@ func (hunter *Hunter) registerExplosiveTrapSpell(timer *core.Timer) {
 			TickLength:    time.Second * 2,
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				baseDamage := (27) + (0.03819999844 * dot.Spell.RangedAttackPower())
+				baseDamage := (27) + (0.0382 * dot.Spell.RangedAttackPower())
 				dot.Spell.DamageMultiplierAdditive += bonusPeriodicDamageMultiplier
 				for _, aoeTarget := range sim.Encounter.TargetUnits {
-					dot.Spell.CalcAndDealPeriodicDamage(sim, aoeTarget, baseDamage/10, dot.Spell.OutcomeRangedHitAndCritNoBlock)
+					dot.Spell.CalcAndDealPeriodicDamage(sim, aoeTarget, baseDamage, dot.Spell.OutcomeRangedHitAndCritNoBlock)
 				}
 				dot.Spell.DamageMultiplierAdditive -= bonusPeriodicDamageMultiplier
 			},
@@ -65,7 +65,7 @@ func (hunter *Hunter) registerExplosiveTrapSpell(timer *core.Timer) {
 					DoAt: 0,
 					OnAction: func(sim *core.Simulation) {
 						for _, aoeTarget := range sim.Encounter.TargetUnits {
-							baseDamage := (109 + sim.RandomFloat("Explosive Trap Initial")*125) + (0.03819999844 * spell.RangedAttackPower())
+							baseDamage := (109 + sim.RandomFloat("Explosive Trap Initial")*125) + (0.0382 * spell.RangedAttackPower())
 							baseDamage *= core.TernaryFloat64(hunter.Spec == proto.Spec_SpecSurvivalHunter, 1.3, 1)
 							spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeRangedHitAndCritNoBlock)
 						}
@@ -74,7 +74,7 @@ func (hunter *Hunter) registerExplosiveTrapSpell(timer *core.Timer) {
 				})
 			} else {
 				for _, aoeTarget := range sim.Encounter.TargetUnits {
-					baseDamage := (109 + sim.RandomFloat("Explosive Trap Initial")*125) + (0.03819999844 * spell.RangedAttackPower())
+					baseDamage := (109 + sim.RandomFloat("Explosive Trap Initial")*125) + (0.0382 * spell.RangedAttackPower())
 					baseDamage *= core.TernaryFloat64(hunter.Spec == proto.Spec_SpecSurvivalHunter, 1.3, 1)
 					spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeRangedHitAndCritNoBlock)
 				}

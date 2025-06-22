@@ -16,7 +16,7 @@ func (druid *Druid) registerTranquilityCD() {
 		ActionID:         core.ActionID{SpellID: 44203},
 		SpellSchool:      core.SpellSchoolNature,
 		ProcMask:         core.ProcMaskSpellHealing,
-		Flags:            core.SpellFlagHelpful | core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
+		Flags:            core.SpellFlagHelpful | core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagReadinessTrinket,
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 		CritMultiplier:   druid.DefaultCritMultiplier(),
@@ -37,7 +37,7 @@ func (druid *Druid) registerTranquilityCD() {
 
 			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
 				dot.SnapshotBaseDamage = 0.068 * dot.Spell.HealingPower(target) * float64(dot.Aura.GetStacks())
-				dot.SnapshotAttackerMultiplier = dot.Spell.CasterHealingMultiplier()
+				dot.SnapshotAttackerMultiplier = dot.CasterPeriodicHealingMultiplier()
 			},
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {

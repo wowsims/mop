@@ -77,7 +77,7 @@ func applyRaceEffects(agent Agent) {
 				} else if spell.Unit.HasEnergyBar() {
 					return character.CurrentEnergy() <= character.maxEnergy-15
 				} else if spell.Unit.HasRageBar() {
-					return character.CurrentRage() <= MaxRage-15
+					return character.CurrentRage() <= character.maxRage-15
 				} else if spell.Unit.HasFocusBar() {
 					return character.CurrentFocus() <= character.maxFocus-15
 				}
@@ -318,12 +318,10 @@ func applyRaceEffects(agent Agent) {
 			OnGain: func(aura *Aura, sim *Simulation) {
 				character.MultiplyCastSpeed(1.2)
 				character.MultiplyAttackSpeed(sim, 1.2)
-				character.MultiplyResourceRegenSpeed(sim, 1.2)
 			},
 			OnExpire: func(aura *Aura, sim *Simulation) {
-				character.MultiplyCastSpeed(1 / 1.2)
 				character.MultiplyAttackSpeed(sim, 1/1.2)
-				character.MultiplyResourceRegenSpeed(sim, 1/1.2)
+				character.MultiplyCastSpeed(1 / 1.2)
 			},
 		})
 

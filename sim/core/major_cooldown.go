@@ -370,7 +370,7 @@ func (mcdm *majorCooldownManager) sort() {
 
 // Add a major cooldown to the given agent, which provides a temporary boost to a single stat.
 // This is use for effects like Icon of the Silver Crescent and Bloodlust Brooch.
-func RegisterTemporaryStatsOnUseCD(character *Character, auraLabel string, tempStats stats.Stats, duration time.Duration, config SpellConfig) {
+func RegisterTemporaryStatsOnUseCD(character *Character, auraLabel string, tempStats stats.Stats, duration time.Duration, config SpellConfig) *StatBuffAura {
 	aura := character.NewTemporaryStatsAura(auraLabel, config.ActionID, tempStats, duration)
 
 	cdType := aura.InferCDType()
@@ -387,19 +387,6 @@ func RegisterTemporaryStatsOnUseCD(character *Character, auraLabel string, tempS
 		Type:     cdType,
 		BuffAura: aura,
 	})
-}
 
-// Helper function to make an ApplyEffect for a temporary stats on-use cooldown.
-func MakeTemporaryStatsOnUseCDRegistration(auraLabel string, tempStats stats.Stats, duration time.Duration, config SpellConfig, cdFunc func(*Character) Cooldown, sharedCDFunc func(*Character) Cooldown) ApplyEffect {
-	return func(agent Agent) {
-		localConfig := config
-		character := agent.GetCharacter()
-		if cdFunc != nil {
-			localConfig.Cast.CD = cdFunc(character)
-		}
-		if sharedCDFunc != nil {
-			localConfig.Cast.SharedCD = sharedCDFunc(character)
-		}
-		RegisterTemporaryStatsOnUseCD(character, auraLabel, tempStats, duration, localConfig)
-	}
+	return aura
 }

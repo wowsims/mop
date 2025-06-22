@@ -186,7 +186,7 @@ export class ReforgeOptimizer {
 		this.player = simUI.player;
 		this.playerClass = this.player.getClass();
 		this.isExperimental = options?.experimental;
-		this.isHybridCaster = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman].includes(this.player.getSpec());
+		this.isHybridCaster = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman, Spec.SpecMistweaverMonk].includes(this.player.getSpec());
 		this.sim = simUI.sim;
 		this.defaults = simUI.individualConfig.defaults;
 		this.getEPDefaults = options?.getEPDefaults;
@@ -631,6 +631,7 @@ export class ReforgeOptimizer {
 							...sharedStatInputConfig,
 						});
 						const statPresets = this.statSelectionPresets?.find(entry => entry.unitStat.equals(unitStat))?.presets;
+
 						const presets = !!statPresets
 							? new EnumPicker(null, this.player, {
 									id: `reforge-optimizer-${statName}-presets`,
@@ -776,7 +777,7 @@ export class ReforgeOptimizer {
 				</thead>
 				<tbody>
 					{this.softCapsConfig
-						.filter(config => config.capType === StatCapType.TypeThreshold && config.breakpoints.length > 1)
+						.filter(config => (config.capType === StatCapType.TypeThreshold ||config.capType === StatCapType.TypeSoftCap) && config.breakpoints.length > 1)
 						.map(({ breakpoints, unitStat }) => {
 							if (!unitStat.hasRootStat()) return;
 							const rootStat = unitStat.getRootStat();
@@ -947,7 +948,7 @@ export class ReforgeOptimizer {
 			}
 
 			for (const reforgeData of this.player.getAvailableReforgings(item.withDynamicStats())) {
-				if (!epStats.includes(reforgeData.toStat)) {
+				if (!epStats.includes(reforgeData.toStat) && reforgeData.toStat != Stat.StatExpertiseRating) {
 					continue;
 				}
 
@@ -966,7 +967,7 @@ export class ReforgeOptimizer {
 	// Apply stat dependencies before setting optimization coefficients
 	applyReforgeStat(coefficients: YalpsCoefficients, stat: Stat, amount: number, preCapEPs: Stats) {
 		// Handle Spirit to Spell Hit conversion for hybrid casters separately from standard dependencies
-		if (((stat == Stat.StatSpirit) && this.isHybridCaster) || (stat == Stat.StatExpertiseRating)) {
+		if ((stat == Stat.StatSpirit && this.isHybridCaster) || stat == Stat.StatExpertiseRating) {
 			this.setPseudoStatCoefficient(coefficients, PseudoStat.PseudoStatSpellHitPercent, amount / Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT);
 		}
 

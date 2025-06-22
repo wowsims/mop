@@ -68,16 +68,26 @@ func (result *SpellResult) HealingString() string {
 	return fmt.Sprintf("%s for %0.3f healing", result.Outcome.String(), result.Damage)
 }
 
-func (spell *Spell) ThreatFromDamage(outcome HitOutcome, damage float64) float64 {
+func (spell *Spell) ThreatFromDamage(sim *Simulation, outcome HitOutcome, damage float64, attackTable *AttackTable) float64 {
 	if outcome.Matches(OutcomeLanded) {
-		return (damage*spell.ThreatMultiplier + spell.FlatThreatBonus) * spell.Unit.PseudoStats.ThreatMultiplier
+		threat := (damage*spell.ThreatMultiplier + spell.FlatThreatBonus) * spell.Unit.PseudoStats.ThreatMultiplier
+
+		if attackTable.ThreatDoneByCasterExtraMultiplier != nil {
+			for i := range attackTable.ThreatDoneByCasterExtraMultiplier {
+				if attackTable.ThreatDoneByCasterExtraMultiplier[i] != nil {
+					threat *= attackTable.ThreatDoneByCasterExtraMultiplier[i](sim, spell, attackTable)
+				}
+			}
+		}
+
+		return threat
 	} else {
 		return 0
 	}
 }
 
 func (spell *Spell) MeleeAttackPower() float64 {
-	return spell.Unit.stats[stats.AttackPower]
+	return spell.Unit.GetAttackPowerValue(spell)
 }
 
 func (spell *Spell) RangedAttackPower() float64 {
@@ -100,7 +110,9 @@ func (spell *Spell) PhysicalHitChance(attackTable *AttackTable) float64 {
 	hitPercent := spell.Unit.stats[stats.PhysicalHitPercent] + spell.BonusHitPercent
 	return hitPercent / 100
 }
-
+func (spell *Spell) PhysicalHitCheck(sim *Simulation, attackTable *AttackTable) bool {
+	return sim.Proc(1.0-spell.GetPhysicalMissChance(attackTable), "Physical Hit Roll")
+}
 func (spell *Spell) PhysicalCritChance(attackTable *AttackTable) float64 {
 	critPercent := spell.Unit.stats[stats.PhysicalCritPercent] + spell.BonusCritPercent
 	return critPercent/100 - attackTable.MeleeCritSuppression
@@ -170,13 +182,20 @@ func (spell *Spell) ApplyPostOutcomeDamageModifiers(sim *Simulation, result *Spe
 	result.Damage = max(0, result.Damage)
 }
 
+func (spell *Spell) ApplyPostOutcomeHealingModifiers(sim *Simulation, result *SpellResult) {
+	for i := range result.Target.DynamicHealingTakenModifiers {
+		result.Target.DynamicHealingTakenModifiers[i](sim, spell, result)
+	}
+	result.Damage = max(0, result.Damage)
+}
+
 // For spells that do no damage but still have a hit/miss check.
 func (spell *Spell) CalcOutcome(sim *Simulation, target *Unit, outcomeApplier OutcomeApplier) *SpellResult {
 	attackTable := spell.Unit.AttackTables[target.UnitIndex]
 	result := spell.NewResult(target)
 
 	outcomeApplier(sim, result, attackTable)
-	result.Threat = spell.ThreatFromDamage(result.Outcome, result.Damage)
+	result.Threat = spell.ThreatFromDamage(sim, result.Outcome, result.Damage, attackTable)
 	return result
 }
 
@@ -214,7 +233,7 @@ func (spell *Spell) calcDamageInternal(sim *Simulation, target *Unit, baseDamage
 			target.LogLabel(), spell.ActionID, spell.Unit.GetStat(stats.AttackPower), spell.Unit.GetStat(stats.RangedAttackPower), spell.SpellPower(), baseDamage, afterAttackMods, afterArmor, afterTargetMods, afterOutcome, afterPostOutcome)
 	}
 
-	result.Threat = spell.ThreatFromDamage(result.Outcome, result.Damage)
+	result.Threat = spell.ThreatFromDamage(sim, result.Outcome, result.Damage, attackTable)
 
 	return result
 }
@@ -237,6 +256,7 @@ func (spell *Spell) CalcPeriodicDamage(sim *Simulation, target *Unit, baseDamage
 	if dot.BonusCoefficient > 0 {
 		baseDamage += dot.BonusCoefficient * spell.BonusDamage()
 	}
+	attackerMultiplier *= dot.PeriodicDamageMultiplier
 	return spell.calcDamageInternal(sim, target, baseDamage, attackerMultiplier, true, outcomeApplier)
 }
 func (dot *Dot) CalcSnapshotDamage(sim *Simulation, target *Unit, outcomeApplier OutcomeApplier) *SpellResult {
@@ -337,7 +357,8 @@ func (dot *Dot) Snapshot(target *Unit, baseDamage float64) {
 	}
 	attackTable := dot.Spell.Unit.AttackTables[target.UnitIndex]
 	dot.SnapshotCritChance = dot.Spell.SpellCritChance(target)
-	dot.SnapshotAttackerMultiplier = dot.Spell.AttackerDamageMultiplier(attackTable, true)
+	dot.SnapshotAttackerMultiplier = dot.Spell.AttackerDamageMultiplier(attackTable, true) *
+		dot.PeriodicDamageMultiplier
 }
 
 func (dot *Dot) SnapshotPhysical(target *Unit, baseDamage float64) {
@@ -345,7 +366,8 @@ func (dot *Dot) SnapshotPhysical(target *Unit, baseDamage float64) {
 	// At this time, not aware of any physical-scaling DoTs that need BonusCoefficient
 	attackTable := dot.Spell.Unit.AttackTables[target.UnitIndex]
 	dot.SnapshotCritChance = dot.Spell.PhysicalCritChance(attackTable)
-	dot.SnapshotAttackerMultiplier = dot.Spell.AttackerDamageMultiplier(attackTable, true)
+	dot.SnapshotAttackerMultiplier = dot.Spell.AttackerDamageMultiplier(attackTable, true) *
+		dot.PeriodicDamageMultiplier
 }
 
 func (spell *Spell) calcHealingInternal(sim *Simulation, target *Unit, baseHealing float64, casterMultiplier float64, outcomeApplier OutcomeApplier) *SpellResult {
@@ -358,6 +380,7 @@ func (spell *Spell) calcHealingInternal(sim *Simulation, target *Unit, baseHeali
 		result.Damage *= casterMultiplier
 		result.Damage = spell.applyTargetHealingModifiers(result.Damage, attackTable)
 		outcomeApplier(sim, result, attackTable)
+		spell.ApplyPostOutcomeHealingModifiers(sim, result)
 	} else {
 		result.Damage *= casterMultiplier
 		afterCasterMods := result.Damage
@@ -366,21 +389,30 @@ func (spell *Spell) calcHealingInternal(sim *Simulation, target *Unit, baseHeali
 		outcomeApplier(sim, result, attackTable)
 		afterOutcome := result.Damage
 
+		spell.ApplyPostOutcomeHealingModifiers(sim, result)
+		afterPostOutcome := result.Damage
+
 		spell.Unit.Log(
 			sim,
-			"%s %s [DEBUG] HealingPower: %0.01f, BaseHealing:%0.01f, AfterCasterMods:%0.01f, AfterTargetMods:%0.01f, AfterOutcome:%0.01f",
-			target.LogLabel(), spell.ActionID, spell.HealingPower(target), baseHealing, afterCasterMods, afterTargetMods, afterOutcome)
+			"%s %s [DEBUG] HealingPower: %0.01f, BaseHealing:%0.01f, AfterCasterMods:%0.01f, AfterTargetMods:%0.01f, AfterOutcome:%0.01f, AfterPostOutcome:%0.01f",
+			target.LogLabel(), spell.ActionID, spell.HealingPower(target), baseHealing, afterCasterMods, afterTargetMods, afterOutcome, afterPostOutcome)
 	}
 
-	result.Threat = spell.ThreatFromDamage(result.Outcome, result.Damage)
+	result.Threat = spell.ThreatFromDamage(sim, result.Outcome, result.Damage, attackTable)
 
 	return result
 }
-func (spell *Spell) CalcHealing(sim *Simulation, target *Unit, baseHealing float64, outcomeApplier OutcomeApplier) *SpellResult {
+func (spell *Spell) calcHealing(sim *Simulation, target *Unit, baseHealing float64, outcomeApplier OutcomeApplier, isPeriodic bool) *SpellResult {
 	if spell.BonusCoefficient > 0 {
 		baseHealing += spell.BonusCoefficient * spell.HealingPower(target)
 	}
-	return spell.calcHealingInternal(sim, target, baseHealing, spell.CasterHealingMultiplier(), outcomeApplier)
+	return spell.calcHealingInternal(sim, target, baseHealing, spell.casterHealingMultiplier(isPeriodic), outcomeApplier)
+}
+func (spell *Spell) CalcHealing(sim *Simulation, target *Unit, baseHealing float64, outcomeApplier OutcomeApplier) *SpellResult {
+	return spell.calcHealing(sim, target, baseHealing, outcomeApplier, false)
+}
+func (spell *Spell) CalcPeriodicHealing(sim *Simulation, target *Unit, baseHealing float64, outcomeApplier OutcomeApplier) *SpellResult {
+	return spell.calcHealing(sim, target, baseHealing, outcomeApplier, true)
 }
 func (dot *Dot) CalcSnapshotHealing(sim *Simulation, target *Unit, outcomeApplier OutcomeApplier) *SpellResult {
 	return dot.Spell.calcHealingInternal(sim, target, dot.SnapshotBaseDamage, dot.SnapshotAttackerMultiplier, outcomeApplier)
@@ -392,7 +424,7 @@ func (dot *Dot) SnapshotHeal(target *Unit, baseHealing float64) {
 		dot.SnapshotBaseDamage += dot.BonusCoefficient * dot.Spell.HealingPower(target)
 	}
 	dot.SnapshotCritChance = dot.Spell.SpellCritChance(target)
-	dot.SnapshotAttackerMultiplier = dot.Spell.CasterHealingMultiplier()
+	dot.SnapshotAttackerMultiplier = dot.CasterPeriodicHealingMultiplier()
 }
 
 // Applies the fully computed spell result to the sim.
@@ -437,8 +469,9 @@ func (spell *Spell) CalcAndDealHealing(sim *Simulation, target *Unit, baseHealin
 	return result
 }
 func (spell *Spell) CalcAndDealPeriodicHealing(sim *Simulation, target *Unit, baseHealing float64, outcomeApplier OutcomeApplier) *SpellResult {
-	// This is currently identical to CalcAndDealHealing, but keeping it separate in case they become different in the future.
-	return spell.CalcAndDealHealing(sim, target, baseHealing, outcomeApplier)
+	result := spell.CalcPeriodicHealing(sim, target, baseHealing, outcomeApplier)
+	spell.DealPeriodicHealing(sim, result)
+	return result
 }
 func (dot *Dot) CalcAndDealPeriodicSnapshotHealing(sim *Simulation, target *Unit, outcomeApplier OutcomeApplier) *SpellResult {
 	result := dot.CalcSnapshotHealing(sim, target, outcomeApplier)
@@ -516,12 +549,25 @@ func (spell *Spell) TargetDamageMultiplier(sim *Simulation, attackTable *AttackT
 	return multiplier
 }
 
-func (spell *Spell) CasterHealingMultiplier() float64 {
+func (spell *Spell) casterHealingMultiplier(isPeriodic bool) float64 {
 	if spell.Flags.Matches(SpellFlagIgnoreAttackerModifiers) {
 		return 1
 	}
 
-	return spell.DamageMultiplier * spell.DamageMultiplierAdditive * spell.Unit.PseudoStats.HealingDealtMultiplier
+	multiplier := spell.DamageMultiplier * spell.DamageMultiplierAdditive * spell.Unit.PseudoStats.HealingDealtMultiplier
+
+	if isPeriodic {
+		multiplier *= spell.Unit.PseudoStats.PeriodicHealingDealtMultiplier
+	}
+
+	return multiplier
+}
+func (spell *Spell) CasterHealingMultiplier() float64 {
+	return spell.casterHealingMultiplier(false)
+}
+func (dot *Dot) CasterPeriodicHealingMultiplier() float64 {
+	return dot.Spell.casterHealingMultiplier(true) *
+		dot.PeriodicDamageMultiplier
 }
 func (spell *Spell) applyTargetHealingModifiers(damage float64, attackTable *AttackTable) float64 {
 	if spell.Flags.Matches(SpellFlagIgnoreTargetModifiers) {

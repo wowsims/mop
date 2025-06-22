@@ -41,30 +41,34 @@ func (hunter *Hunter) registerAMOCSpell() {
 		Dot: core.DotConfig{
 			Aura: core.Aura{
 				ActionID: core.ActionID{SpellID: 131900},
-				Label:    "AMurderOfCrowsDot",
-				Tag:      "AMurderOfCrows",
+				Label:    "Peck",
+				Tag:      "Peck",
 			},
 
 			NumberOfTicks: 30,
 			TickLength:    time.Second * 1,
-			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, isRollover bool) {
+
+			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
 				baseDmg := hunter.GetBaseDamageFromCoeff(0.63) + (0.288 * dot.Spell.RangedAttackPower())
 				dot.Snapshot(target, baseDmg)
-			},
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeTick)
+				dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeTickPhysicalHitAndCrit)
 			},
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			result := spell.CalcOutcome(sim, target, spell.OutcomeRangedHit)
+			result := spell.CalcAndDealOutcome(sim, target, spell.OutcomeAlwaysHit)
+			if !sim.IsExecutePhase20() {
+				spell.CD.Duration = time.Minute * 2
+			}
 			core.StartDelayedAction(sim, core.DelayedActionOptions{
 				DoAt: sim.CurrentTime + (time.Second * 2),
 				OnAction: func(sim *core.Simulation) {
+					if sim.IsExecutePhase20() {
+						spell.CD.Duration = time.Second * 30
+					}
 					if result.Landed() {
 						spell.Dot(target).Apply(sim)
 					}
-					spell.DealOutcome(sim, result)
 				},
 			})
 

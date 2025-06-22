@@ -134,6 +134,10 @@ func (aura *Aura) reset(sim *Simulation) {
 	if aura.OnReset != nil {
 		aura.OnReset(aura, sim)
 	}
+
+	if aura.Dpm != nil {
+		aura.Dpm.Reset()
+	}
 }
 
 func (aura *Aura) doneIteration(sim *Simulation) {
@@ -209,8 +213,14 @@ func (aura *Aura) SetStacks(sim *Simulation, newStacks int32) {
 func (aura *Aura) AddStack(sim *Simulation) {
 	aura.SetStacks(sim, aura.stacks+1)
 }
+func (aura *Aura) AddStacks(sim *Simulation, stacks int32) {
+	aura.SetStacks(sim, aura.stacks+stacks)
+}
 func (aura *Aura) RemoveStack(sim *Simulation) {
-	aura.SetStacks(sim, aura.stacks-1)
+	aura.SetStacks(sim, max(0, aura.stacks-1))
+}
+func (aura *Aura) RemoveStacks(sim *Simulation, stacks int32) {
+	aura.SetStacks(sim, max(0, aura.stacks-stacks))
 }
 
 func (aura *Aura) UpdateExpires(newExpires time.Duration) {
@@ -307,6 +317,21 @@ func (aura *Aura) ApplyOnExpire(newOnExpire OnExpire) *Aura {
 		aura.OnExpire = func(aura *Aura, sim *Simulation) {
 			oldOnExpire(aura, sim)
 			newOnExpire(aura, sim)
+		}
+	}
+
+	return aura
+}
+
+// Adds a handler to be called OnReset, in addition to any current handlers.
+func (aura *Aura) ApplyOnReset(newOnReset OnReset) *Aura {
+	oldOnReset := aura.OnReset
+	if oldOnReset == nil {
+		aura.OnReset = newOnReset
+	} else {
+		aura.OnReset = func(aura *Aura, sim *Simulation) {
+			oldOnReset(aura, sim)
+			newOnReset(aura, sim)
 		}
 	}
 
@@ -1019,4 +1044,31 @@ func (auraArrays LabeledAuraArrays) Append(auras AuraArray) LabeledAuraArrays {
 
 	auraArrays[auras.FindLabel()] = auras
 	return auraArrays
+}
+
+type AuraState struct {
+	RemainingDuration time.Duration
+	Stacks            int32
+}
+
+func (aura *Aura) SaveState(sim *Simulation) AuraState {
+	if !aura.active {
+		return AuraState{}
+	}
+
+	return AuraState{
+		RemainingDuration: aura.expires - sim.CurrentTime,
+		Stacks:            aura.stacks,
+	}
+}
+
+func (aura *Aura) RestoreState(state AuraState, sim *Simulation) {
+	if !aura.active {
+		aura.Activate(sim)
+	}
+
+	aura.UpdateExpires(state.RemainingDuration + sim.CurrentTime)
+	if aura.MaxStacks > 0 {
+		aura.SetStacks(sim, state.Stacks)
+	}
 }

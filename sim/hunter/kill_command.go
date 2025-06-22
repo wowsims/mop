@@ -4,16 +4,17 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func (hunter *Hunter) registerKillCommandSpell() {
-	if hunter.Pet == nil {
+	if hunter.Pet == nil || hunter.Spec != proto.Spec_SpecBeastMasteryHunter {
 		return
 	}
 
 	actionID := core.ActionID{SpellID: 34026}
 
-	hunter.KillCommand = hunter.RegisterSpell(core.SpellConfig{
+	hunter.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMelee,

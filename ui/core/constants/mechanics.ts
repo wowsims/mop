@@ -4,8 +4,8 @@ export const CHARACTER_LEVEL = 90;
 export const BOSS_LEVEL = CHARACTER_LEVEL + 3;
 export const MAX_CHALLENGE_MODE_ILVL = 463;
 
-export const EXPERTISE_PER_QUARTER_PERCENT_REDUCTION = 85.000000;
 export const HASTE_RATING_PER_HASTE_PERCENT = 425.000000;
+export const EXPERTISE_PER_QUARTER_PERCENT_REDUCTION = 85.000000;
 export const CRIT_RATING_PER_CRIT_PERCENT = 600.000000;
 export const PHYSICAL_HIT_RATING_PER_HIT_PERCENT = 340.000000;
 export const SPELL_HIT_RATING_PER_HIT_PERCENT = 340.000000;
@@ -30,23 +30,23 @@ export const masteryPercentPerPoint: Map<Spec, number> = new Map([
 	[Spec.SpecProtectionPaladin, 1.0],
 	[Spec.SpecRetributionPaladin, 1.85],
 	[Spec.SpecElementalShaman, 2.0],
-	[Spec.SpecEnhancementShaman, 2.5],
+	[Spec.SpecEnhancementShaman, 2.0],
 	[Spec.SpecRestorationShaman, 3.0],
 	[Spec.SpecBeastMasteryHunter, 1.675],
 	[Spec.SpecMarksmanshipHunter, 2.1],
 	[Spec.SpecSurvivalHunter, 1.0],
 	[Spec.SpecArmsWarrior, 2.2],
-	[Spec.SpecFuryWarrior, 5.6],
-	[Spec.SpecProtectionWarrior, 1.5],
-	[Spec.SpecArcaneMage, 1.5],
-	[Spec.SpecFireMage, 2.8],
-	[Spec.SpecFrostMage, 2.5],
+	[Spec.SpecFuryWarrior, 1.4],
+	[Spec.SpecProtectionWarrior, 2.2],
+	[Spec.SpecArcaneMage, 2],
+	[Spec.SpecFireMage, 1.5],
+	[Spec.SpecFrostMage, 2],
 	[Spec.SpecDisciplinePriest, 2.5],
 	[Spec.SpecHolyPriest, 1.25],
 	[Spec.SpecShadowPriest, 1.8],
-	[Spec.SpecAfflictionWarlock, 1.625],
-	[Spec.SpecDemonologyWarlock, 2.3],
-	[Spec.SpecDestructionWarlock, 1.35],
-	[Spec.SpecWindwalkerMonk, 2.5],
+	[Spec.SpecAfflictionWarlock, 3.1],
+	[Spec.SpecDemonologyWarlock, 3],
+	[Spec.SpecDestructionWarlock, 3],
+	[Spec.SpecWindwalkerMonk, 0.2],
 	[Spec.SpecBrewmasterMonk, 0.625],
 ]);

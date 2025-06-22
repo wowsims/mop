@@ -11,7 +11,7 @@ import (
 
 func init() {
 	// Rune of the Nerubian Carapace
-	core.NewEnchantEffect(3883, func(agent core.Agent) {
+	core.NewEnchantEffect(3883, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		character.MultiplyStat(stats.Armor, 1.02)
@@ -19,7 +19,7 @@ func init() {
 	})
 
 	// Rune of the Stoneskin Gargoyle
-	core.NewEnchantEffect(3847, func(agent core.Agent) {
+	core.NewEnchantEffect(3847, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		character.MultiplyStat(stats.Armor, 1.04)
@@ -27,33 +27,45 @@ func init() {
 	})
 
 	// Rune of the Swordbreaking
-	core.NewEnchantEffect(3594, func(agent core.Agent) {
+	core.NewEnchantEffect(3594, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		character.PseudoStats.BaseParryChance += 0.02
 	})
 
 	// Rune of Swordshattering
-	core.NewEnchantEffect(3365, func(agent core.Agent) {
+	core.NewEnchantEffect(3365, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		character.PseudoStats.BaseParryChance += 0.04
 	})
 
 	// Rune of the Spellbreaking
-	core.NewEnchantEffect(3595, func(agent core.Agent) {
-		// TODO:
-		// Add 2% magic deflection
+	core.NewEnchantEffect(3595, func(agent core.Agent, _ proto.ItemLevelState) {
+		character := agent.GetCharacter()
+
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexArcane] *= 0.98
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFire] *= 0.98
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFrost] *= 0.98
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexHoly] *= 0.98
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] *= 0.98
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexShadow] *= 0.98
 	})
 
 	// Rune of Spellshattering
-	core.NewEnchantEffect(3367, func(agent core.Agent) {
-		// TODO:
-		// Add 4% magic deflection
+	core.NewEnchantEffect(3367, func(agent core.Agent, _ proto.ItemLevelState) {
+		character := agent.GetCharacter()
+
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexArcane] *= 0.96
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFire] *= 0.96
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFrost] *= 0.96
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexHoly] *= 0.96
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] *= 0.96
+		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexShadow] *= 0.96
 	})
 
 	// Rune of the Fallen Crusader
-	core.NewEnchantEffect(3368, func(agent core.Agent) {
+	core.NewEnchantEffect(3368, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		if character.GetAura("Rune Of The Fallen Crusader") != nil {
@@ -69,7 +81,7 @@ func init() {
 
 			DamageMultiplier: 1,
 			ThreatMultiplier: 1,
-			CritMultiplier:   2,
+			CritMultiplier:   character.DefaultCritMultiplier(),
 
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 				spell.CalcAndDealHealing(sim, target, character.MaxHealth()*0.03, spell.OutcomeHealingCrit)
@@ -92,7 +104,7 @@ func init() {
 			Name:     "Rune Of The Fallen Crusader",
 			Callback: core.CallbackOnSpellHitDealt,
 			Outcome:  core.OutcomeLanded,
-			DPM:      character.AutoAttacks.NewDynamicProcManagerForEnchant(3368, 2.0, 0),
+			DPM:      character.NewDynamicLegacyProcForEnchant(3368, 2.0, 0),
 			// PPM:      2.0,
 			// ProcMask: procMask,
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
@@ -105,7 +117,7 @@ func init() {
 	})
 
 	// Rune of Cinderglacier
-	core.NewEnchantEffect(3369, func(agent core.Agent) {
+	core.NewEnchantEffect(3369, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		if character.GetAura("Rune of Cinderglacier") != nil {
@@ -154,7 +166,7 @@ func init() {
 			Name:     "Rune of Cinderglacier",
 			Callback: core.CallbackOnSpellHitDealt,
 			Outcome:  core.OutcomeLanded,
-			DPM:      character.AutoAttacks.NewDynamicProcManagerForEnchant(3369, 1.0, 0),
+			DPM:      character.NewDynamicLegacyProcForEnchant(3369, 1.0, 0),
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				cinderAura.Activate(sim)
 				cinderAura.SetStacks(sim, cinderAura.MaxStacks)
@@ -165,7 +177,7 @@ func init() {
 	})
 
 	// Rune of Razorice
-	core.NewEnchantEffect(3370, func(agent core.Agent) {
+	core.NewEnchantEffect(3370, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		if character.GetAura("Razor Frost") != nil {
@@ -224,9 +236,9 @@ func init() {
 			})
 		})
 
-		dpm := character.AutoAttacks.NewDynamicProcManagerForEnchant(3370, 0, 1.0)
+		dpm := character.NewDynamicLegacyProcForEnchant(3370, 0, 1.0)
 
-		for _, itemSlot := range core.MeleeWeaponSlots() {
+		for _, itemSlot := range core.AllWeaponSlots() {
 			spell := newRazoriceHitSpell(character, itemSlot == proto.ItemSlot_ItemSlotMainHand)
 			procMask := core.ProcMaskUnknown
 			var weapon *core.Item
