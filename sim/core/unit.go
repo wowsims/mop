@@ -235,7 +235,7 @@ func (unit *Unit) GetOpponents() []*Unit {
 	if unit.Type == EnemyUnit {
 		return unit.Env.Raid.AllUnits
 	} else {
-		return unit.Env.Encounter.TargetUnits
+		return unit.Env.GetActiveTargetUnits()
 	}
 }
 

@@ -80,6 +80,7 @@ func NewEncounter(options *proto.Encounter) Encounter {
 	}
 
 	encounter.updateAOECapMultiplier()
+	encounter.updateTargetUnits()
 
 	return encounter
 }
@@ -88,7 +89,42 @@ func (encounter *Encounter) AOECapMultiplier() float64 {
 	return encounter.aoeCapMultiplier
 }
 func (encounter *Encounter) updateAOECapMultiplier() {
-	encounter.aoeCapMultiplier = min(20/float64(len(encounter.Targets)), 1)
+	encounter.aoeCapMultiplier = min(20/float64(len(encounter.ActiveTargets)), 1)
+}
+
+func (encounter *Encounter) GetActiveTargetUnits() []*Unit {
+	units := make([]*Unit, len(encounter.ActiveTargets))
+	for i, target := range encounter.ActiveTargets {
+		units[i] = &target.Unit
+	}
+	return units
+}
+
+func (encounter *Encounter) updateTargetUnits() {
+	encounter.TargetUnits = encounter.GetActiveTargetUnits()
+}
+
+func (encounter *Encounter) AddActiveTarget(target *Target) {
+	// Check if target is already in the list
+	for _, activeTarget := range encounter.ActiveTargets {
+		if activeTarget == target {
+			return // Already active
+		}
+	}
+	encounter.ActiveTargets = append(encounter.ActiveTargets, target)
+	encounter.updateAOECapMultiplier()
+	encounter.updateTargetUnits()
+}
+
+func (encounter *Encounter) RemoveActiveTarget(target *Target) {
+	for i, activeTarget := range encounter.ActiveTargets {
+		if activeTarget == target {
+			encounter.ActiveTargets = append(encounter.ActiveTargets[:i], encounter.ActiveTargets[i+1:]...)
+			encounter.updateAOECapMultiplier()
+			encounter.updateTargetUnits()
+			return
+		}
+	}
 }
 
 func (encounter *Encounter) doneIteration(sim *Simulation) {
@@ -197,6 +233,38 @@ func (target *Target) GetMetricsProto() *proto.UnitMetrics {
 	metrics.UnitIndex = target.UnitIndex
 	metrics.Auras = target.auraTracker.GetMetricsProto()
 	return metrics
+}
+
+func (target *Target) Enable(sim *Simulation) {
+	if target.Env == nil {
+		panic("Cannot enable target is Env is nil")
+	}
+
+	target.Unit.enabled = true
+	target.IsActive = true
+	target.Env.Encounter.AddActiveTarget(target)
+
+	// Tank sim stuff, untested
+	if target.AutoAttacks.MH().SwingSpeed > 0 {
+		target.AutoAttacks.EnableAutoSwing(sim)
+	}
+}
+
+func (target *Target) Disable(sim *Simulation) {
+	if target.Env == nil {
+		panic("Cannot disable target is Env is nil")
+	}
+
+	target.Unit.enabled = false
+	target.IsActive = false
+	target.Env.Encounter.RemoveActiveTarget(target)
+
+	// Tank sim stuff, untested
+	target.AutoAttacks.CancelAutoSwing(sim)
+}
+
+func (target *Target) IsTargetActive() bool {
+	return target.Unit.enabled && target.IsActive
 }
 
 type DynamicDamageDoneByCaster func(sim *Simulation, spell *Spell, attackTable *AttackTable) float64

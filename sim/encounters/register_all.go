@@ -15,6 +15,8 @@ func init() {
 	bwd.Register()
 	firelands.Register()
 	dragonsoul.Register()
+
+	addDynamicAddsAI()
 }
 
 func AddSingleTargetBossEncounter(presetTarget *core.PresetTarget) {
