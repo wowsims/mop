@@ -48,11 +48,15 @@ func (fire *FireMage) registerInfernoBlastSpell() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			debuffState := map[int32]core.DotState{}
 			dotRefs := []**core.Spell{&fire.Pyroblast.RelatedDotSpell, &fire.Combustion.RelatedDotSpell, &fire.Ignite}
+			originalTargetIgniteTimeLeft := time.Duration(0)
 
 			for _, spellRef := range dotRefs {
 				dot := (*spellRef).Dot(target)
 				if dot.IsActive() {
 					debuffState[dot.ActionID.SpellID] = dot.SaveState(sim)
+					if dot.ActionID.SpellID == igniteSpellID {
+						originalTargetIgniteTimeLeft = dot.RemainingDuration(sim)
+					}
 				}
 			}
 
@@ -71,13 +75,26 @@ func (fire *FireMage) registerInfernoBlastSpell() {
 						// not stored, was not active
 						continue
 					}
-					oldDamage := 0.0
-					if dot.ActionID.SpellID == igniteSpellID && dot.IsActive() {
-						oldDamage = dot.SnapshotBaseDamage * float64(dot.BaseTickCount)
+					if dot.ActionID.SpellID == igniteSpellID {
+
+						ignite := (*spellRef)
+						dotActive := dot.IsActive() // Storing this here so we can do the common steps without overwriting how it was for the checks.
+						ignite.Proc(sim, currTarget)
+						dot.RestoreState(state, sim)
+
+						if dotActive { // Target has ignite -> spread 6 second ignite
+							ignite.Dot(currTarget).Apply(sim)
+							dot.SnapshotBaseDamage *= .66
+						} else if originalTargetIgniteTimeLeft <= time.Duration(time.Second*1) { // Target has no ignite and 1s or less on main -> spread 4 second ignite
+							dot.SnapshotBaseDamage *= .5
+						} else if originalTargetIgniteTimeLeft > time.Duration(time.Second*1) { // Target has no ignite and 1s+ left on main ignite -> spread 6 second ignite
+							ignite.Dot(currTarget).Apply(sim)
+							dot.SnapshotBaseDamage *= .66
+						}
+						continue
 					}
 					(*spellRef).Proc(sim, currTarget)
 					dot.RestoreState(state, sim)
-					dot.SnapshotBaseDamage += oldDamage
 				}
 			}
 		},
