@@ -438,6 +438,10 @@ func (dk *DeathKnight) registerAsphyxiate() {
 
 // Drain vitality from an undead minion, healing the Death Knight for 50% of his maximum health and causing the minion to suffer damage equal to 50% of its maximum health.
 func (dk *DeathKnight) registerDeathPact() {
+	if !dk.Talents.DeathPact {
+		return
+	}
+
 	actionID := core.ActionID{SpellID: 48743}
 
 	spell := dk.RegisterSpell(core.SpellConfig{
@@ -469,7 +473,11 @@ func (dk *DeathKnight) registerDeathPact() {
 			spell.CalcAndDealHealing(sim, spell.Unit, healthGain, spell.OutcomeHealing)
 			dk.Ghoul.RemoveHealth(sim, dk.Ghoul.MaxHealth()*0.5)
 			if dk.Ghoul.CurrentHealth() <= 0 {
-				dk.Ghoul.Disable(sim)
+				if dk.RaiseDeadAura != nil {
+					dk.RaiseDeadAura.Deactivate(sim)
+				} else {
+					dk.Ghoul.Disable(sim)
+				}
 			}
 		},
 	})

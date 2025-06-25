@@ -55,6 +55,7 @@ type DeathKnight struct {
 	BoneShieldAura             *core.Aura
 	BoneWallAura               *core.Aura
 	PillarOfFrostAura          *core.Aura
+	RaiseDeadAura              *core.Aura
 
 	// Diseases
 	FrostFeverSpell  *core.Spell
@@ -174,9 +175,8 @@ func NewDeathKnight(character *core.Character, inputs DeathKnightInputs, talents
 	dk.AddStatDependency(stats.Strength, stats.AttackPower, 2)
 	dk.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[dk.Class])
 
-	strengthToParryRating := (1 / 951.158596) * core.ParryRatingPerParryPercent
-	dk.AddStat(stats.ParryRating, -dk.GetBaseStats()[stats.Strength]*strengthToParryRating) // Does not apply to base Strength
-	dk.AddStatDependency(stats.Strength, stats.ParryRating, strengthToParryRating)
+	dk.AddStat(stats.ParryRating, -dk.GetBaseStats()[stats.Strength]*core.StrengthToParryRating) // Does not apply to base Strength
+	dk.AddStatDependency(stats.Strength, stats.ParryRating, core.StrengthToParryRating)
 
 	dk.AddStatDependency(stats.BonusArmor, stats.Armor, 1)
 
