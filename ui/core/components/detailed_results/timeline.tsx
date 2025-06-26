@@ -1269,6 +1269,10 @@ const auraAsResource = [
 
 	// Monk
 	124255, // Stagger
+	128938, // Elusive Brew - Stacks
+	115308, // Elusive Brew - Active
+	1247279, // Tiger Eye Brew - Stacks
+	1247275, // Tiger Eye Brew - Active
 
 	// Mage
 	148022, // Icicle
@@ -1295,8 +1299,7 @@ const idToCategoryMap: Record<number, number> = {
 	[48465]: SPELL_ACTION_CATEGORY + 0.1, // Starfire
 	[48461]: SPELL_ACTION_CATEGORY + 0.2, // Wrath
 	[53201]: SPELL_ACTION_CATEGORY + 0.3, // Starfall
-	[48468]: SPELL_ACTION_CATEGORY + 0.4, // Insect Swarm
-	[48463]: SPELL_ACTION_CATEGORY + 0.5, // Moonfire
+	[48463]: SPELL_ACTION_CATEGORY + 0.4, // Moonfire
 
 	// Hunter
 	[48996]: 0.1, // Raptor Strike

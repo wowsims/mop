@@ -190,7 +190,7 @@ type EquipScalingManager struct {
 func (character *Character) NewEquipScalingManager() *EquipScalingManager {
 	return &EquipScalingManager{
 		itemStatMultipliers: make(map[stats.Stat]float64),
-		cachedEquipStats:    character.Equipment.Stats().Add(character.bonusStats),
+		cachedEquipStats:    character.Equipment.Stats(character.Spec).Add(character.bonusStats),
 		equipCacheValid:     true,
 	}
 }
@@ -242,7 +242,7 @@ func (character *Character) RemoveDynamicEquipScaling(sim *Simulation, stat stat
 
 func (character *Character) updateCachedEquipStats() {
 	if !character.equipCacheValid {
-		character.cachedEquipStats = character.Equipment.Stats().Add(character.bonusStats)
+		character.cachedEquipStats = character.Equipment.Stats(character.Spec).Add(character.bonusStats)
 		character.equipCacheValid = true
 	}
 }
@@ -363,6 +363,17 @@ func (character *Character) AddPet(pet PetAgent) {
 
 func (character *Character) GetBaseStats() stats.Stats {
 	return character.baseStats
+}
+
+func (character *Character) GetParryRatingWithoutStrength() float64 {
+	parryRating := character.GetStat(stats.ParryRating)
+	strength := character.GetStat(stats.Strength)
+	baseStrength := character.GetBaseStats()[stats.Strength]
+
+	parryRating += baseStrength * StrengthToParryRating
+	parryRating -= strength * StrengthToParryRating
+
+	return parryRating
 }
 
 // Returns the crit multiplier for a spell.

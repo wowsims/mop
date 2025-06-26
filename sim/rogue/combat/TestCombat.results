@@ -40,8 +40,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 61490.28194
-  tps: 42972.89135
+  dps: 109975.24172
+  tps: 77397.21279
  }
 }
 dps_results: {
@@ -185,6 +185,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestCombat-AllItems-FabledFeatherofJi-Kun-96842"
+ value: {
+  dps: 77809.37752
+  tps: 54695.84257
+ }
+}
+dps_results: {
  key: "TestCombat-AllItems-FangsoftheFather"
  value: {
   dps: 61945.16425
@@ -203,6 +210,13 @@ dps_results: {
  value: {
   dps: 80420.47747
   tps: 56517.71597
+ }
+}
+dps_results: {
+ key: "TestCombat-AllItems-Fen-Yu,FuryofXuen-102248"
+ value: {
+  dps: 92007.11306
+  tps: 64710.52489
  }
 }
 dps_results: {
@@ -241,6 +255,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestCombat-AllItems-Gong-Lu,StrengthofXuen-102249"
+ value: {
+  dps: 87275.57208
+  tps: 61382.60247
+ }
+}
+dps_results: {
  key: "TestCombat-AllItems-Heartpierce-49982"
  value: {
   dps: 80420.47747
@@ -252,6 +273,13 @@ dps_results: {
  value: {
   dps: 80420.47747
   tps: 56517.71597
+ }
+}
+dps_results: {
+ key: "TestCombat-AllItems-Horridon'sLastGasp-96757"
+ value: {
+  dps: 76463.76922
+  tps: 53737.65967
  }
 }
 dps_results: {
@@ -269,10 +297,24 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestCombat-AllItems-InscribedBagofHydra-Spawn-96828"
+ value: {
+  dps: 76463.76922
+  tps: 53737.65967
+ }
+}
+dps_results: {
  key: "TestCombat-AllItems-JawsofRetribution"
  value: {
   dps: 58196.26566
   tps: 40816.01494
+ }
+}
+dps_results: {
+ key: "TestCombat-AllItems-Ji-Kun'sRisingWinds-96843"
+ value: {
+  dps: 76463.76922
+  tps: 53737.65967
  }
 }
 dps_results: {
@@ -318,10 +360,24 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestCombat-AllItems-Qian-Le,CourageofNiuzao-102245"
+ value: {
+  dps: 86425.66565
+  tps: 60733.67674
+ }
+}
+dps_results: {
+ key: "TestCombat-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
+ value: {
+  dps: 80830.62548
+  tps: 56796.11827
+ }
+}
+dps_results: {
  key: "TestCombat-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 105969.04414
-  tps: 74284.9148
+  dps: 106263.74722
+  tps: 74486.96834
  }
 }
 dps_results: {
@@ -395,10 +451,38 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestCombat-AllItems-UnerringVisionofLeiShen-96930"
+ value: {
+  dps: 79624.75743
+  tps: 55942.71742
+ }
+}
+dps_results: {
  key: "TestCombat-AllItems-VestmentsoftheDarkPhoenix"
  value: {
   dps: 62497.86554
   tps: 43893.4304
+ }
+}
+dps_results: {
+ key: "TestCombat-AllItems-Wushoolay'sFinalChoice-96785"
+ value: {
+  dps: 77809.37752
+  tps: 54695.84257
+ }
+}
+dps_results: {
+ key: "TestCombat-AllItems-Xing-Ho,BreathofYu'lon-102246"
+ value: {
+  dps: 80106.98894
+  tps: 56307.79316
+ }
+}
+dps_results: {
+ key: "TestCombat-AllItems-YaungolFireCarrier-86518"
+ value: {
+  dps: 80420.47747
+  tps: 56517.71597
  }
 }
 dps_results: {

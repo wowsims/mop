@@ -1,6 +1,8 @@
 package death_knight
 
 import (
+	"time"
+
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
@@ -51,10 +53,11 @@ func (dk *DeathKnight) newGhoulPetInternal(name string, permanent bool, scalingC
 			Name:                            name,
 			Owner:                           &dk.Character,
 			BaseStats:                       stats.Stats{stats.AttackPower: -20},
-			StatInheritance:                 dk.ghoulStatInheritance(scalingCoef),
+			NonHitExpStatInheritance:        ghoulStatInheritance(scalingCoef),
 			EnabledOnStart:                  permanent,
 			IsGuardian:                      !permanent,
 			HasDynamicMeleeSpeedInheritance: true,
+			HasResourceRegenInheritance:     true,
 		}),
 		dkOwner:     dk,
 		clawSpellID: 91776,
@@ -91,6 +94,7 @@ func (ghoulPet *GhoulPet) GetPet() *core.Pet {
 }
 
 func (ghoulPet *GhoulPet) Initialize() {
+	ghoulPet.Pet.Initialize()
 	ghoulPet.Claw = ghoulPet.registerClaw()
 }
 
@@ -112,22 +116,14 @@ func (ghoulPet *GhoulPet) ExecuteCustomRotation(sim *core.Simulation) {
 	}
 }
 
-func (dk *DeathKnight) ghoulStatInheritance(apCoef float64) core.PetStatInheritance {
+func ghoulStatInheritance(apCoef float64) core.PetStatInheritance {
 	return func(ownerStats stats.Stats) stats.Stats {
-		hitRating := ownerStats[stats.HitRating]
-		expertiseRating := ownerStats[stats.ExpertiseRating]
-		combined := (hitRating + expertiseRating) * 0.5
-
 		return stats.Stats{
 			stats.Armor:               ownerStats[stats.Armor],
 			stats.AttackPower:         ownerStats[stats.AttackPower] * apCoef,
-			stats.CritRating:          ownerStats[stats.CritRating],
-			stats.ExpertiseRating:     combined,
 			stats.HasteRating:         ownerStats[stats.HasteRating],
 			stats.Health:              ownerStats[stats.Health],
-			stats.HitRating:           combined,
 			stats.PhysicalCritPercent: ownerStats[stats.PhysicalCritPercent],
-			stats.Stamina:             ownerStats[stats.Stamina],
 		}
 	}
 }
@@ -147,7 +143,7 @@ func (ghoulPet *GhoulPet) registerClaw() *core.Spell {
 
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD: core.GCDMin,
+				GCD: core.BossGCD,
 			},
 			IgnoreHaste: true,
 		},
@@ -177,10 +173,16 @@ func (ghoulPet *GhoulPet) registerClaw() *core.Spell {
 	})
 }
 
+func (ghoulPet *GhoulPet) EnableWithTimeout(sim *core.Simulation, petAgent core.PetAgent, petDuration time.Duration) {
+	ghoulPet.Enable(sim, petAgent)
+
+	ghoulPet.SetTimeoutAction(sim, petDuration)
+}
+
 func (ghoulPet *GhoulPet) Enable(sim *core.Simulation, petAgent core.PetAgent) {
 	if ghoulPet.IsGuardian() && ghoulPet.summonDelay {
 		// The ghoul takes around 4.5s - 5s to from summon to first hit, depending on your distance from the target.
-		randomDelay := core.DurationFromSeconds(sim.RollWithLabel(4.5, 5, "Raise Dead Delay"))
+		randomDelay := core.DurationFromSeconds(sim.RollWithLabel(4.5, 6, "Raise Dead Delay")).Round(time.Millisecond)
 		ghoulPet.Pet.EnableWithStartAttackDelay(sim, petAgent, randomDelay)
 	} else {
 		ghoulPet.Pet.Enable(sim, petAgent)
@@ -192,5 +194,5 @@ const (
 	GhoulSpellClaw int64 = 1 << iota
 
 	GhoulSpellLast
-	GhoulSpellsAll = DeathKnightSpellLast<<1 - 1
+	GhoulSpellsAll = GhoulSpellLast<<1 - 1
 )

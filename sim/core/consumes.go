@@ -126,6 +126,8 @@ func (character *Character) HasAlchStone() bool {
 func makePotionActivationSpell(potionId int32, character *Character, potionCD *Timer) MajorCooldown {
 	potion := ConsumablesByID[potionId]
 	mcd := makePotionActivationSpellInternal(potion, character, potionCD)
+	cooldownDuration := TernaryDuration(potion.CooldownDuration > 0, potion.CooldownDuration, time.Minute*1)
+
 	if mcd.Spell != nil {
 		// Mark as 'Encounter Only' so that users are forced to select the generic Potion
 		// placeholder action instead of specific potion spells, in APL prepull. This
@@ -135,7 +137,7 @@ func makePotionActivationSpell(potionId int32, character *Character, potionCD *T
 		mcd.Spell.ApplyEffects = func(sim *Simulation, target *Unit, spell *Spell) {
 			oldApplyEffects(sim, target, spell)
 			if sim.CurrentTime < 0 {
-				potionCD.Set(sim.CurrentTime + time.Minute)
+				potionCD.Set(sim.CurrentTime + cooldownDuration)
 
 				character.UpdateMajorCooldowns()
 			}
@@ -341,7 +343,7 @@ func registerExplosivesCD(agent Agent, consumes *proto.ConsumesSpec) {
 				},
 
 				ModifyCast: func(sim *Simulation, spell *Spell, cast *Cast) {
-					spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime, false)
+					spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime)
 					spell.Unit.AutoAttacks.StopRangedUntil(sim, sim.CurrentTime)
 				},
 			},
