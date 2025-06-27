@@ -8,7 +8,7 @@ import (
 )
 
 func (priest *Priest) registerPrayerOfMendingSpell() {
-	actionID := core.ActionID{SpellID: 48113}
+	actionID := core.ActionID{SpellID: 33076}
 
 	pomAuras := make([]*core.Aura, len(priest.Env.AllUnits))
 	for _, unit := range priest.Env.AllUnits {
@@ -17,12 +17,12 @@ func (priest *Priest) registerPrayerOfMendingSpell() {
 		}
 	}
 
-	maxJumps := 5 + core.TernaryInt(priest.CouldHaveSetBonus(ItemSetRegaliaOfFaith, 2), 1, 0)
+	maxJumps := 5
 
 	var curTarget *core.Unit
 	var remainingJumps int
 	priest.ProcPrayerOfMending = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-		baseHealing := 1043 + 0.8057*spell.HealingPower(target)
+		baseHealing := 800.0 * .571
 		priest.PrayerOfMending.CalcAndDealHealing(sim, target, baseHealing, spell.OutcomeHealingCrit)
 
 		pomAuras[target.UnitIndex].Deactivate(sim)
@@ -59,10 +59,7 @@ func (priest *Priest) registerPrayerOfMendingSpell() {
 		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
-			BaseCost: 0.15,
-			Multiplier: 1 *
-				(1 - .1*float64(priest.Talents.HealingPrayers)) *
-				(1 - []float64{0, .04, .07, .10}[priest.Talents.MentalAgility]),
+			BaseCostPercent: 3.5,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -70,20 +67,13 @@ func (priest *Priest) registerPrayerOfMendingSpell() {
 			},
 			CD: core.Cooldown{
 				Timer:    priest.NewTimer(),
-				Duration: time.Duration(float64(time.Second*10) * (1 - .06*float64(priest.Talents.DivineProvidence))),
+				Duration: time.Duration(float64(time.Second * 10)),
 			},
 		},
 
-		BonusCritRating: float64(priest.Talents.HolySpecialization) * 1 * core.CritRatingPerCritChance,
-		DamageMultiplier: 1 *
-			(1 + .02*float64(priest.Talents.SpiritualHealing)) *
-			(1 + .01*float64(priest.Talents.BlessedResilience)) *
-			(1 + .02*float64(priest.Talents.FocusedPower)) *
-			(1 + .02*float64(priest.Talents.DivineProvidence)) *
-			(1 + .01*float64(priest.Talents.TwinDisciplines)) *
-			core.TernaryFloat64(priest.CouldHaveSetBonus(ItemSetZabrasRaiment, 2), 1.2, 1),
+		DamageMultiplier: 1,
 		CritMultiplier:   priest.DefaultCritMultiplier(),
-		ThreatMultiplier: 1 - []float64{0, .07, .14, .20}[priest.Talents.SilentResolve],
+		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			if curTarget != nil {

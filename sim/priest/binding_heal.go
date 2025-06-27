@@ -7,16 +7,19 @@ import (
 )
 
 func (priest *Priest) registerBindingHealSpell() {
-	spellCoeff := 0.8057 + 0.04*float64(priest.Talents.EmpoweredHealing)
+
+	bindingHealVariance := 0.25
+	bindingHealScaling := 9.494
+	bindingHealCoefficient := .899
 
 	priest.BindingHeal = priest.RegisterSpell(core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: 48120},
+		ActionID:    core.ActionID{SpellID: 32546},
 		SpellSchool: core.SpellSchoolHoly,
 		ProcMask:    core.ProcMaskSpellHealing,
 		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
-			BaseCost: 0.27,
+			BaseCostPercent: 5.4,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -25,22 +28,17 @@ func (priest *Priest) registerBindingHealSpell() {
 			},
 		},
 
-		BonusCritRating: float64(priest.Talents.HolySpecialization) * 1 * core.CritRatingPerCritChance,
-		DamageMultiplier: 1 *
-			(1 + .02*float64(priest.Talents.SpiritualHealing)) *
-			(1 + .01*float64(priest.Talents.BlessedResilience)) *
-			(1 + .02*float64(priest.Talents.FocusedPower)) *
-			(1 + .02*float64(priest.Talents.DivineProvidence)),
+		BonusCoefficient: bindingHealCoefficient,
+		DamageMultiplier: 1,
 		CritMultiplier:   priest.DefaultCritMultiplier(),
-		ThreatMultiplier: 0.5 * (1 - []float64{0, .07, .14, .20}[priest.Talents.SilentResolve]),
+		ThreatMultiplier: 0.5,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			healFromSP := spellCoeff * spell.HealingPower(target)
 
-			selfHealing := sim.Roll(1959, 2516) + healFromSP
+			selfHealing := priest.CalcAndRollDamageRange(sim, bindingHealScaling, bindingHealVariance)
 			spell.CalcAndDealHealing(sim, &priest.Unit, selfHealing, spell.OutcomeHealingCrit)
 
-			targetHealing := sim.Roll(1959, 2516) + healFromSP
+			targetHealing := priest.CalcAndRollDamageRange(sim, bindingHealScaling, bindingHealVariance)
 			spell.CalcAndDealHealing(sim, target, targetHealing, spell.OutcomeHealingCrit)
 		},
 	})

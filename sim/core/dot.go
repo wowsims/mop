@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -77,6 +78,7 @@ func (dot *Dot) TakeSnapshot(sim *Simulation, doRollover bool) {
 // If the Dot is already active it's duration will be refreshed and the last tick from the previous application will be
 // transfered to the new one
 func (dot *Dot) Apply(sim *Simulation) {
+	fmt.Println("dot", dot)
 	if dot.Spell.Flags&SpellFlagSupressDoTApply > 0 {
 		return
 	}
@@ -415,7 +417,9 @@ func (spell *Spell) createDots(config DotConfig, isHot bool) {
 		if spell.dots == nil {
 			spell.dots = make([]*Dot, len(caster.Env.AllUnits))
 		}
+
 		for _, target := range caster.Env.AllUnits {
+			fmt.Println(isHot, caster.IsOpponent(target))
 			if isHot != caster.IsOpponent(target) {
 				dot.Aura = target.GetOrRegisterAura(auraConfig)
 				spell.dots[target.UnitIndex] = newDot(dot)

@@ -90,6 +90,12 @@ func (priest *Priest) Initialize() {
 	priest.registerPowerInfusionSpell()
 	priest.newMindSearSpell()
 
+	// Healing
+	priest.registerFlashHealSpell()
+	priest.registerBindingHealSpell()
+	priest.registerPowerWordShieldSpell()
+	priest.registerRenewSpell()
+
 	priest.ApplyGlyphs()
 }
 
