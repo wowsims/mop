@@ -37,7 +37,7 @@ func (moonkin *BalanceDruid) registerAstralCommunionSpell() {
 			TickLength:          time.Second * 1,
 			AffectedByCastSpeed: false,
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				if moonkin.CanGainEnergy(SolarAndLunarEnergy) {
+				if moonkin.CanGainEnergy(SolarAndLunarEnergy) || moonkin.CanGainEnergy(LunarEnergy) {
 					moonkin.AddEclipseEnergy(eclipseEnergyGain, LunarEnergy, sim, lunarMetric, dot.Spell)
 				} else {
 					moonkin.AddEclipseEnergy(eclipseEnergyGain, SolarEnergy, sim, solarMetric, dot.Spell)

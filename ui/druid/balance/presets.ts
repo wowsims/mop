@@ -63,6 +63,8 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	leaderOfThePack: true, // crit %
 	blessingOfMight: true, // mastery
 	bloodlust: true, // major haste
+	skullBannerCount: 2,
+	stormlashTotemCount: 4,
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});

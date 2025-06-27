@@ -202,7 +202,7 @@ func (moonkin *BalanceDruid) RegisterEclipseEnergyGainAura() {
 				case druid.DruidSpellWrath:
 					moonkin.AddEclipseEnergy(energyGain, LunarEnergy, sim, lunarMetric, spell)
 				case druid.DruidSpellStarsurge:
-					if moonkin.CanGainEnergy(SolarAndLunarEnergy) {
+					if moonkin.CanGainEnergy(SolarAndLunarEnergy) || moonkin.CanGainEnergy(LunarEnergy) {
 						moonkin.AddEclipseEnergy(energyGain, LunarEnergy, sim, solarMetric, spell)
 					} else {
 						moonkin.AddEclipseEnergy(energyGain, SolarEnergy, sim, lunarMetric, spell)
@@ -260,7 +260,7 @@ func (eb *eclipseEnergyBar) CurrentLunarEnergy() int32 {
 }
 
 func (eb *eclipseEnergyBar) CanGainEnergy(kind EclipseEnergy) bool {
-	return eb.gainMask&kind > 0
+	return eb.gainMask == kind
 }
 
 func (eb *eclipseEnergyBar) StoreGainMaskAndSuspend() {
