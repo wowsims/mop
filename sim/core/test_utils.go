@@ -32,19 +32,23 @@ var AverageDefaultSimTestOptions = &proto.SimOptions{
 const ShortDuration = 60
 const LongDuration = 300
 
-var DefaultTargetProto = &proto.Target{
-	Level: CharacterLevel + 3,
-	Stats: stats.Stats{
-		stats.Armor:       24835,
-		stats.AttackPower: 0,
-	}.ToProtoArray(),
-	MobType: proto.MobType_MobTypeMechanical,
+func FreshDefaultTargetConfig() *proto.Target {
+	return &proto.Target{
+		Level: CharacterLevel + 3,
+		Stats: stats.Stats{
+			stats.Armor:       24835,
+			stats.AttackPower: 0,
+		}.ToProtoArray(),
+		MobType: proto.MobType_MobTypeMechanical,
 
-	SwingSpeed:    2,
-	MinBaseDamage: 550000,
-	ParryHaste:    false,
-	DamageSpread:  0.4,
+		SwingSpeed:    2,
+		MinBaseDamage: 550000,
+		ParryHaste:    false,
+		DamageSpread:  0.4,
+	}
 }
+
+var DefaultTargetProto = FreshDefaultTargetConfig()
 
 var FullRaidBuffs = &proto.RaidBuffs{
 	// +10% Attack Power
@@ -112,9 +116,15 @@ func NewDefaultTarget() *proto.Target {
 func MakeDefaultEncounterCombos() []EncounterCombo {
 	var DefaultTarget = NewDefaultTarget()
 
-	multipleTargets := make([]*proto.Target, 20)
+	multipleTargets := make([]*proto.Target, 21)
 	for i := range multipleTargets {
-		multipleTargets[i] = DefaultTarget
+		if i < 20 {
+			multipleTargets[i] = DefaultTarget
+		} else {
+			disabledTarget := FreshDefaultTargetConfig()
+			disabledTarget.DisabledAtStart = true
+			multipleTargets[i] = disabledTarget
+		}
 	}
 
 	return []EncounterCombo{
