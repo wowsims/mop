@@ -28,7 +28,11 @@ func NewElementalShaman(character *core.Character, options *proto.Player) *Eleme
 	eleOptions := options.GetElementalShaman().Options
 
 	selfBuffs := shaman.SelfBuffs{
-		Shield: eleOptions.ClassOptions.Shield,
+		Shield:      eleOptions.ClassOptions.Shield,
+		ImbueMH:     proto.ShamanImbue_FlametongueWeapon,
+		ImbueOH:     proto.ShamanImbue_NoImbue,
+		ImbueMHSwap: eleOptions.ClassOptions.ImbueMhSwap,
+		ImbueOHSwap: proto.ShamanImbue_NoImbue,
 	}
 
 	inRange := eleOptions.ThunderstormRange == proto.ElementalShaman_Options_TSInRange
@@ -36,16 +40,20 @@ func NewElementalShaman(character *core.Character, options *proto.Player) *Eleme
 		Shaman: shaman.NewShaman(character, options.TalentsString, selfBuffs, inRange, eleOptions.ClassOptions.FeleAutocast),
 	}
 
-	if mh := ele.GetMHWeapon(); mh != nil {
-		ele.ApplyFlametongueImbueToItem(mh)
-		ele.SelfBuffs.ImbueMH = proto.ShamanImbue_FlametongueWeapon
-	}
+	//Some spells use weapon damage (Unleash Wind, ...)
+	ele.EnableAutoAttacks(ele, core.AutoAttackOptions{
+		MainHand:       ele.WeaponFromMainHand(ele.DefaultCritMultiplier()),
+		AutoSwingMelee: false,
+	})
 
 	return ele
 }
 
 func (eleShaman *ElementalShaman) Initialize() {
 	eleShaman.Shaman.Initialize()
+
+	eleShaman.RegisterFlametongueImbue(eleShaman.GetImbueProcMask(proto.ShamanImbue_FlametongueWeapon))
+	eleShaman.RegisterWindfuryImbue(eleShaman.GetImbueProcMask(proto.ShamanImbue_WindfuryWeapon))
 
 	eleShaman.registerThunderstormSpell()
 	eleShaman.registerLavaBurstSpell()
