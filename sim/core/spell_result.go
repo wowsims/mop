@@ -339,6 +339,12 @@ func (spell *Spell) CalcAndDealDamage(sim *Simulation, target *Unit, baseDamage 
 	spell.DealDamage(sim, result)
 	return result
 }
+func (spell *Spell) CalcAndDealAoeDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) {
+	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
+		spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, outcomeApplier)
+	}
+}
+
 func (spell *Spell) CalcAndDealPeriodicDamage(sim *Simulation, target *Unit, baseDamage float64, outcomeApplier OutcomeApplier) *SpellResult {
 	result := spell.CalcPeriodicDamage(sim, target, baseDamage, outcomeApplier)
 	spell.DealPeriodicDamage(sim, result)
