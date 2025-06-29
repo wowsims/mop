@@ -1,6 +1,7 @@
 package balance
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -202,9 +203,9 @@ func (moonkin *BalanceDruid) RegisterEclipseEnergyGainAura() {
 				case druid.DruidSpellWrath:
 					moonkin.AddEclipseEnergy(energyGain, LunarEnergy, sim, lunarMetric, spell)
 				case druid.DruidSpellStarsurge:
-					if moonkin.CanGainEnergy(SolarAndLunarEnergy) {
+					if moonkin.CanGainEnergy(LunarEnergy) {
 						moonkin.AddEclipseEnergy(energyGain, LunarEnergy, sim, solarMetric, spell)
-					} else {
+					} else if moonkin.CanGainEnergy(SolarEnergy) {
 						moonkin.AddEclipseEnergy(energyGain, SolarEnergy, sim, lunarMetric, spell)
 					}
 				}
@@ -232,12 +233,15 @@ func (eb *eclipseEnergyBar) AddEclipseCallback(callback EclipseCallback) {
 }
 
 func (eb *eclipseEnergyBar) AddEclipseEnergy(amount float64, kind EclipseEnergy, sim *core.Simulation, metrics *core.ResourceMetrics, spell *core.Spell) {
+	//debug output spell
+	fmt.Printf("Adding %0.0f eclipse energy of kind %d for spell %s\n", amount, kind, spell.ActionID)
 	if eb.moonkin == nil {
 		return
 	}
 
 	// unit currently can not gain the specified energy
 	if kind&eb.gainMask == 0 {
+		fmt.Printf("Unit can not gain eclipse energy of kind %d, gain mask is %d\n", kind, eb.gainMask)
 		return
 	}
 

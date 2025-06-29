@@ -377,7 +377,7 @@ type APLValueMath struct {
 
 func (rot *APLRotation) newValueMath(config *proto.APLValueMath, uuid *proto.UUID) APLValue {
 	lhs, rhs := rot.newAPLValue(config.Lhs), rot.newAPLValue(config.Rhs)
-	if config.Op == proto.APLValueMath_OpAdd || config.Op == proto.APLValueMath_OpSub {
+	if config.Op == proto.APLValueMath_OpAdd || config.Op == proto.APLValueMath_OpSub || config.Op == proto.APLValueMath_OpMul || config.Op == proto.APLValueMath_OpDiv {
 		lhs, rhs = rot.coerceToSameType(lhs, rhs)
 	}
 	if lhs == nil || rhs == nil {
