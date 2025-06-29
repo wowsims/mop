@@ -1001,6 +1001,14 @@ func (auras AuraArray) ActivateAll(sim *Simulation) {
 	}
 }
 
+func (auras AuraArray) ApplyOnExpire(onExpire OnExpire) {
+	for _, aura := range auras{
+		if aura != nil {
+			aura.ApplyOnExpire(onExpire)
+		}
+	}
+}
+
 func (caster *Unit) NewAllyAuraArray(makeAura func(*Unit) *Aura) AuraArray {
 	auras := make([]*Aura, len(caster.Env.AllUnits))
 	for _, target := range caster.Env.AllUnits {

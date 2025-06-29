@@ -239,7 +239,7 @@ func (warlock *Warlock) ApplyDotWithPandemic(dot *core.Dot, sim *core.Simulation
 }
 
 // Called to handle custom resources
-type WarlockSpellCastedCallback func(resultList []core.SpellResult, spell *core.Spell, sim *core.Simulation)
+type WarlockSpellCastedCallback func(resultList core.SpellResultSlice, spell *core.Spell, sim *core.Simulation)
 
 type SecondaryResourceCost struct {
 	SecondaryCost int

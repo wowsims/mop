@@ -365,10 +365,21 @@ func (spell *Spell) CalcAndDealDamage(sim *Simulation, target *Unit, baseDamage 
 	spell.DealDamage(sim, result)
 	return result
 }
+
 func (spell *Spell) CalcAndDealAoeDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
 	return spell.CalcAndDealAoeDamageWithVariance(sim, outcomeApplier, func(_ *Simulation, _ *Spell) float64 {
 		return baseDamage
 	})
+}
+
+func (spell *Spell) CalcAndDealPeriodicAoeDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
+	spell.resultSlice = spell.resultSlice[:0]
+
+	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
+		spell.resultSlice = append(spell.resultSlice, spell.CalcAndDealPeriodicDamage(sim, aoeTarget, baseDamage, outcomeApplier))
+	}
+
+	return spell.resultSlice
 }
 
 type BaseDamageCalculator func(*Simulation, *Spell) float64
