@@ -9,7 +9,6 @@ import (
 
 // Consecrates the land beneath you, causing 8222 Holy damage over 9 sec to enemies who enter the area.
 func (prot *ProtectionPaladin) registerConsecrationSpell() {
-	numTargets := prot.Env.GetNumTargets()
 	prot.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 26573},
 		SpellSchool:    core.SpellSchoolHoly,
@@ -45,20 +44,11 @@ func (prot *ProtectionPaladin) registerConsecrationSpell() {
 			NumberOfTicks: 9,
 			TickLength:    time.Second * 1,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				results := make([]*core.SpellResult, numTargets)
-
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				// Consecration recalculates everything on each tick
 				baseDamage := prot.CalcScalingSpellDmg(0.80000001192) + 0.07999999821*dot.Spell.MeleeAttackPower()
-
-				for idx := range numTargets {
-					currentTarget := sim.Environment.GetTargetUnit(idx)
-					results[idx] = dot.Spell.CalcPeriodicDamage(sim, currentTarget, baseDamage, dot.Spell.OutcomeMagicHitAndCrit)
-				}
-
-				for idx := range numTargets {
-					dot.Spell.DealPeriodicDamage(sim, results[idx])
-				}
+				dot.Spell.CalcPeriodicAoeDamage(sim, baseDamage, dot.Spell.OutcomeMagicHitAndCrit)
+				dot.Spell.DealBatchedPeriodicDamage(sim)
 			},
 		},
 

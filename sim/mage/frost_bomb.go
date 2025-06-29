@@ -30,8 +30,8 @@ func (mage *Mage) registerFrostBomb() {
 		BonusCoefficient: frostBombExplosionCoefficient,
 		ThreatMultiplier: 1,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for idx, aoeTarget := range sim.Encounter.TargetUnits {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			for idx, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				if idx == 0 {
 					spell.DamageMultiplier *= 2
 				}

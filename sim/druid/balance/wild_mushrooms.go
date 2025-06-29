@@ -53,10 +53,9 @@ func (moonkin *BalanceDruid) registerWildMushrooms() {
 		BonusCoefficient: WildMushroomsBonusCoeff,
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				damage := moonkin.CalcAndRollDamageRange(sim, WildMushroomsCoeff, WildMushroomsVariance)
-				spell.CalcAndDealDamage(sim, aoeTarget, damage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
+				return moonkin.CalcAndRollDamageRange(sim, WildMushroomsCoeff, WildMushroomsVariance)
+			})
 		},
 	})
 

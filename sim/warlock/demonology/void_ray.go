@@ -30,12 +30,11 @@ func (demonology *DemonologyWarlock) registerVoidRay() {
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
 			return demonology.IsInMeta() && demonology.DemonicFury.CanSpend(core.TernaryInt32(demonology.T15_2pc.IsActive(), 56, 80))
 		},
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			demonology.DemonicFury.Spend(sim, core.TernaryInt32(demonology.T15_2pc.IsActive(), 56, 80), spell.ActionID)
-			for _, enemy := range sim.Encounter.TargetUnits {
-				baseDamage := demonology.CalcAndRollDamageRange(sim, voidRayScale, voidRayVariance)
-				spell.CalcAndDealDamage(sim, enemy, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
+				return demonology.CalcAndRollDamageRange(sim, voidRayScale, voidRayVariance)
+			})
 		},
 	})
 }

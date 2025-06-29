@@ -136,8 +136,8 @@ func (dk *DeathKnight) registerUnholyBlight() {
 		ProcMask:    core.ProcMaskEmpty,
 		Flags:       core.SpellFlagPassiveSpell,
 
-		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			for _, target := range sim.Encounter.TargetUnits {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
+			for _, target := range sim.Encounter.ActiveTargetUnits {
 				dk.BloodPlagueSpell.Cast(sim, target)
 				dk.FrostFeverSpell.Cast(sim, target)
 			}

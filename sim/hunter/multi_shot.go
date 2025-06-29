@@ -35,33 +35,21 @@ func (hunter *Hunter) registerMultiShotSpell() {
 
 		BonusCoefficient: 1,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			numHits := hunter.Env.GetNumTargets() // Multi is uncapped in Cata
-
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			sharedDmg := hunter.AutoAttacks.Ranged().CalculateNormalizedWeaponDamage(sim, spell.RangedAttackPower())
-
-			baseDamageArray := make([]*core.SpellResult, numHits)
-			for hitIndex := int32(0); hitIndex < numHits; hitIndex++ {
-				currentTarget := hunter.Env.GetTargetUnit(hitIndex)
-				baseDamage := sharedDmg
-				baseDamageArray[hitIndex] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeRangedHitAndCrit)
-			}
+			results := spell.CalcAoeDamage(sim, sharedDmg, spell.OutcomeRangedHitAndCrit)
 
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-				curTarget := target
-				for hitIndex := int32(0); hitIndex < numHits; hitIndex++ {
-					spell.DealDamage(sim, baseDamageArray[hitIndex])
+				for _, result := range results {
+					spell.DealDamage(sim, result)
 
 					//Serpent Spread
 					if hunter.Spec == proto.Spec_SpecSurvivalHunter {
-
-						ss := hunter.SerpentSting.Dot(curTarget)
-						hunter.ImprovedSerpentSting.Cast(sim, curTarget)
+						ss := hunter.SerpentSting.Dot(result.Target)
+						hunter.ImprovedSerpentSting.Cast(sim, result.Target)
 						ss.BaseTickCount = 5
 						ss.Apply(sim)
 					}
-
-					curTarget = sim.Environment.NextTargetUnit(curTarget)
 				}
 			})
 

@@ -37,10 +37,7 @@ func (druid *Druid) registerSwipeBearSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := flatBaseDamage + 0.225*spell.MeleeAttackPower()
-
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 		},
 	})
 }
@@ -69,7 +66,7 @@ func (druid *Druid) registerSwipeCatSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := spell.Unit.MHWeaponDamage(sim, spell.MeleeAttackPower())
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				result := spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
 
 				if result.Landed() && (aoeTarget == druid.CurrentTarget) {

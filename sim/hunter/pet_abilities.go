@@ -335,8 +335,8 @@ func (hp *HunterPet) newFrostStormBreath() *core.Spell {
 			NumberOfTicks:       4,
 			TickLength:          time.Second * 2,
 			AffectedByCastSpeed: true,
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				for _, aoeTarget := range sim.Encounter.TargetUnits {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, _ *core.Dot) {
+				for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 					frostStormTickSpell.Cast(sim, aoeTarget)
 				}
 			},

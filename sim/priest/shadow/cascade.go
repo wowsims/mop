@@ -27,7 +27,7 @@ func (shadow *ShadowPriest) registerCascade() {
 		}
 
 		bounceTargets := []*core.Unit{}
-		for _, unit := range sim.Encounter.TargetUnits {
+		for _, unit := range sim.Encounter.ActiveTargetUnits {
 			if unit == target {
 				continue
 			}

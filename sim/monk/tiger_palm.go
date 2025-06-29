@@ -35,12 +35,12 @@ func tigerPowerBuffConfig(monk *Monk, isSEFClone bool) core.Aura {
 		Duration: time.Second * 20,
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			for _, target := range sim.Encounter.TargetUnits {
+			for _, target := range sim.Encounter.AllTargetUnits {
 				aura.Unit.AttackTables[target.UnitIndex].ArmorIgnoreFactor += 0.3
 			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			for _, target := range sim.Encounter.TargetUnits {
+			for _, target := range sim.Encounter.AllTargetUnits {
 				aura.Unit.AttackTables[target.UnitIndex].ArmorIgnoreFactor -= 0.3
 			}
 		},

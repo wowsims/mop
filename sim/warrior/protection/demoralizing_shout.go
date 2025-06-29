@@ -35,7 +35,7 @@ func (war *ProtectionWarrior) registerDemoralizingShout() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				result := spell.CalcAndDealOutcome(sim, aoeTarget, spell.OutcomeMagicHit)
 				if result.Landed() {
 					war.DemoralizingShoutAuras.Get(aoeTarget).Activate(sim)

@@ -39,7 +39,7 @@ func (destruction *DestructionWarlock) registerFireAndBrimstoneConflagrate() {
 
 			// keep charges in sync
 			destruction.Conflagrate.ConsumeCharge(sim)
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				result := spell.CalcAndDealDamage(
 					sim,
 					aoeTarget,

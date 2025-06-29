@@ -5,7 +5,7 @@ import (
 )
 
 func (demonology *DemonologyWarlock) registerHellfire() {
-	hellfire := demonology.RegisterHellfire(func(resultList []core.SpellResult, spell *core.Spell, sim *core.Simulation) {
+	hellfire := demonology.RegisterHellfire(func(resultList core.SpellResultSlice, spell *core.Spell, sim *core.Simulation) {
 		if demonology.IsInMeta() {
 			return
 		}

@@ -58,8 +58,8 @@ func (bm *BrewmasterMonk) registerBreathOfFire() {
 			return bm.StanceMatches(monk.SturdyOx) && bm.GetChi() >= 2
 		},
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, enemyTarget := range sim.Encounter.TargetUnits {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			for _, enemyTarget := range sim.Encounter.ActiveTargetUnits {
 				baseDamage := bm.CalcAndRollDamageRange(sim, 1.475, 0.242) + 0.3626*spell.MeleeAttackPower()
 				result := spell.CalcOutcome(sim, enemyTarget, spell.OutcomeMeleeSpecialNoBlockDodgeParryNoCritNoHitCounter)
 

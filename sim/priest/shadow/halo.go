@@ -45,9 +45,7 @@ func (shadow *ShadowPriest) registerHalo() {
 				baseDamage := shadow.CalcAndRollDamageRange(sim, haloScale, haloVariance)
 				distMod := calcHaloMod(shadow.DistanceFromTarget)
 				spell.DamageMultiplier *= distMod
-				for _, target := range sim.Encounter.TargetUnits {
-					spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-				}
+				spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMagicHitAndCrit)
 				spell.DamageMultiplier /= distMod
 			})
 		},

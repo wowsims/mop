@@ -24,7 +24,7 @@ func (mage *Mage) registerNetherTempest() {
 		CritMultiplier:   mage.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			nextTarget := mage.Env.NextTargetUnit(target)
+			nextTarget := mage.Env.NextActiveTargetUnit(target)
 			spell.DamageMultiplier /= 2
 			result := spell.CalcDamage(sim, nextTarget, mage.NetherTempest.Dot(target).SnapshotBaseDamage, spell.OutcomeMagicHitAndCrit)
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
@@ -84,7 +84,7 @@ func (mage *Mage) registerNetherTempest() {
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
 				dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
-				if mage.Env.GetNumTargets() > 1 {
+				if mage.Env.ActiveTargetCount() > 1 {
 					ntCleaveSpell.Cast(sim, target)
 				}
 			},

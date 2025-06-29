@@ -35,7 +35,7 @@ func (demonology *DemonologyWarlock) registerChaosWave() {
 			return demonology.IsInMeta() && demonology.DemonicFury.CanSpend(core.TernaryInt32(demonology.T15_2pc.IsActive(), 56, 80))
 		},
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			// keep stacks in sync as they're shared
 			demonology.HandOfGuldan.ConsumeCharge(sim)
 			demonology.DemonicFury.Spend(sim, core.TernaryInt32(demonology.T15_2pc.IsActive(), 56, 80), spell.ActionID)
@@ -44,14 +44,7 @@ func (demonology *DemonologyWarlock) registerChaosWave() {
 			pa.Priority = core.ActionPriorityAuto
 
 			pa.OnAction = func(sim *core.Simulation) {
-				for _, enemy := range sim.Encounter.TargetUnits {
-					spell.CalcAndDealDamage(
-						sim,
-						enemy,
-						demonology.CalcScalingSpellDmg(chaosWaveScale),
-						spell.OutcomeMagicHitAndCrit,
-					)
-				}
+				spell.CalcAndDealAoeDamage(sim, demonology.CalcScalingSpellDmg(chaosWaveScale), spell.OutcomeMagicHitAndCrit)
 			}
 
 			sim.AddPendingAction(pa)

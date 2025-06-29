@@ -66,9 +66,7 @@ func (hunter *Hunter) registerBarrageSpell() {
 		},
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			mainTarget = target
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.Dot(aoeTarget).Apply(sim)
-			}
+			spell.ApplyAllDots(sim)
 			spell.CalcAndDealOutcome(sim, target, spell.OutcomeAlwaysHitNoHitCounter)
 		},
 	}

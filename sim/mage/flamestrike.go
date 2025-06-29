@@ -40,11 +40,10 @@ func (mage *Mage) registerFlamestrikeSpell() {
 		BonusCoefficient: flameStrikeCoefficient,
 		ThreatMultiplier: 1,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				baseDamage := mage.CalcAndRollDamageRange(sim, flameStrikeScaling, flameStrikeVariance)
-				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
+				return mage.CalcAndRollDamageRange(sim, flameStrikeScaling, flameStrikeVariance)
+			})
 
 			spell.RelatedDotSpell.AOEDot().Apply(sim)
 		},
@@ -72,8 +71,8 @@ func (mage *Mage) registerFlamestrikeSpell() {
 			OnSnapshot: func(_ *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
 				dot.Snapshot(target, mage.CalcScalingSpellDmg(flameStrikeDotScaling))
 			},
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				for _, aoeTarget := range sim.Encounter.TargetUnits {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
+				for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 					dot.CalcAndDealPeriodicSnapshotDamage(sim, aoeTarget, dot.OutcomeSnapshotCrit)
 				}
 			},

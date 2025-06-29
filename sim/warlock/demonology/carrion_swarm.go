@@ -39,14 +39,9 @@ func (demonology *DemonologyWarlock) registerCarrionSwarm() {
 		},
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			demonology.DemonicFury.Spend(sim, core.TernaryInt32(demonology.T15_2pc.IsActive(), 35, 50), spell.ActionID)
-			for _, enemy := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(
-					sim,
-					enemy,
-					demonology.CalcAndRollDamageRange(sim, carrionSwarmScale, carrionSwarmVariance),
-					spell.OutcomeMagicHitAndCrit,
-				)
-			}
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
+				return demonology.CalcAndRollDamageRange(sim, carrionSwarmScale, carrionSwarmVariance)
+			})
 		},
 	})
 }

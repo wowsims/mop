@@ -98,6 +98,10 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 			}
 		}
 
+		if !target.IsEnabled() {
+			return spell.castFailureHelper(sim, "target disabled")
+		}
+
 		if spell.Flags.Matches(SpellFlagSwapped) {
 			return spell.castFailureHelper(sim, "spell attached to an un-equipped item")
 		}
@@ -254,6 +258,10 @@ func (spell *Spell) triggerCooldown(sim *Simulation) {
 
 func (spell *Spell) makeCastFuncSimple() CastSuccessFunc {
 	return func(sim *Simulation, target *Unit) bool {
+		if !target.IsEnabled() {
+			return spell.castFailureHelper(sim, "target disabled")
+		}
+
 		if spell.Flags.Matches(SpellFlagSwapped) {
 			return spell.castFailureHelper(sim, "spell attached to an un-equipped item")
 		}

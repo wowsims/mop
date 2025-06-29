@@ -37,37 +37,31 @@ func (shadow *ShadowPriest) registerDivineStar() {
 				Duration: time.Second * 15,
 			},
 		},
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			hit1 := shadow.DistanceFromTarget / 24
 			hit2 := 2.5 - hit1
 
 			// first hit
 			core.StartDelayedAction(sim, core.DelayedActionOptions{
 				DoAt: sim.CurrentTime + time.Second*time.Duration(hit1),
-				OnAction: func(s *core.Simulation) {
-					for _, unit := range sim.Encounter.TargetUnits {
-						spell.CalcAndDealDamage(
-							sim,
-							unit,
-							shadow.CalcAndRollDamageRange(sim, divineStarScale, divineStarVariance),
-							spell.OutcomeMagicHitAndCrit,
-						)
-					}
-				}})
+
+				OnAction: func(sim *core.Simulation) {
+					spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, shadow.rollDivineStarDamage)
+				},
+			})
 
 			// second hit
 			core.StartDelayedAction(sim, core.DelayedActionOptions{
 				DoAt: sim.CurrentTime + time.Second*time.Duration(hit2),
-				OnAction: func(s *core.Simulation) {
-					for _, unit := range sim.Encounter.TargetUnits {
-						spell.CalcAndDealDamage(
-							sim,
-							unit,
-							shadow.CalcAndRollDamageRange(sim, divineStarScale, divineStarVariance),
-							spell.OutcomeMagicHitAndCrit,
-						)
-					}
-				}})
+
+				OnAction: func(sim *core.Simulation) {
+					spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, shadow.rollDivineStarDamage)
+				},
+			})
 		},
 	})
+}
+
+func (shadow *ShadowPriest) rollDivineStarDamage(sim *core.Simulation, _ *core.Spell) float64 {
+	return shadow.CalcAndRollDamageRange(sim, divineStarScale, divineStarVariance)
 }

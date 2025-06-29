@@ -80,6 +80,14 @@ func (spell *Spell) CanQueue(sim *Simulation, target *Unit) bool {
 		return false
 	}
 
+	if !target.IsEnabled() {
+		return false
+	}
+
+	if spell.Flags.Matches(SpellFlagSwapped) {
+		return false
+	}
+
 	// Same extra cast conditions apply as if we were casting right now
 	if spell.ExtraCastCondition != nil && !spell.ExtraCastCondition(sim, target) {
 		return false

@@ -67,7 +67,7 @@ func (affliction *AfflictionWarlock) Initialize() {
 
 	affliction.registerPotentAffliction()
 	affliction.registerHaunt()
-	corruption := affliction.RegisterCorruption(func(resultList []core.SpellResult, spell *core.Spell, sim *core.Simulation) {
+	corruption := affliction.RegisterCorruption(func(resultList core.SpellResultSlice, spell *core.Spell, sim *core.Simulation) {
 		if resultList[0].Landed() {
 			affliction.LastCorruption = spell.Dot(resultList[0].Target)
 		}
