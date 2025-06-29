@@ -202,9 +202,9 @@ func (moonkin *BalanceDruid) RegisterEclipseEnergyGainAura() {
 				case druid.DruidSpellWrath:
 					moonkin.AddEclipseEnergy(energyGain, LunarEnergy, sim, lunarMetric, spell)
 				case druid.DruidSpellStarsurge:
-					if moonkin.CanGainEnergy(SolarAndLunarEnergy) {
+					if moonkin.CanGainEnergy(LunarEnergy) {
 						moonkin.AddEclipseEnergy(energyGain, LunarEnergy, sim, solarMetric, spell)
-					} else {
+					} else if moonkin.CanGainEnergy(SolarEnergy) {
 						moonkin.AddEclipseEnergy(energyGain, SolarEnergy, sim, lunarMetric, spell)
 					}
 				}
