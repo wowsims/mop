@@ -439,6 +439,16 @@ func (spell *Spell) ApplyAllDots(sim *Simulation) {
 	}
 }
 
+func (spell *Spell) AnyDotsActive(sim *Simulation) bool {
+	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
+		if spell.Dot(aoeTarget).IsActive() {
+			return true
+		}
+	}
+
+	return false
+}
+
 // Metrics for the current iteration
 func (spell *Spell) CurDamagePerCast() float64 {
 	if spell.SpellMetrics[0].Casts == 0 {
