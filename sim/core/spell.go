@@ -433,6 +433,12 @@ func (spell *Spell) SelfShield() *Shield {
 	return spell.selfShield
 }
 
+func (spell *Spell) ApplyAllDots(sim *Simulation) {
+	for _, target := range sim.Encounter.ActiveTargetUnits {
+		spell.Dot(target).Apply(sim)
+	}
+}
+
 // Metrics for the current iteration
 func (spell *Spell) CurDamagePerCast() float64 {
 	if spell.SpellMetrics[0].Casts == 0 {
