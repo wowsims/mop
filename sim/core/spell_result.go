@@ -384,6 +384,20 @@ func (spell *Spell) CalcAndDealAoeDamageWithVariance(sim *Simulation, outcomeApp
 	return spell.resultSlice
 }
 
+func (spell *Spell) CalcAndDealCleaveDamageWithVariance(sim *Simulation, firstTarget *Unit, maxTargets int32, outcomeApplier OutcomeApplier, baseDamageCalculator BaseDamageCalculator) SpellResultSlice {
+	spell.resultSlice = spell.resultSlice[:0]
+	numTargets := min(maxTargets, sim.Environment.ActiveTargetCount())
+	curTarget := firstTarget
+
+	for range numTargets {
+		baseDamage := baseDamageCalculator(sim, spell)
+		spell.resultSlice = append(spell.resultSlice, spell.CalcAndDealDamage(sim, curTarget, baseDamage, outcomeApplier))
+		curTarget = sim.Environment.NextActiveTargetUnit(curTarget)
+	}
+
+	return spell.resultSlice
+}
+
 // Use CalcAoeDamage + DealBatchedAoeDamage instead of CalcAndDealAoeDamage in situations where you want to block procs
 // on early targets from influencing the damage calculation on later targets.
 func (spell *Spell) CalcAoeDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
@@ -403,11 +417,17 @@ func (spell *Spell) CalcAoeDamageWithVariance(sim *Simulation, outcomeApplier Ou
 }
 
 func (spell *Spell) CalcCleaveDamage(sim *Simulation, firstTarget *Unit, maxTargets int32, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
+	return spell.CalcCleaveDamageWithVariance(sim, firstTarget, maxTargets, outcomeApplier, func(_ *Simulation, _ *Spell) float64 {
+		return baseDamage
+	})
+}
+func (spell *Spell) CalcCleaveDamageWithVariance(sim *Simulation, firstTarget *Unit, maxTargets int32, outcomeApplier OutcomeApplier, baseDamageCalculator BaseDamageCalculator) SpellResultSlice {
 	spell.resultSlice = spell.resultSlice[:0]
 	numTargets := min(maxTargets, sim.Environment.ActiveTargetCount())
 	curTarget := firstTarget
 
 	for range numTargets {
+		baseDamage := baseDamageCalculator(sim, spell)
 		spell.resultSlice = append(spell.resultSlice, spell.CalcDamage(sim, curTarget, baseDamage, outcomeApplier))
 		curTarget = sim.Environment.NextActiveTargetUnit(curTarget)
 	}
