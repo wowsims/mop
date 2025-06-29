@@ -22,6 +22,7 @@ type SpellResult struct {
 	inUse bool
 }
 
+type SpellResultSlice []*SpellResult
 type SpellResultCache map[*Unit]*SpellResult
 
 func (resultCache SpellResultCache) Get(target *Unit) *SpellResult {
@@ -368,17 +369,32 @@ func (spell *Spell) CalcAndDealAoeDamageWithVariance(sim *Simulation, outcomeApp
 
 // Use CalcAoeDamage + DealBatchedAoeDamage instead of CalcAndDealAoeDamage in situations where you want to block procs
 // on early targets from influencing the damage calculation on later targets.
-func (spell *Spell) CalcAoeDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultCache {
+func (spell *Spell) CalcAoeDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
+	spell.resultSlice = spell.resultSlice[:0]
+
 	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
-		spell.CalcDamage(sim, aoeTarget, baseDamage, outcomeApplier)
+		spell.resultSlice = append(spell.resultSlice, spell.CalcDamage(sim, aoeTarget, baseDamage, outcomeApplier))
 	}
 
-	return spell.resultCache
+	return spell.resultSlice
+}
+
+func (spell *Spell) CalcCleaveDamage(sim *Simulation, firstTarget *Unit, maxTargets int32, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
+	spell.resultSlice = spell.resultSlice[:0]
+	numTargets := min(maxTargets, sim.Environment.ActiveTargetCount())
+	curTarget := firstTarget
+
+	for range numTargets {
+		spell.resultSlice = append(spell.resultSlice, spell.CalcDamage(sim, curTarget, baseDamage, outcomeApplier))
+		curTarget = sim.Environment.NextActiveTargetUnit(curTarget)
+	}
+
+	return spell.resultSlice
 }
 
 func (spell *Spell) DealBatchedAoeDamage(sim *Simulation) {
-	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
-		spell.DealDamage(sim, spell.resultCache[aoeTarget])
+	for _, result := range spell.resultSlice {
+		spell.DealDamage(sim, result)
 	}
 }
 

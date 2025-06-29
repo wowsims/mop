@@ -152,6 +152,7 @@ type Spell struct {
 	FlatThreatBonus float64
 
 	resultCache SpellResultCache
+	resultSlice SpellResultSlice
 
 	dots   DotArray
 	aoeDot *Dot
@@ -211,6 +212,8 @@ func (unit *Unit) RegisterSpell(config SpellConfig) *Spell {
 		}
 	}
 
+	allocGuess := TernaryInt32(config.Flags.Matches(SpellFlagAoE), unit.Env.TotalTargetCount(), 1)
+
 	spell := &Spell{
 		ActionID:       config.ActionID,
 		Unit:           unit,
@@ -258,7 +261,8 @@ func (unit *Unit) RegisterSpell(config SpellConfig) *Spell {
 		MaxCharges:   config.Charges,
 		RechargeTime: config.RechargeTime,
 
-		resultCache: make(SpellResultCache),
+		resultCache: make(SpellResultCache, allocGuess),
+		resultSlice: make(SpellResultSlice, 0, allocGuess),
 	}
 
 	switch {
