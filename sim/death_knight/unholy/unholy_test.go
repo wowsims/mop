@@ -16,7 +16,7 @@ func TestUnholy(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
 		Class:      proto.Class_ClassDeathKnight,
 		Race:       proto.Race_RaceOrc,
-		OtherRaces: []proto.Race{proto.Race_RaceWorgen},
+		OtherRaces: []proto.Race{proto.Race_RaceTroll, proto.Race_RaceWorgen},
 
 		GearSet:     core.GetGearSet("../../../ui/death_knight/unholy/gear_sets", "p1"),
 		Talents:     UnholyTalents,
@@ -33,7 +33,7 @@ var UnholyTalents = "321111"
 var UnholyDefaultGlyphs = &proto.Glyphs{
 	Major1: int32(proto.DeathKnightMajorGlyph_GlyphOfAntiMagicShell),
 	Major2: int32(proto.DeathKnightMajorGlyph_GlyphOfPestilence),
-	Major3: int32(proto.DeathKnightMajorGlyph_GlyphOfOutbreak),
+	Major3: int32(proto.DeathKnightMajorGlyph_GlyphOfLoudHorn),
 	Minor1: int32(proto.DeathKnightMinorGlyph_GlyphOfDeathsEmbrace),
 }
 
@@ -41,7 +41,7 @@ var PlayerOptionsUnholy = &proto.Player_UnholyDeathKnight{
 	UnholyDeathKnight: &proto.UnholyDeathKnight{
 		Options: &proto.UnholyDeathKnight_Options{
 			ClassOptions: &proto.DeathKnightOptions{
-				StartingRunicPower: 100,
+				StartingRunicPower: 0,
 			},
 		},
 	},

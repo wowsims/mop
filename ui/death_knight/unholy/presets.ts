@@ -4,7 +4,6 @@ import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/p
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '../../core/proto/death_knight';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
-import CataApl from '../../death_knight/unholy/apls/cata.apl.json';
 import DefaultApl from '../../death_knight/unholy/apls/default.apl.json';
 import P1Gear from '../../death_knight/unholy/gear_sets/p1.gear.json';
 // import PreBISGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
@@ -16,7 +15,6 @@ import P1Gear from '../../death_knight/unholy/gear_sets/p1.gear.json';
 export const P1_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P1', P1Gear);
 
 export const DEFAULT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
-export const CATA_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('!OLD! - Cata APL', CataApl);
 
 // Preset options for EP weights
 export const P1_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeights(
