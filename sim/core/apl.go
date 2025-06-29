@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
@@ -290,9 +291,9 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 	}
 
 	//Probably not the best solution, added so apl evaluates if a spell can be cast while channeling during runtime rather than on reset
-	//apl.allowCastWhileChanneling = slices.ContainsFunc(apl.unit.Spellbook, func(spell *Spell) bool {
-	//	return spell.Flags.Matches(SpellFlagCastWhileChanneling)
-	//})
+	apl.allowCastWhileChanneling = slices.ContainsFunc(apl.unit.Spellbook, func(spell *Spell) bool {
+		return spell.Flags.Matches(SpellFlagCastWhileChanneling)
+	})
 
 	if apl.unit.ChanneledDot != nil && !apl.allowCastWhileChanneling {
 		return
