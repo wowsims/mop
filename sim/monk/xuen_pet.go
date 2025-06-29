@@ -74,7 +74,7 @@ func (monk *Monk) NewXuen() *Xuen {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := monk.CalcScalingSpellDmg(0.293) + xuen.GetStat(stats.AttackPower)*0.505
-			spell.CalcAndDealCleaveDamage(sim, target, 3, baseDamage, spell.OutcomeMagicHitAndCrit)
+			spell.CalcAndDealCleaveDamage(sim, target, 4, baseDamage, spell.OutcomeMagicHitAndCrit)
 		},
 	})
 
