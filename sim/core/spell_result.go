@@ -36,6 +36,16 @@ func (results SpellResultSlice) NumLandedHits() int32 {
 	return numLandedHits
 }
 
+func (results SpellResultSlice) AnyLanded() bool {
+	for _, result := range results {
+		if result.Landed() {
+			return true
+		}
+	}
+
+	return false
+}
+
 type SpellResultCache map[*Unit]*SpellResult
 
 func (resultCache SpellResultCache) Get(target *Unit) *SpellResult {
