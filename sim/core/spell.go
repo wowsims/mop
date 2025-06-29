@@ -212,8 +212,6 @@ func (unit *Unit) RegisterSpell(config SpellConfig) *Spell {
 		}
 	}
 
-	allocGuess := TernaryInt32(config.Flags.Matches(SpellFlagAoE), unit.Env.TotalTargetCount(), 1)
-
 	spell := &Spell{
 		ActionID:       config.ActionID,
 		Unit:           unit,
@@ -261,8 +259,8 @@ func (unit *Unit) RegisterSpell(config SpellConfig) *Spell {
 		MaxCharges:   config.Charges,
 		RechargeTime: config.RechargeTime,
 
-		resultCache: make(SpellResultCache, allocGuess),
-		resultSlice: make(SpellResultSlice, 0, allocGuess),
+		resultCache: make(SpellResultCache, 1),
+		resultSlice: make(SpellResultSlice, 0, 1),
 	}
 
 	switch {
@@ -643,6 +641,14 @@ func (spell *Spell) Cast(sim *Simulation, target *Unit) bool {
 		target = spell.Unit.CurrentTarget
 	}
 	return spell.castFn(sim, target)
+}
+
+func (spell *Spell) CastOnAllOtherTargets(sim *Simulation, mainTarget *Unit) {
+	for _, target := range sim.Encounter.ActiveTargetUnits {
+		if target != mainTarget {
+			spell.Cast(sim, target)
+		}
+	}
 }
 
 // Skips the actual cast and applies spell effects immediately.

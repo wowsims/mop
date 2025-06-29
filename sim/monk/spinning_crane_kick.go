@@ -97,11 +97,9 @@ func (monk *Monk) registerSpinningCraneKick() {
 	}
 
 	chiMetrics := monk.NewChiMetrics(sckActionID)
-	numTargets := monk.Env.GetNumTargets()
-
 	spinningCraneKickTickSpell := monk.RegisterSpell(spinningCraneKickTickSpellConfig(monk, false))
-
 	glyphOfSpinningCraneKick := monk.HasMajorGlyph(proto.MonkMajorGlyph_GlyphOfSpinningCraneKick)
+
 	spinningCraneKickAura := monk.RegisterAura(core.Aura{
 		Label:    "Spinning Crane Kick" + monk.Label,
 		ActionID: sckActionID,
@@ -154,7 +152,7 @@ func (monk *Monk) registerSpinningCraneKick() {
 			spinningCraneKickAura.Duration = remainingDuration
 			spinningCraneKickAura.Activate(sim)
 
-			if numTargets >= 3 {
+			if sim.Environment.ActiveTargetCount() >= 3 {
 				monk.AddChi(sim, spell, 1, chiMetrics)
 			}
 		},

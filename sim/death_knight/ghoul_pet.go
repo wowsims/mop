@@ -157,20 +157,16 @@ func (ghoulPet *GhoulPet) registerClaw() *core.Spell {
 		BonusCoefficient: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			results := make([]*core.SpellResult, min(int32(3), min(ghoulPet.Env.GetNumTargets(), core.TernaryInt32(ghoulPet.DarkTransformationAura.IsActive(), 3, 1))))
+			maxHits := min(ghoulPet.Env.ActiveTargetCount(), core.TernaryInt32(ghoulPet.DarkTransformationAura.IsActive(), 3, 1))
+			results := spell.CalcCleaveDamageWithVariance(sim, target, maxHits, spell.OutcomeMeleeSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+				return spell.Unit.MHWeaponDamage(sim, spell.MeleeAttackPower())
+			})
 
-			for idx := range results {
-				baseDamage := spell.Unit.MHWeaponDamage(sim, spell.MeleeAttackPower())
-				results[idx] = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-				target = sim.Environment.NextTargetUnit(target)
+			if !results[0].Landed() {
+				spell.IssueRefund(sim)
 			}
 
-			for idx, result := range results {
-				if idx == 0 && !result.Landed() {
-					spell.IssueRefund(sim)
-				}
-				spell.DealDamage(sim, result)
-			}
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 }

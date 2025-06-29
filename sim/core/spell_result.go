@@ -49,17 +49,19 @@ func (results SpellResultSlice) AnyLanded() bool {
 type SpellResultCache map[*Unit]*SpellResult
 
 func (resultCache SpellResultCache) Get(target *Unit) *SpellResult {
-	if result, ok := resultCache[target]; ok {
-		if result.inUse {
-			panic("Target already has an in-progress result calculation for this spell!")
-		} else {
-			return result
-		}
-	} else {
-		result = &SpellResult{}
-		resultCache[target] = result
+	result, ok := resultCache[target]
+
+	if ok && !result.inUse {
 		return result
 	}
+
+	result = &SpellResult{}
+
+	if !ok {
+		resultCache[target] = result
+	}
+
+	return result
 }
 
 func (spell *Spell) NewResult(target *Unit) *SpellResult {
