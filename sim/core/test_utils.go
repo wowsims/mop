@@ -116,9 +116,9 @@ func NewDefaultTarget() *proto.Target {
 func MakeDefaultEncounterCombos() []EncounterCombo {
 	var DefaultTarget = NewDefaultTarget()
 
-	multipleTargets := make([]*proto.Target, 20)
+	multipleTargets := make([]*proto.Target, 21)
 	for i := range multipleTargets {
-		if i < 20 {
+		if i != 10 {
 			multipleTargets[i] = DefaultTarget
 		} else {
 			disabledTarget := FreshDefaultTargetConfig()
