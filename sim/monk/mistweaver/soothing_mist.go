@@ -1,7 +1,6 @@
 package mistweaver
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -12,11 +11,18 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 	actionID := core.ActionID{SpellID: 115175}
 	chiMetrics := mw.NewChiMetrics(actionID)
 	spellCoeff := 0.1792
+	manaMetrics := mw.NewManaMetrics(actionID)
+	manaLoss := 0.0
 
 	surgingMistCastTimeMod := mw.AddDynamicMod(core.SpellModConfig{
 		Kind:       core.SpellMod_CastTime_Pct,
 		FloatValue: -1,
 		ClassMask:  monk.MonkSpellSurgingMist,
+	})
+
+	surgingMistChannelMod := mw.AddDynamicMod(core.SpellModConfig{
+		Kind:      core.SpellMod_AllowCastWhileChanneling,
+		ClassMask: monk.MonkSpellSurgingMist,
 	})
 
 	envelopingMistCastTimeMod := mw.AddDynamicMod(core.SpellModConfig{
@@ -25,13 +31,18 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 		ClassMask:  monk.MonkSpellEnvelopingMist,
 	})
 
+	envelopingMistChannelMod := mw.AddDynamicMod(core.SpellModConfig{
+		Kind:      core.SpellMod_AllowCastWhileChanneling,
+		ClassMask: monk.MonkSpellEnvelopingMist,
+	})
+
 	var soothingMist *core.Spell
 
 	soothingMist = mw.RegisterSpell(core.SpellConfig{
 		ActionID:    actionID,
 		SpellSchool: core.SpellSchoolNature,
 		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
+		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL | core.SpellFlagChanneled,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 1,
@@ -50,7 +61,16 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 				Label: "Soothing Mist",
 				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 					surgingMistCastTimeMod.Deactivate()
+					surgingMistChannelMod.Deactivate()
 					envelopingMistCastTimeMod.Deactivate()
+					envelopingMistChannelMod.Deactivate()
+				},
+				OnGain: func(aura *core.Aura, sim *core.Simulation) {
+					surgingMistChannelMod.Activate()
+					surgingMistCastTimeMod.Activate()
+					envelopingMistChannelMod.Activate()
+					envelopingMistCastTimeMod.Activate()
+
 				},
 			},
 			NumberOfTicks:        9,
@@ -70,7 +90,8 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
 				dot.CalcAndDealPeriodicSnapshotHealing(sim, target, dot.OutcomeTick)
-
+				mw.SpendMana(sim, manaLoss, manaMetrics)
+				//Need to take 1% of mana on tick
 				outcome := sim.Roll(1, 10)
 				if outcome > 7 {
 					mw.AddChi(sim, soothingMist, 1, chiMetrics)
@@ -80,14 +101,14 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			//Currently target mistweaver only, will need to fix this
+			manaLoss = mw.MaxMana() * 0.01
+
 			hot := spell.Hot(&mw.Unit)
 			hot.Apply(sim)
 			hot.TickOnce(sim)
 			expiresAt := hot.ExpiresAt()
-			mw.AutoAttacks.StopMeleeUntil(sim, expiresAt, false)
-			surgingMistCastTimeMod.Activate()
-			envelopingMistCastTimeMod.Activate()
-			fmt.Print(surgingMistCastTimeMod.IsActive)
+			mw.AutoAttacks.StopMeleeUntil(sim, expiresAt)
+
 		},
 	})
 

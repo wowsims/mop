@@ -17,7 +17,7 @@ func (mw *MistweaverMonk) registerEnvelopingMist() {
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolNature,
 		ProcMask:       core.ProcMaskSpellHealing,
-		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL,
+		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL, // | core.SpellFlagCastWhileChanneling,
 		ClassSpellMask: monk.MonkSpellEnvelopingMist,
 
 		ManaCost: core.ManaCostOptions{BaseCostPercent: 0},

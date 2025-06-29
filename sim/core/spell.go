@@ -571,12 +571,11 @@ func (spell *Spell) CanCast(sim *Simulation, target *Unit) bool {
 	}
 
 	// While casting or channeling, no other action is possible
-	if (spell.Unit.Hardcast.Expires > sim.CurrentTime) && !spell.Flags.Matches(SpellFlagCastWhileChanneling) {
+	if (spell.Unit.Hardcast.Expires > sim.CurrentTime /*|| spell.Unit.IsChanneling(sim)*/) && !spell.Flags.Matches(SpellFlagCastWhileChanneling) {
 		//if sim.Log != nil {
 		//	sim.Log("Cant cast because already casting/channeling")
 		//}
-		fmt.Print("Cant cast because already casting/channeling")
-		sim.Log("Cant cast because already casting/channeling")
+
 		return false
 	}
 

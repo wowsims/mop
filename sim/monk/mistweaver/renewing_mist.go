@@ -16,7 +16,7 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 
 	mistHandler := func(sim *core.Simulation, hot *core.Spell) bool {
 		success := false
-		for _, player := range sim.Raid.AllUnits {
+		for _, player := range sim.Raid.AllPlayerUnits {
 			hot := hot.Hot(player)
 
 			if !hot.IsActive() {
@@ -72,7 +72,7 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 				dot.CalcAndDealPeriodicSnapshotHealing(sim, target, dot.OutcomeTick)
 				//Has to jump to two more targets after initial cast
 
-				if charges > 1 {
+				if charges > 1 && dot.RemainingTicks() > 1 {
 					fmt.Print("Checking\n")
 					success := mistHandler(sim, dot.Spell)
 

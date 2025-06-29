@@ -93,6 +93,7 @@ func (mw *MistweaverMonk) RegisterSpecializationEffects() {
 	mw.registerRevival()
 	mw.registerSummonJadeSerpentStatue()
 	mw.registerManaTea()
+	mw.registerPassives()
 }
 
 func (mw *MistweaverMonk) RegisterMastery() {

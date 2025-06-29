@@ -68,6 +68,7 @@ func blackoutKickSpellConfig(monk *Monk, isSEFClone bool, overrides core.SpellCo
 func (monk *Monk) registerBlackoutKick() {
 	chiMetrics := monk.NewChiMetrics(blackoutKickActionID)
 	chiCost := int32(2)
+	manaMetrics := monk.NewManaMetrics(blackoutKickActionID)
 
 	monk.RegisterSpell(blackoutKickSpellConfig(monk, false, core.SpellConfig{
 		Cast: core.CastConfig{
@@ -91,6 +92,11 @@ func (monk *Monk) registerBlackoutKick() {
 					monk.onChiSpent(sim, chiCost)
 				} else {
 					monk.SpendChi(sim, chiCost, chiMetrics)
+				}
+
+				if monk.MuscleMemoryBlackoutKickAura.IsActive() {
+					result.Damage += result.Damage * 1.5
+					monk.AddMana(sim, monk.MaxMana()*0.04, manaMetrics)
 				}
 			}
 

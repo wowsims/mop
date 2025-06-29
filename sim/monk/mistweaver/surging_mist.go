@@ -16,7 +16,7 @@ func (mw *MistweaverMonk) registerSurgingMist() {
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolNature,
 		ProcMask:       core.ProcMaskSpellHealing,
-		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL | core.SpellFlagCastWhileChanneling,
+		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL,
 		ClassSpellMask: monk.MonkSpellSurgingMist,
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 8.8,

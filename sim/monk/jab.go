@@ -73,7 +73,8 @@ func (monk *Monk) registerJab() {
 			Refund: 0.8,
 		},
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: core.TernaryFloat64(monk.StanceMatches(WiseSerpent), 8, 0),
+			//This is wrong? But works?
+			BaseCostPercent: core.TernaryFloat64(monk.StanceMatches(WiseSerpent), 0, 8),
 		},
 
 		Cast: core.CastConfig{
@@ -84,6 +85,7 @@ func (monk *Monk) registerJab() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+
 			baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)
 			result := spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 
