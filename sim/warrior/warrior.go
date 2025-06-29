@@ -263,11 +263,11 @@ func (warrior *Warrior) GetRageMultiplier(target *core.Unit) float64 {
 	return 1.0
 }
 
-func (warrior *Warrior) CastNormalizedSweepingStrikesAttack(results []*core.SpellResult, sim *core.Simulation) {
+func (warrior *Warrior) CastNormalizedSweepingStrikesAttack(results core.SpellResultCache, sim *core.Simulation) {
 	if warrior.SweepingStrikesAura != nil && warrior.SweepingStrikesAura.IsActive() {
-		for _, result := range results {
-			if result.Landed() {
-				warrior.SweepingStrikesNormalizedAttack.Cast(sim, warrior.Env.NextTargetUnit(result.Target))
+		for target, result := range results {
+			if target.IsEnabled() && result.Landed() {
+				warrior.SweepingStrikesNormalizedAttack.Cast(sim, warrior.Env.NextActiveTargetUnit(target))
 				break
 			}
 		}

@@ -22,12 +22,24 @@ type SpellResult struct {
 	inUse bool
 }
 
-func (spell *Spell) NewResult(target *Unit) *SpellResult {
-	result := &spell.resultCache
-	if result.inUse {
-		result = &SpellResult{}
-	}
+type SpellResultCache map[*Unit]*SpellResult
 
+func (resultCache SpellResultCache) Get(target *Unit) *SpellResult {
+	if result, ok := resultCache[target]; ok {
+		if result.inUse {
+			panic("Target already has an in-progress result calculation for this spell!")
+		} else {
+			return result
+		}
+	} else {
+		result = &SpellResult{}
+		resultCache[target] = result
+		return result
+	}
+}
+
+func (spell *Spell) NewResult(target *Unit) *SpellResult {
+	result := spell.resultCache.Get(target)
 	result.Target = target
 	result.Damage = 0
 	result.Threat = 0
@@ -351,6 +363,22 @@ func (spell *Spell) CalcAndDealAoeDamageWithVariance(sim *Simulation, outcomeApp
 	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 		baseDamage := baseDamageCalculator(sim, spell)
 		spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, outcomeApplier)
+	}
+}
+
+// Use CalcAoeDamage + DealBatchedAoeDamage instead of CalcAndDealAoeDamage in situations where you want to block procs
+// on early targets from influencing the damage calculation on later targets.
+func (spell *Spell) CalcAoeDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultCache {
+	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
+		spell.CalcDamage(sim, aoeTarget, baseDamage, outcomeApplier)
+	}
+
+	return spell.resultCache
+}
+
+func (spell *Spell) DealBatchedAoeDamage(sim *Simulation) {
+	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
+		spell.DealDamage(sim, spell.resultCache[aoeTarget])
 	}
 }
 

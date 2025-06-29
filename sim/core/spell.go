@@ -151,7 +151,7 @@ type Spell struct {
 	// Adds a fixed amount of threat to this spell, before multipliers.
 	FlatThreatBonus float64
 
-	resultCache SpellResult
+	resultCache SpellResultCache
 
 	dots   DotArray
 	aoeDot *Dot
@@ -257,6 +257,8 @@ func (unit *Unit) RegisterSpell(config SpellConfig) *Spell {
 		charges:      config.Charges,
 		MaxCharges:   config.Charges,
 		RechargeTime: config.RechargeTime,
+
+		resultCache: make(SpellResultCache),
 	}
 
 	switch {
