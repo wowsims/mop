@@ -13,18 +13,22 @@ func (fdk *FrostDeathKnight) registerMastery() {
 	// - Soul Reaper now scales with your Mastery. [New]
 	// - Obliterate now scales with your Mastery. [New]
 	// Undocummented: only 20% effective when using a Two-handed weapon.
-	masteryMod := fdk.AddDynamicMod(core.SpellModConfig{
+	physicalMod := fdk.AddDynamicMod(core.SpellModConfig{
 		Kind:      core.SpellMod_DamageDone_Pct,
 		ClassMask: death_knight.DeathKnightSpellObliterate | death_knight.DeathKnightSpellSoulReaper,
+	})
+
+	frostMod := fdk.AddDynamicMod(core.SpellModConfig{
+		Kind:   core.SpellMod_DamageDone_Pct,
+		School: core.SpellSchoolFrost,
 	})
 
 	extraMultiplier := 1.0
 
 	fdk.AddOnMasteryStatChanged(func(sim *core.Simulation, oldMastery float64, newMastery float64) {
-		oldMasteryMultiplier := fdk.getMasteryPercent(oldMastery)
 		newMasteryMultiplier := fdk.getMasteryPercent(newMastery)
-		fdk.PseudoStats.SchoolDamageDealtMultiplier[stats.SchoolIndexFrost] *= (1.0 + newMasteryMultiplier) / (1.0 + oldMasteryMultiplier)
-		masteryMod.UpdateFloatValue(newMasteryMultiplier * extraMultiplier)
+		physicalMod.UpdateFloatValue(newMasteryMultiplier * extraMultiplier)
+		frostMod.UpdateFloatValue(newMasteryMultiplier)
 	})
 
 	core.MakePermanent(fdk.RegisterAura(core.Aura{
@@ -40,12 +44,14 @@ func (fdk *FrostDeathKnight) registerMastery() {
 		},
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			masteryMultiplier := fdk.getMasteryPercent(fdk.GetStat(stats.MasteryRating))
-			fdk.PseudoStats.SchoolDamageDealtMultiplier[stats.SchoolIndexFrost] *= 1.0 + masteryMultiplier
-			masteryMod.UpdateFloatValue(masteryMultiplier * extraMultiplier)
-			masteryMod.Activate()
+			physicalMod.UpdateFloatValue(masteryMultiplier * extraMultiplier)
+			physicalMod.Activate()
+			frostMod.UpdateFloatValue(masteryMultiplier)
+			frostMod.Activate()
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			masteryMod.Deactivate()
+			physicalMod.Deactivate()
+			frostMod.Deactivate()
 		},
 	}))
 
