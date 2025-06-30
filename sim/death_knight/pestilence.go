@@ -14,7 +14,7 @@ func (dk *DeathKnight) registerPestilence() {
 
 	dk.PestilenceSpell = dk.RegisterSpell(core.SpellConfig{
 		ActionID:       PestilenceActionID,
-		Flags:          core.SpellFlagAPL,
+		Flags:          core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskSpellDamage,
 		ClassSpellMask: DeathKnightSpellPestilence,

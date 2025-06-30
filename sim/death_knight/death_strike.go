@@ -82,7 +82,7 @@ func (dk *DeathKnight) registerDeathStrike() {
 		ActionID:       DeathStrikeActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: DeathKnightSpellDeathStrike,
 
 		MaxRange: core.MaxMeleeRange,

@@ -19,7 +19,7 @@ func (dk *DeathKnight) registerBloodBoil() {
 
 	dk.RegisterSpell(core.SpellConfig{
 		ActionID:       BloodBoilActionID,
-		Flags:          core.SpellFlagAoE | core.SpellFlagAPL,
+		Flags:          core.SpellFlagAoE | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskSpellDamage,
 		ClassSpellMask: DeathKnightSpellBloodBoil,

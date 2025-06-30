@@ -20,7 +20,7 @@ for 10 sec.
 func (dk *DeathKnight) registerDeathAndDecay() {
 	dk.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 43265},
-		Flags:          core.SpellFlagAoE | core.SpellFlagAPL,
+		Flags:          core.SpellFlagAoE | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskEmpty, // D&D doesn't seem to proc things in game.
 		ClassSpellMask: DeathKnightSpellDeathAndDecay,

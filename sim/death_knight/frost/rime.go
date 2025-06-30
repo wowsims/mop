@@ -14,10 +14,9 @@ Your Obliterate has a 45% chance to cause your next Howling Blast or Icy Touch t
 func (fdk *FrostDeathKnight) registerRime() {
 	var freezingFogAura *core.Aura
 	freezingFogAura = fdk.GetOrRegisterAura(core.Aura{
-		Label:     "Freezing Fog" + fdk.Label,
-		ActionID:  core.ActionID{SpellID: 59052},
-		Duration:  time.Second * 15,
-		MaxStacks: 0,
+		Label:    "Freezing Fog" + fdk.Label,
+		ActionID: core.ActionID{SpellID: 59052},
+		Duration: time.Second * 15,
 	}).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: death_knight.DeathKnightSpellIcyTouch | death_knight.DeathKnightSpellHowlingBlast,
@@ -27,11 +26,7 @@ func (fdk *FrostDeathKnight) registerRime() {
 		},
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if fdk.T13Dps2pc.IsActive() {
-				freezingFogAura.RemoveStack(sim)
-			} else {
-				freezingFogAura.Deactivate(sim)
-			}
+			freezingFogAura.Deactivate(sim)
 		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
@@ -50,13 +45,6 @@ func (fdk *FrostDeathKnight) registerRime() {
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			freezingFogAura.Activate(sim)
-
-			// T13 2pc: Rime has a 60% chance to grant 2 charges when triggered instead of 1.
-			freezingFogAura.MaxStacks = core.TernaryInt32(fdk.T13Dps2pc.IsActive(), 2, 0)
-			if fdk.T13Dps2pc.IsActive() {
-				stacks := core.TernaryInt32(sim.Proc(0.6, "T13 2pc"), 2, 1)
-				freezingFogAura.SetStacks(sim, stacks)
-			}
 		},
 	})
 }

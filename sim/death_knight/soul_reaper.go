@@ -65,7 +65,7 @@ func (dk *DeathKnight) registerSoulReaper() {
 		ActionID:       SoulReaperActionID.WithTag(tag),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagAPL | core.SpellFlagMeleeMetrics,
+		Flags:          core.SpellFlagAPL | core.SpellFlagMeleeMetrics | core.SpellFlagEncounterOnly,
 		ClassSpellMask: DeathKnightSpellSoulReaper,
 
 		MaxRange: core.MaxMeleeRange,

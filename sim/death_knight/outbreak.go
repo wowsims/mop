@@ -32,7 +32,7 @@ func (dk *DeathKnight) registerOutbreak() {
 		ActionID:       OutbreakActionID,
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskSpellDamage,
-		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
+		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket | core.SpellFlagEncounterOnly,
 		ClassSpellMask: DeathKnightSpellOutbreak,
 
 		MaxRange: 30,

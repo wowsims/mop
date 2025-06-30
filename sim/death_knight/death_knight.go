@@ -66,19 +66,8 @@ type DeathKnight struct {
 	// Runic power decay, used during pre pull
 	RunicPowerDecayAura *core.Aura
 
-	// Cached Gurthalak tentacles
-
-	// T12 spell
-	BurningBloodSpell *core.Spell
-
 	// Item sets
-	T12Tank4pc *core.Aura
-	T13Dps2pc  *core.Aura
-	T13Dps4pc  *core.Aura
-	T14Dps4pc  *core.Aura
-
-	// Used for T13 Tank 4pc
-	VampiricBloodBonusHealth float64
+	T14Dps4pc *core.Aura
 
 	// Modified by T14 Tank 4pc
 	deathStrikeHealingMultiplier float64
