@@ -29,15 +29,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	],
 	epPseudoStats: [PseudoStat.PseudoStatMainHandDps],
 	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
-	epReferenceStat: Stat.StatAttackPower,
-	consumableStats: [
-		Stat.StatStrength,
-		Stat.StatHitRating,
-		Stat.StatHasteRating,
-		Stat.StatCritRating,
-		Stat.StatExpertiseRating,
-		Stat.StatMasteryRating,
-	],
+	epReferenceStat: Stat.StatStrength,
+	consumableStats: [Stat.StatStrength, Stat.StatHitRating, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatExpertiseRating, Stat.StatMasteryRating],
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
@@ -132,7 +125,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.CATA_ROTATION_PRESET],
+		rotations: [Presets.DEFAULT_ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.P1_BIS_GEAR_PRESET],
 		builds: [Presets.P1_PRESET],
