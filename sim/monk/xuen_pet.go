@@ -39,6 +39,8 @@ func (monk *Monk) NewXuen() *Xuen {
 
 					stats.PhysicalCritPercent: ownerStats[stats.PhysicalCritPercent],
 					stats.SpellCritPercent:    ownerStats[stats.PhysicalCritPercent],
+
+					stats.HasteRating: ownerStats[stats.HasteRating],
 				}
 			},
 			EnabledOnStart:                  false,
