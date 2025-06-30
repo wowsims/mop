@@ -15,7 +15,7 @@ func (fdk *FrostDeathKnight) registerHowlingBlast() {
 		ActionID:       HowlingBlastActionID,
 		SpellSchool:    core.SpellSchoolFrost,
 		ProcMask:       core.ProcMaskSpellDamage,
-		Flags:          core.SpellFlagAoE | core.SpellFlagAPL,
+		Flags:          core.SpellFlagAoE | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellHowlingBlast,
 
 		MaxRange: 30,

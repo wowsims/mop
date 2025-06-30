@@ -7,7 +7,7 @@ import (
 )
 
 func (dk *DeathKnight) DiseasesAreActive(target *core.Unit) bool {
-	return dk.FrostFeverSpell.Dot(target).IsActive() || dk.BloodPlagueSpell.Dot(target).IsActive() || dk.BurningBloodSpell != nil && dk.BurningBloodSpell.Dot(target).IsActive()
+	return dk.FrostFeverSpell.Dot(target).IsActive() || dk.BloodPlagueSpell.Dot(target).IsActive()
 }
 
 func (dk *DeathKnight) GetDiseaseMulti(target *core.Unit, base float64, increase float64) float64 {
@@ -17,9 +17,6 @@ func (dk *DeathKnight) GetDiseaseMulti(target *core.Unit, base float64, increase
 	}
 	if dk.BloodPlagueSpell.Dot(target).IsActive() {
 		count++
-	}
-	if count < 2 && dk.BurningBloodSpell != nil && dk.BurningBloodSpell.Dot(target).IsActive() {
-		count = 2
 	}
 	return base + increase*float64(count)
 }

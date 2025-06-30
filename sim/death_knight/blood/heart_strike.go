@@ -19,7 +19,7 @@ func (bdk *BloodDeathKnight) registerHeartStrike() {
 		ActionID:       HeartStrikeActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellHeartStrike,
 
 		MaxRange: core.MaxMeleeRange,

@@ -19,7 +19,7 @@ func (uhdk *UnholyDeathKnight) registerFesteringStrike() {
 		ActionID:       FesteringStrikeActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellFesteringStrike,
 
 		MaxRange: core.MaxMeleeRange,

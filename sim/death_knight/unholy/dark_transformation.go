@@ -33,7 +33,7 @@ func (uhdk *UnholyDeathKnight) registerDarkTransformation() {
 	uhdk.GetOrRegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolShadow,
-		Flags:          core.SpellFlagAPL,
+		Flags:          core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellDarkTransformation,
 
 		RuneCost: core.RuneCostOptions{
