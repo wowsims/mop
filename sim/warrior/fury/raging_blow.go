@@ -102,7 +102,7 @@ func (war *FuryWarrior) registerRagingBlow() {
 
 			meatCleaverStacks := int(war.MeatCleaverAura.GetStacks())
 			if war.MeatCleaverAura.IsActive() && meatCleaverStacks > 0 {
-				for index, mcTarget := range sim.Encounter.TargetUnits {
+				for index, mcTarget := range sim.Encounter.ActiveTargetUnits {
 					if index <= meatCleaverStacks {
 						mhRagingBlow.Cast(sim, mcTarget)
 						ohRagingBlow.Cast(sim, mcTarget)

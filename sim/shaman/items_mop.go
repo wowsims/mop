@@ -47,15 +47,11 @@ var ItemSetRegaliaOfTheWitchDoctor = core.NewItemSet(core.ItemSet{
 				MissileSpeed:   20,
 				ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 					baseDamage := sim.RollWithLabel(32375, 37625, "Lighting Strike 2pT14")
-					nTargets := shaman.Env.GetNumTargets()
-					results := make([]*core.SpellResult, nTargets)
-					for i, aoeTarget := range sim.Encounter.TargetUnits {
-						results[i] = spell.CalcDamage(sim, aoeTarget, baseDamage/float64(nTargets), spell.OutcomeMagicHitAndCrit)
-					}
+					nTargets := shaman.Env.ActiveTargetCount()
+					spell.CalcAoeDamage(sim, baseDamage / float64(nTargets), spell.OutcomeMagicHitAndCrit)
+
 					spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-						for i, _ := range sim.Encounter.TargetUnits {
-							spell.DealDamage(sim, results[i])
-						}
+						spell.DealBatchedAoeDamage(sim)
 					})
 				},
 			})

@@ -51,9 +51,7 @@ func (mage *Mage) registerLivingBomb() {
 			baseDamage := mage.CalcAndRollDamageRange(sim, livingBombExplosionScaling, 0)
 			ticks := max(4, float64(mage.LivingBomb.RelatedDotSpell.Dot(target).Duration)/float64(mage.LivingBomb.RelatedDotSpell.Dot(target).TickPeriod()))
 			spell.DamageMultiplier *= ticks
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMagicHitAndCrit)
 			spell.DamageMultiplier /= ticks
 		},
 	})

@@ -24,16 +24,11 @@ func (mage *Mage) registerBlizzardSpell() {
 		BonusCoefficient: blizzardCoefficient,
 		ThreatMultiplier: 1,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := mage.CalcAndRollDamageRange(sim, blizzardScaling, blizzardVariance)
-			anyLanded := false
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				result := spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-				if result.Landed() {
-					anyLanded = true
-				}
-			}
-			if anyLanded {
+			results := spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMagicHitAndCrit)
+
+			if results.AnyLanded() {
 				mage.ProcFingersOfFrost(sim, spell)
 			}
 		},

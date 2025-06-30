@@ -16,7 +16,6 @@ func (fire *FireMage) registerInfernoBlastSpell() {
 
 	hasGlyph := fire.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfInfernoBlast)
 	extraTargets := core.Ternary(hasGlyph, 4, 3)
-	numTargets := len(fire.Env.Encounter.TargetUnits) - 1
 
 	fire.InfernoBlast = fire.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 108853},
@@ -63,9 +62,10 @@ func (fire *FireMage) registerInfernoBlastSpell() {
 				}
 			}
 
+			numTargets := len(sim.Encounter.ActiveTargetUnits) - 1
 			currentTarget := target
 			for range min(extraTargets, numTargets) {
-				currentTarget = fire.Env.NextTargetUnit(currentTarget)
+				currentTarget = fire.Env.NextActiveTargetUnit(currentTarget)
 				for _, spellRef := range dotRefs {
 					dot := (*spellRef).Dot(currentTarget)
 					state, ok := debuffState[dot.ActionID.SpellID]

@@ -40,17 +40,14 @@ func (demonology *DemonologyWarlock) registerImmolationAura() {
 			BonusCoefficient:     immolationAuraCoeff,
 			IsAOE:                true,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				if !demonology.DemonicFury.CanSpend(core.TernaryInt32(demonology.T15_2pc.IsActive(), 18, 25)) {
 					dot.Deactivate(sim)
 					return
 				}
 
 				demonology.DemonicFury.Spend(sim, core.TernaryInt32(demonology.T15_2pc.IsActive(), 18, 25), dot.Spell.ActionID)
-
-				for _, unit := range sim.Encounter.TargetUnits {
-					dot.Spell.CalcAndDealPeriodicDamage(sim, unit, baseDamage, dot.OutcomeTick)
-				}
+				dot.Spell.CalcAndDealPeriodicAoeDamage(sim, baseDamage, dot.OutcomeTick)
 			},
 		},
 

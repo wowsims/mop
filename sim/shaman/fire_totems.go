@@ -53,14 +53,14 @@ func (shaman *Shaman) registerSearingTotemSpell() {
 				pa := sim.GetConsumedPendingActionFromPool()
 
 				pa.OnAction = func(sim *core.Simulation) {
-					spell.Dot(sim.GetTargetUnit(0)).BaseTickCount = searingTickCount(shaman, dropTime.Minutes())
-					spell.Dot(sim.GetTargetUnit(0)).Apply(sim)
+					spell.Dot(sim.Encounter.ActiveTargetUnits[0]).BaseTickCount = searingTickCount(shaman, dropTime.Minutes())
+					spell.Dot(sim.Encounter.ActiveTargetUnits[0]).Apply(sim)
 				}
 
 				sim.AddPendingAction(pa)
 			} else {
-				spell.Dot(sim.GetTargetUnit(0)).BaseTickCount = searingTickCount(shaman, 0)
-				spell.Dot(sim.GetTargetUnit(0)).Apply(sim)
+				spell.Dot(sim.Encounter.ActiveTargetUnits[0]).BaseTickCount = searingTickCount(shaman, 0)
+				spell.Dot(sim.Encounter.ActiveTargetUnits[0]).Apply(sim)
 			}
 			duration := 60
 			shaman.TotemExpirations[FireTotem] = sim.CurrentTime + time.Duration(duration)*time.Second
@@ -69,7 +69,6 @@ func (shaman *Shaman) registerSearingTotemSpell() {
 }
 
 func (shaman *Shaman) registerMagmaTotemSpell() {
-	results := make([]*core.SpellResult, shaman.Env.GetNumTargets())
 	shaman.MagmaTotem = shaman.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 8190},
 		SpellSchool:    core.SpellSchoolFire,
@@ -97,14 +96,10 @@ func (shaman *Shaman) registerMagmaTotemSpell() {
 			TickLength:       time.Second * 2,
 			BonusCoefficient: 0.06700000167,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				baseDamage := shaman.CalcScalingSpellDmg(0.26699998975)
-				for i, aoeTarget := range sim.Encounter.TargetUnits {
-					results[i] = dot.Spell.CalcPeriodicDamage(sim, aoeTarget, baseDamage, dot.Spell.OutcomeMagicHitAndCrit)
-				}
-				for i := range sim.Encounter.TargetUnits {
-					dot.Spell.DealPeriodicDamage(sim, results[i])
-				}
+				dot.Spell.CalcPeriodicAoeDamage(sim, baseDamage, dot.Spell.OutcomeMagicHitAndCrit)
+				dot.Spell.DealBatchedPeriodicDamage(sim)
 			},
 		},
 

@@ -121,7 +121,7 @@ func (shadow *ShadowPriest) registerSolaceAndInstanity() {
 
 	shadow.OnSpellRegistered(func(spell *core.Spell) {
 		if spell.ClassSpellMask == priest.PriestSpellDevouringPlagueDoT {
-			for _, target := range shadow.Env.Encounter.TargetUnits {
+			for _, target := range shadow.Env.Encounter.AllTargetUnits {
 				dot := spell.Dot(target)
 				if dot != nil {
 					dot.ApplyOnGain(func(aura *core.Aura, sim *core.Simulation) {
