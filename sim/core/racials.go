@@ -199,7 +199,7 @@ func applyRaceEffects(agent Agent) {
 			proto.WeaponType_WeaponTypeMace, proto.WeaponType_WeaponTypeSword)
 	case proto.Race_RaceNightElf:
 		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] *= 0.99
-		character.PseudoStats.ReducedPhysicalHitTakenChance += 0.02
+		character.PseudoStats.BaseDodgeChance += 0.02
 
 		// Shadowmeld
 		actionID := ActionID{SpellID: 58984}
@@ -259,14 +259,12 @@ func applyRaceEffects(agent Agent) {
 		spBonus := 0.0
 
 		switch character.Class {
-		case proto.Class_ClassMage:
+		case proto.Class_ClassPriest,
+			proto.Class_ClassMage,
+			proto.Class_ClassWarlock:
 			spBonus = 2257.0
-		case proto.Class_ClassWarlock:
-			spBonus = 2257.0
-		case proto.Class_ClassShaman:
-			spBonus = 2257.0
-			apBonus = 4514.0
-		case proto.Class_ClassMonk:
+		case proto.Class_ClassShaman,
+			proto.Class_ClassMonk:
 			spBonus = 2257.0
 			apBonus = 4514.0
 		default:
