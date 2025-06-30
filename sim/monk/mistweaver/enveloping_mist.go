@@ -1,7 +1,6 @@
 package mistweaver
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -36,8 +35,6 @@ func (mw *MistweaverMonk) registerEnvelopingMist() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-
-			fmt.Print("Envelop\n")
 
 			mw.SpendChi(sim, 3, chiMetrics)
 			spell.RelatedDotSpell.Cast(sim, &mw.Unit)
@@ -76,7 +73,6 @@ func (mw *MistweaverMonk) registerEnvelopingMist() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			//Targets only mw currently
-			fmt.Print("related mist \n")
 			hot := spell.Hot(&mw.Unit)
 
 			hot.Apply(sim)

@@ -1,7 +1,6 @@
 package mistweaver
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -29,10 +28,6 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 		}
 		return success
 	}
-
-	//var renewingMistSpread *core.Spell
-	var renewingMist *core.Spell
-	fmt.Print(renewingMist)
 
 	mw.renewingMist = mw.RegisterSpell(core.SpellConfig{
 		ActionID:    actionID,
@@ -73,7 +68,7 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 				//Has to jump to two more targets after initial cast
 
 				if charges > 1 && dot.RemainingTicks() > 1 {
-					fmt.Print("Checking\n")
+
 					success := mistHandler(sim, dot.Spell)
 
 					if success {
@@ -85,7 +80,7 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			fmt.Print("Renew\n")
+
 			success := mistHandler(sim, spell)
 
 			if success {
