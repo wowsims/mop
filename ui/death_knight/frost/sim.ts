@@ -156,7 +156,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 			defaultFactionRaces: {
 				[Faction.Unknown]: Race.RaceUnknown,
 				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceTroll,
+				[Faction.Horde]: Race.RaceOrc,
 			},
 			defaultGear: {
 				[Faction.Unknown]: {},
