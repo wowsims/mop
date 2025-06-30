@@ -127,22 +127,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostMasterfrost-AllItems-ElementiumDeathplateBattlearmor"
- value: {
-  dps: 107660.05086
-  tps: 99874.23281
-  hps: 1123.11608
- }
-}
-dps_results: {
- key: "TestFrostMasterfrost-AllItems-ElementiumDeathplateBattlegear"
- value: {
-  dps: 111894.1837
-  tps: 103746.51341
-  hps: 1173.91939
- }
-}
-dps_results: {
  key: "TestFrostMasterfrost-AllItems-EmberPrimalDiamond"
  value: {
   dps: 155617.06636
@@ -309,38 +293,6 @@ dps_results: {
   dps: 156259.08173
   tps: 144907.96324
   hps: 1550.34798
- }
-}
-dps_results: {
- key: "TestFrostMasterfrost-AllItems-MagmaPlatedBattlearmor"
- value: {
-  dps: 105034.19172
-  tps: 97326.69241
-  hps: 1097.46109
- }
-}
-dps_results: {
- key: "TestFrostMasterfrost-AllItems-MagmaPlatedBattlegear"
- value: {
-  dps: 109431.68983
-  tps: 101309.75644
-  hps: 1132.97763
- }
-}
-dps_results: {
- key: "TestFrostMasterfrost-AllItems-NecroticBoneplateArmor"
- value: {
-  dps: 106041.32501
-  tps: 98369.46023
-  hps: 1113.82179
- }
-}
-dps_results: {
- key: "TestFrostMasterfrost-AllItems-NecroticBoneplateBattlegear"
- value: {
-  dps: 108378.35363
-  tps: 100364.25797
-  hps: 1134.33483
  }
 }
 dps_results: {

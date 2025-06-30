@@ -127,22 +127,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestUnholy-AllItems-ElementiumDeathplateBattlearmor"
- value: {
-  dps: 93111.5842
-  tps: 68058.26394
-  hps: 1310.76549
- }
-}
-dps_results: {
- key: "TestUnholy-AllItems-ElementiumDeathplateBattlegear"
- value: {
-  dps: 98921.51856
-  tps: 72572.91223
-  hps: 1381.31973
- }
-}
-dps_results: {
  key: "TestUnholy-AllItems-EmberPrimalDiamond"
  value: {
   dps: 137111.69441
@@ -309,38 +293,6 @@ dps_results: {
   dps: 134111.20361
   tps: 96334.68618
   hps: 1904.11892
- }
-}
-dps_results: {
- key: "TestUnholy-AllItems-MagmaPlatedBattlearmor"
- value: {
-  dps: 91529.07327
-  tps: 66831.57307
-  hps: 1294.0373
- }
-}
-dps_results: {
- key: "TestUnholy-AllItems-MagmaPlatedBattlegear"
- value: {
-  dps: 95872.71711
-  tps: 69801.58691
-  hps: 1332.53104
- }
-}
-dps_results: {
- key: "TestUnholy-AllItems-NecroticBoneplateArmor"
- value: {
-  dps: 92021.89888
-  tps: 67297.79194
-  hps: 1310.9878
- }
-}
-dps_results: {
- key: "TestUnholy-AllItems-NecroticBoneplateBattlegear"
- value: {
-  dps: 95507.37553
-  tps: 69717.43192
-  hps: 1344.51876
  }
 }
 dps_results: {
