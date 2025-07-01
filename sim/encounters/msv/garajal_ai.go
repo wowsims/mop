@@ -114,14 +114,19 @@ type GarajalAI struct {
 	enableFrenzyAt time.Duration
 
 	// Spell + aura references
-	sharedShadowyAttackTimer *core.Timer
+	SharedShadowyAttackTimer *core.Timer
+	ShadowyAttackSpells      []*core.Spell
+	BanishmentAura           *core.Aura
+	VoodooDollsAura          *core.Aura
+	ShadowBolt               *core.Spell
+	FrenzyAura               *core.Aura
 }
 
 func (ai *GarajalAI) Initialize(target *core.Target, config *proto.Target) {
 	// Save unit references
 	ai.Target = target
 	ai.BossUnit = target.Env.Encounter.AllTargetUnits[0]
-	ai.AddUnit = target.Enc.Encounter.AllTargetUnits[1:]
+	ai.AddUnits = target.Env.Encounter.AllTargetUnits[1:]
 	ai.TankUnit = ai.BossUnit.CurrentTarget
 
 	// Save user input parameters
@@ -131,6 +136,9 @@ func (ai *GarajalAI) Initialize(target *core.Target, config *proto.Target) {
 
 	// Register relevant spells and auras
 	ai.registerShadowyAttacks()
+	ai.registerTankSwapAuras()
+	ai.registerShadowBolt()
+	ai.registerFrenzy()
 }
 
 func (ai *GarajalAI) registerShadowyAttacks() {
@@ -138,185 +146,155 @@ func (ai *GarajalAI) registerShadowyAttacks() {
 		return
 	}
 
-	shadowyAttacks := make([]*core.Spell, 4)
+	ai.ShadowyAttackSpells = make([]*core.Spell, 4)
 	spellIDs := []int32{117218, 117219, 117215, 117222}
 
+	const shadowAttackCastTime = time.Second * 2
+
 	for idx, spellID := range spellIDs {
-		shadowyAttacks[idx] = ai.BossUnit.RegisterSpell(core.SpellConfig{
+		ai.ShadowyAttackSpells[idx] = ai.BossUnit.RegisterSpell(core.SpellConfig{
 			ActionID:         core.ActionID{SpellID: spellID},
 			SpellSchool:      core.SpellSchoolShadow,
 			ProcMask:         core.ProcMaskSpellDamage,
 			Flags:            core.SpellFlagMeleeMetrics,
-			DamageMultiplier: 1,
+			DamageMultiplier: 0.7,
 
 			Cast: core.CastConfig{
 				DefaultCast: core.Cast{
-					GCD:      core.BossGCD * 2,
-					CastTime: time.Second * 2,
+					GCD:      shadowAttackCastTime,
+					CastTime: shadowAttackCastTime,
 				},
 
 				SharedCD: core.Cooldown{
-					Timer:    ai.BossUnit.GetOrInitTimer(&ai.sharedShadowyAttackTimer),
+					Timer:    ai.BossUnit.GetOrInitTimer(&ai.SharedShadowyAttackTimer),
 					Duration: time.Second * 6,
 				},
+
+				ModifyCast: func(sim *core.Simulation, spell *core.Spell, curCast *core.Cast) {
+					hastedCastTime := spell.Unit.ApplyCastSpeedForSpell(curCast.CastTime, spell).Round(time.Millisecond)
+					spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime + hastedCastTime)
+				},
+			},
+
+			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+				baseDamage := spell.Unit.AutoAttacks.MH().EnemyWeaponDamage(sim, spell.MeleeAttackPower(), garajalMeleeDamageSpread)
+				spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeEnemyMeleeWhite)
 			},
 		})
 	}
 }
 
-func (ai *BlackhornAI) registerDevastate() {
-	if !ai.isBoss {
+func (ai *GarajalAI) registerTankSwapAuras() {
+	if !ai.isBoss || (ai.TankUnit == nil) {
 		return
 	}
 
-	sunderActionID := core.ActionID{SpellID: 108043}
-	sunderDebuffConfig := core.Aura{
-		Label:     "Sunder Armor",
-		ActionID:  sunderActionID,
-		Duration:  time.Second * 30,
-		MaxStacks: 5,
+	const voodooDollsDuration = time.Second * 71
+	const banishmentDuration = time.Second * 30
 
-		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
-			aura.Unit.PseudoStats.ArmorMultiplier *= (1.0 - 0.2*float64(newStacks)) / (1.0 - 0.2*float64(oldStacks))
-		},
-	}
+	ai.BanishmentAura = ai.TankUnit.RegisterAura(core.Aura{
+		Label:    "Banishment",
+		ActionID: core.ActionID{SpellID: 116272},
+		Duration: banishmentDuration,
 
-	for _, tankUnit := range ai.ValidTanks {
-		tankUnit.GetOrRegisterAura(sunderDebuffConfig)
-	}
+		OnGain: func(_ *core.Aura, sim *core.Simulation) {
+			sim.DisableTargetUnit(ai.BossUnit, false)
 
-	ai.Devastate = ai.BossUnit.RegisterSpell(core.SpellConfig{
-		ActionID:         core.ActionID{SpellID: 108042},
-		SpellSchool:      core.SpellSchoolPhysical,
-		ProcMask:         core.ProcMaskMeleeMHSpecial,
-		Flags:            core.SpellFlagMeleeMetrics,
-		DamageMultiplier: 1.2,
-
-		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: core.BossGCD,
-			},
-
-			CD: core.Cooldown{
-				Timer:    ai.BossUnit.NewTimer(),
-				Duration: time.Second * 8,
-			},
-
-			IgnoreHaste: true,
-		},
-
-		ApplyEffects: func(sim *core.Simulation, tankTarget *core.Unit, spell *core.Spell) {
-			baseDamage := spell.Unit.AutoAttacks.MH().EnemyWeaponDamage(sim, spell.MeleeAttackPower(), blackhornMeleeDamageSpread)
-			result := spell.CalcAndDealDamage(sim, tankTarget, baseDamage, spell.OutcomeEnemyMeleeWhite)
-
-			if result.Landed() {
-				sunderAura := tankTarget.GetAuraByID(sunderActionID)
-
-				if sunderAura != nil {
-					sunderAura.Activate(sim)
-					sunderAura.AddStack(sim)
-				}
+			for _, addUnit := range ai.AddUnits {
+				sim.EnableTargetUnit(addUnit)
 			}
 
-			// Devastate resets swing timer whether or not it landed
-			spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime)
-		},
-	})
-
-	ai.BossUnit.RegisterResetEffect(func(sim *core.Simulation) {
-		ai.Devastate.CD.Set(core.DurationFromSeconds(sim.RandomFloat("Devastate Timing") * ai.Devastate.CD.Duration.Seconds()))
-	})
-}
-
-func (ai *BlackhornAI) registerDisruptingRoar() {
-	if !ai.isBoss {
-		return
-	}
-
-	// 0 - 10H, 1 - 25H
-	scalingIndex := core.TernaryInt(ai.raidSize == 10, 0, 1)
-
-	// https://wago.tools/db2/SpellEffect?build=4.4.2.58947&filter[SpellID]=108044&page=1
-	disruptingRoarBase := []float64{71250, 92625}[scalingIndex]
-	disruptingRoarVariance := []float64{7500, 9750}[scalingIndex]
-
-	ai.DisruptingRoar = ai.BossUnit.RegisterSpell(core.SpellConfig{
-		ActionID:         core.ActionID{SpellID: 108044},
-		SpellSchool:      core.SpellSchoolPhysical,
-		ProcMask:         core.ProcMaskSpellDamage,
-		Flags:            core.SpellFlagIgnoreArmor | core.SpellFlagAPL,
-		DamageMultiplier: 1,
-
-		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: core.BossGCD,
-			},
-
-			CD: core.Cooldown{
-				Timer:    ai.BossUnit.NewTimer(),
-				Duration: time.Second * 18,
-			},
-
-			IgnoreHaste: true,
+			ai.TankUnit.CurrentTarget = ai.AddUnits[0]
 		},
 
-		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Raid.AllPlayerUnits {
-				damageRoll := disruptingRoarBase + disruptingRoarVariance*sim.RandomFloat("Disrupting Roar Damage")
-				spell.CalcAndDealDamage(sim, aoeTarget, damageRoll, spell.OutcomeAlwaysHit)
+		OnExpire: func(_ *core.Aura, sim *core.Simulation) {
+			for _, addUnit := range ai.AddUnits {
+				sim.DisableTargetUnit(addUnit, true)
 			}
 
-			// Different swing delay behavior from Devastate based on log analysis
-			spell.Unit.AutoAttacks.PauseMeleeBy(sim, core.BossGCD+1)
+			sim.EnableTargetUnit(ai.BossUnit)
+			ai.BossUnit.AutoAttacks.CancelAutoSwing(sim)
 		},
 	})
 
-	ai.BossUnit.RegisterResetEffect(func(sim *core.Simulation) {
-		ai.DisruptingRoar.CD.Set(core.DurationFromSeconds(sim.RandomFloat("Disrupting Roar Timing") * ai.DisruptingRoar.CD.Duration.Seconds()))
-	})
-}
+	var priorVengeanceEstimate int32
 
-func (ai *BlackhornAI) registerVengeance() {
-	if !ai.isBoss {
-		return
-	}
-
-	ai.BossUnit.RegisterAura(core.Aura{
-		Label:     "Vengeance",
-		ActionID:  core.ActionID{SpellID: 108045},
-		MaxStacks: 100,
-		Duration:  core.NeverExpires,
-
-		OnReset: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Activate(sim)
-		},
+	ai.VoodooDollsAura = ai.TankUnit.RegisterAura(core.Aura{
+		Label:    "Voodoo Dolls",
+		ActionID: core.ActionID{SpellID: 116000},
+		Duration: voodooDollsDuration,
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			core.StartPeriodicAction(sim, core.PeriodicActionOptions{
-				Period:   ai.cleavePhaseVengeanceInterval,
-				NumTicks: int(ai.cleavePhaseVengeanceGain),
-				Priority: core.ActionPriorityDOT,
+			sim.EnableTargetUnit(ai.BossUnit)
+			ai.SharedShadowyAttackTimer.Set(sim.CurrentTime + core.DurationFromSeconds(8.0 * sim.RandomFloat("Shadowy Attack Timing")))
+			ai.syncBossGCDToSwing(sim)
 
-				OnAction: func(sim *core.Simulation) {
-					aura.AddStack(sim)
-				},
-			})
-		},
-
-		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
-			aura.Unit.PseudoStats.DamageDealtMultiplier *= (1.0 + 0.01*float64(newStacks)) / (1.0 + 0.01*float64(oldStacks))
-
-			if newStacks == ai.cleavePhaseVengeanceGain {
-				newNumTicks := int(aura.MaxStacks - newStacks)
-				newPeriod := sim.GetRemainingDuration() / time.Duration(newNumTicks)
-
+			if sim.CurrentTime + voodooDollsDuration > ai.enableFrenzyAt {
 				core.StartPeriodicAction(sim, core.PeriodicActionOptions{
-					Period:   newPeriod,
-					NumTicks: newNumTicks,
+					Period:   voodooDollsDuration - 1,
 					Priority: core.ActionPriorityDOT,
 
 					OnAction: func(sim *core.Simulation) {
-						aura.AddStack(sim)
+						aura.Refresh(sim)
+					},
+				})
+			}
+
+			// Model the Vengeance gain from a taunt
+			vengeanceAura := aura.Unit.GetAura("Vengeance")
+
+			if vengeanceAura == nil {
+				return
+			}
+
+			vengeanceAura.Activate(sim)
+			vengeanceAura.SetStacks(sim, priorVengeanceEstimate / 2)
+		},
+
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			ai.BanishmentAura.Activate(sim)
+
+			// Store the final Vengeance value for the next swap
+			vengeanceAura := aura.Unit.GetAura("Vengeance")
+
+			if vengeanceAura == nil {
+				return
+			}
+
+			priorVengeanceEstimate = vengeanceAura.GetStacks()
+		},
+
+		OnReset: func(aura *core.Aura, sim *core.Simulation) {
+			priorVengeanceEstimate = 0
+			aura.Activate(sim)
+			activationPeriod := voodooDollsDuration * 2
+			numActivations := ai.enableFrenzyAt / activationPeriod
+
+			if numActivations > 0 {
+				core.StartPeriodicAction(sim, core.PeriodicActionOptions{
+					Period:   activationPeriod,
+					NumTicks: int(numActivations),
+					Priority: core.ActionPriorityDOT,
+
+					OnAction: func(sim *core.Simulation) {
+						aura.Activate(sim)
+					},
+				})
+			}
+
+			finalActivation := activationPeriod * numActivations
+
+			if finalActivation + voodooDollsDuration <= ai.enableFrenzyAt {
+				core.StartDelayedAction(sim, core.DelayedActionOptions{
+					DoAt:     ai.enableFrenzyAt - 1,
+					Priority: core.ActionPriorityDOT,
+
+					OnAction: func(sim *core.Simulation) {
+						if ai.BanishmentAura.IsActive() {
+							ai.BanishmentAura.Deactivate(sim)
+						}
+
+						aura.Activate(sim)
 					},
 				})
 			}
@@ -324,169 +302,99 @@ func (ai *BlackhornAI) registerVengeance() {
 	})
 }
 
-func (ai *BlackhornAI) registerTwilightBreath() {
+func (ai *GarajalAI) syncBossGCDToSwing(sim *core.Simulation) {
+	ai.BossUnit.ExtendGCDUntil(sim, ai.BossUnit.AutoAttacks.NextAttackAt() + core.DurationFromSeconds(0.2 * sim.RandomFloat("Specials Timing")))
+}
+
+func (ai *GarajalAI) registerShadowBolt() {
+	// These are actually cast by the Shadowy Minions, but we have the tank
+	// adds cast them in the sim model for simplicity. The details of the
+	// damage profile don't really matter here, as these casts are really
+	// just used to decay the tank's Vengeance at a reasonable rate while
+	// downstairs.
+	if ai.isBoss {
+		return
+	}
+
 	// 0 - 10H, 1 - 25H
 	scalingIndex := core.TernaryInt(ai.raidSize == 10, 0, 1)
 
-	// https://wago.tools/db2/SpellEffect?build=4.4.2.58947&filter[SpellID]=110212&page=1
-	twilightBreathBase := []float64{81600, 120000}[scalingIndex]
-	twilightBreathVariance := []float64{6800, 10000}[scalingIndex]
+	// https://wago.tools/db2/SpellEffect?build=5.5.0.61767&filter%5BSpellID%5D=122118&page=1
+	shadowBoltBase := []float64{22200, 24050}[scalingIndex]
+	shadowBoltVariance := []float64{3600, 3900}[scalingIndex]
 
-	twilightBreathActionID := core.ActionID{SpellID: 110212}
-	twilightBreathCastTime := time.Second * 2
-	twilightBreathConfig := core.SpellConfig{
-		ActionID:         twilightBreathActionID,
+	ai.ShadowBolt = ai.Target.RegisterSpell(core.SpellConfig{
+		ActionID:         core.ActionID{SpellID: 122118},
 		SpellSchool:      core.SpellSchoolShadow,
 		ProcMask:         core.ProcMaskSpellDamage,
-		Flags:            core.SpellFlagAPL,
 		DamageMultiplier: 1,
 
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD:      core.BossGCD * 2,
-				CastTime: twilightBreathCastTime,
+				GCD:      core.GCDDefault,
+				CastTime: time.Second * 3,
 			},
-
-			CD: core.Cooldown{
-				Timer:    ai.AddUnit.NewTimer(),
-				Duration: time.Second * 18,
-			},
-
-			IgnoreHaste: true,
 		},
 
-		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			// Conal breath will hit both tanks but no one else.
-			for _, tankUnit := range ai.ValidTanks {
-				damageRoll := twilightBreathBase + twilightBreathVariance*sim.RandomFloat("Twilight Breath Damage")
-				spell.CalcAndDealDamage(sim, tankUnit, damageRoll, spell.OutcomeAlwaysHit)
-			}
-
-			// No swing reset/delay logic here, boss can continue to melee while casting based on log analysis.
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			damageRoll := shadowBoltBase + shadowBoltVariance*sim.RandomFloat("Shadow Bolt Damage")
+			spell.CalcAndDealDamage(sim, target, damageRoll, spell.OutcomeAlwaysHit)
 		},
-	}
-
-	if !ai.isBoss {
-		ai.TwilightBreath = ai.AddUnit.RegisterSpell(twilightBreathConfig)
-	} else {
-		ai.AddUnit.RegisterResetEffect(func(sim *core.Simulation) {
-			// Hacky work-around to the add AI not having access to user input parameters
-			twilightBreathSpell := ai.AddUnit.GetSpell(twilightBreathActionID)
-			twilightBreathSpell.CD.Set(core.DurationFromSeconds(sim.RandomFloat("Twilight Breath Timing") * twilightBreathSpell.CD.Duration.Seconds()))
-
-			core.StartDelayedAction(sim, core.DelayedActionOptions{
-				DoAt:     ai.disableAddAt - twilightBreathCastTime,
-				Priority: core.ActionPriorityDOT,
-
-				OnAction: func(_ *core.Simulation) {
-					twilightBreathSpell.CD.Set(core.NeverExpires)
-				},
-			})
-		})
-	}
+	})
 }
 
-func (ai *BlackhornAI) registerPowerOfTheAspects() {
-	if !ai.isBoss || (ai.nerfLevel == 0) {
+func (ai *GarajalAI) registerFrenzy() {
+	if !ai.isBoss {
 		return
 	}
 
-	damageMultiplier := 1.0 - 0.05*float64(ai.nerfLevel)
-	auraID := 109250 + ai.nerfLevel
-
-	debuffConfig := core.Aura{
-		Label:    "Power of the Aspects",
-		ActionID: core.ActionID{SpellID: auraID},
+	ai.FrenzyAura = ai.BossUnit.RegisterAura(core.Aura{
+		Label:    "Frenzy",
+		ActionID: core.ActionID{SpellID: 117752},
 		Duration: core.NeverExpires,
 
-		OnReset: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Activate(sim)
-		},
-
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Unit.PseudoStats.DamageDealtMultiplier *= damageMultiplier
+			aura.Unit.PseudoStats.DamageDealtMultiplier *= 1.25
+			aura.Unit.MultiplyAttackSpeed(sim, 1.5)
+			aura.Unit.MultiplyCastSpeed(sim, 1.5)
 		},
 
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Unit.PseudoStats.DamageDealtMultiplier /= damageMultiplier
+			aura.Unit.PseudoStats.DamageDealtMultiplier /= 1.25
+			aura.Unit.MultiplyAttackSpeed(sim, 1.0 / 1.5)
+			aura.Unit.MultiplyCastSpeed(sim, 1.0 / 1.5)
 		},
-	}
 
-	ai.BossUnit.GetOrRegisterAura(debuffConfig)
-	ai.AddUnit.GetOrRegisterAura(debuffConfig)
+		OnReset: func(aura *core.Aura, sim *core.Simulation) {
+			core.StartDelayedAction(sim, core.DelayedActionOptions{
+				DoAt:     ai.enableFrenzyAt,
+				Priority: core.ActionPriorityDOT,
+
+				OnAction: func(sim *core.Simulation) {
+					aura.Activate(sim)
+				},
+			})
+		},
+	})
 }
 
-func (ai *BlackhornAI) Reset(sim *core.Simulation) {
-	// Randomize GCD and swing timings to prevent fake APL-Haste couplings.
-	ai.Target.Enable(sim)
+func (ai *GarajalAI) Reset(sim *core.Simulation) {}
+
+func (ai *GarajalAI) ExecuteCustomRotation(sim *core.Simulation) {
+	if ai.TankUnit == nil {
+		return
+	}
 
 	if !ai.isBoss {
+		ai.ShadowBolt.Cast(sim, ai.TankUnit)
 		return
 	}
 
-	// Set up delayed action for disabling add swings.
-	core.StartDelayedAction(sim, core.DelayedActionOptions{
-		DoAt:     ai.disableAddAt,
-		Priority: core.ActionPriorityDOT,
-
-		OnAction: func(sim *core.Simulation) {
-			sim.DisableTargetUnit(ai.AddUnit)
-		},
-	})
-
-	// Set up periodic action for tank swaps.
-	core.StartPeriodicAction(sim, core.PeriodicActionOptions{
-		Period:   ai.tankSwapInterval,
-		NumTicks: int(sim.Duration / ai.tankSwapInterval),
-		Priority: core.ActionPriorityDOT,
-
-		OnAction: func(sim *core.Simulation) {
-			newBossTank := core.Ternary((sim.CurrentTime/ai.tankSwapInterval)%2 == 0, ai.MainTank, ai.OffTank)
-			ai.swapTargets(sim, ai.BossUnit, newBossTank)
-			ai.Devastate.CD.Set(sim.CurrentTime + core.DurationFromSeconds(sim.RandomFloat("Devastate Timing")*ai.Devastate.CD.Duration.Seconds()))
-			newAddTank := core.Ternary(newBossTank == ai.MainTank, ai.OffTank, ai.MainTank)
-			ai.swapTargets(sim, ai.AddUnit, newAddTank)
-		},
-	})
-}
-
-func (ai *BlackhornAI) swapTargets(sim *core.Simulation, npc *core.Unit, newTankTarget *core.Unit) {
-	if !npc.IsEnabled() {
-		return
+	if ai.VoodooDollsAura.IsActive() && ai.SharedShadowyAttackTimer.IsReady(sim) {
+		ai.ShadowyAttackSpells[int(4.0 * sim.RandomFloat("Shadowy Attack Selection"))].Cast(sim, ai.TankUnit)
 	}
 
-	npc.AutoAttacks.CancelAutoSwing(sim)
-	npc.CurrentTarget = newTankTarget
-
-	if newTankTarget != nil {
-		newTankTarget.CurrentTarget = npc
+	if ai.VoodooDollsAura.IsActive() {
+		ai.syncBossGCDToSwing(sim)
 	}
-
-	npc.AutoAttacks.EnableAutoSwing(sim)
-	npc.AutoAttacks.RandomizeMeleeTiming(sim)
-}
-
-func (ai *BlackhornAI) ExecuteCustomRotation(sim *core.Simulation) {
-	target := ai.Target.CurrentTarget
-	if target == nil {
-		// For individual non tank sims we still want abilities to work
-		target = &ai.Target.Env.Raid.Parties[0].Players[0].GetCharacter().Unit
-	}
-
-	if ai.isBoss && (target == ai.BossUnit.CurrentTarget) && ai.Devastate.IsReady(sim) {
-		ai.Devastate.Cast(sim, target)
-		return
-	}
-
-	if ai.isBoss && ai.DisruptingRoar.IsReady(sim) && sim.Proc(0.75, "Disrupting Roar AI") {
-		ai.DisruptingRoar.Cast(sim, target)
-		return
-	}
-
-	if !ai.isBoss && ai.TwilightBreath.IsReady(sim) && sim.Proc(0.75, "Twilight Breath AI") {
-		ai.TwilightBreath.Cast(sim, target)
-		return
-	}
-
-	ai.Target.ExtendGCDUntil(sim, sim.CurrentTime+core.BossGCD)
 }
