@@ -40,7 +40,7 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 	})
 
 	var damageMultiplier float64
-	buffAura := ww.RegisterAura(core.Aura{
+	ww.TigereyeBrewAura = ww.RegisterAura(core.Aura{
 		Label:    "Tigereye Brew Buff" + ww.Label,
 		ActionID: buffActionID,
 		Duration: time.Second * 15,
@@ -88,10 +88,10 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			buffAura.Deactivate(sim)
-			buffAura.Activate(sim)
+			spell.RelatedSelfBuff.Deactivate(sim)
+			spell.RelatedSelfBuff.Activate(sim)
 		},
 
-		RelatedSelfBuff: buffAura,
+		RelatedSelfBuff: ww.TigereyeBrewAura,
 	})
 }

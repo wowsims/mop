@@ -86,7 +86,7 @@ func (monk *Monk) registerTigerPalm() {
 	isBrewmaster := monk.Spec == proto.Spec_SpecBrewmasterMonk
 	chiCost := int32(1)
 
-	tigerPowerBuff := monk.RegisterAura(tigerPowerBuffConfig(monk, false))
+	monk.TigerPowerAura = monk.RegisterAura(tigerPowerBuffConfig(monk, false))
 
 	monk.RegisterSpell(tigerPalmSpellConfig(monk, false, core.SpellConfig{
 		ActionID:       tigerPalmActionID,
@@ -117,7 +117,7 @@ func (monk *Monk) registerTigerPalm() {
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 
 			if result.Landed() {
-				tigerPowerBuff.Activate(sim)
+				monk.TigerPowerAura.Activate(sim)
 				if !isBrewmaster {
 					if monk.ComboBreakerTigerPalmAura.IsActive() {
 						monk.onChiSpent(sim, chiCost)

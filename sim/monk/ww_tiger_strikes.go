@@ -10,7 +10,7 @@ import (
 var tigerStrikesMHID = core.ActionID{SpellID: 120274}
 var tigerStrikesOHID = core.ActionID{SpellID: 120278}
 
-func tigerStrikesBuffAura(unit *core.Unit) {
+func tigerStrikesBuffAura(unit *core.Unit) *core.Aura {
 	var tigerStrikesMHSpell *core.Spell
 	var tigerStrikesOHSpell *core.Spell
 	var tigerStrikesBuff *core.Aura
@@ -83,14 +83,16 @@ func tigerStrikesBuffAura(unit *core.Unit) {
 			}
 		},
 	})
+
+	return tigerStrikesBuff
 }
 
-func (monk *Monk) registerTigerStrikes() {
+func (monk *Monk) registerTigerStrikes() *core.Aura {
 	if monk.Spec != proto.Spec_SpecWindwalkerMonk {
-		return
+		return nil
 	}
 
-	tigerStrikesBuffAura(&monk.Unit)
+	return tigerStrikesBuffAura(&monk.Unit)
 }
 
 func (pet *StormEarthAndFirePet) registerSEFTigerStrikes() {
