@@ -48,7 +48,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		FloatValue: -1,
 	}
 
-	ssAura := moonkin.RegisterAura(core.Aura{
+	moonkin.ShootingStarsAura = moonkin.RegisterAura(core.Aura{
 		Label:    "Shooting Stars" + moonkin.Label,
 		ActionID: core.ActionID{SpellID: 93400},
 		Duration: time.Second * 12,
@@ -71,7 +71,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		ProcChance:     0.3,
 		ClassSpellMask: druid.DruidSpellSunfireDoT | druid.DruidSpellMoonfireDoT,
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-			ssAura.Activate(sim)
+			moonkin.ShootingStarsAura.Activate(sim)
 		},
 	})
 
@@ -150,7 +150,7 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 		Kind:      core.SpellMod_PowerCost_Pct,
 	})
 
-	var lunarShowerAura = moonkin.RegisterAura(core.Aura{
+	moonkin.LunarShowerAura = moonkin.RegisterAura(core.Aura{
 		Label:     "Lunar Shower",
 		Duration:  time.Second * 3,
 		ActionID:  core.ActionID{SpellID: 81192},
@@ -185,14 +185,14 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 				return
 			}
 
-			if lunarShowerAura.IsActive() {
-				if lunarShowerAura.GetStacks() < 3 {
-					lunarShowerAura.AddStack(sim)
-					lunarShowerAura.Refresh(sim)
+			if moonkin.LunarShowerAura.IsActive() {
+				if moonkin.LunarShowerAura.GetStacks() < 3 {
+					moonkin.LunarShowerAura.AddStack(sim)
+					moonkin.LunarShowerAura.Refresh(sim)
 				}
 			} else {
-				lunarShowerAura.Activate(sim)
-				lunarShowerAura.SetStacks(sim, 1)
+				moonkin.LunarShowerAura.Activate(sim)
+				moonkin.LunarShowerAura.SetStacks(sim, 1)
 			}
 		},
 	})

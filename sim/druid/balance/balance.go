@@ -66,9 +66,11 @@ type BalanceDruid struct {
 	Sunfire              *druid.DruidSpell
 	Starsurge            *druid.DruidSpell
 
-	AstralInsight   *core.Aura // Soul of the Forest
-	DreamOfCenarius *core.Aura
-	NaturesGrace    *core.Aura
+	AstralInsight     *core.Aura // Soul of the Forest
+	DreamOfCenarius   *core.Aura
+	LunarShowerAura   *core.Aura
+	NaturesGrace      *core.Aura
+	ShootingStarsAura *core.Aura
 }
 
 func (moonkin *BalanceDruid) GetDruid() *druid.Druid {
@@ -106,4 +108,10 @@ func (moonkin *BalanceDruid) RegisterBalanceSpells() {
 func (moonkin *BalanceDruid) Reset(sim *core.Simulation) {
 	moonkin.eclipseEnergyBar.reset()
 	moonkin.Druid.Reset(sim)
+}
+
+func (moonkin *BalanceDruid) OnEncounterStart(sim *core.Simulation) {
+	moonkin.LunarShowerAura.Deactivate(sim)
+	moonkin.ShootingStarsAura.Deactivate(sim)
+	moonkin.Druid.OnEncounterStart(sim)
 }

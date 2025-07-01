@@ -164,4 +164,7 @@ func (bear *GuardianDruid) OnEncounterStart(sim *core.Simulation) {
 	if bear.InForm(druid.Bear) {
 		bear.ResetRageBar(sim, 25)
 	}
+	bear.SavageDefenseAura.Deactivate(sim)
+	bear.ToothAndClawBuff.Deactivate(sim)
+	bear.Druid.OnEncounterStart(sim)
 }
