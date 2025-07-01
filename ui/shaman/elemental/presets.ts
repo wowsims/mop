@@ -3,6 +3,7 @@ import { ConsumesSpec, Glyphs, Profession, Race, Stat } from '../../core/proto/c
 import {
 	ElementalShaman_Options as ElementalShamanOptions,
 	FeleAutocastSettings,
+	ShamanImbue,
 	ShamanMajorGlyph,
 	ShamanShield,
 } from '../../core/proto/shaman.js';
@@ -94,6 +95,7 @@ export const DefaultOptions = ElementalShamanOptions.create({
 					autocastImmolate: true,
 					autocastEmpower: false,
 				}),
+		imbueMhSwap: ShamanImbue.WindfuryWeapon,
 	},
 });
 
