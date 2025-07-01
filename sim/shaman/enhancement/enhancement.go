@@ -158,6 +158,11 @@ func (enh *EnhancementShaman) Reset(sim *core.Simulation) {
 	enh.Shaman.Reset(sim)
 }
 
+func (enh *EnhancementShaman) OnEncounterStart(sim *core.Simulation) {
+	enh.MaelstromWeaponAura.Deactivate(sim)
+	enh.Shaman.OnEncounterStart(sim)
+}
+
 func (enh *EnhancementShaman) AutoSyncWeapons() proto.ShamanSyncType {
 	if mh, oh := enh.MainHand(), enh.OffHand(); mh.SwingSpeed != oh.SwingSpeed {
 		return proto.ShamanSyncType_NoSync

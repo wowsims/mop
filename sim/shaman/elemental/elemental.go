@@ -76,3 +76,9 @@ func (eleShaman *ElementalShaman) GetShaman() *shaman.Shaman {
 func (eleShaman *ElementalShaman) Reset(sim *core.Simulation) {
 	eleShaman.Shaman.Reset(sim)
 }
+
+func (eleShaman *ElementalShaman) OnEncounterStart(sim *core.Simulation) {
+	eleShaman.ClearcastingAura.Deactivate(sim)
+	eleShaman.LavaSurgeAura.Deactivate(sim)
+	eleShaman.Shaman.OnEncounterStart(sim)
+}

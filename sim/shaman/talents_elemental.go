@@ -131,7 +131,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 
 	maxStacks := int32(2)
 
-	clearcastingAura := shaman.RegisterAura(core.Aura{
+	shaman.ClearcastingAura = shaman.RegisterAura(core.Aura{
 		Label:     "Clearcasting",
 		ActionID:  core.ActionID{SpellID: 16246},
 		Duration:  time.Second * 15,
@@ -167,13 +167,13 @@ func (shaman *Shaman) ApplyElementalTalents() {
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			triggeringSpell = spell
 			triggerTime = sim.CurrentTime
-			clearcastingAura.Activate(sim)
-			clearcastingAura.SetStacks(sim, maxStacks)
+			shaman.ClearcastingAura.Activate(sim)
+			shaman.ClearcastingAura.SetStacks(sim, maxStacks)
 		},
 	})
 
 	//Lava Surge
-	procAura := shaman.RegisterAura(core.Aura{
+	shaman.LavaSurgeAura = shaman.RegisterAura(core.Aura{
 		Label:    "Lava Surge",
 		Duration: time.Second * 6,
 		ActionID: core.ActionID{SpellID: 77762},
@@ -202,7 +202,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 
 			pa.OnAction = func(sim *core.Simulation) {
 				shaman.LavaBurst.CD.Reset()
-				procAura.Activate(sim)
+				shaman.LavaSurgeAura.Activate(sim)
 			}
 
 			sim.AddPendingAction(pa)
@@ -217,7 +217,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 			}
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
-			if !spell.Matches(SpellMaskLavaBurst) || !procAura.IsActive() {
+			if !spell.Matches(SpellMaskLavaBurst) || !shaman.LavaSurgeAura.IsActive() {
 				return
 			}
 			//If lava surge procs during LvB cast time, it is not consumed and lvb does not go on cd
@@ -225,7 +225,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 				spell.CD.Reset()
 				return
 			}
-			procAura.Deactivate(sim)
+			shaman.LavaSurgeAura.Deactivate(sim)
 		},
 	}))
 }

@@ -11,7 +11,7 @@ func (shaman *Shaman) registerUnleashFlame() {
 
 	spellMask := SpellMaskLavaBurst | SpellMaskFlameShock | SpellMaskFireNova | SpellMaskElementalBlast
 
-	unleashFlameAura := shaman.RegisterAura(core.Aura{
+	shaman.UnleashFlameAura = shaman.RegisterAura(core.Aura{
 		Label:    "Unleash Flame",
 		ActionID: core.ActionID{SpellID: 73683},
 		Duration: time.Second * 8,
@@ -49,7 +49,7 @@ func (shaman *Shaman) registerUnleashFlame() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := shaman.CalcAndRollDamageRange(sim, 1.11300003529, 0.17000000179)
 			spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-			unleashFlameAura.Activate(sim)
+			shaman.UnleashFlameAura.Activate(sim)
 		},
 	})
 }
@@ -77,7 +77,7 @@ func (shaman *Shaman) registerUnleashWind() {
 
 	speedMultiplier := 1 + 0.5
 
-	unleashWindAura := shaman.RegisterAura(core.Aura{
+	shaman.UnleashWindAura = shaman.RegisterAura(core.Aura{
 		Label:     "Unleash Wind",
 		ActionID:  core.ActionID{SpellID: 73681},
 		Duration:  time.Second * 12,
@@ -107,7 +107,7 @@ func (shaman *Shaman) registerUnleashWind() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			damage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 			spell.CalcAndDealDamage(sim, target, damage, spell.OutcomeRangedHitAndCrit)
-			unleashWindAura.Activate(sim)
+			shaman.UnleashWindAura.Activate(sim)
 		},
 	})
 }
