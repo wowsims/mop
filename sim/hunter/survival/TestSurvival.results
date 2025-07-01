@@ -710,13 +710,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestSurvival-AllItems-Flamewaker'sBattlegear"
- value: {
-  dps: 99837.13667
-  tps: 81973.32156
- }
-}
-dps_results: {
  key: "TestSurvival-AllItems-FlashfrozenResinGlobule-100951"
  value: {
   dps: 144092.05793
@@ -803,8 +796,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Gladiator'sPursuit"
  value: {
-  dps: 156015.39288
-  tps: 126978.25788
+  dps: 154987.64143
+  tps: 126163.11729
  }
 }
 dps_results: {
@@ -1239,13 +1232,6 @@ dps_results: {
  value: {
   dps: 152845.45773
   tps: 127371.536
- }
-}
-dps_results: {
- key: "TestSurvival-AllItems-Lightning-ChargedBattlegear"
- value: {
-  dps: 98270.79909
-  tps: 81113.90915
  }
 }
 dps_results: {
