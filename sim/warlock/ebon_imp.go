@@ -55,9 +55,14 @@ func (imp *EbonImpPet) GetPet() *core.Pet {
 	return &imp.Pet
 }
 
-func (imp *EbonImpPet) Initialize() {}
+func (imp *EbonImpPet) Initialize() {
+}
 
-func (imp *EbonImpPet) Reset(_ *core.Simulation) {}
+func (imp *EbonImpPet) Reset(_ *core.Simulation) {
+}
+
+func (imp *EbonImpPet) OnEncounterStart(_ *core.Simulation) {
+}
 
 func (imp *EbonImpPet) ExecuteCustomRotation(sim *core.Simulation) {
 	imp.SetRotationTimer(sim, time.Duration(1<<63-1))

@@ -92,6 +92,9 @@ func (warlock *Warlock) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 func (warlock *Warlock) Reset(sim *core.Simulation) {
 }
 
+func (warlock *Warlock) OnEncounterStart(_ *core.Simulation) {
+}
+
 func NewWarlock(character *core.Character, options *proto.Player, warlockOptions *proto.WarlockOptions) *Warlock {
 	warlock := &Warlock{
 		Character: *character,

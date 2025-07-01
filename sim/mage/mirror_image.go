@@ -120,6 +120,9 @@ func (mi *MirrorImage) Initialize() {
 func (mi *MirrorImage) Reset(_ *core.Simulation) {
 }
 
+func (mi *MirrorImage) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (mi *MirrorImage) ExecuteCustomRotation(sim *core.Simulation) {
 	mi.mainSpell.Cast(sim, mi.CurrentTarget)
 }

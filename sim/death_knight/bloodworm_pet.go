@@ -152,6 +152,9 @@ func (bloodworm *BloodwormPet) Reset(_ *core.Simulation) {
 func (bloodworm *BloodwormPet) ExecuteCustomRotation(_ *core.Simulation) {
 }
 
+func (bloodworm *BloodwormPet) OnEncounterStart(sim *core.Simulation) {
+}
+
 func (bloodworm *BloodwormPet) disable(sim *core.Simulation) {
 	bloodworm.stackAura.Deactivate(sim)
 }

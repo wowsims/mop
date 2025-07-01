@@ -327,6 +327,9 @@ func (sefClone *StormEarthAndFirePet) GetPet() *core.Pet {
 func (sefClone *StormEarthAndFirePet) Reset(_ *core.Simulation) {
 }
 
+func (sefClone *StormEarthAndFirePet) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (sefClone *StormEarthAndFirePet) ExecuteCustomRotation(_ *core.Simulation) {
 }
 

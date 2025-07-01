@@ -190,6 +190,9 @@ func (warrior *Warrior) Reset(_ *core.Simulation) {
 	warrior.Stance = StanceNone
 }
 
+func (warrior *Warrior) OnEncounterStart(_ *core.Simulation) {
+}
+
 func NewWarrior(character *core.Character, options *proto.WarriorOptions, talents string, inputs WarriorInputs) *Warrior {
 	warrior := &Warrior{
 		Character:         *character,

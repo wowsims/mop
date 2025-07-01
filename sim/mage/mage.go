@@ -147,6 +147,9 @@ func (mage *Mage) Reset(sim *core.Simulation) {
 	mage.Icicles = make([]float64, 0)
 }
 
+func (mage *Mage) OnEncounterStart(_ *core.Simulation) {
+}
+
 func NewMage(character *core.Character, options *proto.Player, mageOptions *proto.MageOptions) *Mage {
 	mage := &Mage{
 		Character:         *character,

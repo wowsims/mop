@@ -47,6 +47,9 @@ func (garg *GargoylePet) Initialize() {
 func (garg *GargoylePet) Reset(_ *core.Simulation) {
 }
 
+func (garg *GargoylePet) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (garg *GargoylePet) SetExpireTime(expireTime time.Duration) {
 	garg.expireTime = expireTime
 }

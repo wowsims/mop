@@ -216,6 +216,9 @@ func (hunter *Hunter) Reset(_ *core.Simulation) {
 	hunter.mayMoveAt = 0
 }
 
+func (hunter *Hunter) OnEncounterStart(_ *core.Simulation) {
+}
+
 const (
 	HunterSpellFlagsNone int64 = 0
 	SpellMaskSpellRanged int64 = 1 << iota

@@ -118,6 +118,9 @@ func (dk *DeathKnight) Initialize() {
 func (dk *DeathKnight) Reset(sim *core.Simulation) {
 }
 
+func (dk *DeathKnight) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (dk *DeathKnight) HasMajorGlyph(glyph proto.DeathKnightMajorGlyph) bool {
 	return dk.HasGlyph(int32(glyph))
 }

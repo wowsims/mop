@@ -85,7 +85,11 @@ func (pet *DoomguardPet) Initialize() {
 	pet.registerDoomBolt()
 }
 
-func (pet *DoomguardPet) Reset(_ *core.Simulation) {}
+func (pet *DoomguardPet) Reset(_ *core.Simulation) {
+}
+
+func (pet *DoomguardPet) OnEncounterStart(_ *core.Simulation) {
+}
 
 func (pet *DoomguardPet) ExecuteCustomRotation(sim *core.Simulation) {
 	if pet.DoomBolt.CanCast(sim, pet.CurrentTarget) {

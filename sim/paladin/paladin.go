@@ -127,6 +127,9 @@ func (paladin *Paladin) Reset(sim *core.Simulation) {
 	}
 }
 
+func (paladin *Paladin) OnEncounterStart(_ *core.Simulation) {
+}
+
 func NewPaladin(character *core.Character, talentsStr string, options *proto.PaladinOptions) *Paladin {
 	paladin := &Paladin{
 		Character: *character,

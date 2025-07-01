@@ -234,6 +234,9 @@ func (rogue *Rogue) Reset(sim *core.Simulation) {
 	rogue.T12ToTLastBuff = 3
 }
 
+func (rogue *Rogue) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (rogue *Rogue) CritMultiplier(applyLethality bool) float64 {
 	secondaryModifier := 0.0
 	return rogue.GetCharacter().CritMultiplier(1.0, secondaryModifier)

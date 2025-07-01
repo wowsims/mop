@@ -260,7 +260,9 @@ func (shaman *Shaman) RegisterHealingSpells() {
 }
 
 func (shaman *Shaman) Reset(sim *core.Simulation) {
+}
 
+func (shaman *Shaman) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (shaman *Shaman) calcDamageStormstrikeCritChance(sim *core.Simulation, target *core.Unit, baseDamage float64, spell *core.Spell) *core.SpellResult {

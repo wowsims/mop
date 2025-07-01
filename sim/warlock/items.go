@@ -92,11 +92,18 @@ func (warlock *Warlock) NewFieryImp() *FieryImpPet {
 	return imp
 }
 
-func (imp *FieryImpPet) GetPet() *core.Pet { return &imp.Pet }
+func (imp *FieryImpPet) GetPet() *core.Pet {
+	return &imp.Pet
+}
 
-func (imp *FieryImpPet) Initialize() {}
+func (imp *FieryImpPet) Initialize() {
+}
 
-func (imp *FieryImpPet) Reset(_ *core.Simulation) {}
+func (imp *FieryImpPet) Reset(_ *core.Simulation) {
+}
+
+func (imp *FieryImpPet) OnEncounterStart(_ *core.Simulation) {
+}
 
 func (imp *FieryImpPet) ExecuteCustomRotation(sim *core.Simulation) {
 	if imp.FlameBlast.CanCast(sim, imp.CurrentTarget) {

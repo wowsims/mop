@@ -764,6 +764,10 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 }
 
 func (unit *Unit) startPull(sim *Simulation) {
+	if agent := unit.Env.GetAgentFromUnit(unit); agent != nil {
+		agent.OnEncounterStart(sim)
+	}
+
 	unit.AutoAttacks.startPull(sim)
 
 	if unit.Type == PlayerUnit {

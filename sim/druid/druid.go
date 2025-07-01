@@ -283,6 +283,9 @@ func (druid *Druid) Reset(_ *core.Simulation) {
 	druid.RebirthUsed = false
 }
 
+func (druid *Druid) OnEncounterStart(_ *core.Simulation) {
+}
+
 func New(char *core.Character, form DruidForm, selfBuffs SelfBuffs, talents string) *Druid {
 	druid := &Druid{
 		Character:         *char,
