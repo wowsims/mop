@@ -27,6 +27,7 @@ func (bdk *BloodDeathKnight) registerVampiricBlood() {
 	hasGlyph := bdk.HasMajorGlyph(proto.DeathKnightMajorGlyph_GlyphOfVampiricBlood)
 	healBonus := core.TernaryFloat64(hasGlyph, 1.40, 1.25)
 
+	var vampiricBloodBonusHealth float64
 	vampiricBloodAura := bdk.RegisterAura(core.Aura{
 		Label:    "Vampiric Blood" + bdk.Label,
 		ActionID: actionID,
@@ -34,13 +35,13 @@ func (bdk *BloodDeathKnight) registerVampiricBlood() {
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			if !hasGlyph {
-				bdk.VampiricBloodBonusHealth = bdk.MaxHealth() * 0.15
-				bdk.UpdateMaxHealth(sim, bdk.VampiricBloodBonusHealth, healthMetrics)
+				vampiricBloodBonusHealth = bdk.MaxHealth() * 0.15
+				bdk.UpdateMaxHealth(sim, vampiricBloodBonusHealth, healthMetrics)
 			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			if !hasGlyph {
-				bdk.UpdateMaxHealth(sim, -bdk.VampiricBloodBonusHealth, healthMetrics)
+				bdk.UpdateMaxHealth(sim, -vampiricBloodBonusHealth, healthMetrics)
 			}
 		},
 	}).AttachMultiplicativePseudoStatBuff(&bdk.PseudoStats.HealingTakenMultiplier, healBonus)

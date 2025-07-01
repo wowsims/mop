@@ -139,24 +139,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBlood-AllItems-ElementiumDeathplateBattlearmor"
- value: {
-  dps: 109530.73255
-  tps: 667108.84038
-  dtps: 111984.24542
-  hps: 71774.18109
- }
-}
-dps_results: {
- key: "TestBlood-AllItems-ElementiumDeathplateBattlegear"
- value: {
-  dps: 115047.96729
-  tps: 699865.85999
-  dtps: 115304.00955
-  hps: 74773.84271
- }
-}
-dps_results: {
  key: "TestBlood-AllItems-EmberPrimalDiamond"
  value: {
   dps: 121672.84002
@@ -352,42 +334,6 @@ dps_results: {
   tps: 745085.84781
   dtps: 96011.16315
   hps: 84508.19537
- }
-}
-dps_results: {
- key: "TestBlood-AllItems-MagmaPlatedBattlearmor"
- value: {
-  dps: 109134.65376
-  tps: 664409.75253
-  dtps: 114460.79208
-  hps: 70740.17806
- }
-}
-dps_results: {
- key: "TestBlood-AllItems-MagmaPlatedBattlegear"
- value: {
-  dps: 112734.47956
-  tps: 684671.25479
-  dtps: 117958.98532
-  hps: 74100.65359
- }
-}
-dps_results: {
- key: "TestBlood-AllItems-NecroticBoneplateArmor"
- value: {
-  dps: 107378.36597
-  tps: 652714.98364
-  dtps: 115661.09691
-  hps: 72520.82705
- }
-}
-dps_results: {
- key: "TestBlood-AllItems-NecroticBoneplateBattlegear"
- value: {
-  dps: 110430.78833
-  tps: 669519.49894
-  dtps: 117003.20812
-  hps: 74834.49286
  }
 }
 dps_results: {
