@@ -126,3 +126,12 @@ func (war *ProtectionWarrior) registerMastery() {
 func (war *ProtectionWarrior) Reset(sim *core.Simulation) {
 	war.Warrior.Reset(sim)
 }
+
+func (war *ProtectionWarrior) OnEncounterStart(sim *core.Simulation) {
+	if war.ShieldBarrierAura.IsActive() {
+		war.ResetRageBar(sim, 5)
+		war.DeactivateAuras(sim)
+	} else {
+		war.Warrior.OnEncounterStart(sim)
+	}
+}

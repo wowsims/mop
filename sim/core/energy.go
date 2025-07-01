@@ -232,6 +232,10 @@ func (eb *energyBar) RunTask(sim *Simulation) time.Duration {
 	return eb.nextEnergyTick
 }
 
+func (eb *energyBar) ResetEnergyBar(sim *Simulation, maxComboPointsToKeep int32) {
+	eb.comboPoints = max(0, min(maxComboPointsToKeep, eb.maxComboPoints))
+}
+
 func (eb *energyBar) reset(sim *Simulation) {
 	if eb.unit == nil {
 		return

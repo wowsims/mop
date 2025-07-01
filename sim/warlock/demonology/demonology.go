@@ -100,6 +100,11 @@ func (demonology *DemonologyWarlock) Reset(sim *core.Simulation) {
 	demonology.HandOfGuldanImpactTime = 0
 }
 
+func (demonology *DemonologyWarlock) OnEncounterStart(sim *core.Simulation) {
+	demonology.DemonicFury.Reset(sim)
+	demonology.Warlock.OnEncounterStart(sim)
+}
+
 func NewDemonicFuryCost(cost int) *warlock.SecondaryResourceCost {
 	return &warlock.SecondaryResourceCost{
 		SecondaryCost: cost,

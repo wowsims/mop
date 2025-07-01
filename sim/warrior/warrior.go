@@ -190,7 +190,12 @@ func (warrior *Warrior) Reset(_ *core.Simulation) {
 	warrior.Stance = StanceNone
 }
 
-func (warrior *Warrior) OnEncounterStart(_ *core.Simulation) {
+func (warrior *Warrior) OnEncounterStart(sim *core.Simulation) {
+	warrior.ResetRageBar(sim, 25)
+	warrior.DeactivateAuras(sim)
+}
+
+func (warrior *Warrior) DeactivateAuras(sim *core.Simulation) {
 }
 
 func NewWarrior(character *core.Character, options *proto.WarriorOptions, talents string, inputs WarriorInputs) *Warrior {

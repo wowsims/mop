@@ -115,7 +115,8 @@ func (dk *DeathKnight) Initialize() {
 func (dk *DeathKnight) Reset(sim *core.Simulation) {
 }
 
-func (dk *DeathKnight) OnEncounterStart(_ *core.Simulation) {
+func (dk *DeathKnight) OnEncounterStart(sim *core.Simulation) {
+	dk.ResetRunicPowerBar(sim)
 }
 
 func (dk *DeathKnight) HasMajorGlyph(glyph proto.DeathKnightMajorGlyph) bool {

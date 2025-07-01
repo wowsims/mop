@@ -16,6 +16,7 @@ type SecondaryResourceBar interface {
 	Gain(sim *Simulation, amount int32, action ActionID)           // Gain the amount specified from the action
 	Reset(sim *Simulation)                                         // Resets the current resource bar
 	Value() int32                                                  // Returns the current amount of resource
+	SetDefault(defaultValue int32)                                 // Sets the default value of the resource bar
 	RegisterOnGain(callback OnGainCallback)                        // Registers a callback that will be called. Gain = amount gained, realGain = actual amount gained due to caps
 	RegisterOnSpend(callback OnSpendCallback)                      // Registers a callback that will be called when the resource was spend
 }
@@ -185,6 +186,10 @@ func (unit *Unit) NewDefaultSecondaryResourceBar(config SecondaryResourceConfig)
 		onGain:  []OnGainCallback{},
 		onSpend: []OnSpendCallback{},
 	}
+}
+
+func (bar *DefaultSecondaryResourceBarImpl) SetDefault(defaultValue int32) {
+	bar.config.Default = defaultValue
 }
 
 func (unit *Unit) RegisterSecondaryResourceBar(config SecondaryResourceBar) {

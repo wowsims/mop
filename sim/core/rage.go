@@ -139,6 +139,10 @@ func (rb *rageBar) SpendRage(sim *Simulation, amount float64, metrics *ResourceM
 	rb.currentRage = newRage
 }
 
+func (rb *rageBar) ResetRageBar(sim *Simulation, rageToKeep float64) {
+	rb.currentRage = min(25, rageToKeep)
+}
+
 func (rb *rageBar) reset(_ *Simulation) {
 	if rb.unit == nil {
 		return

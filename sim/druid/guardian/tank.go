@@ -159,3 +159,9 @@ func (bear *GuardianDruid) Reset(sim *core.Simulation) {
 	bear.BearFormAura.Activate(sim)
 	bear.Druid.PseudoStats.Stunned = false
 }
+
+func (bear *GuardianDruid) OnEncounterStart(sim *core.Simulation) {
+	if bear.InForm(druid.Bear) {
+		bear.ResetRageBar(sim, 25)
+	}
+}

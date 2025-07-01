@@ -221,7 +221,12 @@ func (monk *Monk) Reset(sim *core.Simulation) {
 	monk.ElusiveBrewStacks = 0
 }
 
-func (monk *Monk) OnEncounterStart(_ *core.Simulation) {
+func (monk *Monk) OnEncounterStart(sim *core.Simulation) {
+	monk.ResetEnergyBar(sim, 2)
+	monk.DeactivateAuras(sim)
+}
+
+func (monk *Monk) DeactivateAuras(sim *core.Simulation) {
 }
 
 func (monk *Monk) GetHandType() proto.HandType {

@@ -127,7 +127,12 @@ func (paladin *Paladin) Reset(sim *core.Simulation) {
 	}
 }
 
-func (paladin *Paladin) OnEncounterStart(_ *core.Simulation) {
+func (paladin *Paladin) OnEncounterStart(sim *core.Simulation) {
+	paladin.HolyPower.Reset(sim)
+	paladin.DeactivateAuras(sim)
+}
+
+func (paladin *Paladin) DeactivateAuras(sim *core.Simulation) {
 }
 
 func NewPaladin(character *core.Character, talentsStr string, options *proto.PaladinOptions) *Paladin {

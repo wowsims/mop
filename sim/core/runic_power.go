@@ -101,6 +101,15 @@ func (rp *runicPowerBar) DebugString() string {
 	return strings.Join(ss, "\n")
 }
 
+func (rp *runicPowerBar) ResetRunicPowerBar(sim *Simulation) {
+	rp.currentRunicPower = 20
+	for i := range rp.runeMeta {
+		if rp.runeStates&isDeaths[i] > 0 {
+			rp.ConvertFromDeath(sim, int8(i))
+		}
+	}
+}
+
 func (rp *runicPowerBar) reset(sim *Simulation) {
 	if rp.character == nil {
 		return

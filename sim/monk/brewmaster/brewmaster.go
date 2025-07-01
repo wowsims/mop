@@ -55,6 +55,8 @@ type BrewmasterMonk struct {
 	AvertHarmAura  *core.Aura
 
 	DizzyingHazeAuras core.AuraArray
+
+	Guard *core.Spell
 }
 
 func (bm *BrewmasterMonk) GetMonk() *monk.Monk {
@@ -73,6 +75,15 @@ func (bm *BrewmasterMonk) ApplyTalents() {
 
 func (bm *BrewmasterMonk) Reset(sim *core.Simulation) {
 	bm.Monk.Reset(sim)
+}
+
+func (bm *BrewmasterMonk) OnEncounterStart(sim *core.Simulation) {
+	if bm.Guard.RelatedSelfBuff.IsActive() {
+		bm.ResetEnergyBar(sim, 0)
+		bm.DeactivateAuras(sim)
+	} else {
+		bm.Monk.OnEncounterStart(sim)
+	}
 }
 
 func (bm *BrewmasterMonk) RegisterSpecializationEffects() {

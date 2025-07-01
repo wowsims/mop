@@ -86,6 +86,11 @@ func (destruction *DestructionWarlock) Reset(sim *core.Simulation) {
 	destruction.Warlock.Reset(sim)
 }
 
+func (destruction *DestructionWarlock) OnEncounterStart(sim *core.Simulation) {
+	destruction.BurningEmbers.Reset(sim)
+	destruction.Warlock.OnEncounterStart(sim)
+}
+
 var SpellMaskCinderSpender = warlock.WarlockSpellChaosBolt | warlock.WarlockSpellEmberTap | warlock.WarlockSpellShadowBurn
 var SpellMaskCinderGenerator = warlock.WarlockSpellImmolate | warlock.WarlockSpellImmolateDot |
 	warlock.WarlockSpellIncinerate | warlock.WarlockSpellFelFlame | warlock.WarlockSpellConflagrate |

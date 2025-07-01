@@ -56,3 +56,7 @@ func (holy *HolyPaladin) Initialize() {
 func (holy *HolyPaladin) Reset(sim *core.Simulation) {
 	holy.Paladin.Reset(sim)
 }
+
+func (holy *HolyPaladin) OnEncounterStart(sim *core.Simulation) {
+	holy.DeactivateAuras(sim)
+}

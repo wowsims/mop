@@ -765,6 +765,7 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 
 func (unit *Unit) startPull(sim *Simulation) {
 	if agent := unit.Env.GetAgentFromUnit(unit); agent != nil {
+		unit.deactivateCommonAuras(sim)
 		agent.OnEncounterStart(sim)
 	}
 
@@ -772,6 +773,12 @@ func (unit *Unit) startPull(sim *Simulation) {
 
 	if unit.Type == PlayerUnit {
 		unit.SetGCDTimer(sim, max(0, unit.GCD.ReadyAt()))
+	}
+}
+
+func (unit *Unit) deactivateCommonAuras(sim *Simulation) {
+	if vengeanceAura := unit.GetAura("Vengeance"); vengeanceAura != nil {
+		vengeanceAura.Deactivate(sim)
 	}
 }
 

@@ -234,7 +234,15 @@ func (rogue *Rogue) Reset(sim *core.Simulation) {
 	rogue.T12ToTLastBuff = 3
 }
 
-func (rogue *Rogue) OnEncounterStart(_ *core.Simulation) {
+func (rogue *Rogue) OnEncounterStart(sim *core.Simulation) {
+	rogue.ResetEnergyBar(sim, 0)
+	rogue.DeactivateAuras(sim, false)
+}
+
+func (rogue *Rogue) DeactivateAuras(sim *core.Simulation, keepSliceAndDice bool) {
+	if !keepSliceAndDice {
+		rogue.SliceAndDiceAura.Deactivate(sim)
+	}
 }
 
 func (rogue *Rogue) CritMultiplier(applyLethality bool) float64 {

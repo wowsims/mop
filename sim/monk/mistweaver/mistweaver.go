@@ -71,6 +71,10 @@ func (mw *MistweaverMonk) Reset(sim *core.Simulation) {
 	mw.Monk.Reset(sim)
 }
 
+func (mw *MistweaverMonk) OnEncounterStart(sim *core.Simulation) {
+	mw.DeactivateAuras(sim)
+}
+
 func (mw *MistweaverMonk) RegisterSpecializationEffects() {
 	mw.RegisterMastery()
 }

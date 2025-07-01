@@ -153,6 +153,9 @@ func (bloodworm *BloodwormPet) ExecuteCustomRotation(_ *core.Simulation) {
 }
 
 func (bloodworm *BloodwormPet) OnEncounterStart(sim *core.Simulation) {
+	if bloodworm.IsActive() {
+		bloodworm.Disable(sim)
+	}
 }
 
 func (bloodworm *BloodwormPet) disable(sim *core.Simulation) {
