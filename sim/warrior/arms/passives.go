@@ -89,7 +89,7 @@ func (war *ArmsWarrior) registerSuddenDeath() {
 		},
 	})
 
-	executeAura := war.RegisterAura(core.Aura{
+	war.SuddenDeathExecuteAura = war.RegisterAura(core.Aura{
 		Label:    "Sudden Execute",
 		ActionID: core.ActionID{SpellID: 139958},
 		Duration: 10 * time.Second,
@@ -105,7 +105,7 @@ func (war *ArmsWarrior) registerSuddenDeath() {
 		Outcome:        core.OutcomeLanded,
 		Callback:       core.CallbackOnSpellHitDealt,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			executeAura.Activate(sim)
+			war.SuddenDeathExecuteAura.Activate(sim)
 		},
 	})
 }

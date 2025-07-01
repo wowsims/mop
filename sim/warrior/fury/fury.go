@@ -30,6 +30,7 @@ type FuryWarrior struct {
 	Options *proto.FuryWarrior_Options
 
 	BloodsurgeAura  *core.Aura
+	FlurryAura      *core.Aura
 	MeatCleaverAura *core.Aura
 }
 
@@ -77,6 +78,13 @@ func (war *FuryWarrior) registerPassives() {
 
 func (war *FuryWarrior) Reset(sim *core.Simulation) {
 	war.Warrior.Reset(sim)
+}
+
+func (war *FuryWarrior) OnEncounterStart(sim *core.Simulation) {
+	war.BloodsurgeAura.Deactivate(sim)
+	war.FlurryAura.Deactivate(sim)
+	war.MeatCleaverAura.Deactivate(sim)
+	war.Warrior.OnEncounterStart(sim)
 }
 
 func (war *FuryWarrior) ApplySyncType(syncType proto.WarriorSyncType) {

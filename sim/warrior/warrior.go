@@ -120,7 +120,6 @@ type Warrior struct {
 	LastStandAura       *core.Aura
 	RallyingCryAura     *core.Aura
 	VictoryRushAura     *core.Aura
-	SwordAndBoardAura   *core.Aura
 	ShieldBarrierAura   *core.DamageAbsorptionAura
 
 	SkullBannerAura         *core.Aura

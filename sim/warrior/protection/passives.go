@@ -110,5 +110,5 @@ func (war *ProtectionWarrior) registerUltimatum() {
 }
 
 func (war *ProtectionWarrior) registerRiposte() {
-	shared.RegisterRiposteEffect(&war.Character, 145674, 145672)
+	war.RiposteAura = shared.RegisterRiposteEffect(&war.Character, 145674, 145672)
 }

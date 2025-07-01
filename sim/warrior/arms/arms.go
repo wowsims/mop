@@ -29,8 +29,8 @@ type ArmsWarrior struct {
 
 	Options *proto.ArmsWarrior_Options
 
-	TasteForBloodAura *core.Aura
-	SuddenDeathAura   *core.Aura
+	TasteForBloodAura      *core.Aura
+	SuddenDeathExecuteAura *core.Aura
 }
 
 func NewArmsWarrior(character *core.Character, options *proto.Player) *ArmsWarrior {
@@ -79,4 +79,11 @@ func (war *ArmsWarrior) registerPassives() {
 
 func (war *ArmsWarrior) Reset(sim *core.Simulation) {
 	war.Warrior.Reset(sim)
+}
+
+func (war *ArmsWarrior) OnEncounterStart(sim *core.Simulation) {
+	war.SuddenDeathExecuteAura.Deactivate(sim)
+	war.SweepingStrikesAura.Deactivate(sim)
+	war.TasteForBloodAura.Deactivate(sim)
+	war.Warrior.OnEncounterStart(sim)
 }
