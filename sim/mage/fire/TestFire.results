@@ -2343,43 +2343,43 @@ dps_results: {
 dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 140288.41795
-  tps: 137540.22546
+  dps: 143432.24065
+  tps: 140639.81857
  }
 }
 dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 80167.56334
-  tps: 77431.70548
+  dps: 81622.27605
+  tps: 78910.96475
  }
 }
 dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 138834.47924
-  tps: 129243.35628
+  dps: 140691.81883
+  tps: 131214.65746
  }
 }
 dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 91051.64461
-  tps: 89666.31924
+  dps: 89074.14737
+  tps: 87691.28285
  }
 }
 dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 54352.68338
-  tps: 52967.22738
+  dps: 54509.68646
+  tps: 53116.01231
  }
 }
 dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 66252.03524
-  tps: 62852.99465
+  dps: 67009.17658
+  tps: 63599.84297
  }
 }
 dps_results: {
@@ -2427,43 +2427,43 @@ dps_results: {
 dps_results: {
  key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 140644.36373
-  tps: 138075.42457
+  dps: 136269.15222
+  tps: 133689.34009
  }
 }
 dps_results: {
  key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 79661.34172
-  tps: 77114.17542
+  dps: 79363.19357
+  tps: 76804.29882
  }
 }
 dps_results: {
  key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 133079.01861
-  tps: 124414.19087
+  dps: 133117.41346
+  tps: 124434.10302
  }
 }
 dps_results: {
  key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 89919.25989
-  tps: 88537.37217
+  dps: 86482.47422
+  tps: 85139.41683
  }
 }
 dps_results: {
  key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 54534.12885
-  tps: 53146.42064
+  dps: 53973.01749
+  tps: 52581.53184
  }
 }
 dps_results: {
  key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 64206.92024
-  tps: 60834.95806
+  dps: 63718.1056
+  tps: 60346.04158
  }
 }
 dps_results: {
