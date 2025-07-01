@@ -21,28 +21,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSubtletyRogue, {
 	knownIssues: [],
 
 	// All stats for which EP should be calculated.
-	epStats: [
-		Stat.StatAgility,
-		Stat.StatHitRating,
-		Stat.StatCritRating,
-		Stat.StatHasteRating,
-		Stat.StatMasteryRating,
-		Stat.StatExpertiseRating,
-	],
-	epPseudoStats: [
-		PseudoStat.PseudoStatMainHandDps,
-		PseudoStat.PseudoStatOffHandDps,
-	],
+	epStats: [Stat.StatAgility, Stat.StatHitRating, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating, Stat.StatExpertiseRating],
+	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps],
 	// Reference stat against which to calculate EP.
 	epReferenceStat: Stat.StatAgility,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatHealth, Stat.StatStamina, Stat.StatAgility, Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
-		[
-			PseudoStat.PseudoStatPhysicalHitPercent,
-			PseudoStat.PseudoStatPhysicalCritPercent,
-			PseudoStat.PseudoStatMeleeHastePercent,
-		],
+		[PseudoStat.PseudoStatPhysicalHitPercent, PseudoStat.PseudoStatPhysicalCritPercent, PseudoStat.PseudoStatMeleeHastePercent],
 	),
 
 	defaults: {
@@ -96,49 +82,28 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSubtletyRogue, {
 	playerIconInputs: [RogueInputs.LethalPoison()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
 	includeBuffDebuffInputs: [
-		BuffDebuffInputs.CritBuff, 
+		BuffDebuffInputs.CritBuff,
 		BuffDebuffInputs.AttackPowerBuff,
 		BuffDebuffInputs.MasteryBuff,
 		BuffDebuffInputs.StatsBuff,
 		BuffDebuffInputs.AttackSpeedBuff,
-		
+
 		BuffDebuffInputs.MajorHasteBuff,
 		BuffDebuffInputs.StormLashTotem,
 		BuffDebuffInputs.Skullbanner,
 		BuffDebuffInputs.ShatteringThrow,
 		BuffDebuffInputs.TricksOfTheTrade,
 
-		BuffDebuffInputs.SpellDamageDebuff, 
-		BuffDebuffInputs.MajorArmorDebuff, 
-		BuffDebuffInputs.PhysicalDamageDebuff
+		BuffDebuffInputs.SpellDamageDebuff,
+		BuffDebuffInputs.MajorArmorDebuff,
+		BuffDebuffInputs.PhysicalDamageDebuff,
 	],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [
-			SubInputs.HonorAmongThievesCritRate,
-			OtherInputs.InFrontOfTarget,
-			OtherInputs.InputDelay,
-		],
+		inputs: [SubInputs.HonorAmongThievesCritRate, OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotHead,
-		ItemSlot.ItemSlotNeck,
-		ItemSlot.ItemSlotShoulder,
-		ItemSlot.ItemSlotBack,
-		ItemSlot.ItemSlotChest,
-		ItemSlot.ItemSlotWrist,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotWaist,
-		ItemSlot.ItemSlotLegs,
-		ItemSlot.ItemSlotFeet,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotMainHand,
-		ItemSlot.ItemSlotOffHand,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: false,
@@ -201,14 +166,14 @@ export class SubtletyRogueSimUI extends IndividualSimUI<Spec.SpecSubtletyRogue> 
 		this.player.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
 			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
+				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 			}
 			this.player.setSpecOptions(c, options);
 		});
 		this.sim.encounter.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
 			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
+				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 			}
 			this.player.setSpecOptions(c, options);
 		});

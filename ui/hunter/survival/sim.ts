@@ -5,10 +5,8 @@ import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLAction, APLListItem, APLRotation } from '../../core/proto/apl';
-import { Cooldowns, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { SurvivalHunter_Rotation } from '../../core/proto/hunter';
-import * as AplUtils from '../../core/proto_utils/apl_utils';
+import { APLRotation } from '../../core/proto/apl';
+import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as HunterInputs from '../inputs';
 import { sharedHunterDisplayStatsModifiers } from '../shared';
@@ -43,14 +41,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 	modifyDisplayStats: (player: Player<Spec.SpecSurvivalHunter>) => {
 		return sharedHunterDisplayStatsModifiers(player);
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotMainHand,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_PRESET_GEAR.gear,
@@ -119,7 +110,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 		gear: [Presets.PRERAID_PRESET_GEAR, Presets.PRERAID_CELESTIAL_PRESET_GEAR, Presets.P1_PRESET_GEAR],
 	},
 
-	autoRotation: (player: Player<Spec.SpecSurvivalHunter>): APLRotation => {
+	autoRotation: (_: Player<Spec.SpecSurvivalHunter>): APLRotation => {
 		return Presets.ROTATION_PRESET_SV.rotation.rotation!;
 	},
 
@@ -154,7 +145,7 @@ export class SurvivalHunterSimUI extends IndividualSimUI<Spec.SpecSurvivalHunter
 
 		player.sim.waitForInit().then(() => {
 			new ReforgeOptimizer(this, {
-				getEPDefaults: (player: Player<Spec.SpecSurvivalHunter>) => {
+				getEPDefaults: (_: Player<Spec.SpecSurvivalHunter>) => {
 					return Presets.P1_EP_PRESET.epWeights;
 				},
 			});

@@ -5,23 +5,8 @@ import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLAction, APLListItem, APLRotation } from '../../core/proto/apl';
-import {
-	Cooldowns,
-	Debuffs,
-	Faction,
-	IndividualBuffs,
-	ItemSlot,
-	PartyBuffs,
-	PseudoStat,
-	Race,
-	RaidBuffs,
-	RotationType,
-	Spec,
-	Stat,
-} from '../../core/proto/common';
-import { BeastMasteryHunter_Rotation, HunterStingType } from '../../core/proto/hunter';
-import * as AplUtils from '../../core/proto_utils/apl_utils';
+import { APLRotation } from '../../core/proto/apl';
+import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as HunterInputs from '../inputs';
 import { sharedHunterDisplayStatsModifiers } from '../shared';
@@ -56,14 +41,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 	modifyDisplayStats: (player: Player<Spec.SpecBeastMasteryHunter>) => {
 		return sharedHunterDisplayStatsModifiers(player);
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotMainHand,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_PRESET_GEAR.gear,
@@ -132,7 +110,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 		gear: [Presets.PRERAID_PRESET_GEAR, Presets.PRERAID_CELESTIAL_PRESET_GEAR, Presets.P1_PRESET_GEAR],
 	},
 
-	autoRotation: (player: Player<Spec.SpecBeastMasteryHunter>): APLRotation => {
+	autoRotation: (_: Player<Spec.SpecBeastMasteryHunter>): APLRotation => {
 		return Presets.ROTATION_PRESET_BM.rotation.rotation!;
 	},
 
@@ -168,7 +146,7 @@ export class BeastMasteryHunterSimUI extends IndividualSimUI<Spec.SpecBeastMaste
 
 		player.sim.waitForInit().then(() => {
 			new ReforgeOptimizer(this, {
-				getEPDefaults: (player: Player<Spec.SpecFuryWarrior>) => {
+				getEPDefaults: (_: Player<Spec.SpecFuryWarrior>) => {
 					return Presets.P1_EP_PRESET.epWeights;
 				},
 			});
