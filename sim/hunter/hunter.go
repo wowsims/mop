@@ -36,6 +36,8 @@ type Hunter struct {
 	ExplosiveShot        *core.Spell
 	ImprovedSerpentSting *core.Spell
 
+	ThrillOfTheHuntAura *core.Aura
+
 	// Fake spells to encapsulate weaving logic.
 	HuntersMarkSpell *core.Spell
 }
@@ -216,7 +218,11 @@ func (hunter *Hunter) Reset(_ *core.Simulation) {
 	hunter.mayMoveAt = 0
 }
 
-func (hunter *Hunter) OnEncounterStart(_ *core.Simulation) {
+func (hunter *Hunter) OnEncounterStart(sim *core.Simulation) {
+	hunter.DeactivateAuras(sim)
+}
+
+func (hunter *Hunter) DeactivateAuras(sim *core.Simulation) {
 }
 
 const (

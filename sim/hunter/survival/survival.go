@@ -71,6 +71,8 @@ func NewSurvivalHunter(character *core.Character, options *proto.Player) *Surviv
 
 type SurvivalHunter struct {
 	*hunter.Hunter
+
+	LockAndLoadAura *core.Aura
 }
 
 func (svHunter *SurvivalHunter) GetHunter() *hunter.Hunter {
@@ -79,4 +81,9 @@ func (svHunter *SurvivalHunter) GetHunter() *hunter.Hunter {
 
 func (svHunter *SurvivalHunter) Reset(sim *core.Simulation) {
 	svHunter.Hunter.Reset(sim)
+}
+
+func (svHunter *SurvivalHunter) OnEncounterStart(sim *core.Simulation) {
+	svHunter.LockAndLoadAura.Deactivate(sim)
+	svHunter.Hunter.OnEncounterStart(sim)
 }
