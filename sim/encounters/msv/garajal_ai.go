@@ -50,7 +50,7 @@ func createGarajalHeroicPreset(raidPrefix string, raidSize int32, bossHealth flo
 	targetPathNames := []string{raidPrefix + "/" + bossName}
 
 	for addIdx := int32(1); addIdx <= 3; addIdx++ {
-		currentAddName := addName + fmt.Sprint(" - %d", addIdx)
+		currentAddName := addName + fmt.Sprintf(" - %d", addIdx)
 
 		core.AddPresetTarget(&core.PresetTarget{
 			PathPrefix: raidPrefix,
