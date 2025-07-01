@@ -653,7 +653,7 @@ func (dk *DeathKnight) registerBloodTap() {
 		return
 	}
 
-	bloodChargeAura := dk.RegisterAura(core.Aura{
+	dk.BloodChargeAura = dk.RegisterAura(core.Aura{
 		Label:     "Blood Charge" + dk.Label,
 		ActionID:  core.ActionID{SpellID: 114851},
 		Duration:  time.Second * 25,
@@ -676,12 +676,12 @@ func (dk *DeathKnight) registerBloodTap() {
 		ClassSpellMask: DeathKnightSpellBloodTap,
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return bloodChargeAura.GetStacks() >= 5 && dk.AnyDepletedRunes()
+			return dk.BloodChargeAura.GetStacks() >= 5 && dk.AnyDepletedRunes()
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			if dk.ConvertAndRegenBloodTapRune(sim, spell, runeMetrics) {
-				bloodChargeAura.RemoveStacks(sim, 5)
+				dk.BloodChargeAura.RemoveStacks(sim, 5)
 			}
 		},
 	})
@@ -694,8 +694,8 @@ func (dk *DeathKnight) registerBloodTap() {
 		Outcome:        core.OutcomeLanded,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			bloodChargeAura.Activate(sim)
-			bloodChargeAura.AddStacks(sim, 2)
+			dk.BloodChargeAura.Activate(sim)
+			dk.BloodChargeAura.AddStacks(sim, 2)
 		},
 	})
 }
@@ -749,8 +749,8 @@ func (dk *DeathKnight) registerRunicCorruption() {
 	duration := time.Second * 3
 	multi := 2.0
 	// Runic Corruption gives rune regen speed
-	regenAura := dk.GetOrRegisterAura(core.Aura{
-		Label:    "Runic Corruption",
+	dk.RunicCorruptionAura = dk.GetOrRegisterAura(core.Aura{
+		Label:    "Runic Corruption" + dk.Label,
 		ActionID: core.ActionID{SpellID: 51460},
 		Duration: duration,
 
@@ -772,15 +772,15 @@ func (dk *DeathKnight) registerRunicCorruption() {
 
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			hasteMultiplier := 1.0 + dk.GetStat(stats.HasteRating)/(100*core.HasteRatingPerHastePercent)
-			if regenAura.IsActive() {
+			if dk.RunicCorruptionAura.IsActive() {
 				totalMultiplier := 1 / (hasteMultiplier * (dk.GetRuneRegenMultiplier() / multi))
 				hastedDuration := core.DurationFromSeconds(duration.Seconds() * totalMultiplier)
-				regenAura.UpdateExpires(regenAura.ExpiresAt() + hastedDuration)
+				dk.RunicCorruptionAura.UpdateExpires(dk.RunicCorruptionAura.ExpiresAt() + hastedDuration)
 			} else {
 				totalMultiplier := 1 / (hasteMultiplier * dk.GetRuneRegenMultiplier())
 				hastedDuration := core.DurationFromSeconds(duration.Seconds() * totalMultiplier)
-				regenAura.Duration = hastedDuration
-				regenAura.Activate(sim)
+				dk.RunicCorruptionAura.Duration = hastedDuration
+				dk.RunicCorruptionAura.Activate(sim)
 			}
 		},
 	})

@@ -27,6 +27,10 @@ func RegisterUnholyDeathKnight() {
 type UnholyDeathKnight struct {
 	*death_knight.DeathKnight
 
+	Gargoyle *GargoylePet
+
+	SuddenDoomAura *core.Aura
+
 	lastScourgeStrikeDamage float64
 }
 
@@ -77,4 +81,11 @@ func (uhdk *UnholyDeathKnight) ApplyTalents() {
 
 func (uhdk *UnholyDeathKnight) Reset(sim *core.Simulation) {
 	uhdk.DeathKnight.Reset(sim)
+}
+
+func (uhdk *UnholyDeathKnight) OnEncounterStart(sim *core.Simulation) {
+	uhdk.SuddenDoomAura.Deactivate(sim)
+	uhdk.Ghoul.DarkTransformationAura.Deactivate(sim)
+	uhdk.Ghoul.ShadowInfusionAura.Deactivate(sim)
+	uhdk.DeathKnight.OnEncounterStart(sim)
 }

@@ -21,8 +21,7 @@ func (bdk *BloodDeathKnight) registerScentOfBlood() {
 		ClassMask: death_knight.DeathKnightSpellDeathStrikeHeal,
 	})
 
-	var scentOfBloodAura *core.Aura
-	scentOfBloodAura = bdk.RegisterAura(core.Aura{
+	bdk.ScentOfBloodAura = bdk.RegisterAura(core.Aura{
 		Label:     "Scent of Blood" + bdk.Label,
 		ActionID:  actionID,
 		Duration:  time.Second * 20,
@@ -42,7 +41,7 @@ func (bdk *BloodDeathKnight) registerScentOfBlood() {
 		ClassSpellMask: death_knight.DeathKnightSpellDeathStrike,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			scentOfBloodAura.Deactivate(sim)
+			bdk.ScentOfBloodAura.Deactivate(sim)
 		},
 	})
 
@@ -66,8 +65,8 @@ func (bdk *BloodDeathKnight) registerScentOfBlood() {
 			bdk.AddRunicPower(sim, 10.0, rpMetrics)
 		}
 
-		scentOfBloodAura.Activate(sim)
-		scentOfBloodAura.AddStack(sim)
+		bdk.ScentOfBloodAura.Activate(sim)
+		bdk.ScentOfBloodAura.AddStack(sim)
 	}
 
 	core.MakeProcTriggerAura(&bdk.Unit, core.ProcTrigger{

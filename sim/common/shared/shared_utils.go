@@ -791,7 +791,7 @@ func (versions ItemVersionMap) RegisterAll(fac ItemVersionFactory) {
 	core.AddEffectsToTest = true
 }
 
-func RegisterRiposteEffect(character *core.Character, auraSpellID int32, triggerSpellID int32) {
+func RegisterRiposteEffect(character *core.Character, auraSpellID int32, triggerSpellID int32) *core.Aura {
 	riposteAura := character.RegisterAura(core.Aura{
 		Label:     "Riposte" + character.Label,
 		ActionID:  core.ActionID{SpellID: auraSpellID},
@@ -816,4 +816,6 @@ func RegisterRiposteEffect(character *core.Character, auraSpellID int32, trigger
 			riposteAura.SetStacks(sim, int32(bonusCrit))
 		},
 	})
+
+	return riposteAura
 }

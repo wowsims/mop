@@ -723,7 +723,7 @@ func (aura *Aura) Activate(sim *Simulation) {
 
 // Remove an aura by its ID
 func (aura *Aura) Deactivate(sim *Simulation) {
-	if !aura.active {
+	if !aura.IsActive() {
 		return
 	}
 	aura.active = false
@@ -1002,7 +1002,7 @@ func (auras AuraArray) ActivateAll(sim *Simulation) {
 }
 
 func (auras AuraArray) ApplyOnExpire(onExpire OnExpire) {
-	for _, aura := range auras{
+	for _, aura := range auras {
 		if aura != nil {
 			aura.ApplyOnExpire(onExpire)
 		}

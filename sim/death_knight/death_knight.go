@@ -33,32 +33,29 @@ type DeathKnight struct {
 
 	// Pets
 	Ghoul           *GhoulPet
-	Gargoyle        *GargoylePet
 	ArmyGhoul       []*GhoulPet
 	FallenZandalari []*GhoulPet
 	AllGhoulPets    []*GhoulPet
 	RuneWeapon      *RuneWeaponPet
-	Bloodworm       []*BloodwormPet
 
 	BloodPresenceSpell  *core.Spell
 	FrostPresenceSpell  *core.Spell
 	UnholyPresenceSpell *core.Spell
 
 	PestilenceSpell *core.Spell
-	RuneTapSpell    *core.Spell
 
-	ConversionAura             *core.Aura
-	MightOfTheFrozenWastesAura *core.Aura
-	ThreatOfThassarianAura     *core.Aura
-	BoneShieldAura             *core.Aura
-	BoneWallAura               *core.Aura
-	PillarOfFrostAura          *core.Aura
-	RaiseDeadAura              *core.Aura
+	BloodChargeAura        *core.Aura
+	BoneShieldAura         *core.Aura
+	BoneWallAura           *core.Aura
+	ConversionAura         *core.Aura
+	PillarOfFrostAura      *core.Aura
+	RaiseDeadAura          *core.Aura
+	RunicCorruptionAura    *core.Aura
+	ThreatOfThassarianAura *core.Aura
 
 	// Diseases
 	FrostFeverSpell  *core.Spell
 	BloodPlagueSpell *core.Spell
-	ScarletFeverAura core.AuraArray
 
 	// Runic power decay, used during pre pull
 	RunicPowerDecayAura *core.Aura
@@ -117,6 +114,15 @@ func (dk *DeathKnight) Reset(sim *core.Simulation) {
 
 func (dk *DeathKnight) OnEncounterStart(sim *core.Simulation) {
 	dk.ResetRunicPowerBar(sim)
+	dk.DeactivateAuras(sim)
+}
+
+func (dk *DeathKnight) DeactivateAuras(sim *core.Simulation) {
+	dk.BloodChargeAura.Deactivate(sim)
+	dk.RunicCorruptionAura.Deactivate(sim)
+	if cinderAura := dk.GetAura("Cinderglacier"); cinderAura != nil {
+		cinderAura.Deactivate(sim)
+	}
 }
 
 func (dk *DeathKnight) HasMajorGlyph(glyph proto.DeathKnightMajorGlyph) bool {

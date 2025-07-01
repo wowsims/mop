@@ -12,8 +12,7 @@ Your Obliterate has a 45% chance to cause your next Howling Blast or Icy Touch t
 (Proc chance: 45%)
 */
 func (fdk *FrostDeathKnight) registerRime() {
-	var freezingFogAura *core.Aura
-	freezingFogAura = fdk.GetOrRegisterAura(core.Aura{
+	fdk.FreezingFogAura = fdk.GetOrRegisterAura(core.Aura{
 		Label:    "Freezing Fog" + fdk.Label,
 		ActionID: core.ActionID{SpellID: 59052},
 		Duration: time.Second * 15,
@@ -26,7 +25,7 @@ func (fdk *FrostDeathKnight) registerRime() {
 		},
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			freezingFogAura.Deactivate(sim)
+			fdk.FreezingFogAura.Deactivate(sim)
 		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
@@ -44,7 +43,7 @@ func (fdk *FrostDeathKnight) registerRime() {
 		ProcChance:     0.45,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			freezingFogAura.Activate(sim)
+			fdk.FreezingFogAura.Activate(sim)
 		},
 	})
 }
