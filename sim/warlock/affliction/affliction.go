@@ -110,8 +110,7 @@ func (affliction *AfflictionWarlock) OnEncounterStart(sim *core.Simulation) {
 		defaultShards -= 1
 	}
 
-	affliction.SoulShards.SetDefault(defaultShards)
-	affliction.SoulShards.Reset(sim)
+	affliction.SoulShards.ResetBarTo(sim, defaultShards)
 	affliction.SoulSwapInhaleAura.Deactivate(sim)
 	affliction.Warlock.OnEncounterStart(sim)
 }
