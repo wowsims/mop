@@ -151,7 +151,8 @@ type Spell struct {
 	// Adds a fixed amount of threat to this spell, before multipliers.
 	FlatThreatBonus float64
 
-	resultCache SpellResult
+	resultCache SpellResultCache
+	resultSlice SpellResultSlice
 
 	dots   DotArray
 	aoeDot *Dot
@@ -257,6 +258,9 @@ func (unit *Unit) RegisterSpell(config SpellConfig) *Spell {
 		charges:      config.Charges,
 		MaxCharges:   config.Charges,
 		RechargeTime: config.RechargeTime,
+
+		resultCache: make(SpellResultCache, 1),
+		resultSlice: make(SpellResultSlice, 0, 1),
 	}
 
 	switch {
@@ -427,6 +431,28 @@ func (spell *Spell) SelfShield() *Shield {
 	return spell.selfShield
 }
 
+func (spell *Spell) ApplyAllDots(sim *Simulation) {
+	for _, target := range sim.Encounter.ActiveTargetUnits {
+		spell.Dot(target).Apply(sim)
+	}
+}
+
+func (spell *Spell) TickAllDotsOnce(sim *Simulation) {
+	for _, target := range sim.Encounter.ActiveTargetUnits {
+		spell.Dot(target).TickOnce(sim)
+	}
+}
+
+func (spell *Spell) AnyDotsActive(sim *Simulation) bool {
+	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
+		if spell.Dot(aoeTarget).IsActive() {
+			return true
+		}
+	}
+
+	return false
+}
+
 // Metrics for the current iteration
 func (spell *Spell) CurDamagePerCast() float64 {
 	if spell.SpellMetrics[0].Casts == 0 {
@@ -434,7 +460,7 @@ func (spell *Spell) CurDamagePerCast() float64 {
 	} else {
 		casts := int32(0)
 		damage := 0.0
-		for _, opponent := range spell.Unit.GetOpponents() {
+		for _, opponent := range spell.Unit.GetAllOpponents() {
 			casts += spell.SpellMetrics[opponent.UnitIndex].Casts
 			damage += spell.SpellMetrics[opponent.UnitIndex].TotalDamage
 		}
@@ -548,6 +574,10 @@ func (spell *Spell) CanCast(sim *Simulation, target *Unit) bool {
 		return false
 	}
 
+	if !target.IsEnabled() {
+		return false
+	}
+
 	if spell.Flags.Matches(SpellFlagSwapped) {
 		//if sim.Log != nil {
 		//	sim.Log("Cant cast because of item swap")
@@ -619,6 +649,14 @@ func (spell *Spell) Cast(sim *Simulation, target *Unit) bool {
 	return spell.castFn(sim, target)
 }
 
+func (spell *Spell) CastOnAllOtherTargets(sim *Simulation, mainTarget *Unit) {
+	for _, target := range sim.Encounter.ActiveTargetUnits {
+		if target != mainTarget {
+			spell.Cast(sim, target)
+		}
+	}
+}
+
 // Skips the actual cast and applies spell effects immediately.
 func (spell *Spell) SkipCastAndApplyEffects(sim *Simulation, target *Unit) {
 	if sim.Log != nil && !spell.Flags.Matches(SpellFlagNoLogs) {
@@ -644,9 +682,8 @@ func (spell *Spell) applyEffects(sim *Simulation, target *Unit) {
 }
 
 func (spell *Spell) ApplyAOEThreatIgnoreMultipliers(threatAmount float64) {
-	numTargets := spell.Unit.Env.GetNumTargets()
-	for i := int32(0); i < numTargets; i++ {
-		spell.SpellMetrics[i].TotalThreat += threatAmount
+	for _, target := range spell.Unit.Env.GetActiveTargetUnits() {
+		spell.SpellMetrics[target.UnitIndex].TotalThreat += threatAmount
 	}
 }
 func (spell *Spell) ApplyAOEThreat(threatAmount float64) {

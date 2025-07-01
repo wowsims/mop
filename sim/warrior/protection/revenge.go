@@ -36,27 +36,15 @@ func (war *ProtectionWarrior) registerRevenge() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			chainMultiplier := 1.0
-			aoeTarget := target
-			hitLanded := false
 
-			for idx := range war.Env.GetNumTargets() {
-				if idx >= 3 {
-					break
-				}
+			results := spell.CalcAndDealCleaveDamageWithVariance(sim, target, 3, spell.OutcomeMeleeSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
 				baseDamage := chainMultiplier * (war.CalcAndRollDamageRange(sim, 7.5, 0.20000000298) + spell.MeleeAttackPower()*0.63999998569)
-				result := spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 				chainMultiplier *= 0.5
-				war.Env.NextTargetUnit(aoeTarget)
+				return baseDamage
+			})
 
-				if result.Landed() && !hitLanded {
-					hitLanded = true
-				}
-			}
-
-			if hitLanded {
-				if war.StanceMatches(warrior.DefensiveStance) {
-					war.AddRage(sim, 20*war.GetRageMultiplier(target), rageMetrics)
-				}
+			if (results.NumLandedHits() > 0) && war.StanceMatches(warrior.DefensiveStance) {
+				war.AddRage(sim, 20*war.GetRageMultiplier(target), rageMetrics)
 			}
 		},
 	})

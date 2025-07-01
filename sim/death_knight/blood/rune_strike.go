@@ -16,7 +16,7 @@ func (bdk *BloodDeathKnight) registerRuneStrike() {
 		ActionID:       RuneStrikeActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMH, // Rune Strike triggers white hit procs as well so we give it both masks.
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellRuneStrike,
 
 		MaxRange: core.MaxMeleeRange,

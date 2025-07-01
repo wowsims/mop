@@ -6,7 +6,7 @@ import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common.js';
-import { Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import * as ShamanInputs from '../inputs.js';
 import * as ElementalInputs from './inputs.js';
 import * as Presets from './presets.js';
@@ -27,8 +27,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating],
 		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
-	gemStats: [Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatHitRating, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating, Stat.StatExpertiseRating],
-
+	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_PRESET.gear,
@@ -104,8 +103,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	autoRotation: (_player: Player<Spec.SpecElementalShaman>): APLRotation => {
 		const numTargets = _player.sim.encounter.targets.length;
 
-		if (numTargets>2) return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
-		if (numTargets==2) return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;
+		if (numTargets > 2) return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
+		if (numTargets == 2) return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;
 
 		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},

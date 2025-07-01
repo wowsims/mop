@@ -16,7 +16,7 @@ func (uhdk *UnholyDeathKnight) registerBloodStrike() {
 		ActionID:       BloodStrikeActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellBloodStrike,
 
 		MaxRange: core.MaxMeleeRange,

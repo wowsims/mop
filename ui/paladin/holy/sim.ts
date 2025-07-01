@@ -4,7 +4,7 @@ import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
-import { UnitStat } from '../../core/proto_utils/stats.js';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats.js';
 import * as HolyInputs from '../../paladin/holy/inputs.js';
 import * as PaladinInputs from '../inputs.js';
 import * as Presets from './presets.js';
@@ -24,6 +24,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 		[Stat.StatHealth, Stat.StatMana, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating, Stat.StatArmor, Stat.StatStamina],
 		[PseudoStat.PseudoStatSpellHastePercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHitPercent],
 	),
+	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
+
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_GEAR_PRESET.gear,

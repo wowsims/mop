@@ -27,13 +27,13 @@ func (hunter *Hunter) registerGlaiveTossSpell() {
 			BonusCoefficient:         1,
 
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				numTargets := hunter.Env.GetNumTargets()
+				numTargets := hunter.Env.ActiveTargetCount()
 				sharedDmg := spell.RangedAttackPower()*0.2 + hunter.CalcAndRollDamageRange(sim, 0.7, 1)
 				successChance := hunter.Options.GlaiveTossSuccess / 100.0
 
 				runPass := func(skipPrimary bool) {
 					for i := int32(0); i < numTargets; i++ {
-						unit := hunter.Env.GetTargetUnit(i)
+						unit := sim.Encounter.ActiveTargetUnits[i]
 
 						// skip the main target on return
 						if skipPrimary && unit == target {

@@ -35,7 +35,7 @@ func (bm *BrewmasterMonk) registerDizzyingHaze() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			spell.ApplyAOEThreat(spell.MeleeAttackPower() * 1.1)
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				result := spell.CalcOutcome(sim, target, spell.OutcomeMeleeSpecialNoBlockDodgeParryNoCrit)
 				if result.Landed() {
 					bm.DizzyingHazeAuras.Get(aoeTarget).Activate(sim)

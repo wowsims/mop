@@ -52,7 +52,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		ProcMask: core.ProcMaskMelee,
 		Outcome:  core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if war.Env.GetNumTargets() < 2 || result.PreOutcomeDamage <= 0 ||
+			if war.Env.ActiveTargetCount() < 2 || result.PreOutcomeDamage <= 0 ||
 				spell.Matches(warrior.SpellMaskSweepingStrikesHit|
 					warrior.SpellMaskSweepingStrikesNormalizedHit|
 					warrior.SpellMaskSweepingSlam|
@@ -68,7 +68,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 
 			copyDamage = result.PreOutcomeDamage
 
-			hitSpell.Cast(sim, war.Env.NextTargetUnit(result.Target))
+			hitSpell.Cast(sim, war.Env.NextActiveTargetUnit(result.Target))
 		},
 	})
 
@@ -96,7 +96,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		Spell: spell,
 		Type:  core.CooldownTypeDPS,
 		ShouldActivate: func(sim *core.Simulation, character *core.Character) bool {
-			return character.Env.GetNumTargets() > 1
+			return character.Env.ActiveTargetCount() > 1
 		},
 	})
 }

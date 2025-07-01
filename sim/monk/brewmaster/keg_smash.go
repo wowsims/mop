@@ -10,7 +10,6 @@ import (
 func (bm *BrewmasterMonk) registerKegSmash() {
 	actionID := core.ActionID{SpellID: 121253}
 	chiMetrics := bm.NewChiMetrics(actionID)
-	results := make([]*core.SpellResult, bm.Env.GetNumTargets())
 
 	bm.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -45,24 +44,21 @@ func (bm *BrewmasterMonk) registerKegSmash() {
 			return bm.StanceMatches(monk.SturdyOx)
 		},
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			results := spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMeleeSpecialHitAndCrit, bm.CalculateMonkStrikeDamage)
 			missedTargets := 0
-			for i, enemyTarget := range sim.Encounter.TargetUnits {
-				baseDamage := bm.CalculateMonkStrikeDamage(sim, spell)
-				result := spell.CalcDamage(sim, enemyTarget, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-				results[i] = result
-				if !result.Landed() {
-					missedTargets++
-				}
-			}
-			spell.WaitTravelTime(sim, func(s *core.Simulation) {
+
+			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
 				for _, result := range results {
 					spell.DealOutcome(sim, result)
 					if result.Landed() {
 						bm.DizzyingHazeAuras.Get(result.Target).Activate(sim)
+					} else {
+						missedTargets++
 					}
 				}
-				if missedTargets > 0 && missedTargets == len(sim.Encounter.TargetUnits) {
+
+				if (missedTargets > 0) && (missedTargets == len(results)) {
 					spell.IssueRefund(sim)
 				} else {
 					bm.AddChi(sim, spell, 2, chiMetrics)
