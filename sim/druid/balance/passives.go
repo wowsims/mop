@@ -25,7 +25,7 @@ func (moonkin *BalanceDruid) RegisterBalancePassives() {
 func (moonkin *BalanceDruid) registerMoonkinForm() {
 	moonkin.AddStaticMod(core.SpellModConfig{
 		School:     core.SpellSchoolArcane | core.SpellSchoolNature,
-		FloatValue: 0.2,
+		FloatValue: 0.3,
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})
 
