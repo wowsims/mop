@@ -439,43 +439,43 @@ dps_results: {
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis_rich-Basic-frost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 201068.68992
-  tps: 102784.80096
+  dps: 200061.45667
+  tps: 101949.71164
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis_rich-Basic-frost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 95838.81434
-  tps: 65857.68935
+  dps: 95120.07592
+  tps: 64954.82789
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis_rich-Basic-frost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 136091.60487
-  tps: 93383.93615
+  dps: 134838.44464
+  tps: 92020.60103
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis_rich-Basic-frost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 153478.4412
-  tps: 77862.69284
+  dps: 153560.88169
+  tps: 77630.27303
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis_rich-Basic-frost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 68280.66517
-  tps: 49186.56009
+  dps: 68082.37579
+  tps: 48758.41817
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis_rich-Basic-frost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 75607.38064
-  tps: 54865.26135
+  dps: 75321.43775
+  tps: 54226.47376
  }
 }
 dps_results: {
@@ -523,43 +523,43 @@ dps_results: {
 dps_results: {
  key: "TestFrost-Settings-Troll-p1_prebis_rich-Basic-frost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 195814.66747
-  tps: 102787.66892
+  dps: 194734.63134
+  tps: 101337.13936
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Troll-p1_prebis_rich-Basic-frost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 94886.15826
-  tps: 65681.87891
+  dps: 94023.56453
+  tps: 64520.92306
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Troll-p1_prebis_rich-Basic-frost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 134895.43366
-  tps: 93120.93992
+  dps: 134807.4632
+  tps: 92530.05301
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Troll-p1_prebis_rich-Basic-frost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 148707.59716
-  tps: 78138.9528
+  dps: 147902.79939
+  tps: 77229.75814
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Troll-p1_prebis_rich-Basic-frost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 67600.94383
-  tps: 48954.30168
+  dps: 67217.51438
+  tps: 48334.26113
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Troll-p1_prebis_rich-Basic-frost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 74875.42794
-  tps: 54722.59169
+  dps: 74673.01389
+  tps: 54148.13236
  }
 }
 dps_results: {

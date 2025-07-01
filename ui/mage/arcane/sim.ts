@@ -103,7 +103,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.ArcaneTalents],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS_PRESET, Presets.P1_BIS_PRESET],
+		gear: [Presets.PREBIS_PRESET, Presets.P1_BIS_PRESET, Presets.RICH_PREBIS_PRESET],
 	},
 
 	autoRotation: (player: Player<Spec.SpecArcaneMage>): APLRotation => {
@@ -119,7 +119,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 			otherDefaults: Presets.OtherDefaults,
 			defaultFactionRaces: {
 				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
+				[Faction.Alliance]: Race.RaceAlliancePandaren,
 				[Faction.Horde]: Race.RaceTroll,
 			},
 			defaultGear: {

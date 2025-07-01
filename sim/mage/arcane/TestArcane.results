@@ -439,43 +439,43 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Arcane-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 18180.82629
-  tps: 21213.18239
+  dps: 153107.60857
+  tps: 155031.54976
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Arcane-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 11837.00353
-  tps: 11440.66731
+  dps: 97246.38023
+  tps: 95502.34369
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Arcane-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 21769.55221
-  tps: 20457.34728
+  dps: 141168.99481
+  tps: 135568.24284
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Arcane-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 6162.12243
-  tps: 8752.72235
+  dps: 109506.81118
+  tps: 111705.72068
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Arcane-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 3991.27177
-  tps: 3765.79374
+  dps: 69217.7987
+  tps: 68199.80597
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Arcane-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 6070.01734
-  tps: 5574.80575
+  dps: 81364.55533
+  tps: 78984.98437
  }
 }
 dps_results: {
@@ -523,43 +523,43 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Arcane-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 17379.62214
-  tps: 20640.55661
+  dps: 154649.36968
+  tps: 156581.78992
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Arcane-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 11122.6551
-  tps: 10757.46449
+  dps: 98600.9881
+  tps: 96940.39852
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Arcane-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 20107.32993
-  tps: 19052.37029
+  dps: 144509.10079
+  tps: 139126.69833
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Arcane-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 4957.67445
-  tps: 7787.23301
+  dps: 109807.34999
+  tps: 112086.25885
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Arcane-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 3170.98601
-  tps: 2981.7705
+  dps: 70318.17541
+  tps: 69389.73626
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Arcane-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 4105.37228
-  tps: 3658.91774
+  dps: 84360.046
+  tps: 82088.29355
  }
 }
 dps_results: {
