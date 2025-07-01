@@ -62,44 +62,30 @@ func (mw *MistweaverMonk) registerSerpentsZeal() {
 }
 
 func (mw *MistweaverMonk) registerMuscleMemory() {
-	registerMuscleMemoryAuraAndTrigger := func(labelSuffix string, spellID int32, triggerSpellMask int64) *core.Aura {
-		aura := mw.RegisterAura(core.Aura{
-			Label:    fmt.Sprintf("Muscle Memory %s %s", labelSuffix, mw.Label),
-			ActionID: core.ActionID{SpellID: 139597},
-			Duration: time.Second * 15,
 
-			OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-				if !spell.Matches(triggerSpellMask) || !result.Landed() {
-					return
-				}
-				aura.Deactivate(sim)
-			},
-		})
+	mw.MuscleMemoryAura = mw.RegisterAura(core.Aura{
+		Label:    fmt.Sprintf("Muscle Memory %s", mw.Label),
+		ActionID: core.ActionID{SpellID: 139597},
+		Duration: time.Second * 15,
 
-		core.MakeProcTriggerAura(&mw.Unit, core.ProcTrigger{
-			Name:           fmt.Sprintf("Muscle Memory: %s Trigger %s", labelSuffix, mw.Label),
-			Callback:       core.CallbackOnSpellHitDealt,
-			ClassSpellMask: monk.MonkSpellJab,
-			Outcome:        core.OutcomeLanded,
-			ProcChance:     1,
+		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			if (!spell.Matches(100787) && !spell.Matches(100784)) || !result.Landed() {
+				return
+			}
+			aura.Deactivate(sim)
+		},
+	})
 
-			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-				aura.Activate(sim)
-			},
-		})
+	core.MakeProcTriggerAura(&mw.Unit, core.ProcTrigger{
+		Name:           fmt.Sprintf("Muscle Memory: Trigger %s", mw.Label),
+		Callback:       core.CallbackOnSpellHitDealt,
+		ClassSpellMask: monk.MonkSpellJab,
+		Outcome:        core.OutcomeLanded,
+		ProcChance:     1,
 
-		return aura
-	}
+		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			mw.MuscleMemoryAura.Activate(sim)
+		},
+	})
 
-	mw.MuscleMemoryBlackoutKickAura = registerMuscleMemoryAuraAndTrigger(
-		"Blackout Kick",
-		116768,
-		monk.MonkSpellBlackoutKick,
-	)
-
-	mw.MuscleMemoryTigerPalmAura = registerMuscleMemoryAuraAndTrigger(
-		"Tiger Palm",
-		118864,
-		monk.MonkSpellTigerPalm,
-	)
 }

@@ -94,7 +94,7 @@ func (monk *Monk) registerBlackoutKick() {
 					monk.SpendChi(sim, chiCost, chiMetrics)
 				}
 
-				if monk.MuscleMemoryBlackoutKickAura.IsActive() {
+				if monk.MuscleMemoryAura.IsActive() {
 					result.Damage += result.Damage * 1.5
 					monk.AddMana(sim, monk.MaxMana()*0.04, manaMetrics)
 				}
