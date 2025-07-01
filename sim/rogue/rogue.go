@@ -104,9 +104,9 @@ type Rogue struct {
 	SavageCombatDebuffAuras   core.AuraArray
 	WoundPoisonDebuffAuras    core.AuraArray
 
-	Has2PT15       bool
-	T16EnergyAura  *core.Aura
-	T16SpecMod     *core.SpellMod
+	Has2PT15      bool
+	T16EnergyAura *core.Aura
+	T16SpecMod    *core.SpellMod
 
 	ruthlessnessMetrics      *core.ResourceMetrics
 	relentlessStrikesMetrics *core.ResourceMetrics
@@ -238,6 +238,8 @@ func (rogue *Rogue) DeactivateAuras(sim *core.Simulation, keepSliceAndDice bool)
 	if !keepSliceAndDice {
 		rogue.SliceAndDiceAura.Deactivate(sim)
 	}
+	rogue.AnticipationAura.Deactivate(sim)
+	rogue.RecuperateAura.Deactivate(sim)
 }
 
 func (rogue *Rogue) CritMultiplier(applyLethality bool) float64 {

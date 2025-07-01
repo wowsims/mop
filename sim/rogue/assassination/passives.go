@@ -37,7 +37,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		FloatValue: -2,
 	})
 
-	blindsideProc := asnRogue.RegisterAura(core.Aura{
+	asnRogue.BlindsideAura = asnRogue.RegisterAura(core.Aura{
 		Label:    "Blindside",
 		ActionID: core.ActionID{SpellID: 121153},
 		Duration: time.Second * 10,
@@ -64,7 +64,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		ProcChance:     0.3,
 		Outcome:        core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			blindsideProc.Activate(sim)
+			asnRogue.BlindsideAura.Activate(sim)
 		},
 	}))
 }

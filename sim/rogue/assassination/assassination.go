@@ -58,6 +58,8 @@ func NewAssassinationRogue(character *core.Character, options *proto.Player) *As
 
 type AssassinationRogue struct {
 	*rogue.Rogue
+
+	BlindsideAura *core.Aura
 }
 
 func (sinRogue *AssassinationRogue) GetRogue() *rogue.Rogue {
@@ -66,4 +68,9 @@ func (sinRogue *AssassinationRogue) GetRogue() *rogue.Rogue {
 
 func (sinRogue *AssassinationRogue) Reset(sim *core.Simulation) {
 	sinRogue.Rogue.Reset(sim)
+}
+
+func (sinRogue *AssassinationRogue) OnEncounterStart(sim *core.Simulation) {
+	sinRogue.BlindsideAura.Deactivate(sim)
+	sinRogue.Rogue.OnEncounterStart(sim)
 }
