@@ -11,7 +11,7 @@ func (affliction *AfflictionWarlock) registerSoulSwap() {
 	var debuffState map[int32]core.DotState
 	dotRefs := []**core.Spell{&affliction.Corruption, &affliction.Agony, &affliction.Seed, &affliction.UnstableAffliction}
 
-	inhaleBuff := affliction.RegisterAura(core.Aura{
+	affliction.SoulSwapInhaleAura = affliction.RegisterAura(core.Aura{
 		ActionID: core.ActionID{SpellID: 86211},
 		Label:    "Soul Swap",
 		Duration: time.Second * 3,
@@ -35,7 +35,7 @@ func (affliction *AfflictionWarlock) registerSoulSwap() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return inhaleBuff.IsActive() && target != inhaleTarget
+			return affliction.SoulSwapInhaleAura.IsActive() && target != inhaleTarget
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -78,7 +78,7 @@ func (affliction *AfflictionWarlock) registerSoulSwap() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return (anyDoTActive(dotRefs, target) || affliction.SoulBurnAura.IsActive()) && !inhaleBuff.IsActive()
+			return (anyDoTActive(dotRefs, target) || affliction.SoulBurnAura.IsActive()) && !affliction.SoulSwapInhaleAura.IsActive()
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -101,7 +101,7 @@ func (affliction *AfflictionWarlock) registerSoulSwap() {
 				}
 			}
 
-			inhaleBuff.Activate(sim)
+			affliction.SoulSwapInhaleAura.Activate(sim)
 		},
 
 		ExpectedTickDamage: func(sim *core.Simulation, target *core.Unit, spell *core.Spell, useSnapshot bool) *core.SpellResult {

@@ -8,7 +8,7 @@ import (
 )
 
 func (destruction *DestructionWarlock) registerBackdraft() {
-	buff := destruction.RegisterAura(core.Aura{
+	destruction.BackdraftAura = destruction.RegisterAura(core.Aura{
 		Label:     "Backdraft",
 		ActionID:  core.ActionID{SpellID: 117828},
 		Duration:  time.Second * 15,
@@ -40,7 +40,7 @@ func (destruction *DestructionWarlock) registerBackdraft() {
 		ClassMask:  warlock.WarlockSpellChaosBolt,
 	})
 
-	buff.OnStacksChange = func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
+	destruction.BackdraftAura.OnStacksChange = func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
 		if newStacks >= 3 {
 			mod.Activate()
 		} else {
@@ -48,7 +48,7 @@ func (destruction *DestructionWarlock) registerBackdraft() {
 		}
 	}
 
-	buff.ApplyOnExpire(func(aura *core.Aura, sim *core.Simulation) {
+	destruction.BackdraftAura.ApplyOnExpire(func(aura *core.Aura, sim *core.Simulation) {
 		mod.Deactivate()
 	})
 
@@ -57,10 +57,10 @@ func (destruction *DestructionWarlock) registerBackdraft() {
 		ClassSpellMask: warlock.WarlockSpellConflagrate | warlock.WarlockSpellFaBConflagrate,
 		Callback:       core.CallbackOnCastComplete,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			buff.Activate(sim)
+			destruction.BackdraftAura.Activate(sim)
 
 			// always grants 3 stacks
-			buff.SetStacks(sim, buff.GetStacks()+3)
+			destruction.BackdraftAura.SetStacks(sim, destruction.BackdraftAura.GetStacks()+3)
 		},
 	})
 }

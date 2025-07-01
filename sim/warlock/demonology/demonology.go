@@ -47,6 +47,8 @@ type DemonologyWarlock struct {
 	HandOfGuldan  *core.Spell
 	ChaosWave     *core.Spell
 
+	MoltenCoreAura *core.Aura
+
 	Felguard               *warlock.WarlockPet
 	WildImps               []*WildImpPet
 	HandOfGuldanImpactTime time.Duration
@@ -102,6 +104,7 @@ func (demonology *DemonologyWarlock) Reset(sim *core.Simulation) {
 
 func (demonology *DemonologyWarlock) OnEncounterStart(sim *core.Simulation) {
 	demonology.DemonicFury.Reset(sim)
+	demonology.MoltenCoreAura.Deactivate(sim)
 	demonology.Warlock.OnEncounterStart(sim)
 }
 
