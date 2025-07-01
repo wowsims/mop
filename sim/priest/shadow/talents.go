@@ -144,7 +144,7 @@ func (shadow *ShadowPriest) registerTwistOfFate() {
 		FloatValue: 0.15,
 	})
 
-	tofAura := shadow.RegisterAura(core.Aura{
+	shadow.TwistOfFateAura = shadow.RegisterAura(core.Aura{
 		Label:    "Twist of Fate",
 		ActionID: core.ActionID{SpellID: 123254},
 		Duration: time.Second * 10,
@@ -163,12 +163,12 @@ func (shadow *ShadowPriest) registerTwistOfFate() {
 		Label: "Twist of Fate (Talent)",
 		OnPeriodicDamageDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if sim.IsExecutePhase35() {
-				tofAura.Activate(sim)
+				shadow.TwistOfFateAura.Activate(sim)
 			}
 		},
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if sim.IsExecutePhase35() {
-				tofAura.Activate(sim)
+				shadow.TwistOfFateAura.Activate(sim)
 			}
 		},
 	}))
@@ -187,7 +187,7 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 		FloatValue: -2,
 	})
 
-	procAura := shadow.RegisterAura(core.Aura{
+	shadow.DivineInsightAura = shadow.RegisterAura(core.Aura{
 		Label:    "Divine Insight",
 		Duration: time.Second * 12,
 		ActionID: core.ActionID{SpellID: 124430},
@@ -219,7 +219,7 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 			}
 
 			if sim.Proc(0.05, "Divine Insight (Proc)") {
-				procAura.Activate(sim)
+				shadow.DivineInsightAura.Activate(sim)
 			}
 		},
 	}))
