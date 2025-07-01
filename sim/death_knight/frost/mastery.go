@@ -37,9 +37,9 @@ func (fdk *FrostDeathKnight) registerMastery() {
 
 		OnReset: func(aura *core.Aura, sim *core.Simulation) {
 			if mh := fdk.GetMHWeapon(); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
-				extraMultiplier = 0.2
+				extraMultiplier = 0.1
 			} else {
-				extraMultiplier = 1.0
+				extraMultiplier = 0.5
 			}
 		},
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
@@ -57,9 +57,9 @@ func (fdk *FrostDeathKnight) registerMastery() {
 
 	fdk.RegisterItemSwapCallback(core.AllWeaponSlots(), func(sim *core.Simulation, slot proto.ItemSlot) {
 		if mh := fdk.GetMHWeapon(); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
-			extraMultiplier = 0.2
+			extraMultiplier = 0.1
 		} else {
-			extraMultiplier = 1.0
+			extraMultiplier = 0.5
 		}
 	})
 }
