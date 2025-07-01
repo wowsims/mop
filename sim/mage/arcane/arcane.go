@@ -58,6 +58,12 @@ func (arcaneMage *ArcaneMage) Reset(sim *core.Simulation) {
 	arcaneMage.arcaneMissileCritSnapshot = 0.0
 }
 
+func (arcane *ArcaneMage) OnEncounterStart(sim *core.Simulation) {
+	arcane.arcaneMissilesProcAura.Deactivate(sim)
+	arcane.ArcaneChargesAura.Deactivate(sim)
+	arcane.Mage.OnEncounterStart(sim)
+}
+
 func (arcane *ArcaneMage) Initialize() {
 	arcane.Mage.Initialize()
 
