@@ -651,3 +651,15 @@ export function pseudoStatIsCapped(pseudoStat: PseudoStat, hardCaps: Stats, soft
 
 	return false;
 }
+
+export const DEFAULT_GEM_STATS = [
+	Stat.StatHitRating,
+	Stat.StatCritRating,
+	Stat.StatHasteRating,
+	Stat.StatMasteryRating,
+	Stat.StatExpertiseRating,
+	Stat.StatPvpPowerRating,
+	Stat.StatPvpResilienceRating,
+];
+export const DEFAULT_CASTER_GEM_STATS = [...DEFAULT_GEM_STATS, Stat.StatIntellect, Stat.StatSpellPower];
+export const DEFAULT_HYBRID_CASTER_GEM_STATS = [...DEFAULT_CASTER_GEM_STATS, Stat.StatSpirit];

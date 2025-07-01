@@ -23,17 +23,17 @@ export const P1_PREBIS_2H_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1.0,
-			[Stat.StatHitRating]: 1.11,
-			[Stat.StatCritRating]: 0.33,
-			[Stat.StatHasteRating]: 0.43,
-			[Stat.StatExpertiseRating]: 1.02	,
-			[Stat.StatMasteryRating]: 0.27,
-			[Stat.StatAttackPower]: 0.37,
+			[Stat.StatHitRating]: 1.38,
+			[Stat.StatCritRating]: 0.46,
+			[Stat.StatHasteRating]: 0.54,
+			[Stat.StatExpertiseRating]: 1.22	,
+			[Stat.StatMasteryRating]: 0.38,
+			[Stat.StatAttackPower]: 0.36,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 3.02,
+			[PseudoStat.PseudoStatMainHandDps]: 3.04,
 			[PseudoStat.PseudoStatOffHandDps]: 0,
-			[PseudoStat.PseudoStatPhysicalHitPercent]: 378.01,
+			[PseudoStat.PseudoStatPhysicalHitPercent]: 469.62,
 		},
 	),
 );
@@ -44,17 +44,17 @@ export const P1_PREBIS_DW_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1.0,
-			[Stat.StatHitRating]: 1.09,
-			[Stat.StatCritRating]: 0.42,
-			[Stat.StatHasteRating]: 0.47,
-			[Stat.StatExpertiseRating]: 0.99,
-			[Stat.StatMasteryRating]: 0.26,
-			[Stat.StatAttackPower]: 0.37,
+			[Stat.StatHitRating]: 1.41,
+			[Stat.StatCritRating]: 0.46,
+			[Stat.StatHasteRating]: 0.57,
+			[Stat.StatExpertiseRating]: 0.99	,
+			[Stat.StatMasteryRating]: 0.39,
+			[Stat.StatAttackPower]: 0.36,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.55,
-			[PseudoStat.PseudoStatOffHandDps]: 1.27,
-			[PseudoStat.PseudoStatPhysicalHitPercent]: 370.12,
+			[PseudoStat.PseudoStatMainHandDps]: 2.62,
+			[PseudoStat.PseudoStatOffHandDps]: 1.31,
+			[PseudoStat.PseudoStatPhysicalHitPercent]: 478.07,
 		},
 	),
 );

@@ -216,7 +216,10 @@ func NewWarrior(character *core.Character, options *proto.WarriorOptions, talent
 	warrior.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[character.Class])
 	warrior.AddStatDependency(stats.Strength, stats.AttackPower, 2)
 
-	warrior.AddStat(stats.ParryRating, -warrior.GetBaseStats()[stats.Strength]*core.StrengthToParryRating) // Does not apply to base Strength
+	// Base strength to Parry is not affected by Diminishing Returns
+	baseStrength := warrior.GetBaseStats()[stats.Strength]
+	warrior.PseudoStats.BaseParryChance += baseStrength * core.StrengthToParryPercent
+	warrior.AddStat(stats.ParryRating, -baseStrength*core.StrengthToParryRating)
 	warrior.AddStatDependency(stats.Strength, stats.ParryRating, core.StrengthToParryRating)
 	warrior.AddStatDependency(stats.Agility, stats.DodgeRating, 0.1/10000.0/100.0)
 	warrior.AddStatDependency(stats.BonusArmor, stats.Armor, 1)
@@ -263,11 +266,11 @@ func (warrior *Warrior) GetRageMultiplier(target *core.Unit) float64 {
 	return 1.0
 }
 
-func (warrior *Warrior) CastNormalizedSweepingStrikesAttack(results []*core.SpellResult, sim *core.Simulation, target *core.Unit) {
-	if warrior.SweepingStrikesAura.IsActive() {
+func (warrior *Warrior) CastNormalizedSweepingStrikesAttack(results core.SpellResultSlice, sim *core.Simulation) {
+	if warrior.SweepingStrikesAura != nil && warrior.SweepingStrikesAura.IsActive() {
 		for _, result := range results {
 			if result.Landed() {
-				warrior.SweepingStrikesNormalizedAttack.Cast(sim, target)
+				warrior.SweepingStrikesNormalizedAttack.Cast(sim, warrior.Env.NextActiveTargetUnit(result.Target))
 				break
 			}
 		}

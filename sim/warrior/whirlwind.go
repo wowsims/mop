@@ -11,7 +11,6 @@ func (war *Warrior) registerWhirlwind() {
 	}
 
 	actionID := core.ActionID{SpellID: 1680}
-	results := make([]*core.SpellResult, war.Env.GetNumTargets())
 
 	var whirlwindOH *core.Spell
 	if war.Spec == proto.Spec_SpecFuryWarrior {
@@ -29,14 +28,11 @@ func (war *Warrior) registerWhirlwind() {
 			BonusCoefficient: 1,
 
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				for i, enemyTarget := range sim.Encounter.TargetUnits {
-					baseDamage := spell.Unit.OHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-					results[i] = whirlwindOH.CalcDamage(sim, enemyTarget, baseDamage, whirlwindOH.OutcomeMeleeWeaponSpecialHitAndCrit)
-				}
+				spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMeleeWeaponSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+					return spell.Unit.OHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
+				})
 
-				for _, result := range results {
-					whirlwindOH.DealDamage(sim, result)
-				}
+				spell.DealBatchedAoeDamage(sim)
 			},
 		})
 	}
@@ -65,16 +61,12 @@ func (war *Warrior) registerWhirlwind() {
 		BonusCoefficient: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for i, enemyTarget := range sim.Encounter.TargetUnits {
-				baseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-				results[i] = spell.CalcDamage(sim, enemyTarget, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
+			results := spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMeleeWeaponSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+				return spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
+			})
 
-			war.CastNormalizedSweepingStrikesAttack(results, sim, target)
-
-			for _, result := range results {
-				spell.DealDamage(sim, result)
-			}
+			war.CastNormalizedSweepingStrikesAttack(results, sim)
+			spell.DealBatchedAoeDamage(sim)
 
 			if whirlwindOH != nil && war.OffHand() != nil && war.OffHand().WeaponType != proto.WeaponType_WeaponTypeUnknown {
 				whirlwindOH.Cast(sim, target)

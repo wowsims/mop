@@ -39,7 +39,7 @@ func (comRogue *CombatRogue) registerBladeFlurry() {
 			comRogue.ApplyAdditiveEnergyRegenBonus(sim, -energyReduction)
 		},
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if sim.GetNumTargets() < 2 {
+			if sim.ActiveTargetCount() < 2 {
 				return
 			}
 			if result.Damage == 0 || !spell.ProcMask.Matches(core.ProcMaskMelee) {
@@ -53,8 +53,8 @@ func (comRogue *CombatRogue) registerBladeFlurry() {
 			curDmg = result.Damage * 0.4
 			numHits := 0
 
-			for enemyIndex := 0; enemyIndex < int(comRogue.Env.GetNumTargets()) && numHits < 4; enemyIndex++ {
-				bfTarget := comRogue.Env.GetTargetUnit(int32(enemyIndex))
+			for enemyIndex := int32(0); enemyIndex < comRogue.Env.ActiveTargetCount() && numHits < 4; enemyIndex++ {
+				bfTarget := sim.Encounter.ActiveTargetUnits[enemyIndex]
 				if bfTarget != comRogue.CurrentTarget {
 					numHits++
 					bfHit.Cast(sim, bfTarget)

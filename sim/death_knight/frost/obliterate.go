@@ -36,7 +36,7 @@ func (fdk *FrostDeathKnight) registerObliterate() {
 		ActionID:       ObliterateActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellObliterate,
 
 		MaxRange: core.MaxMeleeRange,

@@ -7,7 +7,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Faction, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { Stats, UnitStat } from '../../core/proto_utils/stats';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as PriestInputs from '../inputs';
 // import * as ShadowPriestInputs from './inputs';
 import * as Presets from './presets';
@@ -39,6 +39,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 		],
 		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
+	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 	modifyDisplayStats: (player: Player<Spec.SpecShadowPriest>) => {
 		const playerStats = player.getCurrentStats();
 		const gearStats = Stats.fromProto(playerStats.gearStats);

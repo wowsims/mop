@@ -11,7 +11,6 @@ func (war *Warrior) registerThunderClap() {
 		return core.WeakenedBlowsAura(target)
 	})
 
-	results := make([]*core.SpellResult, war.Env.GetNumTargets())
 	war.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 6343},
 		SpellSchool:    core.SpellSchoolPhysical,
@@ -37,14 +36,10 @@ func (war *Warrior) registerThunderClap() {
 		ThreatMultiplier: 1,
 		CritMultiplier:   war.DefaultCritMultiplier(),
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := war.CalcScalingSpellDmg(0.25) + spell.MeleeAttackPower()*0.44999998808
-
-			for i, aoeTarget := range sim.Encounter.TargetUnits {
-				results[i] = spell.CalcDamage(sim, aoeTarget, baseDamage, spell.OutcomeMeleeSpecialNoBlockDodgeParry)
-			}
-
-			war.CastNormalizedSweepingStrikesAttack(results, sim, target)
+			results := spell.CalcAoeDamage(sim, baseDamage, spell.OutcomeMeleeSpecialNoBlockDodgeParry)
+			war.CastNormalizedSweepingStrikesAttack(results, sim)
 
 			for _, result := range results {
 				if result.Landed() {

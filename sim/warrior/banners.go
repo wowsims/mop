@@ -67,9 +67,7 @@ func (war *Warrior) registerDemoralizingBanner() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
-			for _, target := range sim.Encounter.TargetUnits {
-				war.DemoralizingBannerAuras.Get(target).Activate(sim)
-			}
+			war.DemoralizingBannerAuras.ActivateAll(sim)
 		},
 	})
 

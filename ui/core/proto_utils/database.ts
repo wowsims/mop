@@ -374,7 +374,7 @@ export class Database {
 
 	static async getItemIconData(itemId: number, options: { signal?: AbortSignal } = {}): Promise<IconData> {
 		const db = await Database.get({ signal: options?.signal });
-		const data = await db.spellIcons[itemId];
+		const data = await db.itemIcons[itemId];
 
 		if (!data?.icon) {
 			db.itemIcons[itemId] = Database.getWowheadItemTooltipData(itemId, { signal: options?.signal });
