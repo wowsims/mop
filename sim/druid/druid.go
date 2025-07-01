@@ -91,9 +91,6 @@ type Druid struct {
 	// Guardian leather specialization is form-specific
 	GuardianLeatherSpecTracker *core.Aura
 	GuardianLeatherSpecDep     *stats.StatDependency
-
-	// Item sets
-	T13Feral4pBonus *core.Aura
 }
 
 const (

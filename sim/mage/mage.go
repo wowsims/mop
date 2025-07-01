@@ -55,8 +55,6 @@ type Mage struct {
 	Icicles                     []float64
 
 	// Item sets
-	T12_4pc *core.Aura
-	T13_4pc *core.Aura
 	T14_4pc *core.Aura
 	T16_4pc *core.Aura
 }

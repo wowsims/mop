@@ -104,7 +104,6 @@ type Rogue struct {
 	SavageCombatDebuffAuras   core.AuraArray
 	WoundPoisonDebuffAuras    core.AuraArray
 
-	T12ToTLastBuff int
 	Has2PT15       bool
 	T16EnergyAura  *core.Aura
 	T16SpecMod     *core.SpellMod
@@ -211,8 +210,6 @@ func (rogue *Rogue) Initialize() {
 	rogue.registerCrimsonTempest()
 	rogue.registerPreparationCD()
 
-	rogue.T12ToTLastBuff = 3
-
 	rogue.ruthlessnessMetrics = rogue.NewComboPointMetrics(core.ActionID{SpellID: 14161})
 	rogue.relentlessStrikesMetrics = rogue.NewEnergyMetrics(core.ActionID{SpellID: 58423})
 }
@@ -230,8 +227,6 @@ func (rogue *Rogue) Reset(sim *core.Simulation) {
 	}
 
 	rogue.MultiplyEnergyRegenSpeed(sim, 1.0+rogue.AdditiveEnergyRegenBonus)
-
-	rogue.T12ToTLastBuff = 3
 }
 
 func (rogue *Rogue) OnEncounterStart(sim *core.Simulation) {

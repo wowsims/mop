@@ -603,10 +603,6 @@ export class ActionId {
 				} else if (tag == 2) {
 					name += ' (Off Hand)';
 				}
-				// Death Knight - T12 4P proc
-				if (baseName === 'Obliterate' && tag === 3) {
-					name = 'Flaming Torment (T12 4P)';
-				}
 				break;
 			case 'Death Strike':
 				if (tag == 1) {
@@ -674,61 +670,10 @@ export class ActionId {
 			case 'Frozen Blows':
 			case 'Opportunity Strike':
 				break;
-			// Warrior - T12 2P proc
-			case 'Shield Slam':
-				if (tag === 3) {
-					name = 'Combust (T12 2P)';
-				}
-				break;
-			// Warrior - T13 4P proc
-			case 'Colossus Smash':
-				if (this.spellId === 108126) {
-					name += ' (T13 4P)';
-				}
-				break;
-			// Warrior - T12 4P proc
-			case 'Mortal Strike':
-				if (tag === 3) {
-					name = 'Fiery attack (T12 4P)';
-				}
-				break;
 			case 'Slam':
 				if (tag == 1) {
 					name += ' (Sweeping Strikes)';
 				}
-				break;
-			// Hunter - T12 2P proc
-			case 'Steady Shot':
-			case 'Cobra Shot':
-				if (tag === 3) {
-					name = 'Flaming Arrow (T12 2P)';
-				}
-				break;
-			// Paladin - T12 4P proc
-			case 'Shield of the Righteous':
-				if (tag === 3) {
-					name = 'Righteous Flames (T12 2P)';
-				}
-				break;
-			// Paladin - T12 4P proc
-			case 'Crusader Strike':
-				if (tag === 3) {
-					name = 'Flames of the Faithful (T12 2P)';
-				}
-				break;
-			// Death Knight - T12 4P proc
-			case 'Scourge Strike':
-				if (tag === 3) {
-					name = 'Flaming Torment (T12 4P)';
-				}
-				break;
-			// Death Knight - T12 2P proc
-			case 'Burning Blood':
-				name += ' (T12 2P)';
-				break;
-			// Death Knight - T12 4P proc
-			case 'Flaming Rune Weapon':
-				name += ' (T12 4P)';
 				break;
 			// Souldrinker - Drain Life
 			case 'Drain Life':
@@ -755,12 +700,6 @@ export class ActionId {
 				} else if (this.spellId === 109872 || this.spellId === 109870 || this.spellId === 109868) {
 					name += ' (Heroic)';
 				}
-				break;
-			case 'Item - Paladin T11 Retribution 4P Bonus':
-				name = 'Reinforced Sapphirium Battleplate - T11 4pc';
-				break;
-			case 'Item - Paladin T12 Retribution 4P Bonus':
-				name = 'Battleplate of Immolation - T12 4pc';
 				break;
 			case 'Item - Paladin T14 Retribution 2P Bonus':
 				name = 'White Tiger Battlegear - T14 2pc';
@@ -1196,16 +1135,8 @@ const spellIdTooltipOverrides: Map<string, ActionIdOverride> = new Map([
 	[JSON.stringify({ spellId: 114867, tag: 1 }), { spellId: 114866 }], // Death Knight - Soul Reaper (Blood)
 	[JSON.stringify({ spellId: 114867, tag: 2 }), { spellId: 130735 }], // Death Knight - Soul Reaper (Frost)
 	[JSON.stringify({ spellId: 114867, tag: 3 }), { spellId: 130736 }], // Death Knight - Soul Reaper (Unholy)
-	[JSON.stringify({ spellId: 12294, tag: 3 }), { spellId: 99237 }], // Warrior - T12 4P Fiery Attack - Mortal Strike
-	[JSON.stringify({ spellId: 23922, tag: 3 }), { spellId: 99240 }], // Warrior - T12 2P Combust - Shield Slam
-	[JSON.stringify({ spellId: 77767, tag: 3 }), { spellId: 99058 }], // Hunter - T12 2P Flaming Arrow - Cobra shot
-	[JSON.stringify({ spellId: 56641, tag: 3 }), { spellId: 99058 }], // Hunter - T12 2P Flaming Arrow - Steady shot
-	[JSON.stringify({ spellId: 35395, tag: 3 }), { spellId: 99092 }], // Paladin - T12 2P Ret Flames of the Faithful
-	[JSON.stringify({ spellId: 53600, tag: 3 }), { spellId: 99075 }], // Paladin - T12 2P Prot Righteous Flames
 	[JSON.stringify({ spellId: 85256, tag: 2 }), { spellId: 138165 }], // Paladin - T15 4P Ret Templar's Verdict
 	[JSON.stringify({ spellId: 879, tag: 2 }), { spellId: 122032 }], // Paladin - Glyph of Mass Exorcism
-	[JSON.stringify({ spellId: 49020, tag: 3 }), { spellId: 99000 }], // Death Knight - T12 4P Flaming Torment
-	[JSON.stringify({ spellId: 55090, tag: 3 }), { spellId: 99000 }], // Death Knight - T12 4P Flaming Torment
 	[JSON.stringify({ spellId: 2818, tag: 2 }), { spellId: 113780 }], // Rogue - Deadly Poison - Hit
 	[JSON.stringify({ spellId: 121411, tag: 7 }), { spellId: 122233 }], // Rogue - Crimson Tempest - DoT
 	[JSON.stringify({ spellId: 121471, tag: 1 }), { spellId: 121473 }], // Rogue - Shadow Blade
@@ -1255,7 +1186,6 @@ const petNameToActionId: Record<string, ActionId> = {
 	'Primal Earth Elemental': ActionId.fromSpellId(2062),
 	'Primal Fire Elemental': ActionId.fromSpellId(2894),
 	'Mirror Image': ActionId.fromSpellId(55342),
-	'Mirror Image T12 2pc': ActionId.fromSpellId(55342),
 	'Rune Weapon': ActionId.fromSpellId(49028),
 	Shadowfiend: ActionId.fromSpellId(34433),
 	Mindbender: ActionId.fromSpellId(123040),

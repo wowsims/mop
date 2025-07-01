@@ -726,6 +726,10 @@ func getHighestCDRune(sim *Simulation, possibleRunes []*depletedRune) int8 {
 		}
 	}
 
+	if len(filteredRunes) == 0 {
+		return -1
+	}
+
 	randomRuneIndex := int(math.Floor(sim.RandomFloat("Rune Regen") * float64(len(filteredRunes))))
 	return filteredRunes[randomRuneIndex]
 }
@@ -755,6 +759,10 @@ func (rp *runicPowerBar) RegenRunicEmpowermentRune(sim *Simulation, runeMetrics 
 	}
 
 	slot := getHighestCDRune(sim, possibleRunes)
+
+	if slot == -1 {
+		return
+	}
 
 	rp.regenRuneInternal(sim, sim.CurrentTime, slot)
 	if rp.runeStates&isDeaths[slot] > 0 {

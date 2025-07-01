@@ -13,8 +13,7 @@ const TotemRefreshTime5M = time.Second * 295
 
 // Damage Done By Caster setup
 const (
-	DDBC_4pcT12 int = iota
-	DDBC_FrostbrandWeapon
+	DDBC_FrostbrandWeapon int = iota
 	DDBC_UnleashedFury
 	DDBC_2PT16
 
@@ -179,8 +178,7 @@ type Shaman struct {
 	Riptide            *core.Spell
 	EarthShield        *core.Spell
 
-	waterShieldManaMetrics   *core.ResourceMetrics
-	VolcanicRegalia4PT12Aura *core.Aura
+	waterShieldManaMetrics *core.ResourceMetrics
 
 	// Item sets
 	T14Ele4pc *core.Aura
