@@ -93,14 +93,12 @@ func (moonkin *BalanceDruid) RegisterEclipseAuras() {
 
 	lunarSpellMod := moonkin.AddDynamicMod(core.SpellModConfig{
 		School:     core.SpellSchoolArcane,
-		ProcMask:   core.ProcMaskSpellDamage,
 		Kind:       core.SpellMod_DamageDone_Pct,
 		FloatValue: docEclipseMasteryBonus + eclipseMasteryBonus,
 	})
 
 	solarSpellMod := moonkin.AddDynamicMod(core.SpellModConfig{
 		School:     core.SpellSchoolNature,
-		ProcMask:   core.ProcMaskSpellDamage,
 		Kind:       core.SpellMod_DamageDone_Pct,
 		FloatValue: docEclipseMasteryBonus + eclipseMasteryBonus,
 	})
