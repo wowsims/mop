@@ -20,6 +20,7 @@ import {
 	APLActionMoveDuration,
 	APLActionMultidot,
 	APLActionMultishield,
+	APLActionNextTarget,
 	APLActionResetSequence,
 	APLActionSchedule,
 	APLActionSequence,
@@ -598,6 +599,13 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		shortDescription: 'Sets the current target, which is the target of auto attacks and most casts by default.',
 		newValue: () => APLActionChangeTarget.create(),
 		fields: [AplHelpers.unitFieldConfig('newTarget', 'targets')],
+	}),
+	['nextTarget']: inputBuilder({
+		label: 'Next Target',
+		submenu: ['Misc'],
+		shortDescription: 'Updates the current target to the next target, which is the target of auto attacks and most casts by default.',
+		newValue: () => APLActionNextTarget.create(),
+		fields: [],
 	}),
 	['activateAura']: inputBuilder({
 		label: 'Activate Aura',

@@ -41,7 +41,7 @@ message APLListItem {
     APLAction action = 3; // The action to be performed.
 }
 
-// NextIndex: 27
+// NextIndex: 28
 message APLAction {
     APLValue condition = 1; // If set, action will only execute if value is true or != 0.
 
@@ -68,6 +68,7 @@ message APLAction {
 
         // Misc
         APLActionChangeTarget change_target = 9;
+        APLActionNextTarget next_target = 27;
         APLActionActivateAura activate_aura = 13;
         APLActionActivateAuraWithStacks activate_aura_with_stacks = 24;
         APLActionActivateAllStatBuffProcAuras activate_all_stat_buff_proc_auras = 25;
@@ -85,7 +86,7 @@ message APLAction {
     }
 }
 
-// NextIndex: 103
+// NextIndex: 105
 message APLValue {
 	UUID uuid = 85;
 
@@ -190,7 +191,9 @@ message APLValue {
 
         // Dot values
         APLValueDotIsActive dot_is_active = 6;
+        APLValueDotIsActiveOnAllTargets dot_is_active_on_all_targets = 103;
         APLValueDotRemainingTime dot_remaining_time = 13;
+        APLValueDotLowestRemainingTime dot_lowest_remaining_time = 104;
         APLValueDotTickFrequency dot_tick_frequency = 67;
 		APLValueDotPercentIncrease dot_percent_increase = 101;
 
@@ -301,6 +304,7 @@ message APLActionStrictSequence {
 message APLActionChangeTarget {
     UnitReference new_target = 1;
 }
+message APLActionNextTarget {}
 
 message APLActionCancelAura {
     ActionID aura_id = 1;
@@ -669,8 +673,14 @@ message APLValueDotIsActive {
     UnitReference target_unit = 2;
     ActionID spell_id = 1;
 }
+message APLValueDotIsActiveOnAllTargets {
+    ActionID spell_id = 1;
+}
 message APLValueDotRemainingTime {
     UnitReference target_unit = 2;
+    ActionID spell_id = 1;
+}
+message APLValueDotLowestRemainingTime {
     ActionID spell_id = 1;
 }
 message APLValueDotTickFrequency {

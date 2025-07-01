@@ -179,6 +179,8 @@ func (rot *APLRotation) newAPLActionImpl(config *proto.APLAction) APLActionImpl 
 	// Misc
 	case *proto.APLAction_ChangeTarget:
 		return rot.newActionChangeTarget(config.GetChangeTarget())
+	case *proto.APLAction_NextTarget:
+		return rot.newActionNextTarget(config.GetNextTarget())
 	case *proto.APLAction_ActivateAura:
 		return rot.newActionActivateAura(config.GetActivateAura())
 	case *proto.APLAction_ActivateAuraWithStacks:

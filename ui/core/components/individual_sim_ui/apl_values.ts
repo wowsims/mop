@@ -42,6 +42,7 @@ import {
 	APLValueCurrentTime,
 	APLValueCurrentTimePercent,
 	APLValueDotIsActive,
+	APLValueDotIsActiveOnAllTargets,
 	APLValueDotPercentIncrease,
 	APLValueDotRemainingTime,
 	APLValueDotTickFrequency,
@@ -121,10 +122,7 @@ type ValidAPLValueKind = NonNullable<APLValueKind>;
 export type APLValueImplStruct<F extends APLValueKind> = Extract<APLValue_Value, { oneofKind: F }>;
 
 // Get the implementation type for a specific kind using infer
-type APLValueImplFor<F extends ValidAPLValueKind> =
-	APLValueImplStruct<F> extends { [K in F]: infer T }
-		? T
-		: never;
+type APLValueImplFor<F extends ValidAPLValueKind> = APLValueImplStruct<F> extends { [K in F]: infer T } ? T : never;
 
 // Map all valid kinds to their implementation types
 type APLValueImplMap = {
@@ -1315,12 +1313,26 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		newValue: APLValueDotIsActive.create,
 		fields: [AplHelpers.unitFieldConfig('targetUnit', 'targets'), AplHelpers.actionIdFieldConfig('spellId', 'dot_spells', '')],
 	}),
+	dotIsActiveOnAllTargets: inputBuilder({
+		label: 'Dot Is Active On All Targets',
+		submenu: ['DoT'],
+		shortDescription: '<b>True</b> if the specified dot is currently ticking on all targets, otherwise <b>False</b>.',
+		newValue: APLValueDotIsActiveOnAllTargets.create,
+		fields: [AplHelpers.actionIdFieldConfig('spellId', 'dot_spells')],
+	}),
 	dotRemainingTime: inputBuilder({
 		label: 'Dot Remaining Time',
 		submenu: ['DoT'],
 		shortDescription: 'Time remaining before the last tick of this DoT will occur, or 0 if the DoT is not currently ticking.',
 		newValue: APLValueDotRemainingTime.create,
 		fields: [AplHelpers.unitFieldConfig('targetUnit', 'targets'), AplHelpers.actionIdFieldConfig('spellId', 'dot_spells', '')],
+	}),
+	dotLowestRemainingTime: inputBuilder({
+		label: 'Dot Lowest Remaining Time',
+		submenu: ['DoT'],
+		shortDescription: 'Time remaining before the last tick of this DoT on any target will occur, or 0 if the DoT is not currently ticking.',
+		newValue: APLValueDotRemainingTime.create,
+		fields: [AplHelpers.actionIdFieldConfig('spellId', 'dot_spells', '')],
 	}),
 	dotTickFrequency: inputBuilder({
 		label: 'Dot Tick Frequency',

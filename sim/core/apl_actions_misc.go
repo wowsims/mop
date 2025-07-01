@@ -36,6 +36,38 @@ func (action *APLActionChangeTarget) String() string {
 	return fmt.Sprintf("Change Target(%s)", action.newTarget.Get().Label)
 }
 
+type APLActionNextTarget struct {
+	defaultAPLActionImpl
+	unit *Unit
+
+	lastExecutedAt time.Duration
+}
+
+func (rot *APLRotation) newActionNextTarget(_ *proto.APLActionNextTarget) APLActionImpl {
+	return &APLActionNextTarget{
+		unit: rot.unit,
+	}
+}
+func (action *APLActionNextTarget) Reset(sim *Simulation) {
+	action.lastExecutedAt = -1
+}
+func (action *APLActionNextTarget) IsReady(sim *Simulation) bool {
+	// Prevent infinite loops by only allowing this action to be performed once at each timestamp.
+	return action.lastExecutedAt != sim.CurrentTime
+}
+func (action *APLActionNextTarget) Execute(sim *Simulation) {
+	newTarget := action.unit.Env.NextActiveTargetUnit(action.unit.CurrentTarget)
+
+	if sim.Log != nil {
+		action.unit.Log(sim, "Changing target to %s", newTarget.Label)
+	}
+	action.unit.CurrentTarget = newTarget
+	action.lastExecutedAt = sim.CurrentTime
+}
+func (action *APLActionNextTarget) String() string {
+	return "Next Target"
+}
+
 type APLActionCancelAura struct {
 	defaultAPLActionImpl
 	aura *Aura
