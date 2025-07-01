@@ -36,7 +36,6 @@ func NewGuardianDruid(character *core.Character, options *proto.Player) *Guardia
 	bear.registerTreants()
 
 	bear.EnableRageBar(core.RageBarOptions{
-		StartingRage:       bear.Options.StartingRage,
 		BaseRageMultiplier: 2.5,
 	})
 	bear.EnableAutoAttacks(bear, core.AutoAttackOptions{

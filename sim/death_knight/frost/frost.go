@@ -29,12 +29,10 @@ type FrostDeathKnight struct {
 }
 
 func NewFrostDeathKnight(character *core.Character, player *proto.Player) *FrostDeathKnight {
-	frostOptions := player.GetFrostDeathKnight().Options
-
 	fdk := &FrostDeathKnight{
 		DeathKnight: death_knight.NewDeathKnight(character, death_knight.DeathKnightInputs{
-			StartingRunicPower: frostOptions.ClassOptions.StartingRunicPower,
-			IsDps:              true,
+			Spec:  proto.Spec_SpecFrostDeathKnight,
+			IsDps: true,
 		}, player.TalentsString, 0),
 	}
 

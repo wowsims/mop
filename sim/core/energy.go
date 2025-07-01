@@ -13,7 +13,6 @@ type energyBar struct {
 
 	maxEnergy           float64
 	currentEnergy       float64
-	startingComboPoints int32
 	maxComboPoints      int32
 	comboPoints         int32
 	nextEnergyTick      time.Duration
@@ -34,11 +33,10 @@ type energyBar struct {
 	hasNoRegen              bool   // some units have an energy bar but do not require regen ticks
 }
 type EnergyBarOptions struct {
-	StartingComboPoints int32
-	MaxComboPoints      int32
-	MaxEnergy           float64
-	UnitClass           proto.Class
-	HasNoRegen          bool
+	MaxComboPoints int32
+	MaxEnergy      float64
+	UnitClass      proto.Class
+	HasNoRegen     bool
 }
 
 func (unit *Unit) EnableEnergyBar(options EnergyBarOptions) {
@@ -54,7 +52,6 @@ func (unit *Unit) EnableEnergyBar(options EnergyBarOptions) {
 		hasteRatingMultiplier:   1,
 		regenMetrics:            unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEnergyRegen}),
 		EnergyRefundMetrics:     unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionRefund}),
-		startingComboPoints:     max(0, min(int32(options.StartingComboPoints), 5)),
 		ownerClass:              options.UnitClass,
 		comboPointsResourceName: Ternary(options.UnitClass == proto.Class_ClassMonk, "chi", "combo points"),
 		hasNoRegen:              options.HasNoRegen,
@@ -241,7 +238,7 @@ func (eb *energyBar) reset(sim *Simulation) {
 	}
 
 	eb.currentEnergy = eb.maxEnergy
-	eb.comboPoints = eb.startingComboPoints
+	eb.comboPoints = 0
 
 	eb.hasteRatingMultiplier = 1.0 + eb.unit.GetStat(stats.HasteRating)/(100*HasteRatingPerHastePercent)
 	eb.energyRegenMultiplier = 1.0

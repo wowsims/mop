@@ -99,7 +99,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
 		inputs: [
-			WarriorInputs.StartingRage(),
 			WarriorInputs.StanceSnapshot(),
 			OtherInputs.DistanceFromTarget,
 			OtherInputs.InputDelay,

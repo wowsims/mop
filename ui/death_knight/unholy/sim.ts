@@ -8,7 +8,6 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
-import * as DeathKnightInputs from '../inputs';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
@@ -102,7 +101,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	excludeBuffDebuffInputs: [BuffDebuffInputs.DamageReduction, BuffDebuffInputs.CastSpeedDebuff],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [DeathKnightInputs.StartingRunicPower(), OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
+		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
 	},
 	itemSwapSlots: [
 		ItemSlot.ItemSlotHead,

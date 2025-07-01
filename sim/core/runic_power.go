@@ -40,7 +40,6 @@ type runicPowerBar struct {
 	character *Character
 
 	maxRunicPower      float64
-	startingRunicPower float64
 	currentRunicPower  float64
 	runeCD             time.Duration
 
@@ -122,18 +121,16 @@ func (rp *runicPowerBar) reset(sim *Simulation) {
 		rp.runeStates |= isDeaths[i]
 	}
 
-	rp.currentRunicPower = rp.startingRunicPower
+	rp.currentRunicPower = 0
 }
 
-func (character *Character) EnableRunicPowerBar(startingRunicPower float64, maxRunicPower float64, runeCD time.Duration,
-	onRuneChange OnRuneChange, onRunicPowerGain OnRunicPowerGain) {
+func (character *Character) EnableRunicPowerBar(runeCD time.Duration, onRuneChange OnRuneChange, onRunicPowerGain OnRunicPowerGain) {
 	character.SetCurrentPowerBar(RunicPower)
 	character.runicPowerBar = runicPowerBar{
 		character: character,
 
-		maxRunicPower:        maxRunicPower,
-		currentRunicPower:    startingRunicPower,
-		startingRunicPower:   startingRunicPower,
+		maxRunicPower:        100,
+		currentRunicPower:    0,
 		runeCD:               runeCD,
 		runeRegenMultiplier:  1.0,
 		runicRegenMultiplier: 1.0,

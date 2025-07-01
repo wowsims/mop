@@ -11,7 +11,6 @@ import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as RogueInputs from '../inputs';
-// import * as SinInputs from './inputs';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
@@ -118,7 +117,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 		inputs: [
 			OtherInputs.InFrontOfTarget,
 			OtherInputs.InputDelay,
-			RogueInputs.StartingComboPoints(),
 		],
 	},
 	itemSwapSlots: [

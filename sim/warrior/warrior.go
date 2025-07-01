@@ -204,7 +204,6 @@ func NewWarrior(character *core.Character, options *proto.WarriorOptions, talent
 
 	warrior.EnableRageBar(core.RageBarOptions{
 		MaxRage:            core.TernaryFloat64(warrior.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfUnendingRage), 120, 100),
-		StartingRage:       options.StartingRage,
 		BaseRageMultiplier: 1,
 	})
 

@@ -124,9 +124,7 @@ export const FuryTGTalents = {
 };
 
 export const DefaultOptions = WarriorOptions.create({
-	classOptions: {
-		startingRage: 0,
-	},
+	classOptions: {},
 	syncType: 0,
 });
 

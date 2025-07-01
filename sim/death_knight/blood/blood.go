@@ -36,13 +36,10 @@ type BloodDeathKnight struct {
 }
 
 func NewBloodDeathKnight(character *core.Character, options *proto.Player) *BloodDeathKnight {
-	dkOptions := options.GetBloodDeathKnight()
-
 	bdk := &BloodDeathKnight{
 		DeathKnight: death_knight.NewDeathKnight(character, death_knight.DeathKnightInputs{
-			IsDps:              false,
-			StartingRunicPower: dkOptions.Options.ClassOptions.StartingRunicPower,
-			Spec:               proto.Spec_SpecBloodDeathKnight,
+			Spec:  proto.Spec_SpecBloodDeathKnight,
+			IsDps: false,
 		}, options.TalentsString, 50034),
 	}
 

@@ -7,7 +7,6 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common.js';
 import { UnitStat } from '../../core/proto_utils/stats.js';
-import * as ProtectionWarriorInputs from '../inputs.js';
 import * as Presets from './presets.js';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
@@ -102,7 +101,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 			OtherInputs.AbsorbFrac,
 			OtherInputs.BurstWindow,
 			OtherInputs.HpPercentForDefensives,
-			ProtectionWarriorInputs.StartingRage(),
 			OtherInputs.InFrontOfTarget,
 		],
 	},

@@ -40,9 +40,7 @@ var UnholyDefaultGlyphs = &proto.Glyphs{
 var PlayerOptionsUnholy = &proto.Player_UnholyDeathKnight{
 	UnholyDeathKnight: &proto.UnholyDeathKnight{
 		Options: &proto.UnholyDeathKnight_Options{
-			ClassOptions: &proto.DeathKnightOptions{
-				StartingRunicPower: 100,
-			},
+			ClassOptions: &proto.DeathKnightOptions{},
 		},
 	},
 }

@@ -263,10 +263,9 @@ func NewRogue(character *core.Character, options *proto.RogueOptions, talents st
 	}
 
 	rogue.EnableEnergyBar(core.EnergyBarOptions{
-		MaxComboPoints:      5,
-		MaxEnergy:           maxEnergy,
-		StartingComboPoints: options.StartingComboPoints,
-		UnitClass:           proto.Class_ClassRogue,
+		MaxComboPoints: 5,
+		MaxEnergy:      maxEnergy,
+		UnitClass:      proto.Class_ClassRogue,
 	})
 
 	rogue.EnableAutoAttacks(rogue, core.AutoAttackOptions{

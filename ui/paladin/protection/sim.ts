@@ -160,7 +160,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
 		inputs: [
-			PaladinInputs.StartingHolyPower(),
 			OtherInputs.InputDelay,
 			OtherInputs.TankAssignment,
 			OtherInputs.IncomingHps,

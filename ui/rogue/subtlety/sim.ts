@@ -119,7 +119,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSubtletyRogue, {
 			SubInputs.HonorAmongThievesCritRate,
 			OtherInputs.InFrontOfTarget,
 			OtherInputs.InputDelay,
-			RogueInputs.StartingComboPoints(),
 		],
 	},
 	itemSwapSlots: [

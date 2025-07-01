@@ -10,7 +10,6 @@ import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Ra
 import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { Sim } from '../../core/sim';
 import * as RogueInputs from '../inputs';
 import * as Presets from './presets';
 
@@ -119,7 +118,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 		inputs: [
 			OtherInputs.InFrontOfTarget,
 			OtherInputs.InputDelay,
-			RogueInputs.StartingComboPoints(),
 		],
 	},
 	itemSwapSlots: [
@@ -215,7 +213,6 @@ export class CombatRogueSimUI extends IndividualSimUI<Spec.SpecCombatRogue> {
 
 		this.player.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
-			const encounter = this.sim.encounter;
 			if (!options.classOptions!.applyPoisonsManually) {
 				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
 			}
@@ -223,7 +220,6 @@ export class CombatRogueSimUI extends IndividualSimUI<Spec.SpecCombatRogue> {
 		});
 		this.sim.encounter.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
-			const encounter = this.sim.encounter;
 			if (!options.classOptions!.applyPoisonsManually) {
 				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
 			}

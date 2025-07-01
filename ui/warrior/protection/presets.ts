@@ -1,7 +1,7 @@
 import * as PresetUtils from '../../core/preset_utils.js';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Stat } from '../../core/proto/common.js';
 import { SavedTalents } from '../../core/proto/ui.js';
-import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph, WarriorMinorGlyph } from '../../core/proto/warrior.js';
+import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior.js';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
@@ -60,9 +60,7 @@ export const StandardTalents = {
 };
 
 export const DefaultOptions = ProtectionWarriorOptions.create({
-	classOptions: {
-		startingRage: 0,
-	},
+	classOptions: {},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({

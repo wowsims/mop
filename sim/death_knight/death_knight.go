@@ -1,7 +1,6 @@
 package death_knight
 
 import (
-	"math"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -22,8 +21,6 @@ type DeathKnightInputs struct {
 	IsDps bool
 
 	UnholyFrenzyTarget *proto.UnitReference
-
-	StartingRunicPower float64
 
 	Spec proto.Spec
 }
@@ -136,12 +133,7 @@ func NewDeathKnight(character *core.Character, inputs DeathKnightInputs, talents
 	}
 	core.FillTalentsProto(dk.Talents.ProtoReflect(), talents)
 
-	maxRunicPower := 100.0
-	currentRunicPower := math.Min(maxRunicPower, dk.Inputs.StartingRunicPower)
-
 	dk.EnableRunicPowerBar(
-		currentRunicPower,
-		maxRunicPower,
 		10*time.Second,
 		func(sim *core.Simulation, changeType core.RuneChangeType, runeRegen []int8) {
 			if deathRuneConvertSpellId == 0 {

@@ -10,7 +10,6 @@ import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, Pseu
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { Sim } from '../../core/sim';
-import { TypedEvent } from '../../core/typed_event';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
