@@ -22,7 +22,7 @@ func (ret *RetributionPaladin) registerInquisition() {
 		stats.SpellCritPercent:    10,
 	}
 
-	inquisitionAura := ret.RegisterAura(core.Aura{
+	ret.InquisitionAura = ret.RegisterAura(core.Aura{
 		Label:     "Inquisition" + ret.Label,
 		ActionID:  actionID,
 		Duration:  inquisitionDuration,
@@ -81,6 +81,6 @@ func (ret *RetributionPaladin) registerInquisition() {
 			ret.HolyPower.SpendUpTo(sim, ret.DynamicHolyPowerSpent, actionID)
 		},
 
-		RelatedSelfBuff: inquisitionAura,
+		RelatedSelfBuff: ret.InquisitionAura,
 	})
 }

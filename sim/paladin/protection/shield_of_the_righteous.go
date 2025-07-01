@@ -54,7 +54,7 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 	})
 
 	var snapshotDmgReduction float64
-	shieldOfTheRighteousAura := prot.RegisterAura(core.Aura{
+	prot.ShieldOfTheRighteousAura = prot.RegisterAura(core.Aura{
 		ActionID:  core.ActionID{SpellID: 132403},
 		Label:     "Shield of the Righteous" + prot.Label,
 		Duration:  time.Second * 3,
@@ -78,7 +78,7 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 		},
 	})
 
-	prot.AddDefensiveCooldownAura(shieldOfTheRighteousAura)
+	prot.AddDefensiveCooldownAura(prot.ShieldOfTheRighteousAura)
 
 	actionID := core.ActionID{SpellID: 53600}
 
@@ -131,6 +131,6 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 			spell.DealDamage(sim, result)
 		},
 
-		RelatedSelfBuff: shieldOfTheRighteousAura,
+		RelatedSelfBuff: prot.ShieldOfTheRighteousAura,
 	})
 }

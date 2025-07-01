@@ -548,7 +548,7 @@ func (paladin *Paladin) registerGlyphOfMassExorcism() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			spell.CalcCleaveDamageWithVariance(sim, sim.Environment.NextActiveTargetUnit(target), sim.Environment.ActiveTargetCount() - 1, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 { 
+			spell.CalcCleaveDamageWithVariance(sim, sim.Environment.NextActiveTargetUnit(target), sim.Environment.ActiveTargetCount()-1, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
 				return paladin.CalcAndRollDamageRange(sim, 6.09499979019, 0.1099999994) + 0.67699998617*spell.MeleeAttackPower()
 			})
 
@@ -612,7 +612,7 @@ func (paladin *Paladin) registerGlyphOfTemplarsVerdict() {
 		return
 	}
 
-	glyphOfTemplarVerdictAura := paladin.RegisterAura(core.Aura{
+	paladin.GlyphOfTemplarsVerdictAura = paladin.RegisterAura(core.Aura{
 		Label:    "Glyph of Templar's Verdict" + paladin.Label,
 		ActionID: core.ActionID{SpellID: 115668},
 		Duration: time.Second * 6,
@@ -625,7 +625,7 @@ func (paladin *Paladin) registerGlyphOfTemplarsVerdict() {
 		ClassSpellMask: SpellMaskExorcism | SpellMaskTemplarsVerdict,
 		Outcome:        core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			glyphOfTemplarVerdictAura.Activate(sim)
+			paladin.GlyphOfTemplarsVerdictAura.Activate(sim)
 		},
 	})
 }
@@ -642,7 +642,7 @@ func (paladin *Paladin) registerGlyphOfTheAlabasterShield() {
 		FloatValue: 0.1,
 	})
 
-	alabasterShieldAura := paladin.RegisterAura(core.Aura{
+	paladin.AlabasterShieldAura = paladin.RegisterAura(core.Aura{
 		Label:     "Alabaster Shield" + paladin.Label,
 		ActionID:  core.ActionID{SpellID: 121467},
 		Duration:  time.Second * 12,
@@ -670,8 +670,8 @@ func (paladin *Paladin) registerGlyphOfTheAlabasterShield() {
 		Outcome:  core.OutcomeBlock,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			alabasterShieldAura.Activate(sim)
-			alabasterShieldAura.AddStack(sim)
+			paladin.AlabasterShieldAura.Activate(sim)
+			paladin.AlabasterShieldAura.AddStack(sim)
 		},
 	})
 }

@@ -15,8 +15,7 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 	hpActionID := core.ActionID{SpellID: 98057}
 	prot.CanTriggerHolyAvengerHpGain(hpActionID)
 
-	var grandCrusaderAura *core.Aura
-	grandCrusaderAura = prot.RegisterAura(core.Aura{
+	prot.GrandCrusaderAura = prot.RegisterAura(core.Aura{
 		Label:    "Grand Crusader" + prot.Label,
 		ActionID: core.ActionID{SpellID: 85416},
 		Duration: time.Second * 6,
@@ -30,7 +29,7 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			prot.HolyPower.Gain(sim, 1, hpActionID)
-			grandCrusaderAura.Deactivate(sim)
+			prot.GrandCrusaderAura.Deactivate(sim)
 		},
 	})
 
@@ -43,7 +42,7 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 		ICD:        time.Second,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			grandCrusaderAura.Activate(sim)
+			prot.GrandCrusaderAura.Activate(sim)
 		},
 	})
 }
