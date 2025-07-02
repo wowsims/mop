@@ -198,21 +198,21 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 		Duration: banishmentDuration,
 
 		OnGain: func(_ *core.Aura, sim *core.Simulation) {
-			sim.DisableTargetUnit(ai.BossUnit, false)
-
 			for _, addUnit := range ai.AddUnits {
 				sim.EnableTargetUnit(addUnit)
 			}
 
+			sim.DisableTargetUnit(ai.BossUnit, false)
 			ai.TankUnit.CurrentTarget = ai.AddUnits[0]
 		},
 
 		OnExpire: func(_ *core.Aura, sim *core.Simulation) {
+			sim.EnableTargetUnit(ai.BossUnit)
+
 			for _, addUnit := range ai.AddUnits {
 				sim.DisableTargetUnit(addUnit, true)
 			}
 
-			sim.EnableTargetUnit(ai.BossUnit)
 			ai.BossUnit.AutoAttacks.CancelAutoSwing(sim)
 		},
 	})
@@ -243,7 +243,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			// Model the Vengeance gain from a taunt
 			vengeanceAura := aura.Unit.GetAura("Vengeance")
 
-			if vengeanceAura == nil {
+			if (vengeanceAura == nil) || (sim.CurrentTime == 0) {
 				return
 			}
 
@@ -331,7 +331,7 @@ func (ai *GarajalAI) registerShadowBolt() {
 
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD:      core.GCDDefault,
+				GCD:      core.BossGCD * 5,
 				CastTime: time.Second * 3,
 			},
 		},
