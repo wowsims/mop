@@ -451,6 +451,12 @@ func (sim *Simulation) PrePull() {
 		OnAction: func(sim *Simulation) {
 			for _, unit := range sim.Environment.AllUnits {
 				if unit.enabled {
+					unit.onEncounterStart(sim)
+				}
+			}
+
+			for _, unit := range sim.Environment.AllUnits {
+				if unit.enabled {
 					unit.startPull(sim)
 				}
 			}
