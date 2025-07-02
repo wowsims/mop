@@ -74,6 +74,8 @@ type Monk struct {
 
 	SerpentZealAura *core.Aura
 
+	VitalMistsAura *core.Aura
+
 	ChiSphereAura          *core.Aura
 	DampenHarmAura         *core.Aura
 	FortifyingBrewAura     *core.Aura
