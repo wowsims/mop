@@ -65,16 +65,16 @@ export const P1_MASTERFROST_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.8,
-			[Stat.StatExpertiseRating]: 0.8,
+			[Stat.StatHitRating]: 0.84,
+			[Stat.StatExpertiseRating]: 0.84,
 			[Stat.StatMasteryRating]: 0.48,
-			[Stat.StatHasteRating]: 0.38,
+			[Stat.StatHasteRating]: 0.39,
 			[Stat.StatAttackPower]: 0.37,
-			[Stat.StatCritRating]: 0.35,
+			[Stat.StatCritRating]: 0.36,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.47,
-			[PseudoStat.PseudoStatOffHandDps]: 0.7,
+			[PseudoStat.PseudoStatMainHandDps]: 1.55,
+			[PseudoStat.PseudoStatOffHandDps]: 0.74,
 		},
 	),
 );

@@ -45,19 +45,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		specOptions: Presets.DefaultOptions,
 		other: Presets.OtherDefaults,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			blessingOfKings: true,
-			leaderOfThePack: true,
-			serpentsSwiftness: true,
-			bloodlust: true,
-			skullBannerCount: 2,
-			stormlashTotemCount: 4,
-		}),
+		raidBuffs: Presets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
-		debuffs: Debuffs.create({
-			curseOfElements: true,
-		}),
+		debuffs: Presets.DefaultDebuffs,
 	},
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [ShamanInputs.ShamanShieldInput()],

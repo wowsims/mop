@@ -255,7 +255,7 @@ func (sim *Simulation) EnableTargetUnit(targetUnit *Unit) {
 	sim.Encounter.AllTargets[targetUnit.Index].Enable(sim)
 }
 
-func (target *Target) Disable(sim *Simulation) {
+func (target *Target) Disable(sim *Simulation, expireAuras bool) {
 	if !target.IsEnabled() {
 		return
 	}
@@ -264,7 +264,10 @@ func (target *Target) Disable(sim *Simulation) {
 	target.AutoAttacks.CancelAutoSwing(sim)
 	target.enabled = false
 	sim.Encounter.removeInactiveTarget(target)
-	target.auraTracker.expireAll(sim)
+
+	if expireAuras {
+		target.auraTracker.expireAll(sim)
+	}
 
 	if target.CurrentTarget != nil {
 		target.CurrentTarget.CurrentTarget = &target.NextActiveTarget().Unit
@@ -272,12 +275,12 @@ func (target *Target) Disable(sim *Simulation) {
 	}
 }
 
-func (sim *Simulation) DisableTargetUnit(targetUnit *Unit) {
+func (sim *Simulation) DisableTargetUnit(targetUnit *Unit, expireAuras bool) {
 	if targetUnit.Type != EnemyUnit {
 		panic("Unit is not an enemy target!")
 	}
 
-	sim.Encounter.AllTargets[targetUnit.Index].Disable(sim)
+	sim.Encounter.AllTargets[targetUnit.Index].Disable(sim, expireAuras)
 }
 
 func (target *Target) NextActiveTarget() *Target {
