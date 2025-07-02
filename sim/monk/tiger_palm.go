@@ -85,6 +85,7 @@ func (monk *Monk) registerTigerPalm() {
 	chiMetrics := monk.NewChiMetrics(tigerPalmActionID)
 	isBrewmaster := monk.Spec == proto.Spec_SpecBrewmasterMonk
 	chiCost := int32(1)
+	manaMetrics := monk.NewManaMetrics(tigerPalmActionID)
 
 	tigerPowerBuff := monk.RegisterAura(tigerPowerBuffConfig(monk, false))
 
@@ -123,6 +124,11 @@ func (monk *Monk) registerTigerPalm() {
 						monk.onChiSpent(sim, chiCost)
 					} else {
 						monk.SpendChi(sim, chiCost, chiMetrics)
+					}
+
+					if monk.MuscleMemoryAura.IsActive() {
+						result.Damage += result.Damage * 1.5
+						monk.AddMana(sim, monk.MaxMana()*0.04, manaMetrics)
 					}
 				}
 			}

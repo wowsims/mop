@@ -165,6 +165,7 @@ const (
 	SpellFlagCannotBeDodged                                // Ignores dodge in physical hit rolls
 	SpellFlagBinary                                        // Does not do partial resists and could need a different hit roll.
 	SpellFlagChanneled                                     // Spell is channeled
+	SpellFlagCastWhileChanneling                           // Spell can be cast while channeling
 	SpellFlagDisease                                       // Spell is categorized as disease
 	SpellFlagHelpful                                       // For healing spells / buffs.
 	SpellFlagMeleeMetrics                                  // Marks a spell as a melee ability for metrics.
