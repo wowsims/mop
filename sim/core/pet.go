@@ -226,8 +226,8 @@ func (pet *Pet) Enable(sim *Simulation, petAgent PetAgent) {
 	pet.SetGCDTimer(sim, max(0, sim.CurrentTime+pet.startAttackDelay, sim.CurrentTime))
 	pet.AutoAttacks.EnableAutoSwing(sim)
 
-	if (sim.CurrentTime < 0) || (pet.startAttackDelay > 0) {
-		pet.AutoAttacks.StopMeleeUntil(sim, max(0, sim.CurrentTime+pet.startAttackDelay)-pet.AutoAttacks.MainhandSwingSpeed())
+	if pet.startAttackDelay > 0 {
+		pet.AutoAttacks.StopMeleeUntil(sim, max(SpellBatchWindow, sim.CurrentTime+pet.startAttackDelay)-pet.AutoAttacks.MainhandSwingSpeed())
 	}
 
 	if sim.Log != nil {
