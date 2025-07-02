@@ -112,6 +112,7 @@ type Warrior struct {
 	DefensiveStanceAura *core.Aura
 	BerserkerStanceAura *core.Aura
 
+	GlyphOfHamstring    *core.Aura
 	InciteAura          *core.Aura
 	UltimatumAura       *core.Aura
 	SweepingStrikesAura *core.Aura
