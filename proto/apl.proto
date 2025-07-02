@@ -41,7 +41,7 @@ message APLListItem {
     APLAction action = 3; // The action to be performed.
 }
 
-// NextIndex: 28
+// NextIndex: 27
 message APLAction {
     APLValue condition = 1; // If set, action will only execute if value is true or != 0.
 
@@ -68,7 +68,6 @@ message APLAction {
 
         // Misc
         APLActionChangeTarget change_target = 9;
-        APLActionNextTarget next_target = 27;
         APLActionActivateAura activate_aura = 13;
         APLActionActivateAuraWithStacks activate_aura_with_stacks = 24;
         APLActionActivateAllStatBuffProcAuras activate_all_stat_buff_proc_auras = 25;
@@ -86,7 +85,7 @@ message APLAction {
     }
 }
 
-// NextIndex: 105
+// NextIndex: 106
 message APLValue {
 	UUID uuid = 85;
 
@@ -139,6 +138,7 @@ message APLValue {
 
 		// Unit values
 		APLValueUnitIsMoving unit_is_moving = 72;
+		APLValueUnitDistance unit_distance = 105;
 
         // Rune Resource values
         APLValueCurrentRuneCount current_rune_count = 29;
@@ -304,7 +304,6 @@ message APLActionStrictSequence {
 message APLActionChangeTarget {
     UnitReference new_target = 1;
 }
-message APLActionNextTarget {}
 
 message APLActionCancelAura {
     ActionID aura_id = 1;
@@ -459,6 +458,9 @@ message APLValueBossSpellIsCasting {
     ActionID spell_id = 2;
 }
 message APLValueUnitIsMoving {
+    UnitReference source_unit = 1;
+}
+message APLValueUnitDistance {
     UnitReference source_unit = 1;
 }
 message APLValueCurrentHealth {

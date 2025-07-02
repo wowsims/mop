@@ -99,6 +99,7 @@ import {
 	APLValueTotemRemainingTime,
 	APLValueTrinketProcsMaxRemainingICD,
 	APLValueTrinketProcsMinRemainingTime,
+	APLValueUnitDistance,
 	APLValueUnitIsMoving,
 	APLValueWarlockHandOfGuldanInFlight,
 	APLValueWarlockHauntInFlight,
@@ -668,6 +669,13 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		submenu: ['Unit'],
 		shortDescription: '',
 		newValue: APLValueUnitIsMoving.create,
+		fields: [AplHelpers.unitFieldConfig('sourceUnit', 'aura_sources')],
+	}),
+	unitDistance: inputBuilder({
+		label: 'Distance',
+		submenu: ['Unit'],
+		shortDescription: 'Returns the distance to the specified unit.',
+		newValue: APLValueUnitDistance.create,
 		fields: [AplHelpers.unitFieldConfig('sourceUnit', 'aura_sources')],
 	}),
 

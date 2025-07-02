@@ -161,9 +161,11 @@ func (rot *APLRotation) newAPLValue(config *proto.APLValue) APLValue {
 	case *proto.APLValue_RuneSlotCooldown:
 		value = rot.newValueRuneSlotCooldown(config.GetRuneSlotCooldown(), config.Uuid)
 
-	//Unit
+	// Unit
 	case *proto.APLValue_UnitIsMoving:
-		value = rot.newValueCharacterIsMoving(config.GetUnitIsMoving(), config.Uuid)
+		value = rot.newValueUnitIsMoving(config.GetUnitIsMoving(), config.Uuid)
+	case *proto.APLValue_UnitDistance:
+		value = rot.newValueUnitDistance(config.GetUnitDistance(), config.Uuid)
 
 	// GCD
 	case *proto.APLValue_GcdIsReady:

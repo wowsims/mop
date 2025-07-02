@@ -45,9 +45,8 @@ func (rot *APLRotation) newValueDotIsActiveOnAllTargets(config *proto.APLValueDo
 		return nil
 	}
 
-	units := unit.Env.Encounter.ActiveTargetUnits
-	dots := make([]*Dot, len(units)-1)
-
+	units := unit.Env.Encounter.AllTargetUnits
+	dots := make([]*Dot, 0, len(units))
 	for _, unit := range units {
 		dot := rot.GetAPLDot(rot.GetTargetUnit(&proto.UnitReference{
 			Type:  proto.UnitReference_Target,
@@ -74,7 +73,7 @@ func (value *APLValueDotIsActiveOnAllTargets) Type() proto.APLValueType {
 }
 func (value *APLValueDotIsActiveOnAllTargets) GetBool(sim *Simulation) bool {
 	for _, dot := range value.dots {
-		if !dot.IsActive() {
+		if !dot.IsActive() && dot.Unit.IsEnabled() {
 			return false
 		}
 	}
@@ -122,8 +121,8 @@ func (rot *APLRotation) newValueDotLowestRemainingTime(config *proto.APLValueDot
 		return nil
 	}
 
-	units := unit.Env.Encounter.ActiveTargetUnits
-	dots := make([]*Dot, len(units)-1)
+	units := unit.Env.Encounter.AllTargetUnits
+	dots := make([]*Dot, 0, len(units))
 
 	for _, unit := range units {
 		dot := rot.GetAPLDot(rot.GetTargetUnit(&proto.UnitReference{
@@ -147,7 +146,10 @@ func (value *APLValueDotLowestRemainingTime) Type() proto.APLValueType {
 func (value *APLValueDotLowestRemainingTime) GetDuration(sim *Simulation) time.Duration {
 	var duration time.Duration
 	for _, dot := range value.dots {
-		if dot.IsActive() {
+		if !dot.Unit.IsEnabled() {
+			continue
+		}
+		if !dot.IsActive() {
 			duration = min(duration, dot.RemainingDuration(sim))
 		} else {
 			return 0
