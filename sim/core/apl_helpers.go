@@ -10,18 +10,26 @@ import (
 // Struct for handling unit references, to account for values that can
 // change dynamically (e.g. CurrentTarget).
 type UnitReference struct {
-	fixedUnit       *Unit
-	curTargetSource *Unit
+	Type               proto.UnitReference_Type
+	fixedUnit          *Unit
+	targetLookupSource *Unit
 }
 
 func (ur UnitReference) Get() *Unit {
 	if ur.fixedUnit != nil {
 		return ur.fixedUnit
-	} else if ur.curTargetSource != nil {
-		return ur.curTargetSource.CurrentTarget
-	} else {
-		return nil
+	} else if ur.targetLookupSource != nil {
+		switch ur.Type {
+		case proto.UnitReference_PreviousTarget:
+			return ur.targetLookupSource.Env.PreviousActiveTargetUnit(ur.targetLookupSource)
+		case proto.UnitReference_CurrentTarget:
+			return ur.targetLookupSource.CurrentTarget
+		case proto.UnitReference_NextTarget:
+			return ur.targetLookupSource.Env.NextActiveTargetUnit(ur.targetLookupSource)
+		}
 	}
+
+	return nil
 }
 
 func (ur *UnitReference) String() string {
@@ -29,13 +37,18 @@ func (ur *UnitReference) String() string {
 }
 
 func NewUnitReference(ref *proto.UnitReference, contextUnit *Unit) UnitReference {
-	if ref == nil || ref.Type == proto.UnitReference_Unknown {
+	switch {
+	case ref == nil,
+		ref.Type == proto.UnitReference_Unknown:
 		return UnitReference{}
-	} else if ref.Type == proto.UnitReference_CurrentTarget {
+	case ref.Type == proto.UnitReference_PreviousTarget,
+		ref.Type == proto.UnitReference_CurrentTarget,
+		ref.Type == proto.UnitReference_NextTarget:
 		return UnitReference{
-			curTargetSource: contextUnit,
+			Type:               ref.Type,
+			targetLookupSource: contextUnit,
 		}
-	} else {
+	default:
 		return UnitReference{
 			fixedUnit: contextUnit.GetUnit(ref),
 		}
@@ -94,7 +107,7 @@ func newAuraReferenceHelper(sourceUnit UnitReference, auraId *proto.ActionID, au
 			auras[unit.UnitIndex] = auraGetter(unit, ProtoToActionID(auraId))
 		}
 		return AuraReference{
-			curTargetSource: sourceUnit.curTargetSource,
+			curTargetSource: sourceUnit.targetLookupSource,
 			curTargetAuras:  auras,
 		}
 	}
