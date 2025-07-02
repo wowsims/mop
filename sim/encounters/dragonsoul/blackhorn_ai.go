@@ -447,7 +447,7 @@ func (ai *BlackhornAI) Reset(sim *core.Simulation) {
 		Priority: core.ActionPriorityDOT,
 
 		OnAction: func(sim *core.Simulation) {
-			sim.DisableTargetUnit(ai.AddUnit)
+			sim.DisableTargetUnit(ai.AddUnit, true)
 		},
 	})
 
