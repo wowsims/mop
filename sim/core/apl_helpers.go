@@ -21,11 +21,11 @@ func (ur UnitReference) Get() *Unit {
 	} else if ur.targetLookupSource != nil {
 		switch ur.Type {
 		case proto.UnitReference_PreviousTarget:
-			return ur.targetLookupSource.Env.PreviousActiveTargetUnit(ur.targetLookupSource)
+			return ur.targetLookupSource.Env.PreviousActiveTargetUnit(ur.targetLookupSource.CurrentTarget)
 		case proto.UnitReference_CurrentTarget:
 			return ur.targetLookupSource.CurrentTarget
 		case proto.UnitReference_NextTarget:
-			return ur.targetLookupSource.Env.NextActiveTargetUnit(ur.targetLookupSource)
+			return ur.targetLookupSource.Env.NextActiveTargetUnit(ur.targetLookupSource.CurrentTarget)
 		}
 	}
 
