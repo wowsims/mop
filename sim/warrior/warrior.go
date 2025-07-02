@@ -59,6 +59,7 @@ const (
 	SpellMaskHeroicLeap
 	SpellMaskWildStrike
 	SpellMaskShieldBlock
+	SpellMaskHamstring
 
 	// Talents
 	SpellMaskImpendingVictory
@@ -175,6 +176,7 @@ func (warrior *Warrior) Initialize() {
 	warrior.registerShatteringThrow()
 	warrior.registerShieldWall()
 	warrior.registerSunderArmor()
+	warrior.registerHamstring()
 	warrior.registerThunderClap()
 	warrior.registerWhirlwind()
 	warrior.registerCharge()
