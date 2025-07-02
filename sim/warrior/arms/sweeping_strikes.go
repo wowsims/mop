@@ -18,9 +18,9 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		ClassSpellMask: warrior.SpellMaskSweepingStrikesHit,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
+		Flags:          core.SpellFlagIgnoreAttackerModifiers | core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
 
-		DamageMultiplier: 0.5,
+		DamageMultiplier: 0.5 + 0.1, // 2025-07-01 - Balance change
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -35,7 +35,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		ProcMask:       core.ProcMaskMeleeSpecial,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
 
-		DamageMultiplier: 0.5,
+		DamageMultiplier: 0.5 + 0.1, // 2025-07-01 - Balance change
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
