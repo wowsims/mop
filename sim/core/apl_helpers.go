@@ -76,15 +76,15 @@ func (rot *APLRotation) GetTargetUnit(ref *proto.UnitReference) UnitReference {
 type AuraReference struct {
 	fixedAura *Aura
 
-	curTargetSource *Unit
-	curTargetAuras  AuraArray
+	curTarget      UnitReference
+	curTargetAuras AuraArray
 }
 
 func (ar *AuraReference) Get() *Aura {
 	if ar.fixedAura != nil {
 		return ar.fixedAura
-	} else if ar.curTargetSource != nil {
-		return ar.curTargetAuras.Get(ar.curTargetSource.CurrentTarget)
+	} else if ar.curTarget.Get() != nil {
+		return ar.curTargetAuras.Get(ar.curTarget.Get())
 	} else {
 		return nil
 	}
@@ -107,8 +107,8 @@ func newAuraReferenceHelper(sourceUnit UnitReference, auraId *proto.ActionID, au
 			auras[unit.UnitIndex] = auraGetter(unit, ProtoToActionID(auraId))
 		}
 		return AuraReference{
-			curTargetSource: sourceUnit.targetLookupSource,
-			curTargetAuras:  auras,
+			curTarget:      sourceUnit,
+			curTargetAuras: auras,
 		}
 	}
 }
