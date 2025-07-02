@@ -112,11 +112,54 @@ func newAuraReferenceHelper(sourceUnit UnitReference, auraId *proto.ActionID, au
 		}
 	}
 }
+
 func NewAuraReference(sourceUnit UnitReference, auraId *proto.ActionID) AuraReference {
 	return newAuraReferenceHelper(sourceUnit, auraId, func(unit *Unit, actionID ActionID) *Aura { return unit.GetAuraByID(actionID) })
 }
+
 func NewIcdAuraReference(sourceUnit UnitReference, auraId *proto.ActionID) AuraReference {
 	return newAuraReferenceHelper(sourceUnit, auraId, func(unit *Unit, actionID ActionID) *Aura { return unit.GetIcdAuraByID(actionID) })
+}
+
+type DotReference struct {
+	fixedDot *Dot
+
+	curTarget     UnitReference
+	curTargetDots DotArray
+}
+
+func (ar *DotReference) Get() *Dot {
+	if ar.fixedDot != nil {
+		return ar.fixedDot
+	} else if ar.curTarget.Get() != nil {
+		return ar.curTargetDots.Get(ar.curTarget.Get())
+	} else {
+		return nil
+	}
+}
+
+func (ar *DotReference) String() string {
+	return ar.Get().ActionID.String()
+}
+
+func (rot *APLRotation) NewDotReference(targetUnit UnitReference, auraId *proto.ActionID) *DotReference {
+	if targetUnit.Get() == nil {
+		return &DotReference{}
+	} else if targetUnit.fixedUnit != nil {
+		return &DotReference{
+			fixedDot: rot.GetAPLDot(targetUnit, auraId),
+		}
+	} else {
+		dots := make([]*Dot, len(targetUnit.Get().Env.Encounter.AllTargetUnits))
+		for _, unit := range targetUnit.Get().Env.Encounter.AllTargetUnits {
+			dots[unit.UnitIndex] = rot.GetAPLDot(UnitReference{fixedUnit: unit}, auraId)
+		}
+
+		return &DotReference{
+			curTarget:     targetUnit,
+			curTargetDots: dots,
+		}
+	}
 }
 
 func (rot *APLRotation) GetAPLAura(sourceUnit UnitReference, auraId *proto.ActionID) AuraReference {

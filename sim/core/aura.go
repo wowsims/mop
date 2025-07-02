@@ -1002,7 +1002,7 @@ func (auras AuraArray) ActivateAll(sim *Simulation) {
 }
 
 func (auras AuraArray) ApplyOnExpire(onExpire OnExpire) {
-	for _, aura := range auras{
+	for _, aura := range auras {
 		if aura != nil {
 			aura.ApplyOnExpire(onExpire)
 		}
