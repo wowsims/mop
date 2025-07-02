@@ -816,7 +816,7 @@ func registerDevotionAuraCD(agent Agent, numDevotionAuras int32) {
 	}
 
 	// TODO: Config for specifying the amount of Holy spec Devotion Auras?
-	devAura := DevotionAuraAura(&agent.GetCharacter().Unit, -1, false)
+	devAura := DevotionAuraAura(&agent.GetCharacter().Unit, -1, true)
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
