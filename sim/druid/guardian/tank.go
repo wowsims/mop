@@ -83,6 +83,9 @@ func (bear *GuardianDruid) ApplyTalents() {
 	bear.applyLeatherSpecialization()
 	bear.RegisterVengeance(84840, bear.BearFormAura)
 	bear.registerIncarnation()
+
+	// MoP Classic balancing
+	bear.BearFormAura.AttachMultiplicativePseudoStatBuff(&bear.PseudoStats.DamageDealtMultiplier, 1.05)
 }
 
 func (bear *GuardianDruid) applyMastery() {
