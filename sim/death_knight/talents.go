@@ -653,11 +653,15 @@ func (dk *DeathKnight) registerBloodTap() {
 		return
 	}
 
-	dk.BloodChargeAura = dk.RegisterAura(core.Aura{
+	bloodChargeAura := dk.RegisterAura(core.Aura{
 		Label:     "Blood Charge" + dk.Label,
 		ActionID:  core.ActionID{SpellID: 114851},
 		Duration:  time.Second * 25,
 		MaxStacks: 12,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	actionID := core.ActionID{SpellID: 45529}
@@ -676,12 +680,12 @@ func (dk *DeathKnight) registerBloodTap() {
 		ClassSpellMask: DeathKnightSpellBloodTap,
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return dk.BloodChargeAura.GetStacks() >= 5 && dk.AnyDepletedRunes()
+			return bloodChargeAura.GetStacks() >= 5 && dk.AnyDepletedRunes()
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			if dk.ConvertAndRegenBloodTapRune(sim, spell, runeMetrics) {
-				dk.BloodChargeAura.RemoveStacks(sim, 5)
+				bloodChargeAura.RemoveStacks(sim, 5)
 			}
 		},
 	})
@@ -694,8 +698,8 @@ func (dk *DeathKnight) registerBloodTap() {
 		Outcome:        core.OutcomeLanded,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			dk.BloodChargeAura.Activate(sim)
-			dk.BloodChargeAura.AddStacks(sim, 2)
+			bloodChargeAura.Activate(sim)
+			bloodChargeAura.AddStacks(sim, 2)
 		},
 	})
 }
@@ -749,7 +753,7 @@ func (dk *DeathKnight) registerRunicCorruption() {
 	duration := time.Second * 3
 	multi := 2.0
 	// Runic Corruption gives rune regen speed
-	dk.RunicCorruptionAura = dk.GetOrRegisterAura(core.Aura{
+	regenAura := dk.RegisterAura(core.Aura{
 		Label:    "Runic Corruption" + dk.Label,
 		ActionID: core.ActionID{SpellID: 51460},
 		Duration: duration,
@@ -759,6 +763,9 @@ func (dk *DeathKnight) registerRunicCorruption() {
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			dk.MultiplyRuneRegenSpeed(sim, 1/multi)
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 
@@ -772,15 +779,15 @@ func (dk *DeathKnight) registerRunicCorruption() {
 
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			hasteMultiplier := 1.0 + dk.GetStat(stats.HasteRating)/(100*core.HasteRatingPerHastePercent)
-			if dk.RunicCorruptionAura.IsActive() {
+			if regenAura.IsActive() {
 				totalMultiplier := 1 / (hasteMultiplier * (dk.GetRuneRegenMultiplier() / multi))
 				hastedDuration := core.DurationFromSeconds(duration.Seconds() * totalMultiplier)
-				dk.RunicCorruptionAura.UpdateExpires(dk.RunicCorruptionAura.ExpiresAt() + hastedDuration)
+				regenAura.UpdateExpires(regenAura.ExpiresAt() + hastedDuration)
 			} else {
 				totalMultiplier := 1 / (hasteMultiplier * dk.GetRuneRegenMultiplier())
 				hastedDuration := core.DurationFromSeconds(duration.Seconds() * totalMultiplier)
-				dk.RunicCorruptionAura.Duration = hastedDuration
-				dk.RunicCorruptionAura.Activate(sim)
+				regenAura.Duration = hastedDuration
+				regenAura.Activate(sim)
 			}
 		},
 	})

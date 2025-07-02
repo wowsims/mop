@@ -71,6 +71,9 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 			hitSpell.Cast(sim, war.Env.NextActiveTargetUnit(result.Target))
 		},
 	})
+	war.SweepingStrikesAura.OnEncounterStart = func(aura *core.Aura, sim *core.Simulation) {
+		aura.Deactivate(sim)
+	}
 
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,

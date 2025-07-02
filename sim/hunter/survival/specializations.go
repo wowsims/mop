@@ -37,7 +37,7 @@ func (survival *SurvivalHunter) applyLNL() {
 		FloatValue: -100,
 	})
 
-	survival.LockAndLoadAura = survival.RegisterAura(core.Aura{
+	lnlAura := survival.RegisterAura(core.Aura{
 		Icd:       &icd,
 		Label:     "Lock and Load Proc",
 		ActionID:  actionID,
@@ -58,6 +58,9 @@ func (survival *SurvivalHunter) applyLNL() {
 				}
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	survival.RegisterAura(core.Aura{
@@ -77,8 +80,8 @@ func (survival *SurvivalHunter) applyLNL() {
 
 			if sim.RandomFloat("Lock and Load") < procChance {
 				icd.Use(sim)
-				survival.LockAndLoadAura.Activate(sim)
-				survival.LockAndLoadAura.SetStacks(sim, 2)
+				lnlAura.Activate(sim)
+				lnlAura.SetStacks(sim, 2)
 				if survival.ExplosiveShot != nil {
 					survival.ExplosiveShot.CD.Reset()
 				}

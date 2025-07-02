@@ -31,6 +31,9 @@ func (bmHunter *BeastMasteryHunter) applyFrenzy() {
 			aura.Unit.MultiplyMeleeSpeed(sim, 1/(1+0.04*float64(oldStacks)))
 			aura.Unit.MultiplyMeleeSpeed(sim, 1+0.04*float64(newStacks))
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	procChance := 0.4

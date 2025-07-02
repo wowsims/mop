@@ -160,6 +160,9 @@ func init() {
 					aura.RemoveStack(sim)
 				}
 			},
+			OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+				aura.Deactivate(sim)
+			},
 		})
 
 		aura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{

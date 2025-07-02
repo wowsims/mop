@@ -42,7 +42,6 @@ func NewWindwalkerMonk(character *core.Character, options *proto.Player) *Windwa
 type WindwalkerMonk struct {
 	*monk.Monk
 
-	TigereyeBrewAura      *core.Aura
 	TigereyeBrewStackAura *core.Aura
 
 	outstandingChi           int32
@@ -72,15 +71,6 @@ func (ww *WindwalkerMonk) Reset(sim *core.Simulation) {
 	ww.outstandingChi = 0
 	ww.tigereyeBrewT164PTracker = 0
 	ww.Monk.Reset(sim)
-}
-
-func (ww *WindwalkerMonk) OnEncounterStart(sim *core.Simulation) {
-	ww.ComboBreakerBlackoutKickAura.Deactivate(sim)
-	ww.ComboBreakerTigerPalmAura.Deactivate(sim)
-	ww.TigereyeBrewAura.Deactivate(sim)
-	ww.TigereyeBrewStackAura.Deactivate(sim)
-	ww.TigerStrikesAura.Deactivate(sim)
-	ww.Monk.OnEncounterStart(sim)
 }
 
 func (ww *WindwalkerMonk) RegisterSpecializationEffects() {

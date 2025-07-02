@@ -72,7 +72,7 @@ func (mw *MistweaverMonk) Reset(sim *core.Simulation) {
 }
 
 func (mw *MistweaverMonk) OnEncounterStart(sim *core.Simulation) {
-	mw.DeactivateAuras(sim)
+	// Overridden here to prevent resetting Chi
 }
 
 func (mw *MistweaverMonk) RegisterSpecializationEffects() {

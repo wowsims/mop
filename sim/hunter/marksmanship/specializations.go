@@ -44,7 +44,7 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 		IntValue:  -20,
 	})
 
-	mm.BombardmentAura = mm.RegisterAura(core.Aura{
+	bombardmentAura := mm.RegisterAura(core.Aura{
 		Label:    "Bombardment",
 		ActionID: core.ActionID{SpellID: 35110},
 		Duration: time.Second * 6,
@@ -55,7 +55,9 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			costMod.Deactivate()
 			dmgMod.Deactivate()
-
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 	core.MakeProcTriggerAura(&mm.Unit, core.ProcTrigger{
@@ -66,10 +68,10 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 		ClassSpellMask: hunter.HunterSpellMultiShot,
 		Outcome:        core.OutcomeCrit,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if mm.BombardmentAura.IsActive() {
-				mm.BombardmentAura.Refresh(sim)
+			if bombardmentAura.IsActive() {
+				bombardmentAura.Refresh(sim)
 			} else {
-				mm.BombardmentAura.Activate(sim)
+				bombardmentAura.Activate(sim)
 			}
 		},
 	})
@@ -77,7 +79,7 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 	var counter *core.Aura
 	procChance := 0.5
-	mm.ReadySetAimAura = mm.RegisterAura(core.Aura{
+	mmAura := mm.RegisterAura(core.Aura{
 		Label:    "Ready, Set, Aim...",
 		ActionID: core.ActionID{SpellID: 82925},
 		Duration: time.Second * 8,
@@ -85,6 +87,9 @@ func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 			if spell.Matches(hunter.HunterSpellAimedShot) && spell.CurCast.Cost == 0 {
 				aura.Deactivate(sim) // Consume effect
 			}
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 
@@ -103,7 +108,7 @@ func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 			}
 			if procChance == 1 || sim.Proc(procChance, "Master Marksman Proc") {
 				if counter.GetStacks() == 2 {
-					mm.ReadySetAimAura.Activate(sim)
+					mmAura.Activate(sim)
 					counter.Deactivate(sim)
 				} else {
 					if !counter.IsActive() {
@@ -117,7 +122,7 @@ func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 }
 func (mm *MarksmanshipHunter) SteadyFocus() {
 	attackspeedMultiplier := core.TernaryFloat64(mm.CouldHaveSetBonus(hunter.YaunGolSlayersBattlegear, 4), 1.25, 1.15)
-	mm.SteadyFocusAura = mm.RegisterAura(core.Aura{
+	steadyFocusAura := mm.RegisterAura(core.Aura{
 		Label:     "Steady Focus",
 		ActionID:  core.ActionID{SpellID: 53224, Tag: 1},
 		Duration:  time.Second * 20,
@@ -127,6 +132,9 @@ func (mm *MarksmanshipHunter) SteadyFocus() {
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			aura.Unit.MultiplyRangedSpeed(sim, 1/attackspeedMultiplier)
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 
@@ -142,7 +150,7 @@ func (mm *MarksmanshipHunter) SteadyFocus() {
 				aura.SetStacks(sim, 1)
 			} else {
 				if aura.GetStacks() == 2 {
-					mm.SteadyFocusAura.Activate(sim)
+					steadyFocusAura.Activate(sim)
 					aura.SetStacks(sim, 1)
 				} else {
 					aura.SetStacks(sim, 2)

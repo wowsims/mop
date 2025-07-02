@@ -20,6 +20,10 @@ func (bear *GuardianDruid) registerSavageDefenseSpell() {
 		OnExpire: func(aura *core.Aura, _ *core.Simulation) {
 			aura.Unit.PseudoStats.BaseDodgeChance -= 0.45
 		},
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	bear.SavageDefense = bear.RegisterSpell(druid.Bear, core.SpellConfig{

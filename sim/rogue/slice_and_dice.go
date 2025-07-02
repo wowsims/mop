@@ -10,6 +10,7 @@ import (
 func (rogue *Rogue) registerSliceAndDice() {
 	actionID := core.ActionID{SpellID: 5171}
 	energyMetrics := rogue.NewEnergyMetrics(core.ActionID{SpellID: 79152})
+	isSubtlety := rogue.Spec == proto.Spec_SpecSubtletyRogue
 
 	rogue.SliceAndDiceBonusFlat = 0.4
 	rogue.sliceAndDiceDurations = [6]time.Duration{
@@ -28,7 +29,7 @@ func (rogue *Rogue) registerSliceAndDice() {
 		// This will be overridden on cast, but set a non-zero default so it doesn't crash when used in APL prepull
 		Duration: rogue.sliceAndDiceDurations[5],
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			masteryBonus := core.TernaryFloat64(rogue.Spec == proto.Spec_SpecSubtletyRogue, rogue.GetMasteryBonus(), 0)
+			masteryBonus := core.TernaryFloat64(isSubtlety, rogue.GetMasteryBonus(), 0)
 			slideAndDiceMod = 1 + rogue.SliceAndDiceBonusFlat*(1+masteryBonus)
 			rogue.MultiplyMeleeSpeed(sim, slideAndDiceMod)
 			if sim.Log != nil {
@@ -37,6 +38,13 @@ func (rogue *Rogue) registerSliceAndDice() {
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			rogue.MultiplyMeleeSpeed(sim, 1/slideAndDiceMod)
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			if isSubtlety && !rogue.Premeditation.CD.IsReady(sim) && aura.IsActive() {
+				// TODO: Handle resetting duration of SnD to 2cp, without incuring a GCD and refresh the energy regen
+			} else {
+				aura.Deactivate(sim)
+			}
 		},
 	})
 
@@ -73,7 +81,7 @@ func (rogue *Rogue) registerSliceAndDice() {
 			AffectedByCastSpeed: false,
 			BonusCoefficient:    1,
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				if rogue.Spec == proto.Spec_SpecSubtletyRogue {
+				if isSubtlety {
 					rogue.AddEnergy(sim, 8, energyMetrics)
 				}
 				// Do something just to give us a tick line
@@ -89,7 +97,7 @@ func (rogue *Rogue) registerSliceAndDice() {
 			rogue.ApplyFinisher(sim, spell)
 			spell.RelatedSelfBuff.Activate(sim)
 
-			if rogue.Spec == proto.Spec_SpecSubtletyRogue {
+			if isSubtlety {
 				hot := spell.Hot(spell.Unit)
 				hot.Duration = rogue.SliceAndDiceAura.Duration
 				hot.BaseTickCount = 3 + 3*rogue.ComboPoints()

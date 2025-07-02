@@ -27,8 +27,6 @@ func RegisterFrostDeathKnight() {
 type FrostDeathKnight struct {
 	*death_knight.DeathKnight
 
-	FreezingFogAura            *core.Aura
-	KillingMachineAura         *core.Aura
 	MightOfTheFrozenWastesAura *core.Aura
 }
 
@@ -83,10 +81,4 @@ func (fdk *FrostDeathKnight) ApplyTalents() {
 
 func (fdk *FrostDeathKnight) Reset(sim *core.Simulation) {
 	fdk.DeathKnight.Reset(sim)
-}
-
-func (fdk *FrostDeathKnight) OnEncounterStart(sim *core.Simulation) {
-	fdk.FreezingFogAura.Deactivate(sim)
-	fdk.KillingMachineAura.Deactivate(sim)
-	fdk.DeathKnight.OnEncounterStart(sim)
 }

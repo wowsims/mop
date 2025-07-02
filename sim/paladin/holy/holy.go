@@ -58,5 +58,5 @@ func (holy *HolyPaladin) Reset(sim *core.Simulation) {
 }
 
 func (holy *HolyPaladin) OnEncounterStart(sim *core.Simulation) {
-	holy.DeactivateAuras(sim)
+	// Overridden here to prevent resetting Holy Power
 }

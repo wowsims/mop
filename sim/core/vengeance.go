@@ -19,6 +19,10 @@ func (character *Character) RegisterVengeance(spellID int32, requiredAura *Aura)
 			ActionID:  ActionID{SpellID: spellID},
 			Duration:  time.Second * 20,
 			MaxStacks: math.MaxInt32,
+
+			OnEncounterStart: func(aura *Aura, sim *Simulation) {
+				aura.Deactivate(sim)
+			},
 		},
 
 		BonusPerStack: stats.Stats{stats.AttackPower: 1},

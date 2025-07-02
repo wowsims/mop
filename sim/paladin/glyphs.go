@@ -612,10 +612,14 @@ func (paladin *Paladin) registerGlyphOfTemplarsVerdict() {
 		return
 	}
 
-	paladin.GlyphOfTemplarsVerdictAura = paladin.RegisterAura(core.Aura{
+	glyphOfTemplarsVerdictAura := paladin.RegisterAura(core.Aura{
 		Label:    "Glyph of Templar's Verdict" + paladin.Label,
 		ActionID: core.ActionID{SpellID: 115668},
 		Duration: time.Second * 6,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachMultiplicativePseudoStatBuff(&paladin.PseudoStats.DamageTakenMultiplier, 0.9)
 
 	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
@@ -625,7 +629,7 @@ func (paladin *Paladin) registerGlyphOfTemplarsVerdict() {
 		ClassSpellMask: SpellMaskExorcism | SpellMaskTemplarsVerdict,
 		Outcome:        core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			paladin.GlyphOfTemplarsVerdictAura.Activate(sim)
+			glyphOfTemplarsVerdictAura.Activate(sim)
 		},
 	})
 }
@@ -642,7 +646,7 @@ func (paladin *Paladin) registerGlyphOfTheAlabasterShield() {
 		FloatValue: 0.1,
 	})
 
-	paladin.AlabasterShieldAura = paladin.RegisterAura(core.Aura{
+	alabasterShieldAura := paladin.RegisterAura(core.Aura{
 		Label:     "Alabaster Shield" + paladin.Label,
 		ActionID:  core.ActionID{SpellID: 121467},
 		Duration:  time.Second * 12,
@@ -661,6 +665,9 @@ func (paladin *Paladin) registerGlyphOfTheAlabasterShield() {
 				aura.Deactivate(sim)
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
@@ -670,8 +677,8 @@ func (paladin *Paladin) registerGlyphOfTheAlabasterShield() {
 		Outcome:  core.OutcomeBlock,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			paladin.AlabasterShieldAura.Activate(sim)
-			paladin.AlabasterShieldAura.AddStack(sim)
+			alabasterShieldAura.Activate(sim)
+			alabasterShieldAura.AddStack(sim)
 		},
 	})
 }

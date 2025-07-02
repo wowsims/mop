@@ -5,5 +5,5 @@ import (
 )
 
 func (bdk *BloodDeathKnight) registerRiposte() {
-	bdk.RiposteAura = shared.RegisterRiposteEffect(&bdk.Character, 145677, 145676)
+	shared.RegisterRiposteEffect(&bdk.Character, 145677, 145676)
 }

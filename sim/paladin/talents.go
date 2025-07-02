@@ -90,12 +90,16 @@ func (paladin *Paladin) registerLongArmOfTheLaw() {
 		return
 	}
 
-	paladin.LongArmOfTheLawAura = paladin.RegisterAura(core.Aura{
+	longArmOfTheLawAura := paladin.RegisterAura(core.Aura{
 		Label:    "Long Arm of the Law" + paladin.Label,
 		ActionID: core.ActionID{SpellID: 87173},
 		Duration: time.Second * 3,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
-	paladin.LongArmOfTheLawAura.NewMovementSpeedEffect(0.45)
+	longArmOfTheLawAura.NewMovementSpeedEffect(0.45)
 
 	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
 		Name:           "Long Arm of the Law Trigger" + paladin.Label,
@@ -105,7 +109,7 @@ func (paladin *Paladin) registerLongArmOfTheLaw() {
 		ClassSpellMask: SpellMaskJudgment,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			paladin.LongArmOfTheLawAura.Activate(sim)
+			longArmOfTheLawAura.Activate(sim)
 		},
 	})
 }
@@ -119,7 +123,7 @@ func (paladin *Paladin) registerPursuitOfJustice() {
 	speedLevels := []float64{0.0, 0.15, 0.20, 0.25, 0.30}
 
 	var movementSpeedEffect *core.ExclusiveEffect
-	paladin.PursuitOfJusticeAura = paladin.RegisterAura(core.Aura{
+	pursuitOfJusticeAura := paladin.RegisterAura(core.Aura{
 		Label:     "Pursuit of Justice" + paladin.Label,
 		ActionID:  core.ActionID{SpellID: 114695},
 		Duration:  core.NeverExpires,
@@ -136,19 +140,23 @@ func (paladin *Paladin) registerPursuitOfJustice() {
 			paladin.MultiplyMovementSpeed(sim, 1+newSpeed)
 			movementSpeedEffect.SetPriority(sim, newSpeed)
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Activate(sim)
+			aura.SetStacks(sim, 1)
+		},
 	})
 
-	movementSpeedEffect = paladin.PursuitOfJusticeAura.NewExclusiveEffect("MovementSpeed", true, core.ExclusiveEffect{
+	movementSpeedEffect = pursuitOfJusticeAura.NewExclusiveEffect("MovementSpeed", true, core.ExclusiveEffect{
 		Priority: speedLevels[1],
 	})
 
 	paladin.HolyPower.RegisterOnGain(func(sim *core.Simulation, gain, realGain int32, actionID core.ActionID) {
-		paladin.PursuitOfJusticeAura.Activate(sim)
-		paladin.PursuitOfJusticeAura.SetStacks(sim, paladin.SpendableHolyPower()+1)
+		pursuitOfJusticeAura.Activate(sim)
+		pursuitOfJusticeAura.SetStacks(sim, paladin.SpendableHolyPower()+1)
 	})
 	paladin.HolyPower.RegisterOnSpend(func(sim *core.Simulation, amount int32, actionID core.ActionID) {
-		paladin.PursuitOfJusticeAura.Activate(sim)
-		paladin.PursuitOfJusticeAura.SetStacks(sim, paladin.SpendableHolyPower()+1)
+		pursuitOfJusticeAura.Activate(sim)
+		pursuitOfJusticeAura.SetStacks(sim, paladin.SpendableHolyPower()+1)
 	})
 }
 
@@ -610,6 +618,9 @@ func (paladin *Paladin) registerDivinePurpose() {
 	paladin.DivinePurposeAura = paladin.divinePurposeFactory("Divine Purpose", 90174, time.Second*8, func(aura *core.Aura, spell *core.Spell) bool {
 		return true
 	})
+	paladin.DivinePurposeAura.OnEncounterStart = func(aura *core.Aura, sim *core.Simulation) {
+		aura.Deactivate(sim)
+	}
 }
 
 func (paladin *Paladin) holyPrismFactory(spellID int32, targets []*core.Unit, timer *core.Timer, isHealing bool) {

@@ -20,23 +20,24 @@ func (hunter *Hunter) applyThrillOfTheHunt() {
 		IntValue:  -20,
 	})
 
-	hunter.ThrillOfTheHuntAura = hunter.RegisterAura(core.Aura{
+	tothAura := hunter.RegisterAura(core.Aura{
 		Label:     "Thrill of the Hunt",
 		ActionID:  actionID,
 		Duration:  time.Second * 12,
 		MaxStacks: 3,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			tothMod.Activate()
-
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			tothMod.Deactivate()
-
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
 			if spell.Matches(HunterSpellMultiShot) || spell.Matches(HunterSpellArcaneShot) {
 				aura.RemoveStack(sim)
 			}
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 
@@ -53,8 +54,8 @@ func (hunter *Hunter) applyThrillOfTheHunt() {
 			}
 
 			if sim.RandomFloat("Thrill of the Hunt") < procChance {
-				hunter.ThrillOfTheHuntAura.Activate(sim)
-				hunter.ThrillOfTheHuntAura.SetStacks(sim, 3)
+				tothAura.Activate(sim)
+				tothAura.SetStacks(sim, 3)
 			}
 		},
 	})

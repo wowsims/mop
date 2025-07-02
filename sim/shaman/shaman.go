@@ -180,12 +180,6 @@ type Shaman struct {
 
 	waterShieldManaMetrics *core.ResourceMetrics
 
-	ClearcastingAura *core.Aura
-	LavaSurgeAura    *core.Aura
-	SearingFlameAura *core.Aura
-	UnleashFlameAura *core.Aura
-	UnleashWindAura  *core.Aura
-
 	// Item sets
 	T14Ele4pc *core.Aura
 	T14Enh4pc *core.Aura
@@ -267,14 +261,6 @@ func (shaman *Shaman) Reset(sim *core.Simulation) {
 }
 
 func (shaman *Shaman) OnEncounterStart(sim *core.Simulation) {
-	shaman.DeactivateAuras(sim)
-}
-
-func (shaman *Shaman) DeactivateAuras(sim *core.Simulation) {
-	shaman.UnleashFlameAura.Deactivate(sim)
-	shaman.UnleashWindAura.Deactivate(sim)
-	shaman.LightningShieldAura.Activate(sim)
-	shaman.LightningShieldAura.SetStacks(sim, 1)
 }
 
 func (shaman *Shaman) calcDamageStormstrikeCritChance(sim *core.Simulation, target *core.Unit, baseDamage float64, spell *core.Spell) *core.SpellResult {

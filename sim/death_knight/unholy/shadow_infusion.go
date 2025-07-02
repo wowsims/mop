@@ -33,6 +33,9 @@ func (uhdk *UnholyDeathKnight) registerShadowInfusion() {
 		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
 			damageMod.UpdateFloatValue(float64(newStacks) * 0.1)
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachDependentAura(uhdk.GetOrRegisterAura(core.Aura{
 		Label:     "Shadow Infusion" + uhdk.Label,
 		ActionID:  actionID,

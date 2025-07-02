@@ -37,8 +37,6 @@ func NewRetributionPaladin(character *core.Character, options *proto.Player) *Re
 type RetributionPaladin struct {
 	*paladin.Paladin
 
-	InquisitionAura *core.Aura
-
 	HoLDamage float64
 }
 
@@ -69,10 +67,4 @@ func (ret *RetributionPaladin) ApplyTalents() {
 
 func (ret *RetributionPaladin) Reset(sim *core.Simulation) {
 	ret.Paladin.Reset(sim)
-}
-
-func (ret *RetributionPaladin) OnEncounterStart(sim *core.Simulation) {
-	ret.GlyphOfTemplarsVerdictAura.Deactivate(sim)
-	ret.InquisitionAura.Deactivate(sim)
-	ret.Paladin.OnEncounterStart(sim)
 }

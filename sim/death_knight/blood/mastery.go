@@ -13,7 +13,8 @@ func (bdk *BloodDeathKnight) registerMastery() {
 	shieldAmount := 0.0
 	currentShield := 0.0
 
-	bdk.BloodShieldSpell = bdk.RegisterSpell(core.SpellConfig{
+	var shieldSpell *core.Spell
+	shieldSpell = bdk.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 77535},
 		ProcMask:    core.ProcMaskSpellHealing,
 		SpellSchool: core.SpellSchoolShadow,
@@ -38,7 +39,7 @@ func (bdk *BloodDeathKnight) registerMastery() {
 						return
 					}
 
-					shield := bdk.BloodShieldSpell.SelfShield()
+					shield := shieldSpell.SelfShield()
 					if currentShield <= 0 {
 						shield.Deactivate(sim)
 						return
@@ -47,13 +48,16 @@ func (bdk *BloodDeathKnight) registerMastery() {
 					damageReduced := min(result.Damage, currentShield)
 					currentShield -= damageReduced
 
-					bdk.GainHealth(sim, damageReduced, bdk.BloodShieldSpell.HealthMetrics(result.Target))
+					bdk.GainHealth(sim, damageReduced, shieldSpell.HealthMetrics(result.Target))
 
 					if currentShield <= 0 {
 						shield.Deactivate(sim)
 					} else {
 						shield.SetStacks(sim, int32(currentShield))
 					}
+				},
+				OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+					shieldSpell.SelfShield().Deactivate(sim)
 				},
 			},
 		},
@@ -77,10 +81,9 @@ func (bdk *BloodDeathKnight) registerMastery() {
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			shieldAmount = result.Damage * bdk.getMasteryPercent()
-			bdk.BloodShieldSpell.Cast(sim, result.Target)
+			shieldSpell.Cast(sim, result.Target)
 		},
 	})
-
 }
 
 func (bdk BloodDeathKnight) getMasteryPercent() float64 {

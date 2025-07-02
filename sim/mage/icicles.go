@@ -34,6 +34,10 @@ func (mage *Mage) registerFrostMastery() {
 		ActionID:  core.ActionID{SpellID: 148022},
 		Duration:  time.Hour * 1,
 		MaxStacks: 5,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 }
 

@@ -18,6 +18,10 @@ func (uhdk *UnholyDeathKnight) registerDarkTransformation() {
 		Label:    "Dark Transformation" + uhdk.Ghoul.Label,
 		ActionID: actionID,
 		Duration: time.Second * 30,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachMultiplicativePseudoStatBuff(
 		&uhdk.Ghoul.PseudoStats.DamageDealtMultiplier, 2.0,
 	).AttachSpellMod(core.SpellModConfig{

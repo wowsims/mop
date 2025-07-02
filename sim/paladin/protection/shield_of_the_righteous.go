@@ -44,6 +44,9 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 
 			prot.BastionOfGloryMultiplier = 0.1*float64(newStacks) + prot.ShieldOfTheRighteousAdditiveMultiplier
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnCastComplete,
 		ClassSpellMask: paladin.SpellMaskWordOfGlory,
@@ -54,7 +57,7 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 	})
 
 	var snapshotDmgReduction float64
-	prot.ShieldOfTheRighteousAura = prot.RegisterAura(core.Aura{
+	shieldOfTheRighteousAura := prot.RegisterAura(core.Aura{
 		ActionID:  core.ActionID{SpellID: 132403},
 		Label:     "Shield of the Righteous" + prot.Label,
 		Duration:  time.Second * 3,
@@ -76,9 +79,12 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			prot.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexPhysical] /= snapshotDmgReduction
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
-	prot.AddDefensiveCooldownAura(prot.ShieldOfTheRighteousAura)
+	prot.AddDefensiveCooldownAura(shieldOfTheRighteousAura)
 
 	actionID := core.ActionID{SpellID: 53600}
 
@@ -131,6 +137,6 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 			spell.DealDamage(sim, result)
 		},
 
-		RelatedSelfBuff: prot.ShieldOfTheRighteousAura,
+		RelatedSelfBuff: shieldOfTheRighteousAura,
 	})
 }

@@ -36,11 +36,7 @@ type BloodDeathKnight struct {
 
 	Bloodworm []*BloodwormPet
 
-	BloodShieldSpell *core.Spell
-	RuneTapSpell     *core.Spell
-
-	RiposteAura      *core.Aura
-	ScentOfBloodAura *core.Aura
+	RuneTapSpell *core.Spell
 }
 
 func NewBloodDeathKnight(character *core.Character, options *proto.Player) *BloodDeathKnight {
@@ -131,11 +127,4 @@ func (bdk *BloodDeathKnight) ApplyTalents() {
 
 func (bdk *BloodDeathKnight) Reset(sim *core.Simulation) {
 	bdk.DeathKnight.Reset(sim)
-}
-
-func (bdk *BloodDeathKnight) OnEncounterStart(sim *core.Simulation) {
-	bdk.BloodShieldSpell.SelfShield().Deactivate(sim)
-	bdk.RiposteAura.Deactivate(sim)
-	bdk.ScentOfBloodAura.Deactivate(sim)
-	bdk.DeathKnight.OnEncounterStart(sim)
 }

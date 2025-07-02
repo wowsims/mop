@@ -69,6 +69,10 @@ func (bear *GuardianDruid) registerToothAndClawPassive() {
 				aura.Deactivate(sim)
 			}
 		},
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	// Finally, register the trigger for the personal buff.

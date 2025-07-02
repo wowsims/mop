@@ -122,8 +122,3 @@ func (bmHunter *BeastMasteryHunter) GetHunter() *hunter.Hunter {
 func (bmHunter *BeastMasteryHunter) Reset(sim *core.Simulation) {
 	bmHunter.Hunter.Reset(sim)
 }
-
-func (bmHunter *BeastMasteryHunter) OnEncounterStart(sim *core.Simulation) {
-	bmHunter.Pet.FrenzyAura.Deactivate(sim)
-	bmHunter.Hunter.Pet.OnEncounterStart(sim)
-}

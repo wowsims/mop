@@ -50,6 +50,10 @@ func (war *ProtectionWarrior) registerSwordAndBoard() {
 		Label:    "Sword and Board",
 		ActionID: core.ActionID{SpellID: 46953},
 		Duration: 5 * time.Second,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
@@ -78,6 +82,9 @@ func (war *ProtectionWarrior) registerUltimatum() {
 			if !war.InciteAura.IsActive() {
 				war.HeroicStrikeCleaveCostMod.Deactivate()
 			}
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	}).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  warrior.SpellMaskHeroicStrike | warrior.SpellMaskCleave,
@@ -110,5 +117,5 @@ func (war *ProtectionWarrior) registerUltimatum() {
 }
 
 func (war *ProtectionWarrior) registerRiposte() {
-	war.RiposteAura = shared.RegisterRiposteEffect(&war.Character, 145674, 145672)
+	shared.RegisterRiposteEffect(&war.Character, 145674, 145672)
 }

@@ -41,7 +41,6 @@ type AfflictionWarlock struct {
 	SoulShards         core.SecondaryResourceBar
 	Agony              *core.Spell
 	UnstableAffliction *core.Spell
-	SoulSwapInhaleAura *core.Aura
 	SoulBurnAura       *core.Aura
 	HauntDebuffAuras   core.AuraArray
 	LastCorruption     *core.Dot // Tracks the last corruption we've applied
@@ -111,7 +110,6 @@ func (affliction *AfflictionWarlock) OnEncounterStart(sim *core.Simulation) {
 	}
 
 	affliction.SoulShards.ResetBarTo(sim, defaultShards)
-	affliction.SoulSwapInhaleAura.Deactivate(sim)
 	affliction.Warlock.OnEncounterStart(sim)
 }
 

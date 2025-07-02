@@ -8,11 +8,15 @@ import (
 )
 
 func (demonology *DemonologyWarlock) registerMoltenCore() {
-	demonology.MoltenCoreAura = demonology.RegisterAura(core.Aura{
-		Label:     "Molten Core",
+	buff := demonology.RegisterAura(core.Aura{
+		Label:     "Demonic Core",
 		ActionID:  core.ActionID{SpellID: 122355},
 		Duration:  time.Second * 30,
 		MaxStacks: 10,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_CastTime_Pct,
 		FloatValue: -0.5,
@@ -27,35 +31,35 @@ func (demonology *DemonologyWarlock) registerMoltenCore() {
 	// When Chaos Wave -> 100% Proc Chance
 	apply := func(unit *core.Unit) {
 		core.MakeProcTriggerAura(unit, core.ProcTrigger{
-			Name:           "Molten Core Tracker",
+			Name:           "Demonic Core Tracker",
 			Outcome:        core.OutcomeLanded,
 			ClassSpellMask: warlock.WarlockSpellImpFireBolt | warlock.WarlockSpellShadowflameDot | warlock.WarlockSpellChaosWave | warlock.WarlockSpellShadowBolt | warlock.WarlockSpellSoulFire | warlock.WarlockSpellTouchOfChaos,
 			Callback:       core.CallbackOnPeriodicDamageDealt | core.CallbackOnSpellHitDealt | core.CallbackOnCastComplete,
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-				if spell.Matches(warlock.WarlockSpellSoulFire) && result == nil && demonology.MoltenCoreAura.IsActive() {
-					demonology.MoltenCoreAura.RemoveStack(sim)
+				if spell.Matches(warlock.WarlockSpellSoulFire) && result == nil && buff.IsActive() {
+					buff.RemoveStack(sim)
 				}
 
 				if spell.Matches(warlock.WarlockSpellShadowflameDot) && sim.Proc(0.08, "Demonic Core Proc") {
-					demonology.MoltenCoreAura.Activate(sim)
-					demonology.MoltenCoreAura.AddStack(sim)
+					buff.Activate(sim)
+					buff.AddStack(sim)
 				}
 
 				// proc fire bolt on cast
 				if result == nil && spell.Matches(warlock.WarlockSpellImpFireBolt) && sim.Proc(0.08, "Demonic Core Proc") {
-					demonology.MoltenCoreAura.Activate(sim)
-					demonology.MoltenCoreAura.AddStack(sim)
+					buff.Activate(sim)
+					buff.AddStack(sim)
 				}
 
 				if spell.Matches(warlock.WarlockSpellChaosWave) && result != nil && result.Landed() {
-					demonology.MoltenCoreAura.Activate(sim)
-					demonology.MoltenCoreAura.AddStack(sim)
+					buff.Activate(sim)
+					buff.AddStack(sim)
 				}
 
 				// Decimation Passive effect, proc on cast
 				if sim.IsExecutePhase25() && spell.Matches(warlock.WarlockSpellShadowBolt|warlock.WarlockSpellSoulFire) && result == nil {
-					demonology.MoltenCoreAura.Activate(sim)
-					demonology.MoltenCoreAura.AddStack(sim)
+					buff.Activate(sim)
+					buff.AddStack(sim)
 				}
 			},
 		})

@@ -31,7 +31,6 @@ type ProtectionWarrior struct {
 
 	Options *proto.ProtectionWarrior_Options
 
-	RiposteAura       *core.Aura
 	SwordAndBoardAura *core.Aura
 }
 
@@ -131,13 +130,8 @@ func (war *ProtectionWarrior) Reset(sim *core.Simulation) {
 }
 
 func (war *ProtectionWarrior) OnEncounterStart(sim *core.Simulation) {
-	war.RiposteAura.Deactivate(sim)
-	war.ShieldBlockAura.Deactivate(sim)
-	war.SwordAndBoardAura.Deactivate(sim)
-	war.UltimatumAura.Deactivate(sim)
 	if war.ShieldBarrierAura.IsActive() {
 		war.ResetRageBar(sim, 5)
-		war.DeactivateAuras(sim)
 	} else {
 		war.Warrior.OnEncounterStart(sim)
 	}

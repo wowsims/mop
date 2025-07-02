@@ -75,8 +75,6 @@ type Monk struct {
 	FortifyingBrewAura     *core.Aura
 	PowerStrikesAura       *core.Aura
 	PowerStrikesChiMetrics *core.ResourceMetrics
-	TigerPowerAura         *core.Aura
-	TigerStrikesAura       *core.Aura
 
 	// Set Bonuses
 	T14Brewmaster4P *core.Aura
@@ -184,7 +182,7 @@ func (monk *Monk) registerPassives() {
 	// Windwalker
 	// Required to be registered on monk so it can interact with SEF
 	monk.registerCombatConditioning()
-	monk.TigerStrikesAura = monk.registerTigerStrikes()
+	monk.registerTigerStrikes()
 }
 
 func (monk *Monk) registerSpells() {
@@ -225,11 +223,6 @@ func (monk *Monk) Reset(sim *core.Simulation) {
 
 func (monk *Monk) OnEncounterStart(sim *core.Simulation) {
 	monk.ResetEnergyBar(sim, 2)
-	monk.DeactivateAuras(sim)
-}
-
-func (monk *Monk) DeactivateAuras(sim *core.Simulation) {
-	monk.TigerPowerAura.Deactivate(sim)
 }
 
 func (monk *Monk) GetHandType() proto.HandType {

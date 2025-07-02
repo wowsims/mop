@@ -44,6 +44,9 @@ func tigerPowerBuffConfig(monk *Monk, isSEFClone bool) core.Aura {
 				aura.Unit.AttackTables[target.UnitIndex].ArmorIgnoreFactor -= 0.3
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}
 
 	if isSEFClone {
@@ -86,7 +89,7 @@ func (monk *Monk) registerTigerPalm() {
 	isBrewmaster := monk.Spec == proto.Spec_SpecBrewmasterMonk
 	chiCost := int32(1)
 
-	monk.TigerPowerAura = monk.RegisterAura(tigerPowerBuffConfig(monk, false))
+	tigerPowerBuff := monk.RegisterAura(tigerPowerBuffConfig(monk, false))
 
 	monk.RegisterSpell(tigerPalmSpellConfig(monk, false, core.SpellConfig{
 		ActionID:       tigerPalmActionID,
@@ -117,7 +120,7 @@ func (monk *Monk) registerTigerPalm() {
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 
 			if result.Landed() {
-				monk.TigerPowerAura.Activate(sim)
+				tigerPowerBuff.Activate(sim)
 				if !isBrewmaster {
 					if monk.ComboBreakerTigerPalmAura.IsActive() {
 						monk.onChiSpent(sim, chiCost)

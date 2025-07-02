@@ -9,17 +9,24 @@ import (
 // https://www.wowhead.com/mop-classic/spell=48107/heating-up#comments:id=1709419 For Information on heating up time specifics (.75s, .25s etc)
 
 func (mage *Mage) registerHeatingUp() {
-
 	mage.HeatingUp = mage.RegisterAura(core.Aura{
 		Label:    "Heating Up",
 		ActionID: core.ActionID{SpellID: 48107},
 		Duration: time.Second * 10,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	mage.InstantPyroblastAura = mage.RegisterAura(core.Aura{
 		Label:    "Pyroblast!",
 		ActionID: core.ActionID{SpellID: 48108},
 		Duration: time.Second * 15,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		FloatValue: -2.0,
@@ -33,7 +40,6 @@ func (mage *Mage) registerHeatingUp() {
 		FloatValue: .25,
 		ClassMask:  MageSpellPyroblast | MageSpellPyroblastDot,
 	})
-
 }
 
 func (mage *Mage) HeatingUpSpellHandler(sim *core.Simulation, spell *core.Spell, result *core.SpellResult, callback func()) {

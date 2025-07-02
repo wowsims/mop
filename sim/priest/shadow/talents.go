@@ -20,6 +20,9 @@ func (shadow *ShadowPriest) registerSurgeOfDarkness() {
 
 			aura.RemoveStack(sim)
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  priest.PriestSpellMindSpike,
 		Kind:       core.SpellMod_DamageDone_Pct,
@@ -144,7 +147,7 @@ func (shadow *ShadowPriest) registerTwistOfFate() {
 		FloatValue: 0.15,
 	})
 
-	shadow.TwistOfFateAura = shadow.RegisterAura(core.Aura{
+	tofAura := shadow.RegisterAura(core.Aura{
 		Label:    "Twist of Fate",
 		ActionID: core.ActionID{SpellID: 123254},
 		Duration: time.Second * 10,
@@ -153,6 +156,9 @@ func (shadow *ShadowPriest) registerTwistOfFate() {
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			dmgMod.Deactivate()
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 
@@ -163,12 +169,12 @@ func (shadow *ShadowPriest) registerTwistOfFate() {
 		Label: "Twist of Fate (Talent)",
 		OnPeriodicDamageDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if sim.IsExecutePhase35() {
-				shadow.TwistOfFateAura.Activate(sim)
+				tofAura.Activate(sim)
 			}
 		},
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if sim.IsExecutePhase35() {
-				shadow.TwistOfFateAura.Activate(sim)
+				tofAura.Activate(sim)
 			}
 		},
 	}))
@@ -187,7 +193,7 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 		FloatValue: -2,
 	})
 
-	shadow.DivineInsightAura = shadow.RegisterAura(core.Aura{
+	procAura := shadow.RegisterAura(core.Aura{
 		Label:    "Divine Insight",
 		Duration: time.Second * 12,
 		ActionID: core.ActionID{SpellID: 124430},
@@ -205,6 +211,9 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 				aura.Deactivate(sim)
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	if !shadow.Talents.DivineInsight {
@@ -219,7 +228,7 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 			}
 
 			if sim.Proc(0.05, "Divine Insight (Proc)") {
-				shadow.DivineInsightAura.Activate(sim)
+				procAura.Activate(sim)
 			}
 		},
 	}))

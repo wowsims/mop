@@ -25,6 +25,9 @@ func (ww *WindwalkerMonk) registerComboBreaker() {
 				}
 				aura.Deactivate(sim)
 			},
+			OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+				aura.Deactivate(sim)
+			},
 		})
 
 		core.MakeProcTriggerAura(&ww.Unit, core.ProcTrigger{

@@ -78,12 +78,8 @@ func (bm *BrewmasterMonk) Reset(sim *core.Simulation) {
 }
 
 func (bm *BrewmasterMonk) OnEncounterStart(sim *core.Simulation) {
-	bm.ElusiveBrewAura.Deactivate(sim)
-	bm.PowerGuardAura.Deactivate(sim)
-	bm.ShuffleAura.Deactivate(sim)
 	if bm.Guard.RelatedSelfBuff.IsActive() {
 		bm.ResetEnergyBar(sim, 0)
-		bm.DeactivateAuras(sim)
 	} else {
 		bm.Monk.OnEncounterStart(sim)
 	}

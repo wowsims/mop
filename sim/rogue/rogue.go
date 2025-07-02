@@ -85,7 +85,6 @@ type Rogue struct {
 	HungerForBloodAura   *core.Aura
 	KillingSpreeAura     *core.Aura
 	SliceAndDiceAura     *core.Aura
-	RecuperateAura       *core.Aura
 	MasterOfSubtletyAura *core.Aura
 	ShadowstepAura       *core.Aura
 	ShadowDanceAura      *core.Aura
@@ -231,15 +230,6 @@ func (rogue *Rogue) Reset(sim *core.Simulation) {
 
 func (rogue *Rogue) OnEncounterStart(sim *core.Simulation) {
 	rogue.ResetEnergyBar(sim, 0)
-	rogue.DeactivateAuras(sim, false)
-}
-
-func (rogue *Rogue) DeactivateAuras(sim *core.Simulation, keepSliceAndDice bool) {
-	if !keepSliceAndDice {
-		rogue.SliceAndDiceAura.Deactivate(sim)
-	}
-	rogue.AnticipationAura.Deactivate(sim)
-	rogue.RecuperateAura.Deactivate(sim)
 }
 
 func (rogue *Rogue) CritMultiplier(applyLethality bool) float64 {

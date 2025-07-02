@@ -93,6 +93,9 @@ func (rogue *Rogue) ApplyTalents() {
 					aura.Deactivate(sim)
 				}
 			},
+			OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+				aura.Deactivate(sim)
+			},
 		})
 	}
 }

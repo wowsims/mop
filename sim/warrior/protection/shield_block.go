@@ -34,6 +34,9 @@ func (war *ProtectionWarrior) registerShieldBlock() {
 				war.CriticalBlockChance[1] -= extraAvoidance
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachStatBuff(stats.BlockPercent, 100)
 
 	war.RegisterSpell(core.SpellConfig{

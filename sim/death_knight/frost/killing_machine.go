@@ -13,10 +13,15 @@ func (fdk *FrostDeathKnight) registerKillingMachine() {
 		mask |= death_knight.DeathKnightSpellSoulReaper
 	}
 
-	fdk.KillingMachineAura = fdk.RegisterAura(core.Aura{
+	var killingMachineAura *core.Aura
+	killingMachineAura = fdk.RegisterAura(core.Aura{
 		Label:    "Killing Machine" + fdk.Label,
 		ActionID: core.ActionID{SpellID: 51124},
 		Duration: time.Second * 10,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: mask,
@@ -24,7 +29,7 @@ func (fdk *FrostDeathKnight) registerKillingMachine() {
 		Outcome:        core.OutcomeLanded,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			fdk.KillingMachineAura.Deactivate(sim)
+			killingMachineAura.Deactivate(sim)
 		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_BonusCrit_Percent,
@@ -42,7 +47,7 @@ func (fdk *FrostDeathKnight) registerKillingMachine() {
 			spell.RelatedSelfBuff.Activate(sim)
 		},
 
-		RelatedSelfBuff: fdk.KillingMachineAura,
+		RelatedSelfBuff: killingMachineAura,
 	})
 
 	core.MakeProcTriggerAura(&fdk.Unit, core.ProcTrigger{

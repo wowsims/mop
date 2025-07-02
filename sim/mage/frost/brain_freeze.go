@@ -23,6 +23,9 @@ func (frost *FrostMage) registerBrainFreeze() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			frost.frostfireFrozenCritBuffMod.Deactivate()
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		FloatValue: -2,
@@ -52,5 +55,4 @@ func (frost *FrostMage) registerBrainFreeze() {
 			}
 		},
 	})
-
 }

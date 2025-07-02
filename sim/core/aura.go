@@ -19,6 +19,7 @@ type OnDoneIteration func(aura *Aura, sim *Simulation)
 type OnGain func(aura *Aura, sim *Simulation)
 type OnExpire func(aura *Aura, sim *Simulation)
 type OnStacksChange func(aura *Aura, sim *Simulation, oldStacks int32, newStacks int32)
+type OnEncounterStart func(aura *Aura, sim *Simulation)
 
 // Callback for after a spell hits the target and after damage is calculated. Use it for proc effects
 // or anything that comes from the final result of the spell.
@@ -97,6 +98,7 @@ type Aura struct {
 	OnHealTaken           OnSpellHit       // Invoked when a heal hits and this unit is the target.
 	OnPeriodicHealDealt   OnPeriodicDamage // Invoked when a hot tick occurs and this unit is the caster.
 	OnPeriodicHealTaken   OnPeriodicDamage // Invoked when a hot tick occurs and this unit is the target.
+	OnEncounterStart      OnEncounterStart // Invoked at the start of each encounter, after the pre-pull.
 
 	// If non-default, stat bonuses from the OnGain callback of this aura will be
 	// included in Character Stats in the UI.

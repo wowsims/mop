@@ -131,7 +131,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 
 	maxStacks := int32(2)
 
-	shaman.ClearcastingAura = shaman.RegisterAura(core.Aura{
+	clearcastingAura := shaman.RegisterAura(core.Aura{
 		Label:     "Clearcasting",
 		ActionID:  core.ActionID{SpellID: 16246},
 		Duration:  time.Second * 15,
@@ -144,6 +144,9 @@ func (shaman *Shaman) ApplyElementalTalents() {
 				return
 			}
 			aura.RemoveStack(sim)
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
@@ -167,16 +170,20 @@ func (shaman *Shaman) ApplyElementalTalents() {
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			triggeringSpell = spell
 			triggerTime = sim.CurrentTime
-			shaman.ClearcastingAura.Activate(sim)
-			shaman.ClearcastingAura.SetStacks(sim, maxStacks)
+			clearcastingAura.Activate(sim)
+			clearcastingAura.SetStacks(sim, maxStacks)
 		},
 	})
 
 	//Lava Surge
-	shaman.LavaSurgeAura = shaman.RegisterAura(core.Aura{
+	lavaSurgeAura := shaman.RegisterAura(core.Aura{
 		Label:    "Lava Surge",
 		Duration: time.Second * 6,
 		ActionID: core.ActionID{SpellID: 77762},
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  SpellMaskLavaBurst,
 		Kind:       core.SpellMod_CastTime_Pct,
@@ -202,7 +209,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 
 			pa.OnAction = func(sim *core.Simulation) {
 				shaman.LavaBurst.CD.Reset()
-				shaman.LavaSurgeAura.Activate(sim)
+				lavaSurgeAura.Activate(sim)
 			}
 
 			sim.AddPendingAction(pa)
@@ -217,7 +224,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 			}
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
-			if !spell.Matches(SpellMaskLavaBurst) || !shaman.LavaSurgeAura.IsActive() {
+			if !spell.Matches(SpellMaskLavaBurst) || !lavaSurgeAura.IsActive() {
 				return
 			}
 			//If lava surge procs during LvB cast time, it is not consumed and lvb does not go on cd
@@ -225,7 +232,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 				spell.CD.Reset()
 				return
 			}
-			shaman.LavaSurgeAura.Deactivate(sim)
+			lavaSurgeAura.Deactivate(sim)
 		},
 	}))
 }

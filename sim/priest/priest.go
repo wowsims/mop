@@ -115,10 +115,6 @@ func (priest *Priest) Reset(_ *core.Simulation) {
 }
 
 func (priest *Priest) OnEncounterStart(sim *core.Simulation) {
-	priest.DeactivateAuras(sim)
-}
-
-func (priest *Priest) DeactivateAuras(sim *core.Simulation) {
 }
 
 func New(char *core.Character, selfBuffs SelfBuffs, talents string) *Priest {

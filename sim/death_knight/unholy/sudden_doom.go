@@ -13,10 +13,15 @@ Reduces the cost of Death Coil by 20%.
 While in Unholy Presence, grants your main-hand autoattacks a chance to make your next Death Coil cost no Runic Power.
 */
 func (uhdk *UnholyDeathKnight) registerSuddenDoom() {
-	uhdk.SuddenDoomAura = uhdk.GetOrRegisterAura(core.Aura{
+	var suddenDoomAura *core.Aura
+	suddenDoomAura = uhdk.RegisterAura(core.Aura{
 		Label:    "Sudden Doom" + uhdk.Label,
 		ActionID: core.ActionID{SpellID: 81340},
 		Duration: time.Second * 10,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachProcTrigger(core.ProcTrigger{
 		Name:           "Sudden Doom Consume Trigger" + uhdk.Label,
 		Callback:       core.CallbackOnCastComplete,
@@ -27,7 +32,7 @@ func (uhdk *UnholyDeathKnight) registerSuddenDoom() {
 		},
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			uhdk.SuddenDoomAura.Deactivate(sim)
+			suddenDoomAura.Deactivate(sim)
 		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
@@ -45,7 +50,7 @@ func (uhdk *UnholyDeathKnight) registerSuddenDoom() {
 			spell.RelatedSelfBuff.Activate(sim)
 		},
 
-		RelatedSelfBuff: uhdk.SuddenDoomAura,
+		RelatedSelfBuff: suddenDoomAura,
 	})
 
 	core.MakeProcTriggerAura(&uhdk.Unit, core.ProcTrigger{

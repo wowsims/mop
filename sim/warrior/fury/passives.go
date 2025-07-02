@@ -27,11 +27,15 @@ func (war *FuryWarrior) registerCrazedBerserker() {
 }
 
 func (war *FuryWarrior) registerFlurry() {
-	war.FlurryAura = war.RegisterAura(core.Aura{
+	flurryAura := war.RegisterAura(core.Aura{
 		Label:     "Flurry",
 		ActionID:  core.ActionID{SpellID: 12968},
 		Duration:  15 * time.Second,
 		MaxStacks: 3,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachMultiplyMeleeSpeed(1.25)
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
@@ -42,12 +46,12 @@ func (war *FuryWarrior) registerFlurry() {
 		Outcome:  core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if sim.Proc(0.09, "Flurry") {
-				war.FlurryAura.Activate(sim)
-				war.FlurryAura.SetStacks(sim, war.FlurryAura.MaxStacks)
+				flurryAura.Activate(sim)
+				flurryAura.SetStacks(sim, flurryAura.MaxStacks)
 				return
 			}
-			if war.FlurryAura.IsActive() && spell.ProcMask.Matches(core.ProcMaskMeleeWhiteHit) {
-				war.FlurryAura.RemoveStack(sim)
+			if flurryAura.IsActive() && spell.ProcMask.Matches(core.ProcMaskMeleeWhiteHit) {
+				flurryAura.RemoveStack(sim)
 			}
 		},
 	})
@@ -61,6 +65,10 @@ func (war *FuryWarrior) registerBloodsurge() {
 		ActionID:  actionID,
 		Duration:  15 * time.Second,
 		MaxStacks: 3,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachSpellMod(core.SpellModConfig{
 		ClassMask: warrior.SpellMaskWildStrike,
 		Kind:      core.SpellMod_PowerCost_Flat,
@@ -92,6 +100,10 @@ func (war *FuryWarrior) registerMeatCleaver() {
 		ActionID:  actionID,
 		Duration:  10 * time.Second,
 		MaxStacks: 3,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{

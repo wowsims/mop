@@ -37,9 +37,6 @@ func NewProtectionPaladin(character *core.Character, options *proto.Player) *Pro
 type ProtectionPaladin struct {
 	*paladin.Paladin
 
-	GrandCrusaderAura        *core.Aura
-	ShieldOfTheRighteousAura *core.Aura
-
 	DamageTakenLastGlobal float64
 }
 
@@ -113,12 +110,4 @@ func (prot *ProtectionPaladin) ApplyTalents() {
 
 func (prot *ProtectionPaladin) Reset(sim *core.Simulation) {
 	prot.Paladin.Reset(sim)
-}
-
-func (prot *ProtectionPaladin) OnEncounterStart(sim *core.Simulation) {
-	prot.AlabasterShieldAura.Deactivate(sim)
-	prot.BastionOfGloryAura.Deactivate(sim)
-	prot.GrandCrusaderAura.Deactivate(sim)
-	prot.ShieldOfTheRighteousAura.Deactivate(sim)
-	prot.Paladin.OnEncounterStart(sim)
 }

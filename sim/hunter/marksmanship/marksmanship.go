@@ -100,10 +100,6 @@ func (mmHunter *MarksmanshipHunter) Initialize() {
 
 type MarksmanshipHunter struct {
 	*hunter.Hunter
-
-	BombardmentAura *core.Aura
-	ReadySetAimAura *core.Aura
-	SteadyFocusAura *core.Aura
 }
 
 func (mmHunter *MarksmanshipHunter) GetHunter() *hunter.Hunter {
@@ -112,11 +108,4 @@ func (mmHunter *MarksmanshipHunter) GetHunter() *hunter.Hunter {
 
 func (mmHunter *MarksmanshipHunter) Reset(sim *core.Simulation) {
 	mmHunter.Hunter.Reset(sim)
-}
-
-func (mmHunter *MarksmanshipHunter) OnEncounterStart(sim *core.Simulation) {
-	mmHunter.BombardmentAura.Deactivate(sim)
-	mmHunter.ReadySetAimAura.Deactivate(sim)
-	mmHunter.SteadyFocusAura.Deactivate(sim)
-	mmHunter.Hunter.OnEncounterStart(sim)
 }

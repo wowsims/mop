@@ -78,14 +78,7 @@ func (subRogue *SubtletyRogue) Reset(sim *core.Simulation) {
 
 func (subRogue *SubtletyRogue) OnEncounterStart(sim *core.Simulation) {
 	if !subRogue.Premeditation.CD.IsReady(sim) {
-		// TODO: Special case for resetting duration of SnD to 2cp, without incuring a GCD I guess?
-		// Has to be tested if it also extends the energy regen etc.
-		// if subRogue.SliceAndDiceAura.IsActive() {
-		// subRogue.DeactivateAuras(sim, true)
-		// } else {
 		subRogue.ResetEnergyBar(sim, min(2, subRogue.ComboPoints()))
-		subRogue.DeactivateAuras(sim, false)
-		// }
 	} else {
 		subRogue.Rogue.OnEncounterStart(sim)
 	}

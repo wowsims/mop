@@ -77,7 +77,6 @@ type Druid struct {
 	FrenziedRegenerationAura *core.Aura
 	LunarEclipseProcAura     *core.Aura
 	MightOfUrsocAura         *core.Aura
-	OwlkinFrenzyAura         *core.Aura
 	ProwlAura                *core.Aura
 	SurvivalInstinctsAura    *core.Aura
 
@@ -281,20 +280,6 @@ func (druid *Druid) Reset(_ *core.Simulation) {
 }
 
 func (druid *Druid) OnEncounterStart(sim *core.Simulation) {
-	druid.DeactivateAuras(sim)
-}
-
-func (druid *Druid) DeactivateAuras(sim *core.Simulation) {
-	druid.OwlkinFrenzyAura.Deactivate(sim)
-	druid.ClearcastingAura.Deactivate(sim)
-	// TODO: Predatory Swiftness
-	/* TODO: Savage Roar:
-	* Savage Roar (Unglyphed, always deactivate)
-		* If using the Glyphed version of Savage Roar, your Savage Roar buff is checked on pull.
-			* If there are more than 12 seconds remaining, it will be set to 12 seconds.
-			* If fewer than 12 seconds remaining, the duration is left as is.
-			* If no Glyph detected, the Glyphed buff is removed from the Druid.
-	*/
 }
 
 func New(char *core.Character, form DruidForm, selfBuffs SelfBuffs, talents string) *Druid {

@@ -63,6 +63,9 @@ func tigerStrikesBuffAura(unit *core.Unit) *core.Aura {
 				tigerStrikesOHSpell.Cast(sim, result.Target)
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	core.MakeProcTriggerAura(unit, core.ProcTrigger{
@@ -87,12 +90,12 @@ func tigerStrikesBuffAura(unit *core.Unit) *core.Aura {
 	return tigerStrikesBuff
 }
 
-func (monk *Monk) registerTigerStrikes() *core.Aura {
+func (monk *Monk) registerTigerStrikes() {
 	if monk.Spec != proto.Spec_SpecWindwalkerMonk {
-		return nil
+		return
 	}
 
-	return tigerStrikesBuffAura(&monk.Unit)
+	tigerStrikesBuffAura(&monk.Unit)
 }
 
 func (pet *StormEarthAndFirePet) registerSEFTigerStrikes() {

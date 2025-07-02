@@ -112,6 +112,10 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 		ActionID:  core.ActionID{SpellID: 79683},
 		Duration:  time.Second * 20,
 		MaxStacks: 2,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	// Listener for procs

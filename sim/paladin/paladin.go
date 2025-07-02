@@ -27,27 +27,22 @@ type Paladin struct {
 	HammerOfWrath  *core.Spell
 	Judgment       *core.Spell
 
-	AlabasterShieldAura        *core.Aura
-	AncientPowerAura           *core.Aura
-	AvengingWrathAura          *core.Aura
-	BastionOfGloryAura         *core.Aura
-	BastionOfPowerAura         *core.Aura
-	DivineCrusaderAura         *core.Aura
-	DivineFavorAura            *core.Aura
-	DivineProtectionAura       *core.Aura
-	DivinePurposeAura          *core.Aura
-	DoubleJeopardyAura         *core.Aura
-	GlyphOfTemplarsVerdictAura *core.Aura
-	GoakAura                   *core.Aura
-	InfusionOfLightAura        *core.Aura
-	LongArmOfTheLawAura        *core.Aura
-	PursuitOfJusticeAura       *core.Aura
-	SealOfInsightAura          *core.Aura
-	SealOfJusticeAura          *core.Aura
-	SealOfRighteousnessAura    *core.Aura
-	SealOfTruthAura            *core.Aura
-	SelflessHealerAura         *core.Aura
-	TheArtOfWarAura            *core.Aura
+	AncientPowerAura        *core.Aura
+	AvengingWrathAura       *core.Aura
+	BastionOfGloryAura      *core.Aura
+	BastionOfPowerAura      *core.Aura
+	DivineCrusaderAura      *core.Aura
+	DivineFavorAura         *core.Aura
+	DivineProtectionAura    *core.Aura
+	DivinePurposeAura       *core.Aura
+	GoakAura                *core.Aura
+	InfusionOfLightAura     *core.Aura
+	SealOfInsightAura       *core.Aura
+	SealOfJusticeAura       *core.Aura
+	SealOfRighteousnessAura *core.Aura
+	SealOfTruthAura         *core.Aura
+	SelflessHealerAura      *core.Aura
+	TheArtOfWarAura         *core.Aura
 
 	// Item sets
 	T11Ret4pc                *core.Aura
@@ -134,16 +129,6 @@ func (paladin *Paladin) Reset(sim *core.Simulation) {
 
 func (paladin *Paladin) OnEncounterStart(sim *core.Simulation) {
 	paladin.HolyPower.Reset(sim)
-	paladin.DeactivateAuras(sim)
-}
-
-func (paladin *Paladin) DeactivateAuras(sim *core.Simulation) {
-	paladin.DivinePurposeAura.Deactivate(sim)
-	paladin.DoubleJeopardyAura.Deactivate(sim)
-	paladin.LongArmOfTheLawAura.Deactivate(sim)
-	if paladin.PursuitOfJusticeAura.IsActive() {
-		paladin.PursuitOfJusticeAura.SetStacks(sim, 1)
-	}
 }
 
 func NewPaladin(character *core.Character, talentsStr string, options *proto.PaladinOptions) *Paladin {

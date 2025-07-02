@@ -146,12 +146,6 @@ func (mage *Mage) Reset(sim *core.Simulation) {
 }
 
 func (mage *Mage) OnEncounterStart(sim *core.Simulation) {
-	mage.DeactivateAuras(sim)
-}
-
-func (mage *Mage) DeactivateAuras(sim *core.Simulation) {
-	mage.HeatingUp.Deactivate(sim)
-	mage.InstantPyroblastAura.Deactivate(sim)
 }
 
 func NewMage(character *core.Character, options *proto.Player, mageOptions *proto.MageOptions) *Mage {

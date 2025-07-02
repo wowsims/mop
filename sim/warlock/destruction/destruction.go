@@ -46,7 +46,6 @@ type DestructionWarlock struct {
 	FABAura        *core.Aura
 	FABImmolate    *core.Spell
 	FABConflagrate *core.Spell
-	BackdraftAura  *core.Aura
 }
 
 func (destruction DestructionWarlock) getGeneratorMasteryBonus() float64 {
@@ -89,7 +88,6 @@ func (destruction *DestructionWarlock) Reset(sim *core.Simulation) {
 
 func (destruction *DestructionWarlock) OnEncounterStart(sim *core.Simulation) {
 	destruction.BurningEmbers.Reset(sim)
-	destruction.BackdraftAura.Deactivate(sim)
 	destruction.Warlock.OnEncounterStart(sim)
 }
 

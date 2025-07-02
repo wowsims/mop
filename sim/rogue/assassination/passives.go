@@ -37,22 +37,25 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		FloatValue: -2,
 	})
 
-	asnRogue.BlindsideAura = asnRogue.RegisterAura(core.Aura{
+	blindsideProc := asnRogue.RegisterAura(core.Aura{
 		Label:    "Blindside",
 		ActionID: core.ActionID{SpellID: 121153},
 		Duration: time.Second * 10,
+
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			energyMod.Activate()
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			energyMod.Deactivate()
 		},
-
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if spell.SpellID == 111240 {
 				// Dispatch casted, consume aura
 				aura.Deactivate(sim)
 			}
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 
@@ -64,7 +67,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		ProcChance:     0.3,
 		Outcome:        core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			asnRogue.BlindsideAura.Activate(sim)
+			blindsideProc.Activate(sim)
 		},
 	}))
 }

@@ -76,7 +76,7 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 		FloatValue: 0.2,
 	})
 
-	shaman.SearingFlameAura = shaman.RegisterAura(core.Aura{
+	searingFlameStackingAura := shaman.RegisterAura(core.Aura{
 		Label:     "Searing Flames",
 		ActionID:  core.ActionID{SpellID: 77661},
 		Duration:  time.Second * 15,
@@ -97,6 +97,9 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 			}
 			aura.Deactivate(sim)
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	core.MakeProcTriggerAura(&shaman.FireElemental.Unit, core.ProcTrigger{
@@ -107,8 +110,8 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 		ProcChance:     1,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			shaman.SearingFlameAura.Activate(sim)
-			shaman.SearingFlameAura.AddStack(sim)
+			searingFlameStackingAura.Activate(sim)
+			searingFlameStackingAura.AddStack(sim)
 		},
 	})
 	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
@@ -119,8 +122,8 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 		ProcChance:     1,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			shaman.SearingFlameAura.Activate(sim)
-			shaman.SearingFlameAura.AddStack(sim)
+			searingFlameStackingAura.Activate(sim)
+			searingFlameStackingAura.AddStack(sim)
 		},
 	})
 
@@ -175,6 +178,9 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 				return
 			}
 			shaman.MaelstromWeaponAura.Deactivate(sim)
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 

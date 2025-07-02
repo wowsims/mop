@@ -53,13 +53,6 @@ func (frostMage *FrostMage) Reset(sim *core.Simulation) {
 	frostMage.Mage.Reset(sim)
 }
 
-func (frostMage *FrostMage) OnEncounterStart(sim *core.Simulation) {
-	frostMage.BrainFreezeAura.Deactivate(sim)
-	frostMage.FingersOfFrostAura.Deactivate(sim)
-	frostMage.IciclesAura.Deactivate(sim)
-	frostMage.Mage.OnEncounterStart(sim)
-}
-
 func (frostMage *FrostMage) Initialize() {
 	frostMage.Mage.Initialize()
 

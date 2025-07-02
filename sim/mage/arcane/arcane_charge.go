@@ -42,6 +42,9 @@ func (arcane *ArcaneMage) registerArcaneCharges() {
 				aura.Deactivate(sim)
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	core.MakeProcTriggerAura(&arcane.Unit, core.ProcTrigger{

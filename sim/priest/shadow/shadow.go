@@ -58,10 +58,7 @@ type ShadowPriest struct {
 	DevouringPlague *core.Spell
 	MindSpike       *core.Spell
 	MindBlast       *core.Spell
-
-	DivineInsightAura *core.Aura
-	SurgeOfDarkness   *core.Aura // Required for dummy effect
-	TwistOfFateAura   *core.Aura
+	SurgeOfDarkness *core.Aura // Required for dummy effect
 }
 
 func (spriest *ShadowPriest) GetPriest() *priest.Priest {
@@ -88,9 +85,6 @@ func (spriest *ShadowPriest) Reset(sim *core.Simulation) {
 
 func (spriest *ShadowPriest) OnEncounterStart(sim *core.Simulation) {
 	spriest.ShadowOrbs.Reset(sim)
-	spriest.DivineInsightAura.Deactivate(sim)
-	spriest.SurgeOfDarkness.Deactivate(sim)
-	spriest.TwistOfFateAura.Deactivate(sim)
 	spriest.Priest.OnEncounterStart(sim)
 }
 

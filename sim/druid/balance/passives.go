@@ -48,7 +48,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		FloatValue: -1,
 	}
 
-	moonkin.ShootingStarsAura = moonkin.RegisterAura(core.Aura{
+	ssAura := moonkin.RegisterAura(core.Aura{
 		Label:    "Shooting Stars" + moonkin.Label,
 		ActionID: core.ActionID{SpellID: 93400},
 		Duration: time.Second * 12,
@@ -62,6 +62,9 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		OnGain: func(_ *core.Aura, _ *core.Simulation) {
 			moonkin.Starsurge.CD.Reset()
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachSpellMod(castTimeModConfig)
 
 	core.MakeProcTriggerAura(&moonkin.Unit, core.ProcTrigger{
@@ -71,7 +74,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		ProcChance:     0.3,
 		ClassSpellMask: druid.DruidSpellSunfireDoT | druid.DruidSpellMoonfireDoT,
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-			moonkin.ShootingStarsAura.Activate(sim)
+			ssAura.Activate(sim)
 		},
 	})
 
@@ -150,7 +153,7 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 		Kind:      core.SpellMod_PowerCost_Pct,
 	})
 
-	moonkin.LunarShowerAura = moonkin.RegisterAura(core.Aura{
+	lunarShowerAura := moonkin.RegisterAura(core.Aura{
 		Label:     "Lunar Shower",
 		Duration:  time.Second * 3,
 		ActionID:  core.ActionID{SpellID: 81192},
@@ -166,6 +169,9 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 		OnExpire: func(_ *core.Aura, _ *core.Simulation) {
 			lunarShowerDmgMod.Deactivate()
 			lunarShowerResourceMod.Deactivate()
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
 		},
 	})
 
@@ -185,14 +191,14 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 				return
 			}
 
-			if moonkin.LunarShowerAura.IsActive() {
-				if moonkin.LunarShowerAura.GetStacks() < 3 {
-					moonkin.LunarShowerAura.AddStack(sim)
-					moonkin.LunarShowerAura.Refresh(sim)
+			if lunarShowerAura.IsActive() {
+				if lunarShowerAura.GetStacks() < 3 {
+					lunarShowerAura.AddStack(sim)
+					lunarShowerAura.Refresh(sim)
 				}
 			} else {
-				moonkin.LunarShowerAura.Activate(sim)
-				moonkin.LunarShowerAura.SetStacks(sim, 1)
+				lunarShowerAura.Activate(sim)
+				lunarShowerAura.SetStacks(sim, 1)
 			}
 		},
 	})

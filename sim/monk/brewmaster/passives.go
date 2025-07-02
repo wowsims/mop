@@ -28,6 +28,10 @@ func (bm *BrewmasterMonk) registerBrewmasterTraining() {
 		Label:    "Power Guard",
 		ActionID: core.ActionID{SpellID: 118636},
 		Duration: 30 * time.Second,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	core.MakeProcTriggerAura(&bm.Unit, core.ProcTrigger{
@@ -48,6 +52,10 @@ func (bm *BrewmasterMonk) registerBrewmasterTraining() {
 		Label:    "Shuffle",
 		ActionID: core.ActionID{SpellID: 115307},
 		Duration: 6 * time.Second,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachAdditivePseudoStatBuff(&bm.PseudoStats.BaseParryChance, 0.2)
 
 	core.MakeProcTriggerAura(&bm.Unit, core.ProcTrigger{
@@ -73,6 +81,10 @@ func (bm *BrewmasterMonk) registerElusiveBrew() {
 		ActionID:  stackActionID,
 		Duration:  30 * time.Second,
 		MaxStacks: 15,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}))
 
 	bm.Monk.RegisterOnNewBrewStacks(func(sim *core.Simulation, stacksToAdd int32) {
@@ -84,6 +96,10 @@ func (bm *BrewmasterMonk) registerElusiveBrew() {
 		Label:    "Elusive Brew" + bm.Label,
 		ActionID: buffActionID,
 		Duration: 0,
+
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachAdditivePseudoStatBuff(&bm.PseudoStats.BaseDodgeChance, 0.3)
 
 	core.MakeProcTriggerAura(&bm.Unit, core.ProcTrigger{

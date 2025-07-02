@@ -15,7 +15,8 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 	hpActionID := core.ActionID{SpellID: 98057}
 	prot.CanTriggerHolyAvengerHpGain(hpActionID)
 
-	prot.GrandCrusaderAura = prot.RegisterAura(core.Aura{
+	var grandCrusaderAura *core.Aura
+	grandCrusaderAura = prot.RegisterAura(core.Aura{
 		Label:    "Grand Crusader" + prot.Label,
 		ActionID: core.ActionID{SpellID: 85416},
 		Duration: time.Second * 6,
@@ -23,13 +24,16 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			prot.AvengersShield.CD.Reset()
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	}).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnCastComplete,
 		ClassSpellMask: paladin.SpellMaskAvengersShield,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			prot.HolyPower.Gain(sim, 1, hpActionID)
-			prot.GrandCrusaderAura.Deactivate(sim)
+			grandCrusaderAura.Deactivate(sim)
 		},
 	})
 
@@ -42,7 +46,7 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 		ICD:        time.Second,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			prot.GrandCrusaderAura.Activate(sim)
+			grandCrusaderAura.Activate(sim)
 		},
 	})
 }

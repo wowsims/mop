@@ -56,6 +56,9 @@ func (druid *Druid) applyOmenOfClarity() {
 				}
 			}
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Deactivate(sim)
+		},
 	})
 
 	druid.ProcOoc = func(sim *core.Simulation) {
