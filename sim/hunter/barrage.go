@@ -39,15 +39,13 @@ func (hunter *Hunter) registerBarrageSpell() {
 					hunter.AutoAttacks.DelayRangedUntil(sim, aura.ExpiresAt())
 				},
 			},
-			NumberOfTicks:        16,
+			NumberOfTicks:        15,
 			TickLength:           200 * time.Millisecond,
 			AffectedByRealHaste:  true,
 			HasteReducesDuration: true,
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				dmg := hunter.AutoAttacks.
-					Ranged().
-					CalculateNormalizedWeaponDamage(sim, dot.Spell.RangedAttackPower()) * 0.2
+				dmg := hunter.calcBarrageTick(sim, dot.Spell.RangedAttackPower())
 				if target == mainTarget {
 					dmg *= 2
 				}
@@ -56,9 +54,7 @@ func (hunter *Hunter) registerBarrageSpell() {
 			},
 		},
 		ExpectedTickDamage: func(sim *core.Simulation, target *core.Unit, spell *core.Spell, _ bool) *core.SpellResult {
-			dmg := hunter.AutoAttacks.
-				Ranged().
-				CalculateNormalizedWeaponDamage(sim, spell.RangedAttackPower()) * 0.2
+			dmg := hunter.calcBarrageTick(sim, spell.RangedAttackPower())
 			if target == mainTarget {
 				dmg *= 2
 			}
@@ -67,9 +63,15 @@ func (hunter *Hunter) registerBarrageSpell() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			mainTarget = target
 			spell.ApplyAllDots(sim)
+			// We tick the dots once to simulate initial hit
+			spell.TickAllDotsOnce(sim)
 			spell.CalcAndDealOutcome(sim, target, spell.OutcomeAlwaysHitNoHitCounter)
 		},
 	}
 
 	hunter.RegisterSpell(barrageSpell)
+}
+
+func (hunter *Hunter) calcBarrageTick(sim *core.Simulation, rap float64) float64 {
+	return hunter.AutoAttacks.Ranged().CalculateNormalizedWeaponDamage(sim, rap) * 0.2
 }

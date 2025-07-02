@@ -437,6 +437,12 @@ func (spell *Spell) ApplyAllDots(sim *Simulation) {
 	}
 }
 
+func (spell *Spell) TickAllDotsOnce(sim *Simulation) {
+	for _, target := range sim.Encounter.ActiveTargetUnits {
+		spell.Dot(target).TickOnce(sim)
+	}
+}
+
 func (spell *Spell) AnyDotsActive(sim *Simulation) bool {
 	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 		if spell.Dot(aoeTarget).IsActive() {

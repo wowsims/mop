@@ -132,12 +132,15 @@ var shaWeaponIDs = []int32{86990, 86865, 86227}
 func init() {
 	for _, id := range shaWeaponIDs {
 		core.NewItemEffect(id, func(agent core.Agent, _ proto.ItemLevelState) {
-			priest := agent.(PriestAgent).GetPriest()
-			priest.AddStaticMod(core.SpellModConfig{
-				Kind:      core.SpellMod_GlobalCooldown_Flat,
-				TimeValue: -core.GCDDefault,
-				ClassMask: PriestSpellShadowFiend | PriestSpellMindBender,
-			})
+			// Hidden effect for Priest only
+			if priestAgent, ok := agent.(PriestAgent); ok {
+				priest := priestAgent.GetPriest()
+				priest.AddStaticMod(core.SpellModConfig{
+					Kind:      core.SpellMod_GlobalCooldown_Flat,
+					TimeValue: -core.GCDDefault,
+					ClassMask: PriestSpellShadowFiend | PriestSpellMindBender,
+				})
+			}
 		})
 	}
 }
