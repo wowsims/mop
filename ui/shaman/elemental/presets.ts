@@ -1,5 +1,5 @@
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Glyphs, Profession, Race, Stat } from '../../core/proto/common.js';
+import { ConsumesSpec, Debuffs, Glyphs, Profession, RaidBuffs, Stat } from '../../core/proto/common.js';
 import {
 	ElementalShaman_Options as ElementalShamanOptions,
 	FeleAutocastSettings,
@@ -102,6 +102,19 @@ export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
 };
+
+export const DefaultRaidBuffs = RaidBuffs.create({
+	blessingOfKings: true,
+	leaderOfThePack: true,
+	serpentsSwiftness: true,
+	bloodlust: true,
+	skullBannerCount: 2,
+	stormlashTotemCount: 3,
+});
+
+export const DefaultDebuffs = Debuffs.create({
+	curseOfElements: true,
+});
 
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 76085, // Flask of the Warm Sun
