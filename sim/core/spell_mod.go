@@ -684,16 +684,16 @@ func applyAllowCastWhileMoving(mod *SpellMod, spell *Spell) {
 	spell.Flags |= SpellFlagCanCastWhileMoving
 }
 
+func removeAllowCastWhileMoving(mod *SpellMod, spell *Spell) {
+	spell.Flags ^= SpellFlagCanCastWhileMoving
+}
+
 func applyAllowCastWhileChanneling(mod *SpellMod, spell *Spell) {
 	spell.Flags |= SpellFlagCastWhileChanneling
 }
 
 func removeAllowCastWhileChanneling(mod *SpellMod, spell *Spell) {
 	spell.Flags ^= SpellFlagCastWhileChanneling
-}
-
-func removeAllowCastWhileMoving(mod *SpellMod, spell *Spell) {
-	spell.Flags ^= SpellFlagCanCastWhileMoving
 }
 
 func applyBonusSpellPowerFlat(mod *SpellMod, spell *Spell) {
