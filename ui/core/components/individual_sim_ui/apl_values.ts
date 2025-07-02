@@ -1382,7 +1382,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 	shamanFireElementalDuration: inputBuilder({
 		label: 'Fire Elemental Total Duration',
 		submenu: ['Shaman'],
-		shortDescription: 'Returns the duration of Fire Elemental depending on if Totemic Focus is talented or not.',
+		shortDescription: 'Returns the total duration of Fire Elemental Totem',
 		newValue: APLValueShamanFireElementalDuration.create,
 		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getClass() == Class.ClassShaman,
 		fields: [],
