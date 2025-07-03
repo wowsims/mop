@@ -67,6 +67,8 @@ type Pet struct {
 	// If true the pet will automatically inherit the owner's regen speed multiplier
 	hasResourceRegenInheritance bool
 
+	pendingInheritance []*PendingAction // List of pending inheritance actions
+
 	isReset bool
 
 	// Some pets expire after a certain duration. This is the pending action that disables
@@ -109,6 +111,7 @@ func NewPet(config PetConfig) Pet {
 		hasResourceRegenInheritance:     config.HasResourceRegenInheritance,
 		enabledOnStart:                  config.EnabledOnStart,
 		isGuardian:                      config.IsGuardian,
+		pendingInheritance:              make([]*PendingAction, 0),
 	}
 
 	pet.GCD = pet.NewTimer()
@@ -330,6 +333,14 @@ func (pet *Pet) Disable(sim *Simulation) {
 		return
 	}
 
+	for len(pet.pendingInheritance) > 0 {
+		pa := pet.pendingInheritance[0]
+		if !pa.cancelled {
+			pa.Cancel(sim)
+			sim.pendingActionPool.Put(pa)
+		}
+	}
+
 	pet.AddStatsDynamic(sim, pet.inheritedStats.Invert())
 	pet.inheritedStats = stats.Stats{}
 
@@ -426,8 +437,18 @@ func (env *Environment) TriggerDelayedPetInheritance(sim *Simulation, dynamicPet
 			if pet.enabled {
 				inheritanceFunc(sim, pet)
 			}
+
+			for i, v := range pet.pendingInheritance {
+				if v == pa {
+					pet.pendingInheritance[i] = pet.pendingInheritance[len(pet.pendingInheritance)-1]
+					pet.pendingInheritance = pet.pendingInheritance[:len(pet.pendingInheritance)-1]
+					break
+				}
+			}
 		}
 
+		pa.CleanUp = pa.OnAction
+		pet.pendingInheritance = append(pet.pendingInheritance, pa)
 		sim.AddPendingAction(pa)
 	}
 }

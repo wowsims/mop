@@ -1636,15 +1636,15 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 152782.25831
-  tps: 143947.14759
+  dps: 152783.15921
+  tps: 143948.04849
  }
 }
 dps_results: {
  key: "TestRetribution-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 158657.09439
-  tps: 149398.87899
+  dps: 158657.99529
+  tps: 149399.77989
  }
 }
 dps_results: {
@@ -2350,8 +2350,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Average-Default"
  value: {
-  dps: 157158.72367
-  tps: 147813.44873
+  dps: 157159.00756
+  tps: 147813.72859
  }
 }
 dps_results: {

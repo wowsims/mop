@@ -473,6 +473,10 @@ func (sim *Simulation) Cleanup() {
 		if pa.CleanUp != nil {
 			pa.CleanUp(sim)
 		}
+
+		if pa.canPool {
+			sim.pendingActionPool.Put(pa)
+		}
 	}
 
 	sim.Raid.doneIteration(sim)

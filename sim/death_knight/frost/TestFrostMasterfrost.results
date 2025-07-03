@@ -73,9 +73,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 152148.98953
-  tps: 137130.03185
-  hps: 1842.88223
+  dps: 151930.26003
+  tps: 137117.94
+  hps: 1837.90685
  }
 }
 dps_results: {
@@ -179,8 +179,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 145063.29037
-  tps: 134116.7223
+  dps: 145047.43879
+  tps: 134096.47325
  }
 }
 dps_results: {
@@ -491,9 +491,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 152907.26181
-  tps: 141479.05018
-  hps: 1732.44121
+  dps: 152877.3116
+  tps: 141435.74597
+  hps: 1730.02498
  }
 }
 dps_results: {
@@ -515,9 +515,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-Average-Default"
  value: {
-  dps: 156575.39597
-  tps: 144547.88019
-  hps: 1526.16692
+  dps: 156576.97757
+  tps: 144548.97139
+  hps: 1526.21337
  }
 }
 dps_results: {

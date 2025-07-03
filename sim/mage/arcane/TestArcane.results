@@ -292,8 +292,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-RegaliaoftheBurningScroll"
  value: {
-  dps: 127879.44765
-  tps: 125917.08084
+  dps: 127881.77655
+  tps: 125919.40974
  }
 }
 dps_results: {
@@ -390,8 +390,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Average-Default"
  value: {
-  dps: 150019.65141
-  tps: 147638.68411
+  dps: 150019.8388
+  tps: 147638.86978
  }
 }
 dps_results: {
