@@ -1,6 +1,6 @@
 import * as Mechanics from '../../core/constants/mechanics';
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common.js';
+import { ConsumesSpec, Debuffs, Glyphs, Profession, Race, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common.js';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,
 	FeleAutocastSettings,
@@ -30,21 +30,21 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Default',
 	Stats.fromMap(
 		{
-			[Stat.StatIntellect]: 0.07,
-			[Stat.StatAgility]: 2.47,
+			[Stat.StatIntellect]: 0.04,
+			[Stat.StatAgility]: 1.00,
 			[Stat.StatSpellPower]: 0,
-			[Stat.StatHitRating]: 0.89 + 0.6,
-			[Stat.StatCritRating]: 0.26 + 0.58,
-			[Stat.StatHasteRating]: 0.22 + 0.44,
-			[Stat.StatAttackPower]: 1.0,
-			[Stat.StatExpertiseRating]: 1.3,
-			[Stat.StatMasteryRating]: 1.21,
+			[Stat.StatHitRating]: 0.97,
+			[Stat.StatCritRating]: 0.41,
+			[Stat.StatHasteRating]: 0.42,
+			[Stat.StatAttackPower]: 0.40,
+			[Stat.StatExpertiseRating]: 0.97,
+			[Stat.StatMasteryRating]: 0.46,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 3.05,
-			[PseudoStat.PseudoStatOffHandDps]: 2.56,
-			[PseudoStat.PseudoStatSpellHitPercent]: 0.89 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
-			[PseudoStat.PseudoStatPhysicalHitPercent]: 0.6 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
+			[PseudoStat.PseudoStatMainHandDps]: 0.88,
+			[PseudoStat.PseudoStatOffHandDps]: 0.76	,
+			[PseudoStat.PseudoStatSpellHitPercent]: 0.57 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
+			[PseudoStat.PseudoStatPhysicalHitPercent]: 0.39 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
 		},
 	),
 );
@@ -54,10 +54,10 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '313233',
+		talentsString: '313133',
 		glyphs: Glyphs.create({
 			major1: ShamanMajorGlyph.GlyphOfLightningShield,
-			major2: ShamanMajorGlyph.GlyphOfHealingStreamTotem,
+			major2: ShamanMajorGlyph.GlyphOfFireElementalTotem,
 			major3: ShamanMajorGlyph.GlyphOfFireNova,
 		}),
 	}),
@@ -81,7 +81,8 @@ export const DefaultOptions = EnhancementShamanOptions.create({
 export const OtherDefaults = {
 	distanceFromTarget: 5,
 	profession1: Profession.Engineering,
-	profession2: Profession.Tailoring,
+	profession2: Profession.Leatherworking,
+	race: Race.RaceOrc,
 };
 
 export const DefaultConsumables = ConsumesSpec.create({
