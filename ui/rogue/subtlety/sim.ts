@@ -10,6 +10,7 @@ import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Ra
 import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as RogueInputs from '../inputs';
 import * as SubInputs from './inputs';
 import * as Presets from './presets';
@@ -79,6 +80,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSubtletyRogue, {
 			legacyOfTheWhiteTiger: true,
 			blessingOfMight: true,
 			bloodlust: true,
+			...defaultRaidBuffMajorDamageCooldowns()
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
@@ -96,20 +98,20 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSubtletyRogue, {
 	playerIconInputs: [RogueInputs.LethalPoison()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
 	includeBuffDebuffInputs: [
-		BuffDebuffInputs.CritBuff, 
+		BuffDebuffInputs.CritBuff,
 		BuffDebuffInputs.AttackPowerBuff,
 		BuffDebuffInputs.MasteryBuff,
 		BuffDebuffInputs.StatsBuff,
 		BuffDebuffInputs.AttackSpeedBuff,
-		
+
 		BuffDebuffInputs.MajorHasteBuff,
 		BuffDebuffInputs.StormLashTotem,
 		BuffDebuffInputs.Skullbanner,
 		BuffDebuffInputs.ShatteringThrow,
 		BuffDebuffInputs.TricksOfTheTrade,
 
-		BuffDebuffInputs.SpellDamageDebuff, 
-		BuffDebuffInputs.MajorArmorDebuff, 
+		BuffDebuffInputs.SpellDamageDebuff,
+		BuffDebuffInputs.MajorArmorDebuff,
 		BuffDebuffInputs.PhysicalDamageDebuff
 	],
 	excludeBuffDebuffInputs: [],
