@@ -63,6 +63,8 @@ type Simulation struct {
 
 	minTaskTime time.Duration
 	tasks       []Task
+
+	isInPrepull bool
 }
 
 func (sim *Simulation) rescheduleTracker(trackerTime time.Duration) {
@@ -373,8 +375,10 @@ func (sim *Simulation) run() *proto.RaidSimResult {
 
 // RunOnce is the main event loop. It will run the simulation for number of seconds.
 func (sim *Simulation) runOnce() {
+	sim.isInPrepull = true
 	sim.reset()
 	sim.PrePull()
+	sim.isInPrepull = false
 	sim.runPendingActions()
 	sim.Cleanup()
 }

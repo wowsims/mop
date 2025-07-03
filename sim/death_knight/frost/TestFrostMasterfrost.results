@@ -73,9 +73,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 150977.58743
-  tps: 136427.95404
-  hps: 1840.39454
+  dps: 151212.79014
+  tps: 136411.91789
+  hps: 1842.88223
  }
 }
 dps_results: {
