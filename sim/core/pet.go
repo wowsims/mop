@@ -141,6 +141,17 @@ func makeStatInheritanceFunc(nonHitExpStatInheritance PetStatInheritance) PetSta
 	}
 }
 
+func (pet *Pet) enableDynamicStats(sim *Simulation) {
+	if slices.Contains(pet.Owner.DynamicStatsPets, pet) {
+		panic("Pet already present in dynamic stats pet list!")
+	}
+
+	pet.inheritedStats = pet.statInheritance(pet.Owner.GetStats())
+	pet.AddStatsDynamic(sim, pet.inheritedStats)
+	pet.Owner.DynamicStatsPets = append(pet.Owner.DynamicStatsPets, pet)
+	pet.dynamicStatInheritance = pet.statInheritance
+}
+
 // Updates the stats for this pet in response to a stat change on the owner.
 // addedStats is the amount of stats added to the owner (will be negative if the
 // owner lost stats).
@@ -149,6 +160,22 @@ func (pet *Pet) AddOwnerStats(sim *Simulation, addedStats stats.Stats) {
 
 	pet.inheritedStats.AddInplace(&inheritedChange)
 	pet.AddStatsDynamic(sim, inheritedChange)
+}
+
+func (pet *Pet) resetDynamicStats(sim *Simulation) {
+	if pet.dynamicStatInheritance == nil {
+		return
+	}
+
+	if idx := slices.Index(pet.Owner.DynamicStatsPets, pet); idx != -1 {
+		pet.Owner.DynamicStatsPets = removeBySwappingToBack(pet.Owner.DynamicStatsPets, idx)
+	} else {
+		panic("Pet not present in dynamic stats pet list!")
+	}
+
+	pet.dynamicStatInheritance = nil
+	pet.AddStatsDynamic(sim, pet.inheritedStats.Invert())
+	pet.inheritedStats = stats.Stats{}
 }
 
 func (pet *Pet) reset(sim *Simulation, agent PetAgent) {
@@ -192,10 +219,7 @@ func (pet *Pet) Enable(sim *Simulation, petAgent PetAgent) {
 		pet.reset(sim, petAgent)
 	}
 
-	pet.inheritedStats = pet.statInheritance(pet.Owner.GetStats())
-	pet.AddStatsDynamic(sim, pet.inheritedStats)
-	pet.Owner.DynamicStatsPets = append(pet.Owner.DynamicStatsPets, pet)
-	pet.dynamicStatInheritance = pet.statInheritance
+	pet.enableDynamicStats(sim)
 
 	//reset current mana after applying stats
 	pet.manaBar.reset()
@@ -322,15 +346,7 @@ func (pet *Pet) Disable(sim *Simulation) {
 		return
 	}
 
-	pet.AddStatsDynamic(sim, pet.inheritedStats.Invert())
-	pet.inheritedStats = stats.Stats{}
-
-	if pet.dynamicStatInheritance != nil {
-		if idx := slices.Index(pet.Owner.DynamicStatsPets, pet); idx != -1 {
-			pet.Owner.DynamicStatsPets = removeBySwappingToBack(pet.Owner.DynamicStatsPets, idx)
-		}
-		pet.dynamicStatInheritance = nil
-	}
+	pet.resetDynamicStats(sim)
 
 	if pet.dynamicMeleeSpeedInheritance != nil {
 		if idx := slices.Index(pet.Owner.DynamicMeleeSpeedPets, pet); idx != -1 {
