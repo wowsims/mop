@@ -8,7 +8,7 @@ import (
 )
 
 func (war *ArmsWarrior) registerSweepingStrikes() {
-	actionID := core.ActionID{SpellID: 12328}
+	actionID := core.ActionID{SpellID: 1250616}
 	attackId := core.ActionID{SpellID: 12723}
 	normalizedId := core.ActionID{SpellID: 26654}
 
