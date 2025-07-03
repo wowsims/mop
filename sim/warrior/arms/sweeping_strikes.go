@@ -18,7 +18,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		ClassSpellMask: warrior.SpellMaskSweepingStrikesHit,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeSpecial,
-		Flags:          core.SpellFlagIgnoreTargetModifiers | core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
+		Flags:          core.SpellFlagIgnoreArmor | core.SpellFlagIgnoreModifiers | core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
 
 		DamageMultiplier: 0.5 + 0.1, // 2025-07-01 - Balance change
 		ThreatMultiplier: 1,
@@ -66,8 +66,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 				return
 			}
 
-			copyDamage = result.PreOutcomeDamage
-
+			copyDamage = result.Damage
 			hitSpell.Cast(sim, war.Env.NextActiveTargetUnit(result.Target))
 		},
 	})
