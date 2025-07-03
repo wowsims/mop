@@ -54,6 +54,7 @@ func TestElemental(t *testing.T) {
 			ArmorType:         proto.ArmorType_ArmorTypeMail,
 			RangedWeaponTypes: []proto.RangedWeaponType{},
 		},
+		StartingDistance: 20,
 	}))
 }
 
