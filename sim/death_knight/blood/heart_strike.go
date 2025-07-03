@@ -12,14 +12,14 @@ Instantly strike the target and up to two additional nearby enemies, causing 105
 Damage dealt to each target is increased by an additional 15% for each of your diseases present.
 */
 func (bdk *BloodDeathKnight) registerHeartStrike() {
-	numHits := min(3, bdk.Env.GetNumTargets())
-	results := make([]*core.SpellResult, numHits)
+	maxHits := min(3, bdk.Env.TotalTargetCount())
+	results := make(core.SpellResultSlice, maxHits)
 
 	bdk.GetOrRegisterSpell(core.SpellConfig{
 		ActionID:       HeartStrikeActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellHeartStrike,
 
 		MaxRange: core.MaxMeleeRange,
@@ -45,7 +45,9 @@ func (bdk *BloodDeathKnight) registerHeartStrike() {
 
 			defaultMultiplier := spell.DamageMultiplier
 			currentTarget := target
-			for idx := int32(0); idx < numHits; idx++ {
+			numHits := min(maxHits, bdk.Env.ActiveTargetCount())
+
+			for idx := range numHits {
 				targetDamage := baseDamage * bdk.GetDiseaseMulti(currentTarget, 1.0, 0.15)
 
 				results[idx] = spell.CalcDamage(sim, currentTarget, targetDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
@@ -54,21 +56,22 @@ func (bdk *BloodDeathKnight) registerHeartStrike() {
 				}
 
 				spell.DamageMultiplier *= 0.5
-				currentTarget = bdk.Env.NextTargetUnit(currentTarget)
+				currentTarget = bdk.Env.NextActiveTargetUnit(currentTarget)
 			}
 
 			spell.DamageMultiplier = defaultMultiplier
 
-			for _, result := range results {
-				spell.DealDamage(sim, result)
+			for idx := range numHits {
+				spell.DealDamage(sim, results[idx])
 			}
 		},
 	})
 }
 
 func (bdk *BloodDeathKnight) registerDrwHeartStrike() *core.Spell {
-	numHits := min(3, bdk.Env.GetNumTargets())
-	results := make([]*core.SpellResult, numHits)
+	maxHits := min(3, bdk.Env.TotalTargetCount())
+	results := make([]*core.SpellResult, maxHits)
+
 	return bdk.RuneWeapon.RegisterSpell(core.SpellConfig{
 		ActionID:    HeartStrikeActionID,
 		SpellSchool: core.SpellSchoolPhysical,
@@ -81,19 +84,21 @@ func (bdk *BloodDeathKnight) registerDrwHeartStrike() *core.Spell {
 
 			defaultMultiplier := spell.DamageMultiplier
 			currentTarget := target
-			for idx := int32(0); idx < numHits; idx++ {
+			numHits := min(maxHits, bdk.Env.ActiveTargetCount())
+
+			for idx := range numHits {
 				targetDamage := baseDamage * bdk.RuneWeapon.GetDiseaseMulti(currentTarget, 1.0, 0.15)
 
 				results[idx] = spell.CalcDamage(sim, currentTarget, targetDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
 
 				spell.DamageMultiplier *= 0.5
-				currentTarget = bdk.Env.NextTargetUnit(currentTarget)
+				currentTarget = bdk.Env.NextActiveTargetUnit(currentTarget)
 			}
 
 			spell.DamageMultiplier = defaultMultiplier
 
-			for _, result := range results {
-				spell.DealDamage(sim, result)
+			for idx := range numHits {
+				spell.DealDamage(sim, results[idx])
 				spell.DamageMultiplier /= 0.5
 			}
 		},

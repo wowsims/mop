@@ -28,8 +28,6 @@ func (rogue *Rogue) registerFanOfKnives() {
 		ThreatMultiplier: 1,
 	})
 
-	results := make([]*core.SpellResult, len(rogue.Env.Encounter.TargetUnits))
-
 	rogue.FanOfKnives = rogue.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 51723},
 		SpellSchool: core.SpellSchoolPhysical,
@@ -46,17 +44,17 @@ func (rogue *Rogue) registerFanOfKnives() {
 			IgnoreHaste: true,
 		},
 
-		ApplyEffects: func(sim *core.Simulation, unit *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			rogue.BreakStealth(sim)
-			for i, aoeTarget := range sim.Encounter.TargetUnits {
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				damage := minDamage +
 					sim.RandomFloat("Fan of Knives")*damageSpread +
 					spell.MeleeAttackPower()*apScaling
 
 				damage *= sim.Encounter.AOECapMultiplier()
 
-				results[i] = fokSpell.CalcAndDealDamage(sim, aoeTarget, damage, fokSpell.OutcomeMeleeSpecialNoBlockDodgeParry)
-				if results[i].Landed() && aoeTarget == rogue.CurrentTarget {
+				result := fokSpell.CalcAndDealDamage(sim, aoeTarget, damage, fokSpell.OutcomeMeleeSpecialNoBlockDodgeParry)
+				if result.Landed() && aoeTarget == rogue.CurrentTarget {
 					rogue.AddComboPointsOrAnticipation(sim, 1, cpMetrics)
 
 					if hasGlyph {

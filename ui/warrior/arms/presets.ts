@@ -12,8 +12,8 @@ import P1PreBisGearRich from './gear_sets/p1_prebis_rich.gear.json';
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
-export const P1_PREBIS_ARMS_RICH_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS 💰', P1PreBisGearRich);
-export const P1_PREBIS_ARMS_POOR_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS 📉', P1PreBisGearPoor);
+export const P1_PREBIS_ARMS_RICH_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS (Rich)', P1PreBisGearRich);
+export const P1_PREBIS_ARMS_POOR_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS (Budget)', P1PreBisGearPoor);
 export const P1_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1ArmsBisGear);
 
 export const ROTATION_ARMS = PresetUtils.makePresetAPLRotation('Default', ArmsApl);

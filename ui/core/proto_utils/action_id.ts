@@ -756,12 +756,6 @@ export class ActionId {
 					name += ' (Heroic)';
 				}
 				break;
-			case 'Death Coil':
-				if (tag === 2) {
-					name += ' (Heal)';
-				}
-				break;
-
 			case 'Item - Paladin T11 Retribution 4P Bonus':
 				name = 'Reinforced Sapphirium Battleplate - T11 4pc';
 				break;

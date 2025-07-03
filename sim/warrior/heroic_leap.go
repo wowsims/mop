@@ -7,8 +7,6 @@ import (
 )
 
 func (war *Warrior) registerHeroicLeap() {
-	results := make([]*core.SpellResult, war.Env.GetNumTargets())
-
 	war.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 6544},
 		SpellSchool:    core.SpellSchoolPhysical,
@@ -31,18 +29,11 @@ func (war *Warrior) registerHeroicLeap() {
 		ThreatMultiplier: 1,
 		CritMultiplier:   war.DefaultCritMultiplier(),
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := 1 + 0.5*spell.MeleeAttackPower()
-
-			for i, enemyTarget := range sim.Encounter.TargetUnits {
-				results[i] = spell.CalcDamage(sim, enemyTarget, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
-
+			results := spell.CalcAoeDamage(sim, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
 			war.CastNormalizedSweepingStrikesAttack(results, sim)
-
-			for _, result := range results {
-				spell.DealDamage(sim, result)
-			}
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 }

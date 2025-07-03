@@ -65,8 +65,7 @@ func (war *Warrior) registerHeroicStrikeSpell() {
 }
 
 func (war *Warrior) registerCleaveSpell() {
-	maxTargets := 2
-	results := make([]*core.SpellResult, maxTargets)
+	const maxTargets int32 = 2
 
 	getCleaveDamageMultiplier := func() float64 {
 		has1H := war.MainHand().HandType != proto.HandType_HandTypeTwoHand
@@ -111,19 +110,9 @@ func (war *Warrior) registerCleaveSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-
-			for idx, target := range sim.Encounter.TargetUnits {
-				if idx > maxTargets {
-					break
-				}
-				results[idx] = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
-
+			results := spell.CalcCleaveDamage(sim, target, maxTargets, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
 			war.CastNormalizedSweepingStrikesAttack(results, sim)
-
-			for _, result := range results {
-				spell.DealDamage(sim, result)
-			}
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 

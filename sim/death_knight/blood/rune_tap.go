@@ -12,7 +12,7 @@ func (bdk *BloodDeathKnight) registerRuneTap() {
 	bdk.RuneTapSpell = bdk.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 48982},
 		SpellSchool:    core.SpellSchoolPhysical,
-		Flags:          core.SpellFlagAPL | core.SpellFlagNoOnCastComplete | core.SpellFlagHelpful,
+		Flags:          core.SpellFlagAPL | core.SpellFlagNoOnCastComplete | core.SpellFlagHelpful | core.SpellFlagEncounterOnly,
 		ProcMask:       core.ProcMaskSpellHealing,
 		ClassSpellMask: death_knight.DeathKnightSpellRuneTap,
 

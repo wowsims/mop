@@ -97,6 +97,8 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	trueshotAura: true,
 	bloodlust: true,
 	elementalOath: true,
+	skullBannerCount: 2,
+	stormlashTotemCount: 3,
 });
 
 export const DefaultDebuffs = Debuffs.create({

@@ -993,6 +993,22 @@ func (auras AuraArray) FindLabel() string {
 	panic("No valid auras in array!")
 }
 
+func (auras AuraArray) ActivateAll(sim *Simulation) {
+	for _, target := range sim.Environment.AllUnits {
+		if target.IsEnabled() && (auras[target.UnitIndex] != nil) {
+			auras[target.UnitIndex].Activate(sim)
+		}
+	}
+}
+
+func (auras AuraArray) ApplyOnExpire(onExpire OnExpire) {
+	for _, aura := range auras{
+		if aura != nil {
+			aura.ApplyOnExpire(onExpire)
+		}
+	}
+}
+
 func (caster *Unit) NewAllyAuraArray(makeAura func(*Unit) *Aura) AuraArray {
 	auras := make([]*Aura, len(caster.Env.AllUnits))
 	for _, target := range caster.Env.AllUnits {

@@ -23,8 +23,7 @@ func (prot *ProtectionPaladin) registerAvengersShieldSpell() {
 	hasGlyphOfFocusedShield := prot.HasMajorGlyph(proto.PaladinMajorGlyph_GlyphOfFocusedShield)
 
 	// Glyph to single target, OR apply to up to 3 targets
-	numTargets := core.TernaryInt32(hasGlyphOfFocusedShield, 1, min(3, prot.Env.GetNumTargets()))
-	results := make([]*core.SpellResult, numTargets)
+	maxTargets := core.TernaryInt32(hasGlyphOfFocusedShield, 1, 3)
 
 	prot.AvengersShield = prot.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 31935},
@@ -59,15 +58,11 @@ func (prot *ProtectionPaladin) registerAvengersShieldSpell() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			bonusDamage := 0.31499999762*spell.SpellPower() + 0.81749999523*spell.MeleeAttackPower()
 
-			for idx := range numTargets {
-				baseDamage := prot.CalcAndRollDamageRange(sim, 5.89499998093, 0.20000000298) + bonusDamage
-				results[idx] = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-				target = sim.Environment.NextTargetUnit(target)
-			}
+			spell.CalcCleaveDamageWithVariance(sim, target, maxTargets, spell.OutcomeMeleeSpecialHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
+				return prot.CalcAndRollDamageRange(sim, 5.89499998093, 0.20000000298) + bonusDamage
+			})
 
-			for idx := range numTargets {
-				spell.DealDamage(sim, results[idx])
-			}
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 }

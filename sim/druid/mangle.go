@@ -8,7 +8,6 @@ import (
 )
 
 func (druid *Druid) registerMangleBearSpell() {
-	maxHits := min(druid.Env.GetNumTargets(), 3)
 	actionID := core.ActionID{SpellID: 33878}
 	rageMetrics := druid.NewRageMetrics(actionID)
 	applySotF := (druid.Spec == proto.Spec_SpecGuardianDruid) && druid.Talents.SoulOfTheForest
@@ -39,22 +38,12 @@ func (druid *Druid) registerMangleBearSpell() {
 		MaxRange:         core.MaxMeleeRange,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			numHits := core.TernaryInt32(druid.BerserkBearAura.IsActive(), maxHits, 1)
-			curTarget := target
-			anyLanded := false
+			maxHits := core.TernaryInt32(druid.BerserkBearAura.IsActive(), 3, 1)
+			results := spell.CalcAndDealCleaveDamageWithVariance(sim, target, maxHits, spell.OutcomeMeleeWeaponSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+				return spell.Unit.MHWeaponDamage(sim, spell.MeleeAttackPower())
+			})
 
-			for hitIndex := int32(0); hitIndex < numHits; hitIndex++ {
-				baseDamage := spell.Unit.MHWeaponDamage(sim, spell.MeleeAttackPower())
-				result := spell.CalcAndDealDamage(sim, curTarget, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-
-				if result.Landed() {
-					anyLanded = true
-				}
-
-				curTarget = sim.Environment.NextTargetUnit(curTarget)
-			}
-
-			if anyLanded {
+			if results.AnyLanded() {
 				druid.AddRage(sim, rageGen, rageMetrics)
 			}
 

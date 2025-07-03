@@ -193,17 +193,17 @@ func (bmHunter *BeastMasteryHunter) applyBeastCleave() {
 		ProcMask: core.ProcMaskMelee,
 		Outcome:  core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if bmHunter.Env.GetNumTargets() < 2 || result.Damage <= 0 || spell.Matches(hunter.HunterPetBeastCleaveHit) {
+			if bmHunter.Env.ActiveTargetCount() < 2 || result.Damage <= 0 || spell.Matches(hunter.HunterPetBeastCleaveHit) {
 				return
 			}
 
 			// FIXME: This ignores target modifiers and assumes they are the same for the original target and the cleaved target
 			copyDamage = result.Damage / result.ArmorMultiplier
 
-			nextTarget := bmHunter.Env.NextTargetUnit(result.Target)
+			nextTarget := bmHunter.Env.NextActiveTargetUnit(result.Target)
 			for nextTarget != nil && nextTarget.Index != result.Target.Index {
 				hitSpell.Cast(sim, nextTarget)
-				nextTarget = bmHunter.Env.NextTargetUnit(nextTarget)
+				nextTarget = bmHunter.Env.NextActiveTargetUnit(nextTarget)
 			}
 		},
 	})

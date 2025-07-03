@@ -27,10 +27,7 @@ func (moonkin *BalanceDruid) registerAstralStormSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			damage := moonkin.CalcScalingSpellDmg(AstralStormCoeff)
-
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, aoeTarget, damage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamage(sim, damage, spell.OutcomeMagicHitAndCrit)
 		},
 	})
 

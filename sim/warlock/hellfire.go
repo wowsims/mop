@@ -10,8 +10,7 @@ const hellFireScale = 0.20999999344
 const hellFireCoeff = 0.20999999344
 
 func (warlock *Warlock) RegisterHellfire(callback WarlockSpellCastedCallback) *core.Spell {
-	var baseDamage = warlock.CalcScalingSpellDmg(hellFireScale)
-	results := make([]core.SpellResult, len(warlock.Env.Encounter.TargetUnits))
+	baseDamage := warlock.CalcScalingSpellDmg(hellFireScale)
 
 	hellfireActionID := core.ActionID{SpellID: 1949}
 	manaMetric := warlock.NewManaMetrics(hellfireActionID)
@@ -43,12 +42,10 @@ func (warlock *Warlock) RegisterHellfire(callback WarlockSpellCastedCallback) *c
 			AffectedByCastSpeed:  true,
 			BonusCoefficient:     hellFireCoeff,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				for idx, unit := range sim.Encounter.TargetUnits {
-					results[idx] = *dot.Spell.CalcAndDealPeriodicDamage(sim, unit, baseDamage, dot.Spell.OutcomeMagicHit)
-				}
-
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
+				results := dot.Spell.CalcAndDealPeriodicAoeDamage(sim, baseDamage, dot.Spell.OutcomeMagicHit)
 				warlock.SpendMana(sim, warlock.MaxMana()*0.02, manaMetric)
+
 				if callback != nil {
 					callback(results, dot.Spell, sim)
 				}

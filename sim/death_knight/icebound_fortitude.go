@@ -21,7 +21,7 @@ func (dk *DeathKnight) registerIceboundFortitude() {
 
 	spell := dk.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
-		Flags:          core.SpellFlagNoOnCastComplete | core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
+		Flags:          core.SpellFlagNoOnCastComplete | core.SpellFlagAPL | core.SpellFlagReadinessTrinket | core.SpellFlagEncounterOnly,
 		ClassSpellMask: DeathKnightSpellIceboundFortitude,
 
 		Cast: core.CastConfig{
