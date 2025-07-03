@@ -1,6 +1,6 @@
 import * as Mechanics from '../../core/constants/mechanics';
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Debuffs, Glyphs, Profession, Race, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common.js';
+import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common.js';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,
 	FeleAutocastSettings,
@@ -11,6 +11,7 @@ import {
 } from '../../core/proto/shaman.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
@@ -31,18 +32,18 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatIntellect]: 0.04,
-			[Stat.StatAgility]: 1.00,
+			[Stat.StatAgility]: 1.0,
 			[Stat.StatSpellPower]: 0,
 			[Stat.StatHitRating]: 0.97,
 			[Stat.StatCritRating]: 0.41,
 			[Stat.StatHasteRating]: 0.42,
-			[Stat.StatAttackPower]: 0.40,
+			[Stat.StatAttackPower]: 0.4,
 			[Stat.StatExpertiseRating]: 0.97,
 			[Stat.StatMasteryRating]: 0.46,
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 0.88,
-			[PseudoStat.PseudoStatOffHandDps]: 0.76	,
+			[PseudoStat.PseudoStatOffHandDps]: 0.76,
 			[PseudoStat.PseudoStatSpellHitPercent]: 0.57 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
 			[PseudoStat.PseudoStatPhysicalHitPercent]: 0.39 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
 		},
@@ -98,8 +99,7 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	trueshotAura: true,
 	bloodlust: true,
 	elementalOath: true,
-	skullBannerCount: 2,
-	stormlashTotemCount: 3,
+	...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman),
 });
 
 export const DefaultDebuffs = Debuffs.create({

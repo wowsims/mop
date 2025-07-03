@@ -3,6 +3,7 @@ import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, PartyBuffs, Profession,
 import { BalanceDruid_Options as BalanceDruidOptions, DruidMajorGlyph } from '../../core/proto/druid.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import StandardApl from './apls/standard.apl.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 import T14Gear from './gear_sets/t14.gear.json';
@@ -57,14 +58,13 @@ export const DefaultConsumables = ConsumesSpec.create({
 });
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
 	markOfTheWild: true, // stats
 	darkIntent: true, // spell power
 	moonkinAura: true, // spell haste
 	leaderOfThePack: true, // crit %
 	blessingOfMight: true, // mastery
 	bloodlust: true, // major haste
-	skullBannerCount: 2,
-	stormlashTotemCount: 4,
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
