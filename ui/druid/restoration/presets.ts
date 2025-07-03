@@ -14,6 +14,7 @@ export const P2_PRESET = PresetUtils.makePresetGear('P2 Preset', P2Gear);
 import P3Gear from './gear_sets/p3.gear.json';
 export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
 import { Stats } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import P4Gear from './gear_sets/p4.gear.json';
 export const P4_PRESET = PresetUtils.makePresetGear('P4 Preset', P4Gear);
 
@@ -71,7 +72,9 @@ export const DefaultConsumables = ConsumesSpec.create({
 	foodId: 62290, // Seafood Magnifique Feast
 	potId: 57192, // Mythical Mana Potion
 });
-export const DefaultRaidBuffs = RaidBuffs.create({});
+export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns()
+});
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
 

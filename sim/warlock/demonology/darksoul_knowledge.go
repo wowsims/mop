@@ -11,7 +11,7 @@ import (
 func (demonology *DemonologyWarlock) registerDarksoulKnowledge() {
 	buff := demonology.NewTemporaryStatsAura(
 		"Dark Soul: Knowledge",
-		core.ActionID{SpellID: 113858},
+		core.ActionID{SpellID: 113861},
 		stats.Stats{stats.MasteryRating: 30 * core.MasteryRatingPerMasteryPoint},
 		time.Second*20,
 	)
