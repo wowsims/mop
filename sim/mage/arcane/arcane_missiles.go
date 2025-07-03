@@ -120,7 +120,7 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 		ActionID:          core.ActionID{SpellID: 79684},
 		ClassSpellMask:    mage.MageSpellsAll ^ mage.MageSpellArcaneMissilesTick,
 		SpellFlagsExclude: core.SpellFlagHelpful,
-		ProcChance:        0.4,
+		ProcChance:        0.3,
 		Callback:          core.CallbackOnSpellHitDealt,
 		Outcome:           core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
