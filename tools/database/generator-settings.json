@@ -22,6 +22,7 @@
 	"Tables": [
 		"Spell",
 		"Item",
+		"Faction",
 		"GemProperties",
 		"ItemSet",
 		"ItemSetSpell",
@@ -70,14 +71,24 @@
 		"SpellReagents",
 		"SpellInterrupts",
 		"SpellItemEnchantment",
+		"SpellProcsPerMinuteMod",
 		"SpellCategories",
 		"SpellShapeshift",
 		"SpellEffect",
 		"SpellDuration",
 		"SpellAuraOptions",
+		"SpellDescriptionVariables",
+		"SpellProcsPerMinute",
+		"SpellXDescriptionVariables",
+		"SpellTargetRestrictions",
 		"GlyphProperties",
 		"SpellMechanic",
 		"Talent",
-		"TalentTab"
+		"TalentTab",
+		"Map",
+		"JournalEncounter",
+		"JournalEncounterItem",
+		"AreaTable",
+		"JournalInstance"
 	]
 }

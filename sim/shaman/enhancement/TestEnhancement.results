@@ -551,8 +551,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 53867.12052
-  tps: 46496.73074
+  dps: 53186.29482
+  tps: 45938.4283
  }
 }
 dps_results: {

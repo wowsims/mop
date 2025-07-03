@@ -8,7 +8,7 @@ import (
 )
 
 func (war *ArmsWarrior) registerSweepingStrikes() {
-	actionID := core.ActionID{SpellID: 12328}
+	actionID := core.ActionID{SpellID: 1250616}
 	attackId := core.ActionID{SpellID: 12723}
 	normalizedId := core.ActionID{SpellID: 26654}
 
@@ -18,7 +18,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		ClassSpellMask: warrior.SpellMaskSweepingStrikesHit,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeSpecial,
-		Flags:          core.SpellFlagIgnoreAttackerModifiers | core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
+		Flags:          core.SpellFlagIgnoreTargetModifiers | core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
 
 		DamageMultiplier: 0.5 + 0.1, // 2025-07-01 - Balance change
 		ThreatMultiplier: 1,

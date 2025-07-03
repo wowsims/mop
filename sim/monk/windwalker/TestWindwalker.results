@@ -617,8 +617,8 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 149400.21695
-  tps: 139815.09462
+  dps: 148043.29422
+  tps: 138462.73761
   hps: 7591.03394
  }
 }

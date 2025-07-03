@@ -418,8 +418,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p1_arms_bis-Basic-arms-FullBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 788280.7514
-  tps: 705880.84177
+  dps: 795866.51512
+  tps: 713466.60549
  }
 }
 dps_results: {
@@ -439,8 +439,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p1_arms_bis-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 585276.50383
-  tps: 525707.24709
+  dps: 591892.94386
+  tps: 532323.68712
  }
 }
 dps_results: {
@@ -460,8 +460,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p1_prebis_poor-Basic-arms-FullBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 615657.09669
-  tps: 551312.74502
+  dps: 620926.27643
+  tps: 556581.92477
  }
 }
 dps_results: {
@@ -481,8 +481,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p1_prebis_poor-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 442874.4585
-  tps: 399183.24127
+  dps: 447238.83756
+  tps: 403547.62034
  }
 }
 dps_results: {
@@ -502,8 +502,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p1_prebis_rich-Basic-arms-FullBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 630210.34043
-  tps: 565264.23098
+  dps: 635459.26661
+  tps: 570513.15716
  }
 }
 dps_results: {
@@ -523,8 +523,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 462222.66183
-  tps: 416200.47986
+  dps: 466627.04104
+  tps: 420604.85907
  }
 }
 dps_results: {
@@ -544,8 +544,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_arms_bis-Basic-arms-FullBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 784407.80076
-  tps: 703524.10238
+  dps: 792084.56488
+  tps: 711200.86649
  }
 }
 dps_results: {
@@ -565,8 +565,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_arms_bis-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 583058.67187
-  tps: 524917.32615
+  dps: 589772.51736
+  tps: 531631.17164
  }
 }
 dps_results: {
@@ -586,8 +586,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_prebis_poor-Basic-arms-FullBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 605081.37997
-  tps: 543924.41058
+  dps: 610351.09457
+  tps: 549194.12518
  }
 }
 dps_results: {
@@ -607,8 +607,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_prebis_poor-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 435075.19753
-  tps: 392813.86384
+  dps: 439380.2225
+  tps: 397118.88881
  }
 }
 dps_results: {
@@ -628,8 +628,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_prebis_rich-Basic-arms-FullBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 621216.24145
-  tps: 559051.31435
+  dps: 626402.65805
+  tps: 564237.73095
  }
 }
 dps_results: {
@@ -649,8 +649,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 456344.98491
-  tps: 411999.87273
+  dps: 460736.90092
+  tps: 416391.78874
  }
 }
 dps_results: {
