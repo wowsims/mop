@@ -3,7 +3,6 @@ import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat,
 import { PriestMajorGlyph as MajorGlyph, PriestMinorGlyph as MinorGlyph, PriestOptions_Armor, ShadowPriest_Options as Options } from '../../core/proto/priest';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import PreRaidGear from './gear_sets/pre_raid.gear.json';
@@ -139,7 +138,8 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	blessingOfMight: true,
 	unholyAura: true,
 	bloodlust: true,
-	...defaultRaidBuffMajorDamageCooldowns()
+	skullBannerCount: 2,
+	stormlashTotemCount: 4,
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});

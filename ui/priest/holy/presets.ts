@@ -3,7 +3,6 @@ import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs, Stat } f
 import { HolyPriest_Options as Options, PriestMajorGlyph as MajorGlyph, PriestMinorGlyph as MinorGlyph, PriestOptions_Armor } from '../../core/proto/priest.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import AOE24Apl from './apls/aoe_2_4.apl.json';
 import AOE4PlusApl from './apls/aoe_4_plus.apl.json';
 import DefaultApl from './apls/default.apl.json';
@@ -85,9 +84,7 @@ export const DefaultConsumables = ConsumesSpec.create({
 	potId: 58091, // Volcanic Potion
 	prepotId: 58091, // Volcanic Potion
 });
-export const DefaultRaidBuffs = RaidBuffs.create({
-	...defaultRaidBuffMajorDamageCooldowns()
-});
+export const DefaultRaidBuffs = RaidBuffs.create({});
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
 
