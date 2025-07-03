@@ -7,7 +7,6 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common.js';
 import { Stats, UnitStat } from '../../core/proto_utils/stats.js';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as PaladinInputs from '../inputs.js';
 import * as Presets from './presets.js';
 
@@ -114,7 +113,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRetributionPaladin, {
 			powerWordFortitude: true,
 			serpentsSwiftness: true,
 			trueshotAura: true,
-			...defaultRaidBuffMajorDamageCooldowns()
+			skullBannerCount: 2,
+			stormlashTotemCount: 4,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),

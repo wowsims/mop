@@ -8,7 +8,6 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as DeathKnightInputs from '../inputs';
 import * as Presets from './presets';
 
@@ -90,7 +89,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 			powerWordFortitude: true,
 			serpentsSwiftness: true,
 			trueshotAura: true,
-			...defaultRaidBuffMajorDamageCooldowns()
+			skullBannerCount: 2,
+			stormlashTotemCount: 4,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),

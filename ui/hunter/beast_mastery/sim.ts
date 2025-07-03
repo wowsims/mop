@@ -23,7 +23,6 @@ import {
 import { BeastMasteryHunter_Rotation, HunterStingType } from '../../core/proto/hunter';
 import * as AplUtils from '../../core/proto_utils/apl_utils';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as HunterInputs from '../inputs';
 import { sharedHunterDisplayStatsModifiers } from '../shared';
 import * as BMInputs from './inputs';
@@ -93,7 +92,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 			commandingShout: true,
 			unholyAura: true,
 			bloodlust: true,
-			...defaultRaidBuffMajorDamageCooldowns()
+			skullBannerCount: 2,
+			stormlashTotemCount: 4,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),

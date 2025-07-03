@@ -9,7 +9,6 @@ import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { Sim } from '../../core/sim';
 import { TypedEvent } from '../../core/typed_event';
 import * as Presets from './presets';
@@ -92,7 +91,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 			moonkinAura: true,
 			blessingOfMight: true,
 			bloodlust: true,
-			...defaultRaidBuffMajorDamageCooldowns()
+			skullBannerCount: 2,
+			stormlashTotemCount: 4,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),

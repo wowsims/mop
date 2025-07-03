@@ -1,6 +1,6 @@
 import * as Mechanics from '../../core/constants/mechanics';
 import * as PresetUtils from '../../core/preset_utils.js';
-import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common.js';
+import { ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common.js';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,
 	FeleAutocastSettings,
@@ -11,7 +11,6 @@ import {
 } from '../../core/proto/shaman.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
@@ -98,7 +97,8 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	trueshotAura: true,
 	bloodlust: true,
 	elementalOath: true,
-	...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman)
+	skullBannerCount: 2,
+	stormlashTotemCount: 3,
 });
 
 export const DefaultDebuffs = Debuffs.create({
