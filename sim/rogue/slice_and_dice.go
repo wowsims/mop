@@ -22,6 +22,22 @@ func (rogue *Rogue) registerSliceAndDice() {
 		time.Duration(time.Second * 36),
 	}
 
+	getDuration := func(comboPoints int32) time.Duration {
+		duration := rogue.sliceAndDiceDurations[comboPoints]
+		if rogue.Has2PT15 {
+			duration += time.Second * 6
+		}
+
+		return duration
+	}
+
+	refreshHot := func(sim *core.Simulation, comboPoints int32) {
+		hot := rogue.SliceAndDice.Hot(&rogue.Unit)
+		hot.Duration = rogue.SliceAndDiceAura.Duration
+		hot.BaseTickCount = 3 + 3*comboPoints
+		hot.Activate(sim)
+	}
+
 	var slideAndDiceMod float64
 	rogue.SliceAndDiceAura = rogue.RegisterAura(core.Aura{
 		Label:    "Slice and Dice",
@@ -41,7 +57,12 @@ func (rogue *Rogue) registerSliceAndDice() {
 		},
 		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
 			if isSubtlety && !rogue.Premeditation.CD.IsReady(sim) && aura.IsActive() {
-				// TODO: Handle resetting duration of SnD to 2cp, without incuring a GCD and refresh the energy regen
+				aura.Deactivate(sim)
+				cp := int32(2)
+				aura.Duration = getDuration(cp)
+				aura.Activate(sim)
+				refreshHot(sim, cp)
+				rogue.ResetComboPoints(sim, 0)
 			} else {
 				aura.Deactivate(sim)
 			}
@@ -90,18 +111,14 @@ func (rogue *Rogue) registerSliceAndDice() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			spell.RelatedSelfBuff.Duration = rogue.sliceAndDiceDurations[rogue.ComboPoints()]
-			if rogue.Has2PT15 {
-				spell.RelatedSelfBuff.Duration += time.Second * 6
-			}
+			comboPoints := rogue.ComboPoints()
 			rogue.ApplyFinisher(sim, spell)
+			spell.RelatedSelfBuff.Deactivate(sim)
+			spell.RelatedSelfBuff.Duration = getDuration(comboPoints)
 			spell.RelatedSelfBuff.Activate(sim)
 
 			if isSubtlety {
-				hot := spell.Hot(spell.Unit)
-				hot.Duration = rogue.SliceAndDiceAura.Duration
-				hot.BaseTickCount = 3 + 3*rogue.ComboPoints()
-				hot.Activate(sim)
+				refreshHot(sim, comboPoints)
 			}
 		},
 
