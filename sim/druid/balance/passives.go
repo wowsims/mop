@@ -25,7 +25,7 @@ func (moonkin *BalanceDruid) RegisterBalancePassives() {
 func (moonkin *BalanceDruid) registerMoonkinForm() {
 	moonkin.AddStaticMod(core.SpellModConfig{
 		School:     core.SpellSchoolArcane | core.SpellSchoolNature,
-		FloatValue: 0.2,
+		FloatValue: 0.2 + 0.1, // 2025-07-01 - Moonkin Form's damage increase to Nature and Arcane raised to 30% (was 20%).
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})
 
