@@ -73,8 +73,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 157113.83997
-  tps: 141003.84541
+  dps: 157046.83524
+  tps: 141210.87715
   hps: 2808.31353
  }
 }

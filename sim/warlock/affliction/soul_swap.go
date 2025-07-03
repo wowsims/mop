@@ -11,15 +11,11 @@ func (affliction *AfflictionWarlock) registerSoulSwap() {
 	var debuffState map[int32]core.DotState
 	dotRefs := []**core.Spell{&affliction.Corruption, &affliction.Agony, &affliction.Seed, &affliction.UnstableAffliction}
 
-	inhaleBuff := affliction.RegisterAura(core.Aura{
+	inhaleBuff := core.BlockPrepull(affliction.RegisterAura(core.Aura{
 		ActionID: core.ActionID{SpellID: 86211},
 		Label:    "Soul Swap",
 		Duration: time.Second * 3,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	// Exhale
 	affliction.RegisterSpell(core.SpellConfig{

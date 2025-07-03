@@ -768,11 +768,7 @@ func (unit *Unit) onEncounterStart(sim *Simulation) {
 		agent.OnEncounterStart(sim)
 	}
 
-	for _, aura := range unit.auras {
-		if aura.OnEncounterStart != nil {
-			aura.OnEncounterStart(aura, sim)
-		}
-	}
+	unit.OnEncounterStart(sim)
 }
 
 func (unit *Unit) startPull(sim *Simulation) {

@@ -11,7 +11,7 @@ func (frost *FrostMage) registerBrainFreeze() {
 	/*
 		https://www.wowhead.com/mop-classic/spell=44549/brain-freeze and https://www.wowhead.com/mop-classic/spell=44614/frostfire-bolt for more information.
 	*/
-	frost.BrainFreezeAura = frost.RegisterAura(core.Aura{
+	frost.BrainFreezeAura = core.BlockPrepull(frost.RegisterAura(core.Aura{
 		Label:     "Brain Freeze",
 		ActionID:  core.ActionID{SpellID: 44549},
 		Duration:  time.Second * 15,
@@ -23,10 +23,7 @@ func (frost *FrostMage) registerBrainFreeze() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			frost.frostfireFrozenCritBuffMod.Deactivate()
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		FloatValue: -2,
 		ClassMask:  mage.MageSpellFrostfireBolt,

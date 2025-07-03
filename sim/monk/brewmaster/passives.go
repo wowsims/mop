@@ -24,15 +24,11 @@ func (bm *BrewmasterMonk) registerBrewmasterTraining() {
 	// Tiger Palm
 	// Tiger Palm no longer costs Chi, and when you deal damage with Tiger Palm the amount of your next Guard is increased by 15%. Lasts 30 sec.
 	// Tiger Palm Chi mod is implemented in tiger_palm.go
-	bm.PowerGuardAura = bm.RegisterAura(core.Aura{
+	bm.PowerGuardAura = core.BlockPrepull(bm.RegisterAura(core.Aura{
 		Label:    "Power Guard",
 		ActionID: core.ActionID{SpellID: 118636},
 		Duration: 30 * time.Second,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	core.MakeProcTriggerAura(&bm.Unit, core.ProcTrigger{
 		Name:           "Power Guard Trigger",
@@ -48,15 +44,11 @@ func (bm *BrewmasterMonk) registerBrewmasterTraining() {
 	// After you Blackout Kick, you gain Shuffle, increasing your parry chance by 20%
 	// and your Stagger amount by an additional 20% for 6 sec.
 	// Stagger amount is implemented in stagger.go
-	bm.ShuffleAura = bm.RegisterAura(core.Aura{
+	bm.ShuffleAura = core.BlockPrepull(bm.RegisterAura(core.Aura{
 		Label:    "Shuffle",
 		ActionID: core.ActionID{SpellID: 115307},
 		Duration: 6 * time.Second,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachAdditivePseudoStatBuff(&bm.PseudoStats.BaseParryChance, 0.2)
+	})).AttachAdditivePseudoStatBuff(&bm.PseudoStats.BaseParryChance, 0.2)
 
 	core.MakeProcTriggerAura(&bm.Unit, core.ProcTrigger{
 		Name:           "Shuffle Trigger",
@@ -76,31 +68,23 @@ func (bm *BrewmasterMonk) registerElusiveBrew() {
 	buffActionID := core.ActionID{SpellID: 115308}
 	stackActionID := core.ActionID{SpellID: 128938}
 
-	stackingAura := core.MakePermanent(bm.RegisterAura(core.Aura{
+	stackingAura := core.BlockPrepull(core.MakePermanent(bm.RegisterAura(core.Aura{
 		Label:     "Brewing: Elusive Brew" + bm.Label,
 		ActionID:  stackActionID,
 		Duration:  30 * time.Second,
 		MaxStacks: 15,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}))
+	})))
 
 	bm.Monk.RegisterOnNewBrewStacks(func(sim *core.Simulation, stacksToAdd int32) {
 		stackingAura.Activate(sim)
 		stackingAura.SetStacks(sim, stackingAura.GetStacks()+stacksToAdd)
 	})
 
-	bm.ElusiveBrewAura = bm.RegisterAura(core.Aura{
+	bm.ElusiveBrewAura = core.BlockPrepull(bm.RegisterAura(core.Aura{
 		Label:    "Elusive Brew" + bm.Label,
 		ActionID: buffActionID,
 		Duration: 0,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachAdditivePseudoStatBuff(&bm.PseudoStats.BaseDodgeChance, 0.3)
+	})).AttachAdditivePseudoStatBuff(&bm.PseudoStats.BaseDodgeChance, 0.3)
 
 	core.MakeProcTriggerAura(&bm.Unit, core.ProcTrigger{
 		Name:     "Brewing: Elusive Brew Proc",

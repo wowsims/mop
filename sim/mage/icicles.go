@@ -29,16 +29,12 @@ func (mage *Mage) registerFrostMastery() {
 		},
 	})
 
-	mage.IciclesAura = mage.RegisterAura(core.Aura{
+	mage.IciclesAura = core.BlockPrepull(mage.RegisterAura(core.Aura{
 		Label:     "Mastery: Icicles",
 		ActionID:  core.ActionID{SpellID: 148022},
 		Duration:  time.Hour * 1,
 		MaxStacks: 5,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 }
 
 func (mage *Mage) SpendIcicle(sim *core.Simulation, target *core.Unit, damage float64) {

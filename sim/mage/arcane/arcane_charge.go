@@ -19,7 +19,7 @@ func (arcane *ArcaneMage) registerArcaneCharges() {
 		Kind:       core.SpellMod_PowerCost_Pct,
 	})
 
-	arcane.ArcaneChargesAura = arcane.GetOrRegisterAura(core.Aura{
+	arcane.ArcaneChargesAura = core.BlockPrepull(arcane.GetOrRegisterAura(core.Aura{
 		Label:     "Arcane Charges Aura",
 		ActionID:  core.ActionID{SpellID: 36032},
 		Duration:  time.Second * 10,
@@ -42,10 +42,7 @@ func (arcane *ArcaneMage) registerArcaneCharges() {
 				aura.Deactivate(sim)
 			}
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	core.MakeProcTriggerAura(&arcane.Unit, core.ProcTrigger{
 		Name:           "Arcane Charge Arcane Explosion - Trigger",

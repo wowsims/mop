@@ -8,7 +8,7 @@ import (
 )
 
 func (shadow *ShadowPriest) registerSurgeOfDarkness() {
-	shadow.SurgeOfDarkness = shadow.RegisterAura(core.Aura{
+	shadow.SurgeOfDarkness = core.BlockPrepull(shadow.RegisterAura(core.Aura{
 		Label:     "Surge of Darkness",
 		ActionID:  core.ActionID{SpellID: 87160},
 		MaxStacks: 2,
@@ -20,10 +20,7 @@ func (shadow *ShadowPriest) registerSurgeOfDarkness() {
 
 			aura.RemoveStack(sim)
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  priest.PriestSpellMindSpike,
 		Kind:       core.SpellMod_DamageDone_Pct,
 		FloatValue: 0.5,
@@ -147,7 +144,7 @@ func (shadow *ShadowPriest) registerTwistOfFate() {
 		FloatValue: 0.15,
 	})
 
-	tofAura := shadow.RegisterAura(core.Aura{
+	tofAura := core.BlockPrepull(shadow.RegisterAura(core.Aura{
 		Label:    "Twist of Fate",
 		ActionID: core.ActionID{SpellID: 123254},
 		Duration: time.Second * 10,
@@ -157,10 +154,7 @@ func (shadow *ShadowPriest) registerTwistOfFate() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			dmgMod.Deactivate()
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	if !shadow.Talents.TwistOfFate {
 		return
@@ -193,7 +187,7 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 		FloatValue: -2,
 	})
 
-	procAura := shadow.RegisterAura(core.Aura{
+	procAura := core.BlockPrepull(shadow.RegisterAura(core.Aura{
 		Label:    "Divine Insight",
 		Duration: time.Second * 12,
 		ActionID: core.ActionID{SpellID: 124430},
@@ -211,10 +205,7 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 				aura.Deactivate(sim)
 			}
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	if !shadow.Talents.DivineInsight {
 		return

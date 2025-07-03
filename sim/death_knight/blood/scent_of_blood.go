@@ -22,7 +22,7 @@ func (bdk *BloodDeathKnight) registerScentOfBlood() {
 	})
 
 	var scentOfBloodAura *core.Aura
-	scentOfBloodAura = bdk.RegisterAura(core.Aura{
+	scentOfBloodAura = core.BlockPrepull(bdk.RegisterAura(core.Aura{
 		Label:     "Scent of Blood" + bdk.Label,
 		ActionID:  actionID,
 		Duration:  time.Second * 20,
@@ -37,10 +37,7 @@ func (bdk *BloodDeathKnight) registerScentOfBlood() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			dsMod.Deactivate()
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachProcTrigger(core.ProcTrigger{
+	})).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: death_knight.DeathKnightSpellDeathStrike,
 

@@ -131,7 +131,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 
 	maxStacks := int32(2)
 
-	clearcastingAura := shaman.RegisterAura(core.Aura{
+	clearcastingAura := core.BlockPrepull(shaman.RegisterAura(core.Aura{
 		Label:     "Clearcasting",
 		ActionID:  core.ActionID{SpellID: 16246},
 		Duration:  time.Second * 15,
@@ -145,10 +145,7 @@ func (shaman *Shaman) ApplyElementalTalents() {
 			}
 			aura.RemoveStack(sim)
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		ClassMask:  canConsumeSpells,
 		FloatValue: -0.25,
@@ -176,15 +173,11 @@ func (shaman *Shaman) ApplyElementalTalents() {
 	})
 
 	//Lava Surge
-	procAura := shaman.RegisterAura(core.Aura{
+	procAura := core.BlockPrepull(shaman.RegisterAura(core.Aura{
 		Label:    "Lava Surge",
 		Duration: time.Second * 6,
 		ActionID: core.ActionID{SpellID: 77762},
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  SpellMaskLavaBurst,
 		Kind:       core.SpellMod_CastTime_Pct,
 		FloatValue: -1.0,

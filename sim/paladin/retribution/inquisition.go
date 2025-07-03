@@ -22,7 +22,7 @@ func (ret *RetributionPaladin) registerInquisition() {
 		stats.SpellCritPercent:    10,
 	}
 
-	inquisitionAura := ret.RegisterAura(core.Aura{
+	inquisitionAura := core.BlockPrepull(ret.RegisterAura(core.Aura{
 		Label:     "Inquisition" + ret.Label,
 		ActionID:  actionID,
 		Duration:  inquisitionDuration,
@@ -34,10 +34,7 @@ func (ret *RetributionPaladin) registerInquisition() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			ret.AddStatsDynamic(sim, critBuffs.Invert())
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_DamageDone_Pct,
 		School:     core.SpellSchoolHoly,
 		FloatValue: 0.3,

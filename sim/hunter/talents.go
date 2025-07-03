@@ -20,7 +20,7 @@ func (hunter *Hunter) applyThrillOfTheHunt() {
 		IntValue:  -20,
 	})
 
-	tothAura := hunter.RegisterAura(core.Aura{
+	tothAura := core.BlockPrepull(hunter.RegisterAura(core.Aura{
 		Label:     "Thrill of the Hunt",
 		ActionID:  actionID,
 		Duration:  time.Second * 12,
@@ -39,10 +39,7 @@ func (hunter *Hunter) applyThrillOfTheHunt() {
 
 			}
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	hunter.RegisterAura(core.Aura{
 		Label:    "Thrill of the Hunt Proccer",

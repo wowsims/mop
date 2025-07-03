@@ -613,7 +613,7 @@ func (aa *AutoAttacks) EnableAutoSwing(sim *Simulation) {
 }
 
 func (aa *AutoAttacks) EnableMeleeSwing(sim *Simulation) {
-	if !aa.AutoSwingMelee || sim.CurrentTime < 0 {
+	if !aa.AutoSwingMelee || sim.CurrentTime <= 0 {
 		return
 	}
 
@@ -642,7 +642,7 @@ func (aa *AutoAttacks) EnableMeleeSwing(sim *Simulation) {
 }
 
 func (aa *AutoAttacks) EnableRangedSwing(sim *Simulation) {
-	if !aa.AutoSwingRanged || aa.ranged.enabled || sim.CurrentTime < 0 {
+	if !aa.AutoSwingRanged || aa.ranged.enabled || sim.CurrentTime <= 0 {
 		return
 	}
 

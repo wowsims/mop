@@ -37,7 +37,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		FloatValue: -2,
 	})
 
-	blindsideProc := asnRogue.RegisterAura(core.Aura{
+	blindsideProc := core.BlockPrepull(asnRogue.RegisterAura(core.Aura{
 		Label:    "Blindside",
 		ActionID: core.ActionID{SpellID: 121153},
 		Duration: time.Second * 10,
@@ -54,10 +54,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 				aura.Deactivate(sim)
 			}
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	core.MakePermanent(core.MakeProcTriggerAura(&asnRogue.Unit, core.ProcTrigger{
 		Name:           "Blindside Proc Trigger",

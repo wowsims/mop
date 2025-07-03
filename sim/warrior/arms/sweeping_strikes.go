@@ -44,7 +44,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		},
 	})
 
-	war.SweepingStrikesAura = core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+	war.SweepingStrikesAura = core.BlockPrepull(core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
 		Name:     "Sweeping Strikes",
 		ActionID: actionID,
 		Duration: time.Second * 10,
@@ -69,10 +69,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 			copyDamage = result.Damage
 			hitSpell.Cast(sim, war.Env.NextActiveTargetUnit(result.Target))
 		},
-	})
-	war.SweepingStrikesAura.OnEncounterStart = func(aura *core.Aura, sim *core.Simulation) {
-		aura.Deactivate(sim)
-	}
+	}))
 
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,

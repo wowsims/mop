@@ -14,15 +14,11 @@ While in Unholy Presence, grants your main-hand autoattacks a chance to make you
 */
 func (uhdk *UnholyDeathKnight) registerSuddenDoom() {
 	var suddenDoomAura *core.Aura
-	suddenDoomAura = uhdk.RegisterAura(core.Aura{
+	suddenDoomAura = core.BlockPrepull(uhdk.RegisterAura(core.Aura{
 		Label:    "Sudden Doom" + uhdk.Label,
 		ActionID: core.ActionID{SpellID: 81340},
 		Duration: time.Second * 10,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachProcTrigger(core.ProcTrigger{
+	})).AttachProcTrigger(core.ProcTrigger{
 		Name:           "Sudden Doom Consume Trigger" + uhdk.Label,
 		Callback:       core.CallbackOnCastComplete,
 		ClassSpellMask: death_knight.DeathKnightSpellDeathCoil | death_knight.DeathKnightSpellDeathCoilHeal,

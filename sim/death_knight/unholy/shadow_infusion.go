@@ -18,7 +18,7 @@ func (uhdk *UnholyDeathKnight) registerShadowInfusion() {
 	})
 
 	actionID := core.ActionID{SpellID: 91342}
-	uhdk.Ghoul.ShadowInfusionAura = uhdk.Ghoul.GetOrRegisterAura(core.Aura{
+	uhdk.Ghoul.ShadowInfusionAura = core.BlockPrepull(uhdk.Ghoul.GetOrRegisterAura(core.Aura{
 		Label:     "Shadow Infusion" + uhdk.Ghoul.Label,
 		ActionID:  actionID,
 		Duration:  time.Second * 30,
@@ -33,10 +33,7 @@ func (uhdk *UnholyDeathKnight) registerShadowInfusion() {
 		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
 			damageMod.UpdateFloatValue(float64(newStacks) * 0.1)
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachDependentAura(uhdk.GetOrRegisterAura(core.Aura{
+	})).AttachDependentAura(uhdk.GetOrRegisterAura(core.Aura{
 		Label:     "Shadow Infusion" + uhdk.Label,
 		ActionID:  actionID,
 		Duration:  core.NeverExpires,

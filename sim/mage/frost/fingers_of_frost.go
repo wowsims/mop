@@ -14,7 +14,7 @@ func (frost *FrostMage) registerFingersOfFrost() {
 		https://www.wowhead.com/mop-classic/spell=30455/ice-lance and https://www.wowhead.com/mop-classic/spell=112965/fingers-of-frost for more information.
 	*/
 
-	frost.FingersOfFrostAura = frost.RegisterAura(core.Aura{
+	frost.FingersOfFrostAura = core.BlockPrepull(frost.RegisterAura(core.Aura{
 		Label:     "Fingers of Frost",
 		ActionID:  core.ActionID{SpellID: 112965},
 		Duration:  time.Second * 15,
@@ -26,10 +26,7 @@ func (frost *FrostMage) registerFingersOfFrost() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			frost.iceLanceFrozenCritBuffMod.Deactivate()
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_DamageDone_Pct,
 		FloatValue: 3.0,
 		ClassMask:  mage.MageSpellIceLance,

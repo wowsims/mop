@@ -37,7 +37,7 @@ func (survival *SurvivalHunter) applyLNL() {
 		FloatValue: -100,
 	})
 
-	lnlAura := survival.RegisterAura(core.Aura{
+	lnlAura := core.BlockPrepull(survival.RegisterAura(core.Aura{
 		Icd:       &icd,
 		Label:     "Lock and Load Proc",
 		ActionID:  actionID,
@@ -58,10 +58,7 @@ func (survival *SurvivalHunter) applyLNL() {
 				}
 			}
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	survival.RegisterAura(core.Aura{
 		Label:    "Lock and Load",

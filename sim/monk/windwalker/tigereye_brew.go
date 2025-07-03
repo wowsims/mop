@@ -22,16 +22,12 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 		ww.outstandingChi = accumulatedChi
 	})
 
-	ww.TigereyeBrewStackAura = ww.RegisterAura(core.Aura{
+	ww.TigereyeBrewStackAura = core.BlockPrepull(ww.RegisterAura(core.Aura{
 		Label:     "Tigereye Brew Stacks" + ww.Label,
 		ActionID:  stackActionID,
 		Duration:  time.Minute * 2,
 		MaxStacks: 20,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	ww.Monk.RegisterOnNewBrewStacks(func(sim *core.Simulation, stacksToAdd int32) {
 		if ww.T15Windwalker4P != nil && ww.T15Windwalker4P.IsActive() && sim.Proc(0.1, "Item - Monk T15 Windwalker 4P Bonus") {
@@ -43,7 +39,7 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 	})
 
 	var damageMultiplier float64
-	buffAura := ww.RegisterAura(core.Aura{
+	buffAura := core.BlockPrepull(ww.RegisterAura(core.Aura{
 		Label:    "Tigereye Brew Buff" + ww.Label,
 		ActionID: buffActionID,
 		Duration: time.Second * 15,
@@ -69,10 +65,7 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			ww.PseudoStats.DamageDealtMultiplier /= damageMultiplier
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	ww.RegisterSpell(core.SpellConfig{
 		ActionID:       buffActionID,

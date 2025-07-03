@@ -30,16 +30,12 @@ func (war *FuryWarrior) registerCrazedBerserker() {
 }
 
 func (war *FuryWarrior) registerFlurry() {
-	flurryAura := war.RegisterAura(core.Aura{
+	flurryAura := core.BlockPrepull(war.RegisterAura(core.Aura{
 		Label:     "Flurry",
 		ActionID:  core.ActionID{SpellID: 12968},
 		Duration:  15 * time.Second,
 		MaxStacks: 3,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachMultiplyMeleeSpeed(1.25)
+	})).AttachMultiplyMeleeSpeed(1.25)
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
 		Name:     "Flurry - Trigger",
@@ -63,16 +59,12 @@ func (war *FuryWarrior) registerFlurry() {
 func (war *FuryWarrior) registerBloodsurge() {
 	actionID := core.ActionID{SpellID: 46916}
 
-	war.BloodsurgeAura = war.RegisterAura(core.Aura{
+	war.BloodsurgeAura = core.BlockPrepull(war.RegisterAura(core.Aura{
 		Label:     "Bloodsurge",
 		ActionID:  actionID,
 		Duration:  15 * time.Second,
 		MaxStacks: 3,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		ClassMask: warrior.SpellMaskWildStrike,
 		Kind:      core.SpellMod_PowerCost_Flat,
 		IntValue:  -30,
@@ -98,16 +90,12 @@ func (war *FuryWarrior) registerBloodsurge() {
 func (war *FuryWarrior) registerMeatCleaver() {
 	actionID := core.ActionID{SpellID: 85739}
 
-	war.MeatCleaverAura = war.RegisterAura(core.Aura{
+	war.MeatCleaverAura = core.BlockPrepull(war.RegisterAura(core.Aura{
 		Label:     "Meat Cleaver",
 		ActionID:  actionID,
 		Duration:  10 * time.Second,
 		MaxStacks: 3,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
 		Name:           "Meat Cleaver: Whirlwind - Trigger",

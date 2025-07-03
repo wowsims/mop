@@ -8,7 +8,7 @@ import (
 
 func (druid *Druid) applyOmenOfClarity() {
 	var affectedSpells []*DruidSpell
-	druid.ClearcastingAura = druid.RegisterAura(core.Aura{
+	druid.ClearcastingAura = core.BlockPrepull(druid.RegisterAura(core.Aura{
 		Label:    "Clearcasting",
 		ActionID: core.ActionID{SpellID: 16870},
 		Duration: time.Second * 15,
@@ -56,10 +56,7 @@ func (druid *Druid) applyOmenOfClarity() {
 				}
 			}
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	druid.ProcOoc = func(sim *core.Simulation) {
 		druid.ClearcastingAura.Activate(sim)

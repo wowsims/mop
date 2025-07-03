@@ -397,8 +397,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-YaungolFireCarrier-86518"
  value: {
-  dps: 164796.85101
-  tps: 111009.16707
+  dps: 163305.662
+  tps: 109894.24629
  }
 }
 dps_results: {

@@ -88,15 +88,11 @@ func (war *ArmsWarrior) registerSuddenDeath() {
 		},
 	})
 
-	executeAura := war.RegisterAura(core.Aura{
+	executeAura := core.BlockPrepull(war.RegisterAura(core.Aura{
 		Label:    "Sudden Execute",
 		ActionID: core.ActionID{SpellID: 139958},
 		Duration: 10 * time.Second,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  warrior.SpellMaskOverpower,
 		Kind:       core.SpellMod_PowerCost_Pct,
 		FloatValue: -2,
@@ -116,16 +112,12 @@ func (war *ArmsWarrior) registerSuddenDeath() {
 func (war *ArmsWarrior) registerTasteForBlood() {
 	actionID := core.ActionID{SpellID: 60503}
 
-	war.TasteForBloodAura = war.RegisterAura(core.Aura{
+	war.TasteForBloodAura = core.BlockPrepull(war.RegisterAura(core.Aura{
 		Label:     "Taste For Blood",
 		ActionID:  actionID,
 		Duration:  12 * time.Second,
 		MaxStacks: 5,
-
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
 		Name:           "Taste For Blood: Mortal Strike - Trigger",

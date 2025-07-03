@@ -44,7 +44,7 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 		IntValue:  -20,
 	})
 
-	bombardmentAura := mm.RegisterAura(core.Aura{
+	bombardmentAura := core.BlockPrepull(mm.RegisterAura(core.Aura{
 		Label:    "Bombardment",
 		ActionID: core.ActionID{SpellID: 35110},
 		Duration: time.Second * 6,
@@ -57,10 +57,7 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 			dmgMod.Deactivate()
 
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 	core.MakeProcTriggerAura(&mm.Unit, core.ProcTrigger{
 		Name:           "Bombardment",
 		ActionID:       core.ActionID{ItemID: 35110},
@@ -80,7 +77,7 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 	var counter *core.Aura
 	procChance := 0.5
-	mmAura := mm.RegisterAura(core.Aura{
+	mmAura := core.BlockPrepull(mm.RegisterAura(core.Aura{
 		Label:    "Ready, Set, Aim...",
 		ActionID: core.ActionID{SpellID: 82925},
 		Duration: time.Second * 8,
@@ -89,10 +86,7 @@ func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 				aura.Deactivate(sim) // Consume effect
 			}
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	counter = mm.RegisterAura(core.Aura{
 		Label:     "Master Marksman",
@@ -123,7 +117,7 @@ func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 }
 func (mm *MarksmanshipHunter) SteadyFocusAura() {
 	attackspeedMultiplier := core.TernaryFloat64(mm.CouldHaveSetBonus(hunter.YaunGolSlayersBattlegear, 4), 1.25, 1.15)
-	steadyFocusAura := mm.RegisterAura(core.Aura{
+	steadyFocusAura := core.BlockPrepull(mm.RegisterAura(core.Aura{
 		Label:     "Steady Focus",
 		ActionID:  core.ActionID{SpellID: 53224, Tag: 1},
 		Duration:  time.Second * 20,
@@ -134,10 +128,7 @@ func (mm *MarksmanshipHunter) SteadyFocusAura() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			aura.Unit.MultiplyRangedSpeed(sim, 1/attackspeedMultiplier)
 		},
-		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Deactivate(sim)
-		},
-	})
+	}))
 
 	core.MakePermanent(mm.RegisterAura(core.Aura{
 		Label:     "Steady Focus Counter",
