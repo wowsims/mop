@@ -43,6 +43,7 @@ import {
 	APLValueCurrentTimePercent,
 	APLValueDotIsActive,
 	APLValueDotIsActiveOnAllTargets,
+	APLValueDotLowestRemainingTime,
 	APLValueDotPercentIncrease,
 	APLValueDotRemainingTime,
 	APLValueDotTickFrequency,
@@ -1339,7 +1340,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		label: 'Dot Lowest Remaining Time',
 		submenu: ['DoT'],
 		shortDescription: 'Time remaining before the last tick of this DoT on any target will occur, or 0 if the DoT is not currently ticking.',
-		newValue: APLValueDotRemainingTime.create,
+		newValue: APLValueDotLowestRemainingTime.create,
 		fields: [AplHelpers.actionIdFieldConfig('spellId', 'dot_spells', '')],
 	}),
 	dotTickFrequency: inputBuilder({

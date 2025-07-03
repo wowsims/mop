@@ -135,6 +135,11 @@ func (rot *APLRotation) newValueDotLowestRemainingTime(config *proto.APLValueDot
 		}
 	}
 
+	if len(dots) == 0 {
+		rot.ValidationMessage(proto.LogLevel_Warning, "Could not find a DoT for %s on Target(s)", ProtoToActionID(config.SpellId))
+		return nil
+	}
+
 	return &APLValueDotLowestRemainingTime{
 		spell: spell,
 		dots:  dots,
@@ -144,12 +149,12 @@ func (value *APLValueDotLowestRemainingTime) Type() proto.APLValueType {
 	return proto.APLValueType_ValueTypeDuration
 }
 func (value *APLValueDotLowestRemainingTime) GetDuration(sim *Simulation) time.Duration {
-	var duration time.Duration
+	duration := NeverExpires
 	for _, dot := range value.dots {
 		if !dot.Unit.IsEnabled() {
 			continue
 		}
-		if !dot.IsActive() {
+		if dot.IsActive() {
 			duration = min(duration, dot.RemainingDuration(sim))
 		} else {
 			return 0
