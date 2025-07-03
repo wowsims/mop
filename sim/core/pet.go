@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"time"
 
@@ -21,7 +22,7 @@ type OnPetEnable func(sim *Simulation)
 type OnPetDisable func(sim *Simulation)
 
 type PetStatInheritance func(ownerStats stats.Stats) stats.Stats
-type PetSpeedInheritance func(amount float64)
+type PetSpeedInheritance func(sim *Simulation, ownerSpeedMultiplier float64)
 
 type PetConfig struct {
 	Name      string
@@ -57,8 +58,10 @@ type Pet struct {
 
 	// In MoP pets inherit their owners melee speed and cast speed
 	// rather than having auras such as Heroism being applied to them.
-	dynamicMeleeSpeedInheritance PetSpeedInheritance
-	dynamicCastSpeedInheritance  PetSpeedInheritance
+	dynamicMeleeSpeedInheritance  PetSpeedInheritance
+	inheritedMeleeSpeedMultiplier float64
+	dynamicCastSpeedInheritance   PetSpeedInheritance
+	inheritedCastSpeedMultiplier  float64
 
 	// If true the pet will automatically inherit the owner's melee speed
 	hasDynamicMeleeSpeedInheritance bool
@@ -105,7 +108,9 @@ func NewPet(config PetConfig) Pet {
 		Owner:                           config.Owner,
 		statInheritance:                 makeStatInheritanceFunc(config.NonHitExpStatInheritance),
 		hasDynamicMeleeSpeedInheritance: config.HasDynamicMeleeSpeedInheritance,
+		inheritedMeleeSpeedMultiplier:   1,
 		hasDynamicCastSpeedInheritance:  config.HasDynamicCastSpeedInheritance,
+		inheritedCastSpeedMultiplier:    1,
 		hasResourceRegenInheritance:     config.HasResourceRegenInheritance,
 		enabledOnStart:                  config.EnabledOnStart,
 		isGuardian:                      config.IsGuardian,
@@ -169,8 +174,6 @@ func (pet *Pet) resetDynamicStats(sim *Simulation) {
 
 	if idx := slices.Index(pet.Owner.DynamicStatsPets, pet); idx != -1 {
 		pet.Owner.DynamicStatsPets = removeBySwappingToBack(pet.Owner.DynamicStatsPets, idx)
-	} else {
-		panic("Pet not present in dynamic stats pet list!")
 	}
 
 	pet.dynamicStatInheritance = nil
@@ -236,15 +239,11 @@ func (pet *Pet) Enable(sim *Simulation, petAgent PetAgent) {
 	}
 
 	if pet.hasDynamicMeleeSpeedInheritance {
-		pet.enableDynamicMeleeSpeed(func(amount float64) {
-			pet.MultiplyMeleeSpeed(sim, amount)
-		})
+		pet.enableDynamicMeleeSpeed(sim)
 	}
 
 	if pet.hasDynamicCastSpeedInheritance {
-		pet.enableDynamicCastSpeed(func(amount float64) {
-			pet.MultiplyCastSpeed(sim, amount)
-		})
+		pet.enableDynamicCastSpeed(sim)
 	}
 
 	pet.SetGCDTimer(sim, max(0, sim.CurrentTime+pet.startAttackDelay, sim.CurrentTime))
@@ -299,37 +298,65 @@ func (pet *Pet) SetStartAttackDelay(startAttackDelay time.Duration) {
 	pet.startAttackDelay = startAttackDelay
 }
 
-// Enables and possibly updates how the pet inherits its owner's melee speed.
-func (pet *Pet) EnableDynamicMeleeSpeed(inheritance PetSpeedInheritance) {
-	if pet.hasDynamicMeleeSpeedInheritance {
-		panic("To use custom EnableDynamicMeleeSpeed remove hasDynamicMeleeSpeedInheritance from the Pet constructor")
+func (pet *Pet) enableDynamicMeleeSpeed(sim *Simulation) {
+	if slices.Contains(pet.Owner.DynamicMeleeSpeedPets, pet) {
+		panic("Pet already present in dynamic melee speed pet list!")
 	}
-	pet.enableDynamicMeleeSpeed(inheritance)
+
+	if math.Abs(pet.inheritedMeleeSpeedMultiplier - 1) > 1e-14 {
+		panic(fmt.Sprintf("Pet melee speed multiplier was not reset properly! Current inherited value = %.17f", pet.inheritedMeleeSpeedMultiplier))
+	}
+
+	pet.dynamicMeleeSpeedInheritance = func(sim *Simulation, ownerSpeedMultiplier float64) {
+		pet.inheritedMeleeSpeedMultiplier *= ownerSpeedMultiplier
+		pet.MultiplyMeleeSpeed(sim, ownerSpeedMultiplier)
+	}
+
+	pet.dynamicMeleeSpeedInheritance(sim, pet.Owner.PseudoStats.MeleeSpeedMultiplier)
+	pet.dynamicMeleeSpeedInheritance(sim, pet.Owner.PseudoStats.AttackSpeedMultiplier)
 }
 
-func (pet *Pet) enableDynamicMeleeSpeed(inheritance PetSpeedInheritance) {
-	if !slices.Contains(pet.Owner.DynamicMeleeSpeedPets, pet) {
-		pet.Owner.DynamicMeleeSpeedPets = append(pet.Owner.DynamicMeleeSpeedPets, pet)
-		inheritance(pet.Owner.PseudoStats.MeleeSpeedMultiplier)
-		inheritance(pet.Owner.PseudoStats.AttackSpeedMultiplier)
+func (pet *Pet) resetDynamicMeleeSpeed(sim *Simulation) {
+	if pet.dynamicMeleeSpeedInheritance == nil {
+		return
 	}
-	pet.dynamicMeleeSpeedInheritance = inheritance
+
+	if idx := slices.Index(pet.Owner.DynamicMeleeSpeedPets, pet); idx != -1 {
+		pet.Owner.DynamicMeleeSpeedPets = removeBySwappingToBack(pet.Owner.DynamicMeleeSpeedPets, idx)
+	}
+
+	pet.dynamicMeleeSpeedInheritance(sim, 1 / pet.inheritedMeleeSpeedMultiplier)
+	pet.dynamicMeleeSpeedInheritance = nil
 }
 
-// Enables and possibly updates how the pet inherits its owner's cast speed.
-func (pet *Pet) EnableDynamicCastSpeed(inheritance PetSpeedInheritance) {
-	if pet.hasDynamicCastSpeedInheritance {
-		panic("To use custom EnableDynamicCastSpeed remove hasDynamicCastSpeedInheritance from the Pet constructor")
+func (pet *Pet) enableDynamicCastSpeed(sim *Simulation) {
+	if slices.Contains(pet.Owner.DynamicCastSpeedPets, pet) {
+		panic("Pet already present in dynamic cast speed pet list!")
 	}
-	pet.enableDynamicCastSpeed(inheritance)
+
+	if math.Abs(pet.inheritedCastSpeedMultiplier - 1) > 1e-14 {
+		panic(fmt.Sprintf("Pet cast speed multiplier was not reset properly! Current inherited value = %.17f", pet.inheritedCastSpeedMultiplier))
+	}
+
+	pet.dynamicCastSpeedInheritance = func(sim *Simulation, ownerSpeedMultiplier float64) {
+		pet.inheritedCastSpeedMultiplier *= ownerSpeedMultiplier
+		pet.MultiplyCastSpeed(sim, ownerSpeedMultiplier)
+	}
+
+	pet.dynamicCastSpeedInheritance(sim, pet.Owner.PseudoStats.CastSpeedMultiplier)
 }
 
-func (pet *Pet) enableDynamicCastSpeed(inheritance PetSpeedInheritance) {
-	if !slices.Contains(pet.Owner.DynamicCastSpeedPets, pet) {
-		pet.Owner.DynamicCastSpeedPets = append(pet.Owner.DynamicCastSpeedPets, pet)
-		inheritance(pet.Owner.PseudoStats.CastSpeedMultiplier)
+func (pet *Pet) resetDynamicCastSpeed(sim *Simulation) {
+	if pet.dynamicCastSpeedInheritance == nil {
+		return
 	}
-	pet.dynamicCastSpeedInheritance = inheritance
+
+	if idx := slices.Index(pet.Owner.DynamicCastSpeedPets, pet); idx != -1 {
+		pet.Owner.DynamicCastSpeedPets = removeBySwappingToBack(pet.Owner.DynamicCastSpeedPets, idx)
+	}
+
+	pet.dynamicCastSpeedInheritance(sim, 1 / pet.inheritedCastSpeedMultiplier)
+	pet.dynamicCastSpeedInheritance = nil
 }
 
 func (pet *Pet) enableResourceRegenInheritance() {
@@ -347,28 +374,8 @@ func (pet *Pet) Disable(sim *Simulation) {
 	}
 
 	pet.resetDynamicStats(sim)
-
-	if pet.dynamicMeleeSpeedInheritance != nil {
-		if idx := slices.Index(pet.Owner.DynamicMeleeSpeedPets, pet); idx != -1 {
-			pet.Owner.DynamicMeleeSpeedPets = removeBySwappingToBack(pet.Owner.DynamicMeleeSpeedPets, idx)
-		}
-
-		// reset melee speed inheritance here so pets that get enabled later to not keep it
-		pet.dynamicMeleeSpeedInheritance(1 / pet.Owner.PseudoStats.MeleeSpeedMultiplier)
-		pet.dynamicMeleeSpeedInheritance(1 / pet.Owner.PseudoStats.AttackSpeedMultiplier)
-		pet.dynamicMeleeSpeedInheritance = nil
-	}
-
-	if pet.dynamicCastSpeedInheritance != nil {
-		if idx := slices.Index(pet.Owner.DynamicCastSpeedPets, pet); idx != -1 {
-			pet.Owner.DynamicCastSpeedPets = removeBySwappingToBack(pet.Owner.DynamicCastSpeedPets, idx)
-		}
-
-		// reset cast speed inheritance here so pets that get enabled later to not keep it
-		pet.dynamicCastSpeedInheritance(1 / pet.Owner.PseudoStats.CastSpeedMultiplier)
-		pet.dynamicCastSpeedInheritance = nil
-	}
-
+	pet.resetDynamicMeleeSpeed(sim)
+	pet.resetDynamicCastSpeed(sim)
 	pet.CancelGCDTimer(sim)
 	pet.focusBar.disable(sim)
 	pet.energyBar.disable(sim)
