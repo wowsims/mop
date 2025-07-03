@@ -222,7 +222,6 @@ func (monk *Monk) Reset(sim *core.Simulation) {
 }
 
 func (monk *Monk) OnEncounterStart(sim *core.Simulation) {
-	monk.ResetEnergyBar(sim, 2)
 }
 
 func (monk *Monk) GetHandType() proto.HandType {

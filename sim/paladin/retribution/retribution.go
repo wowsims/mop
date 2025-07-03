@@ -68,3 +68,8 @@ func (ret *RetributionPaladin) ApplyTalents() {
 func (ret *RetributionPaladin) Reset(sim *core.Simulation) {
 	ret.Paladin.Reset(sim)
 }
+
+func (ret *RetributionPaladin) OnEncounterStart(sim *core.Simulation) {
+	ret.HolyPower.ResetBarTo(sim, 1)
+	ret.Paladin.OnEncounterStart(sim)
+}

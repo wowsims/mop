@@ -8,7 +8,7 @@ import (
 )
 
 func (mm *MarksmanshipHunter) ApplySpecialization() {
-	mm.SteadyFocus()
+	mm.SteadyFocusAura()
 	mm.PiercingShotsAura()
 	mm.MasterMarksmanAura()
 	// Hotfix only applies to MM
@@ -55,6 +55,7 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			costMod.Deactivate()
 			dmgMod.Deactivate()
+
 		},
 		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
 			aura.Deactivate(sim)
@@ -120,7 +121,7 @@ func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 		},
 	}))
 }
-func (mm *MarksmanshipHunter) SteadyFocus() {
+func (mm *MarksmanshipHunter) SteadyFocusAura() {
 	attackspeedMultiplier := core.TernaryFloat64(mm.CouldHaveSetBonus(hunter.YaunGolSlayersBattlegear, 4), 1.25, 1.15)
 	steadyFocusAura := mm.RegisterAura(core.Aura{
 		Label:     "Steady Focus",

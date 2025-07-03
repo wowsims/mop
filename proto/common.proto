@@ -770,6 +770,7 @@ enum OtherAction {
 	OtherActionLunarEnergyGain = 19; // For balance druid lunar energy
 	OtherActionMove = 20; // Used by movement to be able to show it in timeline
 	OtherActionPrepull = 21; // Indicated prepull specific action
+	OtherActionEncounterStart = 22; // Indicated resources gained or lost at the start of an encounter
 }
 
 message ActionID {

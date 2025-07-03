@@ -128,7 +128,6 @@ func (paladin *Paladin) Reset(sim *core.Simulation) {
 }
 
 func (paladin *Paladin) OnEncounterStart(sim *core.Simulation) {
-	paladin.HolyPower.Reset(sim)
 }
 
 func NewPaladin(character *core.Character, talentsStr string, options *proto.PaladinOptions) *Paladin {
@@ -145,9 +144,8 @@ func NewPaladin(character *core.Character, talentsStr string, options *proto.Pal
 	paladin.EnableManaBar()
 	paladin.HolyPower = HolyPowerBar{
 		DefaultSecondaryResourceBarImpl: paladin.NewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
-			Type:    proto.SecondaryResourceType_SecondaryResourceTypeHolyPower,
-			Max:     5,
-			Default: 1,
+			Type: proto.SecondaryResourceType_SecondaryResourceTypeHolyPower,
+			Max:  5,
 		}),
 		paladin: paladin,
 	}

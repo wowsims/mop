@@ -39,19 +39,20 @@ type RuneMeta struct {
 type runicPowerBar struct {
 	character *Character
 
-	maxRunicPower      float64
-	currentRunicPower  float64
-	runeCD             time.Duration
+	maxRunicPower     float64
+	currentRunicPower float64
+	runeCD            time.Duration
 
 	// These flags are used to simplify pending action checks
 	// |DS|DS|DS|DS|DS|DS|
 	runeStates int16
 	runeMeta   [6]RuneMeta
 
-	bloodRuneGainMetrics  *ResourceMetrics
-	frostRuneGainMetrics  *ResourceMetrics
-	unholyRuneGainMetrics *ResourceMetrics
-	deathRuneGainMetrics  *ResourceMetrics
+	bloodRuneGainMetrics            *ResourceMetrics
+	frostRuneGainMetrics            *ResourceMetrics
+	unholyRuneGainMetrics           *ResourceMetrics
+	deathRuneGainMetrics            *ResourceMetrics
+	encounterStartRunicPowerMetrics *ResourceMetrics
 
 	spellRunicPowerMetrics map[ActionID]*ResourceMetrics
 	spellBloodRuneMetrics  map[ActionID]*ResourceMetrics
@@ -101,8 +102,13 @@ func (rp *runicPowerBar) DebugString() string {
 	return strings.Join(ss, "\n")
 }
 
-func (rp *runicPowerBar) ResetRunicPowerBar(sim *Simulation) {
-	rp.currentRunicPower = 20
+func (rp *runicPowerBar) ResetRunicPowerBar(sim *Simulation, runicPowerToKeep float64) {
+	if rp.currentRunicPower > runicPowerToKeep {
+		rp.SpendRunicPower(sim, rp.currentRunicPower-runicPowerToKeep, rp.encounterStartRunicPowerMetrics)
+	} else if runicPowerToKeep > rp.currentRunicPower {
+		rp.AddUnscaledRunicPower(sim, runicPowerToKeep-rp.currentRunicPower, rp.encounterStartRunicPowerMetrics)
+	}
+
 	for i := range rp.runeMeta {
 		if rp.runeStates&isDeaths[i] > 0 {
 			rp.ConvertFromDeath(sim, int8(i))
@@ -159,10 +165,11 @@ func (character *Character) EnableRunicPowerBar(runeCD time.Duration, onRuneChan
 		spellDeathRuneMetrics:  make(map[ActionID]*ResourceMetrics),
 	}
 
-	character.bloodRuneGainMetrics = character.NewBloodRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionBloodRuneGain, Tag: 1})
-	character.frostRuneGainMetrics = character.NewFrostRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionFrostRuneGain, Tag: 1})
-	character.unholyRuneGainMetrics = character.NewUnholyRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionUnholyRuneGain, Tag: 1})
-	character.deathRuneGainMetrics = character.NewDeathRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionDeathRuneGain, Tag: 1})
+	character.runicPowerBar.bloodRuneGainMetrics = character.NewBloodRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionBloodRuneGain, Tag: 1})
+	character.runicPowerBar.frostRuneGainMetrics = character.NewFrostRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionFrostRuneGain, Tag: 1})
+	character.runicPowerBar.unholyRuneGainMetrics = character.NewUnholyRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionUnholyRuneGain, Tag: 1})
+	character.runicPowerBar.deathRuneGainMetrics = character.NewDeathRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionDeathRuneGain, Tag: 1})
+	character.runicPowerBar.encounterStartRunicPowerMetrics = character.NewRunicPowerMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart, Tag: 1})
 }
 
 func (unit *Unit) HasRunicPowerBar() bool {

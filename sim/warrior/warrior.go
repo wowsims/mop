@@ -193,7 +193,6 @@ func (warrior *Warrior) Reset(_ *core.Simulation) {
 }
 
 func (warrior *Warrior) OnEncounterStart(sim *core.Simulation) {
-	warrior.ResetRageBar(sim, 25)
 }
 
 func NewWarrior(character *core.Character, options *proto.WarriorOptions, talents string, inputs WarriorInputs) *Warrior {

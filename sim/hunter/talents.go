@@ -27,13 +27,16 @@ func (hunter *Hunter) applyThrillOfTheHunt() {
 		MaxStacks: 3,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			tothMod.Activate()
+
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			tothMod.Deactivate()
+
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
 			if spell.Matches(HunterSpellMultiShot) || spell.Matches(HunterSpellArcaneShot) {
 				aura.RemoveStack(sim)
+
 			}
 		},
 		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {

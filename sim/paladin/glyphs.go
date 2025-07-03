@@ -612,7 +612,7 @@ func (paladin *Paladin) registerGlyphOfTemplarsVerdict() {
 		return
 	}
 
-	glyphOfTemplarsVerdictAura := paladin.RegisterAura(core.Aura{
+	glyphOfTemplarVerdictAura := paladin.RegisterAura(core.Aura{
 		Label:    "Glyph of Templar's Verdict" + paladin.Label,
 		ActionID: core.ActionID{SpellID: 115668},
 		Duration: time.Second * 6,
@@ -629,7 +629,7 @@ func (paladin *Paladin) registerGlyphOfTemplarsVerdict() {
 		ClassSpellMask: SpellMaskExorcism | SpellMaskTemplarsVerdict,
 		Outcome:        core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			glyphOfTemplarsVerdictAura.Activate(sim)
+			glyphOfTemplarVerdictAura.Activate(sim)
 		},
 	})
 }

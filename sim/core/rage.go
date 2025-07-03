@@ -21,7 +21,8 @@ type rageBar struct {
 	startingHitFactor float64
 	currentHitFactor  float64
 
-	RageRefundMetrics *ResourceMetrics
+	RageRefundMetrics     *ResourceMetrics
+	EncounterStartMetrics *ResourceMetrics
 }
 
 type RageBarOptions struct {
@@ -81,10 +82,11 @@ func (unit *Unit) EnableRageBar(options RageBarOptions) {
 	maxRage := max(100.0, options.MaxRage)
 
 	unit.rageBar = rageBar{
-		unit:              unit,
-		maxRage:           maxRage,
-		startingHitFactor: BaseRageHitFactor * options.BaseRageMultiplier,
-		RageRefundMetrics: unit.NewRageMetrics(ActionID{OtherID: proto.OtherAction_OtherActionRefund}),
+		unit:                  unit,
+		maxRage:               maxRage,
+		startingHitFactor:     BaseRageHitFactor * options.BaseRageMultiplier,
+		RageRefundMetrics:     unit.NewRageMetrics(ActionID{OtherID: proto.OtherAction_OtherActionRefund}),
+		EncounterStartMetrics: unit.NewRageMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart}),
 	}
 }
 
@@ -140,7 +142,11 @@ func (rb *rageBar) SpendRage(sim *Simulation, amount float64, metrics *ResourceM
 }
 
 func (rb *rageBar) ResetRageBar(sim *Simulation, rageToKeep float64) {
-	rb.currentRage = min(25, rageToKeep)
+	if rb.currentRage > rageToKeep {
+		rb.SpendRage(sim, rb.currentRage-rageToKeep, rb.EncounterStartMetrics)
+	} else if rageToKeep > rb.currentRage {
+		rb.AddRage(sim, rageToKeep-rb.currentRage, rb.EncounterStartMetrics)
+	}
 }
 
 func (rb *rageBar) reset(_ *Simulation) {

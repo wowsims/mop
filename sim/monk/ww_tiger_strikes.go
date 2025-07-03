@@ -10,7 +10,7 @@ import (
 var tigerStrikesMHID = core.ActionID{SpellID: 120274}
 var tigerStrikesOHID = core.ActionID{SpellID: 120278}
 
-func tigerStrikesBuffAura(unit *core.Unit) *core.Aura {
+func tigerStrikesBuffAura(unit *core.Unit) {
 	var tigerStrikesMHSpell *core.Spell
 	var tigerStrikesOHSpell *core.Spell
 	var tigerStrikesBuff *core.Aura
@@ -86,8 +86,6 @@ func tigerStrikesBuffAura(unit *core.Unit) *core.Aura {
 			}
 		},
 	})
-
-	return tigerStrikesBuff
 }
 
 func (monk *Monk) registerTigerStrikes() {

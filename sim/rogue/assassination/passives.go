@@ -41,13 +41,13 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		Label:    "Blindside",
 		ActionID: core.ActionID{SpellID: 121153},
 		Duration: time.Second * 10,
-
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			energyMod.Activate()
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			energyMod.Deactivate()
 		},
+
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if spell.SpellID == 111240 {
 				// Dispatch casted, consume aura

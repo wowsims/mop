@@ -143,6 +143,10 @@ export class ActionId {
 				baseName = 'Prepull';
 				iconUrl = 'https://wow.zamimg.com/images/wow/icons/medium/inv_misc_pocketwatch_02.jpg';
 				break;
+			case OtherAction.OtherActionEncounterStart:
+				baseName = 'Encounter Start';
+				iconUrl = 'https://wow.zamimg.com/images/wow/icons/medium/achievement_faction_elders.jpg';
+				break;
 		}
 		this.baseName = baseName ?? '';
 		this.name = (name || baseName) ?? '';

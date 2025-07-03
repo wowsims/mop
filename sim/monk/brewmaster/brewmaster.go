@@ -78,11 +78,8 @@ func (bm *BrewmasterMonk) Reset(sim *core.Simulation) {
 }
 
 func (bm *BrewmasterMonk) OnEncounterStart(sim *core.Simulation) {
-	if bm.Guard.RelatedSelfBuff.IsActive() {
-		bm.ResetEnergyBar(sim, 0)
-	} else {
-		bm.Monk.OnEncounterStart(sim)
-	}
+	bm.ResetComboPoints(sim, core.TernaryInt32(bm.Guard.RelatedSelfBuff.IsActive(), 0, 2))
+	bm.Monk.OnEncounterStart(sim)
 }
 
 func (bm *BrewmasterMonk) RegisterSpecializationEffects() {

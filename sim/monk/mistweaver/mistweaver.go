@@ -71,10 +71,6 @@ func (mw *MistweaverMonk) Reset(sim *core.Simulation) {
 	mw.Monk.Reset(sim)
 }
 
-func (mw *MistweaverMonk) OnEncounterStart(sim *core.Simulation) {
-	// Overridden here to prevent resetting Chi
-}
-
 func (mw *MistweaverMonk) RegisterSpecializationEffects() {
 	mw.RegisterMastery()
 }

@@ -229,7 +229,6 @@ func (rogue *Rogue) Reset(sim *core.Simulation) {
 }
 
 func (rogue *Rogue) OnEncounterStart(sim *core.Simulation) {
-	rogue.ResetEnergyBar(sim, 0)
 }
 
 func (rogue *Rogue) CritMultiplier(applyLethality bool) float64 {

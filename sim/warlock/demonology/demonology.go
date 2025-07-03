@@ -57,13 +57,15 @@ func (demonology *DemonologyWarlock) GetWarlock() *warlock.Warlock {
 	return demonology.Warlock
 }
 
+const DefaultDemonicFury = 200
+
 func (demonology *DemonologyWarlock) Initialize() {
 	demonology.Warlock.Initialize()
 
 	demonology.DemonicFury = demonology.RegisterNewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
 		Type:    proto.SecondaryResourceType_SecondaryResourceTypeDemonicFury,
 		Max:     1000,
-		Default: 200,
+		Default: DefaultDemonicFury,
 	})
 
 	demonology.registerMetamorphosis()
@@ -101,7 +103,7 @@ func (demonology *DemonologyWarlock) Reset(sim *core.Simulation) {
 }
 
 func (demonology *DemonologyWarlock) OnEncounterStart(sim *core.Simulation) {
-	demonology.DemonicFury.Reset(sim)
+	demonology.DemonicFury.ResetBarTo(sim, DefaultDemonicFury)
 	demonology.Warlock.OnEncounterStart(sim)
 }
 

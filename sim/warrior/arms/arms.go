@@ -79,3 +79,8 @@ func (war *ArmsWarrior) registerPassives() {
 func (war *ArmsWarrior) Reset(sim *core.Simulation) {
 	war.Warrior.Reset(sim)
 }
+
+func (war *ArmsWarrior) OnEncounterStart(sim *core.Simulation) {
+	war.ResetRageBar(sim, 25)
+	war.Warrior.OnEncounterStart(sim)
+}

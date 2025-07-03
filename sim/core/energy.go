@@ -11,11 +11,11 @@ import (
 type energyBar struct {
 	unit *Unit
 
-	maxEnergy           float64
-	currentEnergy       float64
-	maxComboPoints      int32
-	comboPoints         int32
-	nextEnergyTick      time.Duration
+	maxEnergy      float64
+	currentEnergy  float64
+	maxComboPoints int32
+	comboPoints    int32
+	nextEnergyTick time.Duration
 
 	// Time between Energy ticks.
 	EnergyTickDuration time.Duration
@@ -25,8 +25,9 @@ type energyBar struct {
 	energyRegenMultiplier float64
 	hasteRatingMultiplier float64
 
-	regenMetrics        *ResourceMetrics
-	EnergyRefundMetrics *ResourceMetrics
+	regenMetrics          *ResourceMetrics
+	EncounterStartMetrics *ResourceMetrics
+	EnergyRefundMetrics   *ResourceMetrics
 
 	ownerClass              proto.Class
 	comboPointsResourceName string // "chi" or "combo points"
@@ -51,10 +52,20 @@ func (unit *Unit) EnableEnergyBar(options EnergyBarOptions) {
 		energyRegenMultiplier:   1,
 		hasteRatingMultiplier:   1,
 		regenMetrics:            unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEnergyRegen}),
+		EncounterStartMetrics:   unit.getEncounterStartMetrics(options.UnitClass),
 		EnergyRefundMetrics:     unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionRefund}),
 		ownerClass:              options.UnitClass,
 		comboPointsResourceName: Ternary(options.UnitClass == proto.Class_ClassMonk, "chi", "combo points"),
 		hasNoRegen:              options.HasNoRegen,
+	}
+
+}
+
+func (unit *Unit) getEncounterStartMetrics(unitClass proto.Class) *ResourceMetrics {
+	if unitClass == proto.Class_ClassMonk {
+		return unit.NewChiMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart})
+	} else {
+		return unit.NewComboPointMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart})
 	}
 }
 
@@ -232,8 +243,12 @@ func (eb *energyBar) RunTask(sim *Simulation) time.Duration {
 	return eb.nextEnergyTick
 }
 
-func (eb *energyBar) ResetEnergyBar(sim *Simulation, maxComboPointsToKeep int32) {
-	eb.comboPoints = max(0, min(maxComboPointsToKeep, eb.maxComboPoints))
+func (eb *energyBar) ResetComboPoints(sim *Simulation, comboPointsToKeep int32) {
+	if eb.comboPoints > comboPointsToKeep {
+		eb.SpendPartialComboPoints(sim, eb.comboPoints-comboPointsToKeep, eb.EncounterStartMetrics)
+	} else if comboPointsToKeep > eb.comboPoints {
+		eb.AddComboPoints(sim, comboPointsToKeep-eb.comboPoints, eb.EncounterStartMetrics)
+	}
 }
 
 func (eb *energyBar) reset(sim *Simulation) {

@@ -77,9 +77,7 @@ func (subRogue *SubtletyRogue) Reset(sim *core.Simulation) {
 }
 
 func (subRogue *SubtletyRogue) OnEncounterStart(sim *core.Simulation) {
-	if !subRogue.Premeditation.CD.IsReady(sim) {
-		subRogue.ResetEnergyBar(sim, min(2, subRogue.ComboPoints()))
-	} else {
-		subRogue.Rogue.OnEncounterStart(sim)
-	}
+	cpToKeep := core.TernaryInt32(subRogue.Premeditation.CD.IsReady(sim), 0, min(2, subRogue.ComboPoints()))
+	subRogue.ResetComboPoints(sim, cpToKeep)
+	subRogue.Rogue.OnEncounterStart(sim)
 }
