@@ -34,7 +34,7 @@ const (
 type BloodDeathKnight struct {
 	*death_knight.DeathKnight
 
-	Bloodworm []*BloodwormPet
+	Bloodworms []*BloodwormPet
 
 	RuneTapSpell *core.Spell
 }
@@ -49,9 +49,9 @@ func NewBloodDeathKnight(character *core.Character, options *proto.Player) *Bloo
 
 	bdk.RuneWeapon = bdk.NewRuneWeapon()
 
-	bdk.Bloodworm = make([]*BloodwormPet, 5)
+	bdk.Bloodworms = make([]*BloodwormPet, 5)
 	for i := range 5 {
-		bdk.Bloodworm[i] = bdk.NewBloodwormPet(i)
+		bdk.Bloodworms[i] = bdk.NewBloodwormPet(i)
 	}
 
 	return bdk
