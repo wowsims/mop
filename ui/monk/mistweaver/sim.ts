@@ -95,6 +95,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMistweaverMonk, {
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
 			arcaneBrilliance: true,
 			blessingOfKings: true,
 			mindQuickening: true,
@@ -102,7 +103,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMistweaverMonk, {
 			blessingOfMight: true,
 			unholyAura: true,
 			bloodlust: true,
-			...defaultRaidBuffMajorDamageCooldowns()
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),

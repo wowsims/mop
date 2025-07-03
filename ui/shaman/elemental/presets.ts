@@ -105,11 +105,11 @@ export const OtherDefaults = {
 };
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman),
 	blessingOfKings: true,
 	leaderOfThePack: true,
 	serpentsSwiftness: true,
 	bloodlust: true,
-	...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman)
 });
 
 export const DefaultDebuffs = Debuffs.create({

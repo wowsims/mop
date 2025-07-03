@@ -86,6 +86,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 		specOptions: Presets.BMDefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
 			blessingOfKings: true,
 			trueshotAura: true,
 			leaderOfThePack: true,
@@ -93,7 +94,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 			commandingShout: true,
 			unholyAura: true,
 			bloodlust: true,
-			...defaultRaidBuffMajorDamageCooldowns()
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),

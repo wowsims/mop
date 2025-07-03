@@ -65,6 +65,7 @@ export const DefaultConsumables = ConsumesSpec.create({
 });
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
 	arcaneBrilliance: true,
 	blessingOfKings: true,
 	leaderOfThePack: true,
@@ -72,7 +73,6 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	bloodlust: true,
 	moonkinAura: true,
 	unholyAura: true,
-	...defaultRaidBuffMajorDamageCooldowns()
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});

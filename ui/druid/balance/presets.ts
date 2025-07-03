@@ -58,13 +58,13 @@ export const DefaultConsumables = ConsumesSpec.create({
 });
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
 	markOfTheWild: true, // stats
 	darkIntent: true, // spell power
 	moonkinAura: true, // spell haste
 	leaderOfThePack: true, // crit %
 	blessingOfMight: true, // mastery
 	bloodlust: true, // major haste
-	...defaultRaidBuffMajorDamageCooldowns()
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
