@@ -275,14 +275,6 @@ func (pet *Pet) SetStartAttackDelay(startAttackDelay time.Duration) {
 	pet.startAttackDelay = startAttackDelay
 }
 
-// Enables and possibly updates how the pet inherits its owner's stats.
-func (pet *Pet) EnableDynamicStats(inheritance PetStatInheritance) {
-	if !slices.Contains(pet.Owner.DynamicStatsPets, pet) {
-		pet.Owner.DynamicStatsPets = append(pet.Owner.DynamicStatsPets, pet)
-	}
-	pet.dynamicStatInheritance = inheritance
-}
-
 // Enables and possibly updates how the pet inherits its owner's melee speed.
 func (pet *Pet) EnableDynamicMeleeSpeed(inheritance PetSpeedInheritance) {
 	if pet.hasDynamicMeleeSpeedInheritance {

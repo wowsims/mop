@@ -88,7 +88,6 @@ func (frost *FrostMage) NewFrozenOrb() *FrozenOrb {
 
 func (frozenOrb *FrozenOrb) enable(sim *core.Simulation) {
 	frozenOrb.TickCount = 0
-	frozenOrb.EnableDynamicStats(createFrozenOrbInheritance())
 }
 
 func (frozenOrb *FrozenOrb) GetPet() *core.Pet {

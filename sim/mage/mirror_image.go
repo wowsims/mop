@@ -90,7 +90,6 @@ func (mage *Mage) NewMirrorImage() *MirrorImage {
 	}
 
 	mirrorImage.EnableManaBar()
-	mirrorImage.EnableDynamicStats(mirrorImageStatInheritance)
 
 	mage.AddPet(mirrorImage)
 

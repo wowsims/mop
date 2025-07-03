@@ -73,7 +73,6 @@ func (mage *FrostMage) NewWaterElemental() *WaterElemental {
 		mageOwner: mage,
 	}
 	waterElemental.EnableManaBar()
-	waterElemental.EnableDynamicStats(waterElementalStatInheritance)
 
 	mage.AddPet(waterElemental)
 
