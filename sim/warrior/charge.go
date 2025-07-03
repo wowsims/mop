@@ -9,7 +9,8 @@ import (
 
 func (war *Warrior) registerCharge() {
 	isProtection := war.Spec == proto.Spec_SpecProtectionWarrior
-	actionID := core.ActionID{SpellID: 100}
+	spellID := core.TernaryInt32(isProtection, 100, 1250619) // 2025-07-01 - Charge now grants 1 Rage per yard traveled up to 10 yards.
+	actionID := core.ActionID{SpellID: spellID}
 	metrics := war.NewRageMetrics(actionID)
 	var chargeRageGenCD time.Duration
 
