@@ -59,6 +59,7 @@ const (
 	SpellMaskHeroicLeap
 	SpellMaskWildStrike
 	SpellMaskShieldBlock
+	SpellMaskHamstring
 
 	// Talents
 	SpellMaskImpendingVictory
@@ -111,6 +112,7 @@ type Warrior struct {
 	DefensiveStanceAura *core.Aura
 	BerserkerStanceAura *core.Aura
 
+	GlyphOfHamstring    *core.Aura
 	InciteAura          *core.Aura
 	UltimatumAura       *core.Aura
 	SweepingStrikesAura *core.Aura
@@ -174,6 +176,7 @@ func (warrior *Warrior) Initialize() {
 	warrior.registerShatteringThrow()
 	warrior.registerShieldWall()
 	warrior.registerSunderArmor()
+	warrior.registerHamstring()
 	warrior.registerThunderClap()
 	warrior.registerWhirlwind()
 	warrior.registerCharge()

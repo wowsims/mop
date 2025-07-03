@@ -530,8 +530,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 148389.26255
-  tps: 140279.44682
+  dps: 146460.65916
+  tps: 138350.84342
  }
 }
 dps_results: {

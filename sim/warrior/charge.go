@@ -8,16 +8,20 @@ import (
 )
 
 func (war *Warrior) registerCharge() {
-	actionID := core.ActionID{SpellID: 100}
+	isProtection := war.Spec == proto.Spec_SpecProtectionWarrior
+	spellID := core.TernaryInt32(isProtection, 100, 1250619) // 2025-07-01 - Charge now grants 1 Rage per yard traveled up to 10 yards.
+	actionID := core.ActionID{SpellID: spellID}
 	metrics := war.NewRageMetrics(actionID)
 	var chargeRageGenCD time.Duration
-	var chargeTarget *core.Unit
+	totalChargeRageGain := 0.0
 
 	hasRageGlyph := war.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfBullRush)
 	hasRangeGlyph := war.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfLongCharge)
 
-	chargeRageGain := 20 + core.TernaryFloat64(hasRageGlyph, 15, 0)
+	chargeRageGain := core.TernaryFloat64(isProtection, 20, 10) + core.TernaryFloat64(hasRageGlyph, 15, 0) // 2025-07-01 - Charge now grants 10 Rage (was 20)
+	chargeMinRange := core.MaxMeleeRange - 3.5
 	chargeRange := 25 + core.TernaryFloat64(hasRangeGlyph, 5, 0)
+	chargeDistanceRageGain := 0.0 // 2025-07-01 - Charge now grants 1 Rage per yard traveled up to 10 yards.
 
 	aura := war.RegisterAura(core.Aura{
 		Label:    "Charge",
@@ -28,7 +32,9 @@ func (war *Warrior) registerCharge() {
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			war.MultiplyMovementSpeed(sim, 1.0/3.0)
-			war.AddRage(sim, chargeRageGain*war.GetRageMultiplier(chargeTarget), metrics)
+			if totalChargeRageGain > 0 {
+				war.AddRage(sim, totalChargeRageGain, metrics)
+			}
 		},
 	})
 
@@ -40,6 +46,8 @@ func (war *Warrior) registerCharge() {
 
 	war.RegisterResetEffect(func(sim *core.Simulation) {
 		chargeRageGenCD = 0
+		chargeDistanceRageGain = 0
+		totalChargeRageGain = 0
 	})
 
 	war.RegisterSpell(core.SpellConfig{
@@ -47,7 +55,7 @@ func (war *Warrior) registerCharge() {
 		SpellSchool:    core.SpellSchoolPhysical,
 		Flags:          core.SpellFlagAPL,
 		ClassSpellMask: SpellMaskCharge,
-		MinRange:       8,
+		MinRange:       core.TernaryFloat64(isProtection, 8, 0), // 2025-07-01 - Charge no longer has a minimum Range (was 8 yard minimum)
 		MaxRange:       chargeRange,
 		Charges:        core.TernaryInt(war.Talents.DoubleTime, 2, 0),
 		RechargeTime:   core.TernaryDuration(war.Talents.DoubleTime, time.Second*20, 0),
@@ -61,12 +69,14 @@ func (war *Warrior) registerCharge() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			chargeTarget = target
+			totalChargeRageGain = 0
+			chargeDistanceRageGain = core.TernaryFloat64(isProtection, 0, core.Clamp(war.DistanceFromTarget-chargeMinRange, 0, 10)) // 2025-07-01 - Charge now grants 1 Rage per yard traveled up to 10 yards.
 			aura.Activate(sim)
 			if !war.Talents.DoubleTime || chargeRageGenCD == 0 || sim.CurrentTime-chargeRageGenCD >= 12*time.Second {
 				chargeRageGenCD = sim.CurrentTime
+				totalChargeRageGain = (chargeRageGain + chargeDistanceRageGain) * war.GetRageMultiplier(target)
 			}
-			war.MoveTo(core.MaxMeleeRange-1, sim) // movement aura is discretized in 1 yard intervals, so need to overshoot to guarantee melee range
+			war.MoveTo(chargeMinRange, sim) // movement aura is discretized in 1 yard intervals, so need to overshoot to guarantee melee range
 		},
 	})
 }

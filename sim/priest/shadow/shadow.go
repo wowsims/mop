@@ -93,7 +93,7 @@ func (spriest *ShadowPriest) ApplyTalents() {
 
 	// apply shadow spec specific auras
 	spriest.AddStaticMod(core.SpellModConfig{
-		FloatValue: 0.3,
+		FloatValue: 0.3 + 0.05, // 2025-07-01 - Shadowform damage increase raised to 35% (was 30%)
 		School:     core.SpellSchoolShadow,
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})

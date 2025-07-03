@@ -690,10 +690,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 151215.5594
-  tps: 900185.10356
-  dtps: 24013.05507
-  hps: 40962.17414
+  dps: 151191.06098
+  tps: 899873.33715
+  dtps: 24706.99096
+  hps: 41008.25197
  }
 }
 dps_results: {

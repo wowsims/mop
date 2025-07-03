@@ -138,7 +138,7 @@ export const DefaultConsumables = ConsumesSpec.create({
 export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Blacksmithing,
-	distanceFromTarget: 5,
+	distanceFromTarget: 15,
 };
 
 export const P1_PRESET_BUILD_SMF = PresetUtils.makePresetBuild('P1 - SMF', {

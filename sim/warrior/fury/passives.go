@@ -11,17 +11,20 @@ import (
 func (war *FuryWarrior) registerCrazedBerserker() {
 	// 2025-06-13 - Balance change
 	// https://www.wowhead.com/blue-tracker/topic/eu/mists-of-pandaria-classic-development-notes-updated-6-june-571162
-	patchedDamageMulti := 0.05
+	// 2025-07-01 - Balance change
+	patchedDamageMulti := 0.1
 	war.AddStaticMod(core.SpellModConfig{
 		Kind:     core.SpellMod_DamageDone_Pct,
 		ProcMask: core.ProcMaskMeleeOH,
 		// 2025-06-13 - Balance change
 		// https://www.wowhead.com/blue-tracker/topic/eu/mists-of-pandaria-classic-development-notes-updated-6-june-571162
+		// 2025-07-01 - Crazed Berserker offhand damage increase raised to 35% (was 30%)
 		FloatValue: 0.25 + patchedDamageMulti,
 	})
 
 	// 2025-06-13 - Balance change
 	// https://www.wowhead.com/blue-tracker/topic/eu/mists-of-pandaria-classic-development-notes-updated-6-june-571162
+	// 2025-07-01 - Crazed Berserker autoatack damage increase raised to 20% (was 15%)
 	war.AutoAttacks.MHConfig().DamageMultiplier *= 1.1 + patchedDamageMulti
 	war.AutoAttacks.OHConfig().DamageMultiplier *= 1.1 + patchedDamageMulti
 }

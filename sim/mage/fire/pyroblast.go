@@ -33,7 +33,7 @@ func (fire *FireMage) registerPyroblastSpell() {
 			},
 		},
 
-		DamageMultiplier: 1 * 1.12, //https://us.forums.blizzard.com/en/wow/t/feedback-mists-of-pandaria-class-changes/2117387/327
+		DamageMultiplier: 1 * 1.30, // 2025-07-01 - Pyroblast's direct damage increase raised to 30% (was 11%).
 		CritMultiplier:   fire.DefaultCritMultiplier(),
 		BonusCoefficient: pyroblastCoefficient,
 		ThreatMultiplier: 1,

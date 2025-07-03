@@ -34,9 +34,9 @@ export const StandardEPWeights = PresetUtils.makePresetEpWeights(
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '113221',
+		talentsString: '113222',
 		glyphs: Glyphs.create({
-			major1: DruidMajorGlyph.GlyphOfStampedingRoar,
+			major1: DruidMajorGlyph.GlyphOfHealingTouch,
 			major2: DruidMajorGlyph.GlyphOfStampede,
 			major3: DruidMajorGlyph.GlyphOfRebirth,
 		}),
@@ -63,6 +63,8 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	leaderOfThePack: true, // crit %
 	blessingOfMight: true, // mastery
 	bloodlust: true, // major haste
+	skullBannerCount: 2,
+	stormlashTotemCount: 4,
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
