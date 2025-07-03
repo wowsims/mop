@@ -1,11 +1,6 @@
 import * as PresetUtils from '../../core/preset_utils.js';
-import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, RaidBuffs, Stat } from '../../core/proto/common.js';
-import {
-	ElementalShaman_Options as ElementalShamanOptions,
-	FeleAutocastSettings,
-	ShamanMajorGlyph,
-	ShamanShield,
-} from '../../core/proto/shaman.js';
+import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common.js';
+import { ElementalShaman_Options as ElementalShamanOptions, FeleAutocastSettings, ShamanMajorGlyph, ShamanShield } from '../../core/proto/shaman.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
@@ -30,26 +25,26 @@ export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AoE (3+)',
 export const EP_PRESET_DEFAULT = PresetUtils.makePresetEpWeights(
 	'Default',
 	Stats.fromMap({
-		[Stat.StatIntellect]: 1.00,
-		[Stat.StatSpellPower]: 0.80,
-		[Stat.StatCritRating]: 0.20,
-		[Stat.StatHasteRating]: 0.40,
-		[Stat.StatHitRating]: 0.60,
-		[Stat.StatSpirit]: 0.60,
-		[Stat.StatMasteryRating]: 0.30,
+		[Stat.StatIntellect]: 1.0,
+		[Stat.StatSpellPower]: 0.8,
+		[Stat.StatCritRating]: 0.2,
+		[Stat.StatHasteRating]: 0.4,
+		[Stat.StatHitRating]: 0.6,
+		[Stat.StatSpirit]: 0.6,
+		[Stat.StatMasteryRating]: 0.3,
 	}),
 );
 
 export const EP_PRESET_AOE = PresetUtils.makePresetEpWeights(
 	'AoE (4+)',
 	Stats.fromMap({
-		[Stat.StatIntellect]: 1.00,
-		[Stat.StatSpellPower]: 0.80,
-		[Stat.StatCritRating]: 0.30,
-		[Stat.StatHasteRating]: 0.20,
-		[Stat.StatHitRating]: 0.60,
-		[Stat.StatSpirit]: 0.60,
-		[Stat.StatMasteryRating]: 0.40,
+		[Stat.StatIntellect]: 1.0,
+		[Stat.StatSpellPower]: 0.8,
+		[Stat.StatCritRating]: 0.3,
+		[Stat.StatHasteRating]: 0.2,
+		[Stat.StatHitRating]: 0.6,
+		[Stat.StatSpirit]: 0.6,
+		[Stat.StatMasteryRating]: 0.4,
 	}),
 );
 
@@ -90,11 +85,11 @@ export const DefaultOptions = ElementalShamanOptions.create({
 	classOptions: {
 		shield: ShamanShield.LightningShield,
 		feleAutocast: FeleAutocastSettings.create({
-					autocastFireblast: true,
-					autocastFirenova: true,
-					autocastImmolate: true,
-					autocastEmpower: false,
-				}),
+			autocastFireblast: true,
+			autocastFirenova: true,
+			autocastImmolate: true,
+			autocastEmpower: false,
+		}),
 	},
 });
 
@@ -102,6 +97,7 @@ export const OtherDefaults = {
 	distanceFromTarget: 20,
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
+	race: Race.RaceTroll,
 };
 
 export const DefaultRaidBuffs = RaidBuffs.create({
