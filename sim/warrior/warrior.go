@@ -90,6 +90,7 @@ type Warrior struct {
 	// Current state
 	Stance              Stance
 	CriticalBlockChance []float64 // Can be gained as non-prot via certain talents and spells
+	PrePullChargeGain   float64
 
 	HeroicStrikeCleaveCostMod *core.SpellMod
 
@@ -193,6 +194,7 @@ func (warrior *Warrior) Reset(_ *core.Simulation) {
 }
 
 func (warrior *Warrior) OnEncounterStart(sim *core.Simulation) {
+	warrior.PrePullChargeGain = 0
 }
 
 func NewWarrior(character *core.Character, options *proto.WarriorOptions, talents string, inputs WarriorInputs) *Warrior {

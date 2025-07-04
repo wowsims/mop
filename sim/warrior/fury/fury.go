@@ -80,7 +80,7 @@ func (war *FuryWarrior) Reset(sim *core.Simulation) {
 }
 
 func (war *FuryWarrior) OnEncounterStart(sim *core.Simulation) {
-	war.ResetRageBar(sim, 25)
+	war.ResetRageBar(sim, 25+war.PrePullChargeGain)
 	war.Warrior.OnEncounterStart(sim)
 }
 

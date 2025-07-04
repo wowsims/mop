@@ -130,6 +130,6 @@ func (war *ProtectionWarrior) Reset(sim *core.Simulation) {
 }
 
 func (war *ProtectionWarrior) OnEncounterStart(sim *core.Simulation) {
-	war.ResetRageBar(sim, core.TernaryFloat64(war.ShieldBarrierAura.IsActive(), 5, 25))
+	war.ResetRageBar(sim, core.TernaryFloat64(war.ShieldBarrierAura.IsActive(), 5, 25)+war.PrePullChargeGain)
 	war.Warrior.OnEncounterStart(sim)
 }
