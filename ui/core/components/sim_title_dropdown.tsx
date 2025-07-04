@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
+import { translateStatus } from '../../i18n/entity_mapping';
 import { translatePlayerClass, translatePlayerSpec } from '../../i18n/localization.js';
 import { LaunchStatus, raidSimStatus, simLaunchStatuses } from '../launched_sims.js';
 import { PlayerClass } from '../player_class.js';
@@ -155,24 +156,17 @@ export class SimTitleDropdown extends Component {
 	}
 
 	private launchStatusLabel(data: SpecOptions | RaidOptions) {
-		if (
-			(data.type === 'Raid' && raidSimStatus.status === LaunchStatus.Launched)
-		)
-			return null;
+		if (data.type === 'Raid' && raidSimStatus.status === LaunchStatus.Launched) return null;
 
 		const status = data.type === 'Raid' ? raidSimStatus.status : simLaunchStatuses[data.spec.specID as Spec].status;
 		const phase = data.type === 'Raid' ? raidSimStatus.phase : simLaunchStatuses[data.spec.specID as Spec].phase;
 
 		return (
 			<span className="launch-status-label text-brand">
-				{status === LaunchStatus.Unlaunched ? (
-					i18n.t('common.status.unlaunched')
-				) : (
-					i18n.t('sidebar.header.phase', {
-						number: i18n.t(`common.phases.${phase}`),
-						status: i18n.t(`common.status.${LaunchStatus[status].toLowerCase()}`)
-					})
-				)}
+				{i18n.t('sidebar.header.phase', {
+					phase: i18n.t(`common.phases.${phase}`),
+					status: translateStatus(status),
+				})}
 			</span>
 		);
 	}

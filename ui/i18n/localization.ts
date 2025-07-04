@@ -2,7 +2,7 @@ import { PlayerClass } from '../core/player_class';
 import { PlayerSpec } from '../core/player_spec';
 import { PseudoStat, Stat } from '../core/proto/common';
 import i18n from './config';
-import { classEnumToString, pseudoStatI18nKeys, specEnumToString, statI18nKeys } from './entity_mapping';
+import { getClassI18nKey, getSpecI18nKey, pseudoStatI18nKeys, statI18nKeys } from './entity_mapping';
 import { getLang, setLang, supportedLanguages } from './locale_service';
 
 /**
@@ -33,15 +33,19 @@ export const translateSpec = (className: string, specName: string): string => {
 };
 
 export const translatePlayerClass = (playerClass: PlayerClass<any>): string => {
-	const classKey = classEnumToString(playerClass.classID);
+	const classKey = getClassI18nKey(playerClass.classID);
 	return translateClass(classKey);
 };
 
 export const translatePlayerSpec = (playerSpec: PlayerSpec<any>): string => {
-	const classKey = classEnumToString(playerSpec.classID);
-	const specKey = specEnumToString(playerSpec.specID);
+	const classKey = getClassI18nKey(playerSpec.classID);
+	const specKey = getSpecI18nKey(playerSpec.specID);
 	return translateSpec(classKey, specKey);
 };
+
+/**
+ * Component Translation Helpers
+ */
 
 export const extractClassAndSpecFromLink = (link: HTMLAnchorElement): { className?: string; specName?: string } => {
 	const parts = link.pathname.split('/').filter(Boolean);
@@ -154,6 +158,10 @@ export const updateSimLinks = (): void => {
 		}
 	});
 };
+
+/**
+ * Localization Initialization
+ */
 
 export interface LocalizationOptions {
 	updateSimMetadata?: boolean;

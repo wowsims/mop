@@ -18,22 +18,13 @@
 			"wowsims": "WoWSims",
 			"expansion": "Mists of Pandaria",
 			"supportDevs": "Soutenir nos développeurs"
-		},
-		"status": {
-			"launched": "Lancé",
-			"not_supported": "Non supporté",
-			"alpha": "Alpha",
-			"beta": "Bêta",
-			"not_yet_supported": "Pas encore supporté"
 		}
 	},
 	"common": {
 		"phases": {
-			"1": "1",
-			"2": "2",
-			"3": "3",
-			"4": "4",
-			"5": "5"
+			"1": "Phase 1 (T14)",
+			"2": "Phase 2 (T15)",
+			"3": "Phase 3 (T16)"
 		},
 		"status": {
 			"unlaunched": "Pas Encore Supporté",
@@ -149,8 +140,8 @@
 		}
 	},
 	"sim": {
-		"title": "Simulateur {class} {spec} - Mists of Pandaria",
-		"description": "Simulations {class} {spec} pour World of Warcraft® Mists of Pandaria Classic."
+		"title": "Simulateur {spec} {class} - Mists of Pandaria",
+		"description": "Simulations {spec} {class} pour World of Warcraft® Mists of Pandaria Classic."
 	},
 	"gear": {
 		"title": "Équipement"
@@ -182,7 +173,7 @@
 		},
 		"header": {
 			"title": "WoWSims - Mists of Pandaria",
-			"phase": "Phase {{number}} - {{status}}"
+			"phase": "{{phase}} - {{status}}"
 		},
 		"character_stats": {
 			"title": "Statistiques",

@@ -22,11 +22,9 @@
 	},
 	"common": {
 		"phases": {
-			"1": "1",
-			"2": "2",
-			"3": "3",
-			"4": "4",
-			"5": "5"
+			"1": "Phase 1 (T14)",
+			"2": "Phase 2 (T15)",
+			"3": "Phase 3 (T16)"
 		},
 		"status": {
 			"unlaunched": "Not Yet Supported",
@@ -175,7 +173,7 @@
 		},
 		"header": {
 			"title": "WoWSims - Mists of Pandaria",
-			"phase": "Phase {{number}} - {{status}}"
+			"phase": "{{phase}} - {{status}}"
 		},
 		"character_stats": {
 			"title": "Stats",
