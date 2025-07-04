@@ -159,8 +159,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 149064.64982
-  tps: 100759.54638
+  dps: 149159.46561
+  tps: 100770.23737
  }
 }
 dps_results: {
@@ -180,8 +180,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 159289.96612
-  tps: 106745.32108
+  dps: 159289.53043
+  tps: 106744.88539
  }
 }
 dps_results: {
@@ -194,8 +194,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 155288.61444
-  tps: 106648.94538
+  dps: 155276.81881
+  tps: 106637.14975
  }
 }
 dps_results: {
@@ -222,8 +222,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 166386.38721
-  tps: 114126.98347
+  dps: 166374.26799
+  tps: 114114.86425
  }
 }
 dps_results: {
@@ -306,8 +306,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Primordius'TalismanofRage-96873"
  value: {
-  dps: 158565.29998
-  tps: 106143.06949
+  dps: 158534.9895
+  tps: 106119.50861
  }
 }
 dps_results: {
@@ -362,8 +362,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-TalismanofBloodlust-96864"
  value: {
-  dps: 149297.65824
-  tps: 100859.80078
+  dps: 149066.30004
+  tps: 100676.82554
  }
 }
 dps_results: {
@@ -397,8 +397,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-YaungolFireCarrier-86518"
  value: {
-  dps: 165470.00343
-  tps: 110693.96412
+  dps: 165670.63436
+  tps: 111060.3582
  }
 }
 dps_results: {
@@ -411,8 +411,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Average-Default"
  value: {
-  dps: 153339.27667
-  tps: 102545.50069
+  dps: 153338.8642
+  tps: 102545.07439
  }
 }
 dps_results: {
@@ -523,22 +523,22 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 468909.63754
-  tps: 423412.73738
+  dps: 468916.91609
+  tps: 423420.27572
  }
 }
 dps_results: {
  key: "TestArms-Settings-Orc-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-LongSingleTarget"
  value: {
-  dps: 84032.02108
-  tps: 57529.8337
+  dps: 84034.79035
+  tps: 57532.60297
  }
 }
 dps_results: {
  key: "TestArms-Settings-Orc-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-ShortSingleTarget"
  value: {
-  dps: 87935.70255
-  tps: 57032.28427
+  dps: 87947.88692
+  tps: 57044.46863
  }
 }
 dps_results: {
@@ -649,22 +649,22 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-LongMultiTarget"
  value: {
-  dps: 466285.67375
-  tps: 421387.18053
+  dps: 466292.72386
+  tps: 421394.49044
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-LongSingleTarget"
  value: {
-  dps: 83521.81585
-  tps: 57458.18964
+  dps: 83524.58512
+  tps: 57460.95891
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-p1_prebis_rich-Basic-arms-NoBuffs-9.0yards-ShortSingleTarget"
  value: {
-  dps: 86995.96052
-  tps: 57118.1296
+  dps: 87008.14488
+  tps: 57130.31396
  }
 }
 dps_results: {
