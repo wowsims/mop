@@ -1,77 +1,22 @@
 import { PlayerClass } from '../core/player_class';
 import { PlayerSpec } from '../core/player_spec';
-import { Class, Spec } from '../core/proto/common';
+import { PseudoStat, Stat } from '../core/proto/common';
 import i18n from './config';
+import { classEnumToString, pseudoStatI18nKeys, specEnumToString, statI18nKeys } from './entity_mapping';
 import { getLang, setLang, supportedLanguages } from './locale_service';
 
-// Helper function to convert Class enum to string for translation keys
-const classEnumToString = (classID: Class): string => {
-	switch (classID) {
-		case Class.ClassDeathKnight: return 'death_knight';
-		case Class.ClassDruid: return 'druid';
-		case Class.ClassHunter: return 'hunter';
-		case Class.ClassMage: return 'mage';
-		case Class.ClassMonk: return 'monk';
-		case Class.ClassPaladin: return 'paladin';
-		case Class.ClassPriest: return 'priest';
-		case Class.ClassRogue: return 'rogue';
-		case Class.ClassShaman: return 'shaman';
-		case Class.ClassWarlock: return 'warlock';
-		case Class.ClassWarrior: return 'warrior';
-		default: return 'unknown';
-	}
+/**
+ * Entity translation functions
+ */
+
+export const translateStat = (stat: Stat): string => {
+	const key = statI18nKeys[stat] || Stat[stat].toLowerCase();
+	return i18n.t(`common.stats.${key}`);
 };
 
-// Helper function to convert Spec enum to string for translation keys
-const specEnumToString = (specID: Spec): string => {
-	switch (specID) {
-		// Death Knight
-		case Spec.SpecBloodDeathKnight: return 'blood';
-		case Spec.SpecFrostDeathKnight: return 'frost';
-		case Spec.SpecUnholyDeathKnight: return 'unholy';
-		// Druid
-		case Spec.SpecBalanceDruid: return 'balance';
-		case Spec.SpecFeralDruid: return 'feral';
-		case Spec.SpecGuardianDruid: return 'guardian';
-		case Spec.SpecRestorationDruid: return 'restoration';
-		// Hunter
-		case Spec.SpecBeastMasteryHunter: return 'beast_mastery';
-		case Spec.SpecMarksmanshipHunter: return 'marksmanship';
-		case Spec.SpecSurvivalHunter: return 'survival';
-		// Mage
-		case Spec.SpecArcaneMage: return 'arcane';
-		case Spec.SpecFireMage: return 'fire';
-		case Spec.SpecFrostMage: return 'frost';
-		// Monk
-		case Spec.SpecBrewmasterMonk: return 'brewmaster';
-		case Spec.SpecMistweaverMonk: return 'mistweaver';
-		case Spec.SpecWindwalkerMonk: return 'windwalker';
-		// Paladin
-		case Spec.SpecHolyPaladin: return 'holy';
-		case Spec.SpecProtectionPaladin: return 'protection';
-		case Spec.SpecRetributionPaladin: return 'retribution';
-		// Priest
-		case Spec.SpecDisciplinePriest: return 'discipline';
-		case Spec.SpecHolyPriest: return 'holy';
-		case Spec.SpecShadowPriest: return 'shadow';
-		// Rogue
-		case Spec.SpecAssassinationRogue: return 'assassination';
-		case Spec.SpecCombatRogue: return 'combat';
-		case Spec.SpecSubtletyRogue: return 'subtlety';
-		// Shaman
-		case Spec.SpecElementalShaman: return 'elemental';
-		case Spec.SpecEnhancementShaman: return 'enhancement';
-		case Spec.SpecRestorationShaman: return 'restoration';
-		// Warlock
-		case Spec.SpecAfflictionWarlock: return 'affliction';
-		case Spec.SpecDemonologyWarlock: return 'demonology';
-		case Spec.SpecDestructionWarlock: return 'destruction';
-		// Warrior
-		case Spec.SpecArmsWarrior: return 'arms';
-		case Spec.SpecFuryWarrior: return 'fury';
-		case Spec.SpecProtectionWarrior: return 'protection';
-		default: return 'unknown';
-	}
+export const translatePseudoStat = (pseudoStat: PseudoStat): string => {
+	const key = pseudoStatI18nKeys[pseudoStat] || PseudoStat[pseudoStat].toLowerCase();
+	return i18n.t(`common.stats.${key}`);
 };
 
 export const translateClass = (className: string): string => {

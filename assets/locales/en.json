@@ -17,7 +17,7 @@
 		"header": {
 			"wowsims": "WoWSims",
 			"expansion": "Mists of Pandaria",
-						"supportDevs": "Support our devs"
+			"supportDevs": "Support our devs"
 		}
 	},
 	"common": {
@@ -104,6 +104,41 @@
 				"fury": "Fury",
 				"protection": "Protection"
 			}
+		},
+		"stats": {
+			"strength": "Strength",
+			"agility": "Agility",
+			"stamina": "Stamina",
+			"intellect": "Intellect",
+			"spirit": "Spirit",
+			"spell_hit": "Spell Hit",
+			"spell_crit": "Spell Crit",
+			"spell_haste": "Spell Haste",
+			"expertise": "Expertise",
+			"dodge": "Dodge",
+			"parry": "Parry",
+			"mastery": "Mastery",
+			"attack_power": "Attack Power",
+			"ranged_attack_power": "Ranged Attack Power",
+			"spell_power": "Spell Power",
+			"pvp_resilience": "PvP Resilience",
+			"pvp_power": "PvP Power",
+			"armor": "Armor",
+			"bonus_armor": "Bonus Armor",
+			"health": "Health",
+			"mana": "Mana",
+			"mp5": "MP5",
+			"main_hand_dps": "Main Hand DPS",
+			"off_hand_dps": "Off Hand DPS",
+			"ranged_dps": "Ranged DPS",
+			"block": "Block",
+			"melee_speed_multiplier": "Melee Speed Multiplier",
+			"ranged_speed_multiplier": "Ranged Speed Multiplier",
+			"cast_speed_multiplier": "Cast Speed Multiplier",
+			"melee_haste": "Melee Haste",
+			"ranged_haste": "Ranged Haste",
+			"melee_hit": "Melee Hit",
+			"melee_crit": "Melee Crit"
 		}
 	},
 	"sim": {
@@ -141,6 +176,34 @@
 		"header": {
 			"title": "WoWSims - Mists of Pandaria",
 			"phase": "Phase {{number}} - {{status}}"
+		},
+		"character_stats": {
+			"title": "Stats",
+			"melee_crit_cap": "Melee Crit Cap",
+			"tooltip": {
+				"base": "Base:",
+				"gear": "Gear:",
+				"talents": "Talents:",
+				"buffs": "Buffs:",
+				"consumes": "Consumes:",
+				"bonus": "Bonus:",
+				"total": "Total:",
+				"glancing": "Glancing:",
+				"suppression": "Suppression:",
+				"to_hit_cap": "To Hit Cap:",
+				"to_exp_cap": "To Exp Cap:",
+				"spec_offsets": "Spec Offsets:",
+				"final_crit_cap": "Final Crit Cap:",
+				"can_raise_by": "Can Raise By:"
+			},
+			"crit_cap": {
+				"exact": "Exact",
+				"over_by": "Over by",
+				"under_by": "Under by"
+			},
+			"bonus_prefix": "Bonus",
+			"points_suffix": "Points",
+			"percent_suffix": "%"
 		}
 	}
 }

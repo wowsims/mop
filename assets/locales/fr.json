@@ -111,6 +111,41 @@
 				"fury": "Fureur",
 				"protection": "Protection"
 			}
+		},
+		"stats": {
+			"strength": "Force",
+			"agility": "Agilité",
+			"stamina": "Endurance",
+			"intellect": "Intelligence",
+			"spirit": "Esprit",
+			"spell_hit": "Toucher des sorts",
+			"spell_crit": "Critique des sorts",
+			"spell_haste": "Hâte des sorts",
+			"expertise": "Expertise",
+			"dodge": "Esquive",
+			"parry": "Parade",
+			"mastery": "Maîtrise",
+			"attack_power": "Puissance d'attaque",
+			"ranged_attack_power": "Puissance d'attaque à distance",
+			"spell_power": "Puissance des sorts",
+			"pvp_resilience": "Résilience JcJ",
+			"pvp_power": "Puissance JcJ",
+			"armor": "Armure",
+			"bonus_armor": "Armure bonus",
+			"health": "Santé",
+			"mana": "Mana",
+			"mp5": "MP5",
+			"main_hand_dps": "DPS main principale",
+			"off_hand_dps": "DPS main gauche",
+			"ranged_dps": "DPS à distance",
+			"block": "Blocage",
+			"melee_speed_multiplier": "Multiplicateur de vitesse de mêlée",
+			"ranged_speed_multiplier": "Multiplicateur de vitesse à distance",
+			"cast_speed_multiplier": "Multiplicateur de vitesse d'incantation",
+			"melee_haste": "Hâte de mêlée",
+			"ranged_haste": "Hâte à distance",
+			"melee_hit": "Toucher de mêlée",
+			"melee_crit": "Critique de mêlée"
 		}
 	},
 	"sim": {
@@ -148,6 +183,34 @@
 		"header": {
 			"title": "WoWSims - Mists of Pandaria",
 			"phase": "Phase {{number}} - {{status}}"
+		},
+		"character_stats": {
+			"title": "Statistiques",
+			"melee_crit_cap": "Plafond de Critique Mêlée",
+			"tooltip": {
+				"base": "Base :",
+				"gear": "Équipement :",
+				"talents": "Talents :",
+				"buffs": "Buffs :",
+				"consumes": "Consommables :",
+				"bonus": "Bonus :",
+				"total": "Total :",
+				"glancing": "Éraflement :",
+				"suppression": "Suppression :",
+				"to_hit_cap": "Vers le Plafond de Précision :",
+				"to_exp_cap": "Vers le Plafond d'Expertise :",
+				"spec_offsets": "Compensations de Spé :",
+				"final_crit_cap": "Plafond de Critique Final :",
+				"can_raise_by": "Peut Augmenter de :"
+			},
+			"crit_cap": {
+				"exact": "Exact",
+				"over_by": "Au-dessus de",
+				"under_by": "En-dessous de"
+			},
+			"bonus_prefix": "Bonus",
+			"points_suffix": "Points",
+			"percent_suffix": "%"
 		}
 	}
 }
