@@ -73,8 +73,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 138228.66853
-  tps: 96586.15462
+  dps: 138204.80086
+  tps: 96594.59203
   hps: 2007.50614
  }
 }
