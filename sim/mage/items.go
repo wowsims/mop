@@ -1,131 +1,284 @@
 package mage
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
-// T11
-var ItemSetFirelordsVestments = core.NewItemSet(core.ItemSet{
-	Name: "Firelord's Vestments",
+// T14
+var ItemSetRegaliaOfTheBurningScroll = core.NewItemSet(core.ItemSet{
+	Name:                    "Regalia of the Burning Scroll",
+	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
+		// Increases the damage done by your Arcane Missiles spell by 7%,
+		// increases the damage done by your Pyroblast spell by 8%, and increases the damage done by your Ice Lance spell by 12%.
 		2: func(_ core.Agent, setBonusAura *core.Aura) {
-			// Increases the critical strike chance of your Death Coil and Frost Strike abilities by 5%.
+			setBonusAura.AttachSpellMod(core.SpellModConfig{
+				Kind:       core.SpellMod_DamageDone_Pct,
+				ClassMask:  MageSpellIceLance,
+				FloatValue: 0.12,
+			}).AttachSpellMod(core.SpellModConfig{
+				Kind:       core.SpellMod_DamageDone_Pct,
+				ClassMask:  MageSpellArcaneMissilesTick,
+				FloatValue: 0.07,
+			}).AttachSpellMod(core.SpellModConfig{
+				Kind:       core.SpellMod_DamageDone_Pct,
+				ClassMask:  MageSpellPyroblast | MageSpellPyroblastDot,
+				FloatValue: 0.08,
+			})
+			setBonusAura.ExposeToAPL(123097)
+		},
+		// Increases the damage bonus of Arcane Power by an additional 10%,
+		// reduces the cooldown of Icy Veins by 50%, and reduces the cooldown of Combustion by 20%.
+		4: func(agent core.Agent, setBonusAura *core.Aura) {
+			mage := agent.(MageAgent).GetMage()
+			mage.T14_4pc = setBonusAura
+
+			setBonusAura.AttachSpellMod(core.SpellModConfig{
+				FloatValue: 0.5,
+				Kind:       core.SpellMod_Cooldown_Multiplier,
+				ClassMask:  MageSpellIcyVeins,
+			}).AttachSpellMod(core.SpellModConfig{
+				FloatValue: 1 - 0.2,
+				Kind:       core.SpellMod_Cooldown_Multiplier,
+				ClassMask:  MageSpellCombustion,
+			})
+			setBonusAura.ExposeToAPL(123101)
+		},
+	},
+})
+
+// T15
+var ItemSetRegaliaOfTheChromaticHydra = core.NewItemSet(core.ItemSet{
+	Name:                    "Regalia of the Chromatic Hydra",
+	DisabledInChallengeMode: true,
+	Bonuses: map[int32]core.ApplySetBonus{
+		// When Alter Time expires, you gain 1800 Haste, Crit, and Mastery for 30 sec.
+		2: func(agent core.Agent, setBonusAura *core.Aura) {
+			mage := agent.(MageAgent).GetMage()
+			statValue := 1800.0
+			aura := mage.NewTemporaryStatsAura(
+				"Time Lord",
+				core.ActionID{SpellID: 138317},
+				stats.Stats{stats.HasteRating: statValue, stats.CritRating: statValue, stats.MasteryRating: statValue},
+				time.Second*30,
+			)
+
+			mage.OnSpellRegistered(func(spell *core.Spell) {
+				if !spell.Matches(MageSpellAlterTime) {
+					return
+				}
+
+				spell.RelatedSelfBuff.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					if setBonusAura.IsActive() {
+						aura.Activate(sim)
+					}
+				})
+			})
+
+			setBonusAura.ExposeToAPL(138316)
+		},
+		// Increases the effects of Arcane Charges by 5%,
+		// increases the critical strike chance of Pyroblast by 5%,
+		// and increases the chance for your Frostbolt to trigger Fingers of Frost by an additional 6%.
+		4: func(agent core.Agent, setBonusAura *core.Aura) {
+			mage := agent.(MageAgent).GetMage()
+
 			setBonusAura.AttachSpellMod(core.SpellModConfig{
 				Kind:       core.SpellMod_BonusCrit_Percent,
-				ClassMask:  MageSpellArcaneMissilesTick | MageSpellIceLance | MageSpellPyroblast | MageSpellPyroblastDot,
+				ClassMask:  MageSpellPyroblast | MageSpellPyroblastDot,
 				FloatValue: 5,
 			})
-		},
-		4: func(_ core.Agent, setBonusAura *core.Aura) {
-			//Reduces cast time of Arcane Blast, Fireball, FFB, and Frostbolt by 10%
-			setBonusAura.AttachSpellMod(core.SpellModConfig{
-				Kind:       core.SpellMod_CastTime_Pct,
-				ClassMask:  MageSpellArcaneBlast | MageSpellFireball | MageSpellFrostfireBolt | MageSpellFrostbolt,
-				FloatValue: -0.1,
-			})
-		},
-	},
-})
-
-// T12
-var ItemSetFirehawkRobesOfConflagration = core.NewItemSet(core.ItemSet{
-	Name: "Firehawk Robes of Conflagration",
-	Bonuses: map[int32]core.ApplySetBonus{
-		// You have a chance to summon a Mirror Image to assist you in battle for 15 sec when you cast Frostbolt, Fireball, Frostfire Bolt, or Arcane Blast.
-		// (Proc chance: 20%, 45s cooldown)
-		2: func(agent core.Agent, setBonusAura *core.Aura) {
-			mage := agent.(MageAgent).GetMage()
-
-			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Name:           "Item - Mage T12 2P Bonus",
-				Callback:       core.CallbackOnCastComplete,
-				ClassSpellMask: MageSpellArcaneBlast | MageSpellFireball | MageSpellFrostfireBolt | MageSpellFrostbolt,
-				ProcChance:     0.20,
-				ICD:            time.Second * 45,
-				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-					mage.t12MirrorImage.EnableWithTimeout(sim, mage.t12MirrorImage, time.Second*15)
-				},
-			})
-		},
-		// Your spells have an increased chance to trigger Brain Freeze or Hot Streak.
-		// In addition, Arcane Power decreases the cost of your damaging spells by 10% instead of increasing their cost.
-		4: func(agent core.Agent, setBonusAura *core.Aura) {
-			mage := agent.(MageAgent).GetMage()
-
 			setBonusAura.ApplyOnGain(func(_ *core.Aura, _ *core.Simulation) {
-				mage.brainFreezeProcChance += .15
-				mage.baseHotStreakProcChance += 0.30
+				mage.T15_4PC_ArcaneChargeEffect += 0.05
+				mage.T15_4PC_FrostboltProcChance += 0.06
+			}).ApplyOnExpire(func(_ *core.Aura, _ *core.Simulation) {
+				mage.T15_4PC_ArcaneChargeEffect -= 0.05
+				mage.T15_4PC_FrostboltProcChance -= 0.06
 			})
 
-			setBonusAura.ApplyOnExpire(func(_ *core.Aura, _ *core.Simulation) {
-				mage.brainFreezeProcChance -= .15
-				mage.baseHotStreakProcChance -= .30
-			})
-
-			setBonusAura.ExposeToAPL(99064)
-
-			// Arcane Power Cost reduction implemented in:
-			// talents_arcane.go#278
-			mage.T12_4pc = setBonusAura
+			setBonusAura.ExposeToAPL(138376)
 		},
 	},
 })
 
-// T13
-var ItemSetTimeLordsRegalia = core.NewItemSet(core.ItemSet{
-	Name: "Time Lord's Regalia",
+// T16
+var ItemSetChronomancerRegalia = core.NewItemSet(core.ItemSet{
+	Name:                    "Chronomancer Regalia",
+	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
-		// Your Arcane Blast has a 100% chance and your Fireball, Pyroblast, Frostfire Bolt, and Frostbolt spells have a 50% chance to grant Stolen Time, increasing your haste rating by 50 for 30 sec and stacking up to 10 times.
-		// When Arcane Power, Combustion, or Icy Veins expires, all stacks of Stolen Time are lost.
+		// Arcane Missiles causes your next Arcane Blast within 10 sec to cost 25% less mana, stacking up to 4 times.
+		// Consuming Brain Freeze increases the damage of your next Ice Lance, Frostbolt, Frostfire Bolt, or Cone of Cold by 20%.
+		// Consuming Pyroblast! increases your haste by 750 for 5 sec, stacking up to 5 times.
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
-			character := agent.GetCharacter()
 			mage := agent.(MageAgent).GetMage()
 
-			// Stack reset handlers can be found in:
-			// combustion.go
-			// talents_arcane.go
-			// talents_frost.go
-			mage.t13ProcAura = core.MakeStackingAura(character, core.StackingStatAura{
-				Aura: core.Aura{
-					Label:     "Stolen Time",
-					ActionID:  core.ActionID{SpellID: 105785},
-					Duration:  time.Second * 30,
-					MaxStacks: 10,
-				},
-				BonusPerStack: stats.Stats{stats.HasteRating: 50},
+			arcaneBlastMod := mage.AddDynamicMod(core.SpellModConfig{
+				Kind:       core.SpellMod_PowerCost_Pct,
+				ClassMask:  MageSpellArcaneBlast,
+				FloatValue: 0,
 			})
 
-			newStolenTimeTrigger := func(procChance float64, spellMask int64) *core.Aura {
-				return setBonusAura.MakeDependentProcTriggerAura(&character.Unit, core.ProcTrigger{
-					Name:           fmt.Sprintf("Stolen Time Trigger %f", procChance),
-					ActionID:       core.ActionID{ItemID: 105788},
-					Callback:       core.CallbackOnSpellHitDealt,
-					ClassSpellMask: spellMask,
-					ProcChance:     procChance,
-					Outcome:        core.OutcomeLanded,
-					Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-						mage.t13ProcAura.Activate(sim)
-						mage.t13ProcAura.AddStack(sim)
-					},
+			arcaneAura := mage.GetOrRegisterAura(core.Aura{
+				Label:     "Profound Magic",
+				ActionID:  core.ActionID{SpellID: 145252},
+				Duration:  time.Second * 10,
+				MaxStacks: 4,
+				OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
+					arcaneBlastMod.UpdateFloatValue(0.25 * float64(newStacks))
+				},
+			})
+
+			setBonusAura.MakeDependentProcTriggerAura(&mage.Unit, core.ProcTrigger{
+				Name:           "Profound Magic - Consume",
+				ClassSpellMask: MageSpellArcaneBlast,
+				Callback:       core.CallbackOnSpellHitDealt,
+				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					arcaneAura.Deactivate(sim)
+				},
+			})
+
+			setBonusAura.MakeDependentProcTriggerAura(&mage.Unit, core.ProcTrigger{
+				Name:           "Item - Mage T16 2P Bonus",
+				ClassSpellMask: MageSpellArcaneMissilesCast,
+				Callback:       core.CallbackOnSpellHitDealt,
+				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					arcaneAura.Activate(sim)
+					arcaneAura.AddStack(sim)
+				},
+			})
+
+			fireAura := core.MakeStackingAura(&mage.Character, core.StackingStatAura{
+				Aura: core.Aura{
+					Label:     "Potent Flames",
+					ActionID:  core.ActionID{SpellID: 145254},
+					Duration:  time.Second * 5,
+					MaxStacks: 5,
+				},
+				BonusPerStack: stats.Stats{stats.HasteRating: 750},
+			})
+
+			mage.OnSpellRegistered(func(spell *core.Spell) {
+				if !spell.Matches(MageSpellPyroblast) {
+					return
+				}
+
+				mage.InstantPyroblastAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					if setBonusAura.IsActive() {
+						fireAura.Activate(sim)
+						fireAura.AddStack(sim)
+					}
 				})
-			}
+			})
 
-			newStolenTimeTrigger(1, MageSpellArcaneBlast)
-			newStolenTimeTrigger(0.5, MageSpellFireball|MageSpellPyroblast|MageSpellFrostfireBolt|MageSpellFrostbolt)
+			frostClassMask := MageSpellIceLance | MageSpellFrostbolt | MageSpellFrostfireBolt | MageSpellConeOfCold
+			frostAura := mage.GetOrRegisterAura(core.Aura{
+				Label:    "Frozen Thoughts",
+				ActionID: core.ActionID{SpellID: 146557},
+				Duration: time.Second * 15,
+			}).AttachSpellMod(core.SpellModConfig{
+				Kind:       core.SpellMod_DamageDone_Pct,
+				ClassMask:  frostClassMask,
+				FloatValue: 0.25,
+			})
+
+			setBonusAura.MakeDependentProcTriggerAura(&mage.Unit, core.ProcTrigger{
+				Name:           "Frozen Thoughts - Consume",
+				ClassSpellMask: frostClassMask,
+				Callback:       core.CallbackOnSpellHitDealt,
+				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					frostAura.Deactivate(sim)
+				},
+			})
+
+			mage.OnSpellRegistered(func(spell *core.Spell) {
+				if !spell.Matches(MageSpellFrostbolt) {
+					return
+				}
+				if mage.BrainFreezeAura == nil {
+					return
+				}
+				mage.BrainFreezeAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					if setBonusAura.IsActive() {
+						frostAura.Activate(sim)
+					}
+				})
+			})
+
+			setBonusAura.ExposeToAPL(145251)
 		},
-		// Each stack of Stolen Time also reduces the cooldown of Arcane Power by 7 sec, Combustion by 5 sec, and Icy Veins by 15 sec.
+		// Arcane Missiles has a 15% chance to not consume Arcane Missiles!.
+		// Consuming Brain Freeze has a 30% chance to drop an icy boulder on your target.
+		// Inferno Blast also causes your next Pyroblast to be a critical strike.
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
-			// Cooldown reduction handlers can be found in:
-			// combustion.go
-			// talents_arcane.go
-			// talents_frost.go
-
 			mage := agent.(MageAgent).GetMage()
-			mage.T13_4pc = setBonusAura
+
+			mage.T16_4pc = setBonusAura
+
+			frigidBlast := mage.RegisterSpell(core.SpellConfig{
+				ActionID:    core.ActionID{SpellID: 145264},
+				SpellSchool: core.SpellSchoolFrost,
+				ProcMask:    core.ProcMaskSpellProc,
+				Flags:       core.SpellFlagPassiveSpell,
+
+				DamageMultiplier: 1,
+				CritMultiplier:   mage.DefaultCritMultiplier(),
+				ThreatMultiplier: 1,
+
+				BonusCoefficient: 1.5,
+
+				ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+					baseDamage := mage.CalcAndRollDamageRange(sim, 1.5, 0.15000000596)
+					spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicCrit)
+				},
+			})
+
+			mage.OnSpellRegistered(func(spell *core.Spell) {
+				if !spell.Matches(MageSpellFrostbolt) {
+					return
+				}
+				if mage.BrainFreezeAura == nil {
+					return
+				}
+				mage.BrainFreezeAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					if setBonusAura.IsActive() {
+						frigidBlast.Cast(sim, mage.CurrentTarget)
+					}
+				})
+			})
+
+			fireAura := mage.GetOrRegisterAura(core.Aura{
+				Label:    "Fiery Adept",
+				ActionID: core.ActionID{SpellID: 145261},
+				Duration: time.Second * 15,
+			}).AttachSpellMod(core.SpellModConfig{
+				Kind:       core.SpellMod_BonusCrit_Percent,
+				ClassMask:  MageSpellPyroblast | MageSpellPyroblastDot,
+				FloatValue: 100,
+			})
+
+			setBonusAura.MakeDependentProcTriggerAura(&mage.Unit, core.ProcTrigger{
+				Name:           "Fiery Adept - Consume",
+				ClassSpellMask: MageSpellPyroblast,
+				Harmful:        true,
+				Callback:       core.CallbackOnSpellHitDealt,
+				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					fireAura.Deactivate(sim)
+				},
+			})
+
+			setBonusAura.MakeDependentProcTriggerAura(&mage.Unit, core.ProcTrigger{
+				Name:           "Item - Mage T16 4P Bonus",
+				ClassSpellMask: MageSpellInfernoBlast,
+				Callback:       core.CallbackOnSpellHitDealt,
+				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					fireAura.Activate(sim)
+				},
+			})
+
+			setBonusAura.ExposeToAPL(145257)
 		},
 	},
 })

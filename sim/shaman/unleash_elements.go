@@ -20,14 +20,13 @@ func (shaman *Shaman) registerUnleashFlame() {
 
 				//Unleash flame applies to both direct damage and dot,
 				//As the 2 parts are separated we wait to deactivate the aura
-				pa := &core.PendingAction{
-					NextActionAt: sim.CurrentTime + time.Duration(1),
-					Priority:     core.ActionPriorityGCD,
+				pa := sim.GetConsumedPendingActionFromPool()
+				pa.NextActionAt = sim.CurrentTime + 1
 
-					OnAction: func(sim *core.Simulation) {
-						aura.Deactivate(sim)
-					},
+				pa.OnAction = func(sim *core.Simulation) {
+					aura.Deactivate(sim)
 				}
+
 				sim.AddPendingAction(pa)
 			}
 		},
@@ -46,6 +45,7 @@ func (shaman *Shaman) registerUnleashFlame() {
 		Flags:            SpellFlagFocusable | core.SpellFlagPassiveSpell,
 		DamageMultiplier: 1,
 		BonusCoefficient: 0.42899999022,
+		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := shaman.CalcAndRollDamageRange(sim, 1.11300003529, 0.17000000179)
 			spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
@@ -65,6 +65,7 @@ func (shaman *Shaman) registerUnleashFrost() {
 		CritMultiplier:   shaman.DefaultCritMultiplier(),
 		DamageMultiplier: 1,
 		BonusCoefficient: 0.38600000739,
+		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := shaman.CalcAndRollDamageRange(sim, 0.86900001764, 0.15000000596)
 			spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
@@ -102,6 +103,7 @@ func (shaman *Shaman) registerUnleashWind() {
 		Flags:            core.SpellFlagPassiveSpell,
 		DamageMultiplier: 0.9,
 		CritMultiplier:   shaman.DefaultCritMultiplier(),
+		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			damage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 			spell.CalcAndDealDamage(sim, target, damage, spell.OutcomeRangedHitAndCrit)
@@ -145,6 +147,7 @@ func (shaman *Shaman) registerUnleashLife() {
 		Flags:            core.SpellFlagHelpful | core.SpellFlagPassiveSpell,
 		CritMultiplier:   shaman.DefaultCritMultiplier(),
 		BonusCoefficient: 0.28600001335,
+		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseHeal := shaman.CalcScalingSpellDmg(2.82999992371)
 			result := spell.CalcAndDealHealing(sim, target, baseHeal, spell.OutcomeHealingCrit)
@@ -172,7 +175,6 @@ func (shaman *Shaman) registerUnleashElements() {
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 8.2,
-			PercentModifier: 100,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{

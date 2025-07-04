@@ -29,23 +29,18 @@ func (monk *Monk) NewXuen() *Xuen {
 			Name:      "Xuen, The White Tiger",
 			Owner:     &monk.Character,
 			BaseStats: baseStats,
-			StatInheritance: func(ownerStats stats.Stats) stats.Stats {
-
-				hitRating := ownerStats[stats.HitRating]
-				expertiseRating := ownerStats[stats.ExpertiseRating]
-				combinedHitExp := (hitRating + expertiseRating) * 0.5
-
+			NonHitExpStatInheritance: func(ownerStats stats.Stats) stats.Stats {
 				return stats.Stats{
 					stats.Stamina:     ownerStats[stats.Stamina],
 					stats.AttackPower: ownerStats[stats.AttackPower] * 0.5,
 
-					stats.HitRating:       combinedHitExp,
-					stats.ExpertiseRating: combinedHitExp,
-					stats.DodgeRating:     ownerStats[stats.DodgeRating],
-					stats.ParryRating:     ownerStats[stats.ParryRating],
+					stats.DodgeRating: ownerStats[stats.DodgeRating],
+					stats.ParryRating: ownerStats[stats.ParryRating],
 
 					stats.PhysicalCritPercent: ownerStats[stats.PhysicalCritPercent],
 					stats.SpellCritPercent:    ownerStats[stats.PhysicalCritPercent],
+
+					stats.HasteRating: ownerStats[stats.HasteRating],
 				}
 			},
 			EnabledOnStart:                  false,
@@ -81,12 +76,7 @@ func (monk *Monk) NewXuen() *Xuen {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := monk.CalcScalingSpellDmg(0.293) + xuen.GetStat(stats.AttackPower)*0.505
-			for index, target := range sim.Encounter.TargetUnits {
-				if index > 3 {
-					break
-				}
-				spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealCleaveDamage(sim, target, 4, baseDamage, spell.OutcomeMagicHitAndCrit)
 		},
 	})
 

@@ -19,7 +19,7 @@ type DefaultTreantImpl struct {
 }
 
 // Overwrite these for spec variants that register spells.
-func (treant *DefaultTreantImpl) Initialize() {}
+func (treant *DefaultTreantImpl) Initialize()                              {}
 func (treant *DefaultTreantImpl) ExecuteCustomRotation(_ *core.Simulation) {}
 
 func (treant *DefaultTreantImpl) Reset(sim *core.Simulation) {
@@ -31,13 +31,13 @@ func (treant *DefaultTreantImpl) GetPet() *core.Pet {
 }
 
 func (treant *DefaultTreantImpl) Enable(sim *core.Simulation) {
-	treant.EnableWithTimeout(sim, treant, time.Second * 15)
+	treant.EnableWithTimeout(sim, treant, time.Second*15)
 }
 
 type TreantConfig struct {
-	StatInheritance         core.PetStatInheritance
-	EnableAutos             bool
-	WeaponDamageCoefficient float64
+	NonHitExpStatInheritance core.PetStatInheritance
+	EnableAutos              bool
+	WeaponDamageCoefficient  float64
 }
 
 func (druid *Druid) NewDefaultTreant(config TreantConfig) *DefaultTreantImpl {
@@ -45,7 +45,7 @@ func (druid *Druid) NewDefaultTreant(config TreantConfig) *DefaultTreantImpl {
 		Pet: core.NewPet(core.PetConfig{
 			Name:                            "Treant",
 			Owner:                           &druid.Character,
-			StatInheritance:                 config.StatInheritance,
+			NonHitExpStatInheritance:        config.NonHitExpStatInheritance,
 			HasDynamicMeleeSpeedInheritance: true,
 			HasDynamicCastSpeedInheritance:  true,
 		}),
@@ -73,14 +73,14 @@ func (druid *Druid) NewDefaultTreant(config TreantConfig) *DefaultTreantImpl {
 	treant.OnPetEnable = func(sim *core.Simulation) {
 		// Treant spawns in front of boss but moves behind after first swing.
 		treant.PseudoStats.InFrontOfTarget = true
+		pa := sim.GetConsumedPendingActionFromPool()
+		pa.NextActionAt = sim.CurrentTime + time.Millisecond*500
 
-		sim.AddPendingAction(&core.PendingAction{
-			NextActionAt: sim.CurrentTime + time.Millisecond * 500,
+		pa.OnAction = func(_ *core.Simulation) {
+			treant.PseudoStats.InFrontOfTarget = false
+		}
 
-			OnAction: func(_ *core.Simulation) {
-				treant.PseudoStats.InFrontOfTarget = false
-			},
-		})
+		sim.AddPendingAction(pa)
 	}
 
 	return treant

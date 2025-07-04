@@ -11,23 +11,16 @@ func (hunter *Hunter) registerRapidFireCD() {
 	actionID := core.ActionID{SpellID: 3045}
 
 	focusMetrics := hunter.NewFocusMetrics(core.ActionID{SpellID: 53232})
-	var focusPA *core.PendingAction
-
 	hasteMultiplier := 1.4
 
-	hunter.RapidFireAura = hunter.RegisterAura(core.Aura{
+	rapidFireAura := hunter.RegisterAura(core.Aura{
 		Label:    "Rapid Fire",
 		ActionID: actionID,
 		Duration: time.Second * 15,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			aura.Unit.MultiplyRangedSpeed(sim, hasteMultiplier)
-			if sim.CurrentTime <= 0 && hunter.Options.UseAqTier {
-				hunter.RapidFire.CD.Reduce(2 * time.Minute)
-			}
-			if sim.CurrentTime < 0 && hunter.Options.UseNaxxTier {
-				aura.UpdateExpires(aura.ExpiresAt() + (time.Second * 4))
-			}
-			focusPA = core.StartPeriodicAction(sim, core.PeriodicActionOptions{
+			aura.Unit.MultiplyRangedHaste(sim, hasteMultiplier)
+
+			core.StartPeriodicAction(sim, core.PeriodicActionOptions{
 				Period:   time.Second * 3,
 				NumTicks: 5,
 				OnAction: func(sim *core.Simulation) {
@@ -39,33 +32,33 @@ func (hunter *Hunter) registerRapidFireCD() {
 
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			focusPA.Cancel(sim)
-			aura.Unit.MultiplyRangedSpeed(sim, 1/hasteMultiplier)
+			aura.Unit.MultiplyRangedHaste(sim, 1/hasteMultiplier)
 		},
 	})
 
-	hunter.RapidFire = hunter.RegisterSpell(core.SpellConfig{
+	rapidFire := hunter.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		ClassSpellMask: HunterSpellRapidFire,
+		Flags:          core.SpellFlagReadinessTrinket,
 		FocusCost: core.FocusCostOptions{
 			Cost: 0,
 		},
 		Cast: core.CastConfig{
 			CD: core.Cooldown{
 				Timer:    hunter.NewTimer(),
-				Duration: time.Minute * 5,
+				Duration: time.Minute * 3,
 			},
 		},
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
 			return hunter.GCD.IsReady(sim)
 		},
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
-			hunter.RapidFireAura.Activate(sim)
+			rapidFireAura.Activate(sim)
 		},
 	})
 
 	hunter.AddMajorCooldown(core.MajorCooldown{
-		Spell: hunter.RapidFire,
+		Spell: rapidFire,
 		Type:  core.CooldownTypeDPS,
 	})
 }

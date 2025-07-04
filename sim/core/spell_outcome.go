@@ -30,10 +30,16 @@ func (dot *Dot) OutcomeTick(_ *Simulation, result *SpellResult, _ *AttackTable) 
 	result.Outcome = OutcomeHit
 	dot.Spell.SpellMetrics[result.Target.UnitIndex].Ticks++
 }
-func (dot *Dot) OutcomeTickPhysicalHit(sim *Simulation, result *SpellResult, attackTable *AttackTable) {
+func (dot *Dot) OutcomeTickPhysicalHitAndCrit(sim *Simulation, result *SpellResult, attackTable *AttackTable) {
 	if dot.Spell.PhysicalHitCheck(sim, attackTable) {
-		result.Outcome = OutcomeHit
-		dot.Spell.SpellMetrics[result.Target.UnitIndex].Ticks++
+		if dot.Spell.PhysicalCritCheck(sim, attackTable) {
+			result.Outcome = OutcomeCrit
+			result.Damage *= dot.Spell.CritDamageMultiplier()
+			dot.Spell.SpellMetrics[result.Target.UnitIndex].CritTicks++
+		} else {
+			result.Outcome = OutcomeHit
+			dot.Spell.SpellMetrics[result.Target.UnitIndex].Ticks++
+		}
 	} else {
 		result.Outcome = OutcomeMiss
 		dot.Spell.SpellMetrics[result.Target.UnitIndex].Misses++
@@ -369,6 +375,29 @@ func (spell *Spell) outcomeMeleeSpecialHitAndCrit(sim *Simulation, result *Spell
 	}
 }
 
+func (spell *Spell) OutcomeMeleeWeaponSpecialNoParry(sim *Simulation, result *SpellResult, attackTable *AttackTable) {
+	spell.outcomeMeleeWeaponSpecialNoParry(sim, result, attackTable, true)
+}
+func (spell *Spell) OutcomeMeleeWeaponSpecialNoParryNoHitCounter(sim *Simulation, result *SpellResult, attackTable *AttackTable) {
+	spell.outcomeMeleeWeaponSpecialNoParry(sim, result, attackTable, false)
+}
+
+func (spell *Spell) outcomeMeleeWeaponSpecialNoParry(sim *Simulation, result *SpellResult, attackTable *AttackTable, countHits bool) {
+	if spell.Unit.PseudoStats.InFrontOfTarget {
+		roll := sim.RandomFloat("White Hit Table")
+		chance := 0.0
+
+		if !result.applyAttackTableMissNoDWPenalty(spell, attackTable, roll, &chance) &&
+			!result.applyAttackTableDodge(spell, attackTable, roll, &chance) &&
+			!result.applyAttackTableBlock(sim, spell, attackTable) &&
+			!result.applyAttackTableCritSeparateRoll(sim, spell, attackTable, countHits) {
+			result.applyAttackTableHit(spell, countHits)
+		}
+	} else {
+		spell.outcomeMeleeSpecialHitAndCrit(sim, result, attackTable, countHits)
+	}
+}
+
 func (spell *Spell) OutcomeMeleeWeaponSpecialHitAndCrit(sim *Simulation, result *SpellResult, attackTable *AttackTable) {
 	spell.outcomeMeleeWeaponSpecialHitAndCrit(sim, result, attackTable, true)
 }
@@ -458,7 +487,6 @@ func (spell *Spell) OutcomeMeleeSpecialCritOnlyNoHitCounter(sim *Simulation, res
 	spell.outcomeMeleeSpecialCritOnly(sim, result, attackTable, false)
 }
 func (spell *Spell) outcomeMeleeSpecialCritOnly(sim *Simulation, result *SpellResult, attackTable *AttackTable, countHits bool) {
-
 	if !result.applyAttackTableCritSeparateRoll(sim, spell, attackTable, countHits) {
 		result.applyAttackTableHit(spell, countHits)
 	}
@@ -743,7 +771,8 @@ func (result *SpellResult) applyAttackTableHit(spell *Spell, countHits bool) {
 }
 
 func (result *SpellResult) applyEnemyAttackTableMiss(spell *Spell, attackTable *AttackTable, roll float64, chance *float64) bool {
-	missChance := result.Target.GetTotalChanceToBeMissedAsDefender(attackTable) + spell.Unit.PseudoStats.IncreasedMissChance
+	missChance := result.Target.GetTotalChanceToBeMissedAsDefender(attackTable)
+
 	if spell.Unit.AutoAttacks.IsDualWielding && !spell.Unit.PseudoStats.DisableDWMissPenalty {
 		missChance += 0.19
 	}
@@ -877,6 +906,17 @@ func (spell *Spell) OutcomeExpectedMagicHitAndCrit(_ *Simulation, result *SpellR
 	result.Damage *= averageMultiplier
 }
 
+func (spell *Spell) OutcomeExpectedPhysicalCrit(_ *Simulation, result *SpellResult, attackTable *AttackTable) {
+	if spell.CritMultiplier == 0 {
+		panic("Spell " + spell.ActionID.String() + " missing CritMultiplier")
+	}
+
+	averageMultiplier := 1.0
+	averageMultiplier += spell.PhysicalCritChance(attackTable) * (spell.CritDamageMultiplier() - 1)
+
+	result.Damage *= averageMultiplier
+}
+
 func (spell *Spell) OutcomeExpectedMeleeWhite(_ *Simulation, result *SpellResult, attackTable *AttackTable) {
 	missChance := spell.GetPhysicalMissChance(attackTable)
 	dodgeChance := TernaryFloat64(spell.Flags.Matches(SpellFlagCannotBeDodged), 0, max(0, attackTable.BaseDodgeChance-spell.DodgeSuppression()))
@@ -900,7 +940,7 @@ func (spell *Spell) OutcomeExpectedMeleeWeaponSpecialHitAndCrit(_ *Simulation, r
 	result.Damage *= averageMultiplier
 }
 
-func (dot *Dot) OutcomeExpectedMagicSnapshotCrit(_ *Simulation, result *SpellResult, _ *AttackTable) {
+func (dot *Dot) OutcomeExpectedSnapshotCrit(_ *Simulation, result *SpellResult, _ *AttackTable) {
 	if dot.Spell.CritMultiplier == 0 {
 		panic("Spell " + dot.Spell.ActionID.String() + " missing CritMultiplier")
 	}

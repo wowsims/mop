@@ -130,6 +130,8 @@ func (rot *APLRotation) newAPLValue(config *proto.APLValue) APLValue {
 		value = rot.newValueMaxEnergy(config.GetMaxEnergy(), config.Uuid)
 	case *proto.APLValue_MaxFocus:
 		value = rot.newValueMaxFocus(config.GetMaxFocus(), config.Uuid)
+	case *proto.APLValue_MaxRage:
+		value = rot.newValueMaxRage(config.GetMaxRage(), config.Uuid)
 	case *proto.APLValue_MaxRunicPower:
 		value = rot.newValueMaxRunicPower(config.GetMaxRunicPower(), config.Uuid)
 	case *proto.APLValue_EnergyRegenPerSecond:
@@ -159,9 +161,11 @@ func (rot *APLRotation) newAPLValue(config *proto.APLValue) APLValue {
 	case *proto.APLValue_RuneSlotCooldown:
 		value = rot.newValueRuneSlotCooldown(config.GetRuneSlotCooldown(), config.Uuid)
 
-	//Unit
+	// Unit
 	case *proto.APLValue_UnitIsMoving:
-		value = rot.newValueCharacterIsMoving(config.GetUnitIsMoving(), config.Uuid)
+		value = rot.newValueUnitIsMoving(config.GetUnitIsMoving(), config.Uuid)
+	case *proto.APLValue_UnitDistance:
+		value = rot.newValueUnitDistance(config.GetUnitDistance(), config.Uuid)
 
 	// GCD
 	case *proto.APLValue_GcdIsReady:
@@ -236,10 +240,16 @@ func (rot *APLRotation) newAPLValue(config *proto.APLValue) APLValue {
 	// Dots
 	case *proto.APLValue_DotIsActive:
 		value = rot.newValueDotIsActive(config.GetDotIsActive(), config.Uuid)
+	case *proto.APLValue_DotIsActiveOnAllTargets:
+		value = rot.newValueDotIsActiveOnAllTargets(config.GetDotIsActiveOnAllTargets(), config.Uuid)
 	case *proto.APLValue_DotRemainingTime:
 		value = rot.newValueDotRemainingTime(config.GetDotRemainingTime(), config.Uuid)
+	case *proto.APLValue_DotLowestRemainingTime:
+		value = rot.newValueDotLowestRemainingTime(config.GetDotLowestRemainingTime(), config.Uuid)
 	case *proto.APLValue_DotTickFrequency:
 		value = rot.newValueDotTickFrequency(config.GetDotTickFrequency(), config.Uuid)
+	case *proto.APLValue_DotPercentIncrease:
+		value = rot.newValueDotPercentIncrease(config.GetDotPercentIncrease(), config.Uuid)
 
 	// Sequences
 	case *proto.APLValue_SequenceIsComplete:

@@ -328,6 +328,7 @@ export class Sim {
 		playerDatabase.enchants.push(...bulkItemsDb.enchants);
 		playerDatabase.gems.push(...bulkItemsDb.gems);
 		playerDatabase.reforgeStats.push(...bulkItemsDb.reforgeStats);
+		playerDatabase.itemEffectRandPropPoints.push(...bulkItemsDb.itemEffectRandPropPoints);
 		playerDatabase.randomSuffixes.push(...bulkItemsDb.randomSuffixes);
 		playerDatabase.consumables.push(...bulkItemsDb.consumables);
 		playerDatabase.spellEffects.push(...bulkItemsDb.spellEffects);
@@ -382,6 +383,7 @@ export class Sim {
 		playerDatabase.enchants.push(...bulkItemsDb.enchants);
 		playerDatabase.gems.push(...bulkItemsDb.gems);
 		playerDatabase.reforgeStats.push(...bulkItemsDb.reforgeStats);
+		playerDatabase.itemEffectRandPropPoints.push(...bulkItemsDb.itemEffectRandPropPoints);
 		playerDatabase.randomSuffixes.push(...bulkItemsDb.randomSuffixes);
 
 		this.bulkSimStartEmitter.emit(TypedEvent.nextEventID(), request);

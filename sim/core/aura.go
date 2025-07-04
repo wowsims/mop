@@ -213,8 +213,14 @@ func (aura *Aura) SetStacks(sim *Simulation, newStacks int32) {
 func (aura *Aura) AddStack(sim *Simulation) {
 	aura.SetStacks(sim, aura.stacks+1)
 }
+func (aura *Aura) AddStacks(sim *Simulation, stacks int32) {
+	aura.SetStacks(sim, aura.stacks+stacks)
+}
 func (aura *Aura) RemoveStack(sim *Simulation) {
-	aura.SetStacks(sim, aura.stacks-1)
+	aura.SetStacks(sim, max(0, aura.stacks-1))
+}
+func (aura *Aura) RemoveStacks(sim *Simulation, stacks int32) {
+	aura.SetStacks(sim, max(0, aura.stacks-stacks))
 }
 
 func (aura *Aura) UpdateExpires(newExpires time.Duration) {
@@ -311,6 +317,21 @@ func (aura *Aura) ApplyOnExpire(newOnExpire OnExpire) *Aura {
 		aura.OnExpire = func(aura *Aura, sim *Simulation) {
 			oldOnExpire(aura, sim)
 			newOnExpire(aura, sim)
+		}
+	}
+
+	return aura
+}
+
+// Adds a handler to be called OnReset, in addition to any current handlers.
+func (aura *Aura) ApplyOnReset(newOnReset OnReset) *Aura {
+	oldOnReset := aura.OnReset
+	if oldOnReset == nil {
+		aura.OnReset = newOnReset
+	} else {
+		aura.OnReset = func(aura *Aura, sim *Simulation) {
+			oldOnReset(aura, sim)
+			newOnReset(aura, sim)
 		}
 	}
 
@@ -972,6 +993,22 @@ func (auras AuraArray) FindLabel() string {
 	panic("No valid auras in array!")
 }
 
+func (auras AuraArray) ActivateAll(sim *Simulation) {
+	for _, target := range sim.Environment.AllUnits {
+		if target.IsEnabled() && (auras[target.UnitIndex] != nil) {
+			auras[target.UnitIndex].Activate(sim)
+		}
+	}
+}
+
+func (auras AuraArray) ApplyOnExpire(onExpire OnExpire) {
+	for _, aura := range auras{
+		if aura != nil {
+			aura.ApplyOnExpire(onExpire)
+		}
+	}
+}
+
 func (caster *Unit) NewAllyAuraArray(makeAura func(*Unit) *Aura) AuraArray {
 	auras := make([]*Aura, len(caster.Env.AllUnits))
 	for _, target := range caster.Env.AllUnits {
@@ -1023,4 +1060,31 @@ func (auraArrays LabeledAuraArrays) Append(auras AuraArray) LabeledAuraArrays {
 
 	auraArrays[auras.FindLabel()] = auras
 	return auraArrays
+}
+
+type AuraState struct {
+	RemainingDuration time.Duration
+	Stacks            int32
+}
+
+func (aura *Aura) SaveState(sim *Simulation) AuraState {
+	if !aura.active {
+		return AuraState{}
+	}
+
+	return AuraState{
+		RemainingDuration: aura.expires - sim.CurrentTime,
+		Stacks:            aura.stacks,
+	}
+}
+
+func (aura *Aura) RestoreState(state AuraState, sim *Simulation) {
+	if !aura.active {
+		aura.Activate(sim)
+	}
+
+	aura.UpdateExpires(state.RemainingDuration + sim.CurrentTime)
+	if aura.MaxStacks > 0 {
+		aura.SetStacks(sim, state.Stacks)
+	}
 }

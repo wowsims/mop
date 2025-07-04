@@ -15,17 +15,15 @@ func (ele *ElementalShaman) registerShamanisticRageSpell() {
 		ActionID: actionID,
 		Duration: time.Second * 15,
 	}).AttachSpellMod(core.SpellModConfig{
-		Kind:     core.SpellMod_PowerCost_Pct,
-		IntValue: -100,
+		Kind:       core.SpellMod_PowerCost_Pct,
+		FloatValue: -2,
 	})
 
 	spell := ele.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		ClassSpellMask: shaman.SpellMaskShamanisticRage,
+		Flags:          core.SpellFlagReadinessTrinket,
 		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: core.GCDDefault,
-			},
 			IgnoreHaste: true,
 			CD: core.Cooldown{
 				Timer:    ele.NewTimer(),
@@ -41,5 +39,8 @@ func (ele *ElementalShaman) registerShamanisticRageSpell() {
 	ele.AddMajorCooldown(core.MajorCooldown{
 		Spell: spell,
 		Type:  core.CooldownTypeMana,
+		ShouldActivate: func(s *core.Simulation, c *core.Character) bool {
+			return ele.CurrentManaPercent() < 0.05
+		},
 	})
 }

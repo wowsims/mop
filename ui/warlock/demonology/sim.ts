@@ -1,16 +1,13 @@
 import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
-import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Faction, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { DEFAULT_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as WarlockInputs from '../inputs';
-import * as DemonologyInputs from './inputs';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
@@ -25,51 +22,35 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpellPower, Stat.StatMasteryRating, Stat.StatMP5],
+		[
+			Stat.StatHealth,
+			Stat.StatMana,
+			Stat.StatStamina,
+			Stat.StatIntellect,
+			Stat.StatSpellPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+			Stat.StatMP5,
+		],
 		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
+	gemStats: DEFAULT_CASTER_GEM_STATS,
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_PRESET.gear,
-		itemSwap: Presets.P3_ITEM_SWAP.itemSwap,
+		gear: Presets.PRERAID_PRESET.gear,
 
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
 		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 17);
-		})(),
-		// Default soft caps for the Reforge optimizer
-		softCapBreakpoints: (() => {
-			// Set up Mastery breakpoints for integer % damage increments.
-			// These should be removed once the bugfix to make Mastery
-			// continuous goes live!
-			const masteryRatingBreakpoints = [];
-			const masteryPercentPerPoint = Mechanics.masteryPercentPerPoint.get(Spec.SpecDemonologyWarlock)!;
-			for (let masteryPercent = 19; masteryPercent <= 200; masteryPercent++) {
-				masteryRatingBreakpoints.push((masteryPercent / masteryPercentPerPoint) * Mechanics.MASTERY_RATING_PER_MASTERY_POINT);
-			}
-
-			const masterySoftCapConfig = StatCap.fromStat(Stat.StatMasteryRating, {
-				breakpoints: masteryRatingBreakpoints,
-				capType: StatCapType.TypeThreshold,
-				postCapEPs: [0],
-			});
-
-			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
-				breakpoints: [16.65, 25],
-				capType: StatCapType.TypeSoftCap,
-				postCapEPs: [0.64 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT, 0.61 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
-			});
-
-			return [hasteSoftCapConfig, masterySoftCapConfig];
+			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 
 		// Default talents.
-		talents: Presets.DemonologyTalentsIncinerate.data,
+		talents: Presets.DemonologyTalentsDefaultP1.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 
@@ -89,19 +70,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	playerIconInputs: [WarlockInputs.PetInput()],
 
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
-	includeBuffDebuffInputs: [],
+	includeBuffDebuffInputs: [BuffDebuffInputs.AttackSpeedBuff, BuffDebuffInputs.MajorArmorDebuff, BuffDebuffInputs.PhysicalDamageDebuff],
 	excludeBuffDebuffInputs: [],
 	petConsumeInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [
-			WarlockInputs.DetonateSeed(),
-			OtherInputs.InputDelay,
-			OtherInputs.DistanceFromTarget,
-			OtherInputs.TankAssignment,
-			OtherInputs.ChannelClipDelay,
-			DemonologyInputs.AssumePrepullMasteryElixir,
-		],
+		inputs: [OtherInputs.InputDelay, OtherInputs.DistanceFromTarget, OtherInputs.TankAssignment, OtherInputs.ChannelClipDelay],
 	},
 	itemSwapSlots: [
 		ItemSlot.ItemSlotHead,
@@ -127,27 +101,27 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	},
 
 	presets: {
-		epWeights: [Presets.DEFAULT_EP_PRESET, Presets.Mastery_EP_PRESET],
+		epWeights: [Presets.DEFAULT_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.DemonologyTalentsShadowBolt, Presets.DemonologyTalentsIncinerate],
+		talents: [Presets.DemonologyTalentsDefaultP1],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.APL_ShadowBolt, Presets.APL_Incinerate],
+		rotations: [Presets.APL_Default],
 
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
-		itemSwaps: [Presets.P3_ITEM_SWAP, Presets.P4_ITEM_SWAP],
+		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET],
+		itemSwaps: [],
 
-		builds: [Presets.PRESET_BUILD_SHADOWBOLT, Presets.PRESET_BUILD_INCINERATE],
+		builds: [Presets.PRSET_BUILD_P1],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecDemonologyWarlock>): APLRotation => {
-		return Presets.APL_Incinerate.rotation.rotation!;
+		return Presets.APL_Default.rotation.rotation!;
 	},
 
 	raidSimPresets: [
 		{
 			spec: Spec.SpecDemonologyWarlock,
-			talents: Presets.DemonologyTalentsIncinerate.data,
+			talents: Presets.DemonologyTalentsDefaultP1.data,
 			specOptions: Presets.DefaultOptions,
 			consumables: Presets.DefaultConsumables,
 			defaultFactionRaces: {
@@ -160,12 +134,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 				[Faction.Alliance]: {
 					1: Presets.PRERAID_PRESET.gear,
 					2: Presets.P1_PRESET.gear,
-					3: Presets.P3_PRESET.gear,
 				},
 				[Faction.Horde]: {
 					1: Presets.PRERAID_PRESET.gear,
 					2: Presets.P1_PRESET.gear,
-					3: Presets.P3_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,
@@ -179,14 +151,6 @@ export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyW
 		player.sim.waitForInit().then(() => {
 			new ReforgeOptimizer(this, {
 				statSelectionPresets: Presets.DEMONOLOGY_BREAKPOINTS,
-				getEPDefaults: (player: Player<Spec.SpecFuryWarrior>) => {
-					const playerWeights = player.getEpWeights();
-					const defaultWeights = Presets.DEFAULT_EP_PRESET.epWeights;
-
-					if (this.individualConfig.presets.epWeights.some(preset => playerWeights.equals(preset.epWeights))) return playerWeights;
-
-					return defaultWeights;
-				},
 			});
 		});
 	}

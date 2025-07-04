@@ -35,7 +35,6 @@ func (ele *ElementalShaman) newLavaBurstSpellConfig(isElementalOverload bool) co
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: core.TernaryFloat64(isElementalOverload, 0, 7.7),
-			PercentModifier: 100,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -48,6 +47,7 @@ func (ele *ElementalShaman) newLavaBurstSpellConfig(isElementalOverload bool) co
 		CritMultiplier:   ele.DefaultCritMultiplier(),
 		BonusCritPercent: 100,
 		BonusCoefficient: 1,
+		ThreatMultiplier: 1,
 	}
 
 	if isElementalOverload {
@@ -67,12 +67,15 @@ func (ele *ElementalShaman) newLavaBurstSpellConfig(isElementalOverload bool) co
 	}
 
 	spellConfig.ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		var result *core.SpellResult
 		baseDamage := ele.CalcAndRollDamageRange(sim, 1.41624999046, 0.10000000149)
 		if ele.FlameShock.Dot(target).IsActive() {
-			baseDamage *= 1.5
+			spell.DamageMultiplier *= 1.5
+			result = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+			spell.DamageMultiplier /= 1.5
+		} else {
+			result = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 		}
-		result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-
 		idx := core.TernaryInt32(spell.Flags.Matches(shaman.SpellFlagIsEcho), 1, 0)
 		spell.WaitTravelTime(sim, func(sim *core.Simulation) {
 			if !isElementalOverload && result.Landed() && sim.Proc(ele.GetOverloadChance(), "Lava Burst Elemental Overload") {

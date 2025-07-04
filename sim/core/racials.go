@@ -77,7 +77,7 @@ func applyRaceEffects(agent Agent) {
 				} else if spell.Unit.HasEnergyBar() {
 					return character.CurrentEnergy() <= character.maxEnergy-15
 				} else if spell.Unit.HasRageBar() {
-					return character.CurrentRage() <= MaxRage-15
+					return character.CurrentRage() <= character.maxRage-15
 				} else if spell.Unit.HasFocusBar() {
 					return character.CurrentFocus() <= character.maxFocus-15
 				}
@@ -85,10 +85,7 @@ func applyRaceEffects(agent Agent) {
 			},
 		})
 	case proto.Race_RaceDraenei:
-		character.AddStats(stats.Stats{
-			stats.PhysicalHitPercent: 1,
-			stats.SpellHitPercent:    1,
-		})
+		character.AddStat(stats.HitRating, PhysicalHitRatingPerHitPercent)
 		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexShadow] *= 0.99
 
 		classSpellIDs := map[proto.Class]ActionID{
@@ -202,7 +199,7 @@ func applyRaceEffects(agent Agent) {
 			proto.WeaponType_WeaponTypeMace, proto.WeaponType_WeaponTypeSword)
 	case proto.Race_RaceNightElf:
 		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] *= 0.99
-		character.PseudoStats.ReducedPhysicalHitTakenChance += 0.02
+		character.PseudoStats.BaseDodgeChance += 0.02
 
 		// Shadowmeld
 		actionID := ActionID{SpellID: 58984}
@@ -262,14 +259,11 @@ func applyRaceEffects(agent Agent) {
 		spBonus := 0.0
 
 		switch character.Class {
-		case proto.Class_ClassMage:
+		case proto.Class_ClassMage,
+			proto.Class_ClassWarlock:
 			spBonus = 2257.0
-		case proto.Class_ClassWarlock:
-			spBonus = 2257.0
-		case proto.Class_ClassShaman:
-			spBonus = 2257.0
-			apBonus = 4514.0
-		case proto.Class_ClassMonk:
+		case proto.Class_ClassShaman,
+			proto.Class_ClassMonk:
 			spBonus = 2257.0
 			apBonus = 4514.0
 		default:
@@ -316,12 +310,12 @@ func applyRaceEffects(agent Agent) {
 			ActionID: actionID,
 			Duration: time.Second * 10,
 			OnGain: func(aura *Aura, sim *Simulation) {
-				character.MultiplyCastSpeed(1.2)
+				character.MultiplyCastSpeed(sim, 1.2)
 				character.MultiplyAttackSpeed(sim, 1.2)
 			},
 			OnExpire: func(aura *Aura, sim *Simulation) {
 				character.MultiplyAttackSpeed(sim, 1/1.2)
-				character.MultiplyCastSpeed(1 / 1.2)
+				character.MultiplyCastSpeed(sim, 1/1.2)
 			},
 		})
 

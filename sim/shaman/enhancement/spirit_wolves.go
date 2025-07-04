@@ -1,6 +1,7 @@
 package enhancement
 
 import (
+	"math"
 	"strconv"
 	"time"
 
@@ -44,7 +45,7 @@ func (enh *EnhancementShaman) NewSpiritWolf(index int) *SpiritWolf {
 			Name:                            "Spirit Wolf " + strconv.Itoa(index),
 			Owner:                           &enh.Character,
 			BaseStats:                       spiritWolfBaseStats,
-			StatInheritance:                 enh.makeStatInheritance(),
+			NonHitExpStatInheritance:        enh.makeStatInheritance(),
 			EnabledOnStart:                  false,
 			IsGuardian:                      true,
 			HasDynamicMeleeSpeedInheritance: true,
@@ -64,7 +65,6 @@ func (enh *EnhancementShaman) NewSpiritWolf(index int) *SpiritWolf {
 	})
 
 	spiritWolf.OnPetEnable = func(sim *core.Simulation) {
-		spiritWolf.EnableDynamicStats(spiritWolf.shamanOwner.makeStatInheritance())
 	}
 
 	enh.AddPet(spiritWolf)
@@ -74,19 +74,14 @@ func (enh *EnhancementShaman) NewSpiritWolf(index int) *SpiritWolf {
 
 func (enh *EnhancementShaman) makeStatInheritance() core.PetStatInheritance {
 	return func(ownerStats stats.Stats) stats.Stats {
-		ownerHitRating := ownerStats[stats.HitRating]
-		ownerExpertiseRating := ownerStats[stats.ExpertiseRating]
 		ownerSpellCritPercent := ownerStats[stats.SpellCritPercent]
 		ownerPhysicalCritPercent := ownerStats[stats.PhysicalCritPercent]
 		ownerHasteRating := ownerStats[stats.HasteRating]
-		hitExpRating := (ownerHitRating + ownerExpertiseRating) / 2
-		critPercent := max(ownerPhysicalCritPercent, ownerSpellCritPercent)
+		critPercent := core.TernaryFloat64(math.Abs(ownerPhysicalCritPercent) > math.Abs(ownerSpellCritPercent), ownerPhysicalCritPercent, ownerSpellCritPercent)
 
 		return stats.Stats{
 			stats.Stamina:             ownerStats[stats.Stamina] * 0.3,
 			stats.AttackPower:         ownerStats[stats.AttackPower] * 0.5,
-			stats.HitRating:           hitExpRating,
-			stats.ExpertiseRating:     hitExpRating,
 			stats.PhysicalCritPercent: critPercent,
 			stats.SpellCritPercent:    critPercent,
 			stats.HasteRating:         ownerHasteRating,

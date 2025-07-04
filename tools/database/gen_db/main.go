@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"maps"
 	"os"
 	"slices"
 	"strings"
@@ -148,7 +149,6 @@ func main() {
 	iconsMap, _ := database.LoadArtTexturePaths("./tools/DB2ToSqlite/listfile.csv")
 	var instance = dbc.GetDBC()
 	instance.LoadSpellScaling()
-
 	database.GenerateProtos(instance, db)
 
 	processItems(instance, iconsMap, names, dropSources, craftingSources, repSources, db)
@@ -163,6 +163,7 @@ func main() {
 
 	for _, enchant := range instance.Enchants {
 		parsed := enchant.ToProto()
+
 		if parsed.Icon == "" {
 			parsed.Icon = strings.ToLower(database.GetIconName(iconsMap, enchant.FDID))
 		}
@@ -225,7 +226,16 @@ func main() {
 	ApplyNonSimmableFilters(leftovers)
 	leftovers.WriteBinaryAndJson(fmt.Sprintf("%s/leftover_db.bin", dbDir), fmt.Sprintf("%s/leftover_db.json", dbDir))
 	ApplySimmableFilters(db)
-	for _, enchant := range db.Enchants {
+
+	database.GenerateItemEffects(instance, db, dropSources)
+	database.GenerateEnchantEffects(instance, db)
+	database.GenerateMissingEffectsFile()
+	database.GenerateItemEffectRandomPropPoints(instance, db)
+
+	for _, key := range slices.SortedFunc(maps.Keys(db.Enchants), func(l database.EnchantDBKey, r database.EnchantDBKey) int {
+		return int(l.EffectID) - int(r.EffectID)
+	}) {
+		enchant := db.Enchants[key]
 		if enchant.ItemId != 0 {
 			db.AddItemIcon(enchant.ItemId, enchant.Icon, enchant.Name)
 		}
@@ -337,7 +347,7 @@ func InferPhase(item *proto.UIItem) int32 {
 	}
 
 	//iLvl 600 legendary vs. epic
-	if ilvl == 600 {
+	if ilvl == core.MaxIlvl {
 		if quality == proto.ItemQuality_ItemQualityLegendary {
 			return 5
 		}
@@ -376,13 +386,17 @@ func InferPhase(item *proto.UIItem) int32 {
 
 	//AtlasLoot‐style source checks
 	for _, src := range item.Sources {
-		//- All items with Reputation requirements of "Shado-Pan Assault" are 5.2
 		if rep := src.GetRep(); rep != nil {
+			//- All items with Reputation requirements of "Shado-Pan Assault" are 5.2
 			if rep.RepFactionId == proto.RepFaction_RepFactionShadoPanAssault {
 				return 3
 			}
 			if rep.RepFactionId == proto.RepFaction_RepFactionOperationShieldwall || rep.RepFactionId == proto.RepFaction_RepFactionDominanceOffensive {
 				return 2
+			}
+			//- All items with Reputation requirements of "Emperor Shaohao" are 5.4
+			if rep.RepFactionId == proto.RepFaction_RepFactionEmperorShaohao {
+				return 3
 			}
 		}
 		if craft := src.GetCrafted(); craft != nil {
@@ -446,7 +460,14 @@ func InferPhase(item *proto.UIItem) int32 {
 func processItems(instance *dbc.DBC, iconsMap map[int]string, names map[int]string, dropSources map[int][]*proto.DropSource, craftingSources map[int][]*proto.CraftedSource, repSources map[int][]*proto.RepSource, db *database.WowDatabase) {
 	sourceMap := make(map[string][]*proto.UIItemSource, len(instance.Items))
 	parsedItems := make([]*proto.UIItem, 0, len(instance.Items))
-	for _, item := range instance.Items {
+
+	sortedItemKeys := slices.Sorted(maps.Keys(instance.Items))
+	sortedItems := make([]dbc.Item, len(instance.Items))
+	for i, k := range sortedItemKeys {
+		sortedItems[i] = instance.Items[k]
+	}
+
+	for _, item := range sortedItems {
 		if item.Flags2&0x10 != 0 && (item.StatAlloc[0] > 0 && item.StatAlloc[0] < 600) {
 			continue
 		}
@@ -518,7 +539,7 @@ func ApplyGlobalFilters(db *database.WowDatabase) {
 		if len(item.ScalingOptions) <= 0 {
 			return false
 		}
-		if item.ScalingOptions[0].Ilvl > 600 || item.ScalingOptions[0].Ilvl < 100 {
+		if item.ScalingOptions[0].Ilvl > core.MaxIlvl || item.ScalingOptions[0].Ilvl < core.MinIlvl {
 			return false
 		}
 		for _, pattern := range database.DenyListNameRegexes {
@@ -576,7 +597,7 @@ func ApplyGlobalFilters(db *database.WowDatabase) {
 			return false
 		}
 
-		if gem.Quality == proto.ItemQuality_ItemQualityLegendary || gem.Id == 95348 {
+		if gem.Color == proto.GemColor_GemColorMeta && gem.Quality > proto.ItemQuality_ItemQualityRare {
 			gem.Phase = 3
 		} else {
 			gem.Phase = 1
@@ -620,6 +641,11 @@ func ApplyGlobalFilters(db *database.WowDatabase) {
 				return false
 			}
 		}
+
+		if _, ok := database.EnchantDenyList[enchant.EffectId]; ok {
+			return false
+		}
+
 		return !strings.HasPrefix(enchant.Name, "QA") && !strings.HasPrefix(enchant.Name, "Test") && !strings.HasPrefix(enchant.Name, "TEST")
 	})
 
@@ -804,7 +830,7 @@ func GetAllRotationSpellIds() map[string][]int32 {
 			Class:         proto.Class_ClassDeathKnight,
 			Equipment:     &proto.EquipmentSpec{},
 			TalentsString: "000000",
-		}, &proto.Player_BloodDeathKnight{BloodDeathKnight: &proto.BloodDeathKnight{Options: &proto.BloodDeathKnight_Options{ClassOptions: &proto.DeathKnightOptions{}}, Rotation: &proto.BloodDeathKnight_Rotation{}}}), nil, nil, nil)},
+		}, &proto.Player_BloodDeathKnight{BloodDeathKnight: &proto.BloodDeathKnight{Options: &proto.BloodDeathKnight_Options{ClassOptions: &proto.DeathKnightOptions{}}}}), nil, nil, nil)},
 		{Name: "frostDeathKnight", Raid: core.SinglePlayerRaidProto(core.WithSpec(&proto.Player{
 			Class:         proto.Class_ClassDeathKnight,
 			Equipment:     &proto.EquipmentSpec{},

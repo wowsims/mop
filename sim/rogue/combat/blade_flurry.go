@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
-	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/rogue"
 )
 
@@ -17,7 +16,7 @@ func (comRogue *CombatRogue) registerBladeFlurry() {
 		ActionID:    BladeFlurryHitID,
 		SpellSchool: core.SpellSchoolPhysical,
 		ProcMask:    core.ProcMaskEmpty, // No proc mask, so it won't proc itself.
-		Flags:       core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete | core.SpellFlagIgnoreAttackerModifiers,
+		Flags:       core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete | core.SpellFlagIgnoreModifiers | core.SpellFlagIgnoreArmor,
 
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
@@ -27,8 +26,7 @@ func (comRogue *CombatRogue) registerBladeFlurry() {
 		},
 	})
 
-	hasGlyph := comRogue.HasMajorGlyph(proto.RogueMajorGlyph_GlyphOfBladeFlurry)
-	energyReduction := core.TernaryFloat64(hasGlyph, -0.15, -0.3)
+	energyReduction := -0.2
 
 	comRogue.BladeFlurryAura = comRogue.RegisterAura(core.Aura{
 		Label:    "Blade Flurry",
@@ -41,7 +39,7 @@ func (comRogue *CombatRogue) registerBladeFlurry() {
 			comRogue.ApplyAdditiveEnergyRegenBonus(sim, -energyReduction)
 		},
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if sim.GetNumTargets() < 2 {
+			if sim.ActiveTargetCount() < 2 {
 				return
 			}
 			if result.Damage == 0 || !spell.ProcMask.Matches(core.ProcMaskMelee) {
@@ -52,11 +50,16 @@ func (comRogue *CombatRogue) registerBladeFlurry() {
 				return
 			}
 
-			// Undo armor reduction to get the raw damage value.
-			curDmg = result.Damage / result.ArmorMultiplier
+			curDmg = result.Damage * 0.4
+			numHits := 0
 
-			bfTarget := comRogue.Env.NextTargetUnit(result.Target)
-			bfHit.Cast(sim, bfTarget)
+			for enemyIndex := int32(0); enemyIndex < comRogue.Env.ActiveTargetCount() && numHits < 4; enemyIndex++ {
+				bfTarget := sim.Encounter.ActiveTargetUnits[enemyIndex]
+				if bfTarget != comRogue.CurrentTarget {
+					numHits++
+					bfHit.Cast(sim, bfTarget)
+				}
+			}
 		},
 	})
 

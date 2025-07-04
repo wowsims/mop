@@ -3,13 +3,14 @@ package elemental
 import (
 	"testing"
 
-	_ "github.com/wowsims/mop/sim/common"
+	"github.com/wowsims/mop/sim/common"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func init() {
 	RegisterElementalShaman()
+	common.RegisterAllEffects()
 }
 
 func TestElemental(t *testing.T) {
@@ -18,7 +19,7 @@ func TestElemental(t *testing.T) {
 		Race:       proto.Race_RaceTroll,
 		OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceDraenei, proto.Race_RaceAlliancePandaren},
 
-		GearSet: core.GetGearSet("../../../ui/shaman/elemental/gear_sets", "preraid"),
+		GearSet: core.GetGearSet("../../../ui/shaman/elemental/gear_sets", "p1"),
 		Talents: TalentsASEB,
 		Glyphs:  StandardGlyphs,
 		OtherTalentSets: []core.TalentsCombo{
@@ -38,7 +39,6 @@ func TestElemental(t *testing.T) {
 		Rotation:    core.GetAplRotation("../../../ui/shaman/elemental/apls", "default"),
 		OtherRotations: []core.RotationCombo{
 			core.GetAplRotation("../../../ui/shaman/elemental/apls", "aoe"),
-			core.GetAplRotation("../../../ui/shaman/elemental/apls", "unleash"),
 		},
 
 		ItemFilter: core.ItemFilter{
@@ -54,6 +54,7 @@ func TestElemental(t *testing.T) {
 			ArmorType:         proto.ArmorType_ArmorTypeMail,
 			RangedWeaponTypes: []proto.RangedWeaponType{},
 		},
+		StartingDistance: 20,
 	}))
 }
 

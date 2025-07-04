@@ -30,6 +30,7 @@ message ProtoVersion {
 	// The actual field value is only used within unit tests.
 	int32 saved_version_number = 1;
 }
+
 enum ItemLevelState {
     Base = 0;
     ChallengeMode = -1;
@@ -38,6 +39,7 @@ enum ItemLevelState {
     UpgradeStepThree = 3;
     UpgradeStepFour = 4;
 }
+
 message ScalingItemProperties {
     int32 rand_prop_points = 1;
     double weapon_damage_min = 2;
@@ -45,6 +47,7 @@ message ScalingItemProperties {
     map<int32, double> stats = 4; // for compactness
 	int32 ilvl = 6;
 }
+
 enum Spec {
 	SpecUnknown = 0;
 
@@ -133,6 +136,12 @@ enum Class {
 	ClassWarlock = 9;
 	ClassMonk = 10;
 	ClassDruid = 11;
+	ClassExtra1 = 12;
+	ClassExtra2 = 13;
+	ClassExtra3 = 14;
+	ClassExtra4 = 15;
+	ClassExtra5 = 16;
+	ClassExtra6 = 17;
 }
 
 enum Profession {
@@ -505,7 +514,7 @@ message IndividualBuffs {
 	TristateEffect tricks_of_the_trade = 101; // "Regular" = Glyphed, "Improved" = un-Glyphed
 	int32 devotion_aura_count = 23;
 	int32 pain_suppression_count = 24;
-	int32 hand_of_sacrifice_count = 25;
+	int32 vigilance_count = 25;
 	int32 guardian_spirit_count = 26;
 	int32 rallying_cry_count = 102;
 	int32 shattering_throw_count = 103;
@@ -588,34 +597,37 @@ message TargetInput {
 }
 
 message Target {
-	// The in-game NPC ID.
-	int32 id = 14;
-	string name = 15;
+        // The in-game NPC ID.
+        int32 id = 14;
+        string name = 15;
 
-	int32 level = 4;
-	MobType mob_type = 3;
-	repeated double stats = 5;
+        int32 level = 4;
+        MobType mob_type = 3;
+        repeated double stats = 5;
 
-	// Auto attack parameters.
-	double min_base_damage = 7;
-	double damage_spread = 19; // replaces tight_enemy_damage
-	double swing_speed = 8;
-	bool dual_wield = 9;
-	bool dual_wield_penalty = 10;
-	bool parry_haste = 12;
-	bool suppress_dodge = 16; // Sunwell Radiance
-	SpellSchool spell_school = 13; // Allows elemental attacks.
+        // Auto attack parameters.
+        double min_base_damage = 7;
+        double damage_spread = 19; // replaces tight_enemy_damage
+        double swing_speed = 8;
+        bool dual_wield = 9;
+        bool dual_wield_penalty = 10;
+        bool parry_haste = 12;
+        bool suppress_dodge = 16; // Sunwell Radiance
+        SpellSchool spell_school = 13; // Allows elemental attacks.
 
-	// Index in Raid.tanks indicating the player tanking this mob at the
-	// start of each pull.
-	// -1 or invalid index indicates not being tanked.
-	int32 tank_index = 6;
+        // Index in Raid.tanks indicating the player tanking this mob at the
+        // start of each pull.
+        // -1 or invalid index indicates not being tanked.
+        int32 tank_index = 6;
 
-	// Used in tank swap AIs.
-	int32 second_tank_index = 100;
+        // Used in tank swap AIs.
+        int32 second_tank_index = 100;
 
-	// Custom Target AI parameters
-	repeated TargetInput target_inputs = 18;
+        // Used in dynamic target AIs.
+        bool disabled_at_start = 101;
+
+        // Custom Target AI parameters
+        repeated TargetInput target_inputs = 18;
 }
 
 message Encounter {
@@ -641,6 +653,9 @@ message Encounter {
 
 	// Same as execute_proportion but for 35%.
 	double execute_proportion_35 = 4;
+
+	// Same as execute_proportion but for 45%.
+	double execute_proportion_45 = 10;
 
 	// Same as execute_proportion but for > 90%.
 	double execute_proportion_90 = 8;
@@ -707,20 +722,6 @@ enum EnchantType {
 	EnchantTypeKit = 3;
 	EnchantTypeStaff = 4;
 	EnchantTypeOffHand = 5;
-}
-
-// Contains only the Enchant info needed by the sim.
-message SimEnchant {
-	int32 effect_id = 1;
-	repeated double stats = 2;
-}
-
-// Contains only the Gem info needed by the sim.
-message SimGem {
-	int32 id = 1;
-	string name = 2;
-	GemColor color = 3;
-	repeated double stats = 4;
 }
 
 message UnitReference {

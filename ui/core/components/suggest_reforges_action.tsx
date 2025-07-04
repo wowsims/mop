@@ -209,13 +209,21 @@ export class ReforgeOptimizer {
 					button.classList.add('loading');
 					button.disabled = true;
 				}
+
+				const wasCM = simUI.player.getChallengeModeEnabled()
 				try {
 					performance.mark('reforge-optimization-start');
+					if (wasCM) {
+						simUI.player.setChallengeModeEnabled(TypedEvent.nextEventID(), false)
+					}
 					await this.optimizeReforges();
 					this.onReforgeDone();
 				} catch (error) {
 					this.onReforgeError(error);
 				} finally {
+					if (wasCM) {
+						simUI.player.setChallengeModeEnabled(TypedEvent.nextEventID(), true)
+					}
 					performance.mark('reforge-optimization-end');
 					if (isDevMode())
 						console.log(
@@ -632,6 +640,7 @@ export class ReforgeOptimizer {
 							...sharedStatInputConfig,
 						});
 						const statPresets = this.statSelectionPresets?.find(entry => entry.unitStat.equals(unitStat))?.presets;
+
 						const presets = !!statPresets
 							? new EnumPicker(null, this.player, {
 									id: `reforge-optimizer-${statName}-presets`,
@@ -777,7 +786,7 @@ export class ReforgeOptimizer {
 				</thead>
 				<tbody>
 					{this.softCapsConfig
-						.filter(config => config.capType === StatCapType.TypeThreshold && config.breakpoints.length > 1)
+						.filter(config => (config.capType === StatCapType.TypeThreshold ||config.capType === StatCapType.TypeSoftCap) && config.breakpoints.length > 1)
 						.map(({ breakpoints, unitStat }) => {
 							if (!unitStat.hasRootStat()) return;
 							const rootStat = unitStat.getRootStat();
@@ -948,7 +957,7 @@ export class ReforgeOptimizer {
 			}
 
 			for (const reforgeData of this.player.getAvailableReforgings(item.withDynamicStats())) {
-				if (!epStats.includes(reforgeData.toStat)) {
+				if (!epStats.includes(reforgeData.toStat) && reforgeData.toStat != Stat.StatExpertiseRating) {
 					continue;
 				}
 

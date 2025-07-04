@@ -159,7 +159,7 @@ func (config RPPMConfig) WithSpecMod(coefficient float64, spec proto.Spec) RPPMC
 
 // Attach an approximate Ilvl scaling to the RPPM config
 // The proc chance will be multiplied by 1.00936^(ilvlDiff)
-func (config *RPPMConfig) WithApproximateIlvlMod(coefficient float64, baseIlvl int32) *RPPMConfig {
+func (config RPPMConfig) WithApproximateIlvlMod(coefficient float64, baseIlvl int32) RPPMConfig {
 	config.Mods = append(config.Mods, rppmApproxIlvlMod{
 		coefficient: coefficient,
 		baseIlvl:    baseIlvl,
@@ -261,8 +261,25 @@ func RppmModFromProto(config *proto.RppmMod) (rppmMod, error) {
 			baseIlvl:    config.GetIlvl(),
 		}, nil
 	case nil:
-		return nil, fmt.Errorf("RppmMod: ModType is not set")
+		return nil, fmt.Errorf("rppmMod: ModType is not set")
 	default:
-		return nil, fmt.Errorf("Unknown ModType: %T", modType)
+		return nil, fmt.Errorf("unknown ModType: %T", modType)
 	}
+}
+
+func RppmConfigFromProcEffectProto(effect *proto.ProcEffect) RPPMConfig {
+	config := RPPMConfig{
+		PPM: effect.GetRppm().GetRate(),
+	}
+
+	for _, protoMod := range effect.GetRppm().GetMods() {
+		mod, error := RppmModFromProto(protoMod)
+		if error != nil {
+			panic("Could not parse rrpm mod from proto")
+		}
+
+		config.Mods = append(config.Mods, mod)
+	}
+
+	return config
 }

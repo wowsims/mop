@@ -10,10 +10,10 @@ import (
 type ApplySetBonus func(agent Agent, setBonusAura *Aura)
 
 type ItemSet struct {
-	ID              int32
-	Name            string
-	AlternativeName string
-
+	ID                      int32
+	Name                    string
+	AlternativeName         string
+	DisabledInChallengeMode bool
 	// Maps set piece requirement to an ApplyEffect function that will be called
 	// before the Sim starts.
 	//
@@ -141,6 +141,10 @@ func (equipment *Equipment) getSetBonuses() SetBonusCollection {
 		}
 
 		if foundSet != nil {
+			if foundSet.DisabledInChallengeMode && item.ChallengeMode {
+				continue
+			}
+
 			setItemCount[foundSet]++
 			if bonusEffect, ok := foundSet.Bonuses[setItemCount[foundSet]]; ok {
 				activeBonuses = append(activeBonuses, SetBonus{
@@ -259,8 +263,9 @@ func (character *Character) GetActiveSetBonusNames() []string {
 }
 
 // Adds a spellID to the set bonus so it can be exposed to the APL
-func (setBonusTracker *Aura) ExposeToAPL(spellID int32) {
+func (setBonusTracker *Aura) ExposeToAPL(spellID int32) *Aura {
 	setBonusTracker.ActionID = ActionID{SpellID: spellID}
+	return setBonusTracker
 }
 
 // Adds a Spellmod to PVP GLoves

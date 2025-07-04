@@ -14,7 +14,8 @@ func (hunter *Hunter) registerFervorSpell() {
 
 	focusMetrics := hunter.NewFocusMetrics(actionID)
 	fervorSpell := hunter.RegisterSpell(core.SpellConfig{
-		ActionID: actionID,
+		ClassSpellMask: HunterSpellFervor,
+		ActionID:       actionID,
 		FocusCost: core.FocusCostOptions{
 			Cost: 0,
 		},
@@ -37,7 +38,7 @@ func (hunter *Hunter) registerFervorSpell() {
 			}
 			core.StartPeriodicAction(sim, core.PeriodicActionOptions{
 				NumTicks: 10,
-				Period:   time.Second * 10,
+				Period:   time.Second * 1,
 				OnAction: func(sim *core.Simulation) {
 					hunter.AddFocus(sim, 5, focusMetrics)
 					hunter.Pet.AddFocus(sim, 5, focusMetrics)

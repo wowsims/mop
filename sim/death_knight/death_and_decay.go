@@ -6,10 +6,21 @@ import (
 	"github.com/wowsims/mop/sim/core"
 )
 
-func (dk *DeathKnight) registerDeathAndDecaySpell() {
+/*
+Corrupts the ground targeted by the Death Knight, causing 26 Shadow damage every sec to targets that remain in the area
+
+-- Glyph of Death and Decay --
+
+and reducing their movement speed by 50%
+
+-- /Glyph of Death and Decay --
+
+for 10 sec.
+*/
+func (dk *DeathKnight) registerDeathAndDecay() {
 	dk.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 43265},
-		Flags:          core.SpellFlagAoE | core.SpellFlagAPL,
+		Flags:          core.SpellFlagAoE | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskEmpty, // D&D doesn't seem to proc things in game.
 		ClassSpellMask: DeathKnightSpellDeathAndDecay,
@@ -20,7 +31,7 @@ func (dk *DeathKnight) registerDeathAndDecaySpell() {
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD: core.GCDDefault,
+				GCD: core.GCDMin,
 			},
 			CD: core.Cooldown{
 				Timer:    dk.NewTimer(),
@@ -29,8 +40,8 @@ func (dk *DeathKnight) registerDeathAndDecaySpell() {
 		},
 
 		DamageMultiplier: 1,
-		ThreatMultiplier: 1.9,
 		CritMultiplier:   dk.DefaultCritMultiplier(),
+		ThreatMultiplier: 1,
 
 		Dot: core.DotConfig{
 			IsAOE: true,
@@ -40,10 +51,10 @@ func (dk *DeathKnight) registerDeathAndDecaySpell() {
 			NumberOfTicks: 10,
 			TickLength:    time.Second * 1,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				// DnD recalculates everything on each tick
 				baseDamage := 26 + dot.Spell.MeleeAttackPower()*0.06400000304
-				for _, aoeTarget := range sim.Encounter.TargetUnits {
+				for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 					dot.Spell.SpellMetrics[aoeTarget.UnitIndex].Casts++
 					dot.Spell.CalcAndDealPeriodicDamage(sim, aoeTarget, baseDamage, dot.Spell.OutcomeMagicHitAndCrit)
 				}

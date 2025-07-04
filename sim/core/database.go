@@ -19,6 +19,7 @@ var GemsByID = map[int32]Gem{}
 var RandomSuffixesByID = map[int32]RandomSuffix{}
 var EnchantsByEffectID = map[int32]Enchant{}
 var ReforgeStatsByID = map[int32]ReforgeStat{}
+var ItemEffectRandPropPointsByIlvl = map[int32]ItemEffectRandPropPoints{}
 var ConsumablesByID = map[int32]Consumable{}
 var SpellEffectsById = map[int32]*proto.SpellEffect{}
 
@@ -57,6 +58,11 @@ func addToDatabase(newDB *proto.SimDatabase) {
 	for _, v := range newDB.ReforgeStats {
 		if _, ok := ReforgeStatsByID[v.Id]; !ok {
 			ReforgeStatsByID[v.Id] = ReforgeStatFromProto(v)
+		}
+	}
+	for _, v := range newDB.ItemEffectRandPropPoints {
+		if _, ok := ItemEffectRandPropPointsByIlvl[v.Ilvl]; !ok {
+			ItemEffectRandPropPointsByIlvl[v.Ilvl] = ItemEffectRandPropPointsFromProto(v)
 		}
 	}
 	for _, v := range newDB.Consumables {
@@ -98,25 +104,48 @@ func ReforgeStatToProto(stat ReforgeStat) *proto.ReforgeStat {
 	}
 }
 
+type ItemEffectRandPropPoints struct {
+	Ilvl           int32
+	RandPropPoints int32
+}
+
+// ItemEffectRandPropPointsFromProto converts a protobuf ItemEffectRandPropPoints to a Go ItemEffectRandPropPoints
+func ItemEffectRandPropPointsFromProto(ieRpp *proto.ItemEffectRandPropPoints) ItemEffectRandPropPoints {
+	return ItemEffectRandPropPoints{
+		Ilvl:           ieRpp.GetIlvl(),
+		RandPropPoints: ieRpp.GetRandPropPoints(),
+	}
+}
+
+// ItemEffectRandPropPointsToProto converts a Go ItemEffectRandPropPoints to a protobuf ItemEffectRandPropPoints
+func ItemEffectRandPropPointsToProto(ieRpp ItemEffectRandPropPoints) *proto.ItemEffectRandPropPoints {
+	return &proto.ItemEffectRandPropPoints{
+		Ilvl:           ieRpp.Ilvl,
+		RandPropPoints: ieRpp.RandPropPoints,
+	}
+}
+
 type Consumable struct {
-	Id            int32
-	Type          proto.ConsumableType
-	Stats         stats.Stats
-	BuffsMainStat bool
-	Name          string
-	BuffDuration  time.Duration
-	EffectIds     []int32
+	Id               int32
+	Type             proto.ConsumableType
+	Stats            stats.Stats
+	BuffsMainStat    bool
+	Name             string
+	BuffDuration     time.Duration
+	CooldownDuration time.Duration
+	EffectIds        []int32
 }
 
 func ConsumableFromProto(consumable *proto.Consumable) Consumable {
 	return Consumable{
-		Id:            consumable.Id,
-		Type:          consumable.Type,
-		Stats:         stats.FromProtoArray(consumable.Stats),
-		BuffsMainStat: consumable.BuffsMainStat,
-		Name:          consumable.Name,
-		BuffDuration:  time.Second * time.Duration(consumable.BuffDuration),
-		EffectIds:     consumable.EffectIds,
+		Id:               consumable.Id,
+		Type:             consumable.Type,
+		Stats:            stats.FromProtoArray(consumable.Stats),
+		BuffsMainStat:    consumable.BuffsMainStat,
+		Name:             consumable.Name,
+		BuffDuration:     time.Second * time.Duration(consumable.BuffDuration),
+		CooldownDuration: time.Second * time.Duration(consumable.CooldownDuration),
+		EffectIds:        consumable.EffectIds,
 	}
 }
 
@@ -153,6 +182,7 @@ type Item struct {
 	ScalingOptions map[int32]*proto.ScalingItemProperties
 	RandPropPoints int32
 	UpgradeStep    proto.ItemLevelState
+	ItemEffect     *proto.ItemEffect
 	ChallengeMode  bool
 }
 
@@ -171,6 +201,7 @@ func ItemFromProto(pData *proto.SimItem) Item {
 		SetName:          pData.SetName,
 		SetID:            pData.SetId,
 		ScalingOptions:   pData.ScalingOptions,
+		ItemEffect:       pData.ItemEffect,
 	}
 }
 
@@ -210,30 +241,38 @@ func RandomSuffixFromProto(pData *proto.ItemRandomSuffix) RandomSuffix {
 }
 
 type Enchant struct {
-	EffectID int32 // Used by UI to apply effect to tooltip
-	Stats    stats.Stats
+	EffectID      int32 // Used by UI to apply effect to tooltip
+	Stats         stats.Stats
+	EnchantEffect *proto.ItemEffect
+	Name          string         // Only needed for unit tests
+	Type          proto.ItemType // Only needed for unit tests
 }
 
 func EnchantFromProto(pData *proto.SimEnchant) Enchant {
 	return Enchant{
-		EffectID: pData.EffectId,
-		Stats:    stats.FromProtoArray(pData.Stats),
+		EffectID:      pData.EffectId,
+		Stats:         stats.FromProtoArray(pData.Stats),
+		EnchantEffect: pData.EnchantEffect,
+		Name:          pData.Name,
+		Type:          pData.Type,
 	}
 }
 
 type Gem struct {
-	ID    int32
-	Name  string
-	Stats stats.Stats
-	Color proto.GemColor
+	ID                      int32
+	Name                    string
+	Stats                   stats.Stats
+	Color                   proto.GemColor
+	DisabledInChallengeMode bool
 }
 
 func GemFromProto(pData *proto.SimGem) Gem {
 	return Gem{
-		ID:    pData.Id,
-		Name:  pData.Name,
-		Stats: stats.FromProtoArray(pData.Stats),
-		Color: pData.Color,
+		ID:                      pData.Id,
+		Name:                    pData.Name,
+		Stats:                   stats.FromProtoArray(pData.Stats),
+		Color:                   pData.Color,
+		DisabledInChallengeMode: pData.DisabledInChallengeMode,
 	}
 }
 
@@ -363,6 +402,16 @@ func (equipment *Equipment) EquipItem(item Item) {
 	}
 }
 
+func (equipment *Equipment) EquipEnchant(enchant Enchant) {
+	// Some shield enchants parse as ItemTypeUnknown, so default those to
+	// the OH slot to ensure they still get tested.
+	if enchant.Type == proto.ItemType_ItemTypeUnknown {
+		equipment.OffHand().Enchant = enchant
+	} else {
+		equipment[ItemTypeToSlot(enchant.Type)].Enchant = enchant
+	}
+}
+
 func (equipment *Equipment) containsEnchantInSlot(effectID int32, slot proto.ItemSlot) bool {
 	return (equipment[slot].Enchant.EffectID == effectID) || (equipment[slot].TempEnchant == effectID) || (equipment[slot].Tinker.EffectID == effectID)
 }
@@ -377,6 +426,13 @@ func (equipment *Equipment) containsItemInSlots(itemID int32, possibleSlots []pr
 	return slices.ContainsFunc(possibleSlots, func(slot proto.ItemSlot) bool {
 		return equipment[slot].ID == itemID
 	})
+}
+
+func GetEnchantByEffectID(effectID int32) *Enchant {
+	if enchant, ok := EnchantsByEffectID[effectID]; ok {
+		return &enchant
+	}
+	return nil
 }
 
 func (equipment *Equipment) ToEquipmentSpecProto() *proto.EquipmentSpec {
@@ -434,6 +490,7 @@ func NewItem(itemSpec ItemSpec) Item {
 	item.ChallengeMode = itemSpec.ChallengeMode
 	scalingOptions := item.GetEffectiveScalingOptions()
 	item.Stats = stats.FromProtoMap(scalingOptions.Stats)
+
 	item.WeaponDamageMax = scalingOptions.WeaponDamageMax
 	item.WeaponDamageMin = scalingOptions.WeaponDamageMin
 	item.RandPropPoints = scalingOptions.RandPropPoints
@@ -510,6 +567,7 @@ func NewEquipmentSet(equipSpec EquipmentSpec) Equipment {
 			equipment.EquipItem(NewItem(itemSpec))
 		}
 	}
+
 	return equipment
 }
 
@@ -545,16 +603,72 @@ func ItemSwapFromJsonString(jsonString string) *proto.ItemSwap {
 	return is
 }
 
-func (equipment *Equipment) Stats() stats.Stats {
+func (equipment *Equipment) Stats(spec proto.Spec) stats.Stats {
 	equipStats := stats.Stats{}
 
-	for _, item := range equipment {
-		equipStats = equipStats.Add(ItemEquipmentStats(item))
+	statsGained := 0.0
+	divisor := 0.0
+	secondaries := []stats.Stat{stats.CritRating, stats.HasteRating, stats.MasteryRating, stats.DodgeRating, stats.ParryRating}
+
+	fixedStats := []stats.Stat{stats.HitRating, stats.ExpertiseRating}
+	switch spec {
+	case proto.Spec_SpecElementalShaman,
+		proto.Spec_SpecShadowPriest,
+		proto.Spec_SpecBalanceDruid:
+		fixedStats = append(fixedStats, stats.Spirit)
 	}
+
+	isChallengeMode := false
+	fixedStatOverwrite := make([]float64, len(fixedStats))
+	for _, item := range equipment {
+		scaledBaseStats := ItemEquipmentBaseStats(item)
+
+		if item.ChallengeMode && item.ScalingOptions != nil {
+			isChallengeMode = true
+			baseItem := item
+			baseItem.ChallengeMode = false
+			baseItem.Stats = stats.FromProtoMap(baseItem.GetEffectiveScalingOptions().Stats)
+			baseItemStats := ItemEquipmentBaseStats(baseItem)
+			for idx, stat := range fixedStats {
+				statsGained += baseItemStats[stat] - scaledBaseStats[stat]
+				fixedStatOverwrite[idx] += baseItemStats[stat]
+			}
+
+			// sum up secondaries
+			for _, stat := range secondaries {
+				divisor += scaledBaseStats[stat]
+			}
+		}
+
+		equipStats = equipStats.Add(scaledBaseStats)
+	}
+
+	if isChallengeMode {
+
+		// scale
+		dividend := divisor - statsGained
+		factor := dividend / divisor
+
+		// apply scaling
+		for _, stat := range secondaries {
+			equipStats[stat] = math.Round(equipStats[stat] * factor)
+		}
+
+		for idx := range fixedStatOverwrite {
+			equipStats[fixedStats[idx]] = fixedStatOverwrite[idx]
+		}
+	}
+
+	// Add Enchants and Gems at the end as they're not scaled
+	for _, item := range equipment {
+		equipStats = equipStats.Add(ItemEquipmentGemAndEnchantStats(item))
+	}
+
 	return equipStats
 }
 
-func ItemEquipmentStats(item Item) stats.Stats {
+// Returns the base stats on the equipment. That is all stats without Gems / Enchants
+func ItemEquipmentBaseStats(item Item) stats.Stats {
 	equipStats := stats.Stats{}
 
 	if item.ID == 0 {
@@ -582,11 +696,25 @@ func ItemEquipmentStats(item Item) stats.Stats {
 		equipStats = equipStats.Add(reforgingChanges)
 	}
 
+	return equipStats
+}
+
+func ItemEquipmentGemAndEnchantStats(item Item) stats.Stats {
+	if item.ID == 0 {
+		return stats.Stats{}
+	}
+
+	equipStats := stats.Stats{}
 	equipStats = equipStats.Add(item.Enchant.Stats)
 
 	for _, gem := range item.Gems {
+		if gem.DisabledInChallengeMode && item.ChallengeMode {
+			continue
+		}
+
 		equipStats = equipStats.Add(gem.Stats)
 	}
+
 	// Check socket bonus
 	if len(item.GemSockets) > 0 && len(item.Gems) >= len(item.GemSockets) {
 		allMatch := true

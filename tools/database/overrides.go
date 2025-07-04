@@ -18,6 +18,7 @@ var OtherItemIdsToFetch = []string{
 var ConsumableOverrides = []*proto.Consumable{
 	{Id: 62290, BuffsMainStat: true, Stats: stats.Stats{stats.Stamina: 90}.ToProtoArray()},
 	{Id: 62649, BuffsMainStat: true, Stats: stats.Stats{stats.Stamina: 90}.ToProtoArray()},
+	{Id: 86125, Type: proto.ConsumableType_ConsumableTypePotion},
 }
 var ItemOverrides = []*proto.UIItem{
 	// Boosted 359 green weapon damage stats are way off
@@ -187,6 +188,7 @@ var ItemOverrides = []*proto.UIItem{
 var ItemAllowList = map[int32]struct{}{
 	2140: {},
 	2505: {},
+
 	//Shaman Dungeon Set 3 Tidefury
 	27510: {}, // Tidefury Gauntlets
 	27802: {}, // Tidefury Shoulderguards
@@ -195,15 +197,6 @@ var ItemAllowList = map[int32]struct{}{
 	28349: {}, // Tidefury Helm
 
 	29309: {}, // Band of the Eternal Restorer
-
-	31026: {}, // Slayer's Handguards
-	31027: {}, // Slayer's Helm
-	31028: {}, // Slayer's Chestguard
-	31029: {}, // Slayer's Legguards
-	31030: {}, // Slayer's Shoulderpads
-	34448: {}, // Slayer's Bracers
-	34558: {}, // Slayer's Belt
-	34575: {}, // Slayer's Boots
 
 	34677: {}, // Shattered Sun Pendant of Restoration
 
@@ -699,6 +692,13 @@ var ItemDenyList = map[int32]struct{}{
 	100356: {},
 	103055: {},
 	103050: {},
+
+	// MOP
+	87080: {}, // HC Trash Jade Magistrate Figurine - 502
+	87079: {}, // HC Trash Jade Bandit Figurine - 502
+	87082: {}, // HC Trash Jade Charioteer Figurine - 502
+	87081: {}, // HC Trash Jade Courteasan Figurine - 502
+	87083: {}, // HC Trash Jade Warlord Figurine - 502
 }
 
 // Item icons to include in the DB, so they don't need to be separately loaded in the UI.
@@ -819,6 +819,7 @@ var ExtraItemIcons = []int32{
 	41166,
 	42545,
 	42641,
+	86125,
 
 	// Poisons
 	43231,
@@ -1058,6 +1059,8 @@ var DenyListNameRegexes = []*regexp.Regexp{
 	regexp.MustCompile(`DELETED`),
 	regexp.MustCompile(`zOLD`),
 	regexp.MustCompile(`Archaic Spell`),
+	regexp.MustCompile(`Well Repaired`),
+	regexp.MustCompile(`Boss X`),
 	regexp.MustCompile(`Adventurine`),
 	regexp.MustCompile(`Sardonyx`),
 	regexp.MustCompile(`Zyanite`),
@@ -1157,4 +1160,11 @@ var GemDenyList = map[int32]struct{}{
 	77141: {},
 	77138: {},
 	77136: {},
+}
+
+var EnchantDenyList = map[int32]struct{}{
+	4671: {}, // Kyle's Test Enchantment
+	4687: {}, // Enchant Weapon - Ninja (TEST VERSION)
+	4717: {}, // Enchant Weapon - Pandamonium (DNT)
+	5110: {}, // Lightweave Embroidery - Junk
 }

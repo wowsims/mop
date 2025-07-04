@@ -205,7 +205,7 @@ func applyBuffEffects(agent Agent, raidBuffs *proto.RaidBuffs, _ *proto.PartyBuf
 		registerUnholyFrenzyCD(agent, individual.UnholyFrenzyCount)
 		registerTricksOfTheTradeCD(agent, individual.TricksOfTheTrade)
 		registerDevotionAuraCD(agent, individual.DevotionAuraCount)
-		registerHandOfSacrificeCD(agent, individual.HandOfSacrificeCount)
+		registerVigilanceCD(agent, individual.VigilanceCount)
 		registerPainSuppressionCD(agent, individual.PainSuppressionCount)
 		registerGuardianSpiritCD(agent, individual.GuardianSpiritCount)
 		registerRallyingCryCD(agent, individual.RallyingCryCount)
@@ -324,6 +324,7 @@ func HornOfWinterAura(unit *Unit, asExternal bool) *Aura {
 
 	baseAura.OnReset = nil
 	baseAura.Duration = time.Minute * 5
+	baseAura.BuildPhase = CharacterBuildPhaseNone
 	return baseAura
 }
 
@@ -342,6 +343,7 @@ func BattleShoutAura(unit *Unit, asExternal bool) *Aura {
 
 	baseAura.OnReset = nil
 	baseAura.Duration = time.Minute * 5
+	baseAura.BuildPhase = CharacterBuildPhaseNone
 	return baseAura
 }
 
@@ -453,20 +455,16 @@ func registerExclusiveSpellHaste(aura *Aura, spellHastePercent float64) {
 	aura.NewExclusiveEffect("SpellHaste%Buff", false, ExclusiveEffect{
 		Priority: spellHastePercent,
 		OnGain: func(ee *ExclusiveEffect, sim *Simulation) {
-			ee.Aura.Unit.MultiplyCastSpeed(1 + ee.Priority)
+			ee.Aura.Unit.MultiplyCastSpeed(sim, 1+ee.Priority)
 		},
 		OnExpire: func(ee *ExclusiveEffect, sim *Simulation) {
-			ee.Aura.Unit.MultiplyCastSpeed(1 / (1 + ee.Priority))
+			ee.Aura.Unit.MultiplyCastSpeed(sim, 1/(1+ee.Priority))
 		},
 	})
 }
 
 func MoonkinAura(unit *Unit) *Aura {
-	aura := makeExclusiveBuff(unit, BuffConfig{
-		"Moonkin Aura",
-		ActionID{SpellID: 24907},
-		[]StatConfig{}})
-
+	aura := makeExclusiveBuff(unit, BuffConfig{"Moonkin Aura", ActionID{SpellID: 24907}, nil})
 	registerExclusiveSpellHaste(aura, 0.05)
 	return aura
 }
@@ -688,10 +686,10 @@ func multiplyCastSpeedEffect(aura *Aura, multiplier float64) *ExclusiveEffect {
 	return aura.NewExclusiveEffect("MultiplyCastSpeed", false, ExclusiveEffect{
 		Priority: multiplier,
 		OnGain: func(ee *ExclusiveEffect, sim *Simulation) {
-			ee.Aura.Unit.MultiplyCastSpeed(multiplier)
+			ee.Aura.Unit.MultiplyCastSpeed(sim, multiplier)
 		},
 		OnExpire: func(ee *ExclusiveEffect, sim *Simulation) {
-			ee.Aura.Unit.MultiplyCastSpeed(1 / multiplier)
+			ee.Aura.Unit.MultiplyCastSpeed(sim, 1/multiplier)
 		},
 	})
 }
@@ -757,7 +755,7 @@ func registerUnholyFrenzyCD(agent Agent, numUnholyFrenzy int32) {
 		return
 	}
 
-	ufAura := UnholyFrenzyAura(&agent.GetCharacter().Unit, -1)
+	ufAura := UnholyFrenzyAura(&agent.GetCharacter().Unit, -1, func() bool { return false })
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
@@ -777,19 +775,22 @@ func registerUnholyFrenzyCD(agent Agent, numUnholyFrenzy int32) {
 		numUnholyFrenzy)
 }
 
-func UnholyFrenzyAura(character *Unit, actionTag int32) *Aura {
+func UnholyFrenzyAura(character *Unit, actionTag int32, has2pT14 func() bool) *Aura {
 	actionID := ActionID{SpellID: 49016, Tag: actionTag}
 
+	var activeMultiplier float64
+	// TODO: Should also lose 2% max hp every 3 sec.
 	aura := character.GetOrRegisterAura(Aura{
 		Label:    "UnholyFrenzy-" + actionID.String(),
 		Tag:      UnholyFrenzyAuraTag,
 		ActionID: actionID,
 		Duration: UnholyFrenzyDuration,
 		OnGain: func(aura *Aura, sim *Simulation) {
-			aura.Unit.MultiplyAttackSpeed(sim, 1.2)
+			activeMultiplier = TernaryFloat64(has2pT14(), 1.3, 1.2)
+			aura.Unit.MultiplyAttackSpeed(sim, activeMultiplier)
 		},
 		OnExpire: func(aura *Aura, sim *Simulation) {
-			aura.Unit.MultiplyAttackSpeed(sim, 1/1.2)
+			aura.Unit.MultiplyAttackSpeed(sim, 1/activeMultiplier)
 		},
 	})
 
@@ -815,7 +816,7 @@ func registerDevotionAuraCD(agent Agent, numDevotionAuras int32) {
 	}
 
 	// TODO: Config for specifying the amount of Holy spec Devotion Auras?
-	devAura := DevotionAuraAura(&agent.GetCharacter().Unit, -1, false)
+	devAura := DevotionAuraAura(&agent.GetCharacter().Unit, -1, true)
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
@@ -849,6 +850,7 @@ func DevotionAuraAura(unit *Unit, actionTag int32, isHoly bool) *Aura {
 		// Beta changes 2025-06-13: https://www.wowhead.com/mop-classic/news/additional-holy-priest-and-paladin-changes-coming-to-mists-of-pandaria-classic-377264
 		// - Devotion Aura cast by a Holy Paladin will now reduce all damage by 20% (was Magical damage only).
 		//   - Developers’ notes: Changing Devotion Aura to reduce all damage makes it beneficial in more situations and aligns with other damage reducing abilities like Power Word: Barrier.
+		// EffectIndex 2 on the Holy specific Hotfix Passive https://wago.tools/db2/SpellEffect?build=5.5.0.61496&filter%5BSpellID%5D=137029&page=1
 		auraConfig.AttachMultiplicativePseudoStatBuff(&unit.PseudoStats.DamageTakenMultiplier, 0.8)
 	} else {
 		auraConfig.OnGain = func(aura *Aura, sim *Simulation) {
@@ -872,46 +874,46 @@ func DevotionAuraAura(unit *Unit, actionTag int32, isHoly bool) *Aura {
 	return unit.GetOrRegisterAura(auraConfig)
 }
 
-var HandOfSacrificeAuraTag = "HandOfSacrifice"
+const VigilanceAuraTag = "Vigilance"
+const VigilanceDuration = time.Second * 12
+const VigilanceCD = time.Minute * 2
+const VigilanceSpellID int32 = 114030
 
-const HandOfSacrificeDuration = time.Millisecond * 10500 // subtract Divine Shield GCD
-const HandOfSacrificeCD = time.Minute * 5                // use Divine Shield CD here
-
-func registerHandOfSacrificeCD(agent Agent, numSacs int32) {
-	if numSacs == 0 {
+func registerVigilanceCD(agent Agent, numWarriors int32) {
+	if numWarriors == 0 {
 		return
 	}
 
-	hosAura := HandOfSacrificeAura(agent.GetCharacter(), -1)
+	buffAura := VigilanceAura(agent.GetCharacter(), -1)
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
 		externalConsecutiveCDApproximation{
-			ActionID:         ActionID{SpellID: 6940, Tag: -1},
-			AuraTag:          HandOfSacrificeAuraTag,
+			ActionID:         ActionID{SpellID: VigilanceSpellID, Tag: -1},
+			AuraTag:          VigilanceAuraTag,
 			CooldownPriority: CooldownPriorityLow,
-			AuraDuration:     HandOfSacrificeDuration,
-			AuraCD:           HandOfSacrificeCD,
+			AuraDuration:     VigilanceDuration,
+			AuraCD:           VigilanceCD,
 			Type:             CooldownTypeSurvival,
 
 			ShouldActivate: func(sim *Simulation, character *Character) bool {
 				return true
 			},
 			AddAura: func(sim *Simulation, character *Character) {
-				hosAura.Activate(sim)
+				buffAura.Activate(sim)
 			},
 		},
-		numSacs)
+		numWarriors)
 }
 
-func HandOfSacrificeAura(character *Character, actionTag int32) *Aura {
-	actionID := ActionID{SpellID: 6940, Tag: actionTag}
+func VigilanceAura(character *Character, actionTag int32) *Aura {
+	actionID := ActionID{SpellID: VigilanceSpellID, Tag: actionTag}
 
 	return character.GetOrRegisterAura(Aura{
-		Label:    "HandOfSacrifice-" + actionID.String(),
-		Tag:      HandOfSacrificeAuraTag,
+		Label:    "Vigilance-" + actionID.String(),
+		Tag:      VigilanceAuraTag,
 		ActionID: actionID,
-		Duration: HandOfSacrificeDuration,
+		Duration: VigilanceDuration,
 	}).AttachMultiplicativePseudoStatBuff(&character.PseudoStats.DamageTakenMultiplier, 0.7)
 }
 
@@ -1012,6 +1014,7 @@ func GuardianSpiritAura(character *Character, actionTag int32) *Aura {
 }
 
 var RallyingCryAuraTag = "RallyingCry"
+var RallyingCryActionID = ActionID{SpellID: 97462}
 
 const RallyingCryDuration = time.Second * 10
 const RallyingCryCD = time.Minute * 3
@@ -1026,7 +1029,7 @@ func registerRallyingCryCD(agent Agent, numRallyingCries int32) {
 	registerExternalConsecutiveCDApproximation(
 		agent,
 		externalConsecutiveCDApproximation{
-			ActionID:         ActionID{SpellID: 97462, Tag: -1},
+			ActionID:         RallyingCryActionID.WithTag(-1),
 			AuraTag:          RallyingCryAuraTag,
 			CooldownPriority: CooldownPriorityLow,
 			AuraDuration:     RallyingCryDuration,
@@ -1046,7 +1049,7 @@ func registerRallyingCryCD(agent Agent, numRallyingCries int32) {
 }
 
 func RallyingCryAura(character *Character, actionTag int32) *Aura {
-	actionID := ActionID{SpellID: 97462, Tag: actionTag}
+	actionID := RallyingCryActionID.WithTag(actionTag)
 	healthMetrics := character.NewHealthMetrics(actionID)
 
 	var bonusHealth float64
@@ -1075,7 +1078,7 @@ func registerShatteringThrowCD(agent Agent, numShatteringThrows int32) {
 		return
 	}
 
-	stAura := ShatteringThrowAura(agent.GetCharacter().Env.Encounter.TargetUnits[0], -1)
+	stAura := ShatteringThrowAura(agent.GetCharacter().Env.GetTargetUnitByIndex(0), -1)
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
@@ -1097,6 +1100,8 @@ func registerShatteringThrowCD(agent Agent, numShatteringThrows int32) {
 		numShatteringThrows)
 }
 
+var SkullBannerActionID = ActionID{SpellID: 114206}
+
 const SkullBannerAuraTag = "SkullBanner"
 const SkullBannerDuration = time.Second * 10
 const SkullBannerCD = time.Minute * 3
@@ -1111,7 +1116,7 @@ func registerSkullBannerCD(agent Agent, numSkullBanners int32) {
 	registerExternalConsecutiveCDApproximation(
 		agent,
 		externalConsecutiveCDApproximation{
-			ActionID:         ActionID{SpellID: 114207, Tag: -1},
+			ActionID:         SkullBannerActionID.WithTag(-1),
 			AuraTag:          SkullBannerAuraTag,
 			CooldownPriority: CooldownPriorityDefault,
 			AuraDuration:     SkullBannerDuration,
@@ -1132,7 +1137,7 @@ func SkullBannerAura(character *Character, actionTag int32) *Aura {
 	return character.GetOrRegisterAura(Aura{
 		Label:    "Skull Banner",
 		Tag:      SkullBannerAuraTag,
-		ActionID: ActionID{SpellID: 114206, Tag: actionTag},
+		ActionID: SkullBannerActionID.WithTag(actionTag),
 		Duration: SkullBannerDuration,
 	}).AttachMultiplicativePseudoStatBuff(&character.PseudoStats.CritDamageMultiplier, 1.2)
 }
@@ -1225,9 +1230,10 @@ var StormLashSpellExceptions = map[int32]float64{
 	1120:   2.0, // Drain Soul
 	403:    2.0, // Lightning Bolt
 	51505:  2.0, // Lava Burst
-	103103: 2.0, // Malefic Grasp
+	103103: 1.0, // Malefic Grasp
 	15407:  1.0, // Mind Flay
 	129197: 1.0, // Mind Flay - Insanity
+	120360: 1.0, // Barrage
 }
 
 // Source: https://www.wowhead.com/mop-classic/spell=120668/stormlash-totem#comments

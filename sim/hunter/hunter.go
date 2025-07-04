@@ -29,55 +29,15 @@ type Hunter struct {
 	mayMoveAt time.Duration
 
 	AspectOfTheHawk *core.Spell
-	AspectOfTheFox  *core.Spell
 
 	// Hunter spells
-	KillCommand   *core.Spell
-	ArcaneShot    *core.Spell
-	ExplosiveTrap *core.Spell
-	KillShot      *core.Spell
-	RapidFire     *core.Spell
-	MultiShot     *core.Spell
-	RaptorStrike  *core.Spell
-	SerpentSting  *core.Spell
-	SteadyShot    *core.Spell
-	ScorpidSting  *core.Spell
-	SilencingShot *core.Spell
-	TrapLauncher  *core.Spell
-	GlaiveToss    *core.Spell
-	Barrage       *core.Spell
-	Powershot     *core.Spell
-	AMOC          *core.Spell
-
-	// BM only spells
-
-	// MM only spells
-	AimedShot   *core.Spell
-	ChimeraShot *core.Spell
-
-	// Survival only spells
-	ExplosiveShot *core.Spell
-	BlackArrow    *core.Spell
-	CobraShot     *core.Spell
+	SerpentSting         *core.Spell
+	ExplosiveTrap        *core.Spell
+	ExplosiveShot        *core.Spell
+	ImprovedSerpentSting *core.Spell
 
 	// Fake spells to encapsulate weaving logic.
-	TrapWeaveSpell                *core.Spell
-	ImprovedSerpentSting          *core.Spell
-	AspectOfTheHawkAura           *core.Aura
-	ImprovedSteadyShotAura        *core.Aura
-	ImprovedSteadyShotAuraCounter *core.Aura
-	LockAndLoadAura               *core.Aura
-	RapidFireAura                 *core.Aura
-	ScorpidStingAuras             core.AuraArray
-	KillingStreakCounterAura      *core.Aura
-	KillingStreakAura             *core.Aura
-	MasterMarksmanAura            *core.Aura
-	MasterMarksmanCounterAura     *core.Aura
-	TrapLauncherAura              *core.Aura
-	HuntersMarkAura               core.AuraArray
-	HuntersMarkSpell              *core.Spell
-	// Item sets
-	T13_2pc *core.Aura
+	HuntersMarkSpell *core.Spell
 }
 
 func (hunter *Hunter) GetCharacter() *core.Character {
@@ -97,11 +57,10 @@ func NewHunter(character *core.Character, options *proto.Player, hunterOptions *
 	}
 
 	core.FillTalentsProto(hunter.Talents.ProtoReflect(), options.TalentsString)
-	focusPerSecond := 5.0
+	focusPerSecond := 4.0
 
-	// TODO: Fix this to work with the new talent system.
-	// hunter.EnableFocusBar(100+(float64(hunter.Talents.KindredSpirits)*5), focusPerSecond, true, nil)
-	hunter.EnableFocusBar(100, focusPerSecond, true, nil)
+	kindredSpritsBonusFocus := core.TernaryFloat64(hunter.Spec == proto.Spec_SpecBeastMasteryHunter, 20, 0)
+	hunter.EnableFocusBar(100+kindredSpritsBonusFocus, focusPerSecond, true, nil)
 
 	hunter.PseudoStats.CanParry = true
 
@@ -157,22 +116,23 @@ func (hunter *Hunter) GetBaseDamageFromCoeff(coeff float64) float64 {
 func (hunter *Hunter) ApplyTalents() {
 	hunter.applyThrillOfTheHunt()
 	hunter.ApplyHotfixes()
+	hunter.addBloodthirstyGloves()
 
 	if hunter.Pet != nil {
 
 		hunter.Pet.ApplyTalents()
 	}
+
+	hunter.ApplyArmorSpecializationEffect(stats.Agility, proto.ArmorType_ArmorTypeMail, 86538)
 }
 
 func (hunter *Hunter) RegisterSpells() {
-	hunter.registerSteadyShotSpell()
 	hunter.registerArcaneShotSpell()
 	hunter.registerKillShotSpell()
 	hunter.registerHawkSpell()
 	hunter.RegisterLynxRushSpell()
 	hunter.registerSerpentStingSpell()
 	hunter.registerMultiShotSpell()
-	hunter.registerKillCommandSpell()
 	hunter.registerExplosiveTrapSpell()
 	hunter.registerCobraShotSpell()
 	hunter.registerRapidFireCD()
@@ -181,7 +141,6 @@ func (hunter *Hunter) RegisterSpells() {
 	hunter.registerAMOCSpell()
 	hunter.registerBarrageSpell()
 	hunter.registerGlaiveTossSpell()
-	hunter.registerBarrageSpell()
 	hunter.registerFervorSpell()
 	hunter.RegisterDireBeastSpell()
 	hunter.RegisterStampedeSpell()
@@ -277,12 +236,21 @@ const (
 	HunterSpellBestialWrath
 	HunterPetFocusDump
 	HunterPetDamage
+	HunterPetBeastCleaveHit
+	HunterSpellFervor
+	HunterSpellDireBeast
+	HunterSpellAMurderOfCrows
+	HunterSpellLynxRush
+	HunterSpellGlaiveToss
+	HunterSpellBarrage
+	HunterSpellPowershot
 	HunterSpellsTierTwelve = HunterSpellArcaneShot | HunterSpellKillCommand | HunterSpellChimeraShot | HunterSpellExplosiveShot |
 		HunterSpellMultiShot | HunterSpellAimedShot
 	HunterSpellsAll = HunterSpellSteadyShot | HunterSpellCobraShot |
 		HunterSpellArcaneShot | HunterSpellKillCommand | HunterSpellChimeraShot | HunterSpellExplosiveShot |
 		HunterSpellExplosiveTrap | HunterSpellBlackArrow | HunterSpellMultiShot | HunterSpellAimedShot |
 		HunterSpellSerpentSting | HunterSpellKillShot | HunterSpellRapidFire | HunterSpellBestialWrath
+	HunterSpellsTalents = HunterSpellFervor | HunterSpellDireBeast | HunterSpellAMurderOfCrows | HunterSpellLynxRush | HunterSpellGlaiveToss | HunterSpellPowershot | HunterSpellBarrage
 )
 
 // Agent is a generic way to access underlying hunter on any of the agents.

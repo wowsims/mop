@@ -22,9 +22,7 @@ func (elemental *ElementalShaman) registerEarthquakeSpell() {
 			spell.SpellMetrics[target.UnitIndex].Casts-- // Do not count pulses as casts
 			// Coefficient damage calculated manually because it's a Nature spell but deals Physical damage
 			baseDamage := elemental.CalcScalingSpellDmg(0.32400000095) + 0.1099999994*spell.SpellPower()
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMagicHitAndCrit)
 		},
 	})
 
@@ -33,7 +31,6 @@ func (elemental *ElementalShaman) registerEarthquakeSpell() {
 		Flags:    shaman.SpellFlagShamanSpell | core.SpellFlagAPL,
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 70.3,
-			PercentModifier: 100,
 		},
 
 		Cast: core.CastConfig{

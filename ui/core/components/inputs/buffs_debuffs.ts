@@ -107,7 +107,7 @@ export const MajorHasteBuff = InputHelpers.makeMultiIconInput(
 // TODO: Look at these, what we want and how to structure them for multiple available
 export const DefensiveCooldownBuff = InputHelpers.makeMultiIconInput(
 	[
-		makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(6940), numStates: 11, fieldName: 'handOfSacrificeCount' }),
+		makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(114030), numStates: 11, fieldName: 'vigilanceCount' }),
 		makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(31821), numStates: 11, fieldName: 'devotionAuraCount' }),
 		makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(33206), numStates: 11, fieldName: 'painSuppressionCount' }),
 		// 		makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(47788), numStates: 11, fieldName: 'guardianSpirits' }),

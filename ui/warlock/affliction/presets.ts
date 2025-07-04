@@ -1,5 +1,5 @@
 import * as PresetUtils from '../../core/preset_utils';
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, RaidBuffs, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
 import {
 	AfflictionWarlock_Options as WarlockOptions,
@@ -8,12 +8,10 @@ import {
 	WarlockOptions_Summon as Summon,
 } from '../../core/proto/warlock';
 import { Stats } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultApl from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
-import P4Gear from './gear_sets/p4.gear.json';
-import ItemSwapP4 from './gear_sets/p4_item_swap.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -22,10 +20,6 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 
 export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const P1_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3Gear);
-export const P4_PRESET = PresetUtils.makePresetGear('P4 - BIS', P4Gear);
-
-export const P4_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P4 - Item Swap', ItemSwapP4);
 
 export const APL_Default = PresetUtils.makePresetAPLRotation('Affliction', DefaultApl);
 
@@ -36,9 +30,9 @@ export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatIntellect]: 1.26,
 		[Stat.StatSpellPower]: 1.0,
 		[Stat.StatHitRating]: 0.93,
-		[Stat.StatCritRating]: 0.52,
+		[Stat.StatCritRating]: 0.38,
 		[Stat.StatHasteRating]: 0.58,
-		[Stat.StatMasteryRating]: 0.38,
+		[Stat.StatMasteryRating]: 0.8,
 	}),
 );
 
@@ -48,8 +42,9 @@ export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 export const AfflictionTalents = {
 	name: 'Affliction',
 	data: SavedTalents.create({
-		talentsString: '',
+		talentsString: '231211',
 		glyphs: Glyphs.create({
+			major1: MajorGlyph.GlyphOfUnstableAffliction,
 			minor3: MinorGlyph.GlyphOfUnendingBreath,
 		}),
 	}),
@@ -63,24 +58,29 @@ export const DefaultOptions = WarlockOptions.create({
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 58086, // Flask of the Draconic Mind
-	foodId: 62290, // Seafood Magnifique Feast
-	potId: 58091, // Volcanic Potion
-	prepotId: 58091, // Volcanic Potion
+	flaskId: 76085, // Flask of the Warm Sun
+	foodId: 74650, // Mogu Fish Stew
+	potId: 76093, //Potion of the Jade Serpent
+	prepotId: 76093, // Potion of the Jade Serpent
 });
 
-export const DefaultRaidBuffs = RaidBuffs.create({});
+export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
+	arcaneBrilliance: true,
+	blessingOfKings: true,
+	leaderOfThePack: true,
+	blessingOfMight: true,
+	bloodlust: true,
+	moonkinAura: true,
+	unholyAura: true,
+});
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
 
 export const DefaultDebuffs = Debuffs.create({
-	// bloodFrenzy: true,
-	// sunderArmor: true,
-	// ebonPlaguebringer: true,
-	// mangle: true,
-	// criticalMass: false,
-	// demoralizingShout: true,
-	// frostFever: true,
+	curseOfElements: true,
+	weakenedArmor: true,
+	physicalVulnerability: true,
 });
 
 export const OtherDefaults = {
