@@ -14,26 +14,15 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 	manaMetrics := mw.NewManaMetrics(actionID)
 	manaLoss := 0.0
 
-	surgingMistCastTimeMod := mw.AddDynamicMod(core.SpellModConfig{
+	mistCastTimeMod := mw.AddDynamicMod(core.SpellModConfig{
 		Kind:       core.SpellMod_CastTime_Pct,
 		FloatValue: -1,
-		ClassMask:  monk.MonkSpellSurgingMist,
+		ClassMask:  monk.MonkSpellSurgingMist | monk.MonkSpellEnvelopingMist,
 	})
 
-	surgingMistChannelMod := mw.AddDynamicMod(core.SpellModConfig{
+	mistChannelMod := mw.AddDynamicMod(core.SpellModConfig{
 		Kind:      core.SpellMod_AllowCastWhileChanneling,
-		ClassMask: monk.MonkSpellSurgingMist,
-	})
-
-	envelopingMistCastTimeMod := mw.AddDynamicMod(core.SpellModConfig{
-		Kind:       core.SpellMod_CastTime_Pct,
-		FloatValue: -1,
-		ClassMask:  monk.MonkSpellEnvelopingMist,
-	})
-
-	envelopingMistChannelMod := mw.AddDynamicMod(core.SpellModConfig{
-		Kind:      core.SpellMod_AllowCastWhileChanneling,
-		ClassMask: monk.MonkSpellEnvelopingMist,
+		ClassMask: monk.MonkSpellSurgingMist | monk.MonkSpellEnvelopingMist,
 	})
 
 	var soothingMist *core.Spell
@@ -42,7 +31,7 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 		ActionID:    actionID,
 		SpellSchool: core.SpellSchoolNature,
 		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL | core.SpellFlagChanneled,
+		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL | core.SpellFlagChanneled | core.SpellFlagCastWhileChanneling,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 1,
@@ -60,16 +49,12 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 			Aura: core.Aura{
 				Label: "Soothing Mist",
 				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-					surgingMistCastTimeMod.Deactivate()
-					surgingMistChannelMod.Deactivate()
-					envelopingMistCastTimeMod.Deactivate()
-					envelopingMistChannelMod.Deactivate()
+					mistCastTimeMod.Deactivate()
+					mistChannelMod.Deactivate()
 				},
 				OnGain: func(aura *core.Aura, sim *core.Simulation) {
-					surgingMistChannelMod.Activate()
-					surgingMistCastTimeMod.Activate()
-					envelopingMistChannelMod.Activate()
-					envelopingMistCastTimeMod.Activate()
+					mistCastTimeMod.Activate()
+					mistChannelMod.Activate()
 
 				},
 			},
