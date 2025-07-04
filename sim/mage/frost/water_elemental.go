@@ -90,6 +90,9 @@ func (we *WaterElemental) Initialize() {
 func (we *WaterElemental) Reset(_ *core.Simulation) {
 }
 
+func (we *WaterElemental) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (we *WaterElemental) ExecuteCustomRotation(sim *core.Simulation) {
 	spell := we.Waterbolt
 	spell.Cast(sim, we.CurrentTarget)

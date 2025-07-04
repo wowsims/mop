@@ -115,6 +115,9 @@ func (mindbender *MindBender) Reset(sim *core.Simulation) {
 	mindbender.Disable(sim)
 }
 
+func (mindbender *MindBender) OnEncounterStart(sim *core.Simulation) {
+}
+
 func (mindbender *MindBender) OnPetDisable(sim *core.Simulation) {
 	mindbender.ShadowcrawlAura.Deactivate(sim)
 }

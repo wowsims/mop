@@ -8,7 +8,7 @@ import (
 )
 
 func (bear *GuardianDruid) registerSavageDefenseSpell() {
-	bear.SavageDefenseAura = bear.RegisterAura(core.Aura{
+	bear.SavageDefenseAura = core.BlockPrepull(bear.RegisterAura(core.Aura{
 		Label:    "Savage Defense",
 		ActionID: core.ActionID{SpellID: 132402},
 		Duration: time.Second * 6,
@@ -20,7 +20,7 @@ func (bear *GuardianDruid) registerSavageDefenseSpell() {
 		OnExpire: func(aura *core.Aura, _ *core.Simulation) {
 			aura.Unit.PseudoStats.BaseDodgeChance -= 0.45
 		},
-	})
+	}))
 
 	bear.SavageDefense = bear.RegisterSpell(druid.Bear, core.SpellConfig{
 		ActionID:        core.ActionID{SpellID: 62606},

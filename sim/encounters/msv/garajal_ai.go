@@ -56,14 +56,14 @@ func createGarajalHeroicPreset(raidPrefix string, raidSize int32, bossHealth flo
 			PathPrefix: raidPrefix,
 
 			Config: &proto.Target{
-				Id:        garajalAddID*100 + addIdx, // hack to guarantee distinct IDs for each add
-				Name:      currentAddName,
-				Level:     92,
-				MobType:   proto.MobType_MobTypeDemon,
+				Id:      garajalAddID*100 + addIdx, // hack to guarantee distinct IDs for each add
+				Name:    currentAddName,
+				Level:   92,
+				MobType: proto.MobType_MobTypeDemon,
 
 				Stats: stats.Stats{
-					stats.Health:      addHealth,
-					stats.Armor:       24835, // TODO: verify add armor
+					stats.Health: addHealth,
+					stats.Armor:  24835, // TODO: verify add armor
 				}.ToProtoArray(),
 
 				TargetInputs:    []*proto.TargetInput{},
@@ -73,7 +73,7 @@ func createGarajalHeroicPreset(raidPrefix string, raidSize int32, bossHealth flo
 			AI: makeGarajalAI(raidSize, false),
 		})
 
-		targetPathNames = append(targetPathNames, raidPrefix + "/" + currentAddName)
+		targetPathNames = append(targetPathNames, raidPrefix+"/"+currentAddName)
 	}
 
 	core.AddPresetEncounter(bossName, targetPathNames)
@@ -172,7 +172,7 @@ func (ai *GarajalAI) registerShadowyAttacks() {
 
 				ModifyCast: func(sim *core.Simulation, spell *core.Spell, curCast *core.Cast) {
 					hastedCastTime := spell.Unit.ApplyCastSpeedForSpell(curCast.CastTime, spell).Round(time.Millisecond)
-					spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime + hastedCastTime)
+					spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime+hastedCastTime)
 				},
 			},
 
@@ -226,10 +226,10 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			sim.EnableTargetUnit(ai.BossUnit)
-			ai.SharedShadowyAttackTimer.Set(sim.CurrentTime + core.DurationFromSeconds(8.0 * sim.RandomFloat("Shadowy Attack Timing")))
+			ai.SharedShadowyAttackTimer.Set(sim.CurrentTime + core.DurationFromSeconds(8.0*sim.RandomFloat("Shadowy Attack Timing")))
 			ai.syncBossGCDToSwing(sim)
 
-			if sim.CurrentTime + voodooDollsDuration > ai.enableFrenzyAt {
+			if sim.CurrentTime+voodooDollsDuration > ai.enableFrenzyAt {
 				core.StartPeriodicAction(sim, core.PeriodicActionOptions{
 					Period:   voodooDollsDuration - 1,
 					Priority: core.ActionPriorityDOT,
@@ -248,7 +248,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			}
 
 			vengeanceAura.Activate(sim)
-			vengeanceAura.SetStacks(sim, priorVengeanceEstimate / 2)
+			vengeanceAura.SetStacks(sim, priorVengeanceEstimate/2)
 		},
 
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
@@ -284,7 +284,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 
 			finalActivation := activationPeriod * numActivations
 
-			if finalActivation + voodooDollsDuration <= ai.enableFrenzyAt {
+			if finalActivation+voodooDollsDuration <= ai.enableFrenzyAt {
 				core.StartDelayedAction(sim, core.DelayedActionOptions{
 					DoAt:     ai.enableFrenzyAt - 1,
 					Priority: core.ActionPriorityDOT,
@@ -303,7 +303,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 }
 
 func (ai *GarajalAI) syncBossGCDToSwing(sim *core.Simulation) {
-	ai.BossUnit.ExtendGCDUntil(sim, ai.BossUnit.AutoAttacks.NextAttackAt() + core.DurationFromSeconds(0.2 * sim.RandomFloat("Specials Timing")))
+	ai.BossUnit.ExtendGCDUntil(sim, ai.BossUnit.AutoAttacks.NextAttackAt()+core.DurationFromSeconds(0.2*sim.RandomFloat("Specials Timing")))
 }
 
 func (ai *GarajalAI) registerShadowBolt() {
@@ -361,8 +361,8 @@ func (ai *GarajalAI) registerFrenzy() {
 
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			aura.Unit.PseudoStats.DamageDealtMultiplier /= 1.25
-			aura.Unit.MultiplyAttackSpeed(sim, 1.0 / 1.5)
-			aura.Unit.MultiplyCastSpeed(sim, 1.0 / 1.5)
+			aura.Unit.MultiplyAttackSpeed(sim, 1.0/1.5)
+			aura.Unit.MultiplyCastSpeed(sim, 1.0/1.5)
 		},
 
 		OnReset: func(aura *core.Aura, sim *core.Simulation) {
@@ -391,7 +391,7 @@ func (ai *GarajalAI) ExecuteCustomRotation(sim *core.Simulation) {
 	}
 
 	if ai.VoodooDollsAura.IsActive() && ai.SharedShadowyAttackTimer.IsReady(sim) {
-		ai.ShadowyAttackSpells[int(4.0 * sim.RandomFloat("Shadowy Attack Selection"))].Cast(sim, ai.TankUnit)
+		ai.ShadowyAttackSpells[int(4.0*sim.RandomFloat("Shadowy Attack Selection"))].Cast(sim, ai.TankUnit)
 	}
 
 	if ai.VoodooDollsAura.IsActive() {

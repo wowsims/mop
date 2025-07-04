@@ -98,9 +98,7 @@ export const DefaultTalents = {
 };
 
 export const DefaultOptions = FrostDeathKnight_Options.create({
-	classOptions: {
-		startingRunicPower: 0,
-	},
+	classOptions: {},
 });
 
 export const OtherDefaults = {

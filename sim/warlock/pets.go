@@ -199,7 +199,11 @@ func (pet *WarlockPet) GetPet() *core.Pet {
 	return &pet.Pet
 }
 
-func (pet *WarlockPet) Reset(_ *core.Simulation) {}
+func (pet *WarlockPet) Reset(_ *core.Simulation) {
+}
+
+func (pet *WarlockPet) OnEncounterStart(_ *core.Simulation) {
+}
 
 func (pet *WarlockPet) ExecuteCustomRotation(sim *core.Simulation) {
 	waitUntil := time.Duration(1<<63 - 1)

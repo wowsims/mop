@@ -70,9 +70,7 @@ export const P1_PRESET = PresetUtils.makePresetBuild('P1', {
 });
 
 export const DefaultOptions = UnholyDeathKnight_Options.create({
-	classOptions: {
-		startingRunicPower: 0,
-	},
+	classOptions: {},
 });
 
 export const OtherDefaults = {

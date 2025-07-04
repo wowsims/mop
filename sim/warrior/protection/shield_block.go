@@ -16,7 +16,7 @@ func (war *ProtectionWarrior) registerShieldBlock() {
 	atkTable := core.NewAttackTable(atkTableAttacker, &war.Unit)
 
 	extraAvoidance := 0.0
-	war.ShieldBlockAura = war.RegisterAura(core.Aura{
+	war.ShieldBlockAura = core.BlockPrepull(war.RegisterAura(core.Aura{
 		Label:    "Shield Block",
 		ActionID: actionId,
 		Duration: time.Second * 6,
@@ -34,7 +34,7 @@ func (war *ProtectionWarrior) registerShieldBlock() {
 				war.CriticalBlockChance[1] -= extraAvoidance
 			}
 		},
-	}).AttachStatBuff(stats.BlockPercent, 100)
+	})).AttachStatBuff(stats.BlockPercent, 100)
 
 	war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionId,

@@ -1,6 +1,4 @@
 import * as InputHelpers from '../core/components/input_helpers.js';
-import { PlayerSpec } from '../core/player_spec';
-import { Player } from '../core/proto/api';
 import { RogueOptions_PoisonOptions as Poison } from '../core/proto/rogue.js';
 import { ActionId } from '../core/proto_utils/action_id.js';
 import { RogueSpecs } from '../core/proto_utils/utils';
@@ -41,12 +39,4 @@ export const ApplyPoisonsManually = <SpecType extends RogueSpecs>() =>
 		fieldName: 'applyPoisonsManually',
 		label: 'Configure poisons manually',
 		labelTooltip: 'Prevent automatic poison configuration that is based on equipped weapons.',
-	});
-
-export const StartingComboPoints = <SpecType extends RogueSpecs>() =>
-	InputHelpers.makeClassOptionsNumberInput<SpecType>({
-		fieldName: 'startingComboPoints',
-		label: 'Starting Combo Points',
-		labelTooltip: 'Initial Combo Points at the start of each iteration.',
-		max: 5,
 	});

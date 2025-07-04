@@ -96,7 +96,9 @@ func (fireElemental *FireElemental) Initialize() {
 }
 
 func (fireElemental *FireElemental) Reset(_ *core.Simulation) {
+}
 
+func (fireElemental *FireElemental) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (fireElemental *FireElemental) ExecuteCustomRotation(sim *core.Simulation) {

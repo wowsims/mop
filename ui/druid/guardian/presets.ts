@@ -123,7 +123,6 @@ export const InfectedWoundsBuild = {
 };
 
 export const DefaultOptions = DruidOptions.create({
-	startingRage: 10,
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
