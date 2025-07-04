@@ -23,7 +23,7 @@ func RegisterDestructionWarlock() {
 	)
 }
 
-const DefaultBulidEmbers = 10
+const DefaultBurningEmbers = 10
 
 func NewDestructionWarlock(character *core.Character, options *proto.Player) *DestructionWarlock {
 	destroOptions := options.GetDestructionWarlock().Options
@@ -34,7 +34,7 @@ func NewDestructionWarlock(character *core.Character, options *proto.Player) *De
 	destruction.BurningEmbers = destruction.RegisterNewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
 		Type:    proto.SecondaryResourceType_SecondaryResourceTypeBurningEmbers,
 		Max:     40,
-		Default: DefaultBulidEmbers,
+		Default: DefaultBurningEmbers,
 	})
 
 	return destruction
@@ -89,7 +89,7 @@ func (destruction *DestructionWarlock) Reset(sim *core.Simulation) {
 }
 
 func (destruction *DestructionWarlock) OnEncounterStart(sim *core.Simulation) {
-	destruction.BurningEmbers.ResetBarTo(sim, DefaultBulidEmbers)
+	destruction.BurningEmbers.ResetBarTo(sim, DefaultBurningEmbers)
 	destruction.Warlock.OnEncounterStart(sim)
 }
 

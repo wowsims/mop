@@ -52,7 +52,7 @@ func (unit *Unit) EnableEnergyBar(options EnergyBarOptions) {
 		energyRegenMultiplier:   1,
 		hasteRatingMultiplier:   1,
 		regenMetrics:            unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEnergyRegen}),
-		EncounterStartMetrics:   unit.getEncounterStartMetrics(options.UnitClass),
+		EncounterStartMetrics:   unit.getEncounterStartComboMetrics(options.UnitClass),
 		EnergyRefundMetrics:     unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionRefund}),
 		ownerClass:              options.UnitClass,
 		comboPointsResourceName: Ternary(options.UnitClass == proto.Class_ClassMonk, "chi", "combo points"),
@@ -61,11 +61,11 @@ func (unit *Unit) EnableEnergyBar(options EnergyBarOptions) {
 
 }
 
-func (unit *Unit) getEncounterStartMetrics(unitClass proto.Class) *ResourceMetrics {
+func (unit *Unit) getEncounterStartComboMetrics(unitClass proto.Class) *ResourceMetrics {
 	if unitClass == proto.Class_ClassMonk {
-		return unit.NewChiMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart})
+		return unit.NewChiMetrics(encounterStartActionID)
 	} else {
-		return unit.NewComboPointMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart})
+		return unit.NewComboPointMetrics(encounterStartActionID)
 	}
 }
 
