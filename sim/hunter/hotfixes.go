@@ -12,7 +12,7 @@ func (hunt *Hunter) ApplyHotfixes() {
 	})
 	hunt.AddStaticMod(core.SpellModConfig{
 		Kind:       core.SpellMod_DamageDone_Pct,
-		ClassMask:  HunterSpellChimeraShot,
-		FloatValue: 0.5,
+		ClassMask:  HunterSpellExplosiveShot,
+		FloatValue: -0.09,
 	})
 }

@@ -119,22 +119,27 @@ func getDatabase(itemIds *int32, numItems int32, enchantIds *int32, numEnchants 
 			SetName:          item.SetName,
 			SetId:            item.SetID,
 			ScalingOptions:   item.ScalingOptions,
+			ItemEffect:       item.ItemEffect,
 		}
 	}
 	for i, enchantId := range eids {
 		enchant := core.EnchantsByEffectID[enchantId]
 		simDB.Enchants[i] = &proto.SimEnchant{
-			EffectId: enchant.EffectID,
-			Stats:    enchant.Stats[:],
+			EffectId:      enchant.EffectID,
+			Stats:         enchant.Stats[:],
+			EnchantEffect: enchant.EnchantEffect,
+			Name:          enchant.Name,
+			Type:          enchant.Type,
 		}
 	}
 	for i, gemId := range gids {
 		gem := core.GemsByID[gemId]
 		simDB.Gems[i] = &proto.SimGem{
-			Id:    gem.ID,
-			Name:  gem.Name,
-			Color: gem.Color,
-			Stats: gem.Stats[:],
+			Id:                      gem.ID,
+			Name:                    gem.Name,
+			Color:                   gem.Color,
+			Stats:                   gem.Stats[:],
+			DisabledInChallengeMode: gem.DisabledInChallengeMode,
 		}
 	}
 	out, err := protojson.Marshal(simDB)

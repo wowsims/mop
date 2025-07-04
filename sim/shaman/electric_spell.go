@@ -46,7 +46,6 @@ func (shaman *Shaman) newElectricSpellConfig(config ShamSpellConfig) core.SpellC
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: core.TernaryFloat64(config.IsElementalOverload, 0, config.BaseCostPercent),
-			PercentModifier: 100,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -57,7 +56,7 @@ func (shaman *Shaman) newElectricSpellConfig(config ShamSpellConfig) core.SpellC
 				spell.SetMetricsSplit(shaman.MaelstromWeaponAura.GetStacks())
 				castTime := shaman.ApplyCastSpeedForSpell(cast.CastTime, spell)
 				if sim.CurrentTime+castTime > shaman.AutoAttacks.NextAttackAt() {
-					shaman.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime+castTime, false)
+					shaman.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime+castTime)
 				}
 			},
 		},
@@ -65,6 +64,7 @@ func (shaman *Shaman) newElectricSpellConfig(config ShamSpellConfig) core.SpellC
 		DamageMultiplier: 1,
 		CritMultiplier:   shaman.DefaultCritMultiplier(),
 		BonusCoefficient: config.BonusCoefficient,
+		ThreatMultiplier: 1,
 	}
 
 	if config.IsElementalOverload {

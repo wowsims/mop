@@ -15,7 +15,11 @@ type manaBar struct {
 	unit     *Unit
 	BaseMana float64
 
-	currentMana          float64
+	currentMana float64
+
+	manaRegenMultiplier float64
+	hasteEffectsRegen   bool
+
 	manaCombatMetrics    *ResourceMetrics
 	manaNotCombatMetrics *ResourceMetrics
 	JowManaMetrics       *ResourceMetrics
@@ -38,6 +42,7 @@ func (character *Character) EnableManaBar() {
 }
 
 func (character *Character) EnableManaBarWithModifier(modifier float64) {
+
 	// Starting with cataclysm you get mp5 equal 5% of your base mana
 	character.AddStat(stats.MP5, character.baseStats[stats.Mana]*0.05)
 
@@ -62,6 +67,7 @@ func (character *Character) EnableManaBarWithModifier(modifier float64) {
 
 	character.BaseMana = character.GetBaseStats()[stats.Mana]
 	character.Unit.manaBar.unit = &character.Unit
+	character.Unit.manaBar.manaRegenMultiplier = 1.0
 }
 
 func (unit *Unit) HasManaBar() bool {
@@ -159,6 +165,10 @@ func (unit *Unit) SpiritManaRegenPerSecond() float64 {
 func (unit *Unit) ManaRegenPerSecondWhileCombat() float64 {
 	regenRate := unit.MP5ManaRegenPerSecond()
 
+	if unit.manaBar.hasteEffectsRegen {
+		regenRate *= unit.TotalSpellHasteMultiplier()
+	}
+
 	spiritRegenRate := 0.0
 	if unit.PseudoStats.SpiritRegenRateCombat != 0 || unit.PseudoStats.ForceFullSpiritRegen {
 		spiritRegenRate = unit.SpiritManaRegenPerSecond() * unit.PseudoStats.SpiritRegenMultiplier
@@ -168,6 +178,8 @@ func (unit *Unit) ManaRegenPerSecondWhileCombat() float64 {
 	}
 	regenRate += spiritRegenRate
 
+	regenRate *= unit.manaRegenMultiplier
+
 	return regenRate
 }
 
@@ -176,7 +188,13 @@ func (unit *Unit) ManaRegenPerSecondWhileCombat() float64 {
 func (unit *Unit) ManaRegenPerSecondWhileNotCombat() float64 {
 	regenRate := unit.MP5ManaRegenPerSecond()
 
+	if unit.manaBar.hasteEffectsRegen {
+		regenRate *= unit.TotalSpellHasteMultiplier()
+	}
+
 	regenRate += unit.SpiritManaRegenPerSecond() * unit.PseudoStats.SpiritRegenMultiplier
+
+	regenRate *= unit.manaRegenMultiplier
 
 	return regenRate
 }
@@ -184,6 +202,15 @@ func (unit *Unit) ManaRegenPerSecondWhileNotCombat() float64 {
 func (unit *Unit) UpdateManaRegenRates() {
 	unit.manaTickWhileCombat = unit.ManaRegenPerSecondWhileCombat() * 2
 	unit.manaTickWhileNotCombat = unit.ManaRegenPerSecondWhileNotCombat() * 2
+}
+
+func (unit *Unit) MultiplyManaRegenSpeed(sim *Simulation, multiplier float64) {
+	unit.manaRegenMultiplier *= multiplier
+	unit.UpdateManaRegenRates()
+}
+
+func (unit *Unit) HasteEffectsManaRegen() {
+	unit.manaBar.hasteEffectsRegen = true
 }
 
 // Applies 1 'tick' of mana regen, which worth 2s of regeneration based on mp5/int/spirit/etc.
@@ -271,6 +298,9 @@ func (mb *manaBar) reset() {
 	}
 
 	mb.currentMana = mb.unit.MaxMana()
+
+	mb.manaRegenMultiplier = 1.0
+
 	mb.waitingForMana = 0
 	mb.waitingForManaStartTime = 0
 }
@@ -290,10 +320,14 @@ func (mb *manaBar) EndOOMEvent(sim *Simulation) {
 	mb.waitingForMana = 0
 }
 
+func (unit *Unit) HasteEffectsRegen() {
+	unit.manaBar.hasteEffectsRegen = true
+}
+
 type ManaCostOptions struct {
 	BaseCostPercent float64 // The cost of the spell as a percentage (0-100) of the unit's base mana.
 	FlatCost        int32   // Alternative to BaseCostPercent for giving a flat value.
-	PercentModifier int32   // Will default to 100. PercentModifier stored as an int, e.g. 60 will apply a 40% discount (0.6 multiplier) to the base cost
+	PercentModifier float64 // Will default to 1. PercentModifier stored as a float i.e. 40% reduction is (0.6 multiplier) to the base cost
 }
 type ManaCost struct {
 	ResourceMetrics *ResourceMetrics
@@ -303,7 +337,7 @@ func newManaCost(spell *Spell, options ManaCostOptions) *SpellCost {
 	return &SpellCost{
 		spell:           spell,
 		BaseCost:        TernaryInt32(options.FlatCost > 0, options.FlatCost, int32(options.BaseCostPercent*spell.Unit.BaseMana)/100),
-		PercentModifier: TernaryInt32(options.PercentModifier == 0, 100, options.PercentModifier),
+		PercentModifier: TernaryFloat64(options.PercentModifier == 0, 1, options.PercentModifier),
 		ResourceCostImpl: &ManaCost{
 			ResourceMetrics: spell.Unit.NewManaMetrics(spell.ActionID),
 		},

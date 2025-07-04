@@ -11,11 +11,11 @@ func (hunter *Hunter) registerSerpentStingSpell() {
 	IsSurvival := hunter.Spec == proto.Spec_SpecSurvivalHunter
 	focusMetrics := hunter.NewFocusMetrics(core.ActionID{SpellID: 118976})
 	hunter.ImprovedSerpentSting = hunter.RegisterSpell(core.SpellConfig{
-		ActionID:                 core.ActionID{SpellID: 82834},
+		ActionID:                 core.ActionID{SpellID: 1978, Tag: 1}, //82834
 		SpellSchool:              core.SpellSchoolNature,
 		ProcMask:                 core.ProcMaskDirect,
 		ClassSpellMask:           HunterSpellSerpentSting,
-		Flags:                    core.SpellFlagPassiveSpell,
+		Flags:                    core.SpellFlagPassiveSpell | core.SpellFlagRanged,
 		DamageMultiplier:         1,
 		DamageMultiplierAdditive: 1,
 		CritMultiplier:           hunter.CritMultiplier(1, 0),

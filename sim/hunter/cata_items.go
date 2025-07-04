@@ -55,9 +55,9 @@ var ItemSetFlameWakersBattleGear = core.NewItemSet(core.ItemSet{
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			hunter := agent.(HunterAgent).GetHunter()
 			var baMod = hunter.AddDynamicMod(core.SpellModConfig{
-				Kind:      core.SpellMod_PowerCost_Pct,
-				ClassMask: HunterSpellsTierTwelve,
-				IntValue:  -100,
+				Kind:       core.SpellMod_PowerCost_Pct,
+				ClassMask:  HunterSpellsTierTwelve,
+				FloatValue: -0.1,
 			})
 			var burningAdrenaline = hunter.RegisterAura(core.Aura{
 				Label:    "Burning Adrenaline",
@@ -89,49 +89,6 @@ var ItemSetFlameWakersBattleGear = core.NewItemSet(core.ItemSet{
 				Callback:   core.CallbackOnSpellHitDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					burningAdrenaline.Activate(sim)
-				},
-			})
-		},
-	},
-})
-
-var ItemSetWyrmstalkerBattleGear = core.NewItemSet(core.ItemSet{
-	Name: "Wyrmstalker Battlegear",
-	Bonuses: map[int32]core.ApplySetBonus{
-		2: func(agent core.Agent, setBonusAura *core.Aura) {
-			hunter := agent.(HunterAgent).GetHunter()
-
-			// Handled in Cobra and Steady code respectively
-			hunter.T13_2pc = setBonusAura
-		},
-		4: func(agent core.Agent, setBonusAura *core.Aura) {
-			hunter := agent.(HunterAgent).GetHunter()
-			var chronoHunter = hunter.RegisterAura(core.Aura{ // 105919
-				Label:    "Chronohunter",
-				Duration: time.Second * 15,
-				ActionID: core.ActionID{SpellID: 105919},
-				OnGain: func(aura *core.Aura, sim *core.Simulation) {
-					aura.Unit.MultiplyRangedSpeed(sim, 1.3)
-					if hunter.Pet != nil {
-						hunter.Pet.Unit.MultiplyAttackSpeed(sim, 1.3)
-					}
-				},
-				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-					aura.Unit.MultiplyRangedSpeed(sim, 1/1.3)
-					if hunter.Pet != nil {
-						hunter.Pet.Unit.MultiplyAttackSpeed(sim, 1/1.3)
-					}
-				},
-			})
-
-			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Name:           "T13 4-set",
-				Callback:       core.CallbackOnCastComplete,
-				ClassSpellMask: HunterSpellArcaneShot,
-				ProcChance:     0.4,
-				ICD:            time.Second * 110,
-				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-					chronoHunter.Activate(sim)
 				},
 			})
 		},
@@ -190,7 +147,7 @@ var ItemSetGladiatorsPursuit = core.NewItemSet(core.ItemSet{
 
 func (hunter *Hunter) addBloodthirstyGloves() {
 	hunter.RegisterPvPGloveMod(
-		[]int32{64991, 64709, 60424, 65544, 70534, 70260, 70441, 72369, 73717, 73583},
+		[]int32{64991, 64709, 60424, 65544, 70534, 70260, 70441, 72369, 73717, 73583, 93495, 98821, 102737, 84841, 94453, 84409, 91577, 85020, 103220, 91224, 91225, 99848, 100320, 100683, 102934, 103417, 100123},
 		core.SpellModConfig{
 			ClassMask: HunterSpellExplosiveTrap | HunterSpellBlackArrow,
 			Kind:      core.SpellMod_Cooldown_Flat,

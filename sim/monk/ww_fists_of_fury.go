@@ -19,34 +19,25 @@ var fofActionID = core.ActionID{SpellID: 113656}
 var fofDebuffActionID = core.ActionID{SpellID: 117418}
 
 func fistsOfFuryTickSpellConfig(monk *Monk, pet *StormEarthAndFirePet) core.SpellConfig {
-	numTargets := monk.Env.GetNumTargets()
-	results := make([]*core.SpellResult, numTargets)
-
 	config := core.SpellConfig{
 		ActionID:       fofDebuffActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagReadinessTrinket,
 		ClassSpellMask: MonkSpellFistsOfFury,
 		MaxRange:       core.MaxMeleeRange,
 
 		DamageMultiplier: 7.5 * 0.89,
 		ThreatMultiplier: 1,
 		CritMultiplier:   monk.DefaultCritMultiplier(),
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)
 
 			// Damage is split between all mobs, each hit rolls for hit/crit separately
-			baseDamage /= float64(numTargets)
+			baseDamage /= float64(sim.Environment.ActiveTargetCount())
 
-			for i, enemyTarget := range sim.Encounter.TargetUnits {
-				result := spell.CalcDamage(sim, enemyTarget, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-				results[i] = result
-			}
-
-			for _, result := range results {
-				spell.DealDamage(sim, result)
-			}
+			spell.CalcAoeDamage(sim, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
+			spell.DealBatchedAoeDamage(sim)
 		},
 	}
 

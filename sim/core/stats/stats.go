@@ -342,7 +342,6 @@ func (stats Stats) ToProtoArray() []float64 {
 	// shared indices between the two.
 	return stats[:ProtoStatsLen]
 }
-
 func (stats Stats) ToProtoMap() map[int32]float64 {
 	m := make(map[int32]float64, ProtoStatsLen)
 	for i := 0; i < int(ProtoStatsLen); i++ {
@@ -391,8 +390,7 @@ type PseudoStats struct {
 	BonusOHDps     float64
 	BonusRangedDps float64
 
-	DisableDWMissPenalty bool    // Used by Heroic Strike and Cleave
-	IncreasedMissChance  float64 // Insect Swarm and Scorpid Sting
+	DisableDWMissPenalty bool // Used by Heroic Strike and Cleave
 
 	ThreatMultiplier float64 // Modulates the threat generated. Affected by things like salv.
 

@@ -17,6 +17,7 @@ func (enh *EnhancementShaman) registerFeralSpirit() {
 	enh.FeralSpirit = enh.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 51533},
 		ClassSpellMask: shaman.SpellMaskFeralSpirit,
+		Flags:          core.SpellFlagReadinessTrinket,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 12,
@@ -41,7 +42,7 @@ func (enh *EnhancementShaman) registerFeralSpirit() {
 
 			// https://github.com/JamminL/wotlk-classic-bugs/issues/280
 			// instant casts (e.g. shocks) usually don't reset a shaman's swing timer
-			enh.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime, false)
+			enh.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime)
 		},
 	})
 

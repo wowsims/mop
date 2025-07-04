@@ -3,9 +3,10 @@ import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat,
 import { PriestMajorGlyph as MajorGlyph, PriestMinorGlyph as MinorGlyph, PriestOptions_Armor, ShadowPriest_Options as Options } from '../../core/proto/priest';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
-import PreRaidGear from './gear_sets/pre_raid.gear.json';
 import P1Gear from './gear_sets/p1.gear.json';
+import PreRaidGear from './gear_sets/pre_raid.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -124,13 +125,14 @@ export const DefaultOptions = Options.create({
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 58086, // Flask of the Draconic Mind
-	foodId: 62290, // Seafood Magnifique Feast
-	potId: 58091, // Volcanic Potion
-	prepotId: 58091, // Volcanic Potion
+	flaskId: 76085, // Flask of the Warm Sun
+	foodId: 74650, // Mogu Fish Stew
+	potId: 76093, //Potion of the Jade Serpent
+	prepotId: 76093, // Potion of the Jade Serpent
 });
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
 	arcaneBrilliance: true,
 	blessingOfKings: true,
 	mindQuickening: true,
@@ -138,8 +140,6 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	blessingOfMight: true,
 	unholyAura: true,
 	bloodlust: true,
-	skullBannerCount: 2,
-	stormlashTotemCount: 4,
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
@@ -150,7 +150,7 @@ export const DefaultDebuffs = Debuffs.create({
 
 export const OtherDefaults = {
 	channelClipDelay: 40,
-	distanceFromTarget: 20,
+	distanceFromTarget: 28,
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
 };

@@ -9,12 +9,12 @@ import (
 
 func (enh *EnhancementShaman) registerFireNovaSpell() {
 
-	results := make([][]*core.SpellResult, enh.Env.GetNumTargets())
-	for i := range enh.Env.GetNumTargets() {
-		results[i] = make([]*core.SpellResult, enh.Env.GetNumTargets())
+	results := make([]core.SpellResultSlice, enh.Env.TotalTargetCount())
+	for i := range enh.Env.TotalTargetCount() {
+		results[i] = make(core.SpellResultSlice, enh.Env.TotalTargetCount())
 	}
 
-	for range enh.Env.GetNumTargets() {
+	for range enh.Env.TotalTargetCount() {
 		nova := enh.RegisterSpell(core.SpellConfig{
 			ActionID:       core.ActionID{SpellID: 1535},
 			SpellSchool:    core.SpellSchoolFire,
@@ -23,9 +23,9 @@ func (enh *EnhancementShaman) registerFireNovaSpell() {
 			ClassSpellMask: shaman.SpellMaskFireNova,
 
 			ApplyEffects: func(sim *core.Simulation, mainTarget *core.Unit, spell *core.Spell) {
-				for j, target := range sim.Encounter.TargetUnits {
+				for _, target := range sim.Encounter.ActiveTargetUnits {
 					if target != mainTarget {
-						spell.DealDamage(sim, results[mainTarget.Index][j])
+						spell.DealDamage(sim, results[mainTarget.Index][target.Index])
 					}
 				}
 			},
@@ -41,7 +41,6 @@ func (enh *EnhancementShaman) registerFireNovaSpell() {
 		ClassSpellMask: shaman.SpellMaskFireNova,
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 13.7,
-			PercentModifier: 100,
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -58,29 +57,24 @@ func (enh *EnhancementShaman) registerFireNovaSpell() {
 		ThreatMultiplier: 1,
 		BonusCoefficient: 0.30000001192,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for i, mainTarget := range sim.Encounter.TargetUnits {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			for _, mainTarget := range sim.Encounter.ActiveTargetUnits {
 				//need to calculate damage even from non flame shocked target in case echo procs from it
-				for j, target := range sim.Encounter.TargetUnits {
+				for _, target := range sim.Encounter.ActiveTargetUnits {
 					if mainTarget != target {
 						baseDamage := enh.CalcAndRollDamageRange(sim, 1.43599998951, 0.15000000596)
-						results[i][j] = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+						results[mainTarget.Index][target.Index] = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 					}
 				}
 			}
-			for i, mainTarget := range sim.Encounter.TargetUnits {
+			for _, mainTarget := range sim.Encounter.ActiveTargetUnits {
 				if enh.FlameShock.Dot(mainTarget).IsActive() {
-					enh.FireNovas[i].Cast(sim, mainTarget)
+					enh.FireNovas[mainTarget.Index].Cast(sim, mainTarget)
 				}
 			}
 		},
-		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				if enh.FlameShock.Dot(aoeTarget).IsActive() {
-					return true
-				}
-			}
-			return false
+		ExtraCastCondition: func(sim *core.Simulation, _ *core.Unit) bool {
+			return enh.FlameShock.AnyDotsActive(sim)
 		},
 	})
 }

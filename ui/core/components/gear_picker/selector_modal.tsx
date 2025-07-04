@@ -14,6 +14,7 @@ import { SimUI } from '../../sim_ui';
 import { EventID, TypedEvent } from '../../typed_event';
 import { mod, randomUUID, sanitizeId } from '../../utils';
 import { BaseModal } from '../base_modal';
+import { ChallengeMode } from '../inputs/other_inputs';
 import GearPicker from './gear_picker';
 import ItemList, { GearData, ItemData, ItemListType } from './item_list';
 import { createGemContainer, getEmptySlotIconUrl } from './utils';
@@ -164,7 +165,7 @@ export default class SelectorModal extends BaseModal {
 							if (equippedItem) {
 								gearData.equipItem(eventID, equippedItem.withItem(item));
 							} else {
-								gearData.equipItem(eventID, new EquippedItem({ item }));
+								gearData.equipItem(eventID, new EquippedItem({ item, challengeMode: this.player.getChallengeModeEnabled() }));
 							}
 						},
 					};
@@ -626,16 +627,18 @@ export default class SelectorModal extends BaseModal {
 				const isItemChange = Item.is(item.item);
 				const newItem = gearData.getEquippedItem() || null;
 				const isRandomSuffixChange = prevItem?._randomSuffix?.id !== newItem?.randomSuffix?.id;
+				const isUpgradeChange = prevItem?.upgrade !== newItem?.upgrade;
 
 				// If the item changes, then gem slots and random suffix options will also change, so remove and recreate these tabs.
-				if (isItemChange || isRandomSuffixChange) {
+				if (isItemChange || isRandomSuffixChange || isUpgradeChange) {
 					if (!isRandomSuffixChange) {
 						this.removeTabs(SelectorModalTabs.RandomSuffixes);
 						this.addRandomSuffixTab(newItem, gearData);
 					}
-
-					this.removeTabs(SelectorModalTabs.Upgrades);
-					this.addUpgradesTab(newItem, gearData);
+					if (!isUpgradeChange) {
+						this.removeTabs(SelectorModalTabs.Upgrades);
+						this.addUpgradesTab(newItem, gearData);
+					}
 
 					this.removeTabs(SelectorModalTabs.Reforging);
 					this.addReforgingTab(newItem, gearData);

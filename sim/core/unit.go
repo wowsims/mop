@@ -31,6 +31,7 @@ const (
 )
 
 type DynamicDamageTakenModifier func(sim *Simulation, spell *Spell, result *SpellResult, isPeriodic bool)
+type DynamicHealingTakenModifier func(sim *Simulation, spell *Spell, result *SpellResult)
 
 type GetSpellPowerValue func(spell *Spell) float64
 type GetAttackPowerValue func(spell *Spell) float64
@@ -132,6 +133,7 @@ type Unit struct {
 	DynamicStatsPets      []*Pet
 	DynamicMeleeSpeedPets []*Pet
 	DynamicCastSpeedPets  []*Pet
+	RegenInheritancePets  []*Pet
 
 	// AutoAttacks is the manager for auto attack swings.
 	// Must be enabled to use, with "EnableAutoAttacks()".
@@ -144,10 +146,11 @@ type Unit struct {
 
 	cdTimers []*Timer
 
-	AttackTables                []*AttackTable
-	DynamicDamageTakenModifiers []DynamicDamageTakenModifier
-	Blockhandler                func(sim *Simulation, spell *Spell, result *SpellResult)
-	avoidanceParams             DiminishingReturnsConstants
+	AttackTables                 []*AttackTable
+	DynamicDamageTakenModifiers  []DynamicDamageTakenModifier
+	DynamicHealingTakenModifiers []DynamicHealingTakenModifier
+	Blockhandler                 func(sim *Simulation, spell *Spell, result *SpellResult)
+	avoidanceParams              DiminishingReturnsConstants
 
 	GCD *Timer
 
@@ -167,9 +170,10 @@ type Unit struct {
 	manaTickWhileCombat    float64
 	manaTickWhileNotCombat float64
 
-	CastSpeed         float64
-	meleeAttackSpeed  float64
-	rangedAttackSpeed float64
+	CastSpeed           float64
+	meleeAttackSpeed    float64
+	rangedAttackSpeed   float64
+	meleeAndRangedHaste float64
 
 	CurrentTarget   *Unit
 	defaultTarget   *Unit
@@ -181,19 +185,22 @@ type Unit struct {
 	// Data about the most recently queued spell, otherwise nil.
 	QueuedSpell *QueuedSpell
 
-	// Used for reacting to mastery stat changes if a spec needs it
+	// Used for reacting to mastery stat changes
 	OnMasteryStatChanged []OnMasteryStatChanged
 
-	// Used for reacting to cast speed changes if a spec needs it (e.g. for cds reduced by haste)
+	// Used for reacting to cast speed changes
 	OnCastSpeedChanged []OnSpeedChanged
 
-	// Used for reacting to melee attack speed changes if a spec needs it (e.g. for cds reduced by haste)
+	// Used for reacting to melee attack speed changes
 	OnMeleeAttackSpeedChanged []OnSpeedChanged
 
-	// Used for reacting to ranged attack speed changes if a spec needs it (e.g. for cds reduced by haste)
+	// Used for reacting to ranged attack speed changes
 	OnRangedAttackSpeedChanged []OnSpeedChanged
 
-	// Used for reacting to transient stat changes if a spec needs if (e.g. for caching snapshotting calculations)
+	// Used for reacting to melee and ranged haste changes
+	OnMeleeAndRangedHasteChanged []OnSpeedChanged
+
+	// Used for reacting to transient stat changes (e.g. for caching snapshotting calculations)
 	OnTemporaryStatsChanges []OnTemporaryStatsChange
 
 	GetSpellPowerValue GetSpellPowerValue
@@ -224,11 +231,11 @@ func (unit *Unit) IsOpponent(other *Unit) bool {
 	return (unit.Type == EnemyUnit) != (other.Type == EnemyUnit)
 }
 
-func (unit *Unit) GetOpponents() []*Unit {
+func (unit *Unit) GetAllOpponents() []*Unit {
 	if unit.Type == EnemyUnit {
 		return unit.Env.Raid.AllUnits
 	} else {
-		return unit.Env.Encounter.TargetUnits
+		return unit.Env.Encounter.AllTargetUnits
 	}
 }
 
@@ -278,6 +285,13 @@ func (unit *Unit) AddDynamicDamageTakenModifier(ddtm DynamicDamageTakenModifier)
 	unit.DynamicDamageTakenModifiers = append(unit.DynamicDamageTakenModifiers, ddtm)
 }
 
+func (unit *Unit) AddDynamicHealingTakenModifier(dhtm DynamicHealingTakenModifier) {
+	if unit.Env != nil && unit.Env.IsFinalized() {
+		panic("Already finalized, cannot add dynamic healing taken modifier!")
+	}
+	unit.DynamicHealingTakenModifiers = append(unit.DynamicHealingTakenModifiers, dhtm)
+}
+
 func (unit *Unit) AddOnMasteryStatChanged(omsc OnMasteryStatChanged) {
 	if unit.Env != nil && unit.Env.IsFinalized() {
 		panic("Already finalized, cannot add on mastery stat changed callback!")
@@ -297,6 +311,20 @@ func (unit *Unit) AddOnMeleeAttackSpeedChanged(ocsc OnSpeedChanged) {
 		panic("Already finalized, cannot add on melee attack speed changed callback!")
 	}
 	unit.OnMeleeAttackSpeedChanged = append(unit.OnMeleeAttackSpeedChanged, ocsc)
+}
+
+func (unit *Unit) AddOnRangedAttackSpeedChanged(ocsc OnSpeedChanged) {
+	if unit.Env != nil && unit.Env.IsFinalized() {
+		panic("Already finalized, cannot add on ranged attack speed changed callback!")
+	}
+	unit.OnRangedAttackSpeedChanged = append(unit.OnRangedAttackSpeedChanged, ocsc)
+}
+
+func (unit *Unit) AddOnMeleeAndRangedHasteChanged(ocsc OnSpeedChanged) {
+	if unit.Env != nil && unit.Env.IsFinalized() {
+		panic("Already finalized, cannot add on melee and ranged haste changed callback!")
+	}
+	unit.OnMeleeAndRangedHasteChanged = append(unit.OnMeleeAndRangedHasteChanged, ocsc)
 }
 
 func (unit *Unit) AddOnTemporaryStatsChange(otsc OnTemporaryStatsChange) {
@@ -344,6 +372,7 @@ func (unit *Unit) processDynamicBonus(sim *Simulation, bonus stats.Stats) {
 	}
 	if bonus[stats.HasteRating] != 0 {
 		unit.updateAttackSpeed()
+		unit.updateMeleeAndRangedHaste()
 		unit.AutoAttacks.UpdateSwingTimers(sim)
 		unit.runicPowerBar.updateRegenTimes(sim)
 		unit.energyBar.processDynamicHasteRatingChange(sim)
@@ -359,9 +388,9 @@ func (unit *Unit) processDynamicBonus(sim *Simulation, bonus stats.Stats) {
 		}
 	}
 
-	for _, pet := range unit.DynamicStatsPets {
-		pet.addOwnerStats(sim, bonus)
-	}
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicStatsPets, func(sim *Simulation, pet *Pet) {
+		pet.AddOwnerStats(sim, bonus)
+	})
 }
 
 func (unit *Unit) EnableDynamicStatDep(sim *Simulation, dep *stats.StatDependency) {
@@ -459,12 +488,12 @@ func (unit *Unit) updateCastSpeed() {
 		unit.OnCastSpeedChanged[i](oldCastSpeed, newCastSpeed)
 	}
 }
-func (unit *Unit) MultiplyCastSpeed(amount float64) {
+func (unit *Unit) MultiplyCastSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.CastSpeedMultiplier *= amount
 
-	for _, pet := range unit.DynamicCastSpeedPets {
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicCastSpeedPets, func(_ *Simulation, pet *Pet) {
 		pet.dynamicCastSpeedInheritance(amount)
-	}
+	})
 
 	unit.updateCastSpeed()
 }
@@ -474,6 +503,15 @@ func (unit *Unit) ApplyCastSpeed(dur time.Duration) time.Duration {
 }
 func (unit *Unit) ApplyCastSpeedForSpell(dur time.Duration, spell *Spell) time.Duration {
 	return time.Duration(float64(dur) * unit.CastSpeed * max(0, spell.CastTimeMultiplier))
+}
+
+// ApplyRangedSpeed applies ranged haste to a duration, for ranged abilities that should be affected by ranged haste
+func (unit *Unit) ApplyRangedSpeed(dur time.Duration) time.Duration {
+	return time.Duration(float64(dur) / unit.TotalRangedHasteMultiplier())
+}
+
+func (unit *Unit) ApplyRealHaste(dur time.Duration) time.Duration {
+	return time.Duration(float64(dur) / unit.TotalRealHasteMultiplier())
 }
 
 func (unit *Unit) TotalMeleeHasteMultiplier() float64 {
@@ -510,12 +548,12 @@ func (unit *Unit) updateMeleeAttackSpeed() {
 // MultiplyMeleeSpeed will alter the attack speed multiplier and change swing speed of all autoattack swings in progress.
 func (unit *Unit) MultiplyMeleeSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.MeleeSpeedMultiplier *= amount
-
 	unit.updateMeleeAttackSpeed()
 
-	for _, pet := range unit.DynamicMeleeSpeedPets {
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(_ *Simulation, pet *Pet) {
 		pet.dynamicMeleeSpeedInheritance(amount)
-	}
+	})
+
 	unit.AutoAttacks.UpdateSwingTimers(sim)
 }
 
@@ -528,10 +566,17 @@ func (unit *Unit) updateRangedAttackSpeed() {
 	}
 }
 
+// Used for "Ranged attack speed" effects like Steady Focus and Serpent's Swiftness
 func (unit *Unit) MultiplyRangedSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.RangedSpeedMultiplier *= amount
 	unit.updateRangedAttackSpeed()
 	unit.AutoAttacks.UpdateSwingTimers(sim)
+}
+
+// Used for "Ranged haste" effects that modify both attack speed and focus regen, like Rapid Fire and Focus Fire
+func (unit *Unit) MultiplyRangedHaste(sim *Simulation, amount float64) {
+	unit.MultiplyRangedSpeed(sim, amount)
+	unit.MultiplyResourceRegenSpeed(sim, amount)
 }
 
 func (unit *Unit) updateAttackSpeed() {
@@ -550,16 +595,27 @@ func (unit *Unit) updateAttackSpeed() {
 	}
 }
 
+func (unit *Unit) updateMeleeAndRangedHaste() {
+	oldMeleeAndRangedHaste := unit.meleeAndRangedHaste
+
+	unit.meleeAndRangedHaste = unit.TotalRealHasteMultiplier()
+
+	for i := range unit.OnMeleeAndRangedHasteChanged {
+		unit.OnMeleeAndRangedHasteChanged[i](oldMeleeAndRangedHaste, unit.meleeAndRangedHaste)
+	}
+}
+
 // Helper for when true haste effects are multiplied for i.E. Bloodlust
 // Seems to also always impact the regen rate
 func (unit *Unit) MultiplyAttackSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.AttackSpeedMultiplier *= amount
 	unit.MultiplyResourceRegenSpeed(sim, amount)
 	unit.updateAttackSpeed()
+	unit.updateMeleeAndRangedHaste()
 
-	for _, pet := range unit.DynamicMeleeSpeedPets {
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(_ *Simulation, pet *Pet) {
 		pet.dynamicMeleeSpeedInheritance(amount)
-	}
+	})
 
 	unit.AutoAttacks.UpdateSwingTimers(sim)
 }
@@ -573,6 +629,10 @@ func (unit *Unit) MultiplyResourceRegenSpeed(sim *Simulation, amount float64) {
 	} else if unit.HasEnergyBar() {
 		unit.MultiplyEnergyRegenSpeed(sim, amount)
 	}
+
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.RegenInheritancePets, func(sim *Simulation, pet *Pet) {
+		pet.MultiplyResourceRegenSpeed(sim, amount)
+	})
 }
 
 func (unit *Unit) AddBonusRangedHitPercent(percentage float64) {
@@ -626,6 +686,7 @@ func (unit *Unit) finalize() {
 	unit.applyParryHaste()
 	unit.updateCastSpeed()
 	unit.updateAttackSpeed()
+	unit.updateMeleeAndRangedHaste()
 	unit.initMovement()
 
 	// All stats added up to this point are part of the 'initial' stats.
@@ -656,7 +717,10 @@ func (unit *Unit) finalize() {
 }
 
 func (unit *Unit) reset(sim *Simulation, _ Agent) {
-	unit.enabled = true
+	if unit.Type != EnemyUnit {
+		unit.enabled = true
+	}
+
 	unit.resetCDs(sim)
 	unit.Hardcast.Expires = startingCDTime
 	unit.ChanneledDot = nil
@@ -751,6 +815,7 @@ func (unit *Unit) GetMetadata() *proto.UnitMetadata {
 			EncounterOnly:   spell.Flags.Matches(SpellFlagEncounterOnly),
 			HasCastTime:     spell.DefaultCast.CastTime > 0,
 			IsFriendly:      spell.Flags.Matches(SpellFlagHelpful),
+			HasExpectedTick: spell.expectedTickDamageInternal != nil,
 		}
 	})
 

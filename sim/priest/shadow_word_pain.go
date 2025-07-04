@@ -6,8 +6,8 @@ import (
 	"github.com/wowsims/mop/sim/core"
 )
 
-const SwpScaleCoeff = 0.743 * 0.85
-const SwpSpellCoeff = 0.366 * 0.85
+const SwpScaleCoeff = 0.743 // Revert 5.4 changes due to Beta changes from June 16th
+const SwpSpellCoeff = 0.366
 
 func (priest *Priest) registerShadowWordPainSpell() {
 	priest.ShadowWordPain = priest.RegisterSpell(core.SpellConfig{
@@ -20,7 +20,6 @@ func (priest *Priest) registerShadowWordPainSpell() {
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 4.4,
-			PercentModifier: 100,
 		},
 
 		DamageMultiplier:         1,
@@ -62,11 +61,15 @@ func (priest *Priest) registerShadowWordPainSpell() {
 		},
 
 		ExpectedTickDamage: func(sim *core.Simulation, target *core.Unit, spell *core.Spell, useSnapshot bool) *core.SpellResult {
+			dot := spell.Dot(target)
 			if useSnapshot {
-				dot := spell.Dot(target)
-				return dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedMagicSnapshotCrit)
+				result := dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedSnapshotCrit)
+				result.Damage /= dot.TickPeriod().Seconds()
+				return result
 			} else {
-				return spell.CalcPeriodicDamage(sim, target, priest.CalcScalingSpellDmg(SwpScaleCoeff), spell.OutcomeExpectedMagicCrit)
+				result := spell.CalcPeriodicDamage(sim, target, priest.CalcScalingSpellDmg(SwpScaleCoeff), spell.OutcomeExpectedMagicCrit)
+				result.Damage /= dot.CalcTickPeriod().Round(time.Millisecond).Seconds()
+				return result
 			}
 		},
 	})

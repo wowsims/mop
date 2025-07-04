@@ -4,6 +4,8 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
+//go:generate stringer -type=ProcMask
+//go:generate stringer -type=AuraCallback
 type ProcMask uint32
 
 // Returns whether there is any overlap between the given masks.
@@ -56,6 +58,8 @@ const (
 	ProcMaskMeleeProc       // Special mask for Melee procs that can trigger things (Can be used together with damage proc mask or alone)
 	ProcMaskRangedProc      // Special mask for Ranged procs that can trigger things (Can be used together with damage proc mask or alone)
 	ProcMaskSpellDamageProc // Mask for procs triggering from spell damage procs like FT weapon and rogue poisons
+
+	ProcMaskLast
 )
 
 const (
@@ -182,7 +186,8 @@ const (
 	SpellFlagSupressDoTApply                               // If present this spell will not apply dots (Used for DTR dot supression)
 	SpellFlagSwapped                                       // Indicates that this spell is not useable because it is from a currently swapped item
 	SpellFlagAoE                                           // Indicates that this spell is an AoE spell. Spells flagged with this will use the AoE Cap multiplier when calculating damage.
-	SpellFlagRanged
+	SpellFlagRanged                                        // Indicates that this spell is a ranged spell. Spells flagged with this will have increased damage when Hunters Mark is active.
+	SpellFlagReadinessTrinket                              // Indicates that this spell part of Readiness. Used by Siege of Orgrimmar CDR trinkets.
 
 	// Used to let agents categorize their spells.
 	SpellFlagAgentReserved1
@@ -204,6 +209,11 @@ const (
 	SpellSchoolHoly
 	SpellSchoolNature
 	SpellSchoolShadow
+	SpellSchoolChaos       SpellSchool = SpellSchoolArcane | SpellSchoolFire | SpellSchoolFrost | SpellSchoolHoly | SpellSchoolNature | SpellSchoolShadow
+	SpellSchoolShadowFlame SpellSchool = SpellSchoolFire | SpellSchoolShadow
+	SpellSchoolShadowFrost SpellSchool = SpellSchoolFrost | SpellSchoolShadow
+	SpellSchoolPlague      SpellSchool = SpellSchoolNature | SpellSchoolShadow
+	SpellSchoolFirestorm   SpellSchool = SpellSchoolFire | SpellSchoolNature
 )
 
 // Returns whether there is any overlap between the given masks.

@@ -11,12 +11,13 @@ func (hunter *Hunter) registerGlaiveTossSpell() {
 		return
 	}
 
-	registerGlaive := func(spellID int32) *core.Spell {
+	registerGlaive := func(spellID int32, tag int32) *core.Spell {
 		return hunter.RegisterSpell(core.SpellConfig{
-			ActionID:                 core.ActionID{SpellID: spellID},
+			ActionID:                 core.ActionID{SpellID: 117050}.WithTag(tag),
 			SpellSchool:              core.SpellSchoolPhysical,
 			ProcMask:                 core.ProcMaskRangedSpecial,
-			Flags:                    core.SpellFlagMeleeMetrics,
+			ClassSpellMask:           HunterSpellGlaiveToss,
+			Flags:                    core.SpellFlagMeleeMetrics | core.SpellFlagRanged | core.SpellFlagPassiveSpell,
 			MissileSpeed:             18,
 			BonusCritPercent:         0,
 			DamageMultiplierAdditive: 1,
@@ -26,48 +27,56 @@ func (hunter *Hunter) registerGlaiveTossSpell() {
 			BonusCoefficient:         1,
 
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				numHits := hunter.Env.GetNumTargets()
+				numTargets := hunter.Env.ActiveTargetCount()
+				sharedDmg := spell.RangedAttackPower()*0.2 + hunter.CalcAndRollDamageRange(sim, 0.7, 1)
+				successChance := hunter.Options.GlaiveTossSuccess / 100.0
 
-				sharedDmg := spell.RangedAttackPower() * 0.2
-				sharedDmg += hunter.CalcAndRollDamageRange(sim, 0.69999998808, 1)
-				// Here we assume the Glaive Toss hits every single target in the encounter.
-				// This might be unrealistic, but until we have more spatial parameters, this is what we should do.
-				results := make([]*core.SpellResult, numHits)
-				for i := int32(0); i < numHits; i++ {
-					unit := hunter.Env.GetTargetUnit(i)
-					// Primary always hits, secondaries only on a successful roll
-					if unit != target {
-						successChance := hunter.Options.GlaiveTossSuccess / 100.0
-						roll := sim.RollWithLabel(0, 1, "GlaiveTossSuccess")
-						if roll > successChance {
+				runPass := func(skipPrimary bool) {
+					for i := int32(0); i < numTargets; i++ {
+						unit := sim.Encounter.ActiveTargetUnits[i]
+
+						// skip the main target on return
+						if skipPrimary && unit == target {
 							continue
 						}
+
+						if unit != target {
+							if sim.RollWithLabel(0, 1, "GlaiveTossSuccess") > successChance {
+								continue
+							}
+						}
+
+						dmg := sharedDmg
+
+						// If primary target we add multiplier
+						if unit == target {
+							dmg *= 4.0
+						}
+
+						res := spell.CalcDamage(sim, unit, dmg, spell.OutcomeRangedHitAndCrit)
+						spell.DealDamage(sim, res)
 					}
-					dmg := sharedDmg
-					if unit == target {
-						dmg *= 4 // primary target takes 4× damage
-					}
-					results[i] = spell.CalcDamage(sim, unit, dmg, spell.OutcomeRangedHitAndCrit)
 				}
 
-				for _, res := range results {
-					spell.DealDamage(sim, res)
-				}
+				// Glaive Toss does two damage passes
+				runPass(false)
+				runPass(true) // Return pass, skips primary target
 			},
 		})
 	}
 
-	firstGlaive := registerGlaive(120755)
-	secondGlaive := registerGlaive(120756)
+	firstGlaive := registerGlaive(120755, 1)
+	secondGlaive := registerGlaive(120756, 2)
 
-	hunter.GlaiveToss = hunter.RegisterSpell(core.SpellConfig{
-		ActionID:     core.ActionID{SpellID: 117050},
-		SpellSchool:  core.SpellSchoolPhysical,
-		ProcMask:     core.ProcMaskProc,
-		Flags:        core.SpellFlagAPL,
-		MaxRange:     40,
-		MissileSpeed: 15,
-		MinRange:     0,
+	hunter.RegisterSpell(core.SpellConfig{
+		ActionID:       core.ActionID{SpellID: 117050},
+		SpellSchool:    core.SpellSchoolPhysical,
+		ProcMask:       core.ProcMaskProc,
+		ClassSpellMask: HunterSpellGlaiveToss,
+		Flags:          core.SpellFlagAPL,
+		MaxRange:       40,
+		MissileSpeed:   15,
+		MinRange:       0,
 		FocusCost: core.FocusCostOptions{
 			Cost: 15,
 		},
@@ -85,6 +94,8 @@ func (hunter *Hunter) registerGlaiveTossSpell() {
 		CritMultiplier:   hunter.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealOutcome(sim, target, spell.OutcomeAlwaysHitNoHitCounter)
+
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
 				firstGlaive.Cast(sim, target)
 				secondGlaive.Cast(sim, target)

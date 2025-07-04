@@ -1,0 +1,767 @@
+character_stats_results: {
+ key: "TestFury-CharacterStats-Default"
+ value: {
+  final_stats: 20220.9525
+  final_stats: 225.75
+  final_stats: 24697.2
+  final_stats: 120.75
+  final_stats: 148
+  final_stats: 2550
+  final_stats: 12353
+  final_stats: 2272.5
+  final_stats: 2562
+  final_stats: 2e-05
+  final_stats: 18621.86605
+  final_stats: 7826
+  final_stats: 44761.0955
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 34190
+  final_stats: 0
+  final_stats: 492163.8
+  final_stats: 0
+  final_stats: 0
+  final_stats: 7.5
+  final_stats: 15.03529
+  final_stats: 30.61091
+  final_stats: 25.58833
+  final_stats: 0
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-AgilePrimalDiamond"
+ value: {
+  dps: 144643.11292
+  tps: 91441.11026
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-AssuranceofConsequence-105472"
+ value: {
+  dps: 141969.85999
+  tps: 89847.19853
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-AusterePrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-BattleplateofResoundingRings"
+ value: {
+  dps: 128640.53072
+  tps: 83298.64033
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-BattleplateoftheLastMogu"
+ value: {
+  dps: 142982.27134
+  tps: 90639.66798
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-BattleplateofthePrehistoricMarauder"
+ value: {
+  dps: 137308.38429
+  tps: 88175.00207
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-BurningPrimalDiamond"
+ value: {
+  dps: 144342.85246
+  tps: 91150.51142
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-CapacitivePrimalDiamond"
+ value: {
+  dps: 143997.50849
+  tps: 90535.36744
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-CourageousPrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-DelicateVialoftheSanguinaire-96895"
+ value: {
+  dps: 141745.85376
+  tps: 89588.80873
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-DestructivePrimalDiamond"
+ value: {
+  dps: 144316.12682
+  tps: 90884.051
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EffulgentPrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EmberPrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
+ value: {
+  dps: 145340.27256
+  tps: 91702.52159
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EnchantWeapon-Colossus-4445"
+ value: {
+  dps: 142503.0402
+  tps: 89943.37171
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EnchantWeapon-JadeSpirit-4442"
+ value: {
+  dps: 142505.93591
+  tps: 89943.37171
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EnchantWeapon-River'sSong-4446"
+ value: {
+  dps: 142503.20416
+  tps: 89943.37171
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EnchantWeapon-SpiritofConquest-5124"
+ value: {
+  dps: 142503.0402
+  tps: 89943.37171
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EnchantWeapon-Windsong-4441"
+ value: {
+  dps: 144158.7275
+  tps: 91206.4842
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EnigmaticPrimalDiamond"
+ value: {
+  dps: 144316.12682
+  tps: 90884.051
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EternalPrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-EvilEyeofGalakras-105491"
+ value: {
+  dps: 161617.49728
+  tps: 106735.02493
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-FabledFeatherofJi-Kun-96842"
+ value: {
+  dps: 143362.52905
+  tps: 91209.74008
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Fen-Yu,FuryofXuen-102248"
+ value: {
+  dps: 151978.96538
+  tps: 97350.26933
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-FleetPrimalDiamond"
+ value: {
+  dps: 143026.38947
+  tps: 90272.21447
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-ForlornPrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-GazeoftheTwins-96915"
+ value: {
+  dps: 153229.07897
+  tps: 96004.66521
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Gong-Lu,StrengthofXuen-102249"
+ value: {
+  dps: 157933.64947
+  tps: 102065.25237
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Horridon'sLastGasp-96757"
+ value: {
+  dps: 141745.85376
+  tps: 89588.80873
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-ImpassivePrimalDiamond"
+ value: {
+  dps: 144316.12682
+  tps: 90884.051
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-IndomitablePrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-InscribedBagofHydra-Spawn-96828"
+ value: {
+  dps: 141745.85376
+  tps: 89588.80873
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Ji-Kun'sRisingWinds-96843"
+ value: {
+  dps: 141745.85376
+  tps: 89588.80873
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-PhaseFingers-4697"
+ value: {
+  dps: 144504.73393
+  tps: 91247.59023
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-PlateofResoundingRings"
+ value: {
+  dps: 111253.75042
+  tps: 71622.73357
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-PlateoftheLastMogu"
+ value: {
+  dps: 120343.04928
+  tps: 77511.5962
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-PlateofthePrehistoricMarauder"
+ value: {
+  dps: 126178.24892
+  tps: 81130.96968
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-PowerfulPrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-PriceofProgress-81266"
+ value: {
+  dps: 141745.85376
+  tps: 89588.80873
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Primordius'TalismanofRage-96873"
+ value: {
+  dps: 155875.00107
+  tps: 97744.27519
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Qian-Le,CourageofNiuzao-102245"
+ value: {
+  dps: 144933.67155
+  tps: 90773.70503
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
+ value: {
+  dps: 147387.09082
+  tps: 93446.90065
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Renataki'sSoulCharm-96741"
+ value: {
+  dps: 144398.79133
+  tps: 91263.37071
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-ReverberatingPrimalDiamond"
+ value: {
+  dps: 145100.89533
+  tps: 91606.35977
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-RevitalizingPrimalDiamond"
+ value: {
+  dps: 144342.85246
+  tps: 91150.51142
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-SinisterPrimalDiamond"
+ value: {
+  dps: 143997.50849
+  tps: 90535.36744
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-SynapseSprings(MarkII)-4898"
+ value: {
+  dps: 146107.58923
+  tps: 92292.65976
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-TalismanofBloodlust-96864"
+ value: {
+  dps: 142708.81451
+  tps: 91925.95969
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-TheGloamingBlade-88149"
+ value: {
+  dps: 145100.89533
+  tps: 91606.35977
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-TyrannicalPrimalDiamond"
+ value: {
+  dps: 141987.64373
+  tps: 89612.85006
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-UnerringVisionofLeiShen-96930"
+ value: {
+  dps: 146744.50905
+  tps: 91863.83384
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Wushoolay'sFinalChoice-96785"
+ value: {
+  dps: 143362.52905
+  tps: 91209.74008
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-Xing-Ho,BreathofYu'lon-102246"
+ value: {
+  dps: 145728.57387
+  tps: 92387.01946
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-YaungolFireCarrier-86518"
+ value: {
+  dps: 145100.89533
+  tps: 91606.35977
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-ZenAlchemistStone-75274"
+ value: {
+  dps: 148489.55644
+  tps: 93850.60556
+ }
+}
+dps_results: {
+ key: "TestFury-Average-Default"
+ value: {
+  dps: 147217.00763
+  tps: 93236.91473
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 353856.0839
+  tps: 239051.22942
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 139840.17133
+  tps: 88740.90208
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-DefaultTalents-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 174953.79544
+  tps: 112012.93416
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 276855.66891
+  tps: 180762.10059
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 101619.96504
+  tps: 65581.25042
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-DefaultTalents-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 111297.73171
+  tps: 72109.84269
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 336678.41635
+  tps: 233004.79429
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 140319.45285
+  tps: 90951.54126
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 174307.29002
+  tps: 112973.16431
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 254193.18188
+  tps: 179025.06858
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 101558.23132
+  tps: 66743.78341
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_smf-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 109763.09395
+  tps: 70951.75722
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 375876.90012
+  tps: 251788.766
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 146704.19704
+  tps: 92651.42929
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-DefaultTalents-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 183786.44117
+  tps: 113831.58391
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 298246.91885
+  tps: 190271.55004
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 109911.43452
+  tps: 69878.09265
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-DefaultTalents-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 120296.63863
+  tps: 75724.52759
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 345318.68384
+  tps: 246388.09267
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 146132.77085
+  tps: 94686.17789
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 177625.28768
+  tps: 114594.06341
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 264619.2317
+  tps: 191659.08813
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 106060.20525
+  tps: 69739.68256
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Troll-p1_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 117097.42482
+  tps: 75537.62799
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 349077.87388
+  tps: 238905.28818
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 141380.11346
+  tps: 89768.37692
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-DefaultTalents-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 174968.87132
+  tps: 108721.55855
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 276684.17144
+  tps: 177113.70152
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 103901.91807
+  tps: 66495.30864
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-DefaultTalents-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 113518.85643
+  tps: 72009.49153
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 338279.91061
+  tps: 234929.20629
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 142114.85637
+  tps: 90565.3805
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 174771.70592
+  tps: 110228.34041
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 255645.08868
+  tps: 179467.40215
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 103112.24589
+  tps: 66867.39098
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_smf-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 109669.66645
+  tps: 69814.97815
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 386337.73968
+  tps: 249608.12026
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-DefaultTalents-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 148489.88789
+  tps: 92673.74228
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-DefaultTalents-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 182174.18775
+  tps: 112749.43029
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 299279.5746
+  tps: 193795.25963
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 109794.63804
+  tps: 69900.6471
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-DefaultTalents-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 116445.57783
+  tps: 73804.4522
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 349310.74741
+  tps: 249917.39799
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 145371.34248
+  tps: 94321.48547
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 176912.8693
+  tps: 112190.95169
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongMultiTarget"
+ value: {
+  dps: 266827.05043
+  tps: 193716.68751
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
+ value: {
+  dps: 107065.21222
+  tps: 70197.49875
+ }
+}
+dps_results: {
+ key: "TestFury-Settings-Worgen-p1_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-5.0yards-ShortSingleTarget"
+ value: {
+  dps: 114320.60543
+  tps: 72903.51981
+ }
+}
+dps_results: {
+ key: "TestFury-SwitchInFrontOfTarget-Default"
+ value: {
+  dps: 131932.04193
+  tps: 84629.49889
+ }
+}

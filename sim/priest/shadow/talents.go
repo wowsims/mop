@@ -27,7 +27,7 @@ func (shadow *ShadowPriest) registerSurgeOfDarkness() {
 	}).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  priest.PriestSpellMindSpike,
 		Kind:       core.SpellMod_PowerCost_Pct,
-		FloatValue: -100,
+		FloatValue: -2,
 	}).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  priest.PriestSpellMindSpike,
 		Kind:       core.SpellMod_CastTime_Pct,
@@ -121,7 +121,7 @@ func (shadow *ShadowPriest) registerSolaceAndInstanity() {
 
 	shadow.OnSpellRegistered(func(spell *core.Spell) {
 		if spell.ClassSpellMask == priest.PriestSpellDevouringPlagueDoT {
-			for _, target := range shadow.Env.Encounter.TargetUnits {
+			for _, target := range shadow.Env.Encounter.AllTargetUnits {
 				dot := spell.Dot(target)
 				if dot != nil {
 					dot.ApplyOnGain(func(aura *core.Aura, sim *core.Simulation) {
@@ -184,7 +184,7 @@ func (shadow *ShadowPriest) registerDivineInsight() {
 	costMod := shadow.AddDynamicMod(core.SpellModConfig{
 		ClassMask:  priest.PriestSpellMindBlast,
 		Kind:       core.SpellMod_PowerCost_Pct,
-		FloatValue: -100,
+		FloatValue: -2,
 	})
 
 	procAura := shadow.RegisterAura(core.Aura{

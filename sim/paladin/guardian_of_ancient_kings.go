@@ -56,7 +56,7 @@ func (paladin *Paladin) registerHolyGuardian(duration time.Duration) {
 
 	spell := paladin.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
-		Flags:          core.SpellFlagAPL,
+		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
 		ClassSpellMask: SpellMaskGuardianOfAncientKings,
 
 		Cast: core.CastConfig{
@@ -106,7 +106,7 @@ func (paladin *Paladin) registerProtectionGuardian(duration time.Duration) {
 
 	spell := paladin.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
-		Flags:          core.SpellFlagAPL | core.SpellFlagHelpful,
+		Flags:          core.SpellFlagAPL | core.SpellFlagHelpful | core.SpellFlagReadinessTrinket,
 		ClassSpellMask: SpellMaskGuardianOfAncientKings,
 
 		Cast: core.CastConfig{
@@ -172,13 +172,11 @@ func (paladin *Paladin) registerRetributionGuardian(duration time.Duration) {
 		},
 	})
 
-	numTargets := paladin.Env.GetNumTargets()
-
 	ancientFury := paladin.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 86704},
 		SpellSchool: core.SpellSchoolHoly,
 		ProcMask:    core.ProcMaskSpellDamage,
-		Flags:       core.SpellFlagPassiveSpell,
+		Flags:       core.SpellFlagPassiveSpell | core.SpellFlagReadinessTrinket,
 
 		MaxRange: 10,
 
@@ -186,24 +184,17 @@ func (paladin *Paladin) registerRetributionGuardian(duration time.Duration) {
 		CritMultiplier:   paladin.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := paladin.CalcAndRollDamageRange(sim, 0.23659999669, 0.30000001192) +
 				0.10700000077*spell.SpellPower()
 
 			// Deals X Holy damage per application of Ancient Power,
 			// divided evenly among all targets within 10 yards.
 			baseDamage *= float64(paladin.AncientPowerAura.GetStacks())
-			baseDamage /= float64(numTargets)
+			baseDamage /= float64(sim.Environment.ActiveTargetCount())
 
-			results := make([]*core.SpellResult, numTargets)
-			for idx := range numTargets {
-				currentTarget := sim.Environment.GetTargetUnit(idx)
-				results[idx] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
-
-			for idx := range numTargets {
-				spell.DealDamage(sim, results[idx])
-			}
+			spell.CalcAoeDamage(sim, baseDamage, spell.OutcomeMagicHitAndCrit)
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 

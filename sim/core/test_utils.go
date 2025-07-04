@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -31,19 +32,23 @@ var AverageDefaultSimTestOptions = &proto.SimOptions{
 const ShortDuration = 60
 const LongDuration = 300
 
-var DefaultTargetProto = &proto.Target{
-	Level: CharacterLevel + 3,
-	Stats: stats.Stats{
-		stats.Armor:       24835,
-		stats.AttackPower: 0,
-	}.ToProtoArray(),
-	MobType: proto.MobType_MobTypeMechanical,
+func FreshDefaultTargetConfig() *proto.Target {
+	return &proto.Target{
+		Level: CharacterLevel + 3,
+		Stats: stats.Stats{
+			stats.Armor:       24835,
+			stats.AttackPower: 0,
+		}.ToProtoArray(),
+		MobType: proto.MobType_MobTypeMechanical,
 
-	SwingSpeed:    2,
-	MinBaseDamage: 550000,
-	ParryHaste:    false,
-	DamageSpread:  0.4,
+		SwingSpeed:    2,
+		MinBaseDamage: 550000,
+		ParryHaste:    false,
+		DamageSpread:  0.4,
+	}
 }
+
+var DefaultTargetProto = FreshDefaultTargetConfig()
 
 var FullRaidBuffs = &proto.RaidBuffs{
 	// +10% Attack Power
@@ -111,9 +116,15 @@ func NewDefaultTarget() *proto.Target {
 func MakeDefaultEncounterCombos() []EncounterCombo {
 	var DefaultTarget = NewDefaultTarget()
 
-	multipleTargets := make([]*proto.Target, 20)
+	multipleTargets := make([]*proto.Target, 21)
 	for i := range multipleTargets {
-		multipleTargets[i] = DefaultTarget
+		if i != 10 {
+			multipleTargets[i] = DefaultTarget
+		} else {
+			disabledTarget := FreshDefaultTargetConfig()
+			disabledTarget.DisabledAtStart = true
+			multipleTargets[i] = disabledTarget
+		}
 	}
 
 	return []EncounterCombo{
@@ -124,6 +135,7 @@ func MakeDefaultEncounterCombos() []EncounterCombo {
 				ExecuteProportion_20: 0.2,
 				ExecuteProportion_25: 0.25,
 				ExecuteProportion_35: 0.35,
+				ExecuteProportion_45: 0.45,
 				ExecuteProportion_90: 0.90,
 				Targets: []*proto.Target{
 					DefaultTarget,
@@ -137,6 +149,7 @@ func MakeDefaultEncounterCombos() []EncounterCombo {
 				ExecuteProportion_20: 0.2,
 				ExecuteProportion_25: 0.25,
 				ExecuteProportion_35: 0.35,
+				ExecuteProportion_45: 0.45,
 				ExecuteProportion_90: 0.90,
 				Targets: []*proto.Target{
 					DefaultTarget,
@@ -150,6 +163,7 @@ func MakeDefaultEncounterCombos() []EncounterCombo {
 				ExecuteProportion_20: 0.2,
 				ExecuteProportion_25: 0.25,
 				ExecuteProportion_35: 0.35,
+				ExecuteProportion_45: 0.45,
 				ExecuteProportion_90: 0.90,
 				Targets:              multipleTargets,
 			},
@@ -164,6 +178,7 @@ func MakeSingleTargetEncounter(variation float64) *proto.Encounter {
 		ExecuteProportion_20: 0.2,
 		ExecuteProportion_25: 0.25,
 		ExecuteProportion_35: 0.35,
+		ExecuteProportion_45: 0.45,
 		ExecuteProportion_90: 0.90,
 		Targets: []*proto.Target{
 			NewDefaultTarget(),
@@ -229,4 +244,42 @@ func GetItemSwapGearSet(dir string, file string) ItemSwapSetCombo {
 	}
 
 	return ItemSwapSetCombo{Label: file, ItemSwap: ItemSwapFromJsonString(string(data))}
+}
+
+func GenerateTalentVariations(baseTalents string, baseGlyphs *proto.Glyphs) []TalentsCombo {
+	return GenerateTalentVariationsForRows(baseTalents, baseGlyphs, []int{0, 1, 2, 3, 4, 5})
+}
+
+func GenerateTalentVariationsForRows(baseTalents string, baseGlyphs *proto.Glyphs, rowsToVary []int) []TalentsCombo {
+	if len(baseTalents) != 6 {
+		log.Fatalf("Expected 6-digit talent string, got: %s", baseTalents)
+	}
+
+	var combinations []TalentsCombo
+
+	baseRunes := []rune(baseTalents)
+	for _, row := range rowsToVary {
+		if row < 0 || row >= 6 {
+			log.Fatalf("Invalid row index: %d, must be between 0 and 5", row)
+		}
+
+		for choice := 0; choice < 3; choice++ {
+			if int(baseRunes[row]-'0') == choice {
+				continue
+			}
+
+			variation := make([]rune, 6)
+			copy(variation, baseRunes)
+			variation[row] = rune('0' + choice)
+
+			label := fmt.Sprintf("Row%d_Talent%d", row+1, choice)
+			combinations = append(combinations, TalentsCombo{
+				Label:   label,
+				Talents: string(variation),
+				Glyphs:  baseGlyphs,
+			})
+		}
+	}
+
+	return combinations
 }

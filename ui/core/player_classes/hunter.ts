@@ -21,6 +21,7 @@ export class Hunter extends PlayerClass<Class.ClassHunter> {
 		Race.RaceDwarf,
 		Race.RaceNightElf,
 		Race.RaceDraenei,
+		Race.RaceAlliancePandaren,
 		// [H]
 		Race.RaceOrc,
 		Race.RaceUndead,
@@ -28,6 +29,7 @@ export class Hunter extends PlayerClass<Class.ClassHunter> {
 		Race.RaceTroll,
 		Race.RaceBloodElf,
 		Race.RaceGoblin,
+		Race.RaceHordePandaren,
 	];
 	static armorTypes: ArmorType[] = [ArmorType.ArmorTypeMail];
 	static weaponTypes: EligibleWeaponType[] = []; // hunter cannot wear weapons anymore

@@ -86,10 +86,10 @@ func (value *APLValueNumberTargets) Type() proto.APLValueType {
 	return proto.APLValueType_ValueTypeInt
 }
 func (value *APLValueNumberTargets) GetInt(sim *Simulation) int32 {
-	return sim.GetNumTargets()
+	return sim.ActiveTargetCount()
 }
 func (value *APLValueNumberTargets) String() string {
-	return "Num Targets"
+	return "Num Active Targets"
 }
 
 type APLValueIsExecutePhase struct {
@@ -115,6 +115,8 @@ func (value *APLValueIsExecutePhase) GetBool(sim *Simulation) bool {
 		return sim.IsExecutePhase25()
 	} else if value.threshold == proto.APLValueIsExecutePhase_E35 {
 		return sim.IsExecutePhase35()
+	} else if value.threshold == proto.APLValueIsExecutePhase_E45 {
+		return sim.IsExecutePhase45()
 	} else if value.threshold == proto.APLValueIsExecutePhase_E90 {
 		return sim.IsExecutePhase90()
 	} else {

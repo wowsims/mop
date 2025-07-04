@@ -8,8 +8,8 @@ import (
 )
 
 func (ww *WindwalkerMonk) registerTigereyeBrew() {
-	buffActionID := core.ActionID{SpellID: 116740}
-	stackActionID := core.ActionID{SpellID: 125195}
+	buffActionID := core.ActionID{SpellID: 1247275}
+	stackActionID := core.ActionID{SpellID: 1247279}
 
 	ww.Monk.RegisterOnChiSpent(func(sim *core.Simulation, chiSpent int32) {
 		accumulatedChi := ww.outstandingChi + chiSpent
@@ -30,8 +30,13 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 	})
 
 	ww.Monk.RegisterOnNewBrewStacks(func(sim *core.Simulation, stacksToAdd int32) {
+
+		if ww.T15Windwalker4P != nil && ww.T15Windwalker4P.IsActive() && sim.Proc(0.1, "Item - Monk T15 Windwalker 4P Bonus") {
+			stacksToAdd += 1
+		}
+
 		ww.TigereyeBrewStackAura.Activate(sim)
-		ww.TigereyeBrewStackAura.AddStack(sim)
+		ww.TigereyeBrewStackAura.SetStacks(sim, ww.TigereyeBrewStackAura.GetStacks()+stacksToAdd)
 	})
 
 	var damageMultiplier float64
@@ -43,7 +48,7 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			stacksToConsume := min(10, ww.TigereyeBrewStackAura.GetStacks())
 
-			damagePerStack := 0.035 + ww.getMasteryPercent() + core.TernaryFloat64(ww.T15Windwalker4P != nil && ww.T15Windwalker4P.IsActive(), 0.005, 0)
+			damagePerStack := 0.035 + ww.getMasteryPercent()
 			damageMultiplier = (1 + damagePerStack*float64(stacksToConsume))
 
 			ww.PseudoStats.DamageDealtMultiplier *= damageMultiplier
@@ -83,6 +88,7 @@ func (ww *WindwalkerMonk) registerTigereyeBrew() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			buffAura.Deactivate(sim)
 			buffAura.Activate(sim)
 		},
 

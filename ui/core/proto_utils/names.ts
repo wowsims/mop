@@ -162,6 +162,8 @@ export const spellSchoolNames: Map<number, string> = new Map([
 	[SpellSchool.Arcane + SpellSchool.Frost, 'Spellfrost'],
 	[SpellSchool.Frost + SpellSchool.Fire, 'Frostfire'],
 	[SpellSchool.Shadow + SpellSchool.Frost, 'Shadowfrost'],
+	[SpellSchool.Nature + SpellSchool.Shadow, 'Plague'],
+	[SpellSchool.Fire + SpellSchool.Nature, 'Firestorm'],
 ]);
 
 export const shortSecondaryStatNames: Map<Stat, string> = new Map([
@@ -262,14 +264,11 @@ export const sourceNames: Map<SourceFilterOption, string> = new Map([
 ]);
 export const raidNames: Map<RaidFilterOption, string> = new Map([
 	[RaidFilterOption.RaidUnknown, 'Unknown'],
-	[RaidFilterOption.RaidIcecrownCitadel, 'Icecrown Citadel'],
-	[RaidFilterOption.RaidRubySanctum, 'Ruby Sanctum'],
-	[RaidFilterOption.RaidBlackwingDescent, 'Blackwing Descent'],
-	[RaidFilterOption.RaidTheBastionOfTwilight, 'The Bastion of Twilight'],
-	[RaidFilterOption.RaidBaradinHold, 'Baradin Hold'],
-	[RaidFilterOption.RaidThroneOfTheFourWinds, 'Throne of the Four Winds'],
-	[RaidFilterOption.RaidFirelands, 'Firelands'],
-	[RaidFilterOption.RaidDragonSoul, 'Dragon Soul'],
+	[RaidFilterOption.RaidMogushanVaults, 'Mogu\'shan Vaults'],
+	[RaidFilterOption.RaidHeartOfFear, 'Heart of Fear'],
+	[RaidFilterOption.RaidTerraceOfEndlessSpring, 'Terrace of Endless Spring'],
+	[RaidFilterOption.RaidThroneOfThunder, 'Throne of Thunder'],
+	[RaidFilterOption.RaidSiegeOfOrgrimmar, 'Siege of Orgrimmar'],
 ]);
 
 export const difficultyNames: Map<DungeonDifficulty, string> = new Map([
@@ -390,13 +389,13 @@ export const masterySpellNames: Map<Spec, string> = new Map([
 	[Spec.SpecProtectionWarrior, 'Critical Block'],
 	[Spec.SpecArcaneMage, 'Mana Adept'],
 	[Spec.SpecFireMage, 'Flashburn'],
-	[Spec.SpecFrostMage, 'Frostburn'],
+	[Spec.SpecFrostMage, 'Icicles'],
 	[Spec.SpecDisciplinePriest, 'Shield Discipline'],
 	[Spec.SpecHolyPriest, 'Echo of Light'],
 	[Spec.SpecShadowPriest, 'Shadow Orb Power'],
 	[Spec.SpecAfflictionWarlock, 'Potent Afflictions'],
 	[Spec.SpecDemonologyWarlock, 'Master Demonologist'],
-	[Spec.SpecDestructionWarlock, 'Fiery Apocalypse'],
+	[Spec.SpecDestructionWarlock, 'Emberstorm'],
 	[Spec.SpecBrewmasterMonk, 'Elusive Brawler'],
 	[Spec.SpecMistweaverMonk, 'Gift of the Serpent'],
 	[Spec.SpecWindwalkerMonk, 'Bottled Fury'],
@@ -436,7 +435,7 @@ export const masterySpellIDs: Map<Spec, number> = new Map([
 	[Spec.SpecDestructionWarlock, 77220],
 	[Spec.SpecBrewmasterMonk, 117906],
 	[Spec.SpecMistweaverMonk, 117907],
-	[Spec.SpecWindwalkerMonk, 115636],
+	[Spec.SpecWindwalkerMonk, 1247280],
 ]);
 export const statCapTypeNames = new Map<StatCapType, string>([
 	[StatCapType.TypeHardCap, 'Hard cap'],

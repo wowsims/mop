@@ -9,14 +9,14 @@ import (
 	"github.com/wowsims/mop/sim/shaman"
 )
 
-func (enh *EnhancementShaman) getSearingFlamesMultiplier() float64 {
-	return enh.SearingFlamesMultiplier + core.TernaryFloat64(enh.T12Enh2pc.IsActive(), 0.05, 0)
-}
-
 func (enh *EnhancementShaman) registerLavaLashSpell() {
 	damageMultiplier := 3.0
 	if enh.SelfBuffs.ImbueOH == proto.ShamanImbue_FlametongueWeapon {
-		damageMultiplier *= 1.4
+		enh.AddStaticMod(core.SpellModConfig{
+			Kind:       core.SpellMod_DamageDone_Flat,
+			ClassMask:  shaman.SpellMaskLavaLash,
+			FloatValue: 0.4,
+		})
 	}
 
 	enh.LavaLash = enh.RegisterSpell(core.SpellConfig{
@@ -38,9 +38,10 @@ func (enh *EnhancementShaman) registerLavaLashSpell() {
 				Duration: time.Second * 10,
 			},
 		},
-		DamageMultiplier: damageMultiplier,
-		CritMultiplier:   enh.DefaultCritMultiplier(),
-		ThreatMultiplier: 1,
+		DamageMultiplier:         damageMultiplier,
+		DamageMultiplierAdditive: 1,
+		CritMultiplier:           enh.DefaultCritMultiplier(),
+		ThreatMultiplier:         1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := spell.Unit.OHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 			searingFlamesBonus := 1.0
@@ -57,9 +58,9 @@ func (enh *EnhancementShaman) registerLavaLashSpell() {
 
 				if flameShockDot != nil && flameShockDot.IsActive() {
 					numberSpread := 0
-					maxTargets := min(4, len(sim.Encounter.TargetUnits))
-					sortedTargets := make([]*core.Unit, len(sim.Encounter.TargetUnits))
-					copy(sortedTargets, sim.Encounter.TargetUnits)
+					maxTargets := min(4, len(sim.Encounter.ActiveTargetUnits))
+					sortedTargets := make([]*core.Unit, len(sim.Encounter.ActiveTargetUnits))
+					copy(sortedTargets, sim.Encounter.ActiveTargetUnits)
 					slices.SortFunc(sortedTargets, func(a *core.Unit, b *core.Unit) int {
 						aDot := enh.FlameShock.Dot(a)
 						if aDot == nil || !aDot.IsActive() {

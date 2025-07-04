@@ -44,7 +44,15 @@ func (shaman *Shaman) ApplyElementalMastery() {
 		Label:    "Elemental Mastery",
 		ActionID: eleMasterActionID,
 		Duration: time.Second * 20,
-	}).AttachMultiplyCastSpeed(1.3)
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			shaman.MultiplyCastSpeed(sim, 1.3)
+			shaman.MultiplyAttackSpeed(sim, 1.3)
+		},
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			shaman.MultiplyCastSpeed(sim, 1/1.3)
+			shaman.MultiplyAttackSpeed(sim, 1/1.3)
+		},
+	})
 
 	eleMastSpell := shaman.RegisterSpell(core.SpellConfig{
 		ActionID:       eleMasterActionID,
@@ -223,11 +231,11 @@ func (shaman *Shaman) ApplyUnleashedFury() {
 	})
 
 	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:           "Unleashed Fury",
-		ActionID:       core.ActionID{SpellID: 117012},
-		Callback:       core.CallbackOnApplyEffects,
-		ClassSpellMask: SpellMaskUnleashElements,
-		ProcChance:     1.0,
+		Name:            "Unleashed Fury",
+		MetricsActionID: core.ActionID{SpellID: 117012},
+		Callback:        core.CallbackOnApplyEffects,
+		ClassSpellMask:  SpellMaskUnleashElements,
+		ProcChance:      1.0,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			switch shaman.SelfBuffs.ImbueMH {
 			case proto.ShamanImbue_FlametongueWeapon:

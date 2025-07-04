@@ -10,7 +10,7 @@ const VtScaleCoeff = 0.071
 const VtSpellCoeff = 0.415
 
 func (priest *Priest) registerVampiricTouchSpell() {
-	manaMetric := priest.NewManaMetrics(core.ActionID{SpellID: 34914})
+	manaMetric := priest.NewManaMetrics(core.ActionID{SpellID: 34914}.WithTag(1))
 	priest.VampiricTouch = priest.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 34914},
 		SpellSchool:    core.SpellSchoolShadow,
@@ -20,7 +20,6 @@ func (priest *Priest) registerVampiricTouchSpell() {
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 3,
-			PercentModifier: 100,
 		},
 
 		DamageMultiplier:         1,
@@ -61,11 +60,15 @@ func (priest *Priest) registerVampiricTouchSpell() {
 			}
 		},
 		ExpectedTickDamage: func(sim *core.Simulation, target *core.Unit, spell *core.Spell, useSnapshot bool) *core.SpellResult {
+			dot := spell.Dot(target)
 			if useSnapshot {
-				dot := spell.Dot(target)
-				return dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedMagicSnapshotCrit)
+				result := dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedSnapshotCrit)
+				result.Damage /= dot.TickPeriod().Seconds()
+				return result
 			} else {
-				return spell.CalcPeriodicDamage(sim, target, priest.CalcScalingSpellDmg(VtScaleCoeff), spell.OutcomeExpectedMagicCrit)
+				result := spell.CalcPeriodicDamage(sim, target, priest.CalcScalingSpellDmg(VtScaleCoeff), spell.OutcomeExpectedMagicCrit)
+				result.Damage /= dot.CalcTickPeriod().Round(time.Millisecond).Seconds()
+				return result
 			}
 		},
 	})

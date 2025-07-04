@@ -247,6 +247,10 @@ func (aa *AutoAttacks) SetReplaceMHSwing(replaceSwing ReplaceMHSwing) {
 	aa.mh.replaceSwing = replaceSwing
 }
 
+func (aa *AutoAttacks) SetReplaceOHSwing(replaceSwing ReplaceMHSwing) {
+	aa.oh.replaceSwing = replaceSwing
+}
+
 func (aa *AutoAttacks) MHConfig() *SpellConfig {
 	return &aa.mh.config
 }
@@ -357,6 +361,7 @@ type AutoAttackOptions struct {
 	AutoSwingMelee  bool // If true, core engine will handle calling SwingMelee() for you.
 	AutoSwingRanged bool // If true, core engine will handle calling SwingRanged() for you.
 	ReplaceMHSwing  ReplaceMHSwing
+	ProcMask        ProcMask // If set will replace the ProcMask for any weapon spells configured.
 }
 
 func (unit *Unit) EnableAutoAttacks(agent Agent, options AutoAttackOptions) {
@@ -396,7 +401,7 @@ func (unit *Unit) EnableAutoAttacks(agent Agent, options AutoAttackOptions) {
 	unit.AutoAttacks.mh.config = SpellConfig{
 		ActionID:    ActionID{OtherID: proto.OtherAction_OtherActionAttack, Tag: 1},
 		SpellSchool: options.MainHand.GetSpellSchool(),
-		ProcMask:    ProcMaskMeleeMHAuto,
+		ProcMask:    Ternary(options.ProcMask == ProcMaskUnknown, ProcMaskMeleeMHAuto, options.ProcMask),
 		Flags:       SpellFlagMeleeMetrics | SpellFlagNoOnCastComplete,
 
 		DamageMultiplier:         1,
@@ -421,7 +426,7 @@ func (unit *Unit) EnableAutoAttacks(agent Agent, options AutoAttackOptions) {
 	unit.AutoAttacks.oh.config = SpellConfig{
 		ActionID:    ActionID{OtherID: proto.OtherAction_OtherActionAttack, Tag: 2},
 		SpellSchool: options.OffHand.GetSpellSchool(),
-		ProcMask:    ProcMaskMeleeOHAuto,
+		ProcMask:    Ternary(options.ProcMask == ProcMaskUnknown, ProcMaskMeleeOHAuto, options.ProcMask),
 		Flags:       SpellFlagMeleeMetrics | SpellFlagNoOnCastComplete,
 
 		DamageMultiplier:         1,
@@ -441,8 +446,8 @@ func (unit *Unit) EnableAutoAttacks(agent Agent, options AutoAttackOptions) {
 	unit.AutoAttacks.ranged.config = SpellConfig{
 		ActionID:     ActionID{OtherID: proto.OtherAction_OtherActionShoot},
 		SpellSchool:  options.Ranged.GetSpellSchool(),
-		ProcMask:     ProcMaskRangedAuto,
-		Flags:        SpellFlagMeleeMetrics,
+		ProcMask:     Ternary(options.ProcMask == ProcMaskUnknown, ProcMaskRangedAuto, options.ProcMask),
+		Flags:        SpellFlagMeleeMetrics | SpellFlagRanged,
 		MissileSpeed: 40,
 
 		DamageMultiplier:         1,
@@ -746,7 +751,7 @@ func (aa *AutoAttacks) DesyncOffHand(sim *Simulation, readyAt time.Duration) {
 
 // StopMeleeUntil should be used whenever a non-melee spell is cast. It stops melee, then restarts it
 // at end of cast, but with a reset swing timer (as if swings had just landed).
-func (aa *AutoAttacks) StopMeleeUntil(sim *Simulation, readyAt time.Duration, desyncOH bool) {
+func (aa *AutoAttacks) StopMeleeUntil(sim *Simulation, readyAt time.Duration) {
 	if !aa.AutoSwingMelee { // if not auto swinging, don't auto restart.
 		return
 	}
@@ -822,7 +827,7 @@ func (aa *AutoAttacks) NextAttackAt() time.Duration {
 func (aa *AutoAttacks) RandomizeMeleeTiming(sim *Simulation) {
 	swingDur := aa.MainhandSwingSpeed()
 	randomAutoOffset := DurationFromSeconds(sim.RandomFloat("Melee Timing") * swingDur.Seconds() / 2)
-	aa.StopMeleeUntil(sim, sim.CurrentTime-swingDur+randomAutoOffset, true)
+	aa.StopMeleeUntil(sim, sim.CurrentTime-swingDur+randomAutoOffset)
 }
 
 // Returns whether a PPM-based effect procced.

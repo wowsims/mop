@@ -63,11 +63,10 @@ func (fireElemental *FireElemental) registerFireNova() {
 		ThreatMultiplier: 1,
 		BonusCoefficient: 1.00,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				baseDamage := sim.Roll(49*levelScalingMultiplier, 58*levelScalingMultiplier) //Estimated from beta testing 49 58
-				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
+				return sim.Roll(49*levelScalingMultiplier, 58*levelScalingMultiplier) //Estimated from beta testing 49 58
+			})
 		},
 	})
 }
@@ -105,14 +104,15 @@ func (fireElemental *FireElemental) registerImmolate() {
 			Aura: core.Aura{
 				Label: "Immolate",
 			},
-			NumberOfTicks:    7,
-			TickLength:       time.Second * 3,
-			BonusCoefficient: 0.34999999404,
+			NumberOfTicks:       7,
+			TickLength:          time.Second * 3,
+			BonusCoefficient:    0.34999999404,
+			AffectedByCastSpeed: true,
 			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, isRollover bool) {
 				dot.Snapshot(target, fireElemental.shamanOwner.CalcScalingSpellDmg(0.62800002098))
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.Spell.OutcomeMagicHitAndCrit)
+				dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
 			},
 		},
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
