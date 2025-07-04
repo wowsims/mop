@@ -174,6 +174,8 @@ func (pet *Pet) resetDynamicStats(sim *Simulation) {
 
 	if idx := slices.Index(pet.Owner.DynamicStatsPets, pet); idx != -1 {
 		pet.Owner.DynamicStatsPets = removeBySwappingToBack(pet.Owner.DynamicStatsPets, idx)
+	} else {
+		panic("Pet not present in dynamic stats pet list!")
 	}
 
 	pet.dynamicStatInheritance = nil
@@ -314,6 +316,7 @@ func (pet *Pet) enableDynamicMeleeSpeed(sim *Simulation) {
 
 	pet.dynamicMeleeSpeedInheritance(sim, pet.Owner.PseudoStats.MeleeSpeedMultiplier)
 	pet.dynamicMeleeSpeedInheritance(sim, pet.Owner.PseudoStats.AttackSpeedMultiplier)
+	pet.Owner.DynamicMeleeSpeedPets = append(pet.Owner.DynamicMeleeSpeedPets, pet)
 }
 
 func (pet *Pet) resetDynamicMeleeSpeed(sim *Simulation) {
@@ -323,6 +326,8 @@ func (pet *Pet) resetDynamicMeleeSpeed(sim *Simulation) {
 
 	if idx := slices.Index(pet.Owner.DynamicMeleeSpeedPets, pet); idx != -1 {
 		pet.Owner.DynamicMeleeSpeedPets = removeBySwappingToBack(pet.Owner.DynamicMeleeSpeedPets, idx)
+	} else {
+		panic("Pet not present in dynamic melee speed pet list!")
 	}
 
 	pet.dynamicMeleeSpeedInheritance(sim, 1 / pet.inheritedMeleeSpeedMultiplier)
@@ -344,6 +349,7 @@ func (pet *Pet) enableDynamicCastSpeed(sim *Simulation) {
 	}
 
 	pet.dynamicCastSpeedInheritance(sim, pet.Owner.PseudoStats.CastSpeedMultiplier)
+	pet.Owner.DynamicCastSpeedPets = append(pet.Owner.DynamicCastSpeedPets, pet)
 }
 
 func (pet *Pet) resetDynamicCastSpeed(sim *Simulation) {
@@ -353,6 +359,8 @@ func (pet *Pet) resetDynamicCastSpeed(sim *Simulation) {
 
 	if idx := slices.Index(pet.Owner.DynamicCastSpeedPets, pet); idx != -1 {
 		pet.Owner.DynamicCastSpeedPets = removeBySwappingToBack(pet.Owner.DynamicCastSpeedPets, idx)
+	} else {
+		panic("Pet not present in dynamic cast speed pet list!")
 	}
 
 	pet.dynamicCastSpeedInheritance(sim, 1 / pet.inheritedCastSpeedMultiplier)
