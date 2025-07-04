@@ -97,6 +97,7 @@ func (we *WaterElemental) ExecuteCustomRotation(sim *core.Simulation) {
 }
 
 func (we *WaterElemental) registerWaterboltSpell() {
+
 	waterboltVariance := 0.25   // Per https://wago.tools/db2/SpellEffect?build=5.5.0.60802&filter%5BSpellID%5D=31707 Field: "Variance"
 	waterboltScale := 0.5       // Per https://wago.tools/db2/SpellEffect?build=5.5.0.60802&filter%5BSpellID%5D=31707 Field: "Coefficient"
 	waterboltCoefficient := 0.5 // Per https://wago.tools/db2/SpellEffect?build=5.5.0.60802&filter%5BSpellID%5D=31707 Field: "BonusCoefficient"
@@ -106,6 +107,8 @@ func (we *WaterElemental) registerWaterboltSpell() {
 			ClassMask: mage.MageWaterElementalSpellWaterBolt,
 		})
 	}
+
+	hasGlyph := we.mageOwner.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfIcyVeins)
 
 	we.Waterbolt = we.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 31707},
@@ -129,11 +132,19 @@ func (we *WaterElemental) registerWaterboltSpell() {
 		BonusCoefficient: waterboltCoefficient,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			baseDamage := we.CalcAndRollDamageRange(sim, waterboltScale, waterboltVariance)
-			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-				spell.DealDamage(sim, result)
-			})
+			hasSplitBolts := we.mageOwner.IcyVeinsAura.IsActive() && hasGlyph
+			numberOfBolts := core.TernaryInt32(hasSplitBolts, 3, 1)
+			damageMultiplier := core.TernaryFloat64(hasSplitBolts, 0.4, 1.0)
+
+			spell.DamageMultiplier *= damageMultiplier
+			for range numberOfBolts {
+				baseDamage := we.CalcAndRollDamageRange(sim, waterboltScale, waterboltVariance)
+				result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+				spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+					spell.DealDamage(sim, result)
+				})
+			}
+			spell.DamageMultiplier /= damageMultiplier
 		},
 	})
 }
