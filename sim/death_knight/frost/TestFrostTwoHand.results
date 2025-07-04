@@ -73,8 +73,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 157113.83997
-  tps: 141003.84541
+  dps: 157134.27492
+  tps: 141084.64152
   hps: 2808.31353
  }
 }
@@ -514,8 +514,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-Average-Default"
  value: {
-  dps: 161923.01044
-  tps: 148535.62484
+  dps: 161923.15843
+  tps: 148535.6204
   hps: 2487.40757
  }
 }
