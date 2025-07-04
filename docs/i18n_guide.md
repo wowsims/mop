@@ -2,7 +2,7 @@
 
 Hey there! 👋 This guide will help you work with translations in our WoW sim project.
 
-## Adding New LocaleAdd commentMore actions
+## Adding New Locale
 
 1. Create `{lang}.json` in `assets/locales`. For example, `de.json`.
 
