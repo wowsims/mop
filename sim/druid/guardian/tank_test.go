@@ -78,9 +78,7 @@ var StandardGlyphs = &proto.Glyphs{}
 
 var PlayerOptionsDefault = &proto.Player_GuardianDruid{
 	GuardianDruid: &proto.GuardianDruid{
-		Options: &proto.GuardianDruid_Options{
-			StartingRage: 10,
-		},
+		Options: &proto.GuardianDruid_Options{},
 	},
 }
 var FullConsumesSpec = &proto.ConsumesSpec{

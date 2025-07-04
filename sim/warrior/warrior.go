@@ -122,7 +122,6 @@ type Warrior struct {
 	LastStandAura       *core.Aura
 	RallyingCryAura     *core.Aura
 	VictoryRushAura     *core.Aura
-	SwordAndBoardAura   *core.Aura
 	ShieldBarrierAura   *core.DamageAbsorptionAura
 
 	SkullBannerAura         *core.Aura
@@ -193,6 +192,9 @@ func (warrior *Warrior) Reset(_ *core.Simulation) {
 	warrior.Stance = StanceNone
 }
 
+func (warrior *Warrior) OnEncounterStart(sim *core.Simulation) {
+}
+
 func NewWarrior(character *core.Character, options *proto.WarriorOptions, talents string, inputs WarriorInputs) *Warrior {
 	warrior := &Warrior{
 		Character:         *character,
@@ -204,7 +206,6 @@ func NewWarrior(character *core.Character, options *proto.WarriorOptions, talent
 
 	warrior.EnableRageBar(core.RageBarOptions{
 		MaxRage:            core.TernaryFloat64(warrior.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfUnendingRage), 120, 100),
-		StartingRage:       options.StartingRage,
 		BaseRageMultiplier: 1,
 	})
 

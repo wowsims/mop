@@ -115,7 +115,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 			OtherInputs.AbsorbFrac,
 			OtherInputs.BurstWindow,
 			OtherInputs.HpPercentForDefensives,
-			DruidInputs.StartingRage,
 			OtherInputs.InFrontOfTarget,
 		],
 	},

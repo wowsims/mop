@@ -56,13 +56,15 @@ func (affliction *AfflictionWarlock) GetWarlock() *warlock.Warlock {
 	return affliction.Warlock
 }
 
+const MaxSoulShards = int32(4)
+
 func (affliction *AfflictionWarlock) Initialize() {
 	affliction.Warlock.Initialize()
 
 	affliction.SoulShards = affliction.RegisterNewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
 		Type:    proto.SecondaryResourceType_SecondaryResourceTypeSoulShards,
-		Max:     4,
-		Default: 4,
+		Max:     MaxSoulShards,
+		Default: MaxSoulShards,
 	})
 
 	affliction.registerPotentAffliction()
@@ -99,6 +101,16 @@ func (affliction *AfflictionWarlock) Reset(sim *core.Simulation) {
 
 	affliction.LastCorruption = nil
 	affliction.HauntImpactTime = 0
+}
+
+func (affliction *AfflictionWarlock) OnEncounterStart(sim *core.Simulation) {
+	defaultShards := MaxSoulShards
+	if affliction.SoulBurnAura.IsActive() {
+		defaultShards -= 1
+	}
+
+	affliction.SoulShards.ResetBarTo(sim, defaultShards)
+	affliction.Warlock.OnEncounterStart(sim)
 }
 
 func calculateDoTBaseTickDamage(dot *core.Dot) float64 {

@@ -37,6 +37,13 @@ func (druid *Druid) registerSavageRoarSpell() {
 				druid.MHAutoSpell.DamageMultiplier /= srm
 			}
 		},
+		/* TODO: Deactivate on encounter start
+		* Savage Roar (Unglyphed, always deactivate)
+			* If using the Glyphed version of Savage Roar, your Savage Roar buff is checked on pull.
+				* If there are more than 12 seconds remaining, it will be set to 12 seconds.
+				* If fewer than 12 seconds remaining, the duration is left as is.
+				* If no Glyph detected, the Glyphed buff is removed from the Druid.
+		*/
 	})
 
 	srSpell := druid.RegisterSpell(Cat, core.SpellConfig{

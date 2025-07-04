@@ -221,6 +221,9 @@ func (monk *Monk) Reset(sim *core.Simulation) {
 	monk.ElusiveBrewStacks = 0
 }
 
+func (monk *Monk) OnEncounterStart(sim *core.Simulation) {
+}
+
 func (monk *Monk) GetHandType() proto.HandType {
 	mh := monk.GetMHWeapon()
 

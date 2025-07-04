@@ -34,13 +34,10 @@ type Warlock struct {
 
 	Doomguard *DoomguardPet
 	Infernal  *InfernalPet
-	// EbonImp   *EbonImpPet
-	FieryImp *FieryImpPet
 
 	serviceTimer *core.Timer
 
 	// Item sets
-	T13_4pc      *core.Aura
 	T15_2pc      *core.Aura
 	T15_4pc      *core.Aura
 	T16_2pc_buff *core.Aura
@@ -92,6 +89,9 @@ func (warlock *Warlock) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 func (warlock *Warlock) Reset(sim *core.Simulation) {
 }
 
+func (warlock *Warlock) OnEncounterStart(_ *core.Simulation) {
+}
+
 func NewWarlock(character *core.Character, options *proto.Player, warlockOptions *proto.WarlockOptions) *Warlock {
 	warlock := &Warlock{
 		Character: *character,
@@ -102,10 +102,8 @@ func NewWarlock(character *core.Character, options *proto.Player, warlockOptions
 	warlock.EnableManaBar()
 	warlock.AddStatDependency(stats.Strength, stats.AttackPower, 1)
 
-	// warlock.EbonImp = warlock.NewEbonImp()
 	warlock.Infernal = warlock.NewInfernalPet()
 	warlock.Doomguard = warlock.NewDoomguardPet()
-	warlock.FieryImp = warlock.NewFieryImp()
 
 	warlock.serviceTimer = character.NewTimer()
 	warlock.registerPets()

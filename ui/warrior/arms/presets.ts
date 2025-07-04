@@ -54,9 +54,7 @@ export const ArmsTalents = {
 };
 
 export const DefaultOptions = WarriorOptions.create({
-	classOptions: {
-		startingRage: 0,
-	},
+	classOptions: {},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({

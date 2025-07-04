@@ -710,13 +710,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestMarksmanship-AllItems-Flamewaker'sBattlegear"
- value: {
-  dps: 106868.85946
-  tps: 89105.36348
- }
-}
-dps_results: {
  key: "TestMarksmanship-AllItems-FlashfrozenResinGlobule-100951"
  value: {
   dps: 146492.96534
@@ -803,8 +796,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-Gladiator'sPursuit"
  value: {
-  dps: 153704.17224
-  tps: 125010.85552
+  dps: 152921.21802
+  tps: 124436.71767
  }
 }
 dps_results: {
@@ -1239,13 +1232,6 @@ dps_results: {
  value: {
   dps: 153787.32292
   tps: 127949.1515
- }
-}
-dps_results: {
- key: "TestMarksmanship-AllItems-Lightning-ChargedBattlegear"
- value: {
-  dps: 105870.8584
-  tps: 88765.15467
  }
 }
 dps_results: {

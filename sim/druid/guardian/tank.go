@@ -36,7 +36,6 @@ func NewGuardianDruid(character *core.Character, options *proto.Player) *Guardia
 	bear.registerTreants()
 
 	bear.EnableRageBar(core.RageBarOptions{
-		StartingRage:       bear.Options.StartingRage,
 		BaseRageMultiplier: 2.5,
 	})
 	bear.EnableAutoAttacks(bear, core.AutoAttackOptions{
@@ -159,4 +158,11 @@ func (bear *GuardianDruid) Reset(sim *core.Simulation) {
 	bear.Druid.ClearForm(sim)
 	bear.BearFormAura.Activate(sim)
 	bear.Druid.PseudoStats.Stunned = false
+}
+
+func (bear *GuardianDruid) OnEncounterStart(sim *core.Simulation) {
+	if bear.InForm(druid.Bear) {
+		bear.ResetRageBar(sim, 25)
+	}
+	bear.Druid.OnEncounterStart(sim)
 }

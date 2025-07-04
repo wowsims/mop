@@ -103,6 +103,9 @@ func (ghoulPet *GhoulPet) Initialize() {
 func (ghoulPet *GhoulPet) Reset(_ *core.Simulation) {
 }
 
+func (ghoulPet *GhoulPet) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (ghoulPet *GhoulPet) ExecuteCustomRotation(sim *core.Simulation) {
 	if !ghoulPet.GCD.IsReady(sim) {
 		return

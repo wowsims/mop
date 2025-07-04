@@ -122,6 +122,9 @@ func (spiritWolf *SpiritWolf) Reset(sim *core.Simulation) {
 	}
 }
 
+func (spiritWolf *SpiritWolf) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (spiritWolf *SpiritWolf) GetPet() *core.Pet {
 	return &spiritWolf.Pet
 }

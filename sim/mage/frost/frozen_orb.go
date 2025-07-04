@@ -103,6 +103,9 @@ func (frozenOrb *FrozenOrb) Reset(_ *core.Simulation) {
 	frozenOrb.TickCount = 0
 }
 
+func (frozenOrb *FrozenOrb) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (frozenOrb *FrozenOrb) ExecuteCustomRotation(sim *core.Simulation) {
 	if frozenOrb.FrozenOrbTick.CanCast(sim, frozenOrb.CurrentTarget) {
 		frozenOrb.FrozenOrbTick.Cast(sim, frozenOrb.CurrentTarget)
