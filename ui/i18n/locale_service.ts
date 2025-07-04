@@ -15,15 +15,15 @@ export const supportedLanguages: Record<string, string> = {
 	'ru': 'Русский',
 };
 
-export function getLang(): string {
+export const getLang = (): string => {
 	const storedLang = localStorage.getItem(STORAGE_KEY);
 	if (storedLang && storedLang in supportedLanguages) {
 		return storedLang;
 	}
 	return setLang('en');
-}
+};
 
-export function setLang(lang: string): string {
+export const setLang = (lang: string): string => {
 	if (lang in supportedLanguages) {
 		localStorage.setItem(STORAGE_KEY, lang);
 		document.documentElement.lang = lang;
@@ -32,7 +32,7 @@ export function setLang(lang: string): string {
 		}
 	}
 	return lang;
-}
+};
 
 // Add TypeScript interface for i18next on window
 declare global {

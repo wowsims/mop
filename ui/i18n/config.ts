@@ -1,20 +1,26 @@
 import i18n from 'i18next';
-import Backend from 'i18next-http-backend';
 
+import en from '../../assets/locales/en.json';
+import fr from '../../assets/locales/fr.json';
 import { getLang } from './locale_service';
 
-i18n
-  .use(Backend)
-  .init({
-    lng: getLang(),
-    fallbackLng: 'en',
-    debug: process.env.NODE_ENV === 'development',
-    interpolation: {
-      escapeValue: false,
+// eslint-disable-next-line import/no-named-as-default-member
+i18n.init({
+  lng: getLang(),
+  fallbackLng: 'en',
+  debug: process.env.NODE_ENV === 'development',
+  interpolation: {
+    escapeValue: false,
+  },
+  // add locales here to enable them in the UI
+  resources: {
+    en: {
+      translation: en
     },
-    backend: {
-      loadPath: '/mop/assets/locales/{{lng}}.json',
-    },
-  });
+    fr: {
+      translation: fr
+    }
+  }
+});
 
 export default i18n;

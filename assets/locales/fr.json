@@ -1,105 +1,216 @@
 {
-  "welcome": "Bienvenue sur WoWSims - Mists of Pandaria",
-  "description": "Un puissant outil de simulation pour World of Warcraft: Mists of Pandaria",
-  "navigation": {
-    "home": "Accueil",
-    "simulations": "Simulations",
-    "about": "À propos",
-    "toggle": "Basculer la navigation"
-  },
-  "simulations": {
-    "full_raid": "Simulation de raid complet"
-  },
-  "home": {
-    "title": "WoWSims - Mists of Pandaria",
-    "description": "Un puissant outil de simulation pour World of Warcraft: Mists of Pandaria",
-    "startSimulation": "Démarrer une simulation",
-    "browseSimulations": "Parcourir les simulations",
-    "documentation": "Documentation",
-    "github": "GitHub",
-    "welcomeDescription": "Bienvenue sur WoWSims - Mists of Pandaria ! Ce projet communautaire propose des simulations de classes et de raids pour World of Warcraft® Mists of Pandaria Classic, en collaboration avec les meilleurs théoriciens et représentants de classes."
-  },
-  "header": {
-    "wowsims": "WoWSims",
-    "expansion": "Mists of Pandaria",
-    "supportDevs": "Soutenir nos développeurs"
-  },
-  "classes": {
-    "death_knight": "Chevalier de la mort",
-    "druid": "Druide",
-    "hunter": "Chasseur",
-    "mage": "Mage",
-    "monk": "Moine",
-    "paladin": "Paladin",
-    "priest": "Prêtre",
-    "rogue": "Voleur",
-    "shaman": "Chaman",
-    "warlock": "Démoniste",
-    "warrior": "Guerrier"
-  },
-  "specs": {
-    "death_knight": {
-      "blood": "Sang",
-      "frost": "Givre",
-      "unholy": "Impie"
-    },
-    "druid": {
-      "balance": "Équilibre",
-      "feral": "Farouche",
-      "guardian": "Gardien",
-      "restoration": "Restauration"
-    },
-    "hunter": {
-      "beast_mastery": "Maîtrise des bêtes",
-      "marksmanship": "Précision",
-      "survival": "Survie"
-    },
-    "mage": {
-      "arcane": "Arcane",
-      "fire": "Feu",
-      "frost": "Givre"
-    },
-    "monk": {
-      "brewmaster": "Maître brasseur",
-      "mistweaver": "Tisse-brume",
-      "windwalker": "Marche-vent"
-    },
-    "paladin": {
-      "holy": "Sacré",
-      "protection": "Protection",
-      "retribution": "Vindicte"
-    },
-    "priest": {
-      "discipline": "Discipline",
-      "holy": "Sacré",
-      "shadow": "Ombre"
-    },
-    "rogue": {
-      "assassination": "Assassinat",
-      "combat": "Combat",
-      "subtlety": "Finesse"
-    },
-    "shaman": {
-      "elemental": "Élémentaire",
-      "enhancement": "Amélioration",
-      "restoration": "Restauration"
-    },
-    "warlock": {
-      "affliction": "Affliction",
-      "demonology": "Démonologie",
-      "destruction": "Destruction"
-    },
-    "warrior": {
-      "arms": "Armes",
-      "fury": "Fureur",
-      "protection": "Protection"
-    }
-  },
-  "status": {
-    "launched": "Lancé",
-    "not_supported": "Non supporté",
-    "alpha": "Alpha",
-    "beta": "Bêta",
-    "not_yet_supported": "Pas encore supporté"
-  }
+	"landing": {
+		"navigation": {
+			"home": "Accueil",
+			"simulations": "Simulations",
+			"about": "À propos",
+			"toggle": "Basculer la navigation"
+		},
+		"simulations": {
+			"full_raid": "Simulation de raid complet"
+		},
+		"home": {
+			"title": "WoWSims - Mists of Pandaria",
+			"description": "Un puissant outil de simulation pour World of Warcraft: Mists of Pandaria",
+			"welcomeDescription": "Bienvenue sur WoWSims - Mists of Pandaria ! Ce projet communautaire propose des simulations de classes et de raids pour World of Warcraft® Mists of Pandaria Classic, en collaboration avec les meilleurs théoriciens et représentants de classes."
+		},
+		"header": {
+			"wowsims": "WoWSims",
+			"expansion": "Mists of Pandaria",
+			"supportDevs": "Soutenir nos développeurs"
+		},
+		"status": {
+			"launched": "Lancé",
+			"not_supported": "Non supporté",
+			"alpha": "Alpha",
+			"beta": "Bêta",
+			"not_yet_supported": "Pas encore supporté"
+		}
+	},
+	"common": {
+		"phases": {
+			"1": "1",
+			"2": "2",
+			"3": "3",
+			"4": "4",
+			"5": "5"
+		},
+		"status": {
+			"unlaunched": "Pas Encore Supporté",
+			"alpha": "Alpha",
+			"beta": "Bêta",
+			"launched": "Lancé"
+		},
+		"classes": {
+			"death_knight": "Chevalier de la mort",
+			"druid": "Druide",
+			"hunter": "Chasseur",
+			"mage": "Mage",
+			"monk": "Moine",
+			"paladin": "Paladin",
+			"priest": "Prêtre",
+			"rogue": "Voleur",
+			"shaman": "Chaman",
+			"warlock": "Démoniste",
+			"warrior": "Guerrier"
+		},
+		"specs": {
+			"death_knight": {
+				"blood": "Sang",
+				"frost": "Givre",
+				"unholy": "Impie"
+			},
+			"druid": {
+				"balance": "Équilibre",
+				"feral": "Farouche",
+				"guardian": "Gardien",
+				"restoration": "Restauration"
+			},
+			"hunter": {
+				"beast_mastery": "Maîtrise des bêtes",
+				"marksmanship": "Précision",
+				"survival": "Survie"
+			},
+			"mage": {
+				"arcane": "Arcane",
+				"fire": "Feu",
+				"frost": "Givre"
+			},
+			"monk": {
+				"brewmaster": "Maître brasseur",
+				"mistweaver": "Tisse-brume",
+				"windwalker": "Marche-vent"
+			},
+			"paladin": {
+				"holy": "Sacré",
+				"protection": "Protection",
+				"retribution": "Vindicte"
+			},
+			"priest": {
+				"discipline": "Discipline",
+				"holy": "Sacré",
+				"shadow": "Ombre"
+			},
+			"rogue": {
+				"assassination": "Assassinat",
+				"combat": "Combat",
+				"subtlety": "Finesse"
+			},
+			"shaman": {
+				"elemental": "Élémentaire",
+				"enhancement": "Amélioration",
+				"restoration": "Restauration"
+			},
+			"warlock": {
+				"affliction": "Affliction",
+				"demonology": "Démonologie",
+				"destruction": "Destruction"
+			},
+			"warrior": {
+				"arms": "Armes",
+				"fury": "Fureur",
+				"protection": "Protection"
+			}
+		},
+		"stats": {
+			"strength": "Force",
+			"agility": "Agilité",
+			"stamina": "Endurance",
+			"intellect": "Intelligence",
+			"spirit": "Esprit",
+			"spell_hit": "Toucher des sorts",
+			"spell_crit": "Critique des sorts",
+			"spell_haste": "Hâte des sorts",
+			"expertise": "Expertise",
+			"dodge": "Esquive",
+			"parry": "Parade",
+			"mastery": "Maîtrise",
+			"attack_power": "Puissance d'attaque",
+			"ranged_attack_power": "Puissance d'attaque à distance",
+			"spell_power": "Puissance des sorts",
+			"pvp_resilience": "Résilience JcJ",
+			"pvp_power": "Puissance JcJ",
+			"armor": "Armure",
+			"bonus_armor": "Armure bonus",
+			"health": "Santé",
+			"mana": "Mana",
+			"mp5": "MP5",
+			"main_hand_dps": "DPS main principale",
+			"off_hand_dps": "DPS main gauche",
+			"ranged_dps": "DPS à distance",
+			"block": "Blocage",
+			"melee_speed_multiplier": "Multiplicateur de vitesse de mêlée",
+			"ranged_speed_multiplier": "Multiplicateur de vitesse à distance",
+			"cast_speed_multiplier": "Multiplicateur de vitesse d'incantation",
+			"melee_haste": "Hâte de mêlée",
+			"ranged_haste": "Hâte à distance",
+			"melee_hit": "Toucher de mêlée",
+			"melee_crit": "Critique de mêlée"
+		}
+	},
+	"sim": {
+		"title": "Simulateur {class} {spec} - Mists of Pandaria",
+		"description": "Simulations {class} {spec} pour World of Warcraft® Mists of Pandaria Classic."
+	},
+	"gear": {
+		"title": "Équipement"
+	},
+	"settings": {
+		"title": "Paramètres"
+	},
+	"talents": {
+		"title": "Talents"
+	},
+	"rotation": {
+		"title": "Rotation"
+	},
+	"results": {
+		"title": "Résultats"
+	},
+	"import": {
+		"title": "Importer"
+	},
+	"export": {
+		"title": "Exporter"
+	},
+	"sidebar": {
+		"iterations": "Itérations",
+		"buttons": {
+			"simulate": "Simuler",
+			"stat_weights": "Poids des Statistiques",
+			"suggest_reforges": "Suggérer des Reforges"
+		},
+		"header": {
+			"title": "WoWSims - Mists of Pandaria",
+			"phase": "Phase {{number}} - {{status}}"
+		},
+		"character_stats": {
+			"title": "Statistiques",
+			"melee_crit_cap": "Plafond de Critique Mêlée",
+			"tooltip": {
+				"base": "Base :",
+				"gear": "Équipement :",
+				"talents": "Talents :",
+				"buffs": "Buffs :",
+				"consumes": "Consommables :",
+				"bonus": "Bonus :",
+				"total": "Total :",
+				"glancing": "Éraflement :",
+				"suppression": "Suppression :",
+				"to_hit_cap": "Vers le Plafond de Précision :",
+				"to_exp_cap": "Vers le Plafond d'Expertise :",
+				"spec_offsets": "Compensations de Spé :",
+				"final_crit_cap": "Plafond de Critique Final :",
+				"can_raise_by": "Peut Augmenter de :"
+			},
+			"crit_cap": {
+				"exact": "Exact",
+				"over_by": "Au-dessus de",
+				"under_by": "En-dessous de"
+			},
+			"bonus_prefix": "Bonus",
+			"points_suffix": "Points",
+			"percent_suffix": "%"
+		}
+	}
 }

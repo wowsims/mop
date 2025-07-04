@@ -1,3 +1,4 @@
+import i18n from '../i18n/config';
 import { CharacterStats, StatMods, StatWrites } from './components/character_stats';
 import { ContentBlock } from './components/content_block';
 import { EmbeddedDetailedResults } from './components/detailed_results';
@@ -472,7 +473,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 
 	private addDetailedResultsTab() {
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
-		this.addTab('Results', 'detailed-results-tab', detailedResults);
+		this.addTab(i18n.t('results.title'), 'detailed-results-tab', detailedResults);
 
 		new EmbeddedDetailedResults(detailedResults, this, this.raidSimResultsManager!);
 	}

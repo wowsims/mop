@@ -2,6 +2,8 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config.js';
+import { translatePseudoStat, translateStat } from '../../i18n/localization.js';
 import * as Mechanics from '../constants/mechanics.js';
 import { Player } from '../player.js';
 import { HandType, ItemSlot, Race, RangedWeaponType, Spec, Stat, WeaponType } from '../proto/common.js';
@@ -42,7 +44,7 @@ export class CharacterStats extends Component {
 
 		const label = document.createElement('label');
 		label.classList.add('character-stats-label');
-		label.textContent = 'Stats';
+		label.textContent = i18n.t('sidebar.character_stats.title');
 		this.rootElem.appendChild(label);
 
 		const table = document.createElement('table');
@@ -51,17 +53,24 @@ export class CharacterStats extends Component {
 
 		this.valueElems = [];
 		this.stats.forEach(unitStat => {
-			const statName = unitStat.getShortName(player.getClass());
+			let statName: string;
+			if (unitStat.isStat()) {
+				statName = translateStat(unitStat.getStat());
+			} else if (unitStat.isPseudoStat()) {
+				statName = translatePseudoStat(unitStat.getPseudoStat());
+			} else {
+				statName = unitStat.getShortName(player.getClass());
+			}
 			const valueRef = ref<HTMLTableCellElement>();
 			const row = (
 				<tr className="character-stats-table-row">
 					<td className="character-stats-table-label">
 						{statName}
 						{unitStat.equalsStat(Stat.StatMasteryRating) && (
-							<>
+							<div>
 								<br />
 								{masterySpellNames.get(this.player.getSpec())}
-							</>
+							</div>
 						)}
 					</td>
 					<td ref={valueRef} className="character-stats-table-value">
@@ -78,7 +87,7 @@ export class CharacterStats extends Component {
 			const valueRef = ref<HTMLTableCellElement>();
 			const row = (
 				<tr className="character-stats-table-row">
-					<td className="character-stats-table-label">Melee Crit Cap</td>
+					<td className="character-stats-table-label">{i18n.t('sidebar.character_stats.melee_crit_cap')}</td>
 					<td ref={valueRef} className="character-stats-table-value"></td>
 				</tr>
 			);
@@ -267,33 +276,33 @@ export class CharacterStats extends Component {
 			const tooltipContent = (
 				<div>
 					<div className="character-stats-tooltip-row">
-						<span>Base:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.base')}</span>
 						<span>{this.statDisplayString(baseDelta, unitStat, true)}</span>
 					</div>
 					<div className="character-stats-tooltip-row">
-						<span>Gear:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.gear')}</span>
 						<span>{this.statDisplayString(gearDelta, unitStat)}</span>
 					</div>
 					<div className="character-stats-tooltip-row">
-						<span>Talents:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.talents')}</span>
 						<span>{this.statDisplayString(talentsDelta, unitStat)}</span>
 					</div>
 					<div className="character-stats-tooltip-row">
-						<span>Buffs:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.buffs')}</span>
 						<span>{this.statDisplayString(buffsDelta, unitStat)}</span>
 					</div>
 					<div className="character-stats-tooltip-row">
-						<span>Consumes:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.consumes')}</span>
 						<span>{this.statDisplayString(consumesDelta, unitStat)}</span>
 					</div>
 					{bonusStatValue !== 0 && (
 						<div className="character-stats-tooltip-row">
-							<span>Bonus:</span>
+							<span>{i18n.t('sidebar.character_stats.tooltip.bonus')}</span>
 							<span>{this.statDisplayString(bonusStats, unitStat)}</span>
 						</div>
 					)}
 					<div className="character-stats-tooltip-row">
-						<span>Total:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.total')}</span>
 						<span>{this.statDisplayString(finalStats, unitStat, true)}</span>
 					</div>
 				</div>
@@ -324,34 +333,34 @@ export class CharacterStats extends Component {
 			const tooltipContent = (
 				<div>
 					<div className="character-stats-tooltip-row">
-						<span>Glancing:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.glancing')}</span>
 						<span>{`${meleeCritCapInfo.glancing.toFixed(2)}%`}</span>
 					</div>
 					<div className="character-stats-tooltip-row">
-						<span>Suppression:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.suppression')}</span>
 						<span>{`${meleeCritCapInfo.suppression.toFixed(2)}%`}</span>
 					</div>
 					<div className="character-stats-tooltip-row">
-						<span>To Hit Cap:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.to_hit_cap')}</span>
 						<span>{`${meleeCritCapInfo.remainingMeleeHitCap.toFixed(2)}%`}</span>
 					</div>
 					<div className="character-stats-tooltip-row">
-						<span>To Exp Cap:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.to_exp_cap')}</span>
 						<span>{`${meleeCritCapInfo.remainingExpertiseCap.toFixed(2)}%`}</span>
 					</div>
 					{meleeCritCapInfo.specSpecificOffset != 0 && (
 						<div className="character-stats-tooltip-row">
-							<span>Spec Offsets:</span>
+							<span>{i18n.t('sidebar.character_stats.tooltip.spec_offsets')}</span>
 							<span>{`${meleeCritCapInfo.specSpecificOffset.toFixed(2)}%`}</span>
 						</div>
 					)}
 					<div className="character-stats-tooltip-row">
-						<span>Final Crit Cap:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.final_crit_cap')}</span>
 						<span>{`${meleeCritCapInfo.baseCritCap.toFixed(2)}%`}</span>
 					</div>
 					<hr />
 					<div className="character-stats-tooltip-row">
-						<span>Can Raise By:</span>
+						<span>{i18n.t('sidebar.character_stats.tooltip.can_raise_by')}</span>
 						<span>{`${(meleeCritCapInfo.remainingExpertiseCap + meleeCritCapInfo.remainingMeleeHitCap).toFixed(2)}%`}</span>
 					</div>
 				</div>
@@ -375,7 +384,7 @@ export class CharacterStats extends Component {
 
 		const hideRootRating = rootRatingValue === null || (rootRatingValue === 0 && derivedPercentOrPointsValue !== null);
 		const rootRatingString = hideRootRating ? '' : String(Math.round(rootRatingValue));
-		const percentOrPointsSuffix = unitStat.equalsStat(Stat.StatMasteryRating) ? ' Points' : '%';
+		const percentOrPointsSuffix = unitStat.equalsStat(Stat.StatMasteryRating) ? ` ${i18n.t('sidebar.character_stats.points_suffix')}` : i18n.t('sidebar.character_stats.percent_suffix');
 		const percentOrPointsString = derivedPercentOrPointsValue === null ? '' : `${derivedPercentOrPointsValue.toFixed(2)}` + percentOrPointsSuffix;
 		const wrappedPercentOrPointsString = hideRootRating || derivedPercentOrPointsValue === null ? percentOrPointsString : ` (${percentOrPointsString})`;
 		return rootRatingString + wrappedPercentOrPointsString;
@@ -393,7 +402,7 @@ export class CharacterStats extends Component {
 			</button>
 		);
 
-		tippy(iconRef.value!, { content: `Bonus ${statName}` });
+		tippy(iconRef.value!, { content: `${i18n.t('sidebar.character_stats.bonus_prefix')} ${statName}` });
 		tippy(linkRef.value!, {
 			interactive: true,
 			trigger: 'click',
@@ -402,7 +411,7 @@ export class CharacterStats extends Component {
 			onShow: instance => {
 				const picker = new NumberPicker(null, this.player, {
 					id: `character-bonus-stat-${rootStat}`,
-					label: `Bonus ${statName}`,
+					label: `${i18n.t('sidebar.character_stats.bonus_prefix')} ${statName}`,
 					extraCssClasses: ['mb-0'],
 					changedEvent: (player: Player<any>) => player.bonusStatsChangeEmitter,
 					getValue: (player: Player<any>) => player.getBonusStats().getStat(rootStat),
@@ -427,10 +436,10 @@ export class CharacterStats extends Component {
 		const playerCritCapDelta = player.getMeleeCritCap();
 
 		if (playerCritCapDelta === 0.0) {
-			return 'Exact';
+			return i18n.t('sidebar.character_stats.crit_cap.exact');
 		}
 
-		const prefix = playerCritCapDelta > 0 ? 'Over by ' : 'Under by ';
+		const prefix = playerCritCapDelta > 0 ? i18n.t('sidebar.character_stats.crit_cap.over_by') : i18n.t('sidebar.character_stats.crit_cap.under_by');
 		return `${prefix} ${Math.abs(playerCritCapDelta).toFixed(2)}%`;
 	}
 }
