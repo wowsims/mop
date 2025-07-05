@@ -54,6 +54,7 @@ func (target *Target) AddPartyBuffs(_ *proto.PartyBuffs) {}
 func (target *Target) ApplyTalents()                     {}
 func (target *Target) GetCharacter() *Character          { return nil }
 func (target *Target) Initialize()                       {}
+func (target *Target) OnEncounterStart(_ *Simulation)    {}
 
 func (target *Target) ExecuteCustomRotation(sim *Simulation) {
 	if (target.AI != nil) && target.IsEnabled() {

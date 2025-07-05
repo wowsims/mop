@@ -68,7 +68,11 @@ func (war *Warrior) registerCharge() {
 			aura.Activate(sim)
 			if !war.Talents.DoubleTime || chargeRageGenCD == 0 || sim.CurrentTime-chargeRageGenCD >= 12*time.Second {
 				chargeRageGenCD = sim.CurrentTime
-				war.AddRage(sim, (chargeRageGain+chargeDistanceRageGain)*war.GetRageMultiplier(target), metrics)
+				totalChargeRageGain := (chargeRageGain + chargeDistanceRageGain) * war.GetRageMultiplier(target)
+				war.AddRage(sim, totalChargeRageGain, metrics)
+				if sim.CurrentTime < 0 {
+					war.PrePullChargeGain = totalChargeRageGain
+				}
 			}
 			war.MoveTo(chargeMinRange, sim) // movement aura is discretized in 1 yard intervals, so need to overshoot to guarantee melee range
 		},

@@ -81,7 +81,6 @@ enum WarriorMinorGlyph {
 // END GENERATED
 
 message WarriorOptions {
-	double starting_rage = 1;
 }
 
 message ArmsWarrior {

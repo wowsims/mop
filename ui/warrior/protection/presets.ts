@@ -1,13 +1,10 @@
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Stat } from '../../core/proto/common.js';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/proto/common.js';
 import { SavedTalents } from '../../core/proto/ui.js';
-import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph, WarriorMinorGlyph } from '../../core/proto/warrior.js';
+import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior.js';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
-import P3BISGear from './gear_sets/p3_bis.gear.json';
-import P4BISGear from './gear_sets/p4_bis.gear.json';
-import P4NelfBISGear from './gear_sets/p4_nelf_bis.gear.json';
 import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -16,14 +13,11 @@ import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 export const PRERAID_BALANCED_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidBISGear);
 export const P1_BALANCED_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
-export const P3_BALANCED_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3BISGear);
-export const P4_BALANCED_PRESET = PresetUtils.makePresetGear('P4 - BIS', P4BISGear);
-export const P4_NELF_BALANCED_PRESET = PresetUtils.makePresetGear('P4 - BIS (Nelf)', P4NelfBISGear);
 
 export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('Default APL', DefaultApl);
 
 // Preset options for EP weights
-export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Default',
 	Stats.fromMap(
 		{
@@ -52,39 +46,27 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '',
+		talentsString: '231231',
 		glyphs: Glyphs.create({
-			major1: WarriorMajorGlyph.GlyphOfShieldWall,
+			major1: WarriorMajorGlyph.GlyphOfIncite,
+			major2: WarriorMajorGlyph.GlyphOfHeavyRepercussions,
+			major3: WarriorMajorGlyph.GlyphOfHoldTheLine,
 		}),
 	}),
 };
 
 export const DefaultOptions = ProtectionWarriorOptions.create({
-	classOptions: {
-		startingRage: 0,
-	},
+	classOptions: {},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	battleElixirId: 58148, // Elixir of the Master (not found in list)
-	guardianElixirId: 58093, // Elixir of Deep Earth (not found in list)
-	foodId: 62670, // Beer-Basted Crocolisk
-	potId: 58090, // Earthen Potion
-	prepotId: 58090, // Earthen Potion
-	explosiveId: 89637, // Big Daddy Explosive
+	flaskId: 76088, // Flask of Winter's Bite
+	foodId: 74646, // Black Pepper Ribs and Shrimp
+	potId: 76095, // Potion of Mogu Power
+	prepotId: 76095, // Potion of Mogu Power
 });
 
 export const OtherDefaults = {
 	profession1: Profession.Leatherworking,
 	profession2: Profession.Inscription,
 };
-
-export const P4_PRESET_BUILD = PresetUtils.makePresetBuild('P4 - Default', {
-	race: Race.RaceGnome,
-	gear: P4_BALANCED_PRESET,
-});
-
-export const P4_NELF_PRESET_BUILD = PresetUtils.makePresetBuild('P4 - Default (Nelf)', {
-	race: Race.RaceNightElf,
-	gear: P4_NELF_BALANCED_PRESET,
-});

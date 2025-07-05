@@ -67,3 +67,8 @@ func (sinRogue *AssassinationRogue) GetRogue() *rogue.Rogue {
 func (sinRogue *AssassinationRogue) Reset(sim *core.Simulation) {
 	sinRogue.Rogue.Reset(sim)
 }
+
+func (sinRogue *AssassinationRogue) OnEncounterStart(sim *core.Simulation) {
+	sinRogue.ResetComboPoints(sim, 0)
+	sinRogue.Rogue.OnEncounterStart(sim)
+}

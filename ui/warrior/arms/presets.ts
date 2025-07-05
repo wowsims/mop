@@ -54,9 +54,7 @@ export const ArmsTalents = {
 };
 
 export const DefaultOptions = WarriorOptions.create({
-	classOptions: {
-		startingRage: 0,
-	},
+	classOptions: {},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
@@ -69,5 +67,5 @@ export const DefaultConsumables = ConsumesSpec.create({
 export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Blacksmithing,
-	distanceFromTarget: 15,
+	distanceFromTarget: 12,
 };

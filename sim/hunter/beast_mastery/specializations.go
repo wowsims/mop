@@ -22,7 +22,7 @@ func (bmHunter *BeastMasteryHunter) applyFrenzy() {
 		return
 	}
 	actionId := core.ActionID{SpellID: 19623}
-	bmHunter.Pet.FrenzyAura = bmHunter.Pet.RegisterAura(core.Aura{
+	bmHunter.Pet.FrenzyAura = core.BlockPrepull(bmHunter.Pet.RegisterAura(core.Aura{
 		Label:     "Frenzy",
 		Duration:  time.Second * 30,
 		ActionID:  actionId,
@@ -31,7 +31,7 @@ func (bmHunter *BeastMasteryHunter) applyFrenzy() {
 			aura.Unit.MultiplyMeleeSpeed(sim, 1/(1+0.04*float64(oldStacks)))
 			aura.Unit.MultiplyMeleeSpeed(sim, 1+0.04*float64(newStacks))
 		},
-	})
+	}))
 
 	procChance := 0.4
 	bmHunter.Pet.RegisterAura(core.Aura{

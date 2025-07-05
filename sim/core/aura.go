@@ -19,6 +19,7 @@ type OnDoneIteration func(aura *Aura, sim *Simulation)
 type OnGain func(aura *Aura, sim *Simulation)
 type OnExpire func(aura *Aura, sim *Simulation)
 type OnStacksChange func(aura *Aura, sim *Simulation, oldStacks int32, newStacks int32)
+type OnEncounterStart func(aura *Aura, sim *Simulation)
 
 // Callback for after a spell hits the target and after damage is calculated. Use it for proc effects
 // or anything that comes from the final result of the spell.
@@ -71,6 +72,7 @@ type Aura struct {
 	onHealTakenIndex           int32 // Position of this aura's index in the onHealAuras array.
 	onPeriodicHealDealtIndex   int32 // Position of this aura's index in the onPeriodicHealAuras array.
 	onPeriodicHealTakenIndex   int32 // Position of this aura's index in the onPeriodicHealAuras array.
+	onEncounterStartIndex      int32 // Position of this aura's index in the onEncounterStartAuras array.
 
 	// The number of stacks, or charges, of this aura. If this aura doesn't care
 	// about charges, is just 0.
@@ -97,6 +99,7 @@ type Aura struct {
 	OnHealTaken           OnSpellHit       // Invoked when a heal hits and this unit is the target.
 	OnPeriodicHealDealt   OnPeriodicDamage // Invoked when a hot tick occurs and this unit is the caster.
 	OnPeriodicHealTaken   OnPeriodicDamage // Invoked when a hot tick occurs and this unit is the target.
+	OnEncounterStart      OnEncounterStart // Invoked at the start of each encounter, after the pre-pull.
 
 	// If non-default, stat bonuses from the OnGain callback of this aura will be
 	// included in Character Stats in the UI.
@@ -354,6 +357,19 @@ func (aura *Aura) ApplyOnStacksChange(newOnStacksChange OnStacksChange) *Aura {
 	return aura
 }
 
+func (aura *Aura) ApplyOnEncounterStart(newOnEncounterStart OnEncounterStart) *Aura {
+	oldOnEncounterStart := aura.OnEncounterStart
+	if oldOnEncounterStart == nil {
+		aura.OnEncounterStart = newOnEncounterStart
+	} else {
+		aura.OnEncounterStart = func(aura *Aura, sim *Simulation) {
+			oldOnEncounterStart(aura, sim)
+			newOnEncounterStart(aura, sim)
+		}
+	}
+	return aura
+}
+
 type AuraFactory func(*Simulation) *Aura
 
 // Callback for doing something on reset.
@@ -390,6 +406,7 @@ type auraTracker struct {
 	onHealTakenAuras           []*Aura
 	onPeriodicHealDealtAuras   []*Aura
 	onPeriodicHealTakenAuras   []*Aura
+	onEncounterStartAuras      []*Aura
 }
 
 func newAuraTracker() auraTracker {
@@ -469,6 +486,7 @@ func (at *auraTracker) registerAura(unit *Unit, aura Aura) *Aura {
 	newAura.onHealTakenIndex = Inactive
 	newAura.onPeriodicHealDealtIndex = Inactive
 	newAura.onPeriodicHealTakenIndex = Inactive
+	newAura.onEncounterStartIndex = Inactive
 
 	at.auras = append(at.auras, newAura)
 	if newAura.Tag != "" {
@@ -496,6 +514,7 @@ func (unit *Unit) GetOrRegisterAura(aura Aura) *Aura {
 		curAura.OnHealTaken = aura.OnHealTaken
 		curAura.OnPeriodicHealDealt = aura.OnPeriodicHealDealt
 		curAura.OnPeriodicHealTaken = aura.OnPeriodicHealTaken
+		curAura.OnEncounterStart = aura.OnEncounterStart
 		return curAura
 	}
 }
@@ -560,6 +579,7 @@ func (at *auraTracker) reset(sim *Simulation) {
 	at.onHealTakenAuras = at.onHealTakenAuras[:0]
 	at.onPeriodicHealDealtAuras = at.onPeriodicHealDealtAuras[:0]
 	at.onPeriodicHealTakenAuras = at.onPeriodicHealTakenAuras[:0]
+	at.onEncounterStartAuras = at.onEncounterStartAuras[:0]
 
 	for _, resetEffect := range at.resetEffects {
 		resetEffect(sim)
@@ -711,6 +731,11 @@ func (aura *Aura) Activate(sim *Simulation) {
 		aura.Unit.onPeriodicHealTakenAuras = append(aura.Unit.onPeriodicHealTakenAuras, aura)
 	}
 
+	if aura.OnEncounterStart != nil {
+		aura.onEncounterStartIndex = int32(len(aura.Unit.onEncounterStartAuras))
+		aura.Unit.onEncounterStartAuras = append(aura.Unit.onEncounterStartAuras, aura)
+	}
+
 	if sim.Log != nil && !aura.ActionID.IsEmptyAction() {
 		aura.Unit.Log(sim, "Aura gained: %s", aura.ActionID)
 	}
@@ -723,7 +748,7 @@ func (aura *Aura) Activate(sim *Simulation) {
 
 // Remove an aura by its ID
 func (aura *Aura) Deactivate(sim *Simulation) {
-	if !aura.active {
+	if !aura.IsActive() {
 		return
 	}
 	aura.active = false
@@ -847,6 +872,15 @@ func (aura *Aura) Deactivate(sim *Simulation) {
 		aura.onPeriodicHealTakenIndex = Inactive
 	}
 
+	if aura.onEncounterStartIndex != Inactive {
+		removeOnEncounterStart := aura.onEncounterStartIndex
+		aura.Unit.onEncounterStartAuras = removeBySwappingToBack(aura.Unit.onEncounterStartAuras, removeOnEncounterStart)
+		if removeOnEncounterStart < int32(len(aura.Unit.onEncounterStartAuras)) {
+			aura.Unit.onEncounterStartAuras[removeOnEncounterStart].onEncounterStartIndex = removeOnEncounterStart
+		}
+		aura.onEncounterStartIndex = Inactive
+	}
+
 	// don't invoke possible callbacks until the internal state is consistent
 	if aura.stacks != 0 {
 		aura.SetStacks(sim, 0)
@@ -952,6 +986,12 @@ func (at *auraTracker) OnPeriodicHealTaken(sim *Simulation, spell *Spell, result
 	}
 }
 
+func (at *auraTracker) OnEncounterStart(sim *Simulation) {
+	for _, aura := range at.onEncounterStartAuras {
+		aura.OnEncounterStart(aura, sim)
+	}
+}
+
 func (at *auraTracker) GetMetricsProto() []*proto.AuraMetrics {
 	metrics := make([]*proto.AuraMetrics, 0, len(at.auras))
 
@@ -1002,7 +1042,7 @@ func (auras AuraArray) ActivateAll(sim *Simulation) {
 }
 
 func (auras AuraArray) ApplyOnExpire(onExpire OnExpire) {
-	for _, aura := range auras{
+	for _, aura := range auras {
 		if aura != nil {
 			aura.ApplyOnExpire(onExpire)
 		}

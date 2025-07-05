@@ -491,8 +491,8 @@ func (unit *Unit) updateCastSpeed() {
 func (unit *Unit) MultiplyCastSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.CastSpeedMultiplier *= amount
 
-	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicCastSpeedPets, func(_ *Simulation, pet *Pet) {
-		pet.dynamicCastSpeedInheritance(amount)
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicCastSpeedPets, func(sim *Simulation, pet *Pet) {
+		pet.dynamicCastSpeedInheritance(sim, amount)
 	})
 
 	unit.updateCastSpeed()
@@ -550,8 +550,8 @@ func (unit *Unit) MultiplyMeleeSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.MeleeSpeedMultiplier *= amount
 	unit.updateMeleeAttackSpeed()
 
-	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(_ *Simulation, pet *Pet) {
-		pet.dynamicMeleeSpeedInheritance(amount)
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(sim *Simulation, pet *Pet) {
+		pet.dynamicMeleeSpeedInheritance(sim, amount)
 	})
 
 	unit.AutoAttacks.UpdateSwingTimers(sim)
@@ -613,8 +613,8 @@ func (unit *Unit) MultiplyAttackSpeed(sim *Simulation, amount float64) {
 	unit.updateAttackSpeed()
 	unit.updateMeleeAndRangedHaste()
 
-	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(_ *Simulation, pet *Pet) {
-		pet.dynamicMeleeSpeedInheritance(amount)
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(sim *Simulation, pet *Pet) {
+		pet.dynamicMeleeSpeedInheritance(sim, amount)
 	})
 
 	unit.AutoAttacks.UpdateSwingTimers(sim)
@@ -761,6 +761,14 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 	if unit.Type != PetUnit {
 		sim.addTracker(&unit.auraTracker)
 	}
+}
+
+func (unit *Unit) onEncounterStart(sim *Simulation) {
+	if agent := unit.Env.GetAgentFromUnit(unit); agent != nil {
+		agent.OnEncounterStart(sim)
+	}
+
+	unit.OnEncounterStart(sim)
 }
 
 func (unit *Unit) startPull(sim *Simulation) {
