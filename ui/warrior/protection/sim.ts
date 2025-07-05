@@ -62,9 +62,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_BALANCED_PRESET.gear,
+		gear: Presets.P1_BALANCED_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P3_EP_PRESET.epWeights,
+		epWeights: Presets.P1_EP_PRESET.epWeights,
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
@@ -114,14 +114,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 	},
 
 	presets: {
-		epWeights: [Presets.P3_EP_PRESET],
+		epWeights: [Presets.P1_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents, Presets.StandardTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_DEFAULT],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_BALANCED_PRESET, Presets.P1_BALANCED_PRESET, Presets.P3_BALANCED_PRESET, Presets.P4_BALANCED_PRESET],
-		builds: [Presets.P4_PRESET_BUILD, Presets.P4_NELF_PRESET_BUILD],
+		gear: [Presets.PRERAID_BALANCED_PRESET, Presets.P1_BALANCED_PRESET,],
+		builds: [],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecProtectionWarrior>): APLRotation => {
@@ -142,14 +142,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P3_BALANCED_PRESET.gear,
-					2: Presets.PRERAID_BALANCED_PRESET.gear,
-					3: Presets.P1_BALANCED_PRESET.gear,
+					1: Presets.PRERAID_BALANCED_PRESET.gear,
+					2: Presets.P1_BALANCED_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P3_BALANCED_PRESET.gear,
-					2: Presets.PRERAID_BALANCED_PRESET.gear,
-					3: Presets.P1_BALANCED_PRESET.gear,
+					1: Presets.PRERAID_BALANCED_PRESET.gear,
+					2: Presets.P1_BALANCED_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,
