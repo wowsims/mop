@@ -223,6 +223,9 @@ func (hp *HunterPet) Reset(sim *core.Simulation) {
 	}
 }
 
+func (hp *HunterPet) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (hp *HunterPet) ExecuteCustomRotation(sim *core.Simulation) {
 	if !hp.isPrimary {
 		return

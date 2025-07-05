@@ -1,25 +1,25 @@
 import * as Tooltips from '../../constants/tooltips.js';
-import { Encounter } from '../../encounter';
-import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
-import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common';
-import { SavedEncounter, SavedSettings } from '../../proto/ui';
-import { professionNames, raceNames } from '../../proto_utils/names';
-import { Stats } from '../../proto_utils/stats';
-import { EventID, TypedEvent } from '../../typed_event';
-import { getEnumValues } from '../../utils';
-import { ContentBlock } from '../content_block';
+import { Encounter } from '../../encounter.js';
+import { IndividualSimUI, InputSection } from '../../individual_sim_ui.jsx';
+import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common.js';
+import { SavedEncounter, SavedSettings } from '../../proto/ui.js';
+import { professionNames, raceNames } from '../../proto_utils/names.js';
+import { Stats } from '../../proto_utils/stats.js';
+import { EventID, TypedEvent } from '../../typed_event.js';
+import { getEnumValues } from '../../utils.js';
+import { ContentBlock } from '../content_block.jsx';
 import { EncounterPicker } from '../encounter_picker.js';
 import * as IconInputs from '../icon_inputs.js';
-import { Input } from '../input';
-import * as BuffDebuffInputs from '../inputs/buffs_debuffs';
-import { relevantStatOptions } from '../inputs/stat_options';
+import { Input } from '../input.jsx';
+import * as BuffDebuffInputs from '../inputs/buffs_debuffs.js';
+import { relevantStatOptions } from '../inputs/stat_options.js';
 import { ItemSwapPicker } from '../item_swap_picker.jsx';
 import { BooleanPicker } from '../pickers/boolean_picker.js';
 import { EnumPicker } from '../pickers/enum_picker.js';
-import { MultiIconPicker } from '../pickers/multi_icon_picker.js';
+import { MultiIconPicker } from '../pickers/multi_icon_picker.jsx';
 import { NumberPicker } from '../pickers/number_picker.js';
-import { SavedDataManager } from '../saved_data_manager';
-import { SimTab } from '../sim_tab';
+import { SavedDataManager } from '../saved_data_manager.jsx';
+import { SimTab } from '../sim_tab.js';
 import { ConsumesPicker } from './consumes_picker.jsx';
 import { PresetConfigurationPicker } from './preset_configuration_picker.jsx';
 
@@ -73,6 +73,8 @@ export class SettingsTab extends SimTab {
 
 		if (!this.simUI.isWithinRaidSim) {
 			this.buildBuffsSettings();
+			this.raidExternalDamageCooldowns();
+			this.raidExternalDefensiveCooldowns();
 			this.buildDebuffsSettings();
 		}
 
@@ -201,6 +203,9 @@ export class SettingsTab extends SimTab {
 		const contentBlock = new ContentBlock(this.column3, 'buffs-settings', {
 			header: { title: 'Raid Buffs', tooltip: Tooltips.BUFFS_SECTION },
 		});
+		contentBlock.headerElement?.appendChild(
+			<p className="fs-body">All raid buffs/debuffs selected are assumed to be provided by <strong>other</strong> raid members than the simulated player.</p>,
+		);
 
 		const buffOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, this.simUI);
 		this.configureIconSection(
@@ -218,6 +223,37 @@ export class SettingsTab extends SimTab {
 					label: 'Misc',
 				},
 				this.simUI,
+			);
+		}
+	}
+
+	private raidExternalDamageCooldowns() {
+		const externalDamageCooldownOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DAMAGE_COOLDOWN, this.simUI);
+		if (externalDamageCooldownOptions.length > 0) {
+			const contentBlock = new ContentBlock(this.column3, 'buffs-settings', {
+				header: { title: 'External Damage Cooldowns', tooltip: Tooltips.EXTERNAL_DAMAGE_COOLDOWN_SECTION },
+			});
+
+			this.configureIconSection(
+				contentBlock.bodyElement,
+				externalDamageCooldownOptions.map(
+					options => options.picker && new options.picker(contentBlock.bodyElement, this.simUI.player, options.config as any),
+				),
+			);
+		}
+	}
+	private raidExternalDefensiveCooldowns() {
+		const externalDefensiveCooldownOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DEFENSIVE_COOLDOWN, this.simUI);
+		if (externalDefensiveCooldownOptions.length > 0) {
+			const contentBlock = new ContentBlock(this.column3, 'buffs-settings', {
+				header: { title: 'External Defensive Cooldowns', tooltip: Tooltips.EXTERNAL_DEFENSIVE_COOLDOWN_SECTION },
+			});
+
+			this.configureIconSection(
+				contentBlock.bodyElement,
+				externalDefensiveCooldownOptions.map(
+					options => options.picker && new options.picker(contentBlock.bodyElement, this.simUI.player, options.config as any),
+				),
 			);
 		}
 	}

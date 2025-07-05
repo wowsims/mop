@@ -39,7 +39,7 @@ func (mm *MarksmanshipHunter) registerSteadyShotSpell() {
 		},
 		BonusCritPercent:         0,
 		DamageMultiplierAdditive: 1,
-		DamageMultiplier:         0.726,
+		DamageMultiplier:         0.713,
 		CritMultiplier:           mm.DefaultCritMultiplier(),
 		ThreatMultiplier:         1,
 

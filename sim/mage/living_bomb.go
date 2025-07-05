@@ -30,10 +30,10 @@ func (mage *Mage) registerLivingBomb() {
 		activeLivingBombs = make([]*core.Dot, 0)
 	})
 
-	livingBombExplosionCoefficient := 0.08 // Per https://wago.tools/db2/SpellEffect?build=4.4.2.60192&filter%5BSpellID%5D=44461 Field "EffetBonusCoefficient"
-	livingBombExplosionScaling := 0.103    // Per https://wago.tools/db2/SpellEffect?build=4.4.2.60192&filter%5BSpellID%5D=44461 Field "Coefficient"
-	livingBombDotCoefficient := 0.8        // Per https://wago.tools/db2/SpellEffect?build=4.4.2.60192&filter%5BSpellID%5D=44461 Field "EffetBonusCoefficient"
-	livingBombDotScaling := 1.03           // Per https://wago.tools/db2/SpellEffect?build=4.4.2.60192&filter%5BSpellID%5D=44461 Field "Coefficient"
+	livingBombExplosionCoefficient := 0.08036000282 // Per https://wago.tools/db2/SpellEffect?build=5.5.0.61798&filter%5BSpellID%5D=44461 Field "EffetBonusCoefficient"
+	livingBombExplosionScaling := 0.10304000229     // Per https://wago.tools/db2/SpellEffect?build=5.5.0.61798&filter%5BSpellID%5D=44461 Field "Coefficient"
+	livingBombDotCoefficient := 0.80360001326       // Per https://wago.tools/db2/SpellEffect?build=5.5.0.61798&filter%5BSpellID%5D=44457 Field "EffetBonusCoefficient"
+	livingBombDotScaling := 1.03040003777           // Per https://wago.tools/db2/SpellEffect?build=5.5.0.61798&filter%5BSpellID%5D=44457 Field "Coefficient"
 
 	livingBombExplosionSpell := mage.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID.WithTag(2), // Real Spell ID: 44461

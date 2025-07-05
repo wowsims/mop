@@ -197,7 +197,9 @@ var ItemSetChronomancerRegalia = core.NewItemSet(core.ItemSet{
 				if !spell.Matches(MageSpellFrostbolt) {
 					return
 				}
-
+				if mage.BrainFreezeAura == nil {
+					return
+				}
 				mage.BrainFreezeAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
 					if setBonusAura.IsActive() {
 						frostAura.Activate(sim)
@@ -237,7 +239,9 @@ var ItemSetChronomancerRegalia = core.NewItemSet(core.ItemSet{
 				if !spell.Matches(MageSpellFrostbolt) {
 					return
 				}
-
+				if mage.BrainFreezeAura == nil {
+					return
+				}
 				mage.BrainFreezeAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
 					if setBonusAura.IsActive() {
 						frigidBlast.Cast(sim, mage.CurrentTarget)

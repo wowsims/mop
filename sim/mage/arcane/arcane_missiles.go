@@ -107,12 +107,12 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 	})
 
 	// Aura for when proc is successful
-	arcane.arcaneMissilesProcAura = arcane.RegisterAura(core.Aura{
+	arcane.arcaneMissilesProcAura = core.BlockPrepull(arcane.RegisterAura(core.Aura{
 		Label:     "Arcane Missiles Proc",
 		ActionID:  core.ActionID{SpellID: 79683},
 		Duration:  time.Second * 20,
 		MaxStacks: 2,
-	})
+	}))
 
 	// Listener for procs
 	core.MakeProcTriggerAura(&arcane.Unit, core.ProcTrigger{
@@ -120,7 +120,7 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 		ActionID:          core.ActionID{SpellID: 79684},
 		ClassSpellMask:    mage.MageSpellsAll ^ mage.MageSpellArcaneMissilesTick,
 		SpellFlagsExclude: core.SpellFlagHelpful,
-		ProcChance:        0.4,
+		ProcChance:        0.3,
 		Callback:          core.CallbackOnSpellHitDealt,
 		Outcome:           core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {

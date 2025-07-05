@@ -100,7 +100,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 	otherInputs: {
 		inputs: [OtherInputs.InputDelay, OtherInputs.DistanceFromTarget, OtherInputs.TankAssignment],
 	},
-	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotHands, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
+	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: true,
@@ -116,7 +116,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 		gear: [Presets.PREBIS_PRESET, Presets.P1_BIS_PRESET, Presets.RICH_PREBIS_PRESET],
 	},
 
-	autoRotation: (player: Player<Spec.SpecArcaneMage>): APLRotation => {
+	autoRotation: (_: Player<Spec.SpecArcaneMage>): APLRotation => {
 		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
 

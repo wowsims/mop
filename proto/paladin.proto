@@ -95,7 +95,6 @@ enum PaladinSeal {
 }
 
 message PaladinOptions {
-	int32 starting_holy_power = 1;
 	PaladinSeal seal = 2;
 }
 

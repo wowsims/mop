@@ -57,7 +57,6 @@ import {
 	Spec,
 	Stat,
 } from './proto/common';
-import { Consumable } from './proto/db';
 import { IndividualSimSettings, SavedTalents } from './proto/ui';
 import { getMetaGemConditionDescription } from './proto_utils/gems';
 import { armorTypeNames, professionNames } from './proto_utils/names';
@@ -90,6 +89,7 @@ export interface OtherDefaults {
 	channelClipDelay?: number;
 	highHpThreshold?: number;
 	iterationCount?: number;
+	race?: Race;
 }
 
 export interface RaidSimPreset<SpecType extends Spec> {
@@ -532,7 +532,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			const healingSpec = this.player.getPlayerSpec().isHealingSpec;
 
 			this.player.applySharedDefaults(eventID);
-			this.player.setRace(eventID, this.player.getPlayerClass().races[0]);
+			this.player.setRace(eventID, this.individualConfig.defaults.other?.race || this.player.getPlayerClass().races[0]);
 			this.player.setGear(eventID, this.sim.db.lookupEquipmentSpec(this.individualConfig.defaults.gear));
 			this.player.setConsumes(eventID, this.individualConfig.defaults.consumables);
 			this.applyDefaultRotation(eventID);

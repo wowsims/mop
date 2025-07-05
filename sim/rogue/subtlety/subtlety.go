@@ -75,3 +75,9 @@ func (subRogue *SubtletyRogue) GetRogue() *rogue.Rogue {
 func (subRogue *SubtletyRogue) Reset(sim *core.Simulation) {
 	subRogue.Rogue.Reset(sim)
 }
+
+func (subRogue *SubtletyRogue) OnEncounterStart(sim *core.Simulation) {
+	cpToKeep := core.TernaryInt32(subRogue.Premeditation.CD.IsReady(sim), 0, min(2, subRogue.ComboPoints()))
+	subRogue.ResetComboPoints(sim, cpToKeep)
+	subRogue.Rogue.OnEncounterStart(sim)
+}

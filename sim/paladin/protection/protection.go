@@ -111,3 +111,8 @@ func (prot *ProtectionPaladin) ApplyTalents() {
 func (prot *ProtectionPaladin) Reset(sim *core.Simulation) {
 	prot.Paladin.Reset(sim)
 }
+
+func (prot *ProtectionPaladin) OnEncounterStart(sim *core.Simulation) {
+	prot.HolyPower.ResetBarTo(sim, 1)
+	prot.Paladin.OnEncounterStart(sim)
+}

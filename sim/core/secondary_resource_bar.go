@@ -15,6 +15,7 @@ type SecondaryResourceBar interface {
 	SpendUpTo(sim *Simulation, limit int32, action ActionID) int32 // Spends as much resource as possible up to the speciefied limit; Returns the amount of resource spent
 	Gain(sim *Simulation, amount int32, action ActionID)           // Gain the amount specified from the action
 	Reset(sim *Simulation)                                         // Resets the current resource bar
+	ResetBarTo(sim *Simulation, resourcesToKeep int32)             // Resets the current resource bar to the specified value
 	Value() int32                                                  // Returns the current amount of resource
 	RegisterOnGain(callback OnGainCallback)                        // Registers a callback that will be called. Gain = amount gained, realGain = actual amount gained due to caps
 	RegisterOnSpend(callback OnSpendCallback)                      // Registers a callback that will be called when the resource was spend
@@ -74,6 +75,16 @@ func (bar *DefaultSecondaryResourceBarImpl) Reset(sim *Simulation) {
 	bar.value = 0
 	if bar.config.Default > 0 {
 		bar.Gain(sim, bar.config.Default, ActionID{SpellID: int32(bar.config.Type)})
+	}
+}
+
+var encounterStartActionID = ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart}
+
+func (bar *DefaultSecondaryResourceBarImpl) ResetBarTo(sim *Simulation, resourcesToKeep int32) {
+	if bar.value > resourcesToKeep {
+		bar.Spend(sim, bar.value-resourcesToKeep, encounterStartActionID)
+	} else if resourcesToKeep > bar.value {
+		bar.Gain(sim, resourcesToKeep-bar.value, encounterStartActionID)
 	}
 }
 

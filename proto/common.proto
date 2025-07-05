@@ -511,7 +511,7 @@ message IndividualBuffs {
 
 	// Other Buffs
 	int32 unholy_frenzy_count = 12;
-	TristateEffect tricks_of_the_trade = 101; // "Regular" = Glyphed, "Improved" = un-Glyphed
+	bool tricks_of_the_trade = 101;
 	int32 devotion_aura_count = 23;
 	int32 pain_suppression_count = 24;
 	int32 vigilance_count = 25;
@@ -770,6 +770,7 @@ enum OtherAction {
 	OtherActionLunarEnergyGain = 19; // For balance druid lunar energy
 	OtherActionMove = 20; // Used by movement to be able to show it in timeline
 	OtherActionPrepull = 21; // Indicated prepull specific action
+	OtherActionEncounterStart = 22; // Indicated resources gained or lost at the start of an encounter
 }
 
 message ActionID {

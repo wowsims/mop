@@ -44,9 +44,7 @@ var ArmsDefaultGlyphs = &proto.Glyphs{
 var PlayerOptionsArms = &proto.Player_ArmsWarrior{
 	ArmsWarrior: &proto.ArmsWarrior{
 		Options: &proto.ArmsWarrior_Options{
-			ClassOptions: &proto.WarriorOptions{
-				StartingRage: 0,
-			},
+			ClassOptions: &proto.WarriorOptions{},
 		},
 	},
 }

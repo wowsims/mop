@@ -121,6 +121,9 @@ func (xuen *Xuen) Reset(sim *core.Simulation) {
 	xuen.Disable(sim)
 }
 
+func (xuen *Xuen) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (xuen *Xuen) enable(sim *core.Simulation) {
 }
 

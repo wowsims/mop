@@ -145,6 +145,9 @@ func (runeWeapon *RuneWeaponPet) Reset(_ *core.Simulation) {
 func (runeWeapon *RuneWeaponPet) ExecuteCustomRotation(_ *core.Simulation) {
 }
 
+func (runeWeapon *RuneWeaponPet) OnEncounterStart(_ *core.Simulation) {
+}
+
 func runeeaponStatInheritance(ownerStats stats.Stats) stats.Stats {
 	return stats.Stats{
 		stats.AttackPower:         ownerStats[stats.AttackPower],

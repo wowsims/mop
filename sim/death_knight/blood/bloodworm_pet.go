@@ -1,4 +1,4 @@
-package death_knight
+package blood
 
 import (
 	"math"
@@ -12,30 +12,30 @@ type BloodwormPet struct {
 	core.Pet
 
 	stackAura *core.Aura
-	dkOwner   *DeathKnight
+	dkOwner   *BloodDeathKnight
 }
 
-func (dk *DeathKnight) NewBloodwormPet(_ int) *BloodwormPet {
+func (bdk *BloodDeathKnight) NewBloodwormPet(_ int) *BloodwormPet {
 	bloodworm := &BloodwormPet{
 		Pet: core.NewPet(core.PetConfig{
 			Name:                            "Bloodworm",
-			Owner:                           &dk.Character,
+			Owner:                           &bdk.Character,
 			BaseStats:                       stats.Stats{},
 			NonHitExpStatInheritance:        bloodwormStatInheritance,
 			EnabledOnStart:                  false,
 			IsGuardian:                      true,
 			HasDynamicMeleeSpeedInheritance: true,
 		}),
-		dkOwner: dk,
+		dkOwner: bdk,
 	}
 
-	baseDamage := dk.CalcScalingSpellDmg(0.55)
+	baseDamage := bdk.CalcScalingSpellDmg(0.55)
 	bloodworm.EnableAutoAttacks(bloodworm, core.AutoAttackOptions{
 		MainHand: core.Weapon{
 			BaseDamageMin:  baseDamage,
 			BaseDamageMax:  baseDamage,
 			SwingSpeed:     2,
-			CritMultiplier: dk.DefaultCritMultiplier(),
+			CritMultiplier: bdk.DefaultCritMultiplier(),
 		},
 		AutoSwingMelee: true,
 	})
@@ -43,11 +43,11 @@ func (dk *DeathKnight) NewBloodwormPet(_ int) *BloodwormPet {
 	bloodworm.OnPetDisable = bloodworm.disable
 
 	// Command doesn't apply to Bloodworms
-	if dk.Race == proto.Race_RaceOrc {
+	if bdk.Race == proto.Race_RaceOrc {
 		bloodworm.PseudoStats.DamageDealtMultiplier /= 1.02
 	}
 
-	dk.AddPet(bloodworm)
+	bdk.AddPet(bloodworm)
 
 	return bloodworm
 }
@@ -150,6 +150,12 @@ func (bloodworm *BloodwormPet) Reset(_ *core.Simulation) {
 }
 
 func (bloodworm *BloodwormPet) ExecuteCustomRotation(_ *core.Simulation) {
+}
+
+func (bloodworm *BloodwormPet) OnEncounterStart(sim *core.Simulation) {
+	if bloodworm.IsActive() {
+		bloodworm.Disable(sim)
+	}
 }
 
 func (bloodworm *BloodwormPet) disable(sim *core.Simulation) {

@@ -73,7 +73,6 @@ func (mage *FrostMage) NewWaterElemental() *WaterElemental {
 		mageOwner: mage,
 	}
 	waterElemental.EnableManaBar()
-	waterElemental.EnableDynamicStats(waterElementalStatInheritance)
 
 	mage.AddPet(waterElemental)
 
@@ -89,6 +88,9 @@ func (we *WaterElemental) Initialize() {
 }
 
 func (we *WaterElemental) Reset(_ *core.Simulation) {
+}
+
+func (we *WaterElemental) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (we *WaterElemental) ExecuteCustomRotation(sim *core.Simulation) {
