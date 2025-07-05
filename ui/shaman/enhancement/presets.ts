@@ -94,12 +94,12 @@ export const DefaultConsumables = ConsumesSpec.create({
 });
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman),
 	blessingOfKings: true,
 	leaderOfThePack: true,
 	trueshotAura: true,
 	bloodlust: true,
 	elementalOath: true,
-	...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman),
 });
 
 export const DefaultDebuffs = Debuffs.create({
