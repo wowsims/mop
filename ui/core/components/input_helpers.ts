@@ -43,7 +43,7 @@ export interface TypedBooleanPickerConfig<ModObject> extends BooleanPickerConfig
 interface WrappedBooleanInputConfig<SpecType extends Spec, ModObject> extends BooleanPickerConfig<ModObject> {
 	getModObject: (player: Player<SpecType>) => ModObject;
 }
-function makeWrappedBooleanInput<SpecType extends Spec, ModObject>(
+export function makeWrappedBooleanInput<SpecType extends Spec, ModObject>(
 	config: WrappedBooleanInputConfig<SpecType, ModObject>,
 ): TypedBooleanPickerConfig<Player<SpecType>> {
 	const getModObject = config.getModObject;
@@ -433,6 +433,7 @@ function makeWrappedIconInput<SpecType extends Spec, ModObject, T>(
 	return {
 		type: 'icon',
 		actionId: config.actionId,
+		label: config.label,
 		states: config.states,
 		changedEvent: (player: Player<SpecType>) => config.changedEvent(getModObject(player)),
 		showWhen: (player: Player<SpecType>) => !config.showWhen || (config.showWhen(getModObject(player)) as any),
@@ -459,10 +460,12 @@ export function makeBooleanIconInput<SpecType extends Spec, Message, ModObject>(
 	actionId: ActionId,
 	fieldName: keyof Message,
 	value?: number,
+	label?: string,
 ): TypedIconPickerConfig<Player<SpecType>, boolean> {
 	return makeWrappedIconInput<SpecType, ModObject, boolean>({
 		getModObject: config.getModObject,
-		actionId: actionId,
+		actionId,
+		label,
 		states: 2,
 		changedEvent: config.changeEmitter,
 		showWhen: config.showWhen,
@@ -538,10 +541,12 @@ function makeNumberIconInput<SpecType extends Spec, Message, ModObject>(
 	actionId: ActionId,
 	fieldName: keyof Message,
 	multiplier?: number,
+	label?: string,
 ): TypedIconPickerConfig<Player<SpecType>, number> {
 	return makeWrappedIconInput<SpecType, ModObject, number>({
 		getModObject: config.getModObject,
-		actionId: actionId,
+		actionId,
+		label,
 		states: 0, // Must be assigned externally.
 		changedEvent: config.changeEmitter,
 		getValue: (modObj: ModObject) => config.getValue(modObj)[fieldName] as unknown as number,
@@ -564,8 +569,9 @@ export function makeTristateIconInput<SpecType extends Spec, Message, ModObject>
 	id: ActionId,
 	impId: ActionId,
 	fieldName: keyof Message,
+	label?: string,
 ): TypedIconPickerConfig<Player<SpecType>, number> {
-	const input = makeNumberIconInput<SpecType, Message, ModObject>(config, id, fieldName);
+	const input = makeNumberIconInput<SpecType, Message, ModObject>(config, id, fieldName, undefined, label);
 	input.states = 3;
 	input.improvedId = impId;
 	return input;
@@ -589,8 +595,9 @@ export function makeMultistateIconInput<SpecType extends Spec, Message, ModObjec
 	numStates: number,
 	fieldName: keyof Message,
 	multiplier?: number,
+	label?: string,
 ): TypedIconPickerConfig<Player<SpecType>, number> {
-	const input = makeNumberIconInput<SpecType, Message, ModObject>(config, id, fieldName, multiplier);
+	const input = makeNumberIconInput<SpecType, Message, ModObject>(config, id, fieldName, multiplier, label);
 	input.states = numStates;
 	return input;
 }
