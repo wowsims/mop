@@ -2,6 +2,7 @@ import { Stat } from '../../proto/common';
 import { ActionId } from '../../proto_utils/action_id';
 import {
 	makeBooleanDebuffInput,
+	makeBooleanIndividualBuffInput,
 	makeBooleanRaidBuffInput,
 	makeMultistateIndividualBuffInput,
 	makeMultistateRaidBuffInput,
@@ -114,9 +115,8 @@ export const StormLashTotem = makeMultistateRaidBuffInput({
 	fieldName: 'stormlashTotemCount',
 	label: 'Stormlash Totem',
 });
-export const TricksOfTheTrade = makeTristateIndividualBuffInput({
-	actionId: ActionId.fromItemId(45767),
-	impId: ActionId.fromSpellId(57933),
+export const TricksOfTheTrade = makeBooleanIndividualBuffInput({
+	actionId: ActionId.fromSpellId(57933),
 	fieldName: 'tricksOfTheTrade',
 	label: 'Tricks of the Trade',
 });
