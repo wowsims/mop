@@ -18,9 +18,9 @@ func TestProtectionWarrior(t *testing.T) {
 		Race:       proto.Race_RaceOrc,
 		OtherRaces: []proto.Race{proto.Race_RaceHuman},
 
-		GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p4_bis"),
+		GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p1_bis"),
 		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p3_bis"),
+			core.GetGearSet("../../../ui/warrior/protection/gear_sets", "preraid"),
 		},
 		Talents:     DefaultTalents,
 		Glyphs:      DefaultGlyphs,
@@ -53,14 +53,11 @@ var ItemFilter = core.ItemFilter{
 	},
 }
 
-var DefaultTalents = "320003-002-33213201121210212031"
+var DefaultTalents = "231231"
 var DefaultGlyphs = &proto.Glyphs{
-	Major1: int32(proto.WarriorMajorGlyph_GlyphOfShieldWall),
-	Major2: int32(proto.WarriorMajorGlyph_GlyphOfShockwave),
-	Major3: int32(proto.WarriorMajorGlyph_GlyphOfThunderClap),
-	Minor1: int32(proto.WarriorMinorGlyph_GlyphOfDemoralizingShout),
-	Minor2: int32(proto.WarriorMinorGlyph_GlyphOfBattle),
-	Minor3: int32(proto.WarriorMinorGlyph_GlyphOfCommand),
+	Major1: int32(proto.WarriorMajorGlyph_GlyphOfIncite),
+	Major2: int32(proto.WarriorMajorGlyph_GlyphOfHeavyRepercussions),
+	Major3: int32(proto.WarriorMajorGlyph_GlyphOfHoldTheLine),
 }
 
 var PlayerOptionsBasic = &proto.Player_ProtectionWarrior{
@@ -72,8 +69,8 @@ var PlayerOptionsBasic = &proto.Player_ProtectionWarrior{
 }
 
 var FullConsumesSpec = &proto.ConsumesSpec{
-	FlaskId:  58085, // Flask of Steelskin
-	FoodId:   62670, // Beer‑Basted Crocolisk
-	PotId:    58090, // Earthen Potion
-	PrepotId: 58090, // Earthen Potion
+	FlaskId:  76088, // Flask of Winter's Bite
+	FoodId:   74646, // Black Pepper Ribs and Shrimp
+	PotId:    76095, // Potion of Mogu Power
+	PrepotId: 76095, // Potion of Mogu Power
 }

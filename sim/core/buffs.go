@@ -1083,7 +1083,7 @@ func registerShatteringThrowCD(agent Agent, numShatteringThrows int32) {
 	registerExternalConsecutiveCDApproximation(
 		agent,
 		externalConsecutiveCDApproximation{
-			ActionID:         ActionID{SpellID: 64382, Tag: -1},
+			ActionID:         ActionID{SpellID: 1249459, Tag: -1},
 			AuraTag:          ShatteringThrowAuraTag,
 			CooldownPriority: CooldownPriorityDefault,
 			AuraDuration:     ShatteringThrowDuration,

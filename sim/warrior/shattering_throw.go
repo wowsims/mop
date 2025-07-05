@@ -12,7 +12,7 @@ func (war *Warrior) registerShatteringThrow() {
 	})
 
 	ShatteringThrowSpell := war.RegisterSpell(core.SpellConfig{
-		ActionID:       core.ActionID{SpellID: 64382},
+		ActionID:       core.ActionID{SpellID: 1249459},
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
