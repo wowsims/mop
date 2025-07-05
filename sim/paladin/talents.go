@@ -90,11 +90,11 @@ func (paladin *Paladin) registerLongArmOfTheLaw() {
 		return
 	}
 
-	longArmOfTheLawAura := paladin.RegisterAura(core.Aura{
+	longArmOfTheLawAura := core.BlockPrepull(paladin.RegisterAura(core.Aura{
 		Label:    "Long Arm of the Law" + paladin.Label,
 		ActionID: core.ActionID{SpellID: 87173},
 		Duration: time.Second * 3,
-	})
+	}))
 	longArmOfTheLawAura.NewMovementSpeedEffect(0.45)
 
 	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
@@ -135,6 +135,10 @@ func (paladin *Paladin) registerPursuitOfJustice() {
 			newSpeed := speedLevels[newStacks]
 			paladin.MultiplyMovementSpeed(sim, 1+newSpeed)
 			movementSpeedEffect.SetPriority(sim, newSpeed)
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Activate(sim)
+			aura.SetStacks(sim, 1)
 		},
 	})
 
@@ -607,9 +611,9 @@ func (paladin *Paladin) registerDivinePurpose() {
 		return
 	}
 
-	paladin.DivinePurposeAura = paladin.divinePurposeFactory("Divine Purpose", 90174, time.Second*8, func(aura *core.Aura, spell *core.Spell) bool {
+	paladin.DivinePurposeAura = core.BlockPrepull(paladin.divinePurposeFactory("Divine Purpose", 90174, time.Second*8, func(aura *core.Aura, spell *core.Spell) bool {
 		return true
-	})
+	}))
 }
 
 func (paladin *Paladin) holyPrismFactory(spellID int32, targets []*core.Unit, timer *core.Timer, isHealing bool) {

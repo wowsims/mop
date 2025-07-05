@@ -46,11 +46,11 @@ func (war *ProtectionWarrior) registerBastionOfDefense() {
 }
 
 func (war *ProtectionWarrior) registerSwordAndBoard() {
-	war.SwordAndBoardAura = war.GetOrRegisterAura(core.Aura{
+	war.SwordAndBoardAura = core.BlockPrepull(war.GetOrRegisterAura(core.Aura{
 		Label:    "Sword and Board",
 		ActionID: core.ActionID{SpellID: 46953},
 		Duration: 5 * time.Second,
-	})
+	}))
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
 		Name:           "Sword and Board - Trigger",
@@ -66,7 +66,7 @@ func (war *ProtectionWarrior) registerSwordAndBoard() {
 }
 
 func (war *ProtectionWarrior) registerUltimatum() {
-	war.UltimatumAura = war.GetOrRegisterAura(core.Aura{
+	war.UltimatumAura = core.BlockPrepull(war.GetOrRegisterAura(core.Aura{
 		Label:    "Ultimatum",
 		ActionID: core.ActionID{SpellID: 122510},
 		Duration: 10 * time.Second,
@@ -79,7 +79,7 @@ func (war *ProtectionWarrior) registerUltimatum() {
 				war.HeroicStrikeCleaveCostMod.Deactivate()
 			}
 		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  warrior.SpellMaskHeroicStrike | warrior.SpellMaskCleave,
 		Kind:       core.SpellMod_BonusCrit_Percent,
 		FloatValue: 100,

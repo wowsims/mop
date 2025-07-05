@@ -31,6 +31,7 @@ interface BooleanInputConfig<T> {
 	actionId: ActionId;
 	fieldName: keyof T;
 	value?: number;
+	label?: string;
 	faction?: Faction;
 	showWhen?: (player: Player<any>) => boolean;
 }
@@ -49,6 +50,7 @@ export function makeBooleanRaidBuffInput<SpecType extends Spec>(
 		config.actionId,
 		config.fieldName,
 		config.value,
+		config.label,
 	);
 }
 export function makeBooleanPartyBuffInput<SpecType extends Spec>(
@@ -113,6 +115,7 @@ export function makeBooleanDebuffInput<SpecType extends Spec>(
 		config.actionId,
 		config.fieldName,
 		config.value,
+		config.label,
 	);
 }
 
@@ -121,6 +124,7 @@ interface TristateInputConfig<T> {
 	impId: ActionId;
 	fieldName: keyof T;
 	faction?: Faction;
+	label?: string;
 }
 
 export function makeTristateRaidBuffInput<SpecType extends Spec>(
@@ -137,6 +141,7 @@ export function makeTristateRaidBuffInput<SpecType extends Spec>(
 		config.actionId,
 		config.impId,
 		config.fieldName,
+		config.label,
 	);
 }
 
@@ -154,6 +159,7 @@ export function makeTristateIndividualBuffInput<SpecType extends Spec>(
 		config.actionId,
 		config.impId,
 		config.fieldName,
+		config.label,
 	);
 }
 
@@ -170,6 +176,7 @@ export function makeTristateDebuffInput<SpecType extends Spec>(
 		config.actionId,
 		config.impId,
 		config.fieldName,
+		config.label,
 	);
 }
 
@@ -200,6 +207,7 @@ export function makeQuadstateDebuffInput<SpecType extends Spec>(
 
 interface MultiStateInputConfig<T> {
 	actionId: ActionId;
+	label?: string;
 	numStates: number;
 	fieldName: keyof T;
 	multiplier?: number;
@@ -221,12 +229,14 @@ export function makeMultistateRaidBuffInput<SpecType extends Spec>(
 		config.numStates,
 		config.fieldName,
 		config.multiplier,
+		config.label,
 	);
 }
 export function makeMultistatePartyBuffInput<SpecType extends Spec>(
 	actionId: ActionId,
 	numStates: number,
 	fieldName: keyof PartyBuffs,
+	label?: string,
 ): InputHelpers.TypedIconPickerConfig<Player<SpecType>, number> {
 	return InputHelpers.makeMultistateIconInput<any, PartyBuffs, Party>(
 		{
@@ -238,6 +248,8 @@ export function makeMultistatePartyBuffInput<SpecType extends Spec>(
 		actionId,
 		numStates,
 		fieldName,
+		undefined,
+		label,
 	);
 }
 export function makeMultistateIndividualBuffInput<SpecType extends Spec>(
@@ -255,6 +267,7 @@ export function makeMultistateIndividualBuffInput<SpecType extends Spec>(
 		config.numStates,
 		config.fieldName,
 		config.multiplier,
+		config.label,
 	);
 }
 

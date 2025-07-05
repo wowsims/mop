@@ -87,7 +87,6 @@ message RogueOptions {
 	int32 starting_overkill_duration = 3;
 	bool apply_poisons_manually = 4;
 	float vanish_break_time = 5;
-	int32 starting_combo_points = 6;
 }
 
 message AssassinationRogue {

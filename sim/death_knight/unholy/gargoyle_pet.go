@@ -1,4 +1,4 @@
-package death_knight
+package unholy
 
 import (
 	"time"
@@ -11,26 +11,26 @@ type GargoylePet struct {
 	core.Pet
 
 	expireTime time.Duration
-	dkOwner    *DeathKnight
+	dkOwner    *UnholyDeathKnight
 
 	GargoyleStrike *core.Spell
 }
 
-func (dk *DeathKnight) NewGargoyle() *GargoylePet {
+func (uhdk *UnholyDeathKnight) NewGargoyle() *GargoylePet {
 	gargoyle := &GargoylePet{
 		Pet: core.NewPet(core.PetConfig{
 			Name:                           "Gargoyle",
-			Owner:                          &dk.Character,
+			Owner:                          &uhdk.Character,
 			BaseStats:                      stats.Stats{},
 			NonHitExpStatInheritance:       gargoyleStatInheritance,
 			EnabledOnStart:                 false,
 			IsGuardian:                     true,
 			HasDynamicCastSpeedInheritance: true,
 		}),
-		dkOwner: dk,
+		dkOwner: uhdk,
 	}
 
-	dk.AddPet(gargoyle)
+	uhdk.AddPet(gargoyle)
 
 	return gargoyle
 }
@@ -45,6 +45,9 @@ func (garg *GargoylePet) Initialize() {
 }
 
 func (garg *GargoylePet) Reset(_ *core.Simulation) {
+}
+
+func (garg *GargoylePet) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (garg *GargoylePet) SetExpireTime(expireTime time.Duration) {

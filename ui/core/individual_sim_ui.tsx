@@ -58,7 +58,6 @@ import {
 	Spec,
 	Stat,
 } from './proto/common';
-import { Consumable } from './proto/db';
 import { IndividualSimSettings, SavedTalents } from './proto/ui';
 import { getMetaGemConditionDescription } from './proto_utils/gems';
 import { armorTypeNames, professionNames } from './proto_utils/names';

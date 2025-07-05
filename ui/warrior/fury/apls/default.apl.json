@@ -5,7 +5,7 @@
 		{"action":{"move":{"rangeFromTarget":{"const":{"val":"9"}}}},"doAtValue":{"const":{"val":"-5s"}}},
 		{"action":{"castSpell":{"spellId":{"spellId":6673}}},"doAtValue":{"const":{"val":"-3"}}},
 		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-1.5"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":64382}}},"doAtValue":{"const":{"val":"-1.5"}}},
+		{"action":{"castSpell":{"spellId":{"spellId":1249459}}},"doAtValue":{"const":{"val":"-1.5"}}},
 		{"action":{"castSpell":{"spellId":{"spellId":1250619}}},"doAtValue":{"const":{"val":"0"}}}
 	],
 	"priorityList": [
@@ -27,6 +27,6 @@
 		{"action":{"castSpell":{"spellId":{"spellId":1250619}}}},
 		{"action":{"condition":{"and":{"vals":[{"not":{"val":{"spellCanCast":{"spellId":{"spellId":1250619}}}}},{"not":{"val":{"unitIsMoving":{}}}},{"cmp":{"op":"OpGe","lhs":{"currentTime":{}},"rhs":{"const":{"val":"1.5"}}}}]}},"castSpell":{"spellId":{"spellId":46924}}}},
 		{"action":{"condition":{"cmp":{"op":"OpLe","lhs":{"currentRage":{}},"rhs":{"const":{"val":"80"}}}},"castSpell":{"spellId":{"spellId":6673}}}},
-		{"action":{"condition":{"const":{"val":"false"}},"castSpell":{"spellId":{"spellId":64382}}}}
+		{"action":{"condition":{"const":{"val":"false"}},"castSpell":{"spellId":{"spellId":1249459}}}}
 	]
 }

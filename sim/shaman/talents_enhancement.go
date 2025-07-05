@@ -76,7 +76,7 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 		FloatValue: 0.2,
 	})
 
-	searingFlameStackingAura := shaman.RegisterAura(core.Aura{
+	searingFlameStackingAura := core.BlockPrepull(shaman.RegisterAura(core.Aura{
 		Label:     "Searing Flames",
 		ActionID:  core.ActionID{SpellID: 77661},
 		Duration:  time.Second * 15,
@@ -97,7 +97,7 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 			}
 			aura.Deactivate(sim)
 		},
-	})
+	}))
 
 	core.MakeProcTriggerAura(&shaman.FireElemental.Unit, core.ProcTrigger{
 		Name:           "Searing Flames Dummy Fire ele",
@@ -150,7 +150,7 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 		Kind:       core.SpellMod_PowerCost_Pct,
 		FloatValue: -0.2,
 	})
-	shaman.MaelstromWeaponAura = shaman.RegisterAura(core.Aura{
+	shaman.MaelstromWeaponAura = core.BlockPrepull(shaman.RegisterAura(core.Aura{
 		Label:     "MaelstromWeapon Proc",
 		ActionID:  core.ActionID{SpellID: 51530},
 		Duration:  time.Second * 30,
@@ -176,7 +176,7 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 			}
 			shaman.MaelstromWeaponAura.Deactivate(sim)
 		},
-	})
+	}))
 
 	ppm := core.TernaryFloat64(shaman.S12Enh2pc.IsActive(), 12.0, 10.0)
 

@@ -155,7 +155,6 @@ message GuardianDruid {
 
   message Options {
     DruidOptions class_options = 1;
-	double starting_rage = 2;
   }
   Options options = 3;
 }

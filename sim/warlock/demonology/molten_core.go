@@ -8,12 +8,12 @@ import (
 )
 
 func (demonology *DemonologyWarlock) registerMoltenCore() {
-	buff := demonology.RegisterAura(core.Aura{
+	buff := core.BlockPrepull(demonology.RegisterAura(core.Aura{
 		Label:     "Demonic Core",
 		ActionID:  core.ActionID{SpellID: 122355},
 		Duration:  time.Second * 30,
 		MaxStacks: 10,
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_CastTime_Pct,
 		FloatValue: -0.5,
 		ClassMask:  warlock.WarlockSpellSoulFire,
