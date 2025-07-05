@@ -87,19 +87,26 @@ export const updateLanguageDropdown = (): void => {
 	dropdownMenu.innerHTML = '';
 
 	Object.entries(supportedLanguages).forEach(([code, name]) => {
-		const li = document.createElement('li');
-		const a = document.createElement('a');
-		a.className = `dropdown-item ${code === currentLang ? 'active' : ''}`;
-		a.href = '#';
-		a.dataset.lang = code;
-		a.textContent = name;
-		a.onclick = e => {
+		const handleClick = (e: Event) => {
 			e.preventDefault();
 			setLang(code);
 			window.location.reload();
 		};
-		li.appendChild(a);
-		dropdownMenu.appendChild(li);
+
+				const languageItem = (
+			<li>
+				<a
+					className={`dropdown-item ${code === currentLang ? 'active' : ''}`}
+					href="#"
+					data-lang={code}
+					onclick={handleClick}
+				>
+					{name}
+				</a>
+			</li>
+		);
+
+		dropdownMenu.appendChild(languageItem);
 	});
 };
 

@@ -3,7 +3,7 @@ import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
 import { translateStatus } from '../../i18n/entity_mapping';
-import { translatePlayerClass, translatePlayerSpec } from '../../i18n/localization.js';
+import { translatePlayerClass, translatePlayerSpec } from '../../i18n/localization';
 import { LaunchStatus, raidSimStatus, simLaunchStatuses } from '../launched_sims.js';
 import { PlayerClass } from '../player_class.js';
 import { PlayerClasses } from '../player_classes/index.js';
