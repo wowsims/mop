@@ -127,7 +127,7 @@ export const UnholyFrenzy = makeMultistateIndividualBuffInput({
 	label: 'Unholy Frenzy',
 });
 export const ShatteringThrow = makeMultistateIndividualBuffInput({
-	actionId: ActionId.fromSpellId(64382),
+	actionId: ActionId.fromSpellId(1249459),
 	numStates: 11,
 	fieldName: 'shatteringThrowCount',
 	label: 'Shattering Throw',
