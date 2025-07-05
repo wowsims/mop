@@ -329,6 +329,9 @@ const (
 	// Enables casting while moving
 	SpellMod_AllowCastWhileMoving
 
+	// Enables casting while channeling
+	SpellMod_AllowCastWhileChanneling
+
 	// Add/subtract bonus spell power
 	// Uses: FloatValue
 	SpellMod_BonusSpellPower_Flat
@@ -446,6 +449,11 @@ var spellModMap = map[SpellModType]*SpellModFunctions{
 	SpellMod_AllowCastWhileMoving: {
 		Apply:  applyAllowCastWhileMoving,
 		Remove: removeAllowCastWhileMoving,
+	},
+
+	SpellMod_AllowCastWhileChanneling: {
+		Apply:  applyAllowCastWhileChanneling,
+		Remove: removeAllowCastWhileChanneling,
 	},
 
 	SpellMod_BonusSpellPower_Flat: {
@@ -678,6 +686,14 @@ func applyAllowCastWhileMoving(mod *SpellMod, spell *Spell) {
 
 func removeAllowCastWhileMoving(mod *SpellMod, spell *Spell) {
 	spell.Flags ^= SpellFlagCanCastWhileMoving
+}
+
+func applyAllowCastWhileChanneling(mod *SpellMod, spell *Spell) {
+	spell.Flags |= SpellFlagCastWhileChanneling
+}
+
+func removeAllowCastWhileChanneling(mod *SpellMod, spell *Spell) {
+	spell.Flags ^= SpellFlagCastWhileChanneling
 }
 
 func applyBonusSpellPowerFlat(mod *SpellMod, spell *Spell) {

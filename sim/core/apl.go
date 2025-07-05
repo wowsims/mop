@@ -282,7 +282,7 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 		return
 	}
 
-	if apl.unit.ChanneledDot != nil {
+	if (apl.unit.ChanneledDot != nil) && !apl.unit.ChanneledDot.Spell.Flags.Matches(SpellFlagCastWhileChanneling) {
 		return
 	}
 
