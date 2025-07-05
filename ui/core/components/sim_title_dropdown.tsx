@@ -1,6 +1,9 @@
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config.js';
+import { translateStatus } from '../../i18n/entity_mapping';
+import { translatePlayerClass, translatePlayerSpec } from '../../i18n/localization';
 import { LaunchStatus, raidSimStatus, simLaunchStatuses } from '../launched_sims.js';
 import { PlayerClass } from '../player_class.js';
 import { PlayerClasses } from '../player_classes/index.js';
@@ -95,7 +98,7 @@ export class SimTitleDropdown extends Component {
 				<div className="sim-link-content">
 					<img src={this.getSimIconPath(data)} className="sim-link-icon" />
 					<div className="d-flex flex-column">
-						<span className="sim-link-label text-white">WoWSims - Mists of Pandaria</span>
+						<span className="sim-link-label text-white">{i18n.t('sidebar.header.title')}</span>
 						<span className="sim-link-title">
 							{data.type === 'Raid' && raidSimLabel}
 							{data.type === 'Spec' && PlayerSpecs.getFullSpecName(data.spec)}
@@ -130,7 +133,7 @@ export class SimTitleDropdown extends Component {
 				<div className="sim-link-content">
 					<img src={this.getSimIconPath({ type: 'Class', class: klass })} className="sim-link-icon" />
 					<div className="d-flex flex-column">
-						<span className="sim-link-title">{klass.friendlyName}</span>
+						<span className="sim-link-title">{translatePlayerClass(klass)}</span>
 					</div>
 				</div>
 			</button>
@@ -143,8 +146,8 @@ export class SimTitleDropdown extends Component {
 				<div className="sim-link-content">
 					<img src={this.getSimIconPath({ type: 'Spec', spec: spec })} className="sim-link-icon" />
 					<div className="d-flex flex-column">
-						<span className="sim-link-label">{PlayerSpecs.getPlayerClass(spec).friendlyName}</span>
-						<span className="sim-link-title">{spec.friendlyName}</span>
+						<span className="sim-link-label">{translatePlayerClass(PlayerSpecs.getPlayerClass(spec))}</span>
+						<span className="sim-link-title">{translatePlayerSpec(spec)}</span>
 						{this.launchStatusLabel({ type: 'Spec', spec: spec })}
 					</div>
 				</div>
@@ -153,23 +156,17 @@ export class SimTitleDropdown extends Component {
 	}
 
 	private launchStatusLabel(data: SpecOptions | RaidOptions) {
-		if (
-			(data.type === 'Raid' && raidSimStatus.status === LaunchStatus.Launched)
-		)
-			return null;
+		if (data.type === 'Raid' && raidSimStatus.status === LaunchStatus.Launched) return null;
 
 		const status = data.type === 'Raid' ? raidSimStatus.status : simLaunchStatuses[data.spec.specID as Spec].status;
 		const phase = data.type === 'Raid' ? raidSimStatus.phase : simLaunchStatuses[data.spec.specID as Spec].phase;
 
 		return (
 			<span className="launch-status-label text-brand">
-				{status === LaunchStatus.Unlaunched ? (
-					<>Not Yet Supported</>
-				) : (
-					<>
-						Phase {phase} - {LaunchStatus[status]}
-					</>
-				)}
+				{i18n.t('sidebar.header.phase', {
+					phase: i18n.t(`common.phases.${phase}`),
+					status: translateStatus(status),
+				})}
 			</span>
 		);
 	}

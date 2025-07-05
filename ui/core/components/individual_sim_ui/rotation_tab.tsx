@@ -1,5 +1,6 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
 import * as Tooltips from '../../constants/tooltips';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
@@ -27,7 +28,7 @@ export class RotationTab extends SimTab {
 	readonly leftCol: HTMLElement = this.buildColumn(1, 'rotation-tab-col');
 
 	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
-		super(parentElem, simUI, { identifier: 'rotation-tab', title: 'Rotation' });
+		super(parentElem, simUI, { identifier: 'rotation-tab', title: i18n.t('rotation.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = (<div className="rotation-tab-left tab-panel-left" />) as HTMLElement;

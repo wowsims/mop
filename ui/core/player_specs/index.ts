@@ -1,3 +1,4 @@
+import { translatePlayerClass, translatePlayerSpec } from '../../i18n/localization';
 import { LOCAL_STORAGE_PREFIX } from '../constants/other';
 import { PlayerClass } from '../player_class';
 import { PlayerClasses } from '../player_classes';
@@ -87,7 +88,9 @@ export const PlayerSpecs = {
 	...WarriorSpecs,
 	getPlayerClass,
 	getFullSpecName: <SpecType extends Spec>(playerSpec: PlayerSpec<SpecType>): string => {
-		return `${playerSpec.friendlyName} ${getPlayerClass(playerSpec).friendlyName}`;
+		const translatedSpec = translatePlayerSpec(playerSpec);
+		const translatedClass = translatePlayerClass(getPlayerClass(playerSpec));
+		return `${translatedSpec} ${translatedClass}`;
 	},
 	getSpecNumber: <SpecType extends Spec>(playerSpec: PlayerSpec<SpecType>): number => {
 		return Object.values(getPlayerClass(playerSpec).specs).findIndex(spec => spec == playerSpec) ?? 0;

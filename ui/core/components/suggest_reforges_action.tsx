@@ -3,6 +3,7 @@ import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 import { Constraint, greaterEq, lessEq, Model, Options, Solution, solve } from 'yalps';
 
+import i18n from '../../i18n/config.js';
 import * as Mechanics from '../constants/mechanics.js';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
@@ -200,7 +201,7 @@ export class ReforgeOptimizer {
 		this.enableBreakpointLimits = !!options?.enableBreakpointLimits;
 
 		const startReforgeOptimizationEntry: ActionGroupItem = {
-			label: 'Suggest Reforges',
+			label: i18n.t('sidebar.buttons.suggest_reforges'),
 			cssClass: 'suggest-reforges-action-button flex-grow-1',
 			onClick: async ({ currentTarget }) => {
 				const button = currentTarget as HTMLButtonElement;

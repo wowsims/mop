@@ -122,20 +122,6 @@ export function getStatName(stat: Stat): string {
 	}
 }
 
-export function getClassPseudoStatName(pseudoStat: PseudoStat, playerClass: Class): string {
-	const genericName = PseudoStat[pseudoStat]
-		.split(/(?<![A-Z])(?=[A-Z])/)
-		.slice(2)
-		.join(' ')
-		.replace('Dps', 'DPS');
-
-	if (playerClass == Class.ClassHunter) {
-		return genericName.replace('Physical', 'Ranged');
-	} else {
-		return genericName.replace('Physical', 'Melee');
-	}
-}
-
 // TODO: Make sure BE exports the spell schools properly
 export enum SpellSchool {
 	None = 0,

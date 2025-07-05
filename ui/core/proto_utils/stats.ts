@@ -1,9 +1,9 @@
+import { translatePseudoStat, translateStat } from '../../i18n/entity_mapping';
 import * as Mechanics from '../constants/mechanics.js';
 import { CURRENT_API_VERSION } from '../constants/other.js';
 import { Class, PseudoStat, Stat, UnitStats } from '../proto/common.js';
 import { StatCapConfig, StatCapType, UIStat as UnitStatProto } from '../proto/ui.js';
 import { getEnumValues } from '../utils.js';
-import { getClassPseudoStatName, getStatName } from './names.js';
 import { migrateOldProto, ProtoConversionMap } from './utils.js';
 
 const STATS_LEN = getEnumValues(Stat).length;
@@ -70,10 +70,12 @@ export class UnitStat {
 	}
 
 	getFullName(playerClass: Class): string {
-		if (this.isStat()) {
-			return getStatName(this.stat!);
+		const fullName = this.isStat() ? translateStat(this.getStat()) : translatePseudoStat(this.getPseudoStat());
+		// Not sure if this is needed anymore, but keeping it for now
+		if (playerClass == Class.ClassHunter) {
+			return fullName.replace('Physical', 'Ranged');
 		} else {
-			return getClassPseudoStatName(this.getPseudoStat(), playerClass);
+			return fullName.replace('Physical', 'Melee');
 		}
 	}
 

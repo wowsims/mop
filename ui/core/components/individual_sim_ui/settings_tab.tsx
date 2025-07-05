@@ -1,3 +1,4 @@
+import i18n from '../../../i18n/config';
 import * as Tooltips from '../../constants/tooltips.js';
 import { Encounter } from '../../encounter.js';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui.jsx';
@@ -35,7 +36,7 @@ export class SettingsTab extends SimTab {
 	readonly column4?: HTMLElement;
 
 	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
-		super(parentElem, simUI, { identifier: 'settings-tab', title: 'Settings' });
+		super(parentElem, simUI, { identifier: 'settings-tab', title: i18n.t('settings.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = document.createElement('div');

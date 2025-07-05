@@ -38,6 +38,13 @@ function serveExternalAssets() {
 
 					serveFile(res, requestedPath);
 					return;
+				} else if (url.includes('/mop/locales')) {
+					const localesPath = path.resolve(__dirname, './assets/locales');
+					const localeRelativePath = url.split('/mop/locales')[1];
+					const requestedPath = path.join(localesPath, localeRelativePath);
+
+					serveFile(res, requestedPath);
+					return;
 				} else {
 					next();
 				}
@@ -85,6 +92,29 @@ function determineContentType(filePath: string) {
 	}
 }
 
+function copyLocales() {
+	return {
+		name: 'copy-locales',
+		buildStart() {
+			// add locales here to enable them in the UI
+			const locales = [
+				'en.json',
+				'fr.json'
+			];
+			const srcDir = path.resolve(__dirname, 'assets/locales');
+			const destDir = path.resolve(__dirname, 'dist/mop/assets/locales');
+			if (!fs.existsSync(destDir)) {
+				fs.mkdirSync(destDir, { recursive: true });
+			}
+			locales.forEach(file => {
+				const src = path.join(srcDir, file);
+				const dest = path.join(destDir, file);
+				fs.copyFileSync(src, dest);
+			});
+		},
+	} satisfies PluginOption;
+}
+
 export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 	({
 		base: '/mop/',
@@ -101,8 +131,14 @@ export default defineConfig(({ command, mode }) => {
 	const baseConfig = getBaseConfig({ command, mode });
 	return {
 		...baseConfig,
+		resolve: {
+			alias: {
+				'/mop/localization.js': path.resolve(__dirname, 'ui/i18n/localization.tsx'),
+			},
+		},
 		plugins: [
 			serveExternalAssets(),
+			copyLocales(),
 			checker({
 				root: path.resolve(__dirname, 'ui'),
 				typescript: true,

@@ -1,9 +1,8 @@
-import { getWowheadLanguagePrefix } from '../constants/lang';
 import { CHARACTER_LEVEL, MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
 import { ActionID as ActionIdProto, ItemLevelState, ItemRandomSuffix, OtherAction, ReforgeStat } from '../proto/common';
 import { ResourceType } from '../proto/spell';
 import { IconData, UIItem as Item } from '../proto/ui';
-import { buildWowheadTooltipDataset, WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../wowhead';
+import { buildWowheadTooltipDataset, getWowheadLanguagePrefix, WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../wowhead';
 import { Database } from './database';
 
 // If true uses wotlkdb.com, else uses wowhead.com.

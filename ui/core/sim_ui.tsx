@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../i18n/config.js';
 import { BaseModal } from './components/base_modal.jsx';
 import { Component } from './components/component.js';
 import { NoticeLocalSim } from './components/individual_sim_ui/notice_local_sim.jsx';
@@ -170,7 +171,7 @@ export abstract class SimUI extends Component {
 
 		this.iterationsPicker = new NumberPicker(this.simActionsContainer, this.sim, {
 			id: 'simui-iterations',
-			label: 'Iterations',
+			label: i18n.t('sidebar.iterations'),
 			extraCssClasses: ['iterations-picker', 'within-raid-sim-hide'],
 			changedEvent: (sim: Sim) => sim.iterationsChangeEmitter,
 			getValue: (sim: Sim) => sim.getIterations(),
