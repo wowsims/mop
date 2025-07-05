@@ -188,11 +188,16 @@ func (war *Warrior) registerBladestorm() {
 		},
 	})
 
+	channelMod := war.AddDynamicMod(core.SpellModConfig{
+		ClassMask: SpellMaskBattleShout | SpellMaskCommandingShout | SpellMaskRallyingCry | SpellMaskLastStand | SpellMaskDemoralizingShout | SpellMaskBerserkerRage,
+		Kind:      core.SpellMod_AllowCastWhileChanneling,
+	})
+
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID.WithTag(0),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ClassSpellMask: SpellMaskBladestorm,
-		Flags:          core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagCastWhileChanneling,
 		ProcMask:       core.ProcMaskEmpty,
 
 		Cast: core.CastConfig{
@@ -212,6 +217,12 @@ func (war *Warrior) registerBladestorm() {
 			IsAOE: true,
 			Aura: core.Aura{
 				Label: "Bladestorm",
+				OnGain: func(aura *core.Aura, sim *core.Simulation) {
+					channelMod.Activate()
+				},
+				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+					channelMod.Deactivate()
+				},
 			},
 			NumberOfTicks: 6,
 			TickLength:    time.Second * 1,
