@@ -734,6 +734,8 @@ message UnitReference {
 		CurrentTarget = 5;
 		AllPlayers = 6;
 		AllTargets = 7;
+		PreviousTarget = 8;
+		NextTarget = 9;
 	}
 
 	// The type of unit being referenced.

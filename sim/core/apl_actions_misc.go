@@ -12,6 +12,8 @@ type APLActionChangeTarget struct {
 	defaultAPLActionImpl
 	unit      *Unit
 	newTarget UnitReference
+
+	lastExecutedAt time.Duration
 }
 
 func (rot *APLRotation) newActionChangeTarget(config *proto.APLActionChangeTarget) APLActionImpl {
@@ -20,17 +22,23 @@ func (rot *APLRotation) newActionChangeTarget(config *proto.APLActionChangeTarge
 		return nil
 	}
 	return &APLActionChangeTarget{
+		unit:      rot.unit,
 		newTarget: newTarget,
 	}
 }
+func (action *APLActionChangeTarget) Reset(sim *Simulation) {
+	action.lastExecutedAt = NeverExpires
+}
 func (action *APLActionChangeTarget) IsReady(sim *Simulation) bool {
-	return action.unit.CurrentTarget != action.newTarget.Get()
+	// Prevent infinite loops by only allowing this action to be performed once at each timestamp.
+	return action.lastExecutedAt != sim.CurrentTime
 }
 func (action *APLActionChangeTarget) Execute(sim *Simulation) {
 	if sim.Log != nil {
 		action.unit.Log(sim, "Changing target to %s", action.newTarget.Get().Label)
 	}
 	action.unit.CurrentTarget = action.newTarget.Get()
+	action.lastExecutedAt = sim.CurrentTime
 }
 func (action *APLActionChangeTarget) String() string {
 	return fmt.Sprintf("Change Target(%s)", action.newTarget.Get().Label)

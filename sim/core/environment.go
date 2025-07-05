@@ -313,6 +313,12 @@ func (env *Environment) NextActiveTarget(target *Unit) *Target {
 func (env *Environment) NextActiveTargetUnit(target *Unit) *Unit {
 	return &env.NextActiveTarget(target).Unit
 }
+func (env *Environment) PreviousActiveTarget(target *Unit) *Target {
+	return env.Encounter.AllTargets[target.Index].PreviousActiveTarget()
+}
+func (env *Environment) PreviousActiveTargetUnit(target *Unit) *Unit {
+	return &env.PreviousActiveTarget(target).Unit
+}
 func (env *Environment) GetActiveTargetUnits() []*Unit {
 	return env.Encounter.ActiveTargetUnits
 }
@@ -375,6 +381,16 @@ func (env *Environment) GetUnit(ref *proto.UnitReference, contextUnit *Unit) *Un
 			return nil
 		}
 		return contextUnit.CurrentTarget
+	case proto.UnitReference_PreviousTarget:
+		if contextUnit == nil {
+			return nil
+		}
+		return env.PreviousActiveTargetUnit(contextUnit.CurrentTarget)
+	case proto.UnitReference_NextTarget:
+		if contextUnit == nil {
+			return nil
+		}
+		return env.NextActiveTargetUnit(contextUnit.CurrentTarget)
 	}
 
 	return nil
