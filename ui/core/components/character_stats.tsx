@@ -3,7 +3,6 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
-import { translatePseudoStat, translateStat } from '../../i18n/localization.js';
 import * as Mechanics from '../constants/mechanics.js';
 import { Player } from '../player.js';
 import { HandType, ItemSlot, Race, RangedWeaponType, Spec, Stat, WeaponType } from '../proto/common.js';
@@ -53,14 +52,7 @@ export class CharacterStats extends Component {
 
 		this.valueElems = [];
 		this.stats.forEach(unitStat => {
-			let statName: string;
-			if (unitStat.isStat()) {
-				statName = translateStat(unitStat.getStat());
-			} else if (unitStat.isPseudoStat()) {
-				statName = translatePseudoStat(unitStat.getPseudoStat());
-			} else {
-				statName = unitStat.getShortName(player.getClass());
-			}
+			const statName = unitStat.getShortName(player.getClass());
 			const valueRef = ref<HTMLTableCellElement>();
 			const row = (
 				<tr className="character-stats-table-row">
