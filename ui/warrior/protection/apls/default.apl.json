@@ -13,7 +13,7 @@
 	"priorityList": [
 		{ "action": { "schedule": { "schedule": "0s", "innerAction": { "castSpell": { "spellId": { "spellId": 2825, "tag": -1 } } } } } },
 		{ "action": { "schedule": { "schedule": "60s", "innerAction": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } } } } },
-		{ "hide": true, "action": { "schedule": { "schedule": "0", "innerAction": { "castSpell": { "spellId": { "spellId": 64382 } } } } } },
+		{ "hide": true, "action": { "schedule": { "schedule": "0", "innerAction": { "castSpell": { "spellId": { "spellId": 1249459 } } } } } },
 		{ "action": { "castSpell": { "spellId": { "spellId": 89637 } } } },
 		{
 			"action": {

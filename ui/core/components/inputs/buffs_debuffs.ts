@@ -124,7 +124,7 @@ export const TricksOfTheTrade = makeTristateIndividualBuffInput({
 	fieldName: 'tricksOfTheTrade',
 });
 export const UnholyFrenzy = makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(49016), numStates: 11, fieldName: 'unholyFrenzyCount' });
-export const ShatteringThrow = makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(64382), numStates: 11, fieldName: 'shatteringThrowCount' });
+export const ShatteringThrow = makeMultistateIndividualBuffInput({ actionId: ActionId.fromSpellId(1249459), numStates: 11, fieldName: 'shatteringThrowCount' });
 export const Skullbanner = makeMultistateRaidBuffInput({ actionId: ActionId.fromSpellId(114207), numStates: 11, fieldName: 'skullBannerCount' });
 export const StormLashTotem = makeMultistateRaidBuffInput({ actionId: ActionId.fromSpellId(120668), numStates: 11, fieldName: 'stormlashTotemCount' });
 

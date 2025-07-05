@@ -1467,7 +1467,7 @@ const idToCategoryMap: Record<number, number> = {
 	[47296]: SPELL_ACTION_CATEGORY + 0.53, // Critical Block
 	[46924]: SPELL_ACTION_CATEGORY + 0.61, // Bladestorm
 	[2565]: SPELL_ACTION_CATEGORY + 0.62, // Shield Block
-	[64382]: SPELL_ACTION_CATEGORY + 0.65, // Shattering Throw
+	[1249459]: SPELL_ACTION_CATEGORY + 0.65, // Shattering Throw
 	[71]: DEFAULT_ACTION_CATEGORY + 0.1, // Defensive Stance
 	[2457]: DEFAULT_ACTION_CATEGORY + 0.1, // Battle Stance
 	[2458]: DEFAULT_ACTION_CATEGORY + 0.1, // Berserker Stance
