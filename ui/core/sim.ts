@@ -415,6 +415,15 @@ export class Sim {
 
 			const request = this.makeRaidSimRequest(false);
 
+			// this I added because I couldn't be assed to create an entirely
+			// new piece of UI to handle a new protobuf message type
+			request.chartInput = {
+				statsToCompare: [Stat.StatCritRating , Stat.StatHasteRating],
+				step: 160,
+				lowerBound: -1600,
+				upperBound: 1600,
+			}
+
 			let result;
 			// Only use worker base concurrency when running wasm. Local sim has native threading.
 			if (await this.shouldUseWasmConcurrency()) {

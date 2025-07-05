@@ -25,7 +25,6 @@ import (
 	"github.com/wowsims/mop/sim/core"
 	proto "github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
-
 	googleProto "google.golang.org/protobuf/proto"
 )
 
@@ -273,6 +272,131 @@ func (s *server) setupAsyncServer() {
 		w.Write(outbytes)
 	})))
 }
+func (s *server) setupCharEndpoint() {
+	http.Handle("/getChartSims", corsMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			return
+		}
+		msg := &proto.RaidSimRequest{}
+		if err := googleProto.Unmarshal(body, msg); err != nil {
+			log.Printf("Failed to parse request: %s", err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		sims := prepareSimsToChart(msg, msg.GetChartInput())
+		allResults := make(chan *proto.RaidSimResult, len(sims))
+
+		var wg sync.WaitGroup
+		for _, sim := range sims {
+			// a lot of the code here is repurposed from the code for running a single sim
+			wg.Add(1)
+			go func(sim *proto.RaidSimRequest, waitGroup *sync.WaitGroup) {
+				// reporter channel is handed into the core simulation.
+				//  as the simulation advances it will push changes to the channel
+				//  these changes will be consumed by the goroutine below so the asyncProgress endpoint can fetch the results.
+				reporter := make(chan *proto.ProgressMetrics, 100)
+
+				// Generate a new async simulation
+				simProgress := s.addNewSim()
+				core.RunRaidSimConcurrentAsync(sim, reporter, sim.RequestId)
+				// Now launch a background process that pulls progress reports off the reporter channel
+				// and pushes it into the async progress cache.
+				go func() {
+					defer waitGroup.Done()
+					for {
+						select {
+						case <-time.After(time.Minute * 10):
+							// if we get no progress after 10 minutes, delete the pending sim and exit.
+							s.progMut.Lock()
+							delete(s.asyncProgresses, simProgress.id)
+							s.progMut.Unlock()
+							return
+						case progMetric := <-reporter:
+							if progMetric == nil {
+								return
+							}
+							simProgress.latestProgress.Store(progMetric)
+							if progMetric.FinalRaidResult != nil {
+								progMetric.FinalRaidResult.ChartInput = sim.ChartInput
+								progMetric.FinalRaidResult.Logs = ""
+								allResults <- progMetric.FinalRaidResult
+								log.Printf("finished for %s", sim.RequestId)
+							}
+							if progMetric.FinalRaidResult != nil || progMetric.FinalWeightResult != nil || progMetric.FinalBulkResult != nil {
+								return
+							}
+						}
+					}
+				}()
+			}(sim, &wg)
+		}
+
+		// waitgroup is here because for some reason I couldn't make it work with
+		// a buffered channel, so I opted to just wait for all task to complete
+		// and manually close the channel
+		wg.Wait()
+		close(allResults)
+
+		var toReturn []*proto.RaidSimResult
+		for finalRaidResult := range allResults {
+			toReturn = append(toReturn, finalRaidResult)
+		}
+
+		outbytes, err := googleProto.Marshal(&proto.ChartResult{
+			RaidSimResult: toReturn,
+		})
+		if err != nil {
+			log.Printf("Failed to marshal result: %s", err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		// why dig through JSON when I can log the data to stdout as csv, lol
+		// this could be deleted
+		log.Printf("first stat, first stat delta, second stat, second stat delta, dps, stdev")
+		for _, row := range toReturn {
+			log.Printf("%d,%d,%d,%d,%v,%v",
+				row.ChartInput.StatsToCompare[0],
+				row.ChartInput.CurrentValue,
+				row.ChartInput.StatsToCompare[1],
+				row.ChartInput.CurrentValueOther,
+				row.RaidMetrics.Dps.Avg,
+				row.RaidMetrics.Dps.Stdev,
+			)
+		}
+
+		// originally I was returning the data marshaled to JSON so I can also read them in the browser,
+		// irrelevant for my implementation, this can be anything protobuf as well.
+		w.Header().Set("Content-Type", "application/x-protobuf")
+		w.Write(outbytes)
+	})))
+}
+
+func prepareSimsToChart(simRequest *proto.RaidSimRequest, setup *proto.ChartInput) []*proto.RaidSimRequest {
+	lowerBound := setup.GetLowerBound()
+	upperBound := setup.GetUpperBound()
+	step := setup.GetStep()
+	statsToCompare := []int32{setup.StatsToCompare[0], setup.StatsToCompare[1]}
+
+	simsToRun := (upperBound - lowerBound) / step
+	results := make([]*proto.RaidSimRequest, 0, simsToRun)
+
+	for i := lowerBound; i <= upperBound; i = i + step {
+		copiedSim := googleProto.Clone(simRequest).(*proto.RaidSimRequest)
+		copiedSim.RequestId = fmt.Sprintf("%s-%d", simRequest.RequestId, i)
+		copiedSim.GetRaid().GetParties()[0].GetPlayers()[0].GetBonusStats().Stats[statsToCompare[0]] = copiedSim.GetRaid().GetParties()[0].GetPlayers()[0].GetBonusStats().Stats[statsToCompare[0]] + float64(i)
+		copiedSim.GetRaid().GetParties()[0].GetPlayers()[0].GetBonusStats().Stats[statsToCompare[1]] = copiedSim.GetRaid().GetParties()[0].GetPlayers()[0].GetBonusStats().Stats[statsToCompare[1]] - float64(i)
+		copiedSim.ChartInput.CurrentValue = i
+		copiedSim.ChartInput.CurrentValueOther = 0
+
+		results = append(results, copiedSim)
+	}
+
+	return results
+}
+
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -287,6 +411,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 func (s *server) runServer(useFS bool, host string, launchBrowser bool, simName string, wasm bool, inputReader *bufio.Reader) {
 	s.setupAsyncServer()
+	s.setupCharEndpoint()
 
 	var fs http.Handler
 	if useFS {
