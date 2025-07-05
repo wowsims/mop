@@ -216,7 +216,7 @@ func ShatteringThrowAura(target *Unit, actionTag int32) *Aura {
 	return target.GetOrRegisterAura(Aura{
 		Label:    "Shattering Throw",
 		Tag:      ShatteringThrowAuraTag,
-		ActionID: ActionID{SpellID: 64382, Tag: actionTag},
+		ActionID: ActionID{SpellID: 1249459, Tag: actionTag},
 		Duration: ShatteringThrowDuration,
 		OnGain: func(aura *Aura, sim *Simulation) {
 			aura.Unit.PseudoStats.ArmorMultiplier *= (1.0 - armorReduction)
