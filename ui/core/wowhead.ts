@@ -137,3 +137,8 @@ export const buildWowheadTooltipDataset = async (options: WowheadTooltipItemPara
 
 	return decodeURIComponent(params.toString());
 };
+
+export function getWowheadLanguagePrefix(): string {
+	const lang = getLang();
+	return lang === 'en' ? '' : `${lang}/`;
+}
