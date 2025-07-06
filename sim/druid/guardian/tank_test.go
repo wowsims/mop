@@ -22,7 +22,10 @@ func TestGuardian(t *testing.T) {
 
 		Talents:         StandardTalents,
 		Glyphs:          StandardGlyphs,
-		OtherTalentSets: []core.TalentsCombo{{Label: "FoN", Talents: "010300", Glyphs: StandardGlyphs}},
+		OtherTalentSets: []core.TalentsCombo{
+			{Label: "FoN-NV", Talents: "010303", Glyphs: StandardGlyphs},
+			{Label: "Incarn-DoC", Talents: "010202", Glyphs: StandardGlyphs},
+		},
 
 		Consumables: FullConsumesSpec,
 		SpecOptions: core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsDefault},
@@ -73,7 +76,7 @@ func TestGuardian(t *testing.T) {
 // 	core.RaidBenchmark(b, rsr)
 // }
 
-var StandardTalents = "010100"
+var StandardTalents = "010101"
 var StandardGlyphs = &proto.Glyphs{}
 
 var PlayerOptionsDefault = &proto.Player_GuardianDruid{
@@ -83,7 +86,7 @@ var PlayerOptionsDefault = &proto.Player_GuardianDruid{
 }
 var FullConsumesSpec = &proto.ConsumesSpec{
 	FlaskId:    76087,
-	FoodId:     105717,
+	FoodId:     74656,
 	PotId:      76089,
 	PrepotId:   76089,
 	ConjuredId: 5512, // Conjured Healthstone
