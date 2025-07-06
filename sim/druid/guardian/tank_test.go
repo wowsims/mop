@@ -22,7 +22,7 @@ func TestGuardian(t *testing.T) {
 
 		Talents:         StandardTalents,
 		Glyphs:          StandardGlyphs,
-		OtherTalentSets: []core.TalentsCombo{{Label: "FoN", Talents: "010301", Glyphs: StandardGlyphs}},
+		OtherTalentSets: []core.TalentsCombo{{Label: "FoN-DoC", Talents: "010302", Glyphs: StandardGlyphs}},
 
 		Consumables: FullConsumesSpec,
 		SpecOptions: core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsDefault},

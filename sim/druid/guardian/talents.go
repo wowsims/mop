@@ -11,6 +11,7 @@ import (
 func (bear *GuardianDruid) applySpecTalents() {
 	bear.registerIncarnation()
 	bear.registerHeartOfTheWild()
+	bear.registerDreamOfCenarius()
 }
 
 func (bear *GuardianDruid) registerIncarnation() {
@@ -154,6 +155,75 @@ func (bear *GuardianDruid) registerHeartOfTheWild() {
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
 			bear.HeartOfTheWildAura.Activate(sim)
+		},
+	})
+}
+
+func (bear *GuardianDruid) registerDreamOfCenarius() {
+	if !bear.Talents.DreamOfCenarius {
+		return
+	}
+
+	bear.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellHealingTouch,
+		Kind:       core.SpellMod_DamageDone_Pct,
+		FloatValue: 0.2,
+	})
+
+	bear.AddStaticMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellMangleBear,
+		Kind:       core.SpellMod_BonusCrit_Percent,
+		FloatValue: 10,
+	})
+
+	var oldGetSpellPowerValue func(*core.Spell) float64
+
+	bear.DreamOfCenariusAura = bear.RegisterAura(core.Aura{
+		Label:    "Dream of Cenarius",
+		ActionID: core.ActionID{SpellID: 145162},
+		Duration: time.Second * 20,
+
+		OnGain: func(_ *core.Aura, _ *core.Simulation) {
+			bear.HealingTouch.CastTimeMultiplier -= 1
+			bear.HealingTouch.Cost.PercentModifier *= -1
+			bear.HealingTouch.FormMask |= druid.Bear
+
+			// https://www.mmo-champion.com/threads/1188383-Guardian-Patch-5-4-Survival-Guide
+			// TODO: Verify this
+			oldGetSpellPowerValue = bear.GetSpellPowerValue
+
+			bear.GetSpellPowerValue = func(spell *core.Spell) float64 {
+				if bear.HealingTouch.IsEqual(spell) {
+					return bear.GetStat(stats.AttackPower) / 2
+				} else {
+					return oldGetSpellPowerValue(spell)
+				}
+			}
+		},
+
+		OnExpire: func(_ *core.Aura, _ *core.Simulation) {
+			bear.HealingTouch.CastTimeMultiplier += 1
+			bear.HealingTouch.Cost.PercentModifier /= -1
+			bear.HealingTouch.FormMask ^= druid.Bear
+			bear.GetSpellPowerValue = oldGetSpellPowerValue
+		},
+
+		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
+			if bear.HealingTouch.IsEqual(spell) {
+				aura.Deactivate(sim)
+			}
+		},
+	})
+
+	core.MakeProcTriggerAura(&bear.Unit, core.ProcTrigger{
+		Name:           "Dream of Cenarius Trigger",
+		Callback:       core.CallbackOnSpellHitDealt,
+		ClassSpellMask: druid.DruidSpellMangleBear,
+		Outcome:        core.OutcomeCrit,
+		ProcChance:     0.5,
+
+		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
+			bear.DreamOfCenariusAura.Activate(sim)
 		},
 	})
 }

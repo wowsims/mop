@@ -55,6 +55,7 @@ type GuardianDruid struct {
 	Options *proto.GuardianDruid_Options
 
 	// Aura references
+	DreamOfCenariusAura *core.Aura
 	EnrageAura          *core.Aura
 	HeartOfTheWildAura  *core.Aura
 	SavageDefenseAura   *core.Aura
