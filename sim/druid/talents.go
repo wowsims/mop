@@ -29,7 +29,7 @@ func (druid *Druid) registerHeartOfTheWild() {
 	druid.MultiplyStat(stats.Agility, statMultiplier)
 	druid.MultiplyStat(stats.Intellect, statMultiplier)
 
-	// The activation spec specific effects are not implemented - most likely irrelevant for the sim unless proven otherwise
+	// The activation spec specific effects are implemented in individual spec packages.
 }
 
 func (druid *Druid) registerNaturesVigil() {
@@ -159,6 +159,7 @@ func (druid *Druid) registerCenarionWard() {
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 		CritMultiplier:   druid.DefaultCritMultiplier(),
+		ClassSpellMask:   DruidSpellCenarionWard,
 
 		Hot: core.DotConfig{
 			Aura: core.Aura{

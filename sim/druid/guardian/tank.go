@@ -56,15 +56,17 @@ type GuardianDruid struct {
 
 	// Aura references
 	EnrageAura          *core.Aura
+	HeartOfTheWildAura  *core.Aura
 	SavageDefenseAura   *core.Aura
 	SonOfUrsocAura      *core.Aura
 	ToothAndClawBuff    *core.Aura
 	ToothAndClawDebuffs core.AuraArray
 
 	// Spell references
-	Enrage        *druid.DruidSpell
-	SavageDefense *druid.DruidSpell
-	SonOfUrsoc    *druid.DruidSpell
+	Enrage         *druid.DruidSpell
+	HeartOfTheWild *druid.DruidSpell
+	SavageDefense  *druid.DruidSpell
+	SonOfUrsoc     *druid.DruidSpell
 }
 
 func (bear *GuardianDruid) GetDruid() *druid.Druid {
@@ -77,11 +79,11 @@ func (bear *GuardianDruid) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 
 func (bear *GuardianDruid) ApplyTalents() {
 	bear.Druid.ApplyTalents()
+	bear.applySpecTalents()
 	bear.applyMastery()
 	bear.applyThickHide()
 	bear.applyLeatherSpecialization()
 	bear.RegisterVengeance(84840, bear.BearFormAura)
-	bear.registerIncarnation()
 
 	// MoP Classic balancing
 	bear.BearFormAura.AttachMultiplicativePseudoStatBuff(&bear.PseudoStats.DamageDealtMultiplier, 1.05)
