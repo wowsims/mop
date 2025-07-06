@@ -135,7 +135,7 @@ func (hp *HunterPet) RegisterKillCommandSpell() *core.Spell {
 				GCD: time.Second * 0,
 			},
 		},
-		DamageMultiplier: 1.5,
+		DamageMultiplier: 1,
 		CritMultiplier:   hp.CritMultiplier(1.0, 0.0),
 		ThreatMultiplier: 1,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
-	"github.com/wowsims/mop/sim/hunter"
 )
 
 func (bmHunter *BeastMasteryHunter) registerKillCommandSpell() {
@@ -15,11 +14,10 @@ func (bmHunter *BeastMasteryHunter) registerKillCommandSpell() {
 	actionID := core.ActionID{SpellID: 34026}
 
 	bmHunter.RegisterSpell(core.SpellConfig{
-		ActionID:       actionID,
-		SpellSchool:    core.SpellSchoolPhysical,
-		ProcMask:       core.ProcMaskMelee,
-		ClassSpellMask: hunter.HunterSpellKillCommand,
-		Flags:          core.SpellFlagAPL,
+		ActionID:    actionID,
+		SpellSchool: core.SpellSchoolPhysical,
+		ProcMask:    core.ProcMaskMelee,
+		Flags:       core.SpellFlagAPL,
 
 		FocusCost: core.FocusCostOptions{
 			Cost: 40,
