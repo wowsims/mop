@@ -41,7 +41,7 @@ func (war *Warrior) registerSkullBanner() {
 }
 
 func (war *Warrior) registerDemoralizingBanner() {
-	actionID := core.ActionID{SpellID: 114030}
+	actionID := core.ActionID{SpellID: 114203}
 
 	war.DemoralizingBannerAuras = war.NewEnemyAuraArray(func(target *core.Unit) *core.Aura {
 		return war.GetOrRegisterAura(core.Aura{
@@ -52,7 +52,7 @@ func (war *Warrior) registerDemoralizingBanner() {
 	})
 
 	spell := war.RegisterSpell(core.SpellConfig{
-		ActionID:       core.SkullBannerActionID,
+		ActionID:       actionID,
 		Flags:          core.SpellFlagAPL,
 		ClassSpellMask: SpellMaskDemoralizingBanner,
 

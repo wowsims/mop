@@ -1323,7 +1323,6 @@ const idToCategoryMap: Record<number, number> = {
 	// Paladin
 	[76672]: MELEE_ACTION_CATEGORY + 0.01, // Hand of Light (mastery)
 	[35395]: MELEE_ACTION_CATEGORY + 0.02, // Crusader Strike
-	[99092]: MELEE_ACTION_CATEGORY + 0.03, // Flames of the Faithful (ret T12 2pc)
 	[53595]: MELEE_ACTION_CATEGORY + 0.04, // Hammer of the Righteous (Physical)
 	[88263]: MELEE_ACTION_CATEGORY + 0.05, // Hammer of the Righteous (Holy)
 	[53385]: MELEE_ACTION_CATEGORY + 0.06, // Divine Storm
@@ -1333,7 +1332,6 @@ const idToCategoryMap: Record<number, number> = {
 	[31803]: MELEE_ACTION_CATEGORY + 0.1, // Censure (Seal of Truth)
 	[101423]: MELEE_ACTION_CATEGORY + 0.11, // Seal of Righteousness
 	[53600]: MELEE_ACTION_CATEGORY + 0.12, // Shield of the Righteous
-	[99075]: MELEE_ACTION_CATEGORY + 0.13, // Righteous Flames (prot T12 2pc)
 	[879]: MELEE_ACTION_CATEGORY + 0.15, // Exorcism
 	[26573]: MELEE_ACTION_CATEGORY + 0.16, // Consecration
 	[119072]: MELEE_ACTION_CATEGORY + 0.17, // Holy Wrath
@@ -1347,7 +1345,6 @@ const idToCategoryMap: Record<number, number> = {
 	[84963]: SPELL_ACTION_CATEGORY + 0.01, // Inquisition
 	[54428]: SPELL_ACTION_CATEGORY + 0.02, // Divine Plea
 	[498]: SPELL_ACTION_CATEGORY + 0.03, // Divine Protection
-	[99090]: SPELL_ACTION_CATEGORY + 0.04, // Flaming Aegis (Prot T12 4pc)
 	[66233]: SPELL_ACTION_CATEGORY + 0.05, // Ardent Defender
 	[31884]: SPELL_ACTION_CATEGORY + 0.06, // Avenging Wrath
 	[114232]: SPELL_ACTION_CATEGORY + 0.07, // Sanctified Wrath
@@ -1470,7 +1467,7 @@ const idToCategoryMap: Record<number, number> = {
 	[47296]: SPELL_ACTION_CATEGORY + 0.53, // Critical Block
 	[46924]: SPELL_ACTION_CATEGORY + 0.61, // Bladestorm
 	[2565]: SPELL_ACTION_CATEGORY + 0.62, // Shield Block
-	[64382]: SPELL_ACTION_CATEGORY + 0.65, // Shattering Throw
+	[1249459]: SPELL_ACTION_CATEGORY + 0.65, // Shattering Throw
 	[71]: DEFAULT_ACTION_CATEGORY + 0.1, // Defensive Stance
 	[2457]: DEFAULT_ACTION_CATEGORY + 0.1, // Battle Stance
 	[2458]: DEFAULT_ACTION_CATEGORY + 0.1, // Berserker Stance

@@ -11,7 +11,7 @@ func (shaman *Shaman) registerUnleashFlame() {
 
 	spellMask := SpellMaskLavaBurst | SpellMaskFlameShock | SpellMaskFireNova | SpellMaskElementalBlast
 
-	unleashFlameAura := shaman.RegisterAura(core.Aura{
+	unleashFlameAura := core.BlockPrepull(shaman.RegisterAura(core.Aura{
 		Label:    "Unleash Flame",
 		ActionID: core.ActionID{SpellID: 73683},
 		Duration: time.Second * 8,
@@ -30,7 +30,7 @@ func (shaman *Shaman) registerUnleashFlame() {
 				sim.AddPendingAction(pa)
 			}
 		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_DamageDone_Pct,
 		ClassMask:  spellMask,
 		FloatValue: 0.3,
@@ -77,7 +77,7 @@ func (shaman *Shaman) registerUnleashWind() {
 
 	speedMultiplier := 1 + 0.5
 
-	unleashWindAura := shaman.RegisterAura(core.Aura{
+	unleashWindAura := core.BlockPrepull(shaman.RegisterAura(core.Aura{
 		Label:     "Unleash Wind",
 		ActionID:  core.ActionID{SpellID: 73681},
 		Duration:  time.Second * 12,
@@ -94,7 +94,7 @@ func (shaman *Shaman) registerUnleashWind() {
 				aura.RemoveStack(sim)
 			}
 		},
-	})
+	}))
 
 	shaman.UnleashWind = shaman.RegisterSpell(core.SpellConfig{
 		ActionID:         core.ActionID{SpellID: 73681},

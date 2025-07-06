@@ -27,6 +27,8 @@ func RegisterUnholyDeathKnight() {
 type UnholyDeathKnight struct {
 	*death_knight.DeathKnight
 
+	Gargoyle *GargoylePet
+
 	lastScourgeStrikeDamage float64
 }
 
@@ -35,10 +37,8 @@ func NewUnholyDeathKnight(character *core.Character, player *proto.Player) *Unho
 
 	uhdk := &UnholyDeathKnight{
 		DeathKnight: death_knight.NewDeathKnight(character, death_knight.DeathKnightInputs{
-			Spec: proto.Spec_SpecUnholyDeathKnight,
-
-			StartingRunicPower: unholyOptions.ClassOptions.StartingRunicPower,
-			IsDps:              true,
+			Spec:  proto.Spec_SpecUnholyDeathKnight,
+			IsDps: true,
 		}, player.TalentsString, 56835),
 	}
 

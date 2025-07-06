@@ -653,12 +653,12 @@ func (dk *DeathKnight) registerBloodTap() {
 		return
 	}
 
-	bloodChargeAura := dk.RegisterAura(core.Aura{
+	bloodChargeAura := core.BlockPrepull(dk.RegisterAura(core.Aura{
 		Label:     "Blood Charge" + dk.Label,
 		ActionID:  core.ActionID{SpellID: 114851},
 		Duration:  time.Second * 25,
 		MaxStacks: 12,
-	})
+	}))
 
 	actionID := core.ActionID{SpellID: 45529}
 
@@ -749,8 +749,8 @@ func (dk *DeathKnight) registerRunicCorruption() {
 	duration := time.Second * 3
 	multi := 2.0
 	// Runic Corruption gives rune regen speed
-	regenAura := dk.GetOrRegisterAura(core.Aura{
-		Label:    "Runic Corruption",
+	regenAura := core.BlockPrepull(dk.RegisterAura(core.Aura{
+		Label:    "Runic Corruption" + dk.Label,
 		ActionID: core.ActionID{SpellID: 51460},
 		Duration: duration,
 
@@ -760,7 +760,7 @@ func (dk *DeathKnight) registerRunicCorruption() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			dk.MultiplyRuneRegenSpeed(sim, 1/multi)
 		},
-	})
+	}))
 
 	core.MakeProcTriggerAura(&dk.Unit, core.ProcTrigger{
 		Name:           "Runic Corruption Trigger" + dk.Label,

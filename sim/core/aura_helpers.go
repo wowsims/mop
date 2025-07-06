@@ -278,6 +278,12 @@ func MakePermanent(aura *Aura) *Aura {
 	return aura
 }
 
+func BlockPrepull(aura *Aura) *Aura {
+	return aura.ApplyOnEncounterStart(func(aura *Aura, sim *Simulation) {
+		aura.Deactivate(sim)
+	})
+}
+
 type TemporaryStatBuffWithStacksConfig struct {
 	StackingAuraLabel    string
 	StackingAuraActionID ActionID

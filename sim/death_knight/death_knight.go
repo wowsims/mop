@@ -1,7 +1,6 @@
 package death_knight
 
 import (
-	"math"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -23,8 +22,6 @@ type DeathKnightInputs struct {
 
 	UnholyFrenzyTarget *proto.UnitReference
 
-	StartingRunicPower float64
-
 	Spec proto.Spec
 }
 
@@ -36,32 +33,27 @@ type DeathKnight struct {
 
 	// Pets
 	Ghoul           *GhoulPet
-	Gargoyle        *GargoylePet
 	ArmyGhoul       []*GhoulPet
 	FallenZandalari []*GhoulPet
 	AllGhoulPets    []*GhoulPet
 	RuneWeapon      *RuneWeaponPet
-	Bloodworm       []*BloodwormPet
 
 	BloodPresenceSpell  *core.Spell
 	FrostPresenceSpell  *core.Spell
 	UnholyPresenceSpell *core.Spell
 
 	PestilenceSpell *core.Spell
-	RuneTapSpell    *core.Spell
 
-	ConversionAura             *core.Aura
-	MightOfTheFrozenWastesAura *core.Aura
-	ThreatOfThassarianAura     *core.Aura
-	BoneShieldAura             *core.Aura
-	BoneWallAura               *core.Aura
-	PillarOfFrostAura          *core.Aura
-	RaiseDeadAura              *core.Aura
+	BoneShieldAura         *core.Aura
+	BoneWallAura           *core.Aura
+	ConversionAura         *core.Aura
+	PillarOfFrostAura      *core.Aura
+	RaiseDeadAura          *core.Aura
+	ThreatOfThassarianAura *core.Aura
 
 	// Diseases
 	FrostFeverSpell  *core.Spell
 	BloodPlagueSpell *core.Spell
-	ScarletFeverAura core.AuraArray
 
 	// Runic power decay, used during pre pull
 	RunicPowerDecayAura *core.Aura
@@ -118,6 +110,10 @@ func (dk *DeathKnight) Initialize() {
 func (dk *DeathKnight) Reset(sim *core.Simulation) {
 }
 
+func (dk *DeathKnight) OnEncounterStart(sim *core.Simulation) {
+	dk.ResetRunicPowerBar(sim, 20)
+}
+
 func (dk *DeathKnight) HasMajorGlyph(glyph proto.DeathKnightMajorGlyph) bool {
 	return dk.HasGlyph(int32(glyph))
 }
@@ -133,12 +129,7 @@ func NewDeathKnight(character *core.Character, inputs DeathKnightInputs, talents
 	}
 	core.FillTalentsProto(dk.Talents.ProtoReflect(), talents)
 
-	maxRunicPower := 100.0
-	currentRunicPower := math.Min(maxRunicPower, dk.Inputs.StartingRunicPower)
-
 	dk.EnableRunicPowerBar(
-		currentRunicPower,
-		maxRunicPower,
 		10*time.Second,
 		func(sim *core.Simulation, changeType core.RuneChangeType, runeRegen []int8) {
 			if deathRuneConvertSpellId == 0 {

@@ -65,9 +65,7 @@ var FuryGlyphs = &proto.Glyphs{
 var PlayerOptionsFury = &proto.Player_FuryWarrior{
 	FuryWarrior: &proto.FuryWarrior{
 		Options: &proto.FuryWarrior_Options{
-			ClassOptions: &proto.WarriorOptions{
-				StartingRage: 0,
-			},
+			ClassOptions: &proto.WarriorOptions{},
 		},
 	},
 }

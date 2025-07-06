@@ -48,7 +48,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		FloatValue: -1,
 	}
 
-	ssAura := moonkin.RegisterAura(core.Aura{
+	ssAura := core.BlockPrepull(moonkin.RegisterAura(core.Aura{
 		Label:    "Shooting Stars" + moonkin.Label,
 		ActionID: core.ActionID{SpellID: 93400},
 		Duration: time.Second * 12,
@@ -62,7 +62,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		OnGain: func(_ *core.Aura, _ *core.Simulation) {
 			moonkin.Starsurge.CD.Reset()
 		},
-	}).AttachSpellMod(castTimeModConfig)
+	})).AttachSpellMod(castTimeModConfig)
 
 	core.MakeProcTriggerAura(&moonkin.Unit, core.ProcTrigger{
 		Name:           "Shooting Stars Trigger" + moonkin.Label,
@@ -168,7 +168,7 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 		Kind:      core.SpellMod_PowerCost_Pct,
 	})
 
-	var lunarShowerAura = moonkin.RegisterAura(core.Aura{
+	var lunarShowerAura = core.BlockPrepull(moonkin.RegisterAura(core.Aura{
 		Label:     "Lunar Shower",
 		Duration:  time.Second * 3,
 		ActionID:  core.ActionID{SpellID: 81192},
@@ -185,7 +185,7 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 			lunarShowerDmgMod.Deactivate()
 			lunarShowerResourceMod.Deactivate()
 		},
-	})
+	}))
 
 	moonkin.RegisterAura(core.Aura{
 		Label:    "Lunar Shower Handler",

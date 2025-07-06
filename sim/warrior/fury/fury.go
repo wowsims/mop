@@ -79,6 +79,11 @@ func (war *FuryWarrior) Reset(sim *core.Simulation) {
 	war.Warrior.Reset(sim)
 }
 
+func (war *FuryWarrior) OnEncounterStart(sim *core.Simulation) {
+	war.ResetRageBar(sim, 25+war.PrePullChargeGain)
+	war.Warrior.OnEncounterStart(sim)
+}
+
 func (war *FuryWarrior) ApplySyncType(syncType proto.WarriorSyncType) {
 	if syncType == proto.WarriorSyncType_WarriorSyncMainhandOffhandSwings {
 		war.AutoAttacks.SetReplaceMHSwing(func(sim *core.Simulation, mhSwingSpell *core.Spell) *core.Spell {

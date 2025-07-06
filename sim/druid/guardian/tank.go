@@ -36,7 +36,6 @@ func NewGuardianDruid(character *core.Character, options *proto.Player) *Guardia
 	bear.registerTreants()
 
 	bear.EnableRageBar(core.RageBarOptions{
-		StartingRage:       bear.Options.StartingRage,
 		BaseRageMultiplier: 2.5,
 	})
 	bear.EnableAutoAttacks(bear, core.AutoAttackOptions{
@@ -56,16 +55,19 @@ type GuardianDruid struct {
 	Options *proto.GuardianDruid_Options
 
 	// Aura references
+	DreamOfCenariusAura *core.Aura
 	EnrageAura          *core.Aura
+	HeartOfTheWildAura  *core.Aura
 	SavageDefenseAura   *core.Aura
 	SonOfUrsocAura      *core.Aura
 	ToothAndClawBuff    *core.Aura
 	ToothAndClawDebuffs core.AuraArray
 
 	// Spell references
-	Enrage        *druid.DruidSpell
-	SavageDefense *druid.DruidSpell
-	SonOfUrsoc    *druid.DruidSpell
+	Enrage         *druid.DruidSpell
+	HeartOfTheWild *druid.DruidSpell
+	SavageDefense  *druid.DruidSpell
+	SonOfUrsoc     *druid.DruidSpell
 }
 
 func (bear *GuardianDruid) GetDruid() *druid.Druid {
@@ -78,11 +80,14 @@ func (bear *GuardianDruid) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 
 func (bear *GuardianDruid) ApplyTalents() {
 	bear.Druid.ApplyTalents()
+	bear.applySpecTalents()
 	bear.applyMastery()
 	bear.applyThickHide()
 	bear.applyLeatherSpecialization()
 	bear.RegisterVengeance(84840, bear.BearFormAura)
-	bear.registerIncarnation()
+
+	// MoP Classic balancing
+	bear.BearFormAura.AttachMultiplicativePseudoStatBuff(&bear.PseudoStats.DamageDealtMultiplier, 1.05)
 }
 
 func (bear *GuardianDruid) applyMastery() {
@@ -159,4 +164,11 @@ func (bear *GuardianDruid) Reset(sim *core.Simulation) {
 	bear.Druid.ClearForm(sim)
 	bear.BearFormAura.Activate(sim)
 	bear.Druid.PseudoStats.Stunned = false
+}
+
+func (bear *GuardianDruid) OnEncounterStart(sim *core.Simulation) {
+	if bear.InForm(druid.Bear) {
+		bear.ResetRageBar(sim, 25)
+	}
+	bear.Druid.OnEncounterStart(sim)
 }

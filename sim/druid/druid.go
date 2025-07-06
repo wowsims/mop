@@ -46,9 +46,10 @@ type Druid struct {
 	Moonfire              *DruidSpell
 	NaturesSwiftness      *DruidSpell
 	Prowl                 *DruidSpell
-	Rebirth               *DruidSpell
 	Rake                  *DruidSpell
 	Ravage                *DruidSpell
+	Rebirth               *DruidSpell
+	Rejuvenation          *DruidSpell
 	Rip                   *DruidSpell
 	SavageRoar            *DruidSpell
 	Shred                 *DruidSpell
@@ -77,7 +78,6 @@ type Druid struct {
 	FrenziedRegenerationAura *core.Aura
 	LunarEclipseProcAura     *core.Aura
 	MightOfUrsocAura         *core.Aura
-	OwlkinFrenzyAura         *core.Aura
 	ProwlAura                *core.Aura
 	SurvivalInstinctsAura    *core.Aura
 
@@ -91,9 +91,6 @@ type Druid struct {
 	// Guardian leather specialization is form-specific
 	GuardianLeatherSpecTracker *core.Aura
 	GuardianLeatherSpecDep     *stats.StatDependency
-
-	// Item sets
-	T13Feral4pBonus *core.Aura
 }
 
 const (
@@ -129,6 +126,7 @@ const (
 	DruidSpellMarkOfTheWild
 	DruidSpellSwiftmend
 	DruidSpellWildGrowth
+	DruidSpellCenarionWard
 
 	DruidSpellLast
 	DruidSpellsAll               = DruidSpellLast<<1 - 1
@@ -234,6 +232,7 @@ func (druid *Druid) RegisterBaselineSpells() {
 	druid.registerNaturesSwiftness()
 	druid.registerFaerieFireSpell()
 	druid.registerTranquilityCD()
+	druid.registerRejuvenationSpell()
 
 	// druid.registerRebirthSpell()
 	// druid.registerInnervateCD()
@@ -281,6 +280,9 @@ func (druid *Druid) Reset(_ *core.Simulation) {
 	druid.form = druid.StartingForm
 	druid.disabledMCDs = []*core.MajorCooldown{}
 	druid.RebirthUsed = false
+}
+
+func (druid *Druid) OnEncounterStart(sim *core.Simulation) {
 }
 
 func New(char *core.Character, form DruidForm, selfBuffs SelfBuffs, talents string) *Druid {

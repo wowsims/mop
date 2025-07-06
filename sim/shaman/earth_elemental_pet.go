@@ -72,7 +72,9 @@ func (earthElemental *EarthElemental) Initialize() {
 }
 
 func (earthElemental *EarthElemental) Reset(_ *core.Simulation) {
+}
 
+func (earthElemental *EarthElemental) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (earthElemental *EarthElemental) ExecuteCustomRotation(sim *core.Simulation) {

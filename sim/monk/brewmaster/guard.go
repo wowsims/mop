@@ -50,7 +50,7 @@ func (bm *BrewmasterMonk) registerGuard() {
 
 	aura.Aura.AttachMultiplicativePseudoStatBuff(&bm.PseudoStats.HealingTakenMultiplier, 1.3)
 
-	bm.RegisterSpell(core.SpellConfig{
+	bm.Guard = bm.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		Flags:          monk.SpellFlagSpender | core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
 		ClassSpellMask: monk.MonkSpellGuard,
