@@ -12,6 +12,7 @@ type APLRotation struct {
 	unit           *Unit
 	prepullActions []*APLAction
 	priorityList   []*APLAction
+	groups         []*APLGroup
 
 	// Action currently controlling this rotation (only used for certain actions, such as StrictSequence).
 	controllingActions []APLActionImpl
@@ -42,6 +43,12 @@ type APLRotation struct {
 	// Maps indices in filtered sim lists to indices in configs.
 	prepullIdxMap      []int
 	priorityListIdxMap []int
+}
+
+type APLGroup struct {
+	name      string
+	actions   []*APLAction
+	variables map[string]string
 }
 
 func (rot *APLRotation) ValidationMessage(log_level proto.LogLevel, message string, vals ...interface{}) {
@@ -139,6 +146,26 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 				}
 			}
 		})
+	}
+
+	// Parse groups
+	for _, groupConfig := range config.Groups {
+		group := &APLGroup{
+			name:      groupConfig.Name,
+			variables: groupConfig.Variables,
+		}
+
+		// Parse actions in the group
+		for _, aplItem := range groupConfig.Actions {
+			if !aplItem.Hide {
+				action := rotation.newAPLAction(aplItem.Action)
+				if action != nil {
+					group.actions = append(group.actions, action)
+				}
+			}
+		}
+
+		rotation.groups = append(rotation.groups, group)
 	}
 
 	// Finalize

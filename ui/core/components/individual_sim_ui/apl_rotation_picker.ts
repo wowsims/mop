@@ -10,6 +10,7 @@ import { Input, InputConfig } from '../input';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker';
 import { AdaptiveStringPicker } from '../pickers/string_picker';
 import { APLActionPicker } from './apl_actions';
+import { APLGroupManager } from './apl_group_manager';
 import { APLValueImplStruct } from './apl_values';
 
 export class APLRotationPicker extends Component {
@@ -42,6 +43,15 @@ export class APLRotationPicker extends Component {
 				config: ListItemPickerConfig<Player<any>, APLPrepullAction>,
 			) => new APLPrepullActionPicker(parent, modPlayer, config, index),
 			inlineMenuBar: true,
+		});
+
+		new APLGroupManager(this.rootElem, modPlayer, {
+			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			getValue: (player: Player<any>) => player.aplRotation.groups || [],
+			setValue: (eventID: EventID, player: Player<any>, newValue: Array<any>) => {
+				player.aplRotation.groups = newValue;
+				player.rotationChangeEmitter.emit(eventID);
+			},
 		});
 
 		new ListPicker<Player<any>, APLListItem>(this.rootElem, modPlayer, {

@@ -197,6 +197,8 @@ func (rot *APLRotation) newAPLActionImpl(config *proto.APLAction) APLActionImpl 
 		return rot.newActionMoveDuration(config.GetMoveDuration())
 	case *proto.APLAction_CustomRotation:
 		return rot.newActionCustomRotation(config.GetCustomRotation())
+	case *proto.APLAction_GroupReference:
+		return rot.newActionGroupReference(config.GetGroupReference())
 
 	default:
 		return nil
