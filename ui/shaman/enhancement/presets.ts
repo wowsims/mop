@@ -82,7 +82,7 @@ export const DefaultOptions = EnhancementShamanOptions.create({
 export const OtherDefaults = {
 	distanceFromTarget: 5,
 	profession1: Profession.Engineering,
-	profession2: Profession.Leatherworking,
+	profession2: Profession.Tailoring,
 	race: Race.RaceOrc,
 };
 
