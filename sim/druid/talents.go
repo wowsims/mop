@@ -37,17 +37,66 @@ func (druid *Druid) registerNaturesVigil() {
 		return
 	}
 
+	var smartHealStrength float64
+
+	smartHealSpell := druid.RegisterSpell(Any, core.SpellConfig{
+		ActionID:         core.ActionID{SpellID: 124988},
+		SpellSchool:      core.SpellSchoolNature,
+		ProcMask:         core.ProcMaskSpellHealing,
+		Flags:            core.SpellFlagHelpful | core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagIgnoreAttackerModifiers,
+		DamageMultiplier: 1,
+		ThreatMultiplier: 0,
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealHealing(sim, target, 0.25 * smartHealStrength, spell.OutcomeHealing)
+		},
+	})
+
 	actionID := core.ActionID{SpellID: 124974}
+	numAllyTargets := float64(len(druid.Env.Raid.AllPlayerUnits) - 1)
 
 	naturesVigilAura := druid.RegisterAura(core.Aura{
 		Label:    "Nature's Vigil",
 		ActionID: actionID,
 		Duration: time.Second * 30,
-		OnGain: func(_ *core.Aura, _ *core.Simulation) {
-			druid.PseudoStats.DamageDealtMultiplier *= 1.12
+
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Unit.PseudoStats.DamageDealtMultiplier *= 1.12
+			aura.Unit.PseudoStats.HealingDealtMultiplier *= 1.12
+			smartHealStrength = 0
+
+			core.StartPeriodicAction(sim, core.PeriodicActionOptions{
+				Period:   time.Millisecond * 250,
+				NumTicks: 119,
+				Priority: core.ActionPriorityDOT,
+
+				OnAction: func(sim *core.Simulation) {
+					if smartHealStrength == 0 {
+						return
+					}
+
+					// Assume that the target is randomly selected from 25 raid members.
+					if sim.Proc(1.0 / 25.0, "Nature's Vigil") {
+						smartHealSpell.Cast(sim, aura.Unit)
+					} else if numAllyTargets > 0 {
+						targetIdx := 1 + int(sim.RandomFloat("Nature's Vigil") * numAllyTargets)
+						smartHealSpell.Cast(sim, sim.Raid.AllPlayerUnits[targetIdx])
+					}
+
+					smartHealStrength = 0
+				},
+			})
 		},
-		OnExpire: func(_ *core.Aura, _ *core.Simulation) {
-			druid.PseudoStats.DamageDealtMultiplier /= 1.12
+
+		OnExpire: func(aura *core.Aura, _ *core.Simulation) {
+			aura.Unit.PseudoStats.DamageDealtMultiplier /= 1.12
+			aura.Unit.PseudoStats.HealingDealtMultiplier /= 1.12
+		},
+
+		OnSpellHitDealt: func(_ *core.Aura, _ *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			if !spell.Flags.Matches(core.SpellFlagAoE) {
+				smartHealStrength = max(smartHealStrength, result.Damage)
+			}
 		},
 	})
 
