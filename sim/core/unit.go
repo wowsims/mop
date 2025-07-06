@@ -475,6 +475,10 @@ func (unit *Unit) IsChanneling() bool {
 	return unit.ChanneledDot != nil
 }
 
+func (unit *Unit) IsCastingDuringChannel() bool {
+	return unit.IsChanneling() && unit.ChanneledDot.Spell.Flags.Matches(SpellFlagCastWhileChanneling)
+}
+
 func (unit *Unit) SpellGCD() time.Duration {
 	return max(GCDMin, unit.ApplyCastSpeed(GCDDefault))
 }
