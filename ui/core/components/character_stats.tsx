@@ -5,11 +5,13 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import * as Mechanics from '../constants/mechanics.js';
+import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player.js';
 import { HandType, ItemSlot, PseudoStat, Race, RangedWeaponType, Spec, Stat, WeaponType } from '../proto/common.js';
 import { ActionId } from '../proto_utils/action_id';
 import { getStatName, masterySpellIDs, masterySpellNames } from '../proto_utils/names.js';
 import { Stats, UnitStat } from '../proto_utils/stats.js';
+import { SimUI } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event.js';
 import { Component } from './component.js';
 import { NumberPicker } from './pickers/number_picker.js';
@@ -24,52 +26,6 @@ enum StatGroup {
 	Spell = 'Spell',
 	Defense = 'Defense',
 }
-const statGroups = new Map<StatGroup, Array<UnitStat>>([
-	[StatGroup.Primary, [UnitStat.fromStat(Stat.StatHealth), UnitStat.fromStat(Stat.StatMana)]],
-	[
-		StatGroup.Attributes,
-		[
-			UnitStat.fromStat(Stat.StatStrength),
-			UnitStat.fromStat(Stat.StatAgility),
-			UnitStat.fromStat(Stat.StatStamina),
-			UnitStat.fromStat(Stat.StatIntellect),
-			UnitStat.fromStat(Stat.StatSpirit),
-		],
-	],
-	[
-		StatGroup.Physical,
-		[
-			UnitStat.fromStat(Stat.StatAttackPower),
-			UnitStat.fromStat(Stat.StatRangedAttackPower),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatMeleeHastePercent),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatRangedHastePercent),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent),
-			UnitStat.fromStat(Stat.StatExpertiseRating),
-			UnitStat.fromStat(Stat.StatMasteryRating),
-		],
-	],
-	[
-		StatGroup.Spell,
-		[
-			UnitStat.fromStat(Stat.StatSpellPower),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHitPercent),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellCritPercent),
-			UnitStat.fromStat(Stat.StatMasteryRating),
-		],
-	],
-	[
-		StatGroup.Defense,
-		[
-			UnitStat.fromStat(Stat.StatArmor),
-			UnitStat.fromStat(Stat.StatBonusArmor),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatDodgePercent),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatParryPercent),
-			UnitStat.fromPseudoStat(PseudoStat.PseudoStatBlockPercent),
-		],
-	],
-]);
 
 export class CharacterStats extends Component {
 	readonly stats: Array<UnitStat>;
@@ -85,6 +41,7 @@ export class CharacterStats extends Component {
 
 	constructor(
 		parent: HTMLElement,
+		simUI: IndividualSimUI<any>,
 		player: Player<any>,
 		statList: Array<UnitStat>,
 		modifyDisplayStats?: (player: Player<any>) => StatMods,
@@ -106,6 +63,60 @@ export class CharacterStats extends Component {
 		this.rootElem.appendChild(table);
 
 		this.valueElems = [];
+
+		const statGroups = new Map<StatGroup, Array<UnitStat>>([
+			[StatGroup.Primary, [UnitStat.fromStat(Stat.StatHealth), UnitStat.fromStat(Stat.StatMana)]],
+			[
+				StatGroup.Attributes,
+				[
+					UnitStat.fromStat(Stat.StatStrength),
+					UnitStat.fromStat(Stat.StatAgility),
+					UnitStat.fromStat(Stat.StatStamina),
+					UnitStat.fromStat(Stat.StatIntellect),
+					UnitStat.fromStat(Stat.StatSpirit),
+				],
+			],
+			[
+				StatGroup.Defense,
+				[
+					UnitStat.fromStat(Stat.StatArmor),
+					UnitStat.fromStat(Stat.StatBonusArmor),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatDodgePercent),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatParryPercent),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatBlockPercent),
+				],
+			],
+			[
+				StatGroup.Physical,
+				[
+					UnitStat.fromStat(Stat.StatAttackPower),
+					UnitStat.fromStat(Stat.StatRangedAttackPower),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatMeleeHastePercent),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatRangedHastePercent),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent),
+					UnitStat.fromStat(Stat.StatExpertiseRating),
+				],
+			],
+			[
+				StatGroup.Spell,
+				[
+					UnitStat.fromStat(Stat.StatSpellPower),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHitPercent),
+					UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellCritPercent),
+				],
+			]
+		]);
+
+		if (this.player.getPlayerSpec().isTankSpec) {
+			statGroups.get(StatGroup.Defense)!.push(UnitStat.fromStat(Stat.StatMasteryRating));
+		} else if (simUI.individualConfig.epReferenceStat === Stat.StatIntellect) {
+			statGroups.get(StatGroup.Spell)!.push(UnitStat.fromStat(Stat.StatMasteryRating));
+		} else {
+			statGroups.get(StatGroup.Physical)!.push(UnitStat.fromStat(Stat.StatMasteryRating));
+		}
+
 		statGroups.forEach((groupedStats, key) => {
 			const filteredStats = groupedStats.filter(stat => statList.find(listStat => listStat.equals(stat)));
 			if (!filteredStats.length) return;
