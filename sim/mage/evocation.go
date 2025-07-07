@@ -11,7 +11,7 @@ func (mage *Mage) registerEvocation() {
 	if mage.Talents.RuneOfPower {
 		return
 	}
-	isInvocation := mage.Talents.Invocation
+	hasInvocation := mage.Talents.Invocation
 
 	actionID := core.ActionID{SpellID: 12051}
 	manaMetrics := mage.NewManaMetrics(actionID)
@@ -39,7 +39,7 @@ func (mage *Mage) registerEvocation() {
 			Aura: core.Aura{
 				Label: "Evocation",
 				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-					if isInvocation {
+					if hasInvocation {
 						mage.InvocationAura.Activate(sim)
 					}
 					if mage.ArcaneChargesAura != nil && mage.ArcaneChargesAura.IsActive() {
