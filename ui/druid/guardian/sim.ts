@@ -77,7 +77,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default rotation settings.
-		rotationType: APLRotationType.TypeSimple,
+		rotationType: APLRotationType.TypeAPL,
 		simpleRotation: Presets.DefaultSimpleRotation,
 		// Default talents.
 		talents: Presets.StandardTalents.data,
@@ -128,7 +128,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents, Presets.InfectedWoundsBuild],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_SIMPLE, Presets.ROTATION_DEFAULT, Presets.ROTATION_CLEAVE, Presets.ROTATION_NEF],
+		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_HOTW],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
 		builds: [

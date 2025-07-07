@@ -114,6 +114,11 @@ func (bear *GuardianDruid) registerHeartOfTheWild() {
 	})
 
 	actionID := core.ActionID{SpellID: 108293}
+	catFormDep := bear.NewDynamicMultiplyStat(stats.Agility, 2.1)
+	catFormStatBuff := stats.Stats{
+		stats.HitRating:       7.5 * core.PhysicalHitRatingPerHitPercent,
+		stats.ExpertiseRating: 7.5 * 4 * core.ExpertisePerQuarterPercentReduction,
+	}
 
 	bear.HeartOfTheWildAura = bear.RegisterAura(core.Aura{
 		Label:    "Heart of the Wild",
@@ -127,8 +132,10 @@ func (bear *GuardianDruid) registerHeartOfTheWild() {
 			bear.Rejuvenation.FormMask |= druid.Bear
 			bear.AddStatDynamic(sim, stats.SpellHitPercent, 15)
 
-			// TODO: 2.1x Agi multiplier when in Cat Form
-			// TODO: +7.5% Hit + Expertise when in Cat Form
+			if bear.InForm(druid.Cat) {
+				bear.EnableDynamicStatDep(sim, catFormDep)
+				bear.AddStatsDynamic(sim, catFormStatBuff)
+			}
 		},
 
 		OnExpire: func(_ *core.Aura, sim *core.Simulation) {
@@ -137,7 +144,26 @@ func (bear *GuardianDruid) registerHeartOfTheWild() {
 			costMod.Deactivate()
 			bear.Rejuvenation.FormMask ^= druid.Bear
 			bear.AddStatDynamic(sim, stats.SpellHitPercent, -15)
+
+			if bear.InForm(druid.Cat) {
+				bear.DisableDynamicStatDep(sim, catFormDep)
+				bear.AddStatsDynamic(sim, catFormStatBuff.Invert())
+			}
 		},
+	})
+
+	bear.CatFormAura.ApplyOnGain(func(_ *core.Aura, sim *core.Simulation) {
+		if bear.HeartOfTheWildAura.IsActive() {
+			bear.EnableDynamicStatDep(sim, catFormDep)
+			bear.AddStatsDynamic(sim, catFormStatBuff)
+		}
+	})
+
+	bear.CatFormAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+		if bear.HeartOfTheWildAura.IsActive() {
+			bear.DisableDynamicStatDep(sim, catFormDep)
+			bear.AddStatsDynamic(sim, catFormStatBuff.Invert())
+		}
 	})
 
 	bear.HeartOfTheWild = bear.RegisterSpell(druid.Any, core.SpellConfig{
