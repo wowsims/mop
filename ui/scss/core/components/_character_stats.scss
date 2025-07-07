@@ -9,15 +9,23 @@
 		width: 100%;
 
 		.character-stats-table-row {
-			border-top: var(--border-default);
 			font-size: var(--content-font-size);
+
+			&:first-child {
+				border-top: var(--border-default);
+			}
+
+			&:last-child {
+				.character-stats-table-label,
+				.character-stats-table-value {
+					padding-bottom: var(--spacer-2);
+				}
+			}
 
 			.character-stats-table-label,
 			.character-stats-table-value {
 				width: 50%;
 				padding-top: var(--spacer-2);
-				padding-bottom: var(--spacer-2);
-				line-height: 20px;
 			}
 
 			.character-stats-table-label {
