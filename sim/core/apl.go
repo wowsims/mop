@@ -473,7 +473,6 @@ func (rot *APLRotation) reResolveVariableRefs(value APLValue, groupVars map[stri
 				if resolved != nil {
 					// Update the original variable reference instead of creating a new one
 					varRef.resolved = resolved
-					fmt.Printf("DEBUG: Resolved VarRef(%s) to %s\n", varRef.name, resolved)
 					return varRef
 				}
 			}
