@@ -18,7 +18,7 @@ func (druid *Druid) registerMaulSpell() {
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
 
 		RageCost: core.RageCostOptions{
-			Cost:   30,
+			Cost:   core.TernaryInt32(druid.Spec == proto.Spec_SpecGuardianDruid, 20, 30),
 			Refund: 0.8,
 		},
 		Cast: core.CastConfig{

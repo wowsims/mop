@@ -26,22 +26,12 @@ export const DefaultSimpleRotation = DruidRotation.create({
 });
 
 import { Stats } from '../../core/proto_utils/stats';
-import BalerocMTApl from './apls/balerocMT.apl.json';
-import BalerocOTApl from './apls/balerocOT.apl.json';
-import BethApl from './apls/bethtilac.apl.json';
-import BlackhornOTApl from './apls/blackhorn.apl.json';
-import CleaveApl from './apls/cleave.apl.json';
 import DefaultApl from './apls/default.apl.json';
-import NefApl from './apls/nef.apl.json';
-export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('APL Default', DefaultApl);
-export const ROTATION_CLEAVE = PresetUtils.makePresetAPLRotation('2-Target Cleave', CleaveApl);
-export const ROTATION_NEF = PresetUtils.makePresetAPLRotation('AoE (Nef Adds)', NefApl);
-export const ROTATION_BETH = PresetUtils.makePresetAPLRotation("Beth'tilac Phase 2", BethApl);
-export const ROTATION_BALEROC_MT = PresetUtils.makePresetAPLRotation('Baleroc MT', BalerocMTApl);
-export const ROTATION_BALEROC_OT = PresetUtils.makePresetAPLRotation('Baleroc OT', BalerocOTApl);
-export const ROTATION_BLACKHORN_OT = PresetUtils.makePresetAPLRotation('Blackhorn OT', BlackhornOTApl);
+import OffensiveHotwApl from './apls/offensiveHotw.apl.json';
+export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal Default", DefaultApl);
+export const ROTATION_HOTW = PresetUtils.makePresetAPLRotation("Gara'jal Offensive HotW", OffensiveHotwApl);
 
-export const ROTATION_PRESET_SIMPLE = PresetUtils.makePresetSimpleRotation('Simple Default', Spec.SpecGuardianDruid, DefaultSimpleRotation);
+//export const ROTATION_PRESET_SIMPLE = PresetUtils.makePresetSimpleRotation('Simple Default', Spec.SpecGuardianDruid, DefaultSimpleRotation);
 
 // Preset options for EP weights
 export const SURVIVAL_EP_PRESET = PresetUtils.makePresetEpWeights(

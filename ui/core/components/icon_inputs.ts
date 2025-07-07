@@ -83,6 +83,7 @@ export function makeBooleanIndividualBuffInput<SpecType extends Spec>(
 		config.actionId,
 		config.fieldName,
 		config.value,
+		config.label,
 	);
 }
 

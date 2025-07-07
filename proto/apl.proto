@@ -41,7 +41,7 @@ message APLListItem {
     APLAction action = 3; // The action to be performed.
 }
 
-// NextIndex: 27
+// NextIndex: 28
 message APLAction {
     APLValue condition = 1; // If set, action will only execute if value is true or != 0.
 
@@ -79,6 +79,7 @@ message APLAction {
 
         // Class or Spec-specific actions
         APLActionCatOptimalRotationAction cat_optimal_rotation_action = 18;
+        APLActionGuardianHotwDpsRotation guardian_hotw_dps_rotation = 27;
 
         // Internal use only, not exposed in UI.
         APLActionCustomRotation custom_rotation = 19;
@@ -357,6 +358,16 @@ message APLActionCatOptimalRotationAction {
     bool bear_weave = 12;
     bool snek_weave = 13;
     bool cancel_primal_madness = 14;
+}
+
+message APLActionGuardianHotwDpsRotation {
+    enum Strategy {
+        Caster = 0;
+        Cat = 1;
+        Hybrid = 2;
+    }
+
+    Strategy strategy = 1;
 }
 
 message APLActionMove {
