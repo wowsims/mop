@@ -73,19 +73,19 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 	case *proto.APLValue_Const:
 		value = rot.newValueConst(config.GetConst(), config.Uuid)
 	case *proto.APLValue_And:
-		value = rot.newValueAndWithContext(config.GetAnd(), config.Uuid, groupVariables)
+		value = rot.newValueAnd(config.GetAnd(), config.Uuid, groupVariables)
 	case *proto.APLValue_Or:
-		value = rot.newValueOrWithContext(config.GetOr(), config.Uuid, groupVariables)
+		value = rot.newValueOr(config.GetOr(), config.Uuid, groupVariables)
 	case *proto.APLValue_Not:
-		value = rot.newValueNotWithContext(config.GetNot(), config.Uuid, groupVariables)
+		value = rot.newValueNot(config.GetNot(), config.Uuid, groupVariables)
 	case *proto.APLValue_Cmp:
-		value = rot.newValueCompareWithContext(config.GetCmp(), config.Uuid, groupVariables)
+		value = rot.newValueCompare(config.GetCmp(), config.Uuid, groupVariables)
 	case *proto.APLValue_Math:
-		value = rot.newValueMathWithContext(config.GetMath(), config.Uuid, groupVariables)
+		value = rot.newValueMath(config.GetMath(), config.Uuid, groupVariables)
 	case *proto.APLValue_Max:
-		value = rot.newValueMaxWithContext(config.GetMax(), config.Uuid, groupVariables)
+		value = rot.newValueMax(config.GetMax(), config.Uuid, groupVariables)
 	case *proto.APLValue_Min:
-		value = rot.newValueMinWithContext(config.GetMin(), config.Uuid, groupVariables)
+		value = rot.newValueMin(config.GetMin(), config.Uuid, groupVariables)
 
 	// Encounter
 	case *proto.APLValue_CurrentTime:
