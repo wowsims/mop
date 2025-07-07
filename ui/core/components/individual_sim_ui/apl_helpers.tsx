@@ -863,50 +863,26 @@ export function groupReferenceVariablesFieldConfig(
 					return;
 				}
 
-				// Scan through group actions to find VariablePlaceholder values
+				// Prepare a set and recursive scanner for VariablePlaceholder values.
 				const placeholderVariables = new Set<string>();
-
-				// Recursive function to scan for Variable Placeholder values
-				const scanForPlaceholders = (value: any) => {
-					if (!value || typeof value !== 'object') return;
-
-					// Check if this value is a Variable Placeholder
-					if (value.value?.oneofKind === 'variablePlaceholder') {
-						const placeholderName = value.value.variablePlaceholder?.name;
-						if (placeholderName) {
-							placeholderVariables.add(placeholderName);
-						}
-						return;
+				const scanForPlaceholders = (obj: any) => {
+					if (!obj || typeof obj !== 'object') return;
+					// Detect a variable placeholder APLValue.
+					if (obj?.value?.oneofKind === 'variablePlaceholder') {
+						const name = obj.value.variablePlaceholder?.name;
+						if (name) placeholderVariables.add(name);
 					}
-
-					// Recursively scan all object properties
-					Object.values(value).forEach(propValue => {
-						if (propValue && typeof propValue === 'object') {
-							scanForPlaceholders(propValue);
-						}
-					});
+					// Recurse through arrays and object properties.
+					if (Array.isArray(obj)) {
+						obj.forEach(child => scanForPlaceholders(child));
+					} else {
+						Object.values(obj).forEach(child => scanForPlaceholders(child));
+					}
 				};
 
-				// Scan through all actions in the group
+				// Perform a full recursive scan on every action in the group.
 				selectedGroup.actions?.forEach((actionItem: any) => {
-					const action = actionItem.action;
-
-					// Scan condition for VariablePlaceholder values
-					if (action?.condition) {
-						scanForPlaceholders(action.condition);
-					}
-
-					// Scan action implementation for VariablePlaceholder values
-					// This is a simplified approach - in practice, you'd need to scan all value fields in the action
-					if (action?.value) {
-						// Scan common value fields in actions
-						const valueFields = ['target', 'duration', 'maxOverlap', 'interruptIf', 'rangeFromTarget'];
-						valueFields.forEach(field => {
-							if (action.value[field]) {
-								scanForPlaceholders(action.value[field]);
-							}
-						});
-					}
+					scanForPlaceholders(actionItem);
 				});
 
 				// Hide the container if no placeholder variables found
