@@ -10,8 +10,8 @@ import { Input, InputConfig } from '../input';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker';
 import { AdaptiveStringPicker } from '../pickers/string_picker';
 import { APLActionPicker } from './apl_actions';
-import { APLConditionVariableManager } from './apl_condition_variable_manager';
 import { APLGroupManager } from './apl_group_manager';
+import { APLValueVariableManager } from './apl_value_variable_manager';
 import { APLValueImplStruct } from './apl_values';
 
 export class APLRotationPicker extends Component {
@@ -55,13 +55,13 @@ export class APLRotationPicker extends Component {
 			},
 		});
 
-		new APLConditionVariableManager(this.rootElem, modPlayer, {
-			getValue: (player: Player<any>) => player.aplRotation.conditionVariables || [],
+		new APLValueVariableManager(this.rootElem, modPlayer, {
+			getValue: (player: Player<any>) => player.aplRotation.valueVariables || [],
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<any>) => {
-				console.log('DEBUG: Setting condition variables:', newValue);
-				player.aplRotation.conditionVariables = newValue;
+				console.log('DEBUG: Setting value variables:', newValue);
+				player.aplRotation.valueVariables = newValue;
 				player.rotationChangeEmitter.emit(eventID);
-				console.log('DEBUG: Condition variables after setting:', player.aplRotation.conditionVariables);
+				console.log('DEBUG: Value variables after setting:', player.aplRotation.valueVariables);
 			},
 		});
 

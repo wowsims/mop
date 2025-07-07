@@ -9,11 +9,11 @@ import (
 )
 
 type APLRotation struct {
-	unit               *Unit
-	prepullActions     []*APLAction
-	priorityList       []*APLAction
-	groups             []*APLGroup
-	conditionVariables []*APLConditionVariable
+	unit           *Unit
+	prepullActions []*APLAction
+	priorityList   []*APLAction
+	groups         []*APLGroup
+	valueVariables []*APLValueVariable
 
 	// Action currently controlling this rotation (only used for certain actions, such as StrictSequence).
 	controllingActions []APLActionImpl
@@ -52,7 +52,7 @@ type APLGroup struct {
 	variables map[string]string
 }
 
-type APLConditionVariable struct {
+type APLValueVariable struct {
 	name  string
 	value *proto.APLValue
 }
@@ -112,9 +112,9 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 		uuidValidations:         make(map[*proto.UUID][]*proto.APLValidation),
 	}
 
-	// Parse condition variables FIRST, before any actions that might reference them
-	for _, condVar := range config.ConditionVariables {
-		rotation.conditionVariables = append(rotation.conditionVariables, &APLConditionVariable{
+	// Parse value variables FIRST, before any actions that might reference them
+	for _, condVar := range config.ValueVariables {
+		rotation.valueVariables = append(rotation.valueVariables, &APLValueVariable{
 			name:  condVar.Name,
 			value: condVar.Value,
 		})

@@ -681,16 +681,16 @@ type APLValueVariableRef struct {
 }
 
 func (rot *APLRotation) newValueVariableRef(config *proto.APLValueVariableRef, uuid *proto.UUID) APLValue {
-	for _, condVar := range rot.conditionVariables {
+	for _, condVar := range rot.valueVariables {
 		if condVar.name == config.Name {
 			resolved := rot.newAPLValue(condVar.value)
 			if resolved == nil {
-				rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Condition variable '%s' is empty or invalid", config.Name)
+				rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Value variable '%s' is empty or invalid", config.Name)
 			}
 			return &APLValueVariableRef{name: config.Name, resolved: resolved}
 		}
 	}
-	rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Condition variable '%s' not found", config.Name)
+	rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Value variable '%s' not found", config.Name)
 	return nil
 }
 
