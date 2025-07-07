@@ -23,6 +23,7 @@ func (druid *Druid) registerRejuvenationSpell() {
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 		CritMultiplier:   druid.DefaultCritMultiplier(),
+		BonusCoefficient: RejuvenationBonusCoeff,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 14.5,
@@ -43,11 +44,10 @@ func (druid *Druid) registerRejuvenationSpell() {
 			TickLength:           time.Second * 3,
 			AffectedByCastSpeed:  true,
 			HasteReducesDuration: false,
+			BonusCoefficient:     RejuvenationBonusCoeff,
 
 			OnSnapshot: func(_ *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
-				dot.SnapshotBaseDamage = baseTickDamage + RejuvenationBonusCoeff * dot.Spell.HealingPower(target)
-				dot.SnapshotAttackerMultiplier = dot.CasterPeriodicHealingMultiplier()
-				dot.SnapshotCritChance = dot.Spell.HealingCritChance()
+				dot.SnapshotHeal(target, baseTickDamage)
 			},
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
@@ -56,6 +56,7 @@ func (druid *Druid) registerRejuvenationSpell() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealHealing(sim, target, baseTickDamage, spell.OutcomeHealingCrit)
 			spell.Hot(target).Apply(sim)
 		},
 	})
