@@ -673,3 +673,69 @@ func (value *APLValueNot) GetBool(sim *Simulation) bool {
 func (value *APLValueNot) String() string {
 	return fmt.Sprintf("Not(%s)", value.val)
 }
+
+type APLValueVariableRef struct {
+	DefaultAPLValueImpl
+	name     string
+	resolved APLValue
+}
+
+func (rot *APLRotation) newValueVariableRef(config *proto.APLValueVariableRef, uuid *proto.UUID) APLValue {
+	for _, condVar := range rot.conditionVariables {
+		if condVar.name == config.Name {
+			resolved := rot.newAPLValue(condVar.value)
+			if resolved == nil {
+				rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Condition variable '%s' is empty or invalid", config.Name)
+			}
+			return &APLValueVariableRef{name: config.Name, resolved: resolved}
+		}
+	}
+	rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Condition variable '%s' not found", config.Name)
+	return nil
+}
+
+func (v *APLValueVariableRef) GetInnerValues() []APLValue {
+	if v.resolved != nil {
+		return []APLValue{v.resolved}
+	}
+	return nil
+}
+func (v *APLValueVariableRef) Type() proto.APLValueType {
+	if v.resolved != nil {
+		return v.resolved.Type()
+	}
+	return proto.APLValueType_ValueTypeUnknown
+}
+func (v *APLValueVariableRef) GetBool(sim *Simulation) bool {
+	if v.resolved != nil {
+		return v.resolved.GetBool(sim)
+	}
+	return false
+}
+func (v *APLValueVariableRef) GetInt(sim *Simulation) int32 {
+	if v.resolved != nil {
+		return v.resolved.GetInt(sim)
+	}
+	return 0
+}
+func (v *APLValueVariableRef) GetFloat(sim *Simulation) float64 {
+	if v.resolved != nil {
+		return v.resolved.GetFloat(sim)
+	}
+	return 0
+}
+func (v *APLValueVariableRef) GetDuration(sim *Simulation) time.Duration {
+	if v.resolved != nil {
+		return v.resolved.GetDuration(sim)
+	}
+	return 0
+}
+func (v *APLValueVariableRef) GetString(sim *Simulation) string {
+	if v.resolved != nil {
+		return v.resolved.GetString(sim)
+	}
+	return ""
+}
+func (v *APLValueVariableRef) String() string {
+	return fmt.Sprintf("VarRef(%s)", v.name)
+}

@@ -265,6 +265,9 @@ func (rot *APLRotation) newAPLValue(config *proto.APLValue) APLValue {
 	case *proto.APLValue_InputDelay:
 		value = rot.newValueInputDelay(config.GetInputDelay(), config.Uuid)
 
+	case *proto.APLValue_VariableRef:
+		value = rot.newValueVariableRef(config.GetVariableRef(), config.Uuid)
+
 	default:
 		value = nil
 	}

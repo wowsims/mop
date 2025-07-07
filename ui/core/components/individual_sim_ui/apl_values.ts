@@ -113,6 +113,7 @@ import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
+import { AdaptiveStringPicker } from '../pickers/string_picker';
 import * as AplHelpers from './apl_helpers.js';
 
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
@@ -1451,5 +1452,12 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		newValue: APLValueProtectionPaladinDamageTakenLastGlobal.create,
 		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() === Spec.SpecProtectionPaladin,
 		fields: [],
+	}),
+	variableRef: inputBuilder({
+		label: 'Variable Reference',
+		submenu: ['Logic'],
+		shortDescription: 'Reference a named condition variable',
+		newValue: () => ({ name: '' }),
+		fields: [AplHelpers.stringFieldConfig('name')],
 	}),
 };

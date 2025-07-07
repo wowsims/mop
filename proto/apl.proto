@@ -23,6 +23,7 @@ message APLRotation {
 	repeated APLPrepullAction prepull_actions = 1;
 	repeated APLListItem priority_list = 2;
 	repeated APLGroup groups = 5; // Action groups that can be referenced
+	repeated APLConditionVariable condition_variables = 6; // Named reusable conditions
 }
 
 message SimpleRotation {
@@ -230,6 +231,9 @@ message APLValue {
 		APLValueMonkMaxChi monk_max_chi = 95;
 		APLValueBrewmasterMonkCurrentStaggerPercent brewmaster_monk_current_stagger_percent = 99;
 		APLValueProtectionPaladinDamageTakenLastGlobal protection_paladin_damage_taken_last_global = 100;
+
+		// Variable reference
+		APLValueVariableRef variable_ref = 106;
     }
 }
 
@@ -733,4 +737,13 @@ message APLValueDotPercentIncrease {
 message APLActionGroupReference {
 	string group_name = 1;                    // Name of the group to reference
 	map<string, string> variable_overrides = 2; // Override group variables with specific values
+}
+
+message APLConditionVariable {
+	string name = 1;
+	APLValue value = 2;
+}
+
+message APLValueVariableRef {
+	string name = 1;
 }

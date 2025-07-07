@@ -10,6 +10,7 @@ import { Input, InputConfig } from '../input';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker';
 import { AdaptiveStringPicker } from '../pickers/string_picker';
 import { APLActionPicker } from './apl_actions';
+import { APLConditionVariableManager } from './apl_condition_variable_manager';
 import { APLGroupManager } from './apl_group_manager';
 import { APLValueImplStruct } from './apl_values';
 
@@ -51,6 +52,16 @@ export class APLRotationPicker extends Component {
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<any>) => {
 				player.aplRotation.groups = newValue;
 				player.rotationChangeEmitter.emit(eventID);
+			},
+		});
+
+		new APLConditionVariableManager(this.rootElem, modPlayer, {
+			getValue: (player: Player<any>) => player.aplRotation.conditionVariables || [],
+			setValue: (eventID: EventID, player: Player<any>, newValue: Array<any>) => {
+				console.log('DEBUG: Setting condition variables:', newValue);
+				player.aplRotation.conditionVariables = newValue;
+				player.rotationChangeEmitter.emit(eventID);
+				console.log('DEBUG: Condition variables after setting:', player.aplRotation.conditionVariables);
 			},
 		});
 
