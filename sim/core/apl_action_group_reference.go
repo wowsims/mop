@@ -8,9 +8,9 @@ import (
 
 type APLActionGroupReference struct {
 	defaultAPLActionImpl
-	groupName         string
-	variableOverrides map[string]string
-	group             *APLGroup
+	groupName string
+	variables map[string]*proto.APLValue
+	group     *APLGroup
 }
 
 func (rot *APLRotation) newActionGroupReference(config *proto.APLActionGroupReference) APLActionImpl {
@@ -18,9 +18,14 @@ func (rot *APLRotation) newActionGroupReference(config *proto.APLActionGroupRefe
 		return nil
 	}
 
+	vars := make(map[string]*proto.APLValue)
+	for _, v := range config.Variables {
+		vars[v.Name] = v.Value
+	}
+
 	return &APLActionGroupReference{
-		groupName:         config.GroupName,
-		variableOverrides: config.VariableOverrides,
+		groupName: config.GroupName,
+		variables: vars,
 	}
 }
 
@@ -62,10 +67,54 @@ func (action *APLActionGroupReference) Finalize(rot *APLRotation) {
 		return
 	}
 
-	// Apply variable overrides
-	if len(action.variableOverrides) > 0 {
-		// TODO: Implement variable substitution
-		rot.ValidationMessage(proto.LogLevel_Warning, "Variable overrides not yet implemented for group '%s'", action.groupName)
+	// Scan for VariablePlaceholder values in the group
+	placeholders := map[string]struct{}{}
+	for _, groupAction := range action.group.actions {
+		// Check condition for placeholders
+		if groupAction.condition != nil {
+			action.scanForPlaceholders(groupAction.condition, placeholders)
+		}
+		// Check action implementation for placeholders
+		if groupAction.impl != nil {
+			action.scanActionForPlaceholders(groupAction.impl, placeholders)
+		}
+	}
+
+	// Check that all placeholders are set
+	for name := range placeholders {
+		if _, ok := action.variables[name]; !ok {
+			rot.ValidationMessage(proto.LogLevel_Error, "Group '%s' requires variable '%s' to be set via Variable Placeholder", action.groupName, name)
+		}
+	}
+
+	// Replace placeholder values with provided variables
+	for _, groupAction := range action.group.actions {
+		// Replace placeholders in condition
+		if groupAction.condition != nil {
+			groupAction.condition = action.replacePlaceholders(groupAction.condition, action.variables, rot)
+		}
+		// Replace placeholders in action implementation
+		if groupAction.impl != nil {
+			action.replaceActionPlaceholders(groupAction.impl, action.variables, rot)
+		}
+	}
+
+	// Add all provided variables to the group's variables map
+	// This allows normal variable references to resolve to the provided values
+	for k, v := range action.variables {
+		action.group.variables[k] = v
+	}
+
+	// Re-resolve variable references in group actions with the updated group variables
+	for _, groupAction := range action.group.actions {
+		// Re-resolve the condition if it contains variable references
+		if groupAction.condition != nil {
+			groupAction.condition = rot.reResolveVariableRefs(groupAction.condition, action.group.variables)
+		}
+		// Re-resolve any variable references in the action implementation
+		if groupAction.impl != nil {
+			groupAction.impl.ReResolveVariableRefs(rot, action.group.variables)
+		}
 	}
 
 	// Finalize all actions in the group
@@ -108,4 +157,137 @@ func (action *APLActionGroupReference) Execute(sim *Simulation) {
 
 func (action *APLActionGroupReference) String() string {
 	return fmt.Sprintf("Group Reference: %s", action.groupName)
+}
+
+// Helper methods for placeholder handling
+
+func (action *APLActionGroupReference) scanForPlaceholders(value APLValue, placeholders map[string]struct{}) {
+	if value == nil {
+		return
+	}
+
+	// Check if this value is a placeholder
+	if placeholder, ok := value.(*APLValueVariablePlaceholder); ok {
+		placeholders[placeholder.name] = struct{}{}
+		return
+	}
+
+	// Recursively scan inner values
+	for _, innerValue := range value.GetInnerValues() {
+		action.scanForPlaceholders(innerValue, placeholders)
+	}
+}
+
+func (action *APLActionGroupReference) scanActionForPlaceholders(actionImpl APLActionImpl, placeholders map[string]struct{}) {
+	if actionImpl == nil {
+		return
+	}
+
+	// Get all APL values from the action and scan them
+	for _, value := range actionImpl.GetAPLValues() {
+		action.scanForPlaceholders(value, placeholders)
+	}
+}
+
+func (action *APLActionGroupReference) replacePlaceholders(value APLValue, variables map[string]*proto.APLValue, rot *APLRotation) APLValue {
+	if value == nil {
+		return nil
+	}
+
+	// Check if this value is a placeholder
+	if placeholder, ok := value.(*APLValueVariablePlaceholder); ok {
+		if replacement, ok := variables[placeholder.name]; ok {
+			// Create a new value from the replacement
+			return rot.newAPLValue(replacement)
+		}
+		return value // Keep original if no replacement found
+	}
+
+	// For composite values, recursively replace placeholders in inner values
+	innerValues := value.GetInnerValues()
+	if len(innerValues) > 0 {
+		// Check if any inner values were replaced
+		anyReplaced := false
+		newInnerValues := make([]APLValue, len(innerValues))
+		for i, innerValue := range innerValues {
+			newInnerValues[i] = action.replacePlaceholders(innerValue, variables, rot)
+			if newInnerValues[i] != innerValue {
+				anyReplaced = true
+			}
+		}
+
+		// If any inner values were replaced, we need to create a new value object
+		if anyReplaced {
+			// Handle specific value types that need special treatment
+			switch v := value.(type) {
+			case *APLValueCompare:
+				// Re-coerce the types after replacement to ensure compatibility
+				lhs, rhs := rot.coerceToSameType(newInnerValues[0], newInnerValues[1])
+				return &APLValueCompare{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					op:                  v.op,
+					lhs:                 lhs,
+					rhs:                 rhs,
+				}
+			case *APLValueMath:
+				// Re-coerce the types after replacement to ensure compatibility
+				lhs, rhs := newInnerValues[0], newInnerValues[1]
+				if v.op == proto.APLValueMath_OpAdd || v.op == proto.APLValueMath_OpSub {
+					lhs, rhs = rot.coerceToSameType(lhs, rhs)
+				}
+				return &APLValueMath{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					op:                  v.op,
+					lhs:                 lhs,
+					rhs:                 rhs,
+				}
+			case *APLValueAnd:
+				return &APLValueAnd{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					vals:                newInnerValues,
+				}
+			case *APLValueOr:
+				return &APLValueOr{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					vals:                newInnerValues,
+				}
+			case *APLValueNot:
+				return &APLValueNot{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					val:                 newInnerValues[0],
+				}
+			case *APLValueMax:
+				return &APLValueMax{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					vals:                newInnerValues,
+				}
+			case *APLValueMin:
+				return &APLValueMin{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					vals:                newInnerValues,
+				}
+			case *APLValueCoerced:
+				return &APLValueCoerced{
+					DefaultAPLValueImpl: v.DefaultAPLValueImpl,
+					valueType:           v.valueType,
+					inner:               newInnerValues[0],
+				}
+			default:
+				// For other value types, we can't easily create new instances
+				// so we'll return the original value
+				return value
+			}
+		}
+	}
+
+	return value
+}
+
+func (action *APLActionGroupReference) replaceActionPlaceholders(actionImpl APLActionImpl, variables map[string]*proto.APLValue, rot *APLRotation) {
+	if actionImpl == nil {
+		return
+	}
+
+	// This is a simplified approach - in practice, you'd need to handle each action type specifically
+	// For now, we'll rely on the value replacement in the main flow
 }

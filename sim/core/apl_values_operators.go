@@ -212,6 +212,7 @@ func (rot *APLRotation) coerceTo(value APLValue, newType proto.APLValueType) APL
 
 // Types that come later in the list are higher 'priority'.
 var aplValueTypeOrder = []proto.APLValueType{
+	proto.APLValueType_ValueTypeUnknown, // Add Unknown as lowest priority
 	proto.APLValueType_ValueTypeInt,
 	proto.APLValueType_ValueTypeFloat,
 	proto.APLValueType_ValueTypeDuration,
@@ -220,6 +221,17 @@ var aplValueTypeOrder = []proto.APLValueType{
 }
 
 func higherOrderType(type1 proto.APLValueType, type2 proto.APLValueType) proto.APLValueType {
+	// Handle Unknown types explicitly
+	if type1 == proto.APLValueType_ValueTypeUnknown && type2 == proto.APLValueType_ValueTypeUnknown {
+		return proto.APLValueType_ValueTypeUnknown
+	}
+	if type1 == proto.APLValueType_ValueTypeUnknown {
+		return type2
+	}
+	if type2 == proto.APLValueType_ValueTypeUnknown {
+		return type1
+	}
+
 	for _, listType := range aplValueTypeOrder {
 		if listType == type1 {
 			return type2
@@ -231,15 +243,34 @@ func higherOrderType(type1 proto.APLValueType, type2 proto.APLValueType) proto.A
 }
 func highestOrderTypeList(values []APLValue) proto.APLValueType {
 	coercionType := aplValueTypeOrder[0]
+	hasPlaceholder := false
+
 	for _, val := range values {
 		if val != nil {
+			// Check if this is a placeholder
+			if _, isPlaceholder := val.(*APLValueVariablePlaceholder); isPlaceholder {
+				hasPlaceholder = true
+				continue // Skip placeholders during initial type determination
+			}
 			coercionType = higherOrderType(coercionType, val.Type())
 		}
 	}
+
+	// If we have placeholders, return Unknown type to defer coercion
+	if hasPlaceholder {
+		return proto.APLValueType_ValueTypeUnknown
+	}
+
 	return coercionType
 }
 func (rot *APLRotation) coerceAllToSameType(values []APLValue) []APLValue {
 	coercionType := highestOrderTypeList(values)
+
+	// If coercion is deferred due to placeholders, return values unchanged
+	if coercionType == proto.APLValueType_ValueTypeUnknown {
+		return values
+	}
+
 	return MapSlice(values, func(val APLValue) APLValue { return rot.coerceTo(val, coercionType) })
 }
 
@@ -276,6 +307,16 @@ func (rot *APLRotation) newValueCompare(config *proto.APLValueCompare, uuid *pro
 		return nil
 	}
 
+	// Check for placeholders that weren't replaced
+	if _, isPlaceholder := lhs.(*APLValueVariablePlaceholder); isPlaceholder {
+		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Left side of comparison contains unreplaced variable placeholder")
+		return nil
+	}
+	if _, isPlaceholder := rhs.(*APLValueVariablePlaceholder); isPlaceholder {
+		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Right side of comparison contains unreplaced variable placeholder")
+		return nil
+	}
+
 	if lhs.Type() == proto.APLValueType_ValueTypeBool && !(config.Op == proto.APLValueCompare_OpEq || config.Op == proto.APLValueCompare_OpNe) {
 		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Warning, "Bool types only allow Equals and NotEquals comparisons!")
 		return nil
@@ -293,6 +334,14 @@ func (value *APLValueCompare) Type() proto.APLValueType {
 	return proto.APLValueType_ValueTypeBool
 }
 func (value *APLValueCompare) GetBool(sim *Simulation) bool {
+	// Runtime safety check for placeholders
+	if _, isPlaceholder := value.lhs.(*APLValueVariablePlaceholder); isPlaceholder {
+		panic("[USER_ERROR] Left side of comparison contains unreplaced variable placeholder during evaluation")
+	}
+	if _, isPlaceholder := value.rhs.(*APLValueVariablePlaceholder); isPlaceholder {
+		panic("[USER_ERROR] Right side of comparison contains unreplaced variable placeholder during evaluation")
+	}
+
 	switch value.lhs.Type() {
 	case proto.APLValueType_ValueTypeBool:
 		switch value.op {
@@ -738,4 +787,195 @@ func (v *APLValueVariableRef) GetString(sim *Simulation) string {
 }
 func (v *APLValueVariableRef) String() string {
 	return fmt.Sprintf("VarRef(%s)", v.name)
+}
+
+// Variable Placeholder value for group APLs
+type APLValueVariablePlaceholder struct {
+	DefaultAPLValueImpl
+	name string
+}
+
+func (rot *APLRotation) newValueVariablePlaceholder(config *proto.APLValueVariablePlaceholder, uuid *proto.UUID) APLValue {
+	if config == nil || config.Name == "" {
+		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Warning, "Variable Placeholder must have a name")
+		return nil
+	}
+	return &APLValueVariablePlaceholder{
+		name: config.Name,
+	}
+}
+
+func (v *APLValueVariablePlaceholder) GetInnerValues() []APLValue {
+	return nil
+}
+func (v *APLValueVariablePlaceholder) Type() proto.APLValueType {
+	return proto.APLValueType_ValueTypeUnknown // Will be determined when replaced
+}
+func (v *APLValueVariablePlaceholder) GetBool(sim *Simulation) bool {
+	// This should never be called directly - placeholder should be replaced before evaluation
+	return false
+}
+func (v *APLValueVariablePlaceholder) GetInt(sim *Simulation) int32 {
+	// This should never be called directly - placeholder should be replaced before evaluation
+	return 0
+}
+func (v *APLValueVariablePlaceholder) GetFloat(sim *Simulation) float64 {
+	// This should never be called directly - placeholder should be replaced before evaluation
+	return 0
+}
+func (v *APLValueVariablePlaceholder) GetDuration(sim *Simulation) time.Duration {
+	// This should never be called directly - placeholder should be replaced before evaluation
+	return 0
+}
+func (v *APLValueVariablePlaceholder) GetString(sim *Simulation) string {
+	// This should never be called directly - placeholder should be replaced before evaluation
+	return ""
+}
+func (v *APLValueVariablePlaceholder) String() string {
+	return fmt.Sprintf("VarPlaceholder(%s)", v.name)
+}
+
+// WithContext versions of operator functions to preserve groupVariables context
+
+func (rot *APLRotation) newValueCompareWithContext(config *proto.APLValueCompare, uuid *proto.UUID, groupVariables map[string]*proto.APLValue) APLValue {
+	lhs, rhs := rot.coerceToSameType(rot.newAPLValueWithContext(config.Lhs, groupVariables), rot.newAPLValueWithContext(config.Rhs, groupVariables))
+
+	if lhs == nil || rhs == nil {
+		return nil
+	}
+
+	// Check for placeholders that weren't replaced - but only if this isn't initial parsing
+	// During initial parsing of groups, placeholders are expected and will be replaced later
+	lhsIsPlaceholder := false
+	rhsIsPlaceholder := false
+	if _, isPlaceholder := lhs.(*APLValueVariablePlaceholder); isPlaceholder {
+		lhsIsPlaceholder = true
+	}
+	if _, isPlaceholder := rhs.(*APLValueVariablePlaceholder); isPlaceholder {
+		rhsIsPlaceholder = true
+	}
+
+	// Only validate placeholder replacement if we have group variables (meaning this is during group reference)
+	if groupVariables != nil {
+		if lhsIsPlaceholder {
+			rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Left side of comparison contains unreplaced variable placeholder")
+			return nil
+		}
+		if rhsIsPlaceholder {
+			rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Right side of comparison contains unreplaced variable placeholder")
+			return nil
+		}
+	}
+
+	// Skip type validation if we have placeholders (during initial parsing)
+	if !lhsIsPlaceholder && !rhsIsPlaceholder {
+		if lhs.Type() == proto.APLValueType_ValueTypeBool && !(config.Op == proto.APLValueCompare_OpEq || config.Op == proto.APLValueCompare_OpNe) {
+			rot.ValidationMessageByUUID(uuid, proto.LogLevel_Warning, "Bool types only allow Equals and NotEquals comparisons!")
+			return nil
+		}
+	}
+
+	return &APLValueCompare{
+		op:  config.Op,
+		lhs: lhs,
+		rhs: rhs,
+	}
+}
+
+func (rot *APLRotation) newValueMathWithContext(config *proto.APLValueMath, uuid *proto.UUID, groupVariables map[string]*proto.APLValue) APLValue {
+	lhs, rhs := rot.newAPLValueWithContext(config.Lhs, groupVariables), rot.newAPLValueWithContext(config.Rhs, groupVariables)
+	if config.Op == proto.APLValueMath_OpAdd || config.Op == proto.APLValueMath_OpSub {
+		lhs, rhs = rot.coerceToSameType(lhs, rhs)
+	}
+	if lhs == nil || rhs == nil {
+		return nil
+	}
+
+	if lhs.Type() == proto.APLValueType_ValueTypeBool || rhs.Type() == proto.APLValueType_ValueTypeBool {
+		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Warning, "Bool types not allowed in Math Operations!")
+		return nil
+	}
+
+	if lhs.Type() == proto.APLValueType_ValueTypeString || rhs.Type() == proto.APLValueType_ValueTypeString {
+		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Warning, "String types not allowed in Math Operations!")
+		return nil
+	}
+
+	return &APLValueMath{
+		op:  config.Op,
+		lhs: lhs,
+		rhs: rhs,
+	}
+}
+
+func (rot *APLRotation) newValueMaxWithContext(config *proto.APLValueMax, _ *proto.UUID, groupVariables map[string]*proto.APLValue) APLValue {
+	vals := MapSlice(config.Vals, func(val *proto.APLValue) APLValue {
+		return rot.newAPLValueWithContext(val, groupVariables)
+	})
+	vals = rot.coerceAllToSameType(vals)
+	vals = FilterSlice(vals, func(val APLValue) bool { return val != nil })
+	if len(vals) == 0 {
+		return nil
+	} else if len(vals) == 1 {
+		return vals[0]
+	}
+	return &APLValueMax{
+		vals: vals,
+	}
+}
+
+func (rot *APLRotation) newValueMinWithContext(config *proto.APLValueMin, _ *proto.UUID, groupVariables map[string]*proto.APLValue) APLValue {
+	vals := MapSlice(config.Vals, func(val *proto.APLValue) APLValue {
+		return rot.newAPLValueWithContext(val, groupVariables)
+	})
+	vals = rot.coerceAllToSameType(vals)
+	vals = FilterSlice(vals, func(val APLValue) bool { return val != nil })
+	if len(vals) == 0 {
+		return nil
+	} else if len(vals) == 1 {
+		return vals[0]
+	}
+	return &APLValueMin{
+		vals: vals,
+	}
+}
+
+func (rot *APLRotation) newValueAndWithContext(config *proto.APLValueAnd, _ *proto.UUID, groupVariables map[string]*proto.APLValue) APLValue {
+	vals := MapSlice(config.Vals, func(val *proto.APLValue) APLValue {
+		return rot.coerceTo(rot.newAPLValueWithContext(val, groupVariables), proto.APLValueType_ValueTypeBool)
+	})
+	vals = FilterSlice(vals, func(val APLValue) bool { return val != nil })
+	if len(vals) == 0 {
+		return nil
+	} else if len(vals) == 1 {
+		return vals[0]
+	}
+	return &APLValueAnd{
+		vals: vals,
+	}
+}
+
+func (rot *APLRotation) newValueOrWithContext(config *proto.APLValueOr, _ *proto.UUID, groupVariables map[string]*proto.APLValue) APLValue {
+	vals := MapSlice(config.Vals, func(val *proto.APLValue) APLValue {
+		return rot.coerceTo(rot.newAPLValueWithContext(val, groupVariables), proto.APLValueType_ValueTypeBool)
+	})
+	vals = FilterSlice(vals, func(val APLValue) bool { return val != nil })
+	if len(vals) == 0 {
+		return nil
+	} else if len(vals) == 1 {
+		return vals[0]
+	}
+	return &APLValueOr{
+		vals: vals,
+	}
+}
+
+func (rot *APLRotation) newValueNotWithContext(config *proto.APLValueNot, _ *proto.UUID, groupVariables map[string]*proto.APLValue) APLValue {
+	val := rot.coerceTo(rot.newAPLValueWithContext(config.Val, groupVariables), proto.APLValueType_ValueTypeBool)
+	if val == nil {
+		return nil
+	}
+	return &APLValueNot{
+		val: val,
+	}
 }

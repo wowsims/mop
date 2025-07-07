@@ -50,7 +50,7 @@ export class APLGroupManager extends Input<Player<any>, Array<APLGroup>> {
 				APLGroup.create({
 					name: 'new_group',
 					actions: [],
-					variables: {},
+					variables: [],
 				}),
 			copyItem: (oldItem: APLGroup) => APLGroup.clone(oldItem),
 			newItemPicker: (

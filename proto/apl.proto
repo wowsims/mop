@@ -46,7 +46,7 @@ message APLListItem {
 message APLGroup {
 	string name = 1;                    // Name of the group (e.g., "careful_aim")
 	repeated APLListItem actions = 2;   // Actions in this group
-	map<string, string> variables = 3;  // Variables that can be used in this group
+	repeated APLValueVariable variables = 3;  // Variables that can be used in this group
 }
 
 // NextIndex: 27
@@ -234,6 +234,9 @@ message APLValue {
 
 		// Variable reference
 		APLValueVariableRef variable_ref = 106;
+
+		// Variable placeholder
+		APLValueVariablePlaceholder variable_placeholder = 107; // Placeholder value that gets replaced when group is referenced
     }
 }
 
@@ -736,7 +739,7 @@ message APLValueDotPercentIncrease {
 
 message APLActionGroupReference {
 	string group_name = 1;                    // Name of the group to reference
-	map<string, string> variable_overrides = 2; // Override group variables with specific values
+	repeated APLValueVariable variables = 2;  // Variables to set for this group reference
 }
 
 message APLValueVariable {
@@ -746,4 +749,8 @@ message APLValueVariable {
 
 message APLValueVariableRef {
 	string name = 1;
+}
+
+message APLValueVariablePlaceholder {
+    string name = 1; // Name of the variable placeholder to expose
 }

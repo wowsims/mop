@@ -60,6 +60,14 @@ export class APLValueVariableManager extends Component {
 			value: oldItem.value,
 		});
 	}
+
+	getInputValue(): APLValueVariable[] {
+		return this.listPicker.getInputValue();
+	}
+
+	setInputValue(newValue: APLValueVariable[]) {
+		this.listPicker.setInputValue(newValue);
+	}
 }
 
 class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {

@@ -712,12 +712,15 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		newValue: () =>
 			APLActionGroupReference.create({
 				groupName: '',
-				variableOverrides: {},
+				variables: [],
 			}),
 		fields: [
-			AplHelpers.stringFieldConfig('groupName', {
-				label: 'Group Name',
+			AplHelpers.groupNameFieldConfig('groupName', {
 				labelTooltip: 'Name of the group to reference (must match a group defined in the Groups section)',
+			}),
+			AplHelpers.groupReferenceVariablesFieldConfig('variables', 'groupName', {
+				label: 'Group Variables',
+				labelTooltip: "Variables to pass to the group. These will override the group's internal variables.",
 			}),
 		],
 	}),

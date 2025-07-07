@@ -9,6 +9,7 @@ import { Input, InputConfig } from '../input';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker';
 import { AdaptiveStringPicker } from '../pickers/string_picker';
 import { APLActionPicker } from './apl_actions';
+import { APLValueVariableManager } from './apl_value_variable_manager';
 
 export interface APLGroupEditorConfig extends InputConfig<Player<any>, APLGroup> {}
 
@@ -55,13 +56,13 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 	private readonly namePicker: AdaptiveStringPicker<Player<any>>;
 	private readonly actionsPicker: ListPicker<Player<any>, APLListItem>;
+	private readonly variablesManager: APLValueVariableManager;
 
 	constructor(parent: HTMLElement, player: Player<any>, config: APLGroupEditorConfig) {
 		super(parent, 'apl-group-editor-root', player, config);
 
 		this.namePicker = new AdaptiveStringPicker(this.rootElem, this.modObject, {
 			id: randomUUID(),
-			label: 'Group Name',
 			labelTooltip: 'Name of this action group (e.g., "careful_aim", "cooldowns")',
 			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			getValue: () => this.getSourceValue()?.name || '',
@@ -69,6 +70,17 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 				const group = this.getSourceValue();
 				if (group) {
 					group.name = newValue;
+					player.rotationChangeEmitter.emit(eventID);
+				}
+			},
+		});
+
+		this.variablesManager = new APLValueVariableManager(this.rootElem, this.modObject, {
+			getValue: (player: Player<any>) => this.getSourceValue()?.variables || [],
+			setValue: (eventID: EventID, player: Player<any>, newValue: any[]) => {
+				const group = this.getSourceValue();
+				if (group) {
+					group.variables = newValue;
 					player.rotationChangeEmitter.emit(eventID);
 				}
 			},
@@ -118,7 +130,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 		return APLGroup.create({
 			name: this.namePicker.getInputValue(),
 			actions: this.actionsPicker.getInputValue(),
-			variables: group.variables || {},
+			variables: this.variablesManager.getInputValue(),
 		});
 	}
 
@@ -127,6 +139,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 			return;
 		}
 		this.namePicker.setInputValue(newValue.name || '');
+		this.variablesManager.setInputValue(newValue.variables || []);
 		this.actionsPicker.setInputValue(newValue.actions || []);
 	}
 }
