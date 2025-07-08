@@ -150,6 +150,10 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 			return spell.castFailureHelper(sim, "casting/channeling %v for %s, curTime = %s", hc.ActionID, hc.Expires-sim.CurrentTime, sim.CurrentTime)
 		}
 
+		if spell.Unit.IsCastingDuringChannel() && !spell.CanCastDuringChannel(sim) {
+			return spell.castFailureHelper(sim, "cannot interrupt in-progress channel of %v with a cast of %v", spell.Unit.ChanneledDot.ActionID, spell.ActionID)
+		}
+
 		if effectiveTime := spell.CurCast.EffectiveTime(); effectiveTime != 0 {
 
 			// do not add channeled time here as they have variable cast length
