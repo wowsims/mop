@@ -22,9 +22,10 @@ func TestArcane(t *testing.T) {
 		OtherGearSets: []core.GearSetCombo{
 			core.GetGearSet("../../../ui/mage/arcane/gear_sets", "prebis"),
 		},
-		Talents:     ArcaneTalents,
-		Glyphs:      ArcaneGlyphs,
-		Consumables: FullArcaneConsumesSpec,
+		Talents:         ArcaneTalents,
+		OtherTalentSets: core.GenerateTalentVariationsForRows(ArcaneTalents, ArcaneGlyphs, []int{4, 5}),
+		Glyphs:          ArcaneGlyphs,
+		Consumables:     FullArcaneConsumesSpec,
 
 		SpecOptions: core.SpecOptionsCombo{Label: "Arcane", SpecOptions: PlayerOptionsArcane},
 		Rotation:    core.GetAplRotation("../../../ui/mage/arcane/apls", "default"),
