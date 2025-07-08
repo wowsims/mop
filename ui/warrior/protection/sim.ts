@@ -63,6 +63,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_BALANCED_PRESET.gear,
+		itemSwap: Presets.P1_ITEM_SWAP.itemSwap,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_EP_PRESET.epWeights,
 		other: Presets.OtherDefaults,
@@ -75,15 +76,22 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
 			...defaultRaidBuffMajorDamageCooldowns(Class.ClassWarrior),
+			arcaneBrilliance: true,
+			blessingOfKings: true,
+			blessingOfMight: true,
+			bloodlust: true,
+			elementalOath: true,
+			powerWordFortitude: true,
+			serpentsSwiftness: true,
+			trueshotAura: true,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({
-			// faerieFire: true,
-			// mangle: true,
-			// vindication: true,
-			// bloodFrenzy: true,
-			// frostFever: true,
+			curseOfElements: true,
+			physicalVulnerability: true,
+			weakenedArmor: true,
+			weakenedBlows: true,
 		}),
 	},
 
@@ -120,7 +128,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_DEFAULT],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_BALANCED_PRESET, Presets.P1_BALANCED_PRESET,],
+		gear: [Presets.PRERAID_BALANCED_PRESET, Presets.P1_BALANCED_PRESET],
 		builds: [],
 	},
 

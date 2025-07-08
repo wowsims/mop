@@ -5,6 +5,7 @@ import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyp
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
+import P1BISItemSwapGear from './gear_sets/p1_bis_item_swap.gear.json';
 import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -13,6 +14,8 @@ import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 export const PRERAID_BALANCED_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidBISGear);
 export const P1_BALANCED_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
+
+export const P1_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P1 - Item Swap', P1BISItemSwapGear);
 
 export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('Default APL', DefaultApl);
 
@@ -46,7 +49,7 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '231231',
+		talentsString: '233232',
 		glyphs: Glyphs.create({
 			major1: WarriorMajorGlyph.GlyphOfIncite,
 			major2: WarriorMajorGlyph.GlyphOfHeavyRepercussions,
@@ -60,13 +63,14 @@ export const DefaultOptions = ProtectionWarriorOptions.create({
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 76088, // Flask of Winter's Bite
-	foodId: 74646, // Black Pepper Ribs and Shrimp
+	flaskId: 76087, // Flask of the Earth
+	foodId: 81411, // Peach Pie
 	potId: 76095, // Potion of Mogu Power
 	prepotId: 76095, // Potion of Mogu Power
 });
 
 export const OtherDefaults = {
-	profession1: Profession.Leatherworking,
-	profession2: Profession.Inscription,
+	profession1: Profession.Tailoring,
+	profession2: Profession.Blacksmithing,
+	distanceFromTarget: 15,
 };

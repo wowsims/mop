@@ -1,0 +1,585 @@
+character_stats_results: {
+ key: "TestProtectionWarrior-CharacterStats-Default"
+ value: {
+  final_stats: 12496.05
+  final_stats: 220.5
+  final_stats: 29496.39
+  final_stats: 121.8
+  final_stats: 149
+  final_stats: 2600
+  final_stats: 0
+  final_stats: 0
+  final_stats: 5094
+  final_stats: 6641.00002
+  final_stats: 18111.41442
+  final_stats: 4571
+  final_stats: 27766.31
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 0
+  final_stats: 52287
+  final_stats: 0
+  final_stats: 559352.46
+  final_stats: 0
+  final_stats: 0
+  final_stats: 7.64706
+  final_stats: 22.62941
+  final_stats: 10.02205
+  final_stats: 5
+  final_stats: 36.68575
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-AgilePrimalDiamond"
+ value: {
+  dps: 114453.47913
+  tps: 801181.75388
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-AssuranceofConsequence-105472"
+ value: {
+  dps: 112583.78245
+  tps: 788093.90212
+  dtps: 54069.05662
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-AusterePrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53200.10953
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-BattleplateofResoundingRings"
+ value: {
+  dps: 98093.60412
+  tps: 686661.47881
+  dtps: 58071.30557
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-BattleplateoftheLastMogu"
+ value: {
+  dps: 110062.22988
+  tps: 770443.89251
+  dtps: 55418.00158
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-BattleplateofthePrehistoricMarauder"
+ value: {
+  dps: 101083.73727
+  tps: 707592.97753
+  dtps: 53583.98719
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-BurningPrimalDiamond"
+ value: {
+  dps: 114447.72275
+  tps: 801141.45922
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-CapacitivePrimalDiamond"
+ value: {
+  dps: 113564.9764
+  tps: 794962.2848
+  dtps: 53742.60217
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-CourageousPrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-DelicateVialoftheSanguinaire-96895"
+ value: {
+  dps: 115401.8591
+  tps: 807820.86369
+  dtps: 52308.11151
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-DestructivePrimalDiamond"
+ value: {
+  dps: 113892.52894
+  tps: 797255.12759
+  dtps: 53869.93529
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EffulgentPrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EmberPrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
+ value: {
+  dps: 112882.4042
+  tps: 790184.08776
+  dtps: 53330.27147
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EnchantWeapon-Colossus-4445"
+ value: {
+  dps: 111310.28076
+  tps: 779179.13199
+  dtps: 53308.36135
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EnchantWeapon-JadeSpirit-4442"
+ value: {
+  dps: 111310.28076
+  tps: 779179.13199
+  dtps: 54089.69469
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EnchantWeapon-River'sSong-4446"
+ value: {
+  dps: 110745.8924
+  tps: 775228.43014
+  dtps: 53213.39585
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EnchantWeapon-SpiritofConquest-5124"
+ value: {
+  dps: 111310.28076
+  tps: 779179.13199
+  dtps: 54089.69469
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EnchantWeapon-Windsong-4441"
+ value: {
+  dps: 112847.80263
+  tps: 789942.3184
+  dtps: 53691.42491
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EnigmaticPrimalDiamond"
+ value: {
+  dps: 113892.52894
+  tps: 797255.12759
+  dtps: 53869.93529
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EternalPrimalDiamond"
+ value: {
+  dps: 113585.97977
+  tps: 795109.25009
+  dtps: 53179.10464
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-EvilEyeofGalakras-105491"
+ value: {
+  dps: 116617.57558
+  tps: 816330.0374
+  dtps: 48702.36383
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-FabledFeatherofJi-Kun-96842"
+ value: {
+  dps: 120459.71003
+  tps: 843225.22857
+  dtps: 50743.85035
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Fen-Yu,FuryofXuen-102248"
+ value: {
+  dps: 117597.06819
+  tps: 823187.18567
+  dtps: 53168.43035
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-FleetPrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53398.90379
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-ForlornPrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-GazeoftheTwins-96915"
+ value: {
+  dps: 120217.78338
+  tps: 841532.45032
+  dtps: 52408.59345
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Gong-Lu,StrengthofXuen-102249"
+ value: {
+  dps: 121136.4975
+  tps: 847963.31583
+  dtps: 51785.01884
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Horridon'sLastGasp-96757"
+ value: {
+  dps: 112355.92402
+  tps: 786498.86813
+  dtps: 54098.45737
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-ImpassivePrimalDiamond"
+ value: {
+  dps: 113892.52894
+  tps: 797255.12759
+  dtps: 53869.93529
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-IndomitablePrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-InscribedBagofHydra-Spawn-96828"
+ value: {
+  dps: 112355.92402
+  tps: 786498.86813
+  dtps: 54098.45737
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Ji-Kun'sRisingWinds-96843"
+ value: {
+  dps: 113477.03111
+  tps: 794346.65945
+  dtps: 54137.26629
+  hps: 1540.992
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-PhaseFingers-4697"
+ value: {
+  dps: 113829.75854
+  tps: 796815.72642
+  dtps: 53227.28477
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-PlateofResoundingRings"
+ value: {
+  dps: 106633.40941
+  tps: 746440.48251
+  dtps: 53086.94835
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-PlateoftheLastMogu"
+ value: {
+  dps: 106057.65832
+  tps: 742410.59156
+  dtps: 52721.56304
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-PlateofthePrehistoricMarauder"
+ value: {
+  dps: 104007.01397
+  tps: 728055.6478
+  dtps: 51185.0492
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-PowerfulPrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-PriceofProgress-81266"
+ value: {
+  dps: 112355.92402
+  tps: 786498.86813
+  dtps: 54098.45737
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Primordius'TalismanofRage-96873"
+ value: {
+  dps: 120341.40894
+  tps: 842398.00428
+  dtps: 52610.86601
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Qian-Le,CourageofNiuzao-102245"
+ value: {
+  dps: 110691.60383
+  tps: 774848.62678
+  dtps: 52106.59114
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
+ value: {
+  dps: 114762.99991
+  tps: 803348.45768
+  dtps: 49852.41669
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Renataki'sSoulCharm-96741"
+ value: {
+  dps: 113292.20898
+  tps: 793052.91287
+  dtps: 54693.21825
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-ReverberatingPrimalDiamond"
+ value: {
+  dps: 115081.45536
+  tps: 805577.57085
+  dtps: 53237.27115
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-RevitalizingPrimalDiamond"
+ value: {
+  dps: 114447.72275
+  tps: 801141.45922
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-SinisterPrimalDiamond"
+ value: {
+  dps: 113564.9764
+  tps: 794962.2848
+  dtps: 53742.60217
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-SynapseSprings(MarkII)-4898"
+ value: {
+  dps: 113829.75854
+  tps: 796815.72642
+  dtps: 53227.28477
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-TalismanofBloodlust-96864"
+ value: {
+  dps: 112946.81287
+  tps: 790634.98174
+  dtps: 54105.59086
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-TheGloamingBlade-88149"
+ value: {
+  dps: 113585.97977
+  tps: 795109.25009
+  dtps: 53179.10464
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-TyrannicalPrimalDiamond"
+ value: {
+  dps: 113159.2155
+  tps: 792121.90853
+  dtps: 53762.16042
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-UnerringVisionofLeiShen-96930"
+ value: {
+  dps: 118550.62145
+  tps: 829862.67518
+  dtps: 53811.21922
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Wushoolay'sFinalChoice-96785"
+ value: {
+  dps: 112355.92402
+  tps: 786498.86813
+  dtps: 54098.45737
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-Xing-Ho,BreathofYu'lon-102246"
+ value: {
+  dps: 111505.63004
+  tps: 780546.92695
+  dtps: 52951.20414
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-YaungolFireCarrier-86518"
+ value: {
+  dps: 113585.97977
+  tps: 795109.25009
+  dtps: 53179.10464
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-ZenAlchemistStone-75274"
+ value: {
+  dps: 115690.4311
+  tps: 809840.51769
+  dtps: 52313.28666
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Average-Default"
+ value: {
+  dps: 113144.79153
+  tps: 792020.96687
+  dtps: 53237.99647
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-FullBuffs-15.0yards-LongMultiTarget"
+ value: {
+  dps: 1.37834259418e+06
+  tps: 9.64848332593e+06
+  dtps: 1.00633660846e+06
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-FullBuffs-15.0yards-LongSingleTarget"
+ value: {
+  dps: 117886.12979
+  tps: 825210.98354
+  dtps: 53355.72422
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-FullBuffs-15.0yards-ShortSingleTarget"
+ value: {
+  dps: 104889.68805
+  tps: 734237.94136
+  dtps: 51574.07229
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-NoBuffs-15.0yards-LongMultiTarget"
+ value: {
+  dps: 1.00642507587e+06
+  tps: 7.04505903107e+06
+  dtps: 1.23771275176e+06
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-NoBuffs-15.0yards-LongSingleTarget"
+ value: {
+  dps: 94257.55993
+  tps: 659809.5945
+  dtps: 64212.65977
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-NoBuffs-15.0yards-ShortSingleTarget"
+ value: {
+  dps: 80281.16284
+  tps: 561977.51486
+  dtps: 63550.29829
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-FullBuffs-15.0yards-LongMultiTarget"
+ value: {
+  dps: 1.37839390953e+06
+  tps: 9.64884253339e+06
+  dtps: 1.00630567085e+06
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-FullBuffs-15.0yards-LongSingleTarget"
+ value: {
+  dps: 117890.70121
+  tps: 825242.98347
+  dtps: 53355.72422
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-FullBuffs-15.0yards-ShortSingleTarget"
+ value: {
+  dps: 104894.31537
+  tps: 734270.33259
+  dtps: 51574.07229
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-NoBuffs-15.0yards-LongMultiTarget"
+ value: {
+  dps: 1.00646352593e+06
+  tps: 7.04532818149e+06
+  dtps: 1.23770304926e+06
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-NoBuffs-15.0yards-LongSingleTarget"
+ value: {
+  dps: 94426.7714
+  tps: 660994.08314
+  dtps: 64228.78722
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-NoBuffs-15.0yards-ShortSingleTarget"
+ value: {
+  dps: 80284.57298
+  tps: 562001.38583
+  dtps: 63550.29829
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-SwitchInFrontOfTarget-Default"
+ value: {
+  dps: 117890.70121
+  tps: 825242.98347
+  dtps: 53355.72422
+ }
+}
