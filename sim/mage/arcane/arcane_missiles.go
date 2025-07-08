@@ -118,7 +118,7 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 	core.MakeProcTriggerAura(&arcane.Unit, core.ProcTrigger{
 		Name:              "Arcane Missiles Activation",
 		ActionID:          core.ActionID{SpellID: 79684},
-		ClassSpellMask:    mage.MageSpellsAll ^ mage.MageSpellArcaneMissilesTick,
+		ClassSpellMask:    mage.MageSpellsAll ^ (mage.MageSpellArcaneMissilesTick | mage.MageSpellNetherTempestDot | mage.MageSpellLivingBombDot),
 		SpellFlagsExclude: core.SpellFlagHelpful,
 		ProcChance:        0.3,
 		Callback:          core.CallbackOnSpellHitDealt,
