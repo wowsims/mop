@@ -22,11 +22,12 @@ func TestFrost(t *testing.T) {
 		OtherGearSets: []core.GearSetCombo{
 			core.GetGearSet("../../../ui/mage/frost/gear_sets", "p1_prebis_rich"),
 		},
-		Talents:     FrostTalents,
-		Glyphs:      FrostDefaultGlyphs,
-		Consumables: DefaultConsumables,
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
-		Rotation:    core.GetAplRotation("../../../ui/mage/frost/apls", "frost"),
+		Talents:         FrostTalents,
+		OtherTalentSets: core.GenerateTalentVariationsForRows(FrostTalents, FrostDefaultGlyphs, []int{4, 5}),
+		Glyphs:          FrostDefaultGlyphs,
+		Consumables:     DefaultConsumables,
+		SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
+		Rotation:        core.GetAplRotation("../../../ui/mage/frost/apls", "frost"),
 
 		ItemFilter: ItemFilter,
 	}))
