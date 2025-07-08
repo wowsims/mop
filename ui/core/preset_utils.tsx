@@ -80,7 +80,6 @@ export interface PresetEncounterOptions extends PresetOptionsBase {}
 type PresetPlayerOptions = Partial<Pick<PlayerProto, 'distanceFromTarget' | 'profession1' | 'profession2' | 'enableItemSwap' | 'itemSwap'>>;
 
 export interface PresetSettings extends PresetBase {
-	level?: number;
 	race?: Race;
 	raidBuffs?: RaidBuffs;
 	partyBuffs?: PartyBuffs;
@@ -295,7 +294,13 @@ export const makePresetBuild = (name: string, { gear, itemSwap, talents, rotatio
 	return { name, itemSwap, gear, talents, rotation, rotationType, epWeights, encounter };
 };
 
-export const makePresetBuildFromJSON = (name: string, spec: Spec, json: any, options?: PresetOptionsBase): PresetBuild => {
+export const makePresetBuildFromJSON = (
+	name: string,
+	spec: Spec,
+	json: any,
+	{ settings: customSimSettings, ...customBuildOptions }: PresetBuildOptions = {},
+	options?: PresetOptionsBase,
+): PresetBuild => {
 	const simSettings = IndividualSimSettings.fromJson(json);
 	const buildConfig: PresetBuildOptions = {};
 
@@ -318,15 +323,15 @@ export const makePresetBuildFromJSON = (name: string, spec: Spec, json: any, opt
 	}
 
 	const settings = makePresetSettingsHelper(name, spec, simSettings);
-	if (Object.keys(settings).length > 1) {
-		buildConfig.settings = settings;
+	if (Object.keys(settings).length > 1 || customSimSettings) {
+		buildConfig.settings = { ...settings, ...customSimSettings };
 	}
 
 	if (simSettings.epWeightsStats) {
 		buildConfig.epWeights = makePresetEpWeightHelper(name, Stats.fromProto(simSettings.epWeightsStats), options);
 	}
 
-	return makePresetBuild(name, buildConfig);
+	return makePresetBuild(name, { ...buildConfig, ...customBuildOptions });
 };
 
 export type SpecCheckWarning = {

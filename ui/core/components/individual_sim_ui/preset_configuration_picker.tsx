@@ -7,7 +7,7 @@ import { APLRotation, APLRotation_Type } from '../../proto/apl';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '../../proto/common';
 import { SavedTalents } from '../../proto/ui';
 import { Stats } from '../../proto_utils/stats';
-import { SpecOptions } from '../../proto_utils/utils';
+import { SpecOptions, SpecType } from '../../proto_utils/utils';
 import { TypedEvent } from '../../typed_event';
 import { Component } from '../component';
 import { ContentBlock } from '../content_block';
@@ -59,7 +59,14 @@ export class PresetConfigurationPicker extends Component {
 				const dataElemRef = ref<HTMLButtonElement>();
 				buildsContainerRef.value!.appendChild(
 					<button className="saved-data-set-chip badge rounded-pill" ref={dataElemRef}>
-						<span className="saved-data-set-name" attributes={{ role: 'button' }} onclick={() => this.applyBuild(build)}>
+						<span
+							className="saved-data-set-name"
+							attributes={{ role: 'button' }}
+							onclick={() => {
+								const eventID = TypedEvent.nextEventID();
+
+								PresetConfigurationPicker.applyBuild(eventID, build, this.simUI);
+							}}>
 							{build.name}
 						</span>
 					</button>,
@@ -121,57 +128,60 @@ export class PresetConfigurationPicker extends Component {
 		});
 	}
 
-	private applyBuild({ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings }: PresetBuild) {
-		const eventID = TypedEvent.nextEventID();
+	static applyBuild(
+		eventID: number,
+		{ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings }: PresetBuild,
+		simUI: IndividualSimUI<any>,
+	) {
 		TypedEvent.freezeAllAndDo(() => {
-			if (gear) this.simUI.player.setGear(eventID, this.simUI.sim.db.lookupEquipmentSpec(gear.gear));
+			if (gear) simUI.player.setGear(eventID, simUI.sim.db.lookupEquipmentSpec(gear.gear));
 			if (itemSwap) {
-				this.simUI.player.itemSwapSettings.setItemSwapSettings(
+				simUI.player.itemSwapSettings.setItemSwapSettings(
 					eventID,
 					true,
-					this.simUI.sim.db.lookupItemSwap(itemSwap.itemSwap),
+					simUI.sim.db.lookupItemSwap(itemSwap.itemSwap),
 					Stats.fromProto(itemSwap.itemSwap.prepullBonusStats),
 				);
 			} else {
-				this.simUI.player.itemSwapSettings.setEnableItemSwap(eventID, false);
+				simUI.player.itemSwapSettings.setEnableItemSwap(eventID, false);
 			}
 			if (talents) {
-				this.simUI.player.setTalentsString(eventID, talents.data.talentsString);
-				if (talents.data.glyphs) this.simUI.player.setGlyphs(eventID, talents.data.glyphs);
+				simUI.player.setTalentsString(eventID, talents.data.talentsString);
+				if (talents.data.glyphs) simUI.player.setGlyphs(eventID, talents.data.glyphs);
 			}
 			if (rotationType) {
-				this.simUI.player.aplRotation.type = rotationType;
-				this.simUI.player.rotationChangeEmitter.emit(eventID);
+				simUI.player.aplRotation.type = rotationType;
+				simUI.player.rotationChangeEmitter.emit(eventID);
 			} else if (rotation?.rotation.rotation) {
-				this.simUI.player.setAplRotation(eventID, rotation.rotation.rotation);
+				simUI.player.setAplRotation(eventID, rotation.rotation.rotation);
 			}
-			if (epWeights) this.simUI.player.setEpWeights(eventID, epWeights.epWeights);
+			if (epWeights) simUI.player.setEpWeights(eventID, epWeights.epWeights);
 			if (settings) {
-				if (settings.race) this.simUI.player.setRace(eventID, settings.race);
-				if (settings.playerOptions?.profession1) this.simUI.player.setProfession1(eventID, settings.playerOptions.profession1);
-				if (settings.playerOptions?.profession2) this.simUI.player.setProfession2(eventID, settings.playerOptions.profession2);
-				if (settings.playerOptions?.distanceFromTarget) this.simUI.player.setDistanceFromTarget(eventID, settings.playerOptions.distanceFromTarget);
+				if (settings.race) simUI.player.setRace(eventID, settings.race);
+				if (settings.playerOptions?.profession1) simUI.player.setProfession1(eventID, settings.playerOptions.profession1);
+				if (settings.playerOptions?.profession2) simUI.player.setProfession2(eventID, settings.playerOptions.profession2);
+				if (settings.playerOptions?.distanceFromTarget) simUI.player.setDistanceFromTarget(eventID, settings.playerOptions.distanceFromTarget);
 				if (settings.playerOptions?.enableItemSwap !== undefined && settings.playerOptions?.itemSwap) {
-					this.simUI.player.itemSwapSettings.setItemSwapSettings(
+					simUI.player.itemSwapSettings.setItemSwapSettings(
 						eventID,
 						settings.playerOptions.enableItemSwap,
-						this.simUI.sim.db.lookupItemSwap(settings.playerOptions.itemSwap),
+						simUI.sim.db.lookupItemSwap(settings.playerOptions.itemSwap),
 						Stats.fromProto(settings.playerOptions.itemSwap.prepullBonusStats),
 					);
 				}
 				if (settings.specOptions) {
-					this.simUI.player.setSpecOptions(eventID, {
-						...this.simUI.player.getSpecOptions(),
+					simUI.player.setSpecOptions(eventID, {
+						...simUI.player.getSpecOptions(),
 						...settings.specOptions,
 					});
 				}
-				if (settings.buffs) this.simUI.player.setBuffs(eventID, settings.buffs);
-				if (settings.debuffs) this.simUI.sim.raid.setDebuffs(eventID, settings.debuffs);
+				if (settings.buffs) simUI.player.setBuffs(eventID, settings.buffs);
+				if (settings.debuffs) simUI.sim.raid.setDebuffs(eventID, settings.debuffs);
 			}
 			if (encounter) {
-				if (encounter.encounter) this.simUI.sim.encounter.fromProto(eventID, encounter.encounter);
-				if (encounter.healingModel) this.simUI.player.setHealingModel(eventID, encounter.healingModel);
-				if (encounter.tanks) this.simUI.sim.raid.setTanks(eventID, encounter.tanks);
+				if (encounter.encounter) simUI.sim.encounter.fromProto(eventID, encounter.encounter);
+				if (encounter.healingModel) simUI.player.setHealingModel(eventID, encounter.healingModel);
+				if (encounter.tanks) simUI.sim.raid.setTanks(eventID, encounter.tanks);
 			}
 		});
 	}
