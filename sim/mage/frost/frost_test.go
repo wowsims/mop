@@ -13,23 +13,25 @@ func init() {
 }
 
 func TestFrost(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassMage,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceOrc},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassMage,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-		GearSet: core.GetGearSet("../../../ui/mage/frost/gear_sets", "p1_bis"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/mage/frost/gear_sets", "p1_prebis_rich"),
+			GearSet: core.GetGearSet("../../../ui/mage/frost/gear_sets", "p1_bis"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/mage/frost/gear_sets", "p1_prebis_rich"),
+			},
+			Talents:         FrostTalents,
+			OtherTalentSets: core.GenerateTalentVariationsForRows(FrostTalents, FrostDefaultGlyphs, []int{4, 5}),
+			Glyphs:          FrostDefaultGlyphs,
+			Consumables:     DefaultConsumables,
+			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
+			Rotation:        core.GetAplRotation("../../../ui/mage/frost/apls", "frost"),
+
+			ItemFilter: ItemFilter,
 		},
-		Talents:         FrostTalents,
-		OtherTalentSets: core.GenerateTalentVariationsForRows(FrostTalents, FrostDefaultGlyphs, []int{4, 5}),
-		Glyphs:          FrostDefaultGlyphs,
-		Consumables:     DefaultConsumables,
-		SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
-		Rotation:        core.GetAplRotation("../../../ui/mage/frost/apls", "frost"),
-
-		ItemFilter: ItemFilter,
 	}))
 }
 

@@ -13,41 +13,45 @@ func init() {
 }
 
 func TestFrostMasterfrost(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassDeathKnight,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceWorgen},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassDeathKnight,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceWorgen},
 
-		GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p1.masterfrost"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "prebis"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p1.masterfrost"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "prebis"),
+			},
+			Talents:         DefaultTalents,
+			OtherTalentSets: OtherTalentSets,
+			Glyphs:          FrostDefaultGlyphs,
+			Consumables:     FullConsumesSpec,
+			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
+			Rotation:        core.GetAplRotation("../../../ui/death_knight/frost/apls", "masterfrost"),
+
+			ItemFilter: ItemFilterMasterfrost,
 		},
-		Talents:         DefaultTalents,
-		OtherTalentSets: OtherTalentSets,
-		Glyphs:          FrostDefaultGlyphs,
-		Consumables:     FullConsumesSpec,
-		SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
-		Rotation:        core.GetAplRotation("../../../ui/death_knight/frost/apls", "masterfrost"),
-
-		ItemFilter: ItemFilterMasterfrost,
 	}))
 }
 
 func TestFrostTwoHand(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassDeathKnight,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceWorgen},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassDeathKnight,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceWorgen},
 
-		GearSet:         core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p1.2h-obliterate"),
-		Talents:         DefaultTalents,
-		OtherTalentSets: OtherTalentSets,
-		Glyphs:          FrostDefaultGlyphs,
-		Consumables:     FullConsumesSpec,
-		SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
-		Rotation:        core.GetAplRotation("../../../ui/death_knight/frost/apls", "obliterate"),
+			GearSet:         core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p1.2h-obliterate"),
+			Talents:         DefaultTalents,
+			OtherTalentSets: OtherTalentSets,
+			Glyphs:          FrostDefaultGlyphs,
+			Consumables:     FullConsumesSpec,
+			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
+			Rotation:        core.GetAplRotation("../../../ui/death_knight/frost/apls", "obliterate"),
 
-		ItemFilter: ItemFilterTwoHand,
+			ItemFilter: ItemFilterTwoHand,
+		},
 	}))
 }
 

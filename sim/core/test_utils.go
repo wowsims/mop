@@ -8,6 +8,7 @@ import (
 
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var DefaultSimTestOptions = &proto.SimOptions{
@@ -282,4 +283,155 @@ func GenerateTalentVariationsForRows(baseTalents string, baseGlyphs *proto.Glyph
 	}
 
 	return combinations
+}
+
+func GetTestBuildFromJSON(class proto.Class, dir string, file string, itemFilter ItemFilter, epReferenceStat *proto.Stat, statsToWeigh *[]proto.Stat) CharacterSuiteConfig {
+	filePath := dir + "/" + file + ".build.json"
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Fatalf("failed to load gear json file: %s, %s", filePath, err)
+	}
+
+	simSettings := &proto.IndividualSimSettings{}
+	if err := protojson.Unmarshal(data, simSettings); err != nil {
+		panic(err)
+	}
+
+	config := CharacterSuiteConfig{
+		Class: class,
+		Race:  simSettings.Player.Race,
+
+		StartingDistance: simSettings.Player.DistanceFromTarget,
+		Talents:          simSettings.Player.TalentsString,
+		GearSet: GearSetCombo{
+			Label:   file,
+			GearSet: simSettings.Player.Equipment,
+		},
+		Rotation: RotationCombo{
+			Label:    file,
+			Rotation: simSettings.Player.Rotation,
+		},
+		SpecOptions: SpecOptionsCombo{
+			Label:       file,
+			SpecOptions: getPlayerSpecOptions(simSettings.Player),
+		},
+
+		ItemFilter: itemFilter,
+	}
+
+	if epReferenceStat != nil {
+		config.EPReferenceStat = *epReferenceStat
+	}
+	if statsToWeigh != nil {
+		config.StatsToWeigh = *statsToWeigh
+	}
+
+	return config
+}
+
+func getPlayerSpecOptions(player *proto.Player) interface{} {
+	if playerSpec, ok := player.Spec.(*proto.Player_BloodDeathKnight); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_FrostDeathKnight); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_UnholyDeathKnight); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_BalanceDruid); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_FeralDruid); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_GuardianDruid); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_RestorationDruid); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_BeastMasteryHunter); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_MarksmanshipHunter); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_SurvivalHunter); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_ArcaneMage); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_FireMage); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_FrostMage); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_BrewmasterMonk); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_MistweaverMonk); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_WindwalkerMonk); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_HolyPaladin); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_ProtectionPaladin); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_RetributionPaladin); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_DisciplinePriest); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_HolyPriest); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_ShadowPriest); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_AssassinationRogue); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_CombatRogue); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_SubtletyRogue); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_ElementalShaman); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_EnhancementShaman); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_RestorationShaman); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_AfflictionWarlock); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_DemonologyWarlock); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_DestructionWarlock); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_ArmsWarrior); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_FuryWarrior); ok {
+		return playerSpec
+	}
+	if playerSpec, ok := player.Spec.(*proto.Player_ProtectionWarrior); ok {
+		return playerSpec
+	}
+
+	panic("Unsupported spec provided to getPlayerSpecOptions. Please add a case for the spec.")
 }

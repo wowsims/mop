@@ -519,157 +519,162 @@ type CharacterSuiteConfig struct {
 	Cooldowns *proto.Cooldowns
 }
 
-func FullCharacterTestSuiteGenerator(config CharacterSuiteConfig) TestGenerator {
-	allRaces := append(config.OtherRaces, config.Race)
-	allGearSets := append(config.OtherGearSets, config.GearSet)
-	allTalentSets := append(config.OtherTalentSets, TalentsCombo{
-		Label:   "DefaultTalents",
-		Talents: config.Talents,
-		Glyphs:  config.Glyphs,
-	})
-	allSpecOptions := append(config.OtherSpecOptions, config.SpecOptions)
-	allRotations := append(config.OtherRotations, config.Rotation)
-	allItemSwapSets := append(config.OtherItemSwapSets, config.ItemSwapSet)
-	allStartingDistances := append(config.OtherStartingDistances, config.StartingDistance)
+// FullCharacterTestSuiteGenerator generates a full test suite for a character.
+// Also accepts JSON build config, Example:
+// core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/arms/builds", "default", ItemFilter, proto.Stat_StatStrength, nil)
+func FullCharacterTestSuiteGenerator(configs []CharacterSuiteConfig) []TestGenerator {
+	return MapSlice(configs, func(config CharacterSuiteConfig) TestGenerator {
+		allRaces := append(config.OtherRaces, config.Race)
+		allGearSets := append(config.OtherGearSets, config.GearSet)
+		allTalentSets := append(config.OtherTalentSets, TalentsCombo{
+			Label:   "DefaultTalents",
+			Talents: config.Talents,
+			Glyphs:  config.Glyphs,
+		})
+		allSpecOptions := append(config.OtherSpecOptions, config.SpecOptions)
+		allRotations := append(config.OtherRotations, config.Rotation)
+		allItemSwapSets := append(config.OtherItemSwapSets, config.ItemSwapSet)
+		allStartingDistances := append(config.OtherStartingDistances, config.StartingDistance)
 
-	defaultPlayer := WithSpec(
-		&proto.Player{
-			Class:         config.Class,
-			Race:          config.Race,
-			Equipment:     config.GearSet.GearSet,
-			Consumables:   config.Consumables,
-			Buffs:         FullIndividualBuffs,
-			TalentsString: config.Talents,
-			Glyphs:        config.Glyphs,
-			Profession1:   proto.Profession_Engineering,
-			Rotation:      config.Rotation.Rotation,
-			ItemSwap:      config.ItemSwapSet.ItemSwap,
-			Cooldowns:     config.Cooldowns,
+		defaultPlayer := WithSpec(
+			&proto.Player{
+				Class:         config.Class,
+				Race:          config.Race,
+				Equipment:     config.GearSet.GearSet,
+				Consumables:   config.Consumables,
+				Buffs:         FullIndividualBuffs,
+				TalentsString: config.Talents,
+				Glyphs:        config.Glyphs,
+				Profession1:   proto.Profession_Engineering,
+				Rotation:      config.Rotation.Rotation,
+				ItemSwap:      config.ItemSwapSet.ItemSwap,
+				Cooldowns:     config.Cooldowns,
 
-			InFrontOfTarget:    config.InFrontOfTarget,
-			DistanceFromTarget: config.StartingDistance,
-			ReactionTimeMs:     100,
-			ChannelClipDelayMs: 50,
-		},
-		config.SpecOptions.SpecOptions)
+				InFrontOfTarget:    config.InFrontOfTarget,
+				DistanceFromTarget: config.StartingDistance,
+				ReactionTimeMs:     100,
+				ChannelClipDelayMs: 50,
+			},
+			config.SpecOptions.SpecOptions)
 
-	defaultRaid := SinglePlayerRaidProto(defaultPlayer, FullPartyBuffs, FullRaidBuffs, FullDebuffs)
-	if config.IsTank {
-		defaultRaid.Tanks = append(defaultRaid.Tanks, &proto.UnitReference{Type: proto.UnitReference_Player, Index: 0})
-	}
-	if config.IsHealer {
-		defaultRaid.TargetDummies = 1
-	}
+		defaultRaid := SinglePlayerRaidProto(defaultPlayer, FullPartyBuffs, FullRaidBuffs, FullDebuffs)
+		if config.IsTank {
+			defaultRaid.Tanks = append(defaultRaid.Tanks, &proto.UnitReference{Type: proto.UnitReference_Player, Index: 0})
+		}
+		if config.IsHealer {
+			defaultRaid.TargetDummies = 1
+		}
 
-	generator := &CombinedTestGenerator{
-		subgenerators: []SubGenerator{
-			{
-				name: "CharacterStats",
-				generator: &SingleCharacterStatsTestGenerator{
-					Name: "Default",
-					Request: &proto.ComputeStatsRequest{
-						Raid: defaultRaid,
+		generator := &CombinedTestGenerator{
+			subgenerators: []SubGenerator{
+				{
+					name: "CharacterStats",
+					generator: &SingleCharacterStatsTestGenerator{
+						Name: "Default",
+						Request: &proto.ComputeStatsRequest{
+							Raid: defaultRaid,
+						},
+					},
+				},
+				{
+					name: "Settings",
+					generator: &SettingsCombos{
+						Class:        config.Class,
+						Races:        allRaces,
+						GearSets:     allGearSets,
+						TalentSets:   allTalentSets,
+						SpecOptions:  allSpecOptions,
+						Rotations:    allRotations,
+						ItemSwapSets: allItemSwapSets,
+						Buffs: []BuffsCombo{
+							{
+								Label: "NoBuffs",
+							},
+							{
+								Label:       "FullBuffs",
+								Raid:        FullRaidBuffs,
+								Party:       FullPartyBuffs,
+								Debuffs:     FullDebuffs,
+								Player:      FullIndividualBuffs,
+								Consumables: config.Consumables,
+							},
+						},
+						IsHealer:          config.IsHealer,
+						IsTank:            config.IsTank,
+						Encounters:        MakeDefaultEncounterCombos(),
+						SimOptions:        DefaultSimTestOptions,
+						Cooldowns:         config.Cooldowns,
+						StartingDistances: allStartingDistances,
+					},
+				},
+				{
+					name: "AllItems",
+					generator: &ItemsTestGenerator{
+						Player:     defaultPlayer,
+						RaidBuffs:  FullRaidBuffs,
+						PartyBuffs: FullPartyBuffs,
+						Debuffs:    FullDebuffs,
+						Encounter:  MakeSingleTargetEncounter(0),
+						SimOptions: DefaultSimTestOptions,
+						ItemFilter: config.ItemFilter,
+						IsHealer:   config.IsHealer,
+						IsTank:     config.IsTank,
 					},
 				},
 			},
-			{
-				name: "Settings",
-				generator: &SettingsCombos{
-					Class:        config.Class,
-					Races:        allRaces,
-					GearSets:     allGearSets,
-					TalentSets:   allTalentSets,
-					SpecOptions:  allSpecOptions,
-					Rotations:    allRotations,
-					ItemSwapSets: allItemSwapSets,
-					Buffs: []BuffsCombo{
-						{
-							Label: "NoBuffs",
-						},
-						{
-							Label:       "FullBuffs",
-							Raid:        FullRaidBuffs,
-							Party:       FullPartyBuffs,
-							Debuffs:     FullDebuffs,
-							Player:      FullIndividualBuffs,
-							Consumables: config.Consumables,
-						},
-					},
-					IsHealer:          config.IsHealer,
-					IsTank:            config.IsTank,
-					Encounters:        MakeDefaultEncounterCombos(),
-					SimOptions:        DefaultSimTestOptions,
-					Cooldowns:         config.Cooldowns,
-					StartingDistances: allStartingDistances,
-				},
-			},
-			{
-				name: "AllItems",
-				generator: &ItemsTestGenerator{
-					Player:     defaultPlayer,
-					RaidBuffs:  FullRaidBuffs,
-					PartyBuffs: FullPartyBuffs,
-					Debuffs:    FullDebuffs,
+		}
+
+		newRaid := googleProto.Clone(defaultRaid).(*proto.Raid)
+		newRaid.Parties[0].Players[0].InFrontOfTarget = !newRaid.Parties[0].Players[0].InFrontOfTarget
+
+		generator.subgenerators = append(generator.subgenerators, SubGenerator{
+			name: "SwitchInFrontOfTarget",
+			generator: &SingleDpsTestGenerator{
+				Name: "Default",
+				Request: &proto.RaidSimRequest{
+					Raid:       newRaid,
 					Encounter:  MakeSingleTargetEncounter(0),
 					SimOptions: DefaultSimTestOptions,
-					ItemFilter: config.ItemFilter,
-					IsHealer:   config.IsHealer,
-					IsTank:     config.IsTank,
-				},
-			},
-		},
-	}
-
-	newRaid := googleProto.Clone(defaultRaid).(*proto.Raid)
-	newRaid.Parties[0].Players[0].InFrontOfTarget = !newRaid.Parties[0].Players[0].InFrontOfTarget
-
-	generator.subgenerators = append(generator.subgenerators, SubGenerator{
-		name: "SwitchInFrontOfTarget",
-		generator: &SingleDpsTestGenerator{
-			Name: "Default",
-			Request: &proto.RaidSimRequest{
-				Raid:       newRaid,
-				Encounter:  MakeSingleTargetEncounter(0),
-				SimOptions: DefaultSimTestOptions,
-			},
-		},
-	})
-
-	if len(config.StatsToWeigh) > 0 {
-		generator.subgenerators = append(generator.subgenerators, SubGenerator{
-			name: "StatWeights",
-			generator: &SingleStatWeightsTestGenerator{
-				Name: "Default",
-				Request: &proto.StatWeightsRequest{
-					Player:     defaultPlayer,
-					RaidBuffs:  FullRaidBuffs,
-					PartyBuffs: FullPartyBuffs,
-					Debuffs:    FullDebuffs,
-					Encounter:  MakeSingleTargetEncounter(0),
-					SimOptions: StatWeightsDefaultSimTestOptions,
-					Tanks:      defaultRaid.Tanks,
-
-					StatsToWeigh:       config.StatsToWeigh,
-					PseudoStatsToWeigh: config.PseudoStatsToWeigh,
-					EpReferenceStat:    config.EPReferenceStat,
 				},
 			},
 		})
-	}
 
-	// Add this separately, so it's always last, which makes it easy to find in the
-	// displayed test results.
-	generator.subgenerators = append(generator.subgenerators, SubGenerator{
-		name: "Average",
-		generator: &SingleDpsTestGenerator{
-			Name: "Default",
-			Request: &proto.RaidSimRequest{
-				Raid:       defaultRaid,
-				Encounter:  MakeSingleTargetEncounter(5),
-				SimOptions: AverageDefaultSimTestOptions,
+		if len(config.StatsToWeigh) > 0 {
+			generator.subgenerators = append(generator.subgenerators, SubGenerator{
+				name: "StatWeights",
+				generator: &SingleStatWeightsTestGenerator{
+					Name: "Default",
+					Request: &proto.StatWeightsRequest{
+						Player:     defaultPlayer,
+						RaidBuffs:  FullRaidBuffs,
+						PartyBuffs: FullPartyBuffs,
+						Debuffs:    FullDebuffs,
+						Encounter:  MakeSingleTargetEncounter(0),
+						SimOptions: StatWeightsDefaultSimTestOptions,
+						Tanks:      defaultRaid.Tanks,
+
+						StatsToWeigh:       config.StatsToWeigh,
+						PseudoStatsToWeigh: config.PseudoStatsToWeigh,
+						EpReferenceStat:    config.EPReferenceStat,
+					},
+				},
+			})
+		}
+
+		// Add this separately, so it's always last, which makes it easy to find in the
+		// displayed test results.
+		generator.subgenerators = append(generator.subgenerators, SubGenerator{
+			name: "Average",
+			generator: &SingleDpsTestGenerator{
+				Name: "Default",
+				Request: &proto.RaidSimRequest{
+					Raid:       defaultRaid,
+					Encounter:  MakeSingleTargetEncounter(5),
+					SimOptions: AverageDefaultSimTestOptions,
+				},
 			},
-		},
-	})
+		})
 
-	return generator
+		return generator
+	})
 }

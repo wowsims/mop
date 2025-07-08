@@ -1,6 +1,6 @@
 import * as Mechanics from '../../core/constants/mechanics.js';
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/proto/common';
 import { DruidMajorGlyph, GuardianDruid_Options as DruidOptions, GuardianDruid_Rotation as DruidRotation } from '../../core/proto/druid.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 // Preset options for this spec.
@@ -112,8 +112,7 @@ export const InfectedWoundsBuild = {
 	}),
 };
 
-export const DefaultOptions = DruidOptions.create({
-});
+export const DefaultOptions = DruidOptions.create({});
 
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 76087,

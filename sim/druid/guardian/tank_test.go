@@ -14,36 +14,38 @@ func init() {
 }
 
 func TestGuardian(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class: proto.Class_ClassDruid,
-		Race:  proto.Race_RaceWorgen,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class: proto.Class_ClassDruid,
+			Race:  proto.Race_RaceWorgen,
 
-		GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "preraid"),
+			GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "preraid"),
 
-		Talents:         StandardTalents,
-		Glyphs:          StandardGlyphs,
-		OtherTalentSets: []core.TalentsCombo{
-			{Label: "FoN-NV", Talents: "010303", Glyphs: StandardGlyphs},
-			{Label: "Incarn-DoC", Talents: "010202", Glyphs: StandardGlyphs},
-		},
-
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsDefault},
-		Rotation:    core.GetAplRotation("../../../ui/druid/guardian/apls", "default"),
-
-		IsTank:          true,
-		InFrontOfTarget: true,
-
-		ItemFilter: core.ItemFilter{
-			WeaponTypes: []proto.WeaponType{
-				proto.WeaponType_WeaponTypeDagger,
-				proto.WeaponType_WeaponTypeMace,
-				proto.WeaponType_WeaponTypeOffHand,
-				proto.WeaponType_WeaponTypeStaff,
-				proto.WeaponType_WeaponTypePolearm,
+			Talents: StandardTalents,
+			Glyphs:  StandardGlyphs,
+			OtherTalentSets: []core.TalentsCombo{
+				{Label: "FoN-NV", Talents: "010303", Glyphs: StandardGlyphs},
+				{Label: "Incarn-DoC", Talents: "010202", Glyphs: StandardGlyphs},
 			},
-			ArmorType:         proto.ArmorType_ArmorTypeLeather,
-			RangedWeaponTypes: []proto.RangedWeaponType{},
+
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsDefault},
+			Rotation:    core.GetAplRotation("../../../ui/druid/guardian/apls", "default"),
+
+			IsTank:          true,
+			InFrontOfTarget: true,
+
+			ItemFilter: core.ItemFilter{
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeDagger,
+					proto.WeaponType_WeaponTypeMace,
+					proto.WeaponType_WeaponTypeOffHand,
+					proto.WeaponType_WeaponTypeStaff,
+					proto.WeaponType_WeaponTypePolearm,
+				},
+				ArmorType:         proto.ArmorType_ArmorTypeLeather,
+				RangedWeaponTypes: []proto.RangedWeaponType{},
+			},
 		},
 	}))
 }

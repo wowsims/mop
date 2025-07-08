@@ -13,21 +13,23 @@ func init() {
 }
 
 func TestBalance(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class: proto.Class_ClassDruid,
-		Race:  proto.Race_RaceNightElf,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class: proto.Class_ClassDruid,
+			Race:  proto.Race_RaceNightElf,
 
-		GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "preraid"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/druid/balance/gear_sets", "t14"),
+			GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "preraid"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/druid/balance/gear_sets", "t14"),
+			},
+			Talents:        StandardTalents,
+			Glyphs:         StandardGlyphs,
+			Consumables:    FullConsumesSpec,
+			SpecOptions:    core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsBalance},
+			Rotation:       core.GetAplRotation("../../../ui/druid/balance/apls", "standard"),
+			OtherRotations: []core.RotationCombo{},
+			ItemFilter:     ItemFilter,
 		},
-		Talents:        StandardTalents,
-		Glyphs:         StandardGlyphs,
-		Consumables:    FullConsumesSpec,
-		SpecOptions:    core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsBalance},
-		Rotation:       core.GetAplRotation("../../../ui/druid/balance/apls", "standard"),
-		OtherRotations: []core.RotationCombo{},
-		ItemFilter:     ItemFilter,
 	}))
 }
 
