@@ -23,11 +23,12 @@ func TestFire(t *testing.T) {
 		OtherGearSets: []core.GearSetCombo{
 			core.GetGearSet("../../../ui/mage/fire/gear_sets", "p1_prebis"),
 		},
-		Talents:     FireTalents,
-		Glyphs:      FireGlyphs,
-		Consumables: FullFireConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Fire", SpecOptions: PlayerOptionsFire},
-		Rotation:    core.GetAplRotation("../../../ui/mage/fire/apls", "fire"),
+		Talents:         FireTalents,
+		OtherTalentSets: core.GenerateTalentVariationsForRows(FireTalents, FireGlyphs, []int{4, 5}),
+		Glyphs:          FireGlyphs,
+		Consumables:     FullFireConsumesSpec,
+		SpecOptions:     core.SpecOptionsCombo{Label: "Fire", SpecOptions: PlayerOptionsFire},
+		Rotation:        core.GetAplRotation("../../../ui/mage/fire/apls", "fire"),
 
 		ItemFilter: ItemFilter,
 	}))

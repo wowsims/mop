@@ -30,6 +30,11 @@ func (druid *Druid) registerWrathSpell() {
 				GCD:      core.GCDDefault,
 				CastTime: time.Millisecond * 2000,
 			},
+
+			ModifyCast: func(sim *core.Simulation, spell *core.Spell, curCast *core.Cast) {
+				hastedCastTime := spell.Unit.ApplyCastSpeedForSpell(curCast.CastTime, spell).Round(time.Millisecond)
+				spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime + hastedCastTime)
+			},
 		},
 
 		BonusCoefficient: WrathBonusCoeff,
