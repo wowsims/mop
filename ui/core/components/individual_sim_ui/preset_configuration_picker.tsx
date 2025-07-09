@@ -6,6 +6,7 @@ import { PresetBuild } from '../../preset_utils';
 import { APLRotation, APLRotation_Type } from '../../proto/apl';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '../../proto/common';
 import { SavedTalents } from '../../proto/ui';
+import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import { Stats } from '../../proto_utils/stats';
 import { SpecOptions, SpecType } from '../../proto_utils/utils';
 import { TypedEvent } from '../../typed_event';
@@ -201,18 +202,9 @@ export class PresetConfigurationPicker extends Component {
 		let hasRotation = true;
 		if (rotationType) {
 			hasRotation = rotationType === this.simUI.player.getRotationType();
-		} else if (rotation) {
+		} else if (rotation?.rotation.rotation) {
 			const activeRotation = this.simUI.player.getResolvedAplRotation();
-			// Ensure that the auto rotation can be matched with a preset
-			if (activeRotation.type === APLRotation_Type.TypeAuto) activeRotation.type = APLRotation_Type.TypeAPL;
-			if (rotation.rotation?.rotation?.type === APLRotation_Type.TypeSimple && rotation.rotation.rotation?.simple?.specRotationJson) {
-				hasRotation = this.simUI.player.specTypeFunctions.rotationEquals(
-					this.simUI.player.specTypeFunctions.rotationFromJson(JSON.parse(rotation.rotation.rotation.simple.specRotationJson)),
-					this.simUI.player.getSimpleRotation(),
-				);
-			} else {
-				hasRotation = APLRotation.equals(rotation.rotation.rotation, activeRotation);
-			}
+			hasRotation = isEqualAPLRotation(this.simUI.player, activeRotation, rotation.rotation.rotation);
 		}
 		const hasEpWeights = epWeights ? this.simUI.player.getEpWeights().equals(epWeights.epWeights) : true;
 		const hasEncounter = encounter?.encounter ? Encounter.equals(encounter.encounter, this.simUI.sim.encounter.toProto()) : true;

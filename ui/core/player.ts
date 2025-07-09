@@ -843,7 +843,7 @@ export class Player<SpecType extends Spec> {
 	setAplRotation(eventID: EventID, newRotation: APLRotation) {
 		if (APLRotation.equals(newRotation, this.aplRotation)) return;
 
-		this.aplRotation = omitDeep(APLRotation.clone(newRotation), ['uuid']);
+		this.aplRotation = APLRotation.clone(newRotation);
 		this.rotationChangeEmitter.emit(eventID);
 	}
 
@@ -915,7 +915,7 @@ export class Player<SpecType extends Spec> {
 			rot.type = APLRotationType.TypeSimple;
 			return rot;
 		} else {
-			return this.aplRotation;
+			return omitDeep(this.aplRotation, ['uuid']);
 		}
 	}
 
