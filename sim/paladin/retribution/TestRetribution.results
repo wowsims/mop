@@ -670,8 +670,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 182658.23519
-  tps: 171303.57758
+  dps: 158590.63608
+  tps: 149393.12138
  }
 }
 dps_results: {
@@ -1699,8 +1699,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 147343.45799
-  tps: 139140.27857
+  dps: 146701.99432
+  tps: 138556.42437
  }
 }
 dps_results: {
@@ -2322,8 +2322,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 146797.82784
-  tps: 138683.06974
+  dps: 146646.91004
+  tps: 138532.15194
  }
 }
 dps_results: {
