@@ -68,7 +68,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		// Default equipped gear.
 		gear: Presets.PRERAID_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.SURVIVAL_EP_PRESET.epWeights,
+		epWeights: Presets.BALANCED_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			return new Stats().withStat(Stat.StatExpertiseRating, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION).withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5).withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
@@ -80,20 +80,25 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		rotationType: APLRotationType.TypeAPL,
 		simpleRotation: Presets.DefaultSimpleRotation,
 		// Default talents.
-		talents: Presets.StandardTalents.data,
+		talents: Presets.DefensiveTalents.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns()
+			...defaultRaidBuffMajorDamageCooldowns(),
+			trueshotAura: true,
+			unholyAura: true,
+			leaderOfThePack: true,
+			graceOfAir: true,
+			markOfTheWild: true,
+			powerWordFortitude: true,
+			bloodlust: true,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({
-			// ebonPlaguebringer: true,
-			// criticalMass: true,
-			// bloodFrenzy: true,
-			// frostFever: true,
+			physicalVulnerability: true,
+			lightningBreath: true,
 		}),
 	},
 
@@ -126,13 +131,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 	presets: {
 		epWeights: [Presets.SURVIVAL_EP_PRESET, Presets.BALANCED_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.StandardTalents, Presets.InfectedWoundsBuild],
+		talents: [Presets.DefensiveTalents, Presets.OffensiveTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_HOTW],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
+		gear: [Presets.PRERAID_PRESET],
 		builds: [
-			//Presets.PRESET_BUILD_BOSS_DUMMY,
+			Presets.PRESET_BUILD_GARAJAL,
 		],
 	},
 
@@ -219,7 +224,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 	raidSimPresets: [
 		{
 			spec: Spec.SpecGuardianDruid,
-			talents: Presets.StandardTalents.data,
+			talents: Presets.DefensiveTalents.data,
 			specOptions: Presets.DefaultOptions,
 			consumables: Presets.DefaultConsumables,
 			defaultFactionRaces: {

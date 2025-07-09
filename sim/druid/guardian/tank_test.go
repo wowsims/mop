@@ -79,7 +79,10 @@ func TestGuardian(t *testing.T) {
 // }
 
 var StandardTalents = "010101"
-var StandardGlyphs = &proto.Glyphs{}
+var StandardGlyphs = &proto.Glyphs{
+	Major1: int32(proto.DruidMajorGlyph_GlyphOfMightOfUrsoc),
+	Major2: int32(proto.DruidMajorGlyph_GlyphOfMaul),
+}
 
 var PlayerOptionsDefault = &proto.Player_GuardianDruid{
 	GuardianDruid: &proto.GuardianDruid{
@@ -89,7 +92,7 @@ var PlayerOptionsDefault = &proto.Player_GuardianDruid{
 var FullConsumesSpec = &proto.ConsumesSpec{
 	FlaskId:    76087,
 	FoodId:     74656,
-	PotId:      76089,
-	PrepotId:   76089,
+	PotId:      76090,
+	PrepotId:   76090,
 	ConjuredId: 5512, // Conjured Healthstone
 }
