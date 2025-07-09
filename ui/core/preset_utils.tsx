@@ -206,22 +206,12 @@ const makePresetRotationHelper = (name: string, rotation: SavedRotation, options
 
 export const makePresetEncounter = (
 	name: string,
-	encounter?: EncounterProto | string,
+	encounter?: EncounterProto,
 	healingModel?: HealingModel,
 	tanks?: UnitReference[],
 	targetDummies?: number,
 	options?: PresetEncounterOptions,
 ): PresetEncounter => {
-	if (typeof encounter === 'string') {
-		const parsedUrl = IndividualLinkImporter.tryParseUrlLocation(new URL(encounter));
-		const settings = parsedUrl?.settings;
-		if (settings?.encounter) Encounter.updateProtoVersion(settings.encounter);
-		encounter = settings?.encounter;
-		healingModel = settings?.player?.healingModel;
-		targetDummies = settings?.targetDummies;
-		tanks = settings?.tanks;
-	}
-
 	return {
 		name,
 		encounter,
