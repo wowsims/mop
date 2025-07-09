@@ -2273,8 +2273,8 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 112422.15098
-  tps: 78717.51159
+  dps: 101086.61666
+  tps: 70803.77921
  }
 }
 dps_results: {

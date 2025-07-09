@@ -173,8 +173,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 138138.55129
-  tps: 136022.56809
+  dps: 138137.99484
+  tps: 136022.01164
  }
 }
 dps_results: {
@@ -369,8 +369,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 180439.03169
-  tps: 177610.69697
+  dps: 157170.23069
+  tps: 154466.89292
  }
 }
 dps_results: {
