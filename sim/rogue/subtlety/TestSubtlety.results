@@ -306,8 +306,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 111096.33918
-  tps: 78311.32981
+  dps: 90487.73862
+  tps: 63702.22873
  }
 }
 dps_results: {

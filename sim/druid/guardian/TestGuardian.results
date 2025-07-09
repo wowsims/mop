@@ -843,10 +843,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 101729.19909
-  tps: 676794.06882
-  dtps: 32338.60773
-  hps: 12497.82908
+  dps: 99009.86064
+  tps: 659438.5624
+  dtps: 32335.45581
+  hps: 12509.53524
  }
 }
 dps_results: {
@@ -2166,10 +2166,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 114547.91135
-  tps: 760666.88947
-  dtps: 28266.67689
-  hps: 13481.22887
+  dps: 103174.88868
+  tps: 686847.48204
+  dtps: 31059.84267
+  hps: 12747.07915
  }
 }
 dps_results: {
@@ -2922,10 +2922,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 98391.49282
-  tps: 654395.5473
-  dtps: 32422.21084
-  hps: 13451.41604
+  dps: 98200.47248
+  tps: 654153.13813
+  dtps: 32343.88827
+  hps: 12712.49842
  }
 }
 dps_results: {
