@@ -298,25 +298,58 @@ func GetTestBuildFromJSON(class proto.Class, dir string, file string, itemFilter
 	}
 
 	config := CharacterSuiteConfig{
-		Class: class,
-		Race:  simSettings.Player.Race,
-
-		StartingDistance: simSettings.Player.DistanceFromTarget,
-		Talents:          simSettings.Player.TalentsString,
+		Class:       class,
+		Race:        simSettings.Player.Race,
+		Profession1: simSettings.Player.Profession1,
+		Profession2: simSettings.Player.Profession2,
 		GearSet: GearSetCombo{
 			Label:   file,
 			GearSet: simSettings.Player.Equipment,
-		},
-		Rotation: RotationCombo{
-			Label:    file,
-			Rotation: simSettings.Player.Rotation,
 		},
 		SpecOptions: SpecOptionsCombo{
 			Label:       file,
 			SpecOptions: getPlayerSpecOptions(simSettings.Player),
 		},
+		Talents: simSettings.Player.TalentsString,
+		Glyphs:  simSettings.Player.Glyphs,
+		Rotation: RotationCombo{
+			Label:    file,
+			Rotation: simSettings.Player.Rotation,
+		},
+		Encounter: EncounterCombo{
+			Label:     file,
+			Encounter: simSettings.Encounter,
+		},
+		ItemSwapSet: ItemSwapSetCombo{
+			Label:    file,
+			ItemSwap: simSettings.Player.ItemSwap,
+		},
+		StartingDistance: simSettings.Player.DistanceFromTarget,
+
+		Consumables:     simSettings.Player.Consumables,
+		IndividualBuffs: simSettings.Player.Buffs,
+		PartyBuffs:      simSettings.PartyBuffs,
+		RaidBuffs:       simSettings.RaidBuffs,
+		Debuffs:         simSettings.Debuffs,
+		Cooldowns:       simSettings.Player.Cooldowns,
+
+		InFrontOfTarget: simSettings.Player.InFrontOfTarget,
+		TargetDummies:   simSettings.TargetDummies,
+		HealingModel:    simSettings.Player.HealingModel,
 
 		ItemFilter: itemFilter,
+	}
+
+	if simSettings.Tanks != nil {
+		config.Tanks = simSettings.Tanks
+
+		// Check if any of the tanks is the player.
+		for _, tank := range simSettings.Tanks {
+			if tank.Type == proto.UnitReference_Player {
+				config.IsTank = true
+				break
+			}
+		}
 	}
 
 	if epReferenceStat != nil {

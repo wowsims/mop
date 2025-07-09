@@ -15,6 +15,7 @@ func init() {
 
 func TestGuardian(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class: proto.Class_ClassDruid,
 			Race:  proto.Race_RaceWorgen,
@@ -35,17 +36,7 @@ func TestGuardian(t *testing.T) {
 			IsTank:          true,
 			InFrontOfTarget: true,
 
-			ItemFilter: core.ItemFilter{
-				WeaponTypes: []proto.WeaponType{
-					proto.WeaponType_WeaponTypeDagger,
-					proto.WeaponType_WeaponTypeMace,
-					proto.WeaponType_WeaponTypeOffHand,
-					proto.WeaponType_WeaponTypeStaff,
-					proto.WeaponType_WeaponTypePolearm,
-				},
-				ArmorType:         proto.ArmorType_ArmorTypeLeather,
-				RangedWeaponTypes: []proto.RangedWeaponType{},
-			},
+			ItemFilter: ItemFilter,
 		},
 	}))
 }
@@ -77,6 +68,18 @@ func TestGuardian(t *testing.T) {
 //
 // 	core.RaidBenchmark(b, rsr)
 // }
+
+var ItemFilter = core.ItemFilter{
+	WeaponTypes: []proto.WeaponType{
+		proto.WeaponType_WeaponTypeDagger,
+		proto.WeaponType_WeaponTypeMace,
+		proto.WeaponType_WeaponTypeOffHand,
+		proto.WeaponType_WeaponTypeStaff,
+		proto.WeaponType_WeaponTypePolearm,
+	},
+	ArmorType:         proto.ArmorType_ArmorTypeLeather,
+	RangedWeaponTypes: []proto.RangedWeaponType{},
+}
 
 var StandardTalents = "010101"
 var StandardGlyphs = &proto.Glyphs{

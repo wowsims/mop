@@ -28,8 +28,8 @@ export const DefaultSimpleRotation = DruidRotation.create({
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import OffensiveHotwApl from './apls/offensiveHotw.apl.json';
-import DefaultBuild from './builds/garajal_default.json';
-import GarajalBuild from './builds/garajal_encounter_only.json';
+import DefaultBuild from './builds/garajal_default.build.json';
+import GarajalBuild from './builds/garajal_encounter_only.build.json';
 export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal Default", DefaultApl);
 export const ROTATION_HOTW = PresetUtils.makePresetAPLRotation("Gara'jal Offensive HotW", OffensiveHotwApl);
 
