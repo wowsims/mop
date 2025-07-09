@@ -85,15 +85,20 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns()
+			...defaultRaidBuffMajorDamageCooldowns(),
+			trueshotAura: true,
+			unholyAura: true,
+			leaderOfThePack: true,
+			graceOfAir: true,
+			markOfTheWild: true,
+			powerWordFortitude: true,
+			bloodlust: true,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({
-			// ebonPlaguebringer: true,
-			// criticalMass: true,
-			// bloodFrenzy: true,
-			// frostFever: true,
+			physicalVulnerability: true,
+			lightningBreath: true,
 		}),
 	},
 
@@ -132,7 +137,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_PRESET],
 		builds: [
-			//Presets.PRESET_BUILD_BOSS_DUMMY,
+			Presets.PRESET_BUILD_GARAJAL,
 		],
 	},
 
