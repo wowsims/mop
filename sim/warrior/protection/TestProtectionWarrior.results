@@ -209,9 +209,9 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 120459.71003
-  tps: 843225.22857
-  dtps: 50743.85035
+  dps: 114446.64772
+  tps: 801133.80074
+  dtps: 53339.32132
  }
 }
 dps_results: {
@@ -370,9 +370,9 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 113292.20898
-  tps: 793052.91287
-  dtps: 54693.21825
+  dps: 112926.19242
+  tps: 790490.78862
+  dtps: 54329.44108
  }
 }
 dps_results: {
