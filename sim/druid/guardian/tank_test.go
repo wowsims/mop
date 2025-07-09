@@ -6,11 +6,13 @@ import (
 	"github.com/wowsims/mop/sim/common"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/encounters/msv"
 )
 
 func init() {
 	RegisterGuardianDruid()
 	common.RegisterAllEffects()
+	msv.Register()
 }
 
 func TestGuardian(t *testing.T) {
