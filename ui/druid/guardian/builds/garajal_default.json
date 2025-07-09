@@ -1,0 +1,213 @@
+{
+  "raidBuffs": {
+    "trueshotAura": true,
+    "unholyAura": true,
+    "leaderOfThePack": true,
+    "graceOfAir": true,
+    "markOfTheWild": true,
+    "powerWordFortitude": true,
+    "bloodlust": true,
+    "stormlashTotemCount": 4,
+    "skullBannerCount": 2
+  },
+  "debuffs": {
+    "physicalVulnerability": true,
+    "lightningBreath": true
+  },
+  "tanks": [
+    {
+      "type": "Player"
+    }
+  ],
+  "partyBuffs": {
+  },
+  "player": {
+    "name": "Player",
+    "race": "RaceWorgen",
+    "class": "ClassDruid",
+    "equipment": {
+      "items": [
+        {"id":77534,"gems":[76895,77545,77543]},
+        {"id":81564},
+        {"id":84916,"enchant":4805,"gems":[76659],"reforging":152},
+        {"id":90586,"enchant":4422,"reforging":139},
+        {"id":85823,"enchant":4420,"gems":[76659,76659],"reforging":165},
+        {"id":81090,"enchant":4416,"gems":[0],"reforging":152},
+        {"id":82858,"enchant":4869,"gems":[0],"reforging":153,"tinker":4898},
+        {"id":89060,"gems":[76681,76693],"reforging":165},
+        {"id":84871,"enchant":4824,"gems":[76693,76693],"reforging":153},
+        {"id":81688,"enchant":4428,"gems":[76659],"reforging":168},
+        {"id":81128,"reforging":144},
+        {"id":90584,"reforging":152},
+        {"id":81267,"reforging":146},
+        {"id":79329},
+        {"id":81576,"enchant":4444,"reforging":153},
+        {}
+      ]
+    },
+    "consumables": {
+      "prepotId": 76090,
+      "potId": 76090,
+      "flaskId": 76087,
+      "foodId": 74656,
+      "conjuredId": 5512
+    },
+    "bonusStats": {
+      "apiVersion": 1,
+      "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    },
+    "itemSwap": {
+      "items": [
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        }
+      ],
+      "prepullBonusStats": {
+        "apiVersion": 1,
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+      }
+    },
+    "buffs": {
+      "devotionAuraCount": 1,
+      "vigilanceCount": 1
+    },
+    "guardianDruid": {
+      "options": {
+      }
+    },
+    "talentsString": "010101",
+    "glyphs": {
+      "major1": 45603,
+      "major2": 40897
+    },
+    "profession1": "Engineering",
+    "cooldowns": {
+      "hpPercentForDefensives": 0.3
+    },
+    "rotation": {
+      "type": "TypeAPL",
+      "simple": {
+        "cooldowns": {
+          "hpPercentForDefensives": 0.3
+        }
+      },
+      "priorityList": [
+        {"action":{"condition":{"not":{"val":{"auraIsActive":{"auraId":{"spellId":132402}}}}},"castSpell":{"spellId":{"spellId":62606}}}},
+        {"action":{"condition":{"cmp":{"op":"OpGe","lhs":{"currentTime":{}},"rhs":{"const":{"val":"15s"}}}},"castSpell":{"spellId":{"spellId":22812}}}},
+        {"action":{"condition":{"not":{"val":{"auraIsActive":{"auraId":{"spellId":132402}}}}},"castSpell":{"spellId":{"spellId":5229}}}},
+        {"action":{"schedule":{"schedule":"269s","innerAction":{"castSpell":{"spellId":{"spellId":61336}}}}}},
+        {"action":{"schedule":{"schedule":"281s","innerAction":{"castSpell":{"spellId":{"spellId":31821,"tag":-1}}}}}},
+        {"action":{"schedule":{"schedule":"299s","innerAction":{"castSpell":{"spellId":{"spellId":114030,"tag":-1}}}}}},
+        {"action":{"schedule":{"schedule":"41s, 256s","innerAction":{"castSpell":{"spellId":{"spellId":102558}}}}}},
+        {"action":{"schedule":{"schedule":"26s, 256s","innerAction":{"castSpell":{"spellId":{"spellId":108293}}}}}},
+        {"action":{"autocastOtherCooldowns":{}}},
+        {"action":{"condition":{"not":{"val":{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":115798}}}}},"castSpell":{"spellId":{"spellId":77758},"target":{"type":"Target"}}}},
+        {"action":{"condition":{"not":{"val":{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":113746}}}}},"castSpell":{"spellId":{"spellId":770},"target":{"type":"Target"}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"40%"}}}},{"cmp":{"op":"OpEq","lhs":{"spellNumCharges":{"spellId":{"spellId":62606}}},"rhs":{"const":{"val":"0"}}}}]}},"castSpell":{"spellId":{"spellId":22842}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":33878}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":106952}}}},
+        {"action":{"condition":{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"90%"}}}},"castFriendlySpell":{"spellId":{"spellId":102351},"target":{"type":"Player"}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":108293}}},{"auraIsActiveWithReactionTime":{"auraId":{"spellId":108293}}},{"auraIsInactiveWithReactionTime":{"auraId":{"spellId":774}}}]}},"castFriendlySpell":{"spellId":{"spellId":774},"target":{"type":"Player"}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":145162}}},{"auraIsActiveWithReactionTime":{"auraId":{"spellId":145162}}},{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"70%"}}}}]}},"castFriendlySpell":{"spellId":{"spellId":5185},"target":{"type":"Player"}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":33745}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":77758}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":770}}}},
+        {"action":{"condition":{"cmp":{"op":"OpGt","lhs":{"currentRage":{}},"rhs":{"const":{"val":"90"}}}},"castSpell":{"spellId":{"spellId":6807}}}}
+      ]
+    },
+    "reactionTimeMs": 100,
+    "inFrontOfTarget": true,
+    "healingModel": {
+      "hps": 37500,
+      "cadenceSeconds": 0.45,
+      "cadenceVariation": 2.31,
+      "absorbFrac": 0.18,
+      "burstWindow": 6
+    }
+  },
+  "encounter": {
+    "apiVersion": 1,
+    "duration": 306,
+    "durationVariation": 15,
+    "executeProportion20": 0.2,
+    "executeProportion25": 0.25,
+    "executeProportion35": 0.35,
+    "executeProportion90": 0.9,
+    "targets": [
+      {
+        "id": 60143,
+        "name": "Gara'jal the Spiritbinder 25 H",
+        "level": 93,
+        "mobType": "MobTypeHumanoid",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,542990565,0,0],
+        "minBaseDamage": 337865,
+        "damageSpread": 0.4846,
+        "swingSpeed": 1.5,
+        "targetInputs": [
+          {
+            "inputType": "Number",
+            "label": "Frenzy time",
+            "tooltip": "Simulation time (in seconds) at which to disable tank swaps and enable the boss Frenzy buff",
+            "numberValue": 256
+          }
+        ]
+      },
+      {
+        "id": 6699201,
+        "name": "Severer of Souls 25 H - 1",
+        "level": 92,
+        "mobType": "MobTypeDemon",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,758866,0,0],
+        "disabledAtStart": true
+      },
+      {
+        "id": 6699202,
+        "name": "Severer of Souls 25 H - 2",
+        "level": 92,
+        "mobType": "MobTypeDemon",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,758866,0,0],
+        "disabledAtStart": true
+      },
+      {
+        "id": 6699203,
+        "name": "Severer of Souls 25 H - 3",
+        "level": 92,
+        "mobType": "MobTypeDemon",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,758866,0,0],
+        "disabledAtStart": true
+      }
+    ]
+  },
+  "targetDummies": 1
+}
