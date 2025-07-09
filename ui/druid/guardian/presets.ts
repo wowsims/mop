@@ -38,24 +38,24 @@ export const SURVIVAL_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Survival',
 	Stats.fromMap(
 		{
-			[Stat.StatHealth]: 0.05,
-			[Stat.StatStamina]: 1.08,
+			[Stat.StatHealth]: 0.08,
+			[Stat.StatStamina]: 1.75,
 			[Stat.StatAgility]: 1.0,
-			[Stat.StatArmor]: 0.93,
-			[Stat.StatBonusArmor]: 0.21,
-			[Stat.StatDodgeRating]: 0.85,
-			[Stat.StatMasteryRating]: 0.31,
-			[Stat.StatStrength]: 0.08,
-			[Stat.StatAttackPower]: 0.08,
-			[Stat.StatHitRating]: 0.22,
-			[Stat.StatExpertiseRating]: 0.185,
-			[Stat.StatCritRating]: 0.42,
-			[Stat.StatHasteRating]: 0.09,
+			[Stat.StatArmor]: 2.21,
+			[Stat.StatBonusArmor]: 0.5,
+			[Stat.StatDodgeRating]: 0.68,
+			[Stat.StatMasteryRating]: 0.92,
+			[Stat.StatStrength]: 0.06,
+			[Stat.StatAttackPower]: 0.06,
+			[Stat.StatHitRating]: 1.17,
+			[Stat.StatExpertiseRating]: 1.09,
+			[Stat.StatCritRating]: 1.06,
+			[Stat.StatHasteRating]: 0.38,
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 0.0,
-			[PseudoStat.PseudoStatPhysicalHitPercent]: 0.185 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
-			[PseudoStat.PseudoStatSpellHitPercent]: 0.035 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
+			[PseudoStat.PseudoStatPhysicalHitPercent]: 1.09 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
+			[PseudoStat.PseudoStatSpellHitPercent]: 0.08 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
 		},
 	),
 );
@@ -64,50 +64,48 @@ export const BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Balanced',
 	Stats.fromMap(
 		{
-			[Stat.StatHealth]: 0.04,
-			[Stat.StatStamina]: 0.88,
+			[Stat.StatHealth]: 0.06,
+			[Stat.StatStamina]: 1.39,
 			[Stat.StatAgility]: 1.0,
-			[Stat.StatArmor]: 0.66,
-			[Stat.StatBonusArmor]: 0.15,
-			[Stat.StatDodgeRating]: 0.6,
-			[Stat.StatMasteryRating]: 0.22,
-			[Stat.StatStrength]: 0.16,
-			[Stat.StatAttackPower]: 0.15,
-			[Stat.StatHitRating]: 0.61,
-			[Stat.StatExpertiseRating]: 0.535,
-			[Stat.StatCritRating]: 0.54,
-			[Stat.StatHasteRating]: 0.15,
+			[Stat.StatArmor]: 1.75,
+			[Stat.StatBonusArmor]: 0.40,
+			[Stat.StatDodgeRating]: 0.53,
+			[Stat.StatMasteryRating]: 0.73,
+			[Stat.StatStrength]: 0.12,
+			[Stat.StatAttackPower]: 0.11,
+			[Stat.StatHitRating]: 1.16,
+			[Stat.StatExpertiseRating]: 1.08,
+			[Stat.StatCritRating]: 1.05,
+			[Stat.StatHasteRating]: 0.37,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.5,
-			[PseudoStat.PseudoStatPhysicalHitPercent]: 0.535 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
-			[PseudoStat.PseudoStatSpellHitPercent]: 0.075 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
+			[PseudoStat.PseudoStatMainHandDps]: 0.29,
+			[PseudoStat.PseudoStatPhysicalHitPercent]: 1.08 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
+			[PseudoStat.PseudoStatSpellHitPercent]: 0.08 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
 		},
 	),
 );
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'Standard',
+export const DefensiveTalents = {
+	name: 'Defensive',
 	data: SavedTalents.create({
-		talentsString: '',
+		talentsString: '010101',
 		glyphs: Glyphs.create({
-			major1: DruidMajorGlyph.GlyphOfFrenziedRegeneration,
+			major1: DruidMajorGlyph.GlyphOfMightOfUrsoc,
 			major2: DruidMajorGlyph.GlyphOfMaul,
-			major3: DruidMajorGlyph.GlyphOfRebirth,
 		}),
 	}),
 };
 
-export const InfectedWoundsBuild = {
-	name: 'Infected Wounds',
+export const OffensiveTalents = {
+	name: 'Offensive',
 	data: SavedTalents.create({
-		talentsString: '',
+		talentsString: '010103',
 		glyphs: Glyphs.create({
-			major1: DruidMajorGlyph.GlyphOfFrenziedRegeneration,
+			major1: DruidMajorGlyph.GlyphOfMightOfUrsoc,
 			major2: DruidMajorGlyph.GlyphOfMaul,
-			major3: DruidMajorGlyph.GlyphOfRebirth,
 		}),
 	}),
 };
@@ -117,7 +115,7 @@ export const DefaultOptions = DruidOptions.create({
 
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 76087,
-	foodId: 105717,
+	foodId: 74656,
 	potId: 76089,
 	prepotId: 76089,
 	conjuredId: 5512, // Conjured Healthstone
