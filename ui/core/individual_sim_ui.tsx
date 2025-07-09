@@ -415,6 +415,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 
 		new CharacterStats(
 			this.rootElem.querySelector('.sim-sidebar-stats') as HTMLElement,
+			this,
 			this.player,
 			this.individualConfig.displayStats,
 			this.individualConfig.modifyDisplayStats,
