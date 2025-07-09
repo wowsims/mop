@@ -590,7 +590,7 @@ func FullCharacterTestSuiteGenerator(configs []CharacterSuiteConfig) []TestGener
 		}
 
 		generator := &CombinedTestGenerator{}
-		// We only run these tests for the first test
+		// We only run this for the first test
 		if testIndex == 0 {
 			generator.subgenerators = append(generator.subgenerators, SubGenerator{
 				name: "CharacterStats",
@@ -601,37 +601,40 @@ func FullCharacterTestSuiteGenerator(configs []CharacterSuiteConfig) []TestGener
 					},
 				},
 			})
-			generator.subgenerators = append(generator.subgenerators, SubGenerator{
-				name: "Settings",
-				generator: &SettingsCombos{
-					Class:        config.Class,
-					Races:        allRaces,
-					GearSets:     allGearSets,
-					TalentSets:   allTalentSets,
-					SpecOptions:  allSpecOptions,
-					Rotations:    allRotations,
-					ItemSwapSets: allItemSwapSets,
-					Buffs: []BuffsCombo{
-						{
-							Label: "NoBuffs",
-						},
-						{
-							Label:       "FullBuffs",
-							Raid:        FullRaidBuffs,
-							Party:       FullPartyBuffs,
-							Debuffs:     FullDebuffs,
-							Player:      FullIndividualBuffs,
-							Consumables: config.Consumables,
-						},
+		}
+		generator.subgenerators = append(generator.subgenerators, SubGenerator{
+			name: "Settings",
+			generator: &SettingsCombos{
+				Class:        config.Class,
+				Races:        allRaces,
+				GearSets:     allGearSets,
+				TalentSets:   allTalentSets,
+				SpecOptions:  allSpecOptions,
+				Rotations:    allRotations,
+				ItemSwapSets: allItemSwapSets,
+				Buffs: []BuffsCombo{
+					{
+						Label: "NoBuffs",
 					},
-					IsHealer:          config.IsHealer,
-					IsTank:            config.IsTank,
-					Encounters:        MakeDefaultEncounterCombos(),
-					SimOptions:        DefaultSimTestOptions,
-					Cooldowns:         config.Cooldowns,
-					StartingDistances: allStartingDistances,
+					{
+						Label:       "FullBuffs",
+						Raid:        FullRaidBuffs,
+						Party:       FullPartyBuffs,
+						Debuffs:     FullDebuffs,
+						Player:      FullIndividualBuffs,
+						Consumables: config.Consumables,
+					},
 				},
-			})
+				IsHealer:          config.IsHealer,
+				IsTank:            config.IsTank,
+				Encounters:        MakeDefaultEncounterCombos(),
+				SimOptions:        DefaultSimTestOptions,
+				Cooldowns:         config.Cooldowns,
+				StartingDistances: allStartingDistances,
+			},
+		})
+		// We only run these tests for the first test
+		if testIndex == 0 {
 			generator.subgenerators = append(generator.subgenerators, SubGenerator{
 				name: "AllItems",
 				generator: &ItemsTestGenerator{
@@ -646,22 +649,22 @@ func FullCharacterTestSuiteGenerator(configs []CharacterSuiteConfig) []TestGener
 					IsTank:     config.IsTank,
 				},
 			})
-		}
 
-		newRaid := googleProto.Clone(defaultRaid).(*proto.Raid)
-		newRaid.Parties[0].Players[0].InFrontOfTarget = !newRaid.Parties[0].Players[0].InFrontOfTarget
+			newRaid := googleProto.Clone(defaultRaid).(*proto.Raid)
+			newRaid.Parties[0].Players[0].InFrontOfTarget = !newRaid.Parties[0].Players[0].InFrontOfTarget
 
-		generator.subgenerators = append(generator.subgenerators, SubGenerator{
-			name: "SwitchInFrontOfTarget",
-			generator: &SingleDpsTestGenerator{
-				Name: "Default",
-				Request: &proto.RaidSimRequest{
-					Raid:       newRaid,
-					Encounter:  Ternary(config.Encounter.Encounter != nil, config.Encounter.Encounter, MakeSingleTargetEncounter(0)),
-					SimOptions: DefaultSimTestOptions,
+			generator.subgenerators = append(generator.subgenerators, SubGenerator{
+				name: "SwitchInFrontOfTarget",
+				generator: &SingleDpsTestGenerator{
+					Name: "Default",
+					Request: &proto.RaidSimRequest{
+						Raid:       newRaid,
+						Encounter:  Ternary(config.Encounter.Encounter != nil, config.Encounter.Encounter, MakeSingleTargetEncounter(0)),
+						SimOptions: DefaultSimTestOptions,
+					},
 				},
-			},
-		})
+			})
+		}
 
 		if len(config.StatsToWeigh) > 0 {
 			generator.subgenerators = append(generator.subgenerators, SubGenerator{
@@ -687,17 +690,20 @@ func FullCharacterTestSuiteGenerator(configs []CharacterSuiteConfig) []TestGener
 
 		// Add this separately, so it's always last, which makes it easy to find in the
 		// displayed test results.
-		generator.subgenerators = append(generator.subgenerators, SubGenerator{
-			name: "Average",
-			generator: &SingleDpsTestGenerator{
-				Name: "Default",
-				Request: &proto.RaidSimRequest{
-					Raid:       defaultRaid,
-					Encounter:  Ternary(config.Encounter.Encounter != nil, config.Encounter.Encounter, MakeSingleTargetEncounter(5)),
-					SimOptions: AverageDefaultSimTestOptions,
+		// We only run this for the first test
+		if testIndex == 0 {
+			generator.subgenerators = append(generator.subgenerators, SubGenerator{
+				name: "Average",
+				generator: &SingleDpsTestGenerator{
+					Name: "Default",
+					Request: &proto.RaidSimRequest{
+						Raid:       defaultRaid,
+						Encounter:  Ternary(config.Encounter.Encounter != nil, config.Encounter.Encounter, MakeSingleTargetEncounter(5)),
+						SimOptions: AverageDefaultSimTestOptions,
+					},
 				},
-			},
-		})
+			})
+		}
 
 		testIndex++
 		return generator
