@@ -15,15 +15,20 @@ func init() {
 func TestBalance(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
 		{
-			Class: proto.Class_ClassDruid,
-			Race:  proto.Race_RaceNightElf,
+			Class:      proto.Class_ClassDruid,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceWorgen, proto.Race_RaceNightElf, proto.Race_RaceTauren},
 
 			GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "preraid"),
 			OtherGearSets: []core.GearSetCombo{
 				core.GetGearSet("../../../ui/druid/balance/gear_sets", "t14"),
 			},
-			Talents:        StandardTalents,
-			Glyphs:         StandardGlyphs,
+			Talents: BalanceIncarnationDocTalents,
+			OtherTalentSets: []core.TalentsCombo{
+				{Label: "FoN + HotW", Talents: BalanceFoNHotWTalents, Glyphs: BalanceStandardGlyphs},
+				{Label: "Incarnation + NV", Talents: BalanceIncarnationNVTalents, Glyphs: BalanceStandardGlyphs},
+			},
+			Glyphs:         BalanceIncarnationDocGlyphs,
 			Consumables:    FullConsumesSpec,
 			SpecOptions:    core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsBalance},
 			Rotation:       core.GetAplRotation("../../../ui/druid/balance/apls", "standard"),
@@ -33,8 +38,21 @@ func TestBalance(t *testing.T) {
 	}))
 }
 
-var StandardTalents = "113221"
-var StandardGlyphs = &proto.Glyphs{}
+var BalanceIncarnationDocTalents = "113222"
+var BalanceIncarnationNVTalents = "113223"
+var BalanceFoNHotWTalents = "113321"
+
+var BalanceIncarnationDocGlyphs = &proto.Glyphs{
+	Major1: int32(proto.DruidMajorGlyph_GlyphOfHealingTouch),
+	Major2: int32(proto.DruidMajorGlyph_GlyphOfRebirth),
+	Major3: int32(proto.DruidMajorGlyph_GlyphOfStampede),
+}
+
+var BalanceStandardGlyphs = &proto.Glyphs{
+	Major1: int32(proto.DruidMajorGlyph_GlyphOfStampedingRoar),
+	Major2: int32(proto.DruidMajorGlyph_GlyphOfRebirth),
+	Major3: int32(proto.DruidMajorGlyph_GlyphOfStampede),
+}
 
 var PlayerOptionsBalance = &proto.Player_BalanceDruid{
 	BalanceDruid: &proto.BalanceDruid{
