@@ -9,27 +9,29 @@ func init() {
 }
 
 // func TestSmite(t *testing.T) {
-// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-// 		Class: proto.Class_ClassPriest,
-// 		Race:  proto.Race_RaceUndead,
+// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+// 		{
+// 			Class: proto.Class_ClassPriest,
+// 			Race:  proto.Race_RaceUndead,
 
-// 		GearSet:     core.GetGearSet("../../../ui/smite_priest/gear_sets", "p1"),
-// 		Talents:     DefaultTalents,
-// 		Glyphs:      DefaultGlyphs,
-// 		Consumes:    FullConsumes,
-// 		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-// 		Rotation:    core.GetAplRotation("../../../ui/smite_priest/apls", "default"),
+// 			GearSet:     core.GetGearSet("../../../ui/smite_priest/gear_sets", "p1"),
+// 			Talents:     DefaultTalents,
+// 			Glyphs:      DefaultGlyphs,
+// 			Consumes:    FullConsumes,
+// 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
+// 			Rotation:    core.GetAplRotation("../../../ui/smite_priest/apls", "default"),
 
-// 		ItemFilter: core.ItemFilter{
-// 			WeaponTypes: []proto.WeaponType{
-// 				proto.WeaponType_WeaponTypeDagger,
-// 				proto.WeaponType_WeaponTypeMace,
-// 				proto.WeaponType_WeaponTypeOffHand,
-// 				proto.WeaponType_WeaponTypeStaff,
-// 			},
-// 			ArmorType: proto.ArmorType_ArmorTypeCloth,
-// 			RangedWeaponTypes: []proto.RangedWeaponType{
-// 				proto.RangedWeaponType_RangedWeaponTypeWand,
+// 			ItemFilter: core.ItemFilter{
+// 				WeaponTypes: []proto.WeaponType{
+// 					proto.WeaponType_WeaponTypeDagger,
+// 					proto.WeaponType_WeaponTypeMace,
+// 					proto.WeaponType_WeaponTypeOffHand,
+// 					proto.WeaponType_WeaponTypeStaff,
+// 				},
+// 				ArmorType: proto.ArmorType_ArmorTypeCloth,
+// 				RangedWeaponTypes: []proto.RangedWeaponType{
+// 					proto.RangedWeaponType_RangedWeaponTypeWand,
+// 				},
 // 			},
 // 		},
 // 	}))

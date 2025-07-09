@@ -102,6 +102,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		}),
 	},
 
+	defaultBuild: Presets.PRESET_BUILD_DEFAULT,
+
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [],
 	// Inputs to include in the 'Rotation' section on the settings tab.

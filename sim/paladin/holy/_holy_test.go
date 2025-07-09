@@ -9,30 +9,32 @@ func init() {
 }
 
 // func TestHoly(t *testing.T) {
-// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-// 		Class:      proto.Class_ClassPaladin,
-// 		Race:       proto.Race_RaceBloodElf,
-// 		OtherRaces: []proto.Race{proto.Race_RaceHuman},
+// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+// 		{
+// 			Class:      proto.Class_ClassPaladin,
+// 			Race:       proto.Race_RaceBloodElf,
+// 			OtherRaces: []proto.Race{proto.Race_RaceHuman},
 
-// 		GearSet:     core.GetGearSet("../../../ui/holy_paladin/gear_sets", "p1"),
-// 		Talents:     StandardTalents,
-// 		Glyphs:      StandardGlyphs,
-// 		Consumes:    FullConsumes,
-// 		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: BasicOptions},
-// 		Rotation:    core.RotationCombo{Label: "Default", Rotation: DefaultRotation},
+// 			GearSet:     core.GetGearSet("../../../ui/holy_paladin/gear_sets", "p1"),
+// 			Talents:     StandardTalents,
+// 			Glyphs:      StandardGlyphs,
+// 			Consumes:    FullConsumes,
+// 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: BasicOptions},
+// 			Rotation:    core.RotationCombo{Label: "Default", Rotation: DefaultRotation},
 
-// 		IsHealer:        true,
-// 		InFrontOfTarget: true,
+// 			IsHealer:        true,
+// 			InFrontOfTarget: true,
 
-// 		ItemFilter: core.ItemFilter{
-// 			WeaponTypes: []proto.WeaponType{
-// 				proto.WeaponType_WeaponTypeSword,
-// 				proto.WeaponType_WeaponTypePolearm,
-// 				proto.WeaponType_WeaponTypeMace,
-// 				proto.WeaponType_WeaponTypeShield,
+// 			ItemFilter: core.ItemFilter{
+// 				WeaponTypes: []proto.WeaponType{
+// 					proto.WeaponType_WeaponTypeSword,
+// 					proto.WeaponType_WeaponTypePolearm,
+// 					proto.WeaponType_WeaponTypeMace,
+// 					proto.WeaponType_WeaponTypeShield,
+// 				},
+// 				ArmorType:         proto.ArmorType_ArmorTypePlate,
+// 				RangedWeaponTypes: []proto.RangedWeaponType{},
 // 			},
-// 			ArmorType: proto.ArmorType_ArmorTypePlate,
-// 			RangedWeaponTypes: []proto.RangedWeaponType{},
 // 		},
 // 	}))
 // }
