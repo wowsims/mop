@@ -182,6 +182,7 @@ export class PresetConfigurationPicker extends Component {
 				if (encounter.encounter) simUI.sim.encounter.fromProto(eventID, encounter.encounter);
 				if (encounter.healingModel) simUI.player.setHealingModel(eventID, encounter.healingModel);
 				if (encounter.tanks) simUI.sim.raid.setTanks(eventID, encounter.tanks);
+				if (encounter.targetDummies !== undefined) simUI.sim.raid.setTargetDummies(eventID, encounter.targetDummies);
 			}
 		});
 	}

@@ -6,6 +6,7 @@ import { Player } from '../../player';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
 import { SavedRotation } from '../../proto/ui';
 import { EventID, TypedEvent } from '../../typed_event';
+import { omitDeep } from '../../utils';
 import { ContentBlock } from '../content_block';
 import * as IconInputs from '../icon_inputs';
 import { Input } from '../input';
@@ -202,7 +203,7 @@ export class RotationTab extends SimTab {
 			storageKey: this.simUI.getSavedRotationStorageKey(),
 			getData: (player: Player<any>) =>
 				SavedRotation.create({
-					rotation: APLRotation.clone(player.aplRotation),
+					rotation: omitDeep(APLRotation.clone(player.aplRotation), ['uuid']),
 				}),
 			setData: (eventID: EventID, player: Player<any>, newRotation: SavedRotation) => {
 				TypedEvent.freezeAllAndDo(() => {
@@ -212,7 +213,7 @@ export class RotationTab extends SimTab {
 			changeEmitters: [this.simUI.player.rotationChangeEmitter, this.simUI.player.talentsChangeEmitter],
 			equals: (a: SavedRotation, b: SavedRotation) => {
 				// Uncomment this to debug equivalence checks with preset rotations (e.g. the chip doesn't highlight)
-				//console.log(`Rot A: ${SavedRotation.toJsonString(a, {prettySpaces: 2})}\n\nRot B: ${SavedRotation.toJsonString(b, {prettySpaces: 2})}`);
+				// console.log(`Rot A: ${SavedRotation.toJsonString(a, {prettySpaces: 2})}\n\nRot B: ${SavedRotation.toJsonString(b, {prettySpaces: 2})}`);
 				return SavedRotation.equals(a, b);
 			},
 			toJson: (a: SavedRotation) => SavedRotation.toJson(a),

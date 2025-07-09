@@ -843,7 +843,7 @@ export class Player<SpecType extends Spec> {
 	setAplRotation(eventID: EventID, newRotation: APLRotation) {
 		if (APLRotation.equals(newRotation, this.aplRotation)) return;
 
-		this.aplRotation = APLRotation.clone(newRotation);
+		this.aplRotation = omitDeep(APLRotation.clone(newRotation), ['uuid']);
 		this.rotationChangeEmitter.emit(eventID);
 	}
 
@@ -1479,10 +1479,7 @@ export class Player<SpecType extends Spec> {
 		const exportCategory = (cat: SimSettingCategories) => !exportCategories || exportCategories.length == 0 || exportCategories.includes(cat);
 
 		const gear = this.getGear();
-		const aplRotation = forSimming
-			? this.getResolvedAplRotation()
-			: // When exporting we want to omit the uuid field to prevent bloat
-			  omitDeep(this.aplRotation, ['uuid']);
+		const aplRotation = forSimming ? this.getResolvedAplRotation() : this.aplRotation;
 
 		let player = PlayerProto.create({
 			class: this.getClass(),

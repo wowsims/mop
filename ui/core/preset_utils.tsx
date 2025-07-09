@@ -74,6 +74,7 @@ export interface PresetEncounter extends PresetBase {
 	encounter?: EncounterProto;
 	healingModel?: HealingModel;
 	tanks?: UnitReference[];
+	targetDummies?: number;
 }
 export interface PresetEncounterOptions extends PresetOptionsBase {}
 
@@ -203,21 +204,28 @@ const makePresetRotationHelper = (name: string, rotation: SavedRotation, options
 	};
 };
 
-export const makePresetEncounter = (name: string, encounter?: EncounterProto | string, options?: PresetEncounterOptions): PresetEncounter => {
-	let healingModel: PresetEncounter['healingModel'] = undefined;
-	let tanks: PresetEncounter['tanks'] = undefined;
+export const makePresetEncounter = (
+	name: string,
+	encounter?: EncounterProto | string,
+	healingModel?: HealingModel,
+	tanks?: UnitReference[],
+	targetDummies?: number,
+	options?: PresetEncounterOptions,
+): PresetEncounter => {
 	if (typeof encounter === 'string') {
 		const parsedUrl = IndividualLinkImporter.tryParseUrlLocation(new URL(encounter));
 		const settings = parsedUrl?.settings;
 		if (settings?.encounter) Encounter.updateProtoVersion(settings.encounter);
 		encounter = settings?.encounter;
 		healingModel = settings?.player?.healingModel;
+		targetDummies = settings?.targetDummies;
 		tanks = settings?.tanks;
 	}
 
 	return {
 		name,
 		encounter,
+		targetDummies,
 		tanks,
 		healingModel,
 		...options,
@@ -290,8 +298,8 @@ const makePresetSettingsHelper = (name: string, spec: Spec, simSettings: Individ
 	return settings;
 };
 
-export const makePresetBuild = (name: string, { gear, itemSwap, talents, rotation, rotationType, epWeights, encounter }: PresetBuildOptions): PresetBuild => {
-	return { name, itemSwap, gear, talents, rotation, rotationType, epWeights, encounter };
+export const makePresetBuild = (name: string, options: PresetBuildOptions): PresetBuild => {
+	return { name, ...options };
 };
 
 export const makePresetBuildFromJSON = (
@@ -319,7 +327,14 @@ export const makePresetBuildFromJSON = (
 	}
 
 	if (simSettings.encounter) {
-		buildConfig.encounter = makePresetEncounter(name, simSettings.encounter, options);
+		buildConfig.encounter = makePresetEncounter(
+			name,
+			simSettings.encounter,
+			simSettings.player?.healingModel,
+			simSettings.tanks,
+			simSettings.targetDummies,
+			options,
+		);
 	}
 
 	const settings = makePresetSettingsHelper(name, spec, simSettings);
