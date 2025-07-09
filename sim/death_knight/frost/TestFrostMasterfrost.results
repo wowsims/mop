@@ -210,8 +210,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 189456.70732
-  tps: 173593.29771
+  dps: 164819.60023
+  tps: 151560.30647
   hps: 1625.803
  }
 }
@@ -258,8 +258,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Horridon'sLastGasp-96757"
  value: {
-  dps: 149234.23355
-  tps: 137834.92369
+  dps: 149237.1377
+  tps: 137837.82784
   hps: 1540.10044
  }
 }
@@ -370,8 +370,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 149661.61417
-  tps: 138161.06855
+  dps: 149359.9125
+  tps: 137921.30033
   hps: 1540.10044
  }
 }

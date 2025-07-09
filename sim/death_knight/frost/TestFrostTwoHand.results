@@ -210,8 +210,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 185471.45835
-  tps: 168732.24542
+  dps: 167546.97926
+  tps: 153436.13141
   hps: 2627.83677
  }
 }
@@ -258,8 +258,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Horridon'sLastGasp-96757"
  value: {
-  dps: 156912.43533
-  tps: 144545.944
+  dps: 156915.25166
+  tps: 144548.76033
   hps: 2630.15729
  }
 }
@@ -370,8 +370,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 158590.27188
-  tps: 146045.4689
+  dps: 158199.59308
+  tps: 145721.81353
   hps: 2646.80938
  }
 }

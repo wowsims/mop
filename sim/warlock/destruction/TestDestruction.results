@@ -2273,8 +2273,8 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 120263.50961
-  tps: 89841.83155
+  dps: 101328.59292
+  tps: 75668.77886
  }
 }
 dps_results: {

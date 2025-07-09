@@ -30,7 +30,7 @@ func init() {
 			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				AuraLabel:            fmt.Sprintf("%s %s", label, versionLabel),
 				ActionID:             core.ActionID{SpellID: 138756},
-				Duration:             time.Second * 20,
+				Duration:             time.Second * 10,
 				MaxStacks:            10,
 				TimePerStack:         time.Second * 1,
 				BonusPerStack:        stats.Stats{stats.Agility: statValue},
@@ -79,27 +79,29 @@ func init() {
 			stackingAura := character.RegisterAura(core.Aura{
 				ActionID:  core.ActionID{SpellID: 138849},
 				Label:     fmt.Sprintf("Item - Proc Mana Per Time %s", versionLabel),
-				Duration:  time.Second * 20,
+				Duration:  time.Second * 10,
 				MaxStacks: 5,
 			})
+
+			var pa *core.PendingAction
 
 			aura := character.RegisterAura(core.Aura{
 				Label:    fmt.Sprintf("%s %s", label, versionLabel),
 				ActionID: core.ActionID{SpellID: 138856},
-				Duration: time.Second * 20,
+				Duration: time.Second * 10,
 				OnGain: func(aura *core.Aura, sim *core.Simulation) {
-					stackingAura.Activate(sim)
-					core.StartPeriodicAction(sim, core.PeriodicActionOptions{
+					pa = core.StartPeriodicAction(sim, core.PeriodicActionOptions{
 						Period:   time.Second * 2,
-						NumTicks: 10,
+						NumTicks: 5,
 						OnAction: func(sim *core.Simulation) {
-							stackingAura.Activate(sim)
-							stackingAura.AddStack(sim)
 							if character.HasManaBar() {
 								character.AddMana(sim, manaValue*float64(stackingAura.GetStacks()), manaMetrics)
 							}
 						},
 					})
+				},
+				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+					pa.Cancel(sim)
 				},
 			})
 
@@ -113,6 +115,10 @@ func init() {
 				Outcome:  core.OutcomeLanded,
 				Callback: core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
+					stackingAura.Activate(sim)
+					stackingAura.AddStack(sim)
+					//deactivate first to cancel the active periodic pa
+					aura.Deactivate(sim)
 					aura.Activate(sim)
 				},
 			})
@@ -140,7 +146,7 @@ func init() {
 			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				AuraLabel:            fmt.Sprintf("%s %s", label, versionLabel),
 				ActionID:             core.ActionID{SpellID: 138790},
-				Duration:             time.Second * 20,
+				Duration:             time.Second * 10,
 				MaxStacks:            10,
 				TimePerStack:         time.Second * 1,
 				BonusPerStack:        stats.Stats{stats.Intellect: statValue},
@@ -188,7 +194,7 @@ func init() {
 			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				AuraLabel:            fmt.Sprintf("%s %s", label, versionLabel),
 				ActionID:             core.ActionID{SpellID: 138790},
-				Duration:             time.Second * 20,
+				Duration:             time.Second * 10,
 				MaxStacks:            10,
 				TimePerStack:         time.Second * 1,
 				BonusPerStack:        stats.Stats{stats.Strength: statValue},

@@ -240,10 +240,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 133888.26207
-  tps: 801152.03306
-  dtps: 86929.01154
-  hps: 77662.29447
+  dps: 126059.18067
+  tps: 760290.91776
+  dtps: 92833.70019
+  hps: 80553.15209
  }
 }
 dps_results: {
@@ -294,10 +294,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Horridon'sLastGasp-96757"
  value: {
-  dps: 121812.19487
-  tps: 736115.26498
-  dtps: 96254.28979
-  hps: 81880.3953
+  dps: 121695.42787
+  tps: 735651.30042
+  dtps: 96130.71166
+  hps: 82017.78252
  }
 }
 dps_results: {
@@ -420,10 +420,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 123619.41392
-  tps: 748162.72769
+  dps: 123188.75811
+  tps: 745581.30081
   dtps: 95939.06688
-  hps: 83233.05553
+  hps: 83288.13185
  }
 }
 dps_results: {

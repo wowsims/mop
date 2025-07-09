@@ -316,11 +316,13 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 				stackingAura.Activate(sim)
 				StartPeriodicAction(sim, PeriodicActionOptions{
 					Period:          config.TimePerStack,
-					NumTicks:        10,
+					NumTicks:        int(config.MaxStacks),
 					TickImmediately: config.TickImmediately,
 					OnAction: func(sim *Simulation) {
-						stackingAura.Activate(sim)
-						stackingAura.AddStack(sim)
+						// Aura might not be active because of stuff like mage alter time being cast right before this aura being activated
+						if stackingAura.IsActive() {
+							stackingAura.AddStack(sim)
+						}
 					},
 				})
 			},
