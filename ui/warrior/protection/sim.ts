@@ -60,6 +60,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 		],
 	),
 
+	defaultBuild: Presets.PRESET_BUILD_DEFAULT,
+
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_BALANCED_PRESET.gear,
@@ -124,9 +126,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 	presets: {
 		epWeights: [Presets.P1_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.StandardTalents, Presets.StandardTalents],
+		talents: [Presets.StandardTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_DEFAULT],
+		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_GARAJAL],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_BALANCED_PRESET, Presets.P1_BALANCED_PRESET],
 		builds: [],

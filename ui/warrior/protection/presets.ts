@@ -1,9 +1,11 @@
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/proto/common.js';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior.js';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
+import GarajalApl from './apls/garajal.apl.json';
+import DefaultBuild from './builds/garajal_default.build.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
 import P1BISItemSwapGear from './gear_sets/p1_bis_item_swap.gear.json';
 import PreraidBISGear from './gear_sets/preraid.gear.json';
@@ -17,7 +19,8 @@ export const P1_BALANCED_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1BISGe
 
 export const P1_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P1 - Item Swap', P1BISItemSwapGear);
 
-export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('Default APL', DefaultApl);
+export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
+export const ROTATION_GARAJAL = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
 
 // Preset options for EP weights
 export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -65,8 +68,8 @@ export const DefaultOptions = ProtectionWarriorOptions.create({
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 76087, // Flask of the Earth
 	foodId: 81411, // Peach Pie
-	potId: 76095, // Potion of Mogu Power
-	prepotId: 76095, // Potion of Mogu Power
+	prepotId: 76090, // Potion of the Mountains
+	potId: 76090, // Potion of the Mountains
 });
 
 export const OtherDefaults = {
@@ -74,3 +77,5 @@ export const OtherDefaults = {
 	profession2: Profession.Blacksmithing,
 	distanceFromTarget: 15,
 };
+
+export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecProtectionWarrior, DefaultBuild);

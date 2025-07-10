@@ -14,6 +14,7 @@ func init() {
 
 func TestProtectionWarrior(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/protection/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class:            proto.Class_ClassWarrior,
 			Race:             proto.Race_RaceOrc,
