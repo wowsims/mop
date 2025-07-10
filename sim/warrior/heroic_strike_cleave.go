@@ -69,7 +69,7 @@ func (war *Warrior) registerCleaveSpell() {
 
 	getCleaveDamageMultiplier := func() float64 {
 		has1H := war.MainHand().HandType != proto.HandType_HandTypeTwoHand
-		return core.TernaryFloat64(has1H, 1.15, 0.8)
+		return core.TernaryFloat64(has1H, .15, -0.2)
 	}
 
 	weaponDamageMod := war.AddDynamicMod(core.SpellModConfig{
@@ -79,6 +79,10 @@ func (war *Warrior) registerCleaveSpell() {
 	})
 
 	war.RegisterItemSwapCallback(core.AllWeaponSlots(), func(_ *core.Simulation, _ proto.ItemSlot) {
+		weaponDamageMod.UpdateFloatValue(getCleaveDamageMultiplier())
+	})
+	war.RegisterResetEffect(func(_ *core.Simulation) {
+		weaponDamageMod.Activate()
 		weaponDamageMod.UpdateFloatValue(getCleaveDamageMultiplier())
 	})
 
