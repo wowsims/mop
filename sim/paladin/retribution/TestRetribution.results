@@ -794,13 +794,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestRetribution-AllItems-Gladiator'sVindication"
- value: {
-  dps: 153911.8976
-  tps: 144116.23489
- }
-}
-dps_results: {
  key: "TestRetribution-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
   dps: 173268.02273
