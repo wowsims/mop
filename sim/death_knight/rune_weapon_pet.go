@@ -115,7 +115,7 @@ func (dk *DeathKnight) NewRuneWeapon() *RuneWeaponPet {
 		AutoSwingMelee: true,
 	})
 
-	// Special weapon used for some strikes like DS and HS
+	// Special weapon used for some strikes like DS and PS
 	strikeWeaponBaseDamage := math.Floor(dk.CalcScalingSpellDmg(1.6))
 	runeWeapon.StrikeWeapon = &core.Weapon{
 		BaseDamageMin:        strikeWeaponBaseDamage,
