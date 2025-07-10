@@ -50,7 +50,7 @@ func (war *ProtectionWarrior) registerDemoralizingShout() {
 		Spell: spell,
 		Type:  core.CooldownTypeSurvival,
 		ShouldActivate: func(s *core.Simulation, c *core.Character) bool {
-			return war.CurrentHealthPercent() < 0.4
+			return war.CurrentHealthPercent() < 0.6
 		},
 	})
 }
