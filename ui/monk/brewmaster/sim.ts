@@ -143,7 +143,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents, Presets.DungeonTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET],
+		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET, Presets.ROTATION_GARAJAL_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.P1_PREBIS_RICH_GEAR_PRESET,
