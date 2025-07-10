@@ -5,6 +5,7 @@ import { BrewmasterMonk_Options as BrewmasterMonkOptions, MonkMajorGlyph, MonkMi
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
+import GarajalApl from './apls/garajal.apl.json';
 import OffensiveApl from './apls/offensive.apl.json';
 import GarajalBuild from './builds/garajal_default.build.json';
 import P1BIS2HGear from './gear_sets/p1_bis_2h.gear.json';
@@ -28,6 +29,7 @@ export const P1_BIS_TIERLESS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 - B
 export const P1_BIS_TIERLESS_2H_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS 2H (no-Tier)', P1BISTierless2HGear);
 
 export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
+export const ROTATION_GARAJAL_PRESET = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
 export const ROTATION_OFFENSIVE_PRESET = PresetUtils.makePresetAPLRotation('Offensive', OffensiveApl);
 
 // Preset options for EP weights
