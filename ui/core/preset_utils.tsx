@@ -307,8 +307,12 @@ export const makePresetBuildFromJSON = (
 			buildConfig.gear = makePresetGear(name, simSettings.player.equipment, options);
 		}
 
-		if (simSettings.player?.talentsString) {
-			buildConfig.talents = makePresetTalents(name, SavedTalents.create({ talentsString: simSettings.player.talentsString }), options);
+		if (simSettings.player?.talentsString || simSettings.player?.glyphs) {
+			buildConfig.talents = makePresetTalents(
+				name,
+				SavedTalents.create({ talentsString: simSettings.player?.talentsString, glyphs: simSettings.player?.glyphs }),
+				options,
+			);
 		}
 
 		if (simSettings.player?.rotation && simSettings.player?.rotation.type === APLRotationType.TypeAPL) {

@@ -222,7 +222,7 @@ export class PresetConfigurationPicker extends Component {
 		const hasItemSwap =
 			settings?.playerOptions?.itemSwap === undefined ||
 			ItemSwap.equals(this.simUI.player.itemSwapSettings?.toProto(), settings?.playerOptions?.itemSwap);
-		const hasSpecOptions = settings?.specOptions ? this.containsAllFields(this.simUI.player.getSpecOptions(), settings.specOptions) : true;
+		const hasSpecOptions = settings?.specOptions ? JSON.stringify(this.simUI.player.getSpecOptions()) == JSON.stringify(settings.specOptions) : true;
 		const hasConsumables = settings?.consumables ? ConsumesSpec.equals(this.simUI.player.getConsumes(), settings.consumables) : true;
 		const hasRaidBuffs = settings?.raidBuffs ? RaidBuffs.equals(this.simUI.sim.raid.getBuffs(), settings.raidBuffs) : true;
 		const hasBuffs = settings?.buffs ? IndividualBuffs.equals(this.simUI.player.getBuffs(), settings.buffs) : true;
@@ -247,9 +247,5 @@ export class PresetConfigurationPicker extends Component {
 			hasBuffs &&
 			hasDebuffs
 		);
-	}
-
-	private containsAllFields<T extends Spec>(full: SpecOptions<T>, partial: Partial<SpecOptions<T>>): boolean {
-		return Object.keys(partial).every(key => key in full && full[key as keyof SpecOptions<T>] === partial[key as keyof SpecOptions<T>]);
 	}
 }
