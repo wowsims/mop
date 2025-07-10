@@ -13,26 +13,28 @@ func init() {
 }
 
 func TestBalance(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassDruid,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceWorgen, proto.Race_RaceNightElf, proto.Race_RaceTauren},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassDruid,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceWorgen, proto.Race_RaceNightElf, proto.Race_RaceTauren},
 
-		GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "preraid"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/druid/balance/gear_sets", "t14"),
+			GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "preraid"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/druid/balance/gear_sets", "t14"),
+			},
+			Talents: BalanceIncarnationDocTalents,
+			OtherTalentSets: []core.TalentsCombo{
+				{Label: "FoN + HotW", Talents: BalanceFoNHotWTalents, Glyphs: BalanceStandardGlyphs},
+				{Label: "Incarnation + NV", Talents: BalanceIncarnationNVTalents, Glyphs: BalanceStandardGlyphs},
+			},
+			Glyphs:         BalanceIncarnationDocGlyphs,
+			Consumables:    FullConsumesSpec,
+			SpecOptions:    core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsBalance},
+			Rotation:       core.GetAplRotation("../../../ui/druid/balance/apls", "standard"),
+			OtherRotations: []core.RotationCombo{},
+			ItemFilter:     ItemFilter,
 		},
-		Talents: BalanceIncarnationDocTalents,
-		OtherTalentSets: []core.TalentsCombo{
-			{Label: "FoN + HotW", Talents: BalanceFoNHotWTalents, Glyphs: BalanceStandardGlyphs},
-			{Label: "Incarnation + NV", Talents: BalanceIncarnationNVTalents, Glyphs: BalanceStandardGlyphs},
-		},
-		Glyphs:         BalanceIncarnationDocGlyphs,
-		Consumables:    FullConsumesSpec,
-		SpecOptions:    core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsBalance},
-		Rotation:       core.GetAplRotation("../../../ui/druid/balance/apls", "standard"),
-		OtherRotations: []core.RotationCombo{},
-		ItemFilter:     ItemFilter,
 	}))
 }
 

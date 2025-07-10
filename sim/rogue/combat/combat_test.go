@@ -13,35 +13,37 @@ func init() {
 }
 
 func TestCombat(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:         proto.Class_ClassRogue,
-		Race:          proto.Race_RaceHuman,
-		OtherRaces:    []proto.Race{proto.Race_RaceOrc},
-		GearSet:       core.GetGearSet("../../../ui/rogue/combat/gear_sets", "preraid_combat"),
-		OtherGearSets: []core.GearSetCombo{
-			//core.GetGearSet("../../../ui/rogue/combat/gear_sets", "p3_combat"),
-			//core.GetGearSet("../../../ui/rogue/combat/gear_sets", "p4_combat"),
-		},
-		Talents:     CombatTalents,
-		Glyphs:      CombatGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Combat", SpecOptions: PlayerOptions},
-
-		Rotation:       core.GetAplRotation("../../../ui/rogue/combat/apls", "combat"),
-		OtherRotations: []core.RotationCombo{},
-		ItemFilter: core.ItemFilter{
-			ArmorType: proto.ArmorType_ArmorTypeLeather,
-			WeaponTypes: []proto.WeaponType{
-				proto.WeaponType_WeaponTypeDagger,
-				proto.WeaponType_WeaponTypeFist,
-				proto.WeaponType_WeaponTypeAxe,
-				proto.WeaponType_WeaponTypeMace,
-				proto.WeaponType_WeaponTypeSword,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:         proto.Class_ClassRogue,
+			Race:          proto.Race_RaceHuman,
+			OtherRaces:    []proto.Race{proto.Race_RaceOrc},
+			GearSet:       core.GetGearSet("../../../ui/rogue/combat/gear_sets", "preraid_combat"),
+			OtherGearSets: []core.GearSetCombo{
+				//core.GetGearSet("../../../ui/rogue/combat/gear_sets", "p3_combat"),
+				//core.GetGearSet("../../../ui/rogue/combat/gear_sets", "p4_combat"),
 			},
-			HandTypes: []proto.HandType{
-				proto.HandType_HandTypeMainHand,
-				proto.HandType_HandTypeOffHand,
-				proto.HandType_HandTypeOneHand,
+			Talents:     CombatTalents,
+			Glyphs:      CombatGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Combat", SpecOptions: PlayerOptions},
+
+			Rotation:       core.GetAplRotation("../../../ui/rogue/combat/apls", "combat"),
+			OtherRotations: []core.RotationCombo{},
+			ItemFilter: core.ItemFilter{
+				ArmorType: proto.ArmorType_ArmorTypeLeather,
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeDagger,
+					proto.WeaponType_WeaponTypeFist,
+					proto.WeaponType_WeaponTypeAxe,
+					proto.WeaponType_WeaponTypeMace,
+					proto.WeaponType_WeaponTypeSword,
+				},
+				HandTypes: []proto.HandType{
+					proto.HandType_HandTypeMainHand,
+					proto.HandType_HandTypeOffHand,
+					proto.HandType_HandTypeOneHand,
+				},
 			},
 		},
 	}))

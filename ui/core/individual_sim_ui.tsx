@@ -20,6 +20,7 @@ import {
 	IndividualLinkImporter,
 	IndividualWowheadGearPlannerImporter,
 } from './components/individual_sim_ui/importers';
+import { PresetConfigurationPicker } from './components/individual_sim_ui/preset_configuration_picker';
 import { RotationTab } from './components/individual_sim_ui/rotation_tab';
 import { SettingsTab } from './components/individual_sim_ui/settings_tab';
 import { TalentsTab } from './components/individual_sim_ui/talents_tab';
@@ -34,7 +35,7 @@ import * as Tooltips from './constants/tooltips';
 import { getSpecLaunchStatus, LaunchStatus, simLaunchStatuses } from './launched_sims';
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player';
 import { PlayerSpecs } from './player_specs';
-import { PresetBuild, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation } from './preset_utils';
+import { PresetBuild, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
 import { StatWeightsResult } from './proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
 import {
@@ -123,8 +124,13 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 	modifyDisplayStats?: (player: Player<SpecType>) => StatMods;
 	overwriteDisplayStats?: (player: Player<SpecType>) => StatWrites;
 
+	// This can be used as a shorthand for setting "defaults".
+	// Useful for when the defaults should be the same as the preset build options
+	defaultBuild?: PresetBuild;
 	defaults: {
 		gear: EquipmentSpec;
+		itemSwap?: ItemSwap;
+
 		epWeights: Stats;
 		// Used for Reforge Optimizer
 		statCaps?: Stats;
@@ -159,8 +165,6 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 		simpleRotation?: SpecRotation<SpecType>;
 
 		other?: OtherDefaults;
-
-		itemSwap?: ItemSwap;
 	};
 
 	playerInputs?: InputSection;
@@ -185,6 +189,7 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 		gear: Array<PresetGear>;
 		talents: Array<SavedDataConfig<Player<SpecType>, SavedTalents>>;
 		rotations: Array<PresetRotation>;
+		settings?: Array<PresetSettings>;
 		builds?: Array<PresetBuild>;
 		itemSwaps?: Array<PresetItemSwap>;
 	};
@@ -589,6 +594,10 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 				}
 
 				this.statWeightActionSettings.applyDefaults(eventID);
+			}
+
+			if (this.individualConfig.defaultBuild) {
+				PresetConfigurationPicker.applyBuild(eventID, this.individualConfig.defaultBuild, this);
 			}
 		});
 	}

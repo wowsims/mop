@@ -21,7 +21,7 @@ import { NumberPicker } from '../pickers/number_picker.js';
 import { SavedDataManager } from '../saved_data_manager.jsx';
 import { SimTab } from '../sim_tab.js';
 import { ConsumesPicker } from './consumes_picker.jsx';
-import { PresetConfigurationPicker } from './preset_configuration_picker.jsx';
+import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker.jsx';
 
 export class SettingsTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
@@ -204,7 +204,9 @@ export class SettingsTab extends SimTab {
 			header: { title: 'Raid Buffs', tooltip: Tooltips.BUFFS_SECTION },
 		});
 		contentBlock.headerElement?.appendChild(
-			<p className="fs-body">All raid buffs/debuffs selected are assumed to be provided by <strong>other</strong> raid members than the simulated player.</p>,
+			<p className="fs-body">
+				All raid buffs/debuffs selected are assumed to be provided by <strong>other</strong> raid members than the simulated player.
+			</p>,
 		);
 
 		const buffOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, this.simUI);
@@ -284,7 +286,7 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, ['encounter', 'race']);
+		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Encounter, PresetConfigurationCategory.Settings]);
 	}
 
 	private buildSavedDataPickers() {
@@ -357,6 +359,21 @@ export class SettingsTab extends SimTab {
 		this.simUI.sim.waitForInit().then(() => {
 			savedEncounterManager.loadUserData();
 			savedSettingsManager.loadUserData();
+			this.simUI.individualConfig.presets.settings?.forEach(settings => {
+				savedSettingsManager.addSavedData({
+					name: settings.name,
+					tooltip: settings.tooltip,
+					isPreset: true,
+					data: SavedSettings.create({
+						race: settings.race,
+						raidBuffs: settings.raidBuffs,
+						playerBuffs: settings.buffs,
+						debuffs: settings.debuffs,
+						consumables: settings.consumables,
+					}),
+				});
+			});
+
 			this.simUI.individualConfig.presets.itemSwaps?.forEach(presetItemSwap => {
 				this.simUI.player;
 				savedSettingsManager.addSavedData({

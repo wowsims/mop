@@ -28,6 +28,8 @@ export const DefaultSimpleRotation = DruidRotation.create({
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import OffensiveHotwApl from './apls/offensiveHotw.apl.json';
+import DefaultBuild from './builds/garajal_default.build.json';
+import GarajalBuild from './builds/garajal_encounter_only.build.json';
 export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal Default", DefaultApl);
 export const ROTATION_HOTW = PresetUtils.makePresetAPLRotation("Gara'jal Offensive HotW", OffensiveHotwApl);
 
@@ -110,8 +112,7 @@ export const OffensiveTalents = {
 	}),
 };
 
-export const DefaultOptions = DruidOptions.create({
-});
+export const DefaultOptions = DruidOptions.create({});
 
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 76087,
@@ -126,10 +127,5 @@ export const OtherDefaults = {
 	profession2: Profession.ProfessionUnknown,
 };
 
-export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuild("Gara'jal", {
-	rotation: ROTATION_DEFAULT,
-	encounter: PresetUtils.makePresetEncounter(
-		"Gara'jal",
-		'http://localhost:5173/mop/druid/guardian/?i=rcmxe#eJzVUk1ME0EU3je7LLvTKNsRsR0iTOsPpSIpVdASzRYPwk0TjuphsUtYrW3TLRLrhZiohIMxXkRj/EEPxoMSLhoPBuQgGn8xoiEmRC5KohJv1YvubltRSDjDSzbz5r3v/XzfDvYqEIDzAOMArwFyAL0IziNhAKE9ggIhaEYKEI5+KLnMi/vj2gk9LbkUl3+N9HBCUKzPc39CCF1/IrT1bdkjPnD63OER5caRMIVk9zbH3qoz6LPg4f0uMh8iXroOr/K7sDwMIhak4X6J2ue5WZ6sp5XYHSyTRIKaOVqKSzDf0Gg66SvDQDy0YmGlhZC+BUg5JVkFC+GmiEny7QameVJN12crrejOBpOsoW5cJr3IAftdNPgLiESKgO+/xH8B1q7ZtVje3mDWsXBjU7H51RtiMRVu+j91+qVIBGqtT3y0Grv9ZXjVMGCCFGQlJ/tKKbbOR9OCHSGMVi2ETOREKlukTokOopnuxPWkDpOgIvGEn4KCLNtDm3BFsFwCIp8SC/LZYmAIOWs8tOTCNL/SZB/664+PiWQD9S3qFwltGgR7tVfX7MFAwjSE/YRh+ZlQoIXlC3zRlWYEW/kz4iDIzunU7KLNuI4EizX936Vije0uHLnDHmlXjwac6uKKb87Or2sLJdNS5zdbilRSL1aCq6USgtKcDcAoEnKSFxu/oFgOQT+/WeYs6903E3W/eG7bR9V3svxu66csitbi9zdTu/ET1SP6R6U2cKAcM6Nux+Hqo97Ll2x7qkbykdeqr9OxSbUl3+6rGp5Dqbl3fLaqVUtrNUe0OMt06aw9ZaSNTIeRiOlp60GwNnbIIwaHgFtGNhL9EJ2/9aaH6kdaFmIc4huvlbdcgp9ls/fv8dNqAZNTL0C39eJce9N6InuCZYxjevBAu3GsO65ljGTCCbCAkWCmfjiZiJm1TMuwni7jcBfLJFnMMLWOuM4yWuIoM3u0lMm0RIzpiXzUkrAjaZqs0Lyju7PTl5+bioanIDX6Y4DPetv143raEjjZydqT3XEzr/RW1sAOetCyVpvjbgVqFql9WwSb3OMlyYVXNrmxJcltW7nk2uAPnjgjFQ==',
-	),
-});
+export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Default", Spec.SpecGuardianDruid, DefaultBuild);
+export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecGuardianDruid, GarajalBuild);

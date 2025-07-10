@@ -14,37 +14,39 @@ func init() {
 }
 
 func TestRetribution(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class: proto.Class_ClassPaladin,
-		Race:  proto.Race_RaceBloodElf,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class: proto.Class_ClassPaladin,
+			Race:  proto.Race_RaceBloodElf,
 
-		GearSet: core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p1"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "preraid"),
-		},
-		Talents:     StandardTalents,
-		Glyphs:      StandardGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Seal of Truth", SpecOptions: SealOfTruth},
-		OtherSpecOptions: []core.SpecOptionsCombo{
-			{Label: "Seal of Insight", SpecOptions: SealOfInsight},
-			{Label: "Seal of Justice", SpecOptions: SealOfJustice},
-			{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
-		},
-		Rotation: core.GetAplRotation("../../../ui/paladin/retribution/apls", "default"),
+			GearSet: core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p1"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "preraid"),
+			},
+			Talents:     StandardTalents,
+			Glyphs:      StandardGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Seal of Truth", SpecOptions: SealOfTruth},
+			OtherSpecOptions: []core.SpecOptionsCombo{
+				{Label: "Seal of Insight", SpecOptions: SealOfInsight},
+				{Label: "Seal of Justice", SpecOptions: SealOfJustice},
+				{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
+			},
+			Rotation: core.GetAplRotation("../../../ui/paladin/retribution/apls", "default"),
 
-		ItemFilter: core.ItemFilter{
-			WeaponTypes: []proto.WeaponType{
-				proto.WeaponType_WeaponTypeAxe,
-				proto.WeaponType_WeaponTypeSword,
-				proto.WeaponType_WeaponTypePolearm,
-				proto.WeaponType_WeaponTypeMace,
+			ItemFilter: core.ItemFilter{
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeAxe,
+					proto.WeaponType_WeaponTypeSword,
+					proto.WeaponType_WeaponTypePolearm,
+					proto.WeaponType_WeaponTypeMace,
+				},
+				HandTypes: []proto.HandType{
+					proto.HandType_HandTypeTwoHand,
+				},
+				ArmorType:         proto.ArmorType_ArmorTypePlate,
+				RangedWeaponTypes: []proto.RangedWeaponType{},
 			},
-			HandTypes: []proto.HandType{
-				proto.HandType_HandTypeTwoHand,
-			},
-			ArmorType:         proto.ArmorType_ArmorTypePlate,
-			RangedWeaponTypes: []proto.RangedWeaponType{},
 		},
 	}))
 }

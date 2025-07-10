@@ -13,26 +13,28 @@ func init() {
 }
 
 func TestProtectionWarrior(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:            proto.Class_ClassWarrior,
-		Race:             proto.Race_RaceOrc,
-		OtherRaces:       []proto.Race{proto.Race_RaceHuman},
-		StartingDistance: 15,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:            proto.Class_ClassWarrior,
+			Race:             proto.Race_RaceOrc,
+			OtherRaces:       []proto.Race{proto.Race_RaceHuman},
+			StartingDistance: 15,
 
-		GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p1_bis"),
-		// OtherGearSets: []core.GearSetCombo{
-		// 	core.GetGearSet("../../../ui/warrior/protection/gear_sets", "preraid"),
-		// },
-		Talents:     DefaultTalents,
-		Glyphs:      DefaultGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-		Rotation:    core.GetAplRotation("../../../ui/warrior/protection/apls", "default"),
+			GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p1_bis"),
+			// OtherGearSets: []core.GearSetCombo{
+			// 	core.GetGearSet("../../../ui/warrior/protection/gear_sets", "preraid"),
+			// },
+			Talents:     DefaultTalents,
+			Glyphs:      DefaultGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
+			Rotation:    core.GetAplRotation("../../../ui/warrior/protection/apls", "default"),
 
-		IsTank:          true,
-		InFrontOfTarget: true,
+			IsTank:          true,
+			InFrontOfTarget: true,
 
-		ItemFilter: ItemFilter,
+			ItemFilter: ItemFilter,
+		},
 	}))
 }
 
@@ -72,6 +74,6 @@ var PlayerOptionsBasic = &proto.Player_ProtectionWarrior{
 var FullConsumesSpec = &proto.ConsumesSpec{
 	FlaskId:  76087, // Flask of the Earth
 	FoodId:   81411, // Peach Pie
-	PotId:    76095, // Potion of Mogu Power
-	PrepotId: 76095, // Potion of Mogu Power
+	PotId:    76090, // Potion of the Mountains
+	PrepotId: 76090, // Potion of the Mountains
 }
