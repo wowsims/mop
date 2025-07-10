@@ -32,7 +32,7 @@
         {"id":84916,"enchant":4805,"gems":[76659],"reforging":152},
         {"id":90586,"enchant":4422,"reforging":139},
         {"id":85823,"enchant":4420,"gems":[76659,76659],"reforging":165},
-        {"id":81090,"enchant":4416,"gems":[0],"reforging":152},
+        {"id":81090,"enchant":4411,"gems":[0],"reforging":152},
         {"id":82858,"enchant":4869,"gems":[0],"reforging":153,"tinker":4898},
         {"id":89060,"gems":[76681,76693],"reforging":165},
         {"id":84871,"enchant":4824,"gems":[76693,76693],"reforging":153},
@@ -41,7 +41,7 @@
         {"id":90584,"reforging":152},
         {"id":81267,"reforging":146},
         {"id":79329},
-        {"id":81576,"enchant":4444,"reforging":153},
+        {"id":81576,"enchant":4445,"reforging":153},
         {}
       ]
     },
