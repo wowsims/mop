@@ -1,10 +1,11 @@
+import { Encounter } from '../../core/encounter';
 import * as PresetUtils from '../../core/preset_utils.js';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior.js';
 import { Stats } from '../../core/proto_utils/stats';
-import DefaultApl from './apls/default.apl.json';
-import GarajalApl from './apls/garajal.apl.json';
+import DefensiveApl from './apls/default.apl.json';
+import DefautlApl from './apls/garajal.apl.json';
 import DefaultBuild from './builds/garajal_default.build.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
 import P1BISItemSwapGear from './gear_sets/p1_bis_item_swap.gear.json';
@@ -19,8 +20,8 @@ export const P1_BALANCED_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1BISGe
 
 export const P1_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P1 - Item Swap', P1BISItemSwapGear);
 
-export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
-export const ROTATION_GARAJAL = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
+export const ROTATION_DEFENSIVE = PresetUtils.makePresetAPLRotation('Defensive', DefensiveApl);
+export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal", DefautlApl);
 
 // Preset options for EP weights
 export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -79,3 +80,9 @@ export const OtherDefaults = {
 };
 
 export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecProtectionWarrior, DefaultBuild);
+export const PRESET_BUILD_DEFENSIVE = PresetUtils.makePresetBuild('Defensive', {
+	talents: StandardTalents,
+	rotation: ROTATION_DEFENSIVE,
+	itemSwap: P1_ITEM_SWAP,
+	encounter: PresetUtils.makePresetEncounter('Defensive', Encounter.defaultEncounterProto()),
+});
