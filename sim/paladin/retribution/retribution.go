@@ -52,12 +52,13 @@ func (ret *RetributionPaladin) Initialize() {
 	ret.registerArtOfWar()
 	ret.registerDivineStorm()
 	ret.registerExorcism()
-	ret.registerHotfixPassive()
 	ret.registerInquisition()
 	ret.registerJudgmentsOfTheBold()
 	ret.registerSealOfJustice()
 	ret.registerSwordOfLight()
 	ret.registerTemplarsVerdict()
+
+	ret.registerHotfixPassive()
 }
 
 func (ret *RetributionPaladin) ApplyTalents() {
