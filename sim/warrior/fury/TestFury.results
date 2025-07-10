@@ -82,7 +82,7 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 143152.114
+  dps: 143152.73401
   tps: 90171.86305
  }
 }
@@ -103,7 +103,7 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 143507.6862
+  dps: 143508.3062
   tps: 90072.55568
  }
 }
@@ -166,7 +166,7 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 143507.6862
+  dps: 143508.3062
   tps: 90072.55568
  }
 }
@@ -236,7 +236,7 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 143507.6862
+  dps: 143508.3062
   tps: 90072.55568
  }
 }
@@ -306,14 +306,14 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Primordius'TalismanofRage-96873"
  value: {
-  dps: 153284.98586
+  dps: 153285.60587
   tps: 96485.20039
  }
 }
 dps_results: {
  key: "TestFury-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 147055.41919
+  dps: 147056.49965
   tps: 92102.88523
  }
 }
@@ -348,7 +348,7 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 143152.114
+  dps: 143152.73401
   tps: 90171.86305
  }
 }
@@ -418,7 +418,7 @@ dps_results: {
 dps_results: {
  key: "TestFury-Average-Default"
  value: {
-  dps: 147226.10047
+  dps: 147226.09474
   tps: 93068.38295
  }
 }
@@ -537,7 +537,7 @@ dps_results: {
 dps_results: {
  key: "TestFury-Settings-Troll-p1_fury_tg-DefaultTalents-Basic-default-NoBuffs-5.0yards-LongSingleTarget"
  value: {
-  dps: 110396.08865
+  dps: 110395.88498
   tps: 70348.63359
  }
 }
