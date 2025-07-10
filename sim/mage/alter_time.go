@@ -33,6 +33,11 @@ func (mage *Mage) registerAlterTimeCD() {
 		for _, aura := range allAuras {
 			state := auraState[aura.Label]
 			if state != nil {
+				// Don't restore state for the currently channeled spell as this can break APL state
+				// Let it complete naturally or be interrupted properly by the APL
+				if mage.IsChanneling() && mage.ChanneledDot != nil && mage.ChanneledDot.Aura == aura {
+					continue
+				}
 				aura.RestoreState(*state, sim)
 			} else if aura.IsActive() {
 				aura.Deactivate(sim)
