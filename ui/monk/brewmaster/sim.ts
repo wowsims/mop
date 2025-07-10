@@ -64,6 +64,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 		],
 	),
 
+	defaultBuild: Presets.PRESET_BUILD_DEFAULT,
+
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_BIS_DW_GEAR_PRESET.gear,
@@ -151,6 +153,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 			Presets.P1_BIS_TIERLESS_DW_GEAR_PRESET,
 			Presets.P1_BIS_TIERLESS_2H_GEAR_PRESET,
 		],
+		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_DEFENSIVE, Presets.PRESET_BUILD_OFFENSIVE],
 	},
 
 	autoRotation: (_: Player<Spec.SpecBrewmasterMonk>): APLRotation => {

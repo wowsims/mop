@@ -172,7 +172,6 @@ func (monk *Monk) Initialize() {
 		monk.OHAutoSpell = monk.AutoAttacks.OHAuto()
 	})
 
-	monk.registerStances()
 	monk.applyGlyphs()
 	monk.registerPassives()
 	monk.registerSpells()
@@ -284,6 +283,7 @@ func NewMonk(character *core.Character, options *proto.MonkOptions, talents stri
 	// to count towards Base stats
 	monk.registerWayOfTheMonk()
 	monk.registerSwiftReflexes()
+	monk.registerStances()
 
 	return monk
 }
