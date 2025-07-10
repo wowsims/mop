@@ -327,8 +327,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 142372.88758
-  tps: 89895.60241
+  dps: 141983.14843
+  tps: 89526.8817
  }
 }
 dps_results: {

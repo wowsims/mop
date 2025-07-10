@@ -670,8 +670,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 133416.05729
-  tps: 69332.98119
+  dps: 133416.09858
+  tps: 69333.02248
  }
 }
 dps_results: {
@@ -1685,8 +1685,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 175043.74459
-  tps: 87044.85338
+  dps: 147538.64866
+  tps: 75046.11824
  }
 }
 dps_results: {
@@ -2273,8 +2273,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 133416.09858
-  tps: 69333.02248
+  dps: 133416.01206
+  tps: 69332.93596
  }
 }
 dps_results: {

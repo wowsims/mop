@@ -13,25 +13,27 @@ func init() {
 }
 
 func TestProtectionWarrior(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassWarrior,
-		Race:       proto.Race_RaceOrc,
-		OtherRaces: []proto.Race{proto.Race_RaceHuman},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassWarrior,
+			Race:       proto.Race_RaceOrc,
+			OtherRaces: []proto.Race{proto.Race_RaceHuman},
 
-		GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p1_bis"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/warrior/protection/gear_sets", "preraid"),
+			GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p1_bis"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/warrior/protection/gear_sets", "preraid"),
+			},
+			Talents:     DefaultTalents,
+			Glyphs:      DefaultGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
+			Rotation:    core.GetAplRotation("../../../ui/warrior/protection/apls", "default"),
+
+			IsTank:          true,
+			InFrontOfTarget: true,
+
+			ItemFilter: ItemFilter,
 		},
-		Talents:     DefaultTalents,
-		Glyphs:      DefaultGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-		Rotation:    core.GetAplRotation("../../../ui/warrior/protection/apls", "default"),
-
-		IsTank:          true,
-		InFrontOfTarget: true,
-
-		ItemFilter: ItemFilter,
 	}))
 }
 

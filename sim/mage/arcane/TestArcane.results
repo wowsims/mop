@@ -173,8 +173,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 138946.18632
-  tps: 136748.41881
+  dps: 138923.13518
+  tps: 136725.36767
  }
 }
 dps_results: {
@@ -306,8 +306,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 138749.91134
-  tps: 136549.02839
+  dps: 138786.14821
+  tps: 136585.08256
  }
 }
 dps_results: {
@@ -369,8 +369,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 177866.15979
-  tps: 174922.52237
+  dps: 156132.58482
+  tps: 153418.21291
  }
 }
 dps_results: {

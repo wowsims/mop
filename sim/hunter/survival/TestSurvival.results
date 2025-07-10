@@ -670,8 +670,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 142728.13417
-  tps: 118701.36861
+  dps: 142727.44233
+  tps: 118702.46932
  }
 }
 dps_results: {
@@ -1685,8 +1685,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 190660.42097
-  tps: 155678.8539
+  dps: 158445.7868
+  tps: 130848.34767
  }
 }
 dps_results: {

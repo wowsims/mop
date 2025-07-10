@@ -210,9 +210,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 169686.36083
-  tps: 119018.53715
-  hps: 1914.35741
+  dps: 146175.25032
+  tps: 104407.49423
+  hps: 1924.73515
  }
 }
 dps_results: {
@@ -370,8 +370,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 132220.26092
-  tps: 95051.99087
+  dps: 131842.65801
+  tps: 94819.49151
   hps: 1909.71621
  }
 }

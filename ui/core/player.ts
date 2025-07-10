@@ -915,7 +915,7 @@ export class Player<SpecType extends Spec> {
 			rot.type = APLRotationType.TypeSimple;
 			return rot;
 		} else {
-			return this.aplRotation;
+			return omitDeep(this.aplRotation, ['uuid']);
 		}
 	}
 

@@ -870,10 +870,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 156978.20223
-  tps: 931198.20826
-  dtps: 24270.22892
-  hps: 42392.40486
+  dps: 152689.07333
+  tps: 907965.49764
+  dtps: 24475.21792
+  hps: 41402.00982
  }
 }
 dps_results: {
@@ -2193,10 +2193,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 166607.32577
-  tps: 982685.54445
-  dtps: 16990.58213
-  hps: 43360.42839
+  dps: 156524.89251
+  tps: 928283.40089
+  dtps: 21886.61141
+  hps: 41563.20182
  }
 }
 dps_results: {
