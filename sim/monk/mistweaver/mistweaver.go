@@ -53,8 +53,8 @@ type MistweaverMonk struct {
 
 	ManaTeaStackAura *core.Aura
 
-	renewingMist    *core.Spell
-	enevelopingMist *core.Spell
+	renewingMist   *core.Spell
+	envelopingMist *core.Spell
 
 	JadeSerpentAura *core.Aura
 	//May move this to monk as both ww and mw use this

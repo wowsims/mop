@@ -10,7 +10,6 @@ import (
 func (mw *MistweaverMonk) registerSurgingMist() {
 	actionID := core.ActionID{SpellID: 116694}
 	chiMetrics := mw.NewChiMetrics(actionID)
-	spellCoeff := 1.8
 
 	mw.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -19,7 +18,7 @@ func (mw *MistweaverMonk) registerSurgingMist() {
 		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL,
 		ClassSpellMask: monk.MonkSpellSurgingMist,
 		ManaCost: core.ManaCostOptions{
-			BaseCostPercent: 8.8,
+			BaseCostPercent: 7.65, //Changed based on patch notes
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -31,12 +30,11 @@ func (mw *MistweaverMonk) registerSurgingMist() {
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 		CritMultiplier:   mw.DefaultCritMultiplier(),
+		BonusCoefficient: 1.8,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			baseHealing := 19630 + spellCoeff*spell.HealingPower(target)
-			//Hardcoded to heal the player for now
-			spell.CalcAndDealHealing(sim, &mw.Unit, baseHealing, spell.OutcomeHealingCrit)
-			chiGain := int32(1) //core.TernaryInt32(monk.StanceMatches(FierceTiger), 2, 1)
+			spell.CalcAndDealHealing(sim, target, 17242, spell.OutcomeHealingCrit)
+			chiGain := int32(1)
 			mw.AddChi(sim, spell, chiGain, chiMetrics)
 		},
 	})

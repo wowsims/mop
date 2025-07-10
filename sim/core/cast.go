@@ -146,7 +146,7 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 			return spell.castFailureHelper(sim, "casting/channeling %v for %s, curTime = %s", hc.ActionID, hc.Expires-sim.CurrentTime, sim.CurrentTime)
 		}
 
-		if dot := spell.Unit.ChanneledDot; spell.Unit.IsChanneling(sim) && !spell.Flags.Matches(SpellFlagCastWhileChanneling) && (spell.Unit.Rotation.interruptChannelIf == nil || !spell.Unit.Rotation.interruptChannelIf.GetBool(sim)) {
+		if dot := spell.Unit.ChanneledDot; spell.Unit.IsChanneling() && !spell.Flags.Matches(SpellFlagCastWhileChanneling) && (spell.Unit.Rotation.interruptChannelIf == nil || !spell.Unit.Rotation.interruptChannelIf.GetBool(sim)) {
 			return spell.castFailureHelper(sim, "channeling %v for %s, curTime = %s", dot.ActionID, dot.expires-sim.CurrentTime, sim.CurrentTime)
 		}
 

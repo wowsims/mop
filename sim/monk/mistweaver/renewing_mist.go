@@ -85,15 +85,9 @@ func (mw *MistweaverMonk) registerRenewingMist() {
 
 			if success {
 				charges = 3
-				chiGain := int32(1) //core.TernaryInt32(monk.StanceMatches(FierceTiger), 2, 1)
+				chiGain := int32(1)
 				mw.AddChi(sim, spell, chiGain, chiMetrics)
 			}
-
-			//hot := spell.Hot(target)
-			//spell.Hot(spell.Unit).Apply(sim)
-			//if !hot.IsActive() { //Error?
-			//	hot.Apply(sim)
-			//}
 
 		},
 	})

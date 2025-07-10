@@ -1,6 +1,7 @@
 package mistweaver
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -25,9 +26,7 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 		ClassMask: monk.MonkSpellSurgingMist | monk.MonkSpellEnvelopingMist,
 	})
 
-	var soothingMist *core.Spell
-
-	soothingMist = mw.RegisterSpell(core.SpellConfig{
+	mw.RegisterSpell(core.SpellConfig{
 		ActionID:    actionID,
 		SpellSchool: core.SpellSchoolNature,
 		ProcMask:    core.ProcMaskSpellHealing,
@@ -63,23 +62,25 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 			AffectedByCastSpeed:  true, //Not sure
 			HasteReducesDuration: true, //Not sure
 			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
-				envelopingActive := mw.enevelopingMist.RelatedDotSpell.Hot(target).IsActive()
+
 				dot.SnapshotBaseDamage = 0 + mw.CalcScalingSpellDmg(spellCoeff)
 				multiplier := dot.Spell.CasterHealingMultiplier()
-				if envelopingActive {
-					multiplier += +0.3
-				}
 
 				dot.SnapshotAttackerMultiplier = multiplier
 			},
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+				envelopingActive := mw.envelopingMist.RelatedDotSpell.Hot(target).IsActive()
+				if envelopingActive {
+					dot.SnapshotAttackerMultiplier = 1.3
+				} else {
+					dot.SnapshotAttackerMultiplier = 1
+				}
 				dot.CalcAndDealPeriodicSnapshotHealing(sim, target, dot.OutcomeTick)
 				mw.SpendMana(sim, manaLoss, manaMetrics)
 				//Need to take 1% of mana on tick
-				outcome := sim.Roll(1, 10)
-				if outcome > 7 {
-					mw.AddChi(sim, soothingMist, 1, chiMetrics)
+				if sim.Proc(0.3, "Soothing Mist Chi") {
+					mw.AddChi(sim, dot.Spell, 1, chiMetrics)
 				}
 			},
 		},
@@ -88,7 +89,11 @@ func (mw *MistweaverMonk) registerSoothingMist() {
 			//Currently target mistweaver only, will need to fix this
 			manaLoss = mw.MaxMana() * 0.01
 
-			hot := spell.Hot(&mw.Unit)
+			hot := spell.Hot(target)
+			if target.Type == core.EnemyUnit {
+				fmt.Printf("Attemping to cast Enveloping mist on enemy: %v\n", target.Label)
+				return
+			}
 			hot.Apply(sim)
 			hot.TickOnce(sim)
 			expiresAt := hot.ExpiresAt()

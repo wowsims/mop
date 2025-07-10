@@ -1,7 +1,6 @@
 package mistweaver
 
 import (
-	"math"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -34,7 +33,7 @@ func (mw *MistweaverMonk) registerManaTea() {
 		Label:     "Mana Tea Stacks" + mw.Label,
 		ActionID:  stackActionID,
 		Duration:  time.Hour,
-		MaxStacks: 10,
+		MaxStacks: 20,
 	})
 
 	mw.Monk.RegisterOnNewBrewStacks(func(sim *core.Simulation, stacksToAdd int32) {
@@ -42,7 +41,7 @@ func (mw *MistweaverMonk) registerManaTea() {
 
 		procChance := mw.GetStat(stats.SpellCritPercent)
 
-		if sim.Proc(math.Mod(procChance, 1), "Mana Tea") {
+		if sim.Proc(procChance/100, "Mana Tea") {
 			stacksToAdd += 1
 		}
 
@@ -75,7 +74,7 @@ func (mw *MistweaverMonk) registerManaTea() {
 			OnTick: func(sim *core.Simulation, target *core.Unit, spell *core.Dot) {
 				mw.AddMana(sim, manaPerTick, manaMetrics)
 
-				mw.ManaTeaStackAura.SetStacks(sim, mw.ManaTeaStackAura.GetStacks()-1)
+				mw.ManaTeaStackAura.RemoveStack(sim)
 
 			},
 		},

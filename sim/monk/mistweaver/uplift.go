@@ -7,7 +7,6 @@ import (
 func (mw *MistweaverMonk) registerUplift() {
 	actionID := core.ActionID{SpellID: 116670}
 	chiMetrics := mw.NewChiMetrics(actionID)
-	spellCoeff := 0.68
 
 	mw.RegisterSpell(core.SpellConfig{
 		ActionID:    actionID,
@@ -22,6 +21,7 @@ func (mw *MistweaverMonk) registerUplift() {
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 		CritMultiplier:   mw.DefaultCritMultiplier(),
+		BonusCoefficient: 0.68,
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
 			return mw.GetChi() >= 2
 		},
@@ -31,8 +31,8 @@ func (mw *MistweaverMonk) registerUplift() {
 				hot := mw.renewingMist.Hot(player)
 
 				if hot.IsActive() {
-					baseHealing := 0 + spellCoeff*spell.HealingPower(target)
-					spell.CalcAndDealHealing(sim, player, baseHealing, spell.OutcomeHealingCrit)
+
+					spell.CalcAndDealHealing(sim, player, 0, spell.OutcomeHealingCrit)
 					success = true
 				}
 			}

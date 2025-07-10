@@ -471,7 +471,7 @@ func (unit *Unit) InitialCastSpeed() float64 {
 	return unit.initialCastSpeed
 }
 
-func (unit *Unit) IsChanneling(sim *Simulation) bool {
+func (unit *Unit) IsChanneling() bool {
 	return unit.ChanneledDot != nil
 }
 

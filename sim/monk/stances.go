@@ -111,7 +111,7 @@ func (monk *Monk) registerStanceOfTheWiseSerpent(stanceCD *core.Timer) {
 		ProcMask:    core.ProcMaskSpellHealing,
 		Flags:       core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
 
-		DamageMultiplier: 0.25,
+		DamageMultiplier: 0.42, //Changed from 25% to 42% based on patch notes
 		ThreatMultiplier: 1,
 		CritMultiplier:   monk.DefaultCritMultiplier(),
 

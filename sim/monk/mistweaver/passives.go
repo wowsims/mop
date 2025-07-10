@@ -121,7 +121,7 @@ func (mw *MistweaverMonk) registerMuscleMemory() {
 		Duration: time.Second * 15,
 
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if (!spell.Matches(monk.MonkSpellBlackoutKick) && !spell.Matches(monk.MonkSpellTigerPalm)) || !result.Landed() {
+			if !spell.Matches(monk.MonkSpellBlackoutKick|monk.MonkSpellTigerPalm) || !result.Landed() {
 				return
 			}
 			aura.Deactivate(sim)

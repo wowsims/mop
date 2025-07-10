@@ -1,6 +1,7 @@
 package mistweaver
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -12,7 +13,7 @@ func (mw *MistweaverMonk) registerEnvelopingMist() {
 	chiMetrics := mw.NewChiMetrics(actionID)
 	spellCoeff := 0.45
 
-	mw.enevelopingMist = mw.RegisterSpell(core.SpellConfig{
+	mw.envelopingMist = mw.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolNature,
 		ProcMask:       core.ProcMaskSpellHealing,
@@ -30,19 +31,19 @@ func (mw *MistweaverMonk) registerEnvelopingMist() {
 		ThreatMultiplier: 1,
 		CritMultiplier:   mw.DefaultCritMultiplier(),
 
-		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+		ExtraCastCondition: func(_ *core.Simulation, _ *core.Unit) bool {
 			return mw.GetChi() >= 3
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 
 			mw.SpendChi(sim, 3, chiMetrics)
-			spell.RelatedDotSpell.Cast(sim, &mw.Unit)
+			spell.RelatedDotSpell.Cast(sim, target)
 
 		},
 	})
 
-	mw.enevelopingMist.RelatedDotSpell = mw.RegisterSpell(core.SpellConfig{
+	mw.envelopingMist.RelatedDotSpell = mw.RegisterSpell(core.SpellConfig{
 		ActionID:    actionID,
 		SpellSchool: core.SpellSchoolNature,
 		ProcMask:    core.ProcMaskSpellHealing,
@@ -66,14 +67,19 @@ func (mw *MistweaverMonk) registerEnvelopingMist() {
 			},
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+
 				dot.CalcAndDealPeriodicSnapshotHealing(sim, target, dot.OutcomeTick)
 
 			},
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			//Targets only mw currently
-			hot := spell.Hot(&mw.Unit)
+			hot := spell.Hot(target)
+			//Will probably have to remove enemy units as options for friendly spells?
+			if target.Type == core.EnemyUnit {
+				fmt.Printf("Attemping to cast Enveloping mist on enemy: %v\n", target.Label)
+				return
+			}
 
 			hot.Apply(sim)
 
