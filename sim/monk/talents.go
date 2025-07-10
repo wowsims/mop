@@ -135,6 +135,13 @@ func (monk *Monk) registerChiWave() {
 	var nextTarget *core.Unit
 	tickIndex := 0
 
+	allyTargets := make([]*core.Unit, 0, monk.Env.Raid.NumTargetDummies+1)
+	allyTargets = append(allyTargets, &monk.Unit)
+	for _, dummy := range monk.Env.Raid.GetTargetDummies() {
+		allyTargets = append(allyTargets, &dummy.Unit)
+	}
+	numAllyTargets := float64(len(allyTargets))
+
 	var chiWaveHealingSpell *core.Spell
 	chiWaveDamageSpell := monk.RegisterSpell(chiWaveDamageSpellConfig(monk, false, core.SpellConfig{
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -146,8 +153,8 @@ func (monk *Monk) registerChiWave() {
 					result = spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicCrit)
 					if tickIndex < chiWaveMaxBounces {
 						tickIndex++
-						nextTarget = nextTarget.Env.NextActiveTargetUnit(nextTarget)
-						chiWaveHealingSpell.Cast(sim, &monk.Unit)
+						nextTarget = allyTargets[int32(sim.RollWithLabel(0, numAllyTargets, "GetRandomAllyUnit"))]
+						chiWaveHealingSpell.Cast(sim, nextTarget)
 					}
 				})
 			}
@@ -165,6 +172,7 @@ func (monk *Monk) registerChiWave() {
 
 				if tickIndex < chiWaveMaxBounces {
 					tickIndex++
+					nextTarget = target.Env.NextActiveTargetUnit(target.CurrentTarget)
 					chiWaveDamageSpell.Cast(sim, nextTarget)
 				}
 			})

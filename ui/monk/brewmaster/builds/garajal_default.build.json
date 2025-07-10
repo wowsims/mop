@@ -237,5 +237,6 @@
         "disabledAtStart": true
       }
     ]
-  }
+  },
+  "targetDummies": 9
 }
