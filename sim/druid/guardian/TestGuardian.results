@@ -3030,163 +3030,163 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-DefaultTalents-Default-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.19215591107e+06
-  tps: 1.526086667584e+07
-  dtps: 1.03179122412e+06
-  hps: 132136.09937
+  dps: 2.17438712473e+06
+  tps: 1.513692638513e+07
+  dtps: 1.04288565724e+06
+  hps: 131405.19185
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-DefaultTalents-Default-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 102948.79595
-  tps: 712378.19802
-  dtps: 51399.0299
-  hps: 32275.97146
+  dps: 100697.55997
+  tps: 696926.30963
+  dtps: 51572.5213
+  hps: 31675.49403
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-DefaultTalents-Default-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 100154.60519
-  tps: 659637.11663
-  dtps: 44270.79972
-  hps: 27621.18385
+  dps: 97391.07657
+  tps: 641830.41513
+  dtps: 44399.43538
+  hps: 27066.49009
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-DefaultTalents-Default-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.61065417746e+06
-  tps: 1.12751045814e+07
-  dtps: 1.11461306571e+06
-  hps: 78350.07479
+  dps: 1.59736541254e+06
+  tps: 1.118207199908e+07
+  dtps: 1.12675415531e+06
+  hps: 75854.16308
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-DefaultTalents-Default-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 84988.4579
-  tps: 594957.84901
-  dtps: 55178.18672
-  hps: 23505.32174
+  dps: 83347.5077
+  tps: 583470.83083
+  dtps: 55261.58403
+  hps: 23016.37709
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-DefaultTalents-Default-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 76207.34847
-  tps: 533501.90104
-  dtps: 52005.45337
-  hps: 20065.22463
+  dps: 74134.39677
+  tps: 518989.84565
+  dtps: 51979.27961
+  hps: 19721.28706
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-NV-Default-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.22486380604e+06
-  tps: 1.540328200434e+07
-  dtps: 1.05097510304e+06
-  hps: 99945.90085
+  dps: 2.21237853269e+06
+  tps: 1.531497279177e+07
+  dtps: 1.06071390303e+06
+  hps: 97407.33537
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-NV-Default-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 106962.35636
-  tps: 720864.38232
-  dtps: 51978.6875
-  hps: 25143.39124
+  dps: 104875.66352
+  tps: 707011.86663
+  dtps: 51451.30414
+  hps: 24536.30917
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-NV-Default-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 105480.98587
-  tps: 668583.6833
-  dtps: 46747.77547
-  hps: 21138.26556
+  dps: 102149.79916
+  tps: 647093.77158
+  dtps: 47032.38796
+  hps: 20896.12269
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-NV-Default-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.65891984904e+06
-  tps: 1.15602209163e+07
-  dtps: 1.12529667871e+06
-  hps: 54993.4978
+  dps: 1.64207414727e+06
+  tps: 1.144284095041e+07
+  dtps: 1.13568541168e+06
+  hps: 53185.89294
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-NV-Default-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 88915.54966
-  tps: 608065.3988
-  dtps: 56518.70106
-  hps: 17594.09603
+  dps: 87189.41579
+  tps: 596286.52185
+  dtps: 56522.43201
+  hps: 17193.62011
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-FoN-NV-Default-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 81465.75593
-  tps: 551346.42535
-  dtps: 55473.28638
-  hps: 14569.43632
+  dps: 79560.68032
+  tps: 538665.33415
+  dtps: 55451.30349
+  hps: 13940.07679
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-Incarn-DoC-Default-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.66533684785e+06
-  tps: 1.157494681844e+07
-  dtps: 1.04262048231e+06
-  hps: 160410.42742
+  dps: 1.66951275173e+06
+  tps: 1.160727560495e+07
+  dtps: 1.05048696379e+06
+  hps: 156697.75773
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-Incarn-DoC-Default-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 96091.98082
-  tps: 664698.79017
-  dtps: 51555.15271
-  hps: 36813.97784
+  dps: 94145.60331
+  tps: 651356.00073
+  dtps: 51393.01231
+  hps: 36582.71828
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-Incarn-DoC-Default-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 98631.79007
-  tps: 650573.21069
-  dtps: 44319.77401
-  hps: 30859.65089
+  dps: 96531.7933
+  tps: 637282.57961
+  dtps: 44165.24209
+  hps: 30729.35405
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-Incarn-DoC-Default-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.37273153578e+06
-  tps: 9.60961730599e+06
-  dtps: 1.12725782764e+06
-  hps: 95767.65238
+  dps: 1.35010232583e+06
+  tps: 9.4512143358e+06
+  dtps: 1.13788902812e+06
+  hps: 98033.79185
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-Incarn-DoC-Default-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 79642.69196
-  tps: 557536.55586
-  dtps: 55234.71776
-  hps: 28033.75368
+  dps: 78114.87377
+  tps: 546841.00185
+  dtps: 55419.26984
+  hps: 27366.14076
  }
 }
 dps_results: {
  key: "TestGuardian-Settings-Worgen-preraid-Incarn-DoC-Default-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 73874.43214
-  tps: 517170.1135
-  dtps: 52398.08956
-  hps: 22332.94827
+  dps: 72161.19662
+  tps: 505175.38934
+  dtps: 53416.87006
+  hps: 21259.89896
  }
 }
 dps_results: {
