@@ -94,7 +94,7 @@ func (bear *GuardianDruid) ApplyTalents() {
 	bear.applyVengeance()
 
 	// MoP Classic balancing
-	bear.BearFormAura.AttachMultiplicativePseudoStatBuff(&bear.PseudoStats.DamageDealtMultiplier, 1.05)
+	bear.BearFormAura.AttachMultiplicativePseudoStatBuff(&bear.PseudoStats.DamageDealtMultiplier, 1.15)
 }
 
 func (bear *GuardianDruid) applyVengeance() {
