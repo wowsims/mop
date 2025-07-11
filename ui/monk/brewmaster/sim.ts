@@ -38,9 +38,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 	epReferenceStat: Stat.StatAttackPower,
 	consumableStats: [
 		Stat.StatAgility,
+		Stat.StatArmor,
 		Stat.StatBonusArmor,
 		Stat.StatStamina,
-		Stat.StatArmor,
 		Stat.StatAttackPower,
 		Stat.StatDodgeRating,
 		Stat.StatParryRating,
@@ -52,7 +52,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 	],
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatStamina, Stat.StatAgility, Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
+		[
+			Stat.StatHealth,
+			Stat.StatArmor,
+			Stat.StatStamina,
+			Stat.StatAgility,
+			Stat.StatStrength,
+			Stat.StatAttackPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+		],
 		[
 			PseudoStat.PseudoStatPhysicalHitPercent,
 			PseudoStat.PseudoStatSpellHitPercent,
@@ -209,8 +218,8 @@ export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk
 			// Zen sphere can be on 2 targets, so we set the target dummies to 1 if it is talented.
 			if (talents.zenSphere) {
 				targetDummies = 2;
-			// Chi Wave jumps to the nearest target rquiring a heal, so we set the target dummies to 9 if it is talented.
-			// This is done to get a better approximation of the healing done by Chi Wave.
+				// Chi Wave jumps to the nearest target rquiring a heal, so we set the target dummies to 9 if it is talented.
+				// This is done to get a better approximation of the healing done by Chi Wave.
 			} else if (talents.chiWave) {
 				targetDummies = 9;
 			}
