@@ -19,7 +19,7 @@ func (dk *DeathKnight) registerEmpowerRuneWeapon() {
 
 	spell := dk.RegisterSpell(core.SpellConfig{
 		ActionID: actionId,
-		Flags:    core.SpellFlagAPL | core.SpellFlagHelpful | core.SpellFlagNoOnCastComplete | core.SpellFlagReadinessTrinket,
+		Flags:    core.SpellFlagAPL | core.SpellFlagHelpful | core.SpellFlagNoOnCastComplete | core.SpellFlagReadinessTrinket | core.SpellFlagEncounterOnly,
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
 				NonEmpty: true,

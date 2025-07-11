@@ -5,9 +5,9 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import * as FrostInputs from './inputs';
 import * as Presets from './presets';
@@ -26,9 +26,19 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating],
+		[
+			Stat.StatHealth,
+			Stat.StatMana,
+			Stat.StatStamina,
+			Stat.StatIntellect,
+			Stat.StatSpirit,
+			Stat.StatSpellPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+		],
 		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
+	gemStats: DEFAULT_CASTER_GEM_STATS,
 
 	defaults: {
 		// Default equipped gear.
@@ -101,6 +111,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 			OtherInputs.TankAssignment,
 		],
 	},
+	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: true,

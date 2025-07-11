@@ -8,7 +8,7 @@ import (
 )
 
 func (druid *Druid) registerMaulSpell() {
-	numHits := core.TernaryInt32(druid.HasMajorGlyph(proto.DruidMajorGlyph_GlyphOfMaul) && druid.Env.GetNumTargets() > 1, 2, 1)
+	maxHits := core.TernaryInt32(druid.HasMajorGlyph(proto.DruidMajorGlyph_GlyphOfMaul), 2, 1)
 
 	druid.Maul = druid.RegisterSpell(Bear, core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 6807},
@@ -18,7 +18,7 @@ func (druid *Druid) registerMaulSpell() {
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
 
 		RageCost: core.RageCostOptions{
-			Cost:   30,
+			Cost:   core.TernaryInt32(druid.Spec == proto.Spec_SpecGuardianDruid, 20, 30),
 			Refund: 0.8,
 		},
 		Cast: core.CastConfig{
@@ -36,26 +36,20 @@ func (druid *Druid) registerMaulSpell() {
 		MaxRange:         core.MaxMeleeRange,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			curTarget := target
-			anyLanded := false
+			numHits := 0
 
-			for hitIndex := int32(0); hitIndex < numHits; hitIndex++ {
+			results := spell.CalcAndDealCleaveDamageWithVariance(sim, target, maxHits, spell.OutcomeMeleeWeaponSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
 				baseDamage := spell.Unit.MHWeaponDamage(sim, spell.MeleeAttackPower())
 
-				if hitIndex > 0 {
+				if numHits > 0 {
 					baseDamage *= 0.5
 				}
 
-				result := spell.CalcAndDealDamage(sim, curTarget, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
+				numHits++
+				return baseDamage
+			})
 
-				if result.Landed() {
-					anyLanded = true
-				}
-
-				curTarget = sim.Environment.NextTargetUnit(curTarget)
-			}
-
-			if !anyLanded {
+			if !results.AnyLanded() {
 				spell.IssueRefund(sim)
 			}
 		},

@@ -6,7 +6,7 @@ import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common.js';
-import { Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import * as ShamanInputs from '../inputs.js';
 import * as ElementalInputs from './inputs.js';
 import * as Presets from './presets.js';
@@ -27,7 +27,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating],
 		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
-
+	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 	defaults: {
 		// Default equipped gear.
 		gear: Presets.P1_PRESET.gear,
@@ -45,17 +45,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		specOptions: Presets.DefaultOptions,
 		other: Presets.OtherDefaults,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			blessingOfKings: true,
-			leaderOfThePack: true,
-			serpentsSwiftness: true,
-			bloodlust: true,
-		}),
+		raidBuffs: Presets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
-		debuffs: Debuffs.create({
-			curseOfElements: true,
-		}),
+		debuffs: Presets.DefaultDebuffs,
 	},
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [ShamanInputs.ShamanShieldInput()],
@@ -66,20 +59,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	otherInputs: {
 		inputs: [ElementalInputs.InThunderstormRange, OtherInputs.InputDelay, OtherInputs.TankAssignment, OtherInputs.DistanceFromTarget],
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotHead,
-		ItemSlot.ItemSlotNeck,
-		ItemSlot.ItemSlotShoulder,
-		ItemSlot.ItemSlotBack,
-		ItemSlot.ItemSlotChest,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotLegs,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotMainHand,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	customSections: [ShamanInputs.TotemsSection],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
@@ -91,7 +71,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents, Presets.TalentsAoE],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_UF, Presets.ROTATION_PRESET_AOE, Presets.ROTATION_PRESET_CLEAVE],
+		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_AOE, Presets.ROTATION_PRESET_CLEAVE],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET],
 
@@ -101,15 +81,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	autoRotation: (_player: Player<Spec.SpecElementalShaman>): APLRotation => {
 		const numTargets = _player.sim.encounter.targets.length;
 
-		if (numTargets>2) return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
-		if (numTargets==2) return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;
-	
-		const talents = _player.getTalents()
+		if (numTargets > 2) return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
+		if (numTargets == 2) return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;
 
-		if(talents.unleashedFury) return Presets.ROTATION_PRESET_UF.rotation.rotation!;
-		if(talents.elementalBlast) return Presets.ROTATION_PRESET_EB.rotation.rotation!;
-
-		return Presets.ROTATION_PRESET_PE.rotation.rotation!;
+		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
 
 	raidSimPresets: [

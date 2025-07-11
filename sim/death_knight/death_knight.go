@@ -1,7 +1,6 @@
 package death_knight
 
 import (
-	"math"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -23,8 +22,6 @@ type DeathKnightInputs struct {
 
 	UnholyFrenzyTarget *proto.UnitReference
 
-	StartingRunicPower float64
-
 	Spec proto.Spec
 }
 
@@ -36,48 +33,33 @@ type DeathKnight struct {
 
 	// Pets
 	Ghoul           *GhoulPet
-	Gargoyle        *GargoylePet
 	ArmyGhoul       []*GhoulPet
 	FallenZandalari []*GhoulPet
+	AllGhoulPets    []*GhoulPet
 	RuneWeapon      *RuneWeaponPet
-	Bloodworm       []*BloodwormPet
 
 	BloodPresenceSpell  *core.Spell
 	FrostPresenceSpell  *core.Spell
 	UnholyPresenceSpell *core.Spell
 
 	PestilenceSpell *core.Spell
-	RuneTapSpell    *core.Spell
 
-	ConversionAura             *core.Aura
-	MightOfTheFrozenWastesAura *core.Aura
-	ThreatOfThassarianAura     *core.Aura
-	BoneShieldAura             *core.Aura
-	BoneWallAura               *core.Aura
-	PillarOfFrostAura          *core.Aura
-	RaiseDeadAura              *core.Aura
+	BoneShieldAura         *core.Aura
+	BoneWallAura           *core.Aura
+	ConversionAura         *core.Aura
+	PillarOfFrostAura      *core.Aura
+	RaiseDeadAura          *core.Aura
+	ThreatOfThassarianAura *core.Aura
 
 	// Diseases
 	FrostFeverSpell  *core.Spell
 	BloodPlagueSpell *core.Spell
-	ScarletFeverAura core.AuraArray
 
 	// Runic power decay, used during pre pull
 	RunicPowerDecayAura *core.Aura
 
-	// Cached Gurthalak tentacles
-
-	// T12 spell
-	BurningBloodSpell *core.Spell
-
 	// Item sets
-	T12Tank4pc *core.Aura
-	T13Dps2pc  *core.Aura
-	T13Dps4pc  *core.Aura
-	T14Dps4pc  *core.Aura
-
-	// Used for T13 Tank 4pc
-	VampiricBloodBonusHealth float64
+	T14Dps4pc *core.Aura
 
 	// Modified by T14 Tank 4pc
 	deathStrikeHealingMultiplier float64
@@ -128,6 +110,10 @@ func (dk *DeathKnight) Initialize() {
 func (dk *DeathKnight) Reset(sim *core.Simulation) {
 }
 
+func (dk *DeathKnight) OnEncounterStart(sim *core.Simulation) {
+	dk.ResetRunicPowerBar(sim, 20)
+}
+
 func (dk *DeathKnight) HasMajorGlyph(glyph proto.DeathKnightMajorGlyph) bool {
 	return dk.HasGlyph(int32(glyph))
 }
@@ -143,12 +129,7 @@ func NewDeathKnight(character *core.Character, inputs DeathKnightInputs, talents
 	}
 	core.FillTalentsProto(dk.Talents.ProtoReflect(), talents)
 
-	maxRunicPower := 100.0
-	currentRunicPower := math.Min(maxRunicPower, dk.Inputs.StartingRunicPower)
-
 	dk.EnableRunicPowerBar(
-		currentRunicPower,
-		maxRunicPower,
 		10*time.Second,
 		func(sim *core.Simulation, changeType core.RuneChangeType, runeRegen []int8) {
 			if deathRuneConvertSpellId == 0 {
@@ -175,8 +156,11 @@ func NewDeathKnight(character *core.Character, inputs DeathKnightInputs, talents
 	dk.AddStatDependency(stats.Strength, stats.AttackPower, 2)
 	dk.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[dk.Class])
 
-	dk.AddStat(stats.ParryRating, -dk.GetBaseStats()[stats.Strength]*core.StrengthToParryRating) // Does not apply to base Strength
+	baseStrength := dk.GetBaseStats()[stats.Strength]
+	dk.PseudoStats.BaseParryChance += baseStrength * core.StrengthToParryPercent
+	dk.AddStat(stats.ParryRating, -baseStrength*core.StrengthToParryRating)
 	dk.AddStatDependency(stats.Strength, stats.ParryRating, core.StrengthToParryRating)
+	dk.AddStatDependency(stats.Agility, stats.DodgeRating, 0.1/10000.0/100.0)
 
 	dk.AddStatDependency(stats.BonusArmor, stats.Armor, 1)
 
@@ -209,6 +193,16 @@ func NewDeathKnight(character *core.Character, inputs DeathKnightInputs, talents
 	dk.deathStrikeHealingMultiplier = 0.2
 
 	return dk
+}
+
+func (dk *DeathKnight) GetAllActiveGhoulPets() []*core.Pet {
+	activePets := make([]*core.Pet, 0, len(dk.AllGhoulPets))
+	for _, pet := range dk.AllGhoulPets {
+		if pet.IsActive() {
+			activePets = append(activePets, pet.GetPet())
+		}
+	}
+	return activePets
 }
 
 func (dk *DeathKnight) GetDeathKnight() *DeathKnight {

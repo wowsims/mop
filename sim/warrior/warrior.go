@@ -23,6 +23,7 @@ const (
 	SpellMaskRallyingCry
 	SpellMaskRecklessness
 	SpellMaskShieldWall
+	SpellMaskEnragedRegeneration
 	SpellMaskLastStand
 	SpellMaskCharge
 	SpellMaskSkullBanner
@@ -33,6 +34,7 @@ const (
 	// Special attacks
 	SpellMaskSweepingStrikes
 	SpellMaskSweepingStrikesHit
+	SpellMaskSweepingStrikesNormalizedHit
 	SpellMaskCleave
 	SpellMaskColossusSmash
 	SpellMaskExecute
@@ -42,6 +44,7 @@ const (
 	SpellMaskRevenge
 	SpellMaskShatteringThrow
 	SpellMaskSlam
+	SpellMaskSweepingSlam
 	SpellMaskSunderArmor
 	SpellMaskThunderClap
 	SpellMaskWhirlwind
@@ -57,6 +60,7 @@ const (
 	SpellMaskHeroicLeap
 	SpellMaskWildStrike
 	SpellMaskShieldBlock
+	SpellMaskHamstring
 
 	// Talents
 	SpellMaskImpendingVictory
@@ -87,6 +91,9 @@ type Warrior struct {
 	// Current state
 	Stance              Stance
 	CriticalBlockChance []float64 // Can be gained as non-prot via certain talents and spells
+	PrePullChargeGain   float64
+
+	HeroicStrikeCleaveCostMod *core.SpellMod
 
 	BattleShout     *core.Spell
 	CommandingShout *core.Spell
@@ -94,10 +101,11 @@ type Warrior struct {
 	DefensiveStance *core.Spell
 	BerserkerStance *core.Spell
 
-	ColossusSmash *core.Spell
-	MortalStrike  *core.Spell
-	DeepWounds    *core.Spell
-	ShieldSlam    *core.Spell
+	ColossusSmash                   *core.Spell
+	MortalStrike                    *core.Spell
+	DeepWounds                      *core.Spell
+	ShieldSlam                      *core.Spell
+	SweepingStrikesNormalizedAttack *core.Spell
 
 	sharedShoutsCD   *core.Timer
 	sharedHSCleaveCD *core.Timer
@@ -106,14 +114,17 @@ type Warrior struct {
 	DefensiveStanceAura *core.Aura
 	BerserkerStanceAura *core.Aura
 
-	EnrageAura        *core.Aura
-	BerserkerRageAura *core.Aura
-	ShieldBlockAura   *core.Aura
-	LastStandAura     *core.Aura
-	RallyingCryAura   *core.Aura
-	VictoryRushAura   *core.Aura
-	SwordAndBoardAura *core.Aura
-	ShieldBarrierAura *core.DamageAbsorptionAura
+	GlyphOfHamstring    *core.Aura
+	InciteAura          *core.Aura
+	UltimatumAura       *core.Aura
+	SweepingStrikesAura *core.Aura
+	EnrageAura          *core.Aura
+	BerserkerRageAura   *core.Aura
+	ShieldBlockAura     *core.Aura
+	LastStandAura       *core.Aura
+	RallyingCryAura     *core.Aura
+	VictoryRushAura     *core.Aura
+	ShieldBarrierAura   *core.DamageAbsorptionAura
 
 	SkullBannerAura         *core.Aura
 	DemoralizingBannerAuras core.AuraArray
@@ -155,6 +166,7 @@ func (warrior *Warrior) Initialize() {
 	warrior.ApplyGlyphs()
 
 	warrior.registerBerserkerRage()
+	warrior.registerEnragedRegeneration()
 	warrior.registerRallyingCry()
 	warrior.registerColossusSmash()
 	warrior.registerExecuteSpell()
@@ -167,6 +179,7 @@ func (warrior *Warrior) Initialize() {
 	warrior.registerShatteringThrow()
 	warrior.registerShieldWall()
 	warrior.registerSunderArmor()
+	warrior.registerHamstring()
 	warrior.registerThunderClap()
 	warrior.registerWhirlwind()
 	warrior.registerCharge()
@@ -182,6 +195,10 @@ func (warrior *Warrior) Reset(_ *core.Simulation) {
 	warrior.Stance = StanceNone
 }
 
+func (warrior *Warrior) OnEncounterStart(sim *core.Simulation) {
+	warrior.PrePullChargeGain = 0
+}
+
 func NewWarrior(character *core.Character, options *proto.WarriorOptions, talents string, inputs WarriorInputs) *Warrior {
 	warrior := &Warrior{
 		Character:         *character,
@@ -193,7 +210,6 @@ func NewWarrior(character *core.Character, options *proto.WarriorOptions, talent
 
 	warrior.EnableRageBar(core.RageBarOptions{
 		MaxRage:            core.TernaryFloat64(warrior.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfUnendingRage), 120, 100),
-		StartingRage:       options.StartingRage,
 		BaseRageMultiplier: 1,
 	})
 
@@ -208,7 +224,10 @@ func NewWarrior(character *core.Character, options *proto.WarriorOptions, talent
 	warrior.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[character.Class])
 	warrior.AddStatDependency(stats.Strength, stats.AttackPower, 2)
 
-	warrior.AddStat(stats.ParryRating, -warrior.GetBaseStats()[stats.Strength]*core.StrengthToParryRating) // Does not apply to base Strength
+	// Base strength to Parry is not affected by Diminishing Returns
+	baseStrength := warrior.GetBaseStats()[stats.Strength]
+	warrior.PseudoStats.BaseParryChance += baseStrength * core.StrengthToParryPercent
+	warrior.AddStat(stats.ParryRating, -baseStrength*core.StrengthToParryRating)
 	warrior.AddStatDependency(stats.Strength, stats.ParryRating, core.StrengthToParryRating)
 	warrior.AddStatDependency(stats.Agility, stats.DodgeRating, 0.1/10000.0/100.0)
 	warrior.AddStatDependency(stats.BonusArmor, stats.Armor, 1)
@@ -219,6 +238,12 @@ func NewWarrior(character *core.Character, options *proto.WarriorOptions, talent
 	warrior.PseudoStats.BaseParryChance += 0.03
 	warrior.PseudoStats.BaseBlockChance += 0.03
 	warrior.CriticalBlockChance = append(warrior.CriticalBlockChance, 0.0, 0.0)
+
+	warrior.HeroicStrikeCleaveCostMod = warrior.AddDynamicMod(core.SpellModConfig{
+		ClassMask:  SpellMaskHeroicStrike | SpellMaskCleave,
+		Kind:       core.SpellMod_PowerCost_Pct,
+		FloatValue: -2,
+	})
 
 	return warrior
 }
@@ -247,6 +272,17 @@ func (warrior *Warrior) GetRageMultiplier(target *core.Unit) float64 {
 	}
 
 	return 1.0
+}
+
+func (warrior *Warrior) CastNormalizedSweepingStrikesAttack(results core.SpellResultSlice, sim *core.Simulation) {
+	if warrior.SweepingStrikesAura != nil && warrior.SweepingStrikesAura.IsActive() {
+		for _, result := range results {
+			if result.Landed() {
+				warrior.SweepingStrikesNormalizedAttack.Cast(sim, warrior.Env.NextActiveTargetUnit(result.Target))
+				break
+			}
+		}
+	}
 }
 
 // Agent is a generic way to access underlying warrior on any of the agents.

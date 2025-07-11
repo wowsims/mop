@@ -6,10 +6,8 @@ import (
 	"github.com/wowsims/mop/sim/core"
 )
 
-func (warrior *Warrior) registerHeroicLeap() {
-	results := make([]*core.SpellResult, warrior.Env.GetNumTargets())
-
-	warrior.RegisterSpell(core.SpellConfig{
+func (war *Warrior) registerHeroicLeap() {
+	war.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 6544},
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
@@ -19,28 +17,23 @@ func (warrior *Warrior) registerHeroicLeap() {
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{},
 			CD: core.Cooldown{
-				Timer:    warrior.NewTimer(),
+				Timer:    war.NewTimer(),
 				Duration: time.Second * 45,
 			},
 			ModifyCast: func(sim *core.Simulation, spell *core.Spell, cast *core.Cast) {
-				warrior.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime+cast.CastTime)
+				war.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime+cast.CastTime)
 			},
 			IgnoreHaste: true,
 		},
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
-		CritMultiplier:   warrior.DefaultCritMultiplier(),
+		CritMultiplier:   war.DefaultCritMultiplier(),
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := 1 + 0.5*spell.MeleeAttackPower()
-
-			for i, enemyTarget := range sim.Encounter.TargetUnits {
-				results[i] = spell.CalcDamage(sim, enemyTarget, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
-
-			for _, result := range results {
-				spell.DealDamage(sim, result)
-			}
+			results := spell.CalcAoeDamage(sim, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
+			war.CastNormalizedSweepingStrikesAttack(results, sim)
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 }

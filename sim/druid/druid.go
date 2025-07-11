@@ -46,9 +46,10 @@ type Druid struct {
 	Moonfire              *DruidSpell
 	NaturesSwiftness      *DruidSpell
 	Prowl                 *DruidSpell
-	Rebirth               *DruidSpell
 	Rake                  *DruidSpell
 	Ravage                *DruidSpell
+	Rebirth               *DruidSpell
+	Rejuvenation          *DruidSpell
 	Rip                   *DruidSpell
 	SavageRoar            *DruidSpell
 	Shred                 *DruidSpell
@@ -77,7 +78,6 @@ type Druid struct {
 	FrenziedRegenerationAura *core.Aura
 	LunarEclipseProcAura     *core.Aura
 	MightOfUrsocAura         *core.Aura
-	OwlkinFrenzyAura         *core.Aura
 	ProwlAura                *core.Aura
 	SurvivalInstinctsAura    *core.Aura
 
@@ -91,9 +91,6 @@ type Druid struct {
 	// Guardian leather specialization is form-specific
 	GuardianLeatherSpecTracker *core.Aura
 	GuardianLeatherSpecDep     *stats.StatDependency
-
-	// Item sets
-	T13Feral4pBonus *core.Aura
 }
 
 const (
@@ -129,6 +126,7 @@ const (
 	DruidSpellMarkOfTheWild
 	DruidSpellSwiftmend
 	DruidSpellWildGrowth
+	DruidSpellCenarionWard
 
 	DruidSpellLast
 	DruidSpellsAll               = DruidSpellLast<<1 - 1
@@ -234,6 +232,7 @@ func (druid *Druid) RegisterBaselineSpells() {
 	druid.registerNaturesSwiftness()
 	druid.registerFaerieFireSpell()
 	druid.registerTranquilityCD()
+	druid.registerRejuvenationSpell()
 
 	// druid.registerRebirthSpell()
 	// druid.registerInnervateCD()
@@ -266,11 +265,15 @@ func (druid *Druid) RegisterFeralTankSpells() {
 	druid.registerBarkskinCD()
 	druid.registerBearFormSpell()
 	druid.registerBerserkCD()
+	druid.registerCatFormSpell()
 	druid.registerFrenziedRegenerationSpell()
 	druid.registerMangleBearSpell()
+	druid.registerMangleCatSpell()
 	druid.registerMaulSpell()
 	druid.registerMightOfUrsocCD()
 	druid.registerLacerateSpell()
+	druid.registerRakeSpell()
+	druid.registerRipSpell()
 	druid.registerSurvivalInstinctsCD()
 	druid.registerSwipeBearSpell()
 	druid.registerThrashBearSpell()
@@ -281,6 +284,9 @@ func (druid *Druid) Reset(_ *core.Simulation) {
 	druid.form = druid.StartingForm
 	druid.disabledMCDs = []*core.MajorCooldown{}
 	druid.RebirthUsed = false
+}
+
+func (druid *Druid) OnEncounterStart(sim *core.Simulation) {
 }
 
 func New(char *core.Character, form DruidForm, selfBuffs SelfBuffs, talents string) *Druid {
@@ -300,11 +306,14 @@ func New(char *core.Character, form DruidForm, selfBuffs SelfBuffs, talents stri
 	druid.AddStatDependency(stats.BonusArmor, stats.Armor, 1)
 	druid.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[char.Class])
 
-	// Druids get roughly 1% Dodge per 951.16 Agi at level 90
-	druid.AddStatDependency(stats.Agility, stats.DodgeRating, 0.00105135*core.DodgeRatingPerDodgePercent)
-
 	// Base dodge is unaffected by Diminishing Returns
 	druid.PseudoStats.BaseDodgeChance += 0.03
+
+	// Base Agility to Dodge is not affected by Diminishing Returns
+	baseAgility := druid.GetBaseStats()[stats.Agility]
+	druid.PseudoStats.BaseDodgeChance += baseAgility * core.AgilityToDodgePercent
+	druid.AddStat(stats.DodgeRating, -baseAgility*core.AgilityToDodgeRating)
+	druid.AddStatDependency(stats.Agility, stats.DodgeRating, core.AgilityToDodgeRating)
 
 	return druid
 }

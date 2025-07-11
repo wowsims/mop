@@ -25,7 +25,7 @@ func (moonkin *BalanceDruid) RegisterBalancePassives() {
 func (moonkin *BalanceDruid) registerMoonkinForm() {
 	moonkin.AddStaticMod(core.SpellModConfig{
 		School:     core.SpellSchoolArcane | core.SpellSchoolNature,
-		FloatValue: 0.2,
+		FloatValue: 0.2 + 0.1, // 2025-07-01 - Moonkin Form's damage increase to Nature and Arcane raised to 30% (was 20%).
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})
 
@@ -48,7 +48,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		FloatValue: -1,
 	}
 
-	ssAura := moonkin.RegisterAura(core.Aura{
+	ssAura := core.BlockPrepull(moonkin.RegisterAura(core.Aura{
 		Label:    "Shooting Stars" + moonkin.Label,
 		ActionID: core.ActionID{SpellID: 93400},
 		Duration: time.Second * 12,
@@ -62,7 +62,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		OnGain: func(_ *core.Aura, _ *core.Simulation) {
 			moonkin.Starsurge.CD.Reset()
 		},
-	}).AttachSpellMod(castTimeModConfig)
+	})).AttachSpellMod(castTimeModConfig)
 
 	core.MakeProcTriggerAura(&moonkin.Unit, core.ProcTrigger{
 		Name:           "Shooting Stars Trigger" + moonkin.Label,
@@ -127,7 +127,25 @@ func (moonkin *BalanceDruid) registerEuphoria() {
 	moonkin.SetSpellEclipseEnergy(druid.DruidSpellStarsurge, StarsurgeBaseEnergyGain, StarsurgeBaseEnergyGain*2)
 }
 
-func (moonkin *BalanceDruid) registerOwlkinFrenzy() {}
+func (moonkin *BalanceDruid) registerOwlkinFrenzy() {
+	moonkin.OwlkinFrenzy = moonkin.RegisterAura(core.Aura{
+		Label:    "Owlkin Frenzy",
+		ActionID: core.ActionID{SpellID: 48393},
+		Duration: time.Second * 10,
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			moonkin.PseudoStats.DamageDealtMultiplier *= 1.1
+		},
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			moonkin.PseudoStats.DamageDealtMultiplier /= 1.1
+		},
+	})
+
+	if moonkin.OwlkinFrenzy != nil && moonkin.Options.OkfUptime > 0 {
+		moonkin.Env.RegisterPreFinalizeEffect(func() {
+			core.ApplyFixedUptimeAura(moonkin.OwlkinFrenzy, float64(moonkin.Options.OkfUptime), time.Second*5, 0)
+		})
+	}
+}
 
 func (moonkin *BalanceDruid) registerKillerInstinct() {}
 
@@ -150,12 +168,12 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 		Kind:      core.SpellMod_PowerCost_Pct,
 	})
 
-	var lunarShowerAura = moonkin.RegisterAura(core.Aura{
+	var lunarShowerAura = core.BlockPrepull(moonkin.RegisterAura(core.Aura{
 		Label:     "Lunar Shower",
 		Duration:  time.Second * 3,
 		ActionID:  core.ActionID{SpellID: 81192},
 		MaxStacks: 3,
-		OnGain: func(_ *core.Aura, Race_RaceNightElf *core.Simulation) {
+		OnGain: func(_ *core.Aura, _ *core.Simulation) {
 			lunarShowerDmgMod.Activate()
 			lunarShowerResourceMod.Activate()
 		},
@@ -167,7 +185,7 @@ func (moonkin *BalanceDruid) registerLunarShower() {
 			lunarShowerDmgMod.Deactivate()
 			lunarShowerResourceMod.Deactivate()
 		},
-	})
+	}))
 
 	moonkin.RegisterAura(core.Aura{
 		Label:    "Lunar Shower Handler",

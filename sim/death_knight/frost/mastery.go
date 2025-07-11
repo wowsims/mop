@@ -12,19 +12,24 @@ func (fdk *FrostDeathKnight) registerMastery() {
 	// Beta changes 2025-06-21: https://eu.forums.blizzard.com/en/wow/t/feedback-mists-of-pandaria-class-changes/576939/51
 	// - Soul Reaper now scales with your Mastery. [New]
 	// - Obliterate now scales with your Mastery. [New]
-	// Undocummented: only 20% effective when using a Two-handed weapon.
-	masteryMod := fdk.AddDynamicMod(core.SpellModConfig{
+	// Undocummented 2025-06-24: only 20% effective when using a Two-handed weapon.
+	// Undocummented 2025-07-01: only 10% effective when using a Two-handed weapon, 50% effective when Dual Wielding.
+	physicalMod := fdk.AddDynamicMod(core.SpellModConfig{
 		Kind:      core.SpellMod_DamageDone_Pct,
 		ClassMask: death_knight.DeathKnightSpellObliterate | death_knight.DeathKnightSpellSoulReaper,
 	})
 
-	extraMultiplier := 1.0
+	frostMod := fdk.AddDynamicMod(core.SpellModConfig{
+		Kind:   core.SpellMod_DamageDone_Pct,
+		School: core.SpellSchoolFrost,
+	})
+
+	extraMultiplier := 0.5
 
 	fdk.AddOnMasteryStatChanged(func(sim *core.Simulation, oldMastery float64, newMastery float64) {
-		oldMasteryMultiplier := fdk.getMasteryPercent(oldMastery)
 		newMasteryMultiplier := fdk.getMasteryPercent(newMastery)
-		fdk.PseudoStats.SchoolDamageDealtMultiplier[stats.SchoolIndexFrost] *= (1.0 + newMasteryMultiplier) / (1.0 + oldMasteryMultiplier)
-		masteryMod.UpdateFloatValue(newMasteryMultiplier * extraMultiplier)
+		physicalMod.UpdateFloatValue(newMasteryMultiplier * extraMultiplier)
+		frostMod.UpdateFloatValue(newMasteryMultiplier)
 	})
 
 	core.MakePermanent(fdk.RegisterAura(core.Aura{
@@ -33,27 +38,29 @@ func (fdk *FrostDeathKnight) registerMastery() {
 
 		OnReset: func(aura *core.Aura, sim *core.Simulation) {
 			if mh := fdk.GetMHWeapon(); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
-				extraMultiplier = 0.2
+				extraMultiplier = 0.1
 			} else {
-				extraMultiplier = 1.0
+				extraMultiplier = 0.5
 			}
 		},
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			masteryMultiplier := fdk.getMasteryPercent(fdk.GetStat(stats.MasteryRating))
-			fdk.PseudoStats.SchoolDamageDealtMultiplier[stats.SchoolIndexFrost] *= 1.0 + masteryMultiplier
-			masteryMod.UpdateFloatValue(masteryMultiplier * extraMultiplier)
-			masteryMod.Activate()
+			physicalMod.UpdateFloatValue(masteryMultiplier * extraMultiplier)
+			physicalMod.Activate()
+			frostMod.UpdateFloatValue(masteryMultiplier)
+			frostMod.Activate()
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			masteryMod.Deactivate()
+			physicalMod.Deactivate()
+			frostMod.Deactivate()
 		},
 	}))
 
 	fdk.RegisterItemSwapCallback(core.AllWeaponSlots(), func(sim *core.Simulation, slot proto.ItemSlot) {
 		if mh := fdk.GetMHWeapon(); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
-			extraMultiplier = 0.2
+			extraMultiplier = 0.1
 		} else {
-			extraMultiplier = 1.0
+			extraMultiplier = 0.5
 		}
 	})
 }

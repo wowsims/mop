@@ -34,8 +34,11 @@
 	}
 
 	.buffs-settings,
-	.world-buffs-settings,
 	.debuffs-settings {
+		.content-block-header{
+			flex-direction: column;
+		}
+
 		.content-block-body {
 			display: grid;
 			grid-template-columns: repeat(3, minmax(0, 1fr));

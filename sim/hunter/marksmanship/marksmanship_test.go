@@ -17,21 +17,23 @@ func TestMarksmanship(t *testing.T) {
 	var talentSets []core.TalentsCombo
 	talentSets = core.GenerateTalentVariationsForRows(MarksmanshipTalents, MarksmanshipDefaultGlyphs, []int{4, 5})
 
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassHunter,
-		Race:       proto.Race_RaceOrc,
-		OtherRaces: []proto.Race{proto.Race_RaceDwarf},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassHunter,
+			Race:       proto.Race_RaceOrc,
+			OtherRaces: []proto.Race{proto.Race_RaceDwarf},
 
-		GearSet:         core.GetGearSet("../../../ui/hunter/presets", "p1"),
-		Talents:         MarksmanshipTalents,
-		OtherTalentSets: talentSets,
-		Glyphs:          MarksmanshipDefaultGlyphs,
-		Consumables:     FullConsumesSpec,
-		SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-		Rotation:        core.GetAplRotation("../../../ui/hunter/marksmanship/apls", "mm"),
+			GearSet:         core.GetGearSet("../../../ui/hunter/presets", "p1"),
+			Talents:         MarksmanshipTalents,
+			OtherTalentSets: talentSets,
+			Glyphs:          MarksmanshipDefaultGlyphs,
+			Consumables:     FullConsumesSpec,
+			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
+			Rotation:        core.GetAplRotation("../../../ui/hunter/marksmanship/apls", "mm"),
 
-		ItemFilter:       ItemFilter,
-		StartingDistance: 5.1,
+			ItemFilter:       ItemFilter,
+			StartingDistance: 5.1,
+		},
 	}))
 }
 

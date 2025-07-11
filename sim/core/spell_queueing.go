@@ -80,13 +80,21 @@ func (spell *Spell) CanQueue(sim *Simulation, target *Unit) bool {
 		return false
 	}
 
+	if !target.IsEnabled() {
+		return false
+	}
+
+	if spell.Flags.Matches(SpellFlagSwapped) {
+		return false
+	}
+
 	// Same extra cast conditions apply as if we were casting right now
 	if spell.ExtraCastCondition != nil && !spell.ExtraCastCondition(sim, target) {
 		return false
 	}
 
 	// Apply SQW leniency to any pending hardcasts
-	if spell.Unit.Hardcast.Expires > sim.CurrentTime+MaxSpellQueueWindow {
+	if (spell.Unit.Hardcast.Expires > sim.CurrentTime+MaxSpellQueueWindow) || (spell.Unit.IsCastingDuringChannel() && !spell.CanCastDuringChannel(sim)) {
 		return false
 	}
 

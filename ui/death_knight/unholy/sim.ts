@@ -8,7 +8,7 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
-import * as DeathKnightInputs from '../inputs';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
@@ -20,7 +20,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	// All stats for which EP should be calculated.
 	epStats: [
 		Stat.StatStrength,
-		Stat.StatArmor,
 		Stat.StatAttackPower,
 		Stat.StatExpertiseRating,
 		Stat.StatHitRating,
@@ -30,7 +29,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	],
 	epPseudoStats: [PseudoStat.PseudoStatMainHandDps],
 	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
-	epReferenceStat: Stat.StatAttackPower,
+	epReferenceStat: Stat.StatStrength,
+	consumableStats: [Stat.StatStrength, Stat.StatHitRating, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatExpertiseRating, Stat.StatMasteryRating],
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
@@ -64,6 +64,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
 			blessingOfKings: true,
 			blessingOfMight: true,
 			bloodlust: true,
@@ -71,8 +72,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 			leaderOfThePack: true,
 			trueshotAura: true,
 			unholyAura: true,
-			skullBannerCount: 2,
-			stormlashTotemCount: 4,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
@@ -95,26 +94,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	excludeBuffDebuffInputs: [BuffDebuffInputs.DamageReduction, BuffDebuffInputs.CastSpeedDebuff],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [DeathKnightInputs.StartingRunicPower(), OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
+		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotHead,
-		ItemSlot.ItemSlotNeck,
-		ItemSlot.ItemSlotShoulder,
-		ItemSlot.ItemSlotBack,
-		ItemSlot.ItemSlotChest,
-		ItemSlot.ItemSlotWrist,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotWaist,
-		ItemSlot.ItemSlotLegs,
-		ItemSlot.ItemSlotFeet,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotMainHand,
-		ItemSlot.ItemSlotOffHand,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: true,
@@ -125,7 +107,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.CATA_ROTATION_PRESET],
+		rotations: [Presets.DEFAULT_ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.P1_BIS_GEAR_PRESET],
 		builds: [Presets.P1_PRESET],

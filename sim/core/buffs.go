@@ -203,9 +203,11 @@ func applyBuffEffects(agent Agent, raidBuffs *proto.RaidBuffs, _ *proto.PartyBuf
 
 		// Other individual CDs
 		registerUnholyFrenzyCD(agent, individual.UnholyFrenzyCount)
-		registerTricksOfTheTradeCD(agent, individual.TricksOfTheTrade)
+		if individual.TricksOfTheTrade {
+			registerTricksOfTheTradeCD(agent)
+		}
 		registerDevotionAuraCD(agent, individual.DevotionAuraCount)
-		registerHandOfSacrificeCD(agent, individual.HandOfSacrificeCount)
+		registerVigilanceCD(agent, individual.VigilanceCount)
 		registerPainSuppressionCD(agent, individual.PainSuppressionCount)
 		registerGuardianSpiritCD(agent, individual.GuardianSpiritCount)
 		registerRallyingCryCD(agent, individual.RallyingCryCount)
@@ -696,16 +698,9 @@ func multiplyCastSpeedEffect(aura *Aura, multiplier float64) *ExclusiveEffect {
 
 var TricksOfTheTradeAuraTag = "TricksOfTheTrade"
 
-func registerTricksOfTheTradeCD(agent Agent, tristateConfig proto.TristateEffect) {
-	if tristateConfig == proto.TristateEffect_TristateEffectMissing {
-		return
-	}
-
-	// TristateEffectRegular is interpreted as the Glyphed version (since it
-	// is weaker).
-	damageMultiplier := GetTristateValueFloat(tristateConfig, 1.1, 1.15)
+func registerTricksOfTheTradeCD(agent Agent) {
 	unit := &agent.GetCharacter().Unit
-	tricksAura := TricksOfTheTradeAura(unit, -1, damageMultiplier)
+	tricksAura := TricksOfTheTradeAura(unit, -1, 1.15)
 
 	// Add a small offset to the tooltip CD to account for input delays
 	// between the Rogue pressing Tricks and hitting a target.
@@ -816,7 +811,7 @@ func registerDevotionAuraCD(agent Agent, numDevotionAuras int32) {
 	}
 
 	// TODO: Config for specifying the amount of Holy spec Devotion Auras?
-	devAura := DevotionAuraAura(&agent.GetCharacter().Unit, -1, false)
+	devAura := DevotionAuraAura(&agent.GetCharacter().Unit, -1, true)
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
@@ -874,46 +869,46 @@ func DevotionAuraAura(unit *Unit, actionTag int32, isHoly bool) *Aura {
 	return unit.GetOrRegisterAura(auraConfig)
 }
 
-var HandOfSacrificeAuraTag = "HandOfSacrifice"
+const VigilanceAuraTag = "Vigilance"
+const VigilanceDuration = time.Second * 12
+const VigilanceCD = time.Minute * 2
+const VigilanceSpellID int32 = 114030
 
-const HandOfSacrificeDuration = time.Millisecond * 10500 // subtract Divine Shield GCD
-const HandOfSacrificeCD = time.Minute * 5                // use Divine Shield CD here
-
-func registerHandOfSacrificeCD(agent Agent, numSacs int32) {
-	if numSacs == 0 {
+func registerVigilanceCD(agent Agent, numWarriors int32) {
+	if numWarriors == 0 {
 		return
 	}
 
-	hosAura := HandOfSacrificeAura(agent.GetCharacter(), -1)
+	buffAura := VigilanceAura(agent.GetCharacter(), -1)
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
 		externalConsecutiveCDApproximation{
-			ActionID:         ActionID{SpellID: 6940, Tag: -1},
-			AuraTag:          HandOfSacrificeAuraTag,
+			ActionID:         ActionID{SpellID: VigilanceSpellID, Tag: -1},
+			AuraTag:          VigilanceAuraTag,
 			CooldownPriority: CooldownPriorityLow,
-			AuraDuration:     HandOfSacrificeDuration,
-			AuraCD:           HandOfSacrificeCD,
+			AuraDuration:     VigilanceDuration,
+			AuraCD:           VigilanceCD,
 			Type:             CooldownTypeSurvival,
 
 			ShouldActivate: func(sim *Simulation, character *Character) bool {
 				return true
 			},
 			AddAura: func(sim *Simulation, character *Character) {
-				hosAura.Activate(sim)
+				buffAura.Activate(sim)
 			},
 		},
-		numSacs)
+		numWarriors)
 }
 
-func HandOfSacrificeAura(character *Character, actionTag int32) *Aura {
-	actionID := ActionID{SpellID: 6940, Tag: actionTag}
+func VigilanceAura(character *Character, actionTag int32) *Aura {
+	actionID := ActionID{SpellID: VigilanceSpellID, Tag: actionTag}
 
 	return character.GetOrRegisterAura(Aura{
-		Label:    "HandOfSacrifice-" + actionID.String(),
-		Tag:      HandOfSacrificeAuraTag,
+		Label:    "Vigilance-" + actionID.String(),
+		Tag:      VigilanceAuraTag,
 		ActionID: actionID,
-		Duration: HandOfSacrificeDuration,
+		Duration: VigilanceDuration,
 	}).AttachMultiplicativePseudoStatBuff(&character.PseudoStats.DamageTakenMultiplier, 0.7)
 }
 
@@ -1078,12 +1073,12 @@ func registerShatteringThrowCD(agent Agent, numShatteringThrows int32) {
 		return
 	}
 
-	stAura := ShatteringThrowAura(agent.GetCharacter().Env.Encounter.TargetUnits[0], -1)
+	stAura := ShatteringThrowAura(agent.GetCharacter().Env.GetTargetUnitByIndex(0), -1)
 
 	registerExternalConsecutiveCDApproximation(
 		agent,
 		externalConsecutiveCDApproximation{
-			ActionID:         ActionID{SpellID: 64382, Tag: -1},
+			ActionID:         ActionID{SpellID: 1249459, Tag: -1},
 			AuraTag:          ShatteringThrowAuraTag,
 			CooldownPriority: CooldownPriorityDefault,
 			AuraDuration:     ShatteringThrowDuration,

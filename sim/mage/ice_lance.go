@@ -38,8 +38,8 @@ func (mage *Mage) registerIceLanceSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			// The target does not entirely appear to be random, but I was unable to determine how to tell which to target. IE: sat in front of 3 dummies it will always hit 2 specific ones.
-			randomTarget := mage.Env.NextTargetUnit(target)
-			hasSplittingIce := hasGlyphSplittingIce && mage.Env.GetNumTargets() > 1
+			randomTarget := mage.Env.NextActiveTargetUnit(target)
+			hasSplittingIce := hasGlyphSplittingIce && mage.Env.ActiveTargetCount() > 1
 			hasSplitBolts := mage.IcyVeinsAura.IsActive() && hasGlyphIcyVeins
 			numberOfBolts := core.TernaryInt32(hasSplitBolts, 3, 1)
 			icyVeinsDamageMultiplier := core.TernaryFloat64(hasSplitBolts, 0.4, 1.0)

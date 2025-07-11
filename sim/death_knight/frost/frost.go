@@ -26,25 +26,17 @@ func RegisterFrostDeathKnight() {
 
 type FrostDeathKnight struct {
 	*death_knight.DeathKnight
+
+	MightOfTheFrozenWastesAura *core.Aura
 }
 
 func NewFrostDeathKnight(character *core.Character, player *proto.Player) *FrostDeathKnight {
-	frostOptions := player.GetFrostDeathKnight().Options
-
 	fdk := &FrostDeathKnight{
 		DeathKnight: death_knight.NewDeathKnight(character, death_knight.DeathKnightInputs{
-			StartingRunicPower: frostOptions.ClassOptions.StartingRunicPower,
-			IsDps:              true,
+			Spec:  proto.Spec_SpecFrostDeathKnight,
+			IsDps: true,
 		}, player.TalentsString, 0),
 	}
-
-	fdk.RegisterItemSwapCallback(core.AllWeaponSlots(), func(sim *core.Simulation, slot proto.ItemSlot) {
-		if fdk.HasMHWeapon() && fdk.HasOHWeapon() {
-			fdk.ThreatOfThassarianAura.Activate(sim)
-		} else if mh := fdk.GetMHWeapon(); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
-			fdk.MightOfTheFrozenWastesAura.Activate(sim)
-		}
-	})
 
 	return fdk
 }
@@ -70,6 +62,16 @@ func (fdk *FrostDeathKnight) Initialize() {
 	fdk.registerPillarOfFrost()
 	fdk.registerRime()
 	fdk.registerThreatOfThassarian()
+
+	fdk.RegisterItemSwapCallback(core.AllWeaponSlots(), func(sim *core.Simulation, slot proto.ItemSlot) {
+		if fdk.HasMHWeapon() && fdk.HasOHWeapon() {
+			fdk.MightOfTheFrozenWastesAura.Deactivate(sim)
+			fdk.ThreatOfThassarianAura.Activate(sim)
+		} else if mh := fdk.GetMHWeapon(); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
+			fdk.ThreatOfThassarianAura.Deactivate(sim)
+			fdk.MightOfTheFrozenWastesAura.Activate(sim)
+		}
+	})
 }
 
 func (fdk *FrostDeathKnight) ApplyTalents() {

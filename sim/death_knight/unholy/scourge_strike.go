@@ -39,8 +39,10 @@ func (dk *UnholyDeathKnight) registerScourgeStrike() {
 		ActionID:       ScourgeStrikeActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellScourgeStrike,
+
+		MaxRange: core.MaxMeleeRange,
 
 		RuneCost: core.RuneCostOptions{
 			UnholyRuneCost: 1,

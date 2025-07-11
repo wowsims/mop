@@ -35,7 +35,7 @@ func (war *ProtectionWarrior) registerDemoralizingShout() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				result := spell.CalcAndDealOutcome(sim, aoeTarget, spell.OutcomeMagicHit)
 				if result.Landed() {
 					war.DemoralizingShoutAuras.Get(aoeTarget).Activate(sim)
@@ -50,7 +50,7 @@ func (war *ProtectionWarrior) registerDemoralizingShout() {
 		Spell: spell,
 		Type:  core.CooldownTypeSurvival,
 		ShouldActivate: func(s *core.Simulation, c *core.Character) bool {
-			return war.CurrentHealthPercent() < 0.4
+			return war.CurrentHealthPercent() < 0.6
 		},
 	})
 }

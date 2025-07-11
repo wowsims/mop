@@ -127,6 +127,9 @@ func (paladin *Paladin) Reset(sim *core.Simulation) {
 	}
 }
 
+func (paladin *Paladin) OnEncounterStart(sim *core.Simulation) {
+}
+
 func NewPaladin(character *core.Character, talentsStr string, options *proto.PaladinOptions) *Paladin {
 	paladin := &Paladin{
 		Character: *character,
@@ -141,9 +144,8 @@ func NewPaladin(character *core.Character, talentsStr string, options *proto.Pal
 	paladin.EnableManaBar()
 	paladin.HolyPower = HolyPowerBar{
 		DefaultSecondaryResourceBarImpl: paladin.NewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
-			Type:    proto.SecondaryResourceType_SecondaryResourceTypeHolyPower,
-			Max:     5,
-			Default: options.StartingHolyPower,
+			Type: proto.SecondaryResourceType_SecondaryResourceTypeHolyPower,
+			Max:  5,
 		}),
 		paladin: paladin,
 	}
@@ -159,15 +161,19 @@ func NewPaladin(character *core.Character, talentsStr string, options *proto.Pal
 		AutoSwingMelee: true,
 	})
 
-	paladin.AddStatDependency(stats.Strength, stats.AttackPower, 2)
-	paladin.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[character.Class])
-
-	paladin.AddStat(stats.ParryRating, -paladin.GetBaseStats()[stats.Strength]*core.StrengthToParryRating) // Does not apply to base Strength
-	paladin.AddStatDependency(stats.Strength, stats.ParryRating, core.StrengthToParryRating)
-
 	paladin.PseudoStats.BaseBlockChance += 0.03
 	paladin.PseudoStats.BaseDodgeChance += 0.03
 	paladin.PseudoStats.BaseParryChance += 0.03
+
+	paladin.AddStatDependency(stats.Strength, stats.AttackPower, 2)
+	paladin.AddStatDependency(stats.Agility, stats.PhysicalCritPercent, core.CritPerAgiMaxLevel[character.Class])
+
+	// Base strength to Parry is not affected by Diminishing Returns
+	baseStrength := paladin.GetBaseStats()[stats.Strength]
+	paladin.PseudoStats.BaseParryChance += baseStrength * core.StrengthToParryPercent
+	paladin.AddStat(stats.ParryRating, -baseStrength*core.StrengthToParryRating)
+	paladin.AddStatDependency(stats.Strength, stats.ParryRating, core.StrengthToParryRating)
+	paladin.AddStatDependency(stats.Agility, stats.DodgeRating, 0.1/10000.0/100.0)
 
 	// Bonus Armor and Armor are treated identically for Paladins
 	paladin.AddStatDependency(stats.BonusArmor, stats.Armor, 1)

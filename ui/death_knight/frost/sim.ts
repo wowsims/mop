@@ -9,7 +9,7 @@ import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import * as DeathKnightInputs from '../inputs';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
@@ -31,6 +31,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps],
 	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
 	epReferenceStat: Stat.StatStrength,
+	consumableStats: [Stat.StatStrength, Stat.StatHitRating, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatExpertiseRating, Stat.StatMasteryRating],
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
@@ -76,6 +77,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
 			blessingOfKings: true,
 			blessingOfMight: true,
 			bloodlust: true,
@@ -83,8 +85,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 			leaderOfThePack: true,
 			trueshotAura: true,
 			unholyAura: true,
-			skullBannerCount: 2,
-			stormlashTotemCount: 4,
 		}),
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
@@ -114,26 +114,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 	excludeBuffDebuffInputs: [BuffDebuffInputs.DamageReduction, BuffDebuffInputs.CastSpeedDebuff],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [DeathKnightInputs.StartingRunicPower(), OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
+		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotHead,
-		ItemSlot.ItemSlotNeck,
-		ItemSlot.ItemSlotShoulder,
-		ItemSlot.ItemSlotBack,
-		ItemSlot.ItemSlotChest,
-		ItemSlot.ItemSlotWrist,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotWaist,
-		ItemSlot.ItemSlotLegs,
-		ItemSlot.ItemSlotFeet,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotMainHand,
-		ItemSlot.ItemSlotOffHand,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
 		showExecuteProportion: true,
 	},
@@ -142,8 +125,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 		epWeights: [Presets.P1_MASTERFROST_EP_PRESET, Presets.P1_2H_OBLITERATE_EP_PRESET],
 		talents: [Presets.DefaultTalents],
 		rotations: [Presets.MASTERFROST_ROTATION_PRESET_DEFAULT, Presets.OBLITERATE_ROTATION_PRESET_DEFAULT],
-		gear: [Presets.P1_MASTERFROST_GEAR_PRESET, Presets.P1_2H_OBLITERATE_GEAR_PRESET],
-		builds: [Presets.PRESET_BUILD_MASTERFROST, Presets.PRESET_BUILD_2H_OBLITERATE],
+		gear: [Presets.PREBIS_MASTERFROST_GEAR_PRESET, Presets.P1_MASTERFROST_GEAR_PRESET, Presets.P1_2H_OBLITERATE_GEAR_PRESET],
+		builds: [Presets.PRESET_BUILD_PREBIS, Presets.PRESET_BUILD_MASTERFROST, Presets.PRESET_BUILD_2H_OBLITERATE],
 	},
 
 	raidSimPresets: [
@@ -155,7 +138,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 			defaultFactionRaces: {
 				[Faction.Unknown]: Race.RaceUnknown,
 				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceTroll,
+				[Faction.Horde]: Race.RaceOrc,
 			},
 			defaultGear: {
 				[Faction.Unknown]: {},
@@ -188,7 +171,7 @@ export class FrostDeathKnightSimUI extends IndividualSimUI<Spec.SpecFrostDeathKn
 						const physicalHitCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent));
 						if (physicalHitCap) {
 							physicalHitCap.postCapEPs[0] =
-								(player.getEpWeights().getStat(Stat.StatHitRating) * 0.3) * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT;
+								player.getEpWeights().getStat(Stat.StatHitRating) * 0.3 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT;
 						}
 					}
 					return softCaps;

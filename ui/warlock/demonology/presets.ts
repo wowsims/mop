@@ -8,6 +8,7 @@ import {
 	WarlockOptions_Summon as Summon,
 } from '../../core/proto/warlock';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultAPL from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
@@ -65,14 +66,13 @@ export const DefaultConsumables = ConsumesSpec.create({
 });
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
 	arcaneBrilliance: true,
 	blessingOfKings: true,
 	leaderOfThePack: true,
 	blessingOfMight: true,
 	bloodlust: true,
 	moonkinAura: true,
-	skullBannerCount: 2,
-	stormlashTotemCount: 4,
 	unholyAura: true,
 });
 

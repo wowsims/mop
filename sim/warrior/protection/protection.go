@@ -30,6 +30,8 @@ type ProtectionWarrior struct {
 	*warrior.Warrior
 
 	Options *proto.ProtectionWarrior_Options
+
+	SwordAndBoardAura *core.Aura
 }
 
 func NewProtectionWarrior(character *core.Character, options *proto.Player) *ProtectionWarrior {
@@ -77,6 +79,7 @@ func (war *ProtectionWarrior) registerPassives() {
 	war.registerUnwaveringSentinel()
 	war.registerBastionOfDefense()
 	war.registerSwordAndBoard()
+	war.registerUltimatum()
 	war.registerRiposte()
 
 	// Vengeance
@@ -124,4 +127,9 @@ func (war *ProtectionWarrior) registerMastery() {
 
 func (war *ProtectionWarrior) Reset(sim *core.Simulation) {
 	war.Warrior.Reset(sim)
+}
+
+func (war *ProtectionWarrior) OnEncounterStart(sim *core.Simulation) {
+	war.ResetRageBar(sim, core.TernaryFloat64(war.ShieldBarrierAura.IsActive(), 5, 25)+war.PrePullChargeGain)
+	war.Warrior.OnEncounterStart(sim)
 }

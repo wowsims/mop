@@ -36,14 +36,16 @@ func (war *Warrior) registerThunderClap() {
 		ThreatMultiplier: 1,
 		CritMultiplier:   war.DefaultCritMultiplier(),
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := war.CalcScalingSpellDmg(0.25) + spell.MeleeAttackPower()*0.44999998808
+			results := spell.CalcAoeDamage(sim, baseDamage, spell.OutcomeMeleeSpecialNoBlockDodgeParry)
+			war.CastNormalizedSweepingStrikesAttack(results, sim)
 
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				result := spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMeleeSpecialNoBlockDodgeParry)
+			for _, result := range results {
 				if result.Landed() {
-					war.ThunderClapAuras.Get(aoeTarget).Activate(sim)
+					war.ThunderClapAuras.Get(result.Target).Activate(sim)
 				}
+				spell.DealDamage(sim, result)
 			}
 		},
 

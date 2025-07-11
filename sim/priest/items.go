@@ -9,7 +9,8 @@ import (
 
 // T14 - Shadow
 var ItemSetRegaliaOfTheGuardianSperpent = core.NewItemSet(core.ItemSet{
-	Name: "Regalia of the Guardian Serpent",
+	Name:                    "Regalia of the Guardian Serpent",
+	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			setBonusAura.AttachSpellMod(core.SpellModConfig{
@@ -29,7 +30,8 @@ var ItemSetRegaliaOfTheGuardianSperpent = core.NewItemSet(core.ItemSet{
 })
 
 var ItemSetRegaliaOfTheExorcist = core.NewItemSet(core.ItemSet{
-	Name: "Regalia of the Exorcist",
+	Name:                    "Regalia of the Exorcist",
+	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			priest := agent.(PriestAgent).GetPriest()
@@ -69,7 +71,8 @@ var ItemSetRegaliaOfTheExorcist = core.NewItemSet(core.ItemSet{
 })
 
 var ItemSetRegaliaOfTheTernionGlory = core.NewItemSet(core.ItemSet{
-	Name: "Regalia of Ternion Glory",
+	Name:                    "Regalia of Ternion Glory",
+	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			setBonusAura.AttachSpellMod(core.SpellModConfig{
@@ -129,12 +132,15 @@ var shaWeaponIDs = []int32{86990, 86865, 86227}
 func init() {
 	for _, id := range shaWeaponIDs {
 		core.NewItemEffect(id, func(agent core.Agent, _ proto.ItemLevelState) {
-			priest := agent.(PriestAgent).GetPriest()
-			priest.AddStaticMod(core.SpellModConfig{
-				Kind:      core.SpellMod_GlobalCooldown_Flat,
-				TimeValue: -core.GCDDefault,
-				ClassMask: PriestSpellShadowFiend | PriestSpellMindBender,
-			})
+			// Hidden effect for Priest only
+			if priestAgent, ok := agent.(PriestAgent); ok {
+				priest := priestAgent.GetPriest()
+				priest.AddStaticMod(core.SpellModConfig{
+					Kind:      core.SpellMod_GlobalCooldown_Flat,
+					TimeValue: -core.GCDDefault,
+					ClassMask: PriestSpellShadowFiend | PriestSpellMindBender,
+				})
+			}
 		})
 	}
 }

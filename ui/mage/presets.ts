@@ -1,5 +1,6 @@
 import { Debuffs,  PseudoStat, RaidBuffs } from '../core/proto/common';
 import { UnitStat, UnitStatPresets } from '../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../core/proto_utils/utils';
 
 export const LIVING_BOMB_BREAKPOINTS: UnitStatPresets = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
@@ -45,6 +46,7 @@ export const MAGE_BREAKPOINTS: UnitStatPresets = {
 };
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
 	arcaneBrilliance: true,
 	blessingOfKings: true,
 	mindQuickening: true,
@@ -52,8 +54,6 @@ export const DefaultRaidBuffs = RaidBuffs.create({
 	blessingOfMight: true,
 	unholyAura: true,
 	bloodlust: true,
-	skullBannerCount: 2,
-	stormlashTotemCount: 4,
 });
 
 export const DefaultDebuffs = Debuffs.create({

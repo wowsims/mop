@@ -16,7 +16,7 @@ func (bdk *BloodDeathKnight) registerRuneStrike() {
 		ActionID:       RuneStrikeActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMH, // Rune Strike triggers white hit procs as well so we give it both masks.
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellRuneStrike,
 
 		MaxRange: core.MaxMeleeRange,
@@ -37,7 +37,7 @@ func (bdk *BloodDeathKnight) registerRuneStrike() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			baseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower()) + spell.MeleeAttackPower()*0.1
+			baseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialNoBlockDodgeParry)
 
@@ -58,9 +58,7 @@ func (bdk *BloodDeathKnight) registerDrwRuneStrike() *core.Spell {
 		MaxRange: core.MaxMeleeRange,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			baseDamage := spell.MeleeAttackPower()*0.1 +
-				bdk.RuneWeapon.StrikeWeapon.CalculateWeaponDamage(sim, spell.MeleeAttackPower()) +
-				bdk.RuneWeapon.StrikeWeaponDamage
+			baseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 
 			spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialNoBlockDodgeParry)
 		},

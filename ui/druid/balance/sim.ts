@@ -1,4 +1,3 @@
-import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import * as Mechanics from '../../core/constants/mechanics';
@@ -8,7 +7,7 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
 import { Faction, ItemSlot, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as DruidInputs from '../inputs';
 import * as BalanceInputs from './inputs';
 import * as Presets from './presets';
@@ -25,9 +24,19 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpirit, Stat.StatSpellPower, Stat.StatMasteryRating],
+		[
+			Stat.StatHealth,
+			Stat.StatMana,
+			Stat.StatStamina,
+			Stat.StatIntellect,
+			Stat.StatSpirit,
+			Stat.StatSpellPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+		],
 		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
+	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 
 	modifyDisplayStats: (player: Player<Spec.SpecBalanceDruid>) => {
 		const playerStats = player.getCurrentStats();
@@ -88,7 +97,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	otherInputs: {
 		inputs: [BalanceInputs.OkfUptime, OtherInputs.TankAssignment, OtherInputs.InputDelay, OtherInputs.DistanceFromTarget],
 	},
-	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotHands, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
+	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: false,

@@ -135,6 +135,13 @@ func (monk *Monk) registerChiWave() {
 	var nextTarget *core.Unit
 	tickIndex := 0
 
+	allyTargets := make([]*core.Unit, 0, monk.Env.Raid.NumTargetDummies+1)
+	allyTargets = append(allyTargets, &monk.Unit)
+	for _, dummy := range monk.Env.Raid.GetTargetDummies() {
+		allyTargets = append(allyTargets, &dummy.Unit)
+	}
+	numAllyTargets := float64(len(allyTargets))
+
 	var chiWaveHealingSpell *core.Spell
 	chiWaveDamageSpell := monk.RegisterSpell(chiWaveDamageSpellConfig(monk, false, core.SpellConfig{
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -146,8 +153,8 @@ func (monk *Monk) registerChiWave() {
 					result = spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicCrit)
 					if tickIndex < chiWaveMaxBounces {
 						tickIndex++
-						nextTarget = nextTarget.Env.NextTargetUnit(nextTarget)
-						chiWaveHealingSpell.Cast(sim, &monk.Unit)
+						nextTarget = allyTargets[int32(sim.RollWithLabel(0, numAllyTargets, "GetRandomAllyUnit"))]
+						chiWaveHealingSpell.Cast(sim, nextTarget)
 					}
 				})
 			}
@@ -165,6 +172,7 @@ func (monk *Monk) registerChiWave() {
 
 				if tickIndex < chiWaveMaxBounces {
 					tickIndex++
+					nextTarget = target.Env.NextActiveTargetUnit(target.CurrentTarget)
 					chiWaveDamageSpell.Cast(sim, nextTarget)
 				}
 			})
@@ -186,7 +194,7 @@ func (monk *Monk) registerChiWave() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			tickIndex = 0
 			if monk.IsOpponent(target) {
-				nextTarget = target.Env.NextTargetUnit(target)
+				nextTarget = target.Env.NextActiveTargetUnit(target)
 				chiWaveDamageSpell.Cast(sim, target)
 			} else {
 				nextTarget = target.CurrentTarget
@@ -216,7 +224,7 @@ func (pet *StormEarthAndFirePet) registerSEFChiWave() {
 					spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicCrit)
 					if tickIndex < chiWaveMaxBounces {
 						tickIndex++
-						nextTarget = nextTarget.Env.NextTargetUnit(nextTarget)
+						nextTarget = nextTarget.Env.NextActiveTargetUnit(nextTarget)
 						chiWaveHealingSpell.Cast(sim, &pet.Unit)
 					}
 				})
@@ -252,7 +260,7 @@ func (pet *StormEarthAndFirePet) registerSEFChiWave() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			tickIndex = 0
 			if pet.IsOpponent(target) {
-				nextTarget = target.Env.NextTargetUnit(target)
+				nextTarget = target.Env.NextActiveTargetUnit(target)
 				chiWaveDamageSpell.Cast(sim, target)
 			} else {
 				nextTarget = target.CurrentTarget
@@ -313,8 +321,8 @@ func (monk *Monk) registerZenSphere() {
 		ThreatMultiplier: 1,
 		CritMultiplier:   monk.DefaultCritMultiplier(),
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, target := range sim.Encounter.TargetUnits {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			for _, target := range sim.Encounter.ActiveTargetUnits {
 				baseDamage := avgDetonateDmgScaling + spell.MeleeAttackPower()*avgDetonateDmgBonusCoefficient
 				result := spell.CalcOutcome(sim, target, spell.OutcomeMeleeSpecialNoBlockDodgeParryNoCritNoHitCounter)
 
@@ -481,7 +489,7 @@ func chiBurstDamageSpellConfig(monk *Monk, isSEFClone bool) core.SpellConfig {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 
 			spell.WaitTravelTime(sim, func(simulation *core.Simulation) {
-				for _, target := range sim.Encounter.TargetUnits {
+				for _, target := range sim.Encounter.ActiveTargetUnits {
 					baseDamage := chiBurstScaling + spell.MeleeAttackPower()*chiBurstBonusCoeff
 					result := spell.CalcOutcome(sim, target, spell.OutcomeMeleeSpecialNoBlockDodgeParryNoCritNoHitCounter)
 
@@ -841,11 +849,8 @@ func rushingJadeWindTickSpellConfig(monk *Monk, isSEFClone bool) core.SpellConfi
 		ThreatMultiplier: 1,
 		CritMultiplier:   monk.DefaultCritMultiplier(),
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, target := range sim.Encounter.TargetUnits {
-				baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)
-				spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-			}
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMeleeSpecialHitAndCrit, monk.CalculateMonkStrikeDamage)
 		},
 	}
 
@@ -899,7 +904,6 @@ func (monk *Monk) registerRushingJadeWind() {
 	}
 
 	chiMetrics := monk.NewChiMetrics(rushingJadeWindActionID)
-	numTargets := monk.Env.GetNumTargets()
 	baseCooldown := time.Second * 6
 
 	rushingJadeWindTickSpell := monk.RegisterSpell(rushingJadeWindTickSpellConfig(monk, false))
@@ -946,7 +950,7 @@ func (monk *Monk) registerRushingJadeWind() {
 			rushingJadeWindBuff.Duration = remainingDuration
 			rushingJadeWindBuff.Activate(sim)
 
-			if numTargets >= 3 {
+			if sim.Environment.ActiveTargetCount() >= 3 {
 				monk.AddChi(sim, spell, 1, chiMetrics)
 			}
 		},

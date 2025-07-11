@@ -4,14 +4,13 @@ import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLAction, APLListItem, APLRotation, APLRotation_Type, SimpleRotation } from '../../core/proto/apl';
-import { Cooldowns, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { APLRotation } from '../../core/proto/apl';
+import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { MageMajorGlyph } from '../../core/proto/mage';
 import { StatCapType } from '../../core/proto/ui';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
 import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
-import * as FireInputs from './inputs';
 import * as Presets from './presets';
 
 const combustBreakpoints = Presets.COMBUSTION_BREAKPOINT.presets;
@@ -64,9 +63,19 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 	epReferenceStat: Stat.StatSpellPower,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatMana, Stat.StatStamina, Stat.StatIntellect, Stat.StatSpellPower, Stat.StatExpertiseRating],
+		[
+			Stat.StatHealth,
+			Stat.StatMana,
+			Stat.StatStamina,
+			Stat.StatIntellect,
+			Stat.StatSpirit,
+			Stat.StatSpellPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+		],
 		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
 	),
+	gemStats: DEFAULT_CASTER_GEM_STATS,
 
 	defaults: {
 		// Default equipped gear.
@@ -90,8 +99,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 		// Default consumes settings.
 		consumables: Presets.DefaultFireConsumables,
 		// Default rotation settings.
-		rotationType: APLRotation_Type.TypeSimple,
-		simpleRotation: Presets.P1TrollDefaultSimpleRotation,
+		// rotationType: APLRotation_Type.TypeSimple,
+		// simpleRotation: Presets.P1TrollDefaultSimpleRotation,
 		// Default talents.
 		talents: Presets.FireTalents.data,
 		// Default spec-specific settings.
@@ -108,7 +117,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [],
 	// Inputs to include in the 'Rotation' section on the settings tab.
-	rotationInputs: FireInputs.MageRotationConfig,
+	// rotationInputs: FireInputs.MageRotationConfig,
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
 	includeBuffDebuffInputs: [],
 	excludeBuffDebuffInputs: [],
@@ -116,7 +125,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 	otherInputs: {
 		inputs: [OtherInputs.InputDelay, OtherInputs.DistanceFromTarget, OtherInputs.TankAssignment],
 	},
-	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotHands, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
+	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: true,
@@ -125,17 +134,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 	presets: {
 		epWeights: [Presets.DEFAULT_EP_PRESET],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.P1_SIMPLE_ROTATION_DEFAULT, Presets.P1_SIMPLE_ROTATION_NO_TROLL, Presets.FIRE_ROTATION_PRESET_DEFAULT],
+		rotations: [Presets.FIRE_ROTATION_PRESET_DEFAULT],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.FireTalents],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PREBIS_PRESET, Presets.P1_BIS_PRESET],
-		builds: [Presets.P1_PRESET_BUILD, Presets.P1_PRESET_BUILD_NO_TROLL],
 	},
 
 	autoRotation: (): APLRotation => {
 		// return Presets.FIRE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
-		return Presets.P1_SIMPLE_ROTATION_DEFAULT.rotation.rotation!;
+		return Presets.FIRE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
 
 	// simpleRotation: (player, simple): APLRotation => {

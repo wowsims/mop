@@ -15,7 +15,7 @@ func (war *ArmsWarrior) registerSlam() {
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskEmpty,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagIgnoreAttackerModifiers | core.SpellFlagNoOnCastComplete,
-		ClassSpellMask: warrior.SpellMaskSlam,
+		ClassSpellMask: warrior.SpellMaskSweepingSlam,
 		MinRange:       2,
 
 		DamageMultiplier: 0.35,
@@ -57,11 +57,7 @@ func (war *ArmsWarrior) registerSlam() {
 
 			if war.SweepingStrikesAura.IsActive() {
 				sweepingStrikesSlamDamage = result.Damage
-				for _, otherTarget := range sim.Encounter.TargetUnits {
-					if otherTarget != target {
-						sweepingStrikesSlam.Cast(sim, otherTarget)
-					}
-				}
+				sweepingStrikesSlam.CastOnAllOtherTargets(sim, target)
 			}
 
 			if !result.Landed() {

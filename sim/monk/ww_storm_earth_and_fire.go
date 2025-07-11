@@ -107,6 +107,9 @@ func (pet *StormEarthAndFirePet) modifyCopySpell(sourceSpell *core.Spell, target
 }
 
 func (controller *StormEarthAndFireController) CastCopySpell(sim *core.Simulation, spell *core.Spell) {
+	if spell.Flags.Matches(core.SpellFlagPassiveSpell) {
+		return
+	}
 	for _, pet := range controller.activeClones {
 		petSpellActionID := spell.ActionID.WithTag(SEFSpellID)
 		copySpell := pet.spells[petSpellActionID]
@@ -325,6 +328,9 @@ func (sefClone *StormEarthAndFirePet) GetPet() *core.Pet {
 }
 
 func (sefClone *StormEarthAndFirePet) Reset(_ *core.Simulation) {
+}
+
+func (sefClone *StormEarthAndFirePet) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (sefClone *StormEarthAndFirePet) ExecuteCustomRotation(_ *core.Simulation) {

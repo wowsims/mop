@@ -10,8 +10,8 @@ import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Ra
 import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as RogueInputs from '../inputs';
-// import * as SinInputs from './inputs';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
@@ -21,28 +21,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 	knownIssues: [],
 
 	// All stats for which EP should be calculated.
-	epStats: [
-		Stat.StatAgility,
-		Stat.StatHitRating,
-		Stat.StatCritRating,
-		Stat.StatHasteRating,
-		Stat.StatMasteryRating,
-		Stat.StatExpertiseRating,
-	],
-	epPseudoStats: [
-		PseudoStat.PseudoStatMainHandDps,
-		PseudoStat.PseudoStatOffHandDps,
-	],
+	epStats: [Stat.StatAgility, Stat.StatHitRating, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating, Stat.StatExpertiseRating],
+	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps],
 	// Reference stat against which to calculate EP.
 	epReferenceStat: Stat.StatAgility,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatHealth, Stat.StatStamina, Stat.StatAgility, Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
-		[
-			PseudoStat.PseudoStatPhysicalHitPercent,
-			PseudoStat.PseudoStatPhysicalCritPercent,
-			PseudoStat.PseudoStatMeleeHastePercent,
-		],
+		[PseudoStat.PseudoStatPhysicalHitPercent, PseudoStat.PseudoStatPhysicalCritPercent, PseudoStat.PseudoStatMeleeHastePercent],
 	),
 
 	defaults: {
@@ -73,6 +59,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
 			blessingOfKings: true,
 			trueshotAura: true,
 			swiftbladesCunning: true,
@@ -110,35 +97,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 
 		BuffDebuffInputs.SpellDamageDebuff,
 		BuffDebuffInputs.MajorArmorDebuff,
-		BuffDebuffInputs.PhysicalDamageDebuff
+		BuffDebuffInputs.PhysicalDamageDebuff,
 	],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [
-			OtherInputs.InFrontOfTarget,
-			OtherInputs.InputDelay,
-			RogueInputs.StartingComboPoints(),
-		],
+		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotHead,
-		ItemSlot.ItemSlotNeck,
-		ItemSlot.ItemSlotShoulder,
-		ItemSlot.ItemSlotBack,
-		ItemSlot.ItemSlotChest,
-		ItemSlot.ItemSlotWrist,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotWaist,
-		ItemSlot.ItemSlotLegs,
-		ItemSlot.ItemSlotFeet,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotMainHand,
-		ItemSlot.ItemSlotOffHand,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: true,
@@ -151,11 +117,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_ASSASSINATION],
 		// Preset gear configurations that the user can quickly select.
-		gear: [
-			Presets.PRERAID_GEARSET,
-			Presets.P1_MSV_GEARSET,
-			Presets.P1_T14_GEARSET,
-		],
+		gear: [Presets.PRERAID_GEARSET, Presets.P1_MSV_GEARSET, Presets.P1_T14_GEARSET],
 	},
 
 	autoRotation: (player: Player<Spec.SpecAssassinationRogue>): APLRotation => {
@@ -204,14 +166,14 @@ export class AssassinationRogueSimUI extends IndividualSimUI<Spec.SpecAssassinat
 		this.player.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
 			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
+				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 			}
 			this.player.setSpecOptions(c, options);
 		});
 		this.sim.encounter.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
 			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
+				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 			}
 			this.player.setSpecOptions(c, options);
 		});

@@ -65,12 +65,11 @@ func (war *Warrior) registerHeroicStrikeSpell() {
 }
 
 func (war *Warrior) registerCleaveSpell() {
-	maxTargets := 2
-	results := make([]*core.SpellResult, maxTargets)
+	const maxTargets int32 = 2
 
 	getCleaveDamageMultiplier := func() float64 {
 		has1H := war.MainHand().HandType != proto.HandType_HandTypeTwoHand
-		return core.TernaryFloat64(has1H, 1.15, 0.8)
+		return core.TernaryFloat64(has1H, .15, -0.2)
 	}
 
 	weaponDamageMod := war.AddDynamicMod(core.SpellModConfig{
@@ -80,6 +79,10 @@ func (war *Warrior) registerCleaveSpell() {
 	})
 
 	war.RegisterItemSwapCallback(core.AllWeaponSlots(), func(_ *core.Simulation, _ proto.ItemSlot) {
+		weaponDamageMod.UpdateFloatValue(getCleaveDamageMultiplier())
+	})
+	war.RegisterResetEffect(func(_ *core.Simulation) {
+		weaponDamageMod.Activate()
 		weaponDamageMod.UpdateFloatValue(getCleaveDamageMultiplier())
 	})
 
@@ -111,17 +114,9 @@ func (war *Warrior) registerCleaveSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-
-			for idx, target := range sim.Encounter.TargetUnits {
-				if idx > maxTargets {
-					break
-				}
-				results[idx] = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
-
-			for _, result := range results {
-				spell.DealDamage(sim, result)
-			}
+			results := spell.CalcCleaveDamage(sim, target, maxTargets, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
+			war.CastNormalizedSweepingStrikesAttack(results, sim)
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 

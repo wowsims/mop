@@ -23,10 +23,3 @@ export const StartingSealSelection = <SpecType extends PaladinSpecs>() =>
 		],
 		changeEmitter: (player: Player<SpecType>) => player.changeEmitter,
 	});
-
-export const StartingHolyPower = <SpecType extends PaladinSpecs>() =>
-	InputHelpers.makeClassOptionsNumberInput<SpecType>({
-		fieldName: 'startingHolyPower',
-		label: 'Starting Holy Power',
-		labelTooltip: "Initial Holy Power at the start of each iteration.",
-	});

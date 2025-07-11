@@ -39,6 +39,8 @@ func (monk *Monk) NewXuen() *Xuen {
 
 					stats.PhysicalCritPercent: ownerStats[stats.PhysicalCritPercent],
 					stats.SpellCritPercent:    ownerStats[stats.PhysicalCritPercent],
+
+					stats.HasteRating: ownerStats[stats.HasteRating],
 				}
 			},
 			EnabledOnStart:                  false,
@@ -74,12 +76,7 @@ func (monk *Monk) NewXuen() *Xuen {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := monk.CalcScalingSpellDmg(0.293) + xuen.GetStat(stats.AttackPower)*0.505
-			for index, target := range sim.Encounter.TargetUnits {
-				if index > 3 {
-					break
-				}
-				spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealCleaveDamage(sim, target, 4, baseDamage, spell.OutcomeMagicHitAndCrit)
 		},
 	})
 
@@ -122,6 +119,9 @@ func (xuen *Xuen) ExecuteCustomRotation(sim *core.Simulation) {
 
 func (xuen *Xuen) Reset(sim *core.Simulation) {
 	xuen.Disable(sim)
+}
+
+func (xuen *Xuen) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (xuen *Xuen) enable(sim *core.Simulation) {

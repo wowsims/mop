@@ -1,13 +1,14 @@
+import { Encounter } from '../../core/encounter';
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Stat } from '../../core/proto/common.js';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common.js';
 import { SavedTalents } from '../../core/proto/ui.js';
-import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph, WarriorMinorGlyph } from '../../core/proto/warrior.js';
+import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior.js';
 import { Stats } from '../../core/proto_utils/stats';
-import DefaultApl from './apls/default.apl.json';
+import DefensiveApl from './apls/default.apl.json';
+import DefautlApl from './apls/garajal.apl.json';
+import DefaultBuild from './builds/garajal_default.build.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
-import P3BISGear from './gear_sets/p3_bis.gear.json';
-import P4BISGear from './gear_sets/p4_bis.gear.json';
-import P4NelfBISGear from './gear_sets/p4_nelf_bis.gear.json';
+import P1BISItemSwapGear from './gear_sets/p1_bis_item_swap.gear.json';
 import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -16,30 +17,30 @@ import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 export const PRERAID_BALANCED_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidBISGear);
 export const P1_BALANCED_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
-export const P3_BALANCED_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3BISGear);
-export const P4_BALANCED_PRESET = PresetUtils.makePresetGear('P4 - BIS', P4BISGear);
-export const P4_NELF_BALANCED_PRESET = PresetUtils.makePresetGear('P4 - BIS (Nelf)', P4NelfBISGear);
 
-export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('Default APL', DefaultApl);
+export const P1_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P1 - Item Swap', P1BISItemSwapGear);
+
+export const ROTATION_DEFENSIVE = PresetUtils.makePresetAPLRotation('Defensive', DefensiveApl);
+export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal", DefautlApl);
 
 // Preset options for EP weights
-export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Default',
 	Stats.fromMap(
 		{
-			[Stat.StatArmor]: 2.155,
-			[Stat.StatBonusArmor]: 2.155,
-			[Stat.StatStamina]: 12.442,
-			[Stat.StatStrength]: 1.4,
-			[Stat.StatAgility]: 0.26,
-			[Stat.StatAttackPower]: 0.196,
-			[Stat.StatExpertiseRating]: 0.863,
-			[Stat.StatHitRating]: 0.736,
-			[Stat.StatCritRating]: 0.336,
-			[Stat.StatHasteRating]: 0.048,
-			[Stat.StatDodgeRating]: 4.801,
-			[Stat.StatParryRating]: 4.801,
-			[Stat.StatMasteryRating]: 7.415,
+			[Stat.StatArmor]: 2.60,
+			[Stat.StatBonusArmor]: 2.60,
+			[Stat.StatStamina]: 0.37,
+			[Stat.StatStrength]: 10.03,
+			[Stat.StatAgility]: 0.23,
+			[Stat.StatAttackPower]: 3.07,
+			[Stat.StatExpertiseRating]: 10,
+			[Stat.StatHitRating]: 10,
+			[Stat.StatCritRating]: 5.62,
+			[Stat.StatHasteRating]: 2.73,
+			[Stat.StatDodgeRating]: 7.91,
+			[Stat.StatParryRating]: 8.73,
+			[Stat.StatMasteryRating]: 4.25,
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 6.081,
@@ -52,39 +53,36 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '',
+		talentsString: '233232',
 		glyphs: Glyphs.create({
-			major1: WarriorMajorGlyph.GlyphOfShieldWall,
+			major1: WarriorMajorGlyph.GlyphOfIncite,
+			major2: WarriorMajorGlyph.GlyphOfHeavyRepercussions,
+			major3: WarriorMajorGlyph.GlyphOfHoldTheLine,
 		}),
 	}),
 };
 
 export const DefaultOptions = ProtectionWarriorOptions.create({
-	classOptions: {
-		startingRage: 0,
-	},
+	classOptions: {},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	battleElixirId: 58148, // Elixir of the Master (not found in list)
-	guardianElixirId: 58093, // Elixir of Deep Earth (not found in list)
-	foodId: 62670, // Beer-Basted Crocolisk
-	potId: 58090, // Earthen Potion
-	prepotId: 58090, // Earthen Potion
-	explosiveId: 89637, // Big Daddy Explosive
+	flaskId: 76087, // Flask of the Earth
+	foodId: 81411, // Peach Pie
+	prepotId: 76090, // Potion of the Mountains
+	potId: 76090, // Potion of the Mountains
 });
 
 export const OtherDefaults = {
-	profession1: Profession.Leatherworking,
-	profession2: Profession.Inscription,
+	profession1: Profession.Tailoring,
+	profession2: Profession.Blacksmithing,
+	distanceFromTarget: 15,
 };
 
-export const P4_PRESET_BUILD = PresetUtils.makePresetBuild('P4 - Default', {
-	race: Race.RaceGnome,
-	gear: P4_BALANCED_PRESET,
-});
-
-export const P4_NELF_PRESET_BUILD = PresetUtils.makePresetBuild('P4 - Default (Nelf)', {
-	race: Race.RaceNightElf,
-	gear: P4_NELF_BALANCED_PRESET,
+export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecProtectionWarrior, DefaultBuild);
+export const PRESET_BUILD_DEFENSIVE = PresetUtils.makePresetBuild('Defensive', {
+	talents: StandardTalents,
+	rotation: ROTATION_DEFENSIVE,
+	itemSwap: P1_ITEM_SWAP,
+	encounter: PresetUtils.makePresetEncounter('Defensive', Encounter.defaultEncounterProto()),
 });

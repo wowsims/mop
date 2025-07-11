@@ -12,7 +12,7 @@ func (mage *Mage) registerGlyphs() {
 
 	// Glyph of Frostfire Bolt
 	if mage.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfFrostfireBolt) {
-		mage.AddDynamicMod(core.SpellModConfig{
+		mage.AddStaticMod(core.SpellModConfig{
 			ClassMask: MageSpellFrostfireBolt,
 			TimeValue: time.Millisecond * -500,
 			Kind:      core.SpellMod_CastTime_Flat,
@@ -21,7 +21,7 @@ func (mage *Mage) registerGlyphs() {
 
 	// Glyph of Cone of Cold
 	if mage.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfConeOfCold) {
-		mage.AddDynamicMod(core.SpellModConfig{
+		mage.AddStaticMod(core.SpellModConfig{
 			ClassMask:  MageSpellConeOfCold,
 			FloatValue: 2.0,
 			Kind:       core.SpellMod_DamageDone_Pct,

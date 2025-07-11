@@ -116,6 +116,7 @@ func (hunter *Hunter) GetBaseDamageFromCoeff(coeff float64) float64 {
 func (hunter *Hunter) ApplyTalents() {
 	hunter.applyThrillOfTheHunt()
 	hunter.ApplyHotfixes()
+	hunter.addBloodthirstyGloves()
 
 	if hunter.Pet != nil {
 
@@ -213,6 +214,9 @@ func (hunter *Hunter) HasMinorGlyph(glyph proto.HunterMinorGlyph) bool {
 
 func (hunter *Hunter) Reset(_ *core.Simulation) {
 	hunter.mayMoveAt = 0
+}
+
+func (hunter *Hunter) OnEncounterStart(sim *core.Simulation) {
 }
 
 const (

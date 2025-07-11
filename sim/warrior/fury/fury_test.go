@@ -14,31 +14,33 @@ func init() {
 }
 
 func TestFury(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassWarrior,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceWorgen},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassWarrior,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-		GearSet: core.GetGearSet("../../../ui/warrior/fury/gear_sets", "p1_fury_tg"),
+			GearSet: core.GetGearSet("../../../ui/warrior/fury/gear_sets", "p1_fury_tg"),
 
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/warrior/fury/gear_sets", "p1_fury_smf"),
-		},
-		Talents: TGTalents,
-		OtherTalentSets: []core.TalentsCombo{
-			{
-				Label:   "Single-Minded Fury",
-				Talents: SMFTalents,
-				Glyphs:  FuryGlyphs,
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/warrior/fury/gear_sets", "p1_fury_smf"),
 			},
-		},
-		Glyphs:           FuryGlyphs,
-		Consumables:      FullConsumesSpec,
-		SpecOptions:      core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFury},
-		Rotation:         core.GetAplRotation("../../../ui/warrior/fury/apls", "default"),
-		StartingDistance: 5,
+			Talents: TGTalents,
+			OtherTalentSets: []core.TalentsCombo{
+				{
+					Label:   "Single-Minded Fury",
+					Talents: SMFTalents,
+					Glyphs:  FuryGlyphs,
+				},
+			},
+			Glyphs:           FuryGlyphs,
+			Consumables:      FullConsumesSpec,
+			SpecOptions:      core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFury},
+			Rotation:         core.GetAplRotation("../../../ui/warrior/fury/apls", "default"),
+			StartingDistance: 5,
 
-		ItemFilter: ItemFilter,
+			ItemFilter: ItemFilter,
+		},
 	}))
 }
 
@@ -65,9 +67,7 @@ var FuryGlyphs = &proto.Glyphs{
 var PlayerOptionsFury = &proto.Player_FuryWarrior{
 	FuryWarrior: &proto.FuryWarrior{
 		Options: &proto.FuryWarrior_Options{
-			ClassOptions: &proto.WarriorOptions{
-				StartingRage: 0,
-			},
+			ClassOptions: &proto.WarriorOptions{},
 		},
 	},
 }

@@ -278,6 +278,12 @@ func MakePermanent(aura *Aura) *Aura {
 	return aura
 }
 
+func BlockPrepull(aura *Aura) *Aura {
+	return aura.ApplyOnEncounterStart(func(aura *Aura, sim *Simulation) {
+		aura.Deactivate(sim)
+	})
+}
+
 type TemporaryStatBuffWithStacksConfig struct {
 	StackingAuraLabel    string
 	StackingAuraActionID ActionID
@@ -310,11 +316,13 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 				stackingAura.Activate(sim)
 				StartPeriodicAction(sim, PeriodicActionOptions{
 					Period:          config.TimePerStack,
-					NumTicks:        10,
+					NumTicks:        int(config.MaxStacks),
 					TickImmediately: config.TickImmediately,
 					OnAction: func(sim *Simulation) {
-						stackingAura.Activate(sim)
-						stackingAura.AddStack(sim)
+						// Aura might not be active because of stuff like mage alter time being cast right before this aura being activated
+						if stackingAura.IsActive() {
+							stackingAura.AddStack(sim)
+						}
 					},
 				})
 			},
@@ -532,6 +540,18 @@ func (parentAura *Aura) AttachMultiplyMeleeSpeed(multiplier float64) *Aura {
 
 	parentAura.ApplyOnExpire(func(_ *Aura, sim *Simulation) {
 		parentAura.Unit.MultiplyMeleeSpeed(sim, 1/multiplier)
+	})
+
+	return parentAura
+}
+
+func (parentAura *Aura) AttachMultiplyAttackSpeed(multiplier float64) *Aura {
+	parentAura.ApplyOnGain(func(_ *Aura, sim *Simulation) {
+		parentAura.Unit.MultiplyAttackSpeed(sim, multiplier)
+	})
+
+	parentAura.ApplyOnExpire(func(_ *Aura, sim *Simulation) {
+		parentAura.Unit.MultiplyAttackSpeed(sim, 1/multiplier)
 	})
 
 	return parentAura

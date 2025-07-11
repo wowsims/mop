@@ -90,9 +90,7 @@ func (monk *Monk) registerRisingSunKick() {
 
 			if result.Landed() {
 				monk.SpendChi(sim, 2, chiMetrics)
-				for _, target := range sim.Encounter.TargetUnits {
-					risingSunKickDebuff.Get(target).Activate(sim)
-				}
+				risingSunKickDebuff.ActivateAll(sim)
 			}
 		},
 		RelatedAuraArrays: risingSunKickDebuff.ToMap(),
@@ -123,9 +121,7 @@ func (pet *StormEarthAndFirePet) registerSEFRisingSunKick() {
 			result := spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 
 			if result.Landed() {
-				for _, target := range sim.Encounter.TargetUnits {
-					risingSunKickDebuff.Get(target).Activate(sim)
-				}
+				risingSunKickDebuff.ActivateAll(sim)
 			}
 		},
 		RelatedAuraArrays: risingSunKickDebuff.ToMap(),

@@ -123,12 +123,10 @@ func (war *Warrior) registerDragonRoar() {
 		BonusCritPercent: 100,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			damageMultiplier := damageMultipliers[min(war.Env.GetNumTargets()-1, 4)]
+			damageMultiplier := damageMultipliers[min(war.Env.ActiveTargetCount()-1, 4)]
 			baseDamage := 126 + spell.MeleeAttackPower()*1.39999997616
 			spell.DamageMultiplier *= damageMultiplier
-			for _, enemyTarget := range sim.Encounter.ActiveTargets {
-				spell.CalcAndDealDamage(sim, &enemyTarget.Unit, baseDamage, spell.OutcomeMeleeSpecialCritOnly)
-			}
+			spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMeleeSpecialCritOnly)
 			spell.DamageMultiplier /= damageMultiplier
 		},
 	})
@@ -164,10 +162,12 @@ func (war *Warrior) registerBladestorm() {
 		CritMultiplier:   war.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, enemyTarget := range sim.Encounter.ActiveTargets {
-				baseDamage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-				spell.CalcAndDealDamage(sim, &enemyTarget.Unit, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
+			results := spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMeleeWeaponSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+				return spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
+			})
+
+			war.CastNormalizedSweepingStrikesAttack(results, sim)
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 
@@ -182,18 +182,22 @@ func (war *Warrior) registerBladestorm() {
 		CritMultiplier:   war.DefaultCritMultiplier(),
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			for _, enemyTarget := range sim.Encounter.ActiveTargets {
-				baseDamage := spell.Unit.OHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-				spell.CalcAndDealDamage(sim, &enemyTarget.Unit, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMeleeWeaponSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+				return spell.Unit.OHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
+			})
 		},
+	})
+
+	channelMod := war.AddDynamicMod(core.SpellModConfig{
+		ClassMask: SpellMaskBattleShout | SpellMaskCommandingShout | SpellMaskRallyingCry | SpellMaskLastStand | SpellMaskDemoralizingShout | SpellMaskBerserkerRage,
+		Kind:      core.SpellMod_AllowCastWhileChanneling,
 	})
 
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID.WithTag(0),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ClassSpellMask: SpellMaskBladestorm,
-		Flags:          core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagCastWhileChanneling,
 		ProcMask:       core.ProcMaskEmpty,
 
 		Cast: core.CastConfig{
@@ -213,12 +217,19 @@ func (war *Warrior) registerBladestorm() {
 			IsAOE: true,
 			Aura: core.Aura{
 				Label: "Bladestorm",
+				OnGain: func(aura *core.Aura, sim *core.Simulation) {
+					channelMod.Activate()
+				},
+				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+					channelMod.Deactivate()
+				},
 			},
 			NumberOfTicks: 6,
 			TickLength:    time.Second * 1,
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
 				mhSpell.Cast(sim, target)
-				if war.OffHand() != nil && war.OffHand().WeaponType != proto.WeaponType_WeaponTypeUnknown {
+
+				if war.OffHand() != nil && (war.OffHand().WeaponType != proto.WeaponType_WeaponTypeUnknown && war.OffHand().WeaponType != proto.WeaponType_WeaponTypeShield) {
 					ohSpell.Cast(sim, target)
 				}
 			},
@@ -264,16 +275,10 @@ func (war *Warrior) registerShockwave() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			numLandedHits := 0
 			baseDamage := spell.MeleeAttackPower()
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				result := spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
+			results := spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 
-				if result.Landed() {
-					numLandedHits++
-				}
-			}
-			if numLandedHits >= 3 {
+			if results.NumLandedHits() >= 3 {
 				spell.CD.Reduce(time.Second * 20)
 			}
 		},

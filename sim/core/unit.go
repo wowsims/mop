@@ -231,11 +231,11 @@ func (unit *Unit) IsOpponent(other *Unit) bool {
 	return (unit.Type == EnemyUnit) != (other.Type == EnemyUnit)
 }
 
-func (unit *Unit) GetOpponents() []*Unit {
+func (unit *Unit) GetAllOpponents() []*Unit {
 	if unit.Type == EnemyUnit {
 		return unit.Env.Raid.AllUnits
 	} else {
-		return unit.Env.Encounter.TargetUnits
+		return unit.Env.Encounter.AllTargetUnits
 	}
 }
 
@@ -388,8 +388,8 @@ func (unit *Unit) processDynamicBonus(sim *Simulation, bonus stats.Stats) {
 		}
 	}
 
-	unit.Env.triggerDelayedPetInheritance(sim, unit.DynamicStatsPets, func(sim *Simulation, pet *Pet) {
-		pet.addOwnerStats(sim, bonus)
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicStatsPets, func(sim *Simulation, pet *Pet) {
+		pet.AddOwnerStats(sim, bonus)
 	})
 }
 
@@ -471,6 +471,14 @@ func (unit *Unit) InitialCastSpeed() float64 {
 	return unit.initialCastSpeed
 }
 
+func (unit *Unit) IsChanneling() bool {
+	return unit.ChanneledDot != nil
+}
+
+func (unit *Unit) IsCastingDuringChannel() bool {
+	return unit.IsChanneling() && unit.ChanneledDot.Spell.Flags.Matches(SpellFlagCastWhileChanneling)
+}
+
 func (unit *Unit) SpellGCD() time.Duration {
 	return max(GCDMin, unit.ApplyCastSpeed(GCDDefault))
 }
@@ -491,8 +499,8 @@ func (unit *Unit) updateCastSpeed() {
 func (unit *Unit) MultiplyCastSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.CastSpeedMultiplier *= amount
 
-	unit.Env.triggerDelayedPetInheritance(sim, unit.DynamicCastSpeedPets, func(_ *Simulation, pet *Pet) {
-		pet.dynamicCastSpeedInheritance(amount)
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicCastSpeedPets, func(sim *Simulation, pet *Pet) {
+		pet.dynamicCastSpeedInheritance(sim, amount)
 	})
 
 	unit.updateCastSpeed()
@@ -503,6 +511,15 @@ func (unit *Unit) ApplyCastSpeed(dur time.Duration) time.Duration {
 }
 func (unit *Unit) ApplyCastSpeedForSpell(dur time.Duration, spell *Spell) time.Duration {
 	return time.Duration(float64(dur) * unit.CastSpeed * max(0, spell.CastTimeMultiplier))
+}
+
+// ApplyRangedSpeed applies ranged haste to a duration, for ranged abilities that should be affected by ranged haste
+func (unit *Unit) ApplyRangedSpeed(dur time.Duration) time.Duration {
+	return time.Duration(float64(dur) / unit.TotalRangedHasteMultiplier())
+}
+
+func (unit *Unit) ApplyRealHaste(dur time.Duration) time.Duration {
+	return time.Duration(float64(dur) / unit.TotalRealHasteMultiplier())
 }
 
 func (unit *Unit) TotalMeleeHasteMultiplier() float64 {
@@ -541,8 +558,8 @@ func (unit *Unit) MultiplyMeleeSpeed(sim *Simulation, amount float64) {
 	unit.PseudoStats.MeleeSpeedMultiplier *= amount
 	unit.updateMeleeAttackSpeed()
 
-	unit.Env.triggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(_ *Simulation, pet *Pet) {
-		pet.dynamicMeleeSpeedInheritance(amount)
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(sim *Simulation, pet *Pet) {
+		pet.dynamicMeleeSpeedInheritance(sim, amount)
 	})
 
 	unit.AutoAttacks.UpdateSwingTimers(sim)
@@ -604,8 +621,8 @@ func (unit *Unit) MultiplyAttackSpeed(sim *Simulation, amount float64) {
 	unit.updateAttackSpeed()
 	unit.updateMeleeAndRangedHaste()
 
-	unit.Env.triggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(_ *Simulation, pet *Pet) {
-		pet.dynamicMeleeSpeedInheritance(amount)
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicMeleeSpeedPets, func(sim *Simulation, pet *Pet) {
+		pet.dynamicMeleeSpeedInheritance(sim, amount)
 	})
 
 	unit.AutoAttacks.UpdateSwingTimers(sim)
@@ -621,7 +638,7 @@ func (unit *Unit) MultiplyResourceRegenSpeed(sim *Simulation, amount float64) {
 		unit.MultiplyEnergyRegenSpeed(sim, amount)
 	}
 
-	unit.Env.triggerDelayedPetInheritance(sim, unit.RegenInheritancePets, func(sim *Simulation, pet *Pet) {
+	unit.Env.TriggerDelayedPetInheritance(sim, unit.RegenInheritancePets, func(sim *Simulation, pet *Pet) {
 		pet.MultiplyResourceRegenSpeed(sim, amount)
 	})
 }
@@ -708,7 +725,10 @@ func (unit *Unit) finalize() {
 }
 
 func (unit *Unit) reset(sim *Simulation, _ Agent) {
-	unit.enabled = true
+	if unit.Type != EnemyUnit {
+		unit.enabled = true
+	}
+
 	unit.resetCDs(sim)
 	unit.Hardcast.Expires = startingCDTime
 	unit.ChanneledDot = nil
@@ -749,6 +769,14 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 	if unit.Type != PetUnit {
 		sim.addTracker(&unit.auraTracker)
 	}
+}
+
+func (unit *Unit) onEncounterStart(sim *Simulation) {
+	if agent := unit.Env.GetAgentFromUnit(unit); agent != nil {
+		agent.OnEncounterStart(sim)
+	}
+
+	unit.OnEncounterStart(sim)
 }
 
 func (unit *Unit) startPull(sim *Simulation) {

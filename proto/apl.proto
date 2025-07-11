@@ -41,7 +41,7 @@ message APLListItem {
     APLAction action = 3; // The action to be performed.
 }
 
-// NextIndex: 27
+// NextIndex: 28
 message APLAction {
     APLValue condition = 1; // If set, action will only execute if value is true or != 0.
 
@@ -79,13 +79,14 @@ message APLAction {
 
         // Class or Spec-specific actions
         APLActionCatOptimalRotationAction cat_optimal_rotation_action = 18;
+        APLActionGuardianHotwDpsRotation guardian_hotw_dps_rotation = 27;
 
         // Internal use only, not exposed in UI.
         APLActionCustomRotation custom_rotation = 19;
     }
 }
 
-// NextIndex: 103
+// NextIndex: 106
 message APLValue {
 	UUID uuid = 85;
 
@@ -138,6 +139,7 @@ message APLValue {
 
 		// Unit values
 		APLValueUnitIsMoving unit_is_moving = 72;
+		APLValueUnitDistance unit_distance = 105;
 
         // Rune Resource values
         APLValueCurrentRuneCount current_rune_count = 29;
@@ -190,7 +192,9 @@ message APLValue {
 
         // Dot values
         APLValueDotIsActive dot_is_active = 6;
+        APLValueDotIsActiveOnAllTargets dot_is_active_on_all_targets = 103;
         APLValueDotRemainingTime dot_remaining_time = 13;
+        APLValueDotLowestRemainingTime dot_lowest_remaining_time = 104;
         APLValueDotTickFrequency dot_tick_frequency = 67;
 		APLValueDotPercentIncrease dot_percent_increase = 101;
 
@@ -356,6 +360,16 @@ message APLActionCatOptimalRotationAction {
     bool cancel_primal_madness = 14;
 }
 
+message APLActionGuardianHotwDpsRotation {
+    enum Strategy {
+        Caster = 0;
+        Cat = 1;
+        Hybrid = 2;
+    }
+
+    Strategy strategy = 1;
+}
+
 message APLActionMove {
     APLValue range_from_target = 1;
 }
@@ -455,6 +469,9 @@ message APLValueBossSpellIsCasting {
     ActionID spell_id = 2;
 }
 message APLValueUnitIsMoving {
+    UnitReference source_unit = 1;
+}
+message APLValueUnitDistance {
     UnitReference source_unit = 1;
 }
 message APLValueCurrentHealth {
@@ -669,8 +686,14 @@ message APLValueDotIsActive {
     UnitReference target_unit = 2;
     ActionID spell_id = 1;
 }
+message APLValueDotIsActiveOnAllTargets {
+    ActionID spell_id = 1;
+}
 message APLValueDotRemainingTime {
     UnitReference target_unit = 2;
+    ActionID spell_id = 1;
+}
+message APLValueDotLowestRemainingTime {
     ActionID spell_id = 1;
 }
 message APLValueDotTickFrequency {

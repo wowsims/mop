@@ -38,7 +38,7 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 		ClassSpellMask: mage.MageSpellArcaneMissilesTick,
 		MissileSpeed:   20,
 
-		DamageMultiplier: 1 * 1.28, // https://www.wowhead.com/mop-classic/news/guardian-druid-and-arcane-mage-buffed-additional-mists-of-pandaria-class-changes-377468
+		DamageMultiplier: 1 * 1.15, // 2025-07-01 - Arcane Missiles damage increase lowered to 15% (was 28%).
 		CritMultiplier:   arcane.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
 		BonusCoefficient: arcaneMissilesCoefficient,
@@ -107,20 +107,20 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 	})
 
 	// Aura for when proc is successful
-	arcane.arcaneMissilesProcAura = arcane.RegisterAura(core.Aura{
+	arcane.arcaneMissilesProcAura = core.BlockPrepull(arcane.RegisterAura(core.Aura{
 		Label:     "Arcane Missiles Proc",
 		ActionID:  core.ActionID{SpellID: 79683},
 		Duration:  time.Second * 20,
 		MaxStacks: 2,
-	})
+	}))
 
 	// Listener for procs
 	core.MakeProcTriggerAura(&arcane.Unit, core.ProcTrigger{
 		Name:              "Arcane Missiles Activation",
 		ActionID:          core.ActionID{SpellID: 79684},
-		ClassSpellMask:    mage.MageSpellsAll ^ mage.MageSpellArcaneMissilesTick,
+		ClassSpellMask:    mage.MageSpellsAll ^ (mage.MageSpellArcaneMissilesTick | mage.MageSpellNetherTempestDot | mage.MageSpellLivingBombDot),
 		SpellFlagsExclude: core.SpellFlagHelpful,
-		ProcChance:        0.4,
+		ProcChance:        0.3,
 		Callback:          core.CallbackOnSpellHitDealt,
 		Outcome:           core.OutcomeLanded,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {

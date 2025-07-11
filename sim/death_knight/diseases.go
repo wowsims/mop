@@ -7,7 +7,7 @@ import (
 )
 
 func (dk *DeathKnight) DiseasesAreActive(target *core.Unit) bool {
-	return dk.FrostFeverSpell.Dot(target).IsActive() || dk.BloodPlagueSpell.Dot(target).IsActive() || dk.BurningBloodSpell != nil && dk.BurningBloodSpell.Dot(target).IsActive()
+	return dk.FrostFeverSpell.Dot(target).IsActive() || dk.BloodPlagueSpell.Dot(target).IsActive()
 }
 
 func (dk *DeathKnight) GetDiseaseMulti(target *core.Unit, base float64, increase float64) float64 {
@@ -17,9 +17,6 @@ func (dk *DeathKnight) GetDiseaseMulti(target *core.Unit, base float64, increase
 	}
 	if dk.BloodPlagueSpell.Dot(target).IsActive() {
 		count++
-	}
-	if count < 2 && dk.BurningBloodSpell != nil && dk.BurningBloodSpell.Dot(target).IsActive() {
-		count = 2
 	}
 	return base + increase*float64(count)
 }
@@ -61,10 +58,10 @@ func (dk *DeathKnight) registerFrostFever() {
 	config.ExpectedTickDamage = func(sim *core.Simulation, target *core.Unit, spell *core.Spell, useSnapshot bool) *core.SpellResult {
 		dot := spell.Dot(target)
 		if useSnapshot {
-			return dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedMagicSnapshotCrit)
+			return dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedSnapshotCrit)
 		} else {
 			baseTickDamage := dk.CalcScalingSpellDmg(0.13300000131) + dot.Spell.MeleeAttackPower()*0.15800000727
-			return spell.CalcPeriodicDamage(sim, target, baseTickDamage, spell.OutcomeExpectedMagicCrit)
+			return spell.CalcPeriodicDamage(sim, target, baseTickDamage, spell.OutcomeExpectedPhysicalCrit)
 		}
 	}
 
@@ -109,10 +106,10 @@ func (dk *DeathKnight) registerBloodPlague() {
 	config.ExpectedTickDamage = func(sim *core.Simulation, target *core.Unit, spell *core.Spell, useSnapshot bool) *core.SpellResult {
 		dot := spell.Dot(target)
 		if useSnapshot {
-			return dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedMagicSnapshotCrit)
+			return dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedSnapshotCrit)
 		} else {
 			baseTickDamage := dk.CalcScalingSpellDmg(0.15800000727) + dot.Spell.MeleeAttackPower()*0.15800000727
-			return spell.CalcPeriodicDamage(sim, target, baseTickDamage, spell.OutcomeExpectedMagicCrit)
+			return spell.CalcPeriodicDamage(sim, target, baseTickDamage, spell.OutcomeExpectedPhysicalCrit)
 		}
 	}
 

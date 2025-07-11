@@ -25,6 +25,7 @@ type DotConfig struct {
 	IsAOE                bool // Set to true for AOE dots (Blizzard, Hurricane, Consecrate, etc)
 	SelfOnly             bool // Set to true to only create the self-hot.
 	AffectedByCastSpeed  bool // tick length are shortened based on casting speed
+	AffectedByRealHaste  bool // tick length are shortened based on real haste (melee/ranged but not spell)
 	HasteReducesDuration bool // does not gain additional ticks after a certain haste threshold
 
 	BonusCoefficient float64 // EffectBonusCoefficient in SpellEffect client DB table, "SP mod" on Wowhead (not necessarily shown there even if > 0)
@@ -58,6 +59,7 @@ type Dot struct {
 	PeriodicDamageMultiplier float64 // Multiplier for periodic damage on top of the spell's damage multiplier
 
 	affectedByCastSpeed  bool // tick length are shortened based on casting speed
+	affectedByRealHaste  bool // tick length are shortened based on real haste
 	hasteReducesDuration bool // does not gain additional ticks after a haste threshold, HasteAffectsDuration in dbc
 	isChanneled          bool
 }
@@ -112,6 +114,8 @@ func (dot *Dot) CalcTickPeriod() time.Duration {
 		}
 
 		return dot.Spell.Unit.ApplyCastSpeed(dot.BaseTickLength).Round(time.Millisecond)
+	} else if dot.affectedByRealHaste {
+		return dot.Spell.Unit.ApplyRealHaste(dot.BaseTickLength).Round(time.Millisecond)
 	} else {
 		return dot.BaseTickLength
 	}
@@ -122,7 +126,7 @@ func (dot *Dot) recomputeAuraDuration(sim *Simulation) {
 
 	dot.tickPeriod = dot.CalcTickPeriod()
 	dot.remainingTicks = dot.calculateTickCount(dot.BaseDuration(), dot.BaseTickLength)
-	if dot.affectedByCastSpeed && !dot.hasteReducesDuration {
+	if (dot.affectedByCastSpeed || dot.affectedByRealHaste) && !dot.hasteReducesDuration {
 		dot.remainingTicks = dot.HastedTickCount()
 	}
 
@@ -165,7 +169,7 @@ func (dot *Dot) HastedTickCount() int32 {
 
 func (dot *Dot) ExpectedTickCount() int32 {
 	tickCount := dot.BaseTickCount
-	if dot.affectedByCastSpeed && !dot.hasteReducesDuration {
+	if (dot.affectedByCastSpeed || dot.affectedByRealHaste) && !dot.hasteReducesDuration {
 		tickPeriod := dot.CalcTickPeriod()
 		tickCount = dot.calculateTickCount(dot.BaseDuration(), tickPeriod)
 	}
@@ -321,6 +325,24 @@ func (dot *Dot) getChannelClipDelay(sim *Simulation) time.Duration {
 
 	return dot.Spell.Unit.ChannelClipDelay
 }
+func (dot *Dot) ChannelCanBeInterrupted(sim *Simulation) bool {
+	if !dot.isChanneled {
+		return false
+	}
+
+	// Channel has ended, but dot.Spell.Unit.ChanneledDot hasn't been cleared yet, meaning the Aura is still active.
+	if dot.remainingTicks == 0 {
+		return false
+	}
+
+	// APL specifies that the channel should be continued.
+	apl := dot.Spell.Unit.Rotation
+	if (apl.interruptChannelIf == nil) || !apl.interruptChannelIf.GetBool(sim) {
+		return false
+	}
+
+	return true
+}
 
 func newDot(config Dot) *Dot {
 	dot := &config
@@ -395,6 +417,7 @@ func (spell *Spell) createDots(config DotConfig, isHot bool) {
 		onSnapshot:           config.OnSnapshot,
 		onTick:               config.OnTick,
 		affectedByCastSpeed:  config.AffectedByCastSpeed,
+		affectedByRealHaste:  config.AffectedByRealHaste,
 		hasteReducesDuration: config.HasteReducesDuration,
 		isChanneled:          config.Spell.Flags.Matches(SpellFlagChanneled),
 

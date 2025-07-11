@@ -38,11 +38,9 @@ func (mage *Mage) registerConeOfColdSpell() {
 		BonusCoefficient: coneOfColdCoefficient,
 		ThreatMultiplier: 1,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDamage := mage.CalcAndRollDamageRange(sim, coneOfColdScaling, coneOfColdVariance)
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamage(sim, baseDamage, spell.OutcomeMagicHitAndCrit)
 		},
 	})
 }

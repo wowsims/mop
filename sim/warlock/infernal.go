@@ -43,11 +43,11 @@ func (warlock *Warlock) registerSummonInfernal(timer *core.Timer) {
 		CritMultiplier:   warlock.DefaultCritMultiplier(),
 		BonusCoefficient: summonInfernalCoefficient,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				baseDamage := warlock.CalcAndRollDamageRange(sim, 0.48500001431, 0.11999999732)
-				spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeMagicHitAndCrit)
-			}
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, _ *core.Spell) float64 {
+				return warlock.CalcAndRollDamageRange(sim, 0.48500001431, 0.11999999732)
+			})
+
 			warlock.Infernal.EnableWithTimeout(sim, warlock.Infernal, spell.RelatedSelfBuff.Duration)
 			// fake aura to show duration
 			spell.RelatedSelfBuff.Activate(sim)
@@ -114,11 +114,9 @@ func (infernal *InfernalPet) Initialize() {
 			TickLength:          2 * time.Second,
 			AffectedByCastSpeed: false,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				baseDmg := infernal.CalcScalingSpellDmg(0.1)
-				for _, aoeTarget := range sim.Encounter.TargetUnits {
-					dot.Spell.CalcAndDealDamage(sim, aoeTarget, baseDmg, dot.Spell.OutcomeMagicHit)
-				}
+				dot.Spell.CalcAndDealPeriodicAoeDamage(sim, baseDmg, dot.Spell.OutcomeMagicHit)
 			},
 		},
 
@@ -129,6 +127,9 @@ func (infernal *InfernalPet) Initialize() {
 }
 
 func (infernal *InfernalPet) Reset(_ *core.Simulation) {
+}
+
+func (infernal *InfernalPet) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (infernal *InfernalPet) ExecuteCustomRotation(sim *core.Simulation) {

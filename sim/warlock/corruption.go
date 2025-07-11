@@ -10,6 +10,8 @@ const corruptionScale = 0.165
 const corruptionCoeff = 0.165
 
 func (warlock *Warlock) RegisterCorruption(callback WarlockSpellCastedCallback) *core.Spell {
+	resultSlice := make(core.SpellResultSlice, 1)
+
 	warlock.Corruption = warlock.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 172},
 		SpellSchool:    core.SpellSchoolShadow,
@@ -37,8 +39,8 @@ func (warlock *Warlock) RegisterCorruption(callback WarlockSpellCastedCallback) 
 				dot.Snapshot(target, warlock.CalcScalingSpellDmg(corruptionScale))
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				result := dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
-				callback([]core.SpellResult{*result}, dot.Spell, sim)
+				resultSlice[0] = dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
+				callback(resultSlice, dot.Spell, sim)
 			},
 		},
 
@@ -52,7 +54,7 @@ func (warlock *Warlock) RegisterCorruption(callback WarlockSpellCastedCallback) 
 		ExpectedTickDamage: func(sim *core.Simulation, target *core.Unit, spell *core.Spell, useSnapshot bool) *core.SpellResult {
 			dot := spell.Dot(target)
 			if useSnapshot {
-				result := dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedMagicSnapshotCrit)
+				result := dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedSnapshotCrit)
 				result.Damage /= dot.TickPeriod().Seconds()
 				return result
 			} else {
