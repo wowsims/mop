@@ -174,6 +174,7 @@ const (
 	PriestSpellGreaterHeal
 	PriestSpellGuardianSpirit
 	PriestSpellHalo
+	PriestSpellHeal
 	PriestSpellHolyFire
 	PriestSpellHolyNova
 	PriestSpellHolyWordChastise

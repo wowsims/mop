@@ -13,10 +13,11 @@ func (priest *Priest) registerPowerWordShieldSpell() {
 	var glyphHeal *core.Spell
 
 	priest.PowerWordShield = priest.RegisterSpell(core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: 17},
-		SpellSchool: core.SpellSchoolHoly,
-		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
+		ActionID:       core.ActionID{SpellID: 17},
+		SpellSchool:    core.SpellSchoolHoly,
+		ProcMask:       core.ProcMaskSpellHealing,
+		ClassSpellMask: PriestSpellPowerWordShield,
+		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 6.1,

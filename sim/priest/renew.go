@@ -14,10 +14,11 @@ func (priest *Priest) registerRenewSpell() {
 	actionID := core.ActionID{SpellID: 139}
 
 	priest.Renew = priest.RegisterSpell(core.SpellConfig{
-		ActionID:    actionID,
-		SpellSchool: core.SpellSchoolHoly,
-		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
+		ActionID:       actionID,
+		SpellSchool:    core.SpellSchoolHoly,
+		ProcMask:       core.ProcMaskSpellHealing,
+		ClassSpellMask: PriestSpellRenew,
+		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 2.6,

@@ -53,10 +53,11 @@ func (priest *Priest) registerPrayerOfMendingSpell() {
 	}
 
 	priest.PrayerOfMending = priest.RegisterSpell(core.SpellConfig{
-		ActionID:    actionID,
-		SpellSchool: core.SpellSchoolHoly,
-		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
+		ActionID:       actionID,
+		SpellSchool:    core.SpellSchoolHoly,
+		ProcMask:       core.ProcMaskSpellHealing,
+		ClassSpellMask: PriestSpellPrayerOfMending,
+		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 3.5,

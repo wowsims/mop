@@ -18,10 +18,11 @@ func (priest *Priest) registerHealSpell() {
 	healCoefficient := 1.024
 
 	priest.GreaterHeal = priest.RegisterSpell(core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: 2050},
-		SpellSchool: core.SpellSchoolHoly,
-		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL,
+		ActionID:       core.ActionID{SpellID: 2050},
+		SpellSchool:    core.SpellSchoolHoly,
+		ProcMask:       core.ProcMaskSpellHealing,
+		ClassSpellMask: PriestSpellHeal,
+		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 1.9,
