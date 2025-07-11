@@ -212,7 +212,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			ai.TankUnit.CurrentTarget = ai.AddUnits[0]
 		},
 
-		OnExpire: func(_ *core.Aura, sim *core.Simulation) {
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			sim.EnableTargetUnit(ai.BossUnit)
 
 			for _, addUnit := range ai.AddUnits {
@@ -220,6 +220,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			}
 
 			ai.BossUnit.AutoAttacks.CancelAutoSwing(sim)
+			aura.Unit.PseudoStats.InFrontOfTarget = false
 		},
 	})
 
@@ -234,6 +235,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			sim.EnableTargetUnit(ai.BossUnit)
 			ai.SharedShadowyAttackTimer.Set(sim.CurrentTime + core.DurationFromSeconds(8.0*sim.RandomFloat("Shadowy Attack Timing")))
 			ai.syncBossGCDToSwing(sim)
+			aura.Unit.PseudoStats.InFrontOfTarget = true
 
 			if sim.CurrentTime+voodooDollsDuration > ai.enableFrenzyAt {
 				core.StartPeriodicAction(sim, core.PeriodicActionOptions{
