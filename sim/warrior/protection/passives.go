@@ -32,8 +32,9 @@ func (war *ProtectionWarrior) registerUnwaveringSentinel() {
 
 func (war *ProtectionWarrior) registerBastionOfDefense() {
 	core.MakePermanent(war.GetOrRegisterAura(core.Aura{
-		Label:    "Bastion of Defense",
-		ActionID: core.ActionID{SpellID: 84608},
+		Label:      "Bastion of Defense",
+		ActionID:   core.ActionID{SpellID: 84608},
+		BuildPhase: core.CharacterBuildPhaseBase,
 	}).AttachAdditivePseudoStatBuff(
 		&war.PseudoStats.BaseBlockChance, 0.1,
 	).AttachAdditivePseudoStatBuff(
@@ -48,7 +49,7 @@ func (war *ProtectionWarrior) registerBastionOfDefense() {
 func (war *ProtectionWarrior) registerSwordAndBoard() {
 	war.SwordAndBoardAura = core.BlockPrepull(war.GetOrRegisterAura(core.Aura{
 		Label:    "Sword and Board",
-		ActionID: core.ActionID{SpellID: 46953},
+		ActionID: core.ActionID{SpellID: 50227},
 		Duration: 5 * time.Second,
 	}))
 
@@ -57,7 +58,7 @@ func (war *ProtectionWarrior) registerSwordAndBoard() {
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: warrior.SpellMaskDevastate,
 		Outcome:        core.OutcomeLanded,
-		ProcChance:     0.3,
+		ProcChance:     0.5,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			war.SwordAndBoardAura.Activate(sim)
 			war.ShieldSlam.CD.Reset()
