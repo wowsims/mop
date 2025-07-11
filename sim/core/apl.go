@@ -265,6 +265,11 @@ func (rot *APLRotation) reset(sim *Simulation) {
 	rot.inLoop = false
 	rot.interruptChannelIf = nil
 	rot.allowChannelRecastOnInterrupt = false
+
+	//rot.allowCastWhileChanneling = slices.ContainsFunc(rot.unit.Spellbook, func(spell *Spell) bool {
+	//	return spell.Flags.Matches(SpellFlagCastWhileChanneling)
+	//})
+
 	for _, action := range rot.allAPLActions() {
 		action.impl.Reset(sim)
 	}
@@ -282,7 +287,7 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 		return
 	}
 
-	if apl.unit.ChanneledDot != nil {
+	if (apl.unit.ChanneledDot != nil) && !apl.unit.ChanneledDot.Spell.Flags.Matches(SpellFlagCastWhileChanneling) {
 		return
 	}
 
