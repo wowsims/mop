@@ -25,7 +25,7 @@
 	"partyBuffs": {},
 	"player": {
 		"name": "Player",
-		"race": "RaceHuman",
+		"race": "RaceOrc",
 		"class": "ClassMonk",
 		"equipment": {
 			"items": [
@@ -35,7 +35,7 @@
 				{ "id": 90586, "enchant": 4424, "reforging": 139 },
 				{ "id": 85823, "enchant": 4419, "gems": [76699, 76667], "reforging": 168 },
 				{ "id": 88884, "enchant": 4258, "gems": [76659], "reforging": 139 },
-				{ "id": 85824, "enchant": 4431, "gems": [76693, 76693], "reforging": 168 },
+				{ "id": 85824, "enchant": 4431, "gems": [76693, 76693], "reforging": 168, "tinker": 4898 },
 				{ "id": 84948, "gems": [76681, 76693], "reforging": 139 },
 				{ "id": 84877, "enchant": 4822, "gems": [76681, 76636], "reforging": 146 },
 				{ "id": 81688, "enchant": 4428, "gems": [76659], "reforging": 168 },
@@ -50,7 +50,7 @@
 		"consumables": {
 			"prepotId": 76090,
 			"potId": 76090,
-			"flaskId": 76084,
+			"flaskId": 76087,
 			"foodId": 74648
 		},
 		"bonusStats": {
@@ -105,7 +105,7 @@
 			"minor2": 87884,
 			"minor3": 87889
 		},
-		"profession1": "Tailoring",
+		"profession1": "Engineering",
 		"profession2": "Blacksmithing",
 		"cooldowns": {
 			"hpPercentForDefensives": 0.3
