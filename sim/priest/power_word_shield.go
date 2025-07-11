@@ -37,7 +37,7 @@ func (priest *Priest) registerPowerWordShieldSpell() {
 		Shield: core.ShieldConfig{
 			Aura: core.Aura{
 				Label:    "Power Word Shield",
-				Duration: time.Second * 30,
+				Duration: time.Second * 15,
 			},
 		},
 

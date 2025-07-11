@@ -404,14 +404,6 @@ func (spell *Spell) AOEDot() *Dot {
 	return spell.aoeDot
 }
 func (spell *Spell) Hot(target *Unit) *Dot {
-	fmt.Println(target.Label, target.UnitIndex)
-	for _, unit := range spell.dots {
-		if unit != nil {
-			fmt.Println(unit.Label)
-		}
-	}
-	fmt.Println(spell.dots)
-	fmt.Println(spell.dots.Get(target))
 	if spell.dots == nil {
 		return nil
 	}

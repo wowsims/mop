@@ -87,6 +87,7 @@ func (priest *Priest) Initialize() {
 
 	// priest.registerDispersionSpell()
 
+	priest.registerSpiritualHealing()
 	priest.registerPowerInfusionSpell()
 	priest.newMindSearSpell()
 
