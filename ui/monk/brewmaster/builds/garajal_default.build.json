@@ -115,7 +115,7 @@
         }
       }
     },
-    "talentsString": "213321",
+    "talentsString": "213322",
     "glyphs": {
       "major1": 87893,
       "major2": 85689,
@@ -129,7 +129,7 @@
     "cooldowns": {
       "hpPercentForDefensives": 0.3
     },
-    "rotation":  {
+    "rotation": {
       "type": "TypeAPL",
       "simple": {
         "cooldowns": {
@@ -160,7 +160,7 @@
         {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":115307}}},"rhs":{"const":{"val":"2"}}}},{"cmp":{"op":"OpLe","lhs":{"monkCurrentChi":{}},"rhs":{"const":{"val":"1"}}}}]}},"castSpell":{"spellId":{"spellId":100780}}}},
         {"action":{"condition":{"or":{"vals":[{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":115307}}},"rhs":{"const":{"val":"1.5"}}}},{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"spellTimeToReady":{"spellId":{"spellId":121253}}},"rhs":{"const":{"val":"2"}}}},{"cmp":{"op":"OpGe","lhs":{"monkCurrentChi":{}},"rhs":{"math":{"op":"OpSub","lhs":{"monkMaxChi":{}},"rhs":{"const":{"val":"1"}}}}}}]}}]}},"castSpell":{"spellId":{"spellId":100784,"tag":1}}}},
         {"action":{"castSpell":{"spellId":{"spellId":123904}}}},
-		{"action":{"condition":{"cmp":{"op":"OpGe","lhs":{"brewmasterMonkCurrentStaggerPercent":{}},"rhs":{"const":{"val":"3%"}}}},"castSpell":{"spellId":{"spellId":119582}}}},
+        {"action":{"condition":{"cmp":{"op":"OpGe","lhs":{"brewmasterMonkCurrentStaggerPercent":{}},"rhs":{"const":{"val":"3%"}}}},"castSpell":{"spellId":{"spellId":119582}}}},
         {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpGe","lhs":{"currentEnergy":{}},"rhs":{"const":{"val":"80"}}}},{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"95%"}}}}]}},"castSpell":{"spellId":{"spellId":115072}}}},
         {"action":{"condition":{"cmp":{"op":"OpGe","lhs":{"currentEnergy":{}},"rhs":{"const":{"val":"80"}}}},"castSpell":{"spellId":{"spellId":100780}}}},
         {"action":{"condition":{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":125359}}},"rhs":{"const":{"val":"1.5"}}}},"castSpell":{"spellId":{"spellId":100787}}}},
