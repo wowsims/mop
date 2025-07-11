@@ -159,6 +159,7 @@ export class PresetConfigurationPicker extends Component {
 			if (epWeights) simUI.player.setEpWeights(eventID, epWeights.epWeights);
 			if (settings) {
 				if (settings.race) simUI.player.setRace(eventID, settings.race);
+				if (settings.consumables) simUI.player.setConsumes(eventID, settings.consumables);
 				if (settings.playerOptions?.profession1) simUI.player.setProfession1(eventID, settings.playerOptions.profession1);
 				if (settings.playerOptions?.profession2) simUI.player.setProfession2(eventID, settings.playerOptions.profession2);
 				if (settings.playerOptions?.distanceFromTarget) simUI.player.setDistanceFromTarget(eventID, settings.playerOptions.distanceFromTarget);
@@ -227,6 +228,26 @@ export class PresetConfigurationPicker extends Component {
 		const hasRaidBuffs = settings?.raidBuffs ? RaidBuffs.equals(this.simUI.sim.raid.getBuffs(), settings.raidBuffs) : true;
 		const hasBuffs = settings?.buffs ? IndividualBuffs.equals(this.simUI.player.getBuffs(), settings.buffs) : true;
 		const hasDebuffs = settings?.debuffs ? Debuffs.equals(this.simUI.sim.raid.getDebuffs(), settings.debuffs) : true;
+
+		console.log({
+			hasGear,
+hasTalents,
+hasRotation,
+hasEpWeights,
+hasEncounter,
+hasHealingModel,
+hasRace,
+hasProfession1,
+hasProfession2,
+hasDistanceFromTarget,
+hasEnableItemSwap,
+hasItemSwap,
+hasSpecOptions,
+hasConsumables,
+hasRaidBuffs,
+hasBuffs,
+hasDebuffs,
+		})
 
 		return (
 			hasGear &&

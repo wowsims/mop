@@ -60,6 +60,10 @@ func (war *ProtectionWarrior) registerShieldBlock() {
 			},
 		},
 
+		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+			return war.PseudoStats.CanBlock
+		},
+
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
 			war.ShieldBlockAura.Activate(sim)
 		},
