@@ -539,6 +539,9 @@ func (character *Character) GetOHWeapon() *Item {
 func (character *Character) HasOHWeapon() bool {
 	return character.GetOHWeapon() != nil
 }
+func (character *Character) HasOH() bool {
+	return character.OffHand().ID != 0
+}
 
 func (character *Character) HasRangedWeapon() bool {
 	return character.Ranged() != nil

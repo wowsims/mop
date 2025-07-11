@@ -9,6 +9,7 @@ import DefautlApl from './apls/garajal.apl.json';
 import DefaultBuild from './builds/garajal_default.build.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
 import P1BISItemSwapGear from './gear_sets/p1_bis_item_swap.gear.json';
+import PreRaidItemSwapGear from './gear_sets/p1_preraid_item_swap.gear.json';
 import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -18,6 +19,7 @@ import PreraidBISGear from './gear_sets/preraid.gear.json';
 export const PRERAID_BALANCED_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidBISGear);
 export const P1_BALANCED_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
 
+export const PRERAID_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('Pre-raid - Item Swap', PreRaidItemSwapGear);
 export const P1_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P1 - Item Swap', P1BISItemSwapGear);
 
 export const ROTATION_DEFENSIVE = PresetUtils.makePresetAPLRotation('Defensive', DefensiveApl);
@@ -28,8 +30,8 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Default',
 	Stats.fromMap(
 		{
-			[Stat.StatArmor]: 2.60,
-			[Stat.StatBonusArmor]: 2.60,
+			[Stat.StatArmor]: 2.6,
+			[Stat.StatBonusArmor]: 2.6,
 			[Stat.StatStamina]: 0.37,
 			[Stat.StatStrength]: 10.03,
 			[Stat.StatAgility]: 0.23,
@@ -53,10 +55,10 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '233232',
+		talentsString: '233332',
 		glyphs: Glyphs.create({
 			major1: WarriorMajorGlyph.GlyphOfIncite,
-			major2: WarriorMajorGlyph.GlyphOfHeavyRepercussions,
+			major2: WarriorMajorGlyph.GlyphOfDeathFromAbove,
 			major3: WarriorMajorGlyph.GlyphOfHoldTheLine,
 		}),
 	}),
@@ -74,15 +76,16 @@ export const DefaultConsumables = ConsumesSpec.create({
 });
 
 export const OtherDefaults = {
-	profession1: Profession.Tailoring,
+	profession1: Profession.Engineering,
 	profession2: Profession.Blacksmithing,
 	distanceFromTarget: 15,
 };
 
-export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecProtectionWarrior, DefaultBuild);
-export const PRESET_BUILD_DEFENSIVE = PresetUtils.makePresetBuild('Defensive', {
+export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Pre-Raid - Gara'jal", Spec.SpecProtectionWarrior, DefaultBuild);
+export const PRESET_BUILD_DEFENSIVE = PresetUtils.makePresetBuild('P1 - BIS (Defensive)', {
 	talents: StandardTalents,
 	rotation: ROTATION_DEFENSIVE,
+	gear: P1_BALANCED_PRESET,
 	itemSwap: P1_ITEM_SWAP,
 	encounter: PresetUtils.makePresetEncounter('Defensive', Encounter.defaultEncounterProto()),
 });

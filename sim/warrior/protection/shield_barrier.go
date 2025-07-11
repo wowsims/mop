@@ -54,6 +54,10 @@ func (war *ProtectionWarrior) registerShieldBarrier() {
 		ThreatMultiplier: 1,
 		CritMultiplier:   war.DefaultCritMultiplier(),
 
+		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+			return war.PseudoStats.CanBlock
+		},
+
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			additionalRage := min(40, war.CurrentRage())
 			war.SpendRage(sim, additionalRage, rageMetrics)

@@ -25,6 +25,10 @@ func (war *ProtectionWarrior) registerDevastate() {
 		CritMultiplier:   war.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
 
+		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+			return war.PseudoStats.CanBlock
+		},
+
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := war.CalcScalingSpellDmg(1.33000004292) + spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 
