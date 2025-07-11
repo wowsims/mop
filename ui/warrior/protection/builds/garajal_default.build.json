@@ -177,7 +177,7 @@
     "inFrontOfTarget": true,
     "distanceFromTarget": 15,
     "healingModel": {
-      "hps": 37500,
+      "hps": 42500,
       "cadenceSeconds": 0.45,
       "cadenceVariation": 2.31,
       "absorbFrac": 0.18,
@@ -209,28 +209,18 @@
             "label": "Frenzy time",
             "tooltip": "Simulation time (in seconds) at which to disable tank swaps and enable the boss Frenzy buff",
             "numberValue": 256
+          },
+          {
+            "inputType": "Number",
+            "label": "Spiritual Grasp frequency",
+            "tooltip": "Average time (in seconds) between Spiritual Grasp hits, following an exponential distribution",
+            "numberValue": 8.25
           }
         ]
       },
       {
-        "id": 6699201,
-        "name": "Severer of Souls 25 H - 1",
-        "level": 92,
-        "mobType": "MobTypeDemon",
-        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,758866,0,0],
-        "disabledAtStart": true
-      },
-      {
-        "id": 6699202,
-        "name": "Severer of Souls 25 H - 2",
-        "level": 92,
-        "mobType": "MobTypeDemon",
-        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,758866,0,0],
-        "disabledAtStart": true
-      },
-      {
-        "id": 6699203,
-        "name": "Severer of Souls 25 H - 3",
+        "id": 66992,
+        "name": "Severer of Souls 25 H",
         "level": 92,
         "mobType": "MobTypeDemon",
         "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,758866,0,0],
