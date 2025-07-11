@@ -2,6 +2,7 @@ package msv
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
@@ -82,6 +83,12 @@ func garajalTargetInputs() []*proto.TargetInput {
 			InputType:   proto.InputType_Number,
 			NumberValue: 256,
 		},
+		{
+			Label:       "Spiritual Grasp frequency",
+			Tooltip:     "Average time (in seconds) between Spiritual Grasp hits, following an exponential distribution",
+			InputType:   proto.InputType_Number,
+			NumberValue: 8.25,
+		},
 	}
 }
 
@@ -106,7 +113,8 @@ type GarajalAI struct {
 	isBoss   bool
 
 	// Dynamic parameters taken from user inputs
-	enableFrenzyAt time.Duration
+	enableFrenzyAt           time.Duration
+	meanGraspIntervalSeconds float64
 
 	// Spell + aura references
 	SharedShadowyAttackTimer *core.Timer
@@ -114,6 +122,7 @@ type GarajalAI struct {
 	BanishmentAura           *core.Aura
 	VoodooDollsAura          *core.Aura
 	ShadowBolt               *core.Spell
+	SpiritualGrasp           *core.Spell
 	FrenzyAura               *core.Aura
 }
 
@@ -127,12 +136,14 @@ func (ai *GarajalAI) Initialize(target *core.Target, config *proto.Target) {
 	// Save user input parameters
 	if ai.isBoss {
 		ai.enableFrenzyAt = core.DurationFromSeconds(config.TargetInputs[0].NumberValue)
+		ai.meanGraspIntervalSeconds = config.TargetInputs[1].NumberValue
 	}
 
 	// Register relevant spells and auras
 	ai.registerShadowyAttacks()
 	ai.registerTankSwapAuras()
 	ai.registerShadowBolt()
+	ai.registerSpiritualGrasp()
 	ai.registerFrenzy()
 }
 
@@ -336,6 +347,59 @@ func (ai *GarajalAI) registerShadowBolt() {
 			spell.CalcAndDealDamage(sim, target, damageRoll, spell.OutcomeAlwaysHit)
 		},
 	})
+}
+
+func (ai *GarajalAI) registerSpiritualGrasp() {
+	// These are actually cast by the Shadowy Minions, but we have the boss
+	// cast them in the sim model for simplicity.
+	if !ai.isBoss {
+		return
+	}
+
+	// 0 - 10H, 1 - 25H
+	scalingIndex := core.TernaryInt(ai.raidSize == 10, 0, 1)
+
+	// https://wago.tools/db2/SpellEffect?build=5.5.0.61767&filter%5BSpellID%5D=115982&page=1
+	spiritualGraspBase := []float64{49500, 81000}[scalingIndex]
+	spiritualGraspVariance := []float64{11000, 18000}[scalingIndex]
+
+	ai.SpiritualGrasp = ai.Target.RegisterSpell(core.SpellConfig{
+		ActionID:         core.ActionID{SpellID: 115982},
+		SpellSchool:      core.SpellSchoolShadow,
+		ProcMask:         core.ProcMaskSpellDamage,
+		DamageMultiplier: 1,
+		Flags:            core.SpellFlagIgnoreAttackerModifiers,
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			damageRoll := spiritualGraspBase + spiritualGraspVariance*sim.RandomFloat("Spiritual Grasp")
+			spell.CalcAndDealDamage(sim, target, damageRoll, spell.OutcomeAlwaysHit)
+		},
+	})
+
+	playerTarget := ai.TankUnit
+	if playerTarget == nil {
+		playerTarget = &ai.Target.Env.Raid.Parties[0].Players[0].GetCharacter().Unit
+	}
+
+	playerTarget.RegisterResetEffect(func(sim *core.Simulation) {
+		pa := sim.GetConsumedPendingActionFromPool()
+		pa.NextActionAt = ai.rollNextSpiritualGraspTime(sim)
+
+		pa.OnAction = func(sim *core.Simulation) {
+			if ai.BossUnit.IsEnabled() && ai.SpiritualGrasp.CanCast(sim, playerTarget) {
+				ai.SpiritualGrasp.Cast(sim, playerTarget)
+			}
+
+			pa.NextActionAt = ai.rollNextSpiritualGraspTime(sim)
+			sim.AddPendingAction(pa)
+		}
+
+		sim.AddPendingAction(pa)
+	})
+}
+
+func (ai *GarajalAI) rollNextSpiritualGraspTime(sim *core.Simulation) time.Duration {
+	return sim.CurrentTime + core.DurationFromSeconds(-math.Log(sim.RandomFloat("Spiritual Grasp")) * ai.meanGraspIntervalSeconds)
 }
 
 func (ai *GarajalAI) registerFrenzy() {
