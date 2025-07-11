@@ -92,7 +92,7 @@ export const DefaultOptions = BrewmasterMonkOptions.create({
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 76084, // Flask of Spring Blossoms
+	flaskId: 76087, // Flask of Spring Blossoms
 	foodId: 74648, // Sea Mist Rice Noodles
 	prepotId: 76090, // Potion of the Mountains
 	potId: 76090, // Potion of the Mountains
