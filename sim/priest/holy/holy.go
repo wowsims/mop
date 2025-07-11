@@ -47,8 +47,10 @@ func (holyPriest *HolyPriest) GetPriest() *priest.Priest {
 	return holyPriest.Priest
 }
 
-func (holyPriest *HolyPriest) Initialize() {
-	holyPriest.Priest.Initialize()
+func (holy *HolyPriest) Initialize() {
+	holy.Priest.Initialize()
+
+	holy.registerCircleOfHealingSpell()
 
 	// holyPriest.RegisterHolyFireSpell()
 	// holyPriest.RegisterSmiteSpell()

@@ -95,6 +95,7 @@ func (priest *Priest) Initialize() {
 	priest.registerFlashHealSpell()
 	priest.registerBindingHealSpell()
 	priest.registerPowerWordShieldSpell()
+	priest.registerPrayerOfHealingSpell()
 	priest.registerRenewSpell()
 
 	priest.ApplyGlyphs()
