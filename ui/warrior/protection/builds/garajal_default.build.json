@@ -141,6 +141,7 @@
 		{"action":{"condition":{"spellIsChanneling":{"spellId":{"spellId":46924}}},"castSpell":{"spellId":{"spellId":6673}}}},
 		{"action":{"condition":{"and":{"vals":[{"spellIsKnown":{"spellId":{"spellId":46924}}},{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":46924}}},"rhs":{"const":{"val":"1.5s"}}}},{"sequenceIsComplete":{"sequenceName":"Bladestorm"}}]}},"strictSequence":{"actions":[{"itemSwap":{"swapSet":"Main"}},{"resetSequence":{"sequenceName":"Bladestorm"}}]}}},
 		{"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpGe","lhs":{"currentRage":{}},"rhs":{"const":{"val":"40"}}}},{"cmp":{"op":"OpLt","lhs":{"currentRage":{}},"rhs":{"const":{"val":"60"}}}},{"spellIsReady":{"spellId":{"spellId":2565}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":2565}}}}}]}},"castSpell":{"spellId":{"spellId":6572}}}},
+		{"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":2565}}}}}]}},"castSpell":{"spellId":{"spellId":2565}}}},
 		{"action":{"condition":{"and":{"vals":[{"not":{"val":{"auraIsActive":{"auraId":{"spellId":112048}}}}},{"cmp":{"op":"OpLe","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"80%"}}}}]}},"castSpell":{"spellId":{"spellId":112048}}}},
 		{"action":{"castSpell":{"spellId":{"spellId":23922}}}},
 		{"action":{"castSpell":{"spellId":{"spellId":6572}}}},
@@ -150,7 +151,7 @@
 		{"action":{"condition":{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"60%"}}}},"castSpell":{"spellId":{"spellId":34428}}}},
 		{"action":{"castSpell":{"spellId":{"spellId":20243}}}}
 		]
-},
+	},
     "reactionTimeMs": 100,
     "inFrontOfTarget": true,
     "distanceFromTarget": 15,
