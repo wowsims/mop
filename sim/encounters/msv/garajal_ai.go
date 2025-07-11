@@ -185,7 +185,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 	}
 
 	const voodooDollsDuration = time.Second * 71
-	const banishmentDuration = time.Second * 30
+	const banishmentDuration = time.Second * 15
 
 	ai.BanishmentAura = ai.TankUnit.RegisterAura(core.Aura{
 		Label:    "Banishment",
@@ -326,8 +326,8 @@ func (ai *GarajalAI) registerShadowBolt() {
 
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD:      core.BossGCD * 5,
-				CastTime: time.Second * 3,
+				GCD:      time.Millisecond * 2101,
+				CastTime: time.Millisecond * 2100,
 			},
 		},
 
