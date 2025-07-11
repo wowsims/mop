@@ -12,7 +12,7 @@ func (priest *Priest) registerSpiritualHealing() {
 	}
 
 	priest.AddStaticMod(core.SpellModConfig{
-		ClassMask:  PriestSpellFlashHeal,
+		ClassMask:  PriestSpellFlashHeal | PriestSpellBindingHeal | PriestSpellRenew | PriestSpellPrayerOfMending,
 		FloatValue: 0.25,
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})

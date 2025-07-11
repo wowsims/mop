@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func (priest *Priest) registerRenewSpell() {
@@ -12,6 +13,10 @@ func (priest *Priest) registerRenewSpell() {
 	scaling := 2.051
 
 	actionID := core.ActionID{SpellID: 139}
+
+	isHolyPriest := priest.Spec == proto.Spec_SpecHolyPriest
+	renewGCD := core.Ternary(isHolyPriest, core.GCDDefault, time.Second*1)
+	renewHealingMultiplier := core.Ternary(isHolyPriest, 1.15, 1.0)
 
 	priest.Renew = priest.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -25,11 +30,10 @@ func (priest *Priest) registerRenewSpell() {
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD: core.GCDDefault,
+				GCD: renewGCD,
 			},
 		},
-
-		DamageMultiplier: 1,
+		DamageMultiplier: renewHealingMultiplier,
 		ThreatMultiplier: 1,
 
 		Hot: core.DotConfig{
@@ -48,6 +52,9 @@ func (priest *Priest) registerRenewSpell() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			// if isHolyPriest {
+			// 	// Do 15% of the total healing.
+			// }
 			spell.Hot(target).Apply(sim)
 		},
 	})

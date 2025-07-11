@@ -97,6 +97,7 @@ func (priest *Priest) Initialize() {
 	priest.registerPowerWordShieldSpell()
 	priest.registerPrayerOfHealingSpell()
 	priest.registerRenewSpell()
+	priest.registerGreaterHealSpell()
 
 	priest.ApplyGlyphs()
 }
