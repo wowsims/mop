@@ -162,7 +162,7 @@ func (ai *GarajalAI) registerShadowyAttacks() {
 			ActionID:         core.ActionID{SpellID: spellID},
 			SpellSchool:      core.SpellSchoolShadow,
 			ProcMask:         core.ProcMaskSpellDamage,
-			Flags:            core.SpellFlagMeleeMetrics,
+			Flags:            core.SpellFlagMeleeMetrics | core.SpellFlagBypassAbsorbs,
 			DamageMultiplier: 0.7,
 
 			Cast: core.CastConfig{
