@@ -49,33 +49,28 @@ func createGarajalHeroicPreset(raidPrefix string, raidSize int32, bossHealth flo
 
 	targetPathNames := []string{raidPrefix + "/" + bossName}
 
-	for addIdx := int32(1); addIdx <= 3; addIdx++ {
-		currentAddName := addName + fmt.Sprintf(" - %d", addIdx)
+	core.AddPresetTarget(&core.PresetTarget{
+		PathPrefix: raidPrefix,
 
-		core.AddPresetTarget(&core.PresetTarget{
-			PathPrefix: raidPrefix,
+		Config: &proto.Target{
+			Id:      garajalAddID,
+			Name:    addName,
+			Level:   92,
+			MobType: proto.MobType_MobTypeDemon,
 
-			Config: &proto.Target{
-				Id:      garajalAddID*100 + addIdx, // hack to guarantee distinct IDs for each add
-				Name:    currentAddName,
-				Level:   92,
-				MobType: proto.MobType_MobTypeDemon,
+			Stats: stats.Stats{
+				stats.Health: addHealth,
+				stats.Armor:  24835, // TODO: verify add armor
+			}.ToProtoArray(),
 
-				Stats: stats.Stats{
-					stats.Health: addHealth,
-					stats.Armor:  24835, // TODO: verify add armor
-				}.ToProtoArray(),
+			TargetInputs:    []*proto.TargetInput{},
+			DisabledAtStart: true,
+		},
 
-				TargetInputs:    []*proto.TargetInput{},
-				DisabledAtStart: true,
-			},
+		AI: makeGarajalAI(raidSize, false),
+	})
 
-			AI: makeGarajalAI(raidSize, false),
-		})
-
-		targetPathNames = append(targetPathNames, raidPrefix+"/"+currentAddName)
-	}
-
+	targetPathNames = append(targetPathNames, raidPrefix + "/" + addName)
 	core.AddPresetEncounter(bossName, targetPathNames)
 }
 
