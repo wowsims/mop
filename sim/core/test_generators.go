@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"strings"
 
@@ -583,8 +584,11 @@ func FullCharacterTestSuiteGenerator(configs []CharacterSuiteConfig) []TestGener
 				defaultRaid.Tanks = append(defaultRaid.Tanks, &proto.UnitReference{Type: proto.UnitReference_Player, Index: 0})
 			}
 		}
-
 		defaultRaid.TargetDummies = TernaryInt32(config.TargetDummies != 0, config.TargetDummies, 0)
+		defaultRaid.NumActiveParties = min(5, int32(math.Round(float64(defaultRaid.TargetDummies)/5)))
+		for range defaultRaid.NumActiveParties - 1 {
+			defaultRaid.Parties = append(defaultRaid.Parties, &proto.Party{})
+		}
 		if config.IsHealer && defaultRaid.TargetDummies == 0 {
 			defaultRaid.TargetDummies = 1
 		}

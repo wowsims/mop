@@ -15,6 +15,7 @@ func init() {
 
 func TestBrewmaster(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class:      proto.Class_ClassMonk,
 			Race:       proto.Race_RaceTroll,
