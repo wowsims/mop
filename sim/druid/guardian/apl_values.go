@@ -7,7 +7,6 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-
 func (bear *GuardianDruid) NewAPLAction(rot *core.APLRotation, config *proto.APLAction) core.APLActionImpl {
 	switch config.Action.(type) {
 	case *proto.APLAction_GuardianHotwDpsRotation:
@@ -70,7 +69,7 @@ func (action *APLActionGuardianHotwDpsRotation) Execute(sim *core.Simulation) {
 
 	curCp := bear.ComboPoints()
 	ripDot := bear.Rip.CurDot()
-	ripNow := (curCp == 5) && (!ripDot.IsActive() || (ripDot.RemainingDuration(sim) < ripDot.BaseTickLength)) 
+	ripNow := (curCp == 5) && (!ripDot.IsActive() || (ripDot.RemainingDuration(sim) < ripDot.BaseTickLength))
 	rakeDot := bear.Rake.CurDot()
 	rakeNow := !rakeDot.IsActive() || (rakeDot.RemainingDuration(sim) < rakeDot.BaseTickLength)
 
@@ -109,7 +108,7 @@ func (action *APLActionGuardianHotwDpsRotation) Execute(sim *core.Simulation) {
 		bear.Wrath.Cast(sim, bear.CurrentTarget)
 		return
 	}
-	
+
 	action.nextActionAt = sim.CurrentTime + poolingTime + bear.ReactionTime
 	bear.WaitUntil(sim, action.nextActionAt)
 }

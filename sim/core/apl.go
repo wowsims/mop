@@ -12,6 +12,8 @@ type APLRotation struct {
 	unit           *Unit
 	prepullActions []*APLAction
 	priorityList   []*APLAction
+	groups         []*APLGroup
+	valueVariables []*APLValueVariable
 
 	// Action currently controlling this rotation (only used for certain actions, such as StrictSequence).
 	controllingActions []APLActionImpl
@@ -42,6 +44,17 @@ type APLRotation struct {
 	// Maps indices in filtered sim lists to indices in configs.
 	prepullIdxMap      []int
 	priorityListIdxMap []int
+}
+
+type APLGroup struct {
+	name      string
+	actions   []*APLAction
+	variables map[string]*proto.APLValue
+}
+
+type APLValueVariable struct {
+	name  string
+	value *proto.APLValue
 }
 
 func (rot *APLRotation) ValidationMessage(log_level proto.LogLevel, message string, vals ...interface{}) {
@@ -99,6 +112,14 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 		uuidValidations:         make(map[*proto.UUID][]*proto.APLValidation),
 	}
 
+	// Parse value variables FIRST, before any actions that might reference them
+	for _, condVar := range config.ValueVariables {
+		rotation.valueVariables = append(rotation.valueVariables, &APLValueVariable{
+			name:  condVar.Name,
+			value: condVar.Value,
+		})
+	}
+
 	// Parse prepull actions
 	for i, prepullItem := range config.PrepullActions {
 		prepullIdx := i // Save to local variable for correct lambda capture behavior
@@ -139,6 +160,32 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 				}
 			}
 		})
+	}
+
+	// Parse groups
+	for _, groupConfig := range config.Groups {
+		group := &APLGroup{
+			name:      groupConfig.Name,
+			variables: make(map[string]*proto.APLValue),
+		}
+
+		for _, varConfig := range groupConfig.Variables {
+			group.variables[varConfig.Name] = varConfig.Value
+		}
+
+		// Parse actions in the group
+		for _, aplItem := range groupConfig.Actions {
+			if !aplItem.Hide {
+				// Don't pass group.variables here - placeholders should remain as placeholders
+				// until the group is actually referenced with specific variable values
+				action := rotation.newAPLActionWithGroupVars(aplItem.Action, nil)
+				if action != nil {
+					group.actions = append(group.actions, action)
+				}
+			}
+		}
+
+		rotation.groups = append(rotation.groups, group)
 	}
 
 	// Finalize
@@ -207,6 +254,7 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 
 	return rotation
 }
+
 func (rot *APLRotation) getStats() *proto.APLStats {
 	// Perform one final round of validation after post-finalize effects.
 	for i, action := range rot.prepullActions {
@@ -372,4 +420,66 @@ func APLRotationFromJsonString(jsonString string) *proto.APLRotation {
 		panic(err)
 	}
 	return apl
+}
+
+// Add newAPLActionWithGroupVars to propagate groupVars to action condition and impl
+func (rot *APLRotation) newAPLActionWithGroupVars(config *proto.APLAction, groupVars map[string]*proto.APLValue) *APLAction {
+	if config == nil {
+		return nil
+	}
+
+	action := &APLAction{
+		condition: rot.coerceTo(rot.newAPLValueWithContext(config.Condition, groupVars), proto.APLValueType_ValueTypeBool),
+		impl:      rot.newAPLActionImpl(config),
+	}
+
+	if action.impl == nil {
+		return nil
+	} else {
+		return action
+	}
+}
+
+// Re-resolve variable references in an APLValue with updated group variables
+func (rot *APLRotation) reResolveVariableRefs(value APLValue, groupVars map[string]*proto.APLValue) APLValue {
+	if value == nil {
+		return nil
+	}
+
+	// Check if this is a variable reference that needs re-resolving
+	if varRef, ok := value.(*APLValueVariableRef); ok {
+		// Re-resolve the variable reference with the updated group variables
+		if groupVars != nil {
+			if val, ok := groupVars[varRef.name]; ok {
+				resolved := rot.newAPLValue(val)
+				if resolved != nil {
+					// Update the original variable reference instead of creating a new one
+					varRef.resolved = resolved
+					return varRef
+				}
+			}
+		}
+
+		// Fall back to global value variables
+		for _, condVar := range rot.valueVariables {
+			if condVar.name == varRef.name {
+				resolved := rot.newAPLValue(condVar.value)
+				if resolved != nil {
+					// Update the original variable reference instead of creating a new one
+					varRef.resolved = resolved
+					return varRef
+				}
+			}
+		}
+	}
+
+	// For other value types, recursively re-resolve their inner values
+	innerValues := value.GetInnerValues()
+	if len(innerValues) > 0 {
+		for i, innerValue := range innerValues {
+			innerValues[i] = rot.reResolveVariableRefs(innerValue, groupVars)
+		}
+	}
+
+	return value
 }

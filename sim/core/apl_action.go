@@ -99,6 +99,9 @@ type APLActionImpl interface {
 	// Called only while this action is controlling the rotation.
 	GetNextAction(sim *Simulation) *APLAction
 
+	// Re-resolve variable references with updated group variables.
+	ReResolveVariableRefs(*APLRotation, map[string]*proto.APLValue)
+
 	// Pretty-print string for debugging.
 	String() string
 }
@@ -107,12 +110,13 @@ type APLActionImpl interface {
 type defaultAPLActionImpl struct {
 }
 
-func (impl defaultAPLActionImpl) GetInnerActions() []*APLAction        { return nil }
-func (impl defaultAPLActionImpl) GetAPLValues() []APLValue             { return nil }
-func (impl defaultAPLActionImpl) Finalize(*APLRotation)                {}
-func (impl defaultAPLActionImpl) PostFinalize(*APLRotation)            {}
-func (impl defaultAPLActionImpl) Reset(*Simulation)                    {}
-func (impl defaultAPLActionImpl) GetNextAction(*Simulation) *APLAction { return nil }
+func (impl defaultAPLActionImpl) GetInnerActions() []*APLAction                                  { return nil }
+func (impl defaultAPLActionImpl) GetAPLValues() []APLValue                                       { return nil }
+func (impl defaultAPLActionImpl) Finalize(*APLRotation)                                          {}
+func (impl defaultAPLActionImpl) PostFinalize(*APLRotation)                                      {}
+func (impl defaultAPLActionImpl) Reset(*Simulation)                                              {}
+func (impl defaultAPLActionImpl) GetNextAction(*Simulation) *APLAction                           { return nil }
+func (impl defaultAPLActionImpl) ReResolveVariableRefs(*APLRotation, map[string]*proto.APLValue) {}
 
 func (rot *APLRotation) newAPLAction(config *proto.APLAction) *APLAction {
 	if config == nil {
@@ -197,6 +201,8 @@ func (rot *APLRotation) newAPLActionImpl(config *proto.APLAction) APLActionImpl 
 		return rot.newActionMoveDuration(config.GetMoveDuration())
 	case *proto.APLAction_CustomRotation:
 		return rot.newActionCustomRotation(config.GetCustomRotation())
+	case *proto.APLAction_GroupReference:
+		return rot.newActionGroupReference(config.GetGroupReference())
 
 	default:
 		return nil

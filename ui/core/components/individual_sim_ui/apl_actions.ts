@@ -14,6 +14,7 @@ import {
 	APLActionChangeTarget,
 	APLActionChannelSpell,
 	APLActionCustomRotation,
+	APLActionGroupReference,
 	APLActionGuardianHotwDpsRotation,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
 	APLActionItemSwap,
@@ -194,9 +195,12 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 			return;
 		}
 
-		this.conditionPicker.setInputValue(newValue.condition || APLValue.create({
-			uuid: { value: randomUUID() }
-		}));
+		this.conditionPicker.setInputValue(
+			newValue.condition ||
+				APLValue.create({
+					uuid: { value: randomUUID() },
+				}),
+		);
 
 		const newActionKind = newValue.action.oneofKind;
 		this.updateActionPicker(newActionKind);
@@ -280,9 +284,10 @@ function itemSwapSetFieldConfig(field: string): AplHelpers.APLPickerBuilderField
 function actionFieldConfig(field: string): AplHelpers.APLPickerBuilderFieldConfig<any, any> {
 	return {
 		field: field,
-		newValue: () => APLValue.create({
-			uuid: { value: randomUUID() }
-		}) ,
+		newValue: () =>
+			APLValue.create({
+				uuid: { value: randomUUID() },
+			}),
 		factory: (parent, player, config) => new APLActionPicker(parent, player, config),
 	};
 }
@@ -353,7 +358,7 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		shortDescription: 'Casts a friendly spell if possible, i.e. resource/cooldown/GCD/etc requirements are all met.',
 		newValue: APLActionCastFriendlySpell.create,
 		fields: [AplHelpers.actionIdFieldConfig('spellId', 'friendly_spells', ''), AplHelpers.unitFieldConfig('target', 'players')],
-		includeIf: (player: Player<any>, _isPrepull: boolean) => (player.getRaid()!.size() > 1) || player.shouldEnableTargetDummies(),
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getRaid()!.size() > 1 || player.shouldEnableTargetDummies(),
 	}),
 	['multidot']: inputBuilder({
 		label: 'Multi Dot',
@@ -387,7 +392,8 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 	['strictMultidot']: inputBuilder({
 		label: 'Strict Multi Dot',
 		submenu: ['Casting'],
-		shortDescription: 'Like a regular <b>Multi Dot</b>, except all Dots are applied immediately after each other. Keeps a DoT active on multiple targets by casting the specified spell. Will take Cast Time/GCD into account when refreshing subsequent DoTs.',
+		shortDescription:
+			'Like a regular <b>Multi Dot</b>, except all Dots are applied immediately after each other. Keeps a DoT active on multiple targets by casting the specified spell. Will take Cast Time/GCD into account when refreshing subsequent DoTs.',
 		includeIf: (player: Player<any>, isPrepull: boolean) => !isPrepull,
 		newValue: () =>
 			APLActionStrictMultidot.create({
@@ -493,11 +499,7 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 				statType2: -1,
 				statType3: -1,
 			}),
-		fields: [
-			AplHelpers.statTypeFieldConfig('statType1'),
-			AplHelpers.statTypeFieldConfig('statType2'),
-			AplHelpers.statTypeFieldConfig('statType3'),
-		],
+		fields: [AplHelpers.statTypeFieldConfig('statType1'), AplHelpers.statTypeFieldConfig('statType2'), AplHelpers.statTypeFieldConfig('statType3')],
 	}),
 	['autocastOtherCooldowns']: inputBuilder({
 		label: 'Autocast Other Cooldowns',
@@ -614,13 +616,17 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		submenu: ['Misc'],
 		shortDescription: 'Activates an aura with the specified number of stacks',
 		includeIf: (_, isPrepull: boolean) => isPrepull,
-		newValue: () => APLActionActivateAuraWithStacks.create({
-			numStacks: 1,
-		}),
-		fields: [AplHelpers.actionIdFieldConfig('auraId', 'stackable_auras'), AplHelpers.numberFieldConfig('numStacks', false, {
-			label: 'stacks',
-			labelTooltip: 'Desired number of initial aura stacks.',
-		})],
+		newValue: () =>
+			APLActionActivateAuraWithStacks.create({
+				numStacks: 1,
+			}),
+		fields: [
+			AplHelpers.actionIdFieldConfig('auraId', 'stackable_auras'),
+			AplHelpers.numberFieldConfig('numStacks', false, {
+				label: 'stacks',
+				labelTooltip: 'Desired number of initial aura stacks.',
+			}),
+		],
 	}),
 	['activateAllStatBuffProcAuras']: inputBuilder({
 		label: 'Activate All Stat Buff Proc Auras',
@@ -695,6 +701,30 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		includeIf: (_player: Player<any>, _isPrepull: boolean) => false, // Never show this, because its internal only.
 		newValue: () => APLActionCustomRotation.create(),
 		fields: [],
+	}),
+	['groupReference']: inputBuilder({
+		label: 'Group Reference',
+		submenu: ['Groups'],
+		shortDescription: 'References an action group defined in the Groups section.',
+		fullDescription: `
+			<p>Executes all actions in the referenced group in order. Groups allow you to create reusable action sequences.</p>
+			<p>Example: If you have a group named "careful_aim" with actions [serpent_sting, chimera_shot, steady_shot],
+			referencing this group will execute those three actions in sequence.</p>
+		`,
+		newValue: () =>
+			APLActionGroupReference.create({
+				groupName: '',
+				variables: [],
+			}),
+		fields: [
+			AplHelpers.groupNameFieldConfig('groupName', {
+				labelTooltip: 'Name of the group to reference (must match a group defined in the Groups section)',
+			}),
+			AplHelpers.groupReferenceVariablesFieldConfig('variables', 'groupName', {
+				label: 'Group Variables',
+				labelTooltip: "Variables to pass to the group. These will override the group's internal variables.",
+			}),
+		],
 	}),
 
 	// Class/spec specific actions

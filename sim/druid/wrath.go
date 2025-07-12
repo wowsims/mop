@@ -33,7 +33,7 @@ func (druid *Druid) registerWrathSpell() {
 
 			ModifyCast: func(sim *core.Simulation, spell *core.Spell, curCast *core.Cast) {
 				hastedCastTime := spell.Unit.ApplyCastSpeedForSpell(curCast.CastTime, spell).Round(time.Millisecond)
-				spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime + hastedCastTime)
+				spell.Unit.AutoAttacks.StopMeleeUntil(sim, sim.CurrentTime+hastedCastTime)
 			},
 		},
 

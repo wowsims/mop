@@ -22,6 +22,8 @@ message APLRotation {
 
 	repeated APLPrepullAction prepull_actions = 1;
 	repeated APLListItem priority_list = 2;
+	repeated APLGroup groups = 5; // Action groups that can be referenced
+	repeated APLValueVariable value_variables = 6; // Named reusable variables
 }
 
 message SimpleRotation {
@@ -41,7 +43,13 @@ message APLListItem {
     APLAction action = 3; // The action to be performed.
 }
 
-// NextIndex: 28
+message APLGroup {
+	string name = 1;                    // Name of the group (e.g., "careful_aim")
+	repeated APLListItem actions = 2;   // Actions in this group
+	repeated APLValueVariable variables = 3;  // Variables that can be used in this group
+}
+
+// NextIndex: 29
 message APLAction {
     APLValue condition = 1; // If set, action will only execute if value is true or != 0.
 
@@ -83,6 +91,9 @@ message APLAction {
 
         // Internal use only, not exposed in UI.
         APLActionCustomRotation custom_rotation = 19;
+
+        // Group reference
+        APLActionGroupReference group_reference = 28;
     }
 }
 
@@ -221,6 +232,12 @@ message APLValue {
 		APLValueMonkMaxChi monk_max_chi = 95;
 		APLValueBrewmasterMonkCurrentStaggerPercent brewmaster_monk_current_stagger_percent = 99;
 		APLValueProtectionPaladinDamageTakenLastGlobal protection_paladin_damage_taken_last_global = 100;
+
+		// Variable reference
+		APLValueVariableRef variable_ref = 106;
+
+		// Variable placeholder
+		APLValueVariablePlaceholder variable_placeholder = 107; // Placeholder value that gets replaced when group is referenced
     }
 }
 
@@ -729,4 +746,22 @@ message APLValueProtectionPaladinDamageTakenLastGlobal {}
 message APLValueDotPercentIncrease {
 	ActionID spell_id = 1;
 	UnitReference target_unit = 2;
+}
+
+message APLActionGroupReference {
+	string group_name = 1;                    // Name of the group to reference
+	repeated APLValueVariable variables = 2;  // Variables to set for this group reference
+}
+
+message APLValueVariable {
+	string name = 1;
+	APLValue value = 2;
+}
+
+message APLValueVariableRef {
+	string name = 1;
+}
+
+message APLValueVariablePlaceholder {
+    string name = 1; // Name of the variable placeholder to expose
 }

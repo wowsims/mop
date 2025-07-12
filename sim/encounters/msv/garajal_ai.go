@@ -71,7 +71,7 @@ func createGarajalHeroicPreset(raidPrefix string, raidSize int32, bossHealth flo
 		AI: makeGarajalAI(raidSize, false),
 	})
 
-	targetPathNames = append(targetPathNames, raidPrefix + "/" + addName)
+	targetPathNames = append(targetPathNames, raidPrefix+"/"+addName)
 	core.AddPresetEncounter(bossName, targetPathNames)
 }
 
@@ -316,7 +316,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			}
 
 			vengeanceAura.ApplyOnStacksChange(func(aura *core.Aura, sim *core.Simulation, _ int32, newStacks int32) {
-				if !ai.VoodooDollsAura.IsActive() && !ai.BanishmentAura.IsActive() && (sim.CurrentTime - lastTaunt > time.Second * 25) && (newStacks < priorVengeanceEstimate/2) {
+				if !ai.VoodooDollsAura.IsActive() && !ai.BanishmentAura.IsActive() && (sim.CurrentTime-lastTaunt > time.Second*25) && (newStacks < priorVengeanceEstimate/2) {
 					aura.Activate(sim)
 					aura.SetStacks(sim, priorVengeanceEstimate/2)
 					lastTaunt = sim.CurrentTime
@@ -417,7 +417,7 @@ func (ai *GarajalAI) registerSpiritualGrasp() {
 }
 
 func (ai *GarajalAI) rollNextSpiritualGraspTime(sim *core.Simulation) time.Duration {
-	return sim.CurrentTime + core.DurationFromSeconds(-math.Log(sim.RandomFloat("Spiritual Grasp")) * ai.meanGraspIntervalSeconds)
+	return sim.CurrentTime + core.DurationFromSeconds(-math.Log(sim.RandomFloat("Spiritual Grasp"))*ai.meanGraspIntervalSeconds)
 }
 
 func (ai *GarajalAI) registerFrenzy() {

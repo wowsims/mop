@@ -12,9 +12,12 @@
 	gap: var(--section-spacer);
 
 	.apl-list-item-picker,
-	.apl-prepull-action-picker {
+	.apl-prepull-action-picker,
+	.apl-groups-picker,
+	.apl-value-variables-picker {
 		flex-wrap: wrap;
 		align-items: flex-start !important;
+		width: 100%;
 
 		.list-picker-title {
 			border: 0;
@@ -28,15 +31,39 @@
 
 		.list-picker-items {
 			gap: var(--apl-spacer);
+			width: 100%;
 		}
 
 		> * > .list-picker-item-container {
 			background-color: color-mix(in srgb, var(--bs-body-bg) 80%, transparent);
 			padding: var(--apl-spacer);
+			margin-bottom: var(--apl-spacer);
+			border-radius: 0;
+			border: 1px solid color-mix(in srgb, var(--bs-border-color) 50%, transparent);
+			transition: all 0.2s ease;
+
+			&:hover {
+				background-color: color-mix(in srgb, var(--bs-body-bg) 85%, transparent);
+				border-color: var(--bs-border-color);
+			}
+
+			&:last-child {
+				margin-bottom: 0;
+			}
 
 			.list-picker-item-header {
 				align-items: flex-start;
 				justify-content: flex-end;
+				min-height: auto;
+
+				.btn-group {
+					gap: calc(var(--apl-spacer) / 2);
+
+					.btn {
+						padding: calc(var(--apl-spacer) / 2);
+						font-size: 0.875rem;
+					}
+				}
 			}
 
 			& > .list-picker-item {
@@ -47,6 +74,27 @@
 
 		.form-label {
 			margin-bottom: 0;
+		}
+	}
+
+	// Specific adjustments for better consistency across all tabs
+	.apl-groups-picker,
+	.apl-value-variables-picker {
+		.list-picker-item-container {
+			// Ensure compact layout for Groups and Variables
+			.list-picker-item {
+				min-height: auto;
+			}
+
+			// Style the variable/group content
+			.input-root,
+			.adaptive-string-picker-root {
+				margin-bottom: calc(var(--apl-spacer) / 2);
+
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
 		}
 	}
 
@@ -204,4 +252,348 @@
 }
 .apl-action-schedule .apl-action-condition {
 	display: none;
+}
+
+// Group editor container - only contains the group name
+.apl-group-editor-root {
+	width: 100%;
+	//padding: var(--apl-spacer);
+	background-color: color-mix(in srgb, var(--bs-body-bg) 80%, transparent);
+	border-radius: 0;
+	//border: 1px solid color-mix(in srgb, var(--bs-border-color) 50%, transparent);
+	margin-bottom: var(--apl-spacer);
+
+	.apl-group-name-input {
+		width: 100%;
+		margin-bottom: 0; // No margin since this is the only item in the container
+
+		> input {
+			width: 100%;
+		}
+	}
+}
+
+// Group actions picker styling - these are now at the same level as priority list actions
+.apl-group-actions-picker {
+	width: 100%;
+
+	.list-picker-title {
+		display: none; // Hide the title completely
+	}
+
+	.list-picker-new-button {
+		display: none; // Hide the nested new button since we have tab-level button
+	}
+
+	.list-picker-items {
+		width: 100%;
+		gap: var(--apl-spacer);
+		margin: 0;
+		padding: 0;
+	}
+
+	// Ensure items within group actions picker get full width like priority list
+	.list-picker-item-container {
+		width: 100%;
+
+		.list-picker-item {
+			width: 100%;
+			flex-grow: 1;
+		}
+
+		.apl-list-item-picker-root {
+			width: 100%;
+			flex-grow: 1;
+		}
+	}
+}
+
+// Ensure Action Groups actions have exactly the same size as Priority List actions
+.apl-groups-picker {
+	.apl-group-actions-picker {
+		.apl-list-item-picker-root {
+			// Ensure consistent sizing
+			min-height: auto !important;
+
+			.apl-action-picker-root {
+				// Match Priority List action picker sizing
+				flex-direction: column !important;
+				gap: var(--apl-spacer) !important;
+				margin: 0 !important;
+
+				.input-root {
+					margin: 0 !important;
+					width: 100% !important;
+				}
+			}
+		}
+
+		// Override any container constraints for action items
+		.list-picker-item-container {
+			width: 100% !important;
+			max-width: none !important;
+
+			.list-picker-item {
+				width: 100% !important;
+				flex: 1 !important;
+			}
+		}
+	}
+
+	// Ensure the actions container takes full width
+	.apl-group-actions-container {
+		width: 100% !important;
+		margin-top: var(--apl-spacer);
+	}
+}
+
+.apl-group-manager-root {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+
+	.apl-groups-header {
+		width: 100%;
+		margin-bottom: var(--apl-spacer);
+
+		.apl-groups-collapse-btn {
+			width: 100%;
+			text-align: left;
+			padding: var(--apl-spacer);
+			color: var(--bs-body-color);
+			text-decoration: none;
+			transition: all 0.2s ease;
+			border-radius: 0;
+			background-color: color-mix(in srgb, var(--bs-body-bg) 95%, transparent);
+
+			&:hover {
+				background-color: color-mix(in srgb, var(--bs-body-bg) 90%, transparent);
+			}
+
+			i {
+				margin-right: var(--apl-spacer);
+				transition: transform 0.2s ease;
+			}
+
+			&.collapsed i {
+				transform: rotate(0deg);
+			}
+
+			&:not(.collapsed) i {
+				transform: rotate(90deg);
+			}
+		}
+	}
+
+	.apl-groups-content {
+		width: 100%;
+		transition: all 0.3s ease;
+	}
+
+	.list-picker-root {
+		width: 100%;
+	}
+}
+
+// Unified tab content styling for perfect consistency
+.apl-rotation-tabs-root {
+	.apl-list-item-picker,
+	.apl-prepull-action-picker,
+	.apl-groups-picker,
+	.apl-value-variables-picker {
+		// Remove any default margins/padding
+		margin: 0;
+		padding: 0;
+
+		// Ensure consistent item spacing
+		.list-picker-items {
+			.list-picker-item-container {
+				&:first-child {
+					margin-top: 0;
+				}
+			}
+		}
+
+		// Unified button styling
+		.btn {
+			font-size: 0.875rem;
+			//padding: calc(var(--apl-spacer) / 2) var(--apl-spacer);
+
+			&.btn-sm {
+				padding: calc(var(--apl-spacer) / 3) calc(var(--apl-spacer) / 1.5);
+			}
+		}
+
+		// Unified form control styling
+		.form-control,
+		.form-select {
+			font-size: 0.875rem;
+			//padding: calc(var(--apl-spacer) / 2) var(--apl-spacer);
+		}
+
+		// Consistent label styling
+		.form-label {
+			font-size: 0.875rem;
+			font-weight: 500;
+			color: var(--bs-secondary);
+		}
+	}
+
+	// Variable picker specific styling
+	.apl-value-variables-picker {
+		.apl-value-variable-picker-root {
+			width: 100%;
+			gap: calc(var(--apl-spacer) / 2) !important;
+
+			.input-root {
+				margin-bottom: 0;
+
+				.form-label {
+					margin-bottom: calc(var(--apl-spacer) / 3);
+				}
+
+				.form-control {
+					width: 100%;
+				}
+			}
+
+			.apl-value-picker-root {
+				margin-bottom: 0;
+
+				.form-label {
+					margin-bottom: calc(var(--apl-spacer) / 3);
+				}
+			}
+		}
+	}
+}
+
+// Override styles for Action Groups tab to match Priority List tab exactly
+.apl-rotation-tabs-root {
+	#groups-tab-pane {
+		// Force groups picker container to not constrain width
+		.apl-groups-picker {
+			width: 100% !important;
+
+			// Force the individual group containers to not constrain their content
+			.list-picker-item-container {
+				width: 100% !important;
+				display: flex !important;
+				flex-direction: column !important;
+
+				// Remove any width constraints from the group editor container
+				.apl-group-editor-root {
+					width: 100% !important;
+					margin-bottom: var(--apl-spacer) !important;
+					flex-shrink: 0 !important;
+				}
+
+				// Force the group actions picker to take full width
+				.apl-group-actions-picker {
+					width: 100% !important;
+					flex-grow: 1 !important;
+
+					.list-picker-items {
+						width: 100% !important;
+
+						// Make sure individual action items fill full width like Priority List
+						.list-picker-item-container {
+							width: 100% !important;
+
+							.apl-list-item-picker-root {
+								width: 100% !important;
+								flex-grow: 1 !important;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Style the Create Action button
+		.create-action-button {
+			margin-top: var(--apl-spacer);
+			width: 12rem;
+		}
+	}
+}
+
+// Override group container styles to match Priority List actions EXACTLY
+.apl-groups-picker {
+	// Groups container should behave like any other list picker
+	.list-picker-item-container {
+		// Remove any special group styling that differs from Priority List
+		background-color: color-mix(in srgb, var(--bs-body-bg) 80%, transparent) !important;
+		padding: var(--apl-spacer) !important;
+		margin-bottom: var(--apl-spacer) !important;
+		border-radius: 0 !important;
+		border: 1px solid color-mix(in srgb, var(--bs-border-color) 50%, transparent) !important;
+
+		&:hover {
+			background-color: color-mix(in srgb, var(--bs-body-bg) 85%, transparent) !important;
+			border-color: var(--bs-border-color) !important;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		// The group name should be compact
+		.apl-group-name-input {
+			margin-bottom: var(--apl-spacer);
+
+			.form-label {
+				font-size: 0.875rem;
+				margin-bottom: calc(var(--apl-spacer) / 2);
+			}
+		}
+
+		// Actions container should have no extra styling
+		.apl-group-actions-container {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			background: transparent;
+
+			// Make the actions list look EXACTLY like Priority List
+			.apl-list-item-picker {
+				margin: 0;
+				padding: 0;
+				border: 0;
+				background: transparent;
+
+				.list-picker-title {
+					font-size: 0.875rem;
+					margin-bottom: calc(var(--apl-spacer) / 2);
+					border: 0;
+					padding: 0;
+				}
+
+				.list-picker-items {
+					gap: calc(var(--apl-spacer) / 2);
+
+					.list-picker-item-container {
+						// Actions within groups should look like Priority List actions
+						background-color: color-mix(in srgb, var(--bs-body-bg) 90%, transparent) !important;
+						padding: calc(var(--apl-spacer) / 2) !important;
+						margin-bottom: calc(var(--apl-spacer) / 2) !important;
+						border: 1px solid color-mix(in srgb, var(--bs-border-color) 30%, transparent) !important;
+						border-radius: 0 !important;
+
+						&:hover {
+							background-color: color-mix(in srgb, var(--bs-body-bg) 95%, transparent) !important;
+							border-color: color-mix(in srgb, var(--bs-border-color) 70%, transparent) !important;
+						}
+					}
+				}
+
+				.list-picker-new-button {
+					width: 100%;
+					font-size: 0.875rem;
+					padding: calc(var(--apl-spacer) / 2);
+					margin-top: calc(var(--apl-spacer) / 2);
+				}
+			}
+		}
+	}
 }
