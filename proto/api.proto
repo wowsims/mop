@@ -363,12 +363,29 @@ message ErrorOutcome {
 }
 
 // RPC RaidSim
+
+// ChartInput describes the input for the chart generation
+// and all the data needed to run parallel sims.
+// I've also done integers everywhere to avoid having to deal with type conversions
+message ChartInput {
+	repeated int32 stats_to_compare = 100;
+	int32 lower_bound = 101;
+	int32 upper_bound = 102;
+	int32 step = 103;
+	int32 current_value = 104;
+	int32 current_value_other = 105;
+}
+
 message RaidSimRequest {
 	string request_id = 5;
 	Raid raid = 1;
 	Encounter encounter = 2;
 	SimOptions sim_options = 3;
 	SimType type = 4;
+
+	// extended RaidSimRequest with ChartInput to save myself
+	// from having to deal with new message
+	ChartInput chart_input = 1000;
 }
 
 // Result from running the raid sim.
@@ -386,6 +403,16 @@ message RaidSimResult {
 	ErrorOutcome error = 5;
 
 	int32 iterations_done = 7;
+
+	// I had to add ChartInput here as well. The sims finish in indeterministic order
+	// so we cannot guarantee that they will end up ordered in a sensible way
+	// including the ChartInput lets us correlate the input and output
+	ChartInput chart_input = 1000;
+}
+
+// ChartResult is a new response type for returning the aggregated sim results
+message ChartResult {
+	repeated RaidSimResult raid_sim_result = 1;
 }
 
 message RaidSimRequestSplitRequest {
