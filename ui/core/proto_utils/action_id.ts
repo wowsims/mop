@@ -370,6 +370,9 @@ export class ActionId {
 			case 'Shattering Throw':
 			case 'Skull Banner':
 			case 'Stormlash':
+			case 'Vigilance':
+			case 'Pain Suppression':
+			case 'Rallying Cry':
 				if (tag === -1) {
 					name += ' (raid)';
 				} else {

@@ -15,19 +15,21 @@ func init() {
 
 func TestSurvival(t *testing.T) {
 
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassHunter,
-		Race:       proto.Race_RaceOrc,
-		OtherRaces: []proto.Race{proto.Race_RaceDwarf},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassHunter,
+			Race:       proto.Race_RaceOrc,
+			OtherRaces: []proto.Race{proto.Race_RaceDwarf},
 
-		GearSet:          core.GetGearSet("../../../ui/hunter/presets", "p1"),
-		Talents:          SurvivalTalents,
-		Glyphs:           SurvivalDefaultGlyphs,
-		Consumables:      FullConsumesSpec,
-		SpecOptions:      core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-		Rotation:         core.GetAplRotation("../../../ui/hunter/survival/apls", "sv"),
-		StartingDistance: 5.1,
-		ItemFilter:       ItemFilter,
+			GearSet:          core.GetGearSet("../../../ui/hunter/presets", "p1"),
+			Talents:          SurvivalTalents,
+			Glyphs:           SurvivalDefaultGlyphs,
+			Consumables:      FullConsumesSpec,
+			SpecOptions:      core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
+			Rotation:         core.GetAplRotation("../../../ui/hunter/survival/apls", "sv"),
+			StartingDistance: 5.1,
+			ItemFilter:       ItemFilter,
+		},
 	}))
 }
 

@@ -38,9 +38,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 	epReferenceStat: Stat.StatAttackPower,
 	consumableStats: [
 		Stat.StatAgility,
+		Stat.StatArmor,
 		Stat.StatBonusArmor,
 		Stat.StatStamina,
-		Stat.StatArmor,
 		Stat.StatAttackPower,
 		Stat.StatDodgeRating,
 		Stat.StatParryRating,
@@ -52,7 +52,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 	],
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
-		[Stat.StatHealth, Stat.StatStamina, Stat.StatAgility, Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
+		[
+			Stat.StatHealth,
+			Stat.StatArmor,
+			Stat.StatStamina,
+			Stat.StatAgility,
+			Stat.StatStrength,
+			Stat.StatAttackPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+		],
 		[
 			PseudoStat.PseudoStatPhysicalHitPercent,
 			PseudoStat.PseudoStatSpellHitPercent,
@@ -63,6 +72,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 			PseudoStat.PseudoStatParryPercent,
 		],
 	),
+
+	defaultBuild: Presets.PRESET_BUILD_DEFAULT,
 
 	defaults: {
 		// Default equipped gear.
@@ -141,7 +152,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents, Presets.DungeonTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET],
+		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET, Presets.ROTATION_GARAJAL_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.P1_PREBIS_RICH_GEAR_PRESET,
@@ -151,6 +162,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 			Presets.P1_BIS_TIERLESS_DW_GEAR_PRESET,
 			Presets.P1_BIS_TIERLESS_2H_GEAR_PRESET,
 		],
+		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_DEFENSIVE, Presets.PRESET_BUILD_OFFENSIVE],
 	},
 
 	autoRotation: (_: Player<Spec.SpecBrewmasterMonk>): APLRotation => {
@@ -202,8 +214,17 @@ export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk
 
 		const setTalentBasedSettings = () => {
 			const talents = player.getTalents();
+			let targetDummies = 0;
 			// Zen sphere can be on 2 targets, so we set the target dummies to 1 if it is talented.
-			player.getRaid()?.setTargetDummies(TypedEvent.nextEventID(), talents.zenSphere ? 2 : 0);
+			if (talents.zenSphere) {
+				targetDummies = 2;
+				// Chi Wave jumps to the nearest target rquiring a heal, so we set the target dummies to 9 if it is talented.
+				// This is done to get a better approximation of the healing done by Chi Wave.
+			} else if (talents.chiWave) {
+				targetDummies = 9;
+			}
+
+			player.getRaid()?.setTargetDummies(TypedEvent.nextEventID(), targetDummies);
 		};
 
 		setTalentBasedSettings();

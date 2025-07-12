@@ -70,6 +70,8 @@ func (prot *ProtectionPaladin) Initialize() {
 	})
 
 	prot.trackDamageTakenLastGlobal()
+
+	prot.registerHotfixPassive()
 }
 
 func (prot *ProtectionPaladin) trackDamageTakenLastGlobal() {

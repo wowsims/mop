@@ -27,6 +27,7 @@ function serveExternalAssets() {
 					const targetPath = workerMappings[url as keyof typeof workerMappings];
 					const assetsPath = path.resolve(__dirname, './dist/mop');
 					const requestedPath = path.join(assetsPath, targetPath.replace('/mop/', ''));
+
 					serveFile(res, requestedPath);
 					return;
 				}
@@ -131,11 +132,6 @@ export default defineConfig(({ command, mode }) => {
 	const baseConfig = getBaseConfig({ command, mode });
 	return {
 		...baseConfig,
-		resolve: {
-			alias: {
-				'/mop/localization.js': path.resolve(__dirname, 'ui/i18n/localization.tsx'),
-			},
-		},
 		plugins: [
 			serveExternalAssets(),
 			copyLocales(),

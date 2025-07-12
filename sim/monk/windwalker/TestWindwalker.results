@@ -777,9 +777,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 161607.78413
-  tps: 150631.11877
-  hps: 8714.55707
+  dps: 153650.67225
+  tps: 143481.86309
+  hps: 8017.24853
  }
 }
 dps_results: {
@@ -1953,9 +1953,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 181563.584
-  tps: 168508.91888
-  hps: 9791.63826
+  dps: 159557.21075
+  tps: 148600.50538
+  hps: 8319.0308
  }
 }
 dps_results: {

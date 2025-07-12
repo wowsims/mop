@@ -28,6 +28,7 @@ func (moonkin *BalanceDruid) newTreant() *BalanceTreant {
 					stats.Health:           0.4 * ownerStats[stats.Health],
 					stats.SpellCritPercent: ownerStats[stats.SpellCritPercent],
 					stats.SpellPower:       ownerStats[stats.SpellPower],
+					stats.HasteRating:      ownerStats[stats.HasteRating],
 				}
 			},
 

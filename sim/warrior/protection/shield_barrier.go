@@ -10,7 +10,7 @@ import (
 
 func (war *ProtectionWarrior) registerShieldBarrier() {
 	actionID := core.ActionID{SpellID: 112048}
-	rageMetrics := war.NewRageMetrics(actionID)
+	rageMetrics := war.NewRageMetrics(actionID.WithTag(1))
 	maxRageSpent := 60.0
 	rageSpent := 20.0
 	apScaling := 2.0 // Beta changes 2025-06-16: Shield Barrier’s attack power modifier increased to 2.0 (was 1.8). [5.2 Revert]
@@ -53,6 +53,10 @@ func (war *ProtectionWarrior) registerShieldBarrier() {
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 		CritMultiplier:   war.DefaultCritMultiplier(),
+
+		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+			return war.PseudoStats.CanBlock
+		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			additionalRage := min(40, war.CurrentRage())

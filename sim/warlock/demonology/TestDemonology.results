@@ -2273,8 +2273,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 106716.04396
-  tps: 67679.32921
+  dps: 91016.4802
+  tps: 57839.06545
  }
 }
 dps_results: {

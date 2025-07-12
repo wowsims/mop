@@ -6,7 +6,9 @@ import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
 import { SavedRotation } from '../../proto/ui';
+import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import { EventID, TypedEvent } from '../../typed_event';
+import { omitDeep } from '../../utils';
 import { ContentBlock } from '../content_block';
 import * as IconInputs from '../icon_inputs';
 import { Input } from '../input';
@@ -17,7 +19,7 @@ import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
 import { APLRotationPicker } from './apl_rotation_picker';
 import { CooldownsPicker } from './cooldowns_picker';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
 
 export class RotationTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
@@ -193,7 +195,7 @@ export class RotationTab extends SimTab {
 	}
 
 	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, ['rotation']);
+		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Rotation]);
 	}
 
 	private buildSavedDataPickers() {
@@ -203,21 +205,20 @@ export class RotationTab extends SimTab {
 			storageKey: this.simUI.getSavedRotationStorageKey(),
 			getData: (player: Player<any>) =>
 				SavedRotation.create({
-					rotation: APLRotation.clone(player.aplRotation),
+					rotation: player.getResolvedAplRotation(),
 				}),
-			setData: (eventID: EventID, player: Player<any>, newRotation: SavedRotation) => {
+			setData: (eventID: EventID, player: Player<any>, newRotation: SavedRotation) =>
 				TypedEvent.freezeAllAndDo(() => {
 					player.setAplRotation(eventID, newRotation.rotation || APLRotation.create());
-				});
-			},
+				}),
 			changeEmitters: [this.simUI.player.rotationChangeEmitter, this.simUI.player.talentsChangeEmitter],
 			equals: (a: SavedRotation, b: SavedRotation) => {
 				// Uncomment this to debug equivalence checks with preset rotations (e.g. the chip doesn't highlight)
-				//console.log(`Rot A: ${SavedRotation.toJsonString(a, {prettySpaces: 2})}\n\nRot B: ${SavedRotation.toJsonString(b, {prettySpaces: 2})}`);
-				return SavedRotation.equals(a, b);
+				// console.log(`Rot A: ${SavedRotation.toJsonString(a, { prettySpaces: 2 })}\n\nRot B: ${SavedRotation.toJsonString(b, { prettySpaces: 2 })}`);
+				return isEqualAPLRotation(this.simUI.player, a.rotation, b.rotation);
 			},
 			toJson: (a: SavedRotation) => SavedRotation.toJson(a),
-			fromJson: (obj: any) => SavedRotation.fromJson(obj),
+			fromJson: (obj: any) => omitDeep(SavedRotation.fromJson(obj), ['uuid']),
 		});
 
 		this.simUI.sim.waitForInit().then(() => {
@@ -226,7 +227,6 @@ export class RotationTab extends SimTab {
 				const rotData = presetRotation.rotation;
 				// Fill default values so the equality checks always work.
 				if (!rotData.rotation) rotData.rotation = APLRotation.create();
-
 				savedRotationsManager.addSavedData({
 					name: presetRotation.name,
 					tooltip: presetRotation.tooltip,

@@ -9,7 +9,7 @@ import GearPicker from '../gear_picker/gear_picker';
 import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
 import { GemSummary } from './gem_summary';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
 import { ReforgeSummary } from './reforge_summary';
 
 export class GearTab extends SimTab {
@@ -55,7 +55,7 @@ export class GearTab extends SimTab {
 	}
 
 	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, ['gear']);
+		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Gear]);
 	}
 
 	private buildSavedGearsetPicker() {

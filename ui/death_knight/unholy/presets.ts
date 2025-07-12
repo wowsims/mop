@@ -1,10 +1,9 @@
 import * as PresetUtils from '../../core/preset_utils';
 import { APLRotation_Type as APLRotationType } from '../../core/proto/apl.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Stat } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '../../core/proto/death_knight';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
-import CataApl from '../../death_knight/unholy/apls/cata.apl.json';
 import DefaultApl from '../../death_knight/unholy/apls/default.apl.json';
 import P1Gear from '../../death_knight/unholy/gear_sets/p1.gear.json';
 // import PreBISGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
@@ -16,7 +15,6 @@ import P1Gear from '../../death_knight/unholy/gear_sets/p1.gear.json';
 export const P1_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P1', P1Gear);
 
 export const DEFAULT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
-export const CATA_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('!OLD! - Cata APL', CataApl);
 
 // Preset options for EP weights
 export const P1_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -24,15 +22,15 @@ export const P1_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.73,
-			[Stat.StatExpertiseRating]: 0.73,
+			[Stat.StatHitRating]: 0.74,
+			[Stat.StatExpertiseRating]: 0.74,
 			[Stat.StatCritRating]: 0.47,
-			[Stat.StatHasteRating]: 0.43,
-			[Stat.StatMasteryRating]: 0.4,
+			[Stat.StatHasteRating]: 0.46,
+			[Stat.StatMasteryRating]: 0.42,
 			[Stat.StatAttackPower]: 0.3,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.8,
+			[PseudoStat.PseudoStatMainHandDps]: 0.85,
 		},
 	),
 );
@@ -43,7 +41,7 @@ export const P1_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeights(
 export const DefaultTalents = {
 	name: 'Default',
 	data: SavedTalents.create({
-		talentsString: '321111',
+		talentsString: '221111',
 		glyphs: Glyphs.create({
 			major1: DeathKnightMajorGlyph.GlyphOfAntiMagicShell,
 			major2: DeathKnightMajorGlyph.GlyphOfPestilence,
@@ -77,6 +75,7 @@ export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Blacksmithing,
 	distanceFromTarget: 5,
+	race: Race.RaceOrc,
 };
 
 export const DefaultConsumables = ConsumesSpec.create({
