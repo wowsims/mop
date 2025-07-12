@@ -25,8 +25,10 @@ export class APLValueVariableManager extends Component {
 		this.modObject = player;
 
 		this.listPicker = new ListPicker(this.rootElem, player, {
+			extraCssClasses: ['apl-value-variables-picker'],
 			title: 'Value Variables',
-			itemLabel: 'Value Variable',
+			titleTooltip: 'Define reusable variables that can be referenced in your rotation logic.',
+			itemLabel: 'Variable',
 			newItem: () => this.createValueVariable(),
 			copyItem: (oldItem: APLValueVariable) => this.copyValueVariable(oldItem),
 			newItemPicker: (
@@ -38,12 +40,13 @@ export class APLValueVariableManager extends Component {
 			allowedActions: ['create', 'copy', 'delete', 'move'],
 			actions: {
 				create: {
-					useIcon: true,
+					useIcon: false,
 				},
 			},
 			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			getValue: (player: Player<any>) => this.config.getValue(player),
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLValueVariable[]) => this.config.setValue(eventID, player, newValue),
+			inlineMenuBar: true,
 		});
 	}
 
@@ -67,6 +70,10 @@ export class APLValueVariableManager extends Component {
 
 	setInputValue(newValue: APLValueVariable[]) {
 		this.listPicker.setInputValue(newValue);
+	}
+
+	getListPicker(): ListPicker<Player<any>, APLValueVariable> {
+		return this.listPicker;
 	}
 }
 
@@ -92,6 +99,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 		this.namePicker = new AdaptiveStringPicker(this.rootElem, player, {
 			id: randomUUID(),
 			label: 'Variable Name',
+			labelTooltip: 'Name of the variable (e.g., "my_dot_remains", "boss_health_pct")',
 			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			getValue: () => this.getSourceValue().name,
 			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
@@ -104,6 +112,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 		this.valuePicker = new APLValuePicker(this.rootElem, player, {
 			id: randomUUID(),
 			label: 'Variable Value',
+			labelTooltip: 'The value expression that this variable represents',
 			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			getValue: () => this.getSourceValue().value,
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
@@ -112,6 +121,8 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 				this.config.setValue(eventID, player, this.config.getValue(player));
 			},
 		});
+
+		this.init();
 	}
 
 	getInputElem(): HTMLElement | null {

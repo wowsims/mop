@@ -1,23 +1,20 @@
-import { ref } from 'tsx-vanilla';
-
 import { Player } from '../../player';
 import { APLAction, APLGroup, APLListItem } from '../../proto/apl';
-import { EventID, TypedEvent } from '../../typed_event';
+import { EventID } from '../../typed_event';
 import { randomUUID } from '../../utils';
-import { Component } from '../component';
 import { Input, InputConfig } from '../input';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker';
 import { AdaptiveStringPicker } from '../pickers/string_picker';
 import { APLActionPicker } from './apl_actions';
-import { APLValueVariableManager } from './apl_value_variable_manager';
 
 export interface APLGroupEditorConfig extends InputConfig<Player<any>, APLGroup> {}
 
-// Simple action picker for group actions
+// Simple list item picker for group actions that matches Priority List structure
 class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 	private readonly actionPicker: APLActionPicker;
 
 	constructor(parent: HTMLElement, player: Player<any>, config: ListItemPickerConfig<Player<any>, APLListItem>) {
+		// Use the same root class as Priority List items for consistent styling
 		super(parent, 'apl-list-item-picker-root', player, config);
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.modObject, {
@@ -56,14 +53,17 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 	private readonly namePicker: AdaptiveStringPicker<Player<any>>;
 	private readonly actionsPicker: ListPicker<Player<any>, APLListItem>;
-	private readonly variablesManager: APLValueVariableManager;
+	private readonly actionsContainer: HTMLElement;
 
 	constructor(parent: HTMLElement, player: Player<any>, config: APLGroupEditorConfig) {
 		super(parent, 'apl-group-editor-root', player, config);
 
+		// Create the group name input within our container
 		this.namePicker = new AdaptiveStringPicker(this.rootElem, this.modObject, {
 			id: randomUUID(),
+			label: 'Group Name',
 			labelTooltip: 'Name of this action group (e.g., "careful_aim", "cooldowns")',
+			extraCssClasses: ['apl-group-name-input'],
 			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			getValue: () => this.getSourceValue()?.name || '',
 			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
@@ -75,19 +75,14 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 			},
 		});
 
-		this.variablesManager = new APLValueVariableManager(this.rootElem, this.modObject, {
-			getValue: (player: Player<any>) => this.getSourceValue()?.variables || [],
-			setValue: (eventID: EventID, player: Player<any>, newValue: any[]) => {
-				const group = this.getSourceValue();
-				if (group) {
-					group.variables = newValue;
-					player.rotationChangeEmitter.emit(eventID);
-				}
-			},
-		});
+		// Create a dedicated container for actions that will have full width
+		this.actionsContainer = document.createElement('div');
+		this.actionsContainer.className = 'apl-group-actions-container';
+		this.rootElem.appendChild(this.actionsContainer);
 
-		this.actionsPicker = new ListPicker<Player<any>, APLListItem>(this.rootElem, this.modObject, {
-			extraCssClasses: ['apl-group-actions-picker'],
+		// Create the actions picker in the dedicated container with EXACT same styling as Priority List
+		this.actionsPicker = new ListPicker<Player<any>, APLListItem>(this.actionsContainer, this.modObject, {
+			extraCssClasses: ['apl-list-item-picker'], // Use SAME class as Priority List!
 			title: 'Actions',
 			titleTooltip: 'Actions in this group. These will be executed in order when the group is referenced.',
 			itemLabel: 'Action',
@@ -112,12 +107,14 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 				config: ListItemPickerConfig<Player<any>, APLListItem>,
 			) => new APLGroupActionPicker(parent, this.modObject, config),
 			inlineMenuBar: true,
+			allowedActions: ['create', 'copy', 'delete', 'move'],
 		});
 
 		this.init();
 	}
 
 	getInputElem(): HTMLElement | null {
+		// Return the main container element
 		return this.rootElem;
 	}
 
@@ -130,7 +127,6 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 		return APLGroup.create({
 			name: this.namePicker.getInputValue(),
 			actions: this.actionsPicker.getInputValue(),
-			variables: this.variablesManager.getInputValue(),
 		});
 	}
 
@@ -139,7 +135,6 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 			return;
 		}
 		this.namePicker.setInputValue(newValue.name || '');
-		this.variablesManager.setInputValue(newValue.variables || []);
 		this.actionsPicker.setInputValue(newValue.actions || []);
 	}
 }
