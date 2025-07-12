@@ -291,7 +291,6 @@ func (sim *Simulation) DisableTargetUnit(targetUnit *Unit, expireAuras bool) {
 
 func (target *Target) NextActiveTarget() *Target {
 	nextIndex := target.Index + 1
-
 	if nextIndex >= target.Env.TotalTargetCount() {
 		nextIndex = 0
 	}
@@ -302,6 +301,21 @@ func (target *Target) NextActiveTarget() *Target {
 		return nextTarget
 	} else {
 		return nextTarget.NextActiveTarget()
+	}
+}
+
+func (target *Target) PreviousActiveTarget() *Target {
+	prevIndex := target.Index - 1
+	if prevIndex < 0 {
+		prevIndex = target.Env.TotalTargetCount()
+	}
+
+	prevTarget := target.Env.GetTargetByIndex(prevIndex)
+
+	if prevTarget.IsEnabled() {
+		return prevTarget
+	} else {
+		return prevTarget.PreviousActiveTarget()
 	}
 }
 

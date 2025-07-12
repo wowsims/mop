@@ -373,6 +373,8 @@ const unitSets: Record<
 					.asList()
 					.map((petMetadata, i) => UnitReference.create({ type: UnitType.Pet, index: i, owner: UnitReference.create({ type: UnitType.Self }) })),
 				UnitReference.create({ type: UnitType.CurrentTarget }),
+				UnitReference.create({ type: UnitType.PreviousTarget }),
+				UnitReference.create({ type: UnitType.NextTarget }),
 				player.sim.raid
 					.getActivePlayers()
 					.filter(filter => filter != player)
@@ -401,6 +403,8 @@ const unitSets: Record<
 			return [
 				undefined,
 				player.sim.encounter.targetsMetadata.asList().map((_targetMetadata, i) => UnitReference.create({ type: UnitType.Target, index: i })),
+				UnitReference.create({ type: UnitType.PreviousTarget }),
+				UnitReference.create({ type: UnitType.NextTarget }),
 			].flat();
 		},
 	},
@@ -459,6 +463,18 @@ export class APLUnitPicker extends UnitPicker<Player<any>> {
 				value: ref,
 				iconUrl: 'fa-bullseye',
 				text: 'Current Target',
+			};
+		} else if (ref.type == UnitType.PreviousTarget) {
+			return {
+				value: ref,
+				iconUrl: 'fa-arrow-left',
+				text: 'Previous Target',
+			};
+		} else if (ref.type == UnitType.NextTarget) {
+			return {
+				value: ref,
+				iconUrl: 'fa-arrow-right',
+				text: 'Next Target',
 			};
 		} else if (ref.type == UnitType.Player) {
 			const player = thisPlayer.sim.raid.getPlayer(ref.index);
