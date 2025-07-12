@@ -15,6 +15,8 @@ import {
 	APLActionChannelSpell,
 	APLActionCustomRotation,
 	APLActionGroupReference,
+	APLActionGuardianHotwDpsRotation,
+	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
 	APLActionItemSwap,
 	APLActionItemSwap_SwapSet as ItemSwapSet,
 	APLActionMove,
@@ -800,6 +802,20 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 				labelTooltip:
 					'Click off Primal Madness buff when doing so will result in net Energy gains. Ignored if Primal Madness is not talented, or if not using manual advanced parameters.',
 			}),
+		],
+	}),
+
+	['guardianHotwDpsRotation']: inputBuilder({
+		label: 'HotW DPS Rotation',
+		submenu: ['Guardian Druid'],
+		shortDescription: 'Executes optimized HotW DPS rotation using hardcoded algorithm.',
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecGuardianDruid,
+		newValue: () =>
+			APLActionGuardianHotwDpsRotation.create({
+				strategy: HotwStrategy.Caster,
+			}),
+		fields: [
+			AplHelpers.hotwStrategyFieldConfig('strategy'),
 		],
 	}),
 };

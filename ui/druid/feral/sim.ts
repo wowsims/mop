@@ -104,7 +104,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
 		itemSwaps: [Presets.P4_ITEM_SWAP_PRESET],
-		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_TENDON],
+		builds: [
+			//Presets.PRESET_BUILD_DEFAULT,
+			//Presets.PRESET_BUILD_TENDON,
+		],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecFeralDruid>): APLRotation => {

@@ -698,8 +698,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 65970.49167
-  tps: 56193.07376
+  dps: 59084.59233
+  tps: 50836.27859
  }
 }
 dps_results: {
@@ -1727,8 +1727,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 78158.84691
-  tps: 65147.73772
+  dps: 63008.06218
+  tps: 53636.50019
  }
 }
 dps_results: {
@@ -2315,8 +2315,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 56078.61301
-  tps: 48469.0737
+  dps: 55671.83595
+  tps: 48190.38736
  }
 }
 dps_results: {

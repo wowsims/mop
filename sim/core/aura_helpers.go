@@ -316,11 +316,13 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 				stackingAura.Activate(sim)
 				StartPeriodicAction(sim, PeriodicActionOptions{
 					Period:          config.TimePerStack,
-					NumTicks:        10,
+					NumTicks:        int(config.MaxStacks),
 					TickImmediately: config.TickImmediately,
 					OnAction: func(sim *Simulation) {
-						stackingAura.Activate(sim)
-						stackingAura.AddStack(sim)
+						// Aura might not be active because of stuff like mage alter time being cast right before this aura being activated
+						if stackingAura.IsActive() {
+							stackingAura.AddStack(sim)
+						}
 					},
 				})
 			},
@@ -543,6 +545,18 @@ func (parentAura *Aura) AttachMultiplyMeleeSpeed(multiplier float64) *Aura {
 	return parentAura
 }
 
+func (parentAura *Aura) AttachMultiplyAttackSpeed(multiplier float64) *Aura {
+	parentAura.ApplyOnGain(func(_ *Aura, sim *Simulation) {
+		parentAura.Unit.MultiplyAttackSpeed(sim, multiplier)
+	})
+
+	parentAura.ApplyOnExpire(func(_ *Aura, sim *Simulation) {
+		parentAura.Unit.MultiplyAttackSpeed(sim, 1/multiplier)
+	})
+
+	return parentAura
+}
+
 // Attaches a Damage Done By Caster buff to a parent Aura
 // Returns parent aura for chaining
 func (parentAura *Aura) AttachDDBC(index int, maxIndex int, attackTables *[]*AttackTable, handler DynamicDamageDoneByCaster) *Aura {
@@ -611,10 +625,12 @@ func (unit *Unit) NewDamageAbsorptionAura(config AbsorptionAuraConfig) *DamageAb
 		aura.ShieldStrength = 0
 	})
 
-	extraSpellCheck := config.ShouldApplyToResult
+	extraSpellCheck := func(sim *Simulation, spell *Spell, result *SpellResult, isPeriodic bool) bool {
+		return !spell.Flags.Matches(SpellFlagBypassAbsorbs) && ((config.ShouldApplyToResult == nil) || config.ShouldApplyToResult(sim, spell, result, isPeriodic))
+	}
 
 	unit.AddDynamicDamageTakenModifier(func(sim *Simulation, spell *Spell, result *SpellResult, isPeriodic bool) {
-		if aura.Aura.IsActive() && result.Damage > 0 && (extraSpellCheck == nil || extraSpellCheck(sim, spell, result, isPeriodic)) {
+		if aura.Aura.IsActive() && (result.Damage > 0) && extraSpellCheck(sim, spell, result, isPeriodic) {
 			absorbedDamage := min(aura.ShieldStrength, result.Damage*config.DamageMultiplier)
 			result.Damage -= absorbedDamage
 			aura.ShieldStrength -= absorbedDamage

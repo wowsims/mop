@@ -25,7 +25,7 @@ var FeralItemFilter = core.ItemFilter{
 }
 
 func TestFeral(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
 		Class:       proto.Class_ClassDruid,
 		Race:        proto.Race_RaceWorgen,
 		OtherRaces:  []proto.Race{proto.Race_RaceTroll},
@@ -58,7 +58,7 @@ func TestFeral(t *testing.T) {
 }
 
 // func TestFeralApl(t *testing.T) {
-// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
+// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
 // 		Class: proto.Class_ClassDruid,
 // 		Race:  proto.Race_RaceTauren,
 

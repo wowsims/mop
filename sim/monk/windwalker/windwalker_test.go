@@ -14,24 +14,26 @@ func init() {
 }
 
 func TestWindwalker(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassMonk,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceOrc},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassMonk,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-		GearSet: core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_dw"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_2h"),
-			core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_dw"),
-			core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_2h"),
+			GearSet: core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_dw"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_2h"),
+				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_dw"),
+				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_2h"),
+			},
+			Talents:     WindwalkerTalents,
+			Glyphs:      WindwalkerDefaultGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsWindwalker},
+			Rotation:    core.GetAplRotation("../../../ui/monk/windwalker/apls", "default"),
+
+			ItemFilter: ItemFilter,
 		},
-		Talents:     WindwalkerTalents,
-		Glyphs:      WindwalkerDefaultGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsWindwalker},
-		Rotation:    core.GetAplRotation("../../../ui/monk/windwalker/apls", "default"),
-
-		ItemFilter: ItemFilter,
 	}))
 }
 

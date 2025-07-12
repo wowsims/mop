@@ -35,6 +35,11 @@ func NewGuardianDruid(character *core.Character, options *proto.Player) *Guardia
 
 	bear.registerTreants()
 
+	bear.EnableEnergyBar(core.EnergyBarOptions{
+		MaxComboPoints: 5,
+		MaxEnergy:      100,
+		UnitClass:      proto.Class_ClassDruid,
+	})
 	bear.EnableRageBar(core.RageBarOptions{
 		BaseRageMultiplier: 2.5,
 	})
@@ -45,6 +50,7 @@ func NewGuardianDruid(character *core.Character, options *proto.Player) *Guardia
 	})
 
 	bear.RegisterBearFormAura()
+	bear.RegisterCatFormAura()
 
 	return bear
 }
@@ -62,6 +68,7 @@ type GuardianDruid struct {
 	SonOfUrsocAura      *core.Aura
 	ToothAndClawBuff    *core.Aura
 	ToothAndClawDebuffs core.AuraArray
+	VengeanceAura       *core.Aura
 
 	// Spell references
 	Enrage         *druid.DruidSpell
@@ -84,10 +91,18 @@ func (bear *GuardianDruid) ApplyTalents() {
 	bear.applyMastery()
 	bear.applyThickHide()
 	bear.applyLeatherSpecialization()
-	bear.RegisterVengeance(84840, bear.BearFormAura)
+	bear.applyVengeance()
 
 	// MoP Classic balancing
-	bear.BearFormAura.AttachMultiplicativePseudoStatBuff(&bear.PseudoStats.DamageDealtMultiplier, 1.05)
+	bear.BearFormAura.AttachMultiplicativePseudoStatBuff(&bear.PseudoStats.DamageDealtMultiplier, 1.15)
+}
+
+func (bear *GuardianDruid) applyVengeance() {
+	bear.VengeanceAura = bear.RegisterVengeance(84840, bear.BearFormAura)
+
+	bear.CatFormAura.ApplyOnGain(func(_ *core.Aura, sim *core.Simulation) {
+		bear.VengeanceAura.Deactivate(sim)
+	})
 }
 
 func (bear *GuardianDruid) applyMastery() {

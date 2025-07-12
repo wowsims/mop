@@ -1,7 +1,7 @@
 package protection
 
 import (
-	"math"
+	"time"
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
@@ -45,12 +45,12 @@ func NewProtectionWarrior(character *core.Character, options *proto.Player) *Pro
 	return war
 }
 
-func (war *ProtectionWarrior) CalculateMasteryBlockChance() float64 {
-	return math.Floor(0.5*(8.0+war.GetMasteryPoints())) / 100.0
+func (war *ProtectionWarrior) CalculateMasteryBlockChance(masteryRating float64) float64 {
+	return 0.5 * (8.0 + core.MasteryRatingToMasteryPoints(masteryRating))
 }
 
 func (war *ProtectionWarrior) CalculateMasteryCriticalBlockChance() float64 {
-	return math.Floor(2.2*(8.0+war.GetMasteryPoints())) / 100.0
+	return 2.2 * (8.0 + war.GetMasteryPoints()) / 100.0
 }
 
 func (war *ProtectionWarrior) GetWarrior() *warrior.Warrior {
@@ -91,6 +91,12 @@ func (war *ProtectionWarrior) registerMastery() {
 	dummyCriticalBlockSpell := war.RegisterSpell(core.SpellConfig{
 		ActionID: core.ActionID{SpellID: 76857}, // Doesn't seem like there's an actual spell ID for the block itself, so use the mastery ID
 		Flags:    core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete,
+		Cast: core.CastConfig{
+			CD: core.Cooldown{
+				Timer:    war.NewTimer(),
+				Duration: time.Second * 3,
+			},
+		},
 	})
 
 	war.Blockhandler = func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
@@ -100,28 +106,23 @@ func (war *ProtectionWarrior) registerMastery() {
 
 		if result.Outcome.Matches(core.OutcomeBlock) && !result.Outcome.Matches(core.OutcomeMiss) && !result.Outcome.Matches(core.OutcomeParry) && !result.Outcome.Matches(core.OutcomeDodge) {
 			procChance := war.GetCriticalBlockChance()
-			if sim.Proc(procChance, "Critical Block Roll") {
+			if dummyCriticalBlockSpell.CD.IsReady(sim) && sim.Proc(procChance, "Critical Block Roll") {
 				result.Damage = result.Damage * (1 - war.BlockDamageReduction()*2)
 				dummyCriticalBlockSpell.Cast(sim, spell.Unit)
 				return
 			}
+
 			result.Damage = result.Damage * (1 - war.BlockDamageReduction())
 		}
 	}
 
-	// Crit block mastery also applies an equal amount to regular block
-	// set initial block % from both Masteries
 	war.CriticalBlockChance[0] = war.CalculateMasteryCriticalBlockChance()
-	war.CriticalBlockChance[1] = war.CalculateMasteryBlockChance()
-	war.AddStat(stats.BlockPercent, (war.CriticalBlockChance[0]+war.CriticalBlockChance[1])*100.0)
+	war.AddStat(stats.BlockPercent, war.CalculateMasteryBlockChance(war.GetStat(stats.MasteryRating)))
 
-	// and keep it updated when mastery changes
 	war.AddOnMasteryStatChanged(func(sim *core.Simulation, oldMasteryRating float64, newMasteryRating float64) {
+		masteryBlockStat := war.CalculateMasteryBlockChance(newMasteryRating - oldMasteryRating)
+		war.AddStatDynamic(sim, stats.BlockPercent, masteryBlockStat)
 		war.CriticalBlockChance[0] = war.CalculateMasteryCriticalBlockChance()
-		war.CriticalBlockChance[1] = war.CalculateMasteryBlockChance()
-		masteryBlockStat := 0.5 * core.MasteryRatingToMasteryPoints(newMasteryRating-oldMasteryRating)
-		masteryCriticalBlockStat := 2.2 * core.MasteryRatingToMasteryPoints(newMasteryRating-oldMasteryRating)
-		war.AddStatDynamic(sim, stats.BlockPercent, masteryCriticalBlockStat+masteryBlockStat)
 	})
 }
 

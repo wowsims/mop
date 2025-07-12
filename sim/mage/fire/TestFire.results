@@ -2266,8 +2266,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 155851.39741
-  tps: 151842.18216
+  dps: 135989.06777
+  tps: 132128.1911
  }
 }
 dps_results: {
@@ -2299,171 +2299,843 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_bis-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Troll-p1_bis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 253062.77416
   tps: 249519.08155
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_bis-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Troll-p1_bis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 130373.12967
   tps: 126988.95208
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_bis-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Troll-p1_bis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 195796.24653
   tps: 183990.29347
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_bis-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Troll-p1_bis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 163205.46581
   tps: 161388.60823
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_bis-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Troll-p1_bis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 92442.08417
   tps: 90636.39637
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_bis-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Troll-p1_bis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 110330.40725
   tps: 105825.61892
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 188234.84192
+  tps: 184619.1383
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 108771.2483
+  tps: 105147.34424
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 164521.72783
+  tps: 151502.40565
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 104632.64706
+  tps: 102821.73266
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 73902.28968
+  tps: 72117.8423
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 89056.88938
+  tps: 84561.52413
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 213449.77982
+  tps: 208760.99829
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 124918.24181
+  tps: 121414.71548
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 189799.54242
+  tps: 177565.41298
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 124644.18286
+  tps: 122806.77067
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 85705.50999
+  tps: 83863.16908
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 106325.71041
+  tps: 101782.37962
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 220577.43289
+  tps: 230225.68466
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 115822.51856
+  tps: 112943.84788
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 186925.53952
+  tps: 174864.71363
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 133249.54162
+  tps: 146076.12839
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 77821.35066
+  tps: 76751.04784
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 94200.5792
+  tps: 90100.83063
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 243192.95755
+  tps: 268582.19267
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 127965.60426
+  tps: 126016.54152
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 196215.66402
+  tps: 185178.27501
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 152187.8182
+  tps: 180734.17932
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 90084.07544
+  tps: 89761.43279
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 110462.02186
+  tps: 106579.78925
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 145948.55962
   tps: 143155.8215
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Troll-p1_prebis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 84064.45168
   tps: 81351.95889
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Troll-p1_prebis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 146381.47781
   tps: 136904.31644
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Troll-p1_prebis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 89622.74365
   tps: 88239.87913
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Troll-p1_prebis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 55527.44946
   tps: 54133.77531
  }
 }
 dps_results: {
- key: "TestFire-Settings-Troll-p1_prebis-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Troll-p1_prebis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 69000.28026
   tps: 65590.94666
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_bis-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 105931.42915
+  tps: 103002.03703
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 69193.01495
+  tps: 66286.42507
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 123783.63778
+  tps: 113293.1059
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 56997.42004
+  tps: 55621.42848
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 45098.75388
+  tps: 43707.94017
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 57780.06679
+  tps: 54385.30019
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 115636.56124
+  tps: 112041.16284
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 76486.95683
+  tps: 73717.65399
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 135674.16983
+  tps: 125913.83778
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 65798.02995
+  tps: 64447.61962
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 50929.44027
+  tps: 49547.65798
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 64634.15552
+  tps: 61270.05588
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 125498.01752
+  tps: 137598.37605
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 72284.42238
+  tps: 70270.84645
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 129118.02003
+  tps: 119927.85234
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 77253.28841
+  tps: 91272.72417
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 47967.73549
+  tps: 47364.04975
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 60174.09194
+  tps: 57160.95203
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 144540.89552
+  tps: 171288.71826
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 82291.35795
+  tps: 81076.57425
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 146428.29205
+  tps: 137653.8533
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 87794.18195
+  tps: 116122.3558
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 54022.43382
+  tps: 54111.02646
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 69116.52353
+  tps: 66196.71202
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 254793.53285
   tps: 251284.74231
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_bis-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_bis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 133331.7127
   tps: 130000.37002
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_bis-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_bis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 197744.71207
   tps: 186226.58832
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_bis-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Worgen-p1_bis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 154889.42927
   tps: 153050.49675
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_bis-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_bis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 90044.03074
   tps: 88236.10095
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_bis-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_bis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 107275.67667
   tps: 102828.49479
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 192230.09227
+  tps: 188696.6602
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 111516.8544
+  tps: 107974.63405
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 169609.74067
+  tps: 157007.4116
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 100594.50671
+  tps: 98809.85356
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 74355.55894
+  tps: 72581.89248
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 88583.14254
+  tps: 84204.20907
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 213688.33041
+  tps: 208932.15115
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 125874.08968
+  tps: 122453.22627
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 199865.67994
+  tps: 188100.01607
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 116262.90273
+  tps: 114402.73487
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 84345.69399
+  tps: 82491.44036
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 98516.23227
+  tps: 93997.95226
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 223864.75943
+  tps: 233054.51103
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 113291.55095
+  tps: 110576.84543
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 175073.0072
+  tps: 163873.58973
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 127755.19454
+  tps: 140033.71395
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 77252.38265
+  tps: 76151.49164
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 92308.41137
+  tps: 88251.44853
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 248580.29085
+  tps: 273752.9538
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 128799.73562
+  tps: 126936.32614
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 198008.25417
+  tps: 187283.12152
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 150995.79953
+  tps: 178887.5404
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 88380.19149
+  tps: 88049.22093
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 107398.82215
+  tps: 103518.33188
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 137923.94271
   tps: 135341.49074
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_prebis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 81921.56197
   tps: 79366.00795
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_prebis-DefaultTalents-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 138074.64946
   tps: 129401.69118
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestFire-Settings-Worgen-p1_prebis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 86918.15317
   tps: 85575.09578
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_prebis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 54994.45398
   tps: 53602.96833
  }
 }
 dps_results: {
- key: "TestFire-Settings-Worgen-p1_prebis-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestFire-Settings-Worgen-p1_prebis-DefaultTalents-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
   dps: 65595.93519
   tps: 62223.87116
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 99172.07904
+  tps: 96467.94381
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 66729.82002
+  tps: 64050.11707
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 111159.83401
+  tps: 101878.31562
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 56286.49375
+  tps: 54894.9905
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 44953.23063
+  tps: 43558.84783
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 54937.52666
+  tps: 51535.9445
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 115083.59326
+  tps: 111519.96016
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 75178.29831
+  tps: 72635.7647
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 129008.62576
+  tps: 120314.39859
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 65052.00502
+  tps: 63652.39613
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 50274.74419
+  tps: 48871.08453
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row5_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 60361.8011
+  tps: 56923.65933
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 121550.47841
+  tps: 133742.19368
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 70760.18653
+  tps: 68892.68886
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent0-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 121661.89815
+  tps: 113251.88736
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 75087.42413
+  tps: 88774.99472
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 47245.17975
+  tps: 46611.48525
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent0-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 57694.04837
+  tps: 54726.97321
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 139474.20145
+  tps: 166009.84869
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 80700.08925
+  tps: 79622.4521
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 138235.22875
+  tps: 130102.40999
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
+ value: {
+  dps: 86233.30261
+  tps: 113879.59877
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongSingleTarget"
+ value: {
+  dps: 53992.64034
+  tps: 54074.27491
+ }
+}
+dps_results: {
+ key: "TestFire-Settings-Worgen-p1_prebis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-ShortSingleTarget"
+ value: {
+  dps: 65820.96227
+  tps: 62946.30115
  }
 }
 dps_results: {
