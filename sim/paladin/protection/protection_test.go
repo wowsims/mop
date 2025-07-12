@@ -14,38 +14,40 @@ func init() {
 }
 
 func TestProtection(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class: proto.Class_ClassPaladin,
-		Race:  proto.Race_RaceBloodElf,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class: proto.Class_ClassPaladin,
+			Race:  proto.Race_RaceBloodElf,
 
-		GearSet:     core.GetGearSet("../../../ui/paladin/protection/gear_sets", "p1-balanced"),
-		Talents:     StandardTalents,
-		Glyphs:      StandardGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Seal of Insight", SpecOptions: SealOfInsight},
-		OtherSpecOptions: []core.SpecOptionsCombo{
-			{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
-			{Label: "Seal of Truth", SpecOptions: SealOfTruth},
-		},
-		Rotation: core.GetAplRotation("../../../ui/paladin/protection/apls", "default"),
-
-		IsTank:          true,
-		InFrontOfTarget: true,
-
-		ItemFilter: core.ItemFilter{
-			WeaponTypes: []proto.WeaponType{
-				proto.WeaponType_WeaponTypeAxe,
-				proto.WeaponType_WeaponTypeSword,
-				proto.WeaponType_WeaponTypeMace,
-				proto.WeaponType_WeaponTypeShield,
+			GearSet:     core.GetGearSet("../../../ui/paladin/protection/gear_sets", "p1-balanced"),
+			Talents:     StandardTalents,
+			Glyphs:      StandardGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Seal of Insight", SpecOptions: SealOfInsight},
+			OtherSpecOptions: []core.SpecOptionsCombo{
+				{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
+				{Label: "Seal of Truth", SpecOptions: SealOfTruth},
 			},
-			HandTypes: []proto.HandType{
-				proto.HandType_HandTypeMainHand,
-				proto.HandType_HandTypeOneHand,
-				proto.HandType_HandTypeOffHand,
+			Rotation: core.GetAplRotation("../../../ui/paladin/protection/apls", "default"),
+
+			IsTank:          true,
+			InFrontOfTarget: true,
+
+			ItemFilter: core.ItemFilter{
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeAxe,
+					proto.WeaponType_WeaponTypeSword,
+					proto.WeaponType_WeaponTypeMace,
+					proto.WeaponType_WeaponTypeShield,
+				},
+				HandTypes: []proto.HandType{
+					proto.HandType_HandTypeMainHand,
+					proto.HandType_HandTypeOneHand,
+					proto.HandType_HandTypeOffHand,
+				},
+				ArmorType:         proto.ArmorType_ArmorTypePlate,
+				RangedWeaponTypes: []proto.RangedWeaponType{},
 			},
-			ArmorType:         proto.ArmorType_ArmorTypePlate,
-			RangedWeaponTypes: []proto.RangedWeaponType{},
 		},
 	}))
 }

@@ -21,6 +21,8 @@ func (war *ProtectionWarrior) registerShieldBlock() {
 		ActionID: actionId,
 		Duration: time.Second * 6,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			war.AddStatDynamic(sim, stats.BlockPercent, 100)
+
 			avoidance := war.GetTotalAvoidanceChance(atkTable)
 			if avoidance > core.CombatTableCoverageCap {
 				extraAvoidance = avoidance - core.CombatTableCoverageCap
@@ -30,11 +32,12 @@ func (war *ProtectionWarrior) registerShieldBlock() {
 			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			war.AddStatDynamic(sim, stats.BlockPercent, -100)
 			if extraAvoidance > 0.0 {
 				war.CriticalBlockChance[1] -= extraAvoidance
 			}
 		},
-	})).AttachStatBuff(stats.BlockPercent, 100)
+	}))
 
 	war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionId,
@@ -58,6 +61,10 @@ func (war *ProtectionWarrior) registerShieldBlock() {
 				Timer:    war.NewTimer(),
 				Duration: time.Millisecond * 1500,
 			},
+		},
+
+		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+			return war.PseudoStats.CanBlock
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {

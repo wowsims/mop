@@ -203,7 +203,9 @@ func applyBuffEffects(agent Agent, raidBuffs *proto.RaidBuffs, _ *proto.PartyBuf
 
 		// Other individual CDs
 		registerUnholyFrenzyCD(agent, individual.UnholyFrenzyCount)
-		registerTricksOfTheTradeCD(agent, individual.TricksOfTheTrade)
+		if individual.TricksOfTheTrade {
+			registerTricksOfTheTradeCD(agent)
+		}
 		registerDevotionAuraCD(agent, individual.DevotionAuraCount)
 		registerVigilanceCD(agent, individual.VigilanceCount)
 		registerPainSuppressionCD(agent, individual.PainSuppressionCount)
@@ -696,16 +698,9 @@ func multiplyCastSpeedEffect(aura *Aura, multiplier float64) *ExclusiveEffect {
 
 var TricksOfTheTradeAuraTag = "TricksOfTheTrade"
 
-func registerTricksOfTheTradeCD(agent Agent, tristateConfig proto.TristateEffect) {
-	if tristateConfig == proto.TristateEffect_TristateEffectMissing {
-		return
-	}
-
-	// TristateEffectRegular is interpreted as the Glyphed version (since it
-	// is weaker).
-	damageMultiplier := GetTristateValueFloat(tristateConfig, 1.1, 1.15)
+func registerTricksOfTheTradeCD(agent Agent) {
 	unit := &agent.GetCharacter().Unit
-	tricksAura := TricksOfTheTradeAura(unit, -1, damageMultiplier)
+	tricksAura := TricksOfTheTradeAura(unit, -1, 1.15)
 
 	// Add a small offset to the tooltip CD to account for input delays
 	// between the Rogue pressing Tricks and hitting a target.

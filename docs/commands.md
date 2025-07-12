@@ -33,7 +33,6 @@ make rundevserver
 # With file-watching so the server auto-restarts and recompiles on Go or TS changes:
 WATCH=1 make rundevserver
 
-
 # The same as rundevserver, recompiles  `wowsimmop` binary and runs it on port 3333. Instead of serving content from the dist folder,
 # this command also runs `vite serve` to start the Vite dev server on port 5173 (or similar) and automatically reloads the page on .ts changes in less than a second.
 # This allows for more rapid development, with sub second reloads on TS changes. This combines the benefits of `WATCH=1 make rundevserver` and `WATCH=1 make host`
@@ -62,6 +61,18 @@ make wowsimmop
 # make dist/mop && ./wowsimmop --usefs would rebuild the whole client and host it. (you would have had to run `make devserver` to build the wowsimmop binary first.)
 ./wowsimmop --usefs
 
-# Generate code for items. Only necessary if you changed the items generator.
-make items
+# Generate code for the sim database (db.json). Only necessary if you changed the items generator.
+# Useful only if you're actively working on the generator and have already run make db locally at least once.
+make simdb
+
+# Generate data from WoW client files
+# Requires dotnet 9 to run
+# Uses tools/database/generator-settings.json for settings
+# Also runs make simdb
+# This is what you will use most of the time for generation
+make db
+
+# Same as make db but from the ptr client
+# Uses tools/database/ptr-generator-settings.json for settings
+make ptrdb
 ```

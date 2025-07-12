@@ -23,6 +23,7 @@ const (
 	SpellMaskRallyingCry
 	SpellMaskRecklessness
 	SpellMaskShieldWall
+	SpellMaskEnragedRegeneration
 	SpellMaskLastStand
 	SpellMaskCharge
 	SpellMaskSkullBanner
@@ -165,6 +166,7 @@ func (warrior *Warrior) Initialize() {
 	warrior.ApplyGlyphs()
 
 	warrior.registerBerserkerRage()
+	warrior.registerEnragedRegeneration()
 	warrior.registerRallyingCry()
 	warrior.registerColossusSmash()
 	warrior.registerExecuteSpell()

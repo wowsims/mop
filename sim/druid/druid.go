@@ -46,9 +46,10 @@ type Druid struct {
 	Moonfire              *DruidSpell
 	NaturesSwiftness      *DruidSpell
 	Prowl                 *DruidSpell
-	Rebirth               *DruidSpell
 	Rake                  *DruidSpell
 	Ravage                *DruidSpell
+	Rebirth               *DruidSpell
+	Rejuvenation          *DruidSpell
 	Rip                   *DruidSpell
 	SavageRoar            *DruidSpell
 	Shred                 *DruidSpell
@@ -125,6 +126,7 @@ const (
 	DruidSpellMarkOfTheWild
 	DruidSpellSwiftmend
 	DruidSpellWildGrowth
+	DruidSpellCenarionWard
 
 	DruidSpellLast
 	DruidSpellsAll               = DruidSpellLast<<1 - 1
@@ -230,6 +232,7 @@ func (druid *Druid) RegisterBaselineSpells() {
 	druid.registerNaturesSwiftness()
 	druid.registerFaerieFireSpell()
 	druid.registerTranquilityCD()
+	druid.registerRejuvenationSpell()
 
 	// druid.registerRebirthSpell()
 	// druid.registerInnervateCD()
@@ -262,11 +265,15 @@ func (druid *Druid) RegisterFeralTankSpells() {
 	druid.registerBarkskinCD()
 	druid.registerBearFormSpell()
 	druid.registerBerserkCD()
+	druid.registerCatFormSpell()
 	druid.registerFrenziedRegenerationSpell()
 	druid.registerMangleBearSpell()
+	druid.registerMangleCatSpell()
 	druid.registerMaulSpell()
 	druid.registerMightOfUrsocCD()
 	druid.registerLacerateSpell()
+	druid.registerRakeSpell()
+	druid.registerRipSpell()
 	druid.registerSurvivalInstinctsCD()
 	druid.registerSwipeBearSpell()
 	druid.registerThrashBearSpell()

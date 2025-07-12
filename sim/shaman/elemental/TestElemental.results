@@ -1706,7 +1706,7 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 120370.29435
+  dps: 120095.5539
   tps: 91185.77107
  }
 }
@@ -2301,8 +2301,8 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 154087.75831
-  tps: 116326.76225
+  dps: 132465.57292
+  tps: 100389.07232
  }
 }
 dps_results: {

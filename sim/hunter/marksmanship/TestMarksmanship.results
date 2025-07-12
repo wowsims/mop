@@ -1685,8 +1685,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 185572.8654
-  tps: 150658.61763
+  dps: 159555.65927
+  tps: 131152.61525
  }
 }
 dps_results: {

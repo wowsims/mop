@@ -86,7 +86,6 @@ message BrewmasterMonk {
 
 	message Options {
 		MonkOptions class_options = 1;
-		MonkStance stance = 2;
 	}
 	Options options = 1;
 }
@@ -96,7 +95,6 @@ message MistweaverMonk {
 
 	message Options {
 		MonkOptions class_options = 1;
-		MonkStance stance = 2;
 	}
 	Options options = 1;
 }

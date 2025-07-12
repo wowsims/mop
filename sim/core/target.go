@@ -262,6 +262,12 @@ func (target *Target) Disable(sim *Simulation, expireAuras bool) {
 
 	target.CancelGCDTimer(sim)
 	target.AutoAttacks.CancelAutoSwing(sim)
+
+	if (target.hardcastAction != nil) && !target.hardcastAction.consumed {
+		target.hardcastAction.Cancel(sim)
+		target.hardcastAction = nil
+	}
+
 	target.enabled = false
 	sim.Encounter.removeInactiveTarget(target)
 

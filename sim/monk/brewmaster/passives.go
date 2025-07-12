@@ -155,6 +155,7 @@ func (bm *BrewmasterMonk) registerGiftOfTheOx() {
 	hasGlyph := bm.HasMajorGlyph(proto.MonkMajorGlyph_GlyphOfEnduringHealingSphere)
 	sphereDuration := time.Minute*1 + core.TernaryDuration(hasGlyph, time.Minute*3, 0)
 
+	pendingSpheres := make([]*core.PendingAction, 0)
 	giftOfTheOxStackingAura := bm.RegisterAura(core.Aura{
 		Label:     "Gift Of The Ox" + bm.Label,
 		ActionID:  giftOfTheOxPassiveActionID,
@@ -187,6 +188,10 @@ func (bm *BrewmasterMonk) registerGiftOfTheOx() {
 			heal := bm.CalcScalingSpellDmg(4.5) + spell.MeleeAttackPower()*0.2508
 			spell.CalcAndDealHealing(sim, spell.Unit, heal, spell.OutcomeHealing)
 			giftOfTheOxStackingAura.RemoveStack(sim)
+			pendingSphere := pendingSpheres[0]
+			if pendingSphere != nil {
+				pendingSphere.Cancel(sim)
+			}
 		},
 		RelatedSelfBuff: giftOfTheOxStackingAura,
 	})
@@ -213,8 +218,22 @@ func (bm *BrewmasterMonk) registerGiftOfTheOx() {
 			if sim.Proc(procChance, "Gift of The Ox") {
 				giftOfTheOxStackingAura.Activate(sim)
 				giftOfTheOxStackingAura.AddStack(sim)
+				pendingSpheres = append(pendingSpheres, core.StartDelayedAction(sim, core.DelayedActionOptions{
+					DoAt: sim.CurrentTime + sphereDuration,
+					OnAction: func(sim *core.Simulation) {
+						giftOfTheOxStackingAura.RemoveStack(sim)
+						pendingSpheres = pendingSpheres[:1]
+					},
+					CleanUp: func(sim *core.Simulation) {
+						pendingSpheres = pendingSpheres[:1]
+					},
+				}))
 			}
 		},
+	})
+
+	bm.RegisterResetEffect(func(s *core.Simulation) {
+		pendingSpheres = make([]*core.PendingAction, 0)
 	})
 
 }

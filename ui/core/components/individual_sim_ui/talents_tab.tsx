@@ -9,7 +9,7 @@ import { EventID, TypedEvent } from '../../typed_event';
 import { PetSpecPicker } from '../pickers/pet_spec_picker';
 import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
 
 export class TalentsTab<SpecType extends Spec> extends SimTab {
 	protected simUI: IndividualSimUI<any>;
@@ -57,7 +57,7 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 	}
 
 	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, ['talents']);
+		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Talents]);
 	}
 
 	private buildSavedTalentsPicker() {

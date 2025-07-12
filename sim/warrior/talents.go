@@ -188,11 +188,16 @@ func (war *Warrior) registerBladestorm() {
 		},
 	})
 
+	war.AddStaticMod(core.SpellModConfig{
+		ClassMask: SpellMaskBattleShout | SpellMaskCommandingShout | SpellMaskRallyingCry | SpellMaskLastStand | SpellMaskDemoralizingShout | SpellMaskBerserkerRage,
+		Kind:      core.SpellMod_AllowCastWhileChanneling,
+	})
+
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID.WithTag(0),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ClassSpellMask: SpellMaskBladestorm,
-		Flags:          core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagCastWhileChanneling,
 		ProcMask:       core.ProcMaskEmpty,
 
 		Cast: core.CastConfig{
@@ -218,7 +223,7 @@ func (war *Warrior) registerBladestorm() {
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
 				mhSpell.Cast(sim, target)
 
-				if war.OffHand() != nil && war.OffHand().WeaponType != proto.WeaponType_WeaponTypeUnknown {
+				if war.OffHand() != nil && (war.OffHand().WeaponType != proto.WeaponType_WeaponTypeUnknown && war.OffHand().WeaponType != proto.WeaponType_WeaponTypeShield) {
 					ohSpell.Cast(sim, target)
 				}
 			},
