@@ -162,7 +162,7 @@ func (ai *GarajalAI) registerShadowyAttacks() {
 			ActionID:         core.ActionID{SpellID: spellID},
 			SpellSchool:      core.SpellSchoolShadow,
 			ProcMask:         core.ProcMaskSpellDamage,
-			Flags:            core.SpellFlagMeleeMetrics,
+			Flags:            core.SpellFlagMeleeMetrics | core.SpellFlagBypassAbsorbs,
 			DamageMultiplier: 0.7,
 
 			Cast: core.CastConfig{
@@ -225,6 +225,8 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 	})
 
 	var priorVengeanceEstimate int32
+	var vengeanceAura *core.Aura
+	var lastTaunt time.Duration
 
 	ai.VoodooDollsAura = ai.TankUnit.RegisterAura(core.Aura{
 		Label:    "Voodoo Dolls",
@@ -236,6 +238,7 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			ai.SharedShadowyAttackTimer.Set(sim.CurrentTime + core.DurationFromSeconds(8.0*sim.RandomFloat("Shadowy Attack Timing")))
 			ai.syncBossGCDToSwing(sim)
 			aura.Unit.PseudoStats.InFrontOfTarget = true
+			lastTaunt = sim.CurrentTime
 
 			if sim.CurrentTime+voodooDollsDuration > ai.enableFrenzyAt {
 				core.StartPeriodicAction(sim, core.PeriodicActionOptions{
@@ -249,8 +252,6 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 			}
 
 			// Model the Vengeance gain from a taunt
-			vengeanceAura := aura.Unit.GetAura("Vengeance")
-
 			if (vengeanceAura == nil) || (sim.CurrentTime == 0) {
 				return
 			}
@@ -261,10 +262,9 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			ai.BanishmentAura.Activate(sim)
+			lastTaunt = sim.CurrentTime
 
 			// Store the final Vengeance value for the next swap
-			vengeanceAura := aura.Unit.GetAura("Vengeance")
-
 			if vengeanceAura == nil {
 				return
 			}
@@ -306,6 +306,22 @@ func (ai *GarajalAI) registerTankSwapAuras() {
 					},
 				})
 			}
+		},
+
+		OnInit: func(aura *core.Aura, _ *core.Simulation) {
+			vengeanceAura = aura.Unit.GetAura("Vengeance")
+
+			if vengeanceAura == nil {
+				return
+			}
+
+			vengeanceAura.ApplyOnStacksChange(func(aura *core.Aura, sim *core.Simulation, _ int32, newStacks int32) {
+				if !ai.VoodooDollsAura.IsActive() && !ai.BanishmentAura.IsActive() && (sim.CurrentTime - lastTaunt > time.Second * 25) && (newStacks < priorVengeanceEstimate/2) {
+					aura.Activate(sim)
+					aura.SetStacks(sim, priorVengeanceEstimate/2)
+					lastTaunt = sim.CurrentTime
+				}
+			})
 		},
 	})
 }

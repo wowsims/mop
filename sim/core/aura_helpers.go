@@ -625,10 +625,12 @@ func (unit *Unit) NewDamageAbsorptionAura(config AbsorptionAuraConfig) *DamageAb
 		aura.ShieldStrength = 0
 	})
 
-	extraSpellCheck := config.ShouldApplyToResult
+	extraSpellCheck := func(sim *Simulation, spell *Spell, result *SpellResult, isPeriodic bool) bool {
+		return !spell.Flags.Matches(SpellFlagBypassAbsorbs) && ((config.ShouldApplyToResult == nil) || config.ShouldApplyToResult(sim, spell, result, isPeriodic))
+	}
 
 	unit.AddDynamicDamageTakenModifier(func(sim *Simulation, spell *Spell, result *SpellResult, isPeriodic bool) {
-		if aura.Aura.IsActive() && result.Damage > 0 && (extraSpellCheck == nil || extraSpellCheck(sim, spell, result, isPeriodic)) {
+		if aura.Aura.IsActive() && (result.Damage > 0) && extraSpellCheck(sim, spell, result, isPeriodic) {
 			absorbedDamage := min(aura.ShieldStrength, result.Damage*config.DamageMultiplier)
 			result.Damage -= absorbedDamage
 			aura.ShieldStrength -= absorbedDamage
