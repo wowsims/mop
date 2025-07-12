@@ -87,8 +87,17 @@ func (priest *Priest) Initialize() {
 
 	// priest.registerDispersionSpell()
 
+	priest.registerSpiritualHealing()
 	priest.registerPowerInfusionSpell()
 	priest.newMindSearSpell()
+
+	// Healing
+	priest.registerFlashHealSpell()
+	priest.registerBindingHealSpell()
+	priest.registerPowerWordShieldSpell()
+	priest.registerPrayerOfHealingSpell()
+	priest.registerRenewSpell()
+	priest.registerGreaterHealSpell()
 
 	priest.ApplyGlyphs()
 }
@@ -167,6 +176,7 @@ const (
 	PriestSpellGreaterHeal
 	PriestSpellGuardianSpirit
 	PriestSpellHalo
+	PriestSpellHeal
 	PriestSpellHolyFire
 	PriestSpellHolyNova
 	PriestSpellHolyWordChastise

@@ -82,7 +82,6 @@ func (dot *Dot) Apply(sim *Simulation) {
 	if dot.Spell.Flags&SpellFlagSupressDoTApply > 0 {
 		return
 	}
-
 	dot.TakeSnapshot(sim, false)
 	dot.recomputeAuraDuration(sim)
 	dot.Activate(sim)
@@ -438,6 +437,7 @@ func (spell *Spell) createDots(config DotConfig, isHot bool) {
 		if spell.dots == nil {
 			spell.dots = make([]*Dot, len(caster.Env.AllUnits))
 		}
+
 		for _, target := range caster.Env.AllUnits {
 			if isHot != caster.IsOpponent(target) {
 				dot.Aura = target.GetOrRegisterAura(auraConfig)

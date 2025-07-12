@@ -41,14 +41,19 @@ func NewHolyPriest(character *core.Character, options *proto.Player) *HolyPriest
 
 type HolyPriest struct {
 	*priest.Priest
+
+	SerendipityAura *core.Aura
 }
 
 func (holyPriest *HolyPriest) GetPriest() *priest.Priest {
 	return holyPriest.Priest
 }
 
-func (holyPriest *HolyPriest) Initialize() {
-	holyPriest.Priest.Initialize()
+func (holy *HolyPriest) Initialize() {
+	holy.Priest.Initialize()
+
+	holy.registerCircleOfHealingSpell()
+	holy.registerSerendipity()
 
 	// holyPriest.RegisterHolyFireSpell()
 	// holyPriest.RegisterSmiteSpell()
