@@ -1,3 +1,4 @@
+import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { EquipmentSpec, UnitStats } from '../../proto/common';
@@ -18,7 +19,7 @@ export class GearTab extends SimTab {
 	readonly rightPanel: HTMLElement;
 
 	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
-		super(parentElem, simUI, { identifier: 'gear-tab', title: 'Gear' });
+		super(parentElem, simUI, { identifier: 'gear-tab', title: i18n.t('gear.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = document.createElement('div');

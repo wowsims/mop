@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 
+import i18n from '../../i18n/config.js';
 import { TOOLTIP_METRIC_LABELS } from '../constants/tooltips';
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '../proto/api';
 import { Encounter as EncounterProto, Spec } from '../proto/common';
@@ -15,7 +16,7 @@ export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 	const resultsViewer = simUI.resultsViewer;
 	let isRunning = false;
 	let waitAbort = false;
-	simUI.addAction('Simulate', 'dps-action', async ev => {
+	simUI.addAction(i18n.t('sidebar.buttons.simulate'), 'dps-action', async ev => {
 		const button = ev.target as HTMLButtonElement;
 		button.disabled = true;
 		if (!isRunning) {

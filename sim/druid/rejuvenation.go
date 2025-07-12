@@ -8,13 +8,13 @@ import (
 
 const (
 	RejuvenationBonusCoeff = 0.39199998975
-	RejuvenationCoeff = 3.86800003052
+	RejuvenationCoeff      = 3.86800003052
 )
 
 func (druid *Druid) registerRejuvenationSpell() {
 	baseTickDamage := RejuvenationCoeff * druid.ClassSpellScaling
 
-	druid.Rejuvenation = druid.RegisterSpell(Humanoid | Moonkin, core.SpellConfig{
+	druid.Rejuvenation = druid.RegisterSpell(Humanoid|Moonkin, core.SpellConfig{
 		ActionID:         core.ActionID{SpellID: 774},
 		SpellSchool:      core.SpellSchoolNature,
 		ProcMask:         core.ProcMaskSpellHealing,

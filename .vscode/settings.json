@@ -101,5 +101,6 @@
 	],
 	"[go]": {
 		"editor.defaultFormatter": "golang.go"
-	}
+	},
+	"makefile.configureOnOpen": false
 }

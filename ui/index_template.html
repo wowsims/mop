@@ -1,12 +1,12 @@
 <!doctype html>
-<html>
+<html lang="" data-i18n-lang>
 	<head>
-		<title>Mists of Pandaria @@SPEC@@ @@CLASS@@ simulator</title>
+		<title data-class="@@CLASS@@" data-spec="@@SPEC@@"></title>
 		<meta charset="utf-8" />
 
 		<link rel="icon" type="image/x-icon" href="/mop/assets/favicon_io/favicon.ico" />
 
-		<meta name="description" content="@@SPEC@@ @@CLASS@@ simulations for World of Warcraft® Cataclysm Classic." />
+		<meta name="description" content="" data-class="@@CLASS@@" data-spec="@@SPEC@@" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		<link rel="preload" href="/mop/assets/database/db.json" as="fetch" crossorigin="anonymous" />
@@ -41,5 +41,9 @@
 			const whTooltips = { colorLinks: true };
 		</script>
 		<script src="https://wow.zamimg.com/js/tooltips.js"></script>
+		<script type="module">
+			import { initLocalization } from '../../i18n/localization.tsx';
+			initLocalization();
+		</script>
 	</body>
 </html>

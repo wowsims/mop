@@ -48,7 +48,7 @@ func (druid *Druid) registerNaturesVigil() {
 		ThreatMultiplier: 0,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			spell.CalcAndDealHealing(sim, target, 0.25 * smartHealStrength, spell.OutcomeHealing)
+			spell.CalcAndDealHealing(sim, target, 0.25*smartHealStrength, spell.OutcomeHealing)
 		},
 	})
 
@@ -76,10 +76,10 @@ func (druid *Druid) registerNaturesVigil() {
 					}
 
 					// Assume that the target is randomly selected from 25 raid members.
-					if sim.Proc(1.0 / 25.0, "Nature's Vigil") {
+					if sim.Proc(1.0/25.0, "Nature's Vigil") {
 						smartHealSpell.Cast(sim, aura.Unit)
 					} else if numAllyTargets > 0 {
-						targetIdx := 1 + int(sim.RandomFloat("Nature's Vigil") * numAllyTargets)
+						targetIdx := 1 + int(sim.RandomFloat("Nature's Vigil")*numAllyTargets)
 						smartHealSpell.Cast(sim, sim.Raid.AllPlayerUnits[targetIdx])
 					}
 
