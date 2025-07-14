@@ -70,11 +70,11 @@ type Monk struct {
 	ComboBreakerBlackoutKickAura *core.Aura
 	ComboBreakerTigerPalmAura    *core.Aura
 
+	// Mistweaver
 	MuscleMemoryAura *core.Aura
-
-	SerpentZealAura *core.Aura
-
-	VitalMistsAura *core.Aura
+	SerpentZealAura  *core.Aura
+	VitalMistsAura   *core.Aura
+	ThunderFocusTea  *core.Aura
 
 	ChiSphereAura          *core.Aura
 	DampenHarmAura         *core.Aura
