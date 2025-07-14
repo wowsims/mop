@@ -23,7 +23,7 @@ func (dk *DeathKnight) registerIcyTouch() {
 
 	dk.RegisterSpell(core.SpellConfig{
 		ActionID:       IcyTouchActionID,
-		Flags:          core.SpellFlagAPL,
+		Flags:          core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		SpellSchool:    core.SpellSchoolFrost,
 		ProcMask:       core.ProcMaskSpellDamage,
 		ClassSpellMask: DeathKnightSpellIcyTouch,

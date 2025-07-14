@@ -8,33 +8,6 @@ import (
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
-var ItemSetMistsGladiatorsVindication = core.NewItemSet(core.ItemSet{
-	ID:                      1111,
-	Name:                    "Gladiator's Vindication",
-	DisabledInChallengeMode: true,
-	Bonuses: map[int32]core.ApplySetBonus{
-		2: func(_ core.Agent, setBonusAura *core.Aura) {
-		},
-		/*
-			You gain a charge of Holy Power whenever you take direct damage.
-			This effect cannot occur more than once every 8 seconds.
-		*/
-		4: func(agent core.Agent, setBonusAura *core.Aura) {
-			paladin := agent.(PaladinAgent).GetPaladin()
-			actionID := core.ActionID{SpellID: 131649}
-			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Callback: core.CallbackOnSpellHitTaken,
-				Harmful:  true,
-				ICD:      time.Second * 8,
-
-				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-					paladin.HolyPower.Gain(sim, 1, actionID)
-				},
-			})
-		},
-	},
-})
-
 // Increases the range of your Judgment by 10 yards.
 func (paladin *Paladin) addMistsPvpGloves() {
 	if paladin.Env.IsChallengeMode {

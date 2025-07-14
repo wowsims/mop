@@ -17,35 +17,11 @@ func (druid *Druid) applyRendAndTear(aura core.Aura) core.Aura {
 		return aura
 	}
 
-	affectedSpells := []*DruidSpell{druid.Maul, druid.SwipeBear, druid.SwipeCat}
-
-	aura.ApplyOnGain(func(_ *core.Aura, _ *core.Simulation) {
-		if druid.BleedsActive == 0 {
-			if druid.FerociousBite != nil {
-				druid.FerociousBite.BonusCritPercent += RendAndTearBonusCritPercent
-			}
-
-			for _, spell := range affectedSpells {
-				if spell != nil {
-					spell.DamageMultiplier *= RendAndTearDamageMultiplier
-				}
-			}
-		}
-		druid.BleedsActive++
+	aura.ApplyOnGain(func(aura *core.Aura, _ *core.Simulation) {
+		druid.BleedsActive[aura.Unit]++
 	})
-	aura.ApplyOnExpire(func(_ *core.Aura, _ *core.Simulation) {
-		druid.BleedsActive--
-		if druid.BleedsActive == 0 {
-			if druid.FerociousBite != nil {
-				druid.FerociousBite.BonusCritPercent -= RendAndTearBonusCritPercent
-			}
-
-			for _, spell := range affectedSpells {
-				if spell != nil {
-					spell.DamageMultiplier /= RendAndTearDamageMultiplier
-				}
-			}
-		}
+	aura.ApplyOnExpire(func(aura *core.Aura, _ *core.Simulation) {
+		druid.BleedsActive[aura.Unit]--
 	})
 
 	return aura

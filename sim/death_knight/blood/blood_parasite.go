@@ -21,7 +21,7 @@ func (bdk *BloodDeathKnight) registerBloodParasite() {
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
 			// Summon Bloodworm
-			for _, worm := range bdk.Bloodworm {
+			for _, worm := range bdk.Bloodworms {
 				if worm.IsActive() {
 					continue
 				}

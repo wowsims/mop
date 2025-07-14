@@ -7,37 +7,23 @@ import (
 )
 
 func (druid *Druid) registerBerserkCD() {
-	var affectedSpells []*DruidSpell
+	catCostMod := druid.AddDynamicMod(core.SpellModConfig{
+		ClassMask:  DruidSpellMangleCat | DruidSpellFerociousBite | DruidSpellRake | DruidSpellRavage | DruidSpellRip | DruidSpellSavageRoar | DruidSpellSwipeCat | DruidSpellShred | DruidSpellThrashCat,
+		Kind:       core.SpellMod_PowerCost_Pct,
+		FloatValue: -0.5,
+	})
 
 	druid.BerserkCatAura = druid.RegisterAura(core.Aura{
 		Label:    "Berserk (Cat)",
 		ActionID: core.ActionID{SpellID: 106951},
 		Duration: time.Second * 15,
 
-		OnInit: func(_ *core.Aura, _ *core.Simulation) {
-			affectedSpells = core.FilterSlice([]*DruidSpell{
-				druid.MangleCat,
-				druid.FerociousBite,
-				druid.Rake,
-				druid.Ravage,
-				druid.Rip,
-				druid.SavageRoar,
-				druid.SwipeCat,
-				druid.Shred,
-				druid.ThrashCat,
-			}, func(spell *DruidSpell) bool { return spell != nil })
-		},
-
 		OnGain: func(_ *core.Aura, _ *core.Simulation) {
-			for _, spell := range affectedSpells {
-				spell.Cost.PercentModifier -= 50
-			}
+			catCostMod.Activate()
 		},
 
 		OnExpire: func(_ *core.Aura, _ *core.Simulation) {
-			for _, spell := range affectedSpells {
-				spell.Cost.PercentModifier += 50
-			}
+			catCostMod.Deactivate()
 		},
 	})
 

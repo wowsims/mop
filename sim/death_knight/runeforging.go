@@ -132,7 +132,7 @@ func init() {
 			School:     core.SpellSchoolShadow | core.SpellSchoolFrost,
 		})
 
-		cinderAura := character.GetOrRegisterAura(core.Aura{
+		cinderAura := core.BlockPrepull(character.GetOrRegisterAura(core.Aura{
 			ActionID:  core.ActionID{SpellID: 53386},
 			Label:     "Cinderglacier",
 			Duration:  time.Second * 30,
@@ -160,7 +160,7 @@ func init() {
 					aura.RemoveStack(sim)
 				}
 			},
-		})
+		}))
 
 		aura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
 			Name:     "Rune of Cinderglacier",

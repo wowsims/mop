@@ -15,7 +15,7 @@ const (
 
 func (moonkin *BalanceDruid) registerStarfallSpell() {
 
-	numberOfTicks := core.TernaryInt32(moonkin.Env.GetNumTargets() > 1, 20, 10)
+	numberOfTicks := core.TernaryInt32(moonkin.Env.TotalTargetCount() > 1, 20, 10)
 	tickLength := time.Second
 
 	starfallTickSpell := moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{

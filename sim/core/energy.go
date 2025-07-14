@@ -11,12 +11,11 @@ import (
 type energyBar struct {
 	unit *Unit
 
-	maxEnergy           float64
-	currentEnergy       float64
-	startingComboPoints int32
-	maxComboPoints      int32
-	comboPoints         int32
-	nextEnergyTick      time.Duration
+	maxEnergy      float64
+	currentEnergy  float64
+	maxComboPoints int32
+	comboPoints    int32
+	nextEnergyTick time.Duration
 
 	// Time between Energy ticks.
 	EnergyTickDuration time.Duration
@@ -26,19 +25,19 @@ type energyBar struct {
 	energyRegenMultiplier float64
 	hasteRatingMultiplier float64
 
-	regenMetrics        *ResourceMetrics
-	EnergyRefundMetrics *ResourceMetrics
+	regenMetrics          *ResourceMetrics
+	EncounterStartMetrics *ResourceMetrics
+	EnergyRefundMetrics   *ResourceMetrics
 
 	ownerClass              proto.Class
 	comboPointsResourceName string // "chi" or "combo points"
 	hasNoRegen              bool   // some units have an energy bar but do not require regen ticks
 }
 type EnergyBarOptions struct {
-	StartingComboPoints int32
-	MaxComboPoints      int32
-	MaxEnergy           float64
-	UnitClass           proto.Class
-	HasNoRegen          bool
+	MaxComboPoints int32
+	MaxEnergy      float64
+	UnitClass      proto.Class
+	HasNoRegen     bool
 }
 
 func (unit *Unit) EnableEnergyBar(options EnergyBarOptions) {
@@ -53,11 +52,20 @@ func (unit *Unit) EnableEnergyBar(options EnergyBarOptions) {
 		energyRegenMultiplier:   1,
 		hasteRatingMultiplier:   1,
 		regenMetrics:            unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEnergyRegen}),
+		EncounterStartMetrics:   unit.getEncounterStartComboMetrics(options.UnitClass),
 		EnergyRefundMetrics:     unit.NewEnergyMetrics(ActionID{OtherID: proto.OtherAction_OtherActionRefund}),
-		startingComboPoints:     max(0, min(int32(options.StartingComboPoints), 5)),
 		ownerClass:              options.UnitClass,
 		comboPointsResourceName: Ternary(options.UnitClass == proto.Class_ClassMonk, "chi", "combo points"),
 		hasNoRegen:              options.HasNoRegen,
+	}
+
+}
+
+func (unit *Unit) getEncounterStartComboMetrics(unitClass proto.Class) *ResourceMetrics {
+	if unitClass == proto.Class_ClassMonk {
+		return unit.NewChiMetrics(encounterStartActionID)
+	} else {
+		return unit.NewComboPointMetrics(encounterStartActionID)
 	}
 }
 
@@ -235,13 +243,21 @@ func (eb *energyBar) RunTask(sim *Simulation) time.Duration {
 	return eb.nextEnergyTick
 }
 
+func (eb *energyBar) ResetComboPoints(sim *Simulation, comboPointsToKeep int32) {
+	if eb.comboPoints > comboPointsToKeep {
+		eb.SpendPartialComboPoints(sim, eb.comboPoints-comboPointsToKeep, eb.EncounterStartMetrics)
+	} else if comboPointsToKeep > eb.comboPoints {
+		eb.AddComboPoints(sim, comboPointsToKeep-eb.comboPoints, eb.EncounterStartMetrics)
+	}
+}
+
 func (eb *energyBar) reset(sim *Simulation) {
 	if eb.unit == nil {
 		return
 	}
 
 	eb.currentEnergy = eb.maxEnergy
-	eb.comboPoints = eb.startingComboPoints
+	eb.comboPoints = 0
 
 	eb.hasteRatingMultiplier = 1.0 + eb.unit.GetStat(stats.HasteRating)/(100*HasteRatingPerHastePercent)
 	eb.energyRegenMultiplier = 1.0

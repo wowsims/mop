@@ -47,7 +47,6 @@ export const DefaultTalents = {
 
 export const DefaultOptions = MistweaverMonkOptions.create({
 	classOptions: {},
-	stance: MonkStance.WiseSerpent,
 });
 
 export const DefaultConsumables = ConsumesSpec.create({

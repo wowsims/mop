@@ -15,7 +15,6 @@ Weakened Blows
 Demoralizes the target, reducing their physical damage dealt by 10% for 30 sec.
 */
 func (paladin *Paladin) registerHammerOfTheRighteous() {
-	numTargets := paladin.Env.GetNumTargets()
 	actionID := core.ActionID{SpellID: 53595}
 	paladin.CanTriggerHolyAvengerHpGain(actionID)
 	auraArray := paladin.NewEnemyAuraArray(core.WeakenedBlowsAura)
@@ -35,16 +34,12 @@ func (paladin *Paladin) registerHammerOfTheRighteous() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			results := make([]*core.SpellResult, numTargets)
-
-			for idx := range numTargets {
-				currentTarget := sim.Environment.GetTargetUnit(idx)
-				baseDamage := paladin.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-				results[idx] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeMagicCrit)
-			}
+			results := spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMagicCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+				return paladin.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
+			})
 
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-				for idx := range numTargets {
+				for idx := range results {
 					spell.DealDamage(sim, results[idx])
 					aura := auraArray.Get(results[idx].Target)
 					if hasGlyphOfHammerOfTheRighteous && aura.Duration != core.NeverExpires {

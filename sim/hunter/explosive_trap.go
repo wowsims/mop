@@ -42,17 +42,15 @@ func (hunter *Hunter) registerExplosiveTrapSpell() {
 			NumberOfTicks: 10,
 			TickLength:    time.Second * 2,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				baseDamage := (27) + (0.0382 * dot.Spell.RangedAttackPower())
 				dot.Spell.DamageMultiplierAdditive += bonusPeriodicDamageMultiplier
-				for _, aoeTarget := range sim.Encounter.TargetUnits {
-					dot.Spell.CalcAndDealPeriodicDamage(sim, aoeTarget, baseDamage, dot.Spell.OutcomeRangedHitAndCritNoBlock)
-				}
+				dot.Spell.CalcAndDealPeriodicAoeDamage(sim, baseDamage, dot.Spell.OutcomeRangedHitAndCritNoBlock)
 				dot.Spell.DamageMultiplierAdditive -= bonusPeriodicDamageMultiplier
 			},
 		},
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			if sim.CurrentTime < 0 {
 				// Traps only last 60s.
 				if sim.CurrentTime < -time.Second*60 {
@@ -61,25 +59,24 @@ func (hunter *Hunter) registerExplosiveTrapSpell() {
 
 				// If using this on prepull, the trap effect will go off when the fight starts
 				// instead of immediately.
-				core.StartDelayedAction(sim, core.DelayedActionOptions{
-					DoAt: 0,
-					OnAction: func(sim *core.Simulation) {
-						for _, aoeTarget := range sim.Encounter.TargetUnits {
-							baseDamage := (109 + sim.RandomFloat("Explosive Trap Initial")*125) + (0.0382 * spell.RangedAttackPower())
-							baseDamage *= core.TernaryFloat64(hunter.Spec == proto.Spec_SpecSurvivalHunter, 1.3, 1)
-							spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeRangedHitAndCritNoBlock)
-						}
-						hunter.ExplosiveTrap.AOEDot().Apply(sim)
-					},
-				})
-			} else {
-				for _, aoeTarget := range sim.Encounter.TargetUnits {
-					baseDamage := (109 + sim.RandomFloat("Explosive Trap Initial")*125) + (0.0382 * spell.RangedAttackPower())
-					baseDamage *= core.TernaryFloat64(hunter.Spec == proto.Spec_SpecSurvivalHunter, 1.3, 1)
-					spell.CalcAndDealDamage(sim, aoeTarget, baseDamage, spell.OutcomeRangedHitAndCritNoBlock)
+				pa := sim.GetConsumedPendingActionFromPool()
+
+				pa.OnAction = func(sim *core.Simulation) {
+					spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeRangedHitAndCritNoBlock, hunter.calcExplosiveTrapImpactDamage)
+					hunter.ExplosiveTrap.AOEDot().Apply(sim)
 				}
+
+				sim.AddPendingAction(pa)
+			} else {
+				spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeRangedHitAndCritNoBlock, hunter.calcExplosiveTrapImpactDamage)
 				hunter.ExplosiveTrap.AOEDot().Apply(sim)
 			}
 		},
 	})
+}
+
+func (hunter *Hunter) calcExplosiveTrapImpactDamage(sim *core.Simulation, spell *core.Spell) float64 {
+	baseDamage := (109 + sim.RandomFloat("Explosive Trap Initial")*125) + (0.0382 * spell.RangedAttackPower())
+	baseDamage *= core.TernaryFloat64(hunter.Spec == proto.Spec_SpecSurvivalHunter, 1.3, 1)
+	return baseDamage
 }

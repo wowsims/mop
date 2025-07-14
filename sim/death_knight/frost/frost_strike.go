@@ -31,7 +31,7 @@ func (fdk *FrostDeathKnight) registerFrostStrike() {
 		ActionID:       frostStrikeActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolFrost,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: death_knight.DeathKnightSpellFrostStrike,
 
 		MaxRange: core.MaxMeleeRange,

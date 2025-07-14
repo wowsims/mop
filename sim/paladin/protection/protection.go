@@ -70,6 +70,8 @@ func (prot *ProtectionPaladin) Initialize() {
 	})
 
 	prot.trackDamageTakenLastGlobal()
+
+	prot.registerHotfixPassive()
 }
 
 func (prot *ProtectionPaladin) trackDamageTakenLastGlobal() {
@@ -89,15 +91,18 @@ func (prot *ProtectionPaladin) trackDamageTakenLastGlobal() {
 					prot.Log(sim, "Damage Taken Last Global: %0.2f", prot.DamageTakenLastGlobal)
 				}
 
-				core.StartDelayedAction(sim, core.DelayedActionOptions{
-					DoAt: sim.CurrentTime + core.GCDDefault,
-					OnAction: func(s *core.Simulation) {
-						prot.DamageTakenLastGlobal -= damageTaken
-						if sim.Log != nil {
-							prot.Log(sim, "Damage Taken Last Global: %0.2f", prot.DamageTakenLastGlobal)
-						}
-					},
-				})
+				pa := sim.GetConsumedPendingActionFromPool()
+				pa.NextActionAt = sim.CurrentTime + core.GCDDefault
+
+				pa.OnAction = func(sim *core.Simulation) {
+					prot.DamageTakenLastGlobal -= damageTaken
+
+					if sim.Log != nil {
+						prot.Log(sim, "Damage Taken Last Global: %0.2f", prot.DamageTakenLastGlobal)
+					}
+				}
+
+				sim.AddPendingAction(pa)
 			}
 		},
 	}))
@@ -110,4 +115,9 @@ func (prot *ProtectionPaladin) ApplyTalents() {
 
 func (prot *ProtectionPaladin) Reset(sim *core.Simulation) {
 	prot.Paladin.Reset(sim)
+}
+
+func (prot *ProtectionPaladin) OnEncounterStart(sim *core.Simulation) {
+	prot.HolyPower.ResetBarTo(sim, 1)
+	prot.Paladin.OnEncounterStart(sim)
 }

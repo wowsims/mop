@@ -23,6 +23,8 @@ func RegisterDestructionWarlock() {
 	)
 }
 
+const DefaultBurningEmbers = 10
+
 func NewDestructionWarlock(character *core.Character, options *proto.Player) *DestructionWarlock {
 	destroOptions := options.GetDestructionWarlock().Options
 	destruction := &DestructionWarlock{
@@ -32,7 +34,7 @@ func NewDestructionWarlock(character *core.Character, options *proto.Player) *De
 	destruction.BurningEmbers = destruction.RegisterNewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
 		Type:    proto.SecondaryResourceType_SecondaryResourceTypeBurningEmbers,
 		Max:     40,
-		Default: 10,
+		Default: DefaultBurningEmbers,
 	})
 
 	return destruction
@@ -84,6 +86,11 @@ func (destruction *DestructionWarlock) ApplyTalents() {
 
 func (destruction *DestructionWarlock) Reset(sim *core.Simulation) {
 	destruction.Warlock.Reset(sim)
+}
+
+func (destruction *DestructionWarlock) OnEncounterStart(sim *core.Simulation) {
+	destruction.BurningEmbers.ResetBarTo(sim, DefaultBurningEmbers)
+	destruction.Warlock.OnEncounterStart(sim)
 }
 
 var SpellMaskCinderSpender = warlock.WarlockSpellChaosBolt | warlock.WarlockSpellEmberTap | warlock.WarlockSpellShadowBurn

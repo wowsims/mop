@@ -1,6 +1,6 @@
 import { Encounter } from '../encounter.js';
 import { IndividualSimUI } from '../individual_sim_ui.js';
-import { InputType, MobType, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common.js';
+import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common.js';
 import { getStatName } from '../proto_utils/names.js';
 import { Stats } from '../proto_utils/stats.js';
 import { Raid } from '../raid.js';
@@ -126,6 +126,9 @@ export class EncounterPicker extends Component {
 					},
 					showWhen: (raid: Raid) => {
 						const shouldEnable = player.shouldEnableTargetDummies();
+						if ([Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk].includes(player.getSpec())) {
+							return false;
+						}
 
 						if (!shouldEnable) {
 							raid.setTargetDummies(TypedEvent.nextEventID(), 0);
@@ -349,7 +352,6 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 				{ name: '91', value: 91 },
 				{ name: '90', value: 90 },
 				{ name: '88', value: 88 },
-
 			],
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().level,

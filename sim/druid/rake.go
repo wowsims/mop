@@ -15,10 +15,11 @@ func (druid *Druid) registerRakeSpell() {
 	flatBaseDamage := coefficient * druid.ClassSpellScaling // ~98.5266
 
 	druid.Rake = druid.RegisterSpell(Cat, core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: 1822},
-		SpellSchool: core.SpellSchoolPhysical,
-		ProcMask:    core.ProcMaskMeleeMHSpecial,
-		Flags:       core.SpellFlagMeleeMetrics | core.SpellFlagIgnoreArmor | core.SpellFlagAPL,
+		ActionID:       core.ActionID{SpellID: 1822},
+		SpellSchool:    core.SpellSchoolPhysical,
+		ProcMask:       core.ProcMaskMeleeMHSpecial,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagIgnoreArmor | core.SpellFlagAPL,
+		ClassSpellMask: DruidSpellRake,
 
 		EnergyCost: core.EnergyCostOptions{
 			Cost:   35,

@@ -51,3 +51,4 @@ func (td *TargetDummy) ApplyTalents()                              {}
 func (td *TargetDummy) Initialize()                                {}
 func (td *TargetDummy) Reset(sim *Simulation)                      {}
 func (td *TargetDummy) ExecuteCustomRotation(sim *Simulation)      {}
+func (td *TargetDummy) OnEncounterStart(sim *Simulation)           {}

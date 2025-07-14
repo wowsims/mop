@@ -49,7 +49,7 @@ func (hunter *Hunter) RegisterLynxRushSpell() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			targetCount := hunter.Env.GetNumTargets()
+			targetCount := hunter.Env.ActiveTargetCount()
 			idx := int32(sim.RollWithLabel(0, float64(targetCount), "LynxRush"))
 			if idx < 0 {
 				idx = 0

@@ -6,41 +6,39 @@ import (
 	"github.com/wowsims/mop/sim/common"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/encounters/msv"
 )
 
 func init() {
 	RegisterGuardianDruid()
 	common.RegisterAllEffects()
+	msv.Register()
 }
 
 func TestGuardian(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class: proto.Class_ClassDruid,
-		Race:  proto.Race_RaceWorgen,
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "garajal_default", ItemFilter, nil, nil),
+		{
+			Class: proto.Class_ClassDruid,
+			Race:  proto.Race_RaceWorgen,
 
-		GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "preraid"),
+			GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "preraid"),
 
-		Talents:         StandardTalents,
-		Glyphs:          StandardGlyphs,
-		OtherTalentSets: []core.TalentsCombo{{Label: "FoN", Talents: "010300", Glyphs: StandardGlyphs}},
-
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsDefault},
-		Rotation:    core.GetAplRotation("../../../ui/druid/guardian/apls", "default"),
-
-		IsTank:          true,
-		InFrontOfTarget: true,
-
-		ItemFilter: core.ItemFilter{
-			WeaponTypes: []proto.WeaponType{
-				proto.WeaponType_WeaponTypeDagger,
-				proto.WeaponType_WeaponTypeMace,
-				proto.WeaponType_WeaponTypeOffHand,
-				proto.WeaponType_WeaponTypeStaff,
-				proto.WeaponType_WeaponTypePolearm,
+			Talents: StandardTalents,
+			Glyphs:  StandardGlyphs,
+			OtherTalentSets: []core.TalentsCombo{
+				{Label: "FoN-NV", Talents: "010303", Glyphs: StandardGlyphs},
+				{Label: "Incarn-DoC", Talents: "010202", Glyphs: StandardGlyphs},
 			},
-			ArmorType:         proto.ArmorType_ArmorTypeLeather,
-			RangedWeaponTypes: []proto.RangedWeaponType{},
+
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Default", SpecOptions: PlayerOptionsDefault},
+			Rotation:    core.GetAplRotation("../../../ui/druid/guardian/apls", "default"),
+
+			IsTank:          true,
+			InFrontOfTarget: true,
+
+			ItemFilter: ItemFilter,
 		},
 	}))
 }
@@ -73,20 +71,33 @@ func TestGuardian(t *testing.T) {
 // 	core.RaidBenchmark(b, rsr)
 // }
 
-var StandardTalents = "010100"
-var StandardGlyphs = &proto.Glyphs{}
+var ItemFilter = core.ItemFilter{
+	WeaponTypes: []proto.WeaponType{
+		proto.WeaponType_WeaponTypeDagger,
+		proto.WeaponType_WeaponTypeMace,
+		proto.WeaponType_WeaponTypeOffHand,
+		proto.WeaponType_WeaponTypeStaff,
+		proto.WeaponType_WeaponTypePolearm,
+	},
+	ArmorType:         proto.ArmorType_ArmorTypeLeather,
+	RangedWeaponTypes: []proto.RangedWeaponType{},
+}
+
+var StandardTalents = "010101"
+var StandardGlyphs = &proto.Glyphs{
+	Major1: int32(proto.DruidMajorGlyph_GlyphOfMightOfUrsoc),
+	Major2: int32(proto.DruidMajorGlyph_GlyphOfMaul),
+}
 
 var PlayerOptionsDefault = &proto.Player_GuardianDruid{
 	GuardianDruid: &proto.GuardianDruid{
-		Options: &proto.GuardianDruid_Options{
-			StartingRage: 10,
-		},
+		Options: &proto.GuardianDruid_Options{},
 	},
 }
 var FullConsumesSpec = &proto.ConsumesSpec{
 	FlaskId:    76087,
-	FoodId:     105717,
-	PotId:      76089,
-	PrepotId:   76089,
+	FoodId:     74656,
+	PotId:      76090,
+	PrepotId:   76090,
 	ConjuredId: 5512, // Conjured Healthstone
 }

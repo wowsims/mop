@@ -31,12 +31,11 @@ func (bdk *BloodDeathKnight) registerScarletFever() {
 			bloodPlague := bdk.BloodPlagueSpell.Dot(result.Target)
 
 			if frostFever.IsActive() {
-				frostFever.Refresh(sim)
-				weakenedBlowsAuras.Get(result.Target).Activate(sim)
+				frostFever.Apply(sim)
 			}
 
 			if bloodPlague.IsActive() {
-				bloodPlague.Refresh(sim)
+				bloodPlague.Apply(sim)
 				weakenedBlowsAuras.Get(result.Target).Activate(sim)
 			}
 		},

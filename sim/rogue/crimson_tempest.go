@@ -81,8 +81,8 @@ func (rogue *Rogue) registerCrimsonTempest() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			lastCTDamage = make([]float64, sim.GetNumTargets())
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
+			lastCTDamage = make([]float64, sim.ActiveTargetCount())
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				damage := hit_minDamage +
 					sim.RandomFloat("Crimson Tempest")*hit_baseDamage +
 					hit_cpScaling*float64(rogue.ComboPoints()) +

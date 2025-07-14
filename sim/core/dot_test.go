@@ -41,9 +41,10 @@ func (fa *FakeAgent) Initialize() {
 	}
 }
 
-func (fa *FakeAgent) ApplyTalents()            {}
-func (fa *FakeAgent) Reset(_ *Simulation)      {}
-func (fa *FakeAgent) OnGCDReady(_ *Simulation) {}
+func (fa *FakeAgent) ApplyTalents()                  {}
+func (fa *FakeAgent) Reset(_ *Simulation)            {}
+func (fa *FakeAgent) OnGCDReady(_ *Simulation)       {}
+func (fa *FakeAgent) OnEncounterStart(_ *Simulation) {}
 
 func NewFakeElementalShaman(char *Character, _ *proto.Player) Agent {
 	fa := &FakeAgent{

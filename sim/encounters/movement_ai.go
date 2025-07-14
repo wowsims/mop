@@ -115,13 +115,15 @@ func (ai *MovementAI) ExecuteCustomRotation(sim *core.Simulation) {
 		if player.Hardcast.Expires > sim.CurrentTime && !player.Hardcast.CanMove {
 			castEndsAt := player.Hardcast.Expires - sim.CurrentTime
 			// if castEndsAt < ai.ReactionTime {
-			core.StartDelayedAction(sim, core.DelayedActionOptions{
-				DoAt:     sim.CurrentTime + castEndsAt,
-				Priority: core.ActionPriorityPrePull + 1,
-				OnAction: func(s *core.Simulation) {
-					player.MoveDuration(duration, sim)
-				},
-			})
+			pa := sim.GetConsumedPendingActionFromPool()
+			pa.NextActionAt = sim.CurrentTime + castEndsAt
+			pa.Priority = core.ActionPriorityPrePull + 1
+
+			pa.OnAction = func(sim *core.Simulation) {
+				player.MoveDuration(duration, sim)
+			}
+
+			sim.AddPendingAction(pa)
 			// } else {
 			// 	// Cancel casted spell and move immediately
 			// 	// For now we do nothing in this scenario

@@ -3,11 +3,6 @@
 	"prepullActions": [
 		{"action":{"castSpell":{"spellId":{"spellId":122278}}},"doAtValue":{"const":{"val":"-30s"}},"hide":true},
 		{"action":{"castSpell":{"spellId":{"spellId":115069}}},"doAtValue":{"const":{"val":"-20s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":115072}}},"doAtValue":{"const":{"val":"-18s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":124081}}},"doAtValue":{"const":{"val":"-6s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":115072}}},"doAtValue":{"const":{"val":"-3s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":115098}}},"doAtValue":{"const":{"val":"-1s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":123986}}},"doAtValue":{"const":{"val":"-1s"}}},
 		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-.5s"}}}
 	],
 	"priorityList": [

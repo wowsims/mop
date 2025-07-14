@@ -226,7 +226,7 @@ func init() {
 			Callback: core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
 			Harmful:  true,
 			ActionID: core.ActionID{SpellID: 104441},
-			ICD:      time.Millisecond * 100,
+			ICD:      time.Millisecond * 250,
 			DPM: character.NewRPPMProcManager(
 				4446,
 				true,

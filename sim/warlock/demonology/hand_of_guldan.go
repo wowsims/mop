@@ -76,7 +76,7 @@ func (demonology *DemonologyWarlock) registerHandOfGuldan() {
 			return !demonology.IsInMeta()
 		},
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			// keep stacks in sync as they're shared
 			demonology.ChaosWave.ConsumeCharge(sim)
 			demonology.HandOfGuldanImpactTime = sim.CurrentTime + time.Millisecond*1300
@@ -85,7 +85,7 @@ func (demonology *DemonologyWarlock) registerHandOfGuldan() {
 			pa.Priority = core.ActionPriorityAuto
 
 			pa.OnAction = func(sim *core.Simulation) {
-				for _, enemy := range sim.Encounter.TargetUnits {
+				for _, enemy := range sim.Encounter.ActiveTargetUnits {
 					result := spell.CalcAndDealDamage(
 						sim,
 						enemy,

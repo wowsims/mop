@@ -26,6 +26,9 @@ func (treant *DefaultTreantImpl) Reset(sim *core.Simulation) {
 	treant.Disable(sim)
 }
 
+func (treant *DefaultTreantImpl) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (treant *DefaultTreantImpl) GetPet() *core.Pet {
 	return &treant.Pet
 }

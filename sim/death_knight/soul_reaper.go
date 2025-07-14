@@ -10,7 +10,6 @@ import (
 var SoulReaperActionID = core.ActionID{SpellID: 114867}
 
 func (dk *DeathKnight) registerSoulReaper() {
-
 	dotTickSpell := dk.RegisterSpell(core.SpellConfig{
 		ActionID:       SoulReaperActionID,
 		SpellSchool:    core.SpellSchoolShadow,
@@ -50,7 +49,7 @@ func (dk *DeathKnight) registerSoulReaper() {
 	}
 
 	var tag int32
-	switch dk.Spec {
+	switch dk.Inputs.Spec {
 	case proto.Spec_SpecBloodDeathKnight:
 		tag = 1 // Actually 114866
 		runeCost.BloodRuneCost = 1
@@ -65,7 +64,7 @@ func (dk *DeathKnight) registerSoulReaper() {
 		ActionID:       SoulReaperActionID.WithTag(tag),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagAPL | core.SpellFlagMeleeMetrics,
+		Flags:          core.SpellFlagAPL | core.SpellFlagMeleeMetrics | core.SpellFlagEncounterOnly,
 		ClassSpellMask: DeathKnightSpellSoulReaper,
 
 		MaxRange: core.MaxMeleeRange,
@@ -89,6 +88,8 @@ func (dk *DeathKnight) registerSoulReaper() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := dk.MHWeaponDamage(sim, spell.MeleeAttackPower())
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
+
+			spell.SpendRefundableCost(sim, result)
 
 			if result.Landed() {
 				spell.RelatedDotSpell.Cast(sim, target)

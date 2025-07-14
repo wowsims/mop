@@ -8,6 +8,7 @@ import {
 	WarlockOptions_Summon as Summon,
 } from '../../core/proto/warlock';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultAPL from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
@@ -26,12 +27,12 @@ export const APL_Default = PresetUtils.makePresetAPLRotation('Incinerate', Defau
 export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Default',
 	Stats.fromMap({
-		[Stat.StatIntellect]: 1.27,
+		[Stat.StatIntellect]: 1.24,
 		[Stat.StatSpellPower]: 1.0,
 		[Stat.StatHitRating]: 4,
-		[Stat.StatCritRating]: 0.51,
+		[Stat.StatCritRating]: 0.63,
 		[Stat.StatHasteRating]: 2.75,
-		[Stat.StatMasteryRating]: 0.57,
+		[Stat.StatMasteryRating]: 0.62,
 	}),
 );
 
@@ -65,14 +66,13 @@ export const DefaultConsumables = ConsumesSpec.create({
 });
 
 export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
 	arcaneBrilliance: true,
 	blessingOfKings: true,
 	leaderOfThePack: true,
 	blessingOfMight: true,
 	bloodlust: true,
 	moonkinAura: true,
-	skullBannerCount: 2,
-	stormlashTotemCount: 4,
 	unholyAura: true,
 });
 

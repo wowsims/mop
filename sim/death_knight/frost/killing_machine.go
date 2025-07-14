@@ -14,11 +14,11 @@ func (fdk *FrostDeathKnight) registerKillingMachine() {
 	}
 
 	var killingMachineAura *core.Aura
-	killingMachineAura = fdk.RegisterAura(core.Aura{
+	killingMachineAura = core.BlockPrepull(fdk.RegisterAura(core.Aura{
 		Label:    "Killing Machine" + fdk.Label,
 		ActionID: core.ActionID{SpellID: 51124},
 		Duration: time.Second * 10,
-	}).AttachProcTrigger(core.ProcTrigger{
+	})).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: mask,
 		ProcMask:       core.ProcMaskMeleeMH,

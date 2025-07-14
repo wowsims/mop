@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import tippy, { ReferenceElement as TippyReferenceElement } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config';
 import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL } from '../constants/other';
 import { SimUI } from '../sim_ui';
 import { isLocal, noop } from '../utils';
@@ -238,13 +239,13 @@ export class SimHeader extends Component {
 					<div className="import-export nav within-raid-sim-hide">
 						<div className="dropdown sim-dropdown-menu import-dropdown">
 							<button className="import-link" attributes={{ 'aria-expanded': 'false' }} dataset={{ bsToggle: 'dropdown', bsDisplay: 'dynamic' }}>
-								<i className="fa fa-download"></i> Import
+								<i className="fa fa-download"></i> {i18n.t('import.title')}
 							</button>
 							<ul className="dropdown-menu"></ul>
 						</div>
 						<div className="dropdown sim-dropdown-menu export-dropdown">
 							<button className="export-link" attributes={{ 'aria-expanded': 'false' }} dataset={{ bsToggle: 'dropdown', bsDisplay: 'dynamic' }}>
-								<i className="fa fa-right-from-bracket"></i> Export
+								<i className="fa fa-right-from-bracket"></i> {i18n.t('export.title')}
 							</button>
 							<ul className="dropdown-menu"></ul>
 						</div>

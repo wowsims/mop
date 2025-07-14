@@ -14,28 +14,39 @@ func init() {
 }
 
 func TestWindwalker(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassMonk,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceOrc},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassMonk,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-		GearSet: core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_dw"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_2h"),
-			core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_dw"),
-			core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_2h"),
+			GearSet: core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_dw"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_bis_2h"),
+				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_dw"),
+				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p1_prebis_2h"),
+			},
+			Talents: WindwalkerTalents,
+			OtherTalentSets: []core.TalentsCombo{
+				{Label: "ZenSphere", Talents: ZenSphereTalent, Glyphs: WindwalkerDefaultGlyphs},
+				{Label: "ChiBurstTalent", Talents: ChiBurstTalent, Glyphs: WindwalkerDefaultGlyphs},
+				{Label: "RushingJadeWindTalent", Talents: RushingJadeWindTalent, Glyphs: WindwalkerDefaultGlyphs},
+			},
+			Glyphs:      WindwalkerDefaultGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsWindwalker},
+			Rotation:    core.GetAplRotation("../../../ui/monk/windwalker/apls", "default"),
+
+			ItemFilter: ItemFilter,
 		},
-		Talents:     WindwalkerTalents,
-		Glyphs:      WindwalkerDefaultGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsWindwalker},
-		Rotation:    core.GetAplRotation("../../../ui/monk/windwalker/apls", "default"),
-
-		ItemFilter: ItemFilter,
 	}))
 }
 
 var WindwalkerTalents = "213322"
+var ZenSphereTalent = "223322"
+var ChiBurstTalent = "233322"
+var RushingJadeWindTalent = "213321"
+
 var WindwalkerDefaultGlyphs = &proto.Glyphs{
 	Major1: int32(proto.MonkMajorGlyph_GlyphOfSpinningCraneKick),
 	Major2: int32(proto.MonkMajorGlyph_GlyphOfTouchOfKarma),

@@ -8,7 +8,7 @@ import (
 )
 
 func (destruction *DestructionWarlock) registerBackdraft() {
-	buff := destruction.RegisterAura(core.Aura{
+	buff := core.BlockPrepull(destruction.RegisterAura(core.Aura{
 		Label:     "Backdraft",
 		ActionID:  core.ActionID{SpellID: 117828},
 		Duration:  time.Second * 15,
@@ -23,7 +23,7 @@ func (destruction *DestructionWarlock) registerBackdraft() {
 				aura.RemoveStack(sim)
 			}
 		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		FloatValue: -0.3,
 		ClassMask:  warlock.WarlockSpellIncinerate | warlock.WarlockSpellFaBIncinerate,

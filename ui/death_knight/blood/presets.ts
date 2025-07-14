@@ -66,9 +66,7 @@ export const P1_PRESET = PresetUtils.makePresetBuild('P1', {
 });
 
 export const DefaultOptions = BloodDeathKnight_Options.create({
-	classOptions: {
-		startingRunicPower: 0,
-	},
+	classOptions: {},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({

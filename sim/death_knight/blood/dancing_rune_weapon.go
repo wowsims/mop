@@ -23,20 +23,6 @@ while active.
 func (dk *BloodDeathKnight) registerDancingRuneWeapon() {
 	duration := time.Second * 12
 
-	hasGlyph := dk.HasMajorGlyph(proto.DeathKnightMajorGlyph_GlyphOfDancingRuneWeapon)
-
-	t124PAura := dk.RegisterAura(core.Aura{
-		Label:    "Flaming Rune Weapon" + dk.Label,
-		ActionID: core.ActionID{SpellID: 101162},
-		Duration: duration,
-		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			dk.PseudoStats.BaseParryChance += 0.15
-		},
-		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			dk.PseudoStats.BaseParryChance -= 0.15
-		},
-	})
-
 	dancingRuneWeaponAura := dk.RegisterAura(core.Aura{
 		Label:    "Dancing Rune Weapon" + dk.Label,
 		ActionID: core.ActionID{SpellID: 81256},
@@ -52,14 +38,9 @@ func (dk *BloodDeathKnight) registerDancingRuneWeapon() {
 
 			copySpell.Cast(sim, dk.CurrentTarget)
 		},
-		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			if dk.T12Tank4pc.IsActive() {
-				t124PAura.Activate(sim)
-			}
-		},
 	}).AttachAdditivePseudoStatBuff(&dk.PseudoStats.BaseParryChance, 0.2)
 
-	if hasGlyph {
+	if dk.HasMajorGlyph(proto.DeathKnightMajorGlyph_GlyphOfDancingRuneWeapon) {
 		dancingRuneWeaponAura.AttachMultiplicativePseudoStatBuff(&dk.PseudoStats.ThreatMultiplier, 2.0)
 	}
 

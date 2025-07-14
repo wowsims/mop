@@ -1,13 +1,10 @@
+import { Encounter } from '../../core/encounter';
 import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Glyphs, Profession, Race, Stat } from '../../core/proto/common.js';
-import {
-	ElementalShaman_Options as ElementalShamanOptions,
-	FeleAutocastSettings,
-	ShamanMajorGlyph,
-	ShamanShield,
-} from '../../core/proto/shaman.js';
+import { Class, ConsumesSpec, Debuffs, Encounter as EncounterProto, Glyphs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common.js';
+import { ElementalShaman_Options as ElementalShamanOptions, FeleAutocastSettings, ShamanMajorGlyph, ShamanShield } from '../../core/proto/shaman.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import AoEApl from './apls/aoe.apl.json';
 import CleaveApl from './apls/cleave.apl.json';
 import DefaultApl from './apls/default.apl.json';
@@ -29,26 +26,26 @@ export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AoE (3+)',
 export const EP_PRESET_DEFAULT = PresetUtils.makePresetEpWeights(
 	'Default',
 	Stats.fromMap({
-		[Stat.StatIntellect]: 1.00,
-		[Stat.StatSpellPower]: 0.80,
-		[Stat.StatCritRating]: 0.20,
-		[Stat.StatHasteRating]: 0.40,
-		[Stat.StatHitRating]: 0.60,
-		[Stat.StatSpirit]: 0.60,
-		[Stat.StatMasteryRating]: 0.30,
+		[Stat.StatIntellect]: 1.0,
+		[Stat.StatSpellPower]: 0.8,
+		[Stat.StatCritRating]: 0.2,
+		[Stat.StatHasteRating]: 0.4,
+		[Stat.StatHitRating]: 0.6,
+		[Stat.StatSpirit]: 0.6,
+		[Stat.StatMasteryRating]: 0.3,
 	}),
 );
 
 export const EP_PRESET_AOE = PresetUtils.makePresetEpWeights(
 	'AoE (4+)',
 	Stats.fromMap({
-		[Stat.StatIntellect]: 1.00,
-		[Stat.StatSpellPower]: 0.80,
-		[Stat.StatCritRating]: 0.30,
-		[Stat.StatHasteRating]: 0.20,
-		[Stat.StatHitRating]: 0.60,
-		[Stat.StatSpirit]: 0.60,
-		[Stat.StatMasteryRating]: 0.40,
+		[Stat.StatIntellect]: 1.0,
+		[Stat.StatSpellPower]: 0.8,
+		[Stat.StatCritRating]: 0.3,
+		[Stat.StatHasteRating]: 0.2,
+		[Stat.StatHitRating]: 0.6,
+		[Stat.StatSpirit]: 0.6,
+		[Stat.StatMasteryRating]: 0.4,
 	}),
 );
 
@@ -89,11 +86,11 @@ export const DefaultOptions = ElementalShamanOptions.create({
 	classOptions: {
 		shield: ShamanShield.LightningShield,
 		feleAutocast: FeleAutocastSettings.create({
-					autocastFireblast: true,
-					autocastFirenova: true,
-					autocastImmolate: true,
-					autocastEmpower: false,
-				}),
+			autocastFireblast: true,
+			autocastFirenova: true,
+			autocastImmolate: true,
+			autocastEmpower: false,
+		}),
 	},
 });
 
@@ -101,7 +98,20 @@ export const OtherDefaults = {
 	distanceFromTarget: 20,
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
+	race: Race.RaceTroll,
 };
+
+export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(Class.ClassShaman),
+	blessingOfKings: true,
+	leaderOfThePack: true,
+	serpentsSwiftness: true,
+	bloodlust: true,
+});
+
+export const DefaultDebuffs = Debuffs.create({
+	curseOfElements: true,
+});
 
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 76085, // Flask of the Warm Sun
@@ -110,20 +120,9 @@ export const DefaultConsumables = ConsumesSpec.create({
 	prepotId: 76093, // Potion of the Jade Serpent
 });
 
-const ENCOUNTER_SINGLE_TARGET = PresetUtils.makePresetEncounter(
-	'Single Target Dummy',
-	'http://localhost:5173/mop/shaman/elemental/?i=e#eJyTYhJgV5rP5MHIyQACB4ocBMEMBj8HyVkzQeCkvSVE5IK9YhoYXLN3PHsGBN7YGz1hLFj1mbGKOygxM0UhJLEoPbVEIVaCXWsDI8MgAgccbjggcX0s5s5xRFcD9uWDEwqOMxkhHr9pD1PjAAAuwChz',
-);
-
-const ENCOUNTER_CLEAVE = PresetUtils.makePresetEncounter(
-	'Cleave',
-	'http://localhost:5173/mop/shaman/elemental/?i=e#eJyTYhJgV2pj8WDkZACBA0UOgmAGg5+D5KyZIHDS3hIicsFeMQ0Mrtk7nj0DAm/sjZ4wFqz6zFjFHZSYmaIQkliUnlqiECvBrrWBkWEQgQMONxyQuD4Wc+c4oqsB+/LBCQXHmYwQj9+0h6lxGGhvBrQ4EKOMUm8CACyAPro=',
-);
-
-const ENCOUNTER_AOE = PresetUtils.makePresetEncounter(
-	'AOE (5+)',
-	'http://localhost:5173/mop/shaman/elemental/?i=e#eJyTYhJgV7rC7sHIyQACB4ocBMEMBj8HyVkzQeCkvSVE5IK9YhoYXLN3PHsGBN7YGz1hLFj1mbGKOygxM0UhJLEoPbVEIVaCXWsDI8MgAgccbjggcX0s5s5xRFcD9uWDEwqOMxkhHr9pD1PjMNDeDGhxIEbZqDfhYNSbDgAivWvH',
-);
+const ENCOUNTER_SINGLE_TARGET = PresetUtils.makePresetEncounter('Single Target Dummy', Encounter.defaultEncounterProto());
+const ENCOUNTER_CLEAVE = PresetUtils.makePresetEncounter('Cleave', Encounter.defaultEncounterProto(2));
+const ENCOUNTER_AOE = PresetUtils.makePresetEncounter('AOE (4+)', Encounter.defaultEncounterProto(4));
 
 export const P1_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('Default', {
 	talents: StandardTalents,

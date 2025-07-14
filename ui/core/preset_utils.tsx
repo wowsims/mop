@@ -3,6 +3,7 @@ import Toast, { ToastOptions } from './components/toast';
 import * as Tooltips from './constants/tooltips.js';
 import { Encounter } from './encounter';
 import { Player } from './player';
+import { Player as PlayerProto } from './proto/api.js';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
 import {
 	ConsumesSpec,
@@ -14,14 +15,16 @@ import {
 	HealingModel,
 	IndividualBuffs,
 	ItemSwap,
+	PartyBuffs,
+	Profession,
 	Race,
 	RaidBuffs,
 	Spec,
 	UnitReference,
 } from './proto/common';
-import { SavedRotation, SavedTalents } from './proto/ui';
+import { IndividualSimSettings, SavedRotation, SavedTalents } from './proto/ui';
 import { Stats } from './proto_utils/stats';
-import { SpecRotation, specTypeFunctions } from './proto_utils/utils';
+import { SpecOptions, SpecRotation, specTypeFunctions } from './proto_utils/utils';
 
 interface PresetBase {
 	name: string;
@@ -71,23 +74,33 @@ export interface PresetEncounter extends PresetBase {
 	encounter?: EncounterProto;
 	healingModel?: HealingModel;
 	tanks?: UnitReference[];
-	raidBuffs?: RaidBuffs;
-	debuffs?: Debuffs;
-	buffs?: IndividualBuffs;
-	consumes?: ConsumesSpec;
+	targetDummies?: number;
 }
 export interface PresetEncounterOptions extends PresetOptionsBase {}
+
+type PresetPlayerOptions = Partial<Pick<PlayerProto, 'distanceFromTarget' | 'profession1' | 'profession2' | 'enableItemSwap' | 'itemSwap'>>;
+
+export interface PresetSettings extends PresetBase {
+	race?: Race;
+	raidBuffs?: RaidBuffs;
+	partyBuffs?: PartyBuffs;
+	buffs?: IndividualBuffs;
+	debuffs?: Debuffs;
+	consumables?: ConsumesSpec;
+	specOptions?: Partial<SpecOptions<any>>;
+	playerOptions?: PresetPlayerOptions;
+}
 
 export interface PresetBuild {
 	name: string;
 	gear?: PresetGear;
+	itemSwap?: PresetItemSwap;
 	talents?: PresetTalents;
 	rotation?: PresetRotation;
 	rotationType?: APLRotationType;
 	epWeights?: PresetEpWeights;
 	encounter?: PresetEncounter;
-	itemSwap?: PresetItemSwap;
-	race?: Race;
+	settings?: PresetSettings;
 }
 
 export interface PresetBuildOptions extends Omit<PresetBuild, 'name'> {}
@@ -191,35 +204,20 @@ const makePresetRotationHelper = (name: string, rotation: SavedRotation, options
 	};
 };
 
-export const makePresetEncounter = (name: string, encounter?: PresetEncounter['encounter'] | string, options?: PresetEncounterOptions): PresetEncounter => {
-	let healingModel: PresetEncounter['healingModel'] = undefined;
-	let tanks: PresetEncounter['tanks'] = undefined;
-	let raidBuffs: PresetEncounter['raidBuffs'] = undefined;
-	let debuffs: PresetEncounter['debuffs'] = undefined;
-	let buffs: PresetEncounter['buffs'] = undefined;
-	let consumes: PresetEncounter['consumes'] = undefined;
-	if (typeof encounter === 'string') {
-		const parsedUrl = IndividualLinkImporter.tryParseUrlLocation(new URL(encounter));
-		const settings = parsedUrl?.settings;
-		if (settings?.encounter) Encounter.updateProtoVersion(settings.encounter);
-		encounter = settings?.encounter;
-		healingModel = settings?.player?.healingModel;
-		tanks = settings?.tanks;
-		raidBuffs = settings?.raidBuffs;
-		debuffs = settings?.debuffs;
-		buffs = settings?.player?.buffs;
-		consumes = settings?.player?.consumables;
-	}
-
+export const makePresetEncounter = (
+	name: string,
+	encounter?: EncounterProto,
+	healingModel?: HealingModel,
+	tanks?: UnitReference[],
+	targetDummies?: number,
+	options?: PresetEncounterOptions,
+): PresetEncounter => {
 	return {
 		name,
 		encounter,
+		targetDummies,
 		tanks,
 		healingModel,
-		raidBuffs,
-		debuffs,
-		buffs,
-		consumes,
 		...options,
 	};
 };
@@ -236,11 +234,113 @@ export const makePresetItemSwapGearHelper = (name: string, itemSwap: ItemSwap): 
 	};
 };
 
-export const makePresetBuild = (
+export const makePresetSettings = (name: string, spec: Spec, simSettings: IndividualSimSettings): PresetSettings => {
+	return makePresetSettingsHelper(name, spec, simSettings);
+};
+
+const makePresetSettingsHelper = (name: string, spec: Spec, simSettings: IndividualSimSettings): PresetSettings => {
+	const settings: PresetSettings = { name };
+
+	if (simSettings.player?.race) {
+		settings.race = simSettings.player.race;
+	}
+
+	if (simSettings.player) {
+		settings.specOptions = specTypeFunctions[spec].optionsFromPlayer(simSettings.player);
+
+		if (simSettings.player.buffs) {
+			settings.buffs = simSettings.player.buffs;
+		}
+
+		if (simSettings.player.consumables) {
+			settings.consumables = simSettings.player.consumables;
+		}
+
+		settings.playerOptions = {
+			distanceFromTarget: simSettings.player.distanceFromTarget,
+			enableItemSwap: simSettings.player.enableItemSwap,
+		};
+		if (!!simSettings.player.profession1) {
+			settings.playerOptions.profession1 = simSettings.player.profession1;
+		}
+
+		if (!!simSettings.player.profession2) {
+			settings.playerOptions.profession2 = simSettings.player.profession2;
+		}
+
+		if (simSettings.player.itemSwap) {
+			settings.playerOptions.itemSwap = simSettings.player.itemSwap;
+		}
+	}
+
+	if (simSettings.raidBuffs) {
+		settings.raidBuffs = simSettings.raidBuffs;
+	}
+
+	if (simSettings.partyBuffs) {
+		settings.partyBuffs = simSettings.partyBuffs;
+	}
+
+	if (simSettings.debuffs) {
+		settings.debuffs = simSettings.debuffs;
+	}
+
+	return settings;
+};
+
+export const makePresetBuild = (name: string, options: PresetBuildOptions): PresetBuild => {
+	return { name, ...options };
+};
+
+export const makePresetBuildFromJSON = (
 	name: string,
-	{ gear, itemSwap, talents, rotation, rotationType, epWeights, encounter, race }: PresetBuildOptions,
+	spec: Spec,
+	json: any,
+	{ settings: customSimSettings, ...customBuildOptions }: PresetBuildOptions = {},
+	options?: PresetOptionsBase,
 ): PresetBuild => {
-	return { name, itemSwap, gear, talents, rotation, rotationType, epWeights, encounter, race };
+	const simSettings = IndividualSimSettings.fromJson(json);
+	const buildConfig: PresetBuildOptions = {};
+
+	if (simSettings.player) {
+		if (simSettings.player.equipment) {
+			buildConfig.gear = makePresetGear(name, simSettings.player.equipment, options);
+		}
+
+		if (simSettings.player?.talentsString || simSettings.player?.glyphs) {
+			buildConfig.talents = makePresetTalents(
+				name,
+				SavedTalents.create({ talentsString: simSettings.player?.talentsString, glyphs: simSettings.player?.glyphs }),
+				options,
+			);
+		}
+
+		if (simSettings.player?.rotation && simSettings.player?.rotation.type === APLRotationType.TypeAPL) {
+			buildConfig.rotation = makePresetRotationHelper(name, SavedRotation.create({ rotation: simSettings.player.rotation }), options);
+		}
+	}
+
+	if (simSettings.encounter) {
+		buildConfig.encounter = makePresetEncounter(
+			name,
+			simSettings.encounter,
+			simSettings.player?.healingModel,
+			simSettings.tanks,
+			simSettings.targetDummies,
+			options,
+		);
+	}
+
+	const settings = makePresetSettingsHelper(name, spec, simSettings);
+	if (Object.keys(settings).length > 1 || customSimSettings) {
+		buildConfig.settings = { ...settings, ...customSimSettings };
+	}
+
+	if (simSettings.epWeightsStats) {
+		buildConfig.epWeights = makePresetEpWeightHelper(name, Stats.fromProto(simSettings.epWeightsStats), options);
+	}
+
+	return makePresetBuild(name, { ...buildConfig, ...customBuildOptions });
 };
 
 export type SpecCheckWarning = {

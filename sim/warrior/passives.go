@@ -119,11 +119,9 @@ func (war *Warrior) registerBloodAndThunder() {
 		Callback:       core.CallbackOnSpellHitDealt,
 		Outcome:        core.OutcomeLanded,
 		ClassSpellMask: SpellMaskThunderClap,
-		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			for _, target := range sim.Encounter.TargetUnits {
-				dot := war.DeepWounds.Dot(target)
-				dot.Apply(sim)
-			}
+
+		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
+			war.DeepWounds.ApplyAllDots(sim)
 		},
 	})
 }

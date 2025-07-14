@@ -12,6 +12,7 @@ import { getPlayerSpecFromPlayer, makeDefaultBlessings } from '../core/proto_uti
 import { Sim } from '../core/sim';
 import { SimUI } from '../core/sim_ui';
 import { EventID, TypedEvent } from '../core/typed_event';
+import i18n from '../i18n/config';
 import { BlessingsPicker } from './blessings_picker';
 import { RaidJsonExporter } from './components/exporters';
 import { RaidJsonImporter, RaidWCLImporter } from './components/importers';
@@ -117,7 +118,7 @@ export class RaidSimUI extends SimUI {
 
 	private addDetailedResultsTab() {
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
-		this.addTab('Results', 'detailed-results-tab', detailedResults);
+		this.addTab(i18n.t('results.title'), 'detailed-results-tab', detailedResults);
 
 		new EmbeddedDetailedResults(detailedResults, this, this.raidSimResultsManager!);
 	}

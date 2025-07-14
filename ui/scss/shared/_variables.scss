@@ -9,7 +9,7 @@
 //////////////////////////
 
 // Custom theme color mapping
-$expansion: #23C88C;
+$expansion: #23c88c;
 $brand: #e0a335;
 $success: #1eff00;
 
@@ -250,6 +250,11 @@ $body-bg: #15171e;
 $body-color: $white;
 $font-size-root: 16px;
 $grid-gutter-width: 0.75rem;
+
+$custom-font-sizes: (
+	body: 0.875rem,
+);
+$font-sizes: map-merge($font-sizes, $custom-font-sizes);
 
 // This option doesn't seem to be working for some reason. Carets hidden manually instead
 // $enable-caret: false;

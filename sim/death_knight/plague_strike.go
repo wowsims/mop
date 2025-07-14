@@ -28,7 +28,7 @@ func (dk *DeathKnight) registerPlagueStrike() {
 		ActionID:       PlagueStrikeActionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		ClassSpellMask: DeathKnightSpellPlagueStrike,
 
 		MaxRange: core.MaxMeleeRange,

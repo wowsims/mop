@@ -185,6 +185,18 @@ func (war *Warrior) applyMajorGlyphs() {
 		})
 	}
 
+	if war.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfHamstring) {
+		war.GlyphOfHamstring = war.RegisterAura(core.Aura{
+			ActionID: core.ActionID{SpellID: 115945},
+			Label:    "Glyph of Hamstring",
+			Duration: core.NeverExpires,
+		}).AttachSpellMod(core.SpellModConfig{
+			ClassMask:  SpellMaskHamstring,
+			Kind:       core.SpellMod_PowerCost_Pct,
+			FloatValue: -2,
+		})
+	}
+
 }
 
 func (war *Warrior) applyMinorGlyphs() {

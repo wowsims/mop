@@ -113,7 +113,7 @@ func (dot *Dot) CalcTickPeriod() time.Duration {
 
 		return dot.Spell.Unit.ApplyCastSpeed(dot.BaseTickLength).Round(time.Millisecond)
 	} else if dot.affectedByRealHaste {
-		return dot.Spell.Unit.ApplyRealHaste(dot.BaseTickLength).Round(time.Millisecond)
+		return dot.Spell.Unit.ApplyRangedSpeed(dot.BaseTickLength).Round(time.Millisecond)
 	} else {
 		return dot.BaseTickLength
 	}
@@ -322,6 +322,24 @@ func (dot *Dot) getChannelClipDelay(sim *Simulation) time.Duration {
 	}
 
 	return dot.Spell.Unit.ChannelClipDelay
+}
+func (dot *Dot) ChannelCanBeInterrupted(sim *Simulation) bool {
+	if !dot.isChanneled {
+		return false
+	}
+
+	// Channel has ended, but dot.Spell.Unit.ChanneledDot hasn't been cleared yet, meaning the Aura is still active.
+	if dot.remainingTicks == 0 {
+		return false
+	}
+
+	// APL specifies that the channel should be continued.
+	apl := dot.Spell.Unit.Rotation
+	if (apl.interruptChannelIf == nil) || !apl.interruptChannelIf.GetBool(sim) {
+		return false
+	}
+
+	return true
 }
 
 func newDot(config Dot) *Dot {

@@ -24,6 +24,8 @@ func RegisterShadowPriest() {
 	)
 }
 
+const MaxShadowOrbs = 3
+
 func NewShadowPriest(character *core.Character, options *proto.Player) *ShadowPriest {
 	shadowOptions := options.GetShadowPriest()
 
@@ -41,8 +43,8 @@ func NewShadowPriest(character *core.Character, options *proto.Player) *ShadowPr
 
 	spriest.ShadowOrbs = spriest.NewDefaultSecondaryResourceBar(core.SecondaryResourceConfig{
 		Type:    proto.SecondaryResourceType_SecondaryResourceTypeShadowOrbs,
-		Default: 3, // We now generate 1 orb every 6 seconds out of combat, so should pretty much start with 3 always
-		Max:     3,
+		Default: MaxShadowOrbs, // We now generate 1 orb every 6 seconds out of combat, so should pretty much start with 3 always
+		Max:     MaxShadowOrbs,
 	})
 	spriest.RegisterSecondaryResourceBar(spriest.ShadowOrbs)
 	return spriest
@@ -83,12 +85,17 @@ func (spriest *ShadowPriest) Reset(sim *core.Simulation) {
 	spriest.Priest.Reset(sim)
 }
 
+func (spriest *ShadowPriest) OnEncounterStart(sim *core.Simulation) {
+	spriest.ShadowOrbs.ResetBarTo(sim, MaxShadowOrbs)
+	spriest.Priest.OnEncounterStart(sim)
+}
+
 func (spriest *ShadowPriest) ApplyTalents() {
 	spriest.Priest.ApplyTalents()
 
 	// apply shadow spec specific auras
 	spriest.AddStaticMod(core.SpellModConfig{
-		FloatValue: 0.3,
+		FloatValue: 0.3 + 0.05, // 2025-07-01 - Shadowform damage increase raised to 35% (was 30%)
 		School:     core.SpellSchoolShadow,
 		Kind:       core.SpellMod_DamageDone_Pct,
 	})

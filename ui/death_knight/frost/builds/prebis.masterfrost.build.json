@@ -1,0 +1,110 @@
+{
+	"raidBuffs": {
+		"trueshotAura": true,
+		"unholyAura": true,
+		"elementalOath": true,
+		"leaderOfThePack": true,
+		"blessingOfMight": true,
+		"blessingOfKings": true,
+		"bloodlust": true,
+		"stormlashTotemCount": 4,
+		"skullBannerCount": 2
+	},
+	"debuffs": {
+		"weakenedBlows": true,
+		"physicalVulnerability": true,
+		"weakenedArmor": true,
+		"curseOfElements": true
+	},
+	"partyBuffs": {},
+	"player": {
+		"name": "Player",
+		"race": "RaceTroll",
+		"class": "ClassDeathKnight",
+		"equipment": {
+			"items": [
+				{ "id": 77539, "gems": [76886, 77547, 77543] },
+				{ "id": 87551, "reforging": 153 },
+				{ "id": 89345, "enchant": 4803, "gems": [76674], "reforging": 147 },
+				{ "id": 84806, "enchant": 4421, "reforging": 139, "tinker": 4897 },
+				{ "id": 82975, "enchant": 4419, "gems": [76674, 76684], "reforging": 146 },
+				{ "id": 84986, "enchant": 4411, "gems": [0], "reforging": 153 },
+				{ "id": 82976, "enchant": 4432, "gems": [76674, 0], "reforging": 144, "tinker": 4898 },
+				{ "id": 89055, "gems": [76684, 76696], "reforging": 144, "tinker": 4223 },
+				{ "id": 82812, "enchant": 4823, "gems": [76674], "reforging": 146 },
+				{ "id": 81113, "enchant": 4429, "gems": [76674], "reforging": 153 },
+				{ "id": 84829, "reforging": 139 },
+				{ "id": 81561, "reforging": 153 },
+				{ "id": 79327 },
+				{ "id": 75274, "reforging": 168 },
+				{ "id": 87545, "enchant": 3368, "reforging": 168 },
+				{ "id": 87545, "enchant": 3370, "reforging": 168 }
+			]
+		},
+		"consumables": {
+			"prepotId": 76095,
+			"potId": 76095,
+			"flaskId": 76088,
+			"foodId": 74646
+		},
+		"bonusStats": {
+			"apiVersion": 1,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		},
+		"itemSwap": {
+			"items": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+			"prepullBonusStats": {
+				"apiVersion": 1,
+				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+			}
+		},
+		"buffs": {},
+		"frostDeathKnight": {
+			"options": {
+				"classOptions": {}
+			}
+		},
+		"talentsString": "221111",
+		"glyphs": {
+			"major1": 43533,
+			"major2": 104048,
+			"major3": 104047,
+			"minor1": 43550,
+			"minor2": 45806,
+			"minor3": 43673
+		},
+		"profession1": "Engineering",
+		"profession2": "Alchemy",
+		"cooldowns": {},
+		"rotation": {
+			"type": "TypeAuto"
+		},
+		"reactionTimeMs": 100,
+		"distanceFromTarget": 5,
+		"healingModel": {}
+	},
+	"encounter": {
+		"apiVersion": 1,
+		"duration": 300,
+		"durationVariation": 60,
+		"executeProportion20": 0.2,
+		"executeProportion25": 0.25,
+		"executeProportion35": 0.35,
+		"executeProportion45": 0.45,
+		"executeProportion90": 0.9,
+		"targets": [
+			{
+				"id": 31146,
+				"name": "Raid Target",
+				"level": 93,
+				"mobType": "MobTypeMechanical",
+				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 650, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
+				"minBaseDamage": 550000,
+				"damageSpread": 0.4,
+				"swingSpeed": 2
+			}
+		]
+	}
+}

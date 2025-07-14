@@ -1,4 +1,4 @@
-import { getLanguageCode } from './constants/lang';
+import { getLang } from '../i18n/locale_service';
 import { CHARACTER_LEVEL } from './constants/mechanics';
 import { Database } from './proto_utils/database';
 
@@ -86,7 +86,7 @@ export type WowheadTooltipSpellParams = {
 export const WOWHEAD_EXPANSION_ENV = 15;
 
 export const buildWowheadTooltipDataset = async (options: WowheadTooltipItemParams | WowheadTooltipSpellParams) => {
-	const lang = getLanguageCode();
+	const lang = getLang();
 	const params = new URLSearchParams();
 	const langPrefix = lang && lang != 'en' ? lang + '.' : '';
 	params.set('domain', `${langPrefix}mop-classic`);
@@ -137,3 +137,8 @@ export const buildWowheadTooltipDataset = async (options: WowheadTooltipItemPara
 
 	return decodeURIComponent(params.toString());
 };
+
+export function getWowheadLanguagePrefix(): string {
+	const lang = getLang();
+	return lang === 'en' ? '' : `${lang}/`;
+}

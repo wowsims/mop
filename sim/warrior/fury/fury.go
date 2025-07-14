@@ -49,7 +49,7 @@ func NewFuryWarrior(character *core.Character, options *proto.Player) *FuryWarri
 }
 
 func (war *FuryWarrior) GetMasteryBonusMultiplier() float64 {
-	return (8 + 1.4*war.GetMasteryPoints()) / 100
+	return (1.4 * (8 + war.GetMasteryPoints())) / 100
 }
 
 func (war *FuryWarrior) GetWarrior() *warrior.Warrior {
@@ -77,6 +77,11 @@ func (war *FuryWarrior) registerPassives() {
 
 func (war *FuryWarrior) Reset(sim *core.Simulation) {
 	war.Warrior.Reset(sim)
+}
+
+func (war *FuryWarrior) OnEncounterStart(sim *core.Simulation) {
+	war.ResetRageBar(sim, 25+war.PrePullChargeGain)
+	war.Warrior.OnEncounterStart(sim)
 }
 
 func (war *FuryWarrior) ApplySyncType(syncType proto.WarriorSyncType) {

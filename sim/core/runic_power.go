@@ -39,20 +39,20 @@ type RuneMeta struct {
 type runicPowerBar struct {
 	character *Character
 
-	maxRunicPower      float64
-	startingRunicPower float64
-	currentRunicPower  float64
-	runeCD             time.Duration
+	maxRunicPower     float64
+	currentRunicPower float64
+	runeCD            time.Duration
 
 	// These flags are used to simplify pending action checks
 	// |DS|DS|DS|DS|DS|DS|
 	runeStates int16
 	runeMeta   [6]RuneMeta
 
-	bloodRuneGainMetrics  *ResourceMetrics
-	frostRuneGainMetrics  *ResourceMetrics
-	unholyRuneGainMetrics *ResourceMetrics
-	deathRuneGainMetrics  *ResourceMetrics
+	bloodRuneGainMetrics            *ResourceMetrics
+	frostRuneGainMetrics            *ResourceMetrics
+	unholyRuneGainMetrics           *ResourceMetrics
+	deathRuneGainMetrics            *ResourceMetrics
+	encounterStartRunicPowerMetrics *ResourceMetrics
 
 	spellRunicPowerMetrics map[ActionID]*ResourceMetrics
 	spellBloodRuneMetrics  map[ActionID]*ResourceMetrics
@@ -102,6 +102,20 @@ func (rp *runicPowerBar) DebugString() string {
 	return strings.Join(ss, "\n")
 }
 
+func (rp *runicPowerBar) ResetRunicPowerBar(sim *Simulation, runicPowerToKeep float64) {
+	if rp.currentRunicPower > runicPowerToKeep {
+		rp.SpendRunicPower(sim, rp.currentRunicPower-runicPowerToKeep, rp.encounterStartRunicPowerMetrics)
+	} else if runicPowerToKeep > rp.currentRunicPower {
+		rp.AddUnscaledRunicPower(sim, runicPowerToKeep-rp.currentRunicPower, rp.encounterStartRunicPowerMetrics)
+	}
+
+	for i := range rp.runeMeta {
+		if rp.runeStates&isDeaths[i] > 0 {
+			rp.ConvertFromDeath(sim, int8(i))
+		}
+	}
+}
+
 func (rp *runicPowerBar) reset(sim *Simulation) {
 	if rp.character == nil {
 		return
@@ -122,18 +136,16 @@ func (rp *runicPowerBar) reset(sim *Simulation) {
 		rp.runeStates |= isDeaths[i]
 	}
 
-	rp.currentRunicPower = rp.startingRunicPower
+	rp.currentRunicPower = 0
 }
 
-func (character *Character) EnableRunicPowerBar(startingRunicPower float64, maxRunicPower float64, runeCD time.Duration,
-	onRuneChange OnRuneChange, onRunicPowerGain OnRunicPowerGain) {
+func (character *Character) EnableRunicPowerBar(runeCD time.Duration, onRuneChange OnRuneChange, onRunicPowerGain OnRunicPowerGain) {
 	character.SetCurrentPowerBar(RunicPower)
 	character.runicPowerBar = runicPowerBar{
 		character: character,
 
-		maxRunicPower:        maxRunicPower,
-		currentRunicPower:    startingRunicPower,
-		startingRunicPower:   startingRunicPower,
+		maxRunicPower:        100,
+		currentRunicPower:    0,
 		runeCD:               runeCD,
 		runeRegenMultiplier:  1.0,
 		runicRegenMultiplier: 1.0,
@@ -153,10 +165,11 @@ func (character *Character) EnableRunicPowerBar(startingRunicPower float64, maxR
 		spellDeathRuneMetrics:  make(map[ActionID]*ResourceMetrics),
 	}
 
-	character.bloodRuneGainMetrics = character.NewBloodRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionBloodRuneGain, Tag: 1})
-	character.frostRuneGainMetrics = character.NewFrostRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionFrostRuneGain, Tag: 1})
-	character.unholyRuneGainMetrics = character.NewUnholyRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionUnholyRuneGain, Tag: 1})
-	character.deathRuneGainMetrics = character.NewDeathRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionDeathRuneGain, Tag: 1})
+	character.runicPowerBar.bloodRuneGainMetrics = character.NewBloodRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionBloodRuneGain, Tag: 1})
+	character.runicPowerBar.frostRuneGainMetrics = character.NewFrostRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionFrostRuneGain, Tag: 1})
+	character.runicPowerBar.unholyRuneGainMetrics = character.NewUnholyRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionUnholyRuneGain, Tag: 1})
+	character.runicPowerBar.deathRuneGainMetrics = character.NewDeathRuneMetrics(ActionID{OtherID: proto.OtherAction_OtherActionDeathRuneGain, Tag: 1})
+	character.runicPowerBar.encounterStartRunicPowerMetrics = character.NewRunicPowerMetrics(ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart, Tag: 1})
 }
 
 func (unit *Unit) HasRunicPowerBar() bool {
@@ -720,6 +733,10 @@ func getHighestCDRune(sim *Simulation, possibleRunes []*depletedRune) int8 {
 		}
 	}
 
+	if len(filteredRunes) == 0 {
+		return -1
+	}
+
 	randomRuneIndex := int(math.Floor(sim.RandomFloat("Rune Regen") * float64(len(filteredRunes))))
 	return filteredRunes[randomRuneIndex]
 }
@@ -749,6 +766,10 @@ func (rp *runicPowerBar) RegenRunicEmpowermentRune(sim *Simulation, runeMetrics 
 	}
 
 	slot := getHighestCDRune(sim, possibleRunes)
+
+	if slot == -1 {
+		return
+	}
 
 	rp.regenRuneInternal(sim, sim.CurrentTime, slot)
 	if rp.runeStates&isDeaths[slot] > 0 {

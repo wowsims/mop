@@ -14,43 +14,45 @@ func init() {
 }
 
 func TestEnhancement(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassShaman,
-		Race:       proto.Race_RaceDwarf,
-		OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceTroll, proto.Race_RaceDraenei, proto.Race_RaceAlliancePandaren},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassShaman,
+			Race:       proto.Race_RaceDwarf,
+			OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceTroll, proto.Race_RaceDraenei, proto.Race_RaceAlliancePandaren},
 
-		// The above line is the actual line for the ring but it is causing an error in the test
-		GearSet: core.GetGearSet("../../../ui/shaman/enhancement/gear_sets", "preraid"),
-		Talents: TalentsASEB,
-		Glyphs:  StandardGlyphs,
-		OtherTalentSets: []core.TalentsCombo{
-			{
-				Label:   "TalentsEchoUnleashed",
-				Talents: TalentsEEUF,
-				Glyphs:  StandardGlyphs,
+			// The above line is the actual line for the ring but it is causing an error in the test
+			GearSet: core.GetGearSet("../../../ui/shaman/enhancement/gear_sets", "preraid"),
+			Talents: TalentsASEB,
+			Glyphs:  StandardGlyphs,
+			OtherTalentSets: []core.TalentsCombo{
+				{
+					Label:   "TalentsEchoUnleashed",
+					Talents: TalentsEEUF,
+					Glyphs:  StandardGlyphs,
+				},
+				{
+					Label:   "TalentsEMPrimal",
+					Talents: TalentsEMPE,
+					Glyphs:  StandardGlyphs,
+				},
 			},
-			{
-				Label:   "TalentsEMPrimal",
-				Talents: TalentsEMPE,
-				Glyphs:  StandardGlyphs,
-			},
-		},
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Standard", SpecOptions: PlayerOptionsStandard},
-		Rotation:    core.GetAplRotation("../../../ui/shaman/enhancement/apls", "default"),
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Standard", SpecOptions: PlayerOptionsStandard},
+			Rotation:    core.GetAplRotation("../../../ui/shaman/enhancement/apls", "default"),
 
-		ItemFilter: core.ItemFilter{
-			WeaponTypes: []proto.WeaponType{
-				proto.WeaponType_WeaponTypeAxe,
-				proto.WeaponType_WeaponTypeDagger,
-				proto.WeaponType_WeaponTypeFist,
-				proto.WeaponType_WeaponTypeMace,
-				proto.WeaponType_WeaponTypeOffHand,
-				proto.WeaponType_WeaponTypeShield,
-				proto.WeaponType_WeaponTypeStaff,
+			ItemFilter: core.ItemFilter{
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeAxe,
+					proto.WeaponType_WeaponTypeDagger,
+					proto.WeaponType_WeaponTypeFist,
+					proto.WeaponType_WeaponTypeMace,
+					proto.WeaponType_WeaponTypeOffHand,
+					proto.WeaponType_WeaponTypeShield,
+					proto.WeaponType_WeaponTypeStaff,
+				},
+				ArmorType:         proto.ArmorType_ArmorTypeMail,
+				RangedWeaponTypes: []proto.RangedWeaponType{},
 			},
-			ArmorType:         proto.ArmorType_ArmorTypeMail,
-			RangedWeaponTypes: []proto.RangedWeaponType{},
 		},
 	}))
 }

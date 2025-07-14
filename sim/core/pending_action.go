@@ -59,3 +59,9 @@ func (pa *PendingAction) Cancel(sim *Simulation) {
 		sim.pendingActions = append(sim.pendingActions[:i], sim.pendingActions[i+1:]...)
 	}
 }
+
+func (pa *PendingAction) dispose(sim *Simulation) {
+	if pa.canPool && pa.consumed {
+		sim.pendingActionPool.Put(pa)
+	}
+}

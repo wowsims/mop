@@ -114,5 +114,5 @@ func (character *Character) RegisterVengeance(spellID int32, requiredAura *Aura)
 		requiredAura.AttachProcTrigger(vengeanceTrigger)
 	}
 
-	return buffAura.Aura
+	return BlockPrepull(buffAura.Aura)
 }

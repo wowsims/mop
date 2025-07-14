@@ -20,6 +20,7 @@ func (druid *Druid) registerTranquilityCD() {
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 		CritMultiplier:   druid.DefaultCritMultiplier(),
+		ClassSpellMask:   DruidSpellTranquility,
 
 		// TODO: Healing value calculations are very likely incorrect and will need a closer look if we care about
 		// modeling the actual healing output from the spell. Right now this is just a placeholder for pre-pull use in
@@ -59,10 +60,11 @@ func (druid *Druid) registerTranquilityCD() {
 
 	// Then register the primary channel spell.
 	druid.RegisterSpell(Humanoid|Tree, core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: 740},
-		SpellSchool: core.SpellSchoolNature,
-		ProcMask:    core.ProcMaskSpellHealing,
-		Flags:       core.SpellFlagHelpful | core.SpellFlagAPL | core.SpellFlagChanneled,
+		ActionID:       core.ActionID{SpellID: 740},
+		SpellSchool:    core.SpellSchoolNature,
+		ProcMask:       core.ProcMaskSpellHealing,
+		Flags:          core.SpellFlagHelpful | core.SpellFlagAPL | core.SpellFlagChanneled,
+		ClassSpellMask: DruidSpellTranquility,
 
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 32,

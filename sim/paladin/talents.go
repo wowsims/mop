@@ -90,11 +90,11 @@ func (paladin *Paladin) registerLongArmOfTheLaw() {
 		return
 	}
 
-	longArmOfTheLawAura := paladin.RegisterAura(core.Aura{
+	longArmOfTheLawAura := core.BlockPrepull(paladin.RegisterAura(core.Aura{
 		Label:    "Long Arm of the Law" + paladin.Label,
 		ActionID: core.ActionID{SpellID: 87173},
 		Duration: time.Second * 3,
-	})
+	}))
 	longArmOfTheLawAura.NewMovementSpeedEffect(0.45)
 
 	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
@@ -135,6 +135,10 @@ func (paladin *Paladin) registerPursuitOfJustice() {
 			newSpeed := speedLevels[newStacks]
 			paladin.MultiplyMovementSpeed(sim, 1+newSpeed)
 			movementSpeedEffect.SetPriority(sim, newSpeed)
+		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Activate(sim)
+			aura.SetStacks(sim, 1)
 		},
 	})
 
@@ -465,12 +469,14 @@ func (paladin *Paladin) registerHolyAvenger() {
 		}
 
 		if slices.Contains(paladin.HolyAvengerActionIDFilter, triggeredActionID) {
-			core.StartDelayedAction(sim, core.DelayedActionOptions{
-				DoAt: sim.CurrentTime + core.SpellBatchWindow,
-				OnAction: func(sim *core.Simulation) {
-					paladin.HolyPower.Gain(sim, 2, actionID)
-				},
-			})
+			pa := sim.GetConsumedPendingActionFromPool()
+			pa.NextActionAt = sim.CurrentTime + core.SpellBatchWindow
+
+			pa.OnAction = func(sim *core.Simulation) {
+				paladin.HolyPower.Gain(sim, 2, actionID)
+			}
+
+			sim.AddPendingAction(pa)
 		}
 	})
 
@@ -582,12 +588,14 @@ func (paladin *Paladin) divinePurposeFactory(label string, spellID int32, durati
 			}
 
 			if sim.Proc(procChances[hpSpent], label+paladin.Label) {
-				core.StartDelayedAction(sim, core.DelayedActionOptions{
-					DoAt: sim.CurrentTime + core.SpellBatchWindow,
-					OnAction: func(sim *core.Simulation) {
-						aura.Activate(sim)
-					},
-				})
+				pa := sim.GetConsumedPendingActionFromPool()
+				pa.NextActionAt = sim.CurrentTime + core.SpellBatchWindow
+
+				pa.OnAction = func(sim *core.Simulation) {
+					aura.Activate(sim)
+				}
+
+				sim.AddPendingAction(pa)
 			}
 		},
 	})
@@ -607,9 +615,9 @@ func (paladin *Paladin) registerDivinePurpose() {
 		return
 	}
 
-	paladin.DivinePurposeAura = paladin.divinePurposeFactory("Divine Purpose", 90174, time.Second*8, func(aura *core.Aura, spell *core.Spell) bool {
+	paladin.DivinePurposeAura = core.BlockPrepull(paladin.divinePurposeFactory("Divine Purpose", 90174, time.Second*8, func(aura *core.Aura, spell *core.Spell) bool {
 		return true
-	})
+	}))
 }
 
 func (paladin *Paladin) holyPrismFactory(spellID int32, targets []*core.Unit, timer *core.Timer, isHealing bool) {

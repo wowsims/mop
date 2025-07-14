@@ -5,8 +5,8 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import SubtletyApl from './apls/subtlety.apl.json';
 import MSVGear from './gear_sets/p1_subtlety_msv.gear.json';
-import PreraidGear from './gear_sets/preraid_subtlety.gear.json';
 import T14 from './gear_sets/p1_subtlety_t14.gear.json'
+import PreraidGear from './gear_sets/preraid_subtlety.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

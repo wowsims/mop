@@ -53,9 +53,10 @@ func (monk *Monk) registerStanceOfTheSturdyOx(stanceCD *core.Timer) {
 	stamDep := monk.NewDynamicMultiplyStat(stats.Stamina, 1.2)
 
 	monk.StanceOfTheSturdyOxAura = monk.GetOrRegisterAura(core.Aura{
-		Label:    "Stance of the Sturdy Ox" + monk.Label,
-		ActionID: actionID,
-		Duration: core.NeverExpires,
+		Label:      "Stance of the Sturdy Ox" + monk.Label,
+		ActionID:   actionID,
+		Duration:   core.NeverExpires,
+		BuildPhase: core.CharacterBuildPhaseBase,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			monk.Stance = SturdyOx
 			monk.MultiplyEnergyRegenSpeed(sim, 1.1)

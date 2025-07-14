@@ -20,7 +20,7 @@ for 10 sec.
 func (dk *DeathKnight) registerDeathAndDecay() {
 	dk.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 43265},
-		Flags:          core.SpellFlagAoE | core.SpellFlagAPL,
+		Flags:          core.SpellFlagAoE | core.SpellFlagAPL | core.SpellFlagEncounterOnly,
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskEmpty, // D&D doesn't seem to proc things in game.
 		ClassSpellMask: DeathKnightSpellDeathAndDecay,
@@ -51,10 +51,10 @@ func (dk *DeathKnight) registerDeathAndDecay() {
 			NumberOfTicks: 10,
 			TickLength:    time.Second * 1,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				// DnD recalculates everything on each tick
 				baseDamage := 26 + dot.Spell.MeleeAttackPower()*0.06400000304
-				for _, aoeTarget := range sim.Encounter.TargetUnits {
+				for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 					dot.Spell.SpellMetrics[aoeTarget.UnitIndex].Casts++
 					dot.Spell.CalcAndDealPeriodicDamage(sim, aoeTarget, baseDamage, dot.Spell.OutcomeMagicHitAndCrit)
 				}

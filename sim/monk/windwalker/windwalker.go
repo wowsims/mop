@@ -73,6 +73,11 @@ func (ww *WindwalkerMonk) Reset(sim *core.Simulation) {
 	ww.Monk.Reset(sim)
 }
 
+func (ww *WindwalkerMonk) OnEncounterStart(sim *core.Simulation) {
+	ww.ResetComboPoints(sim, 2)
+	ww.Monk.OnEncounterStart(sim)
+}
+
 func (ww *WindwalkerMonk) RegisterSpecializationEffects() {
 	ww.registerEnergizingBrew()
 	ww.registerTigereyeBrew()

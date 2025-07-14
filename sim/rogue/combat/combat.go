@@ -81,3 +81,8 @@ func (combatRogue *CombatRogue) Reset(sim *core.Simulation) {
 
 	combatRogue.BanditsGuileAura.Activate(sim)
 }
+
+func (combatRogue *CombatRogue) OnEncounterStart(sim *core.Simulation) {
+	combatRogue.ResetComboPoints(sim, 0)
+	combatRogue.Rogue.OnEncounterStart(sim)
+}

@@ -35,12 +35,12 @@ func tigerPowerBuffConfig(monk *Monk, isSEFClone bool) core.Aura {
 		Duration: time.Second * 20,
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			for _, target := range sim.Encounter.TargetUnits {
+			for _, target := range sim.Encounter.AllTargetUnits {
 				aura.Unit.AttackTables[target.UnitIndex].ArmorIgnoreFactor += 0.3
 			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			for _, target := range sim.Encounter.TargetUnits {
+			for _, target := range sim.Encounter.AllTargetUnits {
 				aura.Unit.AttackTables[target.UnitIndex].ArmorIgnoreFactor -= 0.3
 			}
 		},
@@ -87,7 +87,7 @@ func (monk *Monk) registerTigerPalm() {
 	chiCost := int32(1)
 	manaMetrics := monk.NewManaMetrics(tigerPalmActionID)
 
-	tigerPowerBuff := monk.RegisterAura(tigerPowerBuffConfig(monk, false))
+	tigerPowerBuff := core.BlockPrepull(monk.RegisterAura(tigerPowerBuffConfig(monk, false)))
 
 	monk.RegisterSpell(tigerPalmSpellConfig(monk, false, core.SpellConfig{
 		ActionID:       tigerPalmActionID,
@@ -139,7 +139,7 @@ func (monk *Monk) registerTigerPalm() {
 }
 
 func (pet *StormEarthAndFirePet) registerSEFTigerPalm() {
-	tigerPowerBuff := pet.RegisterAura(tigerPowerBuffConfig(pet.owner, true))
+	tigerPowerBuff := core.BlockPrepull(pet.RegisterAura(tigerPowerBuffConfig(pet.owner, true)))
 
 	pet.RegisterSpell(tigerPalmSpellConfig(pet.owner, true, core.SpellConfig{
 		Cast: core.CastConfig{

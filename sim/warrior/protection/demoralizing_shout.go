@@ -8,16 +8,18 @@ import (
 )
 
 func (war *ProtectionWarrior) registerDemoralizingShout() {
+	actionID := core.ActionID{SpellID: 1160}
 	war.DemoralizingShoutAuras = war.NewEnemyAuraArray(func(target *core.Unit) *core.Aura {
 		return war.GetOrRegisterAura(core.Aura{
-			Label:    "Demoralizing Shout",
-			ActionID: core.ActionID{SpellID: 125565},
-			Duration: 10 * time.Second,
+			Label:           "Demoralizing Shout",
+			ActionID:        actionID,
+			ActionIDForProc: core.ActionID{SpellID: 125565},
+			Duration:        10 * time.Second,
 		}).AttachMultiplicativePseudoStatBuff(&target.PseudoStats.DamageDealtMultiplier, 0.8)
 	})
 
 	spell := war.RegisterSpell(core.SpellConfig{
-		ActionID:       core.ActionID{SpellID: 1160},
+		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskEmpty,
 		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
@@ -35,7 +37,7 @@ func (war *ProtectionWarrior) registerDemoralizingShout() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
+			for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				result := spell.CalcAndDealOutcome(sim, aoeTarget, spell.OutcomeMagicHit)
 				if result.Landed() {
 					war.DemoralizingShoutAuras.Get(aoeTarget).Activate(sim)
@@ -50,7 +52,7 @@ func (war *ProtectionWarrior) registerDemoralizingShout() {
 		Spell: spell,
 		Type:  core.CooldownTypeSurvival,
 		ShouldActivate: func(s *core.Simulation, c *core.Character) bool {
-			return war.CurrentHealthPercent() < 0.4
+			return war.CurrentHealthPercent() < 0.6
 		},
 	})
 }

@@ -58,9 +58,9 @@ func (enh *EnhancementShaman) registerLavaLashSpell() {
 
 				if flameShockDot != nil && flameShockDot.IsActive() {
 					numberSpread := 0
-					maxTargets := min(4, len(sim.Encounter.TargetUnits))
-					sortedTargets := make([]*core.Unit, len(sim.Encounter.TargetUnits))
-					copy(sortedTargets, sim.Encounter.TargetUnits)
+					maxTargets := min(4, len(sim.Encounter.ActiveTargetUnits))
+					sortedTargets := make([]*core.Unit, len(sim.Encounter.ActiveTargetUnits))
+					copy(sortedTargets, sim.Encounter.ActiveTargetUnits)
 					slices.SortFunc(sortedTargets, func(a *core.Unit, b *core.Unit) int {
 						aDot := enh.FlameShock.Dot(a)
 						if aDot == nil || !aDot.IsActive() {

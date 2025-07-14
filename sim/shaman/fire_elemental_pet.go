@@ -96,7 +96,9 @@ func (fireElemental *FireElemental) Initialize() {
 }
 
 func (fireElemental *FireElemental) Reset(_ *core.Simulation) {
+}
 
+func (fireElemental *FireElemental) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (fireElemental *FireElemental) ExecuteCustomRotation(sim *core.Simulation) {
@@ -106,13 +108,13 @@ func (fireElemental *FireElemental) ExecuteCustomRotation(sim *core.Simulation) 
 	target := fireElemental.CurrentTarget
 
 	if fireElemental.immolateAutocast {
-		for _, target := range sim.Encounter.TargetUnits {
+		for _, target := range sim.Encounter.ActiveTargetUnits {
 			if fireElemental.Immolate.Dot(target).RemainingDuration(sim) < fireElemental.Immolate.Dot(target).TickPeriod() && fireElemental.TryCast(sim, target, fireElemental.Immolate) {
 				break
 			}
 		}
 	}
-	if fireElemental.fireNovaAutocast && len(sim.Encounter.TargetUnits) > 2 {
+	if fireElemental.fireNovaAutocast && len(sim.Encounter.ActiveTargetUnits) > 2 {
 		fireElemental.TryCast(sim, target, fireElemental.FireNova)
 	}
 	if fireElemental.fireBlastAutocast {

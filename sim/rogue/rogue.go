@@ -85,7 +85,6 @@ type Rogue struct {
 	HungerForBloodAura   *core.Aura
 	KillingSpreeAura     *core.Aura
 	SliceAndDiceAura     *core.Aura
-	RecuperateAura       *core.Aura
 	MasterOfSubtletyAura *core.Aura
 	ShadowstepAura       *core.Aura
 	ShadowDanceAura      *core.Aura
@@ -104,10 +103,9 @@ type Rogue struct {
 	SavageCombatDebuffAuras   core.AuraArray
 	WoundPoisonDebuffAuras    core.AuraArray
 
-	T12ToTLastBuff int
-	Has2PT15       bool
-	T16EnergyAura  *core.Aura
-	T16SpecMod     *core.SpellMod
+	Has2PT15      bool
+	T16EnergyAura *core.Aura
+	T16SpecMod    *core.SpellMod
 
 	ruthlessnessMetrics      *core.ResourceMetrics
 	relentlessStrikesMetrics *core.ResourceMetrics
@@ -211,8 +209,6 @@ func (rogue *Rogue) Initialize() {
 	rogue.registerCrimsonTempest()
 	rogue.registerPreparationCD()
 
-	rogue.T12ToTLastBuff = 3
-
 	rogue.ruthlessnessMetrics = rogue.NewComboPointMetrics(core.ActionID{SpellID: 14161})
 	rogue.relentlessStrikesMetrics = rogue.NewEnergyMetrics(core.ActionID{SpellID: 58423})
 }
@@ -230,8 +226,9 @@ func (rogue *Rogue) Reset(sim *core.Simulation) {
 	}
 
 	rogue.MultiplyEnergyRegenSpeed(sim, 1.0+rogue.AdditiveEnergyRegenBonus)
+}
 
-	rogue.T12ToTLastBuff = 3
+func (rogue *Rogue) OnEncounterStart(sim *core.Simulation) {
 }
 
 func (rogue *Rogue) CritMultiplier(applyLethality bool) float64 {
@@ -260,10 +257,9 @@ func NewRogue(character *core.Character, options *proto.RogueOptions, talents st
 	}
 
 	rogue.EnableEnergyBar(core.EnergyBarOptions{
-		MaxComboPoints:      5,
-		MaxEnergy:           maxEnergy,
-		StartingComboPoints: options.StartingComboPoints,
-		UnitClass:           proto.Class_ClassRogue,
+		MaxComboPoints: 5,
+		MaxEnergy:      maxEnergy,
+		UnitClass:      proto.Class_ClassRogue,
 	})
 
 	rogue.EnableAutoAttacks(rogue, core.AutoAttackOptions{

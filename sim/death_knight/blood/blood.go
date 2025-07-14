@@ -33,24 +33,25 @@ const (
 
 type BloodDeathKnight struct {
 	*death_knight.DeathKnight
+
+	Bloodworms []*BloodwormPet
+
+	RuneTapSpell *core.Spell
 }
 
 func NewBloodDeathKnight(character *core.Character, options *proto.Player) *BloodDeathKnight {
-	dkOptions := options.GetBloodDeathKnight()
-
 	bdk := &BloodDeathKnight{
 		DeathKnight: death_knight.NewDeathKnight(character, death_knight.DeathKnightInputs{
-			IsDps:              false,
-			StartingRunicPower: dkOptions.Options.ClassOptions.StartingRunicPower,
-			Spec:               proto.Spec_SpecBloodDeathKnight,
+			Spec:  proto.Spec_SpecBloodDeathKnight,
+			IsDps: false,
 		}, options.TalentsString, 50034),
 	}
 
 	bdk.RuneWeapon = bdk.NewRuneWeapon()
 
-	bdk.Bloodworm = make([]*death_knight.BloodwormPet, 5)
+	bdk.Bloodworms = make([]*BloodwormPet, 5)
 	for i := range 5 {
-		bdk.Bloodworm[i] = bdk.NewBloodwormPet(i)
+		bdk.Bloodworms[i] = bdk.NewBloodwormPet(i)
 	}
 
 	return bdk

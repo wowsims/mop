@@ -41,11 +41,8 @@ func spinningCraneKickTickSpellConfig(monk *Monk, isSEFClone bool) core.SpellCon
 		DamageMultiplier: 1.75, // 1.59 * (1.75 / 1.59),
 		ThreatMultiplier: 1,
 		CritMultiplier:   monk.DefaultCritMultiplier(),
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			for _, target := range sim.Encounter.TargetUnits {
-				baseDamage := monk.CalculateMonkStrikeDamage(sim, spell)
-				spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-			}
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMeleeSpecialHitAndCrit, monk.CalculateMonkStrikeDamage)
 		},
 	}
 
@@ -100,11 +97,9 @@ func (monk *Monk) registerSpinningCraneKick() {
 	}
 
 	chiMetrics := monk.NewChiMetrics(sckActionID)
-	numTargets := monk.Env.GetNumTargets()
-
 	spinningCraneKickTickSpell := monk.RegisterSpell(spinningCraneKickTickSpellConfig(monk, false))
-
 	glyphOfSpinningCraneKick := monk.HasMajorGlyph(proto.MonkMajorGlyph_GlyphOfSpinningCraneKick)
+
 	spinningCraneKickAura := monk.RegisterAura(core.Aura{
 		Label:    "Spinning Crane Kick" + monk.Label,
 		ActionID: sckActionID,
@@ -157,7 +152,7 @@ func (monk *Monk) registerSpinningCraneKick() {
 			spinningCraneKickAura.Duration = remainingDuration
 			spinningCraneKickAura.Activate(sim)
 
-			if numTargets >= 3 {
+			if sim.Environment.ActiveTargetCount() >= 3 {
 				monk.AddChi(sim, spell, 1, chiMetrics)
 			}
 		},

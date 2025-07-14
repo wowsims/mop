@@ -32,7 +32,11 @@ func (war *Warrior) registerRallyingCry() {
 	})
 
 	war.AddMajorCooldown(core.MajorCooldown{
-		Spell: spell,
-		Type:  core.CooldownTypeSurvival,
+		Spell:    spell,
+		Type:     core.CooldownTypeSurvival,
+		Priority: core.CooldownPriorityLow,
+		ShouldActivate: func(s *core.Simulation, c *core.Character) bool {
+			return war.CurrentHealthPercent() < 0.6
+		},
 	})
 }

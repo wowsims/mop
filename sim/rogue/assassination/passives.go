@@ -25,10 +25,10 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		masteryMod.UpdateFloatValue(asnRogue.GetMasteryBonusFromRating(newMastery))
 	})
 
-	// Assassin's Resolve: +25% Multiplicative all-school damage
+	// Assassin's Resolve: +40% Multiplicative all-school damage
 	// +20 Energy handled in base rogue
 	if asnRogue.HasDagger(core.MainHand) || asnRogue.HasDagger(core.OffHand) {
-		asnRogue.PseudoStats.DamageDealtMultiplier *= 1.25
+		asnRogue.PseudoStats.DamageDealtMultiplier *= 1.4
 	}
 
 	energyMod := asnRogue.AddDynamicMod(core.SpellModConfig{
@@ -37,7 +37,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		FloatValue: -2,
 	})
 
-	blindsideProc := asnRogue.RegisterAura(core.Aura{
+	blindsideProc := core.BlockPrepull(asnRogue.RegisterAura(core.Aura{
 		Label:    "Blindside",
 		ActionID: core.ActionID{SpellID: 121153},
 		Duration: time.Second * 10,
@@ -54,7 +54,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 				aura.Deactivate(sim)
 			}
 		},
-	})
+	}))
 
 	core.MakePermanent(core.MakeProcTriggerAura(&asnRogue.Unit, core.ProcTrigger{
 		Name:           "Blindside Proc Trigger",

@@ -56,6 +56,9 @@ func (bdk *BloodDeathKnight) registerMastery() {
 						shield.SetStacks(sim, int32(currentShield))
 					}
 				},
+				OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+					shieldSpell.SelfShield().Deactivate(sim)
+				},
 			},
 		},
 
@@ -81,7 +84,6 @@ func (bdk *BloodDeathKnight) registerMastery() {
 			shieldSpell.Cast(sim, result.Target)
 		},
 	})
-
 }
 
 func (bdk BloodDeathKnight) getMasteryPercent() float64 {

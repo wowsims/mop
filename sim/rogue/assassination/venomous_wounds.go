@@ -27,13 +27,15 @@ func (sinRogue *AssassinationRogue) registerVenomousWounds() {
 				if sim.Proc(vwProcChance, "Venomous Wounds") {
 					// Trigger VW after small delay to prevent aura refresh loops
 					// https://i.gyazo.com/dc845a371102294abfb207c6fd586bfa.png
-					core.StartDelayedAction(sim, core.DelayedActionOptions{
-						DoAt:     sim.CurrentTime + 1,
-						Priority: core.ActionPriorityDOT,
-						OnAction: func(s *core.Simulation) {
-							sinRogue.VenomousWounds.Cast(sim, result.Target)
-						},
-					})
+					pa := sim.GetConsumedPendingActionFromPool()
+					pa.NextActionAt = sim.CurrentTime + 1
+					pa.Priority = core.ActionPriorityDOT
+
+					pa.OnAction = func(sim *core.Simulation) {
+						sinRogue.VenomousWounds.Cast(sim, result.Target)
+					}
+
+					sim.AddPendingAction(pa)
 				}
 			}
 		},

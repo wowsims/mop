@@ -223,6 +223,9 @@ func (hp *HunterPet) Reset(sim *core.Simulation) {
 	}
 }
 
+func (hp *HunterPet) OnEncounterStart(_ *core.Simulation) {
+}
+
 func (hp *HunterPet) ExecuteCustomRotation(sim *core.Simulation) {
 	if !hp.isPrimary {
 		return
@@ -241,7 +244,7 @@ func (hp *HunterPet) ExecuteCustomRotation(sim *core.Simulation) {
 
 	target := hp.CurrentTarget
 
-	if hp.frostStormBreath != nil && hp.frostStormBreath.CanCast(sim, target) && len(sim.Encounter.TargetUnits) > 4 {
+	if hp.frostStormBreath != nil && hp.frostStormBreath.CanCast(sim, target) && len(sim.Encounter.ActiveTargetUnits) > 4 {
 		hp.frostStormBreath.Cast(sim, target)
 	}
 

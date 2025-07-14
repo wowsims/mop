@@ -33,7 +33,8 @@ func (bm *BrewmasterMonk) registerGuard() {
 	aura := bm.NewDamageAbsorptionAura(core.AbsorptionAuraConfig{
 		Aura: core.Aura{
 			Label:    "Guard Absorb" + bm.Label,
-			ActionID: actionID.WithTag(1),
+			ActionID: actionID,
+			// ActionIDForProc: actionID,
 			Duration: time.Second * 30,
 		},
 		ShouldApplyToResult: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult, isPeriodic bool) bool {
@@ -50,7 +51,7 @@ func (bm *BrewmasterMonk) registerGuard() {
 
 	aura.Aura.AttachMultiplicativePseudoStatBuff(&bm.PseudoStats.HealingTakenMultiplier, 1.3)
 
-	bm.RegisterSpell(core.SpellConfig{
+	bm.Guard = bm.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		Flags:          monk.SpellFlagSpender | core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
 		ClassSpellMask: monk.MonkSpellGuard,

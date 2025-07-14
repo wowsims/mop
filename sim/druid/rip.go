@@ -16,14 +16,15 @@ func (druid *Druid) registerRipSpell() {
 	const attackPowerCoeff = 0.0484
 
 	// Scaled parameters for spell code
-	baseDamage := coefficient * druid.ClassSpellScaling // 112.7582
+	baseDamage := coefficient * druid.ClassSpellScaling              // 112.7582
 	comboPointCoeff := resourceCoefficient * druid.ClassSpellScaling // 319.664
 
 	druid.Rip = druid.RegisterSpell(Cat, core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: 1079},
-		SpellSchool: core.SpellSchoolPhysical,
-		ProcMask:    core.ProcMaskMeleeMHSpecial,
-		Flags:       core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		ActionID:       core.ActionID{SpellID: 1079},
+		SpellSchool:    core.SpellSchoolPhysical,
+		ProcMask:       core.ProcMaskMeleeMHSpecial,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		ClassSpellMask: DruidSpellRip,
 
 		EnergyCost: core.EnergyCostOptions{
 			Cost:   30,
@@ -61,7 +62,7 @@ func (druid *Druid) registerRipSpell() {
 
 				cp := float64(druid.ComboPoints())
 				ap := dot.Spell.MeleeAttackPower()
-				dot.SnapshotPhysical(target, baseDamage + comboPointCoeff*cp + attackPowerCoeff*cp*ap)
+				dot.SnapshotPhysical(target, baseDamage+comboPointCoeff*cp+attackPowerCoeff*cp*ap)
 
 				// Store snapshot power parameters for later use.
 				druid.UpdateBleedPower(druid.Rip, sim, target, true, true)

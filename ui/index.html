@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="" data-i18n-lang>
 	<head>
-		<title>WoWSims - Mists of Pandaria</title>
+		<title id="title" data-i18n="landing.home.title">Welcome to WoWSims MOP</title>
 		<meta charset="utf-8">
 
 		<link rel="icon" type="image/x-icon" href="/mop/assets/favicon_io/favicon.ico">
 
-		<meta name="description" content="Simulations for World of Warcraft® Mists of Pandaria Classic.">
+		<meta name="description" content="" data-i18n="landing.home.description">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="stylesheet" href="/scss/homepage/index.scss">
@@ -22,17 +22,17 @@
 							<a href="#" class="navbar-brand d-flex align-items-center p-0 m-0">
 								<img class="wowsims-logo" src="/mop/assets/img/WoW-Simulator-Icon.png">
 								<div class="d-flex flex-column">
-									<h2 class="wowsims-title">WoWSims</h2>
-									<h3 class="expansion-title w-100">Mists of Pandaria</h2>
+									<h2 class="wowsims-title" data-i18n="landing.header.wowsims"></h2>
+									<h3 class="expansion-title w-100" data-i18n="landing.header.expansion"></h3>
 								</div>
 							</a>
-							<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="Toggle navigation">
+							<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="" data-i18n="landing.navigation.toggle">
 								<i class="fas fa-bars fa-2x"></i>
 							</button>
 						</div>
 						<div id="homepageHeaderCollapse" class="collapse navbar-collapse homepage-header-collapse order-2 order-md-1">
 							<div class="navbar-nav">
-								<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="Toggle navigation">
+								<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageHeaderCollapse" aria-controls="homepageHeaderCollapse" aria-expanded="false" aria-label="" data-i18n="landing.navigation.toggle">
 									<i class="fas fa-times fa-2x"></i>
 								</button>
 								<a href="https://discord.gg/p3DgvmnDCS" target="_blank" class="nav-link link-alt">
@@ -43,8 +43,15 @@
 								</a>
 								<a href="https://patreon.com/wowsims" target="_blank" class="nav-link link-alt">
 									<i class="patreon-link fab fa-patreon fa-2x me-2"></i>
-									<span class="fs-4 d-md-none d-lg-block">Support our devs</span>
+									<span class="fs-4 d-md-none d-lg-block" data-i18n="landing.header.supportDevs"></span>
 								</a>
+								<div class="nav-item dropdown">
+									<button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="languageDropdown">
+										<i class="fas fa-globe fa-2x"></i>
+									</button>
+									<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+									</ul>
+								</div>
 							</div>
 						</div>
 					</nav>
@@ -53,17 +60,14 @@
 			<main>
 				<div class="container homepage-content-container">
 					<div class="info-container">
-						<p class="wowsims-info">
-							Welcome to WoWSims - Mists of Pandaria! This is a community-driven project to provide class and raid simulations for
-							World of Warcraft® Mists of Pandaria Classic together with the leading theorycrafters and class representatives.
-						</p>
+						<p id="description" class="wowsims-info" data-i18n="landing.home.welcomeDescription"></p>
 					</div>
 					<div class="sim-links-container">
 						<!-- <div class="sim-links">
 							<a href="/mop/raid/" class="sim-link raid-sim-link text-white">
 								<div class="sim-link-content">
 									<img src="/mop/assets/img/raid_icon.png" class="sim-link-icon">
-									<span class="sim-link-title">Full Raid Sim</span>
+									<span class="sim-link-title" data-i18n="landing.simulations.full_raid">Full Raid Sim</span>
 								</div>
 							</a>
 						</div> -->
@@ -74,8 +78,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_deathknight.jpg" class="sim-link-icon border-death-knight">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Death Knight</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.death_knight"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -85,9 +89,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_bloodpresence.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Death Knight</span>
-													<span class="sim-link-title">Blood</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.death_knight"></span>
+													<span class="sim-link-title" data-i18n="common.specs.death_knight.blood"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -97,9 +101,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_frostpresence.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Death Knight</span>
-													<span class="sim-link-title">Frost</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.death_knight"></span>
+													<span class="sim-link-title" data-i18n="common.specs.death_knight.frost"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -109,9 +113,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_unholypresence.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Death Knight</span>
-													<span class="sim-link-title">Unholy</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.death_knight"></span>
+													<span class="sim-link-title" data-i18n="common.specs.death_knight.unholy"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -124,8 +128,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_priest.jpg" class="sim-link-icon border-priest">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Priest</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.priest"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -135,9 +139,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_powerwordshield.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Priest</span>
-													<span class="sim-link-title">Discipline</span>
-													<span class="launch-status-label text-brand">Not Supported</span>
+													<span class="sim-link-label" data-i18n="common.classes.priest"></span>
+													<span class="sim-link-title" data-i18n="common.specs.priest.discipline"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.unlaunched"></span>
 												</div>
 											</div>
 										</a>
@@ -147,9 +151,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_guardianspirit.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Priest</span>
-													<span class="sim-link-title">Holy</span>
-													<span class="launch-status-label text-brand">Not Supported</span>
+													<span class="sim-link-label" data-i18n="common.classes.priest"></span>
+													<span class="sim-link-title" data-i18n="common.specs.priest.holy"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.unlaunched"></span>
 												</div>
 											</div>
 										</a>
@@ -159,9 +163,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowwordpain.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Priest</span>
-													<span class="sim-link-title">Shadow</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.priest"></span>
+													<span class="sim-link-title" data-i18n="common.specs.priest.shadow"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -174,8 +178,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_druid.jpg" class="sim-link-icon border-druid">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Druid</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.druid"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -185,9 +189,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_nature_starfall.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Druid</span>
-													<span class="sim-link-title">Balance</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.druid"></span>
+													<span class="sim-link-title" data-i18n="common.specs.druid.balance"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -197,9 +201,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_druid_catform.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Druid</span>
-													<span class="sim-link-title">Feral</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.druid"></span>
+													<span class="sim-link-title" data-i18n="common.specs.druid.feral"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.unlaunched"></span>
 												</div>
 											</div>
 										</a>
@@ -209,9 +213,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_racial_bearform.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Druid</span>
-													<span class="sim-link-title">Guardian</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.druid"></span>
+													<span class="sim-link-title" data-i18n="common.specs.druid.guardian"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -221,9 +225,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_nature_healingtouch.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Druid</span>
-													<span class="sim-link-title">Restoration</span>
-													<span class="launch-status-label text-brand">Not Supported</span>
+													<span class="sim-link-label" data-i18n="common.classes.druid"></span>
+													<span class="sim-link-title" data-i18n="common.specs.druid.restoration"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.unlaunched"></span>
 												</div>
 											</div>
 										</a>
@@ -236,8 +240,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_rogue.jpg" class="sim-link-icon border-rogue">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Rogue</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.rogue"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -247,9 +251,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_rogue_eviscerate.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Rogue</span>
-													<span class="sim-link-title">Assassination</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.rogue"></span>
+													<span class="sim-link-title" data-i18n="common.specs.rogue.assassination"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -259,9 +263,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_backstab.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Rogue</span>
-													<span class="sim-link-title">Combat</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.rogue"></span>
+													<span class="sim-link-title" data-i18n="common.specs.rogue.combat"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -271,9 +275,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_stealth.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Rogue</span>
-													<span class="sim-link-title">Subtlety</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.rogue"></span>
+													<span class="sim-link-title" data-i18n="common.specs.rogue.subtlety"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -286,8 +290,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_hunter.jpg" class="sim-link-icon border-hunter">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Hunter</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.hunter"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -297,9 +301,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_hunter_bestialdiscipline.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Hunter</span>
-													<span class="sim-link-title">Beast mastery</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.hunter"></span>
+													<span class="sim-link-title" data-i18n="common.specs.hunter.beast_mastery"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -309,9 +313,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_hunter_focusedaim.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Hunter</span>
-													<span class="sim-link-title">Marksmanship</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.hunter"></span>
+													<span class="sim-link-title" data-i18n="common.specs.hunter.marksmanship"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -321,9 +325,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_hunter_camouflage.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Hunter</span>
-													<span class="sim-link-title">Survival</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.hunter"></span>
+													<span class="sim-link-title" data-i18n="common.specs.hunter.survival"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -336,8 +340,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_shaman.jpg" class="sim-link-icon border-shaman">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Shaman</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.shaman"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -347,9 +351,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_nature_lightning.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Shaman</span>
-													<span class="sim-link-title">Elemental</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.shaman"></span>
+													<span class="sim-link-title" data-i18n="common.specs.shaman.elemental"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -359,9 +363,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_nature_lightningshield.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Shaman</span>
-													<span class="sim-link-title">Enhancement</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.shaman"></span>
+													<span class="sim-link-title" data-i18n="common.specs.shaman.enhancement"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -371,9 +375,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_nature_magicimmunity.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Shaman</span>
-													<span class="sim-link-title">Restoration</span>
-													<span class="launch-status-label text-brand">Not Supported</span>
+													<span class="sim-link-label" data-i18n="common.classes.shaman"></span>
+													<span class="sim-link-title" data-i18n="common.specs.shaman.restoration"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.unlaunched"></span>
 												</div>
 											</div>
 										</a>
@@ -386,8 +390,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_mage.jpg" class="sim-link-icon border-mage">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Mage</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.mage"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -397,9 +401,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_magicalsentry.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Mage</span>
-													<span class="sim-link-title">Arcane</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.mage"></span>
+													<span class="sim-link-title" data-i18n="common.specs.mage.arcane"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -409,9 +413,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_firebolt02.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Mage</span>
-													<span class="sim-link-title">Fire</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.mage"></span>
+													<span class="sim-link-title" data-i18n="common.specs.mage.fire"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -421,9 +425,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_frost_frostbolt02.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Mage</span>
-													<span class="sim-link-title">Frost</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.mage"></span>
+													<span class="sim-link-title" data-i18n="common.specs.mage.frost"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -436,8 +440,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_monk.jpg" class="sim-link-icon border-monk">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Monk</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.monk"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -447,9 +451,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_monk_brewmaster_spec.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Monk</span>
-													<span class="sim-link-title">Brewmaster</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.monk"></span>
+													<span class="sim-link-title" data-i18n="common.specs.monk.brewmaster"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -459,9 +463,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_monk_mistweaver_spec.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Monk</span>
-													<span class="sim-link-title">Mistweaver</span>
-													<span class="launch-status-label text-brand">Not Yet Supported</span>
+													<span class="sim-link-label" data-i18n="common.classes.monk"></span>
+													<span class="sim-link-title" data-i18n="common.specs.monk.mistweaver"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.unlaunched"></span>
 												</div>
 											</div>
 										</a>
@@ -471,9 +475,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_monk_windwalker_spec.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Monk</span>
-													<span class="sim-link-title">Windwalker</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.monk"></span>
+													<span class="sim-link-title" data-i18n="common.specs.monk.windwalker"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -486,8 +490,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_warlock.jpg" class="sim-link-icon border-warlock">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Warlock</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.warlock"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -497,9 +501,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_deathcoil.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Warlock</span>
-													<span class="sim-link-title">Affliction</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.warlock"></span>
+													<span class="sim-link-title" data-i18n="common.specs.warlock.affliction"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -509,10 +513,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_metamorphosis.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Warlock</span>
-													<span class="sim-link-title">Demonology</span>
-													<span
-														class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.warlock"></span>
+													<span class="sim-link-title" data-i18n="common.specs.warlock.demonology"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -522,9 +525,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_rainoffire.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Warlock</span>
-													<span class="sim-link-title">Destruction</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.warlock"></span>
+													<span class="sim-link-title" data-i18n="common.specs.warlock.destruction"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -537,8 +540,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_paladin.jpg" class="sim-link-icon border-paladin">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Paladin</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.paladin"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -548,9 +551,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_holybolt.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Paladin</span>
-													<span class="sim-link-title">Holy</span>
-													<span class="launch-status-label text-brand">Not Supported</span>
+													<span class="sim-link-label" data-i18n="common.classes.paladin"></span>
+													<span class="sim-link-title" data-i18n="common.specs.paladin.holy"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.unlaunched"></span>
 												</div>
 											</div>
 										</a>
@@ -560,9 +563,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofthetemplar.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Paladin</span>
-													<span class="sim-link-title">Protection</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.paladin"></span>
+													<span class="sim-link-title" data-i18n="common.specs.paladin.protection"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -572,9 +575,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_auraoflight.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Paladin</span>
-													<span class="sim-link-title">Retribution</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.paladin"></span>
+													<span class="sim-link-title" data-i18n="common.specs.paladin.retribution"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -587,8 +590,8 @@
 									<div class="sim-link-content">
 										<img src="https://wow.zamimg.com/images/wow/icons/large/class_warrior.jpg" class="sim-link-icon border-warrior">
 										<div class="d-flex flex-column">
-											<span class="sim-link-title">Warrior</span>
-											<span class="launch-status-label text-brand">Alpha</span>
+											<span class="sim-link-title" data-i18n="common.classes.warrior"></span>
+											<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 										</div>
 									</div>
 								</button>
@@ -598,9 +601,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_savageblow.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Warrior</span>
-													<span class="sim-link-title">Arms</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.warrior"></span>
+													<span class="sim-link-title" data-i18n="common.specs.warrior.arms"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -610,9 +613,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_innerrage.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Warrior</span>
-													<span class="sim-link-title">Fury</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.warrior"></span>
+													<span class="sim-link-title" data-i18n="common.specs.warrior.fury"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -622,9 +625,9 @@
 											<div class="sim-link-content">
 												<img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_defensivestance.jpg" class="sim-link-icon">
 												<div class="d-flex flex-column">
-													<span class="sim-link-label">Warrior</span>
-													<span class="sim-link-title">Protection</span>
-													<span class="launch-status-label text-brand">Alpha</span>
+													<span class="sim-link-label" data-i18n="common.classes.warrior"></span>
+													<span class="sim-link-title" data-i18n="common.specs.warrior.protection"></span>
+													<span class="launch-status-label text-brand" data-i18n="common.status.alpha"></span>
 												</div>
 											</div>
 										</a>
@@ -635,7 +638,7 @@
 					</div>
 				</div>
 			</main>
-    </div>
+    	</div>
 		<script src="./index.ts" type="module"></script>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-T3HBB0LXNX"></script>
 		<script>
@@ -643,6 +646,10 @@
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
 			gtag('config', 'G-YEJ8MEHGV2');
+		</script>
+		<script type="module">
+			import { initLocalization } from './i18n/localization.tsx';
+			initLocalization();
 		</script>
 	</body>
 </html>

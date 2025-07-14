@@ -23,9 +23,7 @@ func TestAbort(t *testing.T) {
 		Spec: &proto.Player_ArmsWarrior{
 			ArmsWarrior: &proto.ArmsWarrior{
 				Options: &proto.ArmsWarrior_Options{
-					ClassOptions: &proto.WarriorOptions{
-						StartingRage: 50,
-					},
+					ClassOptions: &proto.WarriorOptions{},
 				},
 			},
 		},

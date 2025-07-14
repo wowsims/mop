@@ -6,9 +6,8 @@ import (
 
 // Note that this is only used when the hardcast and GCD actions happen at different times.
 func (unit *Unit) newHardcastAction(sim *Simulation) {
-	if unit.hardcastAction != nil && !unit.hardcastAction.consumed {
+	if (unit.hardcastAction != nil) && !unit.hardcastAction.consumed {
 		unit.hardcastAction.Cancel(sim)
-		unit.hardcastAction = nil
 	}
 
 	if unit.hardcastAction == nil {

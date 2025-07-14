@@ -58,6 +58,10 @@ func (shaman *Shaman) registerLightningShieldSpell() {
 			aura.RemoveStack(sim)
 			shaman.LightningShieldDamage.Cast(sim, spell.Unit)
 		},
+		OnEncounterStart: func(aura *core.Aura, sim *core.Simulation) {
+			aura.Activate(sim)
+			aura.SetStacks(sim, 1)
+		},
 	})
 
 	shaman.LightningShield = shaman.RegisterSpell(core.SpellConfig{

@@ -14,7 +14,11 @@ type DelayedActionOptions struct {
 	CleanUp  func(*Simulation)
 }
 
-func NewDelayedAction(sim *Simulation, options DelayedActionOptions) *PendingAction {
+// Use this only when your code requires persistent access to the returned
+// *PendingAction pointer. For "fire and forget" delayed actions, use
+// sim.GetConsumedPendingActionFromPool() instead, so that the PendingAction
+// struct will be re-used rather than re-allocated on each call.
+func NewDelayedAction(options DelayedActionOptions) *PendingAction {
 	if options.OnAction == nil {
 		panic("NewDelayedAction: OnAction must not be nil")
 	}
@@ -25,13 +29,6 @@ func NewDelayedAction(sim *Simulation, options DelayedActionOptions) *PendingAct
 		OnAction:     options.OnAction,
 		CleanUp:      options.CleanUp,
 	}
-}
-
-// Convenience for immediately creating and starting a delayed action.
-func StartDelayedAction(sim *Simulation, options DelayedActionOptions) *PendingAction {
-	pa := NewDelayedAction(sim, options)
-	sim.AddPendingAction(pa)
-	return pa
 }
 
 type PeriodicActionOptions struct {

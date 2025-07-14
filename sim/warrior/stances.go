@@ -44,10 +44,10 @@ func (warrior *Warrior) makeStanceSpell(stance Stance, aura *core.Aura, stanceCD
 			if warrior.WarriorInputs.StanceSnapshot {
 				// Delayed, so same-GCD casts are affected by the current aura.
 				//  Alternatively, those casts could just (artificially) happen before the stance change.
-				core.StartDelayedAction(sim, core.DelayedActionOptions{
-					DoAt:     sim.CurrentTime + 10*time.Millisecond,
-					OnAction: aura.Activate,
-				})
+				pa := sim.GetConsumedPendingActionFromPool()
+				pa.NextActionAt = sim.CurrentTime + 10*time.Millisecond
+				pa.OnAction = aura.Activate
+				sim.AddPendingAction(pa)
 			} else {
 				aura.Activate(sim)
 			}

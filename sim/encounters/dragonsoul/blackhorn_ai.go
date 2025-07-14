@@ -151,10 +151,10 @@ func (ai *BlackhornAI) Initialize(target *core.Target, config *proto.Target) {
 
 	if ai.isBoss {
 		ai.BossUnit = &target.Unit
-		ai.AddUnit = &target.NextTarget().Unit
+		ai.AddUnit = &target.NextActiveTarget().Unit
 	} else {
 		ai.AddUnit = &target.Unit
-		ai.BossUnit = &target.NextTarget().Unit
+		ai.BossUnit = &target.NextActiveTarget().Unit
 	}
 
 	ai.MainTank = ai.BossUnit.CurrentTarget
@@ -390,15 +390,15 @@ func (ai *BlackhornAI) registerTwilightBreath() {
 			// Hacky work-around to the add AI not having access to user input parameters
 			twilightBreathSpell := ai.AddUnit.GetSpell(twilightBreathActionID)
 			twilightBreathSpell.CD.Set(core.DurationFromSeconds(sim.RandomFloat("Twilight Breath Timing") * twilightBreathSpell.CD.Duration.Seconds()))
+			pa := sim.GetConsumedPendingActionFromPool()
+			pa.NextActionAt = ai.disableAddAt - twilightBreathCastTime
+			pa.Priority = core.ActionPriorityDOT
 
-			core.StartDelayedAction(sim, core.DelayedActionOptions{
-				DoAt:     ai.disableAddAt - twilightBreathCastTime,
-				Priority: core.ActionPriorityDOT,
+			pa.OnAction = func(_ *core.Simulation) {
+				twilightBreathSpell.CD.Set(core.NeverExpires)
+			}
 
-				OnAction: func(_ *core.Simulation) {
-					twilightBreathSpell.CD.Set(core.NeverExpires)
-				},
-			})
+			sim.AddPendingAction(pa)
 		})
 	}
 }
@@ -435,22 +435,22 @@ func (ai *BlackhornAI) registerPowerOfTheAspects() {
 
 func (ai *BlackhornAI) Reset(sim *core.Simulation) {
 	// Randomize GCD and swing timings to prevent fake APL-Haste couplings.
-	ai.Target.ExtendGCDUntil(sim, core.DurationFromSeconds(sim.RandomFloat("Specials Timing")*core.BossGCD.Seconds()))
-	ai.Target.AutoAttacks.RandomizeMeleeTiming(sim)
+	ai.Target.Enable(sim)
 
 	if !ai.isBoss {
 		return
 	}
 
 	// Set up delayed action for disabling add swings.
-	core.StartDelayedAction(sim, core.DelayedActionOptions{
-		DoAt:     ai.disableAddAt,
-		Priority: core.ActionPriorityDOT,
+	pa := sim.GetConsumedPendingActionFromPool()
+	pa.NextActionAt = ai.disableAddAt
+	pa.Priority = core.ActionPriorityDOT
 
-		OnAction: func(sim *core.Simulation) {
-			ai.AddUnit.AutoAttacks.CancelAutoSwing(sim)
-		},
-	})
+	pa.OnAction = func(sim *core.Simulation) {
+		sim.DisableTargetUnit(ai.AddUnit, true)
+	}
+
+	sim.AddPendingAction(pa)
 
 	// Set up periodic action for tank swaps.
 	core.StartPeriodicAction(sim, core.PeriodicActionOptions{
@@ -460,15 +460,19 @@ func (ai *BlackhornAI) Reset(sim *core.Simulation) {
 
 		OnAction: func(sim *core.Simulation) {
 			newBossTank := core.Ternary((sim.CurrentTime/ai.tankSwapInterval)%2 == 0, ai.MainTank, ai.OffTank)
-			ai.swapTargets(sim, ai.BossUnit, newBossTank, true)
+			ai.swapTargets(sim, ai.BossUnit, newBossTank)
 			ai.Devastate.CD.Set(sim.CurrentTime + core.DurationFromSeconds(sim.RandomFloat("Devastate Timing")*ai.Devastate.CD.Duration.Seconds()))
 			newAddTank := core.Ternary(newBossTank == ai.MainTank, ai.OffTank, ai.MainTank)
-			ai.swapTargets(sim, ai.AddUnit, newAddTank, sim.CurrentTime < ai.disableAddAt)
+			ai.swapTargets(sim, ai.AddUnit, newAddTank)
 		},
 	})
 }
 
-func (ai *BlackhornAI) swapTargets(sim *core.Simulation, npc *core.Unit, newTankTarget *core.Unit, enableAutos bool) {
+func (ai *BlackhornAI) swapTargets(sim *core.Simulation, npc *core.Unit, newTankTarget *core.Unit) {
+	if !npc.IsEnabled() {
+		return
+	}
+
 	npc.AutoAttacks.CancelAutoSwing(sim)
 	npc.CurrentTarget = newTankTarget
 
@@ -476,10 +480,8 @@ func (ai *BlackhornAI) swapTargets(sim *core.Simulation, npc *core.Unit, newTank
 		newTankTarget.CurrentTarget = npc
 	}
 
-	if enableAutos {
-		npc.AutoAttacks.EnableAutoSwing(sim)
-		npc.AutoAttacks.RandomizeMeleeTiming(sim)
-	}
+	npc.AutoAttacks.EnableAutoSwing(sim)
+	npc.AutoAttacks.RandomizeMeleeTiming(sim)
 }
 
 func (ai *BlackhornAI) ExecuteCustomRotation(sim *core.Simulation) {

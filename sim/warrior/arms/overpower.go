@@ -29,7 +29,7 @@ func (war *ArmsWarrior) registerOverpower() {
 			IgnoreHaste: true,
 		},
 
-		DamageMultiplier: 1.05,
+		DamageMultiplier: 1.05 + 0.2, // 2025-07-01 - Overpower's weapon damage raised to 125% (was 105%)
 		ThreatMultiplier: 1,
 		BonusCritPercent: 60,
 		CritMultiplier:   war.DefaultCritMultiplier(),

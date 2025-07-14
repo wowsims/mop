@@ -9,7 +9,7 @@ func init() {
 }
 
 // func TestRestoration(t *testing.T) {
-// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
+// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
 // 		Class: proto.Class_ClassDruid,
 // 		Race:  proto.Race_RaceTauren,
 

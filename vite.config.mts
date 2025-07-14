@@ -22,21 +22,31 @@ function serveExternalAssets() {
 		configureServer(server) {
 			server.middlewares.use((req, res, next) => {
 				const url = req.url!;
+				const urlWithoutQuery = url.split('?')[0];
+				const isImport = url.includes('?import');
 
-				if (Object.keys(workerMappings).includes(url)) {
-					const targetPath = workerMappings[url as keyof typeof workerMappings];
+				if (Object.keys(workerMappings).includes(urlWithoutQuery)) {
+					const targetPath = workerMappings[urlWithoutQuery as keyof typeof workerMappings];
 					const assetsPath = path.resolve(__dirname, './dist/mop');
 					const requestedPath = path.join(assetsPath, targetPath.replace('/mop/', ''));
-					serveFile(res, requestedPath);
+
+					serveFile(res, requestedPath, isImport);
 					return;
 				}
 
 				if (url.includes('/mop/assets')) {
 					const assetsPath = path.resolve(__dirname, './assets');
-					const assetRelativePath = url.split('/mop/assets')[1];
+					const assetRelativePath = urlWithoutQuery.split('/mop/assets')[1];
 					const requestedPath = path.join(assetsPath, assetRelativePath);
 
-					serveFile(res, requestedPath);
+					serveFile(res, requestedPath, isImport);
+					return;
+				} else if (url.includes('/mop/locales')) {
+					const localesPath = path.resolve(__dirname, './assets/locales');
+					const localeRelativePath = urlWithoutQuery.split('/mop/locales')[1];
+					const requestedPath = path.join(localesPath, localeRelativePath);
+
+					serveFile(res, requestedPath, isImport);
 					return;
 				} else {
 					next();
@@ -46,11 +56,18 @@ function serveExternalAssets() {
 	} satisfies PluginOption;
 }
 
-function serveFile(res: ServerResponse<IncomingMessage>, filePath: string) {
+function serveFile(res: ServerResponse<IncomingMessage>, filePath: string, isImport = false) {
 	if (fs.existsSync(filePath)) {
-		const contentType = determineContentType(filePath);
+		const contentType = determineContentType(filePath, isImport);
 		res.writeHead(200, { 'Content-Type': contentType });
-		fs.createReadStream(filePath).pipe(res);
+		
+		if (isImport && path.extname(filePath).toLowerCase() === '.json') {
+			// For JSON imports, serve as ES module
+			const jsonContent = fs.readFileSync(filePath, 'utf-8');
+			res.end(`export default ${jsonContent}`);
+		} else {
+			fs.createReadStream(filePath).pipe(res);
+		}
 	} else {
 		console.log('Not found on filesystem: ', filePath);
 		res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -58,7 +75,7 @@ function serveFile(res: ServerResponse<IncomingMessage>, filePath: string) {
 	}
 }
 
-function determineContentType(filePath: string) {
+function determineContentType(filePath: string, isImport = false) {
 	const extension = path.extname(filePath).toLowerCase();
 	switch (extension) {
 		case '.jpg':
@@ -76,13 +93,35 @@ function determineContentType(filePath: string) {
 		case '.woff2':
 			return 'font/woff2';
 		case '.json':
-			return 'application/json';
+			return isImport ? 'text/javascript' : 'application/json';
 		case '.wasm':
-			return 'application/wasm'; // Adding MIME type for WebAssembly files
-		// Add more cases as needed
+			return 'application/wasm';
 		default:
 			return 'application/octet-stream';
 	}
+}
+
+function copyLocales() {
+	return {
+		name: 'copy-locales',
+		buildStart() {
+			// add locales here to enable them in the UI
+			const locales = [
+				'en.json',
+				'fr.json'
+			];
+			const srcDir = path.resolve(__dirname, 'assets/locales');
+			const destDir = path.resolve(__dirname, 'dist/mop/assets/locales');
+			if (!fs.existsSync(destDir)) {
+				fs.mkdirSync(destDir, { recursive: true });
+			}
+			locales.forEach(file => {
+				const src = path.join(srcDir, file);
+				const dest = path.join(destDir, file);
+				fs.copyFileSync(src, dest);
+			});
+		},
+	} satisfies PluginOption;
 }
 
 export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
@@ -103,6 +142,7 @@ export default defineConfig(({ command, mode }) => {
 		...baseConfig,
 		plugins: [
 			serveExternalAssets(),
+			copyLocales(),
 			checker({
 				root: path.resolve(__dirname, 'ui'),
 				typescript: true,

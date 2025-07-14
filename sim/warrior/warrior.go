@@ -23,6 +23,7 @@ const (
 	SpellMaskRallyingCry
 	SpellMaskRecklessness
 	SpellMaskShieldWall
+	SpellMaskEnragedRegeneration
 	SpellMaskLastStand
 	SpellMaskCharge
 	SpellMaskSkullBanner
@@ -59,6 +60,7 @@ const (
 	SpellMaskHeroicLeap
 	SpellMaskWildStrike
 	SpellMaskShieldBlock
+	SpellMaskHamstring
 
 	// Talents
 	SpellMaskImpendingVictory
@@ -89,6 +91,7 @@ type Warrior struct {
 	// Current state
 	Stance              Stance
 	CriticalBlockChance []float64 // Can be gained as non-prot via certain talents and spells
+	PrePullChargeGain   float64
 
 	HeroicStrikeCleaveCostMod *core.SpellMod
 
@@ -111,6 +114,7 @@ type Warrior struct {
 	DefensiveStanceAura *core.Aura
 	BerserkerStanceAura *core.Aura
 
+	GlyphOfHamstring    *core.Aura
 	InciteAura          *core.Aura
 	UltimatumAura       *core.Aura
 	SweepingStrikesAura *core.Aura
@@ -120,7 +124,6 @@ type Warrior struct {
 	LastStandAura       *core.Aura
 	RallyingCryAura     *core.Aura
 	VictoryRushAura     *core.Aura
-	SwordAndBoardAura   *core.Aura
 	ShieldBarrierAura   *core.DamageAbsorptionAura
 
 	SkullBannerAura         *core.Aura
@@ -163,6 +166,7 @@ func (warrior *Warrior) Initialize() {
 	warrior.ApplyGlyphs()
 
 	warrior.registerBerserkerRage()
+	warrior.registerEnragedRegeneration()
 	warrior.registerRallyingCry()
 	warrior.registerColossusSmash()
 	warrior.registerExecuteSpell()
@@ -175,6 +179,7 @@ func (warrior *Warrior) Initialize() {
 	warrior.registerShatteringThrow()
 	warrior.registerShieldWall()
 	warrior.registerSunderArmor()
+	warrior.registerHamstring()
 	warrior.registerThunderClap()
 	warrior.registerWhirlwind()
 	warrior.registerCharge()
@@ -190,6 +195,10 @@ func (warrior *Warrior) Reset(_ *core.Simulation) {
 	warrior.Stance = StanceNone
 }
 
+func (warrior *Warrior) OnEncounterStart(sim *core.Simulation) {
+	warrior.PrePullChargeGain = 0
+}
+
 func NewWarrior(character *core.Character, options *proto.WarriorOptions, talents string, inputs WarriorInputs) *Warrior {
 	warrior := &Warrior{
 		Character:         *character,
@@ -201,7 +210,6 @@ func NewWarrior(character *core.Character, options *proto.WarriorOptions, talent
 
 	warrior.EnableRageBar(core.RageBarOptions{
 		MaxRage:            core.TernaryFloat64(warrior.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfUnendingRage), 120, 100),
-		StartingRage:       options.StartingRage,
 		BaseRageMultiplier: 1,
 	})
 
@@ -266,11 +274,11 @@ func (warrior *Warrior) GetRageMultiplier(target *core.Unit) float64 {
 	return 1.0
 }
 
-func (warrior *Warrior) CastNormalizedSweepingStrikesAttack(results []*core.SpellResult, sim *core.Simulation) {
+func (warrior *Warrior) CastNormalizedSweepingStrikesAttack(results core.SpellResultSlice, sim *core.Simulation) {
 	if warrior.SweepingStrikesAura != nil && warrior.SweepingStrikesAura.IsActive() {
 		for _, result := range results {
 			if result.Landed() {
-				warrior.SweepingStrikesNormalizedAttack.Cast(sim, warrior.Env.NextTargetUnit(result.Target))
+				warrior.SweepingStrikesNormalizedAttack.Cast(sim, warrior.Env.NextActiveTargetUnit(result.Target))
 				break
 			}
 		}

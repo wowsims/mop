@@ -2,7 +2,7 @@ import { ref } from 'tsx-vanilla';
 
 import { CacheHandler } from '../../cache_handler';
 import { Player, UnitMetadata } from '../../player.js';
-import { APLValueEclipsePhase, APLValueRuneSlot, APLValueRuneType } from '../../proto/apl.js';
+import { APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy, APLValueEclipsePhase, APLValueRuneSlot, APLValueRuneType } from '../../proto/apl.js';
 import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
 import { ActionId, defaultTargetIcon, getPetIconFromName } from '../../proto_utils/action_id.js';
@@ -789,6 +789,28 @@ export function rotationTypeFieldConfig(field: string): APLPickerBuilderFieldCon
 				id: randomUUID(),
 				...config,
 				defaultLabel: 'Single Target',
+				equals: (a, b) => a == b,
+				values: values,
+			}),
+	};
+}
+
+export function hotwStrategyFieldConfig(field: string): APLPickerBuilderFieldConfig<any, any> {
+	const values = [
+		{ value: HotwStrategy.Caster, label: 'Caster' },
+		{ value: HotwStrategy.Cat, label: 'Cat' },
+		{ value: HotwStrategy.Hybrid, label: 'Hybrid' },
+	];
+
+	return {
+		field: field,
+		label: 'Strategy',
+		newValue: () => HotwStrategy.Caster,
+		factory: (parent, player, config) =>
+			new TextDropdownPicker(parent, player, {
+				id: randomUUID(),
+				...config,
+				defaultLabel: 'Caster',
 				equals: (a, b) => a == b,
 				values: values,
 			}),

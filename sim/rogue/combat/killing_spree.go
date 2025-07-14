@@ -63,11 +63,11 @@ func (comRogue *CombatRogue) registerKillingSpreeCD() {
 				NumTicks:        7,
 				TickImmediately: true,
 				OnAction: func(s *core.Simulation) {
-					targetCount := sim.GetNumTargets()
+					targetCount := sim.ActiveTargetCount()
 					target := comRogue.CurrentTarget
 					if targetCount > 1 && comRogue.HasActiveAura("Blade Flurry") {
 						newUnitIndex := int32(math.Ceil(float64(targetCount)*sim.RandomFloat("Killing Spree"))) - 1
-						target = sim.GetTargetUnit(newUnitIndex)
+						target = sim.Encounter.ActiveTargetUnits[newUnitIndex]
 					}
 					mhWeaponSwing.Cast(sim, target)
 					ohWeaponSwing.Cast(sim, target)

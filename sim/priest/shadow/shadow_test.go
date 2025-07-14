@@ -14,31 +14,33 @@ func init() {
 }
 
 func TestShadow(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassPriest,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceNightElf, proto.Race_RaceDraenei},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassPriest,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceNightElf, proto.Race_RaceDraenei},
 
-		GearSet: core.GetGearSet("../../../ui/priest/shadow/gear_sets", "pre_raid"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p1"),
-		},
-		Talents:     DefaultTalents,
-		Glyphs:      &proto.Glyphs{},
-		Consumables: FullConsumesSpec,
-
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
-
-		Rotation: core.GetAplRotation("../../../ui/priest/shadow/apls", "default"),
-
-		ItemFilter: core.ItemFilter{
-			WeaponTypes: []proto.WeaponType{
-				proto.WeaponType_WeaponTypeDagger,
-				proto.WeaponType_WeaponTypeMace,
-				proto.WeaponType_WeaponTypeOffHand,
-				proto.WeaponType_WeaponTypeStaff,
+			GearSet: core.GetGearSet("../../../ui/priest/shadow/gear_sets", "pre_raid"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p1"),
 			},
-			ArmorType: proto.ArmorType_ArmorTypeCloth,
+			Talents:     DefaultTalents,
+			Glyphs:      &proto.Glyphs{},
+			Consumables: FullConsumesSpec,
+
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
+
+			Rotation: core.GetAplRotation("../../../ui/priest/shadow/apls", "default"),
+
+			ItemFilter: core.ItemFilter{
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeDagger,
+					proto.WeaponType_WeaponTypeMace,
+					proto.WeaponType_WeaponTypeOffHand,
+					proto.WeaponType_WeaponTypeStaff,
+				},
+				ArmorType: proto.ArmorType_ArmorTypeCloth,
+			},
 		},
 	}))
 }

@@ -52,12 +52,13 @@ func (ret *RetributionPaladin) Initialize() {
 	ret.registerArtOfWar()
 	ret.registerDivineStorm()
 	ret.registerExorcism()
-	ret.registerHotfixPassive()
 	ret.registerInquisition()
 	ret.registerJudgmentsOfTheBold()
 	ret.registerSealOfJustice()
 	ret.registerSwordOfLight()
 	ret.registerTemplarsVerdict()
+
+	ret.registerHotfixPassive()
 }
 
 func (ret *RetributionPaladin) ApplyTalents() {
@@ -67,4 +68,9 @@ func (ret *RetributionPaladin) ApplyTalents() {
 
 func (ret *RetributionPaladin) Reset(sim *core.Simulation) {
 	ret.Paladin.Reset(sim)
+}
+
+func (ret *RetributionPaladin) OnEncounterStart(sim *core.Simulation) {
+	ret.HolyPower.ResetBarTo(sim, 1)
+	ret.Paladin.OnEncounterStart(sim)
 }

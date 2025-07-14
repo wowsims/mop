@@ -231,8 +231,10 @@ var ItemSetPlateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 
 				war.ShieldBarrierAura.Aura.ApplyOnStacksChange(func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
 					if setBonusAura.IsActive() {
-						absorbLoss := float64(oldStacks - newStacks)
-						war.GainHealth(sim, absorbLoss*0.3, healthMetrics)
+						absorbLoss := max(0, float64(oldStacks-newStacks))
+						if absorbLoss > 0 {
+							war.GainHealth(sim, absorbLoss*0.3, healthMetrics)
+						}
 					}
 				})
 			})

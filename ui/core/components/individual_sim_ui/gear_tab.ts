@@ -1,3 +1,4 @@
+import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { EquipmentSpec, UnitStats } from '../../proto/common';
@@ -8,7 +9,7 @@ import GearPicker from '../gear_picker/gear_picker';
 import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
 import { GemSummary } from './gem_summary';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
 import { ReforgeSummary } from './reforge_summary';
 
 export class GearTab extends SimTab {
@@ -18,7 +19,7 @@ export class GearTab extends SimTab {
 	readonly rightPanel: HTMLElement;
 
 	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
-		super(parentElem, simUI, { identifier: 'gear-tab', title: 'Gear' });
+		super(parentElem, simUI, { identifier: 'gear-tab', title: i18n.t('gear.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = document.createElement('div');
@@ -54,7 +55,7 @@ export class GearTab extends SimTab {
 	}
 
 	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, ['gear']);
+		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Gear]);
 	}
 
 	private buildSavedGearsetPicker() {

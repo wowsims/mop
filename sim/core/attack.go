@@ -613,7 +613,7 @@ func (aa *AutoAttacks) EnableAutoSwing(sim *Simulation) {
 }
 
 func (aa *AutoAttacks) EnableMeleeSwing(sim *Simulation) {
-	if !aa.AutoSwingMelee {
+	if !aa.AutoSwingMelee || sim.isInPrepull {
 		return
 	}
 
@@ -642,7 +642,7 @@ func (aa *AutoAttacks) EnableMeleeSwing(sim *Simulation) {
 }
 
 func (aa *AutoAttacks) EnableRangedSwing(sim *Simulation) {
-	if !aa.AutoSwingRanged || aa.ranged.enabled {
+	if !aa.AutoSwingRanged || aa.ranged.enabled || sim.isInPrepull {
 		return
 	}
 

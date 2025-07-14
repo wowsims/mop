@@ -32,6 +32,10 @@ type Agent interface {
 	// and once after the final iteration.
 	Reset(sim *Simulation)
 
+	// Called at the start of each encounter, after the pre-pull.
+	// Used for resetting resources, deactivating auras etc.
+	OnEncounterStart(sim *Simulation)
+
 	// Custom factories for APL values and actions, for cases where the value/action
 	// involves class or spec-specific behavior.
 	//

@@ -49,21 +49,23 @@ func TestAffliction(t *testing.T) {
 		PrepotId: 76093, // Potion of the Jade Serpent
 	}
 
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassWarlock,
-		Race:       proto.Race_RaceOrc,
-		OtherRaces: []proto.Race{proto.Race_RaceTroll, proto.Race_RaceGoblin, proto.Race_RaceHuman},
-		GearSet:    core.GetGearSet("../../../ui/warlock/affliction/gear_sets", "preraid"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/warlock/affliction/gear_sets", "p1"),
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassWarlock,
+			Race:       proto.Race_RaceOrc,
+			OtherRaces: []proto.Race{proto.Race_RaceTroll, proto.Race_RaceGoblin, proto.Race_RaceHuman},
+			GearSet:    core.GetGearSet("../../../ui/warlock/affliction/gear_sets", "preraid"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/warlock/affliction/gear_sets", "p1"),
+			},
+			Talents:          "231211",
+			Consumables:      fullConsumesSpec,
+			SpecOptions:      core.SpecOptionsCombo{Label: "Affliction Warlock", SpecOptions: defaultAfflictionWarlock},
+			OtherSpecOptions: []core.SpecOptionsCombo{},
+			Rotation:         core.GetAplRotation("../../../ui/warlock/affliction/apls", "default"),
+			OtherRotations:   []core.RotationCombo{},
+			ItemFilter:       itemFilter,
+			StartingDistance: 25,
 		},
-		Talents:          "231211",
-		Consumables:      fullConsumesSpec,
-		SpecOptions:      core.SpecOptionsCombo{Label: "Affliction Warlock", SpecOptions: defaultAfflictionWarlock},
-		OtherSpecOptions: []core.SpecOptionsCombo{},
-		Rotation:         core.GetAplRotation("../../../ui/warlock/affliction/apls", "default"),
-		OtherRotations:   []core.RotationCombo{},
-		ItemFilter:       itemFilter,
-		StartingDistance: 25,
 	}))
 }

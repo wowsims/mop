@@ -24,12 +24,9 @@ func (druid *Druid) registerHurricaneSpell() {
 		ThreatMultiplier: 1,
 		BonusCoefficient: HurricaneBonusCoeff,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			damage := druid.CalcScalingSpellDmg(HurricaneCoeff)
-
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, aoeTarget, damage, spell.OutcomeMagicHitAndCrit)
-			}
+			spell.CalcAndDealAoeDamage(sim, damage, spell.OutcomeMagicHitAndCrit)
 		},
 	})
 

@@ -88,7 +88,6 @@ func (frost *FrostMage) NewFrozenOrb() *FrozenOrb {
 
 func (frozenOrb *FrozenOrb) enable(sim *core.Simulation) {
 	frozenOrb.TickCount = 0
-	frozenOrb.EnableDynamicStats(createFrozenOrbInheritance())
 }
 
 func (frozenOrb *FrozenOrb) GetPet() *core.Pet {
@@ -101,6 +100,9 @@ func (frozenOrb *FrozenOrb) Initialize() {
 
 func (frozenOrb *FrozenOrb) Reset(_ *core.Simulation) {
 	frozenOrb.TickCount = 0
+}
+
+func (frozenOrb *FrozenOrb) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (frozenOrb *FrozenOrb) ExecuteCustomRotation(sim *core.Simulation) {
@@ -134,16 +136,11 @@ func (frozenOrb *FrozenOrb) registerFrozenOrbTickSpell() {
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
 			return frozenOrb.TickCount < 10
 		},
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			damage := frozenOrb.mageOwner.CalcAndRollDamageRange(sim, frozenOrbScaling, frozenOrbVariance)
-			anyLanded := false
-			for _, aoeTarget := range sim.Encounter.TargetUnits {
-				result := spell.CalcAndDealDamage(sim, aoeTarget, damage, spell.OutcomeMagicHitAndCrit)
-				if !anyLanded && result.Landed() {
-					anyLanded = true
-				}
-			}
-			if anyLanded && sim.Proc(0.15, "FingersOfFrostProc") {
+			results := spell.CalcAndDealAoeDamage(sim, damage, spell.OutcomeMagicHitAndCrit)
+
+			if results.AnyLanded() && sim.Proc(0.15, "FingersOfFrostProc") {
 				frozenOrb.mageOwner.FingersOfFrostAura.Activate(sim)
 				frozenOrb.mageOwner.FingersOfFrostAura.AddStack(sim)
 			}

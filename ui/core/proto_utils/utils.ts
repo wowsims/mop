@@ -13,6 +13,7 @@ import {
 	ItemType,
 	Profession,
 	Race,
+	RaidBuffs,
 	RangedWeaponType,
 	Spec,
 	UnitReference,
@@ -1972,11 +1973,7 @@ export function enchantAppliesToItem(enchant: Enchant, item: Item): boolean {
 			return false;
 	}
 
-	if (
-		item.rangedWeaponType != RangedWeaponType.RangedWeaponTypeWand &&
-		item.rangedWeaponType > 0 &&
-		enchant.type != ItemType.ItemTypeRanged
-	) {
+	if (item.rangedWeaponType != RangedWeaponType.RangedWeaponTypeWand && item.rangedWeaponType > 0 && enchant.type != ItemType.ItemTypeRanged) {
 		return false;
 	}
 
@@ -2061,6 +2058,13 @@ export const orderedResourceTypes: Array<ResourceType> = [
 
 export const AL_CATEGORY_HARD_MODE = 'Hard Mode';
 export const AL_CATEGORY_TITAN_RUNE = 'Titan Rune';
+
+export const defaultRaidBuffMajorDamageCooldowns = (classID?: Class): Partial<RaidBuffs> => {
+	return RaidBuffs.create({
+		skullBannerCount: classID == Class.ClassWarrior ? 1 : 2,
+		stormlashTotemCount: classID == Class.ClassShaman ? 3 : 4,
+	});
+};
 
 // Utilities for migrating protos between versions
 

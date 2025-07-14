@@ -7,6 +7,7 @@ import {
 } from '../../core/proto/paladin.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import P1Gear from './gear_sets/p1.gear.json';
 
 // Preset options for this spec.
@@ -48,7 +49,9 @@ export const DefaultOptions = Paladin_Options.create({
 	},
 });
 
-export const DefaultRaidBuffs = RaidBuffs.create({});
+export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns()
+});
 
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 58086, // Flask of the Draconic Mind

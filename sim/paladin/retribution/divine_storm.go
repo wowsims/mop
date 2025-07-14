@@ -13,7 +13,6 @@ Using Divine Storm will also heal you for 5% of your maximum health.
 -- /Glyph of Divine Storm --
 */
 func (ret *RetributionPaladin) registerDivineStorm() {
-	numTargets := ret.Env.GetNumTargets()
 	actionID := core.ActionID{SpellID: 53385}
 
 	ret.RegisterSpell(core.SpellConfig{
@@ -39,22 +38,16 @@ func (ret *RetributionPaladin) registerDivineStorm() {
 		CritMultiplier:   ret.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			results := make([]*core.SpellResult, numTargets)
-
-			for idx := range numTargets {
-				currentTarget := sim.Environment.GetTargetUnit(idx)
-				baseDamage := ret.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-				results[idx] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-			}
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMeleeSpecialHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+				return ret.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
+			})
 
 			if !ret.DivineCrusaderAura.IsActive() {
 				ret.HolyPower.Spend(sim, 3, actionID)
 			}
 
-			for idx := range numTargets {
-				spell.DealDamage(sim, results[idx])
-			}
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 }

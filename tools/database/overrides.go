@@ -869,7 +869,7 @@ var SharedSpellsIcons = []int32{
 	// Registered CD's
 	49016,
 	57933,
-	64382,
+	1249459,
 	10060,
 	16190,
 	29166,

@@ -10,7 +10,7 @@ import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Ra
 import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { Sim } from '../../core/sim';
+import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as RogueInputs from '../inputs';
 import * as Presets from './presets';
 
@@ -21,28 +21,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 	knownIssues: [],
 
 	// All stats for which EP should be calculated.
-	epStats: [
-		Stat.StatAgility,
-		Stat.StatHitRating,
-		Stat.StatCritRating,
-		Stat.StatHasteRating,
-		Stat.StatMasteryRating,
-		Stat.StatExpertiseRating,
-	],
-	epPseudoStats: [
-		PseudoStat.PseudoStatMainHandDps,
-		PseudoStat.PseudoStatOffHandDps,
-	],
+	epStats: [Stat.StatAgility, Stat.StatHitRating, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating, Stat.StatExpertiseRating],
+	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps],
 	// Reference stat against which to calculate EP.
 	epReferenceStat: Stat.StatAgility,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatHealth, Stat.StatStamina, Stat.StatAgility, Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
-		[
-			PseudoStat.PseudoStatPhysicalHitPercent,
-			PseudoStat.PseudoStatPhysicalCritPercent,
-			PseudoStat.PseudoStatMeleeHastePercent,
-		],
+		[PseudoStat.PseudoStatPhysicalHitPercent, PseudoStat.PseudoStatPhysicalCritPercent, PseudoStat.PseudoStatMeleeHastePercent],
 	),
 
 	defaults: {
@@ -74,6 +60,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
 		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
 			blessingOfKings: true,
 			trueshotAura: true,
 			swiftbladesCunning: true,
@@ -111,35 +98,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 
 		BuffDebuffInputs.SpellDamageDebuff,
 		BuffDebuffInputs.MajorArmorDebuff,
-		BuffDebuffInputs.PhysicalDamageDebuff
+		BuffDebuffInputs.PhysicalDamageDebuff,
 	],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [
-			OtherInputs.InFrontOfTarget,
-			OtherInputs.InputDelay,
-			RogueInputs.StartingComboPoints(),
-		],
+		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
 	},
-	itemSwapSlots: [
-		ItemSlot.ItemSlotHead,
-		ItemSlot.ItemSlotNeck,
-		ItemSlot.ItemSlotShoulder,
-		ItemSlot.ItemSlotBack,
-		ItemSlot.ItemSlotChest,
-		ItemSlot.ItemSlotWrist,
-		ItemSlot.ItemSlotHands,
-		ItemSlot.ItemSlotWaist,
-		ItemSlot.ItemSlotLegs,
-		ItemSlot.ItemSlotFeet,
-		ItemSlot.ItemSlotFinger1,
-		ItemSlot.ItemSlotFinger2,
-		ItemSlot.ItemSlotTrinket1,
-		ItemSlot.ItemSlotTrinket2,
-		ItemSlot.ItemSlotMainHand,
-		ItemSlot.ItemSlotOffHand,
-	],
+	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: false,
@@ -201,9 +167,18 @@ export class CombatRogueSimUI extends IndividualSimUI<Spec.SpecCombatRogue> {
 					const ohWepType = player.getEquippedItem(ItemSlot.ItemSlotOffHand)?.item.weaponType;
 					const playerRace = player.getRace();
 					if (
-						(playerRace == Race.RaceHuman && (mhWepType == WeaponType.WeaponTypeSword || mhWepType == WeaponType.WeaponTypeMace) && (ohWepType != WeaponType.WeaponTypeSword && ohWepType != WeaponType.WeaponTypeMace)) ||
-						(playerRace == Race.RaceOrc && (mhWepType == WeaponType.WeaponTypeAxe || mhWepType == WeaponType.WeaponTypeFist) && (ohWepType != WeaponType.WeaponTypeAxe && ohWepType != WeaponType.WeaponTypeFist)) ||
-						(playerRace == Race.RaceGnome && (mhWepType == WeaponType.WeaponTypeDagger || mhWepType == WeaponType.WeaponTypeSword) && (ohWepType != WeaponType.WeaponTypeDagger && ohWepType != WeaponType.WeaponTypeSword)) ||
+						(playerRace == Race.RaceHuman &&
+							(mhWepType == WeaponType.WeaponTypeSword || mhWepType == WeaponType.WeaponTypeMace) &&
+							ohWepType != WeaponType.WeaponTypeSword &&
+							ohWepType != WeaponType.WeaponTypeMace) ||
+						(playerRace == Race.RaceOrc &&
+							(mhWepType == WeaponType.WeaponTypeAxe || mhWepType == WeaponType.WeaponTypeFist) &&
+							ohWepType != WeaponType.WeaponTypeAxe &&
+							ohWepType != WeaponType.WeaponTypeFist) ||
+						(playerRace == Race.RaceGnome &&
+							(mhWepType == WeaponType.WeaponTypeDagger || mhWepType == WeaponType.WeaponTypeSword) &&
+							ohWepType != WeaponType.WeaponTypeDagger &&
+							ohWepType != WeaponType.WeaponTypeSword) ||
 						(playerRace == Race.RaceDwarf && mhWepType == WeaponType.WeaponTypeMace && ohWepType != WeaponType.WeaponTypeMace)
 					) {
 						return baseStats.addStat(Stat.StatExpertiseRating, 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
@@ -215,17 +190,15 @@ export class CombatRogueSimUI extends IndividualSimUI<Spec.SpecCombatRogue> {
 
 		this.player.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
-			const encounter = this.sim.encounter;
 			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
+				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 			}
 			this.player.setSpecOptions(c, options);
 		});
 		this.sim.encounter.changeEmitter.on(c => {
 			const options = this.player.getSpecOptions();
-			const encounter = this.sim.encounter;
 			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison
+				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 			}
 			this.player.setSpecOptions(c, options);
 		});

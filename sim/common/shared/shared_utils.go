@@ -718,7 +718,7 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 				}
 			}
 
-			scheduledRefresh = core.StartDelayedAction(sim, core.DelayedActionOptions{
+			scheduledRefresh = core.NewDelayedAction(core.DelayedActionOptions{
 				DoAt:     applyDotAt,
 				Priority: core.ActionPriorityDOT,
 
@@ -726,6 +726,8 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 					refreshIgnite(sim, target, damagePerTick)
 				},
 			})
+
+			sim.AddPendingAction(scheduledRefresh)
 		} else {
 			refreshIgnite(sim, target, damagePerTick)
 		}
@@ -792,7 +794,7 @@ func (versions ItemVersionMap) RegisterAll(fac ItemVersionFactory) {
 }
 
 func RegisterRiposteEffect(character *core.Character, auraSpellID int32, triggerSpellID int32) {
-	riposteAura := character.RegisterAura(core.Aura{
+	riposteAura := core.BlockPrepull(character.RegisterAura(core.Aura{
 		Label:     "Riposte" + character.Label,
 		ActionID:  core.ActionID{SpellID: auraSpellID},
 		Duration:  time.Second * 20,
@@ -801,7 +803,7 @@ func RegisterRiposteEffect(character *core.Character, auraSpellID int32, trigger
 		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
 			character.AddStatDynamic(sim, stats.CritRating, float64(newStacks-oldStacks))
 		},
-	})
+	}))
 
 	core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
 		Name:     "Riposte Trigger" + character.Label,

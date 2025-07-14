@@ -73,14 +73,10 @@ func registerLegionStrikeSpell(pet *warlock.WarlockPet, demo *DemonologyWarlock)
 		ThreatMultiplier: 1,
 		CritMultiplier:   2,
 
-		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			baseDmg := spell.Unit.MHWeaponDamage(sim, spell.MeleeAttackPower()) * 1.3
-			baseDmg /= float64(sim.Environment.GetNumTargets())
-
-			for _, target := range sim.Encounter.TargetUnits {
-				spell.CalcAndDealDamage(sim, target, baseDmg, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
-			}
-
+			baseDmg /= float64(sim.Environment.ActiveTargetCount())
+			spell.CalcAndDealAoeDamage(sim, baseDmg, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
 			demo.DemonicFury.Gain(sim, 12, core.ActionID{SpellID: 30213})
 		},
 	}))
@@ -112,11 +108,9 @@ func registerFelstorm(pet *warlock.WarlockPet, _ *DemonologyWarlock, autoCast bo
 			Aura:          core.Aura{Label: "Felstorm"},
 			NumberOfTicks: 6,
 			TickLength:    time.Second,
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			OnTick: func(sim *core.Simulation, _ *core.Unit, dot *core.Dot) {
 				baseDamage := dot.Spell.Unit.MHWeaponDamage(sim, dot.Spell.MeleeAttackPower()) + dot.Spell.Unit.OHWeaponDamage(sim, dot.Spell.MeleeAttackPower())
-				for _, enemy := range sim.Encounter.TargetUnits {
-					dot.Spell.CalcAndDealDamage(sim, enemy, baseDamage, dot.Spell.OutcomeMeleeSpecialBlockAndCritNoHitCounter)
-				}
+				dot.Spell.CalcAndDealAoeDamage(sim, baseDamage, dot.Spell.OutcomeMeleeSpecialBlockAndCritNoHitCounter)
 			},
 		},
 

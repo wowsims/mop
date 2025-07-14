@@ -1,0 +1,212 @@
+{
+  "raidBuffs": {
+    "trueshotAura": true,
+    "serpentsSwiftness": true,
+    "arcaneBrilliance": true,
+    "elementalOath": true,
+    "blessingOfMight": true,
+    "blessingOfKings": true,
+    "powerWordFortitude": true,
+    "bloodlust": true,
+    "stormlashTotemCount": 4,
+    "skullBannerCount": 1
+  },
+  "debuffs": {
+    "weakenedBlows": true,
+    "physicalVulnerability": true,
+    "weakenedArmor": true,
+    "curseOfElements": true
+  },
+  "tanks": [
+    {
+      "type": "Player"
+    }
+  ],
+  "partyBuffs": {
+  },
+  "player": {
+    "name": "Player",
+    "race": "RaceHuman",
+    "class": "ClassWarrior",
+    "equipment": {
+      "items": [
+        {"id":77539,"gems":[76895,77544,77540]},
+        {"id":81567,"reforging":122},
+        {"id":89346,"enchant":4803,"gems":[76663],"reforging":121},
+        {"id":90578,"enchant":4422,"reforging":122},
+        {"id":82979,"enchant":4420,"gems":[76663,76663],"reforging":165},
+        {"id":81230,"enchant":4412,"gems":[76693],"reforging":121},
+        {"id":82980,"enchant":4431,"gems":[76693,76693],"reforging":168,"tinker":4697},
+        {"id":84950,"gems":[76681,76693],"reforging":165},
+        {"id":81270,"enchant":4824,"gems":[76681],"reforging":125},
+        {"id":84810,"enchant":4429,"gems":[76663],"reforging":165},
+        {"id":81124,"reforging":125},
+        {"id":89071,"reforging":125},
+        {"id":79329},
+        {"id":77530,"gems":[77543,77545,77541]},
+        {"id":87545,"enchant":4441,"reforging":164},
+        {"id":90575,"enchant":4993,"reforging":165}
+      ]
+    },
+    "consumables": {
+      "prepotId": 76090,
+      "potId": 76090,
+      "flaskId": 76087,
+      "foodId": 81411
+    },
+    "bonusStats": {
+      "apiVersion": 1,
+      "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    },
+    "enableItemSwap": true,
+    "itemSwap": {
+		"items": [
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{
+				"id": 87542,
+				"enchant": 4444
+			},
+			{}
+		],
+      "prepullBonusStats": {
+        "apiVersion": 1,
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+      }
+    },
+    "buffs": {
+      "devotionAuraCount": 1,
+      "vigilanceCount": 1
+    },
+    "protectionWarrior": {
+      "options": {
+        "classOptions": {
+        }
+      }
+    },
+    "talentsString": "233332",
+    "glyphs": {
+      "major1": 83096,
+      "major2": 43399,
+      "major3": 43424
+    },
+    "profession1": "Tailoring",
+    "profession2": "Blacksmithing",
+    "cooldowns": {
+      "hpPercentForDefensives": 0.3
+    },
+    "rotation": {
+      "type": "TypeAPL",
+      "simple": {
+        "cooldowns": {
+          "hpPercentForDefensives": 0.3
+        }
+      },
+      "prepullActions": [
+        {"action":{"castSpell":{"spellId":{"spellId":71}}},"doAtValue":{"const":{"val":"-10s"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":114206}}},"doAtValue":{"const":{"val":"-1.5s"}}},
+        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-1.5s"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":1249459}}},"doAtValue":{"const":{"val":"-1.5s"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":100}}},"doAtValue":{"const":{"val":"-0.5s"}}}
+      ],
+      "priorityList": [
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}}]}}]}},"castSpell":{"spellId":{"spellId":871}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":871}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871}}}}}]}}]}}]}},"castSpell":{"spellId":{"spellId":1160}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":871}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":1160}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":1160}}}}}]}}]}}]}},"castSpell":{"spellId":{"spellId":114030,"tag":-1}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":871}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":1160}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":1160}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114030,"tag":-1}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114030,"tag":-1}}}}}]}}]}}]}},"castSpell":{"spellId":{"spellId":114203}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"or":{"vals":[{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"30s"}}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":871}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":1160}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":1160}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114030,"tag":-1}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114030,"tag":-1}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114203}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114203}}}}}]}}]}}]}}]}},"castSpell":{"spellId":{"spellId":31821,"tag":-1}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"or":{"vals":[{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"30s"}}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":871}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":1160}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":1160}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114030,"tag":-1}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114030,"tag":-1}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114203}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114203}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":31821,"tag":-1}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":31821,"tag":-1}}}}}]}}]}}]}}]}},"castSpell":{"spellId":{"spellId":12975}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":117752}}},{"or":{"vals":[{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"20s"}}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"12s"}}}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":871}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":1160}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":1160}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114030,"tag":-1}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114030,"tag":-1}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114203}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114203}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":31821,"tag":-1}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":31821,"tag":-1}}}}}]}},{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":12975}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":12975}}}}}]}}]}}]}}]}},"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}}},
+        {"action":{"schedule":{"schedule":"55s,154s,259s,319s","innerAction":{"castSpell":{"spellId":{"itemId":79329}}}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":12880}}},{"cmp":{"op":"OpLe","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"50"}}}}]}},"castSpell":{"spellId":{"spellId":55694}}}},
+        {"action":{"condition":{"and":{"vals":[{"not":{"val":{"auraIsActive":{"auraId":{"spellId":112048}}}}},{"cmp":{"op":"OpLe","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"50%"}}}},{"cmp":{"op":"OpGe","lhs":{"currentRage":{}},"rhs":{"math":{"op":"OpSub","lhs":{"maxRage":{}},"rhs":{"const":{"val":"20"}}}}}}]}},"castSpell":{"spellId":{"spellId":112048}}}},
+        {"action":{"condition":{"and":{"vals":[{"or":{"vals":[{"auraIsActive":{"auraId":{"spellId":122510}}},{"auraIsActive":{"auraId":{"spellId":122016}}},{"cmp":{"op":"OpGe","lhs":{"currentRage":{}},"rhs":{"math":{"op":"OpSub","lhs":{"maxRage":{}},"rhs":{"const":{"val":"10"}}}}}}]}},{"cmp":{"op":"OpGt","lhs":{"currentHealthPercent":{"sourceUnit":{"type":"CurrentTarget"}}},"rhs":{"const":{"val":"20%"}}}}]}},"castSpell":{"spellId":{"spellId":78}}}},
+        {"action":{"condition":{"or":{"vals":[{"cmp":{"op":"OpLt","lhs":{"auraNumStacks":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":113746}}},"rhs":{"const":{"val":"3"}}}},{"auraShouldRefresh":{"auraId":{"spellId":113746},"maxOverlap":{"const":{"val":"2s"}}}}]}},"castSpell":{"spellId":{"spellId":20243}}}},
+        {"action":{"autocastOtherCooldowns":{}}},
+        {"action":{"castSpell":{"spellId":{"spellId":12292}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":6544}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":118000}}}},
+        {"action":{"condition":{"and":{"vals":[{"spellIsKnown":{"spellId":{"spellId":46924}}},{"spellIsReady":{"spellId":{"spellId":46924}}},{"sequenceIsReady":{"sequenceName":"Bladestorm"}}]}},"itemSwap":{"swapSet":"Swap1"}}},
+        {"action":{"condition":{"and":{"vals":[{"spellIsKnown":{"spellId":{"spellId":46924}}},{"sequenceIsReady":{"sequenceName":"Bladestorm"}},{"not":{"val":{"spellIsChanneling":{"spellId":{"spellId":46924}}}}}]}},"sequence":{"name":"Bladestorm","actions":[{"channelSpell":{"spellId":{"spellId":46924},"interruptIf":{}}}]}}},
+        {"action":{"condition":{"spellIsChanneling":{"spellId":{"spellId":46924}}},"castSpell":{"spellId":{"spellId":6673}}}},
+        {"action":{"condition":{"and":{"vals":[{"spellIsKnown":{"spellId":{"spellId":46924}}},{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":46924}}},"rhs":{"const":{"val":"1.5s"}}}},{"sequenceIsComplete":{"sequenceName":"Bladestorm"}}]}},"strictSequence":{"actions":[{"itemSwap":{"swapSet":"Main"}},{"resetSequence":{"sequenceName":"Bladestorm"}}]}}},
+        {"action":{"condition":{"and":{"vals":[{"not":{"val":{"auraIsActive":{"auraId":{"spellId":112048}}}}},{"cmp":{"op":"OpLe","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"80%"}}}}]}},"castSpell":{"spellId":{"spellId":112048}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":23922}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":6572}}}},
+        {"action":{"condition":{"or":{"vals":[{"auraShouldRefresh":{"auraId":{"spellId":115798},"maxOverlap":{"const":{"val":"2s"}}}},{"cmp":{"op":"OpGt","lhs":{"numberTargets":{}},"rhs":{"const":{"val":"2"}}}}]}},"castSpell":{"spellId":{"spellId":6343}}}},
+        {"action":{"condition":{"not":{"val":{"dotIsActive":{"spellId":{"spellId":115768}}}}},"castSpell":{"spellId":{"spellId":20243}}}},
+        {"action":{"condition":{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"60%"}}}},"castSpell":{"spellId":{"spellId":103840}}}},
+        {"action":{"condition":{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"60%"}}}},"castSpell":{"spellId":{"spellId":34428}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":20243}}}}
+      ]
+    },
+    "reactionTimeMs": 100,
+    "inFrontOfTarget": true,
+    "distanceFromTarget": 15,
+    "healingModel": {
+      "hps": 42500,
+      "cadenceSeconds": 0.45,
+      "cadenceVariation": 2.31,
+      "absorbFrac": 0.18,
+      "burstWindow": 6
+    }
+  },
+  "encounter": {
+    "apiVersion": 1,
+    "duration": 306,
+    "durationVariation": 15,
+    "executeProportion20": 0.2,
+    "executeProportion25": 0.25,
+    "executeProportion35": 0.35,
+    "executeProportion45": 0.45,
+    "executeProportion90": 0.9,
+    "targets": [
+      {
+        "id": 60143,
+        "name": "Gara'jal the Spiritbinder 25 H",
+        "level": 93,
+        "mobType": "MobTypeHumanoid",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,542990565,0,0],
+        "minBaseDamage": 337865,
+        "damageSpread": 0.4846,
+        "swingSpeed": 1.5,
+        "targetInputs": [
+          {
+            "inputType": "Number",
+            "label": "Frenzy time",
+            "tooltip": "Simulation time (in seconds) at which to disable tank swaps and enable the boss Frenzy buff",
+            "numberValue": 256
+          },
+          {
+            "inputType": "Number",
+            "label": "Spiritual Grasp frequency",
+            "tooltip": "Average time (in seconds) between Spiritual Grasp hits, following an exponential distribution",
+            "numberValue": 8.25
+          }
+        ]
+      },
+      {
+        "id": 66992,
+        "name": "Severer of Souls 25 H",
+        "level": 92,
+        "mobType": "MobTypeDemon",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,758866,0,0],
+        "disabledAtStart": true
+      }
+    ]
+  }
+}

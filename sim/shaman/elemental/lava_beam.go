@@ -7,10 +7,11 @@ import (
 )
 
 func (ele *ElementalShaman) registerLavaBeamSpell() {
-	numHits := min(core.TernaryInt32(ele.HasMajorGlyph(proto.ShamanMajorGlyph_GlyphOfChainLightning), 5, 3), ele.Env.GetNumTargets())
+	maxHits := min(core.TernaryInt32(ele.HasMajorGlyph(proto.ShamanMajorGlyph_GlyphOfChainLightning), 5, 3), ele.Env.TotalTargetCount())
 	ele.LavaBeam = ele.newLavaBeamSpell(false)
 	ele.LavaBeamOverloads = [2][]*core.Spell{}
-	for i := int32(0); i < numHits; i++ {
+
+	for range maxHits {
 		ele.LavaBeamOverloads[0] = append(ele.LavaBeamOverloads[0], ele.newLavaBeamSpell(true))
 		ele.LavaBeamOverloads[1] = append(ele.LavaBeamOverloads[1], ele.newLavaBeamSpell(true))
 	}

@@ -65,6 +65,12 @@ func (pet *WildImpPet) GetPet() *core.Pet {
 func (pet *WildImpPet) Reset(sim *core.Simulation) {
 }
 
+func (pet *WildImpPet) OnEncounterStart(sim *core.Simulation) {
+	if pet.IsActive() {
+		pet.Disable(sim)
+	}
+}
+
 func (pet *WildImpPet) ExecuteCustomRotation(sim *core.Simulation) {
 	spell := pet.Fireball
 	if spell.CanCast(sim, pet.CurrentTarget) {

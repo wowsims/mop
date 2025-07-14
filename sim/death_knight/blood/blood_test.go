@@ -13,23 +13,27 @@ func init() {
 }
 
 func TestBlood(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassDeathKnight,
-		Race:       proto.Race_RaceOrc,
-		OtherRaces: []proto.Race{proto.Race_RaceWorgen},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		{
+			Class:      proto.Class_ClassDeathKnight,
+			Race:       proto.Race_RaceOrc,
+			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-		GearSet: core.GetGearSet("../../../ui/death_knight/blood/gear_sets", "p1"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/blood/gear_sets", "p1"),
 
-		Talents:     BloodTalents,
-		Glyphs:      BloodDefaultGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBlood},
-		Rotation:    core.GetAplRotation("../../../ui/death_knight/blood/apls", "defensive"),
+			Talents:     BloodTalents,
+			Glyphs:      BloodDefaultGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBlood},
+			Rotation:    core.GetAplRotation("../../../ui/death_knight/blood/apls", "defensive"),
+			Profession1: proto.Profession_Engineering,
+			Profession2: proto.Profession_Blacksmithing,
 
-		InFrontOfTarget: true,
-		IsTank:          true,
+			InFrontOfTarget: true,
+			IsTank:          true,
 
-		ItemFilter: ItemFilter,
+			ItemFilter: ItemFilter,
+		},
 	}))
 }
 

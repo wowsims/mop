@@ -1,12 +1,12 @@
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, PseudoStat, Stat } from '../../core/proto/common';
-import { CombatRogue_Options as RogueOptions, RogueMajorGlyph, RogueOptions_PoisonOptions } from '../../core/proto/rogue';
+import { CombatRogue_Options as RogueOptions, RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import CombatApl from './apls/combat.apl.json';
 import MSVGear from './gear_sets/p1_combat_msv.gear.json';
-import PreraidGear from './gear_sets/preraid_combat.gear.json';
 import T14 from './gear_sets/p1_combat_t14.gear.json'
+import PreraidGear from './gear_sets/preraid_combat.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

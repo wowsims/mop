@@ -10,9 +10,11 @@ import (
 )
 
 func (war *ProtectionWarrior) registerUnwaveringSentinel() {
+	stamDep := war.NewDynamicMultiplyStat(stats.Stamina, 1.15)
 	core.MakePermanent(war.GetOrRegisterAura(core.Aura{
-		Label:    "Unwavering Sentinel",
-		ActionID: core.ActionID{SpellID: 29144},
+		Label:      "Unwavering Sentinel",
+		ActionID:   core.ActionID{SpellID: 29144},
+		BuildPhase: core.CharacterBuildPhaseBase,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			war.ApplyDynamicEquipScaling(sim, stats.Armor, 1.25)
 		},
@@ -20,7 +22,7 @@ func (war *ProtectionWarrior) registerUnwaveringSentinel() {
 			war.RemoveDynamicEquipScaling(sim, stats.Armor, 1.25)
 		},
 	}).AttachStatDependency(
-		war.NewDynamicMultiplyStat(stats.Stamina, 1.15),
+		stamDep,
 	).AttachAdditivePseudoStatBuff(
 		&war.PseudoStats.ReducedCritTakenChance, 0.06,
 	).AttachSpellMod(core.SpellModConfig{
@@ -32,8 +34,9 @@ func (war *ProtectionWarrior) registerUnwaveringSentinel() {
 
 func (war *ProtectionWarrior) registerBastionOfDefense() {
 	core.MakePermanent(war.GetOrRegisterAura(core.Aura{
-		Label:    "Bastion of Defense",
-		ActionID: core.ActionID{SpellID: 84608},
+		Label:      "Bastion of Defense",
+		ActionID:   core.ActionID{SpellID: 84608},
+		BuildPhase: core.CharacterBuildPhaseBase,
 	}).AttachAdditivePseudoStatBuff(
 		&war.PseudoStats.BaseBlockChance, 0.1,
 	).AttachAdditivePseudoStatBuff(
@@ -46,18 +49,18 @@ func (war *ProtectionWarrior) registerBastionOfDefense() {
 }
 
 func (war *ProtectionWarrior) registerSwordAndBoard() {
-	war.SwordAndBoardAura = war.GetOrRegisterAura(core.Aura{
+	war.SwordAndBoardAura = core.BlockPrepull(war.GetOrRegisterAura(core.Aura{
 		Label:    "Sword and Board",
-		ActionID: core.ActionID{SpellID: 46953},
+		ActionID: core.ActionID{SpellID: 50227},
 		Duration: 5 * time.Second,
-	})
+	}))
 
 	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
 		Name:           "Sword and Board - Trigger",
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: warrior.SpellMaskDevastate,
 		Outcome:        core.OutcomeLanded,
-		ProcChance:     0.3,
+		ProcChance:     0.5,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			war.SwordAndBoardAura.Activate(sim)
 			war.ShieldSlam.CD.Reset()
@@ -66,7 +69,7 @@ func (war *ProtectionWarrior) registerSwordAndBoard() {
 }
 
 func (war *ProtectionWarrior) registerUltimatum() {
-	war.UltimatumAura = war.GetOrRegisterAura(core.Aura{
+	war.UltimatumAura = core.BlockPrepull(war.GetOrRegisterAura(core.Aura{
 		Label:    "Ultimatum",
 		ActionID: core.ActionID{SpellID: 122510},
 		Duration: 10 * time.Second,
@@ -79,7 +82,7 @@ func (war *ProtectionWarrior) registerUltimatum() {
 				war.HeroicStrikeCleaveCostMod.Deactivate()
 			}
 		},
-	}).AttachSpellMod(core.SpellModConfig{
+	})).AttachSpellMod(core.SpellModConfig{
 		ClassMask:  warrior.SpellMaskHeroicStrike | warrior.SpellMaskCleave,
 		Kind:       core.SpellMod_BonusCrit_Percent,
 		FloatValue: 100,

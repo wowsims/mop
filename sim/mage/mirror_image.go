@@ -90,7 +90,6 @@ func (mage *Mage) NewMirrorImage() *MirrorImage {
 	}
 
 	mirrorImage.EnableManaBar()
-	mirrorImage.EnableDynamicStats(mirrorImageStatInheritance)
 
 	mage.AddPet(mirrorImage)
 
@@ -118,6 +117,9 @@ func (mi *MirrorImage) Initialize() {
 }
 
 func (mi *MirrorImage) Reset(_ *core.Simulation) {
+}
+
+func (mi *MirrorImage) OnEncounterStart(_ *core.Simulation) {
 }
 
 func (mi *MirrorImage) ExecuteCustomRotation(sim *core.Simulation) {

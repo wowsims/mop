@@ -18,8 +18,6 @@ func init() {
 		character := agent.GetCharacter()
 		label := "Xing-Ho, Breath of Yu'lon"
 
-		numTargets := min(character.Env.GetNumTargets(), 5)
-
 		spell := character.RegisterSpell(core.SpellConfig{
 			ActionID:    core.ActionID{SpellID: 146198},
 			SpellSchool: core.SpellSchoolFirestorm,
@@ -43,9 +41,11 @@ func init() {
 					dot.Snapshot(target, dot.Spell.SpellPower()*2)
 				},
 				OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+					numTargets := min(sim.Environment.ActiveTargetCount(), 5)
+
 					for range numTargets {
 						dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
-						target = sim.Environment.NextTargetUnit(target)
+						target = sim.Environment.NextActiveTargetUnit(target)
 					}
 				},
 			},
@@ -88,7 +88,6 @@ func init() {
 	newXuenCloakEffect := func(label string, itemID int32) {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
-			numHits := min(5, character.Env.GetNumTargets())
 
 			flurrySpell := character.RegisterSpell(core.SpellConfig{
 				ActionID:    core.ActionID{SpellID: 147891},
@@ -115,11 +114,14 @@ func init() {
 						Period:          time.Millisecond * 300,
 						NumTicks:        10,
 						TickImmediately: true,
+
 						OnAction: func(sim *core.Simulation) {
 							target := aura.Unit.CurrentTarget
+							numHits := min(5, sim.Environment.ActiveTargetCount())
+
 							for range numHits {
 								flurrySpell.Cast(sim, target)
-								target = sim.Environment.NextTargetUnit(target)
+								target = sim.Environment.NextActiveTargetUnit(target)
 							}
 						},
 					})

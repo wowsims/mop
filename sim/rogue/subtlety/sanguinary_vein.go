@@ -9,7 +9,7 @@ import (
 )
 
 func (subRogue *SubtletyRogue) registerSanguinaryVein() {
-	svBonus := 1.35
+	svBonus := 1.5
 	hasHemoGlyph := subRogue.HasMajorGlyph(proto.RogueMajorGlyph_GlyphOfHemorraghingVeins)
 
 	svDebuffArray := subRogue.NewEnemyAuraArray(func(target *core.Unit) *core.Aura {

@@ -69,6 +69,15 @@ func NewFeralDruid(character *core.Character, options *proto.Player) *FeralDruid
 type FeralDruid struct {
 	*druid.Druid
 
+	// Aura references
+	ClearcastingAura        *core.Aura
+	PredatorySwiftnessAura  *core.Aura
+	SavageRoarBuff          *core.Dot
+	SavageRoarDurationTable [6]time.Duration
+
+	// Spell references
+	SavageRoar *druid.DruidSpell
+
 	// Rotation FeralDruidRotation
 
 	readyToShift       bool
@@ -98,9 +107,12 @@ func (cat *FeralDruid) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 func (cat *FeralDruid) Initialize() {
 	cat.Druid.Initialize()
 	cat.RegisterFeralCatSpells()
+	cat.registerSavageRoarSpell()
 	cat.ApplyPrimalFury()
 	cat.ApplyLeaderOfThePack()
 	cat.ApplyNurturingInstinct()
+	cat.applyOmenOfClarity()
+	cat.applyPredatorySwiftness()
 
 	snapshotHandler := func(aura *core.Aura, sim *core.Simulation) {
 		previousRipSnapshotPower := cat.Rip.NewSnapshotPower
@@ -133,7 +145,26 @@ func (cat *FeralDruid) Initialize() {
 
 func (cat *FeralDruid) ApplyTalents() {
 	cat.Druid.ApplyTalents()
-	cat.MultiplyStat(stats.AttackPower, 1.25) // Aggression passive
+	cat.ApplyArmorSpecializationEffect(stats.Agility, proto.ArmorType_ArmorTypeLeather, 86097)
+	cat.applyMastery()
+}
+
+func (cat *FeralDruid) applyMastery() {
+	const baseMasteryPoints = 8.0
+	const masteryModPerPoint = 0.0313 // TODO: We expect 0.03125, possibly bugged?
+	const baseMasteryMod = baseMasteryPoints * masteryModPerPoint
+
+	razorClaws := cat.AddDynamicMod(core.SpellModConfig{
+		ClassMask:  druid.DruidSpellThrashCat | druid.DruidSpellRake | druid.DruidSpellRip,
+		Kind:       core.SpellMod_DamageDone_Pct,
+		FloatValue: baseMasteryMod + masteryModPerPoint*cat.GetMasteryPoints(),
+	})
+
+	cat.AddOnMasteryStatChanged(func(_ *core.Simulation, _ float64, newMasteryRating float64) {
+		razorClaws.UpdateFloatValue(baseMasteryMod + masteryModPerPoint*core.MasteryRatingToMasteryPoints(newMasteryRating))
+	})
+
+	razorClaws.Activate()
 }
 
 func (cat *FeralDruid) Reset(sim *core.Simulation) {

@@ -78,7 +78,7 @@ func (rogue *Rogue) ApplyTalents() {
 		action := core.ActionID{SpellID: 114015}
 		antiMetrics := rogue.NewComboPointMetrics(action)
 
-		rogue.AnticipationAura = rogue.RegisterAura(core.Aura{
+		rogue.AnticipationAura = core.BlockPrepull(rogue.RegisterAura(core.Aura{
 			Label:     "Anticipation",
 			ActionID:  action,
 			Duration:  time.Second * 15,
@@ -93,7 +93,7 @@ func (rogue *Rogue) ApplyTalents() {
 					aura.Deactivate(sim)
 				}
 			},
-		})
+		}))
 	}
 }
 

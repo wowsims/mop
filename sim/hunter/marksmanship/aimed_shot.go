@@ -15,7 +15,7 @@ func (mmHunter *MarksmanshipHunter) getAimedShotSpell(spellID int32, isMasterMar
 	normalCast := core.CastConfig{
 		DefaultCast: core.Cast{
 			GCD:      time.Second,
-			CastTime: time.Second * 3,
+			CastTime: time.Millisecond * 2500,
 		},
 		IgnoreHaste: true,
 		ModifyCast: func(sim *core.Simulation, spell *core.Spell, cast *core.Cast) {

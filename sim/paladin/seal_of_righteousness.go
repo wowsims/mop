@@ -6,8 +6,6 @@ import (
 
 // Fills you with Holy Light, causing melee attacks to deal 9% weapon damage to all targets within 8 yards.
 func (paladin *Paladin) registerSealOfRighteousness() {
-	numTargets := paladin.Env.GetNumTargets()
-
 	registerOnHitSpell := func(tag int32, applyEffects core.ApplySpellResults) *core.Spell {
 		return paladin.RegisterSpell(core.SpellConfig{
 			ActionID:       core.ActionID{SpellID: 101423}.WithTag(tag),
@@ -41,19 +39,12 @@ func (paladin *Paladin) registerSealOfRighteousness() {
 	})
 
 	// Seal of Righteousness on-hit proc (multi-target hit, for everything else)
-	onHitMultiTarget := registerOnHitSpell(2, func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-		results := make([]*core.SpellResult, numTargets)
+	onHitMultiTarget := registerOnHitSpell(2, func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+		spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMeleeSpecialCritOnly, func(sim *core.Simulation, spell *core.Spell) float64 {
+			return paladin.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
+		})
 
-		for idx := range numTargets {
-			currentTarget := sim.Environment.GetTargetUnit(idx)
-			baseDamage := paladin.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-			// can't miss if melee swing landed, but can crit
-			results[idx] = spell.CalcDamage(sim, currentTarget, baseDamage, spell.OutcomeMeleeSpecialCritOnly)
-		}
-
-		for idx := range numTargets {
-			spell.DealDamage(sim, results[idx])
-		}
+		spell.DealBatchedAoeDamage(sim)
 	})
 
 	paladin.SealOfRighteousnessAura = paladin.RegisterAura(core.Aura{

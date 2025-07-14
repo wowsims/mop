@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config.js';
 import { CURRENT_API_VERSION } from '../constants/other';
 import { IndividualSimUI } from '../individual_sim_ui.jsx';
 import { Player } from '../player.js';
@@ -132,7 +133,7 @@ export class StatWeightActionSettings {
 
 export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);
-	simUI.addAction('Stat Weights', 'ep-weights-action', () => {
+	simUI.addAction(i18n.t('sidebar.buttons.stat_weights'), 'ep-weights-action', () => {
 		epWeightsModal.open();
 	});
 

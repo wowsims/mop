@@ -102,7 +102,7 @@ var ChanceOfDeathAuraLabel = "Chance of Death"
 
 func (character *Character) trackChanceOfDeath(healingModel *proto.HealingModel) {
 	character.Unit.Metrics.isTanking = false
-	for _, target := range character.Env.Encounter.TargetUnits {
+	for _, target := range character.Env.Encounter.AllTargetUnits {
 		if (target.CurrentTarget == &character.Unit) || (target.SecondaryTarget == &character.Unit) {
 			character.Unit.Metrics.isTanking = true
 		}
@@ -118,16 +118,18 @@ func (character *Character) trackChanceOfDeath(healingModel *proto.HealingModel)
 			if result.Damage > 0 {
 				aura.Unit.RemoveHealth(sim, result.Damage)
 
-				if aura.Unit.CurrentHealth() <= 0 && !aura.Unit.Metrics.Died {
+				if (aura.Unit.CurrentHealth() <= 0) && !aura.Unit.Metrics.Died {
 					// Queue a pending action to let shield effects give health
-					StartDelayedAction(sim, DelayedActionOptions{
-						DoAt: sim.CurrentTime,
-						OnAction: func(s *Simulation) {
-							if aura.Unit.CurrentHealth() <= 0 && !aura.Unit.Metrics.Died {
-								character.Died(sim)
-							}
-						},
-					})
+					pa := sim.GetConsumedPendingActionFromPool()
+					pa.NextActionAt = sim.CurrentTime
+
+					pa.OnAction = func(sim *Simulation) {
+						if (aura.Unit.CurrentHealth() <= 0) && !aura.Unit.Metrics.Died {
+							character.Died(sim)
+						}
+					}
+
+					sim.AddPendingAction(pa)
 				}
 			}
 		},
@@ -135,16 +137,18 @@ func (character *Character) trackChanceOfDeath(healingModel *proto.HealingModel)
 			if result.Damage > 0 {
 				aura.Unit.RemoveHealth(sim, result.Damage)
 
-				if aura.Unit.CurrentHealth() <= 0 && !aura.Unit.Metrics.Died {
+				if (aura.Unit.CurrentHealth() <= 0) && !aura.Unit.Metrics.Died {
 					// Queue a pending action to let shield effects give health
-					StartDelayedAction(sim, DelayedActionOptions{
-						DoAt: sim.CurrentTime,
-						OnAction: func(s *Simulation) {
-							if aura.Unit.CurrentHealth() <= 0 && !aura.Unit.Metrics.Died {
-								character.Died(sim)
-							}
-						},
-					})
+					pa := sim.GetConsumedPendingActionFromPool()
+					pa.NextActionAt = sim.CurrentTime
+
+					pa.OnAction = func(sim *Simulation) {
+						if (aura.Unit.CurrentHealth() <= 0) && !aura.Unit.Metrics.Died {
+							character.Died(sim)
+						}
+					}
+
+					sim.AddPendingAction(pa)
 				}
 			}
 		},

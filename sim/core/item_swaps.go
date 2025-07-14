@@ -56,7 +56,7 @@ func (character *Character) enableItemSwap(itemSwap *proto.ItemSwap, mhCritMulti
 
 	has2HSwap := swapItems[proto.ItemSlot_ItemSlotMainHand].HandType == proto.HandType_HandTypeTwoHand
 	hasMhEquipped := character.HasMHWeapon()
-	hasOhEquipped := character.HasOHWeapon()
+	hasOhEquipped := character.HasOH()
 
 	// Handle MH and OH together, because present MH + empty OH --> swap MH and unequip OH
 	if hasItemSwap[proto.ItemSlot_ItemSlotOffHand] && hasMhEquipped {
@@ -68,7 +68,6 @@ func (character *Character) enableItemSwap(itemSwap *proto.ItemSwap, mhCritMulti
 	}
 
 	slots := SetToSortedSlice(hasItemSwap)
-
 	if len(slots) == 0 {
 		return
 	}

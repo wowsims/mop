@@ -42,7 +42,7 @@ func (mage *Mage) registerFrostfireBoltSpell() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			if !mage.BrainFreezeAura.IsActive() && mage.PresenceOfMindAura != nil {
+			if (mage.BrainFreezeAura == nil || !mage.BrainFreezeAura.IsActive()) && mage.PresenceOfMindAura != nil {
 				mage.PresenceOfMindAura.Deactivate(sim)
 			}
 			hasSplitBolts := mage.IcyVeinsAura.IsActive() && hasGlyph
@@ -60,22 +60,26 @@ func (mage *Mage) registerFrostfireBoltSpell() {
 			}
 
 			spell.DamageMultiplier /= damageMultiplier
-			mage.BrainFreezeAura.Deactivate(sim)
+			if mage.BrainFreezeAura != nil {
+				mage.BrainFreezeAura.Deactivate(sim)
+			}
 
 			for _, result := range results {
 				if spell.TravelTime() > time.Duration(FireSpellMaxTimeUntilResult) {
-					core.StartDelayedAction(sim, core.DelayedActionOptions{
-						DoAt: sim.CurrentTime + time.Duration(FireSpellMaxTimeUntilResult),
-						OnAction: func(s *core.Simulation) {
-							spell.DealDamage(sim, result)
-							if result.Landed() && mageSpecFrost {
-								mage.GainIcicle(sim, target, result.Damage)
-							}
-							if mageSpecFire {
-								mage.HandleHeatingUp(sim, spell, result)
-							}
-						},
-					})
+					pa := sim.GetConsumedPendingActionFromPool()
+					pa.NextActionAt = sim.CurrentTime + time.Duration(FireSpellMaxTimeUntilResult)
+
+					pa.OnAction = func(sim *core.Simulation) {
+						spell.DealDamage(sim, result)
+						if result.Landed() && mageSpecFrost {
+							mage.GainIcicle(sim, target, result.Damage)
+						}
+						if mageSpecFire {
+							mage.HandleHeatingUp(sim, spell, result)
+						}
+					}
+
+					sim.AddPendingAction(pa)
 				} else {
 					spell.WaitTravelTime(sim, func(sim *core.Simulation) {
 						spell.DealDamage(sim, result)

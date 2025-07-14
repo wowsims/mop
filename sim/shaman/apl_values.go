@@ -64,7 +64,7 @@ type APLValueShamanFireElementalDuration struct {
 func (shaman *Shaman) newValueFireElementalDuration(_ *proto.APLValueShamanFireElementalDuration, _ *proto.UUID) core.APLValue {
 	return &APLValueShamanFireElementalDuration{
 		shaman:   shaman,
-		duration: time.Second * 60,
+		duration: core.TernaryDuration(shaman.HasMajorGlyph(proto.ShamanMajorGlyph_GlyphOfFireElementalTotem), 30, 60) * time.Second,
 	}
 }
 

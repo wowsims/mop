@@ -6,12 +6,14 @@ import { Stats } from '../../core/proto_utils/stats';
 import ArcaneApl from './apls/default.apl.json';
 import P1ArcaneBisGear from './gear_sets/p1_bis.gear.json';
 import ArcanePreBisGear from './gear_sets/prebis.gear.json';
+import ArcaneRichPreBisGear from './gear_sets/rich_prebis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
-export const P1_BIS_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS', ArcanePreBisGear);
-export const PREBIS_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1ArcaneBisGear);
+export const P1_BIS_PRESET = PresetUtils.makePresetGear('P1 Heroic Pre-BIS', ArcanePreBisGear);
+export const PREBIS_PRESET = PresetUtils.makePresetGear('P1 BIS', P1ArcaneBisGear);
+export const RICH_PREBIS_PRESET = PresetUtils.makePresetGear('P1 Rich Pre-BIS', ArcaneRichPreBisGear);
 
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Arcane', ArcaneApl);
 
@@ -37,10 +39,10 @@ export const ArcaneTalents = {
 		glyphs: Glyphs.create({
 			major1: MajorGlyph.GlyphOfArcanePower,
 			major2: MajorGlyph.GlyphOfRapidDisplacement,
-			major3: MajorGlyph.GlyphOfEvocation,
+			major3: MajorGlyph.GlyphOfConeOfCold,
 			minor1: MageMinorGlyph.GlyphOfMomentum,
 			minor2: MageMinorGlyph.GlyphOfRapidTeleportation,
-			minor3: MageMinorGlyph.GlyphOfMirrorImage,
+			minor3: MageMinorGlyph.GlyphOfLooseMana,
 		}),
 	}),
 };

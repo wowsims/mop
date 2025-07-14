@@ -1,7 +1,8 @@
 {
-	"type": "TypeAPL",
-	"priorityList": [
-		{"action":{"autocastOtherCooldowns":{}}},
-		{"action":{"castSpell":{"spellId":{"spellId":10}}}}
-	]
-}
+ "type": "TypeAPL",
+      "priorityList": [
+        {"action":{"autocastOtherCooldowns":{}}},
+        {"action":{"condition":{"auraIsActive":{"auraId":{"spellId":112965}}},"castSpell":{"spellId":{"spellId":30455}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":10}}}}
+      ]
+    }

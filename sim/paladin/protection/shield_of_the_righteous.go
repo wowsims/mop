@@ -30,7 +30,7 @@ Selfless Healer also increases healing from Flash of Light on yourself by 20% pe
 Stacks up to 5 times.
 */
 func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
-	prot.BastionOfGloryAura = prot.RegisterAura(core.Aura{
+	prot.BastionOfGloryAura = core.BlockPrepull(prot.RegisterAura(core.Aura{
 		ActionID:  core.ActionID{SpellID: 114637},
 		Label:     "Bastion of Glory" + prot.Label,
 		Duration:  time.Second * 20,
@@ -44,7 +44,7 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 
 			prot.BastionOfGloryMultiplier = 0.1*float64(newStacks) + prot.ShieldOfTheRighteousAdditiveMultiplier
 		},
-	}).AttachProcTrigger(core.ProcTrigger{
+	})).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnCastComplete,
 		ClassSpellMask: paladin.SpellMaskWordOfGlory,
 
@@ -54,7 +54,7 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 	})
 
 	var snapshotDmgReduction float64
-	shieldOfTheRighteousAura := prot.RegisterAura(core.Aura{
+	shieldOfTheRighteousAura := core.BlockPrepull(prot.RegisterAura(core.Aura{
 		ActionID:  core.ActionID{SpellID: 132403},
 		Label:     "Shield of the Righteous" + prot.Label,
 		Duration:  time.Second * 3,
@@ -76,7 +76,7 @@ func (prot *ProtectionPaladin) registerShieldOfTheRighteous() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			prot.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexPhysical] /= snapshotDmgReduction
 		},
-	})
+	}))
 
 	prot.AddDefensiveCooldownAura(shieldOfTheRighteousAura)
 

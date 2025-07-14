@@ -6,42 +6,47 @@ import (
 	"github.com/wowsims/mop/sim/common" // imported to get item effects included.
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/encounters/msv"
 )
 
 func init() {
 	RegisterBrewmasterMonk()
 	common.RegisterAllEffects()
+	msv.Register()
 }
 
 func TestBrewmaster(t *testing.T) {
-	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator(core.CharacterSuiteConfig{
-		Class:      proto.Class_ClassMonk,
-		Race:       proto.Race_RaceTroll,
-		OtherRaces: []proto.Race{proto.Race_RaceOrc},
+	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "garajal_default", ItemFilter, nil, nil),
+		{
+			Class:      proto.Class_ClassMonk,
+			Race:       proto.Race_RaceTroll,
+			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-		GearSet: core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_bis_2h"),
-		OtherGearSets: []core.GearSetCombo{
-			core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_bis_dw"),
-			core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_prebis_rich"),
-			core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_prebis_poor"),
-		},
-		Talents: BrewmasterDefaultTalents,
-		OtherTalentSets: []core.TalentsCombo{
-			{
-				Label:   "Dungeon",
-				Talents: BrewmasterDungeonTalents,
-				Glyphs:  BrewmasterDefaultGlyphs,
+			GearSet: core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_bis_2h"),
+			OtherGearSets: []core.GearSetCombo{
+				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_bis_dw"),
+				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_prebis_rich"),
+				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p1_prebis_poor"),
 			},
+			Talents: BrewmasterDefaultTalents,
+			OtherTalentSets: []core.TalentsCombo{
+				{
+					Label:   "Dungeon",
+					Talents: BrewmasterDungeonTalents,
+					Glyphs:  BrewmasterDefaultGlyphs,
+				},
+			},
+			Glyphs:      BrewmasterDefaultGlyphs,
+			Consumables: FullConsumesSpec,
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBrewmaster},
+			Rotation:    core.GetAplRotation("../../../ui/monk/brewmaster/apls", "default"),
+
+			IsTank:          true,
+			InFrontOfTarget: true,
+
+			ItemFilter: ItemFilter,
 		},
-		Glyphs:      BrewmasterDefaultGlyphs,
-		Consumables: FullConsumesSpec,
-		SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBrewmaster},
-		Rotation:    core.GetAplRotation("../../../ui/monk/brewmaster/apls", "default"),
-
-		IsTank:          true,
-		InFrontOfTarget: true,
-
-		ItemFilter: ItemFilter,
 	}))
 }
 

@@ -35,7 +35,7 @@ func (prot *ProtectionPaladin) registerHolyWrath() {
 	hasGlyphOfFinalWrath := prot.HasMajorGlyph(proto.PaladinMajorGlyph_GlyphOfFinalWrath)
 	hasGlyphOfFocusedWrath := prot.HasMinorGlyph(proto.PaladinMinorGlyph_GlyphOfFocusedWrath)
 
-	numTargets := core.TernaryInt32(hasGlyphOfFocusedWrath, 1, prot.Env.GetNumTargets())
+	maxTargets := core.TernaryInt32(hasGlyphOfFocusedWrath, 1, prot.Env.TotalTargetCount())
 
 	prot.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 119072},
@@ -65,32 +65,25 @@ func (prot *ProtectionPaladin) registerHolyWrath() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			results := make([]*core.SpellResult, numTargets)
-
 			// Ingame tooltip is ((<MIN> + <MAX>) / 2) / 2
 			// This is the same as, <AVG> / 2 which is the same as just halving the coef
 			baseDamage := prot.CalcScalingSpellDmg(7.53200006485/2) + 0.91*spell.MeleeAttackPower()
 
 			// Damage is split between all mobs, each hit rolls for hit/crit separately
+			numTargets := min(maxTargets, sim.Environment.ActiveTargetCount())
 			baseDamage /= float64(numTargets)
 
-			for idx := range numTargets {
-				multiplier := spell.DamageMultiplier
-				if hasGlyphOfFinalWrath && sim.IsExecutePhase20() {
-					spell.DamageMultiplier *= 1.5
-				}
+			multiplier := spell.DamageMultiplier
 
-				results[idx] = spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-
-				spell.DamageMultiplier = multiplier
-
-				target = sim.Environment.NextTargetUnit(target)
+			if hasGlyphOfFinalWrath && sim.IsExecutePhase20() {
+				spell.DamageMultiplier *= 1.5
 			}
 
+			spell.CalcCleaveDamage(sim, target, numTargets, baseDamage, spell.OutcomeMagicHitAndCrit)
+			spell.DamageMultiplier = multiplier
+
 			spell.WaitTravelTime(sim, func(simulation *core.Simulation) {
-				for idx := range numTargets {
-					spell.DealDamage(sim, results[idx])
-				}
+				spell.DealBatchedAoeDamage(sim)
 			})
 		},
 	})

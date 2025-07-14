@@ -27,7 +27,7 @@ func (shadow *ShadowPriest) registerCascade() {
 		}
 
 		bounceTargets := []*core.Unit{}
-		for _, unit := range sim.Encounter.TargetUnits {
+		for _, unit := range sim.Encounter.ActiveTargetUnits {
 			if unit == target {
 				continue
 			}
@@ -43,13 +43,16 @@ func (shadow *ShadowPriest) registerCascade() {
 			}
 		}
 
-		core.StartDelayedAction(sim, core.DelayedActionOptions{
-			DoAt: sim.CurrentTime + time.Millisecond*100,
-			OnAction: func(s *core.Simulation) {
-				for _, unit := range bounceTargets {
-					bounceSpell.Cast(sim, unit)
-				}
-			}})
+		pa := sim.GetConsumedPendingActionFromPool()
+		pa.NextActionAt = sim.CurrentTime + time.Millisecond*100
+
+		pa.OnAction = func(sim *core.Simulation) {
+			for _, unit := range bounceTargets {
+				bounceSpell.Cast(sim, unit)
+			}
+		}
+
+		sim.AddPendingAction(pa)
 	}
 
 	bounceSpell := shadow.RegisterSpell(core.SpellConfig{

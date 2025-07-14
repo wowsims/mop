@@ -1,3 +1,4 @@
+import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { Class, Glyphs, Spec } from '../../proto/common';
@@ -8,7 +9,7 @@ import { EventID, TypedEvent } from '../../typed_event';
 import { PetSpecPicker } from '../pickers/pet_spec_picker';
 import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
 
 export class TalentsTab<SpecType extends Spec> extends SimTab {
 	protected simUI: IndividualSimUI<any>;
@@ -17,7 +18,7 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 	readonly rightPanel: HTMLElement;
 
 	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<SpecType>) {
-		super(parentElem, simUI, { identifier: 'talents-tab', title: 'Talents' });
+		super(parentElem, simUI, { identifier: 'talents-tab', title: i18n.t('talents.title') });
 		this.simUI = simUI;
 
 		this.leftPanel = (<div className="talents-tab-left tab-panel-left" />) as HTMLElement;
@@ -56,7 +57,7 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 	}
 
 	private buildPresetConfigurationPicker() {
-		new PresetConfigurationPicker(this.rightPanel, this.simUI, ['talents']);
+		new PresetConfigurationPicker(this.rightPanel, this.simUI, [PresetConfigurationCategory.Talents]);
 	}
 
 	private buildSavedTalentsPicker() {
