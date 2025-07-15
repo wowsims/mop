@@ -70,6 +70,12 @@ type Monk struct {
 	ComboBreakerBlackoutKickAura *core.Aura
 	ComboBreakerTigerPalmAura    *core.Aura
 
+	// Mistweaver
+	MuscleMemoryAura *core.Aura
+	SerpentZealAura  *core.Aura
+	VitalMistsAura   *core.Aura
+	ThunderFocusTea  *core.Aura
+
 	ChiSphereAura          *core.Aura
 	DampenHarmAura         *core.Aura
 	FortifyingBrewAura     *core.Aura
@@ -352,6 +358,16 @@ const (
 	MonkSpellAvertHarm
 	MonkSpellPurifyingBrew
 	MonkSpellGiftOfTheOx
+
+	//Mistweaver
+	MonkSpellRenewingMist
+	MonkSpellSoothingMist
+	MonkSpellSurgingMist
+	MonkSpellEnvelopingMist
+	MonkSpellUplift
+	MonkSpellRevival
+	MonkSpellSummonJadeSerpentStatue
+	MonkSpellManaTea
 
 	MonkSpellLast
 	MonkSpellsAll = MonkSpellLast<<1 - 1

@@ -15,7 +15,7 @@ func (cat *FeralDruid) registerSavageRoarSpell() {
 	isGlyphed := cat.HasMajorGlyph(proto.DruidMajorGlyph_GlyphOfSavagery)
 
 	cat.SavageRoarDurationTable = [6]time.Duration{
-		core.TernaryDuration(isGlyphed, time.Second * 12, 0),
+		core.TernaryDuration(isGlyphed, time.Second*12, 0),
 		time.Second * 18,
 		time.Second * 24,
 		time.Second * 30,
@@ -78,8 +78,8 @@ func (cat *FeralDruid) registerSavageRoarSpell() {
 
 					if !isGlyphed {
 						aura.Deactivate(sim)
-					} else if aura.RemainingDuration(sim) > time.Second * 12 {
-						aura.UpdateExpires(sim.CurrentTime + time.Second * 12)
+					} else if aura.RemainingDuration(sim) > time.Second*12 {
+						aura.UpdateExpires(sim.CurrentTime + time.Second*12)
 					}
 				},
 			},

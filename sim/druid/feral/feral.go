@@ -142,11 +142,11 @@ func (cat *FeralDruid) applyMastery() {
 	razorClaws := cat.AddDynamicMod(core.SpellModConfig{
 		ClassMask:  druid.DruidSpellThrashCat | druid.DruidSpellRake | druid.DruidSpellRip,
 		Kind:       core.SpellMod_DamageDone_Pct,
-		FloatValue: baseMasteryMod + masteryModPerPoint * cat.GetMasteryPoints(),
+		FloatValue: baseMasteryMod + masteryModPerPoint*cat.GetMasteryPoints(),
 	})
 
 	cat.AddOnMasteryStatChanged(func(_ *core.Simulation, _ float64, newMasteryRating float64) {
-		razorClaws.UpdateFloatValue(baseMasteryMod + masteryModPerPoint * core.MasteryRatingToMasteryPoints(newMasteryRating))
+		razorClaws.UpdateFloatValue(baseMasteryMod + masteryModPerPoint*core.MasteryRatingToMasteryPoints(newMasteryRating))
 	})
 
 	razorClaws.Activate()

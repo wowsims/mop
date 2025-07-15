@@ -72,7 +72,7 @@ type Druid struct {
 	ProwlAura                *core.Aura
 	SurvivalInstinctsAura    *core.Aura
 
-	form         DruidForm
+	form DruidForm
 
 	// Guardian leather specialization is form-specific
 	GuardianLeatherSpecTracker *core.Aura

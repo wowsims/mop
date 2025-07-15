@@ -50,6 +50,17 @@ func NewMistweaverMonk(character *core.Character, options *proto.Player) *Mistwe
 
 type MistweaverMonk struct {
 	*monk.Monk
+
+	ManaTeaStackAura *core.Aura
+
+	renewingMist   *core.Spell
+	envelopingMist *core.Spell
+
+	JadeSerpentAura *core.Aura
+	//May move this to monk as both ww and mw use this
+	outstandingChi int32
+
+	manaTeaAura *core.Aura
 }
 
 func (mw *MistweaverMonk) GetMonk() *monk.Monk {
@@ -68,11 +79,21 @@ func (mw *MistweaverMonk) ApplyTalents() {
 }
 
 func (mw *MistweaverMonk) Reset(sim *core.Simulation) {
+	mw.outstandingChi = 0
 	mw.Monk.Reset(sim)
 }
 
 func (mw *MistweaverMonk) RegisterSpecializationEffects() {
 	mw.RegisterMastery()
+	mw.registerRenewingMist()
+	mw.registerSurgingMist()
+	mw.registerSoothingMist()
+	mw.registerEnvelopingMist()
+	mw.registerUplift()
+	mw.registerRevival()
+	mw.registerSummonJadeSerpentStatue()
+	mw.registerManaTea()
+	mw.registerPassives()
 }
 
 func (mw *MistweaverMonk) RegisterMastery() {

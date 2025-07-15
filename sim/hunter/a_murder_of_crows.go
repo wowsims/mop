@@ -74,7 +74,7 @@ func (hunter *Hunter) registerAMOCSpell() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			result := spell.CalcAndDealOutcome(sim, target, spell.OutcomeAlwaysHit)
 			pa := sim.GetConsumedPendingActionFromPool()
-			pa.NextActionAt = sim.CurrentTime + time.Second * 2
+			pa.NextActionAt = sim.CurrentTime + time.Second*2
 
 			pa.OnAction = func(sim *core.Simulation) {
 				if result.Landed() {
