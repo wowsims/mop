@@ -1,6 +1,7 @@
 package core
 
 import (
+	"slices"
 	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
@@ -156,8 +157,11 @@ func applyRaceEffects(agent Agent) {
 			character.AddStat(stats.ExpertiseRating, ExpertisePerQuarterPercentReduction*4)
 		}
 
-		applyWeaponSpecialization(character, 4*ExpertisePerQuarterPercentReduction,
-			proto.WeaponType_WeaponTypeMace)
+		registerWeaponSpecializationAura(character, &weaponSpecializationConfig{
+			label:       "Mace Specialization",
+			actionID:    ActionID{SpellID: 59224},
+			weaponTypes: []proto.WeaponType{proto.WeaponType_WeaponTypeMace},
+		})
 
 		actionID := ActionID{SpellID: 20594}
 
@@ -191,12 +195,20 @@ func applyRaceEffects(agent Agent) {
 	case proto.Race_RaceGnome:
 		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexArcane] *= 0.99
 		character.MultiplyStat(stats.Mana, 1.05)
-		applyOneHandWeaponSpecialization(character, 4*ExpertisePerQuarterPercentReduction,
-			proto.WeaponType_WeaponTypeSword, proto.WeaponType_WeaponTypeDagger)
+		registerWeaponSpecializationAura(character, &weaponSpecializationConfig{
+			label:       "Shortblade Specialization",
+			actionID:    ActionID{SpellID: 92680},
+			weaponTypes: []proto.WeaponType{proto.WeaponType_WeaponTypeSword, proto.WeaponType_WeaponTypeDagger},
+			oneHand:     true,
+		})
 	case proto.Race_RaceHuman:
 		character.MultiplyStat(stats.Spirit, 1.03)
-		applyWeaponSpecialization(character, 4*ExpertisePerQuarterPercentReduction,
-			proto.WeaponType_WeaponTypeMace, proto.WeaponType_WeaponTypeSword)
+		// Combining both into Mace Specialization to avoid having to deal with exclusive effects and build phases
+		registerWeaponSpecializationAura(character, &weaponSpecializationConfig{
+			label:       "Mace Specialization",
+			actionID:    ActionID{SpellID: 20864},
+			weaponTypes: []proto.WeaponType{proto.WeaponType_WeaponTypeMace, proto.WeaponType_WeaponTypeSword},
+		})
 	case proto.Race_RaceNightElf:
 		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] *= 0.99
 		character.PseudoStats.BaseDodgeChance += 0.02
@@ -282,9 +294,11 @@ func applyRaceEffects(agent Agent) {
 			},
 		})
 
-		// Axe specialization
-		applyWeaponSpecialization(character, 4*ExpertisePerQuarterPercentReduction,
-			proto.WeaponType_WeaponTypeAxe, proto.WeaponType_WeaponTypeFist)
+		registerWeaponSpecializationAura(character, &weaponSpecializationConfig{
+			label:       "Axe Specialization",
+			actionID:    ActionID{SpellID: 20574},
+			weaponTypes: []proto.WeaponType{proto.WeaponType_WeaponTypeAxe, proto.WeaponType_WeaponTypeFist},
+		})
 	case proto.Race_RaceTauren:
 		character.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] *= 0.99
 		character.AddStat(stats.Health, character.GetBaseStats()[stats.Health]*0.05)
@@ -386,30 +400,69 @@ func applyRaceEffects(agent Agent) {
 	}
 }
 
-func applyWeaponSpecialization(character *Character, expertiseBonus float64, weaponTypes ...proto.WeaponType) {
-	mask := character.GetProcMaskForTypes(weaponTypes...)
-
-	if mask == ProcMaskMelee || (mask == ProcMaskMeleeMH && !character.HasOHWeapon()) {
-		character.AddStat(stats.ExpertiseRating, expertiseBonus)
-	} else {
-		character.OnSpellRegistered(func(spell *Spell) {
-			if spell.ProcMask.Matches(mask) {
-				spell.BonusExpertiseRating += expertiseBonus
-			}
-		})
-	}
+type weaponSpecializationConfig struct {
+	label       string
+	actionID    ActionID
+	weaponTypes []proto.WeaponType
+	oneHand     bool
 }
 
-func applyOneHandWeaponSpecialization(character *Character, expertiseBonus float64, weaponTypes ...proto.WeaponType) {
-	mask := character.GetProcMaskForTypesAndHand(false, weaponTypes...)
+func registerWeaponSpecializationAura(character *Character, config *weaponSpecializationConfig) {
+	getCurrentProcMask := func() ProcMask {
+		if config.oneHand {
+			return character.GetProcMaskForTypesAndHand(false, config.weaponTypes...)
+		} else {
+			return character.GetProcMaskForTypes(config.weaponTypes...)
+		}
+	}
 
-	if mask == ProcMaskMelee || (mask == ProcMaskMeleeMH && !character.HasOHWeapon()) {
-		character.AddStat(stats.ExpertiseRating, expertiseBonus)
-	} else {
-		character.OnSpellRegistered(func(spell *Spell) {
+	var mask ProcMask
+	expertiseBonus := 4 * ExpertisePerQuarterPercentReduction
+	weaponSpecAura := character.RegisterAura(Aura{
+		Label:      config.label,
+		ActionID:   config.actionID,
+		Duration:   NeverExpires,
+		BuildPhase: CharacterBuildPhaseBase,
+
+		OnReset: func(aura *Aura, sim *Simulation) {
+			if (character.HasMHWeapon() && slices.Contains(config.weaponTypes, character.MainHand().WeaponType)) ||
+				(character.HasOHWeapon() && slices.Contains(config.weaponTypes, character.OffHand().WeaponType)) {
+				aura.Activate(sim)
+			}
+		},
+		OnGain: func(aura *Aura, sim *Simulation) {
+			mask = getCurrentProcMask()
+			applyWeaponSpecialization(sim, character, mask, expertiseBonus)
+		},
+		OnExpire: func(aura *Aura, sim *Simulation) {
+			applyWeaponSpecialization(sim, character, mask, -expertiseBonus)
+		},
+	})
+
+	character.RegisterItemSwapCallback(AllWeaponSlots(), func(sim *Simulation, slot proto.ItemSlot) {
+		weaponSpecAura.Deactivate(sim)
+		if (character.HasMHWeapon() && slices.Contains(config.weaponTypes, character.MainHand().WeaponType)) ||
+			(character.HasOHWeapon() && slices.Contains(config.weaponTypes, character.OffHand().WeaponType)) {
+			weaponSpecAura.Activate(sim)
+		}
+	})
+}
+
+func applyWeaponSpecialization(sim *Simulation, character *Character, mask ProcMask, expertiseBonus float64) {
+	if mask == ProcMaskMelee || mask == ProcMaskMeleeMH {
+		character.AddStatDynamic(sim, stats.ExpertiseRating, expertiseBonus)
+		if mask == ProcMaskMeleeMH && character.HasOHWeapon() {
+			for _, spell := range character.Spellbook {
+				if !spell.ProcMask.Matches(mask) {
+					spell.BonusExpertiseRating -= expertiseBonus
+				}
+			}
+		}
+	} else if mask == ProcMaskMeleeOH {
+		for _, spell := range character.Spellbook {
 			if spell.ProcMask.Matches(mask) {
 				spell.BonusExpertiseRating += expertiseBonus
 			}
-		})
+		}
 	}
 }

@@ -1,4 +1,5 @@
 import * as PresetUtils from '../../core/preset_utils';
+import { APLRotation_Type } from '../../core/proto/apl';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '../../core/proto/death_knight';
 import { SavedTalents } from '../../core/proto/ui';
@@ -56,9 +57,11 @@ export const DefaultTalents = {
 
 export const PREBIS_PRESET = PresetUtils.makePresetBuildFromJSON('Prebis', Spec.SpecUnholyDeathKnight, PrebisBuild, {
 	epWeights: P1_UNHOLY_EP_PRESET,
+	rotationType: APLRotation_Type.TypeAuto,
 });
 export const P1_PRESET = PresetUtils.makePresetBuildFromJSON('P1', Spec.SpecUnholyDeathKnight, P1Build, {
 	epWeights: P1_UNHOLY_EP_PRESET,
+	rotationType: APLRotation_Type.TypeAuto,
 });
 
 export const DefaultOptions = UnholyDeathKnight_Options.create({

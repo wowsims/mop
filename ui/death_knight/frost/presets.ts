@@ -1,4 +1,5 @@
 import * as PresetUtils from '../../core/preset_utils';
+import { APLRotation_Type } from '../../core/proto/apl';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, FrostDeathKnight_Options } from '../../core/proto/death_knight';
 import { SavedTalents } from '../../core/proto/ui';
@@ -94,10 +95,13 @@ export const DefaultConsumables = ConsumesSpec.create({
 
 export const PRESET_BUILD_2H_OBLITERATE = PresetUtils.makePresetBuildFromJSON('P1 - 2h Obliterate', Spec.SpecFrostDeathKnight, P12hObliterateBuild, {
 	epWeights: P1_2H_OBLITERATE_EP_PRESET,
+	rotationType: APLRotation_Type.TypeAuto,
 });
 export const PRESET_BUILD_MASTERFROST = PresetUtils.makePresetBuildFromJSON('P1 - Masterfrost', Spec.SpecFrostDeathKnight, P1MasterfrostBuild, {
 	epWeights: P1_MASTERFROST_EP_PRESET,
+	rotationType: APLRotation_Type.TypeAuto,
 });
 export const PRESET_BUILD_PREBIS = PresetUtils.makePresetBuildFromJSON('Prebis Masterfrost', Spec.SpecFrostDeathKnight, PrebisMasterfrostBuild, {
 	epWeights: P1_MASTERFROST_EP_PRESET,
+	rotationType: APLRotation_Type.TypeAuto,
 });
