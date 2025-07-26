@@ -7,8 +7,8 @@ character_stats_results: {
   final_stats: 120.75
   final_stats: 151
   final_stats: 2555
-  final_stats: 5326
-  final_stats: 6745
+  final_stats: 7218
+  final_stats: 4853
   final_stats: 2565
   final_stats: 2e-05
   final_stats: 25355.99596
@@ -25,2248 +25,601 @@ character_stats_results: {
   final_stats: 0
   final_stats: 7.51471
   final_stats: 15.05882
-  final_stats: 18.89851
-  final_stats: 13.87667
+  final_stats: 22.05184
+  final_stats: 17.03
   final_stats: 0
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-AgilePrimalDiamond"
  value: {
-  dps: 135657.52932
-  tps: 96935.43357
-  hps: 1921.27281
+  dps: 138043.32586
+  tps: 98985.93657
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 131800.9916
-  tps: 94344.39737
-  hps: 1921.27281
+  dps: 134202.84661
+  tps: 96383.26365
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-AusterePrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1930.38765
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1910.68503
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-BattlegearoftheLostCatacomb"
  value: {
-  dps: 122230.43484
-  tps: 87572.24447
-  hps: 1821.92874
+  dps: 123742.73332
+  tps: 88614.87636
+  hps: 1840.44428
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-BattleplateofCyclopeanDread"
  value: {
-  dps: 137928.27969
-  tps: 98287.54666
-  hps: 2054.61457
+  dps: 140234.76186
+  tps: 100190.83659
+  hps: 2058.19048
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 135774.4019
-  tps: 95203.65518
-  hps: 2011.52317
+  dps: 139282.24963
+  tps: 97455.0149
+  hps: 2010.01678
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-BurningPrimalDiamond"
  value: {
-  dps: 135621.3664
-  tps: 96902.64717
-  hps: 1921.27281
+  dps: 138006.57707
+  tps: 98952.40511
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 135526.67243
-  tps: 96664.68675
-  hps: 1914.49665
+  dps: 137872.46514
+  tps: 98678.882
+  hps: 1899.6448
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-CourageousPrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1909.85545
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1890.36239
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-DelicateVialoftheSanguinaire-96895"
  value: {
-  dps: 131738.3727
-  tps: 94311.26189
-  hps: 1921.27281
+  dps: 134111.20361
+  tps: 96334.68618
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 135756.03748
-  tps: 96837.09121
-  hps: 1916.81725
+  dps: 138041.95904
+  tps: 98808.67646
+  hps: 1901.9654
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EffulgentPrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1930.38765
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1910.68503
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1909.85545
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1890.36239
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
  value: {
-  dps: 130248.10108
-  tps: 93099.07598
+  dps: 131203.34879
+  tps: 94010.20103
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-Colossus-4445"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-DancingSteel-4444"
  value: {
-  dps: 130128.50095
-  tps: 92887.90398
- }
-}
-dps_results: {
- key: "TestUnholy-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 127238.51172
-  tps: 91597.8045
+  dps: 131163.52467
+  tps: 93974.06041
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.5654
+  tps: 91685.2924
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 127950.60856
-  tps: 91780.08427
+  dps: 128676.38131
+  tps: 92324.28327
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 135756.03748
-  tps: 96837.09121
-  hps: 1916.81725
+  dps: 138041.95904
+  tps: 98808.67646
+  hps: 1901.9654
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EternalPrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1909.85545
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1890.36239
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 144017.25023
-  tps: 101062.05704
-  hps: 1912.39883
+  dps: 152857.77474
+  tps: 104005.62969
+  hps: 2005.41784
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 146805.49481
-  tps: 103950.35961
-  hps: 1928.64304
+  dps: 171877.55521
+  tps: 119531.62328
+  hps: 1899.47771
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 142706.43151
-  tps: 104064.20057
-  hps: 2036.82429
+  dps: 144132.33006
+  tps: 104975.72879
+  hps: 2021.66234
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-FleetPrimalDiamond"
  value: {
-  dps: 135721.72215
-  tps: 96867.20498
-  hps: 1909.85545
+  dps: 137943.13153
+  tps: 98749.52252
+  hps: 1890.36239
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-ForlornPrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1909.85545
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1890.36239
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-GazeoftheTwins-96915"
  value: {
-  dps: 144013.16603
-  tps: 102712.78322
-  hps: 1961.17788
+  dps: 146290.78796
+  tps: 104773.9121
+  hps: 1941.97258
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 152268.7799
-  tps: 110566.56304
-  hps: 2034.38511
+  dps: 155004.62802
+  tps: 113041.80413
+  hps: 2026.5407
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Horridon'sLastGasp-96757"
  value: {
-  dps: 131738.3727
-  tps: 94311.26189
-  hps: 1921.27281
+  dps: 134111.20361
+  tps: 96334.68618
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 135756.03748
-  tps: 96837.09121
-  hps: 1916.81725
+  dps: 138041.95904
+  tps: 98808.67646
+  hps: 1901.9654
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-IndomitablePrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1930.38765
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1910.68503
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-InscribedBagofHydra-Spawn-96828"
  value: {
-  dps: 131738.3727
-  tps: 94311.26189
-  hps: 1921.27281
+  dps: 134111.20361
+  tps: 96334.68618
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Ji-Kun'sRisingWinds-96843"
  value: {
-  dps: 131738.3727
-  tps: 94311.26189
-  hps: 1921.27281
- }
-}
-dps_results: {
- key: "TestUnholy-AllItems-NitroBoosts-4223"
- value: {
-  dps: 136754.78078
-  tps: 97659.05153
-  hps: 1921.27281
+  dps: 134111.20361
+  tps: 96334.68618
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PhaseFingers-4697"
  value: {
-  dps: 135862.74169
-  tps: 97063.73329
-  hps: 1921.27281
+  dps: 138248.7219
+  tps: 99115.12818
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PlateofCyclopeanDread"
  value: {
-  dps: 127757.58612
-  tps: 92134.51284
-  hps: 1880.92761
+  dps: 129643.82526
+  tps: 93552.96631
+  hps: 1866.62398
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PlateoftheAll-ConsumingMaw"
  value: {
-  dps: 122041.07108
-  tps: 87828.65785
-  hps: 1883.98276
+  dps: 123092.08336
+  tps: 88705.53008
+  hps: 1871.42957
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PlateoftheLostCatacomb"
  value: {
-  dps: 111695.69377
-  tps: 80589.36557
-  hps: 1727.49951
+  dps: 112976.36788
+  tps: 81715.47154
+  hps: 1718.24174
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PowerfulPrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1930.38765
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1910.68503
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PriceofProgress-81266"
  value: {
-  dps: 131738.3727
-  tps: 94311.26189
-  hps: 1921.27281
+  dps: 134111.20361
+  tps: 96334.68618
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Primordius'TalismanofRage-96873"
  value: {
-  dps: 145261.85585
-  tps: 103751.47525
-  hps: 1968.00973
+  dps: 147162.10226
+  tps: 105145.80163
+  hps: 1962.47742
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 133916.56821
-  tps: 95987.00483
-  hps: 2002.1001
+  dps: 136473.19194
+  tps: 98229.49277
+  hps: 1999.7097
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 140894.8177
-  tps: 100609.52656
-  hps: 1975.23983
+  dps: 143663.6378
+  tps: 102943.66023
+  hps: 1979.02544
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 131935.43423
-  tps: 94457.38867
-  hps: 1921.27281
+  dps: 134660.88136
+  tps: 96714.54585
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-ReverberatingPrimalDiamond"
  value: {
-  dps: 136754.78078
-  tps: 97659.05153
-  hps: 1921.27281
+  dps: 139143.60499
+  tps: 99716.49604
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RevitalizingPrimalDiamond"
  value: {
-  dps: 135621.3664
-  tps: 96902.64717
-  hps: 1921.27281
+  dps: 138006.57707
+  tps: 98952.40511
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneofCinderglacier-3369"
  value: {
-  dps: 128869.65102
-  tps: 93149.86539
+  dps: 129917.24709
+  tps: 94160.60059
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneofRazorice-3370"
  value: {
-  dps: 127906.9957
-  tps: 92224.81128
+  dps: 129641.63612
+  tps: 93805.36312
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneofSpellbreaking-3595"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneofSpellshattering-3367"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneofSwordbreaking-3594"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneofSwordshattering-3365"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneoftheNerubianCarapace-3883"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-RuneoftheStoneskinGargoyle-3847"
  value: {
-  dps: 125927.82389
-  tps: 90245.63947
+  dps: 127521.64641
+  tps: 91685.37341
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 135526.67243
-  tps: 96664.68675
-  hps: 1914.49665
+  dps: 137872.46514
+  tps: 98678.882
+  hps: 1899.6448
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 134982.49783
-  tps: 95918.32094
-  hps: 1862.70081
+  dps: 141914.3742
+  tps: 101698.89483
+  hps: 1906.43952
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-TalismanofBloodlust-96864"
  value: {
-  dps: 135722.81399
-  tps: 96770.60303
-  hps: 1972.60452
+  dps: 137695.76501
+  tps: 98032.58074
+  hps: 1972.79017
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-TyrannicalPrimalDiamond"
  value: {
-  dps: 134908.28117
-  tps: 96192.85229
-  hps: 1909.85545
+  dps: 137111.69441
+  tps: 98062.16469
+  hps: 1890.36239
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 140084.58862
-  tps: 101556.63958
-  hps: 2021.17008
+  dps: 141946.59391
+  tps: 103090.60956
+  hps: 2012.62098
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 131744.76677
-  tps: 94313.23892
-  hps: 1921.27281
+  dps: 134111.20361
+  tps: 96334.68618
+  hps: 1904.11892
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 136004.37726
-  tps: 97391.59728
-  hps: 2047.73232
+  dps: 138061.639
+  tps: 99200.23032
+  hps: 2021.66234
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 143540.142
-  tps: 101848.84996
-  hps: 1881.40487
+  dps: 144165.63183
+  tps: 103089.39708
+  hps: 1901.79832
  }
 }
 dps_results: {
  key: "TestUnholy-Average-Default"
  value: {
-  dps: 136327.22066
-  tps: 96606.58436
-  hps: 1783.65951
+  dps: 142180.35866
+  tps: 101595.2312
+  hps: 1824.86122
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestUnholy-Settings-Orc-p1-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 198949.10042
-  tps: 148544.09966
-  hps: 1862.70081
+  dps: 342341.91763
+  tps: 290405.70883
+  hps: 1906.43952
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestUnholy-Settings-Orc-p1-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 135866.60023
-  tps: 96503.97298
-  hps: 1862.70081
+  dps: 142812.26587
+  tps: 102302.27332
+  hps: 1906.43952
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestUnholy-Settings-Orc-p1-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 218342.57377
-  tps: 113158.92676
-  hps: 2430.088
+  dps: 228992.8717
+  tps: 120279.32782
+  hps: 2469.07412
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestUnholy-Settings-Orc-p1-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 141874.20031
-  tps: 109220.32543
-  hps: 1615.86089
+  dps: 248312.45821
+  tps: 214454.72778
+  hps: 1664.30276
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestUnholy-Settings-Orc-p1-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 96666.25199
-  tps: 71689.54644
-  hps: 1615.86089
+  dps: 102073.35079
+  tps: 76425.15852
+  hps: 1664.30276
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestUnholy-Settings-Orc-p1-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 133866.90228
-  tps: 78024.79214
-  hps: 1876.08909
+  dps: 143360.24723
+  tps: 84982.23288
+  hps: 1967.70648
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestUnholy-Settings-Worgen-p1-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 196319.18598
-  tps: 146541.98666
-  hps: 1855.73901
+  dps: 340659.80219
+  tps: 290820.81702
+  hps: 1911.71347
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestUnholy-Settings-Worgen-p1-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 134198.74357
-  tps: 94825.56297
-  hps: 1855.73901
+  dps: 139890.43965
+  tps: 101248.18937
+  hps: 1905.70795
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestUnholy-Settings-Worgen-p1-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 218707.2795
-  tps: 113358.92905
-  hps: 2488.79923
+  dps: 221481.79528
+  tps: 117672.03141
+  hps: 2458.08572
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestUnholy-Settings-Worgen-p1-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 141073.08061
-  tps: 108319.03699
-  hps: 1613.6847
+  dps: 245674.89606
+  tps: 213146.14528
+  hps: 1660.6804
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestUnholy-Settings-Worgen-p1-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 96266.26929
-  tps: 71295.66418
-  hps: 1613.6847
+  dps: 100459.15245
+  tps: 75774.79834
+  hps: 1658.76542
  }
 }
 dps_results: {
- key: "TestUnholy-Settings-Orc-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestUnholy-Settings-Worgen-p1-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 134010.48402
-  tps: 78191.77073
-  hps: 1886.97001
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 197756.01614
-  tps: 147379.95553
-  hps: 1855.73901
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135034.81452
-  tps: 95659.55189
-  hps: 1855.73901
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 218961.74157
-  tps: 113747.92652
-  hps: 2430.088
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 141309.97905
-  tps: 108712.96017
-  hps: 1591.92285
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96045.38231
-  tps: 71109.07007
-  hps: 1591.92285
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 134276.70611
-  tps: 78504.11004
-  hps: 1843.44631
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 196493.90986
-  tps: 146335.35955
-  hps: 1869.39343
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135405.66997
-  tps: 96148.36821
-  hps: 1869.39343
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 218735.39624
-  tps: 113489.85315
-  hps: 2430.088
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 139840.87945
-  tps: 107103.2474
-  hps: 1620.21326
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96229.19731
-  tps: 71252.00908
-  hps: 1620.21326
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 133362.9282
-  tps: 77612.02107
-  hps: 1897.85094
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 197371.45562
-  tps: 147282.47833
-  hps: 1865.02142
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135549.36266
-  tps: 96123.70892
-  hps: 1865.02142
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 218475.32546
-  tps: 113057.34617
-  hps: 2453.9902
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 140782.61354
-  tps: 107992.47568
-  hps: 1620.21326
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96206.75391
-  tps: 71179.90153
-  hps: 1620.21326
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 133104.72052
-  tps: 77209.81191
-  hps: 1865.20816
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 339343.91326
-  tps: 289157.63317
-  hps: 1851.0978
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135115.81144
-  tps: 95887.16324
-  hps: 1851.0978
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 217716.51886
-  tps: 113184.31817
-  hps: 2430.78418
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 236842.16394
-  tps: 204049.84409
-  hps: 1578.86574
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96206.74485
-  tps: 71311.38622
-  hps: 1578.86574
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 133639.6082
-  tps: 78148.60367
-  hps: 1810.80354
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 161430.86495
-  tps: 121728.27703
-  hps: 1386.00855
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 109472.07548
-  tps: 77665.7933
-  hps: 1386.00855
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 178637.32711
-  tps: 92007.54201
-  hps: 1822.55451
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 111533.64012
-  tps: 86968.01088
-  hps: 1192.87577
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75872.17646
-  tps: 56889.91935
-  hps: 1192.87577
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 106036.21811
-  tps: 62289.77319
-  hps: 1331.09293
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159617.70039
-  tps: 119802.62432
-  hps: 1380.08599
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 108837.57055
-  tps: 77023.64441
-  hps: 1380.08599
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 176748.88018
-  tps: 90825.06561
-  hps: 1832.61527
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 110559.86979
-  tps: 86204.47954
-  hps: 1187.49907
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75384.07974
-  tps: 56438.03243
-  hps: 1187.49907
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 105014.88111
-  tps: 61244.33081
-  hps: 1322.13176
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159098.62463
-  tps: 119262.8355
-  hps: 1339.44051
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 108758.71555
-  tps: 76882.64991
-  hps: 1339.44051
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 179588.09281
-  tps: 93085.3787
-  hps: 1822.55451
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 109705.7886
-  tps: 85401.82373
-  hps: 1165.88471
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75125.99239
-  tps: 56255.35633
-  hps: 1165.88471
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 106348.85844
-  tps: 62551.29197
-  hps: 1349.01528
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159945.0081
-  tps: 120015.82676
-  hps: 1369.81262
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 108916.57773
-  tps: 76978.57746
-  hps: 1369.81262
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 178943.1868
-  tps: 92520.70786
-  hps: 1813.06323
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 110248.97563
-  tps: 85689.41373
-  hps: 1196.46024
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75600.23007
-  tps: 56579.77513
-  hps: 1196.46024
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 104265.33423
-  tps: 60355.51448
-  hps: 1366.93763
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159881.97253
-  tps: 120079.06803
-  hps: 1382.09814
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 109241.1958
-  tps: 77328.41328
-  hps: 1382.09814
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 178622.75124
-  tps: 91942.81565
-  hps: 1784.01989
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 110865.99839
-  tps: 86307.63483
-  hps: 1196.46024
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75833.99399
-  tps: 56853.17595
-  hps: 1196.46024
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 105162.7544
-  tps: 61466.69935
-  hps: 1349.01528
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 314048.39212
-  tps: 274170.80402
-  hps: 1329.94923
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 108993.01477
-  tps: 77013.64176
-  hps: 1329.94923
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 177940.65884
-  tps: 90915.84118
-  hps: 1813.6327
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 218311.41372
-  tps: 193729.16745
-  hps: 1155.02377
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75465.65703
-  tps: 56478.20055
-  hps: 1155.02377
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Orc-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 105550.46406
-  tps: 61719.8231
-  hps: 1349.01528
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 199217.20045
-  tps: 148476.92998
-  hps: 1878.06586
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 136996.47247
-  tps: 97111.87663
-  hps: 1885.98349
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 222142.17451
-  tps: 114239.11639
-  hps: 2500.31928
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 140198.93812
-  tps: 107348.64783
-  hps: 1628.8656
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96565.39224
-  tps: 71443.57123
-  hps: 1628.8656
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 134445.98918
-  tps: 77494.09197
-  hps: 1876.02874
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 196397.10197
-  tps: 145773.05217
-  hps: 1866.324
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 134782.91599
-  tps: 94835.32727
-  hps: 1866.324
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 221622.35362
-  tps: 113702.46252
-  hps: 2477.11403
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 139750.27425
-  tps: 107202.10867
-  hps: 1624.51337
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96143.11634
-  tps: 71078.43802
-  hps: 1628.8656
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 135155.28825
-  tps: 78317.20319
-  hps: 1919.55104
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 197812.13252
-  tps: 147225.02839
-  hps: 1864.00348
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 136262.73389
-  tps: 96371.72046
-  hps: 1862.63901
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 222341.1933
-  tps: 114409.69431
-  hps: 2500.31928
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 139601.09065
-  tps: 106848.65921
-  hps: 1609.28056
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96064.6217
-  tps: 70985.5288
-  hps: 1617.98502
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 134551.54472
-  tps: 77579.02731
-  hps: 1865.14817
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 196856.60081
-  tps: 146539.09513
-  hps: 1866.87164
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135291.45011
-  tps: 95494.68668
-  hps: 1878.6135
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 220076.2667
-  tps: 112555.40265
-  hps: 2500.31928
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 138519.65624
-  tps: 105870.99619
-  hps: 1628.8656
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96291.56446
-  tps: 71225.3307
-  hps: 1624.51337
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 134921.54406
-  tps: 77969.81655
-  hps: 1897.78989
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 196666.92319
-  tps: 146082.42503
-  hps: 1862.63901
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135138.24752
-  tps: 95519.01238
-  hps: 1867.28006
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 219882.49309
-  tps: 111971.658
-  hps: 2512.61806
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 139199.80847
-  tps: 106656.09517
-  hps: 1626.68948
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96097.1309
-  tps: 71119.12899
-  hps: 1622.33725
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 135062.628
-  tps: 78088.66728
-  hps: 1908.67047
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 340850.81138
-  tps: 290135.02648
-  hps: 1857.99796
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135736.14973
-  tps: 96111.9505
-  hps: 1860.31848
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 220297.98512
-  tps: 112524.86929
-  hps: 2477.11403
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 234972.41169
-  tps: 202087.93122
-  hps: 1600.5761
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96531.57095
-  tps: 71543.98809
-  hps: 1611.45668
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 134793.21603
-  tps: 78096.02676
-  hps: 1865.14817
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159865.46092
-  tps: 119854.75156
-  hps: 1400.02164
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 109614.49663
-  tps: 77521.406
-  hps: 1400.02164
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 180205.25612
-  tps: 92139.0078
-  hps: 1845.94209
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 110600.73218
-  tps: 86144.44947
-  hps: 1207.1665
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 76239.48741
-  tps: 57301.4452
-  hps: 1207.1665
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 105549.92183
-  tps: 61437.49676
-  hps: 1384.8059
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 158083.89958
-  tps: 118172.75984
-  hps: 1397.34141
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 108586.86282
-  tps: 76473.39802
-  hps: 1397.34141
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 179597.09236
-  tps: 91570.38223
-  hps: 1855.43299
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 109158.18956
-  tps: 84868.53164
-  hps: 1198.20568
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74713.10291
-  tps: 55909.95906
-  hps: 1198.20568
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 104847.70404
-  tps: 60894.83745
-  hps: 1411.68837
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 158033.04603
-  tps: 118502.22096
-  hps: 1365.62662
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 108500.02652
-  tps: 76518.31515
-  hps: 1365.62662
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 181848.80412
-  tps: 93517.23879
-  hps: 1855.43299
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 108674.41744
-  tps: 84591.51087
-  hps: 1178.38433
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74694.00306
-  tps: 55869.21427
-  hps: 1178.38433
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 105353.64829
-  tps: 61193.35326
-  hps: 1366.88425
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159355.58251
-  tps: 119323.87678
-  hps: 1391.53298
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 109207.35507
-  tps: 77058.71267
-  hps: 1391.53298
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 178611.6976
-  tps: 90387.7128
-  hps: 1874.41479
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 109195.84879
-  tps: 84896.65174
-  hps: 1212.543
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75064.28241
-  tps: 56250.00333
-  hps: 1212.543
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 105007.23394
-  tps: 61047.13057
-  hps: 1393.76672
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159401.14551
-  tps: 119579.01794
-  hps: 1396.89344
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 109249.31615
-  tps: 77069.55368
-  hps: 1396.89344
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 179311.49685
-  tps: 90997.65936
-  hps: 1855.43299
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 109765.0829
-  tps: 85427.9111
-  hps: 1208.95867
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75142.17313
-  tps: 56198.92518
-  hps: 1208.95867
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 104161.38118
-  tps: 60099.37026
-  hps: 1375.84507
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 307080.37084
-  tps: 267298.63667
-  hps: 1368.75482
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 109067.30131
-  tps: 76880.61994
-  hps: 1368.75482
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 179911.67871
-  tps: 91163.71924
-  hps: 1855.43299
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 205917.69098
-  tps: 181548.06403
-  hps: 1176.59217
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 75179.85666
-  tps: 56415.54408
-  hps: 1176.59217
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Troll-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 106068.32773
-  tps: 62080.58094
-  hps: 1393.76672
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 197006.20514
-  tps: 147713.05499
-  hps: 1871.93967
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 135049.02171
-  tps: 96436.3053
-  hps: 1872.89573
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 215264.20787
-  tps: 112034.43499
-  hps: 2443.00231
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 140747.70991
-  tps: 108699.67255
-  hps: 1620.94454
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 96183.26353
-  tps: 71655.09443
-  hps: 1614.4162
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 131523.005
-  tps: 76787.51512
-  hps: 1867.10667
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 195186.20674
-  tps: 146162.7519
-  hps: 1868.25468
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 133400.86401
-  tps: 94870.08574
-  hps: 1867.29862
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 214508.29877
-  tps: 111006.80579
-  hps: 2490.10897
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 138641.05768
-  tps: 106601.8313
-  hps: 1603.53562
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 95147.73292
-  tps: 70741.066
-  hps: 1599.05282
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 131618.23156
-  tps: 76997.81518
-  hps: 1888.86782
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 195239.15346
-  tps: 146021.26136
-  hps: 1855.696
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 133968.63521
-  tps: 95270.56156
-  hps: 1861.2931
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RoilingBlood-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 215848.86534
-  tps: 112608.52339
-  hps: 2443.00231
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 139818.12588
-  tps: 107696.16881
-  hps: 1597.00728
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 95560.92183
-  tps: 71077.15218
-  hps: 1586.1267
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RoilingBlood-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 131916.58175
-  tps: 77217.1221
-  hps: 1867.10667
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 195389.02525
-  tps: 146369.01705
-  hps: 1879.44889
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 133491.172
-  tps: 94916.99959
-  hps: 1878.49283
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicCorruption-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 214070.96115
-  tps: 110184.40548
-  hps: 2419.79706
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 137892.12021
-  tps: 105957.52937
-  hps: 1612.24008
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 95844.91285
-  tps: 71379.54107
-  hps: 1603.53562
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicCorruption-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 131187.05597
-  tps: 76669.43966
-  hps: 1877.98724
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 197575.47251
-  tps: 148270.54741
-  hps: 1868.25468
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 134471.11314
-  tps: 96064.46204
-  hps: 1872.89573
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 214328.09374
-  tps: 111249.23786
-  hps: 2466.90372
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 139109.09003
-  tps: 106936.41848
-  hps: 1607.75728
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 95503.41098
-  tps: 71051.70927
-  hps: 1614.4162
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 131011.54955
-  tps: 76464.38426
-  hps: 1899.74839
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 341676.04114
-  tps: 292538.6796
-  hps: 1860.33705
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 134444.22101
-  tps: 95996.8655
-  hps: 1860.33705
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-UnholyBlight-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 215751.01935
-  tps: 112902.58472
-  hps: 2431.39968
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 237361.64309
-  tps: 205115.77039
-  hps: 1581.6439
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 95728.50888
-  tps: 71360.98875
-  hps: 1570.63276
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-p1-UnholyBlight-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 131978.91774
-  tps: 77616.26564
-  hps: 1823.58437
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 159215.81505
-  tps: 120666.6632
-  hps: 1403.613
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 108158.77853
-  tps: 77374.21867
-  hps: 1403.613
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 174054.62112
-  tps: 90780.92765
-  hps: 1846.51154
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 109825.42098
-  tps: 86101.66079
-  hps: 1202.22013
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74774.43389
-  tps: 56435.81023
-  hps: 1202.22013
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 103486.56775
-  tps: 61466.39332
-  hps: 1340.53942
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 158208.40012
-  tps: 119554.83658
-  hps: 1391.99614
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 107764.67564
-  tps: 77070.10505
-  hps: 1391.99614
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-GlyphOfOutbreak-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 172191.62482
-  tps: 89700.35538
-  hps: 1856.57189
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 109106.81944
-  tps: 85557.49811
-  hps: 1200.42796
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74541.40607
-  tps: 56280.88007
-  hps: 1200.42796
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 102445.76427
-  tps: 60458.96807
-  hps: 1331.57859
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 156815.77309
-  tps: 118160.54913
-  hps: 1354.36662
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 107250.96306
-  tps: 76416.69174
-  hps: 1354.36662
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RoilingBlood-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 175043.12457
-  tps: 91887.0448
-  hps: 1846.51154
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 108438.10837
-  tps: 84912.19646
-  hps: 1173.43796
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74105.51845
-  tps: 55839.06563
-  hps: 1173.43796
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RoilingBlood-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 103847.50358
-  tps: 61875.72611
-  hps: 1358.46107
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 158379.80119
-  tps: 119619.40356
-  hps: 1387.41773
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 107719.24425
-  tps: 76810.40526
-  hps: 1387.41773
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicCorruption-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 174499.44254
-  tps: 91465.7129
-  hps: 1837.02064
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 108661.17631
-  tps: 84888.10582
-  hps: 1198.52827
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74600.08424
-  tps: 56173.25849
-  hps: 1198.52827
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicCorruption-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 101914.80991
-  tps: 59780.06159
-  hps: 1376.38272
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 157757.39611
-  tps: 119308.13031
-  hps: 1398.9207
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 107830.07681
-  tps: 76995.84941
-  hps: 1398.9207
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 174049.4007
-  tps: 90715.5213
-  hps: 1807.97849
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 109204.08509
-  tps: 85363.93792
-  hps: 1204.01229
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74603.00843
-  tps: 56239.84257
-  hps: 1204.01229
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-RunicEmpowerment-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 102658.11815
-  tps: 60776.04018
-  hps: 1358.46107
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 308012.853
-  tps: 269327.00071
-  hps: 1348.67208
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 107471.27382
-  tps: 76524.03579
-  hps: 1348.67208
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-UnholyBlight-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 173362.63572
-  tps: 89868.76946
-  hps: 1837.59009
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
- value: {
-  dps: 208096.88948
-  tps: 184309.63233
-  hps: 1162.57744
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
- value: {
-  dps: 74537.2351
-  tps: 56214.39898
-  hps: 1162.57744
- }
-}
-dps_results: {
- key: "TestUnholy-Settings-Worgen-prebis-UnholyBlight-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
- value: {
-  dps: 102828.24281
-  tps: 60838.69559
-  hps: 1358.46107
+  dps: 139328.90394
+  tps: 83995.67238
+  hps: 1979.17659
  }
 }
 dps_results: {
  key: "TestUnholy-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 128121.32065
-  tps: 91078.41861
-  hps: 1787.48546
+  dps: 134789.43531
+  tps: 96458.16887
+  hps: 1826.85215
  }
 }
