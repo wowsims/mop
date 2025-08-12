@@ -522,6 +522,10 @@ func (unit *Unit) ApplyRealHaste(dur time.Duration) time.Duration {
 	return time.Duration(float64(dur) / unit.TotalRealHasteMultiplier())
 }
 
+func (unit *Unit) ApplyRealRangedHaste(dur time.Duration) time.Duration {
+	return time.Duration(float64(dur) / unit.TotalRealRangedHasteMultiplier())
+}
+
 func (unit *Unit) TotalMeleeHasteMultiplier() float64 {
 	return unit.PseudoStats.AttackSpeedMultiplier * unit.PseudoStats.MeleeSpeedMultiplier * (1 + (unit.stats[stats.HasteRating] / (HasteRatingPerHastePercent * 100)))
 }
@@ -530,6 +534,10 @@ func (unit *Unit) TotalMeleeHasteMultiplier() float64 {
 // Same value for ranged and melee
 func (unit *Unit) TotalRealHasteMultiplier() float64 {
 	return unit.PseudoStats.AttackSpeedMultiplier * (1 + (unit.stats[stats.HasteRating] / (HasteRatingPerHastePercent * 100)))
+}
+
+func (unit *Unit) TotalRealRangedHasteMultiplier() float64 {
+	return unit.PseudoStats.AttackSpeedMultiplier * unit.PseudoStats.RangedHasteMultiplier * (1 + (unit.stats[stats.HasteRating] / (HasteRatingPerHastePercent * 100)))
 }
 
 func (unit *Unit) Armor() float64 {
@@ -583,6 +591,7 @@ func (unit *Unit) MultiplyRangedSpeed(sim *Simulation, amount float64) {
 
 // Used for "Ranged haste" effects that modify both attack speed and focus regen, like Rapid Fire and Focus Fire
 func (unit *Unit) MultiplyRangedHaste(sim *Simulation, amount float64) {
+	unit.PseudoStats.RangedHasteMultiplier *= amount
 	unit.MultiplyRangedSpeed(sim, amount)
 	unit.MultiplyResourceRegenSpeed(sim, amount)
 }

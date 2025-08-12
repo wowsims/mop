@@ -113,7 +113,7 @@ func (dot *Dot) CalcTickPeriod() time.Duration {
 
 		return dot.Spell.Unit.ApplyCastSpeed(dot.BaseTickLength).Round(time.Millisecond)
 	} else if dot.affectedByRealHaste {
-		return dot.Spell.Unit.ApplyRangedSpeed(dot.BaseTickLength).Round(time.Millisecond)
+		return dot.Spell.Unit.ApplyRealRangedHaste(dot.BaseTickLength).Round(time.Millisecond)
 	} else {
 		return dot.BaseTickLength
 	}
