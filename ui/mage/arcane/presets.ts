@@ -6,8 +6,6 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import ArcaneApl from './apls/default.apl.json';
 import ArcaneCleaveApl from './apls/arcane_cleave.apl.json';
-import P1PreBISRealisticGear from './gear_sets/p1_prebis_realistic.gear.json';
-import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 import P1PostMSVGear from './gear_sets/p1_post_msv.gear.json';
 import P1PostHOFGear from './gear_sets/p1_post_hof.gear.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
@@ -15,8 +13,6 @@ import P1BISGear from './gear_sets/p1_bis.gear.json';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
-export const P1_PREBIS = PresetUtils.makePresetGear('P1 - Pre-BIS', P1PreBISGear);
-export const P1_PREBIS_REALISTIC = PresetUtils.makePresetGear('P1 - Pre-BIS (Realistic)', P1PreBISRealisticGear);
 export const P1_POST_MSV = PresetUtils.makePresetGear('P1 - Post-MSV', P1PostMSVGear);
 export const P1_POST_HOF = PresetUtils.makePresetGear('P1 - Post-HoF', P1PostHOFGear);
 export const P1_BIS = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
@@ -36,6 +32,80 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatMasteryRating]: 0.62,
 	}),
 );
+
+// Breakpoint-specific EP weights (using distinct test values to verify automatic switching)
+export const P1_EP_5_TICK = PresetUtils.makePresetEpWeights(
+	'5-tick Living Bomb (12.51%)',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.24,
+		[Stat.StatSpellPower]: 1,
+		[Stat.StatHitRating]: 0.80,
+		[Stat.StatCritRating]: 0.52,
+		[Stat.StatHasteRating]: 0.69, // REAL: Calculated at 12.507036% haste breakpoint
+		[Stat.StatMasteryRating]: 0.63,
+	}),
+);
+
+export const P1_EP_6_TICK = PresetUtils.makePresetEpWeights(
+	'6-tick Living Bomb (37.52%)',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.24,
+		[Stat.StatSpellPower]: 1,
+		[Stat.StatHitRating]: 0.80,
+		[Stat.StatCritRating]: 0.53,
+		[Stat.StatHasteRating]: 0.57, // REAL: Calculated at 37.520061% haste breakpoint
+		[Stat.StatMasteryRating]: 0.65,
+	}),
+);
+
+// Unrealistic breakpoints - too high haste to be achievable in practice
+// export const P1_EP_7_TICK = PresetUtils.makePresetEpWeights(
+// 	'7-tick Living Bomb (62.47%)',
+// 	Stats.fromMap({
+// 		[Stat.StatIntellect]: 1.24,
+// 		[Stat.StatSpellPower]: 1,
+// 		[Stat.StatHitRating]: 1.31,
+// 		[Stat.StatCritRating]: 0.52,
+// 		[Stat.StatHasteRating]: 0.40, // TEST: Lower haste value for 7-tick
+// 		[Stat.StatMasteryRating]: 0.62,
+// 	}),
+// );
+
+export const P1_EP_7_TICK_LUST = PresetUtils.makePresetEpWeights(
+	'7-tick LB w/ Lust (24.98%)',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.24,
+		[Stat.StatSpellPower]: 1,
+		[Stat.StatHitRating]: 0.80,
+		[Stat.StatCritRating]: 0.53,
+		[Stat.StatHasteRating]: 0.59, // REAL: Calculated at 24.9766% haste breakpoint
+		[Stat.StatMasteryRating]: 0.63,
+	}),
+);
+
+// export const P1_EP_8_TICK = PresetUtils.makePresetEpWeights(
+// 	'8-tick Living Bomb (87.44%)',
+// 	Stats.fromMap({
+// 		[Stat.StatIntellect]: 1.24,
+// 		[Stat.StatSpellPower]: 1,
+// 		[Stat.StatHitRating]: 1.31,
+// 		[Stat.StatCritRating]: 0.52,
+// 		[Stat.StatHasteRating]: 0.30, // TEST: Low haste value for 8-tick
+// 		[Stat.StatMasteryRating]: 0.62,
+// 	}),
+// );
+
+// export const P1_EP_9_TICK = PresetUtils.makePresetEpWeights(
+// 	'9-tick Living Bomb (112.54%)',
+// 	Stats.fromMap({
+// 		[Stat.StatIntellect]: 1.24,
+// 		[Stat.StatSpellPower]: 1,
+// 		[Stat.StatHitRating]: 1.31,
+// 		[Stat.StatCritRating]: 0.52,
+// 		[Stat.StatHasteRating]: 0.20, // TEST: Very low haste value for 9-tick
+// 		[Stat.StatMasteryRating]: 0.62,
+// 	}),
+// );
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.

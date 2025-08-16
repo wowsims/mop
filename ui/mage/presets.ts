@@ -16,6 +16,13 @@ export const LIVING_BOMB_BREAKPOINTS: UnitStatPresets = {
 	]),
 };
 
+export const STATIC_MAGE_BREAKPOINTS: UnitStatPresets = {
+	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+	presets: new Map([
+		['7-tick - LB w/ Lust', 24.9766],
+	]),
+};
+
 export const NETHER_TEMPEST_BREAKPOINTS: UnitStatPresets = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
 	presets: new Map([
@@ -42,7 +49,7 @@ export const NETHER_TEMPEST_BREAKPOINTS: UnitStatPresets = {
 
 export const MAGE_BREAKPOINTS: UnitStatPresets = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
-	presets: new Map([...LIVING_BOMB_BREAKPOINTS.presets, ...NETHER_TEMPEST_BREAKPOINTS.presets].sort((a, b) => a[1] - b[1])),
+	presets: new Map([...LIVING_BOMB_BREAKPOINTS.presets, ...STATIC_MAGE_BREAKPOINTS.presets, ...NETHER_TEMPEST_BREAKPOINTS.presets].sort((a, b) => a[1] - b[1])),
 };
 
 export const DefaultRaidBuffs = RaidBuffs.create({

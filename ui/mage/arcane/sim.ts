@@ -9,6 +9,7 @@ import { APLRotation } from '../../core/proto/apl';
 import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { TypedEvent } from '../../core/typed_event';
 import { formatToNumber } from '../../core/utils';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import * as ArcaneInputs from './inputs';
@@ -44,32 +45,29 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_PREBIS.gear,
+		gear: Presets.P1_POST_MSV.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
-		// Default soft caps for the Reforge optimizer
+		// Default soft caps for the Reforge optimizer - Only practical haste breakpoints
 		softCapBreakpoints: (() => {
-			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
-				breakpoints: [
-					hasteBreakpoints.get('5-tick - Living Bomb')!,
-					hasteBreakpoints.get('6-tick - Living Bomb')!,
-					hasteBreakpoints.get('7-tick - Living Bomb')!,
-					hasteBreakpoints.get('8-tick - Living Bomb')!,
-					hasteBreakpoints.get('9-tick - Living Bomb')!,
-					hasteBreakpoints.get('10-tick - Living Bomb')!,
-					// Higher ticks commented out as they may be unrealistic for most gear levels
-					// hasteBreakpoints.get('11-tick - Living Bomb')!,
-					// hasteBreakpoints.get('12-tick - Living Bomb')!,
-				],
-				capType: StatCapType.TypeThreshold,
-				postCapEPs: [0.6 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
-			});
+			// Curated practical breakpoints with calculated EP weights
+			const practicalBreakpoints = [
+				12.507036,  // 5-tick Living Bomb
+				24.9766,    // 7-tick LB w/ Lust
+				37.520061,  // 6-tick Living Bomb
+			];
 
-			return [hasteSoftCapConfig];
+			return [
+				StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+					breakpoints: practicalBreakpoints,
+					capType: StatCapType.TypeThreshold,
+					postCapEPs: [], // We use getEPDefaults callback instead
+				}),
+			];
 		})(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
@@ -106,13 +104,15 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_EP_PRESET],
+		epWeights: [
+			Presets.P1_EP_PRESET, // Default EP weights - automatic switching handles breakpoint-specific weights
+		],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_DEFAULT],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.ArcaneTalents, Presets.ArcaneTalentsCleave],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS, Presets.P1_PREBIS_REALISTIC, Presets.P1_POST_MSV, Presets.P1_POST_HOF, Presets.P1_BIS],
+		gear: [Presets.P1_POST_MSV, Presets.P1_POST_HOF, Presets.P1_BIS],
 
 		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE],
 	},
@@ -141,10 +141,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P1_PREBIS.gear,
+					1: Presets.P1_POST_MSV.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P1_PREBIS.gear,
+					1: Presets.P1_POST_MSV.gear,
 				},
 			},
 		},
@@ -155,67 +155,189 @@ export class ArcaneMageSimUI extends IndividualSimUI<Spec.SpecArcaneMage> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecArcaneMage>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		const statSelectionPresets = [
-			{
-				unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
-				presets: hasteBreakpoints,
-			},
-		];
+		// Curated practical haste breakpoints for the reforge optimizer
+		const practicalHasteBreakpoints = new Map([
+			['LB: 5-Tick', 12.507036],
+			['LB: 7-Tick w/Lust', 24.9766],
+			['LB: 6-Tick', 37.520061],
+		]);
 
 		player.sim.waitForInit().then(() => {
+			// Helper function to calculate EP weights for a specific haste breakpoint
+			const calculateEPForBreakpoint = async (hastePercent: number, breakpointName: string) => {
+				console.log(`Calculating EP weights for ${breakpointName} (${hastePercent}% haste)`);
+
+				try {
+					// Calculate EP weights using the current player configuration
+					const result = await this.player.computeStatWeights(
+						TypedEvent.nextEventID(),
+						[Stat.StatIntellect, Stat.StatSpellPower, Stat.StatHitRating, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating], // stats to calculate
+						[], // pseudostats to calculate
+						Stat.StatSpellPower, // reference stat
+						(progress) => {
+							console.log(`EP calculation progress for ${breakpointName}:`, progress);
+						}
+					);
+
+					if (result && result.dps && result.dps.weights) {
+						const weights = result.dps.weights;
+						const intellectEP = UnitStat.fromStat(Stat.StatIntellect).getProtoValue(weights);
+						const hitEP = UnitStat.fromStat(Stat.StatHitRating).getProtoValue(weights);
+						const critEP = UnitStat.fromStat(Stat.StatCritRating).getProtoValue(weights);
+						const hasteEP = UnitStat.fromStat(Stat.StatHasteRating).getProtoValue(weights);
+						const masteryEP = UnitStat.fromStat(Stat.StatMasteryRating).getProtoValue(weights);
+
+						console.log(`${breakpointName} EP Values:`, {
+							intellect: intellectEP,
+							hit: hitEP,
+							crit: critEP,
+							haste: hasteEP,
+							mastery: masteryEP
+						});
+
+						// Create the EP weights object normalized to spell power = 1.0
+						const epWeights = new Stats()
+							.withStat(Stat.StatIntellect, intellectEP)
+							.withStat(Stat.StatSpellPower, 1.0) // Reference stat
+							.withStat(Stat.StatHitRating, hitEP)
+							.withStat(Stat.StatCritRating, critEP)
+							.withStat(Stat.StatHasteRating, hasteEP)
+							.withStat(Stat.StatMasteryRating, masteryEP);
+
+						return epWeights;
+					}
+				} catch (error) {
+					console.error(`Error calculating EP weights for ${breakpointName}:`, error);
+				}
+				return null;
+			};
+
+			// Add a global function for manual EP calculation testing
+			// Usage in console: window.calculateBreakpointEPs()
+			(window as any).calculateBreakpointEPs = async () => {
+				console.log('=== Starting EP Calculation for All Breakpoints ===');
+
+				const breakpoints = [
+					{ value: 12.507036, name: '5-tick Living Bomb' },
+					{ value: 24.9766, name: '7-tick LB w/ Lust' },
+					{ value: 37.520061, name: '6-tick Living Bomb' },
+					// Higher breakpoints removed - unrealistic haste levels
+					// { value: 62.469546, name: '7-tick Living Bomb' },
+					// { value: 87.441436, name: '8-tick Living Bomb' },
+					// { value: 112.539866, name: '9-tick Living Bomb' },
+				];
+
+				for (const breakpoint of breakpoints) {
+					console.log(`\n--- Calculating ${breakpoint.name} ---`);
+					const epWeights = await calculateEPForBreakpoint(breakpoint.value, breakpoint.name);
+					if (epWeights) {
+						console.log(`✅ ${breakpoint.name} completed`);
+					} else {
+						console.log(`❌ ${breakpoint.name} failed`);
+					}
+					// Small delay between calculations
+					await new Promise(resolve => setTimeout(resolve, 1000));
+				}
+
+				console.log('\n=== EP Calculation Complete ===');
+			};
+
+			console.log('EP calculation function available: window.calculateBreakpointEPs()');
+
+			// Create mapping of breakpoint values to EP presets
+			const breakpointToEPMap = new Map([
+				[12.507036, Presets.P1_EP_5_TICK.epWeights], // 5-tick Living Bomb
+				[24.9766, Presets.P1_EP_7_TICK_LUST.epWeights], // 7-tick LB w/ Lust
+				[37.520061, Presets.P1_EP_6_TICK.epWeights], // 6-tick Living Bomb
+				// Higher breakpoints commented out - unrealistic haste levels
+				// [62.469546, Presets.P1_EP_7_TICK.epWeights], // 7-tick Living Bomb
+				// [87.441436, Presets.P1_EP_8_TICK.epWeights], // 8-tick Living Bomb
+				// [112.539866, Presets.P1_EP_9_TICK.epWeights], // 9-tick Living Bomb
+			]);
+
+			console.log('Breakpoint to EP mapping:', breakpointToEPMap);
+
 			new ReforgeOptimizer(this, {
-				statSelectionPresets: statSelectionPresets,
+				statSelectionPresets: [{
+					unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+					presets: practicalHasteBreakpoints,
+				}],
 				enableBreakpointLimits: true,
-				updateSoftCaps: softCaps => {
-					const raidBuffs = player.getRaid()?.getBuffs();
-					const hasBL = !!raidBuffs?.bloodlust;
-					const hasBerserking = player.getRace() === Race.RaceTroll;
+				getEPDefaults: (player) => {
+					// Check if soft cap breakpoints are enabled
+					if (!this.sim.getUseSoftCapBreakpoints()) {
+						console.log('GetEPDefaults: Soft cap breakpoints disabled - using default EP weights');
+						return Presets.P1_EP_PRESET.epWeights;
+					}
 
-					const modifyHaste = (oldHastePercent: number, modifier: number) =>
-						Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
+					const breakpointLimits = player.getBreakpointLimits();
+					const selectedHasteBreakpoint = breakpointLimits.getUnitStat(UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
 
-					this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-						const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-						if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-							const adjustedHasteBreakpoints = new Set([...softCap.breakpoints]);
-							const hasCloseMatchingValue = (value: number) =>
-								[...adjustedHasteBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
+					console.log('GetEPDefaults called - Selected haste breakpoint:', selectedHasteBreakpoint);
 
-							softCap.breakpoints.forEach(breakpoint => {
-								if (hasBL) {
-									const blBreakpoint = modifyHaste(breakpoint, 1.3);
+					if (selectedHasteBreakpoint > 0) {
+						// Find the EP preset that matches the selected breakpoint
+						const targetEpWeights = breakpointToEPMap.get(selectedHasteBreakpoint);
+						console.log('Found EP weights for breakpoint:', targetEpWeights ? 'YES' : 'NO');
 
-									if (blBreakpoint > 0) {
-										if (!hasCloseMatchingValue(blBreakpoint)) adjustedHasteBreakpoints.add(blBreakpoint);
-										if (hasBerserking) {
-											const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
-											if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
-												adjustedHasteBreakpoints.add(berserkingBreakpoint);
-											}
-										}
-									}
-								}
-							});
-							softCapToModify.breakpoints = [...adjustedHasteBreakpoints].sort((a, b) => a - b);
+						if (targetEpWeights) {
+							console.log('Returning EP weights for breakpoint:', selectedHasteBreakpoint);
+							return targetEpWeights;
 						}
-					});
-					return softCaps;
-				},
-				additionalSoftCapTooltipInformation: {
-					[Stat.StatHasteRating]: () => {
-						const raidBuffs = player.getRaid()?.getBuffs();
-						const hasBL = !!raidBuffs?.bloodlust;
-						const hasBerserking = player.getRace() === Race.RaceTroll;
+					}
 
-						if (hasBL || hasBerserking) {
-							let tooltip = 'Additional Living Bomb breakpoints have been created using the following cooldowns:\n';
-							if (hasBL) tooltip += '• Bloodlust\n';
-							if (hasBerserking) tooltip += '• Berserking\n';
-							return tooltip;
+					// Fallback to default EP weights (for "No Limit Set" or unrecognized breakpoints)
+					console.log('Using default EP weights (no breakpoint or unrecognized value)');
+					return Presets.P1_EP_PRESET.epWeights;
+				}
+			});
+
+			// Also add a change listener to automatically update EP weights when breakpoint limits change
+			this.player.breakpointLimitsChangeEmitter.on(() => {
+				// Check if soft cap breakpoints are enabled
+				if (!this.sim.getUseSoftCapBreakpoints()) {
+					console.log('Soft cap breakpoints disabled - resetting to default EP weights');
+					this.player.setEpWeights(TypedEvent.nextEventID(), Presets.P1_EP_PRESET.epWeights);
+					return;
+				}
+
+				const breakpointLimits = this.player.getBreakpointLimits();
+				const selectedHasteBreakpoint = breakpointLimits.getUnitStat(UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
+
+				console.log('Breakpoint limits changed - Selected haste breakpoint:', selectedHasteBreakpoint);
+
+				if (selectedHasteBreakpoint > 0) {
+					const targetEpWeights = breakpointToEPMap.get(selectedHasteBreakpoint);
+					if (targetEpWeights) {
+						console.log('Auto-switching EP weights for breakpoint:', selectedHasteBreakpoint);
+						this.player.setEpWeights(TypedEvent.nextEventID(), targetEpWeights);
+					}
+				} else {
+					// selectedHasteBreakpoint is 0 or negative - means "No Limit Set"
+					console.log('No breakpoint limit set - resetting to default EP weights');
+					this.player.setEpWeights(TypedEvent.nextEventID(), Presets.P1_EP_PRESET.epWeights);
+				}
+			});
+
+			// Listen for changes to "Use soft cap breakpoints" checkbox
+			this.sim.useSoftCapBreakpointsChangeEmitter.on(() => {
+				if (!this.sim.getUseSoftCapBreakpoints()) {
+					console.log('Soft cap breakpoints unchecked - resetting to default EP weights');
+					this.player.setEpWeights(TypedEvent.nextEventID(), Presets.P1_EP_PRESET.epWeights);
+				} else {
+					console.log('Soft cap breakpoints enabled - checking for active breakpoint');
+					// If enabling soft caps, check if there's already a breakpoint selected
+					const breakpointLimits = this.player.getBreakpointLimits();
+					const selectedHasteBreakpoint = breakpointLimits.getUnitStat(UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
+
+					if (selectedHasteBreakpoint > 0) {
+						const targetEpWeights = breakpointToEPMap.get(selectedHasteBreakpoint);
+						if (targetEpWeights) {
+							console.log('Auto-switching EP weights for existing breakpoint:', selectedHasteBreakpoint);
+							this.player.setEpWeights(TypedEvent.nextEventID(), targetEpWeights);
 						}
-						return '';
-					},
-				},
+					}
+				}
 			});
 		});
 	}
