@@ -27,7 +27,10 @@ func (hunter *Hunter) RegisterDireBeastSpell() {
 			},
 		},
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
-			hunter.DireBeastPet.EnableWithTimeout(sim, hunter.DireBeastPet, time.Second*15)
+			// Time in milliseconds of leeway after the tooltip duration
+			varianceRoll := time.Duration(sim.Roll(0, 800))
+			summonDuration := time.Second*15 + time.Millisecond*varianceRoll
+			hunter.DireBeastPet.EnableWithTimeout(sim, hunter.DireBeastPet, summonDuration)
 		},
 	})
 
