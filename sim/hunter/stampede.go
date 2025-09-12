@@ -24,8 +24,11 @@ func (hunter *Hunter) RegisterStampedeSpell() {
 			},
 		},
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
+			// Time in milliseconds of leeway after the tooltip duration
+			varianceRoll := time.Duration(sim.Roll(000, 800))
+			summonDuration := time.Second*20 + time.Millisecond*varianceRoll
 			for _, pet := range hunter.StampedePet {
-				pet.EnableWithTimeout(sim, pet, time.Second*20)
+				pet.EnableWithTimeout(sim, pet, summonDuration)
 			}
 		},
 	})
