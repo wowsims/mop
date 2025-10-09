@@ -22,6 +22,12 @@ export abstract class Exporter extends BaseModal {
 	constructor(parent: HTMLElement, options: ExporterOptions) {
 		super(parent, 'exporter', { title: options.title, header: true, footer: true });
 
+		const titleAsSlug = options.title.toLowerCase().replaceAll(' ', '-');
+		gtag('event', 'page_view', {
+			page_title: options.title,
+			page_location: `${window.location.href}/export/${titleAsSlug}`,
+		});
+
 		this.textElem = <textarea spellcheck={false} className="exporter-textarea form-control" />;
 		this.body.append(this.textElem);
 
