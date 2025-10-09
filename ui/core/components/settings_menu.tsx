@@ -72,6 +72,10 @@ export class SettingsMenu extends BaseModal {
 				content: i18n.t('info.options.restore_defaults.tooltip'),
 			});
 			restoreDefaultsButton.value.addEventListener('click', () => {
+				gtag('event', 'sim:actions', {
+					event_category: 'restore-defaults',
+					event_label: 'restore'
+				});
 				this.simUI.applyDefaults(TypedEvent.nextEventID());
 				new Toast({
 					variant: 'success',
@@ -119,6 +123,11 @@ export class SettingsMenu extends BaseModal {
 					return idx == -1 ? defaultLang : idx;
 				},
 				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+					gtag('event', 'sim:actions', {
+						event_category: 'language',
+						event_label: 'update',
+						value: langs[newValue],
+					});
 					sim.setLanguage(eventID, langs[newValue] || 'en');
 					setLang(langs[newValue] || 'en');
 				},
@@ -149,6 +158,11 @@ export class SettingsMenu extends BaseModal {
 				changedEvent: (sim: Sim) => sim.showExperimentalChangeEmitter,
 				getValue: (sim: Sim) => sim.getShowExperimental(),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+					gtag('event', 'sim:actions', {
+						event_category: 'show-experimental',
+						event_label: 'update',
+						value: newValue,
+					});
 					sim.setShowExperimental(eventID, newValue);
 				},
 			});
@@ -177,7 +191,14 @@ export class SettingsMenu extends BaseModal {
 				labelTooltip: 'Use web workers to spread sim workload over multiple CPU cores.',
 				changedEvent: (sim: Sim) => sim.wasmConcurrencyChangeEmitter,
 				getValue: (sim: Sim) => sim.getWasmConcurrency(),
-				setValue: (eventID, sim, newValue) => sim.setWasmConcurrency(eventID, newValue),
+				setValue: (eventID, sim, newValue) => {
+					gtag('event', 'sim:actions', {
+						event_category: 'concurrency',
+						event_label: 'update',
+						value: newValue,
+					});
+					sim.setWasmConcurrency(eventID, newValue);
+				},
 				values: values,
 			});
 

@@ -51,6 +51,10 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 			changedEvent: (player: Player<any>) => player.talentsChangeEmitter,
 			getValue: (player: Player<any>) => player.getTalentsString(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
+				gtag('event', 'sim:actions', {
+					event_category: 'talents',
+					event_label: 'update'
+				});
 				player.setTalentsString(eventID, newValue);
 			},
 		});

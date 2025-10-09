@@ -134,6 +134,10 @@ export class StatWeightActionSettings {
 export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);
 	simUI.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
+		gtag('event', 'page_view', {
+			page_title: 'Stat Weights',
+			page_location: `${window.location.href}/stat-weights`,
+		});
 		epWeightsModal.open();
 	});
 
@@ -361,6 +365,10 @@ export class EpWeightsMenu extends BaseModal {
 		const calcButton = calcWeightsButtonRef.value;
 		let isRunning = false;
 		calcButton?.addEventListener('click', async () => {
+			gtag('event', 'sim:actions', {
+				event_category: 'stat_weights',
+				event_label: 'calculate',
+			});
 			if (isRunning) return;
 			isRunning = true;
 
@@ -650,7 +658,7 @@ export class EpWeightsMenu extends BaseModal {
 			const epStdev = stat.getProtoValue(statWeights.epValuesStdev!);
 			epCell = this.makeTableCellContents(epAvg, epStdev);
 		} else {
-							weightCell = <span className="results-avg notapplicable">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>;
+			weightCell = <span className="results-avg notapplicable">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>;
 			epCell = weightCell.cloneNode(true) as Element;
 		}
 
@@ -671,7 +679,8 @@ export class EpWeightsMenu extends BaseModal {
 		const epDelta = epTotal - epCurrent;
 
 		const epAvgElem = epRef.value!.querySelector('.type-ep .results-avg')!;
-		if (epDelta.toFixed(2) === '0.00') epAvgElem; // no-op
+		if (epDelta.toFixed(2) === '0.00')
+			epAvgElem; // no-op
 		else if (epDelta > 0) epAvgElem.classList.add('positive');
 		else if (epDelta < 0) epAvgElem.classList.add('negative');
 

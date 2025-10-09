@@ -206,7 +206,13 @@ export class SimHeader extends Component {
 			icon: 'fas fa-cog fa-lg',
 			tooltip: i18n.t('info.sim_options'),
 			classes: 'sim-options',
-			onclick: () => settingsMenu.open(),
+			onclick: () => {
+				gtag('event', 'page_view', {
+					page_title: "Options",
+					page_location: `${window.location.href}/settings-menu`,
+				});
+				settingsMenu.open();
+			},
 		});
 	}
 

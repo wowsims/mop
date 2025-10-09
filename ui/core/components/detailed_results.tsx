@@ -303,11 +303,19 @@ export class DetailedResults extends Component {
 
 		const simButton = simButtonRef.value!;
 		simButton?.addEventListener('click', () => {
+			gtag('event', 'sim:actions', {
+				event_category: 'simulate',
+				event_label: 'once',
+			});
 			this.simUI?.runSimOnce();
 		});
 
 		const deathButton = deathButtonRef.value!;
 		deathButton?.addEventListener('click', () => {
+			gtag('event', 'sim:actions', {
+				event_category: 'simulate',
+				event_label: 'death',
+			});
 			if (this.latestDeathSeeds.length > 1) {
 				this.simUI?.sim.setFixedRngSeed(TypedEvent.nextEventID(), Number(this.latestDeathSeeds.pop()));
 				this.recentlyEditedSeed = true;

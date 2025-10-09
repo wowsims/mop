@@ -21,6 +21,12 @@ export abstract class Exporter extends BaseModal {
 	constructor(parent: HTMLElement, options: ExporterOptions) {
 		super(parent, 'exporter', { title: options.title, header: true, footer: true });
 
+		const titleAsSlug = options.title.toLowerCase().replaceAll(' ', '-');
+		gtag('event', 'page_view', {
+			page_title: options.title,
+			page_location: `${window.location.href}/export/${titleAsSlug}`,
+		});
+
 		this.textElem = <textarea spellcheck={false} className="exporter-textarea form-control" />;
 		this.body.append(this.textElem);
 
@@ -37,7 +43,7 @@ export abstract class Exporter extends BaseModal {
 				<button className="exporter-button btn btn-primary download-button ms-2" ref={downloadBtnRef}>
 					<i className="fa fa-download me-1"></i>
 					{i18n.t('export.json.download_button')}
-				</button>
+				</button>,
 			);
 
 			const downloadButton = downloadBtnRef.value!;

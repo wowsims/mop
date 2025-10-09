@@ -1,9 +1,9 @@
-import { SimUI } from "../sim_ui";
-import { Component } from "./component";
+import { SimUI } from '../sim_ui';
+import { Component } from './component';
 
 export interface SimTabConfig {
-	identifier: string,
-	title: string,
+	identifier: string;
+	title: string;
 }
 
 export abstract class SimTab extends Component {
@@ -25,8 +25,7 @@ export abstract class SimTab extends Component {
 		this.rootElem.id = this.config.identifier;
 		this.rootElem.classList.add('tab-pane', 'fade');
 
-		if (parentElem.childNodes.length == 0)
-			this.rootElem.classList.add('active', 'show');
+		if (parentElem.childNodes.length == 0) this.rootElem.classList.add('active', 'show');
 
 		this.navItem = this.buildNavItem();
 		this.navLink = this.navItem.children[0] as HTMLElement;
@@ -35,6 +34,13 @@ export abstract class SimTab extends Component {
 		this.rootElem.appendChild(this.contentContainer);
 
 		this.simUI.simHeader.addSimTabLink(this);
+
+		this.navItem.addEventListener('click', () => {
+			gtag('event', 'page_view', {
+				page_title: config.title,
+				page_location: `${window.location.href}/${config.identifier}`,
+			});
+		});
 	}
 
 	private buildNavItem(): HTMLElement {
@@ -59,7 +65,7 @@ export abstract class SimTab extends Component {
 
 	protected buildColumn(index: number, customCssClass: string): HTMLElement {
 		const column = document.createElement('div');
-		column.classList.add('tab-panel-col', `${customCssClass}-${index}`)
+		column.classList.add('tab-panel-col', `${customCssClass}-${index}`);
 		return column;
 	}
 }

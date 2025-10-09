@@ -177,6 +177,11 @@ export abstract class SimUI extends Component {
 			changedEvent: (sim: Sim) => sim.iterationsChangeEmitter,
 			getValue: (sim: Sim) => sim.getIterations(),
 			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+				gtag('event', 'sim:actions', {
+					event_category: 'iterations',
+					event_label: 'update',
+					value: newValue,
+				});
 				sim.setIterations(eventID, newValue);
 			},
 		}).rootElem;

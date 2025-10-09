@@ -18,6 +18,11 @@ export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 	let waitAbort = false;
 
 	simUI.addAction(i18n.t('sidebar.buttons.simulate'), 'dps-action', async ev => {
+		gtag('event', 'sim:actions', {
+			event_category: 'simulate',
+			event_label: 'simulate',
+			value: simUI.sim.getIterations(),
+		});
 		const button = ev.target as HTMLButtonElement;
 		button.disabled = true;
 		if (!isRunning) {

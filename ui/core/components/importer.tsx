@@ -20,9 +20,14 @@ export abstract class Importer extends BaseModal {
 
 	constructor(parent: HTMLElement, options: ImporterOptions) {
 		super(parent, 'importer', { title: options.title, footer: true, disposeOnClose: false });
+		const titleAsSlug = options.title.toLowerCase().replaceAll(' ', '-');
+		gtag('event', 'page_view', {
+			page_title: options.title,
+			page_location: `${window.location.href}/import/${titleAsSlug}`,
+		});
 
 		this.allowFileUpload = options.allowFileUpload || false;
-		const uploadInputId = 'upload-input-' + options.title.toLowerCase().replaceAll(' ', '-');
+		const uploadInputId = 'upload-input-' + titleAsSlug;
 
 		const descriptionElemRef = ref<HTMLDivElement>();
 		const textElemRef = ref<HTMLTextAreaElement>();
@@ -33,7 +38,7 @@ export abstract class Importer extends BaseModal {
 			<div>
 				<div ref={descriptionElemRef} className="import-description"></div>
 				<textarea ref={textElemRef} className="importer-textarea form-control" attributes={{ spellcheck: false }}></textarea>
-			</div>
+			</div>,
 		);
 
 		this.footer!.appendChild(
@@ -49,7 +54,7 @@ export abstract class Importer extends BaseModal {
 					<i className="fa fa-download me-1"></i>
 					{i18n.t('import.json.import_button')}
 				</button>
-			</div>
+			</div>,
 		);
 
 		this.descriptionElem = descriptionElemRef.value!;
