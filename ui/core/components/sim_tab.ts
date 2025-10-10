@@ -1,3 +1,4 @@
+import { trackPageView } from '../../tracking/utils';
 import { SimUI } from '../sim_ui';
 import { Component } from './component';
 
@@ -36,10 +37,7 @@ export abstract class SimTab extends Component {
 		this.simUI.simHeader.addSimTabLink(this);
 
 		this.navItem.addEventListener('click', () => {
-			gtag('event', 'page_view', {
-				page_title: config.title,
-				page_location: `${window.location.href}/${config.identifier}`,
-			});
+			trackPageView(config.title, config.identifier);
 		});
 	}
 

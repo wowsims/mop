@@ -6,6 +6,7 @@ import { Component } from '../component';
 import { ContentBlock } from '../content_block';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { EquippedItem } from '../../proto_utils/equipped_item';
+import { trackEvent } from '../../../tracking/utils';
 
 export const COSTS = new Map<ItemQuality, number>([
 	[ItemQuality.ItemQualityRare, 750],
@@ -74,6 +75,11 @@ export class UpgradeCostsSummary extends Component {
 						<button
 							className="btn btn-outline-primary"
 							onclick={() => {
+								trackEvent({
+									action: 'click',
+									category: 'upgrades',
+									label: 'upgrade_all',
+								});
 								let curGear = this.player.getGear();
 
 								for (const slot of curGear.getItemSlots()) {
@@ -99,6 +105,11 @@ export class UpgradeCostsSummary extends Component {
 				<button
 					className="btn btn-sm btn-link btn-reset summary-table-reset-button"
 					onclick={() => {
+						trackEvent({
+							action: 'click',
+							category: 'upgrades',
+							label: 'reset',
+						});
 						const gear = this.player.getGear().withoutUpgrades(this.player.canDualWield2H());
 						this.player.setGear(TypedEvent.nextEventID(), gear);
 					}}>

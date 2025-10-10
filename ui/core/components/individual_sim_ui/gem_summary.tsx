@@ -9,6 +9,7 @@ import { TypedEvent } from '../../typed_event';
 import { Component } from '../component';
 import { ContentBlock } from '../content_block';
 import i18n from '../../../i18n/config';
+import { trackEvent } from '../../../tracking/utils';
 
 interface GemSummaryData {
 	gem: Gem;
@@ -91,6 +92,11 @@ export class GemSummary extends Component {
 				<button
 					className="btn btn-sm btn-link btn-reset summary-table-reset-button"
 					onclick={() => {
+						trackEvent({
+							action: 'click',
+							category: 'gems',
+							label: 'reset',
+						});
 						this.player.setGear(TypedEvent.nextEventID(), this.player.getGear().withoutGems(this.player.canDualWield2H()));
 					}}>
 					<i className="fas fa-times me-1"></i>

@@ -13,6 +13,7 @@ import { Importer } from './importer';
 import { SettingsMenu } from './settings_menu';
 import { SimTab } from './sim_tab';
 import { SocialLinks } from './social_links';
+import { trackPageView } from '../../tracking/utils';
 
 interface ToolbarLinkArgs {
 	parent: HTMLElement;
@@ -207,10 +208,7 @@ export class SimHeader extends Component {
 			tooltip: i18n.t('info.sim_options'),
 			classes: 'sim-options',
 			onclick: () => {
-				gtag('event', 'page_view', {
-					page_title: "Options",
-					page_location: `${window.location.href}/settings-menu`,
-				});
+				trackPageView('Options', '/settings-menu');
 				settingsMenu.open();
 			},
 		});

@@ -38,6 +38,7 @@ import {
 } from './bulk/utils';
 import { BulkGearJsonImporter } from './importers';
 import { BooleanPicker } from '../pickers/boolean_picker';
+import { trackEvent } from '../../../tracking/utils';
 
 const WEB_DEFAULT_ITERATIONS = 1000;
 const WEB_ITERATIONS_LIMIT = 50_000;
@@ -700,6 +701,13 @@ export class BulkTab extends SimTab {
 		this.isRunning = false;
 		this.bulkSimButton.addEventListener('click', async () => {
 			if (this.isRunning) return;
+			trackEvent({
+				action: 'sim',
+				category: 'simulate',
+				label: 'batch',
+				value: this.combinations,
+			});
+
 			this.isRunning = true;
 			this.bulkSimButton.disabled = true;
 			this.isPending = true;

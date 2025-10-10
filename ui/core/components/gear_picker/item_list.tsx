@@ -25,11 +25,11 @@ import {
 	makeShowMatchingGemsSelector,
 } from '../inputs/other_inputs';
 import { ItemNotice } from '../item_notice/item_notice';
-import Toast from '../toast';
 import { Clusterize } from '../virtual_scroll/clusterize';
 import { FiltersMenu } from './filters_menu';
 import { SelectorModalTabs, getTranslatedTabLabel } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
+import { trackEvent } from '../../../tracking/utils';
 
 export interface ItemData<T extends ItemListType> {
 	item: T;
@@ -613,6 +613,11 @@ export default class ItemList<T extends ItemListType> {
 				compareButton.value!.addEventListener('click', () => {
 					const hasItem = checkHasItem();
 					simUI.bt?.[hasItem ? 'removeItem' : 'addItem'](ItemSpec.create({ id: itemData.id }));
+					trackEvent({
+						action: 'click',
+						category: 'batch',
+						label: hasItem ? 'remove-item' : 'add-item',
+					});
 				});
 			}
 		}

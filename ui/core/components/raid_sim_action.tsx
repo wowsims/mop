@@ -11,6 +11,7 @@ import { RequestTypes } from '../sim_signal_manager';
 import { SimUI } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
 import { formatDeltaTextElem, formatToNumber, formatToPercent, isDevMode, sum } from '../utils';
+import { trackEvent } from '../../tracking/utils';
 
 export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 	const resultsViewer = simUI.resultsViewer;
@@ -18,9 +19,10 @@ export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 	let waitAbort = false;
 
 	simUI.addAction(i18n.t('sidebar.buttons.simulate'), 'dps-action', async ev => {
-		gtag('event', 'sim:actions', {
-			event_category: 'simulate',
-			event_label: 'simulate',
+		trackEvent({
+			action: 'sim',
+			category: 'simulate',
+			label: 'simulate',
 			value: simUI.sim.getIterations(),
 		});
 		const button = ev.target as HTMLButtonElement;

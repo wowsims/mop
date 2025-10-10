@@ -20,6 +20,7 @@ import { BooleanPicker } from './pickers/boolean_picker.js';
 import { NumberPicker } from './pickers/number_picker.js';
 import { ResultsViewer } from './results_viewer.jsx';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
+import { trackEvent, trackPageView } from '../../tracking/utils';
 export class StatWeightActionSettings {
 	private readonly storageKey: string;
 	readonly changeEmitter = new TypedEvent<void>();
@@ -134,10 +135,7 @@ export class StatWeightActionSettings {
 export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);
 	simUI.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
-		gtag('event', 'page_view', {
-			page_title: 'Stat Weights',
-			page_location: `${window.location.href}/stat-weights`,
-		});
+		trackPageView('Stat Weights', '/stat-weights');
 		epWeightsModal.open();
 	});
 
@@ -365,9 +363,10 @@ export class EpWeightsMenu extends BaseModal {
 		const calcButton = calcWeightsButtonRef.value;
 		let isRunning = false;
 		calcButton?.addEventListener('click', async () => {
-			gtag('event', 'sim:actions', {
-				event_category: 'stat_weights',
-				event_label: 'calculate',
+			trackEvent({
+				action: 'sim',
+				category: 'stat_weights',
+				label: 'calculate',
 			});
 			if (isRunning) return;
 			isRunning = true;

@@ -6,6 +6,7 @@ import { downloadString } from '../utils';
 import { BaseModal } from './base_modal';
 import { CopyButton } from './copy_button';
 import i18n from '../../i18n/config';
+import { trackPageView } from '../../tracking/utils';
 
 export interface ExporterOptions {
 	title: string;
@@ -20,12 +21,6 @@ export abstract class Exporter extends BaseModal {
 
 	constructor(parent: HTMLElement, options: ExporterOptions) {
 		super(parent, 'exporter', { title: options.title, header: true, footer: true });
-
-		const titleAsSlug = options.title.toLowerCase().replaceAll(' ', '-');
-		gtag('event', 'page_view', {
-			page_title: options.title,
-			page_location: `${window.location.href}/export/${titleAsSlug}`,
-		});
 
 		this.textElem = <textarea spellcheck={false} className="exporter-textarea form-control" />;
 		this.body.append(this.textElem);
@@ -55,6 +50,8 @@ export abstract class Exporter extends BaseModal {
 	}
 
 	open() {
+		const titleAsSlug = this.header?.title.toLowerCase().replaceAll(' ', '-');
+		trackPageView(this.header!.title, `/export/${titleAsSlug}`);
 		super.open();
 		this.init();
 	}

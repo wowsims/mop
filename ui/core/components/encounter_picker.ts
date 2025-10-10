@@ -1,5 +1,6 @@
 import i18n from '../../i18n/config.js';
 import { translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip, translateMobType } from '../../i18n/localization.js';
+import { TrackEventProps, trackEvent } from '../../tracking/utils';
 import { Encounter } from '../encounter.js';
 import { IndividualSimUI } from '../individual_sim_ui.js';
 import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common.js';
@@ -53,11 +54,11 @@ export class EncounterPicker extends Component {
 
 			const presetEncounters = modEncounter.sim.db.getAllPresetEncounters();
 			new EnumPicker<Encounter>(this.rootElem, modEncounter, {
-			id: 'encounter-preset-encouter',
-			label: i18n.t('settings_tab.encounter.encounter_preset.label'),
-			//extraCssClasses: ['encounter-picker', 'mb-0', 'pe-2', 'order-first'],
-			extraCssClasses: ['damage-metrics', 'npc-picker'],
-			values: [{ name: i18n.t('common.custom'), value: -1 }].concat(
+				id: 'encounter-preset-encouter',
+				label: i18n.t('settings_tab.encounter.encounter_preset.label'),
+				//extraCssClasses: ['encounter-picker', 'mb-0', 'pe-2', 'order-first'],
+				extraCssClasses: ['damage-metrics', 'npc-picker'],
+				values: [{ name: i18n.t('common.custom'), value: -1 }].concat(
 					presetEncounters.map((pe, i) => {
 						return {
 							name: pe.path,
@@ -197,8 +198,8 @@ class AdvancedEncounterModal extends BaseModal {
 		addEncounterFieldPickers(header, this.encounter, true);
 		if (!simUI.isIndividualSim()) {
 			new BooleanPicker<Encounter>(header, encounter, {
-			id: 'aem-use-health',
-			label: i18n.t('settings_tab.encounter.use_health.label'),
+				id: 'aem-use-health',
+				label: i18n.t('settings_tab.encounter.use_health.label'),
 				labelTooltip: i18n.t('settings_tab.encounter.use_health.tooltip'),
 				inline: true,
 				changedEvent: (encounter: Encounter) => encounter.changeEmitter,
@@ -214,6 +215,11 @@ class AdvancedEncounterModal extends BaseModal {
 			changedEvent: (encounter: Encounter) => encounter.targetsChangeEmitter,
 			getValue: (encounter: Encounter) => encounter.targets,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: Array<TargetProto>) => {
+				trackEvent({
+					action: 'settings',
+					category: 'encounter',
+					label: newValue.length > encounter.targets.length ? 'add-target' : 'remove-target',
+				});
 				encounter.targets = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -248,7 +254,14 @@ class AdvancedEncounterModal extends BaseModal {
 			getValue: (encounter: Encounter) => presetEncounters.findIndex(pe => encounter.matchesPreset(pe)),
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 				if (newValue != -1) {
-					encounter.applyPreset(eventID, presetEncounters[newValue]);
+					const preset = presetEncounters[newValue];
+					trackEvent({
+						action: 'settings',
+						category: 'encounter',
+						label: 'preset',
+						value: preset.path,
+					});
+					encounter.applyPreset(eventID, preset);
 				}
 			},
 		});
@@ -309,7 +322,14 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			getValue: () => presetTargets.findIndex(pe => equalTargetsIgnoreInputs(this.getTarget(), pe.target)),
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				if (newValue != -1) {
-					encounter.applyPresetTarget(eventID, presetTargets[newValue], this.targetIndex);
+					const preset = presetTargets[newValue];
+					trackEvent({
+						action: 'settings',
+						category: 'targets',
+						label: 'preset',
+						value: preset.target?.name || preset.path,
+					});
+					encounter.applyPresetTarget(eventID, preset, this.targetIndex);
 					encounter.targetsChangeEmitter.emit(eventID);
 				}
 			},
@@ -333,10 +353,15 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				const target = this.getTarget();
 				target.id = newValue;
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'ai',
+					value: target.name,
+				});
 
 				// Transfer Target Inputs from the AI of the selected target
 				target.targetInputs = (presetTargets.find(pe => target.id == pe.target?.id)?.target?.targetInputs || []).map(ti => TargetInput.clone(ti));
-
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
 		});
@@ -354,6 +379,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().level,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'level',
+					value: newValue,
+				});
 				this.getTarget().level = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -365,6 +396,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().mobType,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'mob_type',
+					value: newValue,
+				});
 				this.getTarget().mobType = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -384,6 +421,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().tankIndex,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'tank_index',
+					value: newValue,
+				});
 				this.getTarget().tankIndex = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -416,6 +459,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().swingSpeed,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'swing_speed',
+					value: newValue,
+				});
 				this.getTarget().swingSpeed = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -427,6 +476,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().minBaseDamage,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'min_base_damage',
+					value: newValue,
+				});
 				this.getTarget().minBaseDamage = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -439,6 +494,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().damageSpread,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'damage_spread',
+					value: newValue,
+				});
 				this.getTarget().damageSpread = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -452,6 +513,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().dualWield,
 			setValue: (eventID: EventID, _: null, newValue: boolean) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'dual_wield',
+					value: newValue,
+				});
 				this.getTarget().dualWield = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -465,6 +532,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().dualWieldPenalty,
 			setValue: (eventID: EventID, _: null, newValue: boolean) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'dual_wield_penalty',
+					value: newValue,
+				});
 				this.getTarget().dualWieldPenalty = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -479,6 +552,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().parryHaste,
 			setValue: (eventID: EventID, _: null, newValue: boolean) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'parry_haste',
+					value: newValue,
+				});
 				this.getTarget().parryHaste = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -499,6 +578,12 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			changedEvent: () => encounter.targetsChangeEmitter,
 			getValue: () => this.getTarget().spellSchool,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'targets',
+					label: 'spell_school',
+					value: newValue,
+				});
 				this.getTarget().spellSchool = newValue;
 				encounter.targetsChangeEmitter.emit(eventID);
 			},
@@ -607,13 +692,19 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 			enumValue: this.enumPicker ? this.enumPicker.getInputValue() : undefined,
 		});
 	}
-	setInputValue(newValue: TargetInput) {
-		if (!newValue) {
+	setInputValue(newTargetValue: TargetInput) {
+		if (!newTargetValue) {
 			return;
 		}
 
-		if (newValue.inputType == InputType.Number) {
-			if (this.numberPicker && this.numberPicker.inputConfig.label === newValue.label) {
+		const sharedTrackingConfig: TrackEventProps = {
+			action: 'settings',
+			category: 'targets',
+			label: newTargetValue.label,
+		};
+
+		if (newTargetValue.inputType == InputType.Number) {
+			if (this.numberPicker && this.numberPicker.inputConfig.label === newTargetValue.label) {
 				return;
 			}
 
@@ -621,44 +712,56 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 			this.numberPicker = new NumberPicker(this.rootElem, null, {
 				id: randomUUID(),
 				float: true,
-				label: translateTargetInputLabel(newValue.label),
-				labelTooltip: translateTargetInputTooltip(newValue.label, newValue.tooltip),
+				label: translateTargetInputLabel(newTargetValue.label),
+				labelTooltip: translateTargetInputTooltip(newTargetValue.label, newTargetValue.tooltip),
 				changedEvent: () => this.encounter.targetsChangeEmitter,
 				getValue: () => this.getTargetInput().numberValue,
 				setValue: (eventID: EventID, _: null, newValue: number) => {
+					trackEvent({
+						...sharedTrackingConfig,
+						value: newValue,
+					});
 					this.getTargetInput().numberValue = newValue;
 					this.encounter.targetsChangeEmitter.emit(eventID);
 				},
 			});
-		} else if (newValue.inputType == InputType.Bool) {
-			if (this.boolPicker && this.boolPicker.inputConfig.label === newValue.label) {
+		} else if (newTargetValue.inputType == InputType.Bool) {
+			if (this.boolPicker && this.boolPicker.inputConfig.label === newTargetValue.label) {
 				return;
 			}
 
 			this.clearPickers();
 			this.boolPicker = new BooleanPicker(this.rootElem, null, {
 				id: randomUUID(),
-				label: translateTargetInputLabel(newValue.label),
-				labelTooltip: translateTargetInputTooltip(newValue.label, newValue.tooltip),
+				label: translateTargetInputLabel(newTargetValue.label),
+				labelTooltip: translateTargetInputTooltip(newTargetValue.label, newTargetValue.tooltip),
 				extraCssClasses: ['input-inline'],
 				changedEvent: () => this.encounter.targetsChangeEmitter,
 				getValue: () => this.getTargetInput().boolValue,
 				setValue: (eventID: EventID, _: null, newValue: boolean) => {
+					trackEvent({
+						...sharedTrackingConfig,
+						value: newValue,
+					});
 					this.getTargetInput().boolValue = newValue;
 					this.encounter.targetsChangeEmitter.emit(eventID);
 				},
 			});
-		} else if (newValue.inputType == InputType.Enum) {
+		} else if (newTargetValue.inputType == InputType.Enum) {
 			this.clearPickers();
 			this.enumPicker = new EnumPicker<null>(this.rootElem, null, {
 				id: randomUUID(),
-				label: translateTargetInputLabel(newValue.label),
-				values: newValue.enumOptions.map((option, index) => {
+				label: translateTargetInputLabel(newTargetValue.label),
+				values: newTargetValue.enumOptions.map((option, index) => {
 					return { value: index, name: option };
 				}),
 				changedEvent: () => this.encounter.targetsChangeEmitter,
 				getValue: () => this.getTargetInput().enumValue,
 				setValue: (eventID: EventID, _: null, newValue: number) => {
+					trackEvent({
+						...sharedTrackingConfig,
+						value: newValue,
+					});
 					this.getTargetInput().enumValue = newValue;
 					this.encounter.targetsChangeEmitter.emit(eventID);
 				},
@@ -670,13 +773,19 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, showExecuteProportion: boolean) {
 	const durationGroup = Input.newGroupContainer();
 	rootElem.appendChild(durationGroup);
-		new NumberPicker(durationGroup, encounter, {
+	new NumberPicker(durationGroup, encounter, {
 		id: 'encounter-duration',
 		label: i18n.t('settings_tab.encounter.duration.label'),
 		labelTooltip: i18n.t('settings_tab.encounter.duration.tooltip'),
 		changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 		getValue: (encounter: Encounter) => encounter.getDuration(),
 		setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			trackEvent({
+				action: 'settings',
+				category: 'duration',
+				label: 'duration',
+				value: newValue,
+			});
 			encounter.setDuration(eventID, newValue);
 		},
 		enableWhen: _obj => {
@@ -690,6 +799,12 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 		changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 		getValue: (encounter: Encounter) => encounter.getDurationVariation(),
 		setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+			trackEvent({
+				action: 'settings',
+				category: 'duration',
+				label: 'variation',
+				value: newValue,
+			});
 			encounter.setDurationVariation(eventID, newValue);
 		},
 		enableWhen: _obj => {
@@ -709,6 +824,12 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion20() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'execute',
+					label: 'execute_20',
+					value: newValue,
+				});
 				encounter.setExecuteProportion20(eventID, newValue / 100);
 			},
 			enableWhen: _obj => {
@@ -722,6 +843,12 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion25() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'execute',
+					label: 'execute_25',
+					value: newValue,
+				});
 				encounter.setExecuteProportion25(eventID, newValue / 100);
 			},
 			enableWhen: _obj => {
@@ -735,6 +862,12 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion35() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'execute',
+					label: 'execute_35',
+					value: newValue,
+				});
 				encounter.setExecuteProportion35(eventID, newValue / 100);
 			},
 			enableWhen: _obj => {
@@ -748,6 +881,12 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion45() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'execute',
+					label: 'execute_45',
+					value: newValue,
+				});
 				encounter.setExecuteProportion45(eventID, newValue / 100);
 			},
 			enableWhen: _obj => {
@@ -761,6 +900,12 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			changedEvent: (encounter: Encounter) => encounter.changeEmitter,
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion90() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
+				trackEvent({
+					action: 'settings',
+					category: 'execute',
+					label: 'execute_90',
+					value: newValue,
+				});
 				encounter.setExecuteProportion90(eventID, newValue / 100);
 			},
 			enableWhen: _obj => {
@@ -779,6 +924,12 @@ function makeTargetInputsPicker(parent: HTMLElement, encounter: Encounter, targe
 		changedEvent: (encounter: Encounter) => encounter.targetsChangeEmitter,
 		getValue: (encounter: Encounter) => encounter.targets[targetIndex].targetInputs,
 		setValue: (eventID: EventID, encounter: Encounter, newValue: Array<TargetInput>) => {
+			trackEvent({
+				action: 'settings',
+				category: 'targets',
+				label: 'count',
+				value: newValue.length,
+			});
 			encounter.targets[targetIndex].targetInputs = newValue;
 			encounter.targetsChangeEmitter.emit(eventID);
 		},

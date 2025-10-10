@@ -23,6 +23,7 @@ import { RequestTypes } from './sim_signal_manager.js';
 import { EventID, TypedEvent } from './typed_event.js';
 import { WorkerProgressCallback } from './worker_pool';
 import { isDevMode } from './utils';
+import { trackEvent } from '../tracking/utils';
 
 const URLMAXLEN = 2048;
 const globalKnownIssues: Array<string> = [];
@@ -177,9 +178,10 @@ export abstract class SimUI extends Component {
 			changedEvent: (sim: Sim) => sim.iterationsChangeEmitter,
 			getValue: (sim: Sim) => sim.getIterations(),
 			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
-				gtag('event', 'sim:actions', {
-					event_category: 'iterations',
-					event_label: 'update',
+				trackEvent({
+					action: 'settings',
+					category: 'iterations',
+					label: 'update',
 					value: newValue,
 				});
 				sim.setIterations(eventID, newValue);

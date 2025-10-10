@@ -5,6 +5,7 @@ import { EventID, TypedEvent } from '../typed_event';
 import { Component } from './component';
 import { ContentBlock, ContentBlockHeaderConfig } from './content_block';
 import i18n from '../../i18n/config';
+import { trackEvent } from '../../tracking/utils';
 
 export type SavedDataManagerConfig<ModObject, T> = {
 	label: string;
@@ -127,13 +128,22 @@ export class SavedDataManager<ModObject, T> extends Component {
 			this.config.setData(TypedEvent.nextEventID(), this.modObject, config.data);
 			config.onLoad?.(this.modObject);
 			if (this.saveInput) this.saveInput.value = config.name;
+			trackEvent({
+				action: 'settings',
+				category: 'load',
+				label: this.config.label,
+			});
 		});
 
 		if (!this.config.loadOnly && !config.isPreset && deleteButtonRef.value) {
 			const tooltip = tippy(deleteButtonRef.value, { content: this.config.deleteTooltip || `Delete saved ${this.config.label}` });
 			deleteButtonRef.value.addEventListener('click', event => {
 				event.stopPropagation();
-				const shouldDelete = confirm(this.config.deleteConfirmMessage ? this.config.deleteConfirmMessage.replace('{{name}}', config.name) : `Delete saved ${this.config.label} '${config.name}'?`);
+				const shouldDelete = confirm(
+					this.config.deleteConfirmMessage
+						? this.config.deleteConfirmMessage.replace('{{name}}', config.name)
+						: `Delete saved ${this.config.label} '${config.name}'?`,
+				);
 				if (!shouldDelete) return;
 
 				tooltip.destroy();
@@ -142,6 +152,12 @@ export class SavedDataManager<ModObject, T> extends Component {
 				this.userData[idx].elem.remove();
 				this.userData.splice(idx, 1);
 				this.saveUserData();
+
+				trackEvent({
+					action: 'settings',
+					category: 'delete',
+					label: this.config.label,
+				});
 			});
 		}
 
@@ -251,7 +267,11 @@ export class SavedDataManager<ModObject, T> extends Component {
 			}
 
 			if (newName in this.presets) {
-				alert(this.config.nameExistsAlert ? this.config.nameExistsAlert.replace('{{name}}', newName) : `${this.config.label} with name ${newName} already exists.`);
+				alert(
+					this.config.nameExistsAlert
+						? this.config.nameExistsAlert.replace('{{name}}', newName)
+						: `${this.config.label} with name ${newName} already exists.`,
+				);
 				return;
 			}
 			this.addSavedData({
@@ -259,6 +279,11 @@ export class SavedDataManager<ModObject, T> extends Component {
 				data: this.config.getData(this.modObject),
 			});
 			this.saveUserData();
+			trackEvent({
+				action: 'settings',
+				category: 'save',
+				label: this.config.label,
+			});
 		});
 
 		return savedDataCreateFragment;

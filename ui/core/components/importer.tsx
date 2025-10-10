@@ -4,6 +4,7 @@ import { SimUI } from '../sim_ui';
 import { BaseModal } from './base_modal';
 import Toast from './toast';
 import i18n from '../../i18n/config';
+import { trackPageView } from '../../tracking/utils';
 
 export interface ImporterOptions {
 	title: string;
@@ -20,14 +21,8 @@ export abstract class Importer extends BaseModal {
 
 	constructor(parent: HTMLElement, options: ImporterOptions) {
 		super(parent, 'importer', { title: options.title, footer: true, disposeOnClose: false });
-		const titleAsSlug = options.title.toLowerCase().replaceAll(' ', '-');
-		gtag('event', 'page_view', {
-			page_title: options.title,
-			page_location: `${window.location.href}/import/${titleAsSlug}`,
-		});
-
 		this.allowFileUpload = options.allowFileUpload || false;
-		const uploadInputId = 'upload-input-' + titleAsSlug;
+		const uploadInputId = 'upload-input-' + options.title.toLowerCase().replaceAll(' ', '-');
 
 		const descriptionElemRef = ref<HTMLDivElement>();
 		const textElemRef = ref<HTMLTextAreaElement>();
@@ -75,6 +70,13 @@ export abstract class Importer extends BaseModal {
 			}
 		});
 	}
+
+	open() {
+		const titleAsSlug = this.header?.title.toLowerCase().replaceAll(' ', '-');
+		trackPageView(this.header!.title, `/import/${titleAsSlug}`);
+		super.open();
+	}
+
 
 	abstract onImport(data: string): Promise<void>;
 }

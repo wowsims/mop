@@ -11,6 +11,7 @@ import { BooleanPicker } from './pickers/boolean_picker.js';
 import { EnumPicker, EnumValueConfig } from './pickers/enum_picker.js';
 import { NumberPicker } from './pickers/number_picker.js';
 import Toast from './toast';
+import { trackEvent } from '../../tracking/utils';
 
 export class SettingsMenu extends BaseModal {
 	private readonly simUI: SimUI;
@@ -72,9 +73,10 @@ export class SettingsMenu extends BaseModal {
 				content: i18n.t('info.options.restore_defaults.tooltip'),
 			});
 			restoreDefaultsButton.value.addEventListener('click', () => {
-				gtag('event', 'sim:actions', {
-					event_category: 'restore-defaults',
-					event_label: 'restore'
+				trackEvent({
+					action: 'settings',
+					category: 'restore-defaults',
+					label: 'restore',
 				});
 				this.simUI.applyDefaults(TypedEvent.nextEventID());
 				new Toast({
@@ -123,9 +125,10 @@ export class SettingsMenu extends BaseModal {
 					return idx == -1 ? defaultLang : idx;
 				},
 				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
-					gtag('event', 'sim:actions', {
-						event_category: 'language',
-						event_label: 'update',
+					trackEvent({
+						action: 'settings',
+						category: 'language',
+						label: 'update',
 						value: langs[newValue],
 					});
 					sim.setLanguage(eventID, langs[newValue] || 'en');
@@ -158,9 +161,10 @@ export class SettingsMenu extends BaseModal {
 				changedEvent: (sim: Sim) => sim.showExperimentalChangeEmitter,
 				getValue: (sim: Sim) => sim.getShowExperimental(),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
-					gtag('event', 'sim:actions', {
-						event_category: 'show-experimental',
-						event_label: 'update',
+					trackEvent({
+						action: 'settings',
+						category: 'show-experimental',
+						label: 'update',
 						value: newValue,
 					});
 					sim.setShowExperimental(eventID, newValue);
@@ -192,9 +196,10 @@ export class SettingsMenu extends BaseModal {
 				changedEvent: (sim: Sim) => sim.wasmConcurrencyChangeEmitter,
 				getValue: (sim: Sim) => sim.getWasmConcurrency(),
 				setValue: (eventID, sim, newValue) => {
-					gtag('event', 'sim:actions', {
-						event_category: 'concurrency',
-						event_label: 'update',
+					trackEvent({
+						action: 'settings',
+						category: 'concurrency',
+						label: 'update',
 						value: newValue,
 					});
 					sim.setWasmConcurrency(eventID, newValue);
