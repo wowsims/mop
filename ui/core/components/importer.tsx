@@ -22,7 +22,7 @@ export abstract class Importer extends BaseModal {
 	constructor(parent: HTMLElement, options: ImporterOptions) {
 		super(parent, 'importer', { title: options.title, footer: true, disposeOnClose: false });
 		this.allowFileUpload = options.allowFileUpload || false;
-		const uploadInputId = 'upload-input-' + titleAsSlug;
+		const uploadInputId = 'upload-input-' + options.title.toLowerCase().replaceAll(' ', '-');
 
 		const descriptionElemRef = ref<HTMLDivElement>();
 		const textElemRef = ref<HTMLTextAreaElement>();
