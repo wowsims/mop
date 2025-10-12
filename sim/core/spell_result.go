@@ -154,7 +154,7 @@ func (spell *Spell) PhysicalHitCheck(sim *Simulation, attackTable *AttackTable) 
 }
 func (spell *Spell) PhysicalCritChance(attackTable *AttackTable) float64 {
 	critPercent := spell.Unit.stats[stats.PhysicalCritPercent] + spell.BonusCritPercent
-	return max(critPercent/100 - attackTable.MeleeCritSuppression, 0)
+	return max(critPercent/100-attackTable.MeleeCritSuppression, 0)
 }
 func (spell *Spell) PhysicalCritCheck(sim *Simulation, attackTable *AttackTable) bool {
 	return sim.RandomFloat("Physical Crit Roll") < spell.PhysicalCritChance(attackTable)
@@ -192,7 +192,7 @@ func (spell *Spell) SpellCritChance(target *Unit) float64 {
 	critPercent := spell.Unit.stats[stats.SpellCritPercent] +
 		spell.BonusCritPercent +
 		attackTable.BonusSpellCritPercent
-	return max(critPercent/100 - attackTable.SpellCritSuppression, 0)
+	return max(critPercent/100-attackTable.SpellCritSuppression, 0)
 }
 func (spell *Spell) MagicCritCheck(sim *Simulation, target *Unit) bool {
 	critChance := spell.SpellCritChance(target)
@@ -239,13 +239,25 @@ func (spell *Spell) CalcOutcome(sim *Simulation, target *Unit, outcomeApplier Ou
 }
 
 func (spell *Spell) calcDamageInternal(sim *Simulation, target *Unit, baseDamage float64, attackerMultiplier float64, isPeriodic bool, outcomeApplier OutcomeApplier) *SpellResult {
-	attackTable := spell.Unit.AttackTables[target.UnitIndex]
-
+	result := spell.calcBeforeTargetModDamageInternal(sim, target, baseDamage, attackerMultiplier)
+	return spell.calcTargetModDamageInternal(sim, target, isPeriodic, outcomeApplier, result)
+}
+func (spell *Spell) calcBeforeTargetModDamageInternal(sim *Simulation, target *Unit, baseDamage float64, attackerMultiplier float64) *SpellResult {
 	result := spell.NewResult(target)
 	result.Damage = baseDamage
-
+	result.Damage *= attackerMultiplier
+	afterAttackMods := result.Damage
+	if sim.Log != nil {
+		spell.Unit.Log(
+			sim,
+			"%s %s [DEBUG] [CAST] MAP: %0.01f, RAP: %0.01f, SP: %0.01f, BaseDamage:%0.01f, AfterAttackerMods:%0.01f",
+			target.LogLabel(), spell.ActionID, spell.Unit.GetStat(stats.AttackPower), spell.Unit.GetStat(stats.RangedAttackPower), spell.SpellPower(), baseDamage, afterAttackMods)
+	}
+	return result
+}
+func (spell *Spell) calcTargetModDamageInternal(sim *Simulation, target *Unit, isPeriodic bool, outcomeApplier OutcomeApplier, result *SpellResult) *SpellResult {
+	attackTable := spell.Unit.AttackTables[target.UnitIndex]
 	if sim.Log == nil {
-		result.Damage *= attackerMultiplier
 		result.applyArmor(spell, isPeriodic, attackTable)
 		result.applyTargetModifiers(sim, spell, attackTable, isPeriodic)
 
@@ -253,8 +265,6 @@ func (spell *Spell) calcDamageInternal(sim *Simulation, target *Unit, baseDamage
 
 		spell.ApplyPostOutcomeDamageModifiers(sim, result, isPeriodic)
 	} else {
-		result.Damage *= attackerMultiplier
-		afterAttackMods := result.Damage
 		result.applyArmor(spell, isPeriodic, attackTable)
 		afterArmor := result.Damage
 		result.applyTargetModifiers(sim, spell, attackTable, isPeriodic)
@@ -268,20 +278,29 @@ func (spell *Spell) calcDamageInternal(sim *Simulation, target *Unit, baseDamage
 
 		spell.Unit.Log(
 			sim,
-			"%s %s [DEBUG] MAP: %0.01f, RAP: %0.01f, SP: %0.01f, BaseDamage:%0.01f, AfterAttackerMods:%0.01f, AfterArmor:%0.01f, AfterTargetMods:%0.01f, AfterOutcome:%0.01f, AfterPostOutcome:%0.01f",
-			target.LogLabel(), spell.ActionID, spell.Unit.GetStat(stats.AttackPower), spell.Unit.GetStat(stats.RangedAttackPower), spell.SpellPower(), baseDamage, afterAttackMods, afterArmor, afterTargetMods, afterOutcome, afterPostOutcome)
+			"%s %s [DEBUG] [IMPACT] AfterArmor:%0.01f, AfterTargetMods:%0.01f, AfterOutcome:%0.01f, AfterPostOutcome:%0.01f",
+			target.LogLabel(), spell.ActionID, afterArmor, afterTargetMods, afterOutcome, afterPostOutcome)
 	}
-
 	result.Threat = spell.ThreatFromDamage(sim, result.Outcome, result.Damage, attackTable)
-
 	return result
 }
+
 func (spell *Spell) CalcDamage(sim *Simulation, target *Unit, baseDamage float64, outcomeApplier OutcomeApplier) *SpellResult {
 	attackerMultiplier := spell.AttackerDamageMultiplier(spell.Unit.AttackTables[target.UnitIndex], false)
 	if spell.BonusCoefficient > 0 {
 		baseDamage += spell.BonusCoefficient * spell.BonusDamage()
 	}
 	return spell.calcDamageInternal(sim, target, baseDamage, attackerMultiplier, false, outcomeApplier)
+}
+func (spell *Spell) CalcDamageNoTargetMod(sim *Simulation, target *Unit, baseDamage float64) *SpellResult {
+	attackerMultiplier := spell.AttackerDamageMultiplier(spell.Unit.AttackTables[target.UnitIndex], false)
+	if spell.BonusCoefficient > 0 {
+		baseDamage += spell.BonusCoefficient * spell.BonusDamage()
+	}
+	return spell.calcBeforeTargetModDamageInternal(sim, target, baseDamage, attackerMultiplier)
+}
+func (spell *Spell) CalcTargetModDamage(sim *Simulation, target *Unit, isPeriodic bool, outcomeApplier OutcomeApplier, result *SpellResult) *SpellResult {
+	return spell.calcTargetModDamageInternal(sim, target, isPeriodic, outcomeApplier, result)
 }
 func (spell *Spell) CalcPeriodicDamage(sim *Simulation, target *Unit, baseDamage float64, outcomeApplier OutcomeApplier) *SpellResult {
 	attackerMultiplier := spell.AttackerDamageMultiplier(spell.Unit.AttackTables[target.UnitIndex], true)
