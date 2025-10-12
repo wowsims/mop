@@ -95,10 +95,11 @@ func (shaman *Shaman) newElementalBlastSpellConfig(isElementalOverload bool) cor
 		}
 
 		baseDamage := shaman.CalcAndRollDamageRange(sim, 4.23999977112, 0.15000000596)
-		result := shaman.calcDamageStormstrikeCritChance(sim, target, baseDamage, spell)
+		result := spell.CalcDamageNoTargetMod(sim, target, baseDamage)
 
 		idx := core.TernaryInt32(spell.Flags.Matches(SpellFlagIsEcho), 1, 0)
 		spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+			shaman.calcDamageTargetModStormstrikeCritChance(sim, target, spell, result)
 			if !isElementalOverload && result.Landed() && sim.Proc(shaman.GetOverloadChance(), "Elemental Blast Elemental Overload") {
 				shaman.ElementalBlastOverload[idx].Cast(sim, target)
 			}

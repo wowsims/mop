@@ -299,8 +299,8 @@ func (spell *Spell) CalcDamageNoTargetMod(sim *Simulation, target *Unit, baseDam
 	}
 	return spell.calcBeforeTargetModDamageInternal(sim, target, baseDamage, attackerMultiplier)
 }
-func (spell *Spell) CalcTargetModDamage(sim *Simulation, target *Unit, isPeriodic bool, outcomeApplier OutcomeApplier, result *SpellResult) *SpellResult {
-	return spell.calcTargetModDamageInternal(sim, target, isPeriodic, outcomeApplier, result)
+func (spell *Spell) CalcTargetModDamage(sim *Simulation, target *Unit, outcomeApplier OutcomeApplier, result *SpellResult) *SpellResult {
+	return spell.calcTargetModDamageInternal(sim, target, false, outcomeApplier, result)
 }
 func (spell *Spell) CalcPeriodicDamage(sim *Simulation, target *Unit, baseDamage float64, outcomeApplier OutcomeApplier) *SpellResult {
 	attackerMultiplier := spell.AttackerDamageMultiplier(spell.Unit.AttackTables[target.UnitIndex], true)
