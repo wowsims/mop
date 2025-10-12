@@ -251,6 +251,8 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 		value = rot.newValueAllItemStatProcsActive(config.GetAllTrinketStatProcsActive(), config.Uuid)
 	case *proto.APLValue_AnyTrinketStatProcsActive:
 		value = rot.newValueAnyTrinketStatProcsActive(config.GetAnyTrinketStatProcsActive(), config.Uuid)
+	case *proto.APLValue_AnyTrinketStatProcsAvailable:
+		value = rot.newValueAnyTrinketStatProcsAvailable(config.GetAnyTrinketStatProcsAvailable(), config.Uuid)
 	case *proto.APLValue_TrinketProcsMinRemainingTime:
 		value = rot.newValueItemProcsMinRemainingTime(config.GetTrinketProcsMinRemainingTime(), config.Uuid)
 	case *proto.APLValue_TrinketProcsMaxRemainingIcd:

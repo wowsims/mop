@@ -99,7 +99,7 @@ message APLAction {
 }
 
 
-// NextIndex: 119
+// NextIndex: 120
 message APLValue {
 	UUID uuid = 85;
 
@@ -203,6 +203,7 @@ message APLValue {
         // Aggregate Aura set values
         APLValueAllTrinketStatProcsActive all_trinket_stat_procs_active = 78; // TODO: Rename in MoP as it includes all item/effect procs
         APLValueAnyTrinketStatProcsActive any_trinket_stat_procs_active = 79; // TODO: Rename in MoP as it includes all item/effect procs
+		APLValueAnyTrinketStatProcsAvailable any_trinket_stat_procs_available = 119; // TODO: Rename in MoP as it includes all item/effect procs
         APLValueTrinketProcsMinRemainingTime trinket_procs_min_remaining_time = 80; // TODO: Rename in MoP as it includes all item/effect procs
         APLValueTrinketProcsMaxRemainingICD trinket_procs_max_remaining_icd = 82; // TODO: Rename in MoP as it includes all item/effect procs
         APLValueNumEquippedStatProcTrinkets num_equipped_stat_proc_trinkets = 81; // TODO: Rename in MoP as it includes all item/effect procs
@@ -695,6 +696,12 @@ message APLValueAllTrinketStatProcsActive {
     double min_icd_seconds = 4;
 }
 message APLValueAnyTrinketStatProcsActive {
+    int32 stat_type1 = 1;
+    int32 stat_type2 = 2;
+    int32 stat_type3 = 3;
+    double min_icd_seconds = 4;
+}
+message APLValueAnyTrinketStatProcsAvailable {
     int32 stat_type1 = 1;
     int32 stat_type2 = 2;
     int32 stat_type3 = 3;

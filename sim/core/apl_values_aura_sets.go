@@ -110,6 +110,34 @@ func (value *APLValueAnyItemStatProcsActive) GetBool(sim *Simulation) bool {
 	return false
 }
 
+type APLValueAnyItemStatProcsAvailable struct {
+	*APLValueItemStatProcCheck
+}
+
+func (rot *APLRotation) newValueAnyTrinketStatProcsAvailable(config *proto.APLValueAnyTrinketStatProcsAvailable, uuid *proto.UUID) APLValue {
+	parentImpl := rot.newItemStatProcValue("AnyItemStatProcsAvailable", config.StatType1, config.StatType2, config.StatType3, config.MinIcdSeconds, true, uuid)
+
+	if parentImpl == nil {
+		return nil
+	}
+
+	return &APLValueAnyItemStatProcsAvailable{
+		APLValueItemStatProcCheck: parentImpl,
+	}
+}
+func (value *APLValueAnyItemStatProcsAvailable) Type() proto.APLValueType {
+	return proto.APLValueType_ValueTypeBool
+}
+func (value *APLValueAnyItemStatProcsAvailable) GetBool(sim *Simulation) bool {
+	for _, aura := range value.matchingAuras {
+		if !aura.IsActive() && aura.CanProc(sim) && aura.Icd.TimeToReady(sim) == 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
 type APLValueItemProcsMinRemainingTime struct {
 	*APLValueItemStatProcCheck
 }

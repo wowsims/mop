@@ -3,6 +3,7 @@ import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
 import {
 	APLValue,
 	APLValueAllTrinketStatProcsActive,
+	APLValueAnyTrinketStatProcsAvailable,
 	APLValueAnd,
 	APLValueAnyStatBuffCooldownsActive,
 	APLValueAnyTrinketStatProcsActive,
@@ -1274,6 +1275,24 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		fullDescription: i18n.t('rotation_tab.apl.values.any_trinket_stat_procs_active.full_description'),
 		newValue: () =>
 			APLValueAnyTrinketStatProcsActive.create({
+				statType1: -1,
+				statType2: -1,
+				statType3: -1,
+			}),
+		fields: [
+			AplHelpers.statTypeFieldConfig('statType1'),
+			AplHelpers.statTypeFieldConfig('statType2'),
+			AplHelpers.statTypeFieldConfig('statType3'),
+			AplHelpers.minIcdInput,
+		],
+	}),
+	anyTrinketStatProcsAvailable: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.any_trinket_stat_procs_available.label'),
+		submenu: ['aura_sets'],
+		shortDescription: i18n.t('rotation_tab.apl.values.any_trinket_stat_procs_available.tooltip'),
+		fullDescription: i18n.t('rotation_tab.apl.values.any_trinket_stat_procs_available.full_description'),
+		newValue: () =>
+			APLValueAnyTrinketStatProcsAvailable.create({
 				statType1: -1,
 				statType2: -1,
 				statType3: -1,
