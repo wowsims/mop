@@ -200,8 +200,9 @@ export class EquippedItem {
 		return Object.keys(this.getUpgrades()).length - 1;
 	}
 
-	equals(other: EquippedItem, ignoreReforge?: boolean, ignoreGems?: boolean, ignoreUpgrades?: boolean) {
-		if (!Item.equals(this._item, other.item)) return false;
+	equals(other: EquippedItem, ignoreReforge?: boolean, ignoreEnchants?: boolean, ignoreGems?: boolean, ignoreUpgrades?: boolean) {
+		if (this.id != other.id) return false;
+		if (!Item.equals(this._item, other.item) && !ignoreUpgrades) return false;
 
 		if ((this._randomSuffix == null) != (other.randomSuffix == null)) return false;
 
@@ -211,11 +212,11 @@ export class EquippedItem {
 
 		if (this._reforge && other.reforge && !ReforgeStat.equals(this._reforge, other.reforge) && !ignoreReforge) return false;
 
-		if ((this._enchant == null) != (other.enchant == null)) return false;
-		if ((this._tinker == null) != (other.tinker == null)) return false;
+		if (((this._enchant == null) != (other.enchant == null)) && !ignoreEnchants) return false;
+		if (((this._tinker == null) != (other.tinker == null)) && !ignoreEnchants) return false;
 
-		if (this._enchant && other.enchant && !Enchant.equals(this._enchant, other.enchant)) return false;
-		if (this._tinker && other.tinker && !Enchant.equals(this._tinker, other.tinker)) return false;
+		if (this._enchant && other.enchant && !Enchant.equals(this._enchant, other.enchant) && !ignoreEnchants) return false;
+		if (this._tinker && other.tinker && !Enchant.equals(this._tinker, other.tinker) && !ignoreEnchants) return false;
 
 		if ((this._gems.length != other.gems.length) && !ignoreGems) return false;
 

@@ -511,18 +511,18 @@ export class BulkTab extends SimTab {
 				.filter(item => !all2HWeapons.includes(item));
 
 			for (let i = 0; i < allOneHandWeapons.length; i++) {
-				if (allOneHandWeapons.slice(0, i).some((item: EquippedItem) => item.equals(allOneHandWeapons[i], true, true, this.inheritUpgrades))) {
+				if (allOneHandWeapons.slice(0, i).some((item: EquippedItem) => item.equals(allOneHandWeapons[i], true, true, true, this.inheritUpgrades))) {
 					continue;
 				}
 
 				for (let j = i + 1; j < allOneHandWeapons.length; j++) {
-					if (allOneHandWeapons.slice(i + 1, j).some((item: EquippedItem) => item.equals(allOneHandWeapons[j], true, true, this.inheritUpgrades))) {
+					if (allOneHandWeapons.slice(i + 1, j).some((item: EquippedItem) => item.equals(allOneHandWeapons[j], true, true, true, this.inheritUpgrades))) {
 						continue;
 					}
 
 					allWeaponCombos.push([allOneHandWeapons[i], allOneHandWeapons[j]]);
 
-					if (!allOneHandWeapons[i].equals(allOneHandWeapons[j], true, true, this.inheritUpgrades)) {
+					if (!allOneHandWeapons[i].equals(allOneHandWeapons[j], true, true, true, this.inheritUpgrades)) {
 						allWeaponCombos.push([allOneHandWeapons[j], allOneHandWeapons[i]]);
 					}
 				}
