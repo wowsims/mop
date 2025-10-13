@@ -204,7 +204,7 @@ export function formatDeltaTextElem(
 	showPercentage?: boolean,
 ) {
 	const delta = after - before;
-	const denom = before;//Math.min(before, after);
+	const denom = before;
 	const deltaPct = Math.abs((delta / (denom === 0 ? 1 : denom)) * 100).toFixed(precision);
 	let deltaStr = delta.toFixed(precision);
 	if (delta >= 0) {
