@@ -395,11 +395,12 @@ export class BulkTab extends SimTab {
 	}
 
 	removeItem(item: ItemSpec) {
-		this.items.forEach((savedItem, idx) => {
-			if (!!savedItem && savedItem.id === item.id) {
+		for (let idx = 0; idx < this.items.length; idx++) {
+			if (this.items[idx] && ItemSpec.equals(this.items[idx]!, item)) {
 				this.removeItemByIndex(idx);
+				return;
 			}
-		});
+		}
 	}
 	removeItemByIndex(idx: number, silent = false) {
 		if (idx < 0 || this.items.length < idx || !this.items[idx]) {
@@ -420,7 +421,10 @@ export class BulkTab extends SimTab {
 				if (!canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), slot)) return;
 				const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
 				const group = this.pickerGroups.get(bulkSlot)!;
-				group.remove(idx, silent);
+
+				if (group.has(idx)) {
+					group.remove(idx, silent);
+				}
 			});
 			this.itemsChangedEmitter.emit(TypedEvent.nextEventID());
 		}
@@ -507,10 +511,18 @@ export class BulkTab extends SimTab {
 				.filter(item => !all2HWeapons.includes(item));
 
 			for (let i = 0; i < allOneHandWeapons.length; i++) {
-				for (let j = i; j < allOneHandWeapons.length; j++) {
+				if (allOneHandWeapons.slice(0, i).some((item: EquippedItem) => item.equals(allOneHandWeapons[i], true, true, this.inheritUpgrades))) {
+					continue;
+				}
+
+				for (let j = i + 1; j < allOneHandWeapons.length; j++) {
+					if (allOneHandWeapons.slice(i + 1, j).some((item: EquippedItem) => item.equals(allOneHandWeapons[j], true, true, this.inheritUpgrades))) {
+						continue;
+					}
+
 					allWeaponCombos.push([allOneHandWeapons[i], allOneHandWeapons[j]]);
 
-					if (i != j) {
+					if (!allOneHandWeapons[i].equals(allOneHandWeapons[j], true, true, this.inheritUpgrades)) {
 						allWeaponCombos.push([allOneHandWeapons[j], allOneHandWeapons[i]]);
 					}
 				}

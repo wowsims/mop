@@ -36,7 +36,7 @@ export default class BulkItemPickerGroup extends ContentBlock {
 		const pickers = Array.from(this.pickers.values());
 		if (
 			pickers.some(
-				picker => picker.item.id === item.id || (picker.item._item.limitCategory != 0 && picker.item._item.limitCategory === item._item.limitCategory),
+				picker => ((this.bulkSlot != BulkSimItemSlot.ItemSlotHandWeapon) && (picker.item.id === item.id)) || (picker.item._item.limitCategory != 0 && picker.item._item.limitCategory === item._item.limitCategory),
 			)
 		) {
 			if (!silent)
