@@ -1141,7 +1141,7 @@ export class Player<SpecType extends Spec> {
 	}
 
 	computeUpgradeEP(equippedItem: EquippedItem, upgradeLevel: ItemLevelState, slot: ItemSlot): number {
-		const cacheKey = `${equippedItem.id}-${slot}-${equippedItem.randomSuffix?.id}-${upgradeLevel}`;
+		const cacheKey = `${equippedItem.id}-${JSON.stringify(this.epWeights)}-${slot}-${equippedItem.randomSuffix?.id}-${upgradeLevel}`;
 		if (this.upgradeEPCache.has(cacheKey)) {
 			return this.upgradeEPCache.get(cacheKey)!;
 		}
@@ -1155,7 +1155,8 @@ export class Player<SpecType extends Spec> {
 
 	computeItemEP(item: Item, slot: ItemSlot): number {
 		if (item == null) return 0;
-		const cacheKey = `${item.id}-${this.challengeModeEnabled}`;
+
+		const cacheKey = `${item.id}-${JSON.stringify(this.epWeights)}-${this.challengeModeEnabled}`;
 
 		const cached = this.itemEPCache[slot].get(cacheKey);
 		if (cached !== undefined) return cached;
@@ -1168,12 +1169,18 @@ export class Player<SpecType extends Spec> {
 
 		// For random suffix items, use the suffix option with the highest EP for the purposes of ranking items in the picker.
 		let maxSuffixEP = 0;
-		if (item.randomSuffixOptions.length > 0) {
+		if (item.randomSuffixOptions.length) {
 			const suffixEPs = equippedItem.item.randomSuffixOptions.map(id => this.computeRandomSuffixEP(this.sim.db.getRandomSuffixById(id)! || 0));
 			maxSuffixEP = (Math.max(...suffixEPs) * equippedItem.item.randPropPoints) / 10000;
 		}
 
-		let ep = itemStats.computeEP(this.epWeights) + maxSuffixEP;
+		let maxReforgingEP = 0;
+		if (this.getAvailableReforgings(equippedItem).length) {
+			const reforgingEPs = this.getAvailableReforgings(equippedItem).map(reforging => this.computeReforgingEP(reforging));
+			maxReforgingEP = Math.max(...reforgingEPs);
+		}
+
+		let ep = itemStats.computeEP(this.epWeights) + maxSuffixEP + maxReforgingEP;
 
 		// unique items are slightly worse than non-unique because you can have only one.
 		if (item.unique) {
