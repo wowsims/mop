@@ -239,47 +239,46 @@ func (spell *Spell) CalcOutcome(sim *Simulation, target *Unit, outcomeApplier Ou
 }
 
 func (spell *Spell) calcDamageInternal(sim *Simulation, target *Unit, baseDamage float64, attackerMultiplier float64, isPeriodic bool, outcomeApplier OutcomeApplier) *SpellResult {
-	result := spell.calcAttackerModDamageInternal(sim, target, baseDamage, attackerMultiplier)
-	return spell.calcTargetModDamageInternal(sim, target, isPeriodic, outcomeApplier, result)
+	result := spell.calcAttackerModDamageInternal(sim, target, baseDamage, attackerMultiplier, outcomeApplier)
+	return spell.calcTargetModDamageInternal(sim, target, isPeriodic, result)
 }
-func (spell *Spell) calcAttackerModDamageInternal(sim *Simulation, target *Unit, baseDamage float64, attackerMultiplier float64) *SpellResult {
+func (spell *Spell) calcAttackerModDamageInternal(sim *Simulation, target *Unit, baseDamage float64, attackerMultiplier float64, outcomeApplier OutcomeApplier) *SpellResult {
+	attackTable := spell.Unit.AttackTables[target.UnitIndex]
 	result := spell.NewResult(target)
 	result.Damage = baseDamage
+
 	result.Damage *= attackerMultiplier
 	afterAttackMods := result.Damage
+
+	outcomeApplier(sim, result, attackTable)
+	afterOutcome := result.Damage
+
 	if sim.Log != nil {
 		spell.Unit.Log(
 			sim,
-			"%s %s [DEBUG] [CAST] MAP: %0.01f, RAP: %0.01f, SP: %0.01f, BaseDamage:%0.01f, AfterAttackerMods:%0.01f",
-			target.LogLabel(), spell.ActionID, spell.Unit.GetStat(stats.AttackPower), spell.Unit.GetStat(stats.RangedAttackPower), spell.SpellPower(), baseDamage, afterAttackMods)
+			"%s %s [DEBUG] [CAST] MAP: %0.01f, RAP: %0.01f, SP: %0.01f, BaseDamage:%0.01f, AfterAttackerMods:%0.01f, AfterOutcome:%0.01f,",
+			target.LogLabel(), spell.ActionID, spell.Unit.GetStat(stats.AttackPower), spell.Unit.GetStat(stats.RangedAttackPower), spell.SpellPower(), baseDamage, afterAttackMods, afterOutcome)
 	}
 	return result
 }
-func (spell *Spell) calcTargetModDamageInternal(sim *Simulation, target *Unit, isPeriodic bool, outcomeApplier OutcomeApplier, result *SpellResult) *SpellResult {
+func (spell *Spell) calcTargetModDamageInternal(sim *Simulation, target *Unit, isPeriodic bool, result *SpellResult) *SpellResult {
 	attackTable := spell.Unit.AttackTables[target.UnitIndex]
 	if sim.Log == nil {
 		result.applyArmor(spell, isPeriodic, attackTable)
 		result.applyTargetModifiers(sim, spell, attackTable, isPeriodic)
-
-		outcomeApplier(sim, result, attackTable)
-
 		spell.ApplyPostOutcomeDamageModifiers(sim, result, isPeriodic)
 	} else {
 		result.applyArmor(spell, isPeriodic, attackTable)
 		afterArmor := result.Damage
 		result.applyTargetModifiers(sim, spell, attackTable, isPeriodic)
 		afterTargetMods := result.Damage
-
-		outcomeApplier(sim, result, attackTable)
-		afterOutcome := result.Damage
-
 		spell.ApplyPostOutcomeDamageModifiers(sim, result, isPeriodic)
 		afterPostOutcome := result.Damage
 
 		spell.Unit.Log(
 			sim,
-			"%s %s [DEBUG] [IMPACT] AfterArmor:%0.01f, AfterTargetMods:%0.01f, AfterOutcome:%0.01f, AfterPostOutcome:%0.01f",
-			target.LogLabel(), spell.ActionID, afterArmor, afterTargetMods, afterOutcome, afterPostOutcome)
+			"%s %s [DEBUG] [IMPACT] AfterArmor:%0.01f, AfterTargetMods:%0.01f, AfterPostOutcome:%0.01f",
+			target.LogLabel(), spell.ActionID, afterArmor, afterTargetMods, afterPostOutcome)
 	}
 	result.Threat = spell.ThreatFromDamage(sim, result.Outcome, result.Damage, attackTable)
 	return result
@@ -292,15 +291,15 @@ func (spell *Spell) CalcDamage(sim *Simulation, target *Unit, baseDamage float64
 	}
 	return spell.calcDamageInternal(sim, target, baseDamage, attackerMultiplier, false, outcomeApplier)
 }
-func (spell *Spell) CalcAttackerModDamage(sim *Simulation, target *Unit, baseDamage float64) *SpellResult {
+func (spell *Spell) CalcAttackerModDamage(sim *Simulation, target *Unit, baseDamage float64, outcomeApplier OutcomeApplier) *SpellResult {
 	attackerMultiplier := spell.AttackerDamageMultiplier(spell.Unit.AttackTables[target.UnitIndex], false)
 	if spell.BonusCoefficient > 0 {
 		baseDamage += spell.BonusCoefficient * spell.BonusDamage()
 	}
-	return spell.calcAttackerModDamageInternal(sim, target, baseDamage, attackerMultiplier)
+	return spell.calcAttackerModDamageInternal(sim, target, baseDamage, attackerMultiplier, outcomeApplier)
 }
-func (spell *Spell) CalcTargetModDamage(sim *Simulation, target *Unit, outcomeApplier OutcomeApplier, result *SpellResult) *SpellResult {
-	return spell.calcTargetModDamageInternal(sim, target, false, outcomeApplier, result)
+func (spell *Spell) CalcTargetModDamage(sim *Simulation, target *Unit, result *SpellResult) *SpellResult {
+	return spell.calcTargetModDamageInternal(sim, target, false, result)
 }
 func (spell *Spell) CalcPeriodicDamage(sim *Simulation, target *Unit, baseDamage float64, outcomeApplier OutcomeApplier) *SpellResult {
 	attackerMultiplier := spell.AttackerDamageMultiplier(spell.Unit.AttackTables[target.UnitIndex], true)
@@ -400,8 +399,8 @@ func (spell *Spell) CalcAndDealDamage(sim *Simulation, target *Unit, baseDamage 
 
 type BaseDamageCalculator func(*Simulation, *Spell) float64
 type SpellResultIteration func(*Simulation, *Unit, float64, OutcomeApplier) *SpellResult
-type SpellResultIteartionAttackerMod func(*Simulation, *Unit, float64) *SpellResult
-type SpellResultIteartionTargetMod func(*Simulation, *Unit, OutcomeApplier, *SpellResult) *SpellResult
+type SpellResultIteartionAttackerMod func(*Simulation, *Unit, float64, OutcomeApplier) *SpellResult
+type SpellResultIteartionTargetMod func(*Simulation, *Unit, *SpellResult) *SpellResult
 
 func fixedBaseDamageFactory(baseDamage float64) BaseDamageCalculator {
 	return func(_ *Simulation, _ *Spell) float64 {
@@ -420,20 +419,20 @@ func (spell *Spell) aoeIteration(sim *Simulation, outcomeApplier OutcomeApplier,
 	return spell.resultSlice
 }
 
-func (spell *Spell) aoeIterationAttackerMod(sim *Simulation, baseDamageCalculator BaseDamageCalculator, singleResultCalculator SpellResultIteartionAttackerMod) SpellResultSlice {
+func (spell *Spell) aoeIterationAttackerMod(sim *Simulation, outcomeApplier OutcomeApplier, baseDamageCalculator BaseDamageCalculator, singleResultCalculator SpellResultIteartionAttackerMod) SpellResultSlice {
 	spell.resultSlice = spell.resultSlice[:0]
 
 	for _, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 		baseDamage := baseDamageCalculator(sim, spell)
-		spell.resultSlice = append(spell.resultSlice, singleResultCalculator(sim, aoeTarget, baseDamage))
+		spell.resultSlice = append(spell.resultSlice, singleResultCalculator(sim, aoeTarget, baseDamage, outcomeApplier))
 	}
 
 	return spell.resultSlice
 }
 
-func (spell *Spell) aoeIterationTargetMod(sim *Simulation, outcomeApplier OutcomeApplier, singleResultCalculator SpellResultIteartionTargetMod) SpellResultSlice {
+func (spell *Spell) aoeIterationTargetMod(sim *Simulation, singleResultCalculator SpellResultIteartionTargetMod) SpellResultSlice {
 	for _, result := range spell.resultSlice {
-		singleResultCalculator(sim, result.Target, outcomeApplier, result)
+		singleResultCalculator(sim, result.Target, result)
 	}
 	return spell.resultSlice
 }
@@ -464,23 +463,23 @@ func (spell *Spell) cleaveIteration(sim *Simulation, firstTarget *Unit, maxTarge
 	return spell.resultSlice
 }
 
-func (spell *Spell) cleaveIterationAttackerMod(sim *Simulation, firstTarget *Unit, maxTargets int32, baseDamageCalculator BaseDamageCalculator, singleResultCalculator SpellResultIteartionAttackerMod) SpellResultSlice {
+func (spell *Spell) cleaveIterationAttackerMod(sim *Simulation, firstTarget *Unit, maxTargets int32, outcomeApplier OutcomeApplier, baseDamageCalculator BaseDamageCalculator, singleResultCalculator SpellResultIteartionAttackerMod) SpellResultSlice {
 	spell.resultSlice = spell.resultSlice[:0]
 	numTargets := min(maxTargets, sim.Environment.ActiveTargetCount())
 	curTarget := firstTarget
 
 	for range numTargets {
 		baseDamage := baseDamageCalculator(sim, spell)
-		spell.resultSlice = append(spell.resultSlice, singleResultCalculator(sim, curTarget, baseDamage))
+		spell.resultSlice = append(spell.resultSlice, singleResultCalculator(sim, curTarget, baseDamage, outcomeApplier))
 		curTarget = sim.Environment.NextActiveTargetUnit(curTarget)
 	}
 
 	return spell.resultSlice
 }
 
-func (spell *Spell) cleaveIterationTargetMod(sim *Simulation, outcomeApplier OutcomeApplier, singleResultCalculator SpellResultIteartionTargetMod) SpellResultSlice {
+func (spell *Spell) cleaveIterationTargetMod(sim *Simulation, singleResultCalculator SpellResultIteartionTargetMod) SpellResultSlice {
 	for _, result := range spell.resultSlice {
-		singleResultCalculator(sim, result.Target, outcomeApplier, result)
+		singleResultCalculator(sim, result.Target, result)
 	}
 	return spell.resultSlice
 }
@@ -503,14 +502,14 @@ func (spell *Spell) CalcAoeDamageWithVariance(sim *Simulation, outcomeApplier Ou
 }
 
 // Use CalcAoeAttackerModDamage + CalcAoeTargetModDamage when the spell has travel time
-func (spell *Spell) CalcAoeAttackerModDamage(sim *Simulation, baseDamage float64) SpellResultSlice {
-	return spell.CalcAoeAttackerModDamageWithVariance(sim, fixedBaseDamageFactory(baseDamage))
+func (spell *Spell) CalcAoeAttackerModDamage(sim *Simulation, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
+	return spell.CalcAoeAttackerModDamageWithVariance(sim, fixedBaseDamageFactory(baseDamage), outcomeApplier)
 }
-func (spell *Spell) CalcAoeAttackerModDamageWithVariance(sim *Simulation, baseDamageCalculator BaseDamageCalculator) SpellResultSlice {
-	return spell.aoeIterationAttackerMod(sim, baseDamageCalculator, spell.CalcAttackerModDamage)
+func (spell *Spell) CalcAoeAttackerModDamageWithVariance(sim *Simulation, baseDamageCalculator BaseDamageCalculator, outcomeApplier OutcomeApplier) SpellResultSlice {
+	return spell.aoeIterationAttackerMod(sim, outcomeApplier, baseDamageCalculator, spell.CalcAttackerModDamage)
 }
-func (spell *Spell) CalcAoeTargetModDamage(sim *Simulation, outcomeApplier OutcomeApplier) SpellResultSlice {
-	return spell.aoeIterationTargetMod(sim, outcomeApplier, spell.CalcTargetModDamage)
+func (spell *Spell) CalcAoeTargetModDamage(sim *Simulation) SpellResultSlice {
+	return spell.aoeIterationTargetMod(sim, spell.CalcTargetModDamage)
 }
 
 func (spell *Spell) CalcCleaveDamage(sim *Simulation, firstTarget *Unit, maxTargets int32, baseDamage float64, outcomeApplier OutcomeApplier) SpellResultSlice {
@@ -521,14 +520,14 @@ func (spell *Spell) CalcCleaveDamageWithVariance(sim *Simulation, firstTarget *U
 }
 
 // Use CalcCleaveAttackerModDamage + CalcCleaveTargetModDamage when the spell has travel time
-func (spell *Spell) CalcCleaveAttackerModDamage(sim *Simulation, firstTarget *Unit, maxTargets int32, baseDamage float64) SpellResultSlice {
-	return spell.CalcCleaveAttackerModDamagedWithVariance(sim, firstTarget, maxTargets, fixedBaseDamageFactory(baseDamage))
+func (spell *Spell) CalcCleaveAttackerModDamage(sim *Simulation, firstTarget *Unit, maxTargets int32, outcomeApplier OutcomeApplier, baseDamage float64) SpellResultSlice {
+	return spell.CalcCleaveAttackerModDamagedWithVariance(sim, firstTarget, maxTargets, fixedBaseDamageFactory(baseDamage), outcomeApplier)
 }
-func (spell *Spell) CalcCleaveAttackerModDamagedWithVariance(sim *Simulation, firstTarget *Unit, maxTargets int32, baseDamageCalculator BaseDamageCalculator) SpellResultSlice {
-	return spell.cleaveIterationAttackerMod(sim, firstTarget, maxTargets, baseDamageCalculator, spell.CalcAttackerModDamage)
+func (spell *Spell) CalcCleaveAttackerModDamagedWithVariance(sim *Simulation, firstTarget *Unit, maxTargets int32, baseDamageCalculator BaseDamageCalculator, outcomeApplier OutcomeApplier) SpellResultSlice {
+	return spell.cleaveIterationAttackerMod(sim, firstTarget, maxTargets, outcomeApplier, baseDamageCalculator, spell.CalcAttackerModDamage)
 }
-func (spell *Spell) CalcCleaveTargetModDamage(sim *Simulation, outcomeApplier OutcomeApplier) SpellResultSlice {
-	return spell.cleaveIterationTargetMod(sim, outcomeApplier, spell.CalcTargetModDamage)
+func (spell *Spell) CalcCleaveTargetModDamage(sim *Simulation) SpellResultSlice {
+	return spell.cleaveIterationTargetMod(sim, spell.CalcTargetModDamage)
 }
 
 func (spell *Spell) DealBatchedAoeDamage(sim *Simulation) {
