@@ -1412,6 +1412,10 @@
 					"label": "Any Stat Buff Cooldowns Active",
 					"tooltip": "<b>True</b> if any registered Major Cooldowns that buff the specified stat type(s) are currently active, otherwise <b>False</b>."
 				},
+				"any_stat_buff_cooldowns_min_duration": {
+					"label": "Any Stat Buff Cooldowns Min Remaining Time",
+					"tooltip": "Shortest remaining duration on any registered Major Cooldown that buff the specified stat type(s), or infinity if none are currently active."
+				},
 				"dot_is_active": {
 					"label": "Dot Is Active",
 					"tooltip": "<b>True</b> if the specified dot is currently ticking, otherwise <b>False</b>."

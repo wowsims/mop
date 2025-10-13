@@ -263,6 +263,8 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 		value = rot.newValueNumStatBuffCooldowns(config.GetNumStatBuffCooldowns(), config.Uuid)
 	case *proto.APLValue_AnyStatBuffCooldownsActive:
 		value = rot.newValueAnyStatBuffCooldownsActive(config.GetAnyStatBuffCooldownsActive(), config.Uuid)
+	case *proto.APLValue_AnyStatBuffCooldownsMinDuration:
+		value = rot.newValueAnyStatBuffCooldownsMinDuration(config.GetAnyStatBuffCooldownsMinDuration(), config.Uuid)
 
 	// Dots
 	case *proto.APLValue_DotIsActive:

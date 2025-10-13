@@ -5824,6 +5824,22 @@
                     "tooltip"
                   ]
                 },
+				"any_stat_buff_cooldowns_min_duration": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip"
+                  ]
+                },
                 "dot_is_active": {
                   "type": "object",
                   "properties": {

@@ -307,3 +307,54 @@ func (value *APLValueAnyStatBuffCooldownsActive) Finalize(rot *APLRotation) {
 
 	rot.ValidationMessageByUUID(value.Uuid, proto.LogLevel_Information, "%s will check the following auras: %s", value, StringFromActionIDs(actionIDs))
 }
+
+type APLValueAnyStatBuffCooldownsMinDuration struct {
+	DefaultAPLValueImpl
+
+	statTypesToMatch []stats.Stat
+	matchingAuras    []*StatBuffAura
+}
+
+func (rot *APLRotation) newValueAnyStatBuffCooldownsMinDuration(config *proto.APLValueAnyStatBuffCooldownsMinDuration, uuid *proto.UUID) APLValue {
+	unit := rot.unit
+	character := unit.Env.Raid.GetPlayerFromUnit(unit).GetCharacter()
+	statTypesToMatch := stats.IntTupleToStatsList(config.StatType1, config.StatType2, config.StatType3)
+	matchingAuras := character.GetMatchingStatBuffCooldownAuras(statTypesToMatch)
+
+	if len(matchingAuras) == 0 {
+		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Warning, "No cooldown stat buffs found for: %s", StringFromStatTypes(statTypesToMatch))
+		return nil
+	}
+
+	return &APLValueAnyStatBuffCooldownsMinDuration{
+		statTypesToMatch: statTypesToMatch,
+		matchingAuras:    matchingAuras,
+	}
+}
+func (value *APLValueAnyStatBuffCooldownsMinDuration) String() string {
+	return fmt.Sprintf("AnyStatBuffCooldownsMinDuration(%s)", StringFromStatTypes(value.statTypesToMatch))
+}
+func (value *APLValueAnyStatBuffCooldownsMinDuration) Type() proto.APLValueType {
+	return proto.APLValueType_ValueTypeBool
+}
+func (value *APLValueAnyStatBuffCooldownsMinDuration) GetDuration(sim *Simulation) time.Duration {
+	minRemainingDuration := NeverExpires
+
+	for _, aura := range value.matchingAuras {
+		if aura.IsActive() && (aura.GetStacks() == aura.MaxStacks) {
+			minRemainingDuration = min(minRemainingDuration, aura.RemainingDuration(sim))
+		}
+	}
+
+	return minRemainingDuration
+}
+func (value *APLValueAnyStatBuffCooldownsMinDuration) Finalize(rot *APLRotation) {
+	validAuras := FilterSlice(value.matchingAuras, func(aura *StatBuffAura) bool {
+		return !aura.IsSwapped
+	})
+	actionIDs := MapSlice(validAuras, func(aura *StatBuffAura) ActionID {
+		return aura.ActionID
+	})
+
+	rot.ValidationMessageByUUID(value.Uuid, proto.LogLevel_Information, "%s will check the following auras: %s", value, StringFromActionIDs(actionIDs))
+}

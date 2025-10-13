@@ -1412,6 +1412,10 @@
 					"label": "N'importe quel CD de buff de stat actif",
 					"tooltip": "<b>Vrai</b> si n'importe quel Cooldown Majeur enregistré qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>."
 				},
+				"any_stat_buff_cooldowns_min_duration": {
+					"label": "Temps de recharge des bonus de statistiques Temps restant minimum",
+					"tooltip": "Durée restante la plus courte sur tout temps de recharge majeur enregistré qui améliore le(s) type(s) de statistiques spécifié(s), ou l'infini si aucun n'est actuellement actif."
+				},
 				"dot_is_active": {
 					"label": "DoT est actif",
 					"tooltip": "<b>Vrai</b> si le dot spécifié tick actuellement, sinon <b>Faux</b>."

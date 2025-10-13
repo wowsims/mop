@@ -6,6 +6,7 @@ import {
 	APLValueAnyTrinketStatProcsAvailable,
 	APLValueAnd,
 	APLValueAnyStatBuffCooldownsActive,
+	APLValueAnyStatBuffCooldownsMinDuration,
 	APLValueAnyTrinketStatProcsActive,
 	APLValueAuraInternalCooldown,
 	APLValueAuraIsActive,
@@ -1375,6 +1376,19 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		fullDescription: i18n.t('rotation_tab.apl.values.any_stat_buff_cooldowns_active.full_description'),
 		newValue: () =>
 			APLValueAnyStatBuffCooldownsActive.create({
+				statType1: -1,
+				statType2: -1,
+				statType3: -1,
+			}),
+		fields: [AplHelpers.statTypeFieldConfig('statType1'), AplHelpers.statTypeFieldConfig('statType2'), AplHelpers.statTypeFieldConfig('statType3')],
+	}),
+	anyStatBuffCooldownsMinDuration: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.any_stat_buff_cooldowns_min_duration.label'),
+		submenu: ['aura_sets'],
+		shortDescription: i18n.t('rotation_tab.apl.values.any_stat_buff_cooldowns_min_duration.tooltip'),
+		fullDescription: i18n.t('rotation_tab.apl.values.any_stat_buff_cooldowns_min_duration.full_description'),
+		newValue: () =>
+			APLValueAnyStatBuffCooldownsMinDuration.create({
 				statType1: -1,
 				statType2: -1,
 				statType3: -1,
