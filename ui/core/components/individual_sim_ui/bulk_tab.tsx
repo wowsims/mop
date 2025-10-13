@@ -1081,6 +1081,7 @@ export class BulkTab extends SimTab {
 
 	private async getCombinationsCount(): Promise<Element> {
 		await this.calculateBulkCombinations();
+		this.bulkSimButton.disabled = (this.combinations > 50000);
 
 		const warningRef = ref<HTMLButtonElement>();
 		const rtn = (
