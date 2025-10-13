@@ -233,18 +233,28 @@ func (dot *Dot) CopyDotAndApply(sim *Simulation, originaldot *Dot) {
 	sim.AddPendingAction(dot.tickAction)
 }
 
-// This is the incredibly cursed way fel flame uses to increase dot duration, don't use unless you know what you're
-// doing. It extends the duration, immediately recalculates the next tick and then fits as many ticks into the rest of
+// This is the incredibly cursed way of extending DoT durations (for Fel flame (Cata) / moonfire / sunfire)
+// Don't use unless you know what you're doing
+// It extends the duration, immediately recalculates the next tick and then fits as many ticks into the rest of
 // the aura duration as it can. This will cause aura duration and dot ticks to desync ingame, so the aura will fall off
 // prematurely to what is shown.
 //
 // Sometimes the game also decides to tick one last time anyway, even though the time since the last tick is absurdly
 // low, though this isn't implemented until someone figures out the conditions.
+func (dot *Dot) DurationExtend(sim *Simulation, extendBy time.Duration) {
+	dot.durationExtendInternal(sim, extendBy, false)
+}
 func (dot *Dot) DurationExtendSnapshot(sim *Simulation, extendBy time.Duration) {
+	dot.durationExtendInternal(sim, extendBy, true)
+}
+
+func (dot *Dot) durationExtendInternal(sim *Simulation, extendBy time.Duration, useSnapshot bool) {
 	if !dot.IsActive() {
 		panic("Can't extend a non-active dot")
 	}
-	dot.TakeSnapshot(sim, false)
+	if useSnapshot {
+		dot.TakeSnapshot(sim, false)
+	}
 
 	previousTick := dot.tickAction.NextActionAt - dot.tickPeriod
 	dot.tickPeriod = dot.CalcTickPeriod()
