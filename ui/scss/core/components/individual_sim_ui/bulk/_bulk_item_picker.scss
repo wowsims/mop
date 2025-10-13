@@ -5,6 +5,11 @@
 		border-color: var(--bs-brand);
 	}
 
+	&.bulk-item-picker-frozen {
+		border-color: red;
+		border-width: 3px;
+	}
+
 	.item-picker-actions-container {
 		margin-left: var(--spacer-2);
 		gap: var(--spacer-1);

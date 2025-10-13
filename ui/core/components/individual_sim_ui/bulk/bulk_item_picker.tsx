@@ -49,6 +49,19 @@ export default class BulkItemPicker extends Component {
 		this.simUI.sim.waitForInit().then(() => this.setItem(item));
 
 		this.addOnDisposeCallback(() => this.rootElem.remove());
+
+		const updateBorder = () => {
+			if (this.bulkUI.frozenItems.get(this.bulkSlot)?.equals(this.item)) {
+				this.rootElem.classList.remove('bulk-item-picker-equipped');
+				this.rootElem.classList.add('bulk-item-picker-frozen');
+			} else {
+				this.rootElem.classList.remove('bulk-item-picker-frozen');
+				this.rootElem.classList.add('bulk-item-picker-equipped');
+			}
+		};
+
+		updateBorder();
+		TypedEvent.onAny([this.bulkUI.settingsChangedEmitter, this.bulkUI.itemsChangedEmitter]).on(() => updateBorder());
 	}
 
 	setItem(newItem: EquippedItem) {
