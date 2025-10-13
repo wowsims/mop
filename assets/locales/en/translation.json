@@ -1388,6 +1388,10 @@
 					"label": "Any Item Proc Buff Active",
 					"tooltip": "<b>True</b> if any item/enchant procs that buff the specified stat type(s) are currently active, otherwise <b>False</b>."
 				},
+				"any_trinket_stat_procs_available": {
+					"label": "Any Item Proc Buff Available",
+					"tooltip": "<b>True</b> if any item/enchant procs that buff the specified stat type(s) are currently not on ICD and aren't active, otherwise <b>False</b>."
+				},
 				"trinket_procs_min_remaining_time": {
 					"label": "Item Procs Min Remaining Time",
 					"tooltip": "Shortest remaining duration on any active item/enchant procs that buff the specified stat type(s), or infinity if none are currently active."

@@ -5728,6 +5728,22 @@
                     "tooltip"
                   ]
                 },
+				"any_trinket_stat_procs_available": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip"
+                  ]
+                },
                 "trinket_procs_min_remaining_time": {
                   "type": "object",
                   "properties": {
