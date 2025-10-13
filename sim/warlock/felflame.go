@@ -28,7 +28,7 @@ func (warlock *Warlock) RegisterFelflame(callback WarlockSpellCastedCallback) *c
 		BonusCoefficient: felFlameCoeff,
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := warlock.CalcAndRollDamageRange(sim, felFlameScale, felFlameVariance)
-			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+			result := spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 			resultSlice[0] = result
 
 			if callback != nil {
@@ -36,6 +36,7 @@ func (warlock *Warlock) RegisterFelflame(callback WarlockSpellCastedCallback) *c
 			}
 
 			spell.WaitTravelTime(sim, func(s *core.Simulation) {
+				spell.CalcTargetModDamage(sim, target, result)
 				spell.DealDamage(sim, result)
 			})
 		},

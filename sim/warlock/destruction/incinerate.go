@@ -39,7 +39,7 @@ func (destro *DestructionWarlock) registerIncinerate() {
 			}
 
 			baseDamage := destro.CalcAndRollDamageRange(sim, incinerateScale, incinerateVariance)
-			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+			result := spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 			var emberGain int32 = 1
 			if destro.T15_4pc.IsActive() && sim.Proc(0.08, "T15 4p") {
 				emberGain += 1
@@ -56,6 +56,7 @@ func (destro *DestructionWarlock) registerIncinerate() {
 
 			destro.BurningEmbers.Gain(sim, emberGain, spell.ActionID)
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+				spell.CalcTargetModDamage(sim, target, result)
 				spell.DealDamage(sim, result)
 			})
 		},

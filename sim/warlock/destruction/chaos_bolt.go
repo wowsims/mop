@@ -54,7 +54,7 @@ func (destro *DestructionWarlock) registerChaosBolt() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := destro.CalcAndRollDamageRange(sim, chaosBoltScale, chaosBoltVariance)
 			spell.DamageMultiplier *= (1 + destro.GetStat(stats.SpellCritPercent)/100)
-			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+			result := spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 			spell.DamageMultiplier /= (1 + destro.GetStat(stats.SpellCritPercent)/100)
 
 			// check again we can actually spend as Dark Soul might have run out before the cast finishes
@@ -67,6 +67,7 @@ func (destro *DestructionWarlock) registerChaosBolt() {
 			}
 
 			spell.WaitTravelTime(sim, func(s *core.Simulation) {
+				spell.CalcTargetModDamage(sim, target, result)
 				spell.DealDamage(sim, result)
 			})
 		},

@@ -46,7 +46,7 @@ func (destruction *DestructionWarlock) registerFireAndBrimstoneIncinerate() {
 			destruction.BurningEmbers.Spend(sim, 10, spell.ActionID)
 			for _, enemy := range sim.Encounter.ActiveTargetUnits {
 				baseDamage := destruction.CalcAndRollDamageRange(sim, bafIncinerateScale, incinerateVariance)
-				result := spell.CalcDamage(sim, enemy, baseDamage, spell.OutcomeMagicHitAndCrit)
+				result := spell.CalcAttackerModDamage(sim, enemy, baseDamage, spell.OutcomeMagicHitAndCrit)
 				var emberGain int32 = 1
 				if destruction.T15_4pc.IsActive() && sim.Proc(0.08, "T15 4p") {
 					emberGain += 1
@@ -64,6 +64,7 @@ func (destruction *DestructionWarlock) registerFireAndBrimstoneIncinerate() {
 				destruction.BurningEmbers.Gain(sim, emberGain, spell.ActionID)
 
 				spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+					spell.CalcTargetModDamage(sim, enemy, result)
 					spell.DealDamage(sim, result)
 				})
 			}

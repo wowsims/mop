@@ -44,7 +44,7 @@ func (demonology *DemonologyWarlock) registerSoulfire() {
 
 				// Damage is increased by crit chance
 				spell.DamageMultiplier *= (1 + demonology.GetStat(stats.SpellCritPercent)/100)
-				result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+				result := spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 				spell.DamageMultiplier /= (1 + demonology.GetStat(stats.SpellCritPercent)/100)
 
 				if extraApplyEffect != nil {
@@ -52,6 +52,7 @@ func (demonology *DemonologyWarlock) registerSoulfire() {
 				}
 
 				spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+					spell.CalcTargetModDamage(sim, target, result)
 					spell.DealDamage(sim, result)
 				})
 			},
