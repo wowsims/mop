@@ -147,13 +147,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET, Presets.ROTATION_GARAJAL_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
-			Presets.P1_PREBIS_GEAR_PRESET,
 			Presets.P1_BIS_DW_GEAR_PRESET,
-			Presets.P1_BIS_2H_GEAR_PRESET,
-			Presets.P1_BIS_TIERLESS_DW_GEAR_PRESET,
-			Presets.P1_BIS_TIERLESS_2H_GEAR_PRESET,
 			Presets.P2_BIS_DW_GEAR_PRESET,
-			Presets.P2_BIS_2H_GEAR_PRESET,
 		],
 		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_DEFENSIVE, Presets.PRESET_BUILD_OFFENSIVE],
 	},

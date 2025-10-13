@@ -20,16 +20,8 @@ import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
-export const P1_PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS', P1PreBISGear);
-
-export const P1_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS DW', P1BISDWGear);
-export const P1_BIS_2H_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS 2H', P1BIS2HGear);
-
-export const P1_BIS_TIERLESS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS DW (no-Tier)', P1BISTierlessDWGear);
-export const P1_BIS_TIERLESS_2H_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS 2H (no-Tier)', P1BISTierless2HGear);
-
-export const P2_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS DW', P2BISDWGear);
-export const P2_BIS_2H_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS 2H', P2BIS2HGear);
+export const P1_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 BiS - Balanced', P1BISDWGear);
+export const P2_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 BiS - Balanced', P2BISDWGear);
 
 export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 export const ROTATION_GARAJAL_PRESET = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
