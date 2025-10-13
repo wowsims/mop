@@ -74,7 +74,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 		],
 	),
 
-	defaultBuild: Presets.PRESET_BUILD_DEFAULT,
+	defaultBuild: Presets.PRESET_BUILD_SHA,
 
 	defaults: {
 		// Default equipped gear.
@@ -144,13 +144,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents, Presets.DungeonTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET, Presets.ROTATION_GARAJAL_PRESET],
+		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET, Presets.ROTATION_GARAJAL_PRESET, Presets.ROTATION_SHA_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.P1_BIS_DW_GEAR_PRESET,
 			Presets.P2_BIS_DW_GEAR_PRESET,
 		],
-		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_DEFENSIVE, Presets.PRESET_BUILD_OFFENSIVE],
+		builds: [Presets.PRESET_BUILD_GARAJAL, Presets.PRESET_BUILD_SHA],
 	},
 
 	autoRotation: (_: Player<Spec.SpecBrewmasterMonk>): APLRotation => {

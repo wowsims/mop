@@ -86,8 +86,8 @@ export const simLaunchStatuses: Record<Spec, SimStatus> = {
 	},
 	// Monk
 	[Spec.SpecBrewmasterMonk]: {
-		phase: Phase.Phase1,
-		status: LaunchStatus.Beta,
+		phase: Phase.Phase2,
+		status: LaunchStatus.Launched,
 	},
 	[Spec.SpecMistweaverMonk]: {
 		phase: Phase.Phase1,

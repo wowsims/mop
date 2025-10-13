@@ -1,0 +1,164 @@
+{
+  "raidBuffs": {
+    "trueshotAura": true,
+    "unleashedRage": true,
+    "darkIntent": true,
+    "moonkinAura": true,
+    "legacyOfTheWhiteTiger": true,
+    "blessingOfMight": true,
+    "legacyOfTheEmperor": true,
+    "bloodlust": true,
+    "stormlashTotemCount": 4,
+    "skullBannerCount": 2
+  },
+  "debuffs": {
+    "weakenedBlows": true,
+    "physicalVulnerability": true,
+    "weakenedArmor": true,
+    "curseOfElements": true
+  },
+  "tanks": [
+    {
+      "type": "Player"
+    }
+  ],
+  "partyBuffs": {
+  },
+  "player": {
+    "name": "Player",
+    "race": "RaceOrc",
+    "class": "ClassMonk",
+    "equipment": {
+      "items": [
+        {"id":87096,"gems":[76884,76641],"reforging":166,"upgradeStep":"UpgradeStepTwo"},
+        {"id":86953,"reforging":168,"upgradeStep":"UpgradeStepTwo"},
+        {"id":87098,"enchant":4804,"gems":[76641],"reforging":123,"upgradeStep":"UpgradeStepTwo"},
+        {"id":86963,"enchant":4422,"reforging":168,"upgradeStep":"UpgradeStepTwo"},
+        {"id":87094,"enchant":4420,"gems":[76697,76697],"reforging":168,"upgradeStep":"UpgradeStepTwo"},
+        {"id":86954,"enchant":4416,"gems":[76697],"reforging":153,"upgradeStep":"UpgradeStepTwo"},
+        {"id":87095,"enchant":4431,"gems":[76697],"reforging":140,"upgradeStep":"UpgradeStepTwo","tinker":4898},
+        {"id":87180,"gems":[76641,76697],"reforging":139,"upgradeStep":"UpgradeStepTwo"},
+        {"id":90504,"enchant":4822,"gems":[76659,76641],"reforging":166,"upgradeStep":"UpgradeStepTwo"},
+        {"id":86984,"enchant":4427,"gems":[76697],"reforging":166,"upgradeStep":"UpgradeStepTwo"},
+        {"id":90503,"reforging":154,"upgradeStep":"UpgradeStepTwo"},
+        {"id":86974,"reforging":166,"upgradeStep":"UpgradeStepTwo"},
+        {"id":87167,"upgradeStep":"UpgradeStepTwo"},
+        {"id":86046,"upgradeStep":"UpgradeStepTwo"},
+        {"id":86988,"enchant":4444,"gems":[89873,76697],"upgradeStep":"UpgradeStepTwo"},
+        {"id":86988,"enchant":4444,"gems":[0,76697],"upgradeStep":"UpgradeStepTwo"}
+      ]
+    },
+    "consumables": {
+      "potId": 76090,
+      "flaskId": 76087,
+      "foodId": 74656,
+      "conjuredId": 5512
+    },
+    "bonusStats": {
+      "apiVersion": 1,
+      "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    },
+    "itemSwap": {"items":[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{"id":87176,"enchant":4444,"gems":[89881,0]},{}],"prepullBonusStats":{"apiVersion":1,"stats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"pseudoStats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}},
+    "buffs": {
+      "painSuppressionCount": 1,
+      "vigilanceCount": 2
+    },
+    "brewmasterMonk": {
+      "options": {
+        "classOptions": {
+        }
+      }
+    },
+    "talentsString": "213322",
+    "glyphs": {
+      "major1": 87893,
+      "major2": 85689,
+      "major3": 87896,
+      "minor1": 87887,
+      "minor2": 87884,
+      "minor3": 87889
+    },
+    "profession1": "Engineering",
+    "profession2": "Blacksmithing",
+    "cooldowns": {
+      "hpPercentForDefensives": 0.3
+    },
+    "rotation": {
+      "type": "TypeAPL",
+      "simple": {
+        "cooldowns": {
+          "hpPercentForDefensives": 0.3
+        }
+      },
+      "prepullActions": [
+        {"action":{"castSpell":{"spellId":{"spellId":115069}}},"doAtValue":{"const":{"val":"-.1s"}}}
+      ],
+      "priorityList": [
+        {"action":{"autocastOtherCooldowns":{}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":132007},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":120669},"includeReactionTime":true}}]}},"castSpell":{"spellId":{"spellId":126456}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":132007},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":120669},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":126456}}}]}},"castSpell":{"spellId":{"spellId":33206,"tag":-1}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":132007},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":120669},"includeReactionTime":true}}]}},"castSpell":{"spellId":{"spellId":114030,"tag":-1}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":131996},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":120669},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":115295}}}]}},"castSpell":{"spellId":{"spellId":122278}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":131996},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":120669},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":122278,"tag":1}}}]}},"castSpell":{"spellId":{"spellId":115295}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":131996},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":120669},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":122278,"tag":1}}},{"auraIsInactive":{"auraId":{"spellId":115295}}}]}},"castSpell":{"spellId":{"itemId":86046}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"sourceUnit":{"type":"Target"},"auraId":{"spellId":131996},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":120669},"includeReactionTime":true}},{"auraIsInactive":{"auraId":{"spellId":122278,"tag":1}}},{"auraIsInactive":{"auraId":{"spellId":115295}}}]}},"castSpell":{"spellId":{"itemId":76090}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpGe","lhs":{"auraNumStacks":{"auraId":{"spellId":128938},"includeReactionTime":true}},"rhs":{"const":{"val":"6"}}}},{"auraIsInactive":{"auraId":{"spellId":115308},"includeReactionTime":true}}]}},"castSpell":{"spellId":{"spellId":115308}}}},
+        {"action":{"condition":{"or":{"vals":[{"cmp":{"op":"OpEq","lhs":{"monkCurrentChi":{}},"rhs":{"const":{"val":"0"}}}},{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"monkCurrentChi":{}},"rhs":{"const":{"val":"1"}}}},{"cmp":{"op":"OpGe","lhs":{"spellTimeToReady":{"spellId":{"spellId":121253}}},"rhs":{"const":{"val":"1.5s"}}}}]}}]}},"castSpell":{"spellId":{"spellId":115399}}}},
+        {"hide":true,"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"auraRemainingTime":{"auraId":{"spellId":115307}}},"rhs":{"const":{"val":"2s"}}}},{"cmp":{"op":"OpGe","lhs":{"monkCurrentChi":{}},"rhs":{"const":{"val":"3"}}}},{"auraIsActive":{"auraId":{"spellId":118636},"includeReactionTime":true}},{"cmp":{"op":"OpGe","lhs":{"auraNumStacks":{"auraId":{"spellId":120267},"includeReactionTime":true}},"rhs":{"const":{"val":"80000"}}}}]}},"castSpell":{"spellId":{"spellId":115295}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"spellTimeToReady":{"spellId":{"spellId":121253}}},"rhs":{"const":{"val":"1.5s"}}}},{"cmp":{"op":"OpGe","lhs":{"monkCurrentChi":{}},"rhs":{"math":{"op":"OpSub","lhs":{"monkMaxChi":{}},"rhs":{"const":{"val":"1"}}}}}}]}},"castSpell":{"spellId":{"spellId":100784,"tag":1}}}},
+        {"hide":true,"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"spellTimeToReady":{"spellId":{"spellId":121253}}},"rhs":{"const":{"val":".5s"}}}},{"cmp":{"op":"OpGe","lhs":{"monkCurrentChi":{}},"rhs":{"math":{"op":"OpSub","lhs":{"monkMaxChi":{}},"rhs":{"const":{"val":"1"}}}}}}]}},"castSpell":{"spellId":{"spellId":119582}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"60%"}}}}]}},"castSpell":{"spellId":{"spellId":124507}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":121253}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":116847}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":115307}}},"rhs":{"const":{"val":"2s"}}}},{"cmp":{"op":"OpLe","lhs":{"monkCurrentChi":{}},"rhs":{"const":{"val":"1"}}}},{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"95%"}}}}]}},"castSpell":{"spellId":{"spellId":115072}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":115307}}},"rhs":{"const":{"val":"2s"}}}},{"cmp":{"op":"OpLe","lhs":{"monkCurrentChi":{}},"rhs":{"const":{"val":"1"}}}}]}},"castSpell":{"spellId":{"spellId":100780}}}},
+        {"action":{"condition":{"or":{"vals":[{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":115307}}},"rhs":{"const":{"val":"1.5s"}}}},{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"spellTimeToReady":{"spellId":{"spellId":121253}}},"rhs":{"const":{"val":"2s"}}}},{"cmp":{"op":"OpGe","lhs":{"monkCurrentChi":{}},"rhs":{"math":{"op":"OpSub","lhs":{"monkMaxChi":{}},"rhs":{"const":{"val":"1"}}}}}}]}}]}},"castSpell":{"spellId":{"spellId":100784,"tag":1}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":123904}}}},
+        {"action":{"condition":{"cmp":{"op":"OpGe","lhs":{"brewmasterMonkCurrentStaggerPercent":{}},"rhs":{"const":{"val":"3%"}}}},"castSpell":{"spellId":{"spellId":119582}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpGe","lhs":{"currentEnergy":{}},"rhs":{"const":{"val":"80"}}}},{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"95%"}}}}]}},"castSpell":{"spellId":{"spellId":115072}}}},
+        {"action":{"condition":{"cmp":{"op":"OpGe","lhs":{"currentEnergy":{}},"rhs":{"const":{"val":"80"}}}},"castSpell":{"spellId":{"spellId":100780}}}},
+        {"action":{"condition":{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":125359}}},"rhs":{"const":{"val":"1.5s"}}}},"castSpell":{"spellId":{"spellId":100787}}}},
+        {"action":{"condition":{"cmp":{"op":"OpGe","lhs":{"monkCurrentChi":{}},"rhs":{"const":{"val":"3"}}}},"castSpell":{"spellId":{"spellId":100784,"tag":1}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":115098}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":123986}}}},
+        {"action":{"condition":{"cmp":{"op":"OpLt","lhs":{"auraNumStacks":{"auraId":{"spellId":124081,"tag":1},"includeReactionTime":true}},"rhs":{"const":{"val":"2"}}}},"castSpell":{"spellId":{"spellId":124081}}}},
+        {"hide":true,"action":{"castSpell":{"spellId":{"spellId":124081}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":100787}}}}
+      ]
+    },
+    "reactionTimeMs": 750,
+    "inFrontOfTarget": true,
+    "distanceFromTarget": 5,
+    "healingModel": {
+      "hps": 58682,
+      "cadenceSeconds": 0.4,
+      "cadenceVariation": 2.1,
+      "absorbFrac": 0.107,
+      "burstWindow": 6
+    }
+  },
+  "encounter": {
+    "apiVersion": 1,
+    "duration": 620,
+    "durationVariation": 16,
+    "executeProportion20": 0.2,
+    "executeProportion25": 0.25,
+    "executeProportion35": 0.35,
+    "executeProportion45": 0.45,
+    "executeProportion90": 0.9,
+    "targets": [
+      {
+        "id": 60999,
+        "name": "Sha of Fear 25 H",
+        "level": 93,
+        "mobType": "MobTypeElemental",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,1632111860,0,0],
+        "minBaseDamage": 620921,
+        "damageSpread": 0.6195,
+        "swingSpeed": 2.5
+      }
+    ]
+  },
+  "targetDummies": 9
+}

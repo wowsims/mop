@@ -7,14 +7,11 @@ import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import GarajalApl from './apls/garajal.apl.json';
 import OffensiveApl from './apls/offensive.apl.json';
+import ShaApl from './apls/sha.apl.json';
 import GarajalBuild from './builds/garajal_default.build.json';
-import P1BIS2HGear from './gear_sets/p1_bis_2h.gear.json';
+import ShaBuild from './builds/sha_default.build.json';
 import P1BISDWGear from './gear_sets/p1_bis_dw.gear.json';
-import P2BIS2HGear from './gear_sets/p2_bis_2h.gear.json';
 import P2BISDWGear from './gear_sets/p2_bis_dw.gear.json';
-import P1BISTierless2HGear from './gear_sets/p1_bis_tierless_2h.gear.json';
-import P1BISTierlessDWGear from './gear_sets/p1_bis_tierless_dw.gear.json';
-import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -23,9 +20,10 @@ import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 export const P1_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 BiS - Balanced', P1BISDWGear);
 export const P2_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 BiS - Balanced', P2BISDWGear);
 
-export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
+export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Generic', DefaultApl);
 export const ROTATION_GARAJAL_PRESET = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
 export const ROTATION_OFFENSIVE_PRESET = PresetUtils.makePresetAPLRotation('Offensive', OffensiveApl);
+export const ROTATION_SHA_PRESET = PresetUtils.makePresetAPLRotation('Sha of Fear', ShaApl);
 
 // Preset options for EP weights
 export const PREPATCH_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -103,14 +101,5 @@ export const OtherDefaults = {
 	iterationCount: 25000,
 };
 
-export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecBrewmasterMonk, GarajalBuild);
-export const PRESET_BUILD_DEFENSIVE = PresetUtils.makePresetBuild('Defensive', {
-	talents: DefaultTalents,
-	rotation: ROTATION_PRESET,
-	encounter: PresetUtils.makePresetEncounter('Defensive', Encounter.defaultEncounterProto()),
-});
-export const PRESET_BUILD_OFFENSIVE = PresetUtils.makePresetBuild('Offensive', {
-	talents: DungeonTalents,
-	rotation: ROTATION_PRESET,
-	encounter: PresetUtils.makePresetEncounter('Offensive', Encounter.defaultEncounterProto()),
-});
+export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecBrewmasterMonk, GarajalBuild);
+export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON("Sha of Fear", Spec.SpecBrewmasterMonk, ShaBuild);
