@@ -71,14 +71,14 @@ func (ele *ElementalShaman) newLavaBurstSpellConfig(isElementalOverload bool) co
 		baseDamage := ele.CalcAndRollDamageRange(sim, 1.41624999046, 0.10000000149)
 		if ele.FlameShock.Dot(target).IsActive() {
 			spell.DamageMultiplier *= 1.5
-			result = spell.CalcAttackerModDamage(sim, target, baseDamage)
+			result = spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 			spell.DamageMultiplier /= 1.5
 		} else {
-			result = spell.CalcAttackerModDamage(sim, target, baseDamage)
+			result = spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 		}
 		idx := core.TernaryInt32(spell.Flags.Matches(shaman.SpellFlagIsEcho), 1, 0)
 		spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-			spell.CalcTargetModDamage(sim, target, spell.OutcomeMagicHitAndCrit, result)
+			spell.CalcTargetModDamage(sim, target, result)
 			if !isElementalOverload && result.Landed() && sim.Proc(ele.GetOverloadChance(), "Lava Burst Elemental Overload") {
 				ele.LavaBurstOverload[idx].Cast(sim, target)
 			}

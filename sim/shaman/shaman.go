@@ -289,14 +289,15 @@ func (shaman *Shaman) calcDamageStormstrikeCritChance(sim *core.Simulation, targ
 	}
 	return result
 }
-func (shaman *Shaman) calcTargetModDamageStormstrikeCritChance(sim *core.Simulation, target *core.Unit, spell *core.Spell, result *core.SpellResult) *core.SpellResult {
+func (shaman *Shaman) calcAttackerModDamageStormstrikeCritChance(sim *core.Simulation, target *core.Unit, baseDamage float64, spell *core.Spell) *core.SpellResult {
+	var result *core.SpellResult
 	if target.HasActiveAura("Stormstrike-" + shaman.Label) {
 		critPercentBonus := core.TernaryFloat64(shaman.T14Enh4pc.IsActive(), 40.0, 25.0)
 		spell.BonusCritPercent += critPercentBonus
-		result = spell.CalcTargetModDamage(sim, target, spell.OutcomeMagicHitAndCrit, result)
+		result = spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 		spell.BonusCritPercent -= critPercentBonus
 	} else {
-		result = spell.CalcTargetModDamage(sim, target, spell.OutcomeMagicHitAndCrit, result)
+		result = spell.CalcAttackerModDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 	}
 	return result
 }
