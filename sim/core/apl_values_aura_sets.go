@@ -130,7 +130,7 @@ func (value *APLValueAnyItemStatProcsAvailable) Type() proto.APLValueType {
 }
 func (value *APLValueAnyItemStatProcsAvailable) GetBool(sim *Simulation) bool {
 	for _, aura := range value.matchingAuras {
-		if !aura.IsActive() && aura.CanProc(sim) && aura.Icd.TimeToReady(sim) == 0 {
+		if !aura.IsActive() && aura.CanProc(sim) && aura.Icd != nil && aura.Icd.TimeToReady(sim) == 0 {
 			return true
 		}
 	}
