@@ -1388,6 +1388,10 @@
 					"label": "N'importe quel buff proc d'objet actif",
 					"tooltip": "<b>Vrai</b> si n'importe quel proc d'objet/enchantement qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>."
 				},
+				"any_trinket_stat_procs_available": {
+					"label": "N'importe quel buff de procédure d'objet disponible",
+					"tooltip": "<b>Vrai</b> si des objets/enchantements qui améliorent les types de statistiques spécifiés ne sont actuellement pas sur ICD et ne sont pas actifs, sinon <b>Faux</b>."
+				},
 				"trinket_procs_min_remaining_time": {
 					"label": "Temps restant Min des procs d'objets",
 					"tooltip": "Durée restante la plus courte sur n'importe quel proc d'objet/enchantement actif qui buffe le(s) type(s) de stat spécifié(s), ou infini si aucun n'est actuellement actif."
