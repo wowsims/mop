@@ -250,6 +250,7 @@ func (spell *Spell) calcAttackerModDamageInternal(sim *Simulation, target *Unit,
 	result.Damage *= attackerMultiplier
 	afterAttackMods := result.Damage
 
+	result.PreOutcomeDamage = result.Damage
 	outcomeApplier(sim, result, attackTable)
 	afterOutcome := result.Damage
 

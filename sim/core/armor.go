@@ -6,7 +6,6 @@ func (result *SpellResult) applyArmor(spell *Spell, isPeriodic bool, attackTable
 	result.Damage *= armorMitigationMultiplier
 
 	result.ArmorMultiplier = armorMitigationMultiplier
-	result.PreOutcomeDamage = result.Damage
 }
 
 // Returns Armor mitigation fraction for the spell

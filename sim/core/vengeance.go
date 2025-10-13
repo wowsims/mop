@@ -36,7 +36,7 @@ func (character *Character) RegisterVengeance(spellID int32, requiredAura *Aura)
 			}
 
 			// Vengeance uses pre-outcome, pre-mitigation damage.
-			rawDamage := result.PreOutcomeDamage / result.ArmorMultiplier
+			rawDamage := result.PreOutcomeDamage
 
 			// The Weakened Blows debuff does not reduce Vengeance gains.
 			// TODO: The game similarly hardcodes a correction for Demoralizing Banner, add that in once we implement the debuff in the sim.
