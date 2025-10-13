@@ -51,7 +51,7 @@ var ItemSetRegaliaOfTheWitchDoctor = core.NewItemSet(core.ItemSet{
 					spell.CalcAoeAttackerModDamage(sim, baseDamage/float64(nTargets))
 
 					spell.WaitTravelTime(sim, func(sim *core.Simulation) {
-						spell.CalcAoeTargetModDamage(sim, spell.OutcomeExpectedMagicHitAndCrit)
+						spell.CalcAoeTargetModDamage(sim, spell.OutcomeMagicHitAndCrit)
 						spell.DealBatchedAoeDamage(sim)
 					})
 				},

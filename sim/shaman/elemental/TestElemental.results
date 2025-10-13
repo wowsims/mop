@@ -1685,8 +1685,8 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-RegaliaoftheWitchDoctor"
  value: {
-  dps: 141780.39077
-  tps: 103765.32779
+  dps: 142062.37932
+  tps: 103629.29795
  }
 }
 dps_results: {
