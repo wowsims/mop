@@ -272,7 +272,7 @@ func (dot *Dot) durationExtendInternal(sim *Simulation, extendBy time.Duration, 
 	// cap the total duration to the amount of hasted ticks a new dot would have
 	extendDuration := min(dot.RemainingDuration(sim)+extendBy,
 		dot.tickPeriod*time.Duration(dot.HastedTickCount()-1)+(nextTick-sim.CurrentTime))
-	dot.remainingTicks = int32((extendDuration-(nextTick-sim.CurrentTime))/dot.tickPeriod) + 1
+	dot.remainingTicks = dot.calculateTickCount(extendDuration-(nextTick-sim.CurrentTime), dot.tickPeriod) + 1
 
 	dot.Duration = nextTick - sim.CurrentTime + time.Duration(dot.remainingTicks-1)*dot.tickPeriod
 	sim.AddPendingAction(dot.tickAction)
