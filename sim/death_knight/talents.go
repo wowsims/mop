@@ -154,7 +154,7 @@ func (dk *DeathKnight) registerUnholyBlight() {
 		ActionID:       core.ActionID{SpellID: 115989},
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskEmpty,
-		Flags:          core.SpellFlagAPL | core.SpellFlagHelpful | core.SpellFlagEncounterOnly,
+		Flags:          core.SpellFlagAPL | core.SpellFlagHelpful,
 		ClassSpellMask: DeathKnightSpellUnholyBlight,
 
 		Cast: core.CastConfig{
