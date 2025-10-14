@@ -129,7 +129,7 @@ func (rb *rageBar) AddRage(sim *Simulation, amount float64, metrics *ResourceMet
 
 	rb.currentRage = newRage
 	if !sim.Options.Interactive {
-		rb.unit.ReactToEvent(sim)
+		rb.unit.ReactToEvent(sim, false)
 	}
 }
 

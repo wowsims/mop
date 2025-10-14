@@ -66,13 +66,19 @@ func (unit *Unit) SetRotationTimer(sim *Simulation, rotationReadyAt time.Duratio
 }
 
 // Call this when reacting to events that occur before the next scheduled rotation action
-func (unit *Unit) ReactToEvent(sim *Simulation) {
+func (unit *Unit) ReactToEvent(sim *Simulation, randomizeReactionTime bool) {
 	// If the next rotation action was already scheduled for this timestep then execute it now
 	unit.Rotation.DoNextAction(sim)
 
 	// Otherwise schedule an evaluation based on reaction time
-	if unit.NextRotationActionAt() > sim.CurrentTime+unit.ReactionTime {
-		unit.SetRotationTimer(sim, sim.CurrentTime+unit.ReactionTime)
+	newEvaluationTime := sim.CurrentTime + unit.ReactionTime
+
+	if randomizeReactionTime {
+		newEvaluationTime = sim.CurrentTime + DurationFromSeconds(sim.RandomFloat("Reaction Time") * 2 * unit.ReactionTime.Seconds())
+	}
+
+	if unit.NextRotationActionAt() > newEvaluationTime {
+		unit.SetRotationTimer(sim, newEvaluationTime)
 	}
 }
 

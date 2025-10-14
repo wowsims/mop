@@ -1037,7 +1037,7 @@ func (rp *runicPowerBar) Advance(sim *Simulation, newTime time.Duration) {
 
 	// Query APL if a change occurred
 	if changeType != None {
-		rp.character.ReactToEvent(sim)
+		rp.character.ReactToEvent(sim, true)
 	}
 }
 
