@@ -344,6 +344,11 @@ export class DetailedResults extends Component {
 	}
 
 	private updateSettings() {
+		if (this.recentlyEditedSeed) {
+			this.simUI.sim.setFixedRngSeed(TypedEvent.nextEventID(), 0);
+			this.recentlyEditedSeed = false;
+		}
+
 		const settings = this.simUI?.sim.toProto();
 		if (!settings) return;
 
