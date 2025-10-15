@@ -812,7 +812,7 @@ export class BulkTab extends SimTab {
 							? equippedItemInSlot.withItem(equippedItem.item)
 							: equippedItem.withChallengeMode(challengeModeEnabled);
 
-						if (equippedItem._randomSuffix && updatedItem._item.randomSuffixOptions?.[equippedItem._randomSuffix.id]) {
+						if (equippedItem._randomSuffix && updatedItem._item.randomSuffixOptions?.find(suffix => suffix === equippedItem._randomSuffix?.id)) {
 							updatedItem = updatedItem.withRandomSuffix(equippedItem._randomSuffix);
 						}
 						if (!this.inheritUpgrades) {
