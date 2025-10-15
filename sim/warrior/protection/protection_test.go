@@ -60,10 +60,10 @@ var ItemFilter = core.ItemFilter{
 	},
 }
 
-var DefaultTalents = "233332"
+var DefaultTalents = "213332"
 var DefaultGlyphs = &proto.Glyphs{
 	Major1: int32(proto.WarriorMajorGlyph_GlyphOfHeavyRepercussions),
-	Major2: int32(proto.WarriorMajorGlyph_GlyphOfUnendingRage),
+	Major2: int32(proto.WarriorMajorGlyph_GlyphOfBullRush),
 	Major3: int32(proto.WarriorMajorGlyph_GlyphOfHoldTheLine),
 }
 
