@@ -2762,17 +2762,17 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-garajal_default-garajal_default-garajal_default-NoBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 112960.9644
-  tps: 729774.89722
-  dtps: 43854.79722
+  dps: 113295.36196
+  tps: 730887.82007
+  dtps: 43606.98487
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-garajal_default-garajal_default-garajal_default-NoBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 100430.25748
-  tps: 654859.8114
-  dtps: 49058.4538
+  dps: 100903.07458
+  tps: 657002.84045
+  dtps: 49163.53189
  }
 }
 dps_results: {
