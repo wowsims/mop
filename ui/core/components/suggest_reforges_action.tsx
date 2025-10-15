@@ -143,7 +143,7 @@ export class RelativeStatCap {
 			}
 		}
 
-		if ((stat != Stat.StatMasteryRating) && this.forcedHighestStat.equalsStat(Stat.StatMasteryRating) && (this.player.getSpec() == Spec.SpecFeralDruid)) {
+		if (stat != Stat.StatMasteryRating && this.forcedHighestStat.equalsStat(Stat.StatMasteryRating) && this.player.getSpec() == Spec.SpecFeralDruid) {
 			const coefficientKey = 'HasteMinusCrit';
 			const currentValue = coefficients.get(coefficientKey) || 0;
 
@@ -185,7 +185,7 @@ export class RelativeStatCap {
 			constraints.set(this.constraintKeys[idx], greaterEq(minReforgeContribution));
 		}
 
-		if (this.forcedHighestStat.equalsStat(Stat.StatMasteryRating) && (this.player.getSpec() == Spec.SpecFeralDruid)) {
+		if (this.forcedHighestStat.equalsStat(Stat.StatMasteryRating) && this.player.getSpec() == Spec.SpecFeralDruid) {
 			const minReforgeContribution = baseStats.getStat(Stat.StatCritRating) - baseStats.getStat(Stat.StatHasteRating) + 1;
 			constraints.set('HasteMinusCrit', greaterEq(minReforgeContribution));
 		}
@@ -358,7 +358,8 @@ export class ReforgeOptimizer {
 		for (const [unitStat, limit] of this.player.getBreakpointLimits().asUnitStatArray()) {
 			if (!limit) continue;
 			const config = softCaps.find(config => config.unitStat.equals(unitStat));
-			if (config) config.breakpoints = config.breakpoints.filter(breakpoint => breakpoint <= limit);
+			const breakpointLimitExists = config?.breakpoints.some(breakpoint => breakpoint == limit);
+			if (config && breakpointLimitExists) config.breakpoints = config.breakpoints.filter(breakpoint => breakpoint <= limit);
 		}
 		return softCaps;
 	}
@@ -1032,7 +1033,7 @@ export class ReforgeOptimizer {
 
 							const listElementRef = ref<HTMLTableRowElement>();
 							const statName = unitStat.getShortName(this.player.getClass());
-							const picker = !!breakpoints
+							const picker = breakpoints
 								? new EnumPicker(null, this.player, {
 										id: `reforge-optimizer-${statName}-presets`,
 										extraCssClasses: ['mb-0'],
@@ -1046,7 +1047,13 @@ export class ReforgeOptimizer {
 										].sort((a, b) => a.value - b.value),
 										changedEvent: _ => TypedEvent.onAny([this.sim.useSoftCapBreakpointsChangeEmitter]),
 										getValue: () => {
-											return this.player.getBreakpointLimits().getUnitStat(unitStat) || 0;
+											const breakpointLimits = this.player.getBreakpointLimits();
+											let limit = breakpointLimits.getUnitStat(unitStat);
+											if (!breakpoints.some(breakpoint => breakpoint == limit)) {
+												limit = 0;
+											}
+
+											return limit;
 										},
 										setValue: (eventID, _player, newValue) => {
 											this.player.setBreakpointLimits(eventID, this.player.getBreakpointLimits().withUnitStat(unitStat, newValue));

@@ -64,6 +64,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
+		// Default breakpoint limits - set 12T MF/SF with 4P
+		breakpointLimits: (() => {
+			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, Presets.BALANCE_T14_4P_BREAKPOINTS!.presets.get('12-tick MF/SF')!);
+		})(),
 		softCapBreakpoints: (() => {
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [...Presets.BALANCE_BREAKPOINTS!.presets].map(([_, value]) => value),
@@ -192,6 +196,7 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 
 			this.reforger = new ReforgeOptimizer(this, {
 				statSelectionPresets: [statSelectionHastePreset],
+				enableBreakpointLimits: true,
 				updateSoftCaps: softCaps => {
 					const gear = player.getGear();
 					const hasT144P = gear.getItemSetCount('Regalia of the Eternal Blossom') >= 4;
