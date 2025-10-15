@@ -26,9 +26,9 @@ export const StandardEPWeights = PresetUtils.makePresetEpWeights(
 		[Stat.StatSpirit]: 1.27,
 		[Stat.StatSpellPower]: 1,
 		[Stat.StatHitRating]: 1.27,
-		[Stat.StatCritRating]: 0.61,
-		[Stat.StatHasteRating]: 0.63,
-		[Stat.StatMasteryRating]: 0.38,
+		[Stat.StatCritRating]: 0.71,
+		[Stat.StatHasteRating]: 0.73,
+		[Stat.StatMasteryRating]: 0.53,
 	}),
 );
 
