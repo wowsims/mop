@@ -4,8 +4,9 @@ import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../
 import { SavedTalents } from '../../core/proto/ui.js';
 import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior.js';
 import { Stats } from '../../core/proto_utils/stats';
-import DefensiveApl from './apls/default.apl.json';
-import DefautlApl from './apls/garajal.apl.json';
+import GenericApl from './apls/default.apl.json';
+import GarajalApl from './apls/garajal.apl.json';
+import ShaApl from './apls/sha.apl.json';
 import DefaultBuild from './builds/garajal_default.build.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
@@ -26,8 +27,9 @@ export const PRERAID_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('Pre-raid - 
 export const P1_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P1 - Item Swap', P1BISItemSwapGear);
 export const P2_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P2 - Item Swap', P2BISItemSwapGear);
 
-export const ROTATION_DEFENSIVE = PresetUtils.makePresetAPLRotation('Defensive', DefensiveApl);
-export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal", DefautlApl);
+export const ROTATION_GENERIC = PresetUtils.makePresetAPLRotation('Generic', GenericApl);
+export const ROTATION_GARAJAL = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
+export const ROTATION_SHA = PresetUtils.makePresetAPLRotation("Sha of Fear", ShaApl);
 
 // Preset options for EP weights
 export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -87,7 +89,7 @@ export const OtherDefaults = {
 export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Pre-Raid - Gara'jal", Spec.SpecProtectionWarrior, DefaultBuild);
 export const PRESET_BUILD_DEFENSIVE = PresetUtils.makePresetBuild('P2 - BIS (Defensive)', {
 	talents: StandardTalents,
-	rotation: ROTATION_DEFENSIVE,
+	rotation: ROTATION_GENERIC,
 	gear: P2_BALANCED_PRESET,
 	itemSwap: P2_ITEM_SWAP,
 	encounter: PresetUtils.makePresetEncounter('Defensive', Encounter.defaultEncounterProto()),
