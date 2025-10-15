@@ -2786,97 +2786,97 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-FullBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 1.57695233498e+06
-  tps: 8.30517722787e+06
-  dtps: 868997.48945
+  dps: 1.60779079676e+06
+  tps: 8.48146171971e+06
+  dtps: 863751.29404
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-FullBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 151598.11849
-  tps: 969357.99972
-  dtps: 25003.36373
+  dps: 150214.81133
+  tps: 961699.76978
+  dtps: 25165.43809
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-FullBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 147878.86625
-  tps: 930806.57402
-  dtps: 25313.3996
+  dps: 147084.72602
+  tps: 921050.52409
+  dtps: 25956.73312
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-NoBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 1.75184077269e+06
-  tps: 9.89647040808e+06
-  dtps: 1.06358026003e+06
+  dps: 1.79665356349e+06
+  tps: 1.017026028625e+07
+  dtps: 1.05722425063e+06
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-NoBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 129879.40471
-  tps: 835991.35579
-  dtps: 29643.31022
+  dps: 128768.97197
+  tps: 828843.27455
+  dtps: 29801.15369
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p1_bis-Basic-default-NoBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 119411.42934
-  tps: 764935.25672
-  dtps: 32174.93788
+  dps: 118458.00108
+  tps: 758858.63845
+  dtps: 32217.64929
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-FullBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 1.58072815046e+06
-  tps: 8.32183084096e+06
-  dtps: 868428.65627
+  dps: 1.63167690796e+06
+  tps: 8.63558198694e+06
+  dtps: 864042.00646
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-FullBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 152923.88221
-  tps: 979014.21974
-  dtps: 24969.85009
+  dps: 151204.53054
+  tps: 968211.41271
+  dtps: 25082.52381
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-FullBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 150108.22102
-  tps: 942901.52492
-  dtps: 25448.69845
+  dps: 148882.15365
+  tps: 930135.9597
+  dtps: 26049.46682
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-NoBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 1.716444767e+06
-  tps: 9.64676503591e+06
-  dtps: 1.07477945907e+06
+  dps: 1.71842158141e+06
+  tps: 9.62112355273e+06
+  dtps: 1.07492196077e+06
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-NoBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 133053.85868
-  tps: 854630.76651
-  dtps: 29321.93315
+  dps: 131858.11895
+  tps: 846733.92951
+  dtps: 29486.87278
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p1_bis-Basic-default-NoBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 121684.97901
-  tps: 784494.83772
-  dtps: 32853.65383
+  dps: 120771.75175
+  tps: 778657.91289
+  dtps: 32872.95658
  }
 }
 dps_results: {
