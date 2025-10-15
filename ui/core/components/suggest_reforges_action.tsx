@@ -359,7 +359,12 @@ export class ReforgeOptimizer {
 			if (!limit) continue;
 			const config = softCaps.find(config => config.unitStat.equals(unitStat));
 			const breakpointLimitExists = config?.breakpoints.some(breakpoint => breakpoint == limit);
-			if (config && breakpointLimitExists) config.breakpoints = config.breakpoints.filter(breakpoint => breakpoint <= limit);
+			if (config && breakpointLimitExists) {
+				config.breakpoints = config.breakpoints.filter(breakpoint => breakpoint <= limit);
+				if (config.capType === StatCapType.TypeSoftCap) {
+					config.postCapEPs = config.postCapEPs.slice(0, config.breakpoints.length);
+				}
+			}
 		}
 		return softCaps;
 	}
