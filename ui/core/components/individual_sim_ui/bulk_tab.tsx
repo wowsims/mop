@@ -520,7 +520,11 @@ export class BulkTab extends SimTab {
 				}
 
 				for (let j = i + 1; j < allOneHandWeapons.length; j++) {
-					if (allOneHandWeapons.slice(i + 1, j).some((item: EquippedItem) => item.equals(allOneHandWeapons[j], true, true, true, this.inheritUpgrades))) {
+					if (
+						allOneHandWeapons
+							.slice(i + 1, j)
+							.some((item: EquippedItem) => item.equals(allOneHandWeapons[j], true, true, true, this.inheritUpgrades))
+					) {
 						continue;
 					}
 
@@ -610,7 +614,7 @@ export class BulkTab extends SimTab {
 
 				if (numOptions > 1 && [BulkSimItemSlot.ItemSlotFinger, BulkSimItemSlot.ItemSlotTrinket].includes(bulkItemSlot)) {
 					if (this.frozenItems.get(bulkItemSlot)) {
-						numCombinations *= (numOptions - 1);
+						numCombinations *= numOptions - 1;
 					} else {
 						numCombinations *= binomialCoefficient(numOptions, 2);
 					}
@@ -808,6 +812,9 @@ export class BulkTab extends SimTab {
 							? equippedItemInSlot.withItem(equippedItem.item)
 							: equippedItem.withChallengeMode(challengeModeEnabled);
 
+						if (equippedItem._randomSuffix && updatedItem._item.randomSuffixOptions?.[equippedItem._randomSuffix.id]) {
+							updatedItem = updatedItem.withRandomSuffix(equippedItem._randomSuffix);
+						}
 						if (!this.inheritUpgrades) {
 							updatedItem = updatedItem.withUpgrade(equippedItem._upgrade);
 						}
@@ -1081,7 +1088,7 @@ export class BulkTab extends SimTab {
 
 	private async getCombinationsCount(): Promise<Element> {
 		await this.calculateBulkCombinations();
-		this.bulkSimButton.disabled = (this.combinations > 50000);
+		this.bulkSimButton.disabled = this.combinations > 50000;
 
 		const warningRef = ref<HTMLButtonElement>();
 		const rtn = (
