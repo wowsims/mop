@@ -7,7 +7,8 @@ import { Stats } from '../../core/proto_utils/stats';
 import GenericApl from './apls/default.apl.json';
 import GarajalApl from './apls/garajal.apl.json';
 import ShaApl from './apls/sha.apl.json';
-import DefaultBuild from './builds/garajal_default.build.json';
+import GarajalBuild from './builds/garajal_default.build.json';
+import ShaBuild from './builds/sha_default.build.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
 import P1BISItemSwapGear from './gear_sets/p1_bis_item_swap.gear.json';
@@ -86,11 +87,5 @@ export const OtherDefaults = {
 	distanceFromTarget: 15,
 };
 
-export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Pre-Raid - Gara'jal", Spec.SpecProtectionWarrior, DefaultBuild);
-export const PRESET_BUILD_DEFENSIVE = PresetUtils.makePresetBuild('P2 - BIS (Defensive)', {
-	talents: StandardTalents,
-	rotation: ROTATION_GENERIC,
-	gear: P2_BALANCED_PRESET,
-	itemSwap: P2_ITEM_SWAP,
-	encounter: PresetUtils.makePresetEncounter('Defensive', Encounter.defaultEncounterProto()),
-});
+export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuildFromJSON("Pre-Raid - Gara'jal", Spec.SpecProtectionWarrior, GarajalBuild);
+export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON("P2 BiS - Sha of Fear", Spec.SpecProtectionWarrior, ShaBuild);
