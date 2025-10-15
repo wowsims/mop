@@ -7,6 +7,10 @@ import (
 )
 
 func (war *Warrior) registerEnragedRegeneration() {
+	if !war.Talents.EnragedRegeneration {
+		return
+	}
+
 	actionID := core.ActionID{SpellID: 55694}
 	healthMetrics := war.NewHealthMetrics(actionID)
 
