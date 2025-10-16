@@ -1509,10 +1509,10 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-Ji-Kun'sRisingWinds-96843"
  value: {
-  dps: 116091.45194
-  tps: 760338.46835
-  dtps: 13471.15643
-  hps: 19881.25974
+  dps: 116126.4673
+  tps: 760456.85702
+  dtps: 13439.66402
+  hps: 19968.8202
  }
 }
 dps_results: {

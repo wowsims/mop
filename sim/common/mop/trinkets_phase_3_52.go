@@ -386,8 +386,8 @@ func init() {
 				ICD:                time.Second * 30,
 				Outcome:            core.OutcomeLanded,
 				Callback:           core.CallbackOnSpellHitTaken,
-				ExtraCondition: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) bool {
-					return character.CurrentHealth() < 0.35
+				ExtraCondition: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) bool {
+					return character.CurrentHealthPercent() < 0.35 && character.CurrentHealth() > 0
 				},
 				Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 					spell.Cast(sim, &character.Unit)

@@ -1536,10 +1536,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-AllItems-Ji-Kun'sRisingWinds-96843"
  value: {
-  dps: 132453.77244
-  tps: 751859.38564
-  dtps: 9571.58341
-  hps: 20832.88065
+  dps: 132315.94705
+  tps: 750717.57225
+  dtps: 9491.76978
+  hps: 20893.66297
  }
 }
 dps_results: {

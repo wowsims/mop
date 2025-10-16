@@ -1518,10 +1518,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Ji-Kun'sRisingWinds-96843"
  value: {
-  dps: 99320.81301
-  tps: 559766.5715
-  dtps: 35828.67675
-  hps: 38092.28256
+  dps: 98764.91741
+  tps: 555613.43796
+  dtps: 36079.03756
+  hps: 37948.46749
  }
 }
 dps_results: {
