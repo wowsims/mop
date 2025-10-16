@@ -167,7 +167,8 @@ func (dk *DeathKnight) registerUnholyBlight() {
 			},
 		},
 
-		Hot: core.DotConfig{
+		Dot: core.DotConfig{
+			IsAOE: true,
 			Aura: core.Aura{
 				Label: "Unholy Blight" + dk.Label,
 			},
@@ -180,7 +181,7 @@ func (dk *DeathKnight) registerUnholyBlight() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			spell.Hot(&dk.Unit).Apply(sim)
+			spell.AOEDot().Apply(sim)
 		},
 	})
 }

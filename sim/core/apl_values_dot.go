@@ -177,7 +177,7 @@ type APLValueDotTickFrequency struct {
 
 func (rot *APLRotation) newValueDotTickFrequency(config *proto.APLValueDotTickFrequency, _ *proto.UUID) APLValue {
 	dot := rot.NewDotReference(rot.GetTargetUnit(config.TargetUnit), config.SpellId)
-	if dot == nil {
+	if dot.Get() == nil {
 		return nil
 	}
 	return &APLValueDotTickFrequency{
@@ -202,7 +202,7 @@ type APLValueDotTimeToNextTick struct {
 
 func (rot *APLRotation) newValueDotTimeToNextTick(config *proto.APLValueDotTimeToNextTick, _ *proto.UUID) APLValue {
 	dot := rot.NewDotReference(rot.GetTargetUnit(config.TargetUnit), config.SpellId)
-	if dot == nil {
+	if dot.Get() == nil {
 		return nil
 	}
 	return &APLValueDotTimeToNextTick{
