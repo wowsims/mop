@@ -8,19 +8,20 @@ import (
 )
 
 type Consumable struct {
-	Id                 int             // Item ID
-	Name               string          // Item name
-	ItemLevel          int             // Item level
-	RequiredLevel      int             // Required level to use
-	ClassId            int             // Item class ID (should be 0 for consumables)
-	SubClassId         ConsumableClass // Item subclass ID
-	IconFileDataID     int             // Icon file data ID
-	SpellCategoryID    int             // Spell category ID
-	SpellCategoryFlags int             // Spell category flags
-	ItemEffects        []int           // Item effect IDs
-	ElixirType         int
-	Duration           int // In milliseconds
-	CooldownDuration   int // In milliseconds
+	Id                       int             // Item ID
+	Name                     string          // Item name
+	ItemLevel                int             // Item level
+	RequiredLevel            int             // Required level to use
+	ClassId                  int             // Item class ID (should be 0 for consumables)
+	SubClassId               ConsumableClass // Item subclass ID
+	IconFileDataID           int             // Icon file data ID
+	SpellCategoryID          int             // Spell category ID
+	SpellCategoryFlags       int             // Spell category flags
+	ItemEffects              []int           // Item effect IDs
+	ElixirType               int
+	Duration                 int // In milliseconds
+	CooldownDuration         int // In milliseconds
+	CategoryCooldownDuration int // In milliseconds
 }
 
 func (c *Consumable) ToMap() map[string]interface{} {
@@ -41,14 +42,15 @@ func (c *Consumable) ToMap() map[string]interface{} {
 // ToProto converts the Consumable to a proto representation.
 func (c *Consumable) ToProto() *proto.Consumable {
 	return &proto.Consumable{
-		Id:               int32(c.Id),
-		Type:             c.GetConsumableType(),
-		Stats:            c.GetStatModifiers().ToProtoArray(),
-		Name:             c.Name,
-		BuffsMainStat:    false, // Todo: Should be food currently, might be more in MoP, figure out how to tell
-		BuffDuration:     int32(c.Duration / 1000),
-		CooldownDuration: int32(c.CooldownDuration / 1000),
-		EffectIds:        c.GetNonStatEffectIds(),
+		Id:                       int32(c.Id),
+		Type:                     c.GetConsumableType(),
+		Stats:                    c.GetStatModifiers().ToProtoArray(),
+		Name:                     c.Name,
+		BuffsMainStat:            false, // Todo: Should be food currently, might be more in MoP, figure out how to tell
+		BuffDuration:             int32(c.Duration / 1000),
+		CooldownDuration:         int32(c.CooldownDuration / 1000),
+		CategoryCooldownDuration: int32(c.CategoryCooldownDuration / 1000),
+		EffectIds:                c.GetNonStatEffectIds(),
 	}
 }
 func (c *Consumable) GetConsumableType() proto.ConsumableType {

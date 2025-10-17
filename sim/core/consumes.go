@@ -86,14 +86,12 @@ func registerPotionCD(agent Agent, consumes *proto.ConsumesSpec) {
 	potion := consumes.PotId
 	prepot := consumes.PrepotId
 
-	potionCD := character.GetPotionCD()
-
 	if potion == 0 && prepot == 0 {
 		return
 	}
 	var mcd MajorCooldown
 	if prepot != 0 {
-		mcd = makePotionActivationSpell(prepot, character, potionCD)
+		mcd = makePotionActivationSpell(prepot, character)
 		if mcd.Spell != nil {
 			mcd.Spell.Flags |= SpellFlagPrepullPotion
 		}
@@ -104,7 +102,7 @@ func registerPotionCD(agent Agent, consumes *proto.ConsumesSpec) {
 		defaultMCD = mcd
 	} else {
 		if potion != 0 {
-			defaultMCD = makePotionActivationSpell(potion, character, potionCD)
+			defaultMCD = makePotionActivationSpell(potion, character)
 		}
 	}
 	if defaultMCD.Spell != nil {
@@ -123,10 +121,10 @@ func (character *Character) HasAlchStone() bool {
 	return character.HasProfession(proto.Profession_Alchemy) && alchStoneEquipped
 }
 
-func makePotionActivationSpell(potionId int32, character *Character, potionCD *Timer) MajorCooldown {
+func makePotionActivationSpell(potionId int32, character *Character) MajorCooldown {
 	potion := ConsumablesByID[potionId]
-	mcd := makePotionActivationSpellInternal(potion, character, potionCD)
-	cooldownDuration := TernaryDuration(potion.CooldownDuration > 0, potion.CooldownDuration, time.Minute*1)
+	categoryCooldownDuration := TernaryDuration(potion.CategoryCooldownDuration > 0, potion.CategoryCooldownDuration, time.Minute*1)
+	mcd := makePotionActivationSpellInternal(potion, character)
 
 	if mcd.Spell != nil {
 		// Mark as 'Encounter Only' so that users are forced to select the generic Potion
@@ -137,8 +135,7 @@ func makePotionActivationSpell(potionId int32, character *Character, potionCD *T
 		mcd.Spell.ApplyEffects = func(sim *Simulation, target *Unit, spell *Spell) {
 			oldApplyEffects(sim, target, spell)
 			if sim.CurrentTime < 0 {
-				potionCD.Set(sim.CurrentTime + cooldownDuration)
-
+				spell.SharedCD.Set(sim.CurrentTime + categoryCooldownDuration)
 				character.UpdateMajorCooldowns()
 			}
 		}
@@ -153,13 +150,14 @@ type resourceGainConfig struct {
 	spread  float64
 }
 
-func makePotionActivationSpellInternal(potion Consumable, character *Character, potionCD *Timer) MajorCooldown {
+func makePotionActivationSpellInternal(potion Consumable, character *Character) MajorCooldown {
 	stoneMul := TernaryFloat64(character.HasAlchStone(), 1.4, 1.0)
+	cooldownDuration := TernaryDuration(potion.CooldownDuration > 0, potion.CooldownDuration, time.Minute*1)
 
 	potionCast := CastConfig{
 		CD: Cooldown{
-			Timer:    potionCD,
-			Duration: time.Minute * 60, // Infinite CD
+			Timer:    character.NewTimer(),
+			Duration: cooldownDuration,
 		},
 		SharedCD: Cooldown{
 			Timer:    character.GetPotionCD(),

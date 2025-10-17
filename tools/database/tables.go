@@ -836,6 +836,7 @@ func ScanConsumable(rows *sql.Rows) (dbc.Consumable, error) {
 		&consumable.ElixirType,
 		&consumable.Duration,
 		&consumable.CooldownDuration,
+		&consumable.CategoryCooldownDuration,
 	)
 	if err != nil {
 		return consumable, fmt.Errorf("scanning consumable data: %w", err)
@@ -886,7 +887,8 @@ func LoadAndWriteConsumables(dbHelper *DBHelper, inputsDir string) ([]dbc.Consum
 					ELSE 0
 				END AS ElixirType,
 				COALESCE(sd.Duration, 0) as Duration,
-				COALESCE(ie.CoolDownMSec, 0) as CooldownDuration
+				COALESCE(ie.CoolDownMSec, 0) as CooldownDuration,
+				COALESCE(ie.CategoryCoolDownMSec, 0) as CategoryCooldownDuration
 			FROM Item i
 			JOIN ItemSparse s ON i.ID = s.ID
 			LEFT JOIN ItemEffect ie ON i.ID = ie.ParentItemID
