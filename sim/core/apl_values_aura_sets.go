@@ -335,7 +335,7 @@ func (value *APLValueAnyStatBuffCooldownsMinDuration) String() string {
 	return fmt.Sprintf("AnyStatBuffCooldownsMinDuration(%s)", StringFromStatTypes(value.statTypesToMatch))
 }
 func (value *APLValueAnyStatBuffCooldownsMinDuration) Type() proto.APLValueType {
-	return proto.APLValueType_ValueTypeBool
+	return proto.APLValueType_ValueTypeDuration
 }
 func (value *APLValueAnyStatBuffCooldownsMinDuration) GetDuration(sim *Simulation) time.Duration {
 	minRemainingDuration := NeverExpires
