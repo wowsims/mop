@@ -1,6 +1,10 @@
 .tippy-box[data-theme='reforge-optimiser-popover'] {
 	min-width: 300px;
 
+	@include media-breakpoint-down(lg) {
+		max-width: calc(100dvw - var(--settings-button-width) - var(--spacer-3) * 2) !important;
+	}
+
 	.saved-data-manager-root {
 		margin-bottom: 0;
 	}
@@ -24,13 +28,20 @@
 
 .suggest-reforges-settings-group {
 	--settings-button-width: 36px;
-	position: relative;
-	order: 3;
+	display: grid !important;
+	grid-template-columns: auto var(--settings-button-width);
 }
 
 .suggest-reforges-action-button {
 	padding-left: calc(var(--btn-padding-x) + var(--settings-button-width));
 	padding-right: calc(var(--btn-padding-x) + var(--settings-button-width));
+	margin-right: calc(var(--settings-button-width) * -1);
+}
+
+.suggest-reforges-button-settings {
+	background-color: transparent;
+	border-color: transparent;
+	width: var(--settings-button-width);
 }
 
 .reforge-optimizer-stat-cap-table {
@@ -92,14 +103,4 @@
 
 .reforge-optimizer-stat-cap-item-label {
 	white-space: nowrap;
-}
-
-.suggest-reforges-button-settings {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	background-color: transparent;
-	border-color: transparent;
-	width: var(--settings-button-width);
 }

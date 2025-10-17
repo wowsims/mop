@@ -317,7 +317,7 @@ export class ReforgeOptimizer {
 			group,
 			children: [startReforgeOptimizationButton, contextMenuButton],
 		} = simUI.addActionGroup([startReforgeOptimizationEntry, contextMenuEntry], {
-			cssClass: clsx('suggest-reforges-settings-group d-flex', this.isExperimental && !this.player.sim.getShowExperimental() && 'hide'),
+			cssClass: clsx('suggest-reforges-settings-group', this.isExperimental && !this.player.sim.getShowExperimental() && 'hide'),
 		});
 
 		this.bindToggleExperimental(group);
