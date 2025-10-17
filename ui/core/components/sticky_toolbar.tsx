@@ -7,6 +7,7 @@ export class StickyToolbar extends Component {
 
 		new IntersectionObserver(
 			([e]) => {
+				console.log(e.target, e.target.clientHeight, e.intersectionRatio < 1);
 				e.target.classList.toggle('stuck', e.target.clientHeight > 0 && e.intersectionRatio < 1);
 			},
 			{
