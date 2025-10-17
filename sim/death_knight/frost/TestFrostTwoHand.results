@@ -721,48 +721,48 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-Settings-Orc-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 640623.13086
-  tps: 626494.5886
+  dps: 638137.30807
+  tps: 624005.50518
   hps: 2305.11004
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Orc-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 164707.72954
-  tps: 150557.09726
-  hps: 2712.30043
+  dps: 165128.30633
+  tps: 150939.58462
+  hps: 2707.41606
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Orc-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 224433.47166
-  tps: 170820.68545
-  hps: 2969.01315
+  dps: 224484.81681
+  tps: 170852.18694
+  hps: 2981.22407
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Orc-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 469183.95181
-  tps: 461080.31167
-  hps: 1994.01548
+  dps: 472889.10319
+  tps: 464781.2286
+  hps: 2005.17465
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Orc-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 129846.84767
-  tps: 121607.15651
-  hps: 2349.82833
+  dps: 129635.48913
+  tps: 121379.94513
+  hps: 2354.40176
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Orc-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 149289.04995
-  tps: 121757.28599
+  dps: 148806.94718
+  tps: 121300.35587
   hps: 2465.07877
  }
 }
@@ -961,49 +961,49 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 636685.64702
-  tps: 622416.96911
-  hps: 2356.04811
+  dps: 631524.10623
+  tps: 617287.09523
+  hps: 2335.92514
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 166644.10108
-  tps: 152345.87532
-  hps: 2732.32811
+  dps: 165634.56725
+  tps: 151348.01542
+  hps: 2727.4439
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 226834.29207
-  tps: 171928.8964
-  hps: 3017.7617
+  dps: 225759.44353
+  tps: 170921.6888
+  hps: 2993.34062
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 470148.76852
-  tps: 462093.09313
-  hps: 2032.82741
+  dps: 470036.18996
+  tps: 461976.93273
+  hps: 2012.2476
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 129438.82408
-  tps: 121293.73851
-  hps: 2372.62285
+  dps: 128827.7726
+  tps: 120680.27607
+  hps: 2356.61634
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 146257.03981
-  tps: 118683.61295
-  hps: 2465.00331
+  dps: 146810.3106
+  tps: 119189.91843
+  hps: 2476.43653
  }
 }
 dps_results: {
@@ -1201,48 +1201,48 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-Settings-Worgen-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 639096.4704
-  tps: 625440.51625
+  dps: 636838.98882
+  tps: 623179.88862
   hps: 2325.1701
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Worgen-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 164254.32253
-  tps: 150551.60008
-  hps: 2732.34765
+  dps: 164661.53597
+  tps: 150927.15492
+  hps: 2727.46344
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Worgen-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 221647.0977
-  tps: 169820.84885
-  hps: 3030.75371
+  dps: 221939.11605
+  tps: 170099.18424
+  hps: 3042.96425
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Worgen-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 467661.03462
-  tps: 459846.78825
-  hps: 2003.64981
+  dps: 471081.24424
+  tps: 463256.96595
+  hps: 2014.80864
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Worgen-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 129632.11009
-  tps: 121674.02129
-  hps: 2366.72331
+  dps: 129332.84254
+  tps: 121369.17934
+  hps: 2371.2966
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Worgen-p2.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 147802.99903
-  tps: 121307.15439
+  dps: 147383.6992
+  tps: 120912.53363
   hps: 2465.00331
  }
 }
