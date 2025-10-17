@@ -19253,6 +19253,7 @@
 {"id":86073,"type":3,"stats":[0,0,0,0,0,300,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"Spicy Salmon","icon":"inv_misc_food_meat_cooked_06","buffDuration":10,"categoryCooldownDuration":1},
 {"id":86074,"type":3,"stats":[0,0,0,0,0,0,0,0,300,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"Spicy Vegetable Chips","icon":"inv_misc_food_vendor_poundedricecakes","buffDuration":10,"categoryCooldownDuration":1},
 {"id":86125,"type":1,"stats":[0,0,0,0,0,0,0,4000,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"Kafa Press","icon":"inv_drink_15","buffDuration":25,"cooldownDuration":600,"categoryCooldownDuration":60},
+{"id":86569,"type":2,"stats":[500,500,500,500,500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"Crystal of Insanity","icon":"inv_enchant_voidcrystal","buffDuration":3600,"cooldownDuration":900,"categoryCooldownDuration":3},
 {"id":88382,"type":3,"stats":[0,0,0,0,0,0,0,4000,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"Keenbean Kafa","icon":"inv_drink_15","buffDuration":25,"cooldownDuration":600,"categoryCooldownDuration":600},
 {"id":91803,"type":1,"stats":[0,0,0,0,0,0,0,4000,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"Snap Root Tuber","icon":"inv_misc_food_55","buffDuration":25,"categoryCooldownDuration":60},
 {"id":101745,"type":3,"stats":[0,0,0,0,0,0,0,0,0,0,0,300,0,0,0,0,0,0,0,0,0,0],"name":"Mango Ice","icon":"inv_misc_food_mango_ice","buffDuration":10,"categoryCooldownDuration":1}
