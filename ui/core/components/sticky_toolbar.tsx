@@ -1,5 +1,5 @@
-import { SimUI } from "../sim_ui";
-import { Component } from "./component";
+import { SimUI } from '../sim_ui';
+import { Component } from './component';
 
 export class StickyToolbar extends Component {
 	constructor(rootElem: HTMLElement, simUI: SimUI | null) {
@@ -7,6 +7,7 @@ export class StickyToolbar extends Component {
 
 		new IntersectionObserver(
 			([e]) => {
+				console.log(e.target, e.target.clientHeight, e.intersectionRatio < 1);
 				e.target.classList.toggle('stuck', e.target.clientHeight > 0 && e.intersectionRatio < 1);
 			},
 			{

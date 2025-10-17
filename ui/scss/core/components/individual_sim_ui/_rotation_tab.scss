@@ -60,10 +60,15 @@
 
 		.apl-rotation-navbar {
 			flex: 1 0 100%;
+			gap: var(--spacer-3);
 
 			.nav-tabs {
 				margin-left: auto;
 				border: 0;
+				display: flex;
+				flex-wrap: nowrap;
+				overflow: auto;
+				flex-shrink: 1;
 			}
 		}
 

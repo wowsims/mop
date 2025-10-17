@@ -45,6 +45,10 @@
 				align-items: flex-start;
 				justify-content: flex-end;
 
+				@include media-breakpoint-down(md) {
+					flex-direction: column-reverse;
+				}
+
 				.btn-group {
 					gap: calc(var(--apl-spacer) / 2);
 
@@ -57,6 +61,12 @@
 
 			& > .list-picker-item {
 				flex-grow: 1;
+			}
+
+			.list-picker-item {
+				@include media-breakpoint-down(md) {
+					flex-grow: 1;
+				}
 			}
 		}
 	}
@@ -111,6 +121,15 @@
 
 	.list-picker-item-container {
 		gap: var(--apl-spacer);
+
+		div:not(.list-picker-item-header) {
+			.input-root:not(.input-inline):not(.icon-picker) {
+				@include media-breakpoint-down(md) {
+					flex-grow: 1;
+					align-items: stretch !important;
+				}
+			}
+		}
 	}
 }
 
@@ -216,6 +235,10 @@
 	display: flex;
 	flex-direction: row;
 	gap: var(--apl-spacer);
+
+	@include media-breakpoint-down(md) {
+		flex-wrap: wrap;
+	}
 }
 
 .hide-picker-root {
