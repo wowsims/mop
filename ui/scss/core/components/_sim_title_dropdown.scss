@@ -1,10 +1,12 @@
 .sim-title {
-	// Same as sim header
-	position: sticky;
-	top: -1px;
 	height: calc(var(--sim-header-height) + 1px);
 	border-bottom: var(--border-default);
 	z-index: calc(var(--sidebar-z-index) + 1);
+
+	@include media-breakpoint-down(lg) {
+		position: sticky;
+		top: -1px;
+	}
 
 	.sim-title-dropdown-root {
 		height: calc(var(--sim-header-height) - 1px);

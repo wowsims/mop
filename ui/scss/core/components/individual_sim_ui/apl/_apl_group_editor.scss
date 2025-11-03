@@ -18,3 +18,15 @@
 		}
 	}
 }
+
+.group-reference-variables-container {
+	.group-variable-label {
+		font-size: var(--btn-font-size);
+	}
+
+	.list-picker-root {
+		.list-picker-items {
+			gap: calc(var(--apl-spacer) * 1.5) !important;
+		}
+	}
+}

@@ -164,6 +164,8 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 		value = rot.newValueNextRuneCooldown(config.GetNextRuneCooldown(), config.Uuid)
 	case *proto.APLValue_RuneSlotCooldown:
 		value = rot.newValueRuneSlotCooldown(config.GetRuneSlotCooldown(), config.Uuid)
+	case *proto.APLValue_FullRuneCooldown:
+		value = rot.newValueFullRuneCooldown(config.GetFullRuneCooldown(), config.Uuid)
 
 	// Unit
 	case *proto.APLValue_UnitIsMoving:
@@ -210,6 +212,8 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 		value = rot.newValueSpellGCDHastedDuration(config.GetSpellGcdHastedDuration(), config.Uuid)
 	case *proto.APLValue_SpellFullCooldown:
 		value = rot.newValueSpellFullCooldown(config.GetSpellFullCooldown(), config.Uuid)
+	case *proto.APLValue_SpellInFlight:
+		value = rot.newValueSpellInFlight(config.GetSpellInFlight(), config.Uuid)
 
 	// Auras
 	case *proto.APLValue_AuraIsKnown:

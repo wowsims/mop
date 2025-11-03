@@ -76,7 +76,7 @@ func (shaman *Shaman) registerUnleashWind() {
 
 	speedMultiplier := 1 + 0.5
 
-	unleashWindAura := core.BlockPrepull(shaman.RegisterAura(core.Aura{
+	shaman.WindfuryUnleashAura = core.BlockPrepull(shaman.RegisterAura(core.Aura{
 		Label:     "Unleash Wind",
 		ActionID:  core.ActionID{SpellID: 73681},
 		Duration:  time.Second * 12,
@@ -106,7 +106,7 @@ func (shaman *Shaman) registerUnleashWind() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			damage := spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
 			spell.CalcAndDealDamage(sim, target, damage, spell.OutcomeRangedHitAndCrit)
-			unleashWindAura.Activate(sim)
+			shaman.WindfuryUnleashAura.Activate(sim)
 		},
 	})
 }

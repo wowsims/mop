@@ -116,14 +116,16 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 	}))
 
 	// Listener for procs
-	core.MakeProcTriggerAura(&arcane.Unit, core.ProcTrigger{
-		Name:              "Arcane Missiles - Activation",
-		ActionID:          core.ActionID{SpellID: 79684},
-		ClassSpellMask:    mage.MageSpellsAll ^ (mage.MageSpellArcaneMissilesCast | mage.MageSpellArcaneMissilesTick | mage.MageSpellNetherTempestDot | mage.MageSpellLivingBombDot | mage.MageSpellLivingBombExplosion),
-		SpellFlagsExclude: core.SpellFlagHelpful,
-		ProcChance:        0.3,
-		Callback:          core.CallbackOnSpellHitDealt,
-		Outcome:           core.OutcomeLanded,
+	arcane.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Arcane Missiles - Activation",
+		ActionID:           core.ActionID{SpellID: 79684},
+		ClassSpellMask:     mage.MageSpellsAll ^ (mage.MageSpellArcaneMissilesCast | mage.MageSpellArcaneMissilesTick | mage.MageSpellNetherTempestDot | mage.MageSpellLivingBombDot | mage.MageSpellLivingBombExplosion),
+		SpellFlagsExclude:  core.SpellFlagHelpful,
+		ProcChance:         0.3,
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			arcane.arcaneMissilesProcAura.Activate(sim)
 			arcane.arcaneMissilesProcAura.AddStack(sim)

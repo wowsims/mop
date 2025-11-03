@@ -8,6 +8,7 @@ import { CopyButton } from '../copy_button';
 import { IndividualSimUI } from '../../individual_sim_ui.jsx';
 import i18n from '../../../i18n/config';
 import { translateStat } from '../../../i18n/localization';
+import { trackEvent } from '../../../tracking/utils';
 
 type ReforgeSummaryTotal = {
 	[key in Stat]?: number;
@@ -83,6 +84,11 @@ export class ReforgeSummary extends Component {
 			new CopyButton(copyContainer as HTMLElement, {
 				extraCssClasses: ['btn-outline-primary'],
 				getContent: () => {
+					trackEvent({
+						action: 'click',
+						category: 'reforging',
+						label: 'copy',
+					});
 					try {
 						// Lazy export so we always capture the most current state, matching optimizer button logic.
 						const proto = this.simUI.toProto();
@@ -103,6 +109,11 @@ export class ReforgeSummary extends Component {
 				<button
 					className="btn btn-sm btn-link btn-reset summary-table-reset-button"
 					onclick={() => {
+						trackEvent({
+							action: 'click',
+							category: 'reforging',
+							label: 'reset',
+						});
 						const gear = this.player.getGear().withoutReforges(this.player.canDualWield2H());
 						this.player.setGear(TypedEvent.nextEventID(), gear);
 					}}>

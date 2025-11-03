@@ -40,37 +40,6 @@ func TestProtection(t *testing.T) {
 	}))
 }
 
-func BenchmarkSimulate(b *testing.B) {
-	rsr := &proto.RaidSimRequest{
-		Raid: core.SinglePlayerRaidProto(
-			&proto.Player{
-				Race:           proto.Race_RaceBloodElf,
-				Class:          proto.Class_ClassPaladin,
-				Equipment:      core.GetGearSet("../../../ui/paladin/protection/gear_sets", "p1-balanced").GearSet,
-				Consumables:    FullConsumesSpec,
-				Spec:           SealOfInsight,
-				Glyphs:         StandardGlyphs,
-				TalentsString:  StandardTalents,
-				Buffs:          core.FullIndividualBuffs,
-				ReactionTimeMs: 100,
-				Rotation:       core.GetAplRotation("../../../ui/paladin/protection/apls", "default").Rotation,
-			},
-			core.FullPartyBuffs,
-			core.FullRaidBuffs,
-			core.FullDebuffs),
-		Encounter: &proto.Encounter{
-			Duration:          300,
-			DurationVariation: 30,
-			Targets: []*proto.Target{
-				core.NewDefaultTarget(),
-			},
-		},
-		SimOptions: core.AverageDefaultSimTestOptions,
-	}
-
-	core.RaidBenchmark(b, rsr)
-}
-
 var StandardTalents = "313213"
 var StandardGlyphs = &proto.Glyphs{
 	Major1: int32(proto.PaladinMajorGlyph_GlyphOfFocusedShield),

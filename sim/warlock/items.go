@@ -229,13 +229,18 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 						return
 					}
 
-					for _, array := range spell.RelatedAuraArrays {
-						array.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					for _, target := range warlock.Env.Encounter.AllTargets {
+						dot := spell.Dot(&target.Unit)
+						if dot == nil {
+							break
+						}
+						dot.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
 							if sim.Proc(0.1, "T16 4p") {
 								warlock.GetSecondaryResourceBar().Gain(sim, 1, spell.ActionID)
 							}
 						})
 					}
+
 				})
 			case proto.Spec_SpecDemonologyWarlock:
 				setBonusAura.AttachProcTrigger(core.ProcTrigger{

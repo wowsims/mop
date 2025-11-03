@@ -23,12 +23,14 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 	})
 	PWActionID := core.ActionID{SpellID: 63375}
 	primalWisdomManaMetrics := shaman.NewManaMetrics(PWActionID)
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:            "Mental Quickness",
-		ProcMask:        core.ProcMaskMelee,
-		Callback:        core.CallbackOnSpellHitDealt,
-		ProcChance:      0.4,
-		MetricsActionID: PWActionID,
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Mental Quickness",
+		ProcMask:           core.ProcMaskMelee,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcChance:         0.4,
+		MetricsActionID:    PWActionID,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			shaman.AddMana(sim, 0.05*shaman.MaxMana(), primalWisdomManaMetrics)
 		},
@@ -48,10 +50,12 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 		},
 	}).AttachStatDependency(shaman.NewDynamicMultiplyStat(stats.HasteRating, 1.5))
 
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:     "Flurry",
-		ProcMask: core.ProcMaskMelee | core.ProcMaskMeleeProc,
-		Callback: core.CallbackOnSpellHitDealt,
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Flurry",
+		ProcMask:           core.ProcMaskMelee | core.ProcMaskMeleeProc,
+		Callback:           core.CallbackOnSpellHitDealt,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if result.Outcome.Matches(core.OutcomeCrit) {
 				flurryProcAura.Activate(sim)
@@ -101,7 +105,7 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 		},
 	}))
 
-	core.MakeProcTriggerAura(&shaman.FireElemental.Unit, core.ProcTrigger{
+	shaman.FireElemental.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Searing Flames Dummy Fire ele",
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: SpellMaskFireElementalMelee,
@@ -113,7 +117,7 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 			searingFlameStackingAura.AddStack(sim)
 		},
 	})
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Searing Flames Dummy Shaman",
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: SpellMaskSearingTotem,
@@ -127,15 +131,18 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 	})
 
 	//Static Shock
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:           "Static Shock",
-		Callback:       core.CallbackOnSpellHitDealt,
-		ClassSpellMask: SpellMaskStormstrikeDamage | SpellMaskLavaLash,
-		ProcChance:     0.45,
-		Outcome:        core.OutcomeLanded,
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Static Shock",
+		Callback:           core.CallbackOnSpellHitDealt,
+		ClassSpellMask:     SpellMaskStormstrikeDamage | SpellMaskLavaLash,
+		ProcChance:         0.45,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
+
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			return shaman.SelfBuffs.Shield == proto.ShamanShield_LightningShield
 		},
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			shaman.LightningShieldDamage.Cast(sim, result.Target)
 		},
@@ -186,12 +193,14 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 	dpm := shaman.NewLegacyPPMManager(ppm, core.ProcMaskMeleeOrMeleeProc)
 
 	// This aura is hidden, just applies stacks of the proc aura.
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Maelstrom Weapon",
 		Outcome:            core.OutcomeLanded,
 		Callback:           core.CallbackOnSpellHitDealt,
 		RequireDamageDealt: true,
 		DPM:                dpm,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			shaman.MaelstromWeaponAura.Activate(sim)
 			shaman.MaelstromWeaponAura.AddStack(sim)

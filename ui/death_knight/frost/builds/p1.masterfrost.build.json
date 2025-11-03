@@ -68,12 +68,10 @@
 		},
 		"talentsString": "221111",
 		"glyphs": {
-			"major1": 43533,
+			"major1": 68793,
 			"major2": 43548,
-			"major3": 104047,
-			"minor1": 43550,
-			"minor2": 45806,
-			"minor3": 43673
+			"minor1": 43672,
+			"minor2": 45806
 		},
 		"profession1": "Engineering",
 		"profession2": "Blacksmithing",

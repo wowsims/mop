@@ -65,12 +65,13 @@ func tigerStrikesBuffAura(unit *core.Unit) {
 		},
 	}))
 
-	core.MakeProcTriggerAura(unit, core.ProcTrigger{
-		Name:       "Tiger Strikes Buff Trigger" + unit.Label,
-		ActionID:   core.ActionID{SpellID: 120272},
-		Callback:   core.CallbackOnSpellHitDealt,
-		ProcMask:   core.ProcMaskWhiteHit,
-		ProcChance: 1,
+	unit.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Tiger Strikes Buff Trigger" + unit.Label,
+		ActionID:           core.ActionID{SpellID: 120272},
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskWhiteHit,
+		ProcChance:         1,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if spell.Matches(MonkSpellTigerStrikes) {

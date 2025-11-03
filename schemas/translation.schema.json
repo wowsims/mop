@@ -898,6 +898,62 @@
             "action_has_warnings",
             "action_has_errors"
           ]
+        },
+        "preset": {
+          "type": "object",
+          "properties": {
+            "ep_weights": {
+              "type": "string"
+            },
+            "gear": {
+              "type": "string"
+            },
+            "talents": {
+              "type": "string"
+            },
+            "rotation": {
+              "type": "string"
+            },
+            "encounter": {
+              "type": "string"
+            },
+            "settings": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "stat_weights": {
+              "type": "string"
+            },
+            "class_spec_options": {
+              "type": "string"
+            },
+            "consumables": {
+              "type": "string"
+            },
+            "other_settings": {
+              "type": "string"
+            },
+            "buffs": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "ep_weights",
+            "gear",
+            "talents",
+            "rotation",
+            "encounter",
+            "settings",
+            "description",
+            "stat_weights",
+            "class_spec_options",
+            "consumables",
+            "other_settings",
+            "buffs"
+          ]
         }
       },
       "additionalProperties": false,
@@ -922,7 +978,8 @@
         "mastery_spell_names",
         "currency",
         "copy_button",
-        "list_picker"
+        "list_picker",
+        "preset"
       ]
     },
     "sim": {
@@ -1063,78 +1120,6 @@
       "properties": {
         "title": {
           "type": "string"
-        },
-        "slots": {
-          "type": "object",
-          "properties": {
-            "head": {
-              "type": "string"
-            },
-            "neck": {
-              "type": "string"
-            },
-            "shoulder": {
-              "type": "string"
-            },
-            "back": {
-              "type": "string"
-            },
-            "chest": {
-              "type": "string"
-            },
-            "wrist": {
-              "type": "string"
-            },
-            "hands": {
-              "type": "string"
-            },
-            "waist": {
-              "type": "string"
-            },
-            "legs": {
-              "type": "string"
-            },
-            "feet": {
-              "type": "string"
-            },
-            "finger_1": {
-              "type": "string"
-            },
-            "finger_2": {
-              "type": "string"
-            },
-            "trinket_1": {
-              "type": "string"
-            },
-            "trinket_2": {
-              "type": "string"
-            },
-            "main_hand": {
-              "type": "string"
-            },
-            "off_hand": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "head",
-            "neck",
-            "shoulder",
-            "back",
-            "chest",
-            "wrist",
-            "hands",
-            "waist",
-            "legs",
-            "feet",
-            "finger_1",
-            "finger_2",
-            "trinket_1",
-            "trinket_2",
-            "main_hand",
-            "off_hand"
-          ]
         },
         "gem_summary": {
           "type": "object",
@@ -1550,33 +1535,37 @@
             "tooltip"
           ]
         },
-		"upgrade_summary": {
-			"type": "object",
-			"properties": {
-				"title": {
-					"type": "string"
-				},
-				"upgrade_all_items": {
-					"type": "string"
-				},
-				"reset_upgrades": {
-					"type": "string"
-				}
-			},
-			"additionalProperties": false,
-			"required": ["title", "upgrade_all_items", "reset_upgrades"]
-		}
+        "upgrade_summary": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "upgrade_all_items": {
+              "type": "string"
+            },
+            "reset_upgrades": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "upgrade_all_items",
+            "reset_upgrades"
+          ]
+        }
       },
       "additionalProperties": false,
       "required": [
         "title",
-        "slots",
         "gem_summary",
         "reforge_summary",
         "reforge_success",
         "gear_sets",
         "gear_picker",
-        "preset_configurations"
+        "preset_configurations",
+        "upgrade_summary"
       ]
     },
     "settings_tab": {
@@ -2273,6 +2262,38 @@
                 "title",
                 "tooltip"
               ]
+            },
+            "shaman_disable_immolate": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "tooltip": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "tooltip"
+              ]
+            },
+            "shaman_disable_immolate_duration": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "tooltip": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "tooltip"
+              ]
             }
           },
           "additionalProperties": false,
@@ -2306,7 +2327,9 @@
             "enable_item_swap",
             "item_swap",
             "assume_prepull_mastery_elixir",
-            "blessings"
+            "blessings",
+            "shaman_disable_immolate",
+            "shaman_disable_immolate_duration"
           ]
         },
         "consumables": {
@@ -3194,6 +3217,12 @@
             },
             "item_added": {
               "type": "string"
+            },
+            "item_removed": {
+              "type": "string"
+            },
+            "item_unique": {
+              "type": "string"
             }
           },
           "additionalProperties": false,
@@ -3205,7 +3234,9 @@
             "max_ilvl",
             "no_results",
             "showing_results",
-            "item_added"
+            "item_added",
+            "item_removed",
+            "item_unique"
           ]
         },
         "settings": {
@@ -3220,91 +3251,56 @@
             "iterations": {
               "type": "string"
             },
-            "fast_mode": {
-              "type": "object",
-              "properties": {
-                "label": {
-                  "type": "string"
-                },
-                "tooltip": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "label",
-                "tooltip"
-              ]
-            },
-            "combinations": {
-              "type": "object",
-              "properties": {
-                "label": {
-                  "type": "string"
-                },
-                "tooltip": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "label",
-                "tooltip"
-              ]
-            },
-            "auto_enchant": {
-              "type": "object",
-              "properties": {
-                "label": {
-                  "type": "string"
-                },
-                "tooltip": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "label",
-                "tooltip"
-              ]
-            },
-            "auto_gem": {
-              "type": "object",
-              "properties": {
-                "label": {
-                  "type": "string"
-                },
-                "tooltip": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "label",
-                "tooltip"
-              ]
-            },
-            "sim_talents": {
-              "type": "object",
-              "properties": {
-                "label": {
-                  "type": "string"
-                },
-                "tooltip": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "label",
-                "tooltip"
-              ]
-            },
             "default_gems": {
               "type": "string"
             },
-            "talents_to_sim": {
-              "type": "string"
+            "inherit_upgrades": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "tooltip": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "tooltip"
+              ]
+            },
+            "freeze_ring": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "tooltip": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "tooltip"
+              ]
+            },
+            "freeze_trinket": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "tooltip": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "tooltip"
+              ]
             }
           },
           "additionalProperties": false,
@@ -3312,13 +3308,10 @@
             "combinations_count",
             "combination_singular",
             "iterations",
-            "fast_mode",
-            "combinations",
-            "auto_enchant",
-            "auto_gem",
-            "sim_talents",
             "default_gems",
-            "talents_to_sim"
+            "inherit_upgrades",
+            "freeze_ring",
+            "freeze_trinket"
           ]
         },
         "progress": {
@@ -3377,16 +3370,84 @@
             "iterations_limit"
           ]
         },
-        "results": {
+        "picker": {
           "type": "object",
           "properties": {
-            "run_simulation": {
+            "no_items": {
+              "type": "string"
+            },
+            "remove_tooltip": {
+              "type": "string"
+            },
+            "failed_update": {
+              "type": "string"
+            },
+            "failed_remove": {
               "type": "string"
             }
           },
           "additionalProperties": false,
           "required": [
-            "run_simulation"
+            "no_items",
+            "remove_tooltip",
+            "failed_update",
+            "failed_remove"
+          ]
+        },
+        "results": {
+          "type": "object",
+          "properties": {
+            "run_simulation": {
+              "type": "string"
+            },
+            "equip_button": {
+              "type": "string"
+            },
+            "gear_equipped": {
+              "type": "string"
+            },
+            "current_gear": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "run_simulation",
+            "equip_button",
+            "gear_equipped",
+            "current_gear"
+          ]
+        },
+        "gem_selector": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "title"
+          ]
+        },
+        "import_modal": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description_line1": {
+              "type": "string"
+            },
+            "description_line2": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "description_line1",
+            "description_line2"
           ]
         }
       },
@@ -3402,7 +3463,10 @@
         "progress",
         "notifications",
         "warning",
-        "results"
+        "picker",
+        "results",
+        "gem_selector",
+        "import_modal"
       ]
     },
     "rotation_tab": {
@@ -3944,7 +4008,7 @@
                     "tooltip": {
                       "type": "string"
                     },
-                    "full": {
+                    "full_description": {
                       "type": "string"
                     },
                     "interrupt_if": {
@@ -3984,7 +4048,7 @@
                   "required": [
                     "label",
                     "tooltip",
-                    "full",
+                    "full_description",
                     "interrupt_if",
                     "recast"
                   ]
@@ -3998,7 +4062,7 @@
                     "tooltip": {
                       "type": "string"
                     },
-                    "full": {
+                    "full_description": {
                       "type": "string"
                     }
                   },
@@ -4006,7 +4070,7 @@
                   "required": [
                     "label",
                     "tooltip",
-                    "full"
+                    "full_description"
                   ]
                 },
                 "autocast_other_cooldowns": {
@@ -4018,7 +4082,7 @@
                     "tooltip": {
                       "type": "string"
                     },
-                    "full": {
+                    "full_description": {
                       "type": "string"
                     }
                   },
@@ -4026,7 +4090,7 @@
                   "required": [
                     "label",
                     "tooltip",
-                    "full"
+                    "full_description"
                   ]
                 },
                 "wait": {
@@ -4119,7 +4183,7 @@
                     "tooltip": {
                       "type": "string"
                     },
-                    "full": {
+                    "full_description": {
                       "type": "string"
                     }
                   },
@@ -4127,7 +4191,7 @@
                   "required": [
                     "label",
                     "tooltip",
-                    "full"
+                    "full_description"
                   ]
                 },
                 "reset_sequence": {
@@ -4139,7 +4203,7 @@
                     "tooltip": {
                       "type": "string"
                     },
-                    "full": {
+                    "full_description": {
                       "type": "string"
                     }
                   },
@@ -4147,7 +4211,7 @@
                   "required": [
                     "label",
                     "tooltip",
-                    "full"
+                    "full_description"
                   ]
                 },
                 "strict_sequence": {
@@ -4159,7 +4223,7 @@
                     "tooltip": {
                       "type": "string"
                     },
-                    "full": {
+                    "full_description": {
                       "type": "string"
                     }
                   },
@@ -4167,7 +4231,7 @@
                   "required": [
                     "label",
                     "tooltip",
-                    "full"
+                    "full_description"
                   ]
                 },
                 "change_target": {
@@ -4395,7 +4459,7 @@
                     "tooltip"
                   ]
                 },
-				"warlock_next_exhale_target": {
+                "warlock_next_exhale_target": {
                   "type": "object",
                   "properties": {
                     "label": {
@@ -4439,7 +4503,8 @@
                 "move",
                 "custom_rotation",
                 "optimal_rotation_action",
-                "guardian_hotw_dps_rotation"
+                "guardian_hotw_dps_rotation",
+                "warlock_next_exhale_target"
               ]
             },
             "values": {
@@ -5306,6 +5371,22 @@
                     "tooltip"
                   ]
                 },
+                "full_rune_cooldown": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip"
+                  ]
+                },
                 "gcd_is_ready": {
                   "type": "object",
                   "properties": {
@@ -5394,12 +5475,16 @@
                     },
                     "tooltip": {
                       "type": "string"
+                    },
+                    "full_description": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
                   "required": [
                     "label",
-                    "tooltip"
+                    "tooltip",
+                    "full_description"
                   ]
                 },
                 "is_ready": {
@@ -5610,6 +5695,22 @@
                     "tooltip"
                   ]
                 },
+                "spell_in_flight": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip"
+                  ]
+                },
                 "aura_known": {
                   "type": "object",
                   "properties": {
@@ -5730,12 +5831,16 @@
                     },
                     "tooltip": {
                       "type": "string"
+                    },
+                    "full_description": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
                   "required": [
                     "label",
-                    "tooltip"
+                    "tooltip",
+                    "full_description"
                   ]
                 },
                 "all_trinket_stat_procs_active": {
@@ -5746,12 +5851,16 @@
                     },
                     "tooltip": {
                       "type": "string"
+                    },
+                    "full_description": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
                   "required": [
                     "label",
-                    "tooltip"
+                    "tooltip",
+                    "full_description"
                   ]
                 },
                 "any_trinket_stat_procs_active": {
@@ -5762,12 +5871,16 @@
                     },
                     "tooltip": {
                       "type": "string"
+                    },
+                    "full_description": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
                   "required": [
                     "label",
-                    "tooltip"
+                    "tooltip",
+                    "full_description"
                   ]
                 },
                 "trinket_procs_min_remaining_time": {
@@ -5826,12 +5939,16 @@
                     },
                     "tooltip": {
                       "type": "string"
+                    },
+                    "full_description": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
                   "required": [
                     "label",
-                    "tooltip"
+                    "tooltip",
+                    "full_description"
                   ]
                 },
                 "any_stat_buff_cooldowns_active": {
@@ -5842,12 +5959,16 @@
                     },
                     "tooltip": {
                       "type": "string"
+                    },
+                    "full_description": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
                   "required": [
                     "label",
-                    "tooltip"
+                    "tooltip",
+                    "full_description"
                   ]
                 },
                 "dot_is_active": {
@@ -6277,6 +6398,7 @@
                 "rune_cooldown",
                 "next_rune_cooldown",
                 "rune_slot_cooldown",
+                "full_rune_cooldown",
                 "gcd_is_ready",
                 "gcd_time_to_ready",
                 "time_to_next_auto",
@@ -6296,6 +6418,7 @@
                 "full_cooldown",
                 "channel_clip_delay",
                 "input_delay",
+                "spell_in_flight",
                 "aura_known",
                 "aura_active",
                 "aura_active_with_reaction_time",
@@ -6316,6 +6439,7 @@
                 "dot_remaining_time",
                 "dot_lowest_remaining_time",
                 "dot_tick_frequency",
+                "dot_time_to_next_tick",
                 "dot_percent_increase",
                 "sequence_is_complete",
                 "sequence_is_ready",
@@ -6639,6 +6763,9 @@
                     },
                     "expected_dot_spells": {
                       "type": "string"
+                    },
+                    "spells_with_travelTime": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
@@ -6655,7 +6782,8 @@
                     "shield_spells",
                     "non_instant_spells",
                     "friendly_spells",
-                    "expected_dot_spells"
+                    "expected_dot_spells",
+                    "spells_with_travelTime"
                   ]
                 },
                 "field_configs": {
@@ -6675,6 +6803,21 @@
                     },
                     "min_icd_tooltip": {
                       "type": "string"
+                    },
+                    "include_reaction_time": {
+                      "type": "string"
+                    },
+                    "include_reaction_time_tooltip": {
+                      "type": "string"
+                    },
+                    "use_base_value": {
+                      "type": "string"
+                    },
+                    "use_base_value_tooltip": {
+                      "type": "string"
+                    },
+                    "variable_assignment_tooltip": {
+                      "type": "string"
                     }
                   },
                   "additionalProperties": false,
@@ -6683,7 +6826,12 @@
                     "strategy",
                     "buff_type",
                     "min_icd",
-                    "min_icd_tooltip"
+                    "min_icd_tooltip",
+                    "include_reaction_time",
+                    "include_reaction_time_tooltip",
+                    "use_base_value",
+                    "use_base_value_tooltip",
+                    "variable_assignment_tooltip"
                   ]
                 },
                 "eclipse_types": {
@@ -6837,6 +6985,18 @@
                 "placeholder_tooltip": {
                   "type": "string"
                 },
+                "select_variable": {
+                  "type": "string"
+                },
+                "select_group": {
+                  "type": "string"
+                },
+                "no_variables_defined": {
+                  "type": "string"
+                },
+                "no_groups_defined": {
+                  "type": "string"
+                },
                 "buttons": {
                   "type": "object",
                   "properties": {
@@ -6869,6 +7029,10 @@
                 "hotw_strategies",
                 "unit_labels",
                 "placeholder_tooltip",
+                "select_variable",
+                "select_group",
+                "no_variables_defined",
+                "no_groups_defined",
                 "buttons"
               ]
             }
@@ -8859,6 +9023,9 @@
             },
             "dual_wield_2h_without_titans_grip": {
               "type": "string"
+            },
+            "shaman_fele_autocast": {
+              "type": "string"
             }
           },
           "additionalProperties": false,
@@ -8868,7 +9035,8 @@
             "too_many_jc_gems",
             "unspent_talent_points",
             "armor_specialization",
-            "dual_wield_2h_without_titans_grip"
+            "dual_wield_2h_without_titans_grip",
+            "shaman_fele_autocast"
           ]
         },
         "buttons": {
@@ -8882,69 +9050,6 @@
               "properties": {
                 "title": {
                   "type": "string"
-                },
-                "ep_weights": {
-                  "type": "object",
-                  "properties": {
-                    "use_custom": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "object",
-                      "properties": {
-                        "enable_modification": {
-                          "type": "string"
-                        },
-                        "modify_in_editor": {
-                          "type": "string"
-                        },
-                        "hard_cap_info": {
-                          "type": "string"
-                        }
-                      },
-                      "additionalProperties": false,
-                      "required": [
-                        "enable_modification",
-                        "modify_in_editor",
-                        "hard_cap_info"
-                      ]
-                    },
-                    "buttons": {
-                      "type": "object",
-                      "properties": {
-                        "edit_weights": {
-                          "type": "string"
-                        }
-                      },
-                      "additionalProperties": false,
-                      "required": [
-                        "edit_weights"
-                      ]
-                    },
-                    "options": {
-                      "type": "object",
-                      "properties": {
-                        "include_gems": {
-                          "type": "string"
-                        },
-                        "freeze_item_slots": {
-                          "type": "string"
-                        }
-                      },
-                      "additionalProperties": false,
-                      "required": [
-                        "include_gems",
-                        "freeze_item_slots"
-                      ]
-                    }
-                  },
-                  "additionalProperties": false,
-                  "required": [
-                    "use_custom",
-                    "description",
-                    "buttons",
-                    "options"
-                  ]
                 },
                 "modal": {
                   "type": "object",
@@ -9326,7 +9431,6 @@
               "additionalProperties": false,
               "required": [
                 "title",
-                "ep_weights",
                 "modal",
                 "saved_ep_weights"
               ]
@@ -9387,6 +9491,39 @@
                 },
                 "reforge_optimization_failed": {
                   "type": "string"
+                },
+                "use_custom": {
+                  "type": "string"
+                },
+                "enable_modification": {
+                  "type": "string"
+                },
+                "modify_in_editor": {
+                  "type": "string"
+                },
+                "hard_cap_info": {
+                  "type": "string"
+                },
+                "edit_weights": {
+                  "type": "string"
+                },
+                "include_gems": {
+                  "type": "string"
+                },
+                "freeze_item_slots": {
+                  "type": "string"
+                },
+                "include_eotbp_socket": {
+                  "type": "string"
+                },
+                "include_eotbp_socket_tooltip": {
+                  "type": "string"
+                },
+                "limit_execution_time": {
+                  "type": "string"
+                },
+                "limit_execution_time_tooltip": {
+                  "type": "string"
                 }
               },
               "additionalProperties": false,
@@ -9408,7 +9545,18 @@
                 "no_limit_set",
                 "breakpoints_implemented",
                 "post_cap_ep",
-                "reforge_optimization_failed"
+                "reforge_optimization_failed",
+                "use_custom",
+                "enable_modification",
+                "modify_in_editor",
+                "hard_cap_info",
+                "edit_weights",
+                "include_gems",
+                "freeze_item_slots",
+                "include_eotbp_socket",
+                "include_eotbp_socket_tooltip",
+                "limit_execution_time",
+                "limit_execution_time_tooltip"
               ]
             }
           },

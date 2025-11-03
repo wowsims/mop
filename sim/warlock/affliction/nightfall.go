@@ -14,7 +14,7 @@ func (affliction *AfflictionWarlock) registerNightfall() {
 		Duration: time.Second * 6,
 	})
 
-	core.MakeProcTriggerAura(&affliction.Unit, core.ProcTrigger{
+	affliction.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Nightfall",
 		ClassSpellMask: warlock.WarlockSpellCorruption,
 		Callback:       core.CallbackOnPeriodicDamageDealt,

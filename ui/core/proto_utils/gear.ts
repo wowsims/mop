@@ -103,11 +103,14 @@ abstract class BaseGear {
 	}
 
 	private removeUniqueItems(gear: Partial<InternalGear>, newItem: EquippedItem) {
-		if (newItem.item.unique) {
+		if (newItem.item.unique || newItem.item.limitCategory) {
 			this.getItemSlots()
 				.map(slot => Number(slot) as ItemSlot)
 				.forEach(slot => {
-					if (gear[slot]?.item.id == newItem.item.id) {
+					if (
+						(newItem.item.limitCategory && gear[slot]?.item.limitCategory == newItem.item.limitCategory) ||
+						(newItem.item.unique && gear[slot]?.item.id == newItem.item.id)
+					) {
 						gear[slot] = null;
 					}
 				});
@@ -295,6 +298,26 @@ export class Gear extends BaseGear {
 		return this;
 	}
 
+	findGem(gemToFind: Gem, isBlacksmithing: boolean): [ItemSlot, number][] {
+		const gemMatchData: [ItemSlot, number][] = [];
+
+		for (const slot of this.getItemSlots()) {
+			const item = this.getEquippedItem(slot);
+
+			if (!item) {
+				continue;
+			}
+
+			for (const [socketIdx, gem] of item.curGems(isBlacksmithing).entries()) {
+				if (gem?.id === gemToFind.id) {
+					gemMatchData.push([slot, socketIdx]);
+				}
+			}
+		}
+
+		return gemMatchData;
+	}
+
 	withMetaGem(metaGem: Gem | null): Gear {
 		const headItem = this.getEquippedItem(ItemSlot.ItemSlotHead);
 
@@ -319,14 +342,14 @@ export class Gear extends BaseGear {
 		}
 	}
 
-	withoutGems(canDualWield2H: boolean, ignoreSlots?: Map<ItemSlot, boolean>, ignoreMeta?: boolean): Gear {
+	withoutGems(canDualWield2H: boolean, ignoreSlots?: Set<ItemSlot>, ignoreMeta?: boolean): Gear {
 		let curGear: Gear = this;
 		const metaGem = this.getMetaGem();
 
 		for (const slot of this.getItemSlots()) {
 			const item = this.getEquippedItem(slot);
 
-			if (item && !ignoreSlots?.get(slot)) {
+			if (item && !ignoreSlots?.has(slot)) {
 				curGear = curGear.withEquippedItem(slot, item.removeAllGems(), canDualWield2H);
 			}
 		}
@@ -338,13 +361,13 @@ export class Gear extends BaseGear {
 		return curGear;
 	}
 
-	withoutReforges(canDualWield2H: boolean, ignoreSlots?: Map<ItemSlot, boolean>): Gear {
+	withoutReforges(canDualWield2H: boolean, ignoreSlots?: Set<ItemSlot>): Gear {
 		let curGear: Gear = this;
 
 		for (const slot of this.getItemSlots()) {
 			const item = this.getEquippedItem(slot);
 
-			if (item && !ignoreSlots?.get(slot)) {
+			if (item && !ignoreSlots?.has(slot)) {
 				curGear = curGear.withEquippedItem(slot, item.withItem(item.item).withRandomSuffix(item._randomSuffix), canDualWield2H);
 			}
 		}

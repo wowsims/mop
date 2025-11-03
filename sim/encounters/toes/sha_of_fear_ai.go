@@ -135,10 +135,11 @@ func (ai *ShaAI) registerThrash() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&ai.Target.Unit, core.ProcTrigger{
-		Name:     "Thrash Listener",
-		Callback: core.CallbackOnSpellHitDealt,
-		ProcMask: core.ProcMaskMeleeWhiteHit,
+	ai.Target.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Thrash Listener",
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMeleeWhiteHit,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			if !ai.ThrashAura.IsActive() && !ai.DreadThrashAura.IsActive() {

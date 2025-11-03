@@ -6,6 +6,10 @@ import (
 	"github.com/wowsims/mop/sim/core"
 )
 
+const flameShockCoeff = 0.20999999344
+const flameShockScale = 0.26100000739
+const flameShockDirectCoeff = 0.97399997711
+
 // Shared logic for all shocks.
 func (shaman *Shaman) newShockSpellConfig(spellID int32, spellSchool core.SpellSchool, baseCostPercent float64, shockTimer *core.Timer, bonusCoefficient float64) core.SpellConfig {
 	actionID := core.ActionID{SpellID: spellID}
@@ -50,10 +54,18 @@ func (shaman *Shaman) registerEarthShockSpell(shockTimer *core.Timer) {
 
 func (shaman *Shaman) registerFlameShockSpell(shockTimer *core.Timer) {
 	config := shaman.newShockSpellConfig(8050, core.SpellSchoolFire, 11.9, shockTimer, 0.44900000095)
-
 	config.ClassSpellMask = SpellMaskFlameShockDirect
+	config.ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+		baseDamage := shaman.CalcScalingSpellDmg(flameShockDirectCoeff)
+		result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+		if result.Landed() {
+			spell.RelatedDotSpell.Cast(sim, target)
+		}
+		spell.DealDamage(sim, result)
+	}
+	shaman.FlameShock = shaman.RegisterSpell(config)
 
-	config.RelatedDotSpell = shaman.RegisterSpell(core.SpellConfig{
+	shaman.FlameShock.RelatedDotSpell = shaman.RegisterSpell(core.SpellConfig{
 		ActionID:         core.ActionID{SpellID: 8050, Tag: 1},
 		SpellSchool:      core.SpellSchoolFire,
 		ProcMask:         core.ProcMaskSpellDamage,
@@ -70,9 +82,9 @@ func (shaman *Shaman) registerFlameShockSpell(shockTimer *core.Timer) {
 			NumberOfTicks:       10,
 			TickLength:          time.Second * 3,
 			AffectedByCastSpeed: true,
-			BonusCoefficient:    0.20999999344,
+			BonusCoefficient:    flameShockCoeff,
 			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
-				baseDamage := shaman.CalcScalingSpellDmg(0.26100000739)
+				baseDamage := shaman.CalcScalingSpellDmg(flameShockScale)
 				dot.Snapshot(target, baseDamage)
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
@@ -82,18 +94,19 @@ func (shaman *Shaman) registerFlameShockSpell(shockTimer *core.Timer) {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			spell.Dot(target).Apply(sim)
 		},
+		ExpectedTickDamage: func(sim *core.Simulation, target *core.Unit, spell *core.Spell, useSnapshot bool) *core.SpellResult {
+			dot := spell.Dot(target)
+			if useSnapshot {
+				result := dot.CalcSnapshotDamage(sim, target, dot.OutcomeExpectedSnapshotCrit)
+				result.Damage /= dot.TickPeriod().Seconds()
+				return result
+			} else {
+				result := spell.CalcPeriodicDamage(sim, target, shaman.CalcScalingSpellDmg(flameShockScale), spell.OutcomeExpectedMagicCrit)
+				result.Damage /= dot.CalcTickPeriod().Round(time.Millisecond).Seconds()
+				return result
+			}
+		},
 	})
-
-	config.ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-		baseDamage := shaman.CalcScalingSpellDmg(0.97399997711)
-		result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-		if result.Landed() {
-			spell.RelatedDotSpell.Cast(sim, target)
-		}
-		spell.DealDamage(sim, result)
-	}
-
-	shaman.FlameShock = shaman.RegisterSpell(config)
 }
 
 func (shaman *Shaman) registerFrostShockSpell(shockTimer *core.Timer) {

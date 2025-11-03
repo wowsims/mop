@@ -49,7 +49,7 @@ func (war *ProtectionWarrior) registerRevenge() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+	war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:     "Revenge Reset Trigger",
 		ActionID: actionID,
 		Callback: core.CallbackOnSpellHitTaken,

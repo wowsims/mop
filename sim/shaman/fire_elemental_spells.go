@@ -17,9 +17,6 @@ func (fireElemental *FireElemental) registerFireBlast() {
 			FlatCost: 40,
 		},
 		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: core.GCDDefault,
-			},
 			CD: core.Cooldown{
 				Timer:    fireElemental.NewTimer(),
 				Duration: time.Second * 6,
@@ -50,7 +47,6 @@ func (fireElemental *FireElemental) registerFireNova() {
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD:      core.GCDDefault,
 				CastTime: time.Second * 2,
 			},
 			CD: core.Cooldown{
@@ -91,7 +87,6 @@ func (fireElemental *FireElemental) registerImmolate() {
 		},
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
-				GCD:      core.GCDDefault,
 				CastTime: time.Second * 2,
 			},
 			CD: core.Cooldown{

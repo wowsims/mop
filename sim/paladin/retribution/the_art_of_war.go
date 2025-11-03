@@ -21,16 +21,17 @@ func (ret *RetributionPaladin) registerArtOfWar() {
 			ret.Exorcism.CD.Reset()
 		},
 	}).AttachProcTrigger(core.ProcTrigger{
-		Callback:          core.CallbackOnCastComplete,
-		ClassSpellMask:    paladin.SpellMaskExorcism,
-		SpellFlagsExclude: core.SpellFlagPassiveSpell,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     paladin.SpellMaskExorcism,
+		SpellFlagsExclude:  core.SpellFlagPassiveSpell,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			ret.TheArtOfWarAura.Deactivate(sim)
 		},
 	})
 
-	core.MakeProcTriggerAura(&ret.Unit, core.ProcTrigger{
+	ret.MakeProcTriggerAura(core.ProcTrigger{
 		Name:       "The Art of War Trigger" + ret.Label,
 		ActionID:   core.ActionID{SpellID: 87138},
 		Callback:   core.CallbackOnSpellHitDealt,

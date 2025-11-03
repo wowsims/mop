@@ -5,6 +5,7 @@
 	padding-right: var(--container-padding);
 	margin-left: calc(-1 * var(--container-padding));
 	margin-right: calc(-1 * var(--container-padding));
+	width: calc(100% + var(--container-padding) * 2);
 	display: flex;
 	transition: background-color 0.15s ease-in-out;
 	// This needs to be less than var(--header-z-index) otherwise the toolbar overlaps the import/export dropdowns

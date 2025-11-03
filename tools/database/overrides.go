@@ -19,6 +19,7 @@ var ConsumableOverrides = []*proto.Consumable{
 	{Id: 62290, BuffsMainStat: true, Stats: stats.Stats{stats.Stamina: 90}.ToProtoArray()},
 	{Id: 62649, BuffsMainStat: true, Stats: stats.Stats{stats.Stamina: 90}.ToProtoArray()},
 	{Id: 86125, Type: proto.ConsumableType_ConsumableTypePotion},
+	{Id: 86569, Type: proto.ConsumableType_ConsumableTypeFlask},
 }
 var ItemOverrides = []*proto.UIItem{
 	// Boosted 359 green weapon damage stats are way off
@@ -697,6 +698,14 @@ var ItemDenyList = map[int32]struct{}{
 	87575:  {}, // Bubbliest Brightbrew Charm
 	87576:  {}, // Bitterest Balebrew Charm
 	107217: {}, // Direbrew's Bloodied Shanker
+
+	// MOP - Hallows End - Old items
+	87569: {}, // The Horseman's Horrific Hood
+	87570: {}, // The Horseman's Sinister Slicer
+	88166: {}, // Wicked Witch's Signet
+	88167: {}, // Band of the Petrified Pumpkin
+	88168: {}, // Seal of Ghoulish Glee
+	88169: {}, // The Horseman's Ring
 }
 
 // Item icons to include in the DB, so they don't need to be separately loaded in the UI.

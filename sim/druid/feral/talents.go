@@ -256,7 +256,7 @@ func (cat *FeralDruid) registerDreamOfCenarius() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&cat.Unit, core.ProcTrigger{
+	cat.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Dream of Cenarius Trigger",
 		Callback:       core.CallbackOnCastComplete,
 		ClassSpellMask: druid.DruidSpellHealingTouch,

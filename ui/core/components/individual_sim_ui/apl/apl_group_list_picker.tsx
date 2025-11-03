@@ -1,12 +1,12 @@
-import i18n from "../../../../i18n/config";
-import { IndividualSimUI } from "../../../individual_sim_ui";
-import { Player } from "../../../player";
-import { APLGroup } from "../../../proto/apl";
-import { EventID } from "../../../typed_event";
-import { Component } from "../../component";
-import { ListItemPickerConfig, ListPicker } from "../../pickers/list_picker";
-import { AplFloatingActionBar } from "./apl_floating_action_bar";
-import { APLGroupEditor } from "./apl_group_editor";
+import i18n from '../../../../i18n/config';
+import { IndividualSimUI } from '../../../individual_sim_ui';
+import { Player } from '../../../player';
+import { APLGroup } from '../../../proto/apl';
+import { EventID } from '../../../typed_event';
+import { Component } from '../../component';
+import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
+import { AplFloatingActionBar } from './apl_floating_action_bar';
+import { APLGroupEditor } from './apl_group_editor';
 
 export class APLGroupListPicker extends Component {
 	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>) {
@@ -30,16 +30,12 @@ export class APLGroupListPicker extends Component {
 					variables: [],
 				}),
 			copyItem: (oldItem: APLGroup) => APLGroup.clone(oldItem),
-			newItemPicker: (
-				parent: HTMLElement,
-				_: ListPicker<Player<any>, APLGroup>,
-				index: number,
-				config: ListItemPickerConfig<Player<any>, APLGroup>,
-			) => new APLGroupEditor(parent, simUI.player, config),
+			newItemPicker: (parent: HTMLElement, _: ListPicker<Player<any>, APLGroup>, index: number, config: ListItemPickerConfig<Player<any>, APLGroup>) =>
+				new APLGroupEditor(parent, simUI.player, { ...config, index }),
 			allowedActions: ['copy', 'delete', 'move'],
 			inlineMenuBar: true,
 		});
 
-		new AplFloatingActionBar(this.rootElem, simUI, listPicker, i18n.t('rotation_tab.apl.actionGroups.name'))
+		new AplFloatingActionBar(this.rootElem, simUI, listPicker, i18n.t('rotation_tab.apl.actionGroups.name'));
 	}
 }

@@ -101,5 +101,26 @@
 		"skinning": "Skinning",
 		"tailoring": "Tailoring",
 		"archeology": "Archeology"
+	},
+	"slots": {
+		"head": "Head",
+		"neck": "Neck",
+		"shoulder": "Shoulders",
+		"back": "Back",
+		"chest": "Chest",
+		"wrist": "Wrist",
+		"hands": "Hands",
+		"waist": "Waist",
+		"legs": "Legs",
+		"feet": "Feet",
+		"finger_1": "Ring 1",
+		"finger_2": "Ring 2",
+		"rings": "Rings",
+		"trinket_1": "Trinket 1",
+		"trinket_2": "Trinket 2",
+		"trinkets": "Trinkets",
+		"main_hand": "Main Hand",
+		"off_hand": "Off Hand",
+		"weapons": "Weapons"
 	}
 }

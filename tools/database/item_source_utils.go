@@ -14,10 +14,6 @@ func InferPhase(item *proto.UIItem) int32 {
 	description := item.NameDescription
 	quality := item.Quality
 
-	if strings.Contains(name, "Necklace of the Terra-Cotta") {
-		return 4
-	}
-
 	//- Any blue pvp ''Crafted'' item of ilvl 458 is 5.2
 	//- Any blue pvp ''Crafted'' item of ilvl 476 is 5.4
 	if strings.Contains(name, "Crafted") {
@@ -168,6 +164,20 @@ func InferPhase(item *proto.UIItem) int32 {
 	}
 
 	return 0
+}
+
+func InferThroneOfThunderSource(item *proto.UIItem) []*proto.UIItemSource {
+	sources := make([]*proto.UIItemSource, 0, len(item.Sources)+1)
+
+	sources = append(sources, &proto.UIItemSource{
+		Source: &proto.UIItemSource_Drop{Drop: &proto.DropSource{
+			ZoneId:    6622,
+			OtherName: "Shared Boss Loot",
+		}},
+	})
+
+	sources = append(sources, item.Sources...)
+	return sources
 }
 
 func InferCelestialItemSource(item *proto.UIItem) []*proto.UIItemSource {

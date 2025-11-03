@@ -47,11 +47,12 @@ type ProcTrigger struct {
 	DPM                *DynamicProcManager
 	ICD                time.Duration
 	Handler            ProcHandler
+	TriggerImmediately bool // If false (default), the handler will be called one spell batch window later for improved realism.
 	ClassSpellMask     int64
 	ExtraCondition     ProcExtraCondition
 }
 
-func ApplyProcTriggerCallback(unit *Unit, procAura *Aura, config ProcTrigger) {
+func (procAura *Aura) AttachProcTriggerCallback(unit *Unit, config ProcTrigger) {
 	var icd Cooldown
 	if config.ICD != 0 {
 		icd = Cooldown{
@@ -68,6 +69,24 @@ func ApplyProcTriggerCallback(unit *Unit, procAura *Aura, config ProcTrigger) {
 	}
 
 	handler := config.Handler
+
+	applyHandler := func(sim *Simulation, spell *Spell, result *SpellResult) {
+		if config.TriggerImmediately {
+			handler(sim, spell, result)
+			return
+		}
+
+		pa := sim.GetConsumedPendingActionFromPool()
+		pa.NextActionAt = sim.CurrentTime + SpellBatchWindow
+		pa.Priority = ActionPriorityDOT
+
+		pa.OnAction = func(sim *Simulation) {
+			handler(sim, spell, result)
+		}
+
+		sim.AddPendingAction(pa)
+	}
+
 	callback := func(aura *Aura, sim *Simulation, spell *Spell, result *SpellResult) {
 		if config.SpellFlags != SpellFlagNone && !spell.Flags.Matches(config.SpellFlags) {
 			return
@@ -105,7 +124,7 @@ func ApplyProcTriggerCallback(unit *Unit, procAura *Aura, config ProcTrigger) {
 		if icd.Duration != 0 {
 			icd.Use(sim)
 		}
-		handler(sim, spell, result)
+		applyHandler(sim, spell, result)
 	}
 
 	if config.ProcChance == 0 {
@@ -151,7 +170,7 @@ func ApplyProcTriggerCallback(unit *Unit, procAura *Aura, config ProcTrigger) {
 			if icd.Duration != 0 {
 				icd.Use(sim)
 			}
-			handler(sim, spell, nil)
+			applyHandler(sim, spell, nil)
 		}
 	}
 	if config.Callback.Matches(CallbackOnApplyEffects) {
@@ -186,12 +205,12 @@ func ApplyProcTriggerCallback(unit *Unit, procAura *Aura, config ProcTrigger) {
 			if icd.Duration != 0 {
 				icd.Use(sim)
 			}
-			handler(sim, spell, emptyResult)
+			applyHandler(sim, spell, emptyResult)
 		}
 	}
 }
 
-func MakeProcTriggerAura(unit *Unit, config ProcTrigger) *Aura {
+func (unit *Unit) MakeProcTriggerAura(config ProcTrigger) *Aura {
 	aura := Aura{
 		Label:           config.Name,
 		ActionIDForProc: config.ActionID,
@@ -205,7 +224,7 @@ func MakeProcTriggerAura(unit *Unit, config ProcTrigger) *Aura {
 		}
 	}
 
-	ApplyProcTriggerCallback(unit, &aura, config)
+	aura.AttachProcTriggerCallback(unit, config)
 
 	return unit.GetOrRegisterAura(aura)
 }
@@ -416,7 +435,7 @@ func (parentAura *Aura) MakeDependentProcTriggerAura(unit *Unit, config ProcTrig
 		return parentAura.IsActive() && ((oldExtraCondition == nil) || oldExtraCondition(sim, spell, result))
 	}
 
-	aura := MakeProcTriggerAura(unit, config)
+	aura := unit.MakeProcTriggerAura(config)
 
 	return aura
 }
@@ -426,7 +445,7 @@ func (parentAura *Aura) MakeDependentProcTriggerAura(unit *Unit, config ProcTrig
 // For non standard use-cases see: MakeDependentProcTriggerAura
 // Returns parent aura for chaining
 func (parentAura *Aura) AttachProcTrigger(config ProcTrigger) *Aura {
-	ApplyProcTriggerCallback(parentAura.Unit, parentAura, config)
+	parentAura.AttachProcTriggerCallback(parentAura.Unit, config)
 
 	return parentAura
 }

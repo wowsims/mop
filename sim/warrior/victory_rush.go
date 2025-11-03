@@ -9,7 +9,7 @@ import (
 
 func (war *Warrior) registerVictoryRush() {
 
-	war.VictoryRushAura = core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+	war.VictoryRushAura = war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:     "Victorious",
 		ActionID: core.ActionID{SpellID: 32216},
 		Duration: 20 * time.Second,

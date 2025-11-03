@@ -55,7 +55,7 @@ func (war *ProtectionWarrior) registerSwordAndBoard() {
 		Duration: 5 * time.Second,
 	}))
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+	war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Sword and Board - Trigger",
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: warrior.SpellMaskDevastate,
@@ -87,9 +87,10 @@ func (war *ProtectionWarrior) registerUltimatum() {
 		Kind:       core.SpellMod_BonusCrit_Percent,
 		FloatValue: 100,
 	}).AttachProcTrigger(core.ProcTrigger{
-		Name:           "Ultimatum - Consume",
-		ClassSpellMask: warrior.SpellMaskHeroicStrike | warrior.SpellMaskCleave,
-		Callback:       core.CallbackOnCastComplete,
+		Name:               "Ultimatum - Consume",
+		ClassSpellMask:     warrior.SpellMaskHeroicStrike | warrior.SpellMaskCleave,
+		Callback:           core.CallbackOnCastComplete,
+		TriggerImmediately: true,
 
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			return spell.CurCast.Cost <= 0
@@ -100,7 +101,7 @@ func (war *ProtectionWarrior) registerUltimatum() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+	war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Ultimatum - Trigger",
 		ActionID:       core.ActionID{SpellID: 122509},
 		ClassSpellMask: warrior.SpellMaskShieldSlam,

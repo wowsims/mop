@@ -1271,6 +1271,7 @@ var StormLashSpellExceptions = map[int32]float64{
 	129197: 1.0, // Mind Flay - Insanity
 	120360: 1.0, // Barrage
 	1752:   0.5, // Sinister Strike
+	50286:  0.0, // Starfall
 }
 
 // Source: https://www.wowhead.com/mop-classic/spell=120668/stormlash-totem#comments
@@ -1298,16 +1299,11 @@ func StormLashAura(character *Character, actionTag int32) *Aura {
 		},
 	})
 
-	getStormLashSpellOverride := func(spell *Spell) float64 {
-		return StormLashSpellExceptions[spell.ActionID.SpellID]
-	}
-
 	handler := func(aura *Aura, sim *Simulation, spell *Spell, result *SpellResult) {
 		if !aura.Icd.IsReady(sim) || !result.Landed() || result.Damage <= 0 || !spell.ProcMask.Matches(ProcMaskDirect|ProcMaskSpecial) || !sim.Proc(0.5, "Stormlash") {
 			return
 		}
 
-		baseMultiplierExtension := getStormLashSpellOverride(spell)
 		ap := Ternary(spell.IsRanged(), stormlashSpell.RangedAttackPower(), stormlashSpell.MeleeAttackPower())
 		sp := stormlashSpell.SpellPower()
 		scaledAP := ap * 0.2
@@ -1316,8 +1312,8 @@ func StormLashAura(character *Character, actionTag int32) *Aura {
 		baseDamage := max(scaledAP, scaledSP)
 		baseMultiplier := 2.0
 		speedMultiplier := 1.0
-		if baseMultiplierExtension != 0 {
-			baseMultiplier = baseMultiplier * baseMultiplierExtension
+		if multiplier, ok := StormLashSpellExceptions[spell.ActionID.SpellID]; ok && multiplier != 0 {
+			baseMultiplier = baseMultiplier * multiplier
 		}
 		if spell.Unit.Type == PetUnit {
 			baseMultiplier *= 0.2
@@ -1382,11 +1378,14 @@ func StormLashAura(character *Character, actionTag int32) *Aura {
 			}
 		},
 		OnSpellHitDealt: func(aura *Aura, sim *Simulation, spell *Spell, result *SpellResult) {
-			handler(aura, sim, spell, result)
+			// Some Spells are DoT-like, so filter them
+			if multiplier, ok := StormLashSpellExceptions[spell.ActionID.SpellID]; !ok || (ok && multiplier != 0) {
+				handler(aura, sim, spell, result)
+			}
 		},
 		OnPeriodicDamageDealt: func(aura *Aura, sim *Simulation, spell *Spell, result *SpellResult) {
-			isValidDot := getStormLashSpellOverride(spell) != 0
-			if isValidDot {
+			// All DoTs that can trigger Stormlash are exceptions
+			if _, ok := StormLashSpellExceptions[spell.ActionID.SpellID]; ok {
 				handler(aura, sim, spell, result)
 			}
 		},

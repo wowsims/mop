@@ -2,8 +2,6 @@
  * API endpoints and exposed wasm function names. Also used as request identifier.
  */
 export enum SimRequest {
-	bulkSimAsync = 'bulkSimAsync',
-	bulkSimCombos = 'bulkSimCombos',
 	computeStats = 'computeStats',
 	computeStatsJson = 'computeStatsJson',
 	raidSim = 'raidSim',

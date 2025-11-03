@@ -1,36 +1,32 @@
 .bulk-sim-result-root {
 	display: flex;
+	gap: var(--spacer-3);
 	align-items: center;
 
-	&:not(:last-child) {
+	&:not(:last-child):not(:only-child) {
 		padding-bottom: var(--gap-width);
 		border-bottom: var(--border-default);
 		margin-bottom: var(--gap-width);
 	}
 
-	&.bulk-sim-result-no-talents {
-		.bulk-gear-combo {
-			flex: 5;
-		}
-	}
-
 	.results-sim {
 		flex: 3;
+	}
 
-		.results-sim-dps {
-			display: grid;
-			grid-template-columns: 3fr 2fr;
-			text-align: left;
-			line-height: 1;
+	.results-sim-dps {
+		display: grid;
+		grid-template-columns: 3fr 2fr;
+		text-align: left;
+		line-height: 1;
+		gap: var(--spacer-2);
 
-			.results-reference {
-				margin-bottom: 0;
-				display: flex;
-				align-items: flex-end;
+		.results-reference {
+			margin-bottom: 0;
+			display: flex;
+			align-items: flex-end;
 
-				.topline-result-avg {
-					margin-right: var(--spacer-1);
-				}
+			.topline-result-avg {
+				margin-right: var(--spacer-1);
 			}
 		}
 	}
@@ -39,7 +35,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--block-spacer);
-		flex: 3;
+		flex: 5;
 
 		.item-picker-root {
 			padding: 0 !important;

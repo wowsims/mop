@@ -3,10 +3,6 @@ import { REPO_NAME } from './constants/other.js';
 import {
 	AbortRequest,
 	AbortResponse,
-	BulkSimCombosRequest,
-	BulkSimCombosResult,
-	BulkSimRequest,
-	BulkSimResult,
 	ComputeStatsRequest,
 	ComputeStatsResult,
 	ProgressMetrics,
@@ -118,34 +114,6 @@ export class WorkerPool {
 		return StatWeightsResult.fromBinary(result);
 	}
 
-	async bulkSimAsync(request: BulkSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<BulkSimResult> {
-		const worker = this.getLeastBusyWorker();
-		worker.log('bulk sim request: ' + BulkSimRequest.toJsonString(request, { enumAsInteger: true }));
-		const id = generateRequestId(SimRequest.bulkSimAsync);
-
-		signals.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
-
-		const iterations = request.baseSettings?.simOptions?.iterations ?? 30000;
-		const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations);
-
-		const resultJson = BulkSimResult.toJson(result.finalBulkResult!) as any;
-		worker.log('bulk sim result: ' + JSON.stringify(resultJson));
-		return result.finalBulkResult!;
-	}
-
-	// Calculate combos and return counts
-	async bulkSimCombosAsync(request: BulkSimCombosRequest): Promise<BulkSimCombosResult> {
-		const worker = this.getLeastBusyWorker();
-		worker.log('bulk sim combinations request: ' + BulkSimCombosRequest.toJsonString(request, { enumAsInteger: true }));
-		const id = generateRequestId(SimRequest.bulkSimCombos);
-
-		// Now start the async sim
-		const resultData = await worker.doApiCall(SimRequest.bulkSimCombos, BulkSimCombosRequest.toBinary(request), id);
-		return BulkSimCombosResult.fromBinary(resultData);
-	}
-
 	async raidSimAsync(request: RaidSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<RaidSimResult> {
 		const worker = this.getLeastBusyWorker();
 		worker.log('Raid sim request: ' + RaidSimRequest.toJsonString(request));
@@ -194,7 +162,7 @@ export class WorkerPool {
 	 * @returns The final ProgressMetrics.
 	 */
 	private async doAsyncRequest(
-		requestName: SimRequest.raidSimAsync | SimRequest.bulkSimAsync | SimRequest.statWeightsAsync,
+		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync,
 		request: Uint8Array,
 		id: string,
 		worker: SimWorker,
@@ -229,7 +197,7 @@ export class WorkerPool {
 			onProgress(progress);
 			worker.updateSimTask(id, Math.max(1, progress.totalIterations - progress.completedIterations));
 			// If we are done, stop adding the handler.
-			if (progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkResult != null) {
+			if (progress.finalRaidResult != null || progress.finalWeightResult != null) {
 				onFinal(progress);
 				return;
 			}

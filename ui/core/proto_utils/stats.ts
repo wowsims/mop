@@ -221,7 +221,9 @@ export class UnitStat {
 	}
 
 	toProto(): UnitStatProto {
-		const protoMessage = UnitStatProto.create({});
+		const protoMessage = UnitStatProto.create({
+			apiVersion: CURRENT_API_VERSION,
+		});
 
 		if (this.isStat()) {
 			protoMessage.unitStat = {
@@ -241,12 +243,21 @@ export class UnitStat {
 	}
 
 	static fromProto(protoMessage: UnitStatProto): UnitStat {
+		if (protoMessage) {
+			UnitStat.updateProtoVersion(protoMessage);
+		}
 		if (protoMessage.unitStat.oneofKind == 'stat') {
 			return UnitStat.fromStat(protoMessage.unitStat.stat);
 		} else if (protoMessage.unitStat.oneofKind == 'pseudoStat') {
 			return UnitStat.fromPseudoStat(protoMessage.unitStat.pseudoStat);
 		} else {
 			return new UnitStat(null, null, null);
+		}
+	}
+
+	static updateProtoVersion(proto: UnitStatProto) {
+		if (!(proto.apiVersion < CURRENT_API_VERSION)) {
+			return;
 		}
 	}
 
@@ -474,7 +485,7 @@ export class Stats {
 			statDelta /= this.getPseudoStat(PseudoStat.PseudoStatCastSpeedMultiplier);
 		}
 
-		return (statDelta == 0) ? 1e-12 : statDelta;
+		return statDelta == 0 ? 1e-12 : statDelta;
 	}
 
 	computeStatCapsDelta(statCaps: Stats): Stats {

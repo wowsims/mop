@@ -28,11 +28,13 @@ func (shadow ShadowPriest) registerShadowyApparition() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&shadow.Unit, core.ProcTrigger{
-		Name:           "Shadowy Apparition Aura",
-		Callback:       core.CallbackOnPeriodicDamageDealt,
-		Outcome:        core.OutcomeCrit,
-		ClassSpellMask: priest.PriestSpellShadowWordPain,
+	shadow.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Shadowy Apparition Aura",
+		Callback:           core.CallbackOnPeriodicDamageDealt,
+		Outcome:            core.OutcomeCrit,
+		ClassSpellMask:     priest.PriestSpellShadowWordPain,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 			shadow.Priest.ShadowyApparition.Cast(sim, result.Target)
 		},

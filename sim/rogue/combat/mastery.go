@@ -26,11 +26,13 @@ func (comRogue *CombatRogue) applyMastery() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&comRogue.Unit, core.ProcTrigger{
-		Name:     "Mastery: Main Gauche",
-		Callback: core.CallbackOnSpellHitDealt,
-		Outcome:  core.OutcomeLanded,
-		ProcMask: core.ProcMaskMeleeMH | core.ProcMaskMeleeProc,
+	comRogue.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Mastery: Main Gauche",
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		ProcMask:           core.ProcMaskMeleeMH | core.ProcMaskMeleeProc,
+		TriggerImmediately: true,
+
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			if spell == comRogue.Rupture {
 				return false
@@ -39,6 +41,7 @@ func (comRogue *CombatRogue) applyMastery() {
 			// Implement the proc in here so we can get the most up to date proc chance from mastery
 			return sim.Proc(comRogue.GetMasteryBonus(), "Main Gauche")
 		},
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			mgAttack.Cast(sim, result.Target)
 		},

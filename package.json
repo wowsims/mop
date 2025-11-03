@@ -53,6 +53,7 @@
 		"@protobuf-ts/runtime": "2.9.1",
 		"@types/bootstrap": "^5.2.10",
 		"@types/eslint": "^8.56.10",
+		"@types/gtag.js": "^0.0.20",
 		"@types/minimist": "^1.2.5",
 		"@types/node": "^22.0.0",
 		"@types/uuid": "^10.0.0",

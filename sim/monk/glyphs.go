@@ -23,11 +23,12 @@ func (monk *Monk) registerGlyphOfFistsOfFury() {
 		ActionID: core.ActionID{SpellID: 125671},
 	}).AttachAdditivePseudoStatBuff(&monk.PseudoStats.BaseParryChance, 1)
 
-	core.MakeProcTriggerAura(&monk.Unit, core.ProcTrigger{
-		Name:           "Glyph of Fists of Fury Trigger" + monk.Label,
-		ClassSpellMask: MonkSpellFistsOfFury,
-		Callback:       core.CallbackOnCastComplete,
-		SpellFlags:     SpellFlagSpender,
+	monk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Glyph of Fists of Fury Trigger" + monk.Label,
+		ClassSpellMask:     MonkSpellFistsOfFury,
+		Callback:           core.CallbackOnCastComplete,
+		SpellFlags:         SpellFlagSpender,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			parryBuff.Duration = spell.AOEDot().RemainingDuration(sim)
@@ -37,11 +38,13 @@ func (monk *Monk) registerGlyphOfFistsOfFury() {
 }
 
 func (monk *Monk) registerGlyphOfFortuitousSpheres() {
-	core.MakeProcTriggerAura(&monk.Unit, core.ProcTrigger{
-		Name:     "Glyph of Fortuitous Spheres" + monk.Label,
-		ICD:      30 * time.Second,
-		Outcome:  core.OutcomeHit,
-		Callback: core.CallbackOnSpellHitTaken,
+	monk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Glyph of Fortuitous Spheres" + monk.Label,
+		ICD:                30 * time.Second,
+		Outcome:            core.OutcomeLanded,
+		Callback:           core.CallbackOnSpellHitTaken,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if result.Target.CurrentHealthPercent() < 0.25 {
 				monk.SummonHealingSphere(sim)

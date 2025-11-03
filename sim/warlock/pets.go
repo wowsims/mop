@@ -131,7 +131,7 @@ func (warlock *Warlock) registerImp() *WarlockPet {
 func (warlock *Warlock) registerImpWithName(name string, enabledOnStart bool, isGuardian bool) *WarlockPet {
 	pet := warlock.RegisterPet(proto.WarlockOptions_Imp, 0, 0, name, enabledOnStart, isGuardian)
 	pet.registerFireboltSpell()
-	pet.MinEnergy = 140
+	pet.MinEnergy = 120
 	return pet
 }
 
@@ -170,7 +170,7 @@ func (warlock *Warlock) registerSuccubus() *WarlockPet {
 func (warlock *Warlock) registerSuccubusWithName(name string, enabledOnStart bool, isGuardian bool) *WarlockPet {
 	pet := warlock.RegisterPet(proto.WarlockOptions_Succubus, 3, 1.667, name, enabledOnStart, isGuardian)
 	pet.registerLashOfPainSpell()
-	pet.MinEnergy = 60
+	pet.MinEnergy = 160
 	return pet
 }
 

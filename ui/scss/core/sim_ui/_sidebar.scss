@@ -1,20 +1,41 @@
 @import '../components/sim_title_dropdown';
 
 .sim-sidebar {
-	position: relative;
+	position: sticky;
+	top: -1px;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
 	background: var(--bs-body-bg);
-	// This must be larger than the z-index on .sim-content otherwise the dropdown is overlapped
+	height: 100dvh;
 	z-index: var(--sidebar-z-index);
 
+	@include media-breakpoint-down(lg) {
+		position: relative;
+		top: 0;
+	}
+
 	.sim-sidebar-content {
-		min-height: calc(100vh - var(--sim-header-height) - 1px);
 		padding: var(--gap-width);
 		display: flex;
+		flex: 1;
 		flex-direction: column;
+		overflow-y: auto;
+		scrollbar-color: var(--bs-primary) var(--bs-body-bg);
+		scrollbar-width: thin;
+
+		&::-webkit-scrollbar {
+			width: 0.2rem;
+		}
+
+		&::-webkit-scrollbar-track {
+			background-color: var(--bs-body-bg);
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: var(--bs-primary);
+		}
 
 		@include media-breakpoint-down(xxl) {
 			padding-left: calc(var(--gap-width-sm) * 2);
@@ -42,7 +63,8 @@
 
 			@include media-breakpoint-down(xxl) {
 				padding: 0;
-				margin: 0;
+				margin-left: 0;
+				margin-right: 0;
 			}
 
 			& > * {
@@ -61,7 +83,6 @@
 		}
 
 		.sim-sidebar-results {
-			min-height: 25vh;
 			display: flex;
 			justify-content: center;
 			align-items: center;

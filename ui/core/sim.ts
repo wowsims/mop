@@ -5,11 +5,6 @@ import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
-	BulkSettings,
-	BulkSimCombosRequest,
-	BulkSimCombosResult,
-	BulkSimRequest,
-	BulkSimResult,
 	ComputeStatsRequest,
 	ErrorOutcome,
 	ErrorOutcomeType,
@@ -33,7 +28,7 @@ import {
 	UnitReference_Type as UnitType,
 	WeaponType,
 } from './proto/common.js';
-import { Consumable, SimDatabase } from './proto/db';
+import { Consumable } from './proto/db';
 import { SpellEffect } from './proto/spell';
 import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
 import { Database } from './proto_utils/database.js';
@@ -60,6 +55,10 @@ interface SimProps {
 	type?: SimType;
 }
 
+export type RunSimOptions = {
+	silent?: boolean; // If true, don't emit the simResultEmitter event.
+};
+
 const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
 
 // Core Sim module which deals only with api types, no UI-related stuff.
@@ -79,8 +78,6 @@ export class Sim {
 	private wasmConcurrency = 0;
 	private showQuickSwap = true;
 	private showEPValues = false;
-	private useCustomEPValues = false;
-	private useSoftCapBreakpoints = true;
 	private language = '';
 
 	readonly type: SimType;
@@ -102,8 +99,6 @@ export class Sim {
 	readonly wasmConcurrencyChangeEmitter = new TypedEvent<void>();
 	readonly showQuickSwapChangeEmitter = new TypedEvent<void>();
 	readonly showEPValuesChangeEmitter = new TypedEvent<void>();
-	readonly useCustomEPValuesChangeEmitter = new TypedEvent<void>();
-	readonly useSoftCapBreakpointsChangeEmitter = new TypedEvent<void>();
 	readonly languageChangeEmitter = new TypedEvent<void>();
 	readonly crashEmitter = new TypedEvent<SimError>();
 
@@ -118,11 +113,6 @@ export class Sim {
 
 	// Fires when a raid sim API call completes.
 	readonly simResultEmitter = new TypedEvent<SimResult>();
-
-	// Fires when a bulk sim API call starts.
-	readonly bulkSimStartEmitter = new TypedEvent<BulkSimRequest>();
-	// Fires when a bulk sim API call completes..
-	readonly bulkSimResultEmitter = new TypedEvent<BulkSimResult>();
 
 	private readonly _initPromise: Promise<any>;
 	private lastUsedRngSeed = 0;
@@ -176,8 +166,6 @@ export class Sim {
 			this.wasmConcurrencyChangeEmitter,
 			this.showQuickSwapChangeEmitter,
 			this.showEPValuesChangeEmitter,
-			this.useCustomEPValuesChangeEmitter,
-			this.useSoftCapBreakpointsChangeEmitter,
 			this.languageChangeEmitter,
 		]);
 
@@ -300,108 +288,7 @@ export class Sim {
 		});
 	}
 
-	async runBulkSim(bulkSettings: BulkSettings, bulkItemsDb: SimDatabase, onProgress: WorkerProgressCallback): Promise<BulkSimResult> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
-
-		await this.waitForInit();
-
-		const request = BulkSimRequest.create({
-			baseSettings: this.makeRaidSimRequest(false),
-			bulkSettings: bulkSettings,
-		});
-
-		if (request.baseSettings != null && request.baseSettings.simOptions != null) {
-			request.baseSettings.simOptions.debugFirstIteration = false;
-		}
-
-		if (!request.baseSettings?.raid || request.baseSettings?.raid?.parties.length == 0 || request.baseSettings?.raid?.parties[0].players.length == 0) {
-			throw new Error('Raid must contain exactly 1 player for bulk sim.');
-		}
-
-		// Attach the extra database to the player.
-		const playerDatabase = request.baseSettings.raid.parties[0].players[0].database!;
-		playerDatabase.items.push(...bulkItemsDb.items);
-		playerDatabase.enchants.push(...bulkItemsDb.enchants);
-		playerDatabase.gems.push(...bulkItemsDb.gems);
-		playerDatabase.reforgeStats.push(...bulkItemsDb.reforgeStats);
-		playerDatabase.itemEffectRandPropPoints.push(...bulkItemsDb.itemEffectRandPropPoints);
-		playerDatabase.randomSuffixes.push(...bulkItemsDb.randomSuffixes);
-		playerDatabase.consumables.push(...bulkItemsDb.consumables);
-		playerDatabase.spellEffects.push(...bulkItemsDb.spellEffects);
-
-		this.bulkSimStartEmitter.emit(TypedEvent.nextEventID(), request);
-
-		const signals = this.signalManager.registerRunning(RequestTypes.BulkSim);
-		try {
-			const result = await this.workerPool.bulkSimAsync(request, onProgress, signals);
-
-			if (result.error) {
-				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result;
-				throw new SimError(result.error.message);
-			}
-
-			this.bulkSimResultEmitter.emit(TypedEvent.nextEventID(), result);
-			return result;
-		} catch (error) {
-			if (error instanceof SimError) throw error;
-			console.log(error);
-			throw new Error('Something went wrong running your raid sim. Reload the page and try again.');
-		} finally {
-			this.signalManager.unregisterRunning(signals);
-		}
-	}
-
-	async calculateBulkCombinations(bulkSettings: BulkSettings, bulkItemsDb: SimDatabase): Promise<BulkSimCombosResult | null> {
-		if (this.raid.isEmpty()) {
-			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
-			throw new Error('Encounter has no targets! Try adding some targets first.');
-		}
-
-		await this.waitForInit();
-
-		const request = BulkSimCombosRequest.create({
-			baseSettings: this.makeRaidSimRequest(false),
-			bulkSettings: bulkSettings,
-		});
-
-		if (request.baseSettings != null && request.baseSettings.simOptions != null) {
-			request.baseSettings.simOptions.debugFirstIteration = false;
-		}
-
-		if (!request.baseSettings?.raid || request.baseSettings?.raid?.parties.length == 0 || request.baseSettings?.raid?.parties[0].players.length == 0) {
-			throw new Error('Raid must contain exactly 1 player for bulk sim.');
-		}
-
-		// Attach the extra database to the player.
-		const playerDatabase = request.baseSettings.raid.parties[0].players[0].database!;
-		playerDatabase.items.push(...bulkItemsDb.items);
-		playerDatabase.enchants.push(...bulkItemsDb.enchants);
-		playerDatabase.gems.push(...bulkItemsDb.gems);
-		playerDatabase.reforgeStats.push(...bulkItemsDb.reforgeStats);
-		playerDatabase.itemEffectRandPropPoints.push(...bulkItemsDb.itemEffectRandPropPoints);
-		playerDatabase.randomSuffixes.push(...bulkItemsDb.randomSuffixes);
-
-		this.bulkSimStartEmitter.emit(TypedEvent.nextEventID(), request);
-
-		try {
-			const result = await this.workerPool.bulkSimCombosAsync(request);
-			if (result.errorResult != '') {
-				throw new SimError(result.errorResult);
-			}
-			return result;
-		} catch (error) {
-			if (error instanceof SimError) throw error;
-			console.log(error);
-			throw new Error('Something went wrong running your raid sim. Reload the page and try again.');
-		}
-	}
-
-	async runRaidSim(eventID: EventID, onProgress: WorkerProgressCallback): Promise<SimResult | ErrorOutcome> {
+	async runRaidSim(eventID: EventID, onProgress: WorkerProgressCallback, options: RunSimOptions = {}): Promise<SimResult | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
 		} else if (this.encounter.targets.length < 1) {
@@ -427,7 +314,9 @@ export class Sim {
 				throw new SimError(result.error.message);
 			}
 			const simResult = await SimResult.makeNew(request, result);
-			this.simResultEmitter.emit(eventID, simResult);
+			if (!options.silent) {
+				this.simResultEmitter.emit(eventID, simResult);
+			}
 			return simResult;
 		} catch (error) {
 			if (error instanceof SimError) throw error;
@@ -438,7 +327,7 @@ export class Sim {
 		}
 	}
 
-	async runRaidSimWithLogs(eventID: EventID): Promise<SimResult | null> {
+	async runRaidSimWithLogs(eventID: EventID, options: RunSimOptions = {}): Promise<SimResult | null> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
 		} else if (this.encounter.targets.length < 1) {
@@ -455,7 +344,9 @@ export class Sim {
 				throw new SimError(result.error.message);
 			}
 			const simResult = await SimResult.makeNew(request, result);
-			this.simResultEmitter.emit(eventID, simResult);
+			if (!options.silent) {
+				this.simResultEmitter.emit(eventID, simResult);
+			}
 			return simResult;
 		} catch (error) {
 			if (error instanceof SimError) throw error;
@@ -741,26 +632,6 @@ export class Sim {
 		}
 	}
 
-	getUseCustomEPValues(): boolean {
-		return this.useCustomEPValues;
-	}
-	setUseCustomEPValues(eventID: EventID, newUseCustomEPValues: boolean) {
-		if (newUseCustomEPValues !== this.useCustomEPValues) {
-			this.useCustomEPValues = newUseCustomEPValues;
-			this.useCustomEPValuesChangeEmitter.emit(eventID);
-		}
-	}
-
-	getUseSoftCapBreakpoints(): boolean {
-		return this.useSoftCapBreakpoints;
-	}
-	setUseSoftCapBreakpoints(eventID: EventID, newUseSoftCapBreakpoints: boolean) {
-		if (newUseSoftCapBreakpoints !== this.useSoftCapBreakpoints) {
-			this.useSoftCapBreakpoints = newUseSoftCapBreakpoints;
-			this.useSoftCapBreakpointsChangeEmitter.emit(eventID);
-		}
-	}
-
 	getLanguage(): string {
 		return this.language;
 	}
@@ -816,8 +687,6 @@ export class Sim {
 			showExperimental: this.getShowExperimental(),
 			showQuickSwap: this.getShowQuickSwap(),
 			showEpValues: this.getShowEPValues(),
-			useCustomEpValues: this.getUseCustomEPValues(),
-			useSoftCapBreakpoints: this.getUseSoftCapBreakpoints(),
 			language: this.getLanguage(),
 			faction: this.getFaction(),
 			filters: filters,
@@ -835,8 +704,6 @@ export class Sim {
 			this.setShowExperimental(eventID, proto.showExperimental);
 			this.setShowQuickSwap(eventID, proto.showQuickSwap);
 			this.setShowEPValues(eventID, proto.showEpValues);
-			this.setUseCustomEPValues(eventID, proto.useCustomEpValues);
-			this.setUseSoftCapBreakpoints(eventID, proto.useSoftCapBreakpoints);
 			this.setLanguage(eventID, proto.language);
 			this.setFaction(eventID, proto.faction || Faction.Alliance);
 

@@ -101,12 +101,17 @@ func (war *Warrior) registerDragonRoar() {
 
 	damageMultipliers := []float64{1, 0.75, 0.65, 0.55, 0.50}
 
+	flags := core.SpellFlagAPL | core.SpellFlagMeleeMetrics | core.SpellFlagIgnoreArmor
+	if war.Spec != proto.Spec_SpecProtectionWarrior {
+		flags |= core.SpellFlagReadinessTrinket
+	}
+
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ClassSpellMask: SpellMaskDragonRoar,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagAPL | core.SpellFlagMeleeMetrics | core.SpellFlagIgnoreArmor | core.SpellFlagReadinessTrinket,
+		Flags:          flags,
 
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -194,11 +199,16 @@ func (war *Warrior) registerBladestorm() {
 		Kind:      core.SpellMod_AllowCastWhileChanneling,
 	})
 
+	flags := core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagCastWhileChanneling
+	if war.Spec != proto.Spec_SpecProtectionWarrior {
+		flags |= core.SpellFlagReadinessTrinket
+	}
+
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID.WithTag(0),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ClassSpellMask: SpellMaskBladestorm,
-		Flags:          core.SpellFlagChanneled | core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagCastWhileChanneling,
+		Flags:          flags,
 		ProcMask:       core.ProcMaskEmpty,
 
 		Cast: core.CastConfig{
@@ -251,12 +261,17 @@ func (war *Warrior) registerShockwave() {
 		return
 	}
 
+	flags := core.SpellFlagAoE | core.SpellFlagMeleeMetrics | core.SpellFlagAPL
+	if war.Spec != proto.Spec_SpecProtectionWarrior {
+		flags |= core.SpellFlagReadinessTrinket
+	}
+
 	war.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 46968},
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		ClassSpellMask: SpellMaskShockwave,
-		Flags:          core.SpellFlagAoE | core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
+		Flags:          flags,
 
 		Cast: core.CastConfig{
 			DefaultCast: core.Cast{
@@ -296,11 +311,16 @@ func (war *Warrior) registerAvatar() {
 		Duration: 24 * time.Second,
 	}).AttachMultiplicativePseudoStatBuff(&war.Unit.PseudoStats.DamageDealtMultiplier, 1.2)
 
+	flags := core.SpellFlagAPL
+	if war.Spec != proto.Spec_SpecProtectionWarrior {
+		flags |= core.SpellFlagReadinessTrinket
+	}
+
 	avatar := war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionId,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskEmpty,
-		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
+		Flags:          flags,
 		ClassSpellMask: SpellMaskAvatar,
 
 		Cast: core.CastConfig{
@@ -361,11 +381,16 @@ func (war *Warrior) registerBloodbath() {
 		},
 	})
 
+	flags := core.SpellFlagAPL
+	if war.Spec != proto.Spec_SpecProtectionWarrior {
+		flags |= core.SpellFlagReadinessTrinket
+	}
+
 	spell := war.RegisterSpell(core.SpellConfig{
 		ActionID:       spellActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ClassSpellMask: SpellMaskBloodbath,
-		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
+		Flags:          flags,
 		ProcMask:       core.ProcMaskEmpty,
 
 		Cast: core.CastConfig{
@@ -418,11 +443,16 @@ func (war *Warrior) registerStormBolt() {
 		},
 	})
 
+	flags := core.SpellFlagMeleeMetrics | core.SpellFlagAPL
+	if war.Spec != proto.Spec_SpecProtectionWarrior {
+		flags |= core.SpellFlagReadinessTrinket
+	}
+
 	war.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
+		Flags:          flags,
 		ClassSpellMask: SpellMaskStormBolt,
 		MaxRange:       30,
 

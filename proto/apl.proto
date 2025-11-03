@@ -99,7 +99,7 @@ message APLAction {
 }
 
 
-// NextIndex: 118
+// NextIndex: 120
 message APLValue {
 	UUID uuid = 85;
 
@@ -162,6 +162,7 @@ message APLValue {
         APLValueRuneCooldown rune_cooldown = 32;
         APLValueNextRuneCooldown next_rune_cooldown = 33;
         APLValueRuneSlotCooldown rune_slot_cooldown = 53;
+		APLValueFullRuneCooldown full_rune_cooldown = 119;
 
         // GCD values
         APLValueGCDIsReady gcd_is_ready = 17;
@@ -185,6 +186,7 @@ message APLValue {
         APLValueSpellTimeToCharge spell_time_to_charge = 97;
         APLValueSpellGCDHastedDuration spell_gcd_hasted_duration = 115;
         APLValueSpellFullCooldown spell_full_cooldown = 116;
+        APLValueSpellInFlight spell_in_flight = 118;
 
         // Aura values
         APLValueAuraIsKnown aura_is_known = 73;
@@ -235,7 +237,7 @@ message APLValue {
         APLValueCatExcessEnergy cat_excess_energy = 52;
         APLValueCatNewSavageRoarDuration cat_new_savage_roar_duration = 61;
         APLValueWarlockHandOfGuldanInFlight warlock_hand_of_guldan_in_flight = 59;
-        APLValueWarlockHauntInFlight warlock_haunt_in_flight = 60;
+        APLValueWarlockHauntInFlight warlock_haunt_in_flight = 60 [deprecated=true];
         APLValueCurrentEclipsePhase druid_current_eclipse_phase = 70;
 		APLValueMageCurrentCombustionDotEstimate mage_current_combustion_dot_estimate = 77;
         APLValueShamanFireElementalDuration shaman_fire_elemental_duration = 83;
@@ -579,6 +581,9 @@ message APLValueNextRuneCooldown{
 message APLValueRuneSlotCooldown{
     APLValueRuneSlot rune_slot = 1;
 }
+message APLValueFullRuneCooldown{
+	bool use_base_value = 1;
+}
 
 enum APLValueEclipsePhase {
     UnknownPhase = 0;
@@ -644,6 +649,9 @@ message APLValueSpellGCDHastedDuration{
 }
 message APLValueSpellFullCooldown{
     ActionID spell_id = 1;
+}
+message APLValueSpellInFlight{
+	ActionID spell_id = 1;
 }
 
 message APLValueAuraIsKnown {

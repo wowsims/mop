@@ -78,7 +78,7 @@ var ItemSetBattleplateOfTheLastMogu = core.NewItemSet(core.ItemSet{
 				DPM: war.NewSetBonusRPPMProcManager(138120, setBonusAura, core.ProcMaskMeleeWhiteHit, core.RPPMConfig{
 					PPM: 1.1,
 				}.WithSpecMod(-0.625, proto.Spec_SpecFuryWarrior)),
-				Outcome:  core.OutcomeHit,
+				Outcome:  core.OutcomeLanded,
 				Callback: core.CallbackOnSpellHitDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					war.EnrageAura.Deactivate(sim)
@@ -124,7 +124,7 @@ var ItemSetPlaceOfTheLastMogu = core.NewItemSet(core.ItemSet{
 				ActionID:       core.ActionID{SpellID: 138279},
 				ClassSpellMask: SpellMaskRevenge | SpellMaskShieldSlam,
 				ProcChance:     0.1,
-				Outcome:        core.OutcomeHit,
+				Outcome:        core.OutcomeLanded,
 				Callback:       core.CallbackOnSpellHitDealt,
 				Duration:       15 * time.Second,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
@@ -157,7 +157,7 @@ var ItemSetBattleplateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 				Name:     "Colossal Rage",
 				ActionID: actionID,
 				ProcMask: core.ProcMaskMeleeSpecial,
-				Outcome:  core.OutcomeHit,
+				Outcome:  core.OutcomeLanded,
 				Callback: core.CallbackOnSpellHitDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					if war.ColossusSmashAuras.Get(result.Target).IsActive() {
@@ -189,10 +189,12 @@ var ItemSetBattleplateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 				costMod.Deactivate()
 			})
 
-			core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-				Name:           "Death Sentence - Consume",
-				ClassSpellMask: SpellMaskExecute,
-				Callback:       core.CallbackOnCastComplete,
+			war.MakeProcTriggerAura(core.ProcTrigger{
+				Name:               "Death Sentence - Consume",
+				ClassSpellMask:     SpellMaskExecute,
+				Callback:           core.CallbackOnCastComplete,
+				TriggerImmediately: true,
+
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					war.T16Dps4P.Deactivate(sim)
 				},
@@ -202,7 +204,7 @@ var ItemSetBattleplateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 				Name:           "Death Sentence - Trigger",
 				ActionID:       core.ActionID{SpellID: 144442},
 				ClassSpellMask: SpellMaskMortalStrike | SpellMaskBloodthirst,
-				Outcome:        core.OutcomeHit,
+				Outcome:        core.OutcomeLanded,
 				ProcChance:     0.1,
 				Callback:       core.CallbackOnSpellHitDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {

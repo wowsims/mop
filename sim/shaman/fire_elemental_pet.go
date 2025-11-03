@@ -19,10 +19,12 @@ type FireElemental struct {
 
 	shamanOwner *Shaman
 
-	fireBlastAutocast bool
-	fireNovaAutocast  bool
-	immolateAutocast  bool
-	empowerAutocast   bool
+	fireBlastAutocast  bool
+	fireNovaAutocast   bool
+	immolateAutocast   bool
+	empowerAutocast    bool
+	noImmolateDuringWF bool
+	noImmolateDuration time.Duration
 }
 
 var FireElementalSpellPowerScaling = 0.36
@@ -39,11 +41,13 @@ func (shaman *Shaman) NewFireElemental(isGuardian bool) *FireElemental {
 			HasDynamicCastSpeedInheritance:  true,
 			HasDynamicMeleeSpeedInheritance: true,
 		}),
-		shamanOwner:       shaman,
-		fireBlastAutocast: shaman.FeleAutocast.AutocastFireblast || isGuardian,
-		fireNovaAutocast:  shaman.FeleAutocast.AutocastFirenova || isGuardian,
-		immolateAutocast:  shaman.FeleAutocast.AutocastImmolate && !isGuardian,
-		empowerAutocast:   shaman.FeleAutocast.AutocastEmpower && !isGuardian,
+		shamanOwner:        shaman,
+		fireBlastAutocast:  shaman.FeleAutocast.AutocastFireblast || isGuardian,
+		fireNovaAutocast:   shaman.FeleAutocast.AutocastFirenova || isGuardian,
+		immolateAutocast:   shaman.FeleAutocast.AutocastImmolate && !isGuardian,
+		empowerAutocast:    shaman.FeleAutocast.AutocastEmpower && !isGuardian,
+		noImmolateDuringWF: shaman.FeleAutocast.NoImmolateWfunleash,
+		noImmolateDuration: core.DurationFromSeconds(shaman.FeleAutocast.NoImmolateDuration),
 	}
 	scalingDamage := shaman.CalcScalingSpellDmg(1.0)
 	baseMeleeDamage := core.TernaryFloat64(isGuardian, scalingDamage, scalingDamage*1.8)
@@ -58,6 +62,8 @@ func (shaman *Shaman) NewFireElemental(isGuardian bool) *FireElemental {
 		},
 		AutoSwingMelee: true,
 	})
+	// Need to randomize in enable because the first auto at 0 happens before the randomization (because of prepull)
+	fireElemental.AutoAttacks.RandomMeleeOffset = false
 	fireElemental.AutoAttacks.MHConfig().ProcMask |= core.ProcMaskSpellDamage
 	fireElemental.AutoAttacks.MHConfig().Flags |= SpellFlagShamanSpell
 	fireElemental.AutoAttacks.MHConfig().ClassSpellMask |= SpellMaskFireElementalMelee
@@ -76,7 +82,9 @@ func (fireElemental *FireElemental) enable(isGuardian bool) func(*core.Simulatio
 			if fireElemental.Empower.Cast(sim, &fireElemental.shamanOwner.Unit) {
 				fireElemental.AutoAttacks.StopMeleeUntil(sim, fireElemental.Empower.Hot(&fireElemental.shamanOwner.Unit).ExpiresAt())
 			}
+			return
 		}
+		fireElemental.AutoAttacks.RandomizeMeleeTiming(sim)
 	}
 }
 
@@ -108,7 +116,12 @@ func (fireElemental *FireElemental) ExecuteCustomRotation(sim *core.Simulation) 
 	*/
 	target := fireElemental.CurrentTarget
 
-	if fireElemental.immolateAutocast {
+	wfUnleashAura := fireElemental.shamanOwner.WindfuryUnleashAura
+
+	if fireElemental.immolateAutocast &&
+		(!fireElemental.noImmolateDuringWF ||
+			wfUnleashAura == nil ||
+			fireElemental.noImmolateDuration < wfUnleashAura.TimeInactive(sim)) {
 		for _, target := range sim.Encounter.ActiveTargetUnits {
 			if fireElemental.Immolate.Dot(target).RemainingDuration(sim) < fireElemental.Immolate.Dot(target).TickPeriod() && fireElemental.TryCast(sim, target, fireElemental.Immolate) {
 				break
@@ -127,7 +140,7 @@ func (fireElemental *FireElemental) ExecuteCustomRotation(sim *core.Simulation) 
 	}
 
 	minCd := min(fireElemental.FireBlast.CD.ReadyAt(), fireElemental.FireNova.CD.ReadyAt(), fireElemental.Immolate.CD.ReadyAt())
-	fireElemental.ExtendGCDUntil(sim, max(minCd, sim.CurrentTime+time.Second))
+	fireElemental.ExtendGCDUntil(sim, max(minCd, fireElemental.AutoAttacks.NextAttackAt()))
 
 }
 

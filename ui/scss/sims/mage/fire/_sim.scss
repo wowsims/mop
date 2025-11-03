@@ -1,4 +1,9 @@
 // Set color variables which control the site theme.
 .fire-mage-sim-ui {
 	@include theme-color($mage, 0.95, '/mop/assets/img/mage_background.jpg');
+
+	.number-picker-input[id^='combust'] {
+		width: 7rem;
+		text-align: right;
+	}
 }

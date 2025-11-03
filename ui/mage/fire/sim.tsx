@@ -4,13 +4,14 @@ import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl';
-import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '../../core/proto/apl';
+import { Cooldowns, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import * as Presets from './presets';
 import * as MageInputs from '../inputs';
+import * as FireInputs from './inputs';
 
 const mageBombBreakpoints = MAGE_BREAKPOINTS.presets;
 // const combustBreakpoints = Presets.COMBUSTION_BREAKPOINT.presets;
@@ -97,7 +98,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_PREBIS.gear,
+		gear: Presets.P2_BIS.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -117,8 +118,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 		// Default consumes settings.
 		consumables: Presets.DefaultFireConsumables,
 		// Default rotation settings.
-		// rotationType: APLRotation_Type.TypeSimple,
-		// simpleRotation: Presets.P1TrollDefaultSimpleRotation,
+		rotationType: APLRotation_Type.TypeSimple,
+		simpleRotation: Presets.P1TrollDefaultSimpleRotation,
 		// Default talents.
 		talents: Presets.FireTalents.data,
 		// Default spec-specific settings.
@@ -135,7 +136,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [MageInputs.MageArmorInputs()],
 	// Inputs to include in the 'Rotation' section on the settings tab.
-	// rotationInputs: FireInputs.MageRotationConfig,
+	rotationInputs: FireInputs.MageRotationConfig,
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
 	includeBuffDebuffInputs: [],
 	excludeBuffDebuffInputs: [],
@@ -152,13 +153,28 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 	presets: {
 		epWeights: [Presets.DEFAULT_EP_PRESET, Presets.P1_PREBIS_EP_PRESET],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.FIRE_ROTATION_PRESET_DEFAULT],
+		rotations: [
+			Presets.P1_SIMPLE_ROTATION_PRESET_DEFAULT,
+			Presets.P1_SIMPLE_ROTATION_NO_TROLL,
+			Presets.P2_SIMPLE_ROTATION_PRESET_DEFAULT,
+			Presets.P2_SIMPLE_ROTATION_NO_TROLL,
+			Presets.P3_SIMPLE_ROTATION_PRESET_DEFAULT,
+			Presets.P3_SIMPLE_ROTATION_NO_TROLL,
+			Presets.P1_ROTATION_PRESET_APL,
+		],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.FireTalents, Presets.FireTalentsCleave],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS],
 
-		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE],
+		builds: [
+			Presets.P2_PRESET_BUILD_DEFAULT,
+			Presets.P2_NO_TROLL_PRESET_BUILD_DEFAULT,
+			Presets.P3_PRESET_BUILD_DEFAULT,
+			Presets.P3_NO_TROLL_PRESET_BUILD_DEFAULT,
+			Presets.P1_PRESET_SINGLE_TARGET,
+			Presets.P1_PRESET_CLEAVE,
+		],
 	},
 
 	autoRotation: (player: Player<Spec.SpecFireMage>): APLRotation => {
@@ -166,56 +182,66 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 		// if (numTargets >= 3) {
 		// 	return Presets.FIRE_ROTATION_PRESET_CLEAVE.rotation.rotation!;
 		// } else {
-		return Presets.FIRE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
+		return Presets.P1_SIMPLE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
 		// }
 	},
 
-	// simpleRotation: (player, simple): APLRotation => {
-	// 	const rotation = Presets.FIRE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
-	// 	const { combustThreshold, combustLastMomentLustPercentage, combustNoLustPercentage } = simple;
+	simpleRotation: (player, simple): APLRotation => {
+		const rotation = APLRotation.clone(Presets.P1_ROTATION_PRESET_APL.rotation.rotation!);
 
-	// 	const maxCombustDuringLust = APLAction.fromJsonString(
-	// 		`{"condition":{"and":{"vals":[{"or":{"vals":[{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":26297}}},{"auraIsActive":{"auraId":{"spellId":26297}}},{"cmp":{"op":"OpLe","lhs":{"currentTime":{}},"rhs":{"const":{"val":"17s"}}}}]}},{"and":{"vals":[{"not":{"val":{"auraIsKnown":{"auraId":{"spellId":26297}}}}},{"cmp":{"op":"OpGt","lhs":{"auraRemainingTime":{"auraId":{"spellId":2825,"tag":-1}}},"rhs":{"const":{"val":"2s"}}}}]}}]}},{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":44457}}},{"cmp":{"op":"OpGt","lhs":{"mageCurrentCombustionDotEstimate":{}},"rhs":{"const":{"val":"${combustThreshold}"}}}}]}},"castSpell":{"spellId":{"spellId":11129}}}`,
-	// 	);
-	// 	const lastMomentCombustDuringLust = APLAction.fromJsonString(
-	// 		`{"condition":{"and":{"vals":[{"or":{"vals":[{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":26297}}},{"auraIsActive":{"auraId":{"spellId":26297}}},{"cmp":{"op":"OpLt","lhs":{"auraRemainingTime":{"auraId":{"spellId":26297}}},"rhs":{"const":{"val":"2.5s"}}}},{"cmp":{"op":"OpLe","lhs":{"currentTime":{}},"rhs":{"const":{"val":"17s"}}}}]}},{"and":{"vals":[{"not":{"val":{"auraIsKnown":{"auraId":{"spellId":26297}}}}},{"auraIsActive":{"auraId":{"spellId":2825,"tag":-1}}},{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":2825,"tag":-1}}},"rhs":{"const":{"val":"2s"}}}}]}}]}},{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":44457}}},{"cmp":{"op":"OpGt","lhs":{"mageCurrentCombustionDotEstimate":{}},"rhs":{"const":{"val":"${combustLastMomentLustPercentage}"}}}}]}},"castSpell":{"spellId":{"spellId":11129}}}`,
-	// 	);
-	// 	const combustOutsideOfLustAndBerserking = APLAction.fromJsonString(
-	// 		`{"condition":{"and":{"vals":[{"or":{"vals":[{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":26297}}},{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"17s"}}}}]}},{"and":{"vals":[{"not":{"val":{"auraIsKnown":{"auraId":{"spellId":26297}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":2825,"tag":-1}}}}}]}}]}},{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":44457}}},{"cmp":{"op":"OpGt","lhs":{"mageCurrentCombustionDotEstimate":{}},"rhs":{"const":{"val":"${combustNoLustPercentage}"}}}}]}},"castSpell":{"spellId":{"spellId":11129}}}`,
-	// 	);
-	// 	const lastMomentCombustBeforeEncounter = APLAction.fromJsonString(
-	// 		`{"condition":{"and":{"vals":[{"cmp":{"op":"OpLt","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"15s"}}}},{"cmp":{"op":"OpGt","lhs":{"mageCurrentCombustionDotEstimate":{}},"rhs":{"const":{"val":"${combustLastMomentLustPercentage}"}}}}]}},"castSpell":{"spellId":{"spellId":11129}}}`,
-	// 	);
+		const { combustAlwaysSend = 0, combustBloodlust = 0, combustPostAlter = 0, combustNoAlter = 0, combustEndOfCombat = 0 } = simple;
+		const getVariableNamePrefix = (variable: string) => `Combust: Size - ${variable}`;
 
-	// 	const modifiedSimpleRotation = rotation;
+		const combustionSizeAlwaysSend = APLValueVariable.fromJson({
+			name: getVariableNamePrefix('Just send it'),
+			value: { const: { val: String(combustAlwaysSend) } },
+		});
 
-	// 	modifiedSimpleRotation.priorityList[5] = APLListItem.create({
-	// 		action: maxCombustDuringLust,
-	// 	});
-	// 	modifiedSimpleRotation.priorityList[6] = APLListItem.create({
-	// 		action: lastMomentCombustDuringLust,
-	// 	});
-	// 	modifiedSimpleRotation.priorityList[7] = APLListItem.create({
-	// 		action: combustOutsideOfLustAndBerserking,
-	// 	});
-	// 	modifiedSimpleRotation.priorityList[8] = APLListItem.create({
-	// 		action: lastMomentCombustBeforeEncounter,
-	// 	});
+		const combustionSizeBloodlust = APLValueVariable.fromJson({
+			name: getVariableNamePrefix('BL'),
+			value: { const: { val: String(combustBloodlust) } },
+		});
 
-	// 	return APLRotation.create({
-	// 		simple: SimpleRotation.create({
-	// 			cooldowns: Cooldowns.create(),
-	// 		}),
-	// 		prepullActions: modifiedSimpleRotation.prepullActions,
-	// 		priorityList: modifiedSimpleRotation.priorityList,
-	// 	});
-	// },
-	// Hide all the MCDs since the simeple rotation handles them.
+		const combustionSizePostAlter = APLValueVariable.fromJson({
+			name: getVariableNamePrefix('Post-AT'),
+			value: { const: { val: String(combustPostAlter) } },
+		});
+
+		const combustionSizeNoAlter = APLValueVariable.fromJson({
+			name: getVariableNamePrefix('No AT'),
+			value: { const: { val: String(combustNoAlter) } },
+		});
+
+		const combustionSizeEndOfCombat = APLValueVariable.fromJson({
+			name: getVariableNamePrefix('End of Combat'),
+			value: { const: { val: String(combustEndOfCombat) } },
+		});
+		rotation.valueVariables[9] = combustionSizeAlwaysSend;
+		rotation.valueVariables[10] = combustionSizeBloodlust;
+		rotation.valueVariables[11] = combustionSizePostAlter;
+		rotation.valueVariables[12] = combustionSizeNoAlter;
+		rotation.valueVariables[13] = combustionSizeEndOfCombat;
+
+		return APLRotation.create({
+			simple: SimpleRotation.create({
+				cooldowns: Cooldowns.create(),
+			}),
+			prepullActions: rotation.prepullActions,
+			priorityList: rotation.priorityList,
+			groups: rotation.groups,
+			valueVariables: rotation.valueVariables,
+		});
+	},
+	// Hide all the MCDs since the simple rotation handles them.
 	hiddenMCDs: [
 		// Berserking
 		26297,
 		// Bloodlust
 		2825,
+		// Skull Banner
+		114206,
+		// Stormlash Totem
+		120668,
 		// Evocation
 		12051,
 		// Flame Orb
@@ -225,9 +251,17 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 		// Mirror Image
 		55342,
 		// Synapse Springs
-		82174,
-		// Volcanic Potion
-		58091,
+		82174, 126734,
+		// Potion of the Jade Serpent
+		76093,
+		// Alter Time
+		108978,
+		// Presence of Mind
+		12043,
+		// Arcane Torrent
+		28730,
+		// Bloodfury
+		33697,
 	],
 
 	raidSimPresets: [
@@ -272,70 +306,68 @@ export class FireMageSimUI extends IndividualSimUI<Spec.SpecFireMage> {
 			},
 		];
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				statSelectionPresets: statSelectionPresets,
-				enableBreakpointLimits: true,
-				// updateSoftCaps: softCaps => {
-				// 	const raidBuffs = player.getRaid()?.getBuffs();
-				// 	const hasBL = !!raidBuffs?.bloodlust;
-				// 	const hasBerserking = player.getRace() === Race.RaceTroll;
-				// 	const hasGlyphOfCombustion = !!player.getMajorGlyphs().find(glyph => glyph === MageMajorGlyph.GlyphOfCombustion);
+		this.reforger = new ReforgeOptimizer(this, {
+			statSelectionPresets: statSelectionPresets,
+			enableBreakpointLimits: true,
+			// updateSoftCaps: softCaps => {
+			// 	const raidBuffs = player.getRaid()?.getBuffs();
+			// 	const hasBL = !!raidBuffs?.bloodlust;
+			// 	const hasBerserking = player.getRace() === Race.RaceTroll;
+			// 	const hasGlyphOfCombustion = !!player.getMajorGlyphs().find(glyph => glyph === MageMajorGlyph.GlyphOfCombustion);
 
-				// 	const modifyHaste = (oldHastePercent: number, modifier: number) =>
-				// 		Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
+			// 	const modifyHaste = (oldHastePercent: number, modifier: number) =>
+			// 		Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
 
-				// 	this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-				// 		const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-				// 		if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-				// 			if (hasGlyphOfCombustion) softCap.breakpoints = relevantMageBombBreakpoints;
+			// 	this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
+			// 		const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
+			// 		if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
+			// 			if (hasGlyphOfCombustion) softCap.breakpoints = relevantMageBombBreakpoints;
 
-				// 			const adjustedHastedBreakpoints = new Set([...softCap.breakpoints]);
-				// 			const hasCloseMatchingValue = (value: number) =>
-				// 				[...adjustedHastedBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
+			// 			const adjustedHastedBreakpoints = new Set([...softCap.breakpoints]);
+			// 			const hasCloseMatchingValue = (value: number) =>
+			// 				[...adjustedHastedBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
 
-				// 			softCap.breakpoints.forEach(breakpoint => {
-				// 				if (hasBL) {
-				// 					const blBreakpoint = modifyHaste(breakpoint, 1.3);
+			// 			softCap.breakpoints.forEach(breakpoint => {
+			// 				if (hasBL) {
+			// 					const blBreakpoint = modifyHaste(breakpoint, 1.3);
 
-				// 					if (blBreakpoint > 0) {
-				// 						if (!hasCloseMatchingValue(blBreakpoint)) adjustedHastedBreakpoints.add(blBreakpoint);
-				// 						if (hasBerserking) {
-				// 							const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
-				// 							if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
-				// 								adjustedHastedBreakpoints.add(berserkingBreakpoint);
-				// 							}
-				// 						}
-				// 					}
-				// 				}
-				// 			});
-				// 			softCapToModify.breakpoints = [...adjustedHastedBreakpoints].sort((a, b) => a - b);
-				// 		}
-				// 	});
-				// 	return softCaps;
-				// },
-				// additionalSoftCapTooltipInformation: {
-				// 	[Stat.StatHasteRating]: () => {
-				// 		const raidBuffs = player.getRaid()?.getBuffs();
-				// 		const hasBL = !!raidBuffs?.bloodlust;
-				// 		const hasBerserking = player.getRace() === Race.RaceTroll;
+			// 					if (blBreakpoint > 0) {
+			// 						if (!hasCloseMatchingValue(blBreakpoint)) adjustedHastedBreakpoints.add(blBreakpoint);
+			// 						if (hasBerserking) {
+			// 							const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
+			// 							if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
+			// 								adjustedHastedBreakpoints.add(berserkingBreakpoint);
+			// 							}
+			// 						}
+			// 					}
+			// 				}
+			// 			});
+			// 			softCapToModify.breakpoints = [...adjustedHastedBreakpoints].sort((a, b) => a - b);
+			// 		}
+			// 	});
+			// 	return softCaps;
+			// },
+			// additionalSoftCapTooltipInformation: {
+			// 	[Stat.StatHasteRating]: () => {
+			// 		const raidBuffs = player.getRaid()?.getBuffs();
+			// 		const hasBL = !!raidBuffs?.bloodlust;
+			// 		const hasBerserking = player.getRace() === Race.RaceTroll;
 
-				// 		return (
-				// 			<>
-				// 				{(hasBL || hasBerserking) && (
-				// 					<>
-				// 						<p className="mb-0">Additional breakpoints have been created using the following cooldowns:</p>
-				// 						<ul className="mb-0">
-				// 							{hasBL && <li>Bloodlust</li>}
-				// 							{hasBerserking && <li>Berserking</li>}
-				// 						</ul>
-				// 					</>
-				// 				)}
-				// 			</>
-				// 		);
-				// 	},
-				// },
-			});
+			// 		return (
+			// 			<>
+			// 				{(hasBL || hasBerserking) && (
+			// 					<>
+			// 						<p className="mb-0">Additional breakpoints have been created using the following cooldowns:</p>
+			// 						<ul className="mb-0">
+			// 							{hasBL && <li>Bloodlust</li>}
+			// 							{hasBerserking && <li>Berserking</li>}
+			// 						</ul>
+			// 					</>
+			// 				)}
+			// 			</>
+			// 		);
+			// 	},
+			// },
 		});
 	}
 }

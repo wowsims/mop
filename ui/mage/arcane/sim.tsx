@@ -44,7 +44,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_PREBIS.gear,
+		gear: Presets.P2_BIS.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_BIS_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -160,80 +160,73 @@ export class ArcaneMageSimUI extends IndividualSimUI<Spec.SpecArcaneMage> {
 			},
 		];
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				statSelectionPresets: statSelectionPresets,
-				enableBreakpointLimits: true,
-				getEPDefaults: player => {
-					if (this.sim.getUseCustomEPValues()) {
-						return player.getEpWeights();
-					}
+		this.reforger = new ReforgeOptimizer(this, {
+			statSelectionPresets: statSelectionPresets,
+			enableBreakpointLimits: true,
+			getEPDefaults: player => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 525) {
+					return Presets.P3_BIS_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 495) {
+					return Presets.P1_BIS_EP_PRESET.epWeights;
+				}
+				return Presets.P1_PREBIS_EP_PRESET.epWeights;
+			},
+			updateSoftCaps: softCaps => {
+				const raidBuffs = player.getRaid()?.getBuffs();
+				const hasBL = !!raidBuffs?.bloodlust;
+				const hasBerserking = player.getRace() === Race.RaceTroll;
 
-					const avgIlvl = player.getGear().getAverageItemLevel(false);
-					if (avgIlvl >= 525) {
-						return Presets.P3_BIS_EP_PRESET.epWeights;
-					} else if (avgIlvl >= 495) {
-						return Presets.P1_BIS_EP_PRESET.epWeights;
+				const modifyHaste = (oldHastePercent: number, modifier: number) =>
+					Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
+
+				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
+					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
+					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
+						const adjustedHasteBreakpoints = new Set([...softCap.breakpoints]);
+						const hasCloseMatchingValue = (value: number) => [...adjustedHasteBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
+
+						softCap.breakpoints.forEach(breakpoint => {
+							if (hasBL) {
+								const blBreakpoint = modifyHaste(breakpoint, 1.3);
+
+								if (blBreakpoint > 0) {
+									if (!hasCloseMatchingValue(blBreakpoint)) adjustedHasteBreakpoints.add(blBreakpoint);
+									if (hasBerserking) {
+										const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
+										if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
+											adjustedHasteBreakpoints.add(berserkingBreakpoint);
+										}
+									}
+								}
+							}
+						});
+						softCapToModify.breakpoints = [...adjustedHasteBreakpoints].sort((a, b) => a - b);
 					}
-					return Presets.P1_PREBIS_EP_PRESET.epWeights;
-				},
-				updateSoftCaps: softCaps => {
+				});
+				return softCaps;
+			},
+			additionalSoftCapTooltipInformation: {
+				[Stat.StatHasteRating]: () => {
 					const raidBuffs = player.getRaid()?.getBuffs();
 					const hasBL = !!raidBuffs?.bloodlust;
 					const hasBerserking = player.getRace() === Race.RaceTroll;
 
-					const modifyHaste = (oldHastePercent: number, modifier: number) =>
-						Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
-
-					this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-						const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-						if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-							const adjustedHasteBreakpoints = new Set([...softCap.breakpoints]);
-							const hasCloseMatchingValue = (value: number) =>
-								[...adjustedHasteBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
-
-							softCap.breakpoints.forEach(breakpoint => {
-								if (hasBL) {
-									const blBreakpoint = modifyHaste(breakpoint, 1.3);
-
-									if (blBreakpoint > 0) {
-										if (!hasCloseMatchingValue(blBreakpoint)) adjustedHasteBreakpoints.add(blBreakpoint);
-										if (hasBerserking) {
-											const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
-											if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
-												adjustedHasteBreakpoints.add(berserkingBreakpoint);
-											}
-										}
-									}
-								}
-							});
-							softCapToModify.breakpoints = [...adjustedHasteBreakpoints].sort((a, b) => a - b);
-						}
-					});
-					return softCaps;
+					return (
+						<>
+							{(hasBL || hasBerserking) && (
+								<>
+									<p className="mb-0">Additional Living Bomb breakpoints have been created using the following cooldowns:</p>
+									<ul className="mb-0">
+										{hasBL && <li>Bloodlust</li>}
+										{hasBerserking && <li>Berserking</li>}
+									</ul>
+								</>
+							)}
+						</>
+					);
 				},
-				additionalSoftCapTooltipInformation: {
-					[Stat.StatHasteRating]: () => {
-						const raidBuffs = player.getRaid()?.getBuffs();
-						const hasBL = !!raidBuffs?.bloodlust;
-						const hasBerserking = player.getRace() === Race.RaceTroll;
-
-						return (
-							<>
-								{(hasBL || hasBerserking) && (
-									<>
-										<p className="mb-0">Additional Living Bomb breakpoints have been created using the following cooldowns:</p>
-										<ul className="mb-0">
-											{hasBL && <li>Bloodlust</li>}
-											{hasBerserking && <li>Berserking</li>}
-										</ul>
-									</>
-								)}
-							</>
-						);
-					},
-				},
-			});
+			},
 		});
 	}
 }

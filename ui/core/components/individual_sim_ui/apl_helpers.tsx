@@ -38,7 +38,8 @@ export type ACTION_ID_SET =
 	| 'shield_spells'
 	| 'non_instant_spells'
 	| 'friendly_spells'
-	| 'expected_dot_spells';
+	| 'expected_dot_spells'
+	| 'spells_with_travelTime';
 
 const actionIdSets: Record<
 	ACTION_ID_SET,
@@ -266,6 +267,19 @@ const actionIdSets: Record<
 			return metadata
 				.getSpells()
 				.filter(spell => spell.data.hasShield)
+				.map(actionId => {
+					return {
+						value: actionId.id,
+					};
+				});
+		},
+	},
+	spells_with_travelTime: {
+		defaultLabel: i18n.t('rotation_tab.apl.helpers.action_id_sets.spells_with_travelTime'),
+		getActionIDs: async metadata => {
+			return metadata
+				.getSpells()
+				.filter(spell => spell.data.hasMissileSpeed)
 				.map(actionId => {
 					return {
 						value: actionId.id,
@@ -739,7 +753,7 @@ export function variableNameFieldConfig(field: string, options?: Partial<APLPick
 			const picker = new TextDropdownPicker(parent, player, {
 				id: randomUUID(),
 				...config,
-				defaultLabel: 'Select Variable',
+				defaultLabel: i18n.t('rotation_tab.apl.helpers.select_variable'),
 				equals: (a, b) => a === b,
 				values: [],
 				changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
@@ -756,7 +770,7 @@ export function variableNameFieldConfig(field: string, options?: Partial<APLPick
 				if (values.length === 0) {
 					values.push({
 						value: '',
-						label: 'No variables defined',
+						label: i18n.t('rotation_tab.apl.helpers.no_variables_defined'),
 					});
 				}
 
@@ -781,7 +795,7 @@ export function groupNameFieldConfig(field: string, options?: Partial<APLPickerB
 			const picker = new TextDropdownPicker(parent, player, {
 				id: randomUUID(),
 				...config,
-				defaultLabel: 'Select Group',
+				defaultLabel: i18n.t('rotation_tab.apl.helpers.select_group'),
 				equals: (a, b) => a === b,
 				values: [],
 				changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
@@ -798,7 +812,7 @@ export function groupNameFieldConfig(field: string, options?: Partial<APLPickerB
 				if (values.length === 0) {
 					values.push({
 						value: '',
-						label: 'No groups defined',
+						label: i18n.t('rotation_tab.apl.helpers.no_groups_defined'),
 					});
 				}
 
@@ -827,7 +841,6 @@ export function groupReferenceVariablesFieldConfig(
 			// Create a simple container
 			const container = document.createElement('div');
 			container.classList.add('group-reference-variables-container');
-			container.style.marginTop = '8px';
 			parent.appendChild(container);
 
 			// Create a ListPicker for the variables
@@ -873,7 +886,7 @@ export function groupReferenceVariablesFieldConfig(
 
 				if (!selectedGroupName) {
 					listPicker.setInputValue([]);
-					container.style.display = 'none';
+					container.classList.add('d-none');
 					return;
 				}
 
@@ -883,7 +896,7 @@ export function groupReferenceVariablesFieldConfig(
 
 				if (!selectedGroup) {
 					listPicker.setInputValue([]);
-					container.style.display = 'none';
+					container.classList.add('d-none');
 					return;
 				}
 
@@ -911,13 +924,13 @@ export function groupReferenceVariablesFieldConfig(
 
 				// Hide the container if no placeholder variables found
 				if (placeholderVariables.size === 0) {
-					container.style.display = 'none';
+					container.classList.add('d-none');
 					listPicker.setInputValue([]);
 					return;
 				}
 
 				// Show the container and populate variables
-				container.style.display = 'block';
+				container.classList.remove('d-none');
 
 				parentValue.variables = Array.from(placeholderVariables).map(varName => {
 					// Find existing variable or create new one
@@ -985,18 +998,15 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 		// Create label for the variable name
 		const label = document.createElement('label');
 		label.textContent = `${this.variableName}:`;
-		label.classList.add('group-variable-label');
-		label.style.fontWeight = 'bold';
-		label.style.marginBottom = '8px';
-		label.style.display = 'block';
+		label.classList.add('group-variable-label', 'fw-bold', 'd-block');
 		this.rootElem.appendChild(label);
 
 		// Variable value picker
 		this.valuePicker = new TextDropdownPicker(this.rootElem, this.modObject, {
 			id: randomUUID(),
 			label: '',
-			labelTooltip: `Value to assign to variable '${this.variableName}'`,
-			defaultLabel: 'Select Variable',
+			labelTooltip: i18n.t('rotation_tab.apl.helpers.field_configs.variable_assignment_tooltip', { variableName: this.variableName }),
+			defaultLabel: i18n.t('rotation_tab.apl.helpers.select_variable'),
 			equals: (a, b) => a === b,
 			values: [],
 			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
@@ -1219,14 +1229,20 @@ export function aplInputBuilder<T>(
 }
 
 export function reactionTimeCheckbox(): APLPickerBuilderFieldConfig<any, any> {
-	return booleanFieldConfig('includeReactionTime', 'Include Reaction Time', {
-		labelTooltip: 'If checked, will use the configured reaction time.',
+	return booleanFieldConfig('includeReactionTime', i18n.t('rotation_tab.apl.helpers.field_configs.include_reaction_time'), {
+		labelTooltip: i18n.t('rotation_tab.apl.helpers.field_configs.include_reaction_time_tooltip'),
 	});
 }
 
 export function useDotBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any> {
+	return booleanFieldConfig('useBaseValue', i18n.t('rotation_tab.apl.helpers.field_configs.use_base_value'), {
+		labelTooltip: i18n.t('rotation_tab.apl.helpers.field_configs.use_base_value_tooltip'),
+	});
+}
+
+export function useRuneRegenBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any> {
 	return booleanFieldConfig('useBaseValue', 'Use base value', {
-		labelTooltip: 'If checked, will compare the current DoT to the the base value (on encounter start) of the DoT.',
+		labelTooltip: 'If checked, will return your base (unmodified by procs/lust etc) rune regen rate',
 	});
 }
 

@@ -86,18 +86,19 @@ func (demonology *DemonologyWarlock) registerHandOfGuldan() {
 			pa.Priority = core.ActionPriorityAuto
 
 			pa.OnAction = func(sim *core.Simulation) {
-				for _, enemy := range sim.Encounter.ActiveTargetUnits {
-					result := spell.CalcAndDealDamage(
-						sim,
-						enemy,
-						demonology.CalcScalingSpellDmg(hogScale),
-						spell.OutcomeMagicHitAndCrit,
-					)
+				results := spell.CalcAoeDamage(
+					sim,
+					demonology.CalcScalingSpellDmg(hogScale),
+					spell.OutcomeMagicHitAndCrit,
+				)
 
+				for _, result := range results {
 					if result.Landed() {
-						shadowFlame.Cast(sim, enemy)
+						shadowFlame.Cast(sim, result.Target)
 					}
 				}
+
+				spell.DealBatchedAoeDamage(sim)
 			}
 
 			sim.AddPendingAction(pa)

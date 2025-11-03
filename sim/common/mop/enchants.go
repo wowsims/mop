@@ -37,7 +37,7 @@ func init() {
 
 		auras := []*core.StatBuffAura{haste, crit, mastery}
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:     "Enchant Weapon - Windsong",
 			Callback: core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
 			ActionID: core.ActionID{SpellID: 104561},
@@ -84,7 +84,7 @@ func init() {
 				duration,
 			)
 
-			core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+			character.MakeProcTriggerAura(core.ProcTrigger{
 				Name:     "Enchant Weapon - " + name,
 				Callback: core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
 				ActionID: core.ActionID{SpellID: procEffectId},
@@ -148,7 +148,7 @@ func init() {
 			mhAuras := createDancingSteelAuras(1)
 			ohAuras := createDancingSteelAuras(2)
 
-			core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+			character.MakeProcTriggerAura(core.ProcTrigger{
 				Name:     "Enchant Weapon - " + name,
 				Callback: core.CallbackOnSpellHitDealt,
 				ActionID: core.ActionID{SpellID: procEffectId},
@@ -189,7 +189,7 @@ func init() {
 			},
 		})
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "Enchant Weapon - Colossus",
 			Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
 			RequireDamageDealt: true,
@@ -225,7 +225,7 @@ func init() {
 			duration,
 		)
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "Enchant Weapon - River's Song",
 			Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
 			RequireDamageDealt: true,
@@ -271,11 +271,12 @@ func init() {
 			},
 		})
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "Enchant Weapon - Elemental Force",
 			Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
 			RequireDamageDealt: true,
 			ActionID:           core.ActionID{SpellID: 104428},
+
 			DPM: character.NewRPPMProcManager(
 				4443,
 				true,
@@ -286,7 +287,10 @@ func init() {
 					Coefficient: 1.0,
 				}.WithHasteMod(),
 			),
-			Outcome: core.OutcomeLanded,
+
+			Outcome:            core.OutcomeLanded,
+			TriggerImmediately: true,
+
 			Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 				elementalForceSpell.Cast(sim, result.Target)
 			},

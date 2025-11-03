@@ -25,11 +25,11 @@ import {
 	makeShowMatchingGemsSelector,
 } from '../inputs/other_inputs';
 import { ItemNotice } from '../item_notice/item_notice';
-import Toast from '../toast';
 import { Clusterize } from '../virtual_scroll/clusterize';
 import { FiltersMenu } from './filters_menu';
 import { SelectorModalTabs, getTranslatedTabLabel } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
+import { trackEvent } from '../../../tracking/utils';
 
 export interface ItemData<T extends ItemListType> {
 	item: T;
@@ -222,7 +222,6 @@ export default class ItemList<T extends ItemListType> {
 			}
 		}
 
-		// TODO: Turn this back on once we have proper phase data
 		if (phaseSelectorRef.value) makePhaseSelector(phaseSelectorRef.value, player.sim);
 
 		if (label === SelectorModalTabs.Items) {
@@ -614,17 +613,11 @@ export default class ItemList<T extends ItemListType> {
 				compareButton.value!.addEventListener('click', () => {
 					const hasItem = checkHasItem();
 					simUI.bt?.[hasItem ? 'removeItem' : 'addItem'](ItemSpec.create({ id: itemData.id }));
-
-					new Toast({
-						delay: 1000,
-						variant: 'success',
-						body: (
-							<>
-								<strong>{itemData.name}</strong> was {hasItem ? <>removed from the batch</> : <>added to the batch</>}.
-							</>
-						),
+					trackEvent({
+						action: 'click',
+						category: 'batch',
+						label: hasItem ? 'remove-item' : 'add-item',
 					});
-					// TODO: should we open the bulk sim UI or should we run in the background showing progress, and then sort the items in the picker?
 				});
 			}
 		}
@@ -800,11 +793,11 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	private bindToggleCompare(element: Element) {
-		// TODO: Disabled for now until Batch Sim is fixed
-		// const toggleCompare = () => element.classList[!this.player.sim.getShowExperimental() ? 'add' : 'remove']('hide');
-		// toggleCompare();
-		// this.player.sim.showExperimentalChangeEmitter.on(() => {
-		// 	toggleCompare();
-		// });
+		element.classList['remove']('hide');
+		//const toggleCompare = () => element.classList[!this.player.sim.getShowExperimental() ? 'add' : 'remove']('hide');
+		//toggleCompare();
+		//this.player.sim.showExperimentalChangeEmitter.on(() => {
+		//	toggleCompare();
+		//});
 	}
 }

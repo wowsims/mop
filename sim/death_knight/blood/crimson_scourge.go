@@ -18,8 +18,9 @@ func (bdk *BloodDeathKnight) registerCrimsonScourge() {
 		ActionID: core.ActionID{SpellID: 81141},
 		Duration: time.Second * 15,
 	}).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: death_knight.DeathKnightSpellBloodBoil | death_knight.DeathKnightSpellDeathAndDecay,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     death_knight.DeathKnightSpellBloodBoil | death_knight.DeathKnightSpellDeathAndDecay,
+		TriggerImmediately: true,
 
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			return spell.CurCast.Cost <= 0
@@ -34,7 +35,7 @@ func (bdk *BloodDeathKnight) registerCrimsonScourge() {
 		FloatValue: -2.0,
 	})
 
-	core.MakeProcTriggerAura(&bdk.Unit, core.ProcTrigger{
+	bdk.MakeProcTriggerAura(core.ProcTrigger{
 		Name:       "Crimson Scourge Trigger" + bdk.Label,
 		ActionID:   core.ActionID{SpellID: 81136},
 		Callback:   core.CallbackOnSpellHitDealt,

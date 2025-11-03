@@ -3,21 +3,21 @@ package frost
 import (
 	"testing"
 
-	_ "github.com/wowsims/mop/sim/common" // imported to get item effects included.
+	"github.com/wowsims/mop/sim/common" // imported to get item effects included.
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func init() {
 	RegisterFrostDeathKnight()
+	common.RegisterAllEffects()
 }
 
 func TestFrostMasterfrost(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
 		{
-			Class:      proto.Class_ClassDeathKnight,
-			Race:       proto.Race_RaceTroll,
-			OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceWorgen},
+			Class: proto.Class_ClassDeathKnight,
+			Race:  proto.Race_RaceTroll,
 
 			GearSet:         core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p2.masterfrost"),
 			Talents:         DefaultTalents,
@@ -37,11 +37,10 @@ func TestFrostMasterfrost(t *testing.T) {
 func TestFrostTwoHand(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
 		{
-			Class:      proto.Class_ClassDeathKnight,
-			Race:       proto.Race_RaceTroll,
-			OtherRaces: []proto.Race{proto.Race_RaceOrc, proto.Race_RaceWorgen},
+			Class: proto.Class_ClassDeathKnight,
+			Race:  proto.Race_RaceTroll,
 
-			GearSet:         core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p1.2h-obliterate"),
+			GearSet:         core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p2.2h-obliterate"),
 			Talents:         DefaultTalents,
 			OtherTalentSets: OtherTalentSets,
 			Glyphs:          FrostDefaultGlyphs,
@@ -49,7 +48,7 @@ func TestFrostTwoHand(t *testing.T) {
 			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
 			Rotation:        core.GetAplRotation("../../../ui/death_knight/frost/apls", "obliterate"),
 			Profession1:     proto.Profession_Engineering,
-			Profession2:     proto.Profession_Alchemy,
+			Profession2:     proto.Profession_Blacksmithing,
 
 			ItemFilter: ItemFilterTwoHand,
 		},

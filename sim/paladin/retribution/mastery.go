@@ -26,12 +26,13 @@ func (ret *RetributionPaladin) registerMastery() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&ret.Unit, core.ProcTrigger{
-		Name:           "Mastery: Hand of Light" + ret.Label,
-		ActionID:       core.ActionID{SpellID: 76672},
-		Callback:       core.CallbackOnSpellHitDealt,
-		Outcome:        core.OutcomeLanded,
-		ClassSpellMask: paladin.SpellMaskCanTriggerHandOfLight,
+	ret.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Mastery: Hand of Light" + ret.Label,
+		ActionID:           core.ActionID{SpellID: 76672},
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		ClassSpellMask:     paladin.SpellMaskCanTriggerHandOfLight,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			ret.HoLDamage = ret.getMasteryPercent() * result.Damage

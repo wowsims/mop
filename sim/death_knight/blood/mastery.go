@@ -73,11 +73,12 @@ func (bdk *BloodDeathKnight) registerMastery() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&bdk.Unit, core.ProcTrigger{
-		Name:           "Mastery: Blood Shield" + bdk.Label,
-		ActionID:       core.ActionID{SpellID: 77513},
-		Callback:       core.CallbackOnHealDealt,
-		ClassSpellMask: death_knight.DeathKnightSpellDeathStrikeHeal,
+	bdk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Mastery: Blood Shield" + bdk.Label,
+		ActionID:           core.ActionID{SpellID: 77513},
+		Callback:           core.CallbackOnHealDealt,
+		ClassSpellMask:     death_knight.DeathKnightSpellDeathStrikeHeal,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			shieldAmount = result.Damage * bdk.getMasteryPercent()

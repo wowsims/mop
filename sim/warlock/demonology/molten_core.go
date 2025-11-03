@@ -26,11 +26,13 @@ func (demonology *DemonologyWarlock) registerMoltenCore() {
 	// When Shadow Flame or Wild Imp deals damage 8% chance to proc
 	// When Chaos Wave -> 100% Proc Chance
 	apply := func(unit *core.Unit) {
-		core.MakeProcTriggerAura(unit, core.ProcTrigger{
-			Name:           "Demonic Core Tracker",
-			Outcome:        core.OutcomeLanded,
-			ClassSpellMask: warlock.WarlockSpellImpFireBolt | warlock.WarlockSpellShadowflameDot | warlock.WarlockSpellChaosWave | warlock.WarlockSpellShadowBolt | warlock.WarlockSpellSoulFire | warlock.WarlockSpellTouchOfChaos,
-			Callback:       core.CallbackOnPeriodicDamageDealt | core.CallbackOnSpellHitDealt | core.CallbackOnCastComplete,
+		unit.MakeProcTriggerAura(core.ProcTrigger{
+			Name:               "Demonic Core Tracker",
+			Outcome:            core.OutcomeLanded,
+			ClassSpellMask:     warlock.WarlockSpellImpFireBolt | warlock.WarlockSpellShadowflameDot | warlock.WarlockSpellChaosWave | warlock.WarlockSpellShadowBolt | warlock.WarlockSpellSoulFire | warlock.WarlockSpellTouchOfChaos,
+			Callback:           core.CallbackOnPeriodicDamageDealt | core.CallbackOnSpellHitDealt | core.CallbackOnCastComplete,
+			TriggerImmediately: true,
+
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				if spell.Matches(warlock.WarlockSpellSoulFire) && result == nil && demonology.MoltenCore.IsActive() {
 					demonology.MoltenCore.RemoveStack(sim)

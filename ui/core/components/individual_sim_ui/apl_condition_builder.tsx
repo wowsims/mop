@@ -1,12 +1,8 @@
 import { Player } from '../../player.js';
 import { APLValue } from '../../proto/apl.js';
-import { EventID } from '../../typed_event.js';
-import { randomUUID } from '../../utils.js';
 import { Component } from '../component.js';
 import { Input, InputConfig } from '../input.js';
-import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
-import { ListPicker } from '../pickers/list_picker.jsx';
-import { APLValueKind, APLValuePicker } from './apl_values.js';
+import { APLValuePicker } from './apl_values.js';
 
 export interface APLConditionBuilderConfig extends InputConfig<Player<any>, APLValue | undefined> {}
 

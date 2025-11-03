@@ -70,6 +70,7 @@ import {
 	APLValueMonkCurrentChi,
 	APLValueMonkMaxChi,
 	APLValueNextRuneCooldown,
+	APLValueFullRuneCooldown,
 	APLValueNot,
 	APLValueNumberTargets,
 	APLValueNumEquippedStatProcTrinkets,
@@ -111,6 +112,7 @@ import {
 	APLValueSpellGCDHastedDuration,
 	APLValueSpellFullCooldown,
 	APLValueDotTimeToNextTick,
+	APLValueSpellInFlight,
 } from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
@@ -974,6 +976,14 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getClass() == Class.ClassDeathKnight,
 		fields: [AplHelpers.runeSlotFieldConfig('runeSlot')],
 	}),
+	fullRuneCooldown: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.full_rune_cooldown.label'),
+		submenu: ['resources', 'runes'],
+		shortDescription: i18n.t('rotation_tab.apl.values.full_rune_cooldown.tooltip'),
+		newValue: APLValueFullRuneCooldown.create,
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getClass() == Class.ClassDeathKnight,
+		fields: [AplHelpers.useRuneRegenBaseValueCheckbox()],
+	}),
 
 	// GCD
 	gcdIsReady: inputBuilder({
@@ -1125,6 +1135,13 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		shortDescription: i18n.t('rotation_tab.apl.values.input_delay.tooltip'),
 		newValue: APLValueInputDelay.create,
 		fields: [],
+	}),
+	spellInFlight: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.spell_in_flight.label'),
+		submenu: ['spell'],
+		shortDescription: i18n.t('rotation_tab.apl.values.spell_in_flight.tooltip'),
+		newValue: APLValueSpellInFlight.create,
+		fields: [AplHelpers.actionIdFieldConfig('spellId', 'spells_with_travelTime', '')],
 	}),
 
 	// Auras

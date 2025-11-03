@@ -39,14 +39,17 @@ func (warlock *Warlock) RegisterCorruption(onApplyCallback WarlockSpellCastedCal
 				dot.Snapshot(target, warlock.CalcScalingSpellDmg(corruptionScale))
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				resultSlice[0] = dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
-				if onTickCallback != nil {
-					onTickCallback(resultSlice, dot.Spell, sim)
-				}
+				resultSlice[0] = dot.CalcSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
 
 				if warlock.SiphonLife != nil {
 					warlock.SiphonLife.Cast(sim, &warlock.Unit)
 				}
+
+				if onTickCallback != nil {
+					onTickCallback(resultSlice, dot.Spell, sim)
+				}
+
+				dot.Spell.DealPeriodicDamage(sim, resultSlice[0])
 			},
 		},
 

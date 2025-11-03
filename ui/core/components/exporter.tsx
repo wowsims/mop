@@ -6,6 +6,7 @@ import { downloadString } from '../utils';
 import { BaseModal } from './base_modal';
 import { CopyButton } from './copy_button';
 import i18n from '../../i18n/config';
+import { trackPageView } from '../../tracking/utils';
 
 export interface ExporterOptions {
 	title: string;
@@ -37,7 +38,7 @@ export abstract class Exporter extends BaseModal {
 				<button className="exporter-button btn btn-primary download-button ms-2" ref={downloadBtnRef}>
 					<i className="fa fa-download me-1"></i>
 					{i18n.t('export.json.download_button')}
-				</button>
+				</button>,
 			);
 
 			const downloadButton = downloadBtnRef.value!;
@@ -49,6 +50,8 @@ export abstract class Exporter extends BaseModal {
 	}
 
 	open() {
+		const titleAsSlug = this.header?.title.toLowerCase().replaceAll(' ', '-');
+		trackPageView(this.header!.title, `/export/${titleAsSlug}`);
 		super.open();
 		this.init();
 	}

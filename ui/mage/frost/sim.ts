@@ -59,7 +59,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_PREBIS.gear,
+		gear: Presets.P2_BIS.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_BIS_EP_PRESET.epWeights,
 		statCaps: (() => {
@@ -171,38 +171,32 @@ export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecFrostMage>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				statSelectionPresets: [MAGE_BREAKPOINTS],
-				enableBreakpointLimits: true,
-				getEPDefaults: player => {
-					if (this.sim.getUseCustomEPValues()) {
-						return player.getEpWeights();
-					}
-
-					const avgIlvl = player.getGear().getAverageItemLevel(false);
-					if (avgIlvl >= 517) {
-						return Presets.P3_BIS_EP_PRESET.epWeights;
-					} else if (avgIlvl >= 500) {
-						return Presets.P1_BIS_EP_PRESET.epWeights;
-					}
-					return Presets.P1_PREBIS_EP_PRESET.epWeights;
-				},
-				updateSoftCaps: softCaps => {
-					this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-						const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-						if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-							const talents = player.getTalents();
-							if (talents.livingBomb) {
-								softCapToModify.breakpoints = livingBombBreakpoints;
-							} else if (talents.netherTempest) {
-								softCapToModify.breakpoints = netherTempestBreakpoints;
-							}
+		this.reforger = new ReforgeOptimizer(this, {
+			statSelectionPresets: [MAGE_BREAKPOINTS],
+			enableBreakpointLimits: true,
+			getEPDefaults: player => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 517) {
+					return Presets.P3_BIS_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 500) {
+					return Presets.P1_BIS_EP_PRESET.epWeights;
+				}
+				return Presets.P1_PREBIS_EP_PRESET.epWeights;
+			},
+			updateSoftCaps: softCaps => {
+				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
+					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
+					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
+						const talents = player.getTalents();
+						if (talents.livingBomb) {
+							softCapToModify.breakpoints = livingBombBreakpoints;
+						} else if (talents.netherTempest) {
+							softCapToModify.breakpoints = netherTempestBreakpoints;
 						}
-					});
-					return softCaps;
-				},
-			});
+					}
+				});
+				return softCaps;
+			},
 		});
 	}
 }

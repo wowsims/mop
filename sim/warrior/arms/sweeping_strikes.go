@@ -44,16 +44,18 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		},
 	})
 
-	war.SweepingStrikesAura = core.BlockPrepull(core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-		Name:            "Sweeping Strikes",
-		ActionID:        actionID,
-		MetricsActionID: actionID,
-		Duration:        time.Second * 10,
-		Callback:        core.CallbackOnSpellHitDealt,
-		ProcMask:        core.ProcMaskMelee,
-		Outcome:         core.OutcomeLanded,
+	war.SweepingStrikesAura = core.BlockPrepull(war.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Sweeping Strikes",
+		ActionID:           actionID,
+		MetricsActionID:    actionID,
+		Duration:           time.Second * 10,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMelee,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if war.Env.ActiveTargetCount() < 2 || result.PreOutcomeDamage <= 0 ||
+			if war.Env.ActiveTargetCount() < 2 || result.PostArmorDamage <= 0 ||
 				spell.Matches(warrior.SpellMaskSweepingStrikesHit|
 					warrior.SpellMaskSweepingStrikesNormalizedHit|
 					warrior.SpellMaskSweepingSlam|

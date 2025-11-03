@@ -33,2856 +33,2856 @@ character_stats_results: {
 dps_results: {
  key: "TestDestruction-AllItems-AgilePrimalDiamond"
  value: {
-  dps: 95766.68941
-  tps: 70577.65511
-  hps: 798.86854
+  dps: 96021.81437
+  tps: 70590.11378
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-AlacrityofXuen-103989"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ArcaneBadgeoftheShieldwall-93347"
  value: {
-  dps: 96258.56969
-  tps: 70799.33309
+  dps: 96613.40095
+  tps: 70967.66218
   hps: 814.85335
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ArrowflightMedallion-93258"
  value: {
-  dps: 93131.1682
-  tps: 68623.20582
-  hps: 799.61202
+  dps: 93919.65209
+  tps: 69136.58707
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-AusterePrimalDiamond"
  value: {
-  dps: 94339.21274
-  tps: 69308.3092
-  hps: 809.68055
+  dps: 94600.08176
+  tps: 69324.01053
+  hps: 812.31794
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BadJuju-96781"
  value: {
-  dps: 93767.34341
-  tps: 69403.47918
-  hps: 799.61202
+  dps: 94083.52975
+  tps: 69579.82878
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BadgeofKypariZar-84079"
  value: {
-  dps: 92155.41171
-  tps: 67940.3522
-  hps: 799.61202
+  dps: 92465.00311
+  tps: 68110.65976
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BlossomofPureSnow-89081"
  value: {
-  dps: 97770.6006
-  tps: 72052.51815
-  hps: 799.24028
+  dps: 98506.78672
+  tps: 72551.57178
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BottleofInfiniteStars-87057"
  value: {
-  dps: 92975.46528
-  tps: 68684.70291
-  hps: 799.61202
+  dps: 93288.41179
+  tps: 68858.0843
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BraidofTenSongs-84072"
  value: {
-  dps: 92155.41171
-  tps: 67940.3522
-  hps: 799.61202
+  dps: 92465.00311
+  tps: 68110.65976
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Brawler'sStatue-257885"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BreathoftheHydra-96827"
  value: {
-  dps: 104375.20874
-  tps: 76935.44206
-  hps: 832.69685
+  dps: 104434.37823
+  tps: 76906.42839
+  hps: 834.18381
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BroochofMunificentDeeds-87500"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 838.32938
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 840.27785
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BrutalTalismanoftheShado-PanAssault-94508"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-BurningPrimalDiamond"
  value: {
-  dps: 96701.13825
-  tps: 71242.86989
-  hps: 798.86854
+  dps: 97165.60076
+  tps: 71545.94989
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 95090.70802
-  tps: 69871.71967
-  hps: 796.26636
+  dps: 95504.74669
+  tps: 70114.86223
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CarbonicCarbuncle-81138"
  value: {
-  dps: 92663.35887
-  tps: 68210.15893
-  hps: 799.98376
+  dps: 93066.14067
+  tps: 68316.45984
+  hps: 802.58594
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Cha-Ye'sEssenceofBrilliance-96888"
  value: {
-  dps: 105034.64793
-  tps: 77728.24017
-  hps: 797.38158
+  dps: 104271.77283
+  tps: 77108.82904
+  hps: 798.86854
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CharmofTenSongs-84071"
  value: {
-  dps: 93734.1526
-  tps: 69020.47522
-  hps: 811.13595
+  dps: 94088.43396
+  tps: 69268.118
+  hps: 813.36639
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CommunalIdolofDestruction-101168"
  value: {
-  dps: 95258.63479
-  tps: 70084.49625
-  hps: 824.89032
+  dps: 94929.48678
+  tps: 69652.6854
+  hps: 824.51858
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CommunalStoneofDestruction-101171"
  value: {
-  dps: 98134.23131
-  tps: 72611.40365
-  hps: 800.72724
+  dps: 98350.86569
+  tps: 72761.38617
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CommunalStoneofWisdom-101183"
  value: {
-  dps: 99081.52262
-  tps: 73068.66345
+  dps: 99396.17374
+  tps: 73245.76612
   hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ContemplationofChi-Ji-103688"
  value: {
-  dps: 96384.18058
-  tps: 70928.21597
+  dps: 96594.84232
+  tps: 71035.87823
   hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ContemplationofChi-Ji-103988"
  value: {
-  dps: 98773.85977
-  tps: 72765.67905
-  hps: 802.2142
+  dps: 98817.17979
+  tps: 72571.37228
+  hps: 802.95768
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Coren'sColdChromiumCoaster-257880"
  value: {
-  dps: 92730.89529
-  tps: 68373.12842
-  hps: 799.24028
+  dps: 92790.77167
+  tps: 68255.8793
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CoreofDecency-87497"
  value: {
-  dps: 94236.95213
-  tps: 69260.26723
+  dps: 94077.9904
+  tps: 69068.07453
   hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CourageousPrimalDiamond"
  value: {
-  dps: 95681.48
-  tps: 70238.91361
-  hps: 798.12506
+  dps: 96212.95445
+  tps: 70593.40252
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sBadgeofConquest-93419"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sBadgeofDominance-93600"
  value: {
-  dps: 94606.26033
-  tps: 69637.41403
+  dps: 94953.02421
+  tps: 69786.12191
   hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sBadgeofVictory-93606"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sEmblemofCruelty-93485"
  value: {
-  dps: 92428.365
-  tps: 68078.85966
-  hps: 808.65158
+  dps: 92637.31704
+  tps: 68167.03603
+  hps: 809.00351
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sEmblemofMeditation-93487"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sEmblemofTenacity-93486"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 837.97497
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 839.96739
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sInsigniaofConquest-93424"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sInsigniaofDominance-93601"
  value: {
-  dps: 96719.5642
-  tps: 71314.78351
+  dps: 96993.07717
+  tps: 71363.40754
   hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedDreadfulGladiator'sInsigniaofVictory-93611"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sBadgeofConquest-98755"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sBadgeofDominance-98910"
  value: {
-  dps: 95286.18679
-  tps: 70180.27118
-  hps: 799.98376
+  dps: 95634.14165
+  tps: 70286.14515
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sBadgeofVictory-98912"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sEmblemofCruelty-98811"
  value: {
-  dps: 92699.09444
-  tps: 68301.2086
-  hps: 809.02332
+  dps: 92762.12197
+  tps: 68249.97799
+  hps: 808.27984
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sEmblemofMeditation-98813"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sEmblemofTenacity-98812"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 843.78682
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 845.79276
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sInsigniaofConquest-98760"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sInsigniaofDominance-98911"
  value: {
-  dps: 97665.79567
-  tps: 72060.88362
-  hps: 800.3555
+  dps: 97836.63558
+  tps: 72044.50935
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CraftedMalevolentGladiator'sInsigniaofVictory-98917"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CurseofHubris-102307"
  value: {
-  dps: 95120.82975
-  tps: 70326.94518
-  hps: 897.36149
+  dps: 95194.91019
+  tps: 70253.87912
+  hps: 899.44838
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CurseofHubris-104649"
  value: {
-  dps: 95532.7779
-  tps: 70643.08113
-  hps: 907.86513
+  dps: 95847.83131
+  tps: 70771.17177
+  hps: 913.79059
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CurseofHubris-104898"
  value: {
-  dps: 95149.60838
-  tps: 70437.90687
+  dps: 94972.70047
+  tps: 70032.02176
   hps: 888.61678
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CurseofHubris-105147"
  value: {
-  dps: 94365.71331
-  tps: 69778.09064
-  hps: 879.00214
+  dps: 94622.46224
+  tps: 69768.0331
+  hps: 878.18636
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CurseofHubris-105396"
  value: {
-  dps: 95430.81183
-  tps: 70547.45958
-  hps: 902.58371
+  dps: 95467.64691
+  tps: 70448.46654
+  hps: 905.52372
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CurseofHubris-105645"
  value: {
-  dps: 95620.66586
-  tps: 70633.48573
-  hps: 915.07944
+  dps: 96015.56336
+  tps: 70828.68157
+  hps: 920.19399
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-CutstitcherMedallion-93255"
  value: {
-  dps: 96384.18058
-  tps: 70928.21597
+  dps: 96594.84232
+  tps: 71035.87823
   hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Daelo'sFinalWords-87496"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DarkglowEmbroidery(Rank3)-4893"
  value: {
-  dps: 93817.32542
-  tps: 69039.85169
-  hps: 798.4968
+  dps: 94216.31176
+  tps: 69127.64118
+  hps: 803.32942
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DarkmistVortex-87172"
  value: {
-  dps: 94417.43963
-  tps: 69196.37187
-  hps: 829.35119
+  dps: 94716.78171
+  tps: 69342.16985
+  hps: 827.12075
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DeadeyeBadgeoftheShieldwall-93346"
  value: {
-  dps: 92724.31335
-  tps: 68479.47815
-  hps: 799.61202
+  dps: 93050.28255
+  tps: 68673.43498
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DelicateVialoftheSanguinaire-96895"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 95241.60216
-  tps: 70037.2713
-  hps: 796.26636
+  dps: 95808.7964
+  tps: 70495.46132
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DisciplineofXuen-103986"
  value: {
-  dps: 94852.94432
-  tps: 70383.25154
-  hps: 799.61202
+  dps: 95179.58303
+  tps: 70595.7388
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Dominator'sArcaneBadge-93342"
  value: {
-  dps: 96258.56969
-  tps: 70799.33309
+  dps: 96613.40095
+  tps: 70967.66218
   hps: 814.85335
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Dominator'sDeadeyeBadge-93341"
  value: {
-  dps: 92724.31335
-  tps: 68479.47815
-  hps: 799.61202
+  dps: 93050.28255
+  tps: 68673.43498
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Dominator'sDurableBadge-93345"
  value: {
-  dps: 92724.31335
-  tps: 68479.47815
-  hps: 799.61202
+  dps: 93050.28255
+  tps: 68673.43498
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Dominator'sKnightlyBadge-93344"
  value: {
-  dps: 92724.31335
-  tps: 68479.47815
-  hps: 799.61202
+  dps: 93050.28255
+  tps: 68673.43498
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Dominator'sMendingBadge-93343"
  value: {
-  dps: 94804.01807
-  tps: 69709.18621
-  hps: 800.72724
+  dps: 95122.34951
+  tps: 69961.39132
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sBadgeofConquest-84344"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sBadgeofDominance-84488"
  value: {
-  dps: 94606.26033
-  tps: 69637.41403
+  dps: 94953.02421
+  tps: 69786.12191
   hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sBadgeofVictory-84490"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sEmblemofCruelty-84399"
  value: {
-  dps: 92428.365
-  tps: 68078.85966
-  hps: 808.65158
+  dps: 92637.31704
+  tps: 68167.03603
+  hps: 809.00351
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sEmblemofMeditation-84401"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 837.97497
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 839.96739
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sInsigniaofConquest-84349"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sInsigniaofDominance-84489"
  value: {
-  dps: 96380.52852
-  tps: 70988.28178
-  hps: 801.09898
+  dps: 96940.09939
+  tps: 71322.59769
+  hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DreadfulGladiator'sInsigniaofVictory-84495"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-DurableBadgeoftheShieldwall-93350"
  value: {
-  dps: 92724.31335
-  tps: 68479.47815
-  hps: 799.61202
+  dps: 93050.28255
+  tps: 68673.43498
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EffulgentPrimalDiamond"
  value: {
-  dps: 94339.21274
-  tps: 69308.3092
-  hps: 809.68055
+  dps: 94600.08176
+  tps: 69324.01053
+  hps: 812.31794
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 95261.46521
-  tps: 69963.3172
-  hps: 798.86854
+  dps: 95719.2606
+  tps: 70256.54437
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EmblemofKypariZar-84077"
  value: {
-  dps: 92387.36385
-  tps: 68061.74169
-  hps: 801.47072
+  dps: 92650.91026
+  tps: 68187.34833
+  hps: 803.70116
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EmblemoftheCatacombs-83733"
  value: {
-  dps: 92732.1515
-  tps: 68161.45746
-  hps: 814.85335
+  dps: 92731.15345
+  tps: 68110.26817
+  hps: 814.10987
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EmptyFruitBarrel-81133"
  value: {
-  dps: 93872.47212
-  tps: 69128.4898
-  hps: 797.75332
+  dps: 94054.38328
+  tps: 69137.75808
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
  value: {
-  dps: 93700.74367
-  tps: 69130.73317
-  hps: 797.38158
+  dps: 93807.539
+  tps: 69059.03275
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-Colossus-4445"
  value: {
-  dps: 93700.74367
-  tps: 69130.73317
-  hps: 797.38158
+  dps: 93807.539
+  tps: 69059.03275
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-DancingSteel-4444"
  value: {
-  dps: 93700.74367
-  tps: 69130.73317
-  hps: 797.38158
+  dps: 93807.539
+  tps: 69059.03275
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 94813.54307
-  tps: 70100.76028
-  hps: 797.00984
+  dps: 94978.60384
+  tps: 70221.04718
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 93700.74367
-  tps: 69130.73317
-  hps: 797.38158
+  dps: 93807.05666
+  tps: 69059.03275
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
-  dps: 96629.08022
-  tps: 71137.76812
-  hps: 796.6381
+  dps: 96881.38602
+  tps: 71359.11552
+  hps: 799.24028
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 95383.57937
-  tps: 70285.30177
-  hps: 805.55985
+  dps: 95179.21014
+  tps: 69953.33042
+  hps: 807.79029
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 95241.60216
-  tps: 70037.2713
-  hps: 796.26636
+  dps: 95808.7964
+  tps: 70495.46132
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EssenceofTerror-87175"
  value: {
-  dps: 100752.31148
-  tps: 73992.1083
-  hps: 828.97945
+  dps: 100544.24933
+  tps: 73740.82409
+  hps: 827.12075
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EternalPrimalDiamond"
  value: {
-  dps: 94339.21274
-  tps: 69308.3092
-  hps: 798.86854
+  dps: 94600.08176
+  tps: 69324.01053
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.05059
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FearwurmBadge-84074"
  value: {
-  dps: 92387.36385
-  tps: 68061.74169
-  hps: 801.47072
+  dps: 92650.91026
+  tps: 68187.34833
+  hps: 803.70116
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FearwurmRelic-84070"
  value: {
-  dps: 94139.35029
-  tps: 69295.97208
-  hps: 813.36639
+  dps: 94257.28832
+  tps: 69427.6961
+  hps: 812.25117
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FelsoulIdolofDestruction-101263"
  value: {
-  dps: 95252.78954
-  tps: 70301.09916
-  hps: 818.57074
+  dps: 95752.36807
+  tps: 70548.03823
+  hps: 822.28814
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FelsoulStoneofDestruction-101266"
  value: {
-  dps: 98365.55874
-  tps: 72828.533
-  hps: 800.72724
+  dps: 98555.62954
+  tps: 72914.47851
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 95743.80955
-  tps: 70564.7238
-  hps: 881.35724
+  dps: 95469.66772
+  tps: 70279.40278
+  hps: 883.76862
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FlashfrozenResinGlobule-100951"
  value: {
-  dps: 94489.04224
-  tps: 69362.87922
-  hps: 802.58594
+  dps: 94571.55675
+  tps: 69397.98911
+  hps: 801.84246
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FlashfrozenResinGlobule-81263"
  value: {
-  dps: 94845.56703
-  tps: 69640.55873
-  hps: 801.84246
+  dps: 94832.66131
+  tps: 69552.01931
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FlashingSteelTalisman-81265"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FleetPrimalDiamond"
  value: {
-  dps: 95002.33527
-  tps: 69910.55662
-  hps: 798.86854
+  dps: 95261.63624
+  tps: 69924.7391
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ForlornPrimalDiamond"
  value: {
-  dps: 95261.46521
-  tps: 69963.3172
-  hps: 798.86854
+  dps: 95719.2606
+  tps: 70256.54437
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FortitudeoftheZandalari-94516"
  value: {
-  dps: 93344.71183
-  tps: 69019.86263
-  hps: 806.00979
+  dps: 93659.16904
+  tps: 69194.62807
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FortitudeoftheZandalari-95677"
  value: {
-  dps: 92975.46528
-  tps: 68684.70291
-  hps: 806.00979
+  dps: 93288.41179
+  tps: 68858.0843
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FortitudeoftheZandalari-96049"
  value: {
-  dps: 93470.75984
-  tps: 69134.27459
-  hps: 806.00979
+  dps: 93785.73276
+  tps: 69309.5125
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FortitudeoftheZandalari-96421"
  value: {
-  dps: 93626.46622
-  tps: 69275.607
-  hps: 806.00979
+  dps: 93942.07618
+  tps: 69451.42855
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-FortitudeoftheZandalari-96793"
  value: {
-  dps: 93767.34341
-  tps: 69403.47918
-  hps: 806.00979
+  dps: 94083.52975
+  tps: 69579.82878
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GazeoftheTwins-96915"
  value: {
-  dps: 93958.36844
-  tps: 69367.23537
-  hps: 795.52288
+  dps: 93829.94893
+  tps: 69049.4384
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Gerp'sPerfectArrow-87495"
  value: {
-  dps: 92412.37756
-  tps: 68111.3523
-  hps: 801.84246
+  dps: 92592.5999
+  tps: 68143.5414
+  hps: 803.32942
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 95743.80955
-  tps: 70564.7238
-  hps: 881.35724
+  dps: 95469.66772
+  tps: 70279.40278
+  hps: 883.76862
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofConquest-100195"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofConquest-100603"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofConquest-102856"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofConquest-103145"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofDominance-100490"
  value: {
-  dps: 97462.67925
-  tps: 71748.12848
-  hps: 800.3555
+  dps: 97720.58782
+  tps: 71844.49876
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofDominance-100576"
  value: {
-  dps: 97462.67925
-  tps: 71748.12848
-  hps: 800.3555
+  dps: 97720.58782
+  tps: 71844.49876
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofDominance-102830"
  value: {
-  dps: 97462.67925
-  tps: 71748.12848
-  hps: 800.3555
+  dps: 97720.58782
+  tps: 71844.49876
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofDominance-103308"
  value: {
-  dps: 97462.67925
-  tps: 71748.12848
-  hps: 800.3555
+  dps: 97720.58782
+  tps: 71844.49876
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofVictory-100500"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofVictory-100579"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofVictory-102833"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sBadgeofVictory-103314"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofCruelty-100305"
  value: {
-  dps: 93484.65572
-  tps: 68821.9387
-  hps: 806.87211
+  dps: 94138.77609
+  tps: 69472.26638
+  hps: 807.9081
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofCruelty-100626"
  value: {
-  dps: 93484.65572
-  tps: 68821.9387
-  hps: 806.87211
+  dps: 94138.77609
+  tps: 69472.26638
+  hps: 807.9081
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofCruelty-102877"
  value: {
-  dps: 93484.65572
-  tps: 68821.9387
-  hps: 806.87211
+  dps: 94138.77609
+  tps: 69472.26638
+  hps: 807.9081
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofCruelty-103210"
  value: {
-  dps: 93484.65572
-  tps: 68821.9387
-  hps: 806.87211
+  dps: 94138.77609
+  tps: 69472.26638
+  hps: 807.9081
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofMeditation-100307"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofMeditation-100559"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofMeditation-102813"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofMeditation-103212"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofTenacity-100306"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 863.9947
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 866.0476
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofTenacity-100652"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 863.9947
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 866.0476
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofTenacity-102903"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 863.9947
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 866.0476
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sEmblemofTenacity-103211"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 863.9947
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 866.0476
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sInsigniaofConquest-103150"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sInsigniaofDominance-103309"
  value: {
-  dps: 101235.04201
-  tps: 74730.78945
-  hps: 799.61202
+  dps: 101447.08868
+  tps: 74595.63737
+  hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-GrievousGladiator'sInsigniaofVictory-103319"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Hawkmaster'sTalon-89082"
  value: {
-  dps: 93451.24484
-  tps: 68769.99903
-  hps: 820.42944
+  dps: 93355.25777
+  tps: 68578.53631
+  hps: 817.45552
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Heart-LesionDefenderIdol-100999"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 850.74963
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Heart-LesionDefenderStone-101002"
  value: {
-  dps: 93405.48425
-  tps: 69074.32507
-  hps: 850.74963
+  dps: 93757.39214
+  tps: 69300.6299
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Heart-LesionIdolofBattle-100991"
  value: {
-  dps: 92750.36384
-  tps: 68382.07134
+  dps: 92818.19481
+  tps: 68302.97021
   hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Heart-LesionStoneofBattle-100990"
  value: {
-  dps: 93446.60155
-  tps: 69121.42721
-  hps: 799.61202
+  dps: 93778.7305
+  tps: 69319.54108
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-HeartofFire-81181"
  value: {
-  dps: 92425.30276
-  tps: 68185.32838
-  hps: 799.61202
+  dps: 92735.99837
+  tps: 68356.64758
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-HeartwarmerMedallion-93260"
  value: {
-  dps: 96384.18058
-  tps: 70928.21597
+  dps: 96594.84232
+  tps: 71035.87823
   hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-HelmbreakerMedallion-93261"
  value: {
-  dps: 93131.1682
-  tps: 68623.20582
-  hps: 799.61202
+  dps: 93919.65209
+  tps: 69136.58707
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Horridon'sLastGasp-96757"
  value: {
-  dps: 99239.20827
-  tps: 73118.16022
-  hps: 802.58594
+  dps: 99540.66107
+  tps: 73328.35594
+  hps: 802.2142
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 95241.60216
-  tps: 70037.2713
-  hps: 796.26636
+  dps: 95808.7964
+  tps: 70495.46132
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-IndomitablePrimalDiamond"
  value: {
-  dps: 94339.21274
-  tps: 69308.3092
-  hps: 809.68055
+  dps: 94600.08176
+  tps: 69324.01053
+  hps: 812.31794
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-InscribedBagofHydra-Spawn-96828"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-InsigniaofKypariZar-84078"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-IronBellyWok-89083"
  value: {
-  dps: 93451.24484
-  tps: 68769.99903
-  hps: 820.42944
+  dps: 93355.25777
+  tps: 68578.53631
+  hps: 817.45552
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-IronProtectorTalisman-85181"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 837.22205
+  dps: 91474.43935
+  tps: 67211.85811
+  hps: 839.16817
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeBanditFigurine-86043"
  value: {
-  dps: 93451.24484
-  tps: 68769.99903
-  hps: 820.42944
+  dps: 93355.25777
+  tps: 68578.53631
+  hps: 817.45552
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeBanditFigurine-86772"
  value: {
-  dps: 93219.29507
-  tps: 68563.84308
+  dps: 93419.54458
+  tps: 68736.23672
   hps: 817.45552
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeCharioteerFigurine-86042"
  value: {
-  dps: 93451.24484
-  tps: 68769.99903
-  hps: 820.42944
+  dps: 93355.25777
+  tps: 68578.53631
+  hps: 817.45552
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeCharioteerFigurine-86771"
  value: {
-  dps: 93219.29507
-  tps: 68563.84308
+  dps: 93419.54458
+  tps: 68736.23672
   hps: 817.45552
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeCourtesanFigurine-86045"
  value: {
-  dps: 96090.52225
-  tps: 70741.15859
+  dps: 96265.36838
+  tps: 70794.25827
   hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeCourtesanFigurine-86774"
  value: {
-  dps: 95453.75093
-  tps: 70212.7036
-  hps: 800.72724
+  dps: 95724.74793
+  tps: 70397.71515
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeMagistrateFigurine-86044"
  value: {
-  dps: 97770.6006
-  tps: 72052.51815
-  hps: 799.24028
+  dps: 98506.78672
+  tps: 72551.57178
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeMagistrateFigurine-86773"
  value: {
-  dps: 97180.40181
-  tps: 71644.25506
-  hps: 799.24028
+  dps: 97634.29281
+  tps: 71800.40419
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeWarlordFigurine-86046"
  value: {
-  dps: 93245.16292
-  tps: 68959.86307
-  hps: 853.68896
+  dps: 93577.96911
+  tps: 69162.97911
+  hps: 855.67336
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-JadeWarlordFigurine-86775"
  value: {
-  dps: 93007.83567
-  tps: 68740.97371
-  hps: 847.50969
+  dps: 93337.52656
+  tps: 68939.91632
+  hps: 849.47973
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Ji-Kun'sRisingWinds-96843"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-KnightlyBadgeoftheShieldwall-93349"
  value: {
-  dps: 92724.31335
-  tps: 68479.47815
-  hps: 799.61202
+  dps: 93050.28255
+  tps: 68673.43498
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-KnotofTenSongs-84073"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Kor'kronBookofHurting-92785"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Lao-Chin'sLiquidCourage-89079"
  value: {
-  dps: 93245.16292
-  tps: 68959.86307
-  hps: 853.68896
+  dps: 93577.96911
+  tps: 69162.97911
+  hps: 855.67336
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-LeiShen'sFinalOrders-87072"
  value: {
-  dps: 93282.38729
-  tps: 68508.88339
-  hps: 824.89032
+  dps: 93269.00689
+  tps: 68568.8716
+  hps: 824.51858
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-LessonsoftheDarkmaster-81268"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-LightdrinkerIdolofRage-101200"
  value: {
-  dps: 92683.33047
-  tps: 68419.53638
-  hps: 799.61202
+  dps: 92995.08175
+  tps: 68591.82275
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-LightdrinkerStoneofRage-101203"
  value: {
-  dps: 93469.01211
-  tps: 69147.52372
-  hps: 799.61202
+  dps: 93792.10373
+  tps: 69316.44632
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-LightoftheCosmos-87065"
  value: {
-  dps: 100248.37843
-  tps: 73831.13096
-  hps: 821.9164
+  dps: 100212.4558
+  tps: 73870.27179
+  hps: 821.17292
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-LordBlastington'sScopeofDoom-4699"
  value: {
-  dps: 93700.74367
-  tps: 69130.73317
-  hps: 797.38158
+  dps: 93807.539
+  tps: 69059.03275
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sBadgeofConquest-84934"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sBadgeofConquest-91452"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sBadgeofDominance-84940"
  value: {
-  dps: 95560.355
-  tps: 70379.43764
-  hps: 799.98376
+  dps: 95898.58011
+  tps: 70484.66247
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sBadgeofDominance-91753"
  value: {
-  dps: 95286.18679
-  tps: 70180.27118
-  hps: 799.98376
+  dps: 95634.14165
+  tps: 70286.14515
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sBadgeofVictory-84942"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sBadgeofVictory-91763"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sEmblemofCruelty-84936"
  value: {
-  dps: 92750.36384
-  tps: 68382.07134
-  hps: 807.18443
+  dps: 92818.19481
+  tps: 68302.97021
+  hps: 807.12501
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sEmblemofCruelty-91562"
  value: {
-  dps: 92699.09444
-  tps: 68301.2086
-  hps: 809.02332
+  dps: 92762.12197
+  tps: 68249.97799
+  hps: 808.27984
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sEmblemofMeditation-84939"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sEmblemofMeditation-91564"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sEmblemofTenacity-84938"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 846.35873
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 848.37065
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sEmblemofTenacity-91563"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 843.78682
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 845.79276
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sInsigniaofConquest-91457"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sInsigniaofDominance-91754"
  value: {
-  dps: 97633.66342
-  tps: 72000.32887
-  hps: 798.12506
+  dps: 97852.13315
+  tps: 72069.55184
+  hps: 799.24028
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MalevolentGladiator'sInsigniaofVictory-91768"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MarkoftheCatacombs-83731"
  value: {
-  dps: 93547.07156
-  tps: 69114.04493
-  hps: 801.84246
+  dps: 93743.97697
+  tps: 69196.66118
+  hps: 803.70116
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MarkoftheHardenedGrunt-92783"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MedallionofMystifyingVapors-93257"
  value: {
-  dps: 93385.48048
-  tps: 69089.27941
-  hps: 799.61202
+  dps: 93720.12857
+  tps: 69294.86295
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MedallionoftheCatacombs-83734"
  value: {
-  dps: 92084.23166
-  tps: 67875.74309
-  hps: 799.61202
+  dps: 92393.53183
+  tps: 68045.78385
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MendingBadgeoftheShieldwall-93348"
  value: {
-  dps: 94804.01807
-  tps: 69709.18621
-  hps: 800.72724
+  dps: 95122.34951
+  tps: 69961.39132
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MirrorScope-4700"
  value: {
-  dps: 93700.74367
-  tps: 69130.73317
-  hps: 797.38158
+  dps: 93807.539
+  tps: 69059.03275
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MistdancerDefenderIdol-101089"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 850.74963
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MistdancerDefenderStone-101087"
  value: {
-  dps: 93616.14306
-  tps: 69288.88404
-  hps: 850.74963
+  dps: 93920.67245
+  tps: 69449.0697
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MistdancerIdolofRage-101113"
  value: {
-  dps: 92683.33047
-  tps: 68419.53638
-  hps: 799.61202
+  dps: 92995.08175
+  tps: 68591.82275
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MistdancerStoneofRage-101117"
  value: {
-  dps: 93374.2579
-  tps: 69042.51834
-  hps: 799.61202
+  dps: 93707.31063
+  tps: 69235.61731
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MistdancerStoneofWisdom-101107"
  value: {
-  dps: 98485.7716
-  tps: 72515.36304
-  hps: 801.84246
+  dps: 98751.27134
+  tps: 72594.96728
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MithrilWristwatch-257884"
  value: {
-  dps: 96326.14798
-  tps: 71047.29225
-  hps: 799.24028
+  dps: 96419.01931
+  tps: 70917.24736
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MountainsageIdolofDestruction-101069"
  value: {
-  dps: 95192.60953
-  tps: 70351.26328
-  hps: 819.68596
+  dps: 94878.94569
+  tps: 69811.33263
+  hps: 822.28814
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-MountainsageStoneofDestruction-101072"
  value: {
-  dps: 98197.99348
-  tps: 72676.18181
-  hps: 800.72724
+  dps: 98456.25563
+  tps: 72849.37935
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-NitroBoosts-4223"
  value: {
-  dps: 96701.13825
-  tps: 71242.86989
-  hps: 798.86854
+  dps: 97165.60076
+  tps: 71545.94989
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-OathswornDefenderIdol-101303"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 850.74963
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-OathswornDefenderStone-101306"
  value: {
-  dps: 93201.04917
-  tps: 68893.61602
-  hps: 850.74963
+  dps: 93520.3897
+  tps: 69051.26341
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-OathswornIdolofBattle-101295"
  value: {
-  dps: 92750.36384
-  tps: 68382.07134
+  dps: 92818.19481
+  tps: 68302.97021
   hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-OathswornStoneofBattle-101294"
  value: {
-  dps: 93438.77825
-  tps: 69117.83872
-  hps: 799.61202
+  dps: 93771.5426
+  tps: 69302.18696
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PhaseFingers-4697"
  value: {
-  dps: 96432.27023
-  tps: 70998.51718
-  hps: 798.86854
+  dps: 96896.06895
+  tps: 71300.9218
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PouchofWhiteAsh-103639"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PowerfulPrimalDiamond"
  value: {
-  dps: 94339.21274
-  tps: 69308.3092
-  hps: 809.68055
+  dps: 94600.08176
+  tps: 69324.01053
+  hps: 812.31794
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PriceofProgress-81266"
  value: {
-  dps: 94921.53457
-  tps: 69836.63544
-  hps: 800.3555
+  dps: 95437.05905
+  tps: 70250.02119
+  hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sBadgeofConquest-102659"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sBadgeofConquest-103342"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sBadgeofDominance-102633"
  value: {
-  dps: 99507.02812
-  tps: 73268.25117
-  hps: 799.98376
+  dps: 99636.98999
+  tps: 73212.27627
+  hps: 801.84246
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sBadgeofDominance-103505"
  value: {
-  dps: 99507.02812
-  tps: 73268.25117
-  hps: 799.98376
+  dps: 99636.98999
+  tps: 73212.27627
+  hps: 801.84246
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sBadgeofVictory-102636"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sBadgeofVictory-103511"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sEmblemofCruelty-102680"
  value: {
-  dps: 94236.25985
-  tps: 69574.95357
-  hps: 807.16462
+  dps: 95139.86838
+  tps: 70295.74965
+  hps: 808.65158
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sEmblemofCruelty-103407"
  value: {
-  dps: 94236.25985
-  tps: 69574.95357
-  hps: 807.16462
+  dps: 95139.86838
+  tps: 70295.74965
+  hps: 808.65158
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sEmblemofMeditation-102616"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sEmblemofMeditation-103409"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sEmblemofTenacity-102706"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 881.29665
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 883.38977
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sEmblemofTenacity-103408"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 881.29665
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 883.38977
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sInsigniaofConquest-103347"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sInsigniaofDominance-103506"
  value: {
-  dps: 104275.78921
-  tps: 77145.57767
-  hps: 797.75332
+  dps: 104472.32952
+  tps: 76829.95839
+  hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PridefulGladiator'sInsigniaofVictory-103516"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Primordius'TalismanofRage-96873"
  value: {
-  dps: 93951.29755
-  tps: 69379.66905
-  hps: 799.61202
+  dps: 94825.09642
+  tps: 69972.93523
+  hps: 802.2142
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 110319.99446
-  tps: 81705.08718
-  hps: 798.4968
+  dps: 110429.00421
+  tps: 81705.77973
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 93731.36209
-  tps: 69102.75539
-  hps: 862.06625
+  dps: 94236.45872
+  tps: 69561.33052
+  hps: 861.66436
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 92572.10627
-  tps: 68248.31619
-  hps: 864.87952
+  dps: 92473.22289
+  tps: 68078.81244
+  hps: 865.28142
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Qin-xi'sPolarizingSeal-87075"
  value: {
-  dps: 96227.36744
-  tps: 70743.40175
-  hps: 801.84246
+  dps: 96148.1711
+  tps: 70552.07515
+  hps: 803.32942
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RegaliaoftheHornedNightmare"
  value: {
-  dps: 107328.32359
-  tps: 79034.84108
-  hps: 1002.5457
+  dps: 107610.45591
+  tps: 79237.38626
+  hps: 1004.36273
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RegaliaoftheThousandfoldHells"
  value: {
-  dps: 109320.6588
-  tps: 80943.45115
-  hps: 975.57534
+  dps: 109218.84627
+  tps: 80546.27879
+  hps: 980.92096
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RelicofChi-Ji-79330"
  value: {
-  dps: 96336.26877
-  tps: 70890.32137
+  dps: 96613.94957
+  tps: 71050.07469
   hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RelicofKypariZar-84075"
  value: {
-  dps: 93710.02662
-  tps: 68956.63454
-  hps: 813.73813
+  dps: 94288.03027
+  tps: 69412.72126
+  hps: 814.48161
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RelicofNiuzao-79329"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 847.50969
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 849.47973
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RelicofXuen-79327"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RelicofXuen-79328"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ResolveofNiuzao-103690"
  value: {
-  dps: 92877.5927
-  tps: 68595.86539
-  hps: 799.61202
+  dps: 93190.13878
+  tps: 68768.87992
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ResolveofNiuzao-103990"
  value: {
-  dps: 93626.46622
-  tps: 69275.607
-  hps: 799.61202
+  dps: 93942.07618
+  tps: 69451.42855
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ReverberatingPrimalDiamond"
  value: {
-  dps: 95766.68941
-  tps: 70577.65511
-  hps: 798.86854
+  dps: 96021.81437
+  tps: 70590.11378
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RevitalizingPrimalDiamond"
  value: {
-  dps: 95766.68941
-  tps: 70577.65511
-  hps: 798.86854
+  dps: 96021.81437
+  tps: 70590.11378
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RuneofRe-Origination-96918"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SI:7Operative'sManual-92784"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ScrollofReveredAncestors-89080"
  value: {
-  dps: 96090.52225
-  tps: 70741.15859
+  dps: 96265.36838
+  tps: 70794.25827
   hps: 800.3555
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SearingWords-81267"
  value: {
-  dps: 92476.10308
-  tps: 68105.47843
-  hps: 802.2142
+  dps: 92670.64351
+  tps: 68180.80555
+  hps: 802.58594
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Sha-SkinRegalia"
  value: {
-  dps: 102563.57778
-  tps: 75972.85777
-  hps: 886.48996
+  dps: 102774.60623
+  tps: 76005.49833
+  hps: 887.30177
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ShadowflameRegalia"
  value: {
-  dps: 72598.82465
-  tps: 52906.78413
-  hps: 637.63128
+  dps: 73021.94091
+  tps: 53039.87789
+  hps: 637.93319
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Shock-ChargerMedallion-93259"
  value: {
-  dps: 98988.74977
-  tps: 72615.81998
+  dps: 99043.90628
+  tps: 72701.03174
   hps: 823.40336
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SigilofCompassion-83736"
  value: {
-  dps: 92084.23166
-  tps: 67875.74309
-  hps: 799.61202
+  dps: 92442.99537
+  tps: 68082.35699
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SigilofDevotion-83740"
  value: {
-  dps: 92370.73949
-  tps: 68049.22105
-  hps: 801.84246
+  dps: 92570.48697
+  tps: 68135.43844
+  hps: 803.70116
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SigilofFidelity-83737"
  value: {
-  dps: 93725.06314
-  tps: 69040.34112
-  hps: 813.36639
+  dps: 94075.92071
+  tps: 69107.66316
+  hps: 815.59683
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SigilofGrace-83738"
  value: {
-  dps: 92084.23166
-  tps: 67875.74309
-  hps: 799.61202
+  dps: 92393.53183
+  tps: 68045.78385
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SigilofKypariZar-84076"
  value: {
-  dps: 93639.19651
-  tps: 69202.71631
-  hps: 801.47072
+  dps: 93932.65748
+  tps: 69354.63755
+  hps: 803.70116
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SigilofPatience-83739"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SigiloftheCatacombs-83732"
  value: {
-  dps: 93691.59229
-  tps: 68943.62738
-  hps: 816.71204
+  dps: 94231.74807
+  tps: 69461.58317
+  hps: 813.73813
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 98583.02313
-  tps: 72567.25946
-  hps: 837.52947
+  dps: 98255.97565
+  tps: 72366.92896
+  hps: 835.67077
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SkullrenderMedallion-93256"
  value: {
-  dps: 93131.1682
-  tps: 68623.20582
-  hps: 799.61202
+  dps: 93919.65209
+  tps: 69136.58707
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SoothingTalismanoftheShado-PanAssault-94509"
  value: {
-  dps: 97846.68582
-  tps: 72152.02733
-  hps: 799.98376
+  dps: 98126.25024
+  tps: 72243.43882
+  hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SoulBarrier-96927"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 887.39102
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 889.45376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SparkofZandalar-96770"
  value: {
-  dps: 94233.50454
-  tps: 69139.25198
-  hps: 833.44033
+  dps: 94285.28216
+  tps: 69106.86487
+  hps: 835.29903
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SpiritsoftheSun-87163"
  value: {
-  dps: 96836.77573
-  tps: 71206.84267
-  hps: 799.24028
+  dps: 97162.8304
+  tps: 71463.8815
+  hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SpringrainIdolofDestruction-101023"
  value: {
-  dps: 95305.83379
-  tps: 70233.98148
-  hps: 820.80118
+  dps: 95176.95331
+  tps: 69969.79024
+  hps: 821.9164
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SpringrainIdolofRage-101009"
  value: {
-  dps: 92683.33047
-  tps: 68419.53638
-  hps: 799.61202
+  dps: 92995.08175
+  tps: 68591.82275
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SpringrainStoneofDestruction-101026"
  value: {
-  dps: 98214.04151
-  tps: 72673.49029
-  hps: 800.72724
+  dps: 98481.01747
+  tps: 72858.25829
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SpringrainStoneofRage-101012"
  value: {
-  dps: 93665.03695
-  tps: 69312.25522
-  hps: 799.61202
+  dps: 93983.98417
+  tps: 69479.35498
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SpringrainStoneofWisdom-101041"
  value: {
-  dps: 98853.57861
-  tps: 72749.61069
-  hps: 798.86854
+  dps: 99097.21375
+  tps: 72839.52949
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Static-Caster'sMedallion-93254"
  value: {
-  dps: 98988.74977
-  tps: 72615.81998
+  dps: 99043.90628
+  tps: 72701.03174
   hps: 823.40336
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SteadfastFootman'sMedallion-92782"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SteadfastTalismanoftheShado-PanAssault-94507"
  value: {
-  dps: 93344.71183
-  tps: 69019.86263
-  hps: 799.61202
+  dps: 93659.16904
+  tps: 69194.62807
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-StreamtalkerIdolofDestruction-101222"
  value: {
-  dps: 95820.88283
-  tps: 70677.0668
-  hps: 823.03162
+  dps: 95256.63336
+  tps: 69847.82207
+  hps: 824.89032
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-StreamtalkerIdolofRage-101217"
  value: {
-  dps: 92683.33047
-  tps: 68419.53638
-  hps: 799.61202
+  dps: 92995.08175
+  tps: 68591.82275
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-StreamtalkerStoneofDestruction-101225"
  value: {
-  dps: 97940.86773
-  tps: 72406.42639
-  hps: 800.72724
+  dps: 98182.00691
+  tps: 72572.95702
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-StreamtalkerStoneofRage-101220"
  value: {
-  dps: 93317.93742
-  tps: 69006.04738
-  hps: 799.61202
+  dps: 93653.3407
+  tps: 69199.27872
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-StreamtalkerStoneofWisdom-101250"
  value: {
-  dps: 99266.98364
-  tps: 73204.07453
+  dps: 99183.50329
+  tps: 72895.28401
   hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-StuffofNightmares-87160"
  value: {
-  dps: 93097.06455
-  tps: 68795.07679
-  hps: 799.61202
+  dps: 93410.50855
+  tps: 68968.91397
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SunsoulDefenderIdol-101160"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 850.74963
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SunsoulDefenderStone-101163"
  value: {
-  dps: 93489.6102
-  tps: 69151.56256
-  hps: 850.74963
+  dps: 93771.70632
+  tps: 69301.06878
+  hps: 852.7272
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SunsoulIdolofBattle-101152"
  value: {
-  dps: 92750.36384
-  tps: 68382.07134
+  dps: 92818.19481
+  tps: 68302.97021
   hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SunsoulStoneofBattle-101151"
  value: {
-  dps: 93377.28071
-  tps: 69048.20945
-  hps: 799.61202
+  dps: 93762.88376
+  tps: 69303.54926
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SunsoulStoneofWisdom-101138"
  value: {
-  dps: 99372.12827
-  tps: 73226.75708
-  hps: 798.4968
+  dps: 99406.08134
+  tps: 73036.80331
+  hps: 799.24028
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SwordguardEmbroidery(Rank3)-4894"
  value: {
-  dps: 93817.32542
-  tps: 69039.85169
-  hps: 798.4968
+  dps: 94217.73815
+  tps: 69127.64118
+  hps: 803.32942
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SymboloftheCatacombs-83735"
  value: {
-  dps: 92084.23166
-  tps: 67875.74309
-  hps: 799.61202
+  dps: 92393.53183
+  tps: 68045.78385
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 98531.48547
-  tps: 72725.83652
-  hps: 799.98376
+  dps: 99274.01567
+  tps: 73226.12813
+  hps: 798.12506
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TalismanofBloodlust-96864"
  value: {
-  dps: 94147.95557
-  tps: 69033.11107
-  hps: 833.44033
+  dps: 94302.06658
+  tps: 69011.98405
+  hps: 837.52947
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TerrorintheMists-87167"
  value: {
-  dps: 94041.4758
-  tps: 69312.92084
-  hps: 799.61202
+  dps: 94326.85766
+  tps: 69445.55625
+  hps: 797.00984
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Thousand-YearPickledEgg-257881"
  value: {
-  dps: 97730.69682
-  tps: 71867.31067
-  hps: 816.71204
+  dps: 97617.82291
+  tps: 71580.57317
+  hps: 813.73813
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TrailseekerIdolofRage-101054"
  value: {
-  dps: 92683.33047
-  tps: 68419.53638
-  hps: 799.61202
+  dps: 92995.08175
+  tps: 68591.82275
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TrailseekerStoneofRage-101057"
  value: {
-  dps: 93574.28341
-  tps: 69247.81815
-  hps: 799.61202
+  dps: 93778.59007
+  tps: 69315.97127
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofConquest-100043"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofConquest-91099"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofConquest-94373"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofConquest-99772"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofDominance-100016"
  value: {
-  dps: 96159.58313
-  tps: 70792.21325
-  hps: 800.3555
+  dps: 96522.19799
+  tps: 70963.14637
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofDominance-91400"
  value: {
-  dps: 96159.58313
-  tps: 70792.21325
-  hps: 800.3555
+  dps: 96522.19799
+  tps: 70963.14637
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofDominance-94346"
  value: {
-  dps: 96159.58313
-  tps: 70792.21325
-  hps: 800.3555
+  dps: 96522.19799
+  tps: 70963.14637
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofDominance-99937"
  value: {
-  dps: 96159.58313
-  tps: 70792.21325
-  hps: 800.3555
+  dps: 96522.19799
+  tps: 70963.14637
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofVictory-100019"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofVictory-91410"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofVictory-94349"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sBadgeofVictory-99943"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofCruelty-100066"
  value: {
-  dps: 92797.31448
-  tps: 68330.5127
-  hps: 806.50037
+  dps: 93177.02869
+  tps: 68692.1343
+  hps: 806.73346
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofCruelty-91209"
  value: {
-  dps: 92797.31448
-  tps: 68330.5127
-  hps: 806.50037
+  dps: 93177.02869
+  tps: 68692.1343
+  hps: 806.73346
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofCruelty-94396"
  value: {
-  dps: 92797.31448
-  tps: 68330.5127
-  hps: 806.50037
+  dps: 93177.02869
+  tps: 68692.1343
+  hps: 806.73346
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofCruelty-99838"
  value: {
-  dps: 92797.31448
-  tps: 68330.5127
-  hps: 806.50037
+  dps: 93177.02869
+  tps: 68692.1343
+  hps: 806.73346
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofMeditation-91211"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofMeditation-94329"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofMeditation-99840"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofMeditation-99990"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 806.00979
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 807.92791
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofTenacity-100092"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 851.53596
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 853.5599
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofTenacity-91210"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 851.53596
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 853.5599
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofTenacity-94422"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 851.53596
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 853.5599
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sEmblemofTenacity-99839"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 851.53596
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 853.5599
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sInsigniaofConquest-100026"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sInsigniaofDominance-100152"
  value: {
-  dps: 98872.34227
-  tps: 73030.88988
-  hps: 798.4968
+  dps: 99223.43263
+  tps: 73066.08323
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalGladiator'sInsigniaofVictory-100085"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-TyrannicalPrimalDiamond"
  value: {
-  dps: 94339.21274
-  tps: 69308.3092
-  hps: 798.86854
+  dps: 94600.08176
+  tps: 69324.01053
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 104867.56019
-  tps: 77648.65882
-  hps: 799.24028
+  dps: 104742.53744
+  tps: 77461.01441
+  hps: 802.95768
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-VaporshieldMedallion-93262"
  value: {
-  dps: 93385.48048
-  tps: 69089.27941
-  hps: 799.61202
+  dps: 93720.12857
+  tps: 69294.86295
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-VialofDragon'sBlood-87063"
  value: {
-  dps: 92975.46528
-  tps: 68684.70291
-  hps: 799.61202
+  dps: 93288.41179
+  tps: 68858.0843
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-VialofIchorousBlood-100963"
  value: {
-  dps: 94571.69139
-  tps: 69549.18481
+  dps: 94860.30587
+  tps: 69787.81318
   hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-VialofIchorousBlood-81264"
  value: {
-  dps: 94958.67252
-  tps: 69823.69673
-  hps: 800.72724
+  dps: 95277.32468
+  tps: 70076.17058
+  hps: 799.98376
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ViciousTalismanoftheShado-PanAssault-94511"
  value: {
-  dps: 91169.27135
-  tps: 67045.24691
-  hps: 799.61202
+  dps: 91474.82811
+  tps: 67211.85811
+  hps: 801.47072
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-VolatileTalismanoftheShado-PanAssault-94510"
  value: {
-  dps: 100430.87847
-  tps: 73585.4304
-  hps: 829.72293
+  dps: 100161.0671
+  tps: 73111.89668
+  hps: 826.00554
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-WindsweptPages-81125"
  value: {
-  dps: 93016.04738
-  tps: 68303.86663
-  hps: 818.94248
+  dps: 93139.24726
+  tps: 68587.21077
+  hps: 816.71204
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-WoundripperMedallion-93253"
  value: {
-  dps: 93131.1682
-  tps: 68623.20582
-  hps: 799.61202
+  dps: 93919.65209
+  tps: 69136.58707
+  hps: 800.72724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 102021.05786
-  tps: 75161.49528
-  hps: 801.47072
+  dps: 103491.58236
+  tps: 76198.42041
+  hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 122438.88679
-  tps: 95639.64911
-  hps: 883.36672
+  dps: 122308.92233
+  tps: 95377.13014
+  hps: 881.35724
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-Yu'lon'sBite-103987"
  value: {
-  dps: 103313.24234
-  tps: 76284.78154
-  hps: 798.4968
+  dps: 103604.2578
+  tps: 76372.23994
+  hps: 801.09898
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 98276.74329
-  tps: 72647.90609
-  hps: 798.12506
+  dps: 98230.93165
+  tps: 72382.25039
+  hps: 799.61202
  }
 }
 dps_results: {
  key: "TestDestruction-Average-Default"
  value: {
-  dps: 100917.61138
-  tps: 74679.63057
-  hps: 800.3241
+  dps: 101021.13928
+  tps: 74652.43121
+  hps: 800.19641
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Goblin-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 218987.30415
-  tps: 187367.06843
+  dps: 219241.53583
+  tps: 187442.94521
   hps: 2306.54827
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Goblin-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 97996.45782
-  tps: 72476.62771
+  dps: 98203.49632
+  tps: 72670.55813
   hps: 809.61517
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Goblin-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 151467.54608
-  tps: 103472.75978
-  hps: 955.33103
+  dps: 151034.78919
+  tps: 103444.16116
+  hps: 959.04827
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Goblin-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 140530.64347
-  tps: 122450.21104
-  hps: 2063.32365
+  dps: 139834.12771
+  tps: 122160.22949
+  hps: 2062.97352
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Goblin-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 62017.94228
-  tps: 45605.16207
-  hps: 720.22005
+  dps: 62179.40174
+  tps: 45841.82193
+  hps: 719.16966
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Goblin-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 81371.80013
-  tps: 55354.79258
+  dps: 81578.21102
+  tps: 55321.85116
   hps: 700.26257
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Human-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 215803.64109
-  tps: 184779.78588
-  hps: 2287.59034
+  dps: 215798.27858
+  tps: 185107.79618
+  hps: 2290.56413
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Human-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 96732.31051
-  tps: 71629.07079
-  hps: 800.69379
+  dps: 97351.9199
+  tps: 71984.76211
+  hps: 798.09172
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Human-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 149395.74874
-  tps: 101883.28182
-  hps: 955.33103
+  dps: 150194.12248
+  tps: 102370.51936
+  hps: 951.61379
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Human-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 135380.91971
-  tps: 119951.98537
-  hps: 2048.61814
+  dps: 135045.08704
+  tps: 120507.28565
+  hps: 2050.01866
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Human-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 61582.93935
-  tps: 45219.51106
-  hps: 712.51716
+  dps: 61728.15072
+  tps: 45296.60069
+  hps: 710.41637
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Human-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 81195.41065
-  tps: 55399.05264
+  dps: 81336.05159
+  tps: 55487.62315
   hps: 700.26257
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Orc-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 220785.70164
-  tps: 188852.4828
-  hps: 2288.80112
+  dps: 220559.31743
+  tps: 188840.80645
+  hps: 2294.37721
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Orc-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 98808.25776
-  tps: 72977.74963
-  hps: 799.98376
+  dps: 99552.3994
+  tps: 73479.6882
+  hps: 798.12506
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Orc-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 154107.90657
-  tps: 104826.31531
-  hps: 955.37094
+  dps: 155006.61617
+  tps: 105398.46846
+  hps: 951.65354
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Orc-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 138588.51399
-  tps: 122414.51295
-  hps: 2048.70074
+  dps: 138226.66996
+  tps: 122955.39241
+  hps: 2050.10132
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Orc-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 63098.45988
-  tps: 46200.01333
-  hps: 712.89603
+  dps: 63300.50617
+  tps: 46340.76564
+  hps: 711.14531
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Orc-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 83927.71994
-  tps: 57077.01624
+  dps: 84099.29664
+  tps: 57166.13204
   hps: 700.2908
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Troll-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 225784.77912
-  tps: 191345.75432
-  hps: 2305.80482
+  dps: 225568.89596
+  tps: 191062.95828
+  hps: 2303.57447
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Troll-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 99225.19854
-  tps: 72989.46052
-  hps: 814.07586
+  dps: 99980.60542
+  tps: 73709.79174
+  hps: 815.56276
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Troll-p1-prebis-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 154495.74036
-  tps: 104272.74275
+  dps: 153246.29805
+  tps: 102823.45642
   hps: 985.06896
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Troll-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 148344.45682
-  tps: 130425.16158
-  hps: 2036.36354
+  dps: 148146.69196
+  tps: 130158.34651
+  hps: 2037.06381
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Troll-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 62250.36316
-  tps: 45739.52762
-  hps: 724.77176
+  dps: 62281.92271
+  tps: 45838.54535
+  hps: 727.57281
  }
 }
 dps_results: {
  key: "TestDestruction-Settings-Troll-p1-prebis-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 81411.21506
-  tps: 54700.67845
+  dps: 82245.48003
+  tps: 54699.27937
   hps: 705.51454
  }
 }
 dps_results: {
  key: "TestDestruction-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 98808.25776
-  tps: 72977.74963
-  hps: 799.98376
+  dps: 99552.3994
+  tps: 73479.6882
+  hps: 798.12506
  }
 }

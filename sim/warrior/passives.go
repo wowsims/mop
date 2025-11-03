@@ -30,7 +30,7 @@ func (war *Warrior) registerEnrage() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+	war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Enrage - Trigger",
 		ActionID:       actionID,
 		Callback:       core.CallbackOnSpellHitDealt,
@@ -102,12 +102,14 @@ func (warrior *Warrior) registerDeepWounds() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&warrior.Unit, core.ProcTrigger{
-		Name:           "Deep Wounds - Trigger",
-		ActionID:       actionID,
-		ClassSpellMask: SpellMaskMortalStrike | SpellMaskBloodthirst | SpellMaskDevastate,
-		Callback:       core.CallbackOnSpellHitDealt,
-		Outcome:        core.OutcomeLanded,
+	warrior.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Deep Wounds - Trigger",
+		ActionID:           actionID,
+		ClassSpellMask:     SpellMaskMortalStrike | SpellMaskBloodthirst | SpellMaskDevastate,
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			warrior.DeepWounds.Cast(sim, result.Target)
 		},
@@ -125,11 +127,12 @@ func (war *Warrior) registerBloodAndThunder() {
 		FloatValue: 0.5,
 	})
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-		Name:           "Blood and Thunder",
-		Callback:       core.CallbackOnSpellHitDealt,
-		Outcome:        core.OutcomeLanded,
-		ClassSpellMask: SpellMaskThunderClap,
+	war.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Blood and Thunder",
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		ClassSpellMask:     SpellMaskThunderClap,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			war.DeepWounds.ApplyAllDots(sim)

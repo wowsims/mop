@@ -162,6 +162,14 @@ func (bear *GuardianDruid) registerHeartOfTheWild() {
 			bear.HeartOfTheWildAura.Activate(sim)
 		},
 	})
+
+	// Partial CD refund change for MoP Classic
+	bear.BearFormAura.ApplyOnGain(func(_ *core.Aura, sim *core.Simulation) {
+		if bear.HeartOfTheWildAura.IsActive() {
+			bear.HeartOfTheWild.CD.Reduce(bear.HeartOfTheWildAura.RemainingDuration(sim) * 4)
+			bear.HeartOfTheWildAura.Deactivate(sim)
+		}
+	})
 }
 
 func (bear *GuardianDruid) registerDreamOfCenarius() {
@@ -220,7 +228,7 @@ func (bear *GuardianDruid) registerDreamOfCenarius() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&bear.Unit, core.ProcTrigger{
+	bear.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Dream of Cenarius Trigger",
 		Callback:       core.CallbackOnSpellHitDealt,
 		ClassSpellMask: druid.DruidSpellMangleBear,

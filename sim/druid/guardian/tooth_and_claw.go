@@ -72,7 +72,7 @@ func (bear *GuardianDruid) registerToothAndClawPassive() {
 	}))
 
 	// Finally, register the trigger for the personal buff.
-	core.MakeProcTriggerAura(&bear.Unit, core.ProcTrigger{
+	bear.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Tooth and Claw Trigger",
 		Callback:           core.CallbackOnSpellHitDealt,
 		ProcMask:           core.ProcMaskWhiteHit,

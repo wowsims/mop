@@ -26,7 +26,7 @@ export class ResultsViewer extends Component {
 	readonly pendingElem: HTMLDivElement;
 	readonly contentElem: HTMLDivElement;
 	readonly warningElem: HTMLDivElement;
-	readonly buttonElem: HTMLDivElement;
+	readonly buttonWrapperElem: HTMLDivElement;
 	private warningsLink: HTMLElement;
 
 	private warnings: Array<SimWarning> = [];
@@ -53,7 +53,7 @@ export class ResultsViewer extends Component {
 		this.pendingElem = pendingElemRef.value!;
 		this.contentElem = contentElemRef.value!;
 		this.warningElem = warningElemRef.value!;
-		this.buttonElem = buttonElemRef.value!;
+		this.buttonWrapperElem = buttonElemRef.value!;
 
 		this.warningsLink = this.addWarningsLink();
 		this.updateWarnings();
@@ -105,7 +105,13 @@ export class ResultsViewer extends Component {
 
 		const list = ((this.warningsTooltip?.props.content as Element)?.cloneNode(true) || <></>) as HTMLElement;
 		if (list) list.innerHTML = '';
-		list.appendChild(<>{activeWarnings?.map(warning => <li>{warning}</li>)}</>);
+		list.appendChild(
+			<>
+				{activeWarnings?.map(warning => (
+					<li>{warning}</li>
+				))}
+			</>,
+		);
 
 		this.warningsLink.parentElement?.classList?.[activeWarnings.length ? 'remove' : 'add']('hide');
 		this.warningsTooltip?.setContent(list);
@@ -114,7 +120,7 @@ export class ResultsViewer extends Component {
 	hideAll() {
 		this.contentElem.style.display = 'none';
 		this.pendingElem.style.display = 'none';
-		this.buttonElem.style.display = 'none';
+		this.buttonWrapperElem.style.display = 'none';
 	}
 
 	setPending() {
@@ -133,17 +139,26 @@ export class ResultsViewer extends Component {
 	}
 
 	addAbortButton(abortClicked: (event: MouseEvent) => void) {
-		this.buttonElem.replaceChildren(
-			<button className="sim-abort-button" onclick={abortClicked}>
+		const buttonRef = ref<HTMLButtonElement>();
+		const onClick = (event: MouseEvent) => {
+			if (buttonRef.value) {
+				buttonRef.value.disabled = true;
+				buttonRef.value.innerText = 'Stopping...';
+			}
+			abortClicked?.(event);
+		};
+
+		this.buttonWrapperElem.replaceChildren(
+			<button ref={buttonRef} className="sim-abort-button" onclick={onClick}>
 				<i className="fa fa-times fa-lg me-1" />
 				Stop
 			</button>,
 		);
-		this.buttonElem.style.display = 'block';
+		this.buttonWrapperElem.style.display = 'block';
 	}
 
 	removeAbortButton() {
-		this.buttonElem.replaceChildren();
-		this.buttonElem.style.display = 'none';
+		this.buttonWrapperElem.replaceChildren();
+		this.buttonWrapperElem.style.display = 'none';
 	}
 }

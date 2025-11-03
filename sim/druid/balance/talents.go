@@ -88,10 +88,12 @@ func (moonkin *BalanceDruid) registerDreamOfCenarius() {
 		Duration: time.Second * 30,
 	})
 
-	core.MakeProcTriggerAura(&moonkin.Unit, core.ProcTrigger{
-		Name:           "Dream of Cenarius Trigger",
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: druid.DruidSpellHealingTouch,
+	moonkin.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Dream of Cenarius Trigger",
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     druid.DruidSpellHealingTouch,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			moonkin.DreamOfCenarius.Activate(sim)
 		},
@@ -109,11 +111,13 @@ func (moonkin *BalanceDruid) registerSoulOfTheForest() {
 		Duration: time.Second * 30,
 	})
 
-	core.MakeProcTriggerAura(&moonkin.Unit, core.ProcTrigger{
-		Name:           "Astral Insight (SotF) Trigger",
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: druid.DruidSpellWrath | druid.DruidSpellStarfire | druid.DruidSpellStarsurge,
-		ProcChance:     0.08,
+	moonkin.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Astral Insight (SotF) Trigger",
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     druid.DruidSpellWrath | druid.DruidSpellStarfire | druid.DruidSpellStarsurge,
+		ProcChance:         0.08,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			moonkin.AstralInsight.Activate(sim)
 		},

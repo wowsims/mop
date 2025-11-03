@@ -1,5 +1,6 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { GemColor, ItemSlot } from '../../../proto/common';
 import { UIGem } from '../../../proto/ui';
@@ -32,7 +33,7 @@ export default class GemSelectorModal extends BaseModal {
 
 		window.scrollTo({ top: 0 });
 
-		this.header!.insertAdjacentElement('afterbegin', <h6 className="selector-modal-title mb-3">Choose Default Gem</h6>);
+		this.header!.insertAdjacentElement('afterbegin', <h6 className="selector-modal-title mb-3">{i18n.t('bulk_tab.gem_selector.title')}</h6>);
 		const contentRef = ref<HTMLDivElement>();
 		this.body.appendChild(<div ref={contentRef} className="tab-content selector-modal-tab-content"></div>);
 		this.contentElem = contentRef.value!;

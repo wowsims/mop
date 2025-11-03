@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -58,6 +59,7 @@ func ScanRawItemData(rows *sql.Rows) (dbc.Item, error) {
 		&raw.ItemSubClass,
 		&raw.NameDescription,
 		&raw.UpgradeID,
+		&raw.LimitCategory,
 	)
 	if err != nil {
 		panic(err)
@@ -129,7 +131,8 @@ func LoadAndWriteRawItems(dbHelper *DBHelper, filter string, inputsDir string) (
 			 i.ClassID,
 			 i.SubClassID,
 			 COALESCE(ind.Description_lang, ''),
-			 COALESCE(riu.ItemUpgradeID, 0)
+			 COALESCE(riu.ItemUpgradeID, 0),
+			s.LimitCategory
 		FROM Item i
 		JOIN ItemSparse s ON i.ID = s.ID
 		JOIN ItemClass ic ON i.ClassID = ic.ClassID
@@ -834,6 +837,7 @@ func ScanConsumable(rows *sql.Rows) (dbc.Consumable, error) {
 		&consumable.ElixirType,
 		&consumable.Duration,
 		&consumable.CooldownDuration,
+		&consumable.CategoryCooldownDuration,
 	)
 	if err != nil {
 		return consumable, fmt.Errorf("scanning consumable data: %w", err)
@@ -884,7 +888,8 @@ func LoadAndWriteConsumables(dbHelper *DBHelper, inputsDir string) ([]dbc.Consum
 					ELSE 0
 				END AS ElixirType,
 				COALESCE(sd.Duration, 0) as Duration,
-				COALESCE(ie.CoolDownMSec, 0) as CooldownDuration
+				COALESCE(ie.CoolDownMSec, 0) as CooldownDuration,
+				COALESCE(ie.CategoryCoolDownMSec, 0) as CategoryCooldownDuration
 			FROM Item i
 			JOIN ItemSparse s ON i.ID = s.ID
 			LEFT JOIN ItemEffect ie ON i.ID = ie.ParentItemID
@@ -1568,4 +1573,54 @@ func LoadRepItems(dbHelper *DBHelper) (
 	}
 	fmt.Println("Loaded rep items", len(sourcesByItem))
 	return sourcesByItem
+}
+
+func ScanItemUpgradePath(rows *sql.Rows) (UpgradeID int, upgradePathID int, ilvl int, err error) {
+	err = rows.Scan(
+		&UpgradeID,
+		&upgradePathID,
+		&ilvl,
+	)
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("scanning rep row: %w", err)
+	}
+	return UpgradeID, upgradePathID, ilvl, nil
+}
+
+func LoadItemUpgradePath(dbHelper *DBHelper) (upgradePath map[int][]int, err error) {
+	const query = `SELECT
+		iu.ID,
+		iu.ItemUpgradePathID,
+		iu.ItemLevelIncrement
+		FROM ItemUpgrade iu
+    `
+	rows, err := dbHelper.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	upgradeIDToPathID := make(map[int]int)
+	pathIDToIlvls := make(map[int][]int)
+
+	for rows.Next() {
+		ID, pathID, ilvl, scanErr := ScanItemUpgradePath(rows)
+		if scanErr != nil {
+			return nil, scanErr
+		}
+		upgradeIDToPathID[ID] = pathID
+		pathIDToIlvls[pathID] = append(pathIDToIlvls[pathID], ilvl)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	upgradePath = make(map[int][]int)
+	for id, upgrade := range upgradeIDToPathID {
+		upgradePath[id] = pathIDToIlvls[upgrade]
+	}
+	for _, ilvls := range upgradePath {
+		slices.Sort(ilvls)
+	}
+	fmt.Println("Loaded Upgrade Path", len(upgradePath))
+	return upgradePath, nil
 }

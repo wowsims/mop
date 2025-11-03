@@ -11,12 +11,14 @@ func (bm *BrewmasterMonk) registerAvertHarm() {
 	actionID := core.ActionID{SpellID: 115213}
 	duration := 6 * time.Second
 
-	bm.AvertHarmAura = core.MakeProcTriggerAura(&bm.Unit, core.ProcTrigger{
-		Name:     "Avert Harm" + bm.Label,
-		ActionID: actionID,
-		Duration: duration,
-		Outcome:  core.OutcomeHit,
-		Callback: core.CallbackOnSpellHitTaken,
+	bm.AvertHarmAura = bm.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Avert Harm" + bm.Label,
+		ActionID:           actionID,
+		Duration:           duration,
+		Outcome:            core.OutcomeLanded,
+		Callback:           core.CallbackOnSpellHitTaken,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if spell.RelatedSelfBuff != nil && result.Target.CurrentHealthPercent() <= 0.1 {
 				spell.RelatedSelfBuff.Deactivate(sim)

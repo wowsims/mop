@@ -13,6 +13,7 @@ import { Importer } from './importer';
 import { SettingsMenu } from './settings_menu';
 import { SimTab } from './sim_tab';
 import { SocialLinks } from './social_links';
+import { trackPageView } from '../../tracking/utils';
 
 interface ToolbarLinkArgs {
 	parent: HTMLElement;
@@ -206,7 +207,10 @@ export class SimHeader extends Component {
 			icon: 'fas fa-cog fa-lg',
 			tooltip: i18n.t('info.sim_options'),
 			classes: 'sim-options',
-			onclick: () => settingsMenu.open(),
+			onclick: () => {
+				trackPageView('Options', '/settings-menu');
+				settingsMenu.open();
+			},
 		});
 	}
 

@@ -42,18 +42,17 @@ func (destruction *DestructionWarlock) registerFireAndBrimstoneImmolate() {
 			spell.RelatedDotSpell.DamageMultiplier *= reduction
 
 			destruction.BurningEmbers.Spend(sim, 10, spell.ActionID)
-			for _, enemy := range sim.Environment.Encounter.ActiveTargetUnits {
-				result := spell.CalcDamage(sim, enemy, destruction.CalcScalingSpellDmg(immolateScale), spell.OutcomeMagicHitAndCrit)
+			results := spell.CalcAoeDamage(sim, destruction.CalcScalingSpellDmg(immolateScale), spell.OutcomeMagicHitAndCrit)
+			for _, result := range results {
 				if result.Landed() {
-					spell.RelatedDotSpell.Cast(sim, enemy)
+					spell.RelatedDotSpell.Cast(sim, result.Target)
 				}
 
 				if result.DidCrit() {
 					destruction.BurningEmbers.Gain(sim, 1, spell.ActionID)
 				}
-
-				spell.DealDamage(sim, result)
 			}
+			spell.DealBatchedAoeDamage(sim)
 
 			spell.DamageMultiplier /= reduction
 			spell.RelatedDotSpell.DamageMultiplier /= reduction

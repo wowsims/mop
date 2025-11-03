@@ -2072,7 +2072,6 @@ export type ProtoConversionMap<Type> = Map<number, (arg: Type) => Type>;
 export function migrateOldProto<Type>(oldProto: Type, oldApiVersion: number, conversionMap: ProtoConversionMap<Type>, targetApiVersion?: number): Type {
 	let migratedProto = oldProto;
 	const finalVersion = targetApiVersion || CURRENT_API_VERSION;
-
 	for (let nextVersion = oldApiVersion + 1; nextVersion <= finalVersion; nextVersion++) {
 		if (conversionMap.has(nextVersion)) {
 			migratedProto = conversionMap.get(nextVersion)!(migratedProto);

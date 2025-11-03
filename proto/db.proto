@@ -59,6 +59,8 @@ message Consumable {
 	int32 buff_duration = 7;
 	//In seconds
 	int32 cooldown_duration = 9;
+	//In seconds
+	int32 category_cooldown_duration = 10;
 	repeated int32 effect_ids = 8;
 }
 

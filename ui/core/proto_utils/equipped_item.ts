@@ -141,7 +141,7 @@ export class EquippedItem {
 		let upgradeLevel: ItemLevelState;
 		if (!this._challengeMode) {
 			upgradeLevel = this._upgrade;
-		} else if (this._item.scalingOptions[ItemLevelState.Base].ilvl <= MAX_CHALLENGE_MODE_ILVL) {
+		} else if (this._item.scalingOptions[this._upgrade].ilvl <= MAX_CHALLENGE_MODE_ILVL) {
 			upgradeLevel = ItemLevelState.Base;
 		} else {
 			upgradeLevel = ItemLevelState.ChallengeMode;
@@ -200,32 +200,35 @@ export class EquippedItem {
 		return Object.keys(this.getUpgrades()).length - 1;
 	}
 
-	equals(other: EquippedItem) {
-		if (!Item.equals(this._item, other.item)) return false;
+	equals(other: EquippedItem, ignoreReforge?: boolean, ignoreEnchants?: boolean, ignoreGems?: boolean, ignoreUpgrades?: boolean) {
+		if (this.id != other.id) return false;
+		if (!Item.equals(this._item, other.item) && !ignoreUpgrades) return false;
 
 		if ((this._randomSuffix == null) != (other.randomSuffix == null)) return false;
 
 		if (this._randomSuffix && other.randomSuffix && !ItemRandomSuffix.equals(this._randomSuffix, other.randomSuffix)) return false;
 
-		if ((this._reforge == null) != (other.reforge == null)) return false;
+		if (((this._reforge == null) != (other.reforge == null)) && !ignoreReforge) return false;
 
-		if (this._reforge && other.reforge && !ReforgeStat.equals(this._reforge, other.reforge)) return false;
+		if (this._reforge && other.reforge && !ReforgeStat.equals(this._reforge, other.reforge) && !ignoreReforge) return false;
 
-		if ((this._enchant == null) != (other.enchant == null)) return false;
-		if ((this._tinker == null) != (other.tinker == null)) return false;
+		if (((this._enchant == null) != (other.enchant == null)) && !ignoreEnchants) return false;
+		if (((this._tinker == null) != (other.tinker == null)) && !ignoreEnchants) return false;
 
-		if (this._enchant && other.enchant && !Enchant.equals(this._enchant, other.enchant)) return false;
-		if (this._tinker && other.tinker && !Enchant.equals(this._tinker, other.tinker)) return false;
+		if (this._enchant && other.enchant && !Enchant.equals(this._enchant, other.enchant) && !ignoreEnchants) return false;
+		if (this._tinker && other.tinker && !Enchant.equals(this._tinker, other.tinker) && !ignoreEnchants) return false;
 
-		if (this._gems.length != other.gems.length) return false;
+		if ((this._gems.length != other.gems.length) && !ignoreGems) return false;
 
-		for (let i = 0; i < this._gems.length; i++) {
-			if ((this._gems[i] == null) != (other.gems[i] == null)) return false;
+		if (!ignoreGems) {
+			for (let i = 0; i < this._gems.length; i++) {
+				if ((this._gems[i] == null) != (other.gems[i] == null)) return false;
 
-			if (this._gems[i] && other.gems[i] && !Gem.equals(this._gems[i]!, other.gems[i]!)) return false;
+				if (this._gems[i] && other.gems[i] && !Gem.equals(this._gems[i]!, other.gems[i]!)) return false;
+			}
 		}
 
-		if (this._upgrade !== other.upgrade) return false;
+		if ((this._upgrade !== other._upgrade) && !ignoreUpgrades) return false;
 
 		if (this._challengeMode !== other._challengeMode) return false;
 

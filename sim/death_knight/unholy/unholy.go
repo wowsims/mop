@@ -42,10 +42,6 @@ func NewUnholyDeathKnight(character *core.Character, player *proto.Player) *Unho
 		}, player.TalentsString, 56835),
 	}
 
-	// This spec exhibits concurrency failures when randomizing auto timings
-	// on each pull. No other spec has this issue...
-	uhdk.AutoAttacks.RandomMeleeOffset = false
-
 	uhdk.Gargoyle = uhdk.NewGargoyle()
 	uhdk.Inputs.UnholyFrenzyTarget = unholyOptions.UnholyFrenzyTarget
 

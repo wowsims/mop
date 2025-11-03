@@ -1,5 +1,5 @@
-import { SimUI } from "../sim_ui";
-import { Component } from "./component";
+import { SimUI } from '../sim_ui';
+import { Component } from './component';
 
 export class StickyToolbar extends Component {
 	constructor(rootElem: HTMLElement, simUI: SimUI | null) {

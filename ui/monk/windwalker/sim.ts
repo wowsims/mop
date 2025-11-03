@@ -11,6 +11,7 @@ import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { Sim } from '../../core/sim';
+import { TypedEvent } from '../../core/typed_event';
 import * as MonkUtils from '../utils';
 import * as Presets from './presets';
 
@@ -30,7 +31,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 		Stat.StatExpertiseRating,
 		Stat.StatMasteryRating,
 	],
-	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps, PseudoStat.PseudoStatPhysicalHitPercent],
+	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps],
 	// Reference stat against which to calculate EP.
 	epReferenceStat: Stat.StatAgility,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
@@ -48,7 +49,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_BIS_GEAR_PRESET.gear,
+		gear: Presets.P2_BIS_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_BIS_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
@@ -172,17 +173,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 const hasTwoHandMainHand = (player: Player<Spec.SpecWindwalkerMonk>): boolean =>
 	player.getEquippedItem(ItemSlot.ItemSlotMainHand)?.item?.handType === HandType.HandTypeTwoHand;
 
-const getActiveEPWeight = (player: Player<Spec.SpecWindwalkerMonk>, sim: Sim): Stats => {
-	if (sim.getUseCustomEPValues()) {
-		return player.getEpWeights();
-	} else {
-		if (RelativeStatCap.hasRoRo(player)) {
-			return Presets.RORO_BIS_EP_PRESET.epWeights;
-		}
-		return Presets.P1_BIS_EP_PRESET.epWeights;
-	}
-};
-
 export class WindwalkerMonkSimUI extends IndividualSimUI<Spec.SpecWindwalkerMonk> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecWindwalkerMonk>) {
 		super(parentElem, player, SPEC_CONFIG);
@@ -192,23 +182,28 @@ export class WindwalkerMonkSimUI extends IndividualSimUI<Spec.SpecWindwalkerMonk
 			MonkUtils.setTalentBasedSettings(player);
 		});
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				defaultRelativeStatCap: Stat.StatMasteryRating,
-				getEPDefaults: (player: Player<Spec.SpecWindwalkerMonk>) => {
-					return getActiveEPWeight(player, this.sim);
-				},
-				updateSoftCaps: (softCaps: StatCap[]) => {
-					if (hasTwoHandMainHand(player)) {
-						const hasteSoftCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent));
-						if (hasteSoftCap) {
-							// Two-Handed Windwalkers need to adjust for Way of the Monk 40% Melee Haste
-							hasteSoftCap.breakpoints = hasteSoftCap.breakpoints.map(v => v + 40);
-						}
+		this.reforger = new ReforgeOptimizer(this, {
+			defaultRelativeStatCap: Stat.StatMasteryRating,
+			getEPDefaults: (player: Player<Spec.SpecWindwalkerMonk>) => {
+				if (RelativeStatCap.hasRoRo(player)) {
+					this.reforger?.setUseSoftCapBreakpoints(TypedEvent.nextEventID(), false);
+					return Presets.RORO_BIS_EP_PRESET.epWeights;
+				}
+				return Presets.P1_BIS_EP_PRESET.epWeights;
+			},
+			updateSoftCaps: (softCaps: StatCap[]) => {
+				if (RelativeStatCap.hasRoRo(player)) {
+					return [];
+				}
+				if (hasTwoHandMainHand(player)) {
+					const hasteSoftCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent));
+					if (hasteSoftCap) {
+						// Two-Handed Windwalkers need to adjust for Way of the Monk 40% Melee Haste
+						hasteSoftCap.breakpoints = hasteSoftCap.breakpoints.map(v => v + 40);
 					}
-					return softCaps;
-				},
-			});
+				}
+				return softCaps;
+			},
 		});
 	}
 }

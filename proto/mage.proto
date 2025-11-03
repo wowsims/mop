@@ -99,9 +99,11 @@ message ArcaneMage {
 message FireMage {
 	message Rotation {
 		// Minimum Combustion threshold to cast Combustion at during lust
-		int32 combust_threshold = 1;
-		double combust_last_moment_lust_percentage = 2;
-		double combust_no_lust_percentage = 3;
+		int32 combust_always_send = 1;
+		int32 combust_bloodlust = 2;
+		int32 combust_post_alter = 3;
+		int32 combust_no_alter = 4;
+		int32 combust_end_of_combat = 5;
 	}
 
 	message Options {

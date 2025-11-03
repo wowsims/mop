@@ -182,11 +182,13 @@ func (shaman *Shaman) newFlametongueImbueSpell(weapon *core.Item) *core.Spell {
 }
 
 func (shaman *Shaman) makeFTProcTriggerAura(itemSlot proto.ItemSlot, triggerProcMask core.ProcMask, flameTongueSpell *core.Spell) *core.Aura {
-	aura := core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:     fmt.Sprintf("Flametongue Imbue %s", itemSlot),
-		ProcMask: triggerProcMask,
-		Outcome:  core.OutcomeLanded,
-		Callback: core.CallbackOnSpellHitDealt,
+	aura := shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               fmt.Sprintf("Flametongue Imbue %s", itemSlot),
+		ProcMask:           triggerProcMask,
+		Outcome:            core.OutcomeLanded,
+		Callback:           core.CallbackOnSpellHitDealt,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 			flameTongueSpell.Cast(sim, result.Target)
 		},
@@ -354,11 +356,13 @@ func (shaman *Shaman) RegisterFrostbrandImbue(procMask core.ProcMask) {
 
 	fbDebuffAuras := shaman.NewEnemyAuraArray(shaman.FrostbrandDebuffAura)
 
-	aura := core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:     "Frostbrand Imbue",
-		Callback: core.CallbackOnSpellHitDealt,
-		Outcome:  core.OutcomeLanded,
-		DPM:      dpm,
+	aura := shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Frostbrand Imbue",
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		DPM:                dpm,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			fbSpell.Cast(sim, result.Target)
 			fbDebuffAuras.Get(result.Target).Activate(sim)

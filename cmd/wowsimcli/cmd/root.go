@@ -16,7 +16,6 @@ var rootCmd = &cobra.Command{
 func Execute(version string) {
 	rootCmd.AddCommand(newVersionCommand(version))
 	rootCmd.AddCommand(simCmd)
-	rootCmd.AddCommand(bulkCmd)
 	rootCmd.AddCommand(decodeLinkCmd)
 
 	if err := rootCmd.Execute(); err != nil {

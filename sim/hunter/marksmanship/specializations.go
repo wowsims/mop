@@ -58,7 +58,7 @@ func (mm *MarksmanshipHunter) ApplySpecialization() {
 
 		},
 	}))
-	core.MakeProcTriggerAura(&mm.Unit, core.ProcTrigger{
+	mm.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Bombardment",
 		ActionID:       core.ActionID{ItemID: 35110},
 		Callback:       core.CallbackOnSpellHitDealt,

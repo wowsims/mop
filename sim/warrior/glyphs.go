@@ -40,12 +40,14 @@ func (war *Warrior) applyMajorGlyphs() {
 	if war.HasMajorGlyph(proto.WarriorMajorGlyph_GlyphOfSweepingStrikes) {
 		actionID := core.ActionID{SpellID: 58384}
 		rageMetrics := war.NewRageMetrics(actionID)
-		core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-			Name:            "Glyph of Sweeping Strikes",
-			ActionID:        actionID,
-			MetricsActionID: actionID,
-			ClassSpellMask:  SpellMaskSweepingStrikesHit,
-			Callback:        core.CallbackOnSpellHitDealt,
+		war.MakeProcTriggerAura(core.ProcTrigger{
+			Name:               "Glyph of Sweeping Strikes",
+			ActionID:           actionID,
+			MetricsActionID:    actionID,
+			ClassSpellMask:     SpellMaskSweepingStrikesHit,
+			Callback:           core.CallbackOnSpellHitDealt,
+			TriggerImmediately: true,
+
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				war.AddRage(sim, 1, rageMetrics)
 			},
@@ -99,7 +101,7 @@ func (war *Warrior) applyMajorGlyphs() {
 			},
 		})
 
-		core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+		war.MakeProcTriggerAura(core.ProcTrigger{
 			Name:           "Incite - Trigger",
 			ClassSpellMask: SpellMaskDemoralizingShout,
 			Callback:       core.CallbackOnCastComplete,
@@ -122,16 +124,18 @@ func (war *Warrior) applyMajorGlyphs() {
 			FloatValue: 0.1,
 		})
 
-		core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-			Name:           "Raging Wind - Consume",
-			ClassSpellMask: SpellMaskWhirlwind,
-			Callback:       core.CallbackOnCastComplete,
+		war.MakeProcTriggerAura(core.ProcTrigger{
+			Name:               "Raging Wind - Consume",
+			ClassSpellMask:     SpellMaskWhirlwind,
+			Callback:           core.CallbackOnCastComplete,
+			TriggerImmediately: true,
+
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				ragingWindAura.Deactivate(sim)
 			},
 		})
 
-		core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+		war.MakeProcTriggerAura(core.ProcTrigger{
 			Name:           "Raging Wind - Trigger",
 			ClassSpellMask: SpellMaskRagingBlowMH,
 			Callback:       core.CallbackOnSpellHitDealt,
@@ -154,16 +158,18 @@ func (war *Warrior) applyMajorGlyphs() {
 			FloatValue: 0.5,
 		})
 
-		core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-			Name:           "Hold the Line - Consume",
-			ClassSpellMask: SpellMaskRevenge,
-			Callback:       core.CallbackOnCastComplete,
+		war.MakeProcTriggerAura(core.ProcTrigger{
+			Name:               "Hold the Line - Consume",
+			ClassSpellMask:     SpellMaskRevenge,
+			Callback:           core.CallbackOnCastComplete,
+			TriggerImmediately: true,
+
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				holdTheLine.Deactivate(sim)
 			},
 		})
 
-		core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+		war.MakeProcTriggerAura(core.ProcTrigger{
 			Name:     "Hold the Line - Trigger",
 			Callback: core.CallbackOnSpellHitTaken,
 			Outcome:  core.OutcomeParry,

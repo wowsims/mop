@@ -1,6 +1,8 @@
-.gem-socket-container {
+:root {
 	--gem-width: 1.25rem;
+}
 
+.gem-socket-container {
 	position: relative;
 	width: var(--gem-width);
 	height: var(--gem-width);

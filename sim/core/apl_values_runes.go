@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/stats"
 )
 
 type APLValueCurrentRuneCount struct {
@@ -230,4 +231,36 @@ func (value *APLValueRuneSlotCooldown) GetDuration(sim *Simulation) time.Duratio
 }
 func (value *APLValueRuneSlotCooldown) String() string {
 	return fmt.Sprintf("Rune Slot Cooldown(%d)", value.runeSlot)
+}
+
+type APLValueFullRuneCooldown struct {
+	DefaultAPLValueImpl
+	unit         *Unit
+	useBaseValue bool
+}
+
+func (rot *APLRotation) newValueFullRuneCooldown(config *proto.APLValueFullRuneCooldown, uuid *proto.UUID) APLValue {
+	unit := rot.unit
+	if !unit.HasRunicPowerBar() {
+		rot.ValidationMessageByUUID(uuid, proto.LogLevel_Warning, "%s does not use Runes", unit.Label)
+		return nil
+	}
+	return &APLValueFullRuneCooldown{
+		unit:         unit,
+		useBaseValue: config.UseBaseValue,
+	}
+}
+func (value *APLValueFullRuneCooldown) Type() proto.APLValueType {
+	return proto.APLValueType_ValueTypeDuration
+}
+func (value *APLValueFullRuneCooldown) GetDuration(sim *Simulation) time.Duration {
+	if value.useBaseValue {
+		initialHaste := (1 + (value.unit.GetInitialStat(stats.HasteRating) / (HasteRatingPerHastePercent * 100)))
+		return DurationFromSeconds(value.unit.runeCD.Seconds() / initialHaste)
+	} else {
+		return DurationFromSeconds(value.unit.runeCD.Seconds() * value.unit.runicPowerBar.getTotalRegenMultiplier())
+	}
+}
+func (value *APLValueFullRuneCooldown) String() string {
+	return "Full Rune Cooldown"
 }

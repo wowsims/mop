@@ -26,9 +26,6 @@ func (war *ProtectionWarrior) registerDemoralizingShout() {
 		ClassSpellMask: warrior.SpellMaskDemoralizingShout,
 
 		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: core.GCDDefault,
-			},
 			IgnoreHaste: true,
 			CD: core.Cooldown{
 				Duration: time.Minute * 1,

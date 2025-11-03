@@ -28,11 +28,7 @@ export function getEmptySlotIconUrl(slot: ItemSlot): string {
 }
 
 export const createNameDescriptionLabel = (nameDesc: string) => {
-	return (
-		<small>
-			<span className="heroic-label">({nameDesc})</span>
-		</small>
-	);
+	return <small className="heroic-label">({nameDesc})</small>;
 };
 
 export const createGemContainer = (socketColor: GemColor, gem: Gem | null, index: number) => {
@@ -45,7 +41,7 @@ export const createGemContainer = (socketColor: GemColor, gem: Gem | null, index
 		</a>
 	);
 
-	if (!!gem) {
+	if (gem) {
 		ActionId.fromItemId(gem.id)
 			.fill()
 			.then(filledId => {

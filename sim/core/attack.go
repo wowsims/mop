@@ -304,7 +304,7 @@ func (wa *WeaponAttack) swing(sim *Simulation) time.Duration {
 
 	if wa.replaceSwing != nil {
 		// Need to check APL here to allow last-moment HS queue casts.
-		wa.unit.ReactToEvent(sim)
+		wa.unit.ReactToEvent(sim, false)
 
 		// Need to check this again in case the DoNextAction call swapped items.
 		if wa.replaceSwing != nil {
@@ -319,7 +319,7 @@ func (wa *WeaponAttack) swing(sim *Simulation) time.Duration {
 	attackSpell.Cast(sim, wa.unit.CurrentTarget)
 
 	if !sim.Options.Interactive && (wa.unit.Rotation != nil) && !wa.unit.Metrics.isTanking {
-		wa.unit.ReactToEvent(sim)
+		wa.unit.ReactToEvent(sim, false)
 	}
 
 	return wa.swingAt

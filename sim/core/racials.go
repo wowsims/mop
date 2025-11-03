@@ -362,14 +362,16 @@ func applyRaceEffects(agent Agent) {
 			},
 		})
 
-		MakeProcTriggerAura(&character.Unit, ProcTrigger{
-			Name:       "Touch of the Grave",
-			ActionID:   ActionID{SpellID: 5227},
-			Callback:   CallbackOnSpellHitDealt | CallbackOnPeriodicDamageDealt,
-			ProcMask:   ProcMaskSpellDamage | ProcMaskMelee,
-			Outcome:    OutcomeLanded,
-			ProcChance: 0.2,
-			ICD:        time.Second * 15,
+		character.MakeProcTriggerAura(ProcTrigger{
+			Name:               "Touch of the Grave",
+			ActionID:           ActionID{SpellID: 5227},
+			Callback:           CallbackOnSpellHitDealt | CallbackOnPeriodicDamageDealt,
+			ProcMask:           ProcMaskSpellDamage | ProcMaskMelee,
+			Outcome:            OutcomeLanded,
+			ProcChance:         0.2,
+			ICD:                time.Second * 15,
+			TriggerImmediately: true,
+
 			Handler: func(sim *Simulation, spell *Spell, result *SpellResult) {
 				touchOfTheGraveDamageSpell.Cast(sim, result.Target)
 			},

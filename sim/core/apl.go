@@ -39,17 +39,20 @@ type APLRotation struct {
 	curValidations          []*proto.APLValidation
 	prepullValidations      [][]*proto.APLValidation
 	priorityListValidations [][]*proto.APLValidation
+	groupListValidations    [][][]*proto.APLValidation
 	uuidValidations         map[*proto.UUID][]*proto.APLValidation
 
 	// Maps indices in filtered sim lists to indices in configs.
 	prepullIdxMap      []int
 	priorityListIdxMap []int
+	groupListIdxMap    [][]int
 }
 
 type APLGroup struct {
-	name      string
-	actions   []*APLAction
-	variables map[string]*proto.APLValue
+	name         string
+	actions      []*APLAction
+	variables    map[string]*proto.APLValue
+	referencedBy *APLActionGroupReference
 }
 
 type APLValueVariable struct {
@@ -105,10 +108,12 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 		return nil
 	}
 
+	groupsConfig := config.Groups
 	rotation := &APLRotation{
 		unit:                    unit,
 		prepullValidations:      make([][]*proto.APLValidation, len(config.PrepullActions)),
 		priorityListValidations: make([][]*proto.APLValidation, len(config.PriorityList)),
+		groupListValidations:    make([][][]*proto.APLValidation, len(groupsConfig)),
 		uuidValidations:         make(map[*proto.UUID][]*proto.APLValidation),
 	}
 
@@ -163,7 +168,8 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 	}
 
 	// Parse groups
-	for _, groupConfig := range config.Groups {
+	for groupIdx := 0; groupIdx < len(groupsConfig); groupIdx++ {
+		groupConfig := groupsConfig[groupIdx]
 		group := &APLGroup{
 			name:      groupConfig.Name,
 			variables: make(map[string]*proto.APLValue),
@@ -173,19 +179,58 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 			group.variables[varConfig.Name] = varConfig.Value
 		}
 
+		if rotation.groupListValidations[groupIdx] == nil {
+			rotation.groupListValidations[groupIdx] = make([][]*proto.APLValidation, len(groupConfig.Actions))
+			rotation.groupListIdxMap = append(rotation.groupListIdxMap, []int{})
+		}
+
 		// Parse actions in the group
-		for _, aplItem := range groupConfig.Actions {
-			if !aplItem.Hide {
-				// Don't pass group.variables here - placeholders should remain as placeholders
-				// until the group is actually referenced with specific variable values
-				action := rotation.newAPLActionWithGroupVars(aplItem.Action, nil)
-				if action != nil {
-					group.actions = append(group.actions, action)
+		for i, aplItem := range groupConfig.Actions {
+			rotation.doAndRecordWarnings(&rotation.groupListValidations[groupIdx][i], false, func() {
+				if !aplItem.Hide {
+					// Don't pass group.variables here - placeholders should remain as placeholders
+					// until the group is actually referenced with specific variable values
+					action := rotation.newAPLActionWithGroupVars(aplItem.Action, nil)
+					if action != nil {
+						group.actions = append(group.actions, action)
+						rotation.groupListIdxMap[groupIdx] = append(rotation.groupListIdxMap[groupIdx], i)
+					}
+				}
+			})
+		}
+
+		rotation.groups = append(rotation.groups, group)
+
+		// Duplicate the group if it is referenced more than once in the priority list.
+		foundReference := false
+
+		for _, action := range rotation.priorityList {
+			if groupReferenceAction, ok := action.impl.(*APLActionGroupReference); ok {
+				if (groupReferenceAction.groupName == group.name) && !groupReferenceAction.matched {
+					if foundReference {
+						groupsConfig = append(groupsConfig, groupConfig)
+						rotation.groupListValidations = append(rotation.groupListValidations, nil)
+					}
+
+					foundReference = true
+					groupReferenceAction.matched = true
+					group.referencedBy = groupReferenceAction
 				}
 			}
 		}
 
-		rotation.groups = append(rotation.groups, group)
+		// Duplicate any other groups referenced by this group's actions.
+		for _, action := range group.actions {
+			if groupReferenceAction, ok := action.impl.(*APLActionGroupReference); ok {
+				for _, groupConfig := range groupsConfig {
+					if (groupReferenceAction.groupName == groupConfig.Name) && !groupReferenceAction.matched {
+						groupsConfig = append(groupsConfig, groupConfig)
+						rotation.groupListValidations = append(rotation.groupListValidations, nil)
+						groupReferenceAction.matched = true
+					}
+				}
+			}
+		}
 	}
 
 	// Finalize
@@ -194,6 +239,15 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 			action.Finalize(rotation)
 		})
 	}
+
+	for groupIdx, group := range rotation.groups {
+		for actionIdx, action := range group.actions {
+			rotation.doAndRecordWarnings(&rotation.groupListValidations[groupIdx][rotation.groupListIdxMap[groupIdx][actionIdx]], false, func() {
+				action.Finalize(rotation)
+			})
+		}
+	}
+
 	for i, action := range rotation.priorityList {
 		rotation.doAndRecordWarnings(&rotation.priorityListValidations[rotation.priorityListIdxMap[i]], false, func() {
 			action.Finalize(rotation)
@@ -262,6 +316,17 @@ func (rot *APLRotation) getStats() *proto.APLStats {
 			action.impl.PostFinalize(rot)
 		})
 	}
+
+	// Parse groups
+	for groupIdx, group := range rot.groups {
+		// Parse actions in the group
+		for actionIdx, action := range group.actions {
+			rot.doAndRecordWarnings(&rot.groupListValidations[groupIdx][rot.groupListIdxMap[groupIdx][actionIdx]], false, func() {
+				action.impl.PostFinalize(rot)
+			})
+		}
+	}
+
 	for i, action := range rot.priorityList {
 		rot.doAndRecordWarnings(&rot.priorityListValidations[rot.priorityListIdxMap[i]], false, func() {
 			action.impl.PostFinalize(rot)
@@ -284,6 +349,11 @@ func (rot *APLRotation) getStats() *proto.APLStats {
 		}),
 		PriorityList: MapSlice(rot.priorityListValidations, func(validations []*proto.APLValidation) *proto.APLActionStats {
 			return &proto.APLActionStats{Validations: validations}
+		}),
+		Groups: MapSlice(rot.groupListValidations, func(validations [][]*proto.APLValidation) *proto.APLGroupStats {
+			return &proto.APLGroupStats{Actions: MapSlice(validations, func(validations []*proto.APLValidation) *proto.APLActionStats {
+				return &proto.APLActionStats{Validations: validations}
+			})}
 		}),
 		UuidValidations: uuidValidationsArr,
 	}

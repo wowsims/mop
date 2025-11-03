@@ -31,6 +31,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
 	epReferenceStat: Stat.StatStrength,
 	consumableStats: [Stat.StatStrength, Stat.StatHitRating, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatExpertiseRating, Stat.StatMasteryRating],
+	gemStats: [Stat.StatStamina, Stat.StatStrength, Stat.StatHitRating, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatExpertiseRating, Stat.StatMasteryRating],
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
@@ -47,7 +48,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		// Default equipped gear.
 		gear: Presets.P2_BIS_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P1_P2_UNHOLY_EP_PRESET.epWeights,
+		epWeights: Presets.DEFAULT_UNHOLY_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
@@ -84,7 +85,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		rotationType: APLRotation_Type.TypeAuto,
 	},
 
-	autoRotation: (_: Player<Spec.SpecUnholyDeathKnight>): APLRotation => Presets.DEFAULT_ROTATION_PRESET.rotation.rotation!,
+	autoRotation(player: Player<Spec.SpecUnholyDeathKnight>): APLRotation {
+		const gear = player.getGear();
+		// If both Fabled Feather of Ji-Kun and Brutal Talisman of the Shado-Pan Assault are equipped, use Festerblight
+		if (gear.hasTrinketFromOptions([95726, 94515, 96470, 96098, 96842]) && gear.hasTrinket(94508)) {
+			return Presets.FESTERBLIGHT_ROTATION_PRESET.rotation.rotation!;
+		}
+		return Presets.DEFAULT_ROTATION_PRESET.rotation.rotation!;
+	},
 
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [],
@@ -103,14 +111,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_P2_UNHOLY_EP_PRESET],
+		epWeights: [Presets.DEFAULT_UNHOLY_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.DefaultTalents],
+		talents: [Presets.DefaultTalents, Presets.FesterblightTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.DEFAULT_ROTATION_PRESET],
+		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.FESTERBLIGHT_ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P1_BIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET],
-		builds: [Presets.PREBIS_PRESET, Presets.P1_PRESET, Presets.P2_PRESET],
+		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_BIS_GEAR_PRESET],
+		builds: [Presets.PREBIS_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
 	},
 
 	raidSimPresets: [
@@ -142,11 +150,7 @@ export class UnholyDeathKnightSimUI extends IndividualSimUI<Spec.SpecUnholyDeath
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecUnholyDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
 		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				getEPDefaults(_: Player<Spec.SpecUnholyDeathKnight>) {
-					return Presets.P1_P2_UNHOLY_EP_PRESET.epWeights;
-				},
-			});
+			this.reforger = new ReforgeOptimizer(this);
 		});
 	}
 }

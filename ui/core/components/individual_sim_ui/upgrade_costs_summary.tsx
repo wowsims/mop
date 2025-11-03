@@ -6,11 +6,40 @@ import { Component } from '../component';
 import { ContentBlock } from '../content_block';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { EquippedItem } from '../../proto_utils/equipped_item';
+import { trackEvent } from '../../../tracking/utils';
+import { RaidFilterOption, UIItemSource } from '../../proto/ui';
 
-export const COSTS = new Map<ItemQuality, number>([
-	[ItemQuality.ItemQualityRare, 750],
-	[ItemQuality.ItemQualityEpic, 1000],
-	[ItemQuality.ItemQualityLegendary, 1000],
+type UpgradeSummaryTotal = {
+	justicePoints: number;
+	honorPoints: number;
+	valorPoints: number;
+};
+
+export const COSTS = new Map<keyof UpgradeSummaryTotal, Map<ItemQuality, number>>([
+	[
+		'valorPoints',
+		new Map<ItemQuality, number>([
+			[ItemQuality.ItemQualityRare, 250],
+			[ItemQuality.ItemQualityEpic, 250],
+			[ItemQuality.ItemQualityLegendary, 250],
+		]),
+	],
+	[
+		'justicePoints',
+		new Map<ItemQuality, number>([
+			[ItemQuality.ItemQualityRare, 750],
+			[ItemQuality.ItemQualityEpic, 1000],
+			[ItemQuality.ItemQualityLegendary, 1000],
+		]),
+	],
+	[
+		'honorPoints',
+		new Map<ItemQuality, number>([
+			[ItemQuality.ItemQualityRare, 750],
+			[ItemQuality.ItemQualityEpic, 1000],
+			[ItemQuality.ItemQualityLegendary, 1000],
+		]),
+	],
 ]);
 
 export class UpgradeCostsSummary extends Component {
@@ -46,20 +75,54 @@ export class UpgradeCostsSummary extends Component {
 		this.rootElem.classList[!hasUpgradeItems ? 'add' : 'remove']('hide');
 
 		if (hasUpgradeItems) {
-			const total = itemsWithUpgrade.reduce<number>(
-				(acc, item) => (acc += (COSTS.get(item._item.quality) || 0) * (item.getMaxUpgradeCount() - item.upgrade)),
-				0,
+			const ToTRaidID = Player.RAID_IDS[RaidFilterOption.RaidThroneOfThunder];
+			const pred = (item: UIItemSource) => item.source.oneofKind === 'drop' && item.source.drop.zoneId === ToTRaidID;
+			const totals = itemsWithUpgrade.reduce<UpgradeSummaryTotal>(
+				(acc, item) => {
+					let key: keyof UpgradeSummaryTotal = 'justicePoints';
+
+					if (item._item.sources.some(pred)) {
+						key = 'valorPoints';
+					}
+					if (item._item.name.includes("Gladiator's")) {
+						key = 'honorPoints';
+					}
+
+					acc[key] += (COSTS.get(key)?.get(item._item.quality) || 0) * (item.getMaxUpgradeCount() - item.upgrade);
+
+					return acc;
+				},
+				{
+					valorPoints: 0,
+					justicePoints: 0,
+					honorPoints: 0,
+				},
 			);
 
-			body.appendChild(
-				<div className="summary-table-row d-flex align-items-center">
-					<div className="d-flex align-items-center">
-						<img className="gem-icon" src={'https://wow.zamimg.com/images/wow/icons/small/pvecurrency-justice.jpg'} />
-						<div>{i18n.t(`common.currency.justicePoints`)}</div>
-					</div>
-					<div>{total}</div>
-				</div>,
-			);
+			Object.entries(totals).forEach(([key, points]) => {
+				if (points > 0) {
+					body.appendChild(
+						<div>
+							<div className="summary-table-row d-flex align-items-center">
+								<div className="d-flex align-items-center">
+									<img
+										className="gem-icon"
+										src={
+											key === 'justicePoints'
+												? 'https://wow.zamimg.com/images/wow/icons/small/pvecurrency-justice.jpg'
+												: key === 'valorPoints'
+													? 'https://wow.zamimg.com/images/wow/icons/small/pvecurrency-valor.jpg'
+													: `https://wow.zamimg.com/images/wow/icons/small/pvpcurrency-honor-${this.player.getFaction() === Faction.Horde ? 'horde' : 'alliance'}.jpg`
+										}
+									/>
+									<div>{i18n.t(`common.currency.${key}`)}</div>
+								</div>
+								<div>{points}</div>
+							</div>
+						</div>,
+					);
+				}
+			});
 
 			// Replace rows in body
 			this.container.bodyElement.replaceChildren(body);
@@ -74,6 +137,11 @@ export class UpgradeCostsSummary extends Component {
 						<button
 							className="btn btn-outline-primary"
 							onclick={() => {
+								trackEvent({
+									action: 'click',
+									category: 'upgrades',
+									label: 'upgrade_all',
+								});
 								let curGear = this.player.getGear();
 
 								for (const slot of curGear.getItemSlots()) {
@@ -99,6 +167,11 @@ export class UpgradeCostsSummary extends Component {
 				<button
 					className="btn btn-sm btn-link btn-reset summary-table-reset-button"
 					onclick={() => {
+						trackEvent({
+							action: 'click',
+							category: 'upgrades',
+							label: 'reset',
+						});
 						const gear = this.player.getGear().withoutUpgrades(this.player.canDualWield2H());
 						this.player.setGear(TypedEvent.nextEventID(), gear);
 					}}>

@@ -73,14 +73,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		epWeights: Presets.BALANCED_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
-			return new Stats().withStat(Stat.StatExpertiseRating, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION).withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
-		})(),
-		softCapBreakpoints: (() => {
-			return [StatCap.fromStat(Stat.StatExpertiseRating, {
-				breakpoints: [7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION],
-				capType: StatCapType.TypeSoftCap,
-				postCapEPs: [0.59, 0],
-			})];
+			return new Stats().withStat(Stat.StatExpertiseRating, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION).withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5).withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
@@ -89,7 +82,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		rotationType: APLRotationType.TypeAPL,
 		simpleRotation: Presets.DefaultSimpleRotation,
 		// Default talents.
-		talents: Presets.DefensiveTalents.data,
+		talents: Presets.DefaultTalents.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
@@ -142,15 +135,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 	},
 
 	presets: {
-		epWeights: [Presets.SURVIVAL_EP_PRESET, Presets.BALANCED_EP_PRESET],
+		epWeights: [Presets.SURVIVAL_EP_PRESET, Presets.BALANCED_EP_PRESET, Presets.OFFENSIVE_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.DefensiveTalents, Presets.OffensiveTalents],
+		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_HOTW, Presets.ROTATION_EMPRESS, Presets.ROTATION_SHA],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.MSV_PRESET, Presets.HOF_PRESET, Presets.P2_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.MSV_PRESET, Presets.HOF_PRESET, Presets.P2_PRESET, Presets.P2_OFFENSIVE_PRESET],
 		itemSwaps: [Presets.ITEM_SWAP_PRESET],
 		builds: [
+			Presets.PRESET_BUILD_DEFAULT,
 			Presets.PRESET_BUILD_GARAJAL,
 			Presets.PRESET_BUILD_EMPRESS,
 			Presets.PRESET_BUILD_SHA,
@@ -240,7 +234,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 	raidSimPresets: [
 		{
 			spec: Spec.SpecGuardianDruid,
-			talents: Presets.DefensiveTalents.data,
+			talents: Presets.DefaultTalents.data,
 			specOptions: Presets.DefaultOptions,
 			consumables: Presets.DefaultConsumables,
 			defaultFactionRaces: {
@@ -273,7 +267,7 @@ export class GuardianDruidSimUI extends IndividualSimUI<Spec.SpecGuardianDruid> 
 		super(parentElem, player, SPEC_CONFIG);
 
 		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this);
+			this.reforger = new ReforgeOptimizer(this);
 		});
 	}
 }

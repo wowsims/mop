@@ -15,7 +15,9 @@ export const HOF_PRESET = PresetUtils.makePresetGear('Pre-ToES BiS', HofGear);
 import P1Gear from './gear_sets/p1.gear.json';
 export const P1_PRESET = PresetUtils.makePresetGear('P1/P2', P1Gear);
 import P2Gear from './gear_sets/p2.gear.json';
-export const P2_PRESET = PresetUtils.makePresetGear('P2 Farm BiS', P2Gear);
+export const P2_PRESET = PresetUtils.makePresetGear('P2 BiS (Balanced)', P2Gear);
+import P2OffensiveGear from './gear_sets/p2_offensive.gear.json';
+export const P2_OFFENSIVE_PRESET = PresetUtils.makePresetGear('P2 BiS (Offensive)', P2OffensiveGear);
 import P3Gear from './gear_sets/p3.gear.json';
 export const P3_PRESET = PresetUtils.makePresetGear('P3', P3Gear);
 import P4Gear from './gear_sets/p4.gear.json';
@@ -100,26 +102,42 @@ export const BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
+export const OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Offensive',
+	Stats.fromMap(
+		{
+			[Stat.StatHealth]: 0.02,
+			[Stat.StatStamina]: 0.51,
+			[Stat.StatAgility]: 1.0,
+			[Stat.StatArmor]: 0.90,
+			[Stat.StatBonusArmor]: 0.20,
+			[Stat.StatDodgeRating]: 0.14,
+			[Stat.StatMasteryRating]: 0.38,
+			[Stat.StatStrength]: 0.20,
+			[Stat.StatAttackPower]: 0.19,
+			[Stat.StatHitRating]: 0.80,
+			[Stat.StatExpertiseRating]: 0.79,
+			[Stat.StatCritRating]: 0.63,
+			[Stat.StatHasteRating]: 0.51,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 0.85,
+			[PseudoStat.PseudoStatPhysicalHitPercent]: 0.79 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT,
+			[PseudoStat.PseudoStatSpellHitPercent]: 0.01 * Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT,
+		},
+	),
+);
+
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const DefensiveTalents = {
-	name: 'Defensive',
+export const DefaultTalents = {
+	name: 'Default',
 	data: SavedTalents.create({
 		talentsString: '010101',
 		glyphs: Glyphs.create({
 			major1: DruidMajorGlyph.GlyphOfMightOfUrsoc,
 			major2: DruidMajorGlyph.GlyphOfMaul,
-		}),
-	}),
-};
-
-export const OffensiveTalents = {
-	name: 'Offensive',
-	data: SavedTalents.create({
-		talentsString: '010103',
-		glyphs: Glyphs.create({
-			major1: DruidMajorGlyph.GlyphOfMightOfUrsoc,
-			major2: DruidMajorGlyph.GlyphOfMaul,
+			major3: DruidMajorGlyph.GlyphOfStampedingRoar,
 		}),
 	}),
 };
@@ -139,7 +157,7 @@ export const OtherDefaults = {
 	profession2: Profession.ProfessionUnknown,
 };
 
-export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Default", Spec.SpecGuardianDruid, DefaultBuild);
+export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("All Defaults", Spec.SpecGuardianDruid, DefaultBuild);
 export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecGuardianDruid, GarajalBuild);
 export const PRESET_BUILD_EMPRESS = PresetUtils.makePresetBuildFromJSON("Empress P2 Adds", Spec.SpecGuardianDruid, EmpressBuild);
 export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON("Sha of Fear P2", Spec.SpecGuardianDruid, ShaBuild);

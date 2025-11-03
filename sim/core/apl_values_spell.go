@@ -380,3 +380,33 @@ func (value *APLValueSpellFullCooldown) GetDuration(sim *Simulation) time.Durati
 func (value *APLValueSpellFullCooldown) String() string {
 	return fmt.Sprintf("SpellFullCooldown(%s)", value.spell.ActionID)
 }
+
+// Spell In Flight
+type APLValueSpellInFlight struct {
+	DefaultAPLValueImpl
+	spell *Spell
+}
+
+func (rot *APLRotation) NewValueSpellInFlight(config *proto.APLValueSpellInFlight, uuid *proto.UUID) APLValue {
+	return rot.newValueSpellInFlight(config, uuid)
+}
+
+func (rot *APLRotation) newValueSpellInFlight(config *proto.APLValueSpellInFlight, _ *proto.UUID) APLValue {
+	spell := rot.GetAPLSpell(config.SpellId)
+	if spell == nil {
+		return nil
+	}
+	return &APLValueSpellInFlight{
+		spell: spell,
+	}
+}
+
+func (value *APLValueSpellInFlight) Type() proto.APLValueType {
+	return proto.APLValueType_ValueTypeBool
+}
+func (value *APLValueSpellInFlight) GetBool(sim *Simulation) bool {
+	return value.spell.Unit.SpellInFlight(value.spell)
+}
+func (value *APLValueSpellInFlight) String() string {
+	return fmt.Sprintf("SpellInFlight(%s)", value.spell.ActionID)
+}

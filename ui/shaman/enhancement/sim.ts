@@ -8,6 +8,8 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat, UnitStats } from '../../core/proto/common.js';
 import { Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { TypedEvent } from '../../core/typed_event';
+import i18n from '../../i18n/config';
 import * as ShamanInputs from '../inputs.js';
 import * as EnhancementInputs from './inputs.js';
 import * as Presets from './presets.js';
@@ -17,6 +19,19 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Shaman),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
+	warnings: [(simUI) => {
+		return {
+			updateOn : TypedEvent.onAny([simUI.player.specOptionsChangeEmitter, simUI.player.talentsChangeEmitter]),
+			getContent: () => {
+				const autocast = simUI.player.getClassOptions().feleAutocast;
+				if(simUI.player.getTalents().primalElementalist && (autocast?.autocastEmpower || !(autocast?.autocastFireblast && autocast.autocastFirenova && autocast.autocastImmolate))){
+					return i18n.t('sidebar.warnings.shaman_fele_autocast');
+				} else {
+					return '';
+				}
+			}
+		}
+	}],
 
 	overwriteDisplayStats: (player: Player<Spec.SpecEnhancementShaman>) => {
 		const playerStats = player.getCurrentStats();
@@ -88,7 +103,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_PRESET.gear,
+		gear: Presets.P2_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
@@ -136,7 +151,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_DEFAULT],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PRESET],
+		gear: [Presets.P1_PRESET, Presets.P2_PRESET],
 	},
 
 	autoRotation: (_: Player<Spec.SpecEnhancementShaman>): APLRotation => {
@@ -156,10 +171,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 			},
 			defaultGear: {
 				[Faction.Alliance]: {
-					1: Presets.P1_PRESET.gear,
+					1: Presets.P2_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P1_PRESET.gear,
+					1: Presets.P2_PRESET.gear,
 				},
 				[Faction.Unknown]: {},
 			},
@@ -173,7 +188,7 @@ export class EnhancementShamanSimUI extends IndividualSimUI<Spec.SpecEnhancement
 		super(parentElem, player, SPEC_CONFIG);
 
 		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this);
+			this.reforger = new ReforgeOptimizer(this);
 		});
 	}
 }

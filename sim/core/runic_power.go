@@ -741,35 +741,21 @@ func getHighestCDRune(sim *Simulation, possibleRunes []*depletedRune) int8 {
 	return filteredRunes[randomRuneIndex]
 }
 
-// Runic Empowerment prioritizes fully depleted runes with the highest cd
+// Runic Empowerment regens a randoom fully depleted rune
 func (rp *runicPowerBar) RegenRunicEmpowermentRune(sim *Simulation, runeMetrics []*ResourceMetrics) {
-	possibleRunes := make([]*depletedRune, 0)
-
-	if rp.isDepleted(0) {
-		possibleRunes = append(possibleRunes, &depletedRune{runeSlot: 0, regenAt: rp.runeMeta[1].regenAt})
-	} else if rp.isDepleted(1) {
-		possibleRunes = append(possibleRunes, &depletedRune{runeSlot: 1, regenAt: rp.runeMeta[0].regenAt})
-	}
-	if rp.isDepleted(2) {
-		possibleRunes = append(possibleRunes, &depletedRune{runeSlot: 2, regenAt: rp.runeMeta[3].regenAt})
-	} else if rp.isDepleted(3) {
-		possibleRunes = append(possibleRunes, &depletedRune{runeSlot: 3, regenAt: rp.runeMeta[2].regenAt})
-	}
-	if rp.isDepleted(4) {
-		possibleRunes = append(possibleRunes, &depletedRune{runeSlot: 4, regenAt: rp.runeMeta[5].regenAt})
-	} else if rp.isDepleted(5) {
-		possibleRunes = append(possibleRunes, &depletedRune{runeSlot: 5, regenAt: rp.runeMeta[4].regenAt})
+	possibleRunes := make([]int, 0)
+	for i := range rp.runeMeta {
+		if rp.isDepleted(i) {
+			possibleRunes = append(possibleRunes, i)
+		}
 	}
 
 	if len(possibleRunes) == 0 {
 		return
 	}
 
-	slot := getHighestCDRune(sim, possibleRunes)
-
-	if slot == -1 {
-		return
-	}
+	randomRuneIndex := int(math.Floor(sim.RandomFloat("Rune Regen") * float64(len(possibleRunes))))
+	slot := int8(possibleRunes[randomRuneIndex])
 
 	rp.regenRuneInternal(sim, sim.CurrentTime, slot)
 	if rp.runeStates&isDeaths[slot] > 0 {
@@ -1037,7 +1023,7 @@ func (rp *runicPowerBar) Advance(sim *Simulation, newTime time.Duration) {
 
 	// Query APL if a change occurred
 	if changeType != None {
-		rp.character.ReactToEvent(sim)
+		rp.character.ReactToEvent(sim, true)
 	}
 }
 

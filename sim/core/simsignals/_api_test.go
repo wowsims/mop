@@ -169,34 +169,4 @@ func TestAbort(t *testing.T) {
 			}
 		}
 	})
-
-	t.Run("RunBulkSimAsync", func(t *testing.T) {
-		bsr := &proto.BulkSimRequest{
-			BaseSettings: rsr,
-			BulkSettings: &proto.BulkSettings{
-				Combinations:       true,
-				Items:              []*proto.ItemSpec{{Id: 77949}, {Id: 55068}},
-				IterationsPerCombo: 9999,
-				FastMode:           false,
-			},
-		}
-
-		reqId := "bulk"
-		progress := make(chan *proto.ProgressMetrics, 10)
-		core.RunBulkSimAsync(bsr, progress, reqId)
-
-		go func() {
-			time.Sleep(time.Second)
-			simsignals.AbortById(reqId)
-		}()
-
-		for msg := range progress {
-			if msg.FinalBulkResult != nil {
-				if msg.FinalBulkResult.Error == nil || msg.FinalBulkResult.Error.Type != proto.ErrorOutcomeType_ErrorOutcomeAborted {
-					t.Fatalf("Sim did not abort!")
-				}
-				return
-			}
-		}
-	})
 }

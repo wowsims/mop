@@ -27,8 +27,9 @@ func (bdk *BloodDeathKnight) registerWillOfTheNecropolis() {
 		ActionID: core.ActionID{SpellID: 96171},
 		Duration: time.Second * 8,
 	}).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: death_knight.DeathKnightSpellRuneTap,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     death_knight.DeathKnightSpellRuneTap,
+		TriggerImmediately: true,
 
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			return spell.CurCast.Cost <= 0
@@ -43,13 +44,14 @@ func (bdk *BloodDeathKnight) registerWillOfTheNecropolis() {
 		FloatValue: -2.0,
 	})
 
-	core.MakeProcTriggerAura(&bdk.Unit, core.ProcTrigger{
+	bdk.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Will of The Necropolis Trigger" + bdk.Label,
 		ActionID:           core.ActionID{SpellID: 81164},
 		Callback:           core.CallbackOnSpellHitTaken,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: true,
 		ICD:                time.Second * 45,
+		TriggerImmediately: true,
 
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			maxHealth := bdk.MaxHealth()

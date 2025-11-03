@@ -153,18 +153,20 @@ func (rogue *Rogue) ApplyFinisher(sim *core.Simulation, spell *core.Spell) {
 		}
 
 		// Restless Blades
-		cdReduction := 2 * time.Second * time.Duration(numPoints)
-		if rogue.KillingSpree != nil {
-			ksNewTime := rogue.KillingSpree.CD.Timer.ReadyAt() - cdReduction
-			rogue.KillingSpree.CD.Timer.Set(ksNewTime)
-		}
-		if rogue.AdrenalineRush != nil {
-			arNewTime := rogue.AdrenalineRush.CD.Timer.ReadyAt() - cdReduction
-			rogue.AdrenalineRush.CD.Timer.Set(arNewTime)
-		}
-		if rogue.ShadowBlades != nil {
-			sbNewTime := rogue.ShadowBlades.CD.Timer.ReadyAt() - cdReduction
-			rogue.ShadowBlades.CD.Timer.Set(sbNewTime)
+		if !spell.Matches(RogueSpellSliceAndDice) {
+			cdReduction := 2 * time.Second * time.Duration(numPoints)
+			if rogue.KillingSpree != nil {
+				ksNewTime := rogue.KillingSpree.CD.Timer.ReadyAt() - cdReduction
+				rogue.KillingSpree.CD.Timer.Set(ksNewTime)
+			}
+			if rogue.AdrenalineRush != nil {
+				arNewTime := rogue.AdrenalineRush.CD.Timer.ReadyAt() - cdReduction
+				rogue.AdrenalineRush.CD.Timer.Set(arNewTime)
+			}
+			if rogue.ShadowBlades != nil {
+				sbNewTime := rogue.ShadowBlades.CD.Timer.ReadyAt() - cdReduction
+				rogue.ShadowBlades.CD.Timer.Set(sbNewTime)
+			}
 		}
 	}
 

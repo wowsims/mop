@@ -1,4 +1,5 @@
 import i18n from '../../../i18n/config';
+import { trackEvent } from '../../../tracking/utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { Class, Glyphs, Spec } from '../../proto/common';
@@ -51,6 +52,11 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 			changedEvent: (player: Player<any>) => player.talentsChangeEmitter,
 			getValue: (player: Player<any>) => player.getTalentsString(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
+				trackEvent({
+					action: 'settings',
+					category: 'talents',
+					label: 'update',
+				});
 				player.setTalentsString(eventID, newValue);
 			},
 		});

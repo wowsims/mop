@@ -33,10 +33,11 @@ func (paladin *Paladin) registerForbearance() {
 		}
 	})
 
-	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
-		Name:           "Forbearance On Heal Dealt Trigger" + paladin.Label,
-		Callback:       core.CallbackOnHealDealt,
-		ClassSpellMask: SpellMaskHandOfProtection | SpellMaskLayOnHands,
+	paladin.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Forbearance On Heal Dealt Trigger" + paladin.Label,
+		Callback:           core.CallbackOnHealDealt,
+		ClassSpellMask:     SpellMaskHandOfProtection | SpellMaskLayOnHands,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			target := result.Target
@@ -48,10 +49,11 @@ func (paladin *Paladin) registerForbearance() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
-		Name:           "Forbearance On Cast Complete Trigger" + paladin.Label,
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: SpellMaskDivineShield,
+	paladin.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Forbearance On Cast Complete Trigger" + paladin.Label,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     SpellMaskDivineShield,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			forbearanceAuras.Get(&paladin.Unit).Activate(sim)

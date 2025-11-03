@@ -11,6 +11,7 @@ type APLActionGroupReference struct {
 	groupName string
 	variables map[string]*proto.APLValue
 	group     *APLGroup
+	matched   bool
 }
 
 func (rot *APLRotation) newActionGroupReference(config *proto.APLActionGroupReference) APLActionImpl {
@@ -73,8 +74,9 @@ func (action *APLActionGroupReference) Finalize(rot *APLRotation) {
 
 	// Find the referenced group
 	for _, group := range rot.groups {
-		if group.name == action.groupName {
+		if (group.name == action.groupName) && ((group.referencedBy == nil) || (group.referencedBy == action)) {
 			action.group = group
+			group.referencedBy = action
 			break
 		}
 	}

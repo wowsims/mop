@@ -32,24 +32,6 @@ export const getBulkItemSlots = (canDualWield: boolean) => {
 	}
 };
 
-export const bulkSimSlotNames: Map<BulkSimItemSlot, string> = new Map([
-	[BulkSimItemSlot.ItemSlotHead, 'Head'],
-	[BulkSimItemSlot.ItemSlotNeck, 'Neck'],
-	[BulkSimItemSlot.ItemSlotShoulder, 'Shoulders'],
-	[BulkSimItemSlot.ItemSlotBack, 'Back'],
-	[BulkSimItemSlot.ItemSlotChest, 'Chest'],
-	[BulkSimItemSlot.ItemSlotWrist, 'Wrist'],
-	[BulkSimItemSlot.ItemSlotHands, 'Hands'],
-	[BulkSimItemSlot.ItemSlotWaist, 'Waist'],
-	[BulkSimItemSlot.ItemSlotLegs, 'Legs'],
-	[BulkSimItemSlot.ItemSlotFeet, 'Feet'],
-	[BulkSimItemSlot.ItemSlotFinger, 'Rings'],
-	[BulkSimItemSlot.ItemSlotTrinket, 'Trinkets'],
-	[BulkSimItemSlot.ItemSlotMainHand, 'Main Hand'],
-	[BulkSimItemSlot.ItemSlotOffHand, 'Off Hand'],
-	[BulkSimItemSlot.ItemSlotHandWeapon, 'Weapons'],
-]);
-
 export const itemSlotToBulkSimItemSlot: Map<ItemSlot, BulkSimItemSlot> = new Map([
 	[ItemSlot.ItemSlotHead, BulkSimItemSlot.ItemSlotHead],
 	[ItemSlot.ItemSlotNeck, BulkSimItemSlot.ItemSlotNeck],
@@ -69,9 +51,51 @@ export const itemSlotToBulkSimItemSlot: Map<ItemSlot, BulkSimItemSlot> = new Map
 	[ItemSlot.ItemSlotOffHand, BulkSimItemSlot.ItemSlotOffHand],
 ]);
 
+export const bulkSimItemSlotToSingleItemSlot: Map<BulkSimItemSlot, ItemSlot> = new Map([
+	[BulkSimItemSlot.ItemSlotHead, ItemSlot.ItemSlotHead,],
+	[BulkSimItemSlot.ItemSlotNeck, ItemSlot.ItemSlotNeck],
+	[BulkSimItemSlot.ItemSlotShoulder, ItemSlot.ItemSlotShoulder],
+	[BulkSimItemSlot.ItemSlotBack, ItemSlot.ItemSlotBack],
+	[BulkSimItemSlot.ItemSlotChest, ItemSlot.ItemSlotChest],
+	[BulkSimItemSlot.ItemSlotWrist, ItemSlot.ItemSlotWrist],
+	[BulkSimItemSlot.ItemSlotHands, ItemSlot.ItemSlotHands],
+	[BulkSimItemSlot.ItemSlotWaist, ItemSlot.ItemSlotWaist],
+	[BulkSimItemSlot.ItemSlotLegs, ItemSlot.ItemSlotLegs],
+	[BulkSimItemSlot.ItemSlotFeet, ItemSlot.ItemSlotFeet],
+	[BulkSimItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotMainHand],
+	[BulkSimItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotOffHand],
+]);
+
+export const bulkSimItemSlotToItemSlotPairs: Map<BulkSimItemSlot, [ItemSlot, ItemSlot]> = new Map([
+	[BulkSimItemSlot.ItemSlotFinger, [ItemSlot.ItemSlotFinger1, ItemSlot.ItemSlotFinger2]],
+	[BulkSimItemSlot.ItemSlotTrinket, [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2]],
+	[BulkSimItemSlot.ItemSlotHandWeapon, [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand]],
+]);
+
 export const getBulkItemSlotFromSlot = (slot: ItemSlot, canDualWield: boolean): BulkSimItemSlot => {
 	if (canDualWield && [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand].includes(slot)) {
 		return BulkSimItemSlot.ItemSlotHandWeapon;
 	}
 	return itemSlotToBulkSimItemSlot.get(slot)!;
 };
+
+export const binomialCoefficient = (n: number, k: number): number => {
+  if (Number.isNaN(n) || Number.isNaN(k)) return NaN;
+  if (k < 0 || k > n) return 0;
+  if (k === 0 || k === n) return 1;
+  if (k === 1 || k === n - 1) return n;
+  if (n - k < k) k = n - k;
+  let res = n;
+  for (let j = 2; j <= k; j++) res *= (n - j + 1) / j;
+  return Math.round(res);
+};
+
+export function getAllPairs<T>(arr: T[]): [T, T][] {
+  const pairs: [T, T][] = [];
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      pairs.push([arr[i], arr[j]]);
+    }
+  }
+  return pairs;
+}

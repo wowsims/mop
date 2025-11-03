@@ -126,11 +126,12 @@ func (bloodworm *BloodwormPet) Initialize() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&bloodworm.Unit, core.ProcTrigger{
-		Name:     "Blood Gorged Trigger" + bloodworm.Label,
-		ActionID: core.ActionID{SpellID: 50453},
-		Callback: core.CallbackOnSpellHitDealt,
-		Outcome:  core.OutcomeLanded,
+	bloodworm.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Blood Gorged Trigger" + bloodworm.Label,
+		ActionID:           core.ActionID{SpellID: 50453},
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if bloodworm.stackAura.IsActive() {

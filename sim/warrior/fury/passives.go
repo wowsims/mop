@@ -38,12 +38,14 @@ func (war *FuryWarrior) registerFlurry() {
 		MaxStacks: 3,
 	})).AttachMultiplyMeleeSpeed(1.25)
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-		Name:     "Flurry - Trigger",
-		ActionID: core.ActionID{SpellID: 12972},
-		Callback: core.CallbackOnSpellHitDealt,
-		ProcMask: core.ProcMaskMeleeOrMeleeProc,
-		Outcome:  core.OutcomeLanded,
+	war.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Flurry - Trigger",
+		ActionID:           core.ActionID{SpellID: 12972},
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMeleeOrMeleeProc,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if sim.Proc(0.09, "Flurry") {
 				flurryAura.Activate(sim)
@@ -75,7 +77,7 @@ func (war *FuryWarrior) registerBloodsurge() {
 		TimeValue: time.Millisecond * -500,
 	})
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
+	war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Bloodsurge: Bloodthirst - Trigger",
 		ClassSpellMask: warrior.SpellMaskBloodthirst,
 		Outcome:        core.OutcomeLanded,
@@ -98,12 +100,14 @@ func (war *FuryWarrior) registerMeatCleaver() {
 		MaxStacks: 3,
 	}))
 
-	core.MakeProcTriggerAura(&war.Unit, core.ProcTrigger{
-		Name:           "Meat Cleaver: Whirlwind - Trigger",
-		ClassSpellMask: warrior.SpellMaskWhirlwind,
-		Outcome:        core.OutcomeLanded,
-		Callback:       core.CallbackOnSpellHitDealt,
-		ICD:            time.Millisecond * 500,
+	war.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Meat Cleaver: Whirlwind - Trigger",
+		ClassSpellMask:     warrior.SpellMaskWhirlwind,
+		Outcome:            core.OutcomeLanded,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ICD:                time.Millisecond * 500,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			war.MeatCleaverAura.Activate(sim)
 			war.MeatCleaverAura.AddStack(sim)

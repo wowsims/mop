@@ -122,10 +122,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
 		itemSwaps: [Presets.ITEM_SWAP_PRESET],
-		builds: [
-			Presets.PRESET_BUILD_ST,
-			Presets.PRESET_BUILD_CLEAVE,
-		],
+		builds: [Presets.PRESET_BUILD_ST, Presets.PRESET_BUILD_CLEAVE],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecFeralDruid>): APLRotation => {
@@ -236,19 +233,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 export class FeralDruidSimUI extends IndividualSimUI<Spec.SpecFeralDruid> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecFeralDruid>) {
 		super(parentElem, player, SPEC_CONFIG);
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				getEPDefaults: (player: Player<Spec.SpecFeralDruid>) => {
-					if (this.sim.getUseCustomEPValues()) {
-						return player.getEpWeights();
-					} else if (player.getTalents().heartOfTheWild) {
-						return (RelativeStatCap.hasRoRo(player) ? Presets.HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights);
-					} else {
-						return (RelativeStatCap.hasRoRo(player) ? Presets.DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights);
-					}
-				},
-				defaultRelativeStatCap: Stat.StatMasteryRating,
-			});
+
+		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: (player: Player<Spec.SpecFeralDruid>) => {
+				if (player.getTalents().heartOfTheWild) {
+					return RelativeStatCap.hasRoRo(player) ? Presets.HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
+				} else {
+					return RelativeStatCap.hasRoRo(player) ? Presets.DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
+				}
+			},
+			defaultRelativeStatCap: Stat.StatMasteryRating,
 		});
 	}
 }

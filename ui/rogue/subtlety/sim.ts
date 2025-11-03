@@ -162,7 +162,7 @@ export class SubtletyRogueSimUI extends IndividualSimUI<Spec.SpecSubtletyRogue> 
 
 		// Auto Reforging
 		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {});
+			this.reforger = new ReforgeOptimizer(this, {});
 		});
 
 		this.player.changeEmitter.on(c => {

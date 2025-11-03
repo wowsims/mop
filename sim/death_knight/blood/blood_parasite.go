@@ -38,7 +38,7 @@ func (bdk *BloodDeathKnight) registerBloodParasite() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&bdk.Unit, core.ProcTrigger{
+	bdk.MakeProcTriggerAura(core.ProcTrigger{
 		Name:       "Blood Parasite Trigger" + bdk.Label,
 		ActionID:   core.ActionID{SpellID: 49542},
 		Callback:   core.CallbackOnSpellHitDealt,

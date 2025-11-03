@@ -84,13 +84,14 @@ func (destruction *DestructionWarlock) registerImmolate() {
 				dot.Snapshot(target, destruction.CalcScalingSpellDmg(immolateScale))
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				result := dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
+				result := dot.CalcSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
 				if result.DidCrit() {
 					destruction.BurningEmbers.Gain(sim, 1, dot.Spell.ActionID)
 				}
 				if destruction.SiphonLife != nil {
 					destruction.SiphonLife.Cast(sim, &destruction.Unit)
 				}
+				dot.Spell.DealPeriodicDamage(sim, result)
 			},
 		},
 

@@ -105,15 +105,28 @@
 			--gem-width: 1rem;
 		}
 
+		.item-picker-name-row {
+			width: 100%;
+		}
+
 		.item-picker-labels-container {
 			padding-top: 0;
 			overflow: hidden;
+			width: 100%;
 
 			.item-picker-name-container {
 				max-width: 100%;
 				display: flex;
+				flex-wrap: wrap;
+				column-gap: var(--spacer-1);
+				align-items: baseline;
+
+				.heroic-label {
+					margin-left: 0;
+				}
 
 				.item-picker-name {
+					max-width: 100%;
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;

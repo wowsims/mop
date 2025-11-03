@@ -23,22 +23,22 @@
 		"class": "ClassDeathKnight",
 		"equipment": {
 			"items": [
-				{ "id": 77539, "gems": [76886, 77547, 77543] },
-				{ "id": 87551, "reforging": 154 },
-				{ "id": 89345, "enchant": 4803, "gems": [76674], "reforging": 147 },
-				{ "id": 81234, "enchant": 4421, "reforging": 154, "tinker": 4897 },
-				{ "id": 82975, "enchant": 4419, "gems": [76674, 76684], "reforging": 146 },
-				{ "id": 88879, "enchant": 4411, "gems": [0], "reforging": 144 },
-				{ "id": 82976, "enchant": 4432, "gems": [76674, 0], "reforging": 146, "tinker": 4898 },
-				{ "id": 84949, "gems": [76684, 76696], "reforging": 153, "tinker": 4223 },
-				{ "id": 84872, "enchant": 4823, "gems": [76696, 76696], "reforging": 147 },
-				{ "id": 81113, "enchant": 4429, "gems": [76674], "reforging": 153 },
-				{ "id": 81251, "reforging": 147 },
-				{ "id": 81561, "reforging": 153 },
-				{ "id": 79327 },
-				{ "id": 75274, "reforging": 168 },
-				{ "id": 87545, "enchant": 3368 },
-				{ "id": 87545, "enchant": 3370, "reforging": 139 }
+				{ "id": 86676, "gems": [76886, 76684], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 89064, "reforging": 151, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 86674, "enchant": 4803, "gems": [76684], "reforging": 140, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 89074, "enchant": 4424, "reforging": 144, "upgradeStep": "UpgradeStepTwo", "tinker": 4897 },
+				{ "id": 87402, "enchant": 4419, "gems": [76684, 76684], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 86191, "enchant": 4415, "gems": [76696], "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 86677, "enchant": 4432, "gems": [76696], "reforging": 147, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+				{ "id": 93323, "gems": [76674, 76696], "reforging": 146, "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
+				{ "id": 86675, "enchant": 4823, "gems": [76696], "reforging": 158, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 93264, "enchant": 4429, "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 93251, "reforging": 154, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 90862, "reforging": 161, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 79327, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 86894, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 86906, "enchant": 3368, "gems": [89881, 76696], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 86863, "enchant": 3370, "gems": [76684], "reforging": 138, "upgradeStep": "UpgradeStepTwo" }
 			]
 		},
 		"consumables": {
@@ -68,15 +68,13 @@
 		},
 		"talentsString": "221111",
 		"glyphs": {
-			"major1": 43533,
-			"major2": 104048,
-			"major3": 104047,
-			"minor1": 43550,
-			"minor2": 45806,
-			"minor3": 43673
+			"major1": 68793,
+			"major2": 43548,
+			"minor1": 43672,
+			"minor2": 45806
 		},
 		"profession1": "Engineering",
-		"profession2": "Alchemy",
+		"profession2": "Blacksmithing",
 		"cooldowns": {},
 		"rotation": {
 			"type": "TypeAuto"

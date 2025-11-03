@@ -191,7 +191,7 @@ func factory_StatBonusEffect(config ProcStatBonusEffect, extraSpell func(agent c
 			}
 		}
 
-		triggerAura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 			ActionID:           triggerActionID,
 			Name:               config.Name,
 			Callback:           config.Callback,
@@ -360,7 +360,7 @@ func NewStackingStatBonusCD(config StackingStatBonusCD) {
 			})
 		}
 
-		core.ApplyProcTriggerCallback(&character.Unit, procAura, core.ProcTrigger{
+		procAura.AttachProcTriggerCallback(&character.Unit, core.ProcTrigger{
 			Name:               config.Name,
 			Callback:           config.Callback,
 			ProcMask:           config.ProcMask,
@@ -461,7 +461,7 @@ func NewStackingStatBonusEffect(config StackingStatBonusEffect) {
 			BonusPerStack: config.Bonus,
 		})
 
-		triggerAura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 			ActionID:           core.ActionID{ItemID: config.ItemID},
 			Name:               config.Name,
 			Callback:           config.Callback,
@@ -579,10 +579,11 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 		})
 
 		triggerConfig := config.Trigger
+		triggerConfig.TriggerImmediately = true
 		triggerConfig.Handler = func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			damageSpell.Cast(sim, character.CurrentTarget)
 		}
-		triggerAura := core.MakeProcTriggerAura(&character.Unit, triggerConfig)
+		triggerAura := character.MakeProcTriggerAura(triggerConfig)
 
 		if isEnchant {
 			character.ItemSwap.RegisterEnchantProc(effectID, triggerAura)
@@ -673,6 +674,7 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 
 	var scheduledRefresh *core.PendingAction
 	procTrigger := config.ProcTrigger
+	procTrigger.TriggerImmediately = true
 	procTrigger.Handler = func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 		target := result.Target
 		dot := igniteSpell.Dot(target)
@@ -736,7 +738,7 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 	if config.ParentAura != nil {
 		config.ParentAura.AttachProcTrigger(procTrigger)
 	} else {
-		core.MakeProcTriggerAura(unit, procTrigger)
+		unit.MakeProcTriggerAura(procTrigger)
 	}
 
 	return igniteSpell
@@ -805,7 +807,7 @@ func RegisterRiposteEffect(character *core.Character, auraSpellID int32, trigger
 		},
 	}))
 
-	core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+	character.MakeProcTriggerAura(core.ProcTrigger{
 		Name:     "Riposte Trigger" + character.Label,
 		ActionID: core.ActionID{SpellID: triggerSpellID},
 		Callback: core.CallbackOnSpellHitTaken,

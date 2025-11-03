@@ -1,4 +1,5 @@
 import { Stats } from '../../core/proto_utils/stats';
+import { CacheHandler } from '../cache_handler';
 import { CHARACTER_LEVEL } from '../constants/mechanics.js';
 import {
 	ConsumableType,
@@ -30,6 +31,8 @@ const leftoversUrlJson = '/mop/assets/database/leftover_db.json';
 const leftoversUrlBin = '/mop/assets/database/leftover_db.bin';
 // When changing this value, don't forget to change the html <link> for preloading!
 const READ_JSON = true;
+
+const iconRequestCache = new CacheHandler<Promise<IconData>>();
 
 export class Database {
 	private static loadPromise: Promise<Database> | null = null;
@@ -101,8 +104,8 @@ export class Database {
 	private readonly zones = new Map<number, Zone>();
 	private readonly presetEncounters = new Map<string, PresetEncounter>();
 	private readonly presetTargets = new Map<string, PresetTarget>();
-	private readonly itemIcons: Record<number, Promise<IconData>> = {};
-	private readonly spellIcons: Record<number, Promise<IconData>> = {};
+	private readonly itemIcons: Record<number, IconData> = {};
+	private readonly spellIcons: Record<number, IconData> = {};
 	private readonly glyphIds: Array<GlyphID> = [];
 	private readonly consumables = new Map<number, Consumable>();
 	private readonly spellEffects = new Map<number, SpellEffect>();
@@ -152,26 +155,22 @@ export class Database {
 
 		db.items.forEach(
 			item =>
-				(this.itemIcons[item.id] = Promise.resolve(
-					IconData.create({
-						id: item.id,
-						name: item.name,
-						icon: item.icon,
-					}),
-				)),
+				(this.itemIcons[item.id] = IconData.create({
+					id: item.id,
+					name: item.name,
+					icon: item.icon,
+				})),
 		);
 		db.gems.forEach(
 			gem =>
-				(this.itemIcons[gem.id] = Promise.resolve(
-					IconData.create({
-						id: gem.id,
-						name: gem.name,
-						icon: gem.icon,
-					}),
-				)),
+				(this.itemIcons[gem.id] = IconData.create({
+					id: gem.id,
+					name: gem.name,
+					icon: gem.icon,
+				})),
 		);
-		db.itemIcons.forEach(data => (this.itemIcons[data.id] = Promise.resolve(data)));
-		db.spellIcons.forEach(data => (this.spellIcons[data.id] = Promise.resolve(data)));
+		db.itemIcons.forEach(data => (this.itemIcons[data.id] = data));
+		db.spellIcons.forEach(data => (this.spellIcons[data.id] = data));
 		db.glyphIds.forEach(id => this.glyphIds.push(id));
 		db.consumables.forEach(consumable => this.consumables.set(consumable.id, consumable));
 	}
@@ -374,20 +373,22 @@ export class Database {
 
 	static async getItemIconData(itemId: number, options: { signal?: AbortSignal } = {}): Promise<IconData> {
 		const db = await Database.get({ signal: options?.signal });
-		const data = await db.itemIcons[itemId];
-
+		const data = db.itemIcons[itemId];
+		const cacheKey = `item-${itemId}`;
 		if (!data?.icon) {
-			db.itemIcons[itemId] = Database.getWowheadItemTooltipData(itemId, { signal: options?.signal });
+			if (!iconRequestCache.has(cacheKey)) iconRequestCache.set(cacheKey, Database.getWowheadItemTooltipData(itemId, { signal: options?.signal }));
+			db.itemIcons[itemId] = await iconRequestCache.get(cacheKey)!;
 		}
-		return await db.itemIcons[itemId];
+		return db.itemIcons[itemId];
 	}
 
 	static async getSpellIconData(spellId: number, options: { signal?: AbortSignal } = {}): Promise<IconData> {
 		const db = await Database.get({ signal: options?.signal });
-		const data = await db.spellIcons[spellId];
-
+		const data = db.spellIcons[spellId];
+		const cacheKey = `spell-${spellId}`;
 		if (!data?.icon) {
-			db.spellIcons[spellId] = Database.getWowheadSpellTooltipData(spellId, { signal: options?.signal });
+			if (!iconRequestCache.has(cacheKey)) iconRequestCache.set(cacheKey, Database.getWowheadSpellTooltipData(spellId, { signal: options?.signal }));
+			db.spellIcons[spellId] = await iconRequestCache.get(cacheKey)!;
 		}
 		return db.spellIcons[spellId];
 	}

@@ -3,6 +3,7 @@ import { ref } from 'tsx-vanilla';
 
 import { IndividualSimUI } from '../../individual_sim_ui';
 import i18n from '../../../i18n/config';
+import { translatePresetConfigurationCategory } from '../../../i18n/localization';
 import { PresetBuild } from '../../preset_utils';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '../../proto/common';
 import { SavedTalents } from '../../proto/ui';
@@ -72,13 +73,22 @@ export class PresetConfigurationPicker extends Component {
 					</button>,
 				);
 
-				let categories = Object.keys(build).filter(c => !['name', 'encounter', 'settings'].includes(c) && build[c as PresetConfigurationCategory]);
+				let categories: string[] = [];
+
+				// Add main categories from build keys
+				Object.keys(build).forEach(c => {
+					if (!['name', 'encounter', 'settings'].includes(c) && build[c as PresetConfigurationCategory]) {
+						const category = c as PresetConfigurationCategory;
+						categories.push(translatePresetConfigurationCategory(category));
+					}
+				});
+
 				if (build.encounter?.encounter) {
-					categories.push('encounter');
+					categories.push(translatePresetConfigurationCategory(PresetConfigurationCategory.Encounter));
 				}
 
 				if (build.epWeights) {
-					categories.push('stat weights');
+					categories.push(i18n.t('common.preset.stat_weights'));
 				}
 
 				if (build.settings) {
@@ -86,17 +96,17 @@ export class PresetConfigurationPicker extends Component {
 						if (['name', 'buffs', 'raidBuffs'].includes(c)) return;
 
 						if (c === 'options') {
-							categories.push('Class/Spec Options');
+							categories.push(i18n.t('common.preset.class_spec_options'));
 						} else if (c === 'consumes') {
-							categories.push('Consumables');
+							categories.push(i18n.t('common.preset.consumables'));
 						} else {
-							categories.push('Other Settings');
+							categories.push(i18n.t('common.preset.other_settings'));
 						}
 					});
 				}
 
 				if (build.settings?.buffs || build.settings?.raidBuffs) {
-					categories.push('buffs');
+					categories.push(i18n.t('common.preset.buffs'));
 				}
 
 				categories = [...new Set(categories)].sort();
@@ -104,8 +114,8 @@ export class PresetConfigurationPicker extends Component {
 				tippy(dataElemRef.value!, {
 					content: (
 						<>
-							<p className="mb-1">This preset affects the following settings:</p>
-							<ul className="mb-0 text-capitalize">
+							<p className="mb-1">{i18n.t('common.preset.description')}</p>
+							<ul className="mb-0">
 								{categories.map(category => (
 									<li>{category}</li>
 								))}

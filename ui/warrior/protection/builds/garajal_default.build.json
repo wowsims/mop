@@ -52,7 +52,8 @@
       "prepotId": 76090,
       "potId": 76090,
       "flaskId": 76087,
-      "foodId": 81411
+      "foodId": 74656,
+      "conjuredId": 5512
     },
     "bonusStats": {
       "apiVersion": 1,

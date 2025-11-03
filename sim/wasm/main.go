@@ -36,9 +36,7 @@ func main() {
 	js.Global().Set("statWeightsAsync", js.FuncOf(statWeightsAsync))
 	js.Global().Set("statWeightRequests", js.FuncOf(statWeightRequests))
 	js.Global().Set("statWeightCompute", js.FuncOf(statWeightCompute))
-	js.Global().Set("bulkSimAsync", js.FuncOf(bulkSimAsync))
 	js.Global().Set("abortById", js.FuncOf(abortById))
-	js.Global().Set("bulkSimCombos", js.FuncOf(bulkSimCombos))
 	js.Global().Call("wasmready")
 	<-c
 }
@@ -262,24 +260,6 @@ func statWeightCompute(this js.Value, args []js.Value) interface{} {
 	return outArray
 }
 
-func bulkSimAsync(this js.Value, args []js.Value) interface{} {
-	rsr := &proto.BulkSimRequest{}
-	if err := googleProto.Unmarshal(getArgsBinary(args[0]), rsr); err != nil {
-		log.Printf("Failed to parse request: %s", err)
-		return nil
-	}
-
-	requestId := args[2].String()
-	if strings.HasPrefix(requestId, "<T") {
-		requestId = "" // Make it return the error for an empty id
-	}
-
-	reporter := make(chan *proto.ProgressMetrics, 100)
-	go core.RunBulkSimAsync(rsr, reporter, requestId)
-	go processAsyncProgress(args[1], reporter)
-	return js.Undefined()
-}
-
 func raidSimRequestSplit(this js.Value, args []js.Value) interface{} {
 	splitRequest := &proto.RaidSimRequestSplitRequest{}
 	if err := googleProto.Unmarshal(getArgsBinary(args[0]), splitRequest); err != nil {
@@ -358,27 +338,6 @@ func abortById(this js.Value, args []js.Value) interface{} {
 	return outArray
 }
 
-func bulkSimCombos(this js.Value, args []js.Value) interface{} {
-	rsr := &proto.BulkSimCombosRequest{}
-	if err := googleProto.Unmarshal(getArgsBinary(args[0]), rsr); err != nil {
-		log.Printf("Failed to parse request: %s", err)
-		return nil
-	}
-
-	result := core.RunBulkCombos(rsr)
-
-	outbytes, err := googleProto.Marshal(result)
-	if err != nil {
-		log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
-		return nil
-	}
-
-	outArray := js.Global().Get("Uint8Array").New(len(outbytes))
-	js.CopyBytesToJS(outArray, outbytes)
-
-	return outArray
-}
-
 // Assumes args[0] is a Uint8Array
 func getArgsBinary(value js.Value) []byte {
 	data := make([]byte, value.Get("length").Int())
@@ -408,7 +367,7 @@ func processAsyncProgress(progFunc js.Value, reporter chan *proto.ProgressMetric
 			js.CopyBytesToJS(outArray, outbytes)
 			progFunc.Invoke(outArray)
 
-			if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil || progMetric.FinalBulkResult != nil {
+			if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil {
 				return
 			}
 		}

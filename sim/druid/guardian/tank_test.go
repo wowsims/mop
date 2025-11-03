@@ -28,7 +28,7 @@ func TestGuardian(t *testing.T) {
 			Class: proto.Class_ClassDruid,
 			Race:  proto.Race_RaceWorgen,
 
-			GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "p2"),
+			GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "p2_offensive"),
 
 			Talents: StandardTalents,
 			Glyphs:  StandardGlyphs,

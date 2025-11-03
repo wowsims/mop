@@ -1117,9 +1117,9 @@ export class ActionId {
 
 	static async getTooltipData(actionId: ActionId, options: { signal?: AbortSignal } = {}): Promise<IconData> {
 		if (actionId.itemId) {
-			return await Database.getItemIconData(actionId.itemId, { signal: options?.signal });
+			return Database.getItemIconData(actionId.itemId, { signal: options?.signal });
 		} else {
-			return await Database.getSpellIconData(actionId.spellId, { signal: options?.signal });
+			return Database.getSpellIconData(actionId.spellId, { signal: options?.signal });
 		}
 	}
 

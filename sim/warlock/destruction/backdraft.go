@@ -52,7 +52,7 @@ func (destruction *DestructionWarlock) registerBackdraft() {
 		mod.Deactivate()
 	})
 
-	core.MakeProcTriggerAura(&destruction.Unit, core.ProcTrigger{
+	destruction.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Backdraft - Trigger",
 		ClassSpellMask: warlock.WarlockSpellConflagrate | warlock.WarlockSpellFaBConflagrate,
 		Callback:       core.CallbackOnCastComplete,

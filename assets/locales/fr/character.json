@@ -101,5 +101,26 @@
 		"skinning": "Dépeçage",
 		"tailoring": "Couture",
 		"archeology": "Archéologie"
+	},
+	"slots": {
+		"head": "Tête",
+		"neck": "Cou",
+		"shoulder": "Épaules",
+		"back": "Dos",
+		"chest": "Torse",
+		"wrist": "Poignets",
+		"hands": "Mains",
+		"waist": "Taille",
+		"legs": "Jambes",
+		"feet": "Pieds",
+		"finger_1": "Doigt 1",
+		"finger_2": "Doigt 2",
+		"rings": "Anneaux",
+		"trinket_1": "Bijou 1",
+		"trinket_2": "Bijou 2",
+		"trinkets": "Bijoux",
+		"main_hand": "Main principale",
+		"off_hand": "Main secondaire",
+		"weapons": "Armes"
 	}
 }

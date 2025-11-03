@@ -62,14 +62,15 @@ type GuardianDruid struct {
 	Options *proto.GuardianDruid_Options
 
 	// Aura references
-	DreamOfCenariusAura *core.Aura
-	EnrageAura          *core.Aura
-	HeartOfTheWildAura  *core.Aura
-	SavageDefenseAura   *core.Aura
-	SonOfUrsocAura      *core.Aura
-	ToothAndClawBuff    *core.Aura
-	ToothAndClawDebuffs core.AuraArray
-	VengeanceAura       *core.Aura
+	DreamOfCenariusAura      *core.Aura
+	EnrageAura               *core.Aura
+	HeartOfTheWildAura       *core.Aura
+	ImprovedRegenerationAura *core.Aura
+	SavageDefenseAura        *core.Aura
+	SonOfUrsocAura           *core.Aura
+	ToothAndClawBuff         *core.Aura
+	ToothAndClawDebuffs      core.AuraArray
+	VengeanceAura            *core.Aura
 
 	// Spell references
 	Enrage         *druid.DruidSpell

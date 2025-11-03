@@ -27,7 +27,7 @@ func (ww *WindwalkerMonk) registerComboBreaker() {
 			},
 		}))
 
-		core.MakeProcTriggerAura(&ww.Unit, core.ProcTrigger{
+		ww.MakeProcTriggerAura(core.ProcTrigger{
 			Name:           fmt.Sprintf("Combo Breaker: %s Trigger %s", labelSuffix, ww.Label),
 			Callback:       core.CallbackOnSpellHitDealt,
 			ClassSpellMask: monk.MonkSpellJab,

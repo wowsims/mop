@@ -134,6 +134,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Error loading DBC data %v", err))
 	}
+	upgradePath, err := database.LoadItemUpgradePath(helper)
+	if err != nil {
+		panic(fmt.Sprintf("Error loading DBC data %v", err))
+	}
 	craftingSources := database.LoadCraftedItems(helper)
 	repSources := database.LoadRepItems(helper)
 	//Todo: See if we cant get rid of these as well
@@ -146,12 +150,16 @@ func main() {
 	db.Encounters = core.PresetEncounters
 	db.ReforgeStats = reforgeStats.ToProto()
 
-	iconsMap, _ := database.LoadArtTexturePaths("./tools/DB2ToSqlite/listfile.csv")
+	iconsMap, err := database.LoadArtTexturePaths("./tools/DB2ToSqlite/listfile.csv")
+	if err != nil {
+		panic(fmt.Sprintf("Error loading icon paths %v", err))
+	}
+
 	var instance = dbc.GetDBC()
 	instance.LoadSpellScaling()
 	database.GenerateProtos(instance, db)
 
-	processItems(instance, iconsMap, names, dropSources, craftingSources, repSources, db)
+	processItems(instance, iconsMap, names, dropSources, craftingSources, repSources, upgradePath, db)
 
 	for _, gem := range instance.Gems {
 		parsed := gem.ToProto()
@@ -290,6 +298,21 @@ func main() {
 
 	craftedSpellIds := []int32{}
 	for _, item := range db.Items {
+		// Manual override for some ToT weapons that drop from shared loot
+		// and are missing sources in Atlas
+		if slices.Contains([]int32{95866, 95859, 95860, 95861, 95862, 95867, 95876, 95875, 95877, 97129}, item.Id) {
+			item.Sources = database.InferThroneOfThunderSource(item)
+		}
+
+		if item.NameDescription == "Celestial" {
+			item.Sources = database.InferCelestialItemSource(item)
+		}
+
+		// Infer the drop difficulty for the item
+		if item.NameDescription == "Flexible" {
+			item.Sources = database.InferFlexibleRaidItemSource(item)
+		}
+
 		// 1. Add Belt Buckle gem socket to Waist.
 		// 2. Add Eye Of The Black Prince gem socket to Sha-touched items.
 		if item.Type == proto.ItemType_ItemTypeWaist || slices.Contains(item.GemSockets, proto.GemColor_GemColorShaTouched) {
@@ -304,15 +327,6 @@ func main() {
 			if drop := source.GetDrop(); drop != nil && (item.Type == proto.ItemType_ItemTypeWeapon || item.Type == proto.ItemType_ItemTypeRanged) && (item.WeaponType != proto.WeaponType_WeaponTypeOffHand && item.WeaponType != proto.WeaponType_WeaponTypeShield) && drop.ZoneId == 6622 {
 				item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
 			}
-		}
-
-		if item.NameDescription == "Celestial" {
-			item.Sources = database.InferCelestialItemSource(item)
-		}
-
-		// Infer the drop difficulty for the item
-		if item.NameDescription == "Flexible" {
-			item.Sources = database.InferFlexibleRaidItemSource(item)
 		}
 
 		if item.Phase < 2 {
@@ -330,7 +344,14 @@ func main() {
 	db.WriteBinaryAndJson(fmt.Sprintf("%s/db.bin", dbDir), fmt.Sprintf("%s/db.json", dbDir))
 }
 
-func processItems(instance *dbc.DBC, iconsMap map[int]string, names map[int]string, dropSources map[int][]*proto.DropSource, craftingSources map[int][]*proto.CraftedSource, repSources map[int][]*proto.RepSource, db *database.WowDatabase) {
+func processItems(instance *dbc.DBC,
+	iconsMap map[int]string,
+	names map[int]string,
+	dropSources map[int][]*proto.DropSource,
+	craftingSources map[int][]*proto.CraftedSource,
+	repSources map[int][]*proto.RepSource,
+	upgradePath map[int][]int,
+	db *database.WowDatabase) {
 	sourceMap := make(map[string][]*proto.UIItemSource, len(instance.Items))
 	parsedItems := make([]*proto.UIItem, 0, len(instance.Items))
 
@@ -344,6 +365,7 @@ func processItems(instance *dbc.DBC, iconsMap map[int]string, names map[int]stri
 		if item.Flags2&0x10 != 0 && (item.StatAlloc[0] > 0 && item.StatAlloc[0] < 600) {
 			continue
 		}
+		item.UpgradePath = upgradePath[item.UpgradeID]
 		parsed := item.ToUIItem()
 		if parsed.Icon == "" {
 			parsed.Icon = strings.ToLower(database.GetIconName(iconsMap, item.FDID))
@@ -854,6 +876,7 @@ func GetAllRotationSpellIds() map[string][]int32 {
 			Class:         proto.Class_ClassWarlock,
 			Equipment:     &proto.EquipmentSpec{},
 			TalentsString: "000000",
+			Profession1:   proto.Profession_Herbalism,
 		}, &proto.Player_AfflictionWarlock{AfflictionWarlock: &proto.AfflictionWarlock{Options: &proto.AfflictionWarlock_Options{ClassOptions: &proto.WarlockOptions{}}}}), nil, nil, nil)},
 		{Name: "demonologyWarlock", Raid: core.SinglePlayerRaidProto(core.WithSpec(&proto.Player{
 			Class:         proto.Class_ClassWarlock,

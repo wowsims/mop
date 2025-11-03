@@ -40,7 +40,7 @@ func (uhdk *UnholyDeathKnight) registerShadowInfusion() {
 		MaxStacks: 5,
 	}))
 
-	core.MakeProcTriggerAura(&uhdk.Unit, core.ProcTrigger{
+	uhdk.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Shadow Infusion Trigger" + uhdk.Label,
 		ActionID:       core.ActionID{SpellID: 49572},
 		Callback:       core.CallbackOnSpellHitDealt | core.CallbackOnHealDealt,

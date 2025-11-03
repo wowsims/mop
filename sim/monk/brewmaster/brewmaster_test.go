@@ -7,16 +7,19 @@ import (
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/encounters/msv"
+	"github.com/wowsims/mop/sim/encounters/toes"
 )
 
 func init() {
 	RegisterBrewmasterMonk()
 	common.RegisterAllEffects()
 	msv.Register()
+	toes.Register()
 }
 
 func TestBrewmaster(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "sha_default", ItemFilter, nil, nil),
 		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class:      proto.Class_ClassMonk,

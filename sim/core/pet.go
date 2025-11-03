@@ -55,6 +55,8 @@ type Pet struct {
 	statInheritance        PetStatInheritance
 	dynamicStatInheritance PetStatInheritance
 	inheritedStats         stats.Stats
+	pendingStatInheritance stats.Stats
+	statInheritanceAction  *PendingAction
 
 	// In MoP pets inherit their owners melee speed and cast speed
 	// rather than having auras such as Heroism being applied to them.
@@ -159,6 +161,18 @@ func (pet *Pet) enableDynamicStats(sim *Simulation) {
 	pet.AddStatsDynamic(sim, pet.inheritedStats)
 	pet.Owner.DynamicStatsPets = append(pet.Owner.DynamicStatsPets, pet)
 	pet.dynamicStatInheritance = pet.statInheritance
+	pet.pendingStatInheritance = stats.Stats{}
+	pet.statInheritanceAction = &PendingAction{
+		Priority: ActionPriorityDOT,
+
+		OnAction: func(sim *Simulation) {
+			if pet.enabled {
+				pet.AddOwnerStats(sim, pet.pendingStatInheritance)
+			}
+
+			pet.pendingStatInheritance = stats.Stats{}
+		},
+	}
 }
 
 // Updates the stats for this pet in response to a stat change on the owner.
@@ -185,6 +199,7 @@ func (pet *Pet) resetDynamicStats(sim *Simulation) {
 	pet.dynamicStatInheritance = nil
 	pet.AddStatsDynamic(sim, pet.inheritedStats.Invert())
 	pet.inheritedStats = stats.Stats{}
+	pet.pendingStatInheritance = stats.Stats{}
 }
 
 func (pet *Pet) reset(sim *Simulation, agent PetAgent) {

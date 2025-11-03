@@ -36,6 +36,7 @@ func (fdk *FrostDeathKnight) registerHowlingBlast() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			// First we have to calculate all damage done
 			for idx, aoeTarget := range sim.Encounter.ActiveTargetUnits {
 				baseDamage := fdk.CalcScalingSpellDmg(0.46000000834) + 0.848*spell.MeleeAttackPower()
 				damageMultiplier := spell.DamageMultiplier
@@ -55,12 +56,16 @@ func (fdk *FrostDeathKnight) registerHowlingBlast() {
 				}
 			}
 
+			// Then we have to apply all frost fever debuffs, to make sure no procs happen from targets getting hit
 			for idx := range sim.Encounter.ActiveTargetUnits {
-				spell.DealDamage(sim, results[idx])
-
 				if results[idx].Landed() {
 					fdk.FrostFeverSpell.Cast(sim, results[idx].Target)
 				}
+			}
+
+			// And then finally hit all targets
+			for idx := range sim.Encounter.ActiveTargetUnits {
+				spell.DealDamage(sim, results[idx])
 			}
 		},
 	})

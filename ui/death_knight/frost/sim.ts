@@ -32,6 +32,15 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
 	epReferenceStat: Stat.StatStrength,
 	consumableStats: [Stat.StatStrength, Stat.StatHitRating, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatExpertiseRating, Stat.StatMasteryRating],
+	gemStats: [
+		Stat.StatStamina,
+		Stat.StatStrength,
+		Stat.StatHitRating,
+		Stat.StatHasteRating,
+		Stat.StatCritRating,
+		Stat.StatExpertiseRating,
+		Stat.StatMasteryRating,
+	],
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
 	displayStats: UnitStat.createDisplayStatArray(
 		[Stat.StatStrength, Stat.StatAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
@@ -48,7 +57,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 		// Default equipped gear.
 		gear: Presets.P2_MASTERFROST_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P1_P2_MASTERFROST_EP_PRESET.epWeights,
+		epWeights: Presets.MASTERFROST_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			return new Stats();
@@ -122,11 +131,25 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_P2_MASTERFROST_EP_PRESET, Presets.P1_2H_OBLITERATE_EP_PRESET],
+		epWeights: [Presets.MASTERFROST_EP_PRESET, Presets.TWOHAND_OBLITERATE_EP_PRESET],
 		talents: [Presets.DefaultTalents],
 		rotations: [Presets.MASTERFROST_ROTATION_PRESET_DEFAULT, Presets.OBLITERATE_ROTATION_PRESET_DEFAULT],
-		gear: [Presets.PREBIS_MASTERFROST_GEAR_PRESET, Presets.P2_MASTERFROST_GEAR_PRESET, Presets.P1_2H_OBLITERATE_GEAR_PRESET],
-		builds: [Presets.PRESET_BUILD_PREBIS, Presets.PRESET_BUILD_MASTERFROST, Presets.PRESET_BUILD_2H_OBLITERATE],
+		gear: [
+			Presets.PREBIS_MASTERFROST_GEAR_PRESET,
+			Presets.PREBIS_2H_OBLITERATE_GEAR_PRESET,
+			Presets.P2_MASTERFROST_GEAR_PRESET,
+			Presets.P2_2H_OBLITERATE_GEAR_PRESET,
+			Presets.P3_MASTERFROST_GEAR_PRESET,
+			Presets.P3_2H_OBLITERATE_GEAR_PRESET,
+		],
+		builds: [
+			Presets.PRESET_BUILD_PREBIS_MASTERFROST,
+			Presets.PRESET_BUILD_PREBIS_2H_OBLITERATE,
+			Presets.PRESET_BUILD_P2_MASTERFROST,
+			Presets.PRESET_BUILD_P2_2H_OBLITERATE,
+			Presets.PRESET_BUILD_P3_MASTERFROST,
+			Presets.PRESET_BUILD_P3_2H_OBLITERATE,
+		],
 	},
 
 	raidSimPresets: [
@@ -157,34 +180,32 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 export class FrostDeathKnightSimUI extends IndividualSimUI<Spec.SpecFrostDeathKnight> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecFrostDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				updateSoftCaps: (softCaps: StatCap[]) => {
-					const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
-					if (mainHand?.item?.handType === HandType.HandTypeTwoHand) {
-						const physicalHitCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent));
-						if (physicalHitCap) {
-							physicalHitCap.breakpoints = [7.5];
-							physicalHitCap.postCapEPs = [0];
-						}
-					} else {
-						const physicalHitCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent));
-						if (physicalHitCap) {
-							physicalHitCap.postCapEPs[0] =
-								player.getEpWeights().getStat(Stat.StatHitRating) * 0.3 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT;
-						}
+
+		this.reforger = new ReforgeOptimizer(this, {
+			updateSoftCaps: (softCaps: StatCap[]) => {
+				const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
+				if (mainHand?.item?.handType === HandType.HandTypeTwoHand) {
+					const physicalHitCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent));
+					if (physicalHitCap) {
+						physicalHitCap.breakpoints = [7.5];
+						physicalHitCap.postCapEPs = [0];
 					}
-					return softCaps;
-				},
-				getEPDefaults: (player: Player<Spec.SpecFrostDeathKnight>) => {
-					const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
-					if (mainHand?.item?.handType === HandType.HandTypeTwoHand) {
-						return Presets.P1_2H_OBLITERATE_EP_PRESET.epWeights;
-					} else {
-						return Presets.P1_P2_MASTERFROST_EP_PRESET.epWeights;
+				} else {
+					const physicalHitCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent));
+					if (physicalHitCap) {
+						physicalHitCap.postCapEPs[0] = player.getEpWeights().getStat(Stat.StatHitRating) * 0.3 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT;
 					}
-				},
-			});
+				}
+				return softCaps;
+			},
+			getEPDefaults: (player: Player<Spec.SpecFrostDeathKnight>) => {
+				const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
+				if (mainHand?.item?.handType === HandType.HandTypeTwoHand) {
+					return Presets.TWOHAND_OBLITERATE_EP_PRESET.epWeights;
+				} else {
+					return Presets.MASTERFROST_EP_PRESET.epWeights;
+				}
+			},
 		});
 	}
 }

@@ -47,5 +47,7 @@ func (uhdk *UnholyDeathKnight) registerSummonGargoyle() {
 	uhdk.AddMajorCooldown(core.MajorCooldown{
 		Spell: spell,
 		Type:  core.CooldownTypeDPS,
+
+		AllowSpellQueueing: true,
 	})
 }

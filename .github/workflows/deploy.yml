@@ -6,6 +6,9 @@ on:
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
         steps:
             - name: Install Go
               uses: actions/setup-go@v2
@@ -27,7 +30,7 @@ jobs:
                   node-version: 22
 
             - name: Checkout 🛎️
-              uses: actions/checkout@v2.3.1
+              uses: actions/checkout@v5
               with:
                   persist-credentials: false
 
@@ -46,18 +49,19 @@ jobs:
 
             - name: Commit updated version file
               run: |
-                  git config --local user.name "GitHub Actions"
-                  git config --local user.email "actions@github.com"
+                  git config --local user.name "github-actions[bot]"
+                  git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
                   if ! git diff --exit-code; then
                       git checkout -b github-actions
                       git add .deployedprotoversion
                       git commit -m "Auto-update .deployedprotoversion file due to API version increase"
+                      git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
                       git push --set-upstream origin github-actions
                       gh pr create --fill
                       gh pr merge --merge --delete-branch
                   fi
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Test
               run: |

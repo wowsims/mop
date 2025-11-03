@@ -135,6 +135,14 @@ func (cat *FeralDruid) Initialize() {
 		cat.DreamOfCenariusAura.ApplyOnGain(snapshotHandler)
 		cat.DreamOfCenariusAura.ApplyOnExpire(snapshotHandler)
 	}
+
+	cat.CatFormAura.ApplyOnGain(func(_ *core.Aura, sim *core.Simulation) {
+		if cat.tempSnapshotAura.IsActive() {
+			cat.UpdateBleedPower(cat.Rip, sim, cat.CurrentTarget, false, true)
+			cat.UpdateBleedPower(cat.Rake, sim, cat.CurrentTarget, false, true)
+			cat.UpdateBleedPower(cat.ThrashCat, sim, cat.CurrentTarget, false, true)
+		}
+	})
 }
 
 func (cat *FeralDruid) ApplyTalents() {

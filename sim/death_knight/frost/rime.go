@@ -34,7 +34,7 @@ func (fdk *FrostDeathKnight) registerRime() {
 		FloatValue: -2.0,
 	})
 
-	core.MakeProcTriggerAura(&fdk.Unit, core.ProcTrigger{
+	fdk.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Rime" + fdk.Label,
 		ActionID:       core.ActionID{SpellID: 59057},
 		Callback:       core.CallbackOnSpellHitDealt,

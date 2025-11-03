@@ -1,25 +1,23 @@
 import * as PresetUtils from '../../core/preset_utils.js';
 import { APLRotation_Type as APLRotationType } from '../../core/proto/apl.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/proto/common.js';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
 import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as RetributionPaladinOptions } from '../../core/proto/paladin.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
-import P1_Gear from './gear_sets/p1.gear.json';
+import P2_Gear from './gear_sets/p2.gear.json';
 import Preraid_Gear from './gear_sets/preraid.gear.json';
+import P2RetBuild from './builds/p2.build.json';
+import PreraidRetBuild from './builds/preraid.build.json';
 
-// Preset options for this spec.
-// Eventually we will import these values for the raid sim too, so it's good to
-// keep them in a separate file.
-
-export const P1_GEAR_PRESET = PresetUtils.makePresetGear('P1', P1_Gear);
+export const P2_GEAR_PRESET = PresetUtils.makePresetGear('P2', P2_Gear);
 export const PRERAID_GEAR_PRESET = PresetUtils.makePresetGear('Pre-raid', Preraid_Gear);
 
 export const APL_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
 // Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P1',
+export const P1_P2_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P2',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
@@ -68,17 +66,13 @@ export const DefaultTalents = {
 	}),
 };
 
-export const P1_BUILD_PRESET = PresetUtils.makePresetBuild('P1', {
-	gear: P1_GEAR_PRESET,
-	epWeights: P1_EP_PRESET,
-	talents: DefaultTalents,
+export const P2_BUILD_PRESET = PresetUtils.makePresetBuildFromJSON('P2', Spec.SpecRetributionPaladin, P2RetBuild, {
+	epWeights: P1_P2_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
 
-export const PRERAID_BUILD_PRESET = PresetUtils.makePresetBuild('Pre-raid', {
-	gear: PRERAID_GEAR_PRESET,
+export const PRERAID_BUILD_PRESET = PresetUtils.makePresetBuildFromJSON('Pre-raid', Spec.SpecRetributionPaladin, PreraidRetBuild, {
 	epWeights: PRERAID_EP_PRESET,
-	talents: DefaultTalents,
 	rotationType: APLRotationType.TypeAuto,
 });
 
@@ -100,4 +94,5 @@ export const OtherDefaults = {
 	profession2: Profession.Blacksmithing,
 	distanceFromTarget: 5,
 	iterationCount: 25000,
+	race: Race.RaceBloodElf,
 };

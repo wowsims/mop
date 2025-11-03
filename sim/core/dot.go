@@ -233,18 +233,28 @@ func (dot *Dot) CopyDotAndApply(sim *Simulation, originaldot *Dot) {
 	sim.AddPendingAction(dot.tickAction)
 }
 
-// This is the incredibly cursed way fel flame uses to increase dot duration, don't use unless you know what you're
-// doing. It extends the duration, immediately recalculates the next tick and then fits as many ticks into the rest of
+// This is the incredibly cursed way of extending DoT durations (for Fel flame (Cata) / moonfire / sunfire)
+// Don't use unless you know what you're doing
+// It extends the duration, immediately recalculates the next tick and then fits as many ticks into the rest of
 // the aura duration as it can. This will cause aura duration and dot ticks to desync ingame, so the aura will fall off
 // prematurely to what is shown.
 //
 // Sometimes the game also decides to tick one last time anyway, even though the time since the last tick is absurdly
 // low, though this isn't implemented until someone figures out the conditions.
+func (dot *Dot) DurationExtend(sim *Simulation, extendBy time.Duration) {
+	dot.durationExtendInternal(sim, extendBy, false)
+}
 func (dot *Dot) DurationExtendSnapshot(sim *Simulation, extendBy time.Duration) {
+	dot.durationExtendInternal(sim, extendBy, true)
+}
+
+func (dot *Dot) durationExtendInternal(sim *Simulation, extendBy time.Duration, useSnapshot bool) {
 	if !dot.IsActive() {
 		panic("Can't extend a non-active dot")
 	}
-	dot.TakeSnapshot(sim, false)
+	if useSnapshot {
+		dot.TakeSnapshot(sim, false)
+	}
 
 	previousTick := dot.tickAction.NextActionAt - dot.tickPeriod
 	dot.tickPeriod = dot.CalcTickPeriod()
@@ -262,7 +272,7 @@ func (dot *Dot) DurationExtendSnapshot(sim *Simulation, extendBy time.Duration) 
 	// cap the total duration to the amount of hasted ticks a new dot would have
 	extendDuration := min(dot.RemainingDuration(sim)+extendBy,
 		dot.tickPeriod*time.Duration(dot.HastedTickCount()-1)+(nextTick-sim.CurrentTime))
-	dot.remainingTicks = int32((extendDuration-(nextTick-sim.CurrentTime))/dot.tickPeriod) + 1
+	dot.remainingTicks = dot.calculateTickCount(extendDuration-(nextTick-sim.CurrentTime), dot.tickPeriod) + 1
 
 	dot.Duration = nextTick - sim.CurrentTime + time.Duration(dot.remainingTicks-1)*dot.tickPeriod
 	sim.AddPendingAction(dot.tickAction)
@@ -272,7 +282,9 @@ func (dot *Dot) DurationExtendSnapshot(sim *Simulation, extendBy time.Duration) 
 // Forces an instant tick. Does not reset the tick timer or aura duration,
 // the tick is simply an extra tick.
 func (dot *Dot) TickOnce(sim *Simulation) {
-	dot.onTick(sim, dot.Unit, dot)
+	if dot.onTick != nil {
+		dot.onTick(sim, dot.Unit, dot)
+	}
 }
 
 func (dot *Dot) periodicTick(sim *Simulation) {

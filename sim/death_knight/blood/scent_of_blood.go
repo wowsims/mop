@@ -38,8 +38,9 @@ func (bdk *BloodDeathKnight) registerScentOfBlood() {
 			dsMod.Deactivate()
 		},
 	})).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnSpellHitDealt,
-		ClassSpellMask: death_knight.DeathKnightSpellDeathStrike,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ClassSpellMask:     death_knight.DeathKnightSpellDeathStrike,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			scentOfBloodAura.Deactivate(sim)
@@ -70,21 +71,21 @@ func (bdk *BloodDeathKnight) registerScentOfBlood() {
 		scentOfBloodAura.AddStack(sim)
 	}
 
-	core.MakeProcTriggerAura(&bdk.Unit, core.ProcTrigger{
-		Name:     "Scent Of Blood Auto Trigger" + bdk.Label,
-		ActionID: core.ActionID{SpellID: 148211},
-		Callback: core.CallbackOnSpellHitDealt,
-		ProcMask: core.ProcMaskMeleeMHAuto,
-		Outcome:  core.OutcomeLanded,
-
-		Handler: scentOfBloodHandler,
+	bdk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Scent Of Blood Auto Trigger" + bdk.Label,
+		ActionID:           core.ActionID{SpellID: 148211},
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMeleeMHAuto,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
+		Handler:            scentOfBloodHandler,
 	})
 
-	core.MakeProcTriggerAura(&bdk.Unit, core.ProcTrigger{
-		Name:     "Scent Of Blood Avoidance Trigger" + bdk.Label,
-		Callback: core.CallbackOnSpellHitTaken,
-		Outcome:  core.OutcomeDodge | core.OutcomeParry,
-
-		Handler: scentOfBloodHandler,
+	bdk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Scent Of Blood Avoidance Trigger" + bdk.Label,
+		Callback:           core.CallbackOnSpellHitTaken,
+		Outcome:            core.OutcomeDodge | core.OutcomeParry,
+		TriggerImmediately: true,
+		Handler:            scentOfBloodHandler,
 	})
 }

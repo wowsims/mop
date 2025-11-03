@@ -20,6 +20,7 @@ import { BooleanPicker } from './pickers/boolean_picker.js';
 import { NumberPicker } from './pickers/number_picker.js';
 import { ResultsViewer } from './results_viewer.jsx';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
+import { trackEvent, trackPageView } from '../../tracking/utils';
 export class StatWeightActionSettings {
 	private readonly storageKey: string;
 	readonly changeEmitter = new TypedEvent<void>();
@@ -134,6 +135,7 @@ export class StatWeightActionSettings {
 export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);
 	simUI.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
+		trackPageView('Stat Weights', '/stat-weights');
 		epWeightsModal.open();
 	});
 
@@ -361,6 +363,11 @@ export class EpWeightsMenu extends BaseModal {
 		const calcButton = calcWeightsButtonRef.value;
 		let isRunning = false;
 		calcButton?.addEventListener('click', async () => {
+			trackEvent({
+				action: 'sim',
+				category: 'stat_weights',
+				label: 'calculate',
+			});
 			if (isRunning) return;
 			isRunning = true;
 
@@ -650,7 +657,7 @@ export class EpWeightsMenu extends BaseModal {
 			const epStdev = stat.getProtoValue(statWeights.epValuesStdev!);
 			epCell = this.makeTableCellContents(epAvg, epStdev);
 		} else {
-							weightCell = <span className="results-avg notapplicable">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>;
+			weightCell = <span className="results-avg notapplicable">{i18n.t('sidebar.buttons.stat_weights.modal.not_applicable')}</span>;
 			epCell = weightCell.cloneNode(true) as Element;
 		}
 
@@ -671,7 +678,8 @@ export class EpWeightsMenu extends BaseModal {
 		const epDelta = epTotal - epCurrent;
 
 		const epAvgElem = epRef.value!.querySelector('.type-ep .results-avg')!;
-		if (epDelta.toFixed(2) === '0.00') epAvgElem; // no-op
+		if (epDelta.toFixed(2) === '0.00')
+			epAvgElem; // no-op
 		else if (epDelta > 0) epAvgElem.classList.add('positive');
 		else if (epDelta < 0) epAvgElem.classList.add('negative');
 

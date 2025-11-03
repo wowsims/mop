@@ -11,6 +11,7 @@ import { BooleanPicker } from './pickers/boolean_picker.js';
 import { EnumPicker, EnumValueConfig } from './pickers/enum_picker.js';
 import { NumberPicker } from './pickers/number_picker.js';
 import Toast from './toast';
+import { trackEvent } from '../../tracking/utils';
 
 export class SettingsMenu extends BaseModal {
 	private readonly simUI: SimUI;
@@ -72,6 +73,11 @@ export class SettingsMenu extends BaseModal {
 				content: i18n.t('info.options.restore_defaults.tooltip'),
 			});
 			restoreDefaultsButton.value.addEventListener('click', () => {
+				trackEvent({
+					action: 'settings',
+					category: 'restore-defaults',
+					label: 'restore',
+				});
 				this.simUI.applyDefaults(TypedEvent.nextEventID());
 				new Toast({
 					variant: 'success',
@@ -119,6 +125,12 @@ export class SettingsMenu extends BaseModal {
 					return idx == -1 ? defaultLang : idx;
 				},
 				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
+					trackEvent({
+						action: 'settings',
+						category: 'language',
+						label: 'update',
+						value: langs[newValue],
+					});
 					sim.setLanguage(eventID, langs[newValue] || 'en');
 					setLang(langs[newValue] || 'en');
 				},
@@ -149,6 +161,12 @@ export class SettingsMenu extends BaseModal {
 				changedEvent: (sim: Sim) => sim.showExperimentalChangeEmitter,
 				getValue: (sim: Sim) => sim.getShowExperimental(),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
+					trackEvent({
+						action: 'settings',
+						category: 'show-experimental',
+						label: 'update',
+						value: newValue,
+					});
 					sim.setShowExperimental(eventID, newValue);
 				},
 			});
@@ -177,7 +195,15 @@ export class SettingsMenu extends BaseModal {
 				labelTooltip: 'Use web workers to spread sim workload over multiple CPU cores.',
 				changedEvent: (sim: Sim) => sim.wasmConcurrencyChangeEmitter,
 				getValue: (sim: Sim) => sim.getWasmConcurrency(),
-				setValue: (eventID, sim, newValue) => sim.setWasmConcurrency(eventID, newValue),
+				setValue: (eventID, sim, newValue) => {
+					trackEvent({
+						action: 'settings',
+						category: 'concurrency',
+						label: 'update',
+						value: newValue,
+					});
+					sim.setWasmConcurrency(eventID, newValue);
+				},
 				values: values,
 			});
 

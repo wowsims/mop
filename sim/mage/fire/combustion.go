@@ -125,10 +125,12 @@ func (fire *FireMage) registerCombustionSpell() {
 		updateCombustionTotalDamageEstimate()
 	})
 
-	core.MakeProcTriggerAura(&fire.Unit, core.ProcTrigger{
+	fire.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Ignite Tracker",
 		RequireDamageDealt: true,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			updateCombustionTickDamageEstimate(sim)
 			updateCombustionTotalDamageEstimate()

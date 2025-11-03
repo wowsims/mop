@@ -53,13 +53,14 @@ func (dk *DeathKnight) registerRoilingBlood() {
 		return
 	}
 
-	core.MakeProcTriggerAura(&dk.Unit, core.ProcTrigger{
-		Name:            "Roiling Blood" + dk.Label,
-		MetricsActionID: core.ActionID{SpellID: 108170},
-		Callback:        core.CallbackOnSpellHitDealt,
-		ClassSpellMask:  DeathKnightSpellBloodBoil,
-		Outcome:         core.OutcomeLanded,
-		ICD:             core.SpellBatchWindow,
+	dk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Roiling Blood" + dk.Label,
+		MetricsActionID:    core.ActionID{SpellID: 108170},
+		Callback:           core.CallbackOnSpellHitDealt,
+		ClassSpellMask:     DeathKnightSpellBloodBoil,
+		Outcome:            core.OutcomeLanded,
+		ICD:                core.SpellBatchWindow,
+		TriggerImmediately: true,
 
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			return dk.DiseasesAreActive(result.Target)
@@ -154,7 +155,7 @@ func (dk *DeathKnight) registerUnholyBlight() {
 		ActionID:       core.ActionID{SpellID: 115989},
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskEmpty,
-		Flags:          core.SpellFlagAPL | core.SpellFlagHelpful | core.SpellFlagEncounterOnly,
+		Flags:          core.SpellFlagAPL | core.SpellFlagHelpful,
 		ClassSpellMask: DeathKnightSpellUnholyBlight,
 
 		Cast: core.CastConfig{
@@ -167,7 +168,8 @@ func (dk *DeathKnight) registerUnholyBlight() {
 			},
 		},
 
-		Hot: core.DotConfig{
+		Dot: core.DotConfig{
+			IsAOE: true,
 			Aura: core.Aura{
 				Label: "Unholy Blight" + dk.Label,
 			},
@@ -180,7 +182,7 @@ func (dk *DeathKnight) registerUnholyBlight() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			spell.Hot(&dk.Unit).Apply(sim)
+			spell.AOEDot().Apply(sim)
 		},
 	})
 }
@@ -691,12 +693,13 @@ func (dk *DeathKnight) registerBloodTap() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&dk.Unit, core.ProcTrigger{
-		Name:           "Blood Charge Trigger" + dk.Label,
-		Callback:       core.CallbackOnSpellHitDealt,
-		ProcMask:       core.ProcMaskMeleeMH | core.ProcMaskSpellDamage,
-		ClassSpellMask: DeathKnightSpellDeathCoil | DeathKnightSpellFrostStrike | DeathKnightSpellRuneStrike,
-		Outcome:        core.OutcomeLanded,
+	dk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Blood Charge Trigger" + dk.Label,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMeleeMH | core.ProcMaskSpellDamage,
+		ClassSpellMask:     DeathKnightSpellDeathCoil | DeathKnightSpellFrostStrike | DeathKnightSpellRuneStrike,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			bloodChargeAura.Activate(sim)
@@ -728,7 +731,7 @@ func (dk *DeathKnight) registerRunicEmpowerment() {
 		ActionID: actionID,
 	}))
 
-	core.MakeProcTriggerAura(&dk.Unit, core.ProcTrigger{
+	dk.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Runic Empowerement Trigger" + dk.Label,
 		Callback:       core.CallbackOnSpellHitDealt,
 		ProcMask:       core.ProcMaskMeleeMH | core.ProcMaskSpellDamage,
@@ -767,13 +770,14 @@ func (dk *DeathKnight) registerRunicCorruption() {
 		},
 	}))
 
-	core.MakeProcTriggerAura(&dk.Unit, core.ProcTrigger{
-		Name:           "Runic Corruption Trigger" + dk.Label,
-		Callback:       core.CallbackOnSpellHitDealt,
-		ProcMask:       core.ProcMaskMeleeMH | core.ProcMaskSpellDamage,
-		Outcome:        core.OutcomeLanded,
-		ClassSpellMask: DeathKnightSpellDeathCoil | DeathKnightSpellFrostStrike | DeathKnightSpellRuneStrike,
-		ProcChance:     0.45,
+	dk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Runic Corruption Trigger" + dk.Label,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMeleeMH | core.ProcMaskSpellDamage,
+		Outcome:            core.OutcomeLanded,
+		ClassSpellMask:     DeathKnightSpellDeathCoil | DeathKnightSpellFrostStrike | DeathKnightSpellRuneStrike,
+		ProcChance:         0.45,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			hasteMultiplier := 1.0 + dk.GetStat(stats.HasteRating)/(100*core.HasteRatingPerHastePercent)

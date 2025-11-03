@@ -82,12 +82,14 @@ func (monk *Monk) registerSwiftReflexes() {
 		},
 	})
 
-	aura := core.MakeProcTriggerAura(&monk.Unit, core.ProcTrigger{
-		Name:     "Swift Reflexes" + monk.Label,
-		ActionID: core.ActionID{SpellID: 124334},
-		Outcome:  core.OutcomeParry,
-		Callback: core.CallbackOnSpellHitTaken,
-		ICD:      time.Second,
+	aura := monk.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Swift Reflexes" + monk.Label,
+		ActionID:           core.ActionID{SpellID: 124334},
+		Outcome:            core.OutcomeParry,
+		Callback:           core.CallbackOnSpellHitTaken,
+		ICD:                time.Second,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			swiftReflexesAttack.Cast(sim, spell.Unit)
 		},

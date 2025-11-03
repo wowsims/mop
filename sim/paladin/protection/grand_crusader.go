@@ -25,8 +25,9 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 			prot.AvengersShield.CD.Reset()
 		},
 	})).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: paladin.SpellMaskAvengersShield,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     paladin.SpellMaskAvengersShield,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			prot.HolyPower.Gain(sim, 1, hpActionID)
@@ -34,13 +35,14 @@ func (prot *ProtectionPaladin) registerGrandCrusader() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&prot.Unit, core.ProcTrigger{
-		Name:       "Grand Crusader Trigger" + prot.Label,
-		ActionID:   core.ActionID{SpellID: 85043},
-		Callback:   core.CallbackOnSpellHitTaken,
-		Outcome:    core.OutcomeDodge | core.OutcomeParry,
-		ProcChance: 0.3,
-		ICD:        time.Second,
+	prot.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Grand Crusader Trigger" + prot.Label,
+		ActionID:           core.ActionID{SpellID: 85043},
+		Callback:           core.CallbackOnSpellHitTaken,
+		Outcome:            core.OutcomeDodge | core.OutcomeParry,
+		ProcChance:         0.3,
+		ICD:                time.Second,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			grandCrusaderAura.Activate(sim)

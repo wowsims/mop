@@ -117,7 +117,6 @@ func (affliction *AfflictionWarlock) registerSeed() {
 				if result.Landed() {
 					if affliction.Options.DetonateSeed {
 						seedExplosion.Cast(sim, target)
-
 					} else {
 						spell.Dot(target).Apply(sim)
 					}

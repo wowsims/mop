@@ -19,20 +19,20 @@ func TestRetribution(t *testing.T) {
 			Class: proto.Class_ClassPaladin,
 			Race:  proto.Race_RaceBloodElf,
 
-			GearSet: core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p1"),
-			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "preraid"),
-			},
-			Talents:     StandardTalents,
-			Glyphs:      StandardGlyphs,
-			Consumables: FullConsumesSpec,
-			SpecOptions: core.SpecOptionsCombo{Label: "Seal of Truth", SpecOptions: SealOfTruth},
+			GearSet:         core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p2"),
+			Talents:         StandardTalents,
+			OtherTalentSets: OtherTalentSets,
+			Glyphs:          StandardGlyphs,
+			Consumables:     FullConsumesSpec,
+			SpecOptions:     core.SpecOptionsCombo{Label: "Seal of Truth", SpecOptions: SealOfTruth},
 			OtherSpecOptions: []core.SpecOptionsCombo{
 				{Label: "Seal of Insight", SpecOptions: SealOfInsight},
 				{Label: "Seal of Justice", SpecOptions: SealOfJustice},
 				{Label: "Seal of Righteousness", SpecOptions: SealOfRighteousness},
 			},
-			Rotation: core.GetAplRotation("../../../ui/paladin/retribution/apls", "default"),
+			Rotation:    core.GetAplRotation("../../../ui/paladin/retribution/apls", "default"),
+			Profession1: proto.Profession_Engineering,
+			Profession2: proto.Profession_Blacksmithing,
 
 			ItemFilter: core.ItemFilter{
 				WeaponTypes: []proto.WeaponType{
@@ -51,38 +51,18 @@ func TestRetribution(t *testing.T) {
 	}))
 }
 
-func BenchmarkSimulate(b *testing.B) {
-	rsr := &proto.RaidSimRequest{
-		Raid: core.SinglePlayerRaidProto(
-			&proto.Player{
-				Race:           proto.Race_RaceBloodElf,
-				Class:          proto.Class_ClassPaladin,
-				Equipment:      core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p1").GearSet,
-				Consumables:    FullConsumesSpec,
-				Spec:           SealOfTruth,
-				Glyphs:         StandardGlyphs,
-				TalentsString:  StandardTalents,
-				Buffs:          core.FullIndividualBuffs,
-				ReactionTimeMs: 100,
-				Rotation:       core.GetAplRotation("../../../ui/paladin/retribution/apls", "default").Rotation,
-			},
-			core.FullPartyBuffs,
-			core.FullRaidBuffs,
-			core.FullDebuffs),
-		Encounter: &proto.Encounter{
-			Duration:          300,
-			DurationVariation: 30,
-			Targets: []*proto.Target{
-				core.NewDefaultTarget(),
-			},
-		},
-		SimOptions: core.AverageDefaultSimTestOptions,
-	}
-
-	core.RaidBenchmark(b, rsr)
+var StandardTalents = "000023"
+var OtherTalentSets = []core.TalentsCombo{
+	{Label: "HolyAvenger_HolyPrism", Talents: "000011", Glyphs: StandardGlyphs},
+	{Label: "HolyAvenger_LightsHammer", Talents: "000012", Glyphs: StandardGlyphs},
+	{Label: "HolyAvenger_ExecutionSentence", Talents: "000013", Glyphs: StandardGlyphs},
+	{Label: "SanctifiedWrath_HolyPrism", Talents: "000021", Glyphs: StandardGlyphs},
+	{Label: "SanctifiedWrath_LightsHammer", Talents: "000022", Glyphs: StandardGlyphs},
+	// {Label: "SanctifiedWrath_ExecutionSentence", Talents: "000023", Glyphs: StandardGlyphs},
+	{Label: "DivinePurpose_HolyPrism", Talents: "000031", Glyphs: StandardGlyphs},
+	{Label: "DivinePurpose_LightsHammer", Talents: "000032", Glyphs: StandardGlyphs},
+	{Label: "DivinePurpose_ExecutionSentence", Talents: "000033", Glyphs: StandardGlyphs},
 }
-
-var StandardTalents = "221223"
 var StandardGlyphs = &proto.Glyphs{
 	Major1: int32(proto.PaladinMajorGlyph_GlyphOfTemplarsVerdict),
 	Major2: int32(proto.PaladinMajorGlyph_GlyphOfDoubleJeopardy),

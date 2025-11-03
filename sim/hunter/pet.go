@@ -153,13 +153,15 @@ func (hunter *Hunter) NewDireBeastPet() *HunterPet {
 	})
 
 	hunter.AddPet(direBeastPet)
-	core.MakeProcTriggerAura(&direBeastPet.Unit, core.ProcTrigger{
-		Name:       "Dire Beast",
-		ActionID:   core.ActionID{ItemID: 120679},
-		Callback:   core.CallbackOnSpellHitDealt,
-		ProcChance: 1,
-		SpellFlags: core.SpellFlagMeleeMetrics,
-		Outcome:    core.OutcomeLanded,
+	direBeastPet.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Dire Beast",
+		ActionID:           core.ActionID{ItemID: 120679},
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcChance:         1,
+		SpellFlags:         core.SpellFlagMeleeMetrics,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			hunter.AddFocus(sim, 5, focusMetrics)
 		},

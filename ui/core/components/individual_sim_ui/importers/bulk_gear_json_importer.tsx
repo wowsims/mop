@@ -3,18 +3,19 @@ import { EquipmentSpec, Spec } from '../../../proto/common';
 import { Database } from '../../../proto_utils/database';
 import { BulkTab } from '../bulk_tab';
 import { IndividualImporter } from './individual_importer';
+import { t } from 'i18next';
 
 export class BulkGearJsonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
 	private readonly bulkUI: BulkTab;
 
 	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>, bulkUI: BulkTab) {
-		super(parent, simUI, { title: 'Bag Item Import', allowFileUpload: true });
+		super(parent, simUI, { title: t('bulk_tab.import_modal.title'), allowFileUpload: true });
 
 		this.bulkUI = bulkUI;
 		this.descriptionElem.appendChild(
 			<>
-				<p>Import bag items from a JSON file, which can be created by the WowSimsExporter in-game AddOn.</p>
-				<p>To import, upload the file or paste the text below, then click, 'Import'.</p>
+				<p>{t('bulk_tab.import_modal.description_line1')}</p>
+				<p>{t('bulk_tab.import_modal.description_line2')}</p>
 			</>,
 		);
 	}

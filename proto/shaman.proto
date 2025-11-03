@@ -153,6 +153,8 @@ message FeleAutocastSettings {
     bool autocast_firenova = 2;
     bool autocast_immolate = 3;
     bool autocast_empower = 4;
+    bool no_immolate_wfunleash = 5;
+    double no_immolate_duration = 6;
 }
 
 message ShamanOptions {

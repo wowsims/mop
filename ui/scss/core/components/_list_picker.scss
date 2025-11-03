@@ -13,13 +13,20 @@
 	}
 
 	.list-picker-items {
+		--drag-background-spacing: 0;
+
 		width: 100%;
 		display: flex;
 		flex-direction: column;
 		gap: var(--block-spacer);
 
 		.list-picker-item-container {
+			position: relative;
 			border: var(--border-default);
+
+			.list-picker-items {
+				--drag-background-spacing: var(--apl-spacer);
+			}
 
 			&.dragfrom {
 				background-color: color-mix(in srgb, var(--bs-body-bg) 80%, transparent);
@@ -28,7 +35,16 @@
 			}
 
 			&.draggable:has(> .list-picker-item-header .list-picker-item-popover.hover) {
-				background-color: color-mix(in srgb, var(--bs-primary) 5%, transparent);
+				&::after {
+					content: '';
+					position: absolute;
+					top: calc(var(--drag-background-spacing) * -1);
+					left: calc(var(--drag-background-spacing) * -1);
+					height: calc(100% + var(--drag-background-spacing) * 2);
+					width: calc(100% + var(--drag-background-spacing) * 2);
+					background-color: color-mix(in srgb, var(--bs-border-color) 20%, transparent);
+					pointer-events: none;
+				}
 			}
 
 			&.inline {

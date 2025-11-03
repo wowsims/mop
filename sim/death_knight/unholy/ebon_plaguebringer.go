@@ -23,14 +23,6 @@ func (uhdk *UnholyDeathKnight) registerEbonPlaguebringer() {
 		Label:    "Ebon Plaguebringer" + uhdk.Label,
 		ActionID: core.ActionID{SpellID: 51160},
 	})).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnSpellHitDealt,
-		ClassSpellMask: death_knight.DeathKnightSpellPlagueStrike,
-		Outcome:        core.OutcomeLanded,
-
-		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			uhdk.FrostFeverSpell.Cast(sim, result.Target)
-		},
-	}).AttachProcTrigger(core.ProcTrigger{
 		Callback:       core.CallbackOnApplyEffects,
 		ClassSpellMask: death_knight.DeathKnightSpellBloodPlague,
 

@@ -97,11 +97,13 @@ func (shaman *Shaman) ApplyElementalTalents() {
 		},
 	})
 
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:           "Fulmination Proc",
-		ProcChance:     1.0,
-		ClassSpellMask: SpellMaskEarthShock,
-		Callback:       core.CallbackOnApplyEffects,
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Fulmination Proc",
+		ProcChance:         1.0,
+		ClassSpellMask:     SpellMaskEarthShock,
+		Callback:           core.CallbackOnApplyEffects,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			if shaman.SelfBuffs.Shield != proto.ShamanShield_LightningShield || shaman.LightningShieldAura.GetStacks() <= 1 {
 				return
@@ -115,16 +117,19 @@ func (shaman *Shaman) ApplyElementalTalents() {
 	actionID := core.ActionID{SpellID: 88765}
 	manaMetrics := shaman.NewManaMetrics(actionID)
 
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:            "Rolling Thunder",
-		ActionID:        actionID,
-		MetricsActionID: actionID,
-		ClassSpellMask:  SpellMaskChainLightning | SpellMaskChainLightningOverload | SpellMaskLightningBolt | SpellMaskLightningBoltOverload | SpellMaskLavaBeam | SpellMaskLavaBeamOverload,
-		Callback:        core.CallbackOnSpellHitDealt,
-		ProcChance:      0.6,
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Rolling Thunder",
+		ActionID:           actionID,
+		MetricsActionID:    actionID,
+		ClassSpellMask:     SpellMaskChainLightning | SpellMaskChainLightningOverload | SpellMaskLightningBolt | SpellMaskLightningBoltOverload | SpellMaskLavaBeam | SpellMaskLavaBeamOverload,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcChance:         0.6,
+		TriggerImmediately: true,
+
 		ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
 			return shaman.SelfBuffs.Shield == proto.ShamanShield_LightningShield
 		},
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			nStack := core.TernaryInt32(shaman.T14Ele4pc.IsActive(), 2, 1)
 			shaman.AddMana(sim, 0.02*shaman.MaxMana()*float64(nStack), manaMetrics)
@@ -170,11 +175,13 @@ func (shaman *Shaman) ApplyElementalTalents() {
 		FloatValue: 0.2,
 	})
 
-	core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-		Name:           "Elemental Focus",
-		Callback:       core.CallbackOnSpellHitDealt,
-		Outcome:        core.OutcomeCrit,
-		ClassSpellMask: canTriggerSpells,
+	shaman.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Elemental Focus",
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeCrit,
+		ClassSpellMask:     canTriggerSpells,
+		TriggerImmediately: true,
+
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			triggeringSpell = spell
 			triggerTime = sim.CurrentTime

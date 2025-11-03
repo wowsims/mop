@@ -97,7 +97,7 @@ func (paladin *Paladin) registerLongArmOfTheLaw() {
 	}))
 	longArmOfTheLawAura.NewActiveMovementSpeedEffect(0.45)
 
-	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
+	paladin.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Long Arm of the Law Trigger" + paladin.Label,
 		ActionID:       core.ActionID{SpellID: 87172},
 		Callback:       core.CallbackOnSpellHitDealt,
@@ -213,20 +213,22 @@ func (paladin *Paladin) registerSelflessHealer() {
 			costMod.Deactivate()
 		},
 	}).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: classMask,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     classMask,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			paladin.SelflessHealerAura.Deactivate(sim)
 		},
 	})
 
-	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
-		Name:           "Selfless Healer Trigger" + paladin.Label,
-		ActionID:       core.ActionID{SpellID: 85804},
-		Callback:       core.CallbackOnSpellHitDealt,
-		Outcome:        core.OutcomeLanded,
-		ClassSpellMask: SpellMaskJudgment,
+	paladin.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Selfless Healer Trigger" + paladin.Label,
+		ActionID:           core.ActionID{SpellID: 85804},
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		ClassSpellMask:     SpellMaskJudgment,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			paladin.SelflessHealerAura.Activate(sim)
@@ -562,17 +564,18 @@ func (paladin *Paladin) registerSanctifiedWrath() {
 type AuraDeactivationCheck func(aura *core.Aura, spell *core.Spell) bool
 
 func (paladin *Paladin) divinePurposeFactory(label string, spellID int32, duration time.Duration, auraDeactivationCheck AuraDeactivationCheck) *core.Aura {
-	procChances := []float64{0, 0.25 * (1 / 3), 0.25 * (2 / 3), 0.25}
+	procChances := []float64{0, 0.25 * (1.0 / 3.0), 0.25 * (2.0 / 3.0), 0.25}
 	aura := paladin.RegisterAura(core.Aura{
 		Label:    label + paladin.Label,
 		ActionID: core.ActionID{SpellID: spellID},
 		Duration: duration,
 	})
 
-	core.MakeProcTriggerAura(&paladin.Unit, core.ProcTrigger{
-		Name:           label + " Consume Trigger" + paladin.Label,
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: SpellMaskSpender,
+	paladin.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               label + " Consume Trigger" + paladin.Label,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     SpellMaskSpender,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			var hpSpent int32

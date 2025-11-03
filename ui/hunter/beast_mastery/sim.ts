@@ -158,26 +158,20 @@ export class BeastMasteryHunterSimUI extends IndividualSimUI<Spec.SpecBeastMaste
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecBeastMasteryHunter>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				getEPDefaults: (_: Player<Spec.SpecBeastMasteryHunter>) => {
-					return Presets.P1_EP_PRESET.epWeights;
-				},
-				updateSoftCaps: softCaps => {
-					// Implement stepped EP reduction for haste breakpoints
-					this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-						const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-						if (softCap.unitStat.equalsStat(Stat.StatHasteRating) && softCapToModify) {
-							// Set stepped EP values: 0.39 -> 0.36 -> 0.33 -> 0.30 -> 0.27
-							const baseEP = 0.35;
-							const reduction = 0.03;
-							softCapToModify.postCapEPs = softCap.breakpoints.map((_, index) => Math.max(0, baseEP - reduction * (index + 1)));
-						}
-					});
-					console.log(softCaps);
-					return softCaps;
-				},
-			});
+		this.reforger = new ReforgeOptimizer(this, {
+			updateSoftCaps: softCaps => {
+				// Implement stepped EP reduction for haste breakpoints
+				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
+					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
+					if (softCap.unitStat.equalsStat(Stat.StatHasteRating) && softCapToModify) {
+						// Set stepped EP values: 0.39 -> 0.36 -> 0.33 -> 0.30 -> 0.27
+						const baseEP = 0.35;
+						const reduction = 0.03;
+						softCapToModify.postCapEPs = softCap.breakpoints.map((_, index) => Math.max(0, baseEP - reduction * (index + 1)));
+					}
+				});
+				return softCaps;
+			},
 		});
 	}
 }

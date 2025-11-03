@@ -21,7 +21,7 @@ func TestEnhancement(t *testing.T) {
 			OtherRaces: []proto.Race{proto.Race_RaceDwarf, proto.Race_RaceTroll, proto.Race_RaceDraenei, proto.Race_RaceAlliancePandaren},
 
 			// The above line is the actual line for the ring but it is causing an error in the test
-			GearSet: core.GetGearSet("../../../ui/shaman/enhancement/gear_sets", "p1"),
+			GearSet: core.GetGearSet("../../../ui/shaman/enhancement/gear_sets", "simtest"),
 			Talents: TalentsASEB,
 			Glyphs:  StandardGlyphs,
 			OtherTalentSets: []core.TalentsCombo{
@@ -90,10 +90,12 @@ var PlayerOptionsStandard = &proto.Player_EnhancementShaman{
 				ImbueMh:     proto.ShamanImbue_WindfuryWeapon,
 				ImbueMhSwap: proto.ShamanImbue_WindfuryWeapon,
 				FeleAutocast: &proto.FeleAutocastSettings{
-					AutocastFireblast: true,
-					AutocastFirenova:  true,
-					AutocastImmolate:  true,
-					AutocastEmpower:   false,
+					AutocastFireblast:   true,
+					AutocastFirenova:    true,
+					AutocastImmolate:    true,
+					AutocastEmpower:     false,
+					NoImmolateWfunleash: false,
+					NoImmolateDuration:  0,
 				},
 			},
 			ImbueOh:     proto.ShamanImbue_FlametongueWeapon,

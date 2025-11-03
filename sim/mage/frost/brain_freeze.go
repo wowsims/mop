@@ -33,7 +33,7 @@ func (frost *FrostMage) registerBrainFreeze() {
 		ClassMask:  mage.MageSpellFrostfireBolt,
 	})
 
-	core.MakeProcTriggerAura(&frost.Unit, core.ProcTrigger{
+	frost.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Brain Freeze - Trigger",
 		ClassSpellMask: mage.MageSpellLivingBombDot | mage.MageSpellFrostBombExplosion | mage.MageSpellNetherTempestDot,
 		Callback:       core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,

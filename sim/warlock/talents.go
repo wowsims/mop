@@ -124,6 +124,8 @@ func (warlock *Warlock) registerGrimoireOfSupremacy() {
 	warlock.Succubus.ChangeStatInheritance(warlock.SimplePetStatInheritanceWithScale(1 + 1.0/9.0))
 	lashOfPain := warlock.Succubus.GetSpell(petActionLashOfPain)
 	lashOfPain.ActionID = core.ActionID{SpellID: 115748}
+	//Shivarra will auto-cast at 100 energy
+	warlock.Succubus.MinEnergy = 100
 	warlock.Succubus.PseudoStats.DamageDealtMultiplier *= 1.2
 	warlock.Succubus.PseudoStats.DisableDWMissPenalty = true
 	updateName(&warlock.Succubus.Pet, "Shivarra")

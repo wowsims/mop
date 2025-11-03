@@ -83,7 +83,7 @@ func (mage *Mage) registerIceLanceSpell() {
 				spell.DamageMultiplier /= 2
 				splittingIceSpell.DamageMultiplier /= 2
 
-				castIceLance(sim, target, spell)
+				castIceLance(sim, randomTarget, spell)
 
 				for range numberOfSplitBolts {
 					splittingIceSpell.Cast(sim, randomTarget)
@@ -95,7 +95,7 @@ func (mage *Mage) registerIceLanceSpell() {
 			// Main Target hit
 			castIceLance(sim, target, spell)
 			for range numberOfSplitBolts {
-				splittingIceSpell.Cast(sim, randomTarget)
+				splittingIceSpell.Cast(sim, target)
 			}
 
 			if mage.FingersOfFrostAura.IsActive() {

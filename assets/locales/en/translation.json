@@ -223,6 +223,20 @@
 			"additional_information": "Additional Information:",
 			"action_has_warnings": "This action has warnings, and might not behave as expected.",
 			"action_has_errors": "This action has errors, and will not behave as expected."
+		},
+		"preset": {
+			"ep_weights": "EP Weights",
+			"gear": "Gear",
+			"talents": "Talents",
+			"rotation": "Rotation",
+			"encounter": "Encounter",
+			"settings": "Settings",
+			"description": "This preset affects the following settings:",
+			"stat_weights": "Stat Weights",
+			"class_spec_options": "Class/Spec Options",
+			"consumables": "Consumables",
+			"other_settings": "Other Settings",
+			"buffs": "Buffs"
 		}
 	},
 	"sim": {
@@ -259,24 +273,6 @@
 	},
 	"gear_tab": {
 		"title": "Gear",
-		"slots": {
-			"head": "Head",
-			"neck": "Neck",
-			"shoulder": "Shoulder",
-			"back": "Back",
-			"chest": "Chest",
-			"wrist": "Wrist",
-			"hands": "Hands",
-			"waist": "Waist",
-			"legs": "Legs",
-			"feet": "Feet",
-			"finger_1": "Finger 1",
-			"finger_2": "Finger 2",
-			"trinket_1": "Trinket 1",
-			"trinket_2": "Trinket 2",
-			"main_hand": "Main Hand",
-			"off_hand": "Off Hand"
-		},
 		"gem_summary": {
 			"title": "Gem Summary",
 			"reset_gems": "Reset gems"
@@ -557,6 +553,14 @@
 			"blessings": {
 				"title": "Blessings",
 				"tooltip": "Specify Paladin Blessings for each role, in order of priority. Blessings in the 1st column will be used if there is at least 1 Paladin in the raid, 2nd column if at least 2, etc."
+			},
+			"shaman_disable_immolate": {
+				"label": "Disable Immolate during Unleash WF",
+				"tooltip": "When talented into Primal Elementalist and with Immolate autocast on, this will disallow casting Immolate when the Unleash Wind buff is active on the player."
+			},
+			"shaman_disable_immolate_duration": {
+				"label": "Extend disable by",
+				"tooltip": "Time in seconds for which Immolate won't be cast after the end of the Unleash Wind buff on the player. Set 0 for disabling casting Immolate only while the buff is up."
 			}
 		},
 		"consumables": {
@@ -770,34 +774,27 @@
 			"max_ilvl": "Max ILvl",
 			"no_results": "No results found.",
 			"showing_results": "Showing {{max}} of {{total}} total results.",
-			"item_added": "{{itemName}} was added to the batch."
+			"item_added": "{{itemName}} was added to the batch.",
+			"item_removed": "{{itemName}} was removed from the batch.",
+			"item_unique": "{{itemName}} is unique and already added."
 		},
 		"settings": {
 			"combinations_count": "{{count}} Combinations",
 			"combination_singular": "1 Combination",
 			"iterations": "Iterations",
-			"fast_mode": {
-				"label": "Fast Mode",
-				"tooltip": "Fast mode reduces accuracy but will run faster."
-			},
-			"combinations": {
-				"label": "Combinations",
-				"tooltip": "When checked bulk simulator will create all possible combinations of the items. When disabled trinkets and rings will still run all combinations because they each have two slots to fill."
-			},
-			"auto_enchant": {
-				"label": "Auto Enchant",
-				"tooltip": "When checked bulk simulator apply the current enchant for a slot to each replacement item it can."
-			},
-			"auto_gem": {
-				"label": "Auto Gem",
-				"tooltip": "When checked bulk simulator will fill any un-filled gem sockets with default gems."
-			},
-			"sim_talents": {
-				"label": "Sim Talents",
-				"tooltip": "When checked bulk simulator will sim chosen talent setups. Warning, it might cause the bulk sim to run for a lot longer"
-			},
 			"default_gems": "Default Gems",
-			"talents_to_sim": "Talents to Sim"
+			"inherit_upgrades": {
+				"label": "Inherit Upgrades",
+				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
+			},
+			"freeze_ring": {
+				"label": "Freeze ring slot",
+				"tooltip": "Freeze one equipped ring to reduce combination counts"
+			},
+			"freeze_trinket": {
+				"label": "Freeze trinket slot",
+				"tooltip": "Freeze one equipped trinket to reduce combination counts"
+			}
 		},
 		"progress": {
 			"total_combinations": "{{count}} total combinations.",
@@ -813,8 +810,25 @@
 		"warning": {
 			"iterations_limit": "Simming over {{limit}} iterations in the web sim will take a long time or may not run at all. For larger batch sims we recommend using Fast Mode or downloading the executable and running on your machine."
 		},
+		"picker": {
+			"no_items": "No items selected.",
+			"remove_tooltip": "Remove this item from the batch.",
+			"failed_update": "Failed to update item, please report this issue.",
+			"failed_remove": "Failed to remove item, please report this issue."
+		},
 		"results": {
-			"run_simulation": "Run a simulation to view results"
+			"run_simulation": "Run a simulation to view results",
+			"equip_button": "Equip",
+			"gear_equipped": "Batch gear equipped!",
+			"current_gear": "Current Gear"
+		},
+		"gem_selector": {
+			"title": "Choose Default Gem"
+		},
+		"import_modal": {
+			"title": "Bag Item Import",
+			"description_line1": "Import bag items from a JSON file, which can be created by the WowSimsExporter in-game AddOn.",
+			"description_line2": "To import, upload the file or paste the text below, then click, 'Import'."
 		}
 	},
 	"rotation_tab": {
@@ -950,7 +964,7 @@
 				"channel": {
 					"label": "Channel",
 					"tooltip": "Channels the spell if possible.",
-					"full": "\n\t\t\t<p>The difference between channeling a spell vs casting the spell is that channels can be interrupted. If the <b>Interrupt If</b> parameter is empty, this action is equivalent to <b>Cast</b>.</p>\n\t\t\t<p>The channel will be interrupted only if all of the following are true:</p>\n\t\t\t<ul>\n\t\t\t\t<li>Immediately following a tick of the channel</li>\n\t\t\t\t<li>The <b>Interrupt If</b> condition evaluates to <b>True</b></li>\n\t\t\t\t<li>Another action in the APL list is available</li>\n\t\t\t</ul>\n\t\t\t<p>Note that if you simply want to allow other actions to interrupt the channel, set <b>Interrupt If</b> to <b>True</b>.</p>\n\t\t\t",
+					"full_description": "<p>The difference between channeling a spell vs casting the spell is that channels can be interrupted. If the <b>Interrupt If</b> parameter is empty, this action is equivalent to <b>Cast</b>.</p><p>The channel will be interrupted only if all of the following are true:</p><ul><li>Immediately following a tick of the channel</li><li>The <b>Interrupt If</b> condition evaluates to <b>True</b></li><li>Another action in the APL list is available</li></ul><p>Note that if you simply want to allow other actions to interrupt the channel, set <b>Interrupt If</b> to <b>True</b>.</p>",
 					"interrupt_if": {
 						"label": "Interrupt If",
 						"tooltip": "Interrupt the channel if the condition is true."
@@ -963,12 +977,12 @@
 				"cast_all_stat_buff_cooldowns": {
 					"label": "Cast All Stat Buff Cooldowns",
 					"tooltip": "Casts all available stat buff cooldowns.",
-					"full": "\n\t\t\t<ul>\n\t\t\t\t<li>Does not cast cooldowns which are already controlled by other actions in the priority list.</li>\n\t\t\t\t<li>By default, this action will cast such cooldowns greedily as they become available. However, when embedded in a sequence, the action will only fire when ALL cooldowns matching the specified buff type(s) are ready.</li>\n\t\t\t</ul>\n\t\t\t"
+					"full_description": "<ul><li>Does not cast cooldowns which are already controlled by other actions in the priority list.</li><li>By default, this action will cast such cooldowns greedily as they become available. However, when embedded in a sequence, the action will only fire when ALL cooldowns matching the specified buff type(s) are ready.</li></ul>"
 				},
 				"autocast_other_cooldowns": {
 					"label": "Autocast Other Cooldowns",
 					"tooltip": "Automatically casts other cooldowns when available.",
-					"full": "\n\t\t\t<ul>\n\t\t\t\t<li>Does not auto-cast cooldowns which are already controlled by other actions in the priority list.</li>\n\t\t\t\t<li>Cooldowns are usually cast immediately upon becoming ready, but there are some basic smart checks in place, e.g. don't use Mana CDs when near full mana.</li>\n\t\t\t</ul>\n\t\t\t"
+					"full_description": "<ul><li>Does not auto-cast cooldowns which are already controlled by other actions in the priority list.</li><li>Cooldowns are usually cast immediately upon becoming ready, but there are some basic smart checks in place, e.g. don't use Mana CDs when near full mana.</li></ul>"
 				},
 				"wait": {
 					"label": "Wait",
@@ -993,17 +1007,17 @@
 				"sequence": {
 					"label": "Sequence",
 					"tooltip": "A list of sub-actions to execute in the specified order.",
-					"full": "\n\t\t\t<p>Once one of the sub-actions has been performed, the next sub-action will not necessarily be immediately executed next. The system will restart at the beginning of the whole actions list (not the sequence). If the sequence is executed again, it will perform the next sub-action.</p>\n\t\t\t<p>When all actions have been performed, the sequence does NOT automatically reset; instead, it will be skipped from now on. Use the <b>Reset Sequence</b> action to reset it, if desired.</p>\n\t\t\t"
+					"full_description": "<p>Once one of the sub-actions has been performed, the next sub-action will not necessarily be immediately executed next. The system will restart at the beginning of the whole actions list (not the sequence). If the sequence is executed again, it will perform the next sub-action.</p><p>When all actions have been performed, the sequence does NOT automatically reset; instead, it will be skipped from now on. Use the <b>Reset Sequence</b> action to reset it, if desired.</p>"
 				},
 				"reset_sequence": {
 					"label": "Reset Sequence",
 					"tooltip": "Restarts a sequence, so that the next time it executes it will perform its first sub-action.",
-					"full": "\n\t\t\t<p>Use the <b>name</b> field to refer to the sequence to be reset. The desired sequence must have the same (non-empty) value for its <b>name</b>.</p>\n\t\t\t"
+					"full_description": "<p>Use the <b>name</b> field to refer to the sequence to be reset. The desired sequence must have the same (non-empty) value for its <b>name</b>.</p>"
 				},
 				"strict_sequence": {
 					"label": "Strict Sequence",
 					"tooltip": "Like a regular Sequence, except all sub-actions are executed immediately after each other and the sequence resets automatically upon completion.",
-					"full": "\n\t\t\t<p>Strict Sequences do not begin unless ALL sub-actions are ready.</p>\n\t\t\t"
+					"full_description": "<p>Strict Sequences do not begin unless ALL sub-actions are ready.</p>"
 				},
 				"change_target": {
 					"label": "Change Target",
@@ -1283,6 +1297,10 @@
 					"label": "Rune Slot Cooldown",
 					"tooltip": "Amount of time until a rune of certain slot is ready to use.<br><b>NOTE:</b> Returns 0 if rune is ready"
 				},
+				"full_rune_cooldown": {
+					"label": "Full Rune Cooldown",
+					"tooltip": "Amount of time a rune would take to recharge if you used it now."
+				},
 				"gcd_is_ready": {
 					"label": "GCD Is Ready",
 					"tooltip": "<b>True</b> if the GCD is not on cooldown, otherwise <b>False</b>."
@@ -1305,7 +1323,8 @@
 				},
 				"can_cast": {
 					"label": "Can Cast",
-					"tooltip": "<b>True</b> if all requirements for casting the spell are currently met, otherwise <b>False</b>."
+					"tooltip": "<b>True</b> if all requirements for casting the spell are currently met, otherwise <b>False</b>.",
+					"full_description": "<p>The <b>Cast Spell</b> action does not need to be conditioned on this, because it applies this check automatically.</p>"
 				},
 				"is_ready": {
 					"label": "Is Ready",
@@ -1359,6 +1378,10 @@
 					"label": "Input Delay",
 					"tooltip": "The amount of time specified by the <b>Input Dleay</b> setting."
 				},
+				"spell_in_flight": {
+					"label": "Spell in Flight",
+					"tooltip": "<b>True</b> if this spell is currently in flight, otherwise <b>False</b>."
+				},
 				"aura_known": {
 					"label": "Aura Known",
 					"tooltip": "<b>True</b> if the aura is currently known, otherwise <b>False</b>."
@@ -1389,15 +1412,18 @@
 				},
 				"aura_should_refresh": {
 					"label": "Aura Should Refresh",
-					"tooltip": "Whether this aura should be refreshed, e.g. for the purpose of maintaining a debuff."
+					"tooltip": "Whether this aura should be refreshed, e.g. for the purpose of maintaining a debuff.",
+					"full_description": "<p>This condition checks not only the specified aura but also any other auras on the same unit, including auras applied by other raid members, which apply the same debuff category.</p><p>For example, 'Should Refresh Debuff(Sunder Armor)' will return <b>False</b> if the unit has an active Expose Armor aura.</p>"
 				},
 				"all_trinket_stat_procs_active": {
 					"label": "All Item Proc Buffs Active",
-					"tooltip": "<b>True</b> if all item/enchant procs that buff the specified stat type(s) are currently active, otherwise <b>False</b>."
+					"tooltip": "<b>True</b> if all item/enchant procs that buff the specified stat type(s) are currently active, otherwise <b>False</b>.",
+					"full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
 				},
 				"any_trinket_stat_procs_active": {
 					"label": "Any Item Proc Buff Active",
-					"tooltip": "<b>True</b> if any item/enchant procs that buff the specified stat type(s) are currently active, otherwise <b>False</b>."
+					"tooltip": "<b>True</b> if any item/enchant procs that buff the specified stat type(s) are currently active, otherwise <b>False</b>.",
+					"full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
 				},
 				"trinket_procs_min_remaining_time": {
 					"label": "Item Procs Min Remaining Time",
@@ -1413,11 +1439,13 @@
 				},
 				"num_stat_buff_cooldowns": {
 					"label": "Num Stat Buff Cooldowns",
-					"tooltip": "Number of registered Major Cooldowns that buff the specified stat type(s) when they are cast."
+					"tooltip": "Number of registered Major Cooldowns that buff the specified stat type(s) when they are cast.",
+					"full_description": "<p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are included in the total count returned by this value.</p>"
 				},
 				"any_stat_buff_cooldowns_active": {
 					"label": "Any Stat Buff Cooldowns Active",
-					"tooltip": "<b>True</b> if any registered Major Cooldowns that buff the specified stat type(s) are currently active, otherwise <b>False</b>."
+					"tooltip": "<b>True</b> if any registered Major Cooldowns that buff the specified stat type(s) are currently active, otherwise <b>False</b>.",
+					"full_description": "<p>For stacking buffs, this condition also checks that the buff has been stacked to its maximum possible strength after the cooldown is activated.</p><p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are checked.</p>"
 				},
 				"dot_is_active": {
 					"label": "Dot Is Active",
@@ -1480,7 +1508,7 @@
 					"tooltip": "Returns <b>True</b> if the impact of Hand of Guldan currenty is in flight."
 				},
 				"warlock_haunt_in_flight": {
-					"label": "Haunt In Flight",
+					"label": "[DEPRECATED] Haunt In Flight",
 					"tooltip": "Returns <b>True</b> if Haunt currently is in flight."
 				},
 				"mage_current_combustion_dot_estimate": {
@@ -1591,14 +1619,20 @@
 					"shield_spells": "Shield Spell",
 					"non_instant_spells": "Non-instant Spell",
 					"friendly_spells": "Friendly Spell",
-					"expected_dot_spells": "DoT Spell"
+					"expected_dot_spells": "DoT Spell",
+					"spells_with_travelTime": "Spell"
 				},
 				"field_configs": {
 					"type": "Type",
 					"strategy": "Strategy",
 					"buff_type": "Buff Type",
 					"min_icd": "Min ICD",
-					"min_icd_tooltip": "If non-zero, filter out any procs that either lack an ICD or for which the ICD is smaller than the specified value (in seconds). This can be useful for certain snapshotting checks, since procs with low ICDs are often too weak to snapshot."
+					"min_icd_tooltip": "If non-zero, filter out any procs that either lack an ICD or for which the ICD is smaller than the specified value (in seconds). This can be useful for certain snapshotting checks, since procs with low ICDs are often too weak to snapshot.",
+					"include_reaction_time": "Include Reaction Time",
+					"include_reaction_time_tooltip": "If checked, will use the configured reaction time.",
+					"use_base_value": "Use base value",
+					"use_base_value_tooltip": "If checked, will compare the current DoT to the the base value (on encounter start) of the DoT.",
+					"variable_assignment_tooltip": "Value to assign to variable '{{variableName}}'"
 				},
 				"eclipse_types": {
 					"lunar": "Lunar",
@@ -1638,6 +1672,10 @@
 					"pet": "Pet"
 				},
 				"placeholder_tooltip": "The Prepull Potion if CurrentTime < 0, or the Combat Potion if combat has started.",
+				"select_variable": "Select Variable",
+				"select_group": "Select Group",
+				"no_variables_defined": "No variables defined",
+				"no_groups_defined": "No groups defined",
 				"buttons": {
 					"enable_action": "Enable Action",
 					"disable_action": "Disable Action",
@@ -2116,27 +2154,13 @@
 			"too_many_jc_gems": "Only 2 Jewelcrafting Gems are allowed, but {{count}} are equipped.",
 			"unspent_talent_points": "Missing required talent selections in row {{rowNumbers}}.",
 			"armor_specialization": "Equip {{armorType}} gear in each slot for the Armor Specialization (5% primary stat) effect.",
-			"dual_wield_2h_without_titans_grip": "Dual wielding two-handed weapon(s) without Titan's Grip spec."
+			"dual_wield_2h_without_titans_grip": "Dual wielding two-handed weapon(s) without Titan's Grip spec.",
+			"shaman_fele_autocast": "Your Fire Elemental spell autocast setup is not optimal with the use of the Primal Elementalist talent (everything ON but Empower). If you know what you're doing, please ignore this."
 		},
 		"buttons": {
 			"simulate": "Simulate",
 			"stat_weights": {
 				"title": "Stat Weights",
-				"ep_weights": {
-					"use_custom": "Use custom EP Weights",
-					"description": {
-						"enable_modification": "This will enable modification of the default EP weights and setting custom stat caps.",
-						"modify_in_editor": "Ep weights can be modified in the Stat Weights editor.",
-						"hard_cap_info": "If you want to hard cap a stat make sure to put the EP for that stat higher."
-					},
-					"buttons": {
-						"edit_weights": "Edit weights"
-					},
-					"options": {
-						"include_gems": "Include gems",
-						"freeze_item_slots": "Freeze item slots"
-					}
-				},
 				"modal": {
 					"title": "Calculate Stat Weights",
 					"ep": "EP",
@@ -2246,7 +2270,18 @@
 				"no_limit_set": "No limit set",
 				"breakpoints_implemented": "The following breakpoints have been implemented for this spec:",
 				"post_cap_ep": "Post cap EP",
-				"reforge_optimization_failed": "Reforge optimization failed. Please try again, or report the issue if it persists."
+				"reforge_optimization_failed": "Reforge optimization failed. Please try again, or report the issue if it persists.",
+				"use_custom": "Use custom EP Weights",
+				"enable_modification": "This will enable modification of the default EP weights and setting custom stat caps.",
+				"modify_in_editor": "Ep weights can be modified in the Stat Weights editor.",
+				"hard_cap_info": "If you want to hard cap a stat make sure to put the EP for that stat higher.",
+				"edit_weights": "Edit weights",
+				"include_gems": "Include gems",
+				"freeze_item_slots": "Freeze item slots",
+				"include_eotbp_socket": "Include EotBP Socket",
+				"include_eotbp_socket_tooltip": "Allows the optimiser to also include the \"Eye of the Black Prince\" socket in the optimization.",
+				"limit_execution_time": "Limit execution time",
+				"limit_execution_time_tooltip": "If checked, the solver will error out if the total computation time exceeds 30 seconds. If unchecked, then total computation time will be capped at 1 hour instead."
 			}
 		},
 		"header": {

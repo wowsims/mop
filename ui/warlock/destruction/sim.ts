@@ -58,7 +58,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDestructionWarlock, {
 	modifyDisplayStats,
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_PRESET.gear,
+		gear: Presets.P2_PRESET.gear,
 
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
@@ -155,10 +155,8 @@ export class DestructionWarlockSimUI extends IndividualSimUI<Spec.SpecDestructio
 			},
 		];
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				statSelectionPresets,
-			});
+		this.reforger = new ReforgeOptimizer(this, {
+			statSelectionPresets,
 		});
 	}
 }

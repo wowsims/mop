@@ -17,6 +17,7 @@ export class ToplineResults extends ResultComponent {
 	onSimResult(resultData: SimResultData) {
 		const noManaClasses = [DeathKnight, Rogue, Warrior, Hunter];
 		const players = resultData.result.getRaidIndexedPlayers(resultData.filter);
+
 		const content = RaidSimResultsManager.makeToplineResultsContent(resultData.result, resultData.filter, {
 			showOutOfMana: players.length === 1 && !!players[0].spec && !noManaClasses.some(klass => PlayerSpecs.getPlayerClass(players[0].spec!) === klass),
 		});

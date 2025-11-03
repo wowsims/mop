@@ -47,7 +47,7 @@ message UINPC {
 // Contains all information about an Item needed by the UI.
 // Generally this will include everything needed by the sim, plus some
 // additional data for displaying / filtering.
-// Next tag: 30.
+// Next tag: 32.
 message UIItem {
 	int32 id = 1;
 	string name = 2;
@@ -75,6 +75,8 @@ message UIItem {
 	int32 phase = 16;
 	ItemQuality quality = 17;
 	bool unique = 18;
+	// How many of that item can be equipped at once.
+	int32 limit_category = 32;
 	string name_description = 19;
 
 	// Classes that are allowed to use the item. Empty indicates no special class restrictions.
@@ -331,8 +333,8 @@ message SimSettings {
 	bool show_experimental = 5;
 	bool show_quick_swap = 12;
 	bool show_ep_values = 11;
-	bool use_custom_ep_values = 13;
-	bool use_soft_cap_breakpoints = 14;
+	bool use_custom_ep_values = 13 [deprecated=true];
+	bool use_soft_cap_breakpoints = 14 [deprecated=true];
 	string language = 9;
 	Faction faction = 6;
 	DatabaseFilters filters = 10;
@@ -340,6 +342,7 @@ message SimSettings {
 
 // Contains all information that is imported/exported from an individual sim.
 message IndividualSimSettings {
+	int32 api_version = 15;
 	SimSettings settings = 5;
 	RaidBuffs raid_buffs = 1;
 	Debuffs debuffs = 8;
@@ -353,8 +356,22 @@ message IndividualSimSettings {
 	Stat dps_ref_stat = 12;
 	Stat heal_ref_stat = 13;
 	Stat tank_ref_stat = 14;
-	UnitStats stat_caps = 15;
-	UnitStats breakpoint_limits = 16;
+	UnitStats stat_caps = 16 [deprecated=true];
+	UnitStats breakpoint_limits = 17 [deprecated=true];
+	ReforgeSettings reforge_settings = 18;
+}
+
+message ReforgeSettings {
+	bool use_custom_ep_values = 1;
+	bool use_soft_cap_breakpoints = 2;
+	bool include_timeout = 3;
+	bool include_gems = 4;
+	bool include_eotb_gem_socket = 5;
+	bool freeze_item_slots = 6;
+	repeated ItemSlot frozen_item_slots = 7;
+	UIStat relative_stat_cap_stat = 8;
+	UnitStats stat_caps = 9 ;
+	UnitStats breakpoint_limits = 10;
 }
 
 message StatCapConfig {
@@ -377,6 +394,17 @@ message StatCapConfig {
 // caps, and is therefore not versioned, since this message is not imported or
 // exported from local storage or links.
 message UIStat {
+	// Proto version at the time these stats were saved. If you make any
+	// breaking changes to the size, ordering, or interpretation of the
+	// stats or pseudoStats arrays, then make sure to increment the
+	// current_version_number option in the ProtoVersion message at the top
+	// of this file.
+	// A "breaking change" here is defined as anything that will break saved
+	// browser data or old sim links; the version need not be incremented if
+	// you simply append a new rarely-used PseudoStat to the end of the
+	// array, for example.
+	int32 api_version = 3;
+
 	// Uniquely identifies the attribute
 	oneof unit_stat {
 		Stat stat = 1;

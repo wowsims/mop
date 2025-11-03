@@ -18,7 +18,7 @@ func (character *Character) applyProfessionEffects() {
 	}
 
 	if character.HasProfession(proto.Profession_Herbalism) {
-		actionID := ActionID{SpellID: 74497}
+		actionID := ActionID{SpellID: 121279}
 
 		aura := character.NewTemporaryStatsAura(
 			"Lifeblood",

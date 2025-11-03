@@ -1,16 +1,16 @@
-import i18n from "../../../../i18n/config";
-import { IndividualSimUI } from "../../../individual_sim_ui";
-import { Player } from "../../../player";
-import { APLAction, APLListItem } from "../../../proto/apl";
-import { EventID, TypedEvent } from "../../../typed_event";
-import { Component } from "../../component";
-import { Input } from "../../input";
-import { ListItemPickerConfig, ListPicker } from "../../pickers/list_picker";
-import { APLActionPicker } from "../apl_actions";
-import { AplFloatingActionBar } from "./apl_floating_action_bar";
-import { APLHidePicker } from "./hide_picker";
+import i18n from '../../../../i18n/config';
+import { IndividualSimUI } from '../../../individual_sim_ui';
+import { Player } from '../../../player';
+import { APLAction, APLListItem } from '../../../proto/apl';
+import { EventID, TypedEvent } from '../../../typed_event';
+import { Component } from '../../component';
+import { Input } from '../../input';
+import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
+import { APLActionPicker } from '../apl_actions';
+import { AplFloatingActionBar } from './apl_floating_action_bar';
+import { APLHidePicker } from './hide_picker';
 
-export class APLPriorityListPicker extends Component{
+export class APLPriorityListPicker extends Component {
 	constructor(container: HTMLElement, simUI: IndividualSimUI<any>) {
 		super(container, 'apl-priority-list-picker-root');
 
@@ -25,7 +25,7 @@ export class APLPriorityListPicker extends Component{
 				player.aplRotation.priorityList = newValue;
 				player.rotationChangeEmitter.emit(eventID);
 			},
-			newItem: () => APLListItem.create({action: {}}),
+			newItem: () => APLListItem.create({ action: {} }),
 			copyItem: (oldItem: APLListItem) => APLListItem.clone(oldItem),
 			newItemPicker: (
 				parent: HTMLElement,
@@ -37,7 +37,7 @@ export class APLPriorityListPicker extends Component{
 			inlineMenuBar: true,
 		});
 
-		new AplFloatingActionBar(this.rootElem,simUI,listPicker,i18n.t('rotation_tab.apl.priorityList.name'));
+		new AplFloatingActionBar(this.rootElem, simUI, listPicker, i18n.t('rotation_tab.apl.priorityList.name'));
 	}
 }
 
@@ -61,7 +61,11 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 		this.player = player;
 
 		const itemHeaderElem = ListPicker.getItemHeaderElem(this);
-		ListPicker.makeListItemValidations(itemHeaderElem, player, player => player.getCurrentStats().rotationStats?.priorityList[index]?.validations || []);
+		ListPicker.makeListItemValidations(itemHeaderElem, player, player => {
+			const validations = player.getCurrentStats().rotationStats?.priorityList[index]?.validations || [];
+			validations.push(...(player.getCurrentStats().rotationStats?.uuidValidations?.find(v => v.uuid?.value === this.rootElem.id)?.validations || []));
+			return validations;
+		});
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
 			changedEvent: () => this.player.rotationChangeEmitter,
@@ -101,5 +105,8 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 		}
 		this.hidePicker.setInputValue(newValue.hide);
 		this.actionPicker.setInputValue(newValue.action || APLAction.create());
+		if (newValue.action?.condition?.uuid?.value) {
+			this.rootElem.id = newValue.action?.condition?.uuid?.value;
+		}
 	}
 }

@@ -14,7 +14,7 @@ func (bear *GuardianDruid) registerEnrageSpell() {
 	bear.EnrageAura = bear.RegisterAura(core.Aura{
 		Label:    "Enrage",
 		ActionID: actionID,
-		Duration: 10 * time.Second + 1, // add 1 ns duration offset in order to guarantee that the final tick fires
+		Duration: 10*time.Second + 1, // add 1 ns duration offset in order to guarantee that the final tick fires
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			core.StartPeriodicAction(sim, core.PeriodicActionOptions{

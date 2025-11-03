@@ -16,7 +16,7 @@ func (fire *FireMage) registerPyromaniac() {
 		}).AttachDDBC(DDBC_Pyromaniac, DDBC_Total, &fire.AttackTables, fire.pyromaniacDDBCHandler)
 	})
 
-	core.MakeProcTriggerAura(&fire.Unit, core.ProcTrigger{
+	fire.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Pyromaniac - Trigger",
 		ClassSpellMask: mage.MageSpellLivingBombApply | mage.MageSpellFrostBomb | mage.MageSpellNetherTempest,
 		Callback:       core.CallbackOnSpellHitDealt,

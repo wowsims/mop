@@ -11,6 +11,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+var (
+	infile  string
+	outfile string
+	verbose bool
+)
+
 var simCmd = &cobra.Command{
 	Use:   "sim",
 	Short: "simulate items & settings",

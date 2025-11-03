@@ -14,6 +14,7 @@ import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
+import P2Gear from './gear_sets/p2.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -23,6 +24,7 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 
 export const P1_PRESET = PresetUtils.makePresetGear('P1', P1Gear);
+export const P2_PRESET = PresetUtils.makePresetGear('P2', P2Gear);
 
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
@@ -74,6 +76,8 @@ export const DefaultOptions = EnhancementShamanOptions.create({
 			autocastFirenova: true,
 			autocastImmolate: true,
 			autocastEmpower: false,
+			noImmolateWfunleash: false,
+			noImmolateDuration: 0,
 		}),
 	},
 	imbueOh: ShamanImbue.FlametongueWeapon,

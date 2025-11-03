@@ -73,6 +73,7 @@ export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Blacksmithing,
 	distanceFromTarget: 5,
+	iterationCount: 25000,
 };
 
 export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("Default", Spec.SpecBloodDeathKnight, DefaultBuild);

@@ -68,7 +68,7 @@ func init() {
 			},
 		})
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "Lightning Strike Charges Trigger",
 			ActionID:           core.ActionID{SpellID: 137595},
 			RequireDamageDealt: true,
@@ -120,7 +120,7 @@ func init() {
 		}).
 			AttachMultiplyCastSpeed(hasteMulti)
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:     "Haste Trigger",
 			ActionID: core.ActionID{SpellID: 137592},
 			Callback: core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -162,7 +162,7 @@ func init() {
 		}).
 			AttachMultiplicativePseudoStatBuff(&character.PseudoStats.DamageTakenMultiplier, 0.8)
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "Fortitude Trigger",
 			ActionID:           core.ActionID{SpellID: 137594},
 			RequireDamageDealt: true,

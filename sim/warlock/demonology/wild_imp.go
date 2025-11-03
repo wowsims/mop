@@ -181,7 +181,7 @@ func (warlock *DemonologyWarlock) SpawnImp(sim *core.Simulation) {
 
 func (demonology *DemonologyWarlock) registerWildImpPassive() {
 	var trigger *core.Aura
-	trigger = core.MakeProcTriggerAura(&demonology.Unit, core.ProcTrigger{
+	trigger = demonology.MakeProcTriggerAura(core.ProcTrigger{
 		MetricsActionID: core.ActionID{SpellID: 114925},
 		Name:            "Demonic Calling",
 		Callback:        core.CallbackOnCastComplete,
@@ -240,7 +240,7 @@ func (demonology *DemonologyWarlock) registerWildImpPassive() {
 		}
 	})
 
-	core.MakeProcTriggerAura(&demonology.Unit, core.ProcTrigger{
+	demonology.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Wild Imp - Doom Monitor",
 		ClassSpellMask: warlock.WarlockSpellDoom,
 		Outcome:        core.OutcomeCrit,

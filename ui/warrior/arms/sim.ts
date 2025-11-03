@@ -49,7 +49,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_ARMS_BIS_PRESET.gear,
+		gear: Presets.P2_ARMS_BIS_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -115,7 +115,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_ARMS],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS_PRESET, Presets.P1_ARMS_BIS_PRESET, Presets.P2_ARMS_BIS_PRESET],
+		gear: [Presets.P1_PREBIS_PRESET, Presets.P1_ARMS_BIS_PRESET, Presets.P2_ARMS_BIS_PRESET, Presets.P3_ARMS_BIS_PRESET],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecArmsWarrior>): APLRotation => {
@@ -151,20 +151,14 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecArmsWarrior>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				getEPDefaults: player => {
-					if (this.sim.getUseCustomEPValues()) {
-						return player.getEpWeights();
-					}
-
-					const avgIlvl = player.getGear().getAverageItemLevel(false);
-					if (avgIlvl >= 500) {
-						return Presets.P2_EP_PRESET.epWeights;
-					}
-					return Presets.P1_EP_PRESET.epWeights;
-				},
-			});
+		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: player => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 500) {
+					return Presets.P2_EP_PRESET.epWeights;
+				}
+				return Presets.P1_EP_PRESET.epWeights;
+			},
 		});
 	}
 }

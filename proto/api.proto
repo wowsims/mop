@@ -438,6 +438,7 @@ message SpellStats {
 	bool has_cast_time = 9; // Whether this spell has a cast time or not.
 	bool is_friendly = 10; // Whether this spell should be cast on player units
 	bool has_expected_tick = 11; // Whether this spell supports expected damage calculations
+	bool has_missile_speed = 12; // Whether this spell has a missile speed
 }
 message APLValidation {
 	LogLevel log_level = 1;
@@ -580,72 +581,16 @@ message ProgressMetrics {
 	// Final Results
 	RaidSimResult final_raid_result = 6; // only set when completed
 	StatWeightsResult final_weight_result = 7;
-	BulkSimResult final_bulk_result = 10;
-}
-
-// RPC: BulkSim
-message BulkSimRequest {
-    RaidSimRequest base_settings = 1;
-    BulkSettings bulk_settings = 2;
-}
-
-message TalentLoadout {
-	string talents_string = 1;
-	Glyphs glyphs = 2;
-	string name = 3;
 }
 
 message BulkSettings {
 	repeated ItemSpec items = 1;
-	bool combinations = 2;
-	bool fast_mode = 3; // Used to run with less iterations to start and slowly increase to weed out items faster.
-	// Use current enchant on the slot if not specified by the ItemSpec.
-	// Only works when replacement item is valid target for enchant.
-	bool auto_enchant = 4;
+	int32 iterations_per_combo = 2;
+	int32 default_red_gem = 3;
+	int32 default_blue_gem = 4;
+	int32 default_yellow_gem = 5;
+	int32 default_meta_gem = 6;
+	int32 default_prismatic_gem = 7;
 
-	// Currently not used.
-	// Used to fill out gem slots that are not filled in the ItemSpec
-	bool auto_gem = 5;
-	int32 default_red_gem = 6;
-	int32 default_blue_gem = 7;
-	int32 default_yellow_gem = 8;
-	int32 default_meta_gem = 9;
-	bool ensure_meta_req_met = 10; // ensures that meta requirements are met when auto-gemming.
-
-	// Number of iterations per combo.
-	// If set to 0 the sim core decides the optimal iterations.
-	int32 iterations_per_combo = 11;
-	// Should sim talents as well
-	bool sim_talents = 12;
-	repeated TalentLoadout talents_to_sim = 13;
+	bool inherit_upgrades = 8;
 }
-
-message BulkSimResult {
-    repeated BulkComboResult results = 1;
-	BulkComboResult equipped_gear_result = 2;
-    ErrorOutcome error = 3;
-}
-
-message BulkComboResult {
-	repeated ItemSpecWithSlot items_added = 1;
-	UnitMetrics unit_metrics = 2;
-	TalentLoadout talent_loadout = 3;
-}
-
-message ItemSpecWithSlot {
-    ItemSpec item = 1;
-    ItemSlot slot = 2;
-}
-
-// RPC: BulkSimCombos
-message BulkSimCombosRequest {
-	RaidSimRequest base_settings = 1;
-	BulkSettings bulk_settings = 2;
-}
-
-message BulkSimCombosResult {
-	int32 num_combinations = 1;
-	int32 num_iterations = 2;
-	string error_result = 3; // only set if sim failed.
-}
-

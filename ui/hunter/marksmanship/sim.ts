@@ -154,11 +154,7 @@ export class MarksmanshipHunterSimUI extends IndividualSimUI<Spec.SpecMarksmansh
 		super(parentElem, player, SPEC_CONFIG);
 
 		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				getEPDefaults: (_: Player<Spec.SpecMarksmanshipHunter>) => {
-					return Presets.P1_EP_PRESET.epWeights;
-				},
-			});
+			this.reforger = new ReforgeOptimizer(this);
 		});
 	}
 }

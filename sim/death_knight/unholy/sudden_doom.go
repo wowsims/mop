@@ -49,7 +49,7 @@ func (uhdk *UnholyDeathKnight) registerSuddenDoom() {
 		RelatedSelfBuff: suddenDoomAura,
 	})
 
-	core.MakeProcTriggerAura(&uhdk.Unit, core.ProcTrigger{
+	uhdk.MakeProcTriggerAura(core.ProcTrigger{
 		Name:     "Sudden Doom Trigger" + uhdk.Label,
 		ActionID: core.ActionID{SpellID: 49530},
 		Callback: core.CallbackOnSpellHitDealt,

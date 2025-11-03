@@ -45,7 +45,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		},
 	})).AttachSpellMod(castTimeModConfig)
 
-	core.MakeProcTriggerAura(&moonkin.Unit, core.ProcTrigger{
+	moonkin.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Shooting Stars Trigger" + moonkin.Label,
 		Callback:       core.CallbackOnPeriodicDamageDealt,
 		Outcome:        core.OutcomeCrit,

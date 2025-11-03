@@ -30,10 +30,12 @@ const (
 func NewShaman(character *core.Character, talents string, selfBuffs SelfBuffs, thunderstormRange bool, feleAutocastOptions *proto.FeleAutocastSettings) *Shaman {
 	if feleAutocastOptions == nil {
 		feleAutocastOptions = &proto.FeleAutocastSettings{
-			AutocastFireblast: true,
-			AutocastFirenova:  true,
-			AutocastImmolate:  true,
-			AutocastEmpower:   false,
+			AutocastFireblast:   true,
+			AutocastFirenova:    true,
+			AutocastImmolate:    true,
+			AutocastEmpower:     false,
+			NoImmolateWfunleash: false,
+			NoImmolateDuration:  0,
 		}
 	}
 	shaman := &Shaman{
@@ -168,11 +170,12 @@ type Shaman struct {
 	SearingTotem       *core.Spell
 	TremorTotem        *core.Spell
 
-	UnleashElements *core.Spell
-	UnleashLife     *core.Spell
-	UnleashFlame    *core.Spell
-	UnleashFrost    *core.Spell
-	UnleashWind     *core.Spell
+	UnleashElements     *core.Spell
+	UnleashLife         *core.Spell
+	UnleashFlame        *core.Spell
+	UnleashFrost        *core.Spell
+	UnleashWind         *core.Spell
+	WindfuryUnleashAura *core.Aura
 
 	MaelstromWeaponAura           *core.Aura
 	AncestralSwiftnessInstantAura *core.Aura

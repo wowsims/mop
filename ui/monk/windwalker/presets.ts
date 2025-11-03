@@ -36,7 +36,6 @@ export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 2.62,
 			[PseudoStat.PseudoStatOffHandDps]: 1.31,
-			[PseudoStat.PseudoStatPhysicalHitPercent]: 478.07,
 		},
 	),
 );
@@ -46,17 +45,16 @@ export const RORO_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1.0,
-			[Stat.StatHitRating]: 1.41,
-			[Stat.StatCritRating]: 0.64,
-			[Stat.StatHasteRating]: 0.63,
-			[Stat.StatExpertiseRating]: 1.41,
-			[Stat.StatMasteryRating]: 0.62,
-			[Stat.StatAttackPower]: 0.48,
+			[Stat.StatHitRating]: 1.66,
+			[Stat.StatCritRating]: 0.69,
+			[Stat.StatHasteRating]: 0.83,
+			[Stat.StatExpertiseRating]: 1.39,
+			[Stat.StatMasteryRating]: 0.32,
+			[Stat.StatAttackPower]: 0.35,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.62,
-			[PseudoStat.PseudoStatOffHandDps]: 1.31,
-			[PseudoStat.PseudoStatPhysicalHitPercent]: 478.07,
+			[PseudoStat.PseudoStatMainHandDps]: 2.35,
+			[PseudoStat.PseudoStatOffHandDps]: 1.18,
 		},
 	),
 );

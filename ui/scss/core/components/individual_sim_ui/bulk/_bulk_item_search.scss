@@ -2,8 +2,8 @@
 	margin-bottom: 0 !important;
 
 	.content-block-header {
+		padding-bottom: 0;
 		border-bottom: 0;
-		margin-bottom: 10px;
 
 		#bulkGearSearch {
 			max-width: 25%;
@@ -36,9 +36,10 @@
 		--bulk-gear-search-results-column-count: 1;
 		gap: var(--spacer-2);
 		top: 100%;
-		padding: var(--spacer-2);
 		left: var(--spacer-3);
 		right: var(--spacer-3);
+		width: 100%;
+		padding: var(--spacer-2);
 		grid-template-columns: repeat(var(--bulk-gear-search-results-column-count), 1fr);
 		z-index: 10; // Needs to be greater than 1 but less than the header z-index
 
@@ -46,7 +47,7 @@
 			--bulk-gear-search-results-column-count: 2;
 		}
 
-		@include media-breakpoint-up(lg) {
+		@include media-breakpoint-up(xxl) {
 			--bulk-gear-search-results-column-count: 3;
 		}
 
@@ -62,6 +63,10 @@
 		padding: var(--spacer-2);
 		border: var(--border-default);
 		white-space: normal;
+
+		.heroic-label {
+			margin-left: 0;
+		}
 	}
 
 	.bulk-item-search-item-icon-wrapper {

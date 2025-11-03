@@ -2,7 +2,6 @@ package affliction
 
 import (
 	"math"
-	"time"
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
@@ -45,8 +44,7 @@ type AfflictionWarlock struct {
 	Agony              *core.Spell
 	UnstableAffliction *core.Spell
 
-	SoulBurnAura     *core.Aura
-	HauntDebuffAuras core.AuraArray
+	SoulBurnAura *core.Aura
 
 	LastCorruptionTarget *core.Unit // Tracks the last target we've applied corruption to
 	LastInhaleTarget     *core.Unit
@@ -54,8 +52,6 @@ type AfflictionWarlock struct {
 	DrainSoulMaleficEffectMultiplier    float64
 	MaleficGraspMaleficEffectMultiplier float64
 	ProcMaleficEffect                   func(target *core.Unit, coeff float64, sim *core.Simulation)
-
-	HauntImpactTime time.Duration
 }
 
 func (affliction AfflictionWarlock) getMasteryBonus() float64 {
@@ -109,7 +105,6 @@ func (affliction *AfflictionWarlock) Reset(sim *core.Simulation) {
 	affliction.Warlock.Reset(sim)
 
 	affliction.LastCorruptionTarget = nil
-	affliction.HauntImpactTime = 0
 }
 
 func (affliction *AfflictionWarlock) OnEncounterStart(sim *core.Simulation) {
@@ -117,6 +112,10 @@ func (affliction *AfflictionWarlock) OnEncounterStart(sim *core.Simulation) {
 	if affliction.SoulBurnAura.IsActive() {
 		defaultShards -= 1
 	}
+
+	haunt := affliction.GetSpell(core.ActionID{SpellID: HauntSpellID})
+	count := affliction.SpellsInFlight[haunt]
+	defaultShards -= count
 
 	affliction.SoulShards.ResetBarTo(sim, defaultShards)
 	affliction.Warlock.OnEncounterStart(sim)

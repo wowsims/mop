@@ -139,21 +139,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecShadowPriest>) {
 		super(parentElem, player, SPEC_CONFIG);
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				statSelectionPresets: [Presets.SHADOW_BREAKPOINTS],
-				getEPDefaults: player => {
-					if (this.sim.getUseCustomEPValues()) {
-						return player.getEpWeights();
-					}
 
-					const avgIlvl = player.getGear().getAverageItemLevel(false);
-					if (avgIlvl >= 500) {
-						return Presets.P2_EP_PRESET.epWeights;
-					}
-					return Presets.P1_EP_PRESET.epWeights;
-				},
-			});
+		this.reforger = new ReforgeOptimizer(this, {
+			statSelectionPresets: [Presets.SHADOW_BREAKPOINTS],
+			getEPDefaults: player => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 500) {
+					return Presets.P2_EP_PRESET.epWeights;
+				}
+				return Presets.P1_EP_PRESET.epWeights;
+			},
 		});
 	}
 }

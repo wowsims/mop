@@ -56,7 +56,7 @@ func (asnRogue *AssassinationRogue) registerBlindsidePassive() {
 		},
 	}))
 
-	core.MakePermanent(core.MakeProcTriggerAura(&asnRogue.Unit, core.ProcTrigger{
+	core.MakePermanent(asnRogue.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Blindside Proc Trigger",
 		ActionID:       core.ActionID{ItemID: 121152},
 		Callback:       core.CallbackOnSpellHitDealt,

@@ -30,7 +30,7 @@ func init() {
 				auraID, exists := config.cdrAuraIDs[character.Spec]
 				var cdrAura *core.Aura
 				if exists {
-					cdr := core.GetItemEffectScaling(itemID, 0.00989999995, state) / 100
+					cdr := 1.0 / (1.0 + core.GetItemEffectScaling(itemID, 0.00989999995, state)/100)
 					cdrAura = core.MakePermanent(character.RegisterAura(core.Aura{
 						Label:    fmt.Sprintf("Readiness %s", versionLabel),
 						ActionID: core.ActionID{SpellID: auraID},
@@ -51,7 +51,7 @@ func init() {
 					config.buffDuration,
 				)
 
-				triggerAura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+				triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 					Name:       config.baseTrinketLabel,
 					ProcChance: 0.15,
 					ICD:        config.icd,
@@ -205,7 +205,7 @@ func init() {
 				time.Second*20,
 			)
 
-			triggerAura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 				Name:       label,
 				ICD:        time.Second * 115,
 				ProcChance: 0.15,

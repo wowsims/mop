@@ -46,7 +46,7 @@ func init() {
 			},
 		})
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "Yaungol Fire Carrier",
 			ActionID:           core.ActionID{SpellID: 126212},
 			RequireDamageDealt: true,
@@ -54,6 +54,8 @@ func init() {
 			ProcChance:         0.1,
 			Outcome:            core.OutcomeLanded,
 			Callback:           core.CallbackOnSpellHitDealt,
+			TriggerImmediately: true,
+
 			Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 				dot.Cast(sim, result.Target)
 			},
@@ -74,7 +76,7 @@ func init() {
 			BonusPerStack: stats.Stats{stats.CritRating: statValue},
 		})
 
-		core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "The Gloaming Blade",
 			RequireDamageDealt: true,
 			DPM:                character.NewDynamicLegacyProcForWeapon(88149, 2, 0),

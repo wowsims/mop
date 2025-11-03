@@ -52,12 +52,14 @@ func (shaman *Shaman) ApplyGlyphs() {
 
 	if shaman.HasMajorGlyph(proto.ShamanMajorGlyph_GlyphOfTelluricCurrents) {
 		metric := shaman.NewManaMetrics(core.ActionID{SpellID: 55453})
-		core.MakeProcTriggerAura(&shaman.Unit, core.ProcTrigger{
-			Name:           "Glyph of Telluric Currents",
-			ClassSpellMask: SpellMaskLightningBolt | SpellMaskLightningBoltOverload,
-			ProcChance:     1,
-			Callback:       core.CallbackOnSpellHitDealt,
-			Outcome:        core.OutcomeLanded,
+		shaman.MakeProcTriggerAura(core.ProcTrigger{
+			Name:               "Glyph of Telluric Currents",
+			ClassSpellMask:     SpellMaskLightningBolt | SpellMaskLightningBoltOverload,
+			ProcChance:         1,
+			Callback:           core.CallbackOnSpellHitDealt,
+			Outcome:            core.OutcomeLanded,
+			TriggerImmediately: true,
+
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				amount := core.TernaryFloat64(shaman.Spec == proto.Spec_SpecElementalShaman, 0.02, 0.1)
 				shaman.AddMana(sim, amount*shaman.MaxMana(), metric)

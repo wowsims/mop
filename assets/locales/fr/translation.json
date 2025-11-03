@@ -223,6 +223,20 @@
 			"additional_information": "Informations supplémentaires :",
 			"action_has_warnings": "Cette action a des avertissements et pourrait ne pas se comporter comme prévu.",
 			"action_has_errors": "Cette action a des erreurs et ne se comportera pas comme prévu."
+		},
+		"preset": {
+			"ep_weights": "Poids EP",
+			"gear": "Équipement",
+			"talents": "Talents",
+			"rotation": "Rotation",
+			"encounter": "Rencontre",
+			"settings": "Paramètres",
+			"description": "Ce préréglage affecte les paramètres suivants :",
+			"stat_weights": "Poids des Stats",
+			"class_spec_options": "Options Classe/Spé",
+			"consumables": "Consommables",
+			"other_settings": "Autres Paramètres",
+			"buffs": "Buffs"
 		}
 	},
 	"sim": {
@@ -259,24 +273,6 @@
 	},
 	"gear_tab": {
 		"title": "Équipement",
-		"slots": {
-			"head": "Tête",
-			"neck": "Cou",
-			"shoulder": "Épaule",
-			"back": "Dos",
-			"chest": "Torse",
-			"wrist": "Poignets",
-			"hands": "Mains",
-			"waist": "Taille",
-			"legs": "Jambes",
-			"feet": "Pieds",
-			"finger_1": "Doigt 1",
-			"finger_2": "Doigt 2",
-			"trinket_1": "Bijou 1",
-			"trinket_2": "Bijou 2",
-			"main_hand": "Main droite",
-			"off_hand": "Main gauche"
-		},
 		"gem_summary": {
 			"title": "Résumé des gemmes",
 			"reset_gems": "Réinitialiser les gemmes"
@@ -557,6 +553,14 @@
 			"blessings": {
 				"title": "Bénédictions",
 				"tooltip": "Spécifiez les Bénédictions de Paladin pour chaque rôle, par ordre de priorité. Les Bénédictions dans la 1ère colonne seront utilisées s'il y a au moins 1 Paladin dans le raid, 2ème colonne s'il y en a au moins 2, etc."
+			},
+			"shaman_disable_immolate" : {
+				"label": "Désactiver Immolation pendant Déchaînement du vent",
+				"tooltip": "Lorsque que le talent Elémentaliste primordial est selectionné et que le lancement automatiquue de Immolation est activé, cette option permet d'empêcher le lancement d'Immolation lorsque le buff est actif sur le joueur."
+			},
+			"shaman_disable_immolate_duration" : {
+				"label": "Etendre la désactivation de",
+				"tooltip": "Durée en secondes pour laquel Immolation ne sera toujours pas lancé àpres la fin du buff Déchaînement du vent sur le joueur. Mettre 0 pour désactiver Immolation seulement pendant que le buff est actif."
 			}
 		},
 		"consumables": {
@@ -769,35 +773,28 @@
 			"min_ilvl": "ILvl min",
 			"max_ilvl": "ILvl max",
 			"no_results": "Aucun résultat trouvé.",
-			"showing_results": "Affichage de {max} sur {total} résultats totaux.",
-			"item_added": "{itemName} a été ajouté au lot."
+			"showing_results": "Affichage de {{max}} sur {{total}} résultats totaux.",
+			"item_added": "{{itemName}} a été ajouté au lot.",
+			"item_removed": "{{itemName}} a été retiré du lot.",
+			"item_unique": "{{itemName}} est unique et a déjà été ajouté."
 		},
 		"settings": {
-			"combinations_count": "{count} Combinaisons",
+			"combinations_count": "{{count}} Combinaisons",
 			"combination_singular": "1 Combinaison",
 			"iterations": "Itérations",
-			"fast_mode": {
-				"label": "Mode rapide",
-				"tooltip": "Le mode rapide réduit la précision mais s'exécute plus rapidement."
-			},
-			"combinations": {
-				"label": "Combinaisons",
-				"tooltip": "Lorsqu'il est coché, le simulateur par lot créera toutes les combinaisons possibles des objets. Lorsqu'il est désactivé, les trinkets et anneaux exécuteront toujours toutes les combinaisons car chacun a deux emplacements à remplir."
-			},
-			"auto_enchant": {
-				"label": "Enchantement automatique",
-				"tooltip": "Lorsqu'il est coché, le simulateur par lot appliquera l'enchantement actuel d'un emplacement à chaque objet de remplacement qu'il peut."
-			},
-			"auto_gem": {
-				"label": "Gemme automatique",
-				"tooltip": "Lorsqu'il est coché, le simulateur par lot remplira tous les châsses de gemmes non remplis avec des gemmes par défaut."
-			},
-			"sim_talents": {
-				"label": "Simuler les talents",
-				"tooltip": "Lorsqu'il est coché, le simulateur par lot simulera les configurations de talents choisies. Attention, cela pourrait faire durer la simulation par lot beaucoup plus longtemps"
-			},
 			"default_gems": "Gemmes par défaut",
-			"talents_to_sim": "Talents à simuler"
+			"inherit_upgrades": {
+				"label": "Hériter des améliorations",
+				"tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
+			},
+			"freeze_ring": {
+				"label": "Geler un emplacement d'anneau",
+				"tooltip": "Geler un anneau équipé pour réduire le nombre de combinaisons"
+			},
+			"freeze_trinket": {
+				"label": "Geler un emplacement de bijou",
+				"tooltip": "Geler un bijou équipé pour réduire le nombre de combinaisons"
+			}
 		},
 		"progress": {
 			"total_combinations": "{{count}} combinaisons totales.",
@@ -813,8 +810,25 @@
 		"warning": {
 			"iterations_limit": "Simuler plus de {{limit}} itérations dans le simulateur web prendra beaucoup de temps ou ne fonctionnera peut-être pas du tout. Pour les simulations par lot plus importantes, nous recommandons d'utiliser le mode rapide ou de télécharger l'exécutable et de l'exécuter sur votre machine."
 		},
+		"picker": {
+			"no_items": "Aucun objet sélectionné.",
+			"remove_tooltip": "Retirer cet objet du lot.",
+			"failed_update": "Échec de la mise à jour de l'objet, veuillez signaler ce problème.",
+			"failed_remove": "Échec de la suppression de l'objet, veuillez signaler ce problème."
+		},
 		"results": {
-			"run_simulation": "Exécutez une simulation pour voir les résultats"
+			"run_simulation": "Exécutez une simulation pour voir les résultats",
+			"equip_button": "Équiper",
+			"gear_equipped": "Équipement du lot équipé !",
+			"current_gear": "Équipement actuel"
+		},
+		"gem_selector": {
+			"title": "Choisir la gemme par défaut"
+		},
+		"import_modal": {
+			"title": "Importation d'objets de sac",
+			"description_line1": "Importez des objets de sac à partir d'un fichier JSON, qui peut être créé par l'AddOn en jeu WowSimsExporter.",
+			"description_line2": "Pour importer, téléchargez le fichier ou collez le texte ci-dessous, puis cliquez sur 'Importer'."
 		}
 	},
 	"rotation_tab": {
@@ -950,7 +964,7 @@
 				"channel": {
 					"label": "Canaliser",
 					"tooltip": "Canalise le sort si possible.",
-					"full": "\n\t\t\t<p>La différence entre canaliser un sort et lancer le sort est que les canalisations peuvent être interrompues. Si le paramètre <b>Interrompre si</b> est vide, cette action est équivalente à <b>Lancer</b>.</p>\n\t\t\t<p>La canalisation sera interrompue seulement si toutes les conditions suivantes sont vraies :</p>\n\t\t\t<ul>\n\t\t\t\t<li>Immédiatement après un tick de la canalisation</li>\n\t\t\t\t<li>La condition <b>Interrompre si</b> s'évalue à <b>Vrai</b></li>\n\t\t\t\t<li>Une autre action dans la liste APL est disponible</li>\n\t\t\t</ul>\n\t\t\t<p>Notez que si vous voulez simplement permettre à d'autres actions d'interrompre la canalisation, définissez <b>Interrompre si</b> à <b>Vrai</b>.</p>\n\t\t\t",
+					"full_description": "<p>La différence entre canaliser un sort et lancer le sort est que les canalisations peuvent être interrompues. Si le paramètre <b>Interrompre si</b> est vide, cette action est équivalente à <b>Lancer</b>.</p><p>La canalisation sera interrompue seulement si toutes les conditions suivantes sont vraies :</p><ul><li>Immédiatement après un tick de la canalisation</li><li>La condition <b>Interrompre si</b> s'évalue à <b>Vrai</b></li><li>Une autre action dans la liste APL est disponible</li></ul><p>Notez que si vous voulez simplement permettre à d'autres actions d'interrompre la canalisation, définissez <b>Interrompre si</b> à <b>Vrai</b>.</p>",
 					"interrupt_if": {
 						"label": "Interrompre si",
 						"tooltip": "Interrompre la canalisation si la condition est vraie."
@@ -963,12 +977,12 @@
 				"cast_all_stat_buff_cooldowns": {
 					"label": "Lancer tous les CDs de Buff de stats",
 					"tooltip": "Lance tous les cooldowns de buff de stats disponibles.",
-					"full": "\n\t\t\t<ul>\n\t\t\t\t<li>Ne lance pas les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li>\n\t\t\t\t<li>Par défaut, cette action lancera ces cooldowns de manière avide dès qu'ils deviennent disponibles. Cependant, lorsqu'elle est intégrée dans une séquence, l'action ne se déclenchera que lorsque TOUS les cooldowns correspondant au(x) type(s) de buff spécifié(s) sont prêts.</li>\n\t\t\t</ul>\n\t\t\t"
+					"full_description": "<ul><li>Ne lance pas les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li><li>Par défaut, cette action lancera ces cooldowns de manière avide dès qu'ils deviennent disponibles. Cependant, lorsqu'elle est intégrée dans une séquence, l'action ne se déclenchera que lorsque TOUS les cooldowns correspondant au(x) type(s) de buff spécifié(s) sont prêts.</li></ul>"
 				},
 				"autocast_other_cooldowns": {
 					"label": "Auto-lancer autres CDs",
 					"tooltip": "Lance automatiquement d'autres cooldowns quand disponibles.",
-					"full": "\n\t\t\t<ul>\n\t\t\t\t<li>Ne lance pas automatiquement les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li>\n\t\t\t\t<li>Les cooldowns sont généralement lancés immédiatement dès qu'ils sont prêts, mais il y a quelques vérifications intelligentes de base en place, par ex. ne pas utiliser les CDs de Mana quand près du mana plein.</li>\n\t\t\t</ul>\n\t\t\t"
+					"full_description": "<ul><li>Ne lance pas automatiquement les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li><li>Les cooldowns sont généralement lancés immédiatement dès qu'ils sont prêts, mais il y a quelques vérifications intelligentes de base en place, par ex. ne pas utiliser les CDs de Mana quand près du mana plein.</li></ul>"
 				},
 				"wait": {
 					"label": "Attendre",
@@ -993,17 +1007,17 @@
 				"sequence": {
 					"label": "Séquence",
 					"tooltip": "Une liste de sous-actions à exécuter dans l'ordre spécifié.",
-					"full": "\n\t\t\t<p>Une fois qu'une des sous-actions a été effectuée, la prochaine sous-action ne sera pas nécessairement exécutée immédiatement après. Le système redémarrera au début de toute la liste d'actions (pas la séquence). Si la séquence est exécutée à nouveau, elle effectuera la prochaine sous-action.</p>\n\t\t\t<p>Quand toutes les actions ont été effectuées, la séquence ne se réinitialise PAS automatiquement ; au lieu de cela, elle sera ignorée à partir de maintenant. Utilisez l'action <b>Réinitialiser séquence</b> pour la réinitialiser, si désiré.</p>\n\t\t\t"
+					"full_description": "<p>Une fois qu'une des sous-actions a été effectuée, la prochaine sous-action ne sera pas nécessairement exécutée immédiatement après. Le système redémarrera au début de toute la liste d'actions (pas la séquence). Si la séquence est exécutée à nouveau, elle effectuera la prochaine sous-action.</p><p>Quand toutes les actions ont été effectuées, la séquence ne se réinitialise PAS automatiquement ; au lieu de cela, elle sera ignorée à partir de maintenant. Utilisez l'action <b>Réinitialiser séquence</b> pour la réinitialiser, si désiré.</p>"
 				},
 				"reset_sequence": {
 					"label": "Réinitialiser séquence",
 					"tooltip": "Redémarre une séquence, de sorte que la prochaine fois qu'elle s'exécute, elle effectuera sa première sous-action.",
-					"full": "\n\t\t\t<p>Utilisez le champ <b>nom</b> pour faire référence à la séquence à réinitialiser. La séquence désirée doit avoir la même valeur (non vide) pour son <b>nom</b>.</p>\n\t\t\t"
+					"full_description": "<p>Utilisez le champ <b>nom</b> pour faire référence à la séquence à réinitialiser. La séquence désirée doit avoir la même valeur (non vide) pour son <b>nom</b>.</p>"
 				},
 				"strict_sequence": {
 					"label": "Séquence stricte",
 					"tooltip": "Comme une séquence régulière, sauf que toutes les sous-actions sont exécutées immédiatement l'une après l'autre et la séquence se réinitialise automatiquement à la fin.",
-					"full": "\n\t\t\t<p>Les séquences strictes ne commencent pas à moins que TOUTES les sous-actions soient prêtes.</p>\n\t\t\t"
+					"full_description": "<p>Les séquences strictes ne commencent pas à moins que TOUTES les sous-actions soient prêtes.</p>"
 				},
 				"change_target": {
 					"label": "Changer de cible",
@@ -1063,7 +1077,7 @@
 				},
 				"warlock_next_exhale_target": {
 					"label": "Choisir la prochaine cible d'Expiration",
-        			"tooltip": "Choisi la prochaine cible valide d'Expiration. Si la cible actuelle n'est pas la cible de l'échange d'âme ou si l'échange d'âme n'a pas été lancé, la cible ne changera pas."
+					"tooltip": "Choisi la prochaine cible valide d'Expiration. Si la cible actuelle n'est pas la cible de l'échange d'âme ou si l'échange d'âme n'a pas été lancé, la cible ne changera pas."
 				}
 			},
 			"values": {
@@ -1283,6 +1297,10 @@
 					"label": "Temps de recharge d'emplacement de rune",
 					"tooltip": "Quantité de temps jusqu'à ce qu'une rune d'un certains emplacement soit prête à être utiliser.<br><b>NOTE:</b> Retourne 0 si la rune est prête"
 				},
+				"full_rune_cooldown": {
+					"label": "Temps de recharge complet des runes",
+					"tooltip": "Temps qu'il faudrait à une rune pour se recharger si vous l'utilisiez maintenant."
+				},
 				"gcd_is_ready": {
 					"label": "GCD est prêt",
 					"tooltip": "<b>Vrai</b> si le GCD n'est pas en temps de recharge, sinon <b>Faux</b>."
@@ -1305,7 +1323,8 @@
 				},
 				"can_cast": {
 					"label": "Peut lancer",
-					"tooltip": "<b>Vrai</b> si toutes les exigences pour lancer le sort sont actuellement remplies, sinon <b>Faux</b>."
+					"tooltip": "<b>Vrai</b> si toutes les exigences pour lancer le sort sont actuellement remplies, sinon <b>Faux</b>.",
+					"full_description": "<p>The <b>Cast Spell</b> action does not need to be conditioned on this, because it applies this check automatically.</p>"
 				},
 				"is_ready": {
 					"label": "Est prêt",
@@ -1359,6 +1378,10 @@
 					"label": "Temps de réaction",
 					"tooltip": "La quantité de temps spécifiée par le paramètre <b>Temps de réaction</b>."
 				},
+				"spell_in_flight": {
+					"label": "Sort en vol",
+					"tooltip": "<b>Vrai</b> si ce sort est actuellement en cours, sinon <b>Faux</b>."
+				},
 				"aura_known": {
 					"label": "Aura connue",
 					"tooltip": "<b>Vrai</b> si l'aura est actuellement connue, sinon <b>Faux</b>."
@@ -1389,15 +1412,18 @@
 				},
 				"aura_should_refresh": {
 					"label": "Aura à rafraichir",
-					"tooltip": "Si cette aura devrait être rafraîchie, par ex. dans le but de maintenir un debuff."
+					"tooltip": "Si cette aura devrait être rafraîchie, par ex. dans le but de maintenir un debuff.",
+					"full_description": "<p>This condition checks not only the specified aura but also any other auras on the same unit, including auras applied by other raid members, which apply the same debuff category.</p><p>For example, 'Should Refresh Debuff(Sunder Armor)' will return <b>False</b> if the unit has an active Expose Armor aura.</p>"
 				},
 				"all_trinket_stat_procs_active": {
 					"label": "Tous les buffs procs d'objets actifs",
-					"tooltip": "<b>Vrai</b> si tous les procs d'objet/enchantement qui buffent le(s) type(s) de stat spécifié(s) sont actuellement actifs, sinon <b>Faux</b>."
+					"tooltip": "<b>Vrai</b> si tous les procs d'objet/enchantement qui buffent le(s) type(s) de stat spécifié(s) sont actuellement actifs, sinon <b>Faux</b>.",
+					"full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
 				},
 				"any_trinket_stat_procs_active": {
 					"label": "N'importe quel buff proc d'objet actif",
-					"tooltip": "<b>Vrai</b> si n'importe quel proc d'objet/enchantement qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>."
+					"tooltip": "<b>Vrai</b> si n'importe quel proc d'objet/enchantement qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>.",
+					"full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
 				},
 				"trinket_procs_min_remaining_time": {
 					"label": "Temps restant Min des procs d'objets",
@@ -1413,11 +1439,13 @@
 				},
 				"num_stat_buff_cooldowns": {
 					"label": "Nombre de CDs de buff de stats",
-					"tooltip": "Nombre de Cooldowns Majeurs enregistrés qui buffent le(s) type(s) de stat spécifié(s) quand ils sont lancés."
+					"tooltip": "Nombre de Cooldowns Majeurs enregistrés qui buffent le(s) type(s) de stat spécifié(s) quand ils sont lancés.",
+					"full_description": "<p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are included in the total count returned by this value.</p>"
 				},
 				"any_stat_buff_cooldowns_active": {
 					"label": "N'importe quel CD de buff de stat actif",
-					"tooltip": "<b>Vrai</b> si n'importe quel Cooldown Majeur enregistré qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>."
+					"tooltip": "<b>Vrai</b> si n'importe quel Cooldown Majeur enregistré qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>.",
+					"full_description": "<p>For stacking buffs, this condition also checks that the buff has been stacked to its maximum possible strength after the cooldown is activated.</p><p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are checked.</p>"
 				},
 				"dot_is_active": {
 					"label": "DoT est actif",
@@ -1480,7 +1508,7 @@
 					"tooltip": "Retourne <b>Vrai</b> si Main de Gul'dan est actuellement en vol."
 				},
 				"warlock_haunt_in_flight": {
-					"label": "Hantise en vol",
+					"label": "[OBSOLETE]  Hantise en vol",
 					"tooltip": "Retourne <b>Vrai</b> si Hantise est actuellement en vol."
 				},
 				"mage_current_combustion_dot_estimate": {
@@ -1591,14 +1619,20 @@
 					"shield_spells": "Bouclier",
 					"non_instant_spells": "Sort Non-instantané",
 					"friendly_spells": "Sort Amical",
-					"expected_dot_spells": "DoT"
+					"expected_dot_spells": "DoT",
+					"spells_with_travelTime": "Sort"
 				},
 				"field_configs": {
 					"type": "Type",
 					"strategy": "Stratégie",
 					"buff_type": "Type de Buff",
 					"min_icd": "ICD Min",
-					"min_icd_tooltip": "Si non-zéro, filtre tous les procs qui n'ont pas d'ICD ou dont l'ICD est inférieur à la valeur spécifiée (en secondes). Cela peut être utile pour certaines vérifications de snapshot, car les procs avec des ICD faibles sont souvent trop faibles pour snapshot."
+					"min_icd_tooltip": "Si non-zéro, filtre tous les procs qui n'ont pas d'ICD ou dont l'ICD est inférieur à la valeur spécifiée (en secondes). Cela peut être utile pour certaines vérifications de snapshot, car les procs avec des ICD faibles sont souvent trop faibles pour snapshot.",
+					"include_reaction_time": "Inclure le temps de réaction",
+					"include_reaction_time_tooltip": "Si coché, utilisera le temps de réaction configuré.",
+					"use_base_value": "Utiliser la valeur de base",
+					"use_base_value_tooltip": "Si coché, comparera le DoT actuel à la valeur de base (au début de la rencontre) du DoT.",
+					"variable_assignment_tooltip": "Valeur à assigner à la variable '{{variableName}}'"
 				},
 				"eclipse_types": {
 					"lunar": "Lunaire",
@@ -1638,6 +1672,10 @@
 					"pet": "Familier"
 				},
 				"placeholder_tooltip": "La Potion de pré-pull si CurrentTime < 0, ou la Potion en combat si le combat a commencé.",
+				"select_variable": "Sélectionner une variable",
+				"select_group": "Sélectionner un groupe",
+				"no_variables_defined": "Aucune variable définie",
+				"no_groups_defined": "Aucun groupe défini",
 				"buttons": {
 					"enable_action": "Activer l'action",
 					"disable_action": "Désactiver l'action",
@@ -2116,27 +2154,13 @@
 			"too_many_jc_gems": "Seulement 2 gemmes de joaillerie sont autorisées, mais {{count}} sont équipées.",
 			"unspent_talent_points": "Points de talent manquants dans les rangées {{rowNumbers}}.",
 			"armor_specialization": "Équipez de l'équipement {{armorType}} dans chaque emplacement pour l'effet de spécialisation d'armure (5% de statistique primaire).",
-			"dual_wield_2h_without_titans_grip": "Manier deux armes à deux mains sans la spécialisation Poigne du titan."
+			"dual_wield_2h_without_titans_grip": "Manier deux armes à deux mains sans la spécialisation Poigne du titan.",
+			"shaman_fele_autocast": "La configuration des sorts de l'Élémentaire de feu n'est pas optimale avec l'utilisation du talent Élémentaliste primordial (Tous activés sauf Ardeur). Ignorez ce message si vous savez ce que vous faites."
 		},
 		"buttons": {
 			"simulate": "Simuler",
 			"stat_weights": {
 				"title": "Poids des Statistiques",
-				"ep_weights": {
-					"use_custom": "Utiliser des poids PE personnalisés",
-					"description": {
-						"enable_modification": "Ceci permettra la modification des poids PE par défaut et la définition de caps de statistiques personnalisés.",
-						"modify_in_editor": "Les poids PE peuvent être modifiés dans l'éditeur de Poids des Statistiques.",
-						"hard_cap_info": "Si vous voulez caper une statistique, assurez-vous de définir le PE de cette statistique plus haut."
-					},
-					"buttons": {
-						"edit_weights": "Modifier les poids"
-					},
-					"options": {
-						"include_gems": "Inclure les gemmes",
-						"freeze_item_slots": "Verrouiller certains emplacements"
-					}
-				},
 				"modal": {
 					"title": "Calculer les Poids des Statistiques",
 					"ep": "PE",
@@ -2246,7 +2270,18 @@
 				"no_limit_set": "Aucune limite définie",
 				"breakpoints_implemented": "Les breakpoints suivants ont été implémentés pour cette spé :",
 				"post_cap_ep": "PE post-cap",
-				"reforge_optimization_failed": "L'optimisation de la retouche a échoué. Veuillez réessayer ou signaler le problème s'il persiste."
+				"reforge_optimization_failed": "L'optimisation de la retouche a échoué. Veuillez réessayer ou signaler le problème s'il persiste.",
+				"use_custom": "Utiliser des poids PE personnalisés",
+				"enable_modification": "Ceci permettra la modification des poids PE par défaut et la définition de caps de statistiques personnalisés.",
+				"modify_in_editor": "Les poids PE peuvent être modifiés dans l'éditeur de Poids des Statistiques.",
+				"hard_cap_info": "Si vous voulez caper une statistique, assurez-vous de définir le PE de cette statistique plus haut.",
+				"edit_weights": "Modifier les poids",
+				"include_gems": "Inclure les gemmes",
+				"freeze_item_slots": "Verrouiller certains emplacements",
+				"include_eotbp_socket": "Inclure le socket EotBP",
+				"include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation.",
+				"limit_execution_time": "Limiter le temps d'exécution",
+				"limit_execution_time_tooltip": "Si coché, le solveur se terminera en erreur si le temps de calcul total dépasse 30 secondes. Si décoché, le temps de calcul total sera plafonné à 1 heure."
 			}
 		},
 		"header": {
@@ -2327,8 +2362,8 @@
 				"total": "Total :",
 				"glancing": "Éraflement :",
 				"suppression": "Suppression :",
-				"to_hit_cap": "Jusqu’au cap de toucher :",
-				"to_exp_cap": "Jusqu’au cap d'expertise :",
+				"to_hit_cap": "Jusqu'au cap de toucher :",
+				"to_exp_cap": "Jusqu'au cap d'expertise :",
 				"spec_offsets": "Compensations de spé :",
 				"final_crit_cap": "Cap de critique final :",
 				"can_raise_by": "Peut être augmenter de :"
@@ -2336,8 +2371,8 @@
 			"attack_table": {
 				"glancing": "Éraflement :",
 				"suppression": "Suppression :",
-				"to_hit_cap": "Jusqu’au cap de toucher :",
-				"to_exp_cap": "Jusqu’au cap d'expertise :",
+				"to_hit_cap": "Jusqu'au cap de toucher :",
+				"to_exp_cap": "Jusqu'au cap d'expertise :",
 				"spec_offsets": "Compensations de spé :",
 				"final_crit_cap": "Cap de critique final :",
 				"can_raise_by": "Peut être augmenter de :"

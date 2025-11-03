@@ -44,9 +44,14 @@
 		}
 
 		.simple-rotation-container {
+			--columns: 1fr 1fr;
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: var(--columns);
 			gap: var(--container-padding);
+
+			@include media-breakpoint-down(xl) {
+				--columns: 1fr;
+			}
 		}
 	}
 
@@ -55,10 +60,15 @@
 
 		.apl-rotation-navbar {
 			flex: 1 0 100%;
+			gap: var(--spacer-1);
 
 			.nav-tabs {
 				margin-left: auto;
 				border: 0;
+				display: flex;
+				flex-wrap: nowrap;
+				overflow: auto;
+				flex-shrink: 1;
 			}
 		}
 

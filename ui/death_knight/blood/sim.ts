@@ -74,11 +74,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 			return hitCap.add(expCap);
 		})(),
 		softCapBreakpoints: (() => {
-			return [StatCap.fromStat(Stat.StatExpertiseRating, {
-				breakpoints: [7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION],
-				capType: StatCapType.TypeSoftCap,
-				postCapEPs: [0.22, 0],
-			})];
+			return [
+				StatCap.fromStat(Stat.StatExpertiseRating, {
+					breakpoints: [7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION],
+					capType: StatCapType.TypeSoftCap,
+					postCapEPs: [0.22, 0],
+				}),
+			];
 		})(),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
@@ -184,11 +186,7 @@ export class BloodDeathKnightSimUI extends IndividualSimUI<Spec.SpecBloodDeathKn
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecBloodDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
 		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				getEPDefaults: (_: Player<Spec.SpecFuryWarrior>) => {
-					return Presets.P1_BLOOD_EP_PRESET.epWeights;
-				},
-			});
+			this.reforger = new ReforgeOptimizer(this);
 		});
 	}
 }

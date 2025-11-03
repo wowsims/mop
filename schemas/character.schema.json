@@ -423,6 +423,90 @@
         "tailoring",
         "archeology"
       ]
+    },
+    "slots": {
+      "type": "object",
+      "properties": {
+        "head": {
+          "type": "string"
+        },
+        "neck": {
+          "type": "string"
+        },
+        "shoulder": {
+          "type": "string"
+        },
+        "back": {
+          "type": "string"
+        },
+        "chest": {
+          "type": "string"
+        },
+        "wrist": {
+          "type": "string"
+        },
+        "hands": {
+          "type": "string"
+        },
+        "waist": {
+          "type": "string"
+        },
+        "legs": {
+          "type": "string"
+        },
+        "feet": {
+          "type": "string"
+        },
+        "finger_1": {
+          "type": "string"
+        },
+        "finger_2": {
+          "type": "string"
+        },
+        "rings": {
+          "type": "string"
+        },
+        "trinket_1": {
+          "type": "string"
+        },
+        "trinket_2": {
+          "type": "string"
+        },
+        "trinkets": {
+          "type": "string"
+        },
+        "main_hand": {
+          "type": "string"
+        },
+        "off_hand": {
+          "type": "string"
+        },
+        "weapons": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "head",
+        "neck",
+        "shoulder",
+        "back",
+        "chest",
+        "wrist",
+        "hands",
+        "waist",
+        "legs",
+        "feet",
+        "finger_1",
+        "finger_2",
+        "rings",
+        "trinket_1",
+        "trinket_2",
+        "trinkets",
+        "main_hand",
+        "off_hand",
+        "weapons"
+      ]
     }
   },
   "additionalProperties": false,
@@ -430,7 +514,8 @@
     "classes",
     "specs",
     "races",
-    "professions"
+    "professions",
+    "slots"
   ],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Generated Schema",

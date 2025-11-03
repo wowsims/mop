@@ -36,7 +36,7 @@ func init() {
 			duration,
 		)
 
-		triggerAura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:       "Zen Alchemist Stone",
 			ActionID:   core.ActionID{SpellID: 105574},
 			ProcMask:   core.ProcMaskDirect | core.ProcMaskProc,
@@ -64,7 +64,7 @@ func init() {
 
 		mana := core.GetItemEffectScaling(81266, 2.97199988365, state)
 
-		triggerAura := core.MakeProcTriggerAura(&character.Unit, core.ProcTrigger{
+		triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:       "Price of Progress (Heroic)",
 			ActionID:   actionID,
 			ProcMask:   core.ProcMaskSpellHealing,

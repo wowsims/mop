@@ -12,10 +12,6 @@ import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/util
 import * as PaladinInputs from '../inputs.js';
 import * as Presets from './presets.js';
 
-const getEPDefaults = (_: Player<Spec.SpecProtectionPaladin>) => {
-	return Presets.P1_BALANCED_EP_PRESET.epWeights;
-};
-
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 	cssClass: 'protection-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
@@ -105,11 +101,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 			return hitCap.add(expCap);
 		})(),
 		softCapBreakpoints: (() => {
-			return [StatCap.fromStat(Stat.StatExpertiseRating, {
-				breakpoints: [7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION],
-				capType: StatCapType.TypeSoftCap,
-				postCapEPs: [0.57, 0],
-			})];
+			return [
+				StatCap.fromStat(Stat.StatExpertiseRating, {
+					breakpoints: [7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION],
+					capType: StatCapType.TypeSoftCap,
+					postCapEPs: [0.57, 0],
+				}),
+			];
 		})(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
@@ -209,14 +207,11 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecProtectionPaladin>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		player.sim.waitForInit().then(() => {
-			new ReforgeOptimizer(this, {
-				getEPDefaults,
-				updateSoftCaps: softCaps => {
-					softCaps[0].postCapEPs[0] = player.getEpWeights().getStat(Stat.StatExpertiseRating) * 0.9;
-					return softCaps;
-				},
-			});
+		this.reforger = new ReforgeOptimizer(this, {
+			updateSoftCaps: softCaps => {
+				softCaps[0].postCapEPs[0] = player.getEpWeights().getStat(Stat.StatExpertiseRating) * 0.9;
+				return softCaps;
+			},
 		});
 	}
 }

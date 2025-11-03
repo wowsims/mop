@@ -196,7 +196,7 @@ export class ItemRenderer extends Component {
 				fromAmount: Math.abs(reforgeData.fromAmount),
 				fromStat: fromText,
 				toAmount: reforgeData.toAmount,
-				toStat: toText
+				toStat: toText,
 			});
 			this.reforgeElem.classList.remove('hide');
 		} else {

@@ -206,6 +206,8 @@ type Unit struct {
 	GetSpellPowerValue GetSpellPowerValue
 
 	GetAttackPowerValue GetAttackPowerValue
+
+	SpellsInFlight map[*Spell]int32
 }
 
 func (unit *Unit) getSpellPowerValueImpl(spell *Spell) float64 {
@@ -252,6 +254,9 @@ func (unit *Unit) GetInitialStat(stat stats.Stat) float64 {
 }
 func (unit *Unit) GetStats() stats.Stats {
 	return unit.stats
+}
+func (unit *Unit) GetStatsWithoutDeps() stats.Stats {
+	return unit.statsWithoutDeps
 }
 
 // Given an array of Stat types, return the Stat whose value is largest for this
@@ -388,9 +393,20 @@ func (unit *Unit) processDynamicBonus(sim *Simulation, bonus stats.Stats) {
 		}
 	}
 
-	unit.Env.TriggerDelayedPetInheritance(sim, unit.DynamicStatsPets, func(sim *Simulation, pet *Pet) {
-		pet.AddOwnerStats(sim, bonus)
-	})
+	// Higher performance than calling TriggerDelayedPetInheritance()
+	for _, pet := range unit.DynamicStatsPets {
+		if !pet.enabled {
+			continue
+		}
+
+		pet.pendingStatInheritance.AddInplace(&bonus)
+
+		if pet.statInheritanceAction.consumed || (pet.statInheritanceAction.NextActionAt == 0) {
+			numHeartbeats := (sim.CurrentTime - unit.Env.heartbeatOffset) / PetUpdateInterval
+			pet.statInheritanceAction.NextActionAt = PetUpdateInterval * (numHeartbeats + 1) + unit.Env.heartbeatOffset
+			sim.AddPendingAction(pet.statInheritanceAction)
+		}
+	}
 }
 
 func (unit *Unit) EnableDynamicStatDep(sim *Simulation, dep *stats.StatDependency) {
@@ -773,6 +789,7 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 
 	unit.DynamicStatsPets = unit.DynamicStatsPets[:0]
 	unit.DynamicMeleeSpeedPets = unit.DynamicMeleeSpeedPets[:0]
+	clear(unit.SpellsInFlight)
 
 	if unit.Type != PetUnit {
 		sim.addTracker(&unit.auraTracker)
@@ -822,6 +839,15 @@ func (unit *Unit) GetSpellsMatchingSchool(school SpellSchool) []*Spell {
 	return spells
 }
 
+func (unit *Unit) SpellInFlight(spell *Spell) bool {
+	return unit.SpellsInFlight[spell] > 0
+}
+
+func (unit *Unit) SpellInFlightByID(spellID int32) bool {
+	spell := unit.GetSpell(ActionID{SpellID: spellID})
+	return unit.SpellInFlight(spell)
+}
+
 func (unit *Unit) GetUnit(ref *proto.UnitReference) *Unit {
 	return unit.Env.GetUnit(ref, unit)
 }
@@ -845,6 +871,7 @@ func (unit *Unit) GetMetadata() *proto.UnitMetadata {
 			HasCastTime:     spell.DefaultCast.CastTime > 0,
 			IsFriendly:      spell.Flags.Matches(SpellFlagHelpful),
 			HasExpectedTick: spell.expectedTickDamageInternal != nil,
+			HasMissileSpeed: spell.MissileSpeed > 0.0,
 		}
 	})
 

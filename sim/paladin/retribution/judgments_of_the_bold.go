@@ -16,12 +16,13 @@ func (ret *RetributionPaladin) registerJudgmentsOfTheBold() {
 	ret.CanTriggerHolyAvengerHpGain(actionID)
 
 	auraArray := ret.NewEnemyAuraArray(core.PhysVulnerabilityAura)
-	core.MakeProcTriggerAura(&ret.Unit, core.ProcTrigger{
-		Name:           "Judgments of the Bold" + ret.Label,
-		ActionID:       core.ActionID{SpellID: 111529},
-		Callback:       core.CallbackOnSpellHitDealt,
-		Outcome:        core.OutcomeLanded,
-		ClassSpellMask: paladin.SpellMaskJudgment,
+	ret.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Judgments of the Bold" + ret.Label,
+		ActionID:           core.ActionID{SpellID: 111529},
+		Callback:           core.CallbackOnSpellHitDealt,
+		Outcome:            core.OutcomeLanded,
+		ClassSpellMask:     paladin.SpellMaskJudgment,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			ret.HolyPower.Gain(sim, 1, actionID)
