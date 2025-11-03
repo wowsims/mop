@@ -92,11 +92,14 @@ var ItemSetRegaliaOfTheChromaticHydra = core.NewItemSet(core.ItemSet{
 
 			setBonusAura.ExposeToAPL(138316)
 		},
-		// Increases the effects of Arcane Charges by 5%,
+		// Increases the effects of Arcane Charges by 5% per charge,
 		// increases the critical strike chance of Pyroblast by 5%,
 		// and increases the chance for your Frostbolt to trigger Fingers of Frost by an additional 6%.
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			mage := agent.(MageAgent).GetMage()
+
+			// Bind the set bonus aura to the mage struct
+			mage.T15_4PC_ArcaneChargesAura = setBonusAura
 
 			setBonusAura.AttachSpellMod(core.SpellModConfig{
 				Kind:       core.SpellMod_BonusCrit_Percent,
@@ -104,10 +107,8 @@ var ItemSetRegaliaOfTheChromaticHydra = core.NewItemSet(core.ItemSet{
 				FloatValue: 5,
 			})
 			setBonusAura.ApplyOnGain(func(_ *core.Aura, _ *core.Simulation) {
-				mage.T15_4PC_ArcaneChargeEffect += 0.05
 				mage.T15_4PC_FrostboltProcChance += 0.06
 			}).ApplyOnExpire(func(_ *core.Aura, _ *core.Simulation) {
-				mage.T15_4PC_ArcaneChargeEffect -= 0.05
 				mage.T15_4PC_FrostboltProcChance -= 0.06
 			})
 
