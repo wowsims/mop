@@ -64,7 +64,18 @@ func (mage *Mage) registerEvocation() {
 				manaRegenMulti *= 1.75
 			}
 			if mage.ArcaneChargesAura != nil && mage.ArcaneChargesAura.IsActive() {
-				manaRegenMulti *= 1 + float64(mage.ArcaneChargesAura.GetStacks())*0.25*mage.T15_4PC_ArcaneChargeEffect
+				stacks := float64(mage.ArcaneChargesAura.GetStacks())
+				// Base: 25% mana regen per charge
+				baseManaRegenTotal := 0.25 * stacks
+
+				// T15 4PC increases the effect by 5% per charge
+				// At 1 charge: +5%, at 2 charges: +10%, at 3 charges: +15%, at 4 charges: +20%
+				if mage.T15_4PC_ArcaneChargeEffect > 1.0 && stacks > 0 {
+					t15BonusPercent := 0.05 * stacks
+					baseManaRegenTotal *= (1.0 + t15BonusPercent)
+				}
+
+				manaRegenMulti *= 1 + baseManaRegenTotal
 			}
 			spell.SelfHot().Apply(sim)
 			spell.SelfHot().TickOnce(sim)

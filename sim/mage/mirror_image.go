@@ -245,12 +245,12 @@ func (mi *MirrorImage) registerArcaneBlastSpell() {
 
 	abDamageMod := mi.AddDynamicMod(core.SpellModConfig{
 		ClassMask:  MageMirrorImageSpellArcaneBlast,
-		FloatValue: .5 * mi.mageOwner.T15_4PC_ArcaneChargeEffect,
+		FloatValue: .5,
 		Kind:       core.SpellMod_DamageDone_Flat,
 	})
 	abCostMod := mi.AddDynamicMod(core.SpellModConfig{
 		ClassMask:  MageMirrorImageSpellArcaneBlast,
-		FloatValue: 1.5 * mi.mageOwner.T15_4PC_ArcaneChargeEffect,
+		FloatValue: 1.5,
 		Kind:       core.SpellMod_PowerCost_Pct,
 	})
 
@@ -269,8 +269,20 @@ func (mi *MirrorImage) registerArcaneBlastSpell() {
 		},
 		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
 			stacks := float64(newStacks)
-			abDamageMod.UpdateFloatValue(0.25 * stacks * mi.mageOwner.T15_4PC_ArcaneChargeEffect) //Images only gain 25% damage per charge
-			abCostMod.UpdateFloatValue(1.5 * stacks * mi.mageOwner.T15_4PC_ArcaneChargeEffect)
+			// Images: 0.25 damage per charge, 1.5 cost per charge
+			baseDamageTotal := 0.25 * stacks
+			baseCostTotal := 1.5 * stacks
+
+			// T15 4PC increases the effect by 5% per charge
+			// At 1 charge: +5%, at 2 charges: +10%, at 3 charges: +15%, at 4 charges: +20%
+			if mi.mageOwner.T15_4PC_ArcaneChargeEffect > 1.0 && stacks > 0 {
+				t15BonusPercent := 0.05 * stacks
+				baseDamageTotal *= (1.0 + t15BonusPercent)
+				baseCostTotal *= (1.0 + t15BonusPercent)
+			}
+
+			abDamageMod.UpdateFloatValue(baseDamageTotal)
+			abCostMod.UpdateFloatValue(baseCostTotal)
 		},
 	})
 }

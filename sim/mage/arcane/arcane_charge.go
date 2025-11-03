@@ -10,12 +10,12 @@ import (
 func (arcane *ArcaneMage) registerArcaneCharges() {
 	abDamageMod := arcane.AddDynamicMod(core.SpellModConfig{
 		ClassMask:  mage.MageSpellArcaneBlast | mage.MageSpellArcaneBarrage | mage.MageSpellArcaneMissilesTick,
-		FloatValue: 0.5 * arcane.T15_4PC_ArcaneChargeEffect,
+		FloatValue: 0.5,
 		Kind:       core.SpellMod_DamageDone_Flat,
 	})
 	abCostMod := arcane.AddDynamicMod(core.SpellModConfig{
 		ClassMask:  mage.MageSpellArcaneBlast,
-		FloatValue: 1.5 * arcane.T15_4PC_ArcaneChargeEffect,
+		FloatValue: 1.5,
 		Kind:       core.SpellMod_PowerCost_Pct,
 	})
 
@@ -34,8 +34,20 @@ func (arcane *ArcaneMage) registerArcaneCharges() {
 		},
 		OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
 			stacks := float64(newStacks)
-			abDamageMod.UpdateFloatValue(.5 * arcane.T15_4PC_ArcaneChargeEffect * stacks)
-			abCostMod.UpdateFloatValue(1.5 * arcane.T15_4PC_ArcaneChargeEffect * stacks)
+			// Base effect: 0.5 damage per charge, 1.5 cost per charge
+			baseDamageTotal := 0.5 * stacks
+			baseCostTotal := 1.5 * stacks
+
+			// T15 4PC increases the effect by 5% per charge
+			// At 1 charge: +5%, at 2 charges: +10%, at 3 charges: +15%, at 4 charges: +20%
+			if arcane.T15_4PC_ArcaneChargeEffect > 1.0 && stacks > 0 {
+				t15BonusPercent := 0.05 * stacks
+				baseDamageTotal *= (1.0 + t15BonusPercent)
+				baseCostTotal *= (1.0 + t15BonusPercent)
+			}
+
+			abDamageMod.UpdateFloatValue(baseDamageTotal)
+			abCostMod.UpdateFloatValue(baseCostTotal)
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
 			if spell.Matches(mage.MageSpellArcaneBarrage | mage.MageSpellEvocation) {

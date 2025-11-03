@@ -92,7 +92,7 @@ var ItemSetRegaliaOfTheChromaticHydra = core.NewItemSet(core.ItemSet{
 
 			setBonusAura.ExposeToAPL(138316)
 		},
-		// Increases the effects of Arcane Charges by 5%,
+		// Increases the effects of Arcane Charges by 5% per charge,
 		// increases the critical strike chance of Pyroblast by 5%,
 		// and increases the chance for your Frostbolt to trigger Fingers of Frost by an additional 6%.
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
