@@ -98,16 +98,17 @@ var ItemSetRegaliaOfTheChromaticHydra = core.NewItemSet(core.ItemSet{
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			mage := agent.(MageAgent).GetMage()
 
+			// Bind the set bonus aura to the mage struct
+			mage.T15_4PC_ArcaneChargesAura = setBonusAura
+
 			setBonusAura.AttachSpellMod(core.SpellModConfig{
 				Kind:       core.SpellMod_BonusCrit_Percent,
 				ClassMask:  MageSpellPyroblast | MageSpellPyroblastDot,
 				FloatValue: 5,
 			})
 			setBonusAura.ApplyOnGain(func(_ *core.Aura, _ *core.Simulation) {
-				mage.T15_4PC_ArcaneChargeEffect += 0.05
 				mage.T15_4PC_FrostboltProcChance += 0.06
 			}).ApplyOnExpire(func(_ *core.Aura, _ *core.Simulation) {
-				mage.T15_4PC_ArcaneChargeEffect -= 0.05
 				mage.T15_4PC_FrostboltProcChance -= 0.06
 			})
 

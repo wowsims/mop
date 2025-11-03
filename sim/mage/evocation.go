@@ -70,7 +70,7 @@ func (mage *Mage) registerEvocation() {
 
 				// T15 4PC increases the effect by 5% per charge
 				// At 1 charge: +5%, at 2 charges: +10%, at 3 charges: +15%, at 4 charges: +20%
-				if mage.T15_4PC_ArcaneChargeEffect > 1.0 && stacks > 0 {
+				if mage.T15_4PC_ArcaneChargesAura != nil && mage.T15_4PC_ArcaneChargesAura.IsActive() && stacks > 0 {
 					t15BonusPercent := 0.05 * stacks
 					baseManaRegenTotal *= (1.0 + t15BonusPercent)
 				}
