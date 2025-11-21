@@ -288,7 +288,8 @@ func (druid *Druid) RegisterMoonkinFormAura() {
 	).AttachSpellMod(core.SpellModConfig{
 		Kind: core.SpellMod_DamageDone_Pct,
 		// 2025-11-13: Moonkin Form damage bonus reduced to 10% (was 25%).
-		FloatValue: 0.1 + 0.1,
+		// 2025-11-20: Moonkin Form damage bonus increased to 20% (was 10%).
+		FloatValue: 0.1 + 0.2,
 		School:     core.SpellSchoolArcane | core.SpellSchoolNature,
 	})
 }

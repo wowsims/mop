@@ -13,12 +13,15 @@ func (ret *RetributionPaladin) registerHotfixPassive() {
 		// - Divine Storm, Crusader Strike, Judgment, Hammer of the Righteous, Hammer of Wrath, and Exorcism have all had their damage raised by 10%. New
 		// - Templar’s Verdict damage raised by 20%. 6.0.2 Change
 		// EffectIndex 0 and 1 on the Retribution specific Hotfix Passive https://wago.tools/db2/SpellEffect?build=5.5.0.61411&filter%5BSpellID%5D=137027&page=1
+
+		// 2025-11-20 5.5.0 damage increase to Templar’s Verdict increased to 27% (was 20%).
+		// 2025-11-20 5.5.0 damage increase to Crusader Strike, Exorcism, Judgment, Divine Storm, Hammer of the Righteous, and Hammer of Wrath increased to 20% (was 10%).
 		Kind:       core.SpellMod_DamageDone_Pct,
 		ClassMask:  paladin.SpellMaskBuilderRet | paladin.SpellMaskDivineStorm,
-		FloatValue: 0.1,
+		FloatValue: 0.2,
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_DamageDone_Pct,
 		ClassMask:  paladin.SpellMaskTemplarsVerdict,
-		FloatValue: 0.2,
+		FloatValue: 0.27,
 	})
 }
