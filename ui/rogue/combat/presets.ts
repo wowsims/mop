@@ -4,17 +4,17 @@ import { CombatRogue_Options as RogueOptions, RogueOptions_PoisonOptions } from 
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import CombatApl from './apls/combat.apl.json';
-import MSVGear from './gear_sets/p1_combat_msv.gear.json';
-import T14 from './gear_sets/p1_combat_t14.gear.json'
 import PreraidGear from './gear_sets/preraid_combat.gear.json';
+import P2Gear from './gear_sets/p2_combat.gear.json';
+import P3Gear from './gear_sets/p3_combat.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
 export const PRERAID_GEARSET = PresetUtils.makePresetGear('P1 Preraid', PreraidGear);
-export const P1_MSV_GEARSET = PresetUtils.makePresetGear('P1 MSV', MSVGear);
-export const P1_T14_GEARSET = PresetUtils.makePresetGear('P1 T14', T14);
+export const P2_GEARSET = PresetUtils.makePresetGear('P2', P2Gear);
+export const P3_GEARSET = PresetUtils.makePresetGear('P3', P3Gear);
 
 export const ROTATION_PRESET_COMBAT = PresetUtils.makePresetAPLRotation('Combat', CombatApl);
 
