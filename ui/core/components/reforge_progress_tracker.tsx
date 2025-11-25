@@ -9,6 +9,7 @@ export interface ReforgeProgressState {
 	timeElapsed: number;
 	timeRemaining?: number;
 	message: string;
+	stepHistory?: string[]; // New: array of all steps taken
 }
 
 interface ReforgeProgressTrackerOptions {
@@ -24,13 +25,15 @@ export class ReforgeProgressTracker extends Component {
 		constraintIteration: 0,
 		maxConstraintIterations: 10,
 		timeElapsed: 0,
-		message: 'Initializing optimization...'
+		message: 'Initializing optimization...',
+		stepHistory: []
 	};
 
 	private progressBar: HTMLElement;
 	private messageElement: HTMLElement;
 	private detailsElement: HTMLElement;
 	private timeElement: HTMLElement;
+	private stepHistoryElement: HTMLElement;
 	private modal: HTMLElement;
 	private startTime: number = 0;
 	private updateInterval: number | null = null;
@@ -46,6 +49,7 @@ export class ReforgeProgressTracker extends Component {
 		this.messageElement = this.modal.querySelector('.progress-message')!;
 		this.detailsElement = this.modal.querySelector('.progress-details')!;
 		this.timeElement = this.modal.querySelector('.progress-time')!;
+		this.stepHistoryElement = this.modal.querySelector('.progress-step-history')!;
 	}
 
 	private buildModal(options: ReforgeProgressTrackerOptions): HTMLElement {
@@ -66,6 +70,10 @@ export class ReforgeProgressTracker extends Component {
 				<div class="progress-time">
 					<span class="time-elapsed">0s</span> elapsed
 					<span class="time-remaining"></span>
+				</div>
+				<div class="progress-step-history">
+					<h4>Optimization Steps:</h4>
+					<div class="step-list"></div>
 				</div>
 				${options.onCancel ? '<button class="progress-cancel-btn">Cancel</button>' : ''}
 			</div>
@@ -98,12 +106,25 @@ export class ReforgeProgressTracker extends Component {
 	}
 
 	updateProgress(state: Partial<ReforgeProgressState>): void {
+		// Add new message to step history if it's different from the last one
+		if (state.message && state.message !== this.progressState.message) {
+			const currentHistory = this.progressState.stepHistory || [];
+			const timestamp = new Date().toLocaleTimeString();
+			const stepWithTime = `[${timestamp}] ${state.message}`;
+			this.progressState.stepHistory = [...currentHistory, stepWithTime];
+		}
+
+		// If stepHistory is provided in state, use it directly (for initialization)
+		if (state.stepHistory) {
+			this.progressState.stepHistory = state.stepHistory;
+		}
+
 		this.progressState = { ...this.progressState, ...state };
 		this.render();
 	}
 
 	private render(): void {
-		const { stage, iteration, maxIterations, constraintIteration, maxConstraintIterations, message } = this.progressState;
+		const { stage, iteration, maxIterations, constraintIteration, maxConstraintIterations, message, stepHistory } = this.progressState;
 
 		// Update data-stage attribute for CSS styling
 		const contentEl = this.modal.querySelector('.reforge-progress-content') as HTMLElement;
@@ -111,8 +132,20 @@ export class ReforgeProgressTracker extends Component {
 			contentEl.setAttribute('data-stage', stage);
 		}
 
-		// Update message
+		// Update current message (keep it for current status)
 		this.messageElement.textContent = message;
+
+		// Update step history
+		if (stepHistory && stepHistory.length > 0) {
+			const stepListEl = this.stepHistoryElement.querySelector('.step-list')!;
+			stepListEl.innerHTML = stepHistory.map((step, index) => {
+				const isLatest = index === stepHistory.length - 1;
+				return `<div class="step-item ${isLatest ? 'current-step' : 'completed-step'}">${step}</div>`;
+			}).join('');
+
+			// Auto-scroll to latest step
+			stepListEl.scrollTop = stepListEl.scrollHeight;
+		}
 
 		// Calculate overall progress
 		let overallProgress = 0;
