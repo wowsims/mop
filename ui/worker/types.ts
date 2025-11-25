@@ -13,6 +13,7 @@ export enum SimRequest {
 	statWeightCompute = 'statWeightCompute',
 	raidSimRequestSplit = 'raidSimRequestSplit',
 	raidSimResultCombination = 'raidSimResultCombination',
+	reforgeOptimize = 'reforgeOptimize',
 	abortById = 'abortById',
 }
 

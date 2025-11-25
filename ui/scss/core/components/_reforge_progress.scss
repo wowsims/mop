@@ -1,0 +1,162 @@
+// Reforge Progress Modal Styles
+
+.reforge-progress-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 10000;
+}
+
+.reforge-progress-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.7);
+}
+
+.reforge-progress-content {
+	position: relative;
+	background: var(--surface-bg-color);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	padding: 24px;
+	min-width: 400px;
+	max-width: 500px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.reforge-progress-content h3 {
+	margin: 0 0 16px 0;
+	color: var(--text-color);
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.progress-message {
+	color: var(--text-color);
+	margin-bottom: 12px;
+	font-size: 14px;
+}
+
+.progress-bar {
+	width: 100%;
+	height: 8px;
+	background: var(--input-bg-color);
+	border-radius: 4px;
+	overflow: hidden;
+	margin-bottom: 16px;
+	border: 1px solid var(--border-color);
+}
+
+.progress-bar-fill {
+	height: 100%;
+	background: linear-gradient(90deg, #4ade80, #22c55e);
+	border-radius: 4px;
+	transition: width 0.3s ease;
+	width: 0%;
+}
+
+.progress-details {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 12px;
+	font-size: 12px;
+	color: var(--text-color-secondary);
+}
+
+.progress-iteration,
+.progress-constraint {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.progress-iteration span,
+.progress-constraint span {
+	font-weight: 500;
+	color: var(--text-color);
+}
+
+.progress-time {
+	font-size: 12px;
+	color: var(--text-color-secondary);
+	text-align: center;
+	margin-bottom: 16px;
+}
+
+.time-elapsed {
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.time-remaining {
+	color: var(--text-color-secondary);
+}
+
+.progress-cancel-btn {
+	width: 100%;
+	padding: 8px 16px;
+	background: var(--bs-red);
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	transition: background-color 0.2s;
+}
+
+.progress-cancel-btn:hover {
+	background: var(--bs-red-hover, #dc2626);
+}
+
+.progress-cancel-btn:active {
+	transform: translateY(1px);
+}
+
+// Animation for progress bar when solving
+@keyframes solving-pulse {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.7;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+.reforge-progress-content[data-stage='solving'] .progress-bar-fill {
+	animation: solving-pulse 2s ease-in-out infinite;
+}
+
+// Error state styling
+.reforge-progress-content[data-stage='error'] .progress-bar-fill {
+	background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.reforge-progress-content[data-stage='error'] .progress-message {
+	color: var(--bs-red);
+	font-weight: 500;
+}
+
+// Success state styling
+.reforge-progress-content[data-stage='complete'] .progress-bar-fill {
+	background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.reforge-progress-content[data-stage='complete'] .progress-message {
+	color: var(--bs-green);
+	font-weight: 500;
+}

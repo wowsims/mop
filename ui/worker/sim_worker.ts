@@ -35,6 +35,7 @@ globalThis.wasmready = function () {
 		statWeightCompute: statWeightCompute,
 		raidSimRequestSplit: raidSimRequestSplit,
 		raidSimResultCombination: raidSimResultCombination,
+		reforgeOptimize: (() => new Uint8Array()) as any, // Not supported in WASM worker
 		abortById: abortById,
 	}).ready(true);
 };

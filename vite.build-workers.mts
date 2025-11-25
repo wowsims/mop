@@ -15,6 +15,7 @@ const workers = {
 	local_worker: path.resolve(WORKER_BASE_PATH, 'local_worker.ts'),
 	net_worker: path.resolve(WORKER_BASE_PATH, 'net_worker.ts'),
 	sim_worker: path.resolve(WORKER_BASE_PATH, 'sim_worker.ts'),
+	reforge_worker: path.resolve(WORKER_BASE_PATH, 'reforge_worker.ts'),
 };
 
 const args = minimist(process.argv.slice(2), { boolean: ['watch'] });

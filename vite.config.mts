@@ -20,6 +20,7 @@ function serveExternalAssets() {
 	const workerMappings = {
 		'/mop/sim_worker.js': '/mop/local_worker.js',
 		'/mop/net_worker.js': '/mop/net_worker.js',
+		'/mop/reforge_worker.js': '/mop/reforge_worker.js',
 		'/mop/lib.wasm': '/mop/lib.wasm',
 	};
 
