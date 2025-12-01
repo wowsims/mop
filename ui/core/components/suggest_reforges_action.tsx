@@ -1422,6 +1422,46 @@ export class ReforgeOptimizer {
 			console.log('Starting Reforge optimization...');
 		}
 
+		// Check if we should use two-phase optimization for complex gem+reforge problems
+		if (this.includeGems && this.shouldUseTwoPhaseOptimization()) {
+			if (isDevMode()) {
+				console.log('🚀 Using two-phase optimization approach for complex gem+reforge problem');
+			}
+			return await this.optimizeWithTwoPhaseApproach(batchRun);
+		}
+
+		// Continue with original joint optimization approach
+		return await this.optimizeWithJointApproach(batchRun);
+	}
+
+	// Determine if two-phase optimization would be beneficial
+	private shouldUseTwoPhaseOptimization(): boolean {
+		// Count total gem sockets to estimate problem complexity
+		let totalGemSockets = 0;
+		const gear = this.player.getGear();
+
+		for (const slot of gear.getItemSlots()) {
+			const item = gear.getEquippedItem(slot);
+			if (item) {
+				totalGemSockets += item.curSocketColors(this.player.isBlacksmithing()).length;
+			}
+		}
+
+		// Use two-phase if we have many gem sockets (high complexity)
+		const threshold = 6; // More than 6 gem sockets = use two-phase
+		const useTwoPhase = totalGemSockets > threshold;
+
+		if (isDevMode()) {
+			console.log(`Gem socket analysis: ${totalGemSockets} total sockets`);
+			console.log(`Using ${useTwoPhase ? 'two-phase' : 'joint'} optimization approach`);
+		}
+
+		return useTwoPhase;
+	}
+
+	// Original combined gem+reforge optimization (renamed for clarity)
+	private async optimizeWithJointApproach(batchRun?: boolean) {
+
 		// Update progress
 		this.updateProgress({
 			stage: 'initializing',
@@ -2630,4 +2670,261 @@ export class ReforgeOptimizer {
 			this.setRelativeStatCap(eventID, this.relativeStatCapStat);
 		});
 	}
+
+	// Two-phase optimization: separate gem combinations from reforge optimization
+	private async optimizeWithTwoPhaseApproach(batchRun?: boolean): Promise<void> {
+		if (isDevMode()) {
+			console.log('Starting two-phase gem+reforge optimization...');
+		}
+
+		// Initialize gear state (same as joint approach)
+		this.previousGear = this.player.getGear();
+		this.previousReforges = this.previousGear.getAllReforges();
+
+		this.updateProgress({
+			stage: 'initializing',
+			message: 'Generating gem combinations for two-phase optimization...',
+			constraintIteration: 1,
+			maxConstraintIterations: 10, // More iterations expected
+		});
+
+		// Phase 1: Generate reasonable gem combinations
+		// Compute base gear/stats and gem options used to build combinations.
+		const baseGear = this.previousGear!.withoutReforges(this.player.canDualWield2H(), this.frozenItemSlots);
+		const baseStats = await this.updateGear(baseGear);
+		let reforgeCaps = baseStats.computeStatCapsDelta(this.processedStatCaps);
+		if (this.player.getSpec() == Spec.SpecGuardianDruid) {
+			reforgeCaps = reforgeCaps.withPseudoStat(
+				PseudoStat.PseudoStatMeleeHastePercent,
+				reforgeCaps.getPseudoStat(PseudoStat.PseudoStatMeleeHastePercent) / 1.5,
+			);
+		}
+		const reforgeSoftCaps = this.computeReforgeSoftCaps(baseStats);
+		const gemsToInclude = this.buildGemOptions(this.preCapEPs, reforgeCaps, reforgeSoftCaps);
+		const gemCombinations = this.generateGemCombinations(gemsToInclude, baseGear);
+
+		if (gemCombinations.length === 0) {
+			throw new Error('No valid gem combinations found');
+		}
+
+		if (isDevMode()) {
+			console.log(`Generated ${gemCombinations.length} gem combinations for optimization`);
+		}
+
+		// Phase 2: Optimize reforges for each gem combination
+		let bestGear: Gear | null = null;
+		let bestScore = -Infinity;
+
+		for (let i = 0; i < gemCombinations.length; i++) {
+			const gemCombo = gemCombinations[i];
+
+			this.updateProgress({
+				stage: 'solving', // Use existing stage type
+				message: `Optimizing reforges for gem combination ${i + 1}/${gemCombinations.length}...`,
+				constraintIteration: i + 1,
+				maxConstraintIterations: gemCombinations.length,
+			});
+
+			try {
+				// Apply this gem combination temporarily
+				const testGear = this.applyGemCombination(this.previousGear, gemCombo);
+
+				// Run reforge-only optimization with these gems
+				const score = await this.runReforgeOnlyOptimization(testGear, batchRun);
+
+				if (score > bestScore) {
+					bestScore = score;
+					bestGear = this.player.getGear(); // Get the current optimized gear
+				}
+
+				// Early termination if we find a very good result
+				if (i > 5 && bestScore > 0 && this.hasFoundGoodSolution(bestScore, i, gemCombinations.length)) {
+					if (isDevMode()) {
+						console.log(`Early termination: found excellent solution at combination ${i + 1}`);
+					}
+					break;
+				}
+
+			} catch (error) {
+				if (isDevMode()) {
+					console.warn(`Failed optimization for gem combination ${i + 1}:`, error);
+				}
+				// Continue with next combination
+			}
+		}
+
+		if (!bestGear) {
+			throw new Error('No successful optimization found in two-phase approach');
+		}
+
+		// Apply the best solution
+		await this.updateGear(bestGear);
+		this.currentReforges = bestGear.getAllReforges();
+
+		if (isDevMode()) {
+			console.log(`Two-phase optimization complete. Best score: ${bestScore}`);
+		}
+	}
+
+	// Generate reasonable gem combinations for two-phase optimization
+	private generateGemCombinations(gemsToInclude: Map<GemColor, GemData[]>, baseGear: Gear): GemCombination[] {
+		// New implementation: build combinations from gem options per socket.
+		const combinations: GemCombination[] = [];
+		const gear = this.player.getGear();
+
+		// For each slot, create a small set of variants (current, best-by-EP)
+		const slotVariants: Map<ItemSlot, Gem[][]> = new Map();
+
+		for (const slot of gear.getItemSlots()) {
+			const item = gear.getEquippedItem(slot);
+			if (!item) continue;
+
+			const socketColors = item.curSocketColors(this.player.isBlacksmithing());
+			const currentGems = item.curGems(this.player.isBlacksmithing()).filter(g => g !== null) as Gem[];
+
+			// Variant 1: current gems
+			const variants: Gem[][] = [];
+			if (currentGems.length > 0) variants.push(currentGems);
+
+			// Variant 2: best EP gems per socket (pick top candidate from gemsToInclude)
+			const bestGems: (Gem | null)[] = [];
+			for (let i = 0; i < socketColors.length; i++) {
+				const socketColor = socketColors[i];
+				let candidate: Gem | null = null;
+				// prefer exact color list
+				const list = gemsToInclude.get(socketColor) || [];
+				if (list.length > 0) candidate = list[0].gem;
+				// fallback: look across all colors
+				if (!candidate) {
+					for (const arr of gemsToInclude.values()) {
+						if (arr.length > 0) { candidate = arr[0].gem; break; }
+					}
+				}
+				bestGems.push(candidate || null);
+			}
+			if (bestGems.length > 0) variants.push(bestGems as Gem[]);
+
+			slotVariants.set(slot, variants);
+		}
+
+		// Cartesian product over slots' variants, but cap total combinations
+		const slots = Array.from(slotVariants.keys());
+		const maxCombinations = 50;
+
+		function buildCombos(index: number, current: GemCombination) {
+			if (combinations.length >= maxCombinations) return;
+			if (index >= slots.length) { combinations.push(new Map(current)); return; }
+			const slot = slots[index];
+			const variants = slotVariants.get(slot)!;
+			for (const v of variants) {
+				current.set(slot, v);
+				buildCombos(index + 1, current);
+				current.delete(slot);
+				if (combinations.length >= maxCombinations) return;
+			}
+		}
+
+		buildCombos(0, new Map());
+
+		if (isDevMode()) {
+			console.log(`Generated ${combinations.length} gem combinations before baseline:`);
+			combinations.forEach((combo, i) => {
+				const desc = Array.from(combo.entries()).map(([slot, gems]) => `${slot}:[${gems.map(g=>g?.name||'null').join(',')}]`).join(', ');
+				console.log(`  Combo ${i}: ${desc}`);
+			});
+		}
+
+		// Always include the original current configuration as a baseline
+		const baseline: GemCombination = new Map();
+		for (const slot of gear.getItemSlots()) {
+			const item = gear.getEquippedItem(slot);
+			if (!item) continue;
+			const gems = item.curGems(this.player.isBlacksmithing()).filter(g => g !== null) as Gem[];
+			if (gems.length > 0) baseline.set(slot, gems);
+		}
+		combinations.unshift(baseline);
+
+		if (isDevMode()) {
+			console.log(`Final ${combinations.length} combinations after baseline:`);
+		}
+
+		return combinations.slice(0, maxCombinations);
+	}
+
+	// Apply a gem combination to gear
+	private applyGemCombination(baseGear: Gear | null, gemCombo: GemCombination): Gear {
+		if (!baseGear) {
+			throw new Error('Base gear is null in applyGemCombination');
+		}
+		
+		let updatedGear = baseGear.withoutGems(this.player.canDualWield2H(), this.frozenItemSlots, true);
+
+		for (const [slot, gems] of gemCombo) {
+			const item = updatedGear.getEquippedItem(slot);
+			if (item && gems.length > 0) {
+				// Apply gems one by one using withGem
+				let itemWithGems = item;
+				for (let i = 0; i < gems.length && i < item.curSocketColors(this.player.isBlacksmithing()).length; i++) {
+					itemWithGems = itemWithGems.withGem(gems[i], i);
+				}
+				updatedGear = updatedGear.withEquippedItem(slot, itemWithGems, this.player.canDualWield2H());
+			}
+
+			if (isDevMode()) {
+				const applied = updatedGear.getEquippedItem(slot)?.curGems(this.player.isBlacksmithing()) || [];
+				console.log(`applyGemCombination: slot=${slot}, appliedGems=${applied.map(g=>g?g.name:'null').join(',')}`);
+			}
+		}
+
+		return updatedGear;
+	}
+
+	// Run reforge-only optimization for a specific gem configuration
+	private async runReforgeOnlyOptimization(gearWithGems: Gear, batchRun?: boolean): Promise<number> {
+		// Temporarily disable gem inclusion and run joint optimization
+		const originalIncludeGems = this.includeGems;
+		this.includeGems = false;
+
+		try {
+			// Set the gear and run optimization
+			await this.updateGear(gearWithGems);
+			this.previousGear = gearWithGems;
+
+			// Run the joint approach (which is now reforge-only since includeGems = false)
+			await this.optimizeWithJointApproach(batchRun);
+
+			// Calculate and return the score
+			const optimizedGear = this.player.getGear();
+			const stats = await this.updateGear(optimizedGear);
+			return this.calculateGearScore(stats);
+
+		} finally {
+			// Restore gem inclusion setting
+			this.includeGems = originalIncludeGems;
+		}
+	}
+
+	// Check if we found a good enough solution for early termination
+	private hasFoundGoodSolution(score: number, iteration: number, totalCombinations: number): boolean {
+		// Simple heuristic: if score is very high and we've tried some combinations
+		const progressRatio = iteration / totalCombinations;
+		return score > 1000 && progressRatio > 0.3; // Arbitrary thresholds for now
+	}
+
+	// Calculate a score for gear (simple EP-based scoring)
+	private calculateGearScore(stats: Stats): number {
+		let score = 0;
+		// Use available stat types from the Stats class
+		for (const stat of Object.values(Stat)) {
+			if (typeof stat === 'number') {
+				const statValue = stats.getStat(stat);
+				const epValue = this.preCapEPs.getStat(stat);
+				score += statValue * epValue;
+			}
+		}
+		return score;
+	}
 }
+
+// Type definitions for gem combinations
+type GemCombination = Map<ItemSlot, (Gem | null)[]>;
