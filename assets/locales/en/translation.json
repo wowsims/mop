@@ -1095,6 +1095,11 @@
 					"label": "HotW DPS Rotation",
 					"tooltip": "Executes optimized HotW DPS rotation using hardcoded algorithm."
 				},
+				"hunter_pre_pull": {
+					"label": "Automatic pre-pull timings",
+					"tooltip": "Tries to cast the best pre-pull rotation based on distance from the target, cast times (e.g. Aimed Shot and Cobra Shot) and talents.",
+					"full_description": "<b>This will replace all other configured pre-pull actions when the simulation starts!</b>"
+				},
 				"warlock_next_exhale_target": {
 					"label": "Target Next Exhale Target",
 					"tooltip": "Targets the next valid exhale target. If the current target is not the inhale target or no inhale has been cast, the target will not change."
@@ -1629,6 +1634,7 @@
 				"mage": "Mage",
 				"tank": "Tank",
 				"health": "Health",
+				"hunter": "Hunter",
 				"mana": "Mana",
 				"rage": "Rage",
 				"focus": "Focus",

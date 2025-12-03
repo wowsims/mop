@@ -4544,6 +4544,26 @@
                     "tooltip"
                   ]
                 },
+                "hunter_pre_pull": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    },
+                    "full_description": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip",
+                    "full_description"
+                  ]
+                },
                 "warlock_next_exhale_target": {
                   "type": "object",
                   "properties": {
@@ -4589,6 +4609,7 @@
                 "custom_rotation",
                 "optimal_rotation_action",
                 "guardian_hotw_dps_rotation",
+                "hunter_pre_pull",
                 "warlock_next_exhale_target"
               ]
             },
@@ -6801,6 +6822,9 @@
                 "health": {
                   "type": "string"
                 },
+                "hunter": {
+                  "type": "string"
+                },
                 "mana": {
                   "type": "string"
                 },
@@ -6860,6 +6884,7 @@
                 "mage",
                 "tank",
                 "health",
+                "hunter",
                 "mana",
                 "rage",
                 "focus",

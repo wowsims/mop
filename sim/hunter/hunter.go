@@ -1,6 +1,9 @@
 package hunter
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
@@ -22,8 +25,12 @@ type Hunter struct {
 	Thunderhawks []*ThunderhawkPet
 
 	// Hunter spells
+	AimedShot            *core.Spell
 	AspectOfTheHawk      *core.Spell
+	BlackArrow           *core.Spell
+	CobraShot            *core.Spell
 	ExplosiveTrap        *core.Spell
+	Fervor               *core.Spell
 	HuntersMarkSpell     *core.Spell
 	ImprovedSerpentSting *core.Spell
 	RapidFire            *core.Spell
@@ -92,7 +99,134 @@ func NewHunter(character *core.Character, options *proto.Player, hunterOptions *
 		}
 	}
 
+	hunter.RegisterRotationTransformation(hunter.autoPrePull)
+
 	return hunter
+}
+
+func (hunter *Hunter) autoPrePull(raid *proto.Raid, rotation *proto.APLRotation) {
+	if !hasAutoPrePullAction(rotation) {
+		return
+	}
+
+	actions := `{"prepullActions":[` +
+		castSpellAction(hunter.AspectOfTheHawk.SpellID, core.DurationFromSeconds(-10)) + "," +
+		castSpellAction(hunter.HuntersMarkSpell.SpellID, core.DurationFromSeconds(-9)) + "," +
+		castSpellAction(hunter.ExplosiveTrap.SpellID, core.DurationFromSeconds(-5)) + ","
+
+	switch hunter.Spec {
+	case proto.Spec_SpecMarksmanshipHunter:
+		actions += hunter.marksmanshipPrepull(raid)
+	case proto.Spec_SpecBeastMasteryHunter:
+		actions += hunter.beastMasteryPrepull(raid)
+	case proto.Spec_SpecSurvivalHunter:
+		actions += hunter.survivalPrepull(raid)
+	}
+
+	rotation.PrepullActions = core.APLRotationFromJsonString(actions + "]}").PrepullActions
+}
+
+func (hunter *Hunter) marksmanshipPrepull(raid *proto.Raid) string {
+	if hunter.Talents.DireBeast {
+		// For MM with Dire Beast, just pop a prepot
+		return usePotionAction(core.DurationFromSeconds(-0.5))
+	}
+
+	offset := time.Millisecond * 100
+	aimedCastTime := applyHasteBuff(hunter.AimedShot, raid.Buffs)
+
+	// Base Serpent Sting schedule time on it landing at +0.1s
+	srsScheduleTime := offset - hunter.SerpentSting.TravelTime()
+
+	// Round the aimed cast time to even 100ms intervals (away from zero), to somehow simulate actual timing of a pull timer
+	aimedScheduleTime := srsScheduleTime - aimedCastTime.Round(offset)
+
+	// If the calculated timestamp would result in the Aimed Shot hitting before combat starts, add 100ms
+	if aimedScheduleTime+aimedCastTime+hunter.AimedShot.TravelTime() < 0 {
+		aimedScheduleTime += offset
+	}
+
+	// If the calculated timestamp would overlap with the scheduled Serpent Sting cast, base Serpent Sting on Aimed Shot + 10ms
+	if srsScheduleTime <= aimedScheduleTime+aimedCastTime {
+		srsScheduleTime = aimedScheduleTime + aimedCastTime + core.SpellBatchWindow
+	}
+
+	actions := usePotionAction(aimedScheduleTime) + "," +
+		castSpellAction(hunter.AimedShot.SpellID, aimedScheduleTime) + "," +
+		castSpellAction(hunter.SerpentSting.SpellID, srsScheduleTime) + ","
+
+	if hunter.Talents.Fervor {
+		// Schedule Fervor a reaction time unit after Serpent Sting to be a bit more realistic
+		actions += castSpellAction(hunter.Fervor.SpellID, srsScheduleTime+hunter.ReactionTime)
+	}
+
+	return actions
+}
+
+func (hunter *Hunter) beastMasteryPrepull(raid *proto.Raid) string {
+	offset := time.Millisecond * 100
+	cobraCastTime := applyHasteBuff(hunter.CobraShot, raid.Buffs)
+
+	// Base Cobra Shot schedule time on it finishing at +0.1s
+	cobraScheduleTime := offset - cobraCastTime.Round(offset)
+
+	// If the calculated timestamp would result in the Cobra Shot hitting before combat starts, add 100ms
+	if cobraScheduleTime+cobraCastTime+hunter.CobraShot.TravelTime() < 0 {
+		cobraScheduleTime += offset
+	}
+
+	return usePotionAction(cobraScheduleTime) + "," +
+		castSpellAction(hunter.CobraShot.SpellID, cobraScheduleTime)
+}
+
+func (hunter *Hunter) survivalPrepull(raid *proto.Raid) string {
+	offset := time.Millisecond * 100
+	cobraCastTime := applyHasteBuff(hunter.CobraShot, raid.Buffs)
+
+	// Base Black Arrow schedule time on it landing at +0.1s
+	blackArrowScheduleTime := offset - hunter.BlackArrow.TravelTime()
+
+	// Round the aimed cast time to even 100ms intervals (away from zero), to somehow simulate actual timing of a pull timer
+	cobraScheduleTime := blackArrowScheduleTime - cobraCastTime.Round(offset)
+
+	// If the calculated timestamp would result in the Cobra Shot hitting before combat starts, add 100ms
+	if cobraScheduleTime+cobraCastTime+hunter.CobraShot.TravelTime() < 0 {
+		cobraScheduleTime += offset
+	}
+
+	// If the calculated timestamp would overlap with the scheduled Black Arrow cast, base BA on Cobra Shot + 10ms
+	if blackArrowScheduleTime <= cobraScheduleTime+cobraCastTime {
+		blackArrowScheduleTime = cobraScheduleTime + cobraCastTime + core.SpellBatchWindow
+	}
+
+	return usePotionAction(cobraScheduleTime) + "," +
+		castSpellAction(hunter.CobraShot.SpellID, cobraScheduleTime) + "," +
+		castSpellAction(hunter.BlackArrow.SpellID, blackArrowScheduleTime)
+}
+
+func hasAutoPrePullAction(rotation *proto.APLRotation) bool {
+	for _, action := range rotation.PrepullActions {
+		if _, ok := action.Action.Action.(*proto.APLAction_HunterPrePull); ok && !action.Hide {
+			return true
+		}
+	}
+	return false
+}
+
+func applyHasteBuff(spell *core.Spell, raidBuffs *proto.RaidBuffs) time.Duration {
+	castTime := spell.CastTime()
+	if raidBuffs.UnholyAura || raidBuffs.SerpentsSwiftness || raidBuffs.SwiftbladesCunning || raidBuffs.UnleashedRage || raidBuffs.CacklingHowl {
+		return time.Duration(float64(castTime) / 1.1)
+	}
+	return castTime
+}
+
+func usePotionAction(doAt time.Duration) string {
+	return fmt.Sprintf(`{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"%fs"}}}`, doAt.Seconds())
+}
+
+func castSpellAction(spellID int32, doAt time.Duration) string {
+	return fmt.Sprintf(`{"action":{"castSpell":{"spellId":{"spellId":%d}}},"doAtValue":{"const":{"val":"%fs"}}}`, spellID, doAt.Seconds())
 }
 
 func (hunter *Hunter) Initialize() {

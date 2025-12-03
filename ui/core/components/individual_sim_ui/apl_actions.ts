@@ -17,6 +17,7 @@ import {
 	APLActionGroupReference,
 	APLActionGuardianHotwDpsRotation,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
+	APLActionHunterPrePull,
 	APLActionItemSwap,
 	APLActionItemSwap_SwapSet as ItemSwapSet,
 	APLActionMove,
@@ -34,7 +35,7 @@ import {
 	APLValue,
 	APLActionWarlockNextExhaleTarget,
 } from '../../proto/apl.js';
-import { Spec } from '../../proto/common.js';
+import { Class, Spec } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
 import { EventID } from '../../typed_event.js';
 import { randomUUID } from '../../utils';
@@ -767,6 +768,16 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecAfflictionWarlock,
 		newValue: () =>
 			APLActionWarlockNextExhaleTarget.create({}),
+		fields: [],
+	}),
+
+	['hunterPrePull']: inputBuilder({
+		label: i18n.t('rotation_tab.apl.actions.hunter_pre_pull.label'),
+		submenu: ['hunter'],
+		shortDescription: i18n.t('rotation_tab.apl.actions.hunter_pre_pull.tooltip'),
+		fullDescription: i18n.t('rotation_tab.apl.actions.hunter_pre_pull.full_description'),
+		includeIf: (player: Player<any>, isPrepull: boolean) => isPrepull && player.getClass() == Class.ClassHunter,
+		newValue: () => APLActionHunterPrePull.create({}),
 		fields: [],
 	}),
 };

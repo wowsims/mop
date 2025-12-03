@@ -49,7 +49,7 @@ message APLGroup {
 	repeated APLValueVariable variables = 3;  // Variables that can be used in this group
 }
 
-// NextIndex: 30
+// NextIndex: 31
 message APLAction {
     APLValue condition = 1; // If set, action will only execute if value is true or != 0.
 
@@ -89,6 +89,7 @@ message APLAction {
         APLActionCatOptimalRotationAction cat_optimal_rotation_action = 18;
         APLActionGuardianHotwDpsRotation guardian_hotw_dps_rotation = 27;
 		APLActionWarlockNextExhaleTarget warlock_next_exhale_target = 29;
+		APLActionHunterPrePull hunter_pre_pull = 30;
 
         // Internal use only, not exposed in UI.
         APLActionCustomRotation custom_rotation = 19;
@@ -418,6 +419,9 @@ message APLActionCustomRotation {
 }
 
 message APLActionWarlockNextExhaleTarget {
+}
+
+message APLActionHunterPrePull {
 }
 
 ///////////////////////////////////////////////////////////////////////////

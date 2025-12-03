@@ -1,10 +1,12 @@
 {
 	"type": "TypeAPL",
 	"prepullActions": [
-		{ "action": { "castSpell": { "spellId": { "spellId": 13812 } } }, "doAtValue": { "const": { "val": "-5s" } } },
-		{ "action": { "castSpell": { "spellId": { "spellId": 13165 } } }, "doAtValue": { "const": { "val": "-4s" } } },
-		{ "action": { "castSpell": { "spellId": { "spellId": 1130 } } }, "doAtValue": { "const": { "val": "-3s" } } },
-		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "const": { "val": "-0.5s" } } }
+		{ "action": { "castSpell": { "spellId": { "spellId": 13165 } } }, "doAtValue": { "const": { "val": "-10s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 1130 } } }, "doAtValue": { "const": { "val": "-9s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 13812 } } }, "doAtValue": { "const": { "val": "-5s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "const": { "val": "-1.4s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 77767 } } }, "doAtValue": { "const": { "val": "-1.4s" } }, "hide": true },
+		{ "action": { "hunterPrePull": {} }, "doAtValue": { "const": { "val": "-1s" } } }
 	],
 	"priorityList": [
 		{
@@ -78,7 +80,14 @@
 						"castSpell": { "spellId": { "spellId": 1978 } }
 					}
 				},
-				{ "action": { "castSpell": { "spellId": { "spellId": 121818 } } } },
+				{
+					"action": {
+						"sequence": {
+							"name": "Stampede",
+							"actions": [{ "castSpell": { "spellId": { "spellId": 121818 } } }, { "wait": { "duration": { "gcdTimeToReady": {} } } }]
+						}
+					}
+				},
 				{ "action": { "groupReference": { "groupName": "Cooldowns" } } },
 				{ "action": { "castSpell": { "spellId": { "spellId": 120679 } } } },
 				{ "action": { "sequence": { "name": "opener", "actions": [{ "castSpell": { "spellId": { "spellId": 109259 } } }] } } },

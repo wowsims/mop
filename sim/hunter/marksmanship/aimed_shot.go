@@ -9,7 +9,7 @@ import (
 
 func (mmHunter *MarksmanshipHunter) registerAimedShotSpell() {
 	mmHunter.RegisterSpell(mmHunter.getAimedShotSpell(82928, true))
-	mmHunter.RegisterSpell(mmHunter.getAimedShotSpell(19434, false))
+	mmHunter.AimedShot = mmHunter.RegisterSpell(mmHunter.getAimedShotSpell(19434, false))
 }
 func (mmHunter *MarksmanshipHunter) getAimedShotSpell(spellID int32, isMasterMarksman bool) core.SpellConfig {
 	config := core.SpellConfig{

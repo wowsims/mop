@@ -187,6 +187,11 @@ func (env *Environment) finalize(raidProto *proto.Raid, _ *proto.Encounter, raid
 			}
 			playerProto := partyProto.Players[playerIdx]
 			char := player.GetCharacter()
+
+			for _, rotationTransformation := range char.rotationTransformations {
+				rotationTransformation(raidProto, playerProto.Rotation)
+			}
+
 			char.Rotation = char.newAPLRotation(playerProto.Rotation)
 		}
 	}

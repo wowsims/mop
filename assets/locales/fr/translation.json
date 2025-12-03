@@ -1095,6 +1095,11 @@
                     "label": "Rotation DPS CdF",
                     "tooltip": "Exécute la rotation DPS Cœur de fauve optimisée en utilisant un algorithme codé en dur."
                 },
+                "hunter_pre_pull": {
+                    "label": "Automatic pre-pull timings",
+                    "tooltip": "Tries to cast the best pre-pull rotation based on distance from the target, cast times (e.g. Aimed Shot and Cobra Shot) and talents.",
+                    "full_description": "<b>This will replace all other configured pre-pull actions when the simulation starts!</b>"
+                },
                 "warlock_next_exhale_target": {
                     "label": "Choisir la prochaine cible d'Expiration",
                     "tooltip": "Choisi la prochaine cible valide d'Expiration. Si la cible actuelle n'est pas la cible de l'échange d'âme ou si l'échange d'âme n'a pas été lancé, la cible ne changera pas."
@@ -1629,6 +1634,7 @@
                 "mage": "Mage",
                 "tank": "Tank",
                 "health": "PV",
+                "hunter": "Chasseur",
                 "mana": "Mana",
                 "rage": "Rage",
                 "focus": "Focalisation",

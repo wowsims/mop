@@ -1,10 +1,15 @@
 {
 	"type": "TypeAPL",
 	"prepullActions": [
-		{ "action": { "castSpell": { "spellId": { "spellId": 13165 } } }, "doAtValue": { "const": { "val": "-10s" } } },
-		{ "action": { "castSpell": { "spellId": { "spellId": 1130 } } }, "doAtValue": { "const": { "val": "-7s" } } },
-		{ "action": { "castSpell": { "spellId": { "spellId": 13812 } } }, "doAtValue": { "const": { "val": "-5s" } } },
-		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "const": { "val": "-0.5s" } } }
+		{ "action": { "castSpell": { "spellId": { "spellId": 13165 } } }, "doAtValue": { "const": { "val": "-10s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 1130 } } }, "doAtValue": { "const": { "val": "-9s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 13812 } } }, "doAtValue": { "const": { "val": "-5s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "const": { "val": "-2.4s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 19434 } } }, "doAtValue": { "const": { "val": "-2.4s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 1978 } } }, "doAtValue": { "const": { "val": "-0.5s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "spellId": 82726 } } }, "doAtValue": { "const": { "val": "-0.4s" } }, "hide": true },
+		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "const": { "val": "-0.5s" } }, "hide": true },
+		{ "action": { "hunterPrePull": {} }, "doAtValue": { "const": { "val": "-1s" } } }
 	],
 	"priorityList": [
 		{
@@ -55,10 +60,8 @@
 							"name": "step 1",
 							"actions": [
 								{ "castSpell": { "spellId": { "spellId": 131894 } } },
-								{ "castSpell": { "spellId": { "spellId": 1978 } } },
 								{ "castSpell": { "spellId": { "spellId": 121818 } } },
-								{ "wait": { "duration": { "gcdTimeToReady": {} } } },
-								{ "castSpell": { "spellId": { "spellId": 82726 } } }
+								{ "wait": { "duration": { "gcdTimeToReady": {} } } }
 							]
 						}
 					}

@@ -8,7 +8,7 @@ import (
 )
 
 func (svHunter *SurvivalHunter) registerBlackArrowSpell() {
-	svHunter.Hunter.RegisterSpell(core.SpellConfig{
+	svHunter.BlackArrow = svHunter.Hunter.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 3674},
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskRangedSpecial,

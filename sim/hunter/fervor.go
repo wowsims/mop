@@ -13,7 +13,7 @@ func (hunter *Hunter) registerFervorSpell() {
 	actionID := core.ActionID{SpellID: 82726}
 
 	focusMetrics := hunter.NewFocusMetrics(actionID)
-	hunter.RegisterSpell(core.SpellConfig{
+	hunter.Fervor = hunter.RegisterSpell(core.SpellConfig{
 		ClassSpellMask: HunterSpellFervor,
 		Flags:          core.SpellFlagAPL | core.SpellFlagReactive,
 		ActionID:       actionID,
