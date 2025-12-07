@@ -2677,11 +2677,11 @@ export class ReforgeOptimizer {
 
 	// Two-phase optimization: separate gem combinations from reforge optimization
 	// This approach generates multiple gem configurations and tests reforge optimizations for each.
-	// 
+	//
 	// Exhaustiveness is controlled by TWO_PHASE_MAX_GEMS_PER_SOCKET and TWO_PHASE_MAX_COMBINATIONS:
 	// - Higher values = more exhaustive search, longer computation time
 	// - Lower values = faster results, may miss optimal solution
-	// 
+	//
 	// Current defaults: 3 gems/socket, 200 max combinations
 	// For maximum accuracy: increase to 5 gems/socket, 500 combinations (much slower)
 	// For faster testing: decrease to 2 gems/socket, 100 combinations
@@ -2779,7 +2779,7 @@ export class ReforgeOptimizer {
 		// Use class-level configuration for exhaustiveness
 		const maxGemsPerSocket = this.TWO_PHASE_MAX_GEMS_PER_SOCKET;
 		const maxTotalCombinations = this.TWO_PHASE_MAX_COMBINATIONS;
-		
+
 		// For each slot with sockets, build a list of gem option sets
 		const slotVariants: Map<ItemSlot, Gem[][]> = new Map();
 
@@ -2801,7 +2801,7 @@ export class ReforgeOptimizer {
 			// Build variants by selecting top gems for each socket
 			// This creates more exhaustive combinations per slot
 			const socketGemOptions: Gem[][] = [];
-			
+
 			for (let socketIdx = 0; socketIdx < socketColors.length; socketIdx++) {
 				const socketColor = socketColors[socketIdx];
 				const currentGem = currentGems[socketIdx];
@@ -2906,7 +2906,7 @@ export class ReforgeOptimizer {
 		if (!baseGear) {
 			throw new Error('Base gear is null in applyGemCombination');
 		}
-		
+
 		let updatedGear = baseGear.withoutGems(this.player.canDualWield2H(), this.frozenItemSlots, true);
 
 		for (const [slot, gems] of gemCombo) {
@@ -2932,22 +2932,22 @@ export class ReforgeOptimizer {
 	// Helper: Generate all combinations of gems for a single slot's sockets
 	private generateSocketCombinations(socketGemOptions: Gem[][]): Gem[][] {
 		if (socketGemOptions.length === 0) return [];
-		
+
 		const results: Gem[][] = [];
-		
+
 		function buildCombo(index: number, current: Gem[]) {
 			if (index >= socketGemOptions.length) {
 				results.push([...current]);
 				return;
 			}
-			
+
 			for (const gem of socketGemOptions[index]) {
 				current.push(gem);
 				buildCombo(index + 1, current);
 				current.pop();
 			}
 		}
-		
+
 		buildCombo(0, []);
 		return results;
 	}
@@ -2956,7 +2956,7 @@ export class ReforgeOptimizer {
 	private deduplicateGemArrays(gemArrays: Gem[][]): Gem[][] {
 		const seen = new Set<string>();
 		const unique: Gem[][] = [];
-		
+
 		for (const gems of gemArrays) {
 			const key = gems.map(g => g.id).join(',');
 			if (!seen.has(key)) {
@@ -2964,7 +2964,7 @@ export class ReforgeOptimizer {
 				unique.push(gems);
 			}
 		}
-		
+
 		return unique;
 	}
 
