@@ -122,6 +122,10 @@ func NewIcdAuraReference(sourceUnit UnitReference, auraId *proto.ActionID) AuraR
 	return newAuraReferenceHelper(sourceUnit, auraId, func(unit *Unit, actionID ActionID) *Aura { return unit.GetIcdAuraByID(actionID) })
 }
 
+func NewTriggerAuraReference(sourceUnit UnitReference, auraId *proto.ActionID) AuraReference {
+	return newAuraReferenceHelper(sourceUnit, auraId, func(unit *Unit, actionID ActionID) *Aura { return unit.GetTriggerAuraByID(actionID) })
+}
+
 type DotReference struct {
 	fixedDot *Dot
 
@@ -184,6 +188,19 @@ func (rot *APLRotation) GetAPLICDAura(sourceUnit UnitReference, auraId *proto.Ac
 	}
 
 	aura := NewIcdAuraReference(sourceUnit, auraId)
+	if aura.Get() == nil {
+		rot.ValidationMessage(proto.LogLevel_Warning, "No aura found on %s for: %s", resolvedSourceUnit.Label, ProtoToActionID(auraId))
+	}
+	return aura
+}
+
+func (rot *APLRotation) GetAPLTriggerAura(sourceUnit UnitReference, auraId *proto.ActionID) AuraReference {
+	resolvedSourceUnit := sourceUnit.Get()
+	if resolvedSourceUnit == nil {
+		return AuraReference{}
+	}
+
+	aura := NewTriggerAuraReference(sourceUnit, auraId)
 	if aura.Get() == nil {
 		rot.ValidationMessage(proto.LogLevel_Warning, "No aura found on %s for: %s", resolvedSourceUnit.Label, ProtoToActionID(auraId))
 	}

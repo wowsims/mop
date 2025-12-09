@@ -118,6 +118,9 @@ import {
 	APLValueDotTimeToNextTick,
 	APLValueSpellInFlight,
 	APLValueBossCurrentTarget,
+	APLValueRPPMProcChance,
+	APLValueRPPMLastAttempt,
+	APLValueRPPMLastProc,
 } from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
@@ -1707,5 +1710,28 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		includeIf: (player: Player<any>, isPrepull: boolean) => !isPrepull && itemSwapEnabledSpecs.includes(player.getSpec()),
 		newValue: APLValueActiveItemSwapSet.create,
 		fields: [AplHelpers.itemSwapSetFieldConfig('swapSet')],
+	}),
+
+	// RPPM
+	rppmProcChance: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.rppm_proc_chance.label'),
+		submenu: ['RPPM'],
+		shortDescription : i18n.t('rotation_tab.apl.values.rppm_proc_chance.tooltip'),
+		newValue: APLValueRPPMProcChance.create,
+		fields: [AplHelpers.actionIdFieldConfig('auraId', 'rppm_auras', '')]
+	}),
+	rppmLastProc: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.rppm_last_proc.label'),
+		submenu: ['RPPM'],
+		shortDescription : i18n.t('rotation_tab.apl.values.rppm_last_proc.tooltip'),
+		newValue: APLValueRPPMLastProc.create,
+		fields: [AplHelpers.actionIdFieldConfig('auraId', 'rppm_auras', '')]
+	}),
+	rppmLastAttempt: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.rppm_last_attempt.label'),
+		submenu: ['RPPM'],
+		shortDescription : i18n.t('rotation_tab.apl.values.rppm_last_attempt.tooltip'),
+		newValue: APLValueRPPMLastAttempt.create,
+		fields: [AplHelpers.actionIdFieldConfig('auraId', 'rppm_auras', '')]
 	}),
 };

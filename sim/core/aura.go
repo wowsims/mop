@@ -447,6 +447,14 @@ func (at *auraTracker) GetIcdAuraByID(actionID ActionID) *Aura {
 	}
 	return nil
 }
+func (at *auraTracker) GetTriggerAuraByID(actionID ActionID) *Aura {
+	for _, aura := range at.auras {
+		if aura.ActionIDForProc.SameAction(actionID) {
+			return aura
+		}
+	}
+	return nil
+}
 func (at *auraTracker) HasAura(label string) bool {
 	aura := at.GetAura(label)
 	return aura != nil

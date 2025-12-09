@@ -325,6 +325,14 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 	case *proto.APLValue_ActiveItemSwapSet:
 		value = rot.newValueActiveItemSwapSet(config.GetActiveItemSwapSet(), config.Uuid)
 
+	// RPPM
+	case *proto.APLValue_RppmProcChance:
+		value = rot.newValueRPPMProcChance(config.GetRppmProcChance(), config.Uuid)
+	case *proto.APLValue_RppmLastProc:
+		value = rot.newValueRPPMLastProc(config.GetRppmLastProc(), config.Uuid)
+	case *proto.APLValue_RppmLastAttempt:
+		value = rot.newValueRPPMLastAttempt(config.GetRppmLastAttempt(), config.Uuid)
+
 	default:
 		value = nil
 	}

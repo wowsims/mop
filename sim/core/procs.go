@@ -1,6 +1,8 @@
 package core
 
 import (
+	"reflect"
+
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
@@ -302,4 +304,13 @@ func (item *Item) selectEffectId(isEnchant bool, isGem bool) int32 {
 	}
 
 	return item.ID
+}
+
+var rppmProcType = reflect.TypeOf(&RPPMProc{}).String()
+
+func (dpm *DynamicProcManager) IsRPPM() bool {
+	if dpm != nil && len(dpm.procChances) > 0 {
+		return reflect.TypeOf(dpm.procChances[0]).String() == rppmProcType
+	}
+	return false
 }

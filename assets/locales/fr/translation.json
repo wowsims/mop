@@ -1578,7 +1578,19 @@
                 "overlap": {
                     "label": "Rafraichir à",
                     "tooltip": "Temps maximum avant l'expiration de l'aura où elle peut être rafraîchie."
-                }
+                },
+                "rppm_proc_chance": {
+					"label": "Chance de proc",
+					"tooltip": "Chance de proc (%) actuelle de l'effet. Si le même enchantement est présent sur les 2 armes, renvoi la valeur pour l'enchantement de la main droite."
+				},
+				"rppm_last_proc": {
+					"label": "Dernier proc",
+					"tooltip": "Durée depuis le dernier proc de l'effet, cappé à 1000s. Mis à 120s au pull. Si le même enchantement est présent sur les 2 armes, renvoi la valeur pour l'enchantement de la main droite."
+				},
+				"rppm_last_attempt": {
+					"label": "Dernière tentative",
+					"tooltip": "Durée depuis la dernière tentative de proc de l'effet, cappé à 10s. Fixé à 10s jusqu'au premier proc. Si le même enchantement est présent sur les 2 armes, renvoi la valeur pour l'enchantement de la main droite."
+				}
             },
             "operators": {
                 "equals": "==",
@@ -1651,6 +1663,7 @@
                     "stackable_auras": "Aura",
                     "icd_auras": "Aura",
                     "exclusive_effect_auras": "Aura",
+                    "rppm_auras": "Aura",
                     "spells": "Sort",
                     "castable_spells": "Sort",
                     "channel_spells": "Sort Canalisé",

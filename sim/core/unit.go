@@ -883,14 +883,17 @@ func (unit *Unit) GetMetadata() *proto.UnitMetadata {
 	})
 
 	aplAuras := FilterSlice(unit.auras, func(aura *Aura) bool {
-		return !aura.ActionID.IsEmptyAction()
+		return !aura.ActionID.IsEmptyAction() || !aura.ActionIDForProc.IsEmptyAction()
 	})
 	metadata.Auras = MapSlice(aplAuras, func(aura *Aura) *proto.AuraStats {
+		hideTriggerAura := !aura.ActionIDForProc.IsEmptyAction()
 		return &proto.AuraStats{
-			Id:                 aura.ActionID.ToProto(),
+			Id:                 Ternary(hideTriggerAura, aura.ActionIDForProc.ToProto(), aura.ActionID.ToProto()),
 			MaxStacks:          aura.MaxStacks,
 			HasIcd:             aura.Icd != nil,
 			HasExclusiveEffect: len(aura.ExclusiveEffects) > 0,
+			HasRppm:            aura.Dpm.IsRPPM(),
+			HideTrigger:        hideTriggerAura,
 		}
 	})
 

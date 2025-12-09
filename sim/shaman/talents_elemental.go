@@ -121,7 +121,6 @@ func (shaman *Shaman) ApplyElementalTalents() {
 
 	shaman.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Rolling Thunder",
-		ActionID:           actionID,
 		MetricsActionID:    actionID,
 		ClassSpellMask:     SpellMaskChainLightning | SpellMaskChainLightningOverload | SpellMaskLightningBolt | SpellMaskLightningBoltOverload | SpellMaskLavaBeam | SpellMaskLavaBeamOverload,
 		Callback:           core.CallbackOnSpellHitDealt,

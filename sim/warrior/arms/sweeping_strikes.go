@@ -46,7 +46,6 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 
 	war.SweepingStrikesAura = core.BlockPrepull(war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Sweeping Strikes",
-		ActionID:           actionID,
 		MetricsActionID:    actionID,
 		Duration:           time.Second * 10,
 		Callback:           core.CallbackOnSpellHitDealt,

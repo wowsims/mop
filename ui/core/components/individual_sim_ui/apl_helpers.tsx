@@ -30,6 +30,7 @@ export type ACTION_ID_SET =
 	| 'stackable_auras'
 	| 'icd_auras'
 	| 'exclusive_effect_auras'
+	| 'rppm_auras'
 	| 'spells'
 	| 'castable_spells'
 	| 'channel_spells'
@@ -51,11 +52,14 @@ const actionIdSets: Record<
 	auras: {
 		defaultLabel: i18n.t('rotation_tab.apl.helpers.action_id_sets.auras'),
 		getActionIDs: async metadata => {
-			return metadata.getAuras().map(actionId => {
-				return {
-					value: actionId.id,
-				};
-			});
+			return metadata
+				.getAuras()
+				.filter(aura => !aura.data.hideTrigger)
+				.map(actionId => {
+					return {
+						value: actionId.id,
+					};
+				});
 		},
 	},
 	stackable_auras: {
@@ -90,6 +94,19 @@ const actionIdSets: Record<
 			return metadata
 				.getAuras()
 				.filter(aura => aura.data.hasExclusiveEffect)
+				.map(actionId => {
+					return {
+						value: actionId.id,
+					};
+				});
+		},
+	},
+	rppm_auras: {
+		defaultLabel: i18n.t('rotation_tab.apl.helpers.action_id_sets.rppm_auras'),
+		getActionIDs: async metadata => {
+			return metadata
+				.getAuras()
+				.filter(aura => aura.data.hasRppm)
 				.map(actionId => {
 					return {
 						value: actionId.id,

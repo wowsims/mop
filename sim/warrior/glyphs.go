@@ -42,7 +42,6 @@ func (war *Warrior) applyMajorGlyphs() {
 		rageMetrics := war.NewRageMetrics(actionID)
 		war.MakeProcTriggerAura(core.ProcTrigger{
 			Name:               "Glyph of Sweeping Strikes",
-			ActionID:           actionID,
 			MetricsActionID:    actionID,
 			ClassSpellMask:     SpellMaskSweepingStrikesHit,
 			Callback:           core.CallbackOnSpellHitDealt,

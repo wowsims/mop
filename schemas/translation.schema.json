@@ -6503,6 +6503,54 @@
                     "label",
                     "tooltip"
                   ]
+                },
+                "rppm_proc_chance": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip"
+                  ]
+                },
+                "rppm_last_proc": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip"
+                  ]
+                },
+                "rppm_last_attempt": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "tooltip": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "tooltip"
+                  ]
                 }
               },
               "additionalProperties": false,
@@ -6626,7 +6674,10 @@
                 "aura_remaining_icd",
                 "aura_icd_is_ready",
                 "aura_icd_is_ready_with_reaction_time",
-                "overlap"
+                "overlap",
+                "rppm_proc_chance",
+                "rppm_last_proc",
+                "rppm_last_attempt"
               ]
             },
             "operators": {
@@ -6907,6 +6958,9 @@
                     "exclusive_effect_auras": {
                       "type": "string"
                     },
+                    "rppm_auras": {
+                      "type": "string"
+                    },
                     "spells": {
                       "type": "string"
                     },
@@ -6944,6 +6998,7 @@
                     "stackable_auras",
                     "icd_auras",
                     "exclusive_effect_auras",
+                    "rppm_auras",
                     "spells",
                     "castable_spells",
                     "channel_spells",

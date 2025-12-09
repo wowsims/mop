@@ -195,6 +195,14 @@ func NewRPPMProc(character *Character, config RPPMConfig) DynamicProc {
 	return proc
 }
 
+func (proc *RPPMProc) GetLastCheck(sim *Simulation) time.Duration {
+	return min(RppmLastCheckCap, sim.CurrentTime-proc.lastCheck)
+}
+
+func (proc *RPPMProc) GetLastProc(sim *Simulation) time.Duration {
+	return min(RppmLastProcCap, sim.CurrentTime-proc.lastProc)
+}
+
 // Does not change the state of the RPPMProc.
 // Only calculates the proc chance.
 //
@@ -209,8 +217,8 @@ func (proc *RPPMProc) getProcChance(sim *Simulation) float64 {
 		baseCoeff *= mod.GetCoefficient(proc)
 	}
 
-	lastCheck := min(RppmLastCheckCap, sim.CurrentTime-proc.lastCheck).Seconds()
-	lastProc := min(RppmLastProcCap, sim.CurrentTime-proc.lastProc).Seconds()
+	lastCheck := proc.GetLastCheck(sim).Seconds()
+	lastProc := proc.GetLastProc(sim).Seconds()
 
 	// TODO: Adjust implementation if needed
 	// Temporary implementation, targeting the 'intended' MOP proc behavior
