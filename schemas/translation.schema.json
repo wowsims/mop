@@ -6643,9 +6643,7 @@
                 "aura_icd_is_ready",
                 "aura_icd_is_ready_with_reaction_time",
                 "overlap",
-                "rppm_proc_chance",
-                "rppm_last_proc",
-                "rppm_last_attempt"
+                "rppm_average_proc_chance"
               ]
             },
             "operators": {
