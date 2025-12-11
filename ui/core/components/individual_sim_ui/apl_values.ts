@@ -105,7 +105,6 @@ import {
 	APLValueTrinketProcsMinRemainingTime,
 	APLValueUnitDistance,
 	APLValueUnitIsMoving,
-	APLValueVariablePlaceholder,
 	APLValueWarlockHandOfGuldanInFlight,
 	APLValueWarlockHauntInFlight,
 	APLValueAfflictionExhaleWindow,
@@ -118,9 +117,7 @@ import {
 	APLValueDotTimeToNextTick,
 	APLValueSpellInFlight,
 	APLValueBossCurrentTarget,
-	APLValueRPPMProcChance,
-	APLValueRPPMLastAttempt,
-	APLValueRPPMLastProc,
+	APLValueRPPMAverageProcChance
 } from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
@@ -1717,7 +1714,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		label: i18n.t('rotation_tab.apl.values.rppm_average_proc_chance.label'),
 		submenu: ['RPPM'],
 		shortDescription : i18n.t('rotation_tab.apl.values.rppm_average_proc_chance.tooltip'),
-		newValue: APLValueRPPMProcChance.create,
+		newValue: APLValueRPPMAverageProcChance.create,
 		fields: [AplHelpers.actionIdFieldConfig('auraId', 'rppm_auras', '')]
 	}),
 };
