@@ -6504,39 +6504,7 @@
                     "tooltip"
                   ]
                 },
-                "rppm_proc_chance": {
-                  "type": "object",
-                  "properties": {
-                    "label": {
-                      "type": "string"
-                    },
-                    "tooltip": {
-                      "type": "string"
-                    }
-                  },
-                  "additionalProperties": false,
-                  "required": [
-                    "label",
-                    "tooltip"
-                  ]
-                },
-                "rppm_last_proc": {
-                  "type": "object",
-                  "properties": {
-                    "label": {
-                      "type": "string"
-                    },
-                    "tooltip": {
-                      "type": "string"
-                    }
-                  },
-                  "additionalProperties": false,
-                  "required": [
-                    "label",
-                    "tooltip"
-                  ]
-                },
-                "rppm_last_attempt": {
+                "rppm_average_proc_chance": {
                   "type": "object",
                   "properties": {
                     "label": {

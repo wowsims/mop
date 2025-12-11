@@ -96,6 +96,14 @@ func (r rppmApproxIlvlMod) GetCoefficient(proc *RPPMProc) float64 {
 	return 1 + (math.Pow(1.00936, float64(proc.ilvl-r.baseIlvl))-1)*r.coefficient
 }
 
+func (r *RPPMProc) GetCoefficient() float64 {
+	coeff := r.coefficient
+	for _, mod := range r.mods {
+		coeff *= mod.GetCoefficient(r)
+	}
+	return coeff
+}
+
 func (r rppmApproxIlvlMod) IsStatic() bool {
 	return true
 }
@@ -212,10 +220,7 @@ func (proc *RPPMProc) GetLastProc(sim *Simulation) time.Duration {
 func (proc *RPPMProc) getProcChance(sim *Simulation) float64 {
 	basePpm := proc.ppm
 
-	baseCoeff := proc.coefficient
-	for _, mod := range proc.mods {
-		baseCoeff *= mod.GetCoefficient(proc)
-	}
+	baseCoeff := proc.GetCoefficient()
 
 	lastCheck := proc.GetLastCheck(sim).Seconds()
 	lastProc := proc.GetLastProc(sim).Seconds()

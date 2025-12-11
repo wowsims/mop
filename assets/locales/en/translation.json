@@ -1579,17 +1579,9 @@
 					"label": "Overlap",
 					"tooltip": "Maximum amount of time before the aura expires when it may be refreshed."
 				},
-				"rppm_proc_chance": {
+				"rppm_average_proc_chance": {
 					"label": "Proc Chance",
-					"tooltip": "Current chance (%) of triggering the effect. If the same RPPM Enchant is applied to both weapon when dual-wielding, returns the value for the Main Hand."
-				},
-				"rppm_last_proc": {
-					"label": "Last Proc",
-					"tooltip": "Time since the last proc of the effect, capped at 1000s. Set to 120s on pull. If the same RPPM Enchant is applied to both weapon when dual-wielding, returns the value for the Main Hand."
-				},
-				"rppm_last_attempt": {
-					"label": "Last Attempt",
-					"tooltip": "Time since the last attempt to proc the effect, capped at 10s. Fixed at 10s until first proc. If the same RPPM Enchant is applied to both weapon when dual-wielding, returns the value for the Main Hand."
+					"tooltip": "Total chance (%) of triggering the effect disregarding the amount of events/second. If the same RPPM Enchant is applied to both weapon when dual-wielding, returns the value for the Main Hand."
 				}
 			},
 			"operators": {

@@ -1713,25 +1713,11 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 	}),
 
 	// RPPM
-	rppmProcChance: inputBuilder({
-		label: i18n.t('rotation_tab.apl.values.rppm_proc_chance.label'),
+	rppmAverageProcChance: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.rppm_average_proc_chance.label'),
 		submenu: ['RPPM'],
-		shortDescription : i18n.t('rotation_tab.apl.values.rppm_proc_chance.tooltip'),
+		shortDescription : i18n.t('rotation_tab.apl.values.rppm_average_proc_chance.tooltip'),
 		newValue: APLValueRPPMProcChance.create,
-		fields: [AplHelpers.actionIdFieldConfig('auraId', 'rppm_auras', '')]
-	}),
-	rppmLastProc: inputBuilder({
-		label: i18n.t('rotation_tab.apl.values.rppm_last_proc.label'),
-		submenu: ['RPPM'],
-		shortDescription : i18n.t('rotation_tab.apl.values.rppm_last_proc.tooltip'),
-		newValue: APLValueRPPMLastProc.create,
-		fields: [AplHelpers.actionIdFieldConfig('auraId', 'rppm_auras', '')]
-	}),
-	rppmLastAttempt: inputBuilder({
-		label: i18n.t('rotation_tab.apl.values.rppm_last_attempt.label'),
-		submenu: ['RPPM'],
-		shortDescription : i18n.t('rotation_tab.apl.values.rppm_last_attempt.tooltip'),
-		newValue: APLValueRPPMLastAttempt.create,
 		fields: [AplHelpers.actionIdFieldConfig('auraId', 'rppm_auras', '')]
 	}),
 };

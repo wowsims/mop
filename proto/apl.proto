@@ -99,7 +99,7 @@ message APLAction {
 }
 
 
-// NextIndex: 128
+// NextIndex: 126
 message APLValue {
 	UUID uuid = 85;
 
@@ -262,9 +262,7 @@ message APLValue {
 		APLValueActiveItemSwapSet active_item_swap_set = 113;
 
         // RPPM values
-        APLValueRPPMProcChance rppm_proc_chance = 125;
-        APLValueRPPMLastProc rppm_last_proc = 126;
-        APLValueRPPMLastAttempt rppm_last_attempt = 127;
+        APLValueRPPMAverageProcChance rppm_average_proc_chance = 125;
 	}
 }
 
@@ -841,14 +839,6 @@ message APLValueActiveItemSwapSet {
     APLActionItemSwap.SwapSet swap_set = 1;
 }
 
-message APLValueRPPMProcChance {
-    ActionID aura_id = 1;
-}
-
-message APLValueRPPMLastProc {
-    ActionID aura_id = 1;
-}
-
-message APLValueRPPMLastAttempt {
+message APLValueRPPMAverageProcChance {
     ActionID aura_id = 1;
 }
