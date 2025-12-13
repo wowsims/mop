@@ -10,7 +10,7 @@ import i18n from '../../i18n/config.js';
 import * as Mechanics from '../constants/mechanics.js';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
-import { Class, GemColor, ItemSlot, Profession, PseudoStat, Race, ReforgeStat, Spec, Stat, UnitStats } from '../proto/common';
+import { Class, EquipmentSpec, GemColor, ItemSlot, Profession, PseudoStat, Race, ReforgeStat, Spec, Stat, UnitStats } from '../proto/common';
 import { UIGem as Gem, IndividualSimSettings, ReforgeSettings, StatCapType } from '../proto/ui';
 import { isShaTouchedWeapon, isThroneOfThunderWeapon, ReforgeData } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
@@ -54,14 +54,14 @@ type StatTooltipContent = { [key in Stat]?: () => Element | string };
 
 const STAT_TOOLTIPS: StatTooltipContent = {
 	[Stat.StatMasteryRating]: () => (
-		<span>
+		<>
 			Total <strong>percentage</strong>
-		</span>
+		</>
 	),
 	[Stat.StatHasteRating]: () => (
-		<span>
+		<>
 			Final percentage value <strong>including</strong> all buffs/gear.
-		</span>
+		</>
 	),
 };
 
@@ -128,13 +128,6 @@ export class RelativeStatCap {
 		this.constraintKeys = this.constrainedStats.map(
 			unitStat => this.forcedHighestStat.getShortName(playerClass) + 'Minus' + unitStat.getShortName(playerClass),
 		);
-
-		if (isDevMode()) {
-			console.log('RelativeStatCap constraint setup:');
-			console.log(`  forcedHighestStat: ${forcedHighestStat} -> ${this.forcedHighestStat.getShortName(playerClass)}`);
-			console.log(`  constrainedStats:`, this.constrainedStats.map(stat => `${stat.getStat()} -> ${stat.getShortName(playerClass)}`));
-			console.log(`  constraintKeys:`, this.constraintKeys);
-		}
 	}
 
 	updateCoefficients(coefficients: YalpsCoefficients, stat: Stat, amount: number) {
@@ -176,18 +169,8 @@ export class RelativeStatCap {
 
 		for (const [idx, constrainedStat] of this.constrainedStats.entries()) {
 			const weightedStatsArray = new Stats().withUnitStat(this.forcedHighestStat, 1).withUnitStat(constrainedStat, -1);
-			const baseStatsEP = baseStats.computeEP(weightedStatsArray);
-			let minReforgeContribution = 1 - baseStatsEP;
-
-			if (isDevMode()) {
-				console.log(`Constraint calculation for ${this.constraintKeys[idx]}:`);
-				console.log(`  forcedHighestStat: ${this.forcedHighestStat.getShortName(this.player.getClass())}`);
-				console.log(`  constrainedStat: ${constrainedStat.getShortName(this.player.getClass())}`);
-				console.log(`  baseStatsEP: ${baseStatsEP}`);
-				console.log(`  minReforgeContribution: ${minReforgeContribution}`);
-			}
-
-			const procOffsetMap = RelativeStatCap.procTrinketOffsets.get(constrainedStat.getStat())!
+			let minReforgeContribution = 1 - baseStats.computeEP(weightedStatsArray);
+			const procOffsetMap = RelativeStatCap.procTrinketOffsets.get(constrainedStat.getStat())!;
 
 			for (const trinket of gear.getTrinkets()) {
 				if (!trinket) {
@@ -198,22 +181,11 @@ export class RelativeStatCap {
 
 				if (procOffsetMap.has(trinketId)) {
 					minReforgeContribution += procOffsetMap.get(trinketId)!;
-					if (isDevMode()) {
-						console.log(`  Added trinket offset: ${procOffsetMap.get(trinketId)!}`);
-					}
 					break;
 				}
 			}
 
-			if (isDevMode()) {
-				console.log(`  Final minReforgeContribution: ${minReforgeContribution}`);
-			}
-
-			// TEMPORARY: Disable overly restrictive constraints
-			if (isDevMode()) {
-				console.log(`TEMP: Skipping constraint ${this.constraintKeys[idx]} with value ${minReforgeContribution} (likely too restrictive)`);
-			}
-			// constraints.set(this.constraintKeys[idx], greaterEq(minReforgeContribution));
+			constraints.set(this.constraintKeys[idx], greaterEq(minReforgeContribution));
 		}
 
 		if (this.forcedHighestStat.equalsStat(Stat.StatMasteryRating) && this.player.getSpec() == Spec.SpecFeralDruid) {
@@ -262,120 +234,16 @@ export class ReforgeOptimizer {
 	relativeStatCapStat: number = -1;
 	relativeStatCap: RelativeStatCap | null = null;
 
-	// Two-phase optimization configuration - adjust these to control exhaustiveness vs performance
-	private readonly TWO_PHASE_MAX_GEMS_PER_SOCKET = 7; // How many top gems to consider per socket (1-5 reasonable)
-	private readonly TWO_PHASE_MAX_COMBINATIONS = 5000; // Maximum total combinations to test (50-500 reasonable)
-
 	// Progress tracking
 	private progressTracker: ReforgeProgressTracker | null = null;
 	private isOptimizing = false;
-
-	// Optimization performance tracking
-	private optimizationHistory: Array<{ score: number, timestamp: number, iteration: number }> = [];
-	private lastBestScore = 0;
-	private stagnantIterations = 0;
+	private currentOptimizationAbortController: AbortController | null = null;
+	private gearSnapshot: EquipmentSpec | null = null;
 
 	private updateProgress(updates: Partial<ReforgeProgressState>): void {
 		if (this.progressTracker) {
 			this.progressTracker.updateProgress(updates);
 		}
-	}
-
-	// Get adaptive timeout based on constraint iteration - but maintain accuracy
-	private getAdaptiveTimeout(baseTimeout: number, constraintIteration: number): number {
-		// Keep full timeout for all iterations to ensure optimal solutions
-		return baseTimeout;
-	}
-
-	// Get adaptive iteration limit based on constraint iteration - but maintain accuracy
-	private getAdaptiveIterations(baseIterations: number, constraintIteration: number): number {
-		// Keep full iterations for all constraint passes to ensure optimal solutions
-		return baseIterations;
-	}
-
-	// Get adaptive tolerance - keep strict tolerance for accuracy
-	private getAdaptiveTolerance(constraintIteration: number): number {
-		// Always use strict tolerance to ensure optimal solutions
-		return 0.01;
-	}
-
-	// Track optimization progress for debugging - no early termination
-	private trackOptimizationProgress(score: number, constraintIteration: number): void {
-		// Track score improvement for debugging only
-		if (score > this.lastBestScore) {
-			this.lastBestScore = score;
-			this.stagnantIterations = 0;
-		} else {
-			this.stagnantIterations++;
-		}
-
-		// Add to optimization history for debugging
-		this.optimizationHistory.push({
-			score,
-			timestamp: Date.now(),
-			iteration: constraintIteration
-		});
-
-		// Keep only last 10 entries
-		if (this.optimizationHistory.length > 10) {
-			this.optimizationHistory.shift();
-		}
-	}
-
-	// Prune constraints that are likely not binding in later iterations - disabled for accuracy
-	private pruneIrrelevantConstraints(constraints: YalpsConstraints, constraintIteration: number): YalpsConstraints {
-		// Never prune constraints - return original constraints to maintain accuracy
-		return constraints;
-	}
-
-	// Optimize constraint set by removing mathematically redundant constraints
-	// This maintains accuracy while improving performance
-	private optimizeConstraintSet(constraints: YalpsConstraints, variables: YalpsVariables, constraintIteration: number): YalpsConstraints {
-		const optimizedConstraints = new Map(constraints);
-
-		// Performance optimization: identify redundant constraints without affecting solution accuracy
-		if (constraintIteration >= 2) {
-			const redundantConstraints: string[] = [];
-
-			// Check for constraints that are always satisfied (e.g., stat >= 0 when no negative coefficients exist)
-			for (const [constraintName, constraintDef] of constraints) {
-				if (typeof constraintDef === 'object' && constraintDef && 'min' in constraintDef && constraintDef.min !== undefined) {
-					// Check if this is a minimum constraint that's always satisfied
-					if (constraintDef.min <= 0 && this.isConstraintAlwaysSatisfied(constraintName, variables)) {
-						redundantConstraints.push(constraintName);
-					}
-				}
-			}
-
-			// Remove redundant constraints (this is mathematically safe)
-			for (const constraintName of redundantConstraints) {
-				optimizedConstraints.delete(constraintName);
-			}
-		}
-
-		return optimizedConstraints;
-	}
-
-	// Check if a constraint is always satisfied given the variable structure
-	private isConstraintAlwaysSatisfied(constraintName: string, variables: YalpsVariables): boolean {
-		// This is a conservative check - only removes constraints that are provably always satisfied
-
-		// Check if all coefficients for this constraint are non-negative and the constraint is >= 0
-		let allCoefficientsNonNegative = true;
-
-		for (const [varName, coefficients] of variables) {
-			if (coefficients.has(constraintName)) {
-				const coefficient = coefficients.get(constraintName) || 0;
-				if (coefficient < 0) {
-					allCoefficientsNonNegative = false;
-					break;
-				}
-			}
-		}
-
-		// Only remove constraints where we're certain they can't be violated
-		// This is very conservative to ensure we never remove a binding constraint
-		return allCoefficientsNonNegative && constraintName.includes('MinimumZero');
 	}
 
 	readonly includeGemsChangeEmitter = new TypedEvent<void>('IncludeGems');
@@ -440,9 +308,39 @@ export class ReforgeOptimizer {
 				});
 				const button = currentTarget as HTMLButtonElement;
 
+				// Snapshot current gear state before starting
+				this.gearSnapshot = this.player.getGear().asSpec();
+				if (isDevMode()) {
+					console.log('Gear state snapshot taken');
+				}
+
 				// Show progress tracker
 				this.progressTracker = new ReforgeProgressTracker(document.body, {
 					onCancel: () => {
+						if (isDevMode()) {
+							console.log('User cancelled reforge optimization');
+						}
+						
+						// Cancel all worker requests
+						const reforgeWorker = getReforgeWorker();
+						reforgeWorker.cancelAll();
+						
+						// Use abort controller if available
+						if (this.currentOptimizationAbortController) {
+							this.currentOptimizationAbortController.abort();
+							this.currentOptimizationAbortController = null;
+						}
+						
+						// Restore gear snapshot
+						if (this.gearSnapshot) {
+							if (isDevMode()) {
+								console.log('Restoring gear state from snapshot');
+							}
+							const restoredGear = this.player.sim.db.lookupEquipmentSpec(this.gearSnapshot);
+							this.player.setGear(TypedEvent.nextEventID(), restoredGear);
+							this.gearSnapshot = null;
+						}
+						
 						this.isOptimizing = false;
 						if (this.progressTracker) {
 							this.progressTracker.destroy();
@@ -467,23 +365,35 @@ export class ReforgeOptimizer {
 					}
 					await this.optimizeReforges();
 					this.onReforgeDone();
+					// Clear snapshot on success
+					this.gearSnapshot = null;
 				} catch (error) {
-					// Update progress tracker with error
-					if (this.progressTracker) {
-						this.progressTracker.updateProgress({
-							stage: 'error',
-							message: error instanceof Error ? error.message : 'Optimization failed'
-						});
+					// Check if this was a user cancellation
+					const isCancellation = error instanceof Error && error.message.includes('cancelled');
+					
+					if (isCancellation) {
+						// Don't show error for user cancellations
+						if (isDevMode()) {
+							console.log('Optimization cancelled by user');
+						}
+					} else {
+						// Update progress tracker with error
+						if (this.progressTracker) {
+							this.progressTracker.updateProgress({
+								stage: 'error',
+								message: error instanceof Error ? error.message : 'Optimization failed'
+							});
 
-						// Keep error visible for 3 seconds before cleanup
-						setTimeout(() => {
-							if (this.progressTracker) {
-								this.progressTracker.destroy();
-								this.progressTracker = null;
-							}
-						}, 3000);
+							// Keep error visible for 3 seconds before cleanup
+							setTimeout(() => {
+								if (this.progressTracker) {
+									this.progressTracker.destroy();
+									this.progressTracker = null;
+								}
+							}, 3000);
+						}
+						this.onReforgeError(error);
 					}
-					this.onReforgeError(error);
 				} finally {
 					this.isOptimizing = false;
 					if (this.progressTracker) {
@@ -1417,62 +1327,9 @@ export class ReforgeOptimizer {
 	}
 
 	async optimizeReforges(batchRun?: boolean) {
-		// Reset optimization state
-		this.optimizationHistory = [];
-		this.lastBestScore = 0;
-		this.stagnantIterations = 0;
-
 		if (isDevMode()) {
 			console.log('Starting Reforge optimization...');
 		}
-
-		// Check if we should use two-phase optimization for complex gem+reforge problems
-		if (this.includeGems && this.shouldUseTwoPhaseOptimization()) {
-			if (isDevMode()) {
-				console.log('🚀 Using two-phase optimization approach for complex gem+reforge problem');
-			}
-			return await this.optimizeWithTwoPhaseApproach(batchRun);
-		}
-
-		// Continue with original joint optimization approach
-		return await this.optimizeWithJointApproach(batchRun);
-	}
-
-	// Determine if two-phase optimization would be beneficial
-	private shouldUseTwoPhaseOptimization(): boolean {
-		// Count total gem sockets to estimate problem complexity
-		let totalGemSockets = 0;
-		const gear = this.player.getGear();
-
-		for (const slot of gear.getItemSlots()) {
-			const item = gear.getEquippedItem(slot);
-			if (item) {
-				totalGemSockets += item.curSocketColors(this.player.isBlacksmithing()).length;
-			}
-		}
-
-		// Use two-phase if we have many gem sockets (high complexity)
-		const threshold = 6; // More than 6 gem sockets = use two-phase
-		const useTwoPhase = totalGemSockets > threshold;
-
-		if (isDevMode()) {
-			console.log(`Gem socket analysis: ${totalGemSockets} total sockets`);
-			console.log(`Using ${useTwoPhase ? 'two-phase' : 'joint'} optimization approach`);
-		}
-
-		return useTwoPhase;
-	}
-
-	// Original combined gem+reforge optimization (renamed for clarity)
-	private async optimizeWithJointApproach(batchRun?: boolean) {
-
-		// Update progress
-		this.updateProgress({
-			stage: 'initializing',
-			message: 'Initializing reforge optimization...',
-			constraintIteration: 1,
-			maxConstraintIterations: 3, // More realistic estimate
-		});
 
 		// First, clear all existing Reforges
 		if (isDevMode()) {
@@ -1480,8 +1337,6 @@ export class ReforgeOptimizer {
 			console.log('The following slots will not be cleared:');
 			console.log(Array.from(this.frozenItemSlots.keys()).filter(key => this.getFrozenItemSlot(key)));
 		}
-
-		this.updateProgress({ message: 'Analyzing current gear...' });
 
 		this.previousGear = this.player.getGear();
 		this.previousReforges = this.previousGear.getAllReforges();
@@ -1491,11 +1346,9 @@ export class ReforgeOptimizer {
 			baseGear = baseGear.withoutGems(this.player.canDualWield2H(), this.frozenItemSlots, true);
 		}
 
-		this.updateProgress({ message: 'Computing current character stats...' });
 		const baseStats = await this.updateGear(baseGear);
 
 		// Compute effective stat caps for just the Reforge contribution
-		this.updateProgress({ message: 'Calculating stat caps and constraints...' });
 		let reforgeCaps = baseStats.computeStatCapsDelta(this.processedStatCaps);
 
 		if (this.player.getSpec() == Spec.SpecGuardianDruid) {
@@ -1511,12 +1364,10 @@ export class ReforgeOptimizer {
 		}
 
 		// Do the same for any soft cap breakpoints that were configured
-		this.updateProgress({ message: 'Processing soft cap breakpoints...' });
 		const reforgeSoftCaps = this.computeReforgeSoftCaps(baseStats);
 
 		// Perform any required processing on the pre-cap EPs to make them internally consistent with the
 		// configured hard caps and soft caps.
-		this.updateProgress({ message: 'Validating stat weights and caps...' });
 		let validatedWeights = ReforgeOptimizer.checkWeights(this.preCapEPs, reforgeCaps, reforgeSoftCaps);
 
 		if (this.relativeStatCap) {
@@ -1524,7 +1375,6 @@ export class ReforgeOptimizer {
 		}
 
 		// Set up YALPS model
-		this.updateProgress({ message: 'Building optimization variables and constraints...' });
 		const variables = this.buildYalpsVariables(baseGear, validatedWeights, reforgeCaps, reforgeSoftCaps);
 
 		if (isDevMode()) {
@@ -1533,7 +1383,6 @@ export class ReforgeOptimizer {
 			console.log('First 5 variables:', Array.from(variables.entries()).slice(0, 5));
 		}
 
-		this.updateProgress({ message: 'Finalizing constraint system...' });
 		const constraints = this.buildYalpsConstraints(baseGear, baseStats);
 
 		if (isDevMode()) {
@@ -1543,12 +1392,6 @@ export class ReforgeOptimizer {
 		}
 
 		// Solve in multiple passes to enforce caps
-		this.updateProgress({
-			stage: 'solving',
-			message: 'Preparing to solve optimization problem...',
-			maxIterations: 5000000
-		});
-
 		await this.solveModel(
 			baseGear,
 			validatedWeights,
@@ -1557,7 +1400,7 @@ export class ReforgeOptimizer {
 			variables,
 			constraints,
 			5000000,
-			(this.includeTimeout ? (this.relativeStatCap ? 180 : 180) : 3600) / (batchRun ? 4 : 1),
+			(this.includeTimeout ? (this.relativeStatCap ? 120 : 30) : 3600) / (batchRun ? 4 : 1),
 		);
 		this.currentReforges = this.player.getGear().getAllReforges();
 	}
@@ -1972,14 +1815,6 @@ export class ReforgeOptimizer {
 		maxSeconds: number,
 		constraintIteration: number = 1,
 	): Promise<number> {
-		// Update progress for this constraint iteration
-		this.updateProgress({
-			constraintIteration,
-			message: `Solving optimization (iteration ${constraintIteration})...`,
-			iteration: 0,
-			maxIterations
-		});
-
 		// Calculate EP scores for each Reforge option
 		if (isDevMode()) {
 			console.log('Stat weights for this iteration:');
@@ -2026,26 +1861,11 @@ export class ReforgeOptimizer {
 			}
 		}
 
-		// Apply adaptive timeout and iteration limits for later constraint iterations
-		const adaptiveMaxSeconds = this.getAdaptiveTimeout(maxSeconds, constraintIteration);
-		const adaptiveMaxIterations = this.getAdaptiveIterations(maxIterations, constraintIteration);
-		const adaptiveTolerance = this.getAdaptiveTolerance(constraintIteration);
-
-		// Performance optimization: Remove redundant constraints that don't affect the solution
-		// This maintains mathematical accuracy while reducing problem complexity
-		const optimizedConstraints = this.optimizeConstraintSet(constraints, variables, constraintIteration);
-
-		if (isDevMode() && optimizedConstraints.size < constraints.size) {
-			console.log(`Optimized constraint set: ${constraints.size} -> ${optimizedConstraints.size} constraints (removed ${constraints.size - optimizedConstraints.size} redundant)`);
-		}
-
-		// Note: No early termination or constraint pruning - we always need the optimal solution
-
 		// Set up and solve YALPS model
 		const model: Model = {
 			direction: 'maximize',
 			objective: 'score',
-			constraints: Object.fromEntries(optimizedConstraints),  // Convert Map to plain object
+			constraints: Object.fromEntries(constraints),  // Convert Map to plain object
 			variables: Object.fromEntries(
 				Array.from(updatedVariables.entries()).map(([key, coeffMap]) => [
 					key,
@@ -2055,32 +1875,9 @@ export class ReforgeOptimizer {
 			binaries: true,
 		};
 		const options: Options = {
-			timeout: adaptiveMaxSeconds * 1000,
-			maxIterations: adaptiveMaxIterations,
-			tolerance: adaptiveTolerance,
-		};
-
-		// Log adaptive parameters for debugging
-		if (isDevMode() && constraintIteration > 1) {
-			console.log(`Adaptive parameters for iteration ${constraintIteration}:`);
-			console.log(`  Original timeout: ${maxSeconds}s -> Adaptive: ${adaptiveMaxSeconds}s`);
-			console.log(`  Original iterations: ${maxIterations.toLocaleString()} -> Adaptive: ${adaptiveMaxIterations.toLocaleString()}`);
-			console.log(`  Adaptive tolerance: ${adaptiveTolerance}`);
-		}
-
-		// Update progress with adaptive parameters
-		this.updateProgress({
-			message: `Solving with ${adaptiveMaxIterations.toLocaleString()} max iterations, ${adaptiveMaxSeconds}s timeout (iteration ${constraintIteration})`,
-			maxIterations: adaptiveMaxIterations,
-		});
-
-		// Set up progress callback to update our progress tracker
-		const progressCallback = (progress: ReforgeProgressUpdate) => {
-			this.updateProgress({
-				iteration: progress.iteration,
-				message: progress.message,
-				constraintIteration: progress.constraintIteration,
-			});
+			timeout: maxSeconds * 1000,
+			maxIterations: maxIterations,
+			tolerance: 0.01,
 		};
 
 		// Create worker request - only send what's needed for the LP solve
@@ -2101,77 +1898,46 @@ export class ReforgeOptimizer {
 		};
 
 		if (isDevMode()) {
-			console.log('Sending optimized model to worker:');
-			console.log(`Model size: ${Object.keys(serializableModel.variables).length} variables, ${Object.keys(serializableModel.constraints).length} constraints`);
-			console.log('Model objective:', model.objective, 'direction:', model.direction);
+			console.log('Sending model to worker:');
+			console.log('Variables count:', variables.size);
+			console.log('Constraints count:', constraints.size);
+			console.log('Updated variables count:', updatedVariables.size);
+			console.log('Original model variables:', model.variables);
+			console.log('Original model constraints:', model.constraints);
+			console.log('Serializable model variables count:', Object.keys(serializableModel.variables).length);
+			console.log('Serializable model constraints count:', Object.keys(serializableModel.constraints).length);
+			console.log('Model objective:', model.objective);
+			console.log('Model direction:', model.direction);
 
-			// Only log sample data to reduce console spam
+			// Check some variable coefficients
 			const firstVariableKey = Object.keys(serializableModel.variables)[0];
 			if (firstVariableKey) {
-				console.log('Sample variable:', firstVariableKey, '=', serializableModel.variables[firstVariableKey]);
+				console.log('First variable coefficients:', firstVariableKey, '=', serializableModel.variables[firstVariableKey]);
 			}
+
+			// Check constraint range
+			const constraintKeys = Object.keys(serializableModel.constraints);
+			console.log('Sample constraints:', constraintKeys.slice(0, 3).map(key => ({
+				key,
+				constraint: serializableModel.constraints[key]
+			})));
 		}
 
 		const startTimeMs: number = Date.now();
 
-		// Performance optimization: Use web worker for all complex iterations to maintain progress tracking
-		// Direct solve only for very simple first iteration cases
-		const useDirectSolve = constraintIteration === 1 &&
-			Object.keys(serializableModel.variables).length < 100 &&
-			Object.keys(serializableModel.constraints).length < 30;
-		let solution: Solution;
-		let elapsedMs: number;
+		// Run LP solve in web worker
+		const reforgeWorker = getReforgeWorker();
+		const result = await reforgeWorker.optimizeReforges(workerRequest);
 
-		if (useDirectSolve) {
-			if (isDevMode()) console.log(`Using direct YALPS solve for simple case: constraint iteration ${constraintIteration} (${Object.keys(serializableModel.variables).length} vars, ${Object.keys(serializableModel.constraints).length} constraints)`);
-
-			const directStartTime = Date.now();
-
-			// Update progress for direct solve
-			this.updateProgress({
-				constraintIteration,
-				message: `Solving quickly on main thread...`,
-				iteration: 0,
-				maxIterations: Math.min(maxIterations, 1000000)
-			});
-
-			const directOptions: Options = {
-				timeout: 15000, // 15s should be plenty for simple cases
-				maxIterations: Math.min(maxIterations, 1000000),
-				tolerance: 0.01,
-			};
-
-			solution = solve(model, directOptions);
-			elapsedMs = Date.now() - directStartTime;
-
-			// Update progress to show completion
-			this.updateProgress({
-				constraintIteration,
-				message: `Quick solve completed in ${elapsedMs}ms`,
-				iteration: Math.min(maxIterations, 1000000),
-				maxIterations: Math.min(maxIterations, 1000000)
-			});
-
-			if (isDevMode()) {
-				console.log(`Direct YALPS solve completed in ${elapsedMs}ms (status: ${solution.status})`);
-			}
-		} else {
-			if (isDevMode()) console.log(`Using web worker solve with progress tracking: constraint iteration ${constraintIteration} (${Object.keys(serializableModel.variables).length} vars, ${Object.keys(serializableModel.constraints).length} constraints)`);
-			// Run LP solve in web worker for complex cases with full progress tracking
-			const reforgeWorker = getReforgeWorker();
-			const workerResult = await reforgeWorker.optimizeReforges(workerRequest, progressCallback);
-			solution = workerResult.solution;
-			elapsedMs = workerResult.elapsedMs;
-		}
-
-		const elapsedSeconds: number = elapsedMs / 1000;
+		const solution = result.solution;
+		const elapsedSeconds: number = result.elapsedMs / 1000;
 
 		if (isDevMode()) {
 			console.log('LP solution:', {
 				status: solution.status,
 				result: solution.result,
 				variableCount: solution.variables.length,
-				elapsedMs: elapsedMs
+				elapsedMs: result.elapsedMs
 			});
 		}
 
@@ -2180,14 +1946,7 @@ export class ReforgeOptimizer {
 				if (solution.status == 'infeasible') {
 					throw 'The specified stat caps are impossible to achieve. Consider changing any upper bound stat caps to lower bounds instead.';
 				} else if (solution.status == 'timedout' && this.includeTimeout) {
-					// For later constraint iterations, accept timeout as "good enough" if we have a reasonable result
-					// This prevents endless optimization on diminishing returns
-					if (constraintIteration > 2 && !isNaN(solution.result) && solution.result > 0) {
-						if (isDevMode()) console.log(`Accepting timeout solution for constraint iteration ${constraintIteration} with result ${solution.result} (${elapsedMs}ms)`);
-						// Continue with this solution instead of throwing
-					} else {
-						throw 'Solver timed out before finding a feasible solution. Consider un-checking "Limit execution time" in the Reforge settings.';
-					}
+					throw 'Solver timed out before finding a feasible solution. Consider un-checking "Limit execution time" in the Reforge settings.';
 				} else {
 					throw solution.status;
 				}
@@ -2210,9 +1969,6 @@ export class ReforgeOptimizer {
 		// Apply the current solution
 		const updatedGear = await this.applyLPSolution(gear, solution);
 
-		// Track optimization progress for debugging (no early termination)
-		this.trackOptimizationProgress(solution.result, constraintIteration);
-
 		// Check if any unconstrained stats exceeded their specified cap.
 		// If so, add these stats to the constraint list and re-run the solver.
 		// If no unconstrained caps were exceeded, then we're done.
@@ -2232,8 +1988,7 @@ export class ReforgeOptimizer {
 			if (isDevMode()) console.log('One or more stat caps were exceeded, starting constrained iteration...');
 			this.updateProgress({
 				stage: 'checking-caps',
-				message: `Stat caps exceeded, adding constraints (iteration ${constraintIteration + 1})...`,
-				constraintIteration: constraintIteration + 1
+				message: `Stat caps exceeded, adding constraints...`
 			});
 			await sleep(100);
 			return await this.solveModel(
@@ -2674,346 +2429,4 @@ export class ReforgeOptimizer {
 			this.setRelativeStatCap(eventID, this.relativeStatCapStat);
 		});
 	}
-
-	// Two-phase optimization: separate gem combinations from reforge optimization
-	// This approach generates multiple gem configurations and tests reforge optimizations for each.
-	//
-	// Exhaustiveness is controlled by TWO_PHASE_MAX_GEMS_PER_SOCKET and TWO_PHASE_MAX_COMBINATIONS:
-	// - Higher values = more exhaustive search, longer computation time
-	// - Lower values = faster results, may miss optimal solution
-	//
-	// Current defaults: 3 gems/socket, 200 max combinations
-	// For maximum accuracy: increase to 5 gems/socket, 500 combinations (much slower)
-	// For faster testing: decrease to 2 gems/socket, 100 combinations
-	private async optimizeWithTwoPhaseApproach(batchRun?: boolean): Promise<void> {
-		if (isDevMode()) {
-			console.log('Starting two-phase gem+reforge optimization...');
-		}
-
-		// Initialize gear state (same as joint approach)
-		this.previousGear = this.player.getGear();
-		this.previousReforges = this.previousGear.getAllReforges();
-
-		this.updateProgress({
-			stage: 'initializing',
-			message: 'Generating gem combinations for two-phase optimization...',
-			constraintIteration: 1,
-			maxConstraintIterations: 10, // More iterations expected
-		});
-
-		// Phase 1: Generate reasonable gem combinations
-		// Compute base gear/stats and gem options used to build combinations.
-		const baseGear = this.previousGear!.withoutReforges(this.player.canDualWield2H(), this.frozenItemSlots);
-		const baseStats = await this.updateGear(baseGear);
-		let reforgeCaps = baseStats.computeStatCapsDelta(this.processedStatCaps);
-		if (this.player.getSpec() == Spec.SpecGuardianDruid) {
-			reforgeCaps = reforgeCaps.withPseudoStat(
-				PseudoStat.PseudoStatMeleeHastePercent,
-				reforgeCaps.getPseudoStat(PseudoStat.PseudoStatMeleeHastePercent) / 1.5,
-			);
-		}
-		const reforgeSoftCaps = this.computeReforgeSoftCaps(baseStats);
-		const gemsToInclude = this.buildGemOptions(this.preCapEPs, reforgeCaps, reforgeSoftCaps);
-		const gemCombinations = this.generateGemCombinations(gemsToInclude, baseGear);
-
-		if (gemCombinations.length === 0) {
-			throw new Error('No valid gem combinations found');
-		}
-
-		if (isDevMode()) {
-			console.log(`Generated ${gemCombinations.length} gem combinations for optimization`);
-		}
-
-		// Phase 2: Optimize reforges for each gem combination
-		let bestGear: Gear | null = null;
-		let bestScore = -Infinity;
-
-		for (let i = 0; i < gemCombinations.length; i++) {
-			const gemCombo = gemCombinations[i];
-
-			this.updateProgress({
-				stage: 'solving', // Use existing stage type
-				message: `Optimizing reforges for gem combination ${i + 1}/${gemCombinations.length}...`,
-				constraintIteration: i + 1,
-				maxConstraintIterations: gemCombinations.length,
-			});
-
-			try {
-				// Apply this gem combination temporarily
-				const testGear = this.applyGemCombination(this.previousGear, gemCombo);
-
-				// Run reforge-only optimization with these gems
-				const score = await this.runReforgeOnlyOptimization(testGear, batchRun);
-
-				if (score > bestScore) {
-					bestScore = score;
-					bestGear = this.player.getGear(); // Get the current optimized gear
-				}
-
-			} catch (error) {
-				if (isDevMode()) {
-					console.warn(`Failed optimization for gem combination ${i + 1}:`, error);
-				}
-				// Continue with next combination
-			}
-		}
-
-		if (!bestGear) {
-			throw new Error('No successful optimization found in two-phase approach');
-		}
-
-		// Apply the best solution
-		await this.updateGear(bestGear);
-		this.currentReforges = bestGear.getAllReforges();
-
-		if (isDevMode()) {
-			console.log(`Two-phase optimization complete. Best score: ${bestScore}`);
-		}
-	}
-
-	// Generate gem combinations for two-phase optimization with configurable exhaustiveness
-	private generateGemCombinations(gemsToInclude: Map<GemColor, GemData[]>, baseGear: Gear): GemCombination[] {
-		const combinations: GemCombination[] = [];
-		const gear = this.player.getGear();
-
-		// Use class-level configuration for exhaustiveness
-		const maxGemsPerSocket = this.TWO_PHASE_MAX_GEMS_PER_SOCKET;
-		const maxTotalCombinations = this.TWO_PHASE_MAX_COMBINATIONS;
-
-		// For each slot with sockets, build a list of gem option sets
-		const slotVariants: Map<ItemSlot, Gem[][]> = new Map();
-
-		for (const slot of gear.getItemSlots()) {
-			const item = gear.getEquippedItem(slot);
-			if (!item) continue;
-
-			const socketColors = item.curSocketColors(this.player.isBlacksmithing());
-			if (socketColors.length === 0) continue;
-
-			const currentGems = item.curGems(this.player.isBlacksmithing()).filter(g => g !== null) as Gem[];
-			const variants: Gem[][] = [];
-
-			// Always include current gems as a variant
-			if (currentGems.length > 0) {
-				variants.push(currentGems);
-			}
-
-			// Build variants by selecting top gems for each socket
-			// This creates more exhaustive combinations per slot
-			const socketGemOptions: Gem[][] = [];
-
-			for (let socketIdx = 0; socketIdx < socketColors.length; socketIdx++) {
-				const socketColor = socketColors[socketIdx];
-				const currentGem = currentGems[socketIdx];
-				const gemOptions: Gem[] = [];
-
-				// Add current gem first if it exists
-				if (currentGem) {
-					gemOptions.push(currentGem);
-				}
-
-				// Get top N gems for this socket color, sorted by EP
-				const colorGems = gemsToInclude.get(socketColor) || [];
-				for (const gemData of colorGems.slice(0, maxGemsPerSocket)) {
-					if (!gemOptions.find(g => g.id === gemData.gem.id)) {
-						gemOptions.push(gemData.gem);
-					}
-				}
-
-				// Fallback: if no color-matched gems, get top from any color
-				if (gemOptions.length === 0) {
-					for (const gemList of gemsToInclude.values()) {
-						if (gemList.length > 0) {
-							gemOptions.push(gemList[0].gem);
-							break;
-						}
-					}
-				}
-
-				socketGemOptions.push(gemOptions);
-			}
-
-			// Generate combinations for this slot's sockets
-			// This is a per-slot cartesian product of gem options
-			const slotCombos = this.generateSocketCombinations(socketGemOptions);
-			variants.push(...slotCombos);
-
-			// Remove duplicates
-			const uniqueVariants = this.deduplicateGemArrays(variants);
-			slotVariants.set(slot, uniqueVariants);
-
-			if (isDevMode()) {
-				console.log(`Slot ${slot}: ${socketColors.length} sockets, ${uniqueVariants.length} unique gem variants`);
-			}
-		}
-
-		// Now build full gear combinations via cartesian product across slots
-		const slots = Array.from(slotVariants.keys());
-		const maxCombinations = maxTotalCombinations;
-
-		function buildCombos(index: number, current: GemCombination) {
-			if (combinations.length >= maxCombinations) return;
-			if (index >= slots.length) { combinations.push(new Map(current)); return; }
-			const slot = slots[index];
-			const variants = slotVariants.get(slot)!;
-			for (const v of variants) {
-				current.set(slot, v);
-				buildCombos(index + 1, current);
-				current.delete(slot);
-				if (combinations.length >= maxCombinations) return;
-			}
-		}
-
-		buildCombos(0, new Map());
-
-		if (isDevMode()) {
-			const totalSockets = slots.reduce((sum, slot) => {
-				const item = gear.getEquippedItem(slot);
-				return sum + (item?.curSocketColors(this.player.isBlacksmithing()).length || 0);
-			}, 0);
-			console.log('═══════════════════════════════════════════════════════');
-			console.log('🔷 Two-Phase Gem Combination Generation Summary');
-			console.log('═══════════════════════════════════════════════════════');
-			console.log(`Configuration:`);
-			console.log(`  - Max gems per socket: ${maxGemsPerSocket}`);
-			console.log(`  - Max total combinations: ${maxTotalCombinations}`);
-			console.log(`  - Total gem sockets: ${totalSockets}`);
-			console.log(`  - Slots with sockets: ${slots.length}`);
-			console.log(`Generated combinations: ${combinations.length}`);
-			console.log('═══════════════════════════════════════════════════════');
-		}
-
-		// Always include the original current configuration as a baseline
-		const baseline: GemCombination = new Map();
-		for (const slot of gear.getItemSlots()) {
-			const item = gear.getEquippedItem(slot);
-			if (!item) continue;
-			const gems = item.curGems(this.player.isBlacksmithing()).filter(g => g !== null) as Gem[];
-			if (gems.length > 0) baseline.set(slot, gems);
-		}
-		combinations.unshift(baseline);
-
-		if (isDevMode()) {
-			console.log(`✅ Final combination count: ${combinations.length} (including baseline)`);
-			console.log('═══════════════════════════════════════════════════════\n');
-		}
-
-		return combinations.slice(0, maxCombinations);
-	}
-
-	// Apply a gem combination to gear
-	private applyGemCombination(baseGear: Gear | null, gemCombo: GemCombination): Gear {
-		if (!baseGear) {
-			throw new Error('Base gear is null in applyGemCombination');
-		}
-
-		let updatedGear = baseGear.withoutGems(this.player.canDualWield2H(), this.frozenItemSlots, true);
-
-		for (const [slot, gems] of gemCombo) {
-			const item = updatedGear.getEquippedItem(slot);
-			if (item && gems.length > 0) {
-				// Apply gems one by one using withGem
-				let itemWithGems = item;
-				for (let i = 0; i < gems.length && i < item.curSocketColors(this.player.isBlacksmithing()).length; i++) {
-					itemWithGems = itemWithGems.withGem(gems[i], i);
-				}
-				updatedGear = updatedGear.withEquippedItem(slot, itemWithGems, this.player.canDualWield2H());
-			}
-
-			if (isDevMode()) {
-				const applied = updatedGear.getEquippedItem(slot)?.curGems(this.player.isBlacksmithing()) || [];
-				console.log(`applyGemCombination: slot=${slot}, appliedGems=${applied.map(g=>g?g.name:'null').join(',')}`);
-			}
-		}
-
-		return updatedGear;
-	}
-
-	// Helper: Generate all combinations of gems for a single slot's sockets
-	private generateSocketCombinations(socketGemOptions: Gem[][]): Gem[][] {
-		if (socketGemOptions.length === 0) return [];
-
-		const results: Gem[][] = [];
-
-		function buildCombo(index: number, current: Gem[]) {
-			if (index >= socketGemOptions.length) {
-				results.push([...current]);
-				return;
-			}
-
-			for (const gem of socketGemOptions[index]) {
-				current.push(gem);
-				buildCombo(index + 1, current);
-				current.pop();
-			}
-		}
-
-		buildCombo(0, []);
-		return results;
-	}
-
-	// Helper: Remove duplicate gem arrays
-	private deduplicateGemArrays(gemArrays: Gem[][]): Gem[][] {
-		const seen = new Set<string>();
-		const unique: Gem[][] = [];
-
-		for (const gems of gemArrays) {
-			const key = gems.map(g => g.id).join(',');
-			if (!seen.has(key)) {
-				seen.add(key);
-				unique.push(gems);
-			}
-		}
-
-		return unique;
-	}
-
-	// Run reforge-only optimization for a specific gem configuration
-	private async runReforgeOnlyOptimization(gearWithGems: Gear, batchRun?: boolean): Promise<number> {
-		// Temporarily disable gem inclusion and run joint optimization
-		const originalIncludeGems = this.includeGems;
-		this.includeGems = false;
-
-		try {
-			// Set the gear and run optimization
-			await this.updateGear(gearWithGems);
-			this.previousGear = gearWithGems;
-
-			// Run the joint approach (which is now reforge-only since includeGems = false)
-			await this.optimizeWithJointApproach(batchRun);
-
-			// Calculate and return the score
-			const optimizedGear = this.player.getGear();
-			const stats = await this.updateGear(optimizedGear);
-			return this.calculateGearScore(stats);
-
-		} finally {
-			// Restore gem inclusion setting
-			this.includeGems = originalIncludeGems;
-		}
-	}
-
-	// Check if we found a good enough solution for early termination
-	private hasFoundGoodSolution(score: number, iteration: number, totalCombinations: number): boolean {
-		// Simple heuristic: if score is very high and we've tried some combinations
-		const progressRatio = iteration / totalCombinations;
-		return score > 1000 && progressRatio > 0.3; // Arbitrary thresholds for now
-	}
-
-	// Calculate a score for gear (simple EP-based scoring)
-	private calculateGearScore(stats: Stats): number {
-		let score = 0;
-		// Use available stat types from the Stats class
-		for (const stat of Object.values(Stat)) {
-			if (typeof stat === 'number') {
-				const statValue = stats.getStat(stat);
-				const epValue = this.preCapEPs.getStat(stat);
-				score += statValue * epValue;
-			}
-		}
-		return score;
-	}
 }
-
-// Type definitions for gem combinations
-type GemCombination = Map<ItemSlot, (Gem | null)[]>;

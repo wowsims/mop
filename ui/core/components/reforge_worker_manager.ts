@@ -89,8 +89,14 @@ export class ReforgeWorker {
 					}
 					this.activeRequests.delete(id);
 				} else {
-					console.error('No active request found for id:', id);
+					// Request was likely cancelled - this is normal, don't log as error
+					console.log('Request completed after cancellation:', id.substring(0, 20));
 				}
+				return;
+			}
+
+			// Ignore abortById messages (echo from our own sends)
+			if (msg === 'abortById') {
 				return;
 			}
 
@@ -170,6 +176,33 @@ export class ReforgeWorker {
 				}
 			}, 210000);
 		});
+	}
+
+	cancel(requestId: string) {
+		const request = this.activeRequests.get(requestId);
+		if (request) {
+			request.reject(new Error('Operation cancelled by user'));
+			this.activeRequests.delete(requestId);
+			
+			// Send abort message to worker
+			this.sendMessage({
+				id: requestId,
+				msg: 'abortById' as any,
+			});
+		}
+	}
+
+	cancelAll() {
+		// Reject and clear all active requests
+		for (const [id, request] of this.activeRequests.entries()) {
+			request.reject(new Error('All operations cancelled by user'));
+			// Send abort message to worker
+			this.sendMessage({
+				id: id,
+				msg: 'abortById' as any,
+			});
+		}
+		this.activeRequests.clear();
 	}
 
 	private sendMessage(message: WorkerReceiveMessage) {

@@ -172,6 +172,12 @@ const noOpHandler = (data: Uint8Array): Uint8Array => {
 	return new Uint8Array();
 };
 
+// Silent handler for abort requests (expected to be no-op)
+const silentHandler = (data: Uint8Array): Uint8Array => {
+	// Abort is handled by manager rejecting the promise, worker just ignores it
+	return new Uint8Array();
+};
+
 // Create worker interface
 const workerInterface = new WorkerInterface({
 	[SimRequest.computeStats]: noOpHandler,
@@ -186,7 +192,7 @@ const workerInterface = new WorkerInterface({
 	[SimRequest.raidSimRequestSplit]: noOpHandler,
 	[SimRequest.raidSimResultCombination]: noOpHandler,
 	[SimRequest.reforgeOptimize]: handleReforgeOptimize,
-	[SimRequest.abortById]: noOpHandler,
+	[SimRequest.abortById]: silentHandler,
 });
 
 // Signal that worker is ready (not using WASM)
