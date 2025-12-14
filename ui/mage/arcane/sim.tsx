@@ -172,6 +172,7 @@ export class ArcaneMageSimUI extends IndividualSimUI<Spec.SpecArcaneMage> {
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: statSelectionPresets,
 			enableBreakpointLimits: true,
+			preferHitOverExpertise: true,
 			getEPDefaults: player => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 525) {
