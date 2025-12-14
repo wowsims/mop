@@ -100,6 +100,9 @@ export type ReforgeOptimizerOptions = {
 	// Sets the default stat to be the highest for relative stat cap calculations
 	// Defaults to Any
 	defaultRelativeStatCap?: Stat | null;
+	// For casters: prefer Hit Rating over Expertise Rating
+	// This filters out Expertise reforges when Hit reforges are available for the same item
+	preferHitOverExpertise?: boolean;
 };
 
 // Used to force a particular proc from trinkets like Matrix Restabilizer and Apparatus of Khaz'goroth.
@@ -237,6 +240,7 @@ export class ReforgeOptimizer {
 	protected statTooltips: StatTooltipContent = {};
 	protected additionalSoftCapTooltipInformation: StatTooltipContent = {};
 	protected statSelectionPresets: ReforgeOptimizerOptions['statSelectionPresets'];
+	protected preferHitOverExpertise: boolean;
 	protected includeGems = false;
 	protected includeEOTBPGemSocket = false;
 	protected freezeItemSlots = false;
@@ -283,6 +287,7 @@ export class ReforgeOptimizer {
 		this._statCaps = this.defaults.statCaps || new Stats();
 		this.enableBreakpointLimits = !!options?.enableBreakpointLimits;
 		this.relativeStatCapStat = options?.defaultRelativeStatCap ?? -1;
+		this.preferHitOverExpertise = options?.preferHitOverExpertise ?? false;
 
 		// Pre-warm the worker pool
 		getReforgeWorkerPool().warmUp();
@@ -1341,12 +1346,31 @@ export class ReforgeOptimizer {
 			}
 
 			const scaledItem = item.withDynamicStats();
+			const availableReforges = this.player.getAvailableReforgings(scaledItem);
 
-			for (const reforgeData of this.player.getAvailableReforgings(scaledItem)) {
+			// Filter reforges based on preferences
+			let reforgesToUse = availableReforges.filter(reforgeData => {
 				if (!epStats.includes(reforgeData.toStat) && reforgeData.toStat != Stat.StatExpertiseRating) {
-					continue;
+					return false;
 				}
 
+				// For casters: prefer Hit over Expertise
+				// If the item doesn't have Hit or Expertise natively, remove Expertise as a reforge option
+				if (this.preferHitOverExpertise && reforgeData.toStat === Stat.StatExpertiseRating) {
+					const itemStats = scaledItem.calcStats(slot);
+					const hasNativeHit = itemStats.getStat(Stat.StatHitRating) > 0;
+					const hasNativeExpertise = itemStats.getStat(Stat.StatExpertiseRating) > 0;
+					
+					// If item has neither Hit nor Expertise natively, don't allow reforging to Expertise
+					if (!hasNativeHit && !hasNativeExpertise) {
+						return false;
+					}
+				}
+
+				return true;
+			});
+
+			for (const reforgeData of reforgesToUse) {
 				const variableKey = `${slot}_${reforgeData.id}`;
 				const coefficients = new Map<string, number>();
 				coefficients.set(ItemSlot[slot], 1);

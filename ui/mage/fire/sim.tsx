@@ -309,6 +309,7 @@ export class FireMageSimUI extends IndividualSimUI<Spec.SpecFireMage> {
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: statSelectionPresets,
 			enableBreakpointLimits: true,
+			preferHitOverExpertise: true,
 			// updateSoftCaps: softCaps => {
 			// 	const raidBuffs = player.getRaid()?.getBuffs();
 			// 	const hasBL = !!raidBuffs?.bloodlust;

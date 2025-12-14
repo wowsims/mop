@@ -188,6 +188,7 @@ export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: [MAGE_BREAKPOINTS],
 			enableBreakpointLimits: true,
+			preferHitOverExpertise: true,
 			getEPDefaults: player => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 517) {
