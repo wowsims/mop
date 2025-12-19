@@ -341,6 +341,27 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 	})
 
 	if config.TimePerStack > 0 {
+		var pa *PendingAction
+
+		// Helper to create the periodic action for stack changes
+		startStackingAction := func(sim *Simulation, tickImmediately bool, numTicks int) {
+			pa = StartPeriodicAction(sim, PeriodicActionOptions{
+				Period:          config.TimePerStack,
+				NumTicks:        numTicks,
+				TickImmediately: tickImmediately,
+				OnAction: func(sim *Simulation) {
+					// Aura might not be active because of stuff like mage alter time being cast right before this aura being activated
+					if stackingAura.IsActive() {
+						if config.DecrementStacks {
+							stackingAura.RemoveStack(sim)
+						} else {
+							stackingAura.AddStack(sim)
+						}
+					}
+				},
+			})
+		}
+
 		aura := character.RegisterAura(Aura{
 			Label:    config.AuraLabel,
 			ActionID: config.ActionID,
@@ -352,21 +373,32 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 					stackingAura.SetStacks(sim, config.MaxStacks)
 				}
 
-				StartPeriodicAction(sim, PeriodicActionOptions{
-					Period:          config.TimePerStack,
-					NumTicks:        int(config.MaxStacks),
-					TickImmediately: config.TickImmediately,
-					OnAction: func(sim *Simulation) {
-						// Aura might not be active because of stuff like mage alter time being cast right before this aura being activated
-						if stackingAura.IsActive() {
-							if config.DecrementStacks {
-								stackingAura.RemoveStack(sim)
-							} else {
-								stackingAura.AddStack(sim)
-							}
-						}
-					},
-				})
+				startStackingAction(sim, config.TickImmediately, int(config.MaxStacks))
+			},
+			OnExpire: func(aura *Aura, sim *Simulation) {
+				if pa != nil {
+					pa.Cancel(sim)
+					pa = nil
+				}
+			},
+			OnRestore: func(aura *Aura, sim *Simulation, stacks int32) {
+				// When restoring (e.g., via Alter Time), we need to restart the periodic action
+				// but without TickImmediately to avoid adding an extra stack.
+				// Use the stacks parameter to calculate remaining ticks.
+				// Note: We don't activate the stacking aura here because it will be restored
+				// separately by Alter Time's restoration loop with the correct duration.
+
+				var remainingTicks int
+				if config.DecrementStacks {
+					// For decrementing auras, remaining ticks = stacks being restored
+					remainingTicks = int(stacks)
+				} else {
+					// For incrementing auras, remaining ticks = max - stacks being restored
+					remainingTicks = int(config.MaxStacks - stacks)
+				}
+				if remainingTicks > 0 {
+					startStackingAction(sim, false, remainingTicks)
+				}
 			},
 		})
 		return stackingAura, aura
