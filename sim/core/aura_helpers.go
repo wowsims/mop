@@ -379,13 +379,13 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 					pa = nil
 				}
 			},
-			OnRestore: func(aura *Aura, sim *Simulation, stacks int32) {
+			OnRestore: func(aura *Aura, sim *Simulation, state AuraState) {
 				// When restoring (e.g., via Alter Time), we need to restart the periodic action
 				// but without TickImmediately to avoid adding an extra stack.
 				// Note: We don't activate the stacking aura here because it will be restored
 				// separately by Alter Time's restoration loop with the correct duration.
 
-				remainingTicks := int(config.MaxStacks - stacks)
+				remainingTicks := int(config.MaxStacks - state.Stacks)
 				if remainingTicks > 0 {
 					startStackingAction(sim, false, remainingTicks)
 				}

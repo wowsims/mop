@@ -18,7 +18,7 @@ type OnReset func(aura *Aura, sim *Simulation)
 type OnDoneIteration func(aura *Aura, sim *Simulation)
 type OnGain func(aura *Aura, sim *Simulation)
 type OnExpire func(aura *Aura, sim *Simulation)
-type OnRestore func(aura *Aura, sim *Simulation, stacks int32)
+type OnRestore func(aura *Aura, sim *Simulation, state AuraState)
 type OnStacksChange func(aura *Aura, sim *Simulation, oldStacks int32, newStacks int32)
 type OnEncounterStart func(aura *Aura, sim *Simulation)
 
@@ -1164,8 +1164,7 @@ func (aura *Aura) RestoreState(state AuraState, sim *Simulation) {
 		// Activate without triggering OnGain's immediate effects
 		aura.activate(sim, false)
 		// Then call the restore callback to restart periodic actions properly
-		// Pass the stacks so it can calculate remaining ticks
-		aura.OnRestore(aura, sim, state.Stacks)
+		aura.OnRestore(aura, sim, state)
 	} else {
 		if !aura.active {
 			aura.Activate(sim)
