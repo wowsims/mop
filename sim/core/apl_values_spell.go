@@ -175,6 +175,30 @@ func (value *APLValueSpellCPM) String() string {
 	return fmt.Sprintf("CPM(%s)", value.spell.ActionID)
 }
 
+type APLValueSpellIsCasting struct {
+	DefaultAPLValueImpl
+	spell *Spell
+}
+
+func (rot *APLRotation) newValueSpellIsCasting(config *proto.APLValueSpellIsCasting, _ *proto.UUID) APLValue {
+	spell := rot.GetAPLSpell(config.SpellId)
+	if spell == nil {
+		return nil
+	}
+	return &APLValueSpellIsCasting{
+		spell: spell,
+	}
+}
+func (action *APLValueSpellIsCasting) Type() proto.APLValueType {
+	return proto.APLValueType_ValueTypeBool
+}
+func (action *APLValueSpellIsCasting) GetBool(sim *Simulation) bool {
+	return action.spell.Unit.Hardcast.Expires > sim.CurrentTime
+}
+func (action *APLValueSpellIsCasting) String() string {
+	return fmt.Sprintf("IsCasting(%s)", action.spell.ActionID)
+}
+
 type APLValueSpellIsChanneling struct {
 	DefaultAPLValueImpl
 	spell *Spell

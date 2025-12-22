@@ -170,6 +170,8 @@ func (rot *APLRotation) newAPLActionImpl(config *proto.APLAction) APLActionImpl 
 	// Casting
 	case *proto.APLAction_CastSpell:
 		return rot.newActionCastSpell(config.GetCastSpell())
+	case *proto.APLAction_CancelSpellCast:
+		return rot.newActionCancelSpellCast(config.GetCancelSpellCast())
 	case *proto.APLAction_CastFriendlySpell:
 		return rot.newActionCastFriendlySpell(config.GetCastFriendlySpell())
 	case *proto.APLAction_ChannelSpell:

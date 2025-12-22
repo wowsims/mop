@@ -578,7 +578,7 @@ export class Timeline extends ResultComponent {
 
 		const buffsAndDebuffsById = buffsById.concat(
 			// Only pick target 0 to prevent overlapping cast rows
-			debuffsByTargetById[0]
+			debuffsByTargetById[0],
 		);
 
 		auraAsResource.forEach(auraId => {
@@ -895,13 +895,15 @@ export class Timeline extends ResultComponent {
 					className="rotation-timeline-cast"
 					style={{
 						left: this.timeToPx(castLog.timestamp),
-						minWidth: this.timeToPx(castLog.castTime + castLog.travelTime),
+						minWidth: this.timeToPx(castLog.cancelTime || castLog.castTime + castLog.travelTime),
 					}}
 				/>
 			);
 			rowElem.appendChild(castElem);
 
-			if (castLog.travelTime != 0) {
+			if (castLog.cancelTime) {
+				castElem.classList.add('cast-cancelled');
+			} else if (castLog.travelTime != 0) {
 				const travelTimeElem = (
 					<div
 						className="rotation-timeline-travel-time"
@@ -943,8 +945,11 @@ export class Timeline extends ResultComponent {
 			const tt = (
 				<div className="timeline-tooltip">
 					<span>
-						{castLog.actionId!.name} from {castLog.timestamp.toFixed(2)}s to {(castLog.timestamp + castLog.castTime).toFixed(2)}s (
-						{castLog.castTime > 0 && `${castLog.castTime.toFixed(2)}s, `} {castLog.effectiveTime.toFixed(2)}s GCD Time)
+						{castLog.actionId!.name} from {castLog.timestamp.toFixed(2)}s to{' '}
+						{(castLog.castCancelledLog?.timestamp || castLog.timestamp + castLog.castTime).toFixed(2)}s
+						{castLog.castCancelledLog?.timestamp
+							? ` (Cancelled after ${castLog.cancelTime.toFixed(2)}s)`
+							: ` (${castLog.castTime > 0 ? `${castLog.castTime.toFixed(2)}s, ` : ''}${castLog.effectiveTime.toFixed(2)}s GCD Time)`}
 						{travelTimeStr.length > 0 && travelTimeStr}
 					</span>
 					{totalDamage > 0 && (

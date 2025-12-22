@@ -118,6 +118,8 @@ import {
 	APLValueDotTimeToNextTick,
 	APLValueSpellInFlight,
 	APLValueBossCurrentTarget,
+	APLValueSpellIsCasting,
+	APLValueRemainingCastTime,
 } from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
@@ -1054,6 +1056,16 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		fields: [],
 	}),
 
+	// Casting
+	remainingCastTime: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.remaining_cast_time.label'),
+		submenu: ['casting'],
+		shortDescription: i18n.t('rotation_tab.apl.values.remaining_cast_time.tooltip'),
+		newValue: APLValueRemainingCastTime.create,
+		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
+		fields: [],
+	}),
+
 	// Spells
 	spellIsKnown: inputBuilder({
 		label: i18n.t('rotation_tab.apl.values.spell_known.label'),
@@ -1117,6 +1129,14 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		newValue: APLValueSpellCPM.create,
 		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
 		fields: [AplHelpers.actionIdFieldConfig('spellId', 'castable_spells', '')],
+	}),
+	spellIsCasting: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.is_casting.label'),
+		submenu: ['spell'],
+		shortDescription: i18n.t('rotation_tab.apl.values.is_casting.tooltip'),
+		newValue: APLValueSpellIsCasting.create,
+		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
+		fields: [AplHelpers.actionIdFieldConfig('spellId', 'non_instant_spells', '')],
 	}),
 	spellIsChanneling: inputBuilder({
 		label: i18n.t('rotation_tab.apl.values.is_channeling.label'),

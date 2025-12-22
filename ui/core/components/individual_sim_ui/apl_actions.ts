@@ -33,6 +33,7 @@ import {
 	APLActionWaitUntil,
 	APLValue,
 	APLActionWarlockNextExhaleTarget,
+	APLActionCancelSpellCast,
 } from '../../proto/apl.js';
 import { Spec } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
@@ -338,6 +339,13 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		shortDescription: i18n.t('rotation_tab.apl.actions.cast.tooltip'),
 		newValue: APLActionCastSpell.create,
 		fields: [AplHelpers.actionIdFieldConfig('spellId', 'castable_spells', ''), AplHelpers.unitFieldConfig('target', 'targets')],
+	}),
+	['cancelSpellCast']: inputBuilder({
+		label: i18n.t('rotation_tab.apl.actions.cancel_cast.label'),
+		submenu: ['casting'],
+		shortDescription: i18n.t('rotation_tab.apl.actions.cancel_cast.tooltip'),
+		newValue: APLActionCancelSpellCast.create,
+		fields: [],
 	}),
 	['castFriendlySpell']: inputBuilder({
 		label: i18n.t('rotation_tab.apl.actions.cast_at_player.label'),

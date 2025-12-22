@@ -185,6 +185,10 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 	case *proto.APLValue_AutoTimeToNext:
 		value = rot.newValueAutoTimeToNext(config.GetAutoTimeToNext(), config.Uuid)
 
+	// Casting
+	case *proto.APLValue_RemainingCastTime:
+		value = rot.newValueRemainingCastTime(config.GetRemainingCastTime(), config.Uuid)
+
 	// Spells
 	case *proto.APLValue_SpellIsKnown:
 		value = rot.newValueSpellIsKnown(config.GetSpellIsKnown(), config.Uuid)
@@ -200,6 +204,8 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 		value = rot.newValueSpellTravelTime(config.GetSpellTravelTime(), config.Uuid)
 	case *proto.APLValue_SpellCpm:
 		value = rot.newValueSpellCPM(config.GetSpellCpm(), config.Uuid)
+	case *proto.APLValue_SpellIsCasting:
+		value = rot.newValueSpellIsCasting(config.GetSpellIsCasting(), config.Uuid)
 	case *proto.APLValue_SpellIsChanneling:
 		value = rot.newValueSpellIsChanneling(config.GetSpellIsChanneling(), config.Uuid)
 	case *proto.APLValue_SpellChanneledTicks:

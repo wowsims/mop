@@ -253,6 +253,7 @@ export class SimLog {
 					AuraStacksChangeLog.parse(params) ||
 					MajorCooldownUsedLog.parse(params) ||
 					CastBeganLog.parse(params) ||
+					CastCancelledLog.parse(params) ||
 					CastCompletedLog.parse(params) ||
 					StatChangeLog.parse(params) ||
 					Promise.resolve(new SimLog(params))
@@ -287,6 +288,10 @@ export class SimLog {
 
 	isCastCompleted(): this is CastCompletedLog {
 		return this instanceof CastCompletedLog;
+	}
+
+	isCastCancelled(): this is CastCancelledLog {
+		return this instanceof CastCancelledLog;
 	}
 
 	isStatChange(): this is StatChangeLog {
@@ -392,24 +397,24 @@ export class DamageDealtLog extends SimLog {
 						{this.miss
 							? 'Miss'
 							: this.dodge
-							? 'Dodge'
-							: this.parry
-							? 'Parry'
-							: this.block
-							? this.crit
-								? 'Critical Block'
-								: this.glance
-								? 'Blocked Glance'
-								: 'Block'
-							: this.glance
-							? 'Glance'
-							: this.crit
-							? 'Crit'
-							: this.crush
-							? 'Crush'
-							: this.tick
-							? 'Tick'
-							: 'Hit'}
+								? 'Dodge'
+								: this.parry
+									? 'Parry'
+									: this.block
+										? this.crit
+											? 'Critical Block'
+											: this.glance
+												? 'Blocked Glance'
+												: 'Block'
+										: this.glance
+											? 'Glance'
+											: this.crit
+												? 'Crit'
+												: this.crush
+													? 'Crush'
+													: this.tick
+														? 'Tick'
+														: 'Hit'}
 					</>
 				)}
 				{` `}
@@ -997,6 +1002,41 @@ export class CastBeganLog extends SimLog {
 	}
 }
 
+export class CastCancelledLog extends SimLog {
+	readonly cancelTime: number;
+
+	constructor(params: SimLogParams, cancelTime: number) {
+		super(params);
+		this.cancelTime = cancelTime;
+	}
+
+	toHTML(includeTimestamp = true) {
+		return this.cacheOutput(includeTimestamp, () => (
+			<>
+				{this.toPrefix(includeTimestamp)} Cancelled {this.newActionIdLink()} after {this.cancelTime.toFixed(2)}s.
+			</>
+		));
+	}
+
+	static parse(params: SimLogParams): Promise<CastCancelledLog> | null {
+		const match = params.raw.match(/Cancelled (.*) after (\d+\.?\d*)(m?s)/);
+		if (match) {
+			let castProgress = parseFloat(match[2]);
+			if (match[3] == 'ms') {
+				castProgress /= 1000;
+			}
+			return ActionId.fromLogString(match[1])
+				.fill(params.source?.index)
+				.then(castId => {
+					params.actionId = castId;
+					return new CastCancelledLog(params, castProgress);
+				});
+		} else {
+			return null;
+		}
+	}
+}
+
 export class CastCompletedLog extends SimLog {
 	constructor(params: SimLogParams) {
 		super(params);
@@ -1029,33 +1069,46 @@ export class CastLog extends SimLog {
 	readonly castTime: number;
 	readonly effectiveTime: number;
 	readonly travelTime: number;
+	readonly cancelTime: number;
 
 	readonly castBeganLog: CastBeganLog;
+	readonly castCancelledLog: CastCancelledLog | null;
 	readonly castCompletedLog: CastCompletedLog | null;
 
 	// All instances of damage dealt from the completion of this cast until the completion of the next cast.
 	readonly damageDealtLogs: Array<DamageDealtLog>;
 
-	constructor(castBeganLog: CastBeganLog, castCompletedLog: CastCompletedLog | null, damageDealtLogs: Array<DamageDealtLog>) {
+	constructor(
+		castBeganLog: CastBeganLog,
+		castCompletedLog: CastCompletedLog | null,
+		castCancelledLog: CastCancelledLog | null,
+		damageDealtLogs: Array<DamageDealtLog>,
+	) {
 		super({
 			raw: castBeganLog.raw,
 			logIndex: castBeganLog.logIndex,
 			timestamp: castBeganLog.timestamp,
 			source: castBeganLog.source,
 			target: castBeganLog.target,
-			actionId: castCompletedLog?.actionId || castBeganLog.actionId, // Use completed log because of arcane blast
-			spellSchool: castCompletedLog?.spellSchool || castBeganLog.spellSchool,
-			threat: castCompletedLog?.threat || castBeganLog.threat,
+			actionId: castCompletedLog?.actionId || castCancelledLog?.actionId || castBeganLog.actionId, // Use completed log because of arcane blast
+			spellSchool: castCompletedLog?.spellSchool || castCancelledLog?.spellSchool || castBeganLog.spellSchool,
+			threat: castCompletedLog?.threat || castCancelledLog?.threat || castBeganLog.threat,
 		});
 		this.castTime = castBeganLog.castTime;
 		this.effectiveTime = castBeganLog.effectiveTime;
+		this.cancelTime = castCancelledLog?.cancelTime || 0;
+
 		this.castBeganLog = castBeganLog;
 		this.castCompletedLog = castCompletedLog;
+		this.castCancelledLog = castCancelledLog;
 		this.damageDealtLogs = damageDealtLogs;
 
 		if (this.castCompletedLog && this.castBeganLog) {
 			this.castTime = this.castCompletedLog.timestamp - this.castBeganLog.timestamp;
 			this.effectiveTime = this.castCompletedLog.timestamp - this.castBeganLog.timestamp;
+		}
+		if (this.castCancelledLog) {
+			this.cancelTime = this.castCancelledLog.cancelTime;
 		}
 		if (
 			this.castCompletedLog &&
@@ -1084,6 +1137,7 @@ export class CastLog extends SimLog {
 	static fromLogs(logs: Array<SimLog>): Array<CastLog> {
 		const castBeganLogs = logs.filter((log): log is CastBeganLog => log.isCastBegan());
 		const castCompletedLogs = logs.filter((log): log is CastCompletedLog => log.isCastCompleted());
+		const castCancelledLogs = logs.filter((log): log is CastCancelledLog => log.isCastCancelled());
 		const damageDealtLogs = logs.filter((log): log is DamageDealtLog => log.isDamageDealt());
 
 		const toBucketKey = (actionId: ActionId) => {
@@ -1098,36 +1152,58 @@ export class CastLog extends SimLog {
 		};
 		const castBeganLogsByAbility = bucket(castBeganLogs, log => toBucketKey(log.actionId!));
 		const castCompletedLogsByAbility = bucket(castCompletedLogs, log => toBucketKey(log.actionId!));
+		const castCancelledLogsByAbility = bucket(castCancelledLogs, log => toBucketKey(log.actionId!));
 		const damageDealtLogsByAbility = bucket(damageDealtLogs, log => toBucketKey(log.actionId!));
 
 		const castLogs: Array<CastLog> = [];
 		Object.keys(castBeganLogsByAbility).forEach(bucketKey => {
 			const abilityCastsBegan = castBeganLogsByAbility[bucketKey]!;
 			const abilityCastsCompleted = castCompletedLogsByAbility[bucketKey];
+			const abilityCastsCancelled = castCancelledLogsByAbility[bucketKey];
 			const abilityDamageDealt = damageDealtLogsByAbility[bucketKey];
 
 			let ddIdx = 0;
+			let castSkipIdx = 0;
 			for (let cbIdx = 0; cbIdx < abilityCastsBegan.length; cbIdx++) {
 				const cbLog = abilityCastsBegan[cbIdx];
 
 				// Assume cast completed log is the same index because they always come in pairs.
 				// Only exception is final pair, where there might be a cast began without a cast completed.
 				let ccLog: CastCompletedLog | null = null;
+				let cCancelLog: CastCancelledLog | null = null;
 				let nextCcLog: CastCompletedLog | null = null;
 				if (abilityCastsCompleted && cbIdx < abilityCastsCompleted.length) {
-					ccLog = abilityCastsCompleted[cbIdx];
-					if (cbIdx + 1 < abilityCastsCompleted.length) {
-						nextCcLog = abilityCastsCompleted[cbIdx + 1];
+					ccLog = abilityCastsCompleted[cbIdx + castSkipIdx];
+					if (cbIdx + castSkipIdx + 1 < abilityCastsCompleted.length) {
+						nextCcLog = abilityCastsCompleted[cbIdx + castSkipIdx + 1];
 					}
+				}
+
+				if (abilityCastsCancelled) {
+					const cancelledCast =
+						abilityCastsCancelled.find(
+							cancelLog => cancelLog.timestamp >= cbLog.timestamp && cancelLog.timestamp <= abilityCastsBegan[cbIdx + 1].timestamp,
+						) || null;
+					if (cancelledCast) {
+						cCancelLog = cancelledCast;
+						castSkipIdx--
+					}
+				}
+				if (cbLog.actionId?.spellId === 2912) {
 				}
 
 				// Find all damage dealt logs between the cur and next cast completed logs.
 				const ddLogs = [];
-				while (abilityDamageDealt && ddIdx < abilityDamageDealt.length && (!nextCcLog || abilityDamageDealt[ddIdx].timestamp < nextCcLog.timestamp)) {
+				while (
+					!cCancelLog &&
+					abilityDamageDealt &&
+					ddIdx < abilityDamageDealt.length &&
+					(!nextCcLog || abilityDamageDealt[ddIdx].timestamp < nextCcLog.timestamp)
+				) {
 					ddLogs.push(abilityDamageDealt[ddIdx]);
 					ddIdx++;
 				}
-				castLogs.push(new CastLog(cbLog, ccLog, ddLogs));
+				castLogs.push(new CastLog(cbLog, ccLog, cCancelLog, ddLogs));
 			}
 		});
 

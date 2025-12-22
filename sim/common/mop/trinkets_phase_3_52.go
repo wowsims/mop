@@ -539,6 +539,7 @@ func init() {
 				RequireDamageDealt: true,
 				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
 					statBuffAura.Activate(sim)
+					character.ReactToEvent(sim, false)
 				},
 			})
 

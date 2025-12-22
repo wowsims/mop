@@ -33,8 +33,8 @@ character_stats_results: {
 dps_results: {
  key: "TestAffliction-AllItems-AgilePrimalDiamond"
  value: {
-  dps: 229195.29497
-  tps: 155905.68326
+  dps: 229017.34305
+  tps: 155928.07699
   hps: 2609.18061
  }
 }
@@ -73,9 +73,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-AusterePrimalDiamond"
  value: {
-  dps: 224169.50896
-  tps: 152417.83624
-  hps: 2621.06346
+  dps: 223302.7404
+  tps: 151856.03304
+  hps: 2617.14223
  }
 }
 dps_results: {
@@ -161,17 +161,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-BurningPrimalDiamond"
  value: {
-  dps: 230552.60607
-  tps: 156854.15595
+  dps: 230362.6348
+  tps: 156861.76851
   hps: 2608.62546
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 225920.67984
-  tps: 153650.20145
-  hps: 2604.1843
+  dps: 225750.74133
+  tps: 153619.45688
+  hps: 2604.73945
  }
 }
 dps_results: {
@@ -257,9 +257,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-CourageousPrimalDiamond"
  value: {
-  dps: 225589.37583
-  tps: 153482.21157
-  hps: 2596.41228
+  dps: 226444.93339
+  tps: 154109.40737
+  hps: 2600.29829
  }
 }
 dps_results: {
@@ -473,9 +473,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-DarkglowEmbroidery(Rank3)-4893"
  value: {
-  dps: 250302.13072
-  tps: 170319.55019
-  hps: 2891.19417
+  dps: 247295.56934
+  tps: 168421.76521
+  hps: 2877.31555
  }
 }
 dps_results: {
@@ -505,9 +505,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 226146.52963
-  tps: 153829.86861
-  hps: 2604.1843
+  dps: 225978.55459
+  tps: 153817.22279
+  hps: 2604.73945
  }
 }
 dps_results: {
@@ -641,17 +641,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-EffulgentPrimalDiamond"
  value: {
-  dps: 224169.50896
-  tps: 152417.83624
-  hps: 2621.06346
+  dps: 223302.7404
+  tps: 151856.03304
+  hps: 2617.14223
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 225900.85062
-  tps: 153656.69884
-  hps: 2599.74315
+  dps: 225764.8624
+  tps: 153633.2522
+  hps: 2600.29829
  }
 }
 dps_results: {
@@ -681,65 +681,65 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
  value: {
-  dps: 244031.25062
-  tps: 166236.28139
-  hps: 2882.867
+  dps: 242573.53518
+  tps: 165235.06067
+  hps: 2870.09867
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-Colossus-4445"
  value: {
-  dps: 244031.25062
-  tps: 166236.28139
-  hps: 2882.867
+  dps: 242573.53518
+  tps: 165235.06067
+  hps: 2870.09867
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-DancingSteel-4444"
  value: {
-  dps: 244031.25062
-  tps: 166236.28139
-  hps: 2882.867
+  dps: 242573.53518
+  tps: 165235.06067
+  hps: 2870.09867
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 245159.15345
-  tps: 167599.95366
-  hps: 2882.867
+  dps: 243584.04118
+  tps: 166385.37062
+  hps: 2870.09867
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 244031.25062
-  tps: 166236.28139
-  hps: 2882.867
+  dps: 242573.53518
+  tps: 165235.06067
+  hps: 2870.09867
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
-  dps: 247462.43326
-  tps: 168341.87543
-  hps: 2865.10236
+  dps: 245189.44965
+  tps: 166707.36457
+  hps: 2858.99577
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 244256.72158
-  tps: 166065.45772
-  hps: 2894.52504
+  dps: 243812.45284
+  tps: 165761.34033
+  hps: 2900.63163
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 226146.52963
-  tps: 153829.86861
-  hps: 2604.1843
+  dps: 225978.55459
+  tps: 153817.22279
+  hps: 2604.73945
  }
 }
 dps_results: {
@@ -753,9 +753,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-EternalPrimalDiamond"
  value: {
-  dps: 225147.71039
-  tps: 153159.64911
-  hps: 2604.73945
+  dps: 225019.28408
+  tps: 153146.59596
+  hps: 2605.29459
  }
 }
 dps_results: {
@@ -809,9 +809,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 245039.51077
-  tps: 167491.96839
-  hps: 2986.17104
+  dps: 243576.64125
+  tps: 166342.16754
+  hps: 2970.70458
  }
 }
 dps_results: {
@@ -841,17 +841,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-FleetPrimalDiamond"
  value: {
-  dps: 226883.3102
-  tps: 154445.99107
-  hps: 2604.73945
+  dps: 226756.57287
+  tps: 154435.1683
+  hps: 2605.29459
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-ForlornPrimalDiamond"
  value: {
-  dps: 225900.85062
-  tps: 153656.69884
-  hps: 2599.74315
+  dps: 225764.8624
+  tps: 153633.2522
+  hps: 2600.29829
  }
 }
 dps_results: {
@@ -929,9 +929,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 245039.51077
-  tps: 167491.96839
-  hps: 2986.17104
+  dps: 243576.64125
+  tps: 166342.16754
+  hps: 2970.70458
  }
 }
 dps_results: {
@@ -1233,17 +1233,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 226146.52963
-  tps: 153829.86861
-  hps: 2604.1843
+  dps: 225978.55459
+  tps: 153817.22279
+  hps: 2604.73945
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-IndomitablePrimalDiamond"
  value: {
-  dps: 224169.50896
-  tps: 152417.83624
-  hps: 2621.06346
+  dps: 223302.7404
+  tps: 151856.03304
+  hps: 2617.14223
  }
 }
 dps_results: {
@@ -1449,17 +1449,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-LightweaveEmbroidery(Rank3)-4892"
  value: {
-  dps: 246647.2546
-  tps: 167547.4811
-  hps: 2846.78259
+  dps: 250216.82673
+  tps: 170179.68856
+  hps: 2847.33773
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-LordBlastington'sScopeofDoom-4699"
  value: {
-  dps: 244031.25062
-  tps: 166236.28139
-  hps: 2882.867
+  dps: 242573.53518
+  tps: 165235.06067
+  hps: 2870.09867
  }
 }
 dps_results: {
@@ -1625,9 +1625,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-MirrorScope-4700"
  value: {
-  dps: 244320.20821
-  tps: 166479.70835
-  hps: 2885.08758
+  dps: 242862.49277
+  tps: 165478.48763
+  hps: 2872.31925
  }
 }
 dps_results: {
@@ -1697,9 +1697,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-NitroBoosts-4223"
  value: {
-  dps: 251517.58309
-  tps: 171159.76721
-  hps: 2891.19417
+  dps: 248509.27097
+  tps: 169257.75849
+  hps: 2877.31555
  }
 }
 dps_results: {
@@ -1737,8 +1737,8 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-PhaseFingers-4697"
  value: {
-  dps: 248578.0222
-  tps: 168977.73681
+  dps: 247519.94965
+  tps: 168141.48141
   hps: 2878.98098
  }
 }
@@ -1753,9 +1753,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-PowerfulPrimalDiamond"
  value: {
-  dps: 224169.50896
-  tps: 152417.83624
-  hps: 2621.06346
+  dps: 223302.7404
+  tps: 151856.03304
+  hps: 2617.14223
  }
 }
 dps_results: {
@@ -1905,17 +1905,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 238745.70971
-  tps: 162332.32746
-  hps: 2929.46071
+  dps: 238803.9301
+  tps: 162372.64713
+  hps: 2908.26594
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 237000.66445
-  tps: 161131.70713
-  hps: 2929.46071
+  dps: 237074.06072
+  tps: 161141.57681
+  hps: 2908.26594
  }
 }
 dps_results: {
@@ -1929,17 +1929,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-RegaliaoftheHornedNightmare"
  value: {
-  dps: 194529.39025
-  tps: 132624.6264
-  hps: 2507.56293
+  dps: 194442.52413
+  tps: 132792.90379
+  hps: 2506.45043
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-RegaliaoftheThousandfoldHells"
  value: {
-  dps: 196012.25802
-  tps: 133351.54417
-  hps: 2448.78091
+  dps: 197150.27093
+  tps: 133852.42331
+  hps: 2446.59108
  }
 }
 dps_results: {
@@ -2017,16 +2017,16 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-ReverberatingPrimalDiamond"
  value: {
-  dps: 229195.29497
-  tps: 155905.68326
+  dps: 229017.34305
+  tps: 155928.07699
   hps: 2609.18061
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-RevitalizingPrimalDiamond"
  value: {
-  dps: 229195.29497
-  tps: 155905.68326
+  dps: 229017.34305
+  tps: 155928.07699
   hps: 2609.18061
  }
 }
@@ -2065,17 +2065,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Sha-SkinRegalia"
  value: {
-  dps: 192105.35654
-  tps: 130650.39444
-  hps: 2262.15138
+  dps: 191257.00641
+  tps: 129857.61132
+  hps: 2265.70662
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-ShadowflameRegalia"
  value: {
-  dps: 143063.77031
-  tps: 96399.11562
-  hps: 1746.8625
+  dps: 143532.54264
+  tps: 96755.78821
+  hps: 1747.2664
  }
 }
 dps_results: {
@@ -2153,9 +2153,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 251517.58309
-  tps: 171159.76721
-  hps: 2891.19417
+  dps: 248509.27097
+  tps: 169257.75849
+  hps: 2877.31555
  }
 }
 dps_results: {
@@ -2361,9 +2361,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-SwordguardEmbroidery(Rank3)-4894"
  value: {
-  dps: 250302.83875
-  tps: 170319.55019
-  hps: 2891.19417
+  dps: 247296.27737
+  tps: 168421.76521
+  hps: 2877.31555
  }
 }
 dps_results: {
@@ -2377,9 +2377,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 251747.91016
-  tps: 171263.99329
-  hps: 2892.8596
+  dps: 251058.71802
+  tps: 170504.55956
+  hps: 2871.20896
  }
 }
 dps_results: {
@@ -2665,9 +2665,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-TyrannicalPrimalDiamond"
  value: {
-  dps: 225147.71039
-  tps: 153159.64911
-  hps: 2604.73945
+  dps: 225019.28408
+  tps: 153146.59596
+  hps: 2605.29459
  }
 }
 dps_results: {
@@ -2745,9 +2745,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 293241.12688
-  tps: 211691.57357
-  hps: 2986.74387
+  dps: 291189.00963
+  tps: 209862.17939
+  hps: 2971.85025
  }
 }
 dps_results: {
@@ -2769,9 +2769,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-Average-Default"
  value: {
-  dps: 252909.31899
-  tps: 171962.25791
-  hps: 2869.66977
+  dps: 252672.08287
+  tps: 171773.16042
+  hps: 2868.08178
  }
 }
 dps_results: {
@@ -2873,96 +2873,96 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 241498.62986
-  tps: 183391.46576
-  hps: 2742.97051
+  dps: 241169.68536
+  tps: 183141.47991
+  hps: 2746.85652
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 241498.62986
-  tps: 165513.02716
-  hps: 2742.97051
+  dps: 241169.68536
+  tps: 165104.82504
+  hps: 2746.85652
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 419541.68465
-  tps: 269253.61866
-  hps: 3780.53616
+  dps: 420887.27682
+  tps: 270133.12013
+  hps: 3794.41478
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 148774.01097
-  tps: 118693.74982
-  hps: 2310.95863
+  dps: 148780.90537
+  tps: 118717.47563
+  hps: 2310.44175
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 148774.01097
-  tps: 102489.6449
-  hps: 2310.95863
+  dps: 148780.90537
+  tps: 102513.37071
+  hps: 2310.44175
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 217244.37226
-  tps: 139796.28842
-  hps: 2669.67151
+  dps: 216647.15624
+  tps: 139322.66076
+  hps: 2664.50274
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.08515521033e+06
-  tps: 589292.25228
-  hps: 24830.51706
+  dps: 1.08264083892e+06
+  tps: 589053.76127
+  hps: 24579.03646
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 243531.51794
-  tps: 165862.37819
-  hps: 2761.29028
+  dps: 240948.09658
+  tps: 164287.51803
+  hps: 2749.63224
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 420160.08712
-  tps: 268764.66928
-  hps: 3761.10609
+  dps: 419709.16633
+  tps: 268398.2032
+  hps: 3758.33036
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 636276.68317
-  tps: 348859.60927
-  hps: 19872.38348
+  dps: 634193.61703
+  tps: 348221.77882
+  hps: 19856.36028
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 147749.84011
-  tps: 101423.03324
-  hps: 2306.30674
+  dps: 147645.80632
+  tps: 101552.13952
+  hps: 2302.17172
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Goblin-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 213169.91341
-  tps: 136951.72428
+  dps: 213666.73707
+  tps: 137317.24015
   hps: 2659.33397
  }
 }
@@ -3065,96 +3065,96 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 237866.42104
-  tps: 180994.49322
-  hps: 2721.875
+  dps: 238153.03277
+  tps: 181167.25244
+  hps: 2699.11407
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 237866.42104
-  tps: 162324.97326
-  hps: 2721.875
+  dps: 238153.03277
+  tps: 162655.94875
+  hps: 2699.11407
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 415075.40464
-  tps: 266711.64391
-  hps: 3722.24595
+  dps: 415897.9738
+  tps: 267252.4865
+  hps: 3733.34885
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 145557.68017
-  tps: 116591.82601
-  hps: 2262.88904
+  dps: 145074.44866
+  tps: 116231.55872
+  hps: 2264.43967
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 145557.68017
-  tps: 100387.72109
-  hps: 2262.88904
+  dps: 145074.44866
+  tps: 100027.4538
+  hps: 2264.43967
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 216770.39423
-  tps: 139970.24151
+  dps: 217177.45192
+  tps: 140304.59471
   hps: 2628.32132
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.06464363355e+06
-  tps: 583828.50357
-  hps: 24154.90583
+  dps: 1.07750675795e+06
+  tps: 589244.13149
+  hps: 24369.19172
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 235366.05354
-  tps: 160280.42115
-  hps: 2733.53304
+  dps: 235580.36012
+  tps: 160619.45747
+  hps: 2727.9816
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 417348.33408
-  tps: 268477.52126
-  hps: 3725.02168
+  dps: 415944.44295
+  tps: 267331.62687
+  hps: 3719.47023
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 634367.68771
-  tps: 347734.27034
-  hps: 19681.65573
+  dps: 627083.45122
+  tps: 343287.00277
+  hps: 19602.5735
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 144541.10933
-  tps: 99519.39075
-  hps: 2259.2709
+  dps: 144615.17362
+  tps: 99546.66301
+  hps: 2257.20339
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Human-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 215945.5006
-  tps: 138303.32106
+  dps: 216733.71927
+  tps: 138911.12644
   hps: 2633.4901
  }
 }
@@ -3257,96 +3257,96 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 243577.59413
-  tps: 184910.42981
-  hps: 2754.15044
+  dps: 243395.8473
+  tps: 184551.12787
+  hps: 2730.8337
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 243577.59413
-  tps: 166240.38763
-  hps: 2754.15044
+  dps: 243395.8473
+  tps: 165881.0857
+  hps: 2730.8337
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 429099.41275
-  tps: 275051.21872
-  hps: 3727.90167
+  dps: 429889.98075
+  tps: 275573.58129
+  hps: 3739.00488
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 148738.84471
-  tps: 118077.62204
-  hps: 2276.39002
+  dps: 148606.33228
+  tps: 117866.09975
+  hps: 2285.69407
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 148738.84471
-  tps: 102167.7027
-  hps: 2276.39002
+  dps: 148606.33228
+  tps: 102103.49448
+  hps: 2285.69407
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 221088.66503
-  tps: 141587.94071
+  dps: 221485.9797
+  tps: 141913.4598
   hps: 2620.63974
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.08531917424e+06
-  tps: 594219.631
-  hps: 23915.19705
+  dps: 1.09105469002e+06
+  tps: 595429.13642
+  hps: 24122.27186
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 240548.16649
-  tps: 163505.92873
-  hps: 2746.93335
+  dps: 241488.55022
+  tps: 164161.7227
+  hps: 2737.49563
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 428830.57521
-  tps: 274802.60943
-  hps: 3719.57427
+  dps: 427391.98499
+  tps: 273627.02667
+  hps: 3716.79847
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 645749.41274
-  tps: 352996.84703
-  hps: 19529.71029
+  dps: 640306.80271
+  tps: 350166.22795
+  hps: 19475.43668
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 148135.80073
-  tps: 101486.37505
-  hps: 2284.14339
+  dps: 148172.41137
+  tps: 101397.39465
+  hps: 2273.28867
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Orc-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 221286.5454
-  tps: 140951.85328
+  dps: 222066.35782
+  tps: 141550.31193
   hps: 2628.39311
  }
 }
@@ -3449,104 +3449,104 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 254617.20189
-  tps: 192119.16903
-  hps: 2900.07649
+  dps: 252953.94023
+  tps: 190955.3361
+  hps: 2890.08388
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 254617.20189
-  tps: 173449.64907
-  hps: 2900.07649
+  dps: 252953.94023
+  tps: 172285.81614
+  hps: 2890.08388
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 468036.49139
-  tps: 298865.28042
-  hps: 4171.91325
+  dps: 466756.10617
+  tps: 298046.07433
+  hps: 4166.3618
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 152675.76177
-  tps: 121288.00783
-  hps: 2389.00711
+  dps: 153330.6959
+  tps: 121188.65862
+  hps: 2378.66956
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 152675.76177
-  tps: 104936.59286
-  hps: 2389.00711
+  dps: 153330.6959
+  tps: 105279.17378
+  hps: 2378.66956
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 235129.88502
-  tps: 150615.41143
-  hps: 2979.79792
+  dps: 233827.71594
+  tps: 149618.25049
+  hps: 2966.87599
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.18351905931e+06
-  tps: 647619.84539
-  hps: 26601.42901
+  dps: 1.18216780592e+06
+  tps: 646407.06964
+  hps: 26371.59905
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 253183.01899
-  tps: 171528.16958
-  hps: 2878.42584
+  dps: 251974.68332
+  tps: 170350.44601
+  hps: 2867.87809
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-multitarget-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 464765.54418
-  tps: 296003.26815
-  hps: 4191.34332
+  dps: 464980.77386
+  tps: 296374.33442
+  hps: 4199.67049
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 659804.82256
-  tps: 361074.1096
-  hps: 20994.5242
+  dps: 662873.66446
+  tps: 362860.319
+  hps: 20755.20999
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 149849.24048
-  tps: 102442.55138
-  hps: 2366.26451
+  dps: 149839.59917
+  tps: 102589.02087
+  hps: 2375.5683
  }
 }
 dps_results: {
  key: "TestAffliction-Settings-Troll-p3-Affliction Warlock-multitarget-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 232103.0527
-  tps: 147665.22883
-  hps: 2964.2916
+  dps: 232571.87377
+  tps: 147777.84296
+  hps: 2979.79792
  }
 }
 dps_results: {
  key: "TestAffliction-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 253153.17227
-  tps: 173590.8276
-  hps: 2900.07649
+  dps: 251439.51248
+  tps: 172337.59822
+  hps: 2890.08388
  }
 }

@@ -941,6 +941,10 @@
 					"label": "Cast",
 					"tooltip": "Casts the spell if possible, i.e. resource/cooldown/GCD/etc requirements are all met."
 				},
+				"cancel_cast": {
+					"label": "Cancel Cast",
+					"tooltip": "Cancels the current spell cast. (This is only evaluated during hardcasting and requires \"ReactToEvent\" to be added to the trigger in the Sim core."
+				},
 				"cast_at_player": {
 					"label": "Cast at Player",
 					"tooltip": "Casts a friendly spell if possible, i.e. resource/cooldown/GCD/etc requirements are all met."
@@ -1337,6 +1341,10 @@
 					"label": "Time To Next Auto",
 					"tooltip": "Amount of time remaining before the next Main-hand or Off-hand melee attack, or <b>0</b> if autoattacks are not engaged."
 				},
+				"remaining_cast_time": {
+					"label": "Remaining Cast Time",
+					"tooltip": "Amount of time remaining before the current spell cast completes."
+				},
 				"spell_known": {
 					"label": "Spell Known",
 					"tooltip": "<b>True</b> if the spell is currently known, otherwise <b>False</b>."
@@ -1369,6 +1377,10 @@
 				"cpm": {
 					"label": "CPM",
 					"tooltip": "Casts Per Minute for the spell so far in the current iteration."
+				},
+				"is_casting": {
+					"label": "Is Casting",
+					"tooltip": "<b>True</b> if this spell is currently being cast, otherwise <b>False</b>."
 				},
 				"is_channeling": {
 					"label": "Is Channeling",

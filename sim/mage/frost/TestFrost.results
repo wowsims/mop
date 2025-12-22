@@ -488,8 +488,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 163358.19383
-  tps: 118681.02333
+  dps: 163423.91539
+  tps: 118775.44111
  }
 }
 dps_results: {

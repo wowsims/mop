@@ -67,6 +67,12 @@ func (unit *Unit) SetRotationTimer(sim *Simulation, rotationReadyAt time.Duratio
 
 // Call this when reacting to events that occur before the next scheduled rotation action
 func (unit *Unit) ReactToEvent(sim *Simulation, randomizeReactionTime bool) {
+	// If you are channeling return early because channeling has it's own
+	// interrupt handling.
+	if unit.IsChanneling() {
+		return
+	}
+
 	// If the next rotation action was already scheduled for this timestep then execute it now
 	unit.Rotation.DoNextAction(sim)
 
@@ -74,7 +80,7 @@ func (unit *Unit) ReactToEvent(sim *Simulation, randomizeReactionTime bool) {
 	newEvaluationTime := sim.CurrentTime + unit.ReactionTime
 
 	if randomizeReactionTime {
-		newEvaluationTime = sim.CurrentTime + DurationFromSeconds(sim.RandomFloat("Reaction Time") * 2 * unit.ReactionTime.Seconds())
+		newEvaluationTime = sim.CurrentTime + DurationFromSeconds(sim.RandomFloat("Reaction Time")*2*unit.ReactionTime.Seconds())
 	}
 
 	if unit.NextRotationActionAt() > newEvaluationTime {
@@ -89,8 +95,16 @@ func (unit *Unit) CancelGCDTimer(sim *Simulation) {
 }
 
 func (unit *Unit) CancelHardcast(sim *Simulation) {
+	harcastEndTime := unit.Hardcast.Expires
+	unit.hardcastAction.Cancel(sim)
 	unit.Hardcast.Expires = startingCDTime
 	unit.SetGCDTimer(sim, sim.CurrentTime+unit.ReactionTime)
+	spell := unit.GetSpell(unit.Hardcast.ActionID)
+
+	if sim.Log != nil && !spell.Flags.Matches(SpellFlagNoLogs) {
+		cancelTime := spell.CurCast.CastTime - (harcastEndTime - sim.CurrentTime)
+		spell.Unit.Log(sim, "Cancelled %s after %s", spell.ActionID, cancelTime)
+	}
 }
 
 func (unit *Unit) WaitUntil(sim *Simulation, readyTime time.Duration) {

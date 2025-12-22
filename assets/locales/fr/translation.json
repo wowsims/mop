@@ -941,6 +941,10 @@
                     "label": "Lancer",
                     "tooltip": "Lance le sort si possible, c'est-à-dire si toutes les exigences de ressources/temps de recharge/GCD/etc sont remplies."
                 },
+				"cancel_cast": {
+					"label": "Annuler le lancement",
+					"tooltip": "Annule le lancement du sort en cours. (Cela n'est évalué que pendant le lancement dur et nécessite que \"ReactToEvent\" soit ajouté au déclencheur dans le cœur du Sim."
+				},
                 "cast_at_player": {
                     "label": "Lancer sur le joueur",
                     "tooltip": "Lance un sort amical si possible, c'est-à-dire si toutes les exigences de ressources/temps de recharge/GCD/etc sont remplies."
@@ -1337,6 +1341,10 @@
                     "label": "Temps jusqu’à prochaine Auto",
                     "tooltip": "Quantité de temps restant avant la prochaine attaque de mêlée Main gauche ou Main droite, ou <b>0</b> si les attaques automatiques ne sont pas activés."
                 },
+				"remaining_cast_time": {
+					"label": "Temps d'incantation restant",
+					"tooltip": "Quantité de temps restant avant que l'incantation du sort en cours ne soit terminée."
+				},
                 "spell_known": {
                     "label": "Sort connu",
                     "tooltip": "<b>Vrai</b> si le sort est actuellement connu, sinon <b>Faux</b>."
@@ -1370,6 +1378,10 @@
                     "label": "CPM",
                     "tooltip": "Lancers par minute pour le sort jusqu'à présent dans l'itération actuelle."
                 },
+				"is_casting": {
+					"label": "Est en train de lancer",
+					"tooltip": "<b>Vrai</b> si ce sort est actuellement en train d'être lancé, sinon <b>Faux</b>."
+				},
                 "is_channeling": {
                     "label": "Canalise",
                     "tooltip": "<b>Vrai</b> si ce sort est actuellement canalisé, sinon <b>Faux</b>."

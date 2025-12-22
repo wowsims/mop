@@ -2322,8 +2322,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 159258.97476
-  tps: 154251.35273
+  dps: 159147.858
+  tps: 154140.81378
  }
 }
 dps_results: {
