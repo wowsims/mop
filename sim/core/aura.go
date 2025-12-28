@@ -18,6 +18,7 @@ type OnReset func(aura *Aura, sim *Simulation)
 type OnDoneIteration func(aura *Aura, sim *Simulation)
 type OnGain func(aura *Aura, sim *Simulation)
 type OnExpire func(aura *Aura, sim *Simulation)
+type OnRestore func(aura *Aura, sim *Simulation, state AuraState)
 type OnStacksChange func(aura *Aura, sim *Simulation, oldStacks int32, newStacks int32)
 type OnEncounterStart func(aura *Aura, sim *Simulation)
 
@@ -87,6 +88,7 @@ type Aura struct {
 	OnDoneIteration OnDoneIteration
 	OnGain          OnGain
 	OnExpire        OnExpire
+	OnRestore       OnRestore
 	OnStacksChange  OnStacksChange // Invoked when the number of stacks of this aura changes.
 
 	OnApplyEffects        OnApplyEffects   // Invoked when a spell cast is completing, before apply effects are called
@@ -647,6 +649,10 @@ restart:
 // Adds a new aura to the simulation. If an aura with the same ID already
 // exists it will be replaced with the new one.
 func (aura *Aura) Activate(sim *Simulation) {
+	aura.activate(sim, true)
+}
+
+func (aura *Aura) activate(sim *Simulation, triggerOnGain bool) {
 	if aura == nil {
 		return
 	}
@@ -748,7 +754,7 @@ func (aura *Aura) Activate(sim *Simulation) {
 	}
 
 	// don't invoke possible callbacks until the internal state is consistent
-	if aura.OnGain != nil {
+	if triggerOnGain && aura.OnGain != nil {
 		aura.OnGain(aura, sim)
 	}
 }
@@ -1148,8 +1154,21 @@ func (aura *Aura) SaveState(sim *Simulation) AuraState {
 }
 
 func (aura *Aura) RestoreState(state AuraState, sim *Simulation) {
-	if !aura.active {
-		aura.Activate(sim)
+	// If the aura has an OnRestore callback, we need special handling to properly
+	// restart any periodic actions without causing issues like double-stacking.
+	if aura.OnRestore != nil {
+		// Deactivate first to cancel any existing periodic actions
+		if aura.active {
+			aura.Deactivate(sim)
+		}
+		// Activate without triggering OnGain's immediate effects
+		aura.activate(sim, false)
+		// Then call the restore callback to restart periodic actions properly
+		aura.OnRestore(aura, sim, state)
+	} else {
+		if !aura.active {
+			aura.Activate(sim)
+		}
 	}
 
 	aura.UpdateExpires(state.RemainingDuration + sim.CurrentTime)

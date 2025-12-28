@@ -2393,8 +2393,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-TickingEbonDetonator-105612"
  value: {
-  dps: 240898.69088
-  tps: 229849.35766
+  dps: 240900.50608
+  tps: 229851.17286
   hps: 22.01849
  }
 }

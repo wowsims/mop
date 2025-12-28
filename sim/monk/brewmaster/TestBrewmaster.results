@@ -2715,10 +2715,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-AllItems-TickingEbonDetonator-105612"
  value: {
-  dps: 280443.12765
-  tps: 1.2080022053e+06
+  dps: 280460.43133
+  tps: 1.20812333106e+06
   dtps: 13651.61794
-  hps: 31015.91987
+  hps: 31018.86531
  }
 }
 dps_results: {
