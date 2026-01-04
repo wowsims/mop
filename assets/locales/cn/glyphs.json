@@ -1,0 +1,1868 @@
+{
+  "death_knight": {
+    "major": {
+      "glyph_of_anti_magic_shell": {
+        "name": "反魔法护罩",
+        "description": "使你的反魔法护罩为你吸收所有魔法伤害，直至达到吸收极限。"
+      },
+      "glyph_of_unholy_frenzy": {
+        "name": "邪恶狂热",
+        "description": "你的邪恶狂热不再对受影响的目标造成伤害。"
+      },
+      "glyph_of_icebound_fortitude": {
+        "name": "冰封之韧",
+        "description": "你的冰封之韧的冷却时间缩短50%，同时持续时间缩短75%。"
+      },
+      "glyph_of_chains_of_ice": {
+        "name": "寒冰锁链",
+        "description": "你的寒冰锁链可以造成额外的144至156点冰霜伤害，该数值受你的攻击强度影响。"
+      },
+      "glyph_of_death_grip": {
+        "name": "死亡之握",
+        "description": "使你的死亡之握技能的作用范围延长5码。"
+      },
+      "glyph_of_death_and_decay": {
+        "name": "枯萎凋零",
+        "description": "你的枯萎凋零还会使法术范围内敌人的移动速度降低50%。"
+      },
+      "glyph_of_shifting_presences": {
+        "name": "百变灵气",
+        "description": "切换灵气时，可保留70%的符文能量。（特效触发几率：10%）"
+      },
+      "glyph_of_icy_touch": {
+        "name": "冰冷触摸",
+        "description": "你的冰冷触摸可以驱散目标身上的一个有益魔法效果。"
+      },
+      "glyph_of_enduring_infection": {
+        "name": "痼疾",
+        "description": "你的疾病无法被驱散，但造成的伤害降低15%。"
+      },
+      "glyph_of_pestilence": {
+        "name": "传染",
+        "description": "使你的传染效果的影响半径延长5码。"
+      },
+      "glyph_of_mind_freeze": {
+        "name": "心灵冰冻",
+        "description": "心灵冰冻技能的冷却时间缩短1秒，消耗的符文能量提高10点。"
+      },
+      "glyph_of_strangulate": {
+        "name": "绞袭",
+        "description": "对正在施法的目标使用绞袭会使该技能造成的沉默效果的持续时间延长2秒。"
+      },
+      "glyph_of_pillar_of_frost": {
+        "name": "冰霜之柱",
+        "description": "强化你的冰霜之柱，免疫一切会导致你的角色不受控制的效果，但激活该技能会使你的移动速度降低70%。"
+      },
+      "glyph_of_vampiric_blood": {
+        "name": "吸血鬼之血",
+        "description": "使你在吸血鬼之血激活时受到的治疗量提高15%，但是吸血鬼之血不再使你获得生命值。"
+      },
+      "glyph_of_unholy_command": {
+        "name": "邪恶命令",
+        "description": "在杀死一个可以为你提供经验值或者荣誉值的目标时，死亡之握的冷却时间立即结束。"
+      },
+      "glyph_of_outbreak": {
+        "name": "爆发",
+        "description": "你的爆发法术不再有冷却时间，但会消耗30点符文能量。"
+      },
+      "glyph_of_dancing_rune_weapon": {
+        "name": "符文刃舞",
+        "description": "当你的符文刃舞激活时，你产生的威胁值提高100%，但造成的伤害降低25%。"
+      },
+      "glyph_of_dark_simulacrum": {
+        "name": "黑暗模拟",
+        "description": "黑暗模拟的冷却时间缩短30秒，持续时间增加4秒。"
+      },
+      "glyph_of_death_coil": {
+        "name": "凋零缠绕",
+        "description": "你的凋零缠绕现在可用在所有盟友身上。当对一个非亡灵盟友使用时，凋零缠绕将为他们覆盖一道保护性的护盾，吸收最多[(75 + 0.514 * 攻击强度) * 1]点伤害。"
+      },
+      "glyph_of_dark_succor": {
+        "name": "黑暗援助",
+        "description": "当你在冰霜或者邪恶灵气下杀死一个可以为你提供经验值或者荣誉值的目标时，你在15秒内的下一次灵界打击技能将不消耗符文，并至少为你恢复最大生命值的20%。"
+      },
+      "glyph_of_swift_death": {
+        "name": "绝命之疾",
+        "description": "通过灵魂收割获得的急速效果现在还会使你的移动速度在效果持续期间提高30%。"
+      },
+      "glyph_of_loud_horn": {
+        "name": "洪音号角",
+        "description": "你的寒冬号角现在会额外产生10点符文能量值，但冷却时间会延长100%。"
+      },
+      "glyph_of_regenerative_magic": {
+        "name": "魔法再生",
+        "description": "如果反魔法护罩在持续时间结束后消失，其冷却时间最多可缩短50%，缩短量取决于所剩的伤害吸收量。"
+      },
+      "glyph_of_festering_blood": {
+        "name": "溃蚀之血",
+        "description": "血液沸腾现在会视所有目标均受到血之疫病或冰霜疫病效果的影响。"
+      }
+    },
+    "minor": {
+      "glyph_of_the_geist": {
+        "name": "恶鬼",
+        "description": "你的亡者复生将召唤一个恶鬼，而不是一个食尸鬼。"
+      },
+      "glyph_of_deaths_embrace": {
+        "name": "凋零之拥",
+        "description": "当你的凋零缠绕对友方宠物或仆从进行治疗时，会返还20点符文能量，但这样一来不会再触发活力分流了。"
+      },
+      "glyph_of_horn_of_winter": {
+        "name": "寒冬号角",
+        "description": "在非战斗状态下使用时，你的寒冬号角可造成一次短暂的局部降雪。"
+      },
+      "glyph_of_army_of_the_dead": {
+        "name": "亡者大军",
+        "description": "你的亡者大军召唤出的食尸鬼不再嘲讽他们的目标。"
+      },
+      "glyph_of_foul_menagerie": {
+        "name": "邪恶兽群",
+        "description": "使你在施放亡者大军这一法术时，召唤多种亡灵爪牙。"
+      },
+      "glyph_of_path_of_frost": {
+        "name": "冰霜之路",
+        "description": "你的冰霜之路技能还能使你从更高的位置坠落而不受伤害。"
+      },
+      "glyph_of_resilient_grip": {
+        "name": "活力之握",
+        "description": "当你对目标所施放的死亡之握因其免疫而失败时，死亡之握的冷却时间即会重置。"
+      },
+      "glyph_of_death_gate": {
+        "name": "黑锋之门",
+        "description": "使你的黑锋之门法术施法时间缩短60%。"
+      },
+      "glyph_of_corpse_explosion": {
+        "name": "邪爆",
+        "description": "教你学会邪爆技能。"
+      },
+      "glyph_of_tranquil_grip": {
+        "name": "静默之握",
+        "description": "你的死亡之握法术不再嘲讽目标。"
+      },
+      "glyph_of_the_skeleton": {
+        "name": "骷髅",
+        "description": "你的亡者复生将召唤一个骷髅，而不是一个食尸鬼。"
+      },
+      "glyph_of_the_long_winter": {
+        "name": "无尽寒冬",
+        "description": "你的寒冬号角现在能够持续1小时。"
+      }
+    }
+  },
+  "druid": {
+    "major": {
+      "glyph_of_frenzied_regeneration": {
+        "name": "狂暴回复",
+        "description": "狂暴回复激活后的6秒内，你受到的治疗效果提高40%。然而，你的狂暴回复现在总是消耗50点怒气值，并不再将怒气值转化为生命值。"
+      },
+      "glyph_of_maul": {
+        "name": "重殴",
+        "description": "你的重殴技能现在可以攻击1个额外的目标，对其造成50%的伤害。"
+      },
+      "glyph_of_omens": {
+        "name": "天兆",
+        "description": "在非日蚀或月蚀状态下时，以下技能会使你获得10点太阳或月亮能量：纠缠根须、旋风、精灵之火、精灵虫群、群体缠绕、台风、惊魂咆哮、乌索尔旋风和蛮力猛击。"
+      },
+      "glyph_of_shred": {
+        "name": "撕碎",
+        "description": "当狂暴或猛虎之怒处于激活状态时，撕碎不再有站位要求。"
+      },
+      "glyph_of_prowl": {
+        "name": "潜行",
+        "description": "潜行的移动速度惩罚降低100%。"
+      },
+      "glyph_of_pounce": {
+        "name": "突袭",
+        "description": "使你突袭技能的射程延长8码。"
+      },
+      "glyph_of_stampede": {
+        "name": "狂奔",
+        "description": "即使不在熊形态或猎豹形态下，你也可以释放狂奔怒吼了。"
+      },
+      "glyph_of_innervate": {
+        "name": "激活",
+        "description": "当对友方目标而非施法者本人使用激活时，施法者和目标都将同时受益，但效果降低40%。"
+      },
+      "glyph_of_rebirth": {
+        "name": "复生",
+        "description": "被你的复生法术所复活的目标拥有100%的起始生命值。"
+      },
+      "glyph_of_regrowth": {
+        "name": "愈合",
+        "description": "你的愈合法术的爆击几率提高40%，但会移除法术的周期性效果。"
+      },
+      "glyph_of_rejuvenation": {
+        "name": "回春",
+        "description": "在不少于三个目标受到回春术的影响时，你的滋养施法时间缩短30%。"
+      },
+      "glyph_of_healing_touch": {
+        "name": "治疗之触",
+        "description": "施放治疗之触可以使你的自然迅捷的冷却时间缩短3秒。"
+      },
+      "glyph_of_efflorescence": {
+        "name": "百花齐放",
+        "description": "现在你的野性蘑菇会替代迅捷治愈来触发百花齐放效果，并且持续时间和野性蘑菇一样长。此外，迅捷治愈的治疗效果提高20%。"
+      },
+      "glyph_of_guided_stars": {
+        "name": "星辰定位",
+        "description": "你的星辰坠落只会攻击受你月火术或阳炎术影响的目标。"
+      },
+      "glyph_of_hurricane": {
+        "name": "飓风",
+        "description": "你的飓风和星界风暴技能现在也可以令它们的受害者的移动速度降低50%。"
+      },
+      "glyph_of_skull_bash": {
+        "name": "迎头痛击",
+        "description": "你的迎头痛击的打断持续时间延长2秒，但该技能的冷却时间延长5秒。"
+      },
+      "glyph_of_natures_grasp": {
+        "name": "自然之握",
+        "description": "自然之握的冷却时间缩短45秒。"
+      },
+      "glyph_of_savagery": {
+        "name": "野蛮",
+        "description": "野蛮咆哮现在不消耗连击点数，持续时间为12秒。"
+      },
+      "glyph_of_entangling_roots": {
+        "name": "纠缠根须",
+        "description": "使你纠缠根须的施法时间缩短0.2秒。"
+      },
+      "glyph_of_blooming": {
+        "name": "绽放",
+        "description": "你的生命绽放结束时产生的治疗效果提高50%，但持续时间缩短5秒，并且你的治疗之触、滋养和愈合不再刷新生命绽放的持续时间。"
+      },
+      "glyph_of_dash": {
+        "name": "急奔",
+        "description": "你的急奔的冷却时间减少60秒。"
+      },
+      "glyph_of_master_shapeshifter": {
+        "name": "变形大师",
+        "description": "所有变形消耗的法力值降低100%。"
+      },
+      "glyph_of_survival_instincts": {
+        "name": "生存本能",
+        "description": "生存本能的冷却时间减少60秒，持续时间缩短50%。"
+      },
+      "glyph_of_wild_growth": {
+        "name": "野性成长",
+        "description": "野性成长可以影响1个额外的目标，但是冷却时间延长2秒。"
+      },
+      "glyph_of_might_of_ursoc": {
+        "name": "乌索克之力",
+        "description": "乌索克之力增加的生命值提高20%，但冷却时间延长2分钟。"
+      },
+      "glyph_of_stampeding_roar": {
+        "name": "狂奔怒吼",
+        "description": "狂奔怒吼的影响半径增加30码。"
+      },
+      "glyph_of_cyclone": {
+        "name": "旋风",
+        "description": "使你的旋风法术的射程提高5码。"
+      },
+      "glyph_of_barkskin": {
+        "name": "树皮",
+        "description": "在激活树皮术的状态下，使你受到爆击的几率降低25%。"
+      },
+      "glyph_of_ferocious_bite": {
+        "name": "凶猛撕咬",
+        "description": "你的凶猛撕咬技能每使用10点能量值，就会为你恢复最大生命值的2%。"
+      },
+      "glyph_of_fae_silence": {
+        "name": "精灵沉默",
+        "description": "在熊形态下使用精灵之火可使目标沉默3秒，同时触发15秒冷却时间。"
+      },
+      "glyph_of_faerie_fire": {
+        "name": "精灵之火",
+        "description": "你的精灵之火的射程延长10码。"
+      },
+      "glyph_of_cat_form": {
+        "name": "猎豹形态",
+        "description": "使你在猎豹形态下受到的治疗效果提高20%。"
+      }
+    },
+    "minor": {
+      "glyph_of_the_stag": {
+        "name": "雄鹿",
+        "description": "你在旅行形态下将可以充当队友的坐骑。激活猎豹雕文时，该雕文将失效。"
+      },
+      "glyph_of_the_orca": {
+        "name": "虎鲸",
+        "description": "你在水栖形态下将变成一条虎鲸。"
+      },
+      "glyph_of_aquatic_form": {
+        "name": "水栖形态",
+        "description": "使你在水栖形态下的游泳速度提高50%。"
+      },
+      "glyph_of_grace": {
+        "name": "优雅",
+        "description": "即使你不在猎豹形态下，豹之优雅也可减少坠落伤害。"
+      },
+      "glyph_of_the_chameleon": {
+        "name": "变色龙",
+        "description": "你每次变身为猎豹形态或熊形态时，都可随机获得不同的毛色。"
+      },
+      "glyph_of_charm_woodland_creature": {
+        "name": "魅惑林地生物",
+        "description": "德鲁伊可以成为周围一个生物的朋友，其会跟随德鲁伊，持续1小时。"
+      },
+      "glyph_of_stars": {
+        "name": "群星",
+        "description": "你的枭兽形态现在以星界形态出现，所有加成不变，但角色外观将呈现为普通人形形态的星界加强版。"
+      },
+      "glyph_of_the_predator": {
+        "name": "掠食者",
+        "description": "你的追踪人型生物技能现在也能够追踪野兽了。"
+      },
+      "glyph_of_the_treant": {
+        "name": "树人",
+        "description": "变形进入树人形态。"
+      },
+      "glyph_of_the_cheetah": {
+        "name": "猎豹",
+        "description": "你在旅行形态下将变成一头猎豹。该雕文将使雄鹿雕文失效。"
+      },
+      "glyph_of_focus": {
+        "name": "集中",
+        "description": "星辰坠落的半径缩小50%。"
+      },
+      "glyph_of_the_sprouting_mushroom": {
+        "name": "生长蘑菇",
+        "description": "你的野性蘑菇法术现在可以施放在地面上，而不是目标的下方。"
+      },
+      "glyph_of_one_with_nature": {
+        "name": "天人合一",
+        "description": "使你获得能传送至随机自然位置的能力。"
+      }
+    }
+  },
+  "hunter": {
+    "major": {
+      "glyph_of_camouflage": {
+        "name": "伪装",
+        "description": "你的伪装技能现在可使你在移动中保持潜行，当伪装处于激活状态时，你的移动速度降低50%。"
+      },
+      "glyph_of_liberation": {
+        "name": "解放",
+        "description": "使用逃脱后，你立即恢复5%的最大生命值。"
+      },
+      "glyph_of_mending": {
+        "name": "治疗",
+        "description": "你的治疗宠物现在每隔1秒治疗一次，并在持续时间内为你的宠物额外恢复25%的生命值。"
+      },
+      "glyph_of_distracting_shot": {
+        "name": "扰乱射击",
+        "description": "你的扰乱射击现在可以扰乱目标，令其攻击你的宠物，而不是攻击你。"
+      },
+      "glyph_of_endless_wrath": {
+        "name": "无尽怒火",
+        "description": "在狂野怒火激活期间，你的宠物无法被杀死，但仍会受到伤害。"
+      },
+      "glyph_of_deterrence": {
+        "name": "威慑",
+        "description": "使你的威慑造成的伤害减免效果提高20%。"
+      },
+      "glyph_of_disengage": {
+        "name": "逃脱",
+        "description": "增加你的逃脱技能向后跳跃的距离。"
+      },
+      "glyph_of_freezing_trap": {
+        "name": "冰冻陷阱",
+        "description": "当你的冰冻陷阱效果被打破时，被冻结的目标的移动速度降低70%，持续4秒。"
+      },
+      "glyph_of_ice_trap": {
+        "name": "冰霜陷阱",
+        "description": "使你的冰霜陷阱技能的影响半径延长2码。"
+      },
+      "glyph_of_misdirection": {
+        "name": "误导",
+        "description": "对你的宠物使用误导会立即重置误导技能的冷却时间。"
+      },
+      "glyph_of_explosive_trap": {
+        "name": "爆炸陷阱",
+        "description": "你的爆炸陷阱在爆炸时不再造成伤害，而是将敌人击退出陷阱。"
+      },
+      "glyph_of_animal_bond": {
+        "name": "动物盟约",
+        "description": "当你的宠物处于激活状态时，你和你的宠物受到的所有治疗效果提高10%。"
+      },
+      "glyph_of_no_escape": {
+        "name": "无路可逃",
+        "description": "当目标受到你的冰冻陷阱影响时，你所有的远程攻击的爆击几率提高100%。"
+      },
+      "glyph_of_pathfinding": {
+        "name": "寻路",
+        "description": "使你的猎豹守护和豹群守护的速度加成效果提高8%，并使你的骑乘速度提高10%。此骑乘加速效果不与任何其它同类效果叠加。"
+      },
+      "glyph_of_snake_trap": {
+        "name": "毒蛇陷阱",
+        "description": "你的毒蛇陷阱所产生的毒蛇受到的范围攻击伤害降低90%。"
+      },
+      "glyph_of_aimed_shot": {
+        "name": "瞄准射击",
+        "description": "你的瞄准射击现在可以在移动中使用了。"
+      },
+      "glyph_of_mend_pet": {
+        "name": "治疗宠物",
+        "description": "使你的治疗宠物技能每一跳有100%的几率驱散宠物身上的1个诅咒、疾病、魔法或中毒效果。"
+      },
+      "glyph_of_solace": {
+        "name": "抚慰",
+        "description": "你的冰冻陷阱和驱散射击同时也会移除目标身上的所有持续性伤害效果。"
+      },
+      "glyph_of_chimera_shot": {
+        "name": "奇美拉射击",
+        "description": "提高你的奇美拉射击的治疗效果，数值相当于你最大生命值的2%。"
+      },
+      "glyph_of_tranquilizing_shot": {
+        "name": "宁神射击",
+        "description": "你的宁神射击不再消耗集中值，但冷却时间变为10秒。"
+      },
+      "glyph_of_masters_call": {
+        "name": "主人的召唤",
+        "description": "你的主人的召唤技能的持续时间延长4秒。"
+      },
+      "glyph_of_scatter_shot": {
+        "name": "驱散射击",
+        "description": "使你的驱散射击的射程延长3码。"
+      },
+      "glyph_of_mirrored_blades": {
+        "name": "镜影锋刃",
+        "description": "在开启威慑的状态下受到法术攻击时，你有100%的几率将法术反射回攻击者的身上。"
+      },
+      "glyph_of_black_ice": {
+        "name": "黑冰",
+        "description": "当你在受你的冰霜陷阱影响的区域中行进时，你的移动速度提高50%。"
+      },
+      "glyph_of_the_lean_pack": {
+        "name": "单薄豹群",
+        "description": "使豹群守护的范围缩小33码。"
+      },
+      "glyph_of_enduring_deceit": {
+        "name": "耐用伪装",
+        "description": "伪装还会使你受到的法术伤害降低10%。"
+      }
+    },
+    "minor": {
+      "glyph_of_aspects": {
+        "name": "守护",
+        "description": "每当你激活一种新的守护时，一个代表该守护的动物同伴会跟随你，持续15秒。"
+      },
+      "glyph_of_tame_beast": {
+        "name": "驯服野兽",
+        "description": "驯服野兽所需的时间缩短4秒。"
+      },
+      "glyph_of_revive_pet": {
+        "name": "复活宠物",
+        "description": "使你在施放复活宠物时因受到伤害而承受的施法推迟时间缩短100%。"
+      },
+      "glyph_of_lesser_proportion": {
+        "name": "体型缩小",
+        "description": "略微缩小宠物的体型。"
+      },
+      "glyph_of_fireworks": {
+        "name": "烟花",
+        "description": "使用枪、弓或弩发射烟花。"
+      },
+      "glyph_of_aspect_of_the_pack": {
+        "name": "豹群守护",
+        "description": "使你的豹群守护技能的影响半径延长15码。"
+      },
+      "glyph_of_stampede": {
+        "name": "狂奔",
+        "description": "即使不在熊形态或猎豹形态下，你也可以释放狂奔怒吼了。"
+      },
+      "glyph_of_aspect_of_the_cheetah": {
+        "name": "猎豹守护",
+        "description": "当你遭受攻击时，猎豹守护效果不会再导致你眩晕。而是取消猎豹守护效果，并使你的其他守护拥有4秒的冷却时间。"
+      },
+      "glyph_of_aspect_of_the_beast": {
+        "name": "野兽守护",
+        "description": "猎人获得野兽守护，无法被追踪。同一时间内只能激活一种守护。"
+      },
+      "glyph_of_direction": {
+        "name": "指示",
+        "description": "使你的误导目标体型变得更大。"
+      },
+      "glyph_of_marking": {
+        "name": "标记",
+        "description": "你的猎人印记技能现在在目标身上标记靶心，以取代其之前的外观。"
+      },
+      "glyph_of_fetch": {
+        "name": "拾回",
+        "description": "命令你的宠物在附近40码范围内的一具尸体上找回物品。"
+      },
+      "glyph_of_focused_fire": {
+        "name": "集火",
+        "description": "集中火力激活时每层效果会展现出不同的颜色。"
+      },
+      "glyph_of_chameleon": {
+        "name": "变色",
+        "description": "集中火力激活时每层效果会展现出不同的颜色。"
+      }
+    }
+  },
+  "mage": {
+    "major": {
+      "glyph_of_arcane_explosion": {
+        "name": "魔爆",
+        "description": "使你的魔爆术的影响半径扩大5码。"
+      },
+      "glyph_of_blink": {
+        "name": "闪现",
+        "description": "使你闪现术的移动距离延长8码。"
+      },
+      "glyph_of_evocation": {
+        "name": "唤醒",
+        "description": "你的唤醒技能也可以在持续时间内使你恢复60%的生命值。选择祈愿天赋，完成唤醒时你将恢复10%的生命值。选择能量符文天赋，当站在能量符文内时，你每秒可以恢复1%的生命值。"
+      },
+      "glyph_of_combustion": {
+        "name": "燃烧",
+        "description": "燃烧的直接伤害、持续时间和冷却时间都增加100%。"
+      },
+      "glyph_of_frost_nova": {
+        "name": "冰霜新星",
+        "description": "冰霜新星的冷却时间缩短5秒。"
+      },
+      "glyph_of_ice_block": {
+        "name": "寒冰屏障",
+        "description": "寒冰屏障碎裂时，将会立刻触发冰霜新星且不消耗法力值，并使你免疫所有法术，持续3秒。"
+      },
+      "glyph_of_splitting_ice": {
+        "name": "碎冰",
+        "description": "你的冰枪术和冰刺现在能对1个额外目标造成50%的伤害。"
+      },
+      "glyph_of_cone_of_cold": {
+        "name": "冰锥术",
+        "description": "冰锥术的伤害值提高200%。"
+      },
+      "glyph_of_rapid_displacement": {
+        "name": "移形换影",
+        "description": "闪现术现在可以使用两次，每15秒可获得一次使用机会，但不会再为施法者解除昏迷和束缚效果。"
+      },
+      "glyph_of_mana_gem": {
+        "name": "法力宝石",
+        "description": "你的制造魔法宝石法术现在可以制造出一个闪耀法力宝石，最多可以使用10次。"
+      },
+      "glyph_of_polymorph": {
+        "name": "变形",
+        "description": "你的变形术可以移除目标身上的所有持续伤害效果。"
+      },
+      "glyph_of_icy_veins": {
+        "name": "冰冷血脉",
+        "description": "你的冰冷血脉使你的寒冰箭、霜火之箭、冰枪术和水元素的水箭分裂为3支小箭，每支造成40%的伤害而不是提高施法速度。"
+      },
+      "glyph_of_spellsteal": {
+        "name": "法术吸取",
+        "description": "当成功偷取一个法术时，法术吸取现在也会治疗你最大生命值的5%。"
+      },
+      "glyph_of_frostfire_bolt": {
+        "name": "霜火之箭",
+        "description": "使霜火之箭的施法时间减少0.5秒。"
+      },
+      "glyph_of_remove_curse": {
+        "name": "解除诅咒",
+        "description": "成功解除诅咒后，你造成的伤害提高5%，持续10秒。"
+      },
+      "glyph_of_arcane_power": {
+        "name": "奥术强化",
+        "description": "使奥术强化的持续时间和冷却时间都增加100%。"
+      },
+      "glyph_of_water_elemental": {
+        "name": "水元素",
+        "description": "使你的水元素的生命值提高40%，并且可以在移动中施法。当水元素在战斗中处于协助模式，且命令它跟随主人时，水元素会自动使用水箭攻击范围内的目标。"
+      },
+      "glyph_of_slow": {
+        "name": "减速术",
+        "description": "如果当前没有任何目标受到你的减速术的影响，则你的奥术冲击将为受伤害的目标附加减速术。"
+      },
+      "glyph_of_deep_freeze": {
+        "name": "深度冻结",
+        "description": "你的深度冻结法术不再具有公共冷却时间，但其持续时间会缩短1秒。"
+      },
+      "glyph_of_counterspell": {
+        "name": "法术反制",
+        "description": "你现在可以在施放或引导法术时施放法术反制，但这个法术的冷却时间增加4秒。"
+      },
+      "glyph_of_inferno_blast": {
+        "name": "炼狱冲击",
+        "description": "你的炼狱冲击法术会将炎爆术、点燃和燃烧的效果扩散至1个额外目标的身上。"
+      },
+      "glyph_of_armors": {
+        "name": "护甲",
+        "description": "你的霜甲术、法师护甲和熔岩护甲法术施放时间缩短1.5秒，并每种护甲的防御效果额外提高10%。"
+      }
+    },
+    "minor": {
+      "glyph_of_loose_mana": {
+        "name": "法力释放",
+        "description": "你的法力宝石使你在6秒内恢复法力值，而非立即恢复。"
+      },
+      "glyph_of_momentum": {
+        "name": "闪现动能",
+        "description": "你的闪现法术现在使你在移动方向上传送出去，而非你面对的方向。"
+      },
+      "glyph_of_crittermorph": {
+        "name": "小动物变形术",
+        "description": "当目标为小动物时，你的变形术现在可以持续24小时，并且可以对多个目标施放。"
+      },
+      "glyph_of_the_porcupine": {
+        "name": "箭猪",
+        "description": "使你的变形术将目标变成一只箭猪。"
+      },
+      "glyph_of_conjure_familiar": {
+        "name": "构造亲和",
+        "description": "召唤一个魔宠之石，里面包含奥术、火焰或冰霜能量的魔宠。"
+      },
+      "glyph_of_the_monkey": {
+        "name": "小猴",
+        "description": "使你的变形术将目标变成一只小猴。"
+      },
+      "glyph_of_the_penguin": {
+        "name": "企鹅",
+        "description": "使你的变形术将目标变成一只企鹅。"
+      },
+      "glyph_of_the_bear_cub": {
+        "name": "小熊",
+        "description": "使你的变形术将目标变成一只北极熊宝宝。"
+      },
+      "glyph_of_arcane_language": {
+        "name": "奥术语言",
+        "description": "你的奥术光辉使你能够理解盟友的外族语言。"
+      },
+      "glyph_of_illusion": {
+        "name": "幻象",
+        "description": "让法师变形，看起来像其他人，持续2分钟。"
+      },
+      "glyph_of_mirror_image": {
+        "name": "镜像",
+        "description": "使你的镜像根据你的主天赋施放奥术冲击、火球术或者寒冰箭。"
+      },
+      "glyph_of_rapid_teleportation": {
+        "name": "迅捷传送",
+        "description": "在法师施放传送法术或进入一个传送门之后，移动速度提高70%，持续1分钟。"
+      },
+      "glyph_of_discreet_magic": {
+        "name": "节制施法",
+        "description": "你的虚空风暴、活动炸弹、冰霜炸弹、奥术弹幕和炼狱冲击不会再对距离主要目标5码范围外的其他目标造成影响。"
+      },
+      "glyph_of_the_unbound_elemental": {
+        "name": "不羁元素",
+        "description": "你的水元素现在被不羁的水元素替代了。"
+      },
+      "glyph_of_evaporation": {
+        "name": "汽化",
+        "description": "使水元素的体型缩小40%。"
+      },
+      "glyph_of_condensation": {
+        "name": "凝结",
+        "description": "使水元素的体型扩大40%。"
+      }
+    }
+  },
+  "monk": {
+    "major": {
+      "glyph_of_rapid_rolling": {
+        "name": "迅捷翻滚",
+        "description": "使用滚地翻或真气突后的5秒秒内，你的下一个滚地翻或真气突有效距离会延长30%。"
+      },
+      "glyph_of_transcendence": {
+        "name": "魂体双分",
+        "description": "使你的魂体双分：转移法术的冷却时间缩短5秒。"
+      },
+      "glyph_of_breath_of_fire": {
+        "name": "火焰吐息",
+        "description": "当对受迷醉酒雾效果影响的目标施放火焰之息时，他们会陷入迷惑状态，持续3秒。"
+      },
+      "glyph_of_clash": {
+        "name": "对冲",
+        "description": "对冲技能的影响范围扩大10码。"
+      },
+      "glyph_of_enduring_healing_sphere": {
+        "name": "持久疗伤珠",
+        "description": "使用持久疗伤珠治疗目标时，会为你恢复10%的最大生命值。"
+      },
+      "glyph_of_guard": {
+        "name": "金钟罩",
+        "description": "使你的金钟罩的伤害吸收量提高10%，但其只能吸收魔法伤害。"
+      },
+      "glyph_of_mana_tea": {
+        "name": "法力茶",
+        "description": "你的法力茶变为瞬发，不再需要引导，并且使用一次即消耗两层效果，但该技能将有10秒的冷却时间。"
+      },
+      "glyph_of_zen_meditation": {
+        "name": "禅悟冥想",
+        "description": "你现在可以在移动时引导禅悟冥想。"
+      },
+      "glyph_of_renewing_mists": {
+        "name": "复苏之雾",
+        "description": "你的复苏之雾飘到40码范围内最远的受伤目标身边，而不是20码范围内最近的受伤目标身边。"
+      },
+      "glyph_of_spinning_crane_kick": {
+        "name": "神鹤引项踢",
+        "description": "在引导神鹤引项踢期间，你可以全速移动。"
+      },
+      "glyph_of_surging_mist": {
+        "name": "升腾之雾",
+        "description": "你的升腾之雾不再需要目标，而是会治疗40码范围内生命值最低的目标。"
+      },
+      "glyph_of_touch_of_death": {
+        "name": "轮回之触",
+        "description": "你的轮回之触不再消耗真气，但冷却时间会延长2分钟。"
+      },
+      "glyph_of_nimble_brew": {
+        "name": "逍遥酒",
+        "description": "使用逍遥酒清除一个效果，会为你恢复10%的最大生命值。"
+      },
+      "glyph_of_afterlife": {
+        "name": "转生",
+        "description": "杀死一名能够提供经验值或荣誉值的敌人，会使你召唤出一颗疗伤珠的几率提高100%。"
+      },
+      "glyph_of_fists_of_fury": {
+        "name": "怒雷破",
+        "description": "在引导怒雷破时，你的招架几率提高100%。"
+      },
+      "glyph_of_fortifying_brew": {
+        "name": "壮胆酒",
+        "description": "使你在使用壮胆酒后受到的伤害降低额外5%，生命值增加10%而不是20%。"
+      },
+      "glyph_of_leer_of_the_ox": {
+        "name": "玄牛睥睨",
+        "description": "你的玄牛雕像激起目标的仇恨，使其移动速度降低50%，并使其攻击你的玄牛雕像，持续8秒。雕像必须处于目标40码范围内。需要激活玄牛雕像。"
+      },
+      "glyph_of_life_cocoon": {
+        "name": "作茧缚命",
+        "description": "作茧缚命现在可在昏迷时施放。"
+      },
+      "glyph_of_fortuitous_spheres": {
+        "name": "幸运珠",
+        "description": "生命值低于25%时会自动在你身边召唤一颗疗伤珠，且不消耗真气。该效果每30秒只能触发一次。（30秒 冷却）"
+      },
+      "glyph_of_paralysis": {
+        "name": "分筋错骨",
+        "description": "你的分筋错骨技能同时还会移除目标身上所有的持续性伤害效果。"
+      },
+      "glyph_of_sparring": {
+        "name": "见招拆招",
+        "description": "见招拆招技能同时还会移除目标身上所有的持续性伤害效果。"
+      },
+      "glyph_of_detox": {
+        "name": "化瘀",
+        "description": "当化瘀术成功移除一个有害效果时，会为你的目标恢复5%的生命值。"
+      },
+      "glyph_of_touch_of_karma": {
+        "name": "业报之触",
+        "description": "你的业报之触现在有25码效果范围。"
+      },
+      "glyph_of_targeted_expulsion": {
+        "name": "开枝散叶",
+        "description": "移花接木现在可以对其他盟友使用，但治疗效果会降低50%。"
+      }
+    },
+    "minor": {
+      "glyph_of_spinning_fire_blossom": {
+        "name": "旋火冲",
+        "description": "你的旋火冲不再向你的正前方扩散，而是需要有一个敌人作为目标，但不再附带定身效果。"
+      },
+      "glyph_of_crackling_tiger_lightning": {
+        "name": "伏虎闪雷",
+        "description": "你的碎玉闪电的视觉效果改为白虎天神的颜色。"
+      },
+      "glyph_of_flying_serpent_kick": {
+        "name": "翔龙在天",
+        "description": "攻击目标会使你的翔龙在天自动结束，并触发范围效果伤害和诱捕效果。"
+      },
+      "glyph_of_honor": {
+        "name": "荣耀",
+        "description": "你在每次成功施放轮回之触后满怀敬意地鞠躬。"
+      },
+      "glyph_of_jab": {
+        "name": "贯日击",
+        "description": "即使没有装备拳套，你也总能使用手和拳发动贯日击。"
+      },
+      "glyph_of_rising_tiger_kick": {
+        "name": "猛虎出山",
+        "description": "你的旭日东升踢的视觉效果改为白虎的颜色。"
+      },
+      "glyph_of_spirit_roll": {
+        "name": "灵魂滚地翻",
+        "description": "死后成为灵魂时可以施放滚地翻和真气突。"
+      },
+      "glyph_of_fighting_pose": {
+        "name": "战斗姿态",
+        "description": "施放魂体双分时，你的灵魂以战斗姿态出现。"
+      },
+      "glyph_of_water_roll": {
+        "name": "水上翻",
+        "description": "你可以在水面上施放滚地翻和真气突。"
+      },
+      "glyph_of_zen_flight": {
+        "name": "禅意飞行",
+        "description": "你乘着一朵冥想之云在空中快速飞行。"
+      },
+      "glyph_of_blackout_kick": {
+        "name": "幻灭踢",
+        "description": "你的幻灭踢总能在4秒内造成20%的额外伤害，且位置不限，但无法触发其治疗效果。"
+      }
+    }
+  },
+  "paladin": {
+    "major": {
+      "glyph_of_double_jeopardy": {
+        "name": "双重审判",
+        "description": "审判一个目标，并使你下一次审判的伤害提高20%，只能在另外一个不同目标上使用来获得此效果。"
+      },
+      "glyph_of_devotion_aura": {
+        "name": "虔诚光环",
+        "description": "虔诚光环不会再影响小队或团队成员了，但冷却时间会缩短60秒。"
+      },
+      "glyph_of_holy_wrath": {
+        "name": "神圣愤怒",
+        "description": "你的神圣愤怒现在还会使元素生物、龙类和畸变怪昏迷。"
+      },
+      "glyph_of_divine_protection": {
+        "name": "圣佑术",
+        "description": "使你的圣佑术减免法术伤害的效果降低至20%，但减免物理伤害的效果提高20%。"
+      },
+      "glyph_of_templars_verdict": {
+        "name": "圣殿骑士的裁决",
+        "description": "当圣殿骑士的裁决或驱邪术造成伤害后，你受到的伤害会降低10%，持续6秒。"
+      },
+      "glyph_of_avenging_wrath": {
+        "name": "复仇之怒",
+        "description": "复仇之怒激活后，你每2秒恢复最大生命值的1%。"
+      },
+      "glyph_of_consecration": {
+        "name": "奉献",
+        "description": "你现在能在25码范围内的任何地方施放奉献。"
+      },
+      "glyph_of_focused_shield": {
+        "name": "聚盾",
+        "description": "你的复仇者之盾攻击的目标数量减少2个，但伤害提高30%。"
+      },
+      "glyph_of_burden_of_guilt": {
+        "name": "罪孽如山",
+        "description": "你的审判命中后会令你的目标充满疑虑和悔恨，使其移动速度降低50%，持续2秒。"
+      },
+      "glyph_of_blinding_light": {
+        "name": "盲目之光",
+        "description": "你的盲目之光将不再致盲目标，而是击倒目标，持续3秒。"
+      },
+      "glyph_of_final_wrath": {
+        "name": "终结怒火",
+        "description": "你的神圣愤怒对生命值低于20%的目标所造成的伤害提高50%。"
+      },
+      "glyph_of_word_of_glory": {
+        "name": "荣耀圣令",
+        "description": "在对一个友方目标施放荣耀圣令或永恒之火后，你每消耗一层神圣能量，伤害就会提高3%，持续6秒。"
+      },
+      "glyph_of_illumination": {
+        "name": "启发",
+        "description": "神圣震击造成爆击时，可为你回复1%的法力值，但冥想回复的法力值降低10%。"
+      },
+      "glyph_of_harsh_words": {
+        "name": "疾言厉色",
+        "description": "你的荣耀圣令现在可以对敌对目标使用，并造成大约相当于其治疗量的神圣伤害。对永恒之火没有影响。"
+      },
+      "glyph_of_divinity": {
+        "name": "圣洁",
+        "description": "你的圣疗术的冷却时间延长2分钟，但会让你回复最大法力值的10%。"
+      },
+      "glyph_of_light_of_dawn": {
+        "name": "黎明圣光",
+        "description": "受黎明圣光所影响的目标减少2个，但是每个目标所受到的治疗效果提高25%。"
+      },
+      "glyph_of_blessed_life": {
+        "name": "神佑之体",
+        "description": "每当你受到昏迷、恐惧或无法移动效果影响时，都会有50%的几率获得一层神圣能量。该效果每20秒只能触发一次。（特效触发几率：50%，20秒 冷却）"
+      },
+      "glyph_of_flash_of_light": {
+        "name": "圣光闪现",
+        "description": "你对一个目标使用圣光闪现后，你在接下来的7秒内对该目标施放的下一个治疗法术的治疗效果将提高10%。"
+      },
+      "glyph_of_denounce": {
+        "name": "谴责",
+        "description": "你的神圣震击使你的下一个谴责的施法时间缩短0.5秒。该效果最多可叠加3次。"
+      },
+      "glyph_of_dazing_shield": {
+        "name": "眩晕之盾",
+        "description": "你的复仇者之盾将使目标眩晕10秒。"
+      },
+      "glyph_of_immediate_truth": {
+        "name": "直击真理",
+        "description": "真理圣印的直接伤害提高40%，但谴罚的伤害降低50%。"
+      },
+      "glyph_of_beacon_of_light": {
+        "name": "圣光道标",
+        "description": "移除圣光道标的公共冷却时间。"
+      },
+      "glyph_of_hammer_of_the_righteous": {
+        "name": "正义之锤",
+        "description": "正义之锤的物理伤害减免效果持续时间延长50%。"
+      },
+      "glyph_of_divine_storm": {
+        "name": "神圣风暴",
+        "description": "你的神圣风暴还可为你恢复5%的最大生命值。"
+      },
+      "glyph_of_the_alabaster_shield": {
+        "name": "坚石圣盾",
+        "description": "你在成功格挡之后，下一次正义盾击造成的伤害提高10%。最多可叠加3次。"
+      },
+      "glyph_of_divine_plea": {
+        "name": "神圣恳求",
+        "description": "神圣恳求返还的法力值降低50%，但冷却时间也缩短50%。"
+      },
+      "glyph_of_holy_shock": {
+        "name": "神圣震击",
+        "description": "使神圣震击的治疗效果降低50%，但造成的伤害提高50%。"
+      },
+      "glyph_of_inquisition": {
+        "name": "异端裁决",
+        "description": "当你杀死能够为你提供经验值或荣誉值的对手时，异端裁决的持续时间会延长30秒。"
+      },
+      "glyph_of_protector_of_the_innocent": {
+        "name": "无辜守护者",
+        "description": "当你使用荣耀圣令治疗其他目标时，你自己也可获得20%的治疗量。"
+      },
+      "glyph_of_the_battle_healer": {
+        "name": "战地医师",
+        "description": "洞察圣印的近战攻击会为小队或团队成员中生命值最低的盟友恢复普通治疗量的30%，而非你本身。"
+      },
+      "glyph_of_mass_exorcism": {
+        "name": "群体驱邪",
+        "description": "将驱邪术的攻击范围缩小到近战攻击范围，但对主要目标周围8码范围内的所有敌人造成25%的伤害。"
+      },
+      "glyph_of_divine_shield": {
+        "name": "圣盾",
+        "description": "圣盾术每移除一个有害效果，就会为你恢复10%的生命值。该治疗的治疗量不会超过你最大生命值的50%。"
+      },
+      "glyph_of_hand_of_sacrifice": {
+        "name": "牺牲之手",
+        "description": "牺牲之手不再将伤害转移给圣骑士。"
+      }
+    },
+    "minor": {
+      "glyph_of_the_luminous_charger": {
+        "name": "辉煌坐骑",
+        "description": "你的圣骑士职业专属坐骑散发着璀璨的圣光。"
+      },
+      "glyph_of_the_mounted_king": {
+        "name": "马背王者",
+        "description": "当你骑上圣骑士坐骑时会自动对自己施放王者祝福。"
+      },
+      "glyph_of_contemplation": {
+        "name": "静思",
+        "description": "你安静地屈膝跪下，获得片刻的宁静，以思考圣光的本质。"
+      },
+      "glyph_of_winged_vengeance": {
+        "name": "复仇之翼",
+        "description": "你的复仇之怒将呈现出两对翅膀。"
+      },
+      "glyph_of_seal_of_blood": {
+        "name": "鲜血圣印",
+        "description": "你的真理圣印使用鲜血圣印的视觉效果。"
+      },
+      "glyph_of_fire_from_the_heavens": {
+        "name": "天堂之火",
+        "description": "你的审判和愤怒之锤爆击从天空召唤火焰。"
+      },
+      "glyph_of_focused_wrath": {
+        "name": "专注怒火",
+        "description": "神圣愤怒只影响一个目标。"
+      },
+      "glyph_of_the_falling_avenger": {
+        "name": "复仇天降",
+        "description": "在复仇之怒效果影响下，你的坠落速度降低。"
+      },
+      "glyph_of_the_righteous_retreat": {
+        "name": "正当撤退",
+        "description": "在圣盾术有效期间，你使用炉石的速度提高50%。"
+      },
+      "glyph_of_bladed_judgment": {
+        "name": "利刃审判",
+        "description": "如果你装备的是斧或剑，则你的审判法术就会显示出斧或剑的图案，而不是锤的图案。"
+      },
+      "glyph_of_the_exorcist": {
+        "name": "驱魔人",
+        "description": "驱邪术现在会将目标身上驱逐出来的邪恶显现出来。"
+      },
+      "glyph_of_pillar_of_light": {
+        "name": "圣光之柱",
+        "description": "对其他玩家造成治疗爆击时，会在其位置显示出圣光之柱。"
+      }
+    }
+  },
+  "priest": {
+    "major": {
+      "glyph_of_circle_of_healing": {
+        "name": "治疗之环",
+        "description": "你的治疗之环可以多治疗1个额外目标，但是消耗的法力值提高35%。"
+      },
+      "glyph_of_purify": {
+        "name": "纯净术",
+        "description": "当你成功驱散一个魔法效果或疾病时，你的纯净术将为你的目标恢复其最大生命值的5%。"
+      },
+      "glyph_of_fade": {
+        "name": "渐隐",
+        "description": "你的渐隐术使你受到的所有伤害降低10%。"
+      },
+      "glyph_of_fear_ward": {
+        "name": "防护恐惧结界",
+        "description": "防护恐惧结界的冷却时间缩短60秒。"
+      },
+      "glyph_of_inner_sanctum": {
+        "name": "心灵圣殿",
+        "description": "在心灵之火的持续时间内受到的法术伤害降低6%，并且使心灵意志提供的移动速度加成提高6%。"
+      },
+      "glyph_of_holy_nova": {
+        "name": "神圣新星",
+        "description": "制造一次以施法者为中心的圣光爆炸，对10码范围内的所有敌方目标造成13点神圣伤害，并为10码范围内最多5个目标恢复20点生命值。恢复的生命值将由被治疗的目标分摊，这些效果不产生任何威胁值。"
+      },
+      "glyph_of_inner_fire": {
+        "name": "心灵之火",
+        "description": "使你的心灵之火提供的护甲值加成提高50%。"
+      },
+      "glyph_of_deep_wells": {
+        "name": "泉涌",
+        "description": "使你的光明之泉的总使用次数增加2次。"
+      },
+      "glyph_of_mass_dispel": {
+        "name": "群体驱散",
+        "description": "使你的群体驱散法术变得非常强大，可以移除通常无法被驱散的法术。"
+      },
+      "glyph_of_psychic_horror": {
+        "name": "心灵惊骇",
+        "description": "使你的心灵惊骇法术的冷却时间缩短10秒。"
+      },
+      "glyph_of_holy_fire": {
+        "name": "神圣之火",
+        "description": "使你的神圣之火、惩击和真言术：慰的射程提高10码。"
+      },
+      "glyph_of_weakened_soul": {
+        "name": "虚弱灵魂",
+        "description": "使真言术：盾所造成的虚弱灵魂效果的持续时间缩短2秒。"
+      },
+      "glyph_of_power_word_shield": {
+        "name": "真言术：盾",
+        "description": "你的真言术：盾会将其所吸收伤害的20%转化为治疗。"
+      },
+      "glyph_of_spirit_of_redemption": {
+        "name": "救赎之魂",
+        "description": "救赎之魂的持续时间延长10秒。"
+      },
+      "glyph_of_psychic_scream": {
+        "name": "心灵尖啸",
+        "description": "你的心灵尖啸技能和灵能魔的心灵恐惧技能将使目标在原地战栗而非因恐惧而逃跑。"
+      },
+      "glyph_of_renew": {
+        "name": "恢复",
+        "description": "你的恢复法术每一跳的治疗效果提高33%，但持续时间缩短3秒。"
+      },
+      "glyph_of_scourge_imprisonment": {
+        "name": "天灾禁锢",
+        "description": "使你的束缚亡灵的施法时间缩短1.0秒。"
+      },
+      "glyph_of_mind_blast": {
+        "name": "心灵震爆",
+        "description": "使你的心灵震爆打出爆击后，目标在4秒内无法移动。"
+      },
+      "glyph_of_dispel_magic": {
+        "name": "驱散魔法",
+        "description": "当你成功地驱散掉一个魔法效果时，你的驱散魔法法术还会对目标造成30点神圣伤害。"
+      },
+      "glyph_of_smite": {
+        "name": "惩击",
+        "description": "你的惩击法术会对已经受到 [<span class='q2'>慰与乱</span>: <span class='q9'>真言术：慰</span> / 神圣之火]影响的目标额外造成20%的伤害，但是该额外伤害不会被救赎所转化。"
+      },
+      "glyph_of_prayer_of_mending": {
+        "name": "愈合祷言",
+        "description": "愈合祷言第一次治疗的效果提高60%，但治疗的次数减少1次。"
+      },
+      "glyph_of_levitate": {
+        "name": "漂浮",
+        "description": "在漂浮效果持续期间及之后的10秒内，你的移动速度提高15%。"
+      },
+      "glyph_of_reflective_shield": {
+        "name": "反射护盾",
+        "description": "你的真言术：盾所吸收的伤害有70%反射给攻击者。这种伤害不会产生威胁值。"
+      },
+      "glyph_of_dispersion": {
+        "name": "消散",
+        "description": "消散的冷却时间缩短15秒。"
+      },
+      "glyph_of_leap_of_faith": {
+        "name": "信仰飞跃",
+        "description": "你的信仰飞跃法术现在会移除你目标身上的所有移动限制效果。"
+      },
+      "glyph_of_penance": {
+        "name": "苦修",
+        "description": "苦修所消耗的法力值提高20%，但可以在移动中施放。"
+      },
+      "glyph_of_focused_mending": {
+        "name": "专注愈合",
+        "description": "使你的愈合祷言只在施法者和目标之间来回弹跳。"
+      },
+      "glyph_of_mind_spike": {
+        "name": "心灵尖刺",
+        "description": "你的非瞬发心灵尖刺命中后，在9秒内你的下一次心灵震爆的施法时间缩短50%。该效果最多可叠加2次。"
+      },
+      "glyph_of_binding_heal": {
+        "name": "联结治疗",
+        "description": "你的联结治疗法术现在可以为20码范围内的第三个友方目标进行治疗，但会额外消耗35%的法力值。"
+      },
+      "glyph_of_mind_flay": {
+        "name": "精神鞭笞",
+        "description": "你的精神鞭笞法术不再降低受害者的移动速度。精神鞭笞每造成一次伤害，你的移动速度将提高15%，持续5秒，最多可叠加3次。"
+      },
+      "glyph_of_shadow_word_death": {
+        "name": "暗言术：灭",
+        "description": "你现在可以随时使用暗言术：灭，但是对生命值超过20%的目标只能造成25%的伤害 [<span class='q2'>精神鞭笞</span>: <span class='q9'>，且不会产生暗影宝珠</span>]。现在施放暗言术：灭时，对你造成的伤害也相当于对生命值超过20%的敌人造成的伤害。"
+      },
+      "glyph_of_vampiric_embrace": {
+        "name": "吸血鬼的拥抱",
+        "description": "你的吸血鬼的拥抱会额外地将你造成的伤害值的50%转化为治疗量，但持续时间缩短5秒。"
+      },
+      "glyph_of_lightspring": {
+        "name": "光明圣泉",
+        "description": "你的光明之泉不会再自动为附近的目标进行治疗，但玩家可通过点击进行恢复，且治疗效果比平时提高了50%。"
+      },
+      "glyph_of_lightwell": {
+        "name": "光明之泉",
+        "description": "你的光明之泉不会再自动为附近的目标进行治疗，但玩家可通过点击进行恢复，且治疗效果比平时提高了50%。"
+      }
+    },
+    "minor": {
+      "glyph_of_shadow_ravens": {
+        "name": "暗影渡鸦",
+        "description": "你的暗影宝珠现在看起来像是暗影渡鸦。"
+      },
+      "glyph_of_borrowed_time": {
+        "name": "争分夺秒",
+        "description": "你的争分夺秒现在可以直观地显示出来。"
+      },
+      "glyph_of_shackle_undead": {
+        "name": "束缚亡灵",
+        "description": "改变束缚亡灵的外形。"
+      },
+      "glyph_of_dark_archangel": {
+        "name": "黑暗天使长",
+        "description": "当你对目标使用噬灵疫病时，将变身黑暗天使长，持续8秒。"
+      },
+      "glyph_of_shadow": {
+        "name": "暗影",
+        "description": "让你在暗影形态下透明度降低。"
+      },
+      "glyph_of_the_heavens": {
+        "name": "天堂",
+        "description": "你的漂浮术目标在法术的持续时间内将乘着一朵云出现。"
+      },
+      "glyph_of_confession": {
+        "name": "悔罪",
+        "description": "强迫一个友方目标为一个秘密忏悔。"
+      },
+      "glyph_of_holy_resurrection": {
+        "name": "神圣复生",
+        "description": "你的复活目标在复活术持续时间内沐浴在圣光里。"
+      },
+      "glyph_of_the_valkyr": {
+        "name": "瓦格里",
+        "description": "救赎之魂激活时，你会以瓦格里的面目出现。"
+      },
+      "glyph_of_shadowy_friends": {
+        "name": "暗影盟友",
+        "description": "你的暗影形态蔓延到你的非战斗宠物身上。"
+      },
+      "glyph_of_angels": {
+        "name": "天使之翼",
+        "description": "你的治疗法术会暂时赋予你一对天使般的羽翼。（100毫秒 冷却）"
+      },
+      "glyph_of_the_sha": {
+        "name": "邪煞",
+        "description": "将你的暗影魔和摧心魔变成一个邪煞狂兽。"
+      },
+      "glyph_of_shifted_appearances": {
+        "name": "移形易容",
+        "description": "虚空转移会使你和你目标的外形互相交换，持续数秒。不会影响骑乘中的玩家。"
+      },
+      "glyph_of_inspired_hymns": {
+        "name": "圣歌之灵",
+        "description": "当你引导圣歌时，你的上空会出现一个圣灵。"
+      }
+    }
+  },
+  "rogue": {
+    "major": {
+      "glyph_of_shadow_walk": {
+        "name": "暗遁",
+        "description": "在你的暗遁技能激活期间，会提高你的侦测潜行能力。"
+      },
+      "glyph_of_ambush": {
+        "name": "伏击",
+        "description": "伏击的范围扩大5码。"
+      },
+      "glyph_of_blade_flurry": {
+        "name": "剑刃乱舞",
+        "description": "剑刃乱舞激活时，你的攻击有额外30%的几率对目标施加非致命毒药效果。"
+      },
+      "glyph_of_sharp_knives": {
+        "name": "削铁如泥",
+        "description": "你的刀扇同时还会损伤受害者的护甲，对每个目标施加一层破甲效果。"
+      },
+      "glyph_of_recuperate": {
+        "name": "复原",
+        "description": "提高你的复原技能的治疗效果，数值相当于你最大生命值的1.0%。"
+      },
+      "glyph_of_evasion": {
+        "name": "闪避",
+        "description": "使你的闪避技能的持续时间延长5秒。"
+      },
+      "glyph_of_recovery": {
+        "name": "恢复",
+        "description": "当复原激活时，你受到来自别处的治疗效果提高20%。"
+      },
+      "glyph_of_expose_armor": {
+        "name": "破甲",
+        "description": "你的破甲技能能够造成3层破甲效果。"
+      },
+      "glyph_of_feint": {
+        "name": "佯攻",
+        "description": "佯攻的持续时间延长2秒。"
+      },
+      "glyph_of_garrote": {
+        "name": "锁喉",
+        "description": "使你锁喉技能的沉默效果持续时间延长1.0秒。"
+      },
+      "glyph_of_gouge": {
+        "name": "凿击",
+        "description": "使用凿击不再需要站在目标前方。"
+      },
+      "glyph_of_smoke_bomb": {
+        "name": "烟雾弹",
+        "description": "你的烟雾弹的持续时间延长2秒。"
+      },
+      "glyph_of_cheap_shot": {
+        "name": "偷袭",
+        "description": "偷袭的持续时间延长0.5秒。"
+      },
+      "glyph_of_hemorraghing_veins": {
+        "name": "失血动脉",
+        "description": "你的动脉破裂技能现在会对受你出血效果影响的目标造成更大伤害。"
+      },
+      "glyph_of_kick": {
+        "name": "脚踢",
+        "description": "使你脚踢技能的冷却时间延长4秒，但是当脚踢成功打断施法时，冷却时间缩短6秒。"
+      },
+      "glyph_of_redirect": {
+        "name": "转嫁",
+        "description": "转嫁的冷却时间缩短50秒。"
+      },
+      "glyph_of_shiv": {
+        "name": "毒刃",
+        "description": "你的毒刃技能的冷却时间缩短3秒。"
+      },
+      "glyph_of_sprint": {
+        "name": "疾跑",
+        "description": "使你的疾跑技能的移动加速效果提高30%。"
+      },
+      "glyph_of_vendetta": {
+        "name": "仇杀",
+        "description": "仇杀技能的伤害加成减少5%，但持续时间延长10秒。"
+      },
+      "glyph_of_stealth": {
+        "name": "潜行",
+        "description": "你的潜行的冷却时间缩短4秒。"
+      },
+      "glyph_of_deadly_momentum": {
+        "name": "致命冲动",
+        "description": "当你杀死一个可为你提供经验值或荣誉值的对手时，你的切割和恢复技能就会刷新至初始持续时间。"
+      },
+      "glyph_of_cloak_of_shadows": {
+        "name": "暗影斗篷",
+        "description": "当暗影斗篷处于激活状态时，你受到的物理伤害降低40%。"
+      },
+      "glyph_of_vanish": {
+        "name": "消失",
+        "description": "使你消失效果的持续时间延长2秒。"
+      },
+      "glyph_of_blind": {
+        "name": "致盲",
+        "description": "你的致盲技能同时将清除目标身上所有会使其提早恢复正常的持续性伤害效果。"
+      }
+    },
+    "minor": {
+      "glyph_of_decoy": {
+        "name": "诱饵",
+        "description": "当你消失后，你留下一个跟你看起来很像的短暂幻象。"
+      },
+      "glyph_of_detection": {
+        "name": "侦测",
+        "description": "高高度专注，试着侦测到某种生物。"
+      },
+      "glyph_of_hemorrhage": {
+        "name": "出血",
+        "description": "你的出血技能只对已经受到流血效果影响的目标造成持续伤害。"
+      },
+      "glyph_of_pick_pocket": {
+        "name": "搜索",
+        "description": "使你的搜索技能的射程延长5码。"
+      },
+      "glyph_of_distract": {
+        "name": "扰乱",
+        "description": "使你的扰乱技能的作用范围延长5码。"
+      },
+      "glyph_of_pick_lock": {
+        "name": "开锁",
+        "description": "你的开锁技能的施放时间缩短100%。"
+      },
+      "glyph_of_safe_fall": {
+        "name": "安全降落",
+        "description": "使你的安全降落技能允许你从高处跳下来而不受伤的距离增加。"
+      },
+      "glyph_of_blurred_speed": {
+        "name": "水上漂",
+        "description": "使你在激活疾跑技能的状态下可以在水面上行走。"
+      },
+      "glyph_of_poisons": {
+        "name": "药膏",
+        "description": "为武器附加药膏效果的速度提高50%。"
+      },
+      "glyph_of_killing_spree": {
+        "name": "杀戮盛筵",
+        "description": "杀戮盛筳效果结束时，你将回到起始位置。"
+      },
+      "glyph_of_tricks_of_the_trade": {
+        "name": "嫁祸诀窍",
+        "description": "你的嫁祸诀窍技能不消耗能量值，也不会对目标提供伤害加成。"
+      },
+      "glyph_of_disguise": {
+        "name": "伪装",
+        "description": "当你搜索一个敌对人型生物时，你也可复制其外貌，持续5分钟。一旦进入战斗，你的伪装便会瓦解。"
+      },
+      "glyph_of_headhunting": {
+        "name": "猎头煞星",
+        "description": "无论你当前装备的是什么武器，现在使用投掷和致命投掷技能时会掷出斧头。"
+      },
+      "glyph_of_improved_distraction": {
+        "name": "强化扰乱",
+        "description": "扰乱现在会在目标位置召唤出一个假人。"
+      }
+    }
+  },
+  "shaman": {
+    "major": {
+      "glyph_of_unstable_earth": {
+        "name": "动荡大地",
+        "description": "你的地震术还会使受影响目标的移动速度降低40%，持续3秒。"
+      },
+      "glyph_of_chain_lightning": {
+        "name": "闪电链",
+        "description": "使你的闪电链可以额外攻击2个目标，但造成的伤害降低10%。"
+      },
+      "glyph_of_spirit_walk": {
+        "name": "幽魂步",
+        "description": "你的幽魂步的冷却时间缩短25%。"
+      },
+      "glyph_of_capacitor_totem": {
+        "name": "电能图腾",
+        "description": "你的电能图腾的充能时间缩短2秒。"
+      },
+      "glyph_of_purge": {
+        "name": "净化术",
+        "description": "你的净化术能额外驱散1个魔法效果，但有6秒的冷却时间。"
+      },
+      "glyph_of_fire_elemental_totem": {
+        "name": "火元素图腾",
+        "description": "火元素图腾的冷却时间和持续时间缩短50%。"
+      },
+      "glyph_of_fire_nova": {
+        "name": "火焰新星",
+        "description": "使你的火焰新星法术的作用范围延长5码。"
+      },
+      "glyph_of_flame_shock": {
+        "name": "烈焰震击",
+        "description": "当你的烈焰震击造成伤害时，将为你恢复相当于伤害值30%的生命值。"
+      },
+      "glyph_of_wind_shear": {
+        "name": "风剪",
+        "description": "使风剪对敌人同系法术的锁定时间延长1秒，但同时也使风剪的冷却时间延长3秒。"
+      },
+      "glyph_of_healing_stream_totem": {
+        "name": "治疗之泉图腾",
+        "description": "你的治疗之泉图腾在治疗盟友的同时，还将使其受到的火焰、冰霜和自然伤害降低10%，持续6秒。"
+      },
+      "glyph_of_healing_wave": {
+        "name": "治疗波",
+        "description": "当你使用治疗波对其他人进行治疗时，你自己也会受到该次治疗量20%的治疗。"
+      },
+      "glyph_of_totemic_recall": {
+        "name": "图腾召回",
+        "description": "你的图腾召回技能使你在收回任何图腾时回复所消耗的全部法力值。"
+      },
+      "glyph_of_telluric_currents": {
+        "name": "魔流",
+        "description": "你的闪电箭击中一个敌人就为你回复10%的法力值。"
+      },
+      "glyph_of_grounding_totem": {
+        "name": "根基图腾",
+        "description": "根基图腾不再吸收有害的法术，而是将其反射回施法者，但是根基图腾的冷却时间延长20秒。"
+      },
+      "glyph_of_spiritwalkers_grace": {
+        "name": "灵魂行者的恩赐",
+        "description": "你的灵魂行者的恩赐的持续时间延长5秒。"
+      },
+      "glyph_of_water_shield": {
+        "name": "水之护盾",
+        "description": "当你被攻击时，你的水之护盾的被动法力值回复效果会提高50%，但被动法力值回复效果会降低15%。"
+      },
+      "glyph_of_cleansing_waters": {
+        "name": "净化之水",
+        "description": "当你从盟友身上驱散一个有害魔法或者诅咒效果时，你也会治疗目标，数值等同于你最大生命值的5%。"
+      },
+      "glyph_of_frost_shock": {
+        "name": "冰霜震击",
+        "description": "使你的冰霜震击的冷却时间缩短2秒。"
+      },
+      "glyph_of_chaining": {
+        "name": "连锁",
+        "description": "你的治疗链的跳跃距离提高100%，但该法术将有2秒冷却时间。"
+      },
+      "glyph_of_healing_storm": {
+        "name": "治疗风暴",
+        "description": "每层漩涡武器效果还会使你的直接治疗效果提高20%。"
+      },
+      "glyph_of_ghost_wolf": {
+        "name": "幽魂之狼",
+        "description": "处于幽魂之狼形态时，移动速度限制效果对你的影响降低。"
+      },
+      "glyph_of_thunder": {
+        "name": "雷霆",
+        "description": "雷霆风暴的冷却时间缩短10秒。"
+      },
+      "glyph_of_feral_spirit": {
+        "name": "野性狼魂",
+        "description": "野性狼魂的灵魂狩猎技能造成的治疗效果提高40%。"
+      },
+      "glyph_of_riptide": {
+        "name": "激流",
+        "description": "你的激流不再具有冷却时间，但立即恢复的生命值会降低75%。"
+      },
+      "glyph_of_shamanistic_rage": {
+        "name": "萨满之怒",
+        "description": "你在激活萨满之怒时可以驱散所有可驱散的有害魔法效果。"
+      },
+      "glyph_of_hex": {
+        "name": "妖术",
+        "description": "使你妖术的冷却时间缩短10 秒。"
+      },
+      "glyph_of_totemic_vigor": {
+        "name": "图腾活力",
+        "description": "你图腾的生命点数提高，数值相当于你最大生命值的5%。"
+      },
+      "glyph_of_lightning_shield": {
+        "name": "闪电之盾",
+        "description": "当闪电之盾触发后，会使你受到的伤害降低10%，持续6秒。"
+      },
+      "glyph_of_purging": {
+        "name": "净化",
+        "description": "现在成功净化一个目标后会获得一层漩涡武器。"
+      },
+      "glyph_of_eternal_earth": {
+        "name": "永恒之土",
+        "description": "你的闪电箭有一定几率为你当前激活的大地之盾增加一层效果。该效果无法使大地之盾的层数超过9层。"
+      }
+    },
+    "minor": {
+      "glyph_of_the_lakestrider": {
+        "name": "凌波",
+        "description": "当你进入幽魂之狼形态时，将会自动获得水上行走技能。"
+      },
+      "glyph_of_lava_lash": {
+        "name": "熔岩猛击",
+        "description": "你的熔岩猛击技能不再将目标身上烈焰震击的效果扩散到附近的敌人身上。"
+      },
+      "glyph_of_astral_recall": {
+        "name": "星界传送",
+        "description": "你的星界传送法术的冷却时间缩短5 分钟。"
+      },
+      "glyph_of_far_sight": {
+        "name": "视界术",
+        "description": "你的视界术可以在室内使用。"
+      },
+      "glyph_of_the_spectral_wolf": {
+        "name": "鬼灵座狼",
+        "description": "使你的幽魂之狼形态的外表看起来像是一头巨大的鬼灵座狼。"
+      },
+      "glyph_of_totemic_encirclement": {
+        "name": "图腾环绕",
+        "description": "当你施放图腾法术时，你会同时放置所有当前未激活元素的未强化图腾。这些图腾拥有5点生命值，且不产生其它任何效果。"
+      },
+      "glyph_of_thunderstorm": {
+        "name": "雷霆风暴",
+        "description": "解除你的雷霆风暴法术的击退效果。"
+      },
+      "glyph_of_deluge": {
+        "name": "洪水",
+        "description": "使你的治疗链的视觉效果变成水流。"
+      },
+      "glyph_of_spirit_raptors": {
+        "name": "幽灵迅猛龙",
+        "description": "你的幽灵狼被幽灵迅猛龙代替了。"
+      },
+      "glyph_of_lingering_ancestors": {
+        "name": "徘徊先祖",
+        "description": "使用先祖之魂复活某人时，会有一个幽灵般的先祖跟随其后，持续一小段时间。"
+      },
+      "glyph_of_spirit_wolf": {
+        "name": "幽灵狼",
+        "description": "现在当你处于灵魂状态时，可以使用幽魂之狼了。"
+      },
+      "glyph_of_flaming_serpent": {
+        "name": "烈焰毒蛇",
+        "description": "灼热图腾的外形现在看起来像是沃金的毒蛇结界。"
+      },
+      "glyph_of_the_compy": {
+        "name": "掠食龙",
+        "description": "你的妖术现在会将敌人变成一头掠食龙。"
+      },
+      "glyph_of_elemental_familiars": {
+        "name": "元素仆从",
+        "description": "随机召唤一个火焰、流水或自然仆从。不同种类的仆从之间经常会发生冲突。"
+      },
+      "glyph_of_astral_fixation": {
+        "name": "星界定位",
+        "description": "星界传送现在会将你传送至主城的大地神殿。"
+      },
+      "glyph_of_rain_of_frogs": {
+        "name": "天降蟾蜍",
+        "description": "在目标区域降下大量蟾蜍。"
+      }
+    }
+  },
+  "warlock": {
+    "major": {
+      "glyph_of_conflagrate": {
+        "name": "燃烧",
+        "description": "燃烧不再需要献祭法术就可以对目标附加诱捕效果。"
+      },
+      "glyph_of_siphon_life": {
+        "name": "生命虹吸",
+        "description": "你的[献祭]腐蚀术法术在造成[献祭: 周期性]伤害时，会为你恢复0.5%的最大生命值。"
+      },
+      "glyph_of_fear": {
+        "name": "恐惧",
+        "description": "你的恐惧术将使受影响的目标在原地战栗而不是仓惶地逃跑。"
+      },
+      "glyph_of_demon_training": {
+        "name": "恶魔特训",
+        "description": "强化你的恶魔仆从的特定能力：你的[魔典：邪恶统御: 邪能小鬼 / 小鬼]的火焰箭施放时间缩短50%且同时射出三支。你的[魔典：邪恶统御: 虚空领主 / 虚空行者]的总护甲值提高10%。你的[魔典：邪恶统御: 破坏魔 / 魅魔]的[魔典：邪恶统御: 迷魅 / 诱惑]技能可移除目标身上所有的持续伤害效果。当你的[魔典：邪恶统御: 眼魔 / 地狱猎犬]施放[魔典：邪恶统御: 复制魔法 / 吞噬魔法]时，你也可以恢复相同数量的生命值。你的[魔典：邪恶统御: 愤怒卫士 / 恶魔卫士]的生命总值提高20%。"
+      },
+      "glyph_of_healthstone": {
+        "name": "治疗石",
+        "description": "你从使用治疗石中获得的治疗量提高100%，但是治疗石的治疗效果将在使用后的10秒内持续生效。"
+      },
+      "glyph_of_curse_of_the_elements": {
+        "name": "元素诅咒",
+        "description": "元素诅咒会攻击到附近2个额外的目标。"
+      },
+      "glyph_of_imp_swarm": {
+        "name": "小鬼成群",
+        "description": "从扭曲虚空召唤4个野生小鬼攻击目标。小鬼成群冷却时野生小鬼的被动效果不可用。法术急速会缩短小鬼成群的冷却时间。同时野生小鬼的冷却时间缩短4秒。"
+      },
+      "glyph_of_havoc": {
+        "name": "浩劫",
+        "description": "浩劫会有3层额外的效果，但其冷却时间将延长35秒。"
+      },
+      "glyph_of_soulstone": {
+        "name": "灵魂石",
+        "description": "被你的灵魂石复活的目标将拥有100%的起始生命值。"
+      },
+      "glyph_of_unstable_affliction": {
+        "name": "痛苦无常",
+        "description": "痛苦无常的施法时间缩短25%。"
+      },
+      "glyph_of_soul_consumption": {
+        "name": "灵魂吞噬",
+        "description": "使用灵魂吸取杀死一个可为你提供经验值或荣誉值的目标后，你将回复20%的最大生命值。使用混乱之箭杀死一个可为你提供经验值或荣誉值的目标后，你将回复20%的最大生命值。"
+      },
+      "glyph_of_curse_of_exhaustion": {
+        "name": "疲劳诅咒",
+        "description": "疲劳诅咒的持续时间延长10秒。"
+      },
+      "glyph_of_drain_life": {
+        "name": "吸取生命",
+        "description": "吸取生命所造成的治疗效果提高30%。"
+      },
+      "glyph_of_demon_hunting": {
+        "name": "狩猎恶魔",
+        "description": "你为自己灌注恶魔能量，受到的物理伤害降低13.85%，魔法伤害降低15%，并可使用多种恶魔技能。此外，灵魂碎裂变为挑衅来嘲讽你的目标，暮光结界变为愤怒结界来吸收所有类型的伤害，暗影箭变为恶魔猛击，恐惧则变为催眠术。"
+      },
+      "glyph_of_ember_tap": {
+        "name": "灰烬转换",
+        "description": "灰烬转换为你额外恢复5%的生命值，但治疗效果将在使用后的10秒内持续生效。"
+      },
+      "glyph_of_demonic_circle": {
+        "name": "恶魔法阵",
+        "description": "恶魔法阵的冷却时间缩短4秒。"
+      },
+      "glyph_of_unending_resolve": {
+        "name": "不灭决心",
+        "description": "不灭决心的伤害减免效果降低20%，但其冷却时间将缩短60秒。"
+      },
+      "glyph_of_life_tap": {
+        "name": "生命分流",
+        "description": "你的生命分流不再消耗生命值，而是会吸收受到的[([Total Health] * 0.15)]点治疗量。该效果可叠加。吸收持续30秒。"
+      },
+      "glyph_of_eternal_resolve": {
+        "name": "不朽信念",
+        "description": "在竞技场或战场外时：痛苦无常、腐蚀术和痛楚的持续时间延长50%，所造成的伤害降低20%。在竞技场和战场中：无法再激活不灭决心，但会提供所有伤害减免10%的被动效果。"
+      },
+      "glyph_of_supernova": {
+        "name": "超级新星",
+        "description": "当你被杀后，你剩余的每团爆燃灰烬会对8码范围内的所有敌人造成相当于你最大生命值10%的伤害。"
+      }
+    },
+    "minor": {
+      "glyph_of_hand_of_guldan": {
+        "name": "古尔丹之手",
+        "description": "你现在可以对某个位置使用古尔丹之手。"
+      },
+      "glyph_of_verdant_spheres": {
+        "name": "翠绿的魔珠",
+        "description": "你拥有爆燃灰烬时，其会以翠绿的魔珠形态出现在你的角色周围。"
+      },
+      "glyph_of_nightmares": {
+        "name": "梦魇",
+        "description": "你的地狱战马和恐惧战马能够踏波而行并留下一串燃烧的足迹。"
+      },
+      "glyph_of_felguard": {
+        "name": "恶魔卫士",
+        "description": "你的恶魔卫士将可以随机使用你的背包中的双手斧、剑或长柄武器。"
+      },
+      "glyph_of_health_funnel": {
+        "name": "生命通道",
+        "description": "你的生命通道立即为你的恶魔恢复15%的生命值，但有10秒的冷却时间。"
+      },
+      "glyph_of_subtlety": {
+        "name": "微妙",
+        "description": "你的灵魂碎片在非战斗状态下不再显示。"
+      },
+      "glyph_of_shadow_bolt": {
+        "name": "暗影箭",
+        "description": "你的暗影箭攻击将被分割为三次小的攻击。"
+      },
+      "glyph_of_carrion_swarm": {
+        "name": "腐臭蜂群",
+        "description": "你的腐臭蜂群不再击退目标。"
+      },
+      "glyph_of_falling_meteor": {
+        "name": "陨落流星",
+        "description": "如果你在坠落时施放恶魔飞跃，你将迅速撞向地面，但不会因坠落伤害而死亡。"
+      },
+      "glyph_of_unending_breath": {
+        "name": "无尽呼吸",
+        "description": "受到你的无尽呼吸法术影响的目标游泳速度提高20%。"
+      },
+      "glyph_of_eye_of_kilrogg": {
+        "name": "基尔罗格之眼",
+        "description": "你的基尔罗格之眼不再潜行，并可为你施放恶魔法阵。术士必须在基尔罗格之眼的视线范围内才可以施放恶魔法阵。此外，你的基尔罗格之眼移动速度提高50%，并且可以在能使用飞行坐骑的区域内飞行。"
+      },
+      "glyph_of_subjugate_demon": {
+        "name": "征服恶魔",
+        "description": "使你的征服恶魔法术的施法时间缩短50%。"
+      },
+      "glyph_of_soulwell": {
+        "name": "灵魂之井",
+        "description": "你的灵魂之井闪烁着诡异的光芒。"
+      },
+      "glyph_of_crimson_banish": {
+        "name": "猩红放逐",
+        "description": "你的放逐术现在呈现红色。"
+      },
+      "glyph_of_gateway_attunement": {
+        "name": "共振传送",
+        "description": "当你走近恶魔传送门时，它们会自动激活。"
+      }
+    }
+  },
+  "warrior": {
+    "major": {
+      "glyph_of_long_charge": {
+        "name": "长距冲锋",
+        "description": "使你的冲锋技能的射程延长5码。"
+      },
+      "glyph_of_unending_rage": {
+        "name": "不灭怒火",
+        "description": "使你的怒气值上限提高20点。"
+      },
+      "glyph_of_enraged_speed": {
+        "name": "急怒之速",
+        "description": "在激怒状态下，你的移动速度提高20%。"
+      },
+      "glyph_of_hindering_strikes": {
+        "name": "妨害打击",
+        "description": "你的英勇打击和顺劈斩现在也可以使目标的移动速度降低50%，持续8秒。"
+      },
+      "glyph_of_heavy_repercussions": {
+        "name": "强力反击",
+        "description": "当你的盾牌格挡处于激活状态时，你的盾牌猛击可额外造成50%的伤害。"
+      },
+      "glyph_of_bloodthirst": {
+        "name": "嗜血",
+        "description": "嗜血的治疗效果提高100%。"
+      },
+      "glyph_of_rude_interruption": {
+        "name": "粗暴打断",
+        "description": "用拳击成功打断施法后，你造成的伤害提高6%，持续20秒。"
+      },
+      "glyph_of_gag_order": {
+        "name": "禁令",
+        "description": "你的拳击和英勇投掷会使目标沉默3秒。该效果对玩家不起作用。"
+      },
+      "glyph_of_blitz": {
+        "name": "迅猛突袭",
+        "description": "你的冲锋还可以[战神: 定身并诱捕 / 昏迷]附近的2个额外目标。"
+      },
+      "glyph_of_mortal_strike": {
+        "name": "致死打击",
+        "description": "你的致死打击影响一个目标时，你所受到的治疗效果提高10%。"
+      },
+      "glyph_of_die_by_the_sword": {
+        "name": "剑在人在",
+        "description": "当剑在人在处于激活状态时，使用压制会使剑在人在的持续时间延长1秒，使用狂风打击会使剑在人在的持续时间延长0.5秒。"
+      },
+      "glyph_of_hamstring": {
+        "name": "断筋",
+        "description": "当你消耗怒气值来使用断筋时，你下一个断筋消耗的怒气值降低100%。"
+      },
+      "glyph_of_hold_the_line": {
+        "name": "坚守阵地",
+        "description": "成功招架之后，你的下一次复仇造成的伤害提高50%。"
+      },
+      "glyph_of_shield_slam": {
+        "name": "盾牌猛击",
+        "description": "你的盾牌猛击现在可以驱散1个魔法效果。"
+      },
+      "glyph_of_hoarse_voice": {
+        "name": "嘶吼",
+        "description": "你的战斗怒吼和命令怒吼的冷却时间缩短50%，怒气恢复速度降低50%。"
+      },
+      "glyph_of_sweeping_strikes": {
+        "name": "横扫攻击",
+        "description": "当你用横扫攻击命中一个目标时，你会获得1点怒气值。"
+      },
+      "glyph_of_resonating_power": {
+        "name": "共鸣",
+        "description": "雷霆一击造成的伤害提高50%，冷却时间延长50%。"
+      },
+      "glyph_of_victory_rush": {
+        "name": "乘胜追击",
+        "description": "乘胜追击给予的总治疗量提高50%。与胜利在望天赋组合使用会导致该雕文无效。"
+      },
+      "glyph_of_raging_wind": {
+        "name": "怒风斩",
+        "description": "你的怒击技能命中时，可使你的下一个旋风斩的伤害值提高10%。（1秒 冷却）"
+      },
+      "glyph_of_whirlwind": {
+        "name": "旋风斩",
+        "description": "旋风半径延长4码。"
+      },
+      "glyph_of_death_from_above": {
+        "name": "死从天降",
+        "description": "英勇飞跃的冷却时间缩短15秒。"
+      },
+      "glyph_of_victorious_throw": {
+        "name": "胜利投掷",
+        "description": "乘胜追击和胜利在望的作用距离延长15码。"
+      },
+      "glyph_of_spell_reflection": {
+        "name": "法术反射",
+        "description": "使你法术反射的冷却时间缩短5秒。"
+      },
+      "glyph_of_shield_wall": {
+        "name": "盾墙",
+        "description": "盾墙现在使受到的伤害额外再减少20%，但是其冷却时间延长2分钟。"
+      },
+      "glyph_of_colossus_smash": {
+        "name": "巨人打击",
+        "description": "使你的巨人打击同样能够对目标施加破甲效果。"
+      },
+      "glyph_of_bull_rush": {
+        "name": "怒牛冲击",
+        "description": "你的冲锋技能可额外产生15点怒气值。"
+      },
+      "glyph_of_recklessness": {
+        "name": "鲁莽",
+        "description": "鲁莽的爆击几率降低12%，但持续时间延长50%。"
+      },
+      "glyph_of_incite": {
+        "name": "激动",
+        "description": "挫志怒吼可使你的下3次英勇打击或顺劈斩不消耗怒气值。"
+      },
+      "glyph_of_impaling_throws": {
+        "name": "穿刺投掷",
+        "description": "英勇投掷现在会在目标身上留下一把斧头，移至目标5码范围内便可取回，并结束英勇投掷的冷却时间。该效果仅在英勇投掷距离目标超过10码范围外时使用才会被触发。"
+      },
+      "glyph_of_the_executor": {
+        "name": "The Executor",
+        "description": "Killing an enemy with Execute grants you 30 rage."
+      }
+    },
+    "minor": {
+      "glyph_of_mystic_shout": {
+        "name": "神秘尖啸",
+        "description": "你的战斗怒吼和命令怒吼使你在空中悬浮，持续1秒。"
+      },
+      "glyph_of_bloodcurdling_shout": {
+        "name": "威吓",
+        "description": "你的战斗怒吼和命令怒吼会惊吓到小动物。"
+      },
+      "glyph_of_gushing_wound": {
+        "name": "龟裂创伤",
+        "description": "你的重伤技能将比平常更血腥。"
+      },
+      "glyph_of_mighty_victory": {
+        "name": "强力制胜",
+        "description": "当你的乘胜追击或胜利在望对你进行治疗后，你的体型将略微增大。"
+      },
+      "glyph_of_bloody_healing": {
+        "name": "血腥治疗",
+        "description": "在你的重伤效果的生效时间内，你从绷带获得的治疗效果提高20%。"
+      },
+      "glyph_of_intimidating_shout": {
+        "name": "破胆怒吼",
+        "description": "使你破胆怒吼的目标被恐惧后将会呆在原地，而不再逃跑。"
+      },
+      "glyph_of_thunder_strike": {
+        "name": "雷霆一击",
+        "description": "你雷霆一击的视觉效果包括一个闪电打击。"
+      },
+      "glyph_of_crow_feast": {
+        "name": "群鸦盛宴",
+        "description": "你的斩杀爆击后可以召唤一群腐食鸟。"
+      },
+      "glyph_of_burning_anger": {
+        "name": "怒火冲天",
+        "description": "被激怒时，你会大发雷霆，被怒火所吞噬。"
+      },
+      "glyph_of_the_blazing_trail": {
+        "name": "烈焰开道",
+        "description": "你的冲锋在行进路径上留下一道烈焰之痕。既然要冲锋，为什么不做得有型一点？"
+      },
+      "glyph_of_the_raging_whirlwind": {
+        "name": "狂怒旋风",
+        "description": "旋风斩会使你在6秒内获得15点怒气值，但在此期间你的自动攻击将不再产生怒气值。"
+      },
+      "glyph_of_the_subtle_defender": {
+        "name": "谨小慎微",
+        "description": "移除防御姿态下产生的威胁值加成。"
+      },
+      "glyph_of_the_watchful_eye": {
+        "name": "警觉之眼",
+        "description": "援护现在会以25码范围内生命值最低的小队或团队成员为目标。"
+      },
+      "glyph_of_the_weaponmaster": {
+        "name": "武器大师",
+        "description": "你的怒吼技能会使你的武器外观更改成主背包里一件随机武器的样式，持续10分钟。"
+      }
+    }
+  }
+}
