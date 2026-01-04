@@ -89,15 +89,6 @@ func readAtlasLootDungeonData(db *WowDatabase, expansion proto.Expansion, srcUrl
 		fmt.Printf("Zone: %s\n", dungeonMatch[1])
 		zoneID, _ := strconv.Atoi(dungeonMatch[2])
 
-		// @NOTE: Temporary fix. AtlasLoot has SoO and ToT reversed for some reason.
-		// SoO is 6738, ToT is 6622.
-		switch zoneID {
-		case 6738:
-			zoneID = 6622
-		case 6622:
-			zoneID = 6738
-		}
-
 		db.MergeZone(&proto.UIZone{
 			Id:        int32(zoneID),
 			Expansion: expansion,
