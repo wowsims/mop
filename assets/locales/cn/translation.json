@@ -10,13 +10,13 @@
       "full_raid": "团队副本模拟"
     },
     "home": {
-      "title": "WoWSimsCN - 熊猫人之谜",
+      "title": "WoWSims - 熊猫人之谜",
       "description": "魔兽世界：熊猫人之谜的强大模拟工具",
       "welcomeDescription": "我们是一个社区驱动的开源项目,与各专精顶尖的理论和实战玩家合作\n为怀旧服提供最科学的数据导向输出以及配装指导"
     },
     "header": {
-      "wowsims": "WoWSimsCN",
-      "expansion": "魔兽世界®熊猫人之谜",
+      "wowsims": "WoWSims",
+      "expansion": "熊猫人之谜",
       "supportDevs": "支持开发者"
     }
   },
@@ -299,7 +299,7 @@
     },
     "addon": {
       "title": "插件导入",
-      "description": "在新手盒子插件库中搜索 Wowsims Exporter 插件, 在游戏中输出命令/wse即可导出游戏中的角色。",
+      "description": "在插件库中搜索 Wowsims Exporter 插件, 在游戏中输出命令/wse即可导出游戏中的角色。",
       "addon_link": "WoWSims导出器游戏内插件",
       "feature_description": "此功能导入装备、种族、天赋、雕文和专业。它不导入增益、减益、消耗品、循环或自定义属性。",
       "instructions": "要导入，请在下面粘贴插件的输出并点击'导入'。",
@@ -337,7 +337,7 @@
     },
     "pawn_ep": {
       "title": "EP导出",
-      "description": "导出EP字符串，方便你在Pawn或者ForgeLite插件中使用，你可以在新手盒子中找到这些插件下载。",
+      "description": "导出EP字符串，方便你在Pawn或者ForgeLite插件中使用，你可以在插件库中找到这些插件下载。",
       "instructions": "复制下面的EP字符串并将其导入到您的Pawn/ForgeLite插件中。",
       "copy_button": "复制",
       "copy_tooltip": "复制到剪贴板"
@@ -557,7 +557,7 @@
       }
     },
     "header": {
-      "title": "WoWSimsCN @ 财高八抖",
+      "title": "WoWSims - 熊猫人之谜",
       "phase": "{{phase}} - {{status}}"
     },
     "results": {
