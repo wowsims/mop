@@ -1,0 +1,2450 @@
+{
+  "landing": {
+    "navigation": {
+      "home": "首页",
+      "simulations": "模拟器",
+      "about": "关于",
+      "toggle": "切换导航"
+    },
+    "simulations": {
+      "full_raid": "团队副本模拟"
+    },
+    "home": {
+      "title": "WoWSims - 熊猫人之谜",
+      "description": "魔兽世界：熊猫人之谜的强大模拟工具",
+      "welcomeDescription": "我们是一个社区驱动的开源项目,与各专精顶尖的理论和实战玩家合作\n为怀旧服提供最科学的数据导向输出以及配装指导"
+    },
+    "header": {
+      "wowsims": "WoWSims",
+      "expansion": "熊猫人之谜",
+      "supportDevs": "支持开发者"
+    }
+  },
+  "common": {
+    "none": "无",
+    "custom": "自定义",
+    "name": "名称",
+    "search": "搜索",
+    "filter": "过滤",
+    "phases": {
+      "1": "阶段1 (5.0 - T14)",
+      "2": "阶段2 (5.1)",
+      "3": "阶段3 (5.2 - T15)",
+      "4": "阶段4 (5.3)",
+      "5": "阶段5 (5.4 - T16)"
+    },
+    "tanks": {
+      "title": "坦克",
+      "main_tank": "主坦克",
+      "tank_2": "坦克2",
+      "tank_3": "坦克3",
+      "tank_4": "坦克4"
+    },
+    "status": {
+      "unlaunched": "不支持",
+      "alpha": "尝鲜版",
+      "beta": "测试版",
+      "launched": "正式版"
+    },
+    "mob_types": {
+      "unknown": "无",
+      "beast": "野兽",
+      "demon": "恶魔",
+      "dragonkin": "龙类",
+      "elemental": "元素",
+      "giant": "巨人",
+      "humanoid": "人型生物",
+      "mechanical": "机械",
+      "undead": "亡灵"
+    },
+    "sources": {
+      "unknown": "未知",
+      "crafting": "制造",
+      "quest": "任务",
+      "reputation": "声望",
+      "pvp": "PVP",
+      "dungeon": "地下城",
+      "dungeon_h": "地下城（英雄）",
+      "raid": "团队副本",
+      "raid_h": "团队副本（英雄）",
+      "raid_rf": "团队副本（随机）",
+      "sold_by": "Sold by",
+      "raid_flex": "Raid (Flex)"
+    },
+    "raids": {
+      "unknown": "未知",
+      "mogushan_vaults": "魔古山宝库",
+      "heart_of_fear": "恐惧之心",
+      "terrace_of_endless_spring": "永春台",
+      "throne_of_thunder": "雷电王座",
+      "siege_of_orgrimmar": "围攻奥格瑞玛"
+    },
+    "armor_types": {
+      "unknown": "未知",
+      "cloth": "布甲",
+      "leather": "皮甲",
+      "mail": "锁甲",
+      "plate": "板甲"
+    },
+    "weapon_types": {
+      "unknown": "未知",
+      "axe": "斧",
+      "dagger": "匕首",
+      "fist": "拳套",
+      "mace": "锤",
+      "off_hand": "副手",
+      "polearm": "长柄武器",
+      "shield": "盾牌",
+      "staff": "法杖",
+      "sword": "剑"
+    },
+    "ranged_weapon_types": {
+      "unknown": "未知",
+      "bow": "弓",
+      "crossbow": "弩",
+      "gun": "枪",
+      "thrown": "投掷武器",
+      "wand": "魔杖"
+    },
+    "spell_schools": {
+      "physical": "物理",
+      "arcane": "奥术",
+      "fire": "火焰",
+      "frost": "冰霜",
+      "holy": "神圣",
+      "nature": "自然",
+      "shadow": "暗影"
+    },
+    "resource_types": {
+      "health": "生命值",
+      "mana": "法力值",
+      "energy": "能量",
+      "rage": "怒气",
+      "focus": "集中值",
+      "runic_power": "符文能量",
+      "chi": "真气",
+      "holy_power": "神圣能量",
+      "shadow_orbs": "暗影宝珠",
+      "combo_points": "连击点数",
+      "maelstrom": "漩涡",
+      "demonic_fury": "恶魔之怒",
+      "burning_embers": "燃烧余烬"
+    },
+    "stats": {
+      "strength": "力量",
+      "agility": "敏捷",
+      "stamina": "耐力",
+      "intellect": "智力",
+      "spirit": "精神",
+      "hit": "命中",
+      "crit": "暴击",
+      "haste": "急速",
+      "expertise": "精准",
+      "dodge": "躲闪",
+      "parry": "招架",
+      "mastery": "精通",
+      "attack_power": "攻击强度",
+      "ranged_attack_power": "远程攻击强度",
+      "spell_power": "法术强度",
+      "pvp_resilience": "韧性",
+      "pvp_power": "PVP强度",
+      "armor": "护甲",
+      "bonus_armor": "额外护甲",
+      "health": "生命值",
+      "mana": "法力值",
+      "mp5": "法力回复",
+      "main_hand_dps": "主手DPS",
+      "off_hand_dps": "副手DPS",
+      "ranged_dps": "远程DPS",
+      "block": "格挡",
+      "melee_speed_multiplier": "近战攻速",
+      "ranged_speed_multiplier": "远程攻速",
+      "cast_speed_multiplier": "施法攻速",
+      "spell_hit": "法术命中",
+      "spell_crit": "法术暴击",
+      "spell_haste": "法术急速",
+      "melee_hit": "近战命中",
+      "melee_crit": "近战暴击",
+      "melee_haste": "近战急速",
+      "ranged_haste": "远程急速"
+    },
+    "mastery_spell_names": {
+      "unknown": "未知",
+      "potent_poisons": "强效药膏",
+      "main_gauche": "左右开弓",
+      "executioner": "刽子手",
+      "blood_shield": "鲜血护盾",
+      "frozen_heart": "冰冷之心",
+      "dreadblade": "恐惧之刃",
+      "total_eclipse": "日月齐喑",
+      "razor_claws": "剃刀之爪",
+      "natures_guardian": "自然的守护者",
+      "harmony": "相生",
+      "illuminated_healing": "光辉治疗",
+      "divine_bulwark": "神圣壁垒",
+      "hand_of_light": "圣光之手",
+      "elemental_overload": "元素过载",
+      "enhanced_elements": "增强元素",
+      "deep_healing": "深度治疗",
+      "master_of_beasts": "野兽控制大师",
+      "wild_quiver": "毒蛇精华",
+      "essence_of_the_viper": "野性箭弹",
+      "strikes_of_opportunity": "顺势一击",
+      "unshackled_fury": "不羁之怒",
+      "critical_block": "精确格挡",
+      "mana_adept": "法力专家",
+      "ignite": "点燃",
+      "icicles": "冰刺",
+      "shield_discipline": "护盾戒律",
+      "echo_of_light": "圣光回响",
+      "shadow_orb_power": "暗影回荡",
+      "potent_afflictions": "剧痛",
+      "master_demonologist": "恶魔学识大师",
+      "emberstorm": "灰烬风暴",
+      "elusive_brawler": "醉拳大师",
+      "gift_of_the_serpent": "青龙之赐",
+      "bottled_fury": "酒中怒"
+    },
+    "copy_button": {
+      "default_text": "复制",
+      "copied": "已复制"
+    },
+    "list_picker": {
+      "new_item": "新建{{itemLabel}}",
+      "delete_item": "删除{{itemLabel}}",
+      "copy_to_new": "复制到新建{{itemLabel}}",
+      "move_drag_drop": "移动（拖拽）",
+      "warnings": "警告",
+      "additional_information": "附加信息：",
+      "action_has_warnings": "此操作有警告，可能不会按预期运行。",
+      "action_has_errors": "此操作有错误，不会按预期运行。"
+    },
+    "currency": {
+      "valorPoints": "勇气点数",
+      "justicePoints": "正义点数",
+      "honorPoints": "荣誉点数"
+    },
+    "preset": {
+      "ep_weights": "EP权重",
+      "gear": "装备",
+      "talents": "天赋",
+      "rotation": "循环",
+      "encounter": "战斗",
+      "settings": "设置",
+      "description": "此预设影响以下设置：",
+      "stat_weights": "属性权重",
+      "class_spec_options": "职业/专精选项",
+      "consumables": "消耗品",
+      "other_settings": "其他设置",
+      "buffs": "增益"
+    }
+  },
+  "sim": {
+    "title": "熊猫人之谜 {{spec}} {{class}} 模拟器",
+    "description": "魔兽世界®熊猫人之谜经典版 {{spec}} {{class}} 模拟。",
+    "basic_bis_disclaimer": "<p>预设装备列表旨在作为BIS的粗略近似，但不一定是战斗中最佳的配装。最优装备设置将取决于许多因素(这就是为什么我们有模拟器！)</p><p>如果物品竞争激烈且明显更适合其他职业使用，也可能从预设中省略，以鼓励团队整体装备的公平分配。</p>",
+    "healing_sim_disclaimer": "*** 警告 - 使用风险自负 ***\n\n治疗模拟的整个概念都是实验性的。所有结果都应该极其谨慎地对待。\n\n此工具目前更像电子表格而不是真正的模拟器。用于指定传入伤害配置以进行适当反应性循环的选项尚未添加。",
+    "notice_local_download": {
+      "title": "你知道吗？",
+      "message": "您可以下载我们的本地模拟器来显著加快模拟速度？",
+      "download_button": "下载"
+    },
+    "crash_modal": {
+      "title": "崩溃信息",
+      "header": "请将以下完整链接附加到BUG反馈中。这将简化问题调试。"
+    },
+    "unlaunched": {
+      "title": "此模拟器目前不受支持。",
+      "contribute_message": "",
+      "discord_message": "",
+      "healing_message": "？",
+      "qe_live_message": ""
+    },
+    "notifications": {
+      "raid_sim_cancelled": "本模拟已取消。",
+      "simulation_failed": "模拟失败。已生成错误报告。",
+      "failed_to_file_report": "提交报告失败...请稍后再试："
+    },
+    "crash_report": {
+      "confirm_title": "模拟失败：",
+      "confirm_message": "按确定提交崩溃报告",
+      "report_title": "崩溃报告"
+    }
+  },
+  "import": {
+    "title": "导入",
+    "json": {
+      "title": "JSON导入",
+      "description": "导出功能的JSON字符串可以方便你和他人分享设置，再使用导入功能导入。",
+      "instructions": "要导入，请上传文件或在下面粘贴文本，然后点击'导入'。",
+      "upload_button": "上传文件",
+      "import_button": "导入",
+      "error_invalid_json": "请使用有效的JSON对象。"
+    },
+    "wowhead": {
+      "title": "Wowhead导入",
+      "description": "从导入设置",
+      "gear_planner_link": "Wowhead装备规划器",
+      "feature_description": "此功能导入装备、种族和（可选）天赋。它不导入增益、减益、消耗品、循环或自定义属性。",
+      "instructions": "要导入，请在下面粘贴装备规划器链接并点击'导入'。",
+      "upload_button": "上传文件",
+      "import_button": "导入",
+      "tinker_warning": {
+        "title": "工程学问题",
+        "message": "从Wowhead导入工程学存在已知问题。导入后请务必仔细检查您的工程学。"
+      },
+      "error_invalid_url": "无效的WCL URL {url}，必须看起来像\"https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX\"",
+      "error_cannot_parse_class": "无法解析职业：{classId}",
+      "error_cannot_parse_race": "无法解析种族：{raceId}"
+    },
+    "addon": {
+      "title": "插件导入",
+      "description": "在插件库中搜索 Wowsims Exporter 插件, 在游戏中输出命令/wse即可导出游戏中的角色。",
+      "addon_link": "WoWSims导出器游戏内插件",
+      "feature_description": "此功能导入装备、种族、天赋、雕文和专业。它不导入增益、减益、消耗品、循环或自定义属性。",
+      "instructions": "要导入，请在下面粘贴插件的输出并点击'导入'。",
+      "upload_button": "上传文件",
+      "import_button": "导入",
+      "reforge_warning": {
+        "title": "重铸问题",
+        "message": "使用WSE插件时重铸存在已知问题。导入后请务必仔细检查您的重铸。"
+      }
+    }
+  },
+  "export": {
+    "title": "导出",
+    "link": {
+      "title": "链接导出",
+      "description": "将设置导出为可共享的链接。",
+      "instructions": "复制下面的链接以与他人共享您的设置。",
+      "copy_button": "复制",
+      "copy_tooltip": "复制到剪贴板"
+    },
+    "json": {
+      "title": "JSON导出",
+      "description": "将设置导出为JSON文件。",
+      "instructions": "下载JSON文件或复制下面的内容。",
+      "copy_button": "复制",
+      "copy_tooltip": "复制到剪贴板",
+      "download_button": "下载"
+    },
+    "wowhead": {
+      "title": "WoWHead导出",
+      "description": "将设置导出到WoWHead装备规划器。",
+      "instructions": "复制下面的链接以在WoWHead中打开您的装备设置。",
+      "copy_button": "复制",
+      "copy_tooltip": "复制到剪贴板"
+    },
+    "pawn_ep": {
+      "title": "EP导出",
+      "description": "导出EP字符串，方便你在Pawn或者ForgeLite插件中使用，你可以在插件库中找到这些插件下载。",
+      "instructions": "复制下面的EP字符串并将其导入到您的Pawn/ForgeLite插件中。",
+      "copy_button": "复制",
+      "copy_tooltip": "复制到剪贴板"
+    },
+    "cli": {
+      "title": "CLI导出",
+      "description": "导出命令行模拟的设置。",
+      "instructions": "复制下面的命令以从命令行运行模拟。",
+      "copy_button": "复制",
+      "copy_tooltip": "复制到剪贴板"
+    },
+    "categories": {
+      "gear": {
+        "label": "装备",
+        "tooltip": "还包括额外属性和武器交换。"
+      },
+      "talents": {
+        "label": "天赋",
+        "tooltip": "天赋和雕文。"
+      },
+      "rotation": {
+        "label": "循环",
+        "tooltip": "包括循环标签页中找到的所有内容。"
+      },
+      "consumes": {
+        "label": "消耗品",
+        "tooltip": "药剂、药水、食物等。"
+      },
+      "external": {
+        "label": "增益和减益",
+        "tooltip": "由其他团队成员应用的所有设置。"
+      },
+      "miscellaneous": {
+        "label": "其他",
+        "tooltip": "专精特定设置、目标前方/后方、与目标距离等。"
+      },
+      "encounter": {
+        "label": "战斗",
+        "tooltip": "战斗相关设置。"
+      }
+    }
+  },
+  "info": {
+    "known_issues": "已知问题",
+    "bug_report": "报告错误或请求功能",
+    "sim_options": "模拟选项",
+    "discord": "加入我们的Discord",
+    "patreon": "在Patreon上支持我们",
+    "github": "在GitHub上贡献",
+    "status": {
+      "unlaunched": "此模拟器正在开发中。它尚未完全开发，不应用于一般用途。",
+      "alpha": "此模拟器处于测试版。预计会有错误；如果您发现错误请告诉我们！",
+      "beta": "此模拟器处于公测版。可能仍有一些错误；如果您发现错误请告诉我们！"
+    },
+    "options": {
+      "title": "选项",
+      "fixed_rng_seed": {
+        "label": "固定RNG种子",
+        "tooltip": "模拟期间使用的随机数生成器的种子值，或0以在每次运行时使用不同的随机性。使用此功能共享精确的模拟结果或进行调试。",
+        "last_used": "上次使用的RNG种子："
+      },
+      "language": {
+        "label": "语言",
+        "tooltip": "控制Wowhead提示框的语言。"
+      },
+      "feature_toggles": {
+        "show_threat_metrics": "显示威胁/坦克选项",
+        "show_experimental": "显示实验性功能",
+        "show_quick_swap": "显示快速交换界面"
+      },
+      "use_multiple_cpu_cores": {
+        "label": "使用多个CPU核心"
+      },
+      "restore_defaults": {
+        "button": "恢复默认设置",
+        "tooltip": "恢复所有默认设置（装备、消耗品、增益、天赋、EP权重等）。保存的设置将被保留。",
+        "success_message": "已恢复到默认设置。"
+      }
+    }
+  },
+  "sidebar": {
+    "iterations": "迭代次数",
+    "warnings": {
+      "meta_gem_disabled": "多彩宝石已禁用（{{gemName}}）：{{description}}",
+      "profession_requirement": "{{itemName}}需要{{professionName}}，但未选择",
+      "too_many_jc_gems": "只允许2个珠宝加工宝石，但装备了{{count}}个",
+      "unspent_talent_points": "第{{rowNumbers}}行缺少必需的天赋选择。",
+      "armor_specialization": "在每个槽位装备{{armorType}}装备以获得护甲专精（5%主要属性）效果",
+      "dual_wield_2h_without_titans_grip": "没有泰坦之握专精的情况下双持双手武器",
+      "shaman_fele_autocast": "当前火元素法术自动施放设置在使用原始元素使天赋时不是最优的。如果您知道自己在做什么，请忽略此提示。"
+    },
+    "buttons": {
+      "simulate": "开始模拟",
+      "stat_weights": {
+        "title": "属性权重",
+        "modal": {
+          "title": "计算属性权重",
+          "ep": "EP",
+          "weights": "权重",
+          "show_all_stats": "显示所有属性",
+          "dps_tps_reference": "DPS/TPS参考：",
+          "healing_reference": "治疗参考：",
+          "mitigation_reference": "减伤参考：",
+          "reference_description": "上述属性选择器控制不同EP列用于EP标准化的参考属性。",
+          "current_ep_description": "'当前EP'列显示物品选择器当前用于排序物品的值。",
+          "copy_icon_description": "使用EP上方的复制图标来使用新计算的EP。",
+          "stat": "属性",
+          "update": "更新",
+          "ep_ratio": "EP比率",
+          "update_ep": "更新EP",
+          "calculate": "计算",
+          "compute_weighted_ep": "计算加权EP",
+          "dps_weight": {
+            "label": "DPS权重",
+            "tooltip": "每个属性的DPS（每秒伤害）每点增加。"
+          },
+          "dps_ep": {
+            "label": "DPS EP",
+            "tooltip": "每个属性的DPS（每秒伤害）的EP（等价点数）。"
+          },
+          "hps_weight": {
+            "label": "HPS权重",
+            "tooltip": "每个属性的HPS（每秒治疗）每点增加。"
+          },
+          "hps_ep": {
+            "label": "HPS EP",
+            "tooltip": "每个属性的HPS（每秒治疗）的EP（等价点数）。"
+          },
+          "tps_weight": {
+            "label": "TPS权重",
+            "tooltip": "每个属性的TPS（每秒威胁）每点增加。"
+          },
+          "tps_ep": {
+            "label": "TPS EP",
+            "tooltip": "每个属性的TPS（每秒威胁）的EP（等价点数）。"
+          },
+          "dtps_weight": {
+            "label": "DTPS权重",
+            "tooltip": "每个属性的DTPS（每秒受到伤害）每点增加。"
+          },
+          "dtps_ep": {
+            "label": "DTPS EP",
+            "tooltip": "每个属性的DTPS（每秒受到伤害）的EP（等价点数）。"
+          },
+          "tmi_weight": {
+            "label": "TMI权重",
+            "tooltip": "每个属性的TMI（Theck-Meloree指数）每点减少。"
+          },
+          "tmi_ep": {
+            "label": "TMI EP",
+            "tooltip": "每个属性的TMI（Theck-Meloree指数）的EP（等价点数）。"
+          },
+          "death_weight": {
+            "label": "死亡权重",
+            "tooltip": "每个属性的死亡概率每点减少。"
+          },
+          "death_ep": {
+            "label": "死亡EP",
+            "tooltip": "每个属性的死亡概率的EP（等价点数）。"
+          },
+          "current_ep": {
+            "label": "当前EP",
+            "tooltip": "当前EP权重。用于对装备选择器菜单进行排序。"
+          },
+          "not_applicable": "不适用",
+          "column_headers": {
+            "stat": "属性",
+            "update": "更新",
+            "ep_ratio": "EP比率",
+            "update_ep_button": "更新EP"
+          },
+          "tooltips": {
+            "normalized_by": "由{refStatName}标准化。",
+            "copy_to_current_ep": "复制到当前EP",
+            "restore_default_ep": "恢复默认EP",
+            "compute_weighted_ep": "计算加权EP"
+          },
+          "progress": {
+            "simulations_complete": "模拟完成",
+            "iterations_complete": "迭代完成"
+          }
+        },
+        "saved_ep_weights": {
+          "title": "保存的EP权重"
+        }
+      },
+      "suggest_reforges": {
+        "title": "一键重铸",
+        "tooltip": "更改重铸优化器设置",
+        "use_soft_cap_breakpoints": "使用软上限阈值",
+        "force_stat_proc": "强制重生符文触发",
+        "any": "任意",
+        "optimize_gems_tooltip": "同时优化宝石和重铸。",
+        "freeze_item_slots_tooltip": "标记一个或多个物品槽位为\"冻结\"，这将防止优化器更改该槽位的重铸或宝石从其当前设置。这对于使用同一装备件进行多个团队角色的混合职业可能有用。",
+        "edit_stat_caps": "编辑属性上限",
+        "stat_caps_tooltip": "属性上限是可以通过重铸获得的最大属性量。如果属性超过其上限，优化器将尝试将其减少到上限值。",
+        "reset_to_defaults": "重置为属性上限默认值",
+        "stat": "属性",
+        "select_preset": "选择预设",
+        "breakpoint_limit": "阈值限制",
+        "breakpoint_limit_tooltip": "允许您设置自定义阈值限制。",
+        "no_limit_set": "未设置限制",
+        "breakpoints_implemented": "已为此专精实现以下阈值：",
+        "post_cap_ep": "上限后EP",
+        "reforge_optimization_failed": "重铸优化失败。请重试，或如果问题持续存在请报告。",
+        "use_custom": "使用自定义EP权重",
+        "enable_modification": "这将启用默认EP权重的修改和设置自定义属性上限。",
+        "modify_in_editor": "EP权重可以在属性权重编辑器中修改。",
+        "hard_cap_info": "如果您想硬上限某个属性，请确保将该属性的EP设置得更高。",
+        "edit_weights": "编辑权重",
+        "include_gems": "包括宝石",
+        "freeze_item_slots": "冻结物品槽位",
+        "include_eotbp_socket": "包括黑王子之眼插槽",
+        "include_eotbp_socket_tooltip": "允许优化器在优化中也包括\"黑王子之眼\"插槽。",
+        "limit_execution_time": "限制执行时间",
+        "limit_execution_time_tooltip": "如果选中，如果总计算时间超过30秒，求解器将出错。如果未选中，则总计算时间将被限制为1小时。"
+      }
+    },
+    "header": {
+      "title": "WoWSims - 熊猫人之谜",
+      "phase": "{{phase}} - {{status}}"
+    },
+    "results": {
+      "progress": {
+        "presim_running": "预模拟运行中",
+        "iterations_complete": "迭代完成"
+      },
+      "reference": {
+        "save_as_reference": "保存为参考",
+        "use_as_reference": "用作参考",
+        "swap": "交换",
+        "swap_reference_with_current": "将参考与当前交换",
+        "cancel": "取消",
+        "remove_reference": "移除参考",
+        "vs_ref": "vs 参考"
+      },
+      "metrics": {
+        "dps": {
+          "label": "DPS",
+          "tooltip": "每秒伤害"
+        },
+        "hps": {
+          "label": "HPS",
+          "tooltip": "每秒治疗+护盾，包括过量治疗。"
+        },
+        "tps": {
+          "label": "TPS",
+          "tooltip": "每秒威胁"
+        },
+        "dtps": {
+          "label": "DTPS",
+          "tooltip": "每秒受到伤害"
+        },
+        "tmi": {
+          "label": "TMI",
+          "tooltip": {
+            "title": "Theck-Meloree指数（TMI）",
+            "description": "衡量传入伤害平滑度的指标，结合了回避和有效生命值的优势。",
+            "note": "越低越好。这表示基于战斗设置在6秒爆发窗口中预期的生命值百分比。"
+          }
+        },
+        "cod": {
+          "label": "死亡几率",
+          "tooltip": {
+            "title": "死亡几率",
+            "description": "玩家死亡的迭代百分比，基于敌人的传入伤害和传入治疗（参见传入HPS和治疗节奏选项）。",
+            "note": "仅DTPS不是衡量坦克能力的好指标，因为它不受生命值影响并忽略伤害峰值。死亡几率试图捕捉整体坦克能力。"
+          }
+        },
+        "dur": {
+          "label": "持续时间",
+          "tooltip": "平均战斗持续时间"
+        },
+        "tto": {
+          "label": "TTO",
+          "tooltip": "法力耗尽时间"
+        },
+        "oom": {
+          "label": "OOM",
+          "tooltip": "法力耗尽时间"
+        }
+      }
+    },
+    "character_stats": {
+      "title": "属性",
+      "melee_crit_cap": "近战暴击上限",
+      "tooltip": {
+        "base": "基础：",
+        "gear": "装备：",
+        "talents": "天赋：",
+        "buffs": "增益：",
+        "consumes": "消耗品：",
+        "bonus": "加成：",
+        "total": "总计：",
+        "glancing": "偏斜：",
+        "suppression": "压制：",
+        "to_hit_cap": "命中上限：",
+        "to_exp_cap": "精准上限：",
+        "spec_offsets": "专精差异：",
+        "final_crit_cap": "最终暴击上限：",
+        "can_raise_by": "可以提高："
+      },
+      "attack_table": {
+        "glancing": "偏斜：",
+        "suppression": "压制：",
+        "to_hit_cap": "命中上限：",
+        "to_exp_cap": "精准上限：",
+        "spec_offsets": "专精偏移：",
+        "final_crit_cap": "最终暴击上限：",
+        "can_raise_by": "可以提高："
+      },
+      "crit_cap": {
+        "exact": "精确",
+        "over_by": "超过",
+        "under_by": "还差"
+      },
+      "bonus_prefix": "加成",
+      "points_suffix": "点",
+      "percent_suffix": "%"
+    }
+  },
+  "gear_tab": {
+    "title": "装备",
+    "gem_summary": {
+      "title": "宝石摘要",
+      "reset_gems": "重置"
+    },
+    "reforge_summary": {
+      "title": "重铸摘要",
+      "reset_reforges": "重置",
+      "copy_to_reforge_lite": "复制到ReforgeLite插件"
+    },
+    "reforge_success": {
+      "title": "以下物品已重铸：",
+      "removed_reforge": "移除",
+      "no_changes": "未进行重铸更改！",
+      "copy_to_reforge_lite": "复制到ReforgeLite插件"
+    },
+    "gear_sets": {
+      "title": "配装保存",
+      "gear_set": "配装",
+      "gear_set_name": "配装名称",
+      "save_gear_set": "保存配装"
+    },
+    "gear_picker": {
+      "tabs": {
+        "items": "物品",
+        "random_suffix": "随机后缀",
+        "enchants": "附魔",
+        "tinkers": "工程",
+        "reforging": "重铸",
+        "upgrades": "升级",
+        "gem1": "宝石1",
+        "gem2": "宝石2",
+        "gem3": "宝石3"
+      },
+      "remove_buttons": {
+        "remove_enchant": "移除附魔",
+        "remove_tinkers": "移除工程",
+        "remove_reforge": "移除重铸",
+        "remove_random_suffix": "移除随机后缀",
+        "remove_upgrade": "移除升级",
+        "remove_gem": "移除宝石"
+      },
+      "filters": {
+        "title": "过滤",
+        "general": "通用",
+        "min_ilvl": "最低装等",
+        "max_ilvl": "最高装等",
+        "faction_restrictions": "阵营限制",
+        "source": "来源",
+        "raids": "团队副本",
+        "faction_labels": {
+          "none": "无",
+          "alliance_only": "仅联盟",
+          "horde_only": "仅部落"
+        }
+      },
+      "quick_popovers": {
+        "favorite_gems": {
+          "title": "收藏宝石",
+          "empty_message": "添加收藏宝石",
+          "open_gems": "打开宝石"
+        },
+        "favorite_enchants": {
+          "title": "收藏附魔",
+          "empty_message": "添加收藏附魔",
+          "open_enchants": "打开附魔"
+        }
+      },
+      "missing_gear_message": {
+        "title": "如果缺少装备，请检查所选阶段和装备过滤器。",
+        "description": "如果问题持续存在，请保存任何未保存的数据，点击右上角齿轮图标打开模拟选项，然后点击\"恢复默认设置\"。"
+      },
+      "cooldowns": {
+        "title": "冷却时间",
+        "tooltip": "指定冷却时间，以秒为单位。冷却时间将在指定时间后尽快使用。未指定时，冷却时间将在准备就绪且合理时使用。<br><br>可以通过逗号分隔提供多个时间。最后一个提供时间之后的任何冷却时间使用将使用默认逻辑。"
+      },
+      "ep_tooltip": "EP（等价点数）是通过将物品的原始属性与您当前的属性权重相乘来比较物品的方法。更高的EP不一定意味着更高的DPS，因为EP不考虑属性上限和非线性属性计算。",
+      "filters_button": "过滤",
+      "unequip_item": "卸下物品",
+      "table_headers": {
+        "ilvl": "装等",
+        "item": "物品",
+        "source": "来源"
+      },
+      "show_ep": "显示EP",
+      "armor_type": "护甲类型",
+      "weapon_type": "武器类型",
+      "weapon_speed": "武器速度",
+      "min_mh_speed": "主手最低速度",
+      "max_mh_speed": "主手最高速度",
+      "min_oh_speed": "副手最低速度",
+      "max_oh_speed": "副手最高速度",
+      "ranged_weapon_type": "远程武器类型",
+      "ranged_weapon_speed": "远程武器速度",
+      "min_ranged_speed": "远程最低速度",
+      "max_ranged_speed": "远程最高速度",
+      "reforge_text": "重铸 {{fromAmount}} {{fromStat}} → {{toAmount}} {{toStat}}"
+    },
+    "preset_configurations": {
+      "title": "预设全局配置",
+      "tooltip": "预设全局配置可以应用装备、天赋、循环和敌人战设置的最佳组合。"
+    },
+    "upgrade_summary": {
+      "title": "剩余升级成本",
+      "upgrade_all_items": "升级所有物品",
+      "reset_upgrades": "重置升级"
+    }
+  },
+  "settings_tab": {
+    "title": "设置",
+    "raid_buffs": {
+      "title": "团队增益",
+      "tooltip": "由<strong>其他</strong>小队/团队成员提供的增益。",
+      "description": "",
+      "misc": {
+        "label": "其他",
+        "tooltip": "其他团队增益"
+      },
+      "stats": "属性",
+      "attack_power": "攻击强度",
+      "attack_speed": "攻击速度",
+      "spell_power": "法术强度",
+      "spell_haste": "法术急速",
+      "crit_percent": "暴击%",
+      "mastery": "精通",
+      "stamina": "耐力"
+    },
+    "external_damage_cooldowns": {
+      "title": "团队爆发",
+      "tooltip": "由<strong>其他</strong>小队/团队成员提供的主要伤害冷却。",
+      "bloodlust": "嗜血",
+      "skull_banner": "颅骨战旗",
+      "stormlash_totem": "风暴之鞭图腾",
+      "tricks_of_the_trade": "嫁祸诀窍",
+      "unholy_frenzy": "邪恶狂热",
+      "shattering_throw": "碎裂投掷"
+    },
+    "external_defensive_cooldowns": {
+      "title": "团队减伤",
+      "tooltip": "由<strong>其他</strong>小队/团队成员提供的主要防御冷却。",
+      "vigilance": "警戒",
+      "devotion_aura": "虔诚光环",
+      "pain_suppression": "痛苦压制",
+      "rallying_cry": "集结呐喊"
+    },
+    "debuffs": {
+      "title": "团队减益",
+      "tooltip": "由其他团队成员施加在敌人身上的减益。",
+      "misc": {
+        "label": "其他",
+        "tooltip": "其他减益"
+      },
+      "armor_reduction": "护甲降低",
+      "phys_dmg_reduction": "物理伤害降低",
+      "cast_speed": "施法速度",
+      "phys_dmg": "物理易伤",
+      "spell_dmg": "法术易伤"
+    },
+    "other": {
+      "title": "其他",
+      "challenge_mode": {
+        "label": "挑战模式",
+        "tooltip": "启用挑战模式"
+      },
+      "input_delay": {
+        "label": "输入延迟",
+        "tooltip": "玩家输入延迟，以毫秒为单位。指定无法法术队列的操作的最大延迟，例如等待资源获得或等待冷却时间到期的法术施放。也用于某些APL值（如'光环激活反应时间'）。大致模拟反应时间+服务器延迟的总和。"
+      },
+      "channel_clip_delay": {
+        "label": "引导剪辑延迟",
+        "tooltip": "引导法术后的剪辑延迟，以毫秒为单位。当GCD可用后任何完整或部分引导结束时，由于玩家无法队列下一个法术，会发生此延迟。"
+      },
+      "in_front_of_target": {
+        "label": "在目标前方",
+        "tooltip": "站在目标前方，导致格挡和招架。"
+      },
+      "distance_from_target": {
+        "label": "与目标距离",
+        "tooltip": "与目标的距离，以码为单位。用于计算某些法术的飞行时间。"
+      },
+      "tank_assignment": {
+        "label": "坦克分配",
+        "tooltip": "确定哪些怪物将被坦克。大多数怪物默认攻击主坦克，但在预设的多目标战斗中，情况并非总是如此。"
+      },
+      "incoming_hps": {
+        "label": "受到治疗量",
+        "tooltip": "每秒平均受到的治疗量。用于计算死亡几率。如果设置为0，默认为主要目标基础DPS的25%。"
+      },
+      "healing_cadence": {
+        "label": "治疗节奏",
+        "tooltip": "受到治疗的'跳'频率，以秒为单位。通常，较长的持续时间有利于有效生命值（EHP）以最小化死亡几率，而较短的持续时间有利于回避。示例：如果受到治疗量设置为1000且此设置为1秒，则每1秒将受到1000治疗。如果改为2秒，则每2秒将受到2000治疗。如果设置为0，则从Boss伤害参数推断治疗节奏和节奏+/-的默认值。"
+      },
+      "healing_cadence_variation": {
+        "label": "治疗节奏+/-",
+        "tooltip": "治疗间隔随机变化的幅度，以秒为单位。示例：如果治疗节奏设置为1秒，变化为0.5秒，则连续治疗之间的间隔将在0.5到1.5秒之间均匀变化。如果变化改为2秒，则50%的治疗间隔将落在0到1秒之间，另外50%将落在1到3秒之间。每次'跳'的治疗量会根据自上次跳以来的随机时间自动缩放，以保持HPS恒定。"
+      },
+      "absorb_frac": {
+        "label": "吸收%",
+        "tooltip": "将每次受到治疗的'跳'的%建模为吸收护盾而不是直接治疗。"
+      },
+      "burst_window": {
+        "label": "TMI爆发窗口",
+        "tooltip": "计算TMI的爆发窗口大小，以整秒为单位。在比较此指标时使用一致的设置很重要。默认为6秒。如果设置为0，则禁用TMI计算。"
+      },
+      "hp_percent_for_defensives": {
+        "label": "减伤开启生命值%",
+        "tooltip": "最大生命值的%，低于此值时允许使用防御冷却时间。如果设置为0，则禁用此限制。"
+      },
+      "pet_uptime": {
+        "label": "宠物存活时间（%）",
+        "tooltip": "战斗中宠物存活的百分比。"
+      },
+      "glaive_toss_chance": {
+        "label": "战刃投掷成功率%",
+        "tooltip": "战刃投掷命中次要目标的几率百分比。"
+      },
+      "detonate_seed": {
+        "label": "施放时引爆种子",
+        "tooltip": "模拟团队对目标造成伤害，使种子在施放时立即引爆。"
+      },
+      "stance_snapshot": {
+        "label": "姿态快照",
+        "tooltip": "与姿态切换同时施放的能力将受益于切换前姿态的加成。"
+      },
+      "assume_bleed_active": {
+        "label": "假设流血始终激活",
+        "tooltip": "假设流血始终存在用于'割裂和撕碎'计算。否则将仅基于自己的技能计算。"
+      },
+      "cannot_shred_target": {
+        "label": "无法撕碎目标",
+        "tooltip": "替代'在目标前方'用于建模不招架或格挡但您仍无法撕碎的Boss。"
+      },
+      "okf_uptime": {
+        "label": "枭兽狂怒存活时间（%）",
+        "tooltip": "枭兽狂怒的战斗存活时间百分比"
+      },
+      "sync_type": {
+        "label": "同步/错开设置",
+        "tooltip": "选择您的同步或错开选项。自动：将根据您的武器攻击速度自动选择同步选项。无：无同步或错开，用于不匹配的武器速度。完美同步：使您的武器始终同时攻击，用于匹配的武器速度。延迟副手：在0.5秒狂怒ICD窗口内为副手攻击添加轻微延迟。",
+        "values": {
+          "automatic": "自动",
+          "none": "无",
+          "perfect_sync": "完美同步",
+          "delayed_offhand": "延迟副手"
+        }
+      },
+      "show_1h_weapons": {
+        "label": "单手",
+        "tooltip": "显示单手武器"
+      },
+      "show_2h_weapons": {
+        "label": "双手",
+        "tooltip": "显示双手武器"
+      },
+      "show_matching_gems": {
+        "label": "匹配插槽",
+        "tooltip": "仅显示具有匹配插槽颜色的物品"
+      },
+      "show_ep_values": {
+        "label": "显示EP",
+        "tooltip": "显示EP（有效力量）值"
+      },
+      "phase_selector": {
+        "label": "阶段",
+        "tooltip": "选择物品可用性的游戏阶段"
+      },
+      "enable_item_swap": {
+        "label": "启用物品交换",
+        "tooltip": "允许配置与<b>物品交换</b>APL操作一起使用的物品交换套装。"
+      },
+      "item_swap": {
+        "label": "物品交换",
+        "tooltip": "与已装备物品交换"
+      },
+      "assume_prepull_mastery_elixir": {
+        "label": "假设开战前使用精通药剂",
+        "tooltip": "启用此选项假设您在开战前使用精通药剂。"
+      },
+      "blessings": {
+        "title": "祝福",
+        "tooltip": "为每个角色指定圣骑士祝福，按优先级顺序。如果团队中至少有1个圣骑士，将使用第1列的祝福，如果有至少2个，则使用第2列，等等。"
+      },
+      "shaman_disable_immolate": {
+        "label": "释放风怒时禁用献祭",
+        "tooltip": "当选择原始元素天赋且启用献祭自动施放时，这将在玩家身上的释放风怒增益激活时禁止施放献祭。"
+      },
+      "shaman_disable_immolate_duration": {
+        "label": "延长禁用时间",
+        "tooltip": "玩家身上释放风怒增益结束后，不施放献祭的时间（以秒为单位）。设置为0表示仅在增益存在时禁用施放献祭。"
+      }
+    },
+    "consumables": {
+      "title": "消耗品",
+      "potions": {
+        "title": "药水",
+        "prepop": "开战前",
+        "combat": "战斗中"
+      },
+      "elixirs": {
+        "title": "药剂"
+      },
+      "food": {
+        "title": "食物"
+      },
+      "engineering": {
+        "title": "工程",
+        "explosives": "炸弹"
+      },
+      "pet": {
+        "title": "宠物"
+      }
+    },
+    "encounter": {
+      "title": "战斗",
+      "target_inputs": {
+        "label": "目标输入",
+        "frenzy_time": {
+          "label": "狂暴时间",
+          "tooltip": "禁用坦克交换并启用Boss狂暴增益的模拟时间（以秒为单位）"
+        },
+        "spiritual_grasp_frequency": {
+          "label": "灵魂之握频率",
+          "tooltip": "灵魂之握命中之间的平均时间（以秒为单位），遵循指数分布"
+        },
+        "movement_interval": {
+          "label": "移动间隔",
+          "tooltip": "玩家移动的频率（以秒为单位）"
+        },
+        "reaction_time": {
+          "label": "反应时间",
+          "tooltip": "玩家在移动前等待施法完成的时间（以秒为单位）"
+        },
+        "yards": {
+          "label": "码数",
+          "tooltip": "玩家移动的码数"
+        },
+        "jalak_death_time": {
+          "label": "加拉卡死亡时间",
+          "tooltip": "禁用战神加拉卡并触发霍利多恩狂暴增益的模拟时间（秒）。如果设置为比模拟战斗长度更长，则加拉卡将被坦克整个时间，并且永远不会触发狂暴。"
+        },
+        "taunt_swap_for_triple_puncture": {
+          "label": "三重穿刺嘲讽交换",
+          "tooltip": "如果选中，在加拉卡死亡时和之后每隔一次三重穿刺应用时嘲讽交换，以限制单个坦克的叠加累积。"
+        },
+        "adds_lifetime": {
+          "label": "小怪存活时间",
+          "tooltip": "小怪存活时间（秒）"
+        },
+        "adds_respawn_time": {
+          "label": "小怪重生时间",
+          "tooltip": "前一批小怪死亡后重生所需时间（秒）"
+        },
+        "adds_spawn_delay": {
+          "label": "小怪出现延迟",
+          "tooltip": "小怪出现前的初始延迟（秒）"
+        }
+      },
+      "duration": {
+        "label": "持续时间",
+        "tooltip": "每次模拟迭代的战斗长度，以秒为单位。"
+      },
+      "duration_variation": {
+        "label": "持续时间+/-",
+        "tooltip": "为每次模拟迭代添加随机时间量，以秒为单位，在[值，-1 * 值]之间。例如，将持续时间设置为180，持续时间+/-设置为10将导致170到190秒之间的随机持续时间。"
+      },
+      "execute_duration_20": {
+        "label": "斩杀持续时间20（%）",
+        "tooltip": "总战斗持续时间的百分比，在此期间目标将被认为处于斩杀范围（<20%生命值），用于战士斩杀或法师熔火狂怒等效果。"
+      },
+      "execute_duration_25": {
+        "label": "斩杀持续时间25（%）",
+        "tooltip": "总战斗持续时间的百分比，在此期间目标将被认为处于斩杀范围（<25%生命值），用于术士的吸取灵魂等效果。"
+      },
+      "execute_duration_35": {
+        "label": "斩杀持续时间35（%）",
+        "tooltip": "总战斗持续时间的百分比，在此期间目标将被认为处于斩杀范围（<35%生命值），用于死亡骑士灵魂收割者等效果。"
+      },
+      "execute_duration_45": {
+        "label": "斩杀持续时间45（%）",
+        "tooltip": "总战斗持续时间的百分比，在此期间目标将被认为处于斩杀范围（<45%生命值），用于具有T15 DPS 4件套的死亡骑士灵魂收割者等效果。"
+      },
+      "duration_below_high_hp": {
+        "label": "生命值阈值（%）",
+        "tooltip": "总战斗持续时间的百分比，在此期间目标被认为超出范围，用于猎人精确瞄准（<90%生命值）或德鲁伊掠食者打击（<80%生命值）等效果。"
+      },
+      "encounter_preset": {
+        "label": "战斗",
+        "tooltip": "选择预设战斗配置。"
+      },
+      "advanced": "高级",
+      "use_health": {
+        "label": "使用生命值",
+        "tooltip": "使用伤害限制代替持续时间限制。伤害限制等于所有目标生命值的总和。"
+      },
+      "target": "目标",
+      "num_allies": {
+        "label": "盟友数量",
+        "tooltip": "团队中盟友玩家的数量。"
+      },
+      "min_base_damage": {
+        "label": "最低基础伤害",
+        "tooltip": "自动攻击的基础伤害，即对0护甲玩家的0攻击强度最低掷骰。"
+      },
+      "npc": {
+        "label": "NPC",
+        "tooltip": "选择预设NPC配置。"
+      },
+      "ai": {
+        "label": "AI模型",
+        "tooltip": "确定目标的能力循环。注意，大多数循环尚未实现。"
+      },
+      "level": "等级",
+      "mob_type": "怪物类型",
+      "tanked_by": {
+        "label": "目标坦克",
+        "tooltip": "确定此敌人在团队中将攻击哪个坦克玩家。如果没有玩家分配到指定的坦克位置，此敌人将不会攻击。"
+      },
+      "swing_speed": {
+        "label": "平砍速度",
+        "tooltip": "自动攻击之间的时间，以秒为单位。设置为0以禁用自动攻击。"
+      },
+      "dual_wield": {
+        "label": "双持",
+        "tooltip": "使用2把独立武器攻击。"
+      },
+      "dual_wield_penalty": {
+        "label": "双持惩罚",
+        "tooltip": "如果双持则启用双持未命中惩罚（+19%未命中几率）。海加尔山/黑暗神殿/太阳井的Boss通常禁用此功能以防止坦克堆叠回避。"
+      },
+      "parry_haste": {
+        "label": "招架急速",
+        "tooltip": "此敌人在招架攻击时是否获得招架急速。"
+      },
+      "spell_school": {
+        "label": "伤害类型",
+        "tooltip": "自动攻击造成的伤害类型。这通常是物理，但一些敌人有元素攻击。"
+      },
+      "damage_spread": {
+        "label": "伤害扩散",
+        "tooltip": "此敌人在0攻击强度时自动攻击伤害的最小值和最大值之间的分数扩散。"
+      },
+      "suppress_dodge": "抑制躲闪",
+      "second_tank_index": "第二坦克索引",
+      "disabled_at_start": "开始时禁用"
+    },
+    "player": {
+      "title": "玩家",
+      "race": "种族",
+      "profession_1": "专业1",
+      "profession_2": "专业2"
+    },
+    "saved_encounters": {
+      "title": "保存战斗",
+      "encounter": "战斗",
+      "encounter_name": "战斗名称",
+      "save_encounter": "保存战斗"
+    },
+    "saved_settings": {
+      "title": "保存设置",
+      "settings": "设置",
+      "settings_name": "设置名称",
+      "save_settings": "保存设置"
+    },
+    "external_buffs": {
+      "title": "外部增益",
+      "tooltip": "由<strong>其他</strong>小队/团队成员提供的增益。"
+    }
+  },
+  "talents_tab": {
+    "title": "天赋",
+    "copy_button": {
+      "label": "复制",
+      "tooltip": "复制天赋字符串"
+    },
+    "reset_button": {
+      "tooltip": "重置天赋"
+    },
+    "glyphs": {
+      "major": "大型雕文",
+      "minor": "小型雕文",
+      "modal": {
+        "title": ""
+      },
+      "empty": "空"
+    },
+    "saved_talents": {
+      "title": "保存天赋",
+      "label": "天赋",
+      "name_label": "名称",
+      "save_button": "保存天赋",
+      "delete": {
+        "confirm": "删除'{{name}}'？",
+        "tooltip": "删除天赋"
+      },
+      "alerts": {
+        "choose_name": "为您的保存天赋选择一个标签！",
+        "name_exists": "{{name}}天赋已存在。"
+      }
+    }
+  },
+  "rotation_tab": {
+    "title": "循环",
+    "common": {
+      "rotation_type": {
+        "label": "类型",
+        "auto": "自动",
+        "simple": "简单",
+        "apl": "APL",
+        "single_target": "单体",
+        "aoe": "AOE",
+        "custom": "自定义"
+      }
+    },
+    "apl": {
+      "actionGroups": {
+        "attributes": {
+          "actions": "动作",
+          "name": "名称"
+        },
+        "header": "动作组",
+        "name": "动作组",
+        "newGroupName": "新动作组",
+        "tooltips": {
+          "actions": "此组中的动作。当引用该组时，这些动作将按顺序执行。",
+          "name": "此动作组的名称（例如：'careful_aim', 'cooldowns'）。",
+          "overview": "可以在动作优先级列表（APL）中引用的动作组。用于组织APL和重用常见动作序列。组内动作从上到下按顺序执行。"
+        }
+      },
+      "floatingActionBar": {
+        "new": "新建{{itemName}}",
+        "reset": "重置APL"
+      },
+      "prePullActions": {
+        "header": "开战前动作列表",
+        "name": "开战前动作",
+        "tooltips": {
+          "overview": "在战斗开始前执行的动作，如开战前增益或药剂。"
+        }
+      },
+      "priorityList": {
+        "header": "动作优先级列表（APL）",
+        "name": "动作",
+        "tooltips": {
+          "overview": "表示角色在战斗中动作的列表。模拟器将从上（最高优先级）到下（最低优先级）评估列表，并在任何给定时间选择第一个有效动作。"
+        }
+      },
+      "tabs": {
+        "actionGroups": "动作组",
+        "priorityList": "优先级列表",
+        "variables": "变量"
+      },
+      "variables": {
+        "attributes": {
+          "name": "名称",
+          "nameTooltip": "变量的名称（例如：'my_dot_remains', 'boss_health_pct'）",
+          "value": "值",
+          "valueTooltip": "此变量表示的值表达式。"
+        },
+        "copyName": "{variableName} (副本)",
+        "header": "变量",
+        "name": "变量",
+        "newVariableName": "新变量",
+        "tooltips": {
+          "name": "变量的名称（例如：'my_dot_remains', 'boss_health_pct'）",
+          "overview": "变量可用于存储可在动作优先级列表（APL）中引用的复杂条件。这对于存储在战斗中变化的动态值很有用，如冷却计时器或资源等级。",
+          "value": "此变量表示的值表达式。"
+        }
+      },
+      "prepull_actions": {
+        "title": "前戏",
+        "tooltip": "开战前执行的动作。",
+        "item_label": "前戏",
+        "do_at": {
+          "label": "执行时间",
+          "tooltip": "开战前执行动作的时间。应该是负数，格式如'-1s'或'-2500ms'。"
+        },
+        "new_action": "新动作"
+      },
+      "priority_list": {
+        "title": "优先级列表",
+        "tooltip": "在每个决策点，模拟将执行此列表中的第一个有效动作。",
+        "item_label": "动作",
+        "if_label": "如果：",
+        "new_action": "新动作"
+      },
+      "actions": {
+        "cast": {
+          "label": "施放",
+          "tooltip": "如果可能则施放法术，即资源/冷却时间/GCD等要求都满足。"
+        },
+        "cast_at_player": {
+          "label": "对玩家施放",
+          "tooltip": "如果可能则施放友好法术，即资源/冷却时间/GCD等要求都满足。"
+        },
+        "cancel_cast": {
+          "label": "取消施放",
+          "tooltip": "取消当前法术施放。(这仅在硬施放期间评估，并要求将\"ReactToEvent\"添加到Sim核心中的触发器中。"
+        },
+        "multi_dot": {
+          "label": "多目标持续伤害",
+          "tooltip": "通过施放指定法术在多个目标上保持DoT激活。",
+          "max_dots": {
+            "label": "最大DoT数量",
+            "tooltip": "同时应用的最大DoT数量。"
+          },
+          "overlap": {
+            "label": "重叠",
+            "tooltip": "DoT可能被刷新的到期前的最大时间量。"
+          }
+        },
+        "strict_multi_dot": {
+          "label": "严格多目标持续伤害",
+          "tooltip": "通过施放指定法术在多个目标上保持DoT激活。不会刷新即将到期的DoT。",
+          "max_dots": {
+            "label": "最大DoT数量",
+            "tooltip": "同时应用的最大DoT数量。"
+          },
+          "overlap": {
+            "label": "重叠",
+            "tooltip": "DoT可能被刷新的到期前的最大时间量。"
+          }
+        },
+        "multi_shield": {
+          "label": "多目标护盾",
+          "tooltip": "通过施放指定法术在多个目标上保持护盾激活。",
+          "max_shields": {
+            "label": "最大护盾数量",
+            "tooltip": "同时应用的最大护盾数量。"
+          },
+          "overlap": {
+            "label": "重叠",
+            "tooltip": "护盾可能被刷新的到期前的最大时间量。"
+          }
+        },
+        "channel": {
+          "label": "引导",
+          "tooltip": "如果可能则引导法术。",
+          "interrupt_if": {
+            "label": "中断条件",
+            "tooltip": "如果条件为真则中断引导。"
+          },
+          "recast": {
+            "label": "重新施放",
+            "tooltip": "如果选中，此引导的中断将重新施放法术。"
+          },
+          "full_description": "\n\t\t\t<p>引导法术与施放法术的区别在于引导可以被中断。如果<b>中断条件</b>参数为空，此动作等同于<b>施放</b>。</p>\n\t\t\t<p>只有在以下所有条件都为真时，引导才会被中断：</p>\n\t\t\t<ul>\n\t\t\t\t<li>紧接引导的跳之后</li>\n\t\t\t\t<li><b>中断条件</b>条件评估为<b>真</b></li>\n\t\t\t\t<li>APL列表中的另一个动作可用</li>\n\t\t\t</ul>\n\t\t\t<p>注意，如果您只想允许其他动作中断引导，请将<b>中断条件</b>设置为<b>真</b>。</p>\n\t\t\t"
+        },
+        "cast_all_stat_buff_cooldowns": {
+          "label": "施放所有属性增益冷却时间",
+          "tooltip": "施放所有可用的属性增益冷却时间。",
+          "full_description": "\n\t\t\t<ul>\n\t\t\t\t<li>不施放已由优先级列表中的其他动作控制的冷却时间。</li>\n\t\t\t\t<li>默认情况下，此动作将在可用时贪婪地施放此类冷却时间。但是，当嵌入序列中时，动作只会在匹配指定增益类型的所有冷却时间都准备好时触发。</li>\n\t\t\t</ul>\n\t\t\t"
+        },
+        "autocast_other_cooldowns": {
+          "label": "自动施放其他冷却时间",
+          "tooltip": "在可用时自动施放其他冷却时间。",
+          "full_description": "\n\t\t\t<ul>\n\t\t\t\t<li>不自动施放已由优先级列表中的其他动作控制的冷却时间。</li>\n\t\t\t\t<li>冷却时间通常在准备好时立即施放，但有一些基本的智能检查，例如在法力值接近满时不使用法力冷却时间。</li>\n\t\t\t</ul>\n\t\t\t"
+        },
+        "wait": {
+          "label": "等",
+          "tooltip": "等待指定的时间量。"
+        },
+        "wait_until": {
+          "label": "等到",
+          "tooltip": "等待直到指定条件为真。"
+        },
+        "scheduled_action": {
+          "label": "计划动作",
+          "tooltip": "在计划时间执行动作。",
+          "do_at": {
+            "label": "执行时间",
+            "tooltip": "逗号分隔的时间列表。内部动作将在每个时间执行一次。"
+          }
+        },
+        "do_at": {
+          "label": "执行时间",
+          "tooltip": "在特定时间执行动作。"
+        },
+        "sequence": {
+          "label": "序列",
+          "tooltip": "按指定顺序执行的子动作列表。",
+          "full_description": "\n\t\t\t<p>一旦执行了其中一个子动作，下一个子动作不一定会在下次立即执行。系统将重新开始整个动作列表（而不是序列）的开始。如果再次执行序列，它将执行下一个子动作。</p>\n\t\t\t<p>当所有动作都执行完毕后，序列不会自动重置；相反，从现在开始它将被跳过。如果需要，使用<b>重置序列</b>动作来重置它。</p>\n\t\t\t"
+        },
+        "reset_sequence": {
+          "label": "重置序列",
+          "tooltip": "重新启动序列，以便下次执行时它将执行其第一个子动作。",
+          "full_description": "\n\t\t\t<p>使用<b>名称</b>字段引用要重置的序列。所需序列必须对其<b>名称</b>具有相同的（非空）值。</p>\n\t\t\t"
+        },
+        "strict_sequence": {
+          "label": "严格序列",
+          "tooltip": "像常规序列一样，除了所有子动作在彼此之后立即执行，序列在完成时自动重置。",
+          "full_description": "\n\t\t\t<p>严格序列不会开始，除非所有子动作都准备好。</p>\n\t\t\t"
+        },
+        "change_target": {
+          "label": "改变目标",
+          "tooltip": "设置当前目标，这是自动攻击和大多数施放的默认目标。"
+        },
+        "activate_aura": {
+          "label": "激活光环",
+          "tooltip": "激活光环"
+        },
+        "activate_aura_with_stacks": {
+          "label": "激活带层数的光环",
+          "tooltip": "使用给定层数激活指定光环。",
+          "stacks": "层数",
+          "stacks_tooltip": "期望的初始光环层数。"
+        },
+        "activate_all_stat_buff_proc_auras": {
+          "label": "激活所有属性增益触发光环",
+          "tooltip": "使用指定物品套装激活所有增益指定属性类型的物品/附魔触发光环。"
+        },
+        "cancel_aura": {
+          "label": "取消光环",
+          "tooltip": "停用光环，等同于/cancelaura。"
+        },
+        "trigger_icd": {
+          "label": "触发ICD",
+          "tooltip": "触发指定的内部冷却时间。"
+        },
+        "item_swap": {
+          "label": "物品交换",
+          "tooltip": "使用设置中指定的交换套装交换物品。"
+        },
+        "move": {
+          "label": "移动",
+          "tooltip": "开始移动到目标的期望距离。",
+          "to_range": "到距离",
+          "to_range_tooltip": "与目标的期望距离。",
+          "move_duration": "移动持续时间",
+          "duration": "持续时间",
+          "duration_tooltip": "角色应该移动的时间量。",
+          "move_duration_tooltip": "角色移动给定的持续时间。"
+        },
+        "custom_rotation": {
+          "label": "自定义循环",
+          "tooltip": "仅限内部使用"
+        },
+        "optimal_rotation_action": {
+          "label": "最优循环",
+          "tooltip": "使用硬编码算法执行优化的野性DPS循环。",
+          "wrath_weave": {
+            "label": "启用愤怒舞",
+            "tooltip": "在野性之心DPS窗口期间尽可能施放愤怒。如果未天赋野性之心则忽略。"
+          }
+        },
+        "guardian_hotw_dps_rotation": {
+          "label": "野性之心",
+          "tooltip": "使用硬编码算法执行优化的野性之心DPS循环。"
+        },
+        "warlock_next_exhale_target": {
+          "label": "目标下一个呼气目标",
+          "tooltip": "选择下一个有效的呼气目标。如果当前目标不是吸气目标或未施放吸气，目标将不会改变。"
+        }
+      },
+      "values": {
+        "item_label": "值",
+        "no_condition": "无条件",
+        "none": "<无>",
+        "const": {
+          "label": "常量",
+          "tooltip": "一个常数值",
+          "full_description": "<p>示例：<ul><li><b>数字：</b>'123'，'0.5'，'-10'</li><li><b>时间：</b>'100ms'，'5s'，'3m'</li><li><b>百分比：</b>'30%'</li></ul></p>"
+        },
+        "compare": {
+          "label": "比较",
+          "tooltip": "使用指定操作符比较两个值"
+        },
+        "math": {
+          "label": "数学",
+          "tooltip": "对两个值执行数学运算"
+        },
+        "max": {
+          "label": "最大值",
+          "tooltip": "从值列表中获取最大值"
+        },
+        "min": {
+          "label": "最小值",
+          "tooltip": "从值列表中获取最小值"
+        },
+        "all_of": {
+          "label": "全部",
+          "tooltip": "如果所有值都为真则为真"
+        },
+        "any_of": {
+          "label": "任意",
+          "tooltip": "如果任何值为真则为真"
+        },
+        "not": {
+          "label": "非",
+          "tooltip": "如果值为假则为真"
+        },
+        "current_time": {
+          "label": "当前时间",
+          "tooltip": "当前时间（秒）"
+        },
+        "current_time_percent": {
+          "label": "当前时间%",
+          "tooltip": "当前时间作为战斗持续时间的百分比"
+        },
+        "remaining_time": {
+          "label": "剩余时间",
+          "tooltip": "剩余时间（秒）"
+        },
+        "remaining_time_percent": {
+          "label": "剩余时间%",
+          "tooltip": "剩余时间作为战斗持续时间的百分比"
+        },
+        "is_execute_phase": {
+          "label": "是斩杀阶段",
+          "tooltip": "如果我们在斩杀阶段（目标生命值低于阈值）则为真"
+        },
+        "num_targets": {
+          "label": "目标数量",
+          "tooltip": "战斗中的目标数量"
+        },
+        "spell_is_casting": {
+          "label": "法术正在施放",
+          "tooltip": "如果法术当前正在施放则为真"
+        },
+        "spell_time_to_ready": {
+          "label": "法术准备时间",
+          "tooltip": "法术准备就绪的时间"
+        },
+        "in_front_of_target": {
+          "label": "在目标前方",
+          "tooltip": "如果我们在目标前方则为真"
+        },
+        "boss_cast": {
+          "label": "Boss施放",
+          "tooltip": "如果Boss正在施放指定法术则为真"
+        },
+        "boss_cast_time_to_ready": {
+          "label": "Boss施放准备时间",
+          "tooltip": "Boss法术准备就绪的时间"
+        },
+        "unit_is_moving": {
+          "label": "单位正在移动",
+          "tooltip": "如果单位正在移动则为真"
+        },
+        "distance_to_unit": {
+          "label": "到单位的距离",
+          "tooltip": "到单位的距离"
+        },
+        "current_health": {
+          "label": "当前生命值",
+          "tooltip": "单位的当前生命值"
+        },
+        "current_health_percent": {
+          "label": "当前生命值%",
+          "tooltip": "当前生命值作为最大生命值的百分比"
+        },
+        "max_health": {
+          "label": "最大生命值",
+          "tooltip": "单位的最大生命值"
+        },
+        "current_mana": {
+          "label": "当前法力值",
+          "tooltip": "当前可用的法力值量。"
+        },
+        "current_mana_percent": {
+          "label": "当前法力值（%）",
+          "tooltip": "当前可用的法力值量，以百分比表示。"
+        },
+        "current_rage": {
+          "label": "当前怒气",
+          "tooltip": "当前可用的怒气量。"
+        },
+        "max_rage": {
+          "label": "最大怒气",
+          "tooltip": "最大可用怒气量。"
+        },
+        "current_focus": {
+          "label": "当前集中值",
+          "tooltip": "当前可用的集中值量。"
+        },
+        "max_focus": {
+          "label": "最大集中值",
+          "tooltip": "最大可用集中值量。"
+        },
+        "focus_regen_per_second": {
+          "label": "每秒集中值回复",
+          "tooltip": "每秒集中值回复。"
+        },
+        "estimated_time_to_target_focus": {
+          "label": "达到目标集中值预计时间",
+          "tooltip": "达到目标集中值的预计时间，如果已达到或超过目标则返回0。"
+        },
+        "current_energy": {
+          "label": "当前能量",
+          "tooltip": "当前可用的能量量。"
+        },
+        "max_energy": {
+          "label": "最大能量",
+          "tooltip": "最大可用能量量。"
+        },
+        "energy_regen_per_second": {
+          "label": "每秒能量回复",
+          "tooltip": "每秒能量回复。"
+        },
+        "estimated_time_to_target_energy": {
+          "label": "达到目标能量预计时间",
+          "tooltip": "达到目标能量的预计时间，如果已达到或超过目标则返回0。"
+        },
+        "current_combo_points": {
+          "label": "当前连击点数",
+          "tooltip": "当前可用的连击点数量。"
+        },
+        "max_combo_points": {
+          "label": "最大连击点数",
+          "tooltip": "最大可用连击点数量。"
+        },
+        "current_chi": {
+          "label": "当前真气",
+          "tooltip": "当前可用的真气量。"
+        },
+        "max_chi": {
+          "label": "最大真气",
+          "tooltip": "最大可用真气量。"
+        },
+        "current_runic_power": {
+          "label": "当前符文能量",
+          "tooltip": "当前可用的符文能量量。"
+        },
+        "max_runic_power": {
+          "label": "最大符文能量",
+          "tooltip": "最大可用符文能量量。"
+        },
+        "solar_energy": {
+          "label": "太阳能量",
+          "tooltip": "当前可用的太阳能量量。"
+        },
+        "lunar_energy": {
+          "label": "月亮能量",
+          "tooltip": "当前可用的月亮能量量"
+        },
+        "current_eclipse_phase": {
+          "label": "当前蚀相",
+          "tooltip": "德鲁伊当前所处的蚀相。"
+        },
+        "generic_resource": {
+          "label": "{GENERIC_RESOURCE}",
+          "tooltip": "当前可用的{GENERIC_RESOURCE}量。"
+        },
+        "num_runes": {
+          "label": "符文数量",
+          "tooltip": "当前可用的特定类型符文数量，包括死亡符文。"
+        },
+        "num_non_death_runes": {
+          "label": "非死亡符文数量",
+          "tooltip": "当前可用的特定类型符文数量，忽略死亡符文"
+        },
+        "rune_is_ready": {
+          "label": "符文就绪",
+          "tooltip": "特定槽位的符文当前是否可用。"
+        },
+        "rune_is_death": {
+          "label": "符文是死亡符文",
+          "tooltip": "特定槽位的符文当前是否转换为死亡符文。"
+        },
+        "rune_cooldown": {
+          "label": "符文冷却时间",
+          "tooltip": "特定类型符文准备就绪的时间量。<br><b>注意：</b>如果有符文可用则返回0"
+        },
+        "next_rune_cooldown": {
+          "label": "下一个符文冷却时间",
+          "tooltip": "第二个特定类型符文准备就绪的时间量。<br><b>注意：</b>如果有2个符文可用则返回0"
+        },
+        "rune_slot_cooldown": {
+          "label": "符文槽位冷却时间",
+          "tooltip": "特定槽位符文准备就绪的时间量。<br><b>注意：</b>如果符文就绪则返回0"
+        },
+        "full_rune_cooldown": {
+          "label": "完整符文冷却时间",
+          "tooltip": "如果现在使用符文，需要多长时间才能重新充能。"
+        },
+        "gcd_is_ready": {
+          "label": "GCD就绪",
+          "tooltip": "<b>真</b>如果GCD不在冷却中，否则<b>假</b>。"
+        },
+        "gcd_time_to_ready": {
+          "label": "GCD准备时间",
+          "tooltip": "GCD冷却结束前的剩余时间，如果不在冷却中则为<b>0</b>。"
+        },
+        "time_to_next_auto": {
+          "label": "下次自动攻击时间",
+          "tooltip": "下次主手或副手近战攻击前的剩余时间，如果自动攻击未启用则为<b>0</b>。"
+        },
+        "remaining_cast_time": {
+          "label": "剩余施放时间",
+          "tooltip": "当前法术施放完成前的剩余时间。"
+        },
+        "spell_known": {
+          "label": "法术已知",
+          "tooltip": "<b>真</b>如果法术当前已知，否则<b>假</b>。"
+        },
+        "current_cost": {
+          "label": "当前消耗",
+          "tooltip": "返回法术的当前资源消耗"
+        },
+        "can_cast": {
+          "label": "可以施放",
+          "tooltip": "<b>真</b>如果施放法术的所有要求当前都满足，否则<b>假</b>。",
+          "full_description": "<p><b>施放法术</b>动作不需要以此为条件，因为它会自动应用此检查。</p>"
+        },
+        "is_ready": {
+          "label": "就绪",
+          "tooltip": "<b>真</b>如果法术不在冷却中，否则<b>假</b>。"
+        },
+        "time_to_ready": {
+          "label": "准备时间",
+          "tooltip": "法术冷却结束前的剩余时间，如果不在冷却中则为<b>0</b>。"
+        },
+        "cast_time": {
+          "label": "施法时间",
+          "tooltip": "施放法术的时间量，包括任何急速和法术施法时间调整。"
+        },
+        "spell_in_flight": {
+          "label": "法术飞行中",
+          "tooltip": "如果此法术当前正在飞行中则为<b>True</b>，否则为<b>False</b>。"
+        },
+        "travel_time": {
+          "label": "飞行时间",
+          "tooltip": "法术飞向目标的时间量。"
+        },
+        "cpm": {
+          "label": "CPM",
+          "tooltip": "当前迭代中法术的每分钟施放次数。"
+        },
+        "is_casting": {
+          "label": "正在施放",
+          "tooltip": "<b>真</b>如果此法术当前正在施放，否则<b>假</b>。"
+        },
+        "is_channeling": {
+          "label": "正在引导",
+          "tooltip": "<b>真</b>如果此法术当前正在引导，否则<b>假</b>。"
+        },
+        "channeled_ticks": {
+          "label": "引导跳次数",
+          "tooltip": "此法术当前引导中完成的跳次数，如果法术未在引导则为<b>0</b>。"
+        },
+        "number_of_charges": {
+          "label": "充能数量",
+          "tooltip": "法术当前可用的充能数量。"
+        },
+        "time_to_next_charge": {
+          "label": "下次充能时间",
+          "tooltip": "下次充能可用的时间。如果法术有所有充能可用则为0。"
+        },
+        "channel_clip_delay": {
+          "label": "引导剪辑延迟",
+          "tooltip": "<b>引导剪辑延迟</b>设置指定的时间量。"
+        },
+        "input_delay": {
+          "label": "输入延迟",
+          "tooltip": "<b>输入延迟</b>设置指定的时间量。"
+        },
+        "aura_known": {
+          "label": "光环已知",
+          "tooltip": "<b>真</b>如果光环当前已知，否则<b>假</b>。"
+        },
+        "aura_active": {
+          "label": "光环激活",
+          "tooltip": "<b>真</b>如果光环当前激活并且已经激活至少与玩家反应时间一样长（在设置中配置），否则<b>假</b>。"
+        },
+        "aura_active_with_reaction_time": {
+          "label": "[已弃用] 光环激活（带反应时间）",
+          "tooltip": "所有光环检查现在都包含反应时间逻辑，因此不再需要。请使用<b>光环激活</b>代替。"
+        },
+        "aura_inactive": {
+          "label": "光环未激活",
+          "tooltip": "<b>真</b>如果光环当前未激活并且已经未激活至少与玩家反应时间一样长（在设置中配置），否则<b>假</b>。"
+        },
+        "aura_inactive_with_reaction_time": {
+          "label": "[已弃用] 光环未激活（带反应时间）",
+          "tooltip": "所有光环检查现在都包含反应时间逻辑，因此不再需要。请使用<b>光环未激活</b>代替。"
+        },
+        "aura_remaining_time": {
+          "label": "光环剩余时间",
+          "tooltip": "此光环到期前的剩余时间，如果光环当前未激活则为0。"
+        },
+        "aura_num_stacks": {
+          "label": "光环层数",
+          "tooltip": "光环的层数。"
+        },
+        "aura_should_refresh": {
+          "label": "光环应该刷新",
+          "tooltip": "此光环是否应该刷新，例如为了维持减益。",
+          "full_description": "<p>此条件不仅检查指定的光环，还检查同一单位上应用相同减益类别的任何其他光环，包括其他团队成员应用的光环。</p><p>例如，\"应该刷新减益(破甲)\"如果单位具有激活的破甲光环，则会返回<b>False</b>。</p>"
+        },
+        "all_trinket_stat_procs_active": {
+          "label": "所有物品触发增益激活",
+          "tooltip": "<b>真</b>如果增益指定属性类型的所有物品/附魔触发当前激活，否则<b>假</b>。",
+          "full_description": "<p>对于叠加触发增益，此条件还会检查增益是否已叠加到最大可能强度。</p>"
+        },
+        "any_trinket_stat_procs_active": {
+          "label": "任何物品触发增益激活",
+          "tooltip": "<b>真</b>如果增益指定属性类型的任何物品/附魔触发当前激活，否则<b>假</b>。",
+          "full_description": "<p>对于叠加触发增益，此条件还会检查增益是否已叠加到最大可能强度。</p>"
+        },
+        "trinket_procs_min_remaining_time": {
+          "label": "物品触发最小剩余时间",
+          "tooltip": "增益指定属性类型的任何激活物品/附魔触发的最短剩余持续时间，如果当前没有激活则为无穷大。"
+        },
+        "trinket_procs_max_remaining_icd": {
+          "label": "物品触发最大剩余ICD",
+          "tooltip": "增益指定属性类型的任何未激活物品/附魔触发的最长剩余ICD，如果所有都当前激活则为0。"
+        },
+        "num_equipped_stat_proc_trinkets": {
+          "label": "已装备属性触发效果数量",
+          "tooltip": "触发时增益指定属性类型的已装备被动物品/附魔效果数量。"
+        },
+        "num_stat_buff_cooldowns": {
+          "label": "属性增益冷却时间数量",
+          "tooltip": "施放时增益指定属性类型的已注册主要冷却时间数量。",
+          "full_description": "<p>包括手动施放的冷却时间以及由\"施放所有属性增益冷却时间\"和\"自动施放其他冷却时间\"动作控制的冷却时间。</p>"
+        },
+        "any_stat_buff_cooldowns_active": {
+          "label": "任何属性增益冷却时间激活",
+          "tooltip": "<b>真</b>如果增益指定属性类型的任何已注册主要冷却时间当前激活，否则<b>假</b>。",
+          "full_description": "<p>对于叠加增益，此条件还会检查激活冷却后增益是否已叠加到最大可能强度。</p><p>包括手动施放的冷却时间以及由\"施放所有属性增益冷却时间\"和\"自动施放其他冷却时间\"动作控制的冷却时间。</p>"
+        },
+        "dot_is_active": {
+          "label": "DoT激活",
+          "tooltip": "<b>真</b>如果指定的DoT当前正在跳，否则<b>假</b>。"
+        },
+        "dot_is_active_on_all_targets": {
+          "label": "DoT在所有目标上激活",
+          "tooltip": "<b>真</b>如果指定的DoT当前在所有目标上跳，否则<b>假</b>。"
+        },
+        "dot_remaining_time": {
+          "label": "DoT剩余时间",
+          "tooltip": "此DoT最后一次跳发生前的剩余时间，如果DoT当前未跳则为0。"
+        },
+        "dot_lowest_remaining_time": {
+          "label": "DoT最低剩余时间",
+          "tooltip": "此DoT在任何目标上最后一次跳发生前的剩余时间，如果DoT当前未跳则为0。"
+        },
+        "dot_tick_frequency": {
+          "label": "DoT跳频率",
+          "tooltip": "每次跳之间的时间。"
+        },
+        "dot_time_to_next_tick": {
+          "label": "DoT下一跳时间",
+          "tooltip": "此DoT下一跳发生前的剩余时间。"
+        },
+        "dot_percent_increase": {
+          "label": "DoT伤害增加%",
+          "tooltip": "新DoT与旧DoT相比强多少。"
+        },
+        "sequence_is_complete": {
+          "label": "序列完成",
+          "tooltip": "<b>真</b>如果序列中没有更多子动作要执行，否则<b>假</b>。"
+        },
+        "sequence_is_ready": {
+          "label": "序列就绪",
+          "tooltip": "<b>真</b>如果序列中的下一个子动作准备就绪可以执行，否则<b>假</b>。"
+        },
+        "sequence_time_to_ready": {
+          "label": "序列准备时间",
+          "tooltip": "返回序列中下一个子动作准备就绪前的剩余时间量。"
+        },
+        "totem_remaining_time": {
+          "label": "图腾剩余时间",
+          "tooltip": "返回图腾到期前的剩余时间量。"
+        },
+        "shaman_fire_elemental_duration": {
+          "label": "火元素总持续时间",
+          "tooltip": "返回火元素图腾的总持续时间"
+        },
+        "cat_excess_energy": {
+          "label": "多余能量",
+          "tooltip": "返回可用的多余能量量，减去维持DoT所需的能量。"
+        },
+        "cat_new_savage_roar_duration": {
+          "label": "新野蛮咆哮持续时间",
+          "tooltip": "基于当前连击点数返回野蛮咆哮持续时间"
+        },
+        "warlock_hand_of_guldan_in_flight": {
+          "label": "古尔丹之手飞行中",
+          "tooltip": "如果古尔丹之手的冲击当前正在飞行中则返回<b>真</b>。"
+        },
+        "warlock_haunt_in_flight": {
+          "label": "鬼影缠身飞行中",
+          "tooltip": "如果鬼影当前正在飞行中则返回<b>真</b>。"
+        },
+        "mage_current_combustion_dot_estimate": {
+          "label": "燃烧DoT值",
+          "tooltip": "返回您燃烧DoT的当前估计大小。"
+        },
+        "brewmaster_monk_current_stagger_percent": {
+          "label": "当前醉拳（%）",
+          "tooltip": "当前醉拳量，以百分比表示。"
+        },
+        "protection_paladin_damage_taken_last_global": {
+          "label": "上次全局受到伤害",
+          "tooltip": "过去1.5秒内受到的伤害量。"
+        },
+        "aura_remaining_icd": {
+          "label": "光环剩余ICD",
+          "tooltip": "此光环内部冷却时间准备就绪前的剩余时间，如果ICD现在准备就绪则为0。"
+        },
+        "aura_icd_is_ready": {
+          "label": "光环ICD就绪",
+          "tooltip": "<b>真</b>如果光环的ICD当前准备就绪或者最近被放入CD（在玩家的反应时间内，在设置中配置），否则<b>假</b>。"
+        },
+        "aura_icd_is_ready_with_reaction_time": {
+          "label": "[已弃用] 光环ICD就绪（带反应时间）",
+          "tooltip": "所有光环检查现在都包含反应时间逻辑，因此不再需要。请使用<b>光环ICD就绪</b>代替。"
+        },
+        "overlap": {
+          "label": "重叠",
+          "tooltip": "光环到期前可能被刷新的最大时间量。"
+        },
+        "gcd_hasted_duration": {
+          "label": "急速GCD持续时间",
+          "tooltip": "当前急速下施法引起的GCD持续时间"
+        },
+        "full_cooldown": {
+          "label": "完整冷却时间",
+          "tooltip": "法术的完整冷却持续时间"
+        },
+        "affliction_current_snapshot": {
+          "label": "现有原始快照 %",
+          "tooltip": "相对于基线，您现有快照的强度。忽略急速和暴击。除非您知道自己在做什么，否则不建议使用。"
+        },
+        "affliction_exhale_window": {
+          "label": "呼气窗口",
+          "tooltip": "为呼出吸入的持续伤害配置的余地。"
+        },
+        "any_stat_buff_cooldowns_min_duration": {
+          "label": "任何属性增益冷却最短剩余时间",
+          "tooltip": "增益指定属性类型的任何已注册主要冷却的最短剩余持续时间，如果当前没有激活则为无穷大。"
+        },
+        "any_trinket_stat_procs_available": {
+          "label": "任何物品触发增益可用",
+          "tooltip": "如果增益指定属性类型的任何物品/附魔触发当前不在ICD上且未激活，则为<b>True</b>，否则为<b>False</b>。"
+        },
+        "boss_current_target": {
+          "label": "正在坦怪",
+          "tooltip": "如果玩家当前正在坦怪则为True"
+        }
+      },
+      "operators": {
+        "equals": "==",
+        "not_equals": "!=",
+        "greater_than_or_equal": ">=",
+        "greater_than": ">",
+        "less_than_or_equal": "<=",
+        "less_than": "<",
+        "add": "+",
+        "subtract": "-",
+        "multiply": "*",
+        "divide": "/"
+      },
+      "execute_phases": {
+        "e20": "20%",
+        "e25": "25%",
+        "e35": "35%",
+        "e45": "45%",
+        "e90": "90%"
+      },
+      "totem_types": {
+        "earth": "大地",
+        "air": "空气",
+        "fire": "火焰",
+        "water": "水"
+      },
+      "submenus": {
+        "logic": "逻辑",
+        "encounter": "战斗",
+        "boss": "Boss",
+        "unit": "单位",
+        "resources": "资源",
+        "gcd": "GCD",
+        "auto": "自动",
+        "spell": "法术",
+        "aura": "光环",
+        "aura_sets": "光环套装",
+        "dot": "DoT",
+        "sequence": "序列",
+        "casting": "施法",
+        "timing": "时间",
+        "sequences": "序列",
+        "misc": "其他",
+        "feral_druid": "野性德鲁伊",
+        "guardian_druid": "守护德鲁伊",
+        "shaman": "萨满祭司",
+        "warlock": "术士",
+        "mage": "法师",
+        "tank": "坦克",
+        "health": "生命值",
+        "mana": "法力值",
+        "rage": "怒气",
+        "focus": "集中值",
+        "energy": "能量",
+        "combo_points": "连击点数",
+        "chi": "真气",
+        "runic_power": "符文能量",
+        "eclipse": "蚀相",
+        "runes": "符文",
+        "cooldowns": "冷却时间",
+        "placeholders": "占位符"
+      },
+      "item_swap_sets": {
+        "main": "主要",
+        "swapped": "已交换"
+      },
+      "helpers": {
+        "action_id_sets": {
+          "auras": "光环",
+          "stackable_auras": "光环",
+          "icd_auras": "光环",
+          "exclusive_effect_auras": "光环",
+          "spells": "法术",
+          "castable_spells": "法术",
+          "channel_spells": "引导法术",
+          "dot_spells": "DoT法术",
+          "castable_dot_spells": "DoT法术",
+          "shield_spells": "护盾法术",
+          "non_instant_spells": "非瞬发法术",
+          "friendly_spells": "友好法术",
+          "expected_dot_spells": "DoT法术",
+          "spells_with_travelTime": "距离法术"
+        },
+        "field_configs": {
+          "type": "类型",
+          "strategy": "策略",
+          "buff_type": "增益类型",
+          "min_icd": "最小ICD",
+          "min_icd_tooltip": "如果非零，过滤掉任何缺乏ICD或ICD小于指定值（以秒为单位）的触发。这对于某些快照检查可能有用，因为低ICD的触发通常太弱而无法快照。",
+          "include_reaction_time": "包含反应时间",
+          "include_reaction_time_tooltip": "如果选中，将使用配置的反应时间。",
+          "use_base_value": "使用基础值",
+          "use_base_value_tooltip": "如果选中，将比较当前DoT与DoT的基础值（战斗开始时）。",
+          "variable_assignment_tooltip": "分配给变量'{{variableName}}'的值"
+        },
+        "eclipse_types": {
+          "lunar": "月亮",
+          "solar": "太阳",
+          "neutral": "中性"
+        },
+        "rune_types": {
+          "blood": "鲜血",
+          "frost": "冰霜",
+          "unholy": "邪恶",
+          "death": "死亡"
+        },
+        "rune_slots": {
+          "blood_left": "鲜血左",
+          "blood_right": "鲜血右",
+          "frost_left": "冰霜左",
+          "frost_right": "冰霜右",
+          "unholy_left": "邪恶左",
+          "unholy_right": "邪恶右"
+        },
+        "rotation_types": {
+          "single_target": "单体",
+          "aoe": "AOE"
+        },
+        "hotw_strategies": {
+          "caster": "施法者",
+          "cat": "猫",
+          "hybrid": "混合"
+        },
+        "unit_labels": {
+          "self": "自己",
+          "current_target": "当前目标",
+          "previous_target": "上一个目标",
+          "next_target": "下一个目标",
+          "player": "玩家",
+          "target": "目标",
+          "pet": "宠物"
+        },
+        "placeholder_tooltip": "如果当前时间<0则为开战前药水，如果战斗已开始则为战斗药水。",
+        "select_variable": "选择变量",
+        "select_group": "选择组",
+        "no_variables_defined": "未定义变量",
+        "no_groups_defined": "未定义组",
+        "buttons": {
+          "enable_action": "启用动作",
+          "disable_action": "禁用动作",
+          "enable_disable": "启用/禁用"
+        }
+      }
+    },
+    "simple": {
+      "title": "循环"
+    },
+    "cooldowns": {
+      "title": "冷却时间",
+      "tooltip": "指定冷却时间，以秒为单位。冷却时间将在指定时间后尽快使用。未指定时，冷却时间将在准备就绪且合理时使用。<br><br>可以通过逗号分隔提供多个时间。最后一个提供时间之后的任何冷却时间使用将使用默认逻辑。",
+      "delete_tooltip": "删除冷却时间",
+      "timings_placeholder": "20, 40, ..."
+    },
+    "saved_rotations": {
+      "title": "保存的循环",
+      "label": "循环",
+      "name_label": "循环名称",
+      "save_button": "保存循环",
+      "delete": {
+        "confirm": "删除保存的循环'{{name}}'？",
+        "tooltip": "删除保存的循环"
+      },
+      "alerts": {
+        "choose_name": "为您的保存循环选择一个标签！",
+        "name_exists": "{{name}}循环已存在。"
+      }
+    },
+    "options": {
+      "druid": {
+        "feral": {
+          "target_type": {
+            "label": "目标类型",
+            "single_target": "单体",
+            "aoe": "AOE"
+          },
+          "bear_weave": {
+            "label": "启用熊猫舞",
+            "tooltip": "在积累能量时舞到熊形态"
+          },
+          "snek_weave": {
+            "label": "使用白蛇舞",
+            "tooltip": "使用白化蛇宠物在熊形态舞结束时重置挥击计时器"
+          },
+          "use_ns": {
+            "label": "使用自然迅捷",
+            "tooltip": "使用自然迅捷来填补掠食者迅捷存活时间的空白"
+          },
+          "manual_params": {
+            "label": "手动高级参数",
+            "tooltip": "手动指定高级参数，否则将使用预设默认值"
+          },
+          "hotw_strategy": {
+            "label": "野性之心",
+            "tooltip": "如何使用野性之心",
+            "values": {
+              "passives_only": "仅被动",
+              "enhanced_bear_weaving": "增强熊形态舞",
+              "wrath_weaving": "增强愤怒舞"
+            }
+          },
+          "allow_aoe_berserk": {
+            "label": "允许AOE狂暴",
+            "tooltip": "允许在AOE循环中使用狂暴"
+          },
+          "roar_offset": {
+            "label": "咆哮偏移",
+            "tooltip": "当前撕裂和新咆哮之间获得的最小偏移以允许咆哮剪辑"
+          },
+          "rip_leeway": {
+            "label": "撕裂余地",
+            "tooltip": "当前撕裂和当前咆哮到期时间之间的最小容忍间隙，在启动紧急措施之前"
+          },
+          "bite_during_rotation": {
+            "label": "循环中撕咬",
+            "tooltip": "在循环中使用撕咬而不是仅在斩杀期间维持撕裂"
+          },
+          "bite_time": {
+            "label": "撕咬时间",
+            "tooltip": "撕裂或咆哮理想情况下应该被刷新前的剩余秒数（包括计划的早期剪辑）以允许撕咬"
+          },
+          "berserk_bite_time": {
+            "label": "狂暴期间撕咬",
+            "tooltip": "狂暴激活时的更激进阈值"
+          }
+        }
+      },
+      "guardian": {
+        "maintain_faerie_fire": {
+          "label": "维持精灵之火",
+          "tooltip": "维持精灵之火减益。覆盖设置中指定的任何外部破甲效果。"
+        },
+        "maintain_demo_roar": {
+          "label": "维持挫志咆哮",
+          "tooltip": "在主要目标上保持挫志咆哮激活。如果更强的减益激活，将不会施放。"
+        },
+        "demo_roar_refresh_leeway": {
+          "label": "挫志咆哮刷新余地",
+          "tooltip": "当剩余持续时间小于此值（以秒为单位）时刷新挫志咆哮。较大的值提供对未命中的安全缓冲，但以降低DPS为代价。"
+        },
+        "pulverize_refresh_leeway": {
+          "label": "粉碎刷新余地",
+          "tooltip": "当剩余持续时间小于此值（以秒为单位）时刷新粉碎。注意，冷却时使用割伤、痛击和精灵之火优先于此规则，除非割伤本身即将失效。"
+        }
+      },
+      "rogue": {
+        "apply_poisons_manually": {
+          "label": "手动配置毒药",
+          "tooltip": "防止基于已装备武器的自动毒药配置。"
+        },
+        "subtlety": {
+          "honor_of_thieves_crit_rate": {
+            "label": "尊严暴击率",
+            "tooltip": "100秒内其他小组成员产生的暴击数量"
+          }
+        }
+      },
+      "shaman": {
+        "elemental": {
+          "thunderstorm_in_range": {
+            "label": "雷霆风暴在范围内",
+            "tooltip": "当设置为真时，雷霆风暴施放将造成伤害。"
+          }
+        }
+      },
+      "hunter": {
+        "beast_mastery": {
+          "sting": {
+            "label": "钉刺",
+            "tooltip": "在主要目标上维持选定的钉刺",
+            "values": {
+              "none": "无",
+              "serpent_sting": "毒蛇钉刺"
+            }
+          },
+          "trap_weave": {
+            "label": "陷阱舞",
+            "tooltip": "在适当时候使用爆炸陷阱。注意，选择此选项将禁用黑箭，因为它们共享冷却时间"
+          },
+          "multi_dot_serpent_sting": {
+            "label": "多目标毒蛇钉刺",
+            "tooltip": "在多个目标上施放毒蛇钉刺"
+          }
+        },
+        "marksmanship": {
+          "sting": {
+            "label": "钉刺",
+            "tooltip": "在主要目标上维持选定的钉刺",
+            "values": {
+              "none": "无",
+              "serpent_sting": "毒蛇钉刺"
+            }
+          },
+          "trap_weave": {
+            "label": "陷阱舞",
+            "tooltip": "在适当时候使用爆炸陷阱。注意，选择此选项将禁用黑箭，因为它们共享冷却时间"
+          },
+          "multi_dot_serpent_sting": {
+            "label": "多目标毒蛇钉刺",
+            "tooltip": "在多个目标上施放毒蛇钉刺"
+          }
+        },
+        "survival": {
+          "multi_dot_serpent_sting": {
+            "label": "多目标毒蛇钉刺",
+            "tooltip": "在多个目标上施放毒蛇钉刺"
+          }
+        }
+      },
+      "warlock": {
+        "affliction": {
+          "exhale_window": {
+            "label": "灵魂交换呼气窗口",
+            "tooltip": "在多目标战斗中，在吸入的持续伤害到期前多长时间（以毫秒为单位）呼出。"
+          }
+        }
+      }
+    },
+    "auto": {
+      "description": "根据当前设置自动使用保存的循环。"
+    }
+  },
+  "results_tab": {
+    "title": "分析",
+    "details": {
+      "no_results": "运行模拟后查看结果,独立窗口请耐心等待10至30秒获取分析结果.",
+      "view_in_separate_tab": "打开独立窗口",
+      "sim_1_iteration": "模拟1次迭代",
+      "sim_1_death": "模拟1次死亡",
+      "all_targets": "所有目标",
+      "all_players": "所有玩家",
+      "target_number": "目标{{number}}",
+      "damage": {
+        "dps_histogram": "DPS直方图"
+      },
+      "timeline": {
+        "disclaimer": "时间线数据仅可视化1次模拟迭代。",
+        "note": "注意：您可以通过按住Shift滚动或点击并拖拽来移动时间线。",
+        "chart_types": {
+          "rotation": "循环",
+          "dps": "DPS",
+          "threat": "威胁"
+        },
+        "chart_options": {
+          "time_axis": "时间（秒）",
+          "waiting_for_data": "等待数据..."
+        },
+        "tooltips": {
+          "dps": "DPS",
+          "dtps": "DTPS",
+          "amount": "数量",
+          "player_damage": "玩家伤害/团队伤害",
+          "player_damage_taken": "玩家受到伤害/团队受到伤害",
+          "before": "之前",
+          "after": "之后",
+          "threat": "威胁",
+          "active_auras": "激活光环"
+        }
+      },
+      "logs": {
+        "top_button": "顶部",
+        "time_column": "时间",
+        "event_column": "事件",
+        "show_debug": "显示调试语句"
+      },
+      "tabs": {
+        "damage": "伤害",
+        "healing": "治疗",
+        "damage_taken": "受到伤害",
+        "buffs": "增益",
+        "debuffs": "减益",
+        "casts": "施法",
+        "resources": "资源",
+        "timeline": "时间线",
+        "log": "日志"
+      },
+      "columns": {
+        "damage_done": "造成的伤害",
+        "casts": "施法",
+        "avg_cast": "平均施法",
+        "hits": "命中",
+        "avg_hit": "平均命中",
+        "crit_percent": "暴击%",
+        "miss_percent": "未命中%",
+        "dpet": "DPET",
+        "dps": "DPS",
+        "healing_done": "造成的治疗",
+        "cpm": "CPM",
+        "cast_time": "施法时间",
+        "hpm": "HPM",
+        "hpet": "HPET",
+        "amount": "数量",
+        "dtps": "DTPS",
+        "avg_heal": "平均治疗",
+        "hps": "HPS",
+        "damage_taken": "受到伤害",
+        "overhealing": "过量治疗",
+        "name": "名称",
+        "duration": "持续时间",
+        "uptime": "存活时间",
+        "procs": "触发",
+        "ppm": "PPM",
+        "casts_per_minute": "施法/分钟",
+        "mana_gain": "法力获得",
+        "mana_cost": "法力消耗",
+        "rage_gain": "怒气获得",
+        "rage_cost": "怒气消耗",
+        "energy_gain": "能量获得",
+        "energy_cost": "能量消耗",
+        "focus_gain": "集中值获得",
+        "focus_cost": "集中值消耗",
+        "runic_power_gain": "符文能量获得",
+        "runic_power_cost": "符文能量消耗",
+        "chi_gain": "真气获得",
+        "chi_cost": "真气消耗",
+        "holy_power_gain": "神圣能量获得",
+        "holy_power_cost": "神圣能量消耗",
+        "shadow_orbs_gain": "暗影宝珠获得",
+        "shadow_orbs_cost": "暗影宝珠消耗",
+        "combo_points_gain": "连击点数获得",
+        "combo_points_cost": "连击点数消耗",
+        "maelstrom_gain": "漩涡获得",
+        "maelstrom_cost": "漩涡消耗",
+        "demonic_fury_gain": "恶魔之怒获得",
+        "demonic_fury_cost": "恶魔之怒消耗",
+        "burning_embers_gain": "燃烧余烬获得",
+        "burning_embers_cost": "燃烧余烬消耗",
+        "gain": "获得",
+        "gain_per_second": "获得/秒",
+        "avg_gain": "平均获得",
+        "wasted_gain": "浪费获得"
+      },
+      "tooltips": {
+        "damage_avg_cast": "每次施法的平均伤害",
+        "player_damage": "玩家伤害/团队伤害",
+        "player_damage_taken": "玩家受到伤害/团队受到伤害",
+        "damage_taken_per_encounter": "受到伤害/战斗持续时间",
+        "healing_per_encounter": "治疗/战斗持续时间",
+        "threat_per_encounter": "威胁/战斗持续时间",
+        "damage_taken": "受到伤害",
+        "damage_per_encounter": "伤害/战斗持续时间",
+        "damage_avg_cast_tooltip": "伤害/施法和/或伤害/跳",
+        "healing_avg_cast_tooltip": "治疗/施法",
+        "healing_avg_hit_tooltip": "治疗/命中和/或治疗/（跳+暴击跳）",
+        "healing_hits_tooltip": "治疗/（命中+暴击+偏斜+格挡）和/或治疗/跳+暴击跳",
+        "hit_miss_percent_tooltip": "未命中/（命中+暴击+偏斜+格挡）"
+      },
+      "attack_types": {
+        "hit": "命中",
+        "critical_hit": "暴击",
+        "tick": "跳",
+        "critical_tick": "暴击跳",
+        "glancing_blow": "偏斜",
+        "blocked_glancing_blow": "被格挡偏斜",
+        "blocked_hit": "被格挡命中",
+        "blocked_critical_hit": "被格挡暴击",
+        "miss": "未命中",
+        "parry": "招架",
+        "dodge": "躲闪",
+        "threat": "威胁"
+      },
+      "tooltip_table": {
+        "type": "类型",
+        "count": "数量",
+        "average": "平均",
+        "amount": "数量"
+      }
+    }
+  },
+  "bulk_tab": {
+    "title": "批量（<span class=\"text-success\">新</span>）",
+    "description": "<span className=\"bold\">批量模拟是一个新功能，允许您选择多个物品并进行大批量模拟得出当前设置下的最优配装(BIS)。<br />这是一个测试版功能，在普通版WoWSims中可能会速度很慢，建议使用极速版进行操作。<br />如果您有反馈或发现错误，请提交报告！</span>",
+    "download_local": "",
+    "tabs": {
+      "setup": "设置",
+      "results": "结果"
+    },
+    "actions": {
+      "import_bags": "从背包导入",
+      "import_favorites": "导入收藏",
+      "clear_items": "清除物品",
+      "simulate_batch": "批量模拟"
+    },
+    "search": {
+      "title": "物品搜索",
+      "name_label": "名称",
+      "clear_search": "清除搜索",
+      "min_ilvl": "最低装等",
+      "max_ilvl": "最高装等",
+      "no_results": "未找到结果。",
+      "showing_results": "显示 {{total}} 个结果中的 {{max}} 个。",
+      "item_added": "{{itemName}} 已添加到批量中。",
+      "item_removed": "{{itemName}} 已从批量中移除。",
+      "item_unique": "{{itemName}} 是唯一的，已添加。"
+    },
+    "settings": {
+      "combinations_count": "{{count}}种组合",
+      "combination_singular": "1种组合",
+      "iterations": "迭代次数",
+      "default_gems": "默认宝石",
+      "inherit_upgrades": {
+        "label": "继承升级",
+        "tooltip": "启用时，物品将从已装备物品继承升级。否则，物品将在没有任何升级的情况下进行模拟。"
+      },
+      "freeze_ring": {
+        "label": "锁定戒指",
+        "tooltip": "锁定一个已装备的戒指以减少组合数量"
+      },
+      "freeze_trinket": {
+        "label": "锁定饰品",
+        "tooltip": "锁定一个已装备的饰品以减少组合数量"
+      }
+    },
+    "progress": {
+      "total_combinations": "{{count}}种总组合。",
+      "refining_rounds": "{{current}} / {{total}} 优化轮次",
+      "simulations_complete": "{{completed}} / {{total}}<br />模拟完成",
+      "iterations_complete": "{{completed}} / {{total}}<br />迭代完成",
+      "seconds_remaining": "剩余{{seconds}}秒。"
+    },
+    "notifications": {
+      "bulk_sim_cancelled": "批量模拟已取消。",
+      "failed_to_remove_item": "移除物品失败，请报告此问题。"
+    },
+    "warning": {
+      "iterations_limit": "在模拟器中模拟超过{{limit}}次迭代将需要很长时间或可能根本无法运行。"
+    },
+    "picker": {
+      "no_items": "未选择物品。",
+      "remove_tooltip": "从批量中移除此物品。",
+      "failed_update": "更新物品失败，请报告此问题。",
+      "failed_remove": "移除物品失败，请报告此问题。"
+    },
+    "results": {
+      "run_simulation": "运行模拟以查看结果",
+      "equip_button": "装备",
+      "gear_equipped": "批量装备已装备！",
+      "current_gear": "当前装备"
+    },
+    "gem_selector": {
+      "title": "选择默认宝石"
+    },
+    "import_modal": {
+      "title": "背包物品导入",
+      "description_line1": "从WSE字符串导入背包物品，背包字符串可以通过插件WowSimsExporter(WSE)创建。",
+      "description_line2": "要导入，请上传文件或在下方粘贴文本，然后点击'导入'。"
+    }
+  }
+}
