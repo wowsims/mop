@@ -24,6 +24,7 @@ import { EquippedItem } from './equipped_item.js';
 import { Gear, ItemSwapGear } from './gear.js';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems.js';
 import { getEligibleEnchantSlots, getEligibleItemSlots } from './utils.js';
+import { getLangId } from '../../i18n/locale_service';
 
 const dbUrlJson = '/mop/assets/database/db.json';
 const dbUrlBin = '/mop/assets/database/db.bin';
@@ -400,7 +401,7 @@ export class Database {
 		return Database.getWowheadTooltipData(id, 'spell', { signal: options?.signal });
 	}
 	private static async getWowheadTooltipData(id: number, tooltipPostfix: string, options: { signal?: AbortSignal } = {}): Promise<IconData> {
-		const url = `https://nether.wowhead.com/mop-classic/tooltip/${tooltipPostfix}/${id}?lvl=${CHARACTER_LEVEL}&dataEnv=${WOWHEAD_EXPANSION_ENV}`;
+		const url = `https://nether.wowhead.com/mop-classic/tooltip/${tooltipPostfix}/${id}?lvl=${CHARACTER_LEVEL}&dataEnv=${WOWHEAD_EXPANSION_ENV}&locale=${getLangId()}`;
 		try {
 			const response = await fetch(url, { signal: options?.signal });
 			const json = await response.json();
