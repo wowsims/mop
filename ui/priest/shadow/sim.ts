@@ -55,9 +55,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P1_PRESET.gear,
+		gear: Presets.P2_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P1_EP_PRESET.epWeights,
+		epWeights: Presets.P2_EP_PRESET.epWeights,
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
@@ -95,14 +95,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_EP_PRESET, Presets.P2_EP_PRESET],
+		epWeights: [Presets.P1_EP_PRESET, Presets.P2_EP_PRESET, Presets.P3_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
-		rotations: [Presets.ROTATION_PRESET_DEFAULT],
+		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_T15],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRE_RAID_PRESET, Presets.P1_PRESET, Presets.P2_PRESET],
+		gear: [Presets.PRE_RAID_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
 		itemSwaps: [],
-		builds: [],
+		builds: [Presets.PRESET_BUILD_T14, Presets.PRESET_BUILD_T15],
 	},
 
 	autoRotation: (_: Player<Spec.SpecShadowPriest>): APLRotation => {
@@ -125,11 +125,11 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
 					1: Presets.PRE_RAID_PRESET.gear,
-					2: Presets.P1_PRESET.gear,
+					2: Presets.P2_PRESET.gear,
 				},
 				[Faction.Horde]: {
 					1: Presets.PRE_RAID_PRESET.gear,
-					2: Presets.P1_PRESET.gear,
+					2: Presets.P2_PRESET.gear,
 				},
 			},
 		},
@@ -144,7 +144,9 @@ export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 			statSelectionPresets: [Presets.SHADOW_BREAKPOINTS],
 			getEPDefaults: player => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 500) {
+				if (avgIlvl >= 525) {
+					return Presets.P3_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 500) {
 					return Presets.P2_EP_PRESET.epWeights;
 				}
 				return Presets.P1_EP_PRESET.epWeights;

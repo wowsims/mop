@@ -236,6 +236,13 @@ $gray-800: #323232;
 
 .toast {
 	--icon-color: var(--bs-warning);
+	--bs-toast-max-width: 100%;
+
+	@include media-breakpoint-up(md) {
+		--bs-toast-max-width: 350px;
+	}
+	pointer-events: auto;
+	max-width: 100%;
 
 	.toast-header {
 		border-bottom: 0;

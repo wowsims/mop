@@ -1,7 +1,7 @@
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Player } from '../../../player';
-import { APLAction, APLPrepullAction, APLValue } from '../../../proto/apl';
+import { APLAction, APLPrepullAction, APLValue, APLValueConst } from '../../../proto/apl';
 import { EventID } from '../../../typed_event';
 import { randomUUID } from '../../../utils';
 import { Component } from '../../component';
@@ -9,7 +9,7 @@ import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { AdaptiveStringPicker } from '../../pickers/string_picker';
 import { APLActionPicker } from '../apl_actions';
-import { APLValueImplStruct } from '../apl_values';
+import { APLValueImplStruct, APLValuePicker } from '../apl_values';
 import { APLHidePicker } from './hide_picker';
 
 export class APLPrePullListPicker extends Component {
@@ -50,7 +50,7 @@ export class APLPrePullListPicker extends Component {
 class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 	private readonly player: Player<any>;
 	private readonly hidePicker: Input<Player<any>, boolean>;
-	private readonly doAtPicker: Input<Player<any>, string>;
+	private readonly doAtPicker: Input<Player<any>, APLValue | undefined>;
 	private readonly actionPicker: APLActionPicker;
 
 	constructor(parent: HTMLElement, player: Player<any>, config: ListItemPickerConfig<Player<any>, APLPrepullAction>, index: number) {
@@ -70,21 +70,21 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 			},
 		});
 
-		this.doAtPicker = new AdaptiveStringPicker(this.rootElem, this.player, {
+		this.doAtPicker = new APLValuePicker(this.rootElem, this.player, {
 			id: randomUUID(),
 			label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
 			labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
 			extraCssClasses: ['apl-prepull-actions-doat'],
 			changedEvent: () => this.player.rotationChangeEmitter,
-			getValue: () => (this.getItem().doAtValue?.value as APLValueImplStruct<'const'> | undefined)?.const.val || '',
-			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
+			getValue: () => this.getItem().doAtValue,
+			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
 				if (newValue) {
+					this.getItem().doAtValue = newValue;
+				} else {
 					this.getItem().doAtValue = APLValue.create({
-						value: { oneofKind: 'const', const: { val: newValue } },
+						value: { oneofKind: 'const', const: { val: '-1s' } },
 						uuid: { value: randomUUID() },
 					});
-				} else {
-					this.getItem().doAtValue = undefined;
 				}
 				this.player.rotationChangeEmitter.emit(eventID);
 			},
@@ -109,9 +109,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 	getInputValue(): APLPrepullAction {
 		const item = APLPrepullAction.create({
 			hide: this.hidePicker.getInputValue(),
-			doAtValue: {
-				value: { oneofKind: 'const', const: { val: this.doAtPicker.getInputValue() } },
-			},
+			doAtValue: this.doAtPicker.getInputValue(),
 			action: this.actionPicker.getInputValue(),
 		});
 		return item;
@@ -122,7 +120,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 			return;
 		}
 		this.hidePicker.setInputValue(newValue.hide);
-		this.doAtPicker.setInputValue((newValue.doAtValue?.value as APLValueImplStruct<'const'> | undefined)?.const.val || '');
+		this.doAtPicker.setInputValue(newValue.doAtValue);
 		this.actionPicker.setInputValue(newValue.action || APLAction.create());
 	}
 

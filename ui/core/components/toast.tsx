@@ -20,7 +20,7 @@ class Toast {
 	private canClose: ToastOptions['canClose'];
 	private additionalClasses: ToastOptions['additionalClasses'];
 
-	public instance;
+	public instance: BootstrapToast | null = null;
 	constructor(options: ToastOptions) {
 		const { title, variant, autoShow = true, canClose = true, body, additionalClasses, container, ...bootstrapOptions } = options || {};
 		this.container = container || document.getElementById('toastContainer')!;
@@ -46,16 +46,19 @@ class Toast {
 	}
 
 	destroy() {
-		this.instance.dispose();
+		this.instance?.dispose();
 		this.element.remove();
+		this.instance = null;
 	}
 
 	show() {
-		this.instance.show();
+		if (!this.instance) return;
+		this.instance?.show();
 	}
 
 	hide() {
-		this.instance.hide();
+		if (!this.instance) return;
+		this.instance?.hide();
 	}
 
 	getVariantIcon() {

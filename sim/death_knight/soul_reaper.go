@@ -10,12 +10,13 @@ import (
 var SoulReaperActionID = core.ActionID{SpellID: 114867}
 
 func (dk *DeathKnight) registerSoulReaper() {
+	var dotTickShouldCrit bool
 	dotTickSpell := dk.RegisterSpell(core.SpellConfig{
 		ActionID:       SoulReaperActionID,
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskEmpty,
 		Flags:          core.SpellFlagPassiveSpell,
-		ClassSpellMask: DeathKnightSpellSoulReaper,
+		ClassSpellMask: DeathKnightSpellSoulReaperDot,
 
 		Dot: core.DotConfig{
 			Aura: core.Aura{
@@ -28,8 +29,16 @@ func (dk *DeathKnight) registerSoulReaper() {
 				if sim.IsExecutePhase35() || (dk.soulReaper45Percent && sim.IsExecutePhase45()) {
 					baseDamage := dk.CalcAndRollDamageRange(sim, 48, 0.15000000596) +
 						1.20000004768*dot.Spell.MeleeAttackPower()
+
+					bonusCrit := dot.Spell.BonusCritPercent
+					if dotTickShouldCrit {
+						dot.Spell.BonusCritPercent += 100
+					}
+
 					dot.Snapshot(target, baseDamage)
 					dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeTickMagicCrit)
+
+					dot.Spell.BonusCritPercent = bonusCrit
 				}
 			},
 		},
@@ -65,7 +74,7 @@ func (dk *DeathKnight) registerSoulReaper() {
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		Flags:          core.SpellFlagAPL | core.SpellFlagMeleeMetrics | core.SpellFlagEncounterOnly,
-		ClassSpellMask: DeathKnightSpellSoulReaper,
+		ClassSpellMask: DeathKnightSpellSoulReaperMelee,
 
 		MaxRange: core.MaxMeleeRange,
 
@@ -86,6 +95,8 @@ func (dk *DeathKnight) registerSoulReaper() {
 		ThreatMultiplier: 1.0,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			dotTickShouldCrit = dk.soulReaper45Percent && dk.KillingMachineAura.IsActive()
+
 			baseDamage := dk.MHWeaponDamage(sim, spell.MeleeAttackPower())
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMeleeWeaponSpecialHitAndCrit)
 

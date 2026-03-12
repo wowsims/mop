@@ -14,6 +14,12 @@ The Ghoul's abilities are empowered and take on new functions while the transfor
 func (uhdk *UnholyDeathKnight) registerDarkTransformation() {
 	actionID := core.ActionID{SpellID: 63560}
 
+	uhdk.DarkTransformationAura = uhdk.GetOrRegisterAura(core.Aura{
+		Label:    "Dark Transformation" + uhdk.Label,
+		ActionID: actionID,
+		Duration: time.Second * 30,
+	})
+
 	uhdk.Ghoul.DarkTransformationAura = core.BlockPrepull(uhdk.Ghoul.GetOrRegisterAura(core.Aura{
 		Label:    "Dark Transformation" + uhdk.Ghoul.Label,
 		ActionID: actionID,
@@ -24,11 +30,7 @@ func (uhdk *UnholyDeathKnight) registerDarkTransformation() {
 		Kind:       core.SpellMod_DamageDone_Pct,
 		ClassMask:  death_knight.GhoulSpellClaw,
 		FloatValue: 0.2,
-	}).AttachDependentAura(uhdk.GetOrRegisterAura(core.Aura{
-		Label:    "Dark Transformation" + uhdk.Label,
-		ActionID: actionID,
-		Duration: time.Second * 30,
-	}))
+	}).AttachDependentAura(uhdk.DarkTransformationAura)
 
 	uhdk.GetOrRegisterSpell(core.SpellConfig{
 		ActionID:       actionID,

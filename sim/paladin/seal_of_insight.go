@@ -63,13 +63,15 @@ func (paladin *Paladin) registerSealOfInsight() {
 		},
 	})
 
+	buildPhase := core.Ternary(paladin.Seal == proto.PaladinSeal_Insight, core.CharacterBuildPhaseBase, core.CharacterBuildPhaseNone)
 	dpm := paladin.NewLegacyPPMManager(15, core.ProcMaskMeleeMH)
 	paladin.SealOfInsightAura = paladin.RegisterAura(core.Aura{
-		Label:    "Seal of Insight" + paladin.Label,
-		Tag:      "Seal",
-		ActionID: core.ActionID{SpellID: 20165},
-		Duration: core.NeverExpires,
-		Dpm:      dpm,
+		Label:      "Seal of Insight" + paladin.Label,
+		Tag:        "Seal",
+		ActionID:   core.ActionID{SpellID: 20165},
+		Duration:   core.NeverExpires,
+		Dpm:        dpm,
+		BuildPhase: buildPhase,
 
 		OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			// Don't proc on misses

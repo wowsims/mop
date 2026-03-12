@@ -33,7 +33,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_GEARSET.gear,
+		gear: Presets.P3_GEARSET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.CBAT_STANDARD_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
@@ -45,8 +45,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 			const meleeHitSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, {
 				breakpoints: [7.5, 26.5],
 				capType: StatCapType.TypeSoftCap,
-				// These are set by the active EP weight in the updateSoftCaps callback
-				postCapEPs: [0.3 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT, 0],
+				postCapEPs: [0.26 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT, 0],
 			});
 
 			return [meleeHitSoftCapConfig];
@@ -145,10 +144,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P2_GEARSET.gear,
+					1: Presets.P3_GEARSET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P2_GEARSET.gear,
+					1: Presets.P3_GEARSET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

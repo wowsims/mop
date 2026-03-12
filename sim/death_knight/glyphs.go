@@ -118,8 +118,9 @@ func (dk *DeathKnight) registerGlyphOfTheLoudHorn() {
 		ClassMask:  DeathKnightSpellHornOfWinter,
 		FloatValue: 2.0,
 	}).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnCastComplete,
-		ClassSpellMask: DeathKnightSpellHornOfWinter,
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     DeathKnightSpellHornOfWinter,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			dk.AddRunicPower(sim, 10, rpMetrics)

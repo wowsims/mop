@@ -101,9 +101,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_P3, Presets.ROTATION_PRESET_AOE, Presets.ROTATION_PRESET_CLEAVE],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.P1_GEAR_PRESET, Presets.P2_GEAR_PRESET, Presets.P3_GEAR_PRESET],
+		gear: [Presets.PRERAID_GEAR_PRESET, Presets.P2_GEAR_PRESET, Presets.P3_GEAR_PRESET],
 
-		builds: [Presets.P3_PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_CLEAVE, Presets.PRESET_BUILD_AOE],
+		builds: [Presets.P3_PRESET_BUILD_DEFAULT, Presets.P3_PRESET_BUILD_PRERAID, Presets.PRESET_BUILD_CLEAVE, Presets.PRESET_BUILD_AOE],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecElementalShaman>): APLRotation => {

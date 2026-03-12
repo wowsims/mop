@@ -32,6 +32,7 @@ export const isThroneOfThunderWeapon = (item: Item) =>
 	item.phase == 3 &&
 	item.sources.some(itemSource => itemSource.source.oneofKind === 'drop' && itemSource.source.drop.zoneId === 6622);
 export const isShaTouchedWeapon = (item: Item) => item.gemSockets.some(socket => socket === GemColor.GemColorShaTouched);
+export const isRebornWeapon = (item: Item) => item.name.endsWith(', Reborn') && item.scalingOptions[ItemLevelState.Base].ilvl == 502;
 
 export const getWeaponStatsBySlot = (item: Item, slot: ItemSlot, upgradeStep: ItemLevelState = ItemLevelState.Base) => {
 	let itemStats = new Stats();
@@ -208,17 +209,17 @@ export class EquippedItem {
 
 		if (this._randomSuffix && other.randomSuffix && !ItemRandomSuffix.equals(this._randomSuffix, other.randomSuffix)) return false;
 
-		if (((this._reforge == null) != (other.reforge == null)) && !ignoreReforge) return false;
+		if ((this._reforge == null) != (other.reforge == null) && !ignoreReforge) return false;
 
 		if (this._reforge && other.reforge && !ReforgeStat.equals(this._reforge, other.reforge) && !ignoreReforge) return false;
 
-		if (((this._enchant == null) != (other.enchant == null)) && !ignoreEnchants) return false;
-		if (((this._tinker == null) != (other.tinker == null)) && !ignoreEnchants) return false;
+		if ((this._enchant == null) != (other.enchant == null) && !ignoreEnchants) return false;
+		if ((this._tinker == null) != (other.tinker == null) && !ignoreEnchants) return false;
 
 		if (this._enchant && other.enchant && !Enchant.equals(this._enchant, other.enchant) && !ignoreEnchants) return false;
 		if (this._tinker && other.tinker && !Enchant.equals(this._tinker, other.tinker) && !ignoreEnchants) return false;
 
-		if ((this._gems.length != other.gems.length) && !ignoreGems) return false;
+		if (this._gems.length != other.gems.length && !ignoreGems) return false;
 
 		if (!ignoreGems) {
 			for (let i = 0; i < this._gems.length; i++) {
@@ -228,7 +229,7 @@ export class EquippedItem {
 			}
 		}
 
-		if ((this._upgrade !== other._upgrade) && !ignoreUpgrades) return false;
+		if (this._upgrade !== other._upgrade && !ignoreUpgrades) return false;
 
 		if (this._challengeMode !== other._challengeMode) return false;
 

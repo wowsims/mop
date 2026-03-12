@@ -89,7 +89,7 @@ func (unit *Unit) UpdatePosition(sim *Simulation) {
 
 	if unit.AutoAttacks.ranged.enabled != unit.AutoAttacks.ranged.IsInRange() {
 		if unit.AutoAttacks.ranged.IsInRange() {
-			unit.AutoAttacks.EnableRangedSwing(sim)
+			unit.AutoAttacks.EnableRangedSwing(sim, false)
 		} else {
 			unit.AutoAttacks.CancelRangedSwing(sim)
 		}

@@ -1,0 +1,26 @@
+.progress-tracker-modal {
+	margin: 0;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) !important;
+
+	.modal-title {
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+	}
+}
+
+.progress-tracker-modal-warning {
+	border: 1px solid var(--bs-warning);
+	padding: var(--spacer-3);
+	font-size: var(--btn-font-size);
+}
+
+.progress-tracker-modal-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-3);
+	align-items: center;
+	text-align: center;
+}

@@ -362,6 +362,16 @@ export class SettingsTab extends SimTab {
 
 		this.simUI.sim.waitForInit().then(() => {
 			savedEncounterManager.loadUserData();
+			this.simUI.individualConfig.presets.encounters?.forEach(encounter => {
+				savedEncounterManager.addSavedData({
+					name: encounter.name,
+					tooltip: encounter.tooltip,
+					isPreset: true,
+					data: SavedEncounter.create({
+						encounter: encounter.encounter,
+					}),
+				});
+			});
 			savedSettingsManager.loadUserData();
 			this.simUI.individualConfig.presets.settings?.forEach(settings => {
 				savedSettingsManager.addSavedData({
@@ -374,6 +384,14 @@ export class SettingsTab extends SimTab {
 						playerBuffs: settings.buffs,
 						debuffs: settings.debuffs,
 						consumables: settings.consumables,
+						professions: settings.playerOptions?.profession1 && settings.playerOptions?.profession2
+							? [settings.playerOptions.profession1, settings.playerOptions.profession2]
+							: undefined,
+						distanceFromTarget: settings.playerOptions?.distanceFromTarget,
+						reactionTimeMs: settings.playerOptions?.reactionTimeMs,
+						channelClipDelayMs: settings.playerOptions?.channelClipDelayMs,
+						inFrontOfTarget: settings.playerOptions?.inFrontOfTarget,
+						enableItemSwap: settings.playerOptions?.enableItemSwap,
 					}),
 				});
 			});

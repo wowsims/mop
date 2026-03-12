@@ -14,7 +14,7 @@ func init() {
 	core.NewItemEffect(86518, func(agent core.Agent, state proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
-		statValue := core.GetItemEffectScaling(86518, 0.58200001717, state)
+		statValue := core.GetItemEffectScalingStatValue(86518, 0.58200001717, state)
 
 		dot := character.RegisterSpell(core.SpellConfig{
 			ActionID:    core.ActionID{SpellID: 126211},
@@ -66,7 +66,7 @@ func init() {
 	core.NewItemEffect(88149, func(agent core.Agent, state proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
-		statValue := core.GetItemEffectScaling(88149, 0.19400000572, state)
+		statValue := core.GetItemEffectScalingStatValue(88149, 0.19400000572, state)
 
 		aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 			AuraLabel:     "The Deepest Night",

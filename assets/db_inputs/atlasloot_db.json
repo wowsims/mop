@@ -1,5 +1,6 @@
 {
 "items":[
+{"sources":[{"drop":{"difficulty":5,"zoneId":6622,"otherName":"Trash Mobs"}}]},
 {"id":8448,"sources":[{"drop":{"difficulty":5,"zoneId":6738,"otherName":"Achievements"}}]},
 {"id":8453,"sources":[{"drop":{"difficulty":5,"zoneId":6738,"otherName":"Achievements"}}]},
 {"id":8454,"sources":[{"drop":{"difficulty":5,"zoneId":6738,"otherName":"Achievements"}}]},
@@ -600,6 +601,7 @@
 {"id":97211,"sources":[{"rep":{"repFactionId":1388,"repLevel":7,"factionId":2}}],"factionRestriction":2},
 {"id":97212,"sources":[{"rep":{"repFactionId":1388,"repLevel":7,"factionId":2}}],"factionRestriction":2},
 {"id":98017,"sources":[{"rep":{"repFactionId":1435,"repLevel":5}}]},
+{"id":98136,"sources":[{"drop":{"difficulty":5,"zoneId":6622,"otherName":"Trash Mobs"}}]},
 {"id":98558,"sources":[{"rep":{"repFactionId":1387,"repLevel":8,"factionId":1}}],"factionRestriction":1},
 {"id":98559,"sources":[{"rep":{"repFactionId":1388,"repLevel":8,"factionId":2}}],"factionRestriction":2},
 {"id":98560,"sources":[{"rep":{"repFactionId":1387,"repLevel":8,"factionId":1}}],"factionRestriction":1},

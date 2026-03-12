@@ -104,7 +104,6 @@ func (paladin *Paladin) registerSpells() {
 	paladin.registerJudgment()
 	paladin.registerLayOnHands()
 	paladin.registerSanctityOfBattle()
-	paladin.registerSealOfInsight()
 	paladin.registerSealOfRighteousness()
 	paladin.registerSealOfTruth()
 	paladin.registerWordOfGlory()
@@ -177,6 +176,12 @@ func NewPaladin(character *core.Character, talentsStr string, options *proto.Pal
 
 	// Bonus Armor and Armor are treated identically for Paladins
 	paladin.AddStatDependency(stats.BonusArmor, stats.Armor, 1)
+
+	// Register Seal of Insight here to make the build phase stats show properly under Base...
+	paladin.registerSealOfInsight()
+
+	// Register Divine Purpose here to make sure it's registered before T16 DPS 4pc
+	paladin.registerDivinePurpose()
 
 	return paladin
 }

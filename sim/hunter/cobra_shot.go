@@ -42,9 +42,11 @@ func (hunter *Hunter) registerCobraShotSpell() {
 			baseDamage := hunter.AutoAttacks.Ranged().CalculateNormalizedWeaponDamage(sim, spell.RangedAttackPower())
 			intFocus := 14.0
 
-			hunter.AddFocus(sim, intFocus, csMetrics)
-
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeRangedHitAndCrit)
+
+			if result.Landed() {
+				hunter.AddFocus(sim, intFocus, csMetrics)
+			}
 
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
 				if hunter.SerpentSting.Dot(target).IsActive() {

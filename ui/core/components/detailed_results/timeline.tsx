@@ -578,11 +578,13 @@ export class Timeline extends ResultComponent {
 
 		const buffsAndDebuffsById = buffsById.concat(
 			// Only pick target 0 to prevent overlapping cast rows
-			debuffsByTargetById[0]
+			debuffsByTargetById[0],
 		);
 
 		auraAsResource.forEach(auraId => {
-			const auraIndex = buffsById.findIndex(auraUptimeLogs => auraUptimeLogs?.[0].actionId!.spellId === auraId);
+			const auraIndex = buffsById.findIndex(
+				auraUptimeLogs => auraUptimeLogs?.[0].actionId!.spellId === auraId || auraUptimeLogs?.[0].actionId!.otherId === auraId,
+			);
 			if (auraIndex !== -1) {
 				this.addAuraRow(buffsById[auraIndex], duration);
 			}
@@ -895,13 +897,15 @@ export class Timeline extends ResultComponent {
 					className="rotation-timeline-cast"
 					style={{
 						left: this.timeToPx(castLog.timestamp),
-						minWidth: this.timeToPx(castLog.castTime + castLog.travelTime),
+						minWidth: this.timeToPx(castLog.cancelTime || castLog.castTime + castLog.travelTime),
 					}}
 				/>
 			);
 			rowElem.appendChild(castElem);
 
-			if (castLog.travelTime != 0) {
+			if (castLog.cancelTime) {
+				castElem.classList.add('cast-cancelled');
+			} else if (castLog.travelTime != 0) {
 				const travelTimeElem = (
 					<div
 						className="rotation-timeline-travel-time"
@@ -943,8 +947,11 @@ export class Timeline extends ResultComponent {
 			const tt = (
 				<div className="timeline-tooltip">
 					<span>
-						{castLog.actionId!.name} from {castLog.timestamp.toFixed(2)}s to {(castLog.timestamp + castLog.castTime).toFixed(2)}s (
-						{castLog.castTime > 0 && `${castLog.castTime.toFixed(2)}s, `} {castLog.effectiveTime.toFixed(2)}s GCD Time)
+						{castLog.actionId!.name} from {castLog.timestamp.toFixed(2)}s to{' '}
+						{(castLog.castCancelledLog?.timestamp || castLog.timestamp + castLog.castTime).toFixed(2)}s
+						{castLog.castCancelledLog?.timestamp
+							? ` (Cancelled after ${castLog.cancelTime.toFixed(2)}s)`
+							: ` (${castLog.castTime > 0 ? `${castLog.castTime.toFixed(2)}s, ` : ''}${castLog.effectiveTime.toFixed(2)}s GCD Time)`}
 						{travelTimeStr.length > 0 && travelTimeStr}
 					</span>
 					{totalDamage > 0 && (
@@ -1311,6 +1318,9 @@ const SPELL_ACTION_CATEGORY = 2;
 const DEFAULT_ACTION_CATEGORY = 3;
 
 const auraAsResource = [
+	// APL Damage Amplifier
+	OtherAction.OtherActionDamageAmplifier,
+
 	// Vengeance
 	84840, // Druid
 	84839, // Paladin
@@ -1334,6 +1344,7 @@ const idToCategoryMap: Record<number, number> = {
 	[OtherAction.OtherActionMove]: 0,
 	[OtherAction.OtherActionAttack]: 0.01,
 	[OtherAction.OtherActionShoot]: 0.5,
+	[OtherAction.OtherActionDamageAmplifier]: 0.6,
 
 	// Druid
 	[48480]: 0.1, // Maul

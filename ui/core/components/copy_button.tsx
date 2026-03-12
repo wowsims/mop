@@ -9,6 +9,7 @@ export interface CopyButtonConfig {
 	extraCssClasses?: string[];
 	text?: string;
 	tooltip?: string;
+	postClickEvent?: () => void;
 }
 
 export class CopyButton extends Component {
@@ -44,6 +45,8 @@ export class CopyButton extends Component {
 					clicked = false;
 				}, 1500);
 			}
+
+			this.config.postClickEvent?.();
 		});
 
 		if (config.tooltip) {

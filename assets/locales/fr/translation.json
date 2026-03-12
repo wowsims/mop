@@ -1,31 +1,32 @@
 {
-    "landing": {
-        "navigation": {
-            "home": "Accueil",
-            "simulations": "Simulations",
-            "about": "À propos",
-            "toggle": "Basculer la navigation"
-        },
-        "simulations": {
-            "full_raid": "Simulation de raid complet"
-        },
-        "home": {
-			"title": "WoWSims PTR - Mists of Pandaria",
+	"landing": {
+		"navigation": {
+			"home": "Accueil",
+			"simulations": "Simulations",
+			"about": "À propos",
+			"toggle": "Basculer la navigation"
+		},
+		"simulations": {
+			"full_raid": "Simulation de raid complet"
+		},
+		"home": {
+			"title": "WoWSims - Mists of Pandaria",
 			"description": "Un puissant outil de simulation pour World of Warcraft: Mists of Pandaria",
-			"welcomeDescription": "Bienvenue sur WoWSims PTR - Mists of Pandaria ! Ce projet communautaire propose des simulations de classes et de raids pour World of Warcraft® Mists of Pandaria Classic, en collaboration avec les meilleurs théoriciens et représentants de classes."
+			"welcomeDescription": "Bienvenue sur WoWSims - Mists of Pandaria ! Ce projet communautaire propose des simulations de classes et de raids pour World of Warcraft® Mists of Pandaria Classic, en collaboration avec les meilleurs théoriciens et représentants de classes."
 		},
 		"header": {
-			"wowsims": "WoWSims PTR",
+			"wowsims": "WoWSims",
 			"expansion": "Mists of Pandaria",
 			"supportDevs": "Soutenir le projet"
 		}
-    },
-    "common": {
-        "none": "Aucun",
-        "custom": "Personnalisé",
-        "name": "Nom",
-        "search": "Rechercher",
-        "filter": "Filtrer",
+	},
+	"common": {
+		"none": "Aucun",
+		"custom": "Personnalisé",
+		"name": "Nom",
+		"search": "Rechercher",
+		"filter": "Filtrer",
+		"elapsed_time": "Temps écoulé",
         "phases": {
             "1": "Phase 1 (5.0 - T14)",
             "2": "Phase 2 (5.1)",
@@ -283,7 +284,7 @@
             "copy_to_reforge_lite": "Copier vers Reforge Lite"
         },
         "reforge_success": {
-            "title": "Les éléments suivants ont été retouchés :",
+            "title": "Les éléments suivants ont été modifiés:",
             "removed_reforge": "retouche supprimé",
             "no_changes": "Aucun changement de retouche n'a été effectué !",
             "copy_to_reforge_lite": "Copier vers Reforge Lite"
@@ -941,1498 +942,1534 @@
                     "label": "Lancer",
                     "tooltip": "Lance le sort si possible, c'est-à-dire si toutes les exigences de ressources/temps de recharge/GCD/etc sont remplies."
                 },
-                "cast_at_player": {
-                    "label": "Lancer sur le joueur",
-                    "tooltip": "Lance un sort amical si possible, c'est-à-dire si toutes les exigences de ressources/temps de recharge/GCD/etc sont remplies."
-                },
-                "multi_dot": {
-                    "label": "Multi-DoT",
-                    "tooltip": "Maintient un DoT actif sur plusieurs cibles en lançant le sort spécifié.",
-                    "max_dots": {
-                        "label": "# DoTs Max",
-                        "tooltip": "Nombre maximum de DoTs à appliquer simultanément."
-                    },
-                    "overlap": {
-                        "label": "Rafraichir à",
-                        "tooltip": "Temps maximum avant l'expiration d'un DoT où il peut être rafraîchi."
-                    }
-                },
-                "strict_multi_dot": {
-                    "label": "Multi-DoT Strict",
-                    "tooltip": "Maintient un DoT actif sur plusieurs cibles en lançant le sort spécifié. Ne rafraîchira pas les DoTs qui ne sont pas sur le point d'expirer.",
-                    "max_dots": {
-                        "label": "# DoTs Max",
-                        "tooltip": "Nombre maximum de DoTs à appliquer simultanément."
-                    },
-                    "overlap": {
-                        "label": "Rafraichir à",
-                        "tooltip": "Temps maximum avant l'expiration d'un DoT où il peut être rafraîchi."
-                    }
-                },
-                "multi_shield": {
-                    "label": "Multi-Bouclier",
-                    "tooltip": "Maintient un bouclier actif sur plusieurs cibles en lançant le sort spécifié.",
-                    "max_shields": {
-                        "label": "# Boucliers Max",
-                        "tooltip": "Nombre maximum de boucliers à appliquer simultanément."
-                    },
-                    "overlap": {
-                        "label": "Rafraichir à",
-                        "tooltip": "Temps maximum avant l'expiration d'un bouclier où il peut être rafraîchi."
-                    }
-                },
-                "channel": {
-                    "label": "Canaliser",
-                    "tooltip": "Canalise le sort si possible.",
-                    "full_description": "<p>La différence entre canaliser un sort et lancer le sort est que les canalisations peuvent être interrompues. Si le paramètre <b>Interrompre si</b> est vide, cette action est équivalente à <b>Lancer</b>.</p><p>La canalisation sera interrompue seulement si toutes les conditions suivantes sont vraies :</p><ul><li>Immédiatement après un tick de la canalisation</li><li>La condition <b>Interrompre si</b> s'évalue à <b>Vrai</b></li><li>Une autre action dans la liste APL est disponible</li></ul><p>Notez que si vous voulez simplement permettre à d'autres actions d'interrompre la canalisation, définissez <b>Interrompre si</b> à <b>Vrai</b>.</p>",
-                    "interrupt_if": {
-                        "label": "Interrompre si",
-                        "tooltip": "Interrompre la canalisation si la condition est vraie."
-                    },
-                    "recast": {
-                        "label": "Relancer",
-                        "tooltip": "Si coché, les interruptions de cette canalisation relanceront le sort."
-                    }
-                },
-                "cast_all_stat_buff_cooldowns": {
-                    "label": "Lancer tous les CDs de Buff de stats",
-                    "tooltip": "Lance tous les cooldowns de buff de stats disponibles.",
-                    "full_description": "<ul><li>Ne lance pas les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li><li>Par défaut, cette action lancera ces cooldowns de manière avide dès qu'ils deviennent disponibles. Cependant, lorsqu'elle est intégrée dans une séquence, l'action ne se déclenchera que lorsque TOUS les cooldowns correspondant au(x) type(s) de buff spécifié(s) sont prêts.</li></ul>"
-                },
-                "autocast_other_cooldowns": {
-                    "label": "Auto-lancer autres CDs",
-                    "tooltip": "Lance automatiquement d'autres cooldowns quand disponibles.",
-                    "full_description": "<ul><li>Ne lance pas automatiquement les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li><li>Les cooldowns sont généralement lancés immédiatement dès qu'ils sont prêts, mais il y a quelques vérifications intelligentes de base en place, par ex. ne pas utiliser les CDs de Mana quand près du mana plein.</li></ul>"
-                },
-                "wait": {
-                    "label": "Attendre",
-                    "tooltip": "Attend pendant la durée spécifiée."
-                },
-                "wait_until": {
-                    "label": "Attendre jusqu'à",
-                    "tooltip": "Attend jusqu'à ce que la condition spécifiée soit vraie."
-                },
-                "scheduled_action": {
-                    "label": "Action programmée",
-                    "tooltip": "Effectue une action à un moment programmé.",
-                    "do_at": {
-                        "label": "Faire à",
-                        "tooltip": "Liste de timings séparés par des virgules. L'action interne sera effectuée une fois à chaque timing."
-                    }
-                },
-                "do_at": {
-                    "label": "Faire à",
-                    "tooltip": "Effectue une action à un moment spécifique."
-                },
-                "sequence": {
-                    "label": "Séquence",
-                    "tooltip": "Une liste de sous-actions à exécuter dans l'ordre spécifié.",
-                    "full_description": "<p>Une fois qu'une des sous-actions a été effectuée, la prochaine sous-action ne sera pas nécessairement exécutée immédiatement après. Le système redémarrera au début de toute la liste d'actions (pas la séquence). Si la séquence est exécutée à nouveau, elle effectuera la prochaine sous-action.</p><p>Quand toutes les actions ont été effectuées, la séquence ne se réinitialise PAS automatiquement ; au lieu de cela, elle sera ignorée à partir de maintenant. Utilisez l'action <b>Réinitialiser séquence</b> pour la réinitialiser, si désiré.</p>"
-                },
-                "reset_sequence": {
-                    "label": "Réinitialiser séquence",
-                    "tooltip": "Redémarre une séquence, de sorte que la prochaine fois qu'elle s'exécute, elle effectuera sa première sous-action.",
-                    "full_description": "<p>Utilisez le champ <b>nom</b> pour faire référence à la séquence à réinitialiser. La séquence désirée doit avoir la même valeur (non vide) pour son <b>nom</b>.</p>"
-                },
-                "strict_sequence": {
-                    "label": "Séquence stricte",
-                    "tooltip": "Comme une séquence régulière, sauf que toutes les sous-actions sont exécutées immédiatement l'une après l'autre et la séquence se réinitialise automatiquement à la fin.",
-                    "full_description": "<p>Les séquences strictes ne commencent pas à moins que TOUTES les sous-actions soient prêtes.</p>"
-                },
-                "change_target": {
-                    "label": "Changer de cible",
-                    "tooltip": "Définit la cible actuelle, qui est la cible des attaques automatiques et de la plupart des lancers par défaut."
-                },
-                "activate_aura": {
-                    "label": "Activer aura",
-                    "tooltip": "Active une aura"
-                },
-                "activate_aura_with_stacks": {
-                    "label": "Activer aura avec stacks",
-                    "tooltip": "Active l'aura spécifiée avec le nombre de stacks donné.",
-                    "stacks": "stacks",
-                    "stacks_tooltip": "Nombre désiré de stacks initiaux."
-                },
-                "activate_all_stat_buff_proc_auras": {
-                    "label": "Activer tous les proc de buff de stats",
-                    "tooltip": "Active toutes les auras de proc d'objet/enchantement qui buffent le(s) type(s) de stat spécifié(s) en utilisant l'ensemble d'objets spécifié."
-                },
-                "cancel_aura": {
-                    "label": "Désactiver aura",
-                    "tooltip": "Désactive une aura, équivalent à /cancelaura."
-                },
-                "trigger_icd": {
-                    "label": "Déclencher ICD",
-                    "tooltip": "Déclenche l'ICD interne spécifié."
-                },
-                "item_swap": {
-                    "label": "Changer d'ensemble",
-                    "tooltip": "Échange les ensemble d'équipement, en utilisant l'ensemble d'échange spécifié dans les Paramètres."
-                },
-                "move": {
-                    "label": "Se déplacer",
-                    "tooltip": "Commence un déplacement vers la portée désirée à la cible.",
-                    "to_range": "à portée",
-                    "to_range_tooltip": "Portée désirée à la cible.",
-                    "move_duration": "Durée du déplacement",
-                    "duration": "Durée",
-                    "duration_tooltip": "Quantité de temps que le personnage devrait se déplacer.",
-                    "move_duration_tooltip": "Le personnage se déplace pendant la durée donnée."
-                },
-                "custom_rotation": {
-                    "label": "Rotation personnalisée",
-                    "tooltip": "INTERNE UNIQUEMENT"
-                },
-                "optimal_rotation_action": {
-                    "label": "Action de rotation optimale",
-                    "tooltip": "Exécute la rotation DPS Féral optimisée en utilisant un algorithme codé en dur.",
-                    "wrath_weave": {
-                        "label": "Activer le Colère-weaving",
-                        "tooltip": "Lancer Colère quand possible pendant la fenêtre DPS du Cœur de fauve. Ignoré si CdF n'est pas talenté."
-                    }
-                },
-                "guardian_hotw_dps_rotation": {
-                    "label": "Rotation DPS CdF",
-                    "tooltip": "Exécute la rotation DPS Cœur de fauve optimisée en utilisant un algorithme codé en dur."
-                },
-                "warlock_next_exhale_target": {
-                    "label": "Choisir la prochaine cible d'Expiration",
-                    "tooltip": "Choisi la prochaine cible valide d'Expiration. Si la cible actuelle n'est pas la cible de l'échange d'âme ou si l'échange d'âme n'a pas été lancé, la cible ne changera pas."
-                }
-            },
-            "values": {
-                "item_label": "Valeur",
-                "no_condition": "Aucune condition",
-                "none": "<Aucun>",
-                "const": {
-                    "label": "Const",
-                    "tooltip": "Une valeur fixe.",
-                    "full_description": "<p>Exemples :<ul><li><b>Nombre :</b> '123', '0.5', '-10'</li><li><b>Temps :</b> '100ms', '5s', '3m'</li><li><b>Pourcentage :</b> '30%'</li></ul></p>"
-                },
-                "compare": {
-                    "label": "Comparer",
-                    "tooltip": "Compare deux valeurs."
-                },
-                "math": {
-                    "label": "Math",
-                    "tooltip": "Effectue des calculs de base sur deux valeurs."
-                },
-                "max": {
-                    "label": "Max",
-                    "tooltip": "Retourne la plus grande valeur parmi les sous-valeurs."
-                },
-                "min": {
-                    "label": "Min",
-                    "tooltip": "Retourne la plus petite valeur parmi les sous-valeurs."
-                },
-                "all_of": {
-                    "label": "Tous",
-                    "tooltip": "Retourne Vrai si toutes les sous-valeurs sont Vraies, sinon Faux"
-                },
-                "any_of": {
-                    "label": "N'importe lequel",
-                    "tooltip": "Retourne Vrai si n'importe laquelle des sous-valeurs est Vraie, sinon Faux"
-                },
-                "not": {
-                    "label": "Non",
-                    "tooltip": "Retourne l'opposé de la valeur d'entrée."
-                },
-                "current_time": {
-                    "label": "Temps actuel",
-                    "tooltip": "Temps actuel dans la rencontre."
-                },
-                "current_time_percent": {
-                    "label": "Temps actuel (%)",
-                    "tooltip": "Temps écoulé de l'itération de simulation actuelle, en pourcentage."
-                },
-                "remaining_time": {
-                    "label": "Temps restant",
-                    "tooltip": "Temps restant dans la rencontre."
-                },
-                "remaining_time_percent": {
-                    "label": "Temps restant (%)",
-                    "tooltip": "Temps écoulé de l'itération de simulation restante, en pourcentage."
-                },
-                "is_execute_phase": {
-                    "label": "Est phase d'éxécution",
-                    "tooltip": "Retourne vrai si la cible est en phase d'exécution."
-                },
-                "num_targets": {
-                    "label": "Nombre de cibles",
-                    "tooltip": "Nombre de cibles dans la rencontre"
-                },
-                "spell_is_casting": {
-                    "label": "Sort en cours de lancement",
-                    "tooltip": "Vrai si le sort est actuellement en cours de lancement"
-                },
-                "spell_time_to_ready": {
-                    "label": "Temps jusqu'à prêt",
-                    "tooltip": "Temps jusqu'à ce que le sort soit prêt"
-                },
-                "in_front_of_target": {
-                    "label": "Devant la cible",
-                    "tooltip": "Vrai si nous sommes devant la cible"
-                },
-                "boss_cast": {
-                    "label": "Boss en train de lancer",
-                    "tooltip": "Vrai si le boss lance le sort spécifié"
-                },
-                "boss_cast_time_to_ready": {
-                    "label": "Temps jusqu'à boss prêt",
-                    "tooltip": "Temps jusqu'à ce que le sort du boss soit prêt"
-                },
-                "boss_current_target": {
-                    "label": "Est en train de tanker",
-                    "tooltip": "Vrai si le joueur est actuellement en train de tanker"
-                },
-                "unit_is_moving": {
-                    "label": "Unité en mouvement",
-                    "tooltip": "Vrai si l'unité se déplace"
-                },
-                "distance_to_unit": {
-                    "label": "Distance à l'unité",
-                    "tooltip": "Distance à l'unité"
-                },
-                "current_health": {
-                    "label": "PV actuel",
-                    "tooltip": "Quantité de santé actuellement disponible."
-                },
-                "current_health_percent": {
-                    "label": "PV actuel (%)",
-                    "tooltip": "Quantité de santé actuellement disponible, en pourcentage."
-                },
-                "max_health": {
-                    "label": "PV Max",
-                    "tooltip": "Quantité de santé maximum actuellement disponible."
-                },
-                "current_mana": {
-                    "label": "Mana actuel",
-                    "tooltip": "Quantité de mana actuellement disponible."
-                },
-                "current_mana_percent": {
-                    "label": "Mana actuel (%)",
-                    "tooltip": "Quantité de mana actuellement disponible, en pourcentage."
-                },
-                "current_rage": {
-                    "label": "Rage actuelle",
-                    "tooltip": "Quantité de rage actuellement disponible."
-                },
-                "max_rage": {
-                    "label": "Rage Max",
-                    "tooltip": "Quantité de rage maximum disponible."
-                },
-                "current_focus": {
-                    "label": "Focus actuel",
-                    "tooltip": "Quantité de focus actuellement disponible."
-                },
-                "max_focus": {
-                    "label": "Focus Max",
-                    "tooltip": "Quantité de focus maximum disponible."
-                },
-                "focus_regen_per_second": {
-                    "label": "Régénération focus par seconde",
-                    "tooltip": "Régénération de focus par seconde."
-                },
-                "estimated_time_to_target_focus": {
-                    "label": "Temps estimé vers focus cible",
-                    "tooltip": "Temps estimé jusqu'à ce que le focus cible soit atteint, retournera 0 si à ou au-dessus de la cible."
-                },
-                "current_energy": {
-                    "label": "Énergie actuelle",
-                    "tooltip": "Quantité d'énergie actuellement disponible."
-                },
-                "max_energy": {
-                    "label": "Énergie Max",
-                    "tooltip": "Quantité d'énergie maximum disponible."
-                },
-                "energy_regen_per_second": {
-                    "label": "Régénération énergie par seconde",
-                    "tooltip": "Régénération d'énergie par seconde."
-                },
-                "estimated_time_to_target_energy": {
-                    "label": "Temps estimé vers énergie cible",
-                    "tooltip": "Temps estimé jusqu'à ce que l'énergie cible soit atteinte, retournera 0 si à ou au-dessus de la cible."
-                },
-                "current_combo_points": {
-                    "label": "Points de combo actuels",
-                    "tooltip": "Quantité de points de combo actuellement disponibles."
-                },
-                "max_combo_points": {
-                    "label": "Points de combo Max",
-                    "tooltip": "Quantité de points de combo maximum disponibles."
-                },
-                "current_chi": {
-                    "label": "Chi actuel",
-                    "tooltip": "Quantité de chi actuellement disponible."
-                },
-                "max_chi": {
-                    "label": "Chi Max",
-                    "tooltip": "Quantité de chi maximum disponible."
-                },
-                "current_runic_power": {
-                    "label": "Puissance runique actuelle",
-                    "tooltip": "Quantité de puissance runique actuellement disponible."
-                },
-                "max_runic_power": {
-                    "label": "Puissance runique Max",
-                    "tooltip": "Quantité de puissance runique maximum disponible."
-                },
-                "solar_energy": {
-                    "label": "Énergie solaire",
-                    "tooltip": "Quantité d'énergie solaire actuellement disponible."
-                },
-                "lunar_energy": {
-                    "label": "Énergie lunaire",
-                    "tooltip": "Quantité d'énergie lunaire actuellement disponible"
-                },
-                "current_eclipse_phase": {
-                    "label": "Phase d'éclipse actuelle",
-                    "tooltip": "La phase d'éclipse dans laquelle le druide se trouve actuellement."
-                },
-                "generic_resource": {
-                    "label": "{GENERIC_RESOURCE}",
-                    "tooltip": "Quantité de {GENERIC_RESOURCE} actuellement disponible."
-                },
-                "num_runes": {
-                    "label": "Nombre de runes",
-                    "tooltip": "Quantité de runes d'un certain type actuellement disponibles incluant les runes de Mort."
-                },
-                "num_non_death_runes": {
-                    "label": "Nombre de runes non-Mort",
-                    "tooltip": "Quantité de runes d'un certain type actuellement disponibles en ignorant les runes de Mort."
-                },
-                "rune_is_ready": {
-                    "label": "Rune est prête",
-                    "tooltip": "La rune d'un certain emplacement est-elle actuellement disponible."
-                },
-                "rune_is_death": {
-                    "label": "Est rune de Mort",
-                    "tooltip": "La rune d'un certain emplacement est-elle actuellement convertie en rune de Mort."
-                },
-                "rune_cooldown": {
-                    "label": "Temps de eecharge de rune",
-                    "tooltip": "Quantité de temps jusqu'à ce qu'une rune d'un certain type soit prête à être utiliser.<br><b>NOTE:</b> Retourne 0 s'il y a une rune disponible"
-                },
-                "next_rune_cooldown": {
-                    "label": "Prochain temps de recharge de rune",
-                    "tooltip": "Quantité de temps jusqu'à ce qu'une 2ème rune d'un certain type soit prête à être utiliser.<br><b>NOTE:</b> Retourne 0 s'il y a 2 runes disponibles"
-                },
-                "rune_slot_cooldown": {
-                    "label": "Temps de recharge d'emplacement de rune",
-                    "tooltip": "Quantité de temps jusqu'à ce qu'une rune d'un certains emplacement soit prête à être utiliser.<br><b>NOTE:</b> Retourne 0 si la rune est prête"
-                },
-                "full_rune_cooldown": {
-                    "label": "Temps de recharge complet des runes",
-                    "tooltip": "Temps qu'il faudrait à une rune pour se recharger si vous l'utilisiez maintenant."
-                },
-                "gcd_is_ready": {
-                    "label": "GCD est prêt",
-                    "tooltip": "<b>Vrai</b> si le GCD n'est pas en temps de recharge, sinon <b>Faux</b>."
-                },
-                "gcd_time_to_ready": {
-                    "label": "Temps jusqu’à GCD prêt",
-                    "tooltip": "Quantité de temps restant avant que le GCD sorte du temps de recharge, ou <b>0</b> s'il n'est pas en temps de recharge."
-                },
-                "time_to_next_auto": {
-                    "label": "Temps jusqu’à prochaine Auto",
-                    "tooltip": "Quantité de temps restant avant la prochaine attaque de mêlée Main gauche ou Main droite, ou <b>0</b> si les attaques automatiques ne sont pas activés."
-                },
-                "spell_known": {
-                    "label": "Sort connu",
-                    "tooltip": "<b>Vrai</b> si le sort est actuellement connu, sinon <b>Faux</b>."
-                },
-                "current_cost": {
-                    "label": "Coût actuel",
-                    "tooltip": "Retourne le coût de ressource actuel du sort"
-                },
-                "can_cast": {
-                    "label": "Peut lancer",
-                    "tooltip": "<b>Vrai</b> si toutes les exigences pour lancer le sort sont actuellement remplies, sinon <b>Faux</b>.",
-                    "full_description": "<p>The <b>Cast Spell</b> action does not need to be conditioned on this, because it applies this check automatically.</p>"
-                },
-                "is_ready": {
-                    "label": "Est prêt",
-                    "tooltip": "<b>Vrai</b> si le sort n'est pas en temps de recharge, sinon <b>Faux</b>."
-                },
-                "time_to_ready": {
-                    "label": "Temps jusqu'à prêt",
-                    "tooltip": "Quantité de temps restant avant que le sort sorte du temps de recharge, ou <b>0</b> s'il n'est pas en temps de recharge."
-                },
-                "cast_time": {
-                    "label": "Temps d'incantation",
-                    "tooltip": "Quantité de temps pour lancer le sort incluant toute hâte et ajustements de temps de lancement de sort."
-                },
-                "travel_time": {
-                    "label": "Temps de trajet",
-                    "tooltip": "Quantité de temps pour que le sort atteigne la cible."
-                },
-                "cpm": {
-                    "label": "CPM",
-                    "tooltip": "Lancers par minute pour le sort jusqu'à présent dans l'itération actuelle."
-                },
-                "is_channeling": {
-                    "label": "Canalise",
-                    "tooltip": "<b>Vrai</b> si ce sort est actuellement canalisé, sinon <b>Faux</b>."
-                },
-                "channeled_ticks": {
-                    "label": "# Ticks canalisés",
-                    "tooltip": "Le nombre de tics complétés dans la canalisation actuelle de ce sort, ou <b>0</b> si le sort n'est pas canalisé."
-                },
-                "number_of_charges": {
-                    "label": "Nombre de charges",
-                    "tooltip": "Le nombre de charges qui sont actuellement disponibles pour le sort."
-                },
-                "time_to_next_charge": {
-                    "label": "Temps jusqu’à prochaine charge",
-                    "tooltip": "Le temps jusqu'à ce que la prochaine charge soit disponible. 0 si le sort a toutes les charges disponibles."
-                },
-                "gcd_hasted_duration": {
-                    "label": "Durée du GCD",
-                    "tooltip": "La durée du GCD si le spell est lancé avec le montant de hâte actuel"
-                },
-                "full_cooldown": {
-                    "label": "Temps de recharge complet",
-                    "tooltip": "La durée complète de recharge du sort"
-                },
-                "channel_clip_delay": {
-                    "label": "Délai d'interruption de sort canalisé",
-                    "tooltip": "La quantité de temps spécifiée par le paramètre <b>Délai d'interruption de sort canalisé</b>."
-                },
-                "input_delay": {
-                    "label": "Temps de réaction",
-                    "tooltip": "La quantité de temps spécifiée par le paramètre <b>Temps de réaction</b>."
-                },
-                "spell_in_flight": {
-                    "label": "Sort en vol",
-                    "tooltip": "<b>Vrai</b> si ce sort est actuellement en cours, sinon <b>Faux</b>."
-                },
-                "aura_known": {
-                    "label": "Aura connue",
-                    "tooltip": "<b>Vrai</b> si l'aura est actuellement connue, sinon <b>Faux</b>."
-                },
-                "aura_active": {
-                    "label": "Aura active",
-                    "tooltip": "<b>Vrai</b> si l'aura est actuellement active ET qu'elle a été active pendant au moins aussi longtemps que le temps de réaction du joueur (configuré dans Paramètres), sinon <b>Faux</b>."
-                },
-                "aura_active_with_reaction_time": {
-                    "label": "[OBSOLETE] Aura active (avec Temps de réaction)",
-                    "tooltip": "Toutes les vérifications d'aura contiennent maintenant la logique de Temps de Réaction, donc ceci n'est plus nécessaire. Utilisez <b>Aura Active</b> à la place."
-                },
-                "aura_inactive": {
-                    "label": "Aura inactive",
-                    "tooltip": "<b>Vrai</b> si l'aura n'est pas actuellement active ET qu'elle a été inactive pendant au moins aussi longtemps que le temps de réaction du joueur (configuré dans Paramètres), sinon <b>Faux</b>."
-                },
-                "aura_inactive_with_reaction_time": {
-                    "label": "[OBSOLETE] Aura inactive (avec Temps de réaction)",
-                    "tooltip": "Toutes les vérifications d'aura contiennent maintenant la logique de Temps de Réaction, donc ceci n'est plus nécessaire. Utilisez <b>Aura Inactive</b> à la place."
-                },
-                "aura_remaining_time": {
-                    "label": "Temps restant d'aura",
-                    "tooltip": "Temps restant avant que cette aura expire, ou 0 si l'aura n'est pas actuellement active."
-                },
-                "aura_num_stacks": {
-                    "label": "Nombre de stacks d'aura",
-                    "tooltip": "Nombre de stacks de l'aura."
-                },
-                "aura_should_refresh": {
-                    "label": "Aura à rafraichir",
-                    "tooltip": "Si cette aura devrait être rafraîchie, par ex. dans le but de maintenir un debuff.",
-                    "full_description": "<p>This condition checks not only the specified aura but also any other auras on the same unit, including auras applied by other raid members, which apply the same debuff category.</p><p>For example, 'Should Refresh Debuff(Sunder Armor)' will return <b>False</b> if the unit has an active Expose Armor aura.</p>"
-                },
-                "all_trinket_stat_procs_active": {
-                    "label": "Tous les buffs procs d'objets actifs",
-                    "tooltip": "<b>Vrai</b> si tous les procs d'objet/enchantement qui buffent le(s) type(s) de stat spécifié(s) sont actuellement actifs, sinon <b>Faux</b>.",
-                    "full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
-                },
-                "any_trinket_stat_procs_active": {
-                    "label": "N'importe quel buff proc d'objet actif",
-                    "tooltip": "<b>Vrai</b> si n'importe quel proc d'objet/enchantement qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>.",
-                    "full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
-                },
-                "any_trinket_stat_procs_available": {
-                    "label": "N'importe quel buff de procédure d'objet disponible",
-                    "tooltip": "<b>Vrai</b> si des objets/enchantements qui améliorent les types de statistiques spécifiés ne sont actuellement pas sur ICD et ne sont pas actifs, sinon <b>Faux</b>."
-                },
-                "trinket_procs_min_remaining_time": {
-                    "label": "Temps restant Min des procs d'objets",
-                    "tooltip": "Durée restante la plus courte sur n'importe quel proc d'objet/enchantement actif qui buffe le(s) type(s) de stat spécifié(s), ou infini si aucun n'est actuellement actif."
-                },
-                "trinket_procs_max_remaining_icd": {
-                    "label": "ICD restant Max des procs d'objets",
-                    "tooltip": "ICD restant le plus long sur n'importe quel proc d'objet/enchantement inactif qui buffe le(s) type(s) de stat spécifié(s), ou 0 si tous sont actuellement actifs."
-                },
-                "num_equipped_stat_proc_trinkets": {
-                    "label": "Nombre d'effets proc de stat équipés",
-                    "tooltip": "Nombre d'effets passifs d'objet/enchantement équipés qui buffent le(s) type(s) de stat spécifié(s) quand ils proc."
-                },
-                "num_stat_buff_cooldowns": {
-                    "label": "Nombre de CDs de buff de stats",
-                    "tooltip": "Nombre de Cooldowns Majeurs enregistrés qui buffent le(s) type(s) de stat spécifié(s) quand ils sont lancés.",
-                    "full_description": "<p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are included in the total count returned by this value.</p>"
-                },
-                "any_stat_buff_cooldowns_active": {
-                    "label": "N'importe quel CD de buff de stat actif",
-                    "tooltip": "<b>Vrai</b> si n'importe quel Cooldown Majeur enregistré qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>.",
-                    "full_description": "<p>For stacking buffs, this condition also checks that the buff has been stacked to its maximum possible strength after the cooldown is activated.</p><p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are checked.</p>"
-                },
-                "any_stat_buff_cooldowns_min_duration": {
-                    "label": "Temps de recharge des bonus de statistiques Temps restant minimum",
-                    "tooltip": "Durée restante la plus courte sur tout temps de recharge majeur enregistré qui améliore le(s) type(s) de statistiques spécifié(s), ou l'infini si aucun n'est actuellement actif."
-                },
-                "dot_is_active": {
-                    "label": "DoT est actif",
-                    "tooltip": "<b>Vrai</b> si le dot spécifié tick actuellement, sinon <b>Faux</b>."
-                },
-                "dot_is_active_on_all_targets": {
-                    "label": "DoT est actif sur toutes les cibles",
-                    "tooltip": "<b>Vrai</b> si le dot spécifié tick actuellement sur toutes les cibles, sinon <b>Faux</b>."
-                },
-                "dot_remaining_time": {
-                    "label": "Temps restant du DoT",
-                    "tooltip": "Temps restant avant que le dernier tick de ce DoT se produise, ou 0 si le DoT ne tick pas actuellement."
-                },
-                "dot_lowest_remaining_time": {
-                    "label": "Temps restant du DoT le plus court",
-                    "tooltip": "Temps restant avant que le dernier tick de ce DoT sur n'importe quelle cible se produise, ou 0 si le DoT ne tique pas actuellement."
-                },
-                "dot_tick_frequency": {
-                    "label": "Fréquence de tick du DoT",
-                    "tooltip": "Le temps entre chaque tick."
-                },
-                "dot_time_to_next_tick": {
-                    "label": "Temps jusqu'au prochain tick du DoT",
-                    "tooltip": "Le temps restant avant que le prochain tick de ce DoT se produise."
-                },
-                "dot_percent_increase": {
-                    "label": "Augmentation de dégâts DoT %",
-                    "tooltip": "À quel point un nouveau DoT serait plus fort comparé à l'ancien."
-                },
-                "sequence_is_complete": {
-                    "label": "Séquence est complète",
-                    "tooltip": "<b>Vrai</b> s'il n'y a plus de sous-actions à exécuter dans la séquence, sinon <b>Faux</b>."
-                },
-                "sequence_is_ready": {
-                    "label": "Séquence est prête",
-                    "tooltip": "<b>Vrai</b> si la prochaine sous-action dans la séquence est prête à être exécutée, sinon <b>Faux</b>."
-                },
-                "sequence_time_to_ready": {
-                    "label": "Temps jusqu'à séquence prête",
-                    "tooltip": "Retourne la quantité de temps restant jusqu'à ce que la prochaine sous-action dans la séquence soit prête."
-                },
-                "totem_remaining_time": {
-                    "label": "Temps restant du totem",
-                    "tooltip": "Retourne la quantité de temps restant jusqu'à ce que le totem expire."
-                },
-                "shaman_fire_elemental_duration": {
-                    "label": "Durée totale de l'Élémentaire de Feu",
-                    "tooltip": "Retourne la durée totale du Totem d'Élémentaire de Feu"
-                },
-                "cat_excess_energy": {
-                    "label": "Énergie excédentaire",
-                    "tooltip": "Retourne la quantité d'énergie excédentaire disponible, après avoir soustrait l'énergie qui sera nécessaire pour maintenir les DoTs."
-                },
-                "cat_new_savage_roar_duration": {
-                    "label": "Nouvelle durée de Rugissement sauvage",
-                    "tooltip": "Retourne la durée du Rugissement sauvage basée sur les points de combo actuels"
-                },
-                "warlock_hand_of_guldan_in_flight": {
-                    "label": "Main de Gul'dan en vol",
-                    "tooltip": "Retourne <b>Vrai</b> si Main de Gul'dan est actuellement en vol."
-                },
-                "warlock_haunt_in_flight": {
-                    "label": "[OBSOLETE]  Hantise en vol",
-                    "tooltip": "Retourne <b>Vrai</b> si Hantise est actuellement en vol."
-                },
-                "affliction_current_snapshot": {
-                    "label": "Instantané brut existant %",
-                    "tooltip": "Influence la puissance de votre snapshot actuel par rapport à la version de référence. Ignore la hâte et les coups critiques. À utiliser uniquement si vous savez ce que vous faites."
-                },
-                "affliction_exhale_window": {
-                    "label": "Fenêtre d'expiration",
-                    "tooltip": "Marge de manœuvre configurée pour l'expiration des DoTs inhalés."
-                },
-                "mage_current_combustion_dot_estimate": {
-                    "label": "Valeur DoT de Combustion",
-                    "tooltip": "Retourne la taille estimée actuelle de votre DoT de Combustion."
-                },
-                "brewmaster_monk_current_stagger_percent": {
-                    "label": "Report actuel (%)",
-                    "tooltip": "Quantité de Report actuel, en pourcentage."
-                },
-                "protection_paladin_damage_taken_last_global": {
-                    "label": "Dégâts reçus dernier global",
-                    "tooltip": "Quantité de dégâts reçus dans les dernières 1.5s."
-                },
-                "aura_remaining_icd": {
-                    "label": "Aura ICD restant",
-                    "tooltip": "Temps restant avant que le temps de recharge interne de cette aura soit prêt, ou 0 si l'ICD est prêt maintenant."
-                },
-                "aura_icd_is_ready": {
-                    "label": "Aura ICD prêt",
-                    "tooltip": "<b>Vrai</b> si l'ICD de l'aura est actuellement prêt OU s'il a été mis en CD récemment, dans le temps de réaction du joueur (configuré dans Paramètres), sinon <b>Faux</b>."
-                },
-                "aura_icd_is_ready_with_reaction_time": {
-                    "label": "[OBSOLETE] Aura ICD prêt (avec Temps de réaction)",
-                    "tooltip": "Toutes les vérifications d'aura contiennent maintenant la logique de Temps de réaction, donc ceci n'est plus nécessaire. Utilisez <b>Aura ICD prêt</b> à la place."
-                },
-                "overlap": {
-                    "label": "Rafraichir à",
-                    "tooltip": "Temps maximum avant l'expiration de l'aura où elle peut être rafraîchie."
-                }
-            },
-            "operators": {
-                "equals": "==",
-                "not_equals": "!=",
-                "greater_than_or_equal": ">=",
-                "greater_than": ">",
-                "less_than_or_equal": "<=",
-                "less_than": "<",
-                "add": "+",
-                "subtract": "-",
-                "multiply": "*",
-                "divide": "/"
-            },
-            "execute_phases": {
-                "e20": "20%",
-                "e25": "25%",
-                "e35": "35%",
-                "e45": "45%",
-                "e90": "90%"
-            },
-            "totem_types": {
-                "earth": "Terre",
-                "air": "Air",
-                "fire": "Feu",
-                "water": "Eau"
-            },
-            "submenus": {
-                "logic": "Logique",
-                "encounter": "Rencontre",
-                "boss": "Boss",
-                "unit": "Unité",
-                "resources": "Ressources",
-                "gcd": "GCD",
-                "auto": "Auto-Attaque",
-                "spell": "Sort",
-                "aura": "Aura",
-                "aura_sets": "Ensembles d'Auras",
-                "dot": "DoT",
-                "sequence": "Séquence",
-                "casting": "Lancement",
-                "timing": "Attente",
-                "sequences": "Séquences",
-                "misc": "Divers",
-                "feral_druid": "Druide Farouche",
-                "guardian_druid": "Druide Gardien",
-                "shaman": "Chaman",
-                "warlock": "Démoniste",
-                "mage": "Mage",
-                "tank": "Tank",
-                "health": "PV",
-                "mana": "Mana",
-                "rage": "Rage",
-                "focus": "Focalisation",
-                "energy": "Énergie",
-                "combo_points": "Points de Combo",
-                "chi": "Chi",
-                "runic_power": "Puissance Runique",
-                "eclipse": "Éclipse",
-                "runes": "Runes",
-                "cooldowns": "CDs",
-                "placeholders": "Espaces Réservés"
-            },
-            "item_swap_sets": {
-                "main": "Principal",
-                "swapped": "Secondaire"
-            },
-            "helpers": {
-                "action_id_sets": {
-                    "auras": "Aura",
-                    "stackable_auras": "Aura",
-                    "icd_auras": "Aura",
-                    "exclusive_effect_auras": "Aura",
-                    "spells": "Sort",
-                    "castable_spells": "Sort",
-                    "channel_spells": "Sort Canalisé",
-                    "dot_spells": "DoT",
-                    "castable_dot_spells": "DoT",
-                    "shield_spells": "Bouclier",
-                    "non_instant_spells": "Sort Non-instantané",
-                    "friendly_spells": "Sort Amical",
-                    "expected_dot_spells": "DoT",
-                    "spells_with_travelTime": "Sort"
-                },
-                "field_configs": {
-                    "type": "Type",
-                    "strategy": "Stratégie",
-                    "buff_type": "Type de Buff",
-                    "min_icd": "ICD Min",
-                    "min_icd_tooltip": "Si non-zéro, filtre tous les procs qui n'ont pas d'ICD ou dont l'ICD est inférieur à la valeur spécifiée (en secondes). Cela peut être utile pour certaines vérifications de snapshot, car les procs avec des ICD faibles sont souvent trop faibles pour snapshot.",
-                    "include_reaction_time": "Inclure le temps de réaction",
-                    "include_reaction_time_tooltip": "Si coché, utilisera le temps de réaction configuré.",
-                    "use_base_value": "Utiliser la valeur de base",
-                    "use_base_value_tooltip": "Si coché, comparera le DoT actuel à la valeur de base (au début de la rencontre) du DoT.",
-                    "variable_assignment_tooltip": "Valeur à assigner à la variable '{{variableName}}'"
-                },
-                "eclipse_types": {
-                    "lunar": "Lunaire",
-                    "solar": "Solaire",
-                    "neutral": "Neutre"
-                },
-                "rune_types": {
-                    "blood": "Sang",
-                    "frost": "Givre",
-                    "unholy": "Impie",
-                    "death": "Mort"
-                },
-                "rune_slots": {
-                    "blood_left": "Sang Gauche",
-                    "blood_right": "Sang Droite",
-                    "frost_left": "Givre Gauche",
-                    "frost_right": "Givre Droite",
-                    "unholy_left": "Impie Gauche",
-                    "unholy_right": "Impie Droite"
-                },
-                "rotation_types": {
-                    "single_target": "Cible unique",
-                    "aoe": "AoE"
-                },
-                "hotw_strategies": {
-                    "caster": "Humanoïde",
-                    "cat": "Chat",
-                    "hybrid": "Hybride"
-                },
-                "unit_labels": {
-                    "self": "Soi-même",
-                    "current_target": "Cible actuelle",
-                    "previous_target": "Cible précédente",
-                    "next_target": "Cible suivante",
-                    "player": "Joueur",
-                    "target": "Cible",
-                    "pet": "Familier"
-                },
-                "placeholder_tooltip": "La Potion de pré-pull si CurrentTime < 0, ou la Potion en combat si le combat a commencé.",
-                "select_variable": "Sélectionner une variable",
-                "select_group": "Sélectionner un groupe",
-                "no_variables_defined": "Aucune variable définie",
-                "no_groups_defined": "Aucun groupe défini",
-                "buttons": {
-                    "enable_action": "Activer l'action",
-                    "disable_action": "Désactiver l'action",
-                    "enable_disable": "Activer/Désactiver"
-                }
-            }
-        },
-        "auto": {
-            "description": "Utilisation automatique d'une rotation sauvegardée basée sur vos paramètres actuels."
-        },
-        "simple": {
-            "title": "Rotation"
-        },
-        "cooldowns": {
-            "title": "CDs",
-            "tooltip": "Spécifiez les timings des CDs, en secondes. Les CDs seront utilisés dès que possible après leurs timings spécifiés. Quand non spécifiés, les CDs seront utilisés quand ils sont prêts et qu'il est raisonnable de le faire.<br><br>Plusieurs timings peuvent être fournis en les séparant par des virgules. Toute utilisation de CD après le dernier timing fourni utilisera la logique par défaut.",
-            "delete_tooltip": "Supprimer le CD",
-            "timings_placeholder": "20, 40, ..."
-        },
-        "saved_rotations": {
-            "title": "Rotations sauvegardées",
-            "label": "Rotation",
-            "name_label": "Nom de la rotation",
-            "save_button": "Sauvegarder la rotation",
-            "delete": {
-                "confirm": "Supprimer la rotation sauvegardée '{{name}}' ?",
-                "tooltip": "Supprimer la rotation sauvegardée"
-            },
-            "alerts": {
-                "choose_name": "Choisissez un nom pour votre rotation sauvegardée !",
-                "name_exists": "Une rotation avec le nom {{name}} existe déjà."
-            }
-        },
-        "options": {
-            "druid": {
-                "feral": {
-                    "target_type": {
-                        "label": "Type de cible",
-                        "single_target": "Cible unique",
-                        "aoe": "AoE"
-                    },
-                    "bear_weave": {
-                        "label": "Activer le bear-weaving",
-                        "tooltip": "Passe en ours quand en attente d'énergie"
-                    },
-                    "snek_weave": {
-                        "label": "Utiliser Serpent Albino",
-                        "tooltip": "Réinitialiser le timer d'auto-attaque à la fin du passage en forme d'ours en utilisant le familier Serpent Albino"
-                    },
-                    "use_ns": {
-                        "label": "Utiliser Rapidité de la nature",
-                        "tooltip": "Utiliser Rapidité de la nature pour combler les trous de Rapidité du prédateur"
-                    },
-                    "manual_params": {
-                        "label": "Paramètres avancés manuels",
-                        "tooltip": "Spécifier manuellement les paramètres avancés, sinon utilisera les préréglages par défaut"
-                    },
-                    "hotw_strategy": {
-                        "label": "Utilisation de Cœur de fauve",
-                        "tooltip": "Comment utiliser Cœur de fauve",
-                        "values": {
-                            "passives_only": "Passifs uniquement",
-                            "enhanced_bear_weaving": "Bear-weaving amélioré",
-                            "wrath_weaving": "Colère-weaving"
-                        }
-                    },
-                    "allow_aoe_berserk": {
-                        "label": "Permettre Berserk AoE",
-                        "tooltip": "Permettre l'utilisation de Berserk dans la rotation AoE"
-                    },
-                    "roar_offset": {
-                        "label": "Décalage de Rugissement sauvage",
-                        "tooltip": "Décalage minimum gagné entre la Déchirure actuelle et le nouveau Rugissement sauvage pour permettre un clip de Rugissement sauvage"
-                    },
-                    "rip_leeway": {
-                        "label": "Marge de Déchirure",
-                        "tooltip": "Écart minimum toléré entre les temps d'expiration de Déchirure actuel et de Rugissement sauvage actuel avant de déclencher les mesures d'urgence"
-                    },
-                    "bite_during_rotation": {
-                        "label": "Morsure féroce pendant la rotation",
-                        "tooltip": "Utiliser Morsure féroce pendant la rotation plutôt que juste pour la maintenance de Déchirure pendant l'éxécution"
-                    },
-                    "bite_time": {
-                        "label": "Temps jusqu’à Morsure",
-                        "tooltip": "Secondes minimum restantes avant que Déchirure ou Rugissement sauvage devrait idéalement être rafraîchi (incluant les clips précoces planifiés) pour permettre une Morsure féroce"
-                    },
-                    "berserk_bite_time": {
-                        "label": "Temps jusqu’à Morsure pendant Berserk",
-                        "tooltip": "Seuil plus agressif quand Berserk est actif"
-                    }
-                }
-            },
-            "guardian": {
-                "maintain_faerie_fire": {
-                    "label": "Maintenir Lucioles",
-                    "tooltip": "Maintenir le debuff Lucioles. Remplace tous les effets de Fracasser externes spécifiés dans les paramètres."
-                },
-                "maintain_demo_roar": {
-                    "label": "Maintenir Rugissement Démo",
-                    "tooltip": "Garder Rugissement Démoralisant actif sur la cible principale. Si un debuff plus fort est actif, ne lancera pas."
-                },
-                "demo_roar_refresh_leeway": {
-                    "label": "Marge de rafraîchissement Rugissement Démo",
-                    "tooltip": "Rafraîchir Rugissement Démoralisant quand la durée restante est inférieure à cette valeur (en secondes). Des valeurs plus grandes fournissent une marge de sécurité contre les échecs, mais au coût d'un DPS plus faible."
-                },
-                "pulverize_refresh_leeway": {
-                    "label": "Marge de rafraîchissement Pulvériser",
-                    "tooltip": "Rafraîchir Pulvériser quand la durée restante est inférieure à cette valeur (en secondes). Notez que l'utilisation de Mutiler, Fouet et Feu Follet à temps de recharge prend la priorité sur cette règle, sauf si Lacérer lui-même est sur le point de tomber."
-                }
-            },
-            "rogue": {
-                "apply_poisons_manually": {
-                    "label": "Configurer les poisons manuellement",
-                    "tooltip": "Empêcher la configuration automatique des poisons qui est basée sur les armes équipées."
-                },
-                "subtlety": {
-                    "honor_of_thieves_crit_rate": {
-                        "label": "Taux de Critique Honneur des voleurs",
-                        "tooltip": "Nombre de critiques que les autres membres du groupe génèrent en 100 secondes"
-                    }
-                }
-            },
-            "shaman": {
-                "elemental": {
-                    "thunderstorm_in_range": {
-                        "label": "Orage à portée",
-                        "tooltip": "Quand défini à vrai, les lancers de Orage causeront des dégâts."
-                    }
-                }
-            },
-            "warlock": {
-                "affliction": {
-                    "exhale_window": {
-                        "label": "Fenêtre d'expiration de l'échange d'âme",
-                        "tooltip": "Combien de temps, en millisecondes, s'écoule avant que les points inhalés n'expirent lors de rencontres à cibles multiples ?"
-                    }
-                }
-            },
-            "hunter": {
-                "beast_mastery": {
-                    "sting": {
-                        "label": "Morsure",
-                        "tooltip": "Maintient la Morsure sélectionnée sur la cible principale",
-                        "values": {
-                            "none": "Aucune",
-                            "serpent_sting": "Morsure de Serpent"
-                        }
-                    },
-                    "trap_weave": {
-                        "label": "Piège-weaving",
-                        "tooltip": "Utilise Piège Explosif aux moments appropriés. Notez que sélectionner ceci désactivera Flèche Noire car ils partagent un CD"
-                    },
-                    "multi_dot_serpent_sting": {
-                        "label": "Multi-DoT Morsure de Serpent",
-                        "tooltip": "Lance Morsure de Serpent sur plusieurs cibles"
-                    }
-                },
-                "marksmanship": {
-                    "sting": {
-                        "label": "Morsure",
-                        "tooltip": "Maintient la Morsure sélectionnée sur la cible principale",
-                        "values": {
-                            "none": "Aucune",
-                            "serpent_sting": "Morsure de Serpent"
-                        }
-                    },
-                    "trap_weave": {
-                        "label": "Piège-weaving",
-                        "tooltip": "Utilise Piège Explosif aux moments appropriés. Notez que sélectionner ceci désactivera Flèche Noire car ils partagent un CD"
-                    },
-                    "multi_dot_serpent_sting": {
-                        "label": "Multi-DoT Morsure de Serpent",
-                        "tooltip": "Lance Morsure de Serpent sur plusieurs cibles"
-                    }
-                },
-                "survival": {
-                    "multi_dot_serpent_sting": {
-                        "label": "Multi-DoT Morsure de Serpent",
-                        "tooltip": "Lance Morsure de Serpent sur plusieurs cibles"
-                    }
-                }
-            }
-        }
-    },
-    "results_tab": {
-        "title": "Résultats",
-        "details": {
-            "no_results": "Lancez une simulation pour voir les résultats",
-            "view_in_separate_tab": "Voir dans un onglet séparé",
-            "sim_1_iteration": "Sim 1 itération",
-            "sim_1_death": "Simuler une mort",
-            "all_targets": "Toutes les cibles",
-            "all_players": "Tous les joueurs",
-            "target_number": "Cible {{number}}",
-            "damage": {
-                "dps_histogram": "Histogramme DPS"
-            },
-            "timeline": {
-                "disclaimer": "Les données sur le graphe visualisent seulement 1 itération de simulation.",
-                "note": "Note : Vous pouvez déplacer le graphe en maintenant la touche Majuscule tout en utilisant la roulette de la souris, ou en cliquant et en faisant glisser.",
-                "chart_types": {
-                    "rotation": "Rotation",
-                    "dps": "DPS",
-                    "threat": "Menace"
-                },
-                "chart_options": {
-                    "time_axis": "Temps (s)",
-                    "waiting_for_data": "En attente de données..."
-                },
-                "tooltips": {
-                    "dps": "DPS",
-                    "dtps": "DTPS",
-                    "amount": "Montant",
-                    "player_damage": "Dégâts du Joueur / Dégâts du Raid",
-                    "player_damage_taken": "Dégâts Subis par le Joueur / Dégâts Subis par le Raid",
-                    "before": "Avant",
-                    "after": "Après",
-                    "threat": "Menace",
-                    "active_auras": "Auras Actives"
-                }
-            },
-            "logs": {
-                "top_button": "Haut",
-                "time_column": "Temps",
-                "event_column": "Événement",
-                "show_debug": "Afficher les messages de débogage"
-            },
-            "tabs": {
-                "damage": "Dégâts",
-                "healing": "Soins",
-                "damage_taken": "Dégâts Subis",
-                "buffs": "Buffs",
-                "debuffs": "Debuffs",
-                "casts": "Sorts",
-                "resources": "Ressources",
-                "timeline": "Chronologie",
-                "log": "Journal"
-            },
-            "columns": {
-                "damage_done": "Dégâts infligés",
-                "casts": "Lancés",
-                "avg_cast": "Lancé Moyen",
-                "hits": "Touchés",
-                "avg_hit": "Touché Moyen",
-                "crit_percent": "Crit %",
-                "miss_percent": "Raté %",
-                "dpet": "DPET",
-                "dps": "DPS",
-                "healing_done": "Soins prodigués",
-                "cpm": "CPM",
-                "cast_time": "Temps d'incantaton",
-                "hpm": "SPS",
-                "hpet": "SPET",
-                "amount": "Montant",
-                "dtps": "DTPS",
-                "avg_heal": "Soin Moyen",
-                "hps": "SPS",
-                "damage_taken": "Dégâts Subis",
-                "overhealing": "Excédent de soins",
-                "name": "Nom",
-                "duration": "Durée",
-                "uptime": "Temps d'activité",
-                "procs": "Procs",
-                "ppm": "PPM",
-                "casts_per_minute": "Lancé/min",
-                "mana_gain": "Gain de Mana",
-                "mana_cost": "Coût en Mana",
-                "rage_gain": "Gain de Rage",
-                "rage_cost": "Coût en Rage",
-                "energy_gain": "Gain d'Énergie",
-                "energy_cost": "Coût en Énergie",
-                "focus_gain": "Gain de Focalisation",
-                "focus_cost": "Coût en Focalisation",
-                "runic_power_gain": "Gain de Puissance Runique",
-                "runic_power_cost": "Coût en Puissance Runique",
-                "chi_gain": "Gain de Chi",
-                "chi_cost": "Coût en Chi",
-                "holy_power_gain": "Gain de Puissance Sacrée",
-                "holy_power_cost": "Coût en Puissance Sacrée",
-                "shadow_orbs_gain": "Gain d'Orbes d'Ombre",
-                "shadow_orbs_cost": "Coût en Orbes d'Ombre",
-                "combo_points_gain": "Gain de Points de Combo",
-                "combo_points_cost": "Coût en Points de Combo",
-                "maelstrom_gain": "Gain de Maelström",
-                "maelstrom_cost": "Coût en Maelström",
-                "demonic_fury_gain": "Gain de Fureur Démoniaque",
-                "demonic_fury_cost": "Coût en Fureur Démoniaque",
-                "burning_embers_gain": "Gain de Braises Ardentes",
-                "burning_embers_cost": "Coût en Braises Ardentes",
-                "gain": "Gain",
-                "gain_per_second": "Gain / s",
-                "avg_gain": "Gain Moyen",
-                "wasted_gain": "Gain Perdu"
-            },
-            "tooltips": {
-                "damage_avg_cast": "Dégâts moyens par lancé",
-                "player_damage": "Dégâts du Joueur / Dégâts du Raid",
-                "player_damage_taken": "Dégâts subis par le Joueur / Dégâts subis par le Raid",
-                "damage_taken_per_encounter": "Dégâts subis / Durée de l'affrontement",
-                "healing_per_encounter": "Soins / Durée de l'affrontement",
-                "threat_per_encounter": "Menace / Durée de l'affrontement",
-                "damage_taken": "Dégâts subis",
-                "damage_per_encounter": "Dégâts / Durée de l'affrontement",
-                "damage_avg_cast_tooltip": "Dégâts / Lancés et/ou Dégâts / Ticks",
-                "healing_avg_cast_tooltip": "Soins / Lancés",
-                "healing_avg_hit_tooltip": "Soins / Touchés et/ou Soins / (Ticks + Ticks Critiques)",
-                "healing_hits_tooltip": "Soins / (Touchés + Crits + Éraflement + Bloqués) et/ou Soins / Ticks + Ticks Critiques",
-                "hit_miss_percent_tooltip": "Ratés / (Coups + Crits + Éraflement + Bloqués)"
-            },
-            "attack_types": {
-                "hit": "Touché",
-                "critical_hit": "Coup Critique",
-                "tick": "Tick",
-                "critical_tick": "Tick Critique",
-                "glancing_blow": "Éraflement",
-                "blocked_glancing_blow": "Éraflement Bloqué",
-                "blocked_hit": "Touché Bloqué",
-                "blocked_critical_hit": "Coup Critique Bloqué",
-                "miss": "Raté",
-                "parry": "Parade",
-                "dodge": "Esquive",
-                "threat": "Menace"
-            },
-            "tooltip_table": {
-                "type": "Type",
-                "count": "Compte",
-                "average": "Moyenne",
-                "amount": "Montant"
-            }
-        }
-    },
-    "import": {
-        "title": "Importer",
-        "json": {
-            "title": "Import JSON",
-            "description": "Importer les paramètres depuis un fichier JSON, qui peut être créé en utilisant la fonctionnalité d'export JSON.",
-            "instructions": "Pour importer, téléchargez le fichier ou collez le texte ci-dessous, puis cliquez sur 'Importer'.",
-            "upload_button": "Télécharger le fichier",
-            "import_button": "Importer",
-            "error_invalid_json": "Veuillez utiliser un objet JSON valide."
-        },
-        "wowhead": {
-            "title": "Import Wowhead",
-            "description": "Importer les paramètres depuis",
-            "gear_planner_link": "le Planificateur d'Équipement Wowhead",
-            "feature_description": "Cette fonctionnalité importe l'équipement, la race et (optionnellement) les talents. Elle n'importe PAS les buffs, debuffs, consommables, rotation ou stats personnalisées.",
-            "instructions": "Pour importer, collez le lien du planificateur d'équipement ci-dessous et cliquez sur 'Importer'.",
-            "upload_button": "Télécharger le fichier",
-            "import_button": "Importer",
-            "tinker_warning": {
-                "title": "Problèmes de bricolage",
-                "message": "Il y a des problèmes connus lors de l'importation des bricolages depuis Wowhead. Assurez-vous toujours de vérifier vos bricolages après l'importation."
-            },
-            "error_invalid_url": "URL WCL invalide {{url}}, doit ressembler à \"https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX\"",
-            "error_cannot_parse_class": "Impossible de parser la classe : {{classId}}",
-            "error_cannot_parse_race": "Impossible de parser la race : {{raceId}}"
-        },
-        "addon": {
-            "title": "Import Addon",
-            "description": "Importer les paramètres depuis l'",
-            "addon_link": "Addon WoWSims Exporter In-Game",
-            "feature_description": "Cette fonctionnalité importe l'équipement, la race, les talents, les glyphes et les professions. Elle n'importe PAS les buffs, debuffs, consommables, rotation ou stats personnalisées.",
-            "instructions": "Pour importer, collez la sortie de l'addon ci-dessous et cliquez sur 'Importer'.",
-            "upload_button": "Télécharger le fichier",
-            "import_button": "Importer",
-            "reforge_warning": {
-                "title": "Problèmes de retouche",
-                "message": "Il y a des problèmes connus avec la retouche lors de l'utilisation de l'addon WSE. Assurez-vous toujours de vérifier vos retouches après l'importation."
-            }
-        }
-    },
-    "export": {
-        "title": "Exporter",
-        "link": {
-            "title": "Export de Lien",
-            "description": "Exporter les paramètres sous forme de lien partageable.",
-            "instructions": "Copiez le lien ci-dessous pour partager vos paramètres avec d'autres.",
-            "copy_button": "Copier",
-            "copy_tooltip": "Copier dans le presse-papiers"
-        },
-        "json": {
-            "title": "Export JSON",
-            "description": "Exporter les paramètres sous forme de fichier JSON.",
-            "instructions": "Téléchargez le fichier JSON ou copiez le contenu ci-dessous.",
-            "copy_button": "Copier",
-            "copy_tooltip": "Copier dans le presse-papiers",
-            "download_button": "Télécharger"
-        },
-        "wowhead": {
-            "title": "Export WoWHead",
-            "description": "Exporter les paramètres vers le Planificateur d'Équipement WoWHead.",
-            "instructions": "Copiez le lien ci-dessous pour ouvrir votre configuration d'équipement dans WoWHead.",
-            "copy_button": "Copier",
-            "copy_tooltip": "Copier dans le presse-papiers"
-        },
-        "pawn_ep": {
-            "title": "Export PE Pawn",
-            "description": "Exporter les poids PE pour l'addon Pawn.",
-            "instructions": "Copiez la chaîne Pawn ci-dessous et importez-la dans votre addon Pawn.",
-            "copy_button": "Copier",
-            "copy_tooltip": "Copier dans le presse-papiers"
-        },
-        "cli": {
-            "title": "Export CLI",
-            "description": "Exporter les paramètres pour la simulation en ligne de commande.",
-            "instructions": "Copiez la commande ci-dessous pour exécuter des simulations depuis la ligne de commande.",
-            "copy_button": "Copier",
-            "copy_tooltip": "Copier dans le presse-papiers"
-        },
-        "categories": {
-            "gear": {
-                "label": "Équipement",
-                "tooltip": "Inclut également les stats bonus et les changements d'armes."
-            },
-            "talents": {
-                "label": "Talents",
-                "tooltip": "Talents et Glyphes."
-            },
-            "rotation": {
-                "label": "Rotation",
-                "tooltip": "Inclut tout ce qui se trouve dans l'onglet Rotation."
-            },
-            "consumes": {
-                "label": "Consommables",
-                "tooltip": "Flacons, potions, nourriture, etc."
-            },
-            "external": {
-                "label": "Buffs & Debuffs",
-                "tooltip": "Tous les paramètres qui sont appliqués par d'autres membres du raid."
-            },
-            "miscellaneous": {
-                "label": "Divers",
-                "tooltip": "Paramètres spécifiques à la spécialisation, devant/derrière la cible, distance de la cible, etc."
-            },
-            "encounter": {
-                "label": "Rencontre",
-                "tooltip": "Paramètres liés au combat."
-            }
-        }
-    },
-    "info": {
-        "known_issues": "Problèmes Connus",
-        "bug_report": "Signaler un bug ou Demander une fonctionnalité",
-        "sim_options": "Options de simulation",
-        "discord": "Rejoignez-nous sur Discord",
-        "patreon": "Soutenez-nous sur Patreon",
-        "github": "Contribuer sur GitHub",
-        "status": {
-            "unlaunched": "Cette simulation est EN COURS DE DÉVELOPPEMENT. Elle n'est pas entièrement développée et ne devrait pas être utilisée à des fins générales.",
-            "alpha": "Cette simulation est en ALPHA. Des bugs sont attendus ; merci de nous informer si vous en trouvez un !",
-            "beta": "Cette simulation est en BÊTA. Il peut encore y avoir quelques bugs ; merci de nous informer si vous en trouvez un !"
-        },
-        "options": {
-            "title": "Options",
-            "fixed_rng_seed": {
-                "label": "Graine RNG fixe",
-                "tooltip": "Valeur de la graine pour le générateur de nombres aléatoires utilisé pendant les simulations, ou 0 pour utiliser une aléatoire différente à chaque exécution. Utilisez ceci pour partager des résultats de simulation exacts ou pour le débogage.",
-                "last_used": "Dernière graine RNG utilisée :"
-            },
-            "language": {
-                "label": "Langue",
-                "tooltip": "Contrôle la langue pour les infobulles Wowhead."
-            },
-            "feature_toggles": {
-                "show_threat_metrics": "Afficher les options de Menace/Tank",
-                "show_experimental": "Afficher les fonctionnalités expérimentales",
-                "show_quick_swap": "Afficher l'interface de changement rapide"
-            },
-            "use_multiple_cpu_cores": {
-                "label": "Utiliser Plusieurs Cœurs CPU"
-            },
-            "restore_defaults": {
-                "button": "Restaurer les paramètres par défaut",
-                "tooltip": "Restaure tous les paramètres par défaut (équipement, consommables, buffs, talents, poids PE, etc). Les paramètres sauvegardés sont préservés.",
-                "success_message": "Paramètres par défaut restaurés."
-            }
-        }
-    },
-    "sidebar": {
-        "iterations": "Itérations",
-        "warnings": {
-            "meta_gem_disabled": "Gemme méta désactivée ({{gemName}}) : {{description}}",
-            "profession_requirement": "{{itemName}} nécessite {{professionName}}, mais elle n'est pas sélectionnée.",
-            "too_many_jc_gems": "Seulement 2 gemmes de joaillerie sont autorisées, mais {{count}} sont équipées.",
-            "unspent_talent_points": "Points de talent manquants dans les rangées {{rowNumbers}}.",
-            "armor_specialization": "Équipez de l'équipement {{armorType}} dans chaque emplacement pour l'effet de spécialisation d'armure (5% de statistique primaire).",
-            "dual_wield_2h_without_titans_grip": "Manier deux armes à deux mains sans la spécialisation Poigne du titan.",
-            "shaman_fele_autocast": "La configuration des sorts de l'Élémentaire de feu n'est pas optimale avec l'utilisation du talent Élémentaliste primordial (Tous activés sauf Ardeur). Ignorez ce message si vous savez ce que vous faites."
-        },
-        "buttons": {
-            "simulate": "Simuler",
-            "stat_weights": {
-                "title": "Poids des Statistiques",
-                "modal": {
-                    "title": "Calculer les Poids des Statistiques",
-                    "ep": "PE",
-                    "weights": "Poids",
-                    "show_all_stats": "Afficher toutes les Statistiques",
-                    "dps_tps_reference": "Référence DPS/TPS :",
-                    "healing_reference": "Référence de soins :",
-                    "mitigation_reference": "Référence d'atténuation :",
-                    "reference_description": "Les sélecteurs de statistiques ci-dessus contrôlent quelle statistique de référence est utilisée pour la normalisation PE des différentes colonnes PE.",
-                    "current_ep_description": "La colonne 'PE Actuel' affiche les valeurs actuellement utilisées par les sélecteurs d'objets pour trier les objets.",
-                    "copy_icon_description": "Utilisez l'icône de copie au-dessus des PE pour utiliser les PE nouvellement calculés.",
-                    "stat": "Statistique",
-                    "update": "Mettre à jour",
-                    "ep_ratio": "Ratio PE",
-                    "update_ep": "Mettre à jour PE",
-                    "calculate": "Calculer",
-                    "compute_weighted_ep": "Calculer PE Pondéré",
-                    "dps_weight": {
-                        "label": "Poids DPS",
-                        "tooltip": "Augmentation par point de DPS (Dégâts Par Seconde) pour chaque statistique."
-                    },
-                    "dps_ep": {
-                        "label": "PE DPS",
-                        "tooltip": "PE (Points d'Équivalence) pour DPS (Dégâts Par Seconde) pour chaque statistique."
-                    },
-                    "hps_weight": {
-                        "label": "Poids SPS",
-                        "tooltip": "Augmentation par point de SPS (Soins Par Seconde) pour chaque statistique."
-                    },
-                    "hps_ep": {
-                        "label": "PE SPS",
-                        "tooltip": "PE (Points d'Équivalence) pour SPS (Soins Par Seconde) pour chaque statistique."
-                    },
-                    "tps_weight": {
-                        "label": "Poids TPS",
-                        "tooltip": "Augmentation par point de TPS (Menace Par Seconde) pour chaque statistique."
-                    },
-                    "tps_ep": {
-                        "label": "PE TPS",
-                        "tooltip": "PE (Points d'Équivalence) pour TPS (Menace Par Seconde) pour chaque statistique."
-                    },
-                    "dtps_weight": {
-                        "label": "Poids DTPS",
-                        "tooltip": "Augmentation par point de DTPS (Dégâts Subis Par Seconde) pour chaque statistique."
-                    },
-                    "dtps_ep": {
-                        "label": "PE DTPS",
-                        "tooltip": "PE (Points d'Équivalence) pour DTPS (Dégâts Subis Par Seconde) pour chaque statistique."
-                    },
-                    "tmi_weight": {
-                        "label": "Poids TMI",
-                        "tooltip": "Diminution par point de TMI (Indice Theck-Meloree) pour chaque statistique."
-                    },
-                    "tmi_ep": {
-                        "label": "PE TMI",
-                        "tooltip": "PE (Points d'Équivalence) pour TMI (Indice Theck-Meloree) pour chaque statistique."
-                    },
-                    "death_weight": {
-                        "label": "Poids Mort",
-                        "tooltip": "Diminution par point de p(mort) pour chaque statistique."
-                    },
-                    "death_ep": {
-                        "label": "PE Mort",
-                        "tooltip": "PE (Points d'Équivalence) pour p(mort) pour chaque statistique."
-                    },
-                    "current_ep": {
-                        "label": "PE Actuel",
-                        "tooltip": "Poids PE actuels. Utilisés pour trier les menus de sélection d'équipement."
-                    },
-                    "not_applicable": "N/A",
-                    "column_headers": {
-                        "stat": "Statistique",
-                        "update": "Mettre à jour",
-                        "ep_ratio": "Ratio PE",
-                        "update_ep_button": "Mettre à jour PE"
-                    },
-                    "tooltips": {
-                        "normalized_by": "Normalisé par {{refStatName}}.",
-                        "copy_to_current_ep": "Copier vers PE actuel",
-                        "restore_default_ep": "Restaurer PE par défaut",
-                        "compute_weighted_ep": "Calculer PE pondéré"
-                    },
-                    "progress": {
-                        "simulations_complete": "simulations terminées",
-                        "iterations_complete": "itérations terminées"
-                    }
-                },
-                "saved_ep_weights": {
-                    "title": "Poids PE sauvegardés"
-                }
-            },
-            "suggest_reforges": {
-                "title": "Suggérer des retouches",
-                "tooltip": "Modifier les paramètres de l'Optimiseur de retouche",
-                "use_soft_cap_breakpoints": "Utiliser les breakpoints de softcap",
-                "force_stat_proc": "Forcer le proc RoRo",
-                "any": "N'importe lequel",
-                "optimize_gems_tooltip": "Optimiser les gemmes et les retouches simultanément.",
-                "freeze_item_slots_tooltip": "Marquer un ou plusieurs emplacements d'objets comme \"gelés\", ce qui empêchera l'optimiseur de modifier la retouche ou les gemmes dans cet emplacement de leurs paramètres actuels. Cela peut être utile pour les classes hybrides qui utilisent la même pièce d'équipement pour plusieurs rôles de raid.",
-                "edit_stat_caps": "Modifier les caps de statistiques",
-                "stat_caps_tooltip": "Les caps de statistiques sont la quantité maximale d'une statistique qui peut être obtenue par la retouche. Si une statistique dépasse son cap, l'optimiseur tentera de la réduire à la valeur du cap.",
-                "reset_to_defaults": "Réinitialiser aux caps par défaut",
-                "stat": "Statistique",
-                "select_preset": "Sélectionner un préréglage",
-                "breakpoint_limit": "Limite de breakpoint",
-                "breakpoint_limit_tooltip": "Permet de définir une limite de breakpoint personnalisée.",
-                "no_limit_set": "Aucune limite définie",
-                "breakpoints_implemented": "Les breakpoints suivants ont été implémentés pour cette spé :",
-                "post_cap_ep": "PE post-cap",
-                "reforge_optimization_failed": "L'optimisation de la retouche a échoué. Veuillez réessayer ou signaler le problème s'il persiste.",
-                "use_custom": "Utiliser des poids PE personnalisés",
-                "enable_modification": "Ceci permettra la modification des poids PE par défaut et la définition de caps de statistiques personnalisés.",
-                "modify_in_editor": "Les poids PE peuvent être modifiés dans l'éditeur de Poids des Statistiques.",
-                "hard_cap_info": "Si vous voulez caper une statistique, assurez-vous de définir le PE de cette statistique plus haut.",
-                "edit_weights": "Modifier les poids",
-                "include_gems": "Inclure les gemmes",
-                "freeze_item_slots": "Verrouiller certains emplacements",
-                "include_eotbp_socket": "Inclure le socket EotBP",
-                "include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation.",
-                "limit_execution_time": "Limiter le temps d'exécution",
-                "limit_execution_time_tooltip": "Si coché, le solveur se terminera en erreur si le temps de calcul total dépasse 30 secondes. Si décoché, le temps de calcul total sera plafonné à 1 heure."
-            }
-        },
-        "header": {
-            "title": "WoWSims - Mists of Pandaria",
-            "phase": "{{phase}} - {{status}}"
-        },
-        "results": {
-            "progress": {
-                "presim_running": "pré-simulations en cours",
-                "iterations_complete": "itérations terminées"
-            },
-            "reference": {
-                "save_as_reference": "Sauvegarder comme référence",
-                "use_as_reference": "Utiliser comme référence",
-                "swap": "Échanger",
-                "swap_reference_with_current": "Échanger la référence avec l'actuel",
-                "cancel": "Annuler",
-                "remove_reference": "Supprimer la référence",
-                "vs_ref": "vs réf"
-            },
-            "metrics": {
-                "dps": {
-                    "label": "DPS",
-                    "tooltip": "Dégâts par seconde"
-                },
-                "hps": {
-                    "label": "SPS",
-                    "tooltip": "Soins+Boucliers Par Seconde, incluant l'excédent de soin."
-                },
-                "tps": {
-                    "label": "TPS",
-                    "tooltip": "Menace Par Seconde"
-                },
-                "dtps": {
-                    "label": "DTPS",
-                    "tooltip": "Dégâts Subis Par Seconde"
-                },
-                "tmi": {
-                    "label": "TMI",
-                    "tooltip": {
-                        "title": "Indice Theck-Meloree (TMI)",
-                        "description": "Une mesure de la régularité des dégâts entrants qui combine les avantages de l'esquive avec la vie effective.",
-                        "note": "Le plus bas, le meilleur. Ceci représente le % de vos PV à attendre dans une fenêtre de burst de 6 secondes basée sur les paramètres de rencontre."
-                    }
-                },
-                "cod": {
-                    "label": "Chance de Mort",
-                    "tooltip": {
-                        "title": "Chance de Mort",
-                        "description": "Le pourcentage d'itérations dans lesquelles le joueur est mort, basé sur les dégâts entrants des ennemis et les soins entrants (voir les options SPS Entrants et Cadence de Soins).",
-                        "note": "DTPS seul n'est pas une bonne mesure de la résistance car il n'est pas affecté par la santé et ignore les pics de dégâts. La Chance de Mort tente de capturer la résistance globale."
-                    }
-                },
-                "dur": {
-                    "label": "DUR",
-                    "tooltip": "Durée Moyenne de Combat"
-                },
-                "tto": {
-                    "label": "TTO",
-                    "tooltip": "Temps Vers OOM"
-                },
-                "oom": {
-                    "label": "OOM",
-                    "tooltip": "Temps passé Hors de Mana"
-                }
-            }
-        },
-        "character_stats": {
-            "title": "Statistiques",
-            "melee_crit_cap": "Cap de critique CaC",
-            "tooltip": {
-                "base": "Base :",
-                "gear": "Équipement :",
-                "talents": "Talents :",
-                "buffs": "Buffs :",
-                "consumes": "Consommables :",
-                "bonus": "Bonus :",
-                "total": "Total :",
-                "glancing": "Éraflement :",
-                "suppression": "Suppression :",
-                "to_hit_cap": "Jusqu'au cap de toucher :",
-                "to_exp_cap": "Jusqu'au cap d'expertise :",
-                "spec_offsets": "Compensations de spé :",
-                "final_crit_cap": "Cap de critique final :",
-                "can_raise_by": "Peut être augmenter de :"
-            },
-            "attack_table": {
-                "glancing": "Éraflement :",
-                "suppression": "Suppression :",
-                "to_hit_cap": "Jusqu'au cap de toucher :",
-                "to_exp_cap": "Jusqu'au cap d'expertise :",
-                "spec_offsets": "Compensations de spé :",
-                "final_crit_cap": "Cap de critique final :",
-                "can_raise_by": "Peut être augmenter de :"
-            },
-            "crit_cap": {
-                "exact": "Exact",
-                "over_by": "Au-dessus de",
-                "under_by": "En-dessous de"
-            },
-            "bonus_prefix": "Bonus",
-            "points_suffix": "Points",
-            "percent_suffix": "%"
-        }
-    }
+				"cancel_cast": {
+					"label": "Annuler le lancement",
+					"tooltip": "Annule le lancement du sort en cours. (Cela n'est évalué que pendant le lancement dur et nécessite que \"ReactToEvent\" soit ajouté au déclencheur dans le cœur du Sim."
+				},
+				"cast_at_player": {
+					"label": "Lancer sur le joueur",
+					"tooltip": "Lance un sort amical si possible, c'est-à-dire si toutes les exigences de ressources/temps de recharge/GCD/etc sont remplies."
+				},
+				"multi_dot": {
+					"label": "Multi-DoT",
+					"tooltip": "Maintient un DoT actif sur plusieurs cibles en lançant le sort spécifié.",
+					"max_dots": {
+						"label": "# DoTs Max",
+						"tooltip": "Nombre maximum de DoTs à appliquer simultanément."
+					},
+					"overlap": {
+						"label": "Rafraichir à",
+						"tooltip": "Temps maximum avant l'expiration d'un DoT où il peut être rafraîchi."
+					}
+				},
+				"strict_multi_dot": {
+					"label": "Multi-DoT Strict",
+					"tooltip": "Maintient un DoT actif sur plusieurs cibles en lançant le sort spécifié. Ne rafraîchira pas les DoTs qui ne sont pas sur le point d'expirer.",
+					"max_dots": {
+						"label": "# DoTs Max",
+						"tooltip": "Nombre maximum de DoTs à appliquer simultanément."
+					},
+					"overlap": {
+						"label": "Rafraichir à",
+						"tooltip": "Temps maximum avant l'expiration d'un DoT où il peut être rafraîchi."
+					}
+				},
+				"multi_shield": {
+					"label": "Multi-Bouclier",
+					"tooltip": "Maintient un bouclier actif sur plusieurs cibles en lançant le sort spécifié.",
+					"max_shields": {
+						"label": "# Boucliers Max",
+						"tooltip": "Nombre maximum de boucliers à appliquer simultanément."
+					},
+					"overlap": {
+						"label": "Rafraichir à",
+						"tooltip": "Temps maximum avant l'expiration d'un bouclier où il peut être rafraîchi."
+					}
+				},
+				"channel": {
+					"label": "Canaliser",
+					"tooltip": "Canalise le sort si possible.",
+					"full_description": "<p>La différence entre canaliser un sort et lancer le sort est que les canalisations peuvent être interrompues. Si le paramètre <b>Interrompre si</b> est vide, cette action est équivalente à <b>Lancer</b>.</p><p>La canalisation sera interrompue seulement si toutes les conditions suivantes sont vraies :</p><ul><li>Immédiatement après un tick de la canalisation</li><li>La condition <b>Interrompre si</b> s'évalue à <b>Vrai</b></li><li>Une autre action dans la liste APL est disponible</li></ul><p>Notez que si vous voulez simplement permettre à d'autres actions d'interrompre la canalisation, définissez <b>Interrompre si</b> à <b>Vrai</b>.</p>",
+					"interrupt_if": {
+						"label": "Interrompre si",
+						"tooltip": "Interrompre la canalisation si la condition est vraie."
+					},
+					"recast": {
+						"label": "Relancer",
+						"tooltip": "Si coché, les interruptions de cette canalisation relanceront le sort."
+					}
+				},
+				"cast_all_stat_buff_cooldowns": {
+					"label": "Lancer tous les CDs de Buff de stats",
+					"tooltip": "Lance tous les cooldowns de buff de stats disponibles.",
+					"full_description": "<ul><li>Ne lance pas les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li><li>Par défaut, cette action lancera ces cooldowns de manière avide dès qu'ils deviennent disponibles. Cependant, lorsqu'elle est intégrée dans une séquence, l'action ne se déclenchera que lorsque TOUS les cooldowns correspondant au(x) type(s) de buff spécifié(s) sont prêts.</li></ul>"
+				},
+				"autocast_other_cooldowns": {
+					"label": "Auto-lancer autres CDs",
+					"tooltip": "Lance automatiquement d'autres cooldowns quand disponibles.",
+					"full_description": "<ul><li>Ne lance pas automatiquement les cooldowns qui sont déjà contrôlés par d'autres actions dans la liste de priorité.</li><li>Les cooldowns sont généralement lancés immédiatement dès qu'ils sont prêts, mais il y a quelques vérifications intelligentes de base en place, par ex. ne pas utiliser les CDs de Mana quand près du mana plein.</li></ul>"
+				},
+				"wait": {
+					"label": "Attendre",
+					"tooltip": "Attend pendant la durée spécifiée."
+				},
+				"wait_until": {
+					"label": "Attendre jusqu'à",
+					"tooltip": "Attend jusqu'à ce que la condition spécifiée soit vraie."
+				},
+				"scheduled_action": {
+					"label": "Action programmée",
+					"tooltip": "Effectue une action à un moment programmé.",
+					"do_at": {
+						"label": "Faire à",
+						"tooltip": "Liste de timings séparés par des virgules. L'action interne sera effectuée une fois à chaque timing."
+					}
+				},
+				"do_at": {
+					"label": "Faire à",
+					"tooltip": "Effectue une action à un moment spécifique."
+				},
+				"sequence": {
+					"label": "Séquence",
+					"tooltip": "Une liste de sous-actions à exécuter dans l'ordre spécifié.",
+					"full_description": "<p>Une fois qu'une des sous-actions a été effectuée, la prochaine sous-action ne sera pas nécessairement exécutée immédiatement après. Le système redémarrera au début de toute la liste d'actions (pas la séquence). Si la séquence est exécutée à nouveau, elle effectuera la prochaine sous-action.</p><p>Quand toutes les actions ont été effectuées, la séquence ne se réinitialise PAS automatiquement ; au lieu de cela, elle sera ignorée à partir de maintenant. Utilisez l'action <b>Réinitialiser séquence</b> pour la réinitialiser, si désiré.</p>"
+				},
+				"reset_sequence": {
+					"label": "Réinitialiser séquence",
+					"tooltip": "Redémarre une séquence, de sorte que la prochaine fois qu'elle s'exécute, elle effectuera sa première sous-action.",
+					"full_description": "<p>Utilisez le champ <b>nom</b> pour faire référence à la séquence à réinitialiser. La séquence désirée doit avoir la même valeur (non vide) pour son <b>nom</b>.</p>"
+				},
+				"strict_sequence": {
+					"label": "Séquence stricte",
+					"tooltip": "Comme une séquence régulière, sauf que toutes les sous-actions sont exécutées immédiatement l'une après l'autre et la séquence se réinitialise automatiquement à la fin.",
+					"full_description": "<p>Les séquences strictes ne commencent pas à moins que TOUTES les sous-actions soient prêtes.</p>"
+				},
+				"change_target": {
+					"label": "Changer de cible",
+					"tooltip": "Définit la cible actuelle, qui est la cible des attaques automatiques et de la plupart des lancers par défaut."
+				},
+				"activate_aura": {
+					"label": "Activer aura",
+					"tooltip": "Active une aura"
+				},
+				"activate_aura_with_stacks": {
+					"label": "Activer aura avec stacks",
+					"tooltip": "Active l'aura spécifiée avec le nombre de stacks donné.",
+					"stacks": "stacks",
+					"stacks_tooltip": "Nombre désiré de stacks initiaux."
+				},
+				"activate_all_stat_buff_proc_auras": {
+					"label": "Activer tous les proc de buff de stats",
+					"tooltip": "Active toutes les auras de proc d'objet/enchantement qui buffent le(s) type(s) de stat spécifié(s) en utilisant l'ensemble d'objets spécifié."
+				},
+				"cancel_aura": {
+					"label": "Désactiver aura",
+					"tooltip": "Désactive une aura, équivalent à /cancelaura."
+				},
+				"trigger_icd": {
+					"label": "Déclencher ICD",
+					"tooltip": "Déclenche l'ICD interne spécifié."
+				},
+				"damage_amplification": {
+					"label": "Amplification des dégâts",
+					"tooltip": "Multiplie les dégâts infligés % par le pourcentage spécifié.",
+					"amount": {
+						"label": "Pourcentage"
+					}
+				},
+				"item_swap": {
+					"label": "Changer d'ensemble",
+					"tooltip": "Échange les ensemble d'équipement, en utilisant l'ensemble d'échange spécifié dans les Paramètres."
+				},
+				"move": {
+					"label": "Se déplacer",
+					"tooltip": "Commence un déplacement vers la portée désirée à la cible.",
+					"to_range": "à portée",
+					"to_range_tooltip": "Portée désirée à la cible.",
+					"move_duration": "Durée du déplacement",
+					"duration": "Durée",
+					"duration_tooltip": "Quantité de temps que le personnage devrait se déplacer.",
+					"move_duration_tooltip": "Le personnage se déplace pendant la durée donnée."
+				},
+				"custom_rotation": {
+					"label": "Rotation personnalisée",
+					"tooltip": "INTERNE UNIQUEMENT"
+				},
+				"optimal_rotation_action": {
+					"label": "Action de rotation optimale",
+					"tooltip": "Exécute la rotation DPS Féral optimisée en utilisant un algorithme codé en dur.",
+					"wrath_weave": {
+						"label": "Activer le Colère-weaving",
+						"tooltip": "Lancer Colère quand possible pendant la fenêtre DPS du Cœur de fauve. Ignoré si CdF n'est pas talenté."
+					}
+				},
+				"guardian_hotw_dps_rotation": {
+					"label": "Rotation DPS CdF",
+					"tooltip": "Exécute la rotation DPS Cœur de fauve optimisée en utilisant un algorithme codé en dur."
+				},
+				"warlock_next_exhale_target": {
+					"label": "Choisir la prochaine cible d'Expiration",
+					"tooltip": "Choisi la prochaine cible valide d'Expiration. Si la cible actuelle n'est pas la cible de l'échange d'âme ou si l'échange d'âme n'a pas été lancé, la cible ne changera pas."
+				}
+			},
+			"values": {
+				"item_label": "Valeur",
+				"no_condition": "Aucune condition",
+				"none": "<Aucun>",
+				"const": {
+					"label": "Const",
+					"tooltip": "Une valeur fixe.",
+					"full_description": "<p>Exemples :<ul><li><b>Nombre :</b> '123', '0.5', '-10'</li><li><b>Temps :</b> '100ms', '5s', '3m'</li><li><b>Pourcentage :</b> '30%'</li></ul></p>"
+				},
+				"compare": {
+					"label": "Comparer",
+					"tooltip": "Compare deux valeurs."
+				},
+				"math": {
+					"label": "Math",
+					"tooltip": "Effectue des calculs de base sur deux valeurs."
+				},
+				"max": {
+					"label": "Max",
+					"tooltip": "Retourne la plus grande valeur parmi les sous-valeurs."
+				},
+				"min": {
+					"label": "Min",
+					"tooltip": "Retourne la plus petite valeur parmi les sous-valeurs."
+				},
+				"all_of": {
+					"label": "Tous",
+					"tooltip": "Retourne Vrai si toutes les sous-valeurs sont Vraies, sinon Faux"
+				},
+				"any_of": {
+					"label": "N'importe lequel",
+					"tooltip": "Retourne Vrai si n'importe laquelle des sous-valeurs est Vraie, sinon Faux"
+				},
+				"not": {
+					"label": "Non",
+					"tooltip": "Retourne l'opposé de la valeur d'entrée."
+				},
+				"current_time": {
+					"label": "Temps actuel",
+					"tooltip": "Temps actuel dans la rencontre."
+				},
+				"current_time_percent": {
+					"label": "Temps actuel (%)",
+					"tooltip": "Temps écoulé de l'itération de simulation actuelle, en pourcentage."
+				},
+				"remaining_time": {
+					"label": "Temps restant",
+					"tooltip": "Temps restant dans la rencontre."
+				},
+				"remaining_time_percent": {
+					"label": "Temps restant (%)",
+					"tooltip": "Temps écoulé de l'itération de simulation restante, en pourcentage."
+				},
+				"is_execute_phase": {
+					"label": "Est phase d'éxécution",
+					"tooltip": "Retourne vrai si la cible est en phase d'exécution."
+				},
+				"num_targets": {
+					"label": "Nombre de cibles",
+					"tooltip": "Nombre de cibles dans la rencontre"
+				},
+				"spell_is_casting": {
+					"label": "Sort en cours de lancement",
+					"tooltip": "Vrai si le sort est actuellement en cours de lancement"
+				},
+				"spell_time_to_ready": {
+					"label": "Temps jusqu'à prêt",
+					"tooltip": "Temps jusqu'à ce que le sort soit prêt"
+				},
+				"in_front_of_target": {
+					"label": "Devant la cible",
+					"tooltip": "Vrai si nous sommes devant la cible"
+				},
+				"boss_cast": {
+					"label": "Boss en train de lancer",
+					"tooltip": "Vrai si le boss lance le sort spécifié"
+				},
+				"boss_cast_time_to_ready": {
+					"label": "Temps jusqu'à boss prêt",
+					"tooltip": "Temps jusqu'à ce que le sort du boss soit prêt"
+				},
+				"boss_current_target": {
+					"label": "Est en train de tanker",
+					"tooltip": "Vrai si le joueur est actuellement en train de tanker"
+				},
+				"unit_is_moving": {
+					"label": "Unité en mouvement",
+					"tooltip": "Vrai si l'unité se déplace"
+				},
+				"distance_to_unit": {
+					"label": "Distance à l'unité",
+					"tooltip": "Distance à l'unité"
+				},
+				"current_health": {
+					"label": "PV actuel",
+					"tooltip": "Quantité de santé actuellement disponible."
+				},
+				"current_health_percent": {
+					"label": "PV actuel (%)",
+					"tooltip": "Quantité de santé actuellement disponible, en pourcentage."
+				},
+				"max_health": {
+					"label": "PV Max",
+					"tooltip": "Quantité de santé maximum actuellement disponible."
+				},
+				"current_mana": {
+					"label": "Mana actuel",
+					"tooltip": "Quantité de mana actuellement disponible."
+				},
+				"current_mana_percent": {
+					"label": "Mana actuel (%)",
+					"tooltip": "Quantité de mana actuellement disponible, en pourcentage."
+				},
+				"current_rage": {
+					"label": "Rage actuelle",
+					"tooltip": "Quantité de rage actuellement disponible."
+				},
+				"max_rage": {
+					"label": "Rage Max",
+					"tooltip": "Quantité de rage maximum disponible."
+				},
+				"current_focus": {
+					"label": "Focus actuel",
+					"tooltip": "Quantité de focus actuellement disponible."
+				},
+				"max_focus": {
+					"label": "Focus Max",
+					"tooltip": "Quantité de focus maximum disponible."
+				},
+				"focus_regen_per_second": {
+					"label": "Régénération focus par seconde",
+					"tooltip": "Régénération de focus par seconde."
+				},
+				"estimated_time_to_target_focus": {
+					"label": "Temps estimé vers focus cible",
+					"tooltip": "Temps estimé jusqu'à ce que le focus cible soit atteint, retournera 0 si à ou au-dessus de la cible."
+				},
+				"current_energy": {
+					"label": "Énergie actuelle",
+					"tooltip": "Quantité d'énergie actuellement disponible."
+				},
+				"max_energy": {
+					"label": "Énergie Max",
+					"tooltip": "Quantité d'énergie maximum disponible."
+				},
+				"energy_regen_per_second": {
+					"label": "Régénération énergie par seconde",
+					"tooltip": "Régénération d'énergie par seconde."
+				},
+				"estimated_time_to_target_energy": {
+					"label": "Temps estimé vers énergie cible",
+					"tooltip": "Temps estimé jusqu'à ce que l'énergie cible soit atteinte, retournera 0 si à ou au-dessus de la cible."
+				},
+				"current_combo_points": {
+					"label": "Points de combo actuels",
+					"tooltip": "Quantité de points de combo actuellement disponibles."
+				},
+				"max_combo_points": {
+					"label": "Points de combo Max",
+					"tooltip": "Quantité de points de combo maximum disponibles."
+				},
+				"current_chi": {
+					"label": "Chi actuel",
+					"tooltip": "Quantité de chi actuellement disponible."
+				},
+				"max_chi": {
+					"label": "Chi Max",
+					"tooltip": "Quantité de chi maximum disponible."
+				},
+				"current_runic_power": {
+					"label": "Puissance runique actuelle",
+					"tooltip": "Quantité de puissance runique actuellement disponible."
+				},
+				"max_runic_power": {
+					"label": "Puissance runique Max",
+					"tooltip": "Quantité de puissance runique maximum disponible."
+				},
+				"solar_energy": {
+					"label": "Énergie solaire",
+					"tooltip": "Quantité d'énergie solaire actuellement disponible."
+				},
+				"lunar_energy": {
+					"label": "Énergie lunaire",
+					"tooltip": "Quantité d'énergie lunaire actuellement disponible"
+				},
+				"current_eclipse_phase": {
+					"label": "Phase d'éclipse actuelle",
+					"tooltip": "La phase d'éclipse dans laquelle le druide se trouve actuellement."
+				},
+				"generic_resource": {
+					"label": "{GENERIC_RESOURCE}",
+					"tooltip": "Quantité de {GENERIC_RESOURCE} actuellement disponible."
+				},
+				"num_runes": {
+					"label": "Nombre de runes",
+					"tooltip": "Quantité de runes d'un certain type actuellement disponibles incluant les runes de Mort."
+				},
+				"num_non_death_runes": {
+					"label": "Nombre de runes non-Mort",
+					"tooltip": "Quantité de runes d'un certain type actuellement disponibles en ignorant les runes de Mort."
+				},
+				"rune_is_ready": {
+					"label": "Rune est prête",
+					"tooltip": "La rune d'un certain emplacement est-elle actuellement disponible."
+				},
+				"rune_is_death": {
+					"label": "Est rune de Mort",
+					"tooltip": "La rune d'un certain emplacement est-elle actuellement convertie en rune de Mort."
+				},
+				"rune_cooldown": {
+					"label": "Temps de eecharge de rune",
+					"tooltip": "Quantité de temps jusqu'à ce qu'une rune d'un certain type soit prête à être utiliser.<br><b>NOTE:</b> Retourne 0 s'il y a une rune disponible"
+				},
+				"next_rune_cooldown": {
+					"label": "Prochain temps de recharge de rune",
+					"tooltip": "Quantité de temps jusqu'à ce qu'une 2ème rune d'un certain type soit prête à être utiliser.<br><b>NOTE:</b> Retourne 0 s'il y a 2 runes disponibles"
+				},
+				"rune_slot_cooldown": {
+					"label": "Temps de recharge d'emplacement de rune",
+					"tooltip": "Quantité de temps jusqu'à ce qu'une rune d'un certains emplacement soit prête à être utiliser.<br><b>NOTE:</b> Retourne 0 si la rune est prête"
+				},
+				"full_rune_cooldown": {
+					"label": "Temps de recharge complet des runes",
+					"tooltip": "Temps qu'il faudrait à une rune pour se recharger si vous l'utilisiez maintenant."
+				},
+				"gcd_is_ready": {
+					"label": "GCD est prêt",
+					"tooltip": "<b>Vrai</b> si le GCD n'est pas en temps de recharge, sinon <b>Faux</b>."
+				},
+				"gcd_time_to_ready": {
+					"label": "Temps jusqu’à GCD prêt",
+					"tooltip": "Quantité de temps restant avant que le GCD sorte du temps de recharge, ou <b>0</b> s'il n'est pas en temps de recharge."
+				},
+				"time_to_next_auto": {
+					"label": "Temps jusqu’à prochaine Auto",
+					"tooltip": "Quantité de temps restant avant la prochaine attaque de mêlée Main gauche ou Main droite, ou <b>0</b> si les attaques automatiques ne sont pas activés."
+				},
+				"remaining_cast_time": {
+					"label": "Temps d'incantation restant",
+					"tooltip": "Quantité de temps restant avant que l'incantation du sort en cours ne soit terminée."
+				},
+				"spell_known": {
+					"label": "Sort connu",
+					"tooltip": "<b>Vrai</b> si le sort est actuellement connu, sinon <b>Faux</b>."
+				},
+				"current_cost": {
+					"label": "Coût actuel",
+					"tooltip": "Retourne le coût de ressource actuel du sort"
+				},
+				"can_cast": {
+					"label": "Peut lancer",
+					"tooltip": "<b>Vrai</b> si toutes les exigences pour lancer le sort sont actuellement remplies, sinon <b>Faux</b>.",
+					"full_description": "<p>The <b>Cast Spell</b> action does not need to be conditioned on this, because it applies this check automatically.</p>"
+				},
+				"is_ready": {
+					"label": "Est prêt",
+					"tooltip": "<b>Vrai</b> si le sort n'est pas en temps de recharge, sinon <b>Faux</b>."
+				},
+				"time_to_ready": {
+					"label": "Temps jusqu'à prêt",
+					"tooltip": "Quantité de temps restant avant que le sort sorte du temps de recharge, ou <b>0</b> s'il n'est pas en temps de recharge."
+				},
+				"cast_time": {
+					"label": "Temps d'incantation",
+					"tooltip": "Quantité de temps pour lancer le sort incluant toute hâte et ajustements de temps de lancement de sort."
+				},
+				"travel_time": {
+					"label": "Temps de trajet",
+					"tooltip": "Quantité de temps pour que le sort atteigne la cible."
+				},
+				"cpm": {
+					"label": "CPM",
+					"tooltip": "Lancers par minute pour le sort jusqu'à présent dans l'itération actuelle."
+				},
+				"is_casting": {
+					"label": "Est en train de lancer",
+					"tooltip": "<b>Vrai</b> si ce sort est actuellement en train d'être lancé, sinon <b>Faux</b>."
+				},
+				"is_channeling": {
+					"label": "Canalise",
+					"tooltip": "<b>Vrai</b> si ce sort est actuellement canalisé, sinon <b>Faux</b>."
+				},
+				"channeled_ticks": {
+					"label": "# Ticks canalisés",
+					"tooltip": "Le nombre de tics complétés dans la canalisation actuelle de ce sort, ou <b>0</b> si le sort n'est pas canalisé."
+				},
+				"number_of_charges": {
+					"label": "Nombre de charges",
+					"tooltip": "Le nombre de charges qui sont actuellement disponibles pour le sort."
+				},
+				"time_to_next_charge": {
+					"label": "Temps jusqu’à prochaine charge",
+					"tooltip": "Le temps jusqu'à ce que la prochaine charge soit disponible. 0 si le sort a toutes les charges disponibles."
+				},
+				"gcd_hasted_duration": {
+					"label": "Durée du GCD",
+					"tooltip": "La durée du GCD si le spell est lancé avec le montant de hâte actuel"
+				},
+				"full_cooldown": {
+					"label": "Temps de recharge complet",
+					"tooltip": "La durée complète de recharge du sort"
+				},
+				"channel_clip_delay": {
+					"label": "Délai d'interruption de sort canalisé",
+					"tooltip": "La quantité de temps spécifiée par le paramètre <b>Délai d'interruption de sort canalisé</b>."
+				},
+				"input_delay": {
+					"label": "Temps de réaction",
+					"tooltip": "La quantité de temps spécifiée par le paramètre <b>Temps de réaction</b>."
+				},
+				"spell_in_flight": {
+					"label": "Sort en vol",
+					"tooltip": "<b>Vrai</b> si ce sort est actuellement en cours, sinon <b>Faux</b>."
+				},
+				"aura_known": {
+					"label": "Aura connue",
+					"tooltip": "<b>Vrai</b> si l'aura est actuellement connue, sinon <b>Faux</b>."
+				},
+				"aura_active": {
+					"label": "Aura active",
+					"tooltip": "<b>Vrai</b> si l'aura est actuellement active ET qu'elle a été active pendant au moins aussi longtemps que le temps de réaction du joueur (configuré dans Paramètres), sinon <b>Faux</b>."
+				},
+				"aura_active_with_reaction_time": {
+					"label": "[OBSOLETE] Aura active (avec Temps de réaction)",
+					"tooltip": "Toutes les vérifications d'aura contiennent maintenant la logique de Temps de Réaction, donc ceci n'est plus nécessaire. Utilisez <b>Aura Active</b> à la place."
+				},
+				"aura_inactive": {
+					"label": "Aura inactive",
+					"tooltip": "<b>Vrai</b> si l'aura n'est pas actuellement active ET qu'elle a été inactive pendant au moins aussi longtemps que le temps de réaction du joueur (configuré dans Paramètres), sinon <b>Faux</b>."
+				},
+				"aura_inactive_with_reaction_time": {
+					"label": "[OBSOLETE] Aura inactive (avec Temps de réaction)",
+					"tooltip": "Toutes les vérifications d'aura contiennent maintenant la logique de Temps de Réaction, donc ceci n'est plus nécessaire. Utilisez <b>Aura Inactive</b> à la place."
+				},
+				"aura_remaining_time": {
+					"label": "Temps restant d'aura",
+					"tooltip": "Temps restant avant que cette aura expire, ou 0 si l'aura n'est pas actuellement active."
+				},
+				"aura_num_stacks": {
+					"label": "Nombre de stacks d'aura",
+					"tooltip": "Nombre de stacks de l'aura."
+				},
+				"aura_should_refresh": {
+					"label": "Aura à rafraichir",
+					"tooltip": "Si cette aura devrait être rafraîchie, par ex. dans le but de maintenir un debuff.",
+					"full_description": "<p>This condition checks not only the specified aura but also any other auras on the same unit, including auras applied by other raid members, which apply the same debuff category.</p><p>For example, 'Should Refresh Debuff(Sunder Armor)' will return <b>False</b> if the unit has an active Expose Armor aura.</p>"
+				},
+				"all_trinket_stat_procs_active": {
+					"label": "Tous les buffs procs d'objets actifs",
+					"tooltip": "<b>Vrai</b> si tous les procs d'objet/enchantement qui buffent le(s) type(s) de stat spécifié(s) sont actuellement actifs, sinon <b>Faux</b>.",
+					"full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
+				},
+				"any_trinket_stat_procs_active": {
+					"label": "N'importe quel buff proc d'objet actif",
+					"tooltip": "<b>Vrai</b> si n'importe quel proc d'objet/enchantement qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>.",
+					"full_description": "<p>For stacking proc buffs, this condition also checks that the buff has been stacked to its maximum possible strength.</p>"
+				},
+				"any_trinket_stat_procs_available": {
+					"label": "N'importe quel buff de procédure d'objet disponible",
+					"tooltip": "<b>Vrai</b> si des objets/enchantements qui améliorent les types de statistiques spécifiés ne sont actuellement pas sur ICD et ne sont pas actifs, sinon <b>Faux</b>."
+				},
+				"trinket_procs_min_remaining_time": {
+					"label": "Temps restant Min des procs d'objets",
+					"tooltip": "Durée restante la plus courte sur n'importe quel proc d'objet/enchantement actif qui buffe le(s) type(s) de stat spécifié(s), ou infini si aucun n'est actuellement actif."
+				},
+				"trinket_procs_max_remaining_icd": {
+					"label": "ICD restant Max des procs d'objets",
+					"tooltip": "ICD restant le plus long sur n'importe quel proc d'objet/enchantement inactif qui buffe le(s) type(s) de stat spécifié(s), ou 0 si tous sont actuellement actifs."
+				},
+				"num_equipped_stat_proc_trinkets": {
+					"label": "Nombre d'effets proc de stat équipés",
+					"tooltip": "Nombre d'effets passifs d'objet/enchantement équipés qui buffent le(s) type(s) de stat spécifié(s) quand ils proc."
+				},
+				"num_stat_buff_cooldowns": {
+					"label": "Nombre de CDs de buff de stats",
+					"tooltip": "Nombre de Cooldowns Majeurs enregistrés qui buffent le(s) type(s) de stat spécifié(s) quand ils sont lancés.",
+					"full_description": "<p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are included in the total count returned by this value.</p>"
+				},
+				"any_stat_buff_cooldowns_active": {
+					"label": "N'importe quel CD de buff de stat actif",
+					"tooltip": "<b>Vrai</b> si n'importe quel Cooldown Majeur enregistré qui buffe le(s) type(s) de stat spécifié(s) est actuellement actif, sinon <b>Faux</b>.",
+					"full_description": "<p>For stacking buffs, this condition also checks that the buff has been stacked to its maximum possible strength after the cooldown is activated.</p><p>Both manually casted cooldowns as well as cooldowns controlled by \"Cast All Stat Buff Cooldowns\" and \"Autocast Other Cooldowns\" actions are checked.</p>"
+				},
+				"any_stat_buff_cooldowns_min_duration": {
+					"label": "Temps de recharge des bonus de statistiques Temps restant minimum",
+					"tooltip": "Durée restante la plus courte sur tout temps de recharge majeur enregistré qui améliore le(s) type(s) de statistiques spécifié(s), ou l'infini si aucun n'est actuellement actif."
+				},
+				"dot_is_active": {
+					"label": "DoT est actif",
+					"tooltip": "<b>Vrai</b> si le dot spécifié tick actuellement, sinon <b>Faux</b>."
+				},
+				"dot_is_active_on_all_targets": {
+					"label": "DoT est actif sur toutes les cibles",
+					"tooltip": "<b>Vrai</b> si le dot spécifié tick actuellement sur toutes les cibles, sinon <b>Faux</b>."
+				},
+				"dot_remaining_time": {
+					"label": "Temps restant du DoT",
+					"tooltip": "Temps restant avant que le dernier tick de ce DoT se produise, ou 0 si le DoT ne tick pas actuellement."
+				},
+				"dot_lowest_remaining_time": {
+					"label": "Temps restant du DoT le plus court",
+					"tooltip": "Temps restant avant que le dernier tick de ce DoT sur n'importe quelle cible se produise, ou 0 si le DoT ne tique pas actuellement."
+				},
+				"dot_tick_frequency": {
+					"label": "Fréquence de tick du DoT",
+					"tooltip": "Le temps entre chaque tick."
+				},
+				"dot_time_to_next_tick": {
+					"label": "Temps jusqu'au prochain tick du DoT",
+					"tooltip": "Le temps restant avant que le prochain tick de ce DoT se produise."
+				},
+				"dot_percent_increase": {
+					"label": "Augmentation de dégâts DoT %",
+					"tooltip": "À quel point un nouveau DoT serait plus fort comparé à l'ancien."
+				},
+				"sequence_is_complete": {
+					"label": "Séquence est complète",
+					"tooltip": "<b>Vrai</b> s'il n'y a plus de sous-actions à exécuter dans la séquence, sinon <b>Faux</b>."
+				},
+				"sequence_is_ready": {
+					"label": "Séquence est prête",
+					"tooltip": "<b>Vrai</b> si la prochaine sous-action dans la séquence est prête à être exécutée, sinon <b>Faux</b>."
+				},
+				"sequence_time_to_ready": {
+					"label": "Temps jusqu'à séquence prête",
+					"tooltip": "Retourne la quantité de temps restant jusqu'à ce que la prochaine sous-action dans la séquence soit prête."
+				},
+				"totem_remaining_time": {
+					"label": "Temps restant du totem",
+					"tooltip": "Retourne la quantité de temps restant jusqu'à ce que le totem expire."
+				},
+				"shaman_fire_elemental_duration": {
+					"label": "Durée totale de l'Élémentaire de Feu",
+					"tooltip": "Retourne la durée totale du Totem d'Élémentaire de Feu"
+				},
+				"cat_excess_energy": {
+					"label": "Énergie excédentaire",
+					"tooltip": "Retourne la quantité d'énergie excédentaire disponible, après avoir soustrait l'énergie qui sera nécessaire pour maintenir les DoTs."
+				},
+				"cat_new_savage_roar_duration": {
+					"label": "Nouvelle durée de Rugissement sauvage",
+					"tooltip": "Retourne la durée du Rugissement sauvage basée sur les points de combo actuels"
+				},
+				"warlock_hand_of_guldan_in_flight": {
+					"label": "Main de Gul'dan en vol",
+					"tooltip": "Retourne <b>Vrai</b> si Main de Gul'dan est actuellement en vol."
+				},
+				"warlock_haunt_in_flight": {
+					"label": "[OBSOLETE]  Hantise en vol",
+					"tooltip": "Retourne <b>Vrai</b> si Hantise est actuellement en vol."
+				},
+				"affliction_current_snapshot": {
+					"label": "Instantané brut existant %",
+					"tooltip": "Influence la puissance de votre snapshot actuel par rapport à la version de référence. Ignore la hâte et les coups critiques. À utiliser uniquement si vous savez ce que vous faites."
+				},
+				"affliction_exhale_window": {
+					"label": "Fenêtre d'expiration",
+					"tooltip": "Marge de manœuvre configurée pour l'expiration des DoTs inhalés."
+				},
+				"mage_current_combustion_dot_estimate": {
+					"label": "Valeur DoT de Combustion",
+					"tooltip": "Retourne la taille estimée actuelle de votre DoT de Combustion."
+				},
+				"brewmaster_monk_current_stagger_percent": {
+					"label": "Report actuel (%)",
+					"tooltip": "Quantité de Report actuel, en pourcentage."
+				},
+				"protection_paladin_damage_taken_last_global": {
+					"label": "Dégâts reçus dernier global",
+					"tooltip": "Quantité de dégâts reçus dans les dernières 1.5s."
+				},
+				"aura_remaining_icd": {
+					"label": "Aura ICD restant",
+					"tooltip": "Temps restant avant que le temps de recharge interne de cette aura soit prêt, ou 0 si l'ICD est prêt maintenant."
+				},
+				"aura_icd_is_ready": {
+					"label": "Aura ICD prêt",
+					"tooltip": "<b>Vrai</b> si l'ICD de l'aura est actuellement prêt OU s'il a été mis en CD récemment, dans le temps de réaction du joueur (configuré dans Paramètres), sinon <b>Faux</b>."
+				},
+				"aura_icd_is_ready_with_reaction_time": {
+					"label": "[OBSOLETE] Aura ICD prêt (avec Temps de réaction)",
+					"tooltip": "Toutes les vérifications d'aura contiennent maintenant la logique de Temps de réaction, donc ceci n'est plus nécessaire. Utilisez <b>Aura ICD prêt</b> à la place."
+				},
+				"overlap": {
+					"label": "Rafraichir à",
+					"tooltip": "Temps maximum avant l'expiration de l'aura où elle peut être rafraîchie."
+				}
+			},
+			"operators": {
+				"equals": "==",
+				"not_equals": "!=",
+				"greater_than_or_equal": ">=",
+				"greater_than": ">",
+				"less_than_or_equal": "<=",
+				"less_than": "<",
+				"add": "+",
+				"subtract": "-",
+				"multiply": "*",
+				"divide": "/"
+			},
+			"execute_phases": {
+				"e20": "20%",
+				"e25": "25%",
+				"e35": "35%",
+				"e45": "45%",
+				"e90": "90%"
+			},
+			"totem_types": {
+				"earth": "Terre",
+				"air": "Air",
+				"fire": "Feu",
+				"water": "Eau"
+			},
+			"submenus": {
+				"logic": "Logique",
+				"encounter": "Rencontre",
+				"boss": "Boss",
+				"unit": "Unité",
+				"resources": "Ressources",
+				"gcd": "GCD",
+				"auto": "Auto-Attaque",
+				"spell": "Sort",
+				"aura": "Aura",
+				"aura_sets": "Ensembles d'Auras",
+				"dot": "DoT",
+				"sequence": "Séquence",
+				"casting": "Lancement",
+				"timing": "Attente",
+				"sequences": "Séquences",
+				"misc": "Divers",
+				"feral_druid": "Druide Farouche",
+				"guardian_druid": "Druide Gardien",
+				"shaman": "Chaman",
+				"warlock": "Démoniste",
+				"mage": "Mage",
+				"tank": "Tank",
+				"health": "PV",
+				"mana": "Mana",
+				"rage": "Rage",
+				"focus": "Focalisation",
+				"energy": "Énergie",
+				"combo_points": "Points de Combo",
+				"chi": "Chi",
+				"runic_power": "Puissance Runique",
+				"eclipse": "Éclipse",
+				"runes": "Runes",
+				"cooldowns": "CDs",
+				"placeholders": "Espaces Réservés"
+			},
+			"item_swap_sets": {
+				"main": "Principal",
+				"swapped": "Secondaire"
+			},
+			"helpers": {
+				"action_id_sets": {
+					"auras": "Aura",
+					"stackable_auras": "Aura",
+					"icd_auras": "Aura",
+					"exclusive_effect_auras": "Aura",
+					"spells": "Sort",
+					"castable_spells": "Sort",
+					"channel_spells": "Sort Canalisé",
+					"dot_spells": "DoT",
+					"castable_dot_spells": "DoT",
+					"shield_spells": "Bouclier",
+					"non_instant_spells": "Sort Non-instantané",
+					"friendly_spells": "Sort Amical",
+					"expected_dot_spells": "DoT",
+					"spells_with_travelTime": "Sort"
+				},
+				"field_configs": {
+					"type": "Type",
+					"strategy": "Stratégie",
+					"buff_type": "Type de Buff",
+					"min_icd": "ICD Min",
+					"min_icd_tooltip": "Si non-zéro, filtre tous les procs qui n'ont pas d'ICD ou dont l'ICD est inférieur à la valeur spécifiée (en secondes). Cela peut être utile pour certaines vérifications de snapshot, car les procs avec des ICD faibles sont souvent trop faibles pour snapshot.",
+					"include_reaction_time": "Inclure le temps de réaction",
+					"include_reaction_time_tooltip": "Si coché, utilisera le temps de réaction configuré.",
+					"use_base_value": "Utiliser la valeur de base",
+					"use_base_value_tooltip": "Si coché, comparera le DoT actuel à la valeur de base (au début de la rencontre) du DoT.",
+					"variable_assignment_tooltip": "Valeur à assigner à la variable '{{variableName}}'",
+					"amplification_type": "Type d'amplification"
+				},
+				"eclipse_types": {
+					"lunar": "Lunaire",
+					"solar": "Solaire",
+					"neutral": "Neutre"
+				},
+				"rune_types": {
+					"blood": "Sang",
+					"frost": "Givre",
+					"unholy": "Impie",
+					"death": "Mort"
+				},
+				"rune_slots": {
+					"blood_left": "Sang Gauche",
+					"blood_right": "Sang Droite",
+					"frost_left": "Givre Gauche",
+					"frost_right": "Givre Droite",
+					"unholy_left": "Impie Gauche",
+					"unholy_right": "Impie Droite"
+				},
+				"rotation_types": {
+					"single_target": "Cible unique",
+					"aoe": "AoE"
+				},
+				"hotw_strategies": {
+					"caster": "Humanoïde",
+					"cat": "Chat",
+					"hybrid": "Hybride"
+				},
+				"amplification_types": {
+					"caster_buff": {
+						"label": "Buff du lanceur",
+						"tooltip": "Buff est sur le lanceur; capture les DoTs et affecte les familiers (pas les gardiens)"
+
+					},
+					"environment_buff": {
+						"label": "Buff de l'environnement",
+						"tooltip": "Buff est sur l'environnement (par ex. la piscine de Jin'Rokh); capture les DoTs et affecte les familiers (pas les gardiens)"
+					},
+					"target_debuff": {
+						"label": "Débuff de la cible",
+						"tooltip": "Débuff est sur la cible; ne capture pas les DoTs et affecte les familiers/gardiens"
+					}
+				},
+				"unit_labels": {
+					"self": "Soi-même",
+					"current_target": "Cible actuelle",
+					"previous_target": "Cible précédente",
+					"next_target": "Cible suivante",
+					"player": "Joueur",
+					"target": "Cible",
+					"pet": "Familier"
+				},
+				"placeholder_tooltip": "La Potion de pré-pull si CurrentTime < 0, ou la Potion en combat si le combat a commencé.",
+				"select_variable": "Sélectionner une variable",
+				"select_group": "Sélectionner un groupe",
+				"no_variables_defined": "Aucune variable définie",
+				"no_groups_defined": "Aucun groupe défini",
+				"buttons": {
+					"enable_action": "Activer l'action",
+					"disable_action": "Désactiver l'action",
+					"enable_disable": "Activer/Désactiver"
+				}
+			}
+		},
+		"auto": {
+			"description": "Utilisation automatique d'une rotation sauvegardée basée sur vos paramètres actuels."
+		},
+		"simple": {
+			"title": "Rotation"
+		},
+		"cooldowns": {
+			"title": "CDs",
+			"tooltip": "Spécifiez les timings des CDs, en secondes. Les CDs seront utilisés dès que possible après leurs timings spécifiés. Quand non spécifiés, les CDs seront utilisés quand ils sont prêts et qu'il est raisonnable de le faire.<br><br>Plusieurs timings peuvent être fournis en les séparant par des virgules. Toute utilisation de CD après le dernier timing fourni utilisera la logique par défaut.",
+			"delete_tooltip": "Supprimer le CD",
+			"timings_placeholder": "20, 40, ..."
+		},
+		"saved_rotations": {
+			"title": "Rotations sauvegardées",
+			"label": "Rotation",
+			"name_label": "Nom de la rotation",
+			"save_button": "Sauvegarder la rotation",
+			"delete": {
+				"confirm": "Supprimer la rotation sauvegardée '{{name}}' ?",
+				"tooltip": "Supprimer la rotation sauvegardée"
+			},
+			"alerts": {
+				"choose_name": "Choisissez un nom pour votre rotation sauvegardée !",
+				"name_exists": "Une rotation avec le nom {{name}} existe déjà."
+			}
+		},
+		"options": {
+			"druid": {
+				"feral": {
+					"target_type": {
+						"label": "Type de cible",
+						"single_target": "Cible unique",
+						"aoe": "AoE"
+					},
+					"bear_weave": {
+						"label": "Activer le bear-weaving",
+						"tooltip": "Passe en ours quand en attente d'énergie"
+					},
+					"snek_weave": {
+						"label": "Utiliser Serpent Albino",
+						"tooltip": "Réinitialiser le timer d'auto-attaque à la fin du passage en forme d'ours en utilisant le familier Serpent Albino"
+					},
+					"use_ns": {
+						"label": "Utiliser Rapidité de la nature",
+						"tooltip": "Utiliser Rapidité de la nature pour combler les trous de Rapidité du prédateur"
+					},
+					"manual_params": {
+						"label": "Paramètres avancés manuels",
+						"tooltip": "Spécifier manuellement les paramètres avancés, sinon utilisera les préréglages par défaut"
+					},
+					"hotw_strategy": {
+						"label": "Utilisation de Cœur de fauve",
+						"tooltip": "Comment utiliser Cœur de fauve",
+						"values": {
+							"passives_only": "Passifs uniquement",
+							"enhanced_bear_weaving": "Bear-weaving amélioré",
+							"wrath_weaving": "Colère-weaving"
+						}
+					},
+					"allow_aoe_berserk": {
+						"label": "Permettre Berserk AoE",
+						"tooltip": "Permettre l'utilisation de Berserk dans la rotation AoE"
+					},
+					"roar_offset": {
+						"label": "Décalage de Rugissement sauvage",
+						"tooltip": "Décalage minimum gagné entre la Déchirure actuelle et le nouveau Rugissement sauvage pour permettre un clip de Rugissement sauvage"
+					},
+					"rip_leeway": {
+						"label": "Marge de Déchirure",
+						"tooltip": "Écart minimum toléré entre les temps d'expiration de Déchirure actuel et de Rugissement sauvage actuel avant de déclencher les mesures d'urgence"
+					},
+					"bite_during_rotation": {
+						"label": "Morsure féroce pendant la rotation",
+						"tooltip": "Utiliser Morsure féroce pendant la rotation plutôt que juste pour la maintenance de Déchirure pendant l'éxécution"
+					},
+					"bite_time": {
+						"label": "Temps jusqu’à Morsure",
+						"tooltip": "Secondes minimum restantes avant que Déchirure ou Rugissement sauvage devrait idéalement être rafraîchi (incluant les clips précoces planifiés) pour permettre une Morsure féroce"
+					},
+					"berserk_bite_time": {
+						"label": "Temps jusqu’à Morsure pendant Berserk",
+						"tooltip": "Seuil plus agressif quand Berserk est actif"
+					}
+				}
+			},
+			"guardian": {
+				"maintain_faerie_fire": {
+					"label": "Maintenir Lucioles",
+					"tooltip": "Maintenir le debuff Lucioles. Remplace tous les effets de Fracasser externes spécifiés dans les paramètres."
+				},
+				"maintain_demo_roar": {
+					"label": "Maintenir Rugissement Démo",
+					"tooltip": "Garder Rugissement Démoralisant actif sur la cible principale. Si un debuff plus fort est actif, ne lancera pas."
+				},
+				"demo_roar_refresh_leeway": {
+					"label": "Marge de rafraîchissement Rugissement Démo",
+					"tooltip": "Rafraîchir Rugissement Démoralisant quand la durée restante est inférieure à cette valeur (en secondes). Des valeurs plus grandes fournissent une marge de sécurité contre les échecs, mais au coût d'un DPS plus faible."
+				},
+				"pulverize_refresh_leeway": {
+					"label": "Marge de rafraîchissement Pulvériser",
+					"tooltip": "Rafraîchir Pulvériser quand la durée restante est inférieure à cette valeur (en secondes). Notez que l'utilisation de Mutiler, Fouet et Feu Follet à temps de recharge prend la priorité sur cette règle, sauf si Lacérer lui-même est sur le point de tomber."
+				}
+			},
+			"rogue": {
+				"apply_poisons_manually": {
+					"label": "Configurer les poisons manuellement",
+					"tooltip": "Empêcher la configuration automatique des poisons qui est basée sur les armes équipées."
+				},
+				"subtlety": {
+					"honor_of_thieves_crit_rate": {
+						"label": "Taux de Critique Honneur des voleurs",
+						"tooltip": "Nombre de critiques que les autres membres du groupe génèrent en 100 secondes"
+					}
+				}
+			},
+			"shaman": {
+				"elemental": {
+					"thunderstorm_in_range": {
+						"label": "Orage à portée",
+						"tooltip": "Quand défini à vrai, les lancers de Orage causeront des dégâts."
+					}
+				}
+			},
+			"warlock": {
+				"affliction": {
+					"exhale_window": {
+						"label": "Fenêtre d'expiration de l'échange d'âme",
+						"tooltip": "Combien de temps, en millisecondes, s'écoule avant que les points inhalés n'expirent lors de rencontres à cibles multiples ?"
+					}
+				}
+			},
+			"hunter": {
+				"beast_mastery": {
+					"sting": {
+						"label": "Morsure",
+						"tooltip": "Maintient la Morsure sélectionnée sur la cible principale",
+						"values": {
+							"none": "Aucune",
+							"serpent_sting": "Morsure de Serpent"
+						}
+					},
+					"trap_weave": {
+						"label": "Piège-weaving",
+						"tooltip": "Utilise Piège Explosif aux moments appropriés. Notez que sélectionner ceci désactivera Flèche Noire car ils partagent un CD"
+					},
+					"multi_dot_serpent_sting": {
+						"label": "Multi-DoT Morsure de Serpent",
+						"tooltip": "Lance Morsure de Serpent sur plusieurs cibles"
+					}
+				},
+				"marksmanship": {
+					"sting": {
+						"label": "Morsure",
+						"tooltip": "Maintient la Morsure sélectionnée sur la cible principale",
+						"values": {
+							"none": "Aucune",
+							"serpent_sting": "Morsure de Serpent"
+						}
+					},
+					"trap_weave": {
+						"label": "Piège-weaving",
+						"tooltip": "Utilise Piège Explosif aux moments appropriés. Notez que sélectionner ceci désactivera Flèche Noire car ils partagent un CD"
+					},
+					"multi_dot_serpent_sting": {
+						"label": "Multi-DoT Morsure de Serpent",
+						"tooltip": "Lance Morsure de Serpent sur plusieurs cibles"
+					}
+				},
+				"survival": {
+					"multi_dot_serpent_sting": {
+						"label": "Multi-DoT Morsure de Serpent",
+						"tooltip": "Lance Morsure de Serpent sur plusieurs cibles"
+					}
+				}
+			}
+		}
+	},
+	"results_tab": {
+		"title": "Résultats",
+		"details": {
+			"no_results": "Lancez une simulation pour voir les résultats",
+			"view_in_separate_tab": "Voir dans un onglet séparé",
+			"sim_1_iteration": "Sim 1 itération",
+			"sim_1_death": "Simuler une mort",
+			"all_targets": "Toutes les cibles",
+			"all_players": "Tous les joueurs",
+			"target_number": "Cible {{number}}",
+			"damage": {
+				"dps_histogram": "Histogramme DPS"
+			},
+			"timeline": {
+				"disclaimer": "Les données sur le graphe visualisent seulement 1 itération de simulation.",
+				"note": "Note : Vous pouvez déplacer le graphe en maintenant la touche Majuscule tout en utilisant la roulette de la souris, ou en cliquant et en faisant glisser.",
+				"chart_types": {
+					"rotation": "Rotation",
+					"dps": "DPS",
+					"threat": "Menace"
+				},
+				"chart_options": {
+					"time_axis": "Temps (s)",
+					"waiting_for_data": "En attente de données..."
+				},
+				"tooltips": {
+					"dps": "DPS",
+					"dtps": "DTPS",
+					"amount": "Montant",
+					"player_damage": "Dégâts du Joueur / Dégâts du Raid",
+					"player_damage_taken": "Dégâts Subis par le Joueur / Dégâts Subis par le Raid",
+					"before": "Avant",
+					"after": "Après",
+					"threat": "Menace",
+					"active_auras": "Auras Actives"
+				}
+			},
+			"logs": {
+				"top_button": "Haut",
+				"time_column": "Temps",
+				"event_column": "Événement",
+				"show_debug": "Afficher les messages de débogage"
+			},
+			"tabs": {
+				"damage": "Dégâts",
+				"healing": "Soins",
+				"damage_taken": "Dégâts Subis",
+				"buffs": "Buffs",
+				"debuffs": "Debuffs",
+				"casts": "Sorts",
+				"resources": "Ressources",
+				"timeline": "Chronologie",
+				"log": "Journal"
+			},
+			"columns": {
+				"damage_done": "Dégâts infligés",
+				"casts": "Lancés",
+				"avg_cast": "Lancé Moyen",
+				"hits": "Touchés",
+				"avg_hit": "Touché Moyen",
+				"crit_percent": "Crit %",
+				"miss_percent": "Raté %",
+				"dpet": "DPET",
+				"dps": "DPS",
+				"healing_done": "Soins prodigués",
+				"cpm": "CPM",
+				"cast_time": "Temps d'incantaton",
+				"hpm": "SPS",
+				"hpet": "SPET",
+				"amount": "Montant",
+				"dtps": "DTPS",
+				"avg_heal": "Soin Moyen",
+				"hps": "SPS",
+				"damage_taken": "Dégâts Subis",
+				"overhealing": "Excédent de soins",
+				"name": "Nom",
+				"duration": "Durée",
+				"uptime": "Temps d'activité",
+				"procs": "Procs",
+				"ppm": "PPM",
+				"casts_per_minute": "Lancé/min",
+				"mana_gain": "Gain de Mana",
+				"mana_cost": "Coût en Mana",
+				"rage_gain": "Gain de Rage",
+				"rage_cost": "Coût en Rage",
+				"energy_gain": "Gain d'Énergie",
+				"energy_cost": "Coût en Énergie",
+				"focus_gain": "Gain de Focalisation",
+				"focus_cost": "Coût en Focalisation",
+				"runic_power_gain": "Gain de Puissance Runique",
+				"runic_power_cost": "Coût en Puissance Runique",
+				"chi_gain": "Gain de Chi",
+				"chi_cost": "Coût en Chi",
+				"holy_power_gain": "Gain de Puissance Sacrée",
+				"holy_power_cost": "Coût en Puissance Sacrée",
+				"shadow_orbs_gain": "Gain d'Orbes d'Ombre",
+				"shadow_orbs_cost": "Coût en Orbes d'Ombre",
+				"combo_points_gain": "Gain de Points de Combo",
+				"combo_points_cost": "Coût en Points de Combo",
+				"maelstrom_gain": "Gain de Maelström",
+				"maelstrom_cost": "Coût en Maelström",
+				"demonic_fury_gain": "Gain de Fureur Démoniaque",
+				"demonic_fury_cost": "Coût en Fureur Démoniaque",
+				"burning_embers_gain": "Gain de Braises Ardentes",
+				"burning_embers_cost": "Coût en Braises Ardentes",
+				"gain": "Gain",
+				"gain_per_second": "Gain / s",
+				"avg_gain": "Gain Moyen",
+				"wasted_gain": "Gain Perdu"
+			},
+			"tooltips": {
+				"damage_avg_cast": "Dégâts moyens par lancé",
+				"player_damage": "Dégâts du Joueur / Dégâts du Raid",
+				"player_damage_taken": "Dégâts subis par le Joueur / Dégâts subis par le Raid",
+				"damage_taken_per_encounter": "Dégâts subis / Durée de l'affrontement",
+				"healing_per_encounter": "Soins / Durée de l'affrontement",
+				"threat_per_encounter": "Menace / Durée de l'affrontement",
+				"damage_taken": "Dégâts subis",
+				"damage_per_encounter": "Dégâts / Durée de l'affrontement",
+				"damage_avg_cast_tooltip": "Dégâts / Lancés et/ou Dégâts / Ticks",
+				"healing_avg_cast_tooltip": "Soins / Lancés",
+				"healing_avg_hit_tooltip": "Soins / Touchés et/ou Soins / (Ticks + Ticks Critiques)",
+				"healing_hits_tooltip": "Soins / (Touchés + Crits + Éraflement + Bloqués) et/ou Soins / Ticks + Ticks Critiques",
+				"hit_miss_percent_tooltip": "Ratés / (Coups + Crits + Éraflement + Bloqués)"
+			},
+			"attack_types": {
+				"hit": "Touché",
+				"critical_hit": "Coup Critique",
+				"tick": "Tick",
+				"critical_tick": "Tick Critique",
+				"glancing_blow": "Éraflement",
+				"blocked_glancing_blow": "Éraflement Bloqué",
+				"blocked_hit": "Touché Bloqué",
+				"blocked_critical_hit": "Coup Critique Bloqué",
+				"miss": "Raté",
+				"parry": "Parade",
+				"dodge": "Esquive",
+				"threat": "Menace"
+			},
+			"tooltip_table": {
+				"type": "Type",
+				"count": "Compte",
+				"average": "Moyenne",
+				"amount": "Montant"
+			}
+		}
+	},
+	"import": {
+		"title": "Importer",
+		"json": {
+			"title": "Import JSON",
+			"description": "Importer les paramètres depuis un fichier JSON, qui peut être créé en utilisant la fonctionnalité d'export JSON.",
+			"instructions": "Pour importer, téléchargez le fichier ou collez le texte ci-dessous, puis cliquez sur 'Importer'.",
+			"upload_button": "Télécharger le fichier",
+			"import_button": "Importer",
+			"error_invalid_json": "Veuillez utiliser un objet JSON valide."
+		},
+		"wowhead": {
+			"title": "Import Wowhead",
+			"description": "Importer les paramètres depuis",
+			"gear_planner_link": "le Planificateur d'Équipement Wowhead",
+			"feature_description": "Cette fonctionnalité importe l'équipement, la race et (optionnellement) les talents. Elle n'importe PAS les buffs, debuffs, consommables, rotation ou stats personnalisées.",
+			"instructions": "Pour importer, collez le lien du planificateur d'équipement ci-dessous et cliquez sur 'Importer'.",
+			"upload_button": "Télécharger le fichier",
+			"import_button": "Importer",
+			"tinker_warning": {
+				"title": "Problèmes de bricolage",
+				"message": "Il y a des problèmes connus lors de l'importation des bricolages depuis Wowhead. Assurez-vous toujours de vérifier vos bricolages après l'importation."
+			},
+			"error_invalid_url": "URL WCL invalide {{url}}, doit ressembler à \"https://www.wowhead.com/mop-classic/gear-planner/CLASS/RACE/XXXX\"",
+			"error_cannot_parse_class": "Impossible de parser la classe : {{classId}}",
+			"error_cannot_parse_race": "Impossible de parser la race : {{raceId}}"
+		},
+		"addon": {
+			"title": "Import Addon",
+			"description": "Importer les paramètres depuis l'",
+			"addon_link": "Addon WoWSims Exporter In-Game",
+			"feature_description": "Cette fonctionnalité importe l'équipement, la race, les talents, les glyphes et les professions. Elle n'importe PAS les buffs, debuffs, consommables, rotation ou stats personnalisées.",
+			"instructions": "Pour importer, collez la sortie de l'addon ci-dessous et cliquez sur 'Importer'.",
+			"upload_button": "Télécharger le fichier",
+			"import_button": "Importer",
+			"reforge_warning": {
+				"title": "Problèmes de retouche",
+				"message": "Il y a des problèmes connus avec la retouche lors de l'utilisation de l'addon WSE. Assurez-vous toujours de vérifier vos retouches après l'importation."
+			}
+		}
+	},
+	"export": {
+		"title": "Exporter",
+		"link": {
+			"title": "Export de Lien",
+			"description": "Exporter les paramètres sous forme de lien partageable.",
+			"instructions": "Copiez le lien ci-dessous pour partager vos paramètres avec d'autres.",
+			"copy_button": "Copier",
+			"copy_tooltip": "Copier dans le presse-papiers"
+		},
+		"json": {
+			"title": "Export JSON",
+			"description": "Exporter les paramètres sous forme de fichier JSON.",
+			"instructions": "Téléchargez le fichier JSON ou copiez le contenu ci-dessous.",
+			"copy_button": "Copier",
+			"copy_tooltip": "Copier dans le presse-papiers",
+			"download_button": "Télécharger"
+		},
+		"wowhead": {
+			"title": "Export WoWHead",
+			"description": "Exporter les paramètres vers le Planificateur d'Équipement WoWHead.",
+			"instructions": "Copiez le lien ci-dessous pour ouvrir votre configuration d'équipement dans WoWHead.",
+			"copy_button": "Copier",
+			"copy_tooltip": "Copier dans le presse-papiers"
+		},
+		"pawn_ep": {
+			"title": "Export PE Pawn",
+			"description": "Exporter les poids PE pour l'addon Pawn.",
+			"instructions": "Copiez la chaîne Pawn ci-dessous et importez-la dans votre addon Pawn.",
+			"copy_button": "Copier",
+			"copy_tooltip": "Copier dans le presse-papiers"
+		},
+		"cli": {
+			"title": "Export CLI",
+			"description": "Exporter les paramètres pour la simulation en ligne de commande.",
+			"instructions": "Copiez la commande ci-dessous pour exécuter des simulations depuis la ligne de commande.",
+			"copy_button": "Copier",
+			"copy_tooltip": "Copier dans le presse-papiers"
+		},
+		"categories": {
+			"gear": {
+				"label": "Équipement",
+				"tooltip": "Inclut également les stats bonus et les changements d'armes."
+			},
+			"talents": {
+				"label": "Talents",
+				"tooltip": "Talents et Glyphes."
+			},
+			"rotation": {
+				"label": "Rotation",
+				"tooltip": "Inclut tout ce qui se trouve dans l'onglet Rotation."
+			},
+			"consumes": {
+				"label": "Consommables",
+				"tooltip": "Flacons, potions, nourriture, etc."
+			},
+			"external": {
+				"label": "Buffs & Debuffs",
+				"tooltip": "Tous les paramètres qui sont appliqués par d'autres membres du raid."
+			},
+			"miscellaneous": {
+				"label": "Divers",
+				"tooltip": "Paramètres spécifiques à la spécialisation, devant/derrière la cible, distance de la cible, etc."
+			},
+			"encounter": {
+				"label": "Rencontre",
+				"tooltip": "Paramètres liés au combat."
+			}
+		}
+	},
+	"info": {
+		"known_issues": "Problèmes Connus",
+		"bug_report": "Signaler un bug ou Demander une fonctionnalité",
+		"sim_options": "Options de simulation",
+		"discord": "Rejoignez-nous sur Discord",
+		"patreon": "Soutenez-nous sur Patreon",
+		"github": "Contribuer sur GitHub",
+		"status": {
+			"unlaunched": "Cette simulation est EN COURS DE DÉVELOPPEMENT. Elle n'est pas entièrement développée et ne devrait pas être utilisée à des fins générales.",
+			"alpha": "Cette simulation est en ALPHA. Des bugs sont attendus ; merci de nous informer si vous en trouvez un !",
+			"beta": "Cette simulation est en BÊTA. Il peut encore y avoir quelques bugs ; merci de nous informer si vous en trouvez un !"
+		},
+		"options": {
+			"title": "Options",
+			"fixed_rng_seed": {
+				"label": "Graine RNG fixe",
+				"tooltip": "Valeur de la graine pour le générateur de nombres aléatoires utilisé pendant les simulations, ou 0 pour utiliser une aléatoire différente à chaque exécution. Utilisez ceci pour partager des résultats de simulation exacts ou pour le débogage.",
+				"last_used": "Dernière graine RNG utilisée :"
+			},
+			"language": {
+				"label": "Langue",
+				"tooltip": "Contrôle la langue pour les infobulles Wowhead."
+			},
+			"feature_toggles": {
+				"show_threat_metrics": "Afficher les options de Menace/Tank",
+				"show_experimental": "Afficher les fonctionnalités expérimentales",
+				"show_quick_swap": "Afficher l'interface de changement rapide"
+			},
+			"use_multiple_cpu_cores": {
+				"label": "Utiliser Plusieurs Cœurs CPU"
+			},
+			"restore_defaults": {
+				"button": "Restaurer les paramètres par défaut",
+				"tooltip": "Restaure tous les paramètres par défaut (équipement, consommables, buffs, talents, poids PE, etc). Les paramètres sauvegardés sont préservés.",
+				"success_message": "Paramètres par défaut restaurés."
+			}
+		}
+	},
+	"sidebar": {
+		"iterations": "Itérations",
+		"warnings": {
+			"meta_gem_disabled": "Gemme méta désactivée ({{gemName}}) : {{description}}",
+			"profession_requirement": "{{itemName}} nécessite {{professionName}}, mais elle n'est pas sélectionnée.",
+			"too_many_jc_gems": "Seulement 2 gemmes de joaillerie sont autorisées, mais {{count}} sont équipées.",
+			"unspent_talent_points": "Points de talent manquants dans les rangées {{rowNumbers}}.",
+			"armor_specialization": "Équipez de l'équipement {{armorType}} dans chaque emplacement pour l'effet de spécialisation d'armure (5% de statistique primaire).",
+			"dual_wield_2h_without_titans_grip": "Manier deux armes à deux mains sans la spécialisation Poigne du titan.",
+			"shaman_fele_autocast": "La configuration des sorts de l'Élémentaire de feu n'est pas optimale avec l'utilisation du talent Élémentaliste primordial (Tous activés sauf Ardeur). Ignorez ce message si vous savez ce que vous faites."
+		},
+		"buttons": {
+			"simulate": "Simuler",
+			"stat_weights": {
+				"title": "Poids des Statistiques",
+				"modal": {
+					"title": "Calculer les Poids des Statistiques",
+					"ep": "PE",
+					"weights": "Poids",
+					"show_all_stats": "Afficher toutes les Statistiques",
+					"dps_tps_reference": "Référence DPS/TPS :",
+					"healing_reference": "Référence de soins :",
+					"mitigation_reference": "Référence d'atténuation :",
+					"reference_description": "Les sélecteurs de statistiques ci-dessus contrôlent quelle statistique de référence est utilisée pour la normalisation PE des différentes colonnes PE.",
+					"current_ep_description": "La colonne 'PE Actuel' affiche les valeurs actuellement utilisées par les sélecteurs d'objets pour trier les objets.",
+					"copy_icon_description": "Utilisez l'icône de copie au-dessus des PE pour utiliser les PE nouvellement calculés.",
+					"stat": "Statistique",
+					"update": "Mettre à jour",
+					"ep_ratio": "Ratio PE",
+					"update_ep": "Mettre à jour PE",
+					"calculate": "Calculer",
+					"compute_weighted_ep": "Calculer PE Pondéré",
+					"dps_weight": {
+						"label": "Poids DPS",
+						"tooltip": "Augmentation par point de DPS (Dégâts Par Seconde) pour chaque statistique."
+					},
+					"dps_ep": {
+						"label": "PE DPS",
+						"tooltip": "PE (Points d'Équivalence) pour DPS (Dégâts Par Seconde) pour chaque statistique."
+					},
+					"hps_weight": {
+						"label": "Poids SPS",
+						"tooltip": "Augmentation par point de SPS (Soins Par Seconde) pour chaque statistique."
+					},
+					"hps_ep": {
+						"label": "PE SPS",
+						"tooltip": "PE (Points d'Équivalence) pour SPS (Soins Par Seconde) pour chaque statistique."
+					},
+					"tps_weight": {
+						"label": "Poids TPS",
+						"tooltip": "Augmentation par point de TPS (Menace Par Seconde) pour chaque statistique."
+					},
+					"tps_ep": {
+						"label": "PE TPS",
+						"tooltip": "PE (Points d'Équivalence) pour TPS (Menace Par Seconde) pour chaque statistique."
+					},
+					"dtps_weight": {
+						"label": "Poids DTPS",
+						"tooltip": "Augmentation par point de DTPS (Dégâts Subis Par Seconde) pour chaque statistique."
+					},
+					"dtps_ep": {
+						"label": "PE DTPS",
+						"tooltip": "PE (Points d'Équivalence) pour DTPS (Dégâts Subis Par Seconde) pour chaque statistique."
+					},
+					"tmi_weight": {
+						"label": "Poids TMI",
+						"tooltip": "Diminution par point de TMI (Indice Theck-Meloree) pour chaque statistique."
+					},
+					"tmi_ep": {
+						"label": "PE TMI",
+						"tooltip": "PE (Points d'Équivalence) pour TMI (Indice Theck-Meloree) pour chaque statistique."
+					},
+					"death_weight": {
+						"label": "Poids Mort",
+						"tooltip": "Diminution par point de p(mort) pour chaque statistique."
+					},
+					"death_ep": {
+						"label": "PE Mort",
+						"tooltip": "PE (Points d'Équivalence) pour p(mort) pour chaque statistique."
+					},
+					"current_ep": {
+						"label": "PE Actuel",
+						"tooltip": "Poids PE actuels. Utilisés pour trier les menus de sélection d'équipement."
+					},
+					"not_applicable": "N/A",
+					"column_headers": {
+						"stat": "Statistique",
+						"update": "Mettre à jour",
+						"ep_ratio": "Ratio PE",
+						"update_ep_button": "Mettre à jour PE"
+					},
+					"tooltips": {
+						"normalized_by": "Normalisé par {{refStatName}}.",
+						"copy_to_current_ep": "Copier vers PE actuel",
+						"restore_default_ep": "Restaurer PE par défaut",
+						"compute_weighted_ep": "Calculer PE pondéré"
+					},
+					"progress": {
+						"simulations_complete": "simulations terminées",
+						"iterations_complete": "itérations terminées"
+					}
+				},
+				"saved_ep_weights": {
+					"title": "Poids PE sauvegardés"
+				}
+			},
+			"suggest_reforges": {
+				"title": "Suggérer des retouches",
+				"tooltip": "Modifier les paramètres de l'Optimiseur de retouche",
+				"use_soft_cap_breakpoints": "Utiliser les breakpoints de softcap",
+				"force_stat_proc": "Forcer le proc RoRo",
+				"any": "N'importe lequel",
+				"optimize_gems_tooltip": "Optimiser les gemmes et les retouches simultanément.",
+				"freeze_item_slots_tooltip": "Marquer un ou plusieurs emplacements d'objets comme \"gelés\", ce qui empêchera l'optimiseur de modifier la retouche ou les gemmes dans cet emplacement de leurs paramètres actuels. Cela peut être utile pour les classes hybrides qui utilisent la même pièce d'équipement pour plusieurs rôles de raid.",
+				"edit_stat_caps": "Modifier les caps de statistiques",
+				"stat_caps_tooltip": "Les caps de statistiques sont la quantité maximale d'une statistique qui peut être obtenue par la retouche. Si une statistique dépasse son cap, l'optimiseur tentera de la réduire à la valeur du cap.",
+				"reset_to_defaults": "Réinitialiser aux caps par défaut",
+				"stat": "Statistique",
+				"select_preset": "Sélectionner un préréglage",
+				"breakpoint_limit": "Limite de breakpoint",
+				"breakpoint_limit_tooltip": "Permet de définir une limite de breakpoint personnalisée.",
+				"no_limit_set": "Aucune limite définie",
+				"breakpoints_implemented": "Les breakpoints suivants ont été implémentés pour cette spé :",
+				"post_cap_ep": "PE post-cap",
+				"reforge_optimization_failed": "L'optimisation de la retouche a échoué. Veuillez réessayer ou signaler le problème s'il persiste.",
+				"reforge_optimization_cancelled": "Optimisation de la retouche annulée.",
+				"use_custom": "Utiliser des poids PE personnalisés",
+				"enable_modification": "Ceci permettra la modification des poids PE par défaut et la définition de caps de statistiques personnalisés.",
+				"modify_in_editor": "Les poids PE peuvent être modifiés dans l'éditeur de Poids des Statistiques.",
+				"hard_cap_info": "Si vous voulez caper une statistique, assurez-vous de définir le PE de cette statistique plus haut.",
+				"edit_weights": "Modifier les poids",
+				"include_gems": "Inclure les gemmes",
+				"freeze_item_slots": "Verrouiller certains emplacements",
+				"include_eotbp_socket": "Inclure le socket EotBP",
+				"include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation.",
+				"limit_execution_time": "Limiter le temps d'exécution",
+				"limit_execution_time_tooltip": "Si coché, le solveur se terminera en erreur si le temps de calcul total dépasse 30 secondes. Si décoché, le temps de calcul total sera plafonné à 1 heure."
+			}
+		},
+		"header": {
+			"title": "WoWSims - Mists of Pandaria",
+			"phase": "{{phase}} - {{status}}"
+		},
+		"results": {
+			"progress": {
+				"presim_running": "pré-simulations en cours",
+				"iterations_complete": "itérations terminées"
+			},
+			"reference": {
+				"save_as_reference": "Sauvegarder comme référence",
+				"use_as_reference": "Utiliser comme référence",
+				"swap": "Échanger",
+				"swap_reference_with_current": "Échanger la référence avec l'actuel",
+				"cancel": "Annuler",
+				"remove_reference": "Supprimer la référence",
+				"vs_ref": "vs réf"
+			},
+			"metrics": {
+				"dps": {
+					"label": "DPS",
+					"tooltip": "Dégâts par seconde"
+				},
+				"hps": {
+					"label": "SPS",
+					"tooltip": "Soins+Boucliers Par Seconde, incluant l'excédent de soin."
+				},
+				"tps": {
+					"label": "TPS",
+					"tooltip": "Menace Par Seconde"
+				},
+				"dtps": {
+					"label": "DTPS",
+					"tooltip": "Dégâts Subis Par Seconde"
+				},
+				"tmi": {
+					"label": "TMI",
+					"tooltip": {
+						"title": "Indice Theck-Meloree (TMI)",
+						"description": "Une mesure de la régularité des dégâts entrants qui combine les avantages de l'esquive avec la vie effective.",
+						"note": "Le plus bas, le meilleur. Ceci représente le % de vos PV à attendre dans une fenêtre de burst de 6 secondes basée sur les paramètres de rencontre."
+					}
+				},
+				"cod": {
+					"label": "Chance de Mort",
+					"tooltip": {
+						"title": "Chance de Mort",
+						"description": "Le pourcentage d'itérations dans lesquelles le joueur est mort, basé sur les dégâts entrants des ennemis et les soins entrants (voir les options SPS Entrants et Cadence de Soins).",
+						"note": "DTPS seul n'est pas une bonne mesure de la résistance car il n'est pas affecté par la santé et ignore les pics de dégâts. La Chance de Mort tente de capturer la résistance globale."
+					}
+				},
+				"dur": {
+					"label": "DUR",
+					"tooltip": "Durée Moyenne de Combat"
+				},
+				"tto": {
+					"label": "TTO",
+					"tooltip": "Temps Vers OOM"
+				},
+				"oom": {
+					"label": "OOM",
+					"tooltip": "Temps passé Hors de Mana"
+				}
+			}
+		},
+		"character_stats": {
+			"title": "Statistiques",
+			"melee_crit_cap": "Cap de critique CaC",
+			"tooltip": {
+				"base": "Base :",
+				"gear": "Équipement :",
+				"talents": "Talents :",
+				"buffs": "Buffs :",
+				"consumes": "Consommables :",
+				"bonus": "Bonus :",
+				"total": "Total :",
+				"glancing": "Éraflement :",
+				"suppression": "Suppression :",
+				"to_hit_cap": "Jusqu'au cap de toucher :",
+				"to_exp_cap": "Jusqu'au cap d'expertise :",
+				"spec_offsets": "Compensations de spé :",
+				"final_crit_cap": "Cap de critique final :",
+				"can_raise_by": "Peut être augmenter de :"
+			},
+			"attack_table": {
+				"glancing": "Éraflement :",
+				"suppression": "Suppression :",
+				"to_hit_cap": "Jusqu'au cap de toucher :",
+				"to_exp_cap": "Jusqu'au cap d'expertise :",
+				"spec_offsets": "Compensations de spé :",
+				"final_crit_cap": "Cap de critique final :",
+				"can_raise_by": "Peut être augmenter de :"
+			},
+			"crit_cap": {
+				"exact": "Exact",
+				"over_by": "Au-dessus de",
+				"under_by": "En-dessous de"
+			},
+			"bonus_prefix": "Bonus",
+			"points_suffix": "Points",
+			"percent_suffix": "%"
+		}
+	}
 }

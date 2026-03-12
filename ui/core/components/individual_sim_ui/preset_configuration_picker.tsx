@@ -77,7 +77,7 @@ export class PresetConfigurationPicker extends Component {
 
 				// Add main categories from build keys
 				Object.keys(build).forEach(c => {
-					if (!['name', 'encounter', 'settings'].includes(c) && build[c as PresetConfigurationCategory]) {
+					if (!['name', 'encounter', 'settings', 'reforgeSettings'].includes(c) && build[c as PresetConfigurationCategory]) {
 						const category = c as PresetConfigurationCategory;
 						categories.push(translatePresetConfigurationCategory(category));
 					}
@@ -89,6 +89,10 @@ export class PresetConfigurationPicker extends Component {
 
 				if (build.epWeights) {
 					categories.push(i18n.t('common.preset.stat_weights'));
+				}
+
+				if (build.reforgeSettings) {
+					categories.push('Reforge Settings');
 				}
 
 				if (build.settings) {
@@ -140,7 +144,7 @@ export class PresetConfigurationPicker extends Component {
 
 	static applyBuild(
 		eventID: number,
-		{ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings }: PresetBuild,
+		{ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings, reforgeSettings }: PresetBuild,
 		simUI: IndividualSimUI<any>,
 	) {
 		TypedEvent.freezeAllAndDo(() => {
@@ -200,6 +204,9 @@ export class PresetConfigurationPicker extends Component {
 				if (encounter.healingModel) simUI.player.setHealingModel(eventID, encounter.healingModel);
 				if (encounter.tanks) simUI.sim.raid.setTanks(eventID, encounter.tanks);
 				if (encounter.targetDummies !== undefined) simUI.sim.raid.setTargetDummies(eventID, encounter.targetDummies);
+			}
+			if (reforgeSettings && simUI.reforger) {
+				simUI.reforger.fromProto(eventID, reforgeSettings);
 			}
 		});
 	}

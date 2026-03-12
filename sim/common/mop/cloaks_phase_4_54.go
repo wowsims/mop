@@ -5,6 +5,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/wowsims/mop/sim/common/shared"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
@@ -18,79 +19,79 @@ func init() {
 		character := agent.GetCharacter()
 		label := "Xing-Ho, Breath of Yu'lon"
 
-		spell := character.RegisterSpell(core.SpellConfig{
-			ActionID:    core.ActionID{SpellID: 146198},
-			SpellSchool: core.SpellSchoolFirestorm,
-			Flags:       core.SpellFlagNoSpellMods | core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
-			ProcMask:    core.ProcMaskEmpty,
+		if character.Back().ChallengeMode {
+			return
+		}
 
-			DamageMultiplier: 1,
-			CritMultiplier:   character.DefaultCritMultiplier(),
-			ThreatMultiplier: 1,
+		parentAura := core.MakePermanent(character.RegisterAura(core.Aura{
+			Label:    "Essence of Yu'lon - Dummy Aura",
+			Duration: core.NeverExpires,
+		}))
 
-			Dot: core.DotConfig{
-				Aura: core.Aura{
-					Label: "Essence of Yu'lon",
-				},
-				TickLength:           1 * time.Second,
-				NumberOfTicks:        4,
-				AffectedByCastSpeed:  true,
-				HasteReducesDuration: true,
+		var igniteSpell *core.Spell
+		igniteSpell = shared.RegisterIgniteEffect(&character.Unit, shared.IgniteConfig{
+			ActionID:           core.ActionID{SpellID: 148008},
+			SpellSchool:        core.SpellSchoolFirestorm,
+			DisableCastMetrics: true,
+			DotAuraLabel:       "Essence of Yu'lon",
+			DotAuraTag:         "EssenceOfYulon",
+			TickLength:         1 * time.Second,
+			NumberOfTicks:      4,
+			TickImmediately:    true,
+			CritMultiplier:     character.DefaultCritMultiplier(),
+			ParentAura:         parentAura,
 
-				OnSnapshot: func(_ *core.Simulation, target *core.Unit, dot *core.Dot, isRollover bool) {
-					dot.Snapshot(target, dot.Spell.SpellPower()*2)
-				},
-				OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-					numTargets := min(sim.Environment.ActiveTargetCount(), 5)
+			ProcTrigger: core.ProcTrigger{
+				Name: label,
 
-					for range numTargets {
-						dot.CalcAndDealPeriodicSnapshotDamage(sim, target, dot.OutcomeSnapshotCrit)
-						target = sim.Environment.NextActiveTargetUnit(target)
-					}
-				},
+				DPM: character.NewRPPMProcManager(102246, false, false, core.ProcMaskSpellOrSpellProc, core.RPPMConfig{
+					PPM: 2.61100006104,
+				}.WithHasteMod().
+					WithSpecMod(0.25, proto.Spec_SpecArcaneMage).
+					WithSpecMod(0.20000000298, proto.Spec_SpecFireMage).
+					WithSpecMod(0.20000000298, proto.Spec_SpecFrostMage).
+					WithSpecMod(-0.75, proto.Spec_SpecProtectionPaladin).
+					WithSpecMod(-0.75, proto.Spec_SpecProtectionWarrior).
+					WithSpecMod(0.10000000149, proto.Spec_SpecBalanceDruid).
+					WithSpecMod(-0.75, proto.Spec_SpecGuardianDruid).
+					WithSpecMod(-0.75, proto.Spec_SpecBloodDeathKnight).
+					WithSpecMod(0, proto.Spec_SpecShadowPriest).
+					WithSpecMod(0.05000000075, proto.Spec_SpecElementalShaman).
+					WithSpecMod(0.10000000149, proto.Spec_SpecAfflictionWarlock).
+					WithSpecMod(0.25, proto.Spec_SpecDemonologyWarlock).
+					WithSpecMod(0.15000000596, proto.Spec_SpecDestructionWarlock).
+					WithSpecMod(-0.75, proto.Spec_SpecBrewmasterMonk),
+				),
+
+				Callback:           core.CallbackOnSpellHitDealt,
+				TriggerImmediately: true,
+				RequireDamageDealt: true,
 			},
 
-			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				spell.Dot(target).Apply(sim)
+			DamageCalculator: func(result *core.SpellResult) float64 {
+				return igniteSpell.SpellPower() * 2
 			},
-		})
 
-		proctrigger := character.MakeProcTriggerAura(core.ProcTrigger{
-			Name: label,
+			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+				numTargets := min(sim.Environment.ActiveTargetCount(), 5)
 
-			DPM: character.NewRPPMProcManager(102246, false, false, core.ProcMaskSpellOrSpellProc, core.RPPMConfig{
-				PPM: 2.61100006104,
-			}.WithHasteMod().
-				WithSpecMod(0.25, proto.Spec_SpecArcaneMage).
-				WithSpecMod(0.20000000298, proto.Spec_SpecFireMage).
-				WithSpecMod(0.20000000298, proto.Spec_SpecFrostMage).
-				WithSpecMod(-0.75, proto.Spec_SpecProtectionPaladin).
-				WithSpecMod(-0.75, proto.Spec_SpecProtectionWarrior).
-				WithSpecMod(0.10000000149, proto.Spec_SpecBalanceDruid).
-				WithSpecMod(-0.75, proto.Spec_SpecGuardianDruid).
-				WithSpecMod(-0.75, proto.Spec_SpecBloodDeathKnight).
-				WithSpecMod(0, proto.Spec_SpecShadowPriest).
-				WithSpecMod(0.05000000075, proto.Spec_SpecElementalShaman).
-				WithSpecMod(0.10000000149, proto.Spec_SpecAfflictionWarlock).
-				WithSpecMod(0.25, proto.Spec_SpecDemonologyWarlock).
-				WithSpecMod(0.15000000596, proto.Spec_SpecDestructionWarlock).
-				WithSpecMod(-0.75, proto.Spec_SpecBrewmasterMonk),
-			),
-
-			Callback:           core.CallbackOnSpellHitDealt,
-			TriggerImmediately: true,
-
-			Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
-				spell.Cast(sim, result.Target)
+				for range numTargets {
+					dot.Spell.CalcAndDealPeriodicDamage(sim, target, dot.SnapshotBaseDamage, dot.OutcomeTickMagicCrit)
+					target = sim.Environment.NextActiveTargetUnit(target)
+				}
 			},
 		})
 
-		character.ItemSwap.RegisterProc(102246, proctrigger)
+		character.ItemSwap.RegisterProc(102246, parentAura)
 	})
 
 	newXuenCloakEffect := func(label string, itemID int32) {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
+
+			if character.Back().ChallengeMode {
+				return
+			}
 
 			flurrySpell := character.RegisterSpell(core.SpellConfig{
 				ActionID:    core.ActionID{SpellID: 147891},
@@ -186,6 +187,10 @@ func init() {
 	newNiuzaoCloakEffect := func(label string, itemID int32) {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
+
+			if character.Back().ChallengeMode {
+				return
+			}
 
 			dummyAura := core.MakePermanent(character.RegisterAura(core.Aura{
 				Label:    label,

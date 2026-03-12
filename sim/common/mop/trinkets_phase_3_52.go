@@ -27,7 +27,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 
-			statValue := core.GetItemEffectScaling(itemID, 0.44999998808, state)
+			statValue := core.GetItemEffectScalingStatValue(itemID, 0.44999998808, state)
 
 			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				AuraLabel:            fmt.Sprintf("Blades of Renataki (%s)", versionLabel),
@@ -74,7 +74,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 
-			manaValue := core.GetItemEffectScaling(itemID, 0.55900001526, state)
+			manaValue := core.GetItemEffectScalingStatValue(itemID, 0.55900001526, state)
 			manaMetrics := character.NewManaMetrics(core.ActionID{SpellID: 138856})
 
 			stackingAura := character.RegisterAura(core.Aura{
@@ -141,7 +141,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 
-			statValue := core.GetItemEffectScaling(itemID, 0.44999998808, state)
+			statValue := core.GetItemEffectScalingStatValue(itemID, 0.44999998808, state)
 
 			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				AuraLabel:            fmt.Sprintf("Wushoolay's Lightning (%s)", versionLabel),
@@ -189,7 +189,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 
-			statValue := core.GetItemEffectScaling(itemID, 0.44999998808, state)
+			statValue := core.GetItemEffectScalingStatValue(itemID, 0.44999998808, state)
 
 			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				AuraLabel:            fmt.Sprintf("Feathers of Fury (%s)", versionLabel),
@@ -235,7 +235,7 @@ func init() {
 
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
-			statValue := core.GetItemEffectScaling(itemID, 2.97000002861, state)
+			statValue := core.GetItemEffectScalingStatValue(itemID, 2.97000002861, state)
 
 			aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				Duration:             time.Second * 20,
@@ -276,7 +276,7 @@ func init() {
 
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
-			statValue := core.GetItemEffectScaling(itemID, 0.5189999938, state)
+			statValue := core.GetItemEffectScalingStatValue(itemID, 0.5189999938, state)
 
 			aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				Duration:             time.Second * 10,
@@ -320,7 +320,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 
-			shieldValue := core.GetItemEffectScaling(itemID, 9.45600032806, state)
+			shieldValue := core.GetItemEffectScalingStatValue(itemID, 9.45600032806, state)
 
 			// TODO: For now self-shield as there is no healing Sim
 			shield := character.NewDamageAbsorptionAura(core.AbsorptionAuraConfig{
@@ -365,7 +365,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 
-			healValue := core.GetItemEffectScaling(itemID, 13.61499977112, state)
+			healValue := core.GetItemEffectScalingStatValue(itemID, 13.61499977112, state)
 
 			spell := character.RegisterSpell(core.SpellConfig{
 				ActionID:    core.ActionID{SpellID: 138973},
@@ -416,7 +416,7 @@ func init() {
 
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
-			statValue := core.GetItemEffectScaling(itemID, 0.5189999938, state)
+			statValue := core.GetItemEffectScalingStatValue(itemID, 0.5189999938, state)
 
 			aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				Duration:             time.Second * 10,
@@ -460,7 +460,7 @@ func init() {
 
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
-			statValue := core.GetItemEffectScaling(itemID, 0.96799999475, state)
+			statValue := core.GetItemEffectScalingStatValue(itemID, 0.96799999475, state)
 
 			aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
 				Duration:             time.Second * 20,
@@ -539,6 +539,7 @@ func init() {
 				RequireDamageDealt: true,
 				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
 					statBuffAura.Activate(sim)
+					character.ReactToEvent(sim, false)
 				},
 			})
 
@@ -676,7 +677,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 			actionId := core.ActionID{SpellID: 138979, ItemID: itemID}
-			absorbPerHitValue := core.GetItemEffectScaling(itemID, 3.78200006485, state)
+			absorbPerHitValue := core.GetItemEffectScalingStatValue(itemID, 3.78200006485, state)
 
 			damageAbsorptionAura := character.NewDamageAbsorptionAura(core.AbsorptionAuraConfig{
 				Aura: core.Aura{
@@ -743,7 +744,7 @@ func init() {
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
 
-			strengthValue := core.GetItemEffectScaling(itemID, 2.47499990463, state)
+			strengthValue := core.GetItemEffectScalingStatValue(itemID, 2.47499990463, state)
 
 			buffAura := character.NewTemporaryStatsAura(
 				fmt.Sprintf("Zandalari Warrior (%s)", versionLabel),
@@ -792,7 +793,7 @@ func init() {
 		character := agent.GetCharacter()
 		actionId := core.ActionID{SpellID: 138724, ItemID: 94509}
 
-		manaValue := core.GetItemEffectScaling(94509, 10.05900001526, state)
+		manaValue := core.GetItemEffectScalingStatValue(94509, 10.05900001526, state)
 		manaMetrics := character.NewManaMetrics(actionId)
 
 		spell := character.RegisterSpell(core.SpellConfig{

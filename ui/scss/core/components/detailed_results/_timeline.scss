@@ -1,6 +1,7 @@
 :root {
 	--timeline-tick-bg: maroon;
 	--timeline-cast-bg: rgb(229, 204, 128, 0.7);
+	--timeline-cast-cancel-bg: rgb(230, 128, 102, 0.7);
 	--timeline-aura-bg: rgba(0, 0, 255, 0.52);
 	--timeline-travel-time-bg: rgb(249, 192, 255, 0.6);
 }
@@ -329,6 +330,14 @@
 	height: 24px;
 	width: 24px;
 	border-bottom: 3px solid var(--bs-gray);
+}
+
+.rotation-timeline-cast.cast-cancelled {
+	background-color: var(--timeline-cast-cancel-bg);
+
+	.rotation-timeline-cast-icon {
+		border-color: var(--bs-cancel);
+	}
 }
 
 .rotation-timeline-cast.outcome-miss .rotation-timeline-cast-icon {

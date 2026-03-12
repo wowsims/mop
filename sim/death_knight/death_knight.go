@@ -51,6 +51,8 @@ type DeathKnight struct {
 	PillarOfFrostAura      *core.Aura
 	RaiseDeadAura          *core.Aura
 	ThreatOfThassarianAura *core.Aura
+	KillingMachineAura     *core.Aura
+	DarkTransformationAura *core.Aura
 
 	// Diseases
 	FrostFeverSpell  *core.Spell
@@ -257,7 +259,8 @@ const (
 	DeathKnightSpellRuneTap
 	DeathKnightSpellScourgeStrike
 	DeathKnightSpellScourgeStrikeShadow
-	DeathKnightSpellSoulReaper
+	DeathKnightSpellSoulReaperMelee
+	DeathKnightSpellSoulReaperDot
 	DeathKnightSpellSummonGargoyle
 	DeathKnightSpellUnholyBlight
 	DeathKnightSpellUnholyFrenzy

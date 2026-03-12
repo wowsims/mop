@@ -26,19 +26,21 @@ func (demonology *DemonologyWarlock) registerHotfixes() {
 
 	// 2025-09-31 - Doom’s damage over time increased from 33% to 50%.
 	// 2025-11-13 - Doom’s damage over time decreased to 25% (was 50%).
-	demonology.AddStaticMod(core.SpellModConfig{
-		ClassMask:  warlock.WarlockSpellDoom,
-		Kind:       core.SpellMod_DamageDone_Pct,
-		FloatValue: 0.25,
-	})
+	// 2026-02-02 - Reverted hotfix bonus, now 0% again.
+	// demonology.AddStaticMod(core.SpellModConfig{
+	// 	ClassMask:  warlock.WarlockSpellDoom,
+	// 	Kind:       core.SpellMod_DamageDone_Pct,
+	// 	FloatValue: 0,
+	// })
 
 	// 2025-09-31 - Soul Fire damage increased by 20%.
 	// 2025-11-13 - Soul Fire damage decreased to 10% (from 20%).
-	demonology.AddStaticMod(core.SpellModConfig{
-		ClassMask:  warlock.WarlockSpellSoulFire,
-		Kind:       core.SpellMod_DamageDone_Pct,
-		FloatValue: 0.10,
-	})
+	// 2026-02-02 - Reverted hotfix bonus, now 0% again.
+	// demonology.AddStaticMod(core.SpellModConfig{
+	// 	ClassMask:  warlock.WarlockSpellSoulFire,
+	// 	Kind:       core.SpellMod_DamageDone_Pct,
+	// 	FloatValue: 0.0,
+	// })
 
 	// 2025-09-31 - Wild Imp Damage increased from 43% to 60%.
 	for _, imp := range demonology.WildImps {

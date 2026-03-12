@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 )
 
 // T14 - Windwalker
@@ -218,39 +219,38 @@ var ItemSetBattlegearOfSevenSacredSeals = core.NewItemSet(core.ItemSet{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			monk := agent.(MonkAgent).GetMonk()
 
-			registerComboBreakerDamageMod := func(spellID int32, spellMask int64) {
-				monk.OnSpellRegistered(func(spell *core.Spell) {
-					if !spell.Matches(spellMask) {
-						return
-					}
-
-					aura := monk.GetAuraByID(core.ActionID{SpellID: spellID})
-					if aura != nil {
-						damageMod := monk.AddDynamicMod(core.SpellModConfig{
-							Kind:       core.SpellMod_DamageDone_Pct,
-							ClassMask:  spellMask,
-							FloatValue: 0.4,
-						})
-
-						aura.ApplyOnGain(func(_ *core.Aura, sim *core.Simulation) {
-							if setBonusAura.IsActive() {
-								damageMod.Activate()
-							}
-						}).ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
-							damageMod.Deactivate()
-						})
-					}
-				})
-
+			if monk.Spec != proto.Spec_SpecWindwalkerMonk {
+				return
 			}
 
-			registerComboBreakerDamageMod(118864, MonkSpellTigerPalm)
-			registerComboBreakerDamageMod(116768, MonkSpellBlackoutKick)
+			registerComboBreakerDamageMod := func(aura *core.Aura, spellMask int64) {
+				damageMod := monk.AddDynamicMod(core.SpellModConfig{
+					Kind:       core.SpellMod_DamageDone_Pct,
+					ClassMask:  spellMask,
+					FloatValue: 0.4,
+				})
+
+				aura.ApplyOnGain(func(_ *core.Aura, sim *core.Simulation) {
+					if setBonusAura.IsActive() {
+						damageMod.Activate()
+					}
+				}).ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					damageMod.Deactivate()
+				})
+			}
+
+			setBonusAura.ApplyOnInit(func(aura *core.Aura, sim *core.Simulation) {
+				registerComboBreakerDamageMod(monk.ComboBreakerTigerPalmAura, MonkSpellTigerPalm)
+				registerComboBreakerDamageMod(monk.ComboBreakerBlackoutKickAura, MonkSpellBlackoutKick)
+			})
 
 			setBonusAura.ExposeToAPL(145004)
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			// Implemented in windwalker/tigereye_brew.go
+			// Implemented in windwalker/ww_fists_of_fury.go
+			// Implemented in windwalker/ww_rising_sun_kick.go
+			// Implemented in windwalker/blackout_kick.go
 			monk := agent.(MonkAgent).GetMonk()
 			monk.T16Windwalker4P = monk.RegisterAura(core.Aura{
 				Label:    "Focus of Xuen" + monk.Label,

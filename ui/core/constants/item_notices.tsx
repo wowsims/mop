@@ -61,6 +61,19 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 			),
 		},
 	]),
+
+	...[105150, 102310, 104652, 105399, 105648, 104901].map((itemID): [number, ItemNoticeData] => [
+		itemID,
+		{
+			[Spec.SpecUnknown]: (
+				<>
+					<p>
+						The proc has been implemented but currently does not work correctly with Mages Alter Time.
+					</p>
+				</>
+			),
+		},
+	]),
 ]);
 
 export const GENERIC_MISSING_SET_BONUS_NOTICE_DATA = new Map<number, string>([

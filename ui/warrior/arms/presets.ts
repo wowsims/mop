@@ -4,17 +4,15 @@ import { SavedTalents } from '../../core/proto/ui';
 import { ArmsWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior';
 import { Stats } from '../../core/proto_utils/stats';
 import ArmsApl from './apls/arms.apl.json';
-import P1ArmsBisGear from './gear_sets/p1_arms_bis.gear.json';
 import P2ArmsBisGear from './gear_sets/p2_arms_bis.gear.json';
 import P3ArmsBisGear from './gear_sets/p3_arms_bis.gear.json';
-import P1PreBisGear from './gear_sets/p1_prebis.gear.json';
+import PreBisGear from './gear_sets/prebis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
-export const P1_PREBIS_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS', P1PreBisGear);
-export const P1_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1ArmsBisGear);
+export const PREBIS_PRESET = PresetUtils.makePresetGear('Pre-BIS', PreBisGear);
 export const P2_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2ArmsBisGear);
 export const P3_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3ArmsBisGear);
 
@@ -49,7 +47,7 @@ export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatExpertiseRating]: 1.39,
 			[Stat.StatHitRating]: 1.88,
 			[Stat.StatCritRating]: 0.65,
-			[Stat.StatHasteRating]: 0.30,
+			[Stat.StatHasteRating]: 0.3,
 			[Stat.StatMasteryRating]: 0.49,
 		},
 		{

@@ -1,27 +1,28 @@
 import * as PresetUtils from '../../core/preset_utils';
 import { APLRotation_Type as APLRotationType } from '../../core/proto/apl.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { BeastMasteryHunter_Options as BeastMasteryOptions, HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType } from '../../core/proto/hunter';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import P2Build from './builds/p2.build.json';
 import P3Build from './builds/p3.build.json';
-import PreRaidBuild from './builds/preraid.build.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreRaidGear from './gear_sets/preraid.gear.json';
 import AoeApl from './apls/aoe.apl.json';
 import BmApl from './apls/bm.apl.json';
 
 export const PRERAID_PRESET_GEAR = PresetUtils.makePresetGear('Pre-raid', PreRaidGear);
 export const P2_PRESET_GEAR = PresetUtils.makePresetGear('P2', P2Gear);
-export const P3_PRESET_GEAR = PresetUtils.makePresetGear('P3 (WiP)', P3Gear);
+export const P3_PRESET_GEAR = PresetUtils.makePresetGear('P3', P3Gear);
+export const P5_PRESET_GEAR = PresetUtils.makePresetGear('P5 (WiP)', P5Gear);
 export const ROTATION_PRESET_BM = PresetUtils.makePresetAPLRotation('BM', BmApl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', AoeApl);
 export const DefaultTalents = {
 	name: 'Default',
 	data: SavedTalents.create({
-		talentsString: '312211',
+		talentsString: '312213',
 		glyphs: Glyphs.create({
 			major1: MajorGlyph.GlyphOfAnimalBond,
 			major2: MajorGlyph.GlyphOfDeterrence,
@@ -64,15 +65,11 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const PRERAID_PRESET = PresetUtils.makePresetBuildFromJSON('Pre-raid', Spec.SpecBeastMasteryHunter, PreRaidBuild, {
-	epWeights: P2_EP_PRESET,
-	rotationType: APLRotationType.TypeAuto,
-});
 export const P2_PRESET = PresetUtils.makePresetBuildFromJSON('P2', Spec.SpecBeastMasteryHunter, P2Build, {
 	epWeights: P2_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
-export const P3_PRESET = PresetUtils.makePresetBuildFromJSON('P3 (WiP)', Spec.SpecBeastMasteryHunter, P3Build, {
+export const P3_PRESET = PresetUtils.makePresetBuildFromJSON('P3', Spec.SpecBeastMasteryHunter, P3Build, {
 	epWeights: P3_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
@@ -98,4 +95,5 @@ export const OtherDefaults = {
 	iterationCount: 25000,
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
+	race: Race.RaceOrc,
 };

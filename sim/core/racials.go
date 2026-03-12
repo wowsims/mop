@@ -52,7 +52,7 @@ func applyRaceEffects(agent Agent) {
 				if spell.Unit.HasRunicPowerBar() {
 					spell.Unit.AddRunicPower(sim, 15.0, resourceMetrics)
 				} else if character.Class == proto.Class_ClassMonk {
-					spell.Unit.AddComboPoints(sim, 1, nil, resourceMetrics)
+					spell.Unit.AddComboPoints(sim, 1, spell.Unit, resourceMetrics)
 				} else if spell.Unit.HasEnergyBar() {
 					spell.Unit.AddEnergy(sim, 15.0, resourceMetrics)
 				} else if spell.Unit.HasManaBar() {

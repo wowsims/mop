@@ -53,9 +53,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_PRESET_GEAR.gear,
+		gear: Presets.P3_PRESET_GEAR.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P2_EP_PRESET.epWeights,
+		epWeights: Presets.P3_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			return new Stats()
@@ -114,8 +114,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_SV, Presets.ROTATION_PRESET_AOE],
 		// Preset gear configurations that the user can quickly select.
-		builds: [Presets.PRERAID_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
-		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P2_PRESET_GEAR, Presets.P3_PRESET_GEAR],
+		builds: [Presets.P2_PRESET, Presets.P3_PRESET],
+		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P2_PRESET_GEAR, Presets.P3_PRESET_GEAR, Presets.P5_PRESET_GEAR],
 	},
 
 	autoRotation: (player: Player<Spec.SpecSurvivalHunter>): APLRotation => {
@@ -139,11 +139,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 					1: Presets.PRERAID_PRESET_GEAR.gear,
 					2: Presets.P2_PRESET_GEAR.gear,
 					3: Presets.P3_PRESET_GEAR.gear,
+					5: Presets.P5_PRESET_GEAR.gear,
 				},
 				[Faction.Horde]: {
 					1: Presets.PRERAID_PRESET_GEAR.gear,
 					2: Presets.P2_PRESET_GEAR.gear,
 					3: Presets.P3_PRESET_GEAR.gear,
+					5: Presets.P5_PRESET_GEAR.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

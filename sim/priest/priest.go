@@ -96,7 +96,7 @@ func (priest *Priest) Initialize() {
 	// priest.registerDispersionSpell()
 
 	priest.registerPowerInfusionSpell()
-	priest.newMindSearSpell()
+	priest.registerMindSearSpell()
 
 	priest.ApplyGlyphs()
 

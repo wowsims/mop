@@ -10,7 +10,7 @@ import (
 func (war *ProtectionWarrior) registerDemoralizingShout() {
 	actionID := core.ActionID{SpellID: 1160}
 	war.DemoralizingShoutAuras = war.NewEnemyAuraArray(func(target *core.Unit) *core.Aura {
-		return war.GetOrRegisterAura(core.Aura{
+		return target.GetOrRegisterAura(core.Aura{
 			Label:           "Demoralizing Shout",
 			ActionID:        actionID,
 			ActionIDForProc: core.ActionID{SpellID: 125565},

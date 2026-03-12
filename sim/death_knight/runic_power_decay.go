@@ -23,7 +23,7 @@ func (dk *DeathKnight) registerRunicPowerDecay() {
 			dk.SpendRunicPower(sim, 1, decayMetrics)
 
 			decay = &core.PendingAction{
-				Priority:     core.ActionPriorityPrePull,
+				Priority:     core.ActionPriorityHigh,
 				NextActionAt: sim.CurrentTime + time.Second,
 				OnAction: func(sim *core.Simulation) {
 					if dk.CurrentRunicPower() <= 0 {

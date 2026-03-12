@@ -282,7 +282,7 @@ func (eb *energyBar) reset(sim *Simulation) {
 	eb.energyRegenMultiplier = 1.0
 
 	if eb.unit.Type != PetUnit {
-		eb.enable(sim, sim.Environment.PrepullStartTime())
+		eb.enable(sim, sim.Environment.PrepullStartTime(sim))
 	}
 }
 

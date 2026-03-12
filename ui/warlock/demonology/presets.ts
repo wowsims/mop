@@ -11,8 +11,9 @@ import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultAPL from './apls/default.apl.json';
-import P1Gear from './gear_sets/p1.gear.json';
+import UvlsAPL from './apls/uvls.apl.json';
 import P2Gear from './gear_sets/p2.gear.json';
+import P3Gear from './gear_sets/p3.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -20,10 +21,11 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 // keep them in a separate file.
 
 export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
-export const P1_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1Gear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2Gear);
+export const P3_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3Gear);
 
-export const APL_Default = PresetUtils.makePresetAPLRotation('Incinerate', DefaultAPL);
+export const APL_Default = PresetUtils.makePresetAPLRotation('Default', DefaultAPL);
+export const APL_UVLS = PresetUtils.makePresetAPLRotation('UVLS', UvlsAPL);
 
 // Preset options for EP weights
 export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -31,8 +33,8 @@ export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap({
 		[Stat.StatIntellect]: 1.24,
 		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 4,
-		[Stat.StatCritRating]: 0.60,
+		[Stat.StatHitRating]: 0.93,
+		[Stat.StatCritRating]: 0.6,
 		[Stat.StatHasteRating]: 0.66,
 		[Stat.StatMasteryRating]: 0.63,
 	}),
@@ -40,8 +42,8 @@ export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
-export const DemonologyTalentsDefaultP1 = {
-	name: 'Default P1',
+export const DemonologyTalentsDefault = {
+	name: 'Default',
 	data: SavedTalents.create({
 		talentsString: '231221',
 		glyphs: Glyphs.create({
@@ -49,6 +51,17 @@ export const DemonologyTalentsDefaultP1 = {
 			major2: MajorGlyph.GlyphOfSiphonLife,
 			major3: MajorGlyph.GlyphOfImpSwarm,
 			minor3: MinorGlyph.GlyphOfUnendingBreath,
+		}),
+	}),
+};
+
+export const DemonologyTalentsUVLS = {
+	name: 'UVLS',
+	data: SavedTalents.create({
+		...DemonologyTalentsDefault.data,
+		glyphs: Glyphs.create({
+			...DemonologyTalentsDefault.data.glyphs,
+			major2: MajorGlyph.GlyphOfEternalResolve,
 		}),
 	}),
 };
@@ -94,9 +107,27 @@ export const OtherDefaults = {
 	channelClipDelay: 150,
 };
 
-export const PRSET_BUILD_P1 = PresetUtils.makePresetBuild('Default P1', {
-	talents: DemonologyTalentsDefaultP1,
+export const PRESET_BUILD_P2 = PresetUtils.makePresetBuild('T14', {
+	gear: P2_PRESET,
+	talents: DemonologyTalentsDefault,
 	rotation: APL_Default,
+	settings: {
+		name: 'T14',
+		playerOptions: OtherDefaults,
+	},
+});
+export const PRESET_BUILD_P3 = PresetUtils.makePresetBuild('T15', {
+	gear: P3_PRESET,
+	talents: DemonologyTalentsUVLS,
+	rotation: APL_UVLS,
+	settings: {
+		name: 'T15',
+		playerOptions: {
+			...OtherDefaults,
+			profession1: Profession.Engineering,
+			profession2: Profession.Herbalism,
+		},
+	},
 });
 
 export const DEMONOLOGY_BREAKPOINTS = {

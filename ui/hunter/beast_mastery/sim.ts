@@ -51,12 +51,21 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 	modifyDisplayStats: (player: Player<Spec.SpecBeastMasteryHunter>) => {
 		return sharedHunterDisplayStatsModifiers(player);
 	},
-	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
+	itemSwapSlots: [
+		ItemSlot.ItemSlotMainHand,
+		ItemSlot.ItemSlotTrinket1,
+		ItemSlot.ItemSlotTrinket2,
+		ItemSlot.ItemSlotHead,
+		ItemSlot.ItemSlotShoulder,
+		ItemSlot.ItemSlotChest,
+		ItemSlot.ItemSlotHands,
+		ItemSlot.ItemSlotLegs,
+	],
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_PRESET_GEAR.gear,
+		gear: Presets.P3_PRESET_GEAR.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P2_EP_PRESET.epWeights,
+		epWeights: Presets.P3_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			return new Stats()
@@ -128,8 +137,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_BM, Presets.ROTATION_PRESET_AOE],
 		// Preset gear configurations that the user can quickly select.
-		builds: [Presets.PRERAID_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
-		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P2_PRESET_GEAR, Presets.P3_PRESET_GEAR],
+		builds: [Presets.P2_PRESET, Presets.P3_PRESET],
+		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P2_PRESET_GEAR, Presets.P3_PRESET_GEAR, Presets.P5_PRESET_GEAR],
 	},
 
 	autoRotation: (_: Player<Spec.SpecBeastMasteryHunter>): APLRotation => {
@@ -154,11 +163,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 					1: Presets.PRERAID_PRESET_GEAR.gear,
 					2: Presets.P2_PRESET_GEAR.gear,
 					3: Presets.P3_PRESET_GEAR.gear,
+					5: Presets.P5_PRESET_GEAR.gear,
 				},
 				[Faction.Horde]: {
 					1: Presets.PRERAID_PRESET_GEAR.gear,
 					2: Presets.P2_PRESET_GEAR.gear,
 					3: Presets.P3_PRESET_GEAR.gear,
+					5: Presets.P5_PRESET_GEAR.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

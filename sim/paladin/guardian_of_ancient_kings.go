@@ -179,7 +179,7 @@ func (paladin *Paladin) registerRetributionGuardian(duration time.Duration) {
 		ActionID:    core.ActionID{SpellID: 86704},
 		SpellSchool: core.SpellSchoolHoly,
 		ProcMask:    core.ProcMaskSpellDamage,
-		Flags:       core.SpellFlagPassiveSpell | core.SpellFlagReadinessTrinket,
+		Flags:       core.SpellFlagPassiveSpell,
 
 		MaxRange: 10,
 
@@ -224,7 +224,7 @@ func (paladin *Paladin) registerRetributionGuardian(duration time.Duration) {
 
 	spell := paladin.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
-		Flags:          core.SpellFlagAPL,
+		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
 		ProcMask:       core.ProcMaskEmpty,
 		ClassSpellMask: SpellMaskGuardianOfAncientKings,
 

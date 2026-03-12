@@ -49,13 +49,14 @@ message APLGroup {
 	repeated APLValueVariable variables = 3;  // Variables that can be used in this group
 }
 
-// NextIndex: 30
+// NextIndex: 32
 message APLAction {
     APLValue condition = 1; // If set, action will only execute if value is true or != 0.
 
     oneof action {
         // Casting
         APLActionCastSpell cast_spell = 3;
+		APLActionCancelSpellCast cancel_spell_cast = 30;
 		APLActionCastFriendlySpell cast_friendly_spell = 20;
         APLActionChannelSpell channel_spell = 16;
         APLActionMultidot multidot = 8;
@@ -84,6 +85,7 @@ message APLAction {
         APLActionItemSwap item_swap = 17;
         APLActionMove move = 21;
         APLActionMoveDuration move_duration = 22;
+		APLActionDamageAmplifier damage_amplifier = 31;
 
         // Class or Spec-specific actions
         APLActionCatOptimalRotationAction cat_optimal_rotation_action = 18;
@@ -99,7 +101,7 @@ message APLAction {
 }
 
 
-// NextIndex: 125
+// NextIndex: 127
 message APLValue {
 	UUID uuid = 85;
 
@@ -172,6 +174,9 @@ message APLValue {
         // Autoattack values
         APLValueAutoTimeToNext auto_time_to_next = 40;
 
+        // Casting values
+        APLValueRemainingCastTime remaining_cast_time = 125;
+
         // Spell values
         APLValueSpellIsKnown spell_is_known = 74;
         APLValueSpellCanCast spell_can_cast = 19;
@@ -188,6 +193,7 @@ message APLValue {
         APLValueSpellGCDHastedDuration spell_gcd_hasted_duration = 115;
         APLValueSpellFullCooldown spell_full_cooldown = 116;
         APLValueSpellInFlight spell_in_flight = 118;
+        APLValueSpellIsCasting spell_is_casting = 126 ;
 
         // Aura values
         APLValueAuraIsKnown aura_is_known = 73;
@@ -271,6 +277,7 @@ message APLActionCastSpell {
     ActionID spell_id = 1;
     UnitReference target = 2;
 }
+message APLActionCancelSpellCast {}
 
 message APLActionCastFriendlySpell {
     ActionID spell_id = 1;
@@ -412,6 +419,16 @@ message APLActionMove {
 
 message APLActionMoveDuration {
     APLValue duration = 1;
+}
+message APLActionDamageAmplifier {
+	enum AmplificationType {
+        CasterBuff = 0;
+        EnvironmentBuff = 1;
+        TargetDebuff = 2;
+    }
+
+	AmplificationType ampType = 1;
+	int32 amount = 2;
 }
 
 message APLActionCustomRotation {
@@ -607,6 +624,7 @@ message APLValueGCDIsReady {}
 message APLValueGCDTimeToReady {}
 
 message APLValueAutoTimeToNext {}
+message APLValueRemainingCastTime {}
 
 message APLValueSpellIsKnown {
     ActionID spell_id = 1;
@@ -659,6 +677,9 @@ message APLValueSpellFullCooldown{
 }
 message APLValueSpellInFlight{
 	ActionID spell_id = 1;
+}
+message APLValueSpellIsCasting{
+    ActionID spell_id = 1;
 }
 
 message APLValueAuraIsKnown {

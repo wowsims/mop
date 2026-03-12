@@ -13,12 +13,24 @@ func (mage *Mage) registerHeatingUp() {
 		Label:    "Heating Up",
 		ActionID: core.ActionID{SpellID: 48107},
 		Duration: time.Second * 10,
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			mage.ReactToEvent(sim, false)
+		},
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			mage.ReactToEvent(sim, false)
+		},
 	}))
 
 	mage.InstantPyroblastAura = core.BlockPrepull(mage.RegisterAura(core.Aura{
 		Label:    "Pyroblast!",
 		ActionID: core.ActionID{SpellID: 48108},
 		Duration: time.Second * 15,
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			mage.ReactToEvent(sim, false)
+		},
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			mage.ReactToEvent(sim, false)
+		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		FloatValue: -2.0,

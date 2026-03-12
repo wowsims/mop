@@ -119,14 +119,14 @@
 }
 
 .item-picker-icon-wrapper {
+	--icon-size: 4rem;
 	position: relative;
-	width: 4rem;
-	height: 4rem;
+	width: var(--icon-size);
+	height: var(--icon-size);
 	border: var(--border-default);
 
 	@include media-breakpoint-down(lg) {
-		width: 3rem;
-		height: 3rem;
+		--icon-size: 3rem;
 	}
 }
 

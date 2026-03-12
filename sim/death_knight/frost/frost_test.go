@@ -19,17 +19,38 @@ func TestFrostMasterfrost(t *testing.T) {
 			Class: proto.Class_ClassDeathKnight,
 			Race:  proto.Race_RaceTroll,
 
-			GearSet:         core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p2.masterfrost"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p3.masterfrost"),
+
 			Talents:         DefaultTalents,
 			OtherTalentSets: OtherTalentSets,
-			Glyphs:          FrostDefaultGlyphs,
-			Consumables:     FullConsumesSpec,
-			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
-			Rotation:        core.GetAplRotation("../../../ui/death_knight/frost/apls", "masterfrost"),
-			Profession1:     proto.Profession_Engineering,
-			Profession2:     proto.Profession_Blacksmithing,
 
-			ItemFilter: ItemFilterMasterfrost,
+			Glyphs: FrostDefaultGlyphs,
+
+			Consumables: FullConsumesSpec,
+
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
+
+			Rotation: core.GetAplRotation("../../../ui/death_knight/frost/apls", "masterfrost"),
+
+			Profession1: proto.Profession_Engineering,
+			Profession2: proto.Profession_Herbalism,
+
+			ItemFilter: core.ItemFilter{
+				ArmorType: proto.ArmorType_ArmorTypePlate,
+
+				HandTypes: []proto.HandType{
+					proto.HandType_HandTypeMainHand,
+					proto.HandType_HandTypeOffHand,
+					proto.HandType_HandTypeOneHand,
+				},
+
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeAxe,
+					proto.WeaponType_WeaponTypeSword,
+					proto.WeaponType_WeaponTypeMace,
+				},
+				RangedWeaponTypes: []proto.RangedWeaponType{},
+			},
 		},
 	}))
 }
@@ -40,17 +61,37 @@ func TestFrostTwoHand(t *testing.T) {
 			Class: proto.Class_ClassDeathKnight,
 			Race:  proto.Race_RaceTroll,
 
-			GearSet:         core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p2.2h-obliterate"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p3.2h-obliterate"),
+
 			Talents:         DefaultTalents,
 			OtherTalentSets: OtherTalentSets,
-			Glyphs:          FrostDefaultGlyphs,
-			Consumables:     FullConsumesSpec,
-			SpecOptions:     core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
-			Rotation:        core.GetAplRotation("../../../ui/death_knight/frost/apls", "obliterate"),
-			Profession1:     proto.Profession_Engineering,
-			Profession2:     proto.Profession_Blacksmithing,
 
-			ItemFilter: ItemFilterTwoHand,
+			Glyphs: FrostDefaultGlyphs,
+
+			Consumables: FullConsumesSpec,
+
+			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsFrost},
+
+			Rotation: core.GetAplRotation("../../../ui/death_knight/frost/apls", "obliterate"),
+
+			Profession1: proto.Profession_Engineering,
+			Profession2: proto.Profession_Herbalism,
+
+			ItemFilter: core.ItemFilter{
+				ArmorType: proto.ArmorType_ArmorTypePlate,
+
+				HandTypes: []proto.HandType{
+					proto.HandType_HandTypeTwoHand,
+				},
+
+				WeaponTypes: []proto.WeaponType{
+					proto.WeaponType_WeaponTypeAxe,
+					proto.WeaponType_WeaponTypeMace,
+					proto.WeaponType_WeaponTypePolearm,
+					proto.WeaponType_WeaponTypeSword,
+				},
+				RangedWeaponTypes: []proto.RangedWeaponType{},
+			},
 		},
 	}))
 }
@@ -83,34 +124,4 @@ var FullConsumesSpec = &proto.ConsumesSpec{
 	FoodId:   74646, // Black Pepper Ribs and Shrimp
 	PotId:    76095, // Potion of Mogu Power
 	PrepotId: 76095, // Potion of Mogu Power
-}
-
-var ItemFilterMasterfrost = core.ItemFilter{
-	ArmorType: proto.ArmorType_ArmorTypePlate,
-
-	HandTypes: []proto.HandType{
-		proto.HandType_HandTypeMainHand,
-		proto.HandType_HandTypeOffHand,
-		proto.HandType_HandTypeOneHand,
-	},
-	WeaponTypes: []proto.WeaponType{
-		proto.WeaponType_WeaponTypeAxe,
-		proto.WeaponType_WeaponTypeSword,
-		proto.WeaponType_WeaponTypeMace,
-	},
-	RangedWeaponTypes: []proto.RangedWeaponType{},
-}
-
-var ItemFilterTwoHand = core.ItemFilter{
-	ArmorType: proto.ArmorType_ArmorTypePlate,
-
-	HandTypes: []proto.HandType{
-		proto.HandType_HandTypeTwoHand,
-	},
-	WeaponTypes: []proto.WeaponType{
-		proto.WeaponType_WeaponTypeAxe,
-		proto.WeaponType_WeaponTypeSword,
-		proto.WeaponType_WeaponTypeMace,
-	},
-	RangedWeaponTypes: []proto.RangedWeaponType{},
 }

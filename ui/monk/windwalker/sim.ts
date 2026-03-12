@@ -126,7 +126,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_BIS_GEAR_PRESET],
+		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
 		builds: [Presets.P2_BUILD_PRESET, Presets.P3_BUILD_PRESET],
 	},
 
@@ -148,16 +148,16 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P1_PREBIS_GEAR_PRESET.gear,
-					2: Presets.P1_PREBIS_GEAR_PRESET.gear,
-					3: Presets.P1_PREBIS_GEAR_PRESET.gear,
-					4: Presets.P1_PREBIS_GEAR_PRESET.gear,
+					1: Presets.PREBIS_GEAR_PRESET.gear,
+					2: Presets.PREBIS_GEAR_PRESET.gear,
+					3: Presets.PREBIS_GEAR_PRESET.gear,
+					4: Presets.PREBIS_GEAR_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P1_PREBIS_GEAR_PRESET.gear,
-					2: Presets.P1_PREBIS_GEAR_PRESET.gear,
-					3: Presets.P1_PREBIS_GEAR_PRESET.gear,
-					4: Presets.P1_PREBIS_GEAR_PRESET.gear,
+					1: Presets.PREBIS_GEAR_PRESET.gear,
+					2: Presets.PREBIS_GEAR_PRESET.gear,
+					3: Presets.PREBIS_GEAR_PRESET.gear,
+					4: Presets.PREBIS_GEAR_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

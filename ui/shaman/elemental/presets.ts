@@ -23,7 +23,7 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
-export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
+export const PRERAID_GEAR_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const P1_GEAR_PRESET = PresetUtils.makePresetGear('P1 - Default', P1Gear);
 export const P2_GEAR_PRESET = PresetUtils.makePresetGear('P2 - Default', P2Gear);
 export const P3_GEAR_PRESET = PresetUtils.makePresetGear('P3 - Default', P3Gear);
@@ -74,6 +74,16 @@ export const EP_PRESET_AOE = PresetUtils.makePresetEpWeights(
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
+export const P2_TALENTS = {
+	name: 'P2',
+	data: SavedTalents.create({
+		talentsString: '333121',
+		glyphs: Glyphs.create({
+			major1: ShamanMajorGlyph.GlyphOfSpiritwalkersGrace,
+		}),
+	}),
+};
+
 export const P3_TALENTS = {
 	name: 'Default',
 	data: SavedTalents.create({
@@ -161,10 +171,18 @@ export const PRESET_BUILD_AOE = PresetUtils.makePresetBuild('AoE (4+)', {
 	epWeights: EP_PRESET_AOE,
 });
 
-export const P3_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('P3 (WiP)', {
+export const P3_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('P3 - BiS', {
 	talents: P3_TALENTS,
 	rotation: ROTATION_PRESET_P3,
 	encounter: ENCOUNTER_SINGLE_TARGET,
 	epWeights: EP_PRESET_P3,
 	gear: P3_GEAR_PRESET,
+});
+
+export const P3_PRESET_BUILD_PRERAID = PresetUtils.makePresetBuild('P3 - Pre raid', {
+	talents: P2_TALENTS,
+	rotation: ROTATION_PRESET_P3,
+	encounter: ENCOUNTER_SINGLE_TARGET,
+	epWeights: EP_PRESET_P2,
+	gear: PRERAID_GEAR_PRESET,
 });

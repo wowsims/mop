@@ -101,6 +101,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestElemental-AllItems-BlackBloodofY'Shaarj-105648"
+ value: {
+  dps: 159172.8561
+  tps: 115161.03805
+ }
+}
+dps_results: {
  key: "TestElemental-AllItems-BlossomofPureSnow-89081"
  value: {
   dps: 142036.49263
@@ -801,6 +808,20 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestElemental-AllItems-FrenziedCrystalofRage-105572"
+ value: {
+  dps: 152674.04743
+  tps: 110312.30293
+ }
+}
+dps_results: {
+ key: "TestElemental-AllItems-Fusion-FireCore-105459"
+ value: {
+  dps: 134839.24277
+  tps: 97980.50427
+ }
+}
+dps_results: {
  key: "TestElemental-AllItems-GazeoftheTwins-96915"
  value: {
   dps: 137562.02222
@@ -1204,6 +1225,14 @@ dps_results: {
  value: {
   dps: 134839.24277
   tps: 97980.50427
+ }
+}
+dps_results: {
+ key: "TestElemental-AllItems-Juggernaut'sFocusingCrystal-105514"
+ value: {
+  dps: 134839.24277
+  tps: 97980.50427
+  hps: 4083.27534
  }
 }
 dps_results: {
@@ -1664,8 +1693,8 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 160025.76688
-  tps: 114740.74717
+  dps: 160223.30241
+  tps: 114649.5341
  }
 }
 dps_results: {
@@ -1851,6 +1880,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestElemental-AllItems-SigilofRampage-105580"
+ value: {
+  dps: 135072.49574
+  tps: 97980.50427
+ }
+}
+dps_results: {
  key: "TestElemental-AllItems-SigiloftheCatacombs-83732"
  value: {
   dps: 137892.8473
@@ -1862,6 +1898,13 @@ dps_results: {
  value: {
   dps: 151073.4343
   tps: 110188.02257
+ }
+}
+dps_results: {
+ key: "TestElemental-AllItems-Skeer'sBloodsoakedTalisman-105632"
+ value: {
+  dps: 134839.24277
+  tps: 97980.50427
  }
 }
 dps_results: {
@@ -2075,10 +2118,31 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestElemental-AllItems-Thok'sTailTip-105609"
+ value: {
+  dps: 141415.74572
+  tps: 102066.8663
+ }
+}
+dps_results: {
  key: "TestElemental-AllItems-Thousand-YearPickledEgg-257881"
  value: {
   dps: 140549.88316
   tps: 102180.30151
+ }
+}
+dps_results: {
+ key: "TestElemental-AllItems-TickingEbonDetonator-105612"
+ value: {
+  dps: 139182.73644
+  tps: 98350.39698
+ }
+}
+dps_results: {
+ key: "TestElemental-AllItems-Time-LostArtifact-103678"
+ value: {
+  dps: 137288.12062
+  tps: 98273.11907
  }
 }
 dps_results: {
@@ -2327,6 +2391,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestElemental-AllItems-VialofLivingCorruption-105568"
+ value: {
+  dps: 134839.24277
+  tps: 97980.50427
+ }
+}
+dps_results: {
  key: "TestElemental-AllItems-ViciousTalismanoftheShado-PanAssault-94511"
  value: {
   dps: 134913.45478
@@ -2371,8 +2442,8 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 175169.64403
-  tps: 134351.24442
+  dps: 157292.19099
+  tps: 116225.23011
  }
 }
 dps_results: {

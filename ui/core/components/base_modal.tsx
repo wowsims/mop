@@ -24,6 +24,8 @@ type BaseModalConfig = {
 	title?: string | null;
 	// Should the modal be disposed on close?
 	disposeOnClose?: boolean;
+	// User should not be able to close the modal
+	preventClose?: boolean;
 };
 
 const DEFAULT_CONFIG = {
@@ -46,7 +48,7 @@ export class BaseModal extends Component {
 	readonly body: HTMLElement;
 	readonly footer: HTMLElement | undefined;
 
-	constructor(parent: HTMLElement, cssClass: string, config: BaseModalConfig = { disposeOnClose: true }) {
+	constructor(parent: HTMLElement, cssClass: string, config: BaseModalConfig = { disposeOnClose: true, preventClose: false }) {
 		super(parent, 'modal');
 		this.modalConfig = { ...DEFAULT_CONFIG, ...config };
 
@@ -58,18 +60,22 @@ export class BaseModal extends Component {
 		const modalSizeKlass = this.modalConfig.size && this.modalConfig.size != 'md' ? `modal-${this.modalConfig.size}` : '';
 
 		this.rootElem.classList.add('fade');
+		if (this.modalConfig.preventClose) this.rootElem.classList.add('modal-static');
+
 		this.rootElem.appendChild(
 			<div className={`modal-dialog ${cssClass} ${modalSizeKlass} ${this.modalConfig.scrollContents ? 'modal-overflow-scroll' : ''}`} ref={dialogRef}>
 				<div className="modal-content">
 					<div className={`modal-header ${this.modalConfig.header || this.modalConfig.title ? '' : 'p-0 border-0'}`} ref={headerRef}>
 						{this.modalConfig.title && <h5 className="modal-title">{this.modalConfig.title}</h5>}
-						<button
-							type="button"
-							className={`btn-close ${this.modalConfig.closeButton?.fixed ? 'position-fixed' : ''}`}
-							onclick={() => this.close()}
-							attributes={{ 'aria-label': 'Close' }}>
-							<i className="fas fa-times fa-2xl"></i>
-						</button>
+						{!this.modalConfig.preventClose && (
+							<button
+								type="button"
+								className={`btn-close ${this.modalConfig.closeButton?.fixed ? 'position-fixed' : ''}`}
+								onclick={() => this.close()}
+								attributes={{ 'aria-label': 'Close' }}>
+								<i className="fas fa-times fa-2xl"></i>
+							</button>
+						)}
 					</div>
 					<div className="modal-body" ref={bodyRef} />
 					{this.modalConfig.footer && <div className="modal-footer" ref={footerRef} />}
@@ -82,7 +88,10 @@ export class BaseModal extends Component {
 		this.body = bodyRef.value!;
 		this.footer = footerRef.value!;
 
-		this.modal = new Modal(this.rootElem);
+		this.modal = new Modal(this.rootElem, {
+			backdrop: this.modalConfig.preventClose ? 'static' : true,
+			keyboard: !this.modalConfig.preventClose,
+		});
 
 		if (this.modalConfig.disposeOnClose) {
 			this.rootElem.addEventListener(
@@ -169,7 +178,7 @@ export class BaseModal extends Component {
 	}
 
 	private closeModalOnEscKey(event: KeyboardEvent) {
-		if (event.key == 'Escape') {
+		if (!this.modalConfig.preventClose && event.key == 'Escape') {
 			this.close();
 		}
 	}

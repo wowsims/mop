@@ -34,6 +34,7 @@ import {
 	classNameToClassKey,
 } from './entity_mapping';
 import { getLang, setLang, supportedLanguages } from './locale_service';
+import { resourceNames } from '../core/proto_utils/names';
 
 /**
  * Entity translation functions
@@ -123,7 +124,7 @@ export const translateRangedWeaponType = (rangedWeaponType: RangedWeaponType): s
 
 export const translateResourceType = (resourceType: ResourceType): string => {
 	return i18n.t(`common.resource_types.${resourceTypeI18nKeys[resourceType] || ResourceType[resourceType].toLowerCase()}`, {
-		defaultValue: ResourceType[resourceType],
+		defaultValue: resourceNames.get(resourceType),
 	});
 };
 

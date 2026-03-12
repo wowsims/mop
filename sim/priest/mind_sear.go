@@ -56,7 +56,7 @@ func (priest *Priest) getMindSearTickSpell() *core.Spell {
 	return priest.RegisterSpell(config)
 }
 
-func (priest *Priest) newMindSearSpell() *core.Spell {
+func (priest *Priest) registerMindSearSpell() *core.Spell {
 	mindSearTickSpell := priest.getMindSearTickSpell()
 
 	config := priest.getMindSearBaseConfig()
@@ -76,7 +76,7 @@ func (priest *Priest) newMindSearSpell() *core.Spell {
 		Aura: core.Aura{
 			Label: "MindSear-" + priest.Label,
 		},
-		NumberOfTicks:       5,
+		NumberOfTicks:       6,
 		TickLength:          time.Second,
 		AffectedByCastSpeed: true,
 		OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
@@ -86,7 +86,9 @@ func (priest *Priest) newMindSearSpell() *core.Spell {
 	config.ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 		result := spell.CalcAndDealOutcome(sim, target, spell.OutcomeMagicHit)
 		if result.Landed() {
-			spell.Dot(target).Apply(sim)
+			dot := spell.Dot(target)
+			dot.Apply(sim)
+			dot.TickOnce(sim)
 		}
 	}
 	config.ExpectedTickDamage = func(sim *core.Simulation, target *core.Unit, spell *core.Spell, _ bool) *core.SpellResult {

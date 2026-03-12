@@ -84,10 +84,6 @@
 
 	.adaptive-string-picker-root {
 		justify-content: flex-start;
-
-		input {
-			text-align: center;
-		}
 	}
 
 	.boolean-picker-input {
@@ -262,7 +258,7 @@
 
 	.adaptive-string-picker-root {
 		.form-control {
-			width: 10rem;
+			width: 16rem;
 			max-width: 100%;
 			text-align: left;
 		}

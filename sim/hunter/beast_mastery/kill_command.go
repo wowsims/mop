@@ -45,6 +45,10 @@ func (bmHunter *BeastMasteryHunter) registerKillCommandSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			if bmHunter.Pet != nil && bmHunter.Pet.KillCommand != nil {
+				spell.CalcAndDealOutcome(sim, target, spell.OutcomeAlwaysHitNoHitCounter)
+
+				bmHunter.GetHunter().HuntersMarkSpell.Cast(sim, target)
+
 				bmHunter.Pet.KillCommand.Cast(sim, target)
 			}
 		},

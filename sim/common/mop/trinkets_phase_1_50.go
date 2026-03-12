@@ -13,7 +13,7 @@ func init() {
 		character := agent.GetCharacter()
 		duration := time.Second * 15
 
-		statValue := core.GetItemEffectScaling(75274, 2.66700005531, state)
+		statValue := core.GetItemEffectScalingStatValue(75274, 2.66700005531, state)
 		statTypeOptions := []stats.Stat{stats.Strength, stats.Agility, stats.Intellect}
 
 		auras := make(map[stats.Stat]*core.StatBuffAura, 3)
@@ -62,7 +62,7 @@ func init() {
 		actionID := core.ActionID{SpellID: 126467}
 		manaMetrics := character.NewManaMetrics(actionID)
 
-		mana := core.GetItemEffectScaling(81266, 2.97199988365, state)
+		mana := core.GetItemEffectScalingStatValue(81266, 2.97199988365, state)
 
 		triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 			Name:       "Price of Progress (Heroic)",

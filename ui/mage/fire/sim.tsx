@@ -98,7 +98,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_BIS.gear,
+		gear: Presets.P3_BIS.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -151,29 +151,34 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 	},
 
 	presets: {
-		epWeights: [Presets.DEFAULT_EP_PRESET, Presets.P1_PREBIS_EP_PRESET],
+		epWeights: [Presets.DEFAULT_EP_PRESET, Presets.P1_PREBIS_EP_PRESET, Presets.MASTERY_EP_PRESET],
 		// Preset rotations that the user can quickly select.
 		rotations: [
-			Presets.P1_SIMPLE_ROTATION_PRESET_DEFAULT,
-			Presets.P1_SIMPLE_ROTATION_NO_TROLL,
-			Presets.P2_SIMPLE_ROTATION_PRESET_DEFAULT,
-			Presets.P2_SIMPLE_ROTATION_NO_TROLL,
-			Presets.P3_SIMPLE_ROTATION_PRESET_DEFAULT,
-			Presets.P3_SIMPLE_ROTATION_NO_TROLL,
 			Presets.P1_ROTATION_PRESET_APL,
+			Presets.P3_SIMPLE_ROTATION_PRESET_DEFAULT,
+			Presets.MASTERY_ROTATION_PRESET_APL,
 		],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.FireTalents, Presets.FireTalentsCleave],
+		talents: [Presets.FireTalents, Presets.FireTalentsCleave, Presets.FireTalentsMastery],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS],
+		gear: [Presets.P3_BIS, Presets.P3_MASTERY],
+		// gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS, Presets.P3_MASTERY],
 
 		builds: [
-			Presets.P2_PRESET_BUILD_DEFAULT,
-			Presets.P2_NO_TROLL_PRESET_BUILD_DEFAULT,
-			Presets.P3_PRESET_BUILD_DEFAULT,
-			Presets.P3_NO_TROLL_PRESET_BUILD_DEFAULT,
-			Presets.P1_PRESET_SINGLE_TARGET,
-			Presets.P1_PRESET_CLEAVE,
+			Presets.P3_CRIT_PRESET_BUILD,
+			Presets.P3_MASTERY_PRESET_BUILD,
+		],
+
+		// Saved Encounter presets
+		encounters: [
+			Presets.ENCOUNTER_SINGLE_TARGET,
+			Presets.ENCOUNTER_MASTERY,
+		],
+
+		// Saved Settings presets
+		settings: [
+			Presets.CRIT_SETTINGS,
+			Presets.MASTERY_SETTINGS,
 		],
 	},
 
@@ -182,7 +187,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 		// if (numTargets >= 3) {
 		// 	return Presets.FIRE_ROTATION_PRESET_CLEAVE.rotation.rotation!;
 		// } else {
-		return Presets.P1_SIMPLE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
+		return Presets.P3_SIMPLE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
 		// }
 	},
 
@@ -279,12 +284,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P1_PREBIS.gear,
-					2: Presets.P1_BIS.gear,
+					1: Presets.P3_BIS.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P1_PREBIS.gear,
-					2: Presets.P1_BIS.gear,
+					1: Presets.P3_BIS.gear,
 				},
 			},
 		},

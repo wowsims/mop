@@ -63,10 +63,12 @@ func (mage *Mage) registerPresenceOfMind() {
 		Duration: time.Hour,
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
 			presenceOfMindMod.Activate()
+			mage.ReactToEvent(sim, false)
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			presenceOfMindMod.Deactivate()
 			pomSpell.CD.Use(sim)
+			mage.ReactToEvent(sim, false)
 		},
 		OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
 			// Pyroblast and FFB are handeled separately because they can be instant cast through another aura

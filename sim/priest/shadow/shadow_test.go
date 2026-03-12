@@ -22,7 +22,7 @@ func TestShadow(t *testing.T) {
 
 			GearSet: core.GetGearSet("../../../ui/priest/shadow/gear_sets", "pre_raid"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p1"),
+				core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p3"),
 			},
 			Talents:     DefaultTalents,
 			Glyphs:      &proto.Glyphs{},
@@ -30,7 +30,7 @@ func TestShadow(t *testing.T) {
 
 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: PlayerOptionsBasic},
 
-			Rotation: core.GetAplRotation("../../../ui/priest/shadow/apls", "default"),
+			Rotation: core.GetAplRotation("../../../ui/priest/shadow/apls", "t15"),
 
 			ItemFilter: core.ItemFilter{
 				WeaponTypes: []proto.WeaponType{

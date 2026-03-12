@@ -21,6 +21,28 @@ import { addQuickGemPopover } from './quick_gem_popover';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
 import { createGemContainer, createNameDescriptionLabel, getEmptySlotIconUrl } from './utils';
 
+export const LEFT_ITEM_PICKERS = [
+	ItemSlot.ItemSlotHead,
+	ItemSlot.ItemSlotNeck,
+	ItemSlot.ItemSlotShoulder,
+	ItemSlot.ItemSlotBack,
+	ItemSlot.ItemSlotChest,
+	ItemSlot.ItemSlotWrist,
+	ItemSlot.ItemSlotMainHand,
+	ItemSlot.ItemSlotOffHand,
+];
+
+export const RIGHT_ITEM_PICKERS = [
+	ItemSlot.ItemSlotHands,
+	ItemSlot.ItemSlotWaist,
+	ItemSlot.ItemSlotLegs,
+	ItemSlot.ItemSlotFeet,
+	ItemSlot.ItemSlotFinger1,
+	ItemSlot.ItemSlotFinger2,
+	ItemSlot.ItemSlotTrinket1,
+	ItemSlot.ItemSlotTrinket2,
+];
+
 export default class GearPicker extends Component {
 	// ItemSlot is used as the index
 	readonly itemPickers: Array<ItemPicker>;
@@ -39,27 +61,9 @@ export default class GearPicker extends Component {
 			</>,
 		);
 
-		const leftItemPickers = [
-			ItemSlot.ItemSlotHead,
-			ItemSlot.ItemSlotNeck,
-			ItemSlot.ItemSlotShoulder,
-			ItemSlot.ItemSlotBack,
-			ItemSlot.ItemSlotChest,
-			ItemSlot.ItemSlotWrist,
-			ItemSlot.ItemSlotMainHand,
-			ItemSlot.ItemSlotOffHand,
-		].map(slot => new ItemPicker(leftSideRef.value!, this, simUI, player, slot));
+		const leftItemPickers = LEFT_ITEM_PICKERS.map(slot => new ItemPicker(leftSideRef.value!, this, simUI, player, slot));
 
-		const rightItemPickers = [
-			ItemSlot.ItemSlotHands,
-			ItemSlot.ItemSlotWaist,
-			ItemSlot.ItemSlotLegs,
-			ItemSlot.ItemSlotFeet,
-			ItemSlot.ItemSlotFinger1,
-			ItemSlot.ItemSlotFinger2,
-			ItemSlot.ItemSlotTrinket1,
-			ItemSlot.ItemSlotTrinket2,
-		].map(slot => new ItemPicker(rightSideRef.value!, this, simUI, player, slot));
+		const rightItemPickers = RIGHT_ITEM_PICKERS.map(slot => new ItemPicker(rightSideRef.value!, this, simUI, player, slot));
 
 		this.itemPickers = leftItemPickers.concat(rightItemPickers).sort((a, b) => a.slot - b.slot);
 

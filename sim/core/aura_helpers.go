@@ -168,6 +168,9 @@ func (procAura *Aura) AttachProcTriggerCallback(unit *Unit, config ProcTrigger) 
 			if icd.Duration != 0 && !icd.IsReady(sim) {
 				return
 			}
+			if config.ExtraCondition != nil && !config.ExtraCondition(sim, spell, nil) {
+				return
+			}
 			if config.ProcChance != 1 && sim.RandomFloat(config.Name) > config.ProcChance {
 				return
 			}
@@ -195,16 +198,13 @@ func (procAura *Aura) AttachProcTriggerCallback(unit *Unit, config ProcTrigger) 
 			if icd.Duration != 0 && !icd.IsReady(sim) {
 				return
 			}
-			if config.ProcChance != 1 && sim.RandomFloat(config.Name) > config.ProcChance {
-				return
-			}
 			emptyResult := spell.NewResult(target)
 			defer spell.DisposeResult(emptyResult)
-			if config.ExtraCondition != nil {
-				extraConditionMet := config.ExtraCondition(sim, spell, emptyResult)
-				if !extraConditionMet {
-					return
-				}
+			if config.ExtraCondition != nil && !config.ExtraCondition(sim, spell, emptyResult) {
+				return
+			}
+			if config.ProcChance != 1 && sim.RandomFloat(config.Name) > config.ProcChance {
+				return
 			}
 
 			if icd.Duration != 0 {
@@ -326,6 +326,7 @@ type TemporaryStatBuffWithStacksConfig struct {
 	TimePerStack         time.Duration
 	Duration             time.Duration
 	TickImmediately      bool
+	DecrementStacks      bool // Set to true if the aura should start at MaxStacks and decrement by 1 each tick
 }
 
 func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatBuffWithStacksConfig) (*StatBuffAura, *Aura) {
@@ -340,30 +341,85 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 	})
 
 	if config.TimePerStack > 0 {
+		var pa *PendingAction
+
+		startStackingAction := func(sim *Simulation, tickImmediately bool, numTicks int) {
+			pa = StartPeriodicAction(sim, PeriodicActionOptions{
+				Period:          config.TimePerStack,
+				NumTicks:        numTicks,
+				TickImmediately: tickImmediately,
+				OnAction: func(sim *Simulation) {
+					if stackingAura.IsActive() {
+						if config.DecrementStacks {
+							stackingAura.RemoveStack(sim)
+						} else {
+							stackingAura.AddStack(sim)
+						}
+					}
+				},
+			})
+		}
+
 		aura := character.RegisterAura(Aura{
 			Label:    config.AuraLabel,
 			ActionID: config.ActionID,
 			Duration: config.Duration,
 			OnGain: func(aura *Aura, sim *Simulation) {
 				stackingAura.Activate(sim)
-				StartPeriodicAction(sim, PeriodicActionOptions{
-					Period:          config.TimePerStack,
-					NumTicks:        int(config.MaxStacks),
-					TickImmediately: config.TickImmediately,
-					OnAction: func(sim *Simulation) {
-						// Aura might not be active because of stuff like mage alter time being cast right before this aura being activated
-						if stackingAura.IsActive() {
-							stackingAura.AddStack(sim)
-						}
-					},
-				})
+
+				if config.DecrementStacks {
+					stackingAura.SetStacks(sim, config.MaxStacks)
+				}
+
+				startStackingAction(sim, config.TickImmediately, int(config.MaxStacks))
+			},
+			OnExpire: func(aura *Aura, sim *Simulation) {
+				if pa != nil {
+					pa.Cancel(sim)
+					pa = nil
+				}
+			},
+			OnRestore: func(aura *Aura, sim *Simulation, state AuraState, wasActive bool) {
+				// BUGGED BEHAVIOR (matches live game as of phase 3):
+				// If the aura expired during Alter Time (wasActive == false), the restore is broken.
+				// The stacks are restored for exactly 1 tick duration, then the buff is removed entirely.
+				if !wasActive {
+					// Schedule removal after one tick period
+					StartPeriodicAction(sim, PeriodicActionOptions{
+						Period:   config.TimePerStack,
+						NumTicks: 1,
+						OnAction: func(sim *Simulation) {
+							stackingAura.Deactivate(sim)
+							aura.Deactivate(sim)
+						},
+					})
+					return
+				}
+
+				// Normal behavior: restart the periodic action
+				// When restoring (e.g., via Alter Time), we need to restart the periodic action
+				// but without TickImmediately to avoid adding an extra stack.
+				// Note: We don't activate the stacking aura here because it will be restored
+				// separately by Alter Time's restoration loop with the correct duration.
+
+				var remainingTicks int
+				if config.DecrementStacks {
+					// For decrementing buffs: we have N stacks, need N more ticks to reach 0
+					remainingTicks = int(state.Stacks)
+				} else {
+					// For incrementing buffs: we have N stacks, need (MaxStacks - N) ticks to reach max
+					remainingTicks = int(config.MaxStacks - state.Stacks)
+				}
+
+				if remainingTicks > 0 {
+					startStackingAction(sim, false, remainingTicks)
+				}
 			},
 		})
 		return stackingAura, aura
 	}
 
 	return stackingAura, nil
-
 }
 
 // Helper for the common case of making an aura that adds stats.

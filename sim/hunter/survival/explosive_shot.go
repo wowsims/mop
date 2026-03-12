@@ -49,8 +49,8 @@ func (svHunter *SurvivalHunter) registerExplosiveShotSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			rap := spell.RangedAttackPower()
-			baseDamage := svHunter.CalcAndRollDamageRange(sim, 0.391, 1) + (0.391 * rap)
-			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeRangedHitAndCrit)
+			apDamage := 0.391 * rap
+			result := spell.CalcDamage(sim, target, apDamage+svHunter.CalcAndRollDamageRange(sim, 0.391, 1), spell.OutcomeRangedHitAndCrit)
 
 			svHunter.GetHunter().HuntersMarkSpell.Cast(sim, target)
 
@@ -70,7 +70,8 @@ func (svHunter *SurvivalHunter) registerExplosiveShotSpell() {
 					}
 
 					// Tick before outstanding damage is added
-					dot.SnapshotPhysical(target, baseDamage+outstandingDamage)
+					// The bonus damage portion is calculated separately for the dot, since they are different spell effects.
+					dot.SnapshotPhysical(target, apDamage+svHunter.CalcAndRollDamageRange(sim, 0.391, 1)+outstandingDamage)
 
 					dot.Apply(sim)
 					spell.DealDamage(sim, result)

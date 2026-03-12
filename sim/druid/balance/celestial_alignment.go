@@ -41,13 +41,13 @@ func (moonkin *BalanceDruid) registerCelestialAlignmentSpell() {
 			// Restore previous eclipse gain mask
 			moonkin.RestoreEclipseBar()
 		},
-		OnCastComplete: func(_ *core.Aura, sim *core.Simulation, spell *core.Spell) {
-			if spell.ClassSpellMask == druid.DruidSpellMoonfire {
-				moonkin.Sunfire.Dot(spell.Unit.CurrentTarget).Apply(sim)
+		OnSpellHitDealt: func(_ *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			if spell.Matches(druid.DruidSpellMoonfire) {
+				moonkin.Sunfire.Dot(result.Target).Apply(sim)
 			}
 
-			if spell.ClassSpellMask == druid.DruidSpellSunfire {
-				moonkin.Moonfire.Dot(spell.Unit.CurrentTarget).Apply(sim)
+			if spell.Matches(druid.DruidSpellSunfire) {
+				moonkin.Moonfire.Dot(result.Target).Apply(sim)
 			}
 		},
 	})

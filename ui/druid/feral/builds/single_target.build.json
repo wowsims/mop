@@ -33,7 +33,7 @@
       "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     },
     "enableItemSwap": true,
-    "itemSwap": {"items":[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{"id":87170,"enchant":4442,"gems":[89873,0]},{}],"prepullBonusStats":{"apiVersion":1,"stats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"pseudoStats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}},
+	"itemSwap": {"items":[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{"id":96518,"enchant":4442,"gems":[76692,76692],"reforging":166,"upgradeStep":"UpgradeStepTwo"},{"id":96562,"enchant":4434,"gems":[76692],"upgradeStep":"UpgradeStepTwo"}],"prepullBonusStats":{"apiVersion":2,"stats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"pseudoStats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}},
     "buffs": {
     },
     "feralDruid": {

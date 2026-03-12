@@ -6,22 +6,20 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import ArcaneApl from './apls/default.apl.json';
 import ArcaneCleaveApl from './apls/arcane_cleave.apl.json';
-import ArcaneP3APL from './apls/Arcane_T15_4pc.apl.json';
-import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
-import P1BISGear from './gear_sets/p1_bis.gear.json';
+import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';
+import PreBISGear from './gear_sets/prebis.gear.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
 import P3BISGear from './gear_sets/p3_bis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
-export const P1_PREBIS = PresetUtils.makePresetGear('P1 - Pre-BIS', P1PreBISGear);
-export const P1_BIS = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
+export const PREBIS = PresetUtils.makePresetGear('Pre-BIS', PreBISGear);
 export const P2_BIS = PresetUtils.makePresetGear('P2 - BIS', P2BISGear);
 export const P3_BIS = PresetUtils.makePresetGear('P3 - BIS', P3BISGear);
 
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', ArcaneApl);
-export const ROTATION_PRESET_P3_4PC = PresetUtils.makePresetAPLRotation('P3 - T15 4PC', ArcaneP3APL);
+export const ROTATION_PRESET_T15_4PC = PresetUtils.makePresetAPLRotation('P3 - T15 4PC', ArcaneP3APL);
 // export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', ArcaneCleaveApl);
 
 // Preset options for EP weights
@@ -32,7 +30,7 @@ export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatSpellPower]: 1,
 		[Stat.StatHitRating]: 1.71,
 		[Stat.StatCritRating]: 0.61,
-		[Stat.StatHasteRating]: 0.90,
+		[Stat.StatHasteRating]: 0.9,
 		[Stat.StatMasteryRating]: 0.74,
 	}),
 );
@@ -45,7 +43,7 @@ export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatHitRating]: 1.45,
 		[Stat.StatCritRating]: 0.59,
 		[Stat.StatHasteRating]: 0.64,
-		[Stat.StatMasteryRating]: 0.70,
+		[Stat.StatMasteryRating]: 0.7,
 	}),
 );
 
@@ -57,7 +55,7 @@ export const P1_PREBIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatHitRating]: 1.31,
 		[Stat.StatCritRating]: 0.52,
 		[Stat.StatHasteRating]: 0.62,
-		[Stat.StatMasteryRating]: 0.60,
+		[Stat.StatMasteryRating]: 0.6,
 	}),
 );
 
@@ -126,3 +124,15 @@ export const OtherDefaults = {
 	profession2: Profession.Tailoring,
 	race: Race.RaceTroll,
 };
+
+export const T14_PRESET_BUILD = PresetUtils.makePresetBuild('T14', {
+	gear: P2_BIS,
+	rotation: ROTATION_PRESET_DEFAULT,
+	epWeights: P1_BIS_EP_PRESET,
+});
+
+export const T15_PRESET_BUILD = PresetUtils.makePresetBuild('T15', {
+	gear: P3_BIS,
+	rotation: ROTATION_PRESET_T15_4PC,
+	epWeights: P3_BIS_EP_PRESET,
+});

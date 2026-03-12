@@ -117,11 +117,14 @@ func (monk *Monk) registerFistsOfFury() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return monk.GetChi() >= 3
+			return monk.GetChi() >= core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 2, 3)
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			monk.SpendChi(sim, 3, chiMetrics)
+			monk.SpendChi(sim, core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 2, 3), chiMetrics)
+			if monk.T16Windwalker4P != nil {
+				monk.T16Windwalker4P.Deactivate(sim)
+			}
 
 			snapshotDamage = monk.CalculateMonkStrikeDamage(sim, spell)
 			dot := spell.AOEDot()

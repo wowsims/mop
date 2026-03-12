@@ -24,15 +24,15 @@ export const CBAT_STANDARD_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1.0,
-			[Stat.StatCritRating]: 0.29,
-			[Stat.StatHitRating]: 0.7,
-			[Stat.StatHasteRating]: 0.39,
-			[Stat.StatMasteryRating]: 0.32,
-			[Stat.StatExpertiseRating]: 0.56,
+			[Stat.StatCritRating]: 0.42,
+			[Stat.StatHitRating]: 1.26,
+			[Stat.StatHasteRating]: 0.52,
+			[Stat.StatMasteryRating]: 0.46,
+			[Stat.StatExpertiseRating]: 1.07,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.63,
-			[PseudoStat.PseudoStatOffHandDps]: 0.45,
+			[PseudoStat.PseudoStatMainHandDps]: 1.43,
+			[PseudoStat.PseudoStatOffHandDps]: 0.39,
 		},
 	),
 );

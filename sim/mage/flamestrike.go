@@ -59,15 +59,15 @@ func (mage *Mage) registerFlamestrikeSpell() {
 		DamageMultiplier: 1,
 		CritMultiplier:   mage.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
-		BonusCoefficient: flameStrikeDotCoefficient,
 
 		Dot: core.DotConfig{
 			IsAOE: true,
 			Aura: core.Aura{
 				Label: "FlameStrike DOT",
 			},
-			NumberOfTicks: 4,
-			TickLength:    time.Second * 2,
+			NumberOfTicks:    4,
+			TickLength:       time.Second * 2,
+			BonusCoefficient: flameStrikeDotCoefficient,
 			OnSnapshot: func(_ *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
 				dot.Snapshot(target, mage.CalcScalingSpellDmg(flameStrikeDotScaling))
 			},

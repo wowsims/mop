@@ -50,9 +50,12 @@ func (mm *MarksmanshipHunter) registerSteadyShotSpell() {
 			if mm.steadyFocusAura.IsActive() {
 				intFocus += 3
 			}
-			mm.AddFocus(sim, intFocus, ssMetrics)
 
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeRangedHitAndCrit)
+
+			if result.Landed() {
+				mm.AddFocus(sim, intFocus, ssMetrics)
+			}
 
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
 				spell.DealDamage(sim, result)

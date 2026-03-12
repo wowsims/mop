@@ -37,6 +37,26 @@ func (action *APLActionCastSpell) String() string {
 	return fmt.Sprintf("Cast Spell(%s)", action.spell.ActionID)
 }
 
+type APLActionCancelSpellCast struct {
+	defaultAPLActionImpl
+	unit *Unit
+}
+
+func (rot *APLRotation) newActionCancelSpellCast(_ *proto.APLActionCancelSpellCast) APLActionImpl {
+	return &APLActionCancelSpellCast{
+		unit: rot.unit,
+	}
+}
+func (action *APLActionCancelSpellCast) IsReady(sim *Simulation) bool {
+	return action.unit.Hardcast.Expires > sim.CurrentTime
+}
+func (action *APLActionCancelSpellCast) Execute(sim *Simulation) {
+	action.unit.CancelHardcast(sim)
+}
+func (action *APLActionCancelSpellCast) String() string {
+	return fmt.Sprintf("Cancel Spell Cast(%s)", action.unit.Hardcast.ActionID)
+}
+
 type APLActionCastFriendlySpell struct {
 	defaultAPLActionImpl
 	spell  *Spell

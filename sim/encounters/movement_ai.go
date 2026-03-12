@@ -117,7 +117,7 @@ func (ai *MovementAI) ExecuteCustomRotation(sim *core.Simulation) {
 			// if castEndsAt < ai.ReactionTime {
 			pa := sim.GetConsumedPendingActionFromPool()
 			pa.NextActionAt = sim.CurrentTime + castEndsAt
-			pa.Priority = core.ActionPriorityPrePull + 1
+			pa.Priority = core.ActionPriorityHigh + 1
 
 			pa.OnAction = func(sim *core.Simulation) {
 				player.MoveDuration(duration, sim)

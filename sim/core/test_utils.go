@@ -62,7 +62,7 @@ var FullRaidBuffs = &proto.RaidBuffs{
 	ArcaneBrilliance: true, // Mages
 
 	// +5% Spell Haste
-	ShadowForm: true, // Shadow Priests
+	MindQuickening: true, // Shadow Priests
 
 	// +5% Critical Strike Chance
 	LeaderOfThePack: true, // Feral/Guardian Druids

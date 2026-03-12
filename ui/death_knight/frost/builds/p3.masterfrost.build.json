@@ -24,22 +24,22 @@
 		"class": "ClassDeathKnight",
 		"equipment": {
 			"items": [
-				{"id":96894,"gems":[95346,76700],"reforging":147},
-				{"id":96792,"reforging":145},
-				{"id":96573,"enchant":4803,"gems":[76674,76700],"reforging":160},
-				{"id":95017,"enchant":4424,"gems":[76700],"reforging":147,"tinker":4897},
-				{"id":96569,"enchant":4419,"gems":[76674,76700,76643],"reforging":161},
-				{"id":96848,"randomSuffix":-339,"enchant":4415,"gems":[76700,0]},
-				{"id":96570,"enchant":4432,"gems":[76674,0],"reforging":140,"tinker":4898},
-				{"id":96745,"gems":[76674,76700,76700],"tinker":4223},
-				{"id":96572,"enchant":4823,"gems":[76700,76643],"reforging":145},
-				{"id":95012,"enchant":4429,"gems":[76700,76643],"reforging":161},
-				{"id":96872,"gems":[76674],"reforging":140},
-				{"id":95022,"gems":[76643],"reforging":154},
-				{"id":96842,"reforging":140},
-				{"id":96873,"reforging":147},
-				{"id":96906,"enchant":3368,"gems":[76674,76700],"reforging":160},
-				{"id":96906,"enchant":3370,"gems":[76674,76700],"reforging":160}
+				{ "id": 96894, "gems": [95346, 76700], "reforging": 147 },
+				{ "id": 96792, "reforging": 145 },
+				{ "id": 96573, "enchant": 4803, "gems": [76674, 76700], "reforging": 160 },
+				{ "id": 95017, "enchant": 4424, "gems": [76700], "reforging": 147, "tinker": 4897 },
+				{ "id": 96569, "enchant": 4419, "gems": [76674, 76700, 76643], "reforging": 161 },
+				{ "id": 96848, "randomSuffix": -339, "enchant": 4415, "gems": [76700, 0] },
+				{ "id": 96570, "enchant": 4432, "gems": [76674, 0], "reforging": 140, "tinker": 4898 },
+				{ "id": 96745, "gems": [76674, 76700, 76700], "tinker": 4223 },
+				{ "id": 96572, "enchant": 4823, "gems": [76700, 76643], "reforging": 145 },
+				{ "id": 95012, "enchant": 4429, "gems": [76700, 76643], "reforging": 161 },
+				{ "id": 96872, "gems": [76674], "reforging": 140 },
+				{ "id": 95022, "gems": [76643], "reforging": 154 },
+				{ "id": 96842, "reforging": 140 },
+				{ "id": 96873, "reforging": 147 },
+				{ "id": 96906, "enchant": 3368, "gems": [76674, 76700], "reforging": 160 },
+				{ "id": 96906, "enchant": 3370, "gems": [76674, 76700], "reforging": 160 }
 			]
 		},
 		"consumables": {

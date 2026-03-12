@@ -179,7 +179,7 @@ func (fb *focusBar) reset(sim *Simulation) {
 	}
 
 	if fb.unit.Type != PetUnit {
-		fb.enable(sim, sim.Environment.PrepullStartTime())
+		fb.enable(sim, sim.Environment.PrepullStartTime(sim))
 	}
 }
 

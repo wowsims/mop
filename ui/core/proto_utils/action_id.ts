@@ -91,7 +91,6 @@ export class ActionId {
 				} else if (this.tag == 99999) {
 					name += ' (Boss)';
 				} else if (this.tag == 99998) {
-					console.log(this, this.tag)
 					name += ' (Add)';
 				} else if (this.tag > 6445300) {
 					name += ` (Set'thik Windblade ${(this.tag - 6445300).toFixed(0)})`;
@@ -148,6 +147,21 @@ export class ActionId {
 			case OtherAction.OtherActionEncounterStart:
 				baseName = 'Encounter Start';
 				iconUrl = 'https://wow.zamimg.com/images/wow/icons/medium/achievement_faction_elders.jpg';
+				break;
+			case OtherAction.OtherActionDamageAmplifier:
+				baseName = 'Damage Done %';
+				switch (this.tag) {
+					case 1:
+						baseName += ' (Environment Buff)';
+						break;
+					case 2:
+						baseName += ' (Target Debuff)';
+						break;
+					default:
+						baseName += ' (Caster Buff)';
+						break;
+				}
+				iconUrl = 'https://wow.zamimg.com/images/wow/icons/medium/spell_nature_abolishmagic.jpg';
 				break;
 		}
 		this.baseName = baseName ?? '';
@@ -880,6 +894,11 @@ export class ActionId {
 			case 'Corruption':
 				if (tag == 1) {
 					name += ' (Malefic)';
+				}
+				break;
+			case 'Metamorphosis':
+				if (tag == 1) {
+					name += ' (Cancel)';
 				}
 				break;
 			case 'Holy Prism':

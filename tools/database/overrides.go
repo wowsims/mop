@@ -184,85 +184,7 @@ var ItemOverrides = []*proto.UIItem{
 	{Id: 72881, Phase: 4}, // Treads of the Past
 	{Id: 72884, Phase: 4}, // Writhing Wand
 }
-var ItemUpgradesDisallowList = map[int32]struct{}{
-	// MOP
-	// Shado-pan Assault items
-	94507: {}, // Steadfast Talisman of the Shado-Pan Assault
-	94508: {}, // Brutal Talisman of the Shado-Pan Assault
-	94509: {}, // Soothing Talisman of the Shado-Pan Assault
-	94510: {}, // Volatile Talisman of the Shado-Pan Assault
-	94511: {}, // Vicious Talisman of the Shado-Pan Assault
-	95074: {}, // Hauberk of Gleaming Fire
-	95075: {}, // Gianttooth Chestplate
-	95076: {}, // Breastplate of Brutal Strikes
-	95077: {}, // Roofstalker Shadowwrap
-	95078: {}, // Raiment of Silent Stars
-	95079: {}, // Carapace of Segmented Scale
-	95080: {}, // Skinsealer Tunic
-	95081: {}, // Fire Support Robes
-	95082: {}, // Robes of Misty Bindings
-	95083: {}, // Swordhook Slingbelt
-	95084: {}, // Reinforced Spiritplate Girdle
-	95085: {}, // Waistplate of Channeled Mending
-	95086: {}, // Nightflight Chain
-	95087: {}, // Cracklebite Links
-	95088: {}, // Darkfang Belt
-	95089: {}, // Martiean's Splitleaf Girdle
-	95090: {}, // Firestrike Cord
-	95091: {}, // Girdle of Glowing Light
-	95095: {}, // Targetblinder Spaulders
-	95096: {}, // Shoulders of Demonic Dreams
-	95097: {}, // Heartroot Shoulderguards
-	95098: {}, // Sightblinder Shoulderguards
-	95099: {}, // Lightning Strike Mantle
-	95100: {}, // Wallwalker Spaulders
-	95101: {}, // Halo-Graced Mantle
-	95102: {}, // Frost-Kissed Shoulderwraps
-	95103: {}, // Sparksmasher Pauldrons
-	95104: {}, // Shoulderguards of Potentiation
-	95105: {}, // Ghostbinder Grips
-	95106: {}, // Flameweaver Handwraps
-	95107: {}, // Gloves of Enduring Renewal
-	95108: {}, // Daggerfinger Clutches
-	95109: {}, // Gauntlets of the Longbow
-	95110: {}, // Stoneward Handguards
-	95111: {}, // Bloodstained Skullsqueezers
-	95112: {}, // Totemshaper Gloves
-	95113: {}, // Touch of Soothing Mists
-	95114: {}, // Spikeshard Greatcloak
-	95115: {}, // Many-Layered Scalecloak
-	95116: {}, // Longshot Forestcloak
-	95117: {}, // Shadowspike Cloak
-	95118: {}, // Dreamweaver Drape
-	95119: {}, // Thunderbreaker Legplates
-	95120: {}, // Legguards of Renewal
-	95121: {}, // Vaultbreaker Greaves
-	95122: {}, // Wisp-Weave Pantaloons
-	95123: {}, // Charfire Leggings
-	95124: {}, // Trousers of Waning Shadow
-	95125: {}, // Legguards of Hidden Knives
-	95126: {}, // Kilt of Rising Thunder
-	95127: {}, // Homeguard Leggings
-	95128: {}, // Bonecrusher Bracers
-	95129: {}, // Axebinder Wristguards
-	95130: {}, // Softscar Armplates
-	95131: {}, // Powderburn Bracers
-	95132: {}, // Spiritcaller Cuffs
-	95133: {}, // Willow-Weave Armbands
-	95134: {}, // Hearthfire Armwraps
-	95135: {}, // Bracers of Shielding Thought
-	95136: {}, // Troll-Burner Bracers
-	95137: {}, // Seal of the Shado-Pan Assault
-	95138: {}, // Signet of the Shado-Pan Assault
-	95139: {}, // Ring of the Shado-Pan Assault
-	95140: {}, // Band of the Shado-Pan Assault
-	95141: {}, // Loop of the Shado-Pan Assault
-	95142: {}, // Striker's Battletags
-	95143: {}, // Flanker's Battletags
-	95144: {}, // Vanguard's Battletags
-	95145: {}, // Mender's Battletags
-	95146: {}, // Destroyer's Battletags
-}
+var ItemUpgradesDisallowList = map[int32]struct{}{}
 
 // Keep these sorted by item ID.
 var ItemAllowList = map[int32]struct{}{
@@ -834,6 +756,14 @@ var ItemDenyList = map[int32]struct{}{
 	88167: {}, // Band of the Petrified Pumpkin
 	88168: {}, // Seal of Ghoulish Glee
 	88169: {}, // The Horseman's Ring
+
+	// MOP - Love is in the Air - Old items
+	268554: {}, // Miniature Winter Veil Tree
+	270885: {}, // Winking Eye of Love
+	270889: {}, // Choker of the Pure Heart
+	270891: {}, // Heartbreak Charm
+	270893: {}, // Sweet Perfume Broach
+	270895: {}, // Shard of Pirouetting Happiness
 }
 
 // Item icons to include in the DB, so they don't need to be separately loaded in the UI.

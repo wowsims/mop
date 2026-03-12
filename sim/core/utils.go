@@ -277,9 +277,16 @@ func ApplyVarianceMinMax(avgEffect float64, variance float64) (float64, float64)
 	return min, max
 }
 
-func GetItemEffectScaling(itemID int32, coeff float64, state proto.ItemLevelState) float64 {
-	return math.Round(GetItemEffectRandomPropPointsForItem(itemID, state) * coeff)
+// Used to get stat values for item effects which are rounded
+func GetItemEffectScalingStatValue(itemID int32, coeff float64, state proto.ItemLevelState) float64 {
+	return math.Round(GetItemEffectScaling(itemID, coeff, state))
 }
+
+// Used to get non-rounded stat values for item effects such as the amplify trinkets
+func GetItemEffectScaling(itemID int32, coeff float64, state proto.ItemLevelState) float64 {
+	return GetItemEffectRandomPropPointsForItem(itemID, state) * coeff
+}
+
 func GetItemEffectRandomPropPointsForItem(itemID int32, state proto.ItemLevelState) float64 {
 	return float64(GetItemByID(itemID).GetItemEffectRandomPropPoints(state))
 }

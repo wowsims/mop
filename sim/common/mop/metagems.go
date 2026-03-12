@@ -31,6 +31,11 @@ func init() {
 	// (Approximately [19.27 + Haste] procs per minute)
 	core.NewItemEffect(95346, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
+
+		if character.Head().ChallengeMode {
+			return
+		}
+
 		var target *core.Unit
 
 		isHunter := character.Class == proto.Class_ClassHunter
@@ -54,7 +59,7 @@ func init() {
 
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 				baseDamage := sim.Roll(core.CalcScalingSpellEffectVarianceMinMax(proto.Class_ClassUnknown, 0.13300000131, 0.15000000596))
-				apDamage := 0.75 * core.Ternary(isHunter, spell.RangedAttackPower(), spell.MeleeAttackPower())
+				apDamage := 0.75 * core.Ternary(isHunter, spell.RangedAttackPower()*2, spell.MeleeAttackPower())
 
 				outcome := core.Ternary(isHunter, spell.OutcomeRangedHitAndCritNoBlock, spell.OutcomeMeleeSpecialNoBlockDodgeParry)
 				spell.CalcAndDealDamage(sim, target, baseDamage+apDamage, outcome)
@@ -75,11 +80,10 @@ func init() {
 		})
 
 		character.MakeProcTriggerAura(core.ProcTrigger{
-			Name:               "Lightning Strike Charges Trigger",
-			ActionID:           core.ActionID{SpellID: 137595},
-			RequireDamageDealt: true,
-			Callback:           core.CallbackOnSpellHitDealt,
-			Outcome:            core.OutcomeLanded,
+			Name:     "Lightning Strike Charges Trigger",
+			ActionID: core.ActionID{SpellID: 137595},
+			Callback: core.CallbackOnSpellHitDealt,
+			Outcome:  core.OutcomeLanded,
 			DPM: character.NewRPPMProcManager(95346, false, true, core.ProcMaskMeleeOrRanged, core.RPPMConfig{
 				PPM: 19.27000045776,
 			}.WithHasteMod().
@@ -117,6 +121,11 @@ func init() {
 	// (Approximately 1.35 procs per minute)
 	core.NewItemEffect(95347, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
+
+		if character.Head().ChallengeMode {
+			return
+		}
+
 		hasteMulti := 1.3
 
 		aura := character.GetOrRegisterAura(core.Aura{
@@ -160,6 +169,10 @@ func init() {
 	// (Approximately 2.57 procs per minute)
 	core.NewItemEffect(95344, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
+
+		if character.Head().ChallengeMode {
+			return
+		}
 
 		aura := character.GetOrRegisterAura(core.Aura{
 			Label:    "Fortitude",

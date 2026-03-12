@@ -132,8 +132,9 @@ var SaurokStalker = core.NewItemSet(core.ItemSet{
 })
 
 var BattlegearOfTheUnblinkingVigil = core.NewItemSet(core.ItemSet{
-	ID:   1195,
-	Name: "Battlegear of the Unblinking Vigil",
+	ID:                      1195,
+	Name:                    "Battlegear of the Unblinking Vigil",
+	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			// Aimed Shot, Arcane Shot and Multi-shot reduce the cooldown of Rapid Fire by [Bestial Wrath: 4] [Aimed Shot: 4 / 8] seconds per cast.

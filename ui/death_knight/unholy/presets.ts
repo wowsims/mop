@@ -12,6 +12,7 @@ import P3Build from '../../death_knight/unholy/builds/p3.build.json';
 import PrebisBuild from '../../death_knight/unholy/builds/prebis.build.json';
 import P2Gear from '../../death_knight/unholy/gear_sets/p2.gear.json';
 import P3Gear from '../../death_knight/unholy/gear_sets/p3.gear.json';
+import P5Gear from '../../death_knight/unholy/gear_sets/p5.gear.json';
 import PrebisGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
 
 // Preset options for this spec.
@@ -20,6 +21,7 @@ import PrebisGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Prebis', PrebisGear);
 export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2', P2Gear);
 export const P3_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3', P3Gear);
+export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5 (WiP)', P5Gear);
 
 export const DEFAULT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Festerblight', FesterblightApl, {
@@ -108,9 +110,9 @@ export const DefaultOptions = UnholyDeathKnight_Options.create({
 
 export const OtherDefaults = {
 	profession1: Profession.Engineering,
-	profession2: Profession.Blacksmithing,
+	profession2: Profession.Herbalism,
 	distanceFromTarget: 5,
-	race: Race.RaceOrc,
+	race: Race.RaceTroll,
 	iterationCount: 25000,
 };
 

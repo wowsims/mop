@@ -107,7 +107,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_PRESET.gear,
+		gear: Presets.P3_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P3_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
@@ -157,11 +157,11 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 	presets: {
 		epWeights: [Presets.P1_EP_PRESET, Presets.P3_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.StandardTalents, Presets.P3Talents],
+		talents: [Presets.P3Talents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_P3],
+		rotations: [Presets.ROTATION_PRESET_P3],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
+		gear: [Presets.PRERAID_GEAR_PRESET, Presets.P2_GEAR_PRESET, Presets.P3_GEAR_PRESET],
 	},
 
 	autoRotation: (_: Player<Spec.SpecEnhancementShaman>): APLRotation => {
@@ -181,10 +181,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 			},
 			defaultGear: {
 				[Faction.Alliance]: {
-					1: Presets.P3_PRESET.gear,
+					1: Presets.P3_GEAR_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P3_PRESET.gear,
+					1: Presets.P3_GEAR_PRESET.gear,
 				},
 				[Faction.Unknown]: {},
 			},
@@ -197,6 +197,14 @@ export class EnhancementShamanSimUI extends IndividualSimUI<Spec.SpecEnhancement
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecEnhancementShaman>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		this.reforger = new ReforgeOptimizer(this);
+		this.reforger = new ReforgeOptimizer(this, {
+					getEPDefaults: player => {
+						const avgIlvl = player.getGear().getAverageItemLevel(false);
+						if (avgIlvl >= 522) {
+							return Presets.P3_EP_PRESET.epWeights;
+						}
+						return Presets.P1_EP_PRESET.epWeights;
+					},
+				});
 	}
 }

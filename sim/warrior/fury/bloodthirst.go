@@ -36,7 +36,11 @@ func (war *FuryWarrior) registerBloodthirst() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			baseDamage := war.CalcScalingSpellDmg(1) + spell.Unit.MHNormalizedWeaponDamage(sim, spell.MeleeAttackPower())
-			bonusCritPercent := spell.Unit.GetStat(stats.PhysicalCritPercent)
+
+			physicalCritPercent := spell.Unit.GetStat(stats.PhysicalCritPercent)
+			suppressionPercent := war.AttackTables[target.UnitIndex].MeleeCritSuppression * 100
+			bonusCritPercent := physicalCritPercent + spell.BonusCritPercent - suppressionPercent
+
 			spell.BonusCritPercent += bonusCritPercent
 			result := spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 			spell.BonusCritPercent -= bonusCritPercent

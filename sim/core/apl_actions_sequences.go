@@ -200,7 +200,7 @@ func (action *APLActionStrictSequence) GetNextAction(sim *Simulation) *APLAction
 		} else {
 			pa := sim.GetConsumedPendingActionFromPool()
 			pa.NextActionAt = action.unit.NextGCDAt()
-			pa.Priority = ActionPriorityLow
+			pa.Priority = ActionPriorityPrePull
 
 			pa.OnAction = func(_ *Simulation) {
 				if action.unit.Rotation.inSequence {

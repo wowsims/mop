@@ -18336,7 +18336,8 @@
 {"id":263200,"name":"Wicked Witch's Band","icon":"inv_misc_bag_28_halloween","type":11,"quality":4,"scalingOptions":{"0":{"randPropPoints":194,"stats":{"2":76,"3":78,"6":69,"14":119,"21":35},"ilvl":277}}},
 {"id":263201,"name":"The Horseman's Seal","icon":"inv_misc_bag_28_halloween","type":11,"quality":4,"scalingOptions":{"0":{"randPropPoints":194,"stats":{"2":76,"3":78,"5":60,"7":73,"14":119},"ilvl":277}}},
 {"id":263204,"name":"The Horseman's Baleful Blade","icon":"inv_sword_07","type":13,"weaponType":9,"handType":1,"weaponSpeed":2.7,"quality":4,"scalingOptions":{"0":{"randPropPoints":149,"weaponDamageMin":930,"weaponDamageMax":1727,"stats":{"1":53,"2":79,"5":52,"8":52,"12":155,"13":155},"ilvl":277}}},
-{"id":263207,"name":"The Horseman's Horrific Helm","icon":"inv_helmet_21","type":1,"armorType":4,"gemSockets":[1,4],"socketBonus":[8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"quality":4,"scalingOptions":{"0":{"randPropPoints":348,"stats":{"0":188,"2":217,"5":82,"6":102,"17":2246},"ilvl":277}}}
+{"id":263207,"name":"The Horseman's Horrific Helm","icon":"inv_helmet_21","type":1,"armorType":4,"gemSockets":[1,4],"socketBonus":[8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"quality":4,"scalingOptions":{"0":{"randPropPoints":348,"stats":{"0":188,"2":217,"5":82,"6":102,"17":2246},"ilvl":277}}},
+{"id":268583,"name":"Wrathful Gladiator's Plate Helm","icon":"inv_helmet_98","type":1,"armorType":4,"gemSockets":[1,2],"socketBonus":[0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"quality":4,"nameDescription":"Season 8","classAllowlist":[1],"scalingOptions":{"0":{"randPropPoints":326,"stats":{"0":155,"2":257,"6":98,"15":98,"17":2190},"ilvl":270}}}
 ],
 "randomSuffixes":[
 ],

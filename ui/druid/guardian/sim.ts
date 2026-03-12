@@ -144,7 +144,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_HOTW, Presets.ROTATION_EMPRESS, Presets.ROTATION_SHA, Presets.ROTATION_HORRIDON],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.MSV_PRESET, Presets.HOF_PRESET, Presets.P2_PRESET, Presets.P2_OFFENSIVE_PRESET, Presets.P3_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.MSV_PRESET, Presets.HOF_PRESET, Presets.P2_PRESET, Presets.P2_OFFENSIVE_PRESET, Presets.P3_PRESET, Presets.P3_OFFENSIVE_PRESET],
 		itemSwaps: [Presets.ITEM_SWAP_PRESET],
 		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_GARAJAL, Presets.PRESET_BUILD_EMPRESS, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
 	},

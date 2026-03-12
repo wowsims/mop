@@ -170,6 +170,8 @@ func (rot *APLRotation) newAPLActionImpl(config *proto.APLAction) APLActionImpl 
 	// Casting
 	case *proto.APLAction_CastSpell:
 		return rot.newActionCastSpell(config.GetCastSpell())
+	case *proto.APLAction_CancelSpellCast:
+		return rot.newActionCancelSpellCast(config.GetCancelSpellCast())
 	case *proto.APLAction_CastFriendlySpell:
 		return rot.newActionCastFriendlySpell(config.GetCastFriendlySpell())
 	case *proto.APLAction_ChannelSpell:
@@ -214,6 +216,8 @@ func (rot *APLRotation) newAPLActionImpl(config *proto.APLAction) APLActionImpl 
 		return rot.newActionCancelAura(config.GetCancelAura())
 	case *proto.APLAction_TriggerIcd:
 		return rot.newActionTriggerICD(config.GetTriggerIcd())
+	case *proto.APLAction_DamageAmplifier:
+		return rot.newActionDamageAmplifier(config.GetDamageAmplifier())
 	case *proto.APLAction_ItemSwap:
 		return rot.newActionItemSwap(config.GetItemSwap())
 	case *proto.APLAction_Move:

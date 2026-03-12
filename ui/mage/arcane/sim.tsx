@@ -16,6 +16,7 @@ import * as Presets from './presets';
 import * as MageInputs from '../inputs';
 
 const hasteBreakpoints = MAGE_BREAKPOINTS.presets;
+const MAX_HASTE_PERCENT_BREAKPOINT_THRESHOLD = 53.85;
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 	cssClass: 'arcane-mage-sim-ui',
@@ -56,23 +57,28 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 		})(),
 		// Default soft caps for the Reforge optimizer
 		softCapBreakpoints: (() => {
-			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+			const hasteBreakpointConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [
 					hasteBreakpoints.get('5-tick - Living Bomb')!,
-					hasteBreakpoints.get('6-tick - Living Bomb')!,
+					// hasteBreakpoints.get('6-tick - Living Bomb')!,
 					hasteBreakpoints.get('7-tick - Living Bomb')!,
-					hasteBreakpoints.get('8-tick - Living Bomb')!,
-					hasteBreakpoints.get('9-tick - Living Bomb')!,
-					hasteBreakpoints.get('10-tick - Living Bomb')!,
-					// Higher ticks commented out as they may be unrealistic for most gear levels
+					// hasteBreakpoints.get('8-tick - Living Bomb')!,
+					// hasteBreakpoints.get('9-tick - Living Bomb')!,
+					// hasteBreakpoints.get('10-tick - Living Bomb')!,
 					// hasteBreakpoints.get('11-tick - Living Bomb')!,
 					// hasteBreakpoints.get('12-tick - Living Bomb')!,
 				],
 				capType: StatCapType.TypeThreshold,
-				postCapEPs: [0.6 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+				postCapEPs: [0.62 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
 			});
 
-			return [hasteSoftCapConfig];
+			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+				breakpoints: [MAX_HASTE_PERCENT_BREAKPOINT_THRESHOLD],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [0.38 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+			});
+
+			return [hasteBreakpointConfig, hasteSoftCapConfig];
 		})(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
@@ -109,13 +115,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 	presets: {
 		epWeights: [Presets.P1_PREBIS_EP_PRESET, Presets.P1_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_P3_4PC],
+		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_T15_4PC],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.ArcaneTalents, Presets.ArcaneTalentsCleave],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS],
+		gear: [Presets.PREBIS, Presets.P2_BIS, Presets.P3_BIS],
 
-		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE],
+		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE, Presets.T14_PRESET_BUILD, Presets.T15_PRESET_BUILD],
 	},
 
 	autoRotation: (player: Player<Spec.SpecArcaneMage>): APLRotation => {
@@ -142,10 +148,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P1_PREBIS.gear,
+					1: Presets.PREBIS.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P1_PREBIS.gear,
+					1: Presets.PREBIS.gear,
 				},
 			},
 		},
@@ -183,30 +189,32 @@ export class ArcaneMageSimUI extends IndividualSimUI<Spec.SpecArcaneMage> {
 				const modifyHaste = (oldHastePercent: number, modifier: number) =>
 					Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
 
-				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-						const adjustedHasteBreakpoints = new Set([...softCap.breakpoints]);
-						const hasCloseMatchingValue = (value: number) => [...adjustedHasteBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
+				const softCapToModify = softCaps.find(
+					sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && sc.capType === StatCapType.TypeThreshold,
+				);
+				if (softCapToModify) {
+					const adjustedHasteBreakpoints = new Set([...softCapToModify.breakpoints]);
+					const hasCloseMatchingValue = (value: number) => [...adjustedHasteBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
 
-						softCap.breakpoints.forEach(breakpoint => {
-							if (hasBL) {
-								const blBreakpoint = modifyHaste(breakpoint, 1.3);
+					softCapToModify.breakpoints.forEach(breakpoint => {
+						if (hasBL) {
+							const blBreakpoint = modifyHaste(breakpoint, 1.3);
 
-								if (blBreakpoint > 0) {
-									if (!hasCloseMatchingValue(blBreakpoint)) adjustedHasteBreakpoints.add(blBreakpoint);
-									if (hasBerserking) {
-										const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
-										if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
-											adjustedHasteBreakpoints.add(berserkingBreakpoint);
-										}
+							if (blBreakpoint > 0) {
+								if (!hasCloseMatchingValue(blBreakpoint)) adjustedHasteBreakpoints.add(blBreakpoint);
+								if (hasBerserking) {
+									const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
+									if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
+										adjustedHasteBreakpoints.add(berserkingBreakpoint);
 									}
 								}
 							}
-						});
-						softCapToModify.breakpoints = [...adjustedHasteBreakpoints].sort((a, b) => a - b);
-					}
-				});
+						}
+					});
+					softCapToModify.breakpoints = [...adjustedHasteBreakpoints]
+						.filter(bp => bp <= MAX_HASTE_PERCENT_BREAKPOINT_THRESHOLD)
+						.sort((a, b) => a - b);
+				}
 				return softCaps;
 			},
 			additionalSoftCapTooltipInformation: {

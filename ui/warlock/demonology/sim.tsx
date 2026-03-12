@@ -6,30 +6,13 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Faction, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { Faction, ItemSlot, PartyBuffs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as WarlockInputs from '../inputs';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import * as Presets from './presets';
 import { formatToNumber } from '../../core/utils';
-
-const hasteBreakpoints = WARLOCK_BREAKPOINTS.presets;
-
-const MIN_HASTE_PERCENT_BREAKPOINT_THRESHOLD = hasteBreakpoints.get('8-tick - Shadowflame')!;
-const MAX_P2_HASTE_PERCENT_BREAKPOINT_THRESHOLD = 26.0;
-const MAX_P3_HASTE_PERCENT_BREAKPOINT_THRESHOLD = hasteBreakpoints.get('9-tick - Shadowflame')!;
-const defaultHasteBreakpoints = [
-	hasteBreakpoints.get('8-tick - Shadowflame')!,
-	hasteBreakpoints.get('6-tick - Doom')!,
-	hasteBreakpoints.get('9-tick - Shadowflame')!,
-	hasteBreakpoints.get('10-tick - Shadowflame')!,
-	hasteBreakpoints.get('7-tick - Doom')!,
-	hasteBreakpoints.get('11-tick - Shadowflame')!,
-	hasteBreakpoints.get('8-tick - Doom')!,
-	hasteBreakpoints.get('12-tick - Shadowflame')!,
-	hasteBreakpoints.get('9-tick - Doom')!,
-];
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	cssClass: 'demonology-warlock-sim-ui',
@@ -59,7 +42,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_PRESET.gear,
+		gear: Presets.P3_PRESET.gear,
 
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
@@ -70,7 +53,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 		// Default soft caps for the Reforge optimizer
 		softCapBreakpoints: (() => {
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
-				breakpoints: defaultHasteBreakpoints,
+				breakpoints: [25.00365],
 				capType: StatCapType.TypeThreshold,
 				postCapEPs: [(Presets.DEFAULT_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.01) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
 			});
@@ -81,7 +64,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 		consumables: Presets.DefaultConsumables,
 
 		// Default talents.
-		talents: Presets.DemonologyTalentsDefaultP1.data,
+		talents: Presets.DemonologyTalentsUVLS.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 
@@ -117,25 +100,32 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	presets: {
 		epWeights: [Presets.DEFAULT_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.DemonologyTalentsDefaultP1],
+		talents: [Presets.DemonologyTalentsDefault, Presets.DemonologyTalentsUVLS],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.APL_Default],
+		rotations: [Presets.APL_Default, Presets.APL_UVLS],
 
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P2_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
 		itemSwaps: [],
 
-		builds: [Presets.PRSET_BUILD_P1],
+		builds: [Presets.PRESET_BUILD_P2, Presets.PRESET_BUILD_P3],
 	},
 
-	autoRotation: (_player: Player<Spec.SpecDemonologyWarlock>): APLRotation => {
+	autoRotation: (player: Player<Spec.SpecDemonologyWarlock>): APLRotation => {
+		const hasUVLS = player
+			.getGear()
+			.getTrinkets()
+			.some(trinket => trinket?._item.name === 'Unerring Vision of Lei Shen');
+
+		if (hasUVLS) return Presets.APL_UVLS.rotation.rotation!;
+
 		return Presets.APL_Default.rotation.rotation!;
 	},
 
 	raidSimPresets: [
 		{
 			spec: Spec.SpecDemonologyWarlock,
-			talents: Presets.DemonologyTalentsDefaultP1.data,
+			talents: Presets.DemonologyTalentsDefault.data,
 			specOptions: Presets.DefaultOptions,
 			consumables: Presets.DefaultConsumables,
 			defaultFactionRaces: {
@@ -147,11 +137,11 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
 					1: Presets.PRERAID_PRESET.gear,
-					2: Presets.P1_PRESET.gear,
+					2: Presets.P2_PRESET.gear,
 				},
 				[Faction.Horde]: {
 					1: Presets.PRERAID_PRESET.gear,
-					2: Presets.P1_PRESET.gear,
+					2: Presets.P2_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,
@@ -174,61 +164,26 @@ export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyW
 			statSelectionPresets,
 			enableBreakpointLimits: true,
 			updateSoftCaps: softCaps => {
-				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				const raidBuffs = player.getRaid()?.getBuffs();
-				const hasBL = !!raidBuffs?.bloodlust;
-				const hasBerserking = player.getRace() === Race.RaceTroll;
+				const gear = player.getGear();
+				const hasLegendaryMetaGem = gear.getMetaGem()?.id === 95347;
 
-				const modifyHaste = (oldHastePercent: number, modifier: number) =>
-					Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
-
-				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-						const adjustedHasteBreakpoints = new Set([...softCap.breakpoints]);
-						const hasCloseMatchingValue = (value: number) => [...adjustedHasteBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
-
-						softCap.breakpoints.forEach(breakpoint => {
-							if (hasBL) {
-								const blBreakpoint = modifyHaste(breakpoint, 1.3);
-
-								if (blBreakpoint > 0) {
-									if (!hasCloseMatchingValue(blBreakpoint)) adjustedHasteBreakpoints.add(blBreakpoint);
-									if (hasBerserking) {
-										const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
-										if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
-											adjustedHasteBreakpoints.add(berserkingBreakpoint);
-										}
-									}
-								}
-							}
-						});
-						softCapToModify.breakpoints = [...adjustedHasteBreakpoints]
-							.filter(
-								bp =>
-									bp >= MIN_HASTE_PERCENT_BREAKPOINT_THRESHOLD &&
-									bp <= (avgIlvl >= 525 ? MAX_P3_HASTE_PERCENT_BREAKPOINT_THRESHOLD : MAX_P2_HASTE_PERCENT_BREAKPOINT_THRESHOLD),
-							)
-							.sort((a, b) => a - b);
+				this.individualConfig.defaults.softCapBreakpoints!.forEach(() => {
+					const softCapToModify = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
+					if (softCapToModify && hasLegendaryMetaGem) {
+						softCapToModify.breakpoints = [25.74541];
 					}
 				});
 				return softCaps;
 			},
 			additionalSoftCapTooltipInformation: {
 				[Stat.StatHasteRating]: () => {
-					const raidBuffs = player.getRaid()?.getBuffs();
-					const hasBL = !!raidBuffs?.bloodlust;
-					const hasBerserking = player.getRace() === Race.RaceTroll;
+					const hasLegendaryMetaGem = player.getGear().getMetaGem()?.id === 95347;
 
 					return (
 						<>
-							{(hasBL || hasBerserking) && (
+							{hasLegendaryMetaGem && (
 								<>
-									<p className="mb-0">Additional Doom/Shadowflame breakpoints have been created using the following cooldowns:</p>
-									<ul className="mb-0">
-										{hasBL && <li>Bloodlust</li>}
-										{hasBerserking && <li>Berserking</li>}
-									</ul>
+									<p className="mb-0">Your Doom breakpoint has been edited because of your legendary Meta Gem</p>
 								</>
 							)}
 						</>

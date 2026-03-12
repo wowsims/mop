@@ -53,6 +53,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		ClassSpellMask: druid.DruidSpellSunfireDoT | druid.DruidSpellMoonfireDoT,
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			ssAura.Activate(sim)
+			moonkin.ReactToEvent(sim, false)
 		},
 	})
 

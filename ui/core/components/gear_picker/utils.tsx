@@ -9,7 +9,7 @@ const emptySlotIcons: Record<ItemSlot, string> = {
 	[ItemSlot.ItemSlotHead]: '/mop/assets/item_slots/head.jpg',
 	[ItemSlot.ItemSlotNeck]: '/mop/assets/item_slots/neck.jpg',
 	[ItemSlot.ItemSlotShoulder]: '/mop/assets/item_slots/shoulders.jpg',
-	[ItemSlot.ItemSlotBack]: '/mop/assets/item_slots/shirt.jpg',
+	[ItemSlot.ItemSlotBack]: '/mop/assets/item_slots/chest.jpg',
 	[ItemSlot.ItemSlotChest]: '/mop/assets/item_slots/chest.jpg',
 	[ItemSlot.ItemSlotWrist]: '/mop/assets/item_slots/wrists.jpg',
 	[ItemSlot.ItemSlotHands]: '/mop/assets/item_slots/hands.jpg',

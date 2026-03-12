@@ -272,7 +272,17 @@ func (shaman *Shaman) ApplyUnleashedFury() {
 }
 
 func (shaman *Shaman) ApplyPrimalElementalist() {
-	//In the corresponding pet files
+	if !shaman.Talents.PrimalElementalist {
+		return
+	}
+
+	// In the corresponding pet files
+
+	// Dummy Aura
+	core.MakePermanent(shaman.GetOrRegisterAura(core.Aura{
+		Label:    "Primal Elementalist",
+		ActionID: core.ActionID{SpellID: 117013},
+	}))
 }
 
 func (shaman *Shaman) ApplyElementalBlast() {

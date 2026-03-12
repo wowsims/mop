@@ -10,22 +10,22 @@ import (
 func (fdk *FrostDeathKnight) registerKillingMachine() {
 	mask := death_knight.DeathKnightSpellObliterate | death_knight.DeathKnightSpellFrostStrike
 	if fdk.CouldHaveSetBonus(death_knight.ItemSetBattleplateOfTheAllConsumingMaw, 4) {
-		mask |= death_knight.DeathKnightSpellSoulReaper
+		mask |= death_knight.DeathKnightSpellSoulReaperMelee
 	}
 
-	var killingMachineAura *core.Aura
-	killingMachineAura = core.BlockPrepull(fdk.RegisterAura(core.Aura{
+	fdk.KillingMachineAura = core.BlockPrepull(fdk.RegisterAura(core.Aura{
 		Label:    "Killing Machine" + fdk.Label,
 		ActionID: core.ActionID{SpellID: 51124},
 		Duration: time.Second * 10,
 	})).AttachProcTrigger(core.ProcTrigger{
-		Callback:       core.CallbackOnSpellHitDealt,
-		ClassSpellMask: mask,
-		ProcMask:       core.ProcMaskMeleeMH,
-		Outcome:        core.OutcomeLanded,
+		Callback:           core.CallbackOnSpellHitDealt,
+		ClassSpellMask:     mask,
+		ProcMask:           core.ProcMaskMeleeMH,
+		Outcome:            core.OutcomeLanded,
+		TriggerImmediately: true,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			killingMachineAura.Deactivate(sim)
+			fdk.KillingMachineAura.Deactivate(sim)
 		},
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_BonusCrit_Percent,
@@ -43,7 +43,7 @@ func (fdk *FrostDeathKnight) registerKillingMachine() {
 			spell.RelatedSelfBuff.Activate(sim)
 		},
 
-		RelatedSelfBuff: killingMachineAura,
+		RelatedSelfBuff: fdk.KillingMachineAura,
 	})
 
 	fdk.MakeProcTriggerAura(core.ProcTrigger{

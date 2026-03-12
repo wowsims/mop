@@ -66,6 +66,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSubtlety-AllItems-BlackBloodofY'Shaarj-105648"
+ value: {
+  dps: 104634.4895
+  tps: 73772.78723
+ }
+}
+dps_results: {
  key: "TestSubtlety-AllItems-BurningPrimalDiamond"
  value: {
   dps: 104431.99541
@@ -75,8 +82,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 109048.97469
-  tps: 76874.07198
+  dps: 108876.27613
+  tps: 76751.45601
  }
 }
 dps_results: {
@@ -220,6 +227,20 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSubtlety-AllItems-FrenziedCrystalofRage-105572"
+ value: {
+  dps: 100823.43931
+  tps: 71053.07808
+ }
+}
+dps_results: {
+ key: "TestSubtlety-AllItems-Fusion-FireCore-105459"
+ value: {
+  dps: 105535.20159
+  tps: 74291.33007
+ }
+}
+dps_results: {
  key: "TestSubtlety-AllItems-GazeoftheTwins-96915"
  value: {
   dps: 106506.47913
@@ -290,6 +311,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSubtlety-AllItems-Juggernaut'sFocusingCrystal-105514"
+ value: {
+  dps: 100826.2993
+  tps: 71055.10868
+  hps: 3185.20419
+ }
+}
+dps_results: {
  key: "TestSubtlety-AllItems-Kardris'ToxicTotem-105540"
  value: {
   dps: 106316.99062
@@ -341,8 +370,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 103159.7394
-  tps: 72690.77583
+  dps: 104143.82708
+  tps: 73394.46044
  }
 }
 dps_results: {
@@ -388,10 +417,24 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSubtlety-AllItems-SigilofRampage-105580"
+ value: {
+  dps: 119924.34116
+  tps: 84311.07314
+ }
+}
+dps_results: {
  key: "TestSubtlety-AllItems-SinisterPrimalDiamond"
  value: {
   dps: 103571.14487
   tps: 72982.7678
+ }
+}
+dps_results: {
+ key: "TestSubtlety-AllItems-Skeer'sBloodsoakedTalisman-105632"
+ value: {
+  dps: 110115.24894
+  tps: 77463.13506
  }
 }
 dps_results: {
@@ -437,6 +480,27 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSubtlety-AllItems-Thok'sTailTip-105609"
+ value: {
+  dps: 109169.14608
+  tps: 76838.59363
+ }
+}
+dps_results: {
+ key: "TestSubtlety-AllItems-TickingEbonDetonator-105612"
+ value: {
+  dps: 122974.25863
+  tps: 86529.80634
+ }
+}
+dps_results: {
+ key: "TestSubtlety-AllItems-Time-LostArtifact-103678"
+ value: {
+  dps: 104823.55061
+  tps: 73850.7612
+ }
+}
+dps_results: {
  key: "TestSubtlety-AllItems-TyrannicalPrimalDiamond"
  value: {
   dps: 102935.70478
@@ -445,6 +509,13 @@ dps_results: {
 }
 dps_results: {
  key: "TestSubtlety-AllItems-UnerringVisionofLeiShen-96930"
+ value: {
+  dps: 100823.43931
+  tps: 71053.07808
+ }
+}
+dps_results: {
+ key: "TestSubtlety-AllItems-VialofLivingCorruption-105568"
  value: {
   dps: 100823.43931
   tps: 71053.07808

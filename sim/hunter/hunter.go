@@ -109,6 +109,7 @@ func (hunter *Hunter) ApplyTalents() {
 	hunter.applyThrillOfTheHunt()
 	hunter.ApplyHotfixes()
 	hunter.addBloodthirstyGloves()
+	hunter.applyAutoShotTriggers()
 
 	if hunter.Pet != nil {
 		hunter.Pet.ApplyTalents()
@@ -187,6 +188,36 @@ func (hunter *Hunter) Reset(_ *core.Simulation) {
 func (hunter *Hunter) OnEncounterStart(sim *core.Simulation) {
 }
 
+func (hunter *Hunter) applyAutoShotTriggers() {
+	prepullCheck := func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) bool {
+		return sim.CurrentTime < 0 && !hunter.SpellInFlight(hunter.AutoAttacks.RangedAuto())
+	}
+
+	enableAutoShot := func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
+		hunter.AutoAttacks.EnableRangedSwing(sim, true)
+	}
+
+	hunter.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Initiate auto shot on spell cast complete",
+		Callback:           core.CallbackOnCastComplete,
+		ClassSpellMask:     HunterSpellsAutoOnCastComplete,
+		TriggerImmediately: true,
+
+		ExtraCondition: prepullCheck,
+		Handler:        enableAutoShot,
+	})
+
+	hunter.MakeProcTriggerAura(core.ProcTrigger{
+		Name:               "Initiate auto shot on spell cast",
+		Callback:           core.CallbackOnApplyEffects,
+		ClassSpellMask:     HunterSpellsAutoOnCast,
+		TriggerImmediately: true,
+
+		ExtraCondition: prepullCheck,
+		Handler:        enableAutoShot,
+	})
+}
+
 const (
 	HunterSpellFlagsNone int64 = 0
 	SpellMaskSpellRanged int64 = 1 << iota
@@ -220,6 +251,13 @@ const (
 		HunterSpellExplosiveTrap | HunterSpellBlackArrow | HunterSpellMultiShot | HunterSpellAimedShot |
 		HunterSpellSerpentSting | HunterSpellKillShot | HunterSpellRapidFire | HunterSpellBestialWrath
 	HunterSpellsTalents = HunterSpellFervor | HunterSpellDireBeast | HunterSpellAMurderOfCrows | HunterSpellLynxRush | HunterSpellGlaiveToss | HunterSpellPowershot | HunterSpellBarrage
+
+	// These spells trigger auto shot when their cast time finishes
+	HunterSpellsAutoOnCastComplete = HunterSpellCobraShot | HunterSpellAimedShot
+
+	// These spells trigger auto shot when they are cast
+	HunterSpellsAutoOnCast = HunterSpellSteadyShot | HunterSpellArcaneShot | HunterSpellChimeraShot |
+		HunterSpellExplosiveShot | HunterSpellBlackArrow | HunterSpellMultiShot | HunterSpellSerpentSting | HunterSpellKillShot
 )
 
 // Agent is a generic way to access underlying hunter on any of the agents.

@@ -130,6 +130,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBlood-AllItems-BlackBloodofY'Shaarj-105648"
+ value: {
+  dps: 223985.42079
+  tps: 1.13598835231e+06
+  dtps: 65325.36525
+  hps: 77359.34265
+ }
+}
+dps_results: {
  key: "TestBlood-AllItems-BlossomofPureSnow-89081"
  value: {
   dps: 222060.80096
@@ -852,10 +861,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-EssenceofTerror-87175"
  value: {
-  dps: 221342.77751
-  tps: 1.1115278575e+06
+  dps: 220959.31479
+  tps: 1.10884900975e+06
   dtps: 65497.31347
-  hps: 75148.77989
+  hps: 75244.01626
  }
 }
 dps_results: {
@@ -870,10 +879,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 230880.01968
-  tps: 1.16526912054e+06
-  dtps: 60286.60136
-  hps: 73952.91105
+  dps: 231003.46315
+  tps: 1.16591740707e+06
+  dtps: 62298.29046
+  hps: 74610.01863
  }
 }
 dps_results: {
@@ -1018,6 +1027,24 @@ dps_results: {
   tps: 1.10305463807e+06
   dtps: 65397.84607
   hps: 80261.836
+ }
+}
+dps_results: {
+ key: "TestBlood-AllItems-FrenziedCrystalofRage-105572"
+ value: {
+  dps: 222163.5877
+  tps: 1.14092200343e+06
+  dtps: 65495.72794
+  hps: 74259.03766
+ }
+}
+dps_results: {
+ key: "TestBlood-AllItems-Fusion-FireCore-105459"
+ value: {
+  dps: 235046.72704
+  tps: 1.19015862642e+06
+  dtps: 61978.63932
+  hps: 72453.97653
  }
 }
 dps_results: {
@@ -1525,6 +1552,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBlood-AllItems-Juggernaut'sFocusingCrystal-105514"
+ value: {
+  dps: 222865.33139
+  tps: 1.12714720163e+06
+  dtps: 63276.8001
+  hps: 79803.69722
+ }
+}
+dps_results: {
  key: "TestBlood-AllItems-Kardris'ToxicTotem-105540"
  value: {
   dps: 225013.98706
@@ -1941,10 +1977,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-PhaseFingers-4697"
  value: {
-  dps: 216530.41154
-  tps: 1.09592384667e+06
+  dps: 216448.52098
+  tps: 1.09472396979e+06
   dtps: 65340.55983
-  hps: 77887.83765
+  hps: 77820.25412
  }
 }
 dps_results: {
@@ -1968,10 +2004,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-PlateoftheLostCatacomb"
  value: {
-  dps: 206194.37904
-  tps: 1.04391607776e+06
+  dps: 206289.32716
+  tps: 1.0444848343e+06
   dtps: 69733.3762
-  hps: 83403.5959
+  hps: 83317.35933
  }
 }
 dps_results: {
@@ -2148,10 +2184,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 221038.23925
-  tps: 1.12998075584e+06
-  dtps: 65350.88916
-  hps: 75774.17892
+  dps: 222639.21539
+  tps: 1.13738991284e+06
+  dtps: 65501.94312
+  hps: 77087.89491
  }
 }
 dps_results: {
@@ -2328,19 +2364,19 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-RuneofSwordbreaking-3594"
  value: {
-  dps: 209839.64377
-  tps: 1.06720357127e+06
+  dps: 209864.15746
+  tps: 1.0683475303e+06
   dtps: 64984.70313
-  hps: 72815.24325
+  hps: 72868.7662
  }
 }
 dps_results: {
  key: "TestBlood-AllItems-RuneofSwordshattering-3365"
  value: {
-  dps: 211785.36739
-  tps: 1.07785498228e+06
+  dps: 211809.88108
+  tps: 1.07899894131e+06
   dtps: 63437.01107
-  hps: 72839.21702
+  hps: 72892.73996
  }
 }
 dps_results: {
@@ -2452,6 +2488,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBlood-AllItems-SigilofRampage-105580"
+ value: {
+  dps: 223284.34158
+  tps: 1.1432709032e+06
+  dtps: 65343.30636
+  hps: 75686.53346
+ }
+}
+dps_results: {
  key: "TestBlood-AllItems-SigiloftheCatacombs-83732"
  value: {
   dps: 217209.93882
@@ -2467,6 +2512,15 @@ dps_results: {
   tps: 1.10309280407e+06
   dtps: 66168.38264
   hps: 78258.89566
+ }
+}
+dps_results: {
+ key: "TestBlood-AllItems-Skeer'sBloodsoakedTalisman-105632"
+ value: {
+  dps: 240898.80907
+  tps: 1.21686119767e+06
+  dtps: 63578.84611
+  hps: 77017.45154
  }
 }
 dps_results: {
@@ -2706,10 +2760,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 218352.09357
-  tps: 1.10863598216e+06
+  dps: 218465.80933
+  tps: 1.10947025407e+06
   dtps: 64965.54903
-  hps: 78006.7543
+  hps: 77980.68281
  }
 }
 dps_results: {
@@ -2731,12 +2785,39 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBlood-AllItems-Thok'sTailTip-105609"
+ value: {
+  dps: 234442.55094
+  tps: 1.16684998645e+06
+  dtps: 61978.86325
+  hps: 73970.5914
+ }
+}
+dps_results: {
  key: "TestBlood-AllItems-Thousand-YearPickledEgg-257881"
  value: {
   dps: 218183.02075
   tps: 1.10184456719e+06
   dtps: 65393.1986
   hps: 75764.81672
+ }
+}
+dps_results: {
+ key: "TestBlood-AllItems-TickingEbonDetonator-105612"
+ value: {
+  dps: 219338.22955
+  tps: 1.11767216009e+06
+  dtps: 65494.36606
+  hps: 82032.20935
+ }
+}
+dps_results: {
+ key: "TestBlood-AllItems-Time-LostArtifact-103678"
+ value: {
+  dps: 219985.1502
+  tps: 1.11614182376e+06
+  dtps: 65405.42314
+  hps: 78687.31389
  }
 }
 dps_results: {
@@ -3055,6 +3136,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBlood-AllItems-VialofLivingCorruption-105568"
+ value: {
+  dps: 216765.62463
+  tps: 1.09935375748e+06
+  dtps: 64570.778
+  hps: 78808.08448
+ }
+}
+dps_results: {
  key: "TestBlood-AllItems-ViciousTalismanoftheShado-PanAssault-94511"
  value: {
   dps: 216906.98329
@@ -3111,8 +3201,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 213846.33161
-  tps: 1.08569398657e+06
+  dps: 212948.44989
+  tps: 1.08019487124e+06
   dtps: 67813.38211
   hps: 83796.77159
  }
@@ -3138,8 +3228,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Average-Default"
  value: {
-  dps: 204690.13412
-  tps: 1.05432628739e+06
+  dps: 204690.33734
+  tps: 1.05432770987e+06
   dtps: 61071.88955
   hps: 75863.07654
  }

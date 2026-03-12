@@ -13,8 +13,8 @@ import P3Gear from './gear_sets/p3_subtlety.gear.json';
 // keep them in a separate file.
 
 export const PRERAID_GEARSET = PresetUtils.makePresetGear('P1 Preraid', PreraidGear);
-export const P2_T14_GEARSET = PresetUtils.makePresetGear('P2', P2Gear);
-export const P3_T15_GEARSET = PresetUtils.makePresetGear('P3', P3Gear);
+export const P2_GEARSET = PresetUtils.makePresetGear('P2', P2Gear);
+export const P3_GEARSET = PresetUtils.makePresetGear('P3', P3Gear);
 
 export const ROTATION_PRESET_SUBTLETY = PresetUtils.makePresetAPLRotation('Subtlety', SubtletyApl);
 

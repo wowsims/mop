@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -129,28 +128,30 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 	for i, prepullItem := range config.PrepullActions {
 		prepullIdx := i // Save to local variable for correct lambda capture behavior
 		rotation.doAndRecordWarnings(&rotation.prepullValidations[prepullIdx], true, func() {
-			if !prepullItem.Hide {
-				doAtVal := rotation.newAPLValue(prepullItem.DoAtValue)
-				if doAtVal != nil {
-					doAt := doAtVal.GetDuration(nil)
-					if doAt > 0 {
-						rotation.ValidationMessage(proto.LogLevel_Warning, "Invalid time for 'Do At', ignoring this Prepull Action")
-					} else {
-						action := rotation.newAPLAction(prepullItem.Action)
-						if action != nil {
-							rotation.prepullActions = append(rotation.prepullActions, action)
-							rotation.prepullIdxMap = append(rotation.prepullIdxMap, prepullIdx)
-							unit.RegisterPrepullAction(doAt, func(sim *Simulation) {
-								// Warnings for prepull cast failure are detected by running a fake prepull,
-								// so this action.Execute needs to record warnings.
-								rotation.doAndRecordWarnings(&rotation.prepullValidations[prepullIdx], true, func() {
-									action.Execute(sim)
-								})
-							})
-						}
-					}
-				}
+			if prepullItem.Hide {
+				return
 			}
+
+			doAtVal := rotation.newAPLValue(prepullItem.DoAtValue)
+			if doAtVal == nil {
+				rotation.ValidationMessage(proto.LogLevel_Warning, "Invalid time for 'Do At', ignoring this Prepull Action")
+				return
+			}
+
+			action := rotation.newAPLAction(prepullItem.Action)
+			if action == nil {
+				return
+			}
+
+			rotation.prepullActions = append(rotation.prepullActions, action)
+			rotation.prepullIdxMap = append(rotation.prepullIdxMap, prepullIdx)
+			unit.RegisterPrepullAction(doAtVal, func(sim *Simulation) {
+				// Warnings for prepull cast failure are detected by running a fake prepull,
+				// so this action.Execute needs to record warnings.
+				rotation.doAndRecordWarnings(&rotation.prepullValidations[prepullIdx], true, func() {
+					action.Execute(sim)
+				})
+			})
 		})
 	}
 
@@ -280,7 +281,7 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 				}
 			}
 			if !skipItemSwapCheck && !hasMainSwap {
-				unit.RegisterPrepullAction(-1, func(sim *Simulation) {
+				unit.RegisterPrepullAction(rotation.newValueConst(&proto.APLValueConst{Val: "-1s"}, nil), func(sim *Simulation) {
 					character.ItemSwap.SwapItems(sim, proto.APLActionItemSwap_Main, false)
 				})
 			}
@@ -299,7 +300,7 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 				}
 			}
 			if !found {
-				unit.RegisterPrepullAction(-1*time.Second, func(sim *Simulation) {
+				unit.RegisterPrepullAction(rotation.newValueConst(&proto.APLValueConst{Val: "-1s"}, nil), func(sim *Simulation) {
 					prepotSpell.Cast(sim, nil)
 				})
 			}

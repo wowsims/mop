@@ -9,6 +9,12 @@ import (
 
 func (demo *DemonologyWarlock) registerMetamorphosis() {
 	metaActionId := core.ActionID{SpellID: 103958}
+
+	metaStanceCD := core.Cooldown{
+		Timer:    demo.NewTimer(),
+		Duration: time.Second * 1,
+	}
+
 	var queueMetaCost func(sim *core.Simulation)
 	var drainLifeManaCost core.ResourceCostImpl
 
@@ -72,6 +78,8 @@ func (demo *DemonologyWarlock) registerMetamorphosis() {
 				Timer:    demo.NewTimer(),
 				Duration: time.Second * 10,
 			},
+
+			SharedCD: metaStanceCD,
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
@@ -83,5 +91,27 @@ func (demo *DemonologyWarlock) registerMetamorphosis() {
 		},
 
 		RelatedSelfBuff: metaAura,
+	})
+
+	demo.RegisterSpell(core.SpellConfig{
+		ActionID:    metaActionId.WithTag(1),
+		Flags:       core.SpellFlagAPL | core.SpellFlagNoOnCastComplete,
+		SpellSchool: core.SpellSchoolShadow,
+		ProcMask:    core.ProcMaskEmpty,
+
+		ThreatMultiplier: 1,
+		DamageMultiplier: 1,
+
+		Cast: core.CastConfig{
+			SharedCD: metaStanceCD,
+		},
+
+		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+			return metaAura.IsActive()
+		},
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			metaAura.Deactivate(sim)
+		},
 	})
 }

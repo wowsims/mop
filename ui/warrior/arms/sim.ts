@@ -115,7 +115,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_ARMS],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS_PRESET, Presets.P1_ARMS_BIS_PRESET, Presets.P2_ARMS_BIS_PRESET, Presets.P3_ARMS_BIS_PRESET],
+		gear: [Presets.PREBIS_PRESET, Presets.P2_ARMS_BIS_PRESET, Presets.P3_ARMS_BIS_PRESET],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecArmsWarrior>): APLRotation => {
@@ -136,10 +136,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P1_ARMS_BIS_PRESET.gear,
+					1: Presets.P2_ARMS_BIS_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P1_ARMS_BIS_PRESET.gear,
+					1: Presets.P2_ARMS_BIS_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

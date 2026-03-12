@@ -611,7 +611,7 @@ func (aa *AutoAttacks) CancelAutoSwing(sim *Simulation) {
 // Re-enables the auto swing action for the iteration
 func (aa *AutoAttacks) EnableAutoSwing(sim *Simulation) {
 	aa.EnableMeleeSwing(sim)
-	aa.EnableRangedSwing(sim)
+	aa.EnableRangedSwing(sim, false)
 }
 
 func (aa *AutoAttacks) EnableMeleeSwing(sim *Simulation) {
@@ -643,8 +643,8 @@ func (aa *AutoAttacks) EnableMeleeSwing(sim *Simulation) {
 	}
 }
 
-func (aa *AutoAttacks) EnableRangedSwing(sim *Simulation) {
-	if !aa.AutoSwingRanged || aa.ranged.enabled || sim.isInPrepull {
+func (aa *AutoAttacks) EnableRangedSwing(sim *Simulation, bypassPrepullCheck bool) {
+	if !aa.AutoSwingRanged || (sim.CurrentTime >= 0 && !aa.ranged.enabled) || (sim.isInPrepull && !bypassPrepullCheck) {
 		return
 	}
 
@@ -652,7 +652,11 @@ func (aa *AutoAttacks) EnableRangedSwing(sim *Simulation) {
 		return
 	}
 
-	aa.ranged.swingAt = max(aa.ranged.swingAt, sim.CurrentTime, 0)
+	if bypassPrepullCheck && sim.CurrentTime < 0 {
+		aa.ranged.swingAt = min(aa.ranged.swingAt, sim.CurrentTime)
+	} else {
+		aa.ranged.swingAt = max(aa.ranged.swingAt, sim.CurrentTime, 0)
+	}
 	if aa.ranged.IsInRange() {
 		aa.ranged.enabled = true
 		aa.ranged.addWeaponAttack(sim, aa.ranged.unit.TotalRangedHasteMultiplier())

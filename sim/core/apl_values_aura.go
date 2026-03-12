@@ -25,7 +25,7 @@ func (value *APLValueAuraIsKnown) GetBool(sim *Simulation) bool {
 	return value.aura.Get() != nil
 }
 func (value *APLValueAuraIsKnown) String() string {
-	return fmt.Sprintf("Aura Active(%s)", value.aura.String())
+	return fmt.Sprintf("Aura Known(%s)", value.aura.String())
 }
 
 type APLValueAuraIsActive struct {

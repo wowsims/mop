@@ -11,11 +11,11 @@ import HorridonApl from './apls/horridon.apl.json';
 import GarajalBuild from './builds/garajal_encounter_only.build.json';
 import ShaBuild from './builds/sha_encounter_only.build.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
+import PreBISGear from './gear_sets/prebis.gear.json';
 import P1BISDWGear from './gear_sets/p1_bis_dw.gear.json';
 import P2BISDWGear from './gear_sets/p2_bis_dw.gear.json';
 import P3BISDWGear from './gear_sets/p3_bis_dw.gear.json';
 import P3OffensiveDWGear from './gear_sets/p3_bis_offensive_dw.gear.json';
-import P3OffensiveRoRoDWGear from './gear_sets/p3_bis_offensive_dw_roro.default.json';
 import P2BISOffensiveDWGear from './gear_sets/p2_bis_offensive_dw.gear.json';
 import P2BISOffensiveTierlessDWGear from './gear_sets/p2_bis_offensive_tierless_dw.gear.json';
 
@@ -23,13 +23,13 @@ import P2BISOffensiveTierlessDWGear from './gear_sets/p2_bis_offensive_tierless_
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
+export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Pre-BIS (Balanced)', PreBISGear);
 export const P1_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS (Balanced)', P1BISDWGear);
 export const P2_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2BISDWGear);
 export const P2_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - 2PC)', P2BISOffensiveDWGear);
 export const P2_BIS_OFFENSIVE_TIERLESS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - No Tier)', P2BISOffensiveTierlessDWGear);
-export const P3_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('Tentative - P3 - BIS (Balanced)', P3BISDWGear);
-export const P3_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('Tentative - P3 - BIS (Offensive)', P3OffensiveDWGear);
-export const P3_BIS_OFFENSIVE_DW_RORO_GEAR_PRESET = PresetUtils.makePresetGear('Tentative - P3 - BIS (Offensive - RoRo)', P3OffensiveRoRoDWGear);
+export const P3_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 - BIS (Balanced)', P3BISDWGear);
+export const P3_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 - BIS (Offensive)', P3OffensiveDWGear);
 
 export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Generic', DefaultApl);
 export const ROTATION_GARAJAL_PRESET = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);

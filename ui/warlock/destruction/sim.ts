@@ -104,14 +104,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDestructionWarlock, {
 	},
 
 	presets: {
-		epWeights: [Presets.DEFAULT_EP_PRESET],
+		epWeights: [Presets.DEFAULT_EP_PRESET, Presets.P3_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DestructionTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.DEFAULT_APL],
 
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS_PRESET, Presets.P1_PRESET, Presets.P2_PRESET],
+		gear: [Presets.P1_PREBIS_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
 		itemSwaps: [],
 	},
 
@@ -133,10 +133,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDestructionWarlock, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P1_PRESET.gear,
+					1: Presets.P2_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P1_PRESET.gear,
+					1: Presets.P2_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,
@@ -157,6 +157,14 @@ export class DestructionWarlockSimUI extends IndividualSimUI<Spec.SpecDestructio
 
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets,
+			getEPDefaults: player => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 517) {
+					return Presets.P3_EP_PRESET.epWeights;
+				}
+
+				return Presets.DEFAULT_EP_PRESET.epWeights;
+			},
 		});
 	}
 }

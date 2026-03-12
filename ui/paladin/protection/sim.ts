@@ -1,3 +1,4 @@
+import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import * as Mechanics from '../../core/constants/mechanics.js';
@@ -86,6 +87,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 			PseudoStat.PseudoStatMeleeHastePercent,
 			PseudoStat.PseudoStatSpellHitPercent,
 			PseudoStat.PseudoStatSpellCritPercent,
+			PseudoStat.PseudoStatSpellHastePercent,
 			PseudoStat.PseudoStatBlockPercent,
 			PseudoStat.PseudoStatDodgePercent,
 			PseudoStat.PseudoStatParryPercent,
@@ -148,7 +150,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [PaladinInputs.StartingSealSelection()],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
-	includeBuffDebuffInputs: [],
+	includeBuffDebuffInputs: [BuffDebuffInputs.SpellHasteBuff],
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {

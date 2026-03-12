@@ -42,6 +42,8 @@ func (mmHunter *MarksmanshipHunter) registerChimeraShotSpell() {
 
 			result := spell.CalcDamage(sim, target, wepDmg+baseDamage, spell.OutcomeRangedHitAndCrit)
 
+			mmHunter.GetHunter().HuntersMarkSpell.Cast(sim, target)
+
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
 				if result.Landed() {
 					if mmHunter.SerpentSting.Dot(target).IsActive() {

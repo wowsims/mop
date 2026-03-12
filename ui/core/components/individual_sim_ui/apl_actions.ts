@@ -29,10 +29,12 @@ import {
 	APLActionStrictMultidot,
 	APLActionStrictSequence,
 	APLActionTriggerICD,
+	APLActionDamageAmplifier,
 	APLActionWait,
 	APLActionWaitUntil,
 	APLValue,
 	APLActionWarlockNextExhaleTarget,
+	APLActionCancelSpellCast,
 } from '../../proto/apl.js';
 import { Spec } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
@@ -339,6 +341,13 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		newValue: APLActionCastSpell.create,
 		fields: [AplHelpers.actionIdFieldConfig('spellId', 'castable_spells', ''), AplHelpers.unitFieldConfig('target', 'targets')],
 	}),
+	['cancelSpellCast']: inputBuilder({
+		label: i18n.t('rotation_tab.apl.actions.cancel_cast.label'),
+		submenu: ['casting'],
+		shortDescription: i18n.t('rotation_tab.apl.actions.cancel_cast.tooltip'),
+		newValue: APLActionCancelSpellCast.create,
+		fields: [],
+	}),
 	['castFriendlySpell']: inputBuilder({
 		label: i18n.t('rotation_tab.apl.actions.cast_at_player.label'),
 		shortDescription: i18n.t('rotation_tab.apl.actions.cast_at_player.tooltip'),
@@ -620,6 +629,18 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		newValue: () => APLActionTriggerICD.create(),
 		fields: [AplHelpers.actionIdFieldConfig('auraId', 'icd_auras')],
 	}),
+	['damageAmplifier']: inputBuilder({
+		label: i18n.t('rotation_tab.apl.actions.damage_amplification.label'),
+		submenu: ['misc'],
+		shortDescription: i18n.t('rotation_tab.apl.actions.damage_amplification.tooltip'),
+		newValue: () => APLActionDamageAmplifier.create(),
+		fields: [
+			AplHelpers.numberFieldConfig('amount', false, {
+				label: i18n.t('rotation_tab.apl.actions.damage_amplification.amount.label'),
+			}),
+			AplHelpers.damageAmpTypeFieldConfig('ampType')
+		],
+	}),
 	['itemSwap']: inputBuilder({
 		label: i18n.t('rotation_tab.apl.actions.item_swap.label'),
 		submenu: ['misc'],
@@ -765,8 +786,7 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 		submenu: ['warlock'],
 		shortDescription: i18n.t('rotation_tab.apl.actions.warlock_next_exhale_target.tooltip'),
 		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecAfflictionWarlock,
-		newValue: () =>
-			APLActionWarlockNextExhaleTarget.create({}),
+		newValue: () => APLActionWarlockNextExhaleTarget.create({}),
 		fields: [],
 	}),
 };

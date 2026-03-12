@@ -247,11 +247,18 @@ func (rot *APLRotation) GetAPLSpell(spellId *proto.ActionID) *Spell {
 func (rot *APLRotation) GetTargetAPLSpell(spellId *proto.ActionID, targetUnit UnitReference) *Spell {
 	actionID := ProtoToActionID(spellId)
 	target := targetUnit.Get()
+
+	if target == nil {
+		rot.ValidationMessage(proto.LogLevel_Warning, "Target not found for spell %s", actionID)
+		return nil
+	}
+
 	spell := target.GetSpell(actionID)
 
 	if spell == nil {
 		rot.ValidationMessage(proto.LogLevel_Warning, "%s does not know spell %s", target.Label, actionID)
 	}
+
 	return spell
 }
 

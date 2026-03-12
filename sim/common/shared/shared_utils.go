@@ -602,6 +602,7 @@ type IgniteConfig struct {
 	ActionID           core.ActionID
 	ClassSpellMask     int64
 	SpellSchool        core.SpellSchool
+	CritMultiplier     float64 // Optional crit multiplier in case the Ignite DoT can crit (Such as the legendary caster cloak)
 	DisableCastMetrics bool
 	DotAuraLabel       string
 	DotAuraTag         string
@@ -609,6 +610,8 @@ type IgniteConfig struct {
 	DamageCalculator   IgniteDamageCalculator
 	IncludeAuraDelay   bool // "munching" and "free roll-over" interactions
 	NumberOfTicks      int32
+	TickImmediately    bool
+	OnTick             core.OnTick // Overrides default OnTick
 	TickLength         time.Duration
 	ParentAura         *core.Aura
 }
@@ -628,6 +631,12 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 		config.NumberOfTicks = 2
 	}
 
+	if config.OnTick == nil {
+		config.OnTick = func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+			dot.Spell.CalcAndDealPeriodicDamage(sim, target, dot.SnapshotBaseDamage, dot.OutcomeTick)
+		}
+	}
+
 	if config.TickLength == 0 {
 		config.TickLength = time.Second * 2
 	}
@@ -640,6 +649,7 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 		Flags:            spellFlags,
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
+		CritMultiplier:   config.CritMultiplier,
 
 		Dot: core.DotConfig{
 			Aura: core.Aura{
@@ -652,13 +662,16 @@ func RegisterIgniteEffect(unit *core.Unit, config IgniteConfig) *core.Spell {
 			TickLength:          config.TickLength,
 			AffectedByCastSpeed: false,
 
-			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
-				dot.Spell.CalcAndDealPeriodicDamage(sim, target, dot.SnapshotBaseDamage, dot.OutcomeTick)
-			},
+			OnTick: config.OnTick,
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			spell.Dot(target).Apply(sim)
+			dot := spell.Dot(target)
+			dot.Apply(sim)
+
+			if config.TickImmediately {
+				dot.TickOnce(sim)
+			}
 		},
 	})
 

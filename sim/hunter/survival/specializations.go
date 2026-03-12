@@ -54,7 +54,7 @@ func (survival *SurvivalHunter) applyLNL() {
 
 	procChance := core.TernaryFloat64(survival.CouldHaveSetBonus(hunter.YaungolSlayersBattlegear, 4), 0.40, 0.20)
 
-	survival.MakeProcTriggerAura(core.ProcTrigger{
+	procAura := survival.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Lock and Load Trigger",
 		Callback:       core.CallbackOnPeriodicDamageDealt,
 		ClassSpellMask: hunter.HunterSpellBlackArrow,
@@ -68,4 +68,6 @@ func (survival *SurvivalHunter) applyLNL() {
 			survival.explosiveShot.CD.Reset()
 		},
 	})
+
+	lnlAura.Icd = procAura.Icd
 }

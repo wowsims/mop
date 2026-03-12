@@ -44,7 +44,7 @@ func (war *Warrior) registerDemoralizingBanner() {
 	actionID := core.ActionID{SpellID: 114203}
 
 	war.DemoralizingBannerAuras = war.NewEnemyAuraArray(func(target *core.Unit) *core.Aura {
-		return war.GetOrRegisterAura(core.Aura{
+		return target.GetOrRegisterAura(core.Aura{
 			Label:    "Demoralizing Banner",
 			ActionID: actionID,
 			Duration: 15 * time.Second,

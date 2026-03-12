@@ -5,7 +5,7 @@
 		{ "id": 96573, "enchant": 4803, "gems": [76695, 76697], "reforging": 166 },
 		{ "id": 95017, "enchant": 4424, "gems": [76697], "reforging": 151 },
 		{ "id": 96569, "enchant": 4419, "gems": [76697, 76697, 76641], "reforging": 159 },
-		{ "id": 96428, "enchant": 4415, "gems": [76697], "reforging": 123, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 96848, "randomSuffix": -336, "enchant": 4415, "gems": [76697, 76697] },
 		{ "id": 96570, "enchant": 4432, "gems": [76697, 76697], "reforging": 136, "tinker": 4697 },
 		{ "id": 96818, "gems": [76693, 76697, 76697], "reforging": 123, "tinker": 4223 },
 		{ "id": 96551, "enchant": 4823, "gems": [76683, 76697, 76697], "reforging": 150, "upgradeStep": "UpgradeStepTwo" },

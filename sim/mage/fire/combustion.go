@@ -31,6 +31,9 @@ func (fire *FireMage) registerCombustionSpell() {
 		Flags:          core.SpellFlagAPL,
 
 		Cast: core.CastConfig{
+			DefaultCast: core.Cast{
+				GCD: 0,
+			},
 			CD: core.Cooldown{
 				Timer:    fire.NewTimer(),
 				Duration: combustCD,

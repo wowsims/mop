@@ -52,11 +52,11 @@ type Mage struct {
 
 	ArcanePowerDamageMod *core.SpellMod
 
-	T15_4PC_FrostboltProcChance float64
-	T15_4PC_ArcaneChargeEffect  float64
-	Icicles                     []float64
+	T15_4PC_ArcaneChargeEffect float64
+	Icicles                    []float64
 
 	// Item sets
+	T15_4pc *core.Aura
 	T16_4pc *core.Aura
 }
 
@@ -91,7 +91,7 @@ func (mage *Mage) ProcFingersOfFrost(sim *core.Simulation, spell *core.Spell) {
 		return
 	}
 	if spell.Matches(MageSpellFrostbolt | MageSpellFrostfireBolt) {
-		if sim.Proc(0.15+core.TernaryFloat64(spell.Matches(MageSpellFrostbolt), mage.T15_4PC_FrostboltProcChance, 0), "FingersOfFrostProc") {
+		if sim.Proc(0.15+core.TernaryFloat64(spell.Matches(MageSpellFrostbolt) && mage.T15_4pc != nil && mage.T15_4pc.IsActive(), 0.06, 0), "FingersOfFrostProc") {
 			mage.FingersOfFrostAura.Activate(sim)
 			mage.FingersOfFrostAura.AddStack(sim)
 		}
@@ -166,7 +166,6 @@ func NewMage(character *core.Character, options *proto.Player, mageOptions *prot
 	mage.HasteEffectsManaRegen()
 
 	mage.Icicles = make([]float64, 0)
-	mage.T15_4PC_FrostboltProcChance = 0
 	mage.T15_4PC_ArcaneChargeEffect = 1.0
 
 	return mage

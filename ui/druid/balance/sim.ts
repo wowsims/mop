@@ -59,7 +59,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 		// Default equipped gear.
 		gear: Presets.T14PresetGear.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.StandardEPWeights.epWeights,
+		epWeights: Presets.P2_BIS_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
@@ -69,13 +69,25 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, Presets.BALANCE_T14_4P_BREAKPOINTS!.presets.get('12-tick MF/SF')!);
 		})(),
 		softCapBreakpoints: (() => {
-			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+			const hasteBreakpointConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [...Presets.BALANCE_BREAKPOINTS!.presets].map(([_, value]) => value),
 				capType: StatCapType.TypeThreshold,
-				postCapEPs: [0.47 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+				postCapEPs: [0.51 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
 			});
 
-			return [hasteSoftCapConfig];
+			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+				breakpoints: [Presets.BALANCE_BREAKPOINTS.presets.get('11-tick MF/SF')!],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [0.3 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+			});
+
+			const critSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellCritPercent, {
+				breakpoints: [48],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [(Presets.P3_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.01) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
+			});
+
+			return [hasteBreakpointConfig, hasteSoftCapConfig, critSoftCapConfig];
 		})(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
@@ -108,13 +120,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	},
 
 	presets: {
-		epWeights: [Presets.StandardEPWeights],
+		epWeights: [Presets.P2_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
 		rotations: [Presets.StandardRotation],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PreraidPresetGear, Presets.T14PresetGear, Presets.T14UpgradedPresetGear, Presets.T15PresetGear /*, Presets.T16PresetGear*/],
-		builds: [Presets.PresetPreraidBuild, Presets.T14PresetBuild,Presets.T15PresetBuild /*, Presets.T16PresetBuild*/],
+		builds: [Presets.PresetPreraidBuild, Presets.T14PresetBuild, Presets.T15PresetBuild /*, Presets.T16PresetBuild*/],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecBalanceDruid>): APLRotation => {
@@ -196,14 +208,36 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: [statSelectionHastePreset],
 			enableBreakpointLimits: true,
+			getEPDefaults: player => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 525) {
+					return Presets.P3_BIS_EP_PRESET.epWeights;
+				}
+				return Presets.P2_BIS_EP_PRESET.epWeights;
+			},
 			updateSoftCaps: softCaps => {
 				const gear = player.getGear();
 				const hasT144P = gear.getItemSetCount('Regalia of the Eternal Blossom') >= 4;
+				const hasUVLS = gear.getTrinkets().some(trinket => trinket?._item.name === 'Unerring Vision of Lei Shen');
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+
+				if (avgIlvl >= 525) {
+					softCaps = softCaps.slice(1);
+				}
 
 				if (hasT144P) {
-					const softCapToModify = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
+					const softCapToModify = softCaps.find(
+						sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && sc.capType === StatCapType.TypeThreshold,
+					);
 					if (softCapToModify) {
 						softCapToModify.breakpoints = [...Presets.BALANCE_T14_4P_BREAKPOINTS!.presets].map(([_, value]) => value);
+					}
+				}
+
+				if (hasUVLS) {
+					const softCapToModify = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellCritPercent));
+					if (softCapToModify) {
+						softCapToModify.breakpoints = [33.333];
 					}
 				}
 

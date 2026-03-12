@@ -33,7 +33,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_GEARSET.gear,
+		gear: Presets.P3_GEARSET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.ASN_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
@@ -144,10 +144,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P2_GEARSET.gear,
+					1: Presets.P3_GEARSET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P2_GEARSET.gear,
+					1: Presets.P3_GEARSET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

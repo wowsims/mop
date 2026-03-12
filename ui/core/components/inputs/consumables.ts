@@ -149,7 +149,7 @@ export function makeConsumableInput(
 				newConsumes.battleElixirId = 0;
 			}
 
-			if (options.consumesFieldName === 'battleElixirId' || options.consumesFieldName === 'guardianElixirId') {
+			if ((options.consumesFieldName === 'battleElixirId' || options.consumesFieldName === 'guardianElixirId') && newValue != 0) {
 				newConsumes.flaskId = 0;
 			}
 			player.setConsumes(eventID, newConsumes);

@@ -39,10 +39,19 @@ func (character *Character) RegisterVengeance(spellID int32, requiredAura *Aura)
 			// Vengeance uses pre-outcome, pre-mitigation damage.
 			rawDamage := result.PostArmorDamage / result.ArmorMultiplier
 
-			// The Weakened Blows debuff does not reduce Vengeance gains.
-			// TODO: The game similarly hardcodes a correction for Demoralizing Banner, add that in once we implement the debuff in the sim.
-			if (spell.SpellSchool == SpellSchoolPhysical) && spell.Unit.GetAura("Weakened Blows").IsActive() {
-				rawDamage /= 0.9
+			if spell.SpellSchool == SpellSchoolPhysical {
+				// The Weakened Blows debuff does not reduce Vengeance gains.
+				if spell.Unit.HasActiveAura("Weakened Blows") {
+					rawDamage /= 0.9
+				}
+				// Demoralizing Banner does not reduce Vengeance gains.
+				if spell.Unit.HasActiveAura("Demoralizing Banner") {
+					rawDamage /= 0.9
+				}
+				// Demoralizing Shout does not reduce Vengeance gains.
+				if spell.Unit.HasActiveAura("Demoralizing Shout") {
+					rawDamage /= 0.8
+				}
 			}
 
 			// Note that result.PreOutcomeDamage does not include the impact of the tank's various DamageTakenMultiplier PseudoStats.

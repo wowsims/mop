@@ -1,7 +1,6 @@
 package core
 
 import (
-	"slices"
 	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
@@ -22,8 +21,9 @@ type PostFinalizeEffect func()
 
 // Callback for doing something on prepull.
 type PrepullAction struct {
-	DoAt   time.Duration
-	Action func(*Simulation)
+	DoAt     APLValue
+	doAtTime time.Duration
+	Action   func(*Simulation)
 }
 
 type Environment struct {
@@ -44,7 +44,7 @@ type Environment struct {
 	preFinalizeEffects  []PostFinalizeEffect
 	postFinalizeEffects []PostFinalizeEffect
 
-	prepullActions []PrepullAction
+	prepullActions []*PrepullAction
 
 	// Used to model variation in pet stat inheritance
 	heartbeatOffset time.Duration
@@ -198,10 +198,6 @@ func (env *Environment) finalize(raidProto *proto.Raid, _ *proto.Encounter, raid
 	}
 	env.postFinalizeEffects = nil
 
-	slices.SortStableFunc(env.prepullActions, func(a1, a2 PrepullAction) int {
-		return int(a1.DoAt - a2.DoAt)
-	})
-
 	env.setupAttackTables()
 
 	env.State = Finalized
@@ -275,7 +271,7 @@ func (env *Environment) IsFinalized() bool {
 
 func (env *Environment) reset(sim *Simulation) {
 	// Randomize heartbeat timer for pet stat inheritance.
-	env.heartbeatOffset = env.PrepullStartTime() - PetUpdateInterval + DurationFromSeconds(PetUpdateInterval.Seconds()*sim.RandomFloat("Pet Stat Inheritance"))
+	env.heartbeatOffset = env.PrepullStartTime(sim) - PetUpdateInterval + DurationFromSeconds(PetUpdateInterval.Seconds()*sim.RandomFloat("Pet Stat Inheritance"))
 
 	// Reset primary targets damage taken for tracking health fights.
 	env.Encounter.DamageTaken = 0
@@ -418,22 +414,20 @@ func (env *Environment) RegisterPostFinalizeEffect(postFinalizeEffect PostFinali
 
 // Registers a callback to this Unit which will be invoked on the prepull at the specified
 // negative time.
-func (unit *Unit) RegisterPrepullAction(doAt time.Duration, action func(*Simulation)) {
+func (unit *Unit) RegisterPrepullAction(doAt APLValue, action func(*Simulation)) {
 	env := unit.Env
 	if env.IsFinalized() {
 		panic("Prepull actions may not be added once finalized!")
 	}
-	if doAt > 0 {
-		panic("Prepull DoAt must not be positive!")
-	}
 
-	env.prepullActions = append(env.prepullActions, PrepullAction{
-		DoAt:   doAt,
-		Action: action,
+	env.prepullActions = append(env.prepullActions, &PrepullAction{
+		DoAt:     doAt,
+		doAtTime: doAt.GetDuration(nil),
+		Action:   action,
 	})
 }
 
-func (env *Environment) PrepullStartTime() time.Duration {
+func (env *Environment) PrepullStartTime(sim *Simulation) time.Duration {
 	if !env.IsFinalized() {
 		panic("Env not yet finalized")
 	}
@@ -441,6 +435,6 @@ func (env *Environment) PrepullStartTime() time.Duration {
 	if len(env.prepullActions) == 0 {
 		return 0
 	} else {
-		return env.prepullActions[0].DoAt
+		return min(env.prepullActions[0].doAtTime, 0)
 	}
 }

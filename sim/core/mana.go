@@ -276,7 +276,7 @@ func (sim *Simulation) initManaTickAction() {
 
 	interval := time.Second * 2
 	pa := &PendingAction{
-		NextActionAt: sim.Environment.PrepullStartTime() + interval,
+		NextActionAt: sim.Environment.PrepullStartTime(sim) + interval,
 		Priority:     ActionPriorityRegen,
 	}
 	pa.OnAction = func(sim *Simulation) {

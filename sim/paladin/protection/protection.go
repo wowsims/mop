@@ -31,6 +31,8 @@ func NewProtectionPaladin(character *core.Character, options *proto.Player) *Pro
 		Paladin: paladin.NewPaladin(character, options.TalentsString, protOptions.Options.ClassOptions),
 	}
 
+	prot.registerHotfixPassive()
+
 	return prot
 }
 
@@ -70,8 +72,6 @@ func (prot *ProtectionPaladin) Initialize() {
 	})
 
 	prot.trackDamageTakenLastGlobal()
-
-	prot.registerHotfixPassive()
 }
 
 func (prot *ProtectionPaladin) trackDamageTakenLastGlobal() {

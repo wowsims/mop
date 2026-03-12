@@ -14,13 +14,13 @@ import T16Gear from './gear_sets/t16.gear.json';
 export const PreraidPresetGear = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const T14PresetGear = PresetUtils.makePresetGear('T14', T14Gear);
 export const T14UpgradedPresetGear = PresetUtils.makePresetGear('T14 - Upgraded', T14UpgradedGear);
-export const T15PresetGear = PresetUtils.makePresetGear('T15 (WIP)', T15Gear);
+export const T15PresetGear = PresetUtils.makePresetGear('T15', T15Gear);
 export const T16PresetGear = PresetUtils.makePresetGear('T16 (WIP)', T16Gear);
 
 export const StandardRotation = PresetUtils.makePresetAPLRotation('Standard', StandardApl);
 
-export const StandardEPWeights = PresetUtils.makePresetEpWeights(
-	'Standard',
+export const P2_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Item Level < 525',
 	Stats.fromMap({
 		[Stat.StatIntellect]: 1,
 		[Stat.StatSpirit]: 0.88,
@@ -32,12 +32,25 @@ export const StandardEPWeights = PresetUtils.makePresetEpWeights(
 	}),
 );
 
+export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Item Level >= 525',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1,
+		[Stat.StatSpirit]: 1.0,
+		[Stat.StatSpellPower]: 0.79,
+		[Stat.StatHitRating]: 1.0,
+		[Stat.StatCritRating]: 0.57,
+		[Stat.StatHasteRating]: 0.64,
+		[Stat.StatMasteryRating]: 0.53,
+	}),
+);
+
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 export const StandardTalents = {
 	name: 'Standard',
 	data: SavedTalents.create({
-		talentsString: '113222',
+		talentsString: '113223',
 		glyphs: Glyphs.create({
 			major1: DruidMajorGlyph.GlyphOfHealingTouch,
 			major2: DruidMajorGlyph.GlyphOfStampede,
@@ -87,28 +100,28 @@ export const PresetPreraidBuild = PresetUtils.makePresetBuild('Pre-raid', {
 	gear: PreraidPresetGear,
 	talents: StandardTalents,
 	rotation: StandardRotation,
-	epWeights: StandardEPWeights,
+	epWeights: P2_BIS_EP_PRESET,
 });
 
 export const T14PresetBuild = PresetUtils.makePresetBuild('T14', {
 	gear: T14UpgradedPresetGear,
 	talents: StandardTalents,
 	rotation: StandardRotation,
-	epWeights: StandardEPWeights,
+	epWeights: P2_BIS_EP_PRESET,
 });
 
 export const T15PresetBuild = PresetUtils.makePresetBuild('T15', {
 	gear: T15PresetGear,
 	talents: StandardTalents,
 	rotation: StandardRotation,
-	epWeights: StandardEPWeights,
+	epWeights: P3_BIS_EP_PRESET,
 });
 
 export const T16PresetBuild = PresetUtils.makePresetBuild('T16', {
 	gear: T16PresetGear,
 	talents: StandardTalents,
 	rotation: StandardRotation,
-	epWeights: StandardEPWeights,
+	epWeights: P3_BIS_EP_PRESET,
 });
 
 export const BALANCE_BREAKPOINTS: UnitStatPresets = {
@@ -117,9 +130,9 @@ export const BALANCE_BREAKPOINTS: UnitStatPresets = {
 		['9-tick MF/SF', 5.5618],
 		['10-tick MF/SF', 18.0272],
 		['11-tick MF/SF', 30.4347],
-		['12-tick MF/SF', 42.8444],
-		['13-tick MF/SF', 55.3489],
-		['14-tick MF/SF', 67.627],
+		// ['12-tick MF/SF', 42.8444],
+		// ['13-tick MF/SF', 55.3489],
+		// ['14-tick MF/SF', 67.627],
 	]),
 };
 
@@ -129,9 +142,9 @@ export const BALANCE_T14_4P_BREAKPOINTS: UnitStatPresets = {
 		['10-tick MF/SF', 3.2431],
 		['11-tick MF/SF', 14.1536],
 		['12-tick MF/SF', 24.9824],
-		['13-tick MF/SF', 35.9227],
-		['14-tick MF/SF', 46.7002],
-		['15-tick MF/SF', 57.6013],
-		['16-tick MF/SF', 68.4388],
+		// ['13-tick MF/SF', 35.9227],
+		// ['14-tick MF/SF', 46.7002],
+		// ['15-tick MF/SF', 57.6013],
+		// ['16-tick MF/SF', 68.4388],
 	]),
 };

@@ -96,6 +96,7 @@ func (affliction *AfflictionWarlock) Initialize() {
 	affliction.registerSoulburn()
 	affliction.registerSeed()
 	affliction.registerSoulSwap()
+	affliction.RegisterFelflame(nil)
 
 	affliction.registerGlyphs()
 

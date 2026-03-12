@@ -98,6 +98,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestAssassination-AllItems-BlackBloodofY'Shaarj-105648"
+ value: {
+  dps: 101959.84885
+  tps: 71746.61397
+ }
+}
+dps_results: {
  key: "TestAssassination-AllItems-BurningPrimalDiamond"
  value: {
   dps: 101708.32281
@@ -107,8 +114,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 107633.55803
-  tps: 75755.61923
+  dps: 108222.2685
+  tps: 76171.97443
  }
 }
 dps_results: {
@@ -252,6 +259,20 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestAssassination-AllItems-FrenziedCrystalofRage-105572"
+ value: {
+  dps: 97619.77777
+  tps: 68662.65176
+ }
+}
+dps_results: {
+ key: "TestAssassination-AllItems-Fusion-FireCore-105459"
+ value: {
+  dps: 104118.19458
+  tps: 73091.48612
+ }
+}
+dps_results: {
  key: "TestAssassination-AllItems-GazeoftheTwins-96915"
  value: {
   dps: 104441.57095
@@ -322,6 +343,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestAssassination-AllItems-Juggernaut'sFocusingCrystal-105514"
+ value: {
+  dps: 97619.77777
+  tps: 68662.65176
+  hps: 3083.46116
+ }
+}
+dps_results: {
  key: "TestAssassination-AllItems-Kardris'ToxicTotem-105540"
  value: {
   dps: 103061.64724
@@ -373,8 +402,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 101277.29352
-  tps: 71264.12916
+  dps: 101283.72886
+  tps: 71268.50143
  }
 }
 dps_results: {
@@ -420,10 +449,24 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestAssassination-AllItems-SigilofRampage-105580"
+ value: {
+  dps: 116262.76358
+  tps: 81506.29756
+ }
+}
+dps_results: {
  key: "TestAssassination-AllItems-SinisterPrimalDiamond"
  value: {
   dps: 100727.54595
   tps: 70850.64009
+ }
+}
+dps_results: {
+ key: "TestAssassination-AllItems-Skeer'sBloodsoakedTalisman-105632"
+ value: {
+  dps: 107871.28584
+  tps: 75705.36391
  }
 }
 dps_results: {
@@ -469,6 +512,27 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestAssassination-AllItems-Thok'sTailTip-105609"
+ value: {
+  dps: 109353.09535
+  tps: 76803.79892
+ }
+}
+dps_results: {
+ key: "TestAssassination-AllItems-TickingEbonDetonator-105612"
+ value: {
+  dps: 118782.52415
+  tps: 83459.85918
+ }
+}
+dps_results: {
+ key: "TestAssassination-AllItems-Time-LostArtifact-103678"
+ value: {
+  dps: 101837.68781
+  tps: 71641.24717
+ }
+}
+dps_results: {
  key: "TestAssassination-AllItems-TyrannicalPrimalDiamond"
  value: {
   dps: 100483.65549
@@ -477,6 +541,13 @@ dps_results: {
 }
 dps_results: {
  key: "TestAssassination-AllItems-UnerringVisionofLeiShen-96930"
+ value: {
+  dps: 97619.77777
+  tps: 68662.65176
+ }
+}
+dps_results: {
+ key: "TestAssassination-AllItems-VialofLivingCorruption-105568"
  value: {
   dps: 97619.77777
   tps: 68662.65176
@@ -492,8 +563,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 102648.88167
-  tps: 72262.96186
+  dps: 102683.98093
+  tps: 72288.62156
  }
 }
 dps_results: {

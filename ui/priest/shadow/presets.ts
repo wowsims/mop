@@ -5,17 +5,19 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
-import P1Gear from './gear_sets/p1.gear.json';
+import T15Apl from './apls/t15.apl.json';
 import P2Gear from './gear_sets/p2.gear.json';
+import P3Gear from './gear_sets/p3.gear.json';
 import PreRaidGear from './gear_sets/pre_raid.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 export const PRE_RAID_PRESET = PresetUtils.makePresetGear('Pre Raid Preset', PreRaidGear);
-export const P1_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 Preset', P2Gear);
+export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
+export const ROTATION_PRESET_T15 = PresetUtils.makePresetAPLRotation('T15', T15Apl);
 
 // Preset options for EP weights
 export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -40,6 +42,18 @@ export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatCritRating]: 0.46,
 		[Stat.StatHasteRating]: 0.59,
 		[Stat.StatMasteryRating]: 0.44,
+	}),
+);
+export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Item Level >= 525',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.0,
+		[Stat.StatSpirit]: 0.9,
+		[Stat.StatSpellPower]: 0.98,
+		[Stat.StatHitRating]: 0.85,
+		[Stat.StatCritRating]: 0.49,
+		[Stat.StatHasteRating]: 0.75,
+		[Stat.StatMasteryRating]: 0.51,
 	}),
 );
 
@@ -166,3 +180,17 @@ export const OtherDefaults = {
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
 };
+
+export const PRESET_BUILD_T14 = PresetUtils.makePresetBuild('T14', {
+	gear: P2_PRESET,
+	talents: StandardTalents,
+	rotation: ROTATION_PRESET_DEFAULT,
+	epWeights: P2_EP_PRESET,
+});
+
+export const PRESET_BUILD_T15 = PresetUtils.makePresetBuild('T15', {
+	gear: P3_PRESET,
+	talents: StandardTalents,
+	rotation: ROTATION_PRESET_T15,
+	epWeights: P3_EP_PRESET,
+});

@@ -9,6 +9,7 @@ import {
 	APLValueEclipsePhase,
 	APLValueRuneSlot,
 	APLValueRuneType,
+	APLActionDamageAmplifier_AmplificationType,
 } from '../../proto/apl.js';
 import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
@@ -1238,6 +1239,40 @@ export function useDotBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any>
 	return booleanFieldConfig('useBaseValue', i18n.t('rotation_tab.apl.helpers.field_configs.use_base_value'), {
 		labelTooltip: i18n.t('rotation_tab.apl.helpers.field_configs.use_base_value_tooltip'),
 	});
+}
+
+export function damageAmpTypeFieldConfig(field: string): APLPickerBuilderFieldConfig<any, any> {
+	const values = [
+		{
+			value: APLActionDamageAmplifier_AmplificationType.CasterBuff,
+			label: i18n.t('rotation_tab.apl.helpers.amplification_types.caster_buff.label'),
+			tooltip: i18n.t('rotation_tab.apl.helpers.amplification_types.caster_buff.tooltip'),
+		},
+		{
+			value: APLActionDamageAmplifier_AmplificationType.EnvironmentBuff,
+			label: i18n.t('rotation_tab.apl.helpers.amplification_types.environment_buff.label'),
+			tooltip: i18n.t('rotation_tab.apl.helpers.amplification_types.environment_buff.tooltip'),
+		},
+		{
+			value: APLActionDamageAmplifier_AmplificationType.TargetDebuff,
+			label: i18n.t('rotation_tab.apl.helpers.amplification_types.target_debuff.label'),
+			tooltip: i18n.t('rotation_tab.apl.helpers.amplification_types.target_debuff.tooltip'),
+		},
+	];
+
+	return {
+		field: field,
+		label: i18n.t('rotation_tab.apl.helpers.field_configs.amplification_type'),
+		newValue: () => APLActionDamageAmplifier_AmplificationType.CasterBuff,
+		factory: (parent, player, config) =>
+			new TextDropdownPicker(parent, player, {
+				id: randomUUID(),
+				...config,
+				defaultLabel: i18n.t('rotation_tab.apl.helpers.amplification_types.caster_buff.label'),
+				equals: (a, b) => a == b,
+				values: values,
+			}),
+	};
 }
 
 export function useRuneRegenBaseValueCheckbox(): APLPickerBuilderFieldConfig<any, any> {

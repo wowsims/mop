@@ -120,7 +120,7 @@ var ItemSetRegaliaOfTheTernionGlory = core.NewItemSet(core.ItemSet{
 					mod.Deactivate()
 				},
 				OnCastComplete: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell) {
-					if spell.Matches(PriestSpellMindBlast | PriestSpellMindSpike | PriestSpellShadowWordDeath) {
+					if !spell.Matches(PriestSpellMindBlast | PriestSpellMindSpike | PriestSpellShadowWordDeath) {
 						return
 					}
 

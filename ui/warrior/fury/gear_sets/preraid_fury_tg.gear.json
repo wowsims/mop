@@ -1,20 +1,20 @@
 {
 	"items": [
-		{ "id": 77539, "gems": [76886, 77545, 77541] },
-		{ "id": 90592, "reforging": 165 },
-		{ "id": 89345, "enchant": 4803, "gems": [76631], "reforging": 139 },
-		{ "id": 90580, "enchant": 4424, "reforging": 153 },
-		{ "id": 82975, "enchant": 4419, "gems": [76631, 76575], "reforging": 168 },
-		{ "id": 88879, "enchant": 4415, "gems": [76631] },
-		{ "id": 82976, "enchant": 4432, "gems": [76631, 76631], "tinker": 4898 },
-		{ "id": 84950, "enchant": 4223, "gems": [76575, 76631], "reforging": 165 },
-		{ "id": 84507, "enchant": 4823, "gems": [76631, 76631], "reforging": 153 },
-		{ "id": 84810, "enchant": 4429, "gems": [76631], "reforging": 168 },
-		{ "id": 90862, "reforging": 152 },
-		{ "id": 81251, "reforging": 158 },
-		{ "id": 81138 },
-		{ "id": 79327 },
-		{ "id": 87542, "enchant": 4444, "reforging": 139 },
-		{ "id": 87542, "enchant": 4444, "reforging": 139 }
+		{ "id": 95778, "gems": [95346, 76697], "reforging": 151 },
+		{ "id": 95180, "reforging": 151 },
+		{ "id": 95990, "enchant": 4803, "gems": [76661, 76697], "reforging": 159 },
+		{ "id": 95114, "enchant": 4424, "reforging": 152 },
+		{ "id": 95987, "enchant": 4419, "gems": [76661, 76697, 76641], "reforging": 159 },
+		{ "id": 95128, "enchant": 4415, "gems": [76697], "reforging": 161 },
+		{ "id": 95332, "enchant": 4432, "gems": [76697, 76697], "reforging": 140, "tinker": 4898 },
+		{ "id": 95083, "enchant": 4223, "gems": [76697, 76697], "reforging": 165 },
+		{ "id": 95333, "enchant": 4823, "gems": [76697, 76641] },
+		{ "id": 94267, "enchant": 4429, "gems": [76697, 76697], "reforging": 137 },
+		{ "id": 95167, "reforging": 161 },
+		{ "id": 95140, "reforging": 154 },
+		{ "id": 94508, "reforging": 159 },
+		{ "id": 95757 },
+		{ "id": 95809, "enchant": 4444, "gems": [76697, 76697], "reforging": 165 },
+		{ "id": 95809, "enchant": 4444, "gems": [76697, 76697], "reforging": 165 }
 	]
 }

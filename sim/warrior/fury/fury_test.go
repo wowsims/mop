@@ -20,10 +20,10 @@ func TestFury(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-			GearSet: core.GetGearSet("../../../ui/warrior/fury/gear_sets", "p1_fury_tg"),
+			GearSet: core.GetGearSet("../../../ui/warrior/fury/gear_sets", "p3_fury_tg"),
 
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/warrior/fury/gear_sets", "p1_fury_smf"),
+				core.GetGearSet("../../../ui/warrior/fury/gear_sets", "preraid_fury_tg"),
 			},
 			Talents: TGTalents,
 			OtherTalentSets: []core.TalentsCombo{

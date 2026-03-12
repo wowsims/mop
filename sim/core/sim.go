@@ -311,7 +311,7 @@ func (sim *Simulation) run() *proto.RaidSimResult {
 	// 	fmt.Printf(fmt.Sprintf("[%0.1f] "+message+"\n", append([]interface{}{sim.CurrentTime.Seconds()}, vals...)...))
 	// }
 
-	sim.runOnce()
+	sim.runOnce(true)
 	firstIterationDuration := sim.Duration
 	if sim.Encounter.EndFightAtHealth != 0 {
 		firstIterationDuration = sim.CurrentTime
@@ -347,7 +347,7 @@ func (sim *Simulation) run() *proto.RaidSimResult {
 		// Before each iteration, reset state to seed+iterations
 		sim.reseedRands(int64(i))
 
-		sim.runOnce()
+		sim.runOnce(false)
 		iterDuration := sim.Duration
 		if sim.Encounter.EndFightAtHealth != 0 {
 			iterDuration = sim.CurrentTime
@@ -377,9 +377,24 @@ func (sim *Simulation) run() *proto.RaidSimResult {
 }
 
 // RunOnce is the main event loop. It will run the simulation for number of seconds.
-func (sim *Simulation) runOnce() {
+func (sim *Simulation) runOnce(firstIteration bool) {
 	sim.isInPrepull = true
 	sim.reset()
+
+	if firstIteration {
+		for _, action := range sim.Environment.prepullActions {
+			action.doAtTime = action.DoAt.GetDuration(sim)
+		}
+
+		sim.Environment.prepullActions = FilterSlice(sim.Environment.prepullActions, func(action *PrepullAction) bool {
+			return action.doAtTime <= sim.CurrentTime
+		})
+
+		slices.SortStableFunc(sim.Environment.prepullActions, func(a1, a2 *PrepullAction) int {
+			return int(a1.doAtTime - a2.doAtTime)
+		})
+	}
+
 	sim.PrePull()
 	sim.isInPrepull = false
 	sim.runPendingActions()
@@ -441,11 +456,11 @@ func (sim *Simulation) reset() {
 
 func (sim *Simulation) PrePull() {
 	if len(sim.prepullActions) > 0 {
-		sim.CurrentTime = sim.prepullActions[0].DoAt
+		sim.CurrentTime = sim.prepullActions[0].doAtTime
 
 		for i, ppa := range sim.prepullActions {
 			sim.AddPendingAction(&PendingAction{
-				NextActionAt: ppa.DoAt,
+				NextActionAt: ppa.doAtTime,
 				Priority:     ActionPriorityPrePull + ActionPriority(len(sim.prepullActions)-i),
 				OnAction:     ppa.Action,
 			})
@@ -454,7 +469,7 @@ func (sim *Simulation) PrePull() {
 
 	sim.AddPendingAction(&PendingAction{
 		NextActionAt: 0,
-		Priority:     ActionPriorityPrePull + ActionPriority(len(sim.prepullActions)+1),
+		Priority:     ActionPriorityHigh,
 		OnAction: func(sim *Simulation) {
 			for _, unit := range sim.Environment.AllUnits {
 				if unit.enabled {

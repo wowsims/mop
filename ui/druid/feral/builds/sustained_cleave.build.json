@@ -32,8 +32,7 @@
       "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     },
-    "enableItemSwap": true,
-    "itemSwap": {"items":[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{"id":87170,"enchant":4442,"gems":[89873,0]},{}],"prepullBonusStats":{"apiVersion":1,"stats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"pseudoStats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}},
+    "enableItemSwap": false,
     "buffs": {
     },
     "feralDruid": {

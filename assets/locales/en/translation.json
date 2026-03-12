@@ -26,6 +26,7 @@
 		"name": "Name",
 		"search": "Search",
 		"filter": "Filter",
+		"elapsed_time": "Elapsed Time",
 		"phases": {
 			"1": "Phase 1 (5.0 - T14)",
 			"2": "Phase 2 (5.1)",
@@ -283,7 +284,7 @@
 			"copy_to_reforge_lite": "Copy to Reforge Lite"
 		},
 		"reforge_success": {
-			"title": "The following items were reforged:",
+			"title": "The following items were changed:",
 			"removed_reforge": "Removed reforge",
 			"no_changes": "No reforge changes were made!",
 			"copy_to_reforge_lite": "Copy to Reforge Lite"
@@ -941,6 +942,10 @@
 					"label": "Cast",
 					"tooltip": "Casts the spell if possible, i.e. resource/cooldown/GCD/etc requirements are all met."
 				},
+				"cancel_cast": {
+					"label": "Cancel Cast",
+					"tooltip": "Cancels the current spell cast. (This is only evaluated during hardcasting and requires \"ReactToEvent\" to be added to the trigger in the Sim core."
+				},
 				"cast_at_player": {
 					"label": "Cast at Player",
 					"tooltip": "Casts a friendly spell if possible, i.e. resource/cooldown/GCD/etc requirements are all met."
@@ -1064,6 +1069,13 @@
 				"trigger_icd": {
 					"label": "Trigger ICD",
 					"tooltip": "Triggers the specified internal cooldown."
+				},
+				"damage_amplification": {
+					"label": "Damage Amplification",
+					"tooltip": "Multiplies Damage Done % by the specified percentage.",
+					"amount": {
+						"label": "Percentage"
+					}
 				},
 				"item_swap": {
 					"label": "Item Swap",
@@ -1337,6 +1349,10 @@
 					"label": "Time To Next Auto",
 					"tooltip": "Amount of time remaining before the next Main-hand or Off-hand melee attack, or <b>0</b> if autoattacks are not engaged."
 				},
+				"remaining_cast_time": {
+					"label": "Remaining Cast Time",
+					"tooltip": "Amount of time remaining before the current spell cast completes."
+				},
 				"spell_known": {
 					"label": "Spell Known",
 					"tooltip": "<b>True</b> if the spell is currently known, otherwise <b>False</b>."
@@ -1369,6 +1385,10 @@
 				"cpm": {
 					"label": "CPM",
 					"tooltip": "Casts Per Minute for the spell so far in the current iteration."
+				},
+				"is_casting": {
+					"label": "Is Casting",
+					"tooltip": "<b>True</b> if this spell is currently being cast, otherwise <b>False</b>."
 				},
 				"is_channeling": {
 					"label": "Is Channeling",
@@ -1672,7 +1692,8 @@
 					"include_reaction_time_tooltip": "If checked, will use the configured reaction time.",
 					"use_base_value": "Use base value",
 					"use_base_value_tooltip": "If checked, will compare the current DoT to the the base value (on encounter start) of the DoT.",
-					"variable_assignment_tooltip": "Value to assign to variable '{{variableName}}'"
+					"variable_assignment_tooltip": "Value to assign to variable '{{variableName}}'",
+					"amplification_type": "Amplification Type"
 				},
 				"eclipse_types": {
 					"lunar": "Lunar",
@@ -1701,6 +1722,20 @@
 					"caster": "Caster",
 					"cat": "Cat",
 					"hybrid": "Hybrid"
+				},
+				"amplification_types": {
+					"caster_buff": {
+						"label": "Caster Buff",
+						"tooltip": "Buff is on caster; snapshots DoTs and affect pets (not guardians)"
+					},
+					"environment_buff": {
+						"label": "Environment Buff",
+						"tooltip": "Buff is on the environment (ie. Jin'Rokh' pool); snapshots DoTs and affect pets (not guardians)"
+					},
+					"target_debuff": {
+						"label": "Target Debuff",
+						"tooltip": "Debuff is on target; doesn't snapshot DoTs and affects pets/guardians"
+					}
 				},
 				"unit_labels": {
 					"self": "Self",
@@ -2319,6 +2354,7 @@
 				"breakpoints_implemented": "The following breakpoints have been implemented for this spec:",
 				"post_cap_ep": "Post cap EP",
 				"reforge_optimization_failed": "Reforge optimization failed. Please try again, or report the issue if it persists.",
+				"reforge_optimization_cancelled": "Reforge optimization cancelled.",
 				"use_custom": "Use custom EP Weights",
 				"enable_modification": "This will enable modification of the default EP weights and setting custom stat caps.",
 				"modify_in_editor": "Ep weights can be modified in the Stat Weights editor.",

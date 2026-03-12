@@ -14,10 +14,6 @@ const (
 )
 
 func (moonkin *BalanceDruid) registerStarfallSpell() {
-
-	numberOfTicks := core.TernaryInt32(moonkin.Env.TotalTargetCount() > 1, 20, 10)
-	tickLength := time.Second
-
 	starfallTickSpell := moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 50286},
 		SpellSchool:    core.SpellSchoolArcane,
@@ -66,11 +62,25 @@ func (moonkin *BalanceDruid) registerStarfallSpell() {
 			Aura: core.Aura{
 				Label: "Starfall",
 			},
-			NumberOfTicks: numberOfTicks,
-			TickLength:    tickLength,
+			NumberOfTicks: 10,
+			TickLength:    time.Second,
 			OnTick: func(sim *core.Simulation, target *core.Unit, _ *core.Dot) {
 				if sim.CurrentTime > 0 {
-					starfallTickSpell.Cast(sim, target)
+					numActiveTargets := sim.Environment.ActiveTargetCount()
+					// Starfall hits a random target
+					target := int32(sim.RollWithLabel(0, float64(numActiveTargets), "Pick Random Target"))
+
+					starfallTickSpell.Cast(sim, sim.Encounter.ActiveTargetUnits[target])
+
+					// Starfall hits up to 2 random targets
+					// This is a dirty way to pick a random second target that's different from the first
+					if numActiveTargets > 1 {
+						secondTarget := target
+						for secondTarget == target {
+							secondTarget = int32(sim.RollWithLabel(0, float64(numActiveTargets), "Pick Random Target"))
+						}
+						starfallTickSpell.Cast(sim, sim.Encounter.ActiveTargetUnits[secondTarget])
+					}
 				}
 			},
 		},

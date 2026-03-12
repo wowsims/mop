@@ -16,7 +16,7 @@ func (fdk *FrostDeathKnight) registerMastery() {
 	// Undocummented 2025-07-01: only 10% effective when using a Two-handed weapon, 50% effective when Dual Wielding.
 	physicalMod := fdk.AddDynamicMod(core.SpellModConfig{
 		Kind:      core.SpellMod_DamageDone_Pct,
-		ClassMask: death_knight.DeathKnightSpellObliterate | death_knight.DeathKnightSpellSoulReaper,
+		ClassMask: death_knight.DeathKnightSpellObliterate | death_knight.DeathKnightSpellSoulReaperMelee | death_knight.DeathKnightSpellSoulReaperDot,
 	})
 
 	frostMod := fdk.AddDynamicMod(core.SpellModConfig{

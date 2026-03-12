@@ -21,6 +21,8 @@ function serveExternalAssets() {
 		'/mop/sim_worker.js': '/mop/local_worker.js',
 		'/mop/net_worker.js': '/mop/net_worker.js',
 		'/mop/lib.wasm': '/mop/lib.wasm',
+		'/mop/reforge_worker.js': '/mop/reforge_worker.js',
+		'/mop/highs.wasm': '/mop/highs.wasm',
 	};
 
 	return {
@@ -33,6 +35,15 @@ function serveExternalAssets() {
 					const targetPath = workerMappings[url as keyof typeof workerMappings];
 					const assetsPath = path.resolve(__dirname, './dist/mop');
 					const requestedPath = path.join(assetsPath, targetPath.replace('/mop/', ''));
+
+					serveFile(res, requestedPath);
+					return;
+				}
+
+				// Serve HiGHS chunk files
+				if (url.startsWith('/mop/highs-') && url.endsWith('.js')) {
+					const assetsPath = path.resolve(__dirname, './dist/mop');
+					const requestedPath = path.join(assetsPath, url.replace('/mop/', ''));
 
 					serveFile(res, requestedPath);
 					return;

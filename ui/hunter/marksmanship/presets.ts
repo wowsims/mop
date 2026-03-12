@@ -6,22 +6,23 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import P2Build from './builds/p2.build.json';
 import P3Build from './builds/p3.build.json';
-import PreRaidBuild from './builds/preraid.build.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreRaidGear from './gear_sets/preraid.gear.json';
 import AoeApl from './apls/aoe.apl.json';
 import Apl from './apls/mm.apl.json';
 
 export const PRERAID_PRESET_GEAR = PresetUtils.makePresetGear('Pre-raid', PreRaidGear);
 export const P2_PRESET_GEAR = PresetUtils.makePresetGear('P2', P2Gear);
-export const P3_PRESET_GEAR = PresetUtils.makePresetGear('P3 (WiP)', P3Gear);
+export const P3_PRESET_GEAR = PresetUtils.makePresetGear('P3', P3Gear);
+export const P5_PRESET_GEAR = PresetUtils.makePresetGear('P5 (WiP)', P5Gear);
 export const ROTATION_PRESET_MM = PresetUtils.makePresetAPLRotation('Single Target', Apl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', AoeApl);
 export const DefaultTalents = {
 	name: 'Default',
 	data: SavedTalents.create({
-		talentsString: '312111',
+		talentsString: '312213',
 		glyphs: Glyphs.create({
 			major1: MajorGlyph.GlyphOfAnimalBond,
 			major2: MajorGlyph.GlyphOfDeterrence,
@@ -65,15 +66,11 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const PRERAID_PRESET = PresetUtils.makePresetBuildFromJSON('Pre-raid', Spec.SpecMarksmanshipHunter, PreRaidBuild, {
-	epWeights: P2_EP_PRESET,
-	rotationType: APLRotationType.TypeAuto,
-});
 export const P2_PRESET = PresetUtils.makePresetBuildFromJSON('P2', Spec.SpecMarksmanshipHunter, P2Build, {
 	epWeights: P2_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
-export const P3_PRESET = PresetUtils.makePresetBuildFromJSON('P3 (WiP)', Spec.SpecMarksmanshipHunter, P3Build, {
+export const P3_PRESET = PresetUtils.makePresetBuildFromJSON('P3', Spec.SpecMarksmanshipHunter, P3Build, {
 	epWeights: P3_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
@@ -98,5 +95,5 @@ export const OtherDefaults = {
 	distanceFromTarget: 24,
 	iterationCount: 25000,
 	profession1: Profession.Engineering,
-	profession2: Profession.Tailoring,
+	profession2: Profession.Herbalism,
 };

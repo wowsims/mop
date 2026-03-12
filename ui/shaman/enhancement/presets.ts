@@ -12,7 +12,7 @@ import {
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import DefaultApl from './apls/default.apl.json';
+import P1Apl from './apls/default.apl.json';
 import P3Apl from './apls/p3.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
@@ -23,18 +23,18 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
-export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
+export const PRERAID_GEAR_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 
-export const P1_PRESET = PresetUtils.makePresetGear('P1', P1Gear);
-export const P2_PRESET = PresetUtils.makePresetGear('P2', P2Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 (WiP)', P3Gear);
+export const P1_GEAR_PRESET = PresetUtils.makePresetGear('P1', P1Gear);
+export const P2_GEAR_PRESET = PresetUtils.makePresetGear('P2', P2Gear);
+export const P3_GEAR_PRESET = PresetUtils.makePresetGear('P3', P3Gear);
 
-export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
-export const ROTATION_PRESET_P3 = PresetUtils.makePresetAPLRotation('P3 (WiP)', P3Apl);
+export const ROTATION_PRESET_P1 = PresetUtils.makePresetAPLRotation('P1', P1Apl);
+export const ROTATION_PRESET_P3 = PresetUtils.makePresetAPLRotation('Default', P3Apl);
 
 // Preset options for EP weights
 export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default',
+	'P1',
 	Stats.fromMap(
 		{
 			[Stat.StatIntellect]: 0.04,
@@ -56,7 +56,7 @@ export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
 );
 
 export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 (WiP)',
+	'P3',
 	Stats.fromMap(
 		{
 			[Stat.StatIntellect]: 0.04,
@@ -92,7 +92,7 @@ export const StandardTalents = {
 };
 
 export const P3Talents = {
-	name: 'P3 (WiP)',
+	name: 'Default',
 	data: SavedTalents.create({
 		talentsString: '313122',
 		glyphs: Glyphs.create({

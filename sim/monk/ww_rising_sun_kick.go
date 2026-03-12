@@ -80,7 +80,7 @@ func (monk *Monk) registerRisingSunKick() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return monk.GetChi() >= 2
+			return monk.GetChi() >= core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 1, 2)
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -89,8 +89,11 @@ func (monk *Monk) registerRisingSunKick() {
 			result := spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 
 			if result.Landed() {
-				monk.SpendChi(sim, 2, chiMetrics)
+				monk.SpendChi(sim, core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 1, 2), chiMetrics)
 				risingSunKickDebuff.ActivateAll(sim)
+				if monk.T16Windwalker4P != nil {
+					monk.T16Windwalker4P.Deactivate(sim)
+				}
 			}
 		},
 		RelatedAuraArrays: risingSunKickDebuff.ToMap(),

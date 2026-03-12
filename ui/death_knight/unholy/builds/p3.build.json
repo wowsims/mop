@@ -1,4 +1,5 @@
 {
+	"apiVersion": 2,
 	"raidBuffs": {
 		"trueshotAura": true,
 		"unholyAura": true,
@@ -23,21 +24,21 @@
 		"class": "ClassDeathKnight",
 		"equipment": {
 			"items": [
-				{"id":96894,"gems":[95346,76697]},
-				{"id":96792,"reforging":167},
-				{"id":96573,"enchant":4803,"gems":[76696,76661],"reforging":159},
-				{"id":95017,"enchant":4424,"gems":[76697]},
-				{"id":96569,"enchant":4419,"gems":[76661,76697,76684],"reforging":159},
-				{"id":96848,"randomSuffix":-336,"enchant":4415,"gems":[76697,76697]},
-				{"id":96570,"enchant":4432,"gems":[76696,76697],"reforging":138,"tinker":4898},
-				{"id":96745,"enchant":4223,"gems":[76696,76661,76696],"reforging":166},
-				{"id":96572,"enchant":4823,"gems":[76661,76684],"reforging":167},
-				{"id":95012,"enchant":4426,"gems":[76661,76684],"reforging":160},
-				{"id":96872,"gems":[76696],"reforging":137},
-				{"id":95022,"gems":[76684],"reforging":159},
-				{"id":96842,"reforging":137},
-				{"id":94508,"reforging":159},
-				{"id":96991,"enchant":3368,"gems":[76697,76697]},
+				{ "id": 96894, "gems": [95346, 76697] },
+				{ "id": 96792, "reforging": 167 },
+				{ "id": 96573, "enchant": 4803, "gems": [76696, 76661], "reforging": 159 },
+				{ "id": 95017, "enchant": 4424, "gems": [76697] },
+				{ "id": 96569, "enchant": 4419, "gems": [76661, 76697, 76684], "reforging": 159 },
+				{ "id": 96848, "randomSuffix": -336, "enchant": 4415, "gems": [76697, 76697] },
+				{ "id": 96570, "enchant": 4432, "gems": [76696, 76697], "reforging": 138, "tinker": 4898 },
+				{ "id": 96745, "enchant": 4223, "gems": [76696, 76661, 76696], "reforging": 166 },
+				{ "id": 96572, "enchant": 4823, "gems": [76661, 76684], "reforging": 167 },
+				{ "id": 95012, "enchant": 4426, "gems": [76661, 76684], "reforging": 160 },
+				{ "id": 96872, "gems": [76696], "reforging": 137 },
+				{ "id": 95022, "gems": [76684], "reforging": 159 },
+				{ "id": 96842, "reforging": 137 },
+				{ "id": 94508, "reforging": 159 },
+				{ "id": 96991, "enchant": 3368, "gems": [76697, 76697] },
 				{}
 			]
 		},
@@ -48,7 +49,7 @@
 			"foodId": 74646
 		},
 		"bonusStats": {
-			"apiVersion": 1,
+			"apiVersion": 2,
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		},
@@ -100,7 +101,7 @@
 				"name": "Raid Target",
 				"level": 93,
 				"mobType": "MobTypeMechanical",
-				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
+				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 650, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
 				"minBaseDamage": 550000,
 				"damageSpread": 0.4,
 				"swingSpeed": 2

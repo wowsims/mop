@@ -78,7 +78,7 @@ func (monk *Monk) registerBlackoutKick() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return monk.GetChi() >= chiCost || monk.ComboBreakerBlackoutKickAura.IsActive()
+			return monk.GetChi() >= core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), chiCost-1, chiCost) || monk.ComboBreakerBlackoutKickAura.IsActive()
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -90,7 +90,10 @@ func (monk *Monk) registerBlackoutKick() {
 				if monk.ComboBreakerBlackoutKickAura.IsActive() {
 					monk.onChiSpent(sim, chiCost)
 				} else {
-					monk.SpendChi(sim, chiCost, chiMetrics)
+					monk.SpendChi(sim, core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), chiCost-1, chiCost), chiMetrics)
+					if monk.T16Windwalker4P != nil {
+						monk.T16Windwalker4P.Deactivate(sim)
+					}
 				}
 			}
 

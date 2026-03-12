@@ -32,7 +32,7 @@ func (paladin *Paladin) ApplyTalents() {
 	if paladin.Level >= 75 {
 		paladin.registerHolyAvenger()
 		paladin.registerSanctifiedWrath()
-		paladin.registerDivinePurpose()
+		// Divine Purpose is registered in NewPaladin to make sure it's registered before T16 DPS 4pc
 	}
 
 	if paladin.Level >= 90 {
@@ -619,7 +619,7 @@ func (paladin *Paladin) registerDivinePurpose() {
 	}
 
 	paladin.DivinePurposeAura = core.BlockPrepull(paladin.divinePurposeFactory("Divine Purpose", 90174, time.Second*8, func(aura *core.Aura, spell *core.Spell) bool {
-		return true
+		return !spell.Matches(SpellMaskDivineStorm) || !paladin.DivineCrusaderAura.IsActive()
 	}))
 }
 

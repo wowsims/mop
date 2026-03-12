@@ -663,7 +663,7 @@ func (monk *Monk) registerPowerStrikes() {
 		pa.OnAction = func(sim *core.Simulation) {
 			core.StartPeriodicAction(sim, core.PeriodicActionOptions{
 				Period:          time.Second * 20,
-				Priority:        core.ActionPriorityLow,
+				Priority:        core.ActionPriorityPrePull,
 				TickImmediately: true,
 
 				OnAction: func(sim *core.Simulation) {

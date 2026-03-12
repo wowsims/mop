@@ -19,9 +19,9 @@ func TestArcane(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-			GearSet: core.GetGearSet("../../../ui/mage/arcane/gear_sets", "p1_bis"),
+			GearSet: core.GetGearSet("../../../ui/mage/arcane/gear_sets", "p3_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/mage/arcane/gear_sets", "p1_prebis"),
+				core.GetGearSet("../../../ui/mage/arcane/gear_sets", "prebis"),
 			},
 			Talents:         ArcaneTalents,
 			OtherTalentSets: core.GenerateTalentVariationsForRows(ArcaneTalents, ArcaneGlyphs, []int{4, 5}),
@@ -29,7 +29,7 @@ func TestArcane(t *testing.T) {
 			Consumables:     FullArcaneConsumesSpec,
 
 			SpecOptions: core.SpecOptionsCombo{Label: "Arcane", SpecOptions: PlayerOptionsArcane},
-			Rotation:    core.GetAplRotation("../../../ui/mage/arcane/apls", "default"),
+			Rotation:    core.GetAplRotation("../../../ui/mage/arcane/apls", "arcane_t15_4pc"),
 
 			ItemFilter: ItemFilter,
 		},

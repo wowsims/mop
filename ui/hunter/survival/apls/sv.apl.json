@@ -2,10 +2,11 @@
 	"type": "TypeAPL",
 	"prepullActions": [
 		{ "action": { "castSpell": { "spellId": { "spellId": 13165 } } }, "doAtValue": { "const": { "val": "-10s" } } },
+		{ "action": { "castSpell": { "spellId": { "spellId": 1130 } } }, "doAtValue": { "const": { "val": "-9s" } } },
 		{ "action": { "castSpell": { "spellId": { "spellId": 13812 } } }, "doAtValue": { "const": { "val": "-5s" } } },
-		{ "action": { "castSpell": { "spellId": { "spellId": 1130 } } }, "doAtValue": { "const": { "val": "-4s" } } },
-		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "const": { "val": "-0.5s" } } },
-		{ "action": { "castSpell": { "spellId": { "spellId": 3674 } } }, "doAtValue": { "const": { "val": "-0.5s" } } }
+		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "variableRef": { "name": "CS Time" } } },
+		{ "action": { "castSpell": { "spellId": { "spellId": 77767 } } }, "doAtValue": { "variableRef": { "name": "CS Time" } } },
+		{ "action": { "castSpell": { "spellId": { "spellId": 3674 } } }, "doAtValue": { "variableRef": { "name": "BA Time" } } }
 	],
 	"priorityList": [
 		{
@@ -82,7 +83,6 @@
 		{
 			"name": "Opener",
 			"actions": [
-				{ "action": { "castSpell": { "spellId": { "spellId": 3674 } } } },
 				{ "action": { "condition": { "spellIsKnown": { "spellId": { "spellId": 120679 } } }, "groupReference": { "groupName": "Dire Beast Opener" } } },
 				{ "action": { "condition": { "spellIsKnown": { "spellId": { "spellId": 82726 } } }, "groupReference": { "groupName": "Fervor Opener" } } },
 				{ "action": { "sequence": { "name": "opener", "actions": [{ "castSpell": { "spellId": { "spellId": 117050 } } }] } } },
@@ -126,11 +126,18 @@
 					"action": {
 						"sequence": {
 							"name": "amoc",
-							"actions": [{ "castSpell": { "spellId": { "spellId": 131894 } } }, { "wait": { "duration": { "gcdTimeToReady": {} } } }]
+							"actions": [
+								{ "castSpell": { "spellId": { "spellId": 131894 } } },
+								{
+									"wait": {
+										"duration": { "math": { "op": "OpSub", "lhs": { "gcdTimeToReady": {} }, "rhs": { "const": { "val": "500ms" } } } }
+									}
+								},
+								{ "castSpell": { "spellId": { "spellId": 82726 } } }
+							]
 						}
 					}
 				},
-				{ "action": { "castSpell": { "spellId": { "spellId": 82726 } } } },
 				{
 					"action": {
 						"condition": { "auraIsInactive": { "auraId": { "spellId": 56343 }, "includeReactionTime": true } },
@@ -325,6 +332,20 @@
 						},
 						{ "cmp": { "op": "OpGe", "lhs": { "currentFocus": {} }, "rhs": { "const": { "val": "85" } } } }
 					]
+				}
+			}
+		},
+		{
+			"name": "BA Time",
+			"value": { "math": { "op": "OpSub", "lhs": { "const": { "val": "10ms" } }, "rhs": { "spellTravelTime": { "spellId": { "spellId": 3674 } } } } }
+		},
+		{
+			"name": "CS Time",
+			"value": {
+				"math": {
+					"op": "OpSub",
+					"lhs": { "variableRef": { "name": "BA Time" } },
+					"rhs": { "math": { "op": "OpAdd", "lhs": { "spellCastTime": { "spellId": { "spellId": 77767 } } }, "rhs": { "const": { "val": "10ms" } } } }
 				}
 			}
 		}

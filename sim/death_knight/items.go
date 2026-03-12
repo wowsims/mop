@@ -256,6 +256,7 @@ var ItemSetBattleplateOfCyclopeanDread = core.NewItemSet(core.ItemSet{
 					Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 						if dk.Ghoul.DarkTransformationAura.IsActive() {
 							dk.Ghoul.DarkTransformationAura.UpdateExpires(dk.Ghoul.DarkTransformationAura.ExpiresAt() + time.Second*2)
+							dk.DarkTransformationAura.UpdateExpires(dk.DarkTransformationAura.ExpiresAt() + time.Second*2)
 						}
 					},
 				})
@@ -344,7 +345,7 @@ var ItemSetPlateOfCyclopeanDread = core.NewItemSet(core.ItemSet{
 				ClassSpellMask: DeathKnightSpellHeartStrike |
 					DeathKnightSpellRuneStrike |
 					DeathKnightSpellDeathCoil |
-					DeathKnightSpellSoulReaper |
+					DeathKnightSpellSoulReaperMelee |
 					DeathKnightSpellBloodBoil,
 
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {

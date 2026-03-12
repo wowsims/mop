@@ -743,18 +743,48 @@ func (spell *Spell) finalizeExpectedDamage(result *SpellResult) {
 	result.inUse = false
 }
 func (spell *Spell) ExpectedInitialDamage(sim *Simulation, target *Unit) float64 {
+	cacheIsValid, damageCache := GetCachedExpectedInitialDamage(sim, spell, target)
+
+	if cacheIsValid {
+		return damageCache.value
+	}
+
 	result := spell.expectedInitialDamageInternal(sim, target, spell, false)
 	spell.finalizeExpectedDamage(result)
+
+	damageCache.timestamp = sim.CurrentTime
+	damageCache.value = result.Damage
+
 	return result.Damage
 }
 func (spell *Spell) ExpectedTickDamage(sim *Simulation, target *Unit) float64 {
+	cacheIsValid, damageCache := GetCachedExpectedTickDamage(sim, spell, target, false)
+
+	if cacheIsValid {
+		return damageCache.value
+	}
+
 	result := spell.expectedTickDamageInternal(sim, target, spell, false)
 	spell.finalizeExpectedDamage(result)
+
+	damageCache.timestamp = sim.CurrentTime
+	damageCache.value = result.Damage
+
 	return result.Damage
 }
 func (spell *Spell) ExpectedTickDamageFromCurrentSnapshot(sim *Simulation, target *Unit) float64 {
+	cacheIsValid, damageCache := GetCachedExpectedTickDamage(sim, spell, target, true)
+
+	if cacheIsValid {
+		return damageCache.value
+	}
+
 	result := spell.expectedTickDamageInternal(sim, target, spell, true)
 	spell.finalizeExpectedDamage(result)
+
+	damageCache.timestamp = sim.CurrentTime
+	damageCache.value = result.Damage
+
 	return result.Damage
 }
 
