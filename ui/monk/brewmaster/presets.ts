@@ -14,8 +14,8 @@ import HorridonBuild from './builds/horridon_encounter_only.build.json';
 import PreBISGear from './gear_sets/prebis.gear.json';
 import P1BISDWGear from './gear_sets/p1_bis_dw.gear.json';
 import P2BISDWGear from './gear_sets/p2_bis_dw.gear.json';
-import P3BISDWGear from './gear_sets/p3_bis_dw.gear.json';
-import P3OffensiveDWGear from './gear_sets/p3_bis_offensive_dw.gear.json';
+import P4BISDWGear from './gear_sets/p4_bis_dw.gear.json';
+import P4OffensiveDWGear from './gear_sets/p4_bis_offensive_dw.gear.json';
 import P2BISOffensiveDWGear from './gear_sets/p2_bis_offensive_dw.gear.json';
 import P2BISOffensiveTierlessDWGear from './gear_sets/p2_bis_offensive_tierless_dw.gear.json';
 
@@ -28,8 +28,8 @@ export const P1_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS (Balan
 export const P2_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2BISDWGear);
 export const P2_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - 2PC)', P2BISOffensiveDWGear);
 export const P2_BIS_OFFENSIVE_TIERLESS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - No Tier)', P2BISOffensiveTierlessDWGear);
-export const P3_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 - BIS (Balanced)', P3BISDWGear);
-export const P3_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 - BIS (Offensive)', P3OffensiveDWGear);
+export const P3_4_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4BISDWGear);
+export const P3_4_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4OffensiveDWGear);
 
 export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Generic', DefaultApl);
 export const ROTATION_GARAJAL_PRESET = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
@@ -86,8 +86,8 @@ export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P3_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Balanced',
+export const P3_4_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P3 & P4 - Balanced',
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1,
@@ -110,8 +110,8 @@ export const P3_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P3_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Offensive',
+export const P3_4_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P3 & P4 - Offensive',
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1,

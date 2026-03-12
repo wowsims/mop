@@ -27,9 +27,9 @@ func TestBrewmaster(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-			GearSet: core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p3_bis_dw"),
+			GearSet: core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p4_bis_dw"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p3_bis_offensive_dw"),
+				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p4_bis_offensive_dw"),
 				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "prebis"),
 			},
 			Talents: BrewmasterDefaultTalents,

@@ -3163,219 +3163,219 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.59257580139e+06
-  tps: 1.557830591361e+07
-  dtps: 638990.06915
-  hps: 326793.36149
+  dps: 2.75526404034e+06
+  tps: 1.648284193928e+07
+  dtps: 617395.34632
+  hps: 335919.26014
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 211699.66946
-  tps: 1.27279665415e+06
-  dtps: 11816.72491
-  hps: 45968.48989
+  dps: 233319.85814
+  tps: 1.39952932873e+06
+  dtps: 10550.50882
+  hps: 48980.10619
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 272040.92843
-  tps: 1.35867006092e+06
-  dtps: 12916.59463
-  hps: 45788.92737
+  dps: 301425.27362
+  tps: 1.49054998077e+06
+  dtps: 11332.65272
+  hps: 50767.1917
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.87180777961e+06
-  tps: 1.119415435474e+07
-  dtps: 869940.51137
-  hps: 270562.03458
+  dps: 2.09584382639e+06
+  tps: 1.255464780022e+07
+  dtps: 779254.80489
+  hps: 276454.06649
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 164003.81347
-  tps: 994914.04883
-  dtps: 23577.25356
-  hps: 43384.46204
+  dps: 182097.02833
+  tps: 1.10363910146e+06
+  dtps: 17150.61081
+  hps: 45435.74473
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 190581.60299
-  tps: 975889.01979
-  dtps: 19215.33188
-  hps: 39087.12774
+  dps: 214263.02373
+  tps: 1.09063256469e+06
+  dtps: 18200.0285
+  hps: 43463.59571
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 4.34890976846e+06
-  tps: 3.026529498587e+07
-  dtps: 759549.50218
-  hps: 511574.36045
+  dps: 4.72948321084e+06
+  tps: 3.281331195172e+07
+  dtps: 577530.41466
+  hps: 487991.62947
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 206520.55463
-  tps: 1.41934079422e+06
-  dtps: 23873.29367
-  hps: 49704.97195
+  dps: 234438.74348
+  tps: 1.60096425371e+06
+  dtps: 19838.83498
+  hps: 50336.05372
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 242451.34422
-  tps: 1.56564396874e+06
-  dtps: 18227.97852
-  hps: 46638.18558
+  dps: 279352.67643
+  tps: 1.75493398177e+06
+  dtps: 14473.23984
+  hps: 46682.40216
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.02348923558e+06
-  tps: 2.116442464909e+07
-  dtps: 858787.2976
-  hps: 528512.99994
+  dps: 3.37775980601e+06
+  tps: 2.364431864206e+07
+  dtps: 787016.04169
+  hps: 509705.51747
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 156904.73137
-  tps: 1.09833311962e+06
-  dtps: 38102.65692
-  hps: 45570.20274
+  dps: 178852.91988
+  tps: 1.25197043914e+06
+  dtps: 27737.83062
+  hps: 47906.56883
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 156577.64653
-  tps: 1.09604352573e+06
-  dtps: 28944.41865
-  hps: 41886.09226
+  dps: 178109.17043
+  tps: 1.24676419301e+06
+  dtps: 22846.54305
+  hps: 43696.0275
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.55646566835e+06
-  tps: 1.534850971356e+07
-  dtps: 658269.75034
-  hps: 314479.04606
+  dps: 2.78611031305e+06
+  tps: 1.670693104624e+07
+  dtps: 606985.04249
+  hps: 340171.53032
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 227997.84696
-  tps: 1.36674002e+06
-  dtps: 11991.99049
-  hps: 48291.9819
+  dps: 236828.08386
+  tps: 1.41858783471e+06
+  dtps: 11052.9148
+  hps: 49483.9347
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 299691.17989
-  tps: 1.4885018967e+06
-  dtps: 12671.74038
-  hps: 50170.70024
+  dps: 310294.49087
+  tps: 1.53063229377e+06
+  dtps: 11030.1378
+  hps: 51021.93089
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.91391227608e+06
-  tps: 1.149015747245e+07
-  dtps: 871310.21772
-  hps: 261532.92923
+  dps: 2.09302854238e+06
+  tps: 1.254621439997e+07
+  dtps: 811120.40246
+  hps: 281351.53779
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 176554.9172
-  tps: 1.06887488036e+06
-  dtps: 22375.74835
-  hps: 45588.90047
+  dps: 184515.72998
+  tps: 1.1162023764e+06
+  dtps: 17788.37617
+  hps: 46306.88193
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 208464.67198
-  tps: 1.06036555914e+06
-  dtps: 19990.9944
-  hps: 42897.5899
+  dps: 219720.353
+  tps: 1.11625454871e+06
+  dtps: 18369.03197
+  hps: 45051.65132
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 4.44467906782e+06
-  tps: 3.085024863565e+07
-  dtps: 627642.0064
-  hps: 477853.98677
+  dps: 4.86648400389e+06
+  tps: 3.377163713892e+07
+  dtps: 575628.62555
+  hps: 504649.28513
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 226270.09617
-  tps: 1.5450189245e+06
-  dtps: 23224.64812
-  hps: 52512.83789
+  dps: 237467.82165
+  tps: 1.62047705426e+06
+  dtps: 21716.828
+  hps: 53260.85546
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 271655.52816
-  tps: 1.70722995367e+06
-  dtps: 16883.35738
-  hps: 47908.34105
+  dps: 285394.84256
+  tps: 1.7887754114e+06
+  dtps: 14998.49441
+  hps: 47944.73014
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.12861731538e+06
-  tps: 2.190032120765e+07
-  dtps: 855304.56427
-  hps: 498220.51011
+  dps: 3.45119028088e+06
+  tps: 2.415833196618e+07
+  dtps: 787565.92091
+  hps: 523764.78273
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 170169.78849
-  tps: 1.19118851943e+06
-  dtps: 33947.14667
-  hps: 48472.08234
+  dps: 179548.82581
+  tps: 1.25684178067e+06
+  dtps: 34005.87669
+  hps: 49907.18356
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Orc-p3_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Orc-p4_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 171766.20468
-  tps: 1.20236343277e+06
-  dtps: 27105.13539
-  hps: 45894.50651
+  dps: 180790.42433
+  tps: 1.26553297032e+06
+  dtps: 28228.10401
+  hps: 47762.89386
  }
 }
 dps_results: {
@@ -3487,219 +3487,219 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.53598808723e+06
-  tps: 1.521032900487e+07
-  dtps: 636914.52454
-  hps: 323987.87098
+  dps: 2.77484921778e+06
+  tps: 1.666826326468e+07
+  dtps: 578574.31658
+  hps: 333804.98804
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 210543.8431
-  tps: 1.26831931096e+06
-  dtps: 12448.33651
-  hps: 45392.227
+  dps: 234056.44235
+  tps: 1.40195753925e+06
+  dtps: 10463.69366
+  hps: 49282.1677
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 270564.33867
-  tps: 1.35696174694e+06
-  dtps: 12591.22336
-  hps: 45967.51406
+  dps: 304417.93004
+  tps: 1.50796233545e+06
+  dtps: 11491.18637
+  hps: 52759.56068
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.89893624658e+06
-  tps: 1.142686614251e+07
-  dtps: 857833.08335
-  hps: 274110.14858
+  dps: 2.06899129569e+06
+  tps: 1.240385037027e+07
+  dtps: 796370.20593
+  hps: 277850.10872
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 163966.55677
-  tps: 997679.71547
-  dtps: 22767.57714
-  hps: 42819.99952
+  dps: 181937.43686
+  tps: 1.10318660235e+06
+  dtps: 16338.1029
+  hps: 43393.00457
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 188405.37513
-  tps: 969732.28635
-  dtps: 19080.89714
-  hps: 39064.65813
+  dps: 214765.52965
+  tps: 1.10353496118e+06
+  dtps: 16049.27813
+  hps: 42557.69697
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 4.35630860986e+06
-  tps: 3.027385220129e+07
-  dtps: 629703.93166
-  hps: 535072.58364
+  dps: 4.81616860432e+06
+  tps: 3.336097783425e+07
+  dtps: 604793.60053
+  hps: 491130.84601
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 208847.46714
-  tps: 1.43219054668e+06
-  dtps: 23778.88977
-  hps: 49749.13389
+  dps: 235770.88176
+  tps: 1.60686463677e+06
+  dtps: 20385.63487
+  hps: 49801.35996
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 248553.25781
-  tps: 1.59116418814e+06
-  dtps: 16655.52579
-  hps: 44414.65204
+  dps: 289819.64534
+  tps: 1.81226157398e+06
+  dtps: 17018.37369
+  hps: 49374.63782
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.10482024651e+06
-  tps: 2.173374172557e+07
-  dtps: 850294.039
-  hps: 528255.02625
+  dps: 3.38784682756e+06
+  tps: 2.371492779292e+07
+  dtps: 792935.63428
+  hps: 505261.04706
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 157677.48749
-  tps: 1.10374241246e+06
-  dtps: 38644.65674
-  hps: 46001.99188
+  dps: 179848.17512
+  tps: 1.25893722583e+06
+  dtps: 28217.66732
+  hps: 47602.81621
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 159505.82537
-  tps: 1.11654077761e+06
-  dtps: 28353.93851
-  hps: 43021.77981
+  dps: 182545.99985
+  tps: 1.27782199892e+06
+  dtps: 22636.65483
+  hps: 42239.00781
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.54241157773e+06
-  tps: 1.527534085937e+07
-  dtps: 656140.10514
-  hps: 315935.7764
+  dps: 2.80833032795e+06
+  tps: 1.688426684541e+07
+  dtps: 590095.18747
+  hps: 338918.71982
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 226374.95655
-  tps: 1.35663587233e+06
-  dtps: 12151.06371
-  hps: 48653.03666
+  dps: 235738.71447
+  tps: 1.41140528185e+06
+  dtps: 10564.70277
+  hps: 49164.6371
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 295022.8792
-  tps: 1.45559863188e+06
-  dtps: 12719.1625
-  hps: 50721.15739
+  dps: 308556.17044
+  tps: 1.52403520484e+06
+  dtps: 12078.01322
+  hps: 52741.54565
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.9109787712e+06
-  tps: 1.152537314311e+07
-  dtps: 886839.166
-  hps: 264336.79009
+  dps: 2.09279735251e+06
+  tps: 1.258852541915e+07
+  dtps: 786231.33429
+  hps: 284904.73707
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 176180.2061
-  tps: 1.06980262568e+06
-  dtps: 21144.88521
-  hps: 44745.33502
+  dps: 183942.79315
+  tps: 1.11613362675e+06
+  dtps: 17079.98852
+  hps: 44936.71874
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 209013.56657
-  tps: 1.07474297182e+06
-  dtps: 17934.07536
-  hps: 41672.88007
+  dps: 216436.1282
+  tps: 1.10967305195e+06
+  dtps: 17061.37916
+  hps: 42104.78743
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 4.53920721204e+06
-  tps: 3.145488104022e+07
-  dtps: 648470.20799
-  hps: 477688.16148
+  dps: 4.99755924884e+06
+  tps: 3.463340663482e+07
+  dtps: 598259.0724
+  hps: 504278.17085
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 226489.98241
-  tps: 1.54383233362e+06
-  dtps: 24606.99846
-  hps: 53011.62479
+  dps: 236783.4634
+  tps: 1.6126727107e+06
+  dtps: 23101.00798
+  hps: 53897.39432
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-Dungeon-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 279786.80182
-  tps: 1.75201900548e+06
-  dtps: 19260.77406
-  hps: 51100.22107
+  dps: 291244.57616
+  tps: 1.81615645518e+06
+  dtps: 17528.07695
+  hps: 52389.93787
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.16912654403e+06
-  tps: 2.218388580822e+07
-  dtps: 862597.92773
-  hps: 492281.46745
+  dps: 3.5069248642e+06
+  tps: 2.454847404937e+07
+  dtps: 783162.34419
+  hps: 519314.73432
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 173294.46322
-  tps: 1.21306124257e+06
-  dtps: 32953.21432
-  hps: 48600.68064
+  dps: 179931.29991
+  tps: 1.25951909936e+06
+  dtps: 34236.36229
+  hps: 49882.05139
  }
 }
 dps_results: {
- key: "TestBrewmaster-Settings-Troll-p3_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBrewmaster-Settings-Troll-p4_bis_offensive_dw-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 176105.31536
-  tps: 1.23273720752e+06
-  dtps: 27736.5911
-  hps: 46923.90225
+  dps: 183243.80685
+  tps: 1.28270664795e+06
+  dtps: 27309.21411
+  hps: 47387.80503
  }
 }
 dps_results: {
