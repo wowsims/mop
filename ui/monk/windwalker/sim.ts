@@ -10,7 +10,6 @@ import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, Pseu
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import { Sim } from '../../core/sim';
 import { TypedEvent } from '../../core/typed_event';
 import * as MonkUtils from '../utils';
 import * as Presets from './presets';
@@ -49,7 +48,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_BIS_GEAR_PRESET.gear,
+		gear: Presets.P3_4_BIS_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_BIS_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
@@ -126,8 +125,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
-		builds: [Presets.P2_BUILD_PRESET, Presets.P3_BUILD_PRESET],
+		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_4_BIS_GEAR_PRESET, Presets.P3_4_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
+		builds: [Presets.P2_BUILD_PRESET, Presets.P3_4_BUILD_PRESET],
 	},
 
 	autoRotation: (_: Player<Spec.SpecWindwalkerMonk>): APLRotation => {

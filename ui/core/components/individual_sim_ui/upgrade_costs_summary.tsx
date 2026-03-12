@@ -75,15 +75,15 @@ export class UpgradeCostsSummary extends Component {
 		this.rootElem.classList[!hasUpgradeItems ? 'add' : 'remove']('hide');
 
 		if (hasUpgradeItems) {
-			const ToTRaidID = Player.RAID_IDS[RaidFilterOption.RaidThroneOfThunder];
-			const pred = (item: UIItemSource) => item.source.oneofKind === 'drop' && item.source.drop.zoneId === ToTRaidID;
+			// const ToTRaidID = Player.RAID_IDS[RaidFilterOption.RaidThroneOfThunder];
+			// const pred = (item: UIItemSource) => item.source.oneofKind === 'drop' && item.source.drop.zoneId === ToTRaidID;
 			const totals = itemsWithUpgrade.reduce<UpgradeSummaryTotal>(
 				(acc, item) => {
 					let key: keyof UpgradeSummaryTotal = 'justicePoints';
 
-					if (item._item.sources.some(pred)) {
-						key = 'valorPoints';
-					}
+					// if (item._item.sources.some(pred)) {
+					// 	key = 'valorPoints';
+					// }
 					if (item._item.name.includes("Gladiator's")) {
 						key = 'honorPoints';
 					}

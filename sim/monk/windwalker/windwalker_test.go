@@ -20,7 +20,7 @@ func TestWindwalker(t *testing.T) {
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-			GearSet: core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p3_bis"),
+			GearSet: core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p4_bis"),
 			OtherGearSets: []core.GearSetCombo{
 				core.GetGearSet("../../../ui/monk/windwalker/gear_sets", "p2_bis"),
 			},

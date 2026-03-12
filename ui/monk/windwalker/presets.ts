@@ -5,7 +5,7 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import DefaultP2BisGear from './gear_sets/p2_bis.gear.json';
-import DefaultP3BisGear from './gear_sets/p3_bis.gear.json';
+import DefaultP4BisGear from './gear_sets/p4_bis.gear.json';
 import DefaultP5BisGear from './gear_sets/p5_bis.gear.json';
 import DefaultPrebisGear from './gear_sets/prebis.gear.json';
 import { Player } from '../../core/player';
@@ -24,7 +24,8 @@ export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS', Default
 		);
 	},
 });
-export const P3_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3 - BIS', DefaultP3BisGear, {
+
+export const P3_4_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', DefaultP4BisGear, {
 	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
 		PresetUtils.makeSpecChangeWarningToast(
 			[
@@ -120,7 +121,7 @@ export const DefaultConsumables = ConsumesSpec.create({
 
 export const OtherDefaults = {
 	profession1: Profession.Engineering,
-	profession2: Profession.Tailoring,
+	profession2: Profession.Blacksmithing,
 	distanceFromTarget: 5,
 	iterationCount: 25000,
 };
@@ -132,10 +133,10 @@ export const P2_BUILD_PRESET = PresetUtils.makePresetBuild('P2 - BIS', {
 		playerOptions: OtherDefaults,
 	},
 });
-export const P3_BUILD_PRESET = PresetUtils.makePresetBuild('P3 - BIS', {
-	gear: P3_BIS_GEAR_PRESET,
+export const P3_4_BUILD_PRESET = PresetUtils.makePresetBuild('P3 & P4 - BIS', {
+	gear: P3_4_BIS_GEAR_PRESET,
 	settings: {
-		name: 'P3 - BIS',
+		name: 'P3 & P4 - BIS',
 		playerOptions: {
 			...OtherDefaults,
 			profession1: Profession.Engineering,
