@@ -1,13 +1,13 @@
 import * as PresetUtils from '../../core/preset_utils';
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common';
-import { PriestMajorGlyph as MajorGlyph, PriestMinorGlyph as MinorGlyph, PriestOptions_Armor, ShadowPriest_Options as Options } from '../../core/proto/priest';
+import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common';
+import { PriestOptions_Armor, ShadowPriest_Options as Options } from '../../core/proto/priest';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
 import T15Apl from './apls/t15.apl.json';
 import P2Gear from './gear_sets/p2.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
+import P4Gear from './gear_sets/p4.gear.json';
 import PreRaidGear from './gear_sets/pre_raid.gear.json';
 
 // Preset options for this spec.
@@ -15,7 +15,7 @@ import PreRaidGear from './gear_sets/pre_raid.gear.json';
 // keep them in a separate file.
 export const PRE_RAID_PRESET = PresetUtils.makePresetGear('Pre Raid Preset', PreRaidGear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 Preset', P2Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
+export const P3_4_PRESET = PresetUtils.makePresetGear('P3 & P4 Preset', P4Gear);
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 export const ROTATION_PRESET_T15 = PresetUtils.makePresetAPLRotation('T15', T15Apl);
 
@@ -44,7 +44,7 @@ export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatMasteryRating]: 0.44,
 	}),
 );
-export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
+export const P3_4_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Item Level >= 525',
 	Stats.fromMap({
 		[Stat.StatIntellect]: 1.0,
@@ -189,8 +189,8 @@ export const PRESET_BUILD_T14 = PresetUtils.makePresetBuild('T14', {
 });
 
 export const PRESET_BUILD_T15 = PresetUtils.makePresetBuild('T15', {
-	gear: P3_PRESET,
+	gear: P3_4_PRESET,
 	talents: StandardTalents,
 	rotation: ROTATION_PRESET_T15,
-	epWeights: P3_EP_PRESET,
+	epWeights: P3_4_EP_PRESET,
 });

@@ -2791,51 +2791,51 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Draenei-p3-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestShadow-Settings-Draenei-p4-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 238113.98977
-  tps: 238434.83966
-  hps: 3360.79987
+  dps: 276992.98762
+  tps: 272562.22483
+  hps: 3760.48575
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Draenei-p3-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestShadow-Settings-Draenei-p4-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 233573.59043
-  tps: 210507.6934
-  hps: 3371.9127
+  dps: 269353.88268
+  tps: 242016.32012
+  hps: 3726.33361
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Draenei-p3-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestShadow-Settings-Draenei-p4-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 338679.43224
-  tps: 278734.44004
-  hps: 4405.83494
+  dps: 390694.36327
+  tps: 323325.51502
+  hps: 5021.7043
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Draenei-p3-Basic-t15-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestShadow-Settings-Draenei-p4-Basic-t15-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 159110.09476
-  tps: 168673.70862
-  hps: 3024.97764
+  dps: 184862.60894
+  tps: 192571.35311
+  hps: 3283.32872
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Draenei-p3-Basic-t15-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestShadow-Settings-Draenei-p4-Basic-t15-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 154045.6212
-  tps: 142231.20856
-  hps: 3001.49312
+  dps: 178868.59567
+  tps: 164428.43082
+  hps: 3290.31094
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Draenei-p3-Basic-t15-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestShadow-Settings-Draenei-p4-Basic-t15-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 182927.87065
-  tps: 159585.98111
-  hps: 3571.93777
+  dps: 213811.08612
+  tps: 184691.15105
+  hps: 3887.60284
  }
 }
 dps_results: {
@@ -2887,51 +2887,51 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestShadow-Settings-NightElf-p3-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestShadow-Settings-NightElf-p4-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 238113.98977
-  tps: 238434.84812
-  hps: 3360.79987
+  dps: 276992.98762
+  tps: 272562.23361
+  hps: 3760.48575
  }
 }
 dps_results: {
- key: "TestShadow-Settings-NightElf-p3-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestShadow-Settings-NightElf-p4-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 233573.59043
-  tps: 210507.69399
-  hps: 3371.9127
+  dps: 269353.88268
+  tps: 242016.32073
+  hps: 3726.33361
  }
 }
 dps_results: {
- key: "TestShadow-Settings-NightElf-p3-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestShadow-Settings-NightElf-p4-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 338679.43224
-  tps: 278734.44298
-  hps: 4405.83494
+  dps: 390694.36327
+  tps: 323325.51809
+  hps: 5021.7043
  }
 }
 dps_results: {
- key: "TestShadow-Settings-NightElf-p3-Basic-t15-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestShadow-Settings-NightElf-p4-Basic-t15-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 159110.09476
-  tps: 168673.77658
-  hps: 3024.97764
+  dps: 184862.60894
+  tps: 192571.43209
+  hps: 3283.32872
  }
 }
 dps_results: {
- key: "TestShadow-Settings-NightElf-p3-Basic-t15-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestShadow-Settings-NightElf-p4-Basic-t15-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 154045.6212
-  tps: 142231.21212
-  hps: 3001.49312
+  dps: 178868.59567
+  tps: 164428.43457
+  hps: 3290.31094
  }
 }
 dps_results: {
- key: "TestShadow-Settings-NightElf-p3-Basic-t15-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestShadow-Settings-NightElf-p4-Basic-t15-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 182927.87065
-  tps: 159585.99896
-  hps: 3571.93777
+  dps: 213811.08612
+  tps: 184691.16978
+  hps: 3887.60284
  }
 }
 dps_results: {
@@ -2983,51 +2983,51 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Troll-p3-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestShadow-Settings-Troll-p4-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 246038.53913
-  tps: 243509.66311
-  hps: 3467.87591
+  dps: 283073.96141
+  tps: 277031.62846
+  hps: 3864.88417
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Troll-p3-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestShadow-Settings-Troll-p4-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 240145.85511
-  tps: 215510.84123
-  hps: 3512.87977
+  dps: 278419.52454
+  tps: 249193.1161
+  hps: 3855.84389
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Troll-p3-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestShadow-Settings-Troll-p4-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 362781.20984
-  tps: 295536.888
-  hps: 4811.05387
+  dps: 424130.86862
+  tps: 347528.15575
+  hps: 5327.73429
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Troll-p3-Basic-t15-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestShadow-Settings-Troll-p4-Basic-t15-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 164699.18923
-  tps: 173375.005
-  hps: 3106.65794
+  dps: 190491.86137
+  tps: 197639.86027
+  hps: 3426.83837
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Troll-p3-Basic-t15-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestShadow-Settings-Troll-p4-Basic-t15-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 160137.91998
-  tps: 146796.36359
-  hps: 3104.30948
+  dps: 184462.43637
+  tps: 168739.44488
+  hps: 3427.64881
  }
 }
 dps_results: {
- key: "TestShadow-Settings-Troll-p3-Basic-t15-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestShadow-Settings-Troll-p4-Basic-t15-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 201855.87125
-  tps: 171792.57647
-  hps: 3766.68743
+  dps: 230234.43353
+  tps: 195813.88576
+  hps: 4226.11605
  }
 }
 dps_results: {

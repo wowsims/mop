@@ -55,9 +55,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_PRESET.gear,
+		gear: Presets.P3_4_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P2_EP_PRESET.epWeights,
+		epWeights: Presets.P3_4_EP_PRESET.epWeights,
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
@@ -95,12 +95,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_EP_PRESET, Presets.P2_EP_PRESET, Presets.P3_EP_PRESET],
+		epWeights: [Presets.P1_EP_PRESET, Presets.P2_EP_PRESET, Presets.P3_4_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
 		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_T15],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRE_RAID_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
+		gear: [Presets.PRE_RAID_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET],
 		itemSwaps: [],
 		builds: [Presets.PRESET_BUILD_T14, Presets.PRESET_BUILD_T15],
 	},
@@ -109,31 +109,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecShadowPriest,
-			talents: Presets.StandardTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			otherDefaults: Presets.OtherDefaults,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PRE_RAID_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PRE_RAID_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-				},
-			},
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
@@ -145,7 +121,7 @@ export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 			getEPDefaults: player => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 525) {
-					return Presets.P3_EP_PRESET.epWeights;
+					return Presets.P3_4_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 500) {
 					return Presets.P2_EP_PRESET.epWeights;
 				}

@@ -22,7 +22,7 @@ func TestShadow(t *testing.T) {
 
 			GearSet: core.GetGearSet("../../../ui/priest/shadow/gear_sets", "pre_raid"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p3"),
+				core.GetGearSet("../../../ui/priest/shadow/gear_sets", "p4"),
 			},
 			Talents:     DefaultTalents,
 			Glyphs:      &proto.Glyphs{},
