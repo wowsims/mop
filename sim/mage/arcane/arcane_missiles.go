@@ -20,6 +20,7 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 		Duration:  time.Second * 20,
 		MaxStacks: 2,
 	}))
+	arcane.ArcaneMissilesProcAura = arcaneMissilesProcAura
 
 	arcaneMissilesTickSpell := arcane.GetOrRegisterSpell(core.SpellConfig{
 		ActionID:       actionID.WithTag(1),
@@ -68,9 +69,6 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 					arcane.ExtendGCDUntil(sim, sim.CurrentTime+arcane.ReactionTime)
 				},
 				OnReset: func(aura *core.Aura, sim *core.Simulation) {
-					if arcane.T16_4pc != nil && arcane.T16_4pc.IsActive() && sim.Proc(0.15, "Item - Mage T16 4P Bonus") {
-						return
-					}
 					arcane.ArcaneChargesAura.Deactivate(sim)
 				},
 			},

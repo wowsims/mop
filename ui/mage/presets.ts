@@ -1,4 +1,4 @@
-import { Debuffs,  PseudoStat, RaidBuffs } from '../core/proto/common';
+import { Debuffs, PseudoStat, RaidBuffs } from '../core/proto/common';
 import { UnitStat, UnitStatPresets } from '../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../core/proto_utils/utils';
 
@@ -14,6 +14,11 @@ export const LIVING_BOMB_BREAKPOINTS: UnitStatPresets = {
 		['11-tick - Living Bomb', 162.58208],
 		['12-tick - Living Bomb', 187.494038],
 	]),
+};
+
+export const MISC_BREAKPOINTS: UnitStatPresets = {
+	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+	presets: new Map([['GCD Soft Cap', 50.0]]),
 };
 
 export const NETHER_TEMPEST_BREAKPOINTS: UnitStatPresets = {
@@ -42,7 +47,7 @@ export const NETHER_TEMPEST_BREAKPOINTS: UnitStatPresets = {
 
 export const MAGE_BREAKPOINTS: UnitStatPresets = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
-	presets: new Map([...LIVING_BOMB_BREAKPOINTS.presets, ...NETHER_TEMPEST_BREAKPOINTS.presets].sort((a, b) => a[1] - b[1])),
+	presets: new Map([...LIVING_BOMB_BREAKPOINTS.presets, ...NETHER_TEMPEST_BREAKPOINTS.presets, ...MISC_BREAKPOINTS.presets].sort((a, b) => a[1] - b[1])),
 };
 
 export const DefaultRaidBuffs = RaidBuffs.create({

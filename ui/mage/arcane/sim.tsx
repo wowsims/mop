@@ -45,7 +45,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_BIS.gear,
+		gear: Presets.P4_BIS.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P1_BIS_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -60,7 +60,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 			const hasteBreakpointConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [
 					hasteBreakpoints.get('5-tick - Living Bomb')!,
-					// hasteBreakpoints.get('6-tick - Living Bomb')!,
+					hasteBreakpoints.get('6-tick - Living Bomb')!,
 					hasteBreakpoints.get('7-tick - Living Bomb')!,
 					// hasteBreakpoints.get('8-tick - Living Bomb')!,
 					// hasteBreakpoints.get('9-tick - Living Bomb')!,
@@ -119,9 +119,15 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.ArcaneTalents, Presets.ArcaneTalentsCleave],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS, Presets.P2_BIS, Presets.P3_BIS],
+		gear: [Presets.PREBIS, Presets.P2_BIS, Presets.P3_BIS, Presets.P4_BIS],
 
-		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE, Presets.T14_PRESET_BUILD, Presets.T15_PRESET_BUILD],
+		builds: [
+			Presets.P1_PRESET_BUILD_DEFAULT,
+			Presets.P1_PRESET_BUILD_CLEAVE,
+			Presets.T14_PRESET_BUILD,
+			Presets.T15_PRESET_BUILD,
+			Presets.T15_P4_PRESET_BUILD,
+		],
 	},
 
 	autoRotation: (player: Player<Spec.SpecArcaneMage>): APLRotation => {

@@ -10,6 +10,7 @@ import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';
 import P2BSISGear from './gear_sets/p2_bis.gear.json';
 import P3BSISGear from './gear_sets/p3_bis.gear.json';
+import P4BISGear from './gear_sets/p4_bis.gear.json';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
@@ -18,6 +19,7 @@ export const P1_PREBIS = PresetUtils.makePresetGear('P1 - Pre-BIS', P1PreBISGear
 export const P1_BIS = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
 export const P2_BIS = PresetUtils.makePresetGear('P2 - BIS', P2BSISGear);
 export const P3_BIS = PresetUtils.makePresetGear('P3 - BIS', P3BSISGear);
+export const P4_BIS = PresetUtils.makePresetGear('P4 - BIS', P4BISGear);
 
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', FrostApl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', FrostAoeApl);

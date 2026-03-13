@@ -225,6 +225,20 @@ var ItemSetChronomancerRegalia = core.NewItemSet(core.ItemSet{
 
 			mage.T16_4pc = setBonusAura
 
+			// Arcane: 15% chance when casting Arcane Missiles to gain an additional Arcane Missiles! proc stack
+			setBonusAura.MakeDependentProcTriggerAura(&mage.Unit, core.ProcTrigger{
+				Name:           "Item - Mage T16 4P Bonus - Arcane",
+				ClassSpellMask: MageSpellArcaneMissilesCast,
+				ProcChance:     0.15,
+				Callback:       core.CallbackOnSpellHitDealt,
+				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					if mage.ArcaneMissilesProcAura != nil {
+						mage.ArcaneMissilesProcAura.Activate(sim)
+						mage.ArcaneMissilesProcAura.AddStack(sim)
+					}
+				},
+			})
+
 			frigidBlast := mage.RegisterSpell(core.SpellConfig{
 				ActionID:    core.ActionID{SpellID: 145264},
 				SpellSchool: core.SpellSchoolFrost,
@@ -251,7 +265,7 @@ var ItemSetChronomancerRegalia = core.NewItemSet(core.ItemSet{
 					return
 				}
 				mage.BrainFreezeAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
-					if setBonusAura.IsActive() {
+					if setBonusAura.IsActive() && sim.Proc(0.30, "Item - Mage T16 4P Bonus - Frigid Blast") {
 						frigidBlast.Cast(sim, mage.CurrentTarget)
 					}
 				})

@@ -19,6 +19,7 @@ const livingBombBreakpoints = [
 	mageBombBreakpoints.get('7-tick - Living Bomb')!,
 	mageBombBreakpoints.get('8-tick - Living Bomb')!,
 ];
+const softcapBreakpoints = [mageBombBreakpoints.get('GCD Soft Cap')!];
 const netherTempestBreakpoints = [
 	mageBombBreakpoints.get('15-tick - Nether Tempest')!,
 	mageBombBreakpoints.get('16-tick - Nether Tempest')!,
@@ -36,14 +37,16 @@ const P2CritPostCapEPs = [
 	0.45 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 	0.35 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 ];
-const P2HastePostCapEPs = [0.46 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
+
+const P2HastePostCapEPs = [0.46 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT, 0.44 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
 
 const P3CritPostCapEPs = [
 	0.51 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 	0.44 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 	0.38 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 ];
-const P3HastePostCapEPs = [0.48 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
+
+const P3HastePostCapEPs = [0.48 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT, 0.46 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 	cssClass: 'frost-mage-sim-ui',
@@ -82,7 +85,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 		// Default soft caps for the Reforge optimizer
 		softCapBreakpoints: (() => {
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
-				breakpoints: livingBombBreakpoints,
+				breakpoints: [...livingBombBreakpoints, ...softcapBreakpoints],
 				capType: StatCapType.TypeThreshold,
 				postCapEPs: P2HastePostCapEPs,
 			});
@@ -140,7 +143,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.FrostDefaultTalents, Presets.FrostTalentsCleave, Presets.FrostTalentsAoE],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS],
+		gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS, Presets.P4_BIS],
 
 		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE, Presets.P1_PRESET_BUILD_AOE],
 	},
@@ -205,9 +208,11 @@ export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {
 					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
 						const talents = player.getTalents();
 						if (talents.livingBomb) {
-							softCapToModify.breakpoints = livingBombBreakpoints;
+							softCapToModify.breakpoints = [...livingBombBreakpoints, ...softcapBreakpoints];
 						} else if (talents.netherTempest) {
-							softCapToModify.breakpoints = netherTempestBreakpoints;
+							softCapToModify.breakpoints = [...netherTempestBreakpoints, ...softcapBreakpoints];
+						} else {
+							softCapToModify.breakpoints = softcapBreakpoints;
 						}
 						if (avgIlvl >= 517) {
 							softCapToModify.postCapEPs = P3HastePostCapEPs;

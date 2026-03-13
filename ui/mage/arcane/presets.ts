@@ -1,22 +1,39 @@
 import { Encounter } from '../../core/encounter';
+import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
-import { ConsumesSpec, Glyphs, Profession, Race, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Glyphs, Profession, Race, Spec, Stat } from '../../core/proto/common';
 import { ArcaneMage_Options as MageOptions, MageMajorGlyph as MajorGlyph, MageMinorGlyph, MageArmor } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
+import { TypedEvent } from '../../core/typed_event';
+import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
 import ArcaneApl from './apls/default.apl.json';
 import ArcaneCleaveApl from './apls/arcane_cleave.apl.json';
 import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';
 import PreBISGear from './gear_sets/prebis.gear.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
 import P3BISGear from './gear_sets/p3_bis.gear.json';
+import P4BISGear from './gear_sets/p4_bis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
-export const PREBIS = PresetUtils.makePresetGear('Pre-BIS', PreBISGear);
-export const P2_BIS = PresetUtils.makePresetGear('P2 - BIS', P2BISGear);
-export const P3_BIS = PresetUtils.makePresetGear('P3 - BIS', P3BISGear);
+const setFrostArmor = (player: Player<Spec.SpecArcaneMage>) => {
+	const specOptions = player.getSpecOptions();
+	specOptions.classOptions!.defaultMageArmor = MageArmor.MageArmorFrostArmor;
+	player.setSpecOptions(TypedEvent.nextEventID(), specOptions);
+};
+
+const setMageArmor = (player: Player<Spec.SpecArcaneMage>) => {
+	const specOptions = player.getSpecOptions();
+	specOptions.classOptions!.defaultMageArmor = MageArmor.MageArmorMageArmor;
+	player.setSpecOptions(TypedEvent.nextEventID(), specOptions);
+};
+
+export const PREBIS = PresetUtils.makePresetGear('Pre-BIS', PreBISGear, { onLoad: setFrostArmor });
+export const P2_BIS = PresetUtils.makePresetGear('P2 - BIS', P2BISGear, { onLoad: setFrostArmor });
+export const P3_BIS = PresetUtils.makePresetGear('P3 - BIS', P3BISGear, { onLoad: setFrostArmor });
+export const P4_BIS = PresetUtils.makePresetGear('P4 - BIS', P4BISGear, { onLoad: setMageArmor });
 
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', ArcaneApl);
 export const ROTATION_PRESET_T15_4PC = PresetUtils.makePresetAPLRotation('P3 - T15 4PC', ArcaneP3APL);
@@ -111,6 +128,12 @@ export const DefaultArcaneOptions = MageOptions.create({
 		defaultMageArmor: MageArmor.MageArmorFrostArmor,
 	},
 });
+
+export const MageArmorOptions = MageOptions.create({
+	classOptions: {
+		defaultMageArmor: MageArmor.MageArmorMageArmor,
+	},
+});
 export const DefaultConsumables = ConsumesSpec.create({
 	flaskId: 76085, // Flask of the Warm Sun
 	foodId: 74650, // Mogu Fish Stew
@@ -125,14 +148,41 @@ export const OtherDefaults = {
 	race: Race.RaceTroll,
 };
 
+export const DEFAULT_SETTINGS: PresetUtils.PresetSettings = {
+	name: 'Default',
+	specOptions: DefaultArcaneOptions,
+	consumables: DefaultConsumables,
+	raidBuffs: DefaultRaidBuffs,
+	debuffs: DefaultDebuffs,
+	playerOptions: OtherDefaults,
+};
+
+export const P4_SETTINGS: PresetUtils.PresetSettings = {
+	name: 'P4',
+	specOptions: MageArmorOptions,
+	consumables: DefaultConsumables,
+	raidBuffs: DefaultRaidBuffs,
+	debuffs: DefaultDebuffs,
+	playerOptions: OtherDefaults,
+};
+
 export const T14_PRESET_BUILD = PresetUtils.makePresetBuild('T14', {
 	gear: P2_BIS,
 	rotation: ROTATION_PRESET_DEFAULT,
 	epWeights: P1_BIS_EP_PRESET,
+	settings: DEFAULT_SETTINGS,
 });
 
 export const T15_PRESET_BUILD = PresetUtils.makePresetBuild('T15', {
 	gear: P3_BIS,
 	rotation: ROTATION_PRESET_T15_4PC,
 	epWeights: P3_BIS_EP_PRESET,
+	settings: DEFAULT_SETTINGS,
+});
+
+export const T15_P4_PRESET_BUILD = PresetUtils.makePresetBuild('T15 P4', {
+	gear: P4_BIS,
+	rotation: ROTATION_PRESET_T15_4PC,
+	epWeights: P3_BIS_EP_PRESET,
+	settings: P4_SETTINGS,
 });

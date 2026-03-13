@@ -75,8 +75,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-ChronomancerRegalia"
  value: {
-  dps: 211716.34559
-  tps: 204402.36752
+  dps: 214624.5418
+  tps: 206557.52494
  }
 }
 dps_results: {
