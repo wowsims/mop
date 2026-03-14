@@ -6,12 +6,11 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { Stats, UnitStat } from '../../core/proto_utils/stats';
+import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { StatCapType } from '../../core/proto/ui';
+import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as HunterInputs from '../inputs';
-import { sharedHunterDisplayStatsModifiers } from '../shared';
-import * as SVInputs from './inputs';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
@@ -47,21 +46,28 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 		[Stat.StatHealth, Stat.StatStamina, Stat.StatAgility, Stat.StatRangedAttackPower, Stat.StatMasteryRating, Stat.StatExpertiseRating],
 		[PseudoStat.PseudoStatPhysicalHitPercent, PseudoStat.PseudoStatPhysicalCritPercent, PseudoStat.PseudoStatRangedHastePercent],
 	),
-	modifyDisplayStats: (player: Player<Spec.SpecSurvivalHunter>) => {
-		return sharedHunterDisplayStatsModifiers(player);
-	},
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_PRESET_GEAR.gear,
+		gear: Presets.P4_PRESET_GEAR.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P3_EP_PRESET.epWeights,
+		epWeights: Presets.P4_DB_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
-		statCaps: (() => {
-			return new Stats()
-				.withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5)
-				.withStat(Stat.StatExpertiseRating, 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
-		})(),
+		statCaps: Stats.fromMap(
+			{
+				[Stat.StatExpertiseRating]: 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION,
+			},
+			{
+				[PseudoStat.PseudoStatPhysicalHitPercent]: 7.5,
+			},
+		),
+		softCapBreakpoints: [
+			StatCap.fromPseudoStat(PseudoStat.PseudoStatRangedHastePercent, {
+				breakpoints: [33],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [0.2],
+			}),
+		],
 
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
@@ -92,9 +98,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 
 	// IconInputs to include in the 'Player' section on the settings tab.
 	playerIconInputs: [HunterInputs.PetTypeInput()],
-	// Inputs to include in the 'Rotation' section on the settings tab.
-	rotationInputs: SVInputs.SVRotationConfig,
-	petConsumeInputs: [],
 	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
 	includeBuffDebuffInputs: [BuffDebuffInputs.StaminaBuff, BuffDebuffInputs.SpellDamageDebuff, BuffDebuffInputs.MajorArmorDebuff],
 	excludeBuffDebuffInputs: [],
@@ -108,55 +111,48 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 	},
 
 	presets: {
-		epWeights: [Presets.P2_EP_PRESET, Presets.P3_EP_PRESET],
+		epWeights: [Presets.P4_FERVOR_EP_PRESET, Presets.P4_DB_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_SV, Presets.ROTATION_PRESET_AOE],
 		// Preset gear configurations that the user can quickly select.
-		builds: [Presets.P2_PRESET, Presets.P3_PRESET],
-		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P2_PRESET_GEAR, Presets.P3_PRESET_GEAR, Presets.P5_PRESET_GEAR],
+		builds: [Presets.P4_PRESET],
+		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P4_PRESET_GEAR, Presets.P5_PRESET_GEAR],
 	},
 
 	autoRotation: (player: Player<Spec.SpecSurvivalHunter>): APLRotation => {
 		return player.sim.encounter.targets.length >= 3 ? Presets.ROTATION_PRESET_AOE.rotation.rotation! : Presets.ROTATION_PRESET_SV.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecSurvivalHunter,
-			talents: Presets.DefaultTalents.data,
-			specOptions: Presets.SVDefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceOrc,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PRERAID_PRESET_GEAR.gear,
-					2: Presets.P2_PRESET_GEAR.gear,
-					3: Presets.P3_PRESET_GEAR.gear,
-					5: Presets.P5_PRESET_GEAR.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PRERAID_PRESET_GEAR.gear,
-					2: Presets.P2_PRESET_GEAR.gear,
-					3: Presets.P3_PRESET_GEAR.gear,
-					5: Presets.P5_PRESET_GEAR.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class SurvivalHunterSimUI extends IndividualSimUI<Spec.SpecSurvivalHunter> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecSurvivalHunter>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		this.reforger = new ReforgeOptimizer(this);
+		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: (player: Player<Spec.SpecSurvivalHunter>) => {
+				if (player.getTalents().direBeast) {
+					return Presets.P4_DB_EP_PRESET.epWeights;
+				} else {
+					return Presets.P4_FERVOR_EP_PRESET.epWeights;
+				}
+			},
+			updateSoftCaps: softCaps => {
+				const hasteCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatRangedHastePercent));
+				if (hasteCap) {
+					if (player.getTalents().direBeast) {
+						const critWeights = player.getEpWeights().getStat(Stat.StatCritRating);
+						const baseCritEP = critWeights * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
+						hasteCap.postCapEPs = [baseCritEP - 0.01 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
+					} else {
+						return softCaps.slice(1)
+					}
+				}
+				return softCaps;
+			},
+		});
 	}
 }

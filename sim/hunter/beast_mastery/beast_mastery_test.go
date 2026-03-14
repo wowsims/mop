@@ -22,7 +22,7 @@ func TestBeastMastery(t *testing.T) {
 			Class: proto.Class_ClassHunter,
 			Race:  proto.Race_RaceOrc,
 
-			GearSet: core.GetGearSet("../../../ui/hunter/beast_mastery/gear_sets", "p3"),
+			GearSet: core.GetGearSet("../../../ui/hunter/beast_mastery/gear_sets", "p4"),
 
 			Talents:         BeastMasteryTalents,
 			OtherTalentSets: talentSets,

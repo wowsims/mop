@@ -19,7 +19,7 @@ func TestRetribution(t *testing.T) {
 			Class: proto.Class_ClassPaladin,
 			Race:  proto.Race_RaceBloodElf,
 
-			GearSet: core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p3"),
+			GearSet: core.GetGearSet("../../../ui/paladin/retribution/gear_sets", "p4"),
 
 			Talents: "000023",
 			OtherTalentSets: []core.TalentsCombo{

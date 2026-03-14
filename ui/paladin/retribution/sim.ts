@@ -6,19 +6,12 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
-import { Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common.js';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common.js';
 import { StatCapType } from '../../core/proto/ui.js';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as PaladinInputs from '../inputs.js';
 import * as Presets from './presets.js';
-
-const getStatCaps = () => {
-	const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
-	const expCap = new Stats().withStat(Stat.StatExpertiseRating, 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
-
-	return hitCap.add(expCap);
-};
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecRetributionPaladin, {
 	cssClass: 'retribution-paladin-sim-ui',
@@ -101,20 +94,25 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRetributionPaladin, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_GEAR_PRESET.gear,
+		gear: Presets.P4_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P3_EP_PRESET.epWeights,
+		epWeights: Presets.P4_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
-		statCaps: getStatCaps(),
-		softCapBreakpoints: (() => {
-			return [
-				StatCap.fromPseudoStat(PseudoStat.PseudoStatMeleeHastePercent, {
-					breakpoints: [50],
-					capType: StatCapType.TypeSoftCap,
-					postCapEPs: [0],
-				}),
-			];
-		})(),
+		statCaps: Stats.fromMap(
+			{
+				[Stat.StatExpertiseRating]: 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION,
+			},
+			{
+				[PseudoStat.PseudoStatPhysicalHitPercent]: 7.5,
+			},
+		),
+		softCapBreakpoints: [
+			StatCap.fromPseudoStat(PseudoStat.PseudoStatMeleeHastePercent, {
+				breakpoints: [50],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [0],
+			}),
+		],
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default talents.
@@ -160,47 +158,20 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRetributionPaladin, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_P2_EP_PRESET, Presets.P3_EP_PRESET, Presets.P5_EP_PRESET, Presets.PRERAID_EP_PRESET],
+		epWeights: [Presets.P4_EP_PRESET, Presets.P5_EP_PRESET, Presets.PRERAID_EP_PRESET],
 		rotations: [Presets.APL_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P2_GEAR_PRESET, Presets.P3_GEAR_PRESET, Presets.P5_GEAR_PRESET, Presets.PRERAID_GEAR_PRESET],
-		builds: [Presets.P2_BUILD_PRESET, Presets.P3_BUILD_PRESET],
+		gear: [Presets.P4_GEAR_PRESET, Presets.P5_GEAR_PRESET, Presets.PRERAID_GEAR_PRESET],
+		builds: [Presets.P4_BUILD_PRESET],
 	},
 
 	autoRotation: (_: Player<Spec.SpecRetributionPaladin>): APLRotation => {
 		return Presets.APL_PRESET.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecRetributionPaladin,
-			talents: Presets.DefaultTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceBloodElf,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PRERAID_GEAR_PRESET.gear,
-					2: Presets.P2_GEAR_PRESET.gear,
-					3: Presets.P3_GEAR_PRESET.gear,
-					5: Presets.P5_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PRERAID_GEAR_PRESET.gear,
-					2: Presets.P2_GEAR_PRESET.gear,
-					3: Presets.P3_GEAR_PRESET.gear,
-					5: Presets.P5_GEAR_PRESET.gear,
-				},
-			},
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class RetributionPaladinSimUI extends IndividualSimUI<Spec.SpecRetributionPaladin> {

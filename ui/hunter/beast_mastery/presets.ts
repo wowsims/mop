@@ -4,18 +4,15 @@ import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '
 import { BeastMasteryHunter_Options as BeastMasteryOptions, HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType } from '../../core/proto/hunter';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
-import P2Build from './builds/p2.build.json';
-import P3Build from './builds/p3.build.json';
-import P2Gear from './gear_sets/p2.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
+import P4Build from './builds/p4.build.json';
+import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreRaidGear from './gear_sets/preraid.gear.json';
 import AoeApl from './apls/aoe.apl.json';
 import BmApl from './apls/bm.apl.json';
 
 export const PRERAID_PRESET_GEAR = PresetUtils.makePresetGear('Pre-raid', PreRaidGear);
-export const P2_PRESET_GEAR = PresetUtils.makePresetGear('P2', P2Gear);
-export const P3_PRESET_GEAR = PresetUtils.makePresetGear('P3', P3Gear);
+export const P4_PRESET_GEAR = PresetUtils.makePresetGear('P4', P4Gear);
 export const P5_PRESET_GEAR = PresetUtils.makePresetGear('P5 (WiP)', P5Gear);
 export const ROTATION_PRESET_BM = PresetUtils.makePresetAPLRotation('BM', BmApl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', AoeApl);
@@ -31,33 +28,17 @@ export const DefaultTalents = {
 	}),
 };
 
-export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1,
-			[Stat.StatHitRating]: 0.3,
-			[Stat.StatCritRating]: 0.28,
-			[Stat.StatHasteRating]: 0.29,
-			[Stat.StatMasteryRating]: 0.25,
-			[Stat.StatExpertiseRating]: 0.3,
-		},
-		{
-			[PseudoStat.PseudoStatRangedDps]: 0.63,
-		},
-	),
-);
-export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3',
+export const P4_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P4',
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1,
 			[Stat.StatRangedAttackPower]: 0.35,
-			[Stat.StatHitRating]: 0.49,
-			[Stat.StatCritRating]: 0.39,
-			[Stat.StatHasteRating]: 0.5,
-			[Stat.StatMasteryRating]: 0.4,
-			[Stat.StatExpertiseRating]: 0.49,
+			[Stat.StatHitRating]: 0.42,
+			[Stat.StatExpertiseRating]: 0.42,
+			[Stat.StatHasteRating]: 0.41,
+			[Stat.StatCritRating]: 0.4,
+			[Stat.StatMasteryRating]: 0.39,
 		},
 		{
 			[PseudoStat.PseudoStatRangedDps]: 0.7,
@@ -65,12 +46,8 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P2_PRESET = PresetUtils.makePresetBuildFromJSON('P2', Spec.SpecBeastMasteryHunter, P2Build, {
-	epWeights: P2_EP_PRESET,
-	rotationType: APLRotationType.TypeAuto,
-});
-export const P3_PRESET = PresetUtils.makePresetBuildFromJSON('P3', Spec.SpecBeastMasteryHunter, P3Build, {
-	epWeights: P3_EP_PRESET,
+export const P4_PRESET = PresetUtils.makePresetBuildFromJSON('P4', Spec.SpecBeastMasteryHunter, P4Build, {
+	epWeights: P4_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
 

@@ -96,7 +96,7 @@ export type ReforgeOptimizerOptions = {
 	getEPDefaults?: (player: Player<any>) => Stats;
 	// Allows you to modify default softCaps
 	// For example you wish to add breakpoints for Berserking / Bloodlust if enabled
-	updateSoftCaps?: (softCaps: StatCap[]) => StatCap[];
+	updateSoftCaps?: (softCaps: StatCap[], player: Player<any>) => StatCap[];
 	// Allows you to specifiy additional information for the soft cap tooltips
 	additionalSoftCapTooltipInformation?: StatTooltipContent;
 	// Sets the default stat to be the highest for relative stat cap calculations
@@ -378,13 +378,17 @@ export class ReforgeOptimizer {
 
 		this.bindToggleExperimental(group);
 
-		if (this.softCapsConfig?.length)
+		if (this.softCapsConfig)
 			tippy(startReforgeOptimizationButton, {
 				theme: 'suggest-reforges-softcaps',
 				placement: 'bottom',
 				maxWidth: 310,
 				interactive: true,
-				onShow: instance => instance.setContent(this.buildReforgeButtonTooltip()),
+				onShow: instance => {
+					const softCaps = this.softCapsConfigWithLimits;
+					if (!softCaps?.length) return false;
+					instance.setContent(this.buildReforgeButtonTooltip(softCaps!));
+				},
 			});
 
 		tippy(contextMenuButton, {
@@ -431,7 +435,7 @@ export class ReforgeOptimizer {
 	}
 
 	get softCapsConfig() {
-		return this.updateSoftCaps?.(StatCap.cloneSoftCaps(this._softCapsConfig)) || this._softCapsConfig;
+		return this.updateSoftCaps?.(StatCap.cloneSoftCaps(this._softCapsConfig), this.player) || this._softCapsConfig;
 	}
 
 	get softCapsConfigWithLimits() {
@@ -548,13 +552,13 @@ export class ReforgeOptimizer {
 		return cappedStatKeys;
 	}
 
-	buildReforgeButtonTooltip() {
+	buildReforgeButtonTooltip(softCapsConfigWithLimits: StatCap[]) {
 		return (
 			<>
 				<p>{i18n.t('sidebar.buttons.suggest_reforges.breakpoints_implemented')}</p>
 				<table className="w-100">
 					<tbody>
-						{this.softCapsConfigWithLimits?.map(({ unitStat, breakpoints, capType, postCapEPs }, index) => (
+						{softCapsConfigWithLimits.map(({ unitStat, breakpoints, capType, postCapEPs }, index) => (
 							<>
 								<tr>
 									<th className="text-nowrap" colSpan={2}>

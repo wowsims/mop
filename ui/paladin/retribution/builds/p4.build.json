@@ -25,21 +25,21 @@
 		"class": "ClassPaladin",
 		"equipment": {
 			"items": [
-				{ "id": 87101, "gems": [76886, 76684], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 90508, "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 86986, "enchant": 4803, "gems": [76669], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 86945, "enchant": 4424, "reforging": 139, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 87099, "enchant": 4419, "gems": [76699, 76699], "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 90506, "enchant": 4415, "gems": [76699], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 87100, "enchant": 4432, "gems": [76699], "reforging": 145, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
-				{ "id": 86955, "enchant": 4223, "gems": [76669, 76684, 76699], "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 87102, "enchant": 4823, "gems": [76669], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 86979, "enchant": 4426, "gems": [76699], "reforging": 140, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 87158, "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 86957, "reforging": 161, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 87172, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 87072, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 87176, "enchant": 4444, "gems": [89881, 76699], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96894, "gems": [95346, 76699], "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96792, "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96658, "enchant": 4803, "gems": [76667, 76699], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 98147, "enchant": 4424, "gems": [76669], "upgradeStep": "UpgradeStepTwo", "tinker": 4897 },
+				{ "id": 96654, "enchant": 4419, "gems": [76669, 76699, 76642], "reforging": 161, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96848, "randomSuffix": -340, "enchant": 4415, "gems": [76699, 0], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96655, "enchant": 4432, "gems": [76674, 0], "reforging": 138, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+				{ "id": 96745, "enchant": 4223, "gems": [76674, 76699, 76699], "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
+				{ "id": 96657, "enchant": 4823, "gems": [76699, 76642], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 95012, "enchant": 4429, "gems": [76699, 76642], "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96872, "gems": [76674], "reforging": 140, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 95022, "gems": [76699], "reforging": 161, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96842, "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96873, "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 96991, "enchant": 4444, "gems": [76699, 76699], "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
 				{}
 			]
 		},
@@ -75,7 +75,7 @@
 			"major3": 83107
 		},
 		"profession1": "Engineering",
-		"profession2": "Blacksmithing",
+		"profession2": "Herbalism",
 		"cooldowns": {},
 		"rotation": {
 			"type": "TypeAuto"

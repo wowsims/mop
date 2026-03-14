@@ -4,18 +4,15 @@ import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '
 import { HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType, SurvivalHunter_Options as HunterOptions } from '../../core/proto/hunter';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
-import P2Build from './builds/p2.build.json';
-import P3Build from './builds/p3.build.json';
-import P2Gear from './gear_sets/p2.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
+import P4Build from './builds/p4.build.json';
+import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreRaidGear from './gear_sets/preraid.gear.json';
 import AoeApl from './apls/aoe.apl.json';
 import SvApl from './apls/sv.apl.json';
 
 export const PRERAID_PRESET_GEAR = PresetUtils.makePresetGear('Pre-raid', PreRaidGear);
-export const P2_PRESET_GEAR = PresetUtils.makePresetGear('P2', P2Gear);
-export const P3_PRESET_GEAR = PresetUtils.makePresetGear('P3', P3Gear);
+export const P4_PRESET_GEAR = PresetUtils.makePresetGear('P4', P4Gear);
 export const P5_PRESET_GEAR = PresetUtils.makePresetGear('P5 (WiP)', P5Gear);
 export const ROTATION_PRESET_SV = PresetUtils.makePresetAPLRotation('Single Target', SvApl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', AoeApl);
@@ -31,34 +28,17 @@ export const DefaultTalents = {
 	}),
 };
 
-export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2',
+export const P4_FERVOR_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P4 (Fervor)',
 	Stats.fromMap(
 		{
 			[Stat.StatAgility]: 1,
-			[Stat.StatRangedAttackPower]: 0.38,
-			[Stat.StatHitRating]: 0.33,
-			[Stat.StatCritRating]: 0.32,
-			[Stat.StatHasteRating]: 0.27,
-			[Stat.StatMasteryRating]: 0.21,
-			[Stat.StatExpertiseRating]: 0.33,
-		},
-		{
-			[PseudoStat.PseudoStatRangedDps]: 0.5,
-		},
-	),
-);
-export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1,
-			[Stat.StatRangedAttackPower]: 0.36,
 			[Stat.StatHitRating]: 0.37,
+			[Stat.StatExpertiseRating]: 0.37,
+			[Stat.StatRangedAttackPower]: 0.36,
 			[Stat.StatCritRating]: 0.36,
 			[Stat.StatHasteRating]: 0.32,
 			[Stat.StatMasteryRating]: 0.26,
-			[Stat.StatExpertiseRating]: 0.37,
 		},
 		{
 			[PseudoStat.PseudoStatRangedDps]: 0.67,
@@ -66,12 +46,26 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P2_PRESET = PresetUtils.makePresetBuildFromJSON('P2', Spec.SpecSurvivalHunter, P2Build, {
-	epWeights: P2_EP_PRESET,
-	rotationType: APLRotationType.TypeAuto,
-});
-export const P3_PRESET = PresetUtils.makePresetBuildFromJSON('P3', Spec.SpecSurvivalHunter, P3Build, {
-	epWeights: P3_EP_PRESET,
+export const P4_DB_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P4 (Dire Beast)',
+	Stats.fromMap(
+		{
+			[Stat.StatAgility]: 1,
+			[Stat.StatHitRating]: 0.37,
+			[Stat.StatExpertiseRating]: 0.37,
+			[Stat.StatHasteRating]: 0.37,
+			[Stat.StatRangedAttackPower]: 0.36,
+			[Stat.StatCritRating]: 0.36,
+			[Stat.StatMasteryRating]: 0.26,
+		},
+		{
+			[PseudoStat.PseudoStatRangedDps]: 0.67,
+		},
+	),
+);
+
+export const P4_PRESET = PresetUtils.makePresetBuildFromJSON('P4', Spec.SpecSurvivalHunter, P4Build, {
+	epWeights: P4_FERVOR_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
 
