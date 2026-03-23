@@ -1346,6 +1346,7 @@ const petNameToIcon: Record<string, string> = {
 	Wolf: 'https://wow.zamimg.com/images/wow/icons/medium/ability_hunter_pet_wolf.jpg',
 	Worm: 'https://wow.zamimg.com/images/wow/icons/medium/ability_hunter_pet_worm.jpg',
 	Fox: 'https://wow.zamimg.com/images/wow/icons/medium/inv_misc_monstertail_07.jpg',
+	'Lightning Elemental' : 'https://wow.zamimg.com/images/wow/icons/large/spell_shaman_ancestralawakening.jpg',
 };
 
 export function getPetIconFromName(name: string): string | ActionId | undefined {

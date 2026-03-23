@@ -112,8 +112,7 @@ var ItemSetCelestialHarmonyRegalia = core.NewItemSet(core.ItemSet{
 						aura.Refresh(sim)
 						core.EnableDamageDoneByCaster(DDBC_2PT16, DDBC_Total, shaman.AttackTables[aura.Unit.UnitIndex], func(sim *core.Simulation, spell *core.Spell, attackTable *core.AttackTable) float64 {
 							if spell.SpellSchool.Matches(core.SpellSchoolNature | core.SpellSchoolFire) {
-								//TODO Does the damage taken also increases with LS stacks ?
-								return 1.0 + float64(newStacks)*0.04
+								return 1.04
 							}
 							return 1.0
 						})
@@ -131,25 +130,26 @@ var ItemSetCelestialHarmonyRegalia = core.NewItemSet(core.ItemSet{
 				ClassSpellMask:     SpellMaskFulmination,
 				TriggerImmediately: true,
 
-				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+				Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 					debuff := debuffAuras.Get(result.Target)
 					debuff.Activate(sim)
 					debuff.SetStacks(sim, shaman.LightningShieldAura.GetStacks()-1)
 				},
-			})
+			}).ExposeToAPL(144998)
 
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
+			shaman := agent.(ShamanAgent).GetShaman()
 			setBonusAura.AttachProcTrigger(core.ProcTrigger{
 				Name:           "Celestial Harmony Regalia 4P",
 				Callback:       core.CallbackOnSpellHitDealt,
 				Outcome:        core.OutcomeLanded,
 				ClassSpellMask: SpellMaskLightningBolt | SpellMaskChainLightning,
 				ICD:            time.Second * 60,
-				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-					//TODO
+				Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
+					shaman.LightningElemental.EnableWithTimeout(sim, shaman.LightningElemental, 10*time.Second)
 				},
-			})
+			}).ExposeToAPL(145003)
 		},
 	},
 })

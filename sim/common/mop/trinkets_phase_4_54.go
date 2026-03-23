@@ -390,7 +390,7 @@ func init() {
 				spiritValue := 1 + core.GetItemEffectScaling(itemID, 0.00176999997, state)/100
 
 				statAura := core.MakePermanent(character.RegisterAura(core.Aura{
-					Label:      fmt.Sprintf("Amplification (%s)", versionLabel),
+					Label:      fmt.Sprintf("Amplification - %s (%s)", config.baseTrinketLabel, versionLabel),
 					ActionID:   core.ActionID{SpellID: 146051},
 					BuildPhase: core.CharacterBuildPhaseGear,
 				})).

@@ -58,7 +58,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_GEAR_PRESET.gear,
+		gear: Presets.P4BiS_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.EP_PRESET_P3.epWeights,
 		// Default stat caps for the Reforge optimizer
@@ -99,11 +99,11 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.P3_TALENTS, Presets.TalentsAoE],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_P3, Presets.ROTATION_PRESET_AOE, Presets.ROTATION_PRESET_CLEAVE],
+		rotations: [Presets.ROTATION_PRESET_P4, Presets.ROTATION_PRESET_AOE, Presets.ROTATION_PRESET_CLEAVE],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_GEAR_PRESET, Presets.P2_GEAR_PRESET, Presets.P3_GEAR_PRESET],
+		gear: [Presets.PRERAID_GEAR_PRESET, Presets.P2_GEAR_PRESET, Presets.P4BiS_GEAR_PRESET, Presets.P4P3U_GEAR_PRESET],
 
-		builds: [Presets.P3_PRESET_BUILD_DEFAULT, Presets.P3_PRESET_BUILD_PRERAID, Presets.PRESET_BUILD_CLEAVE, Presets.PRESET_BUILD_AOE],
+		builds: [Presets.P4_PRESET_BUILD_DEFAULT, Presets.P4_PRESET_BUILD_PRERAID, Presets.PRESET_BUILD_CLEAVE, Presets.PRESET_BUILD_AOE],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecElementalShaman>): APLRotation => {
@@ -112,7 +112,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		if (numTargets > 2) return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
 		if (numTargets == 2) return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;
 
-		return Presets.ROTATION_PRESET_P3.rotation.rotation!;
+		return Presets.ROTATION_PRESET_P4.rotation.rotation!;
 	},
 
 	raidSimPresets: [
@@ -129,10 +129,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P3_GEAR_PRESET.gear,
+					1: Presets.P4BiS_GEAR_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P3_GEAR_PRESET.gear,
+					1: Presets.P4BiS_GEAR_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

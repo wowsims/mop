@@ -76,6 +76,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 				new APLGroupActionPicker(parent, this.modObject, { ...config, groupIndex: this.index, index }),
 			inlineMenuBar: true,
 			allowedActions: ['create', 'copy', 'delete', 'move'],
+			dragGroup: 'action-group-actions',
 		});
 
 		this.init();

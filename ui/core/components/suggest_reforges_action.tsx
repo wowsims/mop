@@ -178,7 +178,6 @@ export class RelativeStatCap {
 	updateConstraints(constraints: YalpsConstraints, gear: Gear, baseStats: Stats) {
 		baseStats = baseStats.addStat(Stat.StatMasteryRating, -this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT);
 		const raidBuffs = this.player.getRaid()?.getBuffs();
-		// @TODO: Validate on PTR
 		// Mastery raid buff does not count towards RoRo calculation
 		if (raidBuffs && (raidBuffs.roarOfCourage || raidBuffs.blessingOfMight || raidBuffs.spiritBeastBlessing || raidBuffs.graceOfAir)) {
 			baseStats = baseStats.addStat(Stat.StatMasteryRating, -Mechanics.RAID_BUFF_MASTERY_RATING);
@@ -1643,6 +1642,16 @@ export class ReforgeOptimizer {
 	applyReforgeStat(coefficients: YalpsCoefficients, stat: Stat, amount: number, preCapEPs: Stats) {
 		if (stat == Stat.StatSpirit && this.player.getRace() == Race.RaceHuman) {
 			amount *= 1.03;
+		}
+
+		if (stat == Stat.StatHasteRating || stat == Stat.StatMasteryRating || stat == Stat.StatSpirit) {
+			this.player.getAmplificationTrinkets().forEach(trinket => {
+				const randPropPoints = this.sim.db.getItemEffectRandPropPoints(trinket.ilvl)?.randPropPoints;
+				if (!randPropPoints) return;
+				const statScalingCoeff = 0.00176999997;
+				const buffValue = 1 + (statScalingCoeff * randPropPoints) / 100;
+				amount *= buffValue;
+			});
 		}
 
 		// Handle Spirit to Spell Hit conversion for hybrid casters separately from standard dependencies

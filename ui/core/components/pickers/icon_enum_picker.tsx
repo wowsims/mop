@@ -179,12 +179,20 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 
 	/**
 	 * Restores value of current input and shows the element.
+	 *
+	 * If the source already holds a non-zero value (e.g. set by a preset while
+	 * the picker was hidden), that value takes priority over whatever was stored
+	 * before hiding – otherwise we'd overwrite the preset's selection.
 	 */
 	restoreValue() {
 		if (typeof this.storedValue === 'undefined') return;
 
-		this.setInputValue(this.storedValue);
-		this.inputChanged(TypedEvent.nextEventID());
+		const sourceValue = this.getSourceValue();
+		if (this.config.equals(sourceValue, this.config.zeroValue)) {
+			// Source was zeroed by storeValue(); restore the previously saved selection.
+			this.setInputValue(this.storedValue);
+			this.inputChanged(TypedEvent.nextEventID());
+		}
 		this.storedValue = undefined;
 	}
 

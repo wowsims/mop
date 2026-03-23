@@ -68,6 +68,7 @@ func NewShaman(character *core.Character, talents string, selfBuffs SelfBuffs, t
 
 	shaman.FireElemental = shaman.NewFireElemental(!shaman.Talents.PrimalElementalist)
 	shaman.EarthElemental = shaman.NewEarthElemental(!shaman.Talents.PrimalElementalist)
+	shaman.LightningElemental = shaman.NewLightingElemental()
 
 	return shaman
 }
@@ -159,6 +160,8 @@ type Shaman struct {
 
 	EarthElemental      *EarthElemental
 	EarthElementalTotem *core.Spell
+
+	LightningElemental *LightingElemental
 
 	ElementalSharedCDTimer *core.Timer
 

@@ -13,10 +13,12 @@ import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import AoEApl from './apls/aoe.apl.json';
 import CleaveApl from './apls/cleave.apl.json';
-import P3Apl from './apls/p3.apl.json';
+import P4Apl from './apls/p4.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
+import P4BiSGear from './gear_sets/p4bis.gear.json';
+import P4P3UpgradedGear from './gear_sets/p4p3upgraded.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -27,8 +29,10 @@ export const PRERAID_GEAR_PRESET = PresetUtils.makePresetGear('Pre-raid', Prerai
 export const P1_GEAR_PRESET = PresetUtils.makePresetGear('P1 - Default', P1Gear);
 export const P2_GEAR_PRESET = PresetUtils.makePresetGear('P2 - Default', P2Gear);
 export const P3_GEAR_PRESET = PresetUtils.makePresetGear('P3 - Default', P3Gear);
+export const P4BiS_GEAR_PRESET = PresetUtils.makePresetGear('P4 - BiS', P4BiSGear);
+export const P4P3U_GEAR_PRESET = PresetUtils.makePresetGear('P4 - P3 Upgraded', P4P3UpgradedGear);
 
-export const ROTATION_PRESET_P3 = PresetUtils.makePresetAPLRotation('Default', P3Apl);
+export const ROTATION_PRESET_P4 = PresetUtils.makePresetAPLRotation('Default', P4Apl);
 export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', CleaveApl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AoE (3+)', AoEApl);
 
@@ -171,17 +175,17 @@ export const PRESET_BUILD_AOE = PresetUtils.makePresetBuild('AoE (4+)', {
 	epWeights: EP_PRESET_AOE,
 });
 
-export const P3_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('P3 - BiS', {
+export const P4_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('P4 - BiS', {
 	talents: P3_TALENTS,
-	rotation: ROTATION_PRESET_P3,
+	rotation: ROTATION_PRESET_P4,
 	encounter: ENCOUNTER_SINGLE_TARGET,
 	epWeights: EP_PRESET_P3,
-	gear: P3_GEAR_PRESET,
+	gear: P4BiS_GEAR_PRESET,
 });
 
-export const P3_PRESET_BUILD_PRERAID = PresetUtils.makePresetBuild('P3 - Pre raid', {
+export const P4_PRESET_BUILD_PRERAID = PresetUtils.makePresetBuild('P4 - Pre raid', {
 	talents: P2_TALENTS,
-	rotation: ROTATION_PRESET_P3,
+	rotation: ROTATION_PRESET_P4,
 	encounter: ENCOUNTER_SINGLE_TARGET,
 	epWeights: EP_PRESET_P2,
 	gear: PRERAID_GEAR_PRESET,

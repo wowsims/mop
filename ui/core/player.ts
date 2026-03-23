@@ -1659,4 +1659,14 @@ export class Player<SpecType extends Spec> {
 
 		return [false, false];
 	}
+
+	getAmplificationTrinkets() {
+		return [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2]
+			.map(itemSlot => {
+				const item = this.getEquippedItem(itemSlot);
+				if (!item || !['Prismatic Prison of Pride', 'Purified Bindings of Immerseus', "Thok's Tail Tip"].includes(item.item.name)) return null;
+				return item;
+			})
+			.filter((i): i is EquippedItem => !!i);
+	}
 }

@@ -37,7 +37,7 @@ func TestElemental(t *testing.T) {
 			},
 			Consumables: FullConsumesSpec,
 			SpecOptions: core.SpecOptionsCombo{Label: "Standard", SpecOptions: PlayerOptionsFireElemental},
-			Rotation:    core.GetAplRotation("../../../ui/shaman/elemental/apls", "default"),
+			Rotation:    core.GetAplRotation("../../../ui/shaman/elemental/apls", "p4"),
 			OtherRotations: []core.RotationCombo{
 				core.GetAplRotation("../../../ui/shaman/elemental/apls", "aoe"),
 			},

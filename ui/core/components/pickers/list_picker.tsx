@@ -44,6 +44,7 @@ export interface ListPickerConfig<ModObject, ItemType> extends Omit<InputConfig<
 	minimumItems?: number;
 	// If set, only actions included in the list are allowed. Otherwise, all actions are allowed.
 	allowedActions?: Array<ListItemAction>;
+	dragGroup?: string;
 }
 
 const DEFAULT_CONFIG = {
@@ -350,7 +351,12 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 				{ signal: this.signal },
 			);
 
-			const droppingActionOnOtherList = () => curDragData && this.config.itemLabel === 'Action' && curDragData.listPicker !== this;
+			const droppingActionOnOtherList = () => {
+				if (!curDragData || curDragData.listPicker === this) return false;
+				if (this.config.itemLabel !== 'Action') return false;
+				if (this.config.dragGroup && curDragData.listPicker.config.dragGroup === this.config.dragGroup) return false;
+				return true;
+			};
 			const targetIsSelf = () => curDragData && curDragData.listPicker === this && curDragData.item.idx === index;
 			const targetIsChild = () => curDragData && curDragData.item.elem.contains(itemContainer);
 
