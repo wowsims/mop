@@ -54,7 +54,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	),
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_BIS_GEAR_PRESET.gear,
+		gear: Presets.P4_BIS_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_UNHOLY_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -125,39 +125,11 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.FESTERBLIGHT_ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
-		builds: [Presets.PREBIS_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
+		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P3_BIS_GEAR_PRESET, Presets.P4_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
+		builds: [Presets.PREBIS_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecUnholyDeathKnight,
-			talents: Presets.FesterblightTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PREBIS_GEAR_PRESET.gear,
-					2: Presets.P2_BIS_GEAR_PRESET.gear,
-					3: Presets.P3_BIS_GEAR_PRESET.gear,
-					5: Presets.P5_BIS_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PREBIS_GEAR_PRESET.gear,
-					2: Presets.P2_BIS_GEAR_PRESET.gear,
-					3: Presets.P3_BIS_GEAR_PRESET.gear,
-					5: Presets.P5_BIS_GEAR_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class UnholyDeathKnightSimUI extends IndividualSimUI<Spec.SpecUnholyDeathKnight> {

@@ -19,7 +19,7 @@ func TestFrostMasterfrost(t *testing.T) {
 			Class: proto.Class_ClassDeathKnight,
 			Race:  proto.Race_RaceTroll,
 
-			GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p3.masterfrost"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p4.masterfrost"),
 
 			Talents:         DefaultTalents,
 			OtherTalentSets: OtherTalentSets,
@@ -61,7 +61,7 @@ func TestFrostTwoHand(t *testing.T) {
 			Class: proto.Class_ClassDeathKnight,
 			Race:  proto.Race_RaceTroll,
 
-			GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p3.2h-obliterate"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/frost/gear_sets", "p4.2h-obliterate"),
 
 			Talents:         DefaultTalents,
 			OtherTalentSets: OtherTalentSets,

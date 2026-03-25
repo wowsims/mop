@@ -19,7 +19,7 @@ func TestUnholy(t *testing.T) {
 			Class: proto.Class_ClassDeathKnight,
 			Race:  proto.Race_RaceTroll,
 
-			GearSet: core.GetGearSet("../../../ui/death_knight/unholy/gear_sets", "p3"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/unholy/gear_sets", "p4"),
 
 			Talents: "300010",
 			OtherTalentSets: []core.TalentsCombo{

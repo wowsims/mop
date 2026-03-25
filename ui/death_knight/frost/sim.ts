@@ -55,7 +55,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 	),
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_MASTERFROST_GEAR_PRESET.gear,
+		gear: Presets.P4_MASTERFROST_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.MASTERFROST_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -137,50 +137,22 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 		gear: [
 			Presets.PREBIS_MASTERFROST_GEAR_PRESET,
 			Presets.PREBIS_2H_OBLITERATE_GEAR_PRESET,
-			Presets.P2_MASTERFROST_GEAR_PRESET,
-			Presets.P2_2H_OBLITERATE_GEAR_PRESET,
 			Presets.P3_MASTERFROST_GEAR_PRESET,
 			Presets.P3_2H_OBLITERATE_GEAR_PRESET,
+			Presets.P4_MASTERFROST_GEAR_PRESET,
+			Presets.P4_2H_OBLITERATE_GEAR_PRESET,
 			Presets.P5_MASTERFROST_GEAR_PRESET,
 			Presets.P5_2H_OBLITERATE_GEAR_PRESET,
 		],
 		builds: [
-			Presets.PRESET_BUILD_P2_MASTERFROST,
-			Presets.PRESET_BUILD_P2_2H_OBLITERATE,
 			Presets.PRESET_BUILD_P3_MASTERFROST,
 			Presets.PRESET_BUILD_P3_2H_OBLITERATE,
+			Presets.PRESET_BUILD_P4_MASTERFROST,
+			Presets.PRESET_BUILD_P4_2H_OBLITERATE,
 		],
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecFrostDeathKnight,
-			talents: Presets.DefaultTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PREBIS_MASTERFROST_GEAR_PRESET.gear,
-					2: Presets.P2_MASTERFROST_GEAR_PRESET.gear,
-					3: Presets.P3_MASTERFROST_GEAR_PRESET.gear,
-					5: Presets.P5_MASTERFROST_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PREBIS_MASTERFROST_GEAR_PRESET.gear,
-					2: Presets.P2_MASTERFROST_GEAR_PRESET.gear,
-					3: Presets.P3_MASTERFROST_GEAR_PRESET.gear,
-					5: Presets.P5_MASTERFROST_GEAR_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class FrostDeathKnightSimUI extends IndividualSimUI<Spec.SpecFrostDeathKnight> {
