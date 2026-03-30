@@ -12,7 +12,7 @@ import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/util
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultApl from './apls/default.apl.json';
 import P2Gear from './gear_sets/p2.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
+import P4Gear from './gear_sets/p4.gear.json';
 import P1PreBisGear from './gear_sets/p1-prebis.gear.json';
 
 // Preset options for this spec.
@@ -21,7 +21,7 @@ import P1PreBisGear from './gear_sets/p1-prebis.gear.json';
 
 export const P1_PREBIS_PRESET = PresetUtils.makePresetGear('P1 - Pre-BIS', P1PreBisGear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3Gear);
+export const P3_4_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', P4Gear);
 export const DEFAULT_APL = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
 // Preset options for EP weights

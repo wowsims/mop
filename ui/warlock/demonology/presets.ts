@@ -13,7 +13,7 @@ import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultAPL from './apls/default.apl.json';
 import UvlsAPL from './apls/uvls.apl.json';
 import P2Gear from './gear_sets/p2.gear.json';
-import P3Gear from './gear_sets/p3.gear.json';
+import P4Gear from './gear_sets/p4.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -22,7 +22,7 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 
 export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2Gear);
-export const P3_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3Gear);
+export const P3_4_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', P4Gear);
 
 export const APL_Default = PresetUtils.makePresetAPLRotation('Default', DefaultAPL);
 export const APL_UVLS = PresetUtils.makePresetAPLRotation('UVLS', UvlsAPL);
@@ -117,7 +117,7 @@ export const PRESET_BUILD_P2 = PresetUtils.makePresetBuild('T14', {
 	},
 });
 export const PRESET_BUILD_P3 = PresetUtils.makePresetBuild('T15', {
-	gear: P3_PRESET,
+	gear: P3_4_PRESET,
 	talents: DemonologyTalentsUVLS,
 	rotation: APL_UVLS,
 	settings: {

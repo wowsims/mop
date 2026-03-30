@@ -3235,219 +3235,219 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Orc-p4-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 684680.74243
-  tps: 3.82782151638e+06
-  dtps: 1.61690578059e+06
-  hps: 182660.75136
+  dps: 937350.14382
+  tps: 4.87938053012e+06
+  dtps: 1.19258946672e+06
+  hps: 235201.27936
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 159113.69635
-  tps: 950656.62827
-  dtps: 83757.10575
-  hps: 95016.50561
+  dps: 211314.82861
+  tps: 1.20096430741e+06
+  dtps: 61577.68887
+  hps: 94434.28558
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-DefaultTalents-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-DefaultTalents-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 169652.06558
-  tps: 971946.69939
-  dtps: 82812.30595
-  hps: 99438.22347
+  dps: 223576.74965
+  tps: 1.22278703327e+06
+  dtps: 62107.67872
+  hps: 97899.19167
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Orc-p4-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 527259.62169
-  tps: 2.9603991822e+06
-  dtps: 1.81703525341e+06
-  hps: 133816.48579
+  dps: 714662.89363
+  tps: 3.79154604619e+06
+  dtps: 1.35553355676e+06
+  hps: 173759.79523
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 125306.27389
-  tps: 745112.65149
-  dtps: 83918.20264
-  hps: 79364.32954
+  dps: 179127.64205
+  tps: 1.03362110963e+06
+  dtps: 62957.88766
+  hps: 79327.92471
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-DefaultTalents-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-DefaultTalents-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 127259.07927
-  tps: 742569.03683
-  dtps: 85286.54936
-  hps: 80911.46898
+  dps: 169974.4226
+  tps: 962035.39176
+  dtps: 64934.1405
+  hps: 76825.65918
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Orc-p4-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 4.4363890088e+06
-  tps: 2.626867801279e+07
-  dtps: 1.60966052595e+06
-  hps: 152134.32379
+  dps: 5.79458776217e+06
+  tps: 3.259157583689e+07
+  dtps: 1.18860878376e+06
+  hps: 194843.3229
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 154589.75059
-  tps: 931328.24863
-  dtps: 81368.56151
-  hps: 82365.4687
+  dps: 206761.37892
+  tps: 1.18559589393e+06
+  dtps: 60162.14976
+  hps: 89645.59745
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-RC-example-build-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-RC-example-build-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 162374.26539
-  tps: 924613.50928
-  dtps: 76465.83332
-  hps: 90285.07851
+  dps: 213398.17205
+  tps: 1.15780210948e+06
+  dtps: 58062.88628
+  hps: 94382.95824
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Orc-p4-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.59509646043e+06
-  tps: 2.109800752227e+07
-  dtps: 1.65760755854e+06
-  hps: 112776.75661
+  dps: 4.63912222163e+06
+  tps: 2.615282605038e+07
+  dtps: 1.23058416197e+06
+  hps: 147349.3889
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 130520.20648
-  tps: 787681.57778
-  dtps: 83361.84818
-  hps: 64807.50434
+  dps: 173474.33217
+  tps: 1.00444118359e+06
+  dtps: 61814.08543
+  hps: 71017.01741
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Orc-p2-RC-example-build-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Orc-p4-RC-example-build-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 126801.95039
-  tps: 747413.40961
-  dtps: 80673.75465
-  hps: 69555.05861
+  dps: 160911.21933
+  tps: 906813.78549
+  dtps: 60064.1858
+  hps: 71848.25847
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Worgen-p4-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 686857.13683
-  tps: 3.8507179707e+06
-  dtps: 1.61690567642e+06
-  hps: 182749.63116
+  dps: 942304.85087
+  tps: 4.92559257753e+06
+  dtps: 1.1925948028e+06
+  hps: 235397.82172
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-DefaultTalents-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 159408.32404
-  tps: 955040.82904
-  dtps: 83913.01156
-  hps: 95471.00808
+  dps: 211309.84103
+  tps: 1.20710466561e+06
+  dtps: 61651.41248
+  hps: 94594.55274
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-DefaultTalents-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-DefaultTalents-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 168516.27729
-  tps: 971265.49036
-  dtps: 82739.97148
-  hps: 99497.68218
+  dps: 222872.00937
+  tps: 1.2266727322e+06
+  dtps: 62107.67872
+  hps: 97859.55972
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Worgen-p4-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 529014.86861
-  tps: 2.9812470241e+06
-  dtps: 1.81704102185e+06
-  hps: 133985.58561
+  dps: 717208.23369
+  tps: 3.81588587837e+06
+  dtps: 1.35582489626e+06
+  hps: 173969.75146
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-DefaultTalents-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 125131.86499
-  tps: 746485.3462
-  dtps: 84120.12447
-  hps: 79321.84886
+  dps: 179428.49232
+  tps: 1.03838023081e+06
+  dtps: 63156.29834
+  hps: 79699.97834
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-DefaultTalents-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-DefaultTalents-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 125421.37398
-  tps: 736570.01458
-  dtps: 85465.99345
-  hps: 80418.47235
+  dps: 170038.35058
+  tps: 968609.38753
+  dtps: 64911.28854
+  hps: 77104.91042
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Worgen-p4-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 4.4689417572e+06
-  tps: 2.653005403646e+07
-  dtps: 1.61005590227e+06
-  hps: 152391.72933
+  dps: 5.81040683994e+06
+  tps: 3.283307699101e+07
+  dtps: 1.18914595303e+06
+  hps: 194937.23274
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-RC-example-build-Basic-sha-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 154943.17219
-  tps: 935507.22736
-  dtps: 81265.10147
-  hps: 82418.6754
+  dps: 207506.81595
+  tps: 1.19239811683e+06
+  dtps: 60119.87618
+  hps: 89748.34212
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-RC-example-build-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-RC-example-build-Basic-sha-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 162104.28024
-  tps: 927300.59567
-  dtps: 76465.83332
-  hps: 90293.47836
+  dps: 214274.31358
+  tps: 1.16988030906e+06
+  dtps: 58062.88628
+  hps: 94494.83429
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestBlood-Settings-Worgen-p4-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.63833384512e+06
-  tps: 2.125029498393e+07
-  dtps: 1.65775072949e+06
-  hps: 113390.85549
+  dps: 4.587024048e+06
+  tps: 2.627515756342e+07
+  dtps: 1.2312398168e+06
+  hps: 147222.21178
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-RC-example-build-Basic-sha-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 129714.8761
-  tps: 785694.76039
-  dtps: 83504.87024
-  hps: 65079.81788
+  dps: 174620.84657
+  tps: 1.0128326072e+06
+  dtps: 61709.55241
+  hps: 71250.51714
  }
 }
 dps_results: {
- key: "TestBlood-Settings-Worgen-p2-RC-example-build-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestBlood-Settings-Worgen-p4-RC-example-build-Basic-sha-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 126967.52662
-  tps: 750611.76205
-  dtps: 80673.75465
-  hps: 69533.96379
+  dps: 161173.29951
+  tps: 912045.64318
+  dtps: 60064.1858
+  hps: 71965.11094
  }
 }
 dps_results: {

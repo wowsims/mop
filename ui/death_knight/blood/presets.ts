@@ -7,9 +7,9 @@ import ShaApl from './apls/sha.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
 import P2BalancedBloodGear from './gear_sets/p2.gear.json';
 import P2OffensiveBloodGear from './gear_sets/p2_offensive.gear.json';
-import P3BalancedBloodGear from './gear_sets/p3.gear.json';
-import P3ProgBloodGear from './gear_sets/p3_prog.gear.json';
-import P3OffensiveBloodGear from './gear_sets/p3_offensive.gear.json';
+import P4BalancedBloodGear from './gear_sets/p4.gear.json';
+import P4ProgBloodGear from './gear_sets/p4_prog.gear.json';
+import P4OffensiveBloodGear from './gear_sets/p4_offensive.gear.json';
 import DefaultBuild from './builds/sha_default.build.json';
 import ShaBuild from './builds/sha_encounter_only.build.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
@@ -18,9 +18,9 @@ import HorridonBuild from './builds/horridon_encounter_only.build.json';
 // export const PRERAID_BLOOD_PRESET = PresetUtils.makePresetGear('Pre-Raid', PreRaidBloodGear);
 export const P2_BALANCED_BLOOD_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2BalancedBloodGear);
 export const P2_OFFENSIVE_BLOOD_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive)', P2OffensiveBloodGear);
-export const P3_PROG_BLOOD_PRESET = PresetUtils.makePresetGear('P3 - Prog (Survival)', P3ProgBloodGear);
-export const P3_BALANCED_BLOOD_PRESET = PresetUtils.makePresetGear('P3 - BIS (Balanced)', P3BalancedBloodGear);
-export const P3_OFFENSIVE_BLOOD_PRESET = PresetUtils.makePresetGear('P3 - BIS (Offensive)', P3OffensiveBloodGear);
+export const P3_4_PROG_BLOOD_PRESET = PresetUtils.makePresetGear('P3 & P4 - Prog (Survival)', P4ProgBloodGear);
+export const P3_4_BALANCED_BLOOD_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4BalancedBloodGear);
+export const P3_4_OFFENSIVE_BLOOD_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4OffensiveBloodGear);
 
 export const BLOOD_ROTATION_PRESET_SHA = PresetUtils.makePresetAPLRotation('Sha of Fear', ShaApl);
 export const BLOOD_ROTATION_PRESET_HORRIDON = PresetUtils.makePresetAPLRotation('Horridon', HorridonApl);
@@ -72,8 +72,8 @@ export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P3_SURVIVAL_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Survival',
+export const P3_4_SURVIVAL_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P3 & P4 - Survival',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
@@ -95,8 +95,8 @@ export const P3_SURVIVAL_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P3_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Balanced',
+export const P3_4_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P3 & P4 - Balanced',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
@@ -118,8 +118,8 @@ export const P3_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P3_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Offensive',
+export const P3_4_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P3 & P4 - Offensive',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,

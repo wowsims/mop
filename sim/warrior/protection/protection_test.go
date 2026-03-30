@@ -32,7 +32,7 @@ func TestProtectionWarrior(t *testing.T) {
 
 			GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p2_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p3_bis"),
+				core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p4_bis"),
 			},
 			Talents:     DefaultTalents,
 			Glyphs:      DefaultGlyphs,

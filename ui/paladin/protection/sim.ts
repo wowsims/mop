@@ -172,13 +172,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 	},
 
 	presets: {
-		epWeights: [Presets.P2_BALANCED_EP_PRESET, Presets.P2_OFFENSIVE_EP_PRESET, Presets.P3_BALANCED_EP_PRESET, Presets.P3_OFFENSIVE_EP_PRESET],
+		epWeights: [Presets.P2_BALANCED_EP_PRESET, Presets.P2_OFFENSIVE_EP_PRESET, Presets.P3_4_BALANCED_EP_PRESET, Presets.P3_4_OFFENSIVE_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.APL_SHA_PRESET, Presets.APL_HORRIDON_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P2_BALANCED_GEAR_PRESET, Presets.P2_OFFENSIVE_GEAR_PRESET, Presets.P3_BALANCED_GEAR_PRESET, Presets.P3_OFFENSIVE_GEAR_PRESET],
+		gear: [Presets.P2_BALANCED_GEAR_PRESET, Presets.P2_OFFENSIVE_GEAR_PRESET, Presets.P3_4_BALANCED_GEAR_PRESET, Presets.P3_4_OFFENSIVE_GEAR_PRESET],
 		builds: [Presets.P2_BALANCED_BUILD_PRESET, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
 	},
 
@@ -223,9 +223,9 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 					if (softCap.unitStat.equalsStat(Stat.StatExpertiseRating) && softCapToModify) {
 						if (epWeights.equals(Presets.P2_OFFENSIVE_EP_PRESET.epWeights)) {
 							softCapToModify.postCapEPs = P2OffensiveExpertisePostCapEPs;
-						} else if (epWeights.equals(Presets.P3_OFFENSIVE_EP_PRESET.epWeights)) {
+						} else if (epWeights.equals(Presets.P3_4_OFFENSIVE_EP_PRESET.epWeights)) {
 							softCapToModify.postCapEPs = P3OffensiveExpertisePostCapEPs;
-						} else if (epWeights.equals(Presets.P3_BALANCED_EP_PRESET.epWeights)) {
+						} else if (epWeights.equals(Presets.P3_4_BALANCED_EP_PRESET.epWeights)) {
 							softCapToModify.postCapEPs = P3ExpertisePostCapEPs;
 						} else {
 							softCapToModify.postCapEPs = P2ExpertisePostCapEPs;

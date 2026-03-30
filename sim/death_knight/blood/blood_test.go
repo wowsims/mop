@@ -24,7 +24,7 @@ func TestBlood(t *testing.T) {
 			Race:       proto.Race_RaceOrc,
 			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-			GearSet: core.GetGearSet("../../../ui/death_knight/blood/gear_sets", "p2"),
+			GearSet: core.GetGearSet("../../../ui/death_knight/blood/gear_sets", "p4"),
 
 			Talents: BloodTalents,
 			Glyphs:  BloodDefaultGlyphs,

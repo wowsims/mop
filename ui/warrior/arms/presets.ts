@@ -5,7 +5,8 @@ import { ArmsWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '../../
 import { Stats } from '../../core/proto_utils/stats';
 import ArmsApl from './apls/arms.apl.json';
 import P2ArmsBisGear from './gear_sets/p2_arms_bis.gear.json';
-import P3ArmsBisGear from './gear_sets/p3_arms_bis.gear.json';
+import P4ArmsBisGear from './gear_sets/p4_arms_bis.gear.json';
+import P5ArmsBisGear from './gear_sets/p5_arms_bis.gear.json';
 import PreBisGear from './gear_sets/prebis.gear.json';
 
 // Preset options for this spec.
@@ -14,7 +15,8 @@ import PreBisGear from './gear_sets/prebis.gear.json';
 
 export const PREBIS_PRESET = PresetUtils.makePresetGear('Pre-BIS', PreBisGear);
 export const P2_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2ArmsBisGear);
-export const P3_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P3 - BIS', P3ArmsBisGear);
+export const P3_4_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', P4ArmsBisGear);
+export const P5_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP)', P5ArmsBisGear);
 
 export const ROTATION_ARMS = PresetUtils.makePresetAPLRotation('Default', ArmsApl);
 
@@ -56,6 +58,26 @@ export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
 		},
 	),
 );
+
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Item Level >= 550',
+	Stats.fromMap(
+		{
+			[Stat.StatStrength]: 1,
+			[Stat.StatAttackPower]: 0.45,
+			[Stat.StatExpertiseRating]: 2.83,
+			[Stat.StatHitRating]: 3.8,
+			[Stat.StatCritRating]: 0.92,
+			[Stat.StatHasteRating]: 0.61,
+			[Stat.StatMasteryRating]: 0.83,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 3.54,
+			[PseudoStat.PseudoStatOffHandDps]: 0,
+		},
+	),
+);
+
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.

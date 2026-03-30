@@ -7,8 +7,8 @@ import ShaApl from './apls/sha.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
 import P2_Balanced_Gear from './gear_sets/p2_balanced.gear.json';
 import P2_Offensive_Gear from './gear_sets/p2_offensive.gear.json';
-import P3_Balanced_Gear from './gear_sets/p3_balanced.gear.json';
-import P3_Offensive_Gear from './gear_sets/p3_offensive.gear.json';
+import P4_Balanced_Gear from './gear_sets/p4_balanced.gear.json';
+import P4_Offensive_Gear from './gear_sets/p4_offensive.gear.json';
 import DefaultBuild from './builds/sha_default.build.json';
 import ShaBuild from './builds/sha_encounter_only.build.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
@@ -19,8 +19,8 @@ import HorridonBuild from './builds/horridon_encounter_only.build.json';
 
 export const P2_BALANCED_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2_Balanced_Gear);
 export const P2_OFFENSIVE_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive)', P2_Offensive_Gear);
-export const P3_BALANCED_GEAR_PRESET = PresetUtils.makePresetGear('P3 - BIS (Balanced)', P3_Balanced_Gear);
-export const P3_OFFENSIVE_GEAR_PRESET = PresetUtils.makePresetGear('P3 - BIS (Offensive)', P3_Offensive_Gear);
+export const P3_4_BALANCED_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4_Balanced_Gear);
+export const P3_4_OFFENSIVE_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4_Offensive_Gear);
 
 export const APL_SHA_PRESET = PresetUtils.makePresetAPLRotation('Sha of Fear', ShaApl);
 export const APL_HORRIDON_PRESET = PresetUtils.makePresetAPLRotation('Horridon', HorridonApl);
@@ -72,8 +72,8 @@ export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P3_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Balanced',
+export const P3_4_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P3 & P4 - Balanced',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
@@ -95,8 +95,8 @@ export const P3_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const P3_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Offensive',
+export const P3_4_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P3 & P4 - Offensive',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,

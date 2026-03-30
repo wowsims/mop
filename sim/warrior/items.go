@@ -204,12 +204,12 @@ var ItemSetBattleplateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 			})
 
 			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Name:           "Death Sentence - Trigger",
-				ActionID:       core.ActionID{SpellID: 144442},
-				ClassSpellMask: SpellMaskMortalStrike | SpellMaskBloodthirst,
-				Outcome:        core.OutcomeLanded,
-				ProcChance:     0.1,
-				Callback:       core.CallbackOnSpellHitDealt,
+				Name:            "Death Sentence - Trigger",
+				MetricsActionID: core.ActionID{SpellID: 144442},
+				ClassSpellMask:  SpellMaskMortalStrike | SpellMaskBloodthirst,
+				Outcome:         core.OutcomeLanded,
+				ProcChance:      0.1,
+				Callback:        core.CallbackOnSpellHitDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					war.T16Dps4P.Activate(sim)
 				},

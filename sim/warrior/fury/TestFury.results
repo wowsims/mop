@@ -550,84 +550,84 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 458038.66836
   tps: 306509.97979
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 275497.07267
   tps: 172994.19794
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 345468.67523
   tps: 211356.63533
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 383124.6892
   tps: 244751.93803
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 217730.35091
   tps: 137756.42371
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 250563.5446
   tps: 150752.61399
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 457896.68526
   tps: 296507.94653
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 270136.41808
   tps: 173139.22487
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 333136.86871
   tps: 210306.36476
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 366875.72472
   tps: 240604.4385
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 211540.65398
   tps: 135439.79921
  }
 }
 dps_results: {
- key: "TestFury-Settings-Troll-p3_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Troll-p4_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 242561.93128
   tps: 153069.29153
@@ -718,84 +718,84 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 465597.78469
   tps: 299155.84835
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 275815.17257
   tps: 173087.04086
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 340528.43674
   tps: 202886.25839
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 382505.96945
   tps: 243789.17737
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 219610.75169
   tps: 138709.47923
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 248484.81929
   tps: 149572.99727
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 456325.8316
   tps: 292751.83597
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 270650.14759
   tps: 171499.9189
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 336406.3944
   tps: 209300.19686
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
   dps: 362486.18249
   tps: 236632.70636
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
   dps: 211226.1642
   tps: 135071.4165
  }
 }
 dps_results: {
- key: "TestFury-Settings-Worgen-p3_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
+ key: "TestFury-Settings-Worgen-p4_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
   dps: 246263.79909
   tps: 154284.32725
