@@ -18,6 +18,8 @@ func (cbp CharacterBuildPhase) Matches(other CharacterBuildPhase) bool {
 	return (cbp & other) != 0
 }
 
+type OnEncounterStartEffect func()
+
 const (
 	CharacterBuildPhaseNone CharacterBuildPhase = 0
 	CharacterBuildPhaseBase CharacterBuildPhase = 1 << iota
@@ -82,6 +84,8 @@ type Character struct {
 	spellCategoryTimers map[int32]*Timer
 
 	Pets []*Pet // cached in AddPet, for advance()
+
+	OnEncounterStartEffects []OnEncounterStartEffect
 }
 
 func NewCharacter(party *Party, partyIndex int, player *proto.Player) Character {
@@ -804,4 +808,12 @@ func (character *Character) ApplyArmorSpecializationEffect(primaryStat stats.Sta
 	trackerAura := character.RegisterArmorSpecializationTracker(armorType, spellID)
 	trackerAura.AttachStatDependency(armorSpecializationDependency)
 	return trackerAura
+}
+
+func (character *Character) RegisterOnEncounterStartEffect(onEncounterStartEffect OnEncounterStartEffect) {
+	if onEncounterStartEffect == nil {
+		return
+	}
+
+	character.OnEncounterStartEffects = append(character.OnEncounterStartEffects, onEncounterStartEffect)
 }

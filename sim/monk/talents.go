@@ -68,6 +68,7 @@ func chiWaveSpellConfig(_ *Monk, isSEFClone bool, overrides core.SpellConfig) co
 		Flags:          core.SpellFlagAPL,
 		ClassSpellMask: MonkSpellChiWave,
 		MaxRange:       40,
+		MissileSpeed:   8,
 
 		Cast: overrides.Cast,
 
@@ -564,6 +565,7 @@ func (monk *Monk) registerChiBurst() {
 		ProcMask:       core.ProcMaskSpellDamage,
 		Flags:          core.SpellFlagAPL,
 		ClassSpellMask: MonkSpellChiBurst,
+		MissileSpeed:   30,
 		MaxRange:       40,
 
 		Cast: core.CastConfig{

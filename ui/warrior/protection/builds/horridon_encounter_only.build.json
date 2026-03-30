@@ -67,8 +67,8 @@
         {"action":{"castSpell":{"spellId":{"spellId":71}}},"doAtValue":{"const":{"val":"-10s"}}},
         {"action":{"castSpell":{"spellId":{"spellId":6673}}},"doAtValue":{"const":{"val":"-3s"}}},
         {"action":{"castSpell":{"spellId":{"spellId":114206}}},"doAtValue":{"const":{"val":"-1.5s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":1249459}}},"doAtValue":{"const":{"val":"-1.5s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":100}}},"doAtValue":{"const":{"val":"-0.5s"}}}
+        {"action":{"castSpell":{"spellId":{"spellId":1249459}}},"doAtValue":{"variableRef":{"name":"Prepull Shatter"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":100}}},"doAtValue":{"variableRef":{"name":"Prepull Shatter"}}}
       ],
       "priorityList": [
         {"action":{"condition":{"and":{"vals":[{"auraIsInactive":{"auraId":{"spellId":112048}}},{"or":{"vals":[{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"25%"}}}},{"and":{"vals":[{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"45%"}}}},{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":93098},"includeReactionTime":true}},"rhs":{"const":{"val":"150000"}}}}]}},{"and":{"vals":[{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"65%"}}}},{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":93098},"includeReactionTime":true}},"rhs":{"const":{"val":"200000"}}}}]}},{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"cmp":{"op":"OpEq","lhs":{"bossSpellTimeToReady":{"targetUnit":{"type":"Target"},"spellId":{"spellId":136767}}},"rhs":{"const":{"val":"0s"}}}}]}}]}}]}},"castSpell":{"spellId":{"spellId":112048}}}},
@@ -105,7 +105,8 @@
       "valueVariables": [
         {"name":"Shield Barrier: Low","value":{"cmp":{"op":"OpLt","lhs":{"auraNumStacks":{"auraId":{"spellId":112048},"includeReactionTime":true}},"rhs":{"math":{"op":"OpMul","lhs":{"maxHealth":{}},"rhs":{"const":{"val":"0.1"}}}}}}},
         {"name":"Shield Barrier: Medium","value":{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":112048},"includeReactionTime":true}},"rhs":{"math":{"op":"OpMul","lhs":{"maxHealth":{}},"rhs":{"const":{"val":"0.5"}}}}}}},
-        {"name":"Shield Barrier: High","value":{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":112048},"includeReactionTime":true}},"rhs":{"math":{"op":"OpMul","lhs":{"maxHealth":{}},"rhs":{"const":{"val":"0.7"}}}}}}}
+        {"name":"Shield Barrier: High","value":{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":112048},"includeReactionTime":true}},"rhs":{"math":{"op":"OpMul","lhs":{"maxHealth":{}},"rhs":{"const":{"val":"0.7"}}}}}}},
+        {"name":"Prepull Shatter","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"spellTravelTime":{"spellId":{"spellId":1249459}}}}}}
       ]
     },
     "reactionTimeMs": 250,

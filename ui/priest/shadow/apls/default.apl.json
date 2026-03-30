@@ -1,10 +1,10 @@
 {
 	"type": "TypeAPL",
 	"prepullActions": [
-		{"action":{"activateAura":{"auraId":{"spellId":123254}}},"doAtValue":{"const":{"val":"-2.5s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":120696}}},"doAtValue":{"const":{"val":"-2.5s"}}},
-		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-1s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":73510}}},"doAtValue":{"const":{"val":"-1s"}}}
+		{"action":{"activateAura":{"auraId":{"spellId":123254}}},"doAtValue":{"variableRef":{"name":"Prepull Halo"}}},
+		{"action":{"castSpell":{"spellId":{"spellId":120696}}},"doAtValue":{"variableRef":{"name":"Prepull Halo"}}},
+		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull Mind Spike"}}},
+		{"action":{"castSpell":{"spellId":{"spellId":73510}}},"doAtValue":{"variableRef":{"name":"Prepull Mind Spike"}}}
 	],
 	"priorityList": [
 		{"action":{"autocastOtherCooldowns":{}}},
@@ -31,5 +31,9 @@
 		{"action":{"castSpell":{"spellId":{"spellId":127632}}}},
 		{"action":{"castSpell":{"spellId":{"spellId":122128}}}},
 		{"action":{"channelSpell":{"spellId":{"spellId":15407},"interruptIf":{"gcdIsReady":{}}}}}
+	],
+	"valueVariables": [
+		{"name":"Prepull Halo","value":{"math":{"op":"OpSub","lhs":{"variableRef":{"name":"Prepull Mind Spike"}},"rhs":{"spellGcdHastedDuration":{"spellId":{"spellId":120696}}}}}},
+		{"name":"Prepull Mind Spike","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"spellCastTime":{"spellId":{"spellId":73510}}}}}}
 	]
 }

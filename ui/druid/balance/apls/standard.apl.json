@@ -8,10 +8,10 @@
 	{"action":{"castSpell":{"spellId":{"spellId":88747},"target":{"type":"Target"}}},"doAtValue":{"const":{"val":"-15s"}}},
 	{"action":{"castSpell":{"spellId":{"spellId":5185}}},"doAtValue":{"const":{"val":"-14s"}}},
 	{"action":{"castSpell":{"spellId":{"spellId":132158}}},"doAtValue":{"const":{"val":"-11s"}}},
-	{"action":{"castSpell":{"spellId":{"spellId":48505},"target":{"type":"Target"}}},"doAtValue":{"const":{"val":"-4s"}}},
-	{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-2.5s"}}},
-	{"action":{"castSpell":{"spellId":{"spellId":5176},"target":{"type":"Target"}}},"doAtValue":{"const":{"val":"-2.5s"}}},
-	{"action":{"castSpell":{"spellId":{"spellId":102560}}},"doAtValue":{"const":{"val":"-0.5s"}}}
+	{"action":{"castSpell":{"spellId":{"spellId":48505},"target":{"type":"Target"}}},"doAtValue":{"variableRef":{"name":"Prepull Starfall"}}},
+	{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull Wrath"}}},
+	{"action":{"castSpell":{"spellId":{"spellId":5176}}},"doAtValue":{"variableRef":{"name":"Prepull Wrath"}}},
+	{"action":{"castSpell":{"spellId":{"spellId":102560}}},"doAtValue":{"variableRef":{"name":"Prepull Incarn"}}}
 	],
 	"priorityList": [
 	{"action":{"groupReference":{"groupName":"Cooldowns"}}},
@@ -48,6 +48,9 @@
 	{"name":"Starfall Holder","value":{"const":{"val":"0"}}},
 	{"name":"Starfires to Solar DO NOT TOUCH","value":{"math":{"op":"OpDiv","lhs":{"math":{"op":"OpSub","lhs":{"const":{"val":"120"}},"rhs":{"currentSolarEnergy":{}}}},"rhs":{"const":{"val":"40"}}}}},
 	{"name":"UVLS: is equipped","value":{"auraIsKnown":{"auraId":{"spellId":138963}}}},
-	{"name":"UVLS: is active","value":{"and":{"vals":[{"variableRef":{"name":"UVLS: is equipped"}},{"auraIsActive":{"auraId":{"spellId":138963},"includeReactionTime":true}}]}}}
+	{"name":"UVLS: is active","value":{"and":{"vals":[{"variableRef":{"name":"UVLS: is equipped"}},{"auraIsActive":{"auraId":{"spellId":138963},"includeReactionTime":true}}]}}},
+	{"name":"Prepull Starfall","value":{"math":{"op":"OpSub","lhs":{"variableRef":{"name":"Prepull Wrath"}},"rhs":{"spellGcdHastedDuration":{"spellId":{"spellId":48505}}}}}},
+	{"name":"Prepull Wrath","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"math":{"op":"OpAdd","lhs":{"spellCastTime":{"spellId":{"spellId":5176}}},"rhs":{"spellTravelTime":{"spellId":{"spellId":5176}}}}}}}},
+	{"name":"Prepull Incarn","value":{"max":{"vals":[{"math":{"op":"OpSub","lhs":{"const":{"val":"0s"}},"rhs":{"spellGcdHastedDuration":{"spellId":{"spellId":102560}}}}},{"math":{"op":"OpAdd","lhs":{"variableRef":{"name":"Prepull Wrath"}},"rhs":{"max":{"vals":[{"spellCastTime":{"spellId":{"spellId":5176}}},{"spellGcdHastedDuration":{"spellId":{"spellId":5176}}}]}}}}]}}}
 	]
 }

@@ -2,7 +2,7 @@
 	"type": "TypeAPL",
 	"prepullActions": [
 	{"action":{"castSpell":{"spellId":{"spellId":103985}}},"doAtValue":{"const":{"val":"-20s"}}},
-	{"action":{"castSpell":{"spellId":{"spellId":115098}}},"doAtValue":{"const":{"val":"-0.99s"}}},
+	{"action":{"castSpell":{"spellId":{"spellId":115098}}},"doAtValue":{"variableRef":{"name":"Prepull Chi Wave"}}},
 	{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-0.1s"}}}
 	],
 	"priorityList": [
@@ -57,6 +57,7 @@
 	{"name":"Time: Opener","value":{"cmp":{"op":"OpLe","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}}},
 	{"name":"Time: GCD seconds","value":{"spellGcdHastedDuration":{"spellId":{"spellId":100780}}}},
 	{"name":"Time: TEB seconds","value":{"const":{"val":"15s"}}},
-	{"name":"Time: Infinite seconds","value":{"const":{"val":"9999s"}}}
+	{"name":"Time: Infinite seconds","value":{"const":{"val":"9999s"}}},
+	{"name":"Prepull Chi Wave","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"spellTravelTime":{"spellId":{"spellId":115098}}}}}}
 	]
 }

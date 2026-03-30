@@ -628,10 +628,33 @@ func (value *APLValueNot) String() string {
 	return fmt.Sprintf("Not(%s)", value.val)
 }
 
+// variableCache holds per-evaluation-pass cached results for a named variable.
+// All APLValueVariableRef instances referencing the same variable name share
+// the same cache, but each has its own resolved APLValue expression tree
+// (since newAPLValue can have side effects like registering aura callbacks).
+type variableCache struct {
+	boolGeneration uint32
+	boolCache      bool
+
+	intGeneration uint32
+	intCache      int32
+
+	floatGeneration uint32
+	floatCache      float64
+
+	durGeneration uint32
+	durCache      time.Duration
+
+	stringGeneration uint32
+	stringCache      string
+}
+
 type APLValueVariableRef struct {
 	DefaultAPLValueImpl
 	name     string
 	resolved APLValue
+	cache    *variableCache
+	rot      *APLRotation
 }
 
 func (rot *APLRotation) newValueVariableRef(config *proto.APLValueVariableRef, uuid *proto.UUID) APLValue {
@@ -641,7 +664,13 @@ func (rot *APLRotation) newValueVariableRef(config *proto.APLValueVariableRef, u
 			if resolved == nil {
 				rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Value variable '%s' is empty or invalid", config.Name)
 			}
-			return &APLValueVariableRef{name: config.Name, resolved: resolved}
+			// Get or create shared cache for this variable name
+			cache, ok := rot.variableCaches[config.Name]
+			if !ok {
+				cache = &variableCache{}
+				rot.variableCaches[config.Name] = cache
+			}
+			return &APLValueVariableRef{name: config.Name, resolved: resolved, cache: cache, rot: rot}
 		}
 	}
 	rot.ValidationMessageByUUID(uuid, proto.LogLevel_Error, "Value variable '%s' not found", config.Name)
@@ -661,34 +690,74 @@ func (v *APLValueVariableRef) Type() proto.APLValueType {
 	return proto.APLValueType_ValueTypeUnknown
 }
 func (v *APLValueVariableRef) GetBool(sim *Simulation) bool {
-	if v.resolved != nil {
-		return v.resolved.GetBool(sim)
+	if v.resolved == nil {
+		return false
 	}
-	return false
+	c := v.cache
+	gen := v.rot.evalGeneration
+	if c.boolGeneration == gen {
+		return c.boolCache
+	}
+	result := v.resolved.GetBool(sim)
+	c.boolCache = result
+	c.boolGeneration = gen
+	return result
 }
 func (v *APLValueVariableRef) GetInt(sim *Simulation) int32 {
-	if v.resolved != nil {
-		return v.resolved.GetInt(sim)
+	if v.resolved == nil {
+		return 0
 	}
-	return 0
+	c := v.cache
+	gen := v.rot.evalGeneration
+	if c.intGeneration == gen {
+		return c.intCache
+	}
+	result := v.resolved.GetInt(sim)
+	c.intCache = result
+	c.intGeneration = gen
+	return result
 }
 func (v *APLValueVariableRef) GetFloat(sim *Simulation) float64 {
-	if v.resolved != nil {
-		return v.resolved.GetFloat(sim)
+	if v.resolved == nil {
+		return 0
 	}
-	return 0
+	c := v.cache
+	gen := v.rot.evalGeneration
+	if c.floatGeneration == gen {
+		return c.floatCache
+	}
+	result := v.resolved.GetFloat(sim)
+	c.floatCache = result
+	c.floatGeneration = gen
+	return result
 }
 func (v *APLValueVariableRef) GetDuration(sim *Simulation) time.Duration {
-	if v.resolved != nil {
-		return v.resolved.GetDuration(sim)
+	if v.resolved == nil {
+		return 0
 	}
-	return 0
+	c := v.cache
+	gen := v.rot.evalGeneration
+	if c.durGeneration == gen {
+		return c.durCache
+	}
+	result := v.resolved.GetDuration(sim)
+	c.durCache = result
+	c.durGeneration = gen
+	return result
 }
 func (v *APLValueVariableRef) GetString(sim *Simulation) string {
-	if v.resolved != nil {
-		return v.resolved.GetString(sim)
+	if v.resolved == nil {
+		return ""
 	}
-	return ""
+	c := v.cache
+	gen := v.rot.evalGeneration
+	if c.stringGeneration == gen {
+		return c.stringCache
+	}
+	result := v.resolved.GetString(sim)
+	c.stringCache = result
+	c.stringGeneration = gen
+	return result
 }
 func (v *APLValueVariableRef) String() string {
 	return fmt.Sprintf("VarRef(%s)", v.name)
@@ -847,6 +916,18 @@ func (rot *APLRotation) newValueAnd(config *proto.APLValueAnd, _ *proto.UUID, gr
 	} else if len(vals) == 1 {
 		return vals[0]
 	}
+	// Short-circuit: if any child is const false, the whole And is false.
+	// Orphan the other children so they still get Finalize() called.
+	for _, val := range vals {
+		if constVal, ok := val.(*APLValueConst); ok && constVal.valType == proto.APLValueType_ValueTypeBool && !constVal.boolVal {
+			for _, other := range vals {
+				if other != val {
+					rot.orphanValue(other)
+				}
+			}
+			return constVal
+		}
+	}
 	return &APLValueAnd{
 		vals: vals,
 	}
@@ -862,6 +943,18 @@ func (rot *APLRotation) newValueOr(config *proto.APLValueOr, _ *proto.UUID, grou
 	} else if len(vals) == 1 {
 		return vals[0]
 	}
+	// Short-circuit: if any child is const true, the whole Or is true.
+	// Orphan the other children so they still get Finalize() called.
+	for _, val := range vals {
+		if constVal, ok := val.(*APLValueConst); ok && constVal.valType == proto.APLValueType_ValueTypeBool && constVal.boolVal {
+			for _, other := range vals {
+				if other != val {
+					rot.orphanValue(other)
+				}
+			}
+			return constVal
+		}
+	}
 	return &APLValueOr{
 		vals: vals,
 	}
@@ -871,6 +964,12 @@ func (rot *APLRotation) newValueNot(config *proto.APLValueNot, _ *proto.UUID, gr
 	val := rot.coerceTo(rot.newAPLValueWithContext(config.Val, groupVariables), proto.APLValueType_ValueTypeBool)
 	if val == nil {
 		return nil
+	}
+	// Fold Not(const) → flipped const
+	if constVal, ok := val.(*APLValueConst); ok && constVal.valType == proto.APLValueType_ValueTypeBool {
+		constVal.boolVal = !constVal.boolVal
+		constVal.stringVal = Ternary(constVal.boolVal, "true", "false")
+		return constVal
 	}
 	return &APLValueNot{
 		val: val,

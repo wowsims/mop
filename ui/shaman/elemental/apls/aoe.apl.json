@@ -1,9 +1,9 @@
 {
       "type": "TypeAPL",
       "prepullActions": [
-        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-2.5s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":2894}}},"doAtValue":{"const":{"val":"-2.5s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":421}}},"doAtValue":{"const":{"val":"-1s"}}}
+        {"action":{"castSpell":{"spellId":{"spellId":2894}}},"doAtValue":{"variableRef":{"name":"Prepull Fire Ele"}}},
+        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull CL"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":421}}},"doAtValue":{"variableRef":{"name":"Prepull CL"}}}
       ],
       "priorityList": [
         {"action":{"autocastOtherCooldowns":{}}},
@@ -11,5 +11,9 @@
         {"action":{"condition":{"or":{"vals":[{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"26"}}}},{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":16166}}},{"auraIsActive":{"auraId":{"spellId":16166}}},{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"105"}}}}]}},{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":16166}}},{"auraIsActive":{"auraId":{"spellId":16166}}},{"cmp":{"op":"OpLe","lhs":{"spellTimeToReady":{"spellId":{"spellId":114049}}},"rhs":{"const":{"val":"10"}}}}]}},{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":16166}}},{"auraIsActive":{"auraId":{"spellId":16166}}},{"auraIsActive":{"auraId":{"spellId":114049}}}]}},{"auraIsActive":{"auraId":{"spellId":114049}}}]}},"castSpell":{"spellId":{"itemId":76093}}}},
         {"action":{"castSpell":{"spellId":{"spellId":114074}}}},
         {"action":{"castSpell":{"spellId":{"spellId":421}}}}
+      ],
+      "valueVariables": [
+        {"name":"Prepull Fire Ele","value":{"math":{"op":"OpSub","lhs":{"variableRef":{"name":"Prepull CL"}},"rhs":{"spellGcdHastedDuration":{"spellId":{"spellId":2894}}}}}},
+        {"name":"Prepull CL","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"spellCastTime":{"spellId":{"spellId":421}}}}}}
       ]
     }

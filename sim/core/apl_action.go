@@ -147,12 +147,35 @@ func (rot *APLRotation) newAPLAction(config *proto.APLAction) *APLAction {
 		return nil
 	}
 
+	condition := rot.coerceTo(rot.newAPLValue(config.Condition), proto.APLValueType_ValueTypeBool)
+
+	// If condition is const false, this action can never fire — prune it.
+	// Track the impl so its spells are still removed from MCD auto-casting.
+	if condition != nil {
+		if constVal, ok := condition.(*APLValueConst); ok && constVal.valType == proto.APLValueType_ValueTypeBool {
+			if !constVal.boolVal {
+				rot.prunedActions = append(rot.prunedActions, impl)
+				return nil
+			}
+			// Const true condition is equivalent to no condition.
+			condition = nil
+		}
+	}
+
 	action := &APLAction{
-		condition: rot.coerceTo(rot.newAPLValue(config.Condition), proto.APLValueType_ValueTypeBool),
+		condition: condition,
 		impl:      impl,
 	}
 
 	return action
+}
+
+func removeFromMajorCooldowns(action APLActionImpl, character *Character) {
+	if castSpellAction, ok := action.(*APLActionCastSpell); ok {
+		character.removeInitialMajorCooldown(castSpellAction.spell.ActionID)
+	} else if castFriendlySpellAction, ok := action.(*APLActionCastFriendlySpell); ok {
+		character.removeInitialMajorCooldown(castFriendlySpellAction.spell.ActionID)
+	}
 }
 
 func (rot *APLRotation) newAPLActionImpl(config *proto.APLAction) APLActionImpl {

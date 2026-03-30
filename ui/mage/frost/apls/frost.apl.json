@@ -5,8 +5,8 @@
 		{"action":{"castSpell":{"spellId":{"spellId":55342}}},"doAtValue":{"const":{"val":"-6.5s"}}},
 		{"action":{"castSpell":{"spellId":{"spellId":12051}}},"doAtValue":{"const":{"val":"-5s"}}},
 		{"action":{"castSpell":{"spellId":{"spellId":116011}}},"doAtValue":{"const":{"val":"-3.5s"}}},
-		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-2s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":116}}},"doAtValue":{"const":{"val":"-2s"}}}
+		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull Frostbolt"}}},
+		{"action":{"castSpell":{"spellId":{"spellId":116}}},"doAtValue":{"variableRef":{"name":"Prepull Frostbolt"}}}
 	],
 	"priorityList": [
 		{"action":{"autocastOtherCooldowns":{}}},
@@ -25,5 +25,8 @@
 		{"action":{"condition":{"spellIsReady":{"spellId":{"spellId":84714}}},"castSpell":{"spellId":{"spellId":84714}}}},
 		{"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":112965},"includeReactionTime":true}},{"cmp":{"op":"OpGe","lhs":{"spellTimeToReady":{"spellId":{"spellId":108978}}},"rhs":{"const":{"val":"10s"}}}}]}},"castSpell":{"spellId":{"spellId":30455}}}},
 		{"action":{"castSpell":{"spellId":{"spellId":116}}}}
+	],
+	"valueVariables": [
+		{"name":"Prepull Frostbolt","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"0"}},"rhs":{"spellCastTime":{"spellId":{"spellId":116}}}}}}
 	]
 }

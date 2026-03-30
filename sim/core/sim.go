@@ -286,7 +286,7 @@ func (sim *Simulation) Proc(p float64, label string) bool {
 }
 
 func (sim *Simulation) Reset() {
-	sim.reset()
+	sim.reset(false)
 }
 
 func (sim *Simulation) Reseed(seed int64) {
@@ -379,21 +379,7 @@ func (sim *Simulation) run() *proto.RaidSimResult {
 // RunOnce is the main event loop. It will run the simulation for number of seconds.
 func (sim *Simulation) runOnce(firstIteration bool) {
 	sim.isInPrepull = true
-	sim.reset()
-
-	if firstIteration {
-		for _, action := range sim.Environment.prepullActions {
-			action.doAtTime = action.DoAt.GetDuration(sim)
-		}
-
-		sim.Environment.prepullActions = FilterSlice(sim.Environment.prepullActions, func(action *PrepullAction) bool {
-			return action.doAtTime <= sim.CurrentTime
-		})
-
-		slices.SortStableFunc(sim.Environment.prepullActions, func(a1, a2 *PrepullAction) int {
-			return int(a1.doAtTime - a2.doAtTime)
-		})
-	}
+	sim.reset(firstIteration)
 
 	sim.PrePull()
 	sim.isInPrepull = false
@@ -412,7 +398,7 @@ var (
 
 // Reset will set sim back and erase all current state.
 // This is automatically called before every 'Run'.
-func (sim *Simulation) reset() {
+func (sim *Simulation) reset(firstIteration bool) {
 	if sim.Encounter.DurationIsEstimate && sim.CurrentTime != 0 {
 		sim.BaseDuration = sim.CurrentTime
 		sim.Encounter.DurationIsEstimate = false
@@ -449,7 +435,7 @@ func (sim *Simulation) reset() {
 	sim.tasks = sim.tasks[:0]
 	sim.minTaskTime = NeverExpires
 
-	sim.Environment.reset(sim)
+	sim.Environment.reset(sim, firstIteration)
 
 	sim.initManaTickAction()
 }

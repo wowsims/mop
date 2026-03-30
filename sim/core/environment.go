@@ -1,6 +1,7 @@
 package core
 
 import (
+	"slices"
 	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
@@ -215,7 +216,7 @@ func (env *Environment) finalize(raidProto *proto.Raid, _ *proto.Encounter, raid
 		sim := newSimWithEnv(env, &proto.SimOptions{
 			Iterations: 1,
 		}, simsignals.CreateSignals())
-		sim.reset()
+		sim.reset(true)
 		sim.PrePull()
 		sim.Cleanup()
 	}
@@ -269,10 +270,7 @@ func (env *Environment) IsFinalized() bool {
 	return env.State >= Finalized
 }
 
-func (env *Environment) reset(sim *Simulation) {
-	// Randomize heartbeat timer for pet stat inheritance.
-	env.heartbeatOffset = env.PrepullStartTime(sim) - PetUpdateInterval + DurationFromSeconds(PetUpdateInterval.Seconds()*sim.RandomFloat("Pet Stat Inheritance"))
-
+func (env *Environment) reset(sim *Simulation, firstIteration bool) {
 	// Reset primary targets damage taken for tracking health fights.
 	env.Encounter.DamageTaken = 0
 
@@ -283,6 +281,26 @@ func (env *Environment) reset(sim *Simulation) {
 	}
 
 	env.Raid.reset(sim)
+
+	// Re-evaluate dynamic prepull action times on the first iteration.
+	// Must happen after Raid.reset (which re-applies auras like 5% spell haste)
+	// but before heartbeatOffset and initManaTickAction (which read PrepullStartTime).
+	if firstIteration {
+		for _, action := range env.prepullActions {
+			action.doAtTime = action.DoAt.GetDuration(sim)
+		}
+
+		env.prepullActions = FilterSlice(env.prepullActions, func(action *PrepullAction) bool {
+			return action.doAtTime <= sim.CurrentTime
+		})
+
+		slices.SortStableFunc(env.prepullActions, func(a1, a2 *PrepullAction) int {
+			return int(a1.doAtTime - a2.doAtTime)
+		})
+	}
+
+	// Randomize heartbeat timer for pet stat inheritance.
+	env.heartbeatOffset = env.PrepullStartTime(sim) - PetUpdateInterval + DurationFromSeconds(PetUpdateInterval.Seconds()*sim.RandomFloat("Pet Stat Inheritance"))
 }
 
 // The maximum possible duration for any iteration.

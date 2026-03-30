@@ -3,7 +3,7 @@
       "prepullActions": [
         {"action":{"castSpell":{"spellId":{"spellId":55342}}},"doAtValue":{"const":{"val":"-8s"}}},
         {"action":{"castSpell":{"spellId":{"spellId":12051}}},"doAtValue":{"const":{"val":"-5s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":11366}}},"doAtValue":{"const":{"val":"-2s"}}}
+        {"action":{"castSpell":{"spellId":{"spellId":11366}}},"doAtValue":{"variableRef":{"name":"Prepull Pyro"}}}
       ],
       "priorityList": [
         {"action":{"autocastOtherCooldowns":{}}},
@@ -31,5 +31,8 @@
         {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLe","lhs":{"spellTimeToReady":{"spellId":{"spellId":11129}}},"rhs":{"const":{"val":"10s"}}}},{"auraIsInactive":{"auraId":{"spellId":6117},"includeReactionTime":true}},{"not":{"val":{"spellIsReady":{"spellId":{"spellId":11129}}}}}]}},"castSpell":{"spellId":{"spellId":6117}}}},
         {"action":{"condition":{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":11129}}}}},{"cmp":{"op":"OpGe","lhs":{"spellTimeToReady":{"spellId":{"spellId":11129}}},"rhs":{"const":{"val":"5s"}}}},{"auraIsActive":{"auraId":{"spellId":48108},"includeReactionTime":true}},{"auraIsActive":{"auraId":{"spellId":48107},"includeReactionTime":true}},{"spellInFlight":{"spellId":{"spellId":133}}}]}},"castSpell":{"spellId":{"spellId":11366}}}},
         {"action":{"condition":{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":11129}}}}},{"cmp":{"op":"OpGe","lhs":{"spellTimeToReady":{"spellId":{"spellId":11129}}},"rhs":{"const":{"val":"5s"}}}}]}},"castSpell":{"spellId":{"spellId":133}}}}
+      ],
+      "valueVariables": [
+        {"name":"Prepull Pyro","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"0s"}},"rhs":{"spellCastTime":{"spellId":{"spellId":11366}}}}}}
       ]
     }

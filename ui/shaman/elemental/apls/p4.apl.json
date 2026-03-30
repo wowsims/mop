@@ -1,9 +1,11 @@
 {
       "type": "TypeAPL",
       "prepullActions": [
-        {"action":{"castSpell":{"spellId":{"spellId":2894}}},"doAtValue":{"const":{"val":"-3.0s"}}},
-        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-1.7s"}}},
-        {"action":{"groupReference":{"groupName":"Prepull"}},"doAtValue":{"const":{"val":"-1.7s"}}}
+        {"action":{"castSpell":{"spellId":{"spellId":2894}}},"doAtValue":{"variableRef":{"name":"Prepull Fire Ele"}}},
+        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull time"}}},
+        {"action":{"groupReference":{"groupName":"Prepull EB"}},"doAtValue":{"variableRef":{"name":"Prepull time"}}},
+        {"action":{"groupReference":{"groupName":"Prepull LaBu"}},"doAtValue":{"variableRef":{"name":"Prepull time"}}},
+        {"action":{"groupReference":{"groupName":"Prepull LiBo"}},"doAtValue":{"variableRef":{"name":"Prepull time"}}}
       ],
       "priorityList": [
         {"action":{"condition":{"and":{"vals":[{"variableRef":{"name":"Unleashed Fury Talented"}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114049}}}}}]}},"castSpell":{"spellId":{"spellId":73680}}}},
@@ -29,8 +31,10 @@
         {"action":{"condition":{"variableRef":{"name":"Earth Elemental Rules"}},"castSpell":{"spellId":{"spellId":2062}}}},
         {"action":{"castSpell":{"spellId":{"spellId":403}}}}
       ],
-      "groups": [
-        {"name":"Prepull","actions":[{"action":{"condition":{"spellIsKnown":{"spellId":{"spellId":117014}}},"castSpell":{"spellId":{"spellId":117014}}}},{"action":{"condition":{"auraIsKnown":{"auraId":{"spellId":117012}}},"castSpell":{"spellId":{"spellId":51505}}}},{"action":{"castSpell":{"spellId":{"spellId":403}}}},{"action":{"condition":{"cmp":{"op":"OpGt","lhs":{"numberTargets":{}},"rhs":{"const":{"val":"1"}}}},"castSpell":{"spellId":{"spellId":421}}}}]}
+       "groups": [
+        {"name":"Prepull LaBu","actions":[{"action":{"condition":{"variableRef":{"name":"Unleashed Fury Talented"}},"castSpell":{"spellId":{"spellId":51505}}}}]},
+        {"name":"Prepull EB","actions":[{"action":{"condition":{"variableRef":{"name":"Elemental Blast Talented"}},"castSpell":{"spellId":{"spellId":117014}}}}]},
+        {"name":"Prepull LiBo","actions":[{"action":{"condition":{"not":{"val":{"or":{"vals":[{"variableRef":{"name":"Elemental Blast Talented"}},{"variableRef":{"name":"Unleashed Fury Talented"}}]}}}},"castSpell":{"spellId":{"spellId":403}}}}]}
       ],
       "valueVariables": [
         {"name":"Unleashed Fury Talented","value":{"auraIsKnown":{"auraId":{"spellId":117012}}}},
@@ -48,6 +52,8 @@
         {"name":"Earth Elemental Rules","value":{"or":{"vals":[{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"62s"}}}},{"and":{"vals":[{"not":{"val":{"auraIsActive":{"auraId":{"spellId":2894}}}}},{"cmp":{"op":"OpGe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"5s"}}}},{"cmp":{"op":"OpLe","lhs":{"spellTimeToReady":{"spellId":{"spellId":114049}}},"rhs":{"const":{"val":"20s"}}}},{"cmp":{"op":"OpEq","lhs":{"shamanFireElementalDuration":{}},"rhs":{"const":{"val":"60s"}}}},{"cmp":{"op":"OpLt","lhs":{"spellTimeToReady":{"spellId":{"spellId":114206,"tag":-1}}},"rhs":{"const":{"val":"20s"}}}},{"cmp":{"op":"OpGt","lhs":{"spellTimeToReady":{"spellId":{"spellId":2894}}},"rhs":{"const":{"val":"60s"}}}}]}},{"and":{"vals":[{"cmp":{"op":"OpLt","lhs":{"shamanFireElementalDuration":{}},"rhs":{"const":{"val":"60s"}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":2894}}}}},{"cmp":{"op":"OpLt","lhs":{"spellTimeToReady":{"spellId":{"spellId":2894}}},"rhs":{"const":{"val":"65s"}}}}]}}]}}},
         {"name":"Fire Elemental is not active","value":{"and":{"vals":[{"not":{"val":{"auraIsActive":{"auraId":{"spellId":2894}}}}},{"not":{"val":{"dotIsActive":{"spellId":{"spellId":3599}}}}}]}}},
         {"name":"Stormlash Outside Ascendance","value":{"and":{"vals":[{"not":{"val":{"auraIsActive":{"auraId":{"spellId":120668,"tag":-1}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114049}}}}}]}}},
-        {"name":"Sync Second Banners with Ascendance","value":{"auraIsActive":{"auraId":{"spellId":114049}}}}
+        {"name":"Sync Second Banners with Ascendance","value":{"auraIsActive":{"auraId":{"spellId":114049}}}},
+		{"name":"Prepull Fire Ele","value":{"math":{"op":"OpSub","lhs":{"variableRef":{"name":"Prepull time"}},"rhs":{"spellGcdHastedDuration":{"spellId":{"spellId":2894}}}}}},
+        {"name":"Prepull time","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"0s"}},"rhs":{"spellCastTime":{"spellId":{"spellId":403}}}}}}
       ]
     }
