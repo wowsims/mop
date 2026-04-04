@@ -3686,6 +3686,34 @@
                 "reset"
               ]
             },
+            "nameModal": {
+              "type": "object",
+              "properties": {
+                "create": {
+                  "type": "string"
+                },
+                "extract": {
+                  "type": "string"
+                },
+                "nameConflict": {
+                  "type": "string"
+                },
+                "rename": {
+                  "type": "string"
+                },
+                "renameConfirm": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "create",
+                "extract",
+                "nameConflict",
+                "rename",
+                "renameConfirm"
+              ]
+            },
             "prePullActions": {
               "type": "object",
               "properties": {
@@ -3791,7 +3819,10 @@
                     "valueTooltip"
                   ]
                 },
-                "copyName": {
+                "enterVariableName": {
+                  "type": "string"
+                },
+                "extractToVariable": {
                   "type": "string"
                 },
                 "header": {
@@ -3827,11 +3858,27 @@
               "additionalProperties": false,
               "required": [
                 "attributes",
-                "copyName",
+                "enterVariableName",
+                "extractToVariable",
                 "header",
                 "name",
                 "newVariableName",
                 "tooltips"
+              ]
+            },
+            "variablePlaceholder": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "nameLabel": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "nameLabel"
               ]
             },
             "prepull_actions": {
@@ -7360,10 +7407,12 @@
           "required": [
             "actionGroups",
             "floatingActionBar",
+            "nameModal",
             "prePullActions",
             "priorityList",
             "tabs",
             "variables",
+            "variablePlaceholder",
             "prepull_actions",
             "priority_list",
             "actions",

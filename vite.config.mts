@@ -119,6 +119,13 @@ export default defineConfig(({ command, mode }) => {
 	const baseConfig = getBaseConfig({ command, mode });
 	return {
 		...baseConfig,
+		css: {
+			preprocessorOptions: {
+				scss: {
+					silenceDeprecations: ['import', 'global-builtin', 'color-functions'],
+				},
+			},
+		},
 		plugins: [
 			i18nextLoader({ namespaceResolution: 'basename', paths: ['assets/locales'] }),
 			serveExternalAssets(),

@@ -7,25 +7,11 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-type APLValueAuraIsKnown struct {
-	DefaultAPLValueImpl
-	aura AuraReference
-}
-
-func (rot *APLRotation) newValueAuraIsKnown(config *proto.APLValueAuraIsKnown, _ *proto.UUID) APLValue {
+func (rot *APLRotation) newValueAuraIsKnown(config *proto.APLValueAuraIsKnown, uuid *proto.UUID) APLValue {
 	aura := rot.GetAPLAura(rot.GetSourceUnit(config.SourceUnit), config.AuraId)
-	return &APLValueAuraIsKnown{
-		aura: aura,
-	}
-}
-func (value *APLValueAuraIsKnown) Type() proto.APLValueType {
-	return proto.APLValueType_ValueTypeBool
-}
-func (value *APLValueAuraIsKnown) GetBool(sim *Simulation) bool {
-	return value.aura.Get() != nil
-}
-func (value *APLValueAuraIsKnown) String() string {
-	return fmt.Sprintf("Aura Known(%s)", value.aura.String())
+	return rot.newValueConst(&proto.APLValueConst{
+		Val: Ternary(aura.Get() != nil, "true", "false"),
+	}, uuid)
 }
 
 type APLValueAuraIsActive struct {

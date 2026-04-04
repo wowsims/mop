@@ -1,8 +1,8 @@
 {
       "type": "TypeAPL",
       "prepullActions": [
-        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-1.6s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":48181}}},"doAtValue":{"const":{"val":"-1.6s"}}}
+        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull Haunt"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":48181}}},"doAtValue":{"variableRef":{"name":"Prepull Haunt"}}}
       ],
       "priorityList": [
         {"action":{"autocastOtherCooldowns":{}}},
@@ -38,6 +38,7 @@
         {"name":"should-sbss","value":{"or":{"vals":[{"variableRef":{"name":"no-dots-active"}},{"cmp":{"op":"OpGe","lhs":{"dotPercentIncrease":{"spellId":{"spellId":86121,"tag":1}}},"rhs":{"const":{"val":"40%"}}}},{"and":{"vals":[{"cmp":{"op":"OpGe","lhs":{"dotPercentIncrease":{"spellId":{"spellId":86121,"tag":1}}},"rhs":{"const":{"val":"20%"}}}},{"not":{"val":{"variableRef":{"name":"can-proc-more"}}}},{"cmp":{"op":"OpGt","lhs":{"remainingTime":{}},"rhs":{"variableRef":{"name":"dots-min-time"}}}},{"or":{"vals":[{"auraIsInactive":{"auraId":{"spellId":138790}}},{"cmp":{"op":"OpEq","lhs":{"auraNumStacks":{"auraId":{"spellId":138786}}},"rhs":{"const":{"val":"10"}}}}]}}]}},{"and":{"vals":[{"cmp":{"op":"OpGe","lhs":{"dotPercentIncrease":{"spellId":{"spellId":86121,"tag":1}}},"rhs":{"const":{"val":"-2%"}}}},{"cmp":{"op":"OpLe","lhs":{"variableRef":{"name":"time-until-buffs-end"}},"rhs":{"variableRef":{"name":"GCD-duration"}}}},{"cmp":{"op":"OpGt","lhs":{"remainingTime":{}},"rhs":{"variableRef":{"name":"dots-min-time"}}}},{"cmp":{"op":"OpLt","lhs":{"dotRemainingTime":{"spellId":{"spellId":980}}},"rhs":{"const":{"val":"31s"}}}}]}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"dotPercentIncrease":{"spellId":{"spellId":86121,"tag":1}}},"rhs":{"const":{"val":"0%"}}}},{"cmp":{"op":"OpLe","lhs":{"variableRef":{"name":"time-until-buffs-end"}},"rhs":{"variableRef":{"name":"GCD-duration"}}}},{"cmp":{"op":"OpGt","lhs":{"remainingTime":{}},"rhs":{"variableRef":{"name":"dots-min-time"}}}}]}}]}}},
         {"name":"time-until-buffs-end","value":{"min":{"vals":[{"trinketProcsMinRemainingTime":{"statType1":3,"statType2":6,"statType3":7}},{"anyStatBuffCooldownsMinDuration":{"statType1":3,"statType2":7,"statType3":14}}]}}},
         {"name":"should-not-haunt","value":{"and":{"vals":[{"cmp":{"op":"OpGe","lhs":{"dotPercentIncrease":{"spellId":{"spellId":86121,"tag":1}}},"rhs":{"const":{"val":"-2%"}}}},{"cmp":{"op":"OpGt","lhs":{"math":{"op":"OpAdd","lhs":{"math":{"op":"OpAdd","lhs":{"math":{"op":"OpMul","lhs":{"const":{"val":"2"}},"rhs":{"dotTickFrequency":{"spellId":{"spellId":1120}}}}},"rhs":{"channelClipDelay":{}}}},"rhs":{"const":{"val":"2s"}}}},"rhs":{"variableRef":{"name":"time-until-buffs-end"}}}},{"cmp":{"op":"OpLe","lhs":{"currentGenericResource":{}},"rhs":{"const":{"val":"1"}}}}]}}},
-        {"name":"dots-min-time","value":{"min":{"vals":[{"dotRemainingTime":{"spellId":{"spellId":980}}},{"dotRemainingTime":{"spellId":{"spellId":30108}}},{"dotRemainingTime":{"spellId":{"spellId":172}}}]}}}
+        {"name":"dots-min-time","value":{"min":{"vals":[{"dotRemainingTime":{"spellId":{"spellId":980}}},{"dotRemainingTime":{"spellId":{"spellId":30108}}},{"dotRemainingTime":{"spellId":{"spellId":172}}}]}}},
+        {"name":"Prepull Haunt","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"0s"}},"rhs":{"spellCastTime":{"spellId":{"spellId":48181}}}}}}
       ]
 }

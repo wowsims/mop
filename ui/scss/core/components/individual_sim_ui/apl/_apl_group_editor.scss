@@ -1,3 +1,24 @@
+.apl-name-display {
+	display: flex;
+	align-items: center;
+	gap: var(--spacer-2);
+
+	.apl-name-value {
+		font-weight: bold;
+	}
+
+	.apl-name-rename {
+		padding: 0;
+		line-height: 1;
+	}
+}
+
+.apl-placeholder-name-picker-root .apl-name-display {
+	.apl-name-value {
+		font-size: var(--btn-font-size);
+	}
+}
+
 .apl-group-editor-root {
 	.apl-action-picker-root {
 		width: 100%;
@@ -10,12 +31,6 @@
 
 	.list-picker-new-button {
 		width: unset !important;
-	}
-
-	.apl-group-name-picker {
-		input {
-			min-width: 8rem;
-		}
 	}
 }
 

@@ -149,9 +149,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 		epWeights: [
 			Presets.P2_BALANCED_EP_PRESET,
 			Presets.P2_OFFENSIVE_EP_PRESET,
-			Presets.P3_SURVIVAL_EP_PRESET,
-			Presets.P3_BALANCED_EP_PRESET,
-			Presets.P3_OFFENSIVE_EP_PRESET,
+			Presets.P3_4_SURVIVAL_EP_PRESET,
+			Presets.P3_4_BALANCED_EP_PRESET,
+			Presets.P3_4_OFFENSIVE_EP_PRESET,
 		],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.BLOOD_ROTATION_PRESET_SHA, Presets.BLOOD_ROTATION_PRESET_HORRIDON],
@@ -161,9 +161,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 		gear: [
 			Presets.P2_BALANCED_BLOOD_PRESET,
 			Presets.P2_OFFENSIVE_BLOOD_PRESET,
-			Presets.P3_PROG_BLOOD_PRESET,
-			Presets.P3_BALANCED_BLOOD_PRESET,
-			Presets.P3_OFFENSIVE_BLOOD_PRESET,
+			Presets.P3_4_PROG_BLOOD_PRESET,
+			Presets.P3_4_BALANCED_BLOOD_PRESET,
+			Presets.P3_4_OFFENSIVE_BLOOD_PRESET,
 		],
 		builds: [Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
 	},
@@ -207,7 +207,7 @@ export class BloodDeathKnightSimUI extends IndividualSimUI<Spec.SpecBloodDeathKn
 				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
 					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
 					if (softCap.unitStat.equalsStat(Stat.StatExpertiseRating) && softCapToModify) {
-						if (epWeights.equals(Presets.P3_OFFENSIVE_EP_PRESET.epWeights)) {
+						if (epWeights.equals(Presets.P3_4_OFFENSIVE_EP_PRESET.epWeights)) {
 							softCapToModify.postCapEPs = OffensiveExpertiseBreakpoints;
 						} else {
 							softCapToModify.postCapEPs = ExpertiseBreakpoints;

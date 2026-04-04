@@ -11,9 +11,9 @@ import GarajalBuild from './builds/garajal_encounter_only.build.json';
 import ShaBuild from './builds/sha_encounter_only.build.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
-import P3ProgGear from './gear_sets/p3_prog.gear.json';
-import P3BISGear from './gear_sets/p3_bis.gear.json';
-import P3BISOffensiveGear from './gear_sets/p3_bis_offensive.gear.json';
+import P4ProgGear from './gear_sets/p4_prog.gear.json';
+import P4BISGear from './gear_sets/p4_bis.gear.json';
+import P4BISOffensiveGear from './gear_sets/p4_bis_offensive.gear.json';
 import P2BISItemSwapGear from './gear_sets/p2_bis_item_swap.gear.json';
 import P2BISOffensiveGear from './gear_sets/p2_bis_offensive.gear.json';
 import PreRaidItemSwapGear from './gear_sets/p1_preraid_item_swap.gear.json';
@@ -26,9 +26,9 @@ import PreraidBISGear from './gear_sets/preraid.gear.json';
 export const PRERAID_BALANCED_PRESET = PresetUtils.makePresetGear('Pre-BIS', PreraidBISGear);
 export const P2_BALANCED_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2BISGear);
 export const P2_OFFENSIVE_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive)', P2BISOffensiveGear);
-export const P3_PROG_PRESET = PresetUtils.makePresetGear('Tentative - P3 - Prog (Balanced)', P3ProgGear);
-export const P3_BALANCED_PRESET = PresetUtils.makePresetGear('Tentative - P3 - BIS (Balanced)', P3BISGear);
-export const P3_OFFENSIVE_PRESET = PresetUtils.makePresetGear('Tentative - P3 - BIS (Offensive)', P3BISOffensiveGear);
+export const P3_4_PROG_PRESET = PresetUtils.makePresetGear('P3 & P4 - Prog (Balanced)', P4ProgGear);
+export const P3_4_BALANCED_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4BISGear);
+export const P3_4_OFFENSIVE_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4BISOffensiveGear);
 
 export const PRERAID_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('Pre-raid - Item Swap', PreRaidItemSwapGear);
 export const P2_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P2 - Item Swap', P2BISItemSwapGear);
@@ -86,7 +86,7 @@ export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 );
 
 export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Balanced',
+	'P3 & P4 - Balanced',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
@@ -109,7 +109,7 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 );
 
 export const P3_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 - Offensive',
+	'P3 & P4 - Offensive',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.00,

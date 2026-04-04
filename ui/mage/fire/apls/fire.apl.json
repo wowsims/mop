@@ -4,8 +4,8 @@
 	{"action":{"castSpell":{"spellId":{"spellId":55342}}},"doAtValue":{"const":{"val":"-7.5s"}}},
 	{"action":{"castSpell":{"spellId":{"spellId":12051}}},"doAtValue":{"const":{"val":"-6s"}}},
 	{"action":{"castSpell":{"spellId":{"spellId":116011}}},"doAtValue":{"const":{"val":"-4.5s"}}},
-	{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-3s"}}},
-	{"action":{"castSpell":{"spellId":{"spellId":11366}}},"doAtValue":{"const":{"val":"-3s"}}}
+	{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull Pyro"}}},
+	{"action":{"castSpell":{"spellId":{"spellId":11366}}},"doAtValue":{"variableRef":{"name":"Prepull Pyro"}}}
 	],
 	"priorityList": [
 	{"action":{"autocastOtherCooldowns":{}}},
@@ -44,6 +44,7 @@
 	{"name":"Combust: Size - BL","value":{"const":{"val":"4600000"}}},
 	{"name":"Combust: Size - Post-AT","value":{"const":{"val":"2600000"}}},
 	{"name":"Combust: Size - No AT","value":{"const":{"val":"460000"}}},
-	{"name":"Combust: Size - End of Combat","value":{"const":{"val":"350000"}}}
+	{"name":"Combust: Size - End of Combat","value":{"const":{"val":"350000"}}},
+	{"name":"Prepull Pyro","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"0s"}},"rhs":{"spellCastTime":{"spellId":{"spellId":11366}}}}}}
 	]
 }

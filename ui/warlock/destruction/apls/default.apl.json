@@ -1,8 +1,8 @@
 {
 	"type": "TypeAPL",
 	"prepullActions": [
-		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-1.75s"}}},
-		{"action":{"castSpell":{"spellId":{"spellId":29722}}},"doAtValue":{"const":{"val":"-1.75s"}}}
+		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull Incinerate"}}},
+		{"action":{"castSpell":{"spellId":{"spellId":29722}}},"doAtValue":{"variableRef":{"name":"Prepull Incinerate"}}}
 	],
 	"priorityList": [
 		{"action":{"autocastOtherCooldowns":{}}},
@@ -27,5 +27,8 @@
 		{"action":{"condition":{"auraIsActive":{"auraId":{"spellId":117828},"includeReactionTime":true}},"castSpell":{"spellId":{"spellId":29722}}}},
 		{"action":{"castSpell":{"spellId":{"spellId":17962}}}},
 		{"action":{"castSpell":{"spellId":{"spellId":29722}}}}
+	],
+	"valueVariables": [
+		{"name":"Prepull Incinerate","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"spellCastTime":{"spellId":{"spellId":29722}}}}}}
 	]
 }

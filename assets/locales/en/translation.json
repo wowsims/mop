@@ -884,6 +884,13 @@
 				"new": "New {{itemName}}",
 				"reset": "Reset APL"
 			},
+			"nameModal": {
+				"create": "Create",
+				"nameConflict": "An item with this name already exists.",
+				"extract": "Extract",
+				"rename": "Rename {{itemName}}",
+				"renameConfirm": "Rename"
+			},
 			"prePullActions": {
 				"header": "Pre-Pull Action List",
 				"name": "Pre-Pull Action",
@@ -910,7 +917,8 @@
 					"value": "Value",
 					"valueTooltip": "The value expression that this variable represents."
 				},
-				"copyName": "{variableName} (Copy)",
+				"enterVariableName": "Enter variable name:",
+				"extractToVariable": "Extract to APL Variable",
 				"header": "Variables",
 				"name": "Variable",
 				"newVariableName": "New Variable",
@@ -919,6 +927,10 @@
 					"overview": "Variables can be used to store complex conditions that can be referenced in the Action Priority List (APL). This is useful for storing dynamic values that change during the fight, such as cooldown timers or resource levels.",
 					"value": "The value expression that this variable represents."
 				}
+			},
+			"variablePlaceholder": {
+				"name": "Placeholder",
+				"nameLabel": "Placeholder Name"
 			},
 			"prepull_actions": {
 				"title": "Prepull Actions",

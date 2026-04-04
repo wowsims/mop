@@ -2,12 +2,14 @@ import i18n from '../../../../i18n/config';
 import { Player } from '../../../player';
 import { APLAction, APLGroup, APLListItem } from '../../../proto/apl';
 import { UUID } from '../../../proto/common';
-import { EventID } from '../../../typed_event';
+import { renameAPLReference } from '../../../proto_utils/apl_utils';
+import { EventID, TypedEvent } from '../../../typed_event';
 import { randomUUID } from '../../../utils';
 import { Input, InputConfig } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
-import { AdaptiveStringPicker } from '../../pickers/string_picker';
 import { APLActionPicker } from '../apl_actions';
+import * as AplHelpers from '../apl_helpers';
+import { APLNameModal } from './apl_name_modal';
 import { APLHidePicker } from './hide_picker';
 
 export interface APLGroupEditorConfig extends InputConfig<Player<any>, APLGroup> {
@@ -16,7 +18,7 @@ export interface APLGroupEditorConfig extends InputConfig<Player<any>, APLGroup>
 
 export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 	private readonly index: number;
-	private readonly namePicker: AdaptiveStringPicker<Player<any>>;
+	private readonly nameLabel: HTMLElement;
 	private readonly actionsPicker: ListPicker<Player<any>, APLListItem>;
 	private readonly actionsContainer: HTMLElement;
 
@@ -26,22 +28,33 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 		this.index = config.index;
 		const container = this.rootElem.appendChild(<div className="apl-action-picker-root" />) as HTMLElement;
 
-		// Create the group name input within our container
-		this.namePicker = new AdaptiveStringPicker(container, this.modObject, {
-			id: randomUUID(),
-			label: i18n.t('rotation_tab.apl.actionGroups.attributes.name'),
-			labelTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.name'),
-			extraCssClasses: ['apl-group-name-picker'],
-			inline: true,
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
-			getValue: () => this.getSourceValue()?.name || '',
-			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
-				const group = this.getSourceValue();
-				if (group) {
-					group.name = newValue;
-					player.rotationChangeEmitter.emit(eventID);
-				}
-			},
+		// Create the group name display with rename button
+		this.nameLabel = (<span className="apl-name-value" />) as HTMLElement;
+
+		const nameContainer = container.appendChild(
+			<div className="apl-name-display">
+				{this.nameLabel}
+				<button className="btn btn-link apl-name-rename" type="button">
+					<i className="fas fa-pencil-alt" />
+				</button>
+			</div>,
+		) as HTMLElement;
+
+		nameContainer.querySelector('.apl-name-rename')!.addEventListener('click', () => {
+			const group = this.getSourceValue();
+			if (!group) return;
+			new APLNameModal(this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body, {
+				title: i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.actionGroups.name') }),
+				inputLabel: i18n.t('rotation_tab.apl.actionGroups.attributes.name'),
+				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.renameConfirm'),
+				defaultValue: group.name,
+				existingNames: () => (player.aplRotation.groups || []).filter(g => g !== group).map(g => g.name),
+				onSubmit: (name: string) => {
+					renameAPLReference(player.aplRotation, { type: 'group', oldName: group.name, newName: name });
+					group.name = name;
+					player.rotationChangeEmitter.emit(TypedEvent.nextEventID());
+				},
+			});
 		});
 
 		// Create a dedicated container for actions that will have full width
@@ -77,6 +90,16 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 			inlineMenuBar: true,
 			allowedActions: ['create', 'copy', 'delete', 'move'],
 			dragGroup: 'action-group-actions',
+			extraActions: [
+				AplHelpers.extractToVariableAction(
+					player,
+					(actionIndex) => this.getSourceValue()?.actions?.[actionIndex]?.action?.condition,
+					(actionIndex, ref) => {
+						this.getSourceValue()!.actions[actionIndex].action!.condition = ref;
+					},
+					this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body,
+				),
+			],
 		});
 
 		this.init();
@@ -94,7 +117,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 		}
 
 		return APLGroup.create({
-			name: this.namePicker.getInputValue(),
+			name: group.name,
 			actions: this.actionsPicker.getInputValue(),
 		});
 	}
@@ -103,7 +126,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 		if (!newValue) {
 			return;
 		}
-		this.namePicker.setInputValue(newValue.name || '');
+		this.nameLabel.textContent = newValue.name || '';
 		this.actionsPicker.setInputValue(newValue.actions || []);
 	}
 }

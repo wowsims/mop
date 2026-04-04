@@ -30,7 +30,7 @@ func (mage *Mage) registerManaGems() {
 		Duration: 6*time.Second + 1, // add 1 ns duration offset in order to guarantee that the final tick fires
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			manaPerTick := 45000.0 / 5
+			manaPerTick := (45000.0 / 5) * mage.Unit.TotalSpellHasteMultiplier()
 			core.StartPeriodicAction(sim, core.PeriodicActionOptions{
 				Period:   time.Second,
 				NumTicks: 5,
@@ -62,10 +62,11 @@ func (mage *Mage) registerManaGems() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
+			hasteMultiplier := mage.Unit.TotalSpellHasteMultiplier()
 			if hasMinorGlyph {
 				minorGlyphAura.Activate(sim)
 			} else {
-				manaGain = sim.Roll(minManaGain, maxManaGain)
+				manaGain = sim.Roll(minManaGain, maxManaGain) * hasteMultiplier
 				mage.AddMana(sim, manaGain, manaMetrics)
 			}
 

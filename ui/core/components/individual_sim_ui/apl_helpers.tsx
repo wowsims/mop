@@ -6,25 +6,29 @@ import { Player, UnitMetadata } from '../../player.js';
 import {
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
 	APLActionItemSwap_SwapSet as ItemSwapSet,
+	APLValue,
 	APLValueEclipsePhase,
 	APLValueRuneSlot,
 	APLValueRuneType,
+	APLValueVariable,
 	APLActionDamageAmplifier_AmplificationType,
 } from '../../proto/apl.js';
 import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
 import { ActionId, defaultTargetIcon, getPetIconFromName } from '../../proto_utils/action_id.js';
+import { renameAPLReference } from '../../proto_utils/apl_utils.js';
 import { getStatName } from '../../proto_utils/names.js';
 import { translateStat } from '../../../i18n/localization.js';
-import { EventID } from '../../typed_event.js';
+import { EventID, TypedEvent } from '../../typed_event.js';
 import { bucket, getEnumValues, randomUUID } from '../../utils.js';
 import { Input, InputConfig } from '../input.jsx';
 import { BooleanPicker } from '../pickers/boolean_picker.js';
 import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig, TextDropdownPicker } from '../pickers/dropdown_picker.jsx';
-import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
+import { ListItemPickerConfig, ListPicker, ListPickerExtraAction } from '../pickers/list_picker.jsx';
 import { NumberPicker, NumberPickerConfig } from '../pickers/number_picker.js';
 import { AdaptiveStringPicker } from '../pickers/string_picker.js';
 import { UnitPicker, UnitPickerConfig, UnitValue } from '../pickers/unit_picker.jsx';
+import { APLNameModal } from './apl/apl_name_modal';
 
 export type ACTION_ID_SET =
 	| 'auras'
@@ -788,6 +792,157 @@ export function variableNameFieldConfig(field: string, options?: Partial<APLPick
 	};
 }
 
+export function placeholderNameFieldConfig(field: string, options?: Partial<APLPickerBuilderFieldConfig<any, any>>): APLPickerBuilderFieldConfig<any, any> {
+	return {
+		field: field,
+		newValue: () => '',
+		factory: (parent, player, config, getParentValue) => {
+			return new APLPlaceholderNamePicker(parent, player, config, getParentValue);
+		},
+		...(options || {}),
+	};
+}
+
+class APLPlaceholderNamePicker extends Input<Player<any>, string> {
+	private readonly nameLabel: HTMLElement;
+
+	constructor(parent: HTMLElement, player: Player<any>, config: InputConfig<Player<any>, string>, getParentValue: () => any) {
+		super(parent, 'apl-placeholder-name-picker-root', player, config);
+
+		const container = this.rootElem.appendChild(
+			<div className="apl-name-display">
+				<span className="apl-name-value" />
+				<button className="btn btn-link apl-name-rename" type="button">
+					<i className="fas fa-pencil-alt" />
+				</button>
+			</div>,
+		) as HTMLElement;
+
+		this.nameLabel = container.querySelector('.apl-name-value')!;
+
+		container.querySelector('.apl-name-rename')!.addEventListener('click', () => {
+			this.openNameModal(player, getParentValue);
+		});
+
+		this.init();
+
+		// Auto-open modal when name is empty (freshly created)
+		if (!config.getValue(player)) {
+			this.openNameModal(player, getParentValue, true);
+		}
+	}
+
+	private findContainingGroup(player: Player<any>, parentValue: any): any | undefined {
+		return player.aplRotation?.groups?.find((group: any) =>
+			group.actions?.some((action: any) => {
+				const found = { value: false };
+				const search = (obj: any) => {
+					if (found.value || !obj || typeof obj !== 'object') return;
+					if (obj === parentValue) {
+						found.value = true;
+						return;
+					}
+					if (Array.isArray(obj)) {
+						obj.forEach(search);
+					} else {
+						Object.values(obj).forEach(search);
+					}
+				};
+				search(action);
+				return found.value;
+			}),
+		);
+	}
+
+	private getExistingPlaceholderNames(group: any, excludeCurrent: boolean): string[] {
+		const names = new Set<string>();
+		const scan = (obj: any) => {
+			if (!obj || typeof obj !== 'object') return;
+			if (obj?.value?.oneofKind === 'variablePlaceholder') {
+				const name = obj.value.variablePlaceholder?.name;
+				if (name) names.add(name);
+			}
+			if (Array.isArray(obj)) {
+				obj.forEach(scan);
+			} else {
+				Object.values(obj).forEach(scan);
+			}
+		};
+		group?.actions?.forEach(scan);
+
+		if (excludeCurrent) {
+			const currentName = this.getSourceValue();
+			if (currentName) names.delete(currentName);
+		}
+
+		return Array.from(names);
+	}
+
+	private openNameModal(player: Player<any>, getParentValue: () => any, isNew = false) {
+		const currentName = this.getSourceValue();
+		const group = this.findContainingGroup(player, getParentValue());
+		new APLNameModal(this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body, {
+			title: currentName
+				? i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.variablePlaceholder.name') })
+				: i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName: i18n.t('rotation_tab.apl.variablePlaceholder.name') }),
+			inputLabel: i18n.t('rotation_tab.apl.variablePlaceholder.nameLabel'),
+			confirmButtonLabel: currentName ? i18n.t('rotation_tab.apl.nameModal.renameConfirm') : undefined,
+			defaultValue: currentName || '',
+			existingNames: () => this.getExistingPlaceholderNames(group, !!currentName),
+			onSubmit: (name: string) => {
+				if (currentName && group) {
+					// Rename placeholders within this group only
+					renameAPLReference(group, { type: 'placeholder', oldName: currentName, newName: name });
+					// Rename matching variable entries in group references that point to this group
+					const groupName = group.name;
+					const updateGroupRefs = (obj: any) => {
+						if (!obj || typeof obj !== 'object') return;
+						if (obj?.oneofKind === 'groupReference' && obj.groupReference?.groupName === groupName) {
+							for (const v of obj.groupReference.variables ?? []) {
+								if (v.name === currentName) v.name = name;
+							}
+						}
+						if (Array.isArray(obj)) obj.forEach(updateGroupRefs);
+						else Object.values(obj).forEach(updateGroupRefs);
+					};
+					updateGroupRefs(player.aplRotation);
+				}
+				this.setSourceValue(TypedEvent.nextEventID(), name);
+				player.rotationChangeEmitter.emit(TypedEvent.nextEventID());
+			},
+			onCancel: isNew
+				? () => {
+						// Remove the placeholder by resetting the parent APLValue
+						const parentValue = getParentValue();
+						const clearValue = (obj: any): boolean => {
+							if (!obj || typeof obj !== 'object') return false;
+							if (obj?.value?.oneofKind === 'variablePlaceholder' && obj.value.variablePlaceholder === parentValue) {
+								obj.value = { oneofKind: undefined };
+								return true;
+							}
+							if (Array.isArray(obj)) return obj.some(clearValue);
+							return Object.values(obj).some(clearValue);
+						};
+						clearValue(player.aplRotation);
+						player.rotationChangeEmitter.emit(TypedEvent.nextEventID());
+					}
+				: undefined,
+		});
+	}
+
+	getInputElem(): HTMLElement | null {
+		return this.rootElem;
+	}
+
+	getInputValue(): string {
+		return this.nameLabel.textContent || '';
+	}
+
+	setInputValue(newValue: string) {
+		this.nameLabel.textContent = newValue || '';
+	}
+}
+
 export function groupNameFieldConfig(field: string, options?: Partial<APLPickerBuilderFieldConfig<any, any>>): APLPickerBuilderFieldConfig<any, any> {
 	return {
 		field: field,
@@ -953,6 +1108,9 @@ export function groupReferenceVariablesFieldConfig(
 					return variableItem;
 				});
 
+				// Clear first to force picker recreation — labels are set in
+				// the constructor and won't update on reuse.
+				listPicker.setInputValue([]);
 				listPicker.setInputValue(parentValue.variables);
 			};
 
@@ -1296,5 +1454,55 @@ export function itemSwapSetFieldConfig(field: string): APLPickerBuilderFieldConf
 					{ value: ItemSwapSet.Swap1, label: i18n.t('rotation_tab.apl.item_swap_sets.swapped') },
 				],
 			}),
+	};
+}
+
+/**
+ * Creates a ListPickerExtraAction that extracts an APL value/condition to a named variable,
+ * replacing it with a Variable Reference.
+ */
+export function extractToVariableAction(
+	player: Player<any>,
+	getValue: (index: number) => APLValue | undefined,
+	setValue: (index: number, variableRef: APLValue) => void,
+	modalParent: HTMLElement = document.body,
+): ListPickerExtraAction {
+	const isExtractable = (index: number): boolean => {
+		const value = getValue(index);
+		return !!value && !!value.value.oneofKind && value.value.oneofKind !== 'variableRef';
+	};
+
+	return {
+		cssClass: 'list-picker-item-extract-variable',
+		icon: 'fa-arrow-right-from-bracket',
+		tooltip: i18n.t('rotation_tab.apl.variables.extractToVariable'),
+		shouldShow: isExtractable,
+		onClick: (index: number) => {
+			if (!isExtractable(index)) return;
+			const value = getValue(index)!;
+
+			new APLNameModal(modalParent, {
+				title: i18n.t('rotation_tab.apl.variables.extractToVariable'),
+				inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
+				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.extract'),
+				existingNames: (player.aplRotation.valueVariables || []).map(v => v.name),
+				onSubmit: (name: string) => {
+					if (!player.aplRotation.valueVariables) {
+						player.aplRotation.valueVariables = [];
+					}
+					player.aplRotation.valueVariables.push(APLValueVariable.create({ name, value: APLValue.clone(value) }));
+
+					setValue(
+						index,
+						APLValue.create({
+							value: { oneofKind: 'variableRef', variableRef: { name } },
+							uuid: { value: randomUUID() },
+						}),
+					);
+
+					player.rotationChangeEmitter.emit(TypedEvent.nextEventID());
+				},
+			});
+		},
 	};
 }

@@ -884,6 +884,13 @@
                 "new": "Nouveau {{itemName}}",
                 "reset": "Réinitialiser l'APL"
             },
+            "nameModal": {
+                "create": "Créer",
+                "nameConflict": "Un élément avec ce nom existe déjà.",
+                "extract": "Extraire",
+                "rename": "Renommer {{itemName}}",
+                "renameConfirm": "Renommer"
+            },
             "prePullActions": {
                 "header": "Liste d'actions pré-pull",
                 "name": "Action pré-pull",
@@ -910,7 +917,8 @@
                     "value": "Valeur",
                     "valueTooltip": "L'expression de la valeur que représente cette variable."
                 },
-                "copyName": "{{variableName}} (Copie)",
+                "enterVariableName": "Nom de la variable:",
+                "extractToVariable": "Extraire vers une variable APL",
                 "header": "Variables",
                 "name": "Variable",
                 "newVariableName": "Nouvelle variable",
@@ -919,6 +927,10 @@
                     "overview": "Les variables peuvent être utilisées pour stocker des conditions complexes référencées dans l'APL. Utile pour stocker des valeurs dynamiques changeant pendant le combat, comme les timers de CD ou les ressources.",
                     "value": "L'expression de la valeur que représente cette variable."
                 }
+            },
+            "variablePlaceholder": {
+                "name": "Placeholder",
+                "nameLabel": "Placeholder Name"
             },
             "prepull_actions": {
                 "title": "Actions de pré-pull",

@@ -14,6 +14,19 @@ type APLRotation struct {
 	groups         []*APLGroup
 	valueVariables []*APLValueVariable
 
+	// Shared variable caches: all APLValueVariableRef instances for the same
+	// variable name share the same cache (but each has its own expression tree).
+	variableCaches map[string]*variableCache
+	evalGeneration uint32
+
+	// Values orphaned by compile-time constant folding (e.g. And/Or short-circuit).
+	// These still need Finalize() called on them.
+	orphanedValues []APLValue
+
+	// Actions pruned by compile-time constant folding (const false condition).
+	// Their spells still need to be removed from MCD auto-casting.
+	prunedActions []APLActionImpl
+
 	// Action currently controlling this rotation (only used for certain actions, such as StrictSequence).
 	controllingActions []APLActionImpl
 
@@ -110,6 +123,8 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 	groupsConfig := config.Groups
 	rotation := &APLRotation{
 		unit:                    unit,
+		variableCaches:          make(map[string]*variableCache),
+		evalGeneration:          1, // Start at 1 so zero-value generation fields never match
 		prepullValidations:      make([][]*proto.APLValidation, len(config.PrepullActions)),
 		priorityListValidations: make([][]*proto.APLValidation, len(config.PriorityList)),
 		groupListValidations:    make([][][]*proto.APLValidation, len(groupsConfig)),
@@ -255,19 +270,22 @@ func (unit *Unit) newAPLRotation(config *proto.APLRotation) *APLRotation {
 		})
 	}
 
+	// Finalize orphaned values from compile-time constant folding.
+	for _, value := range rotation.orphanedValues {
+		value.Finalize(rotation)
+	}
+
 	agent := unit.Env.GetAgentFromUnit(unit)
 	if agent != nil {
 		character := agent.GetCharacter()
 
-		// Remove MCDs that are referenced by APL actions, so that the Autocast Other Cooldowns
-		// action does not include them.
+		// Remove MCDs that are referenced by APL actions (including pruned ones),
+		// so that the Autocast Other Cooldowns action does not include them.
 		for _, action := range rotation.allAPLActions() {
-			if castSpellAction, ok := action.impl.(*APLActionCastSpell); ok {
-				character.removeInitialMajorCooldown(castSpellAction.spell.ActionID)
-			}
-			if castFriendlySpellAction, ok := action.impl.(*APLActionCastFriendlySpell); ok {
-				character.removeInitialMajorCooldown(castFriendlySpellAction.spell.ActionID)
-			}
+			removeFromMajorCooldowns(action.impl, character)
+		}
+		for _, impl := range rotation.prunedActions {
+			removeFromMajorCooldowns(impl, character)
 		}
 
 		// If user has Item Swapping enabled and hasn't swapped back to the main set do it here.
@@ -360,18 +378,30 @@ func (rot *APLRotation) getStats() *proto.APLStats {
 	}
 }
 
+func getAllActionsSafe(action *APLAction) []*APLAction {
+	// Check if action is nil before calling GetAllActions
+	if action == nil {
+		return []*APLAction{}
+	}
+	return action.GetAllActions()
+}
+
 func (rot *APLRotation) allAPLActions() []*APLAction {
 	if rot == nil || rot.priorityList == nil {
 		return []*APLAction{}
 	}
 
-	return Flatten(MapSlice(rot.priorityList, func(action *APLAction) []*APLAction {
-		// Check if action is nil before calling GetAllActions
-		if action == nil {
-			return []*APLAction{}
+	actions := Flatten(MapSlice(rot.priorityList, getAllActionsSafe))
+
+	//Grab rot.groups actions as well
+	if rot.groups != nil {
+		for _, group := range rot.groups {
+			groupActions := Flatten(MapSlice(group.actions, getAllActionsSafe))
+			actions = append(actions, groupActions...)
 		}
-		return action.GetAllActions()
-	}))
+	}
+
+	return actions
 }
 
 // Returns all action objects from the prepull as an unstructured list. Used for easily finding specific actions.
@@ -384,6 +414,7 @@ func (rot *APLRotation) reset(sim *Simulation) {
 	rot.inLoop = false
 	rot.interruptChannelIf = nil
 	rot.allowChannelRecastOnInterrupt = false
+	rot.evalGeneration++ // Invalidate any variable caches from previous iteration or initialization
 	for _, action := range rot.allAPLActions() {
 		action.impl.Reset(sim)
 	}
@@ -439,6 +470,8 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 }
 
 func (apl *APLRotation) getNextAction(sim *Simulation) *APLAction {
+	apl.evalGeneration++
+
 	if len(apl.controllingActions) != 0 {
 		return apl.controllingActions[len(apl.controllingActions)-1].GetNextAction(sim)
 	}
@@ -522,8 +555,10 @@ func (rot *APLRotation) reResolveVariableRefs(value APLValue, groupVars map[stri
 			if val, ok := groupVars[varRef.name]; ok {
 				resolved := rot.newAPLValue(val)
 				if resolved != nil {
-					// Update the original variable reference instead of creating a new one
+					// Group override: update resolved value and use a private cache
+					// (not shared with global variable refs)
 					varRef.resolved = resolved
+					varRef.cache = &variableCache{}
 					return varRef
 				}
 			}
@@ -534,7 +569,6 @@ func (rot *APLRotation) reResolveVariableRefs(value APLValue, groupVars map[stri
 			if condVar.name == varRef.name {
 				resolved := rot.newAPLValue(condVar.value)
 				if resolved != nil {
-					// Update the original variable reference instead of creating a new one
 					varRef.resolved = resolved
 					return varRef
 				}
@@ -551,4 +585,17 @@ func (rot *APLRotation) reResolveVariableRefs(value APLValue, groupVars map[stri
 	}
 
 	return value
+}
+
+// orphanValue collects a value and all its descendants into orphanedValues
+// so they still get Finalize() called even though they've been removed from
+// the active APL tree by compile-time constant folding.
+func (rot *APLRotation) orphanValue(value APLValue) {
+	if value == nil {
+		return
+	}
+	rot.orphanedValues = append(rot.orphanedValues, value)
+	for _, inner := range value.GetInnerValues() {
+		rot.orphanValue(inner)
+	}
 }

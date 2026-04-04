@@ -1,6 +1,8 @@
 package core
 
 import (
+	"time"
+
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
@@ -263,9 +265,16 @@ func (character *Character) NewRPPMProcManager(effectID int32, isEnchant bool, i
 	dpm := builder()
 
 	// Keep track of the lastProc and lastCheck values when weapon swapping.
-	lastProc := -RppmLastProcResetValue
-	lastCheck := -RppmLastCheckCap
-	isFirstProc := true
+	var lastProc time.Duration
+	var lastCheck time.Duration
+	var isFirstProc bool
+
+	resetProc := func() {
+		lastProc = -RppmLastProcResetValue
+		lastCheck = -RppmLastCheckCap
+		isFirstProc = true
+	}
+	resetProc()
 
 	character.RegisterItemSwapCallback(slotList, func(_ *Simulation, _ proto.ItemSlot) {
 		for _, proc := range dpm.procChances {
@@ -286,9 +295,18 @@ func (character *Character) NewRPPMProcManager(effectID int32, isEnchant bool, i
 	})
 
 	character.RegisterResetEffect(func(_ *Simulation) {
-		lastProc = -RppmLastProcResetValue
-		lastCheck = -RppmLastCheckCap
-		isFirstProc = true
+		resetProc()
+	})
+
+	character.RegisterOnEncounterStartEffect(func() {
+		resetProc()
+
+		for _, proc := range dpm.procChances {
+			resolvedProc := proc.(*RPPMProc)
+			resolvedProc.lastProc = lastProc
+			resolvedProc.lastCheck = lastCheck
+			resolvedProc.isFirstProc = isFirstProc
+		}
 	})
 
 	return &dpm

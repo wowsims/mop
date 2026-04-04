@@ -124,7 +124,7 @@ import {
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
 import SecondaryResource from '../../proto_utils/secondary_resource';
-import { EventID } from '../../typed_event.js';
+import { EventID, TypedEvent } from '../../typed_event.js';
 import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
@@ -511,17 +511,29 @@ export function valueListFieldConfig(field: string): AplHelpers.APLPickerBuilder
 				},
 				copyItem: (oldValue: APLValue | undefined) => (oldValue ? APLValue.clone(oldValue) : oldValue),
 				newItemPicker: (
-					parent: HTMLElement,
-					listPicker: ListPicker<Player<any>, APLValue | undefined>,
-					index: number,
+					_parent: HTMLElement,
+					_listPicker: ListPicker<Player<any>, APLValue | undefined>,
+					_index: number,
 					config: ListItemPickerConfig<Player<any>, APLValue | undefined>,
-				) => new APLValuePicker(parent, player, config),
+				) => new APLValuePicker(_parent, player, config),
 				allowedActions: ['copy', 'create', 'delete', 'move'],
 				actions: {
 					create: {
 						useIcon: true,
 					},
 				},
+				extraActions: [
+					AplHelpers.extractToVariableAction(
+						player,
+						(index) => (config.getValue(player) as Array<APLValue | undefined>)[index],
+						(index, ref) => {
+							const values = config.getValue(player) as Array<APLValue | undefined>;
+							values[index] = ref;
+							config.setValue(TypedEvent.nextEventID(), player, values);
+						},
+						parent,
+					),
+				],
 			}),
 	};
 }
@@ -1713,7 +1725,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		includeIf: (_player: Player<any>, isPrepull: boolean, isGroup: boolean) => !isPrepull && isGroup, // Only show in groups, not prepull or priority list
 		newValue: () => ({ name: '' }),
 		fields: [
-			AplHelpers.stringFieldConfig('name', {
+			AplHelpers.placeholderNameFieldConfig('name', {
 				labelTooltip: 'Name of the variable placeholder to expose. This name will be used when referencing the group.',
 			}),
 		],

@@ -177,6 +177,7 @@ func (rogue *Rogue) applyDeadlyPoison() {
 			Name:               "Deadly Poison",
 			Outcome:            core.OutcomeLanded,
 			Callback:           core.CallbackOnSpellHitDealt,
+			ProcMaskExclude:    core.ProcMaskProc,
 			TriggerImmediately: true,
 
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
@@ -196,6 +197,7 @@ func (rogue *Rogue) applyWoundPoison() {
 			Name:               "Wound Poison",
 			Outcome:            core.OutcomeLanded,
 			Callback:           core.CallbackOnSpellHitDealt,
+			ProcMaskExclude:    core.ProcMaskProc,
 			TriggerImmediately: true,
 
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {

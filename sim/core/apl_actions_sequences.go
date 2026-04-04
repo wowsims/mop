@@ -174,6 +174,7 @@ func (action *APLActionStrictSequence) IsReady(sim *Simulation) bool {
 	return true
 }
 func (action *APLActionStrictSequence) Execute(sim *Simulation) {
+	action.unit.Rotation.inSequence = true
 	action.unit.Rotation.pushControllingAction(action)
 }
 func (action *APLActionStrictSequence) relinquishControl() {
@@ -198,21 +199,23 @@ func (action *APLActionStrictSequence) GetNextAction(sim *Simulation) *APLAction
 		} else if _, ok := nextAction.impl.(*APLActionItemSwap); ok {
 			action.advanceSequence()
 		} else {
-			pa := sim.GetConsumedPendingActionFromPool()
-			pa.NextActionAt = action.unit.NextGCDAt()
-			pa.Priority = ActionPriorityPrePull
-
-			pa.OnAction = func(_ *Simulation) {
-				if action.unit.Rotation.inSequence {
-					action.advanceSequence()
-				}
-			}
-
-			sim.AddPendingAction(pa)
-			action.unit.SetRotationTimer(sim, pa.NextActionAt+time.Duration(1))
+			// Do not advance the sequence; the action will be queued if it can be
 		}
 
 		return nextAction
+	} else if !action.unit.CanQueueSpell(sim) && action.unit.QueuedSpell != nil {
+		// The spell was already queued at this timestep; modify it to advance the sequence when it executes
+		// and return nil to wait for the GCD to become ready.
+		queueAction := action.unit.QueuedSpell.queueAction
+		oldFunc := queueAction.OnAction
+		queueAction.OnAction = func(sim *Simulation) {
+			oldFunc(sim)
+			action.advanceSequence()
+			queueAction.OnAction = oldFunc
+		}
+		action.unit.SetRotationTimer(sim, queueAction.NextActionAt+time.Duration(1))
+
+		return nil
 	} else if action.unit.GCD.TimeToReady(sim) <= MaxSpellQueueWindow {
 		// If the GCD is ready when the next subaction isn't, it means the sequence is bad
 		// so reset and exit the sequence.

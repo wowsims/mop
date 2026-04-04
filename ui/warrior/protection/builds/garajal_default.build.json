@@ -120,9 +120,9 @@
       "prepullActions": [
         {"action":{"castSpell":{"spellId":{"spellId":71}}},"doAtValue":{"const":{"val":"-10s"}}},
         {"action":{"castSpell":{"spellId":{"spellId":114206}}},"doAtValue":{"const":{"val":"-1.5s"}}},
-        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-1.5s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":1249459}}},"doAtValue":{"const":{"val":"-1.5s"}}},
-        {"action":{"castSpell":{"spellId":{"spellId":100}}},"doAtValue":{"const":{"val":"-0.5s"}}}
+        {"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"variableRef":{"name":"Prepull Shatter"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":1249459}}},"doAtValue":{"variableRef":{"name":"Prepull Shatter"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":100}}},"doAtValue":{"variableRef":{"name":"Prepull Shatter"}}}
       ],
       "priorityList": [
         {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":116000}}},{"and":{"vals":[{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}}]}}]}},"castSpell":{"spellId":{"spellId":871}}}},
@@ -154,6 +154,9 @@
         {"action":{"condition":{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"60%"}}}},"castSpell":{"spellId":{"spellId":103840}}}},
         {"action":{"condition":{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"60%"}}}},"castSpell":{"spellId":{"spellId":34428}}}},
         {"action":{"castSpell":{"spellId":{"spellId":20243}}}}
+      ],
+      "valueVariables": [
+        {"name":"Prepull Shatter","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"spellTravelTime":{"spellId":{"spellId":1249459}}}}}}
       ]
     },
     "reactionTimeMs": 100,

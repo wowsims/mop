@@ -1,11 +1,15 @@
+@use 'sass:color';
+
 @mixin theme-color($base-color, $opacity, $background-image-url) {
-	$background-color-hex: mix($black, $base-color, 90%);
+	$background-color-hex: color.mix($black, $base-color, 90%);
 	$hover-color: shade-color($base-color, $btn-hover-bg-shade-amount);
 	$interact-color: shade-color($base-color, $btn-active-bg-shade-amount);
 	$text-color: color-contrast($base-color);
 
 	// Used to style the SimUI background
-	--theme-background-color: #{red($background-color-hex), green($background-color-hex), blue($background-color-hex)};
+	--theme-background-color:
+		#{color.channel($background-color-hex, 'red', $space: rgb), color.channel($background-color-hex, 'green', $space: rgb),
+		color.channel($background-color-hex, 'blue', $space: rgb)};
 	--theme-background-image: url(#{$background-image-url});
 	--theme-background-opacity: #{$opacity};
 
@@ -17,7 +21,7 @@
 	--bs-primary-rgb: #{to-rgb($base-color)};
 
 	// Custom variants we use for styling some components
-	--bs-primary-dampened: #{mix($black, $base-color, 75%)};
+	--bs-primary-dampened: #{color.mix($black, $base-color, 75%)};
 	--bs-hover-color: #{$hover-color};
 
 	.btn-primary {
@@ -33,8 +37,8 @@
 		--bs-btn-active-border-color: #{$interact-color};
 		--bs-btn-active-color: #{$text-color};
 
-		--bs-btn-disabled-bg: #{mix($gray-600, $base-color, 50%)};
-		--bs-btn-disabled-border-color: #{mix($gray-600, $base-color, 50%)};
+		--bs-btn-disabled-bg: #{color.mix($gray-600, $base-color, 50%)};
+		--bs-btn-disabled-border-color: #{color.mix($gray-600, $base-color, 50%)};
 		--bs-btn-disabled-color: #{$text-color};
 	}
 
@@ -50,8 +54,8 @@
 		--bs-btn-active-border-color: #{$interact-color};
 		--bs-btn-active-color: #{$text-color};
 
-		--bs-btn-disabled-bg: #{mix($gray-600, $base-color, 50%)};
-		--bs-btn-disabled-border-color: #{mix($gray-600, $base-color, 50%)};
+		--bs-btn-disabled-bg: #{color.mix($gray-600, $base-color, 50%)};
+		--bs-btn-disabled-border-color: #{color.mix($gray-600, $base-color, 50%)};
 		--bs-btn-disabled-color: #{$text-color};
 	}
 

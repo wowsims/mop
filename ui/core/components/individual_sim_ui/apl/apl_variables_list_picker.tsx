@@ -3,14 +3,15 @@ import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Player } from '../../../player';
 import { APLValueVariable } from '../../../proto/apl';
 import { UUID } from '../../../proto/common';
-import { EventID } from '../../../typed_event';
+import { renameAPLReference } from '../../../proto_utils/apl_utils';
+import { EventID, TypedEvent } from '../../../typed_event';
 import { randomUUID } from '../../../utils';
 import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
-import { AdaptiveStringPicker } from '../../pickers/string_picker';
 import { APLValuePicker } from '../apl_values';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
+import { APLNameModal } from './apl_name_modal';
 
 export class APLVariablesListPicker extends Component {
 	constructor(container: HTMLElement, simUI: IndividualSimUI<any>) {
@@ -27,8 +28,23 @@ export class APLVariablesListPicker extends Component {
 				player.aplRotation.valueVariables = newValue;
 				player.rotationChangeEmitter.emit(eventID);
 			},
-			newItem: () => this.createValueVariable(),
-			copyItem: (oldItem: APLValueVariable) => this.copyValueVariable(oldItem),
+			newItem: () => this.createValueVariable(i18n.t('rotation_tab.apl.variables.newVariableName')),
+			onCopyItem: (index: number) => {
+				const variables = simUI.player.aplRotation.valueVariables || [];
+				const oldItem = variables[index];
+				new APLNameModal(simUI.rootElem, {
+					title: i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName: i18n.t('rotation_tab.apl.variables.name') }),
+					inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
+					inputPlaceholder: oldItem.name,
+					existingNames: variables.map(v => v.name),
+					onSubmit: (name: string) => {
+						const newItem = APLValueVariable.create({ name, value: oldItem.value });
+						const newList = variables.slice();
+						newList.splice(index, 0, newItem);
+						listPicker.config.setValue(TypedEvent.nextEventID(), simUI.player, newList);
+					},
+				});
+			},
 			newItemPicker: (
 				parent: HTMLElement,
 				_: ListPicker<Player<any>, APLValueVariable>,
@@ -44,30 +60,29 @@ export class APLVariablesListPicker extends Component {
 			inlineMenuBar: true,
 		});
 
-		new AplFloatingActionBar(this.rootElem, simUI, listPicker, i18n.t('rotation_tab.apl.variables.name'));
+		new AplFloatingActionBar(this.rootElem, simUI, listPicker, {
+			itemName: i18n.t('rotation_tab.apl.variables.name'),
+			modalTitle: i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName: i18n.t('rotation_tab.apl.variables.name') }),
+			inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
+			getExistingNames: () => (simUI.player.aplRotation.valueVariables || []).map(v => v.name),
+			createItem: (name: string) => this.createValueVariable(name),
+		});
 	}
 
-	private createValueVariable(): APLValueVariable {
+	private createValueVariable(name: string): APLValueVariable {
 		return APLValueVariable.create({
-			name: i18n.t('rotation_tab.apl.variables.newVariableName'),
+			name,
 			value: undefined,
 		});
 	}
 
-	private copyValueVariable(oldItem: APLValueVariable): APLValueVariable {
-		return APLValueVariable.create({
-			name: i18n.t('rotation_tab.apl.variables.copyName', { variableName: oldItem.name }),
-			value: oldItem.value,
-		});
-	}
 }
 
 class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
-	private namePicker: AdaptiveStringPicker<Player<any>>;
+	private nameLabel: HTMLElement;
 	private valuePicker: APLValuePicker;
 	private config: ListItemPickerConfig<Player<any>, APLValueVariable>;
 	public modObject: Player<any>;
-	private index: number;
 
 	constructor(parent: HTMLElement, player: Player<any>, index: number, config: ListItemPickerConfig<Player<any>, APLValueVariable>) {
 		super(parent, 'apl-value-variable-picker-root', player, config);
@@ -75,7 +90,6 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 
 		this.config = config;
 		this.modObject = player;
-		this.index = index;
 
 		const container = this.rootElem.appendChild(<div className="apl-action-picker-root" />) as HTMLElement;
 
@@ -88,19 +102,32 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 			);
 		}
 
-		this.namePicker = new AdaptiveStringPicker(container, player, {
-			id: randomUUID(),
-			label: i18n.t('rotation_tab.apl.variables.attributes.name'),
-			labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.nameTooltip'),
-			extraCssClasses: ['apl-variable-name-picker'],
-			inline: true,
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
-			getValue: () => this.getSourceValue().name,
-			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
-				const sourceValue = this.getSourceValue();
-				sourceValue.name = newValue;
-				this.config.setValue(eventID, player, this.config.getValue(player));
-			},
+		this.nameLabel = (<span className="apl-name-value" />) as HTMLElement;
+
+		const nameContainer = container.appendChild(
+			<div className="apl-name-display">
+				{this.nameLabel}
+				<button className="btn btn-link apl-name-rename" type="button">
+					<i className="fas fa-pencil-alt" />
+				</button>
+			</div>,
+		) as HTMLElement;
+
+		nameContainer.querySelector('.apl-name-rename')!.addEventListener('click', () => {
+			const sourceValue = this.getSourceValue();
+			if (!sourceValue) return;
+			new APLNameModal(this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body, {
+				title: i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.variables.name') }),
+				inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
+				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.renameConfirm'),
+				defaultValue: sourceValue.name,
+				existingNames: () => (player.aplRotation.valueVariables || []).filter(v => v !== sourceValue).map(v => v.name),
+				onSubmit: (name: string) => {
+					renameAPLReference(player.aplRotation, { type: 'variable', oldName: sourceValue.name, newName: name });
+					sourceValue.name = name;
+					player.rotationChangeEmitter.emit(TypedEvent.nextEventID());
+				},
+			});
 		});
 
 		this.valuePicker = new APLValuePicker(container, player, {
@@ -125,13 +152,13 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 
 	getInputValue(): APLValueVariable {
 		return {
-			name: this.namePicker.getInputValue(),
+			name: this.getSourceValue().name,
 			value: this.valuePicker.getInputValue(),
 		};
 	}
 
 	setInputValue(newValue: APLValueVariable) {
-		this.namePicker.setInputValue(newValue.name);
+		this.nameLabel.textContent = newValue.name;
 		this.valuePicker.setInputValue(newValue.value);
 
 		if (newValue.value) {
