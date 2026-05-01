@@ -42,10 +42,21 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 			[Spec.SpecUnknown]: TENTATIVE_IMPLEMENTATION_WARNING,
 		},
 	]),
-	...MISSING_ITEM_EFFECTS.map((itemID): [number, ItemNoticeData] => [
+	...[...MISSING_ITEM_EFFECTS].map(([itemID, tooltips]): [number, ItemNoticeData] => [
 		itemID,
 		{
-			[Spec.SpecUnknown]: MISSING_IMPLEMENTATION_WARNING,
+			[Spec.SpecUnknown]: !tooltips.length ? (
+				MISSING_IMPLEMENTATION_WARNING
+			) : (
+				<>
+					<p className="fw-bold">The following item effect (on-use or proc) is not implemented!</p>
+					<ul>
+						{tooltips.filter(tooltip => !!tooltip).map(tooltip => (
+							<li>{tooltip}</li>
+						))}
+					</ul>
+				</>
+			),
 		},
 	]),
 

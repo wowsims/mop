@@ -132,53 +132,48 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 	},
 
 	presets: {
-		epWeights: [Presets.P2_EP_PRESET, Presets.P2_OFFENSIVE_EP_PRESET, Presets.P3_EP_PRESET, Presets.P3_OFFENSIVE_EP_PRESET],
+		epWeights: [
+			// Presets.P2_EP_PRESET,
+			// Presets.P2_OFFENSIVE_EP_PRESET,
+			Presets.P3_EP_PRESET,
+			Presets.P3_OFFENSIVE_EP_PRESET,
+			Presets.P5_EP_PRESET,
+			Presets.P5_OFFENSIVE_EP_PRESET,
+		],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_GENERIC, Presets.ROTATION_GARAJAL, Presets.ROTATION_SHA, Presets.ROTATION_HORRIDON],
+		rotations: [
+			Presets.ROTATION_GENERIC,
+			// Presets.ROTATION_GARAJAL,
+			Presets.ROTATION_SHA,
+			Presets.ROTATION_HORRIDON,
+			Presets.ROTATION_IRON_JUGGERNAUT,
+		],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.PRERAID_BALANCED_PRESET,
-			Presets.P2_BALANCED_PRESET,
-			Presets.P2_OFFENSIVE_PRESET,
+			// Presets.P2_BALANCED_PRESET,
+			// Presets.P2_OFFENSIVE_PRESET,
 			Presets.P3_4_PROG_PRESET,
 			Presets.P3_4_BALANCED_PRESET,
 			Presets.P3_4_OFFENSIVE_PRESET,
+			Presets.P5_PROG_PRESET,
 		],
 		itemSwaps: [Presets.PRERAID_ITEM_SWAP, Presets.P2_ITEM_SWAP],
-		builds: [Presets.PRESET_BUILD_GARAJAL, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
+		builds: [
+			// Presets.PRESET_BUILD_GARAJAL,
+			Presets.PRESET_BUILD_SHA,
+			Presets.PRESET_BUILD_HORRIDON,
+			Presets.PRESET_BUILD_IRON_JUGGERNAUT,
+		],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecProtectionWarrior>): APLRotation => {
 		return Presets.ROTATION_GENERIC.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecProtectionWarrior,
-			talents: Presets.StandardTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceNightElf,
-				[Faction.Horde]: Race.RaceOrc,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PRERAID_BALANCED_PRESET.gear,
-					2: Presets.P2_BALANCED_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PRERAID_BALANCED_PRESET.gear,
-					2: Presets.P2_BALANCED_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class ProtectionWarriorSimUI extends IndividualSimUI<Spec.SpecProtectionWarrior> {

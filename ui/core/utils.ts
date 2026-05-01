@@ -19,6 +19,13 @@ export const fragmentToString = (element: Node | Element) => {
 	return div.innerHTML;
 };
 
+/** Escape text for safe insertion into HTML (e.g. attribute or text node via innerHTML). */
+export const encodeHTMLEntities = (text: string): string => {
+	const textArea = document.createElement('textarea');
+	textArea.textContent = text;
+	return textArea.innerHTML;
+};
+
 export const sanitizeId = (id: string) => id.split(' ').join('').toLocaleLowerCase();
 
 export const omitDeep = <T>(collection: T, excludeKeys: string[]): T => {

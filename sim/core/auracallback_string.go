@@ -12,11 +12,12 @@ func _() {
 	_ = x[CallbackOnSpellHitDealt-2]
 	_ = x[CallbackOnSpellHitTaken-4]
 	_ = x[CallbackOnPeriodicDamageDealt-8]
-	_ = x[CallbackOnHealDealt-16]
-	_ = x[CallbackOnPeriodicHealDealt-32]
-	_ = x[CallbackOnCastComplete-64]
-	_ = x[CallbackOnApplyEffects-128]
-	_ = x[CallbackLast-256]
+	_ = x[CallbackOnPeriodicDamageTaken-16]
+	_ = x[CallbackOnHealDealt-32]
+	_ = x[CallbackOnPeriodicHealDealt-64]
+	_ = x[CallbackOnCastComplete-128]
+	_ = x[CallbackOnApplyEffects-256]
+	_ = x[CallbackLast-512]
 }
 
 const (
@@ -24,11 +25,12 @@ const (
 	_AuraCallback_name_1 = "CallbackOnSpellHitDealt"
 	_AuraCallback_name_2 = "CallbackOnSpellHitTaken"
 	_AuraCallback_name_3 = "CallbackOnPeriodicDamageDealt"
-	_AuraCallback_name_4 = "CallbackOnHealDealt"
-	_AuraCallback_name_5 = "CallbackOnPeriodicHealDealt"
-	_AuraCallback_name_6 = "CallbackOnCastComplete"
-	_AuraCallback_name_7 = "CallbackOnApplyEffects"
-	_AuraCallback_name_8 = "CalbackLast"
+	_AuraCallback_name_4 = "CallbackOnPeriodicDamageTaken"
+	_AuraCallback_name_5 = "CallbackOnHealDealt"
+	_AuraCallback_name_6 = "CallbackOnPeriodicHealDealt"
+	_AuraCallback_name_7 = "CallbackOnCastComplete"
+	_AuraCallback_name_8 = "CallbackOnApplyEffects"
+	_AuraCallback_name_9 = "CallbackLast"
 )
 
 func (i AuraCallback) String() string {
@@ -51,6 +53,8 @@ func (i AuraCallback) String() string {
 		return _AuraCallback_name_7
 	case i == 256:
 		return _AuraCallback_name_8
+	case i == 512:
+		return _AuraCallback_name_9
 	default:
 		return "AuraCallback(" + strconv.FormatInt(int64(i), 10) + ")"
 	}

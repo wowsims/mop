@@ -93,7 +93,7 @@
         }
       },
       "prepullActions": [
-        {"action":{"castSpell":{"spellId":{"spellId":115069}}},"doAtValue":{"const":{"val":"-.1s"}}}
+        {"action":{"castSpell":{"spellId":{"spellId":115069}}},"doAtValue":{"const":{"val":"-1s"}}}
       ],
       "priorityList": [
         {"action":{"autocastOtherCooldowns":{}}},

@@ -114,106 +114,127 @@ func factory_StatBonusEffect(config ProcStatBonusEffect, extraSpell func(agent c
 	effectFn(effectID, func(agent core.Agent, itemLevelState proto.ItemLevelState) {
 		character := agent.GetCharacter()
 		var eligibleSlots []proto.ItemSlot
-		var procEffect *proto.ItemEffect
+		procEffects := make(map[int32]*proto.ItemEffect)
+
 		if isEnchant {
 			eligibleSlots = character.ItemSwap.EligibleSlotsForEffect(effectID)
 			ench := core.GetEnchantByEffectID(effectID)
-			if ench.EnchantEffect.GetProc() != nil {
-				procEffect = ench.EnchantEffect
+			for _, effect := range ench.EnchantEffects {
+				if effect.GetProc() != nil {
+					procEffects[effect.BuffId] = effect
+				}
 			}
 		} else {
 			eligibleSlots = character.ItemSwap.EligibleSlotsForItem(effectID)
-
 			item := core.GetItemByID(effectID)
-			if item.ItemEffect != nil {
-				if item.ItemEffect.GetProc() != nil {
-					procEffect = item.ItemEffect
-				}
-			}
-		}
-
-		if procEffect == nil {
-			err, _ := fmt.Printf("Error getting proc effect for item/enchant %v", effectID)
-			panic(err)
-		}
-
-		proc := procEffect.GetProc()
-		procAction := core.ActionID{SpellID: procEffect.BuffId}
-		procAura := character.NewTemporaryStatsAura(
-			config.Name+" Proc",
-			procAction,
-			stats.FromProtoMap(procEffect.ScalingOptions[int32(itemLevelState)].Stats),
-			time.Millisecond*time.Duration(procEffect.EffectDurationMs),
-		)
-
-		var dpm *core.DynamicProcManager
-		if proc.GetRppm() != nil {
-			dpm = character.NewRPPMProcManager(effectID, isEnchant, false, config.ProcMask, core.RppmConfigFromProcEffectProto(proc))
-		} else if proc.GetPpm() > 0 {
-			if config.ProcMask == core.ProcMaskUnknown {
-				if isEnchant {
-					dpm = character.NewDynamicLegacyProcForEnchant(effectID, proc.GetPpm(), 0)
-				} else {
-					dpm = character.NewDynamicLegacyProcForWeapon(effectID, proc.GetPpm(), 0)
-				}
-			} else {
-				dpm = character.NewLegacyPPMManager(proc.GetPpm(), config.ProcMask)
-			}
-		}
-
-		procAura.CustomProcCondition = config.CustomProcCondition
-		var customHandler CustomProcHandler
-		if config.CustomProcCondition != nil {
-			customHandler = func(sim *core.Simulation, procAura *core.StatBuffAura) {
-				if procAura.CanProc(sim) {
-					procAura.Activate(sim)
-				} else {
-					// reset ICD condition was not fulfilled
-					if procAura.Icd != nil && procAura.Icd.Duration != 0 {
-						procAura.Icd.Reset()
+			if item.ItemEffects != nil {
+				for _, effect := range item.ItemEffects {
+					if effect.GetProc() != nil {
+						procEffects[effect.BuffId] = effect
 					}
 				}
 			}
 		}
-		var procSpell ExtraSpellInfo
-		if extraSpell != nil {
-			procSpell = extraSpell(agent, itemLevelState)
-		}
 
-		handler := func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-			if customHandler != nil {
-				customHandler(sim, procAura)
+		if len(procEffects) == 0 {
+			err, _ := fmt.Printf("Error getting proc effect for item/enchant %v", effectID)
+			panic(err)
+		}
+		for _, effect := range procEffects {
+			proc := effect.GetProc()
+			procAction := core.ActionID{SpellID: effect.BuffId}
+			var procAura *core.StatBuffAura
+			if effect.MaxCumulativeStacks > 0 {
+				procAura = core.MakeStackingAura(character, core.StackingStatAura{
+					Aura: core.Aura{
+						Label:     config.Name + " Proc",
+						ActionID:  procAction,
+						Duration:  time.Millisecond * time.Duration(effect.EffectDurationMs),
+						MaxStacks: effect.MaxCumulativeStacks,
+					},
+					BonusPerStack: stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].Stats),
+				})
 			} else {
-				procAura.Activate(sim)
-				if procSpell.Spell != nil {
-					procSpell.Trigger(sim, spell, result)
+				procAura = character.NewTemporaryStatsAura(
+					config.Name+" Proc",
+					procAction,
+					stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].Stats),
+					time.Millisecond*time.Duration(effect.EffectDurationMs),
+				)
+			}
+
+			var dpm *core.DynamicProcManager
+			if proc.GetRppm() != nil {
+				dpm = character.NewRPPMProcManager(effectID, isEnchant, false, config.ProcMask, core.RppmConfigFromProcEffectProto(proc))
+			} else if proc.GetPpm() > 0 {
+				if config.ProcMask == core.ProcMaskUnknown {
+					if isEnchant {
+						dpm = character.NewDynamicLegacyProcForEnchant(effectID, proc.GetPpm(), 0)
+					} else {
+						dpm = character.NewDynamicLegacyProcForWeapon(effectID, proc.GetPpm(), 0)
+					}
+				} else {
+					dpm = character.NewLegacyPPMManager(proc.GetPpm(), config.ProcMask)
 				}
 			}
-		}
 
-		triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-			ActionID:           triggerActionID,
-			Name:               config.Name,
-			Callback:           config.Callback,
-			ProcMask:           config.ProcMask,
-			Outcome:            config.Outcome,
-			RequireDamageDealt: config.RequireDamageDealt,
-			ProcChance:         proc.GetProcChance(),
-			DPM:                dpm,
-			ICD:                time.Millisecond * time.Duration(proc.IcdMs),
-			Handler:            handler,
-		})
+			procAura.CustomProcCondition = config.CustomProcCondition
+			var customHandler CustomProcHandler
+			if config.CustomProcCondition != nil {
+				customHandler = func(sim *core.Simulation, procAura *core.StatBuffAura) {
+					if procAura.CanProc(sim) {
+						procAura.Activate(sim)
+					} else {
+						// reset ICD condition was not fulfilled
+						if procAura.Icd != nil && procAura.Icd.Duration != 0 {
+							procAura.Icd.Reset()
+						}
+					}
+				}
+			}
+			var procSpell ExtraSpellInfo
+			if extraSpell != nil {
+				procSpell = extraSpell(agent, itemLevelState)
+			}
 
-		if proc.IcdMs != 0 {
-			procAura.Icd = triggerAura.Icd
-		}
-		if isEnchant {
-			character.ItemSwap.RegisterEnchantProcWithSlots(effectID, triggerAura, eligibleSlots)
-		} else {
-			character.ItemSwap.RegisterProcWithSlots(effectID, triggerAura, eligibleSlots)
-		}
+			handler := func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+				if customHandler != nil {
+					customHandler(sim, procAura)
+				} else {
+					procAura.Activate(sim)
+					if effect.MaxCumulativeStacks > 0 {
+						procAura.AddStack(sim)
+					}
+					if procSpell.Spell != nil {
+						procSpell.Trigger(sim, spell, result)
+					}
+				}
+			}
 
-		character.AddStatProcBuff(effectID, procAura, isEnchant, eligibleSlots)
+			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
+				ActionID:           triggerActionID,
+				Name:               config.Name,
+				Callback:           config.Callback,
+				ProcMask:           config.ProcMask,
+				Outcome:            config.Outcome,
+				RequireDamageDealt: config.RequireDamageDealt,
+				ProcChance:         proc.GetProcChance(),
+				DPM:                dpm,
+				ICD:                time.Millisecond * time.Duration(proc.IcdMs),
+				Handler:            handler,
+			})
+
+			if proc.IcdMs != 0 {
+				procAura.Icd = triggerAura.Icd
+			}
+			if isEnchant {
+				character.ItemSwap.RegisterEnchantProcWithSlots(effectID, triggerAura, eligibleSlots)
+			} else {
+				character.ItemSwap.RegisterProcWithSlots(effectID, triggerAura, eligibleSlots)
+			}
+
+			character.AddStatProcBuff(effectID, procAura, isEnchant, eligibleSlots)
+		}
 	})
 }
 
@@ -238,6 +259,21 @@ func NewProcStatBonusEffect(config ProcStatBonusEffect) {
 	factory_StatBonusEffect(config, nil)
 }
 
+func NewSimpleStatActiveWithVariants(variants []ItemVariant) {
+	var maxItemID int32
+
+	for _, variant := range variants {
+		maxItemID = max(maxItemID, variant.ItemID)
+	}
+
+	for _, variant := range variants {
+		core.AddEffectsToTest = (variant.ItemID == maxItemID)
+		NewSimpleStatActive(variant.ItemID)
+	}
+
+	core.AddEffectsToTest = true
+}
+
 func NewSimpleStatActive(itemID int32) {
 
 	// Soft fail to allow for overrides for bad effects
@@ -251,47 +287,55 @@ func NewSimpleStatActive(itemID int32) {
 			panic(fmt.Sprintf("No item with ID: %d", itemID))
 		}
 
-		itemEffect := item.ItemEffect // Assuming it can be collapsed to one relevant effect per item in pre-processing
-		if itemEffect == nil {
-			panic(fmt.Sprintf("No effect data for item with ID: %d", itemID))
+		itemEffects := item.ItemEffects
+		if len(itemEffects) == 0 {
+			panic(fmt.Sprintf("No effects data for item with ID: %d", itemID))
 		}
 
-		onUseData := itemEffect.GetOnUse()
-		if onUseData == nil {
-			panic(fmt.Sprintf("Item effect for item with ID: %d is not an active effect!", itemID))
-		}
+		hasEffect := false
+		for idx, itemEffect := range itemEffects {
 
-		spellConfig := core.SpellConfig{
-			ActionID: core.ActionID{ItemID: itemID},
-		}
-
-		character := agent.GetCharacter()
-		spellConfig.Cast.CD = core.Cooldown{
-			Timer:    character.NewTimer(),
-			Duration: time.Duration(onUseData.CooldownMs) * time.Millisecond,
-		}
-		// if SpellCategoryID is 0 we seemingly do not share cd with anything
-		// Say Darkmoon Card: Earthquake and Ruthless Gladiator's Emblem of Cruelty even though tooltip shows as such
-		if onUseData.CategoryId > 0 {
-			sharedCDDuration := time.Duration(onUseData.CategoryCooldownMs) * time.Millisecond
-			if sharedCDDuration == 0 {
-				sharedCDDuration = time.Millisecond * time.Duration(itemEffect.EffectDurationMs)
+			onUseData := itemEffect.GetOnUse()
+			if onUseData == nil {
+				if !hasEffect && idx == len(itemEffects)-1 {
+					panic(fmt.Sprintf("No active effects found for item with ID: %d!", itemID))
+				}
+				continue
 			}
 
-			sharedCDTimer := character.GetOrInitSpellCategoryTimer(onUseData.CategoryId)
-			spellConfig.Cast.SharedCD = core.Cooldown{
-				Timer:    sharedCDTimer,
-				Duration: sharedCDDuration,
+			hasEffect = true
+			spellConfig := core.SpellConfig{
+				ActionID: core.ActionID{ItemID: itemID},
 			}
-		}
 
-		core.RegisterTemporaryStatsOnUseCD(character, itemEffect.BuffName, stats.FromProtoMap(itemEffect.ScalingOptions[int32(scalingSelector)].Stats), time.Millisecond*time.Duration(itemEffect.EffectDurationMs), spellConfig)
+			character := agent.GetCharacter()
+			spellConfig.Cast.CD = core.Cooldown{
+				Timer:    character.NewTimer(),
+				Duration: time.Duration(onUseData.CooldownMs) * time.Millisecond,
+			}
+			// if SpellCategoryID is 0 we seemingly do not share cd with anything
+			// Say Darkmoon Card: Earthquake and Ruthless Gladiator's Emblem of Cruelty even though tooltip shows as such
+			if onUseData.CategoryId > 0 {
+				sharedCDDuration := time.Duration(onUseData.CategoryCooldownMs) * time.Millisecond
+				if sharedCDDuration == 0 {
+					sharedCDDuration = time.Millisecond * time.Duration(itemEffect.EffectDurationMs)
+				}
+
+				sharedCDTimer := character.GetOrInitSpellCategoryTimer(onUseData.CategoryId)
+				spellConfig.Cast.SharedCD = core.Cooldown{
+					Timer:    sharedCDTimer,
+					Duration: sharedCDDuration,
+				}
+			}
+
+			core.RegisterTemporaryStatsOnUseCD(character, itemEffect.BuffName, stats.FromProtoMap(itemEffect.ScalingOptions[int32(scalingSelector)].Stats), time.Millisecond*time.Duration(itemEffect.EffectDurationMs), spellConfig)
+		}
 	})
 }
 
 type StackingStatBonusCD struct {
 	Name               string
-	ID                 int32
+	ItemID             int32
 	AuraID             int32
 	Bonus              stats.Stats
 	Duration           time.Duration
@@ -310,30 +354,24 @@ type StackingStatBonusCD struct {
 	TrinketLimitsDuration bool
 }
 
-// Creates a new stacking stats bonus aura based on the configuration. If Bonus is not given, the ItemEffect of the item will be used
-// to determine the correct values.
+// Creates a new stacking stats bonus aura based on the configuration.
 func NewStackingStatBonusCD(config StackingStatBonusCD) {
-	core.NewItemEffect(config.ID, func(agent core.Agent, state proto.ItemLevelState) {
+	core.NewItemEffect(config.ItemID, func(agent core.Agent, state proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
 		auraID := core.ActionID{SpellID: config.AuraID}
 		if auraID.IsEmptyAction() {
-			auraID = core.ActionID{ItemID: config.ID}
+			auraID = core.ActionID{ItemID: config.ItemID}
 		}
 
 		// If we do not get a manual stat, overwrite it with scaling stats
 		if config.Bonus.Equals(stats.Stats{}) {
-			item := core.GetItemByID(config.ID)
-			if item == nil || item.ItemEffect == nil {
-				panic("Unsupported Item-/Effect")
-			}
-
-			config.Bonus = stats.FromProtoMap(item.ItemEffect.ScalingOptions[int32(state)].Stats)
+			panic(fmt.Sprintf("Missing required Bonus stats for item with ID: %d!", config.ItemID))
 		}
 
 		var dpm *core.DynamicProcManager
 		if config.Rppm.PPM > 0 {
-			dpm = character.NewRPPMProcManager(config.ID, false, false, config.ProcMask, config.Rppm)
+			dpm = character.NewRPPMProcManager(config.ItemID, false, false, config.ProcMask, config.Rppm)
 		}
 
 		duration := core.TernaryDuration(config.TrinketLimitsDuration, core.NeverExpires, config.Duration)
@@ -382,7 +420,7 @@ func NewStackingStatBonusCD(config StackingStatBonusCD) {
 		}
 
 		spell := character.RegisterSpell(core.SpellConfig{
-			ActionID: core.ActionID{ItemID: config.ID},
+			ActionID: core.ActionID{ItemID: config.ItemID},
 			Flags:    core.SpellFlagNoOnCastComplete,
 
 			Cast: core.CastConfig{
@@ -436,14 +474,8 @@ func NewStackingStatBonusEffect(config StackingStatBonusEffect) {
 			auraID = core.ActionID{ItemID: config.ItemID}
 		}
 
-		// If we do not get a manual stat, overwrite it with scaling stats
 		if config.Bonus.Equals(stats.Stats{}) {
-			item := core.GetItemByID(config.ItemID)
-			if item == nil || item.ItemEffect == nil {
-				panic("Unsupported Item-/Effect")
-			}
-
-			config.Bonus = stats.FromProtoMap(item.ItemEffect.ScalingOptions[int32(state)].Stats)
+			panic(fmt.Sprintf("Missing required Bonus stats for item with ID: %d!", config.ItemID))
 		}
 
 		var dpm *core.DynamicProcManager

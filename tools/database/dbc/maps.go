@@ -459,3 +459,18 @@ func SpecFromID(id int32) proto.Spec {
 	}
 	return proto.Spec_SpecUnknown
 }
+
+// Used to map ITEM_SPELLTRIGGER_CHANCE_ON_HIT items using PPM
+// which is not available in the gamefiles.
+// Adding PPM values here will prevent filtering of the item
+// when parsing in item_effect.go#MergeItemEffectsForAllStates.
+var MapItemIdToPPM = map[int32]float64{
+	88149: 2, // The Gloaming Blade
+}
+
+func getPPMForItemID(itemID int32) float64 {
+	if ppm, ok := MapItemIdToPPM[itemID]; ok {
+		return ppm
+	}
+	return 0
+}

@@ -49,7 +49,7 @@ func (moonkin *BalanceDruid) registerShootingStars() {
 		Name:           "Shooting Stars Trigger" + moonkin.Label,
 		Callback:       core.CallbackOnPeriodicDamageDealt,
 		Outcome:        core.OutcomeCrit,
-		ProcChance:     0.3,
+		ProcChance:     moonkin.ShootingStarsProcChance,
 		ClassSpellMask: druid.DruidSpellSunfireDoT | druid.DruidSpellMoonfireDoT,
 		Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
 			ssAura.Activate(sim)

@@ -76,9 +76,10 @@ func (mage *Mage) registerFrostfireBoltSpell() {
 				icyVeinsFrostfireBolt.Cast(sim, target)
 			}
 
-			if mage.BrainFreezeAura != nil {
-				mage.BrainFreezeAura.Deactivate(sim)
-			}
+			// Capture whether Brain Freeze was consumed by this cast. Deactivation is deferred
+			// to spell impact so that the T16 2pc "Frozen Thoughts" buff (activated via
+			// BrainFreezeAura.OnExpire) is not immediately consumed by this same cast.
+			consumedBrainFreeze := mage.BrainFreezeAura != nil && mage.BrainFreezeAura.IsActive()
 
 			if mageSpecFire && spell.TravelTime() > time.Duration(FireSpellMaxTimeUntilResult) {
 				pa := sim.GetConsumedPendingActionFromPool()
@@ -86,7 +87,6 @@ func (mage *Mage) registerFrostfireBoltSpell() {
 
 				pa.OnAction = func(sim *core.Simulation) {
 					spell.DealDamage(sim, result)
-
 					mage.HandleHeatingUp(sim, spell, result)
 				}
 
@@ -99,6 +99,9 @@ func (mage *Mage) registerFrostfireBoltSpell() {
 					}
 					if mageSpecFire {
 						mage.HandleHeatingUp(sim, spell, result)
+					}
+					if consumedBrainFreeze {
+						mage.BrainFreezeAura.Deactivate(sim)
 					}
 				})
 			}

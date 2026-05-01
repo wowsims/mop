@@ -196,6 +196,9 @@ var ItemSetChronomancerRegalia = core.NewItemSet(core.ItemSet{
 				Name:           "Frozen Thoughts - Consume",
 				ClassSpellMask: frostClassMask,
 				Callback:       core.CallbackOnSpellHitDealt,
+				ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
+					return frostAura.IsActive()
+				},
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					frostAura.Deactivate(sim)
 				},

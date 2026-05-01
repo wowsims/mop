@@ -20,6 +20,7 @@ const (
 	CallbackOnSpellHitDealt AuraCallback = 1 << iota
 	CallbackOnSpellHitTaken
 	CallbackOnPeriodicDamageDealt
+	CallbackOnPeriodicDamageTaken
 	CallbackOnHealDealt
 	CallbackOnPeriodicHealDealt
 	CallbackOnCastComplete
@@ -144,6 +145,9 @@ func (procAura *Aura) AttachProcTriggerCallback(unit *Unit, config ProcTrigger) 
 	}
 	if config.Callback.Matches(CallbackOnPeriodicDamageDealt) {
 		procAura.OnPeriodicDamageDealt = callback
+	}
+	if config.Callback.Matches(CallbackOnPeriodicDamageTaken) {
+		procAura.OnPeriodicDamageTaken = callback
 	}
 	if config.Callback.Matches(CallbackOnHealDealt) {
 		procAura.OnHealDealt = callback
@@ -327,6 +331,10 @@ type TemporaryStatBuffWithStacksConfig struct {
 	Duration             time.Duration
 	TickImmediately      bool
 	DecrementStacks      bool // Set to true if the aura should start at MaxStacks and decrement by 1 each tick
+	// BuggedAlterTimeRestore mirrors a live-game bug where, if the aura expired during Alter Time,
+	// it is restored for exactly one tick period then removed entirely instead of resuming normally.
+	// Only enable this for trinkets where the bug has been confirmed in game (e.g. Wushoolay's Final Choice).
+	BuggedAlterTimeRestore bool
 }
 
 func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatBuffWithStacksConfig) (*StatBuffAura, *Aura) {
@@ -380,10 +388,10 @@ func (character *Character) NewTemporaryStatBuffWithStacks(config TemporaryStatB
 				}
 			},
 			OnRestore: func(aura *Aura, sim *Simulation, state AuraState, wasActive bool) {
-				// BUGGED BEHAVIOR (matches live game as of phase 3):
+				// BUGGED BEHAVIOR (matches live game for specific trinkets, e.g. Wushoolay's Final Choice):
 				// If the aura expired during Alter Time (wasActive == false), the restore is broken.
 				// The stacks are restored for exactly 1 tick duration, then the buff is removed entirely.
-				if !wasActive {
+				if config.BuggedAlterTimeRestore && !wasActive {
 					// Schedule removal after one tick period
 					StartPeriodicAction(sim, PeriodicActionOptions{
 						Period:   config.TimePerStack,

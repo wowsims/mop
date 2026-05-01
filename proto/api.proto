@@ -437,6 +437,7 @@ message SpellStats {
 	bool encounter_only = 8; // Whether this spell may only be cast during the encounter (not prepull).
 	bool has_cast_time = 9; // Whether this spell has a cast time or not.
 	bool is_friendly = 10; // Whether this spell should be cast on player units
+	bool is_non_combat_potion = 13; // Whether this spell is a non-combat potion (flask/elixir)
 	bool has_expected_tick = 11; // Whether this spell supports expected damage calculations
 	bool has_missile_speed = 12; // Whether this spell has a missile speed
 }

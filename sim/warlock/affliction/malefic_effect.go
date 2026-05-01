@@ -46,6 +46,9 @@ func (affliction *AfflictionWarlock) registerMaleficEffect() {
 	// used to iterate over the map in constant order
 	procKeys := []*core.Spell{corruptionProc, agonyProc, uaProc}
 	affliction.ProcMaleficEffect = func(target *core.Unit, coeff float64, sim *core.Simulation) {
+		if affliction.T16_2pc_Snapshot {
+			coeff += 0.15
+		}
 
 		// I don't like it but if sac is specced the damage replication effect specifically is increased by 20%
 		// Nothing we can do really properly with SpellMod's here nicely
@@ -55,10 +58,6 @@ func (affliction *AfflictionWarlock) registerMaleficEffect() {
 
 		if affliction.T15_4pc.IsActive() {
 			coeff *= 1.05
-		}
-
-		if affliction.T16_2pc_buff != nil && affliction.T16_2pc_buff.IsActive() {
-			coeff *= 1.2
 		}
 
 		for _, proc := range procKeys {

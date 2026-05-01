@@ -109,6 +109,11 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 		})(),
 		softCapBreakpoints: (() => {
 			return [
+				StatCap.fromPseudoStat(PseudoStat.PseudoStatMeleeHastePercent, {
+					breakpoints: [50],
+					capType: StatCapType.TypeSoftCap,
+					postCapEPs: [1.1 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+				}),
 				StatCap.fromStat(Stat.StatExpertiseRating, {
 					breakpoints: [7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION],
 					capType: StatCapType.TypeSoftCap,
@@ -231,7 +236,29 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 							softCapToModify.postCapEPs = P2ExpertisePostCapEPs;
 						}
 					}
+					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent) && softCapToModify) {
+						const raidBuffs = player.getRaid()?.getBuffs()!;
+						const hasMeleeHaste = [
+							raidBuffs.unholyAura,
+							raidBuffs.cacklingHowl,
+							raidBuffs.serpentsSwiftness,
+							raidBuffs.swiftbladesCunning,
+							raidBuffs.unleashedRage,
+						].some(Boolean);
+
+						let targetPercent = 50;
+						if (hasMeleeHaste) {
+							targetPercent += 15;
+						}
+
+						softCapToModify.breakpoints = [targetPercent];
+						softCapToModify.postCapEPs = [
+							((epWeights.getStat(Stat.StatCritRating) - 0.02) / player.getTotalAmplificationTrinketStatModifier()) *
+								Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
+						];
+					}
 				});
+
 				return softCaps;
 			},
 		});

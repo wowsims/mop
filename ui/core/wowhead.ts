@@ -15,7 +15,7 @@ export type WowheadTooltipItemParams = {
 	itemLevel?: number;
 	/**
 	 * @description Level
-	 * @see lvl - mapped value from wowhead
+	 * @see level - mapped value from wowhead
 	 * */
 	level?: number;
 	/**
@@ -92,7 +92,7 @@ export const buildWowheadTooltipDataset = async (options: WowheadTooltipItemPara
 	params.set('domain', `${langPrefix}mop-classic`);
 	params.set('dataEnv', String(WOWHEAD_EXPANSION_ENV));
 
-	params.set('lvl', String(options.level || CHARACTER_LEVEL));
+	params.set('level', String(options.level || CHARACTER_LEVEL));
 
 	if ('spellId' in options) {
 		if (options.spellId) {

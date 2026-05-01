@@ -73,7 +73,7 @@ func (comRogue *CombatRogue) registerKillingSpreeCD() {
 					ohWeaponSwing.Cast(sim, target)
 					if comRogue.T16SpecMod != nil {
 						if comRogue.T16SpecMod.IsActive {
-							newMod := comRogue.T16SpecMod.GetFloatValue() * 1.1
+							newMod := comRogue.T16SpecMod.GetFloatValue() + 0.1
 							comRogue.T16SpecMod.UpdateFloatValue(newMod)
 						}
 						comRogue.T16SpecMod.Activate()

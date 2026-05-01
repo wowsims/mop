@@ -11,6 +11,7 @@ import P1BISGear from './gear_sets/p1_bis.gear.json';
 import P2BSISGear from './gear_sets/p2_bis.gear.json';
 import P3BSISGear from './gear_sets/p3_bis.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
+import P5BISGear from './gear_sets/p5_bis.gear.json';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
@@ -20,6 +21,7 @@ export const P1_BIS = PresetUtils.makePresetGear('P1 - BIS', P1BISGear);
 export const P2_BIS = PresetUtils.makePresetGear('P2 - BIS', P2BSISGear);
 export const P3_BIS = PresetUtils.makePresetGear('P3 - BIS', P3BSISGear);
 export const P4_BIS = PresetUtils.makePresetGear('P4 - BIS', P4BISGear);
+export const P5_BIS = PresetUtils.makePresetGear('P5 - BIS', P5BISGear);
 
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', FrostApl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', FrostAoeApl);
@@ -150,4 +152,10 @@ export const P1_PRESET_BUILD_AOE = PresetUtils.makePresetBuild('AoE (5+)', {
 	talents: FrostTalentsAoE,
 	rotation: ROTATION_PRESET_AOE,
 	encounter: ENCOUNTER_AOE,
+});
+
+export const T16_PRESET_BUILD = PresetUtils.makePresetBuild('T16', {
+	gear: P5_BIS,
+	rotation: ROTATION_PRESET_DEFAULT,
+	epWeights: P3_BIS_EP_PRESET,
 });

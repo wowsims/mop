@@ -1,6 +1,8 @@
 package dbc
 
 import (
+	"math"
+
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
 )
@@ -14,6 +16,7 @@ type ItemEffect struct {
 	CoolDownMSec         int // Cooldown in milliseconds
 	CategoryCoolDownMSec int // Category cooldown in milliseconds
 	SpellCategoryID      int // Spell category ID
+	MaxCumulativeStacks  int // Max cumulative stacks
 	SpellID              int // Spell ID
 	ChrSpecializationID  int // Character specialization ID
 	ParentItemID         int // Parent item ID
@@ -29,6 +32,7 @@ func (e *ItemEffect) ToMap() map[string]interface{} {
 		"CoolDownMSec":         e.CoolDownMSec,
 		"CategoryCoolDownMSec": e.CategoryCoolDownMSec,
 		"SpellCategoryID":      e.SpellCategoryID,
+		"MaxCumulativeStacks":  e.MaxCumulativeStacks,
 		"SpellID":              e.SpellID,
 		"ChrSpecializationID":  e.ChrSpecializationID,
 		"ParentItemID":         e.ParentItemID,
@@ -95,10 +99,12 @@ func assignTrigger(e *ItemEffect, statsSpellID int, pe *proto.ItemEffect) {
 				},
 			}
 
-			// If proc chance is above 100 something weird is happening so we set ppm to 1 since we cant accurately proc it 100% of the time
 		} else if spTop.ProcChance == 0 || spTop.ProcChance > 100 {
+			// If proc chance is above 100 something weird is happening so we set
+			// ppm to 1 since we cant accurately proc it 100% of the time
+			ppm := math.Max(1, getPPMForItemID(int32(e.ParentItemID)))
 			proc.ProcRate = &proto.ProcEffect_Ppm{
-				Ppm: 1,
+				Ppm: ppm,
 			}
 		} else {
 			proc.ProcRate = &proto.ProcEffect_ProcChance{
@@ -109,6 +115,13 @@ func assignTrigger(e *ItemEffect, statsSpellID int, pe *proto.ItemEffect) {
 		pe.BuffId = statsSP.ID
 		pe.BuffName = statsSP.NameLang
 		pe.Effect = &proto.ItemEffect_Proc{Proc: proc}
+
+		// In MoP a lot of times the stacks are on the stats spelkl not the trigger spell,
+		// so we make sure to check both and take the max of the two if they are different.
+		maxCumulativeStacks := max(statsSP.MaxCumulativeStacks, spTop.MaxCumulativeStacks)
+		if maxCumulativeStacks > 0 {
+			pe.MaxCumulativeStacks = maxCumulativeStacks
+		}
 	}
 }
 
@@ -221,40 +234,111 @@ func ParseItemEffects(itemID, itemLevel int, levelState proto.ItemLevelState) []
 	return out
 }
 
-func GetItemEffectSpellTooltip(itemID int) (string, int) {
+func GetItemEffectSpellTooltip(itemID int, buffId int) (string, int) {
 	raw := dbcInstance.ItemEffectsByParentID[itemID]
+	var spellID int
+
 	for _, effect := range raw {
-		spell := dbcInstance.Spells[effect.SpellID]
-		return spell.Description, effect.SpellID
+		spellID = effect.SpellID
+		if effect.SpellID == buffId {
+			spellID = effect.SpellID
+			break
+		} else {
+			triggerEffects := dbcInstance.SpellEffects[effect.SpellID]
+			if len(triggerEffects) == 0 {
+				continue
+			}
+			if spellEffect := GetSpellEffectRecursive(buffId, triggerEffects); spellEffect != nil {
+				if spellEffect.EffectTriggerSpell == buffId {
+					spellID = effect.SpellID
+				}
+				break
+			}
+		}
 	}
-	return "", 0
+	spell := dbcInstance.Spells[spellID]
+	return spell.Description, spellID
+}
+
+func GetItemEffectForBuffID(itemID int, buffId int) *ItemEffect {
+	raw := dbcInstance.ItemEffectsByParentID[itemID]
+	var itemEffect *ItemEffect
+	for _, effect := range raw {
+		if effect.SpellID == buffId {
+			itemEffect = &effect
+			break
+		} else {
+			triggerEffects := dbcInstance.SpellEffects[effect.SpellID]
+			if len(triggerEffects) == 0 {
+				continue
+			}
+			if spellEffect := GetSpellEffectRecursive(buffId, triggerEffects); spellEffect != nil {
+				if spellEffect.EffectTriggerSpell == buffId {
+					return &effect
+				}
+				break
+			}
+		}
+	}
+	return itemEffect
+}
+
+func GetSpellEffectRecursive(spellIDToMatch int, spellEffects map[int]SpellEffect) *SpellEffect {
+	for _, spellEffect := range spellEffects {
+		if spellEffect.EffectTriggerSpell != 0 {
+			if spellEffect.EffectTriggerSpell == spellIDToMatch {
+				return &spellEffect
+			} else {
+				triggerEffects := dbcInstance.SpellEffects[spellEffect.EffectTriggerSpell]
+				return GetSpellEffectRecursive(spellIDToMatch, triggerEffects)
+			}
+		}
+	}
+	return nil
 }
 
 // Parses a UIItem and loops through Scaling Options for that item.
-func MergeItemEffectsForAllStates(parsed *proto.UIItem) *proto.ItemEffect {
+func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
+	var effects []*proto.ItemEffect
+
 	// pick a base effect that has stats if there is more than one effect on the item
-	var baseEff *ItemEffect
 	for i := range dbcInstance.ItemEffectsByParentID[int(parsed.Id)] {
+		var baseEff *ItemEffect
 
 		e := &dbcInstance.ItemEffectsByParentID[int(parsed.Id)][i]
-		props := buildScalingProps(resolveStatsSpell(e.SpellID), int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl), e.SpellID)
-		if len(props.Stats) > 0 {
-			baseEff = e
-			break
+		triggerType := resolveTriggerType(e.TriggerType, e.SpellID)
+		statsSpellID := resolveStatsSpell(e.SpellID)
+		statsSpell := dbcInstance.Spells[statsSpellID]
+		isValidSpell := statsSpell.ID != 0
+		props := buildScalingProps(statsSpellID, int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl), e.SpellID)
+		hasStats := len(props.Stats) > 0
+
+		if !isValidSpell {
+			continue
 		}
-	}
-	if baseEff == nil {
-		return nil
-	}
-	statsSpellID := resolveStatsSpell(baseEff.SpellID)
-	pe := makeBaseProto(baseEff, statsSpellID)
-	assignTrigger(baseEff, statsSpellID, pe)
 
-	// add scaling for each saved state
-	for state, opt := range parsed.ScalingOptions {
-		ilvl := int(opt.Ilvl)
-		pe.ScalingOptions[state] = buildScalingProps(statsSpellID, ilvl, baseEff.SpellID)
+		if triggerType == ITEM_SPELLTRIGGER_ON_EQUIP && hasStats {
+			for stat, value := range props.Stats {
+				parsed.ScalingOptions[0].Stats[int32(stat)] += value
+			}
+			continue
+		} else if triggerType == ITEM_SPELLTRIGGER_ON_EQUIP || triggerType == ITEM_SPELLTRIGGER_CHANCE_ON_HIT || e.CoolDownMSec > 0 {
+			baseEff = e
+		} else {
+			continue
+		}
+
+		pe := makeBaseProto(baseEff, statsSpellID)
+		assignTrigger(baseEff, statsSpellID, pe)
+
+		// add scaling for each saved state
+		for state, opt := range parsed.ScalingOptions {
+			ilvl := int(opt.Ilvl)
+			pe.ScalingOptions[state] = buildScalingProps(statsSpellID, ilvl, baseEff.SpellID)
+		}
+
+		effects = append(effects, pe)
 	}
 
-	return pe
+	return effects
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/hunter"
 )
 
 func (bmHunter *BeastMasteryHunter) registerFocusFireSpell() {
@@ -39,7 +40,8 @@ func (bmHunter *BeastMasteryHunter) registerFocusFireSpell() {
 	})
 
 	focusFireSpell := bmHunter.RegisterSpell(core.SpellConfig{
-		ActionID: actionID,
+		ActionID:       actionID,
+		ClassSpellMask: hunter.HunterSpellFocusFire,
 
 		FocusCost: core.FocusCostOptions{
 			Cost: 0,

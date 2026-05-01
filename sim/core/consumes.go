@@ -14,47 +14,7 @@ func applyConsumeEffects(agent Agent) {
 	if consumables == nil {
 		return
 	}
-	alchemyFlaskBonus := TernaryFloat64(character.HasProfession(proto.Profession_Alchemy), 320, 0)
-	alchemyBattleElixirBonus := TernaryFloat64(character.HasProfession(proto.Profession_Alchemy), 240, 0)
-	if consumables.FlaskId != 0 {
-		flask := ConsumablesByID[consumables.FlaskId]
-		if flask.Stats[stats.Strength] > 0 {
-			flask.Stats[stats.Strength] += alchemyFlaskBonus
-		} else if flask.Stats[stats.Agility] > 0 {
-			flask.Stats[stats.Agility] += alchemyFlaskBonus
-		} else if flask.Stats[stats.Intellect] > 0 {
-			flask.Stats[stats.Intellect] += alchemyFlaskBonus
-		} else if flask.Stats[stats.Spirit] > 0 {
-			flask.Stats[stats.Spirit] += alchemyFlaskBonus
-		} else if flask.Stats[stats.Stamina] > 0 {
-			flask.Stats[stats.Stamina] += alchemyFlaskBonus * 1.5
-		}
-		character.AddStats(flask.Stats)
-	}
 
-	if consumables.BattleElixirId != 0 {
-		elixir := ConsumablesByID[consumables.BattleElixirId]
-		if elixir.Stats[stats.MasteryRating] > 0 {
-			elixir.Stats[stats.MasteryRating] += alchemyBattleElixirBonus
-		} else if elixir.Stats[stats.HasteRating] > 0 {
-			elixir.Stats[stats.HasteRating] += alchemyBattleElixirBonus
-		} else if elixir.Stats[stats.CritRating] > 0 {
-			elixir.Stats[stats.CritRating] += alchemyBattleElixirBonus
-		} else if elixir.Stats[stats.ExpertiseRating] > 0 {
-			elixir.Stats[stats.ExpertiseRating] += alchemyBattleElixirBonus
-		} else if elixir.Stats[stats.Spirit] > 0 {
-			elixir.Stats[stats.Spirit] += alchemyBattleElixirBonus
-		}
-		character.AddStats(elixir.Stats)
-	}
-
-	if consumables.GuardianElixirId != 0 {
-		elixir := ConsumablesByID[consumables.GuardianElixirId]
-		if character.HasProfession(proto.Profession_Alchemy) && elixir.Stats[stats.Armor] > 0 {
-			elixir.Stats[stats.Armor] += 280
-		}
-		character.AddStats(elixir.Stats)
-	}
 	if consumables.FoodId != 0 {
 		food := ConsumablesByID[consumables.FoodId]
 		isPanda := character.Race == proto.Race_RaceHordePandaren || character.Race == proto.Race_RaceAlliancePandaren
@@ -74,9 +34,134 @@ func applyConsumeEffects(agent Agent) {
 		character.AddStats(foodBuffStats)
 	}
 
+	registerNonCombatPotions(agent, consumables)
 	registerPotionCD(agent, consumables)
 	registerConjuredCD(agent, consumables)
 	registerExplosivesCD(agent, consumables)
+}
+
+func registerNonCombatPotions(agent Agent, consumables *proto.ConsumesSpec) {
+	nonCombatPotionIds := []int32{consumables.FlaskId, consumables.BattleElixirId, consumables.GuardianElixirId}
+	nonCombatPotionIds = append(nonCombatPotionIds, consumables.ConsumableIds...)
+
+	for _, ncpId := range nonCombatPotionIds {
+		spell := registerNonCombatPotion(agent, ncpId)
+		isDefaultNonCombatPotion := ncpId == consumables.FlaskId || ncpId == consumables.BattleElixirId || ncpId == consumables.GuardianElixirId
+		if spell != nil && isDefaultNonCombatPotion {
+			MakePermanent(spell.RelatedSelfBuff)
+		}
+	}
+}
+
+func registerNonCombatPotion(agent Agent, elixirOrFlaskId int32) *Spell {
+	character := agent.GetCharacter()
+
+	item := ConsumablesByID[elixirOrFlaskId]
+
+	// All non combat potions require a buff duration to create a buff aura
+	if item.BuffDuration == 0 {
+		return nil
+	}
+
+	actionID := ActionID{ItemID: item.Id}
+
+	categoryCooldownDuration := TernaryDuration(item.CategoryCooldownDuration > 0, item.CategoryCooldownDuration, time.Second*3)
+	alchemyFlaskBonus := TernaryFloat64(character.HasProfession(proto.Profession_Alchemy), 320, 0)
+	alchemyBattleGuardianElixirBonus := TernaryFloat64(character.HasProfession(proto.Profession_Alchemy), 240, 0)
+
+	potionStats := item.Stats
+
+	for stat, amount := range potionStats {
+		if amount == 0 {
+			continue
+		}
+		bonus := 0.0
+
+		switch item.Type {
+		case proto.ConsumableType_ConsumableTypeFlask:
+			bonus = alchemyFlaskBonus
+		case proto.ConsumableType_ConsumableTypeBattleElixir, proto.ConsumableType_ConsumableTypeGuardianElixir:
+			bonus = alchemyBattleGuardianElixirBonus
+		}
+
+		if stat == int(proto.Stat_StatStamina) {
+			bonus *= 1.5
+		} else if stat == int(proto.Stat_StatArmor) {
+			bonus *= 2
+		}
+		potionStats[stat] += bonus
+	}
+
+	aura := character.GetOrRegisterAura(Aura{
+		Label:      item.Name,
+		ActionID:   actionID,
+		Duration:   item.BuffDuration,
+		BuildPhase: CharacterBuildPhaseConsumes,
+	})
+
+	registerExclusiveNonCombatPotionBuff(item.Type, aura, potionStats)
+
+	castConfig := CastConfig{
+		SharedCD: Cooldown{
+			Timer:    character.GetNonCombatPotionCD(),
+			Duration: categoryCooldownDuration,
+		},
+	}
+	if item.CooldownDuration > 0 {
+		castConfig.CD = Cooldown{
+			Timer:    character.NewTimer(),
+			Duration: item.CooldownDuration,
+		}
+	}
+
+	return character.GetOrRegisterSpell(SpellConfig{
+		ActionID: actionID,
+		Flags:    SpellFlagNonCombatPotion | SpellFlagNoOnCastComplete | SpellFlagAPL,
+		Cast:     castConfig,
+		ApplyEffects: func(sim *Simulation, _ *Unit, _ *Spell) {
+			switch item.Type {
+			case proto.ConsumableType_ConsumableTypeFlask:
+				if activeBattle := character.GetExclusiveEffectCategory("FlaskVsBattleElixir").GetActiveAura(); activeBattle != nil && activeBattle != aura {
+					activeBattle.Deactivate(sim)
+				}
+				if activeGuardian := character.GetExclusiveEffectCategory("FlaskVsGuardianElixir").GetActiveAura(); activeGuardian != nil && activeGuardian != aura {
+					activeGuardian.Deactivate(sim)
+				}
+			case proto.ConsumableType_ConsumableTypeBattleElixir:
+				if activeFlask := character.GetExclusiveEffectCategory("FlaskVsBattleElixir").GetActiveAura(); activeFlask != nil && activeFlask != aura {
+					activeFlask.Deactivate(sim)
+				}
+			case proto.ConsumableType_ConsumableTypeGuardianElixir:
+				if activeFlask := character.GetExclusiveEffectCategory("FlaskVsGuardianElixir").GetActiveAura(); activeFlask != nil && activeFlask != aura {
+					activeFlask.Deactivate(sim)
+				}
+			}
+			aura.Activate(sim)
+		},
+		RelatedSelfBuff: aura,
+	})
+}
+
+func registerExclusiveNonCombatPotionBuff(ncpType proto.ConsumableType, aura *Aura, stats stats.Stats) {
+	exclusiveEffectNoopConfig := ExclusiveEffect{}
+	exclusiveEffectConfig := ExclusiveEffect{
+		OnGain: func(ee *ExclusiveEffect, s *Simulation) {
+			ee.Aura.Unit.AddStatsDynamic(s, stats)
+		},
+		OnExpire: func(ee *ExclusiveEffect, s *Simulation) {
+			ee.Aura.Unit.AddStatsDynamic(s, stats.Invert())
+		},
+	}
+
+	switch ncpType {
+	case proto.ConsumableType_ConsumableTypeFlask:
+		aura.NewExclusiveEffect("FlaskVsBattleElixir", true, exclusiveEffectConfig)
+		aura.NewExclusiveEffect("FlaskVsGuardianElixir", true, exclusiveEffectNoopConfig)
+	case proto.ConsumableType_ConsumableTypeBattleElixir:
+		aura.NewExclusiveEffect("FlaskVsBattleElixir", true, exclusiveEffectConfig)
+	case proto.ConsumableType_ConsumableTypeGuardianElixir:
+		aura.NewExclusiveEffect("FlaskVsGuardianElixir", true, exclusiveEffectConfig)
+	}
 }
 
 var PotionAuraTag = "Potion"
@@ -89,6 +174,7 @@ func registerPotionCD(agent Agent, consumes *proto.ConsumesSpec) {
 	if potion == 0 && prepot == 0 {
 		return
 	}
+
 	var mcd MajorCooldown
 	if prepot != 0 {
 		mcd = makePotionActivationSpell(prepot, character)

@@ -12,6 +12,7 @@ func (monk *Monk) registerTouchOfDeath() {
 	actionID := core.ActionID{SpellID: 115080}
 	chiMetrics := monk.NewChiMetrics(actionID)
 	cooldown := time.Second*90 + core.TernaryDuration(hasGlyph, 2*time.Minute, 0)
+	chiCost := int32(3)
 
 	monk.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -47,7 +48,7 @@ func (monk *Monk) registerTouchOfDeath() {
 			if result.Landed() {
 				spell.DealDamage(sim, result)
 				if !hasGlyph {
-					monk.SpendChi(sim, 3, chiMetrics)
+					monk.SpendChi(sim, chiCost, chiCost, chiMetrics)
 				}
 			}
 		},

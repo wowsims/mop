@@ -144,15 +144,16 @@ func init() {
 			statValue := core.GetItemEffectScalingStatValue(itemID, 0.44999998808, state)
 
 			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
-				AuraLabel:            fmt.Sprintf("Wushoolay's Lightning (%s)", versionLabel),
-				ActionID:             core.ActionID{SpellID: 138790},
-				Duration:             time.Second * 10,
-				MaxStacks:            10,
-				TimePerStack:         time.Second * 1,
-				BonusPerStack:        stats.Stats{stats.Intellect: statValue},
-				StackingAuraActionID: core.ActionID{SpellID: 138786},
-				StackingAuraLabel:    fmt.Sprintf("Item - Proc Stacking Intellect (%s)", versionLabel),
-				TickImmediately:      true,
+				AuraLabel:              fmt.Sprintf("Wushoolay's Lightning (%s)", versionLabel),
+				ActionID:               core.ActionID{SpellID: 138790},
+				Duration:               time.Second * 10,
+				MaxStacks:              10,
+				TimePerStack:           time.Second * 1,
+				BonusPerStack:          stats.Stats{stats.Intellect: statValue},
+				StackingAuraActionID:   core.ActionID{SpellID: 138786},
+				StackingAuraLabel:      fmt.Sprintf("Item - Proc Stacking Intellect (%s)", versionLabel),
+				TickImmediately:        true,
+				BuggedAlterTimeRestore: true,
 			})
 
 			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
@@ -262,50 +263,6 @@ func init() {
 		})
 	})
 
-	// Primordius' Talisman of Rage
-	// Your attacks have a chance to grant you 963 Strength for 10s. This effect can stack up to 5 times. (Approximately
-	// 3.50 procs per minute)
-	shared.ItemVersionMap{
-		shared.ItemVersionLFR:                 95757,
-		shared.ItemVersionNormal:              94519,
-		shared.ItemVersionHeroic:              96501,
-		shared.ItemVersionThunderforged:       96129,
-		shared.ItemVersionHeroicThunderforged: 96873,
-	}.RegisterAll(func(version shared.ItemVersion, itemID int32, versionLabel string) {
-		label := "Primordius' Talisman of Rage"
-
-		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
-			character := agent.GetCharacter()
-			statValue := core.GetItemEffectScalingStatValue(itemID, 0.5189999938, state)
-
-			aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
-				Duration:             time.Second * 10,
-				MaxStacks:            5,
-				BonusPerStack:        stats.Stats{stats.Strength: statValue},
-				StackingAuraActionID: core.ActionID{SpellID: 138870},
-				StackingAuraLabel:    fmt.Sprintf("Rampage (%s)", versionLabel),
-			})
-
-			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-				Name: fmt.Sprintf("%s (%s)", label, versionLabel),
-				DPM: character.NewRPPMProcManager(itemID, false, false, core.ProcMaskDirect|core.ProcMaskProc, core.RPPMConfig{
-					PPM: 3.5,
-				}),
-				ICD:      time.Second * 5,
-				Outcome:  core.OutcomeLanded,
-				Callback: core.CallbackOnSpellHitDealt,
-				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
-					aura.Activate(sim)
-					aura.AddStack(sim)
-				},
-			})
-
-			eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
-			character.AddStatProcBuff(itemID, aura, false, eligibleSlots)
-			character.ItemSwap.RegisterProcWithSlots(itemID, triggerAura, eligibleSlots)
-		})
-	})
-
 	// Inscribed Bag of Hydra-Spawn
 	// Your heals have a chance to grant the target a shield absorbing 33446 damage, lasting 15 sec. (Approximately [1.64 + Haste] procs per minute, 17 sec cooldown)
 	shared.ItemVersionMap{
@@ -399,94 +356,6 @@ func init() {
 			})
 
 			character.ItemSwap.RegisterProc(itemID, triggerAura)
-		})
-	})
-
-	// Talisman of Bloodlust
-	// Your attacks have a chance to grant you 963 haste for 10s. This effect can stack up to 5 times. (Approximately
-	// 3.50 procs per minute)
-	shared.ItemVersionMap{
-		shared.ItemVersionLFR:                 95748,
-		shared.ItemVersionNormal:              94522,
-		shared.ItemVersionHeroic:              96492,
-		shared.ItemVersionThunderforged:       96120,
-		shared.ItemVersionHeroicThunderforged: 96864,
-	}.RegisterAll(func(version shared.ItemVersion, itemID int32, versionLabel string) {
-		label := "Talisman of Bloodlust"
-
-		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
-			character := agent.GetCharacter()
-			statValue := core.GetItemEffectScalingStatValue(itemID, 0.5189999938, state)
-
-			aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
-				Duration:             time.Second * 10,
-				MaxStacks:            5,
-				BonusPerStack:        stats.Stats{stats.HasteRating: statValue},
-				StackingAuraActionID: core.ActionID{SpellID: 138895},
-				StackingAuraLabel:    fmt.Sprintf("Frenzy (%s)", versionLabel),
-			})
-
-			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-				Name: fmt.Sprintf("%s (%s)", label, versionLabel),
-				DPM: character.NewRPPMProcManager(itemID, false, false, core.ProcMaskDirect|core.ProcMaskProc, core.RPPMConfig{
-					PPM: 3.5,
-				}),
-				ICD:      time.Second * 5,
-				Outcome:  core.OutcomeLanded,
-				Callback: core.CallbackOnSpellHitDealt,
-				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
-					aura.Activate(sim)
-					aura.AddStack(sim)
-				},
-			})
-
-			eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
-			character.AddStatProcBuff(itemID, aura, false, eligibleSlots)
-			character.ItemSwap.RegisterProcWithSlots(itemID, triggerAura, eligibleSlots)
-		})
-	})
-
-	// Gaze of the Twins
-	// Your critical attacks have a chance to grant you 963 Critical Strike for 20s. This effect can stack up
-	// to 3 times. (Approximately 0.72 procs per minute)
-	shared.ItemVersionMap{
-		shared.ItemVersionLFR:                 95799,
-		shared.ItemVersionNormal:              94529,
-		shared.ItemVersionHeroic:              96543,
-		shared.ItemVersionThunderforged:       96171,
-		shared.ItemVersionHeroicThunderforged: 96915,
-	}.RegisterAll(func(version shared.ItemVersion, itemID int32, versionLabel string) {
-		label := "Gaze of the Twins"
-
-		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
-			character := agent.GetCharacter()
-			statValue := core.GetItemEffectScalingStatValue(itemID, 0.96799999475, state)
-
-			aura, _ := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
-				Duration:             time.Second * 20,
-				MaxStacks:            3,
-				BonusPerStack:        stats.Stats{stats.CritRating: statValue},
-				StackingAuraActionID: core.ActionID{SpellID: 139170},
-				StackingAuraLabel:    fmt.Sprintf("Eye of Brutality (%s)", versionLabel),
-			})
-
-			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-				Name: fmt.Sprintf("%s (%s)", label, versionLabel),
-				DPM: character.NewRPPMProcManager(itemID, false, false, core.ProcMaskDirect|core.ProcMaskProc, core.RPPMConfig{
-					PPM: 0.72000002861,
-				}.WithCritMod()),
-				ICD:      time.Second * 10,
-				Outcome:  core.OutcomeCrit,
-				Callback: core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
-					aura.Activate(sim)
-					aura.AddStack(sim)
-				},
-			})
-
-			eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
-			character.AddStatProcBuff(itemID, aura, false, eligibleSlots)
-			character.ItemSwap.RegisterProcWithSlots(itemID, triggerAura, eligibleSlots)
 		})
 	})
 
@@ -676,7 +545,7 @@ func init() {
 
 		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 			character := agent.GetCharacter()
-			actionId := core.ActionID{SpellID: 138979, ItemID: itemID}
+			actionId := core.ActionID{SpellID: 138979}
 			absorbPerHitValue := core.GetItemEffectScalingStatValue(itemID, 3.78200006485, state)
 
 			damageAbsorptionAura := character.NewDamageAbsorptionAura(core.AbsorptionAuraConfig{

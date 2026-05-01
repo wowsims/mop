@@ -114,6 +114,7 @@ const (
 	DruidSpellSavageRoar
 	DruidSpellShred
 	DruidSpellStarfall
+	DruidSpellStarfallTick
 	DruidSpellStarfire
 	DruidSpellStarsurge
 	DruidSpellSunfire
@@ -126,6 +127,8 @@ const (
 	DruidSpellWildMushroom
 	DruidSpellWildMushroomDetonate
 	DruidSpellWrath
+
+	DruidSpell2PT16Bolt
 
 	DruidSpellHealingTouch
 	DruidSpellRegrowth
@@ -150,7 +153,7 @@ const (
 	DruidSpellBuilder            = DruidSpellMangleCat | DruidSpellShred | DruidSpellRake | DruidSpellRavage
 	DruidSpellFinisher           = DruidSpellFerociousBite | DruidSpellRip | DruidSpellSavageRoar
 	DruidArcaneSpells            = DruidSpellMoonfire | DruidSpellMoonfireDoT | DruidSpellStarfire | DruidSpellStarsurge | DruidSpellStarfall
-	DruidNatureSpells            = DruidSpellWrath | DruidSpellStarsurge | DruidSpellSunfire | DruidSpellSunfireDoT | DruidSpellHurricane
+	DruidNatureSpells            = DruidSpellWrath | DruidSpellStarsurge | DruidSpellSunfire | DruidSpellSunfireDoT | DruidSpellHurricane | DruidSpellWildMushroomDetonate
 	DruidHealingNonInstantSpells = DruidSpellHealingTouch | DruidSpellRegrowth | DruidSpellNourish
 	DruidHealingSpells           = DruidHealingNonInstantSpells | DruidSpellRejuvenation | DruidSpellLifebloom | DruidSpellSwiftmend
 	DruidDamagingSpells          = DruidArcaneSpells | DruidNatureSpells

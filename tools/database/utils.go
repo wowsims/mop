@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -201,21 +202,19 @@ func SpellUsesStacks(spellId int, instance *dbc.DBC) bool {
 	return false
 }
 
-func GetEffectStatString(item *proto.UIItem) string {
-	if item.ItemEffect == nil {
+func GetEffectStatString(itemEffect *proto.ItemEffect) string {
+	if itemEffect == nil {
 		return ""
 	}
 
-	stats := item.ItemEffect.ScalingOptions[int32(proto.ItemLevelState_Base)].Stats
-	var firstStat proto.Stat = proto.Stat_StatStrength
-	found := false
+	stats := itemEffect.ScalingOptions[int32(0)].Stats
+	statsString := make([]string, 0, len(stats))
 	for k := range stats {
 		stat := proto.Stat(k)
-		if !found || stat < firstStat {
-			firstStat = stat
-			found = true
-		}
+		statsString = append(statsString, stat.String()[4:])
 	}
 
-	return firstStat.String()[4:]
+	slices.Sort(statsString)
+
+	return strings.Join(statsString, " / ")
 }

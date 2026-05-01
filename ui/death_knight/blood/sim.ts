@@ -130,12 +130,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 		inputs: [
 			OtherInputs.InputDelay,
 			OtherInputs.TankAssignment,
-			OtherInputs.HpPercentForDefensives,
 			OtherInputs.IncomingHps,
 			OtherInputs.HealingCadence,
 			OtherInputs.HealingCadenceVariation,
 			OtherInputs.AbsorbFrac,
 			OtherInputs.BurstWindow,
+			OtherInputs.HpPercentForDefensives,
 			OtherInputs.InFrontOfTarget,
 		],
 	},

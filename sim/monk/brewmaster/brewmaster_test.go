@@ -19,17 +19,18 @@ func init() {
 
 func TestBrewmaster(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "iron_juggernaut_default", ItemFilter, nil, nil),
 		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "horridon_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "sha_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "garajal_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "sha_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassMonk, "../../../ui/monk/brewmaster/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class:      proto.Class_ClassMonk,
 			Race:       proto.Race_RaceTroll,
 			OtherRaces: []proto.Race{proto.Race_RaceOrc},
 
-			GearSet: core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p4_bis_dw"),
+			GearSet: core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p5_bis_dw"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p4_bis_offensive_dw"),
+				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "p5_bis_offensive_dw"),
 				core.GetGearSet("../../../ui/monk/brewmaster/gear_sets", "prebis"),
 			},
 			Talents: BrewmasterDefaultTalents,

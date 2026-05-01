@@ -58,6 +58,7 @@ func risingSunKickSpellConfig(monk *Monk, isSEFClone bool, overrides core.SpellC
 
 func (monk *Monk) registerRisingSunKick() {
 	chiMetrics := monk.NewChiMetrics(risingSunKickActionID)
+	chiCost := int32(2)
 
 	risingSunKickDebuff := monk.NewEnemyAuraArray(func(target *core.Unit) *core.Aura {
 		return target.GetOrRegisterAura(core.Aura{
@@ -80,7 +81,7 @@ func (monk *Monk) registerRisingSunKick() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return monk.GetChi() >= core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 1, 2)
+			return monk.GetChi() >= monk.GetT16Windwalker4PCostReduction(chiCost)
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
@@ -89,7 +90,7 @@ func (monk *Monk) registerRisingSunKick() {
 			result := spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
 
 			if result.Landed() {
-				monk.SpendChi(sim, core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 1, 2), chiMetrics)
+				monk.SpendChi(sim, monk.GetT16Windwalker4PCostReduction(chiCost), chiCost, chiMetrics)
 				risingSunKickDebuff.ActivateAll(sim)
 				if monk.T16Windwalker4P != nil {
 					monk.T16Windwalker4P.Deactivate(sim)

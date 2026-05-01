@@ -2,11 +2,12 @@ import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Player } from '../../../player';
 import { APLAction, APLListItem } from '../../../proto/apl';
-import { EventID, TypedEvent } from '../../../typed_event';
+import { EventID } from '../../../typed_event';
 import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
+import * as AplHelpers from '../apl_helpers';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLHidePicker } from './hide_picker';
 
@@ -35,9 +36,21 @@ export class APLPriorityListPicker extends Component {
 			) => new APLListItemPicker(parent, simUI.player, config, index),
 			allowedActions: ['copy', 'delete', 'move'],
 			inlineMenuBar: true,
+			extraActions: [
+				AplHelpers.extractToVariableAction(
+					simUI.player,
+					(index) => simUI.player.aplRotation.priorityList[index]?.action?.condition,
+					(index, ref) => {
+						simUI.player.aplRotation.priorityList[index].action!.condition = ref;
+					},
+					simUI.rootElem,
+				),
+			],
 		});
 
-		new AplFloatingActionBar(this.rootElem, simUI, listPicker, i18n.t('rotation_tab.apl.priorityList.name'));
+		new AplFloatingActionBar(this.rootElem, simUI, listPicker, {
+			itemName: i18n.t('rotation_tab.apl.priorityList.name'),
+		});
 	}
 }
 

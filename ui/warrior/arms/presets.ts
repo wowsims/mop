@@ -48,7 +48,7 @@ export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatAttackPower]: 0.45,
 			[Stat.StatExpertiseRating]: 1.39,
 			[Stat.StatHitRating]: 1.88,
-			[Stat.StatCritRating]: 0.65,
+			[Stat.StatCritRating]: 0.6,
 			[Stat.StatHasteRating]: 0.3,
 			[Stat.StatMasteryRating]: 0.49,
 		},
@@ -60,7 +60,7 @@ export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
 );
 
 export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 550',
+	'Item Level >= 560',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1,
@@ -68,8 +68,8 @@ export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatExpertiseRating]: 2.83,
 			[Stat.StatHitRating]: 3.8,
 			[Stat.StatCritRating]: 0.92,
-			[Stat.StatHasteRating]: 0.61,
-			[Stat.StatMasteryRating]: 0.83,
+			[Stat.StatHasteRating]: 0.82 / 1.097, // Offset by -10% because of Thok's Tail Tip
+			[Stat.StatMasteryRating]: 0.92 / 1.097, // Offset by -10% because of Thok's Tail Tip
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 3.54,
@@ -77,7 +77,6 @@ export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
 		},
 	),
 );
-
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.

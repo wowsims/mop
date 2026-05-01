@@ -11,6 +11,7 @@ func (bm *BrewmasterMonk) registerBreathOfFire() {
 	actionID := core.ActionID{SpellID: 115181}
 	dotActionID := core.ActionID{SpellID: 123725}
 	chiMetrics := bm.NewChiMetrics(actionID)
+	chiCost := int32(2)
 
 	bm.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -72,7 +73,7 @@ func (bm *BrewmasterMonk) registerBreathOfFire() {
 				}
 			}
 
-			bm.SpendChi(sim, 2, chiMetrics)
+			bm.SpendChi(sim, chiCost, chiCost, chiMetrics)
 		},
 	})
 }

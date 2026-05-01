@@ -98,7 +98,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAfflictionWarlock, {
 				breakpoints: relevantDotBreakpoints,
 				capType: StatCapType.TypeSoftCap,
 				postCapEPs: relevantDotBreakpoints.map(
-					() => (Presets.P1_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.05) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
+					() => (Presets.P1_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
 				),
 			});
 
@@ -133,13 +133,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAfflictionWarlock, {
 	petConsumeInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [
-			AffInputs.ExhaleWindow,
-			OtherInputs.InputDelay,
-			OtherInputs.DistanceFromTarget,
-			OtherInputs.TankAssignment,
-			OtherInputs.ChannelClipDelay,
-		],
+		inputs: [AffInputs.ExhaleWindow, OtherInputs.InputDelay, OtherInputs.DistanceFromTarget, OtherInputs.TankAssignment, OtherInputs.ChannelClipDelay],
 	},
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	encounterPicker: {
@@ -148,7 +142,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAfflictionWarlock, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_BIS_EP_PRESET, Presets.P2_BIS_EP_PRESET],
+		epWeights: [Presets.P1_BIS_EP_PRESET, Presets.P2_BIS_EP_PRESET, Presets.P5_BIS_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.AfflictionTalents],
 		// Preset rotations that the user can quickly select.
@@ -214,6 +208,8 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 512) {
 					return Presets.P2_BIS_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 580) {
+					return Presets.P5_BIS_EP_PRESET.epWeights;
 				}
 				return Presets.P1_BIS_EP_PRESET.epWeights;
 			},

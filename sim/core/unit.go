@@ -880,17 +880,18 @@ func (unit *Unit) GetMetadata() *proto.UnitMetadata {
 		return &proto.SpellStats{
 			Id: spell.ActionID.ToProto(),
 
-			IsCastable:      spell.Flags.Matches(SpellFlagAPL),
-			IsChanneled:     spell.Flags.Matches(SpellFlagChanneled),
-			IsMajorCooldown: spell.Flags.Matches(SpellFlagMCD),
-			HasDot:          spell.dots != nil || spell.aoeDot != nil || (spell.RelatedDotSpell != nil && (spell.RelatedDotSpell.dots != nil || spell.RelatedDotSpell.aoeDot != nil)),
-			HasShield:       spell.shields != nil || spell.selfShield != nil,
-			PrepullOnly:     spell.Flags.Matches(SpellFlagPrepullOnly),
-			EncounterOnly:   spell.Flags.Matches(SpellFlagEncounterOnly),
-			HasCastTime:     spell.DefaultCast.CastTime > 0,
-			IsFriendly:      spell.Flags.Matches(SpellFlagHelpful),
-			HasExpectedTick: spell.expectedTickDamageInternal != nil,
-			HasMissileSpeed: spell.MissileSpeed > 0.0,
+			IsCastable:        spell.Flags.Matches(SpellFlagAPL),
+			IsChanneled:       spell.Flags.Matches(SpellFlagChanneled),
+			IsMajorCooldown:   spell.Flags.Matches(SpellFlagMCD),
+			HasDot:            spell.dots != nil || spell.aoeDot != nil || (spell.RelatedDotSpell != nil && (spell.RelatedDotSpell.dots != nil || spell.RelatedDotSpell.aoeDot != nil)),
+			HasShield:         spell.shields != nil || spell.selfShield != nil,
+			PrepullOnly:       spell.Flags.Matches(SpellFlagPrepullOnly),
+			EncounterOnly:     spell.Flags.Matches(SpellFlagEncounterOnly),
+			HasCastTime:       spell.DefaultCast.CastTime > 0,
+			IsFriendly:        spell.Flags.Matches(SpellFlagHelpful),
+			IsNonCombatPotion: spell.Flags.Matches(SpellFlagNonCombatPotion),
+			HasExpectedTick:   spell.expectedTickDamageInternal != nil,
+			HasMissileSpeed:   spell.MissileSpeed > 0.0,
 		}
 	})
 

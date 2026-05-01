@@ -34,9 +34,10 @@ func NewBalanceDruid(character *core.Character, options *proto.Player) *BalanceD
 	selfBuffs := druid.SelfBuffs{}
 
 	moonkin := &BalanceDruid{
-		Druid:            druid.New(character, druid.Moonkin, selfBuffs, options.TalentsString),
-		Options:          balanceOptions.Options,
-		EclipseEnergyMap: make(EclipseEnergyMap),
+		Druid:                   druid.New(character, druid.Moonkin, selfBuffs, options.TalentsString),
+		Options:                 balanceOptions.Options,
+		EclipseEnergyMap:        make(EclipseEnergyMap),
+		ShootingStarsProcChance: 0.3,
 	}
 
 	moonkin.registerTreants()
@@ -78,6 +79,8 @@ type BalanceDruid struct {
 	DreamOfCenarius *core.Aura
 	NaturesGrace    *core.Aura
 	OwlkinFrenzy    *core.Aura
+
+	ShootingStarsProcChance float64
 }
 
 func (moonkin *BalanceDruid) GetDruid() *druid.Druid {

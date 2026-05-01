@@ -34,16 +34,23 @@
 				cursor: move;
 			}
 
-			&.draggable:has(> .list-picker-item-header .list-picker-item-popover.hover) {
-				&::after {
-					content: '';
-					position: absolute;
-					top: calc(var(--drag-background-spacing) * -1);
-					left: calc(var(--drag-background-spacing) * -1);
-					height: calc(100% + var(--drag-background-spacing) * 2);
-					width: calc(100% + var(--drag-background-spacing) * 2);
-					background-color: color-mix(in srgb, var(--bs-border-color) 20%, transparent);
-					pointer-events: none;
+			&.draggable {
+				cursor: grab;
+
+				// Highlight the hovered item to indicate it's draggable.
+				// :not(:has(.list-picker-item-container.draggable:hover)) ensures
+				// only the innermost hovered container is highlighted, not its parents.
+				&:hover:not(:has(.list-picker-item-container.draggable:hover)) {
+					&::after {
+						content: '';
+						position: absolute;
+						top: calc(var(--drag-background-spacing) * -1);
+						left: calc(var(--drag-background-spacing) * -1);
+						height: calc(100% + var(--drag-background-spacing) * 2);
+						width: calc(100% + var(--drag-background-spacing) * 2);
+						background-color: color-mix(in srgb, var(--bs-border-color) 20%, transparent);
+						pointer-events: none;
+					}
 				}
 			}
 
@@ -79,12 +86,6 @@
 
 				.list-picker-item-title {
 					margin-bottom: 0;
-				}
-
-				.list-picker-item-action {
-					&.list-picker-item-move {
-						cursor: move;
-					}
 				}
 
 				.list-picker-item-popover:popover-open {

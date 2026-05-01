@@ -7,13 +7,13 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import { TypedEvent } from '../../core/typed_event';
 import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
-import ArcaneApl from './apls/default.apl.json';
 import ArcaneCleaveApl from './apls/arcane_cleave.apl.json';
 import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';
 import PreBISGear from './gear_sets/prebis.gear.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
 import P3BISGear from './gear_sets/p3_bis.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
+import P5BISGear from './gear_sets/p5_bis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -34,9 +34,9 @@ export const PREBIS = PresetUtils.makePresetGear('Pre-BIS', PreBISGear, { onLoad
 export const P2_BIS = PresetUtils.makePresetGear('P2 - BIS', P2BISGear, { onLoad: setFrostArmor });
 export const P3_BIS = PresetUtils.makePresetGear('P3 - BIS', P3BISGear, { onLoad: setFrostArmor });
 export const P4_BIS = PresetUtils.makePresetGear('P4 - BIS', P4BISGear, { onLoad: setMageArmor });
+export const P5_BIS = PresetUtils.makePresetGear('P5 - BIS', P5BISGear, { onLoad: setFrostArmor });
 
-export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', ArcaneApl);
-export const ROTATION_PRESET_T15_4PC = PresetUtils.makePresetAPLRotation('P3 - T15 4PC', ArcaneP3APL);
+export const ROTATION_PRESET_T15_4PC = PresetUtils.makePresetAPLRotation('Default', ArcaneP3APL);
 // export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', ArcaneCleaveApl);
 
 // Preset options for EP weights
@@ -113,13 +113,13 @@ export const ENCOUNTER_CLEAVE = PresetUtils.makePresetEncounter('Cleave (2 targe
 
 export const P1_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('Single Target', {
 	talents: ArcaneTalents,
-	rotation: ROTATION_PRESET_DEFAULT,
+	rotation: ROTATION_PRESET_T15_4PC,
 	encounter: ENCOUNTER_SINGLE_TARGET,
 });
 
 export const P1_PRESET_BUILD_CLEAVE = PresetUtils.makePresetBuild('Cleave (2 targets)', {
 	talents: ArcaneTalentsCleave,
-	rotation: ROTATION_PRESET_DEFAULT,
+	rotation: ROTATION_PRESET_T15_4PC,
 	encounter: ENCOUNTER_CLEAVE,
 });
 
@@ -166,9 +166,18 @@ export const P4_SETTINGS: PresetUtils.PresetSettings = {
 	playerOptions: OtherDefaults,
 };
 
+export const P5_SETTINGS: PresetUtils.PresetSettings = {
+	name: 'P5',
+	specOptions: DefaultArcaneOptions,
+	consumables: DefaultConsumables,
+	raidBuffs: DefaultRaidBuffs,
+	debuffs: DefaultDebuffs,
+	playerOptions: OtherDefaults,
+};
+
 export const T14_PRESET_BUILD = PresetUtils.makePresetBuild('T14', {
 	gear: P2_BIS,
-	rotation: ROTATION_PRESET_DEFAULT,
+	rotation: ROTATION_PRESET_T15_4PC,
 	epWeights: P1_BIS_EP_PRESET,
 	settings: DEFAULT_SETTINGS,
 });
@@ -185,4 +194,11 @@ export const T15_P4_PRESET_BUILD = PresetUtils.makePresetBuild('T15 P4', {
 	rotation: ROTATION_PRESET_T15_4PC,
 	epWeights: P3_BIS_EP_PRESET,
 	settings: P4_SETTINGS,
+});
+
+export const T16_PRESET_BUILD = PresetUtils.makePresetBuild('T16', {
+	gear: P5_BIS,
+	rotation: ROTATION_PRESET_T15_4PC,
+	epWeights: P3_BIS_EP_PRESET,
+	settings: P5_SETTINGS,
 });

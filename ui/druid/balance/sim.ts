@@ -120,13 +120,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	},
 
 	presets: {
-		epWeights: [Presets.P2_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET],
+		epWeights: [Presets.P2_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET, Presets.P4_BIS_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
 		rotations: [Presets.StandardRotation],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PreraidPresetGear, Presets.T14PresetGear, Presets.T14UpgradedPresetGear, Presets.T15PresetGear /*, Presets.T16PresetGear*/],
-		builds: [Presets.PresetPreraidBuild, Presets.T14PresetBuild, Presets.T15PresetBuild /*, Presets.T16PresetBuild*/],
+		gear: [Presets.PreraidPresetGear, Presets.T14PresetGear, Presets.T15PresetGear, Presets.T16PresetGear],
+		builds: [Presets.PresetPreraidBuild, Presets.T14PresetBuild, Presets.T15PresetBuild, Presets.T16PresetBuild],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecBalanceDruid>): APLRotation => {
@@ -210,7 +210,9 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 525) {
+				if (avgIlvl >= 560) {
+					return Presets.P4_BIS_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 525) {
 					return Presets.P3_BIS_EP_PRESET.epWeights;
 				}
 				return Presets.P2_BIS_EP_PRESET.epWeights;
@@ -240,6 +242,7 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 						softCapToModify.breakpoints = [33.333];
 					}
 				}
+				console.log(softCaps);
 
 				return softCaps;
 			},

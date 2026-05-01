@@ -3,6 +3,7 @@ package balance
 import (
 	"testing"
 
+	"github.com/wowsims/mop/sim/common"
 	_ "github.com/wowsims/mop/sim/common" // imported to get caster sets included. (we use spellfire here)
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
@@ -10,6 +11,7 @@ import (
 
 func init() {
 	RegisterBalanceDruid()
+	common.RegisterAllEffects()
 }
 
 func TestBalance(t *testing.T) {

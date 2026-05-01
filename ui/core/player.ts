@@ -1,3 +1,4 @@
+import { relevantStatOptions } from './components/inputs/stat_options';
 import { ItemSwapSettings } from './components/item_swap_picker';
 import Toast from './components/toast';
 import * as Mechanics from './constants/mechanics';
@@ -20,6 +21,7 @@ import {
 import { APLRotation, APLRotation_Type as APLRotationType, SimpleRotation } from './proto/apl';
 import {
 	Class,
+	ConsumableType,
 	ConsumesSpec,
 	Cooldowns,
 	Faction,
@@ -692,9 +694,20 @@ export class Player<SpecType extends Spec> {
 		this.buffsChangeEmitter.emit(eventID);
 	}
 
-	getConsumes(): ConsumesSpec {
+	getConsumes(forSimming?: boolean): ConsumesSpec {
+		const epStats = [...(this.specConfig.consumableStats ?? []), ...this.specConfig.epStats];
+		const flasks = this.sim.db.getConsumablesByTypeAndStats(ConsumableType.ConsumableTypeFlask, epStats);
+		const battleElixirs = this.sim.db.getConsumablesByTypeAndStats(ConsumableType.ConsumableTypeBattleElixir, epStats);
+		const guardianElixirs = this.sim.db.getConsumablesByTypeAndStats(ConsumableType.ConsumableTypeGuardianElixir, epStats);
+
+		if (forSimming) {
+			return ConsumesSpec.create({
+				...this.consumables,
+				consumableIds: [...flasks, ...battleElixirs, ...guardianElixirs].map(c => c.id),
+			});
+		}
 		// Make a defensive copy
-		return ConsumesSpec.clone(this.consumables);
+		return ConsumesSpec.clone({ ...this.consumables, consumableIds: [] });
 	}
 
 	setConsumes(eventID: EventID, newConsumes: ConsumesSpec) {
@@ -1492,7 +1505,7 @@ export class Player<SpecType extends Spec> {
 		}
 		if (exportCategory(SimSettingCategories.Consumes)) {
 			PlayerProto.mergePartial(player, {
-				consumables: this.getConsumes(),
+				consumables: this.getConsumes(forSimming),
 			});
 		}
 		if (exportCategory(SimSettingCategories.Miscellaneous)) {
@@ -1668,5 +1681,18 @@ export class Player<SpecType extends Spec> {
 				return item;
 			})
 			.filter((i): i is EquippedItem => !!i);
+	}
+
+	getTotalAmplificationTrinketStatModifier() {
+		const trinkets = this.getAmplificationTrinkets();
+		let totalModifier = 1;
+		for (const trinket of trinkets) {
+			const randPropPoints = this.sim.db.getItemEffectRandPropPoints(trinket.ilvl)?.randPropPoints;
+			if (!randPropPoints) continue;
+			const statScalingCoeff = 0.00176999997;
+			const buffValue = 1 + (statScalingCoeff * randPropPoints) / 100;
+			totalModifier *= buffValue;
+		}
+		return totalModifier;
 	}
 }

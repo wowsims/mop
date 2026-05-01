@@ -9,6 +9,7 @@ import { DamageMetricsTable } from './detailed_results/damage_metrics';
 import { DpsHistogram } from './detailed_results/dps_histogram';
 import { DtpsMetricsTable } from './detailed_results/dtps_metrics';
 import { HealingMetricsTable } from './detailed_results/healing_metrics';
+import { CombatReplay } from './detailed_results/combat_replay';
 import { LogRunner } from './detailed_results/log_runner';
 import { PlayerDamageMetricsTable } from './detailed_results/player_damage';
 import { PlayerDamageTakenMetricsTable } from './detailed_results/player_damage_taken';
@@ -68,6 +69,10 @@ const tabs: Tab[] = [
 	{
 		targetId: 'timelineTab',
 		label: i18n.t('results_tab.details.tabs.timeline'),
+	},
+	{
+		targetId: 'replayTab',
+		label: i18n.t('results_tab.details.tabs.replay'),
 	},
 	{
 		targetId: 'logTab',
@@ -175,12 +180,17 @@ export class DetailedResults extends Component {
 							<div className="resource-metrics" />
 						</div>
 					</div>
-					<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
-						<div className="dr-row">
-							<div className="timeline" />
-						</div>
+				<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
+					<div className="dr-row">
+						<div className="timeline" />
 					</div>
-					<div id="logTab" className="tab-pane dr-tab-content log-content fade">
+				</div>
+				<div id="replayTab" className="tab-pane dr-tab-content replay-content fade">
+					<div className="dr-row">
+						<div className="combat-replay" />
+					</div>
+				</div>
+				<div id="logTab" className="tab-pane dr-tab-content log-content fade">
 						<div className="dr-row">
 							<div className="log" />
 						</div>
@@ -281,6 +291,16 @@ export class DetailedResults extends Component {
 		const tabEl = document.querySelector('button[data-bs-target="#timelineTab"]');
 		tabEl?.addEventListener('shown.bs.tab', () => {
 			timeline.render();
+		});
+
+		const combatReplay = new CombatReplay({
+			parent: this.rootElem.querySelector('.combat-replay')!,
+			resultsEmitter: this.resultsEmitter,
+		});
+
+		const replayTabEl = document.querySelector('button[data-bs-target="#replayTab"]');
+		replayTabEl?.addEventListener('hide.bs.tab', () => {
+			combatReplay.stopPlayback();
 		});
 
 		new LogRunner({

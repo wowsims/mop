@@ -108,9 +108,13 @@ func (war *ProtectionWarrior) registerMastery() {
 		if dummyCriticalBlockSpell.CD.IsReady(sim) && sim.Proc(procChance, "Critical Block Roll") {
 			result.Damage = result.Damage * (1 - war.BlockDamageReduction()*2)
 			dummyCriticalBlockSpell.Cast(sim, spell.Unit)
-			return
+		} else {
+			result.Damage = result.Damage * (1 - war.BlockDamageReduction())
 		}
-		result.Damage = result.Damage * (1 - war.BlockDamageReduction())
+
+		if war.T16Tank2PHeal != nil {
+			war.T16Tank2PHeal(sim, result.Damage)
+		}
 	}
 
 	war.CriticalBlockChance[0] = war.CalculateMasteryCriticalBlockChance()

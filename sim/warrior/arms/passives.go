@@ -11,10 +11,11 @@ import (
 
 func (war *ArmsWarrior) registerMastery() {
 	procAttackConfig := core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: StrikesOfOpportunityHitID},
-		SpellSchool: core.SpellSchoolPhysical,
-		ProcMask:    core.ProcMaskMeleeSpecial,
-		Flags:       core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
+		ActionID:       core.ActionID{SpellID: StrikesOfOpportunityHitID},
+		SpellSchool:    core.SpellSchoolPhysical,
+		ClassSpellMask: warrior.SpellMaskOpportunityStrike,
+		ProcMask:       core.ProcMaskMeleeSpecial,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
 
 		DamageMultiplier: 0.55,
 		CritMultiplier:   war.DefaultCritMultiplier(),

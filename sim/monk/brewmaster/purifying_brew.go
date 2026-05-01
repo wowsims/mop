@@ -11,6 +11,7 @@ func (bm *BrewmasterMonk) registerPurifyingBrew() {
 	actionID := core.ActionID{SpellID: 119582}
 	chiMetrics := bm.NewChiMetrics(actionID)
 	t16Brewmaster4PHeal := bm.NewHealthMetrics(core.ActionID{SpellID: 145056})
+	chiCost := int32(1)
 
 	bm.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
@@ -37,7 +38,7 @@ func (bm *BrewmasterMonk) registerPurifyingBrew() {
 			if bm.T15Brewmaster4PProcEffect != nil && bm.T15Brewmaster4PProcEffect.IsActive() {
 				bm.T15Brewmaster4PProcEffect.Deactivate(sim)
 			} else {
-				bm.SpendChi(sim, 1, chiMetrics)
+				bm.SpendChi(sim, chiCost, chiCost, chiMetrics)
 			}
 			if bm.T16Brewmaster4P != nil && bm.T16Brewmaster4P.IsActive() {
 				bm.GainHealth(sim, outstandingDamage*0.15, t16Brewmaster4PHeal)

@@ -1,0 +1,188 @@
+{
+  "apiVersion": 3,
+  "raidBuffs": {
+    "trueshotAura": true,
+    "serpentsSwiftness": true,
+    "arcaneBrilliance": true,
+    "elementalOath": true,
+    "blessingOfMight": true,
+    "blessingOfKings": true,
+    "powerWordFortitude": true,
+    "bloodlust": true,
+    "stormlashTotemCount": 4,
+    "skullBannerCount": 1
+  },
+  "debuffs": {
+    "weakenedBlows": true,
+    "physicalVulnerability": true,
+    "weakenedArmor": true,
+    "curseOfElements": true
+  },
+  "tanks": [
+    {
+      "type": "Player"
+    }
+  ],
+  "partyBuffs": {
+  },
+  "player": {
+    "name": "Player",
+    "race": "RaceHuman",
+    "class": "ClassWarrior",
+    "equipment": {
+      "items": [
+        {"id":96396,"gems":[95344,76683],"reforging":125,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96544,"gems":[76695],"reforging":157,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96498,"enchant":4803,"gems":[76695],"reforging":122,"upgradeStep":"UpgradeStepTwo"},
+        {"id":102250,"enchant":4422,"gems":[76695],"reforging":165,"upgradeStep":"UpgradeStepTwo"},
+        {"id":95037,"enchant":4420,"gems":[76695,76695,76695],"reforging":156,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96428,"enchant":4415,"gems":[76695],"upgradeStep":"UpgradeStepTwo"},
+        {"id":96469,"enchant":4431,"gems":[76664,76695],"upgradeStep":"UpgradeStepTwo","tinker":4697},
+        {"id":96446,"gems":[76695,76664,76695],"upgradeStep":"UpgradeStepTwo"},
+        {"id":96497,"enchant":4823,"gems":[76695,76683],"reforging":122,"upgradeStep":"UpgradeStepTwo"},
+        {"id":95012,"enchant":4429,"gems":[76664,76683],"reforging":143,"upgradeStep":"UpgradeStepTwo"},
+        {"id":95020,"gems":[76683],"reforging":125,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96481,"gems":[76695],"reforging":136,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96555,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96543,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96502,"enchant":4444,"gems":[76695,76695],"reforging":125,"upgradeStep":"UpgradeStepTwo"},
+        {"id":96622,"enchant":4993,"gems":[76664],"reforging":122,"upgradeStep":"UpgradeStepTwo"}
+      ]
+    },
+    "consumables": {
+      "prepotId": 76090,
+      "potId": 76090,
+      "flaskId": 76087,
+      "foodId": 74656,
+      "conjuredId": 5512,
+      "consumableIds": []
+    },
+    "bonusStats": {
+      "apiVersion": 3,
+      "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "pseudoStats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    },
+    "itemSwap": {"items":[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{"id":87176,"enchant":4444,"gems":[89881,76697],"reforging":165,"upgradeStep":"UpgradeStepTwo"},{}],"prepullBonusStats":{"apiVersion":3,"stats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"pseudoStats":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}},
+    "buffs": {
+      "painSuppressionCount": 1,
+      "vigilanceCount": 1,
+      "rallyingCryCount": 1
+    },
+    "protectionWarrior": {
+      "options": {
+        "classOptions": {
+        }
+      }
+    },
+    "talentsString": "213332",
+    "glyphs": {
+      "major1": 43415,
+      "major2": 43399,
+      "major3": 43424
+    },
+    "profession1": "Engineering",
+    "profession2": "Blacksmithing",
+    "cooldowns": {
+      "hpPercentForDefensives": 0.3
+    },
+    "rotation": {
+      "type": "TypeAPL",
+      "simple": {
+        "cooldowns": {
+          "hpPercentForDefensives": 0.3
+        }
+      },
+      "prepullActions": [
+        {"action":{"castSpell":{"spellId":{"spellId":71}}},"doAtValue":{"const":{"val":"-10s"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":6673}}},"doAtValue":{"const":{"val":"-3s"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":114206}}},"doAtValue":{"const":{"val":"-1.5s"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":1249459}}},"doAtValue":{"variableRef":{"name":"Prepull Shatter"}}},
+        {"action":{"castSpell":{"spellId":{"spellId":100}}},"doAtValue":{"variableRef":{"name":"Prepull Shatter"}}}
+      ],
+      "priorityList": [
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"auraIsInactive":{"auraId":{"spellId":2565}}},{"or":{"vals":[{"cmp":{"op":"OpGe","lhs":{"currentRage":{}},"rhs":{"math":{"op":"OpSub","lhs":{"maxRage":{}},"rhs":{"const":{"val":"20"}}}}}},{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"80%"}}}}]}}]}},"castSpell":{"spellId":{"spellId":2565}}}},
+        {"action":{"condition":{"or":{"vals":[{"and":{"vals":[{"auraIsInactive":{"auraId":{"spellId":112048}}},{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"75%"}}}}]}},{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"or":{"vals":[{"auraIsInactive":{"auraId":{"spellId":112048}}},{"variableRef":{"name":"Shield Barrier: Low"}}]}},{"cmp":{"op":"OpEq","lhs":{"bossSpellTimeToReady":{"targetUnit":{"type":"Target"},"spellId":{"spellId":144464}}},"rhs":{"const":{"val":"0s"}}}},{"auraIsInactive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":144483}}}]}},{"and":{"vals":[{"or":{"vals":[{"auraIsInactive":{"auraId":{"spellId":112048}}},{"variableRef":{"name":"Shield Barrier: Low"}}]}},{"bossSpellIsCasting":{"targetUnit":{"type":"Target"},"spellId":{"spellId":144485}}}]}}]}},"castSpell":{"spellId":{"spellId":112048}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":144467},"includeReactionTime":true}},"rhs":{"const":{"val":"1"}}}}]}},"castSpell":{"spellId":{"spellId":1160}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":1160},"includeReactionTime":true}}]}},"castAllStatBuffCooldowns":{"statType1":9,"statType2":11,"statType3":19}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":144467},"includeReactionTime":true}},"rhs":{"const":{"val":"2"}}}},{"not":{"val":{"spellIsReady":{"spellId":{"spellId":1160}}}}},{"not":{"val":{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":1160},"includeReactionTime":true}}}}]}},"castSpell":{"spellId":{"spellId":114203}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":144467},"includeReactionTime":true}},"rhs":{"const":{"val":"3"}}}},{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114203}}}}},{"not":{"val":{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":114203},"includeReactionTime":true}}}}]}},"castSpell":{"spellId":{"spellId":871}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":144467},"includeReactionTime":true}},"rhs":{"const":{"val":"3"}}}},{"not":{"val":{"spellIsReady":{"spellId":{"spellId":871}}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871},"includeReactionTime":true}}}}]}},"castSpell":{"spellId":{"itemId":76090}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"not":{"val":{"spellIsReady":{"spellId":{"itemId":76090}}}}},{"auraIsInactive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":114203}}}]}},"castSpell":{"spellId":{"spellId":12975}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"not":{"val":{"spellIsReady":{"spellId":{"spellId":12975}}}}},{"auraIsInactive":{"auraId":{"spellId":12975}}}]}},"castSpell":{"spellId":{"spellId":97462}}}},
+        {"action":{"condition":{"or":{"vals":[{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"not":{"val":{"spellIsReady":{"spellId":{"spellId":97462}}}}},{"auraIsInactive":{"auraId":{"spellId":97462}}},{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"16s"}}}}]}},{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"cmp":{"op":"OpGt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"10s"}}}},{"spellIsReady":{"spellId":{"spellId":1160}}}]}}]}},"castSpell":{"spellId":{"spellId":114030,"tag":-1}}}},
+        {"action":{"condition":{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":114030,"tag":-1}}}}},{"auraIsInactive":{"auraId":{"spellId":114030,"tag":-1}}}]}},"castSpell":{"spellId":{"spellId":31821,"tag":-1}}}},
+        {"action":{"condition":{"and":{"vals":[{"cmp":{"op":"OpLt","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"50%"}}}}]}},"castSpell":{"spellId":{"spellId":103840}}}},
+        {"action":{"condition":{"and":{"vals":[{"auraIsActive":{"auraId":{"spellId":12880}}},{"cmp":{"op":"OpLe","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"50%"}}}},{"not":{"val":{"auraIsActive":{"auraId":{"spellId":871},"includeReactionTime":true}}}}]}},"castSpell":{"spellId":{"spellId":55694}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"cmp":{"op":"OpGe","lhs":{"currentRage":{}},"rhs":{"math":{"op":"OpSub","lhs":{"maxRage":{}},"rhs":{"const":{"val":"20"}}}}}},{"cmp":{"op":"OpLe","lhs":{"currentHealthPercent":{}},"rhs":{"const":{"val":"75%"}}}}]}},"castSpell":{"spellId":{"spellId":112048}}}},
+        {"action":{"condition":{"and":{"vals":[{"or":{"vals":[{"auraIsActive":{"auraId":{"spellId":122510}}},{"auraIsActive":{"auraId":{"spellId":122016}}}]}}]}},"castSpell":{"spellId":{"spellId":78}}}},
+        {"action":{"condition":{"and":{"vals":[{"bossCurrentTarget":{"targetUnit":{"type":"Target"}}},{"variableRef":{"name":"Shield Barrier: Medium"}},{"cmp":{"op":"OpGe","lhs":{"currentRage":{}},"rhs":{"math":{"op":"OpSub","lhs":{"maxRage":{}},"rhs":{"const":{"val":"20"}}}}}}]}},"castSpell":{"spellId":{"spellId":112048}}}},
+        {"action":{"condition":{"or":{"vals":[{"cmp":{"op":"OpLt","lhs":{"auraNumStacks":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":113746}}},"rhs":{"const":{"val":"3"}}}},{"auraShouldRefresh":{"auraId":{"spellId":113746},"maxOverlap":{"const":{"val":"2s"}}}}]}},"castSpell":{"spellId":{"spellId":20243}}}},
+        {"action":{"autocastOtherCooldowns":{}}},
+        {"action":{"castSpell":{"spellId":{"spellId":12292}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":6544}}}},
+        {"action":{"condition":{"and":{"vals":[{"not":{"val":{"spellIsReady":{"spellId":{"spellId":6572}}}}},{"not":{"val":{"spellIsReady":{"spellId":{"spellId":23922}}}}}]}},"castSpell":{"spellId":{"spellId":118000}}}},
+        {"action":{"condition":{"and":{"vals":[{"spellIsKnown":{"spellId":{"spellId":46924}}},{"spellIsReady":{"spellId":{"spellId":46924}}},{"sequenceIsReady":{"sequenceName":"Bladestorm"}}]}},"itemSwap":{"swapSet":"Swap1"}}},
+        {"action":{"condition":{"and":{"vals":[{"spellIsKnown":{"spellId":{"spellId":46924}}},{"sequenceIsReady":{"sequenceName":"Bladestorm"}},{"not":{"val":{"spellIsChanneling":{"spellId":{"spellId":46924}}}}}]}},"sequence":{"name":"Bladestorm","actions":[{"channelSpell":{"spellId":{"spellId":46924},"interruptIf":{}}}]}}},
+        {"action":{"condition":{"spellIsChanneling":{"spellId":{"spellId":46924}}},"castSpell":{"spellId":{"spellId":6673}}}},
+        {"action":{"condition":{"and":{"vals":[{"spellIsKnown":{"spellId":{"spellId":46924}}},{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":46924}}},"rhs":{"const":{"val":"1.5s"}}}},{"sequenceIsComplete":{"sequenceName":"Bladestorm"}}]}},"strictSequence":{"actions":[{"itemSwap":{"swapSet":"Main"}},{"resetSequence":{"sequenceName":"Bladestorm"}}]}}},
+        {"action":{"castSpell":{"spellId":{"spellId":23922}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":6572}}}},
+        {"action":{"condition":{"or":{"vals":[{"auraShouldRefresh":{"auraId":{"spellId":115798},"maxOverlap":{"const":{"val":"2s"}}}},{"cmp":{"op":"OpGt","lhs":{"numberTargets":{}},"rhs":{"const":{"val":"2"}}}}]}},"castSpell":{"spellId":{"spellId":6343}}}},
+        {"action":{"condition":{"not":{"val":{"dotIsActive":{"spellId":{"spellId":115768}}}}},"castSpell":{"spellId":{"spellId":20243}}}},
+        {"action":{"castSpell":{"spellId":{"spellId":20243}}}}
+      ],
+      "valueVariables": [
+        {"name":"Shield Barrier: Low","value":{"cmp":{"op":"OpLt","lhs":{"auraNumStacks":{"auraId":{"spellId":112048},"includeReactionTime":true}},"rhs":{"math":{"op":"OpMul","lhs":{"maxHealth":{}},"rhs":{"const":{"val":"0.1"}}}}}}},
+        {"name":"Shield Barrier: Medium","value":{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":112048},"includeReactionTime":true}},"rhs":{"math":{"op":"OpMul","lhs":{"maxHealth":{}},"rhs":{"const":{"val":"0.5"}}}}}}},
+        {"name":"Shield Barrier: High","value":{"cmp":{"op":"OpGt","lhs":{"auraNumStacks":{"auraId":{"spellId":112048},"includeReactionTime":true}},"rhs":{"math":{"op":"OpMul","lhs":{"maxHealth":{}},"rhs":{"const":{"val":"0.7"}}}}}}},
+        {"name":"Prepull Shatter","value":{"math":{"op":"OpSub","lhs":{"const":{"val":"10ms"}},"rhs":{"spellTravelTime":{"spellId":{"spellId":1249459}}}}}}
+      ]
+    },
+    "reactionTimeMs": 250,
+    "inFrontOfTarget": true,
+    "distanceFromTarget": 15,
+    "healingModel": {
+      "hps": 210000,
+      "cadenceSeconds": 0.4,
+      "cadenceVariation": 1.11,
+      "absorbFrac": 0.18,
+      "burstWindow": 6
+    }
+  },
+  "encounter": {
+    "apiVersion": 3,
+    "duration": 120,
+    "durationVariation": 5,
+    "executeProportion20": 0,
+    "executeProportion25": 0,
+    "executeProportion35": 0,
+    "executeProportion45": 0,
+    "executeProportion90": 0.9,
+    "targets": [
+      {
+        "id": 71466,
+        "name": "Iron Juggernaut 25 H",
+        "level": 93,
+        "mobType": "MobTypeMechanical",
+        "stats": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24835,0,1500000000,0,0],
+        "minBaseDamage": 823479,
+        "damageSpread": 1.128,
+        "swingSpeed": 1.5,
+        "secondTankIndex": 1,
+        "targetInputs": [
+          {
+            "inputType": "Number",
+            "label": "Ignite Armor tank swap stacks",
+            "tooltip": "Taunt swap when the current tank reaches this many Ignite Armor stacks. Set to 0 to disable simulated tank swaps.",
+            "numberValue": 5
+          },
+          {
+            "label": "Swap back when Ignite Armor expires",
+            "tooltip": "Automatically swap back to the main tank when Ignite Armor expires on the main tank. If disabled, swap after stacks build up on the off-tank.",
+            "boolValue": true
+          }
+        ]
+      }
+    ]
+  }
+}

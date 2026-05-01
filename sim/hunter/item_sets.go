@@ -214,7 +214,7 @@ func registerMarksmanT16(hunter *Hunter, setBonusAura *core.Aura) {
 	})
 }
 
-func registerBeastMasteryT16(hunter *Hunter, _ *core.Aura) {
+func registerBeastMasteryT16(hunter *Hunter, setBonusAura *core.Aura) {
 	hunter.OnSpellRegistered(func(spell *core.Spell) {
 		if spell.ClassSpellMask != HunterSpellBestialWrath {
 			return
@@ -231,11 +231,23 @@ func registerBeastMasteryT16(hunter *Hunter, _ *core.Aura) {
 			},
 		})
 
-		hunter.Pet.BestialWrathAura.AttachProcTrigger(core.ProcTrigger{
-			Callback:       core.CallbackOnSpellHitDealt,
+		brutalKinshipPetDriver := hunter.Pet.RegisterAura(core.Aura{
+			Label:    "Brutal Kinship Driver",
+			ActionID: core.ActionID{SpellID: 144671},
+			Duration: core.NeverExpires,
+
+			OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+				brutalKinshipPetAura.Deactivate(sim)
+			},
+		}).AttachProcTrigger(core.ProcTrigger{
+			Callback:       core.CallbackOnCastComplete,
 			ClassSpellMask: HunterPetFocusDump,
 
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+				if !hunter.Pet.BestialWrathAura.IsActive() {
+					return
+				}
+
 				brutalKinshipPetAura.Activate(sim)
 				brutalKinshipPetAura.AddStack(sim)
 			},
@@ -248,21 +260,40 @@ func registerBeastMasteryT16(hunter *Hunter, _ *core.Aura) {
 			MaxStacks: 5,
 
 			OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
-				hunter.Pet.PseudoStats.DamageDealtMultiplier *= (1.0 + 0.04*float64(newStacks)) / (1.0 + 0.04*float64(oldStacks))
+				hunter.PseudoStats.DamageDealtMultiplier *= (1.0 + 0.04*float64(newStacks)) / (1.0 + 0.04*float64(oldStacks))
 			},
 		})
 
-		hunter.BestialWrathAura.ApplyOnExpire(func(aura *core.Aura, sim *core.Simulation) {
-			brutalKinshipAura.Deactivate(sim)
-			brutalKinshipPetAura.Deactivate(sim)
+		brutalKinshipDriver := hunter.RegisterAura(core.Aura{
+			Label:    "Brutal Kinship Driver",
+			ActionID: core.ActionID{SpellID: 144671},
+			Duration: core.NeverExpires,
+
+			OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+				brutalKinshipAura.Deactivate(sim)
+			},
 		}).AttachProcTrigger(core.ProcTrigger{
 			Callback:       core.CallbackOnCastComplete,
 			ClassSpellMask: HunterSpellsAll | HunterSpellsTalents ^ (HunterSpellFervor | HunterSpellDireBeast | HunterSpellBestialWrath),
 
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+				if !hunter.BestialWrathAura.IsActive() {
+					return
+				}
+
 				brutalKinshipAura.Activate(sim)
 				brutalKinshipAura.AddStack(sim)
 			},
+		}).AttachDependentAura(brutalKinshipPetDriver)
+
+		hunter.BestialWrathAura.ApplyOnGain(func(aura *core.Aura, sim *core.Simulation) {
+			if !setBonusAura.IsActive() {
+				return
+			}
+
+			brutalKinshipDriver.Activate(sim)
+		}).ApplyOnExpire(func(aura *core.Aura, sim *core.Simulation) {
+			brutalKinshipDriver.Deactivate(sim)
 		})
 	})
 }

@@ -3686,6 +3686,34 @@
                 "reset"
               ]
             },
+            "nameModal": {
+              "type": "object",
+              "properties": {
+                "create": {
+                  "type": "string"
+                },
+                "nameConflict": {
+                  "type": "string"
+                },
+                "extract": {
+                  "type": "string"
+                },
+                "rename": {
+                  "type": "string"
+                },
+                "renameConfirm": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "create",
+                "nameConflict",
+                "extract",
+                "rename",
+                "renameConfirm"
+              ]
+            },
             "prePullActions": {
               "type": "object",
               "properties": {
@@ -3791,7 +3819,10 @@
                     "valueTooltip"
                   ]
                 },
-                "copyName": {
+                "enterVariableName": {
+                  "type": "string"
+                },
+                "extractToVariable": {
                   "type": "string"
                 },
                 "header": {
@@ -3827,11 +3858,28 @@
               "additionalProperties": false,
               "required": [
                 "attributes",
-                "copyName",
+                "enterVariableName",
+                "extractToVariable",
                 "header",
                 "name",
                 "newVariableName",
                 "tooltips"
+              ]
+            },
+            "variablePlaceholder": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "nameLabel": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "nameLabel"
               ]
             },
             "prepull_actions": {
@@ -6916,6 +6964,9 @@
                 "cooldowns": {
                   "type": "string"
                 },
+                "non_combat_potions": {
+                  "type": "string"
+                },
                 "placeholders": {
                   "type": "string"
                 }
@@ -6955,6 +7006,7 @@
                 "eclipse",
                 "runes",
                 "cooldowns",
+                "non_combat_potions",
                 "placeholders"
               ]
             },
@@ -7360,10 +7412,12 @@
           "required": [
             "actionGroups",
             "floatingActionBar",
+            "nameModal",
             "prePullActions",
             "priorityList",
             "tabs",
             "variables",
+            "variablePlaceholder",
             "prepull_actions",
             "priority_list",
             "actions",
@@ -8330,6 +8384,9 @@
                 "timeline": {
                   "type": "string"
                 },
+                "replay": {
+                  "type": "string"
+                },
                 "log": {
                   "type": "string"
                 }
@@ -8344,6 +8401,7 @@
                 "casts",
                 "resources",
                 "timeline",
+                "replay",
                 "log"
               ]
             },
@@ -10360,6 +10418,26 @@
         "results",
         "character_stats"
       ]
+    },
+    "combat_replay": {
+      "type": "object",
+      "properties": {
+        "empty_title": { "type": "string" },
+        "empty_desc": { "type": "string" },
+        "default_player": { "type": "string" },
+        "training_dummy": { "type": "string" },
+        "seek_back": { "type": "string" },
+        "seek_fwd": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": [
+        "empty_title",
+        "empty_desc",
+        "default_player",
+        "training_dummy",
+        "seek_back",
+        "seek_fwd"
+      ]
     }
   },
   "additionalProperties": false,
@@ -10373,6 +10451,7 @@
     "bulk_tab",
     "rotation_tab",
     "results_tab",
+    "combat_replay",
     "import",
     "export",
     "info",

@@ -157,7 +157,7 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 				})
 
 				warlock.T16_2pc_buff = buff
-				setBonusAura.OnSpellHitDealt = func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+				setBonusAura.OnPeriodicDamageDealt = func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					if spell.Matches(WarlockSpellUnstableAffliction) && result.DidCrit() && sim.Proc(0.5, "T16 - 2pc") {
 						buff.Activate(sim)
 						return

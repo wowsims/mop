@@ -384,7 +384,7 @@ func (value *APLValueSpellFullCooldown) Type() proto.APLValueType {
 }
 
 func (value *APLValueSpellFullCooldown) GetDuration(sim *Simulation) time.Duration {
-	return value.spell.CD.Duration
+	return value.spell.Cooldown()
 }
 
 func (value *APLValueSpellFullCooldown) String() string {

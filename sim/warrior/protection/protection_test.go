@@ -21,18 +21,19 @@ func init() {
 
 func TestProtectionWarrior(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/protection/builds", "iron_juggernaut_default", ItemFilter, nil, nil),
 		core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/protection/builds", "horridon_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/protection/builds", "sha_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/protection/builds", "garajal_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/protection/builds", "sha_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassWarrior, "../../../ui/warrior/protection/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class:            proto.Class_ClassWarrior,
 			Race:             proto.Race_RaceOrc,
 			OtherRaces:       []proto.Race{proto.Race_RaceHuman},
 			StartingDistance: 15,
 
-			GearSet: core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p2_bis"),
+			GearSet:       core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p4_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p4_bis"),
+				// core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p2_bis"),
 			},
 			Talents:     DefaultTalents,
 			Glyphs:      DefaultGlyphs,

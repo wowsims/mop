@@ -27,7 +27,7 @@ func (character *Character) RegisterVengeance(spellID int32, requiredAura *Aura)
 	// Then set up the proc trigger.
 	vengeanceTrigger := ProcTrigger{
 		Name:               "Vengeance Trigger",
-		Callback:           CallbackOnSpellHitTaken,
+		Callback:           CallbackOnSpellHitTaken | CallbackOnPeriodicDamageTaken,
 		TriggerImmediately: true,
 
 		Handler: func(sim *Simulation, spell *Spell, result *SpellResult) {

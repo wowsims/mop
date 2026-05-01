@@ -41,8 +41,8 @@ export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatStrength]: 1.0,
 			[Stat.StatHitRating]: 0.76,
 			[Stat.StatExpertiseRating]: 0.76,
-			[Stat.StatHasteRating]: 0.75,
-			[Stat.StatMasteryRating]: 0.74,
+			[Stat.StatHasteRating]: 0.75 * 0.9, // Offset by -10% because of Thok's Tail Tip
+			[Stat.StatMasteryRating]: 0.74 * 0.9, // Offset by -10% because of Thok's Tail Tip
 			[Stat.StatCritRating]: 0.73,
 			[Stat.StatAttackPower]: 0.44,
 		},

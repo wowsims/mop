@@ -85,6 +85,33 @@ func (we *WaterElemental) GetPet() *core.Pet {
 
 func (we *WaterElemental) Initialize() {
 	we.registerWaterboltSpell()
+
+	tier5TalentDamageValue := 0.0
+	var tier5talentAura *core.Aura = nil
+	if we.mageOwner.Talents.Invocation {
+		tier5talentAura = we.mageOwner.InvocationAura
+		tier5TalentDamageValue = 0.15
+	} else if we.mageOwner.Talents.RuneOfPower {
+		tier5talentAura = we.mageOwner.RuneOfPowerAura
+		tier5TalentDamageValue = 0.15
+	} else if we.mageOwner.Talents.IncantersWard {
+		tier5talentAura = we.mageOwner.IncantersWardPassiveAura
+		tier5TalentDamageValue = 0.06
+	}
+
+	if tier5talentAura != nil {
+		tier5Talent5DamageMod := we.AddDynamicMod(core.SpellModConfig{
+			Kind:       core.SpellMod_DamageDone_Pct,
+			FloatValue: tier5TalentDamageValue,
+		})
+		tier5talentAura.
+			ApplyOnGain(func(aura *core.Aura, sim *core.Simulation) {
+				tier5Talent5DamageMod.Activate()
+			}).
+			ApplyOnExpire(func(aura *core.Aura, sim *core.Simulation) {
+				tier5Talent5DamageMod.Deactivate()
+			})
+	}
 }
 
 func (we *WaterElemental) Reset(_ *core.Simulation) {

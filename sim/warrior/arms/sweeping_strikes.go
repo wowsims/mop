@@ -35,7 +35,7 @@ func (war *ArmsWarrior) registerSweepingStrikes() {
 		ProcMask:       core.ProcMaskMeleeSpecial,
 		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
 
-		DamageMultiplier: 0.5 + 0.1, // 2025-07-01 - Balance change
+		DamageMultiplier: 0.5,
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {

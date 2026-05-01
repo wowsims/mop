@@ -11,8 +11,42 @@ func RegisterAllOnUseCds() {
 
 	// {{ .Name }}
 {{- range .Entries }}
-  	{{- with index .Variants 0}}
-	shared.NewSimpleStatActive({{ .ID }}) // {{ .Name }}
+	{{if not .Supported}}
+	// TODO: Manual implementation required
+	//       This can be ignored if the effect has already been implemented.
+	//       With next db run the item will be removed if implemented.
+	//
+	{{- end}}
+	{{- range (.Tooltip | formatStrings 100) }}
+	// {{.}}
+	{{- end}}
+  	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
+	{{- end}}
+	{{- if not .Supported}}
+	{{- if len .Variants | eq 1}}
+	{{with index .Variants 0 -}}
+	// shared.NewSimpleStatActive({{ .ID }})
+	{{- end}}
+	{{- else }}
+	// shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
+	 	{{- range .Variants }}
+	// 	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
+	 	{{- end}}
+	// })
+	{{- end}}
+	{{- else}}
+	{{- if len .Variants | eq 1}}
+	{{with index .Variants 0 -}}
+	shared.NewSimpleStatActive({{ .ID }})
+	{{- end}}
+	{{- else }}
+	shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
+		{{- range .Variants }}
+		{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
+		{{- end}}
+	})
+	{{- end}}
 	{{- end}}
 {{- end }}
 
@@ -38,6 +72,9 @@ func RegisterAllProcs() {
 	{{- end}}
 	{{- range (.Tooltip | formatStrings 100) }}
 	// {{.}}
+	{{- end}}
+	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
 	{{- end}}
 	{{- if .Supported}}
 	{{- if len .Variants | eq 1}}
@@ -66,21 +103,21 @@ func RegisterAllProcs() {
 	{{- else}}
 	{{- if len .Variants | eq 1}}
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	{{ with index .Variants 0 -}}
-	//	Name:               "{{ .Name }}",
-	//	ItemID:             {{ .ID }},
-		{{- end}}
-	//	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	//	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	//	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }}
+	 	{{with index .Variants 0 -}}
+	// 	Name:               "{{ .Name }}",
+	// 	ItemID:             {{ .ID }},
+	 	{{- end}}
+	// 	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	// 	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	// 	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	// 	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
 	// })
 	{{- else }}
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 	//	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
 	//	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
 	//	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }}
 	// }, []shared.ItemVariant{
 		{{- range .Variants }}
 	//	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
@@ -127,7 +164,7 @@ func RegisterAllEnchants() {
 	})
 	{{- else}}
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	{{- with index .Variants 0 }}
+		{{- with index .Variants 0 }}
 	//	Name:               "{{ .Name }}",
 	//	EnchantID:          {{ .ID }},
 		{{- end}}
@@ -146,15 +183,30 @@ const TmplStrMissingEffects = `
 // This file is auto generated
 // Changes will be overwritten on next database generation
 
-export const MISSING_ITEM_EFFECTS = [
+export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 {{- range .ItemEffects }}
-    {{.ID}}, // {{.Name}}
+	[
+		{{.ItemID}}, // {{ .Name }}
+		[
+			{{- range .Effects }}
+			"{{ .Name }}", // {{.SpellID}} - https://www.wowhead.com/tbc/spell={{.SpellID}}
+			{{- end}}
+		]
+	],
 {{- end }}
-]
+])
 
-export const MISSING_ENCHANT_EFFECTS = [
+export const MISSING_ENCHANT_EFFECTS = new Map<number, string[]>([
 {{- range .EnchantEffects }}
-    {{.ID}}, // {{.Name}}
+{{- $name := .Name }}
+{{- range .Entries }}
+{{- $tooltip := .Tooltip }}
+{{- if not .Supported}}
+{{- range .Variants }}
+	[{{.ID}}, "{{- range $tooltip }}{{.}}{{- end}}"], // {{ $name }} - {{.SpellID}} - https://www.wowhead.com/tbc/spell={{.SpellID}}
+{{- end}}
 {{- end }}
-]
+{{- end }}
+{{- end }}
+])
 `

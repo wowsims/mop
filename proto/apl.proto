@@ -101,7 +101,7 @@ message APLAction {
 }
 
 
-// NextIndex: 127
+// NextIndex: 128
 message APLValue {
 	UUID uuid = 85;
 
@@ -263,6 +263,8 @@ message APLValue {
 		// Variable placeholder
 		APLValueVariablePlaceholder variable_placeholder = 112; // Placeholder value that gets replaced when group is referenced
 
+		// Action Group
+		APLValueActionGroupUsed action_group_used = 127;
 
 		// Item Swap
 		APLValueActiveItemSwapSet active_item_swap_set = 113;
@@ -851,6 +853,10 @@ message APLValueVariableRef {
 
 message APLValueVariablePlaceholder {
     string name = 1; // Name of the variable placeholder to expose
+}
+
+message APLValueActionGroupUsed {
+    string name = 1; // Name of the action group to check
 }
 
 message APLValueActiveItemSwapSet {

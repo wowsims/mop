@@ -25,6 +25,7 @@ func (bm *BrewmasterMonk) registerGuard() {
 	actionID := core.ActionID{SpellID: spellId}
 	chiMetrics := bm.NewChiMetrics(actionID)
 	spellSchool := core.SpellSchoolPhysical | core.SpellSchoolArcane | core.SpellSchoolFire | core.SpellSchoolFrost | core.SpellSchoolHoly | core.SpellSchoolNature | core.SpellSchoolShadow
+	chiCost := int32(2)
 
 	if hasGlyph {
 		spellSchool ^= core.SpellSchoolPhysical
@@ -73,7 +74,7 @@ func (bm *BrewmasterMonk) registerGuard() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			aura.Activate(sim)
 			bm.PowerGuardAura.Deactivate(sim)
-			bm.SpendChi(sim, 2, chiMetrics)
+			bm.SpendChi(sim, chiCost, chiCost, chiMetrics)
 		},
 		RelatedSelfBuff: aura.Aura,
 	})

@@ -8,7 +8,7 @@ import (
 )
 
 func (druid *Druid) ApplyGlyphs() {
-	if druid.HasMajorGlyph(proto.DruidMajorGlyph_GlyphOfHealingTouch) {
+	if druid.HasMajorGlyph(proto.DruidMajorGlyph_GlyphOfHealingTouch) && druid.Spec != proto.Spec_SpecGuardianDruid {
 		druid.RegisterAura(core.Aura{
 			Label:    "Glyph of Healing Touch",
 			Duration: core.NeverExpires,

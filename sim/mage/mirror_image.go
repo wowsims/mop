@@ -108,9 +108,10 @@ func (mi *MirrorImage) Initialize() {
 
 	mi.mainSpell = mi.Frostbolt
 	if mi.hasGlyph {
-		if mi.mageOwner.Spec == proto.Spec_SpecArcaneMage {
+		switch mi.mageOwner.Spec {
+		case proto.Spec_SpecArcaneMage:
 			mi.mainSpell = mi.ArcaneBlast
-		} else if mi.mageOwner.Spec == proto.Spec_SpecFireMage {
+		case proto.Spec_SpecFireMage:
 			mi.mainSpell = mi.Fireball
 		}
 	}

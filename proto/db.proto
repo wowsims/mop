@@ -23,7 +23,7 @@ message SimEnchant {
 	string name = 2; // Only needed for unit tests.
 	ItemType type = 3; // Only needed for unit tests.
 	repeated double stats = 4;
-	ItemEffect enchant_effect = 5;
+	repeated ItemEffect enchant_effects = 5;
 }
 
 // Contains only the Item info needed by the sim.
@@ -45,7 +45,7 @@ message SimItem {
 	int32 set_id = 12;
 
 	map<int32, ScalingItemProperties> scaling_options = 13; // keys are the all ItemLevelState variants that this item could potentially have
-	ItemEffect item_effect = 14;
+	repeated ItemEffect item_effects = 14;
 }
 
 message Consumable {

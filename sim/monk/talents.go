@@ -792,9 +792,6 @@ func (monk *Monk) registerDampenHarm() {
 		ClassSpellMask: MonkSpellDampenHarm,
 
 		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: time.Second,
-			},
 			CD: core.Cooldown{
 				Timer:    monk.NewTimer(),
 				Duration: 90 * time.Second,
@@ -821,6 +818,56 @@ func (monk *Monk) registerDiffuseMagic() {
 	if !monk.Talents.DiffuseMagic {
 		return
 	}
+
+	actionId := core.ActionID{SpellID: 122783}
+
+	aura := monk.RegisterAura(core.Aura{
+		Label:    "Diffuse Magic" + monk.Label,
+		ActionID: actionId,
+		Duration: time.Second * 6,
+		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexArcane] *= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFire] *= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFrost] *= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexHoly] *= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] *= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexShadow] *= 0.1
+		},
+		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexArcane] /= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFire] /= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexFrost] /= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexHoly] /= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexNature] /= 0.1
+			monk.PseudoStats.SchoolDamageTakenMultiplier[stats.SchoolIndexShadow] /= 0.1
+		},
+	})
+
+	spell := monk.RegisterSpell(core.SpellConfig{
+		ActionID:       actionId,
+		SpellSchool:    core.SpellSchoolNature,
+		ClassSpellMask: MonkSpellDiffuseMagic,
+
+		Cast: core.CastConfig{
+			CD: core.Cooldown{
+				Timer:    monk.NewTimer(),
+				Duration: 90 * time.Second,
+			},
+		},
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			aura.Activate(sim)
+		},
+		RelatedSelfBuff: aura,
+	})
+
+	monk.AddMajorCooldown(core.MajorCooldown{
+		Spell: spell,
+		Type:  core.CooldownTypeSurvival,
+		ShouldActivate: func(_ *core.Simulation, _ *core.Character) bool {
+			return false
+		},
+	})
 }
 
 /*

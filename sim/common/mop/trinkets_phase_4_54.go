@@ -16,6 +16,7 @@ type buffConfig struct {
 	stat      stats.Stat
 	duration  time.Duration
 	icd       time.Duration
+	callback  core.AuraCallback // default: core.CallbackOnSpellHitDealt
 }
 
 type readinessTrinketConfig struct {
@@ -411,7 +412,7 @@ func init() {
 
 				triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
 					Name:       fmt.Sprintf("%s (%s)", config.baseTrinketLabel, versionLabel),
-					Callback:   core.CallbackOnSpellHitDealt,
+					Callback:   core.Ternary(config.buff.callback != core.CallbackEmpty, config.buff.callback, core.CallbackOnSpellHitDealt),
 					Outcome:    core.OutcomeLanded,
 					ICD:        time.Second * 115,
 					ProcChance: 0.15,
@@ -420,6 +421,8 @@ func init() {
 						aura.Activate(sim)
 					},
 				})
+
+				aura.Icd = triggerAura.Icd
 
 				eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
 				character.AddStatProcBuff(itemID, aura, false, eligibleSlots)
@@ -468,6 +471,28 @@ func init() {
 			auraLabel: "Expanded Mind",
 			auraID:    146046,
 			stat:      stats.Intellect,
+		},
+	})
+
+	// Prismatic Prison of Pride
+	// Each time your spells heal you have a chance to gain 14039 Intellect for 20 sec.
+	// (15% chance, 115 sec cooldown) (Proc chance: 15%, 1.917m cooldown)
+	// Amplifies your Critical Strike damage and healing, Haste, Mastery, and Spirit by 1%.
+	newStatAmplificationTrinket(&statAmplificationTrinketConfig{
+		itemVersionMap: shared.ItemVersionMap{
+			shared.ItemVersionLFR:             104976,
+			shared.ItemVersionNormal:          102299,
+			shared.ItemVersionHeroic:          104478,
+			shared.ItemVersionWarforged:       105225,
+			shared.ItemVersionHeroicWarforged: 105474,
+			shared.ItemVersionFlexible:        104727,
+		},
+		baseTrinketLabel: "Prismatic Prison of Pride",
+		buff: &buffConfig{
+			auraLabel: "Titanic Restoration",
+			auraID:    146314,
+			stat:      stats.Intellect,
+			callback:  core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
 		},
 	})
 
@@ -720,39 +745,6 @@ func init() {
 			auraID:    148897,
 			stat:      stats.Intellect,
 		},
-	})
-
-	// Time-Lost Artifact
-	// Your melee and ranged attacks have a chance to grant 3647 haste for 20 sec.
-	// (Proc chance: 20%, 50s cooldown)
-	core.NewItemEffect(103678, func(agent core.Agent, state proto.ItemLevelState) {
-		character := agent.GetCharacter()
-
-		aura := character.NewTemporaryStatsAura(
-			"Winds of Time",
-			core.ActionID{SpellID: 148447},
-			stats.Stats{stats.HasteRating: core.GetItemEffectScalingStatValue(103678, 1.56799995899, state)},
-			time.Second*20,
-		)
-
-		triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-			Name:       "Time-Lost Artifact Trigger",
-			Callback:   core.CallbackOnSpellHitDealt,
-			Outcome:    core.OutcomeLanded,
-			ProcMask:   core.ProcMaskMeleeOrMeleeProc | core.ProcMaskRangedOrRangedProc,
-			ICD:        time.Second * 50,
-			ProcChance: 0.2,
-
-			Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-				aura.Activate(sim)
-			},
-		})
-
-		aura.Icd = triggerAura.Icd
-
-		eligibleSlots := character.ItemSwap.EligibleSlotsForItem(103678)
-		character.AddStatProcBuff(103678, aura, false, eligibleSlots)
-		character.ItemSwap.RegisterProcWithSlots(103678, triggerAura, eligibleSlots)
 	})
 
 	// Skeer's Bloodsoaked Talisman

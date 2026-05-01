@@ -182,6 +182,12 @@
 .rotation-labels {
 	display: inline-block;
 	white-space: nowrap;
+
+	@include media-breakpoint-down(lg) {
+		.rotation-label-text {
+			display: none;
+		}
+	}
 }
 
 .rotation-label {

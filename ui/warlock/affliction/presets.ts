@@ -55,6 +55,18 @@ export const P2_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 	}),
 );
 
+export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Item Level >= 560',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.38,
+		[Stat.StatSpellPower]: 1.0,
+		[Stat.StatHitRating]: 1.89,
+		[Stat.StatCritRating]: 1.07,
+		[Stat.StatHasteRating]: 1.38 / 1.097,
+		[Stat.StatMasteryRating]: 1.20 / 1.097,
+	}),
+);
+
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
 

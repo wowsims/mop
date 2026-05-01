@@ -133,35 +133,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 		return Presets.ROTATION_PRESET.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecWindwalkerMonk,
-			talents: Presets.DefaultTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceAlliancePandaren,
-				[Faction.Horde]: Race.RaceHordePandaren,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PREBIS_GEAR_PRESET.gear,
-					2: Presets.PREBIS_GEAR_PRESET.gear,
-					3: Presets.PREBIS_GEAR_PRESET.gear,
-					4: Presets.PREBIS_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PREBIS_GEAR_PRESET.gear,
-					2: Presets.PREBIS_GEAR_PRESET.gear,
-					3: Presets.PREBIS_GEAR_PRESET.gear,
-					4: Presets.PREBIS_GEAR_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 const hasTwoHandMainHand = (player: Player<Spec.SpecWindwalkerMonk>): boolean =>

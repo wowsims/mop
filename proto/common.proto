@@ -25,7 +25,7 @@ message ProtoVersion {
 	// protos need to define an api_version field so that the UI code knows
 	// to up-convert these protos to the new format whenever api_version is
 	// missing (0) or lower than current_version_number.
-	option (current_version_number) = 2;
+	option (current_version_number) = 3;
 
 	// The actual field value is only used within unit tests.
 	int32 saved_version_number = 1;
@@ -564,6 +564,7 @@ message ConsumesSpec {
 	int32 food_id = 6;
 	int32 explosive_id = 7;
 	int32 conjured_id = 9;
+	repeated int32 consumable_ids = 10;
 }
 
 enum MobType {
@@ -774,6 +775,7 @@ enum OtherAction {
 	OtherActionPrepull = 21; // Indicated prepull specific action
 	OtherActionEncounterStart = 22; // Indicated resources gained or lost at the start of an encounter
 	OtherActionDamageAmplifier = 23; // Indicated damage done % amplifiers configured in the APL
+	OtherActionItemSwap = 24; // Used by APL to show current swap set
 }
 
 message ActionID {

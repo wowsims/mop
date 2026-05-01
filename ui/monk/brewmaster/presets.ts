@@ -4,38 +4,43 @@ import { BrewmasterMonk_Options as BrewmasterMonkOptions, MonkMajorGlyph, MonkMi
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
-import GarajalApl from './apls/garajal.apl.json';
 import OffensiveApl from './apls/offensive.apl.json';
-import ShaApl from './apls/sha.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
-import GarajalBuild from './builds/garajal_encounter_only.build.json';
-import ShaBuild from './builds/sha_encounter_only.build.json';
+import IronJuggernautApl from './apls/iron_juggernaut.apl.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
+import IronJuggernautBuild from './builds/iron_juggernaut_encounter_only.build.json';
 import PreBISGear from './gear_sets/prebis.gear.json';
 import P1BISDWGear from './gear_sets/p1_bis_dw.gear.json';
 import P2BISDWGear from './gear_sets/p2_bis_dw.gear.json';
-import P4BISDWGear from './gear_sets/p4_bis_dw.gear.json';
-import P4OffensiveDWGear from './gear_sets/p4_bis_offensive_dw.gear.json';
 import P2BISOffensiveDWGear from './gear_sets/p2_bis_offensive_dw.gear.json';
 import P2BISOffensiveTierlessDWGear from './gear_sets/p2_bis_offensive_tierless_dw.gear.json';
+import P4BISDWGear from './gear_sets/p4_bis_dw.gear.json';
+import P4BISOffensiveDWGear from './gear_sets/p4_bis_offensive_dw.gear.json';
+import P5ProgDWGear from './gear_sets/p5_prog_dw.gear.json';
+import P5BISDWGear from './gear_sets/p5_bis_dw.gear.json';
+import P5BISOffensiveDWGear from './gear_sets/p5_bis_offensive_dw.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Pre-BIS (Balanced)', PreBISGear);
-export const P1_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS (Balanced)', P1BISDWGear);
-export const P2_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2BISDWGear);
-export const P2_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - 2PC)', P2BISOffensiveDWGear);
-export const P2_BIS_OFFENSIVE_TIERLESS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - No Tier)', P2BISOffensiveTierlessDWGear);
+// export const P1_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P1 - BIS (Balanced)', P1BISDWGear);
+// export const P2_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2BISDWGear);
+// export const P2_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - 2PC)', P2BISOffensiveDWGear);
+// export const P2_BIS_OFFENSIVE_TIERLESS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive - No Tier)', P2BISOffensiveTierlessDWGear);
 export const P3_4_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4BISDWGear);
-export const P3_4_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4OffensiveDWGear);
+export const P3_4_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4BISOffensiveDWGear);
+export const P5_PROG_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - Prog (Balanced)', P5ProgDWGear);
+export const P5_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP - Balanced)', P5BISDWGear);
+export const P5_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP - Offensive)', P5BISOffensiveDWGear);
 
 export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Generic', DefaultApl);
-export const ROTATION_GARAJAL_PRESET = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
 export const ROTATION_OFFENSIVE_PRESET = PresetUtils.makePresetAPLRotation('Offensive', OffensiveApl);
-export const ROTATION_SHA_PRESET = PresetUtils.makePresetAPLRotation('Sha of Fear', ShaApl);
+// export const ROTATION_GARAJAL_PRESET = PresetUtils.makePresetAPLRotation("Gara'jal", GarajalApl);
+// export const ROTATION_SHA_PRESET = PresetUtils.makePresetAPLRotation('Sha of Fear', ShaApl);
 export const ROTATION_HORRIDON_PRESET = PresetUtils.makePresetAPLRotation('Horridon', HorridonApl);
+export const ROTATION_IRON_JUGGERNAUT_PRESET = PresetUtils.makePresetAPLRotation('Iron Juggernaut', IronJuggernautApl);
 
 // Preset options for EP weights
 export const P2_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -134,6 +139,54 @@ export const P3_4_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
+export const P5_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P5 - Balanced',
+	Stats.fromMap(
+		{
+			[Stat.StatAgility]: 1.0,
+			[Stat.StatStamina]: 1.11,
+			[Stat.StatHitRating]: 2.56,
+			[Stat.StatCritRating]: 0.85,
+			[Stat.StatHasteRating]: 0.79 / 1.097,
+			[Stat.StatExpertiseRating]: 1.56,
+			[Stat.StatDodgeRating]: 0.27,
+			[Stat.StatParryRating]: 0.39,
+			[Stat.StatMasteryRating]: 0.55,
+			[Stat.StatAttackPower]: 0.2,
+			[Stat.StatArmor]: 0.32,
+			[Stat.StatBonusArmor]: 0.32,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 0.98,
+			[PseudoStat.PseudoStatOffHandDps]: 0.47,
+		},
+	),
+);
+
+export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P5 - Offensive',
+	Stats.fromMap(
+		{
+			[Stat.StatAgility]: 1.0,
+			[Stat.StatStamina]: 0.35,
+			[Stat.StatHitRating]: 3.25,
+			[Stat.StatCritRating]: 1.02,
+			[Stat.StatHasteRating]: 1.01 / 1.097,
+			[Stat.StatExpertiseRating]: 1.91,
+			[Stat.StatDodgeRating]: 0.1,
+			[Stat.StatParryRating]: 0.24,
+			[Stat.StatMasteryRating]: 0.52,
+			[Stat.StatAttackPower]: 0.24,
+			[Stat.StatArmor]: 0.1,
+			[Stat.StatBonusArmor]: 0.1,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 1.28,
+			[PseudoStat.PseudoStatOffHandDps]: 0.72,
+		},
+	),
+);
+
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop/talent-calc and copy the numbers in the url.
 
@@ -192,6 +245,7 @@ export const OtherDefaults = {
 	iterationCount: 25000,
 };
 
-export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecBrewmasterMonk, GarajalBuild);
-export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON('Sha of Fear P2', Spec.SpecBrewmasterMonk, ShaBuild);
+// export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecBrewmasterMonk, GarajalBuild);
+// export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON('Sha of Fear P2', Spec.SpecBrewmasterMonk, ShaBuild);
 export const PRESET_BUILD_HORRIDON = PresetUtils.makePresetBuildFromJSON('Horridon P2', Spec.SpecBrewmasterMonk, HorridonBuild);
+export const PRESET_BUILD_IRON_JUGGERNAUT = PresetUtils.makePresetBuildFromJSON('Iron Juggernaut P1', Spec.SpecBrewmasterMonk, IronJuggernautBuild);

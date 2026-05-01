@@ -320,3 +320,35 @@ func (action *APLActionGroupReference) replaceActionPlaceholders(actionImpl APLA
 	// This is a simplified approach - in practice, you'd need to handle each action type specifically
 	// For now, we'll rely on the value replacement in the main flow
 }
+
+type APLValueActionGroupUsed struct {
+	DefaultAPLValueImpl
+	name   string
+	isUsed bool
+}
+
+func (rot *APLRotation) newValueActionGroupUsed(config *proto.APLValueActionGroupUsed, _ *proto.UUID) APLValue {
+	isUsed := false
+
+	return &APLValueActionGroupUsed{
+		name:   config.Name,
+		isUsed: isUsed,
+	}
+}
+func (value *APLValueActionGroupUsed) Type() proto.APLValueType {
+	return proto.APLValueType_ValueTypeBool
+}
+func (value *APLValueActionGroupUsed) GetBool(sim *Simulation) bool {
+	return value.isUsed
+}
+func (value *APLValueActionGroupUsed) String() string {
+	return fmt.Sprintf("Action Group Is Used(%s)", value.name)
+}
+func (value *APLValueActionGroupUsed) Finalize(rotation *APLRotation) {
+	for _, group := range rotation.groups {
+		if group.name == value.name && (group.referencedBy != nil) {
+			value.isUsed = true
+			break
+		}
+	}
+}

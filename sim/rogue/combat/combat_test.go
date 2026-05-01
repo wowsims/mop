@@ -3,6 +3,7 @@ package combat
 import (
 	"testing"
 
+	"github.com/wowsims/mop/sim/common"
 	_ "github.com/wowsims/mop/sim/common" // imported to get item effects included.
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
@@ -10,6 +11,7 @@ import (
 
 func init() {
 	RegisterCombatRogue()
+	common.RegisterAllEffects()
 }
 
 func TestCombat(t *testing.T) {

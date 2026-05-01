@@ -81,6 +81,7 @@ func fistsOfFurySpellConfig(monk *Monk, isSEFClone bool, overrides core.SpellCon
 func (monk *Monk) registerFistsOfFury() {
 	chiMetrics := monk.NewChiMetrics(fofActionID)
 	snapshotDamage := 0.0
+	chiCost := int32(3)
 
 	fistsOfFuryTickSpell := monk.RegisterSpell(fistsOfFuryTickSpellConfig(monk, nil, core.SpellConfig{
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
@@ -117,11 +118,11 @@ func (monk *Monk) registerFistsOfFury() {
 		},
 
 		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return monk.GetChi() >= core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 2, 3)
+			return monk.GetChi() >= monk.GetT16Windwalker4PCostReduction(chiCost)
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			monk.SpendChi(sim, core.TernaryInt32(monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive(), 2, 3), chiMetrics)
+			monk.SpendChi(sim, monk.GetT16Windwalker4PCostReduction(chiCost), chiCost, chiMetrics)
 			if monk.T16Windwalker4P != nil {
 				monk.T16Windwalker4P.Deactivate(sim)
 			}

@@ -206,7 +206,7 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 					}
 
 					if config.SharedCD.Timer != nil {
-						spell.SharedCD.Set(sim.CurrentTime + time.Duration(float64(spell.SharedCD.Duration)*spell.CdMultiplier))
+						spell.SharedCD.Set(sim.CurrentTime + spell.SharedCooldown())
 					}
 
 					spell.applyEffects(sim, target)
@@ -242,7 +242,7 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 		}
 
 		if config.SharedCD.Timer != nil {
-			spell.SharedCD.Set(sim.CurrentTime + time.Duration(float64(spell.SharedCD.Duration)*spell.CdMultiplier))
+			spell.SharedCD.Set(sim.CurrentTime + spell.SharedCooldown())
 		}
 
 		spell.applyEffects(sim, target)
@@ -256,7 +256,7 @@ func (spell *Spell) makeCastFunc(config CastConfig) CastSuccessFunc {
 }
 
 func (spell *Spell) triggerCooldown(sim *Simulation) {
-	cd := time.Duration(float64(spell.CD.Duration) * spell.CdMultiplier)
+	cd := spell.Cooldown()
 
 	// if recharge timer is higher than the actual cooldown of the spell we use
 	if spell.MaxCharges > 0 && spell.charges == 0 {
@@ -322,7 +322,7 @@ func (spell *Spell) makeCastFuncSimple() CastSuccessFunc {
 		}
 
 		if spell.SharedCD.Timer != nil {
-			spell.SharedCD.Set(sim.CurrentTime + time.Duration(float64(spell.SharedCD.Duration)*spell.CdMultiplier))
+			spell.SharedCD.Set(sim.CurrentTime + spell.SharedCooldown())
 		}
 
 		spell.applyEffects(sim, target)

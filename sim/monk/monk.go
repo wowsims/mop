@@ -123,10 +123,10 @@ func (monk *Monk) AddChi(sim *core.Simulation, spell *core.Spell, pointsToAdd in
 	}
 }
 
-func (monk *Monk) SpendChi(sim *core.Simulation, chiToSpend int32, metrics *core.ResourceMetrics) {
+func (monk *Monk) SpendChi(sim *core.Simulation, chiToSpend int32, realChiToSpend int32, metrics *core.ResourceMetrics) {
 	monk.SpendPartialComboPoints(sim, chiToSpend, metrics)
 	if monk.onChiSpent != nil {
-		monk.onChiSpent(sim, chiToSpend)
+		monk.onChiSpent(sim, realChiToSpend)
 	}
 }
 
@@ -149,6 +149,13 @@ func (monk *Monk) AddBrewStacks(sim *core.Simulation, stacksToAdd int32) {
 }
 func (monk *Monk) RegisterOnNewBrewStacks(onNewBrewStacks OnNewBrewStacks) {
 	monk.onNewBrewStacks = onNewBrewStacks
+}
+
+func (monk *Monk) GetT16Windwalker4PCostReduction(chiCost int32) int32 {
+	if monk.T16Windwalker4P != nil && monk.T16Windwalker4P.IsActive() {
+		return chiCost - 1
+	}
+	return chiCost
 }
 
 func (monk *Monk) GetCharacter() *core.Character {

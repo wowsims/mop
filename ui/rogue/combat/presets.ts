@@ -26,7 +26,7 @@ export const CBAT_STANDARD_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatAgility]: 1.0,
 			[Stat.StatCritRating]: 0.42,
 			[Stat.StatHitRating]: 1.26,
-			[Stat.StatHasteRating]: 0.52,
+			[Stat.StatHasteRating]: 0.49,
 			[Stat.StatMasteryRating]: 0.46,
 			[Stat.StatExpertiseRating]: 1.07,
 		},

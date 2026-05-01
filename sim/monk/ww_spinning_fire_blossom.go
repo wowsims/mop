@@ -46,6 +46,7 @@ func spinningFireBlossomSpellConfig(monk *Monk, isSEFClone bool, overrides core.
 
 func (monk *Monk) registerSpinningFireBlossom() {
 	chiMetrics := monk.NewChiMetrics(spinningFireBlossomActionID)
+	chiCost := int32(1)
 
 	monk.RegisterSpell(spinningFireBlossomSpellConfig(monk, false, core.SpellConfig{
 		Cast: core.CastConfig{
@@ -73,7 +74,7 @@ func (monk *Monk) registerSpinningFireBlossom() {
 				}
 			})
 
-			monk.SpendChi(sim, 1, chiMetrics)
+			monk.SpendChi(sim, chiCost, chiCost, chiMetrics)
 		},
 	}))
 }

@@ -28,11 +28,10 @@ import {
 	UnitReference_Type as UnitType,
 	WeaponType,
 } from './proto/common.js';
-import { Consumable } from './proto/db';
-import { SpellEffect } from './proto/spell';
 import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
 import { Database } from './proto_utils/database.js';
 import { SimResult } from './proto_utils/sim_result.js';
+import { extendPlayerProtoWithMissingEffects } from './proto_utils/utils';
 import { Raid } from './raid.js';
 import { runConcurrentSim, runConcurrentStatWeights } from './sim_concurrent';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
@@ -236,33 +235,7 @@ export class Sim {
 					player.equipment = gear.asSpec();
 				}
 
-				// Include consumables in the player db
-				const pdb = player.database!;
-
-				const newConsumables: Consumable[] = [];
-				const newSpellEffects: SpellEffect[] = [];
-				const seenConsumableIds = new Set<number>();
-				const seenEffectIds = new Set<number>();
-				Object.values(player.consumables ?? []).forEach((cid: number) => {
-					if (!cid || seenConsumableIds.has(cid)) return;
-					const consume = this.db.getConsumable(cid);
-					if (!consume) return;
-					seenConsumableIds.add(consume.id);
-					newConsumables.push(consume);
-					for (const eid of consume.effectIds) {
-						if (seenEffectIds.has(eid)) continue;
-						const effect = this.db.getSpellEffect(eid);
-						if (!effect) continue;
-
-						seenEffectIds.add(effect.id);
-						newSpellEffects.push(effect);
-					}
-				});
-
-				// swap in the fresh arrays
-				pdb.consumables = newConsumables;
-				pdb.spellEffects = newSpellEffects;
-				player.database = pdb;
+				extendPlayerProtoWithMissingEffects(player, this.db);
 			});
 		});
 
@@ -579,7 +552,7 @@ export class Sim {
 		return (
 			this.showHealingMetrics ||
 			(this.showThreatMetrics &&
-				[Spec.SpecBloodDeathKnight, Spec.SpecGuardianDruid, Spec.SpecBrewmasterMonk, Spec.SpecProtectionPaladin].includes(
+				[Spec.SpecBloodDeathKnight, Spec.SpecGuardianDruid, Spec.SpecBrewmasterMonk, Spec.SpecProtectionPaladin, Spec.SpecProtectionWarrior].includes(
 					this.raid.getPlayer(0)?.playerSpec.specID,
 				))
 		);

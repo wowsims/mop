@@ -466,9 +466,14 @@ export class RaidSimResultsManager {
 
 		if (players.length === 1) {
 			const playerMetrics = players[0];
-			const showHPSMetricsForTanks = [Spec.SpecBloodDeathKnight, Spec.SpecGuardianDruid, Spec.SpecBrewmasterMonk, Spec.SpecProtectionPaladin].includes(
-				players[0].spec?.specID,
-			);
+			const showHPSMetricsForTanks = [
+				Spec.SpecBloodDeathKnight,
+				Spec.SpecGuardianDruid,
+				Spec.SpecBrewmasterMonk,
+				Spec.SpecProtectionPaladin,
+				Spec.SpecProtectionWarrior,
+			].includes(players[0].spec?.specID);
+
 			if (playerMetrics.getTargetIndex(filter) === null) {
 				const { chanceOfDeath, dps: dpsMetrics, tps: tpsMetrics, dtps: dtpsMetrics, tmi: tmiMetrics } = playerMetrics;
 

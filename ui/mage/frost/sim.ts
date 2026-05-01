@@ -143,9 +143,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.FrostDefaultTalents, Presets.FrostTalentsCleave, Presets.FrostTalentsAoE],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS, Presets.P4_BIS],
+		gear: [Presets.P1_PREBIS, Presets.P1_BIS, Presets.P2_BIS, Presets.P3_BIS, Presets.P4_BIS, Presets.P5_BIS],
 
-		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE, Presets.P1_PRESET_BUILD_AOE],
+		builds: [Presets.P1_PRESET_BUILD_DEFAULT, Presets.P1_PRESET_BUILD_CLEAVE, Presets.P1_PRESET_BUILD_AOE, Presets.T16_PRESET_BUILD],
 	},
 
 	autoRotation: (player: Player<Spec.SpecFrostMage>): APLRotation => {

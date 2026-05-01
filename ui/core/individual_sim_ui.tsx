@@ -62,7 +62,7 @@ import {
 import { IndividualSimSettings, ReforgeSettings, SavedTalents } from './proto/ui';
 import { getMetaGemConditionDescription } from './proto_utils/gems';
 import { armorTypeNames, professionNames } from './proto_utils/names';
-import { pseudoStatIsCapped, StatCap, Stats, UnitStat } from './proto_utils/stats';
+import { pseudoStatHasCap, StatCap, Stats, UnitStat } from './proto_utils/stats';
 import { getTalentPoints, migrateOldProto, ProtoConversionMap, SpecOptions, SpecRotation } from './proto_utils/utils';
 import { hasRequiredTalents, getMissingTalentRows, getRequiredTalentRows } from './talents/required_talents';
 import { SimUI, SimWarning } from './sim_ui';
@@ -753,7 +753,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 		// Also check all configured soft caps
 		const defaultSoftCaps: StatCap[] = this.individualConfig.defaults.softCapBreakpoints || [];
 
-		return pseudoStatIsCapped(pseudoStat, currentHardCaps.add(defaultHardCaps), defaultSoftCaps);
+		return pseudoStatHasCap(pseudoStat, currentHardCaps.add(defaultHardCaps), defaultSoftCaps);
 	}
 
 	// Determines whether a particular PseudoStat has been configured as a

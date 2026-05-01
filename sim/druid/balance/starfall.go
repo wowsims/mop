@@ -18,7 +18,7 @@ func (moonkin *BalanceDruid) registerStarfallSpell() {
 		ActionID:       core.ActionID{SpellID: 50286},
 		SpellSchool:    core.SpellSchoolArcane,
 		ProcMask:       core.ProcMaskSpellDamage,
-		ClassSpellMask: druid.DruidSpellStarfall,
+		ClassSpellMask: druid.DruidSpellStarfallTick,
 		Flags:          core.SpellFlagPassiveSpell,
 
 		DamageMultiplier: 1,
@@ -33,10 +33,11 @@ func (moonkin *BalanceDruid) registerStarfallSpell() {
 	})
 
 	moonkin.Starfall = moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{
-		ActionID:    core.ActionID{SpellID: 48505},
-		SpellSchool: core.SpellSchoolArcane,
-		ProcMask:    core.ProcMaskEmpty,
-		Flags:       core.SpellFlagAPL,
+		ActionID:       core.ActionID{SpellID: 48505},
+		SpellSchool:    core.SpellSchoolArcane,
+		ClassSpellMask: druid.DruidSpellStarfall,
+		ProcMask:       core.ProcMaskEmpty,
+		Flags:          core.SpellFlagAPL,
 
 		RelatedSelfBuff: moonkin.GetOrRegisterAura(core.Aura{
 			Label:    "Starfall",

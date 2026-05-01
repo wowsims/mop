@@ -14,7 +14,7 @@ import { Gear } from '../proto_utils/gear';
 import { gemMatchesSocket, gemMatchesStats, getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
 import { translateSlotName, translateStat } from '../../i18n/localization';
-import { pseudoStatIsCapped, StatCap, statIsCapped, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
+import { pseudoStatHasCap, pseudoStatIsCapped, StatCap, statHasCap, statIsCapped, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
 import { Sim } from '../sim';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
@@ -493,7 +493,7 @@ export class ReforgeOptimizer {
 
 			// If all children have 0 EP, then loop through children and check whether a cap has been configured for that child.
 			for (const childStat of children) {
-				if (pseudoStatIsCapped(childStat, reforgeCaps, reforgeSoftCaps)) {
+				if (pseudoStatHasCap(childStat, reforgeCaps, reforgeSoftCaps)) {
 					// The first time a cap is detected, set EP for that child to re-scaled parent Rating EP, set parent Rating EP
 					// to 0, and break.
 					const rescaledWeight = UnitStat.fromPseudoStat(childStat).convertPercentToRating(weights.getStat(parentStat));
@@ -505,6 +505,28 @@ export class ReforgeOptimizer {
 		}
 
 		return validatedWeights;
+	}
+
+	static includesStatWithCap(coefficients: YalpsCoefficients, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): boolean {
+		for (const coefficientKey of coefficients.keys()) {
+			if (coefficientKey.includes('PseudoStat')) {
+				const statKey = PseudoStat[coefficientKey as keyof typeof PseudoStat];
+
+				if (pseudoStatHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
+					return true;
+				}
+			} else if (coefficientKey.includes('Stat')) {
+				const statKey = Stat[coefficientKey as keyof typeof Stat];
+
+				if (statHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
+					return true;
+				}
+			} else if (coefficientKey.includes('Minus')) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	static includesCappedStat(coefficients: YalpsCoefficients, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): boolean {
@@ -536,13 +558,13 @@ export class ReforgeOptimizer {
 			if (coefficientKey.includes('PseudoStat')) {
 				const statKey = PseudoStat[coefficientKey as keyof typeof PseudoStat];
 
-				if (pseudoStatIsCapped(statKey, reforgeCaps, reforgeSoftCaps)) {
+				if (pseudoStatHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
 					cappedStatKeys.push(coefficientKey);
 				}
 			} else if (coefficientKey.includes('Stat')) {
 				const statKey = Stat[coefficientKey as keyof typeof Stat];
 
-				if (statIsCapped(statKey, reforgeCaps, reforgeSoftCaps)) {
+				if (statHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
 					cappedStatKeys.push(coefficientKey);
 				}
 			}
@@ -1302,6 +1324,16 @@ export class ReforgeOptimizer {
 		const variables = this.buildYalpsVariables(baseGear, validatedWeights, reforgeCaps, reforgeSoftCaps);
 		const constraints = this.buildYalpsConstraints(baseGear, baseStats);
 
+		// After building variables and constraints we check for
+		// SocketBonusLink constraints for the all-or-nothing socket bonus variables.
+		for (const coefficients of variables.values()) {
+			for (const key of coefficients.keys()) {
+				if (key.startsWith('SocketBonusLink_') && !constraints.has(key)) {
+					constraints.set(key, lessEq(0));
+				}
+			}
+		}
+
 		// Solve in multiple passes to enforce caps
 		await this.solveModel(
 			baseGear,
@@ -1395,7 +1427,9 @@ export class ReforgeOptimizer {
 				socketBonusNormalization -= 1;
 			}
 
-			const distributedSocketBonus = new Stats(scaledItem.item.socketBonus).scale(1.0 / socketBonusNormalization).getBuffedStats();
+			const socketBonusStats = new Stats(scaledItem.item.socketBonus);
+			const distributedSocketBonus = socketBonusStats.scale(1.0 / socketBonusNormalization).getBuffedStats();
+			const fullSocketBonus = socketBonusStats.getBuffedStats();
 
 			// First determine whether the socket bonus should be obviously matched in order to save on brute force computation.
 			let forceSocketBonus: boolean = false;
@@ -1405,45 +1439,53 @@ export class ReforgeOptimizer {
 				this.applyReforgeStat(socketBonusAsCoeff, stat, value, preCapEPs);
 			}
 
-			if (ReforgeOptimizer.includesCappedStat(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps) && socketBonusNormalization > 1) {
-				forceSocketBonus = true;
-			}
-
-			const dummyVariables = new Map<string, YalpsCoefficients>();
-			dummyVariables.set('matched', new Map<string, number>());
-			dummyVariables.set('unmatched', new Map<string, number>());
-
-			for (const socketColor of socketColors.values()) {
-				if (![GemColor.GemColorRed, GemColor.GemColorBlue, GemColor.GemColorYellow, GemColor.GemColorPrismatic].includes(socketColor)) {
-					break;
+			if (socketBonusAsCoeff.size) {
+				if (
+					ReforgeOptimizer.includesStatWithCap(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps) &&
+					!ReforgeOptimizer.includesCappedStat(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps) &&
+					socketBonusNormalization > 1
+				) {
+					forceSocketBonus = true;
 				}
 
-				const matchedCoeffs = dummyVariables.get('matched')!;
-				const worstMatchedGemData = gemsToInclude.get(socketColor)!.at(-1)!;
+				const dummyVariables = new Map<string, YalpsCoefficients>();
+				dummyVariables.set('matched', new Map<string, number>());
+				dummyVariables.set('unmatched', new Map<string, number>());
 
-				for (const [key, value] of worstMatchedGemData.coefficients.entries()) {
-					matchedCoeffs.set(key, (matchedCoeffs.get(key) || 0) + value);
+				for (const socketColor of socketColors.values()) {
+					if (![GemColor.GemColorRed, GemColor.GemColorBlue, GemColor.GemColorYellow, GemColor.GemColorPrismatic].includes(socketColor)) {
+						break;
+					}
+
+					const matchedCoeffs = dummyVariables.get('matched')!;
+					const worstMatchedGemData = gemsToInclude.get(socketColor)!.at(-1)!;
+
+					for (const [key, value] of worstMatchedGemData.coefficients.entries()) {
+						matchedCoeffs.set(key, (matchedCoeffs.get(key) || 0) + value);
+					}
+
+					for (const [key, value] of socketBonusAsCoeff.entries()) {
+						matchedCoeffs.set(key, (matchedCoeffs.get(key) || 0) + value);
+					}
+
+					const unmatchedCoeffs = dummyVariables.get('unmatched')!;
+					const worstUnmatchedGemData = gemsToInclude.get(GemColor.GemColorPrismatic)!.at(0)!;
+
+					for (const [key, value] of worstUnmatchedGemData.coefficients.entries()) {
+						unmatchedCoeffs.set(key, (unmatchedCoeffs.get(key) || 0) + value);
+					}
 				}
 
-				for (const [key, value] of socketBonusAsCoeff.entries()) {
-					matchedCoeffs.set(key, (matchedCoeffs.get(key) || 0) + value);
+				const scoredDummyVariables = this.updateReforgeScores(dummyVariables, preCapEPs);
+
+				if (
+					scoredDummyVariables.get('matched')!.get('score')! > scoredDummyVariables.get('unmatched')!.get('score')! &&
+					(socketBonusNormalization > 1 ||
+						(ReforgeOptimizer.includesStatWithCap(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps) &&
+							!ReforgeOptimizer.includesCappedStat(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps)))
+				) {
+					forceSocketBonus = true;
 				}
-
-				const unmatchedCoeffs = dummyVariables.get('unmatched')!;
-				const worstUnmatchedGemData = gemsToInclude.get(GemColor.GemColorPrismatic)!.at(-1)!;
-
-				for (const [key, value] of worstUnmatchedGemData.coefficients.entries()) {
-					unmatchedCoeffs.set(key, (unmatchedCoeffs.get(key) || 0) + value);
-				}
-			}
-
-			const scoredDummyVariables = this.updateReforgeScores(dummyVariables, preCapEPs);
-
-			if (
-				scoredDummyVariables.get('matched')!.get('score')! > scoredDummyVariables.get('unmatched')!.get('score')! &&
-				(socketBonusNormalization > 1 || !ReforgeOptimizer.includesCappedStat(scoredDummyVariables.get('matched')!, reforgeCaps, reforgeSoftCaps))
-			) {
-				forceSocketBonus = true;
 			}
 
 			socketColors.forEach((socketColor, socketIdx) => {
@@ -1470,8 +1512,12 @@ export class ReforgeOptimizer {
 						coefficients.set(constraintKey, 1);
 
 						if (gemMatchesSocket(gemData.gem, socketColor)) {
-							for (const [stat, value] of distributedSocketBonus.entries()) {
-								this.applyReforgeStat(coefficients, stat, value, preCapEPs);
+							if (forceSocketBonus) {
+								for (const [stat, value] of distributedSocketBonus.entries()) {
+									this.applyReforgeStat(coefficients, stat, value, preCapEPs);
+								}
+							} else {
+								coefficients.set(`SocketBonusLink_${slot}_${socketIdx}`, -1);
 							}
 						}
 						// Performance optimisation to force socket bonus matching for Jewelcrafting gems.
@@ -1493,6 +1539,23 @@ export class ReforgeOptimizer {
 					}
 				}
 			});
+
+			if (!forceSocketBonus && socketBonusNormalization > 0) {
+				const socketBonusKey = `SocketBonus_${slot}`;
+				const socketBonusCoefficients = new Map<string, number>();
+
+				for (const [stat, value] of fullSocketBonus.entries()) {
+					this.applyReforgeStat(socketBonusCoefficients, stat, value, preCapEPs);
+				}
+
+				socketColors.forEach((socketColor, socketIdx) => {
+					if ([GemColor.GemColorRed, GemColor.GemColorBlue, GemColor.GemColorYellow, GemColor.GemColorPrismatic].includes(socketColor)) {
+						socketBonusCoefficients.set(`SocketBonusLink_${slot}_${socketIdx}`, 1);
+					}
+				});
+
+				variables.set(socketBonusKey, socketBonusCoefficients);
+			}
 		}
 
 		return variables;
@@ -1583,7 +1646,7 @@ export class ReforgeOptimizer {
 
 				for (const parentStat of [Stat.StatCritRating, Stat.StatHasteRating]) {
 					for (const childStat of UnitStat.getChildren(parentStat)) {
-						if (pseudoStatIsCapped(childStat, reforgeCaps, reforgeSoftCaps)) {
+						if (pseudoStatHasCap(childStat, reforgeCaps, reforgeSoftCaps)) {
 							foundCritOrHasteCap = true;
 						}
 					}
@@ -1645,17 +1708,14 @@ export class ReforgeOptimizer {
 		}
 
 		if (stat == Stat.StatHasteRating || stat == Stat.StatMasteryRating || stat == Stat.StatSpirit) {
-			this.player.getAmplificationTrinkets().forEach(trinket => {
-				const randPropPoints = this.sim.db.getItemEffectRandPropPoints(trinket.ilvl)?.randPropPoints;
-				if (!randPropPoints) return;
-				const statScalingCoeff = 0.00176999997;
-				const buffValue = 1 + (statScalingCoeff * randPropPoints) / 100;
-				amount *= buffValue;
-			});
+			amount *= this.player.getTotalAmplificationTrinketStatModifier();
 		}
 
 		// Handle Spirit to Spell Hit conversion for hybrid casters separately from standard dependencies
-		if ((stat == Stat.StatSpirit && this.isHybridCaster) || stat == Stat.StatExpertiseRating) {
+		if (
+			preCapEPs.getPseudoStat(PseudoStat.PseudoStatSpellHitPercent) != 0 &&
+			((stat == Stat.StatSpirit && this.isHybridCaster) || stat == Stat.StatExpertiseRating)
+		) {
 			this.setPseudoStatCoefficient(coefficients, PseudoStat.PseudoStatSpellHitPercent, amount / Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT);
 		}
 
@@ -1829,7 +1889,6 @@ export class ReforgeOptimizer {
 					score += weights.getStat(statKey) * value;
 				}
 			}
-
 			updatedCoefficients.set('score', score);
 			updatedVariables.set(variableKey, updatedCoefficients);
 		}

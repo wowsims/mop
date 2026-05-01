@@ -64,7 +64,8 @@ func (monk *Monk) registerStanceOfTheSturdyOx(stanceCD *core.Timer) {
 
 			currentChi := monk.GetChi()
 			if currentChi > 1 {
-				monk.SpendChi(sim, currentChi-1, chiMetrics)
+				currentChi -= 1
+				monk.SpendChi(sim, currentChi, currentChi, chiMetrics)
 			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
@@ -150,7 +151,8 @@ func (monk *Monk) registerStanceOfTheWiseSerpent(stanceCD *core.Timer) {
 
 			currentChi := monk.GetChi()
 			if currentChi > 1 {
-				monk.SpendChi(sim, currentChi-1, chiMetrics)
+				currentChi -= 1
+				monk.SpendChi(sim, currentChi, currentChi, chiMetrics)
 			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
@@ -190,7 +192,8 @@ func (monk *Monk) registerStanceOfTheFierceTiger(stanceCD *core.Timer) {
 
 			currentChi := monk.GetChi()
 			if currentChi > 1 {
-				monk.SpendChi(sim, currentChi-1, chiMetrics)
+				currentChi -= 1
+				monk.SpendChi(sim, currentChi, currentChi, chiMetrics)
 			}
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {

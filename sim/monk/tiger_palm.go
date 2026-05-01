@@ -122,7 +122,7 @@ func (monk *Monk) registerTigerPalm() {
 					if monk.ComboBreakerTigerPalmAura.IsActive() {
 						monk.onChiSpent(sim, chiCost)
 					} else {
-						monk.SpendChi(sim, chiCost, chiMetrics)
+						monk.SpendChi(sim, chiCost, chiCost, chiMetrics)
 					}
 				}
 			}

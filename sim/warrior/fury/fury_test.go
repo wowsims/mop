@@ -1,6 +1,7 @@
 package fury
 
 import (
+	"github.com/wowsims/mop/sim/common"
 	_ "github.com/wowsims/mop/sim/common" // imported to get item effects included.
 
 	"testing"
@@ -11,6 +12,7 @@ import (
 
 func init() {
 	RegisterFuryWarrior()
+	common.RegisterAllEffects()
 }
 
 func TestFury(t *testing.T) {

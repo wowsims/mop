@@ -39,7 +39,7 @@ func init() {
 		var target *core.Unit
 
 		isHunter := character.Class == proto.Class_ClassHunter
-		flags := core.SpellFlagNoOnCastComplete
+		flags := core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell
 		if isHunter {
 			flags |= core.SpellFlagRanged
 		}

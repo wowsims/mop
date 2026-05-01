@@ -1,0 +1,622 @@
+// Stretch the replay tab pane so the component fills to the bottom of the viewport.
+.replay-content.dr-tab-content {
+	padding: 0;
+
+	.dr-row {
+		margin: 0;
+	}
+}
+
+.combat-replay-root {
+	display: flex;
+	flex-direction: column;
+	// Fill from the top of the tab content to the bottom of the viewport, with a 16px gap.
+	height: calc(100vh - 175px);
+	padding-bottom: 16px;
+	overflow: hidden;
+	background: var(--bs-body-bg);
+	color: var(--bs-secondary-color);
+	font-family: inherit;
+
+	.cr-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		padding: 60px 20px;
+		text-align: center;
+		color: color-mix(in srgb, var(--bs-white) 50%, transparent);
+		flex: 1;
+	}
+
+	.cr-empty-icon {
+		font-size: 3rem;
+		opacity: 0.3;
+	}
+
+	.cr-empty-title {
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+	}
+
+	.cr-empty-desc {
+		font-size: 0.85rem;
+		max-width: 380px;
+	}
+
+	.cr-scene {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 0;
+		overflow: hidden;
+		isolation: isolate;
+		background: radial-gradient(ellipse at 50% 80%, color-mix(in srgb, var(--bs-body-bg) 65%, var(--bs-warning) 35%) 0%, var(--bs-body-bg) 70%);
+	}
+
+	// Full-panel vignette (same stacking context as the scene gradient — avoids a “second slab” over CDM/controls).
+	.cr-scene-vignette {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background: radial-gradient(ellipse at 50% 50%, transparent 40%, color-mix(in srgb, var(--bs-black) 70%, transparent) 100%);
+	}
+
+	// ── Arena ──
+
+	.cr-arena {
+		position: relative;
+		z-index: 1;
+		flex: 1;
+		min-height: 180px;
+		overflow: hidden;
+		background: transparent;
+	}
+
+	.cr-ticker-outer {
+		position: absolute;
+		top: 10px;
+		left: 0;
+		right: 0;
+		z-index: 10;
+		display: flex;
+		justify-content: center;
+	}
+
+	.cr-ticker-track {
+		display: flex;
+		gap: 4px;
+		align-items: center;
+	}
+
+	.cr-strip-icon {
+		position: relative;
+		width: 42px;
+		height: 42px;
+		border-radius: 6px;
+		overflow: hidden;
+		border: 2px solid color-mix(in srgb, var(--bs-white) 15%, transparent);
+		cursor: pointer;
+		transition: border-color 0.1s;
+		display: block;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		text-decoration: none;
+
+		&.cr-strip-icon-active {
+			border-color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+			box-shadow: 0 0 10px color-mix(in srgb, var(--bs-white) 30%, transparent);
+		}
+	}
+
+	.cr-crit-badge {
+		position: absolute;
+		top: 1px;
+		right: 2px;
+		font-size: 9px;
+		font-weight: 900;
+		color: var(--bs-crit);
+		line-height: 1;
+	}
+
+	.cr-dmg-badge {
+		position: absolute;
+		bottom: 1px;
+		left: 0;
+		right: 0;
+		text-align: center;
+		font-size: 9px;
+		font-weight: 700;
+		color: var(--bs-white);
+		text-shadow:
+			0 0 4px var(--bs-black),
+			0 0 4px var(--bs-black);
+		line-height: 1;
+	}
+
+	.cr-enemy-zone {
+		position: absolute;
+		left: 20px;
+		right: 20px;
+		bottom: 20px;
+		top: calc(60px + 20px);
+		z-index: 1;
+		overflow: hidden;
+	}
+
+	// Vertically centers the encounter block (nameplates + models) so the arena is not empty above.
+	.cr-enemy-formation {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 50%;
+		height: 78%;
+		transform: translateY(-50%);
+		pointer-events: none;
+	}
+
+	.cr-enemy-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		pointer-events: auto;
+		// position / size / transform are set inline per-card for the depth formation
+	}
+
+	.cr-nameplate {
+		width: 100%;
+		margin-bottom: 6px;
+		background: color-mix(in srgb, var(--bs-black) 55%, transparent);
+		border-radius: 6px;
+		padding: 4px 6px;
+	}
+
+	.cr-debuff-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2px;
+		margin-top: 3px;
+		min-height: 0;
+	}
+
+	.cr-aura-icon {
+		width: 20px;
+		height: 20px;
+		border-radius: 3px;
+		overflow: hidden;
+		border: 1px solid color-mix(in srgb, var(--bs-white) 20%, transparent);
+		cursor: pointer;
+		flex-shrink: 0;
+		display: block;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		text-decoration: none;
+	}
+
+	.cr-enemy-name {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-align: center;
+		color: var(--bs-danger);
+		margin-bottom: 3px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.cr-hp-bar {
+		position: relative;
+		height: 8px;
+		background: color-mix(in srgb, var(--bs-white) 10%, transparent);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.cr-hp-fill {
+		height: 100%;
+		background: linear-gradient(90deg, var(--bs-success), color-mix(in srgb, var(--bs-success) 70%, var(--bs-white)));
+		border-radius: 4px;
+		transition: width 0.05s linear;
+	}
+
+	.cr-hp-text {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 7px;
+		font-weight: 700;
+		color: var(--bs-white);
+		text-shadow: 0 0 3px var(--bs-black);
+	}
+
+	.cr-silhouette {
+		position: relative;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+
+		img {
+			// Scale with card width; single target gets large, multi-target scales down naturally
+			width: 100%;
+			height: auto;
+			max-height: min(260px, 45vh);
+			display: block;
+			object-fit: contain;
+			object-position: center bottom;
+			filter: drop-shadow(0 0 14px color-mix(in srgb, var(--bs-crit) 40%, transparent));
+			user-select: none;
+		}
+	}
+
+	.cr-hit-layer {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.cr-hit-effect {
+		position: absolute;
+		transform: translate(-50%, -50%);
+	}
+
+	.cr-hit-flash {
+		position: absolute;
+		transform: translate(-50%, -50%);
+		border-radius: 50%;
+		background: radial-gradient(circle, var(--bs-white) 0%, color-mix(in srgb, var(--bs-warning) 60%, transparent) 50%, transparent 100%);
+	}
+
+	.cr-hit-ring {
+		position: absolute;
+		transform: translate(-50%, -50%);
+		border-radius: 50%;
+		border: 2px solid var(--bs-hit);
+		color: var(--bs-hit);
+
+		&.cr-hit-outcome-hit {
+			border-color: var(--bs-hit);
+			color: var(--bs-hit);
+		}
+
+		&.cr-hit-outcome-crit {
+			border-color: var(--bs-crit);
+			color: var(--bs-crit);
+		}
+
+		&.cr-hit-outcome-crit-secondary {
+			border-color: var(--bs-warning);
+			color: var(--bs-warning);
+		}
+	}
+
+	.cr-dmg-num {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		white-space: nowrap;
+		font-size: 1rem;
+		font-weight: 800;
+		color: color-mix(in srgb, var(--bs-warning) 80%, var(--bs-white));
+		text-shadow:
+			0 0 6px var(--bs-black),
+			0 0 6px var(--bs-black),
+			0 2px 4px color-mix(in srgb, var(--bs-black) 80%, transparent);
+		pointer-events: none;
+
+		&.cr-dmg-crit {
+			color: var(--bs-crit);
+			font-size: 1.3rem;
+			text-shadow:
+				0 0 8px var(--bs-danger),
+				0 0 8px var(--bs-danger);
+		}
+	}
+
+	.cr-enemy-more {
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: color-mix(in srgb, var(--bs-white) 50%, transparent);
+		align-self: center;
+	}
+
+	// ── CDM HUD — 50% wide, centered ──
+
+	.cr-cdm {
+		position: relative;
+		z-index: 1;
+		flex-shrink: 0;
+		width: 50%;
+		align-self: center;
+		background: color-mix(in srgb, var(--bs-black) 92%, transparent);
+		border-top: 1px solid color-mix(in srgb, var(--bs-white) 8%, transparent);
+		padding: 8px 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.cr-cdm-header {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		gap: 8px;
+		min-height: 46px;
+	}
+
+	.cr-cdm-player-label {
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		flex-shrink: 0;
+	}
+
+	// Left-to-right buff icons; first row fills then wraps to a second row (fixed two-row height, no layout jump).
+	.cr-buff-icons {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-content: flex-start;
+		justify-content: flex-start;
+		gap: 3px;
+		flex: 1;
+		min-width: 0;
+		width: 100%;
+		min-height: 43px;
+		max-height: 43px;
+		overflow: hidden;
+	}
+
+	.cr-cast-bar-container {
+		position: relative;
+		flex-shrink: 0;
+		height: 18px;
+		min-height: 18px;
+		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.cr-cast-bar-fill {
+		height: 100%;
+		width: 0;
+		border-radius: 4px;
+		transition: width 0.05s linear;
+		background: linear-gradient(90deg, var(--bs-primary), color-mix(in srgb, var(--bs-primary) 78%, var(--bs-white)));
+	}
+
+	.cr-cast-bar-label {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--bs-white);
+		text-shadow: 0 0 4px var(--bs-black);
+		pointer-events: none;
+	}
+
+	.cr-cast-bar-time {
+		position: absolute;
+		right: 6px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 0.65rem;
+		color: color-mix(in srgb, var(--bs-white) 75%, transparent);
+		pointer-events: none;
+	}
+
+	.cr-resource-bars {
+		display: flex;
+		flex-direction: column;
+		flex-shrink: 0;
+		gap: 4px;
+		min-height: 1px;
+	}
+
+	// Regular (continuous) resource bar
+
+	.cr-resource-wrap {
+		display: flex;
+		align-items: center;
+	}
+
+	.cr-res-bar-outer {
+		position: relative;
+		height: 12px;
+		width: 100%;
+		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.cr-res-bar-fill {
+		height: 100%;
+		border-radius: 4px;
+		transition: width 0.05s linear;
+	}
+
+	.cr-bar-label {
+		position: absolute;
+		left: 6px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 0.6rem;
+		font-weight: 600;
+		color: color-mix(in srgb, var(--bs-white) 80%, transparent);
+		pointer-events: none;
+	}
+
+	.cr-bar-val {
+		position: absolute;
+		right: 6px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 0.6rem;
+		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+		pointer-events: none;
+	}
+
+	// Dot/segment resource bar (combo points, runes, chi)
+
+	.cr-resource-dot {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		width: 100%;
+	}
+
+	.cr-dot-label {
+		font-size: 0.6rem;
+		font-weight: 600;
+		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.cr-dot-val {
+		font-size: 0.6rem;
+		color: color-mix(in srgb, var(--bs-white) 60%, transparent);
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.cr-seg-bar {
+		flex: 1;
+		display: flex;
+		gap: 3px;
+		align-items: stretch;
+		height: 12px;
+	}
+
+	.cr-segment {
+		flex: 1;
+		min-width: 0;
+		height: 100%;
+		border-radius: 3px;
+	}
+
+	.cr-segment--empty {
+		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+	}
+
+	// Action icon grid
+
+	.cr-action-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		margin-top: 2px;
+	}
+
+	.cr-action-icon {
+		width: 36px;
+		height: 36px;
+		border-radius: 5px;
+		overflow: hidden;
+		border: 2px solid color-mix(in srgb, var(--bs-white) 12%, transparent);
+		cursor: pointer;
+		transition:
+			border-color 0.1s,
+			box-shadow 0.1s;
+		display: block;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		text-decoration: none;
+		flex-shrink: 0;
+
+		&.cr-action-icon-active {
+			border-color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+		}
+	}
+
+	// ── Playback controls ──
+
+	.cr-controls {
+		position: relative;
+		z-index: 1;
+		flex-shrink: 0;
+		padding: 6px 12px 8px;
+		background: transparent;
+		border-top: 1px solid color-mix(in srgb, var(--bs-white) 6%, transparent);
+	}
+
+	.cr-ctrl-row {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		flex-wrap: nowrap;
+		min-height: 32px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		scrollbar-width: thin;
+	}
+
+	.cr-ctrl-btn,
+	.cr-play-btn {
+		padding: 4px 8px;
+		background: color-mix(in srgb, var(--bs-white) 7%, transparent);
+		border: 1px solid color-mix(in srgb, var(--bs-white) 15%, transparent);
+		border-radius: 5px;
+		color: var(--bs-body-color);
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: background 0.1s;
+
+		&:hover {
+			background: color-mix(in srgb, var(--bs-white) 15%, transparent);
+		}
+	}
+
+	.cr-play-btn i {
+		pointer-events: none;
+	}
+
+	.cr-speed-btns {
+		display: flex;
+		gap: 4px;
+	}
+
+	.cr-speed-btn {
+		padding: 3px 8px;
+		background: color-mix(in srgb, var(--bs-white) 5%, transparent);
+		border: 1px solid color-mix(in srgb, var(--bs-white) 12%, transparent);
+		border-radius: 4px;
+		color: color-mix(in srgb, var(--bs-white) 60%, transparent);
+		font-size: 0.75rem;
+		cursor: pointer;
+
+		&.active {
+			border-color: color-mix(in srgb, var(--bs-white) 50%, transparent);
+			color: var(--bs-white);
+		}
+	}
+
+	.cr-time-display {
+		font-size: 0.75rem;
+		font-variant-numeric: tabular-nums;
+		color: color-mix(in srgb, var(--bs-white) 60%, transparent);
+		margin-left: auto;
+	}
+
+	.cr-scrub-row {
+		margin-top: 4px;
+	}
+
+	.cr-scrubber {
+		width: 100%;
+		accent-color: var(--bs-secondary);
+		cursor: pointer;
+	}
+}

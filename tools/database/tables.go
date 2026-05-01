@@ -1132,6 +1132,7 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 	var stringShapeShift string            //2
 	var iconId int                         //
 	var rppmModsJSON string
+	var startRecoveryCategory int
 	err := rows.Scan(
 		&spell.NameLang,
 		&spell.ID,
@@ -1156,6 +1157,7 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 		&spell.ChargeRecoveryTime,
 		&spell.CategoryTypeMask,
 		&spell.Category,
+		&startRecoveryCategory,
 		&spell.Duration,
 		&spell.ProcChance,
 		&spell.ProcCharges,
@@ -1214,6 +1216,7 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 		)
 	}
 	spell.IconPath = iconsMap[iconId]
+
 	return spell, nil
 }
 
@@ -1243,6 +1246,7 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 	COALESCE(ssc.ChargeRecoveryTime, 0),
 	COALESCE(ssc.TypeMask, 0),
 	COALESCE(scs.Category, 0),
+	COALESCE(scs.StartRecoveryCategory, 0),
 	COALESCE(sd.Duration, 0),
 	COALESCE(sao.ProcChance, 0),
 	COALESCE(sao.ProcCharges, 0),

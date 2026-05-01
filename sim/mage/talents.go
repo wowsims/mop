@@ -219,7 +219,7 @@ func (mage *Mage) registerIncantersWard() {
 		return
 	}
 
-	core.MakePermanent(mage.RegisterAura(core.Aura{
+	mage.IncantersWardPassiveAura = core.MakePermanent(mage.RegisterAura(core.Aura{
 		Label:    "Incanter's Ward Passive",
 		ActionID: core.ActionID{SpellID: 1463},
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
@@ -228,8 +228,10 @@ func (mage *Mage) registerIncantersWard() {
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 			mage.MultiplyManaRegenSpeed(sim, 1/1.65)
 		},
-	}).AttachSpellMod(core.SpellModConfig{
-		Kind:       core.SpellMod_DamageDone_Pct,
-		FloatValue: 0.06,
-	}))
+	}).
+		// Water Elemental 6% damage done effect is implemented in frost/water_elemental.go
+		AttachSpellMod(core.SpellModConfig{
+			Kind:       core.SpellMod_DamageDone_Pct,
+			FloatValue: 0.06,
+		}))
 }

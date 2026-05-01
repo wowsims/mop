@@ -3,6 +3,7 @@ package subtlety
 import (
 	"testing"
 
+	"github.com/wowsims/mop/sim/common"
 	_ "github.com/wowsims/mop/sim/common" // imported to get item effects included.
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
@@ -10,6 +11,7 @@ import (
 
 func init() {
 	RegisterSubtletyRogue()
+	common.RegisterAllEffects()
 }
 
 func TestSubtlety(t *testing.T) {

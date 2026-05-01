@@ -812,6 +812,16 @@ func (spell *Spell) TravelTime() time.Duration {
 	}
 }
 
+// Returns the Cooldown time including multipliers
+func (spell *Spell) Cooldown() time.Duration {
+	return time.Duration(float64(spell.CD.Duration) * spell.CdMultiplier)
+}
+
+// Returns the Shared Cooldown time including multipliers
+func (spell *Spell) SharedCooldown() time.Duration {
+	return time.Duration(float64(spell.SharedCD.Duration) * spell.CdMultiplier)
+}
+
 // Returns true if the given mask matches the spell mask
 func (spell *Spell) Matches(mask int64) bool {
 	return spell.ClassSpellMask&mask > 0

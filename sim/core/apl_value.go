@@ -327,6 +327,9 @@ func (rot *APLRotation) newAPLValueWithContext(config *proto.APLValue, groupVari
 		// Otherwise create the placeholder as normal
 		value = rot.newValueVariablePlaceholder(config.GetVariablePlaceholder(), config.Uuid)
 
+	case *proto.APLValue_ActionGroupUsed:
+		value = rot.newValueActionGroupUsed(config.GetActionGroupUsed(), config.Uuid)
+
 	// Item Swap
 	case *proto.APLValue_ActiveItemSwapSet:
 		value = rot.newValueActiveItemSwapSet(config.GetActiveItemSwapSet(), config.Uuid)

@@ -66,11 +66,11 @@ func (enchant *Enchant) ToProto() *proto.UIEnchant {
 		eff := ItemEffect{TriggerType: 2, SpellID: enchant.SpellId}
 		parsedEffect, hasStats := eff.ToProto(0, 0)
 		if hasStats {
-			uiEnchant.EnchantEffect = parsedEffect
+			uiEnchant.EnchantEffects = append(uiEnchant.EnchantEffects, parsedEffect)
 		}
-		if uiEnchant.EnchantEffect.GetOnUse() == nil && uiEnchant.EnchantEffect.GetProc() == nil {
-			uiEnchant.EnchantEffect = nil
-		}
+		// if uiEnchant.EnchantEffect.GetOnUse() == nil && uiEnchant.EnchantEffect.GetProc() == nil {
+		// 	uiEnchant.EnchantEffect = nil
+		// }
 	}
 
 	if enchant.FDID == 0 {

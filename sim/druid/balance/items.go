@@ -17,7 +17,7 @@ var ItemSetRegaliaOfTheEternalBloosom = core.NewItemSet(core.ItemSet{
 			// Your Starfall deals 20% additional damage.
 			setBonusAura.AttachSpellMod(core.SpellModConfig{
 				Kind:       core.SpellMod_DamageDone_Pct,
-				ClassMask:  druid.DruidSpellStarfall,
+				ClassMask:  druid.DruidSpellStarfallTick,
 				FloatValue: 0.2,
 			})
 		},
@@ -67,3 +67,88 @@ var ItemSetRegaliaOfTheHauntedForest = core.NewItemSet(core.ItemSet{
 		},
 	},
 })
+
+// T16 Balance
+var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
+	Name:                    "Regalia of the Shattered Vale",
+	ID:                      1197,
+	DisabledInChallengeMode: true,
+	Bonuses: map[int32]core.ApplySetBonus{
+		2: func(agent core.Agent, setBonusAura *core.Aura) {
+			// Arcane spells cast while in Lunar Eclipse will shoot a single Lunar Bolt at the target. Nature spells cast while in a Solar Eclipse will shoot a single Solar Bolt at the target.
+			moonkin := agent.(*BalanceDruid)
+			solarBolt := moonkin.registerT15BoltSpell(144772, core.SpellSchoolNature, SolarEclipse)
+			lunarBolt := moonkin.registerT15BoltSpell(144770, core.SpellSchoolArcane, LunarEclipse)
+
+			bothDuringCA := druid.DruidSpellMoonfire | druid.DruidSpellSunfire | druid.DruidSpellStarsurge
+
+			procTriggerSpellMask := druid.DruidSpellMoonfire |
+				druid.DruidSpellSunfire |
+				druid.DruidSpellStarfall |
+				druid.DruidSpellStarfire |
+				druid.DruidSpellWrath |
+				druid.DruidSpellStarsurge
+
+			setBonusAura.AttachProcTrigger(core.ProcTrigger{
+				Callback:           core.CallbackOnCastComplete,
+				ClassSpellMask:     procTriggerSpellMask,
+				TriggerImmediately: true,
+
+				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
+					alignmentActive := moonkin.CelestialAlignment.RelatedSelfBuff.IsActive()
+
+					if spell.SpellSchool.Matches(core.SpellSchoolNature) || (alignmentActive && spell.Matches(bothDuringCA)) {
+						solarBolt.Cast(sim, spell.Unit.CurrentTarget)
+					}
+
+					if spell.SpellSchool.Matches(core.SpellSchoolArcane) || (alignmentActive && spell.Matches(bothDuringCA)) {
+						lunarBolt.Cast(sim, spell.Unit.CurrentTarget)
+					}
+				},
+			})
+		},
+		4: func(agent core.Agent, setBonusAura *core.Aura) {
+			// Your chance to get Shooting Stars from a critical strike from Moonfire or Sunfire is increased by 8%.
+			moonkin := agent.(*BalanceDruid)
+			moonkin.ShootingStarsProcChance += 0.08
+		},
+	},
+})
+
+const (
+	T15BoltBonusCoeff = 0.10000000149
+	T15BoltCoeff      = 0.5
+	T15BoltVariance   = 0.25
+)
+
+func (moonkin *BalanceDruid) registerT15BoltSpell(spellID int32, spellSchool core.SpellSchool, eclipse Eclipse) *druid.DruidSpell {
+	return moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{
+		ActionID:       core.ActionID{SpellID: spellID},
+		SpellSchool:    spellSchool,
+		ProcMask:       core.ProcMaskEmpty,
+		ClassSpellMask: druid.DruidSpell2PT16Bolt,
+		Flags:          core.SpellFlagAPL,
+
+		MissileSpeed: 30,
+
+		BonusCoefficient: T15BoltBonusCoeff,
+		DamageMultiplier: 1,
+		CritMultiplier:   moonkin.DefaultCritMultiplier(),
+		ThreatMultiplier: 1,
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			baseDamage := moonkin.CalcAndRollDamageRange(sim, T15BoltCoeff, T15BoltVariance)
+			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
+
+			spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+				spell.DealDamage(sim, result)
+			})
+		},
+
+		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+			return (moonkin.IsInEclipse() && moonkin.currentEclipse == eclipse) || moonkin.CelestialAlignment.RelatedSelfBuff.IsActive()
+		},
+	})
+}
+
+func init() {}

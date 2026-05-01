@@ -17,6 +17,7 @@ import { bucket, distinct, fragmentToString, maxIndex, stringComparator } from '
 import { actionColors } from './color_settings';
 import i18n from '../../../i18n/config';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
+import { APLActionItemSwap_SwapSet } from '../../proto/apl';
 
 type TooltipHandler = (dataPointIndex: number) => Element;
 
@@ -581,10 +582,8 @@ export class Timeline extends ResultComponent {
 			debuffsByTargetById[0],
 		);
 
-		auraAsResource.forEach(auraId => {
-			const auraIndex = buffsById.findIndex(
-				auraUptimeLogs => auraUptimeLogs?.[0].actionId!.spellId === auraId || auraUptimeLogs?.[0].actionId!.otherId === auraId,
-			);
+		auraAsResource.forEach(actionId => {
+			const auraIndex = buffsById.findIndex(auraUptimeLogs => auraUptimeLogs?.[0].actionId!.equals(actionId));
 			if (auraIndex !== -1) {
 				this.addAuraRow(buffsById[auraIndex], duration);
 			}
@@ -619,11 +618,10 @@ export class Timeline extends ResultComponent {
 
 		// Don't add a row for buffs that were already visualized in a cast row or are prioritized.
 		const buffsToShow = buffsById.filter(auraUptimeLogs =>
-			playerCastsByAbility.findIndex(
-				casts =>
-					auraUptimeLogs[0].actionId &&
-					(casts[0].actionId!.equalsIgnoringTag(auraUptimeLogs[0].actionId) || auraAsResource.includes(auraUptimeLogs[0].actionId.anyId())),
-			),
+			!playerCastsByAbility.some(casts => {
+				const actionId = auraUptimeLogs[0].actionId;
+				return actionId && (casts[0].actionId!.equalsIgnoringTag(actionId) || auraAsResource.find(auraId => auraId.equals(actionId)));
+			}),
 		);
 		if (buffsToShow.length > 0) {
 			this.addSeparatorRow(duration);
@@ -715,7 +713,7 @@ export class Timeline extends ResultComponent {
 		hideElem.value!.addEventListener('click', onClickHandler);
 		const tooltip = tippy(hideElem.value!, {
 			theme: 'timeline-tooltip',
-			placement: 'bottom',
+			placement: 'auto-end',
 			content: isHiddenLabel ? 'Show Row' : 'Hide Row',
 		});
 
@@ -1317,26 +1315,30 @@ const MELEE_ACTION_CATEGORY = 1;
 const SPELL_ACTION_CATEGORY = 2;
 const DEFAULT_ACTION_CATEGORY = 3;
 
-const auraAsResource = [
+const auraAsResource: ActionId[] = [
 	// APL Damage Amplifier
-	OtherAction.OtherActionDamageAmplifier,
+	ActionId.fromOtherId(OtherAction.OtherActionDamageAmplifier),
+
+	// Item Swap
+	ActionId.fromOtherId(OtherAction.OtherActionItemSwap, APLActionItemSwap_SwapSet.Main),
+	ActionId.fromOtherId(OtherAction.OtherActionItemSwap, APLActionItemSwap_SwapSet.Swap1),
 
 	// Vengeance
-	84840, // Druid
-	84839, // Paladin
-	93098, // Warrior
-	93099, // Death Knight
-	120267, // Monk
+	ActionId.fromSpellId(84840), // Druid
+	ActionId.fromSpellId(84839), // Paladin
+	ActionId.fromSpellId(93098), // Warrior
+	ActionId.fromSpellId(93099), // Death Knight
+	ActionId.fromSpellId(120267), // Monk
 
 	// Monk
-	124255, // Stagger
-	128938, // Elusive Brew - Stacks
-	115308, // Elusive Brew - Active
-	1247279, // Tiger Eye Brew - Stacks
-	1247275, // Tiger Eye Brew - Active
+	ActionId.fromSpellId(124255, 1), // Stagger
+	ActionId.fromSpellId(128938), // Elusive Brew - Stacks
+	ActionId.fromSpellId(115308), // Elusive Brew - Active
+	ActionId.fromSpellId(1247279), // Tiger Eye Brew - Stacks
+	ActionId.fromSpellId(1247275), // Tiger Eye Brew - Active
 
 	// Mage
-	148022, // Icicle
+	ActionId.fromSpellId(148022), // Icicle
 ];
 
 // Hard-coded spell categories for controlling rotation ordering.

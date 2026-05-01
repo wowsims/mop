@@ -30,7 +30,12 @@ func (affliction *AfflictionWarlock) registerDrainSoul() {
 		ThreatMultiplier:         1,
 
 		Dot: core.DotConfig{
-			Aura:                 core.Aura{Label: "DrainSoul"},
+			Aura: core.Aura{
+				Label: "DrainSoul",
+				OnExpire: func(_ *core.Aura, _ *core.Simulation) {
+					affliction.T16_2pc_Snapshot = false
+				},
+			},
 			NumberOfTicks:        6,
 			TickLength:           2 * time.Second,
 			AffectedByCastSpeed:  true,
@@ -38,6 +43,7 @@ func (affliction *AfflictionWarlock) registerDrainSoul() {
 			BonusCoefficient:     drainSoulCoeff,
 
 			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
+				affliction.T16_2pc_Snapshot = affliction.T16_2pc_buff != nil && affliction.T16_2pc_buff.IsActive()
 				dot.Snapshot(target, affliction.CalcScalingSpellDmg(drainSoulScale))
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {

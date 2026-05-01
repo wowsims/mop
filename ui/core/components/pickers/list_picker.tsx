@@ -22,10 +22,22 @@ export interface ListPickerActionsConfig {
 	};
 }
 
-export interface ListPickerConfig<ModObject, ItemType> extends Omit<InputConfig<ModObject, Array<ItemType>>, 'id'> {
+export interface ListPickerExtraAction {
+	cssClass: string;
+	icon: string;
+	tooltip: string;
+	onClick: (index: number) => void;
+	shouldShow?: (index: number) => boolean;
+}
+
+type CopyItemConfig<ItemType> =
+	| { copyItem: (oldItem: ItemType) => ItemType; onCopyItem?: never }
+	| { copyItem?: never; onCopyItem: (index: number) => void };
+
+export type ListPickerConfig<ModObject, ItemType> = Omit<InputConfig<ModObject, Array<ItemType>>, 'id'> &
+	CopyItemConfig<ItemType> & {
 	itemLabel: string;
 	newItem: () => ItemType;
-	copyItem: (oldItem: ItemType) => ItemType;
 	newItemPicker: (
 		parent: HTMLElement,
 		listPicker: ListPicker<ModObject, ItemType>,
@@ -45,6 +57,8 @@ export interface ListPickerConfig<ModObject, ItemType> extends Omit<InputConfig<
 	// If set, only actions included in the list are allowed. Otherwise, all actions are allowed.
 	allowedActions?: Array<ListItemAction>;
 	dragGroup?: string;
+	// Additional custom action buttons to add to the popover menu
+	extraActions?: Array<ListPickerExtraAction>;
 }
 
 const DEFAULT_CONFIG = {
@@ -264,6 +278,37 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 			}
 		}
 
+		const extraActionButtons: Array<{ elem: HTMLElement; shouldShow?: (index: number) => boolean }> = [];
+		if (this.config.extraActions?.length) {
+			for (const extraAction of this.config.extraActions) {
+				hasActions = true;
+				const extraButton = ListPicker.makeActionElem(extraAction.cssClass, extraAction.icon);
+				popover.appendChild(extraButton);
+				const extraTooltip = tippy(extraButton, {
+					allowHTML: false,
+					content: extraAction.tooltip,
+				});
+				extraButton.addEventListener(
+					'click',
+					() => {
+						extraAction.onClick(index);
+						extraTooltip.hide();
+						try {
+							popover.hidePopover();
+						} catch (_) {
+							// popover may already be hidden
+						}
+					},
+					{ signal: this.signal },
+				);
+				this.addOnDisposeCallback(() => extraTooltip?.destroy());
+				this.addHoverListeners(extraButton);
+				if (extraAction.shouldShow) {
+					extraActionButtons.push({ elem: extraButton, shouldShow: extraAction.shouldShow });
+				}
+			}
+		}
+
 		if (this.actionEnabled('copy')) {
 			hasActions = true;
 			const copyButton = ListPicker.makeActionElem('list-picker-item-copy', 'fa-copy');
@@ -276,9 +321,13 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 			copyButton.addEventListener(
 				'click',
 				() => {
-					const newList = this.config.getValue(this.modObject).slice();
-					newList.splice(index, 0, this.config.copyItem(newList[index]));
-					this.config.setValue(TypedEvent.nextEventID(), this.modObject, newList);
+					if ('onCopyItem' in this.config && this.config.onCopyItem) {
+						this.config.onCopyItem(index);
+					} else if ('copyItem' in this.config && this.config.copyItem) {
+						const newList = this.config.getValue(this.modObject).slice();
+						newList.splice(index, 0, this.config.copyItem(newList[index]));
+						this.config.setValue(TypedEvent.nextEventID(), this.modObject, newList);
+					}
 					copyButtonTooltip.hide();
 				},
 				{ signal: this.signal },
@@ -288,64 +337,61 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		}
 
 		if (this.actionEnabled('move')) {
-			hasActions = true;
 			itemContainer.classList.add('draggable');
 			if (this.config.itemLabel) {
 				itemContainer.classList.add(this.config.itemLabel.toLowerCase().replace(' ', '-'));
 			}
 
-			const moveButton = ListPicker.makeActionElem('list-picker-item-move', 'fa-arrows-up-down');
-			popover.appendChild(moveButton);
+			// Direct drag on the container itself
+			const isInteractiveTarget = (target: HTMLElement): boolean => {
+				const interactiveTags = new Set(['INPUT', 'TEXTAREA']);
+				let el: HTMLElement | null = target;
+				while (el && el !== itemContainer) {
+					if (interactiveTags.has(el.tagName)) return true;
+					if (el.getAttribute('contenteditable') === 'true') return true;
+					el = el.parentElement;
+				}
+				return false;
+			};
 
-			const moveButtonTooltip = tippy(moveButton, {
-				allowHTML: false,
-				content: i18n.t('common.list_picker.move_drag_drop'),
-			});
-
-			moveButton.addEventListener(
-				'click',
-				() => {
-					moveButtonTooltip.hide();
-				},
-				{ signal: this.signal },
-			);
-			this.addOnDisposeCallback(() => {
-				moveButtonTooltip?.destroy();
-			});
-
-			this.addHoverListeners(moveButton);
-
-			moveButton.addEventListener(
+			itemContainer.addEventListener(
 				'mousedown',
-				() => {
-					moveButton.setAttribute('draggable', 'true');
+				event => {
+					const target = event.target as HTMLElement;
+					// Don't start drag if clicking within a nested list-picker-item-container
+					const closestContainer = target.closest('.list-picker-item-container');
+					if (closestContainer !== itemContainer) return;
+					// Don't start drag on interactive elements
+					if (isInteractiveTarget(target)) return;
 					itemContainer.setAttribute('draggable', 'true');
 				},
 				{ signal: this.signal },
 			);
 
-			moveButton.addEventListener(
-				'mouseup',
-				() => {
-					moveButton.removeAttribute('draggable');
-					itemContainer.removeAttribute('draggable');
+			itemContainer.addEventListener(
+				'dragstart',
+				event => {
+					// Skip if drag was already initiated
+					if (curDragData) return;
+					if (event.target !== itemContainer) return;
+					const rect = itemContainer.getBoundingClientRect();
+					event.dataTransfer!.setDragImage(itemContainer, 0, event.clientY - rect.top);
+					event.dataTransfer!.dropEffect = 'move';
+					event.dataTransfer!.effectAllowed = 'move';
+					itemContainer.classList.add('dragfrom');
+					curDragData = {
+						listPicker: this,
+						item: item,
+					};
 				},
 				{ signal: this.signal },
 			);
 
-			moveButton.addEventListener(
-				'dragstart',
-				event => {
-					if (event.target == moveButton) {
-						const popoverRect = popover.getBoundingClientRect();
-						event.dataTransfer!.setDragImage(itemContainer, 0, popoverRect.height / 2);
-						event.dataTransfer!.dropEffect = 'move';
-						event.dataTransfer!.effectAllowed = 'move';
-						itemContainer.classList.add('dragfrom');
-						curDragData = {
-							listPicker: this,
-							item: item,
-						};
+			document.addEventListener(
+				'mouseup',
+				() => {
+					if (!curDragData) {
+						itemContainer.removeAttribute('draggable');
 					}
 				},
 				{ signal: this.signal },
@@ -434,7 +480,6 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 				if (!curDragData) {
 					return;
 				}
-				moveButton.removeAttribute('draggable');
 				itemContainer.removeAttribute('draggable');
 				curDragData.item.elem.removeAttribute('draggable');
 				[...document.querySelectorAll('.dragfrom,.dragto')].forEach(elem => {
@@ -505,6 +550,9 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 			actionsButton.addEventListener(
 				'mouseover',
 				() => {
+					for (const { elem, shouldShow } of extraActionButtons) {
+						elem.style.display = shouldShow!(index) ? '' : 'none';
+					}
 					popover.showPopover();
 					const actionsButtonRect = actionsButton.getBoundingClientRect();
 					const popoverRect = popover.getBoundingClientRect();

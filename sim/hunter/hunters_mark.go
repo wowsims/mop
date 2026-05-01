@@ -26,9 +26,12 @@ func (hunter *Hunter) registerHuntersMarkSpell() {
 	config := core.SpellConfig{
 		ActionID: actionID,
 		ProcMask: core.ProcMaskEmpty,
+		Flags:    core.SpellFlagPassiveSpell,
+
 		FocusCost: core.FocusCostOptions{
 			Cost: 0,
 		},
+
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			for _, aura := range hmAura {
 				if aura.IsActive() {

@@ -11,11 +11,12 @@ message ScalingItemEffectProperties {
 	map<int32, double> stats = 1;
 }
   message ItemEffect {
-	int32            buff_id         = 1;
-	string buff_name = 6;
-	int32            effect_duration_ms = 2;  // milliseconds
+	int32  buff_id  		     = 1;
+	string buff_name 			 = 6;
+	int32  effect_duration_ms    = 2;  // milliseconds
+	int32  max_cumulative_stacks = 7;
 	// Keyed to itemlevelstate
-	map<int32, ScalingItemEffectProperties> scaling_options        = 3;
+	map<int32, ScalingItemEffectProperties> scaling_options = 3;
 
 	oneof effect {
 	  ProcEffect  proc   = 4;
@@ -29,11 +30,11 @@ message ScalingItemEffectProperties {
   }
 
   message ProcEffect {
-	int32       icd_ms         = 1;  // internal cooldown in milliseconds
+	int32 icd_ms = 1;  // internal cooldown in milliseconds
 	oneof procRate {
 		double proc_chance = 2;  // e.g. 0.20 = 20%
-		double ppm = 3;
-		RppmProc rppm = 4;
+		double ppm 		   = 3;
+		RppmProc rppm      = 4;
 	}
   }
 

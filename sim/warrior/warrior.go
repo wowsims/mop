@@ -32,6 +32,7 @@ const (
 	SpellMaskDemoralizingShout
 
 	// Special attacks
+	SpellMaskOpportunityStrike
 	SpellMaskSweepingStrikes
 	SpellMaskSweepingStrikesHit
 	SpellMaskSweepingStrikesNormalizedHit
@@ -138,10 +139,11 @@ type Warrior struct {
 	WeakenedArmorAuras     core.AuraArray
 
 	// Set Bonuses
-	T14Tank2P *core.Aura
-	T15Tank2P *core.Aura
-	T15Tank4P *core.Aura
-	T16Dps4P  *core.Aura
+	T14Tank2P     *core.Aura
+	T15Tank2P     *core.Aura
+	T15Tank4P     *core.Aura
+	T16Dps4P      *core.Aura
+	T16Tank2PHeal func(sim *core.Simulation, healAmount float64)
 }
 
 func (warrior *Warrior) GetCharacter() *core.Character {

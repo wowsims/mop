@@ -5,7 +5,42 @@ import (
 
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
+	"github.com/wowsims/mop/tools/database/dbc"
 )
+
+// Allows you to ignore certain Spell Effects that the Sim does not support.
+// This prevents them from being added to the missing effects list to prevent confusion towards users.
+// Empty array means ignore all effects of that type, otherwise it will be ignored
+// based on EffectMiscValue_0
+var IgnoreSpellEffectByAuraType = map[dbc.EffectAuraType][]int{
+	dbc.A_MOD_MECHANIC_RESISTANCE: {},
+	dbc.A_MOD_STEALTH:             {},
+	dbc.A_MOD_STEALTH_DETECT:      {},
+	dbc.A_MOD_STEALTH_LEVEL:       {},
+	dbc.A_MOD_DECREASE_SPEED:      {},
+	dbc.A_MOD_INVISIBILITY:        {},
+	dbc.A_MOD_INVISIBILITY_DETECT: {},
+	dbc.A_MOD_SKILL: {
+		356, // Fishing Skill
+		393, // Skinning Skill
+	},
+	dbc.A_MOD_INCREASE_MOUNTED_SPEED:        {},
+	dbc.A_MOD_MOUNTED_SPEED_ALWAYS:          {},
+	dbc.A_MOD_MOUNTED_SPEED_NOT_STACK:       {},
+	dbc.A_MOD_INCREASE_MOUNTED_FLIGHT_SPEED: {},
+	dbc.A_MOD_MOUNTED_FLIGHT_SPEED_ALWAYS:   {},
+	dbc.A_TRANSFORM:                         {},
+	dbc.A_MECHANIC_IMMUNITY:                 {},
+	dbc.A_TRACK_CREATURES:                   {},
+	dbc.A_TRACK_RESOURCES:                   {},
+	dbc.A_FAR_SIGHT:                         {},
+}
+
+var IgnoreSpellEffectBySpellEffectType = map[dbc.SpellEffectType][]int{
+	dbc.E_CREATE_ITEM:    {},
+	dbc.E_SUMMON:         {},
+	dbc.E_TELEPORT_UNITS: {},
+}
 
 var OtherItemIdsToFetch = []string{
 	// Hallow's End Ilvl bumped rings

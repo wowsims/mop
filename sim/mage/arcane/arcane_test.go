@@ -3,6 +3,7 @@ package arcane
 import (
 	"testing"
 
+	"github.com/wowsims/mop/sim/common"
 	_ "github.com/wowsims/mop/sim/common"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
@@ -10,6 +11,7 @@ import (
 
 func init() {
 	RegisterArcaneMage()
+	common.RegisterAllEffects()
 }
 
 func TestArcane(t *testing.T) {

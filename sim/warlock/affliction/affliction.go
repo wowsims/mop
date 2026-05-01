@@ -55,6 +55,7 @@ type AfflictionWarlock struct {
 	DrainSoulMaleficEffectMultiplier    float64
 	MaleficGraspMaleficEffectMultiplier float64
 	ProcMaleficEffect                   func(target *core.Unit, coeff float64, sim *core.Simulation)
+	T16_2pc_Snapshot                    bool
 
 	ExhaleWindow time.Duration
 }
@@ -111,6 +112,7 @@ func (affliction *AfflictionWarlock) Reset(sim *core.Simulation) {
 	affliction.Warlock.Reset(sim)
 
 	affliction.LastCorruptionTarget = nil
+	affliction.T16_2pc_Snapshot = false
 }
 
 func (affliction *AfflictionWarlock) OnEncounterStart(sim *core.Simulation) {

@@ -165,7 +165,7 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 550) {
+				if (avgIlvl >= 560) {
 					return Presets.P5_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 500) {
 					return Presets.P2_EP_PRESET.epWeights;
@@ -183,7 +183,10 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 							breakpoints: [hasT154P ? 43 : 49],
 							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
+							postCapEPs: [
+								(epWeights.getStat(Stat.StatMasteryRating) * player.getTotalAmplificationTrinketStatModifier() - 0.02) *
+									Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
+							],
 						}),
 					);
 				}

@@ -115,11 +115,11 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 	presets: {
 		epWeights: [Presets.P1_PREBIS_EP_PRESET, Presets.P1_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_T15_4PC],
+		rotations: [Presets.ROTATION_PRESET_T15_4PC],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.ArcaneTalents, Presets.ArcaneTalentsCleave],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS, Presets.P2_BIS, Presets.P3_BIS, Presets.P4_BIS],
+		gear: [Presets.PREBIS, Presets.P2_BIS, Presets.P3_BIS, Presets.P4_BIS, Presets.P5_BIS],
 
 		builds: [
 			Presets.P1_PRESET_BUILD_DEFAULT,
@@ -127,16 +127,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 			Presets.T14_PRESET_BUILD,
 			Presets.T15_PRESET_BUILD,
 			Presets.T15_P4_PRESET_BUILD,
+			Presets.T16_PRESET_BUILD,
 		],
 	},
 
 	autoRotation: (player: Player<Spec.SpecArcaneMage>): APLRotation => {
-		// const numTargets = player.sim.encounter.targets.length;
-		// if (numTargets >= 2) {
-		// 	return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;
-		// } else {
-		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
-		// }
+		return Presets.ROTATION_PRESET_T15_4PC.rotation.rotation!;
 	},
 
 	raidSimPresets: [

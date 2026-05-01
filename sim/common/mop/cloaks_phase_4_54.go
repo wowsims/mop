@@ -93,7 +93,7 @@ func init() {
 				return
 			}
 
-			flurrySpell := character.RegisterSpell(core.SpellConfig{
+			flurryConfig := core.SpellConfig{
 				ActionID:    core.ActionID{SpellID: 147891},
 				SpellSchool: core.SpellSchoolPhysical,
 				ProcMask:    core.ProcMaskEmpty,
@@ -102,12 +102,30 @@ func init() {
 				DamageMultiplier: 1,
 				CritMultiplier:   character.DefaultCritMultiplier(),
 				ThreatMultiplier: 1,
+			}
 
-				ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-					baseDamage := max(spell.MeleeAttackPower(), spell.RangedAttackPower()) * 0.2
+			if character.Class == proto.Class_ClassHunter {
+				flurryConfig.ActionID.SpellID = 149276
+				flurryConfig.MissileSpeed = 60
+				flurryConfig.MaxRange = 40
+				flurryConfig.Flags |= core.SpellFlagRanged
+				flurryConfig.ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+					baseDamage := spell.RangedAttackPower() * 0.2
+					result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeRangedHitAndCrit)
+
+					spell.WaitTravelTime(sim, func(sim *core.Simulation) {
+						spell.DealDamage(sim, result)
+					})
+				}
+			} else {
+				flurryConfig.MaxRange = 10
+				flurryConfig.ApplyEffects = func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+					baseDamage := spell.MeleeAttackPower() * 0.2
 					spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMeleeSpecialHitAndCrit)
-				},
-			})
+				}
+			}
+
+			flurrySpell := character.RegisterSpell(flurryConfig)
 
 			flurryAura := character.RegisterAura(core.Aura{
 				Label:    label,

@@ -163,9 +163,12 @@ var ItemSetBattleplateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 				Outcome:  core.OutcomeLanded,
 				Callback: core.CallbackOnSpellHitDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-					if war.ColossusSmashAuras.Get(result.Target).IsActive() {
-						war.AddRage(sim, 5, rageMetrics)
+					if !war.ColossusSmashAuras.Get(result.Target).IsActive() ||
+						spell.Matches(SpellMaskOpportunityStrike|SpellMaskSweepingStrikesHit|SpellMaskSweepingStrikesNormalizedHit) {
+						return
 					}
+
+					war.AddRage(sim, 5, rageMetrics)
 				},
 			})
 
@@ -226,9 +229,29 @@ var ItemSetPlateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
-			// TODO: You heal for 30% of all damage blocked with a shield
+			// Block heal is implemented in protection.go#registerMastery
 			war := agent.(WarriorAgent).GetWarrior()
-			healthMetrics := war.NewHealthMetrics(core.ActionID{SpellID: 144503})
+
+			var baseHealing float64
+			spell := war.RegisterSpell(core.SpellConfig{
+				ActionID:    core.ActionID{SpellID: 144551},
+				SpellSchool: core.SpellSchoolPhysical,
+				ProcMask:    core.ProcMaskEmpty,
+
+				Flags: core.SpellFlagIgnoreModifiers | core.SpellFlagHelpful | core.SpellFlagPassiveSpell,
+
+				DamageMultiplier: 1,
+				ThreatMultiplier: 1,
+
+				ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+					spell.CalcAndDealHealing(sim, target, baseHealing, spell.OutcomeHealing)
+				},
+			})
+
+			war.T16Tank2PHeal = func(sim *core.Simulation, damage float64) {
+				baseHealing = damage * 0.3
+				spell.Cast(sim, &war.Unit)
+			}
 
 			war.OnSpellRegistered(func(spell *core.Spell) {
 				if !spell.Matches(SpellMaskShieldBarrier) {
@@ -239,22 +262,10 @@ var ItemSetPlateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 					if setBonusAura.IsActive() {
 						absorbLoss := max(0, float64(oldStacks-newStacks))
 						if absorbLoss > 0 {
-							war.GainHealth(sim, absorbLoss*0.3, healthMetrics)
+							war.T16Tank2PHeal(sim, absorbLoss)
 						}
 					}
 				})
-			})
-
-			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Name:     "Item - Warrior T16 Tank 2P Bonus",
-				Callback: core.CallbackOnSpellHitTaken,
-				Outcome:  core.OutcomeBlock,
-				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-					blockDamageReduction := result.Target.BlockDamageReduction()
-					preBlockDamage := result.Damage / (1 - blockDamageReduction) * blockDamageReduction
-					blockedDamage := result.Damage - preBlockDamage
-					war.GainHealth(sim, blockedDamage*0.3, healthMetrics)
-				},
 			})
 
 			setBonusAura.ExposeToAPL(144503)

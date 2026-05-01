@@ -14,6 +14,7 @@ func (bm *BrewmasterMonk) registerAvertHarm() {
 	bm.AvertHarmAura = bm.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Avert Harm" + bm.Label,
 		ActionID:           actionID,
+		MetricsActionID:    actionID,
 		Duration:           duration,
 		Outcome:            core.OutcomeLanded,
 		Callback:           core.CallbackOnSpellHitTaken,

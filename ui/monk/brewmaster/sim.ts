@@ -123,12 +123,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 		inputs: [
 			OtherInputs.InputDelay,
 			OtherInputs.TankAssignment,
-			OtherInputs.HpPercentForDefensives,
 			OtherInputs.IncomingHps,
 			OtherInputs.HealingCadence,
 			OtherInputs.HealingCadenceVariation,
 			OtherInputs.AbsorbFrac,
 			OtherInputs.BurstWindow,
+			OtherInputs.HpPercentForDefensives,
 			OtherInputs.InFrontOfTarget,
 		],
 	},
@@ -138,62 +138,50 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 	},
 
 	presets: {
-		epWeights: [Presets.P2_BALANCED_EP_PRESET, Presets.P2_OFFENSIVE_EP_PRESET, Presets.P3_4_BALANCED_EP_PRESET, Presets.P3_4_OFFENSIVE_EP_PRESET],
+		epWeights: [
+			Presets.P2_BALANCED_EP_PRESET,
+			Presets.P2_OFFENSIVE_EP_PRESET,
+			Presets.P3_4_BALANCED_EP_PRESET,
+			Presets.P3_4_OFFENSIVE_EP_PRESET,
+			Presets.P5_BALANCED_EP_PRESET,
+			Presets.P5_OFFENSIVE_EP_PRESET,
+		],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents, Presets.DungeonTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [
 			Presets.ROTATION_PRESET,
 			Presets.ROTATION_OFFENSIVE_PRESET,
-			Presets.ROTATION_GARAJAL_PRESET,
-			Presets.ROTATION_SHA_PRESET,
+			// Presets.ROTATION_GARAJAL_PRESET,
+			// Presets.ROTATION_SHA_PRESET,
 			Presets.ROTATION_HORRIDON_PRESET,
+			Presets.ROTATION_IRON_JUGGERNAUT_PRESET,
 		],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.PREBIS_GEAR_PRESET,
-			Presets.P2_BIS_DW_GEAR_PRESET,
-			Presets.P2_BIS_OFFENSIVE_DW_GEAR_PRESET,
-			Presets.P2_BIS_OFFENSIVE_TIERLESS_DW_GEAR_PRESET,
+			// Presets.P2_BIS_DW_GEAR_PRESET,
+			// Presets.P2_BIS_OFFENSIVE_DW_GEAR_PRESET,
+			// Presets.P2_BIS_OFFENSIVE_TIERLESS_DW_GEAR_PRESET,
 			Presets.P3_4_BIS_DW_GEAR_PRESET,
 			Presets.P3_4_BIS_OFFENSIVE_DW_GEAR_PRESET,
+			Presets.P5_PROG_DW_GEAR_PRESET,
+			Presets.P5_BIS_DW_GEAR_PRESET,
+			Presets.P5_BIS_OFFENSIVE_DW_GEAR_PRESET,
 		],
-		builds: [Presets.PRESET_BUILD_GARAJAL, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
+		builds: [
+			// Presets.PRESET_BUILD_GARAJAL,
+			// Presets.PRESET_BUILD_SHA,
+			Presets.PRESET_BUILD_HORRIDON,
+			Presets.PRESET_BUILD_IRON_JUGGERNAUT,
+		],
 	},
 
 	autoRotation: (_: Player<Spec.SpecBrewmasterMonk>): APLRotation => {
 		return Presets.ROTATION_PRESET.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecBrewmasterMonk,
-			talents: Presets.DefaultTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceAlliancePandaren,
-				[Faction.Horde]: Race.RaceHordePandaren,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-					2: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-					3: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-					4: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-					2: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-					3: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-					4: Presets.P1_BIS_DW_GEAR_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk> {

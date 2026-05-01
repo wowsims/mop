@@ -30,7 +30,12 @@ func (affliction *AfflictionWarlock) registerMaleficGrasp() {
 		ThreatMultiplier:         1,
 
 		Dot: core.DotConfig{
-			Aura:                 core.Aura{Label: "MaleficGrasp"},
+			Aura: core.Aura{
+				Label: "MaleficGrasp",
+				OnExpire: func(_ *core.Aura, _ *core.Simulation) {
+					affliction.T16_2pc_Snapshot = false
+				},
+			},
 			NumberOfTicks:        4,
 			TickLength:           1 * time.Second,
 			AffectedByCastSpeed:  true,
@@ -38,6 +43,7 @@ func (affliction *AfflictionWarlock) registerMaleficGrasp() {
 			BonusCoefficient:     maleficGraspCoeff,
 
 			OnSnapshot: func(sim *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
+				affliction.T16_2pc_Snapshot = affliction.T16_2pc_buff != nil && affliction.T16_2pc_buff.IsActive()
 				dot.Snapshot(target, affliction.CalcScalingSpellDmg(maleficGraspScale))
 			},
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
