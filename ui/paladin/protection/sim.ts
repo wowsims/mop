@@ -6,7 +6,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
-import { Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common.js';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common.js';
 import { StatCapType } from '../../core/proto/ui.js';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
@@ -15,8 +15,12 @@ import * as Presets from './presets.js';
 
 const P2ExpertisePostCapEPs = [0.6, 0];
 const P2OffensiveExpertisePostCapEPs = [0.42, 0];
+
 const P3ExpertisePostCapEPs = [0.81, 0];
 const P3OffensiveExpertisePostCapEPs = [0.91, 0];
+
+const P5ExpertisePostCapEPs = [1.08, 0];
+const P5OffensiveExpertisePostCapEPs = [1.21, 0];
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 	cssClass: 'protection-paladin-sim-ui',
@@ -177,42 +181,36 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 	},
 
 	presets: {
-		epWeights: [Presets.P2_BALANCED_EP_PRESET, Presets.P2_OFFENSIVE_EP_PRESET, Presets.P3_4_BALANCED_EP_PRESET, Presets.P3_4_OFFENSIVE_EP_PRESET],
+		epWeights: [
+			// Presets.P2_BALANCED_EP_PRESET,
+			// Presets.P2_OFFENSIVE_EP_PRESET,
+			Presets.P3_4_BALANCED_EP_PRESET,
+			Presets.P3_4_OFFENSIVE_EP_PRESET,
+			Presets.P5_BALANCED_EP_PRESET,
+			Presets.P5_OFFENSIVE_EP_PRESET,
+		],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.APL_SHA_PRESET, Presets.APL_HORRIDON_PRESET],
+		rotations: [Presets.APL_SHA_PRESET, Presets.APL_HORRIDON_PRESET, Presets.APL_IRON_JUGGERNAUT_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P2_BALANCED_GEAR_PRESET, Presets.P2_OFFENSIVE_GEAR_PRESET, Presets.P3_4_BALANCED_GEAR_PRESET, Presets.P3_4_OFFENSIVE_GEAR_PRESET],
-		builds: [Presets.P2_BALANCED_BUILD_PRESET, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
+		gear: [
+			// Presets.P2_BALANCED_GEAR_PRESET,
+			// Presets.P2_OFFENSIVE_GEAR_PRESET,
+			Presets.P3_4_BALANCED_GEAR_PRESET,
+			Presets.P3_4_OFFENSIVE_GEAR_PRESET,
+			Presets.P5_PROG_GEAR_PRESET,
+			Presets.P5_BALANCED_GEAR_PRESET,
+			Presets.P5_OFFENSIVE_GEAR_PRESET,
+		],
+		builds: [Presets.P4_BALANCED_BUILD_PRESET, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON, Presets.PRESET_BUILD_IRON_JUGGERNAUT],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecProtectionPaladin>): APLRotation => {
-		return Presets.APL_SHA_PRESET.rotation.rotation!;
+		return Presets.APL_HORRIDON_PRESET.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecProtectionPaladin,
-			talents: Presets.DefaultTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceBloodElf,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P2_BALANCED_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P2_BALANCED_GEAR_PRESET.gear,
-				},
-			},
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionPaladin> {
@@ -232,6 +230,12 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 							softCapToModify.postCapEPs = P3OffensiveExpertisePostCapEPs;
 						} else if (epWeights.equals(Presets.P3_4_BALANCED_EP_PRESET.epWeights)) {
 							softCapToModify.postCapEPs = P3ExpertisePostCapEPs;
+						} else if (epWeights.equals(Presets.P3_4_BALANCED_EP_PRESET.epWeights)) {
+							softCapToModify.postCapEPs = P3ExpertisePostCapEPs;
+						} else if (epWeights.equals(Presets.P5_BALANCED_EP_PRESET.epWeights)) {
+							softCapToModify.postCapEPs = P5ExpertisePostCapEPs;
+						} else if (epWeights.equals(Presets.P5_OFFENSIVE_EP_PRESET.epWeights)) {
+							softCapToModify.postCapEPs = P5OffensiveExpertisePostCapEPs;
 						} else {
 							softCapToModify.postCapEPs = P2ExpertisePostCapEPs;
 						}

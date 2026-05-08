@@ -4,7 +4,7 @@
  * Uses HiGHS WASM for high-performance linear programming solving
  */
 
-import type { LPSolution, ReforgeWorkerReceiveMessage, ReforgeWorkerSendMessage } from './reforge_types';
+import type { ReforgeWorkerReceiveMessage, ReforgeWorkerSendMessage } from './reforge_types';
 import { modelToLPFormat, highsSolutionToLPSolution, type HighsSolution } from './lp_format';
 
 // HiGHS module type

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
-	"github.com/wowsims/mop/sim/core/proto"
 )
 
 // Rather than update a variable somewhere for one effect (Fury's Unshackled Fury) just take a callback
@@ -17,9 +16,9 @@ func (war *Warrior) registerBerserkerRage() {
 	duration := time.Second * 6
 	// 2025-06-13 - Balance change
 	// https://www.wowhead.com/blue-tracker/topic/eu/mists-of-pandaria-classic-development-notes-updated-6-june-571162
-	if war.Spec == proto.Spec_SpecFuryWarrior {
-		duration = time.Second * 8
-	}
+	// if war.Spec == proto.Spec_SpecFuryWarrior {
+	// 	duration = time.Second * 8
+	// }
 
 	war.BerserkerRageAura = war.RegisterAura(core.Aura{
 		Label:    "Berserker Rage",

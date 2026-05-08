@@ -1920,6 +1920,8 @@ export function validWeaponCombo(mainHand: Item | null | undefined, offHand: Ite
 	return true;
 }
 
+export const hasBlacksmithing = (player: Player) => [player.profession1, player.profession2].includes(Profession.Blacksmithing);
+
 // Returns all item slots to which the enchant might be applied.
 //
 // Note that this alone is not enough; some items have further restrictions,

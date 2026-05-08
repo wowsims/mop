@@ -803,7 +803,7 @@
             "combinations_count": "{{count}} Combinaisons",
             "combination_singular": "1 Combinaison",
             "iterations": "Itérations",
-            "default_gems": "Gemmes par défaut",
+            "fallback_gems": "Gemmes de secours",
             "inherit_upgrades": {
                 "label": "Hériter des améliorations",
                 "tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
@@ -819,17 +819,18 @@
         },
         "progress": {
             "total_combinations": "{{count}} combinaisons totales.",
-            "refining_rounds": "{{current}} / {{total}} tours d'affinage",
-            "simulations_complete": "{{completed}} / {{total}}<br />simulations terminées",
+			"reforging_rounds": "Exécution des reforges",
+			"baseline_round": "Exécution du tour de référence",
+            "refining_rounds": "Exécution des tours d'affinage",
             "iterations_complete": "{{completed}} / {{total}}<br />itérations terminées",
-            "seconds_remaining": "{{seconds}} secondes restantes."
+            "seconds_remaining": "{{seconds}} secondes restantes"
         },
         "notifications": {
             "bulk_sim_cancelled": "Simulation par lot annulée.",
             "failed_to_remove_item": "Échec de la suppression de l'objet, veuillez signaler ce problème."
         },
         "warning": {
-            "iterations_limit": "Simuler plus de {{limit}} itérations dans le simulateur web prendra beaucoup de temps ou ne fonctionnera peut-être pas du tout. Pour les simulations par lot plus importantes, nous recommandons d'utiliser le mode rapide ou de télécharger l'exécutable et de l'exécuter sur votre machine."
+			"iterations_limit": "Simuler plus de {{limit}} itérations dans le simulateur prendra beaucoup de temps ou ne fonctionnera peut-être pas du tout. Pour les simulations par lot plus importantes, nous recommandons de télécharger l'exécutable et de l'exécuter sur votre machine."
         },
         "picker": {
             "no_items": "Aucun objet sélectionné.",

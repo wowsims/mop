@@ -48,6 +48,7 @@ func registerNonCombatPotions(agent Agent, consumables *proto.ConsumesSpec) {
 		spell := registerNonCombatPotion(agent, ncpId)
 		isDefaultNonCombatPotion := ncpId == consumables.FlaskId || ncpId == consumables.BattleElixirId || ncpId == consumables.GuardianElixirId
 		if spell != nil && isDefaultNonCombatPotion {
+			spell.RelatedSelfBuff.BuildPhase = CharacterBuildPhaseConsumes
 			MakePermanent(spell.RelatedSelfBuff)
 		}
 	}
@@ -93,10 +94,9 @@ func registerNonCombatPotion(agent Agent, elixirOrFlaskId int32) *Spell {
 	}
 
 	aura := character.GetOrRegisterAura(Aura{
-		Label:      item.Name,
-		ActionID:   actionID,
-		Duration:   item.BuffDuration,
-		BuildPhase: CharacterBuildPhaseConsumes,
+		Label:    item.Name,
+		ActionID: actionID,
+		Duration: item.BuffDuration,
 	})
 
 	registerExclusiveNonCombatPotionBuff(item.Type, aura, potionStats)

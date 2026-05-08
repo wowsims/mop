@@ -8,6 +8,7 @@ import {
 	ComputeStatsRequest,
 	ErrorOutcome,
 	ErrorOutcomeType,
+	PlayerStats,
 	Raid as RaidProto,
 	RaidSimRequest,
 	RaidSimResult,
@@ -30,8 +31,9 @@ import {
 } from './proto/common.js';
 import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
 import { Database } from './proto_utils/database.js';
+import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
-import { extendPlayerProtoWithMissingEffects } from './proto_utils/utils';
+import { extendPlayerProtoWithMissingEffects, hasBlacksmithing } from './proto_utils/utils';
 import { Raid } from './raid.js';
 import { runConcurrentSim, runConcurrentStatWeights } from './sim_concurrent';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
@@ -191,7 +193,7 @@ export class Sim {
 	 * Whether the current environment should use wasm/worker concurrency methods.
 	 * @returns true if running wasm workers and concurrency setting is active.
 	 */
-	private async shouldUseWasmConcurrency() {
+	async shouldUseWasmConcurrency() {
 		return (await this.isWasm()) && this.getWasmConcurrency() >= 2 && this.workerPool.getNumWorkers() >= 2;
 	}
 
@@ -217,7 +219,7 @@ export class Sim {
 				let gear = this.db.lookupEquipmentSpec(player.equipment);
 				let gearChanged = false;
 
-				const isBlacksmith = [player.profession1, player.profession2].includes(Profession.Blacksmithing);
+				const isBlacksmith = hasBlacksmithing(player);
 
 				// Disable meta gem if inactive.
 				if (gear.hasInactiveMetaGem(isBlacksmith)) {
@@ -300,6 +302,65 @@ export class Sim {
 		}
 	}
 
+	// Runs a lightweight version of the sim that uses a gear set and doesn't compute combat logs or other expensive data,
+	// and returns the raw result from the sim worker.
+	async runRaidSimLightweight(
+		gear: Gear,
+		onProgress: WorkerProgressCallback,
+		_: RunSimOptions = {},
+	): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome> {
+		if (this.raid.isEmpty()) {
+			throw new Error('Raid is empty! Try adding some players first.');
+		} else if (this.encounter.targets.length < 1) {
+			throw new Error('Encounter has no targets! Try adding some targets first.');
+		}
+
+		const signals = this.signalManager.registerRunning(RequestTypes.RaidSim);
+		try {
+			await this.waitForInit();
+
+			const request = this.makeRaidSimRequest(false);
+			const player = request.raid!.parties[0].players[0];
+
+			// Disable meta gem if inactive.
+			const isBlacksmith = hasBlacksmithing(player);
+			if (gear.hasInactiveMetaGem(isBlacksmith)) {
+				gear = gear.withoutMetaGem();
+			}
+
+			// Remove bonus sockets if not blacksmith.
+			if (!isBlacksmith) {
+				gear = gear.withoutBlacksmithSockets();
+			}
+
+			player.database = gear.toDatabase(this.db);
+			player.equipment = gear.asSpec();
+
+			request.raid!.parties[0].players[0] = player;
+
+			let result;
+			// Only use worker base concurrency when running wasm. Local sim has native threading.
+			if (await this.shouldUseWasmConcurrency()) {
+				result = await runConcurrentSim(request, this.workerPool, onProgress, signals);
+			} else {
+				result = await this.workerPool.raidSimAsync(request, onProgress, signals);
+			}
+
+			if (result.error) {
+				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result.error;
+				throw new SimError(result.error.message);
+			}
+
+			return [request, result];
+		} catch (error) {
+			if (error instanceof SimError) throw error;
+			console.error(error);
+			throw new Error('Something went wrong running your lightweight raid sim. Reload the page and try again.');
+		} finally {
+			this.signalManager.unregisterRunning(signals);
+		}
+	}
+
 	async runRaidSimWithLogs(eventID: EventID, options: RunSimOptions = {}): Promise<SimResult | null> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
@@ -376,6 +437,47 @@ export class Sim {
 				this.unitMetadataEmitter.emit(eventID);
 			}
 		});
+	}
+
+	// Returns the stats for Player 0 without triggering any metadata updates.
+	// Can be used for Suggest Gems / Batch Simming without interfering with the UI.
+	async getCharacterStatsForGear(eventID: EventID, gear: Gear): Promise<PlayerStats> {
+		await this.waitForInit();
+
+		const raidProto = this.raid.toProto(false, true);
+		this.modifyRaidProto(raidProto);
+
+		const player = raidProto.parties[0].players[0];
+
+		const isBlacksmith = hasBlacksmithing(player);
+
+		// Disable meta gem if inactive.
+		if (gear.hasInactiveMetaGem(isBlacksmith)) {
+			gear = gear.withoutMetaGem();
+		}
+
+		// Remove bonus sockets if not blacksmith.
+		if (!isBlacksmith) {
+			gear = gear.withoutBlacksmithSockets();
+		}
+
+		player.database = gear.toDatabase(this.db);
+		player.equipment = gear.asSpec();
+
+		extendPlayerProtoWithMissingEffects(player, this.db);
+		raidProto.parties[0].players[0] = player;
+
+		const req = ComputeStatsRequest.create({
+			raid: raidProto,
+			encounter: this.encounter.toProto(),
+		});
+
+		const result = await this.workerPool.computeStats(req);
+		if (result.errorResult != '') {
+			this.crashEmitter.emit(eventID, new SimError(result.errorResult));
+		}
+
+		return result.raidStats!.parties[0].players[0];
 	}
 
 	async statWeights(

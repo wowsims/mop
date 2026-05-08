@@ -16,6 +16,7 @@ import MultiTargetApl from './apls/multitarget.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -26,6 +27,7 @@ export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear
 export const P1_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1Gear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2Gear);
 export const P3_PRESET = PresetUtils.makePresetGear('P3/P4 - BIS', P3Gear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS', P5Gear);
 
 export const APL_Default = PresetUtils.makePresetAPLRotation('Single Target', DefaultApl);
 export const APL_Multitarget = PresetUtils.makePresetAPLRotation('Multi Target', MultiTargetApl);

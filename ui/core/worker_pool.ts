@@ -18,6 +18,7 @@ import {
 } from './proto/api.js';
 import { SimSignals } from './sim_signal_manager';
 import { isDevMode, noop } from './utils';
+import { WorkerPoolManager } from './concurrent_worker_pool';
 
 const SIM_WORKER_URL = `/${REPO_NAME}/sim_worker.js`;
 export type WorkerProgressCallback = (progressMetrics: ProgressMetrics) => void;
@@ -33,46 +34,28 @@ export const generateRequestId = (type: SimRequest) => {
 };
 
 export class WorkerPool {
-	private readonly workers: Array<SimWorker>;
-	private readonly workersDisabled: Array<SimWorker>;
+	private readonly concurrencyPool: WorkerPoolManager<SimWorker>;
 
 	constructor(numWorkers: number) {
-		this.workers = [];
-		this.workersDisabled = [];
+		this.concurrencyPool = new WorkerPoolManager<SimWorker>({
+			create: i => new SimWorker(i),
+			getWorkAmount: worker => worker.getSimTaskWorkAmount(),
+			enable: worker => worker.enable(),
+			disable: worker => worker.disable(),
+		});
 		this.setNumWorkers(numWorkers);
 	}
 
 	setNumWorkers(numWorkers: number) {
-		if (numWorkers < this.workers.length) {
-			for (let i = this.workers.length - 1; i >= numWorkers; i--) {
-				this.workers[i].disable();
-				this.workersDisabled[i] = this.workers[i];
-			}
-			this.workers.length = numWorkers;
-			return;
-		}
-
-		for (let i = 0; i < numWorkers; i++) {
-			if (!this.workers[i]) {
-				if (this.workersDisabled[i]) {
-					this.workers[i] = this.workersDisabled[i];
-					delete this.workersDisabled[i];
-					this.workers[i].enable();
-				} else {
-					this.workers[i] = new SimWorker(i);
-				}
-			}
-		}
+		this.concurrencyPool.resize(numWorkers);
 	}
 
 	getNumWorkers() {
-		return this.workers.length;
+		return this.concurrencyPool.getNumWorkers();
 	}
 
 	private getLeastBusyWorker(): SimWorker {
-		return this.workers.reduce((curMinWorker, nextWorker) =>
-			curMinWorker.getSimTaskWorkAmount() < nextWorker.getSimTaskWorkAmount() ? curMinWorker : nextWorker,
-		);
+		return this.concurrencyPool.getLeastBusyWorker();
 	}
 
 	async makeApiCall(requestName: SimRequest, request: Uint8Array): Promise<Uint8Array> {
@@ -148,7 +131,11 @@ export class WorkerPool {
 	 * @returns True if workers are running wasm.
 	 */
 	isWasm() {
-		return this.workers[0].isWasmWorker();
+		const firstWorker = this.concurrencyPool.getWorkers()[0];
+		if (!firstWorker) {
+			throw new Error('No workers available');
+		}
+		return firstWorker.isWasmWorker();
 	}
 
 	/**

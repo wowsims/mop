@@ -803,7 +803,7 @@
 			"combinations_count": "{{count}} Combinations",
 			"combination_singular": "1 Combination",
 			"iterations": "Iterations",
-			"default_gems": "Default Gems",
+			"fallback_gems": "Fallback Gems",
 			"inherit_upgrades": {
 				"label": "Inherit Upgrades",
 				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
@@ -819,17 +819,18 @@
 		},
 		"progress": {
 			"total_combinations": "{{count}} total combinations.",
-			"refining_rounds": "{{current}} / {{total}} refining rounds",
-			"simulations_complete": "{{completed}} / {{total}}<br />simulations complete",
+			"reforging_rounds": "Running reforges",
+			"baseline_round": "Running baseline round",
+			"refining_rounds": "Running refining rounds",
 			"iterations_complete": "{{completed}} / {{total}}<br />iterations complete",
-			"seconds_remaining": "{{seconds}} seconds remaining."
+			"seconds_remaining": "{{seconds}} seconds remaining"
 		},
 		"notifications": {
 			"bulk_sim_cancelled": "Bulk sim cancelled.",
 			"failed_to_remove_item": "Failed to remove item, please report this issue."
 		},
 		"warning": {
-			"iterations_limit": "Simming over {{limit}} iterations in the web sim will take a long time or may not run at all. For larger batch sims we recommend using Fast Mode or downloading the executable and running on your machine."
+			"iterations_limit": "Simming over {{limit}} iterations in the sim will take a long time or may not run at all. For larger batch sims we recommend downloading the executable and running on your machine."
 		},
 		"picker": {
 			"no_items": "No items selected.",
@@ -844,7 +845,7 @@
 			"current_gear": "Current Gear"
 		},
 		"gem_selector": {
-			"title": "Choose Default Gem"
+			"title": "Choose fallback Gem"
 		},
 		"import_modal": {
 			"title": "Bag Item Import",

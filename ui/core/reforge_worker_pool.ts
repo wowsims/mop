@@ -6,6 +6,7 @@
 
 import { REPO_NAME } from './constants/other.js';
 import type { LPModel, LPSolution, ReforgeWorkerReceiveMessage, ReforgeWorkerSendMessage, SolverOptions } from '../worker/reforge_types';
+import { WorkerPoolManager } from './concurrent_worker_pool';
 
 const REFORGE_WORKER_URL = `/${REPO_NAME}/reforge_worker.js`;
 
@@ -29,10 +30,11 @@ class ReforgeWorker {
 			reject: (reason: unknown) => void;
 		}
 	>();
-	private isReady = false;
 	private readyPromise: Promise<void>;
 	private readyResolve!: () => void;
 	private workerId: string;
+	private solveTasksRunning = 0;
+	private initialized = false;
 
 	constructor(id: number) {
 		this.workerId = `reforge-worker-${id}`;
@@ -57,7 +59,6 @@ class ReforgeWorker {
 	private handleMessage(data: ReforgeWorkerSendMessage) {
 		switch (data.msg) {
 			case 'ready':
-				this.isReady = true;
 				this.readyResolve();
 				break;
 
@@ -115,7 +116,10 @@ class ReforgeWorker {
 
 		return new Promise((resolve, reject) => {
 			this.pendingRequests.set(id, {
-				resolve: resolve as (value: unknown) => void,
+				resolve: value => {
+					this.initialized = !!value;
+					resolve(value as boolean);
+				},
 				reject,
 			});
 
@@ -131,11 +135,18 @@ class ReforgeWorker {
 		await this.readyPromise;
 
 		const id = generateRequestId('solve');
+		this.solveTasksRunning += 1;
 
 		return new Promise((resolve, reject) => {
 			this.pendingRequests.set(id, {
-				resolve: resolve as (value: unknown) => void,
-				reject,
+				resolve: value => {
+					this.solveTasksRunning = Math.max(0, this.solveTasksRunning - 1);
+					resolve(value as LPSolution);
+				},
+				reject: reason => {
+					this.solveTasksRunning = Math.max(0, this.solveTasksRunning - 1);
+					reject(reason);
+				},
 			});
 
 			this.postMessage({
@@ -147,13 +158,34 @@ class ReforgeWorker {
 		});
 	}
 
+	getSolveTaskWorkAmount(): number {
+		return this.solveTasksRunning;
+	}
+
+	isInitialized(): boolean {
+		return this.initialized;
+	}
+
+	abort() {
+		if (!this.pendingRequests.size) return;
+
+		for (const [_, pending] of this.pendingRequests) {
+			pending.reject(new Error('Solve cancelled'));
+		}
+
+		this.pendingRequests.clear();
+		this.worker?.terminate();
+		this.solveTasksRunning = 0;
+	}
+
 	terminate() {
 		this.worker?.terminate();
 		this.worker = null;
-		this.isReady = false;
+		this.solveTasksRunning = 0;
+		this.initialized = false;
 
 		// Reject all pending requests
-		for (const [id, pending] of this.pendingRequests) {
+		for (const [_, pending] of this.pendingRequests) {
 			pending.reject(new Error('Worker terminated'));
 		}
 		this.pendingRequests.clear();
@@ -162,23 +194,52 @@ class ReforgeWorker {
 
 /**
  * Pool of reforge workers
- * Currently single-threaded since HiGHS WASM is already optimized
- * Worker is pre-warmed on getInstance() to reduce first-solve latency
+ * Multi-threaded and load-balanced across dedicated HiGHS worker instances.
+ * Workers are pre-warmed on warmUp() to reduce first-solve latency.
  */
 export class ReforgeWorkerPool {
-	private worker: ReforgeWorker | null = null;
+	private readonly concurrencyPool: WorkerPoolManager<ReforgeWorker>;
 	private static instance: ReforgeWorkerPool | null = null;
 	private initPromise: Promise<boolean> | null = null;
 	private isWarmedUp = false;
+	private wasmUrl?: string;
 
-	private constructor() {}
+	private constructor(numWorkers: number) {
+		this.concurrencyPool = new WorkerPoolManager<ReforgeWorker>({
+			create: i => new ReforgeWorker(i),
+			getWorkAmount: worker => worker.getSolveTaskWorkAmount(),
+			destroy: worker => worker.terminate(),
+		});
+		this.setNumWorkers(numWorkers);
+	}
+
+	async setNumWorkers(numWorkers: number): Promise<void> {
+		const { added: addedWorkers } = this.concurrencyPool.resize(numWorkers);
+
+		if (addedWorkers.length > 0 && (this.isWarmedUp || this.initPromise)) {
+			await Promise.all(
+				addedWorkers.map(async worker => {
+					await worker.waitForReady();
+					return worker.initHiGHS(this.wasmUrl);
+				}),
+			);
+		}
+	}
+
+	getNumWorkers(): number {
+		return this.concurrencyPool.getNumWorkers();
+	}
+
+	private getLeastBusyWorker(): ReforgeWorker {
+		return this.concurrencyPool.getLeastBusyWorker(worker => worker.isInitialized());
+	}
 
 	/**
 	 * Get singleton instance
 	 */
 	static getInstance(): ReforgeWorkerPool {
 		if (!ReforgeWorkerPool.instance) {
-			ReforgeWorkerPool.instance = new ReforgeWorkerPool();
+			ReforgeWorkerPool.instance = new ReforgeWorkerPool(1);
 		}
 		return ReforgeWorkerPool.instance;
 	}
@@ -215,33 +276,72 @@ export class ReforgeWorkerPool {
 			return this.initPromise;
 		}
 
-		if (!this.worker) {
-			this.worker = new ReforgeWorker(0);
-		}
+		this.wasmUrl = wasmUrl;
 
-		await this.worker.waitForReady();
-		const success = await this.worker.initHiGHS(wasmUrl);
-		this.isWarmedUp = success;
-		return success;
+		this.initPromise = (async () => {
+			const initResults = await Promise.all(
+				this.concurrencyPool.getWorkers().map(async worker => {
+					await worker.waitForReady();
+					return worker.initHiGHS(wasmUrl);
+				}),
+			);
+
+			const success = initResults.some(Boolean);
+			this.isWarmedUp = success;
+			return success;
+		})();
+
+		return this.initPromise;
 	}
 
 	/**
 	 * Solve an LP problem using HiGHS
 	 */
 	async solve(model: LPModel, options: SolverOptions = {}): Promise<LPSolution> {
-		if (!this.worker) {
+		if (this.concurrencyPool.getNumWorkers() === 0) {
 			await this.init();
 		}
 
-		return this.worker!.solve(model, options);
+		if (!this.concurrencyPool.hasWorker(worker => worker.isInitialized())) {
+			this.initPromise = null;
+			await this.init(this.wasmUrl);
+		}
+
+		if (this.concurrencyPool.hasWorker(worker => !worker.isInitialized())) {
+			this.initPromise = null;
+			await this.init(this.wasmUrl);
+		}
+
+		if (!this.concurrencyPool.hasWorker(worker => worker.isInitialized())) {
+			throw new Error('Failed to initialize reforge workers');
+		}
+
+		const worker = this.getLeastBusyWorker();
+		return worker.solve(model, options);
+	}
+
+	async abort() {
+		const workerCount = Math.max(1, this.concurrencyPool.getNumWorkers());
+		const wasmUrl = this.wasmUrl;
+		const shouldWarmUp = this.isWarmedUp || !!this.initPromise;
+		this.concurrencyPool.clear();
+		this.initPromise = null;
+		this.isWarmedUp = false;
+
+		await this.setNumWorkers(workerCount);
+		if (shouldWarmUp) {
+			await this.init(wasmUrl);
+		}
 	}
 
 	/**
 	 * Terminate the worker
 	 */
 	terminate() {
-		this.worker?.terminate();
-		this.worker = null;
+		this.concurrencyPool.clear();
+		this.initPromise = null;
+		this.isWarmedUp = false;
+		this.wasmUrl = undefined;
 		ReforgeWorkerPool.instance = null;
 	}
 }

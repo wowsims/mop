@@ -24,3 +24,50 @@
 	align-items: center;
 	text-align: center;
 }
+
+.progress-tracker-modal-progress-container {
+	position: relative;
+	align-self: center;
+	width: 100%;
+	max-width: 250px;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacer-1);
+
+	.progress {
+		--bs-progress-height: 12px;
+		width: 100%;
+		background-color: var(--bs-modal-border-color);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.progress-bar {
+		background: linear-gradient(
+			90deg,
+			var(--bs-success) 0%,
+			color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 25%,
+			var(--bs-success) 50%,
+			color-mix(in srgb, var(--bs-success) 85%, var(--bs-black)) 75%,
+			var(--bs-success) 100%
+		);
+		background-size: 200% 100%;
+		animation: loading-shimmer 6s linear infinite;
+	}
+}
+
+.progress-tracker-modal-progress-text {
+	font-size: 12px;
+	text-align: right;
+	color: var(--bs-border-color);
+}
+
+@keyframes loading-shimmer {
+	from {
+		background-position: 200% 0;
+	}
+
+	to {
+		background-position: -200% 0;
+	}
+}
