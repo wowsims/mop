@@ -418,3 +418,62 @@ export const findInputItemForEnum = <T extends Record<string, string | number>, 
 		return normalizeName(item.name) === formatName(targetEnumKey);
 	});
 };
+
+export interface PromisePoolProgress {
+	completed: number;
+	total: number;
+	pending: number;
+	fulfilled: number;
+	rejected: number;
+}
+
+export const promisePool = <T>(
+	tasks: Array<() => Promise<T>>,
+	{
+		concurrency = 5,
+		waitBetweenBatches,
+		onProgress,
+	}: { concurrency?: number; waitBetweenBatches?: number; onProgress?: (progress: PromisePoolProgress) => void },
+): Promise<PromiseSettledResult<T>[]> => {
+	return (async () => {
+		let completed = 0;
+		let fulfilled = 0;
+		let rejected = 0;
+		const total = tasks.length;
+		const results: PromiseSettledResult<T>[] = new Array(total);
+
+		for (let batchStart = 0; batchStart < total; batchStart += concurrency) {
+			if (waitBetweenBatches && batchStart > 0) await sleep(waitBetweenBatches);
+			const batchTasks = tasks.slice(batchStart, batchStart + concurrency);
+			const batchResults = await Promise.all(
+				batchTasks.map(task =>
+					Promise.resolve(task())
+						.then(value => ({ status: 'fulfilled', value }) as PromiseFulfilledResult<T>)
+						.catch(reason => ({ status: 'rejected', reason }) as PromiseRejectedResult),
+				),
+			);
+
+			batchResults.forEach((result, index) => {
+				results[batchStart + index] = result;
+				if (result.status === 'fulfilled') {
+					fulfilled++;
+				} else {
+					rejected++;
+				}
+			});
+
+			completed += batchResults.length;
+			if (onProgress) {
+				onProgress?.({
+					completed,
+					total,
+					pending: total - completed,
+					fulfilled,
+					rejected,
+				});
+			}
+		}
+
+		return results;
+	})();
+};
