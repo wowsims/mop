@@ -7,3 +7,21 @@
 		text-align: right;
 	}
 }
+
+.combustion-thresholds-modal {
+	table {
+		td,
+		th {
+			padding: 0.5rem 1rem;
+			text-align: right;
+			font-size: var(--content-font-size);
+		}
+
+		th {
+			border-bottom: 2px solid var(--bs-table-accent-bg);
+		}
+
+		tr {
+		}
+	}
+}

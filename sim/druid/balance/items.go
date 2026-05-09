@@ -77,8 +77,8 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			// Arcane spells cast while in Lunar Eclipse will shoot a single Lunar Bolt at the target. Nature spells cast while in a Solar Eclipse will shoot a single Solar Bolt at the target.
 			moonkin := agent.(*BalanceDruid)
-			solarBolt := moonkin.registerT15BoltSpell(144772, core.SpellSchoolNature, SolarEclipse)
-			lunarBolt := moonkin.registerT15BoltSpell(144770, core.SpellSchoolArcane, LunarEclipse)
+			solarBolt := moonkin.registerT16BoltSpell(144772, core.SpellSchoolNature, SolarEclipse)
+			lunarBolt := moonkin.registerT16BoltSpell(144770, core.SpellSchoolArcane, LunarEclipse)
 
 			bothDuringCA := druid.DruidSpellMoonfire | druid.DruidSpellSunfire | druid.DruidSpellStarsurge
 
@@ -93,6 +93,9 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 				Callback:           core.CallbackOnCastComplete,
 				ClassSpellMask:     procTriggerSpellMask,
 				TriggerImmediately: true,
+				ExtraCondition: func(_ *core.Simulation, spell *core.Spell, _ *core.SpellResult) bool {
+					return (moonkin.IsInEclipse() || moonkin.CelestialAlignment.RelatedSelfBuff.IsActive())
+				},
 
 				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
 					alignmentActive := moonkin.CelestialAlignment.RelatedSelfBuff.IsActive()
@@ -116,28 +119,28 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 })
 
 const (
-	T15BoltBonusCoeff = 0.10000000149
-	T15BoltCoeff      = 0.5
-	T15BoltVariance   = 0.25
+	T16BoltBonusCoeff = 0.10000000149
+	T16BoltCoeff      = 0.5
+	T16BoltVariance   = 0.25
 )
 
-func (moonkin *BalanceDruid) registerT15BoltSpell(spellID int32, spellSchool core.SpellSchool, eclipse Eclipse) *druid.DruidSpell {
+func (moonkin *BalanceDruid) registerT16BoltSpell(spellID int32, spellSchool core.SpellSchool, eclipse Eclipse) *druid.DruidSpell {
 	return moonkin.RegisterSpell(druid.Humanoid|druid.Moonkin, core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: spellID},
 		SpellSchool:    spellSchool,
-		ProcMask:       core.ProcMaskEmpty,
+		ProcMask:       core.ProcMaskSpellProc,
 		ClassSpellMask: druid.DruidSpell2PT16Bolt,
 		Flags:          core.SpellFlagAPL,
 
 		MissileSpeed: 30,
 
-		BonusCoefficient: T15BoltBonusCoeff,
+		BonusCoefficient: T16BoltBonusCoeff,
 		DamageMultiplier: 1,
 		CritMultiplier:   moonkin.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			baseDamage := moonkin.CalcAndRollDamageRange(sim, T15BoltCoeff, T15BoltVariance)
+			baseDamage := moonkin.CalcAndRollDamageRange(sim, T16BoltCoeff, T16BoltVariance)
 			result := spell.CalcDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
 
 			spell.WaitTravelTime(sim, func(sim *core.Simulation) {

@@ -17,18 +17,7 @@ import {
 	StatWeightsRequest,
 	StatWeightsResult,
 } from './proto/api.js';
-import {
-	ArmorType,
-	Faction,
-	Profession,
-	PseudoStat,
-	RangedWeaponType,
-	Spec,
-	Stat,
-	UnitReference,
-	UnitReference_Type as UnitType,
-	WeaponType,
-} from './proto/common.js';
+import { ArmorType, Faction, PseudoStat, RangedWeaponType, Spec, Stat, UnitReference, UnitReference_Type as UnitType, WeaponType } from './proto/common.js';
 import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
 import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
@@ -58,6 +47,9 @@ interface SimProps {
 
 export type RunSimOptions = {
 	silent?: boolean; // If true, don't emit the simResultEmitter event.
+	debug?: boolean;
+	singleIteration?: boolean; // If true, only run a single iteration (for testing purposes).
+	iterations?: number;
 };
 
 const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
@@ -244,21 +236,21 @@ export class Sim {
 		return raidProto;
 	}
 
-	makeRaidSimRequest(debug: boolean): RaidSimRequest {
+	makeRaidSimRequest(options: RunSimOptions = {}): RaidSimRequest {
 		const raid = this.getModifiedRaidProto();
 		const encounter = this.encounter.toProto();
 
 		// TODO: remove any replenishment from sim request here? probably makes more sense to do it inside the sim to protect against accidents
-
 		return RaidSimRequest.create({
 			requestId: generateRequestId(SimRequest.raidSimAsync),
 			type: this.type,
 			raid: raid,
 			encounter: encounter,
 			simOptions: SimOptions.create({
-				iterations: debug ? 1 : this.getIterations(),
+				iterations: options.singleIteration ? 1 : (options.iterations ?? this.getIterations()),
 				randomSeed: BigInt(this.nextRngSeed()),
 				debugFirstIteration: true,
+				debug: options.debug ?? false,
 			}),
 		});
 	}
@@ -274,7 +266,7 @@ export class Sim {
 		try {
 			await this.waitForInit();
 
-			const request = this.makeRaidSimRequest(false);
+			const request = this.makeRaidSimRequest(options);
 
 			let result;
 			// Only use worker base concurrency when running wasm. Local sim has native threading.
@@ -288,6 +280,7 @@ export class Sim {
 				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result.error;
 				throw new SimError(result.error.message);
 			}
+
 			const simResult = await SimResult.makeNew(request, result);
 			if (!options.silent) {
 				this.simResultEmitter.emit(eventID, simResult);
@@ -307,7 +300,7 @@ export class Sim {
 	async runRaidSimLightweight(
 		gear: Gear,
 		onProgress: WorkerProgressCallback,
-		_: RunSimOptions = {},
+		options: RunSimOptions = {},
 	): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
@@ -319,7 +312,7 @@ export class Sim {
 		try {
 			await this.waitForInit();
 
-			const request = this.makeRaidSimRequest(false);
+			const request = this.makeRaidSimRequest(options);
 			const player = request.raid!.parties[0].players[0];
 
 			// Disable meta gem if inactive.
@@ -372,7 +365,7 @@ export class Sim {
 		try {
 			await this.waitForInit();
 
-			const request = this.makeRaidSimRequest(true);
+			const request = this.makeRaidSimRequest({ debug: true, ...options });
 			const result = await this.workerPool.raidSimAsync(request, noop, signals);
 			if (result.error) {
 				throw new SimError(result.error.message);

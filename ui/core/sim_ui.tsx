@@ -368,7 +368,7 @@ export abstract class SimUI extends Component {
 	async runSimOnce(options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
-			return await this.sim.runRaidSimWithLogs(TypedEvent.nextEventID(), options);
+			return await this.sim.runRaidSimWithLogs(TypedEvent.nextEventID(), { debug: true, singleIteration: true, ...options });
 		} catch (e) {
 			this.resultsViewer.hideAll();
 			this.handleCrash(e);

@@ -403,6 +403,7 @@ message RaidSimRequestSplitResult {
 
 message RaidSimResultCombinationRequest {
 	repeated RaidSimResult results = 1;
+	bool debug = 2;
 }
 
 message AbortRequest {

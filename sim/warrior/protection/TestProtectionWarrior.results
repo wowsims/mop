@@ -65,8 +65,8 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 401708.66815
-  tps: 2.45665308031e+06
+  dps: 401658.83605
+  tps: 2.45630425562e+06
   dtps: 18314.43009
  }
 }
@@ -745,17 +745,17 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 414594.34784
-  tps: 2.53425346846e+06
-  dtps: 16860.61369
+  dps: 414559.37835
+  tps: 2.5332584835e+06
+  dtps: 16848.06864
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 414931.8715
-  tps: 2.53710623935e+06
-  dtps: 16459.73509
+  dps: 415928.63649
+  tps: 2.54300140407e+06
+  dtps: 17003.19449
  }
 }
 dps_results: {
@@ -849,9 +849,9 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 413864.73898
-  tps: 2.5230605235e+06
-  dtps: 16619.62816
+  dps: 414457.31754
+  tps: 2.52483500006e+06
+  dtps: 16756.46219
  }
 }
 dps_results: {
@@ -953,9 +953,9 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 421254.12072
-  tps: 2.59275904873e+06
-  dtps: 18284.29232
+  dps: 422963.11754
+  tps: 2.60439013523e+06
+  dtps: 18285.65543
  }
 }
 dps_results: {
@@ -1139,8 +1139,8 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 420769.95707
-  tps: 2.58903795169e+06
+  dps: 421395.6908
+  tps: 2.59341808785e+06
   dtps: 18275.48026
  }
 }
@@ -1796,8 +1796,8 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-SigilofRampage-105580"
  value: {
-  dps: 402628.48203
-  tps: 2.46204779179e+06
+  dps: 402551.06285
+  tps: 2.46150585751e+06
   dtps: 17941.25483
  }
 }
@@ -2284,15 +2284,15 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 401367.78485
-  tps: 2.45322274618e+06
+  dps: 401368.58722
+  tps: 2.45322836279e+06
   dtps: 18275.48026
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 395606.14894
+  dps: 395985.58022
   tps: 2.41427559678e+06
   dtps: 21874.44789
  }
@@ -2316,8 +2316,8 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 408390.94765
-  tps: 2.49616965765e+06
+  dps: 408403.47904
+  tps: 2.49619706663e+06
   dtps: 16223.22011
  }
 }

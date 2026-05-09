@@ -61,8 +61,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 273982.6888
-  tps: 173798.63178
+  dps: 274000.91361
+  tps: 173816.8566
  }
 }
 dps_results: {
@@ -110,8 +110,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 279730.29048
-  tps: 178164.75971
+  dps: 279015.31042
+  tps: 178119.52027
  }
 }
 dps_results: {
@@ -600,8 +600,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 289344.93323
-  tps: 181924.38152
+  dps: 289366.0673
+  tps: 181931.3871
  }
 }
 dps_results: {
@@ -628,8 +628,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 289380.25438
-  tps: 181315.11988
+  dps: 292003.81549
+  tps: 183549.49158
  }
 }
 dps_results: {
@@ -656,8 +656,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 300623.43641
-  tps: 192176.06321
+  dps: 300900.4691
+  tps: 192392.44778
  }
 }
 dps_results: {
@@ -747,8 +747,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 289717.65534
-  tps: 183442.03272
+  dps: 289613.15634
+  tps: 183417.70156
  }
 }
 dps_results: {
@@ -838,8 +838,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 288042.28643
-  tps: 187456.70369
+  dps: 288201.66691
+  tps: 187630.21081
  }
 }
 dps_results: {
@@ -1000,8 +1000,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 287594.12199
-  tps: 187663.80657
+  dps: 287800.85453
+  tps: 187870.53911
  }
 }
 dps_results: {
@@ -1574,8 +1574,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-SigilofRampage-105580"
  value: {
-  dps: 274246.49644
-  tps: 173424.69115
+  dps: 274238.53421
+  tps: 173416.72892
  }
 }
 dps_results: {
@@ -2001,15 +2001,15 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 277600.01739
-  tps: 175880.76193
+  dps: 277443.1587
+  tps: 175648.54192
  }
 }
 dps_results: {
  key: "TestFury-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 279759.43819
-  tps: 176118.33865
+  dps: 279600.8447
+  tps: 176249.82024
  }
 }
 dps_results: {
@@ -2029,15 +2029,15 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 283465.64327
-  tps: 179802.48534
+  dps: 283492.06881
+  tps: 179830.67736
  }
 }
 dps_results: {
  key: "TestFury-Average-Default"
  value: {
-  dps: 294634.70475
-  tps: 185780.00323
+  dps: 294662.35786
+  tps: 185799.5378
  }
 }
 dps_results: {

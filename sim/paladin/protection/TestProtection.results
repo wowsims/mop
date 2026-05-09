@@ -69,8 +69,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 470847.79754
-  tps: 2.96957102783e+06
+  dps: 471003.19601
+  tps: 2.97065881709e+06
   dtps: 44595.23892
   hps: 63526.7443
  }
@@ -123,8 +123,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 480120.80156
-  tps: 3.02485430596e+06
+  dps: 480189.98368
+  tps: 3.02613840576e+06
   dtps: 44406.20336
   hps: 64983.15231
  }
@@ -825,19 +825,19 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 483088.1879
-  tps: 3.05120615171e+06
-  dtps: 43480.59927
-  hps: 65092.20607
+  dps: 482723.38981
+  tps: 3.05270876018e+06
+  dtps: 44300.60851
+  hps: 64881.29235
  }
 }
 dps_results: {
  key: "TestProtection-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 481640.58672
-  tps: 3.04257221831e+06
+  dps: 481667.59858
+  tps: 3.04272217903e+06
   dtps: 44487.02396
-  hps: 65021.29295
+  hps: 65023.4206
  }
 }
 dps_results: {
@@ -933,8 +933,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-FrenziedCrystalofRage-105572"
  value: {
-  dps: 473269.35934
-  tps: 2.97932686001e+06
+  dps: 473126.63105
+  tps: 2.9781784673e+06
   dtps: 44595.23892
   hps: 63526.7443
  }
@@ -942,10 +942,10 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 485891.74249
-  tps: 3.06661446673e+06
-  dtps: 44254.78988
-  hps: 65522.75656
+  dps: 485470.38478
+  tps: 3.06409912625e+06
+  dtps: 43611.26391
+  hps: 65497.4139
  }
 }
 dps_results: {
@@ -1059,8 +1059,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 494971.26581
-  tps: 3.13843530574e+06
+  dps: 496698.97848
+  tps: 3.15052929444e+06
   dtps: 44595.23892
   hps: 63526.7443
  }
@@ -1266,8 +1266,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 495551.11548
-  tps: 3.13541415666e+06
+  dps: 498903.62832
+  tps: 3.15815394239e+06
   dtps: 44595.23892
   hps: 63526.7443
  }
@@ -1896,10 +1896,10 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-RuneofRe-Origination-96918"
  value: {
-  dps: 460973.36478
-  tps: 2.92557390082e+06
-  dtps: 46636.62923
-  hps: 66017.17459
+  dps: 461634.55177
+  tps: 2.93355320878e+06
+  dtps: 47125.07803
+  hps: 65879.12269
  }
 }
 dps_results: {
@@ -1995,8 +1995,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-SigilofRampage-105580"
  value: {
-  dps: 470749.90761
-  tps: 2.96888579833e+06
+  dps: 470909.54902
+  tps: 2.97000328819e+06
   dtps: 44595.23892
   hps: 63526.7443
  }
@@ -2013,10 +2013,10 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 474290.85215
-  tps: 2.99066321577e+06
-  dtps: 55110.61959
-  hps: 63406.59385
+  dps: 474558.38024
+  tps: 2.99253446999e+06
+  dtps: 54716.17122
+  hps: 63599.33071
  }
 }
 dps_results: {
@@ -2562,8 +2562,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 473226.99167
-  tps: 2.97910669741e+06
+  dps: 472718.2617
+  tps: 2.97636784156e+06
   dtps: 44595.23892
   hps: 63526.7443
  }
@@ -2571,10 +2571,10 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 473331.41611
-  tps: 3.00876214117e+06
-  dtps: 45777.04954
-  hps: 60979.38331
+  dps: 475711.27976
+  tps: 3.02737119381e+06
+  dtps: 46573.63264
+  hps: 61034.07507
  }
 }
 dps_results: {
@@ -2598,10 +2598,10 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 474506.39348
-  tps: 2.99356080674e+06
-  dtps: 44925.84948
-  hps: 64333.33571
+  dps: 474555.88151
+  tps: 2.99388421972e+06
+  dtps: 44923.94655
+  hps: 64335.70704
  }
 }
 dps_results: {

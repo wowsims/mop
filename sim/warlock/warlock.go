@@ -42,6 +42,9 @@ type Warlock struct {
 	T15_2pc      *core.Aura
 	T15_4pc      *core.Aura
 	T16_2pc_buff *core.Aura
+
+	T16_4pc_HandOfGuldan *core.Spell
+	T16_4pc_ChaosWave    *core.Spell
 }
 
 func (warlock *Warlock) GetCharacter() *core.Character {

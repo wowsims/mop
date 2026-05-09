@@ -301,7 +301,7 @@ func raidSimResultCombination(this js.Value, args []js.Value) interface{} {
 				res = &proto.RaidSimResult{Error: &proto.ErrorOutcome{Message: errStr}}
 			}
 		}()
-		return core.CombineConcurrentSimResults(combRequest.Results, false)
+		return core.CombineConcurrentSimResults(combRequest.Results, combRequest.Debug)
 	}()
 
 	outbytes, err := googleProto.Marshal(combineRes)

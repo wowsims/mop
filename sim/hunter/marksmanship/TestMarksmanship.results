@@ -65,8 +65,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 301493.59871
-  tps: 225978.71654
+  dps: 301650.21084
+  tps: 225897.01693
   hps: 18.18791
  }
 }
@@ -961,8 +961,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 297355.49819
-  tps: 228356.84786
+  dps: 297424.36731
+  tps: 228584.51169
   hps: 18.18791
  }
 }
@@ -1145,8 +1145,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 272512.9345
-  tps: 212677.69599
+  dps: 272611.11393
+  tps: 212775.87542
   hps: 18.18791
  }
 }
@@ -1769,8 +1769,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-SigilofRampage-105580"
  value: {
-  dps: 291426.70592
-  tps: 220587.82211
+  dps: 291551.74326
+  tps: 220641.93978
   hps: 18.18791
  }
 }
@@ -2257,7 +2257,7 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 273188.05526
+  dps: 273101.36988
   tps: 210179.50945
   hps: 18.54706
  }
@@ -2289,8 +2289,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 274480.0574
-  tps: 211273.05759
+  dps: 274481.23002
+  tps: 211274.23021
   hps: 18.18791
  }
 }

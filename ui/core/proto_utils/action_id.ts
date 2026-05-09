@@ -537,6 +537,16 @@ export class ActionId {
 					name += ' (Demon form)';
 				}
 				break;
+			case "Hand of Gul'dan":
+				if (this.spellId == 86040) {
+					name += ' (T16 4P)';
+				}
+				break;
+			case "Chaos Wave":
+				if (this.spellId == 124915) {
+					name += ' (T16 4P)';
+				}
+				break;
 			case 'Shadowflame':
 			case 'Moonfire':
 			case 'Sunfire':

@@ -51,35 +51,12 @@ func (demonology *DemonologyWarlock) registerHandOfGuldan() {
 		},
 	})
 
-	demonology.HandOfGuldan = demonology.RegisterSpell(core.SpellConfig{
-		ActionID:       core.ActionID{SpellID: 105174},
-		SpellSchool:    core.SpellSchoolFire | core.SpellSchoolShadow,
-		ProcMask:       core.ProcMaskSpellDamage,
-		Flags:          core.SpellFlagAoE | core.SpellFlagAPL,
-		ClassSpellMask: warlock.WarlockSpellHandOfGuldan,
-
-		ManaCost: core.ManaCostOptions{BaseCostPercent: 5},
-		Cast: core.CastConfig{
-			DefaultCast: core.Cast{
-				GCD: core.GCDDefault,
-			},
-		},
-
-		Charges:      2,
-		RechargeTime: time.Second * 15,
-
-		DamageMultiplier: 1,
-		CritMultiplier:   demonology.DefaultCritMultiplier(),
-		ThreatMultiplier: 1,
-		BonusCoefficient: hogCoeff,
-
-		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			return !demonology.IsInMeta()
-		},
-
-		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			// keep stacks in sync as they're shared
-			demonology.ChaosWave.ConsumeCharge(sim)
+	newHandOfGuldanApplyEffects := func(consumesChaosWaveCharge bool) core.ApplySpellResults {
+		return func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			if consumesChaosWaveCharge {
+				// keep stacks in sync as they're shared
+				demonology.ChaosWave.ConsumeCharge(sim)
+			}
 			demonology.HandOfGuldanImpactTime = sim.CurrentTime + time.Millisecond*1300
 			pa := sim.GetConsumedPendingActionFromPool()
 			pa.NextActionAt = demonology.HandOfGuldanImpactTime // Fixed delay of 1.3 seconds
@@ -102,6 +79,55 @@ func (demonology *DemonologyWarlock) registerHandOfGuldan() {
 			}
 
 			sim.AddPendingAction(pa)
+		}
+	}
+
+	newHandOfGuldanSpellConfig := func(config core.SpellConfig) core.SpellConfig {
+		spellConfig := core.SpellConfig{
+			ActionID:       config.ActionID,
+			ClassSpellMask: config.ClassSpellMask,
+			SpellSchool:    core.SpellSchoolFire | core.SpellSchoolShadow,
+			ProcMask:       core.ProcMaskSpellDamage,
+			Flags:          core.SpellFlagAoE | core.SpellFlagAPL,
+
+			Cast: config.Cast,
+
+			ManaCost:     config.ManaCost,
+			Charges:      config.Charges,
+			RechargeTime: config.RechargeTime,
+
+			DamageMultiplier: 1,
+			CritMultiplier:   demonology.DefaultCritMultiplier(),
+			ThreatMultiplier: 1,
+			BonusCoefficient: hogCoeff,
+			ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
+				return !demonology.IsInMeta()
+			},
+			ApplyEffects: newHandOfGuldanApplyEffects(false),
+		}
+
+		if config.ApplyEffects != nil {
+			spellConfig.ApplyEffects = config.ApplyEffects
+		}
+
+		return spellConfig
+	}
+
+	demonology.HandOfGuldan = demonology.RegisterSpell(newHandOfGuldanSpellConfig(core.SpellConfig{
+		ActionID:       core.ActionID{SpellID: 105174},
+		ClassSpellMask: warlock.WarlockSpellHandOfGuldan,
+		Cast: core.CastConfig{
+			DefaultCast: core.Cast{
+				GCD: core.GCDDefault,
+			},
 		},
-	})
+		ManaCost:     core.ManaCostOptions{BaseCostPercent: 5},
+		Charges:      2,
+		RechargeTime: time.Second * 15,
+		ApplyEffects: newHandOfGuldanApplyEffects(true),
+	}))
+
+	demonology.T16_4pc_HandOfGuldan = demonology.RegisterSpell(newHandOfGuldanSpellConfig(core.SpellConfig{
+		ActionID: core.ActionID{SpellID: 86040},
+	}))
 }

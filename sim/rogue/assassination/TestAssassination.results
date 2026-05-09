@@ -93,8 +93,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 126891.54665
-  tps: 88953.4747
+  dps: 126901.38751
+  tps: 88958.87934
  }
 }
 dps_results: {
@@ -625,8 +625,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 110682.52776
-  tps: 77807.78717
+  dps: 110694.82441
+  tps: 77825.5908
  }
 }
 dps_results: {
@@ -653,8 +653,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 111125.12923
-  tps: 78139.68196
+  dps: 110768.11339
+  tps: 77886.20071
  }
 }
 dps_results: {
@@ -681,8 +681,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 110239.46892
-  tps: 77354.61059
+  dps: 110254.34282
+  tps: 77364.5028
  }
 }
 dps_results: {
@@ -779,8 +779,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 110682.5874
-  tps: 77659.60617
+  dps: 110671.82869
+  tps: 77650.3053
  }
 }
 dps_results: {
@@ -884,8 +884,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 125053.08308
-  tps: 87691.59721
+  dps: 125078.86437
+  tps: 87709.90192
  }
 }
 dps_results: {
@@ -1046,8 +1046,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 109774.40564
-  tps: 77198.96341
+  dps: 109861.40641
+  tps: 77260.73395
  }
 }
 dps_results: {
@@ -1599,8 +1599,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-SigilofRampage-105580"
  value: {
-  dps: 122850.23439
-  tps: 86084.85464
+  dps: 122902.98177
+  tps: 86114.90753
  }
 }
 dps_results: {
@@ -2033,7 +2033,7 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 113573.99849
+  dps: 113596.66035
   tps: 79871.21568
  }
 }
@@ -2047,8 +2047,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 113024.74852
-  tps: 79379.44562
+  dps: 113009.6095
+  tps: 79368.22289
  }
 }
 dps_results: {

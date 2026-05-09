@@ -61,8 +61,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 305991.58758
-  tps: 231671.86337
+  dps: 306212.8592
+  tps: 231819.74394
  }
 }
 dps_results: {
@@ -838,8 +838,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 303121.40157
-  tps: 234778.42671
+  dps: 303147.02295
+  tps: 234804.04809
  }
 }
 dps_results: {
@@ -1000,8 +1000,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 273385.47637
-  tps: 213807.72252
+  dps: 273080.59647
+  tps: 213502.84262
  }
 }
 dps_results: {
@@ -1546,8 +1546,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-SigilofRampage-105580"
  value: {
-  dps: 295148.08862
-  tps: 225098.71982
+  dps: 295274.53004
+  tps: 225139.21354
  }
 }
 dps_results: {
@@ -1966,14 +1966,14 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 261932.70938
-  tps: 202354.73251
+  dps: 261946.76642
+  tps: 202365.25791
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 262706.68347
+  dps: 262807.7009
   tps: 201924.6417
  }
 }
@@ -2001,8 +2001,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 275973.85361
-  tps: 212680.61158
+  dps: 275999.90448
+  tps: 212699.08528
  }
 }
 dps_results: {

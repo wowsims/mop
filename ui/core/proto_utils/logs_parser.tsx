@@ -79,7 +79,7 @@ export class Entity {
 	}
 }
 
-interface SimLogParams {
+export interface SimLogParams {
 	raw: string;
 	logIndex: number;
 	timestamp: number;

@@ -61,8 +61,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 308974.2729
-  tps: 152198.89184
+  dps: 309034.36509
+  tps: 152141.84963
  }
 }
 dps_results: {
@@ -838,8 +838,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 299048.34958
-  tps: 151894.49187
+  dps: 298951.4106
+  tps: 151797.55289
  }
 }
 dps_results: {
@@ -1000,8 +1000,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 268382.98932
-  tps: 139284.44606
+  dps: 268495.16754
+  tps: 139396.62428
  }
 }
 dps_results: {
@@ -1546,8 +1546,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-SigilofRampage-105580"
  value: {
-  dps: 296764.25657
-  tps: 146550.80917
+  dps: 297112.87169
+  tps: 146545.7358
  }
 }
 dps_results: {
@@ -1973,7 +1973,7 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 265894.45308
+  dps: 265820.0969
   tps: 133827.59249
  }
 }

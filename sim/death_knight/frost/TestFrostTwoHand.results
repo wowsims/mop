@@ -65,8 +65,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 255123.07814
-  tps: 227418.51749
+  dps: 255144.05194
+  tps: 227430.69242
   hps: 4030.15961
  }
 }
@@ -753,8 +753,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 276337.80482
-  tps: 244866.34938
+  dps: 276319.58984
+  tps: 244756.6832
   hps: 4041.36993
  }
 }
@@ -849,8 +849,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 273082.91775
-  tps: 240927.12625
+  dps: 273166.98503
+  tps: 240922.52843
   hps: 4030.15961
  }
 }
@@ -953,8 +953,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 266810.96656
-  tps: 239143.86611
+  dps: 266836.09373
+  tps: 239166.0119
   hps: 4030.15961
  }
 }
@@ -1137,8 +1137,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 266421.80482
-  tps: 238873.55338
+  dps: 266090.80753
+  tps: 238542.55609
   hps: 4030.15961
  }
 }
@@ -1673,8 +1673,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 255093.41616
-  tps: 227459.6109
+  dps: 255088.6126
+  tps: 227453.85593
   hps: 4030.15961
  }
 }
@@ -1857,8 +1857,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofRampage-105580"
  value: {
-  dps: 255167.08605
-  tps: 227491.8251
+  dps: 255178.57036
+  tps: 227501.88231
   hps: 4030.15961
  }
 }
@@ -2345,8 +2345,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 258727.00151
-  tps: 230732.76726
+  dps: 258916.53978
+  tps: 230938.16112
   hps: 4088.53299
  }
 }
@@ -2361,16 +2361,16 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 264259.75925
-  tps: 235044.24659
+  dps: 264246.19772
+  tps: 235036.55255
   hps: 4030.15961
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Average-Default"
  value: {
-  dps: 273810.65088
-  tps: 242950.62447
+  dps: 273809.10102
+  tps: 242943.52788
   hps: 3955.79516
  }
 }

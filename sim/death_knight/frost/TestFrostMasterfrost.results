@@ -65,7 +65,7 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 254225.10751
+  dps: 254220.30857
   tps: 231493.56107
   hps: 2326.56982
  }
@@ -689,8 +689,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 254175.57503
-  tps: 231779.71061
+  dps: 254186.77644
+  tps: 231798.38886
   hps: 17.44162
  }
 }
@@ -721,8 +721,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 256825.27804
-  tps: 234227.06924
+  dps: 256065.52343
+  tps: 233370.07303
   hps: 17.44162
  }
 }
@@ -753,9 +753,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 278745.64372
-  tps: 252728.19994
-  hps: 2331.61631
+  dps: 278126.78038
+  tps: 252037.00431
+  hps: 2322.52953
  }
 }
 dps_results: {
@@ -849,9 +849,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 275846.81183
-  tps: 249225.52404
-  hps: 2314.44525
+  dps: 276441.43461
+  tps: 249711.90397
+  hps: 2296.48054
  }
 }
 dps_results: {
@@ -953,8 +953,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 265535.7231
-  tps: 242822.81697
+  dps: 265984.31706
+  tps: 243278.3803
   hps: 2326.56982
  }
 }
@@ -1137,8 +1137,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 265159.31563
-  tps: 242567.62104
+  dps: 265387.26243
+  tps: 242795.56785
   hps: 2326.56982
  }
 }
@@ -1673,8 +1673,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 254034.05489
-  tps: 231364.94546
+  dps: 254033.96518
+  tps: 231366.98421
   hps: 2326.56982
  }
 }
@@ -1849,8 +1849,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-SigilofRampage-105580"
  value: {
-  dps: 254122.65352
-  tps: 231426.41652
+  dps: 254119.75668
+  tps: 231422.68287
   hps: 2326.56982
  }
 }
@@ -2329,16 +2329,16 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 256196.50471
-  tps: 233652.86722
+  dps: 256073.92493
+  tps: 233519.51682
   hps: 2394.56589
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 256133.82696
-  tps: 233425.10813
+  dps: 256021.48605
+  tps: 233303.75141
   hps: 2353.8679
  }
 }
@@ -2361,17 +2361,17 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 266747.24386
-  tps: 242636.90811
+  dps: 266746.96789
+  tps: 242621.7513
   hps: 2308.3874
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Average-Default"
  value: {
-  dps: 275643.02696
-  tps: 250910.10473
-  hps: 2212.81254
+  dps: 275651.05048
+  tps: 250910.86534
+  hps: 2212.82988
  }
 }
 dps_results: {
@@ -2569,24 +2569,24 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p4.masterfrost-UnholyBlight-Basic-masterfrost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.08816179672e+06
-  tps: 1.06403963545e+06
+  dps: 1.08816308972e+06
+  tps: 1.06404063161e+06
   hps: 2032.40868
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p4.masterfrost-UnholyBlight-Basic-masterfrost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 251594.54099
-  tps: 227321.52658
+  dps: 251595.18445
+  tps: 227321.87284
   hps: 2209.2979
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p4.masterfrost-UnholyBlight-Basic-masterfrost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 374464.76668
-  tps: 289326.39618
+  dps: 374467.98396
+  tps: 289328.12749
   hps: 2774.4953
  }
 }

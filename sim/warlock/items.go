@@ -164,38 +164,35 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 					}
 				}
 			case proto.Spec_SpecDemonologyWarlock:
-				// TODO: Research if all pets or just the primary pet is affected
-				buffAction := core.ActionID{SpellID: 145075}
-				applyBuffAura := func(unit *core.Unit) {
-					unit.RegisterAura(core.Aura{
-						ActionID: buffAction,
-						Label:    "Regalia of the Horned Nightmare - Demo - 2pc",
+				buffActionID := core.ActionID{SpellID: 145085}
+				petBuffActionID := core.ActionID{SpellID: 146043}
+
+				applyBuffAura := func(unit *core.Unit, actionID core.ActionID, label string) *core.Aura {
+					return unit.GetOrRegisterAura(core.Aura{
+						ActionID: actionID,
+						Label:    label,
 						Duration: time.Second * 10,
 					}).AttachMultiplicativePseudoStatBuff(&unit.PseudoStats.DamageDealtMultiplier, 1.2)
 				}
 
-				applyBuffAura(&warlock.Unit)
+				playerAura := applyBuffAura(&warlock.Unit, buffActionID, "Fiery Wrath - Player")
+				petAuras := make(map[int]*core.Aura, len(warlock.Pets))
 				for _, pet := range warlock.Pets {
 					if pet.IsGuardian() {
 						continue
 					}
 
-					applyBuffAura(&pet.Unit)
+					petAuras[int(pet.UnitIndex)] = applyBuffAura(&pet.Unit, petBuffActionID, "Fiery Wrath - Pet")
 				}
 
 				setBonusAura.OnSpellHitDealt = func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					if spell.Matches(WarlockSpellSoulFire) && sim.Proc(0.2, "T16 - 2pc") {
-						warlock.GetAuraByID(buffAction).Activate(sim)
+						playerAura.Activate(sim)
 						for _, pet := range warlock.Pets {
-							if pet.IsGuardian() {
-								continue
-							}
-
 							if !pet.IsActive() {
 								continue
 							}
-
-							pet.GetAuraByID(buffAction).Activate(sim)
+							petAuras[int(pet.UnitIndex)].Activate(sim)
 						}
 					}
 				}
@@ -224,9 +221,24 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 			warlock := agent.(WarlockAgent).GetWarlock()
 			switch agent.GetCharacter().Spec {
 			case proto.Spec_SpecAfflictionWarlock:
+				refundActionID := core.ActionID{SpellID: 145159}
+				refundAura := warlock.RegisterAura(core.Aura{
+					Label:           "Dark Refund",
+					ActionID:        refundActionID,
+					ActionIDForProc: refundActionID,
+					Duration:        time.Millisecond * 1500,
+				})
+
 				warlock.OnSpellRegistered(func(spell *core.Spell) {
 					if !spell.Matches(WarlockSpellHaunt) {
 						return
+					}
+
+					procHandler := func(target *core.Unit, sim *core.Simulation) {
+						if target.IsEnabled() && sim.Proc(0.1, "T16 4p") {
+							refundAura.Activate(sim)
+							warlock.GetSecondaryResourceBar().Gain(sim, 1, spell.ActionID)
+						}
 					}
 
 					for _, target := range warlock.Env.Encounter.AllTargets {
@@ -234,21 +246,27 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 						if dot == nil {
 							break
 						}
-						dot.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
-							if sim.Proc(0.1, "T16 4p") {
-								warlock.GetSecondaryResourceBar().Gain(sim, 1, spell.ActionID)
-							}
+						dot.ApplyOnRefresh(func(_ *core.Aura, sim *core.Simulation) {
+							procHandler(&target.Unit, sim)
+						}).ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+							procHandler(&target.Unit, sim)
+						}).ApplyOnReset(func(_ *core.Aura, sim *core.Simulation) {
+							refundAura.Deactivate(sim)
 						})
 					}
 
 				})
 			case proto.Spec_SpecDemonologyWarlock:
 				setBonusAura.AttachProcTrigger(core.ProcTrigger{
-					Callback:       core.CallbackOnCastComplete,
-					ClassSpellMask: WarlockSpellShadowBolt | WarlockSpellTouchOfChaos,
-					ProcChance:     0.08,
+					ClassSpellMask:     WarlockSpellShadowBolt | WarlockSpellTouchOfChaos,
+					ProcChance:         0.08,
+					Callback:           core.CallbackOnSpellHitDealt,
+					TriggerImmediately: true,
 					Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-						// TODO: NOT IMPLEMENTED - Need to verify how this interacts with existing Shadow Flame DoT
+						// Cast both spells because we can't check for IsInMeta
+						// in items.go
+						warlock.T16_4pc_HandOfGuldan.Cast(sim, result.Target)
+						warlock.T16_4pc_ChaosWave.Cast(sim, result.Target)
 					},
 				})
 			case proto.Spec_SpecDestructionWarlock:
@@ -260,7 +278,7 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 						Timer:    warlock.NewTimer(),
 						Duration: time.Second * 10,
 					},
-				}).AttachStatBuff(stats.CritRating, core.CritRatingPerCritPercent*15)
+				}).AttachStatBuff(stats.SpellCritPercent, 15)
 
 				warlock.GetSecondaryResourceBar().RegisterOnGain(func(
 					sim *core.Simulation,

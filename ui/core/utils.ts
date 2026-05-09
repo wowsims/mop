@@ -151,10 +151,6 @@ export function stDevToConf90(stDev: number, N: number) {
 	return (1.645 * stDev) / Math.sqrt(N);
 }
 
-export async function wait(ms: number): Promise<void> {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 // Only works for numeric enums
 export function getEnumValues<E>(enumType: any): Array<E> {
 	return Object.keys(enumType)

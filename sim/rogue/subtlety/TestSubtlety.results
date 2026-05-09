@@ -61,8 +61,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 128772.76072
-  tps: 90573.55913
+  dps: 129502.73932
+  tps: 91083.98918
  }
 }
 dps_results: {
@@ -593,8 +593,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 109779.37954
-  tps: 77386.051
+  dps: 109361.46541
+  tps: 77071.64858
  }
 }
 dps_results: {
@@ -621,8 +621,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 108860.98143
-  tps: 76676.07015
+  dps: 109080.74654
+  tps: 76835.437
  }
 }
 dps_results: {
@@ -649,8 +649,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 106495.22624
-  tps: 74970.94885
+  dps: 106537.72037
+  tps: 74997.36608
  }
 }
 dps_results: {
@@ -747,8 +747,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 106790.31573
-  tps: 75175.19757
+  dps: 106817.3524
+  tps: 75190.62869
  }
 }
 dps_results: {
@@ -852,8 +852,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 128363.39465
-  tps: 90285.76441
+  dps: 128103.74501
+  tps: 90099.55875
  }
 }
 dps_results: {
@@ -1014,8 +1014,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 107534.66508
-  tps: 75814.07044
+  dps: 107580.34408
+  tps: 75846.50254
  }
 }
 dps_results: {
@@ -1574,8 +1574,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-SigilofRampage-105580"
  value: {
-  dps: 120728.1898
-  tps: 84863.92772
+  dps: 121106.95217
+  tps: 85124.98794
  }
 }
 dps_results: {
@@ -2008,8 +2008,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 111759.3508
-  tps: 78707.90207
+  dps: 111999.70047
+  tps: 78913.54885
  }
 }
 dps_results: {
@@ -2022,8 +2022,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 111159.52316
-  tps: 78263.07928
+  dps: 111162.14653
+  tps: 78264.44748
  }
 }
 dps_results: {

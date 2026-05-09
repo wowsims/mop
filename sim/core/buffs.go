@@ -1289,7 +1289,7 @@ func StormLashAura(character *Character, actionTag int32) *Aura {
 		ActionID:    actionId,
 		Flags:       SpellFlagNoOnCastComplete | SpellFlagPassiveSpell,
 		SpellSchool: SpellSchoolNature,
-		ProcMask:    ProcMaskEmpty,
+		ProcMask:    ProcMaskSpellProc,
 
 		DamageMultiplier: 1,
 		CritMultiplier:   character.DefaultCritMultiplier(),

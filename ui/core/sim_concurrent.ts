@@ -13,6 +13,7 @@ import {
 	StatWeightsStatResultData,
 } from './proto/api';
 import { SimSignals } from './sim_signal_manager';
+import { isDevMode } from './utils';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool';
 
 class ConcurrentSimProgress {
@@ -156,7 +157,9 @@ export const runConcurrentSim = async (
 	onProgress: WorkerProgressCallback,
 	signals: SimSignals,
 ): Promise<RaidSimResult> => {
-	console.log(`Sending requests split for ${workerPool.getNumWorkers()} splits.`);
+	if (isDevMode()) {
+		console.log(`Sending requests split for ${workerPool.getNumWorkers()} splits.`);
+	}
 
 	const splitResult = await workerPool.raidSimRequestSplit(
 		RaidSimRequestSplitRequest.create({
@@ -173,7 +176,9 @@ export const runConcurrentSim = async (
 		return makeAndSendRaidSimError(ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }), onProgress);
 	}
 
-	console.log(`Running ${request.simOptions!.iterations} iterations on ${splitResult.splitsDone} concurrent sims...`);
+	if (isDevMode()) {
+		console.log(`Running ${request.simOptions!.iterations} iterations on ${splitResult.splitsDone} concurrent sims...`);
+	}
 
 	const simRes = await runSims(splitResult.requests, request.simOptions!.iterations, workerPool, onProgress, signals);
 
@@ -185,11 +190,13 @@ export const runConcurrentSim = async (
 		return makeAndSendRaidSimError(ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }), onProgress);
 	}
 
-	console.log(`All ${splitResult.splitsDone} sims finished successfully. Combining ${simRes.results.length} results.`);
-
+	if (isDevMode()) {
+		console.log(`All ${splitResult.splitsDone} sims finished successfully. Combining ${simRes.results.length} results.`);
+	}
 	const combiResult = await workerPool.raidSimResultCombination(
 		RaidSimResultCombinationRequest.create({
 			results: simRes.results,
+			debug: request.simOptions?.debug,
 		}),
 	);
 
@@ -222,7 +229,9 @@ export const runConcurrentStatWeights = async (
 	onProgress: WorkerProgressCallback,
 	signals: SimSignals,
 ): Promise<StatWeightsResult> => {
-	console.log('Getting stat weight sim requests.');
+	if (isDevMode()) {
+		console.log('Getting stat weight sim requests.');
+	}
 
 	const id = generateRequestId(SimRequest.statWeightsAsync);
 
@@ -245,7 +254,9 @@ export const runConcurrentStatWeights = async (
 		simsTotal += 2;
 	}
 
-	console.log(`Need to run a total of ${simsTotal} sims and ${iterationsTotal} iterations.`);
+	if (isDevMode()) {
+		console.log(`Need to run a total of ${simsTotal} sims and ${iterationsTotal} iterations.`);
+	}
 
 	let lastIterations = 0;
 	const progressHandler = (pm: ProgressMetrics) => {
@@ -293,7 +304,9 @@ export const runConcurrentStatWeights = async (
 		);
 	}
 
-	console.log(`All ${simsTotal} sims finished successfully. Computing weights.`);
+	if (isDevMode()) {
+		console.log(`All ${simsTotal} sims finished successfully. Computing weights.`);
+	}
 
 	const weightResult = await workerPool.statWeightCompute(calcRequest);
 	if (weightResult.error) return makeAndSendWeightsError(weightResult.error, onProgress);

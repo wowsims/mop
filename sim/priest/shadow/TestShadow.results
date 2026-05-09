@@ -97,9 +97,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 105487.59558
-  tps: 98247.02622
-  hps: 1643.16194
+  dps: 105877.68993
+  tps: 98507.43104
+  hps: 1644.23137
  }
 }
 dps_results: {
@@ -721,8 +721,8 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 84630.6009
-  tps: 79602.43636
+  dps: 84631.04607
+  tps: 79602.88153
   hps: 1631.8735
  }
 }
@@ -809,9 +809,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-FrenziedCrystalofRage-105572"
  value: {
-  dps: 95843.00834
-  tps: 89042.60216
-  hps: 1620.10975
+  dps: 96260.07797
+  tps: 89357.96751
+  hps: 1620.3474
  }
 }
 dps_results: {
@@ -921,8 +921,8 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 88193.14293
-  tps: 83237.03882
+  dps: 88088.88148
+  tps: 83132.77737
   hps: 1617.02028
  }
 }
@@ -1105,9 +1105,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 103009.0053
-  tps: 96181.97322
-  hps: 1616.22811
+  dps: 103396.73693
+  tps: 96506.96073
+  hps: 1616.34693
  }
 }
 dps_results: {
@@ -2161,9 +2161,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 100990.49693
-  tps: 91807.13226
-  hps: 1606.60322
+  dps: 100987.97317
+  tps: 91880.33121
+  hps: 1613.8912
  }
 }
 dps_results: {
@@ -2249,9 +2249,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 98476.95371
-  tps: 93133.4972
-  hps: 1763.16418
+  dps: 98697.45466
+  tps: 93276.53636
+  hps: 1761.96303
  }
 }
 dps_results: {
@@ -2273,8 +2273,8 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 89924.86843
-  tps: 84198.24514
+  dps: 89896.26211
+  tps: 84150.4901
   hps: 1622.40705
  }
 }
@@ -2289,24 +2289,24 @@ dps_results: {
 dps_results: {
  key: "TestShadow-Settings-Draenei-p4-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 284797.45009
-  tps: 278126.1982
-  hps: 3710.52987
+  dps: 284876.06833
+  tps: 278607.18588
+  hps: 3714.81563
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Draenei-p4-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 272414.40802
-  tps: 244894.90724
-  hps: 3723.98984
+  dps: 273186.22007
+  tps: 245479.95586
+  hps: 3722.98536
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Draenei-p4-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 402466.75666
-  tps: 331781.61433
+  dps: 403341.19252
+  tps: 333077.01703
   hps: 5063.89224
  }
 }
@@ -2385,24 +2385,24 @@ dps_results: {
 dps_results: {
  key: "TestShadow-Settings-NightElf-p4-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 284797.45009
-  tps: 278126.27715
-  hps: 3710.52987
+  dps: 284876.06833
+  tps: 278607.26483
+  hps: 3714.81563
  }
 }
 dps_results: {
  key: "TestShadow-Settings-NightElf-p4-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 272414.40802
-  tps: 244894.91106
-  hps: 3723.98984
+  dps: 273186.22007
+  tps: 245479.95968
+  hps: 3722.98536
  }
 }
 dps_results: {
  key: "TestShadow-Settings-NightElf-p4-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 402466.75666
-  tps: 331781.63343
+  dps: 403341.19252
+  tps: 333077.03613
   hps: 5063.89224
  }
 }
@@ -2481,24 +2481,24 @@ dps_results: {
 dps_results: {
  key: "TestShadow-Settings-Troll-p4-Basic-t15-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 293120.22472
-  tps: 283486.7351
-  hps: 3862.20557
+  dps: 294142.07027
+  tps: 284615.73245
+  hps: 3866.82615
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Troll-p4-Basic-t15-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 278409.50063
-  tps: 248865.56609
-  hps: 3838.56693
+  dps: 278332.41574
+  tps: 248981.8678
+  hps: 3845.66522
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Troll-p4-Basic-t15-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 435935.84108
-  tps: 354752.64874
+  dps: 438464.08445
+  tps: 357009.59857
   hps: 5369.92223
  }
 }

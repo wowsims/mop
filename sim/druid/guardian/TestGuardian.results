@@ -87,10 +87,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 337170.27116
-  tps: 2.03290159221e+06
-  dtps: 43778.90335
-  hps: 29726.23467
+  dps: 337307.10099
+  tps: 2.0335268793e+06
+  dtps: 44292.86749
+  hps: 30543.83341
  }
 }
 dps_results: {
@@ -141,10 +141,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 322568.48233
+  dps: 322682.15778
   tps: 1.96091015621e+06
   dtps: 45601.55275
-  hps: 32592.58137
+  hps: 32614.5095
  }
 }
 dps_results: {
@@ -843,10 +843,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 321161.6963
-  tps: 1.9434348056e+06
-  dtps: 43734.16175
-  hps: 31228.02586
+  dps: 321085.72402
+  tps: 1.9428288254e+06
+  dtps: 43694.13729
+  hps: 30875.94579
  }
 }
 dps_results: {
@@ -951,19 +951,19 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-FrenziedCrystalofRage-105572"
  value: {
-  dps: 323902.9327
-  tps: 1.96739752909e+06
-  dtps: 43906.23966
-  hps: 29133.01377
+  dps: 324870.28188
+  tps: 1.97050178848e+06
+  dtps: 43322.90241
+  hps: 28673.35649
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 328013.93829
-  tps: 1.98723867201e+06
-  dtps: 42658.20861
-  hps: 29081.62532
+  dps: 329200.43981
+  tps: 1.99351101177e+06
+  dtps: 42511.81957
+  hps: 28494.70641
  }
 }
 dps_results: {
@@ -1086,10 +1086,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 352786.69577
-  tps: 2.15079946894e+06
-  dtps: 43589.7584
-  hps: 30083.1014
+  dps: 355242.27022
+  tps: 2.16765505837e+06
+  dtps: 43587.98825
+  hps: 30088.7797
  }
 }
 dps_results: {
@@ -1293,10 +1293,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 331402.06584
-  tps: 2.01846302645e+06
+  dps: 333988.2085
+  tps: 2.03646315049e+06
   dtps: 43804.40631
-  hps: 30532.21221
+  hps: 30371.245
  }
 }
 dps_results: {
@@ -2013,10 +2013,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-SigilofRampage-105580"
  value: {
-  dps: 343301.65033
-  tps: 2.0789672763e+06
-  dtps: 42732.66333
-  hps: 28824.55212
+  dps: 341328.17787
+  tps: 2.070184218e+06
+  dtps: 43109.43633
+  hps: 30067.19426
  }
 }
 dps_results: {
@@ -2031,10 +2031,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 316937.80393
-  tps: 1.91979011138e+06
-  dtps: 53143.58018
-  hps: 35955.65507
+  dps: 316561.45443
+  tps: 1.91665803e+06
+  dtps: 53030.25911
+  hps: 36291.30398
  }
 }
 dps_results: {
@@ -2553,17 +2553,17 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 316560.24612
-  tps: 1.91730658416e+06
+  dps: 316511.37334
+  tps: 1.91490513389e+06
   dtps: 43804.40631
-  hps: 30190.25728
+  hps: 30546.7668
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 315128.0465
-  tps: 1.904676193e+06
+  dps: 314917.34077
+  tps: 1.90193216133e+06
   dtps: 43847.27109
   hps: 29147.79149
  }
@@ -2580,19 +2580,19 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 323970.68417
-  tps: 1.96173709205e+06
-  dtps: 42748.30595
-  hps: 28765.12494
+  dps: 323927.32118
+  tps: 1.96149562977e+06
+  dtps: 42748.84202
+  hps: 28751.55628
  }
 }
 dps_results: {
  key: "TestGuardian-Average-Default"
  value: {
-  dps: 379243.16738
-  tps: 2.32924010912e+06
-  dtps: 47466.09193
-  hps: 32393.14492
+  dps: 379239.24553
+  tps: 2.32919934199e+06
+  dtps: 47465.03721
+  hps: 32393.6919
  }
 }
 dps_results: {

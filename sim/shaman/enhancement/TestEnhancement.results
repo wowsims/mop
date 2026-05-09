@@ -61,8 +61,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 248810.14568
-  tps: 197122.98431
+  dps: 249059.76311
+  tps: 197445.773
  }
 }
 dps_results: {
@@ -103,8 +103,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 215751.02287
-  tps: 183875.29829
+  dps: 215720.53548
+  tps: 183858.1188
  }
 }
 dps_results: {
@@ -607,15 +607,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 228187.17547
-  tps: 193487.68193
+  dps: 228609.57956
+  tps: 193854.60437
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
-  dps: 226807.71723
-  tps: 192133.22259
+  dps: 226903.8443
+  tps: 192215.98316
  }
 }
 dps_results: {
@@ -628,15 +628,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
-  dps: 226883.6582
-  tps: 192195.39448
+  dps: 226848.76848
+  tps: 192172.07006
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 227500.7629
-  tps: 192564.25607
+  dps: 227289.80602
+  tps: 192545.24174
  }
 }
 dps_results: {
@@ -663,8 +663,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 217196.21902
-  tps: 184604.10281
+  dps: 217255.62472
+  tps: 184668.2493
  }
 }
 dps_results: {
@@ -747,15 +747,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-FrenziedCrystalofRage-105572"
  value: {
-  dps: 210161.49868
-  tps: 179235.81533
+  dps: 210138.89143
+  tps: 179215.51937
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 218786.25867
-  tps: 185714.54414
+  dps: 218748.34315
+  tps: 185634.47142
  }
 }
 dps_results: {
@@ -852,8 +852,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 240303.90603
-  tps: 203918.19284
+  dps: 241092.00102
+  tps: 204776.27917
  }
 }
 dps_results: {
@@ -1014,8 +1014,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 219725.67507
-  tps: 188480.56575
+  dps: 220467.93557
+  tps: 189253.67187
  }
 }
 dps_results: {
@@ -1588,8 +1588,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-SigilofRampage-105580"
  value: {
-  dps: 233640.49869
-  tps: 196999.86071
+  dps: 233896.73013
+  tps: 197347.34082
  }
 }
 dps_results: {
@@ -1602,8 +1602,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 223148.55127
-  tps: 187437.17656
+  dps: 220766.87235
+  tps: 185058.22352
  }
 }
 dps_results: {
@@ -2015,15 +2015,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 213915.85403
-  tps: 182817.54664
+  dps: 214161.9678
+  tps: 182803.14475
  }
 }
 dps_results: {
  key: "TestEnhancement-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 226869.4827
-  tps: 192972.53366
+  dps: 227453.51276
+  tps: 193304.73095
  }
 }
 dps_results: {
@@ -2043,15 +2043,15 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 221758.18338
-  tps: 188464.63948
+  dps: 221819.08312
+  tps: 188494.18101
  }
 }
 dps_results: {
  key: "TestEnhancement-Average-Default"
  value: {
-  dps: 236947.4541
-  tps: 199730.65125
+  dps: 236957.55686
+  tps: 199735.04074
  }
 }
 dps_results: {

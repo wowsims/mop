@@ -593,8 +593,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 104595.81395
-  tps: 73677.86134
+  dps: 104592.35656
+  tps: 73666.35778
  }
 }
 dps_results: {
@@ -621,8 +621,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 105312.73479
-  tps: 74143.21791
+  dps: 104807.15755
+  tps: 73788.99212
  }
 }
 dps_results: {
@@ -852,8 +852,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 118048.78385
-  tps: 83216.81812
+  dps: 118088.91605
+  tps: 83245.31198
  }
 }
 dps_results: {
@@ -1014,8 +1014,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 104231.44347
-  tps: 73478.63365
+  dps: 104341.55379
+  tps: 73556.81198
  }
 }
 dps_results: {
@@ -2008,7 +2008,7 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 107455.74344
+  dps: 107463.58458
   tps: 75711.26729
  }
 }

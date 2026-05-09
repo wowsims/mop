@@ -89,8 +89,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 190970.88448
-  tps: 136493.19119
+  dps: 191279.30299
+  tps: 136818.04309
  }
 }
 dps_results: {
@@ -719,14 +719,14 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-FrenziedCrystalofRage-105572"
  value: {
-  dps: 183982.13827
-  tps: 131732.13524
+  dps: 184481.56922
+  tps: 132116.34717
  }
 }
 dps_results: {
  key: "TestFrost-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 159270.55015
+  dps: 159268.78637
   tps: 114134.18829
  }
 }
@@ -824,8 +824,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 166522.76118
-  tps: 121387.68123
+  dps: 166570.17176
+  tps: 121433.80991
  }
 }
 dps_results: {
@@ -986,8 +986,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 188686.11151
-  tps: 137425.26227
+  dps: 189669.80768
+  tps: 138234.41153
  }
 }
 dps_results: {
@@ -1903,8 +1903,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 177668.33231
-  tps: 126419.20929
+  dps: 177495.20102
+  tps: 126301.27469
  }
 }
 dps_results: {
@@ -1973,8 +1973,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 173929.01563
-  tps: 124766.76208
+  dps: 174029.95132
+  tps: 124852.10911
  }
 }
 dps_results: {
@@ -1994,8 +1994,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 170305.51109
-  tps: 120737.16667
+  dps: 170288.45439
+  tps: 120723.06035
  }
 }
 dps_results: {

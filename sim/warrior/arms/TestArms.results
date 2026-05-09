@@ -61,8 +61,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 252085.48397
-  tps: 172956.34308
+  dps: 252089.00772
+  tps: 172959.86683
  }
 }
 dps_results: {
@@ -656,8 +656,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 271633.19558
-  tps: 186648.85311
+  dps: 271645.13644
+  tps: 186609.20071
  }
 }
 dps_results: {
@@ -747,8 +747,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 270575.79554
-  tps: 184588.9572
+  dps: 271004.32416
+  tps: 184752.10028
  }
 }
 dps_results: {
@@ -838,8 +838,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 264459.07197
-  tps: 185226.15396
+  dps: 265023.18168
+  tps: 185603.02809
  }
 }
 dps_results: {
@@ -1000,8 +1000,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 264252.29289
-  tps: 185260.31614
+  dps: 264054.70885
+  tps: 185062.73209
  }
 }
 dps_results: {
@@ -2001,7 +2001,7 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 254271.55707
+  dps: 254315.40098
   tps: 175741.8389
  }
 }
@@ -2022,15 +2022,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 258675.83551
-  tps: 179041.08326
+  dps: 258679.9779
+  tps: 179047.06311
  }
 }
 dps_results: {
  key: "TestArms-Average-Default"
  value: {
-  dps: 268873.83694
-  tps: 184813.34786
+  dps: 268874.43998
+  tps: 184816.40159
  }
 }
 dps_results: {

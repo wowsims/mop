@@ -69,7 +69,7 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 217281.87685
+  dps: 217292.90615
   tps: 1.10024821247e+06
   dtps: 65397.84033
   hps: 75076.03213
@@ -834,10 +834,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 229838.90375
-  tps: 1.15851141147e+06
-  dtps: 62311.33498
-  hps: 74398.27629
+  dps: 229956.76243
+  tps: 1.1606343525e+06
+  dtps: 61987.69631
+  hps: 74143.54347
  }
 }
 dps_results: {
@@ -951,10 +951,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 234974.07867
-  tps: 1.1896214069e+06
-  dtps: 62007.99817
-  hps: 72492.13096
+  dps: 235370.78831
+  tps: 1.18858282319e+06
+  dtps: 62076.46002
+  hps: 72498.62704
  }
 }
 dps_results: {
@@ -1068,8 +1068,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 225154.89418
-  tps: 1.15485428807e+06
+  dps: 226599.255
+  tps: 1.16499901412e+06
   dtps: 65397.84033
   hps: 75076.03213
  }
@@ -1275,8 +1275,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 225013.98706
-  tps: 1.15495570808e+06
+  dps: 226214.14521
+  tps: 1.16335681516e+06
   dtps: 65397.84033
   hps: 75076.03213
  }
@@ -2094,7 +2094,7 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-SigilofRampage-105580"
  value: {
-  dps: 223520.40042
+  dps: 223522.32506
   tps: 1.14378767616e+06
   dtps: 65343.30636
   hps: 75688.72226
@@ -2643,8 +2643,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 212834.17023
-  tps: 1.07976160151e+06
+  dps: 213221.0502
+  tps: 1.08036301029e+06
   dtps: 67813.38211
   hps: 83491.96518
  }
@@ -2661,10 +2661,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 223045.3231
-  tps: 1.13360669571e+06
+  dps: 223064.05996
+  tps: 1.1337072143e+06
   dtps: 63500.88741
-  hps: 76171.65611
+  hps: 76172.49208
  }
 }
 dps_results: {

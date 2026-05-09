@@ -89,8 +89,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 155459.77643
-  tps: 150799.44299
+  dps: 156360.25701
+  tps: 151628.38179
  }
 }
 dps_results: {
@@ -719,8 +719,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-FrenziedCrystalofRage-105572"
  value: {
-  dps: 135387.90118
-  tps: 131253.16618
+  dps: 137526.91307
+  tps: 133290.86536
  }
 }
 dps_results: {
@@ -824,8 +824,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 123534.10571
-  tps: 120382.76554
+  dps: 123428.4504
+  tps: 120277.11023
  }
 }
 dps_results: {
@@ -986,8 +986,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 144607.5665
-  tps: 140468.12697
+  dps: 145380.66304
+  tps: 141137.85949
  }
 }
 dps_results: {
@@ -1560,8 +1560,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 136464.21775
-  tps: 132592.05778
+  dps: 137704.73788
+  tps: 133810.02918
  }
 }
 dps_results: {
@@ -1896,8 +1896,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 141008.30046
-  tps: 136133.62521
+  dps: 141080.40863
+  tps: 136131.16533
  }
 }
 dps_results: {
@@ -1987,8 +1987,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 125967.16505
-  tps: 122541.19857
+  dps: 126388.92053
+  tps: 122923.19686
  }
 }
 dps_results: {
