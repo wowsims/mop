@@ -64,8 +64,8 @@ export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatSpellPower]: 1.0,
 		[Stat.StatHitRating]: 1.89,
 		[Stat.StatCritRating]: 1.07,
-		[Stat.StatHasteRating]: 1.38 / 1.097,
-		[Stat.StatMasteryRating]: 1.20 / 1.097,
+		[Stat.StatHasteRating]: 1.38,
+		[Stat.StatMasteryRating]: 1.2,
 	}),
 );
 

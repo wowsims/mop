@@ -5,25 +5,34 @@ import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import ShaApl from './apls/sha.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
+import IronJuggernautApl from './apls/iron_juggernaut.apl.json';
 import P2BalancedBloodGear from './gear_sets/p2.gear.json';
 import P2OffensiveBloodGear from './gear_sets/p2_offensive.gear.json';
-import P4BalancedBloodGear from './gear_sets/p4.gear.json';
 import P4ProgBloodGear from './gear_sets/p4_prog.gear.json';
+import P4BalancedBloodGear from './gear_sets/p4.gear.json';
 import P4OffensiveBloodGear from './gear_sets/p4_offensive.gear.json';
+import P5ProgBloodGear from './gear_sets/p5_prog.gear.json';
+import P5BalancedBloodGear from './gear_sets/p5.gear.json';
+import P5OffensiveBloodGear from './gear_sets/p5_offensive.gear.json';
 import DefaultBuild from './builds/sha_default.build.json';
 import ShaBuild from './builds/sha_encounter_only.build.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
+import IronJuggernautBuild from './builds/iron_juggernaut_encounter_only.build.json';
 // import PreRaidBloodGear from './gear_sets/preraid.gear.json';
 
 // export const PRERAID_BLOOD_PRESET = PresetUtils.makePresetGear('Pre-Raid', PreRaidBloodGear);
-export const P2_BALANCED_BLOOD_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2BalancedBloodGear);
-export const P2_OFFENSIVE_BLOOD_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive)', P2OffensiveBloodGear);
+// export const P2_BALANCED_BLOOD_PRESET = PresetUtils.makePresetGear('P2 - BIS (Balanced)', P2BalancedBloodGear);
+// export const P2_OFFENSIVE_BLOOD_PRESET = PresetUtils.makePresetGear('P2 - BIS (Offensive)', P2OffensiveBloodGear);
 export const P3_4_PROG_BLOOD_PRESET = PresetUtils.makePresetGear('P3 & P4 - Prog (Survival)', P4ProgBloodGear);
 export const P3_4_BALANCED_BLOOD_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4BalancedBloodGear);
 export const P3_4_OFFENSIVE_BLOOD_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4OffensiveBloodGear);
+export const P5_PROG_BLOOD_PRESET = PresetUtils.makePresetGear('P5 - Prog (Survival)', P5ProgBloodGear);
+export const P5_BALANCED_BLOOD_PRESET = PresetUtils.makePresetGear('P5 - BIS (Balanced)', P5BalancedBloodGear);
+export const P5_OFFENSIVE_BLOOD_PRESET = PresetUtils.makePresetGear('P5 - BIS (Offensive)', P5OffensiveBloodGear);
 
 export const BLOOD_ROTATION_PRESET_SHA = PresetUtils.makePresetAPLRotation('Sha of Fear', ShaApl);
 export const BLOOD_ROTATION_PRESET_HORRIDON = PresetUtils.makePresetAPLRotation('Horridon', HorridonApl);
+export const BLOOD_ROTATION_PRESET_IRON_JUGGERNAUT = PresetUtils.makePresetAPLRotation('Iron Juggernaut', IronJuggernautApl);
 
 // Preset options for EP weights
 export const P2_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -141,6 +150,75 @@ export const P3_4_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
+export const P5_SURVIVAL_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P5 - Survival',
+	Stats.fromMap(
+		{
+			[Stat.StatStrength]: 1.0,
+			[Stat.StatStamina]: 2.23,
+			[Stat.StatHitRating]: 2.01,
+			[Stat.StatCritRating]: 0.91,
+			[Stat.StatHasteRating]: 0.91,
+			[Stat.StatExpertiseRating]: 1.6,
+			[Stat.StatDodgeRating]: 1.14,
+			[Stat.StatParryRating]: 1.25,
+			[Stat.StatMasteryRating]: 1.67,
+			[Stat.StatAttackPower]: 0.18,
+			[Stat.StatArmor]: 0.53,
+			[Stat.StatBonusArmor]: 0.53,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 1.94,
+		},
+	),
+);
+
+export const P5_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P5 - Balanced',
+	Stats.fromMap(
+		{
+			[Stat.StatStrength]: 1.0,
+			[Stat.StatStamina]: 1.62,
+			[Stat.StatHitRating]: 2.4,
+			[Stat.StatCritRating]: 1.21,
+			[Stat.StatHasteRating]: 1.03,
+			[Stat.StatExpertiseRating]: 2.04,
+			[Stat.StatDodgeRating]: 1.23,
+			[Stat.StatParryRating]: 1.29,
+			[Stat.StatMasteryRating]: 1.15,
+			[Stat.StatAttackPower]: 0.24,
+			[Stat.StatArmor]: 0.38,
+			[Stat.StatBonusArmor]: 0.38,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 1.94,
+		},
+	),
+);
+
+export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P5 - Offensive',
+	Stats.fromMap(
+		{
+			[Stat.StatStrength]: 1.0,
+			[Stat.StatStamina]: 0.35,
+			[Stat.StatHitRating]: 3.22,
+			[Stat.StatCritRating]: 1.83,
+			[Stat.StatHasteRating]: 1.28,
+			[Stat.StatExpertiseRating]: 2.94,
+			[Stat.StatDodgeRating]: 1.37,
+			[Stat.StatParryRating]: 1.41,
+			[Stat.StatMasteryRating]: 0.09,
+			[Stat.StatAttackPower]: 0.35,
+			[Stat.StatArmor]: 0.07,
+			[Stat.StatBonusArmor]: 0.07,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 2.15,
+		},
+	),
+);
+
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
 
@@ -180,3 +258,4 @@ export const OtherDefaults = {
 export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON('Default', Spec.SpecBloodDeathKnight, DefaultBuild);
 export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON('Sha of Fear P2', Spec.SpecBloodDeathKnight, ShaBuild);
 export const PRESET_BUILD_HORRIDON = PresetUtils.makePresetBuildFromJSON('Horridon P2', Spec.SpecBloodDeathKnight, HorridonBuild);
+export const PRESET_BUILD_IRON_JUGGERNAUT = PresetUtils.makePresetBuildFromJSON('Iron Juggernaut P1', Spec.SpecBloodDeathKnight, IronJuggernautBuild);

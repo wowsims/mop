@@ -66,9 +66,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 	),
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_BALANCED_BLOOD_PRESET.gear,
+		gear: Presets.P3_4_BALANCED_BLOOD_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P2_BALANCED_EP_PRESET.epWeights,
+		epWeights: Presets.P3_4_BALANCED_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
@@ -147,67 +147,56 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 
 	presets: {
 		epWeights: [
-			Presets.P2_BALANCED_EP_PRESET,
-			Presets.P2_OFFENSIVE_EP_PRESET,
 			Presets.P3_4_SURVIVAL_EP_PRESET,
 			Presets.P3_4_BALANCED_EP_PRESET,
 			Presets.P3_4_OFFENSIVE_EP_PRESET,
+			Presets.P5_SURVIVAL_EP_PRESET,
+			Presets.P5_BALANCED_EP_PRESET,
+			Presets.P5_OFFENSIVE_EP_PRESET,
 		],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.BLOOD_ROTATION_PRESET_SHA, Presets.BLOOD_ROTATION_PRESET_HORRIDON],
+		rotations: [Presets.BLOOD_ROTATION_PRESET_SHA, Presets.BLOOD_ROTATION_PRESET_HORRIDON, Presets.BLOOD_ROTATION_PRESET_IRON_JUGGERNAUT],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.BloodTalents],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
-			Presets.P2_BALANCED_BLOOD_PRESET,
-			Presets.P2_OFFENSIVE_BLOOD_PRESET,
 			Presets.P3_4_PROG_BLOOD_PRESET,
 			Presets.P3_4_BALANCED_BLOOD_PRESET,
 			Presets.P3_4_OFFENSIVE_BLOOD_PRESET,
+			Presets.P5_PROG_BLOOD_PRESET,
+			Presets.P5_BALANCED_BLOOD_PRESET,
+			Presets.P5_OFFENSIVE_BLOOD_PRESET,
 		],
-		builds: [Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
+		builds: [Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON, Presets.PRESET_BUILD_IRON_JUGGERNAUT],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecBloodDeathKnight>): APLRotation => {
-		return Presets.BLOOD_ROTATION_PRESET_SHA.rotation.rotation!;
+		return Presets.BLOOD_ROTATION_PRESET_HORRIDON.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecBloodDeathKnight,
-			talents: Presets.BloodTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceOrc,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P2_BALANCED_BLOOD_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P2_BALANCED_BLOOD_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class BloodDeathKnightSimUI extends IndividualSimUI<Spec.SpecBloodDeathKnight> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecBloodDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
 		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+				return epWeights;
+			},
 			updateSoftCaps: softCaps => {
 				const epWeights = player.getEpWeights();
 
 				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
 					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
 					if (softCap.unitStat.equalsStat(Stat.StatExpertiseRating) && softCapToModify) {
-						if (epWeights.equals(Presets.P3_4_OFFENSIVE_EP_PRESET.epWeights)) {
+						if (epWeights.equals(Presets.P3_4_OFFENSIVE_EP_PRESET.epWeights) || epWeights.equals(Presets.P5_OFFENSIVE_EP_PRESET.epWeights)) {
 							softCapToModify.postCapEPs = OffensiveExpertiseBreakpoints;
 						} else {
 							softCapToModify.postCapEPs = ExpertiseBreakpoints;

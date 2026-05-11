@@ -181,13 +181,22 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
+
 				const avgIlvl = player.getGear().getAverageItemLevel(player.canDualWield2H());
 				if (avgIlvl >= 560) {
-					return Presets.P5_FURY_TG_EP_PRESET.epWeights;
+					epWeights = Presets.P5_FURY_TG_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 517) {
-					return Presets.P3_4_FURY_TG_EP_PRESET.epWeights;
+					epWeights = Presets.P3_4_FURY_TG_EP_PRESET.epWeights;
+				} else {
+					epWeights = Presets.P2_FURY_TG_EP_PRESET.epWeights;
 				}
-				return Presets.P2_FURY_TG_EP_PRESET.epWeights;
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+				return epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const avgIlvl = player.getGear().getAverageItemLevel(player.canDualWield2H());

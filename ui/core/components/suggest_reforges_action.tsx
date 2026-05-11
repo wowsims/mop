@@ -2008,39 +2008,47 @@ export class ReforgeOptimizer {
 			}
 		}
 
-		// If hard caps are all taken care of, then deal with any remaining soft cap breakpoints
-		while (!anyCapsExceeded && reforgeSoftCaps.length > 0) {
-			const nextSoftCap = reforgeSoftCaps[0];
-			const unitStat = nextSoftCap.unitStat;
-			const statName = unitStat.getKey();
-			const currentValue = reforgeStatContribution.getUnitStat(unitStat);
+		// If hard caps are all taken care of, then deal with any remaining soft cap breakpoints.
+		// Keep breakpoints that were not exceeded so they can still be enforced after later solver
+		// passes for other caps change the optimal reforge solution.
+		if (!anyCapsExceeded && reforgeSoftCaps.length > 0) {
+			const remainingSoftCaps: StatCap[] = [];
 
-			let idx = 0;
-			for (const breakpoint of nextSoftCap.breakpoints) {
-				if (currentValue > breakpoint) {
-					updatedConstraints.set(statName, greaterEq(breakpoint));
-					updatedWeights = updatedWeights.withUnitStat(unitStat, nextSoftCap.postCapEPs[idx]);
-					anyCapsExceeded = true;
-					if (isDevMode()) console.log('Breakpoint exceeded for: %s', statName);
-					break;
+			for (const softCap of reforgeSoftCaps) {
+				if (anyCapsExceeded) {
+					remainingSoftCaps.push(softCap);
+					continue;
 				}
 
-				idx++;
+				const unitStat = softCap.unitStat;
+				const statName = unitStat.getKey();
+				const currentValue = reforgeStatContribution.getUnitStat(unitStat);
+				const exceededBreakpointIdx = softCap.breakpoints.findIndex(breakpoint => currentValue > breakpoint);
+
+				if (exceededBreakpointIdx == -1) {
+					remainingSoftCaps.push(softCap);
+					continue;
+				}
+
+				updatedConstraints.set(statName, greaterEq(softCap.breakpoints[exceededBreakpointIdx]));
+				updatedWeights = updatedWeights.withUnitStat(unitStat, softCap.postCapEPs[exceededBreakpointIdx]);
+				anyCapsExceeded = true;
+				if (isDevMode()) console.log('Breakpoint exceeded for: %s', statName);
+
+				// For true soft cap stats (evaluated in ascending order), remove any breakpoint that was
+				// exceeded from the configuration. In contrast, for threshold stats (evaluated in descending
+				// order), always remove the entry completely after the first pass.
+				if (softCap.capType == StatCapType.TypeSoftCap) {
+					softCap.breakpoints = softCap.breakpoints.slice(exceededBreakpointIdx + 1);
+					softCap.postCapEPs = softCap.postCapEPs.slice(exceededBreakpointIdx + 1);
+
+					if (softCap.breakpoints.length > 0) {
+						remainingSoftCaps.push(softCap);
+					}
+				}
 			}
 
-			// For true soft cap stats (evaluated in ascending order), remove any breakpoint that was
-			// exceeded from the configuration. If no breakpoints were exceeded or there are none
-			// remaining, then remove the entry completely from reforgeSoftCaps. In contrast, for threshold
-			// stats (evaluated in descending order), always remove the entry completely after the first
-			// pass.
-			if (nextSoftCap.capType == StatCapType.TypeSoftCap) {
-				nextSoftCap.breakpoints = nextSoftCap.breakpoints.slice(idx + 1);
-				nextSoftCap.postCapEPs = nextSoftCap.postCapEPs.slice(idx + 1);
-			}
-
-			if (nextSoftCap.capType == StatCapType.TypeThreshold || nextSoftCap.breakpoints.length == 0) {
-				reforgeSoftCaps.shift();
-			}
+			reforgeSoftCaps.splice(0, reforgeSoftCaps.length, ...remainingSoftCaps);
 		}
 
 		return [anyCapsExceeded, updatedConstraints, updatedWeights];

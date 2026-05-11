@@ -234,8 +234,15 @@ func init() {
 					absorbedDamage := result.Damage
 					result.Damage = 0
 					shieldAura.SetStacks(sim, int32(absorbedDamage))
-					shieldAura.Deactivate(sim)
 					icd.Use(sim)
+
+					pa := sim.GetConsumedPendingActionFromPool()
+					pa.NextActionAt = sim.CurrentTime + core.SpellBatchWindow
+					pa.Priority = core.ActionPriorityDOT
+					pa.OnAction = func(sim *core.Simulation) {
+						shieldAura.Deactivate(sim)
+					}
+					sim.AddPendingAction(pa)
 				}
 			})
 

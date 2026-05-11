@@ -131,7 +131,7 @@ export const P5_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'P5 - Balanced',
 	Stats.fromMap(
 		{
-			[Stat.StatStrength]: 1.00,
+			[Stat.StatStrength]: 1.0,
 			[Stat.StatStamina]: 1.32,
 			[Stat.StatHitRating]: 3.09,
 			[Stat.StatCritRating]: 1.17,

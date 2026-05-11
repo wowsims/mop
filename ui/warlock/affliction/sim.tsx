@@ -205,13 +205,22 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 			statSelectionPresets,
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 512) {
-					return Presets.P2_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 580) {
-					return Presets.P5_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
+				} else {
+					epWeights = Presets.P1_BIS_EP_PRESET.epWeights;
 				}
-				return Presets.P1_BIS_EP_PRESET.epWeights;
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+
+				return epWeights;
 			},
 			// updateSoftCaps: softCaps => {
 			// 	const raidBuffs = player.getRaid()?.getBuffs();

@@ -65,10 +65,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_BALANCED_PRESET.gear,
-		itemSwap: Presets.P2_ITEM_SWAP.itemSwap,
+		gear: Presets.P3_4_BALANCED_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P2_EP_PRESET.epWeights,
+		epWeights: Presets.P3_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
 			const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
@@ -132,29 +131,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 	},
 
 	presets: {
-		epWeights: [
-			// Presets.P2_EP_PRESET,
-			// Presets.P2_OFFENSIVE_EP_PRESET,
-			Presets.P3_EP_PRESET,
-			Presets.P3_OFFENSIVE_EP_PRESET,
-			Presets.P5_EP_PRESET,
-			Presets.P5_OFFENSIVE_EP_PRESET,
-		],
+		epWeights: [Presets.P3_EP_PRESET, Presets.P3_OFFENSIVE_EP_PRESET, Presets.P5_EP_PRESET, Presets.P5_OFFENSIVE_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [
-			Presets.ROTATION_GENERIC,
-			// Presets.ROTATION_GARAJAL,
-			Presets.ROTATION_SHA,
-			Presets.ROTATION_HORRIDON,
-			Presets.ROTATION_IRON_JUGGERNAUT,
-		],
+		rotations: [Presets.ROTATION_GENERIC, Presets.ROTATION_SHA, Presets.ROTATION_HORRIDON, Presets.ROTATION_IRON_JUGGERNAUT],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.PRERAID_BALANCED_PRESET,
-			// Presets.P2_BALANCED_PRESET,
-			// Presets.P2_OFFENSIVE_PRESET,
 			Presets.P3_4_PROG_PRESET,
 			Presets.P3_4_BALANCED_PRESET,
 			Presets.P3_4_OFFENSIVE_PRESET,
@@ -182,6 +166,16 @@ export class ProtectionWarriorSimUI extends IndividualSimUI<Spec.SpecProtectionW
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecProtectionWarrior>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		this.reforger = new ReforgeOptimizer(this);
+		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+				return epWeights;
+			},
+		});
 	}
 }

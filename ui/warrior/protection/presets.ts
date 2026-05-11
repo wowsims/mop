@@ -121,13 +121,13 @@ export const P3_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'P3 & P4 - Offensive',
 	Stats.fromMap(
 		{
-			[Stat.StatStrength]: 1.00,
+			[Stat.StatStrength]: 1.0,
 			[Stat.StatStamina]: 0.31,
-			[Stat.StatHitRating]: 2.40,
+			[Stat.StatHitRating]: 2.4,
 			[Stat.StatCritRating]: 1.13,
 			[Stat.StatHasteRating]: 0.28,
 			[Stat.StatExpertiseRating]: 2.44,
-			[Stat.StatDodgeRating]: 1.00,
+			[Stat.StatDodgeRating]: 1.0,
 			[Stat.StatParryRating]: 1.11,
 			[Stat.StatMasteryRating]: 0.07,
 			[Stat.StatAttackPower]: 0.34,
@@ -169,8 +169,8 @@ export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
 		{
 			[Stat.StatStrength]: 1.0,
 			[Stat.StatStamina]: 0.35,
-			[Stat.StatHitRating]: 4.10,
-			[Stat.StatCritRating]: 1.90,
+			[Stat.StatHitRating]: 4.1,
+			[Stat.StatCritRating]: 1.9,
 			[Stat.StatHasteRating]: 0.43,
 			[Stat.StatExpertiseRating]: 3.27,
 			[Stat.StatDodgeRating]: 1.48,

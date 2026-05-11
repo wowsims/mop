@@ -299,6 +299,11 @@ func (dk *DeathKnight) registerPurgatory() {
 		return
 	}
 
+	var legendaryCloakAura *core.Aura
+	dk.RegisterResetEffect(func(s *core.Simulation) {
+		legendaryCloakAura = dk.GetAura("Endurance of Niuzao")
+	})
+
 	perditionAura := dk.RegisterAura(core.Aura{
 		Label:    "Perdition" + dk.Label,
 		ActionID: core.ActionID{SpellID: 123981},
@@ -344,8 +349,18 @@ func (dk *DeathKnight) registerPurgatory() {
 		}
 	})
 
-	dk.AddDynamicDamageTakenModifier(func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult, isPeriodic bool) {
-		if result.Damage < dk.CurrentHealth() {
+	dk.AddDynamicDamageTakenModifier(func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult, isPeriodic bool) {
+		damage := result.Damage
+		// Hack to allow purgatory and Legendary cloak to be procced
+		// by the same hit without interaction issues.
+		if legendaryCloakAura.IsActive() {
+			damage = result.PostOutcomeDamage
+			if spell.Flags.Matches(core.SpellFlagAoE) {
+				damage *= sim.Encounter.AOECapMultiplier()
+			}
+		}
+
+		if damage < dk.CurrentHealth() {
 			return
 		}
 
@@ -357,10 +372,10 @@ func (dk *DeathKnight) registerPurgatory() {
 		if shroudOfPurgatoryAura.IsActive() {
 			newDamage = 0
 			dk.GainHealth(sim, 1.0, healthMetrics)
-			currentShield += result.Damage - 1.0
+			currentShield += damage - 1.0
 		} else {
 			newDamage = dk.CurrentHealth() - 1
-			currentShield = result.Damage - newDamage
+			currentShield = damage - newDamage
 
 			shroudOfPurgatoryAura.Activate(sim)
 			if !perditionAura.IsActive() {
@@ -368,13 +383,13 @@ func (dk *DeathKnight) registerPurgatory() {
 			}
 		}
 
-		shroudOfPurgatoryAura.SetStacks(sim, int32(currentShield))
+		shroudOfPurgatoryAura.SetStacks(sim, max(int32(currentShield), 0))
 
 		if sim.Log != nil {
-			dk.Log(sim, "Purgatory absorbed %.1f damage", result.Damage-newDamage)
+			dk.Log(sim, "Purgatory absorbed %.1f damage", damage-newDamage)
 		}
 
-		result.Damage = newDamage
+		result.Damage = max(0, newDamage)
 	})
 }
 

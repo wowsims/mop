@@ -138,31 +138,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 	},
 
 	presets: {
-		epWeights: [
-			Presets.P2_BALANCED_EP_PRESET,
-			Presets.P2_OFFENSIVE_EP_PRESET,
-			Presets.P3_4_BALANCED_EP_PRESET,
-			Presets.P3_4_OFFENSIVE_EP_PRESET,
-			Presets.P5_BALANCED_EP_PRESET,
-			Presets.P5_OFFENSIVE_EP_PRESET,
-		],
+		epWeights: [Presets.P3_4_BALANCED_EP_PRESET, Presets.P3_4_OFFENSIVE_EP_PRESET, Presets.P5_BALANCED_EP_PRESET, Presets.P5_OFFENSIVE_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents, Presets.DungeonTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [
-			Presets.ROTATION_PRESET,
-			Presets.ROTATION_OFFENSIVE_PRESET,
-			// Presets.ROTATION_GARAJAL_PRESET,
-			// Presets.ROTATION_SHA_PRESET,
-			Presets.ROTATION_HORRIDON_PRESET,
-			Presets.ROTATION_IRON_JUGGERNAUT_PRESET,
-		],
+		rotations: [Presets.ROTATION_PRESET, Presets.ROTATION_OFFENSIVE_PRESET, Presets.ROTATION_HORRIDON_PRESET, Presets.ROTATION_IRON_JUGGERNAUT_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.PREBIS_GEAR_PRESET,
-			// Presets.P2_BIS_DW_GEAR_PRESET,
-			// Presets.P2_BIS_OFFENSIVE_DW_GEAR_PRESET,
-			// Presets.P2_BIS_OFFENSIVE_TIERLESS_DW_GEAR_PRESET,
 			Presets.P3_4_BIS_DW_GEAR_PRESET,
 			Presets.P3_4_BIS_OFFENSIVE_DW_GEAR_PRESET,
 			Presets.P5_PROG_DW_GEAR_PRESET,
@@ -193,6 +176,16 @@ export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk
 			MonkUtils.setTalentBasedSettings(player);
 		});
 
-		this.reforger = new ReforgeOptimizer(this);
+		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+				return epWeights;
+			},
+		});
 	}
 }
