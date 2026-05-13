@@ -36,16 +36,6 @@ func (shaman *Shaman) registerBloodlustCD() {
 				Duration: core.BloodlustCD,
 			},
 		},
-		ExtraCastCondition: func(sim *core.Simulation, target *core.Unit) bool {
-			// Only cast if there is a player missing Sated.
-			for _, playerUnit := range shaman.Env.Raid.AllPlayerUnits {
-				if !playerUnit.HasActiveAura(core.SatedAuraLabel) {
-					return true
-				}
-			}
-			return false
-		},
-
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
 			for _, blAura := range blAuras {
 				target := blAura.Unit
@@ -61,5 +51,14 @@ func (shaman *Shaman) registerBloodlustCD() {
 		Spell:    spell,
 		Type:     core.CooldownTypeDPS,
 		Priority: core.CooldownPriorityBloodlust,
+		ShouldActivate: func(_ *core.Simulation, _ *core.Character) bool {
+			// Only cast if there is a player missing Sated.
+			for _, playerUnit := range shaman.Env.Raid.AllPlayerUnits {
+				if !playerUnit.HasActiveAura(core.SatedAuraLabel) {
+					return true
+				}
+			}
+			return false
+		},
 	})
 }

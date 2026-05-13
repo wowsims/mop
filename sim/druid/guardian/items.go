@@ -10,6 +10,57 @@ import (
 func init() {
 }
 
+// T14 Guardian
+var ItemSetArmorOfTheEternalBlossom = core.NewItemSet(core.ItemSet{
+	Name:                    "Armor of the Eternal Blossom",
+	DisabledInChallengeMode: true,
+	Bonuses: map[int32]core.ApplySetBonus{
+		2: func(_ core.Agent, setBonusAura *core.Aura) {
+			// Reduces the cooldown of your Might of Ursoc ability by 60 sec.
+			setBonusAura.AttachSpellMod(core.SpellModConfig{
+				Kind:      core.SpellMod_Cooldown_Flat,
+				ClassMask: druid.DruidSpellMightOfUrsoc,
+				TimeValue: time.Second * -60,
+			}).ExposeToAPL(123086)
+		},
+		4: func(agent core.Agent, setBonusAura *core.Aura) {
+			bear, ok := agent.(*GuardianDruid)
+			if !ok {
+				return
+			}
+
+			// Increases the dodge granted by your Savage Defense by an additional 5%.
+			bear.OnSpellRegistered(func(spell *core.Spell) {
+				if !spell.Matches(druid.DruidSpellSavageDefense) {
+					return
+				}
+
+				hasDodgeBonus := false
+				spell.RelatedSelfBuff.ApplyOnGain(func(_ *core.Aura, sim *core.Simulation) {
+					if setBonusAura.IsActive() {
+						bear.PseudoStats.BaseDodgeChance += 0.05
+						hasDodgeBonus = true
+					}
+				}).ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					if hasDodgeBonus {
+						bear.PseudoStats.BaseDodgeChance -= 0.05
+						hasDodgeBonus = false
+					}
+				})
+			})
+
+			// Increases the healing received from your Frenzied Regeneration by 10%
+			setBonusAura.AttachSpellMod(core.SpellModConfig{
+				Kind:       core.SpellMod_DamageDone_Pct,
+				ClassMask:  druid.DruidSpellFrenziedRegeneration,
+				FloatValue: 0.1,
+			})
+
+			setBonusAura.ExposeToAPL(123087)
+		},
+	},
+})
+
 // T15 Guardian
 var ItemSetArmorOfTheHauntedForest = core.NewItemSet(core.ItemSet{
 	ID:                      1156,
@@ -18,7 +69,11 @@ var ItemSetArmorOfTheHauntedForest = core.NewItemSet(core.ItemSet{
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
 			// Each attack you dodge while Savage Defense is active increases the healing from your next Frenzied Regeneration within 10 sec by 10%, stacking up to 10 times.
-			bear := agent.(*GuardianDruid)
+			bear, ok := agent.(*GuardianDruid)
+			if !ok {
+				return
+			}
+
 			bear.registerImprovedRegeneration(setBonusAura)
 			setBonusAura.AttachProcTrigger(core.ProcTrigger{
 				Callback: core.CallbackOnSpellHitTaken,
@@ -34,7 +89,11 @@ var ItemSetArmorOfTheHauntedForest = core.NewItemSet(core.ItemSet{
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			// You generate 50% more Rage from your attacks while Enrage is active.
-			bear := agent.(*GuardianDruid)
+			bear, ok := agent.(*GuardianDruid)
+			if !ok {
+				return
+			}
+
 			bear.Env.RegisterPreFinalizeEffect(func() {
 				bear.EnrageAura.ApplyOnGain(func(_ *core.Aura, _ *core.Simulation) {
 					if setBonusAura.IsActive() {
@@ -52,7 +111,7 @@ var ItemSetArmorOfTheHauntedForest = core.NewItemSet(core.ItemSet{
 	},
 })
 
-func (bear *GuardianDruid) registerImprovedRegeneration(setBonusTracker *core.Aura) {
+func (bear *GuardianDruid) registerImprovedRegeneration(_ *core.Aura) {
 	improveRegenMod := bear.AddDynamicMod(core.SpellModConfig{
 		ClassMask:  druid.DruidSpellFrenziedRegeneration,
 		Kind:       core.SpellMod_DamageDone_Pct,

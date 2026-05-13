@@ -93,13 +93,14 @@ func (mm *MarksmanshipHunter) MasterMarksmanAura() {
 	})
 }
 func (mm *MarksmanshipHunter) SteadyFocusAura() {
-	attackspeedMultiplier := core.TernaryFloat64(mm.CouldHaveSetBonus(hunter.YaungolSlayersBattlegear, 4), 1.25, 1.15)
+	var attackspeedMultiplier float64
 	mm.steadyFocusAura = core.BlockPrepull(mm.RegisterAura(core.Aura{
 		Label:    "Steady Focus",
 		ActionID: core.ActionID{SpellID: 53224, Tag: 1},
 		Duration: time.Second * 20,
 
 		OnGain: func(aura *core.Aura, sim *core.Simulation) {
+			attackspeedMultiplier = core.TernaryFloat64(mm.T14_4pcAura.IsActive(), 1.25, 1.15)
 			aura.Unit.MultiplyRangedSpeed(sim, attackspeedMultiplier)
 		},
 		OnExpire: func(aura *core.Aura, sim *core.Simulation) {

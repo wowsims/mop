@@ -646,8 +646,8 @@ func registerBloodlustCD(agent Agent, spellID int32) {
 			},
 		},
 
-		ApplyEffects: func(sim *Simulation, target *Unit, _ *Spell) {
-			if !target.HasActiveAura(SatedAuraLabel) {
+		ApplyEffects: func(sim *Simulation, _ *Unit, _ *Spell) {
+			if !character.HasActiveAura(SatedAuraLabel) {
 				bloodlustAura.Activate(sim)
 			}
 		},

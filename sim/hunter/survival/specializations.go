@@ -21,16 +21,17 @@ func (survival *SurvivalHunter) ApplyMods() {
 	})
 }
 
-// Todo: Should we support precasting freezing/ice trap?
 func (survival *SurvivalHunter) applyLNL() {
-	has4pcT16 := survival.CouldHaveSetBonus(hunter.BattlegearOfTheUnblinkingVigil, 4)
-
 	var lnlAura *core.Aura
 	lnlAura = core.BlockPrepull(survival.RegisterAura(core.Aura{
 		Label:     "Lock and Load",
 		ActionID:  core.ActionID{SpellID: 56343},
 		Duration:  time.Second * 12,
 		MaxStacks: 2,
+		Icd: &core.Cooldown{
+			Timer:    survival.NewTimer(),
+			Duration: time.Second * 10,
+		},
 	})).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		ClassMask:  hunter.HunterSpellExplosiveShot,
@@ -44,7 +45,7 @@ func (survival *SurvivalHunter) applyLNL() {
 			survival.explosiveShot.CD.Reset()
 
 			// T16 4pc: Explosive Shot casts have a 40% chance to not consume a charge of Lock and Load.
-			if has4pcT16 && sim.Proc(0.4, "T16 4pc") {
+			if survival.T16_4pcAura.IsActive() && sim.Proc(0.4, "T16 4pc") {
 				return
 			}
 
@@ -52,22 +53,26 @@ func (survival *SurvivalHunter) applyLNL() {
 		},
 	})
 
-	procChance := core.TernaryFloat64(survival.CouldHaveSetBonus(hunter.YaungolSlayersBattlegear, 4), 0.40, 0.20)
-
-	procAura := survival.MakeProcTriggerAura(core.ProcTrigger{
+	survival.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Lock and Load Trigger",
 		Callback:       core.CallbackOnPeriodicDamageDealt,
 		ClassSpellMask: hunter.HunterSpellBlackArrow,
-		ICD:            time.Second * 10,
-		ProcChance:     procChance,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			if !lnlAura.Icd.IsReady(sim) {
+				return
+			}
+
+			procChance := core.TernaryFloat64(survival.T14_4pcAura.IsActive(), 0.40, 0.20)
+			if !sim.Proc(procChance, "Lock and Load Trigger") {
+				return
+			}
+
 			lnlAura.Activate(sim)
 			lnlAura.SetStacks(sim, 2)
 
 			survival.explosiveShot.CD.Reset()
+			lnlAura.Icd.Use(sim)
 		},
 	})
-
-	lnlAura.Icd = procAura.Icd
 }

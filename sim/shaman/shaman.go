@@ -341,6 +341,7 @@ const (
 	SpellMaskUnleashElements
 	SpellMaskUnleashFrost
 	SpellMaskUnleashFlame
+	SpellMaskUnleashWind
 	SpellMaskEarthquake
 	SpellMaskFlametongueWeapon
 	SpellMaskWindfuryWeapon

@@ -89,8 +89,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-BattlegearoftheUnblinkingVigil"
  value: {
-  dps: 231231.23605
-  tps: 178548.92553
+  dps: 231187.58388
+  tps: 178496.59319
  }
 }
 dps_results: {
@@ -2008,8 +2008,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-Average-Default"
  value: {
-  dps: 294888.83251
-  tps: 225845.84582
+  dps: 294888.63161
+  tps: 225845.88329
  }
 }
 dps_results: {

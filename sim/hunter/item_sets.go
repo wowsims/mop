@@ -32,7 +32,18 @@ var YaungolSlayersBattlegear = core.NewItemSet(core.ItemSet{
 			})
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
-			// Stub
+			hunter := agent.(HunterAgent).GetHunter()
+
+			// Used for MM and SV in sim/hunter/marksmanship/specializations.go and sim/hunter/survival/specializations.go
+			hunter.T14_4pcAura = setBonusAura
+
+			if hunter.Spec == proto.Spec_SpecBeastMasteryHunter {
+				setBonusAura.AttachSpellMod(core.SpellModConfig{
+					Kind:      core.SpellMod_BuffDuration_Flat,
+					ClassMask: HunterSpellBestialWrath,
+					TimeValue: time.Second * 6,
+				})
+			}
 		},
 	},
 })
@@ -164,6 +175,7 @@ var BattlegearOfTheUnblinkingVigil = core.NewItemSet(core.ItemSet{
 			// Instant Aimed shots reduce the cast time of your next Aimed Shot by 50%.
 			// Offensive abilities used during Bestial Wrath increase all damage you deal by 4% and all damage dealt by your pet by 2%, stacking up to 5 times.
 			hunter := agent.(HunterAgent).GetHunter()
+			hunter.T16_4pcAura = setBonusAura
 
 			if hunter.Spec == proto.Spec_SpecSurvivalHunter {
 				// Survival bonus is handled in survival/specializations.go

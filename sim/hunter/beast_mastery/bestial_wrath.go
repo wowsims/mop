@@ -12,14 +12,12 @@ func (bmHunter *BeastMasteryHunter) registerBestialWrathCD() {
 		return
 	}
 
-	duration := core.TernaryDuration(bmHunter.CouldHaveSetBonus(hunter.YaungolSlayersBattlegear, 4), 16, 10) * time.Second
-
 	actionID := core.ActionID{SpellID: 19574}
 
 	bmHunter.Pet.BestialWrathAura = bmHunter.Pet.RegisterAura(core.Aura{
 		Label:    "Bestial Wrath Pet",
 		ActionID: actionID,
-		Duration: duration,
+		Duration: core.NeverExpires,
 	}).AttachMultiplicativePseudoStatBuff(
 		&bmHunter.Pet.PseudoStats.DamageDealtMultiplier, 1.2,
 	)
@@ -27,7 +25,7 @@ func (bmHunter *BeastMasteryHunter) registerBestialWrathCD() {
 	bmHunter.BestialWrathAura = bmHunter.RegisterAura(core.Aura{
 		Label:    "Bestial Wrath",
 		ActionID: actionID,
-		Duration: duration,
+		Duration: time.Second * 10,
 	}).AttachSpellMod(core.SpellModConfig{
 		Kind:       core.SpellMod_PowerCost_Pct,
 		ClassMask:  hunter.HunterSpellsAll | hunter.HunterSpellsTalents,
@@ -55,6 +53,8 @@ func (bmHunter *BeastMasteryHunter) registerBestialWrathCD() {
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, _ *core.Spell) {
 			bmHunter.BestialWrathAura.Activate(sim)
 		},
+
+		RelatedSelfBuff: bmHunter.BestialWrathAura,
 	})
 
 	bmHunter.AddMajorCooldown(core.MajorCooldown{

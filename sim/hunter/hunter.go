@@ -30,6 +30,9 @@ type Hunter struct {
 	SerpentSting         *core.Spell
 
 	BestialWrathAura *core.Aura
+
+	T14_4pcAura *core.Aura
+	T16_4pcAura *core.Aura
 }
 
 func (hunter *Hunter) GetCharacter() *core.Character {

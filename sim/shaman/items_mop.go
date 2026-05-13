@@ -226,7 +226,7 @@ var ItemSetCelesialHarmonyBattlegear = core.NewItemSet(core.ItemSet{
 			shaman := agent.(ShamanAgent).GetShaman()
 			var imbueSpells []*core.Spell
 			shaman.OnSpellRegistered(func(spell *core.Spell) {
-				if spell.Matches(SpellMaskWindfuryWeapon | SpellMaskFrostbrandWeapon | SpellMaskFlametongueWeapon) {
+				if spell.Matches(SpellMaskUnleashWind | SpellMaskUnleashFrost | SpellMaskUnleashFlame) {
 					imbueSpells = append(imbueSpells, spell)
 				}
 			})

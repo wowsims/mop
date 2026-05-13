@@ -100,6 +100,7 @@ func (shaman *Shaman) registerUnleashWind() {
 		SpellSchool:      core.SpellSchoolPhysical,
 		ProcMask:         core.ProcMaskRangedSpecial,
 		Flags:            core.SpellFlagPassiveSpell,
+		ClassSpellMask:   SpellMaskUnleashWind,
 		DamageMultiplier: 0.9,
 		CritMultiplier:   shaman.DefaultCritMultiplier(),
 		ThreatMultiplier: 1,
