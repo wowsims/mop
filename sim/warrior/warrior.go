@@ -188,6 +188,8 @@ func (warrior *Warrior) Initialize() {
 	warrior.registerWhirlwind()
 	warrior.registerCharge()
 	warrior.registerPummel()
+
+	warrior.addMistsPvpGloves()
 }
 
 func (warrior *Warrior) registerPassives() {
