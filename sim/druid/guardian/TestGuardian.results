@@ -1761,8 +1761,8 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 327498.65619
-  tps: 1.99027489907e+06
+  dps: 326245.17828
+  tps: 1.98986216206e+06
   dtps: 44989.82602
   hps: 31902.94576
  }
