@@ -595,4 +595,9 @@ message BulkSettings {
 	int32 default_prismatic_gem = 7;
 
 	bool inherit_upgrades = 8;
+	int32 freeze_ring_slot = 9;
+	int32 freeze_trinket_slot = 10;
+	int32 freeze_weapon_slot = 11;
+	repeated WeaponType freeze_mainhand_weapon_slots = 12;
+	repeated WeaponType freeze_offhand_weapon_slots = 13;
 }

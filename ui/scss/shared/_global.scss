@@ -183,6 +183,10 @@ kbd {
 	@extend .pb-gap;
 }
 
+.fs-content {
+	font-size: var(--content-font-size);
+}
+
 @each $label, $value in $item-quality-colors {
 	.item-quality-#{$label} {
 		color: var(--bs-#{$label}) !important;

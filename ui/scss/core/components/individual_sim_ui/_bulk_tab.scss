@@ -57,17 +57,6 @@
 		}
 	}
 
-	.talents-picker-container {
-		display: flex;
-		flex-direction: column;
-
-		.talents-container {
-			display: flex;
-			flex-wrap: wrap;
-			gap: var(--block-spacer);
-		}
-	}
-
 	.fallback-gem-container {
 		display: flex;
 		flex-direction: column;
@@ -88,6 +77,11 @@
 			display: flex;
 			gap: 3px;
 		}
+	}
+
+	.bulk-gear-freeze-weapontypes__list {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
 	}
 
 	.item-picker-root {
