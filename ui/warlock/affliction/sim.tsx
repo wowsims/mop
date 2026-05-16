@@ -84,7 +84,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAfflictionWarlock, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_PRESET.gear,
+		gear: Presets.P3_PRESET.gear,
 
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P2_BIS_EP_PRESET.epWeights,
@@ -163,31 +163,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAfflictionWarlock, {
 		return Presets.APL_Default.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecAfflictionWarlock,
-			talents: Presets.AfflictionTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PRERAID_PRESET.gear,
-					2: Presets.P1_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PRERAID_PRESET.gear,
-					2: Presets.P1_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionWarlock> {
@@ -209,7 +185,7 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 512) {
 					epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 580) {
+				} else if (avgIlvl >= 560) {
 					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
 				} else {
 					epWeights = Presets.P1_BIS_EP_PRESET.epWeights;

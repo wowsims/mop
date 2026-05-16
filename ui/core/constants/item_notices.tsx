@@ -51,9 +51,11 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 				<>
 					<p className="fw-bold">The following item effect (on-use or proc) is not implemented!</p>
 					<ul>
-						{tooltips.filter(tooltip => !!tooltip).map(tooltip => (
-							<li>{tooltip}</li>
-						))}
+						{tooltips
+							.filter(tooltip => !!tooltip)
+							.map(tooltip => (
+								<li>{tooltip}</li>
+							))}
 					</ul>
 				</>
 			),
@@ -66,7 +68,8 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 			[Spec.SpecUnknown]: (
 				<>
 					<p>
-						The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span className="fw-bold">not</span> implemented. The DPS gain of these is around ~40 DPS.
+						The Agility proc on this trinket has been implemented, but the Voodoo Gnomes are <span className="fw-bold">not</span> implemented. The
+						DPS gain of these is around ~40 DPS.
 					</p>
 				</>
 			),
@@ -75,15 +78,17 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 
 	...[105150, 102310, 104652, 105399, 105648, 104901].map((itemID): [number, ItemNoticeData] => [
 		itemID,
-		{
-			[Spec.SpecUnknown]: (
-				<>
-					<p>
-						The proc has been implemented but currently does not work correctly with Mages Alter Time.
-					</p>
-				</>
-			),
-		},
+		[Spec.SpecFrostMage, Spec.SpecArcaneMage, Spec.SpecFireMage].reduce<ItemNoticeData>(
+			(acc, spec) => {
+				acc[spec] = (
+					<>
+						<p>The proc has been implemented but currently does not work correctly with Mages Alter Time.</p>
+					</>
+				);
+				return acc;
+			},
+			{ [Spec.SpecUnknown]: false },
+		),
 	]),
 ]);
 

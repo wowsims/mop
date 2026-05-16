@@ -10,7 +10,7 @@ import { Component } from '../component';
 export type ItemNoticeData = {
 	// SpecUnknown is used as default and should always be present
 	// False is used to disable the notice for a specific spec
-	[Spec.SpecUnknown]: JSX.Element;
+	[Spec.SpecUnknown]: JSX.Element | false;
 } & Record<number, JSX.Element | false>;
 
 type ItemNoticeConfig = {
