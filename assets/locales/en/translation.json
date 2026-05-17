@@ -808,6 +808,10 @@
 				"label": "Inherit Upgrades",
 				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
 			},
+			"pre_optimise": {
+				"label": "Pre-optimise",
+				"tooltip": "When enabled, this will use EP scoring to determine sets that are most likely to be good.<br/><strong>Note:</strong>This will not include dynamic item effects such as set bonuses / trinkets."
+			},
 			"freeze_ring": {
 				"label": "Freeze ring slot",
 				"tooltip": "Freeze one equipped ring to reduce combination counts"

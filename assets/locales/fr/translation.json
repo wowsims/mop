@@ -807,6 +807,10 @@
             "inherit_upgrades": {
                 "label": "Hériter des améliorations",
                 "tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
+			},
+			"pre_optimise": {
+				"label": "Pré-optimiser les ensembles d'équipement",
+				"tooltip": "Lorsque cette option est activée, seuls les meilleurs ensembles optimisés selon le score de retouche seront simulés afin de réduire le temps d'exécution."
             },
             "freeze_ring": {
                 "label": "Geler un emplacement d'anneau",

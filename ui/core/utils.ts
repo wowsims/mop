@@ -151,6 +151,16 @@ export function stDevToConf90(stDev: number, N: number) {
 	return (1.645 * stDev) / Math.sqrt(N);
 }
 
+export function getStDev(arr: Array<number>, sample = false): number {
+	if (arr.length === 0 || (sample && arr.length === 1)) {
+		return 0;
+	}
+
+	const mean = sum(arr) / arr.length;
+	const variance = sum(arr.map(value => Math.pow(value - mean, 2))) / (sample ? arr.length - 1 : arr.length);
+	return Math.sqrt(variance);
+}
+
 // Only works for numeric enums
 export function getEnumValues<E>(enumType: any): Array<E> {
 	return Object.keys(enumType)

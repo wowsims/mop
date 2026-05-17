@@ -595,6 +595,8 @@ message BulkSettings {
 	int32 default_prismatic_gem = 7;
 
 	bool inherit_upgrades = 8;
+	bool use_optimisation_rounds = 14;
+
 	int32 freeze_ring_slot = 9;
 	int32 freeze_trinket_slot = 10;
 	int32 freeze_weapon_slot = 11;

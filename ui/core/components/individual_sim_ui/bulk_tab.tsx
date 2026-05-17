@@ -86,6 +86,7 @@ export class BulkTab extends SimTab {
 	protected bulkSimAbortController: AbortController | null = null;
 
 	inheritUpgrades: boolean;
+	useOptimisationRounds: boolean;
 	frozenItems: Map<BulkSimItemSlot, EquippedItem | null> = new Map([
 		[BulkSimItemSlot.ItemSlotFinger, null],
 		[BulkSimItemSlot.ItemSlotTrinket, null],
@@ -204,6 +205,7 @@ export class BulkTab extends SimTab {
 		});
 
 		this.inheritUpgrades = true;
+		this.useOptimisationRounds = false;
 		this.fallbackGems = Array.from({ length: 5 }, () => UIGem.create());
 		this.gemIconElements = [];
 
@@ -270,6 +272,7 @@ export class BulkTab extends SimTab {
 
 			this.addItems(settings.items, true);
 			this.setInheritUpgrades(settings.inheritUpgrades);
+			this.setUseOptimisationRounds(settings.useOptimisationRounds);
 			this.setFrozenItem(BulkSimItemSlot.ItemSlotFinger, this.getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotFinger, settings.freezeRingSlot));
 			this.setFrozenItem(BulkSimItemSlot.ItemSlotTrinket, this.getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotTrinket, settings.freezeTrinketSlot));
 			this.setFrozenWeaponSlot(settings.freezeWeaponSlot);
@@ -306,6 +309,7 @@ export class BulkTab extends SimTab {
 		return BulkSettings.create({
 			items: this.getItems(),
 			inheritUpgrades: this.inheritUpgrades,
+			useOptimisationRounds: this.useOptimisationRounds,
 			defaultRedGem: this.fallbackGems[0].id,
 			defaultYellowGem: this.fallbackGems[1].id,
 			defaultBlueGem: this.fallbackGems[2].id,
@@ -909,11 +913,17 @@ export class BulkTab extends SimTab {
 		return true;
 	}
 
+	private setUseOptimisationRounds(newValue: boolean) {
+		this.useOptimisationRounds = newValue;
+		this.settingsChangedEmitter.emit(TypedEvent.nextEventID());
+	}
+
 	protected buildBatchSettings() {
 		this.bulkSimButton.addEventListener('click', () => this.runBatchSim());
 
 		const socketsContainerRef = ref<HTMLDivElement>();
 		const inheritUpgradesDiv = ref<HTMLDivElement>();
+		const useOptimisationRoundsDiv = ref<HTMLDivElement>();
 		const frozenRingDiv = ref<HTMLDivElement>();
 		const frozenTrinketDiv = ref<HTMLDivElement>();
 		const frozenWeaponDiv = ref<HTMLDivElement>();
@@ -926,6 +936,7 @@ export class BulkTab extends SimTab {
 					<h6>{i18n.t('bulk_tab.settings.fallback_gems')}</h6>
 					<div ref={socketsContainerRef} className="sockets-container"></div>
 				</div>
+				<div ref={useOptimisationRoundsDiv} className="use-optimisation-rounds-container"></div>
 				<div ref={inheritUpgradesDiv} className="inherit-upgrades-container"></div>
 				<div ref={frozenRingDiv}></div>
 				<div ref={frozenTrinketDiv}></div>
@@ -949,6 +960,19 @@ export class BulkTab extends SimTab {
 				getValue: _modObj => this.inheritUpgrades,
 				setValue: (_, _modObj, newValue: boolean) => {
 					this.setInheritUpgrades(newValue);
+				},
+			});
+
+		if (useOptimisationRoundsDiv.value)
+			new BooleanPicker<BulkTab>(useOptimisationRoundsDiv.value, this, {
+				id: 'use-optimisation-rounds',
+				label: i18n.t('bulk_tab.settings.pre_optimise.label'),
+				labelTooltip: i18n.t('bulk_tab.settings.pre_optimise.tooltip'),
+				inline: true,
+				changedEvent: _modObj => this.settingsChangedEmitter,
+				getValue: _modObj => this.useOptimisationRounds,
+				setValue: (_, _modObj, newValue: boolean) => {
+					this.setUseOptimisationRounds(newValue);
 				},
 			});
 
