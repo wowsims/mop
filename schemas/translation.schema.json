@@ -2886,6 +2886,35 @@
 							},
 							"additionalProperties": false,
 							"required": ["label", "tooltip"]
+						},
+						"freeze_weapon": {
+							"type": "object",
+							"properties": {
+								"label": {
+									"type": "string"
+								},
+								"tooltip": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["label", "tooltip"]
+						},
+						"freeze_weapon_types": {
+							"type": "object",
+							"properties": {
+								"mainhand_label": {
+									"type": "string"
+								},
+								"offhand_label": {
+									"type": "string"
+								},
+								"tooltip": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["mainhand_label", "offhand_label", "tooltip"]
 						}
 					},
 					"additionalProperties": false,
@@ -2896,7 +2925,9 @@
 						"fallback_gems",
 						"inherit_upgrades",
 						"freeze_ring",
-						"freeze_trinket"
+						"freeze_trinket",
+						"freeze_weapon",
+						"freeze_weapon_types"
 					]
 				},
 				"progress": {

@@ -815,6 +815,15 @@
 			"freeze_trinket": {
 				"label": "Freeze trinket slot",
 				"tooltip": "Freeze one equipped trinket to reduce combination counts"
+			},
+			"freeze_weapon": {
+				"label": "Freeze weapon slot",
+				"tooltip": "Freeze the equipped main-hand or off-hand weapon to reduce combination counts"
+			},
+			"freeze_weapon_types": {
+				"mainhand_label": "Freeze MH weapon type",
+				"offhand_label": "Freeze OH weapon type",
+				"tooltip": "Leave all unchecked to allow any weapon type for this slot."
 			}
 		},
 		"progress": {
