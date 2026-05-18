@@ -1553,8 +1553,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 275827.01198
-  tps: 263400.43608
+  dps: 275797.31985
+  tps: 263370.74395
   hps: 23.35571
  }
 }

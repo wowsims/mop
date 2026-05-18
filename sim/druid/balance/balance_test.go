@@ -19,11 +19,11 @@ func TestBalance(t *testing.T) {
 		{
 			Class:      proto.Class_ClassDruid,
 			Race:       proto.Race_RaceTroll,
-			OtherRaces: []proto.Race{proto.Race_RaceWorgen, proto.Race_RaceNightElf, proto.Race_RaceTauren},
+			OtherRaces: []proto.Race{proto.Race_RaceWorgen},
 
-			GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "t15"),
+			GearSet: core.GetGearSet("../../../ui/druid/balance/gear_sets", "t16"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/druid/balance/gear_sets", "t14"),
+				core.GetGearSet("../../../ui/druid/balance/gear_sets", "t15"),
 			},
 			Talents: BalanceIncarnationDocTalents,
 			OtherTalentSets: []core.TalentsCombo{

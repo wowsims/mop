@@ -6,7 +6,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Class, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Class, Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as Presets from './presets';
@@ -137,7 +137,15 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionWarrior, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_GENERIC, Presets.ROTATION_SHA, Presets.ROTATION_HORRIDON, Presets.ROTATION_IRON_JUGGERNAUT],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_BALANCED_PRESET, Presets.P3_4_PROG_PRESET, Presets.P3_4_BALANCED_PRESET, Presets.P3_4_OFFENSIVE_PRESET, Presets.P5_PROG_PRESET],
+		gear: [
+			Presets.PRERAID_BALANCED_PRESET,
+			Presets.P3_4_PROG_PRESET,
+			Presets.P3_4_BALANCED_PRESET,
+			Presets.P3_4_OFFENSIVE_PRESET,
+			Presets.P5_PROG_PRESET,
+			Presets.P5_BALANCED_PRESET,
+			Presets.P5_OFFENSIVE_PRESET,
+		],
 		itemSwaps: [Presets.PRERAID_ITEM_SWAP, Presets.P2_ITEM_SWAP],
 		builds: [
 			// Presets.PRESET_BUILD_GARAJAL,
