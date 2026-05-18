@@ -32,6 +32,7 @@
 		"@types/pako": "^2.0.0",
 		"ajv": "^8.17.1",
 		"apexcharts": "^4.5.0",
+		"async": "^3.2.6",
 		"bootstrap": "^5.3.7",
 		"chart.js": "^4.5.0",
 		"clsx": "^2.1.1",
@@ -43,6 +44,7 @@
 		"tippy.js": "^6.3.7",
 		"tsx-vanilla": "^1.2.0",
 		"uuid": "^11.1.0",
+		"workerpool": "^10.0.2",
 		"yalps": "^0.5.6"
 	},
 	"devDependencies": {
@@ -52,6 +54,7 @@
 		"@protobuf-ts/plugin-framework": "2.9.0",
 		"@protobuf-ts/protoc": "2.9.1",
 		"@protobuf-ts/runtime": "2.9.1",
+		"@types/async": "^3.2.25",
 		"@types/bootstrap": "^5.2.10",
 		"@types/eslint": "^8.56.10",
 		"@types/gtag.js": "^0.0.20",

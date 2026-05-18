@@ -809,8 +809,8 @@
 				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
 			},
 			"pre_optimise": {
-				"label": "Pre-optimise",
-				"tooltip": "When enabled, this will use EP scoring to determine sets that are most likely to be good.<br/><strong>Note:</strong>This will not include dynamic item effects such as set bonuses / trinkets."
+				"label": "Use multi-stage optimisation",
+				"tooltip": "When enabled for batch sims with at least 20 combinations, Bulk Sim first runs each set at 100 iterations, then refines statistically likely contenders at 1000 iterations, and finally runs the best remaining sets at your configured iteration count. Disable this to run every combination at the full configured iteration count."
 			},
 			"freeze_ring": {
 				"label": "Freeze ring slot",
@@ -832,9 +832,13 @@
 		},
 		"progress": {
 			"total_combinations": "{{count}} total combinations.",
+			"building_candidate_gear_sets": "Building candidate gear sets",
 			"reforging_rounds": "Running reforges",
 			"baseline_round": "Running baseline round",
 			"refining_rounds": "Running refining rounds",
+			"low_iteration_rounds": "Running low iteration rounds",
+			"medium_iteration_rounds": "Running medium iteration rounds",
+			"high_iteration_rounds": "Running high iteration rounds",
 			"iterations_complete": "{{completed}} / {{total}}<br />iterations complete",
 			"seconds_remaining": "{{seconds}} seconds remaining"
 		},

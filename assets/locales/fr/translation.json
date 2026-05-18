@@ -809,8 +809,8 @@
                 "tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
 			},
 			"pre_optimise": {
-				"label": "Pré-optimiser les ensembles d'équipement",
-				"tooltip": "Lorsque cette option est activée, seuls les meilleurs ensembles optimisés selon le score de retouche seront simulés afin de réduire le temps d'exécution."
+				"label": "Utiliser l'optimisation multi-étapes",
+				"tooltip": "Lorsque cette option est activée pour les simulations par lots d'au moins 20 combinaisons, Bulk Sim simule d'abord chaque ensemble avec 100 itérations, affine ensuite les candidats statistiquement prometteurs avec 1000 itérations, puis simule les meilleurs ensembles restants avec le nombre d'itérations configuré. Désactivez cette option pour simuler chaque combinaison avec le nombre complet d'itérations configuré."
             },
             "freeze_ring": {
                 "label": "Geler un emplacement d'anneau",
@@ -832,9 +832,13 @@
         },
         "progress": {
             "total_combinations": "{{count}} combinaisons totales.",
+			"building_candidate_gear_sets": "Création des ensembles d'équipement candidats",
 			"reforging_rounds": "Exécution des reforges",
 			"baseline_round": "Exécution du tour de référence",
             "refining_rounds": "Exécution des tours d'affinage",
+			"low_iteration_rounds": "Exécution des tours à faible itération",
+			"medium_iteration_rounds": "Exécution des tours à itération moyenne",
+			"high_iteration_rounds": "Exécution des tours à forte itération",
             "iterations_complete": "{{completed}} / {{total}}<br />itérations terminées",
             "seconds_remaining": "{{seconds}} secondes restantes"
         },

@@ -2861,6 +2861,19 @@
 							"additionalProperties": false,
 							"required": ["label", "tooltip"]
 						},
+						"pre_optimise": {
+							"type": "object",
+							"properties": {
+								"label": {
+									"type": "string"
+								},
+								"tooltip": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["label", "tooltip"]
+						},
 						"freeze_ring": {
 							"type": "object",
 							"properties": {
@@ -2924,6 +2937,7 @@
 						"iterations",
 						"fallback_gems",
 						"inherit_upgrades",
+						"pre_optimise",
 						"freeze_ring",
 						"freeze_trinket",
 						"freeze_weapon",
@@ -2936,6 +2950,9 @@
 						"total_combinations": {
 							"type": "string"
 						},
+						"building_candidate_gear_sets": {
+							"type": "string"
+						},
 						"reforging_rounds": {
 							"type": "string"
 						},
@@ -2943,6 +2960,15 @@
 							"type": "string"
 						},
 						"refining_rounds": {
+							"type": "string"
+						},
+						"low_iteration_rounds": {
+							"type": "string"
+						},
+						"medium_iteration_rounds": {
+							"type": "string"
+						},
+						"high_iteration_rounds": {
 							"type": "string"
 						},
 						"iterations_complete": {
@@ -2953,7 +2979,18 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["total_combinations", "reforging_rounds", "baseline_round", "refining_rounds", "iterations_complete", "seconds_remaining"]
+					"required": [
+						"total_combinations",
+						"building_candidate_gear_sets",
+						"reforging_rounds",
+						"baseline_round",
+						"refining_rounds",
+						"low_iteration_rounds",
+						"medium_iteration_rounds",
+						"high_iteration_rounds",
+						"iterations_complete",
+						"seconds_remaining"
+					]
 				},
 				"notifications": {
 					"type": "object",

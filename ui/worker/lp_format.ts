@@ -110,7 +110,7 @@ function buildConstraints(variables: SerializedVariables, constraints: Serialize
 	for (const [constraintName, constraint] of Object.entries(constraints)) {
 		// Skip constraints that have no bound values defined
 		if (constraint.equal === undefined && constraint.min === undefined && constraint.max === undefined) {
-			console.warn(`[LP] Skipping constraint "${constraintName}" with no bounds defined`);
+			// console.warn(`[LP] Skipping constraint "${constraintName}" with no bounds defined`);
 			continue;
 		}
 
@@ -134,7 +134,7 @@ function buildConstraints(variables: SerializedVariables, constraints: Serialize
 		if (terms.length === 0) {
 			// Skip constraints with no variables - these are constraints on stats
 			// that aren't affected by any reforge options
-			console.warn(`[LP] Skipping constraint "${constraintName}" with no variable coefficients`);
+			// console.warn(`[LP] Skipping constraint "${constraintName}" with no variable coefficients`);
 			continue;
 		}
 
