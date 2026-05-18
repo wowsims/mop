@@ -53,30 +53,35 @@ const LOCAL_COMBINATIONS_LIMIT = 100_000;
 type OptimisationStage = 'low' | 'medium' | 'high';
 type OptimisationStageConfig = {
 	concurrency?: number;
-	iterations?: number;
+	minIterations?: number;
+	targetErrorPct: number;
+	cullingCoefficient?: number;
 	minSurvivors?: number;
 	maxSurvivors?: number;
 };
 
-const BULK_OPTIMISATION_CONFIDENCE_Z = 1.96;
 const BULK_OPTIMISATION_MIN_COMBINATIONS = 20;
-const BULK_OPTIMISATION_MIN_DPS_TOLERANCE = 50;
-const BULK_OPTIMISATION_RELATIVE_DPS_TOLERANCE = 0.001;
+const BULK_OPTIMISATION_AGGRESSIVE_CULLING_COEFFICIENT = 1.35;
+const BULK_OPTIMISATION_CONSERVATIVE_ERROR_THRESHOLD = 2.5;
 const BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE = 250;
 
 const STAGE_CONFIG: Record<OptimisationStage, OptimisationStageConfig> = {
 	low: {
-		iterations: 100,
+		minIterations: 100,
+		targetErrorPct: 1,
 		minSurvivors: 20,
 		maxSurvivors: 100,
 	},
 	medium: {
-		iterations: 1000,
+		minIterations: 1000,
+		targetErrorPct: 0.2,
 		minSurvivors: 5,
 		maxSurvivors: 25,
 		concurrency: 3,
 	},
 	high: {
+		minIterations: 1000,
+		targetErrorPct: 0.05,
 		concurrency: 1,
 	},
 };
@@ -84,10 +89,6 @@ const STAGE_CONFIG: Record<OptimisationStage, OptimisationStageConfig> = {
 export interface TopGearResult {
 	gear: Gear;
 	dpsMetrics: DistributionMetrics;
-}
-
-interface StagedBulkGearResult extends TopGearResult {
-	potentialDps: number;
 }
 
 interface BulkOptimisationStageResult {
@@ -101,6 +102,8 @@ interface BulkOptimisationStageMetrics {
 	inputGearSets: number;
 	results: number;
 	iterations: number;
+	targetErrorPct: number;
+	combinationErrorMultiplier: number;
 	concurrency: number;
 	stageRounds: number;
 	durationSeconds: number;
@@ -824,12 +827,12 @@ export class BulkTab extends SimTab {
 
 		for (const stage of ['low', 'medium'] as const) {
 			if (this.shouldRunOptimisationStage(stage, candidates)) {
-				iterations += this.getOptimisationStageIterations(stage) * (candidates + 1);
+				iterations += this.getOptimisationStageMinIterations(stage) * (candidates + 1);
 				candidates = Math.min(candidates, STAGE_CONFIG[stage].maxSurvivors!);
 			}
 		}
 
-		return iterations + this.getOptimisationStageIterations('high') * (candidates + 1);
+		return iterations + this.getOptimisationStageMinIterations('high') * (candidates + 1);
 	}
 
 	protected buildTabContent() {
@@ -1429,12 +1432,12 @@ export class BulkTab extends SimTab {
 		}
 	}
 
-	private getDifferenceStandardError(a: DistributionMetrics, aIterations: number, b: DistributionMetrics, bIterations: number): number {
-		return Math.sqrt(Math.pow(a.stdev, 2) / aIterations + Math.pow(b.stdev, 2) / bIterations);
+	private getDpsError(metrics: DistributionMetrics, iterations: number): number {
+		return iterations > 0 ? metrics.stdev / Math.sqrt(iterations) : 0;
 	}
 
-	private getPotentialDps(candidate: DistributionMetrics, candidateIterations: number, best: DistributionMetrics, bestIterations: number): number {
-		return candidate.avg + BULK_OPTIMISATION_CONFIDENCE_Z * this.getDifferenceStandardError(candidate, candidateIterations, best, bestIterations);
+	private getCombinationErrorMultiplier(candidateCount: number): number {
+		return Math.sqrt(Math.max(1, Math.log10(Math.max(candidateCount, 10))));
 	}
 
 	private debugOptimisationRound(message: string, data?: unknown) {
@@ -1454,7 +1457,8 @@ export class BulkTab extends SimTab {
 					rank: index + 1,
 					avg: Math.round(result.dpsMetrics.avg * 100) / 100,
 					stdev: Math.round(result.dpsMetrics.stdev * 100) / 100,
-					potential: Math.round(this.getPotentialDps(result.dpsMetrics, iterations, bestMetrics, iterations) * 100) / 100,
+					error: Math.round(this.getDpsError(result.dpsMetrics, iterations) * 100) / 100,
+					behindBest: Math.round((bestMetrics.avg - result.dpsMetrics.avg) * 100) / 100,
 				})),
 		);
 	}
@@ -1481,15 +1485,14 @@ export class BulkTab extends SimTab {
 
 		const rankedByMean = results.slice().sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
 		const bestMetrics = [baseline, rankedByMean[0]].sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg)[0].dpsMetrics;
-		const dpsTolerance = Math.max(BULK_OPTIMISATION_MIN_DPS_TOLERANCE, bestMetrics.avg * BULK_OPTIMISATION_RELATIVE_DPS_TOLERANCE);
+		const stageConfig = STAGE_CONFIG[stageName];
+		const cullingCoefficient = stageConfig.cullingCoefficient ?? BULK_OPTIMISATION_AGGRESSIVE_CULLING_COEFFICIENT;
+		const maxActorError = [baseline, ...results].reduce((maxError, result) => Math.max(maxError, this.getDpsError(result.dpsMetrics, iterations)), 0);
+		const aggressiveCullingMargin = maxActorError * cullingCoefficient;
+		const conservativeCullingMargin = bestMetrics.avg * (stageConfig.targetErrorPct / 100) * BULK_OPTIMISATION_CONSERVATIVE_ERROR_THRESHOLD;
+		const lowerBound = bestMetrics.avg - aggressiveCullingMargin;
 		const meanSurvivors = rankedByMean.slice(0, Math.min(minSurvivors, rankedByMean.length));
-		const stagedResults: StagedBulkGearResult[] = results
-			.map(result => ({
-				...result,
-				potentialDps: this.getPotentialDps(result.dpsMetrics, iterations, bestMetrics, iterations),
-			}))
-			.filter(result => result.potentialDps >= bestMetrics.avg - dpsTolerance)
-			.sort((a, b) => b.potentialDps - a.potentialDps);
+		const stagedResults = results.filter(result => result.dpsMetrics.avg >= lowerBound).sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
 
 		const survivors: TopGearResult[] = [];
 		const addSurvivor = (result: TopGearResult) => {
@@ -1508,11 +1511,16 @@ export class BulkTab extends SimTab {
 			baselineStdev: baseline.dpsMetrics.stdev,
 			bestAvg: bestMetrics.avg,
 			bestStdev: bestMetrics.stdev,
-			dpsTolerance,
+			maxActorError,
+			cullingCoefficient,
+			aggressiveCullingMargin,
+			conservativeCullingMargin,
+			lowerBound,
+			targetErrorPct: stageConfig.targetErrorPct,
 			minSurvivors,
 			maxSurvivors,
 			meanSurvivors: meanSurvivors.length,
-			confidenceSurvivors: stagedResults.length,
+			thresholdSurvivors: stagedResults.length,
 			uniqueSurvivorsBeforeCap: survivors.length,
 		});
 		this.debugOptimisationResults(stageName, results, bestMetrics, iterations);
@@ -1529,11 +1537,7 @@ export class BulkTab extends SimTab {
 		const pinnedMeanSurvivors = new Set(meanSurvivors.map(result => result.gear));
 		const remainingSurvivors = survivors
 			.filter(result => !pinnedMeanSurvivors.has(result.gear))
-			.sort((a, b) => {
-				const aPotential = this.getPotentialDps(a.dpsMetrics, iterations, bestMetrics, iterations);
-				const bPotential = this.getPotentialDps(b.dpsMetrics, iterations, bestMetrics, iterations);
-				return bPotential - aPotential;
-			});
+			.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
 
 		const cappedSurvivors = [...meanSurvivors, ...remainingSurvivors.slice(0, Math.max(0, maxSurvivors - meanSurvivors.length))];
 		this.debugOptimisationRound(`${stageName} pruning complete`, {
@@ -1590,8 +1594,17 @@ export class BulkTab extends SimTab {
 		return maxSurvivors === undefined || candidateCount > maxSurvivors;
 	}
 
-	private getOptimisationStageIterations(stage: OptimisationStage): number {
-		return STAGE_CONFIG[stage].iterations ?? this.simUI.sim.getIterations();
+	private getOptimisationStageMinIterations(stage: OptimisationStage): number {
+		return STAGE_CONFIG[stage].minIterations ?? this.simUI.sim.getIterations();
+	}
+
+	private getOptimisationStageIterations(stage: OptimisationStage, baselineMetrics: DistributionMetrics, candidateCount: number): number {
+		const stageConfig = STAGE_CONFIG[stage];
+		const targetError = baselineMetrics.avg * (stageConfig.targetErrorPct / 100);
+		const combinationErrorMultiplier = this.getCombinationErrorMultiplier(candidateCount);
+		const targetIterations = targetError > 0 ? Math.ceil(Math.pow((baselineMetrics.stdev * combinationErrorMultiplier) / targetError, 2)) : 0;
+
+		return Math.max(this.getOptimisationStageMinIterations(stage), targetIterations);
 	}
 
 	private getOptimisationTotalSimRounds(reforgedGearSetCount: number): number {
@@ -1628,6 +1641,8 @@ export class BulkTab extends SimTab {
 			[`${stageName}_input_gear_sets`]: metrics.inputGearSets,
 			[`${stageName}_results`]: metrics.results,
 			[`${stageName}_iterations`]: metrics.iterations,
+			[`${stageName}_target_error_pct`]: metrics.targetErrorPct,
+			[`${stageName}_combination_error_multiplier`]: Math.round(metrics.combinationErrorMultiplier * 100) / 100,
 			[`${stageName}_concurrency`]: metrics.concurrency,
 			[`${stageName}_stage_rounds`]: metrics.stageRounds,
 			[`${stageName}_duration_seconds`]: Math.round(metrics.durationSeconds),
@@ -1645,6 +1660,7 @@ export class BulkTab extends SimTab {
 			[`${stageName}_skipped`]: 1,
 			[`${stageName}_input_gear_sets`]: gearSets.length,
 			[`${stageName}_survivors`]: gearSets.length,
+			[`${stageName}_target_error_pct`]: STAGE_CONFIG[stageName].targetErrorPct,
 			[`${stageName}_min_survivors`]: STAGE_CONFIG[stageName].minSurvivors ?? '',
 			[`${stageName}_max_survivors`]: STAGE_CONFIG[stageName].maxSurvivors ?? '',
 		};
@@ -1653,25 +1669,50 @@ export class BulkTab extends SimTab {
 	private async runOptimisationStage(
 		stageName: OptimisationStage,
 		gearSets: Gear[],
-		iterations: number,
 		currentRound: number,
 		totalRounds: number,
 		signal: AbortSignal,
 	): Promise<BulkOptimisationStageResult> {
 		this.throwIfBulkAborted(signal);
 		const stageStartedAt = new Date().getTime();
+		const baselineProbeIterations = this.getOptimisationStageMinIterations(stageName);
 		const stageConcurrency = this.getOptimisationStageConcurrency(stageName);
 		const stageRounds = gearSets.length + 1;
 		const title = i18n.t(`bulk_tab.progress.${stageName}_iteration_rounds`);
 		this.debugOptimisationRound(`${stageName} stage started`, {
 			stageName,
-			iterations,
+			baselineProbeIterations,
 			gearSets: gearSets.length,
 			stageConcurrency,
 			stageRounds,
 			startingRound: currentRound,
 			totalSimRounds: totalRounds,
 		});
+
+		const baselineProbeResult = await this.runWithBulkAbort(
+			this.runSingleGearSim(this.originalGear!, {
+				currentRound,
+				totalRounds,
+				iterations: baselineProbeIterations,
+				title,
+				stageCurrentRound: 1,
+				stageRounds,
+			}),
+			signal,
+		);
+		const baselineProbeMetrics = baselineProbeResult!.raidMetrics!.dps!;
+		const iterations = this.getOptimisationStageIterations(stageName, baselineProbeMetrics, gearSets.length);
+		const combinationErrorMultiplier = this.getCombinationErrorMultiplier(gearSets.length);
+		this.debugOptimisationRound(`${stageName} iterations selected`, {
+			stageName,
+			baselineProbeIterations,
+			iterations,
+			targetErrorPct: STAGE_CONFIG[stageName].targetErrorPct,
+			combinationErrorMultiplier,
+			baselineAvg: baselineProbeMetrics.avg,
+			baselineStdev: baselineProbeMetrics.stdev,
+		});
+
 		const aggregateProgress: BulkOptimisationStageProgress = {
 			completedIterationsByRound: new Map<number, number>(),
 			completedIterations: 0,
@@ -1755,6 +1796,8 @@ export class BulkTab extends SimTab {
 			inputGearSets: gearSets.length,
 			results: results.length,
 			iterations,
+			targetErrorPct: STAGE_CONFIG[stageName].targetErrorPct,
+			combinationErrorMultiplier,
 			concurrency: stageConcurrency,
 			stageRounds,
 			durationSeconds: (new Date().getTime() - stageStartedAt) / 1000,
@@ -1948,9 +1991,12 @@ export class BulkTab extends SimTab {
 					totalSimRounds,
 					runLowStage: this.shouldRunOptimisationStage('low', nextStageGearSets.length),
 					runMediumStage: this.shouldRunOptimisationStage('medium', Math.min(nextStageGearSets.length, STAGE_CONFIG.low.maxSurvivors!)),
-					lowIterations: this.getOptimisationStageIterations('low'),
-					mediumIterations: this.getOptimisationStageIterations('medium'),
-					highIterations: this.simUI.sim.getIterations(),
+					lowTargetErrorPct: STAGE_CONFIG.low.targetErrorPct,
+					mediumTargetErrorPct: STAGE_CONFIG.medium.targetErrorPct,
+					highTargetErrorPct: STAGE_CONFIG.high.targetErrorPct,
+					lowMinIterations: this.getOptimisationStageMinIterations('low'),
+					mediumMinIterations: this.getOptimisationStageMinIterations('medium'),
+					highMinIterations: this.getOptimisationStageMinIterations('high'),
 					lowStageMinSurvivors: STAGE_CONFIG.low.minSurvivors,
 					lowStageMaxSurvivors: STAGE_CONFIG.low.maxSurvivors,
 					mediumStageMinSurvivors: STAGE_CONFIG.medium.minSurvivors,
@@ -1961,7 +2007,6 @@ export class BulkTab extends SimTab {
 					const lowStage = await this.runOptimisationStage(
 						'low',
 						nextStageGearSets,
-						this.getOptimisationStageIterations('low'),
 						currentSimRound,
 						totalSimRounds,
 						abortSignal,
@@ -1971,7 +2016,7 @@ export class BulkTab extends SimTab {
 					nextStageGearSets = this.selectOptimisationRoundSurvivors(
 						lowStage.results,
 						lowStage.baseline,
-						this.getOptimisationStageIterations('low'),
+						lowStage.metrics.iterations,
 						STAGE_CONFIG.low.minSurvivors!,
 						STAGE_CONFIG.low.maxSurvivors!,
 						'low',
@@ -1994,7 +2039,6 @@ export class BulkTab extends SimTab {
 					const mediumStage = await this.runOptimisationStage(
 						'medium',
 						nextStageGearSets,
-						this.getOptimisationStageIterations('medium'),
 						currentSimRound,
 						totalSimRounds,
 						abortSignal,
@@ -2004,7 +2048,7 @@ export class BulkTab extends SimTab {
 					nextStageGearSets = this.selectOptimisationRoundSurvivors(
 						mediumStage.results,
 						mediumStage.baseline,
-						this.getOptimisationStageIterations('medium'),
+						mediumStage.metrics.iterations,
 						STAGE_CONFIG.medium.minSurvivors!,
 						STAGE_CONFIG.medium.maxSurvivors!,
 						'medium',
@@ -2026,7 +2070,6 @@ export class BulkTab extends SimTab {
 				const highStage = await this.runOptimisationStage(
 					'high',
 					nextStageGearSets,
-					this.getOptimisationStageIterations('high'),
 					currentSimRound,
 					totalSimRounds,
 					abortSignal,

@@ -208,7 +208,6 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
 					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
 					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent) && softCapToModify) {
-						console.log(avgIlvl);
 						if (avgIlvl >= 560) {
 							softCapToModify.postCapEPs = P5HitPostCapEPs;
 						} else if (avgIlvl >= 517) {
