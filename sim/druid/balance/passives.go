@@ -153,11 +153,11 @@ func (moonkin *BalanceDruid) registerTotalEclipse() {
 		}
 
 		if moonkin.LunarEclipseSpellMod.IsActive {
-			moonkin.LunarEclipseSpellMod.UpdateFloatValue(moonkin.LunarEclipseSpellMod.GetFloatValue() + calculateEclipseMasteryBonus(masteryBonusDiff, false))
+			moonkin.SolarEclipseSpellMod.UpdateFloatValue(moonkin.SolarEclipseSpellMod.GetFloatValue() + calculateEclipseMasteryBonus(masteryBonusDiff, false))
 		}
 
 		if moonkin.CelestialAlignmentSpellMod.IsActive {
-			moonkin.CelestialAlignmentSpellMod.UpdateFloatValue(moonkin.CelestialAlignmentSpellMod.GetFloatValue() + calculateEclipseMasteryBonus(masteryBonusDiff, false))
+			moonkin.SolarEclipseSpellMod.UpdateFloatValue(moonkin.SolarEclipseSpellMod.GetFloatValue() + calculateEclipseMasteryBonus(masteryBonusDiff, false))
 		}
 	})
 }
