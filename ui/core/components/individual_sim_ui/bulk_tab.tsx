@@ -1440,6 +1440,10 @@ export class BulkTab extends SimTab {
 		return Math.sqrt(Math.max(1, Math.log10(Math.max(candidateCount, 10))));
 	}
 
+	private getDurationSeconds(startedAt: number): number {
+		return (new Date().getTime() - startedAt) / 1000;
+	}
+
 	private debugOptimisationRound(message: string, data?: unknown) {
 		if (!isDevMode()) return;
 		console.debug(`[Bulk Sim Optimisation] ${message}`, data);
@@ -1681,6 +1685,7 @@ export class BulkTab extends SimTab {
 		const title = i18n.t(`bulk_tab.progress.${stageName}_iteration_rounds`);
 		this.debugOptimisationRound(`${stageName} stage started`, {
 			stageName,
+			durationSeconds: 0,
 			baselineProbeIterations,
 			gearSets: gearSets.length,
 			stageConcurrency,
@@ -1689,6 +1694,7 @@ export class BulkTab extends SimTab {
 			totalSimRounds: totalRounds,
 		});
 
+		const baselineProbeStartedAt = new Date().getTime();
 		const baselineProbeResult = await this.runWithBulkAbort(
 			this.runSingleGearSim(this.originalGear!, {
 				currentRound,
@@ -1705,6 +1711,8 @@ export class BulkTab extends SimTab {
 		const combinationErrorMultiplier = this.getCombinationErrorMultiplier(gearSets.length);
 		this.debugOptimisationRound(`${stageName} iterations selected`, {
 			stageName,
+			stageElapsedSeconds: this.getDurationSeconds(stageStartedAt),
+			baselineProbeDurationSeconds: this.getDurationSeconds(baselineProbeStartedAt),
 			baselineProbeIterations,
 			iterations,
 			targetErrorPct: STAGE_CONFIG[stageName].targetErrorPct,
@@ -1720,6 +1728,7 @@ export class BulkTab extends SimTab {
 			startedAt: new Date().getTime(),
 		};
 
+		const baselineStartedAt = new Date().getTime();
 		const baselineResult = await this.runWithBulkAbort(
 			this.runSingleGearSim(this.originalGear!, {
 				currentRound: currentRound++,
@@ -1738,12 +1747,15 @@ export class BulkTab extends SimTab {
 		};
 		this.debugOptimisationRound(`${stageName} baseline complete`, {
 			stageName,
+			stageElapsedSeconds: this.getDurationSeconds(stageStartedAt),
+			baselineDurationSeconds: this.getDurationSeconds(baselineStartedAt),
 			iterations,
 			avg: baseline.dpsMetrics.avg,
 			stdev: baseline.dpsMetrics.stdev,
 		});
 
 		const results: TopGearResult[] = [];
+		const candidateSimsStartedAt = new Date().getTime();
 		const simQueue = queue<BulkOptimisationStageTask, Error>(async task => {
 			this.throwIfBulkAborted(signal);
 			const simResult = await this.runWithBulkAbort(
@@ -1780,8 +1792,11 @@ export class BulkTab extends SimTab {
 		}
 
 		const bestCandidate = results.slice().sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg)[0];
+		const stageDurationSeconds = this.getDurationSeconds(stageStartedAt);
 		this.debugOptimisationRound(`${stageName} stage complete`, {
 			stageName,
+			durationSeconds: stageDurationSeconds,
+			candidateSimDurationSeconds: this.getDurationSeconds(candidateSimsStartedAt),
 			iterations,
 			gearSets: gearSets.length,
 			stageConcurrency,
@@ -1800,7 +1815,7 @@ export class BulkTab extends SimTab {
 			combinationErrorMultiplier,
 			concurrency: stageConcurrency,
 			stageRounds,
-			durationSeconds: (new Date().getTime() - stageStartedAt) / 1000,
+			durationSeconds: stageDurationSeconds,
 			baselineAvgDps: baseline.dpsMetrics.avg,
 			baselineStdev: baseline.dpsMetrics.stdev,
 			bestCandidateAvgDps: bestCandidate?.dpsMetrics.avg ?? 0,
@@ -1831,6 +1846,10 @@ export class BulkTab extends SimTab {
 	): Promise<Gear[]> {
 		const startedAt = new Date().getTime();
 		const candidateGearSets: Gear[] = [];
+		this.debugOptimisationRound('candidate gear sets build started', {
+			combinations: this.combinations,
+			chunkSize: BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
+		});
 		this.setCandidateGearProgress(0, this.combinations);
 		await sleep(400);
 
@@ -1867,7 +1886,13 @@ export class BulkTab extends SimTab {
 			}
 		}
 
-		const durationSeconds = (new Date().getTime() - startedAt) / 1000;
+		const durationSeconds = this.getDurationSeconds(startedAt);
+		this.debugOptimisationRound('candidate gear sets build complete', {
+			durationSeconds,
+			combinations: this.combinations,
+			candidateGearSets: candidateGearSets.length,
+			chunkSize: BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
+		});
 		trackEvent({
 			action: 'sim',
 			category: 'batch_sim',
@@ -1888,6 +1913,10 @@ export class BulkTab extends SimTab {
 		const startedAt = new Date().getTime();
 		let completedReforges = 1;
 		const reforgedGearSets: Gear[] = [];
+		this.debugOptimisationRound('reforging started', {
+			inputGearSets: gearSets.length,
+			concurrency,
+		});
 		this.setReforgeProgress(completedReforges, gearSets.length);
 		await sleep(400);
 
@@ -1914,7 +1943,13 @@ export class BulkTab extends SimTab {
 			throw error;
 		}
 
-		const durationSeconds = (new Date().getTime() - startedAt) / 1000;
+		const durationSeconds = this.getDurationSeconds(startedAt);
+		this.debugOptimisationRound('reforging complete', {
+			durationSeconds,
+			inputGearSets: gearSets.length,
+			reforgedGearSets: reforgedGearSets.length,
+			concurrency,
+		});
 		trackEvent({
 			action: 'sim',
 			category: 'batch_sim',
@@ -2000,12 +2035,14 @@ export class BulkTab extends SimTab {
 			batchCompleteMetrics.deduped_gear_sets = validReforgedGearSets.length - reforgedGearSets.length;
 			batchCompleteMetrics.reforging_duration_seconds = Math.round((new Date().getTime() - reforgeStartedAt) / 1000);
 			this.debugOptimisationRound('reforged gear sets deduped', {
+				durationSeconds: this.getDurationSeconds(reforgeStartedAt),
 				reforgeResults: validReforgedGearSets.length,
 				reforgedGearSets: reforgedGearSets.length,
 				dedupedGearSets: validReforgedGearSets.length - reforgedGearSets.length,
 			});
 
 			this.simStart = new Date().getTime();
+			const simStageStartedAt = this.simStart;
 			let currentSimRound = 1;
 			let referenceDpsMetrics: DistributionMetrics;
 
@@ -2014,6 +2051,7 @@ export class BulkTab extends SimTab {
 				batchCompleteMetrics.total_sim_rounds = totalSimRounds;
 				let nextStageGearSets = reforgedGearSets;
 				this.debugOptimisationRound('starting staged run', {
+					durationSeconds: 0,
 					combinations: this.combinations,
 					minCombinations: BULK_OPTIMISATION_MIN_COMBINATIONS,
 					candidateGearSets: candidateGearSets.length,
@@ -2053,6 +2091,8 @@ export class BulkTab extends SimTab {
 					);
 					batchCompleteMetrics.low_survivors = nextStageGearSets.length;
 					this.debugOptimisationRound('medium stage survivors selected', {
+						lowStageDurationSeconds: lowStage.metrics.durationSeconds,
+						stageElapsedSeconds: this.getDurationSeconds(simStageStartedAt),
 						fromStage: 'low',
 						mediumGearSets: nextStageGearSets.length,
 					});
@@ -2085,6 +2125,8 @@ export class BulkTab extends SimTab {
 					);
 					batchCompleteMetrics.medium_survivors = nextStageGearSets.length;
 					this.debugOptimisationRound('high stage survivors selected', {
+						mediumStageDurationSeconds: mediumStage.metrics.durationSeconds,
+						stageElapsedSeconds: this.getDurationSeconds(simStageStartedAt),
 						fromStage: 'medium',
 						highGearSets: nextStageGearSets.length,
 					});
@@ -2110,6 +2152,8 @@ export class BulkTab extends SimTab {
 				referenceDpsMetrics = highStage.baseline.dpsMetrics;
 				topGearResults = highStage.results.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg).slice(0, 5);
 				this.debugOptimisationRound('staged run complete', {
+					durationSeconds: this.getDurationSeconds(simStageStartedAt),
+					highStageDurationSeconds: highStage.metrics.durationSeconds,
 					finalResults: highStage.results.length,
 					topGearResults: topGearResults.map((result, index) => ({
 						rank: index + 1,
