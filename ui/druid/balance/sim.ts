@@ -242,7 +242,6 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 						softCapToModify.breakpoints = [33.333];
 					}
 				}
-				console.log(softCaps);
 
 				return softCaps;
 			},

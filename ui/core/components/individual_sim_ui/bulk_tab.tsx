@@ -1829,6 +1829,7 @@ export class BulkTab extends SimTab {
 		defaultGemsByColor: Map<GemColor, UIGem | null>,
 		signal: AbortSignal,
 	): Promise<Gear[]> {
+		const startedAt = new Date().getTime();
 		const candidateGearSets: Gear[] = [];
 		this.setCandidateGearProgress(0, this.combinations);
 		await sleep(400);
@@ -1866,12 +1867,25 @@ export class BulkTab extends SimTab {
 			}
 		}
 
+		const durationSeconds = (new Date().getTime() - startedAt) / 1000;
+		trackEvent({
+			action: 'sim',
+			category: 'batch_sim',
+			label: 'candidate_gear_sets_complete',
+			value: durationSeconds,
+			additionalData: {
+				combinations: this.combinations,
+				candidate_gear_sets: candidateGearSets.length,
+			},
+		});
+
 		return candidateGearSets;
 	}
 
 	private async runReforgeQueue(gearSets: Gear[], playerPhase: boolean, concurrency: number, signal: AbortSignal): Promise<Gear[]> {
 		if (!gearSets.length) return [];
 
+		const startedAt = new Date().getTime();
 		let completedReforges = 1;
 		const reforgedGearSets: Gear[] = [];
 		this.setReforgeProgress(completedReforges, gearSets.length);
@@ -1899,6 +1913,18 @@ export class BulkTab extends SimTab {
 			reforgeQueue.kill();
 			throw error;
 		}
+
+		const durationSeconds = (new Date().getTime() - startedAt) / 1000;
+		trackEvent({
+			action: 'sim',
+			category: 'batch_sim',
+			label: 'reforging_complete',
+			value: durationSeconds,
+			additionalData: {
+				input_gear_sets: gearSets.length,
+				reforged_gear_sets: reforgedGearSets.length,
+			},
+		});
 
 		return reforgedGearSets;
 	}
@@ -1961,14 +1987,18 @@ export class BulkTab extends SimTab {
 				defaultGemsByColor.set(color, this.simUI.sim.db.lookupGem(this.fallbackGems[colorIdx].id));
 			}
 
+			const candidateGearBuildStartedAt = new Date().getTime();
 			candidateGearSets = await this.buildCandidateGearSets(challengeModeEnabled, hasBlacksmithing, defaultGemsByColor, abortSignal);
 			batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
+			batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
 
+			const reforgeStartedAt = new Date().getTime();
 			const validReforgedGearSets = await this.runReforgeQueue(candidateGearSets, playerPhase, concurrency, abortSignal);
 			reforgedGearSets.push(...this.dedupeGearSets(validReforgedGearSets));
 			batchCompleteMetrics.reforge_results = validReforgedGearSets.length;
 			batchCompleteMetrics.reforged_gear_sets = reforgedGearSets.length;
 			batchCompleteMetrics.deduped_gear_sets = validReforgedGearSets.length - reforgedGearSets.length;
+			batchCompleteMetrics.reforging_duration_seconds = Math.round((new Date().getTime() - reforgeStartedAt) / 1000);
 			this.debugOptimisationRound('reforged gear sets deduped', {
 				reforgeResults: validReforgedGearSets.length,
 				reforgedGearSets: reforgedGearSets.length,
