@@ -105,7 +105,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 		rotations: [Presets.APL_Default, Presets.APL_UVLS],
 
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET, Presets.P5_PRESET],
 		itemSwaps: [],
 
 		builds: [Presets.PRESET_BUILD_P2, Presets.PRESET_BUILD_P3],
@@ -122,31 +122,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 		return Presets.APL_Default.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecDemonologyWarlock,
-			talents: Presets.DemonologyTalentsDefault.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceOrc,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PRERAID_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PRERAID_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyWarlock> {

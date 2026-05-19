@@ -230,6 +230,16 @@ func (spell *Spell) outcomeHealingCrit(sim *Simulation, result *SpellResult, _ *
 	}
 }
 
+func (spell *Spell) OutcomeHealingAlwaysCrit(sim *Simulation, result *SpellResult, _ *AttackTable) {
+	if spell.CritMultiplier == 0 {
+		panic("Spell " + spell.ActionID.String() + " missing CritMultiplier")
+	}
+
+	result.Outcome = OutcomeCrit
+	result.Damage *= spell.CritDamageMultiplier()
+	spell.SpellMetrics[result.Target.UnitIndex].Crits++
+}
+
 func (spell *Spell) OutcomeTickMagicHit(sim *Simulation, result *SpellResult, attackTable *AttackTable) {
 	if spell.MagicHitCheck(sim, attackTable) {
 		result.Outcome = OutcomeHit

@@ -14,6 +14,7 @@ import DefaultAPL from './apls/default.apl.json';
 import UvlsAPL from './apls/uvls.apl.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -23,6 +24,7 @@ import PreraidGear from './gear_sets/preraid.gear.json';
 export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2Gear);
 export const P3_4_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', P4Gear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP)', P5Gear);
 
 export const APL_Default = PresetUtils.makePresetAPLRotation('Default', DefaultAPL);
 export const APL_UVLS = PresetUtils.makePresetAPLRotation('UVLS', UvlsAPL);
