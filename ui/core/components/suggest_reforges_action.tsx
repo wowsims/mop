@@ -1886,7 +1886,7 @@ export class ReforgeOptimizer {
 				updatedVariables,
 				updatedConstraints,
 				solvedGear,
-				maxSeconds - elapsedSeconds,
+				Math.max(maxSeconds - elapsedSeconds, 1),
 			);
 		}
 	}
