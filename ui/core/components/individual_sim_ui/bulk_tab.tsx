@@ -1539,9 +1539,7 @@ export class BulkTab extends SimTab {
 		}
 
 		const pinnedMeanSurvivors = new Set(meanSurvivors.map(result => result.gear));
-		const remainingSurvivors = survivors
-			.filter(result => !pinnedMeanSurvivors.has(result.gear))
-			.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
+		const remainingSurvivors = survivors.filter(result => !pinnedMeanSurvivors.has(result.gear)).sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
 
 		const cappedSurvivors = [...meanSurvivors, ...remainingSurvivors.slice(0, Math.max(0, maxSurvivors - meanSurvivors.length))];
 		this.debugOptimisationRound(`${stageName} pruning complete`, {
@@ -1645,15 +1643,10 @@ export class BulkTab extends SimTab {
 			[`${stageName}_input_gear_sets`]: metrics.inputGearSets,
 			[`${stageName}_results`]: metrics.results,
 			[`${stageName}_iterations`]: metrics.iterations,
-			[`${stageName}_target_error_pct`]: metrics.targetErrorPct,
 			[`${stageName}_combination_error_multiplier`]: Math.round(metrics.combinationErrorMultiplier * 100) / 100,
 			[`${stageName}_concurrency`]: metrics.concurrency,
 			[`${stageName}_stage_rounds`]: metrics.stageRounds,
 			[`${stageName}_duration_seconds`]: Math.round(metrics.durationSeconds),
-			[`${stageName}_baseline_avg_dps`]: Math.round(metrics.baselineAvgDps),
-			[`${stageName}_baseline_stdev`]: Math.round(metrics.baselineStdev),
-			[`${stageName}_best_candidate_avg_dps`]: Math.round(metrics.bestCandidateAvgDps),
-			[`${stageName}_best_candidate_stdev`]: Math.round(metrics.bestCandidateStdev),
 			[`${stageName}_min_survivors`]: STAGE_CONFIG[stageName].minSurvivors ?? '',
 			[`${stageName}_max_survivors`]: STAGE_CONFIG[stageName].maxSurvivors ?? '',
 		};
@@ -1664,7 +1657,6 @@ export class BulkTab extends SimTab {
 			[`${stageName}_skipped`]: 1,
 			[`${stageName}_input_gear_sets`]: gearSets.length,
 			[`${stageName}_survivors`]: gearSets.length,
-			[`${stageName}_target_error_pct`]: STAGE_CONFIG[stageName].targetErrorPct,
 			[`${stageName}_min_survivors`]: STAGE_CONFIG[stageName].minSurvivors ?? '',
 			[`${stageName}_max_survivors`]: STAGE_CONFIG[stageName].maxSurvivors ?? '',
 		};
@@ -1826,7 +1818,7 @@ export class BulkTab extends SimTab {
 			action: 'sim',
 			category: 'batch_sim',
 			label: `${stageName}_stage_complete`,
-			value: metrics.durationSeconds,
+			value: Math.round(metrics.durationSeconds),
 			additionalData: this.getOptimisationStageTrackingMetrics(stageName, metrics),
 		});
 
@@ -1897,7 +1889,7 @@ export class BulkTab extends SimTab {
 			action: 'sim',
 			category: 'batch_sim',
 			label: 'candidate_gear_sets_complete',
-			value: durationSeconds,
+			value: Math.round(durationSeconds),
 			additionalData: {
 				combinations: this.combinations,
 				candidate_gear_sets: candidateGearSets.length,
@@ -1954,7 +1946,7 @@ export class BulkTab extends SimTab {
 			action: 'sim',
 			category: 'batch_sim',
 			label: 'reforging_complete',
-			value: durationSeconds,
+			value: Math.round(durationSeconds),
 			additionalData: {
 				input_gear_sets: gearSets.length,
 				reforged_gear_sets: reforgedGearSets.length,
@@ -2072,13 +2064,7 @@ export class BulkTab extends SimTab {
 				});
 
 				if (this.shouldRunOptimisationStage('low', nextStageGearSets.length)) {
-					const lowStage = await this.runOptimisationStage(
-						'low',
-						nextStageGearSets,
-						currentSimRound,
-						totalSimRounds,
-						abortSignal,
-					);
+					const lowStage = await this.runOptimisationStage('low', nextStageGearSets, currentSimRound, totalSimRounds, abortSignal);
 					Object.assign(batchCompleteMetrics, this.getOptimisationStageTrackingMetrics('low', lowStage.metrics));
 					currentSimRound = lowStage.nextRound;
 					nextStageGearSets = this.selectOptimisationRoundSurvivors(
@@ -2106,13 +2092,7 @@ export class BulkTab extends SimTab {
 				}
 
 				if (this.shouldRunOptimisationStage('medium', nextStageGearSets.length)) {
-					const mediumStage = await this.runOptimisationStage(
-						'medium',
-						nextStageGearSets,
-						currentSimRound,
-						totalSimRounds,
-						abortSignal,
-					);
+					const mediumStage = await this.runOptimisationStage('medium', nextStageGearSets, currentSimRound, totalSimRounds, abortSignal);
 					Object.assign(batchCompleteMetrics, this.getOptimisationStageTrackingMetrics('medium', mediumStage.metrics));
 					currentSimRound = mediumStage.nextRound;
 					nextStageGearSets = this.selectOptimisationRoundSurvivors(
@@ -2139,13 +2119,7 @@ export class BulkTab extends SimTab {
 					});
 				}
 
-				const highStage = await this.runOptimisationStage(
-					'high',
-					nextStageGearSets,
-					currentSimRound,
-					totalSimRounds,
-					abortSignal,
-				);
+				const highStage = await this.runOptimisationStage('high', nextStageGearSets, currentSimRound, totalSimRounds, abortSignal);
 				Object.assign(batchCompleteMetrics, this.getOptimisationStageTrackingMetrics('high', highStage.metrics));
 				batchCompleteMetrics.high_survivors = highStage.results.length;
 				currentSimRound = highStage.nextRound;
@@ -2241,7 +2215,7 @@ export class BulkTab extends SimTab {
 					action: 'sim',
 					category: 'batch_sim',
 					label: 'batch_complete',
-					value: bulkSimDurationSeconds,
+					value: Math.round(bulkSimDurationSeconds),
 					additionalData: batchCompleteMetrics,
 				});
 			}
@@ -2307,10 +2281,7 @@ export class BulkTab extends SimTab {
 			const completedIterationsDelta = Math.max(0, config.iterations - previousCompletedIterations);
 			config.aggregateProgress.completedIterations += completedIterationsDelta;
 			config.aggregateProgress.completedIterationsByRound.set(stageCurrentRound, config.iterations);
-			this.setSimProgress(
-				ProgressMetrics.create({ completedIterations: config.iterations, totalIterations: config.iterations }),
-				getProgressConfig(),
-			);
+			this.setSimProgress(ProgressMetrics.create({ completedIterations: config.iterations, totalIterations: config.iterations }), getProgressConfig());
 		}
 
 		const [_, result] = response;
