@@ -1376,12 +1376,12 @@ export class BulkTab extends SimTab {
 	}
 
 	private debugOptimisationRound(message: string, data?: unknown) {
-		// if (!isDevMode()) return;
+		if (!isDevMode()) return;
 		console.debug(`[Bulk Sim Optimisation] ${message}`, data);
 	}
 
 	private debugOptimisationResults(stageName: OptimisationStage, results: TopGearResult[], bestMetrics: DistributionMetrics, iterations: number) {
-		// if (!isDevMode()) return;
+		if (!isDevMode()) return;
 		console.table(
 			results
 				.slice()

@@ -27,9 +27,12 @@ import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
 import Toast from './toast';
 import { trackEvent, trackPageView } from '../../tracking/utils';
 import { ReforgeWorkerPool, getReforgeWorkerPool } from '../reforge_worker_pool';
+import { ReforgeGearCache } from '../reforge_cache';
 import type { LPModel, LPSolution, SerializedConstraints, SerializedVariables } from '../../worker/reforge_types';
 import { ProgressTrackerModal } from './progress_tracker_modal';
 import { getEmptySlotIconUrl } from './gear_picker/utils';
+import { SimSettingCategories } from '../constants/sim_settings';
+import { IndividualLinkExporter } from './individual_sim_ui/exporters/individual_link_exporter';
 
 type YalpsCoefficients = Map<string, number>;
 type YalpsVariables = Map<string, YalpsCoefficients>;
@@ -253,6 +256,8 @@ export class ReforgeOptimizer {
 	protected previousReforges = new Map<ItemSlot, ReforgeData>();
 	protected updatedGear: Gear | null = null;
 	protected currentReforges = new Map<ItemSlot, ReforgeData>();
+	private readonly reforgeGearCache: ReforgeGearCache;
+	private reforgeCacheConfigHash: string | null = null;
 	relativeStatCapStat: number = -1;
 	relativeStatCap: RelativeStatCap | null = null;
 
@@ -279,6 +284,7 @@ export class ReforgeOptimizer {
 		this.isHybridCaster = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman, Spec.SpecMistweaverMonk].includes(this.player.getSpec());
 		this.isTankSpec = this.player.getPlayerSpec().isTankSpec;
 		this.sim = simUI.sim;
+		this.reforgeGearCache = new ReforgeGearCache(this.player.getPlayerSpec());
 		this.defaults = simUI.individualConfig.defaults;
 		this.getEPDefaults = options?.getEPDefaults;
 		this.updateSoftCaps = options?.updateSoftCaps;
@@ -427,6 +433,9 @@ export class ReforgeOptimizer {
 			],
 			'ReforgeSettingsChange',
 		);
+		void this.updateReforgeCacheConfigHash();
+		this.changeEmitter.on(() => void this.updateReforgeCacheConfigHash());
+		this.player.changeEmitter.on(() => void this.updateReforgeCacheConfigHash());
 
 		TypedEvent.onAny([this.useCustomEPValuesChangeEmitter, this.player.epWeightsChangeEmitter, this.statCapsChangeEmitter]).on(eventID => {
 			if (this.useCustomEPValues && (this.player.hasCustomEPWeights() || !this._statCaps.equals(this.defaults.statCaps || new Stats()))) {
@@ -1292,6 +1301,19 @@ export class ReforgeOptimizer {
 
 	async optimizeReforges(gear?: Gear, batchRun?: boolean) {
 		if (isDevMode()) console.log('Starting Reforge optimization...');
+		const previousGear = gear || this.player.getGear();
+		const previousReforges = previousGear.getAllReforges();
+		const useReforgeCache = !!batchRun;
+		const cacheKey = useReforgeCache ? await this.getReforgeCacheKey(previousGear) : null;
+		if (cacheKey) {
+			const cachedGearSpec = await this.reforgeGearCache.get(cacheKey);
+			if (cachedGearSpec) {
+				const cachedGear = this.sim.db.lookupEquipmentSpec(cachedGearSpec);
+				this.updateReforgeOptimizationState(previousGear, previousReforges, cachedGear, batchRun);
+				if (isDevMode()) console.log('Using cached Reforge optimization result.');
+				return cachedGear;
+			}
+		}
 
 		// First, clear all existing Reforges
 		if (isDevMode()) {
@@ -1299,9 +1321,6 @@ export class ReforgeOptimizer {
 			console.log('The following slots will not be cleared:');
 			console.log(Array.from(this.frozenItemSlots.keys()).filter(key => this.getFrozenItemSlot(key)));
 		}
-		const previousGear = gear || this.player.getGear();
-
-		const previousReforges = previousGear.getAllReforges();
 		let updatedGear = previousGear.withoutReforges(this.player.canDualWield2H(), this.frozenItemSlots);
 
 		if (this.includeGems) {
@@ -1360,15 +1379,82 @@ export class ReforgeOptimizer {
 		);
 
 		updatedGear = optimized.gear;
+		if (cacheKey) {
+			await this.reforgeGearCache.set(cacheKey, this.getReforgeCacheGearLink(updatedGear));
+		}
 
+		this.updateReforgeOptimizationState(previousGear, previousReforges, updatedGear, batchRun);
+
+		return updatedGear;
+	}
+
+	private updateReforgeOptimizationState(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, updatedGear: Gear, batchRun?: boolean) {
 		if (!batchRun) {
 			this.previousGear = previousGear;
 			this.previousReforges = previousReforges;
 			this.updatedGear = updatedGear;
 			this.currentReforges = updatedGear.getAllReforges();
 		}
+	}
 
-		return updatedGear;
+	private async getReforgeCacheKey(gear: Gear): Promise<string> {
+		return ReforgeGearCache.getKey(gear.asSpec(), await this.getReforgeCacheConfigHash());
+	}
+
+	private getReforgeCacheGearLink(gear: Gear): string {
+		const settings = this.simUI.toProto([SimSettingCategories.Gear]);
+		settings.player!.equipment = gear.asSpec();
+
+		const link = IndividualLinkExporter.createLink(
+			{
+				toProto: () => settings,
+			} as IndividualSimUI<any>,
+			[SimSettingCategories.Gear],
+		);
+		const linkUrl = new URL(link);
+		return linkUrl.hash;
+	}
+
+	private async updateReforgeCacheConfigHash() {
+		await this.sim.waitForInit();
+		this.reforgeCacheConfigHash = await ReforgeGearCache.getHash(this.getReforgeCacheConfigFingerprint());
+	}
+
+	private async getReforgeCacheConfigHash(): Promise<string> {
+		if (!this.reforgeCacheConfigHash) await this.updateReforgeCacheConfigHash();
+		return this.reforgeCacheConfigHash!;
+	}
+
+	private getReforgeCacheConfigFingerprint() {
+		const player = this.player.toProto(true, false, [
+			SimSettingCategories.Talents,
+			SimSettingCategories.Consumes,
+			SimSettingCategories.External,
+			SimSettingCategories.Miscellaneous,
+		]);
+
+		player.channelClipDelayMs = 0;
+		player.inFrontOfTarget = false;
+		player.distanceFromTarget = 0;
+		player.healingModel = undefined;
+
+		return {
+			player,
+			sim: {
+				epStats: this.simUI.individualConfig.epStats.slice().sort((a, b) => a - b),
+			},
+			optimizer: {
+				...this.toProto(),
+				preCapEPs: this.preCapEPs.toJson(),
+				softCaps: this.softCapsConfigWithLimits.map(config => ({
+					unitStat: config.unitStat.toJson(),
+					breakpoints: config.breakpoints.slice(),
+					capType: config.capType,
+					postCapEPs: config.postCapEPs.slice(),
+				})),
+				undershootCaps: this.undershootCaps.toJson(),
+			},
+		};
 	}
 
 	async updateGear(gear: Gear): Promise<Stats> {
@@ -1879,7 +1965,7 @@ export class ReforgeOptimizer {
 			return { result: solution.result, gear: solvedGear };
 		} else {
 			await sleep(100);
-			return await this.solveModel(
+			return this.solveModel(
 				updatedWeights,
 				reforgeCaps,
 				reforgeSoftCaps,
