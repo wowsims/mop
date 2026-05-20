@@ -1,10 +1,12 @@
 /**
- * Reforge LP Solver Web Worker
+ * Reforge LP Solver WorkerPool worker
  *
  * Uses HiGHS WASM for high-performance linear programming solving
  */
 
-import type { ReforgeWorkerReceiveMessage, ReforgeWorkerSendMessage } from './reforge_types';
+import * as workerpool from 'workerpool';
+
+import type { LPModel, LPSolution, SolverOptions } from './reforge_types';
 import { modelToLPFormat, highsSolutionToLPSolution, type HighsSolution } from './lp_format';
 
 // HiGHS module type
@@ -17,8 +19,8 @@ type HighsFactory = (options?: { locateFile?: (file: string) => string }) => Pro
 
 // Will be set after WASM loads
 let highs: HighsModule | null = null;
-let workerId = '';
 let cachedWasmUrl: string | undefined = undefined;
+let initPromise: Promise<boolean> | null = null;
 
 /**
  * Get the base URL for loading WASM files
@@ -45,7 +47,11 @@ async function initHiGHS(wasmUrl?: string): Promise<boolean> {
 		cachedWasmUrl = wasmUrl;
 	}
 
-	try {
+	if (initPromise) {
+		return initPromise;
+	}
+
+	initPromise = (async () => {
 		const baseUrl = getBaseUrl();
 		const locateFile = (file: string) => {
 			if (file.endsWith('.wasm')) {
@@ -59,6 +65,14 @@ async function initHiGHS(wasmUrl?: string): Promise<boolean> {
 		const highsFactory = (highsModule.default || highsModule) as HighsFactory;
 		highs = await highsFactory({ locateFile });
 		return true;
+	})().catch(error => {
+		initPromise = null;
+		console.error('[ReforgeWorker] Failed to initialize HiGHS:', error);
+		return false;
+	});
+
+	try {
+		return await initPromise;
 	} catch (error) {
 		console.error('[ReforgeWorker] Failed to initialize HiGHS:', error);
 		return false;
@@ -66,20 +80,11 @@ async function initHiGHS(wasmUrl?: string): Promise<boolean> {
 }
 
 /**
- * Post message back to main thread
- */
-function postMsg(msg: ReforgeWorkerSendMessage) {
-	postMessage(msg);
-}
-
-/**
  * Solve LP problem using HiGHS
  */
-async function solveProblem(msg: Extract<ReforgeWorkerReceiveMessage, { msg: 'solve' }>): Promise<void> {
-	const { id, model, options } = msg;
-
+async function solveProblem(model: LPModel, options: SolverOptions = {}, wasmUrl?: string): Promise<LPSolution> {
 	try {
-		const initSuccess = await initHiGHS();
+		const initSuccess = await initHiGHS(wasmUrl);
 		if (!initSuccess || !highs) {
 			throw new Error('Failed to initialize HiGHS');
 		}
@@ -103,53 +108,16 @@ async function solveProblem(msg: Extract<ReforgeWorkerReceiveMessage, { msg: 'so
 		const highsSolution = highs.solve(lpString, highsOptions);
 		const solution = highsSolutionToLPSolution(highsSolution, reverseNameMap, 0.5);
 
-		postMsg({
-			msg: 'solve',
-			id,
-			solution,
-		});
+		return solution;
 	} catch (error) {
 		console.error('[ReforgeWorker] Error:', error);
-		postMsg({
-			msg: 'error',
-			id,
-			error: error instanceof Error ? error.message : String(error),
-		});
+		throw error;
 	}
 }
 
-/**
- * Handle incoming messages
- */
-addEventListener('message', async ({ data }: MessageEvent<ReforgeWorkerReceiveMessage>) => {
-	const { id, msg } = data;
-
-	switch (msg) {
-		case 'setID':
-			workerId = id;
-			postMsg({ msg: 'idConfirm' });
-			break;
-
-		case 'init': {
-			const initMsg = data as Extract<ReforgeWorkerReceiveMessage, { msg: 'init' }>;
-			const success = await initHiGHS(initMsg.wasmUrl);
-			postMsg({
-				msg: 'init',
-				id,
-				success,
-			});
-			break;
-		}
-
-		case 'solve':
-			await solveProblem(data as Extract<ReforgeWorkerReceiveMessage, { msg: 'solve' }>);
-			break;
-	}
-});
-
-// Auto-initialize on load
-initHiGHS().then(() => {
-	postMsg({ msg: 'ready' });
+workerpool.worker({
+	initHiGHS,
+	solveProblem,
 });
 
 export {};

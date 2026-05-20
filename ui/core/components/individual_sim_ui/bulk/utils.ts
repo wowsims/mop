@@ -1,11 +1,7 @@
 import { BulkSimResult, BulkSimStage, DistributionMetrics } from '../../../proto/api';
 import { ItemSlot } from '../../../proto/common';
 import { Gear } from '../../../proto_utils/gear';
-import {
-	BulkOptimisationStageMetrics,
-	OptimisationStage,
-	STAGE_CONFIG,
-} from './types';
+import { BulkOptimisationStageMetrics, OptimisationStage, STAGE_CONFIG } from './types';
 
 // Combines Fingers 1 and 2 and Trinket 1 and 2 into single groups
 export enum BulkSimItemSlot {
@@ -106,29 +102,36 @@ export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): Distributi
 	return dpsMetrics;
 };
 
-export const getGearKey = (gear: Gear): string =>
-	gear
-		.asArray()
-		.map(item => {
-			if (!item) {
-				return '';
-			}
+export const getGearKey = (gear: Gear): string => {
+	const itemKeys = gear.asArray().map(item => {
+		if (!item) {
+			return '';
+		}
 
-			return [
-				item._item.id,
-				item._randomSuffix?.id ?? 0,
-				item._enchant?.effectId ?? 0,
-				item._tinker?.effectId ?? 0,
-				item._reforge?.id ?? 0,
-				item._upgrade,
-				Number(item._challengeMode),
-				item._gems.map(gem => gem?.id ?? 0).join(','),
-			].join(':');
-		})
-		.join('|');
+		return [
+			item._item.id,
+			item._randomSuffix?.id ?? 0,
+			item._enchant?.effectId ?? 0,
+			item._tinker?.effectId ?? 0,
+			item._reforge?.id ?? 0,
+			item._upgrade,
+			Number(item._challengeMode),
+			item._gems.map(gem => gem?.id ?? 0).join(','),
+		].join(':');
+	});
 
-export const dedupeGearSets = (gearSets: Gear[]): Gear[] => {
-	const seenGearKeys = new Set<string>();
+	[BulkSimItemSlot.ItemSlotFinger, BulkSimItemSlot.ItemSlotTrinket].forEach(bulkSlot => {
+		const slots = bulkSimItemSlotToItemSlotPairs.get(bulkSlot)!;
+		const slotKeys = [itemKeys[slots[0]], itemKeys[slots[1]]].sort();
+		itemKeys[slots[0]] = slotKeys[0];
+		itemKeys[slots[1]] = slotKeys[1];
+	});
+
+	return itemKeys.join('|');
+};
+
+export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []): Gear[] => {
+	const seenGearKeys = new Set<string>(existingGearSets.map(getGearKey));
 	return gearSets.filter(gear => {
 		const gearKey = getGearKey(gear);
 		if (seenGearKeys.has(gearKey)) {
@@ -145,9 +148,15 @@ export const shouldRunOptimisationStage = (stage: OptimisationStage, candidateCo
 	return maxSurvivors === undefined || candidateCount > maxSurvivors;
 };
 
-export const getOptimisationStageMinIterations = (stage: OptimisationStage, highStageIterations: number): number => STAGE_CONFIG[stage].minIterations ?? highStageIterations;
+export const getOptimisationStageMinIterations = (stage: OptimisationStage, highStageIterations: number): number =>
+	STAGE_CONFIG[stage].minIterations ?? highStageIterations;
 
-export const getOptimisationStageIterations = (stage: OptimisationStage, baselineMetrics: DistributionMetrics, candidateCount: number, highStageIterations: number): number => {
+export const getOptimisationStageIterations = (
+	stage: OptimisationStage,
+	baselineMetrics: DistributionMetrics,
+	candidateCount: number,
+	highStageIterations: number,
+): number => {
 	if (stage === 'high') {
 		return getOptimisationStageMinIterations(stage, highStageIterations);
 	}

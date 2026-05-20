@@ -11,6 +11,13 @@ import Toast from '../../toast';
 import { TopGearResult } from './types';
 import { RaidSimResultsManager } from '../../raid_sim_action';
 import { ItemSlot, ItemSpec } from '../../../proto/common';
+import { bulkSimItemSlotToItemSlotPairs, getBulkItemSlotFromSlot } from './utils';
+
+const getSwappableItemSlotPair = (slot: number): [ItemSlot, ItemSlot] | undefined => bulkSimItemSlotToItemSlotPairs.get(getBulkItemSlotFromSlot(slot, false));
+
+const itemSpecPairsEqualUnordered = (resultItems: ItemSpec[], originalItems: ItemSpec[], [slot1, slot2]: [ItemSlot, ItemSlot]): boolean =>
+	(ItemSpec.equals(resultItems[slot1], originalItems[slot1]) && ItemSpec.equals(resultItems[slot2], originalItems[slot2])) ||
+	(ItemSpec.equals(resultItems[slot1], originalItems[slot2]) && ItemSpec.equals(resultItems[slot2], originalItems[slot1]));
 
 export default class BulkSimResultRenderer extends Component {
 	readonly simUI: IndividualSimUI<any>;
@@ -75,8 +82,12 @@ export default class BulkSimResultRenderer extends Component {
 		const originalEquipmentSpec = baseResult.gear.asSpec();
 		for (const [idx, spec] of resultAsSpec.items.entries()) {
 			const itemContainer = (<div className="bulk-result-item" />) as HTMLElement;
+			const swappableItemSlotPair = getSwappableItemSlotPair(idx);
+			const itemChanged = swappableItemSlotPair
+				? !itemSpecPairsEqualUnordered(resultAsSpec.items, originalEquipmentSpec.items, swappableItemSlotPair)
+				: !ItemSpec.equals(spec, originalEquipmentSpec.items[idx]);
 
-			if (spec.id != originalEquipmentSpec.items[idx].id) {
+			if (itemChanged) {
 				itemContainer.style.border = '3px solid red';
 			} else {
 				itemContainer.style.border = '3px solid transparent';
@@ -88,14 +99,8 @@ export default class BulkSimResultRenderer extends Component {
 
 			if (spec.id == 0) {
 				shouldRenderItem = false;
-			} else if (!ItemSpec.equals(spec, originalEquipmentSpec.items[idx])) {
-				shouldRenderItem = true;
-			} else if ([ItemSlot.ItemSlotFinger1, ItemSlot.ItemSlotTrinket1].includes(idx) && !ItemSpec.equals(resultAsSpec.items[idx + 1], originalEquipmentSpec.items[idx + 1])) {
-				shouldRenderItem = true;
-			} else if ([ItemSlot.ItemSlotFinger2, ItemSlot.ItemSlotTrinket2].includes(idx) && !ItemSpec.equals(resultAsSpec.items[idx - 1], originalEquipmentSpec.items[idx - 1])) {
-				shouldRenderItem = true;
 			} else {
-				shouldRenderItem = false;
+				shouldRenderItem = itemChanged;
 			}
 
 			if (shouldRenderItem) {
