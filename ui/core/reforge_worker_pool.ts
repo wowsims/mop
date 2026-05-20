@@ -198,7 +198,7 @@ export class ReforgeWorkerPool {
 			this.pool = workerpool.pool(REFORGE_WORKER_URL, {
 				workerType: 'web',
 				workerOpts: { type: 'module', name: 'reforge-worker' },
-				minWorkers: 1,
+				minWorkers: this.numWorkers,
 				maxWorkers: this.numWorkers,
 			});
 		}
