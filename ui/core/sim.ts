@@ -26,10 +26,11 @@ import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
 import { extendPlayerProtoWithMissingEffects, hasBlacksmithing } from './proto_utils/utils';
 import { Raid } from './raid.js';
-import { runConcurrentSim, runConcurrentStatWeights } from './sim_concurrent';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
 import { getEnumValues, noop } from './utils.js';
+import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
+import { makeBulkGearDatabase } from './wasm/bulk_sim';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
 
 export type RaidSimData = {
@@ -387,6 +388,8 @@ export class Sim {
 
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
 			const preparedGearSets = gearSets.map(prepareGear);
+			const bulkGearDatabase = makeBulkGearDatabase(this.db, [baselineGear, ...preparedGearSets]);
+			player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
 			player.equipment = baselineGear.asSpec();
 			baseRequest.raid!.parties[0].players[0] = player;
 
@@ -399,7 +402,13 @@ export class Sim {
 				highStageIterations: this.getIterations(),
 			});
 
-			const result = await this.workerPool.bulkSimAsync(bulkRequest, onProgress, signals);
+			let result: BulkSimResult;
+			// Only use worker based concurrency when running wasm. Local sim has native threading.
+			if (await this.shouldUseWasmConcurrency()) {
+				result = await runConcurrentBulkSim(bulkRequest, this.workerPool, onProgress, signals);
+			} else {
+				result = await this.workerPool.bulkSimAsync(bulkRequest, onProgress, signals);
+			}
 			if (result.error) {
 				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result.error;
 				throw new SimError(result.error.message);

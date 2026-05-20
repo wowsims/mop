@@ -26,7 +26,7 @@ const (
 )
 
 type BulkSimStageConfig struct {
-	Name               proto.BulkSimStage
+	Stage              proto.BulkSimStage
 	MinIterations      int32
 	TargetErrorPct     float64
 	MinSurvivors       int
@@ -37,7 +37,7 @@ type BulkSimStageConfig struct {
 
 var bulkSimStageConfigs = []BulkSimStageConfig{
 	{
-		Name:               proto.BulkSimStage_BulkSimStageLow,
+		Stage:              proto.BulkSimStage_BulkSimStageLow,
 		MinIterations:      100,
 		TargetErrorPct:     1,
 		MinSurvivors:       20,
@@ -45,7 +45,7 @@ var bulkSimStageConfigs = []BulkSimStageConfig{
 		CullingCoefficient: bulkSimCullingCoefficient,
 	},
 	{
-		Name:               proto.BulkSimStage_BulkSimStageMedium,
+		Stage:              proto.BulkSimStage_BulkSimStageMedium,
 		MinIterations:      1000,
 		TargetErrorPct:     0.2,
 		MinSurvivors:       5,
@@ -53,7 +53,7 @@ var bulkSimStageConfigs = []BulkSimStageConfig{
 		CullingCoefficient: bulkSimCullingCoefficient,
 	},
 	{
-		Name:             proto.BulkSimStage_BulkSimStageHigh,
+		Stage:            proto.BulkSimStage_BulkSimStageHigh,
 		MinIterations:    1000,
 		TargetErrorPct:   0.05,
 		UseConcurrentSim: true,
@@ -221,7 +221,7 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 		latestBaseline = stageResult.Baseline
 		latestResults = stageResult.Results
 		result.StageMetrics = append(result.StageMetrics, stageResult.Metrics)
-		setBulkSimStageTiming(result.Timings, stageConfig.Name, stageResult.Metrics.DurationSeconds)
+		setBulkSimStageTiming(result.Timings, stageConfig.Stage, stageResult.Metrics.DurationSeconds)
 
 		if stageConfig.MaxSurvivors > 0 {
 			candidates = selectBulkSimSurvivors(stageResult.Results, stageResult.Baseline, stageResult.Iterations, stageConfig)
@@ -275,7 +275,7 @@ func validateBulkSimRequest(request *proto.BulkSimRequest) string {
 }
 
 func shouldRunBulkSimStage(config BulkSimStageConfig, candidateCount int) bool {
-	return config.MaxSurvivors == 0 || candidateCount > config.MaxSurvivors || candidateCount < bulkSimMinCombinations && config.Name == proto.BulkSimStage_BulkSimStageHigh
+	return config.MaxSurvivors == 0 || candidateCount > config.MaxSurvivors || candidateCount < bulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
 }
 
 func getBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimStageConfig) int {
@@ -285,7 +285,7 @@ func getBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimSta
 	if request.BaseRequest.SimOptions.IsTest {
 		return 3
 	}
-	if config.Name == proto.BulkSimStage_BulkSimStageLow {
+	if config.Stage == proto.BulkSimStage_BulkSimStageLow {
 		return runtime.NumCPU() * bulkSimLowStageConcurrencyFactor
 	}
 	return runtime.NumCPU()
@@ -300,7 +300,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 	maxBaselineSims := 2
 	maxTotalSims := len(candidates) + maxBaselineSims
 	probeTotalIterations := int32(maxTotalSims) * minIterations
-	emitBulkSimStageProgress(progress, config.Name, 0, maxTotalSims, 0, probeTotalIterations, 0)
+	emitBulkSimStageProgress(progress, config.Stage, 0, maxTotalSims, 0, probeTotalIterations, 0)
 
 	// Run the baseline gear once at the stage minimum to estimate DPS variance.
 	// That variance is used to calculate how many iterations are needed for the
@@ -310,12 +310,12 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 		if progressMetrics.TotalIterations == 0 {
 			return
 		}
-		emitBulkSimStageProgress(progress, config.Name, 0, maxTotalSims, min(progressMetrics.CompletedIterations, minIterations), probeTotalIterations, progressMetrics.Dps)
+		emitBulkSimStageProgress(progress, config.Stage, 0, maxTotalSims, min(progressMetrics.CompletedIterations, minIterations), probeTotalIterations, progressMetrics.Dps)
 	})
 	if baselineProbe.Error != nil {
 		return BulkSimStageResult{Baseline: baselineProbe}
 	}
-	emitBulkSimStageProgress(progress, config.Name, 1, maxTotalSims, minIterations, probeTotalIterations, baselineProbe.DpsMetrics.Avg)
+	emitBulkSimStageProgress(progress, config.Stage, 1, maxTotalSims, minIterations, probeTotalIterations, baselineProbe.DpsMetrics.Avg)
 
 	iterations := getBulkSimStageIterations(request, config, baselineProbe.DpsMetrics, len(candidates))
 	reuseBaselineProbe := iterations == minIterations
@@ -328,25 +328,25 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 	if !reuseBaselineProbe {
 		totalStageIterations += iterations
 	}
-	emitBulkSimStageProgress(progress, config.Name, 1, totalSims, completedBaselineIterations, totalStageIterations, baselineProbe.DpsMetrics.Avg)
+	emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, completedBaselineIterations, totalStageIterations, baselineProbe.DpsMetrics.Avg)
 	if !reuseBaselineProbe {
 		baseline = runSingleBulkSimWithProgress(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, iterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 			if progressMetrics.TotalIterations == 0 {
 				return
 			}
-			emitBulkSimStageProgress(progress, config.Name, 1, totalSims, minIterations+min(progressMetrics.CompletedIterations, iterations), totalStageIterations, progressMetrics.Dps)
+			emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, minIterations+min(progressMetrics.CompletedIterations, iterations), totalStageIterations, progressMetrics.Dps)
 		})
 		if baseline.Error != nil {
 			return BulkSimStageResult{Baseline: baseline, Iterations: iterations}
 		}
 		completedBaselineIterations += iterations
-		emitBulkSimStageProgress(progress, config.Name, baselineSims, totalSims, completedBaselineIterations, totalStageIterations, baseline.DpsMetrics.Avg)
+		emitBulkSimStageProgress(progress, config.Stage, baselineSims, totalSims, completedBaselineIterations, totalStageIterations, baseline.DpsMetrics.Avg)
 	}
 
 	jobs := make(chan BulkSimStageTask, len(candidates))
 	results := make(chan *BulkSimCandidateResult, len(candidates))
 	progressTracker := &BulkSimStageProgressTracker{
-		stage:                               config.Name,
+		stage:                               config.Stage,
 		progress:                            progress,
 		totalCandidates:                     len(candidates),
 		totalSims:                           totalSims,
@@ -398,7 +398,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 	}
 
 	metrics := &proto.BulkSimStageMetrics{
-		Stage:               config.Name,
+		Stage:               config.Stage,
 		InputGearSets:       int32(len(candidates)),
 		Survivors:           int32(len(collected)),
 		Iterations:          iterations,
@@ -515,7 +515,7 @@ func getBulkSimStageIterations(request *proto.BulkSimRequest, config BulkSimStag
 }
 
 func usesUserDefinedHighStageIterations(request *proto.BulkSimRequest, config BulkSimStageConfig) bool {
-	return config.Name == proto.BulkSimStage_BulkSimStageHigh && request.HighStageIterations > 0
+	return config.Stage == proto.BulkSimStage_BulkSimStageHigh && request.HighStageIterations > 0
 }
 
 func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSimCandidateResult, iterations int32, config BulkSimStageConfig) []BulkSimCandidate {
@@ -744,7 +744,7 @@ func formatBulkSimStageStart(config BulkSimStageConfig, candidateCount int, conc
 		"  Per-candidate concurrent sim: %t\n"+
 		"  Min iterations: %d\n"+
 		"  Target error: %.2f%%",
-		bulkSimStageLogName(config.Name),
+		bulkSimStageLogName(config.Stage),
 		candidateCount,
 		candidateCount+1,
 		candidateCount+2,

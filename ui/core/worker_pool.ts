@@ -176,14 +176,6 @@ export class WorkerPool {
 	): Promise<ProgressMetrics> {
 		try {
 			worker.addSimTaskRunning(id, totalIterations);
-			const apiCallResult = worker.doApiCall(requestName, request, id).then(outputData => {
-				const progress = ProgressMetrics.fromBinary(outputData);
-				if (this.isFinalProgress(progress)) {
-					return progress;
-				}
-
-				throw new Error(`${requestName} completed without a final progress result.`);
-			});
 			const finalProgress: Promise<ProgressMetrics> = new Promise(resolve => {
 				// Add handler for the progress events
 				worker.addPromiseFunc(
@@ -192,9 +184,25 @@ export class WorkerPool {
 					noop,
 				);
 			});
+			const apiCallResult = worker.doApiCall(requestName, request, id).then(outputData => {
+				// WASM async handlers deliver their final result via the progress channel and may return no payload
+				// on the request channel. In that case keep waiting for the final progress message instead of
+				// trying to decode an empty response.
+				if (!outputData?.length) {
+					return finalProgress;
+				}
+
+				const progress = ProgressMetrics.fromBinary(outputData);
+				if (this.isFinalProgress(progress)) {
+					return progress;
+				}
+
+				throw new Error(`${requestName} completed without a final progress result.`);
+			});
 			return await Promise.race([finalProgress, apiCallResult]);
 		} finally {
 			worker.updateSimTask(id, 0);
+			worker.ignoreResultId(this.getProgressName(id));
 		}
 	}
 
@@ -227,6 +235,7 @@ class SimWorker {
 	readonly workerId: number;
 	private readonly simTasksRunning: Record<string, { workLeft: number }>;
 	private taskIdsToPromiseFuncs: Record<string, [(result: any) => void, (error: any) => void]>;
+	private readonly ignoredResultIds: Set<string>;
 	private worker: Worker | undefined;
 	private onReady: Promise<void> | undefined;
 	private resolveReady: (() => void) | undefined;
@@ -237,6 +246,7 @@ class SimWorker {
 		this.workerId = id;
 		this.simTasksRunning = {};
 		this.taskIdsToPromiseFuncs = {};
+		this.ignoredResultIds = new Set();
 		this.wasmWorker = false;
 		this.shouldDestroy = false;
 		this.onReady = new Promise((_resolve, _reject) => {
@@ -270,6 +280,7 @@ class SimWorker {
 				default:
 					const promiseFuncs = this.taskIdsToPromiseFuncs[id];
 					if (!promiseFuncs) {
+						if (this.ignoredResultIds.has(id)) return;
 						console.warn(`Unrecognized result id ${id} for msg ${msg}`);
 						return;
 					}
@@ -333,6 +344,11 @@ class SimWorker {
 
 	addPromiseFunc(id: string, callback: (result: Uint8Array) => void, onError: (error: any) => void) {
 		this.taskIdsToPromiseFuncs[id] = [callback, onError];
+	}
+
+	ignoreResultId(id: string, durationMs = 5000) {
+		this.ignoredResultIds.add(id);
+		window.setTimeout(() => this.ignoredResultIds.delete(id), durationMs);
 	}
 
 	async doApiCall(requestName: SimRequest, request: Uint8Array, id: string): Promise<Uint8Array> {

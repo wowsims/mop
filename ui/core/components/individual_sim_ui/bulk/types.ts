@@ -13,14 +13,11 @@ export type OptimisationStageConfig = {
 	concurrency?: number;
 	minIterations?: number;
 	targetErrorPct: number;
-	cullingCoefficient?: number;
 	minSurvivors?: number;
 	maxSurvivors?: number;
 };
 
 export const BULK_OPTIMISATION_MIN_COMBINATIONS = 20;
-export const BULK_OPTIMISATION_AGGRESSIVE_CULLING_COEFFICIENT = 1.35;
-export const BULK_OPTIMISATION_CONSERVATIVE_ERROR_THRESHOLD = 2.5;
 export const BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE = 250;
 
 export const STAGE_CONFIG: Record<OptimisationStage, OptimisationStageConfig> = {
@@ -48,41 +45,6 @@ export interface TopGearResult {
 	dpsMetrics: DistributionMetrics;
 }
 
-export interface BulkOptimisationStageResult {
-	baseline: TopGearResult;
-	results: TopGearResult[];
-	nextRound: number;
-	metrics: BulkOptimisationStageMetrics;
-}
-
-export interface BulkOptimisationStageMetrics {
-	inputGearSets: number;
-	results: number;
-	iterations: number;
-	targetErrorPct: number;
-	combinationErrorMultiplier: number;
-	concurrency: number;
-	stageRounds: number;
-	durationSeconds: number;
-	baselineAvgDps: number;
-	baselineStdev: number;
-	bestCandidateAvgDps: number;
-	bestCandidateStdev: number;
-}
-
-export interface BulkOptimisationStageTask {
-	gear: Gear;
-	round: number;
-	stageRound: number;
-}
-
-export interface BulkOptimisationStageProgress {
-	completedIterationsByRound: Map<number, number>;
-	completedIterations: number;
-	totalIterations: number;
-	startedAt: number;
-}
-
 export interface BulkSimRoundConfig {
 	currentRound: number;
 	totalRounds: number;
@@ -96,9 +58,4 @@ export interface BulkSimProgressConfig extends BulkSimRoundConfig {
 	aggregateTotalIterations?: number;
 	aggregateStartedAt?: number;
 	useSimCountProgress?: boolean;
-}
-
-export interface BulkSingleGearSimConfig extends BulkSimRoundConfig {
-	iterations?: number;
-	aggregateProgress?: BulkOptimisationStageProgress;
 }

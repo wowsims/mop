@@ -7,7 +7,7 @@ import { ref } from 'tsx-vanilla';
 import { REPO_RELEASES_URL } from '../../constants/other';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import i18n from '../../../i18n/config';
-import { BulkSettings, DistributionMetrics, ProgressMetrics, RaidSimResult } from '../../proto/api';
+import { BulkSettings, DistributionMetrics, ProgressMetrics } from '../../proto/api';
 import { Class, GemColor, HandType, ItemRandomSuffix, ItemSlot, ItemSpec, RangedWeaponType, ReforgeStat, Spec, WeaponType } from '../../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../proto/db';
 import { UIEnchant, UIGem, UIItem } from '../../proto/ui';
@@ -28,38 +28,27 @@ import BulkItemPickerGroup from './bulk/bulk_item_picker_group';
 import BulkItemSearch from './bulk/bulk_item_search';
 import BulkSimResultRenderer from './bulk/bulk_sim_results_renderer';
 import GemSelectorModal from './bulk/gem_selector_modal';
-import { runLocalBulkSim as runLocalBulkSimStage } from './bulk/local_sim';
-import { runOptimisationStage as runWasmOptimisationStage } from './bulk/wasm_sim';
+import { runCoreBulkSim as runCoreBulkSimImpl } from './bulk/core_sim';
 import {
 	binomialCoefficient,
 	BulkSimItemSlot,
 	bulkSimItemSlotToSingleItemSlot,
 	bulkSimItemSlotToItemSlotPairs,
-	cleanBulkDpsMetrics,
 	dedupeGearSets,
 	getAllPairs,
 	getBulkItemSlotFromSlot,
-	getDpsError,
 	getDurationSeconds,
 	getGearKey,
 	getOptimisationStageMinIterations,
-	getOptimisationStageTrackingMetrics,
 	getOptimisationTotalSimRounds,
-	getSkippedOptimisationStageTrackingMetrics,
 	shouldRunOptimisationStage,
 } from './bulk/utils';
 import {
 	BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
-	BULK_OPTIMISATION_AGGRESSIVE_CULLING_COEFFICIENT,
-	BULK_OPTIMISATION_CONSERVATIVE_ERROR_THRESHOLD,
 	BULK_OPTIMISATION_MIN_COMBINATIONS,
-	BulkOptimisationStageMetrics,
-	BulkOptimisationStageResult,
 	BulkSimProgressConfig,
-	BulkSingleGearSimConfig,
 	LOCAL_COMBINATIONS_LIMIT,
 	LOCAL_ITERATIONS_LIMIT,
-	OptimisationStage,
 	STAGE_CONFIG,
 	TopGearResult,
 	WEB_COMBINATIONS_LIMIT,
@@ -362,57 +351,6 @@ export class BulkTab extends SimTab {
 		return this.simUI.sim.getIterations();
 	}
 
-	protected createBulkItemsDatabase(): SimDatabase {
-		const itemsDb = SimDatabase.create();
-		for (const is of this.items.values()) {
-			if (!is) continue;
-
-			const item = this.simUI.sim.db.lookupItemSpec(is);
-			if (!item) {
-				throw new Error(`item with ID ${is.id} not found in database`);
-			}
-			itemsDb.items.push(SimItem.fromJson(UIItem.toJson(item.item), { ignoreUnknownFields: true }));
-
-			const ieRpp = this.simUI.sim.db.getItemEffectRandPropPoints(item.ilvl);
-			if (ieRpp) {
-				itemsDb.itemEffectRandPropPoints.push(ItemEffectRandPropPoints.create(this.simUI.sim.db.getItemEffectRandPropPoints(item.ilvl)));
-			}
-
-			if (item.enchant) {
-				itemsDb.enchants.push(
-					SimEnchant.fromJson(UIEnchant.toJson(item.enchant), {
-						ignoreUnknownFields: true,
-					}),
-				);
-			}
-			if (item.randomSuffix) {
-				itemsDb.randomSuffixes.push(
-					ItemRandomSuffix.fromJson(ItemRandomSuffix.toJson(item.randomSuffix), {
-						ignoreUnknownFields: true,
-					}),
-				);
-			}
-			if (item.reforge) {
-				itemsDb.reforgeStats.push(
-					ReforgeStat.fromJson(ReforgeStat.toJson(item.reforge), {
-						ignoreUnknownFields: true,
-					}),
-				);
-			}
-			for (const gem of item.gems) {
-				if (gem) {
-					itemsDb.gems.push(SimGem.fromJson(UIGem.toJson(gem), { ignoreUnknownFields: true }));
-				}
-			}
-		}
-		for (const gem of this.fallbackGems) {
-			if (gem.id > 0) {
-				itemsDb.gems.push(gem);
-			}
-		}
-		return itemsDb;
-	}
-
 	// Add an item to its eligible bulk sim item slot(s). Mainly used for importing and search
 	addItem(item: ItemSpec) {
 		this.addItems([item]);
@@ -703,6 +641,57 @@ export class BulkTab extends SimTab {
 		}
 
 		return this.matchesWeaponTypeFilter(mhItem, ItemSlot.ItemSlotMainHand) && this.matchesWeaponTypeFilter(ohItem, ItemSlot.ItemSlotOffHand);
+	}
+
+	protected createBulkItemsDatabase(): SimDatabase {
+		const itemsDb = SimDatabase.create();
+		for (const is of this.items.values()) {
+			if (!is) continue;
+
+			const item = this.simUI.sim.db.lookupItemSpec(is);
+			if (!item) {
+				throw new Error(`item with ID ${is.id} not found in database`);
+			}
+			itemsDb.items.push(SimItem.fromJson(UIItem.toJson(item.item), { ignoreUnknownFields: true }));
+
+			const ieRpp = this.simUI.sim.db.getItemEffectRandPropPoints(item.ilvl);
+			if (ieRpp) {
+				itemsDb.itemEffectRandPropPoints.push(ItemEffectRandPropPoints.create(this.simUI.sim.db.getItemEffectRandPropPoints(item.ilvl)));
+			}
+
+			if (item.enchant) {
+				itemsDb.enchants.push(
+					SimEnchant.fromJson(UIEnchant.toJson(item.enchant), {
+						ignoreUnknownFields: true,
+					}),
+				);
+			}
+			if (item.randomSuffix) {
+				itemsDb.randomSuffixes.push(
+					ItemRandomSuffix.fromJson(ItemRandomSuffix.toJson(item.randomSuffix), {
+						ignoreUnknownFields: true,
+					}),
+				);
+			}
+			if (item.reforge) {
+				itemsDb.reforgeStats.push(
+					ReforgeStat.fromJson(ReforgeStat.toJson(item.reforge), {
+						ignoreUnknownFields: true,
+					}),
+				);
+			}
+			for (const gem of item.gems) {
+				if (gem) {
+					itemsDb.gems.push(SimGem.fromJson(UIGem.toJson(gem), { ignoreUnknownFields: true }));
+				}
+			}
+		}
+		for (const gem of this.fallbackGems) {
+			if (gem.id > 0) {
+				itemsDb.gems.push(gem);
+			}
+		}
+		return itemsDb;
 	}
 
 	protected calculateBulkCombinations() {
@@ -1368,10 +1357,6 @@ export class BulkTab extends SimTab {
 		}
 	}
 
-	private getDpsError(metrics: DistributionMetrics, iterations: number): number {
-		return getDpsError(metrics, iterations);
-	}
-
 	private getDurationSeconds(startedAt: number): number {
 		return getDurationSeconds(startedAt);
 	}
@@ -1381,120 +1366,15 @@ export class BulkTab extends SimTab {
 		console.debug(`[Bulk Sim Optimisation] ${message}`, data);
 	}
 
-	private debugOptimisationResults(stageName: OptimisationStage, results: TopGearResult[], bestMetrics: DistributionMetrics, iterations: number) {
-		if (!isDevMode()) return;
-		console.table(
-			results
-				.slice()
-				.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg)
-				.slice(0, 10)
-				.map((result, index) => ({
-					stage: stageName,
-					rank: index + 1,
-					avg: Math.round(result.dpsMetrics.avg * 100) / 100,
-					stdev: Math.round(result.dpsMetrics.stdev * 100) / 100,
-					error: Math.round(this.getDpsError(result.dpsMetrics, iterations) * 100) / 100,
-					behindBest: Math.round((bestMetrics.avg - result.dpsMetrics.avg) * 100) / 100,
-				})),
-		);
-	}
-
-	private selectOptimisationRoundSurvivors(
-		results: TopGearResult[],
-		baseline: TopGearResult,
-		iterations: number,
-		minSurvivors: number,
-		maxSurvivors: number,
-		stageName: OptimisationStage,
-	): Gear[] {
-		if (results.length <= maxSurvivors) {
-			this.debugOptimisationRound(`${stageName} pruning skipped`, {
-				stageName,
-				results: results.length,
-				minSurvivors,
-				maxSurvivors,
-				reason: `candidate count (${results.length}) is at or below max survivors (${maxSurvivors})`,
-				survivors: results.length,
-			});
-			return results.map(result => result.gear);
-		}
-
-		const rankedByMean = results.slice().sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
-		const bestMetrics = [baseline, rankedByMean[0]].sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg)[0].dpsMetrics;
-		const stageConfig = STAGE_CONFIG[stageName];
-		const cullingCoefficient = stageConfig.cullingCoefficient ?? BULK_OPTIMISATION_AGGRESSIVE_CULLING_COEFFICIENT;
-		const maxActorError = [baseline, ...results].reduce((maxError, result) => Math.max(maxError, this.getDpsError(result.dpsMetrics, iterations)), 0);
-		const aggressiveCullingMargin = maxActorError * cullingCoefficient;
-		const conservativeCullingMargin = bestMetrics.avg * (stageConfig.targetErrorPct / 100) * BULK_OPTIMISATION_CONSERVATIVE_ERROR_THRESHOLD;
-		const lowerBound = bestMetrics.avg - aggressiveCullingMargin;
-		const meanSurvivors = rankedByMean.slice(0, Math.min(minSurvivors, rankedByMean.length));
-		const stagedResults = results.filter(result => result.dpsMetrics.avg >= lowerBound).sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
-
-		const survivors: TopGearResult[] = [];
-		const addSurvivor = (result: TopGearResult) => {
-			if (!survivors.some(survivor => survivor.gear.equals(result.gear))) {
-				survivors.push(result);
-			}
-		};
-
-		meanSurvivors.forEach(addSurvivor);
-		stagedResults.forEach(addSurvivor);
-		this.debugOptimisationRound(`${stageName} pruning evaluated`, {
-			stageName,
-			iterations,
-			results: results.length,
-			baselineAvg: baseline.dpsMetrics.avg,
-			baselineStdev: baseline.dpsMetrics.stdev,
-			bestAvg: bestMetrics.avg,
-			bestStdev: bestMetrics.stdev,
-			maxActorError,
-			cullingCoefficient,
-			aggressiveCullingMargin,
-			conservativeCullingMargin,
-			lowerBound,
-			targetErrorPct: stageConfig.targetErrorPct,
-			minSurvivors,
-			maxSurvivors,
-			meanSurvivors: meanSurvivors.length,
-			thresholdSurvivors: stagedResults.length,
-			uniqueSurvivorsBeforeCap: survivors.length,
-		});
-		this.debugOptimisationResults(stageName, results, bestMetrics, iterations);
-
-		if (survivors.length <= maxSurvivors) {
-			this.debugOptimisationRound(`${stageName} pruning complete`, {
-				stageName,
-				survivors: survivors.length,
-				capApplied: false,
-			});
-			return survivors.map(result => result.gear);
-		}
-
-		const pinnedMeanSurvivors = new Set(meanSurvivors.map(result => result.gear));
-		const remainingSurvivors = survivors.filter(result => !pinnedMeanSurvivors.has(result.gear)).sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
-
-		const cappedSurvivors = [...meanSurvivors, ...remainingSurvivors.slice(0, Math.max(0, maxSurvivors - meanSurvivors.length))];
-		this.debugOptimisationRound(`${stageName} pruning complete`, {
-			stageName,
-			survivors: cappedSurvivors.length,
-			capApplied: true,
-		});
-		return cappedSurvivors.map(result => result.gear);
-	}
-
-	private cleanBulkDpsMetrics(dpsMetrics: DistributionMetrics): DistributionMetrics {
-		return cleanBulkDpsMetrics(dpsMetrics);
-	}
-
 	private dedupeGearSets(gearSets: Gear[]): Gear[] {
 		return dedupeGearSets(gearSets, this.originalGear ? [this.originalGear] : []);
 	}
 
-	private shouldRunOptimisationStage(stage: OptimisationStage, candidateCount: number): boolean {
+	private shouldRunOptimisationStage(stage: 'low' | 'medium' | 'high', candidateCount: number): boolean {
 		return shouldRunOptimisationStage(stage, candidateCount);
 	}
 
-	private getOptimisationStageMinIterations(stage: OptimisationStage): number {
+	private getOptimisationStageMinIterations(stage: 'low' | 'medium' | 'high'): number {
 		return getOptimisationStageMinIterations(stage, this.simUI.sim.getIterations());
 	}
 
@@ -1502,33 +1382,11 @@ export class BulkTab extends SimTab {
 		return getOptimisationTotalSimRounds(reforgedGearSetCount);
 	}
 
-	private getOptimisationStageConcurrency(stageName: OptimisationStage): number {
-		if (this.bulkSimUsesWasmConcurrency) {
-			return 1;
-		}
-
-		const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-		const stageConcurrency = STAGE_CONFIG[stageName].concurrency || hardwareConcurrency;
-		if (stageName === 'low') {
-			return hardwareConcurrency * 10;
-		}
-
-		return Math.max(1, Math.min(hardwareConcurrency, stageConcurrency));
-	}
-
-	private getOptimisationStageTrackingMetrics(stageName: OptimisationStage, metrics: BulkOptimisationStageMetrics): Record<string, string | number> {
-		return getOptimisationStageTrackingMetrics(stageName, metrics);
-	}
-
-	private getSkippedOptimisationStageTrackingMetrics(stageName: OptimisationStage, gearSets: Gear[]): Record<string, string | number> {
-		return getSkippedOptimisationStageTrackingMetrics(stageName, gearSets);
-	}
-
-	private async runLocalBulkSim(
+	private async runCoreBulkSim(
 		gearSets: Gear[],
 		signal: AbortSignal,
 	): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
-		return runLocalBulkSimStage(
+		return runCoreBulkSimImpl(
 			{
 				simUI: this.simUI,
 				throwIfBulkAborted: signal => this.throwIfBulkAborted(signal),
@@ -1538,32 +1396,6 @@ export class BulkTab extends SimTab {
 			},
 			gearSets,
 			signal,
-		);
-	}
-
-	private async runOptimisationStage(
-		stageName: OptimisationStage,
-		gearSets: Gear[],
-		currentRound: number,
-		totalRounds: number,
-		signal: AbortSignal,
-	): Promise<BulkOptimisationStageResult> {
-		return runWasmOptimisationStage(
-			{
-				originalGear: this.originalGear,
-				bulkSimUsesWasmConcurrency: this.bulkSimUsesWasmConcurrency,
-				throwIfBulkAborted: signal => this.throwIfBulkAborted(signal),
-				runWithBulkAbort: (promise, signal) => this.runWithBulkAbort(promise, signal),
-				runSingleGearSim: (gear, config) => this.runSingleGearSim(gear, config),
-				debugOptimisationRound: (message, data) => this.debugOptimisationRound(message, data),
-				getOptimisationStageConcurrency: stageName => this.getOptimisationStageConcurrency(stageName),
-			},
-			stageName,
-			gearSets,
-			currentRound,
-			totalRounds,
-			signal,
-			this.simUI.sim.getIterations(),
 		);
 	}
 
@@ -1731,7 +1563,7 @@ export class BulkTab extends SimTab {
 		};
 
 		try {
-			await this.simUI.sim.signalManager.abortType(RequestTypes.All);
+			await this.simUI.sim.signalManager.abortType(RequestTypes.RaidSim);
 			this.simStart = new Date().getTime();
 			this.originalGear = this.simUI.player.getGear();
 			let topGearResults: TopGearResult[] = [];
@@ -1773,156 +1605,13 @@ export class BulkTab extends SimTab {
 			});
 
 			this.simStart = new Date().getTime();
-			const simStageStartedAt = this.simStart;
-			let currentSimRound = 1;
 			let referenceDpsMetrics: DistributionMetrics;
-
-			if (useLocalBulkSim) {
-				const bulkSimResult = await this.runLocalBulkSim(reforgedGearSets, abortSignal);
-				referenceDpsMetrics = bulkSimResult.referenceDpsMetrics;
-				topGearResults = bulkSimResult.topGearResults;
-				Object.assign(batchCompleteMetrics, bulkSimResult.metrics);
-			} else if (this.shouldUseOptimisationRounds(this.combinations)) {
-				const totalSimRounds = this.getOptimisationTotalSimRounds(reforgedGearSets.length);
-				batchCompleteMetrics.total_sim_rounds = totalSimRounds;
-				let nextStageGearSets = reforgedGearSets;
-				this.debugOptimisationRound('starting staged run', {
-					durationSeconds: 0,
-					combinations: this.combinations,
-					minCombinations: BULK_OPTIMISATION_MIN_COMBINATIONS,
-					candidateGearSets: candidateGearSets.length,
-					reforgedGearSets: reforgedGearSets.length,
-					totalSimRounds,
-					runLowStage: this.shouldRunOptimisationStage('low', nextStageGearSets.length),
-					runMediumStage: this.shouldRunOptimisationStage('medium', Math.min(nextStageGearSets.length, STAGE_CONFIG.low.maxSurvivors!)),
-					lowTargetErrorPct: STAGE_CONFIG.low.targetErrorPct,
-					mediumTargetErrorPct: STAGE_CONFIG.medium.targetErrorPct,
-					highTargetErrorPct: STAGE_CONFIG.high.targetErrorPct,
-					lowMinIterations: this.getOptimisationStageMinIterations('low'),
-					mediumMinIterations: this.getOptimisationStageMinIterations('medium'),
-					highMinIterations: this.getOptimisationStageMinIterations('high'),
-					lowStageMinSurvivors: STAGE_CONFIG.low.minSurvivors,
-					lowStageMaxSurvivors: STAGE_CONFIG.low.maxSurvivors,
-					mediumStageMinSurvivors: STAGE_CONFIG.medium.minSurvivors,
-					mediumStageMaxSurvivors: STAGE_CONFIG.medium.maxSurvivors,
-				});
-
-				if (this.shouldRunOptimisationStage('low', nextStageGearSets.length)) {
-					const lowStage = await this.runOptimisationStage('low', nextStageGearSets, currentSimRound, totalSimRounds, abortSignal);
-					Object.assign(batchCompleteMetrics, this.getOptimisationStageTrackingMetrics('low', lowStage.metrics));
-					currentSimRound = lowStage.nextRound;
-					nextStageGearSets = this.selectOptimisationRoundSurvivors(
-						lowStage.results,
-						lowStage.baseline,
-						lowStage.metrics.iterations,
-						STAGE_CONFIG.low.minSurvivors!,
-						STAGE_CONFIG.low.maxSurvivors!,
-						'low',
-					);
-					batchCompleteMetrics.low_survivors = nextStageGearSets.length;
-					this.debugOptimisationRound('medium stage survivors selected', {
-						lowStageDurationSeconds: lowStage.metrics.durationSeconds,
-						stageElapsedSeconds: this.getDurationSeconds(simStageStartedAt),
-						fromStage: 'low',
-						mediumGearSets: nextStageGearSets.length,
-					});
-				} else {
-					Object.assign(batchCompleteMetrics, this.getSkippedOptimisationStageTrackingMetrics('low', nextStageGearSets));
-					this.debugOptimisationRound('low stage skipped', {
-						candidateGearSets: nextStageGearSets.length,
-						lowStageMaxSurvivors: STAGE_CONFIG.low.maxSurvivors,
-						reason: 'candidate count is at or below the low-stage survivor cap',
-					});
-				}
-
-				if (this.shouldRunOptimisationStage('medium', nextStageGearSets.length)) {
-					const mediumStage = await this.runOptimisationStage('medium', nextStageGearSets, currentSimRound, totalSimRounds, abortSignal);
-					Object.assign(batchCompleteMetrics, this.getOptimisationStageTrackingMetrics('medium', mediumStage.metrics));
-					currentSimRound = mediumStage.nextRound;
-					nextStageGearSets = this.selectOptimisationRoundSurvivors(
-						mediumStage.results,
-						mediumStage.baseline,
-						mediumStage.metrics.iterations,
-						STAGE_CONFIG.medium.minSurvivors!,
-						STAGE_CONFIG.medium.maxSurvivors!,
-						'medium',
-					);
-					batchCompleteMetrics.medium_survivors = nextStageGearSets.length;
-					this.debugOptimisationRound('high stage survivors selected', {
-						mediumStageDurationSeconds: mediumStage.metrics.durationSeconds,
-						stageElapsedSeconds: this.getDurationSeconds(simStageStartedAt),
-						fromStage: 'medium',
-						highGearSets: nextStageGearSets.length,
-					});
-				} else {
-					Object.assign(batchCompleteMetrics, this.getSkippedOptimisationStageTrackingMetrics('medium', nextStageGearSets));
-					this.debugOptimisationRound('medium stage skipped', {
-						candidateGearSets: nextStageGearSets.length,
-						mediumStageMaxSurvivors: STAGE_CONFIG.medium.maxSurvivors,
-						reason: 'candidate count is at or below the medium-stage survivor cap',
-					});
-				}
-
-				const highStage = await this.runOptimisationStage('high', nextStageGearSets, currentSimRound, totalSimRounds, abortSignal);
-				Object.assign(batchCompleteMetrics, this.getOptimisationStageTrackingMetrics('high', highStage.metrics));
-				batchCompleteMetrics.high_survivors = highStage.results.length;
-				currentSimRound = highStage.nextRound;
-				referenceDpsMetrics = highStage.baseline.dpsMetrics;
-				topGearResults = highStage.results.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg).slice(0, 5);
-				this.debugOptimisationRound('staged run complete', {
-					durationSeconds: this.getDurationSeconds(simStageStartedAt),
-					highStageDurationSeconds: highStage.metrics.durationSeconds,
-					finalResults: highStage.results.length,
-					topGearResults: topGearResults.map((result, index) => ({
-						rank: index + 1,
-						avg: result.dpsMetrics.avg,
-						stdev: result.dpsMetrics.stdev,
-					})),
-				});
-			} else {
-				batchCompleteMetrics.total_sim_rounds = reforgedGearSets.length + 1;
-				if (this.useOptimisationRounds) {
-					this.debugOptimisationRound('staged run skipped', {
-						combinations: this.combinations,
-						minCombinations: BULK_OPTIMISATION_MIN_COMBINATIONS,
-						reason: `staged runs require at least ${BULK_OPTIMISATION_MIN_COMBINATIONS} combinations`,
-					});
-				}
-
-				const totalSimRounds = reforgedGearSets.length + 1;
-				const result = await this.runWithBulkAbort(
-					this.runSingleGearSim(this.originalGear, {
-						currentRound: currentSimRound++,
-						totalRounds: totalSimRounds,
-					}),
-					abortSignal,
-				);
-				referenceDpsMetrics = result!.raidMetrics!.dps!;
-
-				for (let comboIdx = 0; comboIdx < reforgedGearSets.length; comboIdx++) {
-					this.throwIfBulkAborted(abortSignal);
-
-					const reforgedGear = reforgedGearSets[comboIdx];
-					const result = await this.runWithBulkAbort(
-						this.runSingleGearSim(reforgedGear, {
-							currentRound: currentSimRound++,
-							totalRounds: totalSimRounds,
-						}),
-						abortSignal,
-					);
-
-					const isOriginalGear = this.originalGear.equals(reforgedGear);
-					if (!isOriginalGear) {
-						topGearResults.push({
-							gear: reforgedGear,
-							dpsMetrics: this.cleanBulkDpsMetrics(result!.raidMetrics!.dps!),
-						});
-					}
-
-					topGearResults.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
-					if (topGearResults.length > 5) topGearResults.pop();
-				}
-			}
+			const bulkSimResult = await this.runCoreBulkSim(reforgedGearSets, abortSignal);
+			referenceDpsMetrics = bulkSimResult.referenceDpsMetrics;
+			topGearResults = bulkSimResult.topGearResults;
+			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);
+			batchCompleteMetrics.local_bulk_sim = useLocalBulkSim ? 1 : 0;
+			batchCompleteMetrics.wasm_concurrent_bulk_sim = this.bulkSimUsesWasmConcurrency ? 1 : 0;
 
 			const originalGearKey = getGearKey(this.originalGear);
 			this.topGearResults = topGearResults.filter(result => getGearKey(result.gear) !== originalGearKey);
@@ -1985,54 +1674,6 @@ export class BulkTab extends SimTab {
 			this.isCancelling = false;
 			this.progressTrackerModal.hide();
 		}
-	}
-
-	private async runSingleGearSim(gear: Gear, config: BulkSingleGearSimConfig): Promise<RaidSimResult> {
-		const stageCurrentRound = config.stageCurrentRound ?? config.currentRound;
-		const stageRounds = config.stageRounds ?? config.totalRounds;
-		const getProgressConfig = (): BulkSimProgressConfig => {
-			const progressConfig: BulkSimProgressConfig = {
-				currentRound: config.currentRound,
-				totalRounds: config.totalRounds,
-				title: config.title,
-				stageCurrentRound,
-				stageRounds,
-			};
-
-			if (config.aggregateProgress) {
-				progressConfig.aggregateCompletedIterations = config.aggregateProgress.completedIterations;
-				progressConfig.aggregateTotalIterations = config.aggregateProgress.totalIterations;
-				progressConfig.aggregateStartedAt = config.aggregateProgress.startedAt;
-			}
-
-			return progressConfig;
-		};
-		const updateProgress = (progressMetrics: ProgressMetrics) => {
-			if (config.aggregateProgress) {
-				const previousCompletedIterations = config.aggregateProgress.completedIterationsByRound.get(stageCurrentRound) ?? 0;
-				const completedIterationsDelta = Math.max(0, progressMetrics.completedIterations - previousCompletedIterations);
-				config.aggregateProgress.completedIterations += completedIterationsDelta;
-				config.aggregateProgress.completedIterationsByRound.set(stageCurrentRound, progressMetrics.completedIterations);
-			}
-
-			this.setSimProgress(progressMetrics, getProgressConfig());
-		};
-		const response = await this.simUI.sim.runRaidSimLightweight(gear, updateProgress, { iterations: config.iterations });
-		if (!response || (response && 'type' in response)) {
-			throw new Error(response?.message);
-		}
-
-		if (config.aggregateProgress && config.iterations !== undefined) {
-			const previousCompletedIterations = config.aggregateProgress.completedIterationsByRound.get(stageCurrentRound) ?? 0;
-			const completedIterationsDelta = Math.max(0, config.iterations - previousCompletedIterations);
-			config.aggregateProgress.completedIterations += completedIterationsDelta;
-			config.aggregateProgress.completedIterationsByRound.set(stageCurrentRound, config.iterations);
-			this.setSimProgress(ProgressMetrics.create({ completedIterations: config.iterations, totalIterations: config.iterations }), getProgressConfig());
-		}
-
-		const [_, result] = response;
-
-		return result;
 	}
 
 	private async optimizeReforges(gear: Gear, playerPhase: boolean, signal: AbortSignal): Promise<Gear | null> {

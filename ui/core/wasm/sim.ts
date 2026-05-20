@@ -1,4 +1,3 @@
-import { SimRequest } from '../worker/types';
 import {
 	ErrorOutcome,
 	ErrorOutcomeType,
@@ -7,14 +6,10 @@ import {
 	RaidSimRequestSplitRequest,
 	RaidSimResult,
 	RaidSimResultCombinationRequest,
-	StatWeightsCalcRequest,
-	StatWeightsRequest,
-	StatWeightsResult,
-	StatWeightsStatResultData,
-} from './proto/api';
-import { SimSignals } from './sim_signal_manager';
-import { isDevMode } from './utils';
-import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool';
+} from '../proto/api';
+import { SimSignals } from '../sim_signal_manager';
+import { isDevMode } from '../utils';
+import { WorkerPool, WorkerProgressCallback } from '../worker_pool';
 
 class ConcurrentSimProgress {
 	readonly concurrency: number;
@@ -95,6 +90,26 @@ const runSims = (
 		let progressCounter = 0;
 		let running = requests.length;
 
+		const resolveWithError = (idx: number, error: unknown) => {
+			if (!running) return;
+
+			console.error(`Worker ${idx} had an error!`, error);
+			running = 0;
+			signals.abort.trigger();
+
+			const errorResult = RaidSimResult.create({
+				error: ErrorOutcome.create({ message: error instanceof Error ? error.message : String(error) }),
+			});
+			const finalProgressMetrics = csp.makeProgressMetrics();
+			finalProgressMetrics.finalRaidResult = errorResult;
+			onProgress(finalProgressMetrics);
+			resolve({
+				errorResult,
+				results: csp.finalResults,
+				progressMetricsFinal: finalProgressMetrics,
+			});
+		};
+
 		const progressHandler = (idx: number, pm: ProgressMetrics) => {
 			if (!running) return;
 
@@ -133,7 +148,7 @@ const runSims = (
 		};
 
 		for (let i = 0; i < requests.length; i++) {
-			wp.raidSimAsync(requests[i], pm => progressHandler(i, pm), signals);
+			wp.raidSimAsync(requests[i], pm => progressHandler(i, pm), signals).catch(error => resolveWithError(i, error));
 		}
 	});
 };
@@ -208,108 +223,4 @@ export const runConcurrentSim = async (
 	onProgress(simRes.progressMetricsFinal);
 
 	return combiResult;
-};
-
-const makeAndSendWeightsError = (err: string | ErrorOutcome, onProgress: WorkerProgressCallback): StatWeightsResult => {
-	const errRes = RaidSimResult.create();
-	if (typeof err === 'string') {
-		console.error(err);
-		errRes.error = ErrorOutcome.create({ message: err });
-	} else {
-		if (err.message) console.error(err.message);
-		errRes.error = err;
-	}
-	onProgress(ProgressMetrics.create({ finalWeightResult: errRes }));
-	return errRes;
-};
-
-export const runConcurrentStatWeights = async (
-	request: StatWeightsRequest,
-	workerPool: WorkerPool,
-	onProgress: WorkerProgressCallback,
-	signals: SimSignals,
-): Promise<StatWeightsResult> => {
-	if (isDevMode()) {
-		console.log('Getting stat weight sim requests.');
-	}
-
-	const id = generateRequestId(SimRequest.statWeightsAsync);
-
-	const manualResponse = await workerPool.statWeightRequests(request);
-	manualResponse.baseRequest!.requestId = id;
-
-	if (signals.abort.isTriggered()) {
-		return makeAndSendWeightsError(ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }), onProgress);
-	}
-
-	let iterationsTotal = manualResponse.baseRequest!.simOptions!.iterations;
-	let iterationsDone = 0;
-	let simsTotal = 1;
-	let simsDone = 0;
-
-	for (const statReqData of manualResponse.statSimRequests) {
-		statReqData.requestLow!.requestId = id;
-		statReqData.requestHigh!.requestId = id;
-		iterationsTotal += statReqData.requestLow!.simOptions!.iterations + statReqData.requestHigh!.simOptions!.iterations;
-		simsTotal += 2;
-	}
-
-	if (isDevMode()) {
-		console.log(`Need to run a total of ${simsTotal} sims and ${iterationsTotal} iterations.`);
-	}
-
-	let lastIterations = 0;
-	const progressHandler = (pm: ProgressMetrics) => {
-		iterationsDone += pm.completedIterations - lastIterations;
-		lastIterations = pm.completedIterations;
-
-		onProgress(
-			ProgressMetrics.create({
-				totalIterations: iterationsTotal,
-				completedIterations: iterationsDone,
-				totalSims: simsTotal,
-				completedSims: simsDone,
-			}),
-		);
-
-		if (pm.finalRaidResult) simsDone++;
-	};
-
-	const baseLine = await runConcurrentSim(manualResponse.baseRequest!, workerPool, progressHandler, signals);
-	if (baseLine.error) return makeAndSendWeightsError(baseLine.error, onProgress);
-
-	const calcRequest = StatWeightsCalcRequest.create({
-		baseResult: baseLine,
-		epReferenceStat: manualResponse.epReferenceStat,
-		statSimResults: [],
-	});
-
-	for (const statReqData of manualResponse.statSimRequests) {
-		if (signals.abort.isTriggered()) return makeAndSendWeightsError(ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }), onProgress);
-
-		lastIterations = 0;
-		const lowRes = await runConcurrentSim(statReqData.requestLow!, workerPool, progressHandler, signals);
-		if (lowRes.error) return makeAndSendWeightsError(lowRes.error, onProgress);
-
-		lastIterations = 0;
-		const highRes = await runConcurrentSim(statReqData.requestHigh!, workerPool, progressHandler, signals);
-		if (highRes.error) return makeAndSendWeightsError(highRes.error, onProgress);
-
-		calcRequest.statSimResults.push(
-			StatWeightsStatResultData.create({
-				statData: statReqData.statData,
-				resultLow: lowRes,
-				resultHigh: highRes,
-			}),
-		);
-	}
-
-	if (isDevMode()) {
-		console.log(`All ${simsTotal} sims finished successfully. Computing weights.`);
-	}
-
-	const weightResult = await workerPool.statWeightCompute(calcRequest);
-	if (weightResult.error) return makeAndSendWeightsError(weightResult.error, onProgress);
-	onProgress(ProgressMetrics.create({ finalWeightResult: weightResult }));
-	return weightResult;
 };

@@ -3,9 +3,9 @@ import { IndividualSimUI } from '../../../individual_sim_ui';
 import { DistributionMetrics, ProgressMetrics } from '../../../proto/api';
 import { Gear } from '../../../proto_utils/gear';
 import { BulkSimProgressConfig, TopGearResult } from './types';
-import { bulkSimStageToOptimisationStage, cleanBulkDpsMetrics, getLocalBulkSimTrackingMetrics } from './utils';
+import { bulkSimStageToOptimisationStage, cleanBulkDpsMetrics, getCoreBulkSimTrackingMetrics } from './utils';
 
-export interface LocalBulkSimContext {
+export interface CoreBulkSimContext {
 	simUI: IndividualSimUI<any>;
 	throwIfBulkAborted: (signal: AbortSignal) => void;
 	runWithBulkAbort: <T>(promise: Promise<T>, signal: AbortSignal) => Promise<T>;
@@ -13,13 +13,13 @@ export interface LocalBulkSimContext {
 	debugOptimisationRound: (message: string, data?: unknown) => void;
 }
 
-export async function runLocalBulkSim(
-	context: LocalBulkSimContext,
+export async function runCoreBulkSim(
+	context: CoreBulkSimContext,
 	gearSets: Gear[],
 	signal: AbortSignal,
 ): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
 	context.throwIfBulkAborted(signal);
-	context.debugOptimisationRound('local bulk sim started', {
+	context.debugOptimisationRound('core bulk sim started', {
 		gearSets: gearSets.length,
 	});
 
@@ -50,7 +50,7 @@ export async function runLocalBulkSim(
 			dpsMetrics: cleanBulkDpsMetrics(topResult.dpsMetrics!),
 		}));
 
-	context.debugOptimisationRound('local bulk sim complete', {
+	context.debugOptimisationRound('core bulk sim complete', {
 		durationSeconds: result.timings?.totalSeconds ?? 0,
 		gearSets: gearSets.length,
 		stageMetrics: result.stageMetrics,
@@ -64,6 +64,6 @@ export async function runLocalBulkSim(
 	return {
 		referenceDpsMetrics: result.baseline.dpsMetrics,
 		topGearResults,
-		metrics: getLocalBulkSimTrackingMetrics(result),
+		metrics: getCoreBulkSimTrackingMetrics(result),
 	};
 }
