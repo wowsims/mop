@@ -1033,8 +1033,8 @@ export class BulkTab extends SimTab {
 		if (useOptimisationRoundsDiv.value)
 			new BooleanPicker<BulkTab>(useOptimisationRoundsDiv.value, this, {
 				id: 'use-optimisation-rounds',
-				label: i18n.t('bulk_tab.settings.pre_optimise.label'),
-				labelTooltip: i18n.t('bulk_tab.settings.pre_optimise.tooltip'),
+				label: i18n.t('bulk_tab.settings.use_multistage_optimisation.label'),
+				labelTooltip: i18n.t('bulk_tab.settings.use_multistage_optimisation.tooltip'),
 				inline: true,
 				changedEvent: _modObj => this.settingsChangedEmitter,
 				getValue: _modObj => this.useOptimisationRounds,

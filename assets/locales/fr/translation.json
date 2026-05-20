@@ -808,9 +808,9 @@
                 "label": "Hériter des améliorations",
                 "tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
 			},
-			"pre_optimise": {
+			"use_multistage_optimisation": {
 				"label": "Utiliser l'optimisation multi-étapes",
-				"tooltip": "Lorsque cette option est activée pour les simulations par lots d'au moins 20 combinaisons, Bulk Sim simule d'abord chaque ensemble avec 100 itérations, affine ensuite les candidats statistiquement prometteurs avec 1000 itérations, puis simule les meilleurs ensembles restants avec le nombre d'itérations configuré. Désactivez cette option pour simuler chaque combinaison avec le nombre complet d'itérations configuré."
+				"tooltip": "Bulk Sim exécute les lots volumineux en plusieurs étapes : une passe à faible nombre d'itérations pour trouver les candidats prometteurs, une passe de raffinement à nombre moyen d'itérations, puis une passe finale à nombre élevé d'itérations pour les meilleurs ensembles restants. La passe finale utilise votre nombre d'itérations configuré comme minimum et peut utiliser davantage d'itérations si nécessaire pour atteindre l'erreur cible."
             },
             "freeze_ring": {
                 "label": "Geler un emplacement d'anneau",

@@ -2861,7 +2861,7 @@
 							"additionalProperties": false,
 							"required": ["label", "tooltip"]
 						},
-						"pre_optimise": {
+						"use_multistage_optimisation": {
 							"type": "object",
 							"properties": {
 								"label": {
@@ -2937,7 +2937,7 @@
 						"iterations",
 						"fallback_gems",
 						"inherit_upgrades",
-						"pre_optimise",
+						"use_multistage_optimisation",
 						"freeze_ring",
 						"freeze_trinket",
 						"freeze_weapon",
