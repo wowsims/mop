@@ -452,8 +452,9 @@ message BulkSimStageMetrics {
 	int32 concurrency = 5;
 	double duration_seconds = 6;
 	double target_error_pct = 7;
-	double baseline_avg_dps = 8;
-	double best_candidate_avg_dps = 9;
+	double observed_error_pct = 8;
+	double baseline_avg_dps = 9;
+	double best_candidate_avg_dps = 10;
 }
 
 message BulkSimTimings {

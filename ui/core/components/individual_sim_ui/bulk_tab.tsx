@@ -1378,10 +1378,6 @@ export class BulkTab extends SimTab {
 		return getOptimisationStageMinIterations(stage, this.simUI.sim.getIterations());
 	}
 
-	private getOptimisationTotalSimRounds(reforgedGearSetCount: number): number {
-		return getOptimisationTotalSimRounds(reforgedGearSetCount);
-	}
-
 	private async runCoreBulkSim(
 		gearSets: Gear[],
 		signal: AbortSignal,

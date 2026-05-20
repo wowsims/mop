@@ -17,12 +17,14 @@ import (
 )
 
 const (
-	bulkSimDefaultTopResults                 = 5
-	bulkSimMinCombinations                   = 20
-	bulkSimCullingCoefficient                = 1.35
-	bulkSimLowStageConcurrencyFactor         = 2
-	bulkSimCombinationLogMin         float64 = 10
-	bulkSimProgressThrottle                  = 100 * time.Millisecond
+	bulkSimDefaultTopResults                      = 5
+	bulkSimMinCombinations                        = 20
+	bulkSimCullingCoefficient                     = 1.35
+	bulkSimLowStageConcurrencyFactor              = 2
+	bulkSimCombinationLogMin              float64 = 10
+	bulkSimMaxAdaptivePasses                      = 2
+	bulkSimAdaptiveMaxIterationMultiplier         = 4
+	bulkSimProgressThrottle                       = 100 * time.Millisecond
 )
 
 type BulkSimStageConfig struct {
@@ -396,6 +398,10 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 			signals.Abort.Trigger()
 		}
 	}
+	baseline, collected, iterations = adaptBulkSimStageIterations(request, candidates, config, progress, signals, concurrency, baseline, collected, iterations)
+	if baseline.Error != nil {
+		return BulkSimStageResult{Baseline: baseline, Results: collected, Iterations: iterations}
+	}
 
 	metrics := &proto.BulkSimStageMetrics{
 		Stage:               config.Stage,
@@ -405,6 +411,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 		Concurrency:         int32(concurrency),
 		DurationSeconds:     time.Since(startedAt).Seconds(),
 		TargetErrorPct:      config.TargetErrorPct,
+		ObservedErrorPct:    bulkSimObservedStageErrorPct(baseline, collected, iterations, len(candidates)),
 		BaselineAvgDps:      baseline.DpsMetrics.Avg,
 		BestCandidateAvgDps: bestBulkSimDps(collected),
 	}
@@ -500,18 +507,22 @@ func getBulkSimStageIterations(request *proto.BulkSimRequest, config BulkSimStag
 	minIterations := getBulkSimStageMinIterations(request, config)
 	// The user-defined high-stage iteration count is a floor, not a cap. Every
 	// stage still uses enough iterations to satisfy its target error when needed.
-	if baselineMetrics == nil || baselineMetrics.Avg <= 0 {
-		return minIterations
-	}
-
-	targetError := baselineMetrics.Avg * (config.TargetErrorPct / 100)
-	combinationMultiplier := math.Sqrt(math.Max(1, math.Log10(math.Max(float64(candidateCount), bulkSimCombinationLogMin))))
-	if targetError <= 0 {
-		return minIterations
-	}
-
-	targetIterations := int32(math.Ceil(math.Pow((baselineMetrics.Stdev*combinationMultiplier)/targetError, 2)))
+	targetIterations := getBulkSimTargetIterations(config.TargetErrorPct, baselineMetrics, candidateCount)
 	return max(minIterations, targetIterations)
+}
+
+func getBulkSimTargetIterations(targetErrorPct float64, metrics *proto.DistributionMetrics, candidateCount int) int32 {
+	if metrics == nil || metrics.Avg <= 0 {
+		return 0
+	}
+
+	targetError := metrics.Avg * (targetErrorPct / 100)
+	if targetError <= 0 {
+		return 0
+	}
+
+	combinationMultiplier := bulkSimCombinationErrorMultiplier(candidateCount)
+	return int32(math.Ceil(math.Pow((metrics.Stdev*combinationMultiplier)/targetError, 2)))
 }
 
 func usesUserDefinedHighStageIterations(request *proto.BulkSimRequest, config BulkSimStageConfig) bool {
@@ -559,6 +570,154 @@ func bulkSimDpsError(metrics *proto.DistributionMetrics, iterations int32) float
 		return 0
 	}
 	return metrics.Stdev / math.Sqrt(float64(iterations))
+}
+
+func bulkSimCombinationErrorMultiplier(candidateCount int) float64 {
+	return math.Sqrt(math.Max(1, math.Log10(math.Max(float64(candidateCount), bulkSimCombinationLogMin))))
+}
+
+func bulkSimObservedErrorPct(metrics *proto.DistributionMetrics, iterations int32, candidateCount int) float64 {
+	if metrics == nil || metrics.Avg <= 0 || iterations <= 0 {
+		return 0
+	}
+	return bulkSimDpsError(metrics, iterations) * bulkSimCombinationErrorMultiplier(candidateCount) / metrics.Avg * 100
+}
+
+func bulkSimObservedStageErrorPct(baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, iterations int32, candidateCount int) float64 {
+	observedErrorPct := 0.0
+	if baseline != nil {
+		observedErrorPct = bulkSimObservedErrorPct(baseline.DpsMetrics, iterations, candidateCount)
+	}
+	for _, result := range results {
+		if result == nil {
+			continue
+		}
+		observedErrorPct = math.Max(observedErrorPct, bulkSimObservedErrorPct(result.DpsMetrics, iterations, candidateCount))
+	}
+	return observedErrorPct
+}
+
+func getBulkSimStageTargetIterations(targetErrorPct float64, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, candidateCount int) int32 {
+	targetIterations := int32(0)
+	if baseline != nil {
+		targetIterations = max(targetIterations, getBulkSimTargetIterations(targetErrorPct, baseline.DpsMetrics, candidateCount))
+	}
+	for _, result := range results {
+		if result == nil {
+			continue
+		}
+		targetIterations = max(targetIterations, getBulkSimTargetIterations(targetErrorPct, result.DpsMetrics, candidateCount))
+	}
+	return targetIterations
+}
+
+func adaptBulkSimStageIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, iterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult, int32) {
+	maxAdaptiveIterations := int32(math.Ceil(float64(iterations) * bulkSimAdaptiveMaxIterationMultiplier))
+	for adaptivePass := 1; adaptivePass <= bulkSimMaxAdaptivePasses; adaptivePass++ {
+		if signals.Abort.IsTriggered() || hasBulkSimStageError(baseline, results) {
+			return baseline, results, iterations
+		}
+
+		observedErrorPct := bulkSimObservedStageErrorPct(baseline, results, iterations, len(candidates))
+		if observedErrorPct <= config.TargetErrorPct {
+			return baseline, results, iterations
+		}
+
+		targetIterations := getBulkSimStageTargetIterations(config.TargetErrorPct, baseline, results, len(candidates))
+		targetIterations = min(maxAdaptiveIterations, max(iterations+1, targetIterations))
+		if targetIterations <= iterations {
+			return baseline, results, iterations
+		}
+
+		log.Printf("[Bulk Sim] - Stage: %s - Adaptive pass %d\nResults:\n  Current iterations: %d\n  Target iterations: %d\n  Target error: %.2f%%\n  Observed error: %.2f%%", bulkSimStageLogName(config.Stage), adaptivePass, iterations, targetIterations, config.TargetErrorPct, observedErrorPct)
+		baseline, results = rerunBulkSimStageAtIterations(request, candidates, config, progress, signals, concurrency, targetIterations)
+		iterations = targetIterations
+	}
+	return baseline, results, iterations
+}
+
+func rerunBulkSimStageAtIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, iterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult) {
+	totalSims := len(candidates) + 1
+	totalIterations := int32(totalSims) * iterations
+	emitBulkSimStageProgress(progress, config.Stage, 0, totalSims, 0, totalIterations, 0)
+
+	baseline := runSingleBulkSimWithProgress(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, iterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+		if progressMetrics.TotalIterations == 0 {
+			return
+		}
+		emitBulkSimStageProgress(progress, config.Stage, 0, totalSims, min(progressMetrics.CompletedIterations, iterations), totalIterations, progressMetrics.Dps)
+	})
+	if baseline.Error != nil {
+		return baseline, nil
+	}
+	emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, iterations, totalIterations, baseline.DpsMetrics.Avg)
+
+	jobs := make(chan BulkSimStageTask, len(candidates))
+	stageResults := make(chan *BulkSimCandidateResult, len(candidates))
+	progressTracker := &BulkSimStageProgressTracker{
+		stage:                               config.Stage,
+		progress:                            progress,
+		totalCandidates:                     len(candidates),
+		totalSims:                           totalSims,
+		iterations:                          iterations,
+		totalIterations:                     totalIterations,
+		completedSimsBeforeCandidates:       1,
+		completedIterationsBeforeCandidates: iterations,
+		completedIterationsByCandidate:      make([]int32, len(candidates)),
+	}
+	var wg sync.WaitGroup
+
+	for range concurrency {
+		wg.Go(func() {
+			for task := range jobs {
+				if signals.Abort.IsTriggered() {
+					return
+				}
+
+				candidateResult := runSingleBulkSimWithProgress(request, task.Candidate, iterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+					progressTracker.reportCandidateProgress(task.Position, progressMetrics)
+				})
+				progressTracker.reportCandidateComplete(task.Position, candidateResult)
+				stageResults <- candidateResult
+			}
+		})
+	}
+
+	go func() {
+		defer close(jobs)
+		for idx, candidate := range candidates {
+			if signals.Abort.IsTriggered() {
+				return
+			}
+			jobs <- BulkSimStageTask{Candidate: candidate, Position: idx}
+		}
+	}()
+
+	go func() {
+		wg.Wait()
+		close(stageResults)
+	}()
+
+	collected := make([]*BulkSimCandidateResult, 0, len(candidates))
+	for candidateResult := range stageResults {
+		collected = append(collected, candidateResult)
+		if candidateResult.Error != nil {
+			signals.Abort.Trigger()
+		}
+	}
+	return baseline, collected
+}
+
+func hasBulkSimStageError(baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult) bool {
+	if baseline != nil && baseline.Error != nil {
+		return true
+	}
+	for _, result := range results {
+		if result != nil && result.Error != nil {
+			return true
+		}
+	}
+	return false
 }
 
 func topBulkSimResults(results []*BulkSimCandidateResult, limit int) []*BulkSimCandidateResult {
@@ -763,6 +922,8 @@ func formatBulkSimStageSummary(status string, metrics *proto.BulkSimStageMetrics
 		"  Survivors: %d\n"+
 		"Results:\n"+
 		"  Iterations: %d\n"+
+		"  Target error: %.2f%%\n"+
+		"  Observed error: %.2f%%\n"+
 		"  Best candidate DPS: %.2f\n"+
 		"  Baseline DPS: %.2f\n"+
 		"Timing:\n"+
@@ -773,6 +934,8 @@ func formatBulkSimStageSummary(status string, metrics *proto.BulkSimStageMetrics
 		completedSims,
 		metrics.Survivors,
 		metrics.Iterations,
+		metrics.TargetErrorPct,
+		metrics.ObservedErrorPct,
 		metrics.BestCandidateAvgDps,
 		metrics.BaselineAvgDps,
 		metrics.DurationSeconds,
