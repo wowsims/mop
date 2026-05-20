@@ -3,6 +3,11 @@ import { WorkerInterface } from './worker_interface';
 type SimRequestAsync = (data: Uint8Array, progress: (result: Uint8Array) => void, id: string) => Uint8Array;
 type SimRequestSync = (data: Uint8Array) => Uint8Array;
 
+const unsupportedBulkSimAsync = () => {
+	console.error('bulkSimAsync is only supported by the HTTP worker.');
+	return new Uint8Array();
+};
+
 // Functions provided or used by the wasm lib.
 declare global {
 	function wasmready(): void;
@@ -29,6 +34,7 @@ globalThis.wasmready = function () {
 		raidSim: raidSim,
 		raidSimJson: raidSimJson,
 		raidSimAsync: raidSimAsync,
+		bulkSimAsync: unsupportedBulkSimAsync,
 		statWeights: statWeights,
 		statWeightsAsync: statWeightsAsync,
 		statWeightRequests: statWeightRequests,

@@ -406,6 +406,64 @@ message RaidSimResultCombinationRequest {
 	bool debug = 2;
 }
 
+// RPC BulkSim
+enum BulkSimStage {
+	BulkSimStageUnknown = 0;
+	BulkSimStageLow = 1;
+	BulkSimStageMedium = 2;
+	BulkSimStageHigh = 3;
+	BulkSimStageComplete = 4;
+	BulkSimStageError = 5;
+}
+
+message BulkSimRequest {
+	string request_id = 1;
+	RaidSimRequest base_request = 2;
+	EquipmentSpec baseline_gear = 4;
+	repeated BulkGearCandidate candidates = 5;
+	int32 top_results = 6;
+	int32 high_stage_iterations = 7;
+}
+
+message BulkGearCandidate {
+	int32 index = 1;
+	EquipmentSpec gear = 2;
+}
+
+message BulkSimResult {
+	BulkGearResult baseline = 1;
+	repeated BulkGearResult top_results = 2;
+	repeated BulkSimStageMetrics stage_metrics = 3;
+	BulkSimTimings timings = 4;
+	ErrorOutcome error = 5;
+}
+
+message BulkGearResult {
+	int32 candidate_index = 1;
+	EquipmentSpec gear = 2;
+	DistributionMetrics dps_metrics = 3;
+}
+
+message BulkSimStageMetrics {
+	BulkSimStage stage = 1;
+	int32 input_gear_sets = 2;
+	int32 survivors = 3;
+	int32 iterations = 4;
+	int32 concurrency = 5;
+	double duration_seconds = 6;
+	double target_error_pct = 7;
+	double baseline_avg_dps = 8;
+	double best_candidate_avg_dps = 9;
+}
+
+message BulkSimTimings {
+	double total_seconds = 1;
+	double simming_seconds = 2;
+	double low_stage_seconds = 3;
+	double medium_stage_seconds = 4;
+	double high_stage_seconds = 5;
+}
+
 message AbortRequest {
 	string request_id = 1; // The request that should be aborted.
 }
@@ -583,6 +641,8 @@ message ProgressMetrics {
 	// Final Results
 	RaidSimResult final_raid_result = 6; // only set when completed
 	StatWeightsResult final_weight_result = 7;
+	BulkSimResult final_bulk_sim_result = 10;
+	BulkSimStage bulk_stage = 11;
 }
 
 message BulkSettings {

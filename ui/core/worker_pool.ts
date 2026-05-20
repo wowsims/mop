@@ -3,6 +3,8 @@ import { REPO_NAME } from './constants/other.js';
 import {
 	AbortRequest,
 	AbortResponse,
+	BulkSimRequest,
+	BulkSimResult,
 	ComputeStatsRequest,
 	ComputeStatsResult,
 	ProgressMetrics,
@@ -116,6 +118,22 @@ export class WorkerPool {
 		return result.finalRaidResult!;
 	}
 
+	async bulkSimAsync(request: BulkSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<BulkSimResult> {
+		const worker = this.getLeastBusyWorker();
+		worker.log('Bulk sim request: ' + BulkSimRequest.toJsonString(request));
+		const id = request.requestId;
+
+		signals.abort.onTrigger(async () => {
+			await worker.sendAbortById(id);
+		});
+
+		const iterations = request.baseRequest?.simOptions?.iterations ?? 3000;
+		const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations);
+
+		worker.log('Bulk sim result: ' + BulkSimResult.toJsonString(result.finalBulkSimResult!));
+		return result.finalBulkSimResult!;
+	}
+
 	async raidSimRequestSplit(request: RaidSimRequestSplitRequest): Promise<RaidSimRequestSplitResult> {
 		const result = await this.makeApiCall(SimRequest.raidSimRequestSplit, RaidSimRequestSplitRequest.toBinary(request));
 		return RaidSimRequestSplitResult.fromBinary(result);
@@ -149,7 +167,7 @@ export class WorkerPool {
 	 * @returns The final ProgressMetrics.
 	 */
 	private async doAsyncRequest(
-		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync,
+		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync,
 		request: Uint8Array,
 		id: string,
 		worker: SimWorker,
@@ -158,7 +176,14 @@ export class WorkerPool {
 	): Promise<ProgressMetrics> {
 		try {
 			worker.addSimTaskRunning(id, totalIterations);
-			worker.doApiCall(requestName, request, id);
+			const apiCallResult = worker.doApiCall(requestName, request, id).then(outputData => {
+				const progress = ProgressMetrics.fromBinary(outputData);
+				if (this.isFinalProgress(progress)) {
+					return progress;
+				}
+
+				throw new Error(`${requestName} completed without a final progress result.`);
+			});
 			const finalProgress: Promise<ProgressMetrics> = new Promise(resolve => {
 				// Add handler for the progress events
 				worker.addPromiseFunc(
@@ -167,10 +192,14 @@ export class WorkerPool {
 					noop,
 				);
 			});
-			return await finalProgress;
+			return await Promise.race([finalProgress, apiCallResult]);
 		} finally {
 			worker.updateSimTask(id, 0);
 		}
+	}
+
+	private isFinalProgress(progress: ProgressMetrics): boolean {
+		return progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null;
 	}
 
 	private newProgressHandler(
@@ -184,7 +213,7 @@ export class WorkerPool {
 			onProgress(progress);
 			worker.updateSimTask(id, Math.max(1, progress.totalIterations - progress.completedIterations));
 			// If we are done, stop adding the handler.
-			if (progress.finalRaidResult != null || progress.finalWeightResult != null) {
+			if (this.isFinalProgress(progress)) {
 				onFinal(progress);
 				return;
 			}

@@ -5,6 +5,8 @@ import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
+	BulkSimRequest,
+	BulkSimResult,
 	ComputeStatsRequest,
 	ErrorOutcome,
 	ErrorOutcomeType,
@@ -349,6 +351,65 @@ export class Sim {
 			if (error instanceof SimError) throw error;
 			console.error(error);
 			throw new Error('Something went wrong running your lightweight raid sim. Reload the page and try again.');
+		} finally {
+			this.signalManager.unregisterRunning(signals);
+		}
+	}
+
+	async runBulkSim(gearSets: Gear[], onProgress: WorkerProgressCallback): Promise<BulkSimResult | ErrorOutcome> {
+		if (this.raid.isEmpty()) {
+			throw new Error('Raid is empty! Try adding some players first.');
+		} else if (this.encounter.targets.length < 1) {
+			throw new Error('Encounter has no targets! Try adding some targets first.');
+		}
+
+		const signals = this.signalManager.registerRunning(RequestTypes.RaidSim);
+		try {
+			await this.waitForInit();
+
+			const requestId = generateRequestId(SimRequest.bulkSimAsync);
+			const baseRequest = this.makeRaidSimRequest();
+			baseRequest.requestId = requestId;
+			baseRequest.simOptions!.debugFirstIteration = false;
+			baseRequest.simOptions!.debug = false;
+
+			const player = baseRequest.raid!.parties[0].players[0];
+			const isBlacksmith = hasBlacksmithing(player);
+			const prepareGear = (gear: Gear) => {
+				if (gear.hasInactiveMetaGem(isBlacksmith)) {
+					gear = gear.withoutMetaGem();
+				}
+				if (!isBlacksmith) {
+					gear = gear.withoutBlacksmithSockets();
+				}
+				return gear;
+			};
+
+			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
+			const preparedGearSets = gearSets.map(prepareGear);
+			player.equipment = baselineGear.asSpec();
+			baseRequest.raid!.parties[0].players[0] = player;
+
+			const bulkRequest = BulkSimRequest.create({
+				requestId,
+				baseRequest,
+				baselineGear: baselineGear.asSpec(),
+				candidates: preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() })),
+				topResults: 5,
+				highStageIterations: this.getIterations(),
+			});
+
+			const result = await this.workerPool.bulkSimAsync(bulkRequest, onProgress, signals);
+			if (result.error) {
+				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result.error;
+				throw new SimError(result.error.message);
+			}
+
+			return result;
+		} catch (error) {
+			if (error instanceof SimError) throw error;
+			console.error(error);
+			throw new Error('Something went wrong running your bulk sim. Reload the page and try again.');
 		} finally {
 			this.signalManager.unregisterRunning(signals);
 		}

@@ -27,6 +27,7 @@ export class WorkerInterface {
 
 			if (!handlerFunc) {
 				console.error(`Request msg: ${msg}, id: ${id}, is not handled!`);
+				this.postMessage({ msg, id, outputData: new Uint8Array() });
 				return;
 			}
 

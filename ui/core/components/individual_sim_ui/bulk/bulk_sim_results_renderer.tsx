@@ -8,7 +8,7 @@ import { formatDeltaTextElem, formatToNumber } from '../../../utils';
 import { Component } from '../../component';
 import { ItemRenderer } from '../../gear_picker/gear_picker';
 import Toast from '../../toast';
-import { TopGearResult } from '../bulk_tab';
+import { TopGearResult } from './types';
 import { RaidSimResultsManager } from '../../raid_sim_action';
 import { ItemSlot, ItemSpec } from '../../../proto/common';
 

@@ -370,7 +370,7 @@ func (sim *Simulation) run() *proto.RaidSimResult {
 	}
 
 	if d := sim.Options.Iterations; d > 3000 {
-		log.Printf("running %d iterations took %s", d, time.Since(t0))
+		log.Printf("Running %d iterations took %s", d, time.Since(t0))
 	}
 
 	return result

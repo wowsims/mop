@@ -1,4 +1,11 @@
+import { BulkSimResult, BulkSimStage, DistributionMetrics } from '../../../proto/api';
 import { ItemSlot } from '../../../proto/common';
+import { Gear } from '../../../proto_utils/gear';
+import {
+	BulkOptimisationStageMetrics,
+	OptimisationStage,
+	STAGE_CONFIG,
+} from './types';
 
 // Combines Fingers 1 and 2 and Trinket 1 and 2 into single groups
 export enum BulkSimItemSlot {
@@ -54,9 +61,9 @@ export const bulkSimItemSlotToSingleItemSlot: Map<BulkSimItemSlot, ItemSlot> = n
 ]);
 
 export const bulkSimItemSlotToItemSlotPairs: Map<BulkSimItemSlot, [ItemSlot, ItemSlot]> = new Map([
-	[BulkSimItemSlot.ItemSlotFinger, [ItemSlot.ItemSlotFinger2, ItemSlot.ItemSlotFinger1]],
-	[BulkSimItemSlot.ItemSlotTrinket, [ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotTrinket1]],
-	[BulkSimItemSlot.ItemSlotHandWeapon, [ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotMainHand]],
+	[BulkSimItemSlot.ItemSlotFinger, [ItemSlot.ItemSlotFinger1, ItemSlot.ItemSlotFinger2]],
+	[BulkSimItemSlot.ItemSlotTrinket, [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2]],
+	[BulkSimItemSlot.ItemSlotHandWeapon, [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand]],
 ]);
 
 export const getBulkItemSlotFromSlot = (slot: ItemSlot, canDualWield: boolean): BulkSimItemSlot => {
@@ -86,3 +93,144 @@ export function getAllPairs<T>(arr: T[]): [T, T][] {
 	}
 	return pairs;
 }
+
+export const getDpsError = (metrics: DistributionMetrics, iterations: number): number => (iterations > 0 ? metrics.stdev / Math.sqrt(iterations) : 0);
+
+export const getCombinationErrorMultiplier = (candidateCount: number): number => Math.sqrt(Math.max(1, Math.log10(Math.max(candidateCount, 10))));
+
+export const getDurationSeconds = (startedAt: number): number => (new Date().getTime() - startedAt) / 1000;
+
+export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): DistributionMetrics => {
+	dpsMetrics.hist = [];
+	dpsMetrics.allValues = [];
+	return dpsMetrics;
+};
+
+export const getGearKey = (gear: Gear): string =>
+	gear
+		.asArray()
+		.map(item => {
+			if (!item) {
+				return '';
+			}
+
+			return [
+				item._item.id,
+				item._randomSuffix?.id ?? 0,
+				item._enchant?.effectId ?? 0,
+				item._tinker?.effectId ?? 0,
+				item._reforge?.id ?? 0,
+				item._upgrade,
+				Number(item._challengeMode),
+				item._gems.map(gem => gem?.id ?? 0).join(','),
+			].join(':');
+		})
+		.join('|');
+
+export const dedupeGearSets = (gearSets: Gear[]): Gear[] => {
+	const seenGearKeys = new Set<string>();
+	return gearSets.filter(gear => {
+		const gearKey = getGearKey(gear);
+		if (seenGearKeys.has(gearKey)) {
+			return false;
+		}
+
+		seenGearKeys.add(gearKey);
+		return true;
+	});
+};
+
+export const shouldRunOptimisationStage = (stage: OptimisationStage, candidateCount: number): boolean => {
+	const maxSurvivors = STAGE_CONFIG[stage].maxSurvivors;
+	return maxSurvivors === undefined || candidateCount > maxSurvivors;
+};
+
+export const getOptimisationStageMinIterations = (stage: OptimisationStage, highStageIterations: number): number => STAGE_CONFIG[stage].minIterations ?? highStageIterations;
+
+export const getOptimisationStageIterations = (stage: OptimisationStage, baselineMetrics: DistributionMetrics, candidateCount: number, highStageIterations: number): number => {
+	if (stage === 'high') {
+		return getOptimisationStageMinIterations(stage, highStageIterations);
+	}
+
+	const stageConfig = STAGE_CONFIG[stage];
+	const targetError = baselineMetrics.avg * (stageConfig.targetErrorPct / 100);
+	const combinationErrorMultiplier = getCombinationErrorMultiplier(candidateCount);
+	const targetIterations = targetError > 0 ? Math.ceil(Math.pow((baselineMetrics.stdev * combinationErrorMultiplier) / targetError, 2)) : 0;
+
+	return Math.max(getOptimisationStageMinIterations(stage, highStageIterations), targetIterations);
+};
+
+export const getOptimisationTotalSimRounds = (reforgedGearSetCount: number): number => {
+	let candidates = reforgedGearSetCount;
+	let rounds = 0;
+
+	for (const stage of ['low', 'medium'] as const) {
+		if (shouldRunOptimisationStage(stage, candidates)) {
+			rounds += candidates + 1;
+			candidates = Math.min(candidates, STAGE_CONFIG[stage].maxSurvivors!);
+		}
+	}
+
+	return rounds + candidates + 1;
+};
+
+export const getOptimisationStageTrackingMetrics = (stageName: OptimisationStage, metrics: BulkOptimisationStageMetrics): Record<string, string | number> => ({
+	[`${stageName}_skipped`]: 0,
+	[`${stageName}_input_gear_sets`]: metrics.inputGearSets,
+	[`${stageName}_results`]: metrics.results,
+	[`${stageName}_iterations`]: metrics.iterations,
+	[`${stageName}_combination_error_multiplier`]: Math.round(metrics.combinationErrorMultiplier * 100) / 100,
+	[`${stageName}_concurrency`]: metrics.concurrency,
+	[`${stageName}_stage_rounds`]: metrics.stageRounds,
+	[`${stageName}_duration_seconds`]: Math.round(metrics.durationSeconds),
+	[`${stageName}_min_survivors`]: STAGE_CONFIG[stageName].minSurvivors ?? '',
+	[`${stageName}_max_survivors`]: STAGE_CONFIG[stageName].maxSurvivors ?? '',
+});
+
+export const getSkippedOptimisationStageTrackingMetrics = (stageName: OptimisationStage, gearSets: Gear[]): Record<string, string | number> => ({
+	[`${stageName}_skipped`]: 1,
+	[`${stageName}_input_gear_sets`]: gearSets.length,
+	[`${stageName}_survivors`]: gearSets.length,
+	[`${stageName}_min_survivors`]: STAGE_CONFIG[stageName].minSurvivors ?? '',
+	[`${stageName}_max_survivors`]: STAGE_CONFIG[stageName].maxSurvivors ?? '',
+});
+
+export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | null => {
+	switch (stage) {
+		case BulkSimStage.BulkSimStageLow:
+			return 'low';
+		case BulkSimStage.BulkSimStageMedium:
+			return 'medium';
+		case BulkSimStage.BulkSimStageHigh:
+			return 'high';
+		default:
+			return null;
+	}
+};
+
+export const getLocalBulkSimTrackingMetrics = (result: BulkSimResult): Record<string, string | number> => {
+	const metrics: Record<string, string | number> = {
+		local_bulk_sim: 1,
+		total_sim_rounds: result.stageMetrics.reduce((total, stage) => total + stage.inputGearSets + 1, 0),
+	};
+
+	for (const stage of result.stageMetrics) {
+		const stageName = bulkSimStageToOptimisationStage(stage.stage);
+		if (!stageName) continue;
+		metrics[`${stageName}_skipped`] = 0;
+		metrics[`${stageName}_input_gear_sets`] = stage.inputGearSets;
+		metrics[`${stageName}_results`] = stage.survivors;
+		metrics[`${stageName}_survivors`] = stage.survivors;
+		metrics[`${stageName}_iterations`] = stage.iterations;
+		metrics[`${stageName}_target_error_pct`] = stage.targetErrorPct;
+		metrics[`${stageName}_concurrency`] = stage.concurrency;
+		metrics[`${stageName}_duration_seconds`] = Math.round(stage.durationSeconds);
+	}
+
+	if (result.timings) {
+		metrics.local_simming_duration_seconds = Math.round(result.timings.simmingSeconds);
+		metrics.local_total_duration_seconds = Math.round(result.timings.totalSeconds);
+	}
+
+	return metrics;
+};

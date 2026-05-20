@@ -52,6 +52,7 @@ export const setupHttpWorker = (baseURL: string) => {
 		raidSim: syncHandler,
 		raidSimJson: syncHandler,
 		raidSimAsync: asyncHandler,
+		bulkSimAsync: asyncHandler,
 		statWeights: syncHandler,
 		statWeightsAsync: asyncHandler,
 		statWeightRequests: syncHandler,
