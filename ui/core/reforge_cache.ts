@@ -32,7 +32,6 @@ type ReforgeGearCacheDb = {
 };
 
 export class ReforgeGearCache<SpecType extends Spec = Spec> {
-	private static dbPromise: Promise<IDBPDatabase<ReforgeGearCacheDb>> | null = null;
 	private static storeCreationQueue: Promise<void> = Promise.resolve();
 	private static caches = new Map<string, ReforgeGearCache<any>>();
 
@@ -42,7 +41,7 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 
 	constructor(playerSpec: PlayerSpec<SpecType>) {
 		this.storeName = ReforgeGearCache.getStoreName(playerSpec);
-		this.storeReadyPromise = ReforgeGearCache.getDbWithStore(this.storeName).then(() => undefined);
+		this.storeReadyPromise = ReforgeGearCache.ensureStore(this.storeName);
 	}
 
 	static get<SpecType extends Spec>(playerSpec: PlayerSpec<SpecType>): ReforgeGearCache<SpecType> {
@@ -65,8 +64,9 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 	}
 
 	async get(key: string): Promise<EquipmentSpec | null> {
+		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
 		try {
-			const db = await this.getDb();
+			db = await this.getDb();
 			const record = await db.get(this.storeName, key);
 			if (!record) {
 				return null;
@@ -78,27 +78,32 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		} catch (error) {
 			console.warn('[Reforge Cache] Failed to read cached reforge result.', error);
 			return null;
+		} finally {
+			db?.close();
 		}
 	}
 
 	async set(key: string, optimizedGearLink: string): Promise<void> {
+		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
 		try {
-			const db = await this.getDb();
+			db = await this.getDb();
 			const now = Date.now();
 			await this.putRecord(db, key, {
 				gear: optimizedGearLink,
 				createdAt: now,
 				lastAccessedAt: now,
 			});
-			void this.prune(db);
+			await this.prune(db);
 		} catch (error) {
 			console.warn('[Reforge Cache] Failed to store reforge result.', error);
+		} finally {
+			db?.close();
 		}
 	}
 
 	private async getDb(): Promise<IDBPDatabase<ReforgeGearCacheDb>> {
 		await this.storeReadyPromise;
-		return ReforgeGearCache.getDb();
+		return ReforgeGearCache.openDb();
 	}
 
 	private async putRecord(db: IDBPDatabase<ReforgeGearCacheDb>, key: string, record: ReforgeGearCacheRecord): Promise<void> {
@@ -159,43 +164,45 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return `${PlayerSpecs.getLocalStorageKey(playerSpec)}_reforgeGearSets`;
 	}
 
-	private static getDb() {
-		if (!ReforgeGearCache.dbPromise) {
-			ReforgeGearCache.dbPromise = openDB<ReforgeGearCacheDb>(REFORGE_CACHE_DB_NAME);
-		}
-		return ReforgeGearCache.dbPromise;
+	private static openDb(): Promise<IDBPDatabase<ReforgeGearCacheDb>> {
+		return openDB<ReforgeGearCacheDb>(REFORGE_CACHE_DB_NAME);
 	}
 
-	private static async getDbWithStore(storeName: ReforgeGearCacheStoreName): Promise<IDBPDatabase<ReforgeGearCacheDb>> {
-		let db = await ReforgeGearCache.getDb();
-		if (db.objectStoreNames.contains(storeName)) {
-			return db;
+	private static async ensureStore(storeName: ReforgeGearCacheStoreName): Promise<void> {
+		const db = await ReforgeGearCache.openDb();
+		try {
+			if (db.objectStoreNames.contains(storeName)) {
+				return;
+			}
+		} finally {
+			db.close();
 		}
 
 		await ReforgeGearCache.createStore(storeName);
-		return ReforgeGearCache.getDb();
 	}
 
 	private static async createStore(storeName: ReforgeGearCacheStoreName): Promise<void> {
 		const createStore = async () => {
-			let db = await ReforgeGearCache.getDb();
-			if (db.objectStoreNames.contains(storeName)) {
-				return;
-			}
+			const db = await ReforgeGearCache.openDb();
+			try {
+				if (db.objectStoreNames.contains(storeName)) {
+					return;
+				}
 
-			const nextVersion = db.version + 1;
-			db.close();
-			ReforgeGearCache.dbPromise = null;
-			db = await openDB<ReforgeGearCacheDb>(REFORGE_CACHE_DB_NAME, nextVersion, {
-				upgrade(upgradeDb) {
-					if (!upgradeDb.objectStoreNames.contains(storeName)) {
-						const store = upgradeDb.createObjectStore(storeName);
-						store.createIndex('byLastAccessedAt', 'lastAccessedAt');
-					}
-				},
-			});
-			db.close();
-			ReforgeGearCache.dbPromise = null;
+				const nextVersion = db.version + 1;
+				db.close();
+				const upgradeDb = await openDB<ReforgeGearCacheDb>(REFORGE_CACHE_DB_NAME, nextVersion, {
+					upgrade(upgradeDb) {
+						if (!upgradeDb.objectStoreNames.contains(storeName)) {
+							const store = upgradeDb.createObjectStore(storeName);
+							store.createIndex('byLastAccessedAt', 'lastAccessedAt');
+						}
+					},
+				});
+				upgradeDb.close();
+			} finally {
+				db.close();
+			}
 		};
 
 		const task = ReforgeGearCache.storeCreationQueue.catch(() => {}).then(createStore);
