@@ -326,22 +326,22 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 	completedBaselineIterations := minIterations
 	baseline := baselineProbe
 
-	totalStageIterations := completedBaselineIterations + int32(len(candidates))*iterations
-	if !reuseBaselineProbe {
-		totalStageIterations += iterations
-	}
+	totalStageIterations := (int32(len(candidates)) + 1) * iterations
 	emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, completedBaselineIterations, totalStageIterations, baselineProbe.DpsMetrics.Avg)
 	if !reuseBaselineProbe {
-		baseline = runSingleBulkSimWithProgress(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, iterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+		extraBaselineIterations := iterations - minIterations
+		baselineExtra := runSingleBulkSimWithProgressAndSeedOffset(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, extraBaselineIterations, minIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 			if progressMetrics.TotalIterations == 0 {
 				return
 			}
-			emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, minIterations+min(progressMetrics.CompletedIterations, iterations), totalStageIterations, progressMetrics.Dps)
+			emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, minIterations+min(progressMetrics.CompletedIterations, extraBaselineIterations), totalStageIterations, progressMetrics.Dps)
 		})
-		if baseline.Error != nil {
+		if baselineExtra.Error != nil {
+			baseline = baselineExtra
 			return BulkSimStageResult{Baseline: baseline, Iterations: iterations}
 		}
-		completedBaselineIterations += iterations
+		baseline = mergeBulkSimCandidateResults(baselineProbe, baselineExtra)
+		completedBaselineIterations = iterations
 		emitBulkSimStageProgress(progress, config.Stage, baselineSims, totalSims, completedBaselineIterations, totalStageIterations, baseline.DpsMetrics.Avg)
 	}
 
@@ -429,12 +429,17 @@ func runSingleBulkSim(request *proto.BulkSimRequest, candidate BulkSimCandidate,
 }
 
 func runSingleBulkSimWithProgress(request *proto.BulkSimRequest, candidate BulkSimCandidate, iterations int32, signals simsignals.Signals, useConcurrentSim bool, progressCallback func(*proto.ProgressMetrics)) *BulkSimCandidateResult {
+	return runSingleBulkSimWithProgressAndSeedOffset(request, candidate, iterations, 0, signals, useConcurrentSim, progressCallback)
+}
+
+func runSingleBulkSimWithProgressAndSeedOffset(request *proto.BulkSimRequest, candidate BulkSimCandidate, iterations int32, seedOffset int32, signals simsignals.Signals, useConcurrentSim bool, progressCallback func(*proto.ProgressMetrics)) *BulkSimCandidateResult {
 	if signals.Abort.IsTriggered() {
 		return &BulkSimCandidateResult{Candidate: candidate, Error: bulkSimAbortedError()}
 	}
 
 	simRequest := googleProto.Clone(request.BaseRequest).(*proto.RaidSimRequest)
 	simRequest.SimOptions.Iterations = iterations
+	simRequest.SimOptions.RandomSeed += int64(seedOffset)
 	simRequest.SimOptions.DebugFirstIteration = false
 	simRequest.SimOptions.Debug = false
 
@@ -629,28 +634,30 @@ func adaptBulkSimStageIterations(request *proto.BulkSimRequest, candidates []Bul
 			return baseline, results, iterations
 		}
 
-		log.Printf("[Bulk Sim] - Stage: %s - Adaptive pass %d\nResults:\n  Current iterations: %d\n  Target iterations: %d\n  Target error: %.2f%%\n  Observed error: %.2f%%", bulkSimStageLogName(config.Stage), adaptivePass, iterations, targetIterations, config.TargetErrorPct, observedErrorPct)
-		baseline, results = rerunBulkSimStageAtIterations(request, candidates, config, progress, signals, concurrency, targetIterations)
+		additionalIterations := targetIterations - iterations
+		log.Printf("[Bulk Sim] - Stage: %s - Adaptive pass %d\nResults:\n  Current iterations: %d\n  Additional iterations: %d\n  Target iterations: %d\n  Target error: %.2f%%\n  Observed error: %.2f%%", bulkSimStageLogName(config.Stage), adaptivePass, iterations, additionalIterations, targetIterations, config.TargetErrorPct, observedErrorPct)
+		baseline, results = rerunBulkSimStageAdditionalIterations(request, candidates, config, progress, signals, concurrency, baseline, results, iterations, additionalIterations)
 		iterations = targetIterations
 	}
 	return baseline, results, iterations
 }
 
-func rerunBulkSimStageAtIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, iterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult) {
+func rerunBulkSimStageAdditionalIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, currentIterations int32, additionalIterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult) {
 	totalSims := len(candidates) + 1
-	totalIterations := int32(totalSims) * iterations
+	totalIterations := int32(totalSims) * additionalIterations
 	emitBulkSimStageProgress(progress, config.Stage, 0, totalSims, 0, totalIterations, 0)
 
-	baseline := runSingleBulkSimWithProgress(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, iterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+	baselineExtra := runSingleBulkSimWithProgressAndSeedOffset(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, additionalIterations, currentIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 		if progressMetrics.TotalIterations == 0 {
 			return
 		}
-		emitBulkSimStageProgress(progress, config.Stage, 0, totalSims, min(progressMetrics.CompletedIterations, iterations), totalIterations, progressMetrics.Dps)
+		emitBulkSimStageProgress(progress, config.Stage, 0, totalSims, min(progressMetrics.CompletedIterations, additionalIterations), totalIterations, progressMetrics.Dps)
 	})
-	if baseline.Error != nil {
-		return baseline, nil
+	if baselineExtra.Error != nil {
+		return baselineExtra, results
 	}
-	emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, iterations, totalIterations, baseline.DpsMetrics.Avg)
+	baseline = mergeBulkSimCandidateResults(baseline, baselineExtra)
+	emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, additionalIterations, totalIterations, baseline.DpsMetrics.Avg)
 
 	jobs := make(chan BulkSimStageTask, len(candidates))
 	stageResults := make(chan *BulkSimCandidateResult, len(candidates))
@@ -659,10 +666,10 @@ func rerunBulkSimStageAtIterations(request *proto.BulkSimRequest, candidates []B
 		progress:                            progress,
 		totalCandidates:                     len(candidates),
 		totalSims:                           totalSims,
-		iterations:                          iterations,
+		iterations:                          additionalIterations,
 		totalIterations:                     totalIterations,
 		completedSimsBeforeCandidates:       1,
-		completedIterationsBeforeCandidates: iterations,
+		completedIterationsBeforeCandidates: additionalIterations,
 		completedIterationsByCandidate:      make([]int32, len(candidates)),
 	}
 	var wg sync.WaitGroup
@@ -674,7 +681,7 @@ func rerunBulkSimStageAtIterations(request *proto.BulkSimRequest, candidates []B
 					return
 				}
 
-				candidateResult := runSingleBulkSimWithProgress(request, task.Candidate, iterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+				candidateResult := runSingleBulkSimWithProgressAndSeedOffset(request, task.Candidate, additionalIterations, currentIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 					progressTracker.reportCandidateProgress(task.Position, progressMetrics)
 				})
 				progressTracker.reportCandidateComplete(task.Position, candidateResult)
@@ -698,14 +705,84 @@ func rerunBulkSimStageAtIterations(request *proto.BulkSimRequest, candidates []B
 		close(stageResults)
 	}()
 
-	collected := make([]*BulkSimCandidateResult, 0, len(candidates))
+	additionalResults := make([]*BulkSimCandidateResult, 0, len(candidates))
 	for candidateResult := range stageResults {
-		collected = append(collected, candidateResult)
+		additionalResults = append(additionalResults, candidateResult)
 		if candidateResult.Error != nil {
 			signals.Abort.Trigger()
 		}
 	}
-	return baseline, collected
+	return baseline, mergeBulkSimCandidateResultSlices(results, additionalResults)
+}
+
+func mergeBulkSimCandidateResultSlices(results []*BulkSimCandidateResult, additionalResults []*BulkSimCandidateResult) []*BulkSimCandidateResult {
+	additionalByCandidate := make(map[int32]*BulkSimCandidateResult, len(additionalResults))
+	for _, result := range additionalResults {
+		if result != nil {
+			additionalByCandidate[result.Candidate.Index] = result
+		}
+	}
+
+	merged := make([]*BulkSimCandidateResult, 0, len(results))
+	for _, result := range results {
+		if result == nil {
+			continue
+		}
+		additionalResult, ok := additionalByCandidate[result.Candidate.Index]
+		if !ok {
+			merged = append(merged, result)
+			continue
+		}
+		merged = append(merged, mergeBulkSimCandidateResults(result, additionalResult))
+	}
+	return merged
+}
+
+func mergeBulkSimCandidateResults(result *BulkSimCandidateResult, additionalResult *BulkSimCandidateResult) *BulkSimCandidateResult {
+	if result == nil || result.Error != nil {
+		return result
+	}
+	if additionalResult == nil || additionalResult.Error != nil {
+		return additionalResult
+	}
+
+	return &BulkSimCandidateResult{
+		Candidate:  result.Candidate,
+		DpsMetrics: mergeBulkSimDistributionMetrics(result.DpsMetrics, additionalResult.DpsMetrics),
+	}
+}
+
+func mergeBulkSimDistributionMetrics(metrics *proto.DistributionMetrics, additionalMetrics *proto.DistributionMetrics) *proto.DistributionMetrics {
+	if metrics == nil {
+		return additionalMetrics
+	}
+	if additionalMetrics == nil {
+		return metrics
+	}
+
+	metricsAggregator := bulkSimDistributionMetricsAggregatorData(metrics)
+	additionalAggregator := bulkSimDistributionMetricsAggregatorData(additionalMetrics)
+	totalN := metricsAggregator.N + additionalAggregator.N
+	if totalN <= 0 {
+		return googleProto.Clone(metrics).(*proto.DistributionMetrics)
+	}
+
+	combiner := raidSimResultCombiner{}
+	combinedMetrics := combiner.newDistMetrics()
+	combiner.combineDistMetrics(combinedMetrics, metrics, false, float64(metricsAggregator.N)/float64(totalN))
+	combiner.combineDistMetrics(combinedMetrics, additionalMetrics, true, float64(additionalAggregator.N)/float64(totalN))
+	return combinedMetrics
+}
+
+func bulkSimDistributionMetricsAggregatorData(metrics *proto.DistributionMetrics) *proto.AggregatorData {
+	if metrics.AggregatorData != nil && metrics.AggregatorData.N > 0 {
+		return metrics.AggregatorData
+	}
+	n := int32(1)
+	return &proto.AggregatorData{
+		N:     n,
+		SumSq: (metrics.Stdev*metrics.Stdev + metrics.Avg*metrics.Avg) * float64(n),
+	}
 }
 
 func hasBulkSimStageError(baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult) bool {

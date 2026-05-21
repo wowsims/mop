@@ -263,10 +263,11 @@ const cleanBulkSimDpsMetrics = (metrics: DistributionMetrics | undefined): Distr
 	return cleaned;
 };
 
-const makeBulkSimRequestForCandidate = (request: BulkSimRequest, candidate: ConcurrentBulkSimCandidate, iterations: number): RaidSimRequest => {
+const makeBulkSimRequestForCandidate = (request: BulkSimRequest, candidate: ConcurrentBulkSimCandidate, iterations: number, seedOffset = 0): RaidSimRequest => {
 	const simRequest = RaidSimRequest.clone(request.baseRequest!);
 	simRequest.requestId = request.requestId;
 	simRequest.simOptions!.iterations = iterations;
+	simRequest.simOptions!.randomSeed += BigInt(seedOffset);
 	simRequest.simOptions!.debugFirstIteration = false;
 	simRequest.simOptions!.debug = false;
 	simRequest.raid!.parties[0].players[0].equipment = candidate.gear;
@@ -280,12 +281,13 @@ const runSingleBulkSimConcurrent = async (
 	workerPool: WorkerPool,
 	signals: SimSignals,
 	progressCallback?: (progressMetrics: ProgressMetrics) => void,
+	seedOffset = 0,
 ): Promise<ConcurrentBulkSimCandidateResult> => {
 	if (signals.abort.isTriggered()) {
 		return { candidate, error: ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }) };
 	}
 
-	const simRequest = makeBulkSimRequestForCandidate(request, candidate, iterations);
+	const simRequest = makeBulkSimRequestForCandidate(request, candidate, iterations, seedOffset);
 	const simResult = await runConcurrentSim(simRequest, workerPool, progressCallback ?? noop, signals);
 	if (simResult.error) {
 		return { candidate, error: simResult.error };
@@ -366,12 +368,25 @@ const adaptConcurrentBulkSimStageIterations = async (
 			console.log(`[Bulk Sim] - Stage: ${bulkSimStageLogName(config.stage)} - Adaptive pass ${adaptivePass}
 Results:
   Current iterations: ${iterations}
+  Additional iterations: ${targetIterations - iterations}
   Target iterations: ${targetIterations}
   Target error: ${config.targetErrorPct.toFixed(2)}%
   Observed error: ${observedErrorPct.toFixed(2)}%`);
 		}
 
-		const rerunResult = await rerunConcurrentBulkSimStageAtIterations(request, candidates, config, workerPool, onProgress, signals, targetIterations);
+		const additionalIterations = targetIterations - iterations;
+		const rerunResult = await rerunConcurrentBulkSimStageAdditionalIterations(
+			request,
+			candidates,
+			config,
+			workerPool,
+			onProgress,
+			signals,
+			baseline,
+			results,
+			iterations,
+			additionalIterations,
+		);
 		baseline = rerunResult.baseline;
 		results = rerunResult.results;
 		iterations = targetIterations;
@@ -379,48 +394,84 @@ Results:
 	return { baseline, results, iterations };
 };
 
-const rerunConcurrentBulkSimStageAtIterations = async (
+const rerunConcurrentBulkSimStageAdditionalIterations = async (
 	request: BulkSimRequest,
 	candidates: ConcurrentBulkSimCandidate[],
 	config: ConcurrentBulkSimStageConfig,
 	workerPool: WorkerPool,
 	onProgress: WorkerProgressCallback,
 	signals: SimSignals,
-	iterations: number,
+	baseline: ConcurrentBulkSimCandidateResult,
+	results: ConcurrentBulkSimCandidateResult[],
+	currentIterations: number,
+	additionalIterations: number,
 ): Promise<{ baseline: ConcurrentBulkSimCandidateResult; results: ConcurrentBulkSimCandidateResult[] }> => {
 	const totalSims = candidates.length + 1;
-	const totalIterations = totalSims * iterations;
+	const totalIterations = totalSims * additionalIterations;
 	emitBulkSimStageProgress(onProgress, config.stage, 0, totalSims, 0, totalIterations, 0);
 
 	const baselineCandidate = { index: -1, gear: request.baselineGear! };
-	const baseline = await runSingleBulkSimConcurrent(request, baselineCandidate, iterations, workerPool, signals, progressMetrics => {
-		if (progressMetrics.totalIterations == 0) return;
-		emitBulkSimStageProgress(onProgress, config.stage, 0, totalSims, Math.min(progressMetrics.completedIterations, iterations), totalIterations, progressMetrics.dps);
-	});
-	if (baseline.error) return { baseline, results: [] };
-	emitBulkSimStageProgress(onProgress, config.stage, 1, totalSims, iterations, totalIterations, baseline.dpsMetrics?.avg ?? 0);
-
-	const results: ConcurrentBulkSimCandidateResult[] = [];
-	let completedCandidateIterations = 0;
-	for (const [idx, candidate] of candidates.entries()) {
-		if (signals.abort.isTriggered()) break;
-
-		const candidateResult = await runSingleBulkSimConcurrent(request, candidate, iterations, workerPool, signals, progressMetrics => {
+	const baselineExtra = await runSingleBulkSimConcurrent(
+		request,
+		baselineCandidate,
+		additionalIterations,
+		workerPool,
+		signals,
+		progressMetrics => {
 			if (progressMetrics.totalIterations == 0) return;
 			emitBulkSimStageProgress(
 				onProgress,
 				config.stage,
-				1 + idx,
+				0,
 				totalSims,
-				iterations + completedCandidateIterations + Math.min(progressMetrics.completedIterations, iterations),
+				Math.min(progressMetrics.completedIterations, additionalIterations),
 				totalIterations,
 				progressMetrics.dps,
 			);
-		});
+		},
+		currentIterations,
+	);
+	if (baselineExtra.error) return { baseline: baselineExtra, results };
+	baseline = mergeBulkSimCandidateResults(baseline, baselineExtra);
+	emitBulkSimStageProgress(onProgress, config.stage, 1, totalSims, additionalIterations, totalIterations, baseline.dpsMetrics?.avg ?? 0);
 
-		results.push(candidateResult);
-		completedCandidateIterations += iterations;
-		emitBulkSimStageProgress(onProgress, config.stage, 1 + idx + 1, totalSims, iterations + completedCandidateIterations, totalIterations, candidateResult.dpsMetrics?.avg ?? 0);
+	const additionalResults: ConcurrentBulkSimCandidateResult[] = [];
+	let completedCandidateIterations = 0;
+	for (const [idx, candidate] of candidates.entries()) {
+		if (signals.abort.isTriggered()) break;
+
+		const candidateResult = await runSingleBulkSimConcurrent(
+			request,
+			candidate,
+			additionalIterations,
+			workerPool,
+			signals,
+			progressMetrics => {
+				if (progressMetrics.totalIterations == 0) return;
+				emitBulkSimStageProgress(
+					onProgress,
+					config.stage,
+					1 + idx,
+					totalSims,
+					additionalIterations + completedCandidateIterations + Math.min(progressMetrics.completedIterations, additionalIterations),
+					totalIterations,
+					progressMetrics.dps,
+				);
+			},
+			currentIterations,
+		);
+
+		additionalResults.push(candidateResult);
+		completedCandidateIterations += additionalIterations;
+		emitBulkSimStageProgress(
+			onProgress,
+			config.stage,
+			1 + idx + 1,
+			totalSims,
+			additionalIterations + completedCandidateIterations,
+			totalIterations,
+			candidateResult.dpsMetrics?.avg ?? 0,
+		);
 
 		if (candidateResult.error) {
 			signals.abort.trigger();
@@ -428,7 +479,84 @@ const rerunConcurrentBulkSimStageAtIterations = async (
 		}
 	}
 
-	return { baseline, results };
+	return { baseline, results: mergeBulkSimCandidateResultSlices(results, additionalResults) };
+};
+
+const mergeBulkSimCandidateResultSlices = (
+	results: ConcurrentBulkSimCandidateResult[],
+	additionalResults: ConcurrentBulkSimCandidateResult[],
+): ConcurrentBulkSimCandidateResult[] => {
+	const additionalByCandidate = new Map(additionalResults.map(result => [result.candidate.index, result]));
+	return results.map(result => {
+		const additionalResult = additionalByCandidate.get(result.candidate.index);
+		return additionalResult ? mergeBulkSimCandidateResults(result, additionalResult) : result;
+	});
+};
+
+const mergeBulkSimCandidateResults = (
+	result: ConcurrentBulkSimCandidateResult,
+	additionalResult: ConcurrentBulkSimCandidateResult,
+): ConcurrentBulkSimCandidateResult => {
+	if (result.error) return result;
+	if (additionalResult.error) return additionalResult;
+
+	return {
+		candidate: result.candidate,
+		dpsMetrics: mergeBulkSimDistributionMetrics(result.dpsMetrics, additionalResult.dpsMetrics),
+	};
+};
+
+const mergeBulkSimDistributionMetrics = (
+	metrics: DistributionMetrics | undefined,
+	additionalMetrics: DistributionMetrics | undefined,
+): DistributionMetrics | undefined => {
+	if (!metrics) return additionalMetrics;
+	if (!additionalMetrics) return metrics;
+
+	const metricsAggregator = getBulkSimDistributionMetricsAggregatorData(metrics);
+	const additionalAggregator = getBulkSimDistributionMetricsAggregatorData(additionalMetrics);
+	const totalN = metricsAggregator.n + additionalAggregator.n;
+	if (totalN <= 0) return DistributionMetrics.clone(metrics);
+
+	const merged = DistributionMetrics.create({
+		avg: (metrics.avg * metricsAggregator.n + additionalMetrics.avg * additionalAggregator.n) / totalN,
+		max: metrics.max,
+		maxSeed: metrics.maxSeed,
+		min: metrics.min,
+		minSeed: metrics.minSeed,
+		hist: { ...metrics.hist },
+		allValues: metrics.allValues.slice(),
+		aggregatorData: {
+			n: totalN,
+			sumSq: metricsAggregator.sumSq + additionalAggregator.sumSq,
+		},
+	});
+
+	if (additionalMetrics.max > merged.max) {
+		merged.max = additionalMetrics.max;
+		merged.maxSeed = additionalMetrics.maxSeed;
+	}
+	if (additionalMetrics.min == 0 || additionalMetrics.min < merged.min) {
+		merged.min = additionalMetrics.min;
+		merged.minSeed = additionalMetrics.minSeed;
+	} else if (additionalMetrics.min == merged.min) {
+		merged.minSeed = additionalMetrics.minSeed;
+	}
+	for (const [roundedDps, count] of Object.entries(additionalMetrics.hist)) {
+		merged.hist[Number(roundedDps)] = (merged.hist[Number(roundedDps)] ?? 0) + count;
+	}
+	merged.allValues.push(...additionalMetrics.allValues);
+	merged.stdev = Math.sqrt(Math.max(0, merged.aggregatorData!.sumSq / totalN - merged.avg * merged.avg));
+	return merged;
+};
+
+const getBulkSimDistributionMetricsAggregatorData = (metrics: DistributionMetrics): { n: number; sumSq: number } => {
+	if (metrics.aggregatorData && metrics.aggregatorData.n > 0) return metrics.aggregatorData;
+	const n = 1;
+	return {
+		n,
+		sumSq: (metrics.stdev * metrics.stdev + metrics.avg * metrics.avg) * n,
+	};
 };
 
 const topBulkSimResults = (results: ConcurrentBulkSimCandidateResult[], limit: number): ConcurrentBulkSimCandidateResult[] => {
@@ -533,31 +661,41 @@ const runConcurrentBulkSimStage = async (
 	const totalSims = candidates.length + baselineSims;
 	let completedBaselineIterations = minIterations;
 	let baseline = baselineProbe;
-	const totalStageIterations = completedBaselineIterations + candidates.length * iterations + (reuseBaselineProbe ? 0 : iterations);
+	const totalStageIterations = (candidates.length + 1) * iterations;
 	emitBulkSimStageProgress(onProgress, config.stage, 1, totalSims, completedBaselineIterations, totalStageIterations, baselineProbe.dpsMetrics?.avg ?? 0);
 
 	if (!reuseBaselineProbe) {
-		baseline = await runSingleBulkSimConcurrent(request, baselineCandidate, iterations, workerPool, signals, progressMetrics => {
-			if (progressMetrics.totalIterations == 0) return;
-			emitBulkSimStageProgress(
-				onProgress,
-				config.stage,
-				1,
-				totalSims,
-				minIterations + Math.min(progressMetrics.completedIterations, iterations),
-				totalStageIterations,
-				progressMetrics.dps,
-			);
-		});
-		if (baseline.error) {
+		const extraBaselineIterations = iterations - minIterations;
+		const baselineExtra = await runSingleBulkSimConcurrent(
+			request,
+			baselineCandidate,
+			extraBaselineIterations,
+			workerPool,
+			signals,
+			progressMetrics => {
+				if (progressMetrics.totalIterations == 0) return;
+				emitBulkSimStageProgress(
+					onProgress,
+					config.stage,
+					1,
+					totalSims,
+					minIterations + Math.min(progressMetrics.completedIterations, extraBaselineIterations),
+					totalStageIterations,
+					progressMetrics.dps,
+				);
+			},
+			minIterations,
+		);
+		if (baselineExtra.error) {
 			return {
-				baseline,
+				baseline: baselineExtra,
 				results: [],
 				iterations,
 				metrics: BulkSimStageMetrics.create({ stage: config.stage }),
 			};
 		}
-		completedBaselineIterations += iterations;
+		baseline = mergeBulkSimCandidateResults(baselineProbe, baselineExtra);
+		completedBaselineIterations = iterations;
 		emitBulkSimStageProgress(
 			onProgress,
 			config.stage,
@@ -604,7 +742,17 @@ const runConcurrentBulkSimStage = async (
 			break;
 		}
 	}
-	const adaptedStage = await adaptConcurrentBulkSimStageIterations(request, candidates, config, workerPool, onProgress, signals, baseline, results, iterations);
+	const adaptedStage = await adaptConcurrentBulkSimStageIterations(
+		request,
+		candidates,
+		config,
+		workerPool,
+		onProgress,
+		signals,
+		baseline,
+		results,
+		iterations,
+	);
 	baseline = adaptedStage.baseline;
 	results.splice(0, results.length, ...adaptedStage.results);
 	if (baseline.error) {
