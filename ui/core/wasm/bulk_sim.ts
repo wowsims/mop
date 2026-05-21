@@ -28,6 +28,7 @@ const BULK_SIM_CULLING_COEFFICIENT = 1.35;
 const BULK_SIM_COMBINATION_LOG_MIN = 10;
 const BULK_SIM_MAX_ADAPTIVE_PASSES = 2;
 const BULK_SIM_ADAPTIVE_MAX_ITERATION_MULTIPLIER = 4;
+const BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER = 2;
 
 export const makeBulkGearDatabase = (db: Database, gearSets: Gear[]): SimDatabase => {
 	const items = new Map<number, Item>();
@@ -307,6 +308,9 @@ const bulkSimDpsError = (metrics: DistributionMetrics | undefined, iterations: n
 const bulkSimCombinationErrorMultiplier = (candidateCount: number): number =>
 	Math.sqrt(Math.max(1, Math.log10(Math.max(candidateCount, BULK_SIM_COMBINATION_LOG_MIN))));
 
+const bulkSimSurvivorIntervalMultiplier = (candidateCount: number, cullingCoefficient: number): number =>
+	cullingCoefficient * bulkSimCombinationErrorMultiplier(candidateCount);
+
 const bulkSimObservedErrorPct = (metrics: DistributionMetrics | undefined, iterations: number, candidateCount: number): number => {
 	if (!metrics || metrics.avg <= 0 || iterations <= 0) return 0;
 	return (bulkSimDpsError(metrics, iterations) * bulkSimCombinationErrorMultiplier(candidateCount) * 100) / metrics.avg;
@@ -579,27 +583,31 @@ const selectBulkSimSurvivors = (
 	}
 
 	let bestMetrics = baseline.dpsMetrics;
-	let maxActorError = bulkSimDpsError(baseline.dpsMetrics, iterations);
 	for (const result of results) {
 		if (result.dpsMetrics && (!bestMetrics || result.dpsMetrics.avg > bestMetrics.avg)) {
 			bestMetrics = result.dpsMetrics;
 		}
-		maxActorError = Math.max(maxActorError, bulkSimDpsError(result.dpsMetrics, iterations));
 	}
 
-	const lowerBound = (bestMetrics?.avg ?? 0) - maxActorError * (config.cullingCoefficient ?? BULK_SIM_CULLING_COEFFICIENT);
+	const intervalMultiplier = bulkSimSurvivorIntervalMultiplier(results.length, config.cullingCoefficient ?? BULK_SIM_CULLING_COEFFICIENT);
+	const bestLowerBound = (bestMetrics?.avg ?? 0) - bulkSimDpsError(bestMetrics, iterations) * intervalMultiplier;
 	const meanSurvivors = topBulkSimResults(results, config.minSurvivors ?? 0);
 	let survivors = meanSurvivors.slice();
 	const seen = new Set(survivors.map(result => result.candidate.index));
 
 	for (const result of results) {
-		if (!result.dpsMetrics || result.dpsMetrics.avg < lowerBound || seen.has(result.candidate.index)) continue;
+		if (!result.dpsMetrics || seen.has(result.candidate.index)) continue;
+
+		const candidateUpperBound = result.dpsMetrics.avg + bulkSimDpsError(result.dpsMetrics, iterations) * intervalMultiplier;
+		if (candidateUpperBound < bestLowerBound) continue;
+
 		survivors.push(result);
 		seen.add(result.candidate.index);
 	}
 
-	if (survivors.length > config.maxSurvivors) {
-		survivors = topBulkSimResults(survivors, config.maxSurvivors);
+	const softMaxSurvivors = config.maxSurvivors * BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER;
+	if (survivors.length > softMaxSurvivors) {
+		survivors = topBulkSimResults(survivors, softMaxSurvivors);
 	}
 
 	return survivors.map(result => result.candidate);

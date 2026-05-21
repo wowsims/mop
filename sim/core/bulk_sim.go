@@ -24,6 +24,7 @@ const (
 	bulkSimCombinationLogMin              float64 = 10
 	bulkSimMaxAdaptivePasses                      = 2
 	bulkSimAdaptiveMaxIterationMultiplier         = 4
+	bulkSimSurvivorSoftCapMultiplier              = 2
 	bulkSimProgressThrottle                       = 100 * time.Millisecond
 )
 
@@ -293,6 +294,11 @@ func getBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimSta
 	return runtime.NumCPU()
 }
 
+// Runs one low/medium/high refinement stage. Each stage first probes the
+// baseline to estimate variance, then uses that variance to choose a
+// per-candidate iteration count before simming every candidate. After the first
+// pass, the stage may add more iterations if the observed error is still above
+// the configured target.
 func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals) BulkSimStageResult {
 	startedAt := time.Now()
 	minIterations := getBulkSimStageMinIterations(request, config)
@@ -360,7 +366,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 	}
 	var wg sync.WaitGroup
 
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		wg.Go(func() {
 			for task := range jobs {
 				if signals.Abort.IsTriggered() {
@@ -516,6 +522,10 @@ func getBulkSimStageIterations(request *proto.BulkSimRequest, config BulkSimStag
 	return max(minIterations, targetIterations)
 }
 
+// Converts a target relative error into an iteration count using standard
+// error: stdev / sqrt(iterations). The combination multiplier is a practical
+// multiple-candidate adjustment so large candidate sets use more iterations
+// without paying the full Bonferroni cost.
 func getBulkSimTargetIterations(targetErrorPct float64, metrics *proto.DistributionMetrics, candidateCount int) int32 {
 	if metrics == nil || metrics.Avg <= 0 {
 		return 0
@@ -534,20 +544,27 @@ func usesUserDefinedHighStageIterations(request *proto.BulkSimRequest, config Bu
 	return config.Stage == proto.BulkSimStage_BulkSimStageHigh && request.HighStageIterations > 0
 }
 
+// Keeps candidates that could still plausibly be the best result after
+// accounting for sim variance. The top MinSurvivors by mean are always
+// retained, then any candidate whose upper interval overlaps the best
+// candidate's lower interval is kept. A soft cap prevents pathological stages
+// from forwarding the entire candidate set when many results are tied.
 func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSimCandidateResult, iterations int32, config BulkSimStageConfig) []BulkSimCandidate {
 	if config.MaxSurvivors == 0 || len(results) <= config.MaxSurvivors {
 		return bulkSimResultsToCandidates(results)
 	}
 
 	bestMetrics := baseline.DpsMetrics
-	maxActorError := bulkSimDpsError(baseline.DpsMetrics, iterations)
 	for _, result := range results {
+		if result == nil || result.DpsMetrics == nil {
+			continue
+		}
 		if result.DpsMetrics.Avg > bestMetrics.Avg {
 			bestMetrics = result.DpsMetrics
 		}
-		maxActorError = math.Max(maxActorError, bulkSimDpsError(result.DpsMetrics, iterations))
 	}
-	lowerBound := bestMetrics.Avg - maxActorError*config.CullingCoefficient
+	intervalMultiplier := bulkSimSurvivorIntervalMultiplier(len(results), config.CullingCoefficient)
+	bestLowerBound := bestMetrics.Avg - bulkSimDpsError(bestMetrics, iterations)*intervalMultiplier
 
 	meanSurvivors := topBulkSimResults(results, config.MinSurvivors)
 	survivors := make([]*BulkSimCandidateResult, 0, config.MaxSurvivors)
@@ -557,14 +574,21 @@ func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSim
 		seen[result.Candidate.Index] = true
 	}
 	for _, result := range results {
-		if result.DpsMetrics.Avg < lowerBound || seen[result.Candidate.Index] {
+		if result == nil || result.DpsMetrics == nil || seen[result.Candidate.Index] {
+			continue
+		}
+
+		candidateUpperBound := result.DpsMetrics.Avg + bulkSimDpsError(result.DpsMetrics, iterations)*intervalMultiplier
+		if candidateUpperBound < bestLowerBound {
 			continue
 		}
 		survivors = append(survivors, result)
 		seen[result.Candidate.Index] = true
 	}
-	if len(survivors) > config.MaxSurvivors {
-		survivors = topBulkSimResults(survivors, config.MaxSurvivors)
+
+	softMaxSurvivors := config.MaxSurvivors * bulkSimSurvivorSoftCapMultiplier
+	if len(survivors) > softMaxSurvivors {
+		survivors = topBulkSimResults(survivors, softMaxSurvivors)
 	}
 
 	return bulkSimResultsToCandidates(survivors)
@@ -577,8 +601,16 @@ func bulkSimDpsError(metrics *proto.DistributionMetrics, iterations int32) float
 	return metrics.Stdev / math.Sqrt(float64(iterations))
 }
 
+// Intentionally much lighter than a strict Bonferroni correction. Bulk Sim
+// needs to avoid false culls among many candidates, but absolute proof of the
+// full ordering would require infeasible iteration counts for near-tied gear
+// sets.
 func bulkSimCombinationErrorMultiplier(candidateCount int) float64 {
 	return math.Sqrt(math.Max(1, math.Log10(math.Max(float64(candidateCount), bulkSimCombinationLogMin))))
+}
+
+func bulkSimSurvivorIntervalMultiplier(candidateCount int, cullingCoefficient float64) float64 {
+	return cullingCoefficient * bulkSimCombinationErrorMultiplier(candidateCount)
 }
 
 func bulkSimObservedErrorPct(metrics *proto.DistributionMetrics, iterations int32, candidateCount int) float64 {
@@ -588,6 +620,9 @@ func bulkSimObservedErrorPct(metrics *proto.DistributionMetrics, iterations int3
 	return bulkSimDpsError(metrics, iterations) * bulkSimCombinationErrorMultiplier(candidateCount) / metrics.Avg * 100
 }
 
+// Reports the worst relative error across the baseline and every candidate.
+// Using the max is intentionally conservative: one noisy candidate can still
+// affect culling or final top-result confidence.
 func bulkSimObservedStageErrorPct(baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, iterations int32, candidateCount int) float64 {
 	observedErrorPct := 0.0
 	if baseline != nil {
@@ -616,6 +651,10 @@ func getBulkSimStageTargetIterations(targetErrorPct float64, baseline *BulkSimCa
 	return targetIterations
 }
 
+// Adds bounded extra iterations when the completed stage missed its target
+// error. Extra sims use seed offsets and are merged into the existing metrics,
+// avoiding a full rerun while still reducing standard error for the same
+// baseline/candidate set.
 func adaptBulkSimStageIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, iterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult, int32) {
 	maxAdaptiveIterations := int32(math.Ceil(float64(iterations) * bulkSimAdaptiveMaxIterationMultiplier))
 	for adaptivePass := 1; adaptivePass <= bulkSimMaxAdaptivePasses; adaptivePass++ {
@@ -642,6 +681,9 @@ func adaptBulkSimStageIterations(request *proto.BulkSimRequest, candidates []Bul
 	return baseline, results, iterations
 }
 
+// Runs only the delta required by an adaptive pass. The seed offset prevents
+// reusing the same random sequence as the previous pass, and the returned
+// metrics are merged with the existing stage results by candidate index.
 func rerunBulkSimStageAdditionalIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, currentIterations int32, additionalIterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult) {
 	totalSims := len(candidates) + 1
 	totalIterations := int32(totalSims) * additionalIterations
@@ -752,6 +794,10 @@ func mergeBulkSimCandidateResults(result *BulkSimCandidateResult, additionalResu
 	}
 }
 
+// Combines metrics from two independent sim runs for the same gear set.
+// AggregatorData carries the sample count and sum of squares needed to
+// recompute the weighted mean/stdev after adaptive extra iterations are
+// appended.
 func mergeBulkSimDistributionMetrics(metrics *proto.DistributionMetrics, additionalMetrics *proto.DistributionMetrics) *proto.DistributionMetrics {
 	if metrics == nil {
 		return additionalMetrics
