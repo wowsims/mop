@@ -1569,9 +1569,9 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-RegaliaoftheHornedNightmare"
  value: {
-  dps: 224964.30994
-  tps: 171007.69603
-  hps: 1427.68921
+  dps: 238760.31386
+  tps: 182386.70823
+  hps: 1425.31763
  }
 }
 dps_results: {
