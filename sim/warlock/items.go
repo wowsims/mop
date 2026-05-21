@@ -285,7 +285,7 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 					_, realGain float64,
 					actionID core.ActionID,
 				) {
-					if realGain == 0 || buff.Icd.IsReady(sim) {
+					if realGain == 0 || !buff.Icd.IsReady(sim) {
 						return
 					}
 
