@@ -79,6 +79,7 @@ type reforgeOptimization struct {
 	settings     *proto.ReforgeSettings
 	player       *proto.Player
 	baseRaid     *proto.Raid
+	originalGear *proto.EquipmentSpec
 	baseGear     *proto.EquipmentSpec
 	capBaseStats core.UnitStats
 	weights      core.UnitStats

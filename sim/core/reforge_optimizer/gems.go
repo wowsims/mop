@@ -239,7 +239,8 @@ func gemEligibleForSocket(gemColor proto.GemColor, socketColor proto.GemColor) b
 func clearGems(equipment *proto.EquipmentSpec, settings *proto.ReforgeSettings) {
 	frozenSlots := frozenItemSlots(settings)
 	for slotIdx, item := range equipment.Items {
-		if item == nil || frozenSlots[proto.ItemSlot(slotIdx)] {
+		slot := proto.ItemSlot(slotIdx)
+		if item == nil || frozenSlots[slot] {
 			continue
 		}
 
@@ -247,9 +248,22 @@ func clearGems(equipment *proto.EquipmentSpec, settings *proto.ReforgeSettings) 
 			if gemID == 0 {
 				continue
 			}
+			if isHeadMetaSocket(item, slot, gemIdx) {
+				continue
+			}
 			if gem, ok := core.GemsByID[gemID]; !ok || gem.Color != proto.GemColor_GemColorMeta {
 				item.Gems[gemIdx] = 0
 			}
 		}
 	}
+}
+
+func isHeadMetaSocket(item *proto.ItemSpec, slot proto.ItemSlot, gemIdx int) bool {
+	if slot != proto.ItemSlot_ItemSlotHead {
+		return false
+	}
+	if dbItem, ok := core.ItemsByID[item.GetId()]; ok && gemIdx < len(dbItem.GemSockets) {
+		return dbItem.GemSockets[gemIdx] == proto.GemColor_GemColorMeta
+	}
+	return gemIdx == 0
 }

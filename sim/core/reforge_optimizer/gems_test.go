@@ -74,6 +74,48 @@ func TestBuildReforgeGemOptionsFiltersAndPreservesMetadata(t *testing.T) {
 	}
 }
 
+func TestClearGemsPreservesHeadMetaSocket(t *testing.T) {
+	const headItemID int32 = -90001
+	const metaGemID int32 = -90002
+	const redGemID int32 = -90003
+	originalItem, itemExisted := core.ItemsByID[headItemID]
+	originalMetaGem, metaGemExisted := core.GemsByID[metaGemID]
+	originalRedGem, redGemExisted := core.GemsByID[redGemID]
+	core.ItemsByID[headItemID] = core.Item{ID: headItemID, GemSockets: []proto.GemColor{proto.GemColor_GemColorMeta, proto.GemColor_GemColorRed}}
+	core.GemsByID[metaGemID] = core.Gem{ID: metaGemID, Color: proto.GemColor_GemColorMeta}
+	core.GemsByID[redGemID] = core.Gem{ID: redGemID, Color: proto.GemColor_GemColorRed}
+	t.Cleanup(func() {
+		if itemExisted {
+			core.ItemsByID[headItemID] = originalItem
+		} else {
+			delete(core.ItemsByID, headItemID)
+		}
+		if metaGemExisted {
+			core.GemsByID[metaGemID] = originalMetaGem
+		} else {
+			delete(core.GemsByID, metaGemID)
+		}
+		if redGemExisted {
+			core.GemsByID[redGemID] = originalRedGem
+		} else {
+			delete(core.GemsByID, redGemID)
+		}
+	})
+
+	equipment := &proto.EquipmentSpec{Items: make([]*proto.ItemSpec, int(core.NumItemSlots))}
+	equipment.Items[proto.ItemSlot_ItemSlotHead] = &proto.ItemSpec{Id: headItemID, Gems: []int32{metaGemID, redGemID}}
+
+	clearGems(equipment, &proto.ReforgeSettings{})
+
+	gotGems := equipment.Items[proto.ItemSlot_ItemSlotHead].Gems
+	if gotGems[0] != metaGemID {
+		t.Fatalf("expected head meta gem to be preserved, got %d", gotGems[0])
+	}
+	if gotGems[1] != 0 {
+		t.Fatalf("expected ordinary head gem to be cleared, got %d", gotGems[1])
+	}
+}
+
 func TestPreferHitOverExpertiseReforgesFiltersSameSourceExpertise(t *testing.T) {
 	hasteToExpertise := int32(-101)
 	hasteToHit := int32(-102)

@@ -39,7 +39,6 @@ tmp/
 wowsimmop*.so
 wowsimmop*.dll
 wowsimmop*.h
-third_party/highs/
 wowsims.db
 assets/db_inputs/dbc/
 mop.sln

@@ -12,6 +12,7 @@ import (
 	"github.com/wowsims/mop/sim"
 	"github.com/wowsims/mop/sim/core"
 	proto "github.com/wowsims/mop/sim/core/proto"
+	reforgeoptimizer "github.com/wowsims/mop/sim/core/reforge_optimizer"
 	"github.com/wowsims/mop/sim/core/simsignals"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	googleProto "google.golang.org/protobuf/proto"
@@ -27,6 +28,7 @@ func main() {
 
 	js.Global().Set("computeStats", js.FuncOf(computeStats))
 	js.Global().Set("computeStatsJson", js.FuncOf(computeStatsJson))
+	js.Global().Set("reforgeOptimize", js.FuncOf(reforgeOptimize))
 	js.Global().Set("raidSim", js.FuncOf(raidSim))
 	js.Global().Set("raidSimJson", js.FuncOf(raidSimJson))
 	js.Global().Set("raidSimAsync", js.FuncOf(raidSimAsync))
@@ -123,6 +125,48 @@ func computeStatsJson(this js.Value, args []js.Value) (response interface{}) {
 		return nil
 	}
 	response = js.ValueOf(string(output))
+	return response
+}
+
+func reforgeOptimize(this js.Value, args []js.Value) (response interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			errStr := ""
+			switch errt := err.(type) {
+			case string:
+				errStr = errt
+			case error:
+				errStr = errt.Error()
+			}
+
+			errStr += "\nStack Trace:\n" + string(debug.Stack())
+			result := &proto.ReforgeOptimizeResult{Error: &proto.ErrorOutcome{Message: errStr}}
+			outbytes, err := googleProto.Marshal(result)
+			if err != nil {
+				log.Printf("[ERROR] Failed to marshal error (%s) result: %s", errStr, err.Error())
+				return
+			}
+			outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+			js.CopyBytesToJS(outArray, outbytes)
+			response = outArray
+		}
+	}()
+	req := &proto.ReforgeOptimizeRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), req); err != nil {
+		log.Printf("Failed to parse ReforgeOptimizeRequest: %s", err)
+		return nil
+	}
+	result := reforgeoptimizer.Optimize(req)
+
+	outbytes, err := googleProto.Marshal(result)
+	if err != nil {
+		log.Printf("[ERROR] Failed to marshal ReforgeOptimizeResult: %s", err.Error())
+		return nil
+	}
+	outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+	js.CopyBytesToJS(outArray, outbytes)
+
+	response = outArray
 	return response
 }
 

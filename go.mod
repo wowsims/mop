@@ -16,6 +16,8 @@ require (
 	modernc.org/sqlite v1.37.0
 )
 
+require github.com/bytecodealliance/wasmtime-go v1.0.0 // indirect
+
 require (
 	github.com/alecthomas/participle/v2 v2.1.4
 	github.com/dustin/go-humanize v1.0.1 // indirect

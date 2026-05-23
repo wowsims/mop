@@ -1,24 +1,23 @@
 import clsx from 'clsx';
 import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
-import { Constraint, greaterEq, lessEq } from 'yalps';
 
 import i18n from '../../i18n/config.js';
 import * as Mechanics from '../constants/mechanics.js';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
-import { Class, GemColor, ItemSlot, Profession, PseudoStat, Race, Spec, Stat } from '../proto/common';
+import { Class, GemColor, ItemSlot, PseudoStat, Spec, Stat } from '../proto/common';
 import { UIGem as Gem, IndividualSimSettings, ReforgeSettings, StatCapType } from '../proto/ui';
-import { EquippedItem, isRebornWeapon, isShaTouchedWeapon, isThroneOfThunderWeapon, ReforgeData } from '../proto_utils/equipped_item';
+import { EquippedItem, ReforgeData } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
-import { gemMatchesSocket, gemMatchesStats, getEmptyGemSocketIconUrl } from '../proto_utils/gems';
+import { getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
 import { translateSlotName, translateStat } from '../../i18n/localization';
-import { pseudoStatHasCap, pseudoStatIsCapped, StatCap, statHasCap, statIsCapped, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
+import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
 import { Sim } from '../sim';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
-import { distinct, isDevMode, sleep } from '../utils';
+import { distinct, isDevMode } from '../utils';
 import { CopyButton } from './copy_button';
 import { BooleanPicker } from './pickers/boolean_picker';
 import { EnumPicker } from './pickers/enum_picker';
@@ -26,38 +25,15 @@ import { NumberPicker, NumberPickerConfig } from './pickers/number_picker';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
 import Toast from './toast';
 import { trackEvent, trackPageView } from '../../tracking/utils';
-import { ReforgeWorkerPool, getReforgeWorkerPool } from '../reforge_worker_pool';
 import { ReforgeGearCache } from '../reforge_cache';
-import type { LPModel, LPSolution, SerializedConstraints, SerializedVariables } from '../../worker/reforge_types';
 import { ProgressTrackerModal } from './progress_tracker_modal';
 import { getEmptySlotIconUrl } from './gear_picker/utils';
 import { SimSettingCategories } from '../constants/sim_settings';
 import { IndividualLinkExporter } from './individual_sim_ui/exporters/individual_link_exporter';
 
-type YalpsCoefficients = Map<string, number>;
-type YalpsVariables = Map<string, YalpsCoefficients>;
-type YalpsConstraints = Map<string, Constraint>;
-
-function serializeVariables(variables: YalpsVariables): SerializedVariables {
-	const result: SerializedVariables = {};
-	for (const [key, coefficients] of variables.entries()) {
-		result[key] = Object.fromEntries(coefficients.entries());
-	}
-	return result;
-}
-
-function serializeConstraints(constraints: YalpsConstraints): SerializedConstraints {
-	const result: SerializedConstraints = {};
-	for (const [key, constraint] of constraints.entries()) {
-		result[key] = { ...constraint };
-	}
-	return result;
-}
-
 type GemData = {
 	gem: Gem;
 	isJC: boolean;
-	coefficients: YalpsCoefficients;
 };
 
 const INCLUDED_STATS = [
@@ -109,11 +85,8 @@ export type ReforgeOptimizerOptions = {
 
 // Used to force a particular proc from trinkets like Matrix Restabilizer and Apparatus of Khaz'goroth.
 export class RelativeStatCap {
-	readonly player: Player<any>;
 	static relevantStats: Stat[] = [Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating];
 	readonly forcedHighestStat: UnitStat;
-	readonly constrainedStats: UnitStat[];
-	readonly constraintKeys: string[];
 
 	// Not comprehensive, add any other relevant offsets here as needed.
 	static procTrinketOffsets: Map<Stat, Map<number, number>> = new Map([
@@ -138,84 +111,11 @@ export class RelativeStatCap {
 		return player.getGear().hasTrinketFromOptions([95802, 94532, 96546, 96174, 96918]);
 	}
 
-	constructor(forcedHighestStat: Stat, player: Player<any>, playerClass: Class) {
+	constructor(forcedHighestStat: Stat) {
 		if (!RelativeStatCap.relevantStats.includes(forcedHighestStat)) {
 			throw new Error('Forced highest stat must be either Crit, Haste, or Mastery!');
 		}
-		this.player = player;
 		this.forcedHighestStat = UnitStat.fromStat(forcedHighestStat);
-		this.constrainedStats = RelativeStatCap.relevantStats.filter(stat => stat !== forcedHighestStat).map(stat => UnitStat.fromStat(stat));
-		this.constraintKeys = this.constrainedStats.map(
-			unitStat => this.forcedHighestStat.getShortName(playerClass) + 'Minus' + unitStat.getShortName(playerClass),
-		);
-	}
-
-	updateCoefficients(coefficients: YalpsCoefficients, stat: Stat, amount: number) {
-		if (!RelativeStatCap.relevantStats.includes(stat)) {
-			return;
-		}
-
-		for (const [idx, constrainedStat] of this.constrainedStats.entries()) {
-			const coefficientKey = this.constraintKeys[idx];
-			const currentValue = coefficients.get(coefficientKey) || 0;
-
-			if (this.forcedHighestStat.equalsStat(stat)) {
-				coefficients.set(coefficientKey, currentValue + amount);
-			} else if (constrainedStat.equalsStat(stat)) {
-				coefficients.set(coefficientKey, currentValue - amount);
-			}
-		}
-
-		if (stat != Stat.StatMasteryRating && this.forcedHighestStat.equalsStat(Stat.StatMasteryRating) && this.player.getSpec() == Spec.SpecFeralDruid) {
-			const coefficientKey = 'HasteMinusCrit';
-			const currentValue = coefficients.get(coefficientKey) || 0;
-
-			if (stat == Stat.StatHasteRating) {
-				coefficients.set(coefficientKey, currentValue + amount);
-			} else {
-				coefficients.set(coefficientKey, currentValue - amount);
-			}
-		}
-	}
-
-	updateConstraints(constraints: YalpsConstraints, gear: Gear, baseStats: Stats) {
-		baseStats = baseStats.addStat(Stat.StatMasteryRating, -this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT);
-		const raidBuffs = this.player.getRaid()?.getBuffs();
-		// Mastery raid buff does not count towards RoRo calculation
-		if (raidBuffs && (raidBuffs.roarOfCourage || raidBuffs.blessingOfMight || raidBuffs.spiritBeastBlessing || raidBuffs.graceOfAir)) {
-			baseStats = baseStats.addStat(Stat.StatMasteryRating, -Mechanics.RAID_BUFF_MASTERY_RATING);
-		}
-
-		for (const [idx, constrainedStat] of this.constrainedStats.entries()) {
-			const weightedStatsArray = new Stats().withUnitStat(this.forcedHighestStat, 1).withUnitStat(constrainedStat, -1);
-			let minReforgeContribution = 1 - baseStats.computeEP(weightedStatsArray);
-			const procOffsetMap = RelativeStatCap.procTrinketOffsets.get(constrainedStat.getStat())!;
-
-			for (const trinket of gear.getTrinkets()) {
-				if (!trinket) {
-					continue;
-				}
-
-				const trinketId = trinket.item.id;
-
-				if (procOffsetMap.has(trinketId)) {
-					minReforgeContribution += procOffsetMap.get(trinketId)!;
-					break;
-				}
-			}
-
-			constraints.set(this.constraintKeys[idx], greaterEq(minReforgeContribution));
-		}
-
-		if (this.forcedHighestStat.equalsStat(Stat.StatMasteryRating) && this.player.getSpec() == Spec.SpecFeralDruid) {
-			const minReforgeContribution = baseStats.getStat(Stat.StatCritRating) - baseStats.getStat(Stat.StatHasteRating) + 1;
-			constraints.set('HasteMinusCrit', greaterEq(minReforgeContribution));
-		}
-	}
-
-	updateWeights(statWeights: Stats) {
-		const smallestConstrainedEP = Math.min(statWeights.getUnitStat(this.constrainedStats[0]), statWeights.getUnitStat(this.constrainedStats[1]));
-		return statWeights.withUnitStat(this.forcedHighestStat, Math.min(statWeights.getUnitStat(this.forcedHighestStat), smallestConstrainedEP - 0.01));
 	}
 }
 
@@ -1396,7 +1296,7 @@ export class ReforgeOptimizer {
 	}
 
 	private async optimizeReforgesLocally(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, batchRun?: boolean): Promise<Gear | null> {
-		if (this.updateGearStatsModifier || (await this.sim.isWasm())) {
+		if (this.updateGearStatsModifier) {
 			return null;
 		}
 

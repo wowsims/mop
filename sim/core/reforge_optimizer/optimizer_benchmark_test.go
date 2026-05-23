@@ -44,7 +44,7 @@ func BenchmarkBuildChoiceMIPModel(b *testing.B) {
 
 	b.ReportAllocs()
 	for b.Loop() {
-		model := buildChoiceMIPModel(search, search.weights, statConstraints, search.relativeCaps, 20)
+		model := buildChoiceMIPModel(search, search.weights, statConstraints, search.relativeCaps)
 		if len(model.variables) == 0 || len(model.constraints) == 0 {
 			b.Fatalf("empty model: vars=%d constraints=%d", len(model.variables), len(model.constraints))
 		}

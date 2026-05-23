@@ -212,6 +212,7 @@ func (item *Item) ToItemSpecProto() *proto.ItemSpec {
 		Id:            item.ID,
 		RandomSuffix:  item.RandomSuffix.ID,
 		Enchant:       item.Enchant.EffectID,
+		Tinker:        item.Tinker.EffectID,
 		Gems:          MapSlice(item.Gems, func(gem Gem) int32 { return gem.ID }),
 		UpgradeStep:   item.UpgradeStep,
 		ChallengeMode: item.ChallengeMode,

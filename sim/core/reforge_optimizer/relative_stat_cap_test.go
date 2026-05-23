@@ -34,13 +34,13 @@ func TestBuildChoiceMIPModelAddsRelativeStatCapConstraint(t *testing.T) {
 	choiceDelta.Stats[stats.CritRating] = -4
 
 	search := &reforgeSearchState{
-		slots: []reforgeSlotChoices{{slot: proto.ItemSlot_ItemSlotHead, choices: []reforgeChoice{{delta: choiceDelta}}}},
+		slots: []reforgeSlotChoices{{slot: proto.ItemSlot_ItemSlotHead, choices: []reforgeChoice{{hasReforge: true, reforgeID: 113, delta: choiceDelta, objectiveDelta: choiceDelta}}}},
 		relativeCaps: []reforgeRelativeStatCap{
 			{forcedStat: mastery, constrainedStat: crit, minDelta: 10, actualMinDelta: 10},
 		},
 	}
 
-	model := buildChoiceMIPModel(search, core.NewUnitStats(), nil, search.relativeCaps, math.Inf(1))
+	model := buildChoiceMIPModel(search, core.NewUnitStats(), nil, search.relativeCaps)
 	for _, constraint := range model.constraints {
 		if constraint.lower == 10 && constraint.upper == math.Inf(1) {
 			if got, want := constraint.values[0], 16.0; got != want {
@@ -50,6 +50,38 @@ func TestBuildChoiceMIPModelAddsRelativeStatCapConstraint(t *testing.T) {
 		}
 	}
 	t.Fatalf("relative stat cap constraint not found in model: %#v", model.constraints)
+}
+
+func TestBuildChoiceMIPModelUsesJSStyleActiveVariables(t *testing.T) {
+	activeDelta := core.NewUnitStats()
+	activeDelta.Stats[stats.CritRating] = 10
+	search := &reforgeSearchState{
+		slots: []reforgeSlotChoices{
+			{slot: proto.ItemSlot_ItemSlotHead, choices: []reforgeChoice{
+				{slot: proto.ItemSlot_ItemSlotHead, hasReforge: true},
+				{slot: proto.ItemSlot_ItemSlotHead, hasReforge: true, reforgeID: 113, delta: activeDelta, objectiveDelta: activeDelta},
+			}},
+			{slot: proto.ItemSlot_ItemSlotChest, choices: []reforgeChoice{
+				{slot: proto.ItemSlot_ItemSlotChest, socketChoice: true, socketIdx: 0, gems: []reforgeGemChoice{{socketIdx: 0}}},
+				{slot: proto.ItemSlot_ItemSlotChest, socketChoice: true, socketIdx: 0, gems: []reforgeGemChoice{{socketIdx: 0, gemID: 76641}}, delta: activeDelta, objectiveDelta: activeDelta},
+			}},
+			{slot: proto.ItemSlot_ItemSlotChest, choices: []reforgeChoice{
+				{slot: proto.ItemSlot_ItemSlotChest, socketBonus: true},
+				{slot: proto.ItemSlot_ItemSlotChest, socketBonus: true, bonusSocketIdxs: []int{0}, delta: activeDelta, objectiveDelta: activeDelta},
+			}},
+		},
+	}
+
+	model := buildChoiceMIPModel(search, core.NewUnitStats(), nil, nil)
+
+	if got, want := len(model.variables), 3; got != want {
+		t.Fatalf("variable count = %d, want %d active JS-style variables", got, want)
+	}
+	for _, constraint := range model.constraints {
+		if constraint.lower == 1 && constraint.upper == 1 {
+			t.Fatalf("unexpected exactly-one choice constraint in JS-style model: %#v", constraint)
+		}
+	}
 }
 
 func TestExactRelativeCapViolationDetectsFailedCap(t *testing.T) {
@@ -153,20 +185,5 @@ func TestHiGHSPassTimeoutUsesRemainingBudgetWithMinimum(t *testing.T) {
 	}
 	if got, want := highsOptimizerPassTimeout(time.Now().Add(-time.Second)), time.Second; got != want {
 		t.Fatalf("expired pass timeout = %s, want %s", got, want)
-	}
-}
-
-func TestRelativeStatCapBalanceRunsOnlyWhenTimeoutDisabled(t *testing.T) {
-	search := &reforgeSearchState{
-		request:      &proto.ReforgeOptimizeRequest{Settings: &proto.ReforgeSettings{IncludeTimeout: true}},
-		relativeCaps: []reforgeRelativeStatCap{{}},
-	}
-	if shouldRunRelativeStatCapBalance(search) {
-		t.Fatalf("relative-cap balance should not run when timeout is enabled")
-	}
-
-	search.request.Settings.IncludeTimeout = false
-	if !shouldRunRelativeStatCapBalance(search) {
-		t.Fatalf("relative-cap balance should run when timeout is disabled")
 	}
 }

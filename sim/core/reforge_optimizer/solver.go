@@ -72,7 +72,7 @@ func trySolveWithHiGHS(search *reforgeSearchState) ([]reforgeChoice, float64, bo
 			passStartedAt = time.Now()
 			modelStartedAt = time.Now()
 		}
-		model := buildChoiceMIPModel(search, weights, statConstraints, relativeCaps, math.Inf(1))
+		model := buildChoiceMIPModel(search, weights, statConstraints, relativeCaps)
 		var modelDuration time.Duration
 		var solveStartedAt time.Time
 		if debug {
@@ -120,12 +120,6 @@ func trySolveWithHiGHS(search *reforgeSearchState) ([]reforgeChoice, float64, bo
 		}
 		if !updated {
 			score, ok := search.evaluate(delta)
-			if ok && shouldRunRelativeStatCapBalance(search) {
-				choices, delta, score = solveRelativeStatCapBalancedChoices(search, weights, statConstraints, relativeCaps, deadline, choices, delta, score)
-				if time.Now().Before(deadline) {
-					choices, delta, score = improveRelativeStatCapBalance(search, choices, delta, score)
-				}
-			}
 			return choices, score, ok, nil
 		}
 		weights = nextWeights
@@ -162,13 +156,15 @@ func highsOptimizerMIPRelGap(search *reforgeSearchState) float64 {
 	return 0
 }
 
-func shouldRunRelativeStatCapBalance(search *reforgeSearchState) bool {
-	return len(search.relativeCaps) > 0 && !search.request.GetSettings().GetIncludeTimeout()
-}
-
 func choicesFromMIPSolution(search *reforgeSearchState, model mipModel, solution mipSolution) ([]reforgeChoice, error) {
 	choices := make([]reforgeChoice, len(search.slots))
 	selected := make([]bool, len(search.slots))
+	for slotIdx, slot := range search.slots {
+		if len(slot.choices) > 0 {
+			choices[slotIdx] = slot.choices[0]
+			selected[slotIdx] = true
+		}
+	}
 	for varIdx, value := range solution.values {
 		if value < 0.5 {
 			continue
@@ -189,20 +185,21 @@ func choicesFromMIPSolution(search *reforgeSearchState, model mipModel, solution
 	return choices, nil
 }
 
-func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap, relativeBalanceLimit float64) mipModel {
+func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap) mipModel {
 	variableCount := countMIPChoiceVariables(search.slots)
 	uniqueGemIDs := uniqueGemLimitIDs(search)
 	model := mipModel{
 		variables:   make([]mipVariable, 0, variableCount),
-		constraints: make([]mipConstraint, 0, estimateMIPConstraintCount(search, statConstraints, relativeCaps, relativeBalanceLimit, len(uniqueGemIDs))),
+		constraints: make([]mipConstraint, 0, estimateMIPConstraintCount(search, statConstraints, relativeCaps, len(uniqueGemIDs))),
 	}
 	choiceVarIdx := make([][]int, len(search.slots))
-	choiceVarIdxValues := make([]int, variableCount)
-	choiceVarIdxOffset := 0
 	for slotIdx, slot := range search.slots {
-		choiceVarIdx[slotIdx] = choiceVarIdxValues[choiceVarIdxOffset : choiceVarIdxOffset+len(slot.choices)]
-		choiceVarIdxOffset += len(slot.choices)
+		choiceVarIdx[slotIdx] = make([]int, len(slot.choices))
 		for choiceIdx, choice := range slot.choices {
+			choiceVarIdx[slotIdx][choiceIdx] = -1
+			if !choiceMIPActive(choice) {
+				continue
+			}
 			choiceVarIdx[slotIdx][choiceIdx] = len(model.variables)
 			model.variables = append(model.variables, mipVariable{
 				slotIdx:   slotIdx,
@@ -215,11 +212,18 @@ func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, sta
 	}
 
 	for slotIdx := range search.slots {
-		constraint := newMIPConstraint(1, 1, len(search.slots[slotIdx].choices))
-		for choiceIdx := range search.slots[slotIdx].choices {
-			constraint.addCoefficient(choiceVarIdx[slotIdx][choiceIdx], 1)
+		if reforgeSlotChoicesAreSocketBonus(search.slots[slotIdx]) {
+			continue
 		}
-		model.constraints = append(model.constraints, constraint)
+		constraint := newMIPConstraint(math.Inf(-1), 1, len(search.slots[slotIdx].choices))
+		for choiceIdx := range search.slots[slotIdx].choices {
+			if choiceVarIdx[slotIdx][choiceIdx] >= 0 {
+				constraint.addCoefficient(choiceVarIdx[slotIdx][choiceIdx], 1)
+			}
+		}
+		if constraint.coefficientCount() > 0 {
+			model.constraints = append(model.constraints, constraint)
+		}
 	}
 	addSocketBonusLinkConstraints(search, choiceVarIdx, &model)
 
@@ -230,7 +234,6 @@ func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, sta
 		model.constraints = append(model.constraints, constraint)
 	}
 	addRelativeStatCapConstraints(search, choiceVarIdx, &model, relativeCaps)
-	addRelativeStatCapBalanceLimitConstraints(search, choiceVarIdx, &model, relativeCaps, relativeBalanceLimit)
 
 	for _, gemID := range uniqueGemIDs {
 		constraint := buildChoiceLimitConstraint(search, choiceVarIdx, func(choice reforgeChoice) float64 {
@@ -250,7 +253,10 @@ func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, sta
 		constraint := newMIPConstraint(statConstraint.lower, statConstraint.upper, 0)
 		for slotIdx, slot := range search.slots {
 			for choiceIdx, choice := range slot.choices {
-				if delta := getUnitStat(choice.delta, statConstraint.unitStat); delta != 0 {
+				if choiceVarIdx[slotIdx][choiceIdx] < 0 {
+					continue
+				}
+				if delta := getUnitStat(choiceCoefficientDelta(choice), statConstraint.unitStat); delta != 0 {
 					constraint.addCoefficient(choiceVarIdx[slotIdx][choiceIdx], delta)
 				}
 			}
@@ -266,21 +272,35 @@ func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, sta
 func countMIPChoiceVariables(slots []reforgeSlotChoices) int {
 	count := 0
 	for _, slot := range slots {
-		count += len(slot.choices)
-	}
-	return count
-}
-
-func estimateMIPConstraintCount(search *reforgeSearchState, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap, relativeBalanceLimit float64, uniqueGemLimitCount int) int {
-	count := len(search.slots) + countSocketBonusLinkConstraints(search) + len(statConstraints) + len(relativeCaps) + uniqueGemLimitCount
-	count += 2
-	if !math.IsInf(relativeBalanceLimit, 1) {
-		for _, relativeCap := range relativeCaps {
-			if relativeCap.adjustWeight {
+		for _, choice := range slot.choices {
+			if choiceMIPActive(choice) {
 				count++
 			}
 		}
 	}
+	return count
+}
+
+func choiceMIPActive(choice reforgeChoice) bool {
+	if choice.hasReforge {
+		return choice.reforgeID != 0
+	}
+	if choice.socketChoice {
+		return len(choice.gems) > 0 && choice.gems[0].gemID != 0
+	}
+	if choice.socketBonus {
+		return len(choice.bonusSocketIdxs) > 0
+	}
+	return false
+}
+
+func reforgeSlotChoicesAreSocketBonus(slot reforgeSlotChoices) bool {
+	return len(slot.choices) > 0 && slot.choices[0].socketBonus
+}
+
+func estimateMIPConstraintCount(search *reforgeSearchState, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap, uniqueGemLimitCount int) int {
+	count := len(search.slots) + countSocketBonusLinkConstraints(search) + len(statConstraints) + len(relativeCaps) + uniqueGemLimitCount
+	count += 2
 	return count
 }
 
@@ -346,227 +366,16 @@ func exactRelativeCapViolation(relativeCaps []reforgeRelativeStatCap, delta core
 	return reforgeRelativeStatCap{}, 0, false
 }
 
-type relativeStatCapBalanceScore struct {
-	maxSurplus float64
-	sumSurplus float64
-	score      float64
-}
-
-func solveRelativeStatCapBalancedChoices(search *reforgeSearchState, weights core.UnitStats, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap, deadline time.Time, choices []reforgeChoice, delta core.UnitStats, score float64) ([]reforgeChoice, core.UnitStats, float64) {
-	if len(relativeCaps) == 0 {
-		return choices, delta, score
-	}
-	bestChoices := choices
-	bestDelta := delta
-	bestScore := score
-	bestBalance, ok := relativeStatCapBalance(relativeCaps, delta, score)
-	if !ok {
-		return choices, delta, score
-	}
-	for _, balanceLimit := range []float64{0, 2, 5, 10, 20, 40, 80} {
-		if time.Now().After(deadline) {
-			return bestChoices, bestDelta, bestScore
-		}
-		model := buildChoiceMIPModel(search, weights, statConstraints, relativeCaps, balanceLimit)
-		solution, solved, err := solveMIPWithHiGHS(model, highsOptimizerPassTimeout(deadline), highsOptimizerMIPRelGap(search))
-		if err != nil || !solved {
-			continue
-		}
-		candidateChoices, err := choicesFromMIPSolution(search, model, solution)
-		if err != nil {
-			continue
-		}
-		candidateDelta, err := selectedChoicesCapDelta(search, candidateChoices)
-		if err != nil {
-			continue
-		}
-		if _, _, violated := exactRelativeCapViolation(relativeCaps, candidateDelta); violated {
-			continue
-		}
-		candidateScore, ok := search.evaluate(candidateDelta)
-		if !ok {
-			continue
-		}
-		candidateBalance, ok := relativeStatCapBalance(relativeCaps, candidateDelta, candidateScore)
-		if !ok || !relativeStatCapBalanceBetter(candidateBalance, bestBalance) {
-			continue
-		}
-		bestChoices = candidateChoices
-		bestDelta = candidateDelta
-		bestScore = candidateScore
-		bestBalance = candidateBalance
-		if reforgeDebug(search) {
-			log.Printf("[reforgeOptimize] balanced relative caps with limit=%.3f maxSurplus=%.3f sumSurplus=%.3f score=%.3f", balanceLimit, bestBalance.maxSurplus, bestBalance.sumSurplus, bestBalance.score)
-		}
-		break
-	}
-	return bestChoices, bestDelta, bestScore
-}
-
-func improveRelativeStatCapBalance(search *reforgeSearchState, choices []reforgeChoice, delta core.UnitStats, score float64) ([]reforgeChoice, core.UnitStats, float64) {
-	if len(search.relativeCaps) == 0 {
-		return choices, delta, score
-	}
-	currentBalance, ok := relativeStatCapBalance(search.relativeCaps, delta, score)
-	if !ok {
-		return choices, delta, score
-	}
-	for iteration := 0; iteration < 8; iteration++ {
-		bestChoices := choices
-		bestDelta := delta
-		bestScore := score
-		bestBalance := currentBalance
-		improved := false
-
-		for slotIdx, slot := range search.slots {
-			for _, choice := range slot.choices {
-				if sameChoice(choice, choices[slotIdx]) {
-					continue
-				}
-				approxDelta := approximateChoiceSwapDelta(delta, choices[slotIdx], choice)
-				if _, _, violated := exactRelativeCapViolation(search.relativeCaps, approxDelta); violated {
-					continue
-				}
-				approxScore, ok := search.evaluate(approxDelta)
-				if !ok {
-					continue
-				}
-				approxBalance, ok := relativeStatCapBalance(search.relativeCaps, approxDelta, approxScore)
-				if !ok || !relativeStatCapBalanceBetter(approxBalance, bestBalance) {
-					continue
-				}
-				candidateChoices := slices.Clone(choices)
-				candidateChoices[slotIdx] = choice
-				if !selectedChoicesValid(candidateChoices) {
-					continue
-				}
-				candidateDelta, err := selectedChoicesCapDelta(search, candidateChoices)
-				if err != nil {
-					continue
-				}
-				if _, _, violated := exactRelativeCapViolation(search.relativeCaps, candidateDelta); violated {
-					continue
-				}
-				candidateScore, ok := search.evaluate(candidateDelta)
-				if !ok {
-					continue
-				}
-				candidateBalance, ok := relativeStatCapBalance(search.relativeCaps, candidateDelta, candidateScore)
-				if !ok || !relativeStatCapBalanceBetter(candidateBalance, bestBalance) {
-					continue
-				}
-				bestChoices = candidateChoices
-				bestDelta = candidateDelta
-				bestScore = candidateScore
-				bestBalance = candidateBalance
-				improved = true
-			}
-		}
-
-		if !improved {
-			return choices, delta, score
-		}
-		choices = bestChoices
-		delta = bestDelta
-		score = bestScore
-		currentBalance = bestBalance
-		if reforgeDebug(search) {
-			log.Printf("[reforgeOptimize] balanced relative caps iteration=%d maxSurplus=%.3f sumSurplus=%.3f score=%.3f", iteration+1, currentBalance.maxSurplus, currentBalance.sumSurplus, currentBalance.score)
-		}
-	}
-	return choices, delta, score
-}
-
-func approximateChoiceSwapDelta(delta core.UnitStats, selected reforgeChoice, candidate reforgeChoice) core.UnitStats {
-	return addUnitStats(subtractUnitStats(delta, selected.delta), candidate.delta)
-}
-
-func relativeStatCapBalance(relativeCaps []reforgeRelativeStatCap, delta core.UnitStats, score float64) (relativeStatCapBalanceScore, bool) {
-	balance := relativeStatCapBalanceScore{score: score}
-	seen := false
-	for _, relativeCap := range relativeCaps {
-		if !relativeCap.adjustWeight {
-			continue
-		}
-		actualMinDelta := relativeCap.actualMinDelta
-		if actualMinDelta == 0 {
-			actualMinDelta = relativeCap.minDelta
-		}
-		value := getUnitStat(delta, relativeCap.forcedStat) - getUnitStat(delta, relativeCap.constrainedStat)
-		surplus := value - actualMinDelta
-		if surplus < -1e-6 {
-			return relativeStatCapBalanceScore{}, false
-		}
-		if surplus < 0 {
-			surplus = 0
-		}
-		balance.maxSurplus = math.Max(balance.maxSurplus, surplus)
-		balance.sumSurplus += surplus
-		seen = true
-	}
-	return balance, seen
-}
-
-func relativeStatCapBalanceBetter(candidate relativeStatCapBalanceScore, current relativeStatCapBalanceScore) bool {
-	if candidate.maxSurplus < current.maxSurplus-1e-6 {
-		return true
-	}
-	if candidate.maxSurplus > current.maxSurplus+1e-6 {
-		return false
-	}
-	if candidate.sumSurplus < current.sumSurplus-1e-6 {
-		return true
-	}
-	if candidate.sumSurplus > current.sumSurplus+1e-6 {
-		return false
-	}
-	return candidate.score > current.score+1e-6
-}
-
-func sameChoice(a reforgeChoice, b reforgeChoice) bool {
-	if a.slot != b.slot || a.hasReforge != b.hasReforge || a.reforgeID != b.reforgeID || a.socketChoice != b.socketChoice || a.socketIdx != b.socketIdx || a.socketBonus != b.socketBonus {
-		return false
-	}
-	if len(a.gems) != len(b.gems) {
-		return false
-	}
-	for idx := range a.gems {
-		if a.gems[idx] != b.gems[idx] {
-			return false
-		}
-	}
-	return true
-}
-
 func addRelativeStatCapConstraints(search *reforgeSearchState, choiceVarIdx [][]int, model *mipModel, relativeCaps []reforgeRelativeStatCap) {
 	for _, relativeCap := range relativeCaps {
 		constraint := newMIPConstraint(relativeCap.minDelta, math.Inf(1), 0)
 		for slotIdx, slot := range search.slots {
 			for choiceIdx, choice := range slot.choices {
-				coefficient := getUnitStat(choice.delta, relativeCap.forcedStat) - getUnitStat(choice.delta, relativeCap.constrainedStat)
-				if coefficient != 0 {
-					constraint.addCoefficient(choiceVarIdx[slotIdx][choiceIdx], coefficient)
+				if choiceVarIdx[slotIdx][choiceIdx] < 0 {
+					continue
 				}
-			}
-		}
-		if constraint.coefficientCount() > 0 {
-			model.constraints = append(model.constraints, constraint)
-		}
-	}
-}
-
-func addRelativeStatCapBalanceLimitConstraints(search *reforgeSearchState, choiceVarIdx [][]int, model *mipModel, relativeCaps []reforgeRelativeStatCap, balanceLimit float64) {
-	if math.IsInf(balanceLimit, 1) {
-		return
-	}
-	for _, relativeCap := range relativeCaps {
-		if !relativeCap.adjustWeight {
-			continue
-		}
-		constraint := newMIPConstraint(math.Inf(-1), relativeCap.minDelta+balanceLimit, 0)
-		for slotIdx, slot := range search.slots {
-			for choiceIdx, choice := range slot.choices {
-				coefficient := getUnitStat(choice.delta, relativeCap.forcedStat) - getUnitStat(choice.delta, relativeCap.constrainedStat)
+				coefficientDelta := choiceRelativeCapDelta(choice)
+				coefficient := getUnitStat(coefficientDelta, relativeCap.forcedStat) - getUnitStat(coefficientDelta, relativeCap.constrainedStat)
 				if coefficient != 0 {
 					constraint.addCoefficient(choiceVarIdx[slotIdx][choiceIdx], coefficient)
 				}
@@ -585,6 +394,17 @@ func choiceObjectiveDelta(choice reforgeChoice) core.UnitStats {
 	return choice.delta
 }
 
+func choiceCoefficientDelta(choice reforgeChoice) core.UnitStats {
+	if !isEmptyUnitStats(choice.delta) {
+		return choice.delta
+	}
+	return choiceObjectiveDelta(choice)
+}
+
+func choiceRelativeCapDelta(choice reforgeChoice) core.UnitStats {
+	return choiceObjectiveDelta(choice)
+}
+
 func addSocketBonusLinkConstraints(search *reforgeSearchState, choiceVarIdx [][]int, model *mipModel) {
 	for groupIdx, group := range search.slots {
 		for choiceIdx, choice := range group.choices {
@@ -592,12 +412,15 @@ func addSocketBonusLinkConstraints(search *reforgeSearchState, choiceVarIdx [][]
 				continue
 			}
 			bonusVarIdx := choiceVarIdx[groupIdx][choiceIdx]
+			if bonusVarIdx < 0 {
+				continue
+			}
 			for _, socketIdx := range choice.bonusSocketIdxs {
 				constraint := newMIPConstraint(math.Inf(-1), 0, 1)
 				constraint.addCoefficient(bonusVarIdx, 1)
 				for socketGroupIdx, socketGroup := range search.slots {
 					for socketChoiceIdx, socketChoice := range socketGroup.choices {
-						if socketChoice.slot == choice.slot && socketChoice.socketChoice && socketChoice.socketIdx == socketIdx && socketChoice.socketMatches {
+						if socketChoice.slot == choice.slot && socketChoice.socketChoice && socketChoice.socketIdx == socketIdx && socketChoice.socketMatches && choiceVarIdx[socketGroupIdx][socketChoiceIdx] >= 0 {
 							constraint.addCoefficient(choiceVarIdx[socketGroupIdx][socketChoiceIdx], -1)
 						}
 					}
@@ -757,6 +580,9 @@ func buildChoiceLimitConstraint(search *reforgeSearchState, choiceVarIdx [][]int
 	constraint := newMIPConstraint(math.Inf(-1), upper, 0)
 	for slotIdx, slot := range search.slots {
 		for choiceIdx, choice := range slot.choices {
+			if choiceVarIdx[slotIdx][choiceIdx] < 0 {
+				continue
+			}
 			if value := coefficient(choice); value != 0 {
 				constraint.addCoefficient(choiceVarIdx[slotIdx][choiceIdx], value)
 			}

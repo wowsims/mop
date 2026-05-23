@@ -378,17 +378,12 @@ message ReforgeSettings {
 message ReforgeOptimizeRequest {
 	string request_id = 1;
 	Raid raid = 2;
-
-	// Resolved from the current UI state before calling into Go. The raid player
-	// also contains this equipment, but keeping it here makes the optimizer
-	// contract explicit and lets Go mutate gear without relying on UI state.
-	EquipmentSpec baseline_gear = 3;
-	UnitStats pre_cap_ep_weights = 4;
-	UnitStats undershoot_caps = 5;
-	ReforgeSettings settings = 6;
-	repeated StatCapConfig soft_caps = 7;
-	repeated UIGem gem_options = 8;
-	bool debug = 9;
+	UnitStats pre_cap_ep_weights = 3;
+	UnitStats undershoot_caps = 4;
+	ReforgeSettings settings = 5;
+	repeated StatCapConfig soft_caps = 6;
+	repeated UIGem gem_options = 7;
+	bool debug = 8;
 }
 
 message ReforgeOptimizeResult {

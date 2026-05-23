@@ -33,7 +33,7 @@ func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResul
 		log.Printf("[reforgeOptimize:%d] failed after %s: missing player", requestID, time.Since(startedAt))
 		return optimizeError("Reforge optimizer requires a raid with player 0.")
 	}
-	if request.BaselineGear == nil {
+	if request.Raid.Parties[0].Players[0].Equipment == nil {
 		log.Printf("[reforgeOptimize:%d] failed after %s: missing baseline gear", requestID, time.Since(startedAt))
 		return optimizeError("Reforge optimizer requires baseline gear.")
 	}
@@ -96,7 +96,8 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 	request.Settings = normalizedConfig.settings
 	settings := normalizedConfig.settings
 	baseRaid := googleProto.Clone(request.Raid).(*proto.Raid)
-	baseGear := cloneEquipmentSpec(request.BaselineGear)
+	originalGear := cloneEquipmentSpec(baseRaid.Parties[0].Players[0].Equipment)
+	baseGear := cloneEquipmentSpec(originalGear)
 	clearReforges(baseGear, settings)
 	if settings.GetIncludeGems() {
 		clearGems(baseGear, settings)
@@ -131,6 +132,7 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 		settings:     settings,
 		player:       player,
 		baseRaid:     baseRaid,
+		originalGear: originalGear,
 		baseGear:     baseGear,
 		capBaseStats: capBaseStats,
 		weights:      weights,
@@ -158,7 +160,7 @@ func (optimization *reforgeOptimization) searchState() *reforgeSearchState {
 }
 
 func (optimization *reforgeOptimization) optimizedGear(choices []reforgeChoice) *proto.EquipmentSpec {
-	gearEditor := newReforgeGearEditor(optimization.baseGear, optimization.request.BaselineGear, optimization.player, optimization.settings)
+	gearEditor := newReforgeGearEditor(optimization.baseGear, optimization.originalGear, optimization.player, optimization.settings)
 	gearEditor.applyChoices(choices)
 	if optimization.settings.GetIncludeGems() {
 		gearEditor.minimizeRegems()

@@ -620,7 +620,6 @@ export class Sim {
 		const request = ReforgeOptimizeRequest.create({
 			requestId: generateRequestId(SimRequest.reforgeOptimize),
 			raid,
-			baselineGear: config.gear.asSpec(),
 			preCapEpWeights: config.preCapEPWeights.toProto(),
 			undershootCaps: config.undershootCaps.toProto(),
 			settings: config.settings,
@@ -633,7 +632,6 @@ export class Sim {
 			gemOptions,
 			debug: config.debug ?? false,
 		});
-
 		const result = await this.workerPool.reforgeOptimize(request);
 		if (result.error) {
 			throw new SimError(result.error.message);

@@ -20,7 +20,7 @@ func logRequestInput(requestID uint64, request *proto.ReforgeOptimizeRequest, no
 	log.Printf("[reforgeOptimize:%d]     includeGems=%t includeEotbGemSocket=%t", requestID, settings.GetIncludeGems(), settings.GetIncludeEotbGemSocket())
 	log.Printf("[reforgeOptimize:%d]     useSoftCapBreakpoints=%t freezeItemSlots=%t", requestID, settings.GetUseSoftCapBreakpoints(), settings.GetFreezeItemSlots())
 	log.Printf("[reforgeOptimize:%d]     frozenSlots=%s", requestID, formatItemSlots(settings.GetFrozenItemSlots()))
-	log.Printf("[reforgeOptimize:%d]   inputs gemOptions=%d baselineItems=%d softCaps=%d", requestID, len(request.GetGemOptions()), len(request.GetBaselineGear().GetItems()), len(softCaps))
+	log.Printf("[reforgeOptimize:%d]   inputs gemOptions=%d baselineItems=%d softCaps=%d", requestID, len(request.GetGemOptions()), baselineItemCount(request), len(softCaps))
 	log.Printf("[reforgeOptimize:%d]   caps", requestID)
 	logProtoUnitStats(requestID, "    hard", settings.GetStatCaps())
 	logProtoUnitStats(requestID, "    undershoot", request.GetUndershootCaps())
@@ -36,6 +36,13 @@ func logRequestInput(requestID uint64, request *proto.ReforgeOptimizeRequest, no
 		log.Printf("[reforgeOptimize:%d]         breakpoints=%s", requestID, formatFloat64Slice(softCap.GetBreakpoints()))
 		log.Printf("[reforgeOptimize:%d]         postCapEPs=%s", requestID, formatFloat64Slice(softCap.GetPostCap_EPs()))
 	}
+}
+
+func baselineItemCount(request *proto.ReforgeOptimizeRequest) int {
+	if request.GetRaid() == nil || len(request.GetRaid().GetParties()) == 0 || len(request.GetRaid().GetParties()[0].GetPlayers()) == 0 {
+		return 0
+	}
+	return len(request.GetRaid().GetParties()[0].GetPlayers()[0].GetEquipment().GetItems())
 }
 
 func logProtoUnitStats(requestID uint64, label string, unitStats *proto.UnitStats) {

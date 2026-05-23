@@ -33,10 +33,10 @@ jobs:
             - name: Install Protoc Go plugin
               run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
-            - name: Install native build tools
+            - name: Install archive tools
               run: |
                   sudo apt-get update
-                  sudo apt-get install -y g++ unzip zip
+                  sudo apt-get install -y zip
 
             - name: Install Node
               uses: actions/setup-node@v3
