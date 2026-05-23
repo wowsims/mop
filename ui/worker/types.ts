@@ -4,6 +4,7 @@
 export enum SimRequest {
 	computeStats = 'computeStats',
 	computeStatsJson = 'computeStatsJson',
+	reforgeOptimize = 'reforgeOptimize',
 	raidSim = 'raidSim',
 	raidSimJson = 'raidSimJson',
 	raidSimAsync = 'raidSimAsync',

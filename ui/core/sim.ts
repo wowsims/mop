@@ -19,16 +19,37 @@ import {
 	StatWeightsRequest,
 	StatWeightsResult,
 } from './proto/api.js';
-import { ArmorType, Faction, PseudoStat, RangedWeaponType, Spec, Stat, UnitReference, UnitReference_Type as UnitType, WeaponType } from './proto/common.js';
-import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
+import {
+	ArmorType,
+	Faction,
+	GemColor,
+	PseudoStat,
+	RangedWeaponType,
+	Spec,
+	Stat,
+	UnitReference,
+	UnitReference_Type as UnitType,
+	WeaponType,
+} from './proto/common.js';
+import {
+	DatabaseFilters,
+	RaidFilterOption,
+	ReforgeOptimizeRequest,
+	ReforgeOptimizeResult,
+	ReforgeSettings,
+	SimSettings as SimSettingsProto,
+	SourceFilterOption,
+} from './proto/ui.js';
+import { SimGem } from './proto/db.js';
 import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
+import { StatCap, Stats } from './proto_utils/stats.js';
 import { extendPlayerProtoWithMissingEffects, hasBlacksmithing } from './proto_utils/utils';
 import { Raid } from './raid.js';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
-import { getEnumValues, noop } from './utils.js';
+import { distinct, getEnumValues, noop } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import { makeBulkGearDatabase } from './wasm/bulk_sim';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
@@ -41,6 +62,15 @@ export type RaidSimData = {
 export type StatWeightsData = {
 	request: StatWeightsRequest;
 	result: StatWeightsResult;
+};
+
+export type ReforgeOptimizeConfig = {
+	gear: Gear;
+	preCapEPWeights: Stats;
+	undershootCaps: Stats;
+	settings: ReforgeSettings;
+	softCaps: StatCap[];
+	debug?: boolean;
 };
 
 interface SimProps {
@@ -541,6 +571,74 @@ export class Sim {
 		}
 
 		return result.raidStats!.parties[0].players[0];
+	}
+
+	async reforgeOptimize(config: ReforgeOptimizeConfig): Promise<ReforgeOptimizeResult> {
+		await this.waitForInit();
+		const gemOptions = config.settings.includeGems
+			? distinct(
+					[
+						GemColor.GemColorPrismatic,
+						GemColor.GemColorShaTouched,
+						GemColor.GemColorCogwheel,
+						GemColor.GemColorRed,
+						GemColor.GemColorBlue,
+						GemColor.GemColorYellow,
+					]
+						.flatMap(socketColor => this.db.getGems(socketColor))
+						.flat(),
+					(a, b) => a.id == b.id,
+				)
+			: [];
+
+		const raid = this.getModifiedRaidProto();
+		const player = raid.parties[0].players[0];
+		player.database = config.gear.toDatabase(this.db);
+		player.database.reforgeStats = distinct(
+			player.database.reforgeStats.concat(
+				config.gear.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])),
+			),
+			(a, b) => a.id == b.id,
+		);
+		player.database.gems = distinct(
+			player.database.gems.concat(
+				gemOptions.map(gem =>
+					SimGem.create({
+						id: gem.id,
+						name: gem.name,
+						color: gem.color,
+						stats: gem.stats.slice(),
+						disabledInChallengeMode: gem.disabledInChallengeMode,
+					}),
+				),
+			),
+			(a, b) => a.id == b.id,
+		);
+		player.equipment = config.gear.asSpec();
+		raid.parties[0].players[0] = player;
+
+		const request = ReforgeOptimizeRequest.create({
+			requestId: generateRequestId(SimRequest.reforgeOptimize),
+			raid,
+			baselineGear: config.gear.asSpec(),
+			preCapEpWeights: config.preCapEPWeights.toProto(),
+			undershootCaps: config.undershootCaps.toProto(),
+			settings: config.settings,
+			softCaps: config.softCaps.map(softCap => ({
+				unitStat: softCap.unitStat.toProto(),
+				breakpoints: softCap.breakpoints.slice(),
+				capType: softCap.capType,
+				postCapEPs: softCap.postCapEPs.slice(),
+			})),
+			gemOptions,
+			debug: config.debug ?? false,
+		});
+
+		const result = await this.workerPool.reforgeOptimize(request);
+		if (result.error) {
+			throw new SimError(result.error.message);
+		}
+		return result;
 	}
 
 	async statWeights(

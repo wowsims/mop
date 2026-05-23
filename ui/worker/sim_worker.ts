@@ -8,6 +8,11 @@ const unsupportedBulkSimAsync = () => {
 	return new Uint8Array();
 };
 
+const unsupportedReforgeOptimize = () => {
+	console.error('reforgeOptimize is only supported by the local HTTP worker.');
+	return new Uint8Array();
+};
+
 // Functions provided or used by the wasm lib.
 declare global {
 	function wasmready(): void;
@@ -31,6 +36,7 @@ globalThis.wasmready = function () {
 	new WorkerInterface({
 		computeStats: computeStats,
 		computeStatsJson: computeStatsJson,
+		reforgeOptimize: unsupportedReforgeOptimize,
 		raidSim: raidSim,
 		raidSimJson: raidSimJson,
 		raidSimAsync: raidSimAsync,

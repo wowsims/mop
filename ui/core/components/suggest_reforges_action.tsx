@@ -18,7 +18,7 @@ import { pseudoStatHasCap, pseudoStatIsCapped, StatCap, statHasCap, statIsCapped
 import { Sim } from '../sim';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
-import { isDevMode, sleep } from '../utils';
+import { distinct, isDevMode, sleep } from '../utils';
 import { CopyButton } from './copy_button';
 import { BooleanPicker } from './pickers/boolean_picker';
 import { EnumPicker } from './pickers/enum_picker';
@@ -1059,7 +1059,6 @@ export class ReforgeOptimizer {
 						});
 
 						const statPresets = this.statSelectionPresets?.find(entry => entry.unitStat.equals(unitStat))?.presets;
-
 						const presets = !!statPresets
 							? new EnumPicker(null, this.player, {
 									id: `reforge-optimizer-${statName}-presets`,
@@ -1315,6 +1314,14 @@ export class ReforgeOptimizer {
 			}
 		}
 
+		const localOptimizedGear = await this.optimizeReforgesLocally(previousGear, previousReforges, batchRun);
+		if (localOptimizedGear) {
+			if (cacheKey) {
+				await this.reforgeGearCache.set(cacheKey, this.getReforgeCacheGearLink(localOptimizedGear));
+			}
+			return localOptimizedGear;
+		}
+
 		// First, clear all existing Reforges
 		if (isDevMode()) {
 			console.log('Clearing existing Reforges...');
@@ -1386,6 +1393,31 @@ export class ReforgeOptimizer {
 		this.updateReforgeOptimizationState(previousGear, previousReforges, updatedGear, batchRun);
 
 		return updatedGear;
+	}
+
+	private async optimizeReforgesLocally(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, batchRun?: boolean): Promise<Gear | null> {
+		if (this.updateGearStatsModifier || (await this.sim.isWasm())) {
+			return null;
+		}
+
+		const settings = this.toProto();
+		settings.statCaps = this.processedStatCaps.toProto();
+
+		const result = await this.sim.reforgeOptimize({
+			gear: previousGear,
+			preCapEPWeights: this.preCapEPs,
+			undershootCaps: this.undershootCaps,
+			settings,
+			softCaps: this.softCapsConfigWithLimits,
+		});
+		if (!result.optimizedGear) {
+			throw new Error('Local Go reforge optimizer did not return optimized gear.');
+		}
+
+		const optimizedGear = this.sim.db.lookupEquipmentSpec(result.optimizedGear);
+		await this.updateGear(optimizedGear);
+		this.updateReforgeOptimizationState(previousGear, previousReforges, optimizedGear, batchRun);
+		return optimizedGear;
 	}
 
 	private updateReforgeOptimizationState(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, updatedGear: Gear, batchRun?: boolean) {

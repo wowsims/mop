@@ -1362,7 +1362,7 @@ export class BulkTab extends SimTab {
 	}
 
 	private debugOptimisationRound(message: string, data?: unknown) {
-		if (!isDevMode()) return;
+		// if (!isDevMode()) return;
 		console.debug(`[Bulk Sim Optimisation] ${message}`, data);
 	}
 
@@ -1650,14 +1650,14 @@ export class BulkTab extends SimTab {
 					additionalData: batchCompleteMetrics,
 				});
 			}
-			if (isDevMode()) {
+			// if (isDevMode()) {
 				console.info('[Bulk Sim] run complete', {
 					durationSeconds: Math.round(bulkSimDurationSeconds * 100) / 100,
 					combinations: this.combinations,
 					usedOptimisationRounds: this.shouldUseOptimisationRounds(this.combinations),
 					cancelled: wasCancelling,
 				});
-			}
+			// }
 			await this.simUI.player.setGearAsync(TypedEvent.nextEventID(), this.originalGear!);
 			this.bulkSimButton.disabled = false;
 			if (wasCancelling) {

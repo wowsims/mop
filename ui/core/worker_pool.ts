@@ -18,6 +18,7 @@ import {
 	StatWeightsRequest,
 	StatWeightsResult,
 } from './proto/api.js';
+import { ReforgeOptimizeRequest, ReforgeOptimizeResult } from './proto/ui.js';
 import { SimSignals } from './sim_signal_manager';
 import { isDevMode, noop } from './utils';
 import { WorkerPoolManager } from './concurrent_worker_pool';
@@ -67,6 +68,11 @@ export class WorkerPool {
 	async computeStats(request: ComputeStatsRequest): Promise<ComputeStatsResult> {
 		const result = await this.makeApiCall(SimRequest.computeStats, ComputeStatsRequest.toBinary(request));
 		return ComputeStatsResult.fromBinary(result);
+	}
+
+	async reforgeOptimize(request: ReforgeOptimizeRequest): Promise<ReforgeOptimizeResult> {
+		const result = await this.makeApiCall(SimRequest.reforgeOptimize, ReforgeOptimizeRequest.toBinary(request));
+		return ReforgeOptimizeResult.fromBinary(result);
 	}
 
 	private getProgressName(id: string) {

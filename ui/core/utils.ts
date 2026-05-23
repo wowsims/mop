@@ -394,6 +394,7 @@ export const getEnvironment = (): Environments => {
 export const isLocal = () => getEnvironment() === 'local';
 export const isExternal = () => getEnvironment() === 'external';
 export const isDevMode = () => {
+	return false
 	return import.meta.env.DEV;
 };
 export const normalizeName = (name: string): string => {

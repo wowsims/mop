@@ -49,6 +49,7 @@ export const setupHttpWorker = (baseURL: string) => {
 	new WorkerInterface({
 		computeStats: syncHandler,
 		computeStatsJson: syncHandler,
+		reforgeOptimize: syncHandler,
 		raidSim: syncHandler,
 		raidSimJson: syncHandler,
 		raidSimAsync: asyncHandler,

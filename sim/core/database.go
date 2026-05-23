@@ -554,6 +554,10 @@ func NewItem(itemSpec ItemSpec) Item {
 	return item
 }
 
+func ValidateReforging(item *Item, reforging ReforgeStat) bool {
+	return validateReforging(item, reforging)
+}
+
 func validateReforging(item *Item, reforging ReforgeStat) bool {
 	// Validate that the item can reforge these to stats
 	reforgeableStats := stats.Stats{}

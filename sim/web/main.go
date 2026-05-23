@@ -24,6 +24,7 @@ import (
 	"github.com/wowsims/mop/sim"
 	"github.com/wowsims/mop/sim/core"
 	proto "github.com/wowsims/mop/sim/core/proto"
+	reforgeoptimizer "github.com/wowsims/mop/sim/core/reforge_optimizer"
 	"github.com/wowsims/mop/sim/core/simsignals"
 
 	googleProto "google.golang.org/protobuf/proto"
@@ -105,6 +106,9 @@ var handlers = map[string]apiHandler{
 	}},
 	"/computeStats": {msg: func() googleProto.Message { return &proto.ComputeStatsRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
 		return core.ComputeStats(msg.(*proto.ComputeStatsRequest))
+	}},
+	"/reforgeOptimize": {msg: func() googleProto.Message { return &proto.ReforgeOptimizeRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
+		return reforgeoptimizer.Optimize(msg.(*proto.ReforgeOptimizeRequest))
 	}},
 	"/abortById": {msg: func() googleProto.Message { return &proto.AbortRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
 		requestId := msg.(*proto.AbortRequest).RequestId
