@@ -18,9 +18,11 @@ type BloodwormPet struct {
 func (bdk *BloodDeathKnight) NewBloodwormPet(_ int) *BloodwormPet {
 	bloodworm := &BloodwormPet{
 		Pet: core.NewPet(core.PetConfig{
-			Name:                            "Bloodworm",
-			Owner:                           &bdk.Character,
-			BaseStats:                       stats.Stats{},
+			Name:  "Bloodworm",
+			Owner: &bdk.Character,
+			BaseStats: stats.Stats{
+				stats.SpellCritPercent: 3.3400, // Assuming Paladin Class (logs show ~3% crit for Blood Burst)
+			},
 			NonHitExpStatInheritance:        bloodwormStatInheritance,
 			EnabledOnStart:                  false,
 			IsGuardian:                      true,
@@ -119,7 +121,14 @@ func (bloodworm *BloodwormPet) Initialize() {
 					continue
 				}
 
-				healSpell.CalcAndDealHealing(sim, target, baseHealing, healSpell.OutcomeHealingCrit)
+				// We register the heal as a spell on the Player so it shows up in the metrics
+				// however it should inherit the bloodworms crit chance.
+				outcome := healSpell.OutcomeHealing
+				if sim.RandomFloat("Bloodworm Crit Roll") < bloodworm.GetStat(stats.SpellCritPercent)/100 {
+					outcome = healSpell.OutcomeHealingAlwaysCrit
+				}
+
+				healSpell.CalcAndDealHealing(sim, target, baseHealing, outcome)
 			}
 
 			bloodworm.Pet.Disable(sim)

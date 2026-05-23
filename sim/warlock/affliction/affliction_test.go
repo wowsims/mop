@@ -62,6 +62,7 @@ func TestAffliction(t *testing.T) {
 			Glyphs: &proto.Glyphs{
 				Major1: int32(proto.WarlockMajorGlyph_GlyphOfSiphonLife),
 				Major2: int32(proto.WarlockMajorGlyph_GlyphOfUnstableAffliction),
+				Major3: int32(proto.WarlockMajorGlyph_GlyphOfEternalResolve),
 			},
 			Consumables:      fullConsumesSpec,
 			SpecOptions:      core.SpecOptionsCombo{Label: "Affliction Warlock", SpecOptions: defaultAfflictionWarlock},

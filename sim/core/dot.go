@@ -191,7 +191,7 @@ func (dot *Dot) OutstandingDmg() float64 {
 }
 
 func (dot *Dot) BaseDuration() time.Duration {
-	return time.Duration(float64(dot.BaseTickCount) * float64(dot.BaseTickLength) * dot.BaseDurationMultiplier)
+	return time.Duration(math.RoundToEven(float64(dot.BaseTickCount)*dot.BaseDurationMultiplier) * float64(dot.BaseTickLength))
 }
 
 // Adds a tick to the current active dot and extends it's duration

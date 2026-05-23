@@ -815,6 +815,15 @@
             "freeze_trinket": {
                 "label": "Geler un emplacement de bijou",
                 "tooltip": "Geler un bijou équipé pour réduire le nombre de combinaisons"
+			},
+			"freeze_weapon": {
+				"label": "Geler un emplacement d'arme",
+				"tooltip": "Geler l'arme équipée en main principale ou secondaire pour réduire le nombre de combinaisons"
+			},
+			"freeze_weapon_types": {
+				"mainhand_label": "Geler le type d'arme MH",
+				"offhand_label": "Geler le type d'arme OH",
+				"tooltip": "Laissez tout décoché pour autoriser n'importe quel type d'arme pour cet emplacement."
             }
         },
         "progress": {

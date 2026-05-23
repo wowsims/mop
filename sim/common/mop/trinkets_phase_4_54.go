@@ -243,7 +243,7 @@ func init() {
 			magicSpell = getTrinketSpell(character, magicSpellID, school)
 		case proto.Class_ClassMonk:
 			magicSpell = getTrinketSpell(character, 146075, core.SpellSchoolNature)
-		case proto.Class_ClassPriest:
+		case proto.Class_ClassPriest, proto.Class_ClassPaladin:
 			var magicSpellID int32
 			var school core.SpellSchool
 			if character.Spec == proto.Spec_SpecShadowPriest {
