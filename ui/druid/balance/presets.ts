@@ -47,12 +47,12 @@ export const P4_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Item Level >= 560 (WIP)',
 	Stats.fromMap({
 		[Stat.StatIntellect]: 1,
-		[Stat.StatSpirit]: 1.24 * 0.9,
-		[Stat.StatHitRating]: 1.18,
-		[Stat.StatCritRating]: 0.73,
-		[Stat.StatHasteRating]: 0.84 * 0.9,
-		[Stat.StatMasteryRating]: 0.67 * 0.9,
-		[Stat.StatSpellPower]: 0.73,
+		[Stat.StatSpirit]: 1.33,
+		[Stat.StatHitRating]: 1.27,
+		[Stat.StatCritRating]: 0.82,
+		[Stat.StatHasteRating]: 1.01,
+		[Stat.StatMasteryRating]: 0.81,
+		[Stat.StatSpellPower]: 0.74,
 	}),
 );
 

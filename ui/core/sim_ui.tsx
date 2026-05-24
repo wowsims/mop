@@ -77,6 +77,13 @@ export abstract class SimUI extends Component {
 			<>
 				<div className="sim-root">
 					<div className="sim-bg" />
+					<div className="notices-banner alert border-bottom mb-0 text-center within-raid-sim-hide">
+						⚠️ You are using the PTR version of the simulator. You can find the live version{' '}
+						<a href="https://www.wowsims.com/mop/" target="_blank">
+							here
+						</a>{' '}
+						⚠️
+					</div>
 					{config.noticeText ? (
 						<div className="notices-banner alert border-bottom mb-0 text-center within-raid-sim-hide">{config.noticeText}</div>
 					) : null}
@@ -177,7 +184,7 @@ export abstract class SimUI extends Component {
 		new SimTitleDropdown(titleElem, config.spec, { noDropdown: this.isWithinRaidSim });
 
 		this.simActionsContainer = this.rootElem.querySelector('.sim-sidebar-actions') as HTMLElement;
-		this.addNoticeForLocalSim();
+		// this.addNoticeForLocalSim();
 
 		this.iterationsPicker = new NumberPicker(this.simActionsContainer, this.sim, {
 			id: 'simui-iterations',

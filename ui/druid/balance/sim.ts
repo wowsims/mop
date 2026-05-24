@@ -8,11 +8,81 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
 import { Faction, ItemSlot, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
 import * as DruidInputs from '../inputs';
 import * as BalanceInputs from './inputs';
 import * as Presets from './presets';
+
+type EpAtPercent = (percent: number) => number;
+
+const masteryEpAtPercent = (exponent: number, targetPercent: number, startEp: number, endEp: number) => {
+	const t = Math.max(0, Math.min(1, (targetPercent - 30) / 170));
+	return endEp + (startEp - endEp) * (1 - Math.pow(t, exponent));
+};
+
+const masterySoftCapEpAtPercent = (masteryPercent: number) => masteryEpAtPercent(0.700341117, masteryPercent, 0.82, 0.43);
+
+const critEpAtPercent = (critPercent: number) => {
+	if (critPercent >= 100) return 0;
+
+	if (critPercent < 81.64)
+		return Math.max(
+			0.65,
+			1.24442763e-6 * critPercent * critPercent * critPercent - 0.000207423649 * critPercent * critPercent + 0.00722501562 * critPercent + 0.761687277,
+		);
+
+	const d = critPercent - 81.64;
+	return 0.65 - 0.00327772325 * d - 0.00115419889 * d * d + 2.24518052e-5 * d * d * d;
+};
+
+const critUVLSEpAtPercent = (critPercent: number) => {
+	if (critPercent >= 100) return 0;
+	if (critPercent < 88.78)
+		return 6.19142002e-7 * critPercent * critPercent * critPercent - 0.000107970309 * critPercent * critPercent + 0.00324236534 * critPercent + 0.658216265;
+	const d = critPercent - 88.78;
+	return 0.53 + 0.03323357 * d - 0.01160929 * d * d + 0.00067252 * d * d * d;
+};
+
+const findEpIntersection = (first: EpAtPercent, second: EpAtPercent, minPercent: number, maxPercent: number, step = 0.25): number | null => {
+	let previousPercent = minPercent;
+	let previousDifference = first(previousPercent) - second(previousPercent);
+
+	for (let currentPercent = minPercent + step; currentPercent <= maxPercent; currentPercent += step) {
+		const currentDifference = first(currentPercent) - second(currentPercent);
+
+		if (previousDifference === 0) {
+			return previousPercent;
+		}
+
+		if (previousDifference * currentDifference <= 0) {
+			let lower = previousPercent;
+			let upper = currentPercent;
+			let lowerDifference = previousDifference;
+
+			for (let i = 0; i < 50; i++) {
+				const mid = (lower + upper) / 2;
+				const midDifference = first(mid) - second(mid);
+
+				if (lowerDifference * midDifference <= 0) {
+					upper = mid;
+				} else {
+					lower = mid;
+					lowerDifference = midDifference;
+				}
+			}
+
+			return Math.round(((lower + upper) / 2) * 1000) / 1000;
+		}
+
+		previousPercent = currentPercent;
+		previousDifference = currentDifference;
+	}
+
+	return null;
+};
+
+const getMasteryCritEpIntersection = (critEpFormula: EpAtPercent) => findEpIntersection(masterySoftCapEpAtPercent, critEpFormula, 30, 100);
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	cssClass: 'balance-druid-sim-ui',
@@ -209,13 +279,19 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 			statSelectionPresets: [statSelectionHastePreset],
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
+				let epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 560) {
-					return Presets.P4_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P4_BIS_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 525) {
-					return Presets.P3_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
 				}
-				return Presets.P2_BIS_EP_PRESET.epWeights;
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+				return epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const gear = player.getGear();
@@ -242,7 +318,35 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 						softCapToModify.breakpoints = [33.333];
 					}
 				}
-				console.log(softCaps);
+
+				if (avgIlvl >= 560) {
+					const softCapToModify = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellCritPercent));
+					const critFormula = hasUVLS ? critUVLSEpAtPercent : critEpAtPercent;
+					const critMasteryIntersection = getMasteryCritEpIntersection(critFormula);
+					if (softCapToModify) {
+						if (!!critMasteryIntersection) {
+							softCapToModify.breakpoints = [critMasteryIntersection];
+							softCapToModify.postCapEPs = [critFormula(critMasteryIntersection) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT];
+						} else if (hasUVLS) {
+							softCapToModify.breakpoints = [48];
+							softCapToModify.postCapEPs = [critFormula(softCapToModify.breakpoints[0]) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT];
+						}
+					}
+
+					if (!!critMasteryIntersection) {
+						const masteryStat = UnitStat.fromStat(Stat.StatMasteryRating);
+						const masteryBreakpoint = masteryStat.convertPercentToRating(critMasteryIntersection)! / player.getMasteryPerPointModifier();
+						const masteryPostCapEp = masterySoftCapEpAtPercent(critMasteryIntersection) / player.getTotalAmplificationTrinketStatModifier();
+
+						const masterySoftCapConfig = StatCap.fromStat(Stat.StatMasteryRating, {
+							breakpoints: [masteryBreakpoint],
+							capType: StatCapType.TypeSoftCap,
+							postCapEPs: [masteryPostCapEp],
+						});
+
+						softCaps.push(masterySoftCapConfig);
+					}
+				}
 
 				return softCaps;
 			},

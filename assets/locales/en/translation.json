@@ -10,12 +10,12 @@
 			"full_raid": "Full Raid Sim"
 		},
 		"home": {
-			"title": "WoWSims - Mists of Pandaria",
+			"title": "WoWSims PTR - Mists of Pandaria",
 			"description": "A powerful simulation tool for World of Warcraft: Mists of Pandaria",
-			"welcomeDescription": "Welcome to WoWSims - Mists of Pandaria! This is a community-driven project to provide class and raid simulations for World of Warcraft® Mists of Pandaria Classic together with the leading theorycrafters and class representatives."
+			"welcomeDescription": "Welcome to WoWSims PTR - Mists of Pandaria! This is a community-driven project to provide class and raid simulations for World of Warcraft® Mists of Pandaria Classic together with the leading theorycrafters and class representatives."
 		},
 		"header": {
-			"wowsims": "WoWSims",
+			"wowsims": "WoWSims PTR",
 			"expansion": "Mists of Pandaria",
 			"supportDevs": "Support our devs"
 		}
@@ -2393,7 +2393,7 @@
 			}
 		},
 		"header": {
-			"title": "WoWSims - Mists of Pandaria",
+			"title": "WoWSims PTR - Mists of Pandaria",
 			"phase": "{{phase}} - {{status}}"
 		},
 		"results": {

@@ -1770,8 +1770,8 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 477909.65449
-  tps: 3.00950696092e+06
+  dps: 474064.57417
+  tps: 2.99523437227e+06
   dtps: 42871.46079
   hps: 64409.6389
  }
@@ -2614,163 +2614,165 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Insight-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Insight-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.25988367561e+06
-  tps: 1.575037107204e+07
-  dtps: 636505.69501
-  hps: 233904.53246
+  dps: 2.95806344489e+06
+  tps: 2.059898438153e+07
+  dtps: 468955.97025
+  hps: 378661.76562
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Insight-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Insight-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 222700.26771
-  tps: 1.54321321752e+06
-  dtps: 18146.62338
-  hps: 32376.68372
+  dps: 277581.03169
+  tps: 1.9194835356e+06
+  dtps: 14028.62106
+  hps: 39712.60653
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Insight-iron_juggernaut-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Insight-iron_juggernaut-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 249941.59199
-  tps: 1.66579456177e+06
-  dtps: 16596.851
-  hps: 36184.48426
+  dps: 326087.20413
+  tps: 2.1593013229e+06
+  dtps: 12769.83152
+  hps: 44383.11927
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Insight-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Insight-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.70823715309e+06
-  tps: 1.198779957161e+07
-  dtps: 866165.83533
-  hps: 158165.38935
+  dps: 2.23599274146e+06
+  tps: 1.568255739022e+07
+  dtps: 691348.79635
+  hps: 322693.98534
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Insight-iron_juggernaut-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Insight-iron_juggernaut-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 171965.69108
-  tps: 1.20509624755e+06
-  dtps: 30652.07275
-  hps: 26380.30678
+  dps: 215664.29356
+  tps: 1.51094014989e+06
+  dtps: 23403.88526
+  hps: 36210.55222
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Insight-iron_juggernaut-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Insight-iron_juggernaut-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 172128.21804
-  tps: 1.20621452629e+06
-  dtps: 26414.68078
-  hps: 25863.32137
+  dps: 220873.58763
+  tps: 1.54741983842e+06
+  dtps: 20446.63024
+  hps: 34259.69035
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Righteousness-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Righteousness-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.74673825888e+06
-  tps: 1.915891844507e+07
-  dtps: 660324.69937
-  hps: 879.89441
+  dps: 3.77152533841e+06
+  tps: 2.629211641475e+07
+  dtps: 505974.27148
+  hps: 94329.77363
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Righteousness-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Righteousness-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 219485.01923
-  tps: 1.52038121213e+06
-  dtps: 19862.38753
-  hps: 439.94721
+  dps: 274970.19926
+  tps: 1.90100737491e+06
+  dtps: 14944.39119
+  hps: 3995.54219
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Righteousness-iron_juggernaut-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Righteousness-iron_juggernaut-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 248056.04144
-  tps: 1.65124070273e+06
-  dtps: 14421.10707
+  dps: 327781.64039
+  tps: 2.17039625805e+06
+  dtps: 10097.15525
+  hps: 3332.70082
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Righteousness-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Righteousness-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.99257249467e+06
-  tps: 1.397658496267e+07
-  dtps: 898922.17994
-  hps: 777.38213
+  dps: 2.66375568254e+06
+  tps: 1.86760357778e+07
+  dtps: 724446.96347
+  hps: 130087.83159
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Righteousness-iron_juggernaut-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Righteousness-iron_juggernaut-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 168501.91145
-  tps: 1.18077738518e+06
-  dtps: 32992.29024
-  hps: 509.9552
+  dps: 211545.99128
+  tps: 1.48211290898e+06
+  dtps: 25572.03089
+  hps: 6970.96288
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Righteousness-iron_juggernaut-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Righteousness-iron_juggernaut-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 164726.2663
-  tps: 1.15435258911e+06
-  dtps: 28867.01577
-  hps: 606.3207
+  dps: 220669.3134
+  tps: 1.54601376877e+06
+  dtps: 20192.4225
+  hps: 5428.88378
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Truth-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Truth-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.24823890895e+06
-  tps: 1.566939149551e+07
-  dtps: 664465.35855
-  hps: 879.89441
+  dps: 2.96820271396e+06
+  tps: 2.067006204338e+07
+  dtps: 505949.39607
+  hps: 94145.01904
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Truth-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Truth-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 220887.02442
-  tps: 1.53019184345e+06
-  dtps: 19527.84096
-  hps: 439.94721
+  dps: 276414.00153
+  tps: 1.91111424075e+06
+  dtps: 14926.97514
+  hps: 4060.28726
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Truth-iron_juggernaut-FullBuffs-0.0yards-ShortSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Truth-iron_juggernaut-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 248583.64823
-  tps: 1.65493475029e+06
-  dtps: 14099.33112
+  dps: 330399.8394
+  tps: 2.18872365108e+06
+  dtps: 10082.74485
+  hps: 3304.40022
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Truth-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Truth-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.66941405683e+06
-  tps: 1.171447249783e+07
-  dtps: 899891.94234
-  hps: 777.38213
+  dps: 2.21033185754e+06
+  tps: 1.550206900275e+07
+  dtps: 724458.4209
+  hps: 130355.41972
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Truth-iron_juggernaut-NoBuffs-0.0yards-LongSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Truth-iron_juggernaut-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 170071.70742
-  tps: 1.19176751196e+06
-  dtps: 33028.04613
-  hps: 494.81748
+  dps: 211569.24625
+  tps: 1.48227569372e+06
+  dtps: 25536.28423
+  hps: 6988.66894
  }
 }
 dps_results: {
- key: "TestProtection-Settings-BloodElf-p4_balanced-Seal of Truth-iron_juggernaut-NoBuffs-0.0yards-ShortSingleTarget"
+ key: "TestProtection-Settings-BloodElf-p5_balanced-Seal of Truth-iron_juggernaut-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 167416.06567
-  tps: 1.1731844347e+06
-  dtps: 28063.34784
-  hps: 530.63209
+  dps: 218251.59047
+  tps: 1.52908970829e+06
+  dtps: 20169.20621
+  hps: 5569.59622
  }
 }
 dps_results: {

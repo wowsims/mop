@@ -2,6 +2,7 @@ package mop
 
 import (
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/wowsims/mop/sim/common/shared"
@@ -400,6 +401,15 @@ func init() {
 					AttachStatDependency(character.NewDynamicMultiplyStat(stats.Spirit, spiritValue)).
 					AttachMultiplicativePseudoStatBuff(&character.PseudoStats.CritDamageMultiplier, critDamageValue)
 
+				eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
+				character.ItemSwap.RegisterProcWithSlots(itemID, statAura, eligibleSlots)
+
+				// Prismatic Prison of Pride can only proc as a Healer
+				if config.baseTrinketLabel == "Prismatic Prison of Pride" &&
+					!slices.Contains([]proto.Spec{proto.Spec_SpecRestorationDruid, proto.Spec_SpecHolyPaladin, proto.Spec_SpecHolyPriest, proto.Spec_SpecDisciplinePriest, proto.Spec_SpecRestorationShaman, proto.Spec_SpecMistweaverMonk}, character.Spec) {
+					return
+				}
+
 				stats := stats.Stats{}
 				stats[config.buff.stat] = core.GetItemEffectScalingStatValue(itemID, 2.97300004959, state)
 
@@ -424,10 +434,8 @@ func init() {
 
 				aura.Icd = triggerAura.Icd
 
-				eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
 				character.AddStatProcBuff(itemID, aura, false, eligibleSlots)
 				character.ItemSwap.RegisterProcWithSlots(itemID, triggerAura, eligibleSlots)
-				character.ItemSwap.RegisterProcWithSlots(itemID, statAura, eligibleSlots)
 			})
 		})
 	}

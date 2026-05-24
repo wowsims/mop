@@ -1148,3 +1148,33 @@ const (
 	CHALLENGE_MODE
 	NORMAL_RAID_40_MAN
 )
+
+type Race int
+
+// Define each race as a bit flag
+// Table: ChrRaces
+const (
+	Human     Race = 1 << 0  // 1
+	Orc       Race = 1 << 1  // 2
+	Dwarf     Race = 1 << 2  // 4
+	NightElf  Race = 1 << 3  // 8
+	Undead    Race = 1 << 4  // 16
+	Tauren    Race = 1 << 5  // 32
+	Gnome     Race = 1 << 6  // 64
+	Troll     Race = 1 << 7  // 128
+	Goblin    Race = 1 << 8  // 256
+	BloodElf  Race = 1 << 9  // 512
+	Draenei   Race = 1 << 10 // 1024
+	Worgen    Race = 1 << 21 // 2097152
+	PandarenN Race = 1 << 23 // 8388608
+	PandarenA Race = 1 << 24 // 16777216
+	PandarenH Race = 1 << 25 // 33554432
+
+	AlliedRaces Race = Human | Dwarf | NightElf | Gnome | Draenei | Worgen | PandarenA
+	HordeRaces  Race = Undead | Orc | Tauren | Troll | Goblin | BloodElf | PandarenH
+)
+
+// Returns whether there is any overlap between the given masks.
+func (race Race) Matches(other Race) bool {
+	return (race & other) != 0
+}

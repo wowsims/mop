@@ -31,7 +31,7 @@ func TestProtectionWarrior(t *testing.T) {
 			OtherRaces:       []proto.Race{proto.Race_RaceHuman},
 			StartingDistance: 15,
 
-			GearSet:       core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p4_bis"),
+			GearSet:       core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p5_bis"),
 			OtherGearSets: []core.GearSetCombo{
 				// core.GetGearSet("../../../ui/warrior/protection/gear_sets", "p2_bis"),
 			},

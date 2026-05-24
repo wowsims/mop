@@ -2,7 +2,7 @@ name: Build and Deploy
 on:
     push:
         branches:
-            - master
+            - ptr
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
                       git commit -m "Auto-update .deployedprotoversion file due to API version increase"
                       git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
                       git push --set-upstream origin github-actions
-                      gh pr create --fill
+                      gh pr create --fill --base ptr
                       gh pr merge --merge --delete-branch
                   fi
               env:
@@ -67,12 +67,16 @@ jobs:
               run: |
                   make test
 
+            - name: Write robots.txt for PTR
+              run: |
+                  printf "User-agent: *\nDisallow: /" >> dist/mop/robots.txt
+
             - name: Deploy 🚀
               uses: JamesIves/github-pages-deploy-action@v4
               with:
-                  repository-name: wowsims/pages-deploy
+                  repository-name: wowsims/ptr-deploy
                   branch: main
                   folder: dist/mop
                   target-folder: mop
                   single-commit: true
-                  token: ${{ secrets.DEPLOY_REPO_TOKEN }}
+                  token: ${{ secrets.DEPLOY_PTR_REPO_TOKEN }}
