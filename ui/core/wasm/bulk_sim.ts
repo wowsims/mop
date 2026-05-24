@@ -284,76 +284,76 @@ const optimizeReforgeCandidates = async (
 	}
 
 	const startedAt = new Date().getTime();
-	console.log(`[Bulk Sim] Reforge optimization started candidates=${candidates.length} concurrency=1 wasm=true`);
+	const concurrency = Math.max(1, Math.min(workerPool.getNumWorkers(), candidates.length));
+	console.log(`[Bulk Sim] Reforge optimization started candidates=${candidates.length} concurrency=${concurrency} wasm=true`);
 	emitBulkSimStageProgress(onProgress, BulkSimStage.BulkSimStageReforge, 0, candidates.length, 0, candidates.length, 0);
 
 	const optimizedGearByKey = new Map<string, EquipmentSpec | null>();
+	const inFlightOptimizedGearByKey = new Map<string, Promise<EquipmentSpec | null>>();
 	const seenGearKeys = new Set<string>();
+	const completedOptimizedCandidatesByPosition: Array<BulkGearCandidate | undefined> = [];
 	const baselineGear = request.baseRequest.raid.parties[0]?.players[0]?.equipment;
 	if (baselineGear) {
 		seenGearKeys.add(reforgeGearKey(baselineGear));
 	}
 
 	let completedCandidates = 0;
-	for (const candidate of candidates) {
-		if (signals.abort.isTriggered()) {
-			return {
-				request: BulkSimRequest.create({
-					...request,
-					candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates),
-					optimizedCandidates: optimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate)),
-					reforgeRequest: undefined,
-				}),
-				aborted: true,
-			};
-		}
+	let nextCandidatePosition = 0;
+	const completedOptimizedCandidates = () => completedOptimizedCandidatesByPosition.filter((candidate): candidate is BulkGearCandidate => !!candidate);
+	const buildReforgeRequest = (aborted: boolean) => {
+		const partialOptimizedCandidates = dedupeBulkSimReforgeCandidates(request, [...optimizedCandidates, ...completedOptimizedCandidates()]);
+		return BulkSimRequest.create({
+			...request,
+			candidates: partialOptimizedCandidates,
+			optimizedCandidates: aborted ? partialOptimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate)) : [],
+			reforgeRequest: undefined,
+		});
+	};
+	const optimizeWorker = async () => {
+		while (!signals.abort.isTriggered()) {
+			const position = nextCandidatePosition++;
+			if (position >= candidates.length) return;
 
-		const includeGems = reforgeRequest.settings?.includeGems ?? false;
-		let optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear!, includeGems, optimizedGearByKey, workerPool, signals);
-		if (!optimizedGear && !signals.abort.isTriggered() && includeGems) {
-			optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear!, false, optimizedGearByKey, workerPool, signals);
-		}
-		const optimizedSuccessfully = !!optimizedGear;
-		if (!optimizedGear) {
-			if (signals.abort.isTriggered()) {
-				return {
-					request: BulkSimRequest.create({
-						...request,
-						candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates),
-						optimizedCandidates: optimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate)),
-						reforgeRequest: undefined,
-					}),
-					aborted: true,
-				};
+			const candidate = candidates[position];
+			if (!candidate?.gear) continue;
+
+			const includeGems = reforgeRequest.settings?.includeGems ?? false;
+			let optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear, includeGems, optimizedGearByKey, inFlightOptimizedGearByKey, workerPool, signals);
+			if (!optimizedGear && !signals.abort.isTriggered() && includeGems) {
+				optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear, false, optimizedGearByKey, inFlightOptimizedGearByKey, workerPool, signals);
 			}
-			console.warn(`[Bulk Sim] Reforge optimization failed for candidate ${candidate.index}; using original gear`);
-			optimizedGear = candidate.gear!;
-		}
+			const optimizedSuccessfully = !!optimizedGear;
+			if (!optimizedGear) {
+				if (signals.abort.isTriggered()) return;
+				console.warn(`[Bulk Sim] Reforge optimization failed for candidate ${candidate.index}; using original gear`);
+				optimizedGear = candidate.gear;
+			}
 
-		const gearKey = reforgeGearKey(optimizedGear);
-		if (!seenGearKeys.has(gearKey)) {
-			seenGearKeys.add(gearKey);
-			optimizedCandidates.push(BulkGearCandidate.create({ index: candidate.index, gear: optimizedGear }));
-		}
-		if (optimizedSuccessfully) {
-			await onReforgeCandidateOptimized?.(candidate, optimizedGear);
-		}
+			const gearKey = reforgeGearKey(optimizedGear);
+			if (!seenGearKeys.has(gearKey)) {
+				seenGearKeys.add(gearKey);
+				completedOptimizedCandidatesByPosition[position] = BulkGearCandidate.create({ index: candidate.index, gear: optimizedGear });
+			}
+			if (optimizedSuccessfully) {
+				await onReforgeCandidateOptimized?.(candidate, optimizedGear);
+			}
 
-		completedCandidates++;
-		emitBulkSimStageProgress(onProgress, BulkSimStage.BulkSimStageReforge, completedCandidates, candidates.length, completedCandidates, candidates.length, 0);
+			completedCandidates++;
+			emitBulkSimStageProgress(onProgress, BulkSimStage.BulkSimStageReforge, completedCandidates, candidates.length, completedCandidates, candidates.length, 0);
+		}
+	};
+
+	await Promise.all(Array.from({ length: concurrency }, () => optimizeWorker()));
+	if (signals.abort.isTriggered()) {
+		return { request: buildReforgeRequest(true), aborted: true };
 	}
 
 	console.log(
-		`[Bulk Sim] Reforge optimization completed candidates=${completedCandidates} outputCandidates=${optimizedCandidates.length} total=${formatBulkSimReforgeDuration(startedAt)}`,
+		`[Bulk Sim] Reforge optimization completed candidates=${completedCandidates} outputCandidates=${optimizedCandidates.length + completedOptimizedCandidates().length} total=${formatBulkSimReforgeDuration(startedAt)}`,
 	);
 
 	return {
-		request: BulkSimRequest.create({
-			...request,
-			candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates),
-			optimizedCandidates: [],
-			reforgeRequest: undefined,
-		}),
+		request: buildReforgeRequest(false),
 		aborted: false,
 	};
 };
@@ -384,6 +384,7 @@ const optimizeReforgeCandidate = async (
 	gear: EquipmentSpec,
 	includeGems: boolean,
 	optimizedGearByKey: Map<string, EquipmentSpec | null>,
+	inFlightOptimizedGearByKey: Map<string, Promise<EquipmentSpec | null>>,
 	workerPool: WorkerPool,
 	signals: SimSignals,
 ): Promise<EquipmentSpec | null> => {
@@ -392,6 +393,11 @@ const optimizeReforgeCandidate = async (
 		const cachedGear = optimizedGearByKey.get(cacheKey);
 		return cachedGear ? EquipmentSpec.clone(cachedGear) : null;
 	}
+	const inFlightGear = inFlightOptimizedGearByKey.get(cacheKey);
+	if (inFlightGear) {
+		const optimizedGear = await inFlightGear;
+		return optimizedGear ? EquipmentSpec.clone(optimizedGear) : null;
+	}
 
 	const baseRaid = request.baseRequest?.raid;
 	if (!baseRaid) {
@@ -399,9 +405,15 @@ const optimizeReforgeCandidate = async (
 		return null;
 	}
 
-	const optimizedGear = await optimizeReforgeGear(baseRaid, templateRequest, gear, includeGems, workerPool, signals, ReforgeOptimizeMode.ReforgeOptimizeModeBulk);
-	optimizedGearByKey.set(cacheKey, optimizedGear ? EquipmentSpec.clone(optimizedGear) : null);
-	return optimizedGear;
+	const optimizePromise = optimizeReforgeGear(baseRaid, templateRequest, gear, includeGems, workerPool, signals, ReforgeOptimizeMode.ReforgeOptimizeModeBulk);
+	inFlightOptimizedGearByKey.set(cacheKey, optimizePromise);
+	try {
+		const optimizedGear = await optimizePromise;
+		optimizedGearByKey.set(cacheKey, optimizedGear ? EquipmentSpec.clone(optimizedGear) : null);
+		return optimizedGear ? EquipmentSpec.clone(optimizedGear) : null;
+	} finally {
+		inFlightOptimizedGearByKey.delete(cacheKey);
+	}
 };
 
 const formatBulkSimReforgeDuration = (startedAt: number): string => {
