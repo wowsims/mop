@@ -11,6 +11,8 @@ import {
 	ErrorOutcomeType,
 	ProgressMetrics,
 	RaidSimRequest,
+	ReforgeOptimizeMode,
+	ReforgeOptimizeRequest,
 } from '../proto/api';
 import { EquipmentSpec, ItemRandomSuffix, ReforgeStat } from '../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../proto/db';
@@ -20,6 +22,7 @@ import { Gear } from '../proto_utils/gear';
 import { SimSignals } from '../sim_signal_manager';
 import { isDevMode, noop } from '../utils';
 import { WorkerPool, WorkerProgressCallback } from '../worker_pool';
+import { optimizeReforgeGear, reforgeGearKey } from './reforge_optimizer';
 import { runConcurrentSim } from './sim';
 
 const BULK_SIM_DEFAULT_TOP_RESULTS = 5;
@@ -138,8 +141,9 @@ const bulkSimStageConfigs: ConcurrentBulkSimStageConfig[] = [
 	},
 ];
 
-const makeAndSendBulkSimError = (err: string | ErrorOutcome, onProgress: WorkerProgressCallback): BulkSimResult => {
+const makeAndSendBulkSimError = (err: string | ErrorOutcome, onProgress: WorkerProgressCallback, optimizedCandidates: BulkGearCandidate[] = []): BulkSimResult => {
 	const errRes = BulkSimResult.create();
+	errRes.optimizedCandidates = optimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate));
 	if (typeof err === 'string') {
 		console.error(err);
 		errRes.error = ErrorOutcome.create({ message: err });
@@ -256,6 +260,152 @@ const emitBulkSimStageProgress = (
 			dps,
 		}),
 	);
+};
+
+const optimizeReforgeCandidates = async (
+	request: BulkSimRequest,
+	workerPool: WorkerPool,
+	onProgress: WorkerProgressCallback,
+	signals: SimSignals,
+	onReforgeCandidateOptimized?: (candidate: BulkGearCandidate, optimizedGear: EquipmentSpec) => void | Promise<void>,
+): Promise<{ request: BulkSimRequest; aborted: boolean }> => {
+	const reforgeRequest = request.reforgeRequest;
+	if (!reforgeRequest || !request.baseRequest?.raid) {
+		return { request, aborted: false };
+	}
+
+	const candidates = request.candidates.filter(candidate => candidate.gear);
+	const optimizedCandidates: BulkGearCandidate[] = request.optimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate));
+	if (!candidates.length) {
+		return {
+			request: BulkSimRequest.create({ ...request, candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates), optimizedCandidates: [], reforgeRequest: undefined }),
+			aborted: false,
+		};
+	}
+
+	const startedAt = new Date().getTime();
+	console.log(`[Bulk Sim] Reforge optimization started candidates=${candidates.length} concurrency=1 wasm=true`);
+	emitBulkSimStageProgress(onProgress, BulkSimStage.BulkSimStageReforge, 0, candidates.length, 0, candidates.length, 0);
+
+	const optimizedGearByKey = new Map<string, EquipmentSpec | null>();
+	const seenGearKeys = new Set<string>();
+	const baselineGear = request.baseRequest.raid.parties[0]?.players[0]?.equipment;
+	if (baselineGear) {
+		seenGearKeys.add(reforgeGearKey(baselineGear));
+	}
+
+	let completedCandidates = 0;
+	for (const candidate of candidates) {
+		if (signals.abort.isTriggered()) {
+			return {
+				request: BulkSimRequest.create({
+					...request,
+					candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates),
+					optimizedCandidates: optimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate)),
+					reforgeRequest: undefined,
+				}),
+				aborted: true,
+			};
+		}
+
+		const includeGems = reforgeRequest.settings?.includeGems ?? false;
+		let optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear!, includeGems, optimizedGearByKey, workerPool, signals);
+		if (!optimizedGear && !signals.abort.isTriggered() && includeGems) {
+			optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear!, false, optimizedGearByKey, workerPool, signals);
+		}
+		const optimizedSuccessfully = !!optimizedGear;
+		if (!optimizedGear) {
+			if (signals.abort.isTriggered()) {
+				return {
+					request: BulkSimRequest.create({
+						...request,
+						candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates),
+						optimizedCandidates: optimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate)),
+						reforgeRequest: undefined,
+					}),
+					aborted: true,
+				};
+			}
+			console.warn(`[Bulk Sim] Reforge optimization failed for candidate ${candidate.index}; using original gear`);
+			optimizedGear = candidate.gear!;
+		}
+
+		const gearKey = reforgeGearKey(optimizedGear);
+		if (!seenGearKeys.has(gearKey)) {
+			seenGearKeys.add(gearKey);
+			optimizedCandidates.push(BulkGearCandidate.create({ index: candidate.index, gear: optimizedGear }));
+		}
+		if (optimizedSuccessfully) {
+			await onReforgeCandidateOptimized?.(candidate, optimizedGear);
+		}
+
+		completedCandidates++;
+		emitBulkSimStageProgress(onProgress, BulkSimStage.BulkSimStageReforge, completedCandidates, candidates.length, completedCandidates, candidates.length, 0);
+	}
+
+	console.log(
+		`[Bulk Sim] Reforge optimization completed candidates=${completedCandidates} outputCandidates=${optimizedCandidates.length} total=${formatBulkSimReforgeDuration(startedAt)}`,
+	);
+
+	return {
+		request: BulkSimRequest.create({
+			...request,
+			candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates),
+			optimizedCandidates: [],
+			reforgeRequest: undefined,
+		}),
+		aborted: false,
+	};
+};
+
+const dedupeBulkSimReforgeCandidates = (request: BulkSimRequest, candidates: BulkGearCandidate[]): BulkGearCandidate[] => {
+	const seenGearKeys = new Set<string>();
+	const baselineGear = request.baseRequest?.raid?.parties[0]?.players[0]?.equipment;
+	if (baselineGear) {
+		seenGearKeys.add(reforgeGearKey(baselineGear));
+	}
+
+	const deduped: BulkGearCandidate[] = [];
+	for (const candidate of candidates) {
+		if (!candidate.gear) continue;
+
+		const gearKey = reforgeGearKey(candidate.gear);
+		if (seenGearKeys.has(gearKey)) continue;
+
+		seenGearKeys.add(gearKey);
+		deduped.push(BulkGearCandidate.clone(candidate));
+	}
+	return deduped;
+};
+
+const optimizeReforgeCandidate = async (
+	request: BulkSimRequest,
+	templateRequest: ReforgeOptimizeRequest,
+	gear: EquipmentSpec,
+	includeGems: boolean,
+	optimizedGearByKey: Map<string, EquipmentSpec | null>,
+	workerPool: WorkerPool,
+	signals: SimSignals,
+): Promise<EquipmentSpec | null> => {
+	const cacheKey = `${reforgeGearKey(gear)}:${includeGems ? 1 : 0}`;
+	if (optimizedGearByKey.has(cacheKey)) {
+		const cachedGear = optimizedGearByKey.get(cacheKey);
+		return cachedGear ? EquipmentSpec.clone(cachedGear) : null;
+	}
+
+	const baseRaid = request.baseRequest?.raid;
+	if (!baseRaid) {
+		optimizedGearByKey.set(cacheKey, null);
+		return null;
+	}
+
+	const optimizedGear = await optimizeReforgeGear(baseRaid, templateRequest, gear, includeGems, workerPool, signals, ReforgeOptimizeMode.ReforgeOptimizeModeBulk);
+	optimizedGearByKey.set(cacheKey, optimizedGear ? EquipmentSpec.clone(optimizedGear) : null);
+	return optimizedGear;
+};
+
+const formatBulkSimReforgeDuration = (startedAt: number): string => {
+	return `${((new Date().getTime() - startedAt) / 1000).toFixed(2)}s`;
 };
 
 const cleanBulkSimDpsMetrics = (metrics: DistributionMetrics | undefined): DistributionMetrics | undefined => {
@@ -801,6 +951,7 @@ export const runConcurrentBulkSim = async (
 	workerPool: WorkerPool,
 	onProgress: WorkerProgressCallback,
 	signals: SimSignals,
+	onReforgeCandidateOptimized?: (candidate: BulkGearCandidate, optimizedGear: EquipmentSpec) => void | Promise<void>,
 ): Promise<BulkSimResult> => {
 	if (isDevMode()) {
 		console.log(`Running bulk sim using ${workerPool.getNumWorkers()} wasm workers per gear sim.`);
@@ -810,6 +961,13 @@ export const runConcurrentBulkSim = async (
 	if (validationError) return makeAndSendBulkSimError(validationError, onProgress);
 
 	const startedAt = new Date().getTime();
+	if (request.reforgeRequest) {
+		const reforgeResult = await optimizeReforgeCandidates(request, workerPool, onProgress, signals, onReforgeCandidateOptimized);
+		request = reforgeResult.request;
+		if (reforgeResult.aborted) {
+			return makeAndSendBulkSimError(ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }), onProgress, request.optimizedCandidates);
+		}
+	}
 	const simmingStartedAt = new Date().getTime();
 	let candidates = request.candidates
 		.filter(candidate => candidate.gear)
@@ -829,7 +987,7 @@ export const runConcurrentBulkSim = async (
 
 		result.baseline = bulkSimCandidateResultToProto(baseline);
 		result.timings!.totalSeconds = (new Date().getTime() - startedAt) / 1000;
-		result.timings!.simmingSeconds = result.timings!.totalSeconds;
+		result.timings!.simmingSeconds = (new Date().getTime() - simmingStartedAt) / 1000;
 		onProgress(ProgressMetrics.create({ bulkStage: BulkSimStage.BulkSimStageComplete, finalBulkSimResult: result }));
 		return result;
 	}

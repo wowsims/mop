@@ -124,7 +124,7 @@ var asyncAPIHandlers = map[string]asyncAPIHandler{
 	"/bulkSimAsync": {msg: func() googleProto.Message { return &proto.BulkSimRequest{} }, handle: func(msg googleProto.Message, reporter chan *proto.ProgressMetrics, requestId string) {
 		BulkSimAsync(msg.(*proto.BulkSimRequest), reporter, requestId)
 	}},
-	"/reforgeOptimize": {msg: func() googleProto.Message { return &proto.ReforgeOptimizeRequest{} }, handle: func(msg googleProto.Message, reporter chan *proto.ProgressMetrics, requestId string) {
+	"/reforgeOptimizeAsync": {msg: func() googleProto.Message { return &proto.ReforgeOptimizeRequest{} }, handle: func(msg googleProto.Message, reporter chan *proto.ProgressMetrics, requestId string) {
 		ReforgeOptimizeAsync(msg.(*proto.ReforgeOptimizeRequest), reporter, requestId)
 	}},
 }
@@ -201,8 +201,11 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 
 	msg := handler.msg()
 	if err := googleProto.Unmarshal(body, msg); err != nil {
-		log.Printf("Failed to parse %s request: %s (%s)", endpoint, err.Error(), protoParsePreview(body))
-		w.WriteHeader(http.StatusInternalServerError)
+		message := fmt.Sprintf("Failed to parse %s request: %s (%s)", endpoint, err.Error(), protoParsePreview(body))
+		log.Print(message)
+		simProgress := s.addNewSim()
+		simProgress.latestProgress.Store(asyncAPIParseErrorProgress(endpoint, message))
+		s.writeAsyncAPIResult(w, simProgress.id)
 		return
 	}
 
@@ -238,10 +241,11 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	protoResult := &proto.AsyncAPIResult{
-		ProgressId: simProgress.id,
-	}
+	s.writeAsyncAPIResult(w, simProgress.id)
+}
 
+func (s *server) writeAsyncAPIResult(w http.ResponseWriter, progressId string) {
+	protoResult := &proto.AsyncAPIResult{ProgressId: progressId}
 	outbytes, err := googleProto.Marshal(protoResult)
 	if err != nil {
 		log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
@@ -251,6 +255,22 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "application/x-protobuf")
 	w.Write(outbytes)
+}
+
+func asyncAPIParseErrorProgress(endpoint string, message string) *proto.ProgressMetrics {
+	errorOutcome := &proto.ErrorOutcome{Message: message}
+	switch endpoint {
+	case "/raidSimAsync":
+		return &proto.ProgressMetrics{FinalRaidResult: &proto.RaidSimResult{Error: errorOutcome}}
+	case "/statWeightsAsync":
+		return &proto.ProgressMetrics{FinalWeightResult: &proto.StatWeightsResult{Error: errorOutcome}}
+	case "/bulkSimAsync":
+		return &proto.ProgressMetrics{FinalBulkSimResult: &proto.BulkSimResult{Error: errorOutcome}}
+	case "/reforgeOptimizeAsync":
+		return &proto.ProgressMetrics{FinalReforgeResult: &proto.ReforgeOptimizeResult{Error: errorOutcome}}
+	default:
+		return &proto.ProgressMetrics{FinalRaidResult: &proto.RaidSimResult{Error: errorOutcome}}
+	}
 }
 
 func (s *server) setupAsyncServer() {

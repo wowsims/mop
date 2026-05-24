@@ -1,21 +1,25 @@
 import { openDB, IDBPDatabase } from 'idb';
 
-import { LOCAL_STORAGE_PREFIX } from './constants/other';
+import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
+import { SimSettingCategories } from './constants/sim_settings';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
 import { EquipmentSpec, Spec } from './proto/common';
+import { IndividualSimSettings } from './proto/ui';
+import { IndividualLinkExporter } from './components/individual_sim_ui/exporters/individual_link_exporter';
 import { IndividualLinkImporter } from './components/individual_sim_ui/importers/individual_link_importer';
+import { IndividualSimUI } from './individual_sim_ui';
 
 const REFORGE_CACHE_DB_NAME = `${LOCAL_STORAGE_PREFIX}_reforge-cache`;
 const REFORGE_CACHE_DB_VERSION = 1;
 const REFORGE_CACHE_MAX_ENTRIES = 200_000;
-const REFORGE_CACHE_KEY_PREFIX = `v${REFORGE_CACHE_DB_VERSION}:`;
+const REFORGE_CACHE_KEY_PREFIX = `v${REFORGE_CACHE_DB_VERSION}:api-v${CURRENT_API_VERSION}:`;
+const REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX = 'equipmentSpec:';
 const REFORGE_CACHE_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // Store reforge results for 14 days
 const REFORGE_CACHE_PRUNE_INTERVAL_MS = 60 * 60 * 1000;
 
 interface ReforgeGearCacheRecord {
 	gear: string;
-	createdAt: number;
 	lastAccessedAt: number;
 }
 
@@ -74,13 +78,44 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 
 			record.lastAccessedAt = Date.now();
 			await this.putRecord(db, key, record);
-			return IndividualLinkImporter.tryParseUrlLocation(new URL(record.gear, window.location.href))?.settings.player?.equipment || null;
+			return this.parseCachedGear(record.gear);
 		} catch (error) {
 			console.warn('[Reforge Cache] Failed to read cached reforge result.', error);
 			return null;
 		} finally {
 			db?.close();
 		}
+	}
+
+	async getMany(keys: string[]): Promise<Map<string, EquipmentSpec>> {
+		const results = new Map<string, EquipmentSpec>();
+		if (!keys.length) return results;
+
+		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
+		try {
+			db = await this.getDb();
+			const now = Date.now();
+			const tx = db.transaction(this.storeName, 'readwrite');
+			const store = tx.objectStore(this.storeName);
+
+			for (const key of keys) {
+				const record = await store.get(key);
+				if (!record) continue;
+
+				const gear = this.parseCachedGear(record.gear);
+				if (!gear) continue;
+
+				record.lastAccessedAt = now;
+				await store.put(record, key);
+				results.set(key, gear);
+			}
+			await tx.done;
+		} catch (error) {
+			console.warn('[Reforge Cache] Failed to read cached reforge results.', error);
+		} finally {
+			db?.close();
+		}
+		return results;
 	}
 
 	async set(key: string, optimizedGearLink: string): Promise<void> {
@@ -90,7 +125,6 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			const now = Date.now();
 			await this.putRecord(db, key, {
 				gear: optimizedGearLink,
-				createdAt: now,
 				lastAccessedAt: now,
 			});
 			await this.prune(db);
@@ -99,6 +133,18 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		} finally {
 			db?.close();
 		}
+	}
+
+	async setSpec(key: string, optimizedGear: EquipmentSpec): Promise<void> {
+		return this.set(key, ReforgeGearCache.equipmentSpecToLinkHash(optimizedGear));
+	}
+
+	private parseCachedGear(gear: string): EquipmentSpec | null {
+		if (gear.startsWith(REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX)) {
+			return EquipmentSpec.fromJsonString(gear.slice(REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX.length), { ignoreUnknownFields: true });
+		}
+
+		return IndividualLinkImporter.tryParseUrlLocation(new URL(gear, window.location.href))?.settings.player?.equipment || null;
 	}
 
 	private async getDb(): Promise<IDBPDatabase<ReforgeGearCacheDb>> {
@@ -219,5 +265,22 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return Array.from(new Uint8Array(hashBuffer))
 			.map(byte => byte.toString(16).padStart(2, '0'))
 			.join('');
+	}
+
+	private static equipmentSpecToLinkHash(optimizedGear: EquipmentSpec): string {
+		return new URL(
+			IndividualLinkExporter.createLink(
+				{
+					toProto: () =>
+						IndividualSimSettings.create({
+							apiVersion: CURRENT_API_VERSION,
+							player: {
+								equipment: optimizedGear,
+							},
+						}),
+				} as IndividualSimUI<any>,
+				[SimSettingCategories.Gear],
+			),
+		).hash;
 	}
 }

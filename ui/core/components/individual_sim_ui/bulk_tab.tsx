@@ -1606,10 +1606,9 @@ export class BulkTab extends SimTab {
 			batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
 
 
-			const backendReforgeConfig = useLocalBulkSim ? this.getBulkReforgeConfig(playerPhase) : undefined;
+			const backendReforgeConfig = useLocalBulkSim || this.bulkSimUsesWasmConcurrency ? this.getBulkReforgeConfig(playerPhase) : undefined;
 			if (backendReforgeConfig) {
 				reforgedGearSets.push(...candidateGearSets);
-				batchCompleteMetrics.backend_reforging = 1;
 			} else {
 				const reforgeStartedAt = new Date().getTime();
 				const validReforgedGearSets = await this.runReforgeQueue(candidateGearSets, playerPhase, concurrency, abortSignal);

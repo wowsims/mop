@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"sync"
 	"sync/atomic"
 	"time"
 
@@ -17,7 +16,6 @@ import (
 )
 
 var reforgeOptimizeRequestID atomic.Uint64
-var reforgeComputeStatsMu sync.Mutex
 
 func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResult {
 	return OptimizeAsync(request, simsignals.CreateSignals())
@@ -183,8 +181,6 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 }
 
 func computeReforgeStats(request *proto.ComputeStatsRequest) *proto.ComputeStatsResult {
-	reforgeComputeStatsMu.Lock()
-	defer reforgeComputeStatsMu.Unlock()
 	return core.ComputeStats(request)
 }
 

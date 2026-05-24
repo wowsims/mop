@@ -180,7 +180,8 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 	}
 
 	result := &proto.BulkSimResult{
-		Timings: &proto.BulkSimTimings{},
+		Timings:             &proto.BulkSimTimings{},
+		OptimizedCandidates: request.GetOptimizedCandidates(),
 	}
 	baselineGear := getBulkSimBaselineGear(request)
 

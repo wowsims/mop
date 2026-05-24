@@ -418,15 +418,13 @@ enum BulkSimStage {
 }
 
 message BulkSimRequest {
-	reserved 4;
-	reserved "baseline_gear";
-
 	string request_id = 1;
 	RaidSimRequest base_request = 2;
-	repeated BulkGearCandidate candidates = 5;
-	int32 top_results = 6;
-	int32 high_stage_iterations = 7;
-	ReforgeOptimizeRequest reforge_request = 8;
+	repeated BulkGearCandidate candidates = 3;
+	repeated BulkGearCandidate optimized_candidates = 4;
+	int32 top_results = 5;
+	int32 high_stage_iterations = 6;
+	ReforgeOptimizeRequest reforge_request = 7;
 }
 
 // RPC ReforgeOptimize
@@ -437,14 +435,14 @@ enum ReforgeOptimizeMode {
 
 message ReforgeOptimizeRequest {
 	string request_id = 1;
-	Raid raid = 2;
-	UnitStats pre_cap_ep_weights = 3;
-	UnitStats undershoot_caps = 4;
-	ReforgeSettings settings = 5;
-	repeated StatCapConfig soft_caps = 6;
-	repeated ReforgeGemOption gem_options = 7;
-	bool debug = 8;
-	ReforgeOptimizeMode mode = 9;
+	ReforgeOptimizeMode mode = 2;
+	Raid raid = 3;
+	UnitStats pre_cap_ep_weights = 4;
+	UnitStats undershoot_caps = 5;
+	ReforgeSettings settings = 6;
+	repeated StatCapConfig soft_caps = 7;
+	repeated ReforgeGemOption gem_options = 8;
+	bool debug = 9;
 }
 
 message ReforgeOptimizeResult {
@@ -553,9 +551,10 @@ message BulkGearCandidate {
 message BulkSimResult {
 	BulkGearResult baseline = 1;
 	repeated BulkGearResult top_results = 2;
-	repeated BulkSimStageMetrics stage_metrics = 3;
-	BulkSimTimings timings = 4;
-	ErrorOutcome error = 5;
+	repeated BulkGearCandidate optimized_candidates = 3;
+	repeated BulkSimStageMetrics stage_metrics = 4;
+	BulkSimTimings timings = 5;
+	ErrorOutcome error = 6;
 }
 
 message BulkGearResult {

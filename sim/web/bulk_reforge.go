@@ -13,6 +13,7 @@ import (
 )
 
 type bulkSimReforgeTask struct {
+	position  int
 	candidate *proto.BulkGearCandidate
 }
 
@@ -53,7 +54,8 @@ func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMe
 			progress <- &proto.ProgressMetrics{
 				BulkStage: proto.BulkSimStage_BulkSimStageReforge,
 				FinalBulkSimResult: &proto.BulkSimResult{
-					Error: &proto.ErrorOutcome{Type: proto.ErrorOutcomeType_ErrorOutcomeAborted},
+					OptimizedCandidates: request.GetOptimizedCandidates(),
+					Error:               &proto.ErrorOutcome{Type: proto.ErrorOutcomeType_ErrorOutcomeAborted},
 				},
 			}
 			close(progress)
@@ -73,6 +75,8 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 
 	totalCandidates := countBulkSimReforgeCandidates(request.GetCandidates())
 	if totalCandidates == 0 {
+		request.Candidates = dedupeBulkSimReforgeCandidates(getBulkSimRequestBaselineGear(request), request.GetOptimizedCandidates())
+		request.OptimizedCandidates = nil
 		return
 	}
 	concurrency := core.GetBulkSimStageConcurrency(request, core.BulkSimStageConfig{Stage: proto.BulkSimStage_BulkSimStageReforge})
@@ -87,6 +91,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	var totalCandidateDuration time.Duration
 	var minCandidateDuration time.Duration
 	var maxCandidateDuration time.Duration
+	completedReforgeCandidatesByPosition := make([]*proto.BulkGearCandidate, len(request.GetCandidates()))
 	var progressMu sync.Mutex
 	batch := make([]bulkSimReforgeTask, 0, getBulkSimReforgeBatchSize(concurrency))
 	flushBatch := func() {
@@ -94,15 +99,19 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 			return
 		}
 		processBulkSimReforgeBatch(batch, concurrency, signals, func(task bulkSimReforgeTask) {
-			duration := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
+			duration, completed := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
 			progressMu.Lock()
-			completedCandidates++
 			totalCandidateDuration += duration
-			if completedCandidates == 1 || duration < minCandidateDuration {
-				minCandidateDuration = duration
-			}
-			if duration > maxCandidateDuration {
-				maxCandidateDuration = duration
+			if completed {
+				completedCandidates++
+				completedReforgeCandidatesByPosition[task.position] = task.candidate
+				request.Candidates[task.position] = nil
+				if completedCandidates == 1 || duration < minCandidateDuration {
+					minCandidateDuration = duration
+				}
+				if duration > maxCandidateDuration {
+					maxCandidateDuration = duration
+				}
 			}
 			emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates)
 			progressMu.Unlock()
@@ -111,14 +120,14 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 		batch = batch[:0]
 	}
 
-	for _, candidate := range request.GetCandidates() {
+	for position, candidate := range request.GetCandidates() {
 		if signals.Abort.IsTriggered() {
 			break
 		}
 		if candidate == nil || candidate.Gear == nil {
 			continue
 		}
-		batch = append(batch, bulkSimReforgeTask{candidate: candidate})
+		batch = append(batch, bulkSimReforgeTask{position: position, candidate: candidate})
 		if len(batch) == cap(batch) {
 			flushBatch()
 		}
@@ -130,7 +139,16 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	}
 	log.Printf("[Bulk Sim] Reforge optimization completed candidates=%d total=%s minCandidate=%s avgCandidate=%s maxCandidate=%s", completedCandidates, time.Since(stageStartedAt), minCandidateDuration, avgCandidateDuration, maxCandidateDuration)
 
-	request.Candidates = dedupeBulkSimReforgeCandidates(getBulkSimRequestBaselineGear(request), request.GetCandidates())
+	baselineGear := getBulkSimRequestBaselineGear(request)
+	completedReforgeCandidates := compactBulkGearCandidates(completedReforgeCandidatesByPosition)
+	if signals.Abort.IsTriggered() {
+		request.OptimizedCandidates = dedupeBulkSimReforgeCandidates(baselineGear, append(request.GetOptimizedCandidates(), completedReforgeCandidates...))
+		request.Candidates = nil
+		return
+	}
+
+	request.Candidates = dedupeBulkSimReforgeCandidates(baselineGear, append(request.GetOptimizedCandidates(), completedReforgeCandidates...))
+	request.OptimizedCandidates = request.GetCandidates()
 }
 
 func getBulkSimReforgeBatchSize(concurrency int) int {
@@ -183,7 +201,7 @@ func warmBulkSimReforgeDatabase(request *proto.BulkSimRequest) {
 	}
 }
 
-func optimizeBulkSimReforgeCandidateTask(optimizer *bulkSimReforgeOptimizer, reforgeRequest *proto.ReforgeOptimizeRequest, candidate *proto.BulkGearCandidate, signals simsignals.Signals) time.Duration {
+func optimizeBulkSimReforgeCandidateTask(optimizer *bulkSimReforgeOptimizer, reforgeRequest *proto.ReforgeOptimizeRequest, candidate *proto.BulkGearCandidate, signals simsignals.Signals) (time.Duration, bool) {
 	startedAt := time.Now()
 	optimizedGear := optimizer.optimize(candidate.Gear, true, signals)
 	if optimizedGear == nil && !signals.Abort.IsTriggered() && reforgeRequest.GetSettings().GetIncludeGems() {
@@ -191,14 +209,14 @@ func optimizeBulkSimReforgeCandidateTask(optimizer *bulkSimReforgeOptimizer, ref
 	}
 	if optimizedGear == nil {
 		if signals.Abort.IsTriggered() {
-			return time.Since(startedAt)
+			return time.Since(startedAt), false
 		}
 		log.Printf("[Bulk Sim] Reforge optimization failed for candidate %d; using original gear", candidate.Index)
-		return time.Since(startedAt)
+		return time.Since(startedAt), true
 	}
 
 	candidate.Gear = optimizedGear
-	return time.Since(startedAt)
+	return time.Since(startedAt), true
 }
 
 func countBulkSimReforgeCandidates(candidates []*proto.BulkGearCandidate) int32 {
@@ -315,6 +333,17 @@ func dedupeBulkSimReforgeCandidates(baselineGear *proto.EquipmentSpec, candidate
 		deduped = append(deduped, candidate)
 	}
 	return deduped
+}
+
+func compactBulkGearCandidates(candidates []*proto.BulkGearCandidate) []*proto.BulkGearCandidate {
+	compacted := make([]*proto.BulkGearCandidate, 0, len(candidates))
+	for _, candidate := range candidates {
+		if candidate == nil || candidate.Gear == nil {
+			continue
+		}
+		compacted = append(compacted, candidate)
+	}
+	return compacted
 }
 
 func bulkSimReforgeGearKey(gear *proto.EquipmentSpec) string {

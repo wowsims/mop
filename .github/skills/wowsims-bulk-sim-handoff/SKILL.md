@@ -1,78 +1,73 @@
 ---
 name: wowsims-bulk-sim-handoff
-description: 'Use when continuing, debugging, validating, or modifying WoWSims MoP Bulk Sim, local/server bulk sim, browser WASM concurrent bulk sim, BulkSimRequest/BulkSimResult protos, candidate generation, staging/culling, progress, abort behavior, or backend reforge integration for bulk candidates.'
-argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge behavior, or validation task to continue.'
+description: 'Use when continuing, debugging, validating, or modifying WoWSims MoP Bulk Sim, local/server bulk sim, browser WASM concurrent bulk sim, BulkSimRequest/BulkSimResult protos, candidate generation, IndexedDB reforge caching, progress, abort behavior, or backend reforge integration for bulk candidates.'
+argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge/cache behavior, or validation task to continue.'
 ---
 
 # WoWSims Bulk Sim Handoff
 
 ## When to Use
-- Continue work on Bulk Sim candidate generation, staged/culling simulation, progress reporting, abort behavior, or result ranking.
-- Debug local/server `/bulkSimAsync`, browser WASM concurrent bulk sim, or shared `BulkSimRequest` / `BulkSimResult` proto behavior.
-- Modify the local Bulk Sim backend reforge path that reuses `ReforgeOptimizeRequest` before simming candidates.
-- Validate cleanup after moving behavior between frontend TypeScript, Go web wrappers, and core sim code.
+- Continue work on Bulk Sim candidate generation, staged/culling simulation, result ranking, progress, aborts, or reforge candidate caching.
+- Debug local/server `/bulkSimAsync`, browser WASM concurrent Bulk Sim, or shared `BulkSimRequest` / `BulkSimResult` behavior.
+- Modify the backend reforge pre-pass that reuses `ReforgeOptimizeRequest` for Bulk Sim candidates.
 
-## Current Architecture
-- Shared protos live in `proto/api.proto`:
-  - `BulkSimRequest`, `BulkGearCandidate`, `BulkSimResult`, `BulkGearResult`, `BulkSimStageMetrics`, `BulkSimTimings`.
-  - `BulkSimRequest.reforge_request` is a `ReforgeOptimizeRequest`; do not create a duplicate bulk-specific reforge config message.
-  - `ReforgeOptimizeRequest`, `ReforgeSettings`, `StatCapConfig`, `UIStat`, `StatCapType`, and `ReforgeGemOption` are shared API protos because `ui.proto` imports `api.proto` and cannot be imported back from `api.proto`.
-- Core Go runner: `sim/core/bulk_sim.go`.
-  - Owns validation, staged low/medium/high sim execution, culling, survivor selection, baseline result handling, timings, and progress metrics.
-  - Must stay independent of `sim/core/reforge_optimizer`; importing the optimizer from `sim/core` creates an import cycle.
-- Local/server web wrapper: `sim/web/bulk_reforge.go`.
-  - Owns optional backend reforge optimization for local Bulk Sim candidates.
-  - Clones `BulkSimRequest.reforge_request`, injects each candidate gear into the cloned raid player, runs `reforgeoptimizer.Optimize`, then clears `request.ReforgeRequest` before delegating to `core.BulkSimAsync`.
-  - If gem-inclusive optimization fails, retries with `settings.include_gems = false` when gems were enabled.
-  - Emits `ProgressMetrics.bulk_stage = BulkSimStageReforge` with `completed_sims` / `total_sims` while backend candidate reforges are running, before low/medium/high sim stages begin.
-  - Dedupes optimized candidates against baseline gear and each other before simming.
-- HTTP/web entrypoint: `sim/web/main.go`.
-  - `/bulkSimAsync` should call the local web wrapper `BulkSimAsync`, not `core.BulkSimAsync` directly, so local backend reforging can run.
-  - Devserver builds must compile the package (`go build ./sim/web`), not only `sim/web/main.go`, otherwise helpers in `sim/web/bulk_reforge.go` are omitted.
-- Frontend orchestration: `ui/core/sim.ts`.
-  - `runBulkSim(gearSets, onProgress, reforgeConfig?)` builds `BulkSimRequest`, merges needed candidate items/reforges/gems into player database, sets `player.equipment` to baseline gear, and optionally attaches `reforgeRequest`.
-  - `makeBulkSimReforgeRequest` should build the shared `ReforgeOptimizeRequest` shape directly.
-- Bulk UI: `ui/core/components/individual_sim_ui/bulk_tab.tsx`.
-  - Builds candidate gear sets and default gems.
-  - Local non-WASM path passes raw candidates plus backend reforge config to `runCoreBulkSim`.
-  - Browser/WASM concurrent path still uses the frontend reforge queue before bulk simming.
-- WASM concurrent runner: `ui/core/wasm/bulk_sim.ts`.
-  - Runs the staged Bulk Sim in frontend workers for browser concurrency.
-  - Does not currently run backend reforge optimization inside the concurrent bulk worker path.
+## Architecture
+- `proto/api.proto`: shared Bulk Sim and reforge API messages. `BulkSimRequest.reforge_request` reuses `ReforgeOptimizeRequest`; do not add a duplicate bulk-specific reforge config.
+- `sim/core/bulk_sim.go`: core staged runner. It owns validation, low/medium/high sim stages, culling, baseline handling, timings, and progress. Keep it independent of `sim/core/reforge_optimizer` to avoid an import cycle.
+- `sim/web/bulk_reforge.go`: local/server Bulk Sim reforge pre-pass. It clones the shared reforge request, injects each candidate gear into a cloned raid, runs the Go optimizer, emits `BulkSimStageReforge`, dedupes optimized gear, clears `request.ReforgeRequest`, then delegates to `core.BulkSimAsync`.
+- `sim/web/main.go`: `/bulkSimAsync` must call `sim/web.BulkSimAsync`, not `core.BulkSimAsync`, so the local backend reforge wrapper runs.
+- `ui/core/sim.ts`: builds `BulkSimRequest`, merges candidate item/reforge/gem data into the player database, sets the baseline gear on the raid player, partitions reforge cache hits/misses, and dispatches local vs WASM paths.
+- `ui/core/components/individual_sim_ui/bulk/utils.ts`: Bulk Sim feature utilities, including reforge cache partition/write helpers. Keep Bulk Sim cache helpers here, not in `sim.ts` or generic `reforge_cache.ts`.
+- `ui/core/reforge_cache.ts`: generic IndexedDB storage only. It should not know Bulk Sim candidate semantics.
+- `ui/core/components/suggest_reforges_action.tsx`: `ReforgeOptimizer.getReforgeGemOptions` owns gem-option selection shared by single reforge and Bulk Sim request creation.
+- `ui/core/wasm/bulk_sim.ts`: browser concurrent Bulk Sim and sequential FE-orchestrated WASM reforge pre-pass.
+- `ui/core/wasm/reforge_optimizer.ts`: reusable per-gear WASM optimizer request construction and `workerPool.reforgeOptimize` dispatch. Bulk Sim passes `ReforgeOptimizeModeBulk`.
 
-## Behavior to Preserve
-1. Start Bulk Sim from the active player's current gear in `base_request.raid.parties[0].players[0].equipment` and from candidate gear sets generated by the UI.
-2. Ensure `base_request.raid.parties[0].players[0].equipment` matches baseline gear before simming.
-3. Include all candidate items, available reforges, and configured gem options in the player database before sending local/server requests.
-4. For local non-WASM Bulk Sim with reforging enabled, run backend reforge optimization once per candidate in `sim/web`, not as frontend per-candidate optimizer API calls.
-5. Show backend reforge progress as its own Bulk Sim stage before low/medium/high simming progress.
-6. Keep `sim/core/bulk_sim.go` free of reforge optimizer imports to avoid the `sim/core` import cycle.
-7. Keep candidate `index` stable through optimization and dedupe so UI result mapping remains meaningful.
-8. Preserve baseline simulation even when there are zero candidates.
-9. Run low/medium/high stages according to candidate count and culling config; high stage uses native Go concurrency in local/server mode.
-10. Keep abort and progress behavior wired through `simsignals` and `ProgressMetrics`.
-11. If a candidate's backend reforge optimization fails, log the failure and sim the original candidate gear rather than failing the whole bulk run.
+## Candidate and Reforge Flow
+- Baseline gear comes from `base_request.raid.parties[0].players[0].equipment`; generated candidates are carried by stable `BulkGearCandidate.index` values.
+- With `reforge_request`, frontend IndexedDB cache hits go in `BulkSimRequest.optimized_candidates`; cache misses/raw work go in `BulkSimRequest.candidates`.
+- Local/server mode runs the reforge pre-pass in `sim/web/bulk_reforge.go` using Go concurrency from `core.GetBulkSimStageConcurrency` for `BulkSimStageReforge`.
+- Browser/WASM mode cannot share one Go runtime across workers, so it runs a sequential FE > WASM reforge > FE pass, then sends optimized candidates into the TypeScript concurrent Bulk Sim stages.
+- After reforge optimization, merge cache hits and newly optimized candidates, dedupe against baseline and each other, clear `optimized_candidates` for the sim input, and clear `reforge_request` before staged simming.
+- If a candidate's backend reforge fails, log it and use the original candidate gear instead of failing the entire Bulk Sim.
+- If there are zero post-dedupe candidates, still run/preserve the baseline simulation path.
 
-## Reforge Integration Notes
-- `BulkSimRequest.reforge_request` intentionally reuses `ReforgeOptimizeRequest`.
-- The attached bulk reforge request should omit `raid`; `sim/web/bulk_reforge.go` clones the `base_request.raid` and injects the candidate gear for each optimizer call.
+## Cache Invariants
+- `ReforgeGearCache` keys are hashes of input identity: API/cache version, optimizer/player/raid config, and input gear fingerprint. They are not reversible; never try to decode gear from the key.
+- Cache values are the optimized output gear. On a cache hit, Bulk Sim needs this value to build `optimizedCandidates`; a timestamp-only value is insufficient.
+- New direct `setSpec()` writes should store the compact Gear-only link hash produced by `IndividualLinkExporter.createLink(..., [SimSettingCategories.Gear])`, then store only `new URL(link).hash`.
+- Keep `IndividualLinkImporter` parsing for compact link-hash values. Keep the temporary `equipmentSpec:` parser only as backward compatibility for cache rows written during the short-lived JSON-value format.
+- Cache records only need `gear` and `lastAccessedAt`; `createdAt` is dead weight because pruning and recency use `lastAccessedAt`.
+- `writeBulkSimReforgeCacheResults` should only write candidates whose index maps to a cache-miss key. Do not cache original unprocessed candidates.
+
+## Abort and Progress Invariants
+- Reforge progress uses `ProgressMetrics.bulk_stage = BulkSimStageReforge` with completed/total candidate counts before low/medium/high sim stages begin.
+- Aborting during the reforge pre-pass must return a final aborted `BulkSimResult` whose `optimized_candidates` contains cache hits plus candidates whose reforge work actually completed before the abort.
+- Local/server abort handling lives in `sim/web/bulk_reforge.go`; do not drop partial `request.OptimizedCandidates` when returning `ErrorOutcomeAborted`.
+- WASM abort handling should also carry partial `optimizedCandidates` in the aborted result, even though successful misses are written to IndexedDB as each candidate completes.
+- Frontend cache writes happen before checking `result.error`, so aborted results with partial optimized candidates can still preserve progress.
+
+## Proto and API Notes
+- `BulkSimRequest.optimized_candidates` sits directly after `candidates`; `BulkSimResult.optimized_candidates` sits directly after `top_results`.
+- `ReforgeOptimizeRequest.mode` sits directly after `request_id`.
 - `ReforgeGemOption` is the shared API gem-option message for backend optimizer requests. Do not use UI-only `UIGem` in `api.proto` or Go optimizer request paths.
-- Preserve existing `ReforgeGemOption` field numbers when adding UIGem-parity metadata. Renumbering fields can make browser/server builds disagree and fail `proto.Unmarshal` with `invalid wire-format data` before Bulk Sim code runs.
-- `ReforgeOptimizeRequest.debug` should remain off for normal Bulk Sim requests unless debugging optimizer internals.
-- After optimizing candidates, clear `request.ReforgeRequest` before calling `core.BulkSimAsync` so the core runner receives a plain bulk request.
-- Browser WASM concurrent Bulk Sim can continue using the frontend reforge queue until the backend optimizer is explicitly integrated into that worker path.
+- Preserve existing `ReforgeGemOption` field numbers when adding UIGem-parity metadata; frontend/server proto skew can surface as invalid wire-format parse errors.
+- `ReforgeOptimizeRequest.debug` should stay false for normal Bulk Sim requests unless explicitly debugging optimizer internals.
+- Worker/HTTP request name is `reforgeOptimizeAsync`; browser Go WASM export remains `reforgeOptimize` behind the worker bridge.
 
 ## Main Files
-- `proto/api.proto`: Bulk Sim and shared reforge API request/response messages.
-- `sim/core/bulk_sim.go`: core staged Bulk Sim execution, validation, culling, progress, and timings.
-- `sim/web/bulk_reforge.go`: local/server backend reforge pre-pass for Bulk Sim candidates.
-- `sim/web/main.go`: async API handler registration for `/bulkSimAsync`.
-- `ui/core/sim.ts`: request creation, database merging, local vs WASM dispatch, and `makeBulkSimReforgeRequest`.
-- `ui/core/components/individual_sim_ui/bulk_tab.tsx`: candidate gear generation, frontend reforge queue fallback, local backend reforge config, and UI metrics.
-- `ui/core/components/individual_sim_ui/bulk/core_sim.ts`: thin `BulkTab` to `Sim.runBulkSim` adapter.
-- `ui/core/wasm/bulk_sim.ts`: browser concurrent staged Bulk Sim implementation.
+- `proto/api.proto`: Bulk Sim and shared reforge API messages.
+- `sim/core/bulk_sim.go`: staged Bulk Sim runner.
+- `sim/web/bulk_reforge.go`: local/server reforge pre-pass and abort partial-result handling.
+- `sim/web/main.go`: async API handler registration.
+- `ui/core/sim.ts`: frontend request creation, cache partitioning, dispatch, and cache writes.
+- `ui/core/components/individual_sim_ui/bulk_tab.tsx`: candidate generation and UI metrics.
+- `ui/core/components/individual_sim_ui/bulk/utils.ts`: Bulk Sim utilities and reforge cache helpers.
+- `ui/core/reforge_cache.ts`: generic IndexedDB cache storage.
+- `ui/core/wasm/bulk_sim.ts`: browser concurrent Bulk Sim plus WASM reforge pre-pass.
+- `ui/core/wasm/reforge_optimizer.ts`: reusable per-gear WASM reforge helper.
 
-## Cleanup and Convention Checks
+## Cleanup Checks
 Run focused stale-name searches after changing Bulk Sim or reforge proto wiring:
 
 ```bash
@@ -91,37 +86,34 @@ Check for direct core calls that bypass the local web wrapper:
 rg -n "bulkSimAsync.*core\.BulkSimAsync|core\.BulkSimAsync\(msg|/bulkSimAsync" sim/web
 ```
 
-Check touched Go helpers for unused parameters and dead branches. `get_errors` and `go vet` can miss gopls/staticcheck-style hints, so inspect changed function signatures and call sites directly.
+Check touched Go helpers for unused parameters and dead branches. `get_errors` and `go vet` can miss gopls/staticcheck-style hints, so inspect changed signatures and call sites directly.
 
-## Validation Commands
-Run the narrowest relevant check first, then broaden if needed.
+## Validation
+Run the narrowest relevant check first, then broaden:
 
 ```bash
 make proto
-```
-
-```bash
 npm run type-check
-```
-
-```bash
 go test -count=1 ./sim/core ./sim/web
 ```
 
-For changes touching backend reforge integration, include the optimizer package:
+For backend reforge integration, include the optimizer package:
 
 ```bash
 go test -count=1 ./sim/core/reforge_optimizer ./sim/web
 ```
 
-For browser WASM or worker-dispatch changes, also validate the frontend typecheck and, when practical, the WASM build path used by the repo.
+For browser WASM or worker-dispatch changes, also run:
+
+```bash
+make webworkers
+```
 
 ## Bulk Sim Profiling Harness
-- Keep full-request Bulk Sim profiling tests out of the repository unless the user explicitly asks to check one in.
-- The latest full-request profile run used a temporary gated `sim/web` test against `frost-mage-curl.txt`, then deleted the test file after collecting results.
-- Use `results.md` as the current benchmark report and command reference. Raw profile artifacts from the latest run used `tmp/bulk_reforge_profile_cap4.*.pprof` and `tmp/bulk_reforge_profile_benchmark_result.json`.
-- Recreate any future harness as a temporary file, run the profile command, update `results.md`, then delete the harness before finishing.
-- The replay fixture is UI diagnostic JSON with TypeScript `oneofKind` wrappers; normalize those wrappers before `protojson.UnmarshalOptions{DiscardUnknown:true}` or player/spec oneofs can be dropped.
+- Keep full-request Bulk Sim profiling tests out of the repository unless explicitly asked to check one in.
+- Recreate the temporary gated `sim/web` profile harness from prior notes when needed, run against `frost-mage-curl.txt`, collect results, then delete the harness before finishing.
+- Use `results.md` as the benchmark report. Recent raw artifacts used `tmp/bulk_reforge_profile_cap4.*.pprof` and `tmp/bulk_reforge_profile_benchmark_result.json`.
+- Normalize TypeScript `oneofKind` wrappers before `protojson.UnmarshalOptions{DiscardUnknown:true}` when replaying UI diagnostic JSON.
 
 Full-request profile command shape:
 
@@ -134,9 +126,4 @@ WOWSIMS_BULK_PROFILE_HEAP=../../tmp/bulk_reforge_profile_cap4.heap.pprof \
 go test -run TestBulkSimReforgeProfileBenchmarkCapture -count=1 -timeout=90m ./sim/web
 ```
 
-After profiling, summarize at least wall time, core Bulk Sim time, inferred reforge pre-pass time, total CPU, Go heap/sys, total allocations, malloc count, RSS/VSZ, stage metrics, and top CPU/alloc/heap `pprof` entries.
-
-## Last Known Good Flow
-- Local non-WASM Bulk Sim builds candidate gear in `BulkTab`, skips the frontend reforge queue, attaches a shared `ReforgeOptimizeRequest`, and sends one bulk request.
-- `sim/web.BulkSimAsync` optimizes candidates through the Go reforge optimizer, dedupes optimized gear, clears `ReforgeRequest`, and delegates to `core.BulkSimAsync`.
-- Browser/WASM concurrent Bulk Sim still uses the frontend reforge queue before calling the TypeScript concurrent Bulk Sim runner.
+Summarize wall time, core sim time, inferred reforge pre-pass time, CPU, heap/sys, allocations, malloc count, RSS/VSZ, stage metrics, and top CPU/alloc/heap `pprof` entries.

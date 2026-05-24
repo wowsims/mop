@@ -14,6 +14,7 @@ import {
 	RaidSimResult,
 	RaidSimResultCombinationRequest,
 	ReforgeOptimizeRequest,
+	ReforgeOptimizeMode,
 	ReforgeOptimizeResult,
 	StatWeightRequestsData,
 	StatWeightsCalcRequest,
@@ -73,15 +74,20 @@ export class WorkerPool {
 
 	async reforgeOptimize(request: ReforgeOptimizeRequest, signals?: SimSignals): Promise<ReforgeOptimizeResult> {
 		const worker = this.getLeastBusyWorker();
-		const id = request.requestId || generateRequestId(SimRequest.reforgeOptimize);
-		worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
+		const id = request.requestId || generateRequestId(SimRequest.reforgeOptimizeAsync);
+		const shouldLog = request.mode != ReforgeOptimizeMode.ReforgeOptimizeModeBulk;
+		if (shouldLog) {
+			worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
+		}
 
 		signals?.abort.onTrigger(async () => {
 			await worker.sendAbortById(id);
 		});
 
-		const result = await this.doAsyncRequest(SimRequest.reforgeOptimize, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
-		worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+		const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
+		if (shouldLog) {
+			worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+		}
 		return result.finalReforgeResult!;
 	}
 
@@ -183,7 +189,7 @@ export class WorkerPool {
 	 * @returns The final ProgressMetrics.
 	 */
 	private async doAsyncRequest(
-		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync | SimRequest.reforgeOptimize,
+		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync | SimRequest.reforgeOptimizeAsync,
 		request: Uint8Array,
 		id: string,
 		worker: SimWorker,
@@ -282,7 +288,7 @@ class SimWorker {
 		this.worker = new window.Worker(SIM_WORKER_URL);
 
 		this.worker.addEventListener('message', ({ data }: MessageEvent<WorkerSendMessage>) => {
-			const { id, msg, outputData } = data;
+			const { id, msg, outputData, error } = data;
 			switch (msg) {
 				case 'ready':
 					this.wasmWorker = !!outputData && !!outputData[0];
@@ -294,6 +300,10 @@ class SimWorker {
 				case 'idConfirm':
 					break;
 				default:
+					if (!id) {
+						console.warn(`Received ${msg} worker result without an id`);
+						return;
+					}
 					const promiseFuncs = this.taskIdsToPromiseFuncs[id];
 					if (!promiseFuncs) {
 						if (this.ignoredResultIds.has(id)) return;
@@ -302,6 +312,10 @@ class SimWorker {
 					}
 					if (!id.includes('progress')) this.setTaskActive(id, false);
 					delete this.taskIdsToPromiseFuncs[id];
+					if (error) {
+						promiseFuncs[1](new Error(error));
+						return;
+					}
 					promiseFuncs[0](outputData);
 			}
 		});

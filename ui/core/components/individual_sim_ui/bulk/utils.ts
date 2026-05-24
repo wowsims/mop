@@ -1,6 +1,9 @@
-import { BulkSimResult, BulkSimStage, DistributionMetrics } from '../../../proto/api';
+import { SimSettingCategories } from '../../../constants/sim_settings';
+import type { Player } from '../../../player';
+import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeRequest } from '../../../proto/api';
 import { ItemSlot } from '../../../proto/common';
 import { Gear } from '../../../proto_utils/gear';
+import { ReforgeGearCache } from '../../../reforge_cache';
 import { OptimisationStage, STAGE_CONFIG } from './types';
 
 // Combines Fingers 1 and 2 and Trinket 1 and 2 into single groups
@@ -203,3 +206,100 @@ export const getCoreBulkSimTrackingMetrics = (result: BulkSimResult): Record<str
 
 	return metrics;
 };
+
+
+export type BulkSimReforgeCacheData = {
+	cache: ReforgeGearCache;
+	candidates: BulkGearCandidate[];
+	optimizedCandidates: BulkGearCandidate[];
+	cacheKeysByCandidateIndex: Map<number, string>;
+};
+
+export type BulkSimReforgeCacheContext = {
+	player: Player<any>;
+	gearSets: Gear[];
+	reforgeRequest: ReforgeOptimizeRequest;
+	raidBuffs: unknown;
+	partyBuffs: unknown;
+	debuffs: unknown;
+};
+
+export async function getBulkSimReforgeCacheData({
+	player,
+	gearSets,
+	reforgeRequest,
+	raidBuffs,
+	partyBuffs,
+	debuffs,
+}: BulkSimReforgeCacheContext): Promise<BulkSimReforgeCacheData> {
+	const cache = ReforgeGearCache.get(player.getPlayerSpec());
+	const configHash = await getBulkSimReforgeCacheConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
+	const cacheEntries = await Promise.all(
+		gearSets.map(async (gear, index) => ({
+			index,
+			gear,
+			cacheKey: await ReforgeGearCache.getKey(gear.asSpec(), configHash),
+		})),
+	);
+	const cachedGearByKey = await cache.getMany(cacheEntries.map(entry => entry.cacheKey));
+
+	const candidates: BulkGearCandidate[] = [];
+	const optimizedCandidates: BulkGearCandidate[] = [];
+	const cacheKeysByCandidateIndex = new Map<number, string>();
+	for (const entry of cacheEntries) {
+		const cachedGear = cachedGearByKey.get(entry.cacheKey);
+		if (cachedGear) {
+			optimizedCandidates.push(BulkGearCandidate.create({ index: entry.index, gear: cachedGear }));
+		} else {
+			candidates.push(BulkGearCandidate.create({ index: entry.index, gear: entry.gear.asSpec() }));
+			cacheKeysByCandidateIndex.set(entry.index, entry.cacheKey);
+		}
+	}
+
+	return { cache, candidates, optimizedCandidates, cacheKeysByCandidateIndex };
+}
+
+export async function writeBulkSimReforgeCacheResults(optimizedCandidates: BulkGearCandidate[], cacheData: BulkSimReforgeCacheData): Promise<void> {
+	await Promise.all(
+		optimizedCandidates.map(candidate => {
+			const cacheKey = cacheData.cacheKeysByCandidateIndex.get(candidate.index);
+			if (!cacheKey || !candidate.gear) return Promise.resolve();
+			return cacheData.cache.setSpec(cacheKey, candidate.gear);
+		}),
+	);
+}
+
+async function getBulkSimReforgeCacheConfigHash({
+	player,
+	reforgeRequest,
+	raidBuffs,
+	partyBuffs,
+	debuffs,
+}: Omit<BulkSimReforgeCacheContext, 'gearSets'>): Promise<string> {
+	const playerProto = player.toProto(true, false, [
+		SimSettingCategories.Talents,
+		SimSettingCategories.Consumes,
+		SimSettingCategories.External,
+		SimSettingCategories.Miscellaneous,
+	]);
+	playerProto.equipment = undefined;
+	playerProto.database = undefined;
+	playerProto.channelClipDelayMs = 0;
+	playerProto.inFrontOfTarget = false;
+	playerProto.distanceFromTarget = 0;
+	playerProto.healingModel = undefined;
+
+	return ReforgeGearCache.getHash({
+		player: playerProto,
+		raid: {
+			buffs: raidBuffs,
+			partyBuffs,
+			debuffs,
+		},
+		optimizer: {
+			...ReforgeOptimizeRequest.clone(reforgeRequest),
+			requestId: '',
+			raid: undefined,
+		},
+	});
+}

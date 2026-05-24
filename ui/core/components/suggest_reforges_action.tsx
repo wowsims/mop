@@ -9,13 +9,14 @@ import { Player } from '../player';
 import { ReforgeSettings, StatCapType } from '../proto/api';
 import { Class, GemColor, ItemSlot, PseudoStat, Spec, Stat } from '../proto/common';
 import { UIGem as Gem, IndividualSimSettings } from '../proto/ui';
+import { Database } from '../proto_utils/database';
 import { EquippedItem, ReforgeData } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
 import { getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
 import { translateSlotName, translateStat } from '../../i18n/localization';
 import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
-import { Sim, type ReforgeOptimizeConfig } from '../sim';
+import type { ReforgeOptimizeConfig, Sim } from '../sim';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
 import { distinct, isDevMode } from '../utils';
@@ -1237,6 +1238,24 @@ export class ReforgeOptimizer {
 		return unitStat.equalsStat(Stat.StatMasteryRating)
 			? ((value / Mechanics.MASTERY_RATING_PER_MASTERY_POINT) * this.player.getMasteryPerPointModifier()).toFixed(2)
 			: unitStat.convertDefaultUnitsToPercent(value)!.toFixed(2);
+	}
+
+	static getReforgeGemOptions(db: Database, settings: ReforgeSettings): Gem[] {
+		return settings.includeGems
+			? distinct(
+					[
+						GemColor.GemColorPrismatic,
+						GemColor.GemColorShaTouched,
+						GemColor.GemColorCogwheel,
+						GemColor.GemColorRed,
+						GemColor.GemColorBlue,
+						GemColor.GemColorYellow,
+					]
+						.flatMap(socketColor => db.getGems(socketColor))
+						.flat(),
+					(a, b) => a.id == b.id,
+				)
+			: [];
 	}
 
 	onReforgeDone() {

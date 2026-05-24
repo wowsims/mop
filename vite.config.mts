@@ -30,9 +30,10 @@ function serveExternalAssets() {
 		configureServer(server) {
 			server.middlewares.use((req, res, next) => {
 				const url = req.url!;
+				const pathname = new URL(url, 'http://localhost').pathname;
 
-				if (Object.keys(workerMappings).includes(url)) {
-					const targetPath = workerMappings[url as keyof typeof workerMappings];
+				if (Object.keys(workerMappings).includes(pathname)) {
+					const targetPath = workerMappings[pathname as keyof typeof workerMappings];
 					const assetsPath = path.resolve(__dirname, './dist/mop');
 					const requestedPath = path.join(assetsPath, targetPath.replace('/mop/', ''));
 
@@ -41,17 +42,17 @@ function serveExternalAssets() {
 				}
 
 				// Serve HiGHS chunk files
-				if (url.startsWith('/mop/highs-') && url.endsWith('.js')) {
+				if (pathname.startsWith('/mop/highs-') && pathname.endsWith('.js')) {
 					const assetsPath = path.resolve(__dirname, './dist/mop');
-					const requestedPath = path.join(assetsPath, url.replace('/mop/', ''));
+					const requestedPath = path.join(assetsPath, pathname.replace('/mop/', ''));
 
 					serveFile(res, requestedPath);
 					return;
 				}
 
-				if (url.includes('/mop/assets')) {
+				if (pathname.includes('/mop/assets')) {
 					const assetsPath = path.resolve(__dirname, './assets');
-					const assetRelativePath = url.split('/mop/assets')[1];
+					const assetRelativePath = pathname.split('/mop/assets')[1];
 					const requestedPath = path.join(assetsPath, assetRelativePath);
 
 					serveFile(res, requestedPath);

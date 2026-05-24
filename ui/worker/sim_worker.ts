@@ -36,7 +36,7 @@ async function initHiGHS(): Promise<void> {
 	}
 
 	highsInitPromise = (async () => {
-	// @ts-ignore - Custom HiGHS build module.
+		// @ts-ignore - Custom HiGHS build module.
 		const highsModule = await import('./highs.js');
 		const highsFactory = (highsModule.default || highsModule) as HighsFactory;
 		highs = await highsFactory({
@@ -98,7 +98,7 @@ function setupWorkerInterface() {
 	new WorkerInterface({
 		computeStats: computeStats,
 		computeStatsJson: computeStatsJson,
-		reforgeOptimize: async inputData => {
+		reforgeOptimizeAsync: async inputData => {
 			await initHiGHS();
 			const result = ReforgeOptimizeResult.fromBinary(reforgeOptimize(inputData));
 			return ProgressMetrics.toBinary(ProgressMetrics.create({ finalReforgeResult: result }));

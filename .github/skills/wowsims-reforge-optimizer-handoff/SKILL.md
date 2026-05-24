@@ -1,21 +1,21 @@
 ---
 name: wowsims-reforge-optimizer-handoff
-description: 'Use when continuing, debugging, validating, or modifying the WoWSims MoP reforge optimizer, /reforgeOptimize endpoint, HiGHS solver integration, gem/socket/cap logic, softcap breakpoints, or Rune of Re-Origination relative stat caps.'
+description: 'Use when continuing, debugging, validating, or modifying the WoWSims MoP reforge optimizer, /reforgeOptimizeAsync endpoint, HiGHS solver integration, gem/socket/cap logic, softcap breakpoints, or Rune of Re-Origination relative stat caps.'
 argument-hint: 'Describe the reforge optimizer bug, fixture, or behavior to continue.'
 ---
 
 # WoWSims Reforge Optimizer Handoff
 
 ## When to Use
-- Continue work on `sim/core/reforge_optimizer` or `/reforgeOptimize`.
+- Continue work on `sim/core/reforge_optimizer` or `/reforgeOptimizeAsync`.
 - Debug reforge, gem, socket bonus, hard cap, soft cap, breakpoint, or relative stat cap behavior.
 - Validate HiGHS-backed optimizer behavior through the shared Go backend path.
-- Reproduce fixture-driven optimizer mismatches from pasted `/reforgeOptimize` requests.
+- Reproduce fixture-driven optimizer mismatches from pasted `/reforgeOptimizeAsync` requests.
 
 ## Current Architecture
 - Backend package: `sim/core/reforge_optimizer`.
-- Frontend caller: `ui/core/components/suggest_reforges_action.tsx`.
-- Endpoint: `/reforgeOptimize`.
+- Frontend caller: `ui/core/components/suggest_reforges_action.tsx`; `ReforgeOptimizer.getReforgeGemOptions` owns shared gem-option selection for single reforge and Bulk Sim request creation.
+- Local/server HTTP endpoint and frontend worker request name: `/reforgeOptimizeAsync`. Browser WASM still exposes the Go function name `reforgeOptimize`, but the worker handler key is `reforgeOptimizeAsync`.
 - Request/response protos: `ReforgeOptimizeRequest`, `ReforgeOptimizeResult`, `ReforgeSettings`, `StatCapType`, `StatCapConfig`, `EquipmentSpec`, `ItemSpec`.
 - Final stats must be validated through `core.ComputeStats`; MIP deltas are approximate and are not the final source of truth.
 - HiGHS is the required default solver in dev/release flows. Local/server builds use the embedded `ui/worker/highs.wasm` asset through `github.com/bytecodealliance/wasmtime-go`; browser WASM builds call the worker-provided HiGHS JS bridge. Do not reintroduce the native HiGHS C binding.
@@ -122,6 +122,8 @@ forcedStat - constrainedStat >= requiredDelta
 ## Frontend Integration Notes
 - `ui/core/components/suggest_reforges_action.tsx` routes suggest-reforges to the Go optimizer when supported.
 - Browser WASM mode should use the same backend optimizer exported from `sim/wasm/main.go`; JS should only provide worker plumbing and the HiGHS bridge, not duplicate reforge optimization logic.
+- Browser/WASM reusable per-gear reforge helpers live in `ui/core/wasm/reforge_optimizer.ts`; they clone the shared `ReforgeOptimizeRequest`, inject gear into the cloned base raid, and call `workerPool.reforgeOptimize`.
+- Bulk Sim-specific WASM reforge loops, candidate cache handling, abort partial results, and FE > WASM reforge > FE > WASM Bulk Sim flow are covered by the Bulk Sim handoff skill.
 - The Go optimizer path should allow `relativeStatCap`.
 - Do not run `gofmt` on `.tsx` files. Use TypeScript tooling for frontend validation.
 

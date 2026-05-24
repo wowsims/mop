@@ -5,6 +5,7 @@ import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
+	BulkGearCandidate,
 	BulkSimRequest,
 	BulkSimResult,
 	ComputeStatsRequest,
@@ -25,7 +26,6 @@ import {
 import {
 	ArmorType,
 	Faction,
-	GemColor,
 	ItemQuality,
 	Profession,
 	PseudoStat,
@@ -35,13 +35,9 @@ import {
 	UnitReference,
 	UnitReference_Type as UnitType,
 	WeaponType,
+	EquipmentSpec,
 } from './proto/common.js';
-import {
-	DatabaseFilters,
-	RaidFilterOption,
-	SimSettings as SimSettingsProto,
-	SourceFilterOption,
-} from './proto/ui.js';
+import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
 import { SimGem } from './proto/db.js';
 import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
@@ -53,6 +49,8 @@ import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
 import { distinct, getEnumValues, noop } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
+import { getBulkSimReforgeCacheData, writeBulkSimReforgeCacheResults } from './components/individual_sim_ui/bulk/utils';
+import { ReforgeOptimizer } from './components/suggest_reforges_action';
 import { makeBulkGearDatabase } from './wasm/bulk_sim';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
 
@@ -421,10 +419,26 @@ export class Sim {
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
 			const preparedGearSets = gearSets.map(prepareGear);
 			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
-			const bulkGearDatabase = makeBulkGearDatabase(this.db, [baselineGear, ...preparedGearSets]);
+			const useWasmConcurrency = await this.shouldUseWasmConcurrency();
+			const bulkReforgeCacheData = bulkReforgeRequest
+				? await getBulkSimReforgeCacheData({
+						player: this.raid.getActivePlayers()[0],
+						gearSets: preparedGearSets,
+						reforgeRequest: bulkReforgeRequest,
+						raidBuffs: this.raid.getBuffs(),
+						partyBuffs: this.raid.getActivePlayers()[0].getParty()?.getBuffs(),
+						debuffs: this.raid.getDebuffs(),
+					})
+				: undefined;
+			const cachedOptimizedGearSets = bulkReforgeCacheData?.optimizedCandidates.map(candidate => this.db.lookupEquipmentSpec(candidate.gear!)) ?? [];
+			const bulkGearDatabase = makeBulkGearDatabase(this.db, [baselineGear, ...preparedGearSets, ...cachedOptimizedGearSets]);
 			if (bulkReforgeRequest) {
 				bulkGearDatabase.reforgeStats = distinct(
-					bulkGearDatabase.reforgeStats.concat(preparedGearSets.flatMap(gearSet => gearSet.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])))),
+					bulkGearDatabase.reforgeStats.concat(
+						preparedGearSets.flatMap(gearSet =>
+							gearSet.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])),
+						),
+					),
 					(a, b) => a.id == b.id,
 				);
 				bulkGearDatabase.gems = distinct(
@@ -449,18 +463,27 @@ export class Sim {
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,
-				candidates: preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() })),
+				candidates: bulkReforgeCacheData?.candidates ?? preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() })),
+				optimizedCandidates: bulkReforgeCacheData?.optimizedCandidates ?? [],
 				topResults: 5,
 				highStageIterations: this.getIterations(),
 				reforgeRequest: bulkReforgeRequest,
 			});
-			console.log(bulkRequest)
 			let result: BulkSimResult;
 			// Only use worker based concurrency when running wasm. Local sim has native threading.
-			if (await this.shouldUseWasmConcurrency()) {
-				result = await runConcurrentBulkSim(bulkRequest, this.workerPool, onProgress, signals);
+			if (useWasmConcurrency) {
+				const cacheWrites: Promise<void>[] = [];
+				const onReforgeCandidateOptimized = (candidate: BulkGearCandidate, optimizedGear: EquipmentSpec) => {
+					const cacheKey = bulkReforgeCacheData?.cacheKeysByCandidateIndex.get(candidate.index);
+					if (cacheKey) cacheWrites.push(bulkReforgeCacheData!.cache.setSpec(cacheKey, optimizedGear));
+				};
+				result = await runConcurrentBulkSim(bulkRequest, this.workerPool, onProgress, signals, onReforgeCandidateOptimized);
+				await Promise.all(cacheWrites);
 			} else {
 				result = await this.workerPool.bulkSimAsync(bulkRequest, onProgress, signals);
+				if (bulkReforgeCacheData) {
+					await writeBulkSimReforgeCacheResults(result.optimizedCandidates, bulkReforgeCacheData);
+				}
 			}
 			if (result.error) {
 				if (result.error.type != ErrorOutcomeType.ErrorOutcomeError) return result.error;
@@ -600,7 +623,7 @@ export class Sim {
 		const signals = this.signalManager.registerRunning(RequestTypes.ReforgeOptimize);
 		try {
 			await this.waitForInit();
-			const gemOptions = this.getReforgeGemOptions(config.settings);
+			const gemOptions = ReforgeOptimizer.getReforgeGemOptions(this.db, config.settings);
 
 			const raid = this.getModifiedRaidProto();
 			const player = raid.parties[0].players[0];
@@ -629,7 +652,7 @@ export class Sim {
 			raid.parties[0].players[0] = player;
 
 			const request = ReforgeOptimizeRequest.create({
-				requestId: generateRequestId(SimRequest.reforgeOptimize),
+				requestId: generateRequestId(SimRequest.reforgeOptimizeAsync),
 				raid,
 				preCapEpWeights: config.preCapEPWeights.toProto(),
 				undershootCaps: config.undershootCaps.toProto(),
@@ -653,27 +676,9 @@ export class Sim {
 		}
 	}
 
-	private getReforgeGemOptions(settings: ReforgeSettings) {
-		return settings.includeGems
-			? distinct(
-					[
-						GemColor.GemColorPrismatic,
-						GemColor.GemColorShaTouched,
-						GemColor.GemColorCogwheel,
-						GemColor.GemColorRed,
-						GemColor.GemColorBlue,
-						GemColor.GemColorYellow,
-					]
-						.flatMap(socketColor => this.db.getGems(socketColor))
-						.flat(),
-					(a, b) => a.id == b.id,
-				)
-			: [];
-	}
-
 	private makeBulkSimReforgeRequest(config: ReforgeOptimizeConfig): ReforgeOptimizeRequest {
 		return ReforgeOptimizeRequest.create({
-			requestId: generateRequestId(SimRequest.reforgeOptimize),
+			requestId: generateRequestId(SimRequest.reforgeOptimizeAsync),
 			preCapEpWeights: config.preCapEPWeights.toProto(),
 			undershootCaps: config.undershootCaps.toProto(),
 			settings: config.settings,
@@ -683,7 +688,7 @@ export class Sim {
 				capType: softCap.capType,
 				postCapEPs: softCap.postCapEPs.slice(),
 			})),
-			gemOptions: this.getReforgeGemOptions(config.settings).map(gem => ({
+			gemOptions: ReforgeOptimizer.getReforgeGemOptions(this.db, config.settings).map(gem => ({
 				id: gem.id,
 				name: gem.name,
 				icon: gem.icon,

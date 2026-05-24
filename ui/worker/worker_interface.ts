@@ -39,8 +39,14 @@ export class WorkerInterface {
 				});
 			};
 
-			const outputData = await handlerFunc(inputData, progressCallback, id, msg);
-			this.postMessage({ msg, id, outputData });
+			try {
+				const outputData = await handlerFunc(inputData, progressCallback, id, msg);
+				this.postMessage({ msg, id, outputData });
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				console.error(errorMessage);
+				this.postMessage({ msg, id, outputData: new Uint8Array(), error: errorMessage });
+			}
 		});
 	}
 
