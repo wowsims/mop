@@ -123,7 +123,6 @@ forcedStat - constrainedStat >= requiredDelta
 - `ui/core/components/suggest_reforges_action.tsx` routes suggest-reforges to the Go optimizer when supported.
 - Browser WASM mode should use the same backend optimizer exported from `sim/wasm/main.go`; JS should only provide worker plumbing and the HiGHS bridge, not duplicate reforge optimization logic.
 - The Go optimizer path should allow `relativeStatCap`.
-- It may still fall back or reject backend optimization for unsupported frontend-only hooks such as `updateGearStatsModifier`.
 - Do not run `gofmt` on `.tsx` files. Use TypeScript tooling for frontend validation.
 
 ## Validation Commands
@@ -148,6 +147,32 @@ Useful log filter:
 ```bash
 grep -E "request config|built [0-9]+ choice groups|adding breakpoint|tightening|min cap|softcap stat|optimized gear contains|HiGHS solved|failed" /tmp/reforge-log.txt | sed -n '1,180p'
 ```
+
+## Reforge-Only Profiling Harness
+- Keep `sim/core/reforge_optimizer/optimizer_profile_test.go` out of the repository unless the user explicitly asks to check it in.
+- The current gated profile harness source is stored in repo memory at `/memories/repo/reforge-profile-harness.md`.
+- The memory copy was refreshed after the 2026-05-24 reforge-only profile run and includes `sim.RegisterAll()` plus JSON fixture defaults.
+- To profile easy vs hard reforges, temporarily recreate that file from memory, run the profile command, collect `tmp/reforge_profiles`, then delete the file before finishing.
+- Use explicit current fixtures when possible; old `/tmp/reforge-arcane-request.bin` or `/tmp/reforge-ww-request.bin` captures can become proto-incompatible after API changes. The latest successful profile used `/tmp/reforge-arcane-request.json` and `/tmp/reforge-ww-request.json`.
+
+```bash
+go test -c -o tmp/reforge_optimizer_profile.test ./sim/core/reforge_optimizer
+WOWSIMS_REFORGE_PROFILE=1 \
+WOWSIMS_REFORGE_PROFILE_OUTPUT_DIR=tmp/reforge_profiles \
+WOWSIMS_REFORGE_PROFILE_REQUESTS=easy=/tmp/reforge-arcane-request.json,hard=/tmp/reforge-ww-request.json \
+./tmp/reforge_optimizer_profile.test -test.run TestReforgeOptimizerProfile -test.timeout 10m -test.v
+```
+
+For cleaner per-case pprof output, run one fixture at a time:
+
+```bash
+WOWSIMS_REFORGE_PROFILE=1 \
+WOWSIMS_REFORGE_PROFILE_OUTPUT_DIR=tmp/reforge_profiles \
+WOWSIMS_REFORGE_PROFILE_REQUESTS=hard=/tmp/reforge-ww-request.json \
+./tmp/reforge_optimizer_profile.test -test.run 'TestReforgeOptimizerProfile/hard$' -test.timeout 10m -test.v
+```
+
+- The standalone harness must call `sim.RegisterAll()` before loading/running profile cases so `core.ComputeStats` can construct the captured player spec.
 
 ## Last Known Passing Validation
 - Last checked on 2026-05-23 after removing inferred spell-hit cap leftovers and keeping only the Hit-over-Expertise reforge filtering pass.

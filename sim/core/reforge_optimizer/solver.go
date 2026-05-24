@@ -1,6 +1,7 @@
 package reforgeoptimizer
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/simsignals"
 	"github.com/wowsims/mop/sim/core/stats"
 	googleProto "google.golang.org/protobuf/proto"
 )
@@ -51,7 +53,7 @@ func reforgeDebug(search *reforgeSearchState) bool {
 	return search != nil && search.request != nil && search.request.GetDebug()
 }
 
-func trySolveWithHiGHS(search *reforgeSearchState) ([]reforgeChoice, float64, bool, error) {
+func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) ([]reforgeChoice, float64, bool, error) {
 	weights := search.weights
 	softCaps := cloneSoftCaps(search.softCaps)
 	relativeCaps := slices.Clone(search.relativeCaps)
@@ -62,6 +64,9 @@ func trySolveWithHiGHS(search *reforgeSearchState) ([]reforgeChoice, float64, bo
 	debug := reforgeDebug(search)
 
 	for passIdx := 0; passIdx < maxPasses; passIdx++ {
+		if signals.Abort.IsTriggered() {
+			return nil, 0, false, context.Canceled
+		}
 		remainingTimeout := highsOptimizerPassTimeout(deadline)
 		if remainingTimeout <= 0 {
 			return nil, 0, false, nil
@@ -80,6 +85,9 @@ func trySolveWithHiGHS(search *reforgeSearchState) ([]reforgeChoice, float64, bo
 			solveStartedAt = time.Now()
 		}
 		solution, ok, err := solveMIPWithHiGHS(model, remainingTimeout, highsOptimizerMIPRelGap(search))
+		if signals.Abort.IsTriggered() {
+			return nil, 0, false, context.Canceled
+		}
 		var solveDuration time.Duration
 		if debug {
 			solveDuration = time.Since(solveStartedAt)
@@ -546,7 +554,7 @@ func selectedChoicesCapDelta(search *reforgeSearchState, choices []reforgeChoice
 	gear := equipmentSpecWithChoices(search.baseEquipment, choices)
 	raid := googleProto.Clone(search.baseRaid).(*proto.Raid)
 	raid.Parties[0].Players[0].Equipment = gear
-	result := core.ComputeStats(&proto.ComputeStatsRequest{Raid: raid})
+	result := computeReforgeStats(&proto.ComputeStatsRequest{Raid: raid})
 	if result.ErrorResult != "" {
 		return core.UnitStats{}, fmt.Errorf("computing selected reforge choices: %s", result.ErrorResult)
 	}

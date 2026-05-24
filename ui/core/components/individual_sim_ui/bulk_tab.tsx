@@ -7,7 +7,7 @@ import { ref } from 'tsx-vanilla';
 import { REPO_RELEASES_URL } from '../../constants/other';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import i18n from '../../../i18n/config';
-import { BulkSettings, DistributionMetrics, ProgressMetrics } from '../../proto/api';
+import { BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '../../proto/api';
 import { Class, GemColor, HandType, ItemRandomSuffix, ItemSlot, ItemSpec, RangedWeaponType, ReforgeStat, Spec, WeaponType } from '../../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../proto/db';
 import { UIEnchant, UIGem, UIItem } from '../../proto/ui';
@@ -61,6 +61,7 @@ import { trackEvent } from '../../../tracking/utils';
 import { EnumPicker } from '../pickers/enum_picker';
 import { translateBulkSlotName, translateWeaponType } from '../../../i18n/localization';
 import { ProgressTrackerModal } from '../progress_tracker_modal';
+import { ReforgeOptimizeConfig } from '../../sim';
 
 export class BulkTab extends SimTab {
 	readonly simUI: IndividualSimUI<any>;
@@ -1285,17 +1286,17 @@ export class BulkTab extends SimTab {
 	private setReforgeProgress(currentRound: number, rounds: number) {
 		this.progressTrackerModal.updateProgress({
 			stage: 'reforging',
-			title: i18n.t('bulk_tab.progress.reforging_rounds'),
+			title: i18n.t('bulk_tab.progress.reforging_iteration_rounds'),
 			current: currentRound - 1,
 			total: rounds,
 			message: undefined,
 		});
 	}
 
-	private setCandidateGearProgress(completed: number, total: number) {
+	private setCandidateGearProgress(completed: number, total: number, title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'), stage = 'preparing') {
 		this.progressTrackerModal.updateProgress({
-			stage: 'preparing',
-			title: i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
+			stage,
+			title,
 			current: completed,
 			total,
 			message: undefined,
@@ -1303,6 +1304,11 @@ export class BulkTab extends SimTab {
 	}
 
 	private setSimProgress(progress: ProgressMetrics, config: BulkSimProgressConfig) {
+		if (progress.bulkStage == BulkSimStage.BulkSimStageReforge) {
+			this.setCandidateGearProgress(progress.completedSims, progress.totalSims, i18n.t('bulk_tab.progress.reforging_iteration_rounds'), 'reforging');
+			return;
+		}
+
 		const stageCurrentRound = config.stageCurrentRound ?? config.currentRound;
 		const stageRounds = config.stageRounds ?? config.totalRounds;
 		const isBaselineRound = stageCurrentRound === 1;
@@ -1353,7 +1359,7 @@ export class BulkTab extends SimTab {
 		}
 
 		if (RelativeStatCap.hasRoRo(this.simUI.player) && this.simUI.reforger.relativeStatCapStat !== -1) {
-			this.simUI.reforger.relativeStatCap = new RelativeStatCap(this.simUI.reforger.relativeStatCapStat, this.simUI.player, this.simUI.player.getClass());
+			this.simUI.reforger.relativeStatCap = new RelativeStatCap(this.simUI.reforger.relativeStatCapStat);
 		}
 	}
 
@@ -1381,6 +1387,7 @@ export class BulkTab extends SimTab {
 	private async runCoreBulkSim(
 		gearSets: Gear[],
 		signal: AbortSignal,
+		reforgeConfig?: ReforgeOptimizeConfig,
 	): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
 		return runCoreBulkSimImpl(
 			{
@@ -1392,7 +1399,19 @@ export class BulkTab extends SimTab {
 			},
 			gearSets,
 			signal,
+			reforgeConfig,
 		);
+	}
+
+	private getBulkReforgeConfig(playerPhase: boolean): ReforgeOptimizeConfig | undefined {
+		if (!this.simUI.reforger || !this.originalGear) {
+			return undefined;
+		}
+
+		this.simUI.reforger.setIncludeGems(TypedEvent.nextEventID(), true);
+		this.simUI.reforger.setIncludeEOTBPGemSocket(TypedEvent.nextEventID(), playerPhase);
+		this.updateRelativeStatCapReforges();
+		return this.simUI.reforger.getReforgeOptimizeConfig(this.originalGear);
 	}
 
 	private async buildCandidateGearSets(
@@ -1586,23 +1605,30 @@ export class BulkTab extends SimTab {
 			batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
 			batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
 
-			const reforgeStartedAt = new Date().getTime();
-			const validReforgedGearSets = await this.runReforgeQueue(candidateGearSets, playerPhase, concurrency, abortSignal);
-			reforgedGearSets.push(...this.dedupeGearSets(validReforgedGearSets));
-			batchCompleteMetrics.reforge_results = validReforgedGearSets.length;
-			batchCompleteMetrics.reforged_gear_sets = reforgedGearSets.length;
-			batchCompleteMetrics.deduped_gear_sets = validReforgedGearSets.length - reforgedGearSets.length;
-			batchCompleteMetrics.reforging_duration_seconds = Math.round((new Date().getTime() - reforgeStartedAt) / 1000);
-			this.debugOptimisationRound('reforged gear sets deduped', {
-				durationSeconds: this.getDurationSeconds(reforgeStartedAt),
-				reforgeResults: validReforgedGearSets.length,
-				reforgedGearSets: reforgedGearSets.length,
-				dedupedGearSets: validReforgedGearSets.length - reforgedGearSets.length,
-			});
+
+			const backendReforgeConfig = useLocalBulkSim ? this.getBulkReforgeConfig(playerPhase) : undefined;
+			if (backendReforgeConfig) {
+				reforgedGearSets.push(...candidateGearSets);
+				batchCompleteMetrics.backend_reforging = 1;
+			} else {
+				const reforgeStartedAt = new Date().getTime();
+				const validReforgedGearSets = await this.runReforgeQueue(candidateGearSets, playerPhase, concurrency, abortSignal);
+				reforgedGearSets.push(...this.dedupeGearSets(validReforgedGearSets));
+				batchCompleteMetrics.reforge_results = validReforgedGearSets.length;
+				batchCompleteMetrics.reforged_gear_sets = reforgedGearSets.length;
+				batchCompleteMetrics.deduped_gear_sets = validReforgedGearSets.length - reforgedGearSets.length;
+				batchCompleteMetrics.reforging_duration_seconds = Math.round((new Date().getTime() - reforgeStartedAt) / 1000);
+				this.debugOptimisationRound('reforged gear sets deduped', {
+					durationSeconds: this.getDurationSeconds(reforgeStartedAt),
+					reforgeResults: validReforgedGearSets.length,
+					reforgedGearSets: reforgedGearSets.length,
+					dedupedGearSets: validReforgedGearSets.length - reforgedGearSets.length,
+				});
+			}
 
 			this.simStart = new Date().getTime();
 			let referenceDpsMetrics: DistributionMetrics;
-			const bulkSimResult = await this.runCoreBulkSim(reforgedGearSets, abortSignal);
+			const bulkSimResult = await this.runCoreBulkSim(reforgedGearSets, abortSignal, backendReforgeConfig);
 			referenceDpsMetrics = bulkSimResult.referenceDpsMetrics;
 			topGearResults = bulkSimResult.topGearResults;
 			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);

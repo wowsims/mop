@@ -9,7 +9,8 @@ import {
 	MageMajorGlyph as MajorGlyph,
 	MageMinorGlyph as MinorGlyph,
 } from '../../core/proto/mage';
-import { ReforgeSettings, SavedTalents } from '../../core/proto/ui';
+import { ReforgeSettings } from '../../core/proto/api';
+import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
 import FireApl from './apls/fire.apl.json';
 import MasteryApl from './apls/mastery_fire.apl.json';

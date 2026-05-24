@@ -173,9 +173,9 @@ proto: sim/core/proto/api.pb.go ui/core/proto/api.ts
 wowsimmop: binary_dist devserver
 
 .PHONY: devserver
-devserver: sim/core/proto/api.pb.go sim/web/main.go binary_dist/dist.go
+devserver: sim/core/proto/api.pb.go sim/web/*.go binary_dist/dist.go
 	@echo "Starting server compile now..."
-	@if go build -o wowsimmop ./sim/web/main.go ; then \
+	@if go build -o wowsimmop ./sim/web ; then \
 		printf "\033[1;32mBuild Completed Successfully\033[0m\n"; \
 	else \
 		printf "\033[1;31mBUILD FAILED\033[0m\n"; \

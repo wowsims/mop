@@ -833,7 +833,7 @@
 		"progress": {
 			"total_combinations": "{{count}} total combinations.",
 			"building_candidate_gear_sets": "Building candidate gear sets",
-			"reforging_rounds": "Running reforges",
+			"reforging_iteration_rounds": "Running reforges",
 			"baseline_round": "Running baseline round",
 			"refining_rounds": "Running refining rounds",
 			"low_iteration_rounds": "Running low iteration rounds",

@@ -14,6 +14,9 @@ import {
 	Raid as RaidProto,
 	RaidSimRequest,
 	RaidSimResult,
+	ReforgeOptimizeRequest,
+	ReforgeOptimizeResult,
+	ReforgeSettings,
 	SimOptions,
 	SimType,
 	StatWeightsRequest,
@@ -23,6 +26,8 @@ import {
 	ArmorType,
 	Faction,
 	GemColor,
+	ItemQuality,
+	Profession,
 	PseudoStat,
 	RangedWeaponType,
 	Spec,
@@ -34,9 +39,6 @@ import {
 import {
 	DatabaseFilters,
 	RaidFilterOption,
-	ReforgeOptimizeRequest,
-	ReforgeOptimizeResult,
-	ReforgeSettings,
 	SimSettings as SimSettingsProto,
 	SourceFilterOption,
 } from './proto/ui.js';
@@ -387,7 +389,7 @@ export class Sim {
 		}
 	}
 
-	async runBulkSim(gearSets: Gear[], onProgress: WorkerProgressCallback): Promise<BulkSimResult | ErrorOutcome> {
+	async runBulkSim(gearSets: Gear[], onProgress: WorkerProgressCallback, reforgeConfig?: ReforgeOptimizeConfig): Promise<BulkSimResult | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
 		} else if (this.encounter.targets.length < 1) {
@@ -418,7 +420,28 @@ export class Sim {
 
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
 			const preparedGearSets = gearSets.map(prepareGear);
+			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
 			const bulkGearDatabase = makeBulkGearDatabase(this.db, [baselineGear, ...preparedGearSets]);
+			if (bulkReforgeRequest) {
+				bulkGearDatabase.reforgeStats = distinct(
+					bulkGearDatabase.reforgeStats.concat(preparedGearSets.flatMap(gearSet => gearSet.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])))),
+					(a, b) => a.id == b.id,
+				);
+				bulkGearDatabase.gems = distinct(
+					bulkGearDatabase.gems.concat(
+						bulkReforgeRequest.gemOptions.map(gem =>
+							SimGem.create({
+								id: gem.id,
+								name: gem.name,
+								color: gem.color,
+								stats: gem.stats.slice(),
+								disabledInChallengeMode: gem.disabledInChallengeMode,
+							}),
+						),
+					),
+					(a, b) => a.id == b.id,
+				);
+			}
 			player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
 			player.equipment = baselineGear.asSpec();
 			baseRequest.raid!.parties[0].players[0] = player;
@@ -426,12 +449,12 @@ export class Sim {
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,
-				baselineGear: baselineGear.asSpec(),
 				candidates: preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() })),
 				topResults: 5,
 				highStageIterations: this.getIterations(),
+				reforgeRequest: bulkReforgeRequest,
 			});
-
+			console.log(bulkRequest)
 			let result: BulkSimResult;
 			// Only use worker based concurrency when running wasm. Local sim has native threading.
 			if (await this.shouldUseWasmConcurrency()) {
@@ -574,8 +597,64 @@ export class Sim {
 	}
 
 	async reforgeOptimize(config: ReforgeOptimizeConfig): Promise<ReforgeOptimizeResult> {
-		await this.waitForInit();
-		const gemOptions = config.settings.includeGems
+		const signals = this.signalManager.registerRunning(RequestTypes.ReforgeOptimize);
+		try {
+			await this.waitForInit();
+			const gemOptions = this.getReforgeGemOptions(config.settings);
+
+			const raid = this.getModifiedRaidProto();
+			const player = raid.parties[0].players[0];
+			player.database = config.gear.toDatabase(this.db);
+			player.database.reforgeStats = distinct(
+				player.database.reforgeStats.concat(
+					config.gear.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])),
+				),
+				(a, b) => a.id == b.id,
+			);
+			player.database.gems = distinct(
+				player.database.gems.concat(
+					gemOptions.map(gem =>
+						SimGem.create({
+							id: gem.id,
+							name: gem.name,
+							color: gem.color,
+							stats: gem.stats.slice(),
+							disabledInChallengeMode: gem.disabledInChallengeMode,
+						}),
+					),
+				),
+				(a, b) => a.id == b.id,
+			);
+			player.equipment = config.gear.asSpec();
+			raid.parties[0].players[0] = player;
+
+			const request = ReforgeOptimizeRequest.create({
+				requestId: generateRequestId(SimRequest.reforgeOptimize),
+				raid,
+				preCapEpWeights: config.preCapEPWeights.toProto(),
+				undershootCaps: config.undershootCaps.toProto(),
+				settings: config.settings,
+				softCaps: config.softCaps.map(softCap => ({
+					unitStat: softCap.unitStat.toProto(),
+					breakpoints: softCap.breakpoints.slice(),
+					capType: softCap.capType,
+					postCapEPs: softCap.postCapEPs.slice(),
+				})),
+				gemOptions,
+				debug: config.debug ?? false,
+			});
+			const result = await this.workerPool.reforgeOptimize(request, signals);
+			if (result.error) {
+				throw new SimError(result.error.message);
+			}
+			return result;
+		} finally {
+			this.signalManager.unregisterRunning(signals);
+		}
+	}
+
+	private getReforgeGemOptions(settings: ReforgeSettings) {
+		return settings.includeGems
 			? distinct(
 					[
 						GemColor.GemColorPrismatic,
@@ -590,36 +669,11 @@ export class Sim {
 					(a, b) => a.id == b.id,
 				)
 			: [];
+	}
 
-		const raid = this.getModifiedRaidProto();
-		const player = raid.parties[0].players[0];
-		player.database = config.gear.toDatabase(this.db);
-		player.database.reforgeStats = distinct(
-			player.database.reforgeStats.concat(
-				config.gear.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])),
-			),
-			(a, b) => a.id == b.id,
-		);
-		player.database.gems = distinct(
-			player.database.gems.concat(
-				gemOptions.map(gem =>
-					SimGem.create({
-						id: gem.id,
-						name: gem.name,
-						color: gem.color,
-						stats: gem.stats.slice(),
-						disabledInChallengeMode: gem.disabledInChallengeMode,
-					}),
-				),
-			),
-			(a, b) => a.id == b.id,
-		);
-		player.equipment = config.gear.asSpec();
-		raid.parties[0].players[0] = player;
-
-		const request = ReforgeOptimizeRequest.create({
+	private makeBulkSimReforgeRequest(config: ReforgeOptimizeConfig): ReforgeOptimizeRequest {
+		return ReforgeOptimizeRequest.create({
 			requestId: generateRequestId(SimRequest.reforgeOptimize),
-			raid,
 			preCapEpWeights: config.preCapEPWeights.toProto(),
 			undershootCaps: config.undershootCaps.toProto(),
 			settings: config.settings,
@@ -629,14 +683,19 @@ export class Sim {
 				capType: softCap.capType,
 				postCapEPs: softCap.postCapEPs.slice(),
 			})),
-			gemOptions,
-			debug: config.debug ?? false,
+			gemOptions: this.getReforgeGemOptions(config.settings).map(gem => ({
+				id: gem.id,
+				name: gem.name,
+				icon: gem.icon,
+				color: gem.color,
+				stats: gem.stats.slice(),
+				phase: gem.phase,
+				quality: gem.quality ?? ItemQuality.ItemQualityJunk,
+				unique: gem.unique,
+				requiredProfession: gem.requiredProfession ?? Profession.ProfessionUnknown,
+				disabledInChallengeMode: gem.disabledInChallengeMode,
+			})),
 		});
-		const result = await this.workerPool.reforgeOptimize(request);
-		if (result.error) {
-			throw new SimError(result.error.message);
-		}
-		return result;
 	}
 
 	async statWeights(

@@ -2,6 +2,7 @@ package reforgeoptimizer
 
 import (
 	"cmp"
+	"context"
 	"fmt"
 	"maps"
 	"math"
@@ -13,13 +14,17 @@ import (
 	"github.com/wowsims/mop/sim/common/shared"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/simsignals"
 	"github.com/wowsims/mop/sim/core/stats"
 	googleProto "google.golang.org/protobuf/proto"
 )
 
 var amplificationTrinketItemIDs = buildAmplificationTrinketItemIDSet()
 
-func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, baseStats core.UnitStats, weights core.UnitStats, gemSortWeights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, hasRelativeStatCap bool) ([]reforgeSlotChoices, error) {
+// Process-wide semaphore limiting concurrent choice-delta ComputeStats calls across optimizer requests.
+var reforgeChoiceDeltaTokens = make(chan struct{}, getReforgeChoiceDeltaConcurrency())
+
+func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, baseStats core.UnitStats, weights core.UnitStats, gemSortWeights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, hasRelativeStatCap bool, signals simsignals.Signals) ([]reforgeSlotChoices, error) {
 	frozenSlots := frozenItemSlots(request.GetSettings())
 	player := request.Raid.Parties[0].Players[0]
 	ampModifier := amplificationStatModifier(baseGear)
@@ -130,7 +135,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 		}
 	}
 
-	if err := computeChoiceDeltas(baseRaid, baseGear, baseStats, allSlots); err != nil {
+	if err := computeChoiceDeltas(baseRaid, baseGear, baseStats, allSlots, signals); err != nil {
 		return nil, err
 	}
 
@@ -170,7 +175,7 @@ func allowedReforgeDestinationStats(weights *proto.UnitStats) map[stats.Stat]boo
 	return allowedStats
 }
 
-func computeChoiceDeltas(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, baseStats core.UnitStats, allSlots []reforgeSlotChoices) error {
+func computeChoiceDeltas(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, baseStats core.UnitStats, allSlots []reforgeSlotChoices, signals simsignals.Signals) error {
 	type job struct {
 		slotIdx   int
 		choiceIdx int
@@ -180,7 +185,7 @@ func computeChoiceDeltas(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, ba
 	jobs := make(chan job)
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
-	workerCount := max(1, min(runtime.NumCPU(), 8))
+	workerCount := getReforgeChoiceDeltaConcurrency()
 
 	for range workerCount {
 		wg.Add(1)
@@ -189,15 +194,24 @@ func computeChoiceDeltas(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, ba
 			raid := googleProto.Clone(baseRaid).(*proto.Raid)
 			statsRequest := &proto.ComputeStatsRequest{Raid: raid}
 			for job := range jobs {
+				if signals.Abort.IsTriggered() {
+					select {
+					case errChan <- context.Canceled:
+					default:
+					}
+					continue
+				}
 				choice := &allSlots[job.slotIdx].choices[job.choiceIdx]
 				if choice.socketBonus || (choice.hasReforge && choice.reforgeID == 0) || (!choice.hasReforge && len(choice.gems) == 0) || (len(choice.gems) == 1 && choice.gems[0].gemID == 0) {
 					continue
 				}
 
+				acquireReforgeChoiceDeltaToken()
 				gear := equipmentSpecWithChoice(baseEquipment, *choice)
 				raid.Parties[0].Players[0].Equipment = gear
-				result := core.ComputeStats(statsRequest)
+				result := computeReforgeStats(statsRequest)
 				if result.ErrorResult != "" {
+					releaseReforgeChoiceDeltaToken()
 					select {
 					case errChan <- fmt.Errorf("computing reforge %d for slot %s: %s", choice.reforgeID, choice.slot.String(), result.ErrorResult):
 					default:
@@ -209,6 +223,7 @@ func computeChoiceDeltas(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, ba
 				if !isEmptyUnitStats(choice.forcedBonusDelta) {
 					choice.delta = addUnitStats(choice.delta, choice.forcedBonusDelta)
 				}
+				releaseReforgeChoiceDeltaToken()
 			}
 		}()
 	}
@@ -227,6 +242,18 @@ func computeChoiceDeltas(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, ba
 	default:
 		return nil
 	}
+}
+
+func getReforgeChoiceDeltaConcurrency() int {
+	return max(1, runtime.NumCPU()/2)
+}
+
+func acquireReforgeChoiceDeltaToken() {
+	reforgeChoiceDeltaTokens <- struct{}{}
+}
+
+func releaseReforgeChoiceDeltaToken() {
+	<-reforgeChoiceDeltaTokens
 }
 
 func equipmentSpecWithChoice(baseEquipment core.Equipment, choice reforgeChoice) *proto.EquipmentSpec {

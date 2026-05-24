@@ -833,7 +833,7 @@
         "progress": {
             "total_combinations": "{{count}} combinaisons totales.",
 			"building_candidate_gear_sets": "Création des ensembles d'équipement candidats",
-			"reforging_rounds": "Exécution des reforges",
+			"reforging_iteration_rounds": "Exécution des reforges",
 			"baseline_round": "Exécution du tour de référence",
             "refining_rounds": "Exécution des tours d'affinage",
 			"low_iteration_rounds": "Exécution des tours à faible itération",

@@ -24,7 +24,7 @@ func init() {
 }
 
 func main() {
-	c := make(chan struct{}, 0)
+	c := make(chan struct{})
 
 	js.Global().Set("computeStats", js.FuncOf(computeStats))
 	js.Global().Set("computeStatsJson", js.FuncOf(computeStatsJson))
@@ -156,7 +156,21 @@ func reforgeOptimize(this js.Value, args []js.Value) (response interface{}) {
 		log.Printf("Failed to parse ReforgeOptimizeRequest: %s", err)
 		return nil
 	}
-	result := reforgeoptimizer.Optimize(req)
+	signals, err := simsignals.RegisterWithId(req.GetRequestId())
+	if err != nil {
+		result := &proto.ReforgeOptimizeResult{Error: &proto.ErrorOutcome{Message: "Couldn't register for signal API: " + err.Error()}}
+		outbytes, err := googleProto.Marshal(result)
+		if err != nil {
+			log.Printf("[ERROR] Failed to marshal ReforgeOptimizeResult: %s", err.Error())
+			return nil
+		}
+		outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+		js.CopyBytesToJS(outArray, outbytes)
+		response = outArray
+		return response
+	}
+	defer simsignals.UnregisterId(req.GetRequestId())
+	result := reforgeoptimizer.OptimizeAsync(req, signals)
 
 	outbytes, err := googleProto.Marshal(result)
 	if err != nil {
@@ -395,25 +409,19 @@ func getArgsJson(value js.Value) []byte {
 }
 
 func processAsyncProgress(progFunc js.Value, reporter chan *proto.ProgressMetrics) {
-	for {
-		select {
-		case progMetric, ok := <-reporter:
-			if !ok {
-				return
-			}
-			outbytes, err := googleProto.Marshal(progMetric)
-			if err != nil {
-				log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
-				return
-			}
+	for progMetric := range reporter {
+		outbytes, err := googleProto.Marshal(progMetric)
+		if err != nil {
+			log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
+			return
+		}
 
-			outArray := js.Global().Get("Uint8Array").New(len(outbytes))
-			js.CopyBytesToJS(outArray, outbytes)
-			progFunc.Invoke(outArray)
+		outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+		js.CopyBytesToJS(outArray, outbytes)
+		progFunc.Invoke(outArray)
 
-			if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil {
-				return
-			}
+		if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil || progMetric.FinalReforgeResult != nil {
+			return
 		}
 	}
 }

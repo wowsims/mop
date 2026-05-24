@@ -81,7 +81,7 @@ func gemOptionSeen(gemID int32, seenGemIDs []int32, overflowSeenGemIDs map[int32
 	return slices.Contains(seenGemIDs, gemID)
 }
 
-func filteredGemCandidatesForSocket(gems []*proto.UIGem, player *proto.Player, socketColor proto.GemColor, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, spiritToSpellHit bool) []reforgeGemOption {
+func filteredGemCandidatesForSocket(gems []*proto.ReforgeGemOption, player *proto.Player, socketColor proto.GemColor, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, spiritToSpellHit bool) []reforgeGemOption {
 	candidates := make([]reforgeGemOption, 0)
 	hasJewelcrafting := playerHasProfession(player, proto.Profession_Jewelcrafting)
 	for _, gem := range gems {
@@ -194,7 +194,7 @@ func cappedGemStats(delta core.UnitStats, hardCaps []reforgeHardCap, softCaps []
 	return cappedStats
 }
 
-func gemHasPrimaryStat(gem *proto.UIGem) bool {
+func gemHasPrimaryStat(gem *proto.ReforgeGemOption) bool {
 	for _, stat := range []stats.Stat{stats.Strength, stats.Agility, stats.Intellect} {
 		if len(gem.GetStats()) > int(stat) && gem.GetStats()[stat] != 0 {
 			return true

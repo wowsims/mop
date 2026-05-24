@@ -1,4 +1,5 @@
 import { WorkerInterface } from './worker_interface';
+import { ProgressMetrics, ReforgeOptimizeResult } from '../core/proto/api.js';
 
 interface HighsSolutionColumn {
 	Primal: number;
@@ -99,7 +100,8 @@ function setupWorkerInterface() {
 		computeStatsJson: computeStatsJson,
 		reforgeOptimize: async inputData => {
 			await initHiGHS();
-			return reforgeOptimize(inputData);
+			const result = ReforgeOptimizeResult.fromBinary(reforgeOptimize(inputData));
+			return ProgressMetrics.toBinary(ProgressMetrics.create({ finalReforgeResult: result }));
 		},
 		raidSim: raidSim,
 		raidSimJson: raidSimJson,

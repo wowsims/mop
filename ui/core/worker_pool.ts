@@ -13,12 +13,13 @@ import {
 	RaidSimRequestSplitResult,
 	RaidSimResult,
 	RaidSimResultCombinationRequest,
+	ReforgeOptimizeRequest,
+	ReforgeOptimizeResult,
 	StatWeightRequestsData,
 	StatWeightsCalcRequest,
 	StatWeightsRequest,
 	StatWeightsResult,
 } from './proto/api.js';
-import { ReforgeOptimizeRequest, ReforgeOptimizeResult } from './proto/ui.js';
 import { SimSignals } from './sim_signal_manager';
 import { isDevMode, noop } from './utils';
 import { WorkerPoolManager } from './concurrent_worker_pool';
@@ -70,9 +71,18 @@ export class WorkerPool {
 		return ComputeStatsResult.fromBinary(result);
 	}
 
-	async reforgeOptimize(request: ReforgeOptimizeRequest): Promise<ReforgeOptimizeResult> {
-		const result = await this.makeApiCall(SimRequest.reforgeOptimize, ReforgeOptimizeRequest.toBinary(request));
-		return ReforgeOptimizeResult.fromBinary(result);
+	async reforgeOptimize(request: ReforgeOptimizeRequest, signals?: SimSignals): Promise<ReforgeOptimizeResult> {
+		const worker = this.getLeastBusyWorker();
+		const id = request.requestId || generateRequestId(SimRequest.reforgeOptimize);
+		worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
+
+		signals?.abort.onTrigger(async () => {
+			await worker.sendAbortById(id);
+		});
+
+		const result = await this.doAsyncRequest(SimRequest.reforgeOptimize, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
+		worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+		return result.finalReforgeResult!;
 	}
 
 	private getProgressName(id: string) {
@@ -173,7 +183,7 @@ export class WorkerPool {
 	 * @returns The final ProgressMetrics.
 	 */
 	private async doAsyncRequest(
-		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync,
+		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync | SimRequest.reforgeOptimize,
 		request: Uint8Array,
 		id: string,
 		worker: SimWorker,
@@ -213,7 +223,7 @@ export class WorkerPool {
 	}
 
 	private isFinalProgress(progress: ProgressMetrics): boolean {
-		return progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null;
+		return progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null || progress.finalReforgeResult != null;
 	}
 
 	private newProgressHandler(

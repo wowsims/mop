@@ -182,9 +182,10 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 	result := &proto.BulkSimResult{
 		Timings: &proto.BulkSimTimings{},
 	}
+	baselineGear := getBulkSimBaselineGear(request)
 
 	if len(candidates) == 0 {
-		baselineResult := runSingleBulkSim(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, request.BaseRequest.SimOptions.Iterations, signals)
+		baselineResult := runSingleBulkSim(request, BulkSimCandidate{Index: -1, Gear: baselineGear}, request.BaseRequest.SimOptions.Iterations, signals)
 		if baselineResult.Error != nil {
 			result.Error = baselineResult.Error
 			return result
@@ -234,7 +235,7 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 	}
 
 	if latestBaseline == nil {
-		baselineResult := runSingleBulkSim(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, request.BaseRequest.SimOptions.Iterations, signals)
+		baselineResult := runSingleBulkSim(request, BulkSimCandidate{Index: -1, Gear: baselineGear}, request.BaseRequest.SimOptions.Iterations, signals)
 		if baselineResult.Error != nil {
 			result.Error = baselineResult.Error
 			return result
@@ -268,11 +269,12 @@ func validateBulkSimRequest(request *proto.BulkSimRequest) string {
 	if request.BaseRequest.SimOptions == nil {
 		return "[Bulk sim] Sim options are empty"
 	}
-	if request.BaselineGear == nil {
-		return "[Bulk sim] Baseline gear is empty"
-	}
-	if _, err := getBulkSimPlayer(request.BaseRequest.Raid); err != "" {
+	player, err := getBulkSimPlayer(request.BaseRequest.Raid)
+	if err != "" {
 		return err
+	}
+	if player.GetEquipment() == nil {
+		return "[Bulk sim] Baseline gear is empty"
 	}
 	return ""
 }
@@ -281,7 +283,7 @@ func shouldRunBulkSimStage(config BulkSimStageConfig, candidateCount int) bool {
 	return config.MaxSurvivors == 0 || candidateCount > config.MaxSurvivors || candidateCount < bulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
 }
 
-func getBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimStageConfig) int {
+func GetBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimStageConfig) int {
 	if config.UseConcurrentSim {
 		return 1
 	}
@@ -302,7 +304,7 @@ func getBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimSta
 func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals) BulkSimStageResult {
 	startedAt := time.Now()
 	minIterations := getBulkSimStageMinIterations(request, config)
-	concurrency := getBulkSimStageConcurrency(request, config)
+	concurrency := GetBulkSimStageConcurrency(request, config)
 	concurrency = max(1, min(concurrency, len(candidates)))
 	log.Printf("[Bulk Sim] %s", formatBulkSimStageStart(config, len(candidates), concurrency, minIterations))
 	maxBaselineSims := 2
@@ -314,7 +316,8 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 	// That variance is used to calculate how many iterations are needed for the
 	// stage target error; user-provided high-stage iterations are treated as a
 	// floor and may be raised if the probe shows more iterations are required.
-	baselineProbe := runSingleBulkSimWithProgress(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, minIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+	baselineGear := getBulkSimBaselineGear(request)
+	baselineProbe := runSingleBulkSimWithProgress(request, BulkSimCandidate{Index: -1, Gear: baselineGear}, minIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 		if progressMetrics.TotalIterations == 0 {
 			return
 		}
@@ -336,7 +339,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 	emitBulkSimStageProgress(progress, config.Stage, 1, totalSims, completedBaselineIterations, totalStageIterations, baselineProbe.DpsMetrics.Avg)
 	if !reuseBaselineProbe {
 		extraBaselineIterations := iterations - minIterations
-		baselineExtra := runSingleBulkSimWithProgressAndSeedOffset(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, extraBaselineIterations, minIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+		baselineExtra := runSingleBulkSimWithProgressAndSeedOffset(request, BulkSimCandidate{Index: -1, Gear: baselineGear}, extraBaselineIterations, minIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 			if progressMetrics.TotalIterations == 0 {
 				return
 			}
@@ -505,6 +508,14 @@ func getBulkSimPlayer(raid *proto.Raid) (*proto.Player, string) {
 	}
 
 	return player, ""
+}
+
+func getBulkSimBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec {
+	player, _ := getBulkSimPlayer(request.GetBaseRequest().GetRaid())
+	if player == nil {
+		return nil
+	}
+	return player.GetEquipment()
 }
 
 func getBulkSimStageMinIterations(request *proto.BulkSimRequest, config BulkSimStageConfig) int32 {
@@ -689,7 +700,7 @@ func rerunBulkSimStageAdditionalIterations(request *proto.BulkSimRequest, candid
 	totalIterations := int32(totalSims) * additionalIterations
 	emitBulkSimStageProgress(progress, config.Stage, 0, totalSims, 0, totalIterations, 0)
 
-	baselineExtra := runSingleBulkSimWithProgressAndSeedOffset(request, BulkSimCandidate{Index: -1, Gear: request.BaselineGear}, additionalIterations, currentIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+	baselineExtra := runSingleBulkSimWithProgressAndSeedOffset(request, BulkSimCandidate{Index: -1, Gear: getBulkSimBaselineGear(request)}, additionalIterations, currentIterations, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 		if progressMetrics.TotalIterations == 0 {
 			return
 		}

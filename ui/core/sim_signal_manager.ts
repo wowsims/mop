@@ -1,6 +1,7 @@
 export const enum RequestTypes {
 	RaidSim = 0x1,
 	StatWeights = 0x2,
+	ReforgeOptimize = 0x4,
 	All = 0xf,
 }
 

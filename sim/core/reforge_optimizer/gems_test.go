@@ -43,7 +43,7 @@ func TestBuildReforgeGemOptionsFiltersAndPreservesMetadata(t *testing.T) {
 
 	request := &proto.ReforgeOptimizeRequest{
 		Settings: &proto.ReforgeSettings{IncludeGems: true},
-		GemOptions: []*proto.UIGem{
+		GemOptions: []*proto.ReforgeGemOption{
 			uiGem(101, "Brilliant Primordial Ruby", proto.GemColor_GemColorRed, stats.Intellect, 160, proto.Profession_ProfessionUnknown, true),
 			uiGem(102, "Rigid River's Heart", proto.GemColor_GemColorBlue, stats.HitRating, 320, proto.Profession_ProfessionUnknown, false),
 			uiGem(103, "Fractured Serpent's Eye", proto.GemColor_GemColorYellow, stats.MasteryRating, 320, proto.Profession_Jewelcrafting, false),
@@ -187,8 +187,8 @@ func findGemOption(options map[proto.GemColor][]reforgeGemOption, id int32) (ref
 	return reforgeGemOption{}, false
 }
 
-func uiGem(id int32, name string, color proto.GemColor, stat stats.Stat, value float64, requiredProfession proto.Profession, unique bool) *proto.UIGem {
+func uiGem(id int32, name string, color proto.GemColor, stat stats.Stat, value float64, requiredProfession proto.Profession, unique bool) *proto.ReforgeGemOption {
 	gemStats := make([]float64, int(stats.ProtoStatsLen))
 	gemStats[stat] = value
-	return &proto.UIGem{Id: id, Name: name, Color: color, Stats: gemStats, RequiredProfession: requiredProfession, Unique: unique}
+	return &proto.ReforgeGemOption{Id: id, Name: name, Color: color, Stats: gemStats, RequiredProfession: requiredProfession, Unique: unique}
 }

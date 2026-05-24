@@ -163,8 +163,10 @@ export const getOptimisationTotalSimRounds = (reforgedGearSetCount: number): num
 	return rounds + candidates + 1;
 };
 
-export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | null => {
+export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | 'reforging' | null => {
 	switch (stage) {
+		case BulkSimStage.BulkSimStageReforge:
+			return 'reforging';
 		case BulkSimStage.BulkSimStageLow:
 			return 'low';
 		case BulkSimStage.BulkSimStageMedium:

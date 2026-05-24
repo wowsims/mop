@@ -2,6 +2,7 @@ import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { DistributionMetrics, ProgressMetrics } from '../../../proto/api';
 import { Gear } from '../../../proto_utils/gear';
+import { ReforgeOptimizeConfig } from '../../../sim';
 import { BulkSimProgressConfig, TopGearResult } from './types';
 import { bulkSimStageToOptimisationStage, cleanBulkDpsMetrics, getCoreBulkSimTrackingMetrics } from './utils';
 
@@ -17,6 +18,7 @@ export async function runCoreBulkSim(
 	context: CoreBulkSimContext,
 	gearSets: Gear[],
 	signal: AbortSignal,
+	reforgeConfig?: ReforgeOptimizeConfig,
 ): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
 	context.throwIfBulkAborted(signal);
 	context.debugOptimisationRound('core bulk sim started', {
@@ -35,7 +37,7 @@ export async function runCoreBulkSim(
 		});
 	};
 
-	const result = await context.runWithBulkAbort(context.simUI.sim.runBulkSim(gearSets, updateProgress), signal);
+	const result = await context.runWithBulkAbort(context.simUI.sim.runBulkSim(gearSets, updateProgress, reforgeConfig), signal);
 	if (!result || (result && 'type' in result)) {
 		throw new Error(result?.message);
 	}

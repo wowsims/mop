@@ -156,11 +156,13 @@ const validateBulkSimRequest = (request: BulkSimRequest): string => {
 	if (!request.baseRequest) return '[Bulk sim] Base request is empty';
 	if (!request.baseRequest.raid) return '[Bulk sim] Raid is empty';
 	if (!request.baseRequest.simOptions) return '[Bulk sim] Sim options are empty';
-	if (!request.baselineGear) return '[Bulk sim] Baseline gear is empty';
 	const player = request.baseRequest.raid.parties[0]?.players[0];
 	if (!player || !player.class) return '[Bulk Sim] First player is empty';
+	if (!player.equipment) return '[Bulk sim] Baseline gear is empty';
 	return '';
 };
+
+const getBulkSimBaselineGear = (request: BulkSimRequest) => request.baseRequest!.raid!.parties[0].players[0].equipment!;
 
 const shouldRunBulkSimStage = (config: ConcurrentBulkSimStageConfig, candidateCount: number): boolean =>
 	config.maxSurvivors === undefined ||
@@ -414,7 +416,7 @@ const rerunConcurrentBulkSimStageAdditionalIterations = async (
 	const totalIterations = totalSims * additionalIterations;
 	emitBulkSimStageProgress(onProgress, config.stage, 0, totalSims, 0, totalIterations, 0);
 
-	const baselineCandidate = { index: -1, gear: request.baselineGear! };
+	const baselineCandidate = { index: -1, gear: getBulkSimBaselineGear(request) };
 	const baselineExtra = await runSingleBulkSimConcurrent(
 		request,
 		baselineCandidate,
@@ -640,7 +642,7 @@ const runConcurrentBulkSimStage = async (
 	const probeTotalIterations = maxTotalSims * minIterations;
 	emitBulkSimStageProgress(onProgress, config.stage, 0, maxTotalSims, 0, probeTotalIterations, 0);
 
-	const baselineCandidate = { index: -1, gear: request.baselineGear! };
+	const baselineCandidate = { index: -1, gear: getBulkSimBaselineGear(request) };
 	const baselineProbe = await runSingleBulkSimConcurrent(request, baselineCandidate, minIterations, workerPool, signals, progressMetrics => {
 		if (progressMetrics.totalIterations == 0) return;
 		emitBulkSimStageProgress(
@@ -818,7 +820,7 @@ export const runConcurrentBulkSim = async (
 	if (candidates.length == 0) {
 		const baseline = await runSingleBulkSimConcurrent(
 			request,
-			{ index: -1, gear: request.baselineGear! },
+			{ index: -1, gear: getBulkSimBaselineGear(request) },
 			request.baseRequest!.simOptions!.iterations,
 			workerPool,
 			signals,
@@ -870,7 +872,7 @@ export const runConcurrentBulkSim = async (
 	if (!latestBaseline) {
 		latestBaseline = await runSingleBulkSimConcurrent(
 			request,
-			{ index: -1, gear: request.baselineGear! },
+			{ index: -1, gear: getBulkSimBaselineGear(request) },
 			request.baseRequest!.simOptions!.iterations,
 			workerPool,
 			signals,

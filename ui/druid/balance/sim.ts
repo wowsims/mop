@@ -7,7 +7,7 @@ import { PlayerClasses } from '../../core/player_classes';
 
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
 import { Faction, ItemSlot, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
 import * as DruidInputs from '../inputs';

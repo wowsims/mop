@@ -1,21 +1,29 @@
 package reforgeoptimizer
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
+	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/simsignals"
 	"github.com/wowsims/mop/sim/core/stats"
 	googleProto "google.golang.org/protobuf/proto"
 )
 
 var reforgeOptimizeRequestID atomic.Uint64
+var reforgeComputeStatsMu sync.Mutex
 
 func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResult {
+	return OptimizeAsync(request, simsignals.CreateSignals())
+}
+
+func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Signals) *proto.ReforgeOptimizeResult {
 	requestID := reforgeOptimizeRequestID.Add(1)
 	startedAt := time.Now()
 	normalizedConfig, err := validateReforgeOptimizeSettings(request)
@@ -24,8 +32,10 @@ func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResul
 		return optimizeError(err.Error())
 	}
 	settings := normalizedConfig.settings
-	log.Printf("[reforgeOptimize:%d] started includeGems=%t debug=%t", requestID, settings.GetIncludeGems(), request.GetDebug())
-	if request.GetDebug() {
+	debug := request.GetDebug()
+	logAbort := request.GetMode() != proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk || debug
+	if debug {
+		log.Printf("[reforgeOptimize:%d] started includeGems=%t debug=%t", requestID, settings.GetIncludeGems(), debug)
 		logRequestInput(requestID, request, normalizedConfig)
 	}
 
@@ -37,21 +47,36 @@ func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResul
 		log.Printf("[reforgeOptimize:%d] failed after %s: missing baseline gear", requestID, time.Since(startedAt))
 		return optimizeError("Reforge optimizer requires baseline gear.")
 	}
+	if signals.Abort.IsTriggered() {
+		return optimizeAborted()
+	}
 
-	optimization, err := newReforgeOptimization(request, normalizedConfig)
+	optimization, err := newReforgeOptimization(request, normalizedConfig, signals)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			if logAbort {
+				log.Printf("[reforgeOptimize:%d] aborted initializing after %s", requestID, time.Since(startedAt))
+			}
+			return optimizeAborted()
+		}
 		log.Printf("[reforgeOptimize:%d] failed initializing after %s: %s", requestID, time.Since(startedAt), err.Error())
 		return optimizeError(err.Error())
 	}
-	if request.GetDebug() {
+	if debug {
 		log.Printf("[reforgeOptimize:%d] computed baseline stats in %s", requestID, time.Since(startedAt))
 		log.Printf("[reforgeOptimize:%d] built %d choice groups / %d choices in %s", requestID, len(optimization.slotChoices), countReforgeChoices(optimization.slotChoices), time.Since(startedAt))
 	}
 
 	search := optimization.searchState()
 	solveStartedAt := time.Now()
-	choices, score, solved, err := trySolveWithHiGHS(search)
+	choices, score, solved, err := trySolveWithHiGHS(search, signals)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			if logAbort {
+				log.Printf("[reforgeOptimize:%d] aborted solving after %s", requestID, time.Since(startedAt))
+			}
+			return optimizeAborted()
+		}
 		log.Printf("[reforgeOptimize:%d] HiGHS failed after %s: %s", requestID, time.Since(solveStartedAt), err.Error())
 		return optimizeError(fmt.Sprintf("HiGHS reforge optimizer failed: %s", err.Error()))
 	}
@@ -59,13 +84,21 @@ func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResul
 		log.Printf("[reforgeOptimize:%d] HiGHS did not return a solution after %s", requestID, time.Since(solveStartedAt))
 		return optimizeError("HiGHS reforge optimizer did not return a solution.")
 	}
-	log.Printf("[reforgeOptimize:%d] HiGHS solved in %s score=%.3f", requestID, time.Since(solveStartedAt), score)
+	if debug {
+		log.Printf("[reforgeOptimize:%d] HiGHS solved in %s score=%.3f", requestID, time.Since(solveStartedAt), score)
+	}
+	if signals.Abort.IsTriggered() {
+		if logAbort {
+			log.Printf("[reforgeOptimize:%d] aborted after solving in %s", requestID, time.Since(startedAt))
+		}
+		return optimizeAborted()
+	}
 
 	optimizedGear := optimization.optimizedGear(choices)
 
 	optimizedRaid := googleProto.Clone(request.Raid).(*proto.Raid)
 	optimizedRaid.Parties[0].Players[0].Equipment = optimizedGear
-	optimizedResult := core.ComputeStats(&proto.ComputeStatsRequest{Raid: optimizedRaid})
+	optimizedResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: optimizedRaid})
 	if optimizedResult.ErrorResult != "" {
 		log.Printf("[reforgeOptimize:%d] failed computing optimized stats after %s: %s", requestID, time.Since(startedAt), optimizedResult.ErrorResult)
 		return optimizeError(optimizedResult.ErrorResult)
@@ -74,12 +107,15 @@ func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResul
 	optimizedCapStats := optimizedStats
 	optimizedCapStats.Stats[stats.MasteryRating] += 8 * core.MasteryRatingPerMasteryPoint
 	optimizedDelta := subtractUnitStats(optimizedCapStats, optimization.capBaseStats)
-	if request.GetDebug() {
+	if debug {
 		logOptimizedGearSummary(requestID, optimizedGear)
 		logCapEvaluation(requestID, search.hardCaps, search.softCaps, optimizedDelta)
 	}
-	log.Printf("[reforgeOptimize:%d] completed in %s score=%.3f selectedChoices=%d reforgedItems=%d", requestID, time.Since(startedAt), score, len(choices), countSelectedReforges(choices))
-	if request.GetDebug() {
+	if request.GetMode() != proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk {
+		log.Printf("[Reforge Optimizer] Reforge optimization completed requestID=%d total=%s score=%.3f", requestID, time.Since(startedAt), score)
+	}
+	if debug {
+		log.Printf("[reforgeOptimize:%d] selectedChoices=%d reforgedItems=%d", requestID, len(choices), countSelectedReforges(choices))
 		logSelectedChoices(requestID, choices)
 	}
 
@@ -91,7 +127,7 @@ func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResul
 	}
 }
 
-func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedConfig *normalizedReforgeOptimizeConfig) (*reforgeOptimization, error) {
+func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedConfig *normalizedReforgeOptimizeConfig, signals simsignals.Signals) (*reforgeOptimization, error) {
 	request = googleProto.Clone(request).(*proto.ReforgeOptimizeRequest)
 	request.Settings = normalizedConfig.settings
 	settings := normalizedConfig.settings
@@ -105,9 +141,12 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 	player := baseRaid.Parties[0].Players[0]
 	player.Equipment = baseGear
 
-	baseResult := core.ComputeStats(&proto.ComputeStatsRequest{Raid: baseRaid})
+	baseResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: baseRaid})
 	if baseResult.ErrorResult != "" {
 		return nil, errors.New(baseResult.ErrorResult)
+	}
+	if signals.Abort.IsTriggered() {
+		return nil, context.Canceled
 	}
 
 	basePlayerStats := baseResult.RaidStats.Parties[0].Players[0]
@@ -122,7 +161,7 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 	weights = applyRelativeStatCapWeights(weights, relativeCaps)
 	gemSortWeights := relativeStatCapGemSortWeights(weights, relativeCaps)
 
-	slotChoices, err := buildReforgeSlotChoices(request, baseRaid, baseGear, baseStats, weights, gemSortWeights, hardCaps, softCaps, len(relativeCaps) > 0)
+	slotChoices, err := buildReforgeSlotChoices(request, baseRaid, baseGear, baseStats, weights, gemSortWeights, hardCaps, softCaps, len(relativeCaps) > 0, signals)
 	if err != nil {
 		return nil, err
 	}
@@ -141,6 +180,12 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 		relativeCaps: relativeCaps,
 		slotChoices:  slotChoices,
 	}, nil
+}
+
+func computeReforgeStats(request *proto.ComputeStatsRequest) *proto.ComputeStatsResult {
+	reforgeComputeStatsMu.Lock()
+	defer reforgeComputeStatsMu.Unlock()
+	return core.ComputeStats(request)
 }
 
 func (optimization *reforgeOptimization) searchState() *reforgeSearchState {
@@ -190,6 +235,15 @@ func optimizeError(message string) *proto.ReforgeOptimizeResult {
 	return &proto.ReforgeOptimizeResult{
 		Error: &proto.ErrorOutcome{
 			Message: message,
+		},
+	}
+}
+
+func optimizeAborted() *proto.ReforgeOptimizeResult {
+	return &proto.ReforgeOptimizeResult{
+		Error: &proto.ErrorOutcome{
+			Type:    proto.ErrorOutcomeType_ErrorOutcomeAborted,
+			Message: "Reforge optimization aborted.",
 		},
 	}
 }

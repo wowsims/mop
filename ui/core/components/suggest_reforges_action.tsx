@@ -6,15 +6,16 @@ import i18n from '../../i18n/config.js';
 import * as Mechanics from '../constants/mechanics.js';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
+import { ReforgeSettings, StatCapType } from '../proto/api';
 import { Class, GemColor, ItemSlot, PseudoStat, Spec, Stat } from '../proto/common';
-import { UIGem as Gem, IndividualSimSettings, ReforgeSettings, StatCapType } from '../proto/ui';
+import { UIGem as Gem, IndividualSimSettings } from '../proto/ui';
 import { EquippedItem, ReforgeData } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
 import { getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
 import { translateSlotName, translateStat } from '../../i18n/localization';
 import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
-import { Sim } from '../sim';
+import { Sim, type ReforgeOptimizeConfig } from '../sim';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
 import { distinct, isDevMode } from '../utils';
@@ -26,6 +27,7 @@ import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
 import Toast from './toast';
 import { trackEvent, trackPageView } from '../../tracking/utils';
 import { ReforgeGearCache } from '../reforge_cache';
+import { RequestTypes } from '../sim_signal_manager';
 import { ProgressTrackerModal } from './progress_tracker_modal';
 import { getEmptySlotIconUrl } from './gear_picker/utils';
 import { SimSettingCategories } from '../constants/sim_settings';
@@ -67,9 +69,6 @@ export type ReforgeOptimizerOptions = {
 	statSelectionPresets?: UnitStatPresets[];
 	// Allows you to enable breakpoint limits for Treshold type caps
 	enableBreakpointLimits?: boolean;
-	// Allows you to modify the stats before they are returned for the calculations
-	// For example: Adding class specific Glyphs/Talents that are not added by the backend
-	updateGearStatsModifier?: (baseStats: Stats) => Stats;
 	// Allows you to get alternate default EPs
 	// For example for Fury where you have SMF and TG EPs
 	getEPDefaults?: (player: Player<any>) => Stats;
@@ -132,7 +131,6 @@ export class ReforgeOptimizer {
 	protected getEPDefaults: ReforgeOptimizerOptions['getEPDefaults'];
 	protected _statCaps: Stats = new Stats();
 	protected breakpointLimits: Stats = new Stats();
-	protected updateGearStatsModifier: ReforgeOptimizerOptions['updateGearStatsModifier'];
 	protected _softCapsConfig: StatCap[];
 	private useCustomEPValues = false;
 	private useSoftCapBreakpoints = true;
@@ -151,7 +149,6 @@ export class ReforgeOptimizer {
 	protected undershootCaps = new Stats();
 	protected wasCM: boolean = false;
 	protected isCancelling: boolean = false;
-	protected workers: ReforgeWorkerPool | null = null;
 	protected previousGear: Gear | null = null;
 	protected previousReforges = new Map<ItemSlot, ReforgeData>();
 	protected updatedGear: Gear | null = null;
@@ -188,7 +185,6 @@ export class ReforgeOptimizer {
 		this.defaults = simUI.individualConfig.defaults;
 		this.getEPDefaults = options?.getEPDefaults;
 		this.updateSoftCaps = options?.updateSoftCaps;
-		this.updateGearStatsModifier = options?.updateGearStatsModifier;
 		this._softCapsConfig = this.defaults.softCapBreakpoints || [];
 		this.statTooltips = { ...STAT_TOOLTIPS, ...options?.statTooltips };
 		this.additionalSoftCapTooltipInformation = { ...options?.additionalSoftCapTooltipInformation };
@@ -231,21 +227,6 @@ export class ReforgeOptimizer {
 				});
 			},
 		});
-
-		const syncReforgeWorkerPoolConcurrency = async () => {
-			const isWasm = await this.sim.isWasm();
-			let workerCount = navigator.hardwareConcurrency || 4;
-			if (isWasm) {
-				workerCount = Math.min(this.sim.getWasmConcurrency(), workerCount);
-			}
-			getReforgeWorkerPool().setNumWorkers(workerCount);
-		};
-
-		syncReforgeWorkerPoolConcurrency();
-		this.sim.wasmConcurrencyChangeEmitter.on(() => syncReforgeWorkerPoolConcurrency());
-
-		// Pre-warm the worker pool
-		getReforgeWorkerPool().warmUp();
 
 		const startReforgeOptimizationEntry: ActionGroupItem = {
 			label: i18n.t('sidebar.buttons.suggest_reforges.title'),
@@ -397,105 +378,6 @@ export class ReforgeOptimizer {
 		return weights;
 	}
 
-	// Checks that school-specific weights for Rating stats are set whenever there is a school-specific stat cap configured, and ensures that the
-	// EPs for such stats are not double counted.
-	static checkWeights(weights: Stats, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): Stats {
-		let validatedWeights = weights;
-
-		// Loop through Hit/Crit/Haste pure Rating stats.
-		for (const parentStat of [Stat.StatHitRating, Stat.StatCritRating, Stat.StatHasteRating]) {
-			const children = UnitStat.getChildren(parentStat);
-			const specificSchoolWeights = children.map(childStat => weights.getPseudoStat(childStat));
-
-			// If any of the children have non-zero EP, then set pure Rating EP
-			// to 0 and continue.
-			if (specificSchoolWeights.some(weight => weight !== 0)) {
-				validatedWeights = validatedWeights.withStat(parentStat, 0);
-				continue;
-			}
-
-			// If all children have 0 EP, then loop through children and check whether a cap has been configured for that child.
-			for (const childStat of children) {
-				if (pseudoStatHasCap(childStat, reforgeCaps, reforgeSoftCaps)) {
-					// The first time a cap is detected, set EP for that child to re-scaled parent Rating EP, set parent Rating EP
-					// to 0, and break.
-					const rescaledWeight = UnitStat.fromPseudoStat(childStat).convertPercentToRating(weights.getStat(parentStat));
-					validatedWeights = validatedWeights.withPseudoStat(childStat, rescaledWeight!);
-					validatedWeights = validatedWeights.withStat(parentStat, 0);
-					break;
-				}
-			}
-		}
-
-		return validatedWeights;
-	}
-
-	static includesStatWithCap(coefficients: YalpsCoefficients, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): boolean {
-		for (const coefficientKey of coefficients.keys()) {
-			if (coefficientKey.includes('PseudoStat')) {
-				const statKey = PseudoStat[coefficientKey as keyof typeof PseudoStat];
-
-				if (pseudoStatHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
-					return true;
-				}
-			} else if (coefficientKey.includes('Stat')) {
-				const statKey = Stat[coefficientKey as keyof typeof Stat];
-
-				if (statHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
-					return true;
-				}
-			} else if (coefficientKey.includes('Minus')) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	static includesCappedStat(coefficients: YalpsCoefficients, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): boolean {
-		for (const coefficientKey of coefficients.keys()) {
-			if (coefficientKey.includes('PseudoStat')) {
-				const statKey = PseudoStat[coefficientKey as keyof typeof PseudoStat];
-
-				if (pseudoStatIsCapped(statKey, reforgeCaps, reforgeSoftCaps)) {
-					return true;
-				}
-			} else if (coefficientKey.includes('Stat')) {
-				const statKey = Stat[coefficientKey as keyof typeof Stat];
-
-				if (statIsCapped(statKey, reforgeCaps, reforgeSoftCaps)) {
-					return true;
-				}
-			} else if (coefficientKey.includes('Minus')) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	static getCappedStatKeys(coefficients: YalpsCoefficients, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): string[] {
-		const cappedStatKeys: string[] = [];
-
-		for (const coefficientKey of coefficients.keys()) {
-			if (coefficientKey.includes('PseudoStat')) {
-				const statKey = PseudoStat[coefficientKey as keyof typeof PseudoStat];
-
-				if (pseudoStatHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
-					cappedStatKeys.push(coefficientKey);
-				}
-			} else if (coefficientKey.includes('Stat')) {
-				const statKey = Stat[coefficientKey as keyof typeof Stat];
-
-				if (statHasCap(statKey, reforgeCaps, reforgeSoftCaps)) {
-					cappedStatKeys.push(coefficientKey);
-				}
-			}
-		}
-
-		return cappedStatKeys;
-	}
-
 	buildReforgeButtonTooltip(softCapsConfigWithLimits: StatCap[]) {
 		return (
 			<>
@@ -593,7 +475,7 @@ export class ReforgeOptimizer {
 		if (this.relativeStatCapStat === -1 || !RelativeStatCap.hasRoRo(this.player)) {
 			this.relativeStatCap = null;
 		} else {
-			this.relativeStatCap = new RelativeStatCap(this.relativeStatCapStat, this.player, this.playerClass);
+			this.relativeStatCap = new RelativeStatCap(this.relativeStatCapStat);
 		}
 
 		this.relativeStatCapStatChangeEmitter.emit(eventID);
@@ -725,7 +607,7 @@ export class ReforgeOptimizer {
 						if (!canEnable || this.relativeStatCapStat === -1) {
 							this.relativeStatCap = null;
 						} else if (!this.relativeStatCap && this.relativeStatCapStat) {
-							this.relativeStatCap = new RelativeStatCap(this.relativeStatCapStat, this.player, this.playerClass);
+							this.relativeStatCap = new RelativeStatCap(this.relativeStatCapStat);
 						}
 
 						return canEnable;
@@ -1198,6 +1080,19 @@ export class ReforgeOptimizer {
 		return statCaps;
 	}
 
+	getReforgeOptimizeConfig(gear: Gear): ReforgeOptimizeConfig {
+		const settings = this.toProto();
+		settings.statCaps = this.processedStatCaps.toProto();
+
+		return {
+			gear,
+			preCapEPWeights: this.preCapEPs,
+			undershootCaps: this.undershootCaps,
+			settings,
+			softCaps: this.softCapsConfigWithLimits,
+		};
+	}
+
 	async optimizeReforges(gear?: Gear, batchRun?: boolean) {
 		if (isDevMode()) console.log('Starting Reforge optimization...');
 		const previousGear = gear || this.player.getGear();
@@ -1214,102 +1109,15 @@ export class ReforgeOptimizer {
 			}
 		}
 
-		const localOptimizedGear = await this.optimizeReforgesLocally(previousGear, previousReforges, batchRun);
-		if (localOptimizedGear) {
-			if (cacheKey) {
-				await this.reforgeGearCache.set(cacheKey, this.getReforgeCacheGearLink(localOptimizedGear));
-			}
-			return localOptimizedGear;
-		}
-
-		// First, clear all existing Reforges
-		if (isDevMode()) {
-			console.log('Clearing existing Reforges...');
-			console.log('The following slots will not be cleared:');
-			console.log(Array.from(this.frozenItemSlots.keys()).filter(key => this.getFrozenItemSlot(key)));
-		}
-		let updatedGear = previousGear.withoutReforges(this.player.canDualWield2H(), this.frozenItemSlots);
-
-		if (this.includeGems) {
-			updatedGear = updatedGear.withoutGems(this.player.canDualWield2H(), this.frozenItemSlots, true);
-		}
-
-		const baseStats = await this.updateGear(updatedGear);
-
-		// Compute effective stat caps for just the Reforge contribution
-		let reforgeCaps = baseStats.computeStatCapsDelta(this.processedStatCaps);
-
-		if (this.player.getSpec() == Spec.SpecGuardianDruid) {
-			reforgeCaps = reforgeCaps.withPseudoStat(
-				PseudoStat.PseudoStatMeleeHastePercent,
-				reforgeCaps.getPseudoStat(PseudoStat.PseudoStatMeleeHastePercent) / 1.5,
-			);
-		}
-		if (isDevMode()) {
-			console.log('Stat caps for Reforge contribution:');
-			console.log(reforgeCaps);
-		}
-		// Do the same for any soft cap breakpoints that were configured
-		const reforgeSoftCaps = this.computeReforgeSoftCaps(baseStats);
-
-		// Perform any required processing on the pre-cap EPs to make them internally consistent with the
-		// configured hard caps and soft caps.
-		let validatedWeights = ReforgeOptimizer.checkWeights(this.preCapEPs, reforgeCaps, reforgeSoftCaps);
-
-		if (this.relativeStatCap) {
-			validatedWeights = this.relativeStatCap.updateWeights(validatedWeights);
-		}
-
-		// Set up YALPS model
-		const variables = this.buildYalpsVariables(updatedGear, validatedWeights, reforgeCaps, reforgeSoftCaps);
-		const constraints = this.buildYalpsConstraints(updatedGear, baseStats);
-
-		// After building variables and constraints we check for
-		// SocketBonusLink constraints for the all-or-nothing socket bonus variables.
-		for (const coefficients of variables.values()) {
-			for (const key of coefficients.keys()) {
-				if (key.startsWith('SocketBonusLink_') && !constraints.has(key)) {
-					constraints.set(key, lessEq(0));
-				}
-			}
-		}
-
-		// Solve in multiple passes to enforce caps
-		const optimized = await this.solveModel(
-			validatedWeights,
-			reforgeCaps,
-			reforgeSoftCaps,
-			variables,
-			constraints,
-			updatedGear,
-			(this.includeTimeout ? (this.relativeStatCap ? 120 : 30) : 3600) / (batchRun ? 4 : 1),
-		);
-
-		updatedGear = optimized.gear;
+		const optimizedGear = await this.optimizeReforgesLocally(previousGear, previousReforges, batchRun);
 		if (cacheKey) {
-			await this.reforgeGearCache.set(cacheKey, this.getReforgeCacheGearLink(updatedGear));
+			await this.reforgeGearCache.set(cacheKey, this.getReforgeCacheGearLink(optimizedGear));
 		}
-
-		this.updateReforgeOptimizationState(previousGear, previousReforges, updatedGear, batchRun);
-
-		return updatedGear;
+		return optimizedGear;
 	}
 
-	private async optimizeReforgesLocally(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, batchRun?: boolean): Promise<Gear | null> {
-		if (this.updateGearStatsModifier) {
-			return null;
-		}
-
-		const settings = this.toProto();
-		settings.statCaps = this.processedStatCaps.toProto();
-
-		const result = await this.sim.reforgeOptimize({
-			gear: previousGear,
-			preCapEPWeights: this.preCapEPs,
-			undershootCaps: this.undershootCaps,
-			settings,
-			softCaps: this.softCapsConfigWithLimits,
-		});
+	private async optimizeReforgesLocally(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, batchRun?: boolean): Promise<Gear> {
+		const result = await this.sim.reforgeOptimize(this.getReforgeOptimizeConfig(previousGear));
 		if (!result.optimizedGear) {
 			throw new Error('Local Go reforge optimizer did not return optimized gear.');
 		}
@@ -1391,751 +1199,8 @@ export class ReforgeOptimizer {
 
 	async updateGear(gear: Gear): Promise<Stats> {
 		const currentStats = await this.sim.getCharacterStatsForGear(TypedEvent.nextEventID(), gear);
-		let baseStats = Stats.fromProto(currentStats.finalStats);
-		baseStats = baseStats.addStat(Stat.StatMasteryRating, this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT);
-		if (this.updateGearStatsModifier) baseStats = this.updateGearStatsModifier(baseStats);
-		return baseStats;
-	}
-
-	computeReforgeSoftCaps(baseStats: Stats): StatCap[] {
-		const reforgeSoftCaps: StatCap[] = [];
-
-		if (!this.isAllowedToOverrideStatCaps) {
-			this.softCapsConfigWithLimits.slice().forEach(config => {
-				let weights = config.postCapEPs.slice();
-				const relativeBreakpoints = [];
-
-				for (const breakpoint of config.breakpoints) {
-					relativeBreakpoints.push(baseStats.computeGapToCap(config.unitStat, breakpoint));
-				}
-
-				// For stats that are configured as thresholds rather than soft caps,
-				// reverse the order of evaluation of the breakpoints so that the
-				// largest relevant threshold is always targeted. Likewise, use a
-				// single value for the post-cap EP for these stats, which should be
-				// interpreted (and computed) as the residual stat value just after
-				// passing a threshold discontinuity.
-				if (config.capType == StatCapType.TypeThreshold) {
-					relativeBreakpoints.reverse();
-					weights = Array(relativeBreakpoints.length).fill(weights[0]);
-				}
-
-				reforgeSoftCaps.push(new StatCap(config.unitStat, relativeBreakpoints, config.capType, weights));
-			});
-		}
-
-		return reforgeSoftCaps;
-	}
-
-	buildYalpsVariables(gear: Gear, preCapEPs: Stats, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): YalpsVariables {
-		const variables = new Map<string, YalpsCoefficients>();
-		const epStats = this.simUI.individualConfig.epStats;
-		const gemsToInclude = this.buildGemOptions(preCapEPs, reforgeCaps, reforgeSoftCaps);
-
-		for (const slot of gear.getItemSlots()) {
-			const item = gear.getEquippedItem(slot);
-
-			if (!item || this.getFrozenItemSlot(slot)) {
-				continue;
-			}
-
-			const scaledItem = item.withDynamicStats();
-
-			for (const reforgeData of this.player.getAvailableReforgings(scaledItem)) {
-				if (!epStats.includes(reforgeData.toStat) && reforgeData.toStat != Stat.StatExpertiseRating) {
-					continue;
-				}
-
-				const variableKey = `${slot}_${reforgeData.id}`;
-				const coefficients = new Map<string, number>();
-				coefficients.set(ItemSlot[slot], 1);
-				this.applyReforgeStat(coefficients, reforgeData.fromStat, reforgeData.fromAmount, preCapEPs);
-				this.applyReforgeStat(coefficients, reforgeData.toStat, reforgeData.toAmount, preCapEPs);
-				variables.set(variableKey, coefficients);
-			}
-
-			if (!this.includeGems) {
-				continue;
-			}
-			const uiItem = item.item;
-			const socketColors = item.curSocketColors(this.player.isBlacksmithing());
-			if (!this.includeEOTBPGemSocket && (isShaTouchedWeapon(uiItem) || isThroneOfThunderWeapon(uiItem) || isRebornWeapon(uiItem))) {
-				socketColors.pop();
-			}
-
-			let socketBonusNormalization: number = socketColors.length || 1;
-
-			if (socketBonusNormalization > 1 && socketColors[0] === GemColor.GemColorMeta) {
-				socketBonusNormalization -= 1;
-			}
-
-			const socketBonusStats = new Stats(scaledItem.item.socketBonus);
-			const distributedSocketBonus = socketBonusStats.scale(1.0 / socketBonusNormalization).getBuffedStats();
-			const fullSocketBonus = socketBonusStats.getBuffedStats();
-
-			// First determine whether the socket bonus should be obviously matched in order to save on brute force computation.
-			let forceSocketBonus: boolean = false;
-			const socketBonusAsCoeff = new Map<string, number>();
-
-			for (const [stat, value] of distributedSocketBonus.entries()) {
-				this.applyReforgeStat(socketBonusAsCoeff, stat, value, preCapEPs);
-			}
-
-			if (socketBonusAsCoeff.size) {
-				if (
-					ReforgeOptimizer.includesStatWithCap(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps) &&
-					!ReforgeOptimizer.includesCappedStat(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps) &&
-					socketBonusNormalization > 1
-				) {
-					forceSocketBonus = true;
-				}
-
-				const dummyVariables = new Map<string, YalpsCoefficients>();
-				dummyVariables.set('matched', new Map<string, number>());
-				dummyVariables.set('unmatched', new Map<string, number>());
-
-				for (const socketColor of socketColors.values()) {
-					if (![GemColor.GemColorRed, GemColor.GemColorBlue, GemColor.GemColorYellow, GemColor.GemColorPrismatic].includes(socketColor)) {
-						break;
-					}
-
-					const matchedCoeffs = dummyVariables.get('matched')!;
-					const worstMatchedGemData = gemsToInclude.get(socketColor)!.at(-1)!;
-
-					for (const [key, value] of worstMatchedGemData.coefficients.entries()) {
-						matchedCoeffs.set(key, (matchedCoeffs.get(key) || 0) + value);
-					}
-
-					for (const [key, value] of socketBonusAsCoeff.entries()) {
-						matchedCoeffs.set(key, (matchedCoeffs.get(key) || 0) + value);
-					}
-
-					const unmatchedCoeffs = dummyVariables.get('unmatched')!;
-					const worstUnmatchedGemData = gemsToInclude.get(GemColor.GemColorPrismatic)!.at(0)!;
-
-					for (const [key, value] of worstUnmatchedGemData.coefficients.entries()) {
-						unmatchedCoeffs.set(key, (unmatchedCoeffs.get(key) || 0) + value);
-					}
-				}
-
-				const scoredDummyVariables = this.updateReforgeScores(dummyVariables, preCapEPs);
-
-				if (
-					scoredDummyVariables.get('matched')!.get('score')! > scoredDummyVariables.get('unmatched')!.get('score')! &&
-					(socketBonusNormalization > 1 ||
-						(ReforgeOptimizer.includesStatWithCap(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps) &&
-							!ReforgeOptimizer.includesCappedStat(socketBonusAsCoeff, reforgeCaps, reforgeSoftCaps)))
-				) {
-					forceSocketBonus = true;
-				}
-			}
-
-			socketColors.forEach((socketColor, socketIdx) => {
-				let gemColorKeys: GemColor[] = [];
-
-				if ([GemColor.GemColorPrismatic, GemColor.GemColorCogwheel, GemColor.GemColorShaTouched].includes(socketColor)) {
-					gemColorKeys.push(socketColor);
-				} else if ([GemColor.GemColorRed, GemColor.GemColorBlue, GemColor.GemColorYellow].includes(socketColor)) {
-					gemColorKeys.push(socketColor);
-
-					if (!forceSocketBonus) {
-						gemColorKeys.push(GemColor.GemColorPrismatic);
-					}
-				} else {
-					return;
-				}
-
-				const constraintKey = `${slot}_${socketIdx}`;
-
-				for (const gemColorKey of gemColorKeys) {
-					for (const gemData of gemsToInclude.get(gemColorKey)!) {
-						const variableKey = `${constraintKey}_${gemData.gem.id}`;
-						const coefficients = new Map<string, number>(gemData.coefficients);
-						coefficients.set(constraintKey, 1);
-
-						if (gemMatchesSocket(gemData.gem, socketColor)) {
-							if (forceSocketBonus) {
-								for (const [stat, value] of distributedSocketBonus.entries()) {
-									this.applyReforgeStat(coefficients, stat, value, preCapEPs);
-								}
-							} else {
-								coefficients.set(`SocketBonusLink_${slot}_${socketIdx}`, -1);
-							}
-						}
-						// Performance optimisation to force socket bonus matching for Jewelcrafting gems.
-						else if (gemData.isJC) {
-							continue;
-						}
-
-						if (gemColorKey == GemColor.GemColorCogwheel) {
-							coefficients.set(`${gemData.gem.id}`, 1);
-						}
-						if (gemColorKey == GemColor.GemColorShaTouched) {
-							coefficients.set('ShaTouchedGem', 1);
-						}
-						if (gemData.isJC) {
-							coefficients.set('JewelcraftingGem', 1);
-						}
-
-						variables.set(variableKey, coefficients);
-					}
-				}
-			});
-
-			if (!forceSocketBonus && socketBonusNormalization > 0) {
-				const socketBonusKey = `SocketBonus_${slot}`;
-				const socketBonusCoefficients = new Map<string, number>();
-
-				for (const [stat, value] of fullSocketBonus.entries()) {
-					this.applyReforgeStat(socketBonusCoefficients, stat, value, preCapEPs);
-				}
-
-				socketColors.forEach((socketColor, socketIdx) => {
-					if ([GemColor.GemColorRed, GemColor.GemColorBlue, GemColor.GemColorYellow, GemColor.GemColorPrismatic].includes(socketColor)) {
-						socketBonusCoefficients.set(`SocketBonusLink_${slot}_${socketIdx}`, 1);
-					}
-				});
-
-				variables.set(socketBonusKey, socketBonusCoefficients);
-			}
-		}
-
-		return variables;
-	}
-
-	buildGemOptions(preCapEPs: Stats, reforgeCaps: Stats, reforgeSoftCaps: StatCap[]): Map<GemColor, GemData[]> {
-		const gemsToInclude = new Map<GemColor, GemData[]>();
-
-		if (!this.includeGems) {
-			return gemsToInclude;
-		}
-
-		const hasJC = this.player.hasProfession(Profession.Jewelcrafting);
-		const epStats = this.simUI.individualConfig.epStats;
-
-		for (const socketColor of [
-			GemColor.GemColorPrismatic,
-			GemColor.GemColorShaTouched,
-			GemColor.GemColorCogwheel,
-			GemColor.GemColorRed,
-			GemColor.GemColorBlue,
-			GemColor.GemColorYellow,
-		]) {
-			const allGemsOfColor = this.player.getGems(socketColor);
-			const filteredGemDataForColor = new Array<GemData>();
-			let weightsForSorting = preCapEPs;
-
-			if (this.relativeStatCap) {
-				weightsForSorting = weightsForSorting.withUnitStat(
-					this.relativeStatCap.forcedHighestStat,
-					weightsForSorting.getUnitStat(this.relativeStatCap.constrainedStats[0]),
-				);
-			}
-
-			for (const gem of allGemsOfColor) {
-				const isJC = gem.requiredProfession == Profession.Jewelcrafting;
-				if (
-					(isJC && !hasJC) ||
-					// Force non-tank specs to use exclusively primary stat JC gems to speed up calculations.
-					// May need to revisit this approximation at higher ilvls.
-					(isJC && !this.isTankSpec && !gemMatchesStats(gem, [Stat.StatStrength, Stat.StatAgility, Stat.StatIntellect])) ||
-					// Remove Hit gems for Hybrid casters as they can use Spirit as well and this speeds up calculations
-					(this.isHybridCaster && !!gem.stats[Stat.StatHitRating]) ||
-					gem.name.includes('Perfect') ||
-					!gemMatchesSocket(gem, socketColor)
-				) {
-					continue;
-				}
-
-				let allStatsValid = true;
-				const coefficients = new Map<string, number>();
-
-				for (const [statIdx, statValue] of gem.stats.entries()) {
-					if (statValue == 0) {
-						continue;
-					}
-
-					if (!epStats.includes(statIdx) && statIdx != Stat.StatExpertiseRating) {
-						allStatsValid = false;
-						break;
-					}
-
-					this.applyReforgeStat(coefficients, statIdx, statValue, weightsForSorting);
-				}
-
-				if (!allStatsValid) {
-					continue;
-				}
-
-				// Create single-entry map to re-use scoring code.
-				const gemVariableMap = new Map<string, YalpsCoefficients>([['temp', coefficients]]);
-				const scoredGemVariableMap = this.updateReforgeScores(gemVariableMap, weightsForSorting);
-				filteredGemDataForColor.push({
-					gem,
-					isJC,
-					coefficients: scoredGemVariableMap.get('temp')!,
-				});
-			}
-
-			// Sort from highest to lowest pre-cap EP.
-			filteredGemDataForColor.sort((a, b) => b.coefficients.get('score')! - a.coefficients.get('score')!);
-
-			// Go down the list and include all gems until we find the highest EP option with zero capped stats.
-			let maxGemOptionsForStat: number = this.isTankSpec ? 3 : 4;
-
-			if (socketColor == GemColor.GemColorYellow && !this.relativeStatCap) {
-				let foundCritOrHasteCap = false;
-
-				for (const parentStat of [Stat.StatCritRating, Stat.StatHasteRating]) {
-					for (const childStat of UnitStat.getChildren(parentStat)) {
-						if (pseudoStatHasCap(childStat, reforgeCaps, reforgeSoftCaps)) {
-							foundCritOrHasteCap = true;
-						}
-					}
-				}
-
-				if (!foundCritOrHasteCap) {
-					maxGemOptionsForStat = 1;
-				}
-			}
-
-			const includedGemDataForColor = new Array<GemData>();
-			let foundUncappedJCGem = false;
-			let foundUncappedNormalGem = false;
-			let numUncappedNormalGems = 0;
-			const numGemOptionsForStat = new Map<string, number>();
-
-			for (const gemData of filteredGemDataForColor) {
-				const cappedStatKeys = ReforgeOptimizer.getCappedStatKeys(gemData.coefficients, reforgeCaps, reforgeSoftCaps);
-				let isRedundantGem: boolean = false;
-
-				for (const statKey of cappedStatKeys) {
-					const numExistingOptions = numGemOptionsForStat.get(statKey) || 0;
-
-					if (numExistingOptions == maxGemOptionsForStat) {
-						isRedundantGem = true;
-					} else if (!gemData.isJC) {
-						numGemOptionsForStat.set(statKey, numExistingOptions + 1);
-					}
-				}
-
-				if ((!gemData.isJC || !foundUncappedJCGem) && !isRedundantGem && (cappedStatKeys.length == 0 || !foundUncappedNormalGem)) {
-					includedGemDataForColor.push(gemData);
-				}
-
-				if (cappedStatKeys.length == 0 && socketColor != GemColor.GemColorCogwheel) {
-					if (gemData.isJC) {
-						foundUncappedJCGem = true;
-					} else {
-						foundUncappedNormalGem = true;
-						numUncappedNormalGems++;
-
-						if (!this.relativeStatCap || numUncappedNormalGems == 3) {
-							break;
-						}
-					}
-				}
-			}
-
-			gemsToInclude.set(socketColor, includedGemDataForColor);
-		}
-
-		return gemsToInclude;
-	}
-
-	// Apply stat dependencies before setting optimization coefficients
-	applyReforgeStat(coefficients: YalpsCoefficients, stat: Stat, amount: number, preCapEPs: Stats) {
-		if (stat == Stat.StatSpirit && this.player.getRace() == Race.RaceHuman) {
-			amount *= 1.03;
-		}
-
-		if (stat == Stat.StatHasteRating || stat == Stat.StatMasteryRating || stat == Stat.StatSpirit) {
-			amount *= this.player.getTotalAmplificationTrinketStatModifier();
-		}
-
-		// Handle Spirit to Spell Hit conversion for hybrid casters separately from standard dependencies
-		if (
-			preCapEPs.getPseudoStat(PseudoStat.PseudoStatSpellHitPercent) != 0 &&
-			((stat == Stat.StatSpirit && this.isHybridCaster) || stat == Stat.StatExpertiseRating)
-		) {
-			this.setPseudoStatCoefficient(coefficients, PseudoStat.PseudoStatSpellHitPercent, amount / Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT);
-		}
-
-		// If a highest Stat constraint is to be enforced, then update the
-		// associated coefficient if applicable.
-		this.relativeStatCap?.updateCoefficients(coefficients, stat, amount);
-
-		// If the pre-cap EP for the root stat is non-zero, then apply
-		// the root stat directly and don't look for any children.
-		if (preCapEPs.getStat(stat) != 0) {
-			this.setStatCoefficient(coefficients, stat, amount);
-			return;
-		}
-
-		// Loop over all dependent PseudoStats
-		for (const childStat of UnitStat.getChildren(stat)) {
-			// Only add a dependency if the child has an EP value associated with it
-			if (preCapEPs.getPseudoStat(childStat) != 0) {
-				this.setPseudoStatCoefficient(coefficients, childStat, UnitStat.fromPseudoStat(childStat).convertRatingToPercent(amount)!);
-			}
-		}
-	}
-
-	setStatCoefficient(coefficients: YalpsCoefficients, stat: Stat, amount: number) {
-		const currentValue = coefficients.get(Stat[stat]) || 0;
-		coefficients.set(Stat[stat], currentValue + amount);
-	}
-
-	setPseudoStatCoefficient(coefficients: YalpsCoefficients, pseudoStat: PseudoStat, amount: number) {
-		const currentValue = coefficients.get(PseudoStat[pseudoStat]) || 0;
-		coefficients.set(PseudoStat[pseudoStat], currentValue + amount);
-	}
-
-	buildYalpsConstraints(gear: Gear, baseStats: Stats): YalpsConstraints {
-		const constraints = new Map<string, Constraint>();
-		const allCogwheelGems = this.includeGems ? this.player.getGems(GemColor.GemColorCogwheel) : [];
-
-		for (const slot of gear.getItemSlots()) {
-			constraints.set(ItemSlot[slot], lessEq(1));
-
-			if (this.includeGems) {
-				gear.getEquippedItem(slot)
-					?.curSocketColors(this.player.isBlacksmithing())
-					.forEach((_, socketIdx) => {
-						constraints.set(`${slot}_${socketIdx}`, lessEq(1));
-					});
-
-				// Enforce uniqueness of Sha-Touched gems.
-				constraints.set('ShaTouchedGem', lessEq(1));
-
-				// Enforce two Jewelcrafting gems.
-				constraints.set('JewelcraftingGem', lessEq(2));
-
-				// Enforce uniqueness of Cogwheel gems.
-				for (const cogwheelGem of allCogwheelGems) {
-					if (!cogwheelGem.unique) continue;
-					constraints.set(`${cogwheelGem.id}`, lessEq(1));
-				}
-			}
-		}
-
-		if (this.relativeStatCap) {
-			this.relativeStatCap.updateConstraints(constraints, gear, baseStats);
-		}
-
-		return constraints;
-	}
-
-	async solveModel(
-		weights: Stats,
-		reforgeCaps: Stats,
-		reforgeSoftCaps: StatCap[],
-		variables: YalpsVariables,
-		constraints: YalpsConstraints,
-		currentGear: Gear,
-		maxSeconds: number,
-	): Promise<{ result: number; gear: Gear }> {
-		// Calculate EP scores for each Reforge option
-		if (isDevMode()) {
-			console.log('Stat weights for this iteration:');
-			console.log(weights);
-		}
-		const updatedVariables = this.updateReforgeScores(variables, weights);
-		if (isDevMode()) {
-			console.log('Optimization variables and constraints for this iteration:');
-			console.log(updatedVariables);
-			console.log(constraints);
-		}
-
-		const model: LPModel = {
-			direction: 'maximize',
-			objective: 'score',
-			constraints: serializeConstraints(constraints),
-			variables: serializeVariables(updatedVariables),
-			binaries: true,
-		};
-
-		const startTimeMs: number = Date.now();
-
-		this.workers = getReforgeWorkerPool();
-		const solution: LPSolution = await this.workers.solve(model, {
-			timeout: maxSeconds * 1000,
-			tolerance: 0.005, // unused currently
-		});
-		if (isDevMode()) {
-			console.log('LP solution for this iteration:');
-			console.log(solution);
-		}
-		const elapsedSeconds: number = (Date.now() - startTimeMs) / 1000;
-
-		if (isNaN(solution.result) || solution.result == Infinity) {
-			if (solution.status == 'infeasible') {
-				throw 'The specified stat caps are impossible to achieve. Consider changing any upper bound stat caps to lower bounds instead.';
-			} else if (solution.status == 'timedout' && this.includeTimeout) {
-				throw 'Solver timed out before finding a feasible solution. Consider un-checking "Limit execution time" in the Reforge settings.';
-			} else {
-				throw solution.status;
-			}
-		}
-
-		// Apply the current solution
-		const solvedGear = await this.applyLPSolution(currentGear, solution);
-
-		// Check if any unconstrained stats exceeded their specified cap.
-		// If so, add these stats to the constraint list and re-run the solver.
-		// If no unconstrained caps were exceeded, then we're done.
-		const [anyCapsExceeded, updatedConstraints, updatedWeights] = this.checkCaps(
-			solution,
-			reforgeCaps,
-			reforgeSoftCaps,
-			updatedVariables,
-			constraints,
-			weights,
-		);
-
-		if (!anyCapsExceeded) {
-			return { result: solution.result, gear: solvedGear };
-		} else {
-			await sleep(100);
-			return this.solveModel(
-				updatedWeights,
-				reforgeCaps,
-				reforgeSoftCaps,
-				updatedVariables,
-				updatedConstraints,
-				solvedGear,
-				Math.max(maxSeconds - elapsedSeconds, 1),
-			);
-		}
-	}
-
-	updateReforgeScores(variables: YalpsVariables, weights: Stats): YalpsVariables {
-		const updatedVariables = new Map<string, YalpsCoefficients>();
-
-		for (const [variableKey, coefficients] of variables.entries()) {
-			let score = 0;
-			const updatedCoefficients = new Map<string, number>();
-
-			for (const [coefficientKey, value] of coefficients.entries()) {
-				updatedCoefficients.set(coefficientKey, value);
-
-				// Determine whether the key corresponds to a stat change. If so, apply
-				// current EP for that stat. It is assumed that the supplied weights have
-				// already been updated to post-cap values for any stats that were
-				// constrained to be capped in a previous iteration.
-				if (coefficientKey.includes('PseudoStat')) {
-					const statKey = (PseudoStat as any)[coefficientKey] as PseudoStat;
-					score += weights.getPseudoStat(statKey) * value;
-				} else if (coefficientKey.includes('Stat')) {
-					const statKey = (Stat as any)[coefficientKey] as Stat;
-					score += weights.getStat(statKey) * value;
-				}
-			}
-			updatedCoefficients.set('score', score);
-			updatedVariables.set(variableKey, updatedCoefficients);
-		}
-
-		return updatedVariables;
-	}
-
-	async applyLPSolution(gear: Gear, solution: LPSolution): Promise<Gear> {
-		let updatedGear = gear.withoutReforges(this.player.canDualWield2H(), this.frozenItemSlots);
-
-		if (this.includeGems) {
-			updatedGear = updatedGear.withoutGems(this.player.canDualWield2H(), this.frozenItemSlots, true);
-		}
-
-		for (const [variableKey, _coefficient] of solution.variables) {
-			const splitKey = variableKey.split('_');
-			const slot = parseInt(splitKey[0]) as ItemSlot;
-			const equippedItem = updatedGear.getEquippedItem(slot);
-
-			if (equippedItem) {
-				if (splitKey.length > 2) {
-					const socketIdx = parseInt(splitKey[1]);
-					const gemId = parseInt(splitKey[2]);
-					updatedGear = updatedGear.withGem(slot, socketIdx, this.sim.db.lookupGem(gemId));
-					continue;
-				}
-
-				const reforgeId = parseInt(splitKey[1]);
-				updatedGear = updatedGear.withEquippedItem(
-					slot,
-					equippedItem.withReforge(this.sim.db.getReforgeById(reforgeId)!),
-					this.player.canDualWield2H(),
-				);
-			}
-		}
-
-		if (this.includeGems) {
-			updatedGear = this.minimizeRegems(updatedGear);
-		}
-
-		await this.updateGear(updatedGear);
-		return updatedGear;
-	}
-
-	checkCaps(
-		solution: LPSolution,
-		reforgeCaps: Stats,
-		reforgeSoftCaps: StatCap[],
-		variables: YalpsVariables,
-		constraints: YalpsConstraints,
-		currentWeights: Stats,
-	): [boolean, YalpsConstraints, Stats] {
-		// First add up the total stat changes from the solution
-		let reforgeStatContribution = new Stats();
-
-		for (const [variableKey, _coefficient] of solution.variables) {
-			for (const [coefficientKey, value] of variables.get(variableKey)!.entries()) {
-				if (coefficientKey.includes('PseudoStat')) {
-					const statKey = (PseudoStat as any)[coefficientKey] as PseudoStat;
-					reforgeStatContribution = reforgeStatContribution.addPseudoStat(statKey, value);
-				} else if (coefficientKey.includes('Stat')) {
-					const statKey = (Stat as any)[coefficientKey] as Stat;
-					reforgeStatContribution = reforgeStatContribution.addStat(statKey, value);
-				}
-			}
-		}
-
-		if (isDevMode()) {
-			console.log('Total stat contribution from Reforging:');
-			console.log(reforgeStatContribution);
-		}
-
-		// Then check whether any unconstrained stats exceed their cap
-		let anyCapsExceeded = false;
-		const updatedConstraints = new Map<string, Constraint>(constraints);
-		let updatedWeights = currentWeights;
-
-		for (const [unitStat, value] of reforgeStatContribution.asUnitStatArray()) {
-			const cap = reforgeCaps.getUnitStat(unitStat);
-			const statName = unitStat.getKey();
-
-			if (cap !== 0 && value > cap && !constraints.has(statName)) {
-				anyCapsExceeded = true;
-				if (isDevMode()) console.log('Cap exceeded for: %s', statName);
-
-				// Set EP to 0 for hard capped stats unless they are treated as upper bounds.
-				if (this.undershootCaps.getUnitStat(unitStat)) {
-					updatedConstraints.set(statName, lessEq(cap));
-				} else {
-					updatedConstraints.set(statName, greaterEq(cap));
-					updatedWeights = updatedWeights.withUnitStat(unitStat, 0);
-				}
-			}
-		}
-
-		// If hard caps are all taken care of, then deal with any remaining soft cap breakpoints.
-		// Keep breakpoints that were not exceeded so they can still be enforced after later solver
-		// passes for other caps change the optimal reforge solution.
-		if (!anyCapsExceeded && reforgeSoftCaps.length > 0) {
-			const remainingSoftCaps: StatCap[] = [];
-
-			for (const softCap of reforgeSoftCaps) {
-				if (anyCapsExceeded) {
-					remainingSoftCaps.push(softCap);
-					continue;
-				}
-
-				const unitStat = softCap.unitStat;
-				const statName = unitStat.getKey();
-				const currentValue = reforgeStatContribution.getUnitStat(unitStat);
-				const exceededBreakpointIdx = softCap.breakpoints.findIndex(breakpoint => currentValue > breakpoint);
-
-				if (exceededBreakpointIdx == -1) {
-					remainingSoftCaps.push(softCap);
-					continue;
-				}
-
-				updatedConstraints.set(statName, greaterEq(softCap.breakpoints[exceededBreakpointIdx]));
-				updatedWeights = updatedWeights.withUnitStat(unitStat, softCap.postCapEPs[exceededBreakpointIdx]);
-				anyCapsExceeded = true;
-				if (isDevMode()) console.log('Breakpoint exceeded for: %s', statName);
-
-				// For true soft cap stats (evaluated in ascending order), remove any breakpoint that was
-				// exceeded from the configuration. In contrast, for threshold stats (evaluated in descending
-				// order), always remove the entry completely after the first pass.
-				if (softCap.capType == StatCapType.TypeSoftCap) {
-					softCap.breakpoints = softCap.breakpoints.slice(exceededBreakpointIdx + 1);
-					softCap.postCapEPs = softCap.postCapEPs.slice(exceededBreakpointIdx + 1);
-
-					if (softCap.breakpoints.length > 0) {
-						remainingSoftCaps.push(softCap);
-					}
-				}
-			}
-
-			reforgeSoftCaps.splice(0, reforgeSoftCaps.length, ...remainingSoftCaps);
-		}
-
-		return [anyCapsExceeded, updatedConstraints, updatedWeights];
-	}
-
-	minimizeRegems(newGear: Gear): Gear {
-		const originalGear = this.previousGear;
-
-		if (!originalGear) {
-			return newGear;
-		}
-
-		const isBlacksmithing = this.player.isBlacksmithing();
-		const finalizedSocketKeys: string[] = [];
-
-		for (const slot of newGear.getItemSlots()) {
-			const newItem = newGear.getEquippedItem(slot);
-			const originalItem = originalGear.getEquippedItem(slot);
-
-			if (!newItem || !originalItem) {
-				continue;
-			}
-
-			const newGems = newItem.curGems(isBlacksmithing);
-			const originalGems = originalItem.curGems(isBlacksmithing);
-
-			for (const [socketIdx, socketColor] of newItem.curSocketColors(isBlacksmithing).entries()) {
-				const socketKey = `${slot}_${socketIdx}`;
-
-				if (finalizedSocketKeys.includes(socketKey)) {
-					continue;
-				}
-
-				finalizedSocketKeys.push(socketKey);
-
-				if (!newGems[socketIdx] || !originalGems[socketIdx] || newGems[socketIdx]!.id === originalGems[socketIdx]!.id) {
-					continue;
-				}
-
-				if (gemMatchesSocket(newGems[socketIdx]!, socketColor) && !gemMatchesSocket(originalGems[socketIdx]!, socketColor)) {
-					continue;
-				}
-
-				for (const [matchedSlot, matchedSocketIdx] of newGear.findGem(originalGems[socketIdx]!, isBlacksmithing)) {
-					if (this.frozenItemSlots.has(matchedSlot)) {
-						continue;
-					}
-
-					const matchedSocketKey = `${matchedSlot}_${matchedSocketIdx}`;
-
-					if (finalizedSocketKeys.includes(matchedSocketKey)) {
-						continue;
-					}
-
-					const matchedSocketColor = newGear.getEquippedItem(matchedSlot)!.curSocketColors(isBlacksmithing)[matchedSocketIdx];
-
-					if (gemMatchesSocket(originalGems[socketIdx]!, matchedSocketColor) && !gemMatchesSocket(newGems[socketIdx]!, matchedSocketColor)) {
-						continue;
-					}
-
-					finalizedSocketKeys.push(matchedSocketKey);
-					newGear = newGear.withGem(slot, socketIdx, originalGems[socketIdx]);
-					newGear = newGear.withGem(matchedSlot, matchedSocketIdx, newGems[socketIdx]);
-					break;
-				}
-			}
-		}
-
-		return newGear;
+		const baseStats = Stats.fromProto(currentStats.finalStats);
+		return baseStats.addStat(Stat.StatMasteryRating, this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT);
 	}
 
 	private get baseMastery() {
@@ -2372,7 +1437,7 @@ export class ReforgeOptimizer {
 	}
 
 	async abortReforgeOptimization() {
-		this.workers?.abort();
+		await this.sim.signalManager.abortType(RequestTypes.ReforgeOptimize);
 	}
 
 	fromProto(eventID: EventID, proto: ReforgeSettings) {
