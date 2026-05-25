@@ -18,7 +18,7 @@ argument-hint: 'Describe the reforge optimizer bug, fixture, or behavior to cont
 - Local/server HTTP endpoint and frontend worker request name: `/reforgeOptimizeAsync`. Browser WASM still exposes the Go function name `reforgeOptimize`, but the worker handler key is `reforgeOptimizeAsync`.
 - Request/response protos: `ReforgeOptimizeRequest`, `ReforgeOptimizeResult`, `ReforgeSettings`, `StatCapType`, `StatCapConfig`, `EquipmentSpec`, `ItemSpec`.
 - Final stats must be validated through `core.ComputeStats`; MIP deltas are approximate and are not the final source of truth.
-- HiGHS is the required default solver in dev/release flows. Local/server builds use the embedded `ui/worker/highs.wasm` asset through `github.com/bytecodealliance/wasmtime-go`; browser WASM builds call the worker-provided HiGHS JS bridge. Do not reintroduce the native HiGHS C binding.
+- HiGHS is the required default solver in dev/release flows. Local/server builds use the embedded `ui/worker/highs.wasm` asset through the pure-Go `github.com/tetratelabs/wazero` runtime; browser WASM builds call the worker-provided HiGHS JS bridge. Do not reintroduce the native HiGHS C binding or a CGO-only runtime dependency.
 - HiGHS bridges: `sim/core/reforge_optimizer/highswasm.go` for non-browser Go builds and `sim/core/reforge_optimizer/highs_js.go` for `js && wasm` builds.
 - Detailed backend reforge logging is opt-in through `ReforgeOptimizeRequest.debug`; leave it false for normal requests and set it true when capturing solver/request diagnostics.
 

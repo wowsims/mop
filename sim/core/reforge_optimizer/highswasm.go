@@ -3,6 +3,8 @@
 package reforgeoptimizer
 
 import (
+	"bytes"
+	"context"
 	"encoding/binary"
 	"fmt"
 	"math"
@@ -12,7 +14,8 @@ import (
 	"sync"
 	"time"
 
-	wasmtime "github.com/bytecodealliance/wasmtime-go"
+	"github.com/tetratelabs/wazero"
+	"github.com/tetratelabs/wazero/api"
 	worker "github.com/wowsims/mop/ui/worker"
 )
 
@@ -24,40 +27,44 @@ const (
 )
 
 type highsWasmModule struct {
-	engine *wasmtime.Engine
-	module *wasmtime.Module
+	runtime wazero.Runtime
+	module  wazero.CompiledModule
 }
 
 var (
-	highsWasmModuleOnce  sync.Once
-	highsWasmModuleValue *highsWasmModule
-	highsWasmModuleErr   error
-	highsWasmRuntimePool = make(chan struct{}, getHiGHSWasmRuntimeConcurrency())
+	highsWasmModuleOnce   sync.Once
+	highsWasmModuleValue  *highsWasmModule
+	highsWasmModuleErr    error
+	highsWasmRuntimeSlots = make(chan struct{}, getHiGHSWasmRuntimeConcurrency())
+	highsWasmRuntimePool  = make(chan *highsWasmRuntime, getHiGHSWasmRuntimeConcurrency())
 )
 
 type highsWasmRuntime struct {
-	store    *wasmtime.Store
-	instance *wasmtime.Instance
-	memory   *wasmtime.Memory
+	ctx      context.Context
+	instance api.Module
+	memory   api.Memory
 
 	nextFD int32
 	files  map[int32]*highsWasmFile
 	paths  map[string][]byte
-	stdout strings.Builder
-	stderr strings.Builder
+	stdout bytes.Buffer
+	stderr bytes.Buffer
 
-	runtimeInit              *wasmtime.Func
-	highsCreate              *wasmtime.Func
-	highsDestroy             *wasmtime.Func
-	highsRun                 *wasmtime.Func
-	highsReadModel           *wasmtime.Func
-	highsWriteSolutionPretty *wasmtime.Func
-	highsSetIntOption        *wasmtime.Func
-	highsSetDoubleOption     *wasmtime.Func
-	highsSetStringOption     *wasmtime.Func
-	highsGetModelStatus      *wasmtime.Func
-	malloc                   *wasmtime.Func
+	runtimeInit              api.Function
+	runtimeInitialized       bool
+	highsCreate              api.Function
+	highsDestroy             api.Function
+	highsRun                 api.Function
+	highsReadModel           api.Function
+	highsWriteSolutionPretty api.Function
+	highsSetIntOption        api.Function
+	highsSetDoubleOption     api.Function
+	highsSetStringOption     api.Function
+	highsGetModelStatus      api.Function
+	malloc                   api.Function
 }
+
+type highsWasmRuntimeContextKey struct{}
 
 type highsWasmFile struct {
 	path     string
@@ -66,35 +73,36 @@ type highsWasmFile struct {
 }
 
 func solveMIPWithHiGHS(model mipModel, timeout time.Duration, mipRelGap float64) (mipSolution, bool, error) {
-	acquireHiGHSWasmRuntime()
-	defer releaseHiGHSWasmRuntime()
-
-	wasmRuntime, err := newHiGHSWasmRuntime()
+	wasmRuntime, err := acquireHiGHSWasmRuntime()
 	if err != nil {
 		return mipSolution{}, false, err
 	}
+	defer releaseHiGHSWasmRuntime(wasmRuntime)
 
 	wasmRuntime.paths["/m.lp"] = []byte(modelToHiGHSLP(model))
 	wasmRuntime.paths["m.lp"] = wasmRuntime.paths["/m.lp"]
 
-	if _, err := wasmRuntime.runtimeInit.Call(wasmRuntime.store); err != nil {
-		return mipSolution{}, false, fmt.Errorf("initializing HiGHS wasm runtime: %w", err)
+	if !wasmRuntime.runtimeInitialized {
+		if _, err := wasmRuntime.runtimeInit.Call(wasmRuntime.ctx); err != nil {
+			return mipSolution{}, false, fmt.Errorf("initializing HiGHS wasm runtime: %w", err)
+		}
+		wasmRuntime.runtimeInitialized = true
 	}
 
-	highs, err := callI32(wasmRuntime.store, wasmRuntime.highsCreate)
+	highs, err := callI32(wasmRuntime.ctx, wasmRuntime.highsCreate)
 	if err != nil {
 		return mipSolution{}, false, fmt.Errorf("creating HiGHS wasm instance: %w", err)
 	}
 	if highs == 0 {
 		return mipSolution{}, false, fmt.Errorf("failed to create HiGHS wasm instance")
 	}
-	defer wasmRuntime.highsDestroy.Call(wasmRuntime.store, highs)
+	defer wasmRuntime.highsDestroy.Call(wasmRuntime.ctx, uint64(uint32(highs)))
 
 	modelPath, err := wasmRuntime.writeCString("m.lp")
 	if err != nil {
 		return mipSolution{}, false, err
 	}
-	if status, err := callI32(wasmRuntime.store, wasmRuntime.highsReadModel, highs, modelPath); err != nil {
+	if status, err := callI32(wasmRuntime.ctx, wasmRuntime.highsReadModel, wasmI32(highs), wasmI32(modelPath)); err != nil {
 		return mipSolution{}, false, fmt.Errorf("reading HiGHS LP model: %w", err)
 	} else if !isHighsSuccess(status) {
 		return mipSolution{}, false, fmt.Errorf("failed reading HiGHS LP model: %d", status)
@@ -112,13 +120,13 @@ func solveMIPWithHiGHS(model mipModel, timeout time.Duration, mipRelGap float64)
 		}
 	}
 
-	if status, err := callI32(wasmRuntime.store, wasmRuntime.highsRun, highs); err != nil {
+	if status, err := callI32(wasmRuntime.ctx, wasmRuntime.highsRun, wasmI32(highs)); err != nil {
 		return mipSolution{}, false, fmt.Errorf("running HiGHS wasm solve: %w", err)
 	} else if !isHighsSuccess(status) {
 		return mipSolution{}, false, fmt.Errorf("HiGHS wasm solve failed: %d", status)
 	}
 
-	modelStatus, err := callI32(wasmRuntime.store, wasmRuntime.highsGetModelStatus, highs)
+	modelStatus, err := callI32(wasmRuntime.ctx, wasmRuntime.highsGetModelStatus, wasmI32(highs))
 	if err != nil {
 		return mipSolution{}, false, fmt.Errorf("reading HiGHS wasm model status: %w", err)
 	}
@@ -132,7 +140,7 @@ func solveMIPWithHiGHS(model mipModel, timeout time.Duration, mipRelGap float64)
 	if err != nil {
 		return mipSolution{}, false, err
 	}
-	if status, err := callI32(wasmRuntime.store, wasmRuntime.highsWriteSolutionPretty, highs, emptyPath); err != nil {
+	if status, err := callI32(wasmRuntime.ctx, wasmRuntime.highsWriteSolutionPretty, wasmI32(highs), wasmI32(emptyPath)); err != nil {
 		return mipSolution{}, false, fmt.Errorf("writing HiGHS wasm solution: %w", err)
 	} else if !isHighsSuccess(status) {
 		return mipSolution{}, false, fmt.Errorf("failed writing HiGHS wasm solution: %d", status)
@@ -152,12 +160,31 @@ func getHiGHSWasmRuntimeConcurrency() int {
 	return max(1, goruntime.NumCPU()/4)
 }
 
-func acquireHiGHSWasmRuntime() {
-	highsWasmRuntimePool <- struct{}{}
+func acquireHiGHSWasmRuntime() (*highsWasmRuntime, error) {
+	highsWasmRuntimeSlots <- struct{}{}
+	select {
+	case runtime := <-highsWasmRuntimePool:
+		return runtime, nil
+	default:
+		runtime, err := newHiGHSWasmRuntime()
+		if err != nil {
+			<-highsWasmRuntimeSlots
+			return nil, err
+		}
+		return runtime, nil
+	}
 }
 
-func releaseHiGHSWasmRuntime() {
-	<-highsWasmRuntimePool
+func releaseHiGHSWasmRuntime(runtime *highsWasmRuntime) {
+	if runtime != nil {
+		runtime.resetForNextSolve()
+		select {
+		case highsWasmRuntimePool <- runtime:
+		default:
+			_ = runtime.instance.Close(runtime.ctx)
+		}
+	}
+	<-highsWasmRuntimeSlots
 }
 
 func newHiGHSWasmRuntime() (*highsWasmRuntime, error) {
@@ -167,126 +194,141 @@ func newHiGHSWasmRuntime() (*highsWasmRuntime, error) {
 	}
 
 	runtime := &highsWasmRuntime{
-		store:  wasmtime.NewStore(module.engine),
 		nextFD: 3,
 		files:  map[int32]*highsWasmFile{},
 		paths:  map[string][]byte{},
 	}
+	runtime.ctx = context.WithValue(context.Background(), highsWasmRuntimeContextKey{}, runtime)
 
-	imports, err := runtime.buildImports(module.module)
-	if err != nil {
-		return nil, err
-	}
-	instance, err := wasmtime.NewInstance(runtime.store, module.module, imports)
+	instance, err := module.runtime.InstantiateModule(runtime.ctx, module.module, wazero.NewModuleConfig().WithName("").WithStartFunctions())
 	if err != nil {
 		return nil, fmt.Errorf("instantiating HiGHS wasm: %w", err)
 	}
 	runtime.instance = instance
-	runtime.memory = instance.GetExport(runtime.store, "t").Memory()
+	runtime.memory = instance.ExportedMemory("t")
 	if runtime.memory == nil {
 		return nil, fmt.Errorf("HiGHS wasm export t is not memory")
 	}
 
-	runtime.runtimeInit = mustWasmFunc(instance, runtime.store, "u")
-	runtime.highsCreate = mustWasmFunc(instance, runtime.store, "v")
-	runtime.highsDestroy = mustWasmFunc(instance, runtime.store, "w")
-	runtime.highsRun = mustWasmFunc(instance, runtime.store, "x")
-	runtime.highsReadModel = mustWasmFunc(instance, runtime.store, "y")
-	runtime.highsWriteSolutionPretty = mustWasmFunc(instance, runtime.store, "A")
-	runtime.highsSetIntOption = mustWasmFunc(instance, runtime.store, "C")
-	runtime.highsSetDoubleOption = mustWasmFunc(instance, runtime.store, "D")
-	runtime.highsSetStringOption = mustWasmFunc(instance, runtime.store, "E")
-	runtime.highsGetModelStatus = mustWasmFunc(instance, runtime.store, "F")
-	runtime.malloc = mustWasmFunc(instance, runtime.store, "J")
+	runtime.runtimeInit = mustWasmFunc(instance, "u")
+	runtime.highsCreate = mustWasmFunc(instance, "v")
+	runtime.highsDestroy = mustWasmFunc(instance, "w")
+	runtime.highsRun = mustWasmFunc(instance, "x")
+	runtime.highsReadModel = mustWasmFunc(instance, "y")
+	runtime.highsWriteSolutionPretty = mustWasmFunc(instance, "A")
+	runtime.highsSetIntOption = mustWasmFunc(instance, "C")
+	runtime.highsSetDoubleOption = mustWasmFunc(instance, "D")
+	runtime.highsSetStringOption = mustWasmFunc(instance, "E")
+	runtime.highsGetModelStatus = mustWasmFunc(instance, "F")
+	runtime.malloc = mustWasmFunc(instance, "J")
 	return runtime, nil
+}
+
+func (runtime *highsWasmRuntime) resetForNextSolve() {
+	runtime.nextFD = 3
+	for fd := range runtime.files {
+		delete(runtime.files, fd)
+	}
+	for path := range runtime.paths {
+		delete(runtime.paths, path)
+	}
+	runtime.stdout.Reset()
+	runtime.stderr.Reset()
 }
 
 func getHiGHSWasmModule() (*highsWasmModule, error) {
 	highsWasmModuleOnce.Do(func() {
-		config := wasmtime.NewConfig()
-		config.SetCraneliftOptLevel(wasmtime.OptLevelSpeed)
-		engine := wasmtime.NewEngineWithConfig(config)
-		module, err := wasmtime.NewModule(engine, worker.HighsWASM)
+		ctx := context.Background()
+		runtime := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfigCompiler())
+		if err := instantiateHiGHSWasmHostModule(ctx, runtime); err != nil {
+			highsWasmModuleErr = err
+			return
+		}
+		module, err := runtime.CompileModule(ctx, worker.HighsWASM)
 		if err != nil {
 			highsWasmModuleErr = fmt.Errorf("compiling embedded highs.wasm: %w", err)
 			return
 		}
-		highsWasmModuleValue = &highsWasmModule{engine: engine, module: module}
+		highsWasmModuleValue = &highsWasmModule{runtime: runtime, module: module}
 	})
 	return highsWasmModuleValue, highsWasmModuleErr
 }
 
-func (runtime *highsWasmRuntime) buildImports(module *wasmtime.Module) ([]wasmtime.AsExtern, error) {
-	imports := make([]wasmtime.AsExtern, 0, len(module.Imports()))
-	for _, importType := range module.Imports() {
-		name := ""
-		if importType.Name() != nil {
-			name = *importType.Name()
-		}
-		funcType := importType.Type().FuncType()
-		if funcType == nil {
-			return nil, fmt.Errorf("unsupported HiGHS wasm import %s.%s", importType.Module(), name)
-		}
-		imports = append(imports, wasmtime.NewFunc(runtime.store, funcType, runtime.importFunc(name)))
-	}
-	return imports, nil
-}
-
-func (runtime *highsWasmRuntime) importFunc(name string) func(*wasmtime.Caller, []wasmtime.Val) ([]wasmtime.Val, *wasmtime.Trap) {
-	return func(caller *wasmtime.Caller, args []wasmtime.Val) ([]wasmtime.Val, *wasmtime.Trap) {
-		switch name {
-		case "a":
-			return nil, wasmtime.NewTrap("HiGHS wasm exception handling import was called")
-		case "b", "j":
-			return nil, wasmtime.NewTrap(fmt.Sprintf("HiGHS wasm exited with code %d", args[0].I32()))
-		case "c", "m":
-			return []wasmtime.Val{wasmtime.ValF64(float64(time.Now().UnixNano()) / float64(time.Millisecond))}, nil
-		case "d", "g":
-			return []wasmtime.Val{wasmtime.ValI32(0)}, nil
-		case "e":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.fdClose(args[0].I32()))}, nil
-		case "f":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.fdRead(caller, args[0].I32(), args[1].I32(), args[2].I32(), args[3].I32()))}, nil
-		case "h":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.openAt(caller, args[0].I32(), args[1].I32(), args[2].I32()))}, nil
-		case "i":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.fdWrite(caller, args[0].I32(), args[1].I32(), args[2].I32(), args[3].I32()))}, nil
-		case "k", "r":
-			return nil, wasmtime.NewTrap("HiGHS wasm abort")
-		case "l":
-			return []wasmtime.Val{wasmtime.ValI32(0)}, nil
-		case "n":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.environGet(caller, args[0].I32(), args[1].I32()))}, nil
-		case "o":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.environSizesGet(caller, args[0].I32(), args[1].I32()))}, nil
-		case "p":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.clockTimeGet(caller, args[0].I32(), args[2].I32()))}, nil
-		case "q":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.fdSeek(caller, args[0].I32(), args[1].I64(), args[2].I32(), args[3].I32()))}, nil
-		case "s":
-			return []wasmtime.Val{wasmtime.ValI32(runtime.resizeHeap(caller, args[0].I32()))}, nil
-		default:
-			return nil, wasmtime.NewTrap(fmt.Sprintf("unsupported HiGHS wasm import a.%s", name))
-		}
-	}
-}
-
-func (runtime *highsWasmRuntime) memoryBytes(store wasmtime.Storelike) []byte {
-	if runtime.memory != nil {
-		return runtime.memory.UnsafeData(store)
+func instantiateHiGHSWasmHostModule(ctx context.Context, runtime wazero.Runtime) error {
+	_, err := runtime.NewHostModuleBuilder("a").
+		NewFunctionBuilder().WithFunc(func(context.Context, uint32, uint32, uint32) {
+		panic("HiGHS wasm exception handling import was called")
+	}).Export("a").
+		NewFunctionBuilder().WithFunc(func(_ context.Context, code uint32) { panic(fmt.Sprintf("HiGHS wasm exited with code %d", code)) }).Export("b").
+		NewFunctionBuilder().WithFunc(func(context.Context) float64 { return float64(time.Now().UnixNano()) / float64(time.Millisecond) }).Export("c").
+		NewFunctionBuilder().WithFunc(func(context.Context, uint32, uint32, uint32) uint32 { return 0 }).Export("d").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, fd uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).fdClose(int32(fd)))
+	}).Export("e").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, fd uint32, iovsPtr uint32, iovsLen uint32, nreadPtr uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).fdRead(module, int32(fd), int32(iovsPtr), int32(iovsLen), int32(nreadPtr)))
+	}).Export("f").
+		NewFunctionBuilder().WithFunc(func(context.Context, uint32, uint32, uint32) uint32 { return 0 }).Export("g").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, dirFD uint32, pathPtr uint32, pathLen uint32, flags uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).openAt(module, int32(dirFD), int32(pathPtr), int32(pathLen), int32(flags)))
+	}).Export("h").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, fd uint32, iovsPtr uint32, iovsLen uint32, nwrittenPtr uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).fdWrite(module, int32(fd), int32(iovsPtr), int32(iovsLen), int32(nwrittenPtr)))
+	}).Export("i").
+		NewFunctionBuilder().WithFunc(func(_ context.Context, code uint32) { panic(fmt.Sprintf("HiGHS wasm exited with code %d", code)) }).Export("j").
+		NewFunctionBuilder().WithFunc(func(context.Context) { panic("HiGHS wasm abort") }).Export("k").
+		NewFunctionBuilder().WithFunc(func(context.Context, uint32, float64) uint32 { return 0 }).Export("l").
+		NewFunctionBuilder().WithFunc(func(context.Context) float64 { return float64(time.Now().UnixNano()) / float64(time.Millisecond) }).Export("m").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, environPtr uint32, environBufPtr uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).environGet(module, int32(environPtr), int32(environBufPtr)))
+	}).Export("n").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, countPtr uint32, sizePtr uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).environSizesGet(module, int32(countPtr), int32(sizePtr)))
+	}).Export("o").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, clockID uint32, precision uint64, timePtr uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).clockTimeGet(module, int32(clockID), int32(timePtr)))
+	}).Export("p").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, fd uint32, offset uint64, whence uint32, newOffsetPtr uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).fdSeek(module, int32(fd), int64(offset), int32(whence), int32(newOffsetPtr)))
+	}).Export("q").
+		NewFunctionBuilder().WithFunc(func(context.Context) { panic("HiGHS wasm abort") }).Export("r").
+		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, requestedSize uint32) uint32 {
+		return uint32(highsWasmRuntimeFromContext(ctx).resizeHeap(module, int32(requestedSize)))
+	}).Export("s").
+		Instantiate(ctx)
+	if err != nil {
+		return fmt.Errorf("instantiating HiGHS wasm host imports: %w", err)
 	}
 	return nil
 }
 
-func (runtime *highsWasmRuntime) callerMemoryBytes(caller *wasmtime.Caller) []byte {
+func highsWasmRuntimeFromContext(ctx context.Context) *highsWasmRuntime {
+	runtime, _ := ctx.Value(highsWasmRuntimeContextKey{}).(*highsWasmRuntime)
+	if runtime == nil {
+		panic("missing HiGHS wasm runtime context")
+	}
+	return runtime
+}
+
+func (runtime *highsWasmRuntime) memoryBytes() []byte {
 	if runtime.memory == nil {
 		return nil
 	}
-	return runtime.memory.UnsafeData(caller)
+	memory, _ := runtime.memory.Read(0, runtime.memory.Size())
+	return memory
 }
 
-func (runtime *highsWasmRuntime) openAt(caller *wasmtime.Caller, _ int32, pathPtr int32, _ int32) int32 {
-	path := runtime.readCString(runtime.callerMemoryBytes(caller), pathPtr)
+func moduleMemoryBytes(module api.Module) []byte {
+	memory := module.Memory()
+	if memory == nil {
+		return nil
+	}
+	bytes, _ := memory.Read(0, memory.Size())
+	return bytes
+}
+
+func (runtime *highsWasmRuntime) openAt(module api.Module, _ int32, pathPtr int32, _ int32, _ int32) int32 {
+	path := runtime.readCString(moduleMemoryBytes(module), pathPtr)
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}
@@ -308,12 +350,12 @@ func (runtime *highsWasmRuntime) fdClose(fd int32) int32 {
 	return 0
 }
 
-func (runtime *highsWasmRuntime) fdRead(caller *wasmtime.Caller, fd int32, iovsPtr int32, iovsLen int32, nreadPtr int32) int32 {
+func (runtime *highsWasmRuntime) fdRead(module api.Module, fd int32, iovsPtr int32, iovsLen int32, nreadPtr int32) int32 {
 	file := runtime.files[fd]
 	if file == nil {
 		return 8
 	}
-	memory := runtime.callerMemoryBytes(caller)
+	memory := moduleMemoryBytes(module)
 	bytesRead := int32(0)
 	for iovIdx := int32(0); iovIdx < iovsLen; iovIdx++ {
 		iovPtr := int(iovsPtr + 8*iovIdx)
@@ -335,8 +377,8 @@ func (runtime *highsWasmRuntime) fdRead(caller *wasmtime.Caller, fd int32, iovsP
 	return 0
 }
 
-func (runtime *highsWasmRuntime) fdWrite(caller *wasmtime.Caller, fd int32, iovsPtr int32, iovsLen int32, nwrittenPtr int32) int32 {
-	memory := runtime.callerMemoryBytes(caller)
+func (runtime *highsWasmRuntime) fdWrite(module api.Module, fd int32, iovsPtr int32, iovsLen int32, nwrittenPtr int32) int32 {
+	memory := moduleMemoryBytes(module)
 	bytesWritten := int32(0)
 	for iovIdx := int32(0); iovIdx < iovsLen; iovIdx++ {
 		iovPtr := int(iovsPtr + 8*iovIdx)
@@ -345,12 +387,11 @@ func (runtime *highsWasmRuntime) fdWrite(caller *wasmtime.Caller, fd int32, iovs
 		if bufferLen <= 0 {
 			continue
 		}
-		chunk := string(memory[bufferPtr : bufferPtr+bufferLen])
 		switch fd {
 		case 1:
-			runtime.stdout.WriteString(chunk)
+			runtime.stdout.Write(memory[bufferPtr : bufferPtr+bufferLen])
 		case 2:
-			runtime.stderr.WriteString(chunk)
+			runtime.stderr.Write(memory[bufferPtr : bufferPtr+bufferLen])
 		}
 		bytesWritten += bufferLen
 	}
@@ -358,7 +399,7 @@ func (runtime *highsWasmRuntime) fdWrite(caller *wasmtime.Caller, fd int32, iovs
 	return 0
 }
 
-func (runtime *highsWasmRuntime) fdSeek(caller *wasmtime.Caller, fd int32, offset int64, whence int32, newOffsetPtr int32) int32 {
+func (runtime *highsWasmRuntime) fdSeek(module api.Module, fd int32, offset int64, whence int32, newOffsetPtr int32) int32 {
 	file := runtime.files[fd]
 	if file == nil {
 		return 8
@@ -378,40 +419,40 @@ func (runtime *highsWasmRuntime) fdSeek(caller *wasmtime.Caller, fd int32, offse
 		return 28
 	}
 	file.position = nextOffset
-	memory := runtime.callerMemoryBytes(caller)
+	memory := moduleMemoryBytes(module)
 	binary.LittleEndian.PutUint64(memory[newOffsetPtr:], uint64(nextOffset))
 	return 0
 }
 
-func (runtime *highsWasmRuntime) environSizesGet(caller *wasmtime.Caller, countPtr int32, sizePtr int32) int32 {
-	memory := runtime.callerMemoryBytes(caller)
+func (runtime *highsWasmRuntime) environSizesGet(module api.Module, countPtr int32, sizePtr int32) int32 {
+	memory := moduleMemoryBytes(module)
 	binary.LittleEndian.PutUint32(memory[countPtr:], 0)
 	binary.LittleEndian.PutUint32(memory[sizePtr:], 0)
 	return 0
 }
 
-func (runtime *highsWasmRuntime) environGet(_ *wasmtime.Caller, _ int32, _ int32) int32 {
+func (runtime *highsWasmRuntime) environGet(_ api.Module, _ int32, _ int32) int32 {
 	return 0
 }
 
-func (runtime *highsWasmRuntime) clockTimeGet(caller *wasmtime.Caller, _ int32, timePtr int32) int32 {
-	memory := runtime.callerMemoryBytes(caller)
+func (runtime *highsWasmRuntime) clockTimeGet(module api.Module, _ int32, timePtr int32) int32 {
+	memory := moduleMemoryBytes(module)
 	binary.LittleEndian.PutUint64(memory[timePtr:], uint64(time.Now().UnixNano()))
 	return 0
 }
 
-func (runtime *highsWasmRuntime) resizeHeap(caller *wasmtime.Caller, requestedSize int32) int32 {
-	memory := caller.GetExport("t").Memory()
+func (runtime *highsWasmRuntime) resizeHeap(module api.Module, requestedSize int32) int32 {
+	memory := module.Memory()
 	if memory == nil {
 		return 0
 	}
-	currentBytes := uint64(memory.DataSize(caller))
+	currentBytes := uint64(memory.Size())
 	if uint64(requestedSize) <= currentBytes {
 		return 1
 	}
 	const pageSize = 64 * 1024
-	neededPages := (uint64(requestedSize) - currentBytes + pageSize - 1) / pageSize
-	if _, err := memory.Grow(caller, neededPages); err != nil {
+	neededPages := uint32((uint64(requestedSize) - currentBytes + pageSize - 1) / pageSize)
+	if _, ok := memory.Grow(neededPages); !ok {
 		return 0
 	}
 	return 1
@@ -429,11 +470,11 @@ func (runtime *highsWasmRuntime) readCString(memory []byte, ptr int32) string {
 }
 
 func (runtime *highsWasmRuntime) writeCString(value string) (int32, error) {
-	ptr, err := callI32(runtime.store, runtime.malloc, int32(len(value)+1))
+	ptr, err := callI32(runtime.ctx, runtime.malloc, wasmI32(int32(len(value)+1)))
 	if err != nil {
 		return 0, fmt.Errorf("allocating HiGHS wasm string: %w", err)
 	}
-	memory := runtime.memoryBytes(runtime.store)
+	memory := runtime.memoryBytes()
 	copy(memory[ptr:], value)
 	memory[int(ptr)+len(value)] = 0
 	return ptr, nil
@@ -444,7 +485,7 @@ func (runtime *highsWasmRuntime) setDoubleOption(highs int32, name string, value
 	if err != nil {
 		return err
 	}
-	status, err := callI32(runtime.store, runtime.highsSetDoubleOption, highs, namePtr, value)
+	status, err := callI32(runtime.ctx, runtime.highsSetDoubleOption, wasmI32(highs), wasmI32(namePtr), api.EncodeF64(value))
 	if err != nil {
 		return fmt.Errorf("setting HiGHS wasm option %q: %w", name, err)
 	}
@@ -463,7 +504,7 @@ func (runtime *highsWasmRuntime) setStringOption(highs int32, name string, value
 	if err != nil {
 		return err
 	}
-	status, err := callI32(runtime.store, runtime.highsSetStringOption, highs, namePtr, valuePtr)
+	status, err := callI32(runtime.ctx, runtime.highsSetStringOption, wasmI32(highs), wasmI32(namePtr), wasmI32(valuePtr))
 	if err != nil {
 		return fmt.Errorf("setting HiGHS wasm option %q: %w", name, err)
 	}
@@ -473,23 +514,23 @@ func (runtime *highsWasmRuntime) setStringOption(highs int32, name string, value
 	return nil
 }
 
-func callI32(store wasmtime.Storelike, fn *wasmtime.Func, args ...interface{}) (int32, error) {
-	result, err := fn.Call(store, args...)
+func callI32(ctx context.Context, fn api.Function, args ...uint64) (int32, error) {
+	results, err := fn.Call(ctx, args...)
 	if err != nil {
 		return 0, err
 	}
-	switch value := result.(type) {
-	case int32:
-		return value, nil
-	case wasmtime.Val:
-		return value.I32(), nil
-	default:
-		return 0, fmt.Errorf("expected i32 result, got %T", result)
+	if len(results) == 0 {
+		return 0, fmt.Errorf("expected i32 result, got no results")
 	}
+	return int32(uint32(results[0])), nil
 }
 
-func mustWasmFunc(instance *wasmtime.Instance, store wasmtime.Storelike, name string) *wasmtime.Func {
-	fn := instance.GetFunc(store, name)
+func wasmI32(value int32) uint64 {
+	return uint64(uint32(value))
+}
+
+func mustWasmFunc(instance api.Module, name string) api.Function {
+	fn := instance.ExportedFunction(name)
 	if fn == nil {
 		panic(fmt.Sprintf("HiGHS wasm export %s is not a function", name))
 	}

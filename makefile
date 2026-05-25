@@ -209,10 +209,10 @@ wowsimmop-windows.exe: wowsimmop
 	mv ./cmd/wowsimcli/wowsimcli-windows.exe ./wowsimcli-windows.exe
 
 release: wowsimmop wowsimmop-windows.exe
-	GOOS=darwin GOARCH=amd64 GOAMD64=v2 go build -o wowsimmop-amd64-darwin -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./sim/web/main.go
-	GOOS=darwin GOARCH=arm64 go build -o wowsimmop-arm64-darwin -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./sim/web/main.go
+	GOOS=darwin GOARCH=amd64 GOAMD64=v2 go build -o wowsimmop-amd64-darwin -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./sim/web
+	GOOS=darwin GOARCH=arm64 go build -o wowsimmop-arm64-darwin -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./sim/web
 	GOOS=darwin GOARCH=arm64 go build -o wowsimcli-arm64-darwin --tags=with_db -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./cmd/wowsimcli/cli_main.go
-	GOOS=linux GOARCH=amd64 GOAMD64=v2 go build -o wowsimmop-amd64-linux   -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./sim/web/main.go
+	GOOS=linux GOARCH=amd64 GOAMD64=v2 go build -o wowsimmop-amd64-linux -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./sim/web
 	GOOS=linux GOARCH=amd64 GOAMD64=v2 go build -o wowsimcli-amd64-linux --tags=with_db -ldflags="-X 'main.Version=$(VERSION)' -s -w" ./cmd/wowsimcli/cli_main.go
 # Now compress into a zip because the files are getting large.
 	zip wowsimmop-windows.exe.zip wowsimmop-windows.exe
