@@ -2397,9 +2397,7 @@
 				"include_gems": "Inclure les gemmes",
 				"freeze_item_slots": "Verrouiller certains emplacements",
 				"include_eotbp_socket": "Inclure le socket EotBP",
-				"include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation.",
-				"limit_execution_time": "Limiter le temps d'exécution",
-				"limit_execution_time_tooltip": "Si coché, le solveur se terminera en erreur si le temps de calcul total dépasse 30 secondes. Si décoché, le temps de calcul total sera plafonné à 1 heure."
+				"include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation."
 			}
 		},
 		"header": {

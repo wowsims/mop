@@ -162,8 +162,8 @@ func TestBuildRelativeStatCapsOnlyForcesConfiguredStatForWindwalker(t *testing.T
 	}
 }
 
-func TestHiGHSOptimizerTimeoutMatchesJSTimeoutSettings(t *testing.T) {
-	search := &reforgeSearchState{request: &proto.ReforgeOptimizeRequest{Settings: &proto.ReforgeSettings{IncludeTimeout: true}}}
+func TestHiGHSOptimizerTimeoutUsesRelativeCapBudget(t *testing.T) {
+	search := &reforgeSearchState{request: &proto.ReforgeOptimizeRequest{Settings: &proto.ReforgeSettings{}}}
 	if got, want := highsOptimizerTimeout(search), optimizerTimeout; got != want {
 		t.Fatalf("timeout without relative cap = %s, want %s", got, want)
 	}
@@ -171,11 +171,6 @@ func TestHiGHSOptimizerTimeoutMatchesJSTimeoutSettings(t *testing.T) {
 	search.relativeCaps = []reforgeRelativeStatCap{{}}
 	if got, want := highsOptimizerTimeout(search), relativeStatCapOptimizerTimeout; got != want {
 		t.Fatalf("timeout with relative cap = %s, want %s", got, want)
-	}
-
-	search.request.Settings.IncludeTimeout = false
-	if got, want := highsOptimizerTimeout(search), optimizerNoTimeout; got != want {
-		t.Fatalf("timeout disabled = %s, want %s", got, want)
 	}
 }
 

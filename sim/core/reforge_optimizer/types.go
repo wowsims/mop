@@ -11,7 +11,6 @@ import (
 const (
 	optimizerTimeout                = 30 * time.Second
 	relativeStatCapOptimizerTimeout = 120 * time.Second
-	optimizerNoTimeout              = time.Hour
 	relativeStatCapMIPRelGap        = 0.0005
 )
 

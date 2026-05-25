@@ -2396,9 +2396,7 @@
 				"include_gems": "Include gems",
 				"freeze_item_slots": "Freeze item slots",
 				"include_eotbp_socket": "Include EotBP Socket",
-				"include_eotbp_socket_tooltip": "Allows the optimiser to also include the \"Eye of the Black Prince\" socket in the optimization.",
-				"limit_execution_time": "Limit execution time",
-				"limit_execution_time_tooltip": "If checked, the solver will error out if the total computation time exceeds 30 seconds. If unchecked, then total computation time will be capped at 1 hour instead."
+				"include_eotbp_socket_tooltip": "Allows the optimiser to also include the \"Eye of the Black Prince\" socket in the optimization."
 			}
 		},
 		"header": {

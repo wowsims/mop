@@ -2953,7 +2953,7 @@
 						"building_candidate_gear_sets": {
 							"type": "string"
 						},
-						"reforging_rounds": {
+						"reforging_iteration_rounds": {
 							"type": "string"
 						},
 						"baseline_round": {
@@ -2976,20 +2976,24 @@
 						},
 						"seconds_remaining": {
 							"type": "string"
+						},
+						"time_remaining": {
+							"type": "string"
 						}
 					},
 					"additionalProperties": false,
 					"required": [
 						"total_combinations",
 						"building_candidate_gear_sets",
-						"reforging_rounds",
+						"reforging_iteration_rounds",
 						"baseline_round",
 						"refining_rounds",
 						"low_iteration_rounds",
 						"medium_iteration_rounds",
 						"high_iteration_rounds",
 						"iterations_complete",
-						"seconds_remaining"
+						"seconds_remaining",
+						"time_remaining"
 					]
 				},
 				"notifications": {
@@ -8432,12 +8436,6 @@
 								},
 								"include_eotbp_socket_tooltip": {
 									"type": "string"
-								},
-								"limit_execution_time": {
-									"type": "string"
-								},
-								"limit_execution_time_tooltip": {
-									"type": "string"
 								}
 							},
 							"additionalProperties": false,
@@ -8469,9 +8467,7 @@
 								"include_gems",
 								"freeze_item_slots",
 								"include_eotbp_socket",
-								"include_eotbp_socket_tooltip",
-								"limit_execution_time",
-								"limit_execution_time_tooltip"
+								"include_eotbp_socket_tooltip"
 							]
 						}
 					},

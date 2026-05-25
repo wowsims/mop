@@ -8,6 +8,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math"
+	"os"
 	goruntime "runtime"
 	"strconv"
 	"strings"
@@ -157,7 +158,16 @@ func solveMIPWithHiGHS(model mipModel, timeout time.Duration, mipRelGap float64)
 }
 
 func getHiGHSWasmRuntimeConcurrency() int {
-	return max(1, goruntime.NumCPU()/4)
+	if rawCap := os.Getenv("WOWSIMS_HIGHS_WASM_RUNTIME_CONCURRENCY"); rawCap != "" {
+		if cap, err := strconv.Atoi(rawCap); err == nil && cap > 0 {
+			return cap
+		}
+	}
+	return defaultHiGHSWasmRuntimeConcurrency(goruntime.NumCPU())
+}
+
+func defaultHiGHSWasmRuntimeConcurrency(numCPU int) int {
+	return max(1, numCPU*2/3)
 }
 
 func acquireHiGHSWasmRuntime() (*highsWasmRuntime, error) {

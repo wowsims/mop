@@ -146,7 +146,6 @@ export class ReforgeOptimizer {
 	protected includeEOTBPGemSocket = false;
 	protected freezeItemSlots = false;
 	protected frozenItemSlots = new Set<ItemSlot>();
-	protected includeTimeout = true;
 	protected undershootCaps = new Stats();
 	protected wasCM: boolean = false;
 	protected isCancelling: boolean = false;
@@ -161,7 +160,6 @@ export class ReforgeOptimizer {
 
 	readonly includeGemsChangeEmitter = new TypedEvent<void>('IncludeGems');
 	readonly includeEOTBPGemSocketChangeEmitter = new TypedEvent<void>('IncludeEOTBPGemSocket');
-	readonly includeTimeoutChangeEmitter = new TypedEvent<void>('IncludeTimeout');
 	readonly statCapsChangeEmitter = new TypedEvent<void>('StatCaps');
 	readonly useCustomEPValuesChangeEmitter = new TypedEvent<void>('UseCustomEPValues');
 	readonly useSoftCapBreakpointsChangeEmitter = new TypedEvent<void>('UseSoftCapBreakpoints');
@@ -303,7 +301,6 @@ export class ReforgeOptimizer {
 			[
 				this.includeGemsChangeEmitter,
 				this.includeEOTBPGemSocketChangeEmitter,
-				this.includeTimeoutChangeEmitter,
 				this.statCapsChangeEmitter,
 				this.useCustomEPValuesChangeEmitter,
 				this.useSoftCapBreakpointsChangeEmitter,
@@ -486,10 +483,6 @@ export class ReforgeOptimizer {
 		if (this.includeGems !== newValue) {
 			this.includeGems = newValue;
 
-			if (newValue) {
-				this.setIncludeTimeout(eventID, true);
-			}
-
 			this.includeGemsChangeEmitter.emit(eventID);
 		}
 	}
@@ -525,13 +518,6 @@ export class ReforgeOptimizer {
 
 	getFrozenItemSlot(slot: ItemSlot): boolean {
 		return this.frozenItemSlots.has(slot);
-	}
-
-	setIncludeTimeout(eventID: EventID, newValue: boolean) {
-		if (this.includeTimeout !== newValue) {
-			this.includeTimeout = newValue;
-			this.includeTimeoutChangeEmitter.emit(eventID);
-		}
 	}
 
 	buildContextMenu(button: HTMLButtonElement) {
@@ -671,19 +657,6 @@ export class ReforgeOptimizer {
 					},
 				});
 
-				const includeTimeoutInput = new BooleanPicker(null, this.player, {
-					extraCssClasses: ['mb-2'],
-					id: 'reforge-optimizer-include-timeout',
-					label: i18n.t('sidebar.buttons.suggest_reforges.limit_execution_time'),
-					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.limit_execution_time_tooltip'),
-					inline: true,
-					changedEvent: () => TypedEvent.onAny([this.includeTimeoutChangeEmitter, this.includeGemsChangeEmitter]),
-					getValue: () => this.includeTimeout,
-					setValue: (eventID, _player, newValue) => {
-						this.setIncludeTimeout(eventID, newValue);
-					},
-				});
-
 				const descriptionRef = ref<HTMLParagraphElement>();
 				instance.setContent(
 					<>
@@ -702,7 +675,6 @@ export class ReforgeOptimizer {
 						{this.buildSoftCapBreakpointsLimiter({ useSoftCapBreakpointsInput })}
 						{includeGemsInput.rootElem}
 						{includeEOTBPGemSocket.rootElem}
-						{includeTimeoutInput.rootElem}
 						{freezeItemSlotsInput.rootElem}
 						{this.buildFrozenSlotsInputs()}
 						{this.buildEPWeightsToggle({ useCustomEPValuesInput: useCustomEPValuesInput })}
@@ -1464,7 +1436,6 @@ export class ReforgeOptimizer {
 			this.setUseCustomEPValues(eventID, proto.useCustomEpValues);
 			this.setStatCaps(eventID, Stats.fromProto(proto.statCaps));
 			this.setUseSoftCapBreakpoints(eventID, proto.useSoftCapBreakpoints);
-			this.setIncludeTimeout(eventID, proto.includeTimeout);
 			this.setIncludeGems(eventID, proto.includeGems);
 			this.setIncludeEOTBPGemSocket(eventID, proto.includeEotbGemSocket);
 			this.setFreezeItemSlots(eventID, proto.freezeItemSlots);
@@ -1480,7 +1451,6 @@ export class ReforgeOptimizer {
 		return ReforgeSettings.create({
 			useCustomEpValues: this.useCustomEPValues,
 			useSoftCapBreakpoints: this.useSoftCapBreakpoints,
-			includeTimeout: this.includeTimeout,
 			includeGems: this.includeGems,
 			includeEotbGemSocket: this.includeEOTBPGemSocket,
 			freezeItemSlots: this.freezeItemSlots,
@@ -1495,7 +1465,6 @@ export class ReforgeOptimizer {
 		TypedEvent.freezeAllAndDo(() => {
 			this.setUseCustomEPValues(eventID, false);
 			this.setUseSoftCapBreakpoints(eventID, !!this.simUI.individualConfig.defaults.softCapBreakpoints?.length);
-			this.setIncludeTimeout(eventID, true);
 			this.setIncludeGems(eventID, false);
 			this.setIncludeEOTBPGemSocket(eventID, false);
 			this.setFreezeItemSlots(eventID, false);

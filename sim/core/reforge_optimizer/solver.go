@@ -140,9 +140,6 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 }
 
 func highsOptimizerTimeout(search *reforgeSearchState) time.Duration {
-	if !search.request.GetSettings().GetIncludeTimeout() {
-		return optimizerNoTimeout
-	}
 	if len(search.relativeCaps) > 0 {
 		return relativeStatCapOptimizerTimeout
 	}
