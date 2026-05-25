@@ -132,6 +132,11 @@ type ConcurrentBulkSimCandidateTask = {
 	idx: number;
 };
 
+type BulkSimReforgeCandidateTask = {
+	candidate: BulkGearCandidate;
+	position: number;
+};
+
 const bulkSimStageConfigs: ConcurrentBulkSimStageConfig[] = [
 	{
 		stage: BulkSimStage.BulkSimStageLow,
@@ -313,7 +318,6 @@ const optimizeReforgeCandidates = async (
 	}
 
 	let completedCandidates = 0;
-	let nextCandidatePosition = 0;
 	const completedOptimizedCandidates = () => completedOptimizedCandidatesByPosition.filter((candidate): candidate is BulkGearCandidate => !!candidate);
 	const buildReforgeRequest = (aborted: boolean) => {
 		const partialOptimizedCandidates = dedupeBulkSimReforgeCandidates(request, [...optimizedCandidates, ...completedOptimizedCandidates()]);
@@ -324,41 +328,38 @@ const optimizeReforgeCandidates = async (
 			reforgeRequest: undefined,
 		});
 	};
-	const optimizeWorker = async () => {
-		while (!signals.abort.isTriggered()) {
-			const position = nextCandidatePosition++;
-			if (position >= candidates.length) return;
+	const reforgeQueue = queue<BulkSimReforgeCandidateTask, Error>(async ({ candidate, position }) => {
+		if (signals.abort.isTriggered()) return;
+		if (!candidate.gear) return;
 
-			const candidate = candidates[position];
-			if (!candidate?.gear) continue;
-
-			const includeGems = reforgeRequest.settings?.includeGems ?? false;
-			let optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear, includeGems, optimizedGearByKey, inFlightOptimizedGearByKey, workerPool, signals);
-			if (!optimizedGear && !signals.abort.isTriggered() && includeGems) {
-				optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear, false, optimizedGearByKey, inFlightOptimizedGearByKey, workerPool, signals);
-			}
-			const optimizedSuccessfully = !!optimizedGear;
-			if (!optimizedGear) {
-				if (signals.abort.isTriggered()) return;
-				console.warn(`[Bulk Sim] Reforge optimization failed for candidate ${candidate.index}; using original gear`);
-				optimizedGear = candidate.gear;
-			}
-
-			const gearKey = reforgeGearKey(optimizedGear);
-			if (!seenGearKeys.has(gearKey)) {
-				seenGearKeys.add(gearKey);
-				completedOptimizedCandidatesByPosition[position] = BulkGearCandidate.create({ index: candidate.index, gear: optimizedGear });
-			}
-			if (optimizedSuccessfully) {
-				await onReforgeCandidateOptimized?.(candidate, optimizedGear);
-			}
-
-			completedCandidates++;
-			emitBulkSimStageProgress(onProgress, BulkSimStage.BulkSimStageReforge, completedCandidates, candidates.length, completedCandidates, candidates.length, 0);
+		const includeGems = reforgeRequest.settings?.includeGems ?? false;
+		let optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear, includeGems, optimizedGearByKey, inFlightOptimizedGearByKey, workerPool, signals);
+		if (!optimizedGear && !signals.abort.isTriggered() && includeGems) {
+			optimizedGear = await optimizeReforgeCandidate(request, reforgeRequest, candidate.gear, false, optimizedGearByKey, inFlightOptimizedGearByKey, workerPool, signals);
 		}
-	};
+		const optimizedSuccessfully = !!optimizedGear;
+		if (!optimizedGear) {
+			if (signals.abort.isTriggered()) return;
+			console.warn(`[Bulk Sim] Reforge optimization failed for candidate ${candidate.index}; using original gear`);
+			optimizedGear = candidate.gear;
+		}
 
-	await Promise.all(Array.from({ length: concurrency }, () => optimizeWorker()));
+		const gearKey = reforgeGearKey(optimizedGear);
+		if (!seenGearKeys.has(gearKey)) {
+			seenGearKeys.add(gearKey);
+			completedOptimizedCandidatesByPosition[position] = BulkGearCandidate.create({ index: candidate.index, gear: optimizedGear });
+		}
+		if (optimizedSuccessfully) {
+			await onReforgeCandidateOptimized?.(candidate, optimizedGear);
+		}
+
+		completedCandidates++;
+		emitBulkSimStageProgress(onProgress, BulkSimStage.BulkSimStageReforge, completedCandidates, candidates.length, completedCandidates, candidates.length, 0);
+	}, concurrency);
+
+	const queueErrorPromise = reforgeQueue.error();
+	candidates.forEach((candidate, position) => reforgeQueue.push({ candidate, position }));
+	await Promise.race([reforgeQueue.drain(), queueErrorPromise]);
 	if (signals.abort.isTriggered()) {
 		return { request: buildReforgeRequest(true), aborted: true };
 	}
