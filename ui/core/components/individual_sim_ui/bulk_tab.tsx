@@ -19,7 +19,7 @@ import { canEquipItem, getEligibleItemSlots, isSecondaryItemSlot } from '../../p
 import { RequestTypes } from '../../sim_signal_manager';
 import { RelativeStatCap } from '../suggest_reforges_action';
 import { TypedEvent } from '../../typed_event';
-import { getEnumValues, isDevMode, isExternal, sleep } from '../../utils';
+import { formatDurationSeconds, getEnumValues, isDevMode, isExternal, sleep } from '../../utils';
 import { ItemData } from '../gear_picker/item_list';
 import SelectorModal from '../gear_picker/selector_modal';
 import { SimTab } from '../sim_tab';
@@ -1293,25 +1293,23 @@ export class BulkTab extends SimTab {
 		});
 	}
 
-	private setCandidateGearProgress(completed: number, total: number, title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'), stage = 'preparing') {
+	private setCandidateGearProgress(completed: number, total: number, title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'), stage = 'preparing', startedAt?: number) {
+		const secondsRemaining = startedAt !== undefined && completed > 0 ? ((new Date().getTime() - startedAt) / 1000 / completed) * Math.max(0, total - completed) : undefined;
 		this.progressTrackerModal.updateProgress({
 			stage,
 			title,
 			current: completed,
 			total,
-			message: undefined,
+			message:
+				secondsRemaining !== undefined ? <div>{i18n.t('bulk_tab.progress.time_remaining', { time: formatDurationSeconds(secondsRemaining) })}</div> : undefined,
 		});
 	}
 
 	private setSimProgress(progress: ProgressMetrics, config: BulkSimProgressConfig) {
-		if (progress.bulkStage == BulkSimStage.BulkSimStageReforge) {
-			this.setCandidateGearProgress(progress.completedSims, progress.totalSims, i18n.t('bulk_tab.progress.reforging_iteration_rounds'), 'reforging');
-			return;
-		}
-
 		const stageCurrentRound = config.stageCurrentRound ?? config.currentRound;
 		const stageRounds = config.stageRounds ?? config.totalRounds;
 		const isBaselineRound = stageCurrentRound === 1;
+		const stage = progress.bulkStage == BulkSimStage.BulkSimStageReforge ? 'reforging' : 'sim';
 		const totalElapsedSeconds = (new Date().getTime() - (config.aggregateStartedAt ?? this.simStart)) / 1000;
 		const completedIterations = config.aggregateCompletedIterations ?? progress.completedIterations;
 		const totalIterations = config.aggregateTotalIterations ?? progress.totalIterations;
@@ -1335,7 +1333,7 @@ export class BulkTab extends SimTab {
 		if (isNaN(Number(secondsRemaining))) return;
 
 		this.progressTrackerModal.updateProgress({
-			stage: 'sim',
+			stage,
 			title: config.title ?? (isBaselineRound ? i18n.t('bulk_tab.progress.baseline_round') : i18n.t('bulk_tab.progress.refining_rounds')),
 			current: completedRounds,
 			total: totalRounds,
@@ -1347,7 +1345,7 @@ export class BulkTab extends SimTab {
 							total: totalIterations,
 						})}
 					/>
-					<div>{i18n.t('bulk_tab.progress.seconds_remaining', { seconds: Math.round(secondsRemaining) })}</div>
+					<div>{i18n.t('bulk_tab.progress.time_remaining', { time: formatDurationSeconds(secondsRemaining) })}</div>
 				</div>
 			),
 		});
@@ -1426,7 +1424,7 @@ export class BulkTab extends SimTab {
 			combinations: this.combinations,
 			chunkSize: BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
 		});
-		this.setCandidateGearProgress(0, this.combinations);
+		this.setCandidateGearProgress(0, this.combinations, undefined, undefined, startedAt);
 		await sleep(400);
 
 		for (let comboIdx = 0; comboIdx < this.combinations; comboIdx++) {
@@ -1457,7 +1455,7 @@ export class BulkTab extends SimTab {
 
 			candidateGearSets.push(reforgeGear);
 			if ((comboIdx + 1) % BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE === 0 || comboIdx + 1 === this.combinations) {
-				this.setCandidateGearProgress(comboIdx + 1, this.combinations);
+				this.setCandidateGearProgress(comboIdx + 1, this.combinations, undefined, undefined, startedAt);
 				await sleep(0);
 			}
 		}

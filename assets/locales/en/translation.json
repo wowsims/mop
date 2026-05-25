@@ -840,7 +840,8 @@
 			"medium_iteration_rounds": "Running medium iteration rounds",
 			"high_iteration_rounds": "Running high iteration rounds",
 			"iterations_complete": "{{completed}} / {{total}}<br />iterations complete",
-			"seconds_remaining": "{{seconds}} seconds remaining"
+			"seconds_remaining": "{{seconds}} seconds remaining",
+			"time_remaining": "{{time}} remaining"
 		},
 		"notifications": {
 			"bulk_sim_cancelled": "Bulk sim cancelled.",

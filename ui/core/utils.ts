@@ -98,6 +98,48 @@ export function sum(arr: Array<number>): number {
 	return arr.reduce((total, cur) => total + cur, 0);
 }
 
+export interface FormatDurationSecondsOptions {
+	showMilliseconds?: boolean;
+	millisecondDigits?: 1 | 2 | 3;
+	separatorStyle?: 'colon' | 'unit';
+	minimumUnit?: 'seconds' | 'minutes' | 'hours';
+}
+
+export function formatDurationSeconds(seconds: number, options: FormatDurationSecondsOptions = {}): string {
+	const showMilliseconds = options.showMilliseconds ?? false;
+	const millisecondDigits = options.millisecondDigits ?? 1;
+	const precision = showMilliseconds ? Math.pow(10, millisecondDigits) : 1;
+	const totalUnits = Math.max(0, Math.round(seconds * precision));
+	const totalSeconds = Math.floor(totalUnits / precision);
+	const fractionalUnits = totalUnits % precision;
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const remainingSeconds = totalSeconds % 60;
+	const secondsSuffix = showMilliseconds ? `.${String(fractionalUnits).padStart(millisecondDigits, '0')}` : '';
+	const paddedSeconds = String(remainingSeconds).padStart(2, '0');
+
+	if (options.separatorStyle === 'colon') {
+		const showHours = hours > 0 || options.minimumUnit === 'hours';
+		const showMinutes = showHours || minutes > 0 || options.minimumUnit === 'minutes';
+
+		if (showHours) {
+			return `${hours}:${String(minutes).padStart(2, '0')}:${paddedSeconds}${secondsSuffix}`;
+		}
+		if (showMinutes) {
+			return `${minutes}:${paddedSeconds}${secondsSuffix}`;
+		}
+		return `${remainingSeconds}${secondsSuffix}s`;
+	}
+
+	if (hours > 0) {
+		return `${hours}h ${String(minutes).padStart(2, '0')}m ${paddedSeconds}${secondsSuffix}s`;
+	}
+	if (minutes > 0) {
+		return `${minutes}m ${paddedSeconds}${secondsSuffix}s`;
+	}
+	return `${remainingSeconds}${secondsSuffix}s`;
+}
+
 // Returns the index of maximum value, or null if empty.
 export function maxIndex(arr: Array<number>): number | null {
 	return arr.reduce((cur, v, i, arr) => (v > arr[cur] ? i : cur), 0);

@@ -840,7 +840,8 @@
 			"medium_iteration_rounds": "Exécution des tours à itération moyenne",
 			"high_iteration_rounds": "Exécution des tours à forte itération",
             "iterations_complete": "{{completed}} / {{total}}<br />itérations terminées",
-            "seconds_remaining": "{{seconds}} secondes restantes"
+			"seconds_remaining": "{{seconds}} secondes restantes",
+			"time_remaining": "Il reste {{time}}"
         },
         "notifications": {
             "bulk_sim_cancelled": "Simulation par lot annulée.",
