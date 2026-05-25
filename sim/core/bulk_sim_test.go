@@ -7,6 +7,67 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
+func TestGetBulkSimStageMaxSurvivorsScalesLowStage(t *testing.T) {
+	lowStageConfig := BulkSimStageConfig{
+		Stage:        proto.BulkSimStage_BulkSimStageLow,
+		MaxSurvivors: 100,
+	}
+
+	testCases := []struct {
+		name           string
+		candidateCount int
+		want           int
+	}{
+		{name: "below reference", candidateCount: 863, want: 100},
+		{name: "at reference", candidateCount: 1000, want: 100},
+		{name: "large candidate set", candidateCount: 13000, want: 361},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			if got := getBulkSimStageMaxSurvivors(lowStageConfig, testCase.candidateCount); got != testCase.want {
+				t.Fatalf("max survivors for %d candidates = %d, want %d", testCase.candidateCount, got, testCase.want)
+			}
+		})
+	}
+}
+
+func TestGetBulkSimStageMaxSurvivorsScalesMediumStage(t *testing.T) {
+	mediumStageConfig := BulkSimStageConfig{
+		Stage:        proto.BulkSimStage_BulkSimStageMedium,
+		MaxSurvivors: 25,
+	}
+
+	testCases := []struct {
+		name           string
+		candidateCount int
+		want           int
+	}{
+		{name: "below reference", candidateCount: 50, want: 25},
+		{name: "at reference", candidateCount: 100, want: 25},
+		{name: "large low-stage output", candidateCount: 722, want: 68},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			if got := getBulkSimStageMaxSurvivors(mediumStageConfig, testCase.candidateCount); got != testCase.want {
+				t.Fatalf("max survivors for %d candidates = %d, want %d", testCase.candidateCount, got, testCase.want)
+			}
+		})
+	}
+}
+
+func TestGetBulkSimStageMaxSurvivorsKeepsHighStageUncapped(t *testing.T) {
+	highStageConfig := BulkSimStageConfig{
+		Stage:        proto.BulkSimStage_BulkSimStageHigh,
+		MaxSurvivors: 0,
+	}
+
+	if got := getBulkSimStageMaxSurvivors(highStageConfig, 13000); got != 0 {
+		t.Fatalf("high max survivors = %d, want uncapped", got)
+	}
+}
+
 func TestMergeBulkSimDistributionMetrics(t *testing.T) {
 	metrics := newBulkSimTestDistributionMetrics([]float64{8, 12})
 	metrics.MaxSeed = 12

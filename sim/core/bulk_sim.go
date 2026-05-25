@@ -17,15 +17,17 @@ import (
 )
 
 const (
-	bulkSimDefaultTopResults                      = 5
-	bulkSimMinCombinations                        = 20
-	bulkSimCullingCoefficient                     = 1.35
-	bulkSimLowStageConcurrencyFactor              = 2
-	bulkSimCombinationLogMin              float64 = 10
-	bulkSimMaxAdaptivePasses                      = 2
-	bulkSimAdaptiveMaxIterationMultiplier         = 4
-	bulkSimSurvivorSoftCapMultiplier              = 2
-	bulkSimProgressThrottle                       = 100 * time.Millisecond
+	bulkSimDefaultTopResults                         = 5
+	bulkSimMinCombinations                           = 20
+	bulkSimCullingCoefficient                        = 1.35
+	bulkSimLowStageConcurrencyFactor                 = 2
+	bulkSimCombinationLogMin                 float64 = 10
+	bulkSimMaxAdaptivePasses                         = 2
+	bulkSimAdaptiveMaxIterationMultiplier            = 4
+	bulkSimSurvivorSoftCapMultiplier                 = 2
+	bulkSimLowStageSurvivorScaleReference            = 1000
+	bulkSimMediumStageSurvivorScaleReference         = 100
+	bulkSimProgressThrottle                          = 100 * time.Millisecond
 )
 
 type BulkSimStageConfig struct {
@@ -281,7 +283,8 @@ func validateBulkSimRequest(request *proto.BulkSimRequest) string {
 }
 
 func shouldRunBulkSimStage(config BulkSimStageConfig, candidateCount int) bool {
-	return config.MaxSurvivors == 0 || candidateCount > config.MaxSurvivors || candidateCount < bulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
+	maxSurvivors := getBulkSimStageMaxSurvivors(config, candidateCount)
+	return maxSurvivors == 0 || candidateCount > maxSurvivors || candidateCount < bulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
 }
 
 func GetBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimStageConfig) int {
@@ -534,6 +537,29 @@ func getBulkSimStageIterations(request *proto.BulkSimRequest, config BulkSimStag
 	return max(minIterations, targetIterations)
 }
 
+func getBulkSimStageMaxSurvivors(config BulkSimStageConfig, candidateCount int) int {
+	if config.MaxSurvivors == 0 {
+		return config.MaxSurvivors
+	}
+
+	var scaleReference int
+	switch config.Stage {
+	case proto.BulkSimStage_BulkSimStageLow:
+		scaleReference = bulkSimLowStageSurvivorScaleReference
+	case proto.BulkSimStage_BulkSimStageMedium:
+		scaleReference = bulkSimMediumStageSurvivorScaleReference
+	default:
+		return config.MaxSurvivors
+	}
+
+	if candidateCount <= scaleReference {
+		return config.MaxSurvivors
+	}
+
+	scale := math.Sqrt(float64(candidateCount) / float64(scaleReference))
+	return max(config.MaxSurvivors, int(math.Ceil(float64(config.MaxSurvivors)*scale)))
+}
+
 // Converts a target relative error into an iteration count using standard
 // error: stdev / sqrt(iterations). The combination multiplier is a practical
 // multiple-candidate adjustment so large candidate sets use more iterations
@@ -562,7 +588,8 @@ func usesUserDefinedHighStageIterations(request *proto.BulkSimRequest, config Bu
 // candidate's lower interval is kept. A soft cap prevents pathological stages
 // from forwarding the entire candidate set when many results are tied.
 func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSimCandidateResult, iterations int32, config BulkSimStageConfig) []BulkSimCandidate {
-	if config.MaxSurvivors == 0 || len(results) <= config.MaxSurvivors {
+	maxSurvivors := getBulkSimStageMaxSurvivors(config, len(results))
+	if maxSurvivors == 0 || len(results) <= maxSurvivors {
 		return bulkSimResultsToCandidates(results)
 	}
 
@@ -579,7 +606,7 @@ func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSim
 	bestLowerBound := bestMetrics.Avg - bulkSimDpsError(bestMetrics, iterations)*intervalMultiplier
 
 	meanSurvivors := topBulkSimResults(results, config.MinSurvivors)
-	survivors := make([]*BulkSimCandidateResult, 0, config.MaxSurvivors)
+	survivors := make([]*BulkSimCandidateResult, 0, maxSurvivors)
 	seen := make(map[int32]bool)
 	for _, result := range meanSurvivors {
 		survivors = append(survivors, result)
@@ -598,7 +625,7 @@ func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSim
 		seen[result.Candidate.Index] = true
 	}
 
-	softMaxSurvivors := config.MaxSurvivors * bulkSimSurvivorSoftCapMultiplier
+	softMaxSurvivors := maxSurvivors * bulkSimSurvivorSoftCapMultiplier
 	if len(survivors) > softMaxSurvivors {
 		survivors = topBulkSimResults(survivors, softMaxSurvivors)
 	}
