@@ -25,14 +25,21 @@ export async function runCoreBulkSim(
 		gearSets: gearSets.length,
 	});
 
+	let currentProgressStage: ProgressMetrics['bulkStage'] | undefined;
+	let currentProgressStageStartedAt = new Date().getTime();
 	const updateProgress = (progress: ProgressMetrics) => {
 		if (progress.totalIterations <= 0) return;
+		if (progress.bulkStage !== currentProgressStage) {
+			currentProgressStage = progress.bulkStage;
+			currentProgressStageStartedAt = new Date().getTime();
+		}
 
 		const stageName = bulkSimStageToOptimisationStage(progress.bulkStage);
 		context.setSimProgress(progress, {
 			currentRound: 1,
 			totalRounds: 1,
 			title: stageName ? i18n.t(`bulk_tab.progress.${stageName}_iteration_rounds`) : i18n.t('bulk_tab.progress.refining_rounds'),
+			aggregateStartedAt: currentProgressStageStartedAt,
 			useSimCountProgress: true,
 		});
 	};
