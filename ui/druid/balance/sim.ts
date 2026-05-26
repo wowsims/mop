@@ -8,7 +8,7 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
 import { Faction, ItemSlot, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/api';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
 import * as DruidInputs from '../inputs';
 import * as BalanceInputs from './inputs';
@@ -279,13 +279,19 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 			statSelectionPresets: [statSelectionHastePreset],
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
+				let epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 560) {
-					return Presets.P4_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P4_BIS_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 525) {
-					return Presets.P3_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
 				}
-				return Presets.P2_BIS_EP_PRESET.epWeights;
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+				return epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const gear = player.getGear();

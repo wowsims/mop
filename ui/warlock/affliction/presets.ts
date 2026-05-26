@@ -27,7 +27,7 @@ export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear
 export const P1_PRESET = PresetUtils.makePresetGear('P1 - BIS', P1Gear);
 export const P2_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2Gear);
 export const P3_PRESET = PresetUtils.makePresetGear('P3/P4 - BIS', P3Gear);
-export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP)', P5Gear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS', P5Gear);
 
 export const APL_Default = PresetUtils.makePresetAPLRotation('Single Target', DefaultApl);
 export const APL_Multitarget = PresetUtils.makePresetAPLRotation('Multi Target', MultiTargetApl);

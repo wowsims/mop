@@ -1577,9 +1577,9 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 248941.69376
-  tps: 370190.78768
-  hps: 17064.62618
+  dps: 248037.46296
+  tps: 363347.13047
+  hps: 15060.6293
  }
 }
 dps_results: {

@@ -57,17 +57,17 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-ArmorofSevenSacredSeals"
  value: {
-  dps: 331388.13751
-  tps: 314786.18362
-  hps: 11855.24385
+  dps: 329257.99757
+  tps: 312546.92012
+  hps: 12022.4335
  }
 }
 dps_results: {
  key: "TestWindwalker-AllItems-ArmoroftheRedCrane"
  value: {
-  dps: 339267.20167
-  tps: 326327.68
-  hps: 9611.433
+  dps: 339263.02209
+  tps: 326524.76384
+  hps: 9472.59019
  }
 }
 dps_results: {
@@ -113,17 +113,17 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-BattlegearofSevenSacredSeals"
  value: {
-  dps: 333400.85116
-  tps: 317469.18235
-  hps: 12149.71418
+  dps: 377567.87987
+  tps: 364414.77767
+  hps: 9947.0556
  }
 }
 dps_results: {
  key: "TestWindwalker-AllItems-BattlegearoftheRedCrane"
  value: {
-  dps: 358177.8536
-  tps: 345416.11434
-  hps: 9452.73223
+  dps: 354005.6911
+  tps: 341328.36154
+  hps: 9387.53061
  }
 }
 dps_results: {
@@ -801,17 +801,17 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-Fire-CharmArmor"
  value: {
-  dps: 329562.36263
-  tps: 313185.37564
-  hps: 12344.41014
+  dps: 329529.71422
+  tps: 313528.21582
+  hps: 12484.40786
  }
 }
 dps_results: {
  key: "TestWindwalker-AllItems-Fire-CharmBattlegear"
  value: {
-  dps: 382804.82692
-  tps: 369649.43974
-  hps: 10089.87374
+  dps: 371257.54766
+  tps: 358011.61762
+  hps: 9934.13402
  }
 }
 dps_results: {
