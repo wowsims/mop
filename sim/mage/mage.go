@@ -25,6 +25,7 @@ type Mage struct {
 	Combustion           *core.Spell
 	Ignite               *core.Spell
 	LivingBomb           *core.Spell
+	FrostBomb            *core.Spell
 	NetherTempest        *core.Spell
 	FireBlast            *core.Spell
 	FlameOrbExplode      *core.Spell
@@ -56,6 +57,7 @@ type Mage struct {
 
 	T15_4PC_ArcaneChargeEffect float64
 	Icicles                    []float64
+	lastAppliedTargetBySpell   map[*core.Spell]*core.Unit
 
 	// Item sets
 	T15_4pc *core.Aura
@@ -143,8 +145,24 @@ func (mage *Mage) registerMastery() {
 	mage.registerFrostMastery()
 }
 
+func (mage *Mage) SetLastAppliedTargetForSpell(spell *core.Spell, target *core.Unit) {
+	if spell == nil {
+		return
+	}
+	mage.lastAppliedTargetBySpell[spell] = target
+}
+
+func (mage *Mage) IsLastAppliedTargetForSpell(spell *core.Spell, target *core.Unit) bool {
+	if spell == nil || target == nil {
+		return false
+	}
+
+	return mage.lastAppliedTargetBySpell[spell] == target
+}
+
 func (mage *Mage) Reset(sim *core.Simulation) {
 	mage.Icicles = make([]float64, 0)
+	mage.lastAppliedTargetBySpell = make(map[*core.Spell]*core.Unit)
 }
 
 func (mage *Mage) OnEncounterStart(sim *core.Simulation) {
@@ -153,10 +171,11 @@ func (mage *Mage) OnEncounterStart(sim *core.Simulation) {
 func NewMage(character *core.Character, options *proto.Player, mageOptions *proto.MageOptions) *Mage {
 
 	mage := &Mage{
-		Character:         *character,
-		Talents:           &proto.MageTalents{},
-		Options:           mageOptions,
-		ClassSpellScaling: core.GetClassSpellScalingCoefficient(proto.Class_ClassMage),
+		Character:                *character,
+		Talents:                  &proto.MageTalents{},
+		Options:                  mageOptions,
+		ClassSpellScaling:        core.GetClassSpellScalingCoefficient(proto.Class_ClassMage),
+		lastAppliedTargetBySpell: make(map[*core.Spell]*core.Unit),
 	}
 
 	core.FillTalentsProto(mage.Talents.ProtoReflect(), options.TalentsString)

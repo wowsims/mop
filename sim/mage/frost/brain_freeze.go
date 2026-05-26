@@ -38,6 +38,19 @@ func (frost *FrostMage) registerBrainFreeze() {
 		ClassSpellMask: mage.MageSpellLivingBombDot | mage.MageSpellFrostBombExplosion | mage.MageSpellNetherTempestDot,
 		Callback:       core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			var sourceSpell *core.Spell
+			if spell.Matches(mage.MageSpellLivingBombDot) {
+				sourceSpell = frost.LivingBomb
+			} else if spell.Matches(mage.MageSpellFrostBombExplosion) {
+				sourceSpell = frost.FrostBomb
+			} else {
+				sourceSpell = frost.NetherTempest
+			}
+
+			if !frost.IsLastAppliedTargetForSpell(sourceSpell, result.Target) {
+				return
+			}
+
 			// https://github.com/simulationcraft/simc/blob/e1190fed141feec2ec7a489e80caec5138c3a6ab/engine/class_modules/sc_mage.cpp#L4169
 			var procChance float64
 			if spell.Matches(mage.MageSpellLivingBombDot) {
