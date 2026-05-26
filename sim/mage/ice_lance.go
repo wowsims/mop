@@ -12,7 +12,6 @@ func (mage *Mage) registerIceLanceSpell() {
 	iceLanceCoefficient := 0.33500000834
 	iceLanceVariance := 0.25
 	hasGlyphIcyVeins := mage.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfIcyVeins)
-	hasGlyphSplittingIce := mage.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfSplittingIce)
 
 	getIceLanceSpellBaseConfig := func(config core.SpellConfig) core.SpellConfig {
 		return core.SpellConfig{
@@ -75,7 +74,7 @@ func (mage *Mage) registerIceLanceSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			randomTarget := mage.Env.NextActiveTargetUnit(target)
-			hasSplittingIce := hasGlyphSplittingIce && mage.Env.ActiveTargetCount() > 1
+			hasSplittingIce := mage.HasGlyphOfSplittingIce && mage.Env.ActiveTargetCount() > 1
 			hasSplitBolts := mage.IcyVeinsAura.IsActive() && hasGlyphIcyVeins
 			numberOfSplitBolts := core.TernaryInt32(hasSplitBolts, 2, 0)
 			icyVeinsDamageMultiplier := core.TernaryFloat64(hasSplitBolts, 0.4, 1.0)
@@ -110,14 +109,10 @@ func (mage *Mage) registerIceLanceSpell() {
 			if mage.Spec == proto.Spec_SpecFrostMage {
 				// Confirmed in game Icicles launch even if ice lance misses.
 				for _, icicle := range mage.Icicles {
-					if hasSplittingIce {
-						mage.SpendIcicle(sim, randomTarget, icicle/2)
-					}
 					mage.SpendIcicle(sim, target, icicle)
 				}
 				mage.Icicles = make([]float64, 0)
 			}
-
 		},
 	}))
 }

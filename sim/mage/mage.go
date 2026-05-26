@@ -55,6 +55,7 @@ type Mage struct {
 
 	ArcanePowerDamageMod *core.SpellMod
 
+	HasGlyphOfSplittingIce     bool
 	T15_4PC_ArcaneChargeEffect float64
 	Icicles                    []float64
 	lastAppliedTargetBySpell   map[*core.Spell]*core.Unit
@@ -186,6 +187,7 @@ func NewMage(character *core.Character, options *proto.Player, mageOptions *prot
 	// https://www.wowhead.com/mop-classic/spell=117957/nether-attunement
 	mage.HasteEffectsManaRegen()
 
+	mage.HasGlyphOfSplittingIce = mage.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfSplittingIce)
 	mage.Icicles = make([]float64, 0)
 	mage.T15_4PC_ArcaneChargeEffect = 1.0
 
