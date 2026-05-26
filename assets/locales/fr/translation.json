@@ -803,7 +803,6 @@
             "combinations_count": "{{count}} Combinaisons",
             "combination_singular": "1 Combinaison",
             "iterations": "Itérations",
-            "fallback_gems": "Gemmes de secours",
             "inherit_upgrades": {
                 "label": "Hériter des améliorations",
                 "tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
@@ -812,6 +811,13 @@
 				"label": "Utiliser l'optimisation multi-étapes",
 				"tooltip": "Bulk Sim exécute les lots volumineux en plusieurs étapes : une passe à faible nombre d'itérations pour trouver les candidats prometteurs, une passe de raffinement à nombre moyen d'itérations, puis une passe finale à nombre élevé d'itérations pour les meilleurs ensembles restants. La passe finale utilise votre nombre d'itérations configuré comme minimum et peut utiliser davantage d'itérations si nécessaire pour atteindre l'erreur cible."
             },
+			"required_set_bonuses": {
+				"label": "Bonus d'ensemble requis",
+				"none": "Aucune exigence",
+				"require_2p": "Exiger 2P",
+				"require_4p": "Exiger 4P",
+				"available_pieces": "({{count}} disponibles)"
+			},
             "freeze_ring": {
                 "label": "Geler un emplacement d'anneau",
                 "tooltip": "Geler un anneau équipé pour réduire le nombre de combinaisons"

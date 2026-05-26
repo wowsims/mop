@@ -803,7 +803,6 @@
 			"combinations_count": "{{count}} Combinations",
 			"combination_singular": "1 Combination",
 			"iterations": "Iterations",
-			"fallback_gems": "Fallback Gems",
 			"inherit_upgrades": {
 				"label": "Inherit Upgrades",
 				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
@@ -811,6 +810,13 @@
 			"use_multistage_optimisation": {
 				"label": "Use multi-stage optimisation",
 				"tooltip": "Bulk Sim runs large batches in multiple stages: a low-iteration pass to find likely contenders, a medium-iteration refinement pass, and a final high-iteration pass for the best remaining gear sets. The final pass uses your configured iteration count as a floor and may use more iterations when needed to meet the target error."
+			},
+			"required_set_bonuses": {
+				"label": "Required Set Bonuses",
+				"none": "No requirement",
+				"require_2p": "Require 2P",
+				"require_4p": "Require 4P",
+				"available_pieces": "({{count}} available)"
 			},
 			"freeze_ring": {
 				"label": "Freeze ring slot",

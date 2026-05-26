@@ -32,6 +32,16 @@ argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge/cache behavio
 - If a candidate's backend reforge fails, log it and use the original candidate gear instead of failing the entire Bulk Sim.
 - If there are zero post-dedupe candidates, still run/preserve the baseline simulation path.
 
+## Required Set Bonus Filtering
+- `BulkRequiredSetBonus` stores the required `setId` and piece count. The Bulk UI derives display names from selected item data.
+- Bulk set-bonus UI state in `bulk_tab.tsx` is keyed by numeric `setId`. The available set-bonus list keeps `setName` only for labels and sorting.
+- Required set-bonus `BooleanPicker`s are rendered only when enough selected set pieces exist to satisfy that requirement: 2P requires at least 2 available pieces and 4P requires at least 4.
+- Compatibility conflicts between otherwise-available requirements, including overlapping item slots or another set blocking 4P, should keep the picker visible but disabled with `enableWhen`.
+- 2P compatibility must consider slot overlap, not just per-set piece count. Use the same raw-combo matcher path to verify the current requirements plus the candidate 2P/4P have at least one satisfiable combination before enabling a picker.
+- Keep `rawCombinations` and `combinations` distinct. `rawCombinations` is the mixed-radix index space used by `getItemsForCombo(comboIdx)` and the matcher cache; `combinations` is the filtered runnable count after required set-bonus constraints.
+- Candidate generation still scans raw combo indexes, skips nonmatching set-bonus combos with `RequiredSetBonusComboMatcher`, and reports build progress using the filtered candidate count (`this.combinations` / `candidateGearSets.length`), not the raw scan count.
+- `requiredSetBonusCombinationCount.matches` is a `Uint8Array` indexed by raw combo index. Its signature must include raw combination count, required set IDs/pieces, and matcher dimensions so stale match caches are not reused.
+
 ## Cache Invariants
 - `ReforgeGearCache` keys are hashes of input identity: API/cache version, optimizer/player/raid config, and input gear fingerprint. They are not reversible; never try to decode gear from the key.
 - Cache values are the optimized output gear. On a cache hit, Bulk Sim needs this value to build `optimizedCandidates`; a timestamp-only value is insufficient.

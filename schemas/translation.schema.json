@@ -2845,9 +2845,6 @@
 						"iterations": {
 							"type": "string"
 						},
-						"fallback_gems": {
-							"type": "string"
-						},
 						"inherit_upgrades": {
 							"type": "object",
 							"properties": {
@@ -2873,6 +2870,28 @@
 							},
 							"additionalProperties": false,
 							"required": ["label", "tooltip"]
+						},
+						"required_set_bonuses": {
+							"type": "object",
+							"properties": {
+								"label": {
+									"type": "string"
+								},
+								"none": {
+									"type": "string"
+								},
+								"require_2p": {
+									"type": "string"
+								},
+								"require_4p": {
+									"type": "string"
+								},
+								"available_pieces": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["label", "none", "require_2p", "require_4p", "available_pieces"]
 						},
 						"freeze_ring": {
 							"type": "object",
@@ -2935,9 +2954,9 @@
 						"combinations_count",
 						"combination_singular",
 						"iterations",
-						"fallback_gems",
 						"inherit_upgrades",
 						"use_multistage_optimisation",
+						"required_set_bonuses",
 						"freeze_ring",
 						"freeze_trinket",
 						"freeze_weapon",
