@@ -12,7 +12,6 @@ func (frost *FrostMage) registerFrozenOrbSpell() {
 	frozenOrbCoefficient := 0.51099997759
 	frozenOrbScaling := 0.65200001001
 	frozenOrbVariance := 0.25
-	frozenOrbTicks := 0
 
 	frozenOrbTickSpell := frost.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 84721},
@@ -27,15 +26,18 @@ func (frost *FrostMage) registerFrozenOrbSpell() {
 		ThreatMultiplier: 1,
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			results := spell.CalcAndDealAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
+			results := spell.CalcAoeDamageWithVariance(sim, spell.OutcomeMagicHitAndCrit, func(sim *core.Simulation, spell *core.Spell) float64 {
 				return frost.CalcAndRollDamageRange(sim, frozenOrbScaling, frozenOrbVariance)
 			})
 
-			if results.AnyLanded() && (frozenOrbTicks == 0 || sim.Proc(0.15, "FingersOfFrostProc")) {
-				frost.FingersOfFrostAura.Activate(sim)
-				frost.FingersOfFrostAura.AddStack(sim)
+			for _, result := range results {
+				if result.Landed() && sim.Proc(0.15, "FingersOfFrostProc") {
+					frost.FingersOfFrostAura.Activate(sim)
+					frost.FingersOfFrostAura.AddStack(sim)
+				}
 			}
-			frozenOrbTicks++
+
+			spell.DealBatchedAoeDamage(sim)
 		},
 	})
 
@@ -65,7 +67,7 @@ func (frost *FrostMage) registerFrozenOrbSpell() {
 			Aura: core.Aura{
 				Label: "Frozen Orb",
 			},
-			NumberOfTicks: 9,
+			NumberOfTicks: 10,
 			TickLength:    time.Second * 1,
 
 			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
@@ -74,14 +76,14 @@ func (frost *FrostMage) registerFrozenOrbSpell() {
 		},
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-			frozenOrbTicks = 0
-
 			result := spell.CalcOutcome(sim, target, spell.OutcomeAlwaysHit)
 			spell.WaitTravelTime(sim, func(s *core.Simulation) {
 				spell.DealOutcome(sim, result)
 				dot := spell.Dot(target)
 				dot.Apply(sim)
-				dot.TickOnce(sim)
+
+				frost.FingersOfFrostAura.Activate(sim)
+				frost.FingersOfFrostAura.AddStack(sim)
 			})
 		},
 	})

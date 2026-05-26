@@ -43,7 +43,7 @@ func (mage *Mage) registerFrostBomb() {
 		},
 	})
 
-	mage.RegisterSpell(core.SpellConfig{
+	mage.FrostBomb = mage.RegisterSpell(core.SpellConfig{
 		ActionID:       actionID,
 		SpellSchool:    core.SpellSchoolFrost,
 		ProcMask:       core.ProcMaskEmpty,
@@ -83,6 +83,7 @@ func (mage *Mage) registerFrostBomb() {
 			result := spell.CalcAndDealOutcome(sim, target, spell.OutcomeMagicHit)
 			dot := spell.Dot(target)
 			if result.Landed() {
+				mage.SetLastAppliedTargetForSpell(spell, target)
 				dot.Apply(sim)
 				spell.CD.Set(sim.CurrentTime + mage.ApplyCastSpeedForSpell(spell.CD.Duration, spell))
 			}

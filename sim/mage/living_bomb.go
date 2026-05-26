@@ -80,6 +80,7 @@ func (mage *Mage) registerLivingBomb() {
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			result := spell.CalcOutcome(sim, target, spell.OutcomeMagicHitNoHitCounter)
 			if result.Landed() {
+				mage.SetLastAppliedTargetForSpell(spell, target)
 				dot := spell.RelatedDotSpell.Dot(target)
 				// If there is already an active dot on the target, just reapply
 				if dot.IsActive() {
