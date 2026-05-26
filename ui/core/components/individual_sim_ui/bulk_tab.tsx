@@ -879,7 +879,8 @@ export class BulkTab extends SimTab {
 				this.combinations = rawCombinations;
 			}
 
-			if (this.shouldUseOptimisationRounds(this.combinations)) {
+			const optimisationIterationUpperBound = this.getOptimisationRoundsIterationUpperBound(this.combinations);
+			if (this.shouldUseOptimisationRounds(this.combinations, optimisationIterationUpperBound)) {
 				this.iterations = this.getOptimisationRoundsIterationEstimate(this.combinations);
 			} else {
 				this.iterations = this.simUI.sim.getIterations() * this.combinations;
@@ -962,15 +963,36 @@ export class BulkTab extends SimTab {
 		return { signature, count: matchingCombinations, matches };
 	}
 
-	private shouldUseOptimisationRounds(numCombinations: number): boolean {
-		const shouldUseOptimisationRounds = this.useOptimisationRounds && numCombinations >= BULK_OPTIMISATION_MIN_COMBINATIONS;
+	private shouldUseOptimisationRounds(numCombinations: number, optimisationIterationUpperBound?: number): boolean {
+		const isOptimisationEligible = this.useOptimisationRounds && numCombinations >= BULK_OPTIMISATION_MIN_COMBINATIONS;
+		const fullRunIterations = this.simUI.sim.getIterations() * numCombinations;
+		const estimatedOptimisationIterationsUpperBound =
+			optimisationIterationUpperBound ?? this.getOptimisationRoundsIterationUpperBound(numCombinations);
+		const shouldUseOptimisationRounds = isOptimisationEligible && estimatedOptimisationIterationsUpperBound < fullRunIterations;
 		this.debugOptimisationRound('optimisation round check', {
 			numCombinations,
 			minCombinations: BULK_OPTIMISATION_MIN_COMBINATIONS,
 			useOptimisationRoundsSetting: this.useOptimisationRounds,
+			fullRunIterations,
+			estimatedOptimisationIterationsUpperBound,
+			isOptimisationEligible,
 			shouldUseOptimisationRounds,
 		});
 		return shouldUseOptimisationRounds;
+	}
+
+	private getOptimisationRoundsIterationUpperBound(numCombinations: number): number {
+		let candidates = numCombinations;
+		let iterations = 0;
+
+		for (const stage of ['low', 'medium'] as const) {
+			if (this.shouldRunOptimisationStage(stage, candidates)) {
+				iterations += this.getOptimisationStageMinIterations(stage) * (candidates + 1);
+				candidates = Math.min(candidates, STAGE_CONFIG[stage].maxSurvivors!);
+			}
+		}
+
+		return iterations + this.getOptimisationStageMinIterations('high') * (candidates + 1);
 	}
 
 	private getOptimisationRoundsIterationEstimate(numCombinations: number): number {
@@ -980,7 +1002,7 @@ export class BulkTab extends SimTab {
 		for (const stage of ['low', 'medium'] as const) {
 			if (this.shouldRunOptimisationStage(stage, candidates)) {
 				iterations += this.getOptimisationStageMinIterations(stage) * (candidates + 1);
-				candidates = Math.min(candidates, STAGE_CONFIG[stage].maxSurvivors!);
+				candidates = Math.min(candidates, STAGE_CONFIG[stage].minSurvivors ?? STAGE_CONFIG[stage].maxSurvivors!);
 			}
 		}
 
