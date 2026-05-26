@@ -78,11 +78,11 @@ export const P4TrollDefaultSimpleRotation = FireMage_Rotation.create({
 });
 
 export const P5TrollDefaultSimpleRotation = FireMage_Rotation.create({
-	combustAlwaysSend: 15000000,
-	combustBloodlust: 13000000,
-	combustPostAlter: 10000000,
-	combustNoAlter: 1200000,
-	combustEndOfCombat: 700000,
+	combustAlwaysSend: 14094080,
+	combustBloodlust: 10922498,
+	combustPostAlter: 7926414,
+	combustNoAlter: 1189209,
+	combustEndOfCombat: 806346,
 });
 
 export const P4_SIMPLE_ROTATION_PRESET_DEFAULT = PresetUtils.makePresetSimpleRotation('P4 - Crit', Spec.SpecFireMage, P4TrollDefaultSimpleRotation);

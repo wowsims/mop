@@ -331,6 +331,10 @@ func main() {
 			if drop := source.GetDrop(); drop != nil && (item.Type == proto.ItemType_ItemTypeWeapon || item.Type == proto.ItemType_ItemTypeRanged) && (item.WeaponType != proto.WeaponType_WeaponTypeOffHand && item.WeaponType != proto.WeaponType_WeaponTypeShield) && drop.ZoneId == 6622 {
 				item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
 			}
+
+			if rep := source.GetRep(); rep != nil {
+				item.FactionRestriction = proto.UIItem_FactionRestriction(rep.FactionId)
+			}
 		}
 
 		if item.Phase < 2 {

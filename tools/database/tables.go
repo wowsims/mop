@@ -119,7 +119,7 @@ func LoadAndWriteRawItems(dbHelper *DBHelper, filter string, inputsDir string) (
 			COALESCE(itemset.Name_lang, '') as ItemSetName,
 			COALESCE(itemset.ID, 0) as ItemSetID,
 			s.AllowableClass as ClassMask,
-			s.AllowableRace as RaceMask,
+			s.AllowableRace_0 as RaceMask,
 			s.QualityModifier,
 			(
 				SELECT group_concat(-ench, ',')
@@ -1533,15 +1533,25 @@ func LoadCraftedItems(dbHelper *DBHelper) (
 
 func ScanRepItems(rows *sql.Rows) (itemID int, ds *proto.RepSource, err error) {
 	var (
-		minReputation int
-		rep           proto.RepSource
+		minReputation      int
+		rep                proto.RepSource
+		reputationRaceMask dbc.Race
 	)
 
 	err = rows.Scan(
 		&itemID,
 		&rep.RepFactionId,
+		&reputationRaceMask,
 		&minReputation,
 	)
+
+	if dbc.AlliedRaces.Matches(reputationRaceMask) && dbc.HordeRaces.Matches(reputationRaceMask) {
+	} else if dbc.AlliedRaces.Matches(reputationRaceMask) {
+		rep.FactionId = proto.Faction_Alliance
+	} else if dbc.HordeRaces.Matches(reputationRaceMask) {
+		rep.FactionId = proto.Faction_Horde
+	}
+
 	rep.RepLevel = dbc.GetRepLevel(minReputation)
 	if err != nil {
 		return 0, nil, fmt.Errorf("scanning rep row: %w", err)
@@ -1553,7 +1563,7 @@ func LoadRepItems(dbHelper *DBHelper) (
 	sourcesByItem map[int][]*proto.RepSource,
 ) {
 	const query = `
-		SELECT isp.ID, fa.ID, isp.MinReputation FROM ItemSparse isp
+		SELECT isp.ID, fa.ID, COALESCE(fa.ReputationRaceMask_0, 0) AS ReputationRaceMask, isp.MinReputation FROM ItemSparse isp
 		LEFT JOIN Faction fa on fa.ID = isp.MinFactionID
 		WHERE fa.ParentFactionID=1245
     `

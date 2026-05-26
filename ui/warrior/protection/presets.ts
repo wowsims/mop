@@ -20,6 +20,8 @@ import P2BISItemSwapGear from './gear_sets/p2_bis_item_swap.gear.json';
 import P4ProgGear from './gear_sets/p4_prog.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
 import P4BISOffensiveGear from './gear_sets/p4_bis_offensive.gear.json';
+import P5BISGear from './gear_sets/p5_bis.gear.json';
+import P5BISOffensiveGear from './gear_sets/p5_bis_offensive.gear.json';
 import P5ProgGear from './gear_sets/p5_prog.gear.json';
 
 // Preset options for this spec.
@@ -33,6 +35,8 @@ export const P3_4_PROG_PRESET = PresetUtils.makePresetGear('P3 & P4 - Prog (Bala
 export const P3_4_BALANCED_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4BISGear);
 export const P3_4_OFFENSIVE_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4BISOffensiveGear);
 export const P5_PROG_PRESET = PresetUtils.makePresetGear('P5 - Prog (Balanced)', P5ProgGear);
+export const P5_BALANCED_PRESET = PresetUtils.makePresetGear('P5 - BIS (Balanced)', P5BISGear);
+export const P5_OFFENSIVE_PRESET = PresetUtils.makePresetGear('P5 - BIS (Offensive)', P5BISOffensiveGear);
 
 export const PRERAID_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('Pre-raid - Item Swap', PreRaidItemSwapGear);
 export const P2_ITEM_SWAP = PresetUtils.makePresetItemSwapGear('P2 - Item Swap', P2BISItemSwapGear);

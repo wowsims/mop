@@ -4,17 +4,17 @@
 		{ "id": 105566, "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 105642, "enchant": 4803, "gems": [76667, 76667, 76667], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 102249, "enchant": 4424, "gems": [76667], "reforging": 168, "upgradeStep": "UpgradeStepTwo" },
-		{ "id": 105412, "enchant": 4419, "gems": [76667, 76699, 76642], "upgradeStep": "UpgradeStepTwo" },
-		{ "id": 105411, "enchant": 4415, "gems": [76699], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
-		{ "id": 105511, "enchant": 4430, "gems": [76667, 76697, 76697], "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
-		{ "id": 105433, "gems": [76667, 76642, 76697], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105412, "enchant": 4419, "gems": [76667, 76697, 76642], "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105411, "enchant": 4415, "gems": [76642], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105511, "enchant": 4430, "gems": [76667, 76699, 76697], "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+		{ "id": 105433, "gems": [76681, 76642, 76697], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 99372, "enchant": 4823, "gems": [76697, 76697], "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 105531, "enchant": 4426, "gems": [76697], "upgradeStep": "UpgradeStepTwo" },
-		{ "id": 105620, "gems": [76681], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105620, "gems": [76667], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 105589, "gems": [76667], "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 105632, "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 105609, "upgradeStep": "UpgradeStepTwo" },
-		{ "id": 105567, "enchant": 4441, "gems": [76642], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105567, "enchant": 4441, "gems": [76699], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
 		{ "id": 105575, "enchant": 4993, "gems": [76697], "reforging": 116, "upgradeStep": "UpgradeStepTwo" }
 	]
 }
