@@ -1,5 +1,5 @@
 {
-	"apiVersion": 2,
+	"apiVersion": 3,
 	"raidBuffs": {
 		"trueshotAura": true,
 		"unholyAura": true,
@@ -23,21 +23,21 @@
 		"class": "ClassHunter",
 		"equipment": {
 			"items": [
-				{ "id": 96788, "gems": [95346, 76666], "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96815, "gems": [76658], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96630, "enchant": 4804, "gems": [76692, 76658], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 98148, "enchant": 4894, "gems": [76692], "upgradeStep": "UpgradeStepTwo", "tinker": 4897 },
-				{ "id": 96626, "enchant": 4419, "gems": [76692, 76658, 76680], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96797, "randomSuffix": -336, "enchant": 4416, "gems": [76658, 0], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96627, "enchant": 4430, "gems": [76692, 0], "reforging": 160, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
-				{ "id": 96846, "gems": [76692, 76658, 76692], "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
-				{ "id": 96629, "enchant": 4822, "gems": [76658, 76680], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 95009, "enchant": 4428, "gems": [76658, 76680], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 95021, "gems": [76692], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96885, "gems": [76658], "reforging": 153, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96741, "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96781, "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 96897, "enchant": 4699, "gems": [76692, 76692], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99402, "gems": [95346, 76692], "reforging": 146, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105407, "reforging": 165, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99404, "enchant": 4804, "gems": [76692, 76692], "reforging": 158, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 102248, "enchant": 4424, "gems": [76692], "reforging": 144, "upgradeStep": "UpgradeStepTwo", "tinker": 4897 },
+				{ "id": 105585, "enchant": 4419, "gems": [76692, 76692, 76666], "reforging": 146, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105617, "enchant": 4416, "gems": [0], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99406, "enchant": 4430, "gems": [76692, 76692, 0], "reforging": 144, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+				{ "id": 105584, "gems": [76692, 76666, 76692], "reforging": 144, "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
+				{ "id": 99403, "enchant": 4822, "gems": [76666, 76666], "reforging": 168, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105553, "enchant": 4428, "gems": [76692], "reforging": 144, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105558, "gems": [76692], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105624, "gems": [76692], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105472, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105612, "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105559, "enchant": 4699, "gems": [76692], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
 				{}
 			]
 		},
@@ -48,14 +48,14 @@
 			"foodId": 74648
 		},
 		"bonusStats": {
-			"apiVersion": 2,
+			"apiVersion": 3,
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		},
 		"itemSwap": {
 			"items": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
 			"prepullBonusStats": {
-				"apiVersion": 2,
+				"apiVersion": 3,
 				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			}
@@ -71,14 +71,14 @@
 				}
 			}
 		},
-		"talentsString": "312213",
+		"talentsString": "312223",
 		"glyphs": {
 			"major1": 42909,
 			"major2": 42903,
 			"major3": 42911
 		},
 		"profession1": "Engineering",
-		"profession2": "Tailoring",
+		"profession2": "Herbalism",
 		"cooldowns": {},
 		"rotation": {
 			"type": "TypeAuto"
@@ -88,7 +88,7 @@
 		"healingModel": {}
 	},
 	"encounter": {
-		"apiVersion": 2,
+		"apiVersion": 3,
 		"duration": 300,
 		"durationVariation": 60,
 		"executeProportion20": 0.2,

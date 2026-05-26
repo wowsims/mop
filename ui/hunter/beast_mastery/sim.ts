@@ -7,8 +7,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as HunterInputs from '../inputs';
 import * as Presets from './presets';
@@ -58,9 +57,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 	],
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P4_PRESET_GEAR.gear,
+		gear: Presets.P5_PRESET_GEAR.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P4_EP_PRESET.epWeights,
+		epWeights: Presets.P5_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: Stats.fromMap(
 			{
@@ -70,20 +69,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 				[PseudoStat.PseudoStatPhysicalHitPercent]: 7.5,
 			},
 		),
-		// Default breakpoint limits - set 19% haste as default target
-		breakpointLimits: Stats.fromMap(
-			{},
-			{
-				[PseudoStat.PseudoStatRangedHastePercent]: 19,
-			},
-		),
-		softCapBreakpoints: [
-			StatCap.fromPseudoStat(PseudoStat.PseudoStatRangedHastePercent, {
-				breakpoints: [19, 20, 26, 33],
-				capType: StatCapType.TypeSoftCap,
-				postCapEPs: [0.25, 0.2, 0.2, 0.2], // Single value that gets repeated for all breakpoints
-			}),
-		],
 
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
@@ -119,7 +104,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 	excludeBuffDebuffInputs: [],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [HunterInputs.PetUptime(), HunterInputs.GlaiveTossChance(), OtherInputs.InputDelay, OtherInputs.DistanceFromTarget, OtherInputs.TankAssignment],
+		inputs: [HunterInputs.PetUptime(), HunterInputs.GlaiveTossChance(), OtherInputs.InputDelay, OtherInputs.DistanceFromTarget],
 	},
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
@@ -127,14 +112,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 	},
 
 	presets: {
-		epWeights: [Presets.P4_EP_PRESET, Presets.P4_EP_PRESET],
+		epWeights: [Presets.P5_EP_PRESET, Presets.P5_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_BM, Presets.ROTATION_PRESET_AOE],
 		// Preset gear configurations that the user can quickly select.
-		builds: [Presets.P4_PRESET],
-		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P4_PRESET_GEAR, Presets.P5_PRESET_GEAR],
+		builds: [Presets.P5_PRESET],
+		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P5_PRESET_GEAR],
 	},
 
 	autoRotation: (_: Player<Spec.SpecBeastMasteryHunter>): APLRotation => {
@@ -148,18 +133,6 @@ export class BeastMasteryHunterSimUI extends IndividualSimUI<Spec.SpecBeastMaste
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecBeastMasteryHunter>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		this.reforger = new ReforgeOptimizer(this, {
-			updateSoftCaps: softCaps => {
-				const hasteCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatRangedHastePercent));
-				if (hasteCap) {
-					const hasteWeights = player.getEpWeights().getStat(Stat.StatHasteRating);
-					const masteryWeights = player.getEpWeights().getStat(Stat.StatMasteryRating);
-					const baseHasteEP = hasteWeights * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
-					const baseMasteryEP = masteryWeights * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
-					hasteCap.postCapEPs = [baseHasteEP, baseHasteEP, baseHasteEP, baseMasteryEP - 0.01 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
-				}
-				return softCaps;
-			},
-		});
+		this.reforger = new ReforgeOptimizer(this);
 	}
 }

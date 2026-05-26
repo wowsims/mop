@@ -67,6 +67,8 @@ func (affliction *AfflictionWarlock) registerMaleficEffect() {
 				continue
 			}
 
+			coeff *= dot.PeriodicDamageMultiplier
+
 			proc.BonusSpellPower = calculateDoTBaseTickDamage(dot, target) * coeff
 			procDot = dot
 			proc.Cast(sim, target)
