@@ -5,7 +5,8 @@
 		{ "action": { "castSpell": { "spellId": { "spellId": 1130 } } }, "doAtValue": { "const": { "val": "-9s" } } },
 		{ "action": { "castSpell": { "spellId": { "spellId": 13812 } } }, "doAtValue": { "const": { "val": "-5s" } } },
 		{ "action": { "castSpell": { "spellId": { "otherId": "OtherActionPotion" } } }, "doAtValue": { "variableRef": { "name": "CS Time" } } },
-		{ "action": { "castSpell": { "spellId": { "spellId": 77767 } } }, "doAtValue": { "variableRef": { "name": "CS Time" } } }
+		{ "action": { "castSpell": { "spellId": { "spellId": 77767 } } }, "doAtValue": { "variableRef": { "name": "CS Time" } } },
+		{ "action": { "castSpell": { "spellId": { "spellId": 1978 } } }, "doAtValue": { "variableRef": { "name": "SrS Time" } } }
 	],
 	"priorityList": [
 		{
@@ -64,7 +65,16 @@
 		{
 			"name": "Opener",
 			"actions": [
-				{ "action": { "castSpell": { "spellId": { "spellId": 34026 } } } },
+				{
+					"action": {
+						"condition": {
+							"not": {
+								"val": { "auraIsKnown": { "sourceUnit": { "type": "Pet", "owner": { "type": "Self" } }, "auraId": { "spellId": 130392 } } }
+							}
+						},
+						"castSpell": { "spellId": { "spellId": 34026 } }
+					}
+				},
 				{ "action": { "castSpell": { "spellId": { "spellId": 131894 } } } },
 				{
 					"action": {
@@ -72,7 +82,14 @@
 							"and": {
 								"vals": [
 									{ "not": { "val": { "dotIsActive": { "spellId": { "spellId": 1978 } } } } },
-									{ "not": { "val": { "spellInFlight": { "spellId": { "spellId": 1978 } } } } }
+									{ "not": { "val": { "spellInFlight": { "spellId": { "spellId": 1978 } } } } },
+									{
+										"not": {
+											"val": {
+												"auraIsKnown": { "sourceUnit": { "type": "Pet", "owner": { "type": "Self" } }, "auraId": { "spellId": 130392 } }
+											}
+										}
+									}
 								]
 							}
 						},
@@ -88,10 +105,36 @@
 					}
 				},
 				{ "action": { "groupReference": { "groupName": "Cooldowns" } } },
+				{
+					"action": {
+						"condition": { "auraIsKnown": { "sourceUnit": { "type": "Pet", "owner": { "type": "Self" } }, "auraId": { "spellId": 130392 } } },
+						"castSpell": { "spellId": { "spellId": 120360 } }
+					}
+				},
+				{
+					"action": {
+						"condition": { "auraIsKnown": { "sourceUnit": { "type": "Pet", "owner": { "type": "Self" } }, "auraId": { "spellId": 130392 } } },
+						"castSpell": { "spellId": { "spellId": 117050 } }
+					}
+				},
 				{ "action": { "castSpell": { "spellId": { "spellId": 120679 } } } },
+				{
+					"action": {
+						"condition": {
+							"and": {
+								"vals": [
+									{ "not": { "val": { "dotIsActive": { "spellId": { "spellId": 1978 } } } } },
+									{ "not": { "val": { "spellInFlight": { "spellId": { "spellId": 1978 } } } } }
+								]
+							}
+						},
+						"castSpell": { "spellId": { "spellId": 1978 } }
+					}
+				},
 				{ "action": { "sequence": { "name": "opener", "actions": [{ "castSpell": { "spellId": { "spellId": 109259 } } }] } } },
 				{ "action": { "sequence": { "name": "opener", "actions": [{ "castSpell": { "spellId": { "spellId": 117050 } } }] } } },
-				{ "action": { "sequence": { "name": "opener", "actions": [{ "castSpell": { "spellId": { "spellId": 120360 } } }] } } }
+				{ "action": { "sequence": { "name": "opener", "actions": [{ "castSpell": { "spellId": { "spellId": 120360 } } }] } } },
+				{ "action": { "sequence": { "name": "opener", "actions": [{ "castSpell": { "spellId": { "spellId": 34026 } } }] } } }
 			]
 		},
 		{
@@ -216,8 +259,14 @@
 			}
 		},
 		{
+			"name": "SrS Time",
+			"value": { "math": { "op": "OpSub", "lhs": { "const": { "val": "10ms" } }, "rhs": { "spellTravelTime": { "spellId": { "spellId": 1978 } } } } }
+		},
+		{
 			"name": "CS Time",
-			"value": { "math": { "op": "OpSub", "lhs": { "const": { "val": "10ms" } }, "rhs": { "spellCastTime": { "spellId": { "spellId": 77767 } } } } }
+			"value": {
+				"math": { "op": "OpSub", "lhs": { "variableRef": { "name": "SrS Time" } }, "rhs": { "spellCastTime": { "spellId": { "spellId": 77767 } } } }
+			}
 		}
 	]
 }

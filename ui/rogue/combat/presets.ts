@@ -7,6 +7,7 @@ import CombatApl from './apls/combat.apl.json';
 import PreraidGear from './gear_sets/preraid_combat.gear.json';
 import P2Gear from './gear_sets/p2_combat.gear.json';
 import P3Gear from './gear_sets/p3_combat.gear.json';
+import P5Gear from './gear_sets/p5_combat.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -15,6 +16,7 @@ import P3Gear from './gear_sets/p3_combat.gear.json';
 export const PRERAID_GEARSET = PresetUtils.makePresetGear('P1 Preraid', PreraidGear);
 export const P2_GEARSET = PresetUtils.makePresetGear('P2', P2Gear);
 export const P3_GEARSET = PresetUtils.makePresetGear('P3', P3Gear);
+export const P5_GEARSET = PresetUtils.makePresetGear('P5', P5Gear);
 
 export const ROTATION_PRESET_COMBAT = PresetUtils.makePresetAPLRotation('Combat', CombatApl);
 
@@ -26,7 +28,7 @@ export const CBAT_STANDARD_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatAgility]: 1.0,
 			[Stat.StatCritRating]: 0.42,
 			[Stat.StatHitRating]: 1.26,
-			[Stat.StatHasteRating]: 0.49,
+			[Stat.StatHasteRating]: 0.51,
 			[Stat.StatMasteryRating]: 0.46,
 			[Stat.StatExpertiseRating]: 1.07,
 		},

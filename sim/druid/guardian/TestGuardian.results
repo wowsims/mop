@@ -121,24 +121,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestGuardian-AllItems-BattlegearoftheEternalBlossom"
- value: {
-  dps: 269107.99897
-  tps: 1.63952930606e+06
-  dtps: 62097.70041
-  hps: 34675.14197
- }
-}
-dps_results: {
- key: "TestGuardian-AllItems-BattlegearoftheHauntedForest"
- value: {
-  dps: 280914.18666
-  tps: 1.71747606658e+06
-  dtps: 54414.96283
-  hps: 31937.28176
- }
-}
-dps_results: {
  key: "TestGuardian-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
   dps: 322682.15778

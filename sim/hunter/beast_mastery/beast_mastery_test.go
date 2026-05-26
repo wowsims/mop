@@ -22,7 +22,7 @@ func TestBeastMastery(t *testing.T) {
 			Class: proto.Class_ClassHunter,
 			Race:  proto.Race_RaceOrc,
 
-			GearSet: core.GetGearSet("../../../ui/hunter/beast_mastery/gear_sets", "p4"),
+			GearSet: core.GetGearSet("../../../ui/hunter/beast_mastery/gear_sets", "p5"),
 
 			Talents:         BeastMasteryTalents,
 			OtherTalentSets: talentSets,
@@ -52,7 +52,7 @@ func TestBeastMastery(t *testing.T) {
 			Rotation: core.GetAplRotation("../../../ui/hunter/beast_mastery/apls", "bm"),
 
 			Profession1: proto.Profession_Engineering,
-			Profession2: proto.Profession_Tailoring,
+			Profession2: proto.Profession_Herbalism,
 
 			ItemFilter: core.ItemFilter{
 				ArmorType: proto.ArmorType_ArmorTypeMail,
@@ -69,7 +69,7 @@ func TestBeastMastery(t *testing.T) {
 	}))
 }
 
-var BeastMasteryTalents = "312213"
+var BeastMasteryTalents = "312223"
 var BeastMasteryDefaultGlyphs = &proto.Glyphs{
 	Major1: int32(proto.HunterMajorGlyph_GlyphOfPathfinding),
 	Major2: int32(proto.HunterMajorGlyph_GlyphOfAnimalBond),

@@ -33,7 +33,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_GEARSET.gear,
+		gear: Presets.P5_GEARSET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.ASN_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
@@ -118,7 +118,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_ASSASSINATION],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_GEARSET, Presets.P2_GEARSET, Presets.P3_GEARSET],
+		gear: [Presets.PRERAID_GEARSET, Presets.P2_GEARSET, Presets.P3_GEARSET, Presets.P5_GEARSET],
 	},
 
 	autoRotation: (player: Player<Spec.SpecAssassinationRogue>): APLRotation => {
