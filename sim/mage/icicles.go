@@ -46,15 +46,19 @@ func (mage *Mage) SpendIcicle(sim *core.Simulation, target *core.Unit, damage fl
 	mage.Icicle.DamageMultiplier *= damage
 	mage.Icicle.Cast(sim, target)
 	mage.Icicle.DamageMultiplier /= damage
+
+	if mage.HasGlyphOfSplittingIce && mage.Env.ActiveTargetCount() > 1 {
+		splitDamage := damage * 0.5
+		mage.Icicle.DamageMultiplier *= splitDamage
+		mage.Icicle.Cast(sim, mage.Env.NextActiveTargetUnit(target))
+		mage.Icicle.DamageMultiplier /= splitDamage
+	}
 }
 
 func (mage *Mage) GainIcicle(sim *core.Simulation, target *core.Unit, baseDamage float64) {
 	numIcicles := int32(len(mage.Icicles))
-	hasGlyphSplittingIce := mage.HasMajorGlyph(proto.MageMajorGlyph_GlyphOfSplittingIce)
+
 	if numIcicles == mage.IciclesAura.MaxStacks {
-		if hasGlyphSplittingIce && mage.Env.ActiveTargetCount() > 1 {
-			mage.SpendIcicle(sim, mage.Env.NextActiveTargetUnit(target), mage.Icicles[0]/2)
-		}
 		mage.SpendIcicle(sim, target, mage.Icicles[0])
 		mage.Icicles = mage.Icicles[1:]
 	}
