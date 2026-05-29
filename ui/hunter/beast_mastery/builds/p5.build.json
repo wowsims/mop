@@ -102,7 +102,7 @@
 				"name": "Raid Target",
 				"level": 93,
 				"mobType": "MobTypeMechanical",
-				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
+				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 650, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
 				"minBaseDamage": 550000,
 				"damageSpread": 0.4,
 				"swingSpeed": 2

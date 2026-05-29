@@ -116,7 +116,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_BM, Presets.ROTATION_PRESET_AOE],
+		rotations: [Presets.ROTATION_PRESET_BM],
 		// Preset gear configurations that the user can quickly select.
 		builds: [Presets.P5_PRESET],
 		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P5_PRESET_GEAR],

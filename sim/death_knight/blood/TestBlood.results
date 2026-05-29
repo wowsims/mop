@@ -150,10 +150,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-BottleofInfiniteStars-87057"
  value: {
-  dps: 384357.21926
-  tps: 1.91268364006e+06
+  dps: 384538.02297
+  tps: 1.91346665062e+06
   dtps: 152458.63988
-  hps: 181038.75457
+  hps: 181124.11637
  }
 }
 dps_results: {
@@ -240,10 +240,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-CharmofTenSongs-84071"
  value: {
-  dps: 395514.92044
-  tps: 1.95696402894e+06
+  dps: 395178.78548
+  tps: 1.95490097574e+06
   dtps: 152050.15078
-  hps: 171735.54771
+  hps: 171669.14047
  }
 }
 dps_results: {
@@ -2238,10 +2238,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-SteadfastTalismanoftheShado-PanAssault-94507"
  value: {
-  dps: 383337.86098
-  tps: 1.90309987648e+06
+  dps: 383518.66469
+  tps: 1.90388288705e+06
   dtps: 153138.11291
-  hps: 184038.02765
+  hps: 184124.19548
  }
 }
 dps_results: {
@@ -2562,10 +2562,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-VialofDragon'sBlood-87063"
  value: {
-  dps: 387207.69035
-  tps: 1.91169573668e+06
+  dps: 387366.03184
+  tps: 1.91237556518e+06
   dtps: 149723.09729
-  hps: 178284.8257
+  hps: 178439.36549
  }
 }
 dps_results: {
@@ -2670,10 +2670,10 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Average-Default"
  value: {
-  dps: 380057.44866
-  tps: 1.89506493748e+06
-  dtps: 148468.92688
-  hps: 171238.38407
+  dps: 380049.50967
+  tps: 1.89499337427e+06
+  dtps: 148458.60533
+  hps: 171218.06533
  }
 }
 dps_results: {
@@ -2688,8 +2688,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Settings-Orc-p5-DefaultTalents-Basic-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 265792.99055
-  tps: 1.64561800647e+06
+  dps: 265804.4501
+  tps: 1.64569822333e+06
   dtps: 51286.35125
   hps: 95319.35752
  }
@@ -2796,8 +2796,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Settings-Worgen-p5-DefaultTalents-Basic-iron_juggernaut-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 265970.80368
-  tps: 1.65106060407e+06
+  dps: 265950.83918
+  tps: 1.6509657474e+06
   dtps: 51286.35125
   hps: 95343.02581
  }

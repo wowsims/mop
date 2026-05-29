@@ -22,7 +22,7 @@ func TestMarksmanship(t *testing.T) {
 			Class: proto.Class_ClassHunter,
 			Race:  proto.Race_RaceOrc,
 
-			GearSet: core.GetGearSet("../../../ui/hunter/marksmanship/gear_sets", "p4"),
+			GearSet: core.GetGearSet("../../../ui/hunter/marksmanship/gear_sets", "p5"),
 
 			Talents:         MarksmanshipTalents,
 			OtherTalentSets: talentSets,

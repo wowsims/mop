@@ -174,7 +174,7 @@ func (bmHunter *BeastMasteryHunter) applyBeastCleave() {
 
 	bmHunter.MakeProcTriggerAura(core.ProcTrigger{
 		Name:           "Beast Cleave",
-		Callback:       core.CallbackOnSpellHitDealt,
+		Callback:       core.CallbackOnCastComplete,
 		ClassSpellMask: hunter.HunterSpellMultiShot,
 
 		Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {

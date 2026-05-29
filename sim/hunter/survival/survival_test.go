@@ -22,7 +22,7 @@ func TestSurvival(t *testing.T) {
 			Class: proto.Class_ClassHunter,
 			Race:  proto.Race_RaceOrc,
 
-			GearSet: core.GetGearSet("../../../ui/hunter/survival/gear_sets", "p4"),
+			GearSet: core.GetGearSet("../../../ui/hunter/survival/gear_sets", "p5"),
 
 			Talents:         SurvivalTalents,
 			OtherTalentSets: talentSets,
