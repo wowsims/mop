@@ -1,0 +1,6782 @@
+{
+	"raid": {
+		"parties": [
+			{
+				"players": [
+					{
+						"name": "Player",
+						"race": "RaceAlliancePandaren",
+						"class": "ClassMonk",
+						"equipment": {
+							"items": [
+								{
+									"id": 99393,
+									"gems": [95346, 76659],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105407,
+									"reforging": 152,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99395,
+									"enchant": 4804,
+									"gems": [76659, 76659],
+									"reforging": 161,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 102248,
+									"enchant": 4424,
+									"gems": [76659],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105452,
+									"enchant": 4419,
+									"gems": [76681, 76700, 76641],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105616,
+									"enchant": 4416,
+									"gems": [76700],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99392,
+									"enchant": 4433,
+									"gems": [76667, 76659, 76700],
+									"upgradeStep": "UpgradeStepTwo",
+									"tinker": 4898
+								},
+								{
+									"id": 105635,
+									"gems": [76659, 76643, 76700],
+									"reforging": 144,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99394,
+									"enchant": 4822,
+									"gems": [76700, 76642],
+									"reforging": 154,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105582,
+									"enchant": 4428,
+									"gems": [76641],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105451,
+									"gems": [76642],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105624,
+									"gems": [76667],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 96546,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105527,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105685,
+									"enchant": 4444,
+									"gems": [76667, 76667],
+									"reforging": 167
+								},
+								{
+									"id": 105685,
+									"enchant": 4444,
+									"gems": [76667, 76667],
+									"reforging": 145
+								}
+							]
+						},
+						"consumables": {
+							"prepotId": 76089,
+							"potId": 76089,
+							"flaskId": 76084,
+							"foodId": 74648,
+							"consumableIds": [76084, 86569, 76076, 76077, 76078, 76080, 76083]
+						},
+						"bonusStats": {
+							"apiVersion": 4,
+							"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+							"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+						},
+						"itemSwap": {
+							"items": [
+								{},
+								{},
+								{},
+								{},
+								{},
+								{},
+								{},
+								{},
+								{},
+								{},
+								{},
+								{},
+								{
+									"id": 96741
+								},
+								{
+									"id": 96918
+								},
+								{
+									"id": 96907,
+									"enchant": 4444,
+									"gems": [76670, 76699],
+									"reforging": 146,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 96907,
+									"enchant": 4444,
+									"gems": [76666, 76699],
+									"reforging": 147,
+									"upgradeStep": "UpgradeStepTwo"
+								}
+							],
+							"prepullBonusStats": {
+								"apiVersion": 4,
+								"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+								"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+							}
+						},
+						"buffs": {},
+						"windwalkerMonk": {
+							"options": {}
+						},
+						"talentsString": "213323",
+						"glyphs": {
+							"major1": 85697,
+							"major2": 87900,
+							"minor1": 90715
+						},
+						"profession1": "Engineering",
+						"profession2": "Blacksmithing",
+						"cooldowns": {},
+						"rotation": {
+							"type": "TypeAPL",
+							"prepullActions": [
+								{
+									"action": {
+										"castSpell": {
+											"spellId": {
+												"spellId": 103985
+											}
+										}
+									},
+									"doAtValue": {
+										"uuid": {
+											"value": "1e13bc6d-680e-40f5-a144-889d3d6bcbd7"
+										},
+										"const": {
+											"val": "-20s"
+										}
+									}
+								},
+								{
+									"action": {
+										"castSpell": {
+											"spellId": {
+												"spellId": 115098
+											}
+										}
+									},
+									"doAtValue": {
+										"uuid": {
+											"value": "ee3d99c3-1a09-4197-99da-1170df7839c7"
+										},
+										"variableRef": {
+											"name": "Prepull Chi Wave"
+										}
+									}
+								},
+								{
+									"action": {
+										"castSpell": {
+											"spellId": {
+												"otherId": "OtherActionPotion"
+											}
+										}
+									},
+									"doAtValue": {
+										"uuid": {
+											"value": "8ee52e7f-cb9c-4627-9419-2d5ca36780cf"
+										},
+										"const": {
+											"val": "-0.1s"
+										}
+									}
+								}
+							],
+							"priorityList": [
+								{
+									"hide": true,
+									"action": {
+										"groupReference": {
+											"groupName": "Elixir Swap: ON/OFF"
+										}
+									}
+								},
+								{
+									"hide": true,
+									"action": {
+										"groupReference": {
+											"groupName": "Weapon Swap: ON/OFF"
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "37254599-063c-4a88-b235-0ca626b9d7c7"
+											},
+											"spellCanCast": {
+												"spellId": {
+													"spellId": 115080
+												}
+											}
+										},
+										"strictSequence": {
+											"actions": [
+												{
+													"castSpell": {
+														"spellId": {
+															"spellId": 126456
+														}
+													}
+												},
+												{
+													"castSpell": {
+														"spellId": {
+															"spellId": 115080
+														}
+													}
+												}
+											]
+										}
+									}
+								},
+								{
+									"action": {
+										"groupReference": {
+											"groupName": "Wait for Channeling"
+										}
+									}
+								},
+								{
+									"action": {
+										"groupReference": {
+											"groupName": "SEF: Use"
+										}
+									}
+								},
+								{
+									"action": {
+										"groupReference": {
+											"groupName": "Cooldowns: On use"
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "dfd96940-4c71-40ad-8b2d-8d89f12be617"
+											},
+											"actionGroupUsed": {
+												"name": "Weapon Swap: ON/OFF"
+											}
+										},
+										"groupReference": {
+											"groupName": "Weapon Swap: Restore"
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "d0bb6172-d1b0-4bf3-bbbe-4e313e5e01c6"
+											},
+											"actionGroupUsed": {
+												"name": "Elixir Swap: ON/OFF"
+											}
+										},
+										"groupReference": {
+											"groupName": "Elixir Swap: Restore"
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "cb19bc41-304d-4dfd-8d5a-dd0ac3e6e6f7"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "cc50ada4-a106-4a7c-8b21-282de9e99b1b"
+														},
+														"cmp": {
+															"op": "OpLt",
+															"lhs": {
+																"uuid": {
+																	"value": "fb27817a-e209-494a-ab36-8543f559fe9e"
+																},
+																"monkCurrentChi": {}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "cea7333e-e4fe-4eec-9e2f-4f279e3d16b6"
+																},
+																"monkMaxChi": {}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "c0d9a140-d1bc-4e6c-ad2e-1579840d4e57"
+														},
+														"auraIsActive": {
+															"auraId": {
+																"spellId": 121286
+															},
+															"includeReactionTime": true
+														}
+													},
+													{
+														"uuid": {
+															"value": "2f95811a-228c-479c-9ec4-3cedb9d52dd6"
+														},
+														"auraIsInactive": {
+															"auraId": {
+																"spellId": 129914
+															},
+															"includeReactionTime": true
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 121283
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "6ac06648-f6a9-422d-9c3a-2292e4aa8017"
+											},
+											"or": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "0494ba05-a3ef-4f51-9f82-9cad20c3b821"
+														},
+														"and": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "8e8f14f6-13e3-49ea-ba97-3cdf911e74cc"
+																	},
+																	"variableRef": {
+																		"name": "Time: Opener"
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "e1af5803-849a-404d-85ab-6572f1fb4348"
+																	},
+																	"cmp": {
+																		"op": "OpLe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "76173b25-9c66-4866-bae2-18bcf60a596d"
+																			},
+																			"monkCurrentChi": {}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "67acf0a0-8bd8-4f57-bdd9-818b51e7663c"
+																			},
+																			"math": {
+																				"op": "OpSub",
+																				"lhs": {
+																					"uuid": {
+																						"value": "fac8474c-d089-4b1f-aa75-24735849a779"
+																					},
+																					"monkMaxChi": {}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "fbfc3bcd-a42c-4de3-a706-24fef219f837"
+																					},
+																					"const": {
+																						"val": "2"
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															]
+														}
+													},
+													{
+														"uuid": {
+															"value": "c65b10b2-b365-4187-b7a2-858577afb181"
+														},
+														"and": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "9778047f-bb12-43d4-8460-2a4713367563"
+																	},
+																	"cmp": {
+																		"op": "OpLe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "05fe8293-76d4-4573-8738-756bbaaf6bd1"
+																			},
+																			"monkCurrentChi": {}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "e26c50f9-9200-4755-9950-3c8f6c6e887c"
+																			},
+																			"math": {
+																				"op": "OpSub",
+																				"lhs": {
+																					"uuid": {
+																						"value": "9b8488ab-4644-4703-8c73-b924d1e227f6"
+																					},
+																					"monkMaxChi": {}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "ad9d7ba4-4e78-4154-9a5f-d318300b3f41"
+																					},
+																					"const": {
+																						"val": "2"
+																					}
+																				}
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "a7a34526-921e-45dc-93ba-284ebd607c49"
+																	},
+																	"variableRef": {
+																		"name": "TEB: Active"
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "98174e57-4379-4fad-9d28-fb0f7b477311"
+																	},
+																	"cmp": {
+																		"op": "OpGt",
+																		"lhs": {
+																			"uuid": {
+																				"value": "a4827bfd-a783-45ad-94b3-b519690984ec"
+																			},
+																			"energyTimeToTarget": {
+																				"targetEnergy": {
+																					"uuid": {
+																						"value": "5c0a7205-141d-4ce4-9d8c-3284bec9d553"
+																					},
+																					"maxEnergy": {}
+																				}
+																			}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "48406298-8faf-43dd-a262-d98e5afe1fc9"
+																			},
+																			"const": {
+																				"val": "4"
+																			}
+																		}
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 115399
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "39fb1da7-69d5-427c-ad15-5af1172a247a"
+											},
+											"or": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "6f97c927-be50-4ffa-aa9c-23f031e64b3c"
+														},
+														"and": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "f78ec4e0-9b10-4ec3-a904-fe4cf539950e"
+																	},
+																	"variableRef": {
+																		"name": "Time: Opener"
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "d97ac386-f0fa-4eea-b5d7-9cf6fc44dea7"
+																	},
+																	"cmp": {
+																		"op": "OpLe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "5d7963d1-d441-4f61-befc-2c71911829b2"
+																			},
+																			"monkCurrentChi": {}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "0af06019-59c7-458a-a6f7-ac682e9e465d"
+																			},
+																			"math": {
+																				"op": "OpSub",
+																				"lhs": {
+																					"uuid": {
+																						"value": "af0ca91b-c8e3-401a-85d3-f1d529065ca7"
+																					},
+																					"monkMaxChi": {}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "ec127d22-b8b3-4e46-a9cb-4ad51b124185"
+																					},
+																					"const": {
+																						"val": "1"
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															]
+														}
+													},
+													{
+														"uuid": {
+															"value": "342d27e5-a1cc-4286-89b3-c2b5126ca776"
+														},
+														"and": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "28e07bed-2682-4487-a46b-14ffd9ffd36b"
+																	},
+																	"cmp": {
+																		"op": "OpLe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "13654a4e-5694-4642-b809-c16c525514a9"
+																			},
+																			"monkCurrentChi": {}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "614d0fbb-f92d-4afb-8fe7-ae8aeb248244"
+																			},
+																			"math": {
+																				"op": "OpSub",
+																				"lhs": {
+																					"uuid": {
+																						"value": "51634d9a-ef46-4138-9900-ac8d356a769e"
+																					},
+																					"monkMaxChi": {}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "f8009fad-2246-4024-8543-aaabd187126f"
+																					},
+																					"const": {
+																						"val": "1"
+																					}
+																				}
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "ed368128-8a8f-4624-9e73-4542de8633d0"
+																	},
+																	"variableRef": {
+																		"name": "TEB: Active"
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "f969db24-4183-4200-85a6-c0f92851326d"
+																	},
+																	"cmp": {
+																		"op": "OpGt",
+																		"lhs": {
+																			"uuid": {
+																				"value": "81f73a69-067b-4466-b564-daeeca7e045c"
+																			},
+																			"energyTimeToTarget": {
+																				"targetEnergy": {
+																					"uuid": {
+																						"value": "a7651363-9571-4294-8363-20363fd1ea61"
+																					},
+																					"maxEnergy": {}
+																				}
+																			}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "38e304e2-759b-41be-b253-02ab4f5d1d3f"
+																			},
+																			"const": {
+																				"val": "4"
+																			}
+																		}
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 129597
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"groupReference": {
+											"groupName": "RoRo: TEB - Cast"
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "d76e8a50-f8d4-4f4a-8bcc-15f38ddbec83"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "377b81e3-2e40-4615-86ca-97b09090d2df"
+														},
+														"not": {
+															"val": {
+																"uuid": {
+																	"value": "1c8b6c18-6e37-4b3d-baf7-33330f9cbd73"
+																},
+																"variableRef": {
+																	"name": "RoRo: Equipped"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "ec0bc6c8-673b-42f1-8fe3-9c3cf959bc20"
+														},
+														"variableRef": {
+															"name": "TEB: Inactive"
+														}
+													},
+													{
+														"uuid": {
+															"value": "576c323d-0429-4b06-873e-915ce36d9b36"
+														},
+														"gcdIsReady": {}
+													},
+													{
+														"uuid": {
+															"value": "449d2a98-7eaa-4e90-a347-65657749cf50"
+														},
+														"or": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "dc5d2ce7-5715-4d4a-b39a-db2b1f5ee2d9"
+																	},
+																	"cmp": {
+																		"op": "OpGe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "64f69d25-65df-41d5-a34f-0413d4916d78"
+																			},
+																			"auraNumStacks": {
+																				"auraId": {
+																					"spellId": 1247279
+																				}
+																			}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "720a2c76-eac6-47cd-9a6a-6592df18356c"
+																			},
+																			"const": {
+																				"val": "19"
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "fbe11729-8979-4841-b190-95c9e41aa2d1"
+																	},
+																	"and": {
+																		"vals": [
+																			{
+																				"uuid": {
+																					"value": "6b7f35ec-a829-496b-a3cb-b656e1feb0c7"
+																				},
+																				"cmp": {
+																					"op": "OpGe",
+																					"lhs": {
+																						"uuid": {
+																							"value": "405d6d69-9fb9-4381-b831-e831deda47b3"
+																						},
+																						"monkCurrentChi": {}
+																					},
+																					"rhs": {
+																						"uuid": {
+																							"value": "ad312a7b-2c70-49b9-9c00-652402e0ba1d"
+																						},
+																						"const": {
+																							"val": "2"
+																						}
+																					}
+																				}
+																			},
+																			{
+																				"uuid": {
+																					"value": "69cfad75-d44c-4453-82ea-eafb0b1b6463"
+																				},
+																				"or": {
+																					"vals": [
+																						{
+																							"uuid": {
+																								"value": "be647e3c-b19b-4063-8050-07b58008f78a"
+																							},
+																							"cmp": {
+																								"op": "OpLt",
+																								"lhs": {
+																									"uuid": {
+																										"value": "ae8123cb-a98e-4d7c-8c56-ceb6f470e479"
+																									},
+																									"remainingTime": {}
+																								},
+																								"rhs": {
+																									"uuid": {
+																										"value": "adddeff3-161e-4a83-b602-bb3d8e64fcc9"
+																									},
+																									"const": {
+																										"val": "30s"
+																									}
+																								}
+																							}
+																						},
+																						{
+																							"uuid": {
+																								"value": "e3655503-9d6c-4f52-a5d7-407e5fec4fb1"
+																							},
+																							"cmp": {
+																								"op": "OpGe",
+																								"lhs": {
+																									"uuid": {
+																										"value": "ea06fd25-bc4a-42c8-a912-e765dfab728c"
+																									},
+																									"auraNumStacks": {
+																										"auraId": {
+																											"spellId": 1247279
+																										}
+																									}
+																								},
+																								"rhs": {
+																									"uuid": {
+																										"value": "6a7f222d-a1c9-4530-8471-18225f13e557"
+																									},
+																									"const": {
+																										"val": "15"
+																									}
+																								}
+																							}
+																						},
+																						{
+																							"uuid": {
+																								"value": "24fbe3d1-9b0e-4795-9832-013bbdd4ddb9"
+																							},
+																							"and": {
+																								"vals": [
+																									{
+																										"uuid": {
+																											"value": "fbc42635-26bf-412c-a543-2584b1c20f9f"
+																										},
+																										"cmp": {
+																											"op": "OpGe",
+																											"lhs": {
+																												"uuid": {
+																													"value": "7a5a934a-0f17-44a1-9e99-66bc05ef8714"
+																												},
+																												"auraNumStacks": {
+																													"auraId": {
+																														"spellId": 1247279
+																													}
+																												}
+																											},
+																											"rhs": {
+																												"uuid": {
+																													"value": "95704783-0e41-4865-966a-662643e014ca"
+																												},
+																												"const": {
+																													"val": "8"
+																												}
+																											}
+																										}
+																									},
+																									{
+																										"uuid": {
+																											"value": "5c9b6157-b283-4388-af5e-79a877112b2f"
+																										},
+																										"allTrinketStatProcsActive": {
+																											"statType1": 1,
+																											"statType2": -1,
+																											"statType3": -1,
+																											"minIcdSeconds": 40
+																										}
+																									}
+																								]
+																							}
+																						},
+																						{
+																							"uuid": {
+																								"value": "b5bddd47-071b-4e1a-8738-50b138242ad8"
+																							},
+																							"and": {
+																								"vals": [
+																									{
+																										"uuid": {
+																											"value": "5e0ccc46-cc73-4ac9-b022-18d5fba21110"
+																										},
+																										"variableRef": {
+																											"name": "Time: Opener"
+																										}
+																									},
+																									{
+																										"uuid": {
+																											"value": "91c460a0-0a08-47d3-bbaf-d921e6fd7581"
+																										},
+																										"cmp": {
+																											"op": "OpGe",
+																											"lhs": {
+																												"uuid": {
+																													"value": "b30abf68-b672-4917-8351-b6b518b62ea6"
+																												},
+																												"auraNumStacks": {
+																													"auraId": {
+																														"spellId": 1247279
+																													}
+																												}
+																											},
+																											"rhs": {
+																												"uuid": {
+																													"value": "00501504-edb4-4afb-938e-7b5f04bdd4f6"
+																												},
+																												"const": {
+																													"val": "7"
+																												}
+																											}
+																										}
+																									}
+																								]
+																							}
+																						}
+																					]
+																				}
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 1247275
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "dabc2c24-630e-481b-aaac-9275f8235e3c"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "fefe1288-a20c-4c6b-9212-61f485bada8a"
+														},
+														"auraIsKnown": {
+															"auraId": {
+																"spellId": 138177
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "fd82e045-605a-441d-82f1-2b0b67c830b7"
+														},
+														"cmp": {
+															"op": "OpGt",
+															"lhs": {
+																"uuid": {
+																	"value": "601a37d1-bdd1-4e25-89fd-84d1263b75fd"
+																},
+																"energyTimeToTarget": {
+																	"targetEnergy": {
+																		"uuid": {
+																			"value": "d4645edb-6c23-49ed-b627-b467b2f83d4c"
+																		},
+																		"maxEnergy": {}
+																	}
+																}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "dd1cd236-e2d4-4214-99d0-b10630c4fade"
+																},
+																"gcdTimeToReady": {}
+															}
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 138310
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "02659438-0e32-45ea-af4e-c9a5a227e093"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "276f9764-3cbf-4a6a-9844-dd5a259385cb"
+														},
+														"cmp": {
+															"op": "OpGt",
+															"lhs": {
+																"uuid": {
+																	"value": "01638efa-d1b8-4da4-b4cb-a344e6a7bd24"
+																},
+																"energyTimeToTarget": {
+																	"targetEnergy": {
+																		"uuid": {
+																			"value": "f0828213-107f-4e9c-b868-056b9d070635"
+																		},
+																		"maxEnergy": {}
+																	}
+																}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "9cbf1f8b-ae62-4c54-b9a8-bb5b7d85a077"
+																},
+																"const": {
+																	"val": "5s"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "ed6dd742-bb9e-43f8-848d-82daad5ae763"
+														},
+														"or": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "e8c667ac-5a0f-4c15-90da-294ee7754d76"
+																	},
+																	"auraIsInactive": {
+																		"auraId": {
+																			"spellId": 2825,
+																			"tag": -1
+																		},
+																		"includeReactionTime": true
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "a2d4e4fb-22e9-4b2e-a630-a75741ef1c91"
+																	},
+																	"and": {
+																		"vals": [
+																			{
+																				"uuid": {
+																					"value": "0156c142-5554-40f2-b646-73486fd32901"
+																				},
+																				"spellIsKnown": {
+																					"spellId": {
+																						"spellId": 116847
+																					}
+																				}
+																			},
+																			{
+																				"uuid": {
+																					"value": "ac5bdac9-172d-428d-8a0b-dc000ce0b4b6"
+																				},
+																				"variableRef": {
+																					"name": "Targets: More than 1"
+																				}
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 115288
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"autocastOtherCooldowns": {}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "0892e94f-cd64-4cfb-9286-199aac22164a"
+											},
+											"variableRef": {
+												"name": "Targets: More than 1"
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 116847
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "7ef98b4e-50d9-4b6e-bae9-7bdd82f9e05e"
+											},
+											"or": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "7a8e64be-e7c1-4b7b-8af8-b8a87b4af799"
+														},
+														"cmp": {
+															"op": "OpLe",
+															"lhs": {
+																"uuid": {
+																	"value": "aa15845d-31cf-49e7-83d6-b066f08c893e"
+																},
+																"auraRemainingTime": {
+																	"sourceUnit": {
+																		"type": "CurrentTarget"
+																	},
+																	"auraId": {
+																		"spellId": 130320
+																	}
+																}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "69025e72-c99b-4ac7-a841-ac72082f2be4"
+																},
+																"variableRef": {
+																	"name": "Time: GCD seconds"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "fffa6a76-bb78-4f91-b505-9776d3f0b2f8"
+														},
+														"not": {
+															"val": {
+																"uuid": {
+																	"value": "8b416ea1-16e3-408e-ac3c-e2a5573ad321"
+																},
+																"variableRef": {
+																	"name": "Targets: More than 2"
+																}
+															}
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 130320
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "2977be99-c255-41be-ba54-e0302e3b593d"
+											},
+											"cmp": {
+												"op": "OpLe",
+												"lhs": {
+													"uuid": {
+														"value": "5793f9fd-5828-4698-a679-470e4777d523"
+													},
+													"auraRemainingTime": {
+														"auraId": {
+															"spellId": 125359
+														}
+													}
+												},
+												"rhs": {
+													"uuid": {
+														"value": "20535013-578f-46ec-8932-32493a739634"
+													},
+													"const": {
+														"val": "1s"
+													}
+												}
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 100787
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "0e7afc7a-956c-4933-8f1e-02d85abc1fd1"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "968c6690-f912-4980-bb8c-b3c3424667a9"
+														},
+														"cmp": {
+															"op": "OpGe",
+															"lhs": {
+																"uuid": {
+																	"value": "3a36f525-45c2-442b-9c02-451f026dba71"
+																},
+																"numberTargets": {}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "ff52bc13-32f0-4533-8c34-825a5b573f8b"
+																},
+																"const": {
+																	"val": "4"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "75a6fbfb-6989-4745-9600-c9f76aca2e5c"
+														},
+														"cmp": {
+															"op": "OpGe",
+															"lhs": {
+																"uuid": {
+																	"value": "e9bb6875-b90f-412c-b468-971a40510608"
+																},
+																"auraRemainingTime": {
+																	"sourceUnit": {
+																		"type": "CurrentTarget"
+																	},
+																	"auraId": {
+																		"spellId": 130320
+																	}
+																}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "30602e81-300a-487e-afe3-e2cc4482af27"
+																},
+																"const": {
+																	"val": "2.25s"
+																}
+															}
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 101546
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"castSpell": {
+											"spellId": {
+												"spellId": 130320
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "916a1b47-331b-445b-8dd9-85169a59a541"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "34138339-39bb-4a86-91bf-2316b8cac738"
+														},
+														"variableRef": {
+															"name": "Targets: More than 2"
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 101546
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "d059bcfb-118f-4539-9688-3131e47fca47"
+											},
+											"cmp": {
+												"op": "OpGe",
+												"lhs": {
+													"uuid": {
+														"value": "5e7e6c2f-04d0-4b5d-800f-957966f04bfe"
+													},
+													"energyTimeToTarget": {
+														"targetEnergy": {
+															"uuid": {
+																"value": "2a6823b8-67ef-46df-985d-8a19731b586b"
+															},
+															"maxEnergy": {}
+														}
+													}
+												},
+												"rhs": {
+													"uuid": {
+														"value": "e0a899e0-1ce8-4b5d-ae79-90efbb12d408"
+													},
+													"const": {
+														"val": "1s"
+													}
+												}
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 115098
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "2098f526-522b-4555-a870-8aab79e26d9a"
+											},
+											"auraIsActive": {
+												"auraId": {
+													"spellId": 116768
+												},
+												"includeReactionTime": true
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 100784,
+												"tag": 1
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "18a7fa03-ff25-4e64-8647-72beb16fac10"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "bb46ee7b-c2d2-4c15-9471-1182411a7665"
+														},
+														"cmp": {
+															"op": "OpGt",
+															"lhs": {
+																"uuid": {
+																	"value": "f7ad935a-590a-4c85-b78b-f9a7e9f3e57b"
+																},
+																"energyTimeToTarget": {
+																	"targetEnergy": {
+																		"uuid": {
+																			"value": "a4f14bdf-20e2-4f26-8949-6006c5628d0c"
+																		},
+																		"maxEnergy": {}
+																	}
+																}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "5e3cff34-62f8-4645-8b8d-5276602f4cb0"
+																},
+																"variableRef": {
+																	"name": "FoF: Channel Time"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "c304b679-3b90-45b5-9ec7-943dd837f56a"
+														},
+														"or": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "ac99e2e9-8729-4913-aaab-3c75dec1113c"
+																	},
+																	"not": {
+																		"val": {
+																			"uuid": {
+																				"value": "8d19566c-1782-4b75-9c26-72818be88d28"
+																			},
+																			"auraIsActive": {
+																				"auraId": {
+																					"spellId": 115288
+																				},
+																				"includeReactionTime": true
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "df72ce37-6c7e-43eb-99a7-4bed26e85781"
+																	},
+																	"and": {
+																		"vals": [
+																			{
+																				"uuid": {
+																					"value": "73fb86c8-4017-443f-96c0-2501bdc05909"
+																				},
+																				"spellIsKnown": {
+																					"spellId": {
+																						"spellId": 116847
+																					}
+																				}
+																			},
+																			{
+																				"uuid": {
+																					"value": "459d3eb5-3ed0-4303-9a2c-93399db6078e"
+																				},
+																				"cmp": {
+																					"op": "OpGe",
+																					"lhs": {
+																						"uuid": {
+																							"value": "172b72b1-6e19-4761-92ad-ec00e7d7a417"
+																						},
+																						"auraRemainingTime": {
+																							"auraId": {
+																								"spellId": 116847
+																							}
+																						}
+																					},
+																					"rhs": {
+																						"uuid": {
+																							"value": "b396c376-ab0a-4d48-b4ff-6127cff3bac8"
+																						},
+																						"variableRef": {
+																							"name": "FoF: Channel Time"
+																						}
+																					}
+																				}
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													},
+													{
+														"uuid": {
+															"value": "5f46158c-ded4-4a1d-a1eb-c4c6dbab5470"
+														},
+														"or": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "5de1ca80-efa4-48ae-b7c3-b450c7da2257"
+																	},
+																	"not": {
+																		"val": {
+																			"uuid": {
+																				"value": "b2bbae69-f2ea-41db-b78f-e212c9af5463"
+																			},
+																			"variableRef": {
+																				"name": "RoRo: Active"
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "ead5d88a-3455-4e37-a878-2cf911552ddb"
+																	},
+																	"and": {
+																		"vals": [
+																			{
+																				"uuid": {
+																					"value": "0000275a-c63c-47bb-90a7-e99cfd6d405b"
+																				},
+																				"variableRef": {
+																					"name": "RoRo: Active"
+																				}
+																			},
+																			{
+																				"uuid": {
+																					"value": "d055ea74-ef55-4819-9992-5c4275fbf4b8"
+																				},
+																				"cmp": {
+																					"op": "OpGe",
+																					"lhs": {
+																						"uuid": {
+																							"value": "06a6d291-9bfb-4efb-9991-0cc2ae5ffced"
+																						},
+																						"math": {
+																							"op": "OpAdd",
+																							"lhs": {
+																								"uuid": {
+																									"value": "e50e32ee-9347-41e9-8dad-8c23301942c6"
+																								},
+																								"auraRemainingTime": {
+																									"auraId": {
+																										"spellId": 139120
+																									}
+																								}
+																							},
+																							"rhs": {
+																								"uuid": {
+																									"value": "e06b3e59-4d04-45b0-a8af-52a1bca9b170"
+																								},
+																								"math": {
+																									"op": "OpAdd",
+																									"lhs": {
+																										"uuid": {
+																											"value": "374d8a42-8cd3-425d-9c8c-ba1f07e0216b"
+																										},
+																										"spellGcdHastedDuration": {
+																											"spellId": {
+																												"spellId": 113656
+																											}
+																										}
+																									},
+																									"rhs": {
+																										"uuid": {
+																											"value": "4cf6d421-771c-4b63-9d3f-0a4699760a4b"
+																										},
+																										"inputDelay": {}
+																									}
+																								}
+																							}
+																						}
+																					},
+																					"rhs": {
+																						"uuid": {
+																							"value": "6fc08b04-94f0-4f21-80b4-368c7fd1c972"
+																						},
+																						"variableRef": {
+																							"name": "FoF: Channel Time"
+																						}
+																					}
+																				}
+																			},
+																			{
+																				"uuid": {
+																					"value": "ab653e20-0769-4c0b-8267-97043690ab7f"
+																				},
+																				"variableRef": {
+																					"name": "TEB: Active"
+																				}
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 113656
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "de8e21ec-320d-4119-8afc-fd299c36020b"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "5480249f-ac35-45b2-ac82-78a7dff866a6"
+														},
+														"not": {
+															"val": {
+																"uuid": {
+																	"value": "4e9c18d9-4311-41bf-a9b8-b7055f7b6d9b"
+																},
+																"variableRef": {
+																	"name": "Targets: More than 2"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "161ebddf-82ac-4af1-a4fd-bf971dfb15db"
+														},
+														"cmp": {
+															"op": "OpGt",
+															"lhs": {
+																"uuid": {
+																	"value": "532bb1e5-4be1-42c6-979a-e50e0bca49f6"
+																},
+																"energyTimeToTarget": {
+																	"targetEnergy": {
+																		"uuid": {
+																			"value": "0157988c-ab51-47ea-881e-c9ef497bd819"
+																		},
+																		"maxEnergy": {}
+																	}
+																}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "dbddf624-833e-4781-bc14-f6ec8afdb3c5"
+																},
+																"const": {
+																	"val": "2s"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "812bd7a1-3345-45a4-97f7-3f8d36241139"
+														},
+														"cmp": {
+															"op": "OpLt",
+															"lhs": {
+																"uuid": {
+																	"value": "c03222f6-d259-4b8f-93c2-e46cbe72e1e5"
+																},
+																"auraNumStacks": {
+																	"auraId": {
+																		"spellId": 124081,
+																		"tag": 1
+																	},
+																	"includeReactionTime": true
+																}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "a86d5931-3095-4eb4-9aaf-c2de4f94990d"
+																},
+																"const": {
+																	"val": "2"
+																}
+															}
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 124081
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "f9d4cb9f-4d33-4fe4-a54c-90466bb09930"
+											},
+											"and": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "5f38edf4-4166-441c-a00e-293c18784d8e"
+														},
+														"cmp": {
+															"op": "OpGt",
+															"lhs": {
+																"uuid": {
+																	"value": "9ee0f428-5d86-46fe-8cd2-582916ee86a3"
+																},
+																"currentTime": {}
+															},
+															"rhs": {
+																"uuid": {
+																	"value": "a1d8f71e-8d11-48ed-84f9-2e45e079f167"
+																},
+																"const": {
+																	"val": "23s"
+																}
+															}
+														}
+													},
+													{
+														"uuid": {
+															"value": "e695a025-6fb1-466c-9bec-28910941a2e6"
+														},
+														"auraIsInactive": {
+															"auraId": {
+																"spellId": 115288
+															},
+															"includeReactionTime": true
+														}
+													},
+													{
+														"uuid": {
+															"value": "095c58a3-ce2a-4c12-8995-46895a7ca6d2"
+														},
+														"auraIsActive": {
+															"auraId": {
+																"spellId": 118864
+															},
+															"includeReactionTime": true
+														}
+													},
+													{
+														"uuid": {
+															"value": "16480e1a-4004-4dc5-b8af-1a551ca19f86"
+														},
+														"or": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "1fc9fe6d-93f5-4826-8fee-8167498a0c41"
+																	},
+																	"cmp": {
+																		"op": "OpLe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "1e192521-77ac-4bae-8ed0-42803a4756d6"
+																			},
+																			"auraRemainingTime": {
+																				"auraId": {
+																					"spellId": 118864
+																				}
+																			}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "1b3df948-0dfd-4d33-a2a0-b5bb17177bd9"
+																			},
+																			"spellGcdHastedDuration": {
+																				"spellId": {
+																					"spellId": 100787
+																				}
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "c9ad3777-d8fe-4646-ac15-07c04fbb0d45"
+																	},
+																	"cmp": {
+																		"op": "OpGe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "1d3935f5-3103-4ffe-8d24-fc89259b1fcf"
+																			},
+																			"energyTimeToTarget": {
+																				"targetEnergy": {
+																					"uuid": {
+																						"value": "4b8a104a-edf3-4e02-990c-eda835c899f5"
+																					},
+																					"maxEnergy": {}
+																				}
+																			}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "a62aca00-9f9f-46c4-93b0-fa81aeca6f79"
+																			},
+																			"math": {
+																				"op": "OpMul",
+																				"lhs": {
+																					"uuid": {
+																						"value": "3569757f-3562-4b8b-8e06-13ee5a0be380"
+																					},
+																					"spellGcdHastedDuration": {
+																						"spellId": {
+																							"spellId": 100787
+																						}
+																					}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "e538fc7b-9dc2-4101-9753-fceafed3f5d0"
+																					},
+																					"const": {
+																						"val": "2"
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 100787
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "7cb7a145-de5c-43f2-8eae-98ff4e87b046"
+											},
+											"cmp": {
+												"op": "OpGt",
+												"lhs": {
+													"uuid": {
+														"value": "d5d26824-1f40-41d0-8d93-d6291276acfa"
+													},
+													"energyTimeToTarget": {
+														"targetEnergy": {
+															"uuid": {
+																"value": "34e7a0d6-52bf-411f-8718-67c6613d9013"
+															},
+															"maxEnergy": {}
+														}
+													}
+												},
+												"rhs": {
+													"uuid": {
+														"value": "96d16c35-8d15-473f-8df5-273f784df491"
+													},
+													"math": {
+														"op": "OpAdd",
+														"lhs": {
+															"uuid": {
+																"value": "a3cc6789-dd8e-4d9b-972d-fcb98e49f345"
+															},
+															"spellCastTime": {
+																"spellId": {
+																	"spellId": 123986
+																}
+															}
+														},
+														"rhs": {
+															"uuid": {
+																"value": "4c6e40bb-dc70-4e40-aa64-e5c880798d57"
+															},
+															"spellGcdHastedDuration": {
+																"spellId": {
+																	"spellId": 123986
+																}
+															}
+														}
+													}
+												}
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 123986
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "3c43dba1-07e4-411e-a54a-c82cfeb7609f"
+											},
+											"cmp": {
+												"op": "OpGe",
+												"lhs": {
+													"uuid": {
+														"value": "67895fc1-871e-4fb2-97a0-f306dbb2d8a5"
+													},
+													"math": {
+														"op": "OpSub",
+														"lhs": {
+															"uuid": {
+																"value": "d8c5b428-c053-4140-bc70-1accd0e2f83c"
+															},
+															"monkMaxChi": {}
+														},
+														"rhs": {
+															"uuid": {
+																"value": "c3b93acb-4852-455f-b946-2f39b8bba17c"
+															},
+															"monkCurrentChi": {}
+														}
+													}
+												},
+												"rhs": {
+													"uuid": {
+														"value": "791f4add-9efe-4fd3-b0bb-87d98c9c07f9"
+													},
+													"const": {
+														"val": "2"
+													}
+												}
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 100780
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "b174b144-0f03-46c5-83a5-c79629ad930c"
+											},
+											"cmp": {
+												"op": "OpLt",
+												"lhs": {
+													"uuid": {
+														"value": "24701af7-3406-42e9-8613-3666a622db0c"
+													},
+													"auraNumStacks": {
+														"auraId": {
+															"spellId": 124081,
+															"tag": 1
+														},
+														"includeReactionTime": true
+													}
+												},
+												"rhs": {
+													"uuid": {
+														"value": "af7d9c83-7b28-47f2-8014-a2458636990a"
+													},
+													"const": {
+														"val": "2"
+													}
+												}
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 124081
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"castSpell": {
+											"spellId": {
+												"spellId": 116847
+											}
+										}
+									}
+								},
+								{
+									"action": {
+										"condition": {
+											"uuid": {
+												"value": "3cdbca12-bd8f-4b04-8b1a-09e03770fe4a"
+											},
+											"or": {
+												"vals": [
+													{
+														"uuid": {
+															"value": "8b19921d-321d-4c8e-bf82-31d195f16da1"
+														},
+														"and": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "2cf3c88d-fc3f-4791-88d5-1507b9a30fc4"
+																	},
+																	"cmp": {
+																		"op": "OpGe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "ad407c5b-a22b-4a44-a774-b435d8ae7ebe"
+																			},
+																			"math": {
+																				"op": "OpAdd",
+																				"lhs": {
+																					"uuid": {
+																						"value": "25054fc5-7ae4-4c70-bac3-bc9b20968977"
+																					},
+																					"currentEnergy": {}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "3cea919b-10c5-419d-a578-c097ec4dc2d4"
+																					},
+																					"math": {
+																						"op": "OpMul",
+																						"lhs": {
+																							"uuid": {
+																								"value": "eaef8830-7edf-42b3-93ee-3e9f669322ae"
+																							},
+																							"energyRegenPerSecond": {}
+																						},
+																						"rhs": {
+																							"uuid": {
+																								"value": "cf57d135-4fe7-445c-910f-93dfbf5095e2"
+																							},
+																							"spellTimeToReady": {
+																								"spellId": {
+																									"spellId": 130320
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "a14dfe65-9c2d-4a19-ba2f-558558f61df6"
+																			},
+																			"const": {
+																				"val": "35"
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "07061768-6853-419b-b8ec-dd18668ee809"
+																	},
+																	"variableRef": {
+																		"name": "Targets: Max 2"
+																	}
+																}
+															]
+														}
+													},
+													{
+														"uuid": {
+															"value": "bddbec05-9cec-47c0-8982-8f106f4c168e"
+														},
+														"and": {
+															"vals": [
+																{
+																	"uuid": {
+																		"value": "7334c8d7-fc9e-4b15-ac60-89bdc9feedfc"
+																	},
+																	"cmp": {
+																		"op": "OpGe",
+																		"lhs": {
+																			"uuid": {
+																				"value": "68fa4262-e4a8-4556-a95f-4d28c882e291"
+																			},
+																			"math": {
+																				"op": "OpAdd",
+																				"lhs": {
+																					"uuid": {
+																						"value": "ffa1df22-fac0-459f-928b-a2bd33662858"
+																					},
+																					"currentEnergy": {}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "edd7b651-0ab9-41ba-bdc8-579d04e912cc"
+																					},
+																					"math": {
+																						"op": "OpMul",
+																						"lhs": {
+																							"uuid": {
+																								"value": "8a0cfaaa-9243-4dd2-8580-d185528f23fc"
+																							},
+																							"energyRegenPerSecond": {}
+																						},
+																						"rhs": {
+																							"uuid": {
+																								"value": "ac8b7555-34e5-4ff8-af98-8569219491c0"
+																							},
+																							"spellTimeToReady": {
+																								"spellId": {
+																									"spellId": 130320
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		},
+																		"rhs": {
+																			"uuid": {
+																				"value": "d7f1069d-bc26-4bf9-b2a5-02c4390257c0"
+																			},
+																			"const": {
+																				"val": "105"
+																			}
+																		}
+																	}
+																},
+																{
+																	"uuid": {
+																		"value": "9578c985-d1b0-4eed-98ba-a4cb33c9a6a4"
+																	},
+																	"variableRef": {
+																		"name": "Targets: More than 2"
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										"castSpell": {
+											"spellId": {
+												"spellId": 100784,
+												"tag": 1
+											}
+										}
+									}
+								}
+							],
+							"groups": [
+								{
+									"name": "Wait for Channeling",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "0184c11c-3442-49f2-8f99-640328374f7a"
+													},
+													"spellIsChanneling": {
+														"spellId": {
+															"spellId": 113656
+														}
+													}
+												},
+												"waitUntil": {
+													"condition": {
+														"uuid": {
+															"value": "57e2ffc5-41ac-4306-a6d1-4aa7710cf22f"
+														},
+														"not": {
+															"val": {
+																"uuid": {
+																	"value": "9fd06415-c51d-4e4b-9de6-42748541490f"
+																},
+																"spellIsChanneling": {
+																	"spellId": {
+																		"spellId": 113656
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "00ec8a78-bd7c-4fdf-88f2-7e4ba345c593"
+													},
+													"spellIsChanneling": {
+														"spellId": {
+															"spellId": 101546
+														}
+													}
+												},
+												"waitUntil": {
+													"condition": {
+														"uuid": {
+															"value": "321185ec-4fb5-41d3-b115-a56a95e56c1f"
+														},
+														"not": {
+															"val": {
+																"uuid": {
+																	"value": "0b93e2f7-15e1-468f-b332-d76f4add5bb9"
+																},
+																"spellIsChanneling": {
+																	"spellId": {
+																		"spellId": 101546
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "SEF: Use",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "a3d84752-0b88-4511-85f7-5dac864746f7"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "f5e7dbe4-4233-44af-aa5a-753bd956aa7e"
+																},
+																"cmp": {
+																	"op": "OpEq",
+																	"lhs": {
+																		"uuid": {
+																			"value": "04df3cb1-f626-40de-92e1-6cadc9d7021f"
+																		},
+																		"numberTargets": {}
+																	},
+																	"rhs": {
+																		"uuid": {
+																			"value": "31a07808-7ee7-4be3-a3d8-f1d0d8ab47be"
+																		},
+																		"const": {
+																			"val": "2"
+																		}
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "32682471-7d8e-4076-91dc-0863789f9c90"
+																},
+																"cmp": {
+																	"op": "OpLt",
+																	"lhs": {
+																		"uuid": {
+																			"value": "d4ccce8c-383f-44e2-8c45-45999cd94988"
+																		},
+																		"auraNumStacks": {
+																			"auraId": {
+																				"spellId": 138228
+																			}
+																		}
+																	},
+																	"rhs": {
+																		"uuid": {
+																			"value": "ce393ecb-eb1e-4c70-9f2a-9b9c1cdf60a1"
+																		},
+																		"const": {
+																			"val": "1"
+																		}
+																	}
+																}
+															}
+														]
+													}
+												},
+												"sequence": {
+													"name": "sef",
+													"actions": [
+														{
+															"castSpell": {
+																"spellId": {
+																	"spellId": 138228
+																},
+																"target": {
+																	"type": "Target",
+																	"index": 1
+																}
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "98c7159f-2f4b-4b73-ab61-028c9f1cec46"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "ece00719-f6dc-4072-8a9c-a7b6ddac991f"
+																},
+																"variableRef": {
+																	"name": "Targets: More than 2"
+																}
+															},
+															{
+																"uuid": {
+																	"value": "ac59585b-006e-4886-8311-9f1ecbdb5caa"
+																},
+																"cmp": {
+																	"op": "OpEq",
+																	"lhs": {
+																		"uuid": {
+																			"value": "680a7ff6-63b2-4bca-81d7-a3ceb180be7a"
+																		},
+																		"auraNumStacks": {
+																			"auraId": {
+																				"spellId": 138228
+																			}
+																		}
+																	},
+																	"rhs": {
+																		"uuid": {
+																			"value": "f19c2da2-8695-41dd-99bd-064848d21870"
+																		},
+																		"const": {
+																			"val": "0"
+																		}
+																	}
+																}
+															}
+														]
+													}
+												},
+												"sequence": {
+													"name": "sef",
+													"actions": [
+														{
+															"castSpell": {
+																"spellId": {
+																	"spellId": 138228
+																},
+																"target": {
+																	"type": "Target",
+																	"index": 1
+																}
+															}
+														},
+														{
+															"castSpell": {
+																"spellId": {
+																	"spellId": 138228
+																},
+																"target": {
+																	"type": "Target",
+																	"index": 2
+																}
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "d12479f7-1094-4d40-a00f-c1b9c5d012bd"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "33f32916-91d6-4fe5-88ff-683571bc5f0a"
+																},
+																"variableRef": {
+																	"name": "Targets: More than 2"
+																}
+															},
+															{
+																"uuid": {
+																	"value": "b9058fad-bab6-4eab-8a49-faa4d92f71d3"
+																},
+																"cmp": {
+																	"op": "OpEq",
+																	"lhs": {
+																		"uuid": {
+																			"value": "0b8cce4e-a46c-4afd-b5db-79be2760bc96"
+																		},
+																		"auraNumStacks": {
+																			"auraId": {
+																				"spellId": 138228
+																			}
+																		}
+																	},
+																	"rhs": {
+																		"uuid": {
+																			"value": "a9fbc3ca-4336-4c22-b31f-7df6f6de9a76"
+																		},
+																		"const": {
+																			"val": "1"
+																		}
+																	}
+																}
+															}
+														]
+													}
+												},
+												"sequence": {
+													"name": "sef",
+													"actions": [
+														{
+															"castSpell": {
+																"spellId": {
+																	"spellId": 138228
+																},
+																"target": {
+																	"type": "Target",
+																	"index": 2
+																}
+															}
+														}
+													]
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Cooldowns: On use",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "4c7c50f6-304b-4e46-833c-39bfd9ec73aa"
+													},
+													"or": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "48d0bb8e-03a3-4aa9-9e44-449b236426bc"
+																},
+																"auraIsActive": {
+																	"auraId": {
+																		"spellId": 2825,
+																		"tag": -1
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "0e259437-a033-4f68-acaf-6f017832c03e"
+																},
+																"auraIsActive": {
+																	"auraId": {
+																		"spellId": 123904
+																	},
+																	"includeReactionTime": true
+																}
+															},
+															{
+																"uuid": {
+																	"value": "588e0377-e6bb-4c08-b8ff-c3cdb055eab7"
+																},
+																"and": {
+																	"vals": [
+																		{
+																			"uuid": {
+																				"value": "2ce8df3a-2ad9-4e94-967c-86577c74db4e"
+																			},
+																			"cmp": {
+																				"op": "OpGt",
+																				"lhs": {
+																					"uuid": {
+																						"value": "e6eb6d25-7148-42c1-a467-711b7c7ee12b"
+																					},
+																					"math": {
+																						"op": "OpAdd",
+																						"lhs": {
+																							"uuid": {
+																								"value": "18350051-f5a0-4af8-93bc-253fff6e12ef"
+																							},
+																							"spellTimeToReady": {
+																								"spellId": {
+																									"spellId": 123904
+																								}
+																							}
+																						},
+																						"rhs": {
+																							"uuid": {
+																								"value": "eb89f1b1-9d11-4216-b073-6169a69e369c"
+																							},
+																							"const": {
+																								"val": "25s"
+																							}
+																						}
+																					}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "1baaaebb-602c-432a-af76-c3120ae9bf08"
+																					},
+																					"remainingTime": {}
+																				}
+																			}
+																		},
+																		{
+																			"uuid": {
+																				"value": "3c17d8f6-e43b-4e4c-9e95-bff6ee0ff8bb"
+																			},
+																			"cmp": {
+																				"op": "OpGt",
+																				"lhs": {
+																					"uuid": {
+																						"value": "8459a5ef-42fa-43ad-a326-2b34a8aa5fcc"
+																					},
+																					"auraRemainingTime": {
+																						"auraId": {
+																							"spellId": 1247275
+																						}
+																					}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "0eccf666-c526-4b61-ba03-d8d54403ca84"
+																					},
+																					"const": {
+																						"val": "14s"
+																					}
+																				}
+																			}
+																		}
+																	]
+																}
+															},
+															{
+																"uuid": {
+																	"value": "56b5b4ad-13e9-42a4-a353-ddbae9917d69"
+																},
+																"and": {
+																	"vals": [
+																		{
+																			"uuid": {
+																				"value": "94e465df-96c4-459a-9951-8a1aa51a9f66"
+																			},
+																			"variableRef": {
+																				"name": "TEB: Active"
+																			}
+																		},
+																		{
+																			"uuid": {
+																				"value": "832866e5-9b6a-4d23-8805-8b2a071219e9"
+																			},
+																			"auraIsActive": {
+																				"auraId": {
+																					"spellId": 138228
+																				}
+																			}
+																		},
+																		{
+																			"uuid": {
+																				"value": "8b61b570-5e46-4f5a-ad37-188c7d3f3f50"
+																			},
+																			"cmp": {
+																				"op": "OpEq",
+																				"lhs": {
+																					"uuid": {
+																						"value": "996412e2-ec9a-4b52-ad85-0e2cbe708379"
+																					},
+																					"auraNumStacks": {
+																						"auraId": {
+																							"spellId": 138228
+																						}
+																					}
+																				},
+																				"rhs": {
+																					"uuid": {
+																						"value": "0891ec95-64a4-4f95-a347-608e8ad856bc"
+																					},
+																					"min": {
+																						"vals": [
+																							{
+																								"uuid": {
+																									"value": "3079cb9d-d04a-4ddb-91df-1864ffaee6e8"
+																								},
+																								"math": {
+																									"op": "OpSub",
+																									"lhs": {
+																										"uuid": {
+																											"value": "d87876e3-d50f-4fcb-a968-b260ccb86aaa"
+																										},
+																										"numberTargets": {}
+																									},
+																									"rhs": {
+																										"uuid": {
+																											"value": "6c8b80fe-4397-42f8-b1ff-8e3e9b8f4cea"
+																										},
+																										"const": {
+																											"val": "1"
+																										}
+																									}
+																								}
+																							},
+																							{
+																								"uuid": {
+																									"value": "85468cc3-7a8b-49ec-a869-fa1f62da63d7"
+																								},
+																								"const": {
+																									"val": "2"
+																								}
+																							}
+																						]
+																					}
+																				}
+																			}
+																		}
+																	]
+																}
+															}
+														]
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"otherId": "OtherActionPotion"
+													}
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "a4f802dd-e030-456c-acfe-d3183712e465"
+													},
+													"variableRef": {
+														"name": "TEB: Active"
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"spellId": 126734
+													}
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "e96584de-291c-434e-b25e-6a80526cc47f"
+													},
+													"variableRef": {
+														"name": "TEB: Active"
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"spellId": 121279
+													}
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "f209a646-a71c-46b0-818b-083858f1bb66"
+													},
+													"variableRef": {
+														"name": "TEB: Active"
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"spellId": 33697
+													}
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "f7b4c8b9-ede6-4bf9-aea5-b75e973a6e49"
+													},
+													"variableRef": {
+														"name": "TEB: Active"
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"spellId": 26297
+													}
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Internal: Cast TEB",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "a126dfe4-e14b-4c3b-b768-2c94b0bfa473"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "b6e6ff91-9447-4047-a457-8387e5815829"
+																},
+																"not": {
+																	"val": {
+																		"uuid": {
+																			"value": "ed39ef61-73fc-4f64-b096-4b26715fa4b9"
+																		},
+																		"actionGroupUsed": {
+																			"name": "Weapon Swap: ON/OFF"
+																		}
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "f2e84365-0e49-498d-b139-a5898cdc4166"
+																},
+																"not": {
+																	"val": {
+																		"uuid": {
+																			"value": "59655d83-fe09-4895-b292-bf4b1cf7c101"
+																		},
+																		"actionGroupUsed": {
+																			"name": "Elixir Swap: ON/OFF"
+																		}
+																	}
+																}
+															}
+														]
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"spellId": 1247275
+													}
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "9fbbc45a-a88c-49b0-916c-e559f0d0cc37"
+													},
+													"actionGroupUsed": {
+														"name": "Weapon Swap: ON/OFF"
+													}
+												},
+												"groupReference": {
+													"groupName": "Weapon Swap: TEB"
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "576a8785-b618-49da-b83b-1d3fdac76785"
+													},
+													"actionGroupUsed": {
+														"name": "Elixir Swap: ON/OFF"
+													}
+												},
+												"groupReference": {
+													"groupName": "Elixir Swap: TEB"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "RoRo: TEB - Action",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "13a25382-65ed-4ecd-900a-305b64011b4d"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "acae26be-0ec5-489b-8207-6ed412d08d6a"
+																},
+																"variablePlaceholder": {
+																	"name": "TEB: Active/Inactive"
+																}
+															},
+															{
+																"uuid": {
+																	"value": "4177ca21-afc8-421f-8828-36fcd42a5c4f"
+																},
+																"cmp": {
+																	"op": "OpGe",
+																	"lhs": {
+																		"uuid": {
+																			"value": "999027de-8d31-4ff9-b25b-cfd91281a110"
+																		},
+																		"auraNumStacks": {
+																			"auraId": {
+																				"spellId": 1247279
+																			}
+																		}
+																	},
+																	"rhs": {
+																		"uuid": {
+																			"value": "7c6c58e0-5113-470e-8160-cf494322fb05"
+																		},
+																		"variablePlaceholder": {
+																			"name": "TEB: # stacks"
+																		}
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "a4971cdb-1321-4911-bb19-439b8fdc80df"
+																},
+																"cmp": {
+																	"op": "OpLe",
+																	"lhs": {
+																		"uuid": {
+																			"value": "24d1c863-e0fb-4f9d-90c6-245a77057c57"
+																		},
+																		"auraRemainingTime": {
+																			"auraId": {
+																				"spellId": 139120
+																			}
+																		}
+																	},
+																	"rhs": {
+																		"uuid": {
+																			"value": "16a208b2-892a-471e-aff7-15459ee81e11"
+																		},
+																		"variablePlaceholder": {
+																			"name": "RoRo: Remaining Time"
+																		}
+																	}
+																}
+															}
+														]
+													}
+												},
+												"groupReference": {
+													"groupName": "Internal: Cast TEB"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "RoRo: TEB - Actions",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "d60c20e1-6ba2-47e1-a1c6-8ecfad30f8af"
+													},
+													"or": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "bbb3623f-a0d1-49eb-9fd3-a1f6d190902e"
+																},
+																"cmp": {
+																	"op": "OpEq",
+																	"lhs": {
+																		"uuid": {
+																			"value": "a1234923-20a6-47f7-a522-8f76bb5c3762"
+																		},
+																		"auraNumStacks": {
+																			"auraId": {
+																				"spellId": 1247279
+																			}
+																		}
+																	},
+																	"rhs": {
+																		"uuid": {
+																			"value": "1a7b4ec4-c781-4e40-bb4b-970c0a5f1cc1"
+																		},
+																		"const": {
+																			"val": "20"
+																		}
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "47dbda82-954a-455c-9ae3-3b26c69411c3"
+																},
+																"and": {
+																	"vals": [
+																		{
+																			"uuid": {
+																				"value": "0dd194ea-a371-4a38-9ba8-c1599b6b8838"
+																			},
+																			"variableRef": {
+																				"name": "TEB: Stacks > Current"
+																			}
+																		},
+																		{
+																			"uuid": {
+																				"value": "323829b0-8565-41b7-a158-f7694b79f669"
+																			},
+																			"or": {
+																				"vals": [
+																					{
+																						"uuid": {
+																							"value": "faf70110-7e01-456d-a9e9-de70d987814d"
+																						},
+																						"and": {
+																							"vals": [
+																								{
+																									"uuid": {
+																										"value": "40c9773c-2a3a-4730-9fd1-8f52efd52530"
+																									},
+																									"variableRef": {
+																										"name": "RoRo: Active"
+																									}
+																								},
+																								{
+																									"uuid": {
+																										"value": "b09c25a5-d018-4eae-8bdc-22983500ee00"
+																									},
+																									"cmp": {
+																										"op": "OpLe",
+																										"lhs": {
+																											"uuid": {
+																												"value": "f3106706-7d00-44e7-a109-ede2f2418461"
+																											},
+																											"remainingTime": {}
+																										},
+																										"rhs": {
+																											"uuid": {
+																												"value": "1e49f14e-1df9-4d0a-8a0d-9671413cfd0c"
+																											},
+																											"math": {
+																												"op": "OpAdd",
+																												"lhs": {
+																													"uuid": {
+																														"value": "ff154343-3bed-4424-a00b-ddc10e39db4b"
+																													},
+																													"variableRef": {
+																														"name": "Time: TEB seconds"
+																													}
+																												},
+																												"rhs": {
+																													"uuid": {
+																														"value": "312cf54e-1c68-42aa-a8bc-f822cb320d13"
+																													},
+																													"const": {
+																														"val": "10s"
+																													}
+																												}
+																											}
+																										}
+																									}
+																								}
+																							]
+																						}
+																					},
+																					{
+																						"uuid": {
+																							"value": "e7464250-1037-4871-8fb0-5eaf04b33622"
+																						},
+																						"and": {
+																							"vals": [
+																								{
+																									"uuid": {
+																										"value": "c1d9fb1a-16bc-4e3c-9c05-95c9afe6d1b8"
+																									},
+																									"not": {
+																										"val": {
+																											"uuid": {
+																												"value": "c6d3145e-9f19-4dc7-bcd1-f6ecb1865fa1"
+																											},
+																											"variableRef": {
+																												"name": "RoRo: Active"
+																											}
+																										}
+																									}
+																								},
+																								{
+																									"uuid": {
+																										"value": "d7b82942-aff7-4393-87a5-2da686227d0d"
+																									},
+																									"cmp": {
+																										"op": "OpLe",
+																										"lhs": {
+																											"uuid": {
+																												"value": "71c5b57e-e880-4995-ad48-e76496fc632e"
+																											},
+																											"remainingTime": {}
+																										},
+																										"rhs": {
+																											"uuid": {
+																												"value": "052b531c-e4c2-4c36-a682-2eb2ef0b88ed"
+																											},
+																											"variableRef": {
+																												"name": "Time: TEB seconds"
+																											}
+																										}
+																									}
+																								}
+																							]
+																						}
+																					}
+																				]
+																			}
+																		}
+																	]
+																}
+															},
+															{
+																"uuid": {
+																	"value": "97717922-07a8-4acc-a2f4-af486579cd7c"
+																},
+																"and": {
+																	"vals": [
+																		{
+																			"uuid": {
+																				"value": "43359de5-2052-4af9-a1e0-7a4b59024204"
+																			},
+																			"gcdIsReady": {}
+																		},
+																		{
+																			"uuid": {
+																				"value": "58121979-7cd5-4604-a116-8148e3e926ba"
+																			},
+																			"or": {
+																				"vals": [
+																					{
+																						"uuid": {
+																							"value": "35d0bb76-e6e1-4282-a536-e10cd2ab07dd"
+																						},
+																						"and": {
+																							"vals": [
+																								{
+																									"uuid": {
+																										"value": "09e507e1-4c16-4085-9689-b8a5ad5f7aa9"
+																									},
+																									"variableRef": {
+																										"name": "RoRo: Active"
+																									}
+																								},
+																								{
+																									"uuid": {
+																										"value": "b7150636-72e6-422a-9e3f-192d24f22304"
+																									},
+																									"cmp": {
+																										"op": "OpLe",
+																										"lhs": {
+																											"uuid": {
+																												"value": "6800ee0a-8c8c-4bff-abf0-028d06b3faf0"
+																											},
+																											"auraRemainingTime": {
+																												"auraId": {
+																													"spellId": 139120
+																												}
+																											}
+																										},
+																										"rhs": {
+																											"uuid": {
+																												"value": "57f36d77-8310-410b-90f1-edd40d3a5170"
+																											},
+																											"variableRef": {
+																												"name": "Time: GCD seconds"
+																											}
+																										}
+																									}
+																								},
+																								{
+																									"uuid": {
+																										"value": "eff3ab4e-c379-480a-a8b1-9cc5b1fc4a4f"
+																									},
+																									"or": {
+																										"vals": [
+																											{
+																												"uuid": {
+																													"value": "7c304aa5-8f7e-434c-820f-316861927a8e"
+																												},
+																												"and": {
+																													"vals": [
+																														{
+																															"uuid": {
+																																"value": "f2635da9-c8b0-4880-a252-75ed43537957"
+																															},
+																															"variableRef": {
+																																"name": "TEB: Inactive"
+																															}
+																														},
+																														{
+																															"uuid": {
+																																"value": "27d3a65e-f4cd-481a-b96d-dddcbaee4ef5"
+																															},
+																															"variableRef": {
+																																"name": "Time: Opener"
+																															}
+																														}
+																													]
+																												}
+																											},
+																											{
+																												"uuid": {
+																													"value": "e0a9a4ef-80d8-4c63-8a9f-77002ff18850"
+																												},
+																												"and": {
+																													"vals": [
+																														{
+																															"uuid": {
+																																"value": "ab7d1bf9-01c3-4dce-bcf3-6f6a363c0c41"
+																															},
+																															"variableRef": {
+																																"name": "TEB: Stacks > Current"
+																															}
+																														}
+																													]
+																												}
+																											}
+																										]
+																									}
+																								}
+																							]
+																						}
+																					},
+																					{
+																						"uuid": {
+																							"value": "3a672bdb-f015-4d40-822f-73c1225f1366"
+																						},
+																						"and": {
+																							"vals": [
+																								{
+																									"uuid": {
+																										"value": "ed3f7459-055e-40de-b1ee-c35e76949d61"
+																									},
+																									"not": {
+																										"val": {
+																											"uuid": {
+																												"value": "b5ef8fa9-7493-48a2-867f-f2793787bd62"
+																											},
+																											"variableRef": {
+																												"name": "RoRo: Active"
+																											}
+																										}
+																									}
+																								},
+																								{
+																									"uuid": {
+																										"value": "b25ad9f0-5071-47d6-bde5-b21b61c50c8b"
+																									},
+																									"variableRef": {
+																										"name": "TEB: Stacks > Current"
+																									}
+																								},
+																								{
+																									"uuid": {
+																										"value": "22455c0d-c073-433b-b6b8-b827bb085572"
+																									},
+																									"cmp": {
+																										"op": "OpGt",
+																										"lhs": {
+																											"uuid": {
+																												"value": "d47805c1-6570-454d-85ce-ebbbdf608af1"
+																											},
+																											"auraNumStacks": {
+																												"auraId": {
+																													"spellId": 1247279
+																												}
+																											}
+																										},
+																										"rhs": {
+																											"uuid": {
+																												"value": "6642be93-6a58-4853-8370-3750a985dd40"
+																											},
+																											"const": {
+																												"val": "15"
+																											}
+																										}
+																									}
+																								}
+																							]
+																						}
+																					}
+																				]
+																			}
+																		}
+																	]
+																}
+															}
+														]
+													}
+												},
+												"groupReference": {
+													"groupName": "Internal: Cast TEB"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "RoRo: TEB - Cast",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "2474a9d4-77b5-4b76-93fe-519154a69afb"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "7ff9e598-e38b-4d66-ac71-237c000bc1b3"
+																},
+																"variableRef": {
+																	"name": "RoRo: Equipped"
+																}
+															}
+														]
+													}
+												},
+												"groupReference": {
+													"groupName": "RoRo: TEB - Actions"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Weapon Swap: ON/OFF"
+								},
+								{
+									"name": "Weapon Swap: Restore",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "e3cc0912-0de5-41fb-968e-b4bd10525957"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "3709c2fe-9fb8-4204-b126-d9999c12d1c4"
+																},
+																"activeItemSwapSet": {
+																	"swapSet": "Swap1"
+																}
+															},
+															{
+																"uuid": {
+																	"value": "5183a80b-46a3-489b-81b4-202fb9c5f929"
+																},
+																"auraIsInactive": {
+																	"auraId": {
+																		"spellId": 1247275
+																	},
+																	"includeReactionTime": true
+																}
+															},
+															{
+																"uuid": {
+																	"value": "9db9191a-f6a7-47a2-bc6a-b19df3ef41aa"
+																},
+																"not": {
+																	"val": {
+																		"uuid": {
+																			"value": "0ba59f54-7fbd-498c-857e-b2564f3dd6fc"
+																		},
+																		"gcdIsReady": {}
+																	}
+																}
+															}
+														]
+													}
+												},
+												"itemSwap": {
+													"swapSet": "Main"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Weapon Swap: TEB",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "7f537568-752a-45d1-a3ea-cefa8dcca7cb"
+													},
+													"auraIsActive": {
+														"auraId": {
+															"spellId": 139120
+														},
+														"includeReactionTime": true
+													}
+												},
+												"strictSequence": {
+													"actions": [
+														{
+															"castSpell": {
+																"spellId": {
+																	"spellId": 1247275
+																}
+															}
+														},
+														{
+															"itemSwap": {
+																"swapSet": "Swap1"
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "fbd44228-88be-47e7-bfc9-9817a932e77a"
+													},
+													"not": {
+														"val": {
+															"uuid": {
+																"value": "aed8b112-fa62-4e36-b25a-ee1310216a19"
+															},
+															"auraIsActive": {
+																"auraId": {
+																	"spellId": 139120
+																},
+																"includeReactionTime": true
+															}
+														}
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"spellId": 1247275
+													}
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Elixir Swap: ON/OFF"
+								},
+								{
+									"name": "Elixir Swap: Restore",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "0dfaf8e9-fc62-482a-8b9a-73c9c14fc663"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "597f4139-ddce-4d6f-8e72-c450e2967138"
+																},
+																"not": {
+																	"val": {
+																		"uuid": {
+																			"value": "a132d8a7-d575-439a-8d1f-f7958e26a189"
+																		},
+																		"auraIsActive": {
+																			"auraId": {
+																				"itemId": 76084
+																			},
+																			"includeReactionTime": true
+																		}
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "53c1372c-622b-43a0-9090-8d9a7a5aeb0b"
+																},
+																"auraIsInactive": {
+																	"auraId": {
+																		"spellId": 1247275
+																	},
+																	"includeReactionTime": true
+																}
+															}
+														]
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"itemId": 76084
+													}
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Elixir Swap: TEB",
+									"actions": [
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "42c292e1-2dce-4e53-902a-f1336212bde6"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "bcf40619-ae8f-43e7-9c91-cf053579e76c"
+																},
+																"auraIsInactive": {
+																	"auraId": {
+																		"spellId": 2825,
+																		"tag": -1
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "5b34b3de-fbb9-44f6-82e6-9a3275ea1b17"
+																},
+																"auraIsActive": {
+																	"auraId": {
+																		"spellId": 139120
+																	},
+																	"includeReactionTime": true
+																}
+															}
+														]
+													}
+												},
+												"strictSequence": {
+													"actions": [
+														{
+															"castSpell": {
+																"spellId": {
+																	"spellId": 1247275
+																}
+															}
+														},
+														{
+															"castSpell": {
+																"spellId": {
+																	"itemId": 76078
+																}
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "4f98f6fb-8a1f-419c-8238-6315e2a9c562"
+													},
+													"and": {
+														"vals": [
+															{
+																"uuid": {
+																	"value": "b9194bab-5d31-4d89-b149-fd19ff46e597"
+																},
+																"auraIsActive": {
+																	"auraId": {
+																		"spellId": 2825,
+																		"tag": -1
+																	}
+																}
+															},
+															{
+																"uuid": {
+																	"value": "0525982a-3388-4b8c-9651-c3c40acf3877"
+																},
+																"auraIsActive": {
+																	"auraId": {
+																		"spellId": 139120
+																	},
+																	"includeReactionTime": true
+																}
+															}
+														]
+													}
+												},
+												"strictSequence": {
+													"actions": [
+														{
+															"castSpell": {
+																"spellId": {
+																	"spellId": 1247275
+																}
+															}
+														},
+														{
+															"castSpell": {
+																"spellId": {
+																	"itemId": 76076
+																}
+															}
+														}
+													]
+												}
+											}
+										},
+										{
+											"action": {
+												"condition": {
+													"uuid": {
+														"value": "8c27407f-0364-4a5a-bb5a-530a09e0a93c"
+													},
+													"not": {
+														"val": {
+															"uuid": {
+																"value": "daef4ea2-0a07-487a-95cf-3f3bc408bf60"
+															},
+															"auraIsActive": {
+																"auraId": {
+																	"spellId": 139120
+																},
+																"includeReactionTime": true
+															}
+														}
+													}
+												},
+												"castSpell": {
+													"spellId": {
+														"spellId": 1247275
+													}
+												}
+											}
+										}
+									]
+								}
+							],
+							"valueVariables": [
+								{
+									"name": "Targets: Max 2",
+									"value": {
+										"uuid": {
+											"value": "75ed3b04-de22-48a1-b6eb-672ca7241d83"
+										},
+										"cmp": {
+											"op": "OpLe",
+											"lhs": {
+												"uuid": {
+													"value": "73ec0aff-8e64-414f-9a7e-e270723c8c1e"
+												},
+												"numberTargets": {}
+											},
+											"rhs": {
+												"uuid": {
+													"value": "97d43286-1439-4a88-a802-0ca5d83227c7"
+												},
+												"const": {
+													"val": "2"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "Targets: More than 1",
+									"value": {
+										"uuid": {
+											"value": "c6465f6a-f0c7-4663-b538-c26118e3cdc5"
+										},
+										"cmp": {
+											"op": "OpGe",
+											"lhs": {
+												"uuid": {
+													"value": "12b0c8bd-5052-4ca6-b3e6-7f43fbcb321d"
+												},
+												"numberTargets": {}
+											},
+											"rhs": {
+												"uuid": {
+													"value": "f69f9f94-2d68-4cab-a71e-ac0000319751"
+												},
+												"const": {
+													"val": "2"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "Targets: More than 2",
+									"value": {
+										"uuid": {
+											"value": "6b39432f-6581-49c6-bf42-0c16ff385344"
+										},
+										"cmp": {
+											"op": "OpGe",
+											"lhs": {
+												"uuid": {
+													"value": "2b2425e4-4429-4f5a-8785-10a5e1c33b7c"
+												},
+												"numberTargets": {}
+											},
+											"rhs": {
+												"uuid": {
+													"value": "5694a3f4-84e7-4b86-826a-0a36b109fb1b"
+												},
+												"const": {
+													"val": "3"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "FoF: Channel Time",
+									"value": {
+										"uuid": {
+											"value": "798a8d13-3647-478c-bf3a-68c0fbd71689"
+										},
+										"math": {
+											"op": "OpAdd",
+											"lhs": {
+												"uuid": {
+													"value": "eafb03fd-fa07-4ae7-9ab5-09b55d93db5f"
+												},
+												"math": {
+													"op": "OpMul",
+													"lhs": {
+														"uuid": {
+															"value": "7a978ee0-7b1a-44fd-a653-f3bfaace4222"
+														},
+														"dotTickFrequency": {
+															"spellId": {
+																"spellId": 113656
+															}
+														}
+													},
+													"rhs": {
+														"uuid": {
+															"value": "0f62fd7b-1168-4bb9-ba5b-9aaebbe24ed5"
+														},
+														"const": {
+															"val": "4"
+														}
+													}
+												}
+											},
+											"rhs": {
+												"uuid": {
+													"value": "db29128b-56ca-4c52-a477-6f92bf599f37"
+												},
+												"inputDelay": {}
+											}
+										}
+									}
+								},
+								{
+									"name": "TEB: Active",
+									"value": {
+										"uuid": {
+											"value": "65cd0496-6f41-43f2-bdd8-d9d8cffc349e"
+										},
+										"auraIsActive": {
+											"auraId": {
+												"spellId": 1247275
+											},
+											"includeReactionTime": true
+										}
+									}
+								},
+								{
+									"name": "TEB: Inactive",
+									"value": {
+										"uuid": {
+											"value": "c62ae6d9-b653-44d2-b7c5-c9ffa9e6b576"
+										},
+										"not": {
+											"val": {
+												"uuid": {
+													"value": "d61bafac-9b45-4d34-a81a-97e7e2bc6f67"
+												},
+												"auraIsActive": {
+													"auraId": {
+														"spellId": 1247275
+													},
+													"includeReactionTime": true
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "TEB: Stacks > Current",
+									"value": {
+										"uuid": {
+											"value": "94d92cb3-6f7c-49a0-b754-036ed6110919"
+										},
+										"cmp": {
+											"op": "OpGt",
+											"lhs": {
+												"uuid": {
+													"value": "09031db9-d72f-4158-b42d-cc065000b538"
+												},
+												"auraNumStacks": {
+													"auraId": {
+														"spellId": 1247279
+													}
+												}
+											},
+											"rhs": {
+												"uuid": {
+													"value": "90966e1b-7bbf-4ab2-8c2f-2025ec2765e8"
+												},
+												"auraNumStacks": {
+													"auraId": {
+														"spellId": 1247275
+													}
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "RoRo: Equipped",
+									"value": {
+										"uuid": {
+											"value": "55b29152-d6b9-4fde-a853-06e75050d787"
+										},
+										"auraIsKnown": {
+											"auraId": {
+												"spellId": 139120
+											}
+										}
+									}
+								},
+								{
+									"name": "RoRo: Active",
+									"value": {
+										"uuid": {
+											"value": "8afbb4c6-bfa5-446a-afc5-83dbb6476b5a"
+										},
+										"and": {
+											"vals": [
+												{
+													"uuid": {
+														"value": "96aec825-2e2f-45c3-b1b6-219023c63213"
+													},
+													"variableRef": {
+														"name": "RoRo: Equipped"
+													}
+												},
+												{
+													"uuid": {
+														"value": "f71687ac-4874-4109-b76a-303b5bf4b181"
+													},
+													"auraIsActive": {
+														"auraId": {
+															"spellId": 139120
+														},
+														"includeReactionTime": true
+													}
+												}
+											]
+										}
+									}
+								},
+								{
+									"name": "Time: Opener",
+									"value": {
+										"uuid": {
+											"value": "61e14cdb-c63c-44f1-9f53-e6b99af24737"
+										},
+										"cmp": {
+											"op": "OpLe",
+											"lhs": {
+												"uuid": {
+													"value": "6b7cf326-be11-4cce-a538-43d7287f5aea"
+												},
+												"currentTime": {}
+											},
+											"rhs": {
+												"uuid": {
+													"value": "1b3a1210-319b-4325-abcb-710992194ec7"
+												},
+												"const": {
+													"val": "10s"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "Time: GCD seconds",
+									"value": {
+										"uuid": {
+											"value": "d4203274-b1a2-418e-8e22-9c31a238f457"
+										},
+										"spellGcdHastedDuration": {
+											"spellId": {
+												"spellId": 100780
+											}
+										}
+									}
+								},
+								{
+									"name": "Time: TEB seconds",
+									"value": {
+										"uuid": {
+											"value": "00288bd7-ddb0-46e0-ab67-453f3099407f"
+										},
+										"const": {
+											"val": "15s"
+										}
+									}
+								},
+								{
+									"name": "Time: Infinite seconds",
+									"value": {
+										"uuid": {
+											"value": "b95adc51-d50d-4838-9ab4-74de3b759804"
+										},
+										"const": {
+											"val": "9999s"
+										}
+									}
+								},
+								{
+									"name": "Prepull Chi Wave",
+									"value": {
+										"uuid": {
+											"value": "6b8e3a0f-d44e-4c52-ad74-fb2ea40a12e9"
+										},
+										"math": {
+											"op": "OpSub",
+											"lhs": {
+												"uuid": {
+													"value": "bb866c24-db43-4f0a-8b48-446dc95c6d27"
+												},
+												"const": {
+													"val": "10ms"
+												}
+											},
+											"rhs": {
+												"uuid": {
+													"value": "7d39e4c1-367c-4a17-99b4-0547fc08575f"
+												},
+												"spellTravelTime": {
+													"spellId": {
+														"spellId": 115098
+													}
+												}
+											}
+										}
+									}
+								}
+							]
+						},
+						"reactionTimeMs": 100,
+						"distanceFromTarget": 5,
+						"healingModel": {},
+						"database": {
+							"items": [
+								{
+									"id": 99393,
+									"name": "Headpiece of Seven Sacred Seals",
+									"type": "ItemTypeHead",
+									"armorType": "ArmorTypeLeather",
+									"gemSockets": ["GemColorMeta", "GemColorRed"],
+									"socketBonus": [0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"setName": "Battlegear of Seven Sacred Seals",
+									"setId": 1193,
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 4465,
+											"stats": {
+												"1": 2108,
+												"2": 3522,
+												"6": 1445,
+												"11": 1445,
+												"17": 2895
+											},
+											"ilvl": 566
+										},
+										"1": {
+											"randPropPoints": 4635,
+											"stats": {
+												"1": 2198,
+												"2": 3657,
+												"6": 1505,
+												"11": 1505,
+												"17": 2925
+											},
+											"ilvl": 570
+										},
+										"2": {
+											"randPropPoints": 4811,
+											"stats": {
+												"1": 2290,
+												"2": 3795,
+												"6": 1567,
+												"11": 1567,
+												"17": 2956
+											},
+											"ilvl": 574
+										},
+										"-1": {
+											"randPropPoints": 1710,
+											"stats": {
+												"1": 659,
+												"2": 1349,
+												"6": 480,
+												"11": 480,
+												"17": 2106
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 105407,
+									"name": "Immerseus' Crystalline Eye",
+									"type": "ItemTypeNeck",
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 2631,
+											"stats": {
+												"1": 1384,
+												"2": 2076,
+												"7": 922,
+												"11": 922
+											},
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 2731,
+											"stats": {
+												"1": 1436,
+												"2": 2154,
+												"7": 957,
+												"11": 957
+											},
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 2834,
+											"stats": {
+												"1": 1490,
+												"2": 2236,
+												"7": 994,
+												"11": 994
+											},
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 953,
+											"stats": {
+												"1": 501,
+												"2": 752,
+												"7": 334,
+												"11": 334
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 99395,
+									"name": "Spaulders of Seven Sacred Seals",
+									"type": "ItemTypeShoulder",
+									"armorType": "ArmorTypeLeather",
+									"gemSockets": ["GemColorRed", "GemColorRed"],
+									"socketBonus": [0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"setName": "Battlegear of Seven Sacred Seals",
+									"setId": 1193,
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 3317,
+											"stats": {
+												"1": 1584,
+												"2": 2617,
+												"7": 1246,
+												"8": 804,
+												"17": 2672
+											},
+											"ilvl": 566
+										},
+										"1": {
+											"randPropPoints": 3443,
+											"stats": {
+												"1": 1651,
+												"2": 2716,
+												"7": 1296,
+												"8": 837,
+												"17": 2700
+											},
+											"ilvl": 570
+										},
+										"2": {
+											"randPropPoints": 3574,
+											"stats": {
+												"1": 1720,
+												"2": 2820,
+												"7": 1349,
+												"8": 872,
+												"17": 2729
+											},
+											"ilvl": 574
+										},
+										"-1": {
+											"randPropPoints": 1270,
+											"stats": {
+												"1": 508,
+												"2": 1002,
+												"7": 428,
+												"8": 258,
+												"17": 1944
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 102248,
+									"name": "Fen-Yu, Fury of Xuen",
+									"type": "ItemTypeBack",
+									"armorType": "ArmorTypeCloth",
+									"gemSockets": ["GemColorRed"],
+									"socketBonus": [0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 3415,
+											"stats": {
+												"1": 1716,
+												"2": 2694,
+												"6": 918,
+												"7": 918,
+												"11": 918,
+												"17": 1525
+											},
+											"ilvl": 600
+										},
+										"1": {
+											"randPropPoints": 3545,
+											"stats": {
+												"1": 1784,
+												"2": 2797,
+												"6": 955,
+												"7": 955,
+												"11": 955,
+												"17": 1540
+											},
+											"ilvl": 604
+										},
+										"2": {
+											"randPropPoints": 3679,
+											"stats": {
+												"1": 1855,
+												"2": 2902,
+												"6": 992,
+												"7": 992,
+												"11": 992,
+												"17": 1555
+											},
+											"ilvl": 608
+										},
+										"-1": {
+											"randPropPoints": 953,
+											"stats": {
+												"1": 421,
+												"2": 752,
+												"6": 238,
+												"7": 238,
+												"11": 238,
+												"17": 1018
+											},
+											"ilvl": 463
+										}
+									},
+									"itemEffects": [
+										{
+											"buffId": 146194,
+											"buffName": "Flurry of Xuen",
+											"effectDurationMs": 3000,
+											"scalingOptions": {
+												"0": {},
+												"1": {},
+												"2": {},
+												"-1": {}
+											},
+											"proc": {
+												"icdMs": 3000,
+												"rppm": {
+													"rate": 1.7400000095367432,
+													"mods": [
+														{
+															"coefficient": 1,
+															"haste": false
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecBloodDeathKnight"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecGuardianDruid"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecBrewmasterMonk"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecProtectionPaladin"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecProtectionWarrior"
+														},
+														{
+															"coefficient": 0.349999994039536,
+															"spec": "SpecArmsWarrior"
+														},
+														{
+															"spec": "SpecBeastMasteryHunter"
+														},
+														{
+															"coefficient": 0.150000005960464,
+															"spec": "SpecCombatRogue"
+														},
+														{
+															"coefficient": 0.550000011920929,
+															"spec": "SpecAssassinationRogue"
+														},
+														{
+															"coefficient": 0.550000011920929,
+															"spec": "SpecEnhancementShaman"
+														},
+														{
+															"coefficient": 0.300000011920929,
+															"spec": "SpecFeralDruid"
+														},
+														{
+															"coefficient": 0.5,
+															"spec": "SpecFrostDeathKnight"
+														},
+														{
+															"coefficient": 0.0500000007450581,
+															"spec": "SpecFuryWarrior"
+														},
+														{
+															"coefficient": 0.200000002980232,
+															"spec": "SpecMarksmanshipHunter"
+														},
+														{
+															"coefficient": 0.449999988079071,
+															"spec": "SpecRetributionPaladin"
+														},
+														{
+															"spec": "SpecSubtletyRogue"
+														},
+														{
+															"coefficient": 0.150000005960464,
+															"spec": "SpecSurvivalHunter"
+														},
+														{
+															"coefficient": 0.0500000007450581,
+															"spec": "SpecUnholyDeathKnight"
+														},
+														{
+															"coefficient": 0.200000002980232,
+															"spec": "SpecWindwalkerMonk"
+														},
+														{
+															"coefficient": 1,
+															"haste": false
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecBloodDeathKnight"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecGuardianDruid"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecBrewmasterMonk"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecProtectionPaladin"
+														},
+														{
+															"coefficient": -0.400000005960464,
+															"spec": "SpecProtectionWarrior"
+														},
+														{
+															"coefficient": 0.349999994039536,
+															"spec": "SpecArmsWarrior"
+														},
+														{
+															"spec": "SpecBeastMasteryHunter"
+														},
+														{
+															"coefficient": 0.150000005960464,
+															"spec": "SpecCombatRogue"
+														},
+														{
+															"coefficient": 0.550000011920929,
+															"spec": "SpecAssassinationRogue"
+														},
+														{
+															"coefficient": 0.550000011920929,
+															"spec": "SpecEnhancementShaman"
+														},
+														{
+															"coefficient": 0.300000011920929,
+															"spec": "SpecFeralDruid"
+														},
+														{
+															"coefficient": 0.5,
+															"spec": "SpecFrostDeathKnight"
+														},
+														{
+															"coefficient": 0.0500000007450581,
+															"spec": "SpecFuryWarrior"
+														},
+														{
+															"coefficient": 0.200000002980232,
+															"spec": "SpecMarksmanshipHunter"
+														},
+														{
+															"coefficient": 0.449999988079071,
+															"spec": "SpecRetributionPaladin"
+														},
+														{
+															"spec": "SpecSubtletyRogue"
+														},
+														{
+															"coefficient": 0.150000005960464,
+															"spec": "SpecSurvivalHunter"
+														},
+														{
+															"coefficient": 0.0500000007450581,
+															"spec": "SpecUnholyDeathKnight"
+														},
+														{
+															"coefficient": 0.200000002980232,
+															"spec": "SpecWindwalkerMonk"
+														}
+													]
+												}
+											}
+										}
+									]
+								},
+								{
+									"id": 105452,
+									"name": "Robes of the Blackened Watcher",
+									"type": "ItemTypeChest",
+									"armorType": "ArmorTypeLeather",
+									"gemSockets": ["GemColorRed", "GemColorYellow", "GemColorBlue"],
+									"socketBonus": [0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 4722,
+											"stats": {
+												"1": 2243,
+												"2": 3725,
+												"6": 1176,
+												"7": 1746,
+												"17": 3619
+											},
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 4901,
+											"stats": {
+												"1": 2337,
+												"2": 3866,
+												"6": 1225,
+												"7": 1816,
+												"17": 3657
+											},
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 5087,
+											"stats": {
+												"1": 2435,
+												"2": 4013,
+												"6": 1276,
+												"7": 1890,
+												"17": 3695
+											},
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 1710,
+											"stats": {
+												"1": 659,
+												"2": 1349,
+												"6": 349,
+												"7": 556,
+												"17": 2592
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 105616,
+									"name": "Bomber's Blackened Wristwatch",
+									"type": "ItemTypeWrist",
+									"armorType": "ArmorTypeLeather",
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 2631,
+											"stats": {
+												"1": 1384,
+												"2": 2076,
+												"7": 936,
+												"11": 899,
+												"17": 1583
+											},
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 2731,
+											"stats": {
+												"1": 1436,
+												"2": 2154,
+												"7": 972,
+												"11": 933,
+												"17": 1600
+											},
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 2834,
+											"stats": {
+												"1": 1490,
+												"2": 2236,
+												"7": 1009,
+												"11": 969,
+												"17": 1616
+											},
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 953,
+											"stats": {
+												"1": 501,
+												"2": 752,
+												"7": 339,
+												"11": 326,
+												"17": 1134
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 99392,
+									"name": "Grips of Seven Sacred Seals",
+									"type": "ItemTypeHands",
+									"armorType": "ArmorTypeLeather",
+									"gemSockets": ["GemColorRed", "GemColorRed"],
+									"socketBonus": [0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"setName": "Battlegear of Seven Sacred Seals",
+									"setId": 1193,
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 3317,
+											"stats": {
+												"1": 1584,
+												"2": 2617,
+												"6": 1101,
+												"11": 1041,
+												"17": 2227
+											},
+											"ilvl": 566
+										},
+										"1": {
+											"randPropPoints": 3443,
+											"stats": {
+												"1": 1651,
+												"2": 2716,
+												"6": 1147,
+												"11": 1083,
+												"17": 2250
+											},
+											"ilvl": 570
+										},
+										"2": {
+											"randPropPoints": 3574,
+											"stats": {
+												"1": 1720,
+												"2": 2820,
+												"6": 1194,
+												"11": 1127,
+												"17": 2274
+											},
+											"ilvl": 574
+										},
+										"-1": {
+											"randPropPoints": 1270,
+											"stats": {
+												"1": 508,
+												"2": 1002,
+												"6": 362,
+												"11": 359,
+												"17": 1620
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 105635,
+									"name": "Cord of Black Dreams",
+									"type": "ItemTypeWaist",
+									"armorType": "ArmorTypeLeather",
+									"gemSockets": ["GemColorRed", "GemColorYellow", "GemColorPrismatic"],
+									"socketBonus": [0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 3508,
+											"stats": {
+												"1": 1685,
+												"2": 2767,
+												"6": 1204,
+												"7": 1059,
+												"17": 2036
+											},
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 3641,
+											"stats": {
+												"1": 1755,
+												"2": 2872,
+												"6": 1253,
+												"7": 1102,
+												"17": 2057
+											},
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 3779,
+											"stats": {
+												"1": 1827,
+												"2": 2981,
+												"6": 1303,
+												"7": 1147,
+												"17": 2078
+											},
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 1270,
+											"stats": {
+												"1": 508,
+												"2": 1002,
+												"6": 385,
+												"7": 332,
+												"17": 1458
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 99394,
+									"name": "Leggings of Seven Sacred Seals",
+									"type": "ItemTypeLegs",
+									"armorType": "ArmorTypeLeather",
+									"gemSockets": ["GemColorYellow", "GemColorYellow"],
+									"socketBonus": [0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"setName": "Battlegear of Seven Sacred Seals",
+									"setId": 1193,
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 4465,
+											"stats": {
+												"1": 2188,
+												"2": 3522,
+												"6": 1555,
+												"7": 1369,
+												"17": 3117
+											},
+											"ilvl": 566
+										},
+										"1": {
+											"randPropPoints": 4635,
+											"stats": {
+												"1": 2278,
+												"2": 3657,
+												"6": 1617,
+												"7": 1425,
+												"17": 3150
+											},
+											"ilvl": 570
+										},
+										"2": {
+											"randPropPoints": 4811,
+											"stats": {
+												"1": 2370,
+												"2": 3795,
+												"6": 1681,
+												"7": 1482,
+												"17": 3183
+											},
+											"ilvl": 574
+										},
+										"-1": {
+											"randPropPoints": 1710,
+											"stats": {
+												"1": 739,
+												"2": 1349,
+												"6": 546,
+												"7": 475,
+												"17": 2268
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 105582,
+									"name": "Pandaren Roofsprinters",
+									"type": "ItemTypeFeet",
+									"armorType": "ArmorTypeLeather",
+									"gemSockets": ["GemColorBlue"],
+									"socketBonus": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 3508,
+											"stats": {
+												"1": 1765,
+												"2": 2767,
+												"7": 1198,
+												"11": 1182,
+												"17": 2488
+											},
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 3641,
+											"stats": {
+												"1": 1835,
+												"2": 2872,
+												"7": 1245,
+												"11": 1229,
+												"17": 2514
+											},
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 3779,
+											"stats": {
+												"1": 1907,
+												"2": 2981,
+												"7": 1293,
+												"11": 1277,
+												"17": 2540
+											},
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 1270,
+											"stats": {
+												"1": 588,
+												"2": 1002,
+												"7": 413,
+												"11": 397,
+												"17": 1782
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 105451,
+									"name": "Reality Ripper Ring",
+									"type": "ItemTypeFinger",
+									"gemSockets": ["GemColorBlue"],
+									"socketBonus": [0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 2631,
+											"stats": {
+												"1": 1304,
+												"2": 2076,
+												"5": 988,
+												"6": 685
+											},
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 2731,
+											"stats": {
+												"1": 1356,
+												"2": 2154,
+												"5": 1028,
+												"6": 712
+											},
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 2834,
+											"stats": {
+												"1": 1410,
+												"2": 2236,
+												"5": 1069,
+												"6": 739
+											},
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 953,
+											"stats": {
+												"1": 421,
+												"2": 752,
+												"5": 317,
+												"6": 238
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 105624,
+									"name": "Kil'ruk's Band of Ascendancy",
+									"type": "ItemTypeFinger",
+									"gemSockets": ["GemColorRed"],
+									"socketBonus": [0, 0, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 2631,
+											"stats": {
+												"1": 1304,
+												"2": 2076,
+												"7": 861,
+												"11": 886
+											},
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 2731,
+											"stats": {
+												"1": 1356,
+												"2": 2154,
+												"7": 894,
+												"11": 922
+											},
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 2834,
+											"stats": {
+												"1": 1410,
+												"2": 2236,
+												"7": 928,
+												"11": 959
+											},
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 953,
+											"stats": {
+												"1": 421,
+												"2": 752,
+												"7": 302,
+												"11": 280
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 96546,
+									"name": "Rune of Re-Origination",
+									"type": "ItemTypeTrinket",
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 2485,
+											"stats": {
+												"1": 1657
+											},
+											"ilvl": 535
+										},
+										"1": {
+											"randPropPoints": 2652,
+											"stats": {
+												"1": 1768
+											},
+											"ilvl": 542
+										},
+										"2": {
+											"randPropPoints": 2831,
+											"stats": {
+												"1": 1887
+											},
+											"ilvl": 549
+										},
+										"-1": {
+											"randPropPoints": 1270,
+											"stats": {
+												"1": 847
+											},
+											"ilvl": 463
+										}
+									},
+									"itemEffects": [
+										{
+											"buffId": 139116,
+											"buffName": "Item - Attacks Proc Highest Rating",
+											"scalingOptions": {
+												"0": {},
+												"1": {},
+												"2": {},
+												"-1": {}
+											}
+										}
+									]
+								},
+								{
+									"id": 105527,
+									"name": "Haromm's Talisman",
+									"type": "ItemTypeTrinket",
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 3508,
+											"ilvl": 572
+										},
+										"1": {
+											"randPropPoints": 3641,
+											"ilvl": 576
+										},
+										"2": {
+											"randPropPoints": 3779,
+											"ilvl": 580
+										},
+										"-1": {
+											"randPropPoints": 1270,
+											"ilvl": 463
+										}
+									},
+									"itemEffects": [
+										{
+											"buffId": 146059,
+											"buffName": "Multistrike",
+											"scalingOptions": {
+												"0": {},
+												"1": {},
+												"2": {},
+												"-1": {}
+											}
+										},
+										{
+											"buffId": 148903,
+											"buffName": "Vicious",
+											"effectDurationMs": 10000,
+											"scalingOptions": {
+												"0": {
+													"stats": {
+														"1": 14039
+													}
+												},
+												"1": {
+													"stats": {
+														"1": 14571
+													}
+												},
+												"2": {
+													"stats": {
+														"1": 15124
+													}
+												},
+												"-1": {
+													"stats": {
+														"1": 5084
+													}
+												}
+											},
+											"proc": {
+												"icdMs": 10000,
+												"rppm": {
+													"rate": 0.9200000166893005
+												}
+											}
+										}
+									]
+								},
+								{
+									"id": 105685,
+									"name": "Hellscream's Cleaver",
+									"type": "ItemTypeWeapon",
+									"weaponType": "WeaponTypeAxe",
+									"handType": "HandTypeOneHand",
+									"gemSockets": ["GemColorRed", "GemColorRed"],
+									"socketBonus": [0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"weaponSpeed": 2.6,
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 2221,
+											"weaponDamageMin": 13440,
+											"weaponDamageMax": 24960,
+											"stats": {
+												"1": 1008,
+												"2": 1752,
+												"6": 699,
+												"11": 699
+											},
+											"ilvl": 582
+										},
+										"-1": {
+											"randPropPoints": 733,
+											"weaponDamageMin": 4434,
+											"weaponDamageMax": 8236,
+											"stats": {
+												"1": 225,
+												"2": 578,
+												"6": 177,
+												"11": 177
+											},
+											"ilvl": 463
+										}
+									}
+								},
+								{
+									"id": 105685,
+									"name": "Hellscream's Cleaver",
+									"type": "ItemTypeWeapon",
+									"weaponType": "WeaponTypeAxe",
+									"handType": "HandTypeOneHand",
+									"gemSockets": ["GemColorRed", "GemColorRed"],
+									"socketBonus": [0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"weaponSpeed": 2.6,
+									"scalingOptions": {
+										"0": {
+											"randPropPoints": 2221,
+											"weaponDamageMin": 13440,
+											"weaponDamageMax": 24960,
+											"stats": {
+												"1": 1008,
+												"2": 1752,
+												"6": 699,
+												"11": 699
+											},
+											"ilvl": 582
+										},
+										"-1": {
+											"randPropPoints": 733,
+											"weaponDamageMin": 4434,
+											"weaponDamageMax": 8236,
+											"stats": {
+												"1": 225,
+												"2": 578,
+												"6": 177,
+												"11": 177
+											},
+											"ilvl": 463
+										}
+									}
+								}
+							],
+							"enchants": [
+								{
+									"effectId": 4804,
+									"name": "Greater Tiger Claw Inscription",
+									"type": "ItemTypeShoulder",
+									"stats": [0, 200, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4424,
+									"name": "Enchant Cloak - Superior Critical Strike",
+									"type": "ItemTypeBack",
+									"stats": [0, 0, 0, 0, 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4419,
+									"name": "Enchant Chest - Glorious Stats",
+									"type": "ItemTypeChest",
+									"stats": [80, 80, 80, 80, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4416,
+									"name": "Enchant Bracer - Greater Agility",
+									"type": "ItemTypeWrist",
+									"stats": [0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4433,
+									"name": "Enchant Gloves - Superior Mastery",
+									"type": "ItemTypeHands",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4898,
+									"name": "Synapse Springs (Mark II)",
+									"type": "ItemTypeHands",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4822,
+									"name": "Shadowleather Leg Armor",
+									"type": "ItemTypeLegs",
+									"stats": [0, 285, 0, 0, 0, 0, 165, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4428,
+									"name": "Enchant Boots - Blurred Speed",
+									"type": "ItemTypeFeet",
+									"stats": [0, 140, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4444,
+									"name": "Enchant Weapon - Dancing Steel",
+									"type": "ItemTypeWeapon",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"effectId": 4444,
+									"name": "Enchant Weapon - Dancing Steel",
+									"type": "ItemTypeWeapon",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								}
+							],
+							"gems": [
+								{
+									"id": 95346,
+									"name": "Capacitive Primal Diamond",
+									"color": "GemColorMeta",
+									"stats": [0, 0, 0, 0, 0, 0, 324, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"disabledInChallengeMode": true
+								},
+								{
+									"id": 76659,
+									"name": "Crafty Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 160, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76681,
+									"name": "Accurate Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 0, 0, 0, 160, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76700,
+									"name": "Fractured Sun's Radiance",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76641,
+									"name": "Piercing Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76667,
+									"name": "Wicked Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76643,
+									"name": "Sensei's Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76642,
+									"name": "Lightning Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 160, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76636,
+									"name": "Rigid River's Heart",
+									"color": "GemColorBlue",
+									"stats": [0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76637,
+									"name": "Stormy River's Heart",
+									"color": "GemColorBlue",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76638,
+									"name": "Sparkling River's Heart",
+									"color": "GemColorBlue",
+									"stats": [0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76639,
+									"name": "Solid River's Heart",
+									"color": "GemColorBlue",
+									"stats": [0, 0, 240, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76640,
+									"name": "Misty Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 160, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76644,
+									"name": "Effulgent Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76645,
+									"name": "Zen Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76646,
+									"name": "Balanced Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76647,
+									"name": "Vivid Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 80, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76648,
+									"name": "Turbid Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76649,
+									"name": "Radiant Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76650,
+									"name": "Shattered Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76651,
+									"name": "Energized Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 160, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76652,
+									"name": "Jagged Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 120, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76653,
+									"name": "Regal Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76654,
+									"name": "Forceful Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 120, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76656,
+									"name": "Puissant Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76657,
+									"name": "Steady Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76658,
+									"name": "Deadly Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 80, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76660,
+									"name": "Potent Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 80, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76661,
+									"name": "Inscribed Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [80, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76662,
+									"name": "Polished Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76663,
+									"name": "Resolute Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76664,
+									"name": "Stalwart Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76665,
+									"name": "Champion's Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76666,
+									"name": "Deft Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 80, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76668,
+									"name": "Reckless Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 80, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76669,
+									"name": "Fierce Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [80, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76670,
+									"name": "Adept Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76671,
+									"name": "Keen Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76672,
+									"name": "Artful Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76673,
+									"name": "Fine Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76674,
+									"name": "Skillful Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76675,
+									"name": "Lucent Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76676,
+									"name": "Tenuous Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76677,
+									"name": "Willful Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76678,
+									"name": "Splendid Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76679,
+									"name": "Resplendent Vermilion Onyx",
+									"color": "GemColorOrange",
+									"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76680,
+									"name": "Glinting Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 80, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76682,
+									"name": "Veiled Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 0, 80, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76683,
+									"name": "Retaliating Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76684,
+									"name": "Etched Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [80, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76685,
+									"name": "Mysterious Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76686,
+									"name": "Purified Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 0, 80, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76687,
+									"name": "Shifting Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 80, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76688,
+									"name": "Guardian's Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 120, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76689,
+									"name": "Timeless Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 120, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76690,
+									"name": "Defender's Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76691,
+									"name": "Sovereign Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [80, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76692,
+									"name": "Delicate Primordial Ruby",
+									"color": "GemColorRed",
+									"stats": [0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76693,
+									"name": "Precise Primordial Ruby",
+									"color": "GemColorRed",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76694,
+									"name": "Brilliant Primordial Ruby",
+									"color": "GemColorRed",
+									"stats": [0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76695,
+									"name": "Flashing Primordial Ruby",
+									"color": "GemColorRed",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76696,
+									"name": "Bold Primordial Ruby",
+									"color": "GemColorRed",
+									"stats": [160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76697,
+									"name": "Smooth Sun's Radiance",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76698,
+									"name": "Subtle Sun's Radiance",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76699,
+									"name": "Quick Sun's Radiance",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 76701,
+									"name": "Mystic Sun's Radiance",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83141,
+									"name": "Bold Serpent's Eye",
+									"color": "GemColorRed",
+									"stats": [320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83142,
+									"name": "Quick Serpent's Eye",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83143,
+									"name": "Fractured Serpent's Eye",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83144,
+									"name": "Rigid Serpent's Eye",
+									"color": "GemColorBlue",
+									"stats": [0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83145,
+									"name": "Subtle Serpent's Eye",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83146,
+									"name": "Smooth Serpent's Eye",
+									"color": "GemColorYellow",
+									"stats": [0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83147,
+									"name": "Precise Serpent's Eye",
+									"color": "GemColorRed",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83148,
+									"name": "Solid Serpent's Eye",
+									"color": "GemColorBlue",
+									"stats": [0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83149,
+									"name": "Sparkling Serpent's Eye",
+									"color": "GemColorBlue",
+									"stats": [0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83150,
+									"name": "Brilliant Serpent's Eye",
+									"color": "GemColorRed",
+									"stats": [0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83151,
+									"name": "Delicate Serpent's Eye",
+									"color": "GemColorRed",
+									"stats": [0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 83152,
+									"name": "Flashing Serpent's Eye",
+									"color": "GemColorRed",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 89674,
+									"name": "Tense Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 89680,
+									"name": "Assassin's Imperial Amethyst",
+									"color": "GemColorPurple",
+									"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 93404,
+									"name": "Resplendent Serpent's Eye",
+									"color": "GemColorOrange",
+									"stats": [160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 93405,
+									"name": "Lucent Serpent's Eye",
+									"color": "GemColorOrange",
+									"stats": [0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 93406,
+									"name": "Willful Serpent's Eye",
+									"color": "GemColorOrange",
+									"stats": [0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 93408,
+									"name": "Tense Serpent's Eye",
+									"color": "GemColorPurple",
+									"stats": [160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 93409,
+									"name": "Assassin's Serpent's Eye",
+									"color": "GemColorPurple",
+									"stats": [0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 93410,
+									"name": "Mysterious Serpent's Eye",
+									"color": "GemColorPurple",
+									"stats": [0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 93705,
+									"name": "Nimble Wild Jade",
+									"color": "GemColorGreen",
+									"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 89873,
+									"name": "Crystallized Dread",
+									"color": "GemColorShaTouched",
+									"stats": [0, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"disabledInChallengeMode": true
+								},
+								{
+									"id": 89881,
+									"name": "Crystallized Terror",
+									"color": "GemColorShaTouched",
+									"stats": [500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"disabledInChallengeMode": true
+								},
+								{
+									"id": 89882,
+									"name": "Crystallized Horror",
+									"color": "GemColorShaTouched",
+									"stats": [0, 0, 0, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"disabledInChallengeMode": true
+								},
+								{
+									"id": 98056,
+									"name": "Crystallized Horror",
+									"color": "GemColorShaTouched",
+									"stats": [0, 0, 0, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+									"disabledInChallengeMode": true
+								},
+								{
+									"id": 77540,
+									"name": "Subtle Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 77541,
+									"name": "Smooth Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 77542,
+									"name": "Quick Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 77543,
+									"name": "Precise Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 77544,
+									"name": "Flashing Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 77545,
+									"name": "Rigid Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 77546,
+									"name": "Sparkling Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								},
+								{
+									"id": 77547,
+									"name": "Fractured Tinker's Gear",
+									"color": "GemColorCogwheel",
+									"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+								}
+							],
+							"reforgeStats": [
+								{
+									"id": 152,
+									"fromStat": "StatHasteRating",
+									"toStat": "StatCritRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 161,
+									"fromStat": "StatExpertiseRating",
+									"toStat": "StatMasteryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 144,
+									"fromStat": "StatCritRating",
+									"toStat": "StatHitRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 154,
+									"fromStat": "StatHasteRating",
+									"toStat": "StatMasteryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 167,
+									"fromStat": "StatMasteryRating",
+									"toStat": "StatHasteRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 145,
+									"fromStat": "StatCritRating",
+									"toStat": "StatHasteRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 141,
+									"fromStat": "StatCritRating",
+									"toStat": "StatSpirit",
+									"multiplier": 0.4
+								},
+								{
+									"id": 142,
+									"fromStat": "StatCritRating",
+									"toStat": "StatDodgeRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 143,
+									"fromStat": "StatCritRating",
+									"toStat": "StatParryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 146,
+									"fromStat": "StatCritRating",
+									"toStat": "StatExpertiseRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 162,
+									"fromStat": "StatMasteryRating",
+									"toStat": "StatSpirit",
+									"multiplier": 0.4
+								},
+								{
+									"id": 163,
+									"fromStat": "StatMasteryRating",
+									"toStat": "StatDodgeRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 164,
+									"fromStat": "StatMasteryRating",
+									"toStat": "StatParryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 165,
+									"fromStat": "StatMasteryRating",
+									"toStat": "StatHitRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 168,
+									"fromStat": "StatMasteryRating",
+									"toStat": "StatExpertiseRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 148,
+									"fromStat": "StatHasteRating",
+									"toStat": "StatSpirit",
+									"multiplier": 0.4
+								},
+								{
+									"id": 149,
+									"fromStat": "StatHasteRating",
+									"toStat": "StatDodgeRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 150,
+									"fromStat": "StatHasteRating",
+									"toStat": "StatParryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 151,
+									"fromStat": "StatHasteRating",
+									"toStat": "StatHitRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 153,
+									"fromStat": "StatHasteRating",
+									"toStat": "StatExpertiseRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 166,
+									"fromStat": "StatMasteryRating",
+									"toStat": "StatCritRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 155,
+									"fromStat": "StatExpertiseRating",
+									"toStat": "StatSpirit",
+									"multiplier": 0.4
+								},
+								{
+									"id": 156,
+									"fromStat": "StatExpertiseRating",
+									"toStat": "StatDodgeRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 157,
+									"fromStat": "StatExpertiseRating",
+									"toStat": "StatParryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 158,
+									"fromStat": "StatExpertiseRating",
+									"toStat": "StatHitRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 159,
+									"fromStat": "StatExpertiseRating",
+									"toStat": "StatCritRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 147,
+									"fromStat": "StatCritRating",
+									"toStat": "StatMasteryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 134,
+									"fromStat": "StatHitRating",
+									"toStat": "StatSpirit",
+									"multiplier": 0.4
+								},
+								{
+									"id": 135,
+									"fromStat": "StatHitRating",
+									"toStat": "StatDodgeRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 136,
+									"fromStat": "StatHitRating",
+									"toStat": "StatParryRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 138,
+									"fromStat": "StatHitRating",
+									"toStat": "StatHasteRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 139,
+									"fromStat": "StatHitRating",
+									"toStat": "StatExpertiseRating",
+									"multiplier": 0.4
+								},
+								{
+									"id": 140,
+									"fromStat": "StatHitRating",
+									"toStat": "StatMasteryRating",
+									"multiplier": 0.4
+								}
+							],
+							"itemEffectRandPropPoints": [
+								{
+									"ilvl": 574,
+									"randPropPoints": 4811
+								},
+								{
+									"ilvl": 580,
+									"randPropPoints": 5087
+								},
+								{
+									"ilvl": 549,
+									"randPropPoints": 3811
+								},
+								{
+									"ilvl": 582,
+									"randPropPoints": 5183
+								}
+							]
+						}
+					},
+					{},
+					{},
+					{},
+					{}
+				],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			}
+		],
+		"numActiveParties": 5,
+		"buffs": {
+			"trueshotAura": true,
+			"unleashedRage": true,
+			"darkIntent": true,
+			"moonkinAura": true,
+			"legacyOfTheWhiteTiger": true,
+			"blessingOfMight": true,
+			"legacyOfTheEmperor": true,
+			"bloodlust": true,
+			"stormlashTotemCount": 4,
+			"skullBannerCount": 2
+		},
+		"debuffs": {
+			"physicalVulnerability": true,
+			"weakenedArmor": true,
+			"masterPoisoner": true
+		},
+		"targetDummies": 9
+	},
+	"preCapEpWeights": {
+		"apiVersion": 4,
+		"stats": [0, 1, 0, 0, 0, 1.79, 0.74, 0.89, 1.49, 0, 0, 0.34, 0.35, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [2.33, 1.17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"undershootCaps": {
+		"apiVersion": 4,
+		"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"settings": {
+		"includeGems": true,
+		"includeEotbGemSocket": true,
+		"relativeStatCapStat": {
+			"apiVersion": 4,
+			"stat": "StatMasteryRating"
+		},
+		"statCaps": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 2550, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
+		},
+		"breakpointLimits": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		}
+	},
+	"gemOptions": [
+		{
+			"id": 76636,
+			"name": "Rigid River's Heart",
+			"color": "GemColorBlue",
+			"stats": [0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_blue",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76637,
+			"name": "Stormy River's Heart",
+			"color": "GemColorBlue",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_blue",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76638,
+			"name": "Sparkling River's Heart",
+			"color": "GemColorBlue",
+			"stats": [0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_blue",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76639,
+			"name": "Solid River's Heart",
+			"color": "GemColorBlue",
+			"stats": [0, 0, 240, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_blue",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76640,
+			"name": "Misty Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 160, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76641,
+			"name": "Piercing Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76642,
+			"name": "Lightning Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 160, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76643,
+			"name": "Sensei's Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76644,
+			"name": "Effulgent Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76645,
+			"name": "Zen Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76646,
+			"name": "Balanced Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76647,
+			"name": "Vivid Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 80, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76648,
+			"name": "Turbid Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76649,
+			"name": "Radiant Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76650,
+			"name": "Shattered Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76651,
+			"name": "Energized Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 160, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76652,
+			"name": "Jagged Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 120, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76653,
+			"name": "Regal Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76654,
+			"name": "Forceful Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 120, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76656,
+			"name": "Puissant Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76657,
+			"name": "Steady Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76658,
+			"name": "Deadly Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 80, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76659,
+			"name": "Crafty Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 160, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76660,
+			"name": "Potent Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 80, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76661,
+			"name": "Inscribed Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [80, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76662,
+			"name": "Polished Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76663,
+			"name": "Resolute Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76664,
+			"name": "Stalwart Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76665,
+			"name": "Champion's Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76666,
+			"name": "Deft Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 80, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76667,
+			"name": "Wicked Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76668,
+			"name": "Reckless Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 80, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76669,
+			"name": "Fierce Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [80, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76670,
+			"name": "Adept Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76671,
+			"name": "Keen Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76672,
+			"name": "Artful Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76673,
+			"name": "Fine Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76674,
+			"name": "Skillful Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76675,
+			"name": "Lucent Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76676,
+			"name": "Tenuous Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76677,
+			"name": "Willful Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76678,
+			"name": "Splendid Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76679,
+			"name": "Resplendent Vermilion Onyx",
+			"color": "GemColorOrange",
+			"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_orange",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76680,
+			"name": "Glinting Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 80, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76681,
+			"name": "Accurate Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 0, 0, 0, 160, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76682,
+			"name": "Veiled Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 0, 80, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76683,
+			"name": "Retaliating Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76684,
+			"name": "Etched Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [80, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76685,
+			"name": "Mysterious Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76686,
+			"name": "Purified Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 0, 80, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76687,
+			"name": "Shifting Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 80, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76688,
+			"name": "Guardian's Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 120, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76689,
+			"name": "Timeless Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 120, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76690,
+			"name": "Defender's Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 120, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76691,
+			"name": "Sovereign Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [80, 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76692,
+			"name": "Delicate Primordial Ruby",
+			"color": "GemColorRed",
+			"stats": [0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_red",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76693,
+			"name": "Precise Primordial Ruby",
+			"color": "GemColorRed",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_red",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76694,
+			"name": "Brilliant Primordial Ruby",
+			"color": "GemColorRed",
+			"stats": [0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_red",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76695,
+			"name": "Flashing Primordial Ruby",
+			"color": "GemColorRed",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_red",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76696,
+			"name": "Bold Primordial Ruby",
+			"color": "GemColorRed",
+			"stats": [160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_red",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76697,
+			"name": "Smooth Sun's Radiance",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_yellow",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76698,
+			"name": "Subtle Sun's Radiance",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_yellow",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76699,
+			"name": "Quick Sun's Radiance",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_yellow",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76700,
+			"name": "Fractured Sun's Radiance",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_yellow",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 76701,
+			"name": "Mystic Sun's Radiance",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_yellow",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 83141,
+			"name": "Bold Serpent's Eye",
+			"color": "GemColorRed",
+			"stats": [320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83142,
+			"name": "Quick Serpent's Eye",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye03",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83143,
+			"name": "Fractured Serpent's Eye",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye03",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83144,
+			"name": "Rigid Serpent's Eye",
+			"color": "GemColorBlue",
+			"stats": [0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye04",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83145,
+			"name": "Subtle Serpent's Eye",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye03",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83146,
+			"name": "Smooth Serpent's Eye",
+			"color": "GemColorYellow",
+			"stats": [0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye03",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83147,
+			"name": "Precise Serpent's Eye",
+			"color": "GemColorRed",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83148,
+			"name": "Solid Serpent's Eye",
+			"color": "GemColorBlue",
+			"stats": [0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye04",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83149,
+			"name": "Sparkling Serpent's Eye",
+			"color": "GemColorBlue",
+			"stats": [0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye04",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83150,
+			"name": "Brilliant Serpent's Eye",
+			"color": "GemColorRed",
+			"stats": [0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83151,
+			"name": "Delicate Serpent's Eye",
+			"color": "GemColorRed",
+			"stats": [0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 83152,
+			"name": "Flashing Serpent's Eye",
+			"color": "GemColorRed",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 89674,
+			"name": "Tense Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 89680,
+			"name": "Assassin's Imperial Amethyst",
+			"color": "GemColorPurple",
+			"stats": [0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_purple",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 93404,
+			"name": "Resplendent Serpent's Eye",
+			"color": "GemColorOrange",
+			"stats": [160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 93405,
+			"name": "Lucent Serpent's Eye",
+			"color": "GemColorOrange",
+			"stats": [0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 93406,
+			"name": "Willful Serpent's Eye",
+			"color": "GemColorOrange",
+			"stats": [0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 93408,
+			"name": "Tense Serpent's Eye",
+			"color": "GemColorPurple",
+			"stats": [160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 93409,
+			"name": "Assassin's Serpent's Eye",
+			"color": "GemColorPurple",
+			"stats": [0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 93410,
+			"name": "Mysterious Serpent's Eye",
+			"color": "GemColorPurple",
+			"stats": [0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 0, 0, 0, 0, 0],
+			"requiredProfession": "Jewelcrafting",
+			"icon": "inv_jewelcrafting_dragonseye05",
+			"phase": 1,
+			"quality": "ItemQualityEpic"
+		},
+		{
+			"id": 93705,
+			"name": "Nimble Wild Jade",
+			"color": "GemColorGreen",
+			"stats": [0, 0, 0, 0, 0, 160, 0, 0, 0, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"icon": "inv_misc_gem_x4_rare_cut_green",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 89873,
+			"name": "Crystallized Dread",
+			"color": "GemColorShaTouched",
+			"stats": [0, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"disabledInChallengeMode": true,
+			"icon": "inv_legendary_breathofblackprince_int",
+			"phase": 1,
+			"quality": "ItemQualityLegendary"
+		},
+		{
+			"id": 89881,
+			"name": "Crystallized Terror",
+			"color": "GemColorShaTouched",
+			"stats": [500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"disabledInChallengeMode": true,
+			"icon": "inv_legendary_breathofblackprince_agi",
+			"phase": 1,
+			"quality": "ItemQualityLegendary"
+		},
+		{
+			"id": 89882,
+			"name": "Crystallized Horror",
+			"color": "GemColorShaTouched",
+			"stats": [0, 0, 0, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"disabledInChallengeMode": true,
+			"icon": "inv_legendary_breathofblackprince_str",
+			"phase": 1,
+			"quality": "ItemQualityLegendary"
+		},
+		{
+			"id": 98056,
+			"name": "Crystallized Horror",
+			"color": "GemColorShaTouched",
+			"stats": [0, 0, 0, 500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"disabledInChallengeMode": true,
+			"icon": "inv_legendary_breathofblackprince_str",
+			"phase": 1,
+			"quality": "ItemQualityLegendary"
+		},
+		{
+			"id": 77540,
+			"name": "Subtle Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 77541,
+			"name": "Smooth Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 77542,
+			"name": "Quick Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 77543,
+			"name": "Precise Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 77544,
+			"name": "Flashing Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 77545,
+			"name": "Rigid Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 77546,
+			"name": "Sparkling Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		},
+		{
+			"id": 77547,
+			"name": "Fractured Tinker's Gear",
+			"color": "GemColorCogwheel",
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"unique": true,
+			"icon": "inv_misc_enggizmos_30",
+			"phase": 1,
+			"quality": "ItemQualityRare"
+		}
+	]
+}
