@@ -54,7 +54,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	),
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P4_BIS_GEAR_PRESET.gear,
+		gear: Presets.P5_BIS_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_UNHOLY_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -125,8 +125,8 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.FESTERBLIGHT_ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P3_BIS_GEAR_PRESET, Presets.P4_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
-		builds: [Presets.PREBIS_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
+		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
+		builds: [Presets.PREBIS_PRESET, Presets.P5_PRESET],
 	},
 
 	raidSimPresets: [],

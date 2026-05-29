@@ -55,7 +55,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 	),
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P4_MASTERFROST_GEAR_PRESET.gear,
+		gear: Presets.P5_MASTERFROST_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.MASTERFROST_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
@@ -137,19 +137,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 		gear: [
 			Presets.PREBIS_MASTERFROST_GEAR_PRESET,
 			Presets.PREBIS_2H_OBLITERATE_GEAR_PRESET,
-			Presets.P3_MASTERFROST_GEAR_PRESET,
-			Presets.P3_2H_OBLITERATE_GEAR_PRESET,
-			Presets.P4_MASTERFROST_GEAR_PRESET,
-			Presets.P4_2H_OBLITERATE_GEAR_PRESET,
 			Presets.P5_MASTERFROST_GEAR_PRESET,
 			Presets.P5_2H_OBLITERATE_GEAR_PRESET,
 		],
-		builds: [
-			Presets.PRESET_BUILD_P3_MASTERFROST,
-			Presets.PRESET_BUILD_P3_2H_OBLITERATE,
-			Presets.PRESET_BUILD_P4_MASTERFROST,
-			Presets.PRESET_BUILD_P4_2H_OBLITERATE,
-		],
+		builds: [Presets.PRESET_BUILD_P5_MASTERFROST, Presets.PRESET_BUILD_P5_2H_OBLITERATE],
 	},
 
 	raidSimPresets: [],

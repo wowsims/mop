@@ -1,5 +1,5 @@
 {
-	"apiVersion": 2,
+	"apiVersion": 3,
 	"raidBuffs": {
 		"trueshotAura": true,
 		"unholyAura": true,
@@ -24,22 +24,22 @@
 		"class": "ClassDeathKnight",
 		"equipment": {
 			"items": [
-				{ "id": 96894, "gems": [95346, 76699] },
-				{ "id": 96792, "reforging": 167 },
-				{ "id": 96573, "enchant": 4803, "gems": [76684, 76699], "reforging": 160 },
-				{ "id": 95017, "enchant": 4424, "gems": [76699], "tinker": 4897 },
-				{ "id": 96569, "enchant": 4419, "gems": [76669, 76699, 76642], "reforging": 159 },
-				{ "id": 96848, "randomSuffix": -340, "enchant": 4415, "gems": [76699, 0] },
-				{ "id": 96570, "enchant": 4432, "gems": [76669, 0], "reforging": 138, "tinker": 4898 },
-				{ "id": 96745, "gems": [76669, 76699, 76699], "reforging": 166, "tinker": 4223 },
-				{ "id": 96572, "enchant": 4823, "gems": [76699, 76642], "reforging": 167 },
-				{ "id": 96914, "enchant": 4426, "gems": [76669], "reforging": 153 },
-				{ "id": 96872, "gems": [76669], "reforging": 137 },
-				{ "id": 95022, "gems": [76642], "reforging": 159 },
-				{ "id": 96842, "reforging": 138 },
-				{ "id": 94508, "reforging": 160 },
-				{ "id": 96991, "enchant": 3368, "gems": [76699, 76699] },
-				{}
+				{ "id": 99337, "gems": [95346, 76674], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105566, "reforging": 146, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99339, "enchant": 4803, "gems": [76674, 76674], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 102249, "enchant": 4424, "gems": [76674], "reforging": 144, "upgradeStep": "UpgradeStepTwo", "tinker": 4897 },
+				{ "id": 99335, "enchant": 4419, "gems": [76674, 76674, 76674], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105456, "enchant": 4415, "gems": [0], "reforging": 144, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99336, "enchant": 4432, "gems": [76674, 76674, 0], "reforging": 139, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+				{ "id": 105509, "gems": [76674, 76700, 76700], "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
+				{ "id": 105640, "enchant": 4823, "gems": [76643, 76643, 76674], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105531, "enchant": 4429, "gems": [76700], "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105611, "gems": [76674], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105534, "gems": [76700], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105632, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105609, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105621, "enchant": 3368, "gems": [76674], "reforging": 151, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 105621, "enchant": 3370, "gems": [76674], "upgradeStep": "UpgradeStepTwo" }
 			]
 		},
 		"consumables": {
@@ -49,14 +49,14 @@
 			"foodId": 74646
 		},
 		"bonusStats": {
-			"apiVersion": 2,
+			"apiVersion": 3,
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		},
 		"itemSwap": {
 			"items": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
 			"prepullBonusStats": {
-				"apiVersion": 2,
+				"apiVersion": 3,
 				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			}
@@ -69,10 +69,12 @@
 		},
 		"talentsString": "221111",
 		"glyphs": {
-			"major1": 68793,
-			"major2": 43548,
-			"minor1": 43672,
-			"minor2": 45806
+			"major1": 43533,
+			"major2": 43541,
+			"major3": 45800,
+			"minor1": 43550,
+			"minor2": 45806,
+			"minor3": 104101
 		},
 		"profession1": "Engineering",
 		"profession2": "Herbalism",
@@ -85,7 +87,7 @@
 		"healingModel": {}
 	},
 	"encounter": {
-		"apiVersion": 2,
+		"apiVersion": 3,
 		"duration": 300,
 		"durationVariation": 60,
 		"executeProportion20": 0.2,
@@ -99,7 +101,7 @@
 				"name": "Raid Target",
 				"level": 93,
 				"mobType": "MobTypeMechanical",
-				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
+				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 650, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
 				"minBaseDamage": 550000,
 				"damageSpread": 0.4,
 				"swingSpeed": 2

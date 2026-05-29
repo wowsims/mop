@@ -7,13 +7,11 @@ import { Stats } from '../../core/proto_utils/stats';
 import P5Build from './builds/p5.build.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreRaidGear from './gear_sets/preraid.gear.json';
-import AoeApl from './apls/aoe.apl.json';
 import BmApl from './apls/bm.apl.json';
 
 export const PRERAID_PRESET_GEAR = PresetUtils.makePresetGear('Pre-raid', PreRaidGear);
 export const P5_PRESET_GEAR = PresetUtils.makePresetGear('P5', P5Gear);
 export const ROTATION_PRESET_BM = PresetUtils.makePresetAPLRotation('BM', BmApl);
-export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', AoeApl);
 export const DefaultTalents = {
 	name: 'Default',
 	data: SavedTalents.create({

@@ -7,11 +7,8 @@ import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from '../../death_knight/unholy/apls/default.apl.json';
 import FesterblightApl from '../../death_knight/unholy/apls/festerblight.apl.json';
-import P3Build from '../../death_knight/unholy/builds/p3.build.json';
-import P4Build from '../../death_knight/unholy/builds/p4.build.json';
+import P5Build from '../../death_knight/unholy/builds/p5.build.json';
 import PrebisBuild from '../../death_knight/unholy/builds/prebis.build.json';
-import P3Gear from '../../death_knight/unholy/gear_sets/p3.gear.json';
-import P4Gear from '../../death_knight/unholy/gear_sets/p4.gear.json';
 import P5Gear from '../../death_knight/unholy/gear_sets/p5.gear.json';
 import PrebisGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
 
@@ -19,9 +16,7 @@ import PrebisGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Prebis', PrebisGear);
-export const P3_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3', P3Gear);
-export const P4_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P4', P4Gear);
-export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5 (WiP)', P5Gear);
+export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5Gear);
 
 export const DEFAULT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Festerblight', FesterblightApl, {
@@ -95,11 +90,7 @@ export const PREBIS_PRESET = PresetUtils.makePresetBuildFromJSON('Prebis', Spec.
 	epWeights: DEFAULT_UNHOLY_EP_PRESET,
 	rotationType: APLRotation_Type.TypeAuto,
 });
-export const P3_PRESET = PresetUtils.makePresetBuildFromJSON('P3', Spec.SpecUnholyDeathKnight, P3Build, {
-	epWeights: DEFAULT_UNHOLY_EP_PRESET,
-	rotationType: APLRotation_Type.TypeAuto,
-});
-export const P4_PRESET = PresetUtils.makePresetBuildFromJSON('P4', Spec.SpecUnholyDeathKnight, P4Build, {
+export const P5_PRESET = PresetUtils.makePresetBuildFromJSON('P5', Spec.SpecUnholyDeathKnight, P5Build, {
 	epWeights: DEFAULT_UNHOLY_EP_PRESET,
 	rotationType: APLRotation_Type.TypeAuto,
 });

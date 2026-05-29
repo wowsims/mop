@@ -160,7 +160,7 @@ var BattlegearOfTheUnblinkingVigil = core.NewItemSet(core.ItemSet{
 			}
 
 			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Callback:       core.CallbackOnSpellHitDealt,
+				Callback:       core.CallbackOnCastComplete,
 				ClassSpellMask: HunterSpellAimedShot | HunterSpellArcaneShot | HunterSpellMultiShot,
 
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
@@ -287,6 +287,10 @@ func registerBeastMasteryT16(hunter *Hunter, setBonusAura *core.Aura) {
 		}).AttachProcTrigger(core.ProcTrigger{
 			Callback:       core.CallbackOnCastComplete,
 			ClassSpellMask: HunterSpellsAll | HunterSpellsTalents ^ (HunterSpellFervor | HunterSpellDireBeast | HunterSpellBestialWrath),
+
+			ExtraCondition: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) bool {
+				return !spell.Matches(HunterSpellGlaiveToss) || spell.ActionID.Tag == 0
+			},
 
 			Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				if !hunter.BestialWrathAura.IsActive() {

@@ -14,15 +14,15 @@ func (bmHunter *BeastMasteryHunter) registerBestialWrathCD() {
 
 	actionID := core.ActionID{SpellID: 19574}
 
-	bmHunter.Pet.BestialWrathAura = bmHunter.Pet.RegisterAura(core.Aura{
+	bmHunter.Pet.BestialWrathAura = core.BlockPrepull(bmHunter.Pet.RegisterAura(core.Aura{
 		Label:    "Bestial Wrath Pet",
 		ActionID: actionID,
 		Duration: core.NeverExpires,
 	}).AttachMultiplicativePseudoStatBuff(
 		&bmHunter.Pet.PseudoStats.DamageDealtMultiplier, 1.2,
-	)
+	))
 
-	bmHunter.BestialWrathAura = bmHunter.RegisterAura(core.Aura{
+	bmHunter.BestialWrathAura = core.BlockPrepull(bmHunter.RegisterAura(core.Aura{
 		Label:    "Bestial Wrath",
 		ActionID: actionID,
 		Duration: time.Second * 10,
@@ -34,7 +34,7 @@ func (bmHunter *BeastMasteryHunter) registerBestialWrathCD() {
 		&bmHunter.PseudoStats.DamageDealtMultiplier, 1.1,
 	).AttachDependentAura(
 		bmHunter.Pet.BestialWrathAura,
-	)
+	))
 	core.RegisterPercentDamageModifierEffect(bmHunter.BestialWrathAura, 1.1)
 
 	bestialWrath := bmHunter.RegisterSpell(core.SpellConfig{

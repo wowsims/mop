@@ -1,5 +1,5 @@
 {
-	"apiVersion": 2,
+	"apiVersion": 3,
 	"raidBuffs": {
 		"trueshotAura": true,
 		"unholyAura": true,
@@ -23,21 +23,21 @@
 		"class": "ClassHunter",
 		"equipment": {
 			"items": [
-				{"id":96788,"gems":[95346,76666],"upgradeStep":"UpgradeStepTwo"},
-				{"id":96815,"gems":[76692],"reforging":137,"upgradeStep":"UpgradeStepTwo"},
-				{"id":96630,"enchant":4804,"gems":[76692,76658],"reforging":138,"upgradeStep":"UpgradeStepTwo"},
-				{"id":98148,"enchant":4894,"gems":[76692],"upgradeStep":"UpgradeStepTwo","tinker":4897},
-				{"id":96626,"enchant":4419,"gems":[76692,76666,76680],"reforging":166,"upgradeStep":"UpgradeStepTwo"},
-				{"id":96797,"randomSuffix":-336,"enchant":4416,"gems":[76658,0],"upgradeStep":"UpgradeStepTwo"},
-				{"id":96867,"enchant":4430,"gems":[76692,76692,0],"upgradeStep":"UpgradeStepTwo","tinker":4898},
-				{"id":96846,"gems":[76692,76658,76692],"upgradeStep":"UpgradeStepTwo","tinker":4223},
-				{"id":96921,"enchant":4822,"gems":[76692,76692,76692],"upgradeStep":"UpgradeStepTwo"},
-				{"id":95009,"enchant":4428,"gems":[76658,76680],"reforging":167,"upgradeStep":"UpgradeStepTwo"},
-				{"id":95021,"gems":[76680],"reforging":137,"upgradeStep":"UpgradeStepTwo"},
-				{"id":96885,"gems":[76692],"reforging":153,"upgradeStep":"UpgradeStepTwo"},
-				{"id":96741,"reforging":159,"upgradeStep":"UpgradeStepTwo"},
-				{"id":96781,"reforging":166,"upgradeStep":"UpgradeStepTwo"},
-				{"id":96897,"enchant":4699,"gems":[76692,76692],"reforging":137,"upgradeStep":"UpgradeStepTwo"},
+				{ "id": 99402, "gems": [95346, 76692], "reforging": 144, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104606, "reforging": 146, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99404, "enchant": 4804, "gems": [76692, 76692], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 102248, "enchant": 4421, "gems": [76692], "reforging": 168, "upgradeStep": "UpgradeStepTwo", "tinker": 4897 },
+				{ "id": 99405, "enchant": 4419, "gems": [76692, 76692, 76692], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104491, "enchant": 4416, "gems": [0], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99406, "enchant": 4430, "gems": [76692, 76692, 0], "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+				{ "id": 104588, "gems": [76692, 76666, 76692], "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
+				{ "id": 104458, "enchant": 4822, "gems": [76680, 76680], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104557, "enchant": 4428, "gems": [76692], "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104487, "gems": [76666], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104455, "gems": [76680], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104476, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104531, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 104627, "enchant": 4699, "gems": [76692], "upgradeStep": "UpgradeStepTwo" },
 				{}
 			]
 		},
@@ -48,20 +48,20 @@
 			"foodId": 74648
 		},
 		"bonusStats": {
-			"apiVersion": 2,
+			"apiVersion": 3,
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		},
 		"itemSwap": {
 			"items": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
 			"prepullBonusStats": {
-				"apiVersion": 2,
+				"apiVersion": 3,
 				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			}
 		},
 		"buffs": {},
-		"survivalHunter": {
+		"marksmanshipHunter": {
 			"options": {
 				"classOptions": {
 					"petType": "Tallstrider",
@@ -75,10 +75,10 @@
 		"glyphs": {
 			"major1": 42909,
 			"major2": 42903,
-			"major3": 42899
+			"major3": 42914
 		},
 		"profession1": "Engineering",
-		"profession2": "Tailoring",
+		"profession2": "Herbalism",
 		"cooldowns": {},
 		"rotation": {
 			"type": "TypeAuto"
@@ -88,7 +88,7 @@
 		"healingModel": {}
 	},
 	"encounter": {
-		"apiVersion": 2,
+		"apiVersion": 3,
 		"duration": 300,
 		"durationVariation": 60,
 		"executeProportion20": 0.2,
@@ -102,7 +102,7 @@
 				"name": "Raid Target",
 				"level": 93,
 				"mobType": "MobTypeMechanical",
-				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
+				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 650, 0, 0, 0, 0, 24835, 0, 120016403, 0, 0],
 				"minBaseDamage": 550000,
 				"damageSpread": 0.4,
 				"swingSpeed": 2

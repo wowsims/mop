@@ -48,9 +48,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMarksmanshipHunter, {
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P4_PRESET_GEAR.gear,
+		gear: Presets.P5_PRESET_GEAR.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P4_EP_PRESET.epWeights,
+		epWeights: Presets.P5_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: Stats.fromMap(
 			{
@@ -102,14 +102,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMarksmanshipHunter, {
 	},
 
 	presets: {
-		epWeights: [Presets.P4_EP_PRESET],
+		epWeights: [Presets.P5_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_MM, Presets.ROTATION_PRESET_AOE],
 		// Preset gear configurations that the user can quickly select.
-		builds: [Presets.P4_PRESET],
-		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P4_PRESET_GEAR, Presets.P5_PRESET_GEAR],
+		builds: [Presets.P5_PRESET],
+		gear: [Presets.PRERAID_PRESET_GEAR, Presets.P5_PRESET_GEAR],
 	},
 
 	autoRotation: (_: Player<Spec.SpecMarksmanshipHunter>): APLRotation => {

@@ -120,7 +120,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 		talents: [Presets.StandardTalents, Presets.HotWTalents],
 		rotations: [Presets.SIMPLE_ROTATION_DEFAULT, Presets.APL_ROTATION_DEFAULT],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P2_PRESET, Presets.P3_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P2_PRESET, Presets.P3_PRESET, Presets.P4_PRESET],
 		itemSwaps: [Presets.ITEM_SWAP_PRESET],
 		builds: [Presets.PRESET_BUILD_ST, Presets.PRESET_BUILD_CLEAVE],
 	},

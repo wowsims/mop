@@ -576,13 +576,13 @@ func (rp *runicPowerBar) spendRuneCost(sim *Simulation, spell *Spell, cost RuneC
 	}
 	if d > 0 {
 		for i, mu := int8(0), defaultCost.Unholy()-u; i < mu; i++ {
-			slots = append(slots, rp.spendDeathRune(sim, []int8{4, 5, 2, 3, 0, 1}, spell.DeathRuneMetrics()))
+			slots = append(slots, rp.spendDeathRune(sim, []int8{4, 5, 0, 1, 2, 3}, spell.DeathRuneMetrics()))
 		}
 		for i, mf := int8(0), defaultCost.Frost()-f; i < mf; i++ {
-			slots = append(slots, rp.spendDeathRune(sim, []int8{2, 3, 4, 5, 0, 1}, spell.DeathRuneMetrics()))
+			slots = append(slots, rp.spendDeathRune(sim, []int8{2, 3, 0, 1, 4, 5}, spell.DeathRuneMetrics()))
 		}
 		for i, mb := int8(0), defaultCost.Blood()-b; i < mb; i++ {
-			slots = append(slots, rp.spendDeathRune(sim, []int8{0, 1, 4, 5, 2, 3}, spell.DeathRuneMetrics()))
+			slots = append(slots, rp.spendDeathRune(sim, []int8{0, 1, 2, 3, 4, 5}, spell.DeathRuneMetrics()))
 		}
 	}
 
