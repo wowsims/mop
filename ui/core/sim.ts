@@ -624,7 +624,6 @@ export class Sim {
 		try {
 			await this.waitForInit();
 			const gemOptions = ReforgeOptimizer.getReforgeGemOptions(this.db, config.settings);
-
 			const raid = this.getModifiedRaidProto();
 			const player = raid.parties[0].players[0];
 			player.database = config.gear.toDatabase(this.db);

@@ -1,5 +1,4 @@
 import { Tab } from 'bootstrap';
-import { queue } from 'async';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -1789,63 +1788,6 @@ export class BulkTab extends SimTab {
 		return candidateGearSets;
 	}
 
-	private async runReforgeQueue(gearSets: Gear[], playerPhase: boolean, concurrency: number, signal: AbortSignal): Promise<Gear[]> {
-		if (!gearSets.length) return [];
-
-		const startedAt = new Date().getTime();
-		let completedReforges = 1;
-		const reforgedGearSets: Gear[] = [];
-		this.debugOptimisationRound('reforging started', {
-			inputGearSets: gearSets.length,
-			concurrency,
-		});
-		this.setReforgeProgress(completedReforges, gearSets.length);
-		await sleep(400);
-
-		const reforgeQueue = queue<Gear, Error>(async reforgeGear => {
-			this.throwIfBulkAborted(signal);
-			const reforgedGear = await this.optimizeReforges(reforgeGear, playerPhase, signal);
-			this.throwIfBulkAborted(signal);
-			if (reforgedGear) {
-				reforgedGearSets.push(reforgedGear);
-			}
-			completedReforges += 1;
-			this.setReforgeProgress(completedReforges, gearSets.length);
-		}, concurrency);
-
-		const queueErrorPromise = reforgeQueue.error();
-		for (const gearSet of gearSets) {
-			reforgeQueue.push(gearSet);
-		}
-
-		try {
-			await Promise.race([reforgeQueue.drain(), queueErrorPromise]);
-		} catch (error) {
-			reforgeQueue.kill();
-			throw error;
-		}
-
-		const durationSeconds = this.getDurationSeconds(startedAt);
-		this.debugOptimisationRound('reforging complete', {
-			durationSeconds,
-			inputGearSets: gearSets.length,
-			reforgedGearSets: reforgedGearSets.length,
-			concurrency,
-		});
-		trackEvent({
-			action: 'sim',
-			category: 'batch_sim',
-			label: 'reforging_complete',
-			value: Math.round(durationSeconds),
-			additionalData: {
-				input_gear_sets: gearSets.length,
-				reforged_gear_sets: reforgedGearSets.length,
-			},
-		});
-
-		return reforgedGearSets;
-	}
-
 	private async runBatchSim() {
 		if (this.isRunning) return;
 
@@ -1899,23 +1841,11 @@ export class BulkTab extends SimTab {
 			batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
 
 
-			const backendReforgeConfig = useLocalBulkSim || this.bulkSimUsesWasmConcurrency ? this.getBulkReforgeConfig(playerPhase) : undefined;
+			const backendReforgeConfig = this.getBulkReforgeConfig(playerPhase);
 			if (backendReforgeConfig) {
 				reforgedGearSets.push(...candidateGearSets);
 			} else {
-				const reforgeStartedAt = new Date().getTime();
-				const validReforgedGearSets = await this.runReforgeQueue(candidateGearSets, playerPhase, concurrency, abortSignal);
-				reforgedGearSets.push(...this.dedupeGearSets(validReforgedGearSets));
-				batchCompleteMetrics.reforge_results = validReforgedGearSets.length;
-				batchCompleteMetrics.reforged_gear_sets = reforgedGearSets.length;
-				batchCompleteMetrics.deduped_gear_sets = validReforgedGearSets.length - reforgedGearSets.length;
-				batchCompleteMetrics.reforging_duration_seconds = Math.round((new Date().getTime() - reforgeStartedAt) / 1000);
-				this.debugOptimisationRound('reforged gear sets deduped', {
-					durationSeconds: this.getDurationSeconds(reforgeStartedAt),
-					reforgeResults: validReforgedGearSets.length,
-					reforgedGearSets: reforgedGearSets.length,
-					dedupedGearSets: validReforgedGearSets.length - reforgedGearSets.length,
-				});
+				reforgedGearSets.push(...this.dedupeGearSets(candidateGearSets));
 			}
 
 			this.simStart = new Date().getTime();
@@ -1987,33 +1917,6 @@ export class BulkTab extends SimTab {
 			this.isRunning = false;
 			this.isCancelling = false;
 			this.progressTrackerModal.hide();
-		}
-	}
-
-	private async optimizeReforges(gear: Gear, playerPhase: boolean, signal: AbortSignal): Promise<Gear | null> {
-		if (!this.simUI.reforger) {
-			return gear;
-		}
-
-		this.throwIfBulkAborted(signal);
-
-		this.simUI.reforger.setIncludeGems(TypedEvent.nextEventID(), true);
-		this.simUI.reforger.setIncludeEOTBPGemSocket(TypedEvent.nextEventID(), playerPhase);
-		this.updateRelativeStatCapReforges();
-
-		try {
-			return this.runWithBulkAbort(this.simUI.reforger.optimizeReforges(gear, true), signal);
-		} catch {
-			this.throwIfBulkAborted(signal);
-			this.simUI.reforger.setIncludeGems(TypedEvent.nextEventID(), false);
-			this.updateRelativeStatCapReforges();
-
-			try {
-				return this.runWithBulkAbort(this.simUI.reforger.optimizeReforges(gear, true), signal);
-			} catch {
-				this.throwIfBulkAborted(signal);
-				return gear;
-			}
 		}
 	}
 

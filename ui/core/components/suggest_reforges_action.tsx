@@ -7,10 +7,10 @@ import * as Mechanics from '../constants/mechanics.js';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
 import { ReforgeSettings, StatCapType } from '../proto/api';
-import { Class, GemColor, ItemSlot, PseudoStat, Spec, Stat } from '../proto/common';
+import { Class, GemColor, ItemQuality, ItemSlot, PseudoStat, Spec, Stat } from '../proto/common';
 import { UIGem as Gem, IndividualSimSettings } from '../proto/ui';
 import { Database } from '../proto_utils/database';
-import { EquippedItem, ReforgeData } from '../proto_utils/equipped_item';
+import { EquippedItem } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
 import { getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
@@ -27,12 +27,9 @@ import { NumberPicker, NumberPickerConfig } from './pickers/number_picker';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
 import Toast from './toast';
 import { trackEvent, trackPageView } from '../../tracking/utils';
-import { ReforgeGearCache } from '../reforge_cache';
 import { RequestTypes } from '../sim_signal_manager';
 import { ProgressTrackerModal } from './progress_tracker_modal';
 import { getEmptySlotIconUrl } from './gear_picker/utils';
-import { SimSettingCategories } from '../constants/sim_settings';
-import { IndividualLinkExporter } from './individual_sim_ui/exporters/individual_link_exporter';
 
 type GemData = {
 	gem: Gem;
@@ -65,7 +62,6 @@ const STAT_TOOLTIPS: StatTooltipContent = {
 };
 
 export type ReforgeOptimizerOptions = {
-	experimental?: true;
 	statTooltips?: StatTooltipContent;
 	statSelectionPresets?: UnitStatPresets[];
 	// Allows you to enable breakpoint limits for Treshold type caps
@@ -123,7 +119,6 @@ export class ReforgeOptimizer {
 	protected readonly simUI: IndividualSimUI<any>;
 	protected readonly player: Player<any>;
 	protected readonly playerClass: Class;
-	protected readonly isExperimental: ReforgeOptimizerOptions['experimental'];
 	protected readonly isHybridCaster: boolean;
 	protected readonly isTankSpec: boolean;
 	protected readonly sim: Sim;
@@ -150,11 +145,6 @@ export class ReforgeOptimizer {
 	protected wasCM: boolean = false;
 	protected isCancelling: boolean = false;
 	protected previousGear: Gear | null = null;
-	protected previousReforges = new Map<ItemSlot, ReforgeData>();
-	protected updatedGear: Gear | null = null;
-	protected currentReforges = new Map<ItemSlot, ReforgeData>();
-	private readonly reforgeGearCache: ReforgeGearCache;
-	private reforgeCacheConfigHash: string | null = null;
 	relativeStatCapStat: number = -1;
 	relativeStatCap: RelativeStatCap | null = null;
 
@@ -176,11 +166,9 @@ export class ReforgeOptimizer {
 		this.simUI = simUI;
 		this.player = simUI.player;
 		this.playerClass = this.player.getClass();
-		this.isExperimental = options?.experimental;
 		this.isHybridCaster = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman, Spec.SpecMistweaverMonk].includes(this.player.getSpec());
 		this.isTankSpec = this.player.getPlayerSpec().isTankSpec;
 		this.sim = simUI.sim;
-		this.reforgeGearCache = new ReforgeGearCache(this.player.getPlayerSpec());
 		this.defaults = simUI.individualConfig.defaults;
 		this.getEPDefaults = options?.getEPDefaults;
 		this.updateSoftCaps = options?.updateSoftCaps;
@@ -269,13 +257,10 @@ export class ReforgeOptimizer {
 		};
 
 		const {
-			group,
 			children: [startReforgeOptimizationButton, contextMenuButton],
 		} = simUI.addActionGroup([startReforgeOptimizationEntry, contextMenuEntry], {
-			cssClass: clsx('suggest-reforges-settings-group', this.isExperimental && !this.player.sim.getShowExperimental() && 'hide'),
+			cssClass: 'suggest-reforges-settings-group',
 		});
-
-		this.bindToggleExperimental(group);
 
 		if (this.softCapsConfig)
 			tippy(startReforgeOptimizationButton, {
@@ -312,9 +297,6 @@ export class ReforgeOptimizer {
 			],
 			'ReforgeSettingsChange',
 		);
-		void this.updateReforgeCacheConfigHash();
-		this.changeEmitter.on(() => void this.updateReforgeCacheConfigHash());
-		this.player.changeEmitter.on(() => void this.updateReforgeCacheConfigHash());
 
 		TypedEvent.onAny([this.useCustomEPValuesChangeEmitter, this.player.epWeightsChangeEmitter, this.statCapsChangeEmitter]).on(eventID => {
 			if (this.useCustomEPValues && (this.player.hasCustomEPWeights() || !this._statCaps.equals(this.defaults.statCaps || new Stats()))) {
@@ -324,14 +306,6 @@ export class ReforgeOptimizer {
 
 		this.player.gearChangeEmitter.on(eventID => {
 			this.setRelativeStatCap(eventID, this.relativeStatCapStat);
-		});
-	}
-
-	private bindToggleExperimental(element: Element) {
-		const toggle = () => element.classList[this.isExperimental && !this.player.sim.getShowExperimental() ? 'add' : 'remove']('hide');
-		toggle();
-		this.player.sim.showExperimentalChangeEmitter.on(() => {
-			toggle();
 		});
 	}
 
@@ -1066,136 +1040,27 @@ export class ReforgeOptimizer {
 		};
 	}
 
-	async optimizeReforges(gear?: Gear, batchRun?: boolean) {
+	async optimizeReforges(gear?: Gear) {
 		if (isDevMode()) console.log('Starting Reforge optimization...');
 		const previousGear = gear || this.player.getGear();
-		const previousReforges = previousGear.getAllReforges();
-		const useReforgeCache = !!batchRun;
-		const cacheKey = useReforgeCache ? await this.getReforgeCacheKey(previousGear) : null;
-		if (cacheKey) {
-			const cachedGearSpec = await this.reforgeGearCache.get(cacheKey);
-			if (cachedGearSpec) {
-				const cachedGear = this.sim.db.lookupEquipmentSpec(cachedGearSpec);
-				this.updateReforgeOptimizationState(previousGear, previousReforges, cachedGear, batchRun);
-				if (isDevMode()) console.log('Using cached Reforge optimization result.');
-				return cachedGear;
-			}
-		}
+		this.previousGear = previousGear;
 
-		const optimizedGear = await this.optimizeReforgesLocally(previousGear, previousReforges, batchRun);
-		if (cacheKey) {
-			await this.reforgeGearCache.set(cacheKey, this.getReforgeCacheGearLink(optimizedGear));
-		}
-		return optimizedGear;
-	}
-
-	private async optimizeReforgesLocally(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, batchRun?: boolean): Promise<Gear> {
 		const result = await this.sim.reforgeOptimize(this.getReforgeOptimizeConfig(previousGear));
 		if (!result.optimizedGear) {
 			throw new Error('Local Go reforge optimizer did not return optimized gear.');
 		}
 
 		const optimizedGear = this.sim.db.lookupEquipmentSpec(result.optimizedGear);
-		await this.updateGear(optimizedGear);
-		this.updateReforgeOptimizationState(previousGear, previousReforges, optimizedGear, batchRun);
 		return optimizedGear;
-	}
-
-	private updateReforgeOptimizationState(previousGear: Gear, previousReforges: Map<ItemSlot, ReforgeData>, updatedGear: Gear, batchRun?: boolean) {
-		if (!batchRun) {
-			this.previousGear = previousGear;
-			this.previousReforges = previousReforges;
-			this.updatedGear = updatedGear;
-			this.currentReforges = updatedGear.getAllReforges();
-		}
-	}
-
-	private async getReforgeCacheKey(gear: Gear): Promise<string> {
-		return ReforgeGearCache.getKey(gear.asSpec(), await this.getReforgeCacheConfigHash());
-	}
-
-	private getReforgeCacheGearLink(gear: Gear): string {
-		const settings = this.simUI.toProto([SimSettingCategories.Gear]);
-		settings.player!.equipment = gear.asSpec();
-
-		const link = IndividualLinkExporter.createLink(
-			{
-				toProto: () => settings,
-			} as IndividualSimUI<any>,
-			[SimSettingCategories.Gear],
-		);
-		const linkUrl = new URL(link);
-		return linkUrl.hash;
-	}
-
-	private async updateReforgeCacheConfigHash() {
-		await this.sim.waitForInit();
-		this.reforgeCacheConfigHash = await ReforgeGearCache.getHash(this.getReforgeCacheConfigFingerprint());
-	}
-
-	private async getReforgeCacheConfigHash(): Promise<string> {
-		if (!this.reforgeCacheConfigHash) await this.updateReforgeCacheConfigHash();
-		return this.reforgeCacheConfigHash!;
-	}
-
-	private getReforgeCacheConfigFingerprint() {
-		const player = this.player.toProto(true, false, [
-			SimSettingCategories.Talents,
-			SimSettingCategories.Consumes,
-			SimSettingCategories.External,
-			SimSettingCategories.Miscellaneous,
-		]);
-
-		player.channelClipDelayMs = 0;
-		player.inFrontOfTarget = false;
-		player.distanceFromTarget = 0;
-		player.healingModel = undefined;
-
-		return {
-			player,
-			sim: {
-				epStats: this.simUI.individualConfig.epStats.slice().sort((a, b) => a - b),
-			},
-			optimizer: {
-				...this.toProto(),
-				preCapEPs: this.preCapEPs.toJson(),
-				softCaps: this.softCapsConfigWithLimits.map(config => ({
-					unitStat: config.unitStat.toJson(),
-					breakpoints: config.breakpoints.slice(),
-					capType: config.capType,
-					postCapEPs: config.postCapEPs.slice(),
-				})),
-				undershootCaps: this.undershootCaps.toJson(),
-			},
-		};
-	}
-
-	async updateGear(gear: Gear): Promise<Stats> {
-		const currentStats = await this.sim.getCharacterStatsForGear(TypedEvent.nextEventID(), gear);
-		const baseStats = Stats.fromProto(currentStats.finalStats);
-		return baseStats.addStat(Stat.StatMasteryRating, this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT);
-	}
-
-	private get baseMastery() {
-		return this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT;
-	}
-
-	private toVisualTotalMasteryPercentage(statPoints: number, statValue: number) {
-		// If the value is less than or equal to the base mastery, then set it to 0,
-		// because we assume you want to reset this stat cap.
-		if (statValue - this.baseMastery <= 0) {
-			statPoints = 0;
-		} else {
-			// When displaying the mastery percentage we want to include the base mastery
-			statPoints *= this.player.getMasteryPerPointModifier();
-		}
-		return statPoints;
 	}
 
 	private toVisualUnitStatPercentage(statValue: number, unitStat: UnitStat) {
 		const rawStatValue = statValue;
 		let percentOrPointsValue = unitStat.convertDefaultUnitsToPercent(rawStatValue)!;
-		if (unitStat.equalsStat(Stat.StatMasteryRating)) percentOrPointsValue = this.toVisualTotalMasteryPercentage(percentOrPointsValue, rawStatValue);
+		if (unitStat.equalsStat(Stat.StatMasteryRating)) {
+			const baseMastery = this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT;
+			percentOrPointsValue = rawStatValue - baseMastery <= 0 ? 0 : percentOrPointsValue * this.player.getMasteryPerPointModifier();
+		}
 
 		return percentOrPointsValue;
 	}
@@ -1224,6 +1089,7 @@ export class ReforgeOptimizer {
 						GemColor.GemColorYellow,
 					]
 						.flatMap(socketColor => db.getGems(socketColor))
+						.filter(gem => !gem.name.includes('Perfect') && gem.quality >= ItemQuality.ItemQualityRare)
 						.flat(),
 					(a, b) => a.id == b.id,
 				)
@@ -1386,7 +1252,7 @@ export class ReforgeOptimizer {
 	onReforgeError(error: any) {
 		if (isDevMode()) console.log(error);
 
-		if (this.previousGear) this.updateGear(this.previousGear);
+		if (this.previousGear) void this.player.setGearAsync(TypedEvent.nextEventID(), this.previousGear);
 		trackEvent({
 			action: 'settings',
 			category: 'reforging',
