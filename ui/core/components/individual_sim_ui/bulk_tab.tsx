@@ -587,7 +587,11 @@ export class BulkTab extends SimTab {
 
 		const requiredPieces = requiredSetBonuses.map(requiredSetBonus => requiredSetBonus.pieces);
 		return {
-			signature: [baseCounts.join(','), requiredPieces.join(','), dimensions.map(dimension => dimension.optionDeltas.map(deltas => deltas.join(',')).join(';')).join('|')].join('/'),
+			signature: [
+				baseCounts.join(','),
+				requiredPieces.join(','),
+				dimensions.map(dimension => dimension.optionDeltas.map(deltas => deltas.join(',')).join(';')).join('|'),
+			].join('/'),
 			baseCounts,
 			requiredPieces,
 			dimensions,
@@ -658,8 +662,26 @@ export class BulkTab extends SimTab {
 			);
 		}
 
-		for (const twoHandWeapon of all2HWeapons) {
-			allWeaponCombos.push([twoHandWeapon, null]);
+		if (this.playerIsFuryWarrior) {
+			for (let i = 0; i < all2HWeapons.length; i++) {
+				if (all2HWeapons.slice(0, i).some((item: EquippedItem) => item.equals(all2HWeapons[i], true, true, true, this.inheritUpgrades))) {
+					continue;
+				}
+				allWeaponCombos.push([all2HWeapons[i], null]);
+				for (let j = i + 1; j < all2HWeapons.length; j++) {
+					if (all2HWeapons.slice(i + 1, j).some((item: EquippedItem) => item.equals(all2HWeapons[j], true, true, true, this.inheritUpgrades))) {
+						continue;
+					}
+					allWeaponCombos.push([all2HWeapons[i], all2HWeapons[j]]);
+					if (!all2HWeapons[i].equals(all2HWeapons[j], true, true, true, this.inheritUpgrades)) {
+						allWeaponCombos.push([all2HWeapons[j], all2HWeapons[i]]);
+					}
+				}
+			}
+		} else {
+			for (const twoHandWeapon of all2HWeapons) {
+				allWeaponCombos.push([twoHandWeapon, null]);
+			}
 		}
 
 		// Then loop through all pairs of MH and OH items.
@@ -697,6 +719,13 @@ export class BulkTab extends SimTab {
 			for (let i = 0; i < allOneHandWeapons.length; i++) {
 				if (allOneHandWeapons.slice(0, i).some((item: EquippedItem) => item.equals(allOneHandWeapons[i], true, true, true, this.inheritUpgrades))) {
 					continue;
+				}
+
+				const hasDuplicate = allOneHandWeapons
+					.slice(i + 1)
+					.some((item: EquippedItem) => item.equals(allOneHandWeapons[i], true, true, true, this.inheritUpgrades));
+				if (!allOneHandWeapons[i].item.unique && !hasDuplicate) {
+					allWeaponCombos.push([allOneHandWeapons[i], allOneHandWeapons[i]]);
 				}
 
 				for (let j = i + 1; j < allOneHandWeapons.length; j++) {
@@ -868,9 +897,17 @@ export class BulkTab extends SimTab {
 			const requiredSetBonuses = this.getRequiredSetBonusFilters();
 			if (requiredSetBonuses.length) {
 				const requiredSetBonusMatcher = this.getRequiredSetBonusComboMatcher(requiredSetBonuses);
-				const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(rawCombinations, requiredSetBonuses, requiredSetBonusMatcher);
+				const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(
+					rawCombinations,
+					requiredSetBonuses,
+					requiredSetBonusMatcher,
+				);
 				if (this.requiredSetBonusCombinationCount?.signature !== requiredSetBonusCountSignature) {
-					this.requiredSetBonusCombinationCount = this.getRequiredSetBonusCombinationCount(rawCombinations, requiredSetBonusMatcher, requiredSetBonusCountSignature);
+					this.requiredSetBonusCombinationCount = this.getRequiredSetBonusCombinationCount(
+						rawCombinations,
+						requiredSetBonusMatcher,
+						requiredSetBonusCountSignature,
+					);
 				}
 				this.combinations = this.requiredSetBonusCombinationCount?.count ?? rawCombinations;
 			} else {
@@ -965,8 +1002,7 @@ export class BulkTab extends SimTab {
 	private shouldUseOptimisationRounds(numCombinations: number, optimisationIterationUpperBound?: number): boolean {
 		const isOptimisationEligible = this.useOptimisationRounds && numCombinations >= BULK_OPTIMISATION_MIN_COMBINATIONS;
 		const fullRunIterations = this.simUI.sim.getIterations() * numCombinations;
-		const estimatedOptimisationIterationsUpperBound =
-			optimisationIterationUpperBound ?? this.getOptimisationRoundsIterationUpperBound(numCombinations);
+		const estimatedOptimisationIterationsUpperBound = optimisationIterationUpperBound ?? this.getOptimisationRoundsIterationUpperBound(numCombinations);
 		const shouldUseOptimisationRounds = isOptimisationEligible && estimatedOptimisationIterationsUpperBound < fullRunIterations;
 		this.debugOptimisationRound('optimisation round check', {
 			numCombinations,
@@ -1597,15 +1633,24 @@ export class BulkTab extends SimTab {
 		});
 	}
 
-	private setCandidateGearProgress(completed: number, total: number, title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'), stage = 'preparing', startedAt?: number) {
-		const secondsRemaining = startedAt !== undefined && completed > 0 ? ((new Date().getTime() - startedAt) / 1000 / completed) * Math.max(0, total - completed) : undefined;
+	private setCandidateGearProgress(
+		completed: number,
+		total: number,
+		title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
+		stage = 'preparing',
+		startedAt?: number,
+	) {
+		const secondsRemaining =
+			startedAt !== undefined && completed > 0 ? ((new Date().getTime() - startedAt) / 1000 / completed) * Math.max(0, total - completed) : undefined;
 		this.progressTrackerModal.updateProgress({
 			stage,
 			title,
 			current: completed,
 			total,
 			message:
-				secondsRemaining !== undefined ? <div>{i18n.t('bulk_tab.progress.time_remaining', { time: formatDurationSeconds(secondsRemaining) })}</div> : undefined,
+				secondsRemaining !== undefined ? (
+					<div>{i18n.t('bulk_tab.progress.time_remaining', { time: formatDurationSeconds(secondsRemaining) })}</div>
+				) : undefined,
 		});
 	}
 
@@ -1716,16 +1761,18 @@ export class BulkTab extends SimTab {
 		return this.simUI.reforger.getReforgeOptimizeConfig(this.originalGear);
 	}
 
-	private async buildCandidateGearSets(
-		challengeModeEnabled: boolean,
-		signal: AbortSignal,
-	): Promise<Gear[]> {
+	private async buildCandidateGearSets(challengeModeEnabled: boolean, signal: AbortSignal): Promise<Gear[]> {
 		const startedAt = new Date().getTime();
 		const candidateGearSets: Gear[] = [];
 		const requiredSetBonuses = this.getRequiredSetBonusFilters();
 		const requiredSetBonusMatcher = this.getRequiredSetBonusComboMatcher(requiredSetBonuses);
-		const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(this.rawCombinations, requiredSetBonuses, requiredSetBonusMatcher);
-		const requiredSetBonusMatches = this.requiredSetBonusCombinationCount?.signature === requiredSetBonusCountSignature ? this.requiredSetBonusCombinationCount.matches : undefined;
+		const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(
+			this.rawCombinations,
+			requiredSetBonuses,
+			requiredSetBonusMatcher,
+		);
+		const requiredSetBonusMatches =
+			this.requiredSetBonusCombinationCount?.signature === requiredSetBonusCountSignature ? this.requiredSetBonusCombinationCount.matches : undefined;
 		this.debugOptimisationRound('candidate gear sets build started', {
 			combinations: this.combinations,
 			rawCombinations: this.rawCombinations,
@@ -1740,7 +1787,7 @@ export class BulkTab extends SimTab {
 				continue;
 			}
 
-			let reforgeGear = this.originalGear!;
+			let gear = this.originalGear!;
 			const itemCombo = this.getItemsForCombo(comboIdx);
 			for (const [itemSlot, equippedItem] of itemCombo.entries()) {
 				const equippedItemInSlot = this.originalGear!.getEquippedItem(itemSlot);
@@ -1753,10 +1800,10 @@ export class BulkTab extends SimTab {
 					updatedItem = updatedItem.withUpgrade(equippedItem._upgrade);
 				}
 
-				reforgeGear = reforgeGear.withEquippedItem(itemSlot, updatedItem, this.playerIsFuryWarrior);
+				gear = gear.withEquippedItem(itemSlot, updatedItem, this.playerIsFuryWarrior);
 			}
 
-			candidateGearSets.push(reforgeGear);
+			candidateGearSets.push(gear);
 
 			if ((comboIdx + 1) % BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE === 0 || comboIdx + 1 === this.rawCombinations) {
 				this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
@@ -1816,7 +1863,7 @@ export class BulkTab extends SimTab {
 		const playerPhase = this.simUI.sim.getPhase() >= 2;
 		const challengeModeEnabled = this.simUI.player.getChallengeModeEnabled();
 		let candidateGearSets: Gear[] = [];
-		const reforgedGearSets: Gear[] = [];
+		const gearSets: Gear[] = [];
 		let runError: unknown = null;
 		const batchCompleteMetrics: Record<string, string | number> = {
 			wasm_concurrency: this.bulkSimUsesWasmConcurrency ? 1 : 0,
@@ -1840,17 +1887,15 @@ export class BulkTab extends SimTab {
 			batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
 			batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
 
-
 			const backendReforgeConfig = this.getBulkReforgeConfig(playerPhase);
 			if (backendReforgeConfig) {
-				reforgedGearSets.push(...candidateGearSets);
+				gearSets.push(...candidateGearSets);
 			} else {
-				reforgedGearSets.push(...this.dedupeGearSets(candidateGearSets));
+				gearSets.push(...this.dedupeGearSets(candidateGearSets));
 			}
-
 			this.simStart = new Date().getTime();
 			let referenceDpsMetrics: DistributionMetrics;
-			const bulkSimResult = await this.runCoreBulkSim(reforgedGearSets, abortSignal, backendReforgeConfig);
+			const bulkSimResult = await this.runCoreBulkSim(gearSets, abortSignal, backendReforgeConfig);
 			referenceDpsMetrics = bulkSimResult.referenceDpsMetrics;
 			topGearResults = bulkSimResult.topGearResults;
 			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);
@@ -1899,12 +1944,12 @@ export class BulkTab extends SimTab {
 				});
 			}
 			// if (isDevMode()) {
-				console.info('[Bulk Sim] run complete', {
-					durationSeconds: Math.round(bulkSimDurationSeconds * 100) / 100,
-					combinations: this.combinations,
-					usedOptimisationRounds: this.shouldUseOptimisationRounds(this.combinations),
-					cancelled: wasCancelling,
-				});
+			console.info('[Bulk Sim] run complete', {
+				durationSeconds: Math.round(bulkSimDurationSeconds * 100) / 100,
+				combinations: this.combinations,
+				usedOptimisationRounds: this.shouldUseOptimisationRounds(this.combinations),
+				cancelled: wasCancelling,
+			});
 			// }
 			await this.simUI.player.setGearAsync(TypedEvent.nextEventID(), this.originalGear!);
 			this.bulkSimButton.disabled = false;
