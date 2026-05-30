@@ -1,7 +1,7 @@
 import { SimSettingCategories } from '../../../constants/sim_settings';
 import type { Player } from '../../../player';
-import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeRequest } from '../../../proto/api';
-import { ItemSlot } from '../../../proto/common';
+import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
+import { Debuffs, ItemSlot, PartyBuffs, RaidBuffs } from '../../../proto/common';
 import { Gear } from '../../../proto_utils/gear';
 import { ReforgeGearCache } from '../../../reforge_cache';
 import { OptimisationStage, STAGE_CONFIG } from './types';
@@ -219,9 +219,9 @@ export type BulkSimReforgeCacheContext = {
 	player: Player<any>;
 	gearSets: Gear[];
 	reforgeRequest: ReforgeOptimizeRequest;
-	raidBuffs: unknown;
-	partyBuffs: unknown;
-	debuffs: unknown;
+	raidBuffs: RaidBuffs;
+	partyBuffs: PartyBuffs | undefined;
+	debuffs: Debuffs;
 };
 
 export async function getBulkSimReforgeCacheData({
@@ -289,17 +289,18 @@ async function getBulkSimReforgeCacheConfigHash({
 	playerProto.distanceFromTarget = 0;
 	playerProto.healingModel = undefined;
 
+	const optimizerForHash = ReforgeOptimizeRequest.clone(reforgeRequest);
+	optimizerForHash.requestId = '';
+	optimizerForHash.raid = undefined;
+	optimizerForHash.mode = 0;
+
 	return ReforgeGearCache.getHash({
-		player: playerProto,
+		player: PlayerProtoMessageType.toJsonString(playerProto),
 		raid: {
-			buffs: raidBuffs,
-			partyBuffs,
-			debuffs,
+			buffs: RaidBuffs.toJsonString(raidBuffs),
+			partyBuffs: partyBuffs ? PartyBuffs.toJsonString(partyBuffs) : null,
+			debuffs: Debuffs.toJsonString(debuffs),
 		},
-		optimizer: {
-			...ReforgeOptimizeRequest.clone(reforgeRequest),
-			requestId: '',
-			raid: undefined,
-		},
+		optimizer: ReforgeOptimizeRequest.toJsonString(optimizerForHash),
 	});
 }
