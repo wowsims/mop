@@ -1,9 +1,9 @@
-import { SimSettingCategories } from '../../../constants/sim_settings';
 import type { Player } from '../../../player';
-import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
+import { ReforgeOptimizer } from '../../suggest_reforges_action';
+import { ReforgeGearCache } from '../../../reforge_cache';
+import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
 import { Debuffs, ItemSlot, PartyBuffs, RaidBuffs } from '../../../proto/common';
 import { Gear } from '../../../proto_utils/gear';
-import { ReforgeGearCache } from '../../../reforge_cache';
 import { OptimisationStage, STAGE_CONFIG } from './types';
 
 // Combines Fingers 1 and 2 and Trinket 1 and 2 into single groups
@@ -233,7 +233,7 @@ export async function getBulkSimReforgeCacheData({
 	debuffs,
 }: BulkSimReforgeCacheContext): Promise<BulkSimReforgeCacheData> {
 	const cache = ReforgeGearCache.get(player.getPlayerSpec());
-	const configHash = await getBulkSimReforgeCacheConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
+	const configHash = await ReforgeOptimizer.getBulkSimReforgeCacheConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
 	const cacheEntries = await Promise.all(
 		gearSets.map(async (gear, index) => ({
 			index,
@@ -269,38 +269,3 @@ export async function writeBulkSimReforgeCacheResults(optimizedCandidates: BulkG
 	);
 }
 
-async function getBulkSimReforgeCacheConfigHash({
-	player,
-	reforgeRequest,
-	raidBuffs,
-	partyBuffs,
-	debuffs,
-}: Omit<BulkSimReforgeCacheContext, 'gearSets'>): Promise<string> {
-	const playerProto = player.toProto(true, false, [
-		SimSettingCategories.Talents,
-		SimSettingCategories.Consumes,
-		SimSettingCategories.External,
-		SimSettingCategories.Miscellaneous,
-	]);
-	playerProto.equipment = undefined;
-	playerProto.database = undefined;
-	playerProto.channelClipDelayMs = 0;
-	playerProto.inFrontOfTarget = false;
-	playerProto.distanceFromTarget = 0;
-	playerProto.healingModel = undefined;
-
-	const optimizerForHash = ReforgeOptimizeRequest.clone(reforgeRequest);
-	optimizerForHash.requestId = '';
-	optimizerForHash.raid = undefined;
-	optimizerForHash.mode = 0;
-
-	return ReforgeGearCache.getHash({
-		player: PlayerProtoMessageType.toJsonString(playerProto),
-		raid: {
-			buffs: RaidBuffs.toJsonString(raidBuffs),
-			partyBuffs: partyBuffs ? PartyBuffs.toJsonString(partyBuffs) : null,
-			debuffs: Debuffs.toJsonString(debuffs),
-		},
-		optimizer: ReforgeOptimizeRequest.toJsonString(optimizerForHash),
-	});
-}

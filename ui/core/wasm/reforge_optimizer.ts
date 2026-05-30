@@ -23,7 +23,7 @@ export const optimizeReforgeGear = async (
 	}
 
 	try {
-		const result = await workerPool.reforgeOptimize(reforgeRequest, signals);
+		const result = await workerPool.reforgeOptimizeAsync(reforgeRequest, signals);
 		if (result.error) {
 			if (result.error.type != ErrorOutcomeType.ErrorOutcomeAborted) {
 				console.warn(`[Reforge] Optimization failed includeGems=${includeGems}: ${result.error.message}`);

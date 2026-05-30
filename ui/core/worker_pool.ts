@@ -72,7 +72,7 @@ export class WorkerPool {
 		return ComputeStatsResult.fromBinary(result);
 	}
 
-	async reforgeOptimize(request: ReforgeOptimizeRequest, signals?: SimSignals): Promise<ReforgeOptimizeResult> {
+	async reforgeOptimizeAsync(request: ReforgeOptimizeRequest, signals?: SimSignals): Promise<ReforgeOptimizeResult> {
 		const worker = this.getLeastBusyWorker();
 		const id = request.requestId || generateRequestId(SimRequest.reforgeOptimizeAsync);
 		const shouldLog = request.mode != ReforgeOptimizeMode.ReforgeOptimizeModeBulk;

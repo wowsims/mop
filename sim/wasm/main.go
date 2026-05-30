@@ -29,6 +29,7 @@ func main() {
 	js.Global().Set("computeStats", js.FuncOf(computeStats))
 	js.Global().Set("computeStatsJson", js.FuncOf(computeStatsJson))
 	js.Global().Set("reforgeOptimize", js.FuncOf(reforgeOptimize))
+	js.Global().Set("reforgeOptimizeAsync", js.FuncOf(reforgeOptimizeAsync))
 	js.Global().Set("raidSim", js.FuncOf(raidSim))
 	js.Global().Set("raidSimJson", js.FuncOf(raidSimJson))
 	js.Global().Set("raidSimAsync", js.FuncOf(raidSimAsync))
@@ -182,6 +183,39 @@ func reforgeOptimize(this js.Value, args []js.Value) (response interface{}) {
 
 	response = outArray
 	return response
+}
+
+func reforgeOptimizeAsync(this js.Value, args []js.Value) interface{} {
+	req := &proto.ReforgeOptimizeRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), req); err != nil {
+		log.Printf("Failed to parse ReforgeOptimizeRequest: %s", err)
+		return nil
+	}
+
+	requestId := args[2].String()
+	if strings.HasPrefix(requestId, "<T") {
+		requestId = ""
+	}
+
+	reporter := make(chan *proto.ProgressMetrics, 100)
+	go func() {
+		signals, err := simsignals.RegisterWithId(requestId)
+		if err != nil {
+			reporter <- &proto.ProgressMetrics{
+				FinalReforgeResult: &proto.ReforgeOptimizeResult{
+					Error: &proto.ErrorOutcome{Message: "Couldn't register for signal API: " + err.Error()},
+				},
+			}
+			close(reporter)
+			return
+		}
+		defer simsignals.UnregisterId(requestId)
+		result := reforgeoptimizer.OptimizeAsync(req, signals)
+		reporter <- &proto.ProgressMetrics{FinalReforgeResult: result}
+		close(reporter)
+	}()
+	go processAsyncProgress(args[1], reporter)
+	return js.Undefined()
 }
 
 func raidSim(this js.Value, args []js.Value) interface{} {

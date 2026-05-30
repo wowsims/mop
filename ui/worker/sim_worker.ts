@@ -1,5 +1,4 @@
 import { WorkerInterface } from './worker_interface';
-import { ProgressMetrics, ReforgeOptimizeResult } from '../core/proto/api.js';
 
 interface HighsSolutionColumn {
 	Primal: number;
@@ -73,7 +72,7 @@ declare global {
 	function wasmready(): void;
 	const computeStats: SimRequestSync;
 	const computeStatsJson: SimRequestSync;
-	const reforgeOptimize: SimRequestSync;
+	const reforgeOptimizeAsync: SimRequestAsync;
 	const raidSim: SimRequestSync;
 	const raidSimJson: SimRequestSync;
 	const raidSimAsync: SimRequestAsync;
@@ -98,10 +97,10 @@ function setupWorkerInterface() {
 	new WorkerInterface({
 		computeStats: computeStats,
 		computeStatsJson: computeStatsJson,
-		reforgeOptimizeAsync: async inputData => {
+		reforgeOptimizeAsync: async (inputData, progress, id) => {
 			await initHiGHS();
-			const result = ReforgeOptimizeResult.fromBinary(reforgeOptimize(inputData));
-			return ProgressMetrics.toBinary(ProgressMetrics.create({ finalReforgeResult: result }));
+			reforgeOptimizeAsync(inputData, progress, id);
+			return new Uint8Array();
 		},
 		raidSim: raidSim,
 		raidSimJson: raidSimJson,

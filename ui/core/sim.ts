@@ -459,7 +459,6 @@ export class Sim {
 			player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
 			player.equipment = baselineGear.asSpec();
 			baseRequest.raid!.parties[0].players[0] = player;
-
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,
@@ -653,19 +652,10 @@ export class Sim {
 			const request = ReforgeOptimizeRequest.create({
 				requestId: generateRequestId(SimRequest.reforgeOptimizeAsync),
 				raid,
-				preCapEpWeights: config.preCapEPWeights.toProto(),
-				undershootCaps: config.undershootCaps.toProto(),
-				settings: config.settings,
-				softCaps: config.softCaps.map(softCap => ({
-					unitStat: softCap.unitStat.toProto(),
-					breakpoints: softCap.breakpoints.slice(),
-					capType: softCap.capType,
-					postCapEPs: softCap.postCapEPs.slice(),
-				})),
-				gemOptions,
+				...ReforgeOptimizer.makeReforgeConfigRequestFields(config, this.db),
 				debug: config.debug ?? false,
 			});
-			const result = await this.workerPool.reforgeOptimize(request, signals);
+			const result = await this.workerPool.reforgeOptimizeAsync(request, signals);
 			if (result.error) {
 				throw new SimError(result.error.message);
 			}
@@ -678,27 +668,7 @@ export class Sim {
 	private makeBulkSimReforgeRequest(config: ReforgeOptimizeConfig): ReforgeOptimizeRequest {
 		return ReforgeOptimizeRequest.create({
 			requestId: generateRequestId(SimRequest.reforgeOptimizeAsync),
-			preCapEpWeights: config.preCapEPWeights.toProto(),
-			undershootCaps: config.undershootCaps.toProto(),
-			settings: config.settings,
-			softCaps: config.softCaps.map(softCap => ({
-				unitStat: softCap.unitStat.toProto(),
-				breakpoints: softCap.breakpoints.slice(),
-				capType: softCap.capType,
-				postCapEPs: softCap.postCapEPs.slice(),
-			})),
-			gemOptions: ReforgeOptimizer.getReforgeGemOptions(this.db, config.settings).map(gem => ({
-				id: gem.id,
-				name: gem.name,
-				icon: gem.icon,
-				color: gem.color,
-				stats: gem.stats.slice(),
-				phase: gem.phase,
-				quality: gem.quality ?? ItemQuality.ItemQualityJunk,
-				unique: gem.unique,
-				requiredProfession: gem.requiredProfession ?? Profession.ProfessionUnknown,
-				disabledInChallengeMode: gem.disabledInChallengeMode,
-			})),
+			...ReforgeOptimizer.makeReforgeConfigRequestFields(config, this.db),
 		});
 	}
 

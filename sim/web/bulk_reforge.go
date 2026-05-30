@@ -141,14 +141,21 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 
 	baselineGear := getBulkSimRequestBaselineGear(request)
 	completedReforgeCandidates := compactBulkGearCandidates(completedReforgeCandidatesByPosition)
+	allReforgeCandidates := append(request.GetOptimizedCandidates(), completedReforgeCandidates...)
 	if signals.Abort.IsTriggered() {
-		request.OptimizedCandidates = dedupeBulkSimReforgeCandidates(baselineGear, append(request.GetOptimizedCandidates(), completedReforgeCandidates...))
+		request.OptimizedCandidates = allReforgeCandidates
 		request.Candidates = nil
 		return
 	}
 
-	request.Candidates = dedupeBulkSimReforgeCandidates(baselineGear, append(request.GetOptimizedCandidates(), completedReforgeCandidates...))
-	request.OptimizedCandidates = request.GetCandidates()
+	// Deduplicate for simulation: avoid running the same reforged gear twice and exclude
+	// gear identical to the baseline (it is already simmed separately).
+	request.Candidates = dedupeBulkSimReforgeCandidates(baselineGear, allReforgeCandidates)
+	// Include ALL reforged candidates (before dedup) so the frontend can write a cache entry
+	// for every input gear set, including those whose optimal reforge matched another candidate
+	// or the baseline. Without this, filtered runs (e.g. Require 4P) would always miss the
+	// cache because the matching entries were never written after the first run.
+	request.OptimizedCandidates = allReforgeCandidates
 }
 
 func getBulkSimReforgeBatchSize(concurrency int) int {
