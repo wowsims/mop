@@ -257,9 +257,42 @@ export class BulkTab extends SimTab {
 					}
 				}
 
+				const equippedIds = new Set(
+					this.simUI.player.getEquippedItems().filter(Boolean).map(item => item!.id),
+				);
+
+				// Sync user-added pickers with currently equipped state:
+				// - Hide pickers for items that are now equipped (the dedicated equipped slot covers them).
+				// - Restore pickers for items that are no longer equipped but still in the user's list.
+				for (let idx = 0; idx < this.items.length; idx++) {
+					const itemSpec = this.items[idx];
+					if (!itemSpec) continue;
+
+					const equippedItem = this.simUI.sim.db
+						.lookupItemSpec(itemSpec)
+						?.withChallengeMode(this.simUI.player.getChallengeModeEnabled())
+						.withDynamicStats();
+					if (!equippedItem) continue;
+
+					getEligibleItemSlots(equippedItem.item, this.playerIsFuryWarrior).forEach(slot => {
+						if (this.isSecondaryItemSlot(slot) || !canEquipItem(equippedItem.item, this.simUI.player.getPlayerSpec(), slot)) return;
+
+						const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
+						const group = this.pickerGroups.get(bulkSlot);
+						if (!group) return;
+
+						if (equippedIds.has(itemSpec.id)) {
+							if (group.has(idx)) group.remove(idx, true);
+						} else {
+							if (!group.has(idx)) group.add(idx, equippedItem, true);
+						}
+					});
+				}
+
 				this.simUI.player.getEquippedItems().forEach((equippedItem, slot) => {
 					const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
-					const group = this.pickerGroups.get(bulkSlot)!;
+					const group = this.pickerGroups.get(bulkSlot);
+					if (!group) return;
 					const idx = this.isSecondaryItemSlot(slot) ? -2 : -1;
 					if (equippedItem) {
 						group.add(idx, equippedItem, true);
