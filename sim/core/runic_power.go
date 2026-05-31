@@ -123,6 +123,9 @@ func (rp *runicPowerBar) reset(sim *Simulation) {
 
 	if rp.pa != nil {
 		rp.pa.Cancel(sim)
+		// Sentinel so the at >= NextActionAt guard in launchPA doesn't skip
+		// rescheduling at the start of the next simulation iteration.
+		rp.pa.NextActionAt = NeverExpires
 	}
 
 	for i := range rp.runeMeta {
@@ -195,8 +198,8 @@ func (rp *runicPowerBar) MaximumRunicPower() float64 {
 func (rp *runicPowerBar) maybeFireChange(sim *Simulation, changeType RuneChangeType) {
 	if changeType != None && rp.onRuneChange != nil {
 		rp.onRuneChange(sim, changeType, rp.lastRegen)
-		// Clear regen runes
-		rp.lastRegen = make([]int8, 0)
+		// Clear regen runes without reallocating
+		rp.lastRegen = rp.lastRegen[:0]
 	}
 }
 
@@ -974,29 +977,28 @@ func (rp *runicPowerBar) launchPA(sim *Simulation, at time.Duration) {
 		if at >= rp.pa.NextActionAt {
 			return
 		}
-		// If this new regen is before currently scheduled one, we must cancel old regen and start a new one.
+		// New regen fires sooner — cancel the current schedule.
+		// PendingAction.Cancel removes the PA from pendingActions, so rp.pa is
+		// immediately safe to reset and re-add without creating a duplicate.
 		rp.pa.Cancel(sim)
 	}
 
-	pa := &PendingAction{
-		NextActionAt: at,
-		Priority:     ActionPriorityRegen,
-	}
-	pa.OnAction = func(sim *Simulation) {
-		if !pa.cancelled {
-			// regenerate and revert
+	if rp.pa == nil {
+		// First rune spend ever: allocate the PA and closure once per DK lifetime.
+		pa := &PendingAction{Priority: ActionPriorityRegen}
+		pa.OnAction = func(sim *Simulation) {
 			rp.Advance(sim, sim.CurrentTime)
-
-			// Check when we need next check
 			pa.NextActionAt = min(rp.AnySpentRuneReadyAt(), rp.DeathRuneRevertAt())
 			if pa.NextActionAt < NeverExpires {
 				sim.AddPendingAction(pa)
 			}
 		}
+		rp.pa = pa
 	}
-	rp.pa = pa
-	sim.AddPendingAction(pa)
 
+	rp.pa.cancelled = false
+	rp.pa.NextActionAt = at
+	sim.AddPendingAction(rp.pa)
 }
 
 func (rp *runicPowerBar) Advance(sim *Simulation, newTime time.Duration) {
