@@ -284,9 +284,10 @@ func getConstAPLFloatValue(value APLValue) float64 {
 
 type APLValueCompare struct {
 	DefaultAPLValueImpl
-	op  proto.APLValueCompare_ComparisonOperator
-	lhs APLValue
-	rhs APLValue
+	op      proto.APLValueCompare_ComparisonOperator
+	lhs     APLValue
+	rhs     APLValue
+	lhsType proto.APLValueType // cached at construction, never changes
 }
 
 func (value *APLValueCompare) GetInnerValues() []APLValue {
@@ -296,7 +297,7 @@ func (value *APLValueCompare) Type() proto.APLValueType {
 	return proto.APLValueType_ValueTypeBool
 }
 func (value *APLValueCompare) GetBool(sim *Simulation) bool {
-	switch value.lhs.Type() {
+	switch value.lhsType {
 	case proto.APLValueType_ValueTypeBool:
 		switch value.op {
 		case proto.APLValueCompare_OpEq:
@@ -827,9 +828,10 @@ func (rot *APLRotation) newValueCompare(config *proto.APLValueCompare, uuid *pro
 	}
 
 	return &APLValueCompare{
-		op:  config.Op,
-		lhs: lhs,
-		rhs: rhs,
+		op:      config.Op,
+		lhs:     lhs,
+		rhs:     rhs,
+		lhsType: lhs.Type(),
 	}
 }
 

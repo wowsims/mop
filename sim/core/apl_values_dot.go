@@ -254,12 +254,18 @@ func (value *APLValueDotBaseDuration) String() string {
 
 type APLValueDotIncreaseCheck struct {
 	DefaultAPLValueImpl
+	rot                *APLRotation
 	spell              *Spell
 	targetRef          UnitReference
 	baseName           string
 	useBaseValue       bool // if true, use the base value before any increases
 	baseValue          float64
 	baseValueDummyAura *Aura // Used to get the base value at encounter start
+
+	// evalGeneration cache: avoids re-computing when the same value node is
+	// evaluated multiple times in a single getNextAction scan.
+	cachedGen   uint32
+	cachedValue float64
 }
 
 func (rot *APLRotation) newDotIncreaseValue(baseName string, config *proto.APLValueDotPercentIncrease) *APLValueDotIncreaseCheck {
@@ -278,6 +284,7 @@ func (rot *APLRotation) newDotIncreaseValue(baseName string, config *proto.APLVa
 	}
 
 	return &APLValueDotIncreaseCheck{
+		rot:                rot,
 		spell:              spell,
 		targetRef:          targetRef,
 		baseName:           baseName,
@@ -316,15 +323,25 @@ func (value *APLValueDotPercentIncrease) Finalize(rot *APLRotation) {
 }
 
 func (value *APLValueDotPercentIncrease) GetFloat(sim *Simulation) float64 {
+	if gen := value.rot.evalGeneration; value.cachedGen == gen {
+		return value.cachedValue
+	} else {
+		value.cachedGen = gen
+	}
+
 	target := value.targetRef.Get()
 	expectedDamage := TernaryFloat64(value.useBaseValue, value.baseValue, value.spell.ExpectedTickDamageFromCurrentSnapshot(sim, target))
 
+	var result float64
 	if expectedDamage == 0 {
-		return 1
+		result = 1
+	} else {
+		// Rounding to effectively 3 decimal places as a percentage to avoid floating point errors
+		result = math.Round((value.spell.ExpectedTickDamage(sim, target)/expectedDamage)*100000)/100000 - 1
 	}
 
-	// Rounding this to effectively 3 decimal places as a percentage to avoid floating point errors
-	return math.Round((value.spell.ExpectedTickDamage(sim, target)/expectedDamage)*100000)/100000 - 1
+	value.cachedValue = result
+	return result
 }
 
 type APLValueDotCritPercentIncrease struct {
@@ -349,12 +366,21 @@ func (value *APLValueDotCritPercentIncrease) Finalize(rot *APLRotation) {
 }
 
 func (value *APLValueDotCritPercentIncrease) GetFloat(sim *Simulation) float64 {
-	currentCritChance := value.getCritChance(true)
-	if currentCritChance == 0 {
-		return 1
+	if gen := value.rot.evalGeneration; value.cachedGen == gen {
+		return value.cachedValue
+	} else {
+		value.cachedGen = gen
 	}
-	val := value.getCritChance(false)/currentCritChance - 1
-	return val
+
+	currentCritChance := value.getCritChance(true)
+	var result float64
+	if currentCritChance == 0 {
+		result = 1
+	} else {
+		result = value.getCritChance(false)/currentCritChance - 1
+	}
+	value.cachedValue = result
+	return result
 }
 
 func (value *APLValueDotCritPercentIncrease) getCritChance(useSnapshot bool) float64 {
@@ -389,13 +415,21 @@ func (value *APLValueDotTickRatePercentIncrease) Finalize(rot *APLRotation) {
 }
 
 func (value *APLValueDotTickRatePercentIncrease) GetFloat(sim *Simulation) float64 {
-	currentTickrate := value.getTickRate(true)
-
-	if currentTickrate == 0 {
-		return 1
+	if gen := value.rot.evalGeneration; value.cachedGen == gen {
+		return value.cachedValue
+	} else {
+		value.cachedGen = gen
 	}
 
-	return currentTickrate/value.getTickRate(false) - 1
+	currentTickrate := value.getTickRate(true)
+	var result float64
+	if currentTickrate == 0 {
+		result = 1
+	} else {
+		result = currentTickrate/value.getTickRate(false) - 1
+	}
+	value.cachedValue = result
+	return result
 }
 
 func (value *APLValueDotTickRatePercentIncrease) getTickRate(useSnapshot bool) float64 {

@@ -362,11 +362,6 @@ type AttackTable struct {
 	DamageDoneByCasterExtraMultiplier []DynamicDamageDoneByCaster
 
 	ThreatDoneByCasterExtraMultiplier []DynamicThreatDoneByCaster
-
-	// Store Expected Initial/DoT Tick values to speed up DoT damage calculations
-	expectedInitialDamageCache      map[*Spell]*ExpectedDamageCalculatorCache
-	expectedTickDamageCache         map[*Spell]*ExpectedDamageCalculatorCache
-	expectedTickSnapshotDamageCache map[*Spell]*ExpectedDamageCalculatorCache
 }
 
 func NewAttackTable(attacker *Unit, defender *Unit) *AttackTable {
@@ -378,10 +373,6 @@ func NewAttackTable(attacker *Unit, defender *Unit) *AttackTable {
 		DamageTakenMultiplier:       1,
 		RangedDamageTakenMultiplier: 1,
 		HealingDealtMultiplier:      1,
-
-		expectedInitialDamageCache:      make(map[*Spell]*ExpectedDamageCalculatorCache),
-		expectedTickDamageCache:         make(map[*Spell]*ExpectedDamageCalculatorCache),
-		expectedTickSnapshotDamageCache: make(map[*Spell]*ExpectedDamageCalculatorCache),
 	}
 
 	if defender.Type == EnemyUnit {
@@ -429,26 +420,21 @@ func DisableThreatDoneByCaster(index int, attackTable *AttackTable) {
 }
 
 func GetCachedExpectedInitialDamage(sim *Simulation, spell *Spell, target *Unit) (bool, *ExpectedDamageCalculatorCache) {
-	return getCachedExpectedDamageInternal(sim, spell, spell.Unit.AttackTables[target.Index].expectedInitialDamageCache)
+	return getCachedExpectedDamageSlice(sim, spell, spell.expectedInitialDmgCache, target.UnitIndex)
 }
 
 func GetCachedExpectedTickDamage(sim *Simulation, spell *Spell, target *Unit, useSnapshot bool) (bool, *ExpectedDamageCalculatorCache) {
 	if useSnapshot {
-		return getCachedExpectedDamageInternal(sim, spell, spell.Unit.AttackTables[target.Index].expectedTickSnapshotDamageCache)
+		return getCachedExpectedDamageSlice(sim, spell, spell.expectedTickSnapshotDmgCache, target.UnitIndex)
 	}
-
-	return getCachedExpectedDamageInternal(sim, spell, spell.Unit.AttackTables[target.Index].expectedTickDamageCache)
+	return getCachedExpectedDamageSlice(sim, spell, spell.expectedTickDmgCache, target.UnitIndex)
 }
 
-func getCachedExpectedDamageInternal(sim *Simulation, spell *Spell, store map[*Spell]*ExpectedDamageCalculatorCache) (bool, *ExpectedDamageCalculatorCache) {
-	if store[spell] == nil {
-		emptyCache := ExpectedDamageCalculatorCache{}
-		store[spell] = &emptyCache
+// getCachedExpectedDamageSlice is a O(1) direct-index lookup replacing the old map[*Spell]* approach.
+func getCachedExpectedDamageSlice(sim *Simulation, spell *Spell, store []ExpectedDamageCalculatorCache, idx int32) (bool, *ExpectedDamageCalculatorCache) {
+	entry := &store[idx]
+	if (entry.timestamp - sim.CurrentTime).Abs() <= spell.Unit.ReactionTime {
+		return true, entry
 	}
-
-	if (store[spell].timestamp - sim.CurrentTime).Abs() <= spell.Unit.ReactionTime {
-		return true, store[spell]
-	}
-
-	return false, store[spell]
+	return false, entry
 }
