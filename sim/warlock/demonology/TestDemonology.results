@@ -1770,8 +1770,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-TalismanofBloodlust-96864"
  value: {
-  dps: 393680.54985
-  tps: 257548.73697
+  dps: 393246.65169
+  tps: 257308.65294
  }
 }
 dps_results: {
@@ -1973,8 +1973,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 411678.83965
-  tps: 269798.69628
+  dps: 410987.73035
+  tps: 269770.74452
  }
 }
 dps_results: {
@@ -1994,8 +1994,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Average-Default"
  value: {
-  dps: 451390.23905
-  tps: 298203.19824
+  dps: 451393.86973
+  tps: 298202.56816
  }
 }
 dps_results: {

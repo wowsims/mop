@@ -306,8 +306,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-CraftedDreadfulGladiator'sInsigniaofVictory-93611"
  value: {
-  dps: 256734.66125
-  tps: 176329.52727
+  dps: 256727.52069
+  tps: 176322.38672
  }
 }
 dps_results: {
@@ -1035,8 +1035,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-LeiShen'sFinalOrders-87072"
  value: {
-  dps: 260454.24815
-  tps: 179409.75988
+  dps: 260486.62945
+  tps: 179443.28038
  }
 }
 dps_results: {
@@ -1378,8 +1378,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-PridefulGladiator'sInsigniaofVictory-103516"
  value: {
-  dps: 265109.62638
-  tps: 181378.63357
+  dps: 265102.48583
+  tps: 181371.49302
  }
 }
 dps_results: {
@@ -1448,8 +1448,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-RelicofXuen-79327"
  value: {
-  dps: 260385.71387
-  tps: 179350.61621
+  dps: 260378.69804
+  tps: 179343.60038
  }
 }
 dps_results: {
@@ -1966,8 +1966,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-VisionofthePredator-81192"
  value: {
-  dps: 251305.0198
-  tps: 173238.98139
+  dps: 251297.87924
+  tps: 173231.84083
  }
 }
 dps_results: {
@@ -2015,8 +2015,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Yu'lon'sBite-103987"
  value: {
-  dps: 251305.0198
-  tps: 173238.98139
+  dps: 251297.87924
+  tps: 173231.84083
  }
 }
 dps_results: {
@@ -2036,8 +2036,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.80370116981e+06
-  tps: 1.42552620979e+06
+  dps: 1.80030315709e+06
+  tps: 1.42228488215e+06
  }
 }
 dps_results: {
@@ -2057,8 +2057,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.43170437044e+06
-  tps: 1.15041734261e+06
+  dps: 1.4322842354e+06
+  tps: 1.14991112303e+06
  }
 }
 dps_results: {
@@ -2078,8 +2078,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-prebis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.23416858723e+06
-  tps: 964226.08423
+  dps: 1.2352336278e+06
+  tps: 965687.36532
  }
 }
 dps_results: {
@@ -2092,8 +2092,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-prebis-Basic-arms-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 195619.22339
-  tps: 130221.44024
+  dps: 195556.36111
+  tps: 130136.6983
  }
 }
 dps_results: {
@@ -2120,8 +2120,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.79055597296e+06
-  tps: 1.41987903597e+06
+  dps: 1.78912202649e+06
+  tps: 1.41883474513e+06
  }
 }
 dps_results: {
@@ -2141,15 +2141,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.43155817495e+06
-  tps: 1.15491853815e+06
+  dps: 1.4279446486e+06
+  tps: 1.15145945947e+06
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 216418.45181
-  tps: 149596.17254
+  dps: 216398.52217
+  tps: 149589.40439
  }
 }
 dps_results: {
@@ -2162,8 +2162,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-prebis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.19916552035e+06
-  tps: 937050.17914
+  dps: 1.20133954188e+06
+  tps: 939535.72916
  }
 }
 dps_results: {
@@ -2176,22 +2176,22 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-prebis-Basic-arms-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 190735.06038
-  tps: 128666.23867
+  dps: 190699.44349
+  tps: 128608.74212
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-prebis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 924902.55489
-  tps: 742981.84417
+  dps: 924738.45435
+  tps: 742740.72121
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-prebis-Basic-arms-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 135574.08442
-  tps: 92501.26877
+  dps: 135556.01564
+  tps: 92484.01495
  }
 }
 dps_results: {
