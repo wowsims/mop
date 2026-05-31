@@ -24,7 +24,7 @@ func (action *APLAction) Finalize(rot *APLRotation) {
 }
 
 func (action *APLAction) IsReady(sim *Simulation) bool {
-	return (action.condition == nil || action.condition.GetBool(sim)) && action.impl.IsReady(sim)
+	return action.impl.IsReady(sim) && (action.condition == nil || action.condition.GetBool(sim))
 }
 
 func (action *APLAction) Execute(sim *Simulation) {
