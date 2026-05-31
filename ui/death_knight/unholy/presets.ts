@@ -24,10 +24,8 @@ export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('F
 		PresetUtils.makeSpecChangeWarningToast(
 			[
 				{
-					condition: (player: Player<Spec.SpecUnholyDeathKnight>) =>
-						!player.getGear().hasTrinketFromOptions([95726, 94515, 96470, 96098, 96842]),
-					message:
-						'You have selected a rotation that requires Fabled Feather of Ji-Kun to be equipped.',
+					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => !player.getGear().hasTrinketFromOptions([95726, 94515, 96470, 96098, 96842]),
+					message: 'You have selected a rotation that requires Fabled Feather of Ji-Kun to be equipped.',
 				},
 			],
 			player,
@@ -63,7 +61,7 @@ export const DefaultTalents = {
 		glyphs: Glyphs.create({
 			major1: DeathKnightMajorGlyph.GlyphOfAntiMagicShell,
 			major2: DeathKnightMajorGlyph.GlyphOfPestilence,
-			major3: DeathKnightMajorGlyph.GlyphOfFesteringBlood,
+			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
 			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
 			minor2: DeathKnightMinorGlyph.GlyphOfTranquilGrip,
 			minor3: DeathKnightMinorGlyph.GlyphOfDeathsEmbrace,
@@ -78,7 +76,7 @@ export const FesterblightTalents = {
 		glyphs: Glyphs.create({
 			major1: DeathKnightMajorGlyph.GlyphOfAntiMagicShell,
 			major2: DeathKnightMajorGlyph.GlyphOfPestilence,
-			major3: DeathKnightMajorGlyph.GlyphOfFesteringBlood,
+			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
 			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
 			minor2: DeathKnightMinorGlyph.GlyphOfTranquilGrip,
 			minor3: DeathKnightMinorGlyph.GlyphOfDeathsEmbrace,

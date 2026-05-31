@@ -68,7 +68,7 @@ export const DefaultTalents = {
 		glyphs: Glyphs.create({
 			major1: DeathKnightMajorGlyph.GlyphOfAntiMagicShell,
 			major2: DeathKnightMajorGlyph.GlyphOfDeathGrip,
-			major3: DeathKnightMajorGlyph.GlyphOfDarkSimulacrum,
+			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
 			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
 			minor2: DeathKnightMinorGlyph.GlyphOfTranquilGrip,
 			minor3: DeathKnightMinorGlyph.GlyphOfTheLongWinter,

@@ -141,6 +141,6 @@ export const P3_4_BUILD_PRESET = PresetUtils.makePresetBuild('P3 & P4 - BIS', {
 	gear: P3_4_BIS_GEAR_PRESET,
 	settings: {
 		name: 'P3 & P4 - BIS',
-		playerOptions: OtherDefaults,
+		playerOptions: OtherDefaults
 	},
 });

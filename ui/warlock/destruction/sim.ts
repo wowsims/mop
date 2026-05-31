@@ -111,7 +111,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDestructionWarlock, {
 		rotations: [Presets.DEFAULT_APL],
 
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.P1_PREBIS_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET],
+		gear: [Presets.P1_PREBIS_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET, Presets.P5_PRESET],
 		itemSwaps: [],
 	},
 
@@ -119,29 +119,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDestructionWarlock, {
 		return Presets.DEFAULT_APL.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecDestructionWarlock,
-			talents: Presets.DestructionTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P2_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P2_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class DestructionWarlockSimUI extends IndividualSimUI<Spec.SpecDestructionWarlock> {
