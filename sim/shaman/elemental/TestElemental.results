@@ -1385,8 +1385,8 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 246585.25434
-  tps: 154923.58366
+  dps: 245926.63657
+  tps: 154524.50786
  }
 }
 dps_results: {

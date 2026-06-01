@@ -1399,8 +1399,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 219152.04152
-  tps: 187058.96027
+  dps: 219130.91037
+  tps: 187041.85371
  }
 }
 dps_results: {

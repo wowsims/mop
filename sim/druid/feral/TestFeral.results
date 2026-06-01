@@ -1585,9 +1585,9 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 247562.05865
-  tps: 360293.73578
-  hps: 16462.68479
+  dps: 247046.00198
+  tps: 356493.48327
+  hps: 16435.38142
  }
 }
 dps_results: {

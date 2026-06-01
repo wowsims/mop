@@ -42,7 +42,9 @@ func TestUnholy(t *testing.T) {
 			SpecOptions: core.SpecOptionsCombo{Label: "Basic", SpecOptions: &proto.Player_UnholyDeathKnight{
 				UnholyDeathKnight: &proto.UnholyDeathKnight{
 					Options: &proto.UnholyDeathKnight_Options{
-						ClassOptions: &proto.DeathKnightOptions{},
+						ClassOptions:      &proto.DeathKnightOptions{},
+						AvgAmsHit:         170000,
+						AvgAmsSuccessRate: 1,
 					},
 				},
 			}},
@@ -72,13 +74,13 @@ func TestUnholy(t *testing.T) {
 }
 
 var UnholyDefaultGlyphs = &proto.Glyphs{
-	Major1: int32(proto.DeathKnightMajorGlyph_GlyphOfAntiMagicShell),
+	Major1: int32(proto.DeathKnightMajorGlyph_GlyphOfRegenerativeMagic),
 	Major2: int32(proto.DeathKnightMajorGlyph_GlyphOfPestilence),
 	Major3: int32(proto.DeathKnightMajorGlyph_GlyphOfLoudHorn),
 }
 
 var GlyphOfOutbreak = &proto.Glyphs{
-	Major1: int32(proto.DeathKnightMajorGlyph_GlyphOfAntiMagicShell),
+	Major1: int32(proto.DeathKnightMajorGlyph_GlyphOfRegenerativeMagic),
 	Major2: int32(proto.DeathKnightMajorGlyph_GlyphOfPestilence),
 	Major3: int32(proto.DeathKnightMajorGlyph_GlyphOfOutbreak),
 }

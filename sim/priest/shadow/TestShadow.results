@@ -1537,9 +1537,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 100661.92248
-  tps: 94089.63603
-  hps: 1630.76446
+  dps: 100286.84458
+  tps: 93868.25481
+  hps: 1630.5268
  }
 }
 dps_results: {

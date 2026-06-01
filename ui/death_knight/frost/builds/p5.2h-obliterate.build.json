@@ -64,12 +64,14 @@
 		"buffs": {},
 		"frostDeathKnight": {
 			"options": {
-				"classOptions": {}
+				"classOptions": {},
+				"avgAmsHit": 170000,
+				"avgAmsSuccessRate": 1
 			}
 		},
 		"talentsString": "221111",
 		"glyphs": {
-			"major1": 43533,
+			"major1": 104048,
 			"major2": 43541,
 			"major3": 104047,
 			"minor1": 43550,

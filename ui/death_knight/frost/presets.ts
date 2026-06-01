@@ -66,7 +66,7 @@ export const DefaultTalents = {
 	data: SavedTalents.create({
 		talentsString: '221111',
 		glyphs: Glyphs.create({
-			major1: DeathKnightMajorGlyph.GlyphOfAntiMagicShell,
+			major1: DeathKnightMajorGlyph.GlyphOfRegenerativeMagic,
 			major2: DeathKnightMajorGlyph.GlyphOfDeathGrip,
 			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
 			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
@@ -78,6 +78,8 @@ export const DefaultTalents = {
 
 export const DefaultOptions = FrostDeathKnight_Options.create({
 	classOptions: {},
+	avgAmsHit: 170000,
+	avgAmsSuccessRate: 1,
 });
 
 export const OtherDefaults = {

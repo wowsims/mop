@@ -1569,9 +1569,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 424252.10945
-  tps: 404100.01247
-  hps: 16.60338
+  dps: 424227.87998
+  tps: 404075.783
+  hps: 15.95679
  }
 }
 dps_results: {

@@ -12,12 +12,13 @@ import (
 )
 
 type buffConfig struct {
-	auraLabel string
-	auraID    int32
-	stat      stats.Stat
-	duration  time.Duration
-	icd       time.Duration
-	callback  core.AuraCallback // default: core.CallbackOnSpellHitDealt
+	auraLabel       string
+	auraID          int32
+	stat            stats.Stat
+	duration        time.Duration
+	icd             time.Duration
+	procMaskExclude core.ProcMask
+	callback        core.AuraCallback // default: core.CallbackOnSpellHitDealt
 }
 
 type readinessTrinketConfig struct {
@@ -421,11 +422,12 @@ func init() {
 				)
 
 				triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-					Name:       fmt.Sprintf("%s (%s)", config.baseTrinketLabel, versionLabel),
-					Callback:   core.Ternary(config.buff.callback != core.CallbackEmpty, config.buff.callback, core.CallbackOnSpellHitDealt),
-					Outcome:    core.OutcomeLanded,
-					ICD:        time.Second * 115,
-					ProcChance: 0.15,
+					Name:            fmt.Sprintf("%s (%s)", config.baseTrinketLabel, versionLabel),
+					Callback:        core.Ternary(config.buff.callback != core.CallbackEmpty, config.buff.callback, core.CallbackOnSpellHitDealt),
+					ProcMaskExclude: core.Ternary(config.buff.procMaskExclude != core.ProcMaskUnknown, config.buff.procMaskExclude, core.ProcMaskUnknown),
+					Outcome:         core.OutcomeLanded,
+					ICD:             time.Second * 115,
+					ProcChance:      0.15,
 
 					Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
 						aura.Activate(sim)
@@ -476,9 +478,10 @@ func init() {
 		},
 		baseTrinketLabel: "Purified Bindings of Immerseus",
 		buff: &buffConfig{
-			auraLabel: "Expanded Mind",
-			auraID:    146046,
-			stat:      stats.Intellect,
+			auraLabel:       "Expanded Mind",
+			auraID:          146046,
+			stat:            stats.Intellect,
+			procMaskExclude: core.ProcMaskSpellProc | core.ProcMaskSpellDamageProc,
 		},
 	})
 

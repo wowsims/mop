@@ -180,8 +180,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-ChronomancerRegalia"
  value: {
-  dps: 164834.2759
-  tps: 118013.15231
+  dps: 162153.28025
+  tps: 115239.4401
  }
 }
 dps_results: {
@@ -1364,8 +1364,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 189117.38378
-  tps: 135814.1281
+  dps: 188114.33249
+  tps: 135148.36049
  }
 }
 dps_results: {

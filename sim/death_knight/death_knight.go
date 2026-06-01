@@ -22,6 +22,13 @@ type DeathKnightInputs struct {
 
 	UnholyFrenzyTarget *proto.UnitReference
 
+	// Anti-Magic Shell simulated damage intake, used to model the Runic Power gain
+	// from absorbing magic damage. AvgAMSHit is the average magic hit (+-10%) the
+	// shell is exposed to; AvgAMSSuccessRate is the chance a hit lands during the
+	// shell's window. Both default to 0 (no simulated damage).
+	AvgAMSHit         float64
+	AvgAMSSuccessRate float64
+
 	Spec proto.Spec
 }
 

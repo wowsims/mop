@@ -24,15 +24,15 @@
 		"class": "ClassDeathKnight",
 		"equipment": {
 			"items": [
-				{ "id": 99337, "gems": [95346, 76659], "reforging": 152, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99337, "gems": [95346, 76661], "reforging": 152, "upgradeStep": "UpgradeStepTwo" },
 				{ "id": 104570, "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
 				{ "id": 99339, "enchant": 4803, "gems": [76661, 76661], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
 				{ "id": 102249, "enchant": 4424, "gems": [76659], "reforging": 165, "upgradeStep": "UpgradeStepTwo", "tinker": 4897 },
-				{ "id": 99335, "enchant": 4419, "gems": [76659, 76661, 76661], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99335, "enchant": 4419, "gems": [76659, 76661, 76659], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
 				{ "id": 104460, "enchant": 4415, "gems": [0], "reforging": 165, "upgradeStep": "UpgradeStepTwo" },
-				{ "id": 99336, "enchant": 4432, "gems": [76661, 76659, 0], "reforging": 137, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
-				{ "id": 104513, "enchant": 4223, "gems": [76659, 76697, 76697], "reforging": 166, "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
-				{ "id": 104569, "enchant": 4823, "gems": [76641, 76641, 76661], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
+				{ "id": 99336, "enchant": 4432, "gems": [76659, 76661, 0], "reforging": 137, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+				{ "id": 104513, "enchant": 4223, "gems": [76661, 76697, 76697], "reforging": 166, "upgradeStep": "UpgradeStepTwo", "tinker": 4223 },
+				{ "id": 104569, "enchant": 4823, "gems": [76641, 76641, 76659], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
 				{ "id": 104482, "enchant": 4426, "gems": [76659], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
 				{ "id": 104593, "gems": [76659], "upgradeStep": "UpgradeStepTwo" },
 				{ "id": 104624, "gems": [76659], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
@@ -64,12 +64,14 @@
 		"buffs": {},
 		"unholyDeathKnight": {
 			"options": {
-				"classOptions": {}
+				"classOptions": {},
+				"avgAmsHit": 170000,
+				"avgAmsSuccessRate": 1
 			}
 		},
 		"talentsString": "321111",
 		"glyphs": {
-			"major1": 43533,
+			"major1": 104048,
 			"major2": 43548,
 			"major3": 104047,
 			"minor1": 43550,

@@ -24,8 +24,8 @@ export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('F
 		PresetUtils.makeSpecChangeWarningToast(
 			[
 				{
-					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => !player.getGear().hasTrinketFromOptions([95726, 94515, 96470, 96098, 96842]),
-					message: 'You have selected a rotation that requires Fabled Feather of Ji-Kun to be equipped.',
+					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.targets.length > 1,
+					message: 'Festerblight is a single-target rotation. Use the Default rotation for multiple targets.',
 				},
 			],
 			player,
@@ -40,13 +40,13 @@ export const DEFAULT_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatStrength]: 1.0,
 			[Stat.StatHitRating]: 0.73,
 			[Stat.StatExpertiseRating]: 0.73,
-			[Stat.StatCritRating]: 0.51,
-			[Stat.StatHasteRating]: 0.43,
-			[Stat.StatMasteryRating]: 0.4,
+			[Stat.StatCritRating]: 0.65,
+			[Stat.StatHasteRating]: 0.52,
+			[Stat.StatMasteryRating]: 0.51,
 			[Stat.StatAttackPower]: 0.3,
 		},
 		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.8,
+			[PseudoStat.PseudoStatMainHandDps]: 0.67,
 		},
 	),
 );
@@ -59,7 +59,7 @@ export const DefaultTalents = {
 	data: SavedTalents.create({
 		talentsString: '221111',
 		glyphs: Glyphs.create({
-			major1: DeathKnightMajorGlyph.GlyphOfAntiMagicShell,
+			major1: DeathKnightMajorGlyph.GlyphOfRegenerativeMagic,
 			major2: DeathKnightMajorGlyph.GlyphOfPestilence,
 			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
 			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
@@ -74,7 +74,7 @@ export const FesterblightTalents = {
 	data: SavedTalents.create({
 		talentsString: '321111',
 		glyphs: Glyphs.create({
-			major1: DeathKnightMajorGlyph.GlyphOfAntiMagicShell,
+			major1: DeathKnightMajorGlyph.GlyphOfRegenerativeMagic,
 			major2: DeathKnightMajorGlyph.GlyphOfPestilence,
 			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
 			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
@@ -95,6 +95,8 @@ export const P5_PRESET = PresetUtils.makePresetBuildFromJSON('P5', Spec.SpecUnho
 
 export const DefaultOptions = UnholyDeathKnight_Options.create({
 	classOptions: {},
+	avgAmsHit: 170000,
+	avgAmsSuccessRate: 1,
 });
 
 export const OtherDefaults = {

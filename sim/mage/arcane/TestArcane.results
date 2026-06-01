@@ -1371,8 +1371,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 284384.5254
-  tps: 273042.69575
+  dps: 281542.25231
+  tps: 270499.59373
  }
 }
 dps_results: {
