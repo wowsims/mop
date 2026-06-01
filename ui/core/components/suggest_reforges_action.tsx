@@ -1122,7 +1122,7 @@ export class ReforgeOptimizer {
 			throw new Error('Local Go reforge optimizer did not return optimized gear.');
 		}
 
-		await cache.setSpec(cacheKey, result.optimizedGear);
+		await cache.setGear(cacheKey, result.optimizedGear);
 
 		return this.sim.db.lookupEquipmentSpec(result.optimizedGear);
 	}

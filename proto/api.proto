@@ -758,6 +758,7 @@ message ProgressMetrics {
 	// Partial Results
 	double dps = 5;
 	double hps = 9;
+	repeated BulkGearCandidate optimized_candidates = 13; // partial optimized candidates during bulk sim reforge stage
 
 	// Final Results
 	RaidSimResult final_raid_result = 6; // only set when completed

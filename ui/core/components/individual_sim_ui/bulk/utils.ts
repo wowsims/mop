@@ -260,12 +260,11 @@ export async function getBulkSimReforgeCacheData({
 }
 
 export async function writeBulkSimReforgeCacheResults(optimizedCandidates: BulkGearCandidate[], cacheData: BulkSimReforgeCacheData): Promise<void> {
-	await Promise.all(
-		optimizedCandidates.map(candidate => {
-			const cacheKey = cacheData.cacheKeysByCandidateIndex.get(candidate.index);
-			if (!cacheKey || !candidate.gear) return Promise.resolve();
-			return cacheData.cache.setSpec(cacheKey, candidate.gear);
-		}),
-	);
+	const cacheEntries = optimizedCandidates.flatMap(candidate => {
+		const cacheKey = cacheData.cacheKeysByCandidateIndex.get(candidate.index);
+		if (!cacheKey || !candidate.gear) return [];
+		return [{ key: cacheKey, optimizedGear: candidate.gear }];
+	});
+	await cacheData.cache.setGearMany(cacheEntries);
 }
 

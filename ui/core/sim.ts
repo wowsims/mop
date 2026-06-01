@@ -22,6 +22,8 @@ import {
 	SimType,
 	StatWeightsRequest,
 	StatWeightsResult,
+	BulkSimStage,
+	ProgressMetrics,
 } from './proto/api.js';
 import {
 	ArmorType,
@@ -474,13 +476,32 @@ export class Sim {
 				const cacheWrites: Promise<void>[] = [];
 				const onReforgeCandidateOptimized = (candidate: BulkGearCandidate, optimizedGear: EquipmentSpec) => {
 					const cacheKey = bulkReforgeCacheData?.cacheKeysByCandidateIndex.get(candidate.index);
-					if (cacheKey) cacheWrites.push(bulkReforgeCacheData!.cache.setSpec(cacheKey, optimizedGear));
+					if (cacheKey) cacheWrites.push(bulkReforgeCacheData!.cache.setGear(cacheKey, optimizedGear));
 				};
 				result = await runConcurrentBulkSim(bulkRequest, this.workerPool, onProgress, signals, onReforgeCandidateOptimized);
 				await Promise.all(cacheWrites);
 			} else {
-				result = await this.workerPool.bulkSimAsync(bulkRequest, onProgress, signals);
-				if (bulkReforgeCacheData) {
+				// Wrap onProgress to also write partial reforge candidates to cache incrementally
+				const cacheWrites: Promise<void>[] = [];
+				const wrappedOnProgress: WorkerProgressCallback = (progress: ProgressMetrics) => {
+					onProgress(progress);
+					// Write partial reforge candidates to cache as they complete
+					if (progress.bulkStage === BulkSimStage.BulkSimStageReforge && progress.optimizedCandidates && bulkReforgeCacheData) {
+						const cacheEntries = progress.optimizedCandidates.flatMap(candidate => {
+							const cacheKey = bulkReforgeCacheData.cacheKeysByCandidateIndex.get(candidate.index);
+							if (!cacheKey || !candidate.gear) return [];
+							return [{ key: cacheKey, optimizedGear: candidate.gear }];
+						});
+						if (cacheEntries.length) {
+							cacheWrites.push(bulkReforgeCacheData.cache.setGearMany(cacheEntries));
+						}
+					}
+				};
+				result = await this.workerPool.bulkSimAsync(bulkRequest, wrappedOnProgress, signals);
+				// Wait for all cache writes to complete
+				await Promise.all(cacheWrites);
+				// Still handle final candidates in case any weren't sent via partial updates
+				if (bulkReforgeCacheData && result.optimizedCandidates) {
 					await writeBulkSimReforgeCacheResults(result.optimizedCandidates, bulkReforgeCacheData);
 				}
 			}

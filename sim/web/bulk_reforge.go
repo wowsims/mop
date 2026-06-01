@@ -12,6 +12,8 @@ import (
 	googleProto "google.golang.org/protobuf/proto"
 )
 
+const bulkSimReforgeProgressOptimizedCandidateFlushSize = 250
+
 type bulkSimReforgeTask struct {
 	position  int
 	candidate *proto.BulkGearCandidate
@@ -84,7 +86,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	stageStartedAt := time.Now()
 	log.Printf("[Bulk Sim] Reforge optimization started candidates=%d concurrency=%d", totalCandidates, concurrency)
 	warmBulkSimReforgeDatabase(request)
-	emitBulkSimReforgeProgress(progress, 0, totalCandidates)
+	emitBulkSimReforgeProgress(progress, 0, totalCandidates, nil)
 
 	optimizer := newBulkSimReforgeOptimizer(request)
 	var completedCandidates int32
@@ -93,11 +95,34 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	var maxCandidateDuration time.Duration
 	completedReforgeCandidatesByPosition := make([]*proto.BulkGearCandidate, len(request.GetCandidates()))
 	var progressMu sync.Mutex
+
+	// Track completed candidates to emit in larger cache-write batches so progress
+	// updates stay lightweight even for very large candidate counts.
+	completedCandidateBatch := make([]*proto.BulkGearCandidate, 0, bulkSimReforgeProgressOptimizedCandidateFlushSize)
+
+	flushCandidateBatch := func() bool {
+		if len(completedCandidateBatch) == 0 {
+			return false
+		}
+		emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates, completedCandidateBatch)
+		completedCandidateBatch = completedCandidateBatch[:0]
+		return true
+	}
+
+	emitProgressUpdate := func() {
+		if progress == nil {
+			return
+		}
+
+		emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates, nil)
+	}
+
 	batch := make([]bulkSimReforgeTask, 0, getBulkSimReforgeBatchSize(concurrency))
 	flushBatch := func() {
 		if len(batch) == 0 {
 			return
 		}
+		emittedCandidates := false
 		processBulkSimReforgeBatch(batch, concurrency, signals, func(task bulkSimReforgeTask) {
 			duration, completed := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
 			progressMu.Lock()
@@ -106,16 +131,24 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 				completedCandidates++
 				completedReforgeCandidatesByPosition[task.position] = task.candidate
 				request.Candidates[task.position] = nil
+				completedCandidateBatch = append(completedCandidateBatch, task.candidate)
 				if completedCandidates == 1 || duration < minCandidateDuration {
 					minCandidateDuration = duration
 				}
 				if duration > maxCandidateDuration {
 					maxCandidateDuration = duration
 				}
+				if len(completedCandidateBatch) >= bulkSimReforgeProgressOptimizedCandidateFlushSize {
+					emittedCandidates = flushCandidateBatch()
+				}
 			}
-			emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates)
 			progressMu.Unlock()
 		})
+		progressMu.Lock()
+		if !emittedCandidates {
+			emitProgressUpdate()
+		}
+		progressMu.Unlock()
 		clear(batch)
 		batch = batch[:0]
 	}
@@ -133,6 +166,10 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 		}
 	}
 	flushBatch()
+	// Flush any remaining partial candidates at the end.
+	progressMu.Lock()
+	flushCandidateBatch()
+	progressMu.Unlock()
 	avgCandidateDuration := time.Duration(0)
 	if completedCandidates > 0 {
 		avgCandidateDuration = time.Duration(int64(totalCandidateDuration) / int64(completedCandidates))
@@ -236,7 +273,7 @@ func countBulkSimReforgeCandidates(candidates []*proto.BulkGearCandidate) int32 
 	return count
 }
 
-func emitBulkSimReforgeProgress(progress chan *proto.ProgressMetrics, completed int32, total int32) {
+func emitBulkSimReforgeProgress(progress chan *proto.ProgressMetrics, completed int32, total int32, partialCandidates []*proto.BulkGearCandidate) {
 	if progress == nil {
 		return
 	}
@@ -247,6 +284,7 @@ func emitBulkSimReforgeProgress(progress chan *proto.ProgressMetrics, completed 
 		TotalSims:           total,
 		CompletedIterations: completed,
 		TotalIterations:     total,
+		OptimizedCandidates: partialCandidates,
 	}
 }
 

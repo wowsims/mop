@@ -135,8 +135,32 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		}
 	}
 
-	async setSpec(key: string, optimizedGear: EquipmentSpec): Promise<void> {
+	async setGear(key: string, optimizedGear: EquipmentSpec): Promise<void> {
 		return this.set(key, ReforgeGearCache.equipmentSpecToLinkHash(optimizedGear));
+	}
+
+	async setGearMany(entries: Array<{ key: string; optimizedGear: EquipmentSpec }>): Promise<void> {
+		if (!entries.length) return;
+
+		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
+		try {
+			db = await this.getDb();
+			await this.putRecords(
+				db,
+				entries.map(entry => ({
+					key: entry.key,
+					record: {
+						gear: ReforgeGearCache.equipmentSpecToLinkHash(entry.optimizedGear),
+						lastAccessedAt: Date.now(),
+					},
+				})),
+			);
+			await this.prune(db);
+		} catch (error) {
+			console.warn('[Reforge Cache] Failed to store batched reforge results.', error);
+		} finally {
+			db?.close();
+		}
 	}
 
 	private parseCachedGear(gear: string): EquipmentSpec | null {
@@ -162,6 +186,29 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 
 			await this.prune(db, true);
 			await db.put(this.storeName, record, key);
+		}
+	}
+
+	private async putRecords(db: IDBPDatabase<ReforgeGearCacheDb>, entries: Array<{ key: string; record: ReforgeGearCacheRecord }>): Promise<void> {
+		try {
+			let tx = db.transaction(this.storeName, 'readwrite');
+			let store = tx.objectStore(this.storeName);
+			for (const entry of entries) {
+				await store.put(entry.record, entry.key);
+			}
+			await tx.done;
+		} catch (error) {
+			if (!ReforgeGearCache.isQuotaExceededError(error)) {
+				throw error;
+			}
+
+			await this.prune(db, true);
+			const tx = db.transaction(this.storeName, 'readwrite');
+			const store = tx.objectStore(this.storeName);
+			for (const entry of entries) {
+				await store.put(entry.record, entry.key);
+			}
+			await tx.done;
 		}
 	}
 
