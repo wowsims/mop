@@ -54,6 +54,13 @@ type bulkSimCandidateOption struct {
 	item core.Item
 }
 
+type itemSpecCacheKey struct {
+	id            int32
+	randomSuffix  int32
+	upgradeStep   proto.ItemLevelState
+	challengeMode bool
+}
+
 type bulkSimRequiredSetBonusComboMatcher struct {
 	baseCounts     []int
 	requiredPieces []int
@@ -148,10 +155,10 @@ var BulkSimItemSlotNames = map[BulkSimItemSlot]string{
 }
 
 func GetBulkSimItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) BulkSimItemSlot {
-	return bulkSimGetItemSlotFromSlot(slot, playerCanDualWield)
+	return getBulkItemSlotFromSlot(slot, playerCanDualWield)
 }
 
-var bulkSimItemTypeToSlots = map[proto.ItemType][]proto.ItemSlot{
+var itemTypeToSlotsMap = map[proto.ItemType][]proto.ItemSlot{
 	proto.ItemType_ItemTypeHead:     {proto.ItemSlot_ItemSlotHead},
 	proto.ItemType_ItemTypeNeck:     {proto.ItemSlot_ItemSlotNeck},
 	proto.ItemType_ItemTypeShoulder: {proto.ItemSlot_ItemSlotShoulder},
@@ -174,7 +181,7 @@ func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
 	if request.GetBaseRequest() == nil || request.GetBaseRequest().GetRaid() == nil {
 		return fmt.Errorf("bulk sim request is missing base raid")
 	}
-	player, playerErr := bulkSimRequestPlayer(request)
+	player, playerErr := getPlayer(request)
 	if playerErr != nil {
 		return playerErr
 	}
@@ -211,7 +218,7 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 		BaseRequest:  request.GetBaseRequest(),
 		BulkSettings: request.GetBulkSettings(),
 	}
-	player, playerErr := bulkSimRequestPlayer(bulkRequest)
+	player, playerErr := getPlayer(bulkRequest)
 	if playerErr != nil {
 		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: playerErr.Error()}}
 	}
@@ -259,7 +266,7 @@ func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesR
 		BaseRequest:  request.GetBaseRequest(),
 		BulkSettings: request.GetBulkSettings(),
 	}
-	player, playerErr := bulkSimRequestPlayer(bulkRequest)
+	player, playerErr := getPlayer(bulkRequest)
 	if playerErr != nil {
 		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: playerErr.Error()}}
 	}
@@ -289,7 +296,7 @@ func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesR
 }
 
 func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.Player) (*bulkSimCandidateGenerator, error) {
-	playerSpec, err := bulkSimPlayerSpec(player)
+	playerSpec, err := getPlayerSpec(player)
 	if err != nil {
 		return nil, err
 	}
@@ -417,14 +424,14 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 				ChallengeMode: selectedItem.GetChallengeMode(),
 			}),
 		}
-		for _, slot := range bulkSimEligibleItemSlots(option.item, generator.playerIsFuryWarrior) {
-			if bulkSimIsSecondaryItemSlot(slot, generator.playerCanDualWield) {
+		for _, slot := range getEligibleItemSlots(option.item, generator.playerIsFuryWarrior) {
+			if isSecondaryItemSlot(slot, generator.playerCanDualWield) {
 				continue
 			}
-			if !bulkSimCanEquipItem(option.item, generator.playerClass, generator.playerSpec, slot) {
+			if !canEquipItem(option.item, generator.playerClass, generator.playerSpec, slot) {
 				continue
 			}
-			bulkSlot := bulkSimGetItemSlotFromSlot(slot, generator.playerCanDualWield)
+			bulkSlot := getBulkItemSlotFromSlot(slot, generator.playerCanDualWield)
 			generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], option)
 		}
 	}
@@ -433,7 +440,7 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 		if equippedItem == nil {
 			continue
 		}
-		bulkSlot := bulkSimGetItemSlotFromSlot(slot, generator.playerCanDualWield)
+		bulkSlot := getBulkItemSlotFromSlot(slot, generator.playerCanDualWield)
 		generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], bulkSimCandidateOption{
 			spec: equippedItem.ToItemSpecProto(),
 			item: *equippedItem,
@@ -448,12 +455,12 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 		if len(options) < 2 {
 			continue
 		}
-		pairs := bulkSimAllPairs(options)
+		pairs := allPairs(options)
 		if frozenItem := generator.frozenItems[bulkSlot]; frozenItem != nil {
 			pairs = make([][2]bulkSimCandidateOption, 0, len(options))
 			frozenSpec := frozenItem.ToItemSpecProto()
 			for _, option := range options {
-				if bulkSimCandidateOptionEqualsItem(option, *frozenItem, generator.inheritUpgrades) {
+				if candidateOptionEqualsItem(option, *frozenItem, generator.inheritUpgrades) {
 					continue
 				}
 				pairs = append(pairs, [2]bulkSimCandidateOption{{spec: frozenSpec, item: *frozenItem}, option})
@@ -495,9 +502,9 @@ func (generator *bulkSimCandidateGenerator) buildGearForCombo(comboIdx int) (*pr
 		option := generator.comboItemsBySlot[int(slot)]
 		existingItem := gear.GetItemBySlot(slot)
 		if existingItem != nil && existingItem.ID != 0 {
-			gear[slot] = bulkSimReplaceItem(*existingItem, option, generator.inheritUpgrades)
+			gear[slot] = replaceItem(*existingItem, option, generator.inheritUpgrades)
 		} else {
-			gear[slot] = bulkSimCreateSelectedItem(option, generator.challengeModeEnabled)
+			gear[slot] = createSelectedItem(option, generator.challengeModeEnabled)
 		}
 	}
 	return gear.ToEquipmentSpecProto(), nil
@@ -571,16 +578,16 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 	}
 	if generator.playerIsFuryWarrior {
 		for i := range all2HWeapons {
-			if bulkSimOptionsContainEquivalent(all2HWeapons[:i], all2HWeapons[i], generator.inheritUpgrades) {
+			if optionsContainEquivalent(all2HWeapons[:i], all2HWeapons[i], generator.inheritUpgrades) {
 				continue
 			}
 			allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&all2HWeapons[i], nil})
 			for j := i + 1; j < len(all2HWeapons); j++ {
-				if bulkSimOptionsContainEquivalent(all2HWeapons[i+1:j], all2HWeapons[j], generator.inheritUpgrades) {
+				if optionsContainEquivalent(all2HWeapons[i+1:j], all2HWeapons[j], generator.inheritUpgrades) {
 					continue
 				}
 				allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&all2HWeapons[i], &all2HWeapons[j]})
-				if !bulkSimCandidateOptionsEqual(all2HWeapons[i], all2HWeapons[j], generator.inheritUpgrades) {
+				if !candidateOptionsEqual(all2HWeapons[i], all2HWeapons[j], generator.inheritUpgrades) {
 					allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&all2HWeapons[j], &all2HWeapons[i]})
 				}
 			}
@@ -594,7 +601,7 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 	ohOptions := generator.selectedByBulkSlot[bulkSimItemSlotOffHand]
 	if len(mhOptions) > 0 {
 		for i := range mhOptions {
-			if bulkSimOptionsContainEquivalent(all2HWeapons, mhOptions[i], generator.inheritUpgrades) {
+			if optionsContainEquivalent(all2HWeapons, mhOptions[i], generator.inheritUpgrades) {
 				continue
 			}
 			if len(ohOptions) > 0 {
@@ -614,25 +621,25 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 	if len(oneHandOptions) > 0 {
 		filtered := make([]bulkSimCandidateOption, 0, len(oneHandOptions))
 		for _, option := range oneHandOptions {
-			if bulkSimOptionsContainEquivalent(all2HWeapons, option, generator.inheritUpgrades) {
+			if optionsContainEquivalent(all2HWeapons, option, generator.inheritUpgrades) {
 				continue
 			}
 			filtered = append(filtered, option)
 		}
 		for i := range filtered {
-			if bulkSimOptionsContainEquivalent(filtered[:i], filtered[i], generator.inheritUpgrades) {
+			if optionsContainEquivalent(filtered[:i], filtered[i], generator.inheritUpgrades) {
 				continue
 			}
-			hasDuplicate := bulkSimOptionsContainEquivalent(filtered[i+1:], filtered[i], generator.inheritUpgrades)
+			hasDuplicate := optionsContainEquivalent(filtered[i+1:], filtered[i], generator.inheritUpgrades)
 			if filtered[i].item.WeaponType != proto.WeaponType_WeaponTypeUnknown && !hasDuplicate {
 				allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&filtered[i], &filtered[i]})
 			}
 			for j := i + 1; j < len(filtered); j++ {
-				if bulkSimOptionsContainEquivalent(filtered[i+1:j], filtered[j], generator.inheritUpgrades) {
+				if optionsContainEquivalent(filtered[i+1:j], filtered[j], generator.inheritUpgrades) {
 					continue
 				}
 				allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&filtered[i], &filtered[j]})
-				if !bulkSimCandidateOptionsEqual(filtered[i], filtered[j], generator.inheritUpgrades) {
+				if !candidateOptionsEqual(filtered[i], filtered[j], generator.inheritUpgrades) {
 					allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&filtered[j], &filtered[i]})
 				}
 			}
@@ -649,10 +656,10 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 
 func (generator *bulkSimCandidateGenerator) weaponComboMatchesSettings(mhItem *bulkSimCandidateOption, ohItem *bulkSimCandidateOption) bool {
 	frozenWeaponItem := generator.getFrozenWeaponItem()
-	if generator.frozenWeaponSlot == proto.ItemSlot_ItemSlotMainHand && frozenWeaponItem != nil && !bulkSimCandidateOptionEqualsItemPtr(mhItem, frozenWeaponItem, generator.inheritUpgrades) {
+	if generator.frozenWeaponSlot == proto.ItemSlot_ItemSlotMainHand && frozenWeaponItem != nil && !candidateOptionEqualsItemPtr(mhItem, frozenWeaponItem, generator.inheritUpgrades) {
 		return false
 	}
-	if generator.frozenWeaponSlot == proto.ItemSlot_ItemSlotOffHand && frozenWeaponItem != nil && !bulkSimCandidateOptionEqualsItemPtr(ohItem, frozenWeaponItem, generator.inheritUpgrades) {
+	if generator.frozenWeaponSlot == proto.ItemSlot_ItemSlotOffHand && frozenWeaponItem != nil && !candidateOptionEqualsItemPtr(ohItem, frozenWeaponItem, generator.inheritUpgrades) {
 		return false
 	}
 	return generator.matchesWeaponTypeFilter(mhItem, proto.ItemSlot_ItemSlotMainHand) && generator.matchesWeaponTypeFilter(ohItem, proto.ItemSlot_ItemSlotOffHand)
@@ -784,19 +791,19 @@ func (generator *bulkSimCandidateGenerator) comboMatchesRequiredSetBonusMatcher(
 	return true
 }
 
-func bulkSimReplaceItem(existing core.Item, option bulkSimCandidateOption, inheritUpgrades bool) core.Item {
+func replaceItem(existing core.Item, option bulkSimCandidateOption, inheritUpgrades bool) core.Item {
 	itemSpec := existing.ToItemSpecProto()
 	itemSpec.Id = option.spec.GetId()
 	itemSpec.Reforging = 0
 	itemSpec.RandomSuffix = 0
 	itemSpec.ChallengeMode = existing.ChallengeMode
-	if !bulkSimEnchantAppliesToItem(itemSpec.GetEnchant(), option.item) {
+	if !enchantAppliesToItem(itemSpec.GetEnchant(), option.item) {
 		itemSpec.Enchant = 0
 	}
-	if !bulkSimEnchantAppliesToItem(itemSpec.GetTinker(), option.item) {
+	if !enchantAppliesToItem(itemSpec.GetTinker(), option.item) {
 		itemSpec.Tinker = 0
 	}
-	itemSpec.Gems = bulkSimReorganizeGems(existing, option.item)
+	itemSpec.Gems = applyMetaGem(existing, option.item)
 	if option.spec.GetRandomSuffix() != 0 {
 		itemSpec.RandomSuffix = option.spec.GetRandomSuffix()
 	}
@@ -814,7 +821,7 @@ func bulkSimReplaceItem(existing core.Item, option bulkSimCandidateOption, inher
 	})
 }
 
-func bulkSimCreateSelectedItem(option bulkSimCandidateOption, challengeModeEnabled bool) core.Item {
+func createSelectedItem(option bulkSimCandidateOption, challengeModeEnabled bool) core.Item {
 	return core.NewItem(core.ItemSpec{
 		ID:            option.spec.GetId(),
 		RandomSuffix:  option.spec.GetRandomSuffix(),
@@ -827,38 +834,34 @@ func bulkSimCreateSelectedItem(option bulkSimCandidateOption, challengeModeEnabl
 	})
 }
 
-func bulkSimReorganizeGems(existing core.Item, newItem core.Item) []int32 {
+func applyMetaGem(item core.Item, newItem core.Item) []int32 {
 	newGems := make([]int32, len(newItem.GemSockets))
-	for _, gem := range existing.Gems {
-		if gem.ID == 0 {
-			continue
-		}
-		firstMatching := -1
-		firstEligible := -1
-		for socketIdx, socketColor := range newItem.GemSockets {
-			if newGems[socketIdx] != 0 {
-				continue
-			}
-			if firstMatching == -1 && bulkSimGemMatchesSocket(gem.Color, socketColor) {
-				firstMatching = socketIdx
-			}
-			if firstEligible == -1 && bulkSimGemEligibleForSocket(gem.Color, socketColor) {
-				firstEligible = socketIdx
-			}
-		}
-		if firstMatching != -1 {
-			newGems[firstMatching] = gem.ID
-		} else if firstEligible != -1 {
-			newGems[firstEligible] = gem.ID
+
+	if item.Type != proto.ItemType_ItemTypeHead || newItem.Type != proto.ItemType_ItemTypeHead {
+		return newGems
+	}
+
+	metaGemID := int32(0)
+	for _, gem := range item.Gems {
+		if gem.ID != 0 && gem.Color == proto.GemColor_GemColorMeta {
+			metaGemID = gem.ID
+			break
 		}
 	}
-	if bulkSimCouldHaveExtraSocket(existing.Type) && len(existing.Gems) > len(existing.GemSockets) {
-		newGems = append(newGems, existing.Gems[len(existing.Gems)-1].ID)
+	if metaGemID == 0 {
+		return newGems
+	}
+
+	for socketIdx, socketColor := range newItem.GemSockets {
+		if socketColor == proto.GemColor_GemColorMeta {
+			newGems[socketIdx] = metaGemID
+			break
+		}
 	}
 	return newGems
 }
 
-func bulkSimEnchantAppliesToItem(effectID int32, item core.Item) bool {
+func enchantAppliesToItem(effectID int32, item core.Item) bool {
 	if effectID == 0 {
 		return false
 	}
@@ -866,38 +869,54 @@ func bulkSimEnchantAppliesToItem(effectID int32, item core.Item) bool {
 	if enchant == nil {
 		return false
 	}
-	sharedSlots := bulkSimSharedSlots(bulkSimEligibleEnchantSlots(*enchant), bulkSimEligibleItemSlots(item, false))
+	sharedSlots := sharedSlots(getEligibleEnchantSlots(*enchant), getEligibleItemSlots(item, false))
 	if len(sharedSlots) == 0 {
 		return false
 	}
+
+	if enchant.EnchantType == proto.EnchantType_EnchantTypeTwoHand && item.HandType != proto.HandType_HandTypeTwoHand {
+		return false
+	}
+
+	if enchant.EnchantType == proto.EnchantType_EnchantTypeStaff && item.WeaponType != proto.WeaponType_WeaponTypeStaff {
+		return false
+	}
+
+	if enchant.EnchantType == proto.EnchantType_EnchantTypeShield && item.WeaponType != proto.WeaponType_WeaponTypeShield {
+		return false
+	}
+
+	itemIsOffHandTarget := item.WeaponType == proto.WeaponType_WeaponTypeOffHand ||
+		(item.WeaponType == proto.WeaponType_WeaponTypeShield && enchant.EnchantType != proto.EnchantType_EnchantTypeShield)
+	if (enchant.EnchantType == proto.EnchantType_EnchantTypeOffHand) != itemIsOffHandTarget {
+		return false
+	}
+
 	if enchant.Type == proto.ItemType_ItemTypeRanged {
 		return item.RangedWeaponType == proto.RangedWeaponType_RangedWeaponTypeBow || item.RangedWeaponType == proto.RangedWeaponType_RangedWeaponTypeCrossbow || item.RangedWeaponType == proto.RangedWeaponType_RangedWeaponTypeGun
 	}
 	if item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeUnknown && item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeWand && enchant.Type != proto.ItemType_ItemTypeRanged {
 		return false
 	}
-	if enchant.Type == proto.ItemType_ItemTypeWeapon {
-		if enchant.Name == "Enchant 2H Weapon - Mighty Spellpower" || enchant.Name == "Enchant 2H Weapon - Jade Spirit" || enchant.Name == "Enchant 2H Weapon - Windsong" || enchant.Name == "Enchant 2H Weapon - Colossus" || enchant.Name == "Enchant 2H Weapon - Dancing Steel" {
-			return item.HandType == proto.HandType_HandTypeTwoHand
-		}
-		if item.WeaponType == proto.WeaponType_WeaponTypeStaff {
-			return true
-		}
-	}
 	return true
 }
 
-func bulkSimEligibleEnchantSlots(enchant core.Enchant) []proto.ItemSlot {
-	if slots, ok := bulkSimItemTypeToSlots[enchant.Type]; ok {
-		return slots
+func getEligibleEnchantSlots(enchant core.Enchant) []proto.ItemSlot {
+	types := append([]proto.ItemType{enchant.Type}, enchant.ExtraTypes...)
+	slots := make([]proto.ItemSlot, 0, len(types)*2)
+	for _, itemType := range types {
+		if typeSlots, ok := itemTypeToSlotsMap[itemType]; ok {
+			slots = append(slots, typeSlots...)
+			continue
+		}
+		if itemType == proto.ItemType_ItemTypeWeapon {
+			slots = append(slots, proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand)
+		}
 	}
-	if enchant.Type == proto.ItemType_ItemTypeWeapon {
-		return []proto.ItemSlot{proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand}
-	}
-	return nil
+	return slots
 }
 
-func bulkSimSharedSlots(left []proto.ItemSlot, right []proto.ItemSlot) []proto.ItemSlot {
+func sharedSlots(left []proto.ItemSlot, right []proto.ItemSlot) []proto.ItemSlot {
 	shared := make([]proto.ItemSlot, 0, min(len(left), len(right)))
 	for _, slot := range left {
 		if slices.Contains(right, slot) {
@@ -907,49 +926,8 @@ func bulkSimSharedSlots(left []proto.ItemSlot, right []proto.ItemSlot) []proto.I
 	return shared
 }
 
-func bulkSimCouldHaveExtraSocket(itemType proto.ItemType) bool {
-	return itemType == proto.ItemType_ItemTypeWrist || itemType == proto.ItemType_ItemTypeHands
-}
-
-func bulkSimGemMatchesSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
-	if gemColor == socketColor {
-		return true
-	}
-	switch socketColor {
-	case proto.GemColor_GemColorMeta:
-		return gemColor == proto.GemColor_GemColorMeta
-	case proto.GemColor_GemColorBlue:
-		return gemColor == proto.GemColor_GemColorBlue || gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
-	case proto.GemColor_GemColorRed:
-		return gemColor == proto.GemColor_GemColorRed || gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorPrismatic
-	case proto.GemColor_GemColorYellow:
-		return gemColor == proto.GemColor_GemColorYellow || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
-	case proto.GemColor_GemColorPrismatic:
-		return gemColor != proto.GemColor_GemColorMeta && gemColor != proto.GemColor_GemColorCogwheel && gemColor != proto.GemColor_GemColorShaTouched
-	case proto.GemColor_GemColorCogwheel:
-		return gemColor == proto.GemColor_GemColorCogwheel
-	case proto.GemColor_GemColorShaTouched:
-		return gemColor == proto.GemColor_GemColorShaTouched
-	default:
-		return false
-	}
-}
-
-func bulkSimGemEligibleForSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
-	switch socketColor {
-	case proto.GemColor_GemColorMeta:
-		return gemColor == proto.GemColor_GemColorMeta
-	case proto.GemColor_GemColorCogwheel:
-		return gemColor == proto.GemColor_GemColorCogwheel
-	case proto.GemColor_GemColorShaTouched:
-		return gemColor == proto.GemColor_GemColorShaTouched
-	default:
-		return gemColor != proto.GemColor_GemColorMeta && gemColor != proto.GemColor_GemColorCogwheel && gemColor != proto.GemColor_GemColorShaTouched
-	}
-}
-
-func bulkSimEligibleItemSlots(item core.Item, isFuryWarrior bool) []proto.ItemSlot {
-	if slots, ok := bulkSimItemTypeToSlots[item.Type]; ok {
+func getEligibleItemSlots(item core.Item, isFuryWarrior bool) []proto.ItemSlot {
+	if slots, ok := itemTypeToSlotsMap[item.Type]; ok {
 		return slots
 	}
 	if item.Type == proto.ItemType_ItemTypeWeapon {
@@ -968,7 +946,7 @@ func bulkSimEligibleItemSlots(item core.Item, isFuryWarrior bool) []proto.ItemSl
 	return nil
 }
 
-func bulkSimCanEquipItem(item core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
+func canEquipItem(item core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
 	if item.Type == proto.ItemType_ItemTypeFinger || item.Type == proto.ItemType_ItemTypeTrinket {
 		return true
 	}
@@ -1000,11 +978,11 @@ func bulkSimCanEquipItem(item core.Item, playerClass proto.Class, playerSpec pro
 	return maxArmorType >= item.ArmorType
 }
 
-func bulkSimIsSecondaryItemSlot(slot proto.ItemSlot, playerCanDualWield bool) bool {
+func isSecondaryItemSlot(slot proto.ItemSlot, playerCanDualWield bool) bool {
 	return slot == proto.ItemSlot_ItemSlotFinger2 || slot == proto.ItemSlot_ItemSlotTrinket2 || (playerCanDualWield && slot == proto.ItemSlot_ItemSlotOffHand)
 }
 
-func bulkSimGetItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) bulkSimItemSlot {
+func getBulkItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) bulkSimItemSlot {
 	if playerCanDualWield && (slot == proto.ItemSlot_ItemSlotMainHand || slot == proto.ItemSlot_ItemSlotOffHand) {
 		return bulkSimItemSlotHandWeapon
 	}
@@ -1014,7 +992,7 @@ func bulkSimGetItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) bu
 	return bulkSimItemSlotHead
 }
 
-func bulkSimAllPairs(options []bulkSimCandidateOption) [][2]bulkSimCandidateOption {
+func allPairs(options []bulkSimCandidateOption) [][2]bulkSimCandidateOption {
 	pairs := make([][2]bulkSimCandidateOption, 0, len(options)*(len(options)-1)/2)
 	for i := 0; i < len(options); i++ {
 		for j := i + 1; j < len(options); j++ {
@@ -1024,116 +1002,126 @@ func bulkSimAllPairs(options []bulkSimCandidateOption) [][2]bulkSimCandidateOpti
 	return pairs
 }
 
-func bulkSimOptionsContainEquivalent(options []bulkSimCandidateOption, target bulkSimCandidateOption, inheritUpgrades bool) bool {
+func optionsContainEquivalent(options []bulkSimCandidateOption, target bulkSimCandidateOption, inheritUpgrades bool) bool {
 	for _, option := range options {
-		if bulkSimCandidateOptionsEqual(option, target, inheritUpgrades) {
+		if candidateOptionsEqual(option, target, inheritUpgrades) {
 			return true
 		}
 	}
 	return false
 }
 
-func bulkSimCandidateOptionsEqual(left bulkSimCandidateOption, right bulkSimCandidateOption, inheritUpgrades bool) bool {
-	return bulkSimItemSpecKey(left.spec, inheritUpgrades) == bulkSimItemSpecKey(right.spec, inheritUpgrades)
+func candidateOptionsEqual(left bulkSimCandidateOption, right bulkSimCandidateOption, inheritUpgrades bool) bool {
+	return buildItemSpecKey(left.spec, inheritUpgrades) == buildItemSpecKey(right.spec, inheritUpgrades)
 }
 
-func bulkSimCandidateOptionEqualsItem(option bulkSimCandidateOption, item core.Item, inheritUpgrades bool) bool {
-	return bulkSimItemSpecKey(option.spec, inheritUpgrades) == bulkSimItemSpecKey(item.ToItemSpecProto(), inheritUpgrades)
+func candidateOptionEqualsItem(option bulkSimCandidateOption, item core.Item, inheritUpgrades bool) bool {
+	return buildItemSpecKey(option.spec, inheritUpgrades) == buildItemSpecKey(item.ToItemSpecProto(), inheritUpgrades)
 }
 
-func bulkSimCandidateOptionEqualsItemPtr(option *bulkSimCandidateOption, item *core.Item, inheritUpgrades bool) bool {
+func candidateOptionEqualsItemPtr(option *bulkSimCandidateOption, item *core.Item, inheritUpgrades bool) bool {
 	if option == nil || item == nil {
 		return option == nil && item == nil
 	}
-	return bulkSimCandidateOptionEqualsItem(*option, *item, inheritUpgrades)
+	return candidateOptionEqualsItem(*option, *item, inheritUpgrades)
 }
 
-func bulkSimItemSpecKey(itemSpec *proto.ItemSpec, inheritUpgrades bool) string {
+func buildItemSpecKey(itemSpec *proto.ItemSpec, inheritUpgrades bool) itemSpecCacheKey {
 	if itemSpec == nil {
-		return ""
+		return itemSpecCacheKey{}
+	}
+	key := itemSpecCacheKey{
+		id:            itemSpec.GetId(),
+		randomSuffix:  itemSpec.GetRandomSuffix(),
+		challengeMode: itemSpec.GetChallengeMode(),
 	}
 	if inheritUpgrades {
-		return fmt.Sprintf("%d:%d:%t", itemSpec.GetId(), itemSpec.GetRandomSuffix(), itemSpec.GetChallengeMode())
+		return key
 	}
-	return fmt.Sprintf("%d:%d:%d:%t", itemSpec.GetId(), itemSpec.GetRandomSuffix(), itemSpec.GetUpgradeStep(), itemSpec.GetChallengeMode())
+	key.upgradeStep = itemSpec.GetUpgradeStep()
+	return key
 }
 
-func bulkSimPlayerSpec(player *proto.Player) (proto.Spec, error) {
-	switch {
-	case player.GetBloodDeathKnight() != nil:
+func getPlayerSpec(player *proto.Player) (proto.Spec, error) {
+	if player == nil {
+		return proto.Spec_SpecUnknown, fmt.Errorf("unsupported player spec for backend bulk candidate generation")
+	}
+
+	switch player.GetSpec().(type) {
+	case *proto.Player_BloodDeathKnight:
 		return proto.Spec_SpecBloodDeathKnight, nil
-	case player.GetFrostDeathKnight() != nil:
+	case *proto.Player_FrostDeathKnight:
 		return proto.Spec_SpecFrostDeathKnight, nil
-	case player.GetUnholyDeathKnight() != nil:
+	case *proto.Player_UnholyDeathKnight:
 		return proto.Spec_SpecUnholyDeathKnight, nil
-	case player.GetBalanceDruid() != nil:
+	case *proto.Player_BalanceDruid:
 		return proto.Spec_SpecBalanceDruid, nil
-	case player.GetFeralDruid() != nil:
+	case *proto.Player_FeralDruid:
 		return proto.Spec_SpecFeralDruid, nil
-	case player.GetGuardianDruid() != nil:
+	case *proto.Player_GuardianDruid:
 		return proto.Spec_SpecGuardianDruid, nil
-	case player.GetRestorationDruid() != nil:
+	case *proto.Player_RestorationDruid:
 		return proto.Spec_SpecRestorationDruid, nil
-	case player.GetBeastMasteryHunter() != nil:
+	case *proto.Player_BeastMasteryHunter:
 		return proto.Spec_SpecBeastMasteryHunter, nil
-	case player.GetMarksmanshipHunter() != nil:
+	case *proto.Player_MarksmanshipHunter:
 		return proto.Spec_SpecMarksmanshipHunter, nil
-	case player.GetSurvivalHunter() != nil:
+	case *proto.Player_SurvivalHunter:
 		return proto.Spec_SpecSurvivalHunter, nil
-	case player.GetArcaneMage() != nil:
+	case *proto.Player_ArcaneMage:
 		return proto.Spec_SpecArcaneMage, nil
-	case player.GetFireMage() != nil:
+	case *proto.Player_FireMage:
 		return proto.Spec_SpecFireMage, nil
-	case player.GetFrostMage() != nil:
+	case *proto.Player_FrostMage:
 		return proto.Spec_SpecFrostMage, nil
-	case player.GetBrewmasterMonk() != nil:
+	case *proto.Player_BrewmasterMonk:
 		return proto.Spec_SpecBrewmasterMonk, nil
-	case player.GetMistweaverMonk() != nil:
+	case *proto.Player_MistweaverMonk:
 		return proto.Spec_SpecMistweaverMonk, nil
-	case player.GetWindwalkerMonk() != nil:
+	case *proto.Player_WindwalkerMonk:
 		return proto.Spec_SpecWindwalkerMonk, nil
-	case player.GetHolyPaladin() != nil:
+	case *proto.Player_HolyPaladin:
 		return proto.Spec_SpecHolyPaladin, nil
-	case player.GetProtectionPaladin() != nil:
+	case *proto.Player_ProtectionPaladin:
 		return proto.Spec_SpecProtectionPaladin, nil
-	case player.GetRetributionPaladin() != nil:
+	case *proto.Player_RetributionPaladin:
 		return proto.Spec_SpecRetributionPaladin, nil
-	case player.GetDisciplinePriest() != nil:
+	case *proto.Player_DisciplinePriest:
 		return proto.Spec_SpecDisciplinePriest, nil
-	case player.GetHolyPriest() != nil:
+	case *proto.Player_HolyPriest:
 		return proto.Spec_SpecHolyPriest, nil
-	case player.GetShadowPriest() != nil:
+	case *proto.Player_ShadowPriest:
 		return proto.Spec_SpecShadowPriest, nil
-	case player.GetAssassinationRogue() != nil:
+	case *proto.Player_AssassinationRogue:
 		return proto.Spec_SpecAssassinationRogue, nil
-	case player.GetCombatRogue() != nil:
+	case *proto.Player_CombatRogue:
 		return proto.Spec_SpecCombatRogue, nil
-	case player.GetSubtletyRogue() != nil:
+	case *proto.Player_SubtletyRogue:
 		return proto.Spec_SpecSubtletyRogue, nil
-	case player.GetElementalShaman() != nil:
+	case *proto.Player_ElementalShaman:
 		return proto.Spec_SpecElementalShaman, nil
-	case player.GetEnhancementShaman() != nil:
+	case *proto.Player_EnhancementShaman:
 		return proto.Spec_SpecEnhancementShaman, nil
-	case player.GetRestorationShaman() != nil:
+	case *proto.Player_RestorationShaman:
 		return proto.Spec_SpecRestorationShaman, nil
-	case player.GetAfflictionWarlock() != nil:
+	case *proto.Player_AfflictionWarlock:
 		return proto.Spec_SpecAfflictionWarlock, nil
-	case player.GetDemonologyWarlock() != nil:
+	case *proto.Player_DemonologyWarlock:
 		return proto.Spec_SpecDemonologyWarlock, nil
-	case player.GetDestructionWarlock() != nil:
+	case *proto.Player_DestructionWarlock:
 		return proto.Spec_SpecDestructionWarlock, nil
-	case player.GetArmsWarrior() != nil:
+	case *proto.Player_ArmsWarrior:
 		return proto.Spec_SpecArmsWarrior, nil
-	case player.GetFuryWarrior() != nil:
+	case *proto.Player_FuryWarrior:
 		return proto.Spec_SpecFuryWarrior, nil
-	case player.GetProtectionWarrior() != nil:
+	case *proto.Player_ProtectionWarrior:
 		return proto.Spec_SpecProtectionWarrior, nil
 	default:
 		return proto.Spec_SpecUnknown, fmt.Errorf("unsupported player spec for backend bulk candidate generation")
 	}
 }
 
-func bulkSimRequestPlayer(request *proto.BulkSimRequest) (*proto.Player, error) {
+func getPlayer(request *proto.BulkSimRequest) (*proto.Player, error) {
 	if request == nil || request.GetBaseRequest() == nil || request.GetBaseRequest().GetRaid() == nil {
 		return nil, fmt.Errorf("bulk sim request is missing base raid")
 	}

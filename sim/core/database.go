@@ -253,6 +253,8 @@ type Enchant struct {
 	EnchantEffects []*proto.ItemEffect
 	Name           string         // Only needed for unit tests
 	Type           proto.ItemType // Only needed for unit tests
+	EnchantType    proto.EnchantType
+	ExtraTypes     []proto.ItemType
 }
 
 func EnchantFromProto(pData *proto.SimEnchant) Enchant {
@@ -262,6 +264,8 @@ func EnchantFromProto(pData *proto.SimEnchant) Enchant {
 		EnchantEffects: pData.EnchantEffects,
 		Name:           pData.Name,
 		Type:           pData.Type,
+		EnchantType:    pData.EnchantType,
+		ExtraTypes:     append([]proto.ItemType(nil), pData.ExtraTypes...),
 	}
 }
 
