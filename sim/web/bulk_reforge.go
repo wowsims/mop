@@ -32,6 +32,16 @@ type bulkSimReforgeOptimizer struct {
 }
 
 func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMetrics, requestId string) {
+	if err := ensureBulkSimCandidatesGenerated(request); err != nil {
+		progress <- &proto.ProgressMetrics{
+			BulkStage: proto.BulkSimStage_BulkSimStageError,
+			FinalBulkSimResult: &proto.BulkSimResult{
+				Error: &proto.ErrorOutcome{Message: err.Error()},
+			},
+		}
+		close(progress)
+		return
+	}
 	if request.GetReforgeRequest() == nil {
 		core.BulkSimAsync(request, progress, requestId)
 		return

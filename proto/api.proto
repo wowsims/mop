@@ -425,6 +425,7 @@ message BulkSimRequest {
 	int32 top_results = 5;
 	int32 high_stage_iterations = 6;
 	ReforgeOptimizeRequest reforge_request = 7;
+	BulkSettings bulk_settings = 8;
 }
 
 // RPC ReforgeOptimize

@@ -6,6 +6,7 @@ import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
 	BulkGearCandidate,
+	BulkSettings,
 	BulkSimRequest,
 	BulkSimResult,
 	ComputeStatsRequest,
@@ -28,6 +29,7 @@ import {
 import {
 	ArmorType,
 	Faction,
+	ItemSpec,
 	ItemQuality,
 	Profession,
 	PseudoStat,
@@ -40,7 +42,8 @@ import {
 	EquipmentSpec,
 } from './proto/common.js';
 import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
-import { SimGem } from './proto/db.js';
+import { ItemEffectRandPropPoints, SimDatabase, SimGem, SimItem } from './proto/db.js';
+import { UIItem } from './proto/ui.js';
 import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
@@ -73,6 +76,32 @@ export type ReforgeOptimizeConfig = {
 	settings: ReforgeSettings;
 	softCaps: StatCap[];
 	debug?: boolean;
+};
+
+const makeBulkItemDatabaseFromSpecs = (db: Database, baselineGear: Gear, itemSpecs: readonly ItemSpec[]): SimDatabase => {
+	const gearSets = [baselineGear];
+	const selectedItems = itemSpecs
+		.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null))
+		.filter((item): item is NonNullable<typeof item> => item != null);
+	const simDatabase = makeBulkGearDatabase(db, gearSets);
+	for (const selectedItem of selectedItems) {
+		simDatabase.items.push(SimItem.fromJson(UIItem.toJson(selectedItem.item), { ignoreUnknownFields: true }));
+		const ieRpp = db.getItemEffectRandPropPoints(selectedItem.ilvl);
+		if (ieRpp) {
+			simDatabase.itemEffectRandPropPoints.push(ItemEffectRandPropPoints.create(ieRpp));
+		}
+		if (selectedItem.randomSuffix) {
+			simDatabase.randomSuffixes.push(selectedItem.randomSuffix);
+		}
+	}
+	return SimDatabase.create({
+		items: distinct(simDatabase.items, (a, b) => a.id == b.id),
+		randomSuffixes: distinct(simDatabase.randomSuffixes, (a, b) => a.id == b.id),
+		reforgeStats: distinct(simDatabase.reforgeStats, (a, b) => a.id == b.id),
+		itemEffectRandPropPoints: distinct(simDatabase.itemEffectRandPropPoints, (a, b) => a.ilvl == b.ilvl),
+		enchants: distinct(simDatabase.enchants, (a, b) => a.effectId == b.effectId),
+		gems: distinct(simDatabase.gems, (a, b) => a.id == b.id),
+	});
 };
 
 interface SimProps {
@@ -389,7 +418,12 @@ export class Sim {
 		}
 	}
 
-	async runBulkSim(gearSets: Gear[], onProgress: WorkerProgressCallback, reforgeConfig?: ReforgeOptimizeConfig): Promise<BulkSimResult | ErrorOutcome> {
+	async runBulkSim(
+		gearSets: Gear[],
+		onProgress: WorkerProgressCallback,
+		reforgeConfig?: ReforgeOptimizeConfig,
+		bulkSettings?: BulkSettings,
+	): Promise<BulkSimResult | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
 		} else if (this.encounter.targets.length < 1) {
@@ -419,10 +453,12 @@ export class Sim {
 			};
 
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
-			const preparedGearSets = gearSets.map(prepareGear);
-			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
 			const useWasmConcurrency = await this.shouldUseWasmConcurrency();
+			const backendBuildCandidates = !useWasmConcurrency && !!bulkSettings;
+			const preparedGearSets = backendBuildCandidates ? [] : gearSets.map(prepareGear);
+			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
 			const bulkReforgeCacheData = bulkReforgeRequest
+				&& !backendBuildCandidates
 				? await getBulkSimReforgeCacheData({
 						player: this.raid.getActivePlayers()[0],
 						gearSets: preparedGearSets,
@@ -433,13 +469,19 @@ export class Sim {
 					})
 				: undefined;
 			const cachedOptimizedGearSets = bulkReforgeCacheData?.optimizedCandidates.map(candidate => this.db.lookupEquipmentSpec(candidate.gear!)) ?? [];
-			const bulkGearDatabase = makeBulkGearDatabase(this.db, [baselineGear, ...preparedGearSets, ...cachedOptimizedGearSets]);
+			const bulkGearDatabase = backendBuildCandidates && bulkSettings
+				? makeBulkItemDatabaseFromSpecs(this.db, baselineGear, bulkSettings.items)
+				: makeBulkGearDatabase(this.db, [baselineGear, ...preparedGearSets, ...cachedOptimizedGearSets]);
 			if (bulkReforgeRequest) {
+				const selectedItems = bulkSettings?.items
+					.map(itemSpec => this.db.lookupItemSpec(itemSpec))
+					.filter((item): item is NonNullable<typeof item> => item != null) ?? [];
+				const reforgeSourceItems = backendBuildCandidates
+					? selectedItems
+					: preparedGearSets.flatMap(gearSet => gearSet.asArray()).filter((equippedItem): equippedItem is NonNullable<typeof equippedItem> => equippedItem != null);
 				bulkGearDatabase.reforgeStats = distinct(
 					bulkGearDatabase.reforgeStats.concat(
-						preparedGearSets.flatMap(gearSet =>
-							gearSet.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])),
-						),
+						reforgeSourceItems.flatMap(equippedItem => this.db.getAvailableReforges(equippedItem.item)),
 					),
 					(a, b) => a.id == b.id,
 				);
@@ -464,11 +506,12 @@ export class Sim {
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,
-				candidates: bulkReforgeCacheData?.candidates ?? preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() })),
-				optimizedCandidates: bulkReforgeCacheData?.optimizedCandidates ?? [],
+				candidates: backendBuildCandidates ? [] : (bulkReforgeCacheData?.candidates ?? preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() }))),
+				optimizedCandidates: backendBuildCandidates ? [] : (bulkReforgeCacheData?.optimizedCandidates ?? []),
 				topResults: 5,
 				highStageIterations: this.getIterations(),
 				reforgeRequest: bulkReforgeRequest,
+				bulkSettings,
 			});
 			let result: BulkSimResult;
 			// Only use worker based concurrency when running wasm. Local sim has native threading.

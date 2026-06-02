@@ -1768,6 +1768,7 @@ export class BulkTab extends SimTab {
 		gearSets: Gear[],
 		signal: AbortSignal,
 		reforgeConfig?: ReforgeOptimizeConfig,
+		bulkSettings?: BulkSettings,
 	): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
 		return runCoreBulkSimImpl(
 			{
@@ -1780,6 +1781,7 @@ export class BulkTab extends SimTab {
 			gearSets,
 			signal,
 			reforgeConfig,
+			bulkSettings,
 		);
 	}
 
@@ -1895,6 +1897,7 @@ export class BulkTab extends SimTab {
 
 		const playerPhase = this.simUI.sim.getPhase() >= 2;
 		const challengeModeEnabled = this.simUI.player.getChallengeModeEnabled();
+		const backendBulkSettings = useLocalBulkSim ? this.createBulkSettings() : undefined;
 		let candidateGearSets: Gear[] = [];
 		const gearSets: Gear[] = [];
 		let runError: unknown = null;
@@ -1915,20 +1918,26 @@ export class BulkTab extends SimTab {
 			batchCompleteMetrics.combinations = this.combinations;
 			batchCompleteMetrics.optimisation_rounds_used = this.shouldUseOptimisationRounds(this.combinations) ? 1 : 0;
 
-			const candidateGearBuildStartedAt = new Date().getTime();
-			candidateGearSets = await this.buildCandidateGearSets(challengeModeEnabled, abortSignal);
-			batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
-			batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
+			if (!useLocalBulkSim) {
+				const candidateGearBuildStartedAt = new Date().getTime();
+				candidateGearSets = await this.buildCandidateGearSets(challengeModeEnabled, abortSignal);
+				batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
+				batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
+			} else {
+				batchCompleteMetrics.backend_candidate_generation = 1;
+			}
 
 			const backendReforgeConfig = this.getBulkReforgeConfig(playerPhase);
-			if (backendReforgeConfig) {
+			if (useLocalBulkSim) {
+				this.setCandidateGearProgress(0, 1, i18n.t('bulk_tab.progress.building_candidate_gear_sets'), 'preparing');
+			} else if (backendReforgeConfig) {
 				gearSets.push(...candidateGearSets);
 			} else {
 				gearSets.push(...this.dedupeGearSets(candidateGearSets));
 			}
 			this.simStart = new Date().getTime();
 			let referenceDpsMetrics: DistributionMetrics;
-			const bulkSimResult = await this.runCoreBulkSim(gearSets, abortSignal, backendReforgeConfig);
+			const bulkSimResult = await this.runCoreBulkSim(gearSets, abortSignal, backendReforgeConfig, backendBulkSettings);
 			referenceDpsMetrics = bulkSimResult.referenceDpsMetrics;
 			topGearResults = bulkSimResult.topGearResults;
 			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);

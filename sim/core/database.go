@@ -77,6 +77,10 @@ func addToDatabase(newDB *proto.SimDatabase) {
 	}
 }
 
+func AddToDatabase(newDB *proto.SimDatabase) {
+	addToDatabase(newDB)
+}
+
 type ReforgeStat struct {
 	ID         int32
 	FromStat   proto.Stat
