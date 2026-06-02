@@ -9,29 +9,45 @@ import (
 	googleProto "google.golang.org/protobuf/proto"
 )
 
-type bulkSimItemSlot int
+type BulkSimItemSlot int
 
 const (
-	bulkSimItemSlotHead bulkSimItemSlot = iota
-	bulkSimItemSlotNeck
-	bulkSimItemSlotShoulder
-	bulkSimItemSlotBack
-	bulkSimItemSlotChest
-	bulkSimItemSlotWrist
-	bulkSimItemSlotHands
-	bulkSimItemSlotWaist
-	bulkSimItemSlotLegs
-	bulkSimItemSlotFeet
-	bulkSimItemSlotFinger
-	bulkSimItemSlotTrinket
-	bulkSimItemSlotMainHand
-	bulkSimItemSlotOffHand
-	bulkSimItemSlotHandWeapon
+	BulkSimItemSlotHead BulkSimItemSlot = iota
+	BulkSimItemSlotNeck
+	BulkSimItemSlotShoulder
+	BulkSimItemSlotBack
+	BulkSimItemSlotChest
+	BulkSimItemSlotWrist
+	BulkSimItemSlotHands
+	BulkSimItemSlotWaist
+	BulkSimItemSlotLegs
+	BulkSimItemSlotFeet
+	BulkSimItemSlotFinger
+	BulkSimItemSlotTrinket
+	BulkSimItemSlotMainHand
+	BulkSimItemSlotOffHand
+	BulkSimItemSlotHandWeapon
 )
 
-type bulkSimEligibleWeaponType struct {
-	canUseTwoHand bool
-}
+type bulkSimItemSlot = BulkSimItemSlot
+
+const (
+	bulkSimItemSlotHead       = BulkSimItemSlotHead
+	bulkSimItemSlotNeck       = BulkSimItemSlotNeck
+	bulkSimItemSlotShoulder   = BulkSimItemSlotShoulder
+	bulkSimItemSlotBack       = BulkSimItemSlotBack
+	bulkSimItemSlotChest      = BulkSimItemSlotChest
+	bulkSimItemSlotWrist      = BulkSimItemSlotWrist
+	bulkSimItemSlotHands      = BulkSimItemSlotHands
+	bulkSimItemSlotWaist      = BulkSimItemSlotWaist
+	bulkSimItemSlotLegs       = BulkSimItemSlotLegs
+	bulkSimItemSlotFeet       = BulkSimItemSlotFeet
+	bulkSimItemSlotFinger     = BulkSimItemSlotFinger
+	bulkSimItemSlotTrinket    = BulkSimItemSlotTrinket
+	bulkSimItemSlotMainHand   = BulkSimItemSlotMainHand
+	bulkSimItemSlotOffHand    = BulkSimItemSlotOffHand
+	bulkSimItemSlotHandWeapon = BulkSimItemSlotHandWeapon
+)
 
 type bulkSimCandidateOption struct {
 	spec *proto.ItemSpec
@@ -84,10 +100,55 @@ var bulkSimItemSlotToSingleItemSlot = map[bulkSimItemSlot]proto.ItemSlot{
 	bulkSimItemSlotOffHand:  proto.ItemSlot_ItemSlotOffHand,
 }
 
+var BulkSimItemSlotToSingleItemSlot = bulkSimItemSlotToSingleItemSlot
+
 var bulkSimItemSlotToItemSlotPairs = map[bulkSimItemSlot][2]proto.ItemSlot{
 	bulkSimItemSlotFinger:     {proto.ItemSlot_ItemSlotFinger1, proto.ItemSlot_ItemSlotFinger2},
 	bulkSimItemSlotTrinket:    {proto.ItemSlot_ItemSlotTrinket1, proto.ItemSlot_ItemSlotTrinket2},
 	bulkSimItemSlotHandWeapon: {proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand},
+}
+
+var BulkSimItemSlotToItemSlotPairs = bulkSimItemSlotToItemSlotPairs
+
+var ItemSlotToBulkSimItemSlot = map[proto.ItemSlot]BulkSimItemSlot{
+	proto.ItemSlot_ItemSlotHead:     BulkSimItemSlotHead,
+	proto.ItemSlot_ItemSlotNeck:     BulkSimItemSlotNeck,
+	proto.ItemSlot_ItemSlotShoulder: BulkSimItemSlotShoulder,
+	proto.ItemSlot_ItemSlotBack:     BulkSimItemSlotBack,
+	proto.ItemSlot_ItemSlotChest:    BulkSimItemSlotChest,
+	proto.ItemSlot_ItemSlotWrist:    BulkSimItemSlotWrist,
+	proto.ItemSlot_ItemSlotHands:    BulkSimItemSlotHands,
+	proto.ItemSlot_ItemSlotWaist:    BulkSimItemSlotWaist,
+	proto.ItemSlot_ItemSlotLegs:     BulkSimItemSlotLegs,
+	proto.ItemSlot_ItemSlotFeet:     BulkSimItemSlotFeet,
+	proto.ItemSlot_ItemSlotFinger1:  BulkSimItemSlotFinger,
+	proto.ItemSlot_ItemSlotFinger2:  BulkSimItemSlotFinger,
+	proto.ItemSlot_ItemSlotTrinket1: BulkSimItemSlotTrinket,
+	proto.ItemSlot_ItemSlotTrinket2: BulkSimItemSlotTrinket,
+	proto.ItemSlot_ItemSlotMainHand: BulkSimItemSlotMainHand,
+	proto.ItemSlot_ItemSlotOffHand:  BulkSimItemSlotOffHand,
+}
+
+var BulkSimItemSlotNames = map[BulkSimItemSlot]string{
+	BulkSimItemSlotHead:       "ItemSlotHead",
+	BulkSimItemSlotNeck:       "ItemSlotNeck",
+	BulkSimItemSlotShoulder:   "ItemSlotShoulder",
+	BulkSimItemSlotBack:       "ItemSlotBack",
+	BulkSimItemSlotChest:      "ItemSlotChest",
+	BulkSimItemSlotWrist:      "ItemSlotWrist",
+	BulkSimItemSlotHands:      "ItemSlotHands",
+	BulkSimItemSlotWaist:      "ItemSlotWaist",
+	BulkSimItemSlotLegs:       "ItemSlotLegs",
+	BulkSimItemSlotFeet:       "ItemSlotFeet",
+	BulkSimItemSlotFinger:     "ItemSlotFinger",
+	BulkSimItemSlotTrinket:    "ItemSlotTrinket",
+	BulkSimItemSlotMainHand:   "ItemSlotMainHand",
+	BulkSimItemSlotOffHand:    "ItemSlotOffHand",
+	BulkSimItemSlotHandWeapon: "ItemSlotHandWeapon",
+}
+
+func GetBulkSimItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) BulkSimItemSlot {
+	return bulkSimGetItemSlotFromSlot(slot, playerCanDualWield)
 }
 
 var bulkSimItemTypeToSlots = map[proto.ItemType][]proto.ItemSlot{
@@ -104,126 +165,6 @@ var bulkSimItemTypeToSlots = map[proto.ItemType][]proto.ItemSlot{
 	proto.ItemType_ItemTypeFinger:   {proto.ItemSlot_ItemSlotFinger1, proto.ItemSlot_ItemSlotFinger2},
 	proto.ItemType_ItemTypeTrinket:  {proto.ItemSlot_ItemSlotTrinket1, proto.ItemSlot_ItemSlotTrinket2},
 	proto.ItemType_ItemTypeRanged:   {proto.ItemSlot_ItemSlotMainHand},
-}
-
-var bulkSimClassMaxArmorType = map[proto.Class]proto.ArmorType{
-	proto.Class_ClassWarrior:     proto.ArmorType_ArmorTypePlate,
-	proto.Class_ClassPaladin:     proto.ArmorType_ArmorTypePlate,
-	proto.Class_ClassDeathKnight: proto.ArmorType_ArmorTypePlate,
-	proto.Class_ClassShaman:      proto.ArmorType_ArmorTypeMail,
-	proto.Class_ClassHunter:      proto.ArmorType_ArmorTypeMail,
-	proto.Class_ClassRogue:       proto.ArmorType_ArmorTypeLeather,
-	proto.Class_ClassMonk:        proto.ArmorType_ArmorTypeLeather,
-	proto.Class_ClassDruid:       proto.ArmorType_ArmorTypeLeather,
-	proto.Class_ClassMage:        proto.ArmorType_ArmorTypeCloth,
-	proto.Class_ClassPriest:      proto.ArmorType_ArmorTypeCloth,
-	proto.Class_ClassWarlock:     proto.ArmorType_ArmorTypeCloth,
-}
-
-var bulkSimClassWeaponTypes = map[proto.Class]map[proto.WeaponType]bulkSimEligibleWeaponType{
-	proto.Class_ClassWarrior: {
-		proto.WeaponType_WeaponTypeAxe:     {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeDagger:  {},
-		proto.WeaponType_WeaponTypeFist:    {},
-		proto.WeaponType_WeaponTypeMace:    {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypePolearm: {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeShield:  {},
-		proto.WeaponType_WeaponTypeStaff:   {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeSword:   {canUseTwoHand: true},
-	},
-	proto.Class_ClassPaladin: {
-		proto.WeaponType_WeaponTypeAxe:     {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeMace:    {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypePolearm: {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeShield:  {},
-		proto.WeaponType_WeaponTypeSword:   {canUseTwoHand: true},
-	},
-	proto.Class_ClassDeathKnight: {
-		proto.WeaponType_WeaponTypeAxe:     {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeMace:    {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypePolearm: {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeSword:   {canUseTwoHand: true},
-	},
-	proto.Class_ClassRogue: {
-		proto.WeaponType_WeaponTypeAxe:     {},
-		proto.WeaponType_WeaponTypeDagger:  {},
-		proto.WeaponType_WeaponTypeFist:    {},
-		proto.WeaponType_WeaponTypeMace:    {},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypeSword:   {},
-	},
-	proto.Class_ClassMonk: {
-		proto.WeaponType_WeaponTypeAxe:     {},
-		proto.WeaponType_WeaponTypeFist:    {},
-		proto.WeaponType_WeaponTypeMace:    {},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypePolearm: {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeStaff:   {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeSword:   {},
-	},
-	proto.Class_ClassDruid: {
-		proto.WeaponType_WeaponTypeDagger:  {},
-		proto.WeaponType_WeaponTypeFist:    {},
-		proto.WeaponType_WeaponTypeMace:    {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypePolearm: {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeStaff:   {canUseTwoHand: true},
-	},
-	proto.Class_ClassShaman: {
-		proto.WeaponType_WeaponTypeAxe:     {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeDagger:  {},
-		proto.WeaponType_WeaponTypeFist:    {},
-		proto.WeaponType_WeaponTypeMace:    {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypeShield:  {},
-		proto.WeaponType_WeaponTypeStaff:   {canUseTwoHand: true},
-	},
-	proto.Class_ClassMage: {
-		proto.WeaponType_WeaponTypeDagger:  {},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypeStaff:   {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeSword:   {},
-	},
-	proto.Class_ClassPriest: {
-		proto.WeaponType_WeaponTypeDagger:  {},
-		proto.WeaponType_WeaponTypeMace:    {},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypeStaff:   {canUseTwoHand: true},
-	},
-	proto.Class_ClassWarlock: {
-		proto.WeaponType_WeaponTypeDagger:  {},
-		proto.WeaponType_WeaponTypeOffHand: {},
-		proto.WeaponType_WeaponTypeStaff:   {canUseTwoHand: true},
-		proto.WeaponType_WeaponTypeSword:   {},
-	},
-	proto.Class_ClassHunter: {},
-}
-
-var bulkSimClassRangedWeaponTypes = map[proto.Class][]proto.RangedWeaponType{
-	proto.Class_ClassWarrior: {proto.RangedWeaponType_RangedWeaponTypeBow, proto.RangedWeaponType_RangedWeaponTypeCrossbow, proto.RangedWeaponType_RangedWeaponTypeGun, proto.RangedWeaponType_RangedWeaponTypeThrown},
-	proto.Class_ClassHunter:  {proto.RangedWeaponType_RangedWeaponTypeBow, proto.RangedWeaponType_RangedWeaponTypeCrossbow, proto.RangedWeaponType_RangedWeaponTypeGun},
-	proto.Class_ClassMage:    {proto.RangedWeaponType_RangedWeaponTypeWand},
-	proto.Class_ClassPriest:  {proto.RangedWeaponType_RangedWeaponTypeWand},
-	proto.Class_ClassWarlock: {proto.RangedWeaponType_RangedWeaponTypeWand},
-}
-
-var bulkSimSpecCanDualWield = map[proto.Spec]bool{
-	proto.Spec_SpecBloodDeathKnight:   true,
-	proto.Spec_SpecFrostDeathKnight:   true,
-	proto.Spec_SpecUnholyDeathKnight:  true,
-	proto.Spec_SpecBeastMasteryHunter: true,
-	proto.Spec_SpecMarksmanshipHunter: true,
-	proto.Spec_SpecSurvivalHunter:     true,
-	proto.Spec_SpecBrewmasterMonk:     true,
-	proto.Spec_SpecWindwalkerMonk:     true,
-	proto.Spec_SpecAssassinationRogue: true,
-	proto.Spec_SpecCombatRogue:        true,
-	proto.Spec_SpecSubtletyRogue:      true,
-	proto.Spec_SpecEnhancementShaman:  true,
-	proto.Spec_SpecArmsWarrior:        true,
-	proto.Spec_SpecFuryWarrior:        true,
-	proto.Spec_SpecProtectionWarrior:  true,
 }
 
 func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
@@ -352,7 +293,7 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 	if err != nil {
 		return nil, err
 	}
-	playerCanDualWield := bulkSimSpecCanDualWield[playerSpec] && player.GetClass() != proto.Class_ClassHunter
+	playerCanDualWield := core.SpecCanDualWieldCapabilities[playerSpec] && player.GetClass() != proto.Class_ClassHunter
 	generator := &bulkSimCandidateGenerator{
 		request:              request,
 		settings:             request.GetBulkSettings(),
@@ -1032,15 +973,15 @@ func bulkSimCanEquipItem(item core.Item, playerClass proto.Class, playerSpec pro
 		return true
 	}
 	if item.Type == proto.ItemType_ItemTypeWeapon {
-		eligibleWeaponTypes := bulkSimClassWeaponTypes[playerClass]
+		eligibleWeaponTypes := core.ClassWeaponTypeCapabilities[playerClass]
 		eligibleWeaponType, ok := eligibleWeaponTypes[item.WeaponType]
 		if !ok {
 			return false
 		}
-		if (item.HandType == proto.HandType_HandTypeOffHand || (item.HandType == proto.HandType_HandTypeOneHand && slot == proto.ItemSlot_ItemSlotOffHand)) && item.WeaponType != proto.WeaponType_WeaponTypeShield && item.WeaponType != proto.WeaponType_WeaponTypeOffHand && !bulkSimSpecCanDualWield[playerSpec] {
+		if (item.HandType == proto.HandType_HandTypeOffHand || (item.HandType == proto.HandType_HandTypeOneHand && slot == proto.ItemSlot_ItemSlotOffHand)) && item.WeaponType != proto.WeaponType_WeaponTypeShield && item.WeaponType != proto.WeaponType_WeaponTypeOffHand && !core.SpecCanDualWieldCapabilities[playerSpec] {
 			return false
 		}
-		if item.HandType == proto.HandType_HandTypeTwoHand && !eligibleWeaponType.canUseTwoHand {
+		if item.HandType == proto.HandType_HandTypeTwoHand && !eligibleWeaponType.CanUseTwoHand {
 			return false
 		}
 		if item.HandType == proto.HandType_HandTypeTwoHand && slot == proto.ItemSlot_ItemSlotOffHand && playerSpec != proto.Spec_SpecFuryWarrior {
@@ -1049,12 +990,13 @@ func bulkSimCanEquipItem(item core.Item, playerClass proto.Class, playerSpec pro
 		return true
 	}
 	if item.Type == proto.ItemType_ItemTypeRanged {
-		return slices.Contains(bulkSimClassRangedWeaponTypes[playerClass], item.RangedWeaponType)
+		return slices.Contains(core.ClassRangedWeaponTypeCapabilities[playerClass], item.RangedWeaponType)
 	}
-	maxArmorType, ok := bulkSimClassMaxArmorType[playerClass]
-	if !ok {
+	classArmorTypes := core.ClassArmorTypeCapabilities[playerClass]
+	if len(classArmorTypes) == 0 {
 		return false
 	}
+	maxArmorType := classArmorTypes[0]
 	return maxArmorType >= item.ArmorType
 }
 
@@ -1066,38 +1008,10 @@ func bulkSimGetItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) bu
 	if playerCanDualWield && (slot == proto.ItemSlot_ItemSlotMainHand || slot == proto.ItemSlot_ItemSlotOffHand) {
 		return bulkSimItemSlotHandWeapon
 	}
-	switch slot {
-	case proto.ItemSlot_ItemSlotHead:
-		return bulkSimItemSlotHead
-	case proto.ItemSlot_ItemSlotNeck:
-		return bulkSimItemSlotNeck
-	case proto.ItemSlot_ItemSlotShoulder:
-		return bulkSimItemSlotShoulder
-	case proto.ItemSlot_ItemSlotBack:
-		return bulkSimItemSlotBack
-	case proto.ItemSlot_ItemSlotChest:
-		return bulkSimItemSlotChest
-	case proto.ItemSlot_ItemSlotWrist:
-		return bulkSimItemSlotWrist
-	case proto.ItemSlot_ItemSlotHands:
-		return bulkSimItemSlotHands
-	case proto.ItemSlot_ItemSlotWaist:
-		return bulkSimItemSlotWaist
-	case proto.ItemSlot_ItemSlotLegs:
-		return bulkSimItemSlotLegs
-	case proto.ItemSlot_ItemSlotFeet:
-		return bulkSimItemSlotFeet
-	case proto.ItemSlot_ItemSlotFinger1, proto.ItemSlot_ItemSlotFinger2:
-		return bulkSimItemSlotFinger
-	case proto.ItemSlot_ItemSlotTrinket1, proto.ItemSlot_ItemSlotTrinket2:
-		return bulkSimItemSlotTrinket
-	case proto.ItemSlot_ItemSlotMainHand:
-		return bulkSimItemSlotMainHand
-	case proto.ItemSlot_ItemSlotOffHand:
-		return bulkSimItemSlotOffHand
-	default:
-		return bulkSimItemSlotHead
+	if bulkSlot, ok := ItemSlotToBulkSimItemSlot[slot]; ok {
+		return bulkSlot
 	}
+	return bulkSimItemSlotHead
 }
 
 func bulkSimAllPairs(options []bulkSimCandidateOption) [][2]bulkSimCandidateOption {

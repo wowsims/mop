@@ -6,6 +6,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ConfigEnv, defineConfig, PluginOption, UserConfigExport } from 'vite';
+import { watchAndRun } from 'vite-plugin-watch-and-run';
 import { checker } from 'vite-plugin-checker';
 import i18nextLoader from 'vite-plugin-i18next-loader';
 import stylelint from 'vite-plugin-stylelint';
@@ -118,6 +119,13 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 
 export default defineConfig(({ command, mode }) => {
 	const baseConfig = getBaseConfig({ command, mode });
+	const watchedBackendFiles = [
+		path.resolve(__dirname, 'sim/core/character_constants.go'),
+		path.resolve(__dirname, 'sim/bulk/candidates.go'),
+		path.resolve(__dirname, 'tools/database/gen_character_constants_ts.go'),
+		path.resolve(__dirname, 'tools/database/gen_bulksim_constants.ts.go'),
+	];
+
 	return {
 		...baseConfig,
 		css: {
@@ -129,6 +137,16 @@ export default defineConfig(({ command, mode }) => {
 		},
 		plugins: [
 			i18nextLoader({ namespaceResolution: 'basename', paths: ['assets/locales'] }),
+			watchAndRun([
+				{
+					name: 'Generate TypeScript from Go',
+					watch: watchedBackendFiles,
+					watchKind: ['ready', 'change'],
+					run: 'go run ./tools/database/gen_db -gen=go-to-ts',
+					delay: 0,
+					logs: ['trigger', 'end'],
+				},
+			]),
 			serveExternalAssets(),
 			checker({
 				root: BASE_PATH,

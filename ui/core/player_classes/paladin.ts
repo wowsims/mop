@@ -1,8 +1,9 @@
-import { EligibleWeaponType, IconSize, PlayerClass } from '../player_class';
+import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { HolyPaladin, ProtectionPaladin, RetributionPaladin } from '../player_specs/paladin';
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '../proto/common';
+import { Class } from '../proto/common';
 import { PaladinSpecs } from '../proto_utils/utils';
+import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Paladin extends PlayerClass<Class.ClassPaladin> {
 	static classID = Class.ClassPaladin as Class.ClassPaladin;
@@ -14,25 +15,10 @@ export class Paladin extends PlayerClass<Class.ClassPaladin> {
 		[ProtectionPaladin.friendlyName]: ProtectionPaladin,
 		[RetributionPaladin.friendlyName]: RetributionPaladin,
 	};
-	static races: Race[] = [
-		// [H]
-		Race.RaceBloodElf,
-		Race.RaceTauren,
-		// [A]
-		Race.RaceHuman,
-		Race.RaceDwarf,
-		Race.RaceDraenei,
-	];
-	static armorTypes: ArmorType[] = [ArmorType.ArmorTypePlate, ArmorType.ArmorTypeMail, ArmorType.ArmorTypeLeather, ArmorType.ArmorTypeCloth];
-	static weaponTypes: EligibleWeaponType[] = [
-		{ weaponType: WeaponType.WeaponTypeAxe, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeMace, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeOffHand },
-		{ weaponType: WeaponType.WeaponTypePolearm, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeShield },
-		{ weaponType: WeaponType.WeaponTypeSword, canUseTwoHand: true },
-	];
-	static rangedWeaponTypes: RangedWeaponType[] = [];
+	static races = getClassRaces(Paladin.classID);
+	static armorTypes = getClassArmorTypes(Paladin.classID);
+	static weaponTypes = getClassWeaponTypes(Paladin.classID);
+	static rangedWeaponTypes = getClassRangedWeaponTypes(Paladin.classID);
 
 	readonly classID = Paladin.classID;
 	readonly friendlyName = Paladin.name;

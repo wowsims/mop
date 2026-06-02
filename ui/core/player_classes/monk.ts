@@ -1,8 +1,9 @@
-import { EligibleWeaponType, IconSize, PlayerClass } from '../player_class';
+import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { BrewmasterMonk, MistweaverMonk, WindwalkerMonk } from '../player_specs/monk';
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '../proto/common';
+import { Class } from '../proto/common';
 import { MonkSpecs } from '../proto_utils/utils';
+import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Monk extends PlayerClass<Class.ClassMonk> {
 	static classID = Class.ClassMonk as Class.ClassMonk;
@@ -13,35 +14,10 @@ export class Monk extends PlayerClass<Class.ClassMonk> {
 		[MistweaverMonk.friendlyName]: MistweaverMonk,
 		[WindwalkerMonk.friendlyName]: WindwalkerMonk,
 	};
-	static races: Race[] = [
-		// [A]
-		Race.RaceAlliancePandaren,
-		Race.RaceDraenei,
-		Race.RaceDwarf,
-		Race.RaceGnome,
-		Race.RaceHuman,
-		Race.RaceNightElf,
-		Race.RaceWorgen,
-		// [H]
-		Race.RaceHordePandaren,
-		Race.RaceBloodElf,
-		Race.RaceOrc,
-		Race.RaceTauren,
-		Race.RaceTroll,
-		Race.RaceUndead,
-		Race.RaceGoblin,
-	];
-	static armorTypes: ArmorType[] = [ArmorType.ArmorTypeLeather, ArmorType.ArmorTypeCloth];
-	static weaponTypes: EligibleWeaponType[] = [
-		{ weaponType: WeaponType.WeaponTypeAxe, canUseTwoHand: false },
-		{ weaponType: WeaponType.WeaponTypeFist },
-		{ weaponType: WeaponType.WeaponTypeMace, canUseTwoHand: false },
-		{ weaponType: WeaponType.WeaponTypeOffHand },
-		{ weaponType: WeaponType.WeaponTypePolearm, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeStaff, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeSword, canUseTwoHand: false },
-	];
-	static rangedWeaponTypes: RangedWeaponType[] = [];
+	static races = getClassRaces(Monk.classID);
+	static armorTypes = getClassArmorTypes(Monk.classID);
+	static weaponTypes = getClassWeaponTypes(Monk.classID);
+	static rangedWeaponTypes = getClassRangedWeaponTypes(Monk.classID);
 
 	readonly classID = Monk.classID;
 	readonly friendlyName = Monk.name;

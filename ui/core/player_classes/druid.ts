@@ -1,8 +1,9 @@
-import { EligibleWeaponType, IconSize, PlayerClass } from '../player_class';
+import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { BalanceDruid, FeralDruid, GuardianDruid, RestorationDruid } from '../player_specs/druid';
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '../proto/common';
+import { Class } from '../proto/common';
 import { DruidSpecs } from '../proto_utils/utils';
+import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Druid extends PlayerClass<Class.ClassDruid> {
 	static classID = Class.ClassDruid as Class.ClassDruid;
@@ -15,24 +16,10 @@ export class Druid extends PlayerClass<Class.ClassDruid> {
 		[RestorationDruid.friendlyName]: RestorationDruid,
 	};
 
-	static races: Race[] = [
-		// [H]
-		Race.RaceTroll,
-		Race.RaceTauren,
-		// [A]
-		Race.RaceWorgen,
-		Race.RaceNightElf,
-	];
-	static armorTypes: ArmorType[] = [ArmorType.ArmorTypeLeather, ArmorType.ArmorTypeCloth];
-	static weaponTypes: EligibleWeaponType[] = [
-		{ weaponType: WeaponType.WeaponTypeDagger },
-		{ weaponType: WeaponType.WeaponTypeFist },
-		{ weaponType: WeaponType.WeaponTypeMace, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeOffHand },
-		{ weaponType: WeaponType.WeaponTypeStaff, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypePolearm, canUseTwoHand: true },
-	];
-	static rangedWeaponTypes: RangedWeaponType[] = [];
+	static races = getClassRaces(Druid.classID);
+	static armorTypes = getClassArmorTypes(Druid.classID);
+	static weaponTypes = getClassWeaponTypes(Druid.classID);
+	static rangedWeaponTypes = getClassRangedWeaponTypes(Druid.classID);
 
 	readonly classID = Druid.classID;
 	readonly friendlyName = Druid.name;
