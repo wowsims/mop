@@ -7,9 +7,7 @@ import { REPO_RELEASES_URL } from '../../constants/other';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import i18n from '../../../i18n/config';
 import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '../../proto/api';
-import { Class, HandType, ItemRandomSuffix, ItemSlot, ItemSpec, RangedWeaponType, ReforgeStat, Spec, WeaponType } from '../../proto/common';
-import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../proto/db';
-import { UIEnchant, UIGem, UIItem } from '../../proto/ui';
+import { Class, HandType, ItemSlot, ItemSpec, RangedWeaponType, Spec, WeaponType } from '../../proto/common';
 import { EquippedItem } from '../../proto_utils/equipped_item';
 import { Gear } from '../../proto_utils/gear';
 import { canEquipItem, getEligibleItemSlots, isSecondaryItemSlot } from '../../proto_utils/utils';
@@ -32,14 +30,12 @@ import {
 	dedupeGearSets,
 	getAllPairs,
 	getBulkItemSlotFromSlot,
-	getDurationSeconds,
 	getGearKey,
 	getOptimisationStageMinIterations,
 	getOptimisationTotalSimRounds,
 	shouldRunOptimisationStage,
 } from './bulk/utils';
 import {
-	BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
 	BULK_OPTIMISATION_MIN_COMBINATIONS,
 	BulkSimProgressConfig,
 	LOCAL_COMBINATIONS_LIMIT,
@@ -54,7 +50,7 @@ import { BulkGearJsonImporter } from './importers';
 import { BooleanPicker } from '../pickers/boolean_picker';
 import { trackEvent } from '../../../tracking/utils';
 import { EnumPicker } from '../pickers/enum_picker';
-import { translateBulkSlotName, translateWeaponType } from '../../../i18n/localization';
+import { translateWeaponType } from '../../../i18n/localization';
 import { ProgressTrackerModal } from '../progress_tracker_modal';
 import { ReforgeOptimizeConfig } from '../../sim';
 
@@ -105,7 +101,7 @@ export class BulkTab extends SimTab {
 	protected bulkSimAbortPromise: Promise<void> | null = null;
 	protected bulkSimUsesWasmConcurrency = false;
 	protected rawCombinations = 0;
-	protected requiredSetBonusCombinationCount: { signature: string; count: number; matches: Uint8Array } | null = null;
+	private combinationsCalcRequestVersion = 0;
 
 	inheritUpgrades: boolean;
 	useOptimisationRounds: boolean;
@@ -258,7 +254,10 @@ export class BulkTab extends SimTab {
 				}
 
 				const equippedIds = new Set(
-					this.simUI.player.getEquippedItems().filter(Boolean).map(item => item!.id),
+					this.simUI.player
+						.getEquippedItems()
+						.filter(Boolean)
+						.map(item => item!.id),
 				);
 
 				// Sync user-added pickers with currently equipped state:
@@ -302,7 +301,7 @@ export class BulkTab extends SimTab {
 				this.itemsChangedEmitter.emit(TypedEvent.nextEventID());
 			};
 			const updateCombinationsCount = () => {
-				this.combinationsElem.replaceChildren(this.getCombinationsCount());
+				void this.refreshCombinationsCount();
 			};
 
 			TypedEvent.onAny([this.simUI.player.challengeModeChangeEmitter, this.simUI.player.gearChangeEmitter]).on(() => loadEquippedItems());
@@ -524,10 +523,6 @@ export class BulkTab extends SimTab {
 			})
 			.filter((requiredSetBonus): requiredSetBonus is BulkRequiredSetBonus => requiredSetBonus !== null)
 			.sort((a, b) => a.setId - b.setId);
-	}
-
-	private getRequiredSetBonusFilters(): BulkRequiredSetBonus[] {
-		return this.getRequiredSetBonusesForSettings();
 	}
 
 	private getRequiredFourPieceSetBonusId(): number | undefined {
@@ -782,67 +777,6 @@ export class BulkTab extends SimTab {
 		return allWeaponCombos.filter(([mhItem, ohItem]) => this.weaponComboMatchesSettings(mhItem, ohItem));
 	}
 
-	protected getItemsForCombo(comboIdx: number): Map<ItemSlot, EquippedItem> {
-		const itemsForCombo = new Map<ItemSlot, EquippedItem>();
-
-		// Deal with weapon combos first since they bridge multiple slots.
-		const allWeaponPairs = this.getAllWeaponCombos();
-		const numWeaponPairs = allWeaponPairs.length;
-
-		if (numWeaponPairs > 0) {
-			const weaponPairIdx = comboIdx % numWeaponPairs;
-			comboIdx = Math.floor(comboIdx / numWeaponPairs);
-			const weaponPairToUse = allWeaponPairs[weaponPairIdx];
-
-			if (weaponPairToUse[0]) {
-				itemsForCombo.set(ItemSlot.ItemSlotMainHand, weaponPairToUse[0]);
-			}
-
-			if (weaponPairToUse[1]) {
-				itemsForCombo.set(ItemSlot.ItemSlotOffHand, weaponPairToUse[1]);
-			}
-		}
-
-		for (const [bulkItemSlot, pickerGroup] of this.pickerGroups.entries()) {
-			if (
-				pickerGroup.pickers.size == 0 ||
-				[BulkSimItemSlot.ItemSlotMainHand, BulkSimItemSlot.ItemSlotOffHand, BulkSimItemSlot.ItemSlotHandWeapon].includes(bulkItemSlot)
-			) {
-				continue;
-			}
-
-			const optionsForSlot: EquippedItem[] = Array.from(pickerGroup.pickers.values()).map(picker => picker.item);
-			const numOptions = optionsForSlot.length;
-
-			if ([BulkSimItemSlot.ItemSlotFinger, BulkSimItemSlot.ItemSlotTrinket].includes(bulkItemSlot)) {
-				if (numOptions < 2) {
-					throw `At least 2 items must be selected for ${translateBulkSlotName(bulkItemSlot)}`;
-				}
-
-				let pairsForSlot = getAllPairs(optionsForSlot);
-				const frozenItem = this.frozenItems.get(bulkItemSlot);
-
-				if (frozenItem) {
-					pairsForSlot = optionsForSlot.filter(option => !frozenItem.equals(option)).map(option => [frozenItem, option]);
-				}
-
-				const numPairs = pairsForSlot.length;
-				const pairIdx = comboIdx % numPairs;
-				comboIdx = Math.floor(comboIdx / numPairs);
-				const pairToUse = pairsForSlot[pairIdx];
-				const slotsToUse = bulkSimItemSlotToItemSlotPairs.get(bulkItemSlot)!;
-				itemsForCombo.set(slotsToUse[0], pairToUse[0]);
-				itemsForCombo.set(slotsToUse[1], pairToUse[1]);
-			} else {
-				const optionIdx = comboIdx % numOptions;
-				comboIdx = Math.floor(comboIdx / numOptions);
-				itemsForCombo.set(bulkSimItemSlotToSingleItemSlot.get(bulkItemSlot)!, optionsForSlot[optionIdx]);
-			}
-		}
-
-		return itemsForCombo;
-	}
-
 	private getFrozenWeaponItem(): EquippedItem | undefined {
 		if (!this.frozenWeaponSlot) {
 			return undefined;
@@ -877,76 +811,16 @@ export class BulkTab extends SimTab {
 		return this.matchesWeaponTypeFilter(mhItem, ItemSlot.ItemSlotMainHand) && this.matchesWeaponTypeFilter(ohItem, ItemSlot.ItemSlotOffHand);
 	}
 
-	protected createBulkItemsDatabase(): SimDatabase {
-		const itemsDb = SimDatabase.create();
-		for (const is of this.items.values()) {
-			if (!is) continue;
-
-			const item = this.simUI.sim.db.lookupItemSpec(is);
-			if (!item) {
-				throw new Error(`item with ID ${is.id} not found in database`);
-			}
-			itemsDb.items.push(SimItem.fromJson(UIItem.toJson(item.item), { ignoreUnknownFields: true }));
-
-			const ieRpp = this.simUI.sim.db.getItemEffectRandPropPoints(item.ilvl);
-			if (ieRpp) {
-				itemsDb.itemEffectRandPropPoints.push(ItemEffectRandPropPoints.create(this.simUI.sim.db.getItemEffectRandPropPoints(item.ilvl)));
-			}
-
-			if (item.enchant) {
-				itemsDb.enchants.push(
-					SimEnchant.fromJson(UIEnchant.toJson(item.enchant), {
-						ignoreUnknownFields: true,
-					}),
-				);
-			}
-			if (item.randomSuffix) {
-				itemsDb.randomSuffixes.push(
-					ItemRandomSuffix.fromJson(ItemRandomSuffix.toJson(item.randomSuffix), {
-						ignoreUnknownFields: true,
-					}),
-				);
-			}
-			if (item.reforge) {
-				itemsDb.reforgeStats.push(
-					ReforgeStat.fromJson(ReforgeStat.toJson(item.reforge), {
-						ignoreUnknownFields: true,
-					}),
-				);
-			}
-			for (const gem of item.gems) {
-				if (gem) {
-					itemsDb.gems.push(SimGem.fromJson(UIGem.toJson(gem), { ignoreUnknownFields: true }));
-				}
-			}
-		}
-		return itemsDb;
-	}
-
-	protected calculateBulkCombinations() {
+	protected async calculateBulkCombinations() {
 		try {
-			const rawCombinations = this.getRawCombinationsCount();
-			this.rawCombinations = rawCombinations;
-			const requiredSetBonuses = this.getRequiredSetBonusFilters();
-			if (requiredSetBonuses.length) {
-				const requiredSetBonusMatcher = this.getRequiredSetBonusComboMatcher(requiredSetBonuses);
-				const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(
-					rawCombinations,
-					requiredSetBonuses,
-					requiredSetBonusMatcher,
-				);
-				if (this.requiredSetBonusCombinationCount?.signature !== requiredSetBonusCountSignature) {
-					this.requiredSetBonusCombinationCount = this.getRequiredSetBonusCombinationCount(
-						rawCombinations,
-						requiredSetBonusMatcher,
-						requiredSetBonusCountSignature,
-					);
-				}
-				this.combinations = this.requiredSetBonusCombinationCount?.count ?? rawCombinations;
-			} else {
-				this.requiredSetBonusCombinationCount = null;
-				this.combinations = rawCombinations;
+			const bulkSettings = this.createBulkSettings();
+			const combinationCountResult = await this.simUI.sim.getBulkCombinationCount(bulkSettings);
+			console.log(combinationCountResult);
+			if (combinationCountResult.error) {
+				throw new Error(combinationCountResult.error.message || 'Failed to calculate bulk combinations');
 			}
+			this.rawCombinations = combinationCountResult.rawCombinations;
+			this.combinations = combinationCountResult.combinations;
 
 			const optimisationIterationUpperBound = this.getOptimisationRoundsIterationUpperBound(this.combinations);
 			if (this.shouldUseOptimisationRounds(this.combinations, optimisationIterationUpperBound)) {
@@ -957,6 +831,15 @@ export class BulkTab extends SimTab {
 		} catch (e) {
 			this.simUI.handleCrash(e);
 		}
+	}
+
+	private async refreshCombinationsCount() {
+		const requestVersion = ++this.combinationsCalcRequestVersion;
+		await this.calculateBulkCombinations();
+		if (requestVersion !== this.combinationsCalcRequestVersion) {
+			return;
+		}
+		this.combinationsElem.replaceChildren(this.getCombinationsCount());
 	}
 
 	private getRawCombinationsCount(): number {
@@ -999,37 +882,6 @@ export class BulkTab extends SimTab {
 		const requiredSetBonuses = Array.from(this.requiredSetBonuses.values()).filter(requiredSetBonus => requiredSetBonus.setId !== setId);
 		requiredSetBonuses.push(BulkRequiredSetBonus.create({ setId, pieces }));
 		return this.hasMatchingRequiredSetBonusCombination(requiredSetBonuses);
-	}
-
-	private getRequiredSetBonusCombinationCountSignature(
-		rawCombinations: number,
-		requiredSetBonuses: BulkRequiredSetBonus[],
-		matcher: RequiredSetBonusComboMatcher | null,
-	): string {
-		return [
-			rawCombinations,
-			requiredSetBonuses.map(requiredSetBonus => `${requiredSetBonus.setId}:${requiredSetBonus.pieces}`).join('|'),
-			matcher?.signature ?? '',
-		].join('/');
-	}
-
-	private getRequiredSetBonusCombinationCount(
-		rawCombinations: number,
-		matcher: RequiredSetBonusComboMatcher | null,
-		signature: string,
-	): { signature: string; count: number; matches: Uint8Array } | null {
-		if (!matcher) return null;
-
-		let matchingCombinations = 0;
-		const matches = new Uint8Array(rawCombinations);
-		for (let comboIdx = 0; comboIdx < rawCombinations; comboIdx++) {
-			if (this.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher)) {
-				matches[comboIdx] = 1;
-				matchingCombinations++;
-			}
-		}
-
-		return { signature, count: matchingCombinations, matches };
 	}
 
 	private shouldUseOptimisationRounds(numCombinations: number, optimisationIterationUpperBound?: number): boolean {
@@ -1318,7 +1170,6 @@ export class BulkTab extends SimTab {
 		} else {
 			this.requiredSetBonuses.delete(setBonus.setId);
 		}
-		this.requiredSetBonusCombinationCount = null;
 		this.settingsChangedEmitter.emit(eventID);
 	}
 
@@ -1331,7 +1182,6 @@ export class BulkTab extends SimTab {
 				this.requiredSetBonuses.set(requiredSetBonus.setId, BulkRequiredSetBonus.create(requiredSetBonus));
 			}
 		});
-		this.requiredSetBonusCombinationCount = null;
 		this.settingsChangedEmitter.emit(eventID);
 	}
 
@@ -1601,7 +1451,6 @@ export class BulkTab extends SimTab {
 	}
 
 	private getCombinationsCount(): Element {
-		this.calculateBulkCombinations();
 		this.bulkSimButton.disabled = !this.combinations || this.combinations > this.getCombinationsLimit();
 
 		const warningRef = ref<HTMLButtonElement>();
@@ -1656,34 +1505,11 @@ export class BulkTab extends SimTab {
 		return isExternal() ? WEB_COMBINATIONS_LIMIT : LOCAL_COMBINATIONS_LIMIT;
 	}
 
-	private setReforgeProgress(currentRound: number, rounds: number) {
+	private setCandidateGearProgress() {
 		this.progressTrackerModal.updateProgress({
-			stage: 'reforging',
-			title: i18n.t('bulk_tab.progress.reforging_iteration_rounds'),
-			current: currentRound - 1,
-			total: rounds,
+			stage: 'preparing',
+			title: i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
 			message: undefined,
-		});
-	}
-
-	private setCandidateGearProgress(
-		completed: number,
-		total: number,
-		title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
-		stage = 'preparing',
-		startedAt?: number,
-	) {
-		const secondsRemaining =
-			startedAt !== undefined && completed > 0 ? ((new Date().getTime() - startedAt) / 1000 / completed) * Math.max(0, total - completed) : undefined;
-		this.progressTrackerModal.updateProgress({
-			stage,
-			title,
-			current: completed,
-			total,
-			message:
-				secondsRemaining !== undefined ? (
-					<div>{i18n.t('bulk_tab.progress.time_remaining', { time: formatDurationSeconds(secondsRemaining) })}</div>
-				) : undefined,
 		});
 	}
 
@@ -1743,10 +1569,6 @@ export class BulkTab extends SimTab {
 		}
 	}
 
-	private getDurationSeconds(startedAt: number): number {
-		return getDurationSeconds(startedAt);
-	}
-
 	private debugOptimisationRound(message: string, data?: unknown) {
 		// if (!isDevMode()) return;
 		console.debug(`[Bulk Sim Optimisation] ${message}`, data);
@@ -1796,80 +1618,6 @@ export class BulkTab extends SimTab {
 		return this.simUI.reforger.getReforgeOptimizeConfig(this.originalGear);
 	}
 
-	private async buildCandidateGearSets(challengeModeEnabled: boolean, signal: AbortSignal): Promise<Gear[]> {
-		const startedAt = new Date().getTime();
-		const candidateGearSets: Gear[] = [];
-		const requiredSetBonuses = this.getRequiredSetBonusFilters();
-		const requiredSetBonusMatcher = this.getRequiredSetBonusComboMatcher(requiredSetBonuses);
-		const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(
-			this.rawCombinations,
-			requiredSetBonuses,
-			requiredSetBonusMatcher,
-		);
-		const requiredSetBonusMatches =
-			this.requiredSetBonusCombinationCount?.signature === requiredSetBonusCountSignature ? this.requiredSetBonusCombinationCount.matches : undefined;
-		this.debugOptimisationRound('candidate gear sets build started', {
-			combinations: this.combinations,
-			rawCombinations: this.rawCombinations,
-			chunkSize: BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
-		});
-		this.setCandidateGearProgress(0, this.combinations, undefined, undefined, startedAt);
-		await sleep(400);
-
-		for (let comboIdx = 0; comboIdx < this.rawCombinations; comboIdx++) {
-			this.throwIfBulkAborted(signal);
-			if (requiredSetBonusMatches ? !requiredSetBonusMatches[comboIdx] : !this.comboMatchesRequiredSetBonusMatcher(comboIdx, requiredSetBonusMatcher)) {
-				continue;
-			}
-
-			let gear = this.originalGear!;
-			const itemCombo = this.getItemsForCombo(comboIdx);
-			for (const [itemSlot, equippedItem] of itemCombo.entries()) {
-				const equippedItemInSlot = this.originalGear!.getEquippedItem(itemSlot);
-				let updatedItem = equippedItemInSlot ? equippedItemInSlot.withItem(equippedItem.item) : equippedItem.withChallengeMode(challengeModeEnabled);
-
-				if (equippedItem._randomSuffix) {
-					updatedItem = updatedItem.withRandomSuffix(equippedItem._randomSuffix);
-				}
-				if (!this.inheritUpgrades) {
-					updatedItem = updatedItem.withUpgrade(equippedItem._upgrade);
-				}
-
-				gear = gear.withEquippedItem(itemSlot, updatedItem, this.playerIsFuryWarrior);
-			}
-
-			candidateGearSets.push(gear);
-
-			if ((comboIdx + 1) % BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE === 0 || comboIdx + 1 === this.rawCombinations) {
-				this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
-				await sleep(0);
-			}
-		}
-		this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
-
-		const durationSeconds = this.getDurationSeconds(startedAt);
-		this.debugOptimisationRound('candidate gear sets build complete', {
-			durationSeconds,
-			combinations: this.combinations,
-			rawCombinations: this.rawCombinations,
-			candidateGearSets: candidateGearSets.length,
-			chunkSize: BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
-		});
-		trackEvent({
-			action: 'sim',
-			category: 'batch_sim',
-			label: 'candidate_gear_sets_complete',
-			value: Math.round(durationSeconds),
-			additionalData: {
-				combinations: this.combinations,
-				raw_combinations: this.rawCombinations,
-				candidate_gear_sets: candidateGearSets.length,
-			},
-		});
-
-		return candidateGearSets;
-	}
-
 	private async runBatchSim() {
 		if (this.isRunning) return;
 
@@ -1896,7 +1644,6 @@ export class BulkTab extends SimTab {
 		this.originalGearResults = null;
 
 		const playerPhase = this.simUI.sim.getPhase() >= 2;
-		const challengeModeEnabled = this.simUI.player.getChallengeModeEnabled();
 		const backendBulkSettings = useLocalBulkSim ? this.createBulkSettings() : undefined;
 		let candidateGearSets: Gear[] = [];
 		const gearSets: Gear[] = [];
@@ -1914,23 +1661,29 @@ export class BulkTab extends SimTab {
 			let topGearResults: TopGearResult[] = [];
 
 			this.resetResultsTabContent();
-			this.calculateBulkCombinations();
+			this.setCandidateGearProgress();
+			await sleep(200);
+			await this.calculateBulkCombinations();
 			batchCompleteMetrics.combinations = this.combinations;
 			batchCompleteMetrics.optimisation_rounds_used = this.shouldUseOptimisationRounds(this.combinations) ? 1 : 0;
 
 			if (!useLocalBulkSim) {
 				const candidateGearBuildStartedAt = new Date().getTime();
-				candidateGearSets = await this.buildCandidateGearSets(challengeModeEnabled, abortSignal);
+				const bulkCandidatesResult = await this.simUI.sim.getBulkCandidates(this.createBulkSettings());
+				if (bulkCandidatesResult.error) {
+					throw new Error(bulkCandidatesResult.error.message || 'Failed to build bulk candidates');
+				}
+				candidateGearSets = bulkCandidatesResult.candidates
+					.filter(candidate => !!candidate.gear)
+					.map(candidate => this.simUI.sim.db.lookupEquipmentSpec(candidate.gear!));
+				this.rawCombinations = bulkCandidatesResult.rawCombinations;
+				this.combinations = bulkCandidatesResult.combinations;
 				batchCompleteMetrics.candidate_gear_sets = candidateGearSets.length;
 				batchCompleteMetrics.candidate_gear_sets_duration_seconds = Math.round((new Date().getTime() - candidateGearBuildStartedAt) / 1000);
-			} else {
-				batchCompleteMetrics.backend_candidate_generation = 1;
 			}
 
 			const backendReforgeConfig = this.getBulkReforgeConfig(playerPhase);
-			if (useLocalBulkSim) {
-				this.setCandidateGearProgress(0, 1, i18n.t('bulk_tab.progress.building_candidate_gear_sets'), 'preparing');
-			} else if (backendReforgeConfig) {
+			if (backendReforgeConfig) {
 				gearSets.push(...candidateGearSets);
 			} else {
 				gearSets.push(...this.dedupeGearSets(candidateGearSets));
@@ -1942,7 +1695,6 @@ export class BulkTab extends SimTab {
 			topGearResults = bulkSimResult.topGearResults;
 			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);
 			batchCompleteMetrics.local_bulk_sim = useLocalBulkSim ? 1 : 0;
-			batchCompleteMetrics.wasm_concurrent_bulk_sim = this.bulkSimUsesWasmConcurrency ? 1 : 0;
 
 			const originalGearKey = getGearKey(this.originalGear);
 			this.topGearResults = topGearResults.filter(result => getGearKey(result.gear) !== originalGearKey);

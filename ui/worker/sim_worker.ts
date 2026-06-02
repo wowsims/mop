@@ -82,6 +82,8 @@ declare global {
 	const statWeightCompute: SimRequestSync;
 	var __wowsimsSolveHiGHSLP: (lp: string, timeoutSeconds: number, mipRelGap: number) => string;
 	const raidSimResultCombination: SimRequestSync;
+	const bulkCombinationCount: SimRequestSync;
+	const bulkCandidates: SimRequestSync;
 	const raidSimRequestSplit: SimRequestSync;
 	const abortById: SimRequestSync;
 }
@@ -106,6 +108,8 @@ function setupWorkerInterface() {
 		raidSimJson: raidSimJson,
 		raidSimAsync: raidSimAsync,
 		bulkSimAsync: unsupportedBulkSimAsync,
+		bulkCombinationCount: bulkCombinationCount,
+		bulkCandidates: bulkCandidates,
 		statWeights: statWeights,
 		statWeightsAsync: statWeightsAsync,
 		statWeightRequests: statWeightRequests,

@@ -789,3 +789,26 @@ message BulkRequiredSetBonus {
 	int32 set_id = 1;
 	int32 pieces = 2;
 }
+
+message BulkCombinationCountRequest {
+	RaidSimRequest base_request = 1;
+	BulkSettings bulk_settings = 2;
+}
+
+message BulkCombinationCountResult {
+	int32 raw_combinations = 1;
+	int32 combinations = 2;
+	ErrorOutcome error = 3;
+}
+
+message BulkCandidatesRequest {
+	RaidSimRequest base_request = 1;
+	BulkSettings bulk_settings = 2;
+}
+
+message BulkCandidatesResult {
+	repeated BulkGearCandidate candidates = 1;
+	int32 raw_combinations = 2;
+	int32 combinations = 3;
+	ErrorOutcome error = 4;
+}

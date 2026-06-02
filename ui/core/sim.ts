@@ -6,6 +6,10 @@ import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
 	BulkGearCandidate,
+	BulkCombinationCountRequest,
+	BulkCombinationCountResult,
+	BulkCandidatesRequest,
+	BulkCandidatesResult,
 	BulkSettings,
 	BulkSimRequest,
 	BulkSimResult,
@@ -561,6 +565,56 @@ export class Sim {
 		} finally {
 			this.signalManager.unregisterRunning(signals);
 		}
+	}
+
+	private makeBulkBaseRequest(bulkSettings: BulkSettings): RaidSimRequest {
+		const baseRequest = this.makeRaidSimRequest();
+		const player = baseRequest.raid!.parties[0].players[0];
+		const isBlacksmith = hasBlacksmithing(player);
+		let baselineGear = this.raid.getActivePlayers()[0].getGear();
+		if (baselineGear.hasInactiveMetaGem(isBlacksmith)) {
+			baselineGear = baselineGear.withoutMetaGem();
+		}
+		if (!isBlacksmith) {
+			baselineGear = baselineGear.withoutBlacksmithSockets();
+		}
+		const bulkGearDatabase = makeBulkItemDatabaseFromSpecs(this.db, baselineGear, bulkSettings.items);
+		player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
+		player.equipment = baselineGear.asSpec();
+		baseRequest.raid!.parties[0].players[0] = player;
+		return baseRequest;
+	}
+
+	async getBulkCombinationCount(bulkSettings: BulkSettings): Promise<BulkCombinationCountResult> {
+		if (this.raid.isEmpty()) {
+			throw new Error('Raid is empty! Try adding some players first.');
+		} else if (this.encounter.targets.length < 1) {
+			throw new Error('Encounter has no targets! Try adding some targets first.');
+		}
+
+		await this.waitForInit();
+		const baseRequest = this.makeBulkBaseRequest(bulkSettings);
+		const request = BulkCombinationCountRequest.create({
+			baseRequest,
+			bulkSettings,
+		});
+		return await this.workerPool.bulkCombinationCount(request);
+	}
+
+	async getBulkCandidates(bulkSettings: BulkSettings): Promise<BulkCandidatesResult> {
+		if (this.raid.isEmpty()) {
+			throw new Error('Raid is empty! Try adding some players first.');
+		} else if (this.encounter.targets.length < 1) {
+			throw new Error('Encounter has no targets! Try adding some targets first.');
+		}
+
+		await this.waitForInit();
+		const baseRequest = this.makeBulkBaseRequest(bulkSettings);
+		const request = BulkCandidatesRequest.create({
+			baseRequest,
+			bulkSettings,
+		});
+		return await this.workerPool.bulkCandidates(request);
 	}
 
 	async runRaidSimWithLogs(eventID: EventID, options: RunSimOptions = {}): Promise<SimResult | null> {

@@ -64,6 +64,42 @@ func TestBackendBulkCandidateGenerationMatchesReference(t *testing.T) {
 	}
 }
 
+func TestBulkCombinationCountMatchesReferenceTotal(t *testing.T) {
+	referenceRequest := &proto.BulkSimRequest{}
+	requestBytes, err := os.ReadFile("../../candidates-reference.json")
+	if err != nil {
+		t.Fatalf("failed to read candidates reference: %v", err)
+	}
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(requestBytes, referenceRequest); err != nil {
+		t.Fatalf("failed to decode candidates reference request: %v", err)
+	}
+
+	bulkSettings := &proto.BulkSettings{}
+	settingsBytes, err := os.ReadFile("../../bulk-selected-items-reference.json")
+	if err != nil {
+		t.Fatalf("failed to read bulk settings reference: %v", err)
+	}
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(settingsBytes, bulkSettings); err != nil {
+		t.Fatalf("failed to decode bulk settings reference: %v", err)
+	}
+
+	result := BulkCombinationCount(&proto.BulkCombinationCountRequest{
+		BaseRequest:  referenceRequest.GetBaseRequest(),
+		BulkSettings: bulkSettings,
+	})
+	if result.GetError() != nil {
+		t.Fatalf("bulk combination count failed: %v", result.GetError().GetMessage())
+	}
+
+	expectedTotal := len(referenceRequest.GetOptimizedCandidates()) + len(referenceRequest.GetCandidates())
+	if int(result.GetCombinations()) != expectedTotal {
+		t.Fatalf("bulk combination count=%d expected=%d", result.GetCombinations(), expectedTotal)
+	}
+	if result.GetRawCombinations() < result.GetCombinations() {
+		t.Fatalf("raw combinations should be >= filtered combinations, raw=%d filtered=%d", result.GetRawCombinations(), result.GetCombinations())
+	}
+}
+
 func summarizeBulkCandidateMismatch(actual *proto.EquipmentSpec, expected *proto.EquipmentSpec) string {
 	if actual == nil || expected == nil {
 		return fmt.Sprintf("actual nil=%t expected nil=%t", actual == nil, expected == nil)

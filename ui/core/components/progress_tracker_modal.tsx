@@ -160,19 +160,27 @@ export class ProgressTrackerModal extends Component {
 		}
 
 		this.progressTitleElement?.classList[title ? 'remove' : 'add']('d-none');
-		if (this.progressBarElement && current !== undefined && total !== undefined) {
+		if (this.progressBarElement) {
 			if (this.progressTitleElement && title) {
 				this.progressTitleElement.textContent = title;
 			}
-			const currentRounded = Math.ceil(current);
-			if (this.progressTextElement) {
-				this.progressTextElement.textContent = `${currentRounded}/${total}`;
-			}
-			this.progressBarElement.style.width = `${(current / total) * 100}%`;
 
-			this.progressBarElement.setAttribute('aria-valuenow', currentRounded.toString());
-			this.progressBarElement.setAttribute('aria-valuemin', '0');
-			this.progressBarElement.setAttribute('aria-valuemax', total.toString());
+			if (current !== undefined && total !== undefined) {
+				const currentRounded = Math.ceil(current);
+				if (this.progressTextElement) {
+					this.progressTextElement?.classList.remove('d-none');
+					this.progressTextElement.textContent = `${currentRounded}/${total}`;
+				}
+				this.progressBarElement?.classList.remove('d-none');
+				this.progressBarElement.style.width = `${(current / total) * 100}%`;
+
+				this.progressBarElement.setAttribute('aria-valuenow', currentRounded.toString());
+				this.progressBarElement.setAttribute('aria-valuemin', '0');
+				this.progressBarElement.setAttribute('aria-valuemax', total.toString());
+			} else {
+				this.progressBarElement?.classList.add('d-none');
+				this.progressTextElement?.classList.add('d-none');
+			}
 		}
 	}
 
