@@ -39,7 +39,6 @@ import {
 	shouldRunOptimisationStage,
 } from './bulk/utils';
 import {
-	BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
 	BULK_OPTIMISATION_MIN_COMBINATIONS,
 	BulkSimProgressConfig,
 	LOCAL_COMBINATIONS_LIMIT,
@@ -69,6 +68,15 @@ type RequiredSetBonusComboMatcher = {
 	baseCounts: number[];
 	requiredPieces: number[];
 	dimensions: Array<{ optionDeltas: number[][] }>;
+};
+
+type ComboSlotSelection = [ItemSlot, EquippedItem | null];
+type ComboDimension = {
+	options: ComboSlotSelection[][];
+};
+type PreparedComboSelection = [ItemSlot, EquippedItem];
+type PreparedComboDimension = {
+	options: PreparedComboSelection[][];
 };
 
 export class BulkTab extends SimTab {
@@ -258,7 +266,10 @@ export class BulkTab extends SimTab {
 				}
 
 				const equippedIds = new Set(
-					this.simUI.player.getEquippedItems().filter(Boolean).map(item => item!.id),
+					this.simUI.player
+						.getEquippedItems()
+						.filter(Boolean)
+						.map(item => item!.id),
 				);
 
 				// Sync user-added pickers with currently equipped state:
@@ -782,25 +793,16 @@ export class BulkTab extends SimTab {
 		return allWeaponCombos.filter(([mhItem, ohItem]) => this.weaponComboMatchesSettings(mhItem, ohItem));
 	}
 
-	protected getItemsForCombo(comboIdx: number): Map<ItemSlot, EquippedItem> {
-		const itemsForCombo = new Map<ItemSlot, EquippedItem>();
-
-		// Deal with weapon combos first since they bridge multiple slots.
-		const allWeaponPairs = this.getAllWeaponCombos();
-		const numWeaponPairs = allWeaponPairs.length;
-
-		if (numWeaponPairs > 0) {
-			const weaponPairIdx = comboIdx % numWeaponPairs;
-			comboIdx = Math.floor(comboIdx / numWeaponPairs);
-			const weaponPairToUse = allWeaponPairs[weaponPairIdx];
-
-			if (weaponPairToUse[0]) {
-				itemsForCombo.set(ItemSlot.ItemSlotMainHand, weaponPairToUse[0]);
-			}
-
-			if (weaponPairToUse[1]) {
-				itemsForCombo.set(ItemSlot.ItemSlotOffHand, weaponPairToUse[1]);
-			}
+	private buildComboDimensions(): ComboDimension[] {
+		const dimensions: ComboDimension[] = [];
+		const weaponPairs = this.getAllWeaponCombos();
+		if (weaponPairs.length > 0) {
+			dimensions.push({
+				options: weaponPairs.map(([mainHand, offHand]) => [
+					[ItemSlot.ItemSlotMainHand, mainHand],
+					[ItemSlot.ItemSlotOffHand, offHand],
+				]),
+			});
 		}
 
 		for (const [bulkItemSlot, pickerGroup] of this.pickerGroups.entries()) {
@@ -812,31 +814,86 @@ export class BulkTab extends SimTab {
 			}
 
 			const optionsForSlot: EquippedItem[] = Array.from(pickerGroup.pickers.values()).map(picker => picker.item);
-			const numOptions = optionsForSlot.length;
-
 			if ([BulkSimItemSlot.ItemSlotFinger, BulkSimItemSlot.ItemSlotTrinket].includes(bulkItemSlot)) {
-				if (numOptions < 2) {
+				if (optionsForSlot.length < 2) {
 					throw `At least 2 items must be selected for ${translateBulkSlotName(bulkItemSlot)}`;
 				}
 
 				let pairsForSlot = getAllPairs(optionsForSlot);
 				const frozenItem = this.frozenItems.get(bulkItemSlot);
-
 				if (frozenItem) {
 					pairsForSlot = optionsForSlot.filter(option => !frozenItem.equals(option)).map(option => [frozenItem, option]);
 				}
 
-				const numPairs = pairsForSlot.length;
-				const pairIdx = comboIdx % numPairs;
-				comboIdx = Math.floor(comboIdx / numPairs);
-				const pairToUse = pairsForSlot[pairIdx];
 				const slotsToUse = bulkSimItemSlotToItemSlotPairs.get(bulkItemSlot)!;
-				itemsForCombo.set(slotsToUse[0], pairToUse[0]);
-				itemsForCombo.set(slotsToUse[1], pairToUse[1]);
+				dimensions.push({
+					options: pairsForSlot.map(pair => [
+						[slotsToUse[0], pair[0]],
+						[slotsToUse[1], pair[1]],
+					]),
+				});
 			} else {
-				const optionIdx = comboIdx % numOptions;
-				comboIdx = Math.floor(comboIdx / numOptions);
-				itemsForCombo.set(bulkSimItemSlotToSingleItemSlot.get(bulkItemSlot)!, optionsForSlot[optionIdx]);
+				const slotToUse = bulkSimItemSlotToSingleItemSlot.get(bulkItemSlot)!;
+				dimensions.push({
+					options: optionsForSlot.map(option => [[slotToUse, option]]),
+				});
+			}
+		}
+
+		return dimensions;
+	}
+
+	private getComboSlotSelections(comboIdx: number, comboDimensions: ComboDimension[]): ComboSlotSelection[] {
+		const selections: ComboSlotSelection[] = [];
+		for (const dimension of comboDimensions) {
+			if (!dimension.options.length) {
+				return [];
+			}
+
+			const optionIdx = comboIdx % dimension.options.length;
+			comboIdx = Math.floor(comboIdx / dimension.options.length);
+			selections.push(...dimension.options[optionIdx]);
+		}
+
+		return selections;
+	}
+
+	private buildPreparedComboDimensions(comboDimensions: ComboDimension[], originalGear: Gear, challengeModeEnabled: boolean): PreparedComboDimension[] {
+		// Precompute per-option item transformations once
+		// so the hot combo loop only applies prepared items.
+		return comboDimensions.map(dimension => ({
+			options: dimension.options.map(optionSelections => {
+				const preparedSelections: PreparedComboSelection[] = [];
+				for (const [itemSlot, equippedItem] of optionSelections) {
+					if (!equippedItem) {
+						continue;
+					}
+
+					const equippedItemInSlot = originalGear.getEquippedItem(itemSlot);
+					let updatedItem = equippedItemInSlot
+						? equippedItemInSlot.withItem(equippedItem.item)
+						: equippedItem.withChallengeMode(challengeModeEnabled);
+					if (equippedItem._randomSuffix) {
+						updatedItem = updatedItem.withRandomSuffix(equippedItem._randomSuffix);
+					}
+					if (!this.inheritUpgrades) {
+						updatedItem = updatedItem.withUpgrade(equippedItem._upgrade);
+					}
+
+					preparedSelections.push([itemSlot, updatedItem]);
+				}
+
+				return preparedSelections;
+			}),
+		}));
+	}
+
+	protected getItemsForCombo(comboIdx: number): Map<ItemSlot, EquippedItem> {
+		const itemsForCombo = new Map<ItemSlot, EquippedItem>();
+
+		for (const [itemSlot, equippedItem] of this.getComboSlotSelections(comboIdx, this.buildComboDimensions())) {
+			if (equippedItem) {
+				itemsForCombo.set(itemSlot, equippedItem);
 			}
 		}
 
@@ -1797,50 +1854,53 @@ export class BulkTab extends SimTab {
 	private async buildCandidateGearSets(challengeModeEnabled: boolean, signal: AbortSignal): Promise<Gear[]> {
 		const startedAt = new Date().getTime();
 		const candidateGearSets: Gear[] = [];
+		const comboDimensions = this.buildComboDimensions();
+		const originalGear = this.originalGear!;
+		const rawCombinations = this.rawCombinations;
+		const preparedComboDimensions = this.buildPreparedComboDimensions(comboDimensions, originalGear, challengeModeEnabled);
 		const requiredSetBonuses = this.getRequiredSetBonusFilters();
 		const requiredSetBonusMatcher = this.getRequiredSetBonusComboMatcher(requiredSetBonuses);
-		const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(
-			this.rawCombinations,
-			requiredSetBonuses,
-			requiredSetBonusMatcher,
-		);
+		const requiredSetBonusCountSignature = this.getRequiredSetBonusCombinationCountSignature(rawCombinations, requiredSetBonuses, requiredSetBonusMatcher);
 		const requiredSetBonusMatches =
+			// Reuse precomputed required-set-bonus pass/fail flags
+			// whenever the signature still matches current settings.
 			this.requiredSetBonusCombinationCount?.signature === requiredSetBonusCountSignature ? this.requiredSetBonusCombinationCount.matches : undefined;
 		this.debugOptimisationRound('candidate gear sets build started', {
 			combinations: this.combinations,
-			rawCombinations: this.rawCombinations,
-			chunkSize: BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
+			rawCombinations,
 		});
 		this.setCandidateGearProgress(0, this.combinations, undefined, undefined, startedAt);
-		await sleep(400);
+		await sleep(0);
+		let lastYieldAt = performance.now();
 
-		for (let comboIdx = 0; comboIdx < this.rawCombinations; comboIdx++) {
+		for (let comboIdx = 0; comboIdx < rawCombinations; comboIdx++) {
 			this.throwIfBulkAborted(signal);
 			if (requiredSetBonusMatches ? !requiredSetBonusMatches[comboIdx] : !this.comboMatchesRequiredSetBonusMatcher(comboIdx, requiredSetBonusMatcher)) {
 				continue;
 			}
 
-			let gear = this.originalGear!;
-			const itemCombo = this.getItemsForCombo(comboIdx);
-			for (const [itemSlot, equippedItem] of itemCombo.entries()) {
-				const equippedItemInSlot = this.originalGear!.getEquippedItem(itemSlot);
-				let updatedItem = equippedItemInSlot ? equippedItemInSlot.withItem(equippedItem.item) : equippedItem.withChallengeMode(challengeModeEnabled);
-
-				if (equippedItem._randomSuffix) {
-					updatedItem = updatedItem.withRandomSuffix(equippedItem._randomSuffix);
+			let gear = originalGear;
+			let comboRemainder = comboIdx;
+			// Decode a mixed-radix combo index: each dimension consumes one digit (option index).
+			for (const dimension of preparedComboDimensions) {
+				const optionIdx = comboRemainder % dimension.options.length;
+				comboRemainder = Math.floor(comboRemainder / dimension.options.length);
+				for (const [itemSlot, updatedItem] of dimension.options[optionIdx]) {
+					gear = gear.withEquippedItem(itemSlot, updatedItem, this.playerIsFuryWarrior);
 				}
-				if (!this.inheritUpgrades) {
-					updatedItem = updatedItem.withUpgrade(equippedItem._upgrade);
-				}
-
-				gear = gear.withEquippedItem(itemSlot, updatedItem, this.playerIsFuryWarrior);
 			}
 
 			candidateGearSets.push(gear);
 
-			if ((comboIdx + 1) % BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE === 0 || comboIdx + 1 === this.rawCombinations) {
-				this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
-				await sleep(0);
+			const scannedCombinations = comboIdx + 1;
+			// Check progress every 64 combos
+			if (scannedCombinations % 64 === 0 || scannedCombinations === rawCombinations) {
+				const now = performance.now();
+				if (scannedCombinations === rawCombinations || now - lastYieldAt >= 16) {
+					this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
+					await sleep(0);
+					lastYieldAt = performance.now();
+				}
 			}
 		}
 		this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
@@ -1849,9 +1909,8 @@ export class BulkTab extends SimTab {
 		this.debugOptimisationRound('candidate gear sets build complete', {
 			durationSeconds,
 			combinations: this.combinations,
-			rawCombinations: this.rawCombinations,
+			rawCombinations,
 			candidateGearSets: candidateGearSets.length,
-			chunkSize: BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE,
 		});
 		trackEvent({
 			action: 'sim',
@@ -1860,7 +1919,7 @@ export class BulkTab extends SimTab {
 			value: Math.round(durationSeconds),
 			additionalData: {
 				combinations: this.combinations,
-				raw_combinations: this.rawCombinations,
+				raw_combinations: rawCombinations,
 				candidate_gear_sets: candidateGearSets.length,
 			},
 		});
@@ -1923,9 +1982,12 @@ export class BulkTab extends SimTab {
 			const backendReforgeConfig = this.getBulkReforgeConfig(playerPhase);
 			if (backendReforgeConfig) {
 				gearSets.push(...candidateGearSets);
+				this.setCandidateGearProgress(0, gearSets.length, i18n.t('bulk_tab.progress.reforging_iteration_rounds'), 'reforging');
 			} else {
 				gearSets.push(...this.dedupeGearSets(candidateGearSets));
+				this.setCandidateGearProgress(0, gearSets.length, i18n.t('bulk_tab.progress.refining_rounds'), 'sim');
 			}
+			await sleep(0);
 			this.simStart = new Date().getTime();
 			let referenceDpsMetrics: DistributionMetrics;
 			const bulkSimResult = await this.runCoreBulkSim(gearSets, abortSignal, backendReforgeConfig);

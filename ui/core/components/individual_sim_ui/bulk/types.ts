@@ -18,7 +18,6 @@ export type OptimisationStageConfig = {
 };
 
 export const BULK_OPTIMISATION_MIN_COMBINATIONS = 20;
-export const BULK_CANDIDATE_GEAR_BUILD_CHUNK_SIZE = 250;
 
 export const STAGE_CONFIG: Record<OptimisationStage, OptimisationStageConfig> = {
 	low: {
