@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"log"
 	"sync"
 	"time"
@@ -20,8 +21,10 @@ type bulkSimReforgeTask struct {
 	candidate *proto.BulkGearCandidate
 }
 
+type bulkSimReforgeGearHash [sha256.Size]byte
+
 type bulkSimReforgeCandidateCacheKey struct {
-	gearKey     string
+	gearKey     bulkSimReforgeGearHash
 	includeGems bool
 }
 
@@ -382,7 +385,7 @@ func cloneEquipmentSpecOrNil(gear *proto.EquipmentSpec) *proto.EquipmentSpec {
 }
 
 func dedupeBulkSimReforgeCandidates(baselineGear *proto.EquipmentSpec, candidates []*proto.BulkGearCandidate) []*proto.BulkGearCandidate {
-	seen := make(map[string]bool, len(candidates)+1)
+	seen := make(map[bulkSimReforgeGearHash]bool, len(candidates)+1)
 	if baselineGear != nil {
 		seen[bulkSimReforgeGearKey(baselineGear)] = true
 	}
@@ -414,10 +417,13 @@ func compactBulkGearCandidates(candidates []*proto.BulkGearCandidate) []*proto.B
 	return compacted
 }
 
-func bulkSimReforgeGearKey(gear *proto.EquipmentSpec) string {
+func bulkSimReforgeGearKey(gear *proto.EquipmentSpec) bulkSimReforgeGearHash {
 	data, err := googleProto.MarshalOptions{Deterministic: true}.Marshal(gear)
 	if err != nil {
-		return gear.String()
+		if gear == nil {
+			return sha256.Sum256(nil)
+		}
+		return sha256.Sum256([]byte(gear.String()))
 	}
-	return string(data)
+	return sha256.Sum256(data)
 }
