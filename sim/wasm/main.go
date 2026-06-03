@@ -10,8 +10,8 @@ import (
 	"syscall/js"
 
 	"github.com/wowsims/mop/sim"
-	"github.com/wowsims/mop/sim/bulk"
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/bulk"
 	proto "github.com/wowsims/mop/sim/core/proto"
 	reforgeoptimizer "github.com/wowsims/mop/sim/core/reforge_optimizer"
 	"github.com/wowsims/mop/sim/core/simsignals"

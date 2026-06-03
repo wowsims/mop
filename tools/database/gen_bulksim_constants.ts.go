@@ -8,7 +8,7 @@ import (
 	"slices"
 	"text/template"
 
-	"github.com/wowsims/mop/sim/bulk"
+	"github.com/wowsims/mop/sim/core/bulk"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 

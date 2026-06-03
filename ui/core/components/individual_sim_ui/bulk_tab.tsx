@@ -14,7 +14,7 @@ import { canEquipItem, getEligibleItemSlots, isSecondaryItemSlot } from '../../p
 import { RequestTypes } from '../../sim_signal_manager';
 import { RelativeStatCap } from '../suggest_reforges_action';
 import { TypedEvent } from '../../typed_event';
-import { formatDurationSeconds, getEnumValues, isDevMode, isExternal, sleep } from '../../utils';
+import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, isExternal, sleep } from '../../utils';
 import SelectorModal from '../gear_picker/selector_modal';
 import { SimTab } from '../sim_tab';
 import Toast from '../toast';
@@ -53,6 +53,7 @@ import { EnumPicker } from '../pickers/enum_picker';
 import { translateWeaponType } from '../../../i18n/localization';
 import { ProgressTrackerModal } from '../progress_tracker_modal';
 import { ReforgeOptimizeConfig } from '../../sim';
+import { formatNumber } from 'chart.js/helpers';
 
 type BulkSetBonusOption = {
 	setId: number;
@@ -661,6 +662,7 @@ export class BulkTab extends SimTab {
 
 	private async refreshCombinationsCount() {
 		const requestVersion = ++this.combinationsCalcRequestVersion;
+		this.combinationsElem.replaceChildren(this.getCombinationsLoading());
 		await this.calculateBulkCombinations();
 		if (requestVersion !== this.combinationsCalcRequestVersion) {
 			return;
@@ -1238,10 +1240,10 @@ export class BulkTab extends SimTab {
 				<span className={clsx(this.showIterationsWarning() && 'text-danger')}>
 					{this.combinations === 1
 						? i18n.t('bulk_tab.settings.combination_singular')
-						: i18n.t('bulk_tab.settings.combinations_count', { count: this.combinations })}
+						: i18n.t('bulk_tab.settings.combinations_count', { amount: formatToNumber(this.combinations) })}
 					<br />
 					<small>
-						{this.iterations} {i18n.t('bulk_tab.settings.iterations')}
+						{formatToNumber(this.iterations)} {i18n.t('bulk_tab.settings.iterations')}
 					</small>
 				</span>
 				{this.showIterationsWarning() && (
@@ -1272,6 +1274,11 @@ export class BulkTab extends SimTab {
 		return rtn;
 	}
 
+	private getCombinationsLoading(): Element {
+		this.bulkSimButton.disabled = true;
+		return <div className="loader"></div>;
+	}
+
 	private showIterationsWarning(): boolean {
 		return this.iterations > this.getIterationsLimit();
 	}
@@ -1284,21 +1291,19 @@ export class BulkTab extends SimTab {
 		return isExternal() ? WEB_COMBINATIONS_LIMIT : LOCAL_COMBINATIONS_LIMIT;
 	}
 
-	private setCandidateGearProgress(
-		{
-			completed,
-			total,
-			title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
-			stage = 'preparing',
-			startedAt,
-		}: {
-			completed?: number;
-			total?: number;
-			title?: string;
-			stage?: string;
-			startedAt?: number;
-		} = {},
-	) {
+	private setCandidateGearProgress({
+		completed,
+		total,
+		title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
+		stage = 'preparing',
+		startedAt,
+	}: {
+		completed?: number;
+		total?: number;
+		title?: string;
+		stage?: string;
+		startedAt?: number;
+	} = {}) {
 		const secondsRemaining =
 			startedAt !== undefined && completed !== undefined && total !== undefined && completed > 0
 				? ((new Date().getTime() - startedAt) / 1000 / completed) * Math.max(0, total - completed)

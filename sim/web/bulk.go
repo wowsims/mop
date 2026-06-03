@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/bulk"
 	"github.com/wowsims/mop/sim/core/proto"
 	reforgeoptimizer "github.com/wowsims/mop/sim/core/reforge_optimizer"
 	"github.com/wowsims/mop/sim/core/simsignals"
@@ -31,6 +32,18 @@ type bulkSimReforgeOptimizer struct {
 	cacheMu            sync.Mutex
 }
 
+func ensureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
+	return bulk.EnsureBulkSimCandidatesGenerated(request)
+}
+
+func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.BulkCombinationCountResult {
+	return bulk.BulkCombinationCount(request)
+}
+
+func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesResult {
+	return bulk.BulkCandidates(request)
+}
+
 func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMetrics, requestId string) {
 	if err := ensureBulkSimCandidatesGenerated(request); err != nil {
 		progress <- &proto.ProgressMetrics{
@@ -43,7 +56,7 @@ func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMe
 		return
 	}
 	if request.GetReforgeRequest() == nil {
-		core.BulkSimAsync(request, progress, requestId)
+		bulk.BulkSimAsync(request, progress, requestId)
 		return
 	}
 	signals, err := simsignals.RegisterWithId(requestId)
@@ -75,7 +88,7 @@ func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMe
 		}
 		request.ReforgeRequest = nil
 		simsignals.UnregisterId(requestId)
-		core.BulkSimAsync(request, progress, requestId)
+		bulk.BulkSimAsync(request, progress, requestId)
 	}()
 }
 
@@ -91,7 +104,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 		request.OptimizedCandidates = nil
 		return
 	}
-	concurrency := core.GetBulkSimStageConcurrency(request, core.BulkSimStageConfig{Stage: proto.BulkSimStage_BulkSimStageReforge})
+	concurrency := bulk.GetBulkSimStageConcurrency(request, bulk.BulkSimStageConfig{Stage: proto.BulkSimStage_BulkSimStageReforge})
 	concurrency = max(1, min(concurrency, int(totalCandidates)))
 	stageStartedAt := time.Now()
 	log.Printf("[Bulk Sim] Reforge optimization started candidates=%d concurrency=%d", totalCandidates, concurrency)

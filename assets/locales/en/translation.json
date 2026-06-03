@@ -800,7 +800,7 @@
 			"item_unique": "{{itemName}} is unique and already added."
 		},
 		"settings": {
-			"combinations_count": "{{count}} Combinations",
+			"combinations_count": "{{amount}} Combinations",
 			"combination_singular": "1 Combination",
 			"iterations": "Iterations",
 			"inherit_upgrades": {

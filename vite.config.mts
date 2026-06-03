@@ -121,7 +121,7 @@ export default defineConfig(({ command, mode }) => {
 	const baseConfig = getBaseConfig({ command, mode });
 	const watchedBackendFiles = [
 		path.resolve(__dirname, 'sim/core/character_constants.go'),
-		path.resolve(__dirname, 'sim/bulk/candidates.go'),
+		path.resolve(__dirname, 'sim/core/bulk/candidates.go'),
 		path.resolve(__dirname, 'tools/database/gen_character_constants_ts.go'),
 		path.resolve(__dirname, 'tools/database/gen_bulksim_constants.ts.go'),
 	];
