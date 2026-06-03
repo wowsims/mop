@@ -11,7 +11,7 @@ const maleficGraspScale = 0.132
 const maleficGraspCoeff = 0.132
 
 func (affliction *AfflictionWarlock) registerMaleficGrasp() {
-	affliction.RegisterSpell(core.SpellConfig{
+	affliction.MaleficGrasp = affliction.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 103103},
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskSpellDamage,
@@ -52,7 +52,7 @@ func (affliction *AfflictionWarlock) registerMaleficGrasp() {
 					return
 				}
 
-				affliction.ProcMaleficEffect(target, affliction.MaleficGraspMaleficEffectMultiplier, sim)
+				affliction.ProcMaleficEffect(dot.Spell, target, affliction.MaleficGraspMaleficEffectMultiplier, sim)
 			},
 		},
 

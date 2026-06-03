@@ -30,25 +30,25 @@
     "race": "RaceBloodElf",
     "class": "ClassPaladin",
     "equipment": {
-		"items": [
-			{ "id": 96894, "gems": [95344, 76699], "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96801, "gems": [76642], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96799, "enchant": 4803, "gems": [76699], "upgradeStep": "UpgradeStepTwo" },
+	"items": [
+			{ "id": 105586, "gems": [95346, 76667], "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105513, "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 99364, "enchant": 4803, "gems": [76667, 76667], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
 			{ "id": 102250, "enchant": 4422, "gems": [76667], "reforging": 131, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 95038, "enchant": 4420, "gems": [76699, 76699, 76699], "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96766, "enchant": 4415, "gems": [76699], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96905, "enchant": 4430, "gems": [76667, 76642, 76699], "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
-			{ "id": 96745, "gems": [76667, 76699, 76699], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96923, "enchant": 4823, "gems": [76667, 76699, 76699], "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96914, "enchant": 4426, "gems": [76667], "reforging": 144, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 95022, "gems": [76642], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96872, "gems": [76667], "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96770, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96927, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96802, "enchant": 4444, "gems": [76642, 76699], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-			{ "id": 96994, "enchant": 4993, "gems": [76699], "reforging": 131, "upgradeStep": "UpgradeStepTwo" }
+			{ "id": 105412, "enchant": 4420, "gems": [76667, 76699, 76652], "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105411, "enchant": 4415, "gems": [76699], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 99369, "enchant": 4430, "gems": [76667, 76667, 76699], "reforging": 159, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+			{ "id": 105433, "gems": [76667, 76642, 76699], "reforging": 137, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105640, "enchant": 4823, "gems": [76654, 76654, 76667], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105531, "enchant": 4426, "gems": [76699], "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105620, "gems": [76667], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105589, "gems": [76667], "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105568, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105632, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105567, "enchant": 4444, "gems": [76667], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+			{ "id": 105575, "enchant": 4993, "gems": [76699], "reforging": 116, "upgradeStep": "UpgradeStepTwo" }
 		]
-    },
+	},
     "consumables": {
       "prepotId": 76090,
       "potId": 76090,

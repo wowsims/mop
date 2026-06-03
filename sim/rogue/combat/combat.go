@@ -1,6 +1,8 @@
 package combat
 
 import (
+	"time"
+
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
@@ -66,6 +68,11 @@ func (combatRogue *CombatRogue) Initialize() {
 	combatRogue.registerAdrenalineRushCD()
 
 	combatRogue.applyMastery()
+
+	combatRogue.RestlessICD = core.Cooldown{
+		Timer:    combatRogue.NewTimer(),
+		Duration: time.Millisecond * 800,
+	}
 }
 
 type CombatRogue struct {

@@ -39,7 +39,7 @@ func (dk *DeathKnight) registerGlyphs() {
 	}
 	if dk.HasMajorGlyph(proto.DeathKnightMajorGlyph_GlyphOfRegenerativeMagic) {
 		// If Anti-Magic Shell expires after its full duration, the cooldown is reduced by up to 50%, based on the amount of damage absorbtion remaining
-		// TODO Handle in anti_magic_shell.go
+		// Handled in anti_magic_shell.go
 	}
 	if dk.HasMajorGlyph(proto.DeathKnightMajorGlyph_GlyphOfShiftingPresences) {
 		// You retain 70% of your Runic Power when switching Presences.

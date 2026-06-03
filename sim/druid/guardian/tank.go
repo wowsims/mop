@@ -73,10 +73,11 @@ type GuardianDruid struct {
 	VengeanceAura            *core.Aura
 
 	// Spell references
-	Enrage         *druid.DruidSpell
-	HeartOfTheWild *druid.DruidSpell
-	SavageDefense  *druid.DruidSpell
-	SonOfUrsoc     *druid.DruidSpell
+	Enrage               *druid.DruidSpell
+	HeartOfTheWild       *druid.DruidSpell
+	SavageDefense        *druid.DruidSpell
+	SonOfUrsoc           *druid.DruidSpell
+	T16FreeFrenziedRegen *druid.DruidSpell
 }
 
 func (bear *GuardianDruid) GetDruid() *druid.Druid {

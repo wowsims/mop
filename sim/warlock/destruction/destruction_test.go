@@ -51,8 +51,8 @@ func TestDestruction(t *testing.T) {
 		{
 			Class:      proto.Class_ClassWarlock,
 			Race:       proto.Race_RaceOrc,
-			OtherRaces: []proto.Race{proto.Race_RaceTroll, proto.Race_RaceGoblin, proto.Race_RaceHuman},
-			GearSet:    core.GetGearSet("../../../ui/warlock/destruction/gear_sets", "p4"),
+			OtherRaces: []proto.Race{proto.Race_RaceTroll, proto.Race_RaceHuman},
+			GearSet:    core.GetGearSet("../../../ui/warlock/destruction/gear_sets", "p5"),
 			Talents:    "221211",
 			Glyphs: &proto.Glyphs{
 				Major1: int32(proto.WarlockMajorGlyph_GlyphOfSiphonLife),

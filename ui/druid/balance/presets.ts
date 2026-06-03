@@ -107,11 +107,17 @@ export const OtherDefaults = {
 	profession2: Profession.Tailoring,
 };
 
+const defaultPresetSettings = {
+	name: 'Settings',
+	playerOptions: OtherDefaults,
+};
+
 export const PresetPreraidBuild = PresetUtils.makePresetBuild('Pre-raid', {
 	gear: PreraidPresetGear,
 	talents: StandardTalents,
 	rotation: StandardRotation,
 	epWeights: P2_BIS_EP_PRESET,
+	settings: defaultPresetSettings,
 });
 
 export const T14PresetBuild = PresetUtils.makePresetBuild('T14', {
@@ -119,6 +125,7 @@ export const T14PresetBuild = PresetUtils.makePresetBuild('T14', {
 	talents: StandardTalents,
 	rotation: StandardRotation,
 	epWeights: P2_BIS_EP_PRESET,
+	settings: defaultPresetSettings,
 });
 
 export const T15PresetBuild = PresetUtils.makePresetBuild('T15', {
@@ -126,6 +133,7 @@ export const T15PresetBuild = PresetUtils.makePresetBuild('T15', {
 	talents: StandardTalents,
 	rotation: StandardRotation,
 	epWeights: P3_BIS_EP_PRESET,
+	settings: defaultPresetSettings,
 });
 
 export const T16PresetBuild = PresetUtils.makePresetBuild('T16 (WIP)', {
@@ -133,6 +141,14 @@ export const T16PresetBuild = PresetUtils.makePresetBuild('T16 (WIP)', {
 	talents: StandardTalents,
 	rotation: StandardRotation,
 	epWeights: P3_BIS_EP_PRESET,
+	settings: {
+		name: 'T16 (WIP)',
+		playerOptions: {
+			...OtherDefaults,
+			profession1: Profession.Engineering,
+			profession2: Profession.Blacksmithing,
+		},
+	},
 });
 
 export const BALANCE_BREAKPOINTS: UnitStatPresets = {

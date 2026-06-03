@@ -18,6 +18,7 @@ import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -30,6 +31,7 @@ export const P1_GEAR_PRESET = PresetUtils.makePresetGear('P1', P1Gear);
 export const P2_GEAR_PRESET = PresetUtils.makePresetGear('P2', P2Gear);
 export const P3_GEAR_PRESET = PresetUtils.makePresetGear('P3', P3Gear);
 export const P4_GEAR_PRESET = PresetUtils.makePresetGear('P4', P4Gear);
+export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5Gear);
 
 export const ROTATION_PRESET_P1 = PresetUtils.makePresetAPLRotation('P1', P1Apl);
 export const ROTATION_PRESET_P3 = PresetUtils.makePresetAPLRotation('Default', P3Apl);

@@ -11,7 +11,7 @@ const drainSoulScale = 0.257
 const drainSoulCoeff = 0.257
 
 func (affliction *AfflictionWarlock) registerDrainSoul() {
-	affliction.RegisterSpell(core.SpellConfig{
+	affliction.DrainSoul = affliction.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 1120},
 		SpellSchool:    core.SpellSchoolShadow,
 		ProcMask:       core.ProcMaskSpellDamage,
@@ -58,7 +58,7 @@ func (affliction *AfflictionWarlock) registerDrainSoul() {
 					return
 				}
 
-				affliction.ProcMaleficEffect(target, affliction.DrainSoulMaleficEffectMultiplier, sim)
+				affliction.ProcMaleficEffect(dot.Spell, target, affliction.DrainSoulMaleficEffectMultiplier, sim)
 			},
 		},
 

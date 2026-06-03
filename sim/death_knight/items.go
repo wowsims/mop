@@ -214,25 +214,28 @@ var ItemSetBattleplateOfCyclopeanDread = core.NewItemSet(core.ItemSet{
 				MaxStacks: 10,
 
 				OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
-					newStat := core.Ternary(
-						dk.GetStat(stats.HasteRating) > dk.GetStat(stats.MasteryRating),
-						stats.HasteRating,
-						stats.MasteryRating)
-					if currentStat == newStat {
-						dk.AddStatDynamic(sim, currentStat, 500*float64(newStacks-oldStacks))
-					} else {
-						dk.AddStatDynamic(sim, currentStat, -500*float64(oldStacks))
-						dk.AddStatDynamic(sim, newStat, 500*float64(newStacks))
-						currentStat = newStat
-					}
+					dk.AddStatDynamic(sim, currentStat, 500*float64(newStacks-oldStacks))
 				},
 			})
+
+			masteryRaidBuffs := dk.GetExclusiveEffectCategory("MasteryRatingBuff")
 
 			setBonusAura.AttachProcTrigger(core.ProcTrigger{
 				Callback:       core.CallbackOnCastComplete,
 				ClassSpellMask: DeathKnightSpellKillingMachine | DeathKnightSpellSuddenDoom,
 
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+					// Stat only changes on a new application
+					if !deathShroudAura.IsActive() {
+						mastery := dk.GetStatWithoutDeps(stats.MasteryRating)
+						hasMasteryRaidBuff := masteryRaidBuffs.GetActiveAura().IsActive()
+						if hasMasteryRaidBuff {
+							mastery -= core.MasteryRaidBuffStrength
+						}
+
+						currentStat = core.Ternary(dk.GetStatWithoutDeps(stats.HasteRating) > mastery, stats.HasteRating, stats.MasteryRating)
+					}
+
 					deathShroudAura.Activate(sim)
 					deathShroudAura.AddStack(sim)
 				},

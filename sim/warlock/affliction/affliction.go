@@ -46,6 +46,8 @@ type AfflictionWarlock struct {
 	SoulShards         core.SecondaryResourceBar
 	Agony              *core.Spell
 	UnstableAffliction *core.Spell
+	DrainSoul          *core.Spell
+	MaleficGrasp       *core.Spell
 
 	SoulBurnAura *core.Aura
 
@@ -54,7 +56,7 @@ type AfflictionWarlock struct {
 
 	DrainSoulMaleficEffectMultiplier    float64
 	MaleficGraspMaleficEffectMultiplier float64
-	ProcMaleficEffect                   func(target *core.Unit, coeff float64, sim *core.Simulation)
+	ProcMaleficEffect                   func(sourceSpell *core.Spell, target *core.Unit, coeff float64, sim *core.Simulation)
 	T16_2pc_Snapshot                    bool
 
 	ExhaleWindow time.Duration
@@ -90,9 +92,9 @@ func (affliction *AfflictionWarlock) Initialize() {
 	affliction.registerAgony()
 	affliction.registerNightfall()
 	affliction.registerUnstableAffliction()
-	affliction.registerMaleficEffect()
-	affliction.registerMaleficGrasp()
 	affliction.registerDrainSoul()
+	affliction.registerMaleficGrasp()
+	affliction.registerMaleficEffect()
 	affliction.registerDarkSoulMisery()
 	affliction.registerSoulburn()
 	affliction.registerSeed()
