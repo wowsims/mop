@@ -1724,11 +1724,19 @@ export class BulkTab extends SimTab {
 	}
 
 	private setCandidateGearProgress(
-		completed: number,
-		total: number,
-		title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
-		stage = 'preparing',
-		startedAt?: number,
+		{
+			completed,
+			total,
+			title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
+			stage = 'preparing',
+			startedAt,
+		}: {
+			completed: number;
+			total: number;
+			title?: string;
+			stage?: string;
+			startedAt?: number;
+		},
 	) {
 		const secondsRemaining =
 			startedAt !== undefined && completed > 0 ? ((new Date().getTime() - startedAt) / 1000 / completed) * Math.max(0, total - completed) : undefined;
@@ -1826,12 +1834,23 @@ export class BulkTab extends SimTab {
 		signal: AbortSignal,
 		reforgeConfig?: ReforgeOptimizeConfig,
 	): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
+		let cacheRestoreStartedAt: number | undefined;
 		return runCoreBulkSimImpl(
 			{
 				simUI: this.simUI,
 				throwIfBulkAborted: signal => this.throwIfBulkAborted(signal),
 				runWithBulkAbort: (promise, signal) => this.runWithBulkAbort(promise, signal),
 				setSimProgress: (progress, config) => this.setSimProgress(progress, config),
+				setCacheRestoreProgress: progress => {
+					cacheRestoreStartedAt ??= new Date().getTime();
+					this.setCandidateGearProgress({
+						completed: progress.processedCandidates,
+						total: progress.totalCandidates,
+						title: i18n.t('bulk_tab.progress.restoring_reforges_from_cache'),
+						stage: 'reforging',
+						startedAt: cacheRestoreStartedAt,
+					});
+				},
 				debugOptimisationRound: (message, data) => this.debugOptimisationRound(message, data),
 			},
 			gearSets,
@@ -1869,7 +1888,7 @@ export class BulkTab extends SimTab {
 			combinations: this.combinations,
 			rawCombinations,
 		});
-		this.setCandidateGearProgress(0, this.combinations, undefined, undefined, startedAt);
+		this.setCandidateGearProgress({ completed: 0, total: this.combinations, startedAt });
 		await sleep(0);
 		let lastYieldAt = performance.now();
 
@@ -1897,13 +1916,13 @@ export class BulkTab extends SimTab {
 			if (scannedCombinations % 64 === 0 || scannedCombinations === rawCombinations) {
 				const now = performance.now();
 				if (scannedCombinations === rawCombinations || now - lastYieldAt >= 16) {
-					this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
+					this.setCandidateGearProgress({ completed: candidateGearSets.length, total: this.combinations, startedAt });
 					await sleep(0);
 					lastYieldAt = performance.now();
 				}
 			}
 		}
-		this.setCandidateGearProgress(candidateGearSets.length, this.combinations, undefined, undefined, startedAt);
+		this.setCandidateGearProgress({ completed: candidateGearSets.length, total: this.combinations, startedAt });
 
 		const durationSeconds = this.getDurationSeconds(startedAt);
 		this.debugOptimisationRound('candidate gear sets build complete', {
@@ -1982,10 +2001,8 @@ export class BulkTab extends SimTab {
 			const backendReforgeConfig = this.getBulkReforgeConfig(playerPhase);
 			if (backendReforgeConfig) {
 				gearSets.push(...candidateGearSets);
-				this.setCandidateGearProgress(0, gearSets.length, i18n.t('bulk_tab.progress.reforging_iteration_rounds'), 'reforging');
 			} else {
 				gearSets.push(...this.dedupeGearSets(candidateGearSets));
-				this.setCandidateGearProgress(0, gearSets.length, i18n.t('bulk_tab.progress.refining_rounds'), 'sim');
 			}
 			await sleep(0);
 			this.simStart = new Date().getTime();

@@ -2972,6 +2972,9 @@
 						"building_candidate_gear_sets": {
 							"type": "string"
 						},
+						"restoring_reforges_from_cache": {
+							"type": "string"
+						},
 						"reforging_iteration_rounds": {
 							"type": "string"
 						},
@@ -3004,6 +3007,7 @@
 					"required": [
 						"total_combinations",
 						"building_candidate_gear_sets",
+						"restoring_reforges_from_cache",
 						"reforging_iteration_rounds",
 						"baseline_round",
 						"refining_rounds",

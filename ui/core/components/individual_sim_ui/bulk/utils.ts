@@ -3,8 +3,14 @@ import { ReforgeOptimizer } from '../../suggest_reforges_action';
 import { ReforgeGearCache } from '../../../reforge_cache';
 import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
 import { Debuffs, ItemSlot, PartyBuffs, RaidBuffs } from '../../../proto/common';
+import { Database } from '../../../proto_utils/database';
 import { Gear } from '../../../proto_utils/gear';
+import { sleep } from '../../../utils';
 import { OptimisationStage, STAGE_CONFIG } from './types';
+
+const BULK_CACHE_LOOKUP_BATCH_SIZE = 2000;
+const BULK_CACHE_PROGRESS_CHECK_MODULO = 64;
+const BULK_CACHE_YIELD_BUDGET_MS = 16;
 
 // Combines Fingers 1 and 2 and Trinket 1 and 2 into single groups
 export enum BulkSimItemSlot {
@@ -207,56 +213,116 @@ export const getCoreBulkSimTrackingMetrics = (result: BulkSimResult): Record<str
 	return metrics;
 };
 
-
 export type BulkSimReforgeCacheData = {
 	cache: ReforgeGearCache;
 	candidates: BulkGearCandidate[];
 	optimizedCandidates: BulkGearCandidate[];
+	cachedOptimizedGearSets: Gear[];
 	cacheKeysByCandidateIndex: Map<number, string>;
+};
+
+export type BulkSimReforgeCacheProgress = {
+	processedCandidates: number;
+	totalCandidates: number;
+	restoredCandidates: number;
 };
 
 export type BulkSimReforgeCacheContext = {
 	player: Player<any>;
 	gearSets: Gear[];
+	db: Database;
 	reforgeRequest: ReforgeOptimizeRequest;
 	raidBuffs: RaidBuffs;
 	partyBuffs: PartyBuffs | undefined;
 	debuffs: Debuffs;
+	onProgress?: (progress: BulkSimReforgeCacheProgress) => void;
+	signal?: AbortSignal;
 };
 
 export async function getBulkSimReforgeCacheData({
 	player,
 	gearSets,
+	db,
 	reforgeRequest,
 	raidBuffs,
 	partyBuffs,
 	debuffs,
+	onProgress,
+	signal,
 }: BulkSimReforgeCacheContext): Promise<BulkSimReforgeCacheData> {
+	throwIfAborted(signal);
+
 	const cache = ReforgeGearCache.get(player.getPlayerSpec());
 	const configHash = await ReforgeOptimizer.getBulkSimReforgeCacheConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
-	const cacheEntries = await Promise.all(
-		gearSets.map(async (gear, index) => ({
-			index,
-			gear,
-			cacheKey: await ReforgeGearCache.getKey(gear.asSpec(), configHash),
-		})),
-	);
-	const cachedGearByKey = await cache.getMany(cacheEntries.map(entry => entry.cacheKey));
+	const totalCandidates = gearSets.length;
+	onProgress?.({
+		processedCandidates: 0,
+		totalCandidates,
+		restoredCandidates: 0,
+	});
+
+	let lastYieldAt = performance.now();
 
 	const candidates: BulkGearCandidate[] = [];
 	const optimizedCandidates: BulkGearCandidate[] = [];
+	const cachedOptimizedGearSets: Gear[] = [];
 	const cacheKeysByCandidateIndex = new Map<number, string>();
-	for (const entry of cacheEntries) {
-		const cachedGear = cachedGearByKey.get(entry.cacheKey);
-		if (cachedGear) {
-			optimizedCandidates.push(BulkGearCandidate.create({ index: entry.index, gear: cachedGear }));
-		} else {
-			candidates.push(BulkGearCandidate.create({ index: entry.index, gear: entry.gear.asSpec() }));
-			cacheKeysByCandidateIndex.set(entry.index, entry.cacheKey);
+	const pendingEntries: Array<{ index: number; gear: Gear; cacheKey: string }> = [];
+
+	let processedCandidates = 0;
+	let restoredCandidates = 0;
+
+	const flushPendingEntries = async () => {
+		if (!pendingEntries.length) {
+			return;
+		}
+
+		const cachedGearByKey = await cache.getMany(
+			pendingEntries.map(entry => entry.cacheKey),
+			signal,
+		);
+		for (const entry of pendingEntries) {
+			throwIfAborted(signal);
+			const cachedGear = cachedGearByKey.get(entry.cacheKey);
+			if (cachedGear) {
+				optimizedCandidates.push(BulkGearCandidate.create({ index: entry.index, gear: cachedGear }));
+				cachedOptimizedGearSets.push(db.lookupEquipmentSpec(cachedGear));
+				restoredCandidates++;
+			} else {
+				candidates.push(BulkGearCandidate.create({ index: entry.index, gear: entry.gear.asSpec() }));
+				cacheKeysByCandidateIndex.set(entry.index, entry.cacheKey);
+			}
+
+			processedCandidates++;
+			if (processedCandidates % BULK_CACHE_PROGRESS_CHECK_MODULO === 0 || processedCandidates === totalCandidates) {
+				const now = performance.now();
+				if (processedCandidates === totalCandidates || now - lastYieldAt >= BULK_CACHE_YIELD_BUDGET_MS) {
+					onProgress?.({
+						processedCandidates,
+						totalCandidates,
+						restoredCandidates,
+					});
+					await sleep(0);
+					lastYieldAt = performance.now();
+				}
+			}
+		}
+
+		pendingEntries.length = 0;
+	};
+
+	for (let i = 0; i < totalCandidates; i++) {
+		throwIfAborted(signal);
+		const gear = gearSets[i];
+		const cacheKey = await ReforgeGearCache.getKey(gear.asSpec(), configHash);
+		pendingEntries.push({ index: i, gear, cacheKey });
+
+		if (pendingEntries.length >= BULK_CACHE_LOOKUP_BATCH_SIZE || i + 1 === totalCandidates) {
+			await flushPendingEntries();
 		}
 	}
 
-	return { cache, candidates, optimizedCandidates, cacheKeysByCandidateIndex };
+	return { cache, candidates, optimizedCandidates, cachedOptimizedGearSets, cacheKeysByCandidateIndex };
 }
 
 export async function writeBulkSimReforgeCacheResults(optimizedCandidates: BulkGearCandidate[], cacheData: BulkSimReforgeCacheData): Promise<void> {
@@ -268,3 +334,8 @@ export async function writeBulkSimReforgeCacheResults(optimizedCandidates: BulkG
 	await cacheData.cache.setGearMany(cacheEntries);
 }
 
+export const throwIfAborted = (signal?: AbortSignal, errorMessage = 'Bulk Sim Aborted'): void => {
+	if (signal?.aborted) {
+		throw new Error(errorMessage);
+	}
+};
