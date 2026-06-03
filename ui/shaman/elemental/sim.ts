@@ -3,6 +3,7 @@ import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
 import { Player } from '../../core/player.js';
+import * as Mechanics from '../../core/constants/mechanics'
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
@@ -58,12 +59,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	gemStats: DEFAULT_HYBRID_CASTER_GEM_STATS,
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P4BiS_GEAR_PRESET.gear,
+		gear: Presets.P5_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.EP_PRESET_P3.epWeights,
 		// Default stat caps for the Reforge optimizer
 		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
+			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15)
+			.withStat(Stat.StatMasteryRating, 100*Mechanics.MASTERY_RATING_PER_MASTERY_POINT/2);
 		})(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
@@ -95,15 +97,15 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	},
 
 	presets: {
-		epWeights: [Presets.EP_PRESET_P3,Presets.EP_PRESET_P2, Presets.EP_PRESET_AOE],
+		epWeights: [Presets.EP_PRESET_P3, Presets.EP_PRESET_AOE],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.P3_TALENTS, Presets.TalentsAoE],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_P4, Presets.ROTATION_PRESET_AOE, Presets.ROTATION_PRESET_CLEAVE],
+		rotations: [Presets.ROTATION_PRESET_P5, Presets.ROTATION_PRESET_AOE, Presets.ROTATION_PRESET_CLEAVE],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_GEAR_PRESET, Presets.P2_GEAR_PRESET, Presets.P4BiS_GEAR_PRESET, Presets.P4P3U_GEAR_PRESET],
+		gear: [Presets.PRERAID_GEAR_PRESET, Presets.P2_GEAR_PRESET, Presets.P4BiS_GEAR_PRESET, Presets.P5_GEAR_PRESET],
 
-		builds: [Presets.P4_PRESET_BUILD_DEFAULT, Presets.P4_PRESET_BUILD_PRERAID, Presets.PRESET_BUILD_CLEAVE, Presets.PRESET_BUILD_AOE],
+		builds: [Presets.P5_PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_CLEAVE, Presets.PRESET_BUILD_AOE],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecElementalShaman>): APLRotation => {
@@ -112,7 +114,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		if (numTargets > 2) return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
 		if (numTargets == 2) return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;
 
-		return Presets.ROTATION_PRESET_P4.rotation.rotation!;
+		return Presets.ROTATION_PRESET_P5.rotation.rotation!;
 	},
 
 	raidSimPresets: [
@@ -129,10 +131,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 			defaultGear: {
 				[Faction.Unknown]: {},
 				[Faction.Alliance]: {
-					1: Presets.P4BiS_GEAR_PRESET.gear,
+					1: Presets.P5_GEAR_PRESET.gear,
 				},
 				[Faction.Horde]: {
-					1: Presets.P4BiS_GEAR_PRESET.gear,
+					1: Presets.P5_GEAR_PRESET.gear,
 				},
 			},
 			otherDefaults: Presets.OtherDefaults,

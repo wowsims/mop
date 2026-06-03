@@ -6,9 +6,10 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
-import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import * as DeathKnightInputs from './inputs';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
@@ -94,9 +95,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	},
 
 	autoRotation(player: Player<Spec.SpecUnholyDeathKnight>): APLRotation {
-		const gear = player.getGear();
-		// If both Fabled Feather of Ji-Kun and Brutal Talisman of the Shado-Pan Assault are equipped, use Festerblight
-		if (gear.hasTrinketFromOptions([95726, 94515, 96470, 96098, 96842]) && gear.hasTrinket(94508)) {
+		// Festerblight (single-target disease snapshot/hold) wins on single-target;
+		// the default rotation scales better on multiple targets.
+		if (player.sim.encounter.targets.length <= 1) {
 			return Presets.FESTERBLIGHT_ROTATION_PRESET.rotation.rotation!;
 		}
 		return Presets.DEFAULT_ROTATION_PRESET.rotation.rotation!;
@@ -110,7 +111,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	excludeBuffDebuffInputs: [BuffDebuffInputs.DamageReduction, BuffDebuffInputs.CastSpeedDebuff],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay],
+		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay, DeathKnightInputs.AvgAMSHitInput, DeathKnightInputs.AvgAMSSuccessRateInput],
 	},
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {

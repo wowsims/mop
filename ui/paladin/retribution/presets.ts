@@ -5,19 +5,17 @@ import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as Retributi
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
-import P4_Gear from './gear_sets/p4.gear.json';
 import P5_Gear from './gear_sets/p5.gear.json';
 import Preraid_Gear from './gear_sets/preraid.gear.json';
-import P4RetBuild from './builds/p4.build.json';
+import P5RetBuild from './builds/p5.build.json';
 
-export const P4_GEAR_PRESET = PresetUtils.makePresetGear('P4', P4_Gear);
-export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5 (WiP)', P5_Gear);
+export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5_Gear);
 export const PRERAID_GEAR_PRESET = PresetUtils.makePresetGear('Pre-raid', Preraid_Gear);
 
 export const APL_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
-export const P4_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P4',
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'P5',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
@@ -30,24 +28,6 @@ export const P4_EP_PRESET = PresetUtils.makePresetEpWeights(
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 1.86,
-		},
-	),
-);
-
-export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P5 (WiP)',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.76,
-			[Stat.StatExpertiseRating]: 0.76,
-			[Stat.StatHasteRating]: 0.75,
-			[Stat.StatMasteryRating]: 0.74,
-			[Stat.StatCritRating]: 0.73,
-			[Stat.StatAttackPower]: 0.44,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.8,
 		},
 	),
 );
@@ -82,8 +62,8 @@ export const DefaultTalents = {
 	}),
 };
 
-export const P4_BUILD_PRESET = PresetUtils.makePresetBuildFromJSON('P4', Spec.SpecRetributionPaladin, P4RetBuild, {
-	epWeights: P4_EP_PRESET,
+export const P5_BUILD_PRESET = PresetUtils.makePresetBuildFromJSON('P5', Spec.SpecRetributionPaladin, P5RetBuild, {
+	epWeights: P5_EP_PRESET,
 	rotationType: APLRotationType.TypeAuto,
 });
 

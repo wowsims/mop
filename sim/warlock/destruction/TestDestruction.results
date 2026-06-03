@@ -3,30 +3,30 @@ character_stats_results: {
  value: {
   final_stats: 157.5
   final_stats: 161.7
-  final_stats: 36854.18
-  final_stats: 24271.5375
-  final_stats: 280
-  final_stats: 3918
-  final_stats: 10214
-  final_stats: 4668
-  final_stats: 1196
+  final_stats: 47422.32
+  final_stats: 30814.875
+  final_stats: 305.21117
+  final_stats: 3040
+  final_stats: 8612
+  final_stats: 10199.50333
+  final_stats: 2080
   final_stats: 0
   final_stats: 0
-  final_stats: 19598
+  final_stats: 24282.81882
   final_stats: 162.25
   final_stats: 0
-  final_stats: 39312.39125
+  final_stats: 50738.4625
   final_stats: 0
   final_stats: 0
-  final_stats: 16866
+  final_stats: 18104
   final_stats: 0
-  final_stats: 728597.672
+  final_stats: 891347.028
   final_stats: 300000
   final_stats: 108750
-  final_stats: 11.52353
-  final_stats: 15.04118
-  final_stats: 24.64333
-  final_stats: 33.30307
+  final_stats: 8.94118
+  final_stats: 15.05882
+  final_stats: 21.97333
+  final_stats: 33.21566
   final_stats: 0
  }
 }
@@ -1569,17 +1569,17 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-RegaliaoftheHornedNightmare"
  value: {
-  dps: 238760.31386
-  tps: 182386.70823
-  hps: 1425.31763
+  dps: 339416.83994
+  tps: 263977.46329
+  hps: 1763.26738
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-RegaliaoftheThousandfoldHells"
  value: {
-  dps: 222553.41994
-  tps: 169307.86521
-  hps: 1400.68415
+  dps: 325355.44449
+  tps: 253422.37139
+  hps: 1740.66919
  }
 }
 dps_results: {
@@ -1697,17 +1697,17 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-Sha-SkinRegalia"
  value: {
-  dps: 215520.16465
-  tps: 164236.28791
-  hps: 1299.81449
+  dps: 311889.94673
+  tps: 242150.09839
+  hps: 1624.19482
  }
 }
 dps_results: {
  key: "TestDestruction-AllItems-ShadowflameRegalia"
  value: {
-  dps: 167074.70496
-  tps: 126081.92605
-  hps: 1016.33895
+  dps: 244039.68423
+  tps: 187487.73524
+  hps: 1303.09473
  }
 }
 dps_results: {
@@ -2009,9 +2009,9 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 271189.86331
-  tps: 210235.91623
-  hps: 1528.84078
+  dps: 455974.08119
+  tps: 359544.87464
+  hps: 2092.43715
  }
 }
 dps_results: {
@@ -2247,7 +2247,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestDestruction-AllItems-Xing-Ho,BreathofYu'lon-102246"
+ key: "TestDestruction-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
   dps: 272232.16746
   tps: 212279.84016
@@ -2273,208 +2273,160 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-Average-Default"
  value: {
-  dps: 270488.47268
-  tps: 209573.32848
-  hps: 1535.74312
+  dps: 450802.53874
+  tps: 354951.36115
+  hps: 2101.89324
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Goblin-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
+ key: "TestDestruction-Settings-Human-p5-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 570843.15639
-  tps: 472553.9121
-  hps: 4393.93875
+  dps: 1.02834504067e+06
+  tps: 861455.7874
+  hps: 5974.12856
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Goblin-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
+ key: "TestDestruction-Settings-Human-p5-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 268991.39574
-  tps: 208995.46227
-  hps: 1548.8376
+  dps: 452347.83426
+  tps: 357417.27198
+  hps: 2093.13618
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Goblin-p4-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
+ key: "TestDestruction-Settings-Human-p5-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 429336.91058
-  tps: 311432.44968
-  hps: 1933.7702
+  dps: 706344.18111
+  tps: 521512.87874
+  hps: 2640.56037
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Goblin-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
+ key: "TestDestruction-Settings-Human-p5-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 372869.56953
-  tps: 312128.73188
-  hps: 3613.97095
+  dps: 683140.07045
+  tps: 577333.11556
+  hps: 4983.31804
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Goblin-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
+ key: "TestDestruction-Settings-Human-p5-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 172720.33492
-  tps: 133998.47955
-  hps: 1287.39958
+  dps: 293149.18849
+  tps: 231477.41231
+  hps: 1751.62014
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Goblin-p4-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
+ key: "TestDestruction-Settings-Human-p5-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 240055.48136
-  tps: 177717.32286
-  hps: 1311.65821
+  dps: 399111.10587
+  tps: 298850.96279
+  hps: 1770.18126
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Human-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
+ key: "TestDestruction-Settings-Orc-p5-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 568373.02787
-  tps: 468920.96309
-  hps: 4340.50962
+  dps: 1.03751676806e+06
+  tps: 867974.30803
+  hps: 5974.99624
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Human-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
+ key: "TestDestruction-Settings-Orc-p5-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 268292.72091
-  tps: 208452.67864
-  hps: 1529.40883
+  dps: 457088.47898
+  tps: 360559.0558
+  hps: 2092.43715
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Human-p4-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
+ key: "TestDestruction-Settings-Orc-p5-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 426985.77208
-  tps: 310266.06625
-  hps: 1903.41274
+  dps: 716663.60282
+  tps: 527937.82315
+  hps: 2640.61557
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Human-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
+ key: "TestDestruction-Settings-Orc-p5-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 366163.26745
-  tps: 305303.2225
-  hps: 3520.32138
+  dps: 689120.25038
+  tps: 582187.84482
+  hps: 4964.85887
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Human-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
+ key: "TestDestruction-Settings-Orc-p5-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 171662.80313
-  tps: 133053.61786
-  hps: 1272.16742
+  dps: 296609.9785
+  tps: 233794.7178
+  hps: 1755.09342
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Human-p4-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
+ key: "TestDestruction-Settings-Orc-p5-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 235915.75166
-  tps: 173846.21806
-  hps: 1286.27127
+  dps: 405396.15924
+  tps: 302786.60215
+  hps: 1770.21761
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Orc-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
+ key: "TestDestruction-Settings-Troll-p5-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 574420.24335
-  tps: 473527.09267
-  hps: 4326.04868
+  dps: 1.03956857296e+06
+  tps: 864214.94731
+  hps: 6101.14286
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Orc-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
+ key: "TestDestruction-Settings-Troll-p5-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 271869.92632
-  tps: 210858.64154
-  hps: 1528.84078
+  dps: 462476.25503
+  tps: 362238.23508
+  hps: 2163.69968
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Orc-p4-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
+ key: "TestDestruction-Settings-Troll-p5-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 435066.3391
-  tps: 315462.62738
-  hps: 1903.46142
+  dps: 720311.77769
+  tps: 521811.58082
+  hps: 2878.24794
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Orc-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
+ key: "TestDestruction-Settings-Troll-p5-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 369945.60076
-  tps: 307449.972
-  hps: 3510.8186
+  dps: 703843.68833
+  tps: 591109.35737
+  hps: 5142.11877
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Orc-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
+ key: "TestDestruction-Settings-Troll-p5-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 174187.46491
-  tps: 134807.07617
-  hps: 1272.19925
+  dps: 294885.14894
+  tps: 231744.28579
+  hps: 1823.11484
  }
 }
 dps_results: {
- key: "TestDestruction-Settings-Orc-p4-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
+ key: "TestDestruction-Settings-Troll-p5-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 240653.65159
-  tps: 176801.75594
-  hps: 1286.30346
- }
-}
-dps_results: {
- key: "TestDestruction-Settings-Troll-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
- value: {
-  dps: 587511.93304
-  tps: 481847.09332
-  hps: 4379.97432
- }
-}
-dps_results: {
- key: "TestDestruction-Settings-Troll-p4-Destruction Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
- value: {
-  dps: 274813.8956
-  tps: 210925.30379
-  hps: 1588.3023
- }
-}
-dps_results: {
- key: "TestDestruction-Settings-Troll-p4-Destruction Warlock-default-FullBuffs-25.0yards-ShortSingleTarget"
- value: {
-  dps: 449603.11812
-  tps: 319448.79604
-  hps: 2091.62899
- }
-}
-dps_results: {
- key: "TestDestruction-Settings-Troll-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
- value: {
-  dps: 385417.94506
-  tps: 322249.3057
-  hps: 3719.46776
- }
-}
-dps_results: {
- key: "TestDestruction-Settings-Troll-p4-Destruction Warlock-default-NoBuffs-25.0yards-LongSingleTarget"
- value: {
-  dps: 173253.7772
-  tps: 133694.80897
-  hps: 1303.76005
- }
-}
-dps_results: {
- key: "TestDestruction-Settings-Troll-p4-Destruction Warlock-default-NoBuffs-25.0yards-ShortSingleTarget"
- value: {
-  dps: 243063.25717
-  tps: 175488.95207
-  hps: 1370.89438
+  dps: 409137.87604
+  tps: 298936.86528
+  hps: 1993.6022
  }
 }
 dps_results: {
  key: "TestDestruction-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 271869.92632
-  tps: 210858.64154
-  hps: 1528.84078
+  dps: 457088.47898
+  tps: 360559.0558
+  hps: 2092.43715
  }
 }

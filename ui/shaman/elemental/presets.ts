@@ -14,11 +14,13 @@ import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/util
 import AoEApl from './apls/aoe.apl.json';
 import CleaveApl from './apls/cleave.apl.json';
 import P4Apl from './apls/p4.apl.json';
+import P5Apl from './apls/p5.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
 import P4BiSGear from './gear_sets/p4bis.gear.json';
 import P4P3UpgradedGear from './gear_sets/p4p3upgraded.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
@@ -31,8 +33,9 @@ export const P2_GEAR_PRESET = PresetUtils.makePresetGear('P2 - Default', P2Gear)
 export const P3_GEAR_PRESET = PresetUtils.makePresetGear('P3 - Default', P3Gear);
 export const P4BiS_GEAR_PRESET = PresetUtils.makePresetGear('P4 - BiS', P4BiSGear);
 export const P4P3U_GEAR_PRESET = PresetUtils.makePresetGear('P4 - P3 Upgraded', P4P3UpgradedGear);
+export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BiS', P5Gear)
 
-export const ROTATION_PRESET_P4 = PresetUtils.makePresetAPLRotation('Default', P4Apl);
+export const ROTATION_PRESET_P5 = PresetUtils.makePresetAPLRotation('Default', P5Apl);
 export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', CleaveApl);
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AoE (3+)', AoEApl);
 
@@ -175,18 +178,10 @@ export const PRESET_BUILD_AOE = PresetUtils.makePresetBuild('AoE (4+)', {
 	epWeights: EP_PRESET_AOE,
 });
 
-export const P4_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('P4 - BiS', {
+export const P5_PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuild('P5 - BiS', {
 	talents: P3_TALENTS,
-	rotation: ROTATION_PRESET_P4,
+	rotation: ROTATION_PRESET_P5,
 	encounter: ENCOUNTER_SINGLE_TARGET,
 	epWeights: EP_PRESET_P3,
-	gear: P4BiS_GEAR_PRESET,
-});
-
-export const P4_PRESET_BUILD_PRERAID = PresetUtils.makePresetBuild('P4 - Pre raid', {
-	talents: P2_TALENTS,
-	rotation: ROTATION_PRESET_P4,
-	encounter: ENCOUNTER_SINGLE_TARGET,
-	epWeights: EP_PRESET_P2,
-	gear: PRERAID_GEAR_PRESET,
+	gear: P5_GEAR_PRESET,
 });

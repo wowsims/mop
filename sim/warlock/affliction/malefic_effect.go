@@ -7,9 +7,9 @@ import (
 
 func (affliction *AfflictionWarlock) registerMaleficEffect() {
 	var procDot *core.Dot
-	buildSpell := func(id int32) *core.Spell {
+	buildSpell := func(id int32, tag int32, additionalApplyEffect core.ApplySpellResults) *core.Spell {
 		return affliction.RegisterSpell(core.SpellConfig{
-			ActionID:       core.ActionID{SpellID: id}.WithTag(1),
+			ActionID:       core.ActionID{SpellID: id}.WithTag(tag),
 			Flags:          core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete | core.SpellFlagNoSpellMods | core.SpellFlagIgnoreAttackerModifiers,
 			SpellSchool:    core.SpellSchoolShadow,
 			ProcMask:       core.ProcMaskSpellDamage,
@@ -23,6 +23,10 @@ func (affliction *AfflictionWarlock) registerMaleficEffect() {
 				result := spell.CalcDamage(sim, target, spell.BonusSpellPower, procDot.OutcomeTickMagicCritNoHitCounter)
 				spell.DealPeriodicDamage(sim, result)
 
+				if additionalApplyEffect != nil {
+					additionalApplyEffect(sim, target, spell)
+				}
+
 				// Adjust metrics just for Malefic Effects as it is a edgecase and needs to be handled manually
 				if result.DidCrit() {
 					spell.SpellMetrics[result.Target.UnitIndex].CritTicks++
@@ -33,19 +37,50 @@ func (affliction *AfflictionWarlock) registerMaleficEffect() {
 		})
 	}
 
-	corruptionProc := buildSpell(172)
-	agonyProc := buildSpell(980)
-	uaProc := buildSpell(30108)
-
-	procTable := map[*core.Spell]**core.Spell{
-		corruptionProc: &affliction.Corruption,
-		agonyProc:      &affliction.Agony,
-		uaProc:         &affliction.UnstableAffliction,
+	// Build proc variants for each source spell (Drain Soul, Malefic Grasp)
+	type procVariant struct {
+		procTable map[*core.Spell]**core.Spell
+		procKeys  []*core.Spell
 	}
 
-	// used to iterate over the map in constant order
-	procKeys := []*core.Spell{corruptionProc, agonyProc, uaProc}
-	affliction.ProcMaleficEffect = func(target *core.Unit, coeff float64, sim *core.Simulation) {
+	variants := make(map[*core.Spell]*procVariant)
+
+	// Spell IDs for the proc effects (tag) with their apply effects
+	dotSpells := []struct {
+		spellID               int32
+		dotRef                **core.Spell
+		additionalApplyEffect core.ApplySpellResults
+	}{
+		{spellID: affliction.Corruption.SpellID, dotRef: &affliction.Corruption, additionalApplyEffect: nil},
+		{spellID: affliction.Agony.SpellID, dotRef: &affliction.Agony, additionalApplyEffect: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			procDot.AddStack(sim)
+		}},
+		{spellID: affliction.UnstableAffliction.SpellID, dotRef: &affliction.UnstableAffliction, additionalApplyEffect: nil},
+	}
+
+	sourceSpells := []*core.Spell{affliction.DrainSoul, affliction.MaleficGrasp}
+	for _, sourceSpell := range sourceSpells {
+		sourceSpellID := sourceSpell.ActionID.SpellID
+		procTable := make(map[*core.Spell]**core.Spell)
+		procKeys := make([]*core.Spell, 0, len(dotSpells))
+
+		for _, dot := range dotSpells {
+			proc := buildSpell(sourceSpellID, dot.spellID, dot.additionalApplyEffect)
+			procTable[proc] = dot.dotRef
+			procKeys = append(procKeys, proc)
+		}
+
+		variants[sourceSpell] = &procVariant{
+			procTable: procTable,
+			procKeys:  procKeys,
+		}
+	}
+
+	affliction.ProcMaleficEffect = func(sourceSpell *core.Spell, target *core.Unit, coeff float64, sim *core.Simulation) {
+		variant := variants[sourceSpell]
+		if variant == nil {
+			return
+		}
 		if affliction.T16_2pc_Snapshot {
 			coeff += 0.15
 		}
@@ -60,16 +95,13 @@ func (affliction *AfflictionWarlock) registerMaleficEffect() {
 			coeff *= 1.05
 		}
 
-		for _, proc := range procKeys {
-			source := procTable[proc]
+		for _, proc := range variant.procKeys {
+			source := variant.procTable[proc]
 			dot := (*source).Dot(target)
 			if !dot.IsActive() {
 				continue
 			}
-
-			coeff *= dot.PeriodicDamageMultiplier
-
-			proc.BonusSpellPower = calculateDoTBaseTickDamage(dot, target) * coeff
+			proc.BonusSpellPower = calculateDoTBaseTickDamage(dot, target) * dot.PeriodicDamageMultiplier * coeff
 			procDot = dot
 			proc.Cast(sim, target)
 		}

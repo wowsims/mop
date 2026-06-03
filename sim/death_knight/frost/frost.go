@@ -31,12 +31,17 @@ type FrostDeathKnight struct {
 }
 
 func NewFrostDeathKnight(character *core.Character, player *proto.Player) *FrostDeathKnight {
+	frostOptions := player.GetFrostDeathKnight().Options
+
 	fdk := &FrostDeathKnight{
 		DeathKnight: death_knight.NewDeathKnight(character, death_knight.DeathKnightInputs{
 			Spec:  proto.Spec_SpecFrostDeathKnight,
 			IsDps: true,
 		}, player.TalentsString, 0),
 	}
+
+	fdk.Inputs.AvgAMSHit = frostOptions.AvgAmsHit
+	fdk.Inputs.AvgAMSSuccessRate = frostOptions.AvgAmsSuccessRate
 
 	return fdk
 }

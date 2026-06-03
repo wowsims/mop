@@ -88,6 +88,10 @@ type Druid struct {
 	// Guardian leather specialization is form-specific
 	GuardianLeatherSpecTracker *core.Aura
 	GuardianLeatherSpecDep     *stats.StatDependency
+
+	// Invoked after each Frenzied Regeneration cast with the rage spent / 60
+	// ratio. Used by the Guardian T16 4P HoT to scale its healing.
+	OnFrenziedRegenCast func(rageFraction float64)
 }
 
 const (

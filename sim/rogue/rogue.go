@@ -108,6 +108,8 @@ type Rogue struct {
 	T16EnergyAura *core.Aura
 	T16SpecMod    *core.SpellMod
 
+	RestlessICD core.Cooldown
+
 	ruthlessnessMetrics      *core.ResourceMetrics
 	relentlessStrikesMetrics *core.ResourceMetrics
 }
@@ -168,6 +170,7 @@ func (rogue *Rogue) ApplyFinisher(sim *core.Simulation, spell *core.Spell) {
 				sbNewTime := rogue.ShadowBlades.CD.Timer.ReadyAt() - cdReduction
 				rogue.ShadowBlades.CD.Timer.Set(sbNewTime)
 			}
+			rogue.RestlessICD.Use(sim)
 		}
 	}
 

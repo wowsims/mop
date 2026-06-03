@@ -267,6 +267,9 @@ func (unit *Unit) GetHighestStatType(statTypeOptions []stats.Stat) stats.Stat {
 func (unit *Unit) GetStat(stat stats.Stat) float64 {
 	return unit.stats[stat]
 }
+func (unit *Unit) GetStatWithoutDeps(stat stats.Stat) float64 {
+	return unit.statsWithoutDeps[stat]
+}
 func (unit *Unit) GetMasteryPoints() float64 {
 	return MasteryRatingToMasteryPoints(unit.GetStat(stats.MasteryRating))
 }

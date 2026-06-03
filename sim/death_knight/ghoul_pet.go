@@ -186,6 +186,12 @@ func (ghoulPet *GhoulPet) Enable(sim *core.Simulation, petAgent core.PetAgent) {
 	} else {
 		ghoulPet.Pet.Enable(sim, petAgent)
 	}
+
+	if ghoulPet.dkOwner.Spec == proto.Spec_SpecFrostDeathKnight {
+		// Icy Talons needs to be handled here because Pet.Enable resets the focus bar and resource regen speed.
+		// It can't therefore be appended to the Icy Talons aura.
+		ghoulPet.MultiplyResourceRegenSpeed(sim, 1.45)
+	}
 }
 
 const (

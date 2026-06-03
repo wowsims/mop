@@ -22,6 +22,8 @@ import P3Gear from './gear_sets/p3.gear.json';
 export const P3_PRESET = PresetUtils.makePresetGear('P3', P3Gear);
 import P4Gear from './gear_sets/p4.gear.json';
 export const P4_PRESET = PresetUtils.makePresetGear('P4', P4Gear);
+import P5Gear from './gear_sets/p5.gear.json';
+export const P5_PRESET = PresetUtils.makePresetGear('P5', P5Gear);
 import ItemSwapGear from './gear_sets/p3_item_swap.gear.json';
 export const ITEM_SWAP_PRESET = PresetUtils.makePresetItemSwapGear('HotW Caster Weapon Swap', ItemSwapGear);
 

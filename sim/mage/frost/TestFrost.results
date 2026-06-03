@@ -180,8 +180,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-ChronomancerRegalia"
  value: {
-  dps: 164834.2759
-  tps: 118013.15231
+  dps: 162153.28025
+  tps: 115239.4401
  }
 }
 dps_results: {

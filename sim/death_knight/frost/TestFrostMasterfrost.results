@@ -1,19 +1,19 @@
 character_stats_results: {
  key: "TestFrostMasterfrost-CharacterStats-Default"
  value: {
-  final_stats: 34309.8
+  final_stats: 34243.65
   final_stats: 223.65
   final_stats: 42637.1
   final_stats: 119.7
   final_stats: 163.50598
   final_stats: 2554
-  final_stats: 3418
-  final_stats: 11501.01097
+  final_stats: 4432
+  final_stats: 10395.71051
   final_stats: 2552
   final_stats: 2e-05
-  final_stats: 31727.96117
+  final_stats: 31666.41229
   final_stats: 23725.80843
-  final_stats: 75756.56
+  final_stats: 75611.03
   final_stats: 0
   final_stats: 0
   final_stats: 0
@@ -25,8 +25,8 @@ character_stats_results: {
   final_stats: 0
   final_stats: 7.51176
   final_stats: 15.01765
-  final_stats: 15.71903
-  final_stats: 10.69667
+  final_stats: 17.40903
+  final_stats: 12.38667
   final_stats: 0
  }
 }
@@ -97,25 +97,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-BattlegearoftheLostCatacomb"
  value: {
-  dps: 302098.65052
-  tps: 278751.47919
-  hps: 2464.82889
+  dps: 315075.72545
+  tps: 288923.36332
+  hps: 2556.77913
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-BattleplateofCyclopeanDread"
  value: {
-  dps: 339211.97216
-  tps: 314855.91506
-  hps: 2639.56676
+  dps: 349268.96971
+  tps: 322400.58708
+  hps: 2752.14285
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 320554.09466
-  tps: 289580.52979
-  hps: 2691.97209
+  dps: 331117.14583
+  tps: 296670.46891
+  hps: 2797.52809
  }
 }
 dps_results: {
@@ -425,9 +425,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-CurseofHubris-105645"
  value: {
-  dps: 382846.37158
-  tps: 358430.35808
-  hps: 3377.71204
+  dps: 393740.76115
+  tps: 366947.2051
+  hps: 3411.98763
  }
 }
 dps_results: {
@@ -1161,9 +1161,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-Kor'kronBookofHurting-92785"
  value: {
-  dps: 372624.6737
-  tps: 349854.7109
-  hps: 2986.21875
+  dps: 382659.12291
+  tps: 357655.95975
+  hps: 3037.62549
  }
 }
 dps_results: {
@@ -1465,33 +1465,33 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-PlateofCyclopeanDread"
  value: {
-  dps: 304504.36622
-  tps: 281778.06068
-  hps: 2418.27734
+  dps: 318715.80173
+  tps: 293310.93346
+  hps: 2556.29644
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-PlateoftheAll-ConsumingMaw"
  value: {
-  dps: 293283.73141
-  tps: 270790.37966
-  hps: 2537.38361
+  dps: 307613.63442
+  tps: 282182.29118
+  hps: 2625.57528
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-PlateoftheLostCatacomb"
  value: {
-  dps: 278958.14709
-  tps: 257493.15227
-  hps: 2332.01453
+  dps: 292562.98359
+  tps: 268436.85149
+  hps: 2411.45541
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-PouchofWhiteAsh-103639"
  value: {
-  dps: 372624.6737
-  tps: 349854.7109
-  hps: 2986.21875
+  dps: 382659.12291
+  tps: 357655.95975
+  hps: 3037.62549
  }
 }
 dps_results: {
@@ -1777,9 +1777,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-SI:7Operative'sManual-92784"
  value: {
-  dps: 372624.6737
-  tps: 349854.7109
-  hps: 2986.21875
+  dps: 382659.12291
+  tps: 357655.95975
+  hps: 3037.62549
  }
 }
 dps_results: {
@@ -2089,9 +2089,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 432526.2344
-  tps: 403463.8766
-  hps: 3004.42231
+  dps: 441841.37579
+  tps: 409836.8985
+  hps: 3108.67404
  }
 }
 dps_results: {
@@ -2361,256 +2361,256 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-Average-Default"
  value: {
-  dps: 437657.61485
-  tps: 407926.8453
-  hps: 2867.70535
+  dps: 448974.42364
+  tps: 416897.08013
+  hps: 2924.26382
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-DefaultTalents-Basic-masterfrost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.99598504284e+06
-  tps: 1.96773350432e+06
-  hps: 2783.24311
+  dps: 2.00374299029e+06
+  tps: 1.97266930024e+06
+  hps: 2856.04606
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-DefaultTalents-Basic-masterfrost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 429600.15799
-  tps: 401385.92448
-  hps: 2968.67924
+  dps: 441907.68177
+  tps: 410781.85343
+  hps: 3113.95051
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-DefaultTalents-Basic-masterfrost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 582083.06229
-  tps: 470159.83512
-  hps: 3489.13761
+  dps: 606889.6414
+  tps: 483423.64839
+  hps: 3699.16913
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-DefaultTalents-Basic-masterfrost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.5315923324e+06
-  tps: 1.51451624487e+06
-  hps: 2421.5275
+  dps: 1.54223947384e+06
+  tps: 1.52296341037e+06
+  hps: 2476.3089
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-DefaultTalents-Basic-masterfrost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 334778.62205
-  tps: 317602.50623
-  hps: 2613.2226
+  dps: 346681.01099
+  tps: 327332.18584
+  hps: 2707.143
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-DefaultTalents-Basic-masterfrost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 404772.76727
-  tps: 342822.56382
-  hps: 2846.84862
+  dps: 422067.5466
+  tps: 352152.23683
+  hps: 2885.95466
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RoilingBlood-Basic-masterfrost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.76584900891e+06
-  tps: 1.73767421907e+06
-  hps: 2756.61736
+  dps: 1.91832190618e+06
+  tps: 1.88721677957e+06
+  hps: 2972.47996
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RoilingBlood-Basic-masterfrost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 404465.58903
-  tps: 376212.94795
-  hps: 2934.68009
+  dps: 451056.85525
+  tps: 419833.34422
+  hps: 3190.38596
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RoilingBlood-Basic-masterfrost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 593334.34806
-  tps: 481086.00422
-  hps: 3563.46985
+  dps: 615896.09464
+  tps: 492446.36514
+  hps: 3714.40576
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RoilingBlood-Basic-masterfrost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.34437164615e+06
-  tps: 1.32739139136e+06
-  hps: 2311.00111
+  dps: 1.47513323934e+06
+  tps: 1.45573241851e+06
+  hps: 2560.26954
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RoilingBlood-Basic-masterfrost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 313663.89213
-  tps: 296465.98111
-  hps: 2529.91534
+  dps: 356122.8078
+  tps: 336674.97159
+  hps: 2809.84818
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RoilingBlood-Basic-masterfrost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 415135.7441
-  tps: 353229.99756
-  hps: 2917.30538
+  dps: 435654.27075
+  tps: 365546.27897
+  hps: 3012.7439
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicCorruption-Basic-masterfrost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.77800319893e+06
-  tps: 1.74979284668e+06
-  hps: 2887.79807
+  dps: 1.79752534686e+06
+  tps: 1.76637906924e+06
+  hps: 3023.96289
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicCorruption-Basic-masterfrost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 421771.63672
-  tps: 393668.0487
-  hps: 3093.00066
+  dps: 439884.30423
+  tps: 408699.04631
+  hps: 3214.17939
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicCorruption-Basic-masterfrost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 580673.79406
-  tps: 468683.45056
-  hps: 3457.76703
+  dps: 601814.19108
+  tps: 478212.65649
+  hps: 3676.94053
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicCorruption-Basic-masterfrost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.37308183659e+06
-  tps: 1.35599289287e+06
-  hps: 2538.66719
+  dps: 1.38627648252e+06
+  tps: 1.36706697066e+06
+  hps: 2641.68258
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicCorruption-Basic-masterfrost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 330546.54976
-  tps: 313383.55616
-  hps: 2725.02279
+  dps: 348712.70247
+  tps: 329338.07915
+  hps: 2891.88165
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicCorruption-Basic-masterfrost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 410044.29442
-  tps: 348082.52098
-  hps: 2992.41535
+  dps: 424914.74079
+  tps: 354797.7293
+  hps: 3029.97033
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicEmpowerment-Basic-masterfrost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.84253765295e+06
-  tps: 1.81429651385e+06
-  hps: 2808.84064
+  dps: 1.86739347745e+06
+  tps: 1.83612658992e+06
+  hps: 3023.13842
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicEmpowerment-Basic-masterfrost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 423768.38706
-  tps: 395480.11026
-  hps: 3041.9122
+  dps: 438777.99637
+  tps: 407533.72454
+  hps: 3147.00555
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicEmpowerment-Basic-masterfrost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 580953.95164
-  tps: 468601.23292
-  hps: 3462.18846
+  dps: 596240.79181
+  tps: 472572.51678
+  hps: 3644.19584
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicEmpowerment-Basic-masterfrost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.41855332527e+06
-  tps: 1.40148816069e+06
-  hps: 2466.96957
+  dps: 1.43606262262e+06
+  tps: 1.41685039239e+06
+  hps: 2563.71482
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicEmpowerment-Basic-masterfrost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 333838.56909
-  tps: 316626.75118
-  hps: 2740.355
+  dps: 349133.12725
+  tps: 329737.27247
+  hps: 2794.51598
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-RunicEmpowerment-Basic-masterfrost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 406619.42871
-  tps: 344321.82395
-  hps: 2918.85645
+  dps: 425573.26442
+  tps: 355130.70938
+  hps: 2956.41143
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.82142246128e+06
-  tps: 1.7930341384e+06
-  hps: 2732.25001
+  dps: 1.97793815551e+06
+  tps: 1.94681059118e+06
+  hps: 2951.27958
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 402368.95898
-  tps: 374125.21668
-  hps: 2937.11795
+  dps: 452421.91728
+  tps: 421513.21996
+  hps: 3185.45042
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 598965.30922
-  tps: 487011.99874
-  hps: 3602.30918
+  dps: 621255.78884
+  tps: 498930.27062
+  hps: 3639.77441
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.38708786643e+06
-  tps: 1.37012570633e+06
-  hps: 2310.69089
+  dps: 1.52285264323e+06
+  tps: 1.50340021366e+06
+  hps: 2618.80644
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 314399.46049
-  tps: 297232.95717
-  hps: 2507.69256
+  dps: 355730.44338
+  tps: 336270.49439
+  hps: 2790.45026
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 418445.79399
-  tps: 356544.28215
-  hps: 2881.30147
+  dps: 439759.00793
+  tps: 369688.32428
+  hps: 3048.74782
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 401961.58682
-  tps: 374741.46739
-  hps: 2812.88633
+  dps: 410539.73155
+  tps: 381108.69957
+  hps: 2897.87258
  }
 }

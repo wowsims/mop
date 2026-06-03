@@ -24,6 +24,7 @@ func (warlock *Warlock) registerCurseOfElements() {
 				GCDMin: time.Millisecond * 500,
 				GCD:    core.GCDMin,
 			},
+			IgnoreHaste: true,
 		},
 
 		ThreatMultiplier: 1,

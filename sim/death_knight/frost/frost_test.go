@@ -105,8 +105,9 @@ var OtherTalentSets = []core.TalentsCombo{
 }
 
 var FrostDefaultGlyphs = &proto.Glyphs{
-	Major1: int32(proto.DeathKnightMajorGlyph_GlyphOfDarkSuccor),
+	Major1: int32(proto.DeathKnightMajorGlyph_GlyphOfRegenerativeMagic),
 	Major2: int32(proto.DeathKnightMajorGlyph_GlyphOfPestilence),
+	Major3: int32(proto.DeathKnightMajorGlyph_GlyphOfLoudHorn),
 	Minor1: int32(proto.DeathKnightMinorGlyph_GlyphOfResilientGrip),
 	Minor2: int32(proto.DeathKnightMinorGlyph_GlyphOfTranquilGrip),
 }
@@ -114,7 +115,9 @@ var FrostDefaultGlyphs = &proto.Glyphs{
 var PlayerOptionsFrost = &proto.Player_FrostDeathKnight{
 	FrostDeathKnight: &proto.FrostDeathKnight{
 		Options: &proto.FrostDeathKnight_Options{
-			ClassOptions: &proto.DeathKnightOptions{},
+			ClassOptions:      &proto.DeathKnightOptions{},
+			AvgAmsHit:         170000,
+			AvgAmsSuccessRate: 1,
 		},
 	},
 }
