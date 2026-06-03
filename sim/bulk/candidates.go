@@ -29,26 +29,6 @@ const (
 	BulkSimItemSlotHandWeapon
 )
 
-type bulkSimItemSlot = BulkSimItemSlot
-
-const (
-	bulkSimItemSlotHead       = BulkSimItemSlotHead
-	bulkSimItemSlotNeck       = BulkSimItemSlotNeck
-	bulkSimItemSlotShoulder   = BulkSimItemSlotShoulder
-	bulkSimItemSlotBack       = BulkSimItemSlotBack
-	bulkSimItemSlotChest      = BulkSimItemSlotChest
-	bulkSimItemSlotWrist      = BulkSimItemSlotWrist
-	bulkSimItemSlotHands      = BulkSimItemSlotHands
-	bulkSimItemSlotWaist      = BulkSimItemSlotWaist
-	bulkSimItemSlotLegs       = BulkSimItemSlotLegs
-	bulkSimItemSlotFeet       = BulkSimItemSlotFeet
-	bulkSimItemSlotFinger     = BulkSimItemSlotFinger
-	bulkSimItemSlotTrinket    = BulkSimItemSlotTrinket
-	bulkSimItemSlotMainHand   = BulkSimItemSlotMainHand
-	bulkSimItemSlotOffHand    = BulkSimItemSlotOffHand
-	bulkSimItemSlotHandWeapon = BulkSimItemSlotHandWeapon
-)
-
 type bulkSimCandidateOption struct {
 	spec *proto.ItemSpec
 	item core.Item
@@ -59,6 +39,41 @@ type itemSpecCacheKey struct {
 	randomSuffix  int32
 	upgradeStep   proto.ItemLevelState
 	challengeMode bool
+}
+
+// itemSpecFingerprintKey is a zero-allocation alternative to the string fingerprint.
+// gemsHash is a position-weighted XOR of gem IDs; collision probability is negligible
+// for the small, fixed set of gem IDs used in practice.
+type itemSpecFingerprintKey struct {
+	id            int32
+	randomSuffix  int32
+	enchant       int32
+	tinker        int32
+	reforging     int32
+	upgradeStep   proto.ItemLevelState
+	challengeMode bool
+	gemsHash      uint64
+}
+
+func buildItemSpecFingerprintKey(item *proto.ItemSpec) itemSpecFingerprintKey {
+	if item == nil {
+		return itemSpecFingerprintKey{}
+	}
+	var gemsHash uint64
+	for i, gem := range item.GetGems() {
+		// Knuth multiplicative hash per position to make order matter.
+		gemsHash ^= uint64(uint32(gem)*2654435761) << (uint(i) & 63)
+	}
+	return itemSpecFingerprintKey{
+		id:            item.GetId(),
+		randomSuffix:  item.GetRandomSuffix(),
+		enchant:       item.GetEnchant(),
+		tinker:        item.GetTinker(),
+		reforging:     item.GetReforging(),
+		upgradeStep:   item.GetUpgradeStep(),
+		challengeMode: item.GetChallengeMode(),
+		gemsHash:      gemsHash,
+	}
 }
 
 type bulkSimRequiredSetBonusComboMatcher struct {
@@ -81,41 +96,60 @@ type bulkSimCandidateGenerator struct {
 	playerCanDualWield   bool
 	playerIsFuryWarrior  bool
 	challengeModeEnabled bool
-	selectedByBulkSlot   map[bulkSimItemSlot][]bulkSimCandidateOption
-	groupedPairsBySlot   map[bulkSimItemSlot][][2]bulkSimCandidateOption
+	selectedByBulkSlot   map[BulkSimItemSlot][]bulkSimCandidateOption
+	groupedPairsBySlot   map[BulkSimItemSlot][][2]bulkSimCandidateOption
 	comboItemsBySlot     []bulkSimCandidateOption
 	comboSlotUsed        []bool
-	selectedOrder        []bulkSimItemSlot
 	inheritUpgrades      bool
-	frozenItems          map[bulkSimItemSlot]*core.Item
+	frozenItems          map[BulkSimItemSlot]*core.Item
 	frozenWeaponSlot     proto.ItemSlot
 	weaponTypeFilters    map[proto.ItemSlot][]proto.WeaponType
+	weaponCombosCached   [][2]*bulkSimCandidateOption
+	weaponCombosReady    bool
 }
 
-var bulkSimItemSlotToSingleItemSlot = map[bulkSimItemSlot]proto.ItemSlot{
-	bulkSimItemSlotHead:     proto.ItemSlot_ItemSlotHead,
-	bulkSimItemSlotNeck:     proto.ItemSlot_ItemSlotNeck,
-	bulkSimItemSlotShoulder: proto.ItemSlot_ItemSlotShoulder,
-	bulkSimItemSlotBack:     proto.ItemSlot_ItemSlotBack,
-	bulkSimItemSlotChest:    proto.ItemSlot_ItemSlotChest,
-	bulkSimItemSlotWrist:    proto.ItemSlot_ItemSlotWrist,
-	bulkSimItemSlotHands:    proto.ItemSlot_ItemSlotHands,
-	bulkSimItemSlotWaist:    proto.ItemSlot_ItemSlotWaist,
-	bulkSimItemSlotLegs:     proto.ItemSlot_ItemSlotLegs,
-	bulkSimItemSlotFeet:     proto.ItemSlot_ItemSlotFeet,
-	bulkSimItemSlotMainHand: proto.ItemSlot_ItemSlotMainHand,
-	bulkSimItemSlotOffHand:  proto.ItemSlot_ItemSlotOffHand,
+var bulkSimItemSlotToSingleItemSlot = map[BulkSimItemSlot]proto.ItemSlot{
+	BulkSimItemSlotHead:     proto.ItemSlot_ItemSlotHead,
+	BulkSimItemSlotNeck:     proto.ItemSlot_ItemSlotNeck,
+	BulkSimItemSlotShoulder: proto.ItemSlot_ItemSlotShoulder,
+	BulkSimItemSlotBack:     proto.ItemSlot_ItemSlotBack,
+	BulkSimItemSlotChest:    proto.ItemSlot_ItemSlotChest,
+	BulkSimItemSlotWrist:    proto.ItemSlot_ItemSlotWrist,
+	BulkSimItemSlotHands:    proto.ItemSlot_ItemSlotHands,
+	BulkSimItemSlotWaist:    proto.ItemSlot_ItemSlotWaist,
+	BulkSimItemSlotLegs:     proto.ItemSlot_ItemSlotLegs,
+	BulkSimItemSlotFeet:     proto.ItemSlot_ItemSlotFeet,
+	BulkSimItemSlotMainHand: proto.ItemSlot_ItemSlotMainHand,
+	BulkSimItemSlotOffHand:  proto.ItemSlot_ItemSlotOffHand,
 }
 
 var BulkSimItemSlotToSingleItemSlot = bulkSimItemSlotToSingleItemSlot
 
-var bulkSimItemSlotToItemSlotPairs = map[bulkSimItemSlot][2]proto.ItemSlot{
-	bulkSimItemSlotFinger:     {proto.ItemSlot_ItemSlotFinger1, proto.ItemSlot_ItemSlotFinger2},
-	bulkSimItemSlotTrinket:    {proto.ItemSlot_ItemSlotTrinket1, proto.ItemSlot_ItemSlotTrinket2},
-	bulkSimItemSlotHandWeapon: {proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand},
+var bulkSimItemSlotToItemSlotPairs = map[BulkSimItemSlot][2]proto.ItemSlot{
+	BulkSimItemSlotFinger:     {proto.ItemSlot_ItemSlotFinger1, proto.ItemSlot_ItemSlotFinger2},
+	BulkSimItemSlotTrinket:    {proto.ItemSlot_ItemSlotTrinket1, proto.ItemSlot_ItemSlotTrinket2},
+	BulkSimItemSlotHandWeapon: {proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand},
 }
 
 var BulkSimItemSlotToItemSlotPairs = bulkSimItemSlotToItemSlotPairs
+
+var bulkSimSelectedOrder = [...]BulkSimItemSlot{
+	BulkSimItemSlotHead,
+	BulkSimItemSlotNeck,
+	BulkSimItemSlotShoulder,
+	BulkSimItemSlotBack,
+	BulkSimItemSlotChest,
+	BulkSimItemSlotWrist,
+	BulkSimItemSlotHands,
+	BulkSimItemSlotWaist,
+	BulkSimItemSlotLegs,
+	BulkSimItemSlotFeet,
+	BulkSimItemSlotFinger,
+	BulkSimItemSlotTrinket,
+	BulkSimItemSlotMainHand,
+	BulkSimItemSlotOffHand,
+	BulkSimItemSlotHandWeapon,
+}
 
 var ItemSlotToBulkSimItemSlot = map[proto.ItemSlot]BulkSimItemSlot{
 	proto.ItemSlot_ItemSlotHead:     BulkSimItemSlotHead,
@@ -238,8 +272,9 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 	matchingCombinations := rawCombinations
 	if matcher := generator.buildRequiredSetBonusMatcher(generator.settings.GetRequiredSetBonuses()); matcher != nil {
 		matchingCombinations = 0
+		scratchCounts := make([]int, len(matcher.baseCounts))
 		for comboIdx := 0; comboIdx < rawCombinations; comboIdx++ {
-			if generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher) {
+			if generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts) {
 				matchingCombinations++
 			}
 		}
@@ -311,29 +346,12 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 		playerCanDualWield:   playerCanDualWield,
 		playerIsFuryWarrior:  playerSpec == proto.Spec_SpecFuryWarrior,
 		challengeModeEnabled: player.GetChallengeMode(),
-		selectedByBulkSlot:   make(map[bulkSimItemSlot][]bulkSimCandidateOption),
-		groupedPairsBySlot:   make(map[bulkSimItemSlot][][2]bulkSimCandidateOption),
+		selectedByBulkSlot:   make(map[BulkSimItemSlot][]bulkSimCandidateOption),
+		groupedPairsBySlot:   make(map[BulkSimItemSlot][][2]bulkSimCandidateOption),
 		comboItemsBySlot:     make([]bulkSimCandidateOption, int(core.NumItemSlots)),
 		comboSlotUsed:        make([]bool, int(core.NumItemSlots)),
-		selectedOrder: []bulkSimItemSlot{
-			bulkSimItemSlotHead,
-			bulkSimItemSlotNeck,
-			bulkSimItemSlotShoulder,
-			bulkSimItemSlotBack,
-			bulkSimItemSlotChest,
-			bulkSimItemSlotWrist,
-			bulkSimItemSlotHands,
-			bulkSimItemSlotWaist,
-			bulkSimItemSlotLegs,
-			bulkSimItemSlotFeet,
-			bulkSimItemSlotFinger,
-			bulkSimItemSlotTrinket,
-			bulkSimItemSlotMainHand,
-			bulkSimItemSlotOffHand,
-			bulkSimItemSlotHandWeapon,
-		},
-		inheritUpgrades: request.GetBulkSettings().GetInheritUpgrades(),
-		frozenItems:     make(map[bulkSimItemSlot]*core.Item),
+		inheritUpgrades:      request.GetBulkSettings().GetInheritUpgrades(),
+		frozenItems:          make(map[BulkSimItemSlot]*core.Item),
 		weaponTypeFilters: map[proto.ItemSlot][]proto.WeaponType{
 			proto.ItemSlot_ItemSlotMainHand: request.GetBulkSettings().GetFreezeMainhandWeaponSlots(),
 			proto.ItemSlot_ItemSlotOffHand:  request.GetBulkSettings().GetFreezeOffhandWeaponSlots(),
@@ -350,9 +368,19 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 func (generator *bulkSimCandidateGenerator) buildCandidates() ([]*proto.BulkGearCandidate, error) {
 	rawCombinations := generator.rawCombinationsCount()
 	matcher := generator.buildRequiredSetBonusMatcher(generator.settings.GetRequiredSetBonuses())
-	candidates := make([]*proto.BulkGearCandidate, 0, rawCombinations)
+	initialCapacity := rawCombinations
+	if matcher != nil && initialCapacity > 16384 {
+		// Required-set filtering can drop output cardinality by orders of magnitude.
+		// Avoid over-reserving to raw combinations in that case.
+		initialCapacity = 16384
+	}
+	candidates := make([]*proto.BulkGearCandidate, 0, initialCapacity)
+	var scratchCounts []int
+	if matcher != nil {
+		scratchCounts = make([]int, len(matcher.baseCounts))
+	}
 	for comboIdx := 0; comboIdx < rawCombinations; comboIdx++ {
-		if !generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher) {
+		if !generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts) {
 			continue
 		}
 		gear, err := generator.buildGearForCombo(comboIdx)
@@ -372,14 +400,14 @@ func (generator *bulkSimCandidateGenerator) initFrozenSettings() {
 		item := generator.baseEquipment.GetItemBySlot(proto.ItemSlot(slot))
 		if item != nil && item.ID != 0 {
 			itemCopy := *item
-			generator.frozenItems[bulkSimItemSlotFinger] = &itemCopy
+			generator.frozenItems[BulkSimItemSlotFinger] = &itemCopy
 		}
 	}
 	if slot := generator.settings.GetFreezeTrinketSlot(); slot == int32(proto.ItemSlot_ItemSlotTrinket1) || slot == int32(proto.ItemSlot_ItemSlotTrinket2) {
 		item := generator.baseEquipment.GetItemBySlot(proto.ItemSlot(slot))
 		if item != nil && item.ID != 0 {
 			itemCopy := *item
-			generator.frozenItems[bulkSimItemSlotTrinket] = &itemCopy
+			generator.frozenItems[BulkSimItemSlotTrinket] = &itemCopy
 		}
 	}
 	if slot := generator.settings.GetFreezeWeaponSlot(); slot == int32(proto.ItemSlot_ItemSlotMainHand) || slot == int32(proto.ItemSlot_ItemSlotOffHand) {
@@ -388,23 +416,20 @@ func (generator *bulkSimCandidateGenerator) initFrozenSettings() {
 }
 
 func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
-	equippedItemsBySlot := make(map[proto.ItemSlot]*core.Item)
-	equippedIDs := make(map[int32]bool)
+	equippedSpecKeys := make(map[itemSpecFingerprintKey]struct{}, int(core.NumItemSlots))
 	for slot := proto.ItemSlot_ItemSlotHead; slot < core.NumItemSlots; slot++ {
 		equippedItem := generator.baseEquipment.GetItemBySlot(slot)
 		if equippedItem == nil || equippedItem.ID == 0 {
 			continue
 		}
-		itemCopy := *equippedItem
-		equippedItemsBySlot[slot] = &itemCopy
-		equippedIDs[equippedItem.ID] = true
+		equippedSpecKeys[buildItemSpecFingerprintKey(equippedItem.ToItemSpecProto())] = struct{}{}
 	}
 
 	for _, selectedItem := range generator.settings.GetItems() {
 		if selectedItem == nil || selectedItem.GetId() == 0 {
 			continue
 		}
-		if equippedIDs[selectedItem.GetId()] {
+		if _, isEquipped := equippedSpecKeys[buildItemSpecFingerprintKey(selectedItem)]; isEquipped {
 			continue
 		}
 		baseItem := core.GetItemByID(selectedItem.GetId())
@@ -435,22 +460,33 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 			generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], option)
 		}
 	}
-	for slot := proto.ItemSlot_ItemSlotHead; slot < core.NumItemSlots; slot++ {
-		equippedItem := equippedItemsBySlot[slot]
-		if equippedItem == nil {
-			continue
-		}
-		bulkSlot := getBulkItemSlotFromSlot(slot, generator.playerCanDualWield)
-		generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], bulkSimCandidateOption{
-			spec: equippedItem.ToItemSpecProto(),
-			item: *equippedItem,
-		})
+	for bulkSlot, options := range generator.selectedByBulkSlot {
+		generator.selectedByBulkSlot[bulkSlot] = dedupeCandidateOptions(options, generator.inheritUpgrades)
 	}
 	return nil
 }
 
+func dedupeCandidateOptions(options []bulkSimCandidateOption, inheritUpgrades bool) []bulkSimCandidateOption {
+	if len(options) <= 1 {
+		return options
+	}
+
+	seen := make(map[itemSpecCacheKey]struct{}, len(options))
+	deduped := make([]bulkSimCandidateOption, 0, len(options))
+	for _, option := range options {
+		key := buildItemSpecKey(option.spec, inheritUpgrades)
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		deduped = append(deduped, option)
+	}
+
+	return deduped
+}
+
 func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
-	for _, bulkSlot := range []bulkSimItemSlot{bulkSimItemSlotFinger, bulkSimItemSlotTrinket} {
+	for _, bulkSlot := range []BulkSimItemSlot{BulkSimItemSlotFinger, BulkSimItemSlotTrinket} {
 		options := generator.selectedByBulkSlot[bulkSlot]
 		if len(options) < 2 {
 			continue
@@ -475,12 +511,12 @@ func (generator *bulkSimCandidateGenerator) rawCombinationsCount() int {
 	if rawCombinations == 0 {
 		rawCombinations = 1
 	}
-	for _, bulkSlot := range generator.selectedOrder {
-		if bulkSlot == bulkSimItemSlotMainHand || bulkSlot == bulkSimItemSlotOffHand || bulkSlot == bulkSimItemSlotHandWeapon {
+	for _, bulkSlot := range bulkSimSelectedOrder {
+		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
 			continue
 		}
 		numOptions := len(generator.selectedByBulkSlot[bulkSlot])
-		if numOptions > 1 && (bulkSlot == bulkSimItemSlotFinger || bulkSlot == bulkSimItemSlotTrinket) {
+		if numOptions > 1 && (bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket) {
 			rawCombinations *= len(generator.groupedPairsBySlot[bulkSlot])
 		} else if numOptions > 0 {
 			rawCombinations *= numOptions
@@ -531,15 +567,15 @@ func (generator *bulkSimCandidateGenerator) populateItemsForCombo(comboIdx int) 
 			generator.comboSlotUsed[int(slot)] = true
 		}
 	}
-	for _, bulkSlot := range generator.selectedOrder {
-		if bulkSlot == bulkSimItemSlotMainHand || bulkSlot == bulkSimItemSlotOffHand || bulkSlot == bulkSimItemSlotHandWeapon {
+	for _, bulkSlot := range bulkSimSelectedOrder {
+		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
 			continue
 		}
 		options := generator.selectedByBulkSlot[bulkSlot]
 		if len(options) == 0 {
 			continue
 		}
-		if bulkSlot == bulkSimItemSlotFinger || bulkSlot == bulkSimItemSlotTrinket {
+		if bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket {
 			if len(options) < 2 {
 				return fmt.Errorf("at least 2 items must be selected for grouped bulk slot %d", bulkSlot)
 			}
@@ -566,9 +602,13 @@ func (generator *bulkSimCandidateGenerator) populateItemsForCombo(comboIdx int) 
 }
 
 func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCandidateOption {
+	if generator.weaponCombosReady {
+		return generator.weaponCombosCached
+	}
+
 	allWeaponCombos := make([][2]*bulkSimCandidateOption, 0)
 	all2HWeapons := make([]bulkSimCandidateOption, 0)
-	for _, bulkSlot := range []bulkSimItemSlot{bulkSimItemSlotMainHand, bulkSimItemSlotHandWeapon} {
+	for _, bulkSlot := range []BulkSimItemSlot{BulkSimItemSlotMainHand, BulkSimItemSlotHandWeapon} {
 		options := generator.selectedByBulkSlot[bulkSlot]
 		for _, option := range options {
 			if (option.item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeUnknown && option.item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeWand) || option.item.HandType == proto.HandType_HandTypeTwoHand {
@@ -597,8 +637,8 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 			allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&all2HWeapons[i], nil})
 		}
 	}
-	mhOptions := generator.selectedByBulkSlot[bulkSimItemSlotMainHand]
-	ohOptions := generator.selectedByBulkSlot[bulkSimItemSlotOffHand]
+	mhOptions := generator.selectedByBulkSlot[BulkSimItemSlotMainHand]
+	ohOptions := generator.selectedByBulkSlot[BulkSimItemSlotOffHand]
 	if len(mhOptions) > 0 {
 		for i := range mhOptions {
 			if optionsContainEquivalent(all2HWeapons, mhOptions[i], generator.inheritUpgrades) {
@@ -617,7 +657,7 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 			allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{nil, &ohOptions[i]})
 		}
 	}
-	oneHandOptions := generator.selectedByBulkSlot[bulkSimItemSlotHandWeapon]
+	oneHandOptions := generator.selectedByBulkSlot[BulkSimItemSlotHandWeapon]
 	if len(oneHandOptions) > 0 {
 		filtered := make([]bulkSimCandidateOption, 0, len(oneHandOptions))
 		for _, option := range oneHandOptions {
@@ -651,7 +691,10 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 			filteredCombos = append(filteredCombos, combo)
 		}
 	}
-	return filteredCombos
+
+	generator.weaponCombosCached = filteredCombos
+	generator.weaponCombosReady = true
+	return generator.weaponCombosCached
 }
 
 func (generator *bulkSimCandidateGenerator) weaponComboMatchesSettings(mhItem *bulkSimCandidateOption, ohItem *bulkSimCandidateOption) bool {
@@ -709,15 +752,15 @@ func (generator *bulkSimCandidateGenerator) buildRequiredSetBonusMatcher(require
 		}
 		dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 	}
-	for _, bulkSlot := range generator.selectedOrder {
-		if bulkSlot == bulkSimItemSlotMainHand || bulkSlot == bulkSimItemSlotOffHand || bulkSlot == bulkSimItemSlotHandWeapon {
+	for _, bulkSlot := range bulkSimSelectedOrder {
+		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
 			continue
 		}
 		options := generator.selectedByBulkSlot[bulkSlot]
 		if len(options) == 0 {
 			continue
 		}
-		if bulkSlot == bulkSimItemSlotFinger || bulkSlot == bulkSimItemSlotTrinket {
+		if bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket {
 			pairs := generator.groupedPairsBySlot[bulkSlot]
 			slots := bulkSimItemSlotToItemSlotPairs[bulkSlot]
 			optionDeltas := make([][]int, 0, len(pairs))
@@ -767,11 +810,15 @@ func (generator *bulkSimCandidateGenerator) getRequiredSetBonusOptionDeltas(requ
 	return deltas
 }
 
-func (generator *bulkSimCandidateGenerator) comboMatchesRequiredSetBonusMatcher(comboIdx int, matcher *bulkSimRequiredSetBonusComboMatcher) bool {
+func (generator *bulkSimCandidateGenerator) comboMatchesRequiredSetBonusMatcher(comboIdx int, matcher *bulkSimRequiredSetBonusComboMatcher, scratchCounts []int) bool {
 	if matcher == nil {
 		return true
 	}
-	counts := slices.Clone(matcher.baseCounts)
+	counts := scratchCounts
+	if len(counts) != len(matcher.baseCounts) {
+		counts = make([]int, len(matcher.baseCounts))
+	}
+	copy(counts, matcher.baseCounts)
 	for _, dimension := range matcher.dimensions {
 		if len(dimension.optionDeltas) == 0 {
 			return false
@@ -982,14 +1029,14 @@ func isSecondaryItemSlot(slot proto.ItemSlot, playerCanDualWield bool) bool {
 	return slot == proto.ItemSlot_ItemSlotFinger2 || slot == proto.ItemSlot_ItemSlotTrinket2 || (playerCanDualWield && slot == proto.ItemSlot_ItemSlotOffHand)
 }
 
-func getBulkItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) bulkSimItemSlot {
+func getBulkItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) BulkSimItemSlot {
 	if playerCanDualWield && (slot == proto.ItemSlot_ItemSlotMainHand || slot == proto.ItemSlot_ItemSlotOffHand) {
-		return bulkSimItemSlotHandWeapon
+		return BulkSimItemSlotHandWeapon
 	}
 	if bulkSlot, ok := ItemSlotToBulkSimItemSlot[slot]; ok {
 		return bulkSlot
 	}
-	return bulkSimItemSlotHead
+	return BulkSimItemSlotHead
 }
 
 func allPairs(options []bulkSimCandidateOption) [][2]bulkSimCandidateOption {
