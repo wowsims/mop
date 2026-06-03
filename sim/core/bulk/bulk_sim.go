@@ -853,43 +853,45 @@ func mergeBulkSimDistributionMetrics(metrics *proto.DistributionMetrics, additio
 		return googleProto.Clone(metrics).(*proto.DistributionMetrics)
 	}
 
-	totalNFloat := float64(totalN)
-	totalSumSq := metricsAggregator.SumSq + additionalAggregator.SumSq
-	totalSum := metrics.GetAvg()*float64(metricsAggregator.N) + additionalMetrics.GetAvg()*float64(additionalAggregator.N)
-	avg := totalSum / totalNFloat
-	variance := totalSumSq/totalNFloat - avg*avg
-	if variance < 0 {
-		variance = 0
+	combinedMetrics := &proto.DistributionMetrics{
+		Min:            math.MaxFloat64,
+		MinSeed:        math.MaxInt64,
+		Hist:           make(map[int32]int32),
+		AllValues:      make([]float64, 0),
+		AggregatorData: &proto.AggregatorData{},
 	}
-
-	maxValue := metrics.GetMax()
-	maxSeed := metrics.GetMaxSeed()
-	if additionalMetrics.GetMax() > maxValue {
-		maxValue = additionalMetrics.GetMax()
-		maxSeed = additionalMetrics.GetMaxSeed()
-	}
-
-	minValue := metrics.GetMin()
-	minSeed := metrics.GetMinSeed()
-	if additionalMetrics.GetMin() < minValue {
-		minValue = additionalMetrics.GetMin()
-		minSeed = additionalMetrics.GetMinSeed()
-	}
-
-	return &proto.DistributionMetrics{
-		Avg:     avg,
-		Stdev:   math.Sqrt(variance),
-		Min:     minValue,
-		Max:     maxValue,
-		MinSeed: minSeed,
-		MaxSeed: maxSeed,
-		AggregatorData: &proto.AggregatorData{
-			N:     totalN,
-			SumSq: totalSumSq,
-		},
-	}
+	combineBulkSimDistributionMetrics(combinedMetrics, metrics, false, float64(metricsAggregator.N)/float64(totalN))
+	combineBulkSimDistributionMetrics(combinedMetrics, additionalMetrics, true, float64(additionalAggregator.N)/float64(totalN))
+	return combinedMetrics
 }
 
+func combineBulkSimDistributionMetrics(base *proto.DistributionMetrics, add *proto.DistributionMetrics, isLast bool, weight float64) {
+	base.Avg += add.Avg * weight
+
+	if add.Max > base.Max {
+		base.Max = add.Max
+		base.MaxSeed = add.MaxSeed
+	}
+
+	if add.Min == 0 || add.Min < base.Min {
+		base.Min = add.Min
+		base.MinSeed = add.MinSeed
+	} else if add.Min == base.Min {
+		base.MinSeed = add.MinSeed
+	}
+
+	for idx, val := range add.Hist {
+		base.Hist[idx] += val
+	}
+
+	base.AllValues = append(base.AllValues, add.AllValues...)
+
+	base.AggregatorData.N += add.AggregatorData.N
+	base.AggregatorData.SumSq += add.AggregatorData.SumSq
+	if isLast {
+		base.Stdev = math.Sqrt(base.AggregatorData.SumSq/float64(base.AggregatorData.N) - base.Avg*base.Avg)
+	}
+}
 func bulkSimDistributionMetricsAggregatorData(metrics *proto.DistributionMetrics) *proto.AggregatorData {
 	if metrics.AggregatorData != nil && metrics.AggregatorData.N > 0 {
 		return metrics.AggregatorData
@@ -950,14 +952,9 @@ func sortBulkSimResultsByDps(results []*BulkSimCandidateResult) {
 }
 
 func bulkSimResultsToCandidates(results []*BulkSimCandidateResult) []BulkSimCandidate {
-	candidates := make([]BulkSimCandidate, 0, len(results))
-	for _, result := range results {
-		if result == nil {
-			continue
-		}
-		candidates = append(candidates, result.Candidate)
-	}
-	return candidates
+	return core.MapSlice(results, func(result *BulkSimCandidateResult) BulkSimCandidate {
+		return result.Candidate
+	})
 }
 
 func bulkSimCandidateResultToProto(result *BulkSimCandidateResult) *proto.BulkGearResult {

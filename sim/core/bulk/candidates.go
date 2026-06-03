@@ -3,6 +3,7 @@ package bulk
 import (
 	"fmt"
 	"slices"
+	"sync"
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
@@ -108,6 +109,11 @@ type bulkSimCandidateGenerator struct {
 	weaponCombosReady    bool
 }
 
+// Bulk candidate/count generation temporarily mutates the shared core item database
+// using request-scoped SimDatabase payloads. Keep that mutation + generation path
+// serialized to avoid concurrent map read/write panics with parallel sim requests.
+var bulkCandidateDatabaseMu sync.Mutex
+
 var bulkSimItemSlotToSingleItemSlot = map[BulkSimItemSlot]proto.ItemSlot{
 	BulkSimItemSlotHead:     proto.ItemSlot_ItemSlotHead,
 	BulkSimItemSlotNeck:     proto.ItemSlot_ItemSlotNeck,
@@ -209,6 +215,9 @@ var itemTypeToSlotsMap = map[proto.ItemType][]proto.ItemSlot{
 }
 
 func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
+	bulkCandidateDatabaseMu.Lock()
+	defer bulkCandidateDatabaseMu.Unlock()
+
 	if request == nil || request.GetBulkSettings() == nil || len(request.GetCandidates()) > 0 {
 		return nil
 	}
@@ -238,6 +247,9 @@ func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
 }
 
 func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.BulkCombinationCountResult {
+	bulkCandidateDatabaseMu.Lock()
+	defer bulkCandidateDatabaseMu.Unlock()
+
 	if request == nil {
 		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: "bulk combination count request is missing"}}
 	}
@@ -287,6 +299,9 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 }
 
 func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesResult {
+	bulkCandidateDatabaseMu.Lock()
+	defer bulkCandidateDatabaseMu.Unlock()
+
 	if request == nil {
 		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: "bulk candidates request is missing"}}
 	}
@@ -460,6 +475,26 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 			generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], option)
 		}
 	}
+
+	// Keep backend candidate semantics aligned with the frontend picker behavior:
+	// selected items are considered first, but currently equipped items are always
+	// available fallback options for each eligible bulk slot.
+	for slot := proto.ItemSlot_ItemSlotHead; slot < core.NumItemSlots; slot++ {
+		equippedItem := generator.baseEquipment.GetItemBySlot(slot)
+		if equippedItem == nil || equippedItem.ID == 0 {
+			continue
+		}
+		if !canEquipItem(*equippedItem, generator.playerClass, generator.playerSpec, slot) {
+			continue
+		}
+
+		bulkSlot := getBulkItemSlotFromSlot(slot, generator.playerCanDualWield)
+		generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], bulkSimCandidateOption{
+			spec: equippedItem.ToItemSpecProto(),
+			item: *equippedItem,
+		})
+	}
+
 	for bulkSlot, options := range generator.selectedByBulkSlot {
 		generator.selectedByBulkSlot[bulkSlot] = dedupeCandidateOptions(options, generator.inheritUpgrades)
 	}
