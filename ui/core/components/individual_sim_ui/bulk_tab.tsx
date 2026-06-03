@@ -1284,11 +1284,44 @@ export class BulkTab extends SimTab {
 		return isExternal() ? WEB_COMBINATIONS_LIMIT : LOCAL_COMBINATIONS_LIMIT;
 	}
 
-	private setCandidateGearProgress() {
+	private setCandidateGearProgress(
+		{
+			completed,
+			total,
+			title = i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
+			stage = 'preparing',
+			startedAt,
+		}: {
+			completed?: number;
+			total?: number;
+			title?: string;
+			stage?: string;
+			startedAt?: number;
+		} = {},
+	) {
+		const secondsRemaining =
+			startedAt !== undefined && completed !== undefined && total !== undefined && completed > 0
+				? ((new Date().getTime() - startedAt) / 1000 / completed) * Math.max(0, total - completed)
+				: undefined;
+
+		if (completed === undefined || total === undefined) {
+			this.progressTrackerModal.updateProgress({
+				stage,
+				title,
+				message: undefined,
+			});
+			return;
+		}
+
 		this.progressTrackerModal.updateProgress({
-			stage: 'preparing',
-			title: i18n.t('bulk_tab.progress.building_candidate_gear_sets'),
-			message: undefined,
+			stage,
+			title,
+			current: completed,
+			total,
+			message:
+				secondsRemaining !== undefined ? (
+					<div>{i18n.t('bulk_tab.progress.time_remaining', { time: formatDurationSeconds(secondsRemaining) })}</div>
+				) : undefined,
 		});
 	}
 
@@ -1371,12 +1404,23 @@ export class BulkTab extends SimTab {
 		reforgeConfig?: ReforgeOptimizeConfig,
 		bulkSettings?: BulkSettings,
 	): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
+		let cacheRestoreStartedAt: number | undefined;
 		return runCoreBulkSimImpl(
 			{
 				simUI: this.simUI,
 				throwIfBulkAborted: signal => this.throwIfBulkAborted(signal),
 				runWithBulkAbort: (promise, signal) => this.runWithBulkAbort(promise, signal),
 				setSimProgress: (progress, config) => this.setSimProgress(progress, config),
+				setCacheRestoreProgress: progress => {
+					cacheRestoreStartedAt ??= new Date().getTime();
+					this.setCandidateGearProgress({
+						completed: progress.processedCandidates,
+						total: progress.totalCandidates,
+						title: i18n.t('bulk_tab.progress.restoring_reforges_from_cache'),
+						stage: 'reforging',
+						startedAt: cacheRestoreStartedAt,
+					});
+				},
 				debugOptimisationRound: (message, data) => this.debugOptimisationRound(message, data),
 			},
 			gearSets,

@@ -2,6 +2,7 @@ import { openDB, IDBPDatabase } from 'idb';
 
 import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { SimSettingCategories } from './constants/sim_settings';
+import { throwIfAborted } from './components/individual_sim_ui/bulk/utils';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
 import { EquipmentSpec, Spec } from './proto/common';
@@ -9,6 +10,7 @@ import { IndividualSimSettings } from './proto/ui';
 import { IndividualLinkExporter } from './components/individual_sim_ui/exporters/individual_link_exporter';
 import { IndividualLinkImporter } from './components/individual_sim_ui/importers/individual_link_importer';
 import { IndividualSimUI } from './individual_sim_ui';
+import { sleep } from './utils';
 
 const REFORGE_CACHE_DB_NAME = `${LOCAL_STORAGE_PREFIX}_reforge-cache`;
 const REFORGE_CACHE_DB_VERSION = 1;
@@ -17,6 +19,7 @@ const REFORGE_CACHE_KEY_PREFIX = `v${REFORGE_CACHE_DB_VERSION}:api-v${CURRENT_AP
 const REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX = 'equipmentSpec:';
 const REFORGE_CACHE_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // Store reforge results for 14 days
 const REFORGE_CACHE_PRUNE_INTERVAL_MS = 60 * 60 * 1000;
+const REFORGE_CACHE_ACCESS_UPDATE_CHUNK_SIZE = 2000;
 
 interface ReforgeGearCacheRecord {
 	gear: string;
@@ -87,29 +90,70 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		}
 	}
 
-	async getMany(keys: string[]): Promise<Map<string, EquipmentSpec>> {
+	async getMany(keys: string[], signal?: AbortSignal): Promise<Map<string, EquipmentSpec>> {
 		const results = new Map<string, EquipmentSpec>();
 		if (!keys.length) return results;
 
 		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
 		try {
+			throwIfAborted(signal);
 			db = await this.getDb();
 			const now = Date.now();
-			const tx = db.transaction(this.storeName, 'readwrite');
-			const store = tx.objectStore(this.storeName);
+			let lastYieldAt = performance.now();
+			const accessUpdates: Array<{ key: string; record: ReforgeGearCacheRecord }> = [];
 
-			for (const key of keys) {
-				const record = await store.get(key);
-				if (!record) continue;
+			const requestedKeys = new Set(keys);
+			const [allKeys, allRecords] = await Promise.all([db.getAllKeys(this.storeName), db.getAll(this.storeName)]);
+			throwIfAborted(signal);
+
+			for (let i = 0; i < allKeys.length; i++) {
+				const key = allKeys[i];
+				if (typeof key !== 'string' || !requestedKeys.has(key)) {
+					continue;
+				}
+
+				const record = allRecords[i];
+				if (!record) {
+					requestedKeys.delete(key);
+					continue;
+				}
 
 				const gear = this.parseCachedGear(record.gear);
-				if (!gear) continue;
+				requestedKeys.delete(key);
+				if (!gear) {
+					continue;
+				}
 
-				record.lastAccessedAt = now;
-				await store.put(record, key);
+				accessUpdates.push({
+					key,
+					record: {
+						...record,
+						lastAccessedAt: now,
+					},
+				});
 				results.set(key, gear);
+
+				if (i % 2000 === 0) {
+					const yieldNow = performance.now();
+					if (yieldNow - lastYieldAt >= 16) {
+						await sleep(0);
+						throwIfAborted(signal);
+						lastYieldAt = performance.now();
+					}
+				}
+
+				if (!requestedKeys.size) {
+					break;
+				}
 			}
-			await tx.done;
+
+			for (let start = 0; start < accessUpdates.length; start += REFORGE_CACHE_ACCESS_UPDATE_CHUNK_SIZE) {
+				throwIfAborted(signal);
+				await this.putRecords(db, accessUpdates.slice(start, start + REFORGE_CACHE_ACCESS_UPDATE_CHUNK_SIZE));
+				if (start + REFORGE_CACHE_ACCESS_UPDATE_CHUNK_SIZE < accessUpdates.length) {
+					await sleep(0);
+				}
+			}
 		} catch (error) {
 			console.warn('[Reforge Cache] Failed to read cached reforge results.', error);
 		} finally {

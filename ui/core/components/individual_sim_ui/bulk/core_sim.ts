@@ -4,13 +4,14 @@ import { BulkSettings, DistributionMetrics, ProgressMetrics } from '../../../pro
 import { Gear } from '../../../proto_utils/gear';
 import { ReforgeOptimizeConfig } from '../../../sim';
 import { BulkSimProgressConfig, TopGearResult } from './types';
-import { bulkSimStageToOptimisationStage, cleanBulkDpsMetrics, getCoreBulkSimTrackingMetrics } from './utils';
+import { bulkSimStageToOptimisationStage, BulkSimReforgeCacheProgress, cleanBulkDpsMetrics, getCoreBulkSimTrackingMetrics } from './utils';
 
 export interface CoreBulkSimContext {
 	simUI: IndividualSimUI<any>;
 	throwIfBulkAborted: (signal: AbortSignal) => void;
 	runWithBulkAbort: <T>(promise: Promise<T>, signal: AbortSignal) => Promise<T>;
 	setSimProgress: (progress: ProgressMetrics, config: BulkSimProgressConfig) => void;
+	setCacheRestoreProgress?: (progress: BulkSimReforgeCacheProgress) => void;
 	debugOptimisationRound: (message: string, data?: unknown) => void;
 }
 
@@ -45,7 +46,17 @@ export async function runCoreBulkSim(
 		});
 	};
 
-	const result = await context.runWithBulkAbort(context.simUI.sim.runBulkSim(gearSets, updateProgress, reforgeConfig, bulkSettings), signal);
+	const result = await context.runWithBulkAbort(
+		context.simUI.sim.runBulkSim(
+			gearSets,
+			updateProgress,
+			reforgeConfig,
+			bulkSettings,
+			progress => context.setCacheRestoreProgress?.(progress),
+			signal,
+		),
+		signal,
+	);
 	if (!result || (result && 'type' in result)) {
 		throw new Error(result?.message);
 	}

@@ -58,7 +58,12 @@ import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
 import { distinct, getEnumValues, noop } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
-import { getBulkSimReforgeCacheData, writeBulkSimReforgeCacheResults } from './components/individual_sim_ui/bulk/utils';
+import {
+	getBulkSimReforgeCacheData,
+	type BulkSimReforgeCacheProgress,
+	throwIfAborted,
+	writeBulkSimReforgeCacheResults,
+} from './components/individual_sim_ui/bulk/utils';
 import { ReforgeOptimizer } from './components/suggest_reforges_action';
 import { makeBulkGearDatabase } from './wasm/bulk_sim';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
@@ -435,6 +440,8 @@ export class Sim {
 		onProgress: WorkerProgressCallback,
 		reforgeConfig?: ReforgeOptimizeConfig,
 		bulkSettings?: BulkSettings,
+		onCacheRestoreProgress?: (progress: BulkSimReforgeCacheProgress) => void,
+		abortSignal?: AbortSignal,
 	): Promise<BulkSimResult | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
@@ -465,22 +472,26 @@ export class Sim {
 			};
 
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
+			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
 			const useWasmConcurrency = await this.shouldUseWasmConcurrency();
 			const backendBuildCandidates = !useWasmConcurrency && !!bulkSettings;
 			const preparedGearSets = backendBuildCandidates ? [] : gearSets.map(prepareGear);
-			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
 			const bulkReforgeCacheData =
 				bulkReforgeRequest && !backendBuildCandidates
 					? await getBulkSimReforgeCacheData({
 							player: this.raid.getActivePlayers()[0],
 							gearSets: preparedGearSets,
+							db: this.db,
 							reforgeRequest: bulkReforgeRequest,
 							raidBuffs: this.raid.getBuffs(),
 							partyBuffs: this.raid.getActivePlayers()[0].getParty()?.getBuffs(),
 							debuffs: this.raid.getDebuffs(),
+							onProgress: onCacheRestoreProgress,
+							signal: abortSignal,
 						})
 					: undefined;
-			const cachedOptimizedGearSets = bulkReforgeCacheData?.optimizedCandidates.map(candidate => this.db.lookupEquipmentSpec(candidate.gear!)) ?? [];
+			throwIfAborted(abortSignal);
+			const cachedOptimizedGearSets = bulkReforgeCacheData?.cachedOptimizedGearSets ?? [];
 			const bulkGearDatabase =
 				backendBuildCandidates && bulkSettings
 					? makeBulkItemDatabaseFromSpecs(this.db, baselineGear, bulkSettings.items)
@@ -516,6 +527,7 @@ export class Sim {
 			player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
 			player.equipment = baselineGear.asSpec();
 			baseRequest.raid!.parties[0].players[0] = player;
+			throwIfAborted(abortSignal);
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,
