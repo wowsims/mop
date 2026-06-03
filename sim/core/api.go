@@ -91,6 +91,11 @@ func RunRaidSimConcurrent(request *proto.RaidSimRequest) *proto.RaidSimResult {
 }
 
 // Threading does not work in WASM!
+func RunRaidSimConcurrentWithSignals(request *proto.RaidSimRequest, progress chan *proto.ProgressMetrics, signals simsignals.Signals) *proto.RaidSimResult {
+	return runSimConcurrent(request, progress, signals)
+}
+
+// Threading does not work in WASM!
 func RunRaidSimConcurrentAsync(request *proto.RaidSimRequest, progress chan *proto.ProgressMetrics, requestId string) {
 	signals, err := simsignals.RegisterWithId(requestId)
 	if err != nil {

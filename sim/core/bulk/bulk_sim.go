@@ -1,4 +1,4 @@
-package core
+package bulk
 
 import (
 	"cmp"
@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
 	googleProto "google.golang.org/protobuf/proto"
@@ -334,7 +335,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 
 	iterations := getBulkSimStageIterations(request, config, baselineProbe.DpsMetrics, len(candidates))
 	reuseBaselineProbe := iterations == minIterations
-	baselineSims := TernaryInt(reuseBaselineProbe, 1, 2)
+	baselineSims := core.TernaryInt(reuseBaselineProbe, 1, 2)
 	totalSims := len(candidates) + baselineSims
 	completedBaselineIterations := minIterations
 	baseline := baselineProbe
@@ -475,9 +476,9 @@ func runSingleBulkSimWithProgressAndSeedOffset(request *proto.BulkSimRequest, ca
 
 	var simResult *proto.RaidSimResult
 	if useConcurrentSim {
-		simResult = runSimConcurrent(simRequest, simProgress, signals)
+		simResult = core.RunRaidSimConcurrentWithSignals(simRequest, simProgress, signals)
 	} else {
-		simResult = RunSim(simRequest, simProgress, signals)
+		simResult = core.RunSim(simRequest, simProgress, signals)
 	}
 	if simProgress != nil {
 		progressWg.Wait()
@@ -852,13 +853,45 @@ func mergeBulkSimDistributionMetrics(metrics *proto.DistributionMetrics, additio
 		return googleProto.Clone(metrics).(*proto.DistributionMetrics)
 	}
 
-	combiner := raidSimResultCombiner{}
-	combinedMetrics := combiner.newDistMetrics()
-	combiner.combineDistMetrics(combinedMetrics, metrics, false, float64(metricsAggregator.N)/float64(totalN))
-	combiner.combineDistMetrics(combinedMetrics, additionalMetrics, true, float64(additionalAggregator.N)/float64(totalN))
+	combinedMetrics := &proto.DistributionMetrics{
+		Min:            math.MaxFloat64,
+		MinSeed:        math.MaxInt64,
+		Hist:           make(map[int32]int32),
+		AllValues:      make([]float64, 0),
+		AggregatorData: &proto.AggregatorData{},
+	}
+	combineBulkSimDistributionMetrics(combinedMetrics, metrics, false, float64(metricsAggregator.N)/float64(totalN))
+	combineBulkSimDistributionMetrics(combinedMetrics, additionalMetrics, true, float64(additionalAggregator.N)/float64(totalN))
 	return combinedMetrics
 }
 
+func combineBulkSimDistributionMetrics(base *proto.DistributionMetrics, add *proto.DistributionMetrics, isLast bool, weight float64) {
+	base.Avg += add.Avg * weight
+
+	if add.Max > base.Max {
+		base.Max = add.Max
+		base.MaxSeed = add.MaxSeed
+	}
+
+	if add.Min == 0 || add.Min < base.Min {
+		base.Min = add.Min
+		base.MinSeed = add.MinSeed
+	} else if add.Min == base.Min {
+		base.MinSeed = add.MinSeed
+	}
+
+	for idx, val := range add.Hist {
+		base.Hist[idx] += val
+	}
+
+	base.AllValues = append(base.AllValues, add.AllValues...)
+
+	base.AggregatorData.N += add.AggregatorData.N
+	base.AggregatorData.SumSq += add.AggregatorData.SumSq
+	if isLast {
+		base.Stdev = math.Sqrt(base.AggregatorData.SumSq/float64(base.AggregatorData.N) - base.Avg*base.Avg)
+	}
+}
 func bulkSimDistributionMetricsAggregatorData(metrics *proto.DistributionMetrics) *proto.AggregatorData {
 	if metrics.AggregatorData != nil && metrics.AggregatorData.N > 0 {
 		return metrics.AggregatorData
@@ -919,7 +952,7 @@ func sortBulkSimResultsByDps(results []*BulkSimCandidateResult) {
 }
 
 func bulkSimResultsToCandidates(results []*BulkSimCandidateResult) []BulkSimCandidate {
-	return MapSlice(results, func(result *BulkSimCandidateResult) BulkSimCandidate {
+	return core.MapSlice(results, func(result *BulkSimCandidateResult) BulkSimCandidate {
 		return result.Candidate
 	})
 }
