@@ -42,6 +42,14 @@ argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge/cache behavio
 - Candidate generation still scans raw combo indexes, skips nonmatching set-bonus combos with `RequiredSetBonusComboMatcher`, and reports build progress using the filtered candidate count (`this.combinations` / `candidateGearSets.length`), not the raw scan count.
 - `requiredSetBonusCombinationCount.matches` is a `Uint8Array` indexed by raw combo index. Its signature must include raw combination count, required set IDs/pieces, and matcher dimensions so stale match caches are not reused.
 
+## Recent Candidate/Count Optimizations (2026-06-03)
+- `sim/bulk/candidates.go` now memoizes `getAllWeaponCombos()` per generator instance (`weaponCombosCached` + `weaponCombosReady`). Do not reintroduce repeated recomputation from `rawCombinationsCount`, `buildCandidates`, or matcher construction paths.
+- Required-set matcher checks now reuse a caller-provided `scratchCounts` buffer (`comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts)`), removing per-combo slice allocations during both `BulkCombinationCount` and `buildCandidates` scans.
+- `buildCandidates` caps initial slice capacity to `16384` when required-set filtering is active to avoid over-reserving to raw combination cardinality when filtered output is much smaller.
+- Slot iteration order is now a package-level static array `bulkSimSelectedOrder`; avoid recreating per-generator slot-order slices.
+- Equipped-item dedupe in `initSelectedItems` now uses a struct map key (`itemSpecFingerprintKey`) instead of string fingerprints. This removed `strings.Builder`/`strconv` key construction and reduced setup-path allocations without changing candidate/count invariants.
+- Current benchmark guardrails: `reference-no-4p` remains `2,799,360` raw/combinations/candidates and `reference-required-4p` remains `2,799,360 / 84,240 / 84,240`; optimization changes must preserve these exact counts.
+
 ## Cache Invariants
 - `ReforgeGearCache` keys are hashes of input identity: API/cache version, optimizer/player/raid config, and input gear fingerprint. They are not reversible; never try to decode gear from the key.
 - Cache values are the optimized output gear. On a cache hit, Bulk Sim needs this value to build `optimizedCandidates`; a timestamp-only value is insufficient.
