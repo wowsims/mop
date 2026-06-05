@@ -10,26 +10,6 @@ import (
 	googleProto "google.golang.org/protobuf/proto"
 )
 
-type BulkSimItemSlot int
-
-const (
-	BulkSimItemSlotHead BulkSimItemSlot = iota
-	BulkSimItemSlotNeck
-	BulkSimItemSlotShoulder
-	BulkSimItemSlotBack
-	BulkSimItemSlotChest
-	BulkSimItemSlotWrist
-	BulkSimItemSlotHands
-	BulkSimItemSlotWaist
-	BulkSimItemSlotLegs
-	BulkSimItemSlotFeet
-	BulkSimItemSlotFinger
-	BulkSimItemSlotTrinket
-	BulkSimItemSlotMainHand
-	BulkSimItemSlotOffHand
-	BulkSimItemSlotHandWeapon
-)
-
 type bulkSimCandidateOption struct {
 	spec *proto.ItemSpec
 	item core.Item
@@ -114,7 +94,27 @@ type bulkSimCandidateGenerator struct {
 // serialized to avoid concurrent map read/write panics with parallel sim requests.
 var bulkCandidateDatabaseMu sync.Mutex
 
-var bulkSimItemSlotToSingleItemSlot = map[BulkSimItemSlot]proto.ItemSlot{
+type BulkSimItemSlot int
+
+const (
+	BulkSimItemSlotHead BulkSimItemSlot = iota
+	BulkSimItemSlotNeck
+	BulkSimItemSlotShoulder
+	BulkSimItemSlotBack
+	BulkSimItemSlotChest
+	BulkSimItemSlotWrist
+	BulkSimItemSlotHands
+	BulkSimItemSlotWaist
+	BulkSimItemSlotLegs
+	BulkSimItemSlotFeet
+	BulkSimItemSlotFinger
+	BulkSimItemSlotTrinket
+	BulkSimItemSlotMainHand
+	BulkSimItemSlotOffHand
+	BulkSimItemSlotHandWeapon
+)
+
+var BulkSimItemSlotToSingleItemSlot = map[BulkSimItemSlot]proto.ItemSlot{
 	BulkSimItemSlotHead:     proto.ItemSlot_ItemSlotHead,
 	BulkSimItemSlotNeck:     proto.ItemSlot_ItemSlotNeck,
 	BulkSimItemSlotShoulder: proto.ItemSlot_ItemSlotShoulder,
@@ -129,32 +129,10 @@ var bulkSimItemSlotToSingleItemSlot = map[BulkSimItemSlot]proto.ItemSlot{
 	BulkSimItemSlotOffHand:  proto.ItemSlot_ItemSlotOffHand,
 }
 
-var BulkSimItemSlotToSingleItemSlot = bulkSimItemSlotToSingleItemSlot
-
-var bulkSimItemSlotToItemSlotPairs = map[BulkSimItemSlot][2]proto.ItemSlot{
+var BulkSimItemSlotToItemSlotPairs = map[BulkSimItemSlot][2]proto.ItemSlot{
 	BulkSimItemSlotFinger:     {proto.ItemSlot_ItemSlotFinger1, proto.ItemSlot_ItemSlotFinger2},
 	BulkSimItemSlotTrinket:    {proto.ItemSlot_ItemSlotTrinket1, proto.ItemSlot_ItemSlotTrinket2},
 	BulkSimItemSlotHandWeapon: {proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand},
-}
-
-var BulkSimItemSlotToItemSlotPairs = bulkSimItemSlotToItemSlotPairs
-
-var bulkSimSelectedOrder = [...]BulkSimItemSlot{
-	BulkSimItemSlotHead,
-	BulkSimItemSlotNeck,
-	BulkSimItemSlotShoulder,
-	BulkSimItemSlotBack,
-	BulkSimItemSlotChest,
-	BulkSimItemSlotWrist,
-	BulkSimItemSlotHands,
-	BulkSimItemSlotWaist,
-	BulkSimItemSlotLegs,
-	BulkSimItemSlotFeet,
-	BulkSimItemSlotFinger,
-	BulkSimItemSlotTrinket,
-	BulkSimItemSlotMainHand,
-	BulkSimItemSlotOffHand,
-	BulkSimItemSlotHandWeapon,
 }
 
 var ItemSlotToBulkSimItemSlot = map[proto.ItemSlot]BulkSimItemSlot{
@@ -192,6 +170,24 @@ var BulkSimItemSlotNames = map[BulkSimItemSlot]string{
 	BulkSimItemSlotMainHand:   "ItemSlotMainHand",
 	BulkSimItemSlotOffHand:    "ItemSlotOffHand",
 	BulkSimItemSlotHandWeapon: "ItemSlotHandWeapon",
+}
+
+var bulkSimSelectedOrder = [...]BulkSimItemSlot{
+	BulkSimItemSlotHead,
+	BulkSimItemSlotNeck,
+	BulkSimItemSlotShoulder,
+	BulkSimItemSlotBack,
+	BulkSimItemSlotChest,
+	BulkSimItemSlotWrist,
+	BulkSimItemSlotHands,
+	BulkSimItemSlotWaist,
+	BulkSimItemSlotLegs,
+	BulkSimItemSlotFeet,
+	BulkSimItemSlotFinger,
+	BulkSimItemSlotTrinket,
+	BulkSimItemSlotMainHand,
+	BulkSimItemSlotOffHand,
+	BulkSimItemSlotHandWeapon,
 }
 
 func GetBulkSimItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) BulkSimItemSlot {
@@ -632,7 +628,7 @@ func (generator *bulkSimCandidateGenerator) populateItemsForCombo(comboIdx int) 
 			}
 			pairIdx := comboIdx % len(pairs)
 			comboIdx = comboIdx / len(pairs)
-			slots := bulkSimItemSlotToItemSlotPairs[bulkSlot]
+			slots := BulkSimItemSlotToItemSlotPairs[bulkSlot]
 			generator.comboItemsBySlot[int(slots[0])] = pairs[pairIdx][0]
 			generator.comboSlotUsed[int(slots[0])] = true
 			generator.comboItemsBySlot[int(slots[1])] = pairs[pairIdx][1]
@@ -641,7 +637,7 @@ func (generator *bulkSimCandidateGenerator) populateItemsForCombo(comboIdx int) 
 		}
 		optionIdx := comboIdx % len(options)
 		comboIdx = comboIdx / len(options)
-		slot := bulkSimItemSlotToSingleItemSlot[bulkSlot]
+		slot := BulkSimItemSlotToSingleItemSlot[bulkSlot]
 		generator.comboItemsBySlot[int(slot)] = options[optionIdx]
 		generator.comboSlotUsed[int(slot)] = true
 	}
@@ -809,14 +805,14 @@ func (generator *bulkSimCandidateGenerator) buildRequiredSetBonusMatcher(require
 		}
 		if bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket {
 			pairs := generator.groupedPairsBySlot[bulkSlot]
-			slots := bulkSimItemSlotToItemSlotPairs[bulkSlot]
+			slots := BulkSimItemSlotToItemSlotPairs[bulkSlot]
 			optionDeltas := make([][]int, 0, len(pairs))
 			for _, pair := range pairs {
 				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(requiredIndexes, [][2]any{{slots[0], &pair[0]}, {slots[1], &pair[1]}}))
 			}
 			dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 		} else {
-			slot := bulkSimItemSlotToSingleItemSlot[bulkSlot]
+			slot := BulkSimItemSlotToSingleItemSlot[bulkSlot]
 			optionDeltas := make([][]int, 0, len(options))
 			for idx := range options {
 				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(requiredIndexes, [][2]any{{slot, &options[idx]}}))
