@@ -493,7 +493,7 @@ func processAsyncProgress(progFunc js.Value, reporter chan *proto.ProgressMetric
 		js.CopyBytesToJS(outArray, outbytes)
 		progFunc.Invoke(outArray)
 
-		if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil || progMetric.FinalReforgeResult != nil {
+		if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil || progMetric.FinalBulkSimResult != nil || progMetric.FinalReforgeResult != nil {
 			return
 		}
 	}
