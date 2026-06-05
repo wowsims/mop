@@ -203,6 +203,7 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 	simmingStartedAt := time.Now()
 	var latestBaseline *BulkSimCandidateResult
 	var latestResults []*BulkSimCandidateResult
+	useLegacyBulkSim := shouldUseLegacyBulkSim(request.GetBulkSettings(), request.HighStageIterations, len(candidates))
 
 	for _, stageConfig := range bulkSimStageConfigs {
 		if signals.Abort.IsTriggered() {
@@ -210,6 +211,9 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 			return result
 		}
 
+		if useLegacyBulkSim && stageConfig.Stage != proto.BulkSimStage_BulkSimStageHigh {
+			continue
+		}
 		if !shouldRunBulkSimStage(stageConfig, len(candidates)) {
 			continue
 		}
@@ -286,6 +290,47 @@ func validateBulkSimRequest(request *proto.BulkSimRequest) string {
 func shouldRunBulkSimStage(config BulkSimStageConfig, candidateCount int) bool {
 	maxSurvivors := getBulkSimStageMaxSurvivors(config, candidateCount)
 	return maxSurvivors == 0 || candidateCount > maxSurvivors || candidateCount < bulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
+}
+
+func shouldUseLegacyBulkSim(settings *proto.BulkSettings, highStageIterations int32, candidateCount int) bool {
+	if settings != nil && settings.GetUseLegacyBulkSim() {
+		return true
+	}
+	if candidateCount < bulkSimMinCombinations {
+		return true
+	}
+
+	fullRunIterations := int64(highStageIterations) * int64(candidateCount)
+	estimatedMultistageIterationsUpperBound := getBulkSimOptimisationIterationsUpperBound(highStageIterations, candidateCount)
+	return estimatedMultistageIterationsUpperBound >= fullRunIterations
+}
+
+func getBulkSimOptimisationIterationsUpperBound(highStageIterations int32, candidateCount int) int64 {
+	remainingCandidates := candidateCount
+	var iterations int64
+
+	for _, stageConfig := range bulkSimStageConfigs {
+		if stageConfig.Stage == proto.BulkSimStage_BulkSimStageHigh {
+			break
+		}
+		if !shouldRunBulkSimStage(stageConfig, remainingCandidates) {
+			continue
+		}
+
+		stageIterations := getBulkSimStageMinIterationsFromFloor(highStageIterations, stageConfig)
+		iterations += int64(stageIterations) * int64(remainingCandidates+1)
+		remainingCandidates = min(remainingCandidates, getBulkSimStageMaxSurvivors(stageConfig, remainingCandidates))
+	}
+
+	return iterations + int64(highStageIterations)*int64(remainingCandidates+1)
+}
+
+func estimateBulkSimIterations(settings *proto.BulkSettings, highStageIterations int32, candidateCount int) (int64, bool) {
+	if shouldUseLegacyBulkSim(settings, highStageIterations, candidateCount) {
+		return int64(highStageIterations) * int64(candidateCount), true
+	}
+
+	return getBulkSimOptimisationIterationsUpperBound(highStageIterations, candidateCount), false
 }
 
 func GetBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimStageConfig) int {
@@ -524,8 +569,12 @@ func getBulkSimBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec 
 }
 
 func getBulkSimStageMinIterations(request *proto.BulkSimRequest, config BulkSimStageConfig) int32 {
-	if usesUserDefinedHighStageIterations(request, config) {
-		return request.HighStageIterations
+	return getBulkSimStageMinIterationsFromFloor(request.HighStageIterations, config)
+}
+
+func getBulkSimStageMinIterationsFromFloor(highStageIterations int32, config BulkSimStageConfig) int32 {
+	if config.Stage == proto.BulkSimStage_BulkSimStageHigh && highStageIterations > 0 {
+		return highStageIterations
 	}
 	return config.MinIterations
 }

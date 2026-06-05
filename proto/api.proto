@@ -775,7 +775,7 @@ message BulkSettings {
 	reserved 3 to 7;
 
 	bool inherit_upgrades = 8;
-	bool use_optimisation_rounds = 14;
+	bool use_legacy_bulk_sim = 14;
 
 	int32 freeze_ring_slot = 9;
 	int32 freeze_trinket_slot = 10;
@@ -798,7 +798,9 @@ message BulkCombinationCountRequest {
 message BulkCombinationCountResult {
 	int32 raw_combinations = 1;
 	int32 combinations = 2;
-	ErrorOutcome error = 3;
+	double iterations = 3;
+	bool use_legacy_bulk_sim = 4;
+	ErrorOutcome error = 5;
 }
 
 message BulkCandidatesRequest {

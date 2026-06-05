@@ -31,15 +31,11 @@ import {
 	getBulkPlayerCanDualWield,
 	getBulkFreezeWeaponTypes,
 	getGearKey,
-	getOptimisationStageMinIterations,
-	shouldRunOptimisationStage,
 } from './bulk/utils';
 import {
-	BULK_OPTIMISATION_MIN_COMBINATIONS,
 	BulkSimProgressConfig,
 	LOCAL_COMBINATIONS_LIMIT,
 	LOCAL_ITERATIONS_LIMIT,
-	STAGE_CONFIG,
 	TopGearResult,
 	WEB_COMBINATIONS_LIMIT,
 	WEB_DEFAULT_ITERATIONS,
@@ -93,10 +89,11 @@ export class BulkTab extends SimTab {
 	protected bulkSimAbortPromise: Promise<void> | null = null;
 	protected bulkSimUsesWasmConcurrency = false;
 	protected rawCombinations = 0;
+	protected usesLegacyBulkSim = false;
 	private combinationsCalcRequestVersion = 0;
 
 	inheritUpgrades: boolean;
-	useOptimisationRounds: boolean;
+	useLegacyBulkSim: boolean;
 	requiredSetBonuses: Map<number, BulkRequiredSetBonus> = new Map();
 	frozenItems: Map<BulkSimItemSlot, EquippedItem | null> = new Map([
 		[BulkSimItemSlot.ItemSlotFinger, null],
@@ -224,7 +221,7 @@ export class BulkTab extends SimTab {
 		});
 
 		this.inheritUpgrades = true;
-		this.useOptimisationRounds = false;
+		this.useLegacyBulkSim = false;
 
 		this.buildTabContent();
 
@@ -315,6 +312,12 @@ export class BulkTab extends SimTab {
 		const storedSettings = window.localStorage.getItem(this.getSettingsKey());
 		if (storedSettings != null) {
 			let settings: BulkSettings;
+			let legacySettings: { useOptimisationRounds?: boolean; useLegacyBulkSim?: boolean } | null = null;
+			try {
+				legacySettings = JSON.parse(storedSettings) as { useOptimisationRounds?: boolean; useLegacyBulkSim?: boolean };
+			} catch {
+				legacySettings = null;
+			}
 			try {
 				settings = BulkSettings.fromJsonString(storedSettings, {
 					ignoreUnknownFields: true,
@@ -322,10 +325,13 @@ export class BulkTab extends SimTab {
 			} catch {
 				settings = BulkSettings.create();
 			}
+			if (legacySettings?.useLegacyBulkSim === undefined && legacySettings?.useOptimisationRounds !== undefined) {
+				settings.useLegacyBulkSim = !legacySettings.useOptimisationRounds;
+			}
 
 			this.addItems(settings.items, true);
 			this.setInheritUpgrades(settings.inheritUpgrades);
-			this.setUseOptimisationRounds(settings.useOptimisationRounds);
+			this.setUseLegacyBulkSim(settings.useLegacyBulkSim);
 			this.setFrozenItem(BulkSimItemSlot.ItemSlotFinger, this.getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotFinger, settings.freezeRingSlot));
 			this.setFrozenItem(BulkSimItemSlot.ItemSlotTrinket, this.getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotTrinket, settings.freezeTrinketSlot));
 			this.setFrozenWeaponSlot(settings.freezeWeaponSlot);
@@ -345,7 +351,7 @@ export class BulkTab extends SimTab {
 		return BulkSettings.create({
 			items: this.getItems(),
 			inheritUpgrades: this.inheritUpgrades,
-			useOptimisationRounds: this.useOptimisationRounds,
+			useLegacyBulkSim: this.useLegacyBulkSim,
 			iterationsPerCombo: this.getDefaultIterationsCount(),
 			freezeRingSlot: this.getFrozenItemSlot(BulkSimItemSlot.ItemSlotFinger),
 			freezeTrinketSlot: this.getFrozenItemSlot(BulkSimItemSlot.ItemSlotTrinket),
@@ -646,13 +652,8 @@ export class BulkTab extends SimTab {
 			}
 			this.rawCombinations = combinationCountResult.rawCombinations;
 			this.combinations = combinationCountResult.combinations;
-
-			const optimisationIterationUpperBound = this.getOptimisationRoundsIterationUpperBound(this.combinations);
-			if (this.shouldUseOptimisationRounds(this.combinations, optimisationIterationUpperBound)) {
-				this.iterations = this.getOptimisationRoundsIterationEstimate(this.combinations);
-			} else {
-				this.iterations = this.simUI.sim.getIterations() * this.combinations;
-			}
+			this.iterations = combinationCountResult.iterations;
+			this.usesLegacyBulkSim = combinationCountResult.useLegacyBulkSim;
 		} catch (e) {
 			this.simUI.handleCrash(e);
 		}
@@ -672,51 +673,6 @@ export class BulkTab extends SimTab {
 		const requiredSetBonuses = Array.from(this.requiredSetBonuses.values()).filter(requiredSetBonus => requiredSetBonus.setId !== setId);
 		requiredSetBonuses.push(BulkRequiredSetBonus.create({ setId, pieces }));
 		return this.hasMatchingRequiredSetBonusCombination(requiredSetBonuses);
-	}
-
-	private shouldUseOptimisationRounds(numCombinations: number, optimisationIterationUpperBound?: number): boolean {
-		const isOptimisationEligible = this.useOptimisationRounds && numCombinations >= BULK_OPTIMISATION_MIN_COMBINATIONS;
-		const fullRunIterations = this.simUI.sim.getIterations() * numCombinations;
-		const estimatedOptimisationIterationsUpperBound = optimisationIterationUpperBound ?? this.getOptimisationRoundsIterationUpperBound(numCombinations);
-		const shouldUseOptimisationRounds = isOptimisationEligible && estimatedOptimisationIterationsUpperBound < fullRunIterations;
-		this.debugOptimisationRound('optimisation round check', {
-			numCombinations,
-			minCombinations: BULK_OPTIMISATION_MIN_COMBINATIONS,
-			useOptimisationRoundsSetting: this.useOptimisationRounds,
-			fullRunIterations,
-			estimatedOptimisationIterationsUpperBound,
-			isOptimisationEligible,
-			shouldUseOptimisationRounds,
-		});
-		return shouldUseOptimisationRounds;
-	}
-
-	private getOptimisationRoundsIterationUpperBound(numCombinations: number): number {
-		let candidates = numCombinations;
-		let iterations = 0;
-
-		for (const stage of ['low', 'medium'] as const) {
-			if (this.shouldRunOptimisationStage(stage, candidates)) {
-				iterations += this.getOptimisationStageMinIterations(stage) * (candidates + 1);
-				candidates = Math.min(candidates, STAGE_CONFIG[stage].maxSurvivors!);
-			}
-		}
-
-		return iterations + this.getOptimisationStageMinIterations('high') * (candidates + 1);
-	}
-
-	private getOptimisationRoundsIterationEstimate(numCombinations: number): number {
-		let candidates = numCombinations;
-		let iterations = 0;
-
-		for (const stage of ['low', 'medium'] as const) {
-			if (this.shouldRunOptimisationStage(stage, candidates)) {
-				iterations += this.getOptimisationStageMinIterations(stage) * (candidates + 1);
-				candidates = Math.min(candidates, STAGE_CONFIG[stage].minSurvivors ?? STAGE_CONFIG[stage].maxSurvivors!);
-			}
-		}
-
-		return iterations + this.getOptimisationStageMinIterations('high') * (candidates + 1);
 	}
 
 	protected buildTabContent() {
@@ -930,8 +886,8 @@ export class BulkTab extends SimTab {
 		return true;
 	}
 
-	private setUseOptimisationRounds(newValue: boolean) {
-		this.useOptimisationRounds = newValue;
+	private setUseLegacyBulkSim(newValue: boolean) {
+		this.useLegacyBulkSim = newValue;
 		this.settingsChangedEmitter.emit(TypedEvent.nextEventID());
 	}
 
@@ -1037,7 +993,7 @@ export class BulkTab extends SimTab {
 		this.bulkSimButton.addEventListener('click', () => this.runBatchSim());
 
 		const inheritUpgradesDiv = ref<HTMLDivElement>();
-		const useOptimisationRoundsDiv = ref<HTMLDivElement>();
+		const useLegacyBulkSimDiv = ref<HTMLDivElement>();
 		const requiredSetBonusesDiv = ref<HTMLDivElement>();
 		const frozenRingDiv = ref<HTMLDivElement>();
 		const frozenTrinketDiv = ref<HTMLDivElement>();
@@ -1047,7 +1003,7 @@ export class BulkTab extends SimTab {
 
 		this.settingsContainer.appendChild(
 			<>
-				<div ref={useOptimisationRoundsDiv} className="use-optimisation-rounds-container"></div>
+				<div ref={useLegacyBulkSimDiv} className="use-legacy-bulk-sim-container"></div>
 				<div ref={inheritUpgradesDiv} className="inherit-upgrades-container"></div>
 				<div ref={requiredSetBonusesDiv} className="required-set-bonuses-container d-flex flex-column gap-2"></div>
 				<div ref={frozenRingDiv}></div>
@@ -1081,20 +1037,20 @@ export class BulkTab extends SimTab {
 				},
 			});
 
-		if (useOptimisationRoundsDiv.value)
-			new BooleanPicker<BulkTab>(useOptimisationRoundsDiv.value, this, {
-				id: 'use-optimisation-rounds',
-				label: i18n.t('bulk_tab.settings.use_multistage_optimisation.label'),
-				labelTooltip: i18n.t('bulk_tab.settings.use_multistage_optimisation.tooltip'),
+		if (useLegacyBulkSimDiv.value)
+			new BooleanPicker<BulkTab>(useLegacyBulkSimDiv.value, this, {
+				id: 'use-legacy-bulk-sim',
+				label: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.label'),
+				labelTooltip: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.tooltip'),
 				inline: true,
 				changedEvent: _modObj => this.settingsChangedEmitter,
-				getValue: _modObj => this.useOptimisationRounds,
+				getValue: _modObj => this.useLegacyBulkSim,
 				setValue: (_, _modObj, newValue: boolean) => {
-					this.setUseOptimisationRounds(newValue);
+					this.setUseLegacyBulkSim(newValue);
 					trackEvent({
 						action: 'settings',
 						category: 'batch_sim',
-						label: 'use_optimisation_rounds',
+						label: 'use_legacy_bulk_sim',
 						value: newValue,
 					});
 				},
@@ -1393,14 +1349,6 @@ export class BulkTab extends SimTab {
 		return dedupeGearSets(gearSets, this.originalGear ? [this.originalGear] : []);
 	}
 
-	private shouldRunOptimisationStage(stage: 'low' | 'medium' | 'high', candidateCount: number): boolean {
-		return shouldRunOptimisationStage(stage, candidateCount);
-	}
-
-	private getOptimisationStageMinIterations(stage: 'low' | 'medium' | 'high'): number {
-		return getOptimisationStageMinIterations(stage, this.simUI.sim.getIterations());
-	}
-
 	private async runCoreBulkSim(
 		gearSets: Gear[],
 		signal: AbortSignal,
@@ -1490,7 +1438,7 @@ export class BulkTab extends SimTab {
 			await sleep(200);
 			await this.calculateBulkCombinations();
 			batchCompleteMetrics.combinations = this.combinations;
-			batchCompleteMetrics.optimisation_rounds_used = this.shouldUseOptimisationRounds(this.combinations) ? 1 : 0;
+			batchCompleteMetrics.legacy_bulk_sim_used = this.usesLegacyBulkSim ? 1 : 0;
 
 			if (!useLocalBulkSim) {
 				const candidateGearBuildStartedAt = new Date().getTime();
@@ -1565,7 +1513,7 @@ export class BulkTab extends SimTab {
 				console.info('[Bulk Sim] run complete', {
 					durationSeconds: Math.round(bulkSimDurationSeconds * 100) / 100,
 					combinations: this.combinations,
-					usedOptimisationRounds: this.shouldUseOptimisationRounds(this.combinations),
+					usedLegacyBulkSim: this.usesLegacyBulkSim,
 					cancelled: wasCancelling,
 				});
 			}

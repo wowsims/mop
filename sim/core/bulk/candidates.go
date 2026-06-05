@@ -293,9 +293,21 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 	}
 
 	return &proto.BulkCombinationCountResult{
-		RawCombinations: int32(rawCombinations),
-		Combinations:    int32(matchingCombinations),
+		RawCombinations:  int32(rawCombinations),
+		Combinations:     int32(matchingCombinations),
+		Iterations:       estimateIterationsForCountRequest(request.GetBulkSettings(), matchingCombinations),
+		UseLegacyBulkSim: shouldUseLegacyBulkSimForCountRequest(request.GetBulkSettings(), matchingCombinations),
 	}
+}
+
+func estimateIterationsForCountRequest(settings *proto.BulkSettings, candidateCount int) float64 {
+	iterations, _ := estimateBulkSimIterations(settings, settings.GetIterationsPerCombo(), candidateCount)
+	return float64(iterations)
+}
+
+func shouldUseLegacyBulkSimForCountRequest(settings *proto.BulkSettings, candidateCount int) bool {
+	useLegacyBulkSim := shouldUseLegacyBulkSim(settings, settings.GetIterationsPerCombo(), candidateCount)
+	return useLegacyBulkSim
 }
 
 func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesResult {
