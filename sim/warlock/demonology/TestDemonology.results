@@ -621,8 +621,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-EssenceofTerror-87175"
  value: {
-  dps: 405288.84074
-  tps: 264535.92888
+  dps: 405308.31824
+  tps: 264544.25999
  }
 }
 dps_results: {
@@ -677,8 +677,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 400091.73361
-  tps: 259318.80426
+  dps: 400861.89068
+  tps: 259673.84207
  }
 }
 dps_results: {
@@ -747,8 +747,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 400091.73361
-  tps: 259318.80426
+  dps: 400861.89068
+  tps: 259673.84207
  }
 }
 dps_results: {
@@ -1672,8 +1672,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-StreamtalkerIdolofDestruction-101222"
  value: {
-  dps: 389058.40807
-  tps: 256018.25285
+  dps: 388953.39606
+  tps: 255996.03476
  }
 }
 dps_results: {
@@ -1763,8 +1763,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 451012.73825
-  tps: 298415.07501
+  dps: 451098.62807
+  tps: 298397.14619
  }
 }
 dps_results: {
@@ -1994,8 +1994,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Average-Default"
  value: {
-  dps: 450590.22474
-  tps: 297058.99137
+  dps: 450586.76727
+  tps: 297054.30107
  }
 }
 dps_results: {
@@ -2008,8 +2008,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Settings-Orc-p5-Demonology Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 452071.25475
-  tps: 299182.03991
+  dps: 452157.43206
+  tps: 299164.1763
  }
 }
 dps_results: {
@@ -2064,8 +2064,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Settings-Troll-p5-Demonology Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.18647711985e+06
-  tps: 924064.96307
+  dps: 1.18649808599e+06
+  tps: 924085.93063
  }
 }
 dps_results: {
@@ -2085,7 +2085,7 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 447110.47623
-  tps: 300081.90277
+  dps: 447196.59887
+  tps: 300064.03916
  }
 }

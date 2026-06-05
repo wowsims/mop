@@ -430,7 +430,6 @@ func GetCachedExpectedTickDamage(sim *Simulation, spell *Spell, target *Unit, us
 	return getCachedExpectedDamageSlice(sim, spell, spell.expectedTickDmgCache, target.UnitIndex)
 }
 
-// getCachedExpectedDamageSlice is a O(1) direct-index lookup replacing the old map[*Spell]* approach.
 func getCachedExpectedDamageSlice(sim *Simulation, spell *Spell, store []ExpectedDamageCalculatorCache, idx int32) (bool, *ExpectedDamageCalculatorCache) {
 	entry := &store[idx]
 	if (entry.timestamp - sim.CurrentTime).Abs() <= spell.Unit.ReactionTime {

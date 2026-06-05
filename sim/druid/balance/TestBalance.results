@@ -169,9 +169,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 471148.96487
-  tps: 468108.8075
-  hps: 44020.71262
+  dps: 470941.8067
+  tps: 467902.74933
+  hps: 44029.22758
  }
 }
 dps_results: {
@@ -457,9 +457,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 475867.4782
-  tps: 472826.78582
-  hps: 43825.28905
+  dps: 476249.07629
+  tps: 473208.45392
+  hps: 43812.26215
  }
 }
 dps_results: {
@@ -697,9 +697,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 475867.4782
-  tps: 472826.78582
-  hps: 43825.28905
+  dps: 476249.07629
+  tps: 473208.45392
+  hps: 43812.26215
  }
 }
 dps_results: {
@@ -769,9 +769,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 465223.47831
-  tps: 462277.87802
-  hps: 44024.1833
+  dps: 465258.16332
+  tps: 462311.96803
+  hps: 44016.82742
  }
 }
 dps_results: {
@@ -857,9 +857,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 465223.47831
-  tps: 462277.87802
-  hps: 44024.1833
+  dps: 465258.16332
+  tps: 462311.96803
+  hps: 44016.82742
  }
 }
 dps_results: {
@@ -1017,9 +1017,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 475867.4782
-  tps: 472826.78582
-  hps: 43825.28905
+  dps: 476249.07629
+  tps: 473208.45392
+  hps: 43812.26215
  }
 }
 dps_results: {
@@ -1921,9 +1921,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-StreamtalkerStoneofDestruction-101225"
  value: {
-  dps: 462569.51339
-  tps: 460505.25084
-  hps: 44363.15254
+  dps: 463168.38481
+  tps: 461104.36726
+  hps: 44422.61441
  }
 }
 dps_results: {
@@ -2289,9 +2289,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Average-Default"
  value: {
-  dps: 519099.2876
-  tps: 515800.88707
-  hps: 45656.09563
+  dps: 519121.78985
+  tps: 515823.11697
+  hps: 45656.67055
  }
 }
 dps_results: {
@@ -2497,8 +2497,8 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Troll-t16-FoN + HotW-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 504537.60828
-  tps: 468904.85982
+  dps: 504209.16481
+  tps: 468604.55648
   hps: 13956.84633
  }
 }
@@ -2521,9 +2521,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Troll-t16-FoN + HotW-Default-standard-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 324131.75325
-  tps: 306351.58629
-  hps: 12525.12054
+  dps: 324296.49707
+  tps: 306528.6183
+  hps: 12529.85859
  }
 }
 dps_results: {
@@ -2593,9 +2593,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t15-DefaultTalents-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 312105.5738
-  tps: 311481.59867
-  hps: 33004.03008
+  dps: 312206.7471
+  tps: 311573.11697
+  hps: 32880.98428
  }
 }
 dps_results: {
@@ -2713,9 +2713,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t15-Incarnation + NV-Default-standard-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 200239.09416
-  tps: 202957.06898
-  hps: 11085.74109
+  dps: 200632.35582
+  tps: 203365.00565
+  hps: 11079.5883
  }
 }
 dps_results: {
@@ -2785,9 +2785,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t16-FoN + HotW-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 517998.34256
-  tps: 484091.4723
-  hps: 14154.4207
+  dps: 518001.86812
+  tps: 484060.81047
+  hps: 14142.44649
  }
 }
 dps_results: {
@@ -2809,8 +2809,8 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t16-FoN + HotW-Default-standard-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 323721.67822
-  tps: 306745.09728
+  dps: 324188.02958
+  tps: 307235.44324
   hps: 12553.54883
  }
 }
@@ -2833,9 +2833,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t16-Incarnation + NV-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 527948.11648
-  tps: 524060.55545
-  hps: 15807.48226
+  dps: 528024.96919
+  tps: 524131.93816
+  hps: 15785.78414
  }
 }
 dps_results: {
