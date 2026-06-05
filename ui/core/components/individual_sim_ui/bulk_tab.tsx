@@ -32,7 +32,6 @@ import {
 	getBulkFreezeWeaponTypes,
 	getGearKey,
 	getOptimisationStageMinIterations,
-	getOptimisationTotalSimRounds,
 	shouldRunOptimisationStage,
 } from './bulk/utils';
 import {
@@ -53,7 +52,6 @@ import { EnumPicker } from '../pickers/enum_picker';
 import { translateWeaponType } from '../../../i18n/localization';
 import { ProgressTrackerModal } from '../progress_tracker_modal';
 import { ReforgeOptimizeConfig } from '../../sim';
-import { formatNumber } from 'chart.js/helpers';
 
 type BulkSetBonusOption = {
 	setId: number;

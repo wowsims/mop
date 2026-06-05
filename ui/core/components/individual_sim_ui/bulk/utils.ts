@@ -61,10 +61,6 @@ export const getBulkFreezeWeaponTypes = (
 	);
 };
 
-export const getDpsError = (metrics: DistributionMetrics, iterations: number): number => (iterations > 0 ? metrics.stdev / Math.sqrt(iterations) : 0);
-
-export const getDurationSeconds = (startedAt: number): number => (new Date().getTime() - startedAt) / 1000;
-
 export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): DistributionMetrics => {
 	dpsMetrics.hist = [];
 	dpsMetrics.allValues = [];
@@ -120,20 +116,6 @@ export const shouldRunOptimisationStage = (stage: OptimisationStage, candidateCo
 export const getOptimisationStageMinIterations = (stage: OptimisationStage, highStageIterations: number): number =>
 	STAGE_CONFIG[stage].minIterations ?? highStageIterations;
 
-export const getOptimisationTotalSimRounds = (reforgedGearSetCount: number): number => {
-	let candidates = reforgedGearSetCount;
-	let rounds = 0;
-
-	for (const stage of ['low', 'medium'] as const) {
-		if (shouldRunOptimisationStage(stage, candidates)) {
-			rounds += candidates + 1;
-			candidates = Math.min(candidates, STAGE_CONFIG[stage].maxSurvivors!);
-		}
-	}
-
-	return rounds + candidates + 1;
-};
-
 export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | 'reforging' | null => {
 	switch (stage) {
 		case BulkSimStage.BulkSimStageReforge:
@@ -175,7 +157,7 @@ export const getCoreBulkSimTrackingMetrics = (result: BulkSimResult): Record<str
 	return metrics;
 };
 
-export type BulkSimReforgeCacheData = {
+type BulkSimReforgeCacheData = {
 	cache: ReforgeGearCache;
 	candidates: BulkGearCandidate[];
 	optimizedCandidates: BulkGearCandidate[];
@@ -189,7 +171,7 @@ export type BulkSimReforgeCacheProgress = {
 	restoredCandidates: number;
 };
 
-export type BulkSimReforgeCacheContext = {
+type BulkSimReforgeCacheContext = {
 	player: Player<any>;
 	gearSets: Gear[];
 	db: Database;
