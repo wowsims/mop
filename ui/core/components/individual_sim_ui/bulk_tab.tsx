@@ -312,21 +312,12 @@ export class BulkTab extends SimTab {
 		const storedSettings = window.localStorage.getItem(this.getSettingsKey());
 		if (storedSettings != null) {
 			let settings: BulkSettings;
-			let legacySettings: { useOptimisationRounds?: boolean; useLegacyBulkSim?: boolean } | null = null;
-			try {
-				legacySettings = JSON.parse(storedSettings) as { useOptimisationRounds?: boolean; useLegacyBulkSim?: boolean };
-			} catch {
-				legacySettings = null;
-			}
 			try {
 				settings = BulkSettings.fromJsonString(storedSettings, {
 					ignoreUnknownFields: true,
 				});
 			} catch {
 				settings = BulkSettings.create();
-			}
-			if (legacySettings?.useLegacyBulkSim === undefined && legacySettings?.useOptimisationRounds !== undefined) {
-				settings.useLegacyBulkSim = !legacySettings.useOptimisationRounds;
 			}
 
 			this.addItems(settings.items, true);
