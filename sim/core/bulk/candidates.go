@@ -10,6 +10,11 @@ import (
 	googleProto "google.golang.org/protobuf/proto"
 )
 
+// Bulk candidate/count generation temporarily mutates the shared core item database
+// using request-scoped SimDatabase payloads. Keep that mutation + generation path
+// serialized to avoid concurrent map read/write panics with parallel sim requests.
+var bulkCandidateDatabaseMu sync.Mutex
+
 type bulkSimCandidateOption struct {
 	spec *proto.ItemSpec
 	item core.Item
@@ -88,11 +93,6 @@ type bulkSimCandidateGenerator struct {
 	weaponCombosCached   [][2]*bulkSimCandidateOption
 	weaponCombosReady    bool
 }
-
-// Bulk candidate/count generation temporarily mutates the shared core item database
-// using request-scoped SimDatabase payloads. Keep that mutation + generation path
-// serialized to avoid concurrent map read/write panics with parallel sim requests.
-var bulkCandidateDatabaseMu sync.Mutex
 
 type BulkSimItemSlot int
 
