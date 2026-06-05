@@ -42,6 +42,7 @@ func NewFrostDeathKnight(character *core.Character, player *proto.Player) *Frost
 
 	fdk.Inputs.AvgAMSHit = frostOptions.AvgAmsHit
 	fdk.Inputs.AvgAMSSuccessRate = frostOptions.AvgAmsSuccessRate
+	fdk.Inputs.AMSNumTicks = frostOptions.AmsNumTicks
 
 	return fdk
 }

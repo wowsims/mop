@@ -16,3 +16,18 @@ export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<Sp
 	labelTooltip: 'Chance for damage to be taken during the 5 second window of AMS.',
 	percent: true,
 });
+
+export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecFrostDeathKnight, number>({
+	fieldName: 'amsNumTicks',
+	label: 'AMS Damage Ticks',
+	labelTooltip: 'Number of magic hits taken per AMS window — 1 lands at a random time, 2+ are evenly spaced. Each tick independently rolls Avg AMS Success %.',
+	values: [
+		{ name: '1', value: 1 },
+		{ name: '2', value: 2 },
+		{ name: '3', value: 3 },
+		{ name: '4', value: 4 },
+		{ name: '5', value: 5 },
+	],
+	// Old saved settings predate this field and deserialize to 0; show them as 1 tick.
+	getValue: player => player.getSpecOptions().amsNumTicks || 1,
+});

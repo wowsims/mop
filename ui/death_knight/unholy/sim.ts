@@ -111,7 +111,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	excludeBuffDebuffInputs: [BuffDebuffInputs.DamageReduction, BuffDebuffInputs.CastSpeedDebuff],
 	// Inputs to include in the 'Other' section on the settings tab.
 	otherInputs: {
-		inputs: [OtherInputs.InFrontOfTarget, OtherInputs.InputDelay, DeathKnightInputs.AvgAMSHitInput, DeathKnightInputs.AvgAMSSuccessRateInput],
+		inputs: [
+			OtherInputs.InFrontOfTarget,
+			OtherInputs.InputDelay,
+			DeathKnightInputs.AvgAMSHitInput,
+			DeathKnightInputs.AvgAMSSuccessRateInput,
+			DeathKnightInputs.AMSNumTicksInput,
+		],
 	},
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
