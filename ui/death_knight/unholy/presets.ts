@@ -97,6 +97,7 @@ export const DefaultOptions = UnholyDeathKnight_Options.create({
 	classOptions: {},
 	avgAmsHit: 170000,
 	avgAmsSuccessRate: 1,
+	amsNumTicks: 1,
 });
 
 export const OtherDefaults = {

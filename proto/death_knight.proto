@@ -93,6 +93,7 @@ message FrostDeathKnight {
 		DeathKnightOptions class_options = 1;
 		double avg_ams_hit = 2;
 		double avg_ams_success_rate = 3;
+		int32 ams_num_ticks = 4;
 	}
 	Options options = 3;
 }
@@ -105,6 +106,7 @@ message UnholyDeathKnight {
 		UnitReference unholy_frenzy_target = 2;
 		double avg_ams_hit = 3;
 		double avg_ams_success_rate = 4;
+		int32 ams_num_ticks = 5;
 	}
 	Options options = 3;
 }

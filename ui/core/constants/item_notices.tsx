@@ -97,11 +97,5 @@ export const GENERIC_MISSING_SET_BONUS_NOTICE_DATA = new Map<number, string>([
 	[4, 'Not yet implemented'],
 ]);
 
-const ELE_T16_SET_BONUS_NOTICE_DATA = new Map<number, string>([
-	[2, 'Implementation needs testing on PTR'],
-	[4, 'Implementation needs testing on PTR'],
-]);
-
 export const SET_BONUS_NOTICES = new Map<number, SetBonusNoticeData>([
-	[1182, ELE_T16_SET_BONUS_NOTICE_DATA], // Elemental T16
 ]);

@@ -430,6 +430,22 @@ export class EquippedItem {
 		});
 	}
 
+	getRandomSuffixStats(): Stats {
+		const stats = new Stats([]);
+
+		if (this._randomSuffix) {
+			console.log(this.item.name, this._randomSuffix.name, this._randomSuffix.stats);
+			return this._randomSuffix!.stats.reduce<Stats>((acc, value, index) => {
+				if (value > 0) {
+					return acc.addStat(index, Math.floor((value * this._item.randPropPoints) / 10000));
+				}
+				return acc;
+			}, stats);
+		}
+
+		return stats;
+	}
+
 	withDynamicStats() {
 		const item = this.item;
 		const scalingOptions = item.scalingOptions[this.upgrade];
