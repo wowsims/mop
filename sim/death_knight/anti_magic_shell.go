@@ -29,10 +29,8 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 	// absorbing spells while the shell is up. targetDummySpell is a metrics-free
 	// vehicle (registered lazily on the current target on first use) whose damage
 	// flows through the normal absorption -> OnDamageAbsorbed -> AddRunicPower path,
-	// so RP generation reuses the already-correct formula. simulatedDamagePA is the
-	// single scheduled hit; it is cancelled if the shell ends before it lands.
+	// so RP generation reuses the already-correct formula.
 	var targetDummySpell *core.Spell
-	var simulatedDamagePA *core.PendingAction
 
 	var antiMagicShellSpell *core.Spell
 	var antiMagicShellAura *core.DamageAbsorptionAura
@@ -52,7 +50,7 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 				if targetDummySpell == nil && dk.CurrentTarget != nil {
 					targetDummySpell = dk.CurrentTarget.RegisterSpell(core.SpellConfig{
 						ActionID:         core.ActionID{SpellID: 49375},
-						SpellSchool:      core.SpellSchoolShadow,
+						SpellSchool:      core.SpellSchoolChaos,
 						ProcMask:         core.ProcMaskSpellDamage,
 						Flags:            core.SpellFlagNoOnCastComplete | core.SpellFlagNoMetrics,
 						DamageMultiplier: 1,
@@ -68,28 +66,32 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 					return
 				}
 
-				// Land a single hit at a random point within the shell's window.
-				simulatedDamagePA = &core.PendingAction{
-					Priority:     core.ActionPriorityAuto,
-					NextActionAt: sim.CurrentTime + time.Duration(sim.RandomFloat("AMS Induced Damage")*float64(aura.Duration)),
-					OnAction: func(sim *core.Simulation) {
+				numTicks := max(dk.Inputs.AMSNumTicks, 1)
+				scheduleTick := func(at time.Duration) {
+					pa := sim.GetConsumedPendingActionFromPool()
+					pa.Priority = core.ActionPriorityAuto
+					pa.NextActionAt = at
+					pa.OnAction = func(sim *core.Simulation) {
+						if !aura.IsActive() {
+							return
+						}
+
 						if sim.RandomFloat("AMS Trigger Chance") < min(dk.Inputs.AvgAMSSuccessRate, 1.0) {
 							targetDummySpell.Cast(sim, aura.Unit)
 						}
-					},
-				}
-				sim.AddPendingAction(simulatedDamagePA)
-			},
-			OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-				// Cancel the pending simulated hit if the shell ends before it lands —
-				// e.g. the shield is fully depleted or the aura is cancelled via the APL.
-				// Without this the PendingAction would still fire after the aura is gone,
-				// dealing unabsorbed damage and generating no Runic Power.
-				if simulatedDamagePA != nil {
-					simulatedDamagePA.Cancel(sim)
-					simulatedDamagePA = nil
+					}
+					sim.AddPendingAction(pa)
 				}
 
+				if numTicks == 1 {
+					scheduleTick(sim.CurrentTime + time.Duration(sim.RandomFloat("AMS Induced Damage")*float64(aura.Duration)))
+				} else {
+					for i := range numTicks {
+						scheduleTick(sim.CurrentTime + antiMagicShellTickOffset(aura.Duration, i, numTicks))
+					}
+				}
+			},
+			OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 				// Glyph of Regenerative Magic: a depleted shield Deactivate()s early with
 				// ShieldStrength <= 0, so ShieldStrength > 0 here means AMS reached its full
 				// duration with shield left. Reduce the *remaining* cooldown by up to 50%,
@@ -153,6 +155,15 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 			Priority: core.CooldownPriorityLow,
 		})
 	}
+}
+
+// antiMagicShellTickOffset returns how far into the shell's window tick i (0-indexed) of
+// numTicks lands when the simulated hits are spread evenly across it: tick i fires at
+// (i+0.5) * window/numTicks. This centres the hits in equal sub-intervals, so e.g. 5 ticks
+// over a 5s window land at 0.5/1.5/2.5/3.5/4.5s and the last always falls before expiry.
+// Only used for numTicks >= 2; a single tick is placed at a random time by the caller.
+func antiMagicShellTickOffset(window time.Duration, i, numTicks int32) time.Duration {
+	return time.Duration((float64(i) + 0.5) * float64(window) / float64(numTicks))
 }
 
 // antiMagicShellRunicPowerCoefficient is the base Runic Power generated per point of

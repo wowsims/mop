@@ -7,7 +7,8 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Faction, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { StatCapType } from '../../core/proto/ui';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as PriestInputs from '../inputs';
 import * as Presets from './presets';
 
@@ -95,14 +96,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_EP_PRESET, Presets.P2_EP_PRESET, Presets.P3_4_EP_PRESET],
+		epWeights: [Presets.P1_EP_PRESET, Presets.P2_EP_PRESET, Presets.P3_4_EP_PRESET, Presets.P5_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
-		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_T15],
+		rotations: [Presets.ROTATION_PRESET_DEFAULT],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRE_RAID_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET],
+		gear: [Presets.PRE_RAID_PRESET, Presets.P3_4_PRESET, Presets.P5_PRESET],
 		itemSwaps: [],
-		builds: [Presets.PRESET_BUILD_T14, Presets.PRESET_BUILD_T15],
+		builds: [Presets.PRESET_BUILD_T15, Presets.PRESET_BUILD_T16],
 	},
 
 	autoRotation: (_: Player<Spec.SpecShadowPriest>): APLRotation => {
@@ -119,13 +120,48 @@ export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: [Presets.SHADOW_BREAKPOINTS],
 			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
+
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 525) {
-					return Presets.P3_4_EP_PRESET.epWeights;
+				if (avgIlvl >= 560) {
+					epWeights = Presets.P5_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 525) {
+					epWeights = Presets.P3_4_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 500) {
-					return Presets.P2_EP_PRESET.epWeights;
+					epWeights = Presets.P2_EP_PRESET.epWeights;
+				} else {
+					epWeights = Presets.P1_EP_PRESET.epWeights;
 				}
-				return Presets.P1_EP_PRESET.epWeights;
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+
+				return epWeights;
+			},
+			updateSoftCaps: softCaps => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 560) {
+					const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+						breakpoints: [Presets.SHADOW_BREAKPOINTS.presets!.get('BL - 12-tick - DP')!],
+						capType: StatCapType.TypeThreshold,
+						postCapEPs: [
+							((Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) / player.getTotalAmplificationTrinketStatModifier()) *
+								Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
+						],
+					});
+					softCaps.push(hasteSoftCapConfig);
+
+					const masterySoftCapConfig = StatCap.fromStat(Stat.StatMasteryRating, {
+						breakpoints: [UnitStat.fromStat(Stat.StatMasteryRating).convertPercentToRating(60)! / player.getMasteryPerPointModifier()],
+						capType: StatCapType.TypeSoftCap,
+						postCapEPs: [(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.02) / player.getTotalAmplificationTrinketStatModifier()],
+					});
+					softCaps.push(masterySoftCapConfig);
+				}
+
+				return softCaps;
 			},
 		});
 	}

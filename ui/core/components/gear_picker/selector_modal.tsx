@@ -455,11 +455,28 @@ export default class SelectorModal extends BaseModal {
 			label: SelectorModalTabs.RandomSuffixes,
 			gearData,
 			itemData: this.player.getRandomSuffixes(itemProto).map((randomSuffix: ItemRandomSuffix) => {
+				const equippedItemWithSuffix = equippedItem.withRandomSuffix(randomSuffix).getRandomSuffixStats();
+				const statString = equippedItemWithSuffix
+					.asProtoArray()
+					.map((statValue, statIdx) => {
+						if (statValue > 0) {
+							return `+${statValue} ${translateStat(statIdx)}`;
+						}
+						return undefined;
+					})
+					.filter(Boolean)
+					.join(' ');
+
 				return {
 					item: randomSuffix,
 					id: randomSuffix.id,
 					actionId: ActionId.fromRandomSuffix(itemProto, randomSuffix),
-					name: translateProtoStatName(randomSuffix.name),
+					name: (
+						<div className="d-flex flex-column">
+							{translateProtoStatName(randomSuffix.name)}
+							<span className="fs-content positive mt-1">{statString}</span>
+						</div>
+					) as HTMLElement,
 					quality: itemProto.quality,
 					phase: itemProto.phase,
 					nameDescription: '',

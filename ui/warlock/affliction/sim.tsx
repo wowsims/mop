@@ -6,10 +6,9 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Faction, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { formatToNumber } from '../../core/utils';
 import * as WarlockInputs from '../inputs';
 import * as AffInputs from './inputs';
 import * as Presets from './presets';
@@ -26,10 +25,10 @@ const relevantDotBreakpoints = [
 	Presets.AFFLICTION_BREAKPOINTS.presets.get('17-tick - Agony')!,
 	Presets.AFFLICTION_BREAKPOINTS.presets.get('13-tick - Corruption')!,
 	Presets.AFFLICTION_BREAKPOINTS.presets.get('18-tick - Agony')!,
-	Presets.AFFLICTION_BREAKPOINTS.presets.get('14-tick - Corruption')!,
+	// Presets.AFFLICTION_BREAKPOINTS.presets.get('14-tick - Corruption')!,
 	Presets.AFFLICTION_BREAKPOINTS.presets.get('11-tick - Unstable Affliction')!,
-	Presets.AFFLICTION_BREAKPOINTS.presets.get('19-tick - Agony')!,
-	Presets.AFFLICTION_BREAKPOINTS.presets.get('15-tick - Corruption')!,
+	// Presets.AFFLICTION_BREAKPOINTS.presets.get('19-tick - Agony')!,
+	// Presets.AFFLICTION_BREAKPOINTS.presets.get('15-tick - Corruption')!,
 	// Presets.AFFLICTION_BREAKPOINTS.presets.get('20-tick - Agony')!,
 	// Presets.AFFLICTION_BREAKPOINTS.presets.get('12-tick - Unstable Affliction')!,
 	// Presets.AFFLICTION_BREAKPOINTS.presets.get('21-tick - Agony')!,
@@ -183,10 +182,10 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 			getEPDefaults: player => {
 				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 512) {
-					epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 560) {
+				if (avgIlvl >= 560) {
 					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 512) {
+					epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
 				} else {
 					epWeights = Presets.P1_BIS_EP_PRESET.epWeights;
 				}
@@ -198,51 +197,28 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 
 				return epWeights;
 			},
-			// updateSoftCaps: softCaps => {
-			// 	const raidBuffs = player.getRaid()?.getBuffs();
-			// 	const hasBL = !!raidBuffs?.bloodlust;
-			// 	const hasBerserking = player.getRace() === Race.RaceTroll;
+			updateSoftCaps: softCaps => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 560) {
+					this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
+						let softCapToModifyIndex = softCaps.findIndex(sc => sc.unitStat.equals(softCap.unitStat));
+						if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModifyIndex !== -1) {
+							softCaps[softCapToModifyIndex] = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+								breakpoints: relevantDotBreakpoints,
+								capType: StatCapType.TypeThreshold,
+								postCapEPs: relevantDotBreakpoints.map(
+									() =>
+										((Presets.P5_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) /
+											player.getTotalAmplificationTrinketStatModifier()) *
+										Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
+								),
+							});
+						}
+					});
+				}
 
-			// 	const modifyHaste = (oldHastePercent: number, modifier: number) =>
-			// 		Number(formatToNumber(((oldHastePercent / 100 + 1) / modifier - 1) * 100, { maximumFractionDigits: 5 }));
-
-			// 	this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-			// 		const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-			// 		if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-			// 			const adjustedHasteBreakpoints = new Set([...softCap.breakpoints]);
-			// 			const hasCloseMatchingValue = (value: number) =>
-			// 				[...adjustedHasteBreakpoints.values()].find(bp => bp.toFixed(2) === value.toFixed(2));
-
-			// 			softCap.breakpoints.forEach(breakpoint => {
-			// 				const dsMiseryBreakpoint = modifyHaste(breakpoint, 1.3);
-			// 				if (dsMiseryBreakpoint > 0 && !hasCloseMatchingValue(dsMiseryBreakpoint)) {
-			// 					adjustedHasteBreakpoints.add(dsMiseryBreakpoint);
-			// 				}
-			// 				if (hasBL) {
-			// 					const blBreakpoint = modifyHaste(breakpoint, 1.3);
-
-			// 					if (blBreakpoint > 0) {
-			// 						if (!hasCloseMatchingValue(blBreakpoint)) adjustedHasteBreakpoints.add(blBreakpoint);
-
-			// 						const dsMiseryBlBreakpoint = modifyHaste(blBreakpoint, 1.3);
-			// 						if (dsMiseryBlBreakpoint > 0 && !hasCloseMatchingValue(dsMiseryBlBreakpoint)) {
-			// 							adjustedHasteBreakpoints.add(dsMiseryBlBreakpoint);
-			// 						}
-
-			// 						if (hasBerserking) {
-			// 							const berserkingBreakpoint = modifyHaste(blBreakpoint, 1.2);
-			// 							if (berserkingBreakpoint > 0 && !hasCloseMatchingValue(berserkingBreakpoint)) {
-			// 								adjustedHasteBreakpoints.add(berserkingBreakpoint);
-			// 							}
-			// 						}
-			// 					}
-			// 				}
-			// 			});
-			// 			softCapToModify.breakpoints = [...adjustedHasteBreakpoints].sort((a, b) => a - b);
-			// 		}
-			// 	});
-			// 	return softCaps;
-			// },
+				return softCaps;
+			},
 			// additionalSoftCapTooltipInformation: {
 			// 	[Stat.StatHasteRating]: () => {
 			// 		const raidBuffs = player.getRaid()?.getBuffs();

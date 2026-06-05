@@ -9,7 +9,7 @@ import (
 
 func (comRogue *CombatRogue) registerSinisterStrikeSpell() {
 	baseDamage := comRogue.GetBaseDamageFromCoefficient(0.22499999404)
-	wepDamage := 1.92
+	wepDamage := 2.4
 
 	comRogue.SinisterStrike = comRogue.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 1752},
@@ -19,7 +19,7 @@ func (comRogue *CombatRogue) registerSinisterStrikeSpell() {
 		ClassSpellMask: rogue.RogueSpellSinisterStrike,
 
 		EnergyCost: core.EnergyCostOptions{
-			Cost:   40,
+			Cost:   50,
 			Refund: 0.8,
 		},
 		Cast: core.CastConfig{

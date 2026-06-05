@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/stats"
 	"github.com/wowsims/mop/sim/druid"
 )
 
@@ -140,6 +141,150 @@ func (bear *GuardianDruid) registerImprovedRegeneration(_ *core.Aura) {
 
 		OnExpire: func(_ *core.Aura, _ *core.Simulation) {
 			improveRegenMod.Deactivate()
+		},
+	})
+}
+
+// T16 Guardian
+var ItemSetArmorOfTheShatteredVale = core.NewItemSet(core.ItemSet{
+	ID:                      1196,
+	DisabledInChallengeMode: true,
+	Name:                    "Armor of the Shattered Vale",
+	Bonuses: map[int32]core.ApplySetBonus{
+		2: func(agent core.Agent, setBonusAura *core.Aura) {
+			// When Barkskin fades, Savage Defense is automatically activated,
+			// and a 20 Rage Frenzied Regeneration is automatically cast.
+			bear, ok := agent.(*GuardianDruid)
+			if !ok {
+				return
+			}
+
+			bear.registerT162PFreeFrenziedRegen(setBonusAura)
+
+			bear.Env.RegisterPreFinalizeEffect(func() {
+				bear.BarkskinAura.ApplyOnExpire(func(_ *core.Aura, sim *core.Simulation) {
+					if !setBonusAura.IsActive() {
+						return
+					}
+					// Savage Defense: activate for 3s, or extend by 3s if already active.
+					const triggeredDuration = 3 * time.Second
+					if bear.SavageDefenseAura.IsActive() {
+						bear.SavageDefenseAura.UpdateExpires(bear.SavageDefenseAura.ExpiresAt() + triggeredDuration)
+					} else {
+						bear.SavageDefenseAura.Activate(sim)
+						bear.SavageDefenseAura.UpdateExpires(sim.CurrentTime + triggeredDuration)
+					}
+					bear.T16FreeFrenziedRegen.Cast(sim, &bear.Unit)
+				})
+			})
+
+			setBonusAura.ExposeToAPL(144879)
+		},
+		4: func(agent core.Agent, setBonusAura *core.Aura) {
+			// Activating Frenzied Regeneration and Savage Defense will cause a
+			// heal over time on yourself based on 30% of your Attack Power over
+			// 8 sec.
+			bear, ok := agent.(*GuardianDruid)
+			if !ok {
+				return
+			}
+
+			bear.registerT164PHot(setBonusAura)
+			setBonusAura.ExposeToAPL(144887)
+		},
+	},
+})
+
+// 2PT16 : Free Frenzied Regeneration cast by the T16 2P bonus when Barkskin fades. 
+// Always uses the unglyphed heal formula with a fixed 20-rage cost, regardless of glyph.
+func (bear *GuardianDruid) registerT162PFreeFrenziedRegen(_ *core.Aura) {
+	const triggeredRageCost = 20.0
+	const maxRageCost = 60.0
+	const rageFraction = triggeredRageCost / maxRageCost
+
+	bear.T16FreeFrenziedRegen = bear.RegisterSpell(druid.Bear, core.SpellConfig{
+		ActionID:         core.ActionID{SpellID: 22842}.WithTag(1),
+		SpellSchool:      core.SpellSchoolPhysical,
+		ProcMask:         core.ProcMaskSpellHealing,
+		Flags:            core.SpellFlagNoOnCastComplete,
+		DamageMultiplier: 1,
+		CritMultiplier:   bear.DefaultCritMultiplier(),
+		ThreatMultiplier: 1,
+		ClassSpellMask:   druid.DruidSpellFrenziedRegeneration,
+
+		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
+			healthGained := max(
+				(bear.GetStat(stats.AttackPower)-2*bear.GetStat(stats.Agility))*2.2,
+				bear.GetStat(stats.Stamina)*2.5,
+			) * rageFraction
+			spell.CalcAndDealHealing(sim, spell.Unit, healthGained, spell.OutcomeHealing)
+			if bear.OnFrenziedRegenCast != nil {
+				bear.OnFrenziedRegenCast(rageFraction)
+			}
+		},
+	})
+}
+
+// 4PT16 : 30% AP healing over 8s, triggered by Frenzied Regeneration or
+// Savage Defense. FR scales by rage spent / max rage cost unless glyphed;
+// Savage Defense fires at full strength.
+func (bear *GuardianDruid) registerT164PHot(setBonusAura *core.Aura) {
+	const apCoeff = 0.30
+	const numTicks = 8
+
+	// Set by the proc handler before each Cast(); read by OnSnapshot.
+	nextHealMultiplier := 1.0
+	// Most recent FR cast's rage / 60 ratio, used to scale the HoT for FR triggers.
+	lastFRRageFraction := 1.0
+
+	bear.OnFrenziedRegenCast = func(rageFraction float64) {
+		lastFRRageFraction = rageFraction
+	}
+
+	hotSpell := bear.RegisterSpell(druid.Any, core.SpellConfig{
+		ActionID:         core.ActionID{SpellID: 144888},
+		SpellSchool:      core.SpellSchoolNature,
+		ProcMask:         core.ProcMaskSpellHealing,
+		Flags:            core.SpellFlagHelpful | core.SpellFlagNoOnCastComplete,
+		DamageMultiplier: 1,
+		CritMultiplier:   bear.DefaultCritMultiplier(),
+		ThreatMultiplier: 1,
+
+		Hot: core.DotConfig{
+			Aura: core.Aura{
+				Label:    "Ursoc's Vigor",
+				ActionID: core.ActionID{SpellID: 144888},
+			},
+
+			NumberOfTicks: numTicks,
+			TickLength:    time.Second,
+
+			OnSnapshot: func(_ *core.Simulation, target *core.Unit, dot *core.Dot, _ bool) {
+				totalHeal := apCoeff * bear.GetStat(stats.AttackPower) * nextHealMultiplier
+				dot.SnapshotHeal(target, totalHeal/float64(numTicks))
+			},
+
+			OnTick: func(sim *core.Simulation, target *core.Unit, dot *core.Dot) {
+				dot.CalcAndDealPeriodicSnapshotHealing(sim, target, dot.OutcomeTick)
+			},
+		},
+
+		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
+			spell.Hot(target).Apply(sim)
+		},
+	})
+
+	setBonusAura.AttachProcTrigger(core.ProcTrigger{
+		Name:           "4PT16 HoT Trigger",
+		Callback:       core.CallbackOnCastComplete,
+		ClassSpellMask: druid.DruidSpellFrenziedRegeneration | druid.DruidSpellSavageDefense,
+		Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
+			if spell.Matches(druid.DruidSpellFrenziedRegeneration) {
+				nextHealMultiplier = lastFRRageFraction
+			} else {
+				nextHealMultiplier = 1.0
+			}
+			hotSpell.Cast(sim, &bear.Unit)
 		},
 	})
 }

@@ -76,6 +76,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestGuardian-AllItems-ArmoroftheShatteredVale"
+ value: {
+  dps: 299920.59268
+  tps: 1.83293829241e+06
+  dtps: 52919.97962
+  hps: 42496.94625
+ }
+}
+dps_results: {
  key: "TestGuardian-AllItems-ArrowflightMedallion-93258"
  value: {
   dps: 332077.20414

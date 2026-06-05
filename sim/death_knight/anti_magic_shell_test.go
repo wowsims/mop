@@ -2,9 +2,47 @@ package death_knight
 
 import (
 	"testing"
+	"time"
 
 	"github.com/wowsims/mop/sim/core"
 )
+
+// When the user configures multiple AMS damage ticks, they are spread evenly across the
+// shell's 5s window, each landing in the centre of its own equal sub-interval.
+func TestAntiMagicShellTickOffset(t *testing.T) {
+	const window = 5 * time.Second
+
+	cases := []struct {
+		numTicks int32
+		expected []time.Duration // offset of each tick within the window
+	}{
+		{numTicks: 2, expected: []time.Duration{1250 * time.Millisecond, 3750 * time.Millisecond}},
+		{numTicks: 3, expected: []time.Duration{time.Second * 5 / 6, time.Second * 5 / 2, time.Second * 25 / 6}},
+		{
+			numTicks: 5,
+			expected: []time.Duration{
+				500 * time.Millisecond,
+				1500 * time.Millisecond,
+				2500 * time.Millisecond,
+				3500 * time.Millisecond,
+				4500 * time.Millisecond,
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		for i := int32(0); i < tc.numTicks; i++ {
+			got := antiMagicShellTickOffset(window, i, tc.numTicks)
+			if got != tc.expected[i] {
+				t.Errorf("numTicks=%d tick %d: expected %s, got %s", tc.numTicks, i, tc.expected[i], got)
+			}
+			// Every tick must land strictly within the window so it fires before the shell expires.
+			if got <= 0 || got >= window {
+				t.Errorf("numTicks=%d tick %d: offset %s is outside the (0, %s) window", tc.numTicks, i, got, window)
+			}
+		}
+	}
+}
 
 // Anti-Magic Shell generates Runic Power based on the magic damage it is exposed to,
 // before its own % reduction. Derived from MoP-Classic WCL logs: a flat 0.0007 RP per

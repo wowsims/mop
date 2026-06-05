@@ -542,7 +542,7 @@ export class ActionId {
 					name += ' (T16 4P)';
 				}
 				break;
-			case "Chaos Wave":
+			case 'Chaos Wave':
 				if (this.spellId == 124915) {
 					name += ' (T16 4P)';
 				}
@@ -909,11 +909,16 @@ export class ActionId {
 				}
 
 				break;
-			case 'Agony':
-			case 'Unstable Affliction':
-			case 'Corruption':
-				if (tag == 1) {
-					name += ' (Malefic)';
+			case 'Malefic Grasp':
+			case 'Drain Soul':
+				if (tag == 980) {
+					name += ' (Agony)';
+				}
+				if (tag == 30108) {
+					name += ' (Unstable Affliction)';
+				}
+				if (tag == 172) {
+					name += ' (Corruption)';
 				}
 				break;
 			case 'Metamorphosis':
@@ -964,6 +969,11 @@ export class ActionId {
 			case 'Ignite Armor':
 				if (tag == 1) {
 					name += ' (DoT)';
+				}
+				break;
+			case 'Frenzied Regeneration':
+				if (tag == 1) {
+					name += ' - Druid T16 Guardian 2P Bonus';
 				}
 				break;
 			default:
@@ -1265,9 +1275,14 @@ const spellIdTooltipOverrides: Map<string, ActionIdOverride> = new Map([
 	// Warlock - Immolation Aura
 	[JSON.stringify({ spellId: 104025, tag: 2 }), { spellId: 129476 }],
 	[JSON.stringify({ spellId: 47897, tag: 1 }), { spellId: 47960 }], // Shadowflame Dot
-	[JSON.stringify({ spellId: 30108, tag: 1 }), { spellId: 131736 }], // Malefic Grasp - Unstable Affliction
-	[JSON.stringify({ spellId: 980, tag: 1 }), { spellId: 131737 }], // Malefic Grasp - Agony
-	[JSON.stringify({ spellId: 172, tag: 1 }), { spellId: 131740 }], // Malefic Grasp - Corruption
+
+	[JSON.stringify({ spellId: 103103, tag: 172 }), { spellId: 172 }], // Malefic Grasp - Corruption
+	[JSON.stringify({ spellId: 103103, tag: 980 }), { spellId: 980 }], // Malefic Grasp - Agony
+	[JSON.stringify({ spellId: 103103, tag: 30108 }), { spellId: 30108 }], // Malefic Grasp - Unstable Affliction
+
+	[JSON.stringify({ spellId: 1120, tag: 172 }), { spellId: 172 }], // Drain Soul - Corruption
+	[JSON.stringify({ spellId: 1120, tag: 980 }), { spellId: 980 }], // Drain Soul - Agony
+	[JSON.stringify({ spellId: 1120, tag: 30108 }), { spellId: 30108 }], // Drain Soul - Unstable Affliction
 ]);
 
 export const defaultTargetIcon = 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_metamorphosis.jpg';
