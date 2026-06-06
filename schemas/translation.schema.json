@@ -2858,7 +2858,7 @@
 							"additionalProperties": false,
 							"required": ["label", "tooltip"]
 						},
-						"use_multistage_optimisation": {
+						"use_legacy_bulk_sim": {
 							"type": "object",
 							"properties": {
 								"label": {
@@ -2955,7 +2955,7 @@
 						"combination_singular",
 						"iterations",
 						"inherit_upgrades",
-						"use_multistage_optimisation",
+						"use_legacy_bulk_sim",
 						"required_set_bonuses",
 						"freeze_ring",
 						"freeze_trinket",
