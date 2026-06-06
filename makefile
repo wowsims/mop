@@ -54,6 +54,7 @@ $(OUT_DIR)/.dirstamp: \
 $(OUT_DIR)/bundle/.dirstamp: \
   $(UI_SRC) \
   $(PAGE_INDECES) \
+  $(AUTO_GEN_FILES_TS) \
   vite.config.mts \
   vite.build-workers.mts \
   node_modules \
@@ -123,7 +124,7 @@ node_modules: package-lock.json
 
 # Generic rule for hosting any class directory
 .PHONY: host_%
-host_%: $(OUT_DIR) node_modules
+host_%: $(OUT_DIR) node_modules $(AUTO_GEN_FILES_TS)
 	npx http-server $(OUT_DIR)/..
 
 # Generic rule for building index.html for any class directory
