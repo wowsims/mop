@@ -245,7 +245,7 @@
 		"description": "{{spec}} {{class}} simulations for World of Warcraft® Mists of Pandaria Classic.",
 		"basic_bis_disclaimer": "<p>Preset gear lists are intended as rough approximations of BIS, and will often not be the absolute highest-DPS setup for you. Your optimal gear setup will depend on many factors; that's why we have a sim!</p><p>Items may also be omitted from the presets if they are highly contested and clearly better utilized on other classes, to encourage equitable gearing for the raid as a whole.</p>",
 		"healing_sim_disclaimer": "*** WARNING - USE AT YOUR OWN RISK ***\n\nThe entire concept of a healing sim is EXPERIMENTAL. All results should be taken with an EXTREMELY large grain of salt.\n\nThis tool is currently more similar to a spreadsheet than a true sim. Options for specifying incoming damage profiles in order to have proper reactive rotations have not yet been added.",
-		"notice_local_download": {
+		"notice_native_download": {
 			"title": "Did you know?",
 			"message": "You can download our local sim to speed up your simulations significantly?",
 			"download_button": "Download"
@@ -776,7 +776,7 @@
 	"bulk_tab": {
 		"title": "Batch (<span class=\"text-success\">New</span>)",
 		"description": "<span className=\"bold\">Batch Simming</span> is a new feature akin to the <span className=\"bold\">Top Gear</span> sim on <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> that allows you to select multiple items and sim them find the best combinations.<br />This is an <span className=\"text-brand\">Alpha</span> feature, so if you have feedback or find a bug, please report it!",
-		"download_local": "Download the local sim for faster results.",
+		"download_native": "Download the local sim for faster results.",
 		"tabs": {
 			"setup": "Setup",
 			"results": "Results"

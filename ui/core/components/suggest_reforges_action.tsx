@@ -1119,7 +1119,7 @@ export class ReforgeOptimizer {
 
 		const result = await this.sim.reforgeOptimize(config);
 		if (!result.optimizedGear) {
-			throw new Error('Local Go reforge optimizer did not return optimized gear.');
+			throw new Error('Native Go reforge optimizer did not return optimized gear.');
 		}
 
 		await cache.setGear(cacheKey, result.optimizedGear);

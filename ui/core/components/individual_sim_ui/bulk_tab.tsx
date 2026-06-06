@@ -34,8 +34,8 @@ import {
 } from './bulk/utils';
 import {
 	BulkSimProgressConfig,
-	LOCAL_COMBINATIONS_LIMIT,
-	LOCAL_ITERATIONS_LIMIT,
+	NATIVE_COMBINATIONS_LIMIT,
+	NATIVE_ITERATIONS_LIMIT,
 	TopGearResult,
 	WEB_COMBINATIONS_LIMIT,
 	WEB_ITERATIONS_LIMIT,
@@ -90,9 +90,10 @@ export class BulkTab extends SimTab {
 	protected rawCombinations = 0;
 	protected usesLegacyBulkSim = false;
 	private combinationsCalcRequestVersion = 0;
+	private webSimWarningContainer: HTMLElement | null = null;
 
-	inheritUpgrades: boolean;
-	useLegacyBulkSim: boolean;
+	inheritUpgrades: boolean = true;
+	useLegacyBulkSim: boolean = false;
 	requiredSetBonuses: Map<number, BulkRequiredSetBonus> = new Map();
 	frozenItems: Map<BulkSimItemSlot, EquippedItem | null> = new Map([
 		[BulkSimItemSlot.ItemSlotFinger, null],
@@ -219,13 +220,11 @@ export class BulkTab extends SimTab {
 			},
 		});
 
-		this.inheritUpgrades = true;
-		this.useLegacyBulkSim = false;
-
 		this.buildTabContent();
 
 		this.simUI.sim.waitForInit().then(() => {
 			this.loadSettings();
+			this.updateWebSimWarning();
 			const loadEquippedItems = () => {
 				if (this.isRunning) {
 					return;
@@ -354,6 +353,25 @@ export class BulkTab extends SimTab {
 
 	private getDefaultIterationsCount(): number {
 		return this.simUI.sim.getIterations();
+	}
+
+	private updateWebSimWarning() {
+		if (!this.webSimWarningContainer) {
+			return;
+		}
+
+		if (this.simUI.sim.isNative === false) {
+			this.webSimWarningContainer.replaceChildren(
+				<p className="mb-0">
+					<a href={REPO_RELEASES_URL} target="_blank">
+						<i className="fas fa-gauge-high me-1" />
+						{i18n.t('bulk_tab.download_native')}
+					</a>
+				</p>,
+			);
+		} else {
+			this.webSimWarningContainer.replaceChildren();
+		}
 	}
 
 	// Add an item to its eligible bulk sim item slot(s). Mainly used for importing and search
@@ -634,7 +652,6 @@ export class BulkTab extends SimTab {
 		try {
 			const bulkSettings = this.createBulkSettings();
 			const combinationCountResult = await this.simUI.sim.getBulkCombinationCount(bulkSettings);
-			console.log({ combinationCountResult });
 			if (combinationCountResult.error) {
 				throw new Error(combinationCountResult.error.message || 'Failed to calculate bulk combinations');
 			}
@@ -651,7 +668,6 @@ export class BulkTab extends SimTab {
 		const requestVersion = ++this.combinationsCalcRequestVersion;
 		this.combinationsElem.replaceChildren(this.getCombinationsLoading());
 		await this.calculateBulkCombinations();
-		console.log(requestVersion, this.combinationsCalcRequestVersion);
 		if (requestVersion !== this.combinationsCalcRequestVersion) {
 			return;
 		}
@@ -674,18 +690,12 @@ export class BulkTab extends SimTab {
 		const bagImportBtnRef = ref<HTMLButtonElement>();
 		const favsImportBtnRef = ref<HTMLButtonElement>();
 		const clearBtnRef = ref<HTMLButtonElement>();
+		const webSimWarningRef = ref<HTMLDivElement>();
 		this.setupTabElem.appendChild(
 			<>
 				{/* // TODO: Remove once we're more comfortable with the state of Batch sim */}
 				<p className="mb-0" innerHTML={i18n.t('bulk_tab.description')} />
-				{isExternal() && (
-					<p className="mb-0">
-						<a href={REPO_RELEASES_URL} target="_blank">
-							<i className="fas fa-gauge-high me-1" />
-							{i18n.t('bulk_tab.download_local')}
-						</a>
-					</p>
-				)}
+				<div ref={webSimWarningRef}></div>
 				<div className="bulk-gear-actions">
 					<button className="btn btn-secondary" ref={bagImportBtnRef}>
 						<i className="fa fa-download me-1" /> {i18n.t('bulk_tab.actions.import_bags')}
@@ -704,6 +714,8 @@ export class BulkTab extends SimTab {
 		const bagImportButton = bagImportBtnRef.value!;
 		const favsImportButton = favsImportBtnRef.value!;
 		const clearButton = clearBtnRef.value!;
+		this.webSimWarningContainer = webSimWarningRef.value!;
+		this.updateWebSimWarning();
 
 		bagImportButton.addEventListener('click', () => new BulkGearJsonImporter(this.simUI.rootElem, this.simUI, this).open());
 
@@ -1227,11 +1239,19 @@ export class BulkTab extends SimTab {
 	}
 
 	private getIterationsLimit(): number {
-		return isExternal() ? WEB_ITERATIONS_LIMIT : LOCAL_ITERATIONS_LIMIT;
+		if (this.simUI.sim.isNative === undefined) {
+			return isExternal() ? WEB_ITERATIONS_LIMIT : NATIVE_ITERATIONS_LIMIT;
+		}
+
+		return this.simUI.sim.isNative ? NATIVE_ITERATIONS_LIMIT : WEB_ITERATIONS_LIMIT;
 	}
 
 	private getCombinationsLimit(): number {
-		return isExternal() ? WEB_COMBINATIONS_LIMIT : LOCAL_COMBINATIONS_LIMIT;
+		if (this.simUI.sim.isNative === undefined) {
+			return isExternal() ? WEB_COMBINATIONS_LIMIT : NATIVE_COMBINATIONS_LIMIT;
+		}
+
+		return this.simUI.sim.isNative ? NATIVE_COMBINATIONS_LIMIT : WEB_COMBINATIONS_LIMIT;
 	}
 
 	private setCandidateGearProgress({
@@ -1397,7 +1417,8 @@ export class BulkTab extends SimTab {
 		this.isCancelling = false;
 		this.bulkSimStartedAt = new Date().getTime();
 		this.bulkSimUsesWasmConcurrency = await this.simUI.sim.shouldUseWasmConcurrency();
-		const useLocalBulkSim = !(await this.simUI.sim.isWasm());
+		await this.simUI.sim.waitForInit();
+		const useNativeBulkSim = this.simUI.sim.isNative ?? false;
 		const concurrency = this.bulkSimUsesWasmConcurrency ? this.simUI.sim.getWasmConcurrency() : navigator.hardwareConcurrency || 4;
 		this.bulkSimAbortController = new AbortController();
 		this.bulkSimAbortPromise = null;
@@ -1407,12 +1428,12 @@ export class BulkTab extends SimTab {
 		this.originalGearResults = null;
 
 		const playerPhase = this.simUI.sim.getPhase() >= 2;
-		const backendBulkSettings = useLocalBulkSim ? this.createBulkSettings() : undefined;
+		const backendBulkSettings = useNativeBulkSim ? this.createBulkSettings() : undefined;
 		let candidateGearSets: Gear[] = [];
 		const gearSets: Gear[] = [];
 		let runError: unknown = null;
 		const batchCompleteMetrics: Record<string, string | number> = {
-			is_local: useLocalBulkSim ? 1 : 0,
+			is_native: useNativeBulkSim ? 1 : 0,
 			concurrency,
 		};
 
@@ -1429,7 +1450,7 @@ export class BulkTab extends SimTab {
 			batchCompleteMetrics.combinations = this.combinations;
 			batchCompleteMetrics.legacy_bulk_sim_used = this.usesLegacyBulkSim ? 1 : 0;
 
-			if (!useLocalBulkSim) {
+			if (!useNativeBulkSim) {
 				const candidateGearBuildStartedAt = new Date().getTime();
 				const bulkCandidatesResult = await this.simUI.sim.getBulkCandidates(this.createBulkSettings());
 				if (bulkCandidatesResult.error) {

@@ -908,7 +908,7 @@
 				"healing_sim_disclaimer": {
 					"type": "string"
 				},
-				"notice_local_download": {
+				"notice_native_download": {
 					"type": "object",
 					"properties": {
 						"title": {
@@ -998,7 +998,7 @@
 				"description",
 				"basic_bis_disclaimer",
 				"healing_sim_disclaimer",
-				"notice_local_download",
+				"notice_native_download",
 				"crash_modal",
 				"unlaunched",
 				"notifications",
@@ -2750,7 +2750,7 @@
 				"description": {
 					"type": "string"
 				},
-				"download_local": {
+				"download_native": {
 					"type": "string"
 				},
 				"tabs": {
@@ -3111,7 +3111,7 @@
 			"required": [
 				"title",
 				"description",
-				"download_local",
+				"download_native",
 				"tabs",
 				"actions",
 				"search",

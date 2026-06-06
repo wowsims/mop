@@ -245,7 +245,7 @@
         "description": "Simulations {{class}} {{spec}} pour World of Warcraft® Mists of Pandaria Classic.",
         "basic_bis_disclaimer": "<p>Les listes d'équipement prédéfinies fournie sont approximatives du meilleur équipement possible, et ne seront souvent pas la configuration optimale pour vous. Votre configuration d'équipement optimale dépendra de nombreux facteurs ; c'est pourquoi nous avons un simulateur !</p><p>Les objets peuvent également être omis des préréglages s'ils sont très contestés et clairement mieux utilisés sur d'autres classes, pour encourager un équipement équitable pour le raid dans son ensemble.</p>",
         "healing_sim_disclaimer": "*** AVERTISSEMENT - UTILISEZ À VOS PROPRES RISQUES ***\n\nLe concept entier d'un simulateur de soins est EXPÉRIMENTAL. Tous les résultats doivent être pris avec un grain de sel EXTREMEMENT important.\n\nCet outil est actuellement plus similaire à une feuille de calcul qu'à un véritable simulateur. Les options pour spécifier les profils de dégâts entrants afin d'avoir des rotations réactives appropriées n'ont pas encore été ajoutées.",
-        "notice_local_download": {
+        "notice_native_download": {
             "title": "Le saviez-vous ?",
             "message": "Vous pouvez télécharger notre simulateur en local pour accélérer considérablement vos simulations ?",
             "download_button": "Télécharger"
@@ -776,7 +776,7 @@
     "bulk_tab": {
         "title": "Lot (<span class=\"text-success\">Nouveau</span>)",
         "description": "<span className=\"bold\">Simulation par lot</span> est une nouvelle fonctionnalité similaire à la simulation <span className=\"bold\">Top Gear</span> sur <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> qui vous permet de sélectionner plusieurs objets et de les simuler pour trouver les meilleures combinaisons.<br />C'est une fonctionnalité <span className=\"text-brand\">Alpha</span>, donc si vous avez des commentaires ou trouvez un bug, veuillez le signaler !",
-        "download_local": "Téléchargez le simulateur en local pour des résultats plus rapides.",
+        "download_native": "Téléchargez le simulateur en local pour des résultats plus rapides.",
         "tabs": {
             "setup": "Configuration",
             "results": "Résultats"
