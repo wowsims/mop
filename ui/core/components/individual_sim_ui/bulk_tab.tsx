@@ -38,7 +38,6 @@ import {
 	LOCAL_ITERATIONS_LIMIT,
 	TopGearResult,
 	WEB_COMBINATIONS_LIMIT,
-	WEB_DEFAULT_ITERATIONS,
 	WEB_ITERATIONS_LIMIT,
 } from './bulk/types';
 import { BulkGearJsonImporter } from './importers';
@@ -354,8 +353,6 @@ export class BulkTab extends SimTab {
 	}
 
 	private getDefaultIterationsCount(): number {
-		if (isExternal()) return WEB_DEFAULT_ITERATIONS;
-
 		return this.simUI.sim.getIterations();
 	}
 
@@ -637,7 +634,7 @@ export class BulkTab extends SimTab {
 		try {
 			const bulkSettings = this.createBulkSettings();
 			const combinationCountResult = await this.simUI.sim.getBulkCombinationCount(bulkSettings);
-
+			console.log({ combinationCountResult });
 			if (combinationCountResult.error) {
 				throw new Error(combinationCountResult.error.message || 'Failed to calculate bulk combinations');
 			}
@@ -654,6 +651,7 @@ export class BulkTab extends SimTab {
 		const requestVersion = ++this.combinationsCalcRequestVersion;
 		this.combinationsElem.replaceChildren(this.getCombinationsLoading());
 		await this.calculateBulkCombinations();
+		console.log(requestVersion, this.combinationsCalcRequestVersion);
 		if (requestVersion !== this.combinationsCalcRequestVersion) {
 			return;
 		}

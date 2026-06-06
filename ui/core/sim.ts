@@ -536,7 +536,7 @@ export class Sim {
 					: (bulkReforgeCacheData?.candidates ?? preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() }))),
 				optimizedCandidates: backendBuildCandidates ? [] : (bulkReforgeCacheData?.optimizedCandidates ?? []),
 				topResults: 5,
-				highStageIterations: this.getIterations(),
+				highStageIterations: bulkSettings?.iterationsPerCombo ?? this.getIterations(),
 				reforgeRequest: bulkReforgeRequest,
 				bulkSettings,
 			});
