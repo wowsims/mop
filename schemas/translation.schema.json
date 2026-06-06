@@ -3080,16 +3080,6 @@
 					"additionalProperties": false,
 					"required": ["run_simulation", "equip_button", "gear_equipped", "current_gear"]
 				},
-				"gem_selector": {
-					"type": "object",
-					"properties": {
-						"title": {
-							"type": "string"
-						}
-					},
-					"additionalProperties": false,
-					"required": ["title"]
-				},
 				"import_modal": {
 					"type": "object",
 					"properties": {
@@ -3121,7 +3111,6 @@
 				"warning",
 				"picker",
 				"results",
-				"gem_selector",
 				"import_modal"
 			]
 		},

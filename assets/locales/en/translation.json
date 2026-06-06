@@ -869,9 +869,6 @@
 			"gear_equipped": "Batch gear equipped!",
 			"current_gear": "Current Gear"
 		},
-		"gem_selector": {
-			"title": "Choose fallback Gem"
-		},
 		"import_modal": {
 			"title": "Bag Item Import",
 			"description_line1": "Import bag items from a JSON file, which can be created by the WowSimsExporter in-game AddOn.",

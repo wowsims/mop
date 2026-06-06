@@ -869,9 +869,6 @@
             "gear_equipped": "Équipement du lot équipé !",
             "current_gear": "Équipement actuel"
         },
-        "gem_selector": {
-            "title": "Choisir la gemme par défaut"
-        },
         "import_modal": {
             "title": "Importation d'objets de sac",
             "description_line1": "Importez des objets de sac à partir d'un fichier JSON, qui peut être créé par l'AddOn en jeu WowSimsExporter.",
