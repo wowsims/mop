@@ -3,6 +3,10 @@ import { REPO_NAME } from './constants/other.js';
 import {
 	AbortRequest,
 	AbortResponse,
+	BulkCandidatesRequest,
+	BulkCandidatesResult,
+	BulkCombinationCountRequest,
+	BulkCombinationCountResult,
 	BulkSimRequest,
 	BulkSimResult,
 	ComputeStatsRequest,
@@ -154,6 +158,16 @@ export class WorkerPool {
 
 		worker.log('Bulk sim result: ' + BulkSimResult.toJsonString(result.finalBulkSimResult!));
 		return result.finalBulkSimResult!;
+	}
+
+	async bulkCombinationCount(request: BulkCombinationCountRequest): Promise<BulkCombinationCountResult> {
+		const result = await this.makeApiCall(SimRequest.bulkCombinationCount, BulkCombinationCountRequest.toBinary(request));
+		return BulkCombinationCountResult.fromBinary(result);
+	}
+
+	async bulkCandidates(request: BulkCandidatesRequest): Promise<BulkCandidatesResult> {
+		const result = await this.makeApiCall(SimRequest.bulkCandidates, BulkCandidatesRequest.toBinary(request));
+		return BulkCandidatesResult.fromBinary(result);
 	}
 
 	async raidSimRequestSplit(request: RaidSimRequestSplitRequest): Promise<RaidSimRequestSplitResult> {

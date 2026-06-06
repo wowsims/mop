@@ -800,16 +800,16 @@
             "item_unique": "{{itemName}} est unique et a déjà été ajouté."
         },
         "settings": {
-            "combinations_count": "{{count}} Combinaisons",
+            "combinations_count": "{{amount}} Combinaisons",
             "combination_singular": "1 Combinaison",
             "iterations": "Itérations",
             "inherit_upgrades": {
                 "label": "Hériter des améliorations",
                 "tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
 			},
-			"use_multistage_optimisation": {
-				"label": "Utiliser l'optimisation multi-étapes",
-				"tooltip": "Bulk Sim exécute les lots volumineux en plusieurs étapes : une passe à faible nombre d'itérations pour trouver les candidats prometteurs, une passe de raffinement à nombre moyen d'itérations, puis une passe finale à nombre élevé d'itérations pour les meilleurs ensembles restants. La passe finale utilise votre nombre d'itérations configuré comme minimum et peut utiliser davantage d'itérations si nécessaire pour atteindre l'erreur cible."
+			"use_legacy_bulk_sim": {
+				"label": "Utiliser la simulation mono-étape héritée",
+				"tooltip": "Par défaut, Bulk Sim exécute les lots volumineux en plusieurs étapes : une passe à faible nombre d'itérations pour trouver les candidats prometteurs, une passe de raffinement à nombre moyen d'itérations, puis une passe finale à nombre élevé d'itérations pour les meilleurs ensembles restants. Activez cette option uniquement pour forcer l'ancien comportement avec une seule passe finale."
             },
 			"required_set_bonuses": {
 				"label": "Bonus d'ensemble requis",

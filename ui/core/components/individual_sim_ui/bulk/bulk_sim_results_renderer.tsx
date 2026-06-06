@@ -11,9 +11,10 @@ import Toast from '../../toast';
 import { TopGearResult } from './types';
 import { RaidSimResultsManager } from '../../raid_sim_action';
 import { ItemSlot, ItemSpec } from '../../../proto/common';
-import { bulkSimItemSlotToItemSlotPairs, getBulkItemSlotFromSlot } from './utils';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot } from './utils';
 
-const getSwappableItemSlotPair = (slot: number): [ItemSlot, ItemSlot] | undefined => bulkSimItemSlotToItemSlotPairs.get(getBulkItemSlotFromSlot(slot, false));
+const getSwappableItemSlotPair = (slot: number): [ItemSlot, ItemSlot] | undefined =>
+	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, false));
 
 const itemSpecPairsEqualUnordered = (resultItems: ItemSpec[], originalItems: ItemSpec[], [slot1, slot2]: [ItemSlot, ItemSlot]): boolean =>
 	(ItemSpec.equals(resultItems[slot1], originalItems[slot1]) && ItemSpec.equals(resultItems[slot2], originalItems[slot2])) ||

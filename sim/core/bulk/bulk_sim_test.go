@@ -68,6 +68,61 @@ func TestGetBulkSimStageMaxSurvivorsKeepsHighStageUncapped(t *testing.T) {
 	}
 }
 
+func TestShouldUseLegacyBulkSim(t *testing.T) {
+	legacySettings := &proto.BulkSettings{UseLegacyBulkSim: true}
+
+	testCases := []struct {
+		name           string
+		settings       *proto.BulkSettings
+		highIterations int32
+		candidateCount int
+		want           bool
+	}{
+		{name: "forced legacy", settings: legacySettings, highIterations: 5000, candidateCount: 1000, want: true},
+		{name: "below minimum candidates", settings: &proto.BulkSettings{}, highIterations: 5000, candidateCount: 19, want: true},
+		{name: "multistage cheaper", settings: &proto.BulkSettings{}, highIterations: 5000, candidateCount: 1000, want: false},
+		{name: "multistage not cheaper", settings: &proto.BulkSettings{}, highIterations: 1000, candidateCount: 20, want: true},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			if got := shouldUseLegacyBulkSim(testCase.settings, testCase.highIterations, testCase.candidateCount); got != testCase.want {
+				t.Fatalf("shouldUseLegacyBulkSim(%d, %d) = %t, want %t", testCase.highIterations, testCase.candidateCount, got, testCase.want)
+			}
+		})
+	}
+}
+
+func TestEstimateBulkSimIterations(t *testing.T) {
+	settings := &proto.BulkSettings{}
+
+	iterations, useLegacyBulkSim := estimateBulkSimIterations(settings, 5000, 1000)
+	if useLegacyBulkSim {
+		t.Fatalf("expected multistage bulk sim to be used")
+	}
+	if iterations != 331100 {
+		t.Fatalf("optimisation iterations = %d, want 331100", iterations)
+	}
+
+	iterations, useLegacyBulkSim = estimateBulkSimIterations(settings, 1000, 20)
+	if !useLegacyBulkSim {
+		t.Fatalf("expected high-stage only run")
+	}
+	if iterations != 20000 {
+		t.Fatalf("high-stage-only iterations = %d, want 20000", iterations)
+	}
+}
+
+func TestEstimateBulkSimIterationsAvoidsOverflow(t *testing.T) {
+	iterations, useLegacyBulkSim := estimateBulkSimIterations(&proto.BulkSettings{UseLegacyBulkSim: true}, 50000, 84240)
+	if !useLegacyBulkSim {
+		t.Fatalf("expected high-stage-only run")
+	}
+	if iterations != 4212000000 {
+		t.Fatalf("high-stage-only iterations = %d, want 4212000000", iterations)
+	}
+}
+
 func TestMergeBulkSimDistributionMetrics(t *testing.T) {
 	metrics := newBulkSimTestDistributionMetrics([]float64{8, 12})
 	metrics.MaxSeed = 12

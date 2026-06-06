@@ -25,11 +25,13 @@
 }
 
 .loader {
-	border: 16px solid #f3f3f3; /* Light grey */
-	border-top: 16px solid #3498db; /* Blue */
+	--loader-width: 120px;
+	--loader-height: 120px;
+	border: calc(var(--loader-width) / 7.5) solid #f3f3f3; /* Light grey */
+	border-top: calc(var(--loader-width) / 7.5) solid #3498db; /* Blue */
 	border-radius: 50%;
-	width: 120px;
-	height: 120px;
+	width: var(--loader-width);
+	height: var(--loader-height);
 	animation: spin 1s linear infinite;
 }
 

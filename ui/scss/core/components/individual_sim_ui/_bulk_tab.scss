@@ -41,6 +41,11 @@
 				order: -1;
 			}
 		}
+
+		.loader {
+			--loader-width: 60px;
+			--loader-height: 60px;
+		}
 	}
 
 	.bulk-boolean-settings-container {

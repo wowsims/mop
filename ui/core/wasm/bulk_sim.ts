@@ -188,6 +188,35 @@ const validateBulkSimRequest = (request: BulkSimRequest): string => {
 
 const getBulkSimBaselineGear = (request: BulkSimRequest) => request.baseRequest!.raid!.parties[0].players[0].equipment!;
 
+const shouldUseLegacyBulkSim = (request: BulkSimRequest, candidateCount: number): boolean => {
+	const settings = request.bulkSettings;
+	if (settings?.useLegacyBulkSim) {
+		return true;
+	}
+	if (candidateCount < BULK_SIM_MIN_COMBINATIONS) {
+		return true;
+	}
+
+	const highStageIterations = request.highStageIterations;
+	let remainingCandidates = candidateCount;
+	let estimatedOptimisationIterationsUpperBound = 0;
+
+	for (const config of bulkSimStageConfigs) {
+		if (config.stage === BulkSimStage.BulkSimStageHigh) {
+			break;
+		}
+		if (!shouldRunBulkSimStage(config, remainingCandidates)) {
+			continue;
+		}
+
+		estimatedOptimisationIterationsUpperBound += getBulkSimStageMinIterations(request, config) * (remainingCandidates + 1);
+		remainingCandidates = Math.min(remainingCandidates, config.maxSurvivors ?? remainingCandidates);
+	}
+
+	estimatedOptimisationIterationsUpperBound += getBulkSimStageMinIterations(request, bulkSimStageConfigs[bulkSimStageConfigs.length - 1]!) * (remainingCandidates + 1);
+	return estimatedOptimisationIterationsUpperBound >= highStageIterations * candidateCount;
+};
+
 const shouldRunBulkSimStage = (config: ConcurrentBulkSimStageConfig, candidateCount: number): boolean =>
 	config.maxSurvivors === undefined ||
 	candidateCount > config.maxSurvivors ||
@@ -1072,8 +1101,10 @@ export const runConcurrentBulkSim = async (
 
 	let latestBaseline: ConcurrentBulkSimCandidateResult | undefined;
 	let latestResults: ConcurrentBulkSimCandidateResult[] = [];
+	const useLegacyBulkSim = shouldUseLegacyBulkSim(request, candidates.length);
 	for (const stageConfig of bulkSimStageConfigs) {
 		if (signals.abort.isTriggered()) return makeAndSendBulkSimError(ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }), onProgress);
+		if (useLegacyBulkSim && stageConfig.stage !== BulkSimStage.BulkSimStageHigh) continue;
 		if (!shouldRunBulkSimStage(stageConfig, candidates.length)) continue;
 
 		const stageResult = await runConcurrentBulkSimStage(request, candidates, stageConfig, workerPool, onProgress, signals);

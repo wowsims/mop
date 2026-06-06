@@ -1,6 +1,6 @@
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
-import { DistributionMetrics, ProgressMetrics } from '../../../proto/api';
+import { BulkSettings, DistributionMetrics, ProgressMetrics } from '../../../proto/api';
 import { Gear } from '../../../proto_utils/gear';
 import { ReforgeOptimizeConfig } from '../../../sim';
 import { BulkSimProgressConfig, TopGearResult } from './types';
@@ -20,6 +20,7 @@ export async function runCoreBulkSim(
 	gearSets: Gear[],
 	signal: AbortSignal,
 	reforgeConfig?: ReforgeOptimizeConfig,
+	bulkSettings?: BulkSettings,
 ): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
 	context.throwIfBulkAborted(signal);
 	context.debugOptimisationRound('core bulk sim started', {
@@ -46,7 +47,14 @@ export async function runCoreBulkSim(
 	};
 
 	const result = await context.runWithBulkAbort(
-		context.simUI.sim.runBulkSim(gearSets, updateProgress, reforgeConfig, progress => context.setCacheRestoreProgress?.(progress), signal),
+		context.simUI.sim.runBulkSim(
+			gearSets,
+			updateProgress,
+			reforgeConfig,
+			bulkSettings,
+			progress => context.setCacheRestoreProgress?.(progress),
+			signal,
+		),
 		signal,
 	);
 	if (!result || (result && 'type' in result)) {

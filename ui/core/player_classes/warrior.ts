@@ -1,8 +1,9 @@
-import { EligibleWeaponType, IconSize, PlayerClass } from '../player_class';
+import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { ArmsWarrior, FuryWarrior, ProtectionWarrior } from '../player_specs/warrior';
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '../proto/common';
+import { Class } from '../proto/common';
 import { WarriorSpecs } from '../proto_utils/utils';
+import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Warrior extends PlayerClass<Class.ClassWarrior> {
 	static classID = Class.ClassWarrior as Class.ClassWarrior;
@@ -13,42 +14,10 @@ export class Warrior extends PlayerClass<Class.ClassWarrior> {
 		[FuryWarrior.friendlyName]: FuryWarrior,
 		[ProtectionWarrior.friendlyName]: ProtectionWarrior,
 	};
-	static races: Race[] = [
-		// [A]
-		Race.RaceHuman,
-		Race.RaceDwarf,
-		Race.RaceNightElf,
-		Race.RaceGnome,
-		Race.RaceDraenei,
-		Race.RaceWorgen,
-		Race.RaceAlliancePandaren,
-		// [H]
-		Race.RaceOrc,
-		Race.RaceUndead,
-		Race.RaceTauren,
-		Race.RaceTroll,
-		Race.RaceBloodElf,
-		Race.RaceGoblin,
-		Race.RaceHordePandaren,
-	];
-	static armorTypes: ArmorType[] = [ArmorType.ArmorTypePlate, ArmorType.ArmorTypeMail, ArmorType.ArmorTypeLeather, ArmorType.ArmorTypeCloth];
-	static weaponTypes: EligibleWeaponType[] = [
-		{ weaponType: WeaponType.WeaponTypeAxe, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeDagger },
-		{ weaponType: WeaponType.WeaponTypeFist },
-		{ weaponType: WeaponType.WeaponTypeMace, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeOffHand },
-		{ weaponType: WeaponType.WeaponTypePolearm, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeShield },
-		{ weaponType: WeaponType.WeaponTypeStaff, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeSword, canUseTwoHand: true },
-	];
-	static rangedWeaponTypes: RangedWeaponType[] = [
-		RangedWeaponType.RangedWeaponTypeBow,
-		RangedWeaponType.RangedWeaponTypeCrossbow,
-		RangedWeaponType.RangedWeaponTypeGun,
-		RangedWeaponType.RangedWeaponTypeThrown,
-	];
+	static races = getClassRaces(Warrior.classID);
+	static armorTypes = getClassArmorTypes(Warrior.classID);
+	static weaponTypes = getClassWeaponTypes(Warrior.classID);
+	static rangedWeaponTypes = getClassRangedWeaponTypes(Warrior.classID);
 
 	readonly classID = Warrior.classID;
 	readonly friendlyName = Warrior.name;

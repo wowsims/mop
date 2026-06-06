@@ -13,9 +13,9 @@ argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge/cache behavio
 
 ## Architecture
 - `proto/api.proto`: shared Bulk Sim and reforge API messages. `BulkSimRequest.reforge_request` reuses `ReforgeOptimizeRequest`; do not add a duplicate bulk-specific reforge config.
-- `sim/core/bulk_sim.go`: core staged runner. It owns validation, low/medium/high sim stages, culling, baseline handling, timings, and progress. Keep it independent of `sim/core/reforge_optimizer` to avoid an import cycle.
-- `sim/web/bulk_reforge.go`: local/server Bulk Sim reforge pre-pass. It clones the shared reforge request, injects each candidate gear into a cloned raid, runs the Go optimizer, emits `BulkSimStageReforge`, dedupes optimized gear, clears `request.ReforgeRequest`, then delegates to `core.BulkSimAsync`.
-- `sim/web/main.go`: `/bulkSimAsync` must call `sim/web.BulkSimAsync`, not `core.BulkSimAsync`, so the local backend reforge wrapper runs.
+- `sim/core/bulk/bulk_sim.go`: staged runner in the `sim/core/bulk` package. It owns validation, low/medium/high sim stages, culling, baseline handling, timings, and progress. Keep it independent of `sim/core/reforge_optimizer` to avoid an import cycle.
+- `sim/web/bulk_reforge.go`: local/server Bulk Sim reforge pre-pass. It clones the shared reforge request, injects each candidate gear into a cloned raid, runs the Go optimizer, emits `BulkSimStageReforge`, dedupes optimized gear, clears `request.ReforgeRequest`, then delegates to `bulk.BulkSimAsync`.
+- `sim/web/main.go`: `/bulkSimAsync` must call `sim/web.BulkSimAsync`, not `bulk.BulkSimAsync`, so the local/backend reforge wrapper runs.
 - `ui/core/sim.ts`: builds `BulkSimRequest`, merges candidate item/reforge/gem data into the player database, sets the baseline gear on the raid player, partitions reforge cache hits/misses, and dispatches local vs WASM paths.
 - `ui/core/components/individual_sim_ui/bulk/utils.ts`: Bulk Sim feature utilities, including reforge cache partition/write helpers. Keep Bulk Sim cache helpers here, not in `sim.ts` or generic `reforge_cache.ts`.
 - `ui/core/reforge_cache.ts`: generic IndexedDB storage only. It should not know Bulk Sim candidate semantics.
@@ -26,7 +26,7 @@ argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge/cache behavio
 ## Candidate and Reforge Flow
 - Baseline gear comes from `base_request.raid.parties[0].players[0].equipment`; generated candidates are carried by stable `BulkGearCandidate.index` values.
 - With `reforge_request`, frontend IndexedDB cache hits go in `BulkSimRequest.optimized_candidates`; cache misses/raw work go in `BulkSimRequest.candidates`.
-- Local/server mode runs the reforge pre-pass in `sim/web/bulk_reforge.go` using Go concurrency from `core.GetBulkSimStageConcurrency` for `BulkSimStageReforge`.
+- Local/server mode runs the reforge pre-pass in `sim/web/bulk_reforge.go` using Go concurrency from `bulk.GetBulkSimStageConcurrency` for `BulkSimStageReforge`.
 - Browser/WASM mode cannot share one Go runtime across workers, so it runs a sequential FE > WASM reforge > FE pass, then sends optimized candidates into the TypeScript concurrent Bulk Sim stages.
 - After reforge optimization, merge cache hits and newly optimized candidates, dedupe against baseline and each other, clear `optimized_candidates` for the sim input, and clear `reforge_request` before staged simming.
 - If a candidate's backend reforge fails, log it and use the original candidate gear instead of failing the entire Bulk Sim.
@@ -41,6 +41,14 @@ argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge/cache behavio
 - Keep `rawCombinations` and `combinations` distinct. `rawCombinations` is the mixed-radix index space used by `getItemsForCombo(comboIdx)` and the matcher cache; `combinations` is the filtered runnable count after required set-bonus constraints.
 - Candidate generation still scans raw combo indexes, skips nonmatching set-bonus combos with `RequiredSetBonusComboMatcher`, and reports build progress using the filtered candidate count (`this.combinations` / `candidateGearSets.length`), not the raw scan count.
 - `requiredSetBonusCombinationCount.matches` is a `Uint8Array` indexed by raw combo index. Its signature must include raw combination count, required set IDs/pieces, and matcher dimensions so stale match caches are not reused.
+
+## Recent Candidate/Count Optimizations (2026-06-03)
+- `sim/core/bulk/candidates.go` now memoizes `getAllWeaponCombos()` per generator instance (`weaponCombosCached` + `weaponCombosReady`). Do not reintroduce repeated recomputation from `rawCombinationsCount`, `buildCandidates`, or matcher construction paths.
+- Required-set matcher checks now reuse a caller-provided `scratchCounts` buffer (`comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts)`), removing per-combo slice allocations during both `BulkCombinationCount` and `buildCandidates` scans.
+- `buildCandidates` caps initial slice capacity to `16384` when required-set filtering is active to avoid over-reserving to raw combination cardinality when filtered output is much smaller.
+- Slot iteration order is now a package-level static array `bulkSimSelectedOrder`; avoid recreating per-generator slot-order slices.
+- Equipped-item dedupe in `initSelectedItems` now uses a struct map key (`itemSpecFingerprintKey`) instead of string fingerprints. This removed `strings.Builder`/`strconv` key construction and reduced setup-path allocations without changing candidate/count invariants.
+- Current benchmark guardrails: `reference-no-4p` remains `2,799,360` raw/combinations/candidates and `reference-required-4p` remains `2,799,360 / 84,240 / 84,240`; optimization changes must preserve these exact counts.
 
 ## Cache Invariants
 - `ReforgeGearCache` keys are hashes of input identity: API/cache version, optimizer/player/raid config, and input gear fingerprint. They are not reversible; never try to decode gear from the key.
@@ -67,7 +75,7 @@ argument-hint: 'Describe the Bulk Sim bug, candidate flow, reforge/cache behavio
 
 ## Main Files
 - `proto/api.proto`: Bulk Sim and shared reforge API messages.
-- `sim/core/bulk_sim.go`: staged Bulk Sim runner.
+- `sim/core/bulk/bulk_sim.go`: staged Bulk Sim runner.
 - `sim/web/bulk_reforge.go`: local/server reforge pre-pass and abort partial-result handling.
 - `sim/web/main.go`: async API handler registration.
 - `ui/core/sim.ts`: frontend request creation, cache partitioning, dispatch, and cache writes.

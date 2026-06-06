@@ -11,6 +11,7 @@ import (
 
 	"github.com/wowsims/mop/sim"
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/bulk"
 	proto "github.com/wowsims/mop/sim/core/proto"
 	reforgeoptimizer "github.com/wowsims/mop/sim/core/reforge_optimizer"
 	"github.com/wowsims/mop/sim/core/simsignals"
@@ -35,6 +36,8 @@ func main() {
 	js.Global().Set("raidSimAsync", js.FuncOf(raidSimAsync))
 	js.Global().Set("raidSimRequestSplit", js.FuncOf(raidSimRequestSplit))
 	js.Global().Set("raidSimResultCombination", js.FuncOf(raidSimResultCombination))
+	js.Global().Set("bulkCombinationCount", js.FuncOf(bulkCombinationCount))
+	js.Global().Set("bulkCandidates", js.FuncOf(bulkCandidates))
 	js.Global().Set("statWeights", js.FuncOf(statWeights))
 	js.Global().Set("statWeightsAsync", js.FuncOf(statWeightsAsync))
 	js.Global().Set("statWeightRequests", js.FuncOf(statWeightRequests))
@@ -407,6 +410,42 @@ func raidSimResultCombination(this js.Value, args []js.Value) interface{} {
 	return outArray
 }
 
+func bulkCombinationCount(this js.Value, args []js.Value) interface{} {
+	request := &proto.BulkCombinationCountRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), request); err != nil {
+		log.Printf("Failed to parse BulkCombinationCountRequest: %s", err)
+		return nil
+	}
+
+	result := bulk.BulkCombinationCount(request)
+	outbytes, err := googleProto.Marshal(result)
+	if err != nil {
+		log.Printf("[ERROR] Failed to marshal BulkCombinationCountResult: %s", err.Error())
+		return nil
+	}
+	outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+	js.CopyBytesToJS(outArray, outbytes)
+	return outArray
+}
+
+func bulkCandidates(this js.Value, args []js.Value) interface{} {
+	request := &proto.BulkCandidatesRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), request); err != nil {
+		log.Printf("Failed to parse BulkCandidatesRequest: %s", err)
+		return nil
+	}
+
+	result := bulk.BulkCandidates(request)
+	outbytes, err := googleProto.Marshal(result)
+	if err != nil {
+		log.Printf("[ERROR] Failed to marshal BulkCandidatesResult: %s", err.Error())
+		return nil
+	}
+	outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+	js.CopyBytesToJS(outArray, outbytes)
+	return outArray
+}
+
 func abortById(this js.Value, args []js.Value) interface{} {
 	abortRequest := &proto.AbortRequest{}
 	if err := googleProto.Unmarshal(getArgsBinary(args[0]), abortRequest); err != nil {
@@ -454,7 +493,7 @@ func processAsyncProgress(progFunc js.Value, reporter chan *proto.ProgressMetric
 		js.CopyBytesToJS(outArray, outbytes)
 		progFunc.Invoke(outArray)
 
-		if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil || progMetric.FinalReforgeResult != nil {
+		if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil || progMetric.FinalBulkSimResult != nil || progMetric.FinalReforgeResult != nil {
 			return
 		}
 	}

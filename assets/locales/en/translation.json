@@ -800,16 +800,16 @@
 			"item_unique": "{{itemName}} is unique and already added."
 		},
 		"settings": {
-			"combinations_count": "{{count}} Combinations",
+			"combinations_count": "{{amount}} Combinations",
 			"combination_singular": "1 Combination",
 			"iterations": "Iterations",
 			"inherit_upgrades": {
 				"label": "Inherit Upgrades",
 				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
 			},
-			"use_multistage_optimisation": {
-				"label": "Use multi-stage optimisation",
-				"tooltip": "Bulk Sim runs large batches in multiple stages: a low-iteration pass to find likely contenders, a medium-iteration refinement pass, and a final high-iteration pass for the best remaining gear sets. The final pass uses your configured iteration count as a floor and may use more iterations when needed to meet the target error."
+			"use_legacy_bulk_sim": {
+				"label": "Use legacy single-stage sim",
+				"tooltip": "By default, Bulk Sim runs large batches in multiple stages: a low-iteration pass to find likely contenders, a medium-iteration refinement pass, and a final high-iteration pass for the best remaining gear sets. Enable this only to force the legacy high-stage-only behavior."
 			},
 			"required_set_bonuses": {
 				"label": "Required Set Bonuses",

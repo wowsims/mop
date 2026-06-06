@@ -24,6 +24,8 @@ message SimEnchant {
 	ItemType type = 3; // Only needed for unit tests.
 	repeated double stats = 4;
 	repeated ItemEffect enchant_effects = 5;
+	EnchantType enchant_type = 6;
+	repeated ItemType extra_types = 7;
 }
 
 // Contains only the Item info needed by the sim.

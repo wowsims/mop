@@ -9,6 +9,8 @@ export enum SimRequest {
 	raidSimJson = 'raidSimJson',
 	raidSimAsync = 'raidSimAsync',
 	bulkSimAsync = 'bulkSimAsync',
+	bulkCombinationCount = 'bulkCombinationCount',
+	bulkCandidates = 'bulkCandidates',
 	statWeights = 'statWeights',
 	statWeightsAsync = 'statWeightsAsync',
 	statWeightRequests = 'statWeightRequests',

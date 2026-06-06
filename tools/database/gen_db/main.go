@@ -25,7 +25,7 @@ import (
 // go run ./tools/database/gen_db -outDir=assets -gen=db
 
 var outDir = flag.String("outDir", "assets", "Path to output directory for writing generated .go files.")
-var genAsset = flag.String("gen", "", "Asset to generate. Valid values are 'db', 'atlasloot', 'wowhead-items', 'wowhead-spells', 'wowhead-itemdb', 'mop-items', and 'wago-db2-items'")
+var genAsset = flag.String("gen", "", "Asset to generate. Valid values are 'db', 'atlasloot', and 'go-to-ts'")
 var dbPath = flag.String("dbPath", "./tools/database/wowsims.db", "Location of wowsims.db file from the DB2ToSqliteTool")
 
 func main() {
@@ -40,7 +40,15 @@ func main() {
 	dbDir := fmt.Sprintf("%s/database", *outDir)
 	inputsDir := fmt.Sprintf("%s/db_inputs", *outDir)
 
-	if *genAsset == "atlasloot" {
+	if *genAsset == "go-to-ts" {
+		if err := database.GenerateCharacterConstantsTSFile(); err != nil {
+			log.Fatalf("failed to generate character constants TS file: %v", err)
+		}
+		if err := database.GenerateBulkSimConstantsTSFile(); err != nil {
+			log.Fatalf("failed to generate bulk sim constants TS file: %v", err)
+		}
+		return
+	} else if *genAsset == "atlasloot" {
 		helper, err := database.NewDBHelper()
 		if err != nil {
 			log.Fatalf("failed to initialize database: %v", err)

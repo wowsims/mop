@@ -1,8 +1,9 @@
-import { EligibleWeaponType, IconSize, PlayerClass } from '../player_class';
+import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { ElementalShaman, EnhancementShaman, RestorationShaman } from '../player_specs/shaman';
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '../proto/common';
+import { Class } from '../proto/common';
 import { ShamanSpecs } from '../proto_utils/utils';
+import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Shaman extends PlayerClass<Class.ClassShaman> {
 	static classID = Class.ClassShaman as Class.ClassShaman;
@@ -13,30 +14,10 @@ export class Shaman extends PlayerClass<Class.ClassShaman> {
 		[EnhancementShaman.friendlyName]: EnhancementShaman,
 		[RestorationShaman.friendlyName]: RestorationShaman,
 	};
-	static races: Race[] = [
-		// [H]
-		Race.RaceTroll,
-		Race.RaceOrc,
-		Race.RaceTauren,
-		Race.RaceGoblin,
-		Race.RaceHordePandaren,
-		// [A]
-		Race.RaceDwarf,
-		Race.RaceDraenei,
-		Race.RaceAlliancePandaren,
-
-	];
-	static armorTypes: ArmorType[] = [ArmorType.ArmorTypeMail, ArmorType.ArmorTypeLeather, ArmorType.ArmorTypeCloth];
-	static weaponTypes: EligibleWeaponType[] = [
-		{ weaponType: WeaponType.WeaponTypeAxe, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeDagger },
-		{ weaponType: WeaponType.WeaponTypeFist },
-		{ weaponType: WeaponType.WeaponTypeMace, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeOffHand },
-		{ weaponType: WeaponType.WeaponTypeShield },
-		{ weaponType: WeaponType.WeaponTypeStaff, canUseTwoHand: true },
-	];
-	static rangedWeaponTypes: RangedWeaponType[] = [];
+	static races = getClassRaces(Shaman.classID);
+	static armorTypes = getClassArmorTypes(Shaman.classID);
+	static weaponTypes = getClassWeaponTypes(Shaman.classID);
+	static rangedWeaponTypes = getClassRangedWeaponTypes(Shaman.classID);
 
 	readonly classID = Shaman.classID;
 	readonly friendlyName = Shaman.name;

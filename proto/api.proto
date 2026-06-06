@@ -425,6 +425,7 @@ message BulkSimRequest {
 	int32 top_results = 5;
 	int32 high_stage_iterations = 6;
 	ReforgeOptimizeRequest reforge_request = 7;
+	BulkSettings bulk_settings = 8;
 }
 
 // RPC ReforgeOptimize
@@ -774,7 +775,7 @@ message BulkSettings {
 	reserved 3 to 7;
 
 	bool inherit_upgrades = 8;
-	bool use_optimisation_rounds = 14;
+	bool use_legacy_bulk_sim = 14;
 
 	int32 freeze_ring_slot = 9;
 	int32 freeze_trinket_slot = 10;
@@ -787,4 +788,29 @@ message BulkSettings {
 message BulkRequiredSetBonus {
 	int32 set_id = 1;
 	int32 pieces = 2;
+}
+
+message BulkCombinationCountRequest {
+	RaidSimRequest base_request = 1;
+	BulkSettings bulk_settings = 2;
+}
+
+message BulkCombinationCountResult {
+	int32 raw_combinations = 1;
+	int32 combinations = 2;
+	double iterations = 3;
+	bool use_legacy_bulk_sim = 4;
+	ErrorOutcome error = 5;
+}
+
+message BulkCandidatesRequest {
+	RaidSimRequest base_request = 1;
+	BulkSettings bulk_settings = 2;
+}
+
+message BulkCandidatesResult {
+	repeated BulkGearCandidate candidates = 1;
+	int32 raw_combinations = 2;
+	int32 combinations = 3;
+	ErrorOutcome error = 4;
 }

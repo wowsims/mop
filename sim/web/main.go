@@ -107,6 +107,12 @@ var handlers = map[string]apiHandler{
 	"/computeStats": {msg: func() googleProto.Message { return &proto.ComputeStatsRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
 		return core.ComputeStats(msg.(*proto.ComputeStatsRequest))
 	}},
+	"/bulkCombinationCount": {msg: func() googleProto.Message { return &proto.BulkCombinationCountRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
+		return BulkCombinationCount(msg.(*proto.BulkCombinationCountRequest))
+	}},
+	"/bulkCandidates": {msg: func() googleProto.Message { return &proto.BulkCandidatesRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
+		return BulkCandidates(msg.(*proto.BulkCandidatesRequest))
+	}},
 	"/abortById": {msg: func() googleProto.Message { return &proto.AbortRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
 		requestId := msg.(*proto.AbortRequest).RequestId
 		triggered := simsignals.AbortById(requestId)
