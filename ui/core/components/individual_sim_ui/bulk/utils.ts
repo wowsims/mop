@@ -146,6 +146,7 @@ export type BulkSimReforgeCacheProgress = {
 type BulkSimReforgeCacheContext = {
 	player: Player<any>;
 	gearSets: Gear[];
+	candidateIndices?: number[];
 	db: Database;
 	reforgeRequest: ReforgeOptimizeRequest;
 	raidBuffs: RaidBuffs;
@@ -158,6 +159,7 @@ type BulkSimReforgeCacheContext = {
 export async function getBulkSimReforgeCacheData({
 	player,
 	gearSets,
+	candidateIndices,
 	db,
 	reforgeRequest,
 	raidBuffs,
@@ -230,8 +232,9 @@ export async function getBulkSimReforgeCacheData({
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
 		const gear = gearSets[i];
+		const candidateIndex = candidateIndices?.[i] ?? i;
 		const cacheKey = await ReforgeGearCache.getKey(gear.getGearKey(), configHash);
-		pendingEntries.push({ index: i, gear, cacheKey });
+		pendingEntries.push({ index: candidateIndex, gear, cacheKey });
 
 		if (pendingEntries.length >= BULK_CACHE_LOOKUP_BATCH_SIZE || i + 1 === totalCandidates) {
 			await flushPendingEntries();

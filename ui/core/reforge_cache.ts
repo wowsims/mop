@@ -102,24 +102,15 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			let lastYieldAt = performance.now();
 			const accessUpdates: Array<{ key: string; record: ReforgeGearCacheRecord }> = [];
 
-			const requestedKeys = new Set(keys);
-			const [allKeys, allRecords] = await Promise.all([db.getAllKeys(this.storeName), db.getAll(this.storeName)]);
-			throwIfAborted(signal);
-
-			for (let i = 0; i < allKeys.length; i++) {
-				const key = allKeys[i];
-				if (typeof key !== 'string' || !requestedKeys.has(key)) {
-					continue;
-				}
-
-				const record = allRecords[i];
+			for (let i = 0; i < keys.length; i++) {
+				throwIfAborted(signal);
+				const key = keys[i];
+				const record = await db.get(this.storeName, key);
 				if (!record) {
-					requestedKeys.delete(key);
 					continue;
 				}
 
 				const gear = this.parseCachedGear(record.gear);
-				requestedKeys.delete(key);
 				if (!gear) {
 					continue;
 				}
@@ -137,13 +128,8 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 					const yieldNow = performance.now();
 					if (yieldNow - lastYieldAt >= 16) {
 						await sleep(0);
-						throwIfAborted(signal);
 						lastYieldAt = performance.now();
 					}
-				}
-
-				if (!requestedKeys.size) {
-					break;
 				}
 			}
 

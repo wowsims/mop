@@ -485,12 +485,28 @@ export class Sim {
 			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
 			const useWasmConcurrency = await this.shouldUseWasmConcurrency();
 			const backendBuildCandidates = !useWasmConcurrency && !!bulkSettings;
-			const preparedGearSets = backendBuildCandidates ? [] : gearSets.map(prepareGear);
+			let preparedGearSets = gearSets.map(prepareGear);
+			let preparedCandidateIndices: number[] | undefined = undefined;
+			if (backendBuildCandidates && bulkSettings) {
+				const bulkCandidatesResult = await this.getBulkCandidates(bulkSettings);
+				if (bulkCandidatesResult.error) {
+					throw new Error(bulkCandidatesResult.error.message || 'Failed to build bulk candidates');
+				}
+				const preparedCandidates = bulkCandidatesResult.candidates.flatMap(candidate => {
+					if (!candidate.gear) {
+						return [];
+					}
+					return [{ index: candidate.index, gear: prepareGear(this.db.lookupEquipmentSpec(candidate.gear)) }];
+				});
+				preparedCandidateIndices = preparedCandidates.map(candidate => candidate.index);
+				preparedGearSets = preparedCandidates.map(candidate => candidate.gear);
+			}
 			const bulkReforgeCacheData =
-				bulkReforgeRequest && !backendBuildCandidates
+				bulkReforgeRequest
 					? await getBulkSimReforgeCacheData({
 							player: this.raid.getActivePlayers()[0],
 							gearSets: preparedGearSets,
+							candidateIndices: preparedCandidateIndices,
 							db: this.db,
 							reforgeRequest: bulkReforgeRequest,
 							raidBuffs: this.raid.getBuffs(),
@@ -538,13 +554,17 @@ export class Sim {
 			player.equipment = baselineGear.asSpec();
 			baseRequest.raid!.parties[0].players[0] = player;
 			throwIfAborted(abortSignal);
+			const requestCandidates =
+				bulkReforgeCacheData?.candidates ??
+				preparedGearSets.map((gear, index) => ({
+					index: preparedCandidateIndices?.[index] ?? index,
+					gear: gear.asSpec(),
+				}));
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,
-				candidates: backendBuildCandidates
-					? []
-					: (bulkReforgeCacheData?.candidates ?? preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() }))),
-				optimizedCandidates: backendBuildCandidates ? [] : (bulkReforgeCacheData?.optimizedCandidates ?? []),
+				candidates: requestCandidates,
+				optimizedCandidates: bulkReforgeCacheData?.optimizedCandidates ?? [],
 				topResults: 5,
 				highStageIterations: bulkSettings?.iterationsPerCombo ?? this.getIterations(),
 				reforgeRequest: bulkReforgeRequest,
@@ -560,13 +580,16 @@ export class Sim {
 				};
 				result = await runConcurrentBulkSim(bulkRequest, this.workerPool, onProgress, signals, onReforgeCandidateOptimized);
 				await Promise.all(cacheWrites);
+				if (bulkReforgeCacheData && result.optimizedCandidates?.length) {
+					await writeBulkSimReforgeCacheResults(result.optimizedCandidates, bulkReforgeCacheData);
+				}
 			} else {
 				// Wrap onProgress to also write partial reforge candidates to cache incrementally
 				const cacheWrites: Promise<void>[] = [];
 				const wrappedOnProgress: WorkerProgressCallback = (progress: ProgressMetrics) => {
 					onProgress(progress);
 					// Write partial reforge candidates to cache as they complete
-					if (progress.bulkStage === BulkSimStage.BulkSimStageReforge && progress.optimizedCandidates && bulkReforgeCacheData) {
+					if (progress.optimizedCandidates?.length && bulkReforgeCacheData) {
 						const cacheEntries = progress.optimizedCandidates.flatMap(candidate => {
 							const cacheKey = bulkReforgeCacheData.cacheKeysByCandidateIndex.get(candidate.index);
 							if (!cacheKey || !candidate.gear) return [];
@@ -581,7 +604,7 @@ export class Sim {
 				// Wait for all cache writes to complete
 				await Promise.all(cacheWrites);
 				// Still handle final candidates in case any weren't sent via partial updates
-				if (bulkReforgeCacheData && result.optimizedCandidates) {
+				if (bulkReforgeCacheData && result.optimizedCandidates?.length) {
 					await writeBulkSimReforgeCacheResults(result.optimizedCandidates, bulkReforgeCacheData);
 				}
 			}
