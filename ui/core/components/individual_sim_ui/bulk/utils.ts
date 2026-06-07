@@ -9,9 +9,10 @@ import {
 	ReforgeOptimizeMode,
 	ReforgeOptimizeRequest,
 } from '../../../proto/api';
-import { Class, Debuffs, ItemSlot, PartyBuffs, RaidBuffs, WeaponType } from '../../../proto/common';
+import { Class, Debuffs, EquipmentSpec, ItemSlot, PartyBuffs, RaidBuffs, WeaponType } from '../../../proto/common';
 import { Database } from '../../../proto_utils/database';
 import { Gear } from '../../../proto_utils/gear';
+import { getGearKeyFromSpec } from '../../../proto_utils/utils';
 import { isSpecDualWieldCapable } from '../../../player_classes/capabilities';
 import { sleep } from '../../../utils';
 import { OptimisationStage, STAGE_CONFIG } from './types';
@@ -68,9 +69,9 @@ export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): Distributi
 };
 
 export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []): Gear[] => {
-	const seenGearKeys = new Set<string>(existingGearSets.map(gear => gear.getGearKey()));
+	const seenGearKeys = new Set<string>(existingGearSets.map(gear => getGearKeyFromSpec(gear.asSpec())));
 	return gearSets.filter(gear => {
-		const gearKey = gear.getGearKey();
+		const gearKey = getGearKeyFromSpec(gear.asSpec());
 		if (seenGearKeys.has(gearKey)) {
 			return false;
 		}
@@ -138,6 +139,7 @@ type BulkSimReforgeCacheData = {
 };
 
 export type BulkSimReforgeCacheProgress = {
+	stage?: 'candidate-build' | 'cache-restore';
 	processedCandidates: number;
 	totalCandidates: number;
 	restoredCandidates: number;
@@ -145,7 +147,9 @@ export type BulkSimReforgeCacheProgress = {
 
 type BulkSimReforgeCacheContext = {
 	player: Player<any>;
-	gearSets: Gear[];
+	gearSets?: Gear[];
+	candidateSpecs?: EquipmentSpec[];
+	candidateGearKeys?: string[];
 	candidateIndices?: number[];
 	db: Database;
 	reforgeRequest: ReforgeOptimizeRequest;
@@ -159,6 +163,8 @@ type BulkSimReforgeCacheContext = {
 export async function getBulkSimReforgeCacheData({
 	player,
 	gearSets,
+	candidateSpecs,
+	candidateGearKeys,
 	candidateIndices,
 	db,
 	reforgeRequest,
@@ -169,11 +175,15 @@ export async function getBulkSimReforgeCacheData({
 	signal,
 }: BulkSimReforgeCacheContext): Promise<BulkSimReforgeCacheData> {
 	throwIfAborted(signal);
+	if (!gearSets && !candidateSpecs) {
+		throw new Error('Either gearSets or candidateSpecs must be provided for cache restore.');
+	}
 
 	const cache = ReforgeGearCache.get(player.getPlayerSpec());
 	const configHash = await ReforgeOptimizer.getConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
-	const totalCandidates = gearSets.length;
+	const totalCandidates = candidateSpecs?.length ?? gearSets!.length;
 	onProgress?.({
+		stage: 'cache-restore',
 		processedCandidates: 0,
 		totalCandidates,
 		restoredCandidates: 0,
@@ -185,7 +195,7 @@ export async function getBulkSimReforgeCacheData({
 	const optimizedCandidates: BulkGearCandidate[] = [];
 	const cachedOptimizedGearSets: Gear[] = [];
 	const cacheKeysByCandidateIndex = new Map<number, string>();
-	const pendingEntries: Array<{ index: number; gear: Gear; cacheKey: string }> = [];
+	const pendingEntries: Array<{ index: number; spec: EquipmentSpec; cacheKey: string }> = [];
 
 	let processedCandidates = 0;
 	let restoredCandidates = 0;
@@ -207,7 +217,7 @@ export async function getBulkSimReforgeCacheData({
 				cachedOptimizedGearSets.push(db.lookupEquipmentSpec(cachedGear));
 				restoredCandidates++;
 			} else {
-				candidates.push(BulkGearCandidate.create({ index: entry.index, gear: entry.gear.asSpec() }));
+				candidates.push(BulkGearCandidate.create({ index: entry.index, gear: entry.spec }));
 				cacheKeysByCandidateIndex.set(entry.index, entry.cacheKey);
 			}
 
@@ -216,6 +226,7 @@ export async function getBulkSimReforgeCacheData({
 				const now = performance.now();
 				if (processedCandidates === totalCandidates || now - lastYieldAt >= BULK_CACHE_YIELD_BUDGET_MS) {
 					onProgress?.({
+						stage: 'cache-restore',
 						processedCandidates,
 						totalCandidates,
 						restoredCandidates,
@@ -231,10 +242,11 @@ export async function getBulkSimReforgeCacheData({
 
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
-		const gear = gearSets[i];
+		const spec = candidateSpecs?.[i] ?? gearSets![i].asSpec();
+		const gearKey = candidateGearKeys?.[i] ?? getGearKeyFromSpec(gearSets![i].asSpec());
 		const candidateIndex = candidateIndices?.[i] ?? i;
-		const cacheKey = await ReforgeGearCache.getKey(gear.getGearKey(), configHash);
-		pendingEntries.push({ index: candidateIndex, gear, cacheKey });
+		const cacheKey = await ReforgeGearCache.getKey(gearKey, configHash);
+		pendingEntries.push({ index: candidateIndex, spec, cacheKey });
 
 		if (pendingEntries.length >= BULK_CACHE_LOOKUP_BATCH_SIZE || i + 1 === totalCandidates) {
 			await flushPendingEntries();

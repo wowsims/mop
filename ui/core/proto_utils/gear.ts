@@ -463,36 +463,6 @@ export class Gear extends BaseGear {
 		return totalIlvl / itemSlotsToCount;
 	}
 
-	getGearKey(): string {
-		const itemKeys = this.asArray().map(item => {
-			if (!item) {
-				return '';
-			}
-
-			return [
-				item._item.id,
-				item._randomSuffix?.id ?? 0,
-				item._enchant?.effectId ?? 0,
-				item._tinker?.effectId ?? 0,
-				item._reforge?.id ?? 0,
-				item._upgrade,
-				Number(item._challengeMode),
-				item._gems.map(gem => gem?.id ?? 0).join(','),
-			].join(':');
-		});
-
-		// Normalize interchangeable slots so equivalent gear layouts share a cache key.
-		Gear.reorderPairedSlots(itemKeys, ItemSlot.ItemSlotFinger1, ItemSlot.ItemSlotFinger2);
-		Gear.reorderPairedSlots(itemKeys, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2);
-
-		return itemKeys.join('|');
-	}
-
-	private static reorderPairedSlots(itemKeys: string[], firstSlot: ItemSlot, secondSlot: ItemSlot): void {
-		const slotKeys = [itemKeys[firstSlot], itemKeys[secondSlot]].sort();
-		itemKeys[firstSlot] = slotKeys[0];
-		itemKeys[secondSlot] = slotKeys[1];
-	}
 }
 
 /**

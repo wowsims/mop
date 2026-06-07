@@ -10,7 +10,7 @@ import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, 
 import { ItemSlot, ItemSpec, Spec, WeaponType } from '../../proto/common';
 import { EquippedItem } from '../../proto_utils/equipped_item';
 import { Gear } from '../../proto_utils/gear';
-import { canEquipItem, getEligibleItemSlots, isSecondaryItemSlot } from '../../proto_utils/utils';
+import { canEquipItem, getEligibleItemSlots, getGearKeyFromSpec, isSecondaryItemSlot } from '../../proto_utils/utils';
 import { RequestTypes } from '../../sim_signal_manager';
 import { RelativeStatCap } from '../suggest_reforges_action';
 import { TypedEvent } from '../../typed_event';
@@ -1363,6 +1363,7 @@ export class BulkTab extends SimTab {
 		reforgeConfig?: ReforgeOptimizeConfig,
 		bulkSettings?: BulkSettings,
 	): Promise<{ referenceDpsMetrics: DistributionMetrics; topGearResults: TopGearResult[]; metrics: Record<string, string | number> }> {
+		let candidateBuildStartedAt: number | undefined;
 		let cacheRestoreStartedAt: number | undefined;
 		return runCoreBulkSimImpl(
 			{
@@ -1371,13 +1372,20 @@ export class BulkTab extends SimTab {
 				runWithBulkAbort: (promise, signal) => this.runWithBulkAbort(promise, signal),
 				setSimProgress: (progress, config) => this.setSimProgress(progress, config),
 				setCacheRestoreProgress: progress => {
-					cacheRestoreStartedAt ??= new Date().getTime();
+					const isCandidateBuildStage = progress.stage === 'candidate-build';
+					if (isCandidateBuildStage) {
+						candidateBuildStartedAt ??= new Date().getTime();
+					} else {
+						cacheRestoreStartedAt ??= new Date().getTime();
+					}
 					this.setCandidateGearProgress({
 						completed: progress.processedCandidates,
 						total: progress.totalCandidates,
-						title: i18n.t('bulk_tab.progress.restoring_reforges_from_cache'),
-						stage: 'reforging',
-						startedAt: cacheRestoreStartedAt,
+						title: isCandidateBuildStage
+							? i18n.t('bulk_tab.progress.building_candidate_gear_sets')
+							: i18n.t('bulk_tab.progress.restoring_reforges_from_cache'),
+						stage: isCandidateBuildStage ? 'preparing' : 'reforging',
+						startedAt: isCandidateBuildStage ? candidateBuildStartedAt : cacheRestoreStartedAt,
 					});
 				},
 				debugOptimisationRound: (message, data) => this.debugOptimisationRound(message, data),
@@ -1477,8 +1485,8 @@ export class BulkTab extends SimTab {
 			topGearResults = bulkSimResult.topGearResults;
 			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);
 
-			const originalGearKey = this.originalGear.getGearKey();
-			this.topGearResults = topGearResults.filter(result => result.gear.getGearKey() !== originalGearKey);
+			const originalGearKey = getGearKeyFromSpec(this.originalGear.asSpec());
+			this.topGearResults = topGearResults.filter(result => getGearKeyFromSpec(result.gear.asSpec()) !== originalGearKey);
 			this.originalGearResults = {
 				gear: this.originalGear,
 				dpsMetrics: referenceDpsMetrics,
