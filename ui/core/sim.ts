@@ -526,9 +526,13 @@ export class Sim {
 						}
 						continue;
 					}
+					// Prepare spec (remove meta gems, blacksmith sockets) before computing cache key
+					// so cache key matches what would be computed from prepared Gear objects
+					const preparedGear = prepareGear(this.db.lookupEquipmentSpec(candidate.gear));
+					const preparedSpec = preparedGear.asSpec();
 					preparedCandidateIndices.push(candidate.index);
-					preparedCandidateSpecs.push(candidate.gear);
-					preparedCandidateGearKeys.push(getGearKeyFromSpec(candidate.gear));
+					preparedCandidateSpecs.push(preparedSpec);
+					preparedCandidateGearKeys.push(getGearKeyFromSpec(preparedSpec));
 					const processedCandidates = i + 1;
 					if (processedCandidates % 1024 === 0 || processedCandidates === totalCandidates) {
 						const now = performance.now();

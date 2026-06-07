@@ -49,15 +49,25 @@ func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesR
 }
 
 func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMetrics, requestId string) {
-	if err := ensureBulkSimCandidatesGenerated(request); err != nil {
-		progress <- &proto.ProgressMetrics{
-			BulkStage: proto.BulkSimStage_BulkSimStageError,
-			FinalBulkSimResult: &proto.BulkSimResult{
-				Error: &proto.ErrorOutcome{Message: err.Error()},
-			},
+	// When all reforge candidates are restored from cache, request.Candidates is
+	// intentionally empty and request.OptimizedCandidates is pre-populated.
+	// In this case, do not regenerate candidates from bulk settings.
+	fullyCachedReforgeRequest :=
+		request != nil &&
+			request.GetReforgeRequest() != nil &&
+			len(request.GetCandidates()) == 0 &&
+			len(request.GetOptimizedCandidates()) > 0
+	if !fullyCachedReforgeRequest {
+		if err := ensureBulkSimCandidatesGenerated(request); err != nil {
+			progress <- &proto.ProgressMetrics{
+				BulkStage: proto.BulkSimStage_BulkSimStageError,
+				FinalBulkSimResult: &proto.BulkSimResult{
+					Error: &proto.ErrorOutcome{Message: err.Error()},
+				},
+			}
+			close(progress)
+			return
 		}
-		close(progress)
-		return
 	}
 	if request.GetReforgeRequest() == nil {
 		bulk.BulkSimAsync(request, progress, requestId)
