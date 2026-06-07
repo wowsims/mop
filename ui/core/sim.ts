@@ -56,7 +56,7 @@ import { extendPlayerProtoWithMissingEffects, hasBlacksmithing } from './proto_u
 import { Raid } from './raid.js';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
-import { distinct, getEnumValues, isExternal, noop } from './utils.js';
+import { distinct, getEnumValues, isExternal, noop, sleep } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import {
 	getBulkSimReforgeCacheData,
@@ -492,12 +492,24 @@ export class Sim {
 				if (bulkCandidatesResult.error) {
 					throw new Error(bulkCandidatesResult.error.message || 'Failed to build bulk candidates');
 				}
-				const preparedCandidates = bulkCandidatesResult.candidates.flatMap(candidate => {
+				const preparedCandidates: Array<{ index: number; gear: Gear }> = [];
+				let lastYieldAt = performance.now();
+				for (let i = 0; i < bulkCandidatesResult.candidates.length; i++) {
+					const candidate = bulkCandidatesResult.candidates[i];
 					if (!candidate.gear) {
-						return [];
+						continue;
 					}
-					return [{ index: candidate.index, gear: prepareGear(this.db.lookupEquipmentSpec(candidate.gear)) }];
-				});
+					preparedCandidates.push({ index: candidate.index, gear: prepareGear(this.db.lookupEquipmentSpec(candidate.gear)) });
+
+					// Periodically yield so large candidate lists do not block popup/UI rendering.
+					if (i % 2000 === 0) {
+						const yieldNow = performance.now();
+						if (yieldNow - lastYieldAt >= 16) {
+							await sleep(0);
+							lastYieldAt = performance.now();
+						}
+					}
+				}
 				preparedCandidateIndices = preparedCandidates.map(candidate => candidate.index);
 				preparedGearSets = preparedCandidates.map(candidate => candidate.gear);
 			}
