@@ -30,7 +30,6 @@ import {
 	getBulkItemSlotFromSlot,
 	getBulkPlayerCanDualWield,
 	getBulkFreezeWeaponTypes,
-	getGearKey,
 } from './bulk/utils';
 import {
 	BulkSimProgressConfig,
@@ -1478,8 +1477,8 @@ export class BulkTab extends SimTab {
 			topGearResults = bulkSimResult.topGearResults;
 			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);
 
-			const originalGearKey = getGearKey(this.originalGear);
-			this.topGearResults = topGearResults.filter(result => getGearKey(result.gear) !== originalGearKey);
+			const originalGearKey = this.originalGear.getGearKey();
+			this.topGearResults = topGearResults.filter(result => result.gear.getGearKey() !== originalGearKey);
 			this.originalGearResults = {
 				gear: this.originalGear,
 				dpsMetrics: referenceDpsMetrics,

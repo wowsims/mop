@@ -67,38 +67,10 @@ export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): Distributi
 	return dpsMetrics;
 };
 
-export const getGearKey = (gear: Gear): string => {
-	const itemKeys = gear.asArray().map(item => {
-		if (!item) {
-			return '';
-		}
-
-		return [
-			item._item.id,
-			item._randomSuffix?.id ?? 0,
-			item._enchant?.effectId ?? 0,
-			item._tinker?.effectId ?? 0,
-			item._reforge?.id ?? 0,
-			item._upgrade,
-			Number(item._challengeMode),
-			item._gems.map(gem => gem?.id ?? 0).join(','),
-		].join(':');
-	});
-
-	[BulkSimItemSlot.ItemSlotFinger, BulkSimItemSlot.ItemSlotTrinket].forEach(bulkSlot => {
-		const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(bulkSlot)!;
-		const slotKeys = [itemKeys[slots[0]], itemKeys[slots[1]]].sort();
-		itemKeys[slots[0]] = slotKeys[0];
-		itemKeys[slots[1]] = slotKeys[1];
-	});
-
-	return itemKeys.join('|');
-};
-
 export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []): Gear[] => {
-	const seenGearKeys = new Set<string>(existingGearSets.map(getGearKey));
+	const seenGearKeys = new Set<string>(existingGearSets.map(gear => gear.getGearKey()));
 	return gearSets.filter(gear => {
-		const gearKey = getGearKey(gear);
+		const gearKey = gear.getGearKey();
 		if (seenGearKeys.has(gearKey)) {
 			return false;
 		}
@@ -197,7 +169,7 @@ export async function getBulkSimReforgeCacheData({
 	throwIfAborted(signal);
 
 	const cache = ReforgeGearCache.get(player.getPlayerSpec());
-	const configHash = await ReforgeOptimizer.getBulkSimReforgeCacheConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
+	const configHash = await ReforgeOptimizer.getConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
 	const totalCandidates = gearSets.length;
 	onProgress?.({
 		processedCandidates: 0,
@@ -258,7 +230,7 @@ export async function getBulkSimReforgeCacheData({
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
 		const gear = gearSets[i];
-		const cacheKey = await ReforgeGearCache.getKey(gear.asSpec(), configHash);
+		const cacheKey = await ReforgeGearCache.getKey(gear.getGearKey(), configHash);
 		pendingEntries.push({ index: i, gear, cacheKey });
 
 		if (pendingEntries.length >= BULK_CACHE_LOOKUP_BATCH_SIZE || i + 1 === totalCandidates) {

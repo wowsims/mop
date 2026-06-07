@@ -15,6 +15,7 @@ import (
 )
 
 const bulkSimReforgeProgressOptimizedCandidateFlushSize = 250
+const bulkSimReforgeProgressUpdateInterval = 100 * time.Millisecond
 
 type bulkSimReforgeTask struct {
 	position  int
@@ -125,6 +126,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	// Track completed candidates to emit in larger cache-write batches so progress
 	// updates stay lightweight even for very large candidate counts.
 	completedCandidateBatch := make([]*proto.BulkGearCandidate, 0, bulkSimReforgeProgressOptimizedCandidateFlushSize)
+	lastProgressEmit := time.Now()
 
 	flushCandidateBatch := func() bool {
 		if len(completedCandidateBatch) == 0 {
@@ -139,8 +141,12 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 		if progress == nil {
 			return
 		}
+		if completedCandidates < totalCandidates && time.Since(lastProgressEmit) < bulkSimReforgeProgressUpdateInterval {
+			return
+		}
 
 		emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates, nil)
+		lastProgressEmit = time.Now()
 	}
 
 	completeTask := func(task bulkSimReforgeTask, duration time.Duration, completed bool) {
