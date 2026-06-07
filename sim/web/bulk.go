@@ -143,40 +143,45 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 		emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates, nil)
 	}
 
-	batch := make([]bulkSimReforgeTask, 0, getBulkSimReforgeBatchSize(concurrency))
-	flushBatch := func() {
-		if len(batch) == 0 {
-			return
-		}
+	completeTask := func(task bulkSimReforgeTask, duration time.Duration, completed bool) {
+		totalCandidateDuration += duration
 		emittedCandidates := false
-		processBulkSimReforgeBatch(batch, concurrency, signals, func(task bulkSimReforgeTask) {
-			duration, completed := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
-			progressMu.Lock()
-			totalCandidateDuration += duration
-			if completed {
-				completedCandidates++
-				completedReforgeCandidatesByPosition[task.position] = task.candidate
-				request.Candidates[task.position] = nil
-				completedCandidateBatch = append(completedCandidateBatch, task.candidate)
-				if completedCandidates == 1 || duration < minCandidateDuration {
-					minCandidateDuration = duration
-				}
-				if duration > maxCandidateDuration {
-					maxCandidateDuration = duration
-				}
-				if len(completedCandidateBatch) >= bulkSimReforgeProgressOptimizedCandidateFlushSize {
-					emittedCandidates = flushCandidateBatch()
-				}
+		if completed {
+			completedCandidates++
+			completedReforgeCandidatesByPosition[task.position] = task.candidate
+			request.Candidates[task.position] = nil
+			completedCandidateBatch = append(completedCandidateBatch, task.candidate)
+			if completedCandidates == 1 || duration < minCandidateDuration {
+				minCandidateDuration = duration
 			}
-			progressMu.Unlock()
-		})
-		progressMu.Lock()
+			if duration > maxCandidateDuration {
+				maxCandidateDuration = duration
+			}
+			if len(completedCandidateBatch) >= bulkSimReforgeProgressOptimizedCandidateFlushSize {
+				emittedCandidates = flushCandidateBatch()
+			}
+		}
 		if !emittedCandidates {
 			emitProgressUpdate()
 		}
-		progressMu.Unlock()
-		clear(batch)
-		batch = batch[:0]
+	}
+
+	jobs := make(chan bulkSimReforgeTask, max(16, 2*concurrency))
+	var wg sync.WaitGroup
+	workerCount := max(1, concurrency)
+	for range workerCount {
+		wg.Go(func() {
+			for task := range jobs {
+				if signals.Abort.IsTriggered() {
+					continue
+				}
+
+				duration, completed := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
+				progressMu.Lock()
+				completeTask(task, duration, completed)
+				progressMu.Unlock()
+			}
+		})
 	}
 
 	for position, candidate := range request.GetCandidates() {
@@ -186,12 +191,10 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 		if candidate == nil || candidate.Gear == nil {
 			continue
 		}
-		batch = append(batch, bulkSimReforgeTask{position: position, candidate: candidate})
-		if len(batch) == cap(batch) {
-			flushBatch()
-		}
+		jobs <- bulkSimReforgeTask{position: position, candidate: candidate}
 	}
-	flushBatch()
+	close(jobs)
+	wg.Wait()
 	// Flush any remaining partial candidates at the end.
 	progressMu.Lock()
 	flushCandidateBatch()
@@ -219,34 +222,6 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	// or the baseline. Without this, filtered runs (e.g. Require 4P) would always miss the
 	// cache because the matching entries were never written after the first run.
 	request.OptimizedCandidates = allReforgeCandidates
-}
-
-func getBulkSimReforgeBatchSize(concurrency int) int {
-	return max(16, 2*concurrency)
-}
-
-func processBulkSimReforgeBatch(batch []bulkSimReforgeTask, concurrency int, signals simsignals.Signals, optimize func(bulkSimReforgeTask)) {
-	jobs := make(chan bulkSimReforgeTask, len(batch))
-	var wg sync.WaitGroup
-	workerCount := min(concurrency, len(batch))
-	for range workerCount {
-		wg.Go(func() {
-			for task := range jobs {
-				if signals.Abort.IsTriggered() {
-					return
-				}
-				optimize(task)
-			}
-		})
-	}
-	for _, task := range batch {
-		if signals.Abort.IsTriggered() {
-			break
-		}
-		jobs <- task
-	}
-	close(jobs)
-	wg.Wait()
 }
 
 func newBulkSimReforgeOptimizer(request *proto.BulkSimRequest) *bulkSimReforgeOptimizer {
