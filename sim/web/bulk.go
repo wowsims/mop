@@ -36,15 +36,6 @@ type bulkSimReforgeOptimizer struct {
 	cacheMu            sync.RWMutex
 }
 
-var deterministicProtoMarshalOptions = googleProto.MarshalOptions{Deterministic: true}
-
-var bulkSimReforgeMarshalBufferPool = sync.Pool{
-	New: func() any {
-		buf := make([]byte, 0, 1024)
-		return &buf
-	},
-}
-
 func ensureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
 	return bulk.EnsureBulkSimCandidatesGenerated(request)
 }
@@ -426,6 +417,14 @@ func compactBulkGearCandidates(candidates []*proto.BulkGearCandidate) []*proto.B
 		compacted = append(compacted, candidate)
 	}
 	return compacted
+}
+
+var deterministicProtoMarshalOptions = googleProto.MarshalOptions{Deterministic: true}
+var bulkSimReforgeMarshalBufferPool = sync.Pool{
+	New: func() any {
+		buf := make([]byte, 0, 1024)
+		return &buf
+	},
 }
 
 func bulkSimReforgeGearKey(gear *proto.EquipmentSpec) bulkSimReforgeGearHash {
