@@ -67,6 +67,11 @@ func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMe
 			len(request.GetCandidates()) == 0 &&
 			len(request.GetOptimizedCandidates()) > 0
 	if !fullyCachedReforgeRequest {
+		shouldLogReforgeStages := request.GetReforgeRequest() != nil
+		candidateGenerationStartedAt := time.Now()
+		if shouldLogReforgeStages {
+			log.Printf("[Bulk Sim] Candidate generation started")
+		}
 		if err := ensureBulkSimCandidatesGenerated(request); err != nil {
 			progress <- &proto.ProgressMetrics{
 				BulkStage: proto.BulkSimStage_BulkSimStageError,
@@ -77,6 +82,11 @@ func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMe
 			close(progress)
 			return
 		}
+		if shouldLogReforgeStages {
+			log.Printf("[Bulk Sim] Candidate generation completed total=%s candidates=%d optimizedCandidates=%d", time.Since(candidateGenerationStartedAt), len(request.GetCandidates()), len(request.GetOptimizedCandidates()))
+		}
+	} else {
+		log.Printf("[Bulk Sim] Candidate generation skipped optimizedCandidates=%d", len(request.GetOptimizedCandidates()))
 	}
 	if request.GetReforgeRequest() == nil {
 		bulk.BulkSimAsync(request, progress, requestId)
