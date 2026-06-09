@@ -2120,31 +2120,50 @@ export function migrateOldProto<Type>(oldProto: Type, oldApiVersion: number, con
 	return migratedProto;
 }
 
-export function getGearKeyFromSpec(spec: EquipmentSpec): string {
-	const itemKeys = spec.items.map((item, slotIdx) => {
+export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[]): string {
+	const items = spec.items;
+	const frozenSlots = frozenItemSlots ?? [];
+	const frozenSlotMask = frozenSlots.length ? new Uint8Array(items.length) : undefined;
+	if (frozenSlotMask) {
+		for (let i = 0; i < frozenSlots.length; i++) {
+			const slot = frozenSlots[i];
+			if (slot >= 0 && slot < items.length) {
+				frozenSlotMask[slot] = 1;
+			}
+		}
+	}
+	const itemKeys = new Array<string>(items.length);
+	for (let slotIdx = 0; slotIdx < items.length; slotIdx++) {
+		const item = items[slotIdx];
 		if (!item?.id) {
-			return '';
+			itemKeys[slotIdx] = '';
+			continue;
 		}
 
-		// For reforge input identity we intentionally ignore all mutable reforge
-		// state and only retain the head-slot meta gem if present.
-		const metaGemId = slotIdx === ItemSlot.ItemSlotHead ? (item.gems?.[0] ?? 0) : 0;
-
-		return [
+		const itemSlot = slotIdx as ItemSlot;
+		const isFrozen = !!frozenSlotMask?.[itemSlot];
+		const gemFingerprint = isFrozen
+			? (item.gems ?? []).map(gemId => gemId ?? 0).join(',')
+			: String(itemSlot === ItemSlot.ItemSlotHead ? (item.gems?.[0] ?? 0) : 0);
+		const reforgeFingerprint = isFrozen ? (item.reforging ?? 0) : 0;
+		itemKeys[slotIdx] = [
 			item.id,
 			item.randomSuffix ?? 0,
 			item.enchant ?? 0,
 			item.tinker ?? 0,
+			reforgeFingerprint,
 			item.upgradeStep ?? 0,
-			metaGemId,
+			gemFingerprint,
 			Number(item.challengeMode ?? false),
 		].join(':');
-	});
+	}
 
 	const reorderPairedSlots = (firstSlot: ItemSlot, secondSlot: ItemSlot): void => {
-		const slotKeys = [itemKeys[firstSlot], itemKeys[secondSlot]].sort();
-		itemKeys[firstSlot] = slotKeys[0];
-		itemKeys[secondSlot] = slotKeys[1];
+		if (itemKeys[firstSlot] > itemKeys[secondSlot]) {
+			const temp = itemKeys[firstSlot];
+			itemKeys[firstSlot] = itemKeys[secondSlot];
+			itemKeys[secondSlot] = temp;
+		}
 	};
 
 	// Normalize interchangeable slots so equivalent gear layouts share a cache key.

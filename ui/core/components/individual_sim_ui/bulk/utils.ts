@@ -69,16 +69,23 @@ export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): Distributi
 };
 
 export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []): Gear[] => {
-	const seenGearKeys = new Set<string>(existingGearSets.map(gear => getGearKeyFromSpec(gear.asSpec())));
-	return gearSets.filter(gear => {
+	const seenGearKeys = new Set<string>();
+	for (let i = 0; i < existingGearSets.length; i++) {
+		seenGearKeys.add(getGearKeyFromSpec(existingGearSets[i].asSpec()));
+	}
+
+	const deduped: Gear[] = [];
+	for (let i = 0; i < gearSets.length; i++) {
+		const gear = gearSets[i];
 		const gearKey = getGearKeyFromSpec(gear.asSpec());
 		if (seenGearKeys.has(gearKey)) {
-			return false;
+			continue;
 		}
-
 		seenGearKeys.add(gearKey);
-		return true;
-	});
+		deduped.push(gear);
+	}
+
+	return deduped;
 };
 
 export const shouldRunOptimisationStage = (stage: OptimisationStage, candidateCount: number): boolean => {
@@ -181,6 +188,10 @@ export async function getBulkSimReforgeCacheData({
 
 	const cache = ReforgeGearCache.get(player.getPlayerSpec());
 	const configHash = await ReforgeOptimizer.getConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
+	const frozenItemSlots =
+		reforgeRequest.settings?.freezeItemSlots && reforgeRequest.settings.frozenItemSlots.length
+			? reforgeRequest.settings.frozenItemSlots
+			: undefined;
 	const totalCandidates = candidateSpecs?.length ?? gearSets!.length;
 	onProgress?.({
 		stage: 'cache-restore',
@@ -243,7 +254,7 @@ export async function getBulkSimReforgeCacheData({
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
 		const spec = candidateSpecs?.[i] ?? gearSets![i].asSpec();
-		const gearKey = candidateGearKeys?.[i] ?? getGearKeyFromSpec(gearSets![i].asSpec());
+		const gearKey = candidateGearKeys?.[i] ?? getGearKeyFromSpec(gearSets![i].asSpec(), frozenItemSlots);
 		const candidateIndex = candidateIndices?.[i] ?? i;
 		const cacheKey = await ReforgeGearCache.getKey(gearKey, configHash);
 		pendingEntries.push({ index: candidateIndex, spec, cacheKey });
@@ -257,11 +268,15 @@ export async function getBulkSimReforgeCacheData({
 }
 
 export async function writeBulkSimReforgeCacheResults(optimizedCandidates: BulkGearCandidate[], cacheData: BulkSimReforgeCacheData): Promise<void> {
-	const cacheEntries = optimizedCandidates.flatMap(candidate => {
+	const cacheEntries: Array<{ key: string; optimizedGear: EquipmentSpec }> = [];
+	for (let i = 0; i < optimizedCandidates.length; i++) {
+		const candidate = optimizedCandidates[i];
 		const cacheKey = cacheData.cacheKeysByCandidateIndex.get(candidate.index);
-		if (!cacheKey || !candidate.gear) return [];
-		return [{ key: cacheKey, optimizedGear: candidate.gear }];
-	});
+		if (!cacheKey || !candidate.gear) {
+			continue;
+		}
+		cacheEntries.push({ key: cacheKey, optimizedGear: candidate.gear });
+	}
 	await cacheData.cache.setGearMany(cacheEntries);
 }
 

@@ -1109,7 +1109,11 @@ export class ReforgeOptimizer {
 			partyBuffs: this.player.getParty()?.getBuffs(),
 			debuffs: this.sim.raid.getDebuffs(),
 		});
-		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec()), configHash);
+		const frozenItemSlots =
+			config.settings.freezeItemSlots && config.settings.frozenItemSlots.length
+				? config.settings.frozenItemSlots
+				: undefined;
+		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots), configHash);
 		const cachedGear = await cache.get(cacheKey);
 		if (cachedGear) {
 			if (isDevMode()) console.log('Reforge optimization: cache hit.');

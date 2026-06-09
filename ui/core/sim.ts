@@ -33,6 +33,7 @@ import {
 import {
 	ArmorType,
 	Faction,
+	ItemSlot,
 	ItemSpec,
 	ItemQuality,
 	Profession,
@@ -505,6 +506,10 @@ export class Sim {
 				preparedCandidateIndices = [];
 				preparedCandidateSpecs = [];
 				preparedCandidateGearKeys = [];
+				const frozenItemSlots =
+					bulkReforgeRequest?.settings?.freezeItemSlots && bulkReforgeRequest.settings.frozenItemSlots.length
+						? bulkReforgeRequest.settings.frozenItemSlots
+						: undefined;
 				let lastYieldAt = performance.now();
 				let lastProgressEmitAt = lastYieldAt;
 				for (let i = 0; i < bulkCandidatesResult.candidates.length; i++) {
@@ -532,7 +537,7 @@ export class Sim {
 					const preparedSpec = preparedGear.asSpec();
 					preparedCandidateIndices.push(candidate.index);
 					preparedCandidateSpecs.push(preparedSpec);
-					preparedCandidateGearKeys.push(getGearKeyFromSpec(preparedSpec));
+					preparedCandidateGearKeys.push(getGearKeyFromSpec(preparedSpec, frozenItemSlots));
 					const processedCandidates = i + 1;
 					if (processedCandidates % 1024 === 0 || processedCandidates === totalCandidates) {
 						const now = performance.now();
@@ -653,11 +658,15 @@ export class Sim {
 					onProgress(progress);
 					// Write partial reforge candidates to cache as they complete
 					if (progress.optimizedCandidates?.length && bulkReforgeCacheData) {
-						const cacheEntries = progress.optimizedCandidates.flatMap(candidate => {
+						const cacheEntries: Array<{ key: string; optimizedGear: EquipmentSpec }> = [];
+						for (let i = 0; i < progress.optimizedCandidates.length; i++) {
+							const candidate = progress.optimizedCandidates[i];
 							const cacheKey = bulkReforgeCacheData.cacheKeysByCandidateIndex.get(candidate.index);
-							if (!cacheKey || !candidate.gear) return [];
-							return [{ key: cacheKey, optimizedGear: candidate.gear }];
-						});
+							if (!cacheKey || !candidate.gear) {
+								continue;
+							}
+							cacheEntries.push({ key: cacheKey, optimizedGear: candidate.gear });
+						}
 						if (cacheEntries.length) {
 							cacheWrites.push(bulkReforgeCacheData.cache.setGearMany(cacheEntries));
 						}
