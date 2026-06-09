@@ -765,8 +765,8 @@ message ProgressMetrics {
 	RaidSimResult final_raid_result = 6; // only set when completed
 	StatWeightsResult final_weight_result = 7;
 	BulkSimResult final_bulk_sim_result = 10;
-	BulkSimStage bulk_stage = 11;
-	ReforgeOptimizeResult final_reforge_result = 12;
+	ReforgeOptimizeResult final_reforge_result = 11;
+	BulkSimStage bulk_stage = 12;
 }
 
 message BulkSettings {
