@@ -33,8 +33,8 @@ character_stats_results: {
 dps_results: {
  key: "TestSurvival-AllItems-AgilePrimalDiamond"
  value: {
-  dps: 431903.45756
-  tps: 338465.67496
+  dps: 437272.74088
+  tps: 342495.9212
  }
 }
 dps_results: {
@@ -68,8 +68,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-AusterePrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -159,15 +159,15 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-BurningPrimalDiamond"
  value: {
-  dps: 429498.51068
-  tps: 336548.71555
+  dps: 434946.15235
+  tps: 340668.63389
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 465954.69315
-  tps: 373437.86057
+  dps: 469629.82806
+  tps: 375515.57049
  }
 }
 dps_results: {
@@ -236,8 +236,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-CourageousPrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -390,8 +390,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-DarkglowEmbroidery(Rank3)-4893"
  value: {
-  dps: 460960.46215
-  tps: 369762.23548
+  dps: 464656.57302
+  tps: 371869.65146
  }
 }
 dps_results: {
@@ -418,8 +418,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 423704.83033
-  tps: 330555.64738
+  dps: 429135.24566
+  tps: 334673.51886
  }
 }
 dps_results: {
@@ -544,15 +544,15 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-EffulgentPrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -579,64 +579,64 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
  value: {
-  dps: 464215.96339
-  tps: 371792.55415
+  dps: 467911.053
+  tps: 373862.41422
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-Colossus-4445"
  value: {
-  dps: 454373.77873
-  tps: 363892.7392
+  dps: 458139.7237
+  tps: 366084.15492
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-DancingSteel-4444"
  value: {
-  dps: 464301.22769
-  tps: 371825.20777
+  dps: 467872.00181
+  tps: 373789.99213
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 455844.95843
-  tps: 364951.47021
+  dps: 459874.1073
+  tps: 367834.60325
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
-  dps: 454373.77873
-  tps: 363892.7392
+  dps: 458139.7237
+  tps: 366084.15492
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 454373.77873
-  tps: 363892.7392
+  dps: 458139.7237
+  tps: 366084.15492
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
-  dps: 454373.77873
-  tps: 363892.7392
+  dps: 458122.5497
+  tps: 366084.15492
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 455742.52802
-  tps: 363916.35361
+  dps: 461390.75356
+  tps: 368147.82672
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 423704.83033
-  tps: 330555.64738
+  dps: 429135.24566
+  tps: 334673.51886
  }
 }
 dps_results: {
@@ -649,8 +649,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-EternalPrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -712,15 +712,15 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-FleetPrimalDiamond"
  value: {
-  dps: 423342.15031
-  tps: 330433.4665
+  dps: 428679.183
+  tps: 334444.16964
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-ForlornPrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -768,8 +768,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 428659.86439
-  tps: 342322.11156
+  dps: 429726.10824
+  tps: 342636.15589
  }
 }
 dps_results: {
@@ -838,8 +838,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 457891.16759
-  tps: 366396.28611
+  dps: 462363.51828
+  tps: 369379.49384
  }
 }
 dps_results: {
@@ -908,15 +908,15 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 423704.83033
-  tps: 330555.64738
+  dps: 429135.24566
+  tps: 334673.51886
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-IndomitablePrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -1000,8 +1000,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 419991.4097
-  tps: 337258.1986
+  dps: 424282.62633
+  tps: 340156.50192
  }
 }
 dps_results: {
@@ -1070,8 +1070,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-LightweaveEmbroidery(Rank3)-4892"
  value: {
-  dps: 460952.56975
-  tps: 369762.23548
+  dps: 464656.57302
+  tps: 371869.65146
  }
 }
 dps_results: {
@@ -1175,8 +1175,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-MirrorScope-4700"
  value: {
-  dps: 456331.37863
-  tps: 365609.70771
+  dps: 460098.49928
+  tps: 367799.19132
  }
 }
 dps_results: {
@@ -1238,8 +1238,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-NitroBoosts-4223"
  value: {
-  dps: 465954.69315
-  tps: 373437.86057
+  dps: 469629.82806
+  tps: 375515.57049
  }
 }
 dps_results: {
@@ -1273,8 +1273,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-PhaseFingers-4697"
  value: {
-  dps: 465363.8496
-  tps: 372284.01529
+  dps: 470037.07089
+  tps: 375639.37883
  }
 }
 dps_results: {
@@ -1287,8 +1287,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-PowerfulPrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -1385,15 +1385,15 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 429856.34197
-  tps: 340309.73816
+  dps: 432079.03307
+  tps: 341424.23809
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 406850.41355
-  tps: 321499.72074
+  dps: 409302.64995
+  tps: 322737.5173
  }
 }
 dps_results: {
@@ -1462,15 +1462,15 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-ReverberatingPrimalDiamond"
  value: {
-  dps: 429498.51068
-  tps: 336548.71555
+  dps: 434946.15235
+  tps: 340668.63389
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-RevitalizingPrimalDiamond"
  value: {
-  dps: 429498.51068
-  tps: 336548.71555
+  dps: 434946.15235
+  tps: 340668.63389
  }
 }
 dps_results: {
@@ -1567,8 +1567,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 423353.40322
-  tps: 330279.3461
+  dps: 428759.21902
+  tps: 334394.16746
  }
 }
 dps_results: {
@@ -1777,8 +1777,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-TheGloamingBlade-88149"
  value: {
-  dps: 465954.69315
-  tps: 373437.86057
+  dps: 469629.82806
+  tps: 375515.57049
  }
 }
 dps_results: {
@@ -1896,8 +1896,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-TyrannicalPrimalDiamond"
  value: {
-  dps: 421931.90953
-  tps: 329058.58753
+  dps: 427256.21865
+  tps: 333057.48795
  }
 }
 dps_results: {
@@ -1980,15 +1980,15 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 410243.42633
-  tps: 324357.57982
+  dps: 418186.24562
+  tps: 330743.12308
  }
 }
 dps_results: {
  key: "TestSurvival-AllItems-YaungolFireCarrier-86518"
  value: {
-  dps: 465931.82883
-  tps: 373414.99625
+  dps: 469618.54919
+  tps: 375504.29162
  }
 }
 dps_results: {

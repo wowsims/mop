@@ -889,9 +889,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 497222.8267
-  tps: 481707.37105
-  hps: 11762.66153
+  dps: 502863.9188
+  tps: 487220.11882
+  hps: 11898.75791
  }
 }
 dps_results: {
@@ -2273,9 +2273,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 473176.83065
-  tps: 458349.72865
-  hps: 11555.31807
+  dps: 475007.22087
+  tps: 460071.20781
+  hps: 11582.56856
  }
 }
 dps_results: {

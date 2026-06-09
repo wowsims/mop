@@ -33,9 +33,9 @@ character_stats_results: {
 dps_results: {
  key: "TestBalance-AllItems-AgilePrimalDiamond"
  value: {
-  dps: 481950.43992
-  tps: 478699.6152
-  hps: 44001.28099
+  dps: 486822.34885
+  tps: 483422.6272
+  hps: 44620.73992
  }
 }
 dps_results: {
@@ -73,9 +73,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-AusterePrimalDiamond"
  value: {
-  dps: 472435.64223
-  tps: 469333.94109
-  hps: 43503.36015
+  dps: 477185.15498
+  tps: 473938.25187
+  hps: 44107.38698
  }
 }
 dps_results: {
@@ -161,17 +161,17 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-BurningPrimalDiamond"
  value: {
-  dps: 485506.65963
-  tps: 482252.58809
-  hps: 44197.84045
+  dps: 488983.06308
+  tps: 485564.4096
+  hps: 44392.26541
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 475546.2745
-  tps: 472472.65836
-  hps: 43844.37772
+  dps: 478833.16376
+  tps: 475535.12451
+  hps: 43572.69575
  }
 }
 dps_results: {
@@ -249,9 +249,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-CourageousPrimalDiamond"
  value: {
-  dps: 478190.30142
-  tps: 475079.06243
-  hps: 43872.2616
+  dps: 479778.33281
+  tps: 476505.54184
+  hps: 43907.43655
  }
 }
 dps_results: {
@@ -425,9 +425,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-DarkglowEmbroidery(Rank3)-4893"
  value: {
-  dps: 508541.46098
-  tps: 505302.82226
-  hps: 45376.61953
+  dps: 508682.37121
+  tps: 505343.00071
+  hps: 45058.91942
  }
 }
 dps_results: {
@@ -457,9 +457,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 475081.75893
-  tps: 471977.33779
-  hps: 43639.81469
+  dps: 482113.84512
+  tps: 478821.70588
+  hps: 43769.33898
  }
 }
 dps_results: {
@@ -601,17 +601,17 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-EffulgentPrimalDiamond"
  value: {
-  dps: 472435.64223
-  tps: 469333.94109
-  hps: 43503.36015
+  dps: 477185.15498
+  tps: 473938.25187
+  hps: 44107.38698
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 475855.54791
-  tps: 472751.03301
-  hps: 43605.03336
+  dps: 479303.13504
+  tps: 476037.73318
+  hps: 43790.13992
  }
 }
 dps_results: {
@@ -641,65 +641,65 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
  value: {
-  dps: 500631.39219
-  tps: 497662.20033
-  hps: 45788.9539
+  dps: 504389.03864
+  tps: 501158.81915
+  hps: 44873.42384
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-Colossus-4445"
  value: {
-  dps: 500631.39219
-  tps: 497662.20033
-  hps: 45788.9539
+  dps: 504389.03864
+  tps: 501158.81915
+  hps: 44873.42384
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-DancingSteel-4444"
  value: {
-  dps: 500631.39219
-  tps: 497662.20033
-  hps: 45788.9539
+  dps: 504389.03864
+  tps: 501158.81915
+  hps: 44873.42384
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 503179.34614
-  tps: 499972.84644
-  hps: 45546.0317
+  dps: 506090.62723
+  tps: 502652.32034
+  hps: 45468.52404
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 500631.39219
-  tps: 497662.20033
-  hps: 45788.9539
+  dps: 504389.03864
+  tps: 501158.81915
+  hps: 44873.42384
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
-  dps: 509487.8282
-  tps: 506241.80149
-  hps: 45230.35775
+  dps: 516760.89668
+  tps: 513418.60394
+  hps: 45777.56348
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 502346.9301
-  tps: 499467.75199
-  hps: 46112.32699
+  dps: 514285.85947
+  tps: 511136.01634
+  hps: 46219.32116
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 475081.75893
-  tps: 471977.33779
-  hps: 43639.81469
+  dps: 482113.84512
+  tps: 478821.70588
+  hps: 43769.33898
  }
 }
 dps_results: {
@@ -713,9 +713,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-EternalPrimalDiamond"
  value: {
-  dps: 472435.64223
-  tps: 469333.94109
-  hps: 43408.7203
+  dps: 477185.15498
+  tps: 473938.25187
+  hps: 44012.57483
  }
 }
 dps_results: {
@@ -769,9 +769,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 465395.77756
-  tps: 462309.78118
-  hps: 44017.76369
+  dps: 467967.31757
+  tps: 464693.92454
+  hps: 43064.33235
  }
 }
 dps_results: {
@@ -793,17 +793,17 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-FleetPrimalDiamond"
  value: {
-  dps: 475457.28753
-  tps: 472303.89395
-  hps: 43604.6179
+  dps: 480228.53881
+  tps: 476928.63649
+  hps: 44211.03213
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-ForlornPrimalDiamond"
  value: {
-  dps: 475855.54791
-  tps: 472751.03301
-  hps: 43605.03336
+  dps: 479303.13504
+  tps: 476037.73318
+  hps: 43790.13992
  }
 }
 dps_results: {
@@ -857,9 +857,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 465395.77756
-  tps: 462309.78118
-  hps: 44017.76369
+  dps: 467967.31757
+  tps: 464693.92454
+  hps: 43064.33235
  }
 }
 dps_results: {
@@ -937,9 +937,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 465787.72898
-  tps: 464287.98539
-  hps: 43919.74479
+  dps: 469306.94081
+  tps: 467590.01865
+  hps: 43460.17307
  }
 }
 dps_results: {
@@ -1017,17 +1017,17 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 475081.75893
-  tps: 471977.33779
-  hps: 43639.81469
+  dps: 482113.84512
+  tps: 478821.70588
+  hps: 43769.33898
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-IndomitablePrimalDiamond"
  value: {
-  dps: 472435.64223
-  tps: 469333.94109
-  hps: 43503.36015
+  dps: 477185.15498
+  tps: 473938.25187
+  hps: 44107.38698
  }
 }
 dps_results: {
@@ -1193,17 +1193,17 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-LightweaveEmbroidery(Rank3)-4892"
  value: {
-  dps: 510392.57223
-  tps: 507099.99316
-  hps: 45581.84371
+  dps: 518992.22584
+  tps: 515597.46739
+  hps: 45796.96864
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-LordBlastington'sScopeofDoom-4699"
  value: {
-  dps: 500631.39219
-  tps: 497662.20033
-  hps: 45788.9539
+  dps: 504389.03864
+  tps: 501158.81915
+  hps: 44873.42384
  }
 }
 dps_results: {
@@ -1321,9 +1321,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-MirrorScope-4700"
  value: {
-  dps: 500631.39219
-  tps: 497662.20033
-  hps: 45788.9539
+  dps: 504389.03864
+  tps: 501158.81915
+  hps: 44873.42384
  }
 }
 dps_results: {
@@ -1393,9 +1393,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-NitroBoosts-4223"
  value: {
-  dps: 508502.98086
-  tps: 505251.43415
-  hps: 45693.86808
+  dps: 512401.71768
+  tps: 509055.50494
+  hps: 45358.12285
  }
 }
 dps_results: {
@@ -1433,9 +1433,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-PhaseFingers-4697"
  value: {
-  dps: 504548.63685
-  tps: 501335.69319
-  hps: 46139.50685
+  dps: 510650.62778
+  tps: 507323.27636
+  hps: 45663.14157
  }
 }
 dps_results: {
@@ -1449,9 +1449,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-PowerfulPrimalDiamond"
  value: {
-  dps: 472435.64223
-  tps: 469333.94109
-  hps: 43503.36015
+  dps: 477185.15498
+  tps: 473938.25187
+  hps: 44107.38698
  }
 }
 dps_results: {
@@ -1553,17 +1553,17 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 452944.11649
-  tps: 450093.74916
-  hps: 43201.20277
+  dps: 464537.59774
+  tps: 461373.03706
+  hps: 43845.88647
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 445970.09627
-  tps: 443180.82678
-  hps: 41986.71437
+  dps: 448599.08581
+  tps: 445665.48501
+  hps: 42601.79983
  }
 }
 dps_results: {
@@ -1665,17 +1665,17 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-ReverberatingPrimalDiamond"
  value: {
-  dps: 481950.43992
-  tps: 478699.6152
-  hps: 44001.28099
+  dps: 486822.34885
+  tps: 483422.6272
+  hps: 44620.73992
  }
 }
 dps_results: {
  key: "TestBalance-AllItems-RevitalizingPrimalDiamond"
  value: {
-  dps: 481950.43992
-  tps: 478691.25263
-  hps: 44001.28099
+  dps: 486822.34885
+  tps: 483414.26463
+  hps: 44620.73992
  }
 }
 dps_results: {
@@ -1785,9 +1785,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 508502.98086
-  tps: 505251.43415
-  hps: 45693.86808
+  dps: 512401.71768
+  tps: 509055.50494
+  hps: 45358.12285
  }
 }
 dps_results: {
@@ -1993,9 +1993,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-SwordguardEmbroidery(Rank3)-4894"
  value: {
-  dps: 508541.46098
-  tps: 505308.11745
-  hps: 45376.61953
+  dps: 508682.37121
+  tps: 505348.2959
+  hps: 45058.91942
  }
 }
 dps_results: {
@@ -2033,9 +2033,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-TheGloamingBlade-88149"
  value: {
-  dps: 508502.98086
-  tps: 505251.43415
-  hps: 45693.86808
+  dps: 512401.71768
+  tps: 509055.50494
+  hps: 45358.12285
  }
 }
 dps_results: {
@@ -2169,9 +2169,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-TyrannicalPrimalDiamond"
  value: {
-  dps: 472435.64223
-  tps: 469333.94109
-  hps: 43408.7203
+  dps: 477185.15498
+  tps: 473938.25187
+  hps: 44012.57483
  }
 }
 dps_results: {
@@ -2265,9 +2265,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-YaungolFireCarrier-86518"
  value: {
-  dps: 508502.98086
-  tps: 505251.43415
-  hps: 45693.86808
+  dps: 512401.71768
+  tps: 509055.50494
+  hps: 45358.12285
  }
 }
 dps_results: {

@@ -689,8 +689,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 394626.8867
-  tps: 358868.29543
+  dps: 395630.59722
+  tps: 359385.26861
   hps: 19.51284
  }
 }
@@ -1721,8 +1721,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofRazorice-3370"
  value: {
-  dps: 411774.73368
-  tps: 376123.49158
+  dps: 414806.14549
+  tps: 378536.72344
   hps: 19.33643
  }
 }

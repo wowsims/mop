@@ -953,8 +953,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 457285.29205
-  tps: 212710.96309
+  dps: 462646.36571
+  tps: 214189.44438
   hps: 17.66285
  }
 }
@@ -1137,8 +1137,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 418172.11418
-  tps: 198049.30396
+  dps: 423109.46654
+  tps: 199481.07291
   hps: 17.66285
  }
 }
