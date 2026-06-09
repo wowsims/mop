@@ -689,8 +689,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 395429.3977
-  tps: 282538.95649
+  dps: 391584.20248
+  tps: 279491.4337
   hps: 20.83558
  }
 }
@@ -953,9 +953,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 389796.77771
-  tps: 289691.22815
-  hps: 3850.09221
+  dps: 383644.49093
+  tps: 285424.00038
+  hps: 3842.23213
  }
 }
 dps_results: {
@@ -1137,9 +1137,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 387397.9168
-  tps: 288369.75977
-  hps: 3852.30564
+  dps: 383099.57941
+  tps: 284842.66032
+  hps: 3857.43348
  }
 }
 dps_results: {
@@ -1713,8 +1713,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-RuneofRazorice-3370"
  value: {
-  dps: 401726.0474
-  tps: 289704.98556
+  dps: 398839.84757
+  tps: 287163.21603
   hps: 20.83558
  }
 }

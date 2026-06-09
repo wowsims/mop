@@ -593,8 +593,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 109361.46541
-  tps: 77071.64858
+  dps: 108555.50409
+  tps: 76499.41605
  }
 }
 dps_results: {

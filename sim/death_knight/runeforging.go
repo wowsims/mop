@@ -193,7 +193,7 @@ func init() {
 				ActionID:    actionID.WithTag(core.TernaryInt32(isMH, 1, 2)),
 				SpellSchool: core.SpellSchoolFrost,
 				ProcMask:    core.ProcMaskEmpty,
-				Flags:       core.SpellFlagNoOnCastComplete,
+				Flags:       core.SpellFlagNoOnCastComplete | core.SpellFlagNoOnDamageDealt,
 
 				DamageMultiplier: 1,
 				ThreatMultiplier: 1,

@@ -238,7 +238,7 @@ func init() {
 			ActionID:    core.ActionID{SpellID: spellID},
 			SpellSchool: spellSchool,
 			ProcMask:    core.ProcMaskEmpty,
-			Flags:       core.SpellFlagIgnoreArmor | core.SpellFlagIgnoreModifiers | core.SpellFlagPassiveSpell | core.SpellFlagNoSpellMods,
+			Flags:       core.SpellFlagIgnoreArmor | core.SpellFlagIgnoreModifiers | core.SpellFlagPassiveSpell | core.SpellFlagNoSpellMods | core.SpellFlagNoOnDamageDealt,
 
 			DamageMultiplier: 1,
 			ThreatMultiplier: 1,
@@ -292,7 +292,6 @@ func init() {
 		return physicalSpell, magicSpell
 	}
 
-	blackoutKickTickID := core.ActionID{SpellID: 100784}.WithTag(2)
 	newMultistrikeTrinket := func(config *multistrikeTrinketConfig) {
 		config.itemVersionMap.RegisterAll(func(version shared.ItemVersion, itemID int32, versionLabel string) {
 			core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
@@ -300,7 +299,16 @@ func init() {
 
 				var baseDamage float64
 				applyEffects := func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-					spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeAlwaysHit)
+					var outcome core.OutcomeApplier
+					if character.Class == proto.Class_ClassHunter {
+						outcome = spell.OutcomeRangedHit
+					} else if spell.ProcMask.Matches(core.ProcMaskMeleeOrMeleeProc) {
+						outcome = spell.OutcomeMeleeSpecialHit
+					} else {
+						outcome = spell.OutcomeMagicHit
+					}
+
+					spell.CalcAndDealDamage(sim, target, baseDamage, outcome)
 				}
 
 				physicalSpell, magicSpell := getMultistrikeSpells(character)
@@ -319,8 +327,7 @@ func init() {
 					Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 						baseDamage = result.Damage / 3.0
 
-						// Special case for Windwalker Blackout Kick DoTs which does physical damage but procs the nature damage spell
-						if spell.SpellSchool.Matches(core.SpellSchoolPhysical) && !spell.ActionID.SameAction(blackoutKickTickID) {
+						if !spell.ProcMask.Matches(core.ProcMaskSpellOrSpellProc) {
 							physicalSpell.ApplyEffects = applyEffects
 							physicalSpell.Cast(sim, result.Target)
 						} else {
@@ -575,8 +582,8 @@ func init() {
 		}
 
 		physicalSpell := getTrinketSpell(character, physicalSpellID, core.SpellSchoolPhysical)
+		magicSpell := physicalSpell
 
-		var magicSpell *core.Spell
 		switch character.Class {
 		case proto.Class_ClassDruid:
 			magicSpell = getTrinketSpell(character, 146158, core.SpellSchoolArcane)
@@ -629,7 +636,7 @@ func init() {
 					var outcome core.OutcomeApplier
 					if character.Class == proto.Class_ClassHunter {
 						outcome = spell.OutcomeRangedHit
-					} else if spell.SpellSchool == core.SpellSchoolPhysical {
+					} else if spell.ProcMask.Matches(core.ProcMaskMeleeOrMeleeProc) {
 						outcome = spell.OutcomeMeleeSpecialHit
 					} else {
 						outcome = spell.OutcomeMagicHit
@@ -655,7 +662,7 @@ func init() {
 					Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 						baseDamage = result.Damage
 
-						if magicSpell == nil || !spell.ProcMask.Matches(core.ProcMaskSpellOrSpellProc) {
+						if !spell.ProcMask.Matches(core.ProcMaskSpellOrSpellProc) {
 							physicalSpell.ApplyEffects = applyEffects
 							physicalSpell.Cast(sim, result.Target)
 						} else {

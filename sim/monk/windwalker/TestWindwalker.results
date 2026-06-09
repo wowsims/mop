@@ -113,9 +113,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-BattlegearofSevenSacredSeals"
  value: {
-  dps: 342751.6042
-  tps: 328488.43733
-  hps: 8990.80377
+  dps: 341804.7805
+  tps: 327498.74919
+  hps: 8977.09739
  }
 }
 dps_results: {
@@ -889,9 +889,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 502645.34046
-  tps: 487013.95208
-  hps: 11898.75791
+  dps: 497222.8267
+  tps: 481707.37105
+  hps: 11762.66153
  }
 }
 dps_results: {
@@ -2273,9 +2273,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 476028.99279
-  tps: 461082.03544
-  hps: 11580.33236
+  dps: 473176.83065
+  tps: 458349.72865
+  hps: 11555.31807
  }
 }
 dps_results: {
