@@ -94,8 +94,16 @@ const makeBulkItemDatabaseFromSpecs = (db: Database, baselineGear: Gear, itemSpe
 		.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null))
 		.filter((item): item is NonNullable<typeof item> => item != null);
 	const simDatabase = makeBulkGearDatabase(db, gearSets);
+	const selectedItemReforgeStats = new Map<number, NonNullable<ReturnType<Database['getReforgeById']>>>();
 	for (const selectedItem of selectedItems) {
 		simDatabase.items.push(SimItem.fromJson(UIItem.toJson(selectedItem.item), { ignoreUnknownFields: true }));
+		const selectedReforge = selectedItem.reforge;
+		if (selectedReforge) {
+			const reforgeStat = db.getReforgeById(selectedReforge.id);
+			if (reforgeStat) {
+				selectedItemReforgeStats.set(reforgeStat.id, reforgeStat);
+			}
+		}
 		const scalingIlvls = new Set<number>([selectedItem.ilvl]);
 		Object.values(selectedItem.item.scalingOptions ?? {}).forEach(scalingOption => {
 			if (scalingOption?.ilvl) {
@@ -115,7 +123,7 @@ const makeBulkItemDatabaseFromSpecs = (db: Database, baselineGear: Gear, itemSpe
 	return SimDatabase.create({
 		items: distinct(simDatabase.items, (a, b) => a.id == b.id),
 		randomSuffixes: distinct(simDatabase.randomSuffixes, (a, b) => a.id == b.id),
-		reforgeStats: distinct(simDatabase.reforgeStats, (a, b) => a.id == b.id),
+		reforgeStats: distinct([...simDatabase.reforgeStats, ...selectedItemReforgeStats.values()], (a, b) => a.id == b.id),
 		itemEffectRandPropPoints: distinct(simDatabase.itemEffectRandPropPoints, (a, b) => a.ilvl == b.ilvl),
 		enchants: distinct(simDatabase.enchants, (a, b) => a.effectId == b.effectId),
 		gems: distinct(simDatabase.gems, (a, b) => a.id == b.id),
