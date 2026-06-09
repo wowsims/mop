@@ -1186,7 +1186,7 @@ export class BulkTab extends SimTab {
 	}
 
 	private getCombinationsCount(): Element {
-		this.bulkSimButton.disabled = !this.combinations || this.combinations > this.getCombinationsLimit();
+		this.bulkSimButton.disabled = this.combinations <= 1 || this.combinations > this.getCombinationsLimit();
 
 		const warningRef = ref<HTMLButtonElement>();
 		const rtn = (
