@@ -481,16 +481,32 @@ func ProtoToEquipmentSpec(es *proto.EquipmentSpec) EquipmentSpec {
 }
 
 func (item *Item) GetScalingState() proto.ItemLevelState {
-	if !item.ChallengeMode || item.ScalingOptions[int32(item.UpgradeStep)].Ilvl <= MaxChallengeModeIlvl {
+	if !item.ChallengeMode {
 		return item.UpgradeStep
-	} else {
-		return proto.ItemLevelState_ChallengeMode
 	}
+	option := item.ScalingOptions[int32(item.UpgradeStep)]
+	if option == nil || option.Ilvl <= MaxChallengeModeIlvl {
+		return item.UpgradeStep
+	}
+	return proto.ItemLevelState_ChallengeMode
 }
 
-// Returns the current scaling options for the item based on challenge mode and upgrade level
+// Returns the current scaling options for the item based on challenge mode and upgrade level.
+// If the exact upgrade step is not present, falls back to the highest available step below it.
 func (item *Item) GetEffectiveScalingOptions() *proto.ScalingItemProperties {
-	return item.ScalingOptions[int32(item.GetScalingState())]
+	target := int32(item.GetScalingState())
+	if option, ok := item.ScalingOptions[target]; ok {
+		return option
+	}
+	var bestKey int32 = math.MinInt32
+	var bestOpt *proto.ScalingItemProperties
+	for k, v := range item.ScalingOptions {
+		if k <= target && k > bestKey {
+			bestKey = k
+			bestOpt = v
+		}
+	}
+	return bestOpt
 }
 
 func NewItem(itemSpec ItemSpec) Item {
