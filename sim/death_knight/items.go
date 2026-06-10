@@ -265,10 +265,11 @@ var ItemSetBattleplateOfCyclopeanDread = core.NewItemSet(core.ItemSet{
 				})
 			} else if dk.Spec == proto.Spec_SpecFrostDeathKnight {
 				frozenPowerSpell := dk.RegisterSpell(core.SpellConfig{
-					ActionID:    core.ActionID{SpellID: 147620},
-					SpellSchool: core.SpellSchoolFrost,
-					ProcMask:    core.ProcMaskEmpty,
-					Flags:       core.SpellFlagPassiveSpell,
+					ActionID:       core.ActionID{SpellID: 147620},
+					SpellSchool:    core.SpellSchoolFrost,
+					ProcMask:       core.ProcMaskEmpty,
+					Flags:          core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete | core.SpellFlagNoOnDamageDealt,
+					ClassSpellMask: DeathKnightSpellFrozenPower,
 
 					DamageMultiplier: 1,
 					CritMultiplier:   dk.DefaultCritMultiplier(),

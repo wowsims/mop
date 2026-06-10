@@ -18,7 +18,7 @@ func (shaman *Shaman) registerAscendanceSpell() {
 		ActionID:       core.ActionID{SpellID: 114089, Tag: 1},
 		SpellSchool:    core.SpellSchoolNature,
 		ProcMask:       core.ProcMaskMeleeMHAuto,
-		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete | core.SpellFlagReadinessTrinket,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete,
 		ClassSpellMask: SpellMaskWindLash,
 
 		DamageMultiplier:         1,
@@ -98,7 +98,7 @@ func (shaman *Shaman) registerAscendanceSpell() {
 	shaman.Ascendance = shaman.RegisterSpell(core.SpellConfig{
 		ActionID:       core.ActionID{SpellID: 114049},
 		SpellSchool:    core.SpellSchoolPhysical,
-		Flags:          core.SpellFlagAPL,
+		Flags:          core.SpellFlagAPL | core.SpellFlagReadinessTrinket,
 		ClassSpellMask: SpellMaskAscendance,
 		ManaCost: core.ManaCostOptions{
 			BaseCostPercent: 5.2,

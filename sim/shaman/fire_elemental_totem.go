@@ -7,7 +7,7 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-func (shaman *Shaman) registerFireElementalTotem(isGuardian bool) {
+func (shaman *Shaman) registerFireElementalTotem() {
 
 	actionID := core.ActionID{SpellID: 2894}
 

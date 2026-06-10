@@ -20,5 +20,9 @@ func (fdk *FrostDeathKnight) registerThreatOfThassarian() {
 		Kind:       core.SpellMod_DamageDone_Pct,
 		ClassMask:  death_knight.DeathKnightSpellFrostStrike,
 		FloatValue: 0.5,
+	}).AttachSpellMod(core.SpellModConfig{
+		Kind:       core.SpellMod_DamageDone_Pct,
+		ClassMask:  death_knight.DeathKnightSpellFrozenPower,
+		FloatValue: -0.5,
 	})
 }

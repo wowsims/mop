@@ -61,8 +61,8 @@ dps_results: {
 dps_results: {
  key: "TestEnhancement-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 251870.35486
-  tps: 199231.81073
+  dps: 260412.3459
+  tps: 207276.36221
  }
 }
 dps_results: {
