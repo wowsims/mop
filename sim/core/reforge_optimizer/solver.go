@@ -12,7 +12,6 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
 	"github.com/wowsims/mop/sim/core/stats"
-	googleProto "google.golang.org/protobuf/proto"
 )
 
 type mipVariable struct {
@@ -192,16 +191,26 @@ func choicesFromMIPSolution(search *reforgeSearchState, model mipModel, solution
 
 func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap) mipModel {
 	variableCount := countMIPChoiceVariables(search.slots)
-	uniqueGemIDs := uniqueGemLimitIDs(search)
+	uniqueGemIDs := search.uniqueGemIDs
+	if uniqueGemIDs == nil {
+		uniqueGemIDs = buildUniqueGemLimitIDs(search.slots)
+	}
 	model := mipModel{
 		variables:   make([]mipVariable, 0, variableCount),
 		constraints: make([]mipConstraint, 0, estimateMIPConstraintCount(search, statConstraints, relativeCaps, len(uniqueGemIDs))),
 	}
-	choiceVarIdx := make([][]int, len(search.slots))
+	choiceVarIdx := search.choiceVarIdx
+	if len(choiceVarIdx) != len(search.slots) {
+		choiceVarIdx = make([][]int, len(search.slots))
+		for i, slot := range search.slots {
+			choiceVarIdx[i] = make([]int, len(slot.choices))
+		}
+	}
 	for slotIdx, slot := range search.slots {
-		choiceVarIdx[slotIdx] = make([]int, len(slot.choices))
-		for choiceIdx, choice := range slot.choices {
+		for choiceIdx := range slot.choices {
 			choiceVarIdx[slotIdx][choiceIdx] = -1
+		}
+		for choiceIdx, choice := range slot.choices {
 			if !choiceMIPActive(choice) {
 				continue
 			}
@@ -321,10 +330,10 @@ func countSocketBonusLinkConstraints(search *reforgeSearchState) int {
 	return count
 }
 
-func uniqueGemLimitIDs(search *reforgeSearchState) []int32 {
+func buildUniqueGemLimitIDs(slots []reforgeSlotChoices) []int32 {
 	uniqueGemIDs := make([]int32, 0)
 	seen := map[int32]bool{}
-	for _, slot := range search.slots {
+	for _, slot := range slots {
 		for _, choice := range slot.choices {
 			for _, gemID := range choice.uniqueGemIDs {
 				if seen[gemID] {
@@ -441,7 +450,14 @@ func updateHiGHSCapPass(search *reforgeSearchState, passIdx int, delta core.Unit
 		value := getUnitStat(delta, constraint.unitStat)
 		if constraint.hasActualLower && value < constraint.actualLower-1e-6 {
 			missing := constraint.actualLower - value
-			statConstraints[idx].lower += missing + 1e-6
+			// If the actual value also violates the tightened LP lower bound, the LP
+			// approximation has a systematic error. Tighten by the larger LP violation
+			// to avoid many small increments before the LP produces a different solution.
+			if lpMissing := constraint.lower - value; lpMissing > missing+1e-6 {
+				statConstraints[idx].lower += lpMissing + 1e-6
+			} else {
+				statConstraints[idx].lower += missing + 1e-6
+			}
 			if reforgeDebug(search) {
 				log.Printf("[reforgeOptimize] HiGHS pass=%d tightening min cap stat=%s valueDelta=%.3f requiredDelta=%.3f adjustedDelta=%.3f", passIdx+1, unitStatName(constraint.unitStat), value, constraint.actualLower, statConstraints[idx].lower)
 			}
@@ -549,9 +565,8 @@ func selectedChoicesValid(choices []reforgeChoice) bool {
 
 func selectedChoicesCapDelta(search *reforgeSearchState, choices []reforgeChoice) (core.UnitStats, error) {
 	gear := equipmentSpecWithChoices(search.baseEquipment, choices)
-	raid := googleProto.Clone(search.baseRaid).(*proto.Raid)
-	raid.Parties[0].Players[0].Equipment = gear
-	result := computeReforgeStats(&proto.ComputeStatsRequest{Raid: raid})
+	search.workingRaid.Parties[0].Players[0].Equipment = gear
+	result := computeReforgeStats(search.workingStatsRequest)
 	if result.ErrorResult != "" {
 		return core.UnitStats{}, fmt.Errorf("computing selected reforge choices: %s", result.ErrorResult)
 	}

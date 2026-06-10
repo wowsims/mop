@@ -16,11 +16,7 @@ import {
 	ReforgeOptimizeMode,
 	ReforgeOptimizeRequest,
 } from '../proto/api';
-import { EquipmentSpec, ItemRandomSuffix, ReforgeStat } from '../proto/common';
-import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../proto/db';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui';
-import { Database } from '../proto_utils/database';
-import { Gear } from '../proto_utils/gear';
+import { EquipmentSpec } from '../proto/common';
 import { SimSignals } from '../sim_signal_manager';
 import { isDevMode, noop } from '../utils';
 import { WorkerPool, WorkerProgressCallback } from '../worker_pool';
@@ -34,63 +30,6 @@ const BULK_SIM_COMBINATION_LOG_MIN = 10;
 const BULK_SIM_MAX_ADAPTIVE_PASSES = 2;
 const BULK_SIM_ADAPTIVE_MAX_ITERATION_MULTIPLIER = 4;
 const BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER = 2;
-
-export const makeBulkGearDatabase = (db: Database, gearSets: Gear[]): SimDatabase => {
-	const items = new Map<number, Item>();
-	const randomSuffixes = new Map<number, ItemRandomSuffix>();
-	const reforgeStats = new Map<number, ReforgeStat>();
-	const itemEffectRandPropPoints = new Map<number, ItemEffectRandPropPoints>();
-	const enchants = new Map<number, Enchant>();
-	const gems = new Map<number, Gem>();
-
-	for (const gearSet of gearSets) {
-		for (const equippedItem of gearSet.asArray()) {
-			if (!equippedItem) continue;
-
-			const item = equippedItem.item;
-			items.set(item.id, item);
-
-			const randomSuffix = equippedItem.randomSuffix;
-			if (randomSuffix) {
-				randomSuffixes.set(randomSuffix.id, randomSuffix);
-			}
-
-			const itemReforge = equippedItem.reforge;
-			if (itemReforge) {
-				const reforge = db.getReforgeById(itemReforge.id);
-				if (reforge) reforgeStats.set(reforge.id, reforge);
-			}
-
-			const randPropPoints = db.getItemEffectRandPropPoints(equippedItem.ilvl);
-			if (randPropPoints) {
-				itemEffectRandPropPoints.set(randPropPoints.ilvl, randPropPoints);
-			}
-
-			const enchant = equippedItem.enchant;
-			if (enchant) {
-				enchants.set(enchant.effectId, enchant);
-			}
-
-			const tinker = equippedItem.tinker;
-			if (tinker) {
-				enchants.set(tinker.effectId, tinker);
-			}
-
-			for (const gem of equippedItem.gems) {
-				if (gem) gems.set(gem.id, gem);
-			}
-		}
-	}
-
-	return SimDatabase.create({
-		items: Array.from(items.values()).map(item => SimItem.fromJson(Item.toJson(item), { ignoreUnknownFields: true })),
-		randomSuffixes: Array.from(randomSuffixes.values()),
-		reforgeStats: Array.from(reforgeStats.values()),
-		itemEffectRandPropPoints: Array.from(itemEffectRandPropPoints.values()),
-		enchants: Array.from(enchants.values()).map(enchant => SimEnchant.fromJson(Enchant.toJson(enchant), { ignoreUnknownFields: true })),
-		gems: Array.from(gems.values()).map(gem => SimGem.fromJson(Gem.toJson(gem), { ignoreUnknownFields: true })),
-	});
-};
 
 type ConcurrentBulkSimCandidate = {
 	index: number;

@@ -34,7 +34,6 @@ import {
 	ArmorType,
 	Faction,
 	ItemSlot,
-	ItemSpec,
 	ItemQuality,
 	Profession,
 	PseudoStat,
@@ -47,8 +46,7 @@ import {
 	EquipmentSpec,
 } from './proto/common.js';
 import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
-import { ItemEffectRandPropPoints, SimDatabase, SimGem, SimItem } from './proto/db.js';
-import { UIItem } from './proto/ui.js';
+import { SimGem } from './proto/db.js';
 import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
@@ -61,12 +59,13 @@ import { distinct, getEnumValues, isExternal, noop, sleep } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import {
 	getBulkSimReforgeCacheData,
+	makeBulkItemDatabaseFromSpecs,
 	type BulkSimReforgeCacheProgress,
 	throwIfAborted,
+	makeBulkGearDatabase,
 	writeBulkSimReforgeCacheResults,
 } from './components/individual_sim_ui/bulk/utils';
 import { ReforgeOptimizer } from './components/suggest_reforges_action';
-import { makeBulkGearDatabase } from './wasm/bulk_sim';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
 
 export type RaidSimData = {
@@ -86,48 +85,6 @@ export type ReforgeOptimizeConfig = {
 	settings: ReforgeSettings;
 	softCaps: StatCap[];
 	debug?: boolean;
-};
-
-const makeBulkItemDatabaseFromSpecs = (db: Database, baselineGear: Gear, itemSpecs: readonly ItemSpec[]): SimDatabase => {
-	const gearSets = [baselineGear];
-	const selectedItems = itemSpecs
-		.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null))
-		.filter((item): item is NonNullable<typeof item> => item != null);
-	const simDatabase = makeBulkGearDatabase(db, gearSets);
-	const selectedItemReforgeStats = new Map<number, NonNullable<ReturnType<Database['getReforgeById']>>>();
-	for (const selectedItem of selectedItems) {
-		simDatabase.items.push(SimItem.fromJson(UIItem.toJson(selectedItem.item), { ignoreUnknownFields: true }));
-		const selectedReforge = selectedItem.reforge;
-		if (selectedReforge) {
-			const reforgeStat = db.getReforgeById(selectedReforge.id);
-			if (reforgeStat) {
-				selectedItemReforgeStats.set(reforgeStat.id, reforgeStat);
-			}
-		}
-		const scalingIlvls = new Set<number>([selectedItem.ilvl]);
-		Object.values(selectedItem.item.scalingOptions ?? {}).forEach(scalingOption => {
-			if (scalingOption?.ilvl) {
-				scalingIlvls.add(scalingOption.ilvl);
-			}
-		});
-		scalingIlvls.forEach(ilvl => {
-			const ieRpp = db.getItemEffectRandPropPoints(ilvl);
-			if (ieRpp) {
-				simDatabase.itemEffectRandPropPoints.push(ItemEffectRandPropPoints.create(ieRpp));
-			}
-		});
-		if (selectedItem.randomSuffix) {
-			simDatabase.randomSuffixes.push(selectedItem.randomSuffix);
-		}
-	}
-	return SimDatabase.create({
-		items: distinct(simDatabase.items, (a, b) => a.id == b.id),
-		randomSuffixes: distinct(simDatabase.randomSuffixes, (a, b) => a.id == b.id),
-		reforgeStats: distinct([...simDatabase.reforgeStats, ...selectedItemReforgeStats.values()], (a, b) => a.id == b.id),
-		itemEffectRandPropPoints: distinct(simDatabase.itemEffectRandPropPoints, (a, b) => a.ilvl == b.ilvl),
-		enchants: distinct(simDatabase.enchants, (a, b) => a.effectId == b.effectId),
-		gems: distinct(simDatabase.gems, (a, b) => a.id == b.id),
-	});
 };
 
 interface SimProps {
@@ -570,23 +527,22 @@ export class Sim {
 					}
 				}
 			}
-			const bulkReforgeCacheData =
-				bulkReforgeRequest
-					? await getBulkSimReforgeCacheData({
-							player: this.raid.getActivePlayers()[0],
-							gearSets: backendBuildCandidates ? undefined : preparedGearSets,
-							candidateSpecs: backendBuildCandidates ? preparedCandidateSpecs : undefined,
-							candidateGearKeys: backendBuildCandidates ? preparedCandidateGearKeys : undefined,
-							candidateIndices: preparedCandidateIndices,
-							db: this.db,
-							reforgeRequest: bulkReforgeRequest,
-							raidBuffs: this.raid.getBuffs(),
-							partyBuffs: this.raid.getActivePlayers()[0].getParty()?.getBuffs(),
-							debuffs: this.raid.getDebuffs(),
-							onProgress: onCacheRestoreProgress,
-							signal: abortSignal,
-						})
-					: undefined;
+			const bulkReforgeCacheData = bulkReforgeRequest
+				? await getBulkSimReforgeCacheData({
+						player: this.raid.getActivePlayers()[0],
+						gearSets: backendBuildCandidates ? undefined : preparedGearSets,
+						candidateSpecs: backendBuildCandidates ? preparedCandidateSpecs : undefined,
+						candidateGearKeys: backendBuildCandidates ? preparedCandidateGearKeys : undefined,
+						candidateIndices: preparedCandidateIndices,
+						db: this.db,
+						reforgeRequest: bulkReforgeRequest,
+						raidBuffs: this.raid.getBuffs(),
+						partyBuffs: this.raid.getActivePlayers()[0].getParty()?.getBuffs(),
+						debuffs: this.raid.getDebuffs(),
+						onProgress: onCacheRestoreProgress,
+						signal: abortSignal,
+					})
+				: undefined;
 			throwIfAborted(abortSignal);
 			const cachedOptimizedGearSets = bulkReforgeCacheData?.cachedOptimizedGearSets ?? [];
 			const bulkGearDatabase =
@@ -631,11 +587,11 @@ export class Sim {
 					? (preparedCandidateSpecs ?? []).map((gear, index) => ({
 							index: preparedCandidateIndices?.[index] ?? index,
 							gear,
-					  }))
+						}))
 					: preparedGearSets.map((gear, index) => ({
 							index: preparedCandidateIndices?.[index] ?? index,
 							gear: gear.asSpec(),
-					  })));
+						})));
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,

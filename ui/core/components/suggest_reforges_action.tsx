@@ -940,7 +940,7 @@ export class ReforgeOptimizer {
 					{this.softCapsConfig
 						.filter(
 							config =>
-								(config.capType === StatCapType.TypeThreshold || config.capType === StatCapType.TypeSoftCap) && config.breakpoints.length > 1,
+								(config.capType === StatCapType.TypeThreshold || config.capType === StatCapType.TypeSoftCap) && config.breakpoints.length > 0,
 						)
 						.map(({ breakpoints, unitStat }) => {
 							if (!unitStat.hasRootStat()) return;
@@ -1109,10 +1109,7 @@ export class ReforgeOptimizer {
 			partyBuffs: this.player.getParty()?.getBuffs(),
 			debuffs: this.sim.raid.getDebuffs(),
 		});
-		const frozenItemSlots =
-			config.settings.freezeItemSlots && config.settings.frozenItemSlots.length
-				? config.settings.frozenItemSlots
-				: undefined;
+		const frozenItemSlots = config.settings.freezeItemSlots && config.settings.frozenItemSlots.length ? config.settings.frozenItemSlots : undefined;
 		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots), configHash);
 		const cachedGear = await cache.get(cacheKey);
 		if (cachedGear) {

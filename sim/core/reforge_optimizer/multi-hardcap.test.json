@@ -1,0 +1,231 @@
+{
+	"preCapEpWeights": {
+		"apiVersion": 4,
+		"stats": [0, 1, 0, 0, 0, 0.37, 0.36, 0.37, 0.37, 0, 0, 0.26, 0, 0.36, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [0, 0, 0.67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"raid": {
+		"buffs": {
+			"trueshotAura": true,
+			"unholyAura": true,
+			"leaderOfThePack": true,
+			"blessingOfMight": true,
+			"blessingOfKings": true,
+			"commandingShout": true,
+			"bloodlust": true,
+			"stormlashTotemCount": 4,
+			"skullBannerCount": 2
+		},
+		"debuffs": {
+			"physicalVulnerability": true,
+			"weakenedArmor": true,
+			"curseOfElements": true
+		},
+		"numActiveParties": 5,
+		"parties": [
+			{
+				"buffs": {},
+				"players": [
+					{
+						"bonusStats": {
+							"apiVersion": 4,
+							"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+							"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+						},
+						"buffs": {},
+						"class": "ClassHunter",
+						"consumables": {
+							"prepotId": 76089,
+							"potId": 76089,
+							"flaskId": 76084,
+							"foodId": 74648,
+							"consumableIds": [76084, 86569, 76076, 76077, 76078, 76080, 76083]
+						},
+						"cooldowns": {},
+						"distanceFromTarget": 24,
+						"equipment": {
+							"items": [
+								{
+									"id": 99402,
+									"gems": [95346, 76692],
+									"reforging": 153,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104606,
+									"reforging": 151,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99404,
+									"enchant": 4804,
+									"gems": [76692, 76692],
+									"reforging": 159,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 102248,
+									"enchant": 4894,
+									"gems": [76692],
+									"reforging": 165,
+									"upgradeStep": "UpgradeStepTwo",
+									"tinker": 4897
+								},
+								{
+									"id": 104589,
+									"enchant": 4419,
+									"gems": [76692, 76692, 76658],
+									"reforging": 165,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104566,
+									"enchant": 4416,
+									"gems": [0],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99406,
+									"enchant": 4430,
+									"gems": [76692, 76692, 0],
+									"reforging": 151,
+									"upgradeStep": "UpgradeStepTwo",
+									"tinker": 4898
+								},
+								{
+									"id": 104588,
+									"gems": [76692, 76658, 76692],
+									"upgradeStep": "UpgradeStepTwo",
+									"tinker": 4223
+								},
+								{
+									"id": 99403,
+									"enchant": 4822,
+									"gems": [76658, 76658],
+									"reforging": 166,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104557,
+									"enchant": 4428,
+									"gems": [76692],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104628,
+									"gems": [76692],
+									"reforging": 166,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104562,
+									"gems": [76692],
+									"reforging": 168,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104476,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104531,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104563,
+									"enchant": 4699,
+									"gems": [76692],
+									"reforging": 165,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{}
+							]
+						},
+						"glyphs": {
+							"major1": 42909,
+							"major2": 42903,
+							"major3": 42899
+						},
+						"healingModel": {},
+						"itemSwap": {
+							"items": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+							"prepullBonusStats": {
+								"apiVersion": 4,
+								"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+								"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+							}
+						},
+						"name": "Player",
+						"profession1": "Engineering",
+						"profession2": "Tailoring",
+						"race": "RaceOrc",
+						"reactionTimeMs": 100,
+						"survivalHunter": {
+							"options": {
+								"classOptions": {
+									"petType": "Tallstrider",
+									"petUptime": 1,
+									"useHuntersMark": true,
+									"glaiveTossSuccess": 0.8
+								}
+							}
+						},
+						"talentsString": "312113"
+					},
+					{},
+					{},
+					{},
+					{}
+				]
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			}
+		]
+	},
+	"requestId": "reforgeOptimizeAsync-92711fb5cb7dca92",
+	"settings": {
+		"useSoftCapBreakpoints": true,
+		"includeGems": true,
+		"includeEotbGemSocket": true,
+		"statCaps": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 2550, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
+		},
+		"breakpointLimits": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		}
+	},
+	"softCaps": [
+		{
+			"unitStat": {
+				"apiVersion": 4,
+				"pseudoStat": "PseudoStatRangedHastePercent"
+			},
+			"breakpoints": [33],
+			"capType": "TypeSoftCap",
+			"postCapEPs": [148.75]
+		}
+	],
+	"undershootCaps": {
+		"apiVersion": 4,
+		"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	}
+}

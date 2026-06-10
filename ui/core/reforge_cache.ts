@@ -13,7 +13,7 @@ import { IndividualSimUI } from './individual_sim_ui';
 import { sleep } from './utils';
 
 const REFORGE_CACHE_DB_NAME = `${LOCAL_STORAGE_PREFIX}_reforge-cache`;
-const REFORGE_CACHE_DB_VERSION = 1;
+const REFORGE_CACHE_DB_VERSION = 2;
 const REFORGE_CACHE_MAX_ENTRIES = 200_000;
 const REFORGE_CACHE_KEY_PREFIX = `v${REFORGE_CACHE_DB_VERSION}:api-v${CURRENT_API_VERSION}:`;
 const REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX = 'equipmentSpec:';
@@ -188,6 +188,20 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			await this.prune(db);
 		} catch (error) {
 			console.warn('[Reforge Cache] Failed to store batched reforge results.', error);
+		} finally {
+			db?.close();
+		}
+	}
+
+	async hasEntries(): Promise<boolean> {
+		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
+		try {
+			db = await this.getDb();
+			return (await db.count(this.storeName)) > 0;
+		} catch (error) {
+			// Fail open: if this probe fails, keep the normal restore path so cache use still works.
+			console.warn('[Reforge Cache] Failed to probe cache entry count.', error);
+			return true;
 		} finally {
 			db?.close();
 		}

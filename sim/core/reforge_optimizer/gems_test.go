@@ -1,7 +1,6 @@
 package reforgeoptimizer
 
 import (
-	"slices"
 	"testing"
 
 	"github.com/wowsims/mop/sim/core"
@@ -114,66 +113,6 @@ func TestClearGemsPreservesHeadMetaSocket(t *testing.T) {
 	if gotGems[1] != 0 {
 		t.Fatalf("expected ordinary head gem to be cleared, got %d", gotGems[1])
 	}
-}
-
-func TestPreferHitOverExpertiseReforgesFiltersSameSourceExpertise(t *testing.T) {
-	hasteToExpertise := int32(-101)
-	hasteToHit := int32(-102)
-	critToExpertise := int32(-103)
-	installTestReforges(t,
-		core.ReforgeStat{ID: hasteToExpertise, FromStat: proto.Stat_StatHasteRating, ToStat: proto.Stat_StatExpertiseRating},
-		core.ReforgeStat{ID: hasteToHit, FromStat: proto.Stat_StatHasteRating, ToStat: proto.Stat_StatHitRating},
-		core.ReforgeStat{ID: critToExpertise, FromStat: proto.Stat_StatCritRating, ToStat: proto.Stat_StatExpertiseRating},
-	)
-
-	filtered := preferHitOverExpertiseReforges([]int32{0, hasteToExpertise, hasteToHit, critToExpertise})
-
-	if hasReforgeID(filtered, hasteToExpertise) {
-		t.Fatalf("expected Haste->Expertise to be filtered when Haste->Hit exists, got %v", filtered)
-	}
-	if !hasReforgeID(filtered, hasteToHit) || !hasReforgeID(filtered, critToExpertise) {
-		t.Fatalf("expected Hit alternative and non-duplicate Expertise to remain, got %v", filtered)
-	}
-}
-
-func TestPreferHitOverExpertiseReforgesKeepsExpertiseWithoutHitAlternative(t *testing.T) {
-	hasteToExpertise := int32(-201)
-	critToHit := int32(-202)
-	installTestReforges(t,
-		core.ReforgeStat{ID: hasteToExpertise, FromStat: proto.Stat_StatHasteRating, ToStat: proto.Stat_StatExpertiseRating},
-		core.ReforgeStat{ID: critToHit, FromStat: proto.Stat_StatCritRating, ToStat: proto.Stat_StatHitRating},
-	)
-
-	filtered := preferHitOverExpertiseReforges([]int32{0, hasteToExpertise, critToHit})
-
-	if !hasReforgeID(filtered, hasteToExpertise) {
-		t.Fatalf("expected Haste->Expertise to remain when Haste->Hit is unavailable, got %v", filtered)
-	}
-}
-
-func installTestReforges(t *testing.T, reforges ...core.ReforgeStat) {
-	t.Helper()
-	originals := make(map[int32]core.ReforgeStat, len(reforges))
-	existed := make(map[int32]bool, len(reforges))
-	for _, reforge := range reforges {
-		original, ok := core.ReforgeStatsByID[reforge.ID]
-		originals[reforge.ID] = original
-		existed[reforge.ID] = ok
-		core.ReforgeStatsByID[reforge.ID] = reforge
-	}
-	t.Cleanup(func() {
-		for _, reforge := range reforges {
-			if existed[reforge.ID] {
-				core.ReforgeStatsByID[reforge.ID] = originals[reforge.ID]
-			} else {
-				delete(core.ReforgeStatsByID, reforge.ID)
-			}
-		}
-	})
-}
-
-func hasReforgeID(reforgeIDs []int32, reforgeID int32) bool {
-	return slices.Contains(reforgeIDs, reforgeID)
 }
 
 func findGemOption(options map[proto.GemColor][]reforgeGemOption, id int32) (reforgeGemOption, bool) {

@@ -181,22 +181,32 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 }
 
 func computeReforgeStats(request *proto.ComputeStatsRequest) *proto.ComputeStatsResult {
+	request.SkipRotation = true
 	return core.ComputeStats(request)
 }
 
 func (optimization *reforgeOptimization) searchState() *reforgeSearchState {
+	workingRaid := googleProto.Clone(optimization.baseRaid).(*proto.Raid)
+	choiceVarIdx := make([][]int, len(optimization.slotChoices))
+	for i, slot := range optimization.slotChoices {
+		choiceVarIdx[i] = make([]int, len(slot.choices))
+	}
 	return &reforgeSearchState{
-		request:        optimization.request,
-		baseRaid:       optimization.baseRaid,
-		baseEquipment:  core.ProtoToEquipment(optimization.baseGear),
-		capBaseStats:   optimization.capBaseStats,
-		slots:          optimization.slotChoices,
-		weights:        optimization.weights,
-		hardCaps:       optimization.hardCaps,
-		hardCapsByStat: reforgeHardCapsByStat(optimization.hardCaps),
-		softCaps:       optimization.softCaps,
-		softCapsByStat: reforgeSoftCapsByStat(optimization.softCaps),
-		relativeCaps:   optimization.relativeCaps,
+		request:             optimization.request,
+		baseRaid:            optimization.baseRaid,
+		baseEquipment:       core.ProtoToEquipment(optimization.baseGear),
+		capBaseStats:        optimization.capBaseStats,
+		slots:               optimization.slotChoices,
+		weights:             optimization.weights,
+		hardCaps:            optimization.hardCaps,
+		hardCapsByStat:      reforgeHardCapsByStat(optimization.hardCaps),
+		softCaps:            optimization.softCaps,
+		softCapsByStat:      reforgeSoftCapsByStat(optimization.softCaps),
+		relativeCaps:        optimization.relativeCaps,
+		workingRaid:         workingRaid,
+		workingStatsRequest: &proto.ComputeStatsRequest{Raid: workingRaid},
+		choiceVarIdx:        choiceVarIdx,
+		uniqueGemIDs:        buildUniqueGemLimitIDs(optimization.slotChoices),
 	}
 }
 

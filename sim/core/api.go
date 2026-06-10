@@ -15,7 +15,7 @@ func ComputeStats(csr *proto.ComputeStatsRequest) *proto.ComputeStatsResult {
 		encounter = &proto.Encounter{}
 	}
 
-	_, raidStats, encounterStats := NewEnvironment(csr.Raid, encounter, true)
+	_, raidStats, encounterStats := NewEnvironment(csr.Raid, encounter, !csr.SkipRotation, csr.SkipRotation)
 
 	return &proto.ComputeStatsResult{
 		RaidStats:      raidStats,

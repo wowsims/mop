@@ -188,7 +188,7 @@ func runSim(rsr *proto.RaidSimRequest, progress chan *proto.ProgressMetrics, ski
 }
 
 func NewSim(rsr *proto.RaidSimRequest, signals simsignals.Signals) *Simulation {
-	env, _, _ := NewEnvironment(rsr.Raid, rsr.Encounter, false)
+	env, _, _ := NewEnvironment(rsr.Raid, rsr.Encounter, false, false)
 	return newSimWithEnv(env, rsr.SimOptions, signals)
 }
 

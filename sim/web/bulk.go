@@ -266,7 +266,7 @@ func newBulkSimReforgeOptimizer(request *proto.BulkSimRequest) *bulkSimReforgeOp
 
 func warmBulkSimReforgeDatabase(request *proto.BulkSimRequest) {
 	raid := googleProto.Clone(request.GetBaseRequest().GetRaid()).(*proto.Raid)
-	result := core.ComputeStats(&proto.ComputeStatsRequest{Raid: raid})
+	result := core.ComputeStats(&proto.ComputeStatsRequest{Raid: raid, SkipRotation: true})
 	if result.GetErrorResult() != "" {
 		log.Printf("[Bulk Sim] Reforge database warm-up failed: %s", result.GetErrorResult())
 	}

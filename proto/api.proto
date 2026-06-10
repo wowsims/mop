@@ -599,6 +599,7 @@ message AbortResponse {
 message ComputeStatsRequest {
 	Raid raid = 1;
 	Encounter encounter = 2;
+	bool skip_rotation = 3; // Skip APL rotation init and attack-table setup. Faster; suitable for stat-only reads.
 }
 message AuraStats {
 	ActionID id = 1;
