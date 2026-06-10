@@ -134,10 +134,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
-		// Default breakpoint limits - set 12T MF/SF with 4P
-		breakpointLimits: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, Presets.BALANCE_T14_4P_BREAKPOINTS!.presets.get('12-tick MF/SF')!);
-		})(),
 		softCapBreakpoints: (() => {
 			const hasteBreakpointConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [...Presets.BALANCE_BREAKPOINTS!.presets].map(([_, value]) => value),
