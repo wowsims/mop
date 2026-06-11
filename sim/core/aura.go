@@ -413,7 +413,8 @@ type auraTracker struct {
 	// All registered auras, both active and inactive.
 	auras []*Aura
 
-	aurasByTag map[string][]*Aura
+	aurasByTag   map[string][]*Aura
+	aurasByLabel map[string]*Aura
 
 	// IDs of Auras that may expire and are currently active, in no particular order.
 	activeAuras []*Aura
@@ -440,16 +441,12 @@ func newAuraTracker() auraTracker {
 		resetEffects:           []ResetEffect{},
 		ExclusiveEffectManager: &ExclusiveEffectManager{},
 		aurasByTag:             make(map[string][]*Aura),
+		aurasByLabel:           make(map[string]*Aura),
 	}
 }
 
 func (at *auraTracker) GetAura(label string) *Aura {
-	for _, aura := range at.auras {
-		if aura.Label == label {
-			return aura
-		}
-	}
-	return nil
+	return at.aurasByLabel[label]
 }
 func (at *auraTracker) GetAuras() []*Aura {
 	return at.auras
@@ -515,6 +512,7 @@ func (at *auraTracker) registerAura(unit *Unit, aura Aura) *Aura {
 	newAura.onEncounterStartIndex = Inactive
 
 	at.auras = append(at.auras, newAura)
+	at.aurasByLabel[newAura.Label] = newAura
 	if newAura.Tag != "" {
 		at.aurasByTag[newAura.Tag] = append(at.aurasByTag[newAura.Tag], newAura)
 	}
@@ -627,16 +625,28 @@ func (at *auraTracker) tryAdvance(sim *Simulation) time.Duration {
 }
 
 func (at *auraTracker) advance(sim *Simulation) time.Duration {
-restart:
-	at.minExpires = NeverExpires
-	for _, aura := range at.activeAuras {
-		if aura.expires <= sim.CurrentTime {
-			aura.Deactivate(sim)
-			goto restart // activeAuras have changed
+	var toExpire [16]*Aura
+	for {
+		n := 0
+		at.minExpires = NeverExpires
+		for _, aura := range at.activeAuras {
+			if aura.expires <= sim.CurrentTime {
+				if n < len(toExpire) {
+					toExpire[n] = aura
+				}
+				n++
+			} else {
+				at.minExpires = min(at.minExpires, aura.expires)
+			}
 		}
-		at.minExpires = min(at.minExpires, aura.expires)
+		if n == 0 {
+			return at.minExpires
+		}
+		limit := min(n, len(toExpire))
+		for i := range limit {
+			toExpire[i].Deactivate(sim)
+		}
 	}
-	return at.minExpires
 }
 
 func (at *auraTracker) expireAll(sim *Simulation) {
