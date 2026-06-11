@@ -116,9 +116,6 @@ func (controller *StormEarthAndFireController) CastCopySpell(sim *core.Simulatio
 			}
 			pet.modifyCopySpell(spell, copySpell)
 			copySpell.Cast(sim, pet.CurrentTarget)
-		} else {
-			// Break the loop early because the spell doesn't exist
-			break
 		}
 	}
 }
@@ -168,8 +165,8 @@ func (controller *StormEarthAndFireController) deactivateClone(sim *core.Simulat
 }
 
 func (controller *StormEarthAndFireController) updateActiveClones() {
-	controller.activeClones = make([]*StormEarthAndFirePet, 0, 3)
-	controller.inactiveClones = make([]*StormEarthAndFirePet, 0, 3)
+	controller.activeClones = controller.activeClones[:0]
+	controller.inactiveClones = controller.inactiveClones[:0]
 	for _, pet := range controller.pets {
 		if pet.IsEnabled() {
 			controller.activeClones = append(controller.activeClones, pet)
@@ -202,8 +199,10 @@ func (controller *StormEarthAndFireController) Reset(sim *core.Simulation) {
 
 func (monk *Monk) RegisterSEFPets() {
 	monk.SefController = &StormEarthAndFireController{
-		owner: monk,
-		pets:  make([]*StormEarthAndFirePet, 0, 3),
+		owner:          monk,
+		pets:           make([]*StormEarthAndFirePet, 0, 3),
+		activeClones:   make([]*StormEarthAndFirePet, 0, 3),
+		inactiveClones: make([]*StormEarthAndFirePet, 0, 3),
 	}
 
 	monk.SefController.pets = append(monk.SefController.pets, monk.NewSEFPet("Storm Spirit", 138121, 2.7))
