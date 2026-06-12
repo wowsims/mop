@@ -6,6 +6,7 @@ import (
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
+	googleProto "google.golang.org/protobuf/proto"
 )
 
 func protoToCoreUnitStats(protoStats *proto.UnitStats) core.UnitStats {
@@ -77,6 +78,30 @@ func setUnitStat(unitStats core.UnitStats, unitStat stats.UnitStat, value float6
 	}
 	unitStats.PseudoStats[pseudoStatIdx] = value
 	return unitStats
+}
+
+// resolveStatDelta runs a ComputeStats call with delta injected as Player.BonusStats and returns
+// the resulting stat change relative to baseStats. This resolves stat dependencies (e.g. Agility
+// or Intellect converting to CritPercent) that purely analytical calculations would miss.
+func resolveStatDelta(baseRaid *proto.Raid, baseStats core.UnitStats, delta core.UnitStats) core.UnitStats {
+	if isEmptyUnitStats(delta) {
+		return delta
+	}
+	raid := googleProto.Clone(baseRaid).(*proto.Raid)
+	raid.Parties[0].Players[0].BonusStats = mergedBonusStats(raid.Parties[0].Players[0].BonusStats, delta)
+	result := computeReforgeStats(&proto.ComputeStatsRequest{Raid: raid})
+	if result.ErrorResult != "" {
+		return delta
+	}
+	return subtractUnitStats(protoToCoreUnitStats(result.RaidStats.Parties[0].Players[0].FinalStats), baseStats)
+}
+
+func mergedBonusStats(existing *proto.UnitStats, delta core.UnitStats) *proto.UnitStats {
+	combined := addUnitStats(protoToCoreUnitStats(existing), delta)
+	return &proto.UnitStats{
+		Stats:       slices.Clone(combined.Stats[:]),
+		PseudoStats: combined.PseudoStats,
+	}
 }
 
 func isEmptyUnitStats(unitStats core.UnitStats) bool {

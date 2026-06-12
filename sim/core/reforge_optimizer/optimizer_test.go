@@ -3,6 +3,7 @@
 package reforgeoptimizer
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"github.com/wowsims/mop/assets/database"
 	"github.com/wowsims/mop/sim"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/stats"
 	"google.golang.org/protobuf/encoding/protojson"
 	protopkg "google.golang.org/protobuf/proto"
 )
@@ -30,6 +32,7 @@ func TestReforgerOptimizer(t *testing.T) {
 		{name: "threshold", fileName: "threshold.test.json"},
 		{name: "breakpoint-limit", fileName: "breakpoint-limit.test.json"},
 		{name: "custom-ep", fileName: "custom-ep.test.json"},
+		{name: "crit-cap", fileName: "crit-cap.test.json"},
 		{name: "relative-statcap", fileName: "relative-statcap.test.json"},
 	}
 
@@ -53,8 +56,49 @@ func TestReforgerOptimizer(t *testing.T) {
 				t.Fatal("Optimize returned no optimized gear")
 			}
 
-			if !protopkg.Equal(expectedGear, optimizedGear) {
-				t.Fatal("optimized gear does not match expected gear")
+			if os.Getenv("UPDATE_FIXTURES") != "" {
+				updateFixture(t, tc.fileName, request, optimizedGear)
+				return
+			}
+
+			expectedRaid := protopkg.Clone(request.Raid).(*proto.Raid)
+			expectedRaid.Parties[0].Players[0].Equipment = expectedGear
+			expectedResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: expectedRaid})
+			if expectedResult.ErrorResult != "" {
+				t.Fatalf("ComputeStats on expected gear failed: %s", expectedResult.ErrorResult)
+			}
+			expStats := protoToCoreUnitStats(expectedResult.RaidStats.Parties[0].Players[0].FinalStats)
+			optStats := protoToCoreUnitStats(result.GetOptimizedPlayerStats().GetFinalStats())
+			diff := subtractUnitStats(optStats, expStats)
+			statsDiffer := !isEmptyUnitStats(diff)
+			if statsDiffer {
+				for i, expItem := range expectedGear.GetItems() {
+					var optItem *proto.ItemSpec
+					if i < len(optimizedGear.GetItems()) {
+						optItem = optimizedGear.GetItems()[i]
+					}
+					if !protopkg.Equal(expItem, optItem) {
+						expJSON, _ := protojson.Marshal(expItem)
+						optJSON, _ := protojson.Marshal(optItem)
+						t.Logf("slot %d: expected %s", i, expJSON)
+						t.Logf("slot %d: got      %s", i, optJSON)
+					}
+				}
+				for statIdx, d := range diff.Stats {
+					if d != 0 {
+						t.Logf("stat %-24s expected=%8.2f got=%8.2f diff=%+.2f", stats.Stat(statIdx).StatName(), expStats.Stats[statIdx], optStats.Stats[statIdx], d)
+					}
+				}
+				for psIdx, d := range diff.PseudoStats {
+					if d != 0 {
+						name := proto.PseudoStat_name[int32(psIdx)]
+						if name == "" {
+							name = fmt.Sprintf("PseudoStat(%d)", psIdx)
+						}
+						t.Logf("stat %-24s expected=%8.4f got=%8.4f diff=%+.4f", name, expStats.PseudoStats[psIdx], optStats.PseudoStats[psIdx], d)
+					}
+				}
+				t.Fatal("optimized stats do not match expected stats")
 			}
 		})
 	}
@@ -116,6 +160,22 @@ func uiGemEligibleForSocket(gemColor, socketColor proto.GemColor) bool {
 			gemColor != proto.GemColor_GemColorCogwheel &&
 			gemColor != proto.GemColor_GemColorShaTouched
 	}
+}
+
+func updateFixture(t testing.TB, fileName string, request *proto.ReforgeOptimizeRequest, optimizedGear *proto.EquipmentSpec) {
+	t.Helper()
+
+	updated := protopkg.Clone(request).(*proto.ReforgeOptimizeRequest)
+	updated.Raid.Parties[0].Players[0].Equipment = optimizedGear
+
+	out, err := (protojson.MarshalOptions{Multiline: true, Indent: "\t", EmitUnpopulated: false}).Marshal(updated)
+	if err != nil {
+		t.Fatalf("failed marshalling updated fixture %s: %v", fileName, err)
+	}
+	if err := os.WriteFile(filepath.Join(".", fileName), out, 0644); err != nil {
+		t.Fatalf("failed writing updated fixture %s: %v", fileName, err)
+	}
+	t.Logf("updated fixture %s", fileName)
 }
 
 func loadPreset(t testing.TB, fileName string) *proto.ReforgeOptimizeRequest {

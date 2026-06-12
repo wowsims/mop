@@ -78,7 +78,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 			distributedSocketBonusObjectiveDelta := core.NewUnitStats()
 			if forceSocketBonus && socketBonusSocketCount > 0 {
 				distributedSocketBonus := item.SocketBonus.Multiply(1 / float64(socketBonusSocketCount))
-				distributedSocketBonusDelta = rawUnitStatsFromStats(distributedSocketBonus, ampModifier)
+				distributedSocketBonusDelta = resolveStatDelta(baseRaid, baseStats, rawUnitStatsFromStats(distributedSocketBonus, ampModifier))
 				distributedSocketBonusObjectiveDelta = unitStatsFromStats(distributedSocketBonus, weights, ampModifier, spiritToSpellHit)
 			}
 			variableSocketIdxs := make([]int, 0, len(socketColors))
@@ -125,7 +125,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 				}
 			}
 			if !forceSocketBonus && len(variableSocketIdxs) > 0 && hasSocketBonus(*item) {
-				socketBonusDelta := rawUnitStatsFromStats(item.SocketBonus, ampModifier)
+				socketBonusDelta := resolveStatDelta(baseRaid, baseStats, rawUnitStatsFromStats(item.SocketBonus, ampModifier))
 				socketBonusObjectiveDelta := unitStatsFromStats(item.SocketBonus, weights, ampModifier, spiritToSpellHit)
 				allSlots = append(allSlots, reforgeSlotChoices{slot: slot, choices: []reforgeChoice{
 					{slot: slot, socketBonus: true},
@@ -186,7 +186,6 @@ func computeChoiceDeltas(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, ba
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 	workerCount := getReforgeChoiceDeltaConcurrency()
-
 	for range workerCount {
 		wg.Add(1)
 		go func() {
@@ -405,6 +404,13 @@ func reforgeDelta(item core.Item, reforge core.ReforgeStat, weights core.UnitSta
 	return unitStatsFromStats(delta, weights, ampModifier, spiritToSpellHit)
 }
 
+func applyAmpModifier(stat stats.Stat, amount, ampModifier float64) float64 {
+	if stat == stats.HasteRating || stat == stats.MasteryRating || stat == stats.Spirit {
+		return amount * ampModifier
+	}
+	return amount
+}
+
 func rawUnitStatsFromStats(statValues stats.Stats, ampModifier float64) core.UnitStats {
 	unitStats := core.NewUnitStats()
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
@@ -412,11 +418,7 @@ func rawUnitStatsFromStats(statValues stats.Stats, ampModifier float64) core.Uni
 		if amount == 0 {
 			continue
 		}
-		stat := stats.Stat(statIdx)
-		if stat == stats.HasteRating || stat == stats.MasteryRating || stat == stats.Spirit {
-			amount *= ampModifier
-		}
-		unitStats.Stats[statIdx] += amount
+		unitStats.Stats[statIdx] += applyAmpModifier(stats.Stat(statIdx), amount, ampModifier)
 	}
 	return unitStats
 }
@@ -429,9 +431,7 @@ func unitStatsFromStats(statValues stats.Stats, weights core.UnitStats, ampModif
 			continue
 		}
 		stat := stats.Stat(statIdx)
-		if stat == stats.HasteRating || stat == stats.MasteryRating || stat == stats.Spirit {
-			amount *= ampModifier
-		}
+		amount = applyAmpModifier(stat, amount, ampModifier)
 		if weights.Stats[statIdx] != 0 {
 			unitStats.Stats[statIdx] += amount
 			continue
