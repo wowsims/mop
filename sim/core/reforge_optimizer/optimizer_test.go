@@ -29,6 +29,7 @@ func TestReforgerOptimizer(t *testing.T) {
 		{name: "expertise", fileName: "expertise.test.json"},
 		{name: "threshold", fileName: "threshold.test.json"},
 		{name: "breakpoint-limit", fileName: "breakpoint-limit.test.json"},
+		{name: "custom-ep", fileName: "custom-ep.test.json"},
 		{name: "relative-statcap", fileName: "relative-statcap.test.json"},
 	}
 

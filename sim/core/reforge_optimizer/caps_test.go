@@ -64,6 +64,7 @@ func TestValidateReforgeOptimizeSettingsReturnsNormalizedSoftCaps(t *testing.T) 
 	breakpointLimits[proto.PseudoStat_PseudoStatSpellHastePercent] = 50
 	request := &proto.ReforgeOptimizeRequest{
 		Settings: &proto.ReforgeSettings{
+			UseSoftCapBreakpoints: true,
 			BreakpointLimits: &proto.UnitStats{
 				PseudoStats: breakpointLimits,
 			},
@@ -95,7 +96,7 @@ func TestValidateReforgeOptimizeSettingsReturnsNormalizedSoftCaps(t *testing.T) 
 
 func TestValidateReforgeOptimizeSettingsInfersThresholdLimit(t *testing.T) {
 	request := &proto.ReforgeOptimizeRequest{
-		Settings: &proto.ReforgeSettings{},
+		Settings: &proto.ReforgeSettings{UseSoftCapBreakpoints: true},
 		SoftCaps: []*proto.StatCapConfig{onStatCapConfig(proto.PseudoStat_PseudoStatSpellHastePercent, proto.StatCapType_TypeThreshold,
 			[]float64{37.520, 62.470, 87.441, 50.000}, []float64{204, 170})},
 	}
@@ -138,7 +139,7 @@ func TestNormalizeThresholdBreakpointsUsesFinalPostCapEPForFinalBreakpoint(t *te
 
 func TestBuildReforgeSoftCapsPreservesThresholdPostCapPairings(t *testing.T) {
 	request := &proto.ReforgeOptimizeRequest{
-		Settings: &proto.ReforgeSettings{BreakpointLimits: &proto.UnitStats{PseudoStats: make([]float64, int(proto.PseudoStat_PseudoStatSpellHastePercent)+1)}},
+		Settings: &proto.ReforgeSettings{UseSoftCapBreakpoints: true, BreakpointLimits: &proto.UnitStats{PseudoStats: make([]float64, int(proto.PseudoStat_PseudoStatSpellHastePercent)+1)}},
 		SoftCaps: []*proto.StatCapConfig{onStatCapConfig(proto.PseudoStat_PseudoStatSpellHastePercent, proto.StatCapType_TypeThreshold,
 			[]float64{37.520, 62.470, 87.441, 50.000}, []float64{204, 195.5, 180, 170})},
 	}

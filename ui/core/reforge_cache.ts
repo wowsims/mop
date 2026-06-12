@@ -13,7 +13,7 @@ import { IndividualSimUI } from './individual_sim_ui';
 import { sleep } from './utils';
 
 const REFORGE_CACHE_DB_NAME = `${LOCAL_STORAGE_PREFIX}_reforge-cache`;
-const REFORGE_CACHE_DB_VERSION = 2;
+const REFORGE_CACHE_DB_VERSION = 3;
 const REFORGE_CACHE_MAX_ENTRIES = 200_000;
 const REFORGE_CACHE_KEY_PREFIX = `v${REFORGE_CACHE_DB_VERSION}:api-v${CURRENT_API_VERSION}:`;
 const REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX = 'equipmentSpec:';

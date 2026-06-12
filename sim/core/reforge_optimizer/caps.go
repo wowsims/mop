@@ -20,23 +20,25 @@ func validateReforgeOptimizeSettings(request *proto.ReforgeOptimizeRequest) (*no
 	}
 
 	normalizedSoftCaps := make([]*proto.StatCapConfig, 0, len(request.GetSoftCaps()))
-	for _, config := range request.GetSoftCaps() {
-		unitStat, ok := unitStatFromUIStat(config.GetUnitStat())
-		if !ok {
-			return nil, fmt.Errorf("reforge optimizer soft cap is missing a stat")
-		}
+	if settings.GetUseSoftCapBreakpoints() {
+		for _, config := range request.GetSoftCaps() {
+			unitStat, ok := unitStatFromUIStat(config.GetUnitStat())
+			if !ok {
+				return nil, fmt.Errorf("reforge optimizer soft cap is missing a stat")
+			}
 
-		breakpointLimit := getProtoUnitStat(settings.GetBreakpointLimits(), unitStat)
-		if breakpointLimit == 0 {
-			breakpointLimit = inferThresholdBreakpointLimit(config)
+			breakpointLimit := getProtoUnitStat(settings.GetBreakpointLimits(), unitStat)
+			if breakpointLimit == 0 {
+				breakpointLimit = inferThresholdBreakpointLimit(config)
+			}
+			breakpoints, postCapEPs := normalizeSoftCapBreakpoints(config, breakpointLimit)
+			normalizedSoftCaps = append(normalizedSoftCaps, &proto.StatCapConfig{
+				UnitStat:    config.GetUnitStat(),
+				Breakpoints: breakpoints,
+				PostCap_EPs: postCapEPs,
+				CapType:     config.GetCapType(),
+			})
 		}
-		breakpoints, postCapEPs := normalizeSoftCapBreakpoints(config, breakpointLimit)
-		normalizedSoftCaps = append(normalizedSoftCaps, &proto.StatCapConfig{
-			UnitStat:    config.GetUnitStat(),
-			Breakpoints: breakpoints,
-			PostCap_EPs: postCapEPs,
-			CapType:     config.GetCapType(),
-		})
 	}
 	slices.SortStableFunc(normalizedSoftCaps, func(a, b *proto.StatCapConfig) int {
 		left := formatUIStat(a.GetUnitStat())
