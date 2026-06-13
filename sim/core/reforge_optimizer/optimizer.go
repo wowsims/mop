@@ -93,23 +93,29 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 	}
 
 	optimizedGear := optimization.optimizedGear(choices)
+	isBulk := request.GetMode() == proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk
 
-	optimizedRaid := googleProto.Clone(request.Raid).(*proto.Raid)
-	optimizedRaid.Parties[0].Players[0].Equipment = optimizedGear
-	optimizedResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: optimizedRaid})
-	if optimizedResult.ErrorResult != "" {
-		log.Printf("[reforgeOptimize:%d] failed computing optimized stats after %s: %s", requestID, time.Since(startedAt), optimizedResult.ErrorResult)
-		return optimizeError(optimizedResult.ErrorResult)
+	// Skip the final stats computation in bulk mode — callers only use OptimizedGear.
+	var optimizedPlayerStats *proto.PlayerStats
+	if !isBulk || debug {
+		optimizedRaid := googleProto.Clone(request.Raid).(*proto.Raid)
+		optimizedRaid.Parties[0].Players[0].Equipment = optimizedGear
+		optimizedResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: optimizedRaid})
+		if optimizedResult.ErrorResult != "" {
+			log.Printf("[reforgeOptimize:%d] failed computing optimized stats after %s: %s", requestID, time.Since(startedAt), optimizedResult.ErrorResult)
+			return optimizeError(optimizedResult.ErrorResult)
+		}
+		if debug {
+			optimizedStats := protoToCoreUnitStats(optimizedResult.RaidStats.Parties[0].Players[0].FinalStats)
+			optimizedCapStats := optimizedStats
+			optimizedCapStats.Stats[stats.MasteryRating] += 8 * core.MasteryRatingPerMasteryPoint
+			optimizedDelta := subtractUnitStats(optimizedCapStats, optimization.capBaseStats)
+			logOptimizedGearSummary(requestID, optimizedGear)
+			logCapEvaluation(requestID, search.hardCaps, search.softCaps, optimizedDelta)
+		}
+		optimizedPlayerStats = optimizedResult.RaidStats.Parties[0].Players[0]
 	}
-	optimizedStats := protoToCoreUnitStats(optimizedResult.RaidStats.Parties[0].Players[0].FinalStats)
-	optimizedCapStats := optimizedStats
-	optimizedCapStats.Stats[stats.MasteryRating] += 8 * core.MasteryRatingPerMasteryPoint
-	optimizedDelta := subtractUnitStats(optimizedCapStats, optimization.capBaseStats)
-	if debug {
-		logOptimizedGearSummary(requestID, optimizedGear)
-		logCapEvaluation(requestID, search.hardCaps, search.softCaps, optimizedDelta)
-	}
-	if request.GetMode() != proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk {
+	if !isBulk {
 		log.Printf("[Reforge Optimizer] Reforge optimization completed requestID=%d total=%s score=%.3f", requestID, time.Since(startedAt), score)
 	}
 	if debug {
@@ -119,7 +125,7 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 
 	return &proto.ReforgeOptimizeResult{
 		OptimizedGear:        optimizedGear,
-		OptimizedPlayerStats: optimizedResult.RaidStats.Parties[0].Players[0],
+		OptimizedPlayerStats: optimizedPlayerStats,
 		Score:                score,
 		PassesDone:           1,
 	}
@@ -139,7 +145,7 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 	player := baseRaid.Parties[0].Players[0]
 	player.Equipment = baseGear
 
-	baseResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: baseRaid})
+	baseResult, statDeps := computeReforgeStatsAndDeps(&proto.ComputeStatsRequest{Raid: baseRaid})
 	if baseResult.ErrorResult != "" {
 		return nil, errors.New(baseResult.ErrorResult)
 	}
@@ -159,7 +165,7 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 	weights = applyRelativeStatCapWeights(weights, relativeCaps)
 	gemSortWeights := relativeStatCapGemSortWeights(weights, relativeCaps)
 
-	slotChoices, err := buildReforgeSlotChoices(request, baseRaid, baseGear, baseStats, weights, gemSortWeights, hardCaps, softCaps, len(relativeCaps) > 0, signals)
+	slotChoices, err := buildReforgeSlotChoices(request, baseRaid, baseGear, baseStats, weights, gemSortWeights, hardCaps, softCaps, len(relativeCaps) > 0, statDeps)
 	if err != nil {
 		return nil, err
 	}
@@ -183,6 +189,11 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 func computeReforgeStats(request *proto.ComputeStatsRequest) *proto.ComputeStatsResult {
 	request.SkipRotation = true
 	return core.ComputeStats(request)
+}
+
+func computeReforgeStatsAndDeps(request *proto.ComputeStatsRequest) (*proto.ComputeStatsResult, *stats.StatDependencyManager) {
+	request.SkipRotation = true
+	return core.ComputeStatsAndDeps(request)
 }
 
 func (optimization *reforgeOptimization) searchState() *reforgeSearchState {

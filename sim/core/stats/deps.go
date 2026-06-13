@@ -261,6 +261,18 @@ func (sdm *StatDependencyManager) SortAndApplyStatDependencies(s Stats) Stats {
 	return sdm.ApplyStatDependencies(s)
 }
 
+// GetStatDependencyCoeff returns the combined linear coefficient for how much of dst
+// is gained per unit of src from all currently-enabled dependencies. For same-stat
+// dependencies (multipliers), returns the combined multiplier (or 0 if none).
+func (sdm *StatDependencyManager) GetStatDependencyCoeff(src, dst Stat) float64 {
+	for _, dep := range sdm.deps {
+		if dep.enabled && dep.src == src && dep.dst == dst {
+			return dep.amount
+		}
+	}
+	return 0
+}
+
 // Returns whether the state changed.
 func (sdm *StatDependencyManager) EnableDynamicStatDep(dep *StatDependency) bool {
 	if !dep.enabled {

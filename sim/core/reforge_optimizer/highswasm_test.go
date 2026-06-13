@@ -22,9 +22,9 @@ func TestDefaultHiGHSWasmRuntimeConcurrency(t *testing.T) {
 		want   int
 	}{
 		{numCPU: 1, want: 1},
-		{numCPU: 2, want: 1},
-		{numCPU: 4, want: 2},
-		{numCPU: 18, want: 12},
+		{numCPU: 2, want: 2},
+		{numCPU: 4, want: 4},
+		{numCPU: 18, want: 18},
 	}
 
 	for _, testCase := range testCases {

@@ -6,8 +6,18 @@ import (
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
-	googleProto "google.golang.org/protobuf/proto"
 )
+
+// hasteRatingSpeedMultiplierPairs maps each haste% pseudo-stat to the speed multiplier
+// pseudo-stat stored by GetPseudoStatsProto (MeleeSpeedMult * AttackSpeedMult, etc.).
+var hasteRatingSpeedMultiplierPairs = [3]struct {
+	hastePS     proto.PseudoStat
+	speedMultPS proto.PseudoStat
+}{
+	{proto.PseudoStat_PseudoStatMeleeHastePercent, proto.PseudoStat_PseudoStatMeleeSpeedMultiplier},
+	{proto.PseudoStat_PseudoStatRangedHastePercent, proto.PseudoStat_PseudoStatRangedSpeedMultiplier},
+	{proto.PseudoStat_PseudoStatSpellHastePercent, proto.PseudoStat_PseudoStatCastSpeedMultiplier},
+}
 
 func protoToCoreUnitStats(protoStats *proto.UnitStats) core.UnitStats {
 	if protoStats == nil {
@@ -80,28 +90,41 @@ func setUnitStat(unitStats core.UnitStats, unitStat stats.UnitStat, value float6
 	return unitStats
 }
 
-// resolveStatDelta runs a ComputeStats call with delta injected as Player.BonusStats and returns
-// the resulting stat change relative to baseStats. This resolves stat dependencies (e.g. Agility
-// or Intellect converting to CritPercent) that purely analytical calculations would miss.
-func resolveStatDelta(baseRaid *proto.Raid, baseStats core.UnitStats, delta core.UnitStats) core.UnitStats {
+// resolveStatDelta applies the character's stat dependency graph to delta, resolving
+// conversions such as Agility → PhysicalCritPercent and Intellect → SpellCritPercent.
+// It also mirrors the resolved Stats values back to their corresponding PseudoStats
+// so that LP constraint evaluation (which reads PseudoStats for crit/hit/haste caps)
+// sees the correct contribution.
+//
+// Haste% is multiplicative with a speed multiplier that is not captured by the dep
+// manager. We read it from baseStats.PseudoStats (populated by GetPseudoStatsProto):
+//
+//	Δhaste% = speedMult * ΔHasteRating / HasteRatingPerHastePercent
+func resolveStatDelta(sdm *stats.StatDependencyManager, baseStats core.UnitStats, delta core.UnitStats) core.UnitStats {
 	if isEmptyUnitStats(delta) {
 		return delta
 	}
-	raid := googleProto.Clone(baseRaid).(*proto.Raid)
-	raid.Parties[0].Players[0].BonusStats = mergedBonusStats(raid.Parties[0].Players[0].BonusStats, delta)
-	result := computeReforgeStats(&proto.ComputeStatsRequest{Raid: raid})
-	if result.ErrorResult != "" {
-		return delta
-	}
-	return subtractUnitStats(protoToCoreUnitStats(result.RaidStats.Parties[0].Players[0].FinalStats), baseStats)
-}
+	delta.Stats = sdm.ApplyStatDependencies(delta.Stats)
 
-func mergedBonusStats(existing *proto.UnitStats, delta core.UnitStats) *proto.UnitStats {
-	combined := addUnitStats(protoToCoreUnitStats(existing), delta)
-	return &proto.UnitStats{
-		Stats:       slices.Clone(combined.Stats[:]),
-		PseudoStats: combined.PseudoStats,
+	// Mirror dual-stored stats from Stats back to PseudoStats so cap constraints
+	// that evaluate via PseudoStat indices see the resolved values.
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalCritPercent), delta.Stats[stats.PhysicalCritPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellCritPercent), delta.Stats[stats.SpellCritPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalHitPercent), delta.Stats[stats.PhysicalHitPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellHitPercent), delta.Stats[stats.SpellHitPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatBlockPercent), delta.Stats[stats.BlockPercent])
+
+	// Haste% pseudo-stats: read speed multipliers from baseStats.PseudoStats, which
+	// are populated by GetPseudoStatsProto (MeleeSpeedMultiplier = MeleeSpeedMult *
+	// AttackSpeedMult, etc.). Δhaste% = speedMult * ΔHR / HasteRatingPerHastePercent.
+	if hasteRatingDelta := delta.Stats[stats.HasteRating]; hasteRatingDelta != 0 {
+		for _, p := range hasteRatingSpeedMultiplierPairs {
+			speedMult := getUnitStat(baseStats, stats.UnitStatFromPseudoStat(p.speedMultPS))
+			delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(p.hastePS), speedMult*hasteRatingDelta/core.HasteRatingPerHastePercent)
+		}
 	}
+
+	return delta
 }
 
 func isEmptyUnitStats(unitStats core.UnitStats) bool {

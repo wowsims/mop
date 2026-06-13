@@ -167,7 +167,7 @@ func getHiGHSWasmRuntimeConcurrency() int {
 }
 
 func defaultHiGHSWasmRuntimeConcurrency(numCPU int) int {
-	return max(1, numCPU*2/3)
+	return max(1, numCPU)
 }
 
 func acquireHiGHSWasmRuntime() (*highsWasmRuntime, error) {

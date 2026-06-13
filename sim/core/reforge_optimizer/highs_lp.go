@@ -15,10 +15,18 @@ func modelToHiGHSLP(model mipModel) string {
 	objective.WriteString(" obj:")
 	objectiveTerms := 0
 	for variableIdx, variable := range model.variables {
-		if variable.objective == 0 {
-			continue
+		obj := variable.objective
+		if obj == 0 {
+			// Write a tiny negative penalty for zero-objective integer variables so
+			// HiGHS branch-and-bound prefers leaving them unset rather than arbitrarily
+			// fixing them to 1 (which it may do when objective coefficient is absent).
+			// The penalty is negligible vs any real EP difference (< 1e-3 per unit).
+			if !variable.integer {
+				continue
+			}
+			obj = -1e-6
 		}
-		writeLPTerm(&objective, objectiveTerms == 0, variable.objective, variableIdx)
+		writeLPTerm(&objective, objectiveTerms == 0, obj, variableIdx)
 		objectiveTerms++
 	}
 	if objectiveTerms == 0 {

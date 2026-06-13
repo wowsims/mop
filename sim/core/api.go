@@ -4,6 +4,7 @@ package core
 import (
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
+	"github.com/wowsims/mop/sim/core/stats"
 )
 
 /**
@@ -21,6 +22,41 @@ func ComputeStats(csr *proto.ComputeStatsRequest) *proto.ComputeStatsResult {
 		RaidStats:      raidStats,
 		EncounterStats: encounterStats,
 	}
+}
+
+// ComputeStatDependencies builds a character from the request and returns its finalized
+// StatDependencyManager. This is lightweight compared to ComputeStats — it builds the
+// character and resolves all stat dependencies, but does not run the simulation.
+func ComputeStatDependencies(request *proto.ComputeStatsRequest) *stats.StatDependencyManager {
+	_, sdm := ComputeStatsAndDeps(request)
+	return sdm
+}
+
+// ComputeStatsAndDeps combines a skip-rotation ComputeStats with ComputeStatDependencies
+// in a single NewEnvironment call. Use this when both are needed for the same raid to
+// avoid building the character environment twice.
+func ComputeStatsAndDeps(request *proto.ComputeStatsRequest) (*proto.ComputeStatsResult, *stats.StatDependencyManager) {
+	encounter := request.Encounter
+	if encounter == nil {
+		encounter = &proto.Encounter{}
+	}
+	env, raidStats, encounterStats := NewEnvironment(request.Raid, encounter, false, true)
+	result := &proto.ComputeStatsResult{
+		RaidStats:      raidStats,
+		EncounterStats: encounterStats,
+	}
+	if len(env.Raid.Parties) == 0 || len(env.Raid.Parties[0].Players) == 0 {
+		return result, &stats.StatDependencyManager{}
+	}
+	character := env.Raid.Parties[0].Players[0].GetCharacter()
+	// FillPlayerStats (called inside NewEnvironment) activates build-phase auras to
+	// compute FinalStats, then clears them — leaving dynamic deps (e.g. Bear Form's
+	// CritRating×1.5) disabled. Re-apply base-phase auras only so that starting-form
+	// multipliers are active in the returned SDM without also enabling talent/gear/buff
+	// deps that are already handled analytically in the optimizer's choice evaluation.
+	character.applyBuildPhaseAuras(CharacterBuildPhaseBase)
+	sdm := character.StatDependencyManager
+	return result, &sdm
 }
 
 /**
