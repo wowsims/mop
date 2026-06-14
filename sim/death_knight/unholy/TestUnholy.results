@@ -1713,8 +1713,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-RuneofRazorice-3370"
  value: {
-  dps: 403274.52933
-  tps: 290101.15792
+  dps: 403233.51743
+  tps: 290060.14601
   hps: 20.83558
  }
 }
