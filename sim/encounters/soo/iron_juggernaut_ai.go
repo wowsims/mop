@@ -441,16 +441,23 @@ func (ai *IronJuggernautAI) Reset(sim *core.Simulation) {
 	ai.Target.Enable(sim)
 	ai.Target.AutoAttacks.EnableAutoSwing(sim)
 	ai.Target.AutoAttacks.RandomizeMeleeTiming(sim)
-	ai.TankUnit.PseudoStats.InFrontOfTarget = true
 
 	ai.fakeTauntPendingAction.Cancel(sim)
 	ai.targetSwapPendingAction.Cancel(sim)
 
-	ai.VengeanceAura = ai.TankUnit.GetAura("Vengeance")
 	ai.priorVengeanceEstimate = 0
+
+	if ai.TankUnit != nil {
+		ai.TankUnit.PseudoStats.InFrontOfTarget = true
+		ai.VengeanceAura = ai.TankUnit.GetAura("Vengeance")
+	}
 }
 
 func (ai *IronJuggernautAI) ExecuteCustomRotation(sim *core.Simulation) {
+	if ai.TankUnit == nil {
+		return
+	}
+
 	target := ai.Target.CurrentTarget
 
 	if ai.LaserBurn.IsReady(sim) {

@@ -15,7 +15,7 @@ import * as Presets from './presets';
 
 const P2HitPostCapEPs = [0, 0];
 const P3HitPostCapEPs = [0.42 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT, 0];
-const P5HitPostCapEPs = [1.18 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT, 0];
+const P5HitPostCapEPs = [0.42 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT, 0];
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecFuryWarrior, {
 	cssClass: 'fury-warrior-sim-ui',
@@ -223,7 +223,7 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 							breakpoints: [53],
 							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
+							postCapEPs: [epWeights.getStat(Stat.StatMasteryRating) * 0.8 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
 						}),
 					);
 				}

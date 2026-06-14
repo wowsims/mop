@@ -251,11 +251,15 @@ func init() {
 				continue
 			}
 
+			// Wowhead lists an 8ms proc cooldown on Razor Frost (50401), but it is not
+			// enforced in-game: logs show same-millisecond double procs from an OH auto +
+			// OH special (https://classic.warcraftlogs.com/reports/mjRP7htDnYNdLF31?fight=26&source=28&type=damage-done&view=events&start=9741342&end=9741442)
+			// and two T16 Frozen Power procs 1ms apart
+			// (https://classic.warcraftlogs.com/reports/6Mn3mZKPyjtrWVvT?fight=1&source=4).
 			aura := character.MakeProcTriggerAura(core.ProcTrigger{
 				Name:     fmt.Sprintf("Razor Frost %s", itemSlot),
 				Callback: core.CallbackOnSpellHitDealt,
 				Outcome:  core.OutcomeLanded,
-				ICD:      time.Millisecond * 8,
 				ProcMask: procMask,
 				DPM:      dpm,
 				Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {

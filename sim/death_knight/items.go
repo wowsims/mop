@@ -264,11 +264,14 @@ var ItemSetBattleplateOfCyclopeanDread = core.NewItemSet(core.ItemSet{
 					},
 				})
 			} else if dk.Spec == proto.Spec_SpecFrostDeathKnight {
+				// Frozen Power is missing both the "Suppress Weapon Effects" and "Suppress
+				// Caster Procs" flags in-game: WCL logs show it feeding MH weapon enchant
+				// procs (Fallen Crusader) and trinket triggers (Fusion-Fire Core cleave).
 				frozenPowerSpell := dk.RegisterSpell(core.SpellConfig{
 					ActionID:       core.ActionID{SpellID: 147620},
 					SpellSchool:    core.SpellSchoolFrost,
-					ProcMask:       core.ProcMaskEmpty,
-					Flags:          core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete | core.SpellFlagNoOnDamageDealt,
+					ProcMask:       core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeProc,
+					Flags:          core.SpellFlagPassiveSpell | core.SpellFlagNoOnCastComplete,
 					ClassSpellMask: DeathKnightSpellFrozenPower,
 
 					DamageMultiplier: 1,
@@ -287,8 +290,11 @@ var ItemSetBattleplateOfCyclopeanDread = core.NewItemSet(core.ItemSet{
 					}
 
 					dk.PillarOfFrostAura.AttachProcTrigger(core.ProcTrigger{
-						Callback:           core.CallbackOnSpellHitDealt,
-						ProcMask:           core.ProcMaskSpecial,
+						Callback: core.CallbackOnSpellHitDealt,
+						ProcMask: core.ProcMaskSpecial,
+						// Frozen Power carries ProcMaskMeleeProc so it can feed other proc
+						// systems, but it does not re-trigger itself (WCL-verified).
+						ProcMaskExclude:    core.ProcMaskProc,
 						Outcome:            core.OutcomeLanded,
 						RequireDamageDealt: true,
 
