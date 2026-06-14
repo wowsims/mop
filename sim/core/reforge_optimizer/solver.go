@@ -57,7 +57,7 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 	softCaps := cloneSoftCaps(search.softCaps)
 	relativeCaps := slices.Clone(search.relativeCaps)
 	statConstraints := make([]mipStatConstraint, 0, len(search.hardCaps)+len(search.softCaps))
-	constrainedStats := map[stats.UnitStat]bool{}
+	constrainedStats := make(map[stats.UnitStat]bool, len(search.hardCaps)+1)
 	maxPasses := max(1, 2*(len(search.hardCaps)+countSoftCapBreakpoints(search.softCaps)+1))
 	deadline := time.Now().Add(highsOptimizerTimeout(search))
 	debug := reforgeDebug(search)
@@ -92,6 +92,9 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 			solveDuration = time.Since(solveStartedAt)
 		}
 		if err != nil || !ok {
+			if debug {
+				log.Printf("[reforgeOptimize] HiGHS pass=%d failure vars=%d constraints=%d err=%v", passIdx+1, len(model.variables), len(model.constraints), err)
+			}
 			return nil, 0, ok, err
 		}
 
@@ -264,7 +267,7 @@ func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, sta
 	}
 
 	for _, statConstraint := range statConstraints {
-		constraint := newMIPConstraint(statConstraint.lower, statConstraint.upper, 0)
+		constraint := newMIPConstraint(statConstraint.lower, statConstraint.upper, variableCount)
 		for slotIdx, slot := range search.slots {
 			for choiceIdx, choice := range slot.choices {
 				if choiceVarIdx[slotIdx][choiceIdx] < 0 {

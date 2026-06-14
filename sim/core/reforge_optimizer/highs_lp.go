@@ -9,9 +9,13 @@ import (
 const highsLPMaxLineLength = 200
 
 func modelToHiGHSLP(model mipModel) string {
+	// Pre-size to avoid repeated doubling as the LP string grows.
+	// Rough estimate: ~36 bytes/variable (objective term + binary line) + ~60 bytes/constraint.
 	var builder strings.Builder
+	builder.Grow(32 + len(model.variables)*36 + len(model.constraints)*60)
 	builder.WriteString("Maximize\n")
 	var objective strings.Builder
+	objective.Grow(8 + len(model.variables)*28)
 	objective.WriteString(" obj:")
 	objectiveTerms := 0
 	for variableIdx, variable := range model.variables {
@@ -70,6 +74,8 @@ func modelToHiGHSLP(model mipModel) string {
 
 func writeLPConstraint(builder *strings.Builder, constraintIdx int, constraint mipConstraint, operator string, bound float64) {
 	var line strings.Builder
+	// Pre-size: ~10 chars header + ~28 chars/coefficient + ~20 chars operator+bound.
+	line.Grow(10 + constraint.coefficientCount()*28 + 20)
 	line.WriteString(" c")
 	line.WriteString(strconv.Itoa(constraintIdx))
 	line.WriteByte(':')

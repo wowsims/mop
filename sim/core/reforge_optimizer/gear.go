@@ -60,7 +60,7 @@ func (editor *reforgeGearEditor) applyChoice(choice reforgeChoice) {
 		if choice.reforgeID == 0 {
 			item.Reforging = nil
 		} else {
-			reforge := core.ReforgeStatsByID[choice.reforgeID]
+			reforge := core.GetReforgeStatByID(choice.reforgeID)
 			item.Reforging = &reforge
 		}
 	}
@@ -109,8 +109,8 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 				continue
 			}
 
-			newGem, newGemOk := core.GemsByID[newGemID]
-			originalGem, originalGemOk := core.GemsByID[originalGemID]
+			newGem, newGemOk := core.GetGemByID(newGemID)
+			originalGem, originalGemOk := core.GetGemByID(originalGemID)
 			if !newGemOk || !originalGemOk {
 				continue
 			}
@@ -196,7 +196,7 @@ func gemFromID(gemID int32) core.Gem {
 	if gemID == 0 {
 		return core.Gem{}
 	}
-	if gem, ok := core.GemsByID[gemID]; ok {
+	if gem, ok := core.GetGemByID(gemID); ok {
 		return gem
 	}
 	return core.Gem{ID: gemID}

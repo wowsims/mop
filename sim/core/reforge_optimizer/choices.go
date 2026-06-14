@@ -5,6 +5,7 @@ import (
 	"maps"
 	"math"
 	"slices"
+	"sync"
 
 	"github.com/wowsims/mop/sim/common/mop"
 	"github.com/wowsims/mop/sim/common/shared"
@@ -14,6 +15,21 @@ import (
 )
 
 var amplificationTrinketItemIDs = buildAmplificationTrinketItemIDSet()
+
+// sortedReforgeStatIDsOnce caches the sorted reforge stat IDs locally so the
+// optimizer avoids rebuilding the sorted slice on every candidate. The database
+// is populated once before any optimization runs, so this cache is stable.
+var (
+	sortedReforgeStatIDsOnce   sync.Once
+	sortedReforgeStatIDsCached []int32
+)
+
+func getSortedReforgeStatIDs() []int32 {
+	sortedReforgeStatIDsOnce.Do(func() {
+		sortedReforgeStatIDsCached = core.GetSortedReforgeStatIDs()
+	})
+	return sortedReforgeStatIDsCached
+}
 
 func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, baseStats core.UnitStats, weights core.UnitStats, gemSortWeights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, hasRelativeStatCap bool, statDeps *stats.StatDependencyManager) ([]reforgeSlotChoices, error) {
 	frozenSlots := frozenItemSlots(request.GetSettings())
@@ -25,7 +41,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 	spiritToSpellHit := playerIsHybridCaster(player)
 	gemOptions := buildReforgeGemOptions(request, player, gemSortWeights, hardCaps, softCaps, ampModifier, hasRelativeStatCap, spiritToSpellHit)
 	allowedReforgeToStats := allowedReforgeDestinationStats(request.GetPreCapEpWeights())
-	reforgeIDs := slices.Sorted(maps.Keys(core.ReforgeStatsByID))
+	reforgeIDs := getSortedReforgeStatIDs()
 	baseEquipment := core.ProtoToEquipment(baseGear)
 
 	allSlots := make([]reforgeSlotChoices, 0, int(core.NumItemSlots))
@@ -38,7 +54,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 
 		itemReforgeIDs := []int32{0}
 		for _, reforgeID := range reforgeIDs {
-			reforge := core.ReforgeStatsByID[reforgeID]
+			reforge := core.GetReforgeStatByID(reforgeID)
 			toStat := stats.Stat(reforge.ToStat)
 			if !allowedReforgeToStats[toStat] && toStat != stats.ExpertiseRating {
 				continue
@@ -55,7 +71,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 		for _, reforgeID := range itemReforgeIDs {
 			choice := reforgeChoice{slot: slot, hasReforge: true, reforgeID: reforgeID}
 			if reforgeID != 0 {
-				choice.objectiveDelta = reforgeDelta(*item, core.ReforgeStatsByID[reforgeID], weights, ampModifier, spiritToSpellHit)
+				choice.objectiveDelta = reforgeDelta(*item, core.GetReforgeStatByID(reforgeID), weights, ampModifier, spiritToSpellHit)
 				choice.score = dotUnitStats(choice.objectiveDelta, weights)
 			}
 			choices = append(choices, choice)
@@ -85,7 +101,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 					if !gemEligibleForSocket(gemOption.color, socketColor) {
 						return
 					}
-					gem, ok := core.GemsByID[gemOption.id]
+					gem, ok := core.GetGemByID(gemOption.id)
 					if !ok {
 						return
 					}

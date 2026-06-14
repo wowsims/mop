@@ -12,6 +12,7 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
 	"github.com/wowsims/mop/sim/core/stats"
+	"google.golang.org/protobuf/encoding/protojson"
 	googleProto "google.golang.org/protobuf/proto"
 )
 
@@ -75,11 +76,15 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 			}
 			return optimizeAborted()
 		}
-		log.Printf("[reforgeOptimize:%d] HiGHS failed after %s: %s", requestID, time.Since(solveStartedAt), err.Error())
+		gear := request.GetRaid().GetParties()[0].GetPlayers()[0].GetEquipment()
+		gearJSON, _ := protojson.Marshal(gear)
+		log.Printf("[reforgeOptimize:%d] HiGHS failed after %s: %s gear=%s", requestID, time.Since(solveStartedAt), err.Error(), gearJSON)
 		return optimizeError(fmt.Sprintf("HiGHS reforge optimizer failed: %s", err.Error()))
 	}
 	if !solved {
-		log.Printf("[reforgeOptimize:%d] HiGHS did not return a solution after %s", requestID, time.Since(solveStartedAt))
+		gear := request.GetRaid().GetParties()[0].GetPlayers()[0].GetEquipment()
+		gearJSON, _ := protojson.Marshal(gear)
+		log.Printf("[reforgeOptimize:%d] HiGHS did not return a solution after %s gear=%s", requestID, time.Since(solveStartedAt), gearJSON)
 		return optimizeError("HiGHS reforge optimizer did not return a solution.")
 	}
 	if debug {
