@@ -1110,7 +1110,7 @@ export class ReforgeOptimizer {
 			debuffs: this.sim.raid.getDebuffs(),
 		});
 		const frozenItemSlots = config.settings.freezeItemSlots && config.settings.frozenItemSlots.length ? config.settings.frozenItemSlots : undefined;
-		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots), configHash);
+		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots, !config.settings.includeGems), configHash);
 		const cachedGear = await cache.get(cacheKey);
 		if (cachedGear) {
 			if (isDevMode()) console.log('Reforge optimization: cache hit.');

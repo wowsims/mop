@@ -2120,7 +2120,7 @@ export function migrateOldProto<Type>(oldProto: Type, oldApiVersion: number, con
 	return migratedProto;
 }
 
-export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[]): string {
+export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[], includeExistingGems = false): string {
 	const items = spec.items;
 	const frozenSlots = frozenItemSlots ?? [];
 	const frozenSlotMask = frozenSlots.length ? new Uint8Array(items.length) : undefined;
@@ -2142,7 +2142,7 @@ export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readon
 
 		const itemSlot = slotIdx as ItemSlot;
 		const isFrozen = !!frozenSlotMask?.[itemSlot];
-		const gemFingerprint = isFrozen
+		const gemFingerprint = isFrozen || includeExistingGems
 			? (item.gems ?? []).map(gemId => gemId ?? 0).join(',')
 			: String(itemSlot === ItemSlot.ItemSlotHead ? (item.gems?.[0] ?? 0) : 0);
 		const reforgeFingerprint = isFrozen ? (item.reforging ?? 0) : 0;
