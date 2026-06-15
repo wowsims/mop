@@ -8,6 +8,10 @@ import (
 
 const highsLPMaxLineLength = 200
 
+// Serializes a mipModel to HiGHS LP format (Maximize / Subject To / Binary / End).
+// Zero-objective integer variables receive a tiny negative penalty (-1e-6) so HiGHS
+// prefers leaving them unset rather than arbitrarily fixing them to 1 during branch-
+// and-bound when their coefficient is absent from the objective.
 func modelToHiGHSLP(model mipModel) string {
 	// Pre-size to avoid repeated doubling as the LP string grows.
 	// Rough estimate: ~36 bytes/variable (objective term + binary line) + ~60 bytes/constraint.
@@ -109,6 +113,8 @@ func writeLPTerm(builder *strings.Builder, first bool, coefficient float64, vari
 	builder.WriteString(strconv.Itoa(variableIdx))
 }
 
+// Encodes a float as a fixed-decimal LP number. Maps ±Inf to ±1e30, the conventional
+// large-bound representation in HiGHS LP format (which doesn't accept Go's "+Inf").
 func formatLPNumber(value float64) string {
 	if math.IsInf(value, 1) {
 		return "1e30"
@@ -119,6 +125,7 @@ func formatLPNumber(value float64) string {
 	return strconv.FormatFloat(value, 'f', 10, 64)
 }
 
+// Splits an LP line at word boundaries to stay within HiGHS's 200-character line limit.
 func wrapLPLine(line string) []string {
 	if len(line) <= highsLPMaxLineLength {
 		return []string{line}

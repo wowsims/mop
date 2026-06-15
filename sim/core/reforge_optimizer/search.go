@@ -6,6 +6,8 @@ import (
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
+// Returns true if adding the choice stays within the global gem limits: JC gems ≤2,
+// Sha-Touched gems ≤1, and each unique gem appears at most once.
 func canAddChoice(choice reforgeChoice, jewelcraftingGems int, shaTouchedGems int, uniqueGemIDs map[int32]bool) bool {
 	if jewelcraftingGems+choice.jewelcraftingGems > 2 || shaTouchedGems+choice.shaTouchedGems > 1 {
 		return false
@@ -26,6 +28,8 @@ func canAddChoice(choice reforgeChoice, jewelcraftingGems int, shaTouchedGems in
 	return true
 }
 
+// Computes the total objective score, returning (0, false) if any max-cap stat is
+// exceeded. Hard-cap stats are clamped at cap; soft-cap stats use piecewise EP scoring.
 func (search *reforgeSearchState) evaluate(delta core.UnitStats) (float64, bool) {
 	score := 0.0
 
@@ -49,6 +53,8 @@ func (search *reforgeSearchState) evaluate(delta core.UnitStats) (float64, bool)
 	return score, true
 }
 
+// Scores one stat: hard max-cap returns (0, false) to discard the solution; hard min-cap
+// clamps score at cap×weight (excess is free); soft cap applies piecewise EP tiers.
 func (search *reforgeSearchState) evaluateUnitStat(unitStat stats.UnitStat, value float64, weight float64) (float64, bool) {
 	if cap, ok := search.hardCapsByStat[unitStat]; ok && cap.cap != 0 {
 		if cap.undershoot && value > cap.cap+1e-9 {
@@ -80,6 +86,8 @@ func reforgeSoftCapsByStat(softCaps []reforgeSoftCap) map[stats.UnitStat]reforge
 	return byStat
 }
 
+// Piecewise linear scoring: accumulates value×preCapWeight up to the first breakpoint,
+// then switches to postCapEP[i] for each subsequent tier beyond that breakpoint.
 func scoreSoftCap(value float64, preCapWeight float64, cap reforgeSoftCap) float64 {
 	if len(cap.breakpoints) == 0 {
 		return value * preCapWeight

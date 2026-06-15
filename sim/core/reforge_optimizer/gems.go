@@ -10,6 +10,8 @@ import (
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
+// Builds the per-socket-color gem option lists used during slot choice construction.
+// Each socket color gets a filtered, scored, and pruned list of eligible gems.
 func buildReforgeGemOptions(request *proto.ReforgeOptimizeRequest, player *proto.Player, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, hasRelativeStatCap bool, spiritToSpellHit bool) map[proto.GemColor][]reforgeGemOption {
 	options := make(map[proto.GemColor][]reforgeGemOption)
 	if !request.GetSettings().GetIncludeGems() {
@@ -30,6 +32,9 @@ func buildReforgeGemOptions(request *proto.ReforgeOptimizeRequest, player *proto
 	return options
 }
 
+// Visits unique gem options eligible for a socket: colored sockets see their own list
+// plus prismatic options (unless forceSocketBonus is set, which restricts to matching
+// colors only). Uses an inline array for dedup to avoid a map allocation for <16 gems.
 func forEachGemOptionForSocket(gemOptions map[proto.GemColor][]reforgeGemOption, socketColor proto.GemColor, forceSocketBonus bool, visit func(reforgeGemOption)) {
 	var gemColorKeys [2]proto.GemColor
 	gemColorKeyCount := 0
@@ -81,6 +86,10 @@ func gemOptionSeen(gemID int32, seenGemIDs []int32, overflowSeenGemIDs map[int32
 	return slices.Contains(seenGemIDs, gemID)
 }
 
+// Filters the gem list to those eligible for the socket color, removes JC-only gems if
+// the player lacks Jewelcrafting or the gem has no primary stat (for DPS), excludes
+// HitRating gems for hybrid casters (Spirit already covers hit), and sorts descending
+// by EP score.
 func filteredGemCandidatesForSocket(gems []*proto.ReforgeGemOption, player *proto.Player, socketColor proto.GemColor, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, spiritToSpellHit bool) []reforgeGemOption {
 	candidates := make([]reforgeGemOption, 0)
 	hasJewelcrafting := playerHasProfession(player, proto.Profession_Jewelcrafting)
@@ -116,6 +125,9 @@ func filteredGemCandidatesForSocket(gems []*proto.ReforgeGemOption, player *prot
 	return candidates
 }
 
+// Prunes candidates to keep at most maxGemOptionsForStat per capped stat (4 normally, 3
+// for tanks, 1 for Yellow sockets with no crit/haste cap) to limit MIP variable count.
+// Stops early once a top-N of uncapped gems is found.
 func selectGemCandidates(candidates []reforgeGemOption, socketColor proto.GemColor, isTank bool, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, hasRelativeStatCap bool) []reforgeGemOption {
 	maxGemOptionsForStat := 4
 	if isTank {
@@ -159,6 +171,8 @@ func selectGemCandidates(candidates []reforgeGemOption, socketColor proto.GemCol
 	return included
 }
 
+// Returns true if at least one stat on the gem maps to a non-zero-weighted EP pseudo-stat.
+// Gems whose entire budget lands on unweighted stats are excluded from the solver.
 func gemStatsAllowed(gemStats stats.Stats, weights core.UnitStats, ampModifier float64, spiritToSpellHit bool) bool {
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
 		if gemStats[statIdx] == 0 {
@@ -176,6 +190,8 @@ func gemStatsAllowed(gemStats stats.Stats, weights core.UnitStats, ampModifier f
 	return true
 }
 
+// Returns the subset of hard/soft cap stats that this gem contributes to. Used by
+// selectGemCandidates to count how many options per capped stat have been included.
 func cappedGemStats(delta core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap) []stats.UnitStat {
 	cappedStats := make([]stats.UnitStat, 0)
 	seen := make(map[stats.UnitStat]bool)
@@ -194,6 +210,8 @@ func cappedGemStats(delta core.UnitStats, hardCaps []reforgeHardCap, softCaps []
 	return cappedStats
 }
 
+// Returns true if the gem grants Strength, Agility, or Intellect. JC-only gems are only
+// included for non-tank DPS specs when they carry a primary stat.
 func gemHasPrimaryStat(gem *proto.ReforgeGemOption) bool {
 	for _, stat := range []stats.Stat{stats.Strength, stats.Agility, stats.Intellect} {
 		if len(gem.GetStats()) > int(stat) && gem.GetStats()[stat] != 0 {
@@ -203,6 +221,8 @@ func gemHasPrimaryStat(gem *proto.ReforgeGemOption) bool {
 	return false
 }
 
+// Returns the effective socket colors: drops the end-of-tier bonus socket when disabled,
+// and appends a Prismatic bonus socket for Blacksmiths on wrists/hands.
 func currentSocketColors(item core.Item, isBlacksmithing bool, settings *proto.ReforgeSettings) []proto.GemColor {
 	socketColors := slices.Clone(item.GemSockets)
 	if !settings.GetIncludeEotbGemSocket() && hasEndOfTierBonusSocket(item) && len(socketColors) > 0 {
@@ -214,6 +234,9 @@ func currentSocketColors(item core.Item, isBlacksmithing bool, settings *proto.R
 	return socketColors
 }
 
+// Detects a Throne of Thunder end-of-tier bonus socket. Sha-Touched socket color is the
+// direct signal; the ", Reborn" name suffix catches LFR tier pieces which share the same
+// bonus but use a standard socket color.
 func hasEndOfTierBonusSocket(item core.Item) bool {
 	for _, socketColor := range item.GemSockets {
 		if socketColor == proto.GemColor_GemColorShaTouched {
@@ -236,6 +259,8 @@ func gemEligibleForSocket(gemColor proto.GemColor, socketColor proto.GemColor) b
 	}
 }
 
+// Removes all non-meta gems from unfrozen slots for baseline stat computation. The head
+// meta socket is preserved because the optimizer never changes meta gems.
 func clearGems(equipment *proto.EquipmentSpec, settings *proto.ReforgeSettings) {
 	frozenSlots := frozenItemSlots(settings)
 	for slotIdx, item := range equipment.Items {
@@ -258,6 +283,8 @@ func clearGems(equipment *proto.EquipmentSpec, settings *proto.ReforgeSettings) 
 	}
 }
 
+// Returns true when gemIdx is the meta socket in the head slot. Falls back to gemIdx==0
+// when the item isn't in the DB, since meta is always the first socket on helms.
 func isHeadMetaSocket(item *proto.ItemSpec, slot proto.ItemSlot, gemIdx int) bool {
 	if slot != proto.ItemSlot_ItemSlotHead {
 		return false

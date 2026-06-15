@@ -10,6 +10,9 @@ import (
 
 var relativeStatCapStats = []stats.Stat{stats.CritRating, stats.HasteRating, stats.MasteryRating}
 
+// Builds constraints ensuring the forced stat (Crit, Haste, or Mastery) remains strictly
+// above each of the other two in {Crit, Haste, Mastery}. Feral Druids get an extra
+// Haste > Crit constraint on top of the Mastery-forced set.
 func buildRelativeStatCaps(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, capBaseStats core.UnitStats, settings *proto.ReforgeSettings) []reforgeRelativeStatCap {
 	if settings == nil || settings.GetRelativeStatCapStat() == nil {
 		return nil
@@ -39,6 +42,8 @@ func buildRelativeStatCaps(baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, 
 	return relativeCaps
 }
 
+// Validates and extracts the relative cap stat, rejecting anything outside
+// {CritRating, HasteRating, MasteryRating}.
 func relativeStatCapStat(uiStat *proto.UIStat) (stats.Stat, bool) {
 	unitStat, ok := unitStatFromUIStat(uiStat)
 	if !ok || !unitStat.IsStat() {
@@ -53,6 +58,8 @@ func relativeStatCapStat(uiStat *proto.UIStat) (stats.Stat, bool) {
 	return 0, false
 }
 
+// Strips the 8 free mastery points (always present) and any raid mastery buff so the
+// relative gap is computed on reforge-only contributions, not base/buff mastery.
 func relativeStatCapBaseStats(baseRaid *proto.Raid, capBaseStats core.UnitStats) core.UnitStats {
 	baseStats := capBaseStats
 	baseStats.Stats[stats.MasteryRating] -= 8 * core.MasteryRatingPerMasteryPoint
@@ -70,6 +77,9 @@ func raidHasMasteryBuff(raid *proto.Raid) bool {
 	return buffs.GetRoarOfCourage() || buffs.GetSpiritBeastBlessing() || buffs.GetBlessingOfMight() || buffs.GetGraceOfAir()
 }
 
+// Adds the average proc contribution of specific on-proc trinkets (two Crit proc IDs and
+// two Haste proc IDs) to the relative cap gap. Without this offset the optimizer counts
+// proc stats as permanent reforge budget and over-invests in the forced stat.
 func relativeStatCapProcOffset(baseGear *proto.EquipmentSpec, constrainedStat stats.Stat) float64 {
 	procOffsets := map[stats.Stat]map[int32]float64{
 		stats.CritRating: {
@@ -96,6 +106,9 @@ func relativeStatCapProcOffset(baseGear *proto.EquipmentSpec, constrainedStat st
 	return 0
 }
 
+// Lowers the forced stat's EP weight to just below the smallest constrained stat EP.
+// This makes the optimizer maximize constrained stats up to the cap before investing
+// further in the forced stat, preventing over-investment in the less-constrained stat.
 func applyRelativeStatCapWeights(weights core.UnitStats, relativeCaps []reforgeRelativeStatCap) core.UnitStats {
 	constrainedWeightsByForcedStat := make(map[stats.UnitStat][]float64)
 	for _, relativeCap := range relativeCaps {
@@ -116,6 +129,8 @@ func applyRelativeStatCapWeights(weights core.UnitStats, relativeCaps []reforgeR
 	return weights
 }
 
+// Returns gem sort weights with the forced stat's EP replaced by the constrained stat's
+// EP so gems are ranked by their constrained-stat value, not the (lowered) forced-stat EP.
 func relativeStatCapGemSortWeights(weights core.UnitStats, relativeCaps []reforgeRelativeStatCap) core.UnitStats {
 	for _, relativeCap := range relativeCaps {
 		if !relativeCap.adjustWeight {

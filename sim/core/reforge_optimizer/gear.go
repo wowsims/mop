@@ -78,6 +78,10 @@ func (editor *reforgeGearEditor) applyChoices(choices []reforgeChoice) {
 	}
 }
 
+// Post-processes gem assignments to minimize unnecessary purchases. For each socket where
+// the optimizer swapped a gem, looks for another unfrozen socket that already holds the
+// new gem ID and swaps them — preserving the same total gem set while keeping expensive
+// gems in their original sockets where possible.
 func (editor *reforgeGearEditor) minimizeRegems() {
 	if editor == nil || editor.gear == nil || editor.originalGear == nil || editor.player == nil {
 		return
@@ -133,6 +137,8 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 	}
 }
 
+// Restores the original meta gem; meta sockets are never modified by the optimizer so the
+// original gem is always correct.
 func restoreMetaSocketGem(newItem *core.Item, originalItem *core.Item, socketIdx int) {
 	originalGemID := gemIDAt(originalItem, socketIdx)
 	if originalGemID != 0 || socketIdx < len(newItem.Gems) {
@@ -192,6 +198,8 @@ func optionalEquipmentFromProto(equipment *proto.EquipmentSpec) *core.Equipment 
 	return equipmentFromProto(equipment)
 }
 
+// Returns the gem for the given ID, falling back to a stub {ID: gemID} if not found in
+// the database (preserves the ID so the proto round-trip doesn't silently drop it).
 func gemFromID(gemID int32) core.Gem {
 	if gemID == 0 {
 		return core.Gem{}
@@ -202,6 +210,8 @@ func gemFromID(gemID int32) core.Gem {
 	return core.Gem{ID: gemID}
 }
 
+// Strips reforge assignments from all unfrozen slots so baseline stats are computed
+// without any pre-existing reforges.
 func clearReforges(equipment *proto.EquipmentSpec, settings *proto.ReforgeSettings) {
 	frozenSlots := frozenItemSlots(settings)
 	for slotIdx, item := range equipment.Items {

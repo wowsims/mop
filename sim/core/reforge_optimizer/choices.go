@@ -31,6 +31,11 @@ func getSortedReforgeStatIDs() []int32 {
 	return sortedReforgeStatIDsCached
 }
 
+// Builds one reforgeSlotChoices entry per decision variable: each item slot gets a reforge
+// group (no-reforge vs. each valid reforge) and, when gems are enabled, one group per
+// non-meta socket (empty vs. each eligible gem) plus an optional socket-bonus group. Slots
+// are sorted descending by their best choice score so the MIP solver branches on the
+// highest-impact decisions first.
 func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, baseStats core.UnitStats, weights core.UnitStats, gemSortWeights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, hasRelativeStatCap bool, statDeps *stats.StatDependencyManager) ([]reforgeSlotChoices, error) {
 	frozenSlots := frozenItemSlots(request.GetSettings())
 	player := request.Raid.Parties[0].Players[0]
@@ -153,6 +158,9 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 	return allSlots, nil
 }
 
+// Drops any reforge that converts a stat to Expertise when the same source stat can already
+// reforge to Hit. Pure casters have zero Expertise EP, so keeping both options only bloats
+// the MIP without ever being chosen.
 func preferHitOverExpertiseReforges(reforgeIDs []int32) []int32 {
 	hitReforgeFromStats := map[stats.Stat]bool{}
 	for _, reforgeID := range reforgeIDs {
@@ -170,6 +178,9 @@ func preferHitOverExpertiseReforges(reforgeIDs []int32) []int32 {
 	})
 }
 
+// Returns the set of stats that may appear as reforge targets, derived from non-zero EP
+// weights. ExpertiseRating is always permitted separately by the caller for melee specs
+// regardless of its weight.
 func allowedReforgeDestinationStats(weights *proto.UnitStats) map[stats.Stat]bool {
 	allowedStats := map[stats.Stat]bool{}
 	if weights == nil {
@@ -183,6 +194,10 @@ func allowedReforgeDestinationStats(weights *proto.UnitStats) map[stats.Stat]boo
 	return allowedStats
 }
 
+// Fills choice.delta — the stat-dependency-resolved delta used by the cap constraint
+// evaluator — for every non-trivial choice. Separate from choice.objectiveDelta (the MIP
+// objective) because caps are evaluated in raw stat space while the objective is in
+// weighted EP space.
 func computeChoiceDeltas(baseGear *proto.EquipmentSpec, allSlots []reforgeSlotChoices, sdm *stats.StatDependencyManager, baseStats core.UnitStats, ampModifier float64) {
 	baseEquipment := core.ProtoToEquipment(baseGear)
 	for slotIdx := range allSlots {
@@ -197,16 +212,6 @@ func computeChoiceDeltas(baseGear *proto.EquipmentSpec, allSlots []reforgeSlotCh
 			}
 		}
 	}
-}
-
-func equipmentSpecWithChoice(baseEquipment core.Equipment, choice reforgeChoice) *proto.EquipmentSpec {
-	gear := baseEquipment
-	if int(choice.slot) >= 0 && int(choice.slot) < int(core.NumItemSlots) {
-		gear[choice.slot].Gems = slices.Clone(gear[choice.slot].Gems)
-	}
-	gearEditor := &reforgeGearEditor{gear: &gear}
-	gearEditor.applyChoice(choice)
-	return gearEditor.equipment()
 }
 
 func equipmentSpecWithChoices(baseEquipment core.Equipment, choices []reforgeChoice) *proto.EquipmentSpec {
@@ -233,6 +238,10 @@ func hasSocketBonus(item core.Item) bool {
 	return false
 }
 
+// Returns true when every socket should be constrained to match its color (guaranteeing the
+// bonus activates): either matching gems + bonus beats the best unmatched gem, or the bonus
+// grants a capped stat and matching is therefore valuable for cap management even if the
+// raw EP gain is lower.
 func shouldForceSocketBonus(item core.Item, socketColors []proto.GemColor, gemOptions map[proto.GemColor][]reforgeGemOption, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, spiritToSpellHit bool) bool {
 	if !hasSocketBonus(item) {
 		return false
@@ -283,6 +292,9 @@ func shouldForceSocketBonus(item core.Item, socketColors []proto.GemColor, gemOp
 	return false
 }
 
+// Returns the number of non-meta sockets. The bonus is divided by this to distribute it
+// evenly across sockets for per-socket EP scoring; meta sockets are excluded because they
+// are never candidates for matching.
 func socketBonusNormalization(socketColors []proto.GemColor) int {
 	normalization := len(socketColors)
 	if normalization == 0 {
@@ -308,6 +320,10 @@ func includesStatWithCap(delta core.UnitStats, hardCaps []reforgeHardCap, softCa
 	return false
 }
 
+// Returns true if the delta touches a hard-cap stat that is already at or over its cap
+// (undershoot=true means we are still short; false means capped/over). Used to skip
+// forcing the socket bonus when doing so would waste the bonus on a stat where additional
+// rating has no value.
 func includesCappedStat(delta core.UnitStats, hardCaps []reforgeHardCap) bool {
 	for _, hardCap := range hardCaps {
 		if hardCap.undershoot && getUnitStat(delta, hardCap.unitStat) != 0 {
@@ -335,6 +351,9 @@ func gemMatchesSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool 
 	}
 }
 
+// Returns the unresolved (pre-stat-dependency) stat delta for a choice, combining any
+// reforge and gem stats with the Amplification Trinket modifier applied. Passed to
+// resolveStatDelta to produce the final choice.delta used for cap checks.
 func rawChoiceDelta(equipment core.Equipment, choice *reforgeChoice, ampModifier float64) core.UnitStats {
 	rawStats := stats.Stats{}
 	if choice.hasReforge && choice.reforgeID != 0 {
@@ -352,6 +371,8 @@ func rawChoiceDelta(equipment core.Equipment, choice *reforgeChoice, ampModifier
 	return rawUnitStatsFromStats(rawStats, ampModifier)
 }
 
+// Computes the stat change a reforge produces on an item. For random-suffix items, the
+// suffix stats (scaled by RandPropPoints) replace base item stats as the reforge source.
 func reforgeRawStats(item core.Item, reforge core.ReforgeStat) stats.Stats {
 	itemStats := item.Stats
 	if item.RandomSuffix.ID != 0 {
@@ -369,6 +390,8 @@ func reforgeDelta(item core.Item, reforge core.ReforgeStat, weights core.UnitSta
 	return unitStatsFromStats(reforgeRawStats(item, reforge), weights, ampModifier, spiritToSpellHit)
 }
 
+// Scales Haste, Mastery, and Spirit by the Amplification Trinket multiplier; all other
+// stats are unaffected.
 func applyAmpModifier(stat stats.Stat, amount, ampModifier float64) float64 {
 	if stat == stats.HasteRating || stat == stats.MasteryRating || stat == stats.Spirit {
 		return amount * ampModifier
@@ -376,6 +399,9 @@ func applyAmpModifier(stat stats.Stat, amount, ampModifier float64) float64 {
 	return amount
 }
 
+// Converts stats.Stats to UnitStats with the Amplification modifier applied, but without
+// expanding ratings into percent pseudo-stats. Used for deltas that feed resolveStatDelta
+// (cap constraint space), not the EP objective.
 func rawUnitStatsFromStats(statValues stats.Stats, ampModifier float64) core.UnitStats {
 	unitStats := core.NewUnitStats()
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
@@ -388,6 +414,10 @@ func rawUnitStatsFromStats(statValues stats.Stats, ampModifier float64) core.Uni
 	return unitStats
 }
 
+// Converts stats to the optimizer's weighted EP representation. Rating stats are expanded
+// into their percent pseudo-stat equivalents (e.g. HitRating → PhysicalHitPercent and/or
+// SpellHitPercent) only for pseudo-stats that carry non-zero EP weight. spiritToSpellHit
+// routes Spirit into SpellHitPercent for hybrid casters.
 func unitStatsFromStats(statValues stats.Stats, weights core.UnitStats, ampModifier float64, spiritToSpellHit bool) core.UnitStats {
 	unitStats := core.NewUnitStats()
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
@@ -444,6 +474,9 @@ func addPseudoStat(unitStats core.UnitStats, pseudoStat proto.PseudoStat, value 
 	return setUnitStat(unitStats, unitStat, getUnitStat(unitStats, unitStat)+value)
 }
 
+// Returns the combined multiplier from any Amplification Trinkets in the player's trinket
+// slots. The two slots multiply together, so wearing two trinkets (e.g. normal + heroic
+// upgrade) compounds the modifier.
 func amplificationStatModifier(equipment *proto.EquipmentSpec) float64 {
 	modifier := 1.0
 	for _, slot := range core.TrinketSlots() {
@@ -465,6 +498,8 @@ func isAmplificationTrinket(itemID int32) bool {
 	return ok
 }
 
+// Merges the melee, caster, and healer Amplification Trinket item ID maps into a single
+// set for O(1) membership testing at runtime.
 func buildAmplificationTrinketItemIDSet() map[int32]struct{} {
 	itemIDs := make(map[int32]struct{}, len(mop.MeleeAmplificationTrinketItemIDs)+len(mop.CasterAmplificationTrinketItemIDs)+len(mop.HealerAmplificationTrinketItemIDs))
 	for _, itemVersionMap := range []shared.ItemVersionMap{

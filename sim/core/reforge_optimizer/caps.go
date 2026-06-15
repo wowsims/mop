@@ -11,6 +11,8 @@ import (
 	googleProto "google.golang.org/protobuf/proto"
 )
 
+// Validates and normalizes soft cap configs: applies breakpoint limits, strips out-of-
+// range breakpoints, and sorts caps deterministically so the optimizer sees a stable config.
 func validateReforgeOptimizeSettings(request *proto.ReforgeOptimizeRequest) (*normalizedReforgeOptimizeConfig, error) {
 	settings := request.GetSettings()
 	if settings == nil {
@@ -51,6 +53,8 @@ func validateReforgeOptimizeSettings(request *proto.ReforgeOptimizeRequest) (*no
 	return &normalizedReforgeOptimizeConfig{settings: settings, softCaps: normalizedSoftCaps}, nil
 }
 
+// For TypeThreshold caps, returns the second-highest positive breakpoint as the effective
+// limit — the last meaningful tier before an unreachable ceiling breakpoint.
 func inferThresholdBreakpointLimit(config *proto.StatCapConfig) float64 {
 	if config.GetCapType() != proto.StatCapType_TypeThreshold {
 		return 0
@@ -69,6 +73,8 @@ func inferThresholdBreakpointLimit(config *proto.StatCapConfig) float64 {
 	return 0
 }
 
+// Reads either a stat or pseudo-stat value from proto.UnitStats by index, returning 0 for
+// nil input or out-of-bounds indices.
 func getProtoUnitStat(unitStats *proto.UnitStats, unitStat stats.UnitStat) float64 {
 	if unitStats == nil {
 		return 0
@@ -87,6 +93,9 @@ func getProtoUnitStat(unitStats *proto.UnitStats, unitStat stats.UnitStat) float
 	return unitStats.GetPseudoStats()[pseudoStatIdx]
 }
 
+// Converts absolute cap values from settings into gap-to-cap deltas relative to base
+// stats. undershootCaps marks stats where the cap is a ceiling (stay below) rather than
+// a floor (reach at least).
 func buildReforgeHardCaps(baseStats core.UnitStats, settings *proto.ReforgeSettings, undershootCaps core.UnitStats) []reforgeHardCap {
 	if settings == nil || settings.StatCaps == nil {
 		return nil
@@ -109,6 +118,9 @@ func buildReforgeHardCaps(baseStats core.UnitStats, settings *proto.ReforgeSetti
 	return caps
 }
 
+// Converts soft cap configs into gap-to-cap deltas. TypeThreshold caps have their
+// breakpoints and post-cap EPs reversed so the optimizer evaluates from largest gap to
+// smallest — highest-reward breakpoints are applied first.
 func buildReforgeSoftCaps(baseStats core.UnitStats, configs []*proto.StatCapConfig) []reforgeSoftCap {
 	softCaps := make([]reforgeSoftCap, 0, len(configs))
 	for _, config := range configs {
@@ -135,6 +147,9 @@ func buildReforgeSoftCaps(baseStats core.UnitStats, configs []*proto.StatCapConf
 	return softCaps
 }
 
+// Promotes a rating EP weight to its percent pseudo-stat equivalents when a cap is
+// configured for those pseudo-stats. This ensures cap enforcement happens in percent space
+// rather than rating space and zeros the parent rating weight to avoid double-counting.
 func validateReforgeWeights(weights core.UnitStats, settings *proto.ReforgeSettings, softCapConfigs []*proto.StatCapConfig) core.UnitStats {
 	validatedWeights := weights
 	for _, parent := range []stats.Stat{stats.HitRating, stats.CritRating, stats.HasteRating} {
@@ -172,6 +187,8 @@ func validateReforgeWeights(weights core.UnitStats, settings *proto.ReforgeSetti
 	return validatedWeights
 }
 
+// Maps a rating stat to its percent pseudo-stat children (e.g. HitRating →
+// {PhysicalHitPercent, SpellHitPercent}). Used by validateReforgeWeights.
 func childPseudoStats(parent stats.Stat) []proto.PseudoStat {
 	switch parent {
 	case stats.HitRating:
@@ -219,6 +236,9 @@ type softCapBreakpoint struct {
 	hasPostEP  bool
 }
 
+// Clips breakpoints to the limit, inserting the limit itself as an explicit post-cap EP=0
+// boundary if it wasn't already present, then returns the sorted breakpoints and their
+// corresponding post-cap EPs as parallel slices.
 func normalizeSoftCapBreakpoints(config *proto.StatCapConfig, breakpointLimit float64) ([]float64, []float64) {
 	allBreakpoints := config.GetBreakpoints()
 	breakpoints := make([]softCapBreakpoint, 0, len(config.GetBreakpoints()))
@@ -256,6 +276,8 @@ func normalizeSoftCapBreakpoints(config *proto.StatCapConfig, breakpointLimit fl
 	return rawBreakpoints, postCapEPs
 }
 
+// Returns the post-cap EP for a given breakpoint index. For TypeThreshold caps, the last
+// EP in the list applies to the final (highest) breakpoint, not just the one at that index.
 func postCapEPForBreakpoint(config *proto.StatCapConfig, breakpointIdx int, breakpointCount int) (float64, bool) {
 	postCapEPs := config.GetPostCap_EPs()
 	if breakpointIdx < len(postCapEPs) {
@@ -267,6 +289,8 @@ func postCapEPForBreakpoint(config *proto.StatCapConfig, breakpointIdx int, brea
 	return 0, false
 }
 
+// Returns the delta needed to reach cap from base stats. Returns 1e-12 (rather than 0)
+// when already at the cap so the MIP constraint remains active with a non-zero RHS.
 func computeSheetGapToCap(baseStats core.UnitStats, unitStat stats.UnitStat, cap float64) float64 {
 	statDelta := cap - getUnitStat(baseStats, unitStat)
 	if statDelta == 0 {
@@ -275,6 +299,7 @@ func computeSheetGapToCap(baseStats core.UnitStats, unitStat stats.UnitStat, cap
 	return statDelta
 }
 
+// Converts the proto.UIStat oneof (Stat or PseudoStat) to the internal stats.UnitStat handle.
 func unitStatFromUIStat(uiStat *proto.UIStat) (stats.UnitStat, bool) {
 	if uiStat == nil {
 		return 0, false

@@ -52,6 +52,10 @@ func reforgeDebug(search *reforgeSearchState) bool {
 	return search != nil && search.request != nil && search.request.GetDebug()
 }
 
+// Iterative cap-refinement loop: solve the MIP → evaluate caps on the real sim result →
+// tighten constraints → repeat until no cap is violated or the pass limit is reached.
+// Hard caps, soft cap breakpoints, and relative caps are each handled as separate
+// constraint-tightening events within updateHiGHSCapPass.
 func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) ([]reforgeChoice, float64, bool, error) {
 	weights := search.weights
 	softCaps := cloneSoftCaps(search.softCaps)
@@ -141,6 +145,8 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 	return nil, 0, false, fmt.Errorf("HiGHS optimizer reached cap refinement pass limit")
 }
 
+// Relative-stat-cap problems produce harder MIPs (enforcing Crit > Haste > Mastery
+// ordering across many reforge choices); they get 120s vs the standard 30s.
 func highsOptimizerTimeout(search *reforgeSearchState) time.Duration {
 	if len(search.relativeCaps) > 0 {
 		return relativeStatCapOptimizerTimeout
@@ -148,6 +154,8 @@ func highsOptimizerTimeout(search *reforgeSearchState) time.Duration {
 	return optimizerTimeout
 }
 
+// Returns time remaining to the deadline, floored at 1 second so the last pass still
+// gets a chance to run rather than timing out immediately.
 func highsOptimizerPassTimeout(deadline time.Time) time.Duration {
 	remaining := time.Until(deadline)
 	if remaining < time.Second {
@@ -156,6 +164,8 @@ func highsOptimizerPassTimeout(deadline time.Time) time.Duration {
 	return remaining
 }
 
+// Uses a 0.05% relative MIP gap for relative-cap problems to trade a negligible
+// optimality loss for faster convergence on hard MIPs; exact (0) otherwise.
 func highsOptimizerMIPRelGap(search *reforgeSearchState) float64 {
 	if len(search.relativeCaps) > 0 {
 		return relativeStatCapMIPRelGap
@@ -163,6 +173,9 @@ func highsOptimizerMIPRelGap(search *reforgeSearchState) float64 {
 	return 0
 }
 
+// Maps binary MIP solution values back to reforgeChoice objects. Each slot is initialized
+// to its first (no-op) choice, then overridden by any variable set to 1. Returns an error
+// if any slot ends up with no selection (should not happen if the model is feasible).
 func choicesFromMIPSolution(search *reforgeSearchState, model mipModel, solution mipSolution) ([]reforgeChoice, error) {
 	choices := make([]reforgeChoice, len(search.slots))
 	selected := make([]bool, len(search.slots))
@@ -192,6 +205,9 @@ func choicesFromMIPSolution(search *reforgeSearchState, model mipModel, solution
 	return choices, nil
 }
 
+// Constructs the full MIP model: one "at-most-one active choice" constraint per slot,
+// socket-bonus link constraints, JC/Sha-Touched/unique-gem global limits, relative-cap
+// linear constraints, and per-stat LP bounds accumulated from prior cap passes.
 func buildChoiceMIPModel(search *reforgeSearchState, weights core.UnitStats, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap) mipModel {
 	variableCount := countMIPChoiceVariables(search.slots)
 	uniqueGemIDs := search.uniqueGemIDs
@@ -298,6 +314,9 @@ func countMIPChoiceVariables(slots []reforgeSlotChoices) int {
 	return count
 }
 
+// Returns true for choices that require a MIP binary variable: non-zero reforges,
+// non-empty gem assignments, and socket-bonus activations with bonusSocketIdxs set.
+// No-op choices (reforgeID=0, empty gems) are the default and need no variable.
 func choiceMIPActive(choice reforgeChoice) bool {
 	if choice.hasReforge {
 		return choice.reforgeID != 0
@@ -333,6 +352,8 @@ func countSocketBonusLinkConstraints(search *reforgeSearchState) int {
 	return count
 }
 
+// Collects all gem IDs that appear in any choice's uniqueGemIDs list. Each ID gets its
+// own "at most 1" MIP constraint to enforce the unique-equipped restriction.
 func buildUniqueGemLimitIDs(slots []reforgeSlotChoices) []int32 {
 	uniqueGemIDs := make([]int32, 0)
 	seen := map[int32]bool{}
@@ -368,6 +389,9 @@ func (constraint mipConstraint) coefficientCount() int {
 	return len(constraint.indices)
 }
 
+// Checks whether the LP-feasible solution violates a relative cap when evaluated with
+// exact sim stats. The LP uses a linear approximation that may be slightly off; a
+// violation here triggers a constraint-tightening pass.
 func exactRelativeCapViolation(relativeCaps []reforgeRelativeStatCap, delta core.UnitStats) (reforgeRelativeStatCap, float64, bool) {
 	for _, relativeCap := range relativeCaps {
 		actualMinDelta := relativeCap.actualMinDelta
@@ -383,6 +407,8 @@ func exactRelativeCapViolation(relativeCaps []reforgeRelativeStatCap, delta core
 	return reforgeRelativeStatCap{}, 0, false
 }
 
+// Adds one LP constraint per relative cap:
+//   Σ (forcedStatDelta_i − constrainedStatDelta_i) × x_i ≥ minDelta
 func addRelativeStatCapConstraints(search *reforgeSearchState, choiceVarIdx [][]int, model *mipModel, relativeCaps []reforgeRelativeStatCap) {
 	for _, relativeCap := range relativeCaps {
 		constraint := newMIPConstraint(relativeCap.minDelta, math.Inf(1), 0)
@@ -404,6 +430,8 @@ func addRelativeStatCapConstraints(search *reforgeSearchState, choiceVarIdx [][]
 	}
 }
 
+// Returns objectiveDelta if non-zero, falling back to delta. Choices with only a cap
+// contribution (no separate EP delta) use delta as their objective approximation.
 func choiceObjectiveDelta(choice reforgeChoice) core.UnitStats {
 	if !isEmptyUnitStats(choice.objectiveDelta) {
 		return choice.objectiveDelta
@@ -411,6 +439,9 @@ func choiceObjectiveDelta(choice reforgeChoice) core.UnitStats {
 	return choice.delta
 }
 
+// Returns delta if non-zero (dependency-resolved, correct for stat constraint
+// coefficients), falling back to objectiveDelta for choices that don't have a separate
+// delta computed.
 func choiceCoefficientDelta(choice reforgeChoice) core.UnitStats {
 	if !isEmptyUnitStats(choice.delta) {
 		return choice.delta
@@ -422,6 +453,9 @@ func choiceRelativeCapDelta(choice reforgeChoice) core.UnitStats {
 	return choiceObjectiveDelta(choice)
 }
 
+// Links each socket-bonus activation variable to its required matching socket variables:
+// bonus_var ≤ Σ matching_socket_var for each bonusSocketIdx. Prevents the solver from
+// awarding the bonus without actually matching the sockets.
 func addSocketBonusLinkConstraints(search *reforgeSearchState, choiceVarIdx [][]int, model *mipModel) {
 	for groupIdx, group := range search.slots {
 		for choiceIdx, choice := range group.choices {
@@ -448,6 +482,11 @@ func addSocketBonusLinkConstraints(search *reforgeSearchState, choiceVarIdx [][]
 	}
 }
 
+// Evaluates the latest solution against all caps and returns updated solver state for the
+// next pass. Processes in priority order: tighten any LP bound that undershot its actual
+// target → add the first new hard cap constraint violated → advance past the first
+// exceeded soft cap breakpoint (and update its weight) → tighten any violated relative
+// cap min delta. Returns false (no update) only when all caps are satisfied.
 func updateHiGHSCapPass(search *reforgeSearchState, passIdx int, delta core.UnitStats, weights core.UnitStats, softCaps []reforgeSoftCap, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap, constrainedStats map[stats.UnitStat]bool) (bool, core.UnitStats, []reforgeSoftCap, []mipStatConstraint, []reforgeRelativeStatCap) {
 	for idx, constraint := range statConstraints {
 		value := getUnitStat(delta, constraint.unitStat)
@@ -566,6 +605,9 @@ func selectedChoicesValid(choices []reforgeChoice) bool {
 	return true
 }
 
+// Runs a real sim stats computation on the selected gear to get accurate cap deltas.
+// Adds the 8 free mastery points to align with how caps are expressed relative to the
+// base stats (which include those points).
 func selectedChoicesCapDelta(search *reforgeSearchState, choices []reforgeChoice) (core.UnitStats, error) {
 	gear := equipmentSpecWithChoices(search.baseEquipment, choices)
 	search.workingRaid.Parties[0].Players[0].Equipment = gear
@@ -599,6 +641,9 @@ func countSoftCapBreakpoints(softCaps []reforgeSoftCap) int {
 	return count
 }
 
+// Generic upper-bound constraint builder: sums coefficient(choice) × x_choice for all
+// active choices. Used for JC gem limit (≤2), Sha-Touched limit (≤1), and unique-gem
+// limits (≤1 per ID).
 func buildChoiceLimitConstraint(search *reforgeSearchState, choiceVarIdx [][]int, coefficient func(reforgeChoice) float64, upper float64) mipConstraint {
 	constraint := newMIPConstraint(math.Inf(-1), upper, 0)
 	for slotIdx, slot := range search.slots {

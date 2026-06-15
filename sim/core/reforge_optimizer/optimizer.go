@@ -136,6 +136,9 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 	}
 }
 
+// Sets up the full optimization context: strips reforges/gems from base gear, computes
+// base stats and stat dependencies in a single environment call, builds hard/soft/relative
+// caps, then generates slot choices for the solver.
 func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedConfig *normalizedReforgeOptimizeConfig, signals simsignals.Signals) (*reforgeOptimization, error) {
 	request = googleProto.Clone(request).(*proto.ReforgeOptimizeRequest)
 	request.Settings = normalizedConfig.settings
@@ -201,6 +204,8 @@ func computeReforgeStatsAndDeps(request *proto.ComputeStatsRequest) (*proto.Comp
 	return core.ComputeStatsAndDeps(request)
 }
 
+// Creates a reforgeSearchState from the optimization, pre-allocating the working raid
+// clone and MIP index arrays to avoid repeated allocations across solver passes.
 func (optimization *reforgeOptimization) searchState() *reforgeSearchState {
 	workingRaid := googleProto.Clone(optimization.baseRaid).(*proto.Raid)
 	choiceVarIdx := make([][]int, len(optimization.slotChoices))
@@ -226,6 +231,8 @@ func (optimization *reforgeOptimization) searchState() *reforgeSearchState {
 	}
 }
 
+// Applies solver choices to the base gear and calls minimizeRegems to avoid unnecessary
+// gem purchases where existing gems can be reused.
 func (optimization *reforgeOptimization) optimizedGear(choices []reforgeChoice) *proto.EquipmentSpec {
 	gearEditor := newReforgeGearEditor(optimization.baseGear, optimization.originalGear, optimization.player, optimization.settings)
 	gearEditor.applyChoices(choices)
