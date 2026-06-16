@@ -78,16 +78,59 @@ func (editor *reforgeGearEditor) applyChoices(choices []reforgeChoice) {
 	}
 }
 
-// Post-processes gem assignments to minimize unnecessary purchases. For each socket where
-// the optimizer swapped a gem, looks for another unfrozen socket that already holds the
-// new gem ID and swaps them — preserving the same total gem set while keeping expensive
-// gems in their original sockets where possible.
+// Post-processes gem assignments to minimize unnecessary gem purchases.
+//
+// Meta gems are restored first (they are never touched by the optimizer).
+// If the LP output contains the same non-meta gem multiset as the original gear, all
+// non-meta gems are copied back from originalGear — this correctly resolves 2-cycles,
+// 3-cycles, and any longer permutation without tracking individual cycles.
+// When the optimizer genuinely changed which gems are present (different multiset), only
+// true 2-cycle swaps are resolved: the candidate socket must currently hold originalGemID
+// AND its original gem must be newGemID, ensuring each swap is a clean reversal.
 func (editor *reforgeGearEditor) minimizeRegems() {
 	if editor == nil || editor.gear == nil || editor.originalGear == nil || editor.player == nil {
 		return
 	}
-	finalizedSocketKeys := map[reforgeSocketKey]bool{}
 
+	// First pass: restore meta gems.
+	for slotIdx := range editor.gear {
+		newItem := &editor.gear[slotIdx]
+		originalItem := &editor.originalGear[slotIdx]
+		if newItem.ID == 0 || originalItem.ID == 0 {
+			continue
+		}
+		if editor.frozenSlots[proto.ItemSlot(slotIdx)] {
+			continue
+		}
+		for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
+			if socketColor == proto.GemColor_GemColorMeta {
+				restoreMetaSocketGem(newItem, originalItem, socketIdx)
+			}
+		}
+	}
+
+	// Same non-meta multiset: full restore handles all permutation cycle lengths.
+	if editor.nonMetaGemMultisetUnchanged() {
+		for slotIdx := range editor.gear {
+			newItem := &editor.gear[slotIdx]
+			originalItem := &editor.originalGear[slotIdx]
+			if newItem.ID == 0 || originalItem.ID == 0 {
+				continue
+			}
+			if editor.frozenSlots[proto.ItemSlot(slotIdx)] {
+				continue
+			}
+			for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
+				if socketColor != proto.GemColor_GemColorMeta {
+					setGemIDAt(newItem, socketIdx, gemIDAt(originalItem, socketIdx))
+				}
+			}
+		}
+		return
+	}
+
+	// Different multiset: resolve true 2-cycle swaps only.
+	finalizedSocketKeys := map[reforgeSocketKey]bool{}
 	for slotIdx := range editor.gear {
 		newItem := &editor.gear[slotIdx]
 		originalItem := &editor.originalGear[slotIdx]
@@ -95,17 +138,16 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 			continue
 		}
 		slot := proto.ItemSlot(slotIdx)
-		newSocketColors := currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings)
-		for socketIdx, socketColor := range newSocketColors {
+		if editor.frozenSlots[slot] {
+			continue
+		}
+		for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
 			socketKey := reforgeSocketKey{slot: slot, socketIdx: socketIdx}
-			if finalizedSocketKeys[socketKey] {
+			if finalizedSocketKeys[socketKey] || socketColor == proto.GemColor_GemColorMeta {
+				finalizedSocketKeys[socketKey] = true
 				continue
 			}
 			finalizedSocketKeys[socketKey] = true
-			if socketColor == proto.GemColor_GemColorMeta {
-				restoreMetaSocketGem(newItem, originalItem, socketIdx)
-				continue
-			}
 
 			newGemID := gemIDAt(newItem, socketIdx)
 			originalGemID := gemIDAt(originalItem, socketIdx)
@@ -122,7 +164,7 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 				continue
 			}
 
-			matchedSlot, matchedSocketIdx, matchedSocketColor, ok := editor.findSwappableGem(originalGemID, finalizedSocketKeys)
+			matchedSlot, matchedSocketIdx, matchedSocketColor, ok := editor.find2CyclePartner(originalGemID, newGemID, finalizedSocketKeys)
 			if !ok {
 				continue
 			}
@@ -146,7 +188,46 @@ func restoreMetaSocketGem(newItem *core.Item, originalItem *core.Item, socketIdx
 	}
 }
 
-func (editor *reforgeGearEditor) findSwappableGem(gemID int32, finalizedSocketKeys map[reforgeSocketKey]bool) (proto.ItemSlot, int, proto.GemColor, bool) {
+// Returns true if the non-meta gem multiset across all unfrozen slots is identical between
+// the LP output (editor.gear, after meta restore) and the original gear.
+func (editor *reforgeGearEditor) nonMetaGemMultisetUnchanged() bool {
+	newGems := map[int32]int{}
+	originalGems := map[int32]int{}
+	for slotIdx := range editor.gear {
+		newItem := &editor.gear[slotIdx]
+		originalItem := &editor.originalGear[slotIdx]
+		if newItem.ID == 0 || originalItem.ID == 0 {
+			continue
+		}
+		if editor.frozenSlots[proto.ItemSlot(slotIdx)] {
+			continue
+		}
+		for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
+			if socketColor == proto.GemColor_GemColorMeta {
+				continue
+			}
+			if id := gemIDAt(newItem, socketIdx); id != 0 {
+				newGems[id]++
+			}
+			if id := gemIDAt(originalItem, socketIdx); id != 0 {
+				originalGems[id]++
+			}
+		}
+	}
+	if len(newGems) != len(originalGems) {
+		return false
+	}
+	for id, count := range newGems {
+		if originalGems[id] != count {
+			return false
+		}
+	}
+	return true
+}
+
+// Finds a socket that forms a true 2-cycle: currently holds originalGemID and whose
+// original gem is newGemID. This prevents broken resolutions of longer permutation cycles.
+func (editor *reforgeGearEditor) find2CyclePartner(originalGemID int32, newGemID int32, finalizedSocketKeys map[reforgeSocketKey]bool) (proto.ItemSlot, int, proto.GemColor, bool) {
 	for slotIdx, item := range editor.gear {
 		if item.ID == 0 {
 			continue
@@ -155,12 +236,17 @@ func (editor *reforgeGearEditor) findSwappableGem(gemID int32, finalizedSocketKe
 		if editor.frozenSlots[slot] {
 			continue
 		}
-		socketColors := currentSocketColors(item, editor.isBlacksmithing, editor.settings)
-		for socketIdx, socketColor := range socketColors {
-			if finalizedSocketKeys[reforgeSocketKey{slot: slot, socketIdx: socketIdx}] || gemIDAt(&item, socketIdx) != gemID {
+		originalItem := &editor.originalGear[slotIdx]
+		for socketIdx, socketColor := range currentSocketColors(item, editor.isBlacksmithing, editor.settings) {
+			if socketColor == proto.GemColor_GemColorMeta {
 				continue
 			}
-			return slot, socketIdx, socketColor, true
+			if finalizedSocketKeys[reforgeSocketKey{slot: slot, socketIdx: socketIdx}] {
+				continue
+			}
+			if gemIDAt(&item, socketIdx) == originalGemID && gemIDAt(originalItem, socketIdx) == newGemID {
+				return slot, socketIdx, socketColor, true
+			}
 		}
 	}
 	return proto.ItemSlot_ItemSlotHead, 0, proto.GemColor_GemColorUnknown, false
