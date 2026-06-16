@@ -586,6 +586,13 @@ func (generator *bulkSimCandidateGenerator) buildGearForCombo(comboIdx int) (*pr
 			gear[slot] = createSelectedItem(option, generator.challengeModeEnabled)
 		}
 	}
+	// Non-Fury players cannot dual-wield 2H weapons. When a 2H lands in the mainhand
+	// the offhand combo slot is nil, leaving the base gear's 1H offhand in place — clear it.
+	if !generator.playerIsFuryWarrior {
+		if mh := gear.GetItemBySlot(proto.ItemSlot_ItemSlotMainHand); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
+			gear[proto.ItemSlot_ItemSlotOffHand] = core.Item{}
+		}
+	}
 	return gear.ToEquipmentSpecProto(), nil
 }
 
