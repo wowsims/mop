@@ -40,6 +40,8 @@ func init() {
 			SetId:            item.SetId,
 			ScalingOptions:   item.ScalingOptions,
 			ItemEffects:      item.ItemEffects,
+			Unique:           item.Unique,
+			LimitCategory:    item.LimitCategory,
 		}
 	}
 
