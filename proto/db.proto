@@ -48,6 +48,8 @@ message SimItem {
 
 	map<int32, ScalingItemProperties> scaling_options = 13; // keys are the all ItemLevelState variants that this item could potentially have
 	repeated ItemEffect item_effects = 14;
+	int32 limit_category = 15;
+	bool unique = 16;
 }
 
 message Consumable {

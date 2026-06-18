@@ -534,7 +534,7 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 		if len(options) < 2 {
 			continue
 		}
-		pairs := allPairs(options)
+		var pairs [][2]bulkSimCandidateOption
 		if frozenItem := generator.frozenItems[bulkSlot]; frozenItem != nil {
 			pairs = make([][2]bulkSimCandidateOption, 0, len(options))
 			frozenSpec := frozenItem.ToItemSpecProto()
@@ -542,7 +542,27 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 				if candidateOptionEqualsItem(option, *frozenItem, generator.inheritUpgrades) {
 					continue
 				}
+				if frozenItem.Unique && frozenItem.ID == option.item.ID {
+					continue
+				}
+				if frozenItem.LimitCategory != 0 && frozenItem.LimitCategory == option.item.LimitCategory {
+					continue
+				}
 				pairs = append(pairs, [2]bulkSimCandidateOption{{spec: frozenSpec, item: *frozenItem}, option})
+			}
+		} else {
+			pairs = make([][2]bulkSimCandidateOption, 0, len(options)*(len(options)-1)/2)
+			for i := 0; i < len(options); i++ {
+				for j := i + 1; j < len(options); j++ {
+					if options[i].item.Unique && options[i].item.ID == options[j].item.ID {
+						continue
+					}
+					lc := options[i].item.LimitCategory
+					if lc != 0 && lc == options[j].item.LimitCategory {
+						continue
+					}
+					pairs = append(pairs, [2]bulkSimCandidateOption{options[i], options[j]})
+				}
 			}
 		}
 		generator.groupedPairsBySlot[bulkSlot] = pairs
@@ -1087,16 +1107,6 @@ func getBulkItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) BulkS
 		return bulkSlot
 	}
 	return BulkSimItemSlotHead
-}
-
-func allPairs(options []bulkSimCandidateOption) [][2]bulkSimCandidateOption {
-	pairs := make([][2]bulkSimCandidateOption, 0, len(options)*(len(options)-1)/2)
-	for i := 0; i < len(options); i++ {
-		for j := i + 1; j < len(options); j++ {
-			pairs = append(pairs, [2]bulkSimCandidateOption{options[i], options[j]})
-		}
-	}
-	return pairs
 }
 
 func optionsContainEquivalent(options []bulkSimCandidateOption, target bulkSimCandidateOption, inheritUpgrades bool) bool {

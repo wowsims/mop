@@ -165,11 +165,13 @@ type Item struct {
 	WeaponDamageMax  float64
 	SwingSpeed       float64
 
-	Name    string
-	Stats   stats.Stats // Stats applied to wearer
-	Quality proto.ItemQuality
-	SetName string // Empty string if not part of a set.
-	SetID   int32  // 0 if not part of a set.
+	Name          string
+	Stats         stats.Stats // Stats applied to wearer
+	Quality       proto.ItemQuality
+	Unique        bool
+	LimitCategory int32
+	SetName       string // Empty string if not part of a set.
+	SetID         int32  // 0 if not part of a set.
 
 	GemSockets  []proto.GemColor
 	SocketBonus stats.Stats
@@ -206,6 +208,8 @@ func ItemFromProto(pData *proto.SimItem) Item {
 		SetID:            pData.SetId,
 		ScalingOptions:   pData.ScalingOptions,
 		ItemEffects:      pData.ItemEffects,
+		Unique:           pData.Unique,
+		LimitCategory:    pData.LimitCategory,
 	}
 }
 
