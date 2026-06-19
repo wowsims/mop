@@ -380,11 +380,34 @@ export default class ItemList<T extends ItemListType> {
 
 				const searchQuery = formatQuery(this.searchInput.value).split(' ');
 				const name = formatQuery(listItemData.name.toString());
-
+				const nameDescription = formatQuery(listItemData.nameDescription.toString());
+				let sourceNames: string[] = [];
+				if ('item' in listItemData && typeof listItemData.item == 'object' && 'sources' in listItemData.item) {
+					sourceNames.push(
+						...listItemData.item.sources
+							.map(src => {
+								let label = undefined;
+								const source = src.source;
+								if (source.oneofKind === 'drop') {
+									label = this.simUI.sim.db.getNpc(source.drop.npcId)?.name || source.drop.otherName;
+								} else if (source.oneofKind === 'soldBy') {
+									label = source.soldBy.npcName;
+								} else if (source.oneofKind === 'crafted') {
+									label = professionNames.get(source.crafted.profession);
+								}
+								return label?.toLowerCase();
+							})
+							.filter((name): name is string => !!name),
+					);
+				}
 				let include = true;
-				searchQuery.some(v => {
-					if (!name.includes(v)) include = false;
-				});
+				for (const v of searchQuery) {
+					if (!name.includes(v) && !nameDescription.includes(v) && !sourceNames.some(sourceName => sourceName.includes(v))) {
+						include = false;
+						break;
+					}
+				}
+
 				if (!include) {
 					return false;
 				}
