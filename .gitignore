@@ -30,7 +30,7 @@ wowsimmop
 # old result file
 TestAPL.results
 
-#macos
+# macos
 .DS_Store
 
 # air tmp dir
@@ -43,3 +43,7 @@ wowsimmop*.h
 wowsims.db
 assets/db_inputs/dbc/
 mop.sln
+
+# agents
+graphify-out
+.claude
