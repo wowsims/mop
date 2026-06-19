@@ -233,8 +233,8 @@ func (shaman *Shaman) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 
 func (shaman *Shaman) Initialize() {
 	shaman.registerChainLightningSpell()
-	shaman.registerFireElementalTotem(!shaman.Talents.PrimalElementalist)
-	shaman.registerEarthElementalTotem(!shaman.Talents.PrimalElementalist)
+	shaman.registerFireElementalTotem()
+	shaman.registerEarthElementalTotem()
 	shaman.registerLightningBoltSpell()
 	shaman.registerLightningShieldSpell()
 	shaman.registerSpiritwalkersGraceSpell()

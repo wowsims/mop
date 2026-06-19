@@ -657,9 +657,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 467889.2954
-  tps: 325107.5916
-  hps: 5054.92484
+  dps: 471305.31712
+  tps: 327982.23988
+  hps: 5051.17712
  }
 }
 dps_results: {
@@ -921,9 +921,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 381340.80229
-  tps: 269510.34475
-  hps: 4913.26102
+  dps: 374545.48486
+  tps: 265699.59786
+  hps: 4816.56984
  }
 }
 dps_results: {
@@ -1105,9 +1105,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 443991.73028
-  tps: 312850.7299
-  hps: 5018.19718
+  dps: 430746.15328
+  tps: 306018.77461
+  hps: 4936.49688
  }
 }
 dps_results: {

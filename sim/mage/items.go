@@ -135,7 +135,9 @@ var ItemSetChronomancerRegalia = core.NewItemSet(core.ItemSet{
 				Duration:  time.Second * 10,
 				MaxStacks: 4,
 				OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks int32, newStacks int32) {
-					arcaneBlastMod.UpdateFloatValue(0.25 * float64(newStacks))
+					manaMod := []float64{0, -0.25, -0.5, -0.75, -2}[newStacks]
+					arcaneBlastMod.Activate()
+					arcaneBlastMod.UpdateFloatValue(manaMod)
 				},
 			})
 

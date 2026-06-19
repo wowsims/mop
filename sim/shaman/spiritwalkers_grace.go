@@ -6,10 +6,6 @@ import (
 	"github.com/wowsims/mop/sim/core"
 )
 
-func (shaman *Shaman) spiritwalkersGraceBaseDuration() time.Duration {
-	return 15 * time.Second
-}
-
 func (shaman *Shaman) registerSpiritwalkersGraceSpell() {
 	actionID := core.ActionID{SpellID: 79206}
 

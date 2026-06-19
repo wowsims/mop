@@ -11,7 +11,6 @@ import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultAPL from './apls/default.apl.json';
-import UvlsAPL from './apls/uvls.apl.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
@@ -27,7 +26,6 @@ export const P3_4_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', P4Gear);
 export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP)', P5Gear);
 
 export const APL_Default = PresetUtils.makePresetAPLRotation('Default', DefaultAPL);
-export const APL_UVLS = PresetUtils.makePresetAPLRotation('UVLS', UvlsAPL);
 
 // Preset options for EP weights
 export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
@@ -50,20 +48,9 @@ export const DemonologyTalentsDefault = {
 		talentsString: '231221',
 		glyphs: Glyphs.create({
 			major1: MajorGlyph.GlyphOfSoulstone,
-			major2: MajorGlyph.GlyphOfSiphonLife,
+			major2: MajorGlyph.GlyphOfEternalResolve,
 			major3: MajorGlyph.GlyphOfImpSwarm,
 			minor3: MinorGlyph.GlyphOfUnendingBreath,
-		}),
-	}),
-};
-
-export const DemonologyTalentsUVLS = {
-	name: 'UVLS',
-	data: SavedTalents.create({
-		...DemonologyTalentsDefault.data,
-		glyphs: Glyphs.create({
-			...DemonologyTalentsDefault.data.glyphs,
-			major2: MajorGlyph.GlyphOfEternalResolve,
 		}),
 	}),
 };
@@ -120,10 +107,24 @@ export const PRESET_BUILD_P2 = PresetUtils.makePresetBuild('T14', {
 });
 export const PRESET_BUILD_P3 = PresetUtils.makePresetBuild('T15', {
 	gear: P3_4_PRESET,
-	talents: DemonologyTalentsUVLS,
-	rotation: APL_UVLS,
+	talents: DemonologyTalentsDefault,
+	rotation: APL_Default,
 	settings: {
 		name: 'T15',
+		playerOptions: {
+			...OtherDefaults,
+			profession1: Profession.Engineering,
+			profession2: Profession.Herbalism,
+		},
+	},
+});
+
+export const PRESET_BUILD_P5 = PresetUtils.makePresetBuild('T16', {
+	gear: P5_PRESET,
+	talents: DemonologyTalentsDefault,
+	rotation: APL_Default,
+	settings: {
+		name: 'T16',
 		playerOptions: {
 			...OtherDefaults,
 			profession1: Profession.Engineering,

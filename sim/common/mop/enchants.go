@@ -258,7 +258,7 @@ func init() {
 		elementalForceSpell := character.RegisterSpell(core.SpellConfig{
 			ActionID:    core.ActionID{SpellID: 116616},
 			SpellSchool: core.SpellSchoolElemental,
-			Flags:       core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
+			Flags:       core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
 			ProcMask:    core.ProcMaskEmpty,
 
 			DamageMultiplier: 1,

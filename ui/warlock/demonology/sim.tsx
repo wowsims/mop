@@ -6,13 +6,11 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Faction, ItemSlot, PartyBuffs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as WarlockInputs from '../inputs';
-import { WARLOCK_BREAKPOINTS } from '../presets';
 import * as Presets from './presets';
-import { formatToNumber } from '../../core/utils';
+import { StatCapType } from '../../core/proto/ui';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	cssClass: 'demonology-warlock-sim-ui',
@@ -42,7 +40,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P3_4_PRESET.gear,
+		gear: Presets.P5_PRESET.gear,
 
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
@@ -64,7 +62,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 		consumables: Presets.DefaultConsumables,
 
 		// Default talents.
-		talents: Presets.DemonologyTalentsUVLS.data,
+		talents: Presets.DemonologyTalentsDefault.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 
@@ -100,25 +98,18 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	presets: {
 		epWeights: [Presets.DEFAULT_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.DemonologyTalentsDefault, Presets.DemonologyTalentsUVLS],
+		talents: [Presets.DemonologyTalentsDefault],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.APL_Default, Presets.APL_UVLS],
+		rotations: [Presets.APL_Default],
 
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET, Presets.P5_PRESET],
 		itemSwaps: [],
 
-		builds: [Presets.PRESET_BUILD_P2, Presets.PRESET_BUILD_P3],
+		builds: [Presets.PRESET_BUILD_P2, Presets.PRESET_BUILD_P3, Presets.PRESET_BUILD_P5],
 	},
 
-	autoRotation: (player: Player<Spec.SpecDemonologyWarlock>): APLRotation => {
-		const hasUVLS = player
-			.getGear()
-			.getTrinkets()
-			.some(trinket => trinket?._item.name === 'Unerring Vision of Lei Shen');
-
-		if (hasUVLS) return Presets.APL_UVLS.rotation.rotation!;
-
+	autoRotation: (_: Player<Spec.SpecDemonologyWarlock>): APLRotation => {
 		return Presets.APL_Default.rotation.rotation!;
 	},
 

@@ -2135,7 +2135,7 @@ dps_results: {
  key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongSingleTarget"
  value: {
   dps: 134625.95254
-  tps: 132280.36709
+  tps: 132280.25341
  }
 }
 dps_results: {
@@ -2149,7 +2149,7 @@ dps_results: {
  key: "TestFire-Settings-Troll-p1_bis-Row6_Talent1-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 221213.46309
-  tps: 248830.14473
+  tps: 248845.88845
  }
 }
 dps_results: {
@@ -2191,7 +2191,7 @@ dps_results: {
  key: "TestFire-Settings-Troll-p1_bis-Row6_Talent3-Fire-fire-NoBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 203835.95382
-  tps: 216516.46705
+  tps: 216537.12766
  }
 }
 dps_results: {
@@ -2338,7 +2338,7 @@ dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 243503.67507
-  tps: 270613.23962
+  tps: 270614.87796
  }
 }
 dps_results: {
@@ -2380,7 +2380,7 @@ dps_results: {
  key: "TestFire-Settings-Troll-p1_prebis-Row6_Talent3-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 218701.29383
-  tps: 230945.22655
+  tps: 230948.50321
  }
 }
 dps_results: {
@@ -2548,7 +2548,7 @@ dps_results: {
  key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent1-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
   dps: 325255.26388
-  tps: 351123.49226
+  tps: 351117.23253
  }
 }
 dps_results: {
@@ -2589,8 +2589,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-Settings-Worgen-p1_bis-Row6_Talent3-Fire-fire-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 296668.41506
-  tps: 306472.70242
+  dps: 296668.46986
+  tps: 306433.25241
  }
 }
 dps_results: {

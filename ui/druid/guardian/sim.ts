@@ -10,7 +10,7 @@ import { Cooldowns, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, Pse
 import { GuardianDruid_Rotation as DruidRotation } from '../../core/proto/druid.js';
 import { StatCapType } from '../../core/proto/ui';
 import * as AplUtils from '../../core/proto_utils/apl_utils.js';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { StatCap, Stats, UnitStat, pseudoStatHasCap } from '../../core/proto_utils/stats.js';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as DruidInputs from './inputs.js';
 import * as Presets from './presets.js';
@@ -40,7 +40,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		Stat.StatCritRating,
 		Stat.StatHasteRating,
 	],
-	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatPhysicalHitPercent, PseudoStat.PseudoStatSpellHitPercent],
+	epPseudoStats: [PseudoStat.PseudoStatMainHandDps],
 	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
 	epReferenceStat: Stat.StatAgility,
 	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
@@ -76,7 +76,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 			return new Stats()
 				.withStat(Stat.StatExpertiseRating, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION)
 				.withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5)
-				.withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
+				.withPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, 103.0);
 		})(),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
@@ -138,15 +138,15 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 	},
 
 	presets: {
-		epWeights: [Presets.SURVIVAL_EP_PRESET, Presets.BALANCED_EP_PRESET, Presets.OFFENSIVE_EP_PRESET],
+		epWeights: [Presets.BALANCED_PRECAP_EP_PRESET, Presets.BALANCED_EP_PRESET, Presets.OFFENSIVE_PRECAP_EP_PRESET, Presets.OFFENSIVE_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_HOTW, Presets.ROTATION_EMPRESS, Presets.ROTATION_SHA, Presets.ROTATION_HORRIDON],
+		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_HOTW, Presets.ROTATION_EMPRESS, Presets.ROTATION_SHA, Presets.ROTATION_HORRIDON, Presets.ROTATION_IJ],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.MSV_PRESET, Presets.HOF_PRESET, Presets.P2_PRESET, Presets.P2_OFFENSIVE_PRESET, Presets.P3_PRESET, Presets.P3_OFFENSIVE_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.MSV_PRESET, Presets.HOF_PRESET, Presets.P2_PRESET, Presets.P2_OFFENSIVE_PRESET, Presets.P3_PRESET, Presets.P3_OFFENSIVE_PRESET, Presets.P5_PRESET, Presets.P5_OFFENSIVE_PRESET],
 		itemSwaps: [Presets.ITEM_SWAP_PRESET],
-		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_GARAJAL, Presets.PRESET_BUILD_EMPRESS, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON],
+		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_GARAJAL, Presets.PRESET_BUILD_EMPRESS, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON, Presets.PRESET_BUILD_IJ],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecGuardianDruid>): APLRotation => {
@@ -264,6 +264,34 @@ export class GuardianDruidSimUI extends IndividualSimUI<Spec.SpecGuardianDruid> 
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecGuardianDruid>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		this.reforger = new ReforgeOptimizer(this);
+		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: player => {
+				if (player.getEpWeights().equals(Presets.OFFENSIVE_EP_PRESET.epWeights)) {
+					return Presets.OFFENSIVE_PRECAP_EPS;
+				} else {
+					return Presets.BALANCED_PRECAP_EPS;
+				}
+			},
+			updateSoftCaps: softCaps => {
+				const epWeights = this.reforger?.preCapEPs;
+				console.log(epWeights);
+
+				if (!epWeights) {
+					return softCaps;
+				}
+
+				if (epWeights.getStat(Stat.StatCritRating) == Presets.BALANCED_PRECAP_EPS.getStat(Stat.StatCritRating) / 1.5) {
+					softCaps.push(
+						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
+							breakpoints: [79.0],
+							capType: StatCapType.TypeSoftCap,
+							postCapEPs: [1.16 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT / 1.5],
+						}),
+					);
+				}
+
+				return softCaps;
+			},
+		});
 	}
 }

@@ -276,6 +276,7 @@ const (
 	DeathKnightSpellUnholyFrenzy
 	DeathKnightSpellUnholyPresence
 	DeathKnightSpellVampiricBlood
+	DeathKnightSpellFrozenPower
 
 	DeathKnightSpellKillingMachine     // Used to react to km procs
 	DeathKnightSpellSuddenDoom         // Used to react to km procs

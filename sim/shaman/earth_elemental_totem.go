@@ -7,7 +7,7 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-func (shaman *Shaman) registerEarthElementalTotem(isGuardian bool) {
+func (shaman *Shaman) registerEarthElementalTotem() {
 
 	actionID := core.ActionID{SpellID: 2062}
 

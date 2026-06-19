@@ -485,6 +485,10 @@ export class ReforgeOptimizer {
 			weights = weights.withStat(Stat.StatSpirit, 0.01);
 		}
 
+		if (this.player.getSpec() == Spec.SpecGuardianDruid) {
+			weights = weights.withStat(Stat.StatCritRating, weights.getStat(Stat.StatCritRating) / 1.5);
+		}
+
 		return weights;
 	}
 
@@ -1735,12 +1739,29 @@ export class ReforgeOptimizer {
 			amount *= this.player.getTotalAmplificationTrinketStatModifier();
 		}
 
+		if (stat == Stat.StatCritRating && this.player.getSpec() == Spec.SpecGuardianDruid) {
+			amount *= 1.5;
+		}
+
 		// Handle Spirit to Spell Hit conversion for hybrid casters separately from standard dependencies
 		if (
 			preCapEPs.getPseudoStat(PseudoStat.PseudoStatSpellHitPercent) != 0 &&
 			((stat == Stat.StatSpirit && this.isHybridCaster) || stat == Stat.StatExpertiseRating)
 		) {
 			this.setPseudoStatCoefficient(coefficients, PseudoStat.PseudoStatSpellHitPercent, amount / Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT);
+		}
+
+		// Handle Agi contribution to Guardian Crit cap
+		if (stat == Stat.StatAgility && this.player.getSpec() == Spec.SpecGuardianDruid) {
+			amount *= 1.05;
+
+			if ((this.player as Player<Spec.SpecGuardianDruid>).getTalents().heartOfTheWild) {
+				amount *= 1.06;
+			}
+
+			this.setStatCoefficient(coefficients, Stat.StatAttackPower, amount * 2);
+			this.setPseudoStatCoefficient(coefficients, PseudoStat.PseudoStatPhysicalCritPercent, amount*0.00079395);
+			return;
 		}
 
 		// If a highest Stat constraint is to be enforced, then update the

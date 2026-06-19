@@ -189,7 +189,7 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		{{.ItemID}}, // {{ .Name }}
 		[
 			{{- range .Effects }}
-			"{{ .Name }}", // {{.SpellID}} - https://www.wowhead.com/tbc/spell={{.SpellID}}
+			"{{ .Name }}", // {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
 			{{- end}}
 		]
 	],
@@ -203,7 +203,7 @@ export const MISSING_ENCHANT_EFFECTS = new Map<number, string[]>([
 {{- $tooltip := .Tooltip }}
 {{- if not .Supported}}
 {{- range .Variants }}
-	[{{.ID}}, "{{- range $tooltip }}{{.}}{{- end}}"], // {{ $name }} - {{.SpellID}} - https://www.wowhead.com/tbc/spell={{.SpellID}}
+	[{{.ID}}, "{{- range $tooltip }}{{.}}{{- end}}"], // {{ $name }} - {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
 {{- end}}
 {{- end }}
 {{- end }}

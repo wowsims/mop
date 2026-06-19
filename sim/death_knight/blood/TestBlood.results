@@ -1095,8 +1095,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-Heart-LesionDefenderStone-101002"
  value: {
-  dps: 386559.50852
-  tps: 1.91770544048e+06
+  dps: 386559.70235
+  tps: 1.91770679735e+06
   dtps: 152384.16791
   hps: 179824.69818
  }
@@ -1608,8 +1608,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-OathswornDefenderStone-101306"
  value: {
-  dps: 385699.96953
-  tps: 1.91284909172e+06
+  dps: 385700.16337
+  tps: 1.91285044859e+06
   dtps: 151520.08907
   hps: 179597.78807
  }
@@ -1932,8 +1932,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-RuneofRazorice-3370"
  value: {
-  dps: 386963.82561
-  tps: 1.95580387313e+06
+  dps: 386963.59836
+  tps: 1.9558022824e+06
   dtps: 155931.63936
   hps: 171605.4719
  }
@@ -2202,8 +2202,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-SpringrainStoneofRage-101012"
  value: {
-  dps: 385715.65268
-  tps: 1.90518789133e+06
+  dps: 385715.84652
+  tps: 1.9051892482e+06
   dtps: 151350.12055
   hps: 178808.36288
  }
@@ -2265,8 +2265,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-StreamtalkerStoneofDestruction-101225"
  value: {
-  dps: 383989.2738
-  tps: 1.90743238687e+06
+  dps: 383989.46763
+  tps: 1.90743374374e+06
   dtps: 151258.81792
   hps: 179910.37521
  }
@@ -2679,7 +2679,7 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Settings-Orc-p5-DefaultTalents-Basic-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 8.10902081563e+06
+  dps: 8.10904964037e+06
   tps: 5.146415260402e+07
   dtps: 975271.3865
   hps: 295153.96554
@@ -2706,7 +2706,7 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Settings-Orc-p5-DefaultTalents-Basic-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 6.50896283718e+06
+  dps: 6.50901206617e+06
   tps: 4.091587966386e+07
   dtps: 1.0153310815e+06
   hps: 231263.8681
@@ -2733,8 +2733,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Settings-Orc-p5-RC-example-build-Basic-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 8.98953778893e+06
-  tps: 5.174502130886e+07
+  dps: 8.98964989071e+06
+  tps: 5.174580602132e+07
   dtps: 967335.65601
   hps: 280692.25481
  }
@@ -2814,7 +2814,7 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Settings-Worgen-p5-DefaultTalents-Basic-iron_juggernaut-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 6.53353195475e+06
+  dps: 6.53357998072e+06
   tps: 4.116291448604e+07
   dtps: 1.01540267747e+06
   hps: 231291.88729
@@ -2841,8 +2841,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-Settings-Worgen-p5-RC-example-build-Basic-iron_juggernaut-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 8.9971062974e+06
-  tps: 5.205166314226e+07
+  dps: 8.9972179873e+06
+  tps: 5.205244497156e+07
   dtps: 967156.46646
   hps: 280958.10107
  }
