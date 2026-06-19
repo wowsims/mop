@@ -22,9 +22,9 @@ func TestArms(t *testing.T) {
 			OtherRaces:       []proto.Race{proto.Race_RaceWorgen},
 			StartingDistance: 25,
 
-			GearSet: core.GetGearSet("../../../ui/warrior/arms/gear_sets", "p4_arms_bis"),
+			GearSet: core.GetGearSet("../../../ui/warrior/arms/gear_sets", "p5_arms_bis"),
 			OtherGearSets: []core.GearSetCombo{
-				core.GetGearSet("../../../ui/warrior/arms/gear_sets", "prebis"),
+				core.GetGearSet("../../../ui/warrior/arms/gear_sets", "p4_arms_bis"),
 			},
 			Talents:     ArmsTalents,
 			Glyphs:      ArmsDefaultGlyphs,
