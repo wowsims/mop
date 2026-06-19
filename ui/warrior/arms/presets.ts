@@ -16,7 +16,7 @@ import PreBisGear from './gear_sets/prebis.gear.json';
 export const PREBIS_PRESET = PresetUtils.makePresetGear('Pre-BIS', PreBisGear);
 export const P2_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P2 - BIS', P2ArmsBisGear);
 export const P3_4_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', P4ArmsBisGear);
-export const P5_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP)', P5ArmsBisGear);
+export const P5_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P5 - BIS', P5ArmsBisGear);
 
 export const ROTATION_ARMS = PresetUtils.makePresetAPLRotation('Default', ArmsApl);
 
