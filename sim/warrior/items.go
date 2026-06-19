@@ -179,7 +179,13 @@ var ItemSetBattleplateOfThePrehistoricMarauder = core.NewItemSet(core.ItemSet{
 				Callback: core.CallbackOnSpellHitDealt,
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					if !war.ColossusSmashAuras.Get(result.Target).IsActive() ||
-						spell.Matches(SpellMaskOpportunityStrike|SpellMaskSweepingStrikesHit|SpellMaskSweepingStrikesNormalizedHit) {
+						spell.Matches(
+							SpellMaskOpportunityStrike|
+								SpellMaskSweepingStrikesHit|
+								SpellMaskSweepingStrikesNormalizedHit|
+								SpellMaskHamstring|
+								SpellMaskPummel,
+						) {
 						return
 					}
 
