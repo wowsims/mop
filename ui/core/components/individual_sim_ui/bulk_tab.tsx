@@ -1210,7 +1210,7 @@ export class BulkTab extends SimTab {
 
 		if (warningRef.value) {
 			tippy(warningRef.value, {
-				content: i18n.t('bulk_tab.warning.iterations_limit', { limit: this.getIterationsLimit() }),
+				content: i18n.t('bulk_tab.warning.iterations_limit', { limit: formatToNumber(this.getIterationsLimit()) }),
 				placement: 'left',
 				popperOptions: {
 					modifiers: [
