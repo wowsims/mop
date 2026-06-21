@@ -103,8 +103,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-BattleplateofthePrehistoricMarauder"
  value: {
-  dps: 250955.50257
-  tps: 160555.78148
+  dps: 253148.3244
+  tps: 161919.53618
  }
 }
 dps_results: {
@@ -264,8 +264,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-CraftedDreadfulGladiator'sBadgeofVictory-93606"
  value: {
-  dps: 277203.13594
-  tps: 175928.31826
+  dps: 276847.75088
+  tps: 174881.68636
  }
 }
 dps_results: {
@@ -327,8 +327,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-CraftedMalevolentGladiator'sBadgeofVictory-98912"
  value: {
-  dps: 277898.90084
-  tps: 176378.60007
+  dps: 277546.12875
+  tps: 175330.43165
  }
 }
 dps_results: {
@@ -390,8 +390,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Daelo'sFinalWords-87496"
  value: {
-  dps: 281272.07895
-  tps: 178044.04511
+  dps: 281016.50022
+  tps: 178294.77416
  }
 }
 dps_results: {
@@ -488,8 +488,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-DreadfulGladiator'sBadgeofVictory-84490"
  value: {
-  dps: 277203.13594
-  tps: 175928.31826
+  dps: 276847.75088
+  tps: 174881.68636
  }
 }
 dps_results: {
@@ -656,8 +656,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 300900.4691
-  tps: 192392.44778
+  dps: 300784.62321
+  tps: 194789.45613
  }
 }
 dps_results: {
@@ -789,8 +789,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-GrievousGladiator'sBadgeofVictory-103314"
  value: {
-  dps: 280312.39428
-  tps: 177940.55323
+  dps: 279968.68615
+  tps: 176887.05485
  }
 }
 dps_results: {
@@ -1042,8 +1042,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-LessonsoftheDarkmaster-81268"
  value: {
-  dps: 280130.93533
-  tps: 175639.4464
+  dps: 279676.04091
+  tps: 175713.83101
  }
 }
 dps_results: {
@@ -1098,8 +1098,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-MalevolentGladiator'sBadgeofVictory-91763"
  value: {
-  dps: 277898.90084
-  tps: 176378.60007
+  dps: 277546.12875
+  tps: 175330.43165
  }
 }
 dps_results: {
@@ -1336,8 +1336,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-PridefulGladiator'sBadgeofVictory-103511"
  value: {
-  dps: 282377.06249
-  tps: 179276.75535
+  dps: 282041.10831
+  tps: 178218.69736
  }
 }
 dps_results: {
@@ -1875,8 +1875,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-TyrannicalGladiator'sBadgeofVictory-100019"
  value: {
-  dps: 278824.70184
-  tps: 176977.75554
+  dps: 278475.40663
+  tps: 175927.54258
  }
 }
 dps_results: {
