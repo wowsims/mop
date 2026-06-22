@@ -2966,9 +2966,6 @@
 				"progress": {
 					"type": "object",
 					"properties": {
-						"total_combinations": {
-							"type": "string"
-						},
 						"building_candidate_gear_sets": {
 							"type": "string"
 						},
@@ -3005,7 +3002,6 @@
 					},
 					"additionalProperties": false,
 					"required": [
-						"total_combinations",
 						"building_candidate_gear_sets",
 						"restoring_reforges_from_cache",
 						"reforging_iteration_rounds",

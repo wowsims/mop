@@ -837,7 +837,6 @@
             }
         },
         "progress": {
-            "total_combinations": "{{count}} combinaisons totales.",
 			"building_candidate_gear_sets": "Création des ensembles d'équipement candidats",
 			"restoring_reforges_from_cache": "Restauration des reforges depuis le cache",
 			"reforging_iteration_rounds": "Exécution des reforges",

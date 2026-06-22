@@ -837,7 +837,6 @@
 			}
 		},
 		"progress": {
-			"total_combinations": "{{count}} total combinations.",
 			"building_candidate_gear_sets": "Building candidate gear sets",
 			"restoring_reforges_from_cache": "Restoring reforges from cache",
 			"reforging_iteration_rounds": "Running reforges",
@@ -2396,7 +2395,7 @@
 				"enable_modification": "This will enable modification of the default EP weights and setting custom stat caps.",
 				"modify_in_editor": "Ep weights can be modified in the Stat Weights editor.",
 				"hard_cap_info": "If you want to hard cap a stat make sure to put the EP for that stat higher.",
-				"edit_weights": "Edit weights",
+				"edit_weights": "Change weights",
 				"include_gems": "Include gems",
 				"freeze_item_slots": "Freeze item slots",
 				"include_eotbp_socket": "Include EotBP Socket",
