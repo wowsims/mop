@@ -37,6 +37,10 @@ type APLRotation struct {
 	// If true, can recast channel when interrupted.
 	allowChannelRecastOnInterrupt bool
 
+	// Set by shouldInterruptChannel when the interrupt is for a same-spell recast.
+	// Read by interrupt call-sites to propagate unit.pendingChannelRollover.
+	recastingChannel bool
+
 	// Used inside of actions/value to determine whether they will occur during the prepull or regular rotation.
 	parsingPrepull bool
 
@@ -414,6 +418,7 @@ func (rot *APLRotation) reset(sim *Simulation) {
 	rot.inLoop = false
 	rot.interruptChannelIf = nil
 	rot.allowChannelRecastOnInterrupt = false
+	rot.recastingChannel = false
 	rot.evalGeneration++ // Invalidate any variable caches from previous iteration or initialization
 	for _, action := range rot.allAPLActions() {
 		action.impl.Reset(sim)
@@ -433,6 +438,20 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 	}
 
 	if apl.unit.IsChanneling() && !apl.unit.ChanneledDot.Spell.Flags.Matches(SpellFlagCastWhileChanneling) {
+		// Also evaluate interruptIf when the GCD fires, not only on each tick.
+		if apl.shouldInterruptChannel(sim) {
+			dot := apl.unit.ChanneledDot
+			channelDelay := dot.getChannelClipDelay(sim)
+			// Always track rollover: if the same spell is recast, inherit tick schedule.
+			apl.unit.pendingChannelRollover = true
+			apl.unit.pendingRolloverNextTickAt = dot.tickAction.NextActionAt
+			apl.unit.pendingRolloverFromSpell = dot.Spell
+			dot.tickAction.NextActionAt = NeverExpires
+			dot.Deactivate(sim)
+			if dot.Spell.Unit.GCD.IsReady(sim) {
+				apl.unit.WaitUntil(sim, sim.CurrentTime+channelDelay)
+			}
+		}
 		return
 	}
 
@@ -496,6 +515,58 @@ func (apl *APLRotation) popControllingAction(ca APLActionImpl) {
 	apl.controllingActions = apl.controllingActions[:len(apl.controllingActions)-1]
 }
 
+// nextActionWouldRecastChannel reports whether the same channeled spell would be the
+// first action cast if the channel ended right now. It evaluates the APL in the
+// post-channel state (ChanneledDot = nil) so that channel-state-dependent
+// conditions (e.g. spell.isChanneling) do not produce stale results.
+//
+// It uses CanCast rather than CanCastOrQueue for the same-spell check so that a
+// proc-queued spell in the same timestep (which sets CanQueueSpell = false) does
+// not incorrectly block a same-spell re-cast from being detected.
+//
+// The caller is responsible for saving/restoring ChanneledDot around this call if
+// the dot reference is needed afterwards — this function does NOT restore it.
+func (apl *APLRotation) nextActionWouldRecastChannel(sim *Simulation, channeledDot *Dot) bool {
+	channeledSpell := channeledDot.Spell
+
+	// Evaluate in post-channel state.
+	apl.unit.ChanneledDot = nil
+
+	for _, action := range apl.priorityList {
+		// Condition not met — skip.
+		if action.condition != nil && !action.condition.GetBool(sim) {
+			continue
+		}
+
+		// Same spell via cast_spell action?
+		if castAction, ok := action.impl.(*APLActionCastSpell); ok {
+			if castAction.spell == channeledSpell || castAction.spell.Matches(channeledSpell.ClassSpellMask) {
+				return castAction.spell.CanCast(sim, castAction.target.Get())
+			}
+		}
+
+		// Same spell via channel_spell action?
+		if channelAction, ok := action.impl.(*APLActionChannelSpell); ok {
+			if channelAction.spell == channeledSpell || channelAction.spell.Matches(channeledSpell.ClassSpellMask) {
+				return channelAction.spell.CanCast(sim, channelAction.target.Get())
+			}
+		}
+
+		// autocast_other_cooldowns fires off-GCD MCDs alongside the main rotation
+		// rather than replacing it, so it should never block same-spell detection.
+		if _, ok := action.impl.(*APLActionAutocastOtherCooldowns); ok {
+			continue
+		}
+
+		// A different action is fully ready — it would be cast first.
+		if action.impl.IsReady(sim) {
+			return false
+		}
+	}
+
+	return false
+}
+
 func (apl *APLRotation) shouldInterruptChannel(sim *Simulation) bool {
 	channeledDot := apl.unit.ChanneledDot
 
@@ -503,15 +574,17 @@ func (apl *APLRotation) shouldInterruptChannel(sim *Simulation) bool {
 		return false
 	}
 
-	// Allow next action to interrupt the channel, but if the action is the same action then it still needs to continue.
-	nextAction := apl.getNextAction(sim)
-	if nextAction != nil {
-		if channelAction, ok := nextAction.impl.(*APLActionChannelSpell); ok && channelAction.spell == channeledDot.Spell {
-			// Newly selected action is channeling the same spell, so continue the channel unless recast is allowed.
-			return apl.allowChannelRecastOnInterrupt
-		}
+	// Check whether the same channel would be re-cast in post-channel state.
+	// nextActionWouldRecastChannel clears ChanneledDot — restore it afterwards.
+	wouldRecast := apl.nextActionWouldRecastChannel(sim, channeledDot)
+	apl.unit.ChanneledDot = channeledDot
+
+	if wouldRecast {
+		apl.recastingChannel = apl.allowChannelRecastOnInterrupt
+		return apl.allowChannelRecastOnInterrupt
 	}
 
+	apl.recastingChannel = false
 	return true
 }
 
