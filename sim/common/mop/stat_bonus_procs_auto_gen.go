@@ -1478,21 +1478,6 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Let the Frostscythe's chill flow through you.
-	// https://www.wowhead.com/mop/spell=46643
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Frostscythe of Lord Ahune",
-	// 	ItemID:             95426,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
 	// Your Chains of Ice ability now generates an additional 10 Runic Power.
 	// https://www.wowhead.com/mop/spell=62458
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -2577,6 +2562,21 @@ func RegisterAllProcs() {
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "The Horseman's Sinister Slicer",
 	// 	ItemID:             263018,
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
+	// })
+
+	// TODO: Manual implementation required
+	//       This can be ignored if the effect has already been implemented.
+	//       With next db run the item will be removed if implemented.
+	//
+	// Let the Frostscythe's chill flow through you.
+	// https://www.wowhead.com/mop/spell=46643
+	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
+	// 	Name:               "Frostscythe of Lord Ahune",
+	// 	ItemID:             280389,
 	// 	Callback:           core.CallbackEmpty,
 	// 	ProcMask:           core.ProcMaskUnknown,
 	// 	Outcome:            core.OutcomeEmpty,

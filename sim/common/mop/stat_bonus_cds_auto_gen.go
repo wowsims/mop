@@ -52,14 +52,6 @@ func RegisterAllOnUseCds() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Let the Frostscythe's chill flow through you.
-	// https://www.wowhead.com/mop/spell=46643
-	// shared.NewSimpleStatActive(95426)
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
 	// Reduces damage taken from creature area of effect attacks by 2585% for 15s.
 	// https://www.wowhead.com/mop/spell=146343
 	// shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
@@ -86,6 +78,14 @@ func RegisterAllOnUseCds() {
 	// Summon Pumpkin Soldiers to burn your foes.
 	// https://www.wowhead.com/mop/spell=50070
 	// shared.NewSimpleStatActive(263018)
+
+	// TODO: Manual implementation required
+	//       This can be ignored if the effect has already been implemented.
+	//       With next db run the item will be removed if implemented.
+	//
+	// Let the Frostscythe's chill flow through you.
+	// https://www.wowhead.com/mop/spell=46643
+	// shared.NewSimpleStatActive(280389)
 
 	// Agility
 
