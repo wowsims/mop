@@ -847,6 +847,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestFeral-AllItems-FrostscytheofLordAhune-280389"
+ value: {
+  dps: 259956.9171
+  tps: 285100.1979
+  hps: 22498.45402
+ }
+}
+dps_results: {
  key: "TestFeral-AllItems-Fusion-FireCore-105459"
  value: {
   dps: 246520.32263

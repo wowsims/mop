@@ -799,6 +799,26 @@ var ItemDenyList = map[int32]struct{}{
 	270891: {}, // Heartbreak Charm
 	270893: {}, // Sweet Perfume Broach
 	270895: {}, // Shard of Pirouetting Happiness
+
+	// MOP - Midsummer - Old items
+	95425:  {}, // Cloak of the Frigid Winds
+	95426:  {}, // Frostscythe of Lord Ahune
+	95427:  {}, // Icebound Cloak
+	95428:  {}, // Shroud of Winter's Chill
+	95429:  {}, // The Frost Lord's Battle Shroud
+	95430:  {}, // The Frost Lord's War Cloak
+	248747: {}, // Frostscythe of Lord Ahune
+	248748: {}, // The Frost Lord's War Cloak
+	248749: {}, // The Frost Lord's Battle Shroud
+	248750: {}, // Shroud of Winter's Chill
+	248751: {}, // Cloak of the Frigid Winds
+	248752: {}, // Icebound Cloak
+	280378: {}, // Icebound Cloak
+	280379: {}, // The Frost Lord's Battle Shroud
+	280380: {}, // Shroud of Winter's Chill
+	280381: {}, // Cloak of the Frigid Winds
+	280382: {}, // The Frost Lord's War Cloak
+	280388: {}, // Frostscythe of Lord Ahune
 }
 
 // Item icons to include in the DB, so they don't need to be separately loaded in the UI.
