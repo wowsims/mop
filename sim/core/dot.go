@@ -295,8 +295,11 @@ func (dot *Dot) periodicTick(sim *Simulation) {
 		// Note: even if the clip delay is 0ms, need a WaitUntil so APL fires after aura fades.
 		if dot.remainingTicks == 0 && dot.Spell.Unit.GCD.IsReady(sim) {
 			dot.Spell.Unit.WaitUntil(sim, sim.CurrentTime+channelDelay)
-		} else if dot.Spell.Unit.Rotation.shouldInterruptChannel(sim) {
-			// Always track rollover: if the same spell is recast, inherit tick schedule.
+		} else if dot.Spell.Unit.Rotation.shouldInterruptChannel(sim) &&
+			(dot.Spell.Unit.GCD.IsReady(sim) || dot.Spell.Unit.GCD.TimeToReady(sim) > MaxSpellQueueWindow) {
+			// Skip interrupts that are purely SQW-triggered (GCD within queue window but not
+			// actually ready). Those are handled by the rotation action at actual GCD time.
+			// Only interrupt when GCD is ready OR the condition is unrelated to GCD queuing.
 			dot.Spell.Unit.pendingChannelRollover = true
 			dot.Spell.Unit.pendingRolloverNextTickAt = sim.CurrentTime + dot.tickPeriod
 			dot.Spell.Unit.pendingRolloverFromSpell = dot.Spell
@@ -310,8 +313,9 @@ func (dot *Dot) periodicTick(sim *Simulation) {
 		}
 	}
 
-	// Dot might have been disabled in tick
-	if dot.IsActive() {
+	// Dot might have been disabled in tick. For channeled spells, don't reschedule
+	// once all ticks are consumed — the aura may still be alive filling the GCD.
+	if dot.IsActive() && (!dot.isChanneled || dot.remainingTicks > 0) {
 		dot.tickAction.NextActionAt = sim.CurrentTime + dot.tickPeriod
 		sim.AddPendingAction(dot.tickAction)
 	}

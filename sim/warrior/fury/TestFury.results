@@ -103,8 +103,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-BattleplateofthePrehistoricMarauder"
  value: {
-  dps: 250955.50257
-  tps: 160555.78148
+  dps: 250727.64043
+  tps: 160563.25082
  }
 }
 dps_results: {
@@ -768,8 +768,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 299273.39802
-  tps: 193068.60137
+  dps: 299107.84014
+  tps: 192861.26094
  }
 }
 dps_results: {
@@ -1280,8 +1280,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-PlateofResoundingRings"
  value: {
-  dps: 212703.61686
-  tps: 136110.6487
+  dps: 212957.49686
+  tps: 136151.04241
  }
 }
 dps_results: {
@@ -1581,8 +1581,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-SigiloftheCatacombs-83732"
  value: {
-  dps: 280134.0408
-  tps: 177189.66207
+  dps: 280380.15545
+  tps: 177513.80519
  }
 }
 dps_results: {
@@ -1840,8 +1840,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Time-LostArtifact-103678"
  value: {
-  dps: 281756.85796
-  tps: 179986.35854
+  dps: 281793.86219
+  tps: 180020.58096
  }
 }
 dps_results: {
@@ -2036,8 +2036,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-Average-Default"
  value: {
-  dps: 294662.35786
-  tps: 185799.5378
+  dps: 294654.66833
+  tps: 185794.85478
  }
 }
 dps_results: {
@@ -2134,8 +2134,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 174795.13377
-  tps: 112560.41092
+  dps: 174810.20216
+  tps: 112614.87952
  }
 }
 dps_results: {
@@ -2302,8 +2302,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 176001.95332
-  tps: 112473.4226
+  dps: 175856.95564
+  tps: 112485.54103
  }
 }
 dps_results: {
@@ -2323,8 +2323,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 135196.41174
-  tps: 87560.52558
+  dps: 135158.44211
+  tps: 87491.58716
  }
 }
 dps_results: {
