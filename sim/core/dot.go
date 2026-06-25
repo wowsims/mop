@@ -292,10 +292,17 @@ func (dot *Dot) periodicTick(sim *Simulation) {
 	dot.TickOnce(sim)
 	if dot.isChanneled {
 		channelDelay := dot.getChannelClipDelay(sim)
-		// Note: even if the clip delay is 0ms, need a WaitUntil so that APL is called after the channel aura fades.
+		// Note: even if the clip delay is 0ms, need a WaitUntil so APL fires after aura fades.
 		if dot.remainingTicks == 0 && dot.Spell.Unit.GCD.IsReady(sim) {
 			dot.Spell.Unit.WaitUntil(sim, sim.CurrentTime+channelDelay)
-		} else if dot.Spell.Unit.Rotation.shouldInterruptChannel(sim) {
+		} else if dot.Spell.Unit.Rotation.shouldInterruptChannel(sim) &&
+			(dot.Spell.Unit.GCD.IsReady(sim) || dot.Spell.Unit.GCD.TimeToReady(sim) > MaxSpellQueueWindow) {
+			// Skip interrupts that are purely SQW-triggered (GCD within queue window but not
+			// actually ready). Those are handled by the rotation action at actual GCD time.
+			// Only interrupt when GCD is ready OR the condition is unrelated to GCD queuing.
+			dot.Spell.Unit.pendingChannelRollover = true
+			dot.Spell.Unit.pendingRolloverNextTickAt = sim.CurrentTime + dot.tickPeriod
+			dot.Spell.Unit.pendingRolloverFromSpell = dot.Spell
 			dot.tickAction.NextActionAt = NeverExpires // don't tick again in ApplyOnExpire
 			dot.Deactivate(sim)
 			if dot.Spell.Unit.GCD.IsReady(sim) {
@@ -306,8 +313,9 @@ func (dot *Dot) periodicTick(sim *Simulation) {
 		}
 	}
 
-	// Dot might have been disabled in tick
-	if dot.IsActive() {
+	// Dot might have been disabled in tick. For channeled spells, don't reschedule
+	// once all ticks are consumed — the aura may still be alive filling the GCD.
+	if dot.IsActive() && (!dot.isChanneled || dot.remainingTicks > 0) {
 		dot.tickAction.NextActionAt = sim.CurrentTime + dot.tickPeriod
 		sim.AddPendingAction(dot.tickAction)
 	}
@@ -319,18 +327,11 @@ func (dot *Dot) getChannelClipDelay(sim *Simulation) time.Duration {
 		return dot.Spell.Unit.ChannelClipDelay
 	}
 
-	nextAction := dot.Spell.Unit.Rotation.getNextAction(sim)
-	if nextAction == nil {
-		return dot.Spell.Unit.ChannelClipDelay
-	}
+	// nextActionWouldRecastChannel clears ChanneledDot — restore it afterwards.
+	wouldRecast := dot.Spell.Unit.Rotation.nextActionWouldRecastChannel(sim, channeledDot)
+	dot.Spell.Unit.ChanneledDot = channeledDot
 
-	// if we're channeling the same spell again, we don't need to add a delay
-	// within the game we'd actually cast before the last tick and it would be carried over
-	if channelAction, ok := nextAction.impl.(*APLActionCastSpell); ok && ((channelAction.spell == channeledDot.Spell) || (channelAction.spell.Matches(channeledDot.Spell.ClassSpellMask))) {
-		return 0
-	}
-
-	if channelAction, ok := nextAction.impl.(*APLActionChannelSpell); ok && ((channelAction.spell == channeledDot.Spell) || (channelAction.spell.Matches(channeledDot.Spell.ClassSpellMask))) {
+	if wouldRecast {
 		return 0
 	}
 
@@ -370,6 +371,19 @@ func newDot(config Dot) *Dot {
 		sim.AddPendingAction(dot.tickAction)
 		if dot.isChanneled {
 			dot.Spell.Unit.ChanneledDot = dot
+			if dot.Spell.Unit.pendingChannelRollover {
+				sameSpell := dot.Spell.Unit.pendingRolloverFromSpell == dot.Spell
+				dot.Spell.Unit.pendingChannelRollover = false
+				dot.Spell.Unit.pendingRolloverFromSpell = nil
+				rolloverAt := dot.Spell.Unit.pendingRolloverNextTickAt
+				if sameSpell && rolloverAt > sim.CurrentTime {
+					// Carry over the old channel's next-tick time instead of starting fresh.
+					dot.tickAction.Cancel(sim)
+					dot.tickAction.cancelled = false
+					dot.tickAction.NextActionAt = rolloverAt
+					sim.AddPendingAction(dot.tickAction)
+				}
+			}
 		}
 	})
 	dot.ApplyOnExpire(func(aura *Aura, sim *Simulation) {
@@ -377,18 +391,23 @@ func newDot(config Dot) *Dot {
 		if dot.tickAction.NextActionAt == sim.CurrentTime {
 			dot.remainingTicks--
 			dot.TickOnce(sim)
-			// Note: even if the clip delay is 0ms, need a WaitUntil so that APL is called after the channel aura fades.
-			if dot.isChanneled && dot.Spell.Unit.GCD.IsReady(sim) {
-				dot.Spell.Unit.WaitUntil(sim, sim.CurrentTime+dot.getChannelClipDelay(sim))
-			}
 		}
 
 		dot.tickAction.Cancel(sim)
 		dot.tickAction = nil
 		if dot.isChanneled {
+			// Compute clip delay before clearing ChanneledDot (used by nextActionWouldRecastChannel).
+			clipDelay := dot.getChannelClipDelay(sim)
 			dot.Spell.Unit.ChanneledDot = nil
 			dot.Spell.Unit.Rotation.interruptChannelIf = nil
 			dot.Spell.Unit.Rotation.allowChannelRecastOnInterrupt = false
+			// Note: even if clip delay is 0ms, always schedule rotation here so APL fires
+			// after ChanneledDot is cleared. This also handles rollover channels where ticks
+			// finish before aura expiry — periodicTick's WaitUntil saw IsChanneling=true and
+			// returned early, leaving no rotation event scheduled until now.
+			if dot.Spell.Unit.GCD.IsReady(sim) {
+				dot.Spell.Unit.WaitUntil(sim, sim.CurrentTime+clipDelay)
+			}
 			// track time metrics for channels
 			dot.Spell.SpellMetrics[aura.Unit.UnitIndex].TotalCastTime += dot.fadeTime - dot.StartedAt()
 		}

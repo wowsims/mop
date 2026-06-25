@@ -22,17 +22,19 @@ import P3Gear from './gear_sets/p3.gear.json';
 export const P3_PRESET = PresetUtils.makePresetGear('P3', P3Gear);
 import P4Gear from './gear_sets/p4.gear.json';
 export const P4_PRESET = PresetUtils.makePresetGear('P4', P4Gear);
+import P4ItemSwapGear from './gear_sets/p3_item_swap.gear.json';
+export const P4_ITEM_SWAP_PRESET = PresetUtils.makePresetItemSwapGear('P4 - HotW Caster Weapon Swap', P4ItemSwapGear);
 import P5Gear from './gear_sets/p5.gear.json';
 export const P5_PRESET = PresetUtils.makePresetGear('P5', P5Gear);
-import ItemSwapGear from './gear_sets/p3_item_swap.gear.json';
-export const ITEM_SWAP_PRESET = PresetUtils.makePresetItemSwapGear('HotW Caster Weapon Swap', ItemSwapGear);
+import P5ItemSwapGear from './gear_sets/p5_item_swap.gear.json';
+export const P5_ITEM_SWAP_PRESET = PresetUtils.makePresetItemSwapGear('P5 - HotW Caster Weapon Swap', P5ItemSwapGear);
 
 import DefaultApl from './apls/default.apl.json';
 export const APL_ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation('APL List View', DefaultApl);
 import SingleTargetBuild from './builds/single_target.build.json';
-export const PRESET_BUILD_ST = PresetUtils.makePresetBuildFromJSON("Single-Target Patchwerk", Spec.SpecFeralDruid, SingleTargetBuild);
+export const PRESET_BUILD_ST = PresetUtils.makePresetBuildFromJSON('Single-Target Patchwerk', Spec.SpecFeralDruid, SingleTargetBuild);
 import SustainedCleaveBuild from './builds/sustained_cleave.build.json';
-export const PRESET_BUILD_CLEAVE = PresetUtils.makePresetBuildFromJSON("4-Target Cleave", Spec.SpecFeralDruid, SustainedCleaveBuild);
+export const PRESET_BUILD_CLEAVE = PresetUtils.makePresetBuildFromJSON('4-Target Cleave', Spec.SpecFeralDruid, SustainedCleaveBuild);
 
 import { Stats } from '../../core/proto_utils/stats';
 
@@ -57,7 +59,7 @@ export const DOC_EP_PRESET = PresetUtils.makePresetEpWeights(
 );
 
 export const DOC_RORO_PRESET = PresetUtils.makePresetEpWeights(
-	'DoC RoRo',
+	'DoC RoRo - ilvl < 550',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 0.39,
@@ -71,6 +73,25 @@ export const DOC_RORO_PRESET = PresetUtils.makePresetEpWeights(
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 0.74,
+		},
+	),
+);
+
+export const P5_DOC_RORO_PRESET = PresetUtils.makePresetEpWeights(
+	'DoC RoRo - ilvl >= 550',
+	Stats.fromMap(
+		{
+			[Stat.StatStrength]: 0.37,
+			[Stat.StatAgility]: 1.0,
+			[Stat.StatAttackPower]: 0.35,
+			[Stat.StatHitRating]: 0.62,
+			[Stat.StatExpertiseRating]: 0.58,
+			[Stat.StatCritRating]: 0.57,
+			[Stat.StatHasteRating]: 0.53,
+			[Stat.StatMasteryRating]: 0.41,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 0.54,
 		},
 	),
 );
@@ -95,7 +116,7 @@ export const HOTW_EP_PRESET = PresetUtils.makePresetEpWeights(
 );
 
 export const HOTW_RORO_PRESET = PresetUtils.makePresetEpWeights(
-	'HotW RoRo',
+	'HotW RoRo - ilvl < 550',
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 0.34,
@@ -109,6 +130,25 @@ export const HOTW_RORO_PRESET = PresetUtils.makePresetEpWeights(
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 0.72,
+		},
+	),
+);
+
+export const P5_HOTW_RORO_PRESET = PresetUtils.makePresetEpWeights(
+	'HotW RoRo - ilvl >= 550',
+	Stats.fromMap(
+		{
+			[Stat.StatStrength]: 0.33,
+			[Stat.StatAgility]: 1.0,
+			[Stat.StatAttackPower]: 0.32,
+			[Stat.StatHitRating]: 0.55,
+			[Stat.StatExpertiseRating]: 0.51,
+			[Stat.StatCritRating]: 0.54,
+			[Stat.StatHasteRating]: 0.51,
+			[Stat.StatMasteryRating]: 0.38,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 0.54,
 		},
 	),
 );
@@ -146,7 +186,7 @@ export const SIMPLE_ROTATION_DEFAULT = PresetUtils.makePresetSimpleRotation('Sin
 export const StandardTalents = {
 	name: 'DoC',
 	data: SavedTalents.create({
-		talentsString: "100302",
+		talentsString: '100302',
 		glyphs: Glyphs.create({
 			major1: 40923,
 			major2: 40914,
@@ -158,7 +198,7 @@ export const StandardTalents = {
 export const HotWTalents = {
 	name: 'HotW',
 	data: SavedTalents.create({
-		talentsString: "100301",
+		talentsString: '100301',
 		glyphs: Glyphs.create({
 			major1: 40923,
 			major2: 40914,

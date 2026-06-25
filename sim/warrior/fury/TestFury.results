@@ -103,8 +103,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-BattleplateofthePrehistoricMarauder"
  value: {
-  dps: 253148.3244
-  tps: 161919.53618
+  dps: 252862.96176
+  tps: 161775.73801
  }
 }
 dps_results: {
@@ -768,8 +768,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 302237.21613
-  tps: 194918.16221
+  dps: 302074.89654
+  tps: 194713.2778
  }
 }
 dps_results: {
@@ -1280,8 +1280,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-PlateofResoundingRings"
  value: {
-  dps: 212703.61686
-  tps: 136110.6487
+  dps: 212957.49686
+  tps: 136151.04241
  }
 }
 dps_results: {
@@ -1581,8 +1581,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-SigiloftheCatacombs-83732"
  value: {
-  dps: 282771.89308
-  tps: 178954.11051
+  dps: 282804.15108
+  tps: 179192.82362
  }
 }
 dps_results: {
@@ -1840,8 +1840,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Time-LostArtifact-103678"
  value: {
-  dps: 284441.27953
-  tps: 181321.19818
+  dps: 284480.17783
+  tps: 181354.68063
  }
 }
 dps_results: {
@@ -2036,8 +2036,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-Average-Default"
  value: {
-  dps: 294662.35786
-  tps: 185799.5378
+  dps: 294654.66833
+  tps: 185794.85478
  }
 }
 dps_results: {

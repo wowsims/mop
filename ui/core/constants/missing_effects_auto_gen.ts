@@ -989,12 +989,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		95426, // Frostscythe of Lord Ahune
-		[
-			"Let the Frostscythe's chill flow through you.", // 46643 - https://www.wowhead.com/mop/spell=46643
-		]
-	],
-	[
 		95763, // Stolen Relic of Zuldazar
 		[
 			"Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately 2.89 procs per minute)", // 138967 - https://www.wowhead.com/mop/spell=138967
@@ -2196,6 +2190,12 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		263018, // The Horseman's Sinister Slicer
 		[
 			"Summon Pumpkin Soldiers to burn your foes.", // 50070 - https://www.wowhead.com/mop/spell=50070
+		]
+	],
+	[
+		280389, // Frostscythe of Lord Ahune
+		[
+			"Let the Frostscythe's chill flow through you.", // 46643 - https://www.wowhead.com/mop/spell=46643
 		]
 	],
 ])
