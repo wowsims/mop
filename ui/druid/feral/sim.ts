@@ -115,13 +115,20 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 	},
 
 	presets: {
-		epWeights: [Presets.DOC_EP_PRESET, Presets.HOTW_EP_PRESET, Presets.DOC_RORO_PRESET, Presets.HOTW_RORO_PRESET],
+		epWeights: [
+			Presets.DOC_EP_PRESET,
+			Presets.HOTW_EP_PRESET,
+			Presets.DOC_RORO_PRESET,
+			Presets.P5_DOC_RORO_PRESET,
+			Presets.HOTW_RORO_PRESET,
+			Presets.P5_HOTW_RORO_PRESET,
+		],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents, Presets.HotWTalents],
 		rotations: [Presets.SIMPLE_ROTATION_DEFAULT, Presets.APL_ROTATION_DEFAULT],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_PRESET, Presets.P1_PRESET, Presets.P2_PRESET, Presets.P3_PRESET, Presets.P4_PRESET, Presets.P5_PRESET],
-		itemSwaps: [Presets.ITEM_SWAP_PRESET],
+		itemSwaps: [Presets.P4_ITEM_SWAP_PRESET, Presets.P5_ITEM_SWAP_PRESET],
 		builds: [Presets.PRESET_BUILD_ST, Presets.PRESET_BUILD_CLEAVE],
 	},
 
@@ -199,37 +206,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 
 	hiddenMCDs: [126734, 106737, 76089, 26297, 106952, 132158, 108292, 55004],
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecFeralDruid,
-			talents: Presets.StandardTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceNightElf,
-				[Faction.Horde]: Race.RaceTauren,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P1_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-					3: Presets.P3_PRESET.gear,
-					4: Presets.P4_PRESET.gear,
-					5: Presets.P5_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P1_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-					3: Presets.P3_PRESET.gear,
-					4: Presets.P4_PRESET.gear,
-					5: Presets.P5_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class FeralDruidSimUI extends IndividualSimUI<Spec.SpecFeralDruid> {
@@ -238,6 +215,16 @@ export class FeralDruidSimUI extends IndividualSimUI<Spec.SpecFeralDruid> {
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: (player: Player<Spec.SpecFeralDruid>) => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+
+				if (avgIlvl >= 550) {
+					if (player.getTalents().heartOfTheWild) {
+						return RelativeStatCap.hasRoRo(player) ? Presets.P5_HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
+					} else {
+						return RelativeStatCap.hasRoRo(player) ? Presets.P5_DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
+					}
+				}
+
 				if (player.getTalents().heartOfTheWild) {
 					return RelativeStatCap.hasRoRo(player) ? Presets.HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
 				} else {
