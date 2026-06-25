@@ -752,13 +752,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestEnhancement-AllItems-FrostscytheofLordAhune-280389"
- value: {
-  dps: 231296.7881
-  tps: 195672.94344
- }
-}
-dps_results: {
  key: "TestEnhancement-AllItems-Fusion-FireCore-105459"
  value: {
   dps: 218748.34315

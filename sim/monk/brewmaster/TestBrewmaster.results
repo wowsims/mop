@@ -976,15 +976,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBrewmaster-AllItems-FrostscytheofLordAhune-280389"
- value: {
-  dps: 580912.32494
-  tps: 3.13760693426e+06
-  dtps: 46241.6614
-  hps: 84659.35554
- }
-}
-dps_results: {
  key: "TestBrewmaster-AllItems-Fusion-FireCore-105459"
  value: {
   dps: 556986.70834

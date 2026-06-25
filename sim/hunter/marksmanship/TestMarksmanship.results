@@ -839,14 +839,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestMarksmanship-AllItems-FrostscytheofLordAhune-280389"
- value: {
-  dps: 475182.79295
-  tps: 372550.86887
-  hps: 19.46479
- }
-}
-dps_results: {
  key: "TestMarksmanship-AllItems-Fusion-FireCore-105459"
  value: {
   dps: 409624.50261
