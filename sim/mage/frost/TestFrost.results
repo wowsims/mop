@@ -2666,15 +2666,15 @@ dps_results: {
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis-Row5_Talent3-Basic-frost_aoe-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 63939.4933
-  tps: 46319.73592
+  dps: 63872.88749
+  tps: 46265.61316
  }
 }
 dps_results: {
  key: "TestFrost-Settings-Orc-p1_prebis-Row5_Talent3-Basic-frost_aoe-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 66709.52795
-  tps: 46855.79668
+  dps: 66715.3053
+  tps: 46856.57662
  }
 }
 dps_results: {
