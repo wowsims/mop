@@ -438,9 +438,15 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 	}
 
 	if apl.unit.IsChanneling() && !apl.unit.ChanneledDot.Spell.Flags.Matches(SpellFlagCastWhileChanneling) {
+		dot := apl.unit.ChanneledDot
+		// All ticks consumed but aura not yet expired (lazy expiry). Deactivate now so the
+		// caster doesn't idle between GCD-ready and the lazy aura expiry time.
+		if dot.remainingTicks == 0 {
+			dot.Deactivate(sim)
+			return
+		}
 		// Also evaluate interruptIf when the GCD fires, not only on each tick.
 		if apl.shouldInterruptChannel(sim) {
-			dot := apl.unit.ChanneledDot
 			channelDelay := dot.getChannelClipDelay(sim)
 			// Always track rollover: if the same spell is recast, inherit tick schedule.
 			apl.unit.pendingChannelRollover = true
