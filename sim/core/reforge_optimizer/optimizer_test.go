@@ -34,6 +34,7 @@ func TestReforgerOptimizer(t *testing.T) {
 		{name: "custom-ep", fileName: "custom-ep.test.json"},
 		{name: "crit-cap", fileName: "crit-cap.test.json"},
 		{name: "relative-statcap", fileName: "relative-statcap.test.json"},
+		{name: "relative-statcap-2", fileName: "relative-statcap-2.test.json"},
 	}
 
 	for _, tc := range testCases {

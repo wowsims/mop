@@ -1,0 +1,138 @@
+{
+	"requestId": "reforgeOptimizeAsync-59f7e89033e2c340",
+	"raid": {
+		"parties": [
+			{
+				"players": [
+					{
+						"name": "Player",
+						"race": "RaceWorgen",
+						"class": "ClassDruid",
+						"equipment": {
+							"items": [
+								{ "id": 99328, "gems": [95346, 76666], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105407, "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 99322, "enchant": 4804, "gems": [76666, 76666], "reforging": 161, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 102248, "enchant": 4421, "gems": [76659], "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 99326, "enchant": 4419, "gems": [76681, 76680, 76681], "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105616, "enchant": 4416, "gems": [0], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 99327, "enchant": 4433, "gems": [76670, 76681, 0], "reforging": 165, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+								{ "id": 105635, "gems": [76659, 76642, 76636], "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105529, "enchant": 4880, "gems": [76636, 76641], "reforging": 168, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105582, "enchant": 4428, "gems": [76641], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105483, "gems": [76642], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105624, "gems": [76666], "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105527, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 96546, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105560, "enchant": 4444, "gems": [76697], "upgradeStep": "UpgradeStepTwo" },
+								{}
+							]
+						},
+						"consumables": {
+							"prepotId": 76089,
+							"potId": 76089,
+							"foodId": 74648,
+							"consumableIds": [76084, 76088, 86569, 76076, 76077, 76078, 76080, 76083]
+						},
+						"bonusStats": {
+							"apiVersion": 4,
+							"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+							"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+						},
+						"itemSwap": {
+							"items": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+							"prepullBonusStats": {
+								"apiVersion": 4,
+								"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+								"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+							}
+						},
+						"buffs": {},
+						"feralDruid": {
+							"options": {
+								"assumeBleedActive": true
+							}
+						},
+						"talentsString": "100302",
+						"glyphs": {
+							"major1": 40923,
+							"major2": 40914,
+							"major3": 40897
+						},
+						"profession1": "Engineering",
+						"cooldowns": {},
+						"reactionTimeMs": 100,
+						"distanceFromTarget": 24,
+						"healingModel": {}
+					},
+					{},
+					{},
+					{},
+					{}
+				],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			}
+		],
+		"numActiveParties": 5,
+		"buffs": {
+			"trueshotAura": true,
+			"unholyAura": true,
+			"arcaneBrilliance": true,
+			"moonkinAura": true,
+			"graceOfAir": true,
+			"markOfTheWild": true,
+			"bloodlust": true,
+			"stormlashTotemCount": 4,
+			"skullBannerCount": 2
+		},
+		"debuffs": {
+			"physicalVulnerability": true,
+			"weakenedArmor": true,
+			"lightningBreath": true
+		}
+	},
+	"preCapEpWeights": {
+		"apiVersion": 4,
+		"stats": [0.37, 1, 0, 0, 0, 0.62, 0.57, 0.53, 0.58, 0, 0, 0.41, 0.35, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [0.54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"undershootCaps": {
+		"apiVersion": 4,
+		"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"settings": {
+		"includeGems": true,
+		"includeEotbGemSocket": true,
+		"relativeStatCapStat": {
+			"apiVersion": 4,
+			"stat": "StatMasteryRating"
+		},
+		"statCaps": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 2550, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
+		},
+		"breakpointLimits": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		}
+	}
+}

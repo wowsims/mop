@@ -151,9 +151,25 @@ func ReforgeOptimizeAsync(request *proto.ReforgeOptimizeRequest, progress chan *
 	go func() {
 		defer simsignals.UnregisterId(requestId)
 		defer close(progress)
-		progress <- &proto.ProgressMetrics{
-			FinalReforgeResult: reforgeoptimizer.OptimizeAsync(request, signals),
-		}
+		// Heartbeat: the server watchdog in handleAsyncAPI drops the progress entry after
+		// 10 minutes of silence. Long-running optimizations (e.g. relative stat cap with
+		// a high solver timeout) must send periodic empty progress messages to keep it alive.
+		done := make(chan struct{})
+		go func() {
+			ticker := time.NewTicker(5 * time.Minute)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-ticker.C:
+					progress <- &proto.ProgressMetrics{}
+				case <-done:
+					return
+				}
+			}
+		}()
+		result := reforgeoptimizer.OptimizeAsync(request, signals)
+		close(done)
+		progress <- &proto.ProgressMetrics{FinalReforgeResult: result}
 	}()
 }
 

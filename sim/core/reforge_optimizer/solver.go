@@ -408,7 +408,7 @@ func exactRelativeCapViolation(relativeCaps []reforgeRelativeStatCap, delta core
 }
 
 // Adds one LP constraint per relative cap:
-//   Σ (forcedStatDelta_i − constrainedStatDelta_i) × x_i ≥ minDelta
+// Σ (forcedStatDelta_i − constrainedStatDelta_i) × x_i ≥ minDelta
 func addRelativeStatCapConstraints(search *reforgeSearchState, choiceVarIdx [][]int, model *mipModel, relativeCaps []reforgeRelativeStatCap) {
 	for _, relativeCap := range relativeCaps {
 		constraint := newMIPConstraint(relativeCap.minDelta, math.Inf(1), 0)
