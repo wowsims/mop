@@ -376,7 +376,7 @@ func newDot(config Dot) *Dot {
 				dot.Spell.Unit.pendingChannelRollover = false
 				dot.Spell.Unit.pendingRolloverFromSpell = nil
 				rolloverAt := dot.Spell.Unit.pendingRolloverNextTickAt
-				if sameSpell && rolloverAt > sim.CurrentTime {
+				if sameSpell && rolloverAt >= sim.CurrentTime {
 					// Carry over the old channel's next-tick time instead of starting fresh.
 					dot.tickAction.Cancel(sim)
 					dot.tickAction.cancelled = false
