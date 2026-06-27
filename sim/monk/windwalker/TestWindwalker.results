@@ -2529,8 +2529,8 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p4_bis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.40526118068e+06
-  tps: 490826.81777
+  dps: 1.40529688623e+06
+  tps: 490822.72413
   hps: 6918.46074
  }
 }
@@ -2625,8 +2625,8 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p5_bis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.07036547611e+06
-  tps: 773611.57082
+  dps: 2.07033516559e+06
+  tps: 773594.5889
   hps: 8850.27399
  }
 }
