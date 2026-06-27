@@ -2162,8 +2162,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.18032875365e+06
-  tps: 1.63914967823e+06
+  dps: 2.1804492781e+06
+  tps: 1.63972485475e+06
  }
 }
 dps_results: {
