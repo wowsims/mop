@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"hash/maphash"
 	"math"
 	"strconv"
 	"time"
@@ -414,7 +415,7 @@ type auraTracker struct {
 	auras []*Aura
 
 	aurasByTag   map[string][]*Aura
-	aurasByLabel map[string]*Aura
+	aurasByLabel map[uint64]*Aura
 
 	// IDs of Auras that may expire and are currently active, in no particular order.
 	activeAuras []*Aura
@@ -441,12 +442,20 @@ func newAuraTracker() auraTracker {
 		resetEffects:           []ResetEffect{},
 		ExclusiveEffectManager: &ExclusiveEffectManager{},
 		aurasByTag:             make(map[string][]*Aura),
-		aurasByLabel:           make(map[string]*Aura),
+		aurasByLabel:           make(map[uint64]*Aura),
 	}
 }
 
+// auraLabelHash returns a hash of the label string using Go's hardware-accelerated
+// maphash (AES on x86-64). uint64 keys are pointer-free so the GC skips scanning them.
+var auraLabelHashSeed = maphash.MakeSeed()
+
+func auraLabelHash(label string) uint64 {
+	return maphash.String(auraLabelHashSeed, label)
+}
+
 func (at *auraTracker) GetAura(label string) *Aura {
-	return at.aurasByLabel[label]
+	return at.aurasByLabel[auraLabelHash(label)]
 }
 func (at *auraTracker) GetAuras() []*Aura {
 	return at.auras
@@ -512,7 +521,7 @@ func (at *auraTracker) registerAura(unit *Unit, aura Aura) *Aura {
 	newAura.onEncounterStartIndex = Inactive
 
 	at.auras = append(at.auras, newAura)
-	at.aurasByLabel[newAura.Label] = newAura
+	at.aurasByLabel[auraLabelHash(newAura.Label)] = newAura
 	if newAura.Tag != "" {
 		at.aurasByTag[newAura.Tag] = append(at.aurasByTag[newAura.Tag], newAura)
 	}
