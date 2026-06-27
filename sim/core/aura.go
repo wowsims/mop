@@ -624,11 +624,18 @@ func (at *auraTracker) tryAdvance(sim *Simulation) time.Duration {
 	return at.advance(sim)
 }
 
+// advance expires all auras whose deadline has passed and returns the next
+// expiry time. One scan collects expired auras into a stack buffer while
+// simultaneously computing minExpires for survivors. A second pass calls
+// Deactivate on each collected aura. The outer loop handles the rare case
+// where a Deactivate callback itself expires additional auras. Common case
+// (no expirations at this timestamp) pays exactly one scan and returns.
 func (at *auraTracker) advance(sim *Simulation) time.Duration {
 	var toExpire [16]*Aura
 	for {
 		n := 0
 		at.minExpires = NeverExpires
+		// Single pass: bucket auras into expired vs. surviving, track next expiry.
 		for _, aura := range at.activeAuras {
 			if aura.expires <= sim.CurrentTime {
 				if n < len(toExpire) {
@@ -642,6 +649,8 @@ func (at *auraTracker) advance(sim *Simulation) time.Duration {
 		if n == 0 {
 			return at.minExpires
 		}
+		// Deactivate collected auras. Capped at len(toExpire); any overflow auras
+		// will be picked up on the next outer iteration.
 		limit := min(n, len(toExpire))
 		for i := range limit {
 			toExpire[i].Deactivate(sim)
