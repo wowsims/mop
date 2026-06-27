@@ -182,6 +182,12 @@ type Unit struct {
 	// The currently-channeled DOT spell, otherwise nil.
 	ChanneledDot *Dot
 
+	// Set when a channel ends (interrupt or natural completion) so the next same-spell recast
+	// can inherit the old tick schedule instead of starting fresh.
+	pendingChannelRollover    bool
+	pendingRolloverNextTickAt time.Duration
+	pendingRolloverFromSpell  *Spell
+
 	// Data about the most recently queued spell, otherwise nil.
 	QueuedSpell *QueuedSpell
 
@@ -766,6 +772,9 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 	unit.resetCDs(sim)
 	unit.Hardcast.Expires = startingCDTime
 	unit.ChanneledDot = nil
+	unit.pendingChannelRollover = false
+	unit.pendingRolloverNextTickAt = NeverExpires
+	unit.pendingRolloverFromSpell = nil
 	unit.QueuedSpell = nil
 	unit.DistanceFromTarget = unit.StartDistanceFromTarget
 	unit.Metrics.reset()

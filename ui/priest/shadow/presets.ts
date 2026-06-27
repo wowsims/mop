@@ -62,7 +62,7 @@ export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatSpellPower]: 0.73,
 		[Stat.StatHitRating]: 1.45,
 		[Stat.StatCritRating]: 0.74,
-		[Stat.StatHasteRating]: 1.00,
+		[Stat.StatHasteRating]: 1.0,
 		[Stat.StatMasteryRating]: 0.75,
 	}),
 );
@@ -195,10 +195,12 @@ export const PRESET_BUILD_T15 = PresetUtils.makePresetBuild('T15', {
 	gear: P3_4_PRESET,
 	talents: StandardTalents,
 	epWeights: P3_4_EP_PRESET,
+	rotation: ROTATION_PRESET_DEFAULT,
 });
 
 export const PRESET_BUILD_T16 = PresetUtils.makePresetBuild('T16', {
 	gear: P5_PRESET,
 	talents: StandardTalents,
 	epWeights: P5_EP_PRESET,
+	rotation: ROTATION_PRESET_DEFAULT,
 });
