@@ -1581,8 +1581,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 437663.765
-  tps: 321661.21581
+  dps: 437841.12193
+  tps: 321535.19927
  }
 }
 dps_results: {
