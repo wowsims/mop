@@ -544,18 +544,29 @@ func (apl *APLRotation) nextActionWouldRecastChannel(sim *Simulation, channeledD
 			continue
 		}
 
-		// Same spell via cast_spell action?
 		if castAction, ok := action.impl.(*APLActionCastSpell); ok {
+			canCast := castAction.spell.CanCast(sim, castAction.target.Get())
 			if castAction.spell == channeledSpell || castAction.spell.Matches(channeledSpell.ClassSpellMask) {
-				return castAction.spell.CanCast(sim, castAction.target.Get())
+				return canCast
 			}
+			// Different cast_spell: use CanCast (not CanCastOrQueue) so SQW-queued spells
+			// don't prematurely interrupt — they'll fire after the channel's next tick.
+			if canCast {
+				return false
+			}
+			continue
 		}
 
-		// Same spell via channel_spell action?
 		if channelAction, ok := action.impl.(*APLActionChannelSpell); ok {
+			canCast := channelAction.spell.CanCast(sim, channelAction.target.Get())
 			if channelAction.spell == channeledSpell || channelAction.spell.Matches(channeledSpell.ClassSpellMask) {
-				return channelAction.spell.CanCast(sim, channelAction.target.Get())
+				return canCast
 			}
+			// Different channel_spell: same SQW reasoning as cast_spell above.
+			if canCast {
+				return false
+			}
+			continue
 		}
 
 		// autocast_other_cooldowns fires off-GCD MCDs alongside the main rotation
@@ -564,7 +575,7 @@ func (apl *APLRotation) nextActionWouldRecastChannel(sim *Simulation, channeledD
 			continue
 		}
 
-		// A different action is fully ready — it would be cast first.
+		// A different non-spell action is fully ready — it would be cast first.
 		if action.impl.IsReady(sim) {
 			return false
 		}
