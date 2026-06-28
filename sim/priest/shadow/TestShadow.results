@@ -97,9 +97,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 443675.2681
-  tps: 405887.96122
-  hps: 4833.27521
+  dps: 443628.70601
+  tps: 405898.77346
+  hps: 4827.83364
  }
 }
 dps_results: {
@@ -689,9 +689,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 447785.8265
-  tps: 412189.79936
-  hps: 4753.21807
+  dps: 447757.16291
+  tps: 412185.13375
+  hps: 4757.01068
  }
 }
 dps_results: {
