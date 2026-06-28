@@ -300,7 +300,7 @@ func (dot *Dot) periodicTick(sim *Simulation) {
 			// Skip interrupts that are purely SQW-triggered (GCD within queue window but not
 			// actually ready). Those are handled by the rotation action at actual GCD time.
 			// Only interrupt when GCD is ready OR the condition is unrelated to GCD queuing.
-			dot.Spell.Unit.pendingChannelRollover = true
+			dot.Spell.Unit.pendingChannelRollover = dot.Spell.Unit.Rotation.recastingChannel
 			dot.Spell.Unit.pendingRolloverNextTickAt = sim.CurrentTime + dot.tickPeriod
 			dot.Spell.Unit.pendingRolloverFromSpell = dot.Spell
 			dot.tickAction.NextActionAt = NeverExpires // don't tick again in ApplyOnExpire

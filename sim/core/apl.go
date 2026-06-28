@@ -448,8 +448,8 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 		// Also evaluate interruptIf when the GCD fires, not only on each tick.
 		if apl.shouldInterruptChannel(sim) {
 			channelDelay := dot.getChannelClipDelay(sim)
-			// Always track rollover: if the same spell is recast, inherit tick schedule.
-			apl.unit.pendingChannelRollover = true
+			// Only track rollover when the same channel would be immediately recast.
+			apl.unit.pendingChannelRollover = apl.recastingChannel
 			apl.unit.pendingRolloverNextTickAt = dot.tickAction.NextActionAt
 			apl.unit.pendingRolloverFromSpell = dot.Spell
 			dot.tickAction.NextActionAt = NeverExpires
