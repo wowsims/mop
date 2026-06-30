@@ -2161,9 +2161,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 438674.74413
-  tps: 396794.44349
-  hps: 4891.40116
+  dps: 438403.06405
+  tps: 396578.47689
+  hps: 4862.21451
  }
 }
 dps_results: {
