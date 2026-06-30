@@ -89,22 +89,23 @@ const SpellMaskSanctityOfBattleBaseGcd = SpellMaskCrusaderStrike |
 	SpellMaskWordOfGlory
 
 const SpellMaskSanctityOfBattleRet = SpellMaskSanctityOfBattleBase |
-	// SpellMaskHammerOfTheRighteous | // Will be handled by Crusader Strike, since they share CD
+	SpellMaskHammerOfTheRighteous |
 	SpellMaskExorcism
 
 const SpellMaskSanctityOfBattleRetGcd = SpellMaskSanctityOfBattleBaseGcd |
-	// SpellMaskHammerOfTheRighteous | // Will be handled by Crusader Strike, since they share CD
+	SpellMaskHammerOfTheRighteous |
 	SpellMaskDivineStorm |
 	SpellMaskTemplarsVerdict
 
 const SpellMaskSanctityOfBattleProt = SpellMaskSanctityOfBattleBase |
-	// SpellMaskHammerOfTheRighteous | // Will be handled by Crusader Strike, since they share CD
+	SpellMaskHammerOfTheRighteous |
 	SpellMaskAvengersShield |
 	SpellMaskConsecration |
 	SpellMaskHolyWrath |
 	SpellMaskShieldOfTheRighteous
 
-const SpellMaskSanctityOfBattleProtGcd = SpellMaskSanctityOfBattleBaseGcd
+const SpellMaskSanctityOfBattleProtGcd = SpellMaskSanctityOfBattleBaseGcd |
+	SpellMaskHammerOfTheRighteous
 
 const SpellMaskSanctityOfBattleHoly = SpellMaskSanctityOfBattleBase |
 	SpellMaskHolyShock
