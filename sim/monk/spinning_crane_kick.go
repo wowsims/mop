@@ -35,7 +35,7 @@ func spinningCraneKickTickSpellConfig(monk *Monk, isSEFClone bool) core.SpellCon
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		ClassSpellMask: MonkSpellSpinningCraneKick,
-		Flags:          core.SpellFlagAoE | core.SpellFlagMeleeMetrics | core.SpellFlagPassiveSpell,
+		Flags:          core.SpellFlagAoE | core.SpellFlagMeleeMetrics,
 		MaxRange:       8,
 
 		DamageMultiplier: 1.75, // 1.59 * (1.75 / 1.59),
@@ -68,7 +68,7 @@ func spinningCraneKickSpellConfig(monk *Monk, isSEFClone bool, overrides core.Sp
 			IsAOE: true,
 			Aura: core.Aura{
 				Label:    "Spinning Crane Kick " + monk.Label,
-				ActionID: sckDebuffActionID,
+				ActionID: sckActionID,
 			},
 			NumberOfTicks:        3,
 			TickLength:           time.Millisecond * 750,
@@ -100,22 +100,6 @@ func (monk *Monk) registerSpinningCraneKick() {
 	spinningCraneKickTickSpell := monk.RegisterSpell(spinningCraneKickTickSpellConfig(monk, false))
 	glyphOfSpinningCraneKick := monk.HasMajorGlyph(proto.MonkMajorGlyph_GlyphOfSpinningCraneKick)
 
-	spinningCraneKickAura := monk.RegisterAura(core.Aura{
-		Label:    "Spinning Crane Kick" + monk.Label,
-		ActionID: sckActionID,
-		Duration: time.Millisecond * 750 * 3,
-		OnGain: func(aura *core.Aura, sim *core.Simulation) {
-			if !glyphOfSpinningCraneKick {
-				monk.MultiplyMovementSpeed(sim, 0.7)
-			}
-		},
-		OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-			if !glyphOfSpinningCraneKick {
-				monk.MultiplyMovementSpeed(sim, 1.0/0.7)
-			}
-		},
-	})
-
 	isWiseSerpent := monk.StanceMatches(WiseSerpent)
 
 	monk.RegisterSpell(spinningCraneKickSpellConfig(monk, false, core.SpellConfig{
@@ -136,7 +120,15 @@ func (monk *Monk) registerSpinningCraneKick() {
 		Dot: core.DotConfig{
 			Aura: core.Aura{
 				Label: "Spinning Crane Kick" + monk.Label,
+				OnGain: func(aura *core.Aura, sim *core.Simulation) {
+					if !glyphOfSpinningCraneKick {
+						monk.MultiplyMovementSpeed(sim, 0.7)
+					}
+				},
 				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
+					if !glyphOfSpinningCraneKick {
+						monk.MultiplyMovementSpeed(sim, 1.0/0.7)
+					}
 					monk.WaitUntil(sim, sim.CurrentTime+monk.ReactionTime)
 					monk.AutoAttacks.UpdateSwingTimers(sim)
 				},
@@ -155,10 +147,6 @@ func (monk *Monk) registerSpinningCraneKick() {
 
 				expiresAt := dot.ExpiresAt()
 				monk.AutoAttacks.DelayMeleeBy(sim, expiresAt-sim.CurrentTime)
-
-				remainingDuration := dot.RemainingDuration(sim)
-				spinningCraneKickAura.Duration = remainingDuration
-				spinningCraneKickAura.Activate(sim)
 
 				if sim.Environment.ActiveTargetCount() >= 3 {
 					monk.AddChi(sim, spell, 1, chiMetrics)

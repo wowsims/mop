@@ -4,9 +4,9 @@ import { ref } from 'tsx-vanilla';
 import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
 import { ActionId } from '../../proto_utils/action_id';
-import { CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '../../proto_utils/logs_parser';
+import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '../../proto_utils/logs_parser';
 import { resourceColors, resourceNames } from '../../proto_utils/names';
-import { SimResult, SimResultFilter } from '../../proto_utils/sim_result';
+import { ActionMetrics, SimResult, SimResultFilter } from '../../proto_utils/sim_result';
 import i18n from '../../../i18n/config';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 
@@ -27,6 +27,7 @@ interface AuraSnapshot {
 	iconUrl: string;
 	actionId: ActionId | null;
 	targetIndex: number;
+	stacksChange: AuraStacksChangeLog[];
 }
 
 interface ResourceSnapshot {
@@ -87,6 +88,34 @@ const DOT_RESOURCE_TYPES = new Set([
 	ResourceType.ResourceTypeDeathRune,
 ]);
 
+function stacksAt(stacksChange: AuraStacksChangeLog[], t: number): number {
+	for (let i = stacksChange.length - 1; i >= 0; i--) {
+		if (stacksChange[i].timestamp <= t) return stacksChange[i].newStacks;
+	}
+	return 0;
+}
+
+// Merge adjacent uptime spans for the same spell into one.
+// Refreshed auras produce a new AuraUptimeLog entry starting at the refresh time,
+// which would otherwise show an artificially short timer.
+function mergeAdjacentAuras(auras: AuraSnapshot[]): AuraSnapshot[] {
+	const result: AuraSnapshot[] = [];
+	const byKey = new Map<string, AuraSnapshot>();
+	for (const aura of auras) {
+		const key = aura.actionId?.toStringIgnoringTag() ?? aura.name;
+		const prev = byKey.get(key);
+		if (prev && Math.abs(prev.fadedAt - aura.gainedAt) < 0.05) {
+			prev.fadedAt = aura.fadedAt;
+			prev.stacksChange = [...prev.stacksChange, ...aura.stacksChange];
+		} else {
+			const copy = { ...aura, stacksChange: [...aura.stacksChange] };
+			result.push(copy);
+			byKey.set(key, copy);
+		}
+	}
+	return result;
+}
+
 const HIT_WINDOW_SEC = 0.45;
 const DMG_WINDOW_SEC = 1.1;
 const MAX_TICKER = 10;
@@ -111,6 +140,9 @@ export class CombatReplay extends ResultComponent {
 
 	private lastBuffKey = '';
 	private lastDebuffKeys = new Map<number, string>();
+	private auraBadgesByContainer = new Map<HTMLElement, HTMLSpanElement[]>();
+	private auraStackBadgesByContainer = new Map<HTMLElement, HTMLSpanElement[]>();
+	private auraIconsByContainer = new Map<HTMLElement, HTMLAnchorElement[]>();
 
 	/** Resource types present anywhere in the log — rows are pre-built so CDM height does not jump. */
 	private lockedResourceTypes: ResourceType[] = [];
@@ -312,7 +344,13 @@ export class CombatReplay extends ResultComponent {
 
 		const players = result.getPlayers(filter);
 		const playerEntity = players[0] ? new Entity(players[0].name, '', players[0].index, false, false) : null;
-		const actionMetrics = result.getActionMetrics(filter);
+
+		// Per-tag lookup so passive tagged variants (e.g. tag=1) are not merged with
+		// non-passive variants (tag=0) before the isPassiveAction check.
+		const actionMetricsPerTag = ActionMetrics.joinById(
+			players.map(player => player.getPlayerAndPetActions().map(action => action.forTarget(filter))).flat(),
+			true,
+		);
 
 		const castBeganLogs: CastBeganLog[] = [];
 		const dmgLogs: DamageDealtLog[] = [];
@@ -331,7 +369,7 @@ export class CombatReplay extends ResultComponent {
 			if (id.otherId !== OtherAction.OtherActionNone) return false;
 			if (!id.spellId && !id.itemId) return false;
 			if (!(id.name ?? '')) return false;
-			if (actionMetrics.find(m => m.actionId?.equals(id))?.isPassiveAction) {
+			if (actionMetricsPerTag.find(m => m.actionId?.equals(id))?.isPassiveAction) {
 				return false;
 			}
 			return true;
@@ -414,12 +452,15 @@ export class CombatReplay extends ResultComponent {
 			});
 		}
 
+		const isPermanent = (gainedAt: number, fadedAt: number) => gainedAt <= 0 && fadedAt >= this.fightLen - 0.1;
+
 		if (players[0]) {
 			for (const aura of players[0].auraUptimeLogs) {
 				const id = aura.actionId;
 				if (!id || (!id.spellId && !id.itemId) || !(id.name ?? '')) continue;
 				if (id.otherId !== OtherAction.OtherActionNone) continue;
-				this.playerAuras.push({ gainedAt: aura.gainedAt, fadedAt: aura.fadedAt, name: id.name, iconUrl: id.iconUrl, actionId: id, targetIndex: -1 });
+				if (isPermanent(aura.gainedAt, aura.fadedAt)) continue;
+				this.playerAuras.push({ gainedAt: aura.gainedAt, fadedAt: aura.fadedAt, name: id.name, iconUrl: id.iconUrl, actionId: id, targetIndex: -1, stacksChange: aura.stacksChange });
 			}
 		}
 
@@ -429,6 +470,7 @@ export class CombatReplay extends ResultComponent {
 				const id = aura.actionId;
 				if (!id || (!id.spellId && !id.itemId) || !(id.name ?? '')) continue;
 				if (id.otherId !== OtherAction.OtherActionNone) continue;
+				if (isPermanent(aura.gainedAt, aura.fadedAt)) continue;
 				this.targetAuras.push({
 					gainedAt: aura.gainedAt,
 					fadedAt: aura.fadedAt,
@@ -436,9 +478,13 @@ export class CombatReplay extends ResultComponent {
 					iconUrl: id.iconUrl,
 					actionId: id,
 					targetIndex: target.index,
+					stacksChange: aura.stacksChange,
 				});
 			}
 		}
+
+		this.playerAuras = mergeAdjacentAuras(this.playerAuras);
+		this.targetAuras = mergeAdjacentAuras(this.targetAuras);
 
 		this.preloadImages();
 	}
@@ -481,31 +527,16 @@ export class CombatReplay extends ResultComponent {
 		this.currentTime = 0;
 	}
 
-	private appendEnemyCard(targetIdx: number, xPct: number, isFront: boolean, cardW: number): void {
+	private appendEnemyCard(targetIdx: number, xPct: number, scale: number, cardW: number): void {
 		const name = this.enemyNames[targetIdx] ?? i18n.t('combat_replay.training_dummy');
 		const hpFillRef = ref<HTMLDivElement>();
 		const hpTextRef = ref<HTMLSpanElement>();
 		const debuffRowRef = ref<HTMLDivElement>();
 		const hitLayerRef = ref<HTMLDivElement>();
-		const scale = isFront ? 1 : 0.62;
-		const bottom = isFront ? '0%' : '14%';
-		const bright = isFront ? 1 : 0.6;
-		const z = isFront ? 2 : 1;
+		const cardRef = ref<HTMLDivElement>();
 
 		this.ui.enemyFormation.appendChild(
-			<div
-				className="cr-enemy-card"
-				dataset={{ idx: String(targetIdx) }}
-				style={{
-					position: 'absolute',
-					left: `${xPct}%`,
-					bottom,
-					width: `${cardW}%`,
-					transform: `translateX(-50%) scale(${scale})`,
-					transformOrigin: 'bottom center',
-					zIndex: z,
-					filter: `brightness(${bright})`,
-				}}>
+			<div ref={cardRef} className="cr-enemy-card" dataset={{ idx: String(targetIdx) }}>
 				<div className="cr-nameplate">
 					<div className="cr-enemy-name">{name}</div>
 					<div className="cr-hp-bar">
@@ -523,6 +554,13 @@ export class CombatReplay extends ResultComponent {
 			</div>,
 		);
 
+		const card = cardRef.value!;
+		card.style.setProperty('--cr-card-x', `${xPct}%`);
+		card.style.setProperty('--cr-card-w', `${cardW}%`);
+		card.style.setProperty('--cr-card-scale', scale.toFixed(3));
+		card.style.setProperty('--cr-card-z', String(Math.round(scale * 10)));
+		card.style.setProperty('--cr-card-brightness', (0.6 + 0.4 * scale).toFixed(2));
+
 		this.enemyCardDom[targetIdx] = {
 			hpFill: hpFillRef.value!,
 			hpText: hpTextRef.value!,
@@ -537,19 +575,40 @@ export class CombatReplay extends ResultComponent {
 		const formation = this.ui.enemyFormation;
 		formation.replaceChildren();
 
-		const frontCount = n <= 2 ? n : n <= 5 ? Math.ceil(n / 2) : 3;
-		const backCount = n - frontCount;
+		// Visual order (left → right):
+		//   odd  N: [..., 6, 4, 2,  0,  1, 3, 5, ...]
+		//   even N: [..., 6, 4, 2,  0, 1,  3, 5, 7, ...]
+		// Enemy 0 (user "1") is always the innermost / center.
+		// Depth 0 = innermost (largest), depth 1 = adjacent, etc.
 
-		const rowXs = (count: number, minX: number, maxX: number): number[] =>
-			count === 1 ? [(minX + maxX) / 2] : Array.from({ length: count }, (_, i) => minX + (i / (count - 1)) * (maxX - minX));
+		// Indices that go LEFT of center, sorted innermost→outermost: 2, 4, 6, ...
+		const leftInner: number[] = [];
+		for (let i = 2; i < n; i += 2) leftInner.push(i);
 
-		const frontXs = rowXs(frontCount, frontCount <= 2 ? 22 : 12, frontCount <= 2 ? 78 : 88);
-		const backXs = backCount > 0 ? rowXs(backCount, 18, 82) : [];
+		// Indices that go RIGHT of center, sorted innermost→outermost.
+		// For even N, index 1 is in the center pair, so right side starts at 3.
+		const rightInner: number[] = [];
+		for (let i = n % 2 === 0 ? 3 : 1; i < n; i += 2) rightInner.push(i);
 
-		const cardW = n === 1 ? 55 : n <= 2 ? 40 : n <= 4 ? 30 : 26;
+		// Build slot list left→right with depth annotation.
+		interface Slot { idx: number; depth: number }
+		const leftSlots: Slot[] = [...leftInner].reverse().map((idx, i) => ({ idx, depth: leftInner.length - i }));
+		const centerSlots: Slot[] = n % 2 === 0
+			? [{ idx: 0, depth: 0 }, { idx: 1, depth: 0 }]
+			: [{ idx: 0, depth: 0 }];
+		const rightSlots: Slot[] = rightInner.map((idx, i) => ({ idx, depth: i + 1 }));
+		const slots: Slot[] = [...leftSlots, ...centerSlots, ...rightSlots];
 
-		backXs.forEach((x, j) => this.appendEnemyCard(frontCount + j, x, false, cardW));
-		frontXs.forEach((x, j) => this.appendEnemyCard(j, x, true, cardW));
+		const maxDepth = slots.reduce((m, s) => Math.max(m, s.depth), 0);
+		const minScale = n >= 6 ? 0.25 : 0.5;
+		const scaleStep = maxDepth > 0 ? (1.0 - minScale) / maxDepth : 0;
+
+		const [xMin, xMax] = n <= 2 ? [25, 75] : n <= 4 ? [15, 85] : [10, 90];
+		const xs = slots.length <= 1 ? [50] : slots.map((_, i) => xMin + (i / (slots.length - 1)) * (xMax - xMin));
+
+		const cardW = n === 1 ? 55 : n <= 2 ? 40 : n <= 4 ? 30 : n <= 6 ? 26 : 22;
+
+		slots.forEach((slot, i) => this.appendEnemyCard(slot.idx, xs[i], 1.0 - slot.depth * scaleStep, cardW));
 
 		if (this.numEnemies > MAX_ENEMIES) {
 			this.ui.enemyFormation.appendChild(
@@ -787,19 +846,55 @@ export class CombatReplay extends ResultComponent {
 	private renderAuraIcons(container: HTMLElement, auras: AuraSnapshot[], t: number, cacheKey: string): string {
 		const active = auras.filter(a => a.gainedAt <= t && a.fadedAt >= t);
 		const key = active.map(a => a.name).join('|');
-		if (key === cacheKey) return cacheKey;
 
-		const frag = document.createDocumentFragment();
-		for (const aura of active) {
-			const iconRef = ref<HTMLAnchorElement>();
-			frag.appendChild(<a ref={iconRef} className="cr-aura-icon" />);
-			const el = iconRef.value!;
-			if (aura.actionId) {
-				aura.actionId.setBackgroundAndHref(el);
-				aura.actionId.setWowheadDataset(el, { useBuffAura: true });
+		if (key !== cacheKey) {
+			const badges: HTMLSpanElement[] = [];
+			const stackBadges: HTMLSpanElement[] = [];
+			const icons: HTMLAnchorElement[] = [];
+			const frag = document.createDocumentFragment();
+			for (const aura of active) {
+				const iconRef = ref<HTMLAnchorElement>();
+				const badgeRef = ref<HTMLSpanElement>();
+				const stackBadgeRef = ref<HTMLSpanElement>();
+				frag.appendChild(
+					<a ref={iconRef} className="cr-aura-icon">
+						<span ref={stackBadgeRef} className="cr-aura-stack-badge" />
+						<span ref={badgeRef} className="cr-aura-time-badge" />
+					</a>,
+				);
+				const el = iconRef.value!;
+				if (aura.actionId) {
+					aura.actionId.setBackgroundAndHref(el);
+					aura.actionId.setWowheadDataset(el, { useBuffAura: true });
+				}
+				badges.push(badgeRef.value!);
+				stackBadges.push(stackBadgeRef.value!);
+				icons.push(el);
 			}
+			this.auraBadgesByContainer.set(container, badges);
+			this.auraStackBadgesByContainer.set(container, stackBadges);
+			this.auraIconsByContainer.set(container, icons);
+			container.replaceChildren(frag);
 		}
-		container.replaceChildren(frag);
+
+		// Update time remaining, stack count, and gained highlight every tick.
+		const badges = this.auraBadgesByContainer.get(container);
+		const stackBadges = this.auraStackBadgesByContainer.get(container);
+		const icons = this.auraIconsByContainer.get(container);
+		active.forEach((aura, i) => {
+			const badge = badges?.[i];
+			if (badge) {
+				const remaining = aura.fadedAt - t;
+				badge.textContent = remaining < 10 ? remaining.toFixed(1) : String(Math.round(remaining));
+			}
+			const stackBadge = stackBadges?.[i];
+			if (stackBadge) {
+				const stacks = stacksAt(aura.stacksChange, t);
+				stackBadge.textContent = stacks > 1 ? String(stacks) : '';
+			}
+			icons?.[i]?.classList.toggle('cr-aura-icon-active', t - aura.gainedAt <= 0.6);
+		});
+
 		return key;
 	}
 
