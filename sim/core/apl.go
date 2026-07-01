@@ -445,6 +445,9 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 			dot.Deactivate(sim)
 			return
 		}
+		// Increment evalGeneration so variable refs re-evaluate with current game state,
+		// not the cached values from the previous getNextAction call.
+		apl.evalGeneration++
 		// Also evaluate interruptIf when the GCD fires, not only on each tick.
 		if apl.shouldInterruptChannel(sim) {
 			channelDelay := dot.getChannelClipDelay(sim)

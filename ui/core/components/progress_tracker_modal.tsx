@@ -31,6 +31,9 @@ export class ProgressTrackerModal extends Component {
 	private startTime: number = 0;
 	private updateInterval: number | null = null;
 
+	private isModalShown: boolean = false;
+	private pendingClose: boolean = false;
+
 	private progressBarElement: HTMLElement | null = null;
 	private progressTitleElement: HTMLElement | null = null;
 	private progressTextElement: HTMLElement | null = null;
@@ -121,6 +124,18 @@ export class ProgressTrackerModal extends Component {
 	}
 
 	show(): void {
+		this.isModalShown = false;
+		this.pendingClose = false;
+		this.modal.rootElem.addEventListener(
+			'shown.bs.modal',
+			() => {
+				this.isModalShown = true;
+				if (this.pendingClose) {
+					this.modal.close();
+				}
+			},
+			{ once: true },
+		);
 		this.modal.open();
 		this.startTime = Date.now();
 		this.updateInterval = window.setInterval(() => this.updateTimeDisplay(), 100);
@@ -129,11 +144,14 @@ export class ProgressTrackerModal extends Component {
 	hide(): void {
 		if (this.updateInterval) {
 			clearInterval(this.updateInterval);
+			this.updateInterval = null;
 		}
 
-		// Ensure we give the modal enough time to finish opening
-		// To solve a Bootstrap Modal bug where it will not close properly
-		setTimeout(() => this.modal.close(), Math.max(0, 650 - (Date.now() - this.startTime)));
+		if (this.isModalShown) {
+			this.modal.close();
+		} else {
+			this.pendingClose = true;
+		}
 	}
 
 	updateProgress(state: Partial<ProgressTrackerModalState>): void {

@@ -2329,9 +2329,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.44905517969e+06
-  tps: 2.43311122751e+06
-  hps: 16077.44229
+  dps: 2.77641358674e+06
+  tps: 2.76048466619e+06
+  hps: 17662.4297
  }
 }
 dps_results: {
@@ -2353,9 +2353,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.84137918281e+06
-  tps: 1.83946509966e+06
-  hps: 11856.47162
+  dps: 2.07899684871e+06
+  tps: 2.07768096622e+06
+  hps: 13177.14622
  }
 }
 dps_results: {
@@ -2377,8 +2377,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.46941076192e+06
-  tps: 2.4537046467e+06
+  dps: 2.79181906115e+06
+  tps: 2.77611364483e+06
  }
 }
 dps_results: {
@@ -2398,8 +2398,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.84559087639e+06
-  tps: 1.84387332958e+06
+  dps: 2.09127916853e+06
+  tps: 2.09017677818e+06
  }
 }
 dps_results: {
@@ -2419,8 +2419,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.66682986813e+06
-  tps: 2.65135379602e+06
+  dps: 3.0044357131e+06
+  tps: 2.98896178866e+06
  }
 }
 dps_results: {
@@ -2440,8 +2440,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.99178873834e+06
-  tps: 1.99018809033e+06
+  dps: 2.25703923927e+06
+  tps: 2.25606202739e+06
  }
 }
 dps_results: {
@@ -2461,8 +2461,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.49086817526e+06
-  tps: 2.47480307364e+06
+  dps: 2.80280278725e+06
+  tps: 2.78672140208e+06
  }
 }
 dps_results: {
@@ -2482,8 +2482,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DefaultTalents-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.85200666228e+06
-  tps: 1.85005506219e+06
+  dps: 2.10188299564e+06
+  tps: 2.10069449855e+06
  }
 }
 dps_results: {
@@ -2503,9 +2503,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.83867985694e+06
-  tps: 2.82184522009e+06
-  hps: 15706.59192
+  dps: 3.21206597136e+06
+  tps: 3.19591841386e+06
+  hps: 17099.32974
  }
 }
 dps_results: {
@@ -2527,9 +2527,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.12271570109e+06
-  tps: 2.12069863251e+06
-  hps: 11564.18363
+  dps: 2.40839943473e+06
+  tps: 2.40682818081e+06
+  hps: 12574.1208
  }
 }
 dps_results: {
@@ -2551,8 +2551,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.8457244368e+06
-  tps: 2.8289391687e+06
+  dps: 3.23093689595e+06
+  tps: 3.21480786612e+06
  }
 }
 dps_results: {
@@ -2572,8 +2572,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.12607373856e+06
-  tps: 2.12376964896e+06
+  dps: 2.41752381247e+06
+  tps: 2.41583109587e+06
  }
 }
 dps_results: {
@@ -2593,8 +2593,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.05459571911e+06
-  tps: 3.03830098092e+06
+  dps: 3.44812765461e+06
+  tps: 3.43237982907e+06
  }
 }
 dps_results: {
@@ -2614,8 +2614,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.28300243453e+06
-  tps: 2.28081827935e+06
+  dps: 2.59601458766e+06
+  tps: 2.59447140475e+06
  }
 }
 dps_results: {
@@ -2635,8 +2635,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.86570601289e+06
-  tps: 2.8487322609e+06
+  dps: 3.24814983468e+06
+  tps: 3.23220981071e+06
  }
 }
 dps_results: {
@@ -2656,8 +2656,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_ExecutionSentence-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.13440580612e+06
-  tps: 2.13197889511e+06
+  dps: 2.42764633237e+06
+  tps: 2.42607916568e+06
  }
 }
 dps_results: {
@@ -2677,9 +2677,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.89081814993e+06
-  tps: 2.87462489235e+06
-  hps: 17313.76929
+  dps: 3.27854272442e+06
+  tps: 3.26251330694e+06
+  hps: 18112.62099
  }
 }
 dps_results: {
@@ -2701,9 +2701,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.15646454411e+06
-  tps: 2.1547784146e+06
-  hps: 12926.2871
+  dps: 2.45004946785e+06
+  tps: 2.44910535679e+06
+  hps: 13691.58411
  }
 }
 dps_results: {
@@ -2725,9 +2725,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.8979308602e+06
-  tps: 2.88170146749e+06
-  hps: 1508.93603
+  dps: 3.28578879584e+06
+  tps: 3.27002010252e+06
+  hps: 1016.27404
  }
 }
 dps_results: {
@@ -2749,9 +2749,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.15765639308e+06
-  tps: 2.15607426698e+06
-  hps: 1413.27215
+  dps: 2.45590664856e+06
+  tps: 2.45473034663e+06
+  hps: 1004.95543
  }
 }
 dps_results: {
@@ -2773,9 +2773,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.09630307051e+06
-  tps: 3.08042328199e+06
-  hps: 1532.14323
+  dps: 3.51088535981e+06
+  tps: 3.49546148221e+06
+  hps: 1000.17998
  }
 }
 dps_results: {
@@ -2797,9 +2797,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.31566598403e+06
-  tps: 2.31423531788e+06
-  hps: 1436.04433
+  dps: 2.63580154169e+06
+  tps: 2.63479340079e+06
+  hps: 1001.10437
  }
 }
 dps_results: {
@@ -2821,9 +2821,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.91231350039e+06
-  tps: 2.89577236349e+06
-  hps: 1504.88367
+  dps: 3.30210795607e+06
+  tps: 3.28652834948e+06
+  hps: 1004.34644
  }
 }
 dps_results: {
@@ -2845,9 +2845,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_HolyPrism-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.16528564709e+06
-  tps: 2.16357080534e+06
-  hps: 1416.1848
+  dps: 2.46856509016e+06
+  tps: 2.46749291791e+06
+  hps: 1004.85618
  }
 }
 dps_results: {
@@ -2869,9 +2869,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.92562775681e+06
-  tps: 2.90880744546e+06
-  hps: 20300.16623
+  dps: 3.30034663992e+06
+  tps: 3.28419872837e+06
+  hps: 21753.30863
  }
 }
 dps_results: {
@@ -2893,9 +2893,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.18799086884e+06
-  tps: 2.18597380027e+06
-  hps: 15195.48312
+  dps: 2.47383788545e+06
+  tps: 2.47226663154e+06
+  hps: 16182.14398
  }
 }
 dps_results: {
@@ -2917,9 +2917,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.93295828919e+06
-  tps: 2.91618734658e+06
-  hps: 4608.47927
+  dps: 3.31861029474e+06
+  tps: 3.30248091087e+06
+  hps: 4630.06034
  }
 }
 dps_results: {
@@ -2941,9 +2941,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.19097877421e+06
-  tps: 2.18867468461e+06
-  hps: 3599.33704
+  dps: 2.48270829305e+06
+  tps: 2.48101557645e+06
+  hps: 3617.72937
  }
 }
 dps_results: {
@@ -2965,9 +2965,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.14105517729e+06
-  tps: 3.12477476459e+06
-  hps: 4551.1005
+  dps: 3.53537219932e+06
+  tps: 3.51962401973e+06
+  hps: 4589.38519
  }
 }
 dps_results: {
@@ -2989,9 +2989,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.34757612413e+06
-  tps: 2.34539196894e+06
-  hps: 3568.10478
+  dps: 2.66098628917e+06
+  tps: 2.65944310626e+06
+  hps: 3593.32443
  }
 }
 dps_results: {
@@ -3013,9 +3013,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.95224446186e+06
-  tps: 2.93528503536e+06
-  hps: 4588.72555
+  dps: 3.33555694735e+06
+  tps: 3.31961656934e+06
+  hps: 4619.24257
  }
 }
 dps_results: {
@@ -3037,9 +3037,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-DivinePurpose_LightsHammer-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.19916143056e+06
-  tps: 2.19673451955e+06
-  hps: 3585.50821
+  dps: 2.49290629471e+06
+  tps: 2.49133912802e+06
+  hps: 3612.6437
  }
 }
 dps_results: {
@@ -3061,9 +3061,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.5150947152e+06
-  tps: 2.49922104746e+06
-  hps: 16592.29013
+  dps: 2.7291147639e+06
+  tps: 2.71364606518e+06
+  hps: 18339.22364
  }
 }
 dps_results: {
@@ -3085,9 +3085,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.91595371424e+06
-  tps: 1.91420341124e+06
-  hps: 12132.15271
+  dps: 2.07706452195e+06
+  tps: 2.07561426315e+06
+  hps: 13636.84752
  }
 }
 dps_results: {
@@ -3109,8 +3109,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.5241291548e+06
-  tps: 2.50801598868e+06
+  dps: 2.73646392497e+06
+  tps: 2.72112766371e+06
  }
 }
 dps_results: {
@@ -3130,8 +3130,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.91598184461e+06
-  tps: 1.9139186764e+06
+  dps: 2.08755290571e+06
+  tps: 2.08650600984e+06
  }
 }
 dps_results: {
@@ -3151,8 +3151,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.71646356268e+06
-  tps: 2.70080760115e+06
+  dps: 2.95436965498e+06
+  tps: 2.93940259029e+06
  }
 }
 dps_results: {
@@ -3172,8 +3172,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.07489280133e+06
-  tps: 2.07299044532e+06
+  dps: 2.2583153183e+06
+  tps: 2.2574960005e+06
  }
 }
 dps_results: {
@@ -3193,8 +3193,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.53605989106e+06
-  tps: 2.51995522122e+06
+  dps: 2.76185069263e+06
+  tps: 2.74614595003e+06
  }
 }
 dps_results: {
@@ -3214,8 +3214,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_ExecutionSentence-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.92717822732e+06
-  tps: 1.92531663501e+06
+  dps: 2.09960066675e+06
+  tps: 2.09833040824e+06
  }
 }
 dps_results: {
@@ -3235,9 +3235,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.58260521858e+06
-  tps: 2.56693478953e+06
-  hps: 18131.49125
+  dps: 2.80222466265e+06
+  tps: 2.78688795337e+06
+  hps: 19943.45019
  }
 }
 dps_results: {
@@ -3259,9 +3259,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.95519445313e+06
-  tps: 1.95399052744e+06
-  hps: 13671.58199
+  dps: 2.12429439737e+06
+  tps: 2.12387430527e+06
+  hps: 14997.88477
  }
 }
 dps_results: {
@@ -3283,9 +3283,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.59183151927e+06
-  tps: 2.57620059177e+06
-  hps: 1695.43813
+  dps: 2.81811708781e+06
+  tps: 2.8029719466e+06
+  hps: 1462.68876
  }
 }
 dps_results: {
@@ -3307,9 +3307,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.96327528404e+06
-  tps: 1.96201126338e+06
-  hps: 1566.15517
+  dps: 2.11878369797e+06
+  tps: 2.11834199123e+06
+  hps: 1399.8225
  }
 }
 dps_results: {
@@ -3331,9 +3331,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.78427897519e+06
-  tps: 2.76897997138e+06
-  hps: 1730.80238
+  dps: 3.03184495137e+06
+  tps: 3.01699193974e+06
+  hps: 1484.51194
  }
 }
 dps_results: {
@@ -3355,9 +3355,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.12705540098e+06
-  tps: 2.12594057065e+06
-  hps: 1576.38379
+  dps: 2.29237381914e+06
+  tps: 2.29207004206e+06
+  hps: 1385.98415
  }
 }
 dps_results: {
@@ -3379,9 +3379,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.60615576851e+06
-  tps: 2.59016258383e+06
-  hps: 1711.30408
+  dps: 2.83657180279e+06
+  tps: 2.82129973356e+06
+  hps: 1466.51184
  }
 }
 dps_results: {
@@ -3403,9 +3403,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_HolyPrism-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.97731684912e+06
-  tps: 1.97607769221e+06
-  hps: 1555.92738
+  dps: 2.12974199605e+06
+  tps: 2.12938668475e+06
+  hps: 1396.51258
  }
 }
 dps_results: {
@@ -3427,9 +3427,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.60442702187e+06
-  tps: 2.58863341117e+06
-  hps: 21318.14265
+  dps: 2.8193399116e+06
+  tps: 2.80393731812e+06
+  hps: 23095.96809
  }
 }
 dps_results: {
@@ -3451,9 +3451,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.98147314079e+06
-  tps: 1.97972283779e+06
-  hps: 15804.73861
+  dps: 2.14350067265e+06
+  tps: 2.14205041385e+06
+  hps: 17318.38523
  }
 }
 dps_results: {
@@ -3475,9 +3475,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.61299180841e+06
-  tps: 2.59695869933e+06
-  hps: 4706.43292
+  dps: 2.82571543263e+06
+  tps: 2.81044527662e+06
+  hps: 4723.76099
  }
 }
 dps_results: {
@@ -3499,9 +3499,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.98168000995e+06
-  tps: 1.97961684175e+06
-  hps: 3655.69215
+  dps: 2.15341586022e+06
+  tps: 2.15235323217e+06
+  hps: 3663.88905
  }
 }
 dps_results: {
@@ -3523,9 +3523,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.80460970652e+06
-  tps: 2.78903380204e+06
-  hps: 4649.59289
+  dps: 3.04321948384e+06
+  tps: 3.02831852439e+06
+  hps: 4670.88565
  }
 }
 dps_results: {
@@ -3547,9 +3547,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.1399245982e+06
-  tps: 2.1380222422e+06
-  hps: 3609.91937
+  dps: 2.32376371699e+06
+  tps: 2.32292866702e+06
+  hps: 3625.90901
  }
 }
 dps_results: {
@@ -3571,9 +3571,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.62456373524e+06
-  tps: 2.60853912244e+06
-  hps: 4685.82429
+  dps: 2.85066904199e+06
+  tps: 2.83503040464e+06
+  hps: 4700.07418
  }
 }
 dps_results: {
@@ -3595,9 +3595,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-HolyAvenger_LightsHammer-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.99257759275e+06
-  tps: 1.99071600044e+06
-  hps: 3641.10134
+  dps: 2.16548473607e+06
+  tps: 2.16419874539e+06
+  hps: 3648.12477
  }
 }
 dps_results: {
@@ -3619,9 +3619,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.51286261741e+06
-  tps: 2.49725940191e+06
-  hps: 17930.23544
+  dps: 2.82685127781e+06
+  tps: 2.81092898567e+06
+  hps: 19177.59781
  }
 }
 dps_results: {
@@ -3643,9 +3643,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.86212803908e+06
-  tps: 1.86076092727e+06
-  hps: 13360.22712
+  dps: 2.10298685379e+06
+  tps: 2.10205800927e+06
+  hps: 14327.29301
  }
 }
 dps_results: {
@@ -3667,9 +3667,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.51203727915e+06
-  tps: 2.49622752644e+06
-  hps: 1586.33326
+  dps: 2.84628081482e+06
+  tps: 2.83064356591e+06
+  hps: 1380.179
  }
 }
 dps_results: {
@@ -3691,9 +3691,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.86849792214e+06
-  tps: 1.8672147968e+06
-  hps: 1352.69407
+  dps: 2.11292863014e+06
+  tps: 2.11210818774e+06
+  hps: 1155.19244
  }
 }
 dps_results: {
@@ -3715,9 +3715,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.71383985005e+06
-  tps: 2.69833099842e+06
-  hps: 1558.44008
+  dps: 3.05819571599e+06
+  tps: 3.04281770193e+06
+  hps: 1352.19444
  }
 }
 dps_results: {
@@ -3739,9 +3739,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.02515524547e+06
-  tps: 2.02398734402e+06
-  hps: 1315.95147
+  dps: 2.2798722329e+06
+  tps: 2.279170609e+06
+  hps: 1127.81889
  }
 }
 dps_results: {
@@ -3763,9 +3763,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.53193272281e+06
-  tps: 2.51593628269e+06
-  hps: 1590.15635
+  dps: 2.86196885055e+06
+  tps: 2.84637624205e+06
+  hps: 1380.179
  }
 }
 dps_results: {
@@ -3787,9 +3787,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_HolyPrism-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.88250241421e+06
-  tps: 1.88102217901e+06
-  hps: 1342.23173
+  dps: 2.12766937724e+06
+  tps: 2.12676402347e+06
+  hps: 1148.37396
  }
 }
 dps_results: {
@@ -3811,9 +3811,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Insight-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.53778582761e+06
-  tps: 2.52192399022e+06
-  hps: 20794.48411
+  dps: 2.86620339205e+06
+  tps: 2.85033387006e+06
+  hps: 22434.39655
  }
 }
 dps_results: {
@@ -3835,9 +3835,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Insight-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.90716539642e+06
-  tps: 1.90525131327e+06
-  hps: 15476.35976
+  dps: 2.14562514711e+06
+  tps: 2.14430926462e+06
+  hps: 16828.44099
  }
 }
 dps_results: {
@@ -3859,9 +3859,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Justice-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.55833256146e+06
-  tps: 2.54270856103e+06
-  hps: 4703.36382
+  dps: 2.88179979874e+06
+  tps: 2.86615378098e+06
+  hps: 4755.4262
  }
 }
 dps_results: {
@@ -3883,9 +3883,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Justice-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.9115726986e+06
-  tps: 1.9098551518e+06
-  hps: 3613.67096
+  dps: 2.1573470931e+06
+  tps: 2.15624470275e+06
+  hps: 3645.90616
  }
 }
 dps_results: {
@@ -3907,9 +3907,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Righteousness-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.75547254599e+06
-  tps: 2.74007858867e+06
-  hps: 4675.3963
+  dps: 3.09385702904e+06
+  tps: 3.07844250317e+06
+  hps: 4717.35828
  }
 }
 dps_results: {
@@ -3931,9 +3931,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Righteousness-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.05750734725e+06
-  tps: 2.05590669924e+06
-  hps: 3594.59406
+  dps: 2.32276641088e+06
+  tps: 2.321789199e+06
+  hps: 3624.81945
  }
 }
 dps_results: {
@@ -3955,9 +3955,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Truth-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.57986412342e+06
-  tps: 2.56388113659e+06
-  hps: 4693.17191
+  dps: 2.8926599523e+06
+  tps: 2.8766379657e+06
+  hps: 4745.10265
  }
 }
 dps_results: {
@@ -3979,9 +3979,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-Settings-BloodElf-p5-SanctifiedWrath_LightsHammer-Seal of Truth-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.91793336446e+06
-  tps: 1.91598176437e+06
-  hps: 3610.76963
+  dps: 2.16795313075e+06
+  tps: 2.16676463366e+06
+  hps: 3641.87171
  }
 }
 dps_results: {
