@@ -844,7 +844,7 @@ export class CombatReplay extends ResultComponent {
 	}
 
 	private renderAuraIcons(container: HTMLElement, auras: AuraSnapshot[], t: number, cacheKey: string): string {
-		const active = auras.filter(a => a.gainedAt <= t && a.fadedAt >= t);
+		const active = auras.filter(a => a.gainedAt <= t && a.fadedAt >= t).sort((a, b) => a.fadedAt - b.fadedAt);
 		const key = active.map(a => a.name).join('|');
 
 		if (key !== cacheKey) {
