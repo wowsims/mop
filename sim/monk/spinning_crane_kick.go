@@ -27,11 +27,10 @@ Generates 1 Chi, if it hits at least 3 targets. Lasts 2 sec.
 During Spinning Crane Kick, you can continue to dodge and parry.
 */
 var sckActionID = core.ActionID{SpellID: 101546}
-var sckDebuffActionID = core.ActionID{SpellID: 107270}
 
 func spinningCraneKickTickSpellConfig(monk *Monk, isSEFClone bool) core.SpellConfig {
 	config := core.SpellConfig{
-		ActionID:       sckDebuffActionID,
+		ActionID:       sckActionID,
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
 		ClassSpellMask: MonkSpellSpinningCraneKick,
@@ -69,6 +68,8 @@ func spinningCraneKickSpellConfig(monk *Monk, isSEFClone bool, overrides core.Sp
 			Aura: core.Aura{
 				Label:    "Spinning Crane Kick " + monk.Label,
 				ActionID: sckActionID,
+				OnGain:   overrides.Dot.Aura.OnGain,
+				OnExpire: overrides.Dot.Aura.OnExpire,
 			},
 			NumberOfTicks:        3,
 			TickLength:           time.Millisecond * 750,
@@ -77,6 +78,8 @@ func spinningCraneKickSpellConfig(monk *Monk, isSEFClone bool, overrides core.Sp
 
 			OnTick: overrides.Dot.OnTick,
 		},
+
+		CritMultiplier: monk.DefaultCritMultiplier(),
 
 		ApplyEffects: overrides.ApplyEffects,
 	}
@@ -119,7 +122,6 @@ func (monk *Monk) registerSpinningCraneKick() {
 
 		Dot: core.DotConfig{
 			Aura: core.Aura{
-				Label: "Spinning Crane Kick" + monk.Label,
 				OnGain: func(aura *core.Aura, sim *core.Simulation) {
 					if !glyphOfSpinningCraneKick {
 						monk.MultiplyMovementSpeed(sim, 0.7)
