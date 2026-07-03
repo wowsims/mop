@@ -92,6 +92,7 @@ type bulkSimCandidateGenerator struct {
 	weaponTypeFilters    map[proto.ItemSlot][]proto.WeaponType
 	weaponCombosCached   [][2]*bulkSimCandidateOption
 	weaponCombosReady    bool
+	weaponCopyCounts     map[itemSpecCacheKey]int
 }
 
 type BulkSimItemSlot int
@@ -503,6 +504,14 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 		})
 	}
 
+	// Capture how many copies of each 1H weapon are available (selected + equipped)
+	// before dedup collapses them. A weapon may only occupy both hands when at least
+	// two copies exist.
+	generator.weaponCopyCounts = make(map[itemSpecCacheKey]int)
+	for _, option := range generator.selectedByBulkSlot[BulkSimItemSlotHandWeapon] {
+		generator.weaponCopyCounts[buildItemSpecKey(option.spec, generator.inheritUpgrades)]++
+	}
+
 	for bulkSlot, options := range generator.selectedByBulkSlot {
 		generator.selectedByBulkSlot[bulkSlot] = dedupeCandidateOptions(options, generator.inheritUpgrades)
 	}
@@ -740,8 +749,9 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 			if optionsContainEquivalent(filtered[:i], filtered[i], generator.inheritUpgrades) {
 				continue
 			}
-			hasDuplicate := optionsContainEquivalent(filtered[i+1:], filtered[i], generator.inheritUpgrades)
-			if filtered[i].item.WeaponType != proto.WeaponType_WeaponTypeUnknown && !hasDuplicate {
+			// Only wield the same 1H weapon in both hands when at least two copies exist.
+			copyCount := generator.weaponCopyCounts[buildItemSpecKey(filtered[i].spec, generator.inheritUpgrades)]
+			if filtered[i].item.WeaponType != proto.WeaponType_WeaponTypeUnknown && copyCount >= 2 {
 				allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&filtered[i], &filtered[i]})
 			}
 			for j := i + 1; j < len(filtered); j++ {
