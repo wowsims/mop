@@ -1,6 +1,8 @@
 package fury
 
 import (
+	"time"
+
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
@@ -85,16 +87,18 @@ func (war *FuryWarrior) OnEncounterStart(sim *core.Simulation) {
 }
 
 func (war *FuryWarrior) ApplySyncType(syncType proto.WarriorSyncType) {
+	const syncWindow = time.Millisecond * 500
+
 	if syncType == proto.WarriorSyncType_WarriorSyncMainhandOffhandSwings {
 		war.AutoAttacks.SetReplaceMHSwing(func(sim *core.Simulation, mhSwingSpell *core.Spell) *core.Spell {
 			aa := &war.AutoAttacks
-			if nextMHSwingAt := sim.CurrentTime + aa.MainhandSwingSpeed(); nextMHSwingAt > aa.OffhandSwingAt() {
-				aa.SetOffhandSwingAt(nextMHSwingAt)
+			if aa.OffhandSwingAt()-sim.CurrentTime > syncWindow {
+				if nextMHSwingAt := sim.CurrentTime + aa.MainhandSwingSpeed(); nextMHSwingAt != aa.OffhandSwingAt() {
+					aa.SetOffhandSwingAt(nextMHSwingAt)
+				}
 			}
-
 			return mhSwingSpell
 		})
-
 	} else {
 		war.AutoAttacks.SetReplaceMHSwing(nil)
 	}
