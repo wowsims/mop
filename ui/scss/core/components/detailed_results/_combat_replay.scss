@@ -1,3 +1,19 @@
+@mixin cr-overlay-badge {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 2px;
+	text-align: center;
+	font-size: 9px;
+	font-weight: 700;
+	color: var(--bs-white);
+	text-shadow:
+		0 0 4px var(--bs-black),
+		0 0 4px var(--bs-black);
+	line-height: 1;
+}
+
 // Stretch the replay tab pane so the component fills to the bottom of the viewport.
 .replay-content.dr-tab-content {
 	padding: 0;
@@ -97,11 +113,11 @@
 		position: relative;
 		width: 42px;
 		height: 42px;
-		border-radius: 6px;
+		border-radius: 4px;
 		overflow: hidden;
-		border: 2px solid color-mix(in srgb, var(--bs-white) 15%, transparent);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 15%, transparent) inset;
 		cursor: pointer;
-		transition: border-color 0.1s;
+		transition: box-shadow 0.1s;
 		display: block;
 		background-size: cover;
 		background-position: center;
@@ -109,14 +125,15 @@
 		text-decoration: none;
 
 		&.cr-strip-icon-active {
-			border-color: color-mix(in srgb, var(--bs-white) 70%, transparent);
-			box-shadow: 0 0 10px color-mix(in srgb, var(--bs-white) 30%, transparent);
+			box-shadow:
+				0 0 0 2px color-mix(in srgb, var(--bs-white) 70%, transparent) inset,
+				0 0 10px color-mix(in srgb, var(--bs-white) 30%, transparent);
 		}
 	}
 
 	.cr-crit-badge {
 		position: absolute;
-		top: 1px;
+		top: 2px;
 		right: 2px;
 		font-size: 9px;
 		font-weight: 900;
@@ -125,71 +142,70 @@
 	}
 
 	.cr-dmg-badge {
-		position: absolute;
-		bottom: 1px;
-		left: 0;
-		right: 0;
-		text-align: center;
-		font-size: 9px;
-		font-weight: 700;
-		color: var(--bs-white);
-		text-shadow:
-			0 0 4px var(--bs-black),
-			0 0 4px var(--bs-black);
-		line-height: 1;
+		@include cr-overlay-badge;
 	}
 
 	.cr-enemy-zone {
 		position: absolute;
 		left: 20px;
 		right: 20px;
-		bottom: 20px;
-		top: calc(60px + 20px);
+		bottom: 0px;
+		top: calc(42px + 20px);
 		z-index: 1;
 		overflow: hidden;
 	}
 
-	// Vertically centers the encounter block (nameplates + models) so the arena is not empty above.
 	.cr-enemy-formation {
 		position: absolute;
 		left: 0;
 		right: 0;
-		top: 50%;
-		height: 78%;
-		transform: translateY(-50%);
+		top: 0;
+		height: 100%;
 		pointer-events: none;
 	}
 
 	.cr-enemy-card {
+		position: absolute;
+		top: 50%;
+		left: var(--cr-card-x);
+		bottom: 0;
+		width: var(--cr-card-w);
+		max-height: 100%;
+		transform: translate(-50%, -50%) scale(var(--cr-card-scale, 1));
+		transform-origin: bottom center;
+		z-index: var(--cr-card-z, 1);
+		filter: brightness(var(--cr-card-brightness, 1));
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		pointer-events: auto;
-		// position / size / transform are set inline per-card for the depth formation
+		gap: 10px;
 	}
 
 	.cr-nameplate {
+		position: relative;
 		width: 100%;
-		margin-bottom: 6px;
 		background: color-mix(in srgb, var(--bs-black) 55%, transparent);
 		border-radius: 6px;
 		padding: 4px 6px;
+		z-index: 2;
 	}
 
 	.cr-debuff-row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 2px;
+		gap: 4px;
 		margin-top: 3px;
 		min-height: 0;
 	}
 
 	.cr-aura-icon {
-		width: 20px;
-		height: 20px;
-		border-radius: 3px;
+		position: relative;
+		width: 42px;
+		height: 42px;
+		border-radius: 4px;
 		overflow: hidden;
-		border: 1px solid color-mix(in srgb, var(--bs-white) 20%, transparent);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 20%, transparent) inset;
 		cursor: pointer;
 		flex-shrink: 0;
 		display: block;
@@ -197,6 +213,28 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		text-decoration: none;
+		transition: box-shadow 0.1s;
+
+		&.cr-aura-icon-active {
+			box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 70%, transparent) inset;
+		}
+	}
+
+	.cr-aura-time-badge {
+		@include cr-overlay-badge;
+	}
+
+	.cr-aura-stack-badge {
+		position: absolute;
+		top: 2px;
+		right: 2px;
+		font-size: 9px;
+		font-weight: 900;
+		color: var(--bs-white);
+		text-shadow:
+			0 0 3px var(--bs-black),
+			0 0 3px var(--bs-black);
+		line-height: 1;
 	}
 
 	.cr-enemy-name {
@@ -234,7 +272,7 @@
 		font-size: 7px;
 		font-weight: 700;
 		color: var(--bs-white);
-		text-shadow: 0 0 3px var(--bs-black);
+		text-shadow: 1px 1px 3px var(--bs-black);
 	}
 
 	.cr-silhouette {
@@ -243,6 +281,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: flex-end;
+		flex-shrink: 1;
 
 		img {
 			// Scale with card width; single target gets large, multi-target scales down naturally
@@ -261,6 +300,7 @@
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
+		z-index: 1;
 	}
 
 	.cr-hit-effect {
@@ -357,9 +397,10 @@
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		flex-shrink: 0;
+		color: color-mix(in srgb, var(--bs-white) 70%, transparent);
 	}
 
-	// Left-to-right buff icons; first row fills then wraps to a second row (fixed two-row height, no layout jump).
+	// Left-to-right buff icons; wraps to additional rows, fixed three-row max-height so the CDM doesn't jump in height.
 	.cr-buff-icons {
 		display: flex;
 		flex-direction: row;
@@ -370,8 +411,8 @@
 		flex: 1;
 		min-width: 0;
 		width: 100%;
-		min-height: 43px;
-		max-height: 43px;
+		min-height: calc(42px + 3px);
+		max-height: calc(3 * 42px + 2 * 3px);
 		overflow: hidden;
 	}
 
@@ -402,7 +443,7 @@
 		font-size: 0.7rem;
 		font-weight: 600;
 		color: var(--bs-white);
-		text-shadow: 0 0 4px var(--bs-black);
+		text-shadow: 1px 1px 4px var(--bs-black);
 		pointer-events: none;
 	}
 
@@ -520,15 +561,13 @@
 	}
 
 	.cr-action-icon {
-		width: 36px;
-		height: 36px;
-		border-radius: 5px;
+		width: 42px;
+		height: 42px;
+		border-radius: 4px;
 		overflow: hidden;
-		border: 2px solid color-mix(in srgb, var(--bs-white) 12%, transparent);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 20%, transparent) inset;
 		cursor: pointer;
-		transition:
-			border-color 0.1s,
-			box-shadow 0.1s;
+		transition: box-shadow 0.1s;
 		display: block;
 		background-size: cover;
 		background-position: center;
@@ -537,7 +576,7 @@
 		flex-shrink: 0;
 
 		&.cr-action-icon-active {
-			border-color: color-mix(in srgb, var(--bs-white) 70%, transparent);
+			box-shadow: 0 0 0 2px color-mix(in srgb, var(--bs-white) 70%, transparent) inset;
 		}
 	}
 
