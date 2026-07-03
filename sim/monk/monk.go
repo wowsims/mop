@@ -88,6 +88,7 @@ type Monk struct {
 	T15Brewmaster4P            *core.Aura
 	T15Brewmaster4PProcEffect  *core.Aura
 	T16Windwalker4P            *core.Aura
+	T16Brewmaster2P            *core.Aura
 	T16Brewmaster4P            *core.Aura
 }
 
