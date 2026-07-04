@@ -32,6 +32,9 @@ func (value *APLValueSpellCanCast) Type() proto.APLValueType {
 	return proto.APLValueType_ValueTypeBool
 }
 func (value *APLValueSpellCanCast) GetBool(sim *Simulation) bool {
+	// Deliberately ignores strictCastPass: condition values must read the same in
+	// both evaluation passes, and preset conditions rely on seeing the queue-window
+	// leniency (e.g. Ret's Execution Sentence gate).
 	return value.spell.CanCastOrQueue(sim, value.spell.Unit.CurrentTarget)
 }
 func (value *APLValueSpellCanCast) String() string {

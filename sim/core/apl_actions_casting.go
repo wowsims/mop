@@ -27,8 +27,34 @@ func (rot *APLRotation) newActionCastSpell(config *proto.APLActionCastSpell) APL
 		target: target,
 	}
 }
+
+// canCastOrQueueAPL is the readiness check for APL cast actions, respecting the
+// two-pass evaluation: during the strict pass only immediately castable spells match.
+func (spell *Spell) canCastOrQueueAPL(sim *Simulation, target *Unit) bool {
+	rot := spell.Unit.Rotation
+	if !rot.strictCastPass {
+		return spell.CanCastOrQueue(sim, target)
+	}
+	if spell.CanCast(sim, target) {
+		return true
+	}
+	// Record whether the relaxed pass could reach a different verdict, so
+	// getNextAction can skip the second walk entirely when nothing is queueable.
+	if !rot.queueCandidateSeen && spell.CanCastOrQueue(sim, target) {
+		rot.queueCandidateSeen = true
+	}
+	return false
+}
+
+// aplCastActionIsReady is the shared IsReady for plain cast actions: castable or
+// queueable for the current pass, and non-reactive MCDs additionally wait for the
+// GCD unless inside a sequence.
+func (spell *Spell) aplCastActionIsReady(sim *Simulation, target *Unit) bool {
+	return spell.canCastOrQueueAPL(sim, target) && (!spell.Flags.Matches(SpellFlagMCD) || spell.Flags.Matches(SpellFlagReactive) || spell.Unit.GCD.IsReady(sim) || spell.Unit.Rotation.inSequence)
+}
+
 func (action *APLActionCastSpell) IsReady(sim *Simulation) bool {
-	return action.spell.CanCastOrQueue(sim, action.target.Get()) && (!action.spell.Flags.Matches(SpellFlagMCD) || action.spell.Flags.Matches(SpellFlagReactive) || action.spell.Unit.GCD.IsReady(sim) || action.spell.Unit.Rotation.inSequence)
+	return action.spell.aplCastActionIsReady(sim, action.target.Get())
 }
 func (action *APLActionCastSpell) Execute(sim *Simulation) {
 	action.spell.CastOrQueue(sim, action.target.Get())
@@ -78,7 +104,7 @@ func (rot *APLRotation) newActionCastFriendlySpell(config *proto.APLActionCastFr
 	}
 }
 func (action *APLActionCastFriendlySpell) IsReady(sim *Simulation) bool {
-	return action.spell.CanCastOrQueue(sim, action.target.Get()) && (!action.spell.Flags.Matches(SpellFlagMCD) || action.spell.Flags.Matches(SpellFlagReactive) || action.spell.Unit.GCD.IsReady(sim) || action.spell.Unit.Rotation.inSequence)
+	return action.spell.aplCastActionIsReady(sim, action.target.Get())
 }
 func (action *APLActionCastFriendlySpell) Execute(sim *Simulation) {
 	action.spell.CastOrQueue(sim, action.target.Get())
@@ -128,7 +154,7 @@ func (action *APLActionChannelSpell) GetAPLValues() []APLValue {
 	return []APLValue{action.interruptIf}
 }
 func (action *APLActionChannelSpell) IsReady(sim *Simulation) bool {
-	return action.spell.CanCastOrQueue(sim, action.target.Get())
+	return action.spell.canCastOrQueueAPL(sim, action.target.Get())
 }
 func (action *APLActionChannelSpell) Execute(sim *Simulation) {
 	action.spell.CastOrQueue(sim, action.target.Get())
@@ -190,7 +216,7 @@ func (action *APLActionMultidot) IsReady(sim *Simulation) bool {
 		for i := int32(0); i < action.maxDots; i++ {
 			target := sim.Raid.AllPlayerUnits[i]
 			dot := action.spell.Dot(target)
-			if (!dot.IsActive() || dot.RemainingDuration(sim) < maxOverlap) && action.spell.CanCastOrQueue(sim, target) {
+			if (!dot.IsActive() || dot.RemainingDuration(sim) < maxOverlap) && action.spell.canCastOrQueueAPL(sim, target) {
 				action.nextTarget = target
 				return true
 			}
@@ -199,7 +225,7 @@ func (action *APLActionMultidot) IsReady(sim *Simulation) bool {
 		for i := int32(0); i < action.maxDots; i++ {
 			target := sim.Encounter.AllTargetUnits[i]
 			dot := action.spell.Dot(target)
-			if (!dot.IsActive() || dot.RemainingDuration(sim) < maxOverlap) && action.spell.CanCastOrQueue(sim, target) {
+			if (!dot.IsActive() || dot.RemainingDuration(sim) < maxOverlap) && action.spell.canCastOrQueueAPL(sim, target) {
 				action.nextTarget = target
 				return true
 			}
@@ -305,13 +331,13 @@ func (action *APLActionStrictMultidot) IsReady(sim *Simulation) bool {
 	for i := int32(0); i < action.maxDots; i++ {
 		target := action.targets[i]
 		dot := action.spell.Dot(target)
-		if (!dot.IsActive() || dot.RemainingDuration(sim) < maxOverlap) && action.spell.CanCastOrQueue(sim, target) {
+		if (!dot.IsActive() || dot.RemainingDuration(sim) < maxOverlap) && action.spell.canCastOrQueueAPL(sim, target) {
 			action.readyActions = append(action.readyActions, action.actions[i])
 			previousTarget = target
 		} else if previousTarget != nil {
 			previousDot := action.spell.Dot(previousTarget)
 			// Take the previous Dot + Cast Time into account for the overlap check
-			if (!previousDot.IsActive() || dot.RemainingDuration(sim)-action.spell.EffectiveCastTime() <= previousDot.RemainingDuration(sim)) && action.spell.CanCastOrQueue(sim, target) {
+			if (!previousDot.IsActive() || dot.RemainingDuration(sim)-action.spell.EffectiveCastTime() <= previousDot.RemainingDuration(sim)) && action.spell.canCastOrQueueAPL(sim, target) {
 				action.readyActions = append(action.readyActions, action.actions[i])
 				previousTarget = target
 			}
@@ -378,7 +404,7 @@ func (action *APLActionMultishield) IsReady(sim *Simulation) bool {
 	for i := int32(0); i < action.maxShields; i++ {
 		target := sim.Raid.AllPlayerUnits[i]
 		shield := action.spell.Shield(target)
-		if (!shield.IsActive() || shield.RemainingDuration(sim) < maxOverlap) && action.spell.CanCastOrQueue(sim, target) {
+		if (!shield.IsActive() || shield.RemainingDuration(sim) < maxOverlap) && action.spell.canCastOrQueueAPL(sim, target) {
 			action.nextTarget = target
 			return true
 		}

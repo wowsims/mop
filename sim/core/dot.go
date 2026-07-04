@@ -423,8 +423,10 @@ func newDot(config Dot) *Dot {
 			// after ChanneledDot is cleared. This also handles rollover channels where ticks
 			// finish before aura expiry — periodicTick's WaitUntil saw IsChanneling=true and
 			// returned early, leaving no rotation event scheduled until now.
-			if dot.Spell.Unit.GCD.IsReady(sim) {
-				dot.Spell.Unit.WaitUntil(sim, sim.CurrentTime+clipDelay)
+			// Also reschedule when the GCD is busy but the channel consumed the pending
+			// rotation event; without it no rotation event remains and the unit idles forever.
+			if dot.Spell.Unit.GCD.IsReady(sim) || dot.Spell.Unit.NextRotationActionAt() < sim.CurrentTime {
+				dot.Spell.Unit.WaitUntil(sim, max(sim.CurrentTime+clipDelay, dot.Spell.Unit.GCD.ReadyAt()))
 			}
 			// track time metrics for channels
 			dot.Spell.SpellMetrics[aura.Unit.UnitIndex].TotalCastTime += dot.fadeTime - dot.StartedAt()

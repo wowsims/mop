@@ -51,6 +51,16 @@ type APLRotation struct {
 	// Used inside of actions/value to determine whether they will occur during the prepull or regular rotation.
 	parsingPrepull bool
 
+	// Two-pass evaluation: when true, APLActionCastSpell.IsReady only
+	// matches spells that are immediately castable. A second relaxed pass allows
+	// queueing only when nothing is castable right now.
+	strictCastPass bool
+
+	// Set during the strict pass when a spell failed CanCast but would pass
+	// CanCastOrQueue; when it stays false the relaxed pass cannot find anything
+	// new and getNextAction skips it.
+	queueCandidateSeen bool
+
 	// Used to avoid recursive APL loops.
 	inLoop bool
 
@@ -485,6 +495,7 @@ func (apl *APLRotation) DoNextAction(sim *Simulation) {
 		}
 
 		nextAction.Execute(sim)
+		apl.strictCastPass = false
 	}
 	apl.inLoop = false
 
@@ -511,12 +522,28 @@ func (apl *APLRotation) getNextAction(sim *Simulation) *APLAction {
 		return apl.controllingActions[len(apl.controllingActions)-1].GetNextAction(sim)
 	}
 
-	for _, action := range apl.priorityList {
-		if action.IsReady(sim) {
-			return action
+	// Two-pass: prefer actions that can act immediately; only fall back
+	// to queueable-but-not-yet-castable spells if nothing is ready right now.
+	// The flag stays set on return so composite actions (groups, sequences) that
+	// re-evaluate readiness inside Execute() see the same pass; DoNextAction
+	// clears it after each Execute, so the controllingActions path above always
+	// runs in relaxed mode.
+	apl.queueCandidateSeen = false
+	for _, strict := range [2]bool{true, false} {
+		if !strict && !apl.queueCandidateSeen {
+			// No spell flipped from "not castable" to "queueable" during the
+			// strict pass, so the relaxed pass would repeat it verbatim.
+			break
+		}
+		apl.strictCastPass = strict
+		for _, action := range apl.priorityList {
+			if action.IsReady(sim) {
+				return action
+			}
 		}
 	}
 
+	apl.strictCastPass = false
 	return nil
 }
 

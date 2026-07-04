@@ -119,6 +119,11 @@ type APLActionStrictSequence struct {
 	curIdx     int
 
 	subactionSpells []*Spell
+
+	// Queued-spell PendingAction whose OnAction was wrapped to advance this
+	// sequence, and the original callback to restore on unhook.
+	hookedQueueAction *PendingAction
+	hookedOnAction    func(*Simulation)
 }
 
 func (rot *APLRotation) newActionStrictSequence(config *proto.APLActionStrictSequence) APLActionImpl {
@@ -152,6 +157,8 @@ func (action *APLActionStrictSequence) PostFinalize(rot *APLRotation) {
 func (action *APLActionStrictSequence) Reset(*Simulation) {
 	action.curIdx = 0
 	action.unit.Rotation.inSequence = false
+	action.hookedQueueAction = nil
+	action.hookedOnAction = nil
 }
 func (action *APLActionStrictSequence) IsReady(sim *Simulation) bool {
 	action.unit.Rotation.inSequence = true
@@ -180,7 +187,19 @@ func (action *APLActionStrictSequence) Execute(sim *Simulation) {
 func (action *APLActionStrictSequence) relinquishControl() {
 	action.curIdx = 0
 	action.unit.Rotation.inSequence = false
+	// Disarm any still-pending queued-spell hook so it cannot advance the
+	// sequence after control is gone.
+	action.unhookQueuedSpell()
 	action.unit.Rotation.popControllingAction(action)
+}
+
+// unhookQueuedSpell restores the queued spell's original OnAction callback.
+func (action *APLActionStrictSequence) unhookQueuedSpell() {
+	if action.hookedQueueAction != nil {
+		action.hookedQueueAction.OnAction = action.hookedOnAction
+		action.hookedQueueAction = nil
+		action.hookedOnAction = nil
+	}
 }
 func (action *APLActionStrictSequence) advanceSequence() {
 	action.curIdx++
@@ -207,11 +226,15 @@ func (action *APLActionStrictSequence) GetNextAction(sim *Simulation) *APLAction
 		// The spell was already queued at this timestep; modify it to advance the sequence when it executes
 		// and return nil to wait for the GCD to become ready.
 		queueAction := action.unit.QueuedSpell.queueAction
-		oldFunc := queueAction.OnAction
-		queueAction.OnAction = func(sim *Simulation) {
-			oldFunc(sim)
-			action.advanceSequence()
-			queueAction.OnAction = oldFunc
+		if action.hookedQueueAction != queueAction {
+			oldFunc := queueAction.OnAction
+			action.hookedQueueAction = queueAction
+			action.hookedOnAction = oldFunc
+			queueAction.OnAction = func(sim *Simulation) {
+				oldFunc(sim)
+				action.unhookQueuedSpell()
+				action.advanceSequence()
+			}
 		}
 		action.unit.SetRotationTimer(sim, queueAction.NextActionAt+time.Duration(1))
 

@@ -594,10 +594,8 @@ func (spell *Spell) CanCast(sim *Simulation, target *Unit) bool {
 		return false
 	}
 
-	if !spell.CanCompleteCast(sim, target, false) {
-		return false
-	}
-
+	// Cheapest filters first (flag/timer compares); CanCompleteCast last since it
+	// calls ExtraCastCondition and the cost check. Mirrors CanQueue's ordering.
 	if spell.Flags.Matches(SpellFlagSwapped) {
 		//if sim.Log != nil {
 		//	sim.Log("Cant cast because of item swap")
@@ -637,6 +635,10 @@ func (spell *Spell) CanCast(sim *Simulation, target *Unit) bool {
 
 	// Spell uses charges but has none
 	if spell.MaxCharges > 0 && spell.charges == 0 {
+		return false
+	}
+
+	if !spell.CanCompleteCast(sim, target, false) {
 		return false
 	}
 
