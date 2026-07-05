@@ -2313,9 +2313,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p4_bis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.84113956523e+06
-  tps: 647068.58869
-  hps: 7933.60519
+  dps: 1.84714677102e+06
+  tps: 643789.86458
+  hps: 7750.71915
  }
 }
 dps_results: {
@@ -2337,9 +2337,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p4_bis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.36112703738e+06
-  tps: 476138.67854
-  hps: 6584.10671
+  dps: 1.38305567745e+06
+  tps: 481234.77328
+  hps: 6729.53992
  }
 }
 dps_results: {
@@ -2409,9 +2409,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p5_bis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.63574819975e+06
-  tps: 990718.51905
-  hps: 10183.58985
+  dps: 2.67317341714e+06
+  tps: 996552.90945
+  hps: 10096.39284
  }
 }
 dps_results: {
@@ -2433,9 +2433,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p5_bis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.97952065393e+06
-  tps: 739016.66905
-  hps: 8850.68684
+  dps: 2.01867502702e+06
+  tps: 750764.7809
+  hps: 8638.54982
  }
 }
 dps_results: {
@@ -2505,9 +2505,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p4_bis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.88663153315e+06
-  tps: 663273.56308
-  hps: 7746.23167
+  dps: 1.90170848085e+06
+  tps: 661582.95657
+  hps: 7635.2412
  }
 }
 dps_results: {
@@ -2529,9 +2529,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p4_bis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.40456362512e+06
-  tps: 490678.21007
-  hps: 6694.32863
+  dps: 1.42319280105e+06
+  tps: 497292.74728
+  hps: 6733.04801
  }
 }
 dps_results: {
@@ -2601,9 +2601,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p5_bis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.69386683241e+06
-  tps: 1.01144583276e+06
-  hps: 10272.41299
+  dps: 2.68059695584e+06
+  tps: 998602.37834
+  hps: 10276.7107
  }
 }
 dps_results: {
@@ -2625,9 +2625,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p5_bis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.09592410964e+06
-  tps: 781682.90022
-  hps: 8883.68381
+  dps: 2.07291601966e+06
+  tps: 769501.73716
+  hps: 8811.57377
  }
 }
 dps_results: {
