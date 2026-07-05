@@ -269,7 +269,13 @@ var ItemSetArmorOfSevenSacredSeals = core.NewItemSet(core.ItemSet{
 	DisabledInChallengeMode: true,
 	Bonuses: map[int32]core.ApplySetBonus{
 		2: func(agent core.Agent, setBonusAura *core.Aura) {
-			// Not implemented as not having Black Ox statue
+			// Grants the Monk a self-Guard (Protection of Niuzao) equal to 8% of each
+			// Guard cast by the Black Ox Statue. Implemented in brewmaster/black_ox_statue.go.
+			monk := agent.(MonkAgent).GetMonk()
+
+			monk.T16Brewmaster2P = setBonusAura
+
+			setBonusAura.ExposeToAPL(145049)
 		},
 		4: func(agent core.Agent, setBonusAura *core.Aura) {
 			monk := agent.(MonkAgent).GetMonk()

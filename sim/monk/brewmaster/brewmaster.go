@@ -92,6 +92,7 @@ func (bm *BrewmasterMonk) RegisterSpecializationEffects() {
 	bm.registerBreathOfFire()
 	bm.registerGuard()
 	bm.registerDizzyingHaze()
+	bm.registerBlackOxStatue()
 }
 
 func (bm *BrewmasterMonk) RegisterMastery() {
