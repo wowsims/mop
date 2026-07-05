@@ -65,12 +65,10 @@ func (bm *BrewmasterMonk) registerStagger() {
 			oldDamagePerTick := dot.SnapshotBaseDamage
 			dot.SnapshotBaseDamage = damagePerTick
 			bm.Stagger.Cast(sim, target)
-			newStaggerValue := int32(damagePerTick)
-			if newStaggerValue < 0 {
-				panic("Stagger is above 2.147 billion. Please check your Rotation/Encounter settings.")
-			}
-
-			dot.Aura.SetStacks(sim, int32(damagePerTick))
+			// The stacks value only feeds the APL stagger% check and display; in
+			// sustained heavy-AoE scenarios with few purifies the per-tick damage
+			// can exceed int32 range, so clamp instead of panicking.
+			dot.Aura.SetStacks(sim, int32(min(damagePerTick, math.MaxInt32)))
 
 			if sim.Log != nil && dot.Aura.IsActive() {
 				bm.Log(sim, "[DEBUG] Stagger tick refreshed from: %0.0f -> %0.0f", oldDamagePerTick, damagePerTick)
