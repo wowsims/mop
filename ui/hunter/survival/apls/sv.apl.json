@@ -43,6 +43,19 @@
 		},
 		{
 			"action": {
+				"condition": {
+					"and": {
+						"vals": [
+							{ "cmp": { "op": "OpGt", "lhs": { "spellTimeToReady": { "spellId": { "spellId": 53301 } } }, "rhs": { "const": { "val": "0" } } } },
+							{ "cmp": { "op": "OpLe", "lhs": { "spellTimeToReady": { "spellId": { "spellId": 53301 } } }, "rhs": { "const": { "val": "0.2s" } } } }
+						]
+					}
+				},
+				"wait": { "duration": { "spellTimeToReady": { "spellId": { "spellId": 53301 } } } }
+			}
+		},
+		{
+			"action": {
 				"condition": { "auraIsActive": { "auraId": { "spellId": 120668, "tag": -1 }, "includeReactionTime": true } },
 				"castSpell": { "spellId": { "spellId": 120360 } }
 			}
