@@ -341,6 +341,13 @@ func main() {
 			item.Phase = database.InferPhase(item)
 		}
 
+		// Phase 5 items can be upgraded 2 additional steps beyond the default 2.
+		if item.Phase == 5 {
+			if dbcItem, ok := instance.Items[int(item.Id)]; ok {
+				dbcItem.AddUpgradeSteps(item, 2)
+			}
+		}
+
 	}
 	addSpellIcons(db, craftedSpellIds, icons, iconsMap)
 
