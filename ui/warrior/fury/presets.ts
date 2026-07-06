@@ -51,7 +51,7 @@ export const PRERAID_FURY_TG_PRESET = PresetUtils.makePresetGear('Pre-BIS - 2H',
 export const P2_BIS_FURY_SMF_PRESET = PresetUtils.makePresetGear('P2 - 1H', P2FurySMFGear, FURY_SMF_PRESET_OPTIONS);
 export const P2_BIS_FURY_TG_PRESET = PresetUtils.makePresetGear('P2 - 2H', P2FuryTGGear, FURY_TG_PRESET_OPTIONS);
 export const P3_4_BIS_FURY_TG_PRESET = PresetUtils.makePresetGear('P3 & P4 - 2H', P4FuryTGGear, FURY_TG_PRESET_OPTIONS);
-export const P5_BIS_FURY_TG_PRESET = PresetUtils.makePresetGear('P5 - 2H (WIP)', P5FuryTGGear, FURY_TG_PRESET_OPTIONS);
+export const P5_BIS_FURY_TG_PRESET = PresetUtils.makePresetGear('P5 - 2H', P5FuryTGGear, FURY_TG_PRESET_OPTIONS);
 
 export const FURY_DEFAULT_ROTATION = PresetUtils.makePresetAPLRotation('Default', DefaultFuryApl);
 
@@ -193,7 +193,7 @@ export const P3_4_PRESET_BUILD_TG = PresetUtils.makePresetBuild('P3 & P4 - TG', 
 	talents: FuryTGTalents,
 	epWeights: P3_4_FURY_TG_EP_PRESET,
 });
-export const P5_PRESET_BUILD_TG = PresetUtils.makePresetBuild('P5 - TG (WIP)', {
+export const P5_PRESET_BUILD_TG = PresetUtils.makePresetBuild('P5 - TG', {
 	gear: P5_BIS_FURY_TG_PRESET,
 	talents: FuryTGTalents,
 	epWeights: P5_FURY_TG_EP_PRESET,

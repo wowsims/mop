@@ -32,8 +32,8 @@ export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Pre-BIS (Balanced)
 export const P3_4_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4BISDWGear);
 export const P3_4_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4BISOffensiveDWGear);
 export const P5_PROG_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - Prog (Balanced)', P5ProgDWGear);
-export const P5_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP - Balanced)', P5BISDWGear);
-export const P5_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP - Offensive)', P5BISOffensiveDWGear);
+export const P5_BIS_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (Balanced)', P5BISDWGear);
+export const P5_BIS_OFFENSIVE_DW_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (Offensive)', P5BISOffensiveDWGear);
 
 export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Generic', DefaultApl);
 export const ROTATION_OFFENSIVE_PRESET = PresetUtils.makePresetAPLRotation('Offensive', OffensiveApl);
