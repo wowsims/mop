@@ -38,7 +38,7 @@ export const P3_4_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', 
 		);
 	},
 });
-export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP)', DefaultP5BisGear, {
+export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS', DefaultP5BisGear, {
 	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
 		PresetUtils.makeSpecChangeWarningToast(
 			[

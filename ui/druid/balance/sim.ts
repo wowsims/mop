@@ -127,9 +127,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.T14PresetGear.gear,
+		gear: Presets.T16PresetGear.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P2_BIS_EP_PRESET.epWeights,
+		epWeights: Presets.P5_BIS_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
@@ -148,7 +148,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 			});
 
 			const critSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellCritPercent, {
-				breakpoints: [48],
+				breakpoints: [43],
 				capType: StatCapType.TypeSoftCap,
 				postCapEPs: [(Presets.P3_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.01) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
 			});
@@ -186,7 +186,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	},
 
 	presets: {
-		epWeights: [Presets.P2_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET, Presets.P4_BIS_EP_PRESET],
+		epWeights: [Presets.P2_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET, Presets.P5_BIS_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.StandardTalents],
 		rotations: [Presets.StandardRotation],
@@ -199,29 +199,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 		return Presets.StandardRotation.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecBalanceDruid,
-			talents: Presets.StandardTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			otherDefaults: Presets.OtherDefaults,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PreraidPresetGear.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PreraidPresetGear.gear,
-				},
-			},
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
@@ -278,7 +256,7 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 				let epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 560) {
-					epWeights = Presets.P4_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 525) {
 					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
 				}
@@ -324,7 +302,7 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 							softCapToModify.breakpoints = [critMasteryIntersection];
 							softCapToModify.postCapEPs = [critFormula(critMasteryIntersection) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT];
 						} else if (hasUVLS) {
-							softCapToModify.breakpoints = [48];
+							softCapToModify.breakpoints = [43];
 							softCapToModify.postCapEPs = [critFormula(softCapToModify.breakpoints[0]) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT];
 						}
 					}
