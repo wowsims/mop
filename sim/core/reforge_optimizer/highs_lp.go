@@ -135,15 +135,19 @@ func wrapLPLine(line string) []string {
 		return []string{line}
 	}
 	lines := make([]string, 0, len(line)/highsLPMaxLineLength+1)
-	current := fields[0]
+	var current strings.Builder
+	current.WriteString(fields[0])
 	for _, field := range fields[1:] {
-		if len(current)+1+len(field) <= highsLPMaxLineLength {
-			current += " " + field
+		if current.Len()+1+len(field) <= highsLPMaxLineLength {
+			current.WriteByte(' ')
+			current.WriteString(field)
 			continue
 		}
-		lines = append(lines, current)
-		current = " " + field
+		lines = append(lines, current.String())
+		current.Reset()
+		current.WriteByte(' ')
+		current.WriteString(field)
 	}
-	lines = append(lines, current)
+	lines = append(lines, current.String())
 	return lines
 }

@@ -264,49 +264,78 @@ func getHiGHSWasmModule() (*highsWasmModule, error) {
 	return highsWasmModuleValue, highsWasmModuleErr
 }
 
+// Registers the HiGHS wasm host imports using wazero's stack-based
+// (GoModuleFunction) dispatch rather than reflection-based WithFunc. HiGHS calls
+// these imports (file I/O, clock, heap growth) many times per solve; reflection
+// dispatch boxed every argument via reflect.New/reflect.Value.Call, which
+// dominated allocations in bulk reforge runs. The stack convention passes params
+// as a []uint64 and writes results back in place, eliminating that per-call
+// reflection. Behavior is identical — only the calling convention changed.
 func instantiateHiGHSWasmHostModule(ctx context.Context, runtime wazero.Runtime) error {
-	_, err := runtime.NewHostModuleBuilder("a").
-		NewFunctionBuilder().WithFunc(func(context.Context, uint32, uint32, uint32) {
+	const i32 = api.ValueTypeI32
+	const i64 = api.ValueTypeI64
+	const f64 = api.ValueTypeF64
+
+	builder := runtime.NewHostModuleBuilder("a")
+	addFunc := func(name string, params []api.ValueType, results []api.ValueType, fn api.GoModuleFunc) {
+		builder.NewFunctionBuilder().WithGoModuleFunction(fn, params, results).Export(name)
+	}
+
+	nowMillis := func(_ context.Context, _ api.Module, stack []uint64) {
+		stack[0] = api.EncodeF64(float64(time.Now().UnixNano()) / float64(time.Millisecond))
+	}
+
+	addFunc("a", []api.ValueType{i32, i32, i32}, nil, func(context.Context, api.Module, []uint64) {
 		panic("HiGHS wasm exception handling import was called")
-	}).Export("a").
-		NewFunctionBuilder().WithFunc(func(_ context.Context, code uint32) { panic(fmt.Sprintf("HiGHS wasm exited with code %d", code)) }).Export("b").
-		NewFunctionBuilder().WithFunc(func(context.Context) float64 { return float64(time.Now().UnixNano()) / float64(time.Millisecond) }).Export("c").
-		NewFunctionBuilder().WithFunc(func(context.Context, uint32, uint32, uint32) uint32 { return 0 }).Export("d").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, fd uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).fdClose(int32(fd)))
-	}).Export("e").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, fd uint32, iovsPtr uint32, iovsLen uint32, nreadPtr uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).fdRead(module, int32(fd), int32(iovsPtr), int32(iovsLen), int32(nreadPtr)))
-	}).Export("f").
-		NewFunctionBuilder().WithFunc(func(context.Context, uint32, uint32, uint32) uint32 { return 0 }).Export("g").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, dirFD uint32, pathPtr uint32, pathLen uint32, flags uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).openAt(module, int32(dirFD), int32(pathPtr), int32(pathLen), int32(flags)))
-	}).Export("h").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, fd uint32, iovsPtr uint32, iovsLen uint32, nwrittenPtr uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).fdWrite(module, int32(fd), int32(iovsPtr), int32(iovsLen), int32(nwrittenPtr)))
-	}).Export("i").
-		NewFunctionBuilder().WithFunc(func(_ context.Context, code uint32) { panic(fmt.Sprintf("HiGHS wasm exited with code %d", code)) }).Export("j").
-		NewFunctionBuilder().WithFunc(func(context.Context) { panic("HiGHS wasm abort") }).Export("k").
-		NewFunctionBuilder().WithFunc(func(context.Context, uint32, float64) uint32 { return 0 }).Export("l").
-		NewFunctionBuilder().WithFunc(func(context.Context) float64 { return float64(time.Now().UnixNano()) / float64(time.Millisecond) }).Export("m").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, environPtr uint32, environBufPtr uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).environGet(module, int32(environPtr), int32(environBufPtr)))
-	}).Export("n").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, countPtr uint32, sizePtr uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).environSizesGet(module, int32(countPtr), int32(sizePtr)))
-	}).Export("o").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, clockID uint32, precision uint64, timePtr uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).clockTimeGet(module, int32(clockID), int32(timePtr)))
-	}).Export("p").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, fd uint32, offset uint64, whence uint32, newOffsetPtr uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).fdSeek(module, int32(fd), int64(offset), int32(whence), int32(newOffsetPtr)))
-	}).Export("q").
-		NewFunctionBuilder().WithFunc(func(context.Context) { panic("HiGHS wasm abort") }).Export("r").
-		NewFunctionBuilder().WithFunc(func(ctx context.Context, module api.Module, requestedSize uint32) uint32 {
-		return uint32(highsWasmRuntimeFromContext(ctx).resizeHeap(module, int32(requestedSize)))
-	}).Export("s").
-		Instantiate(ctx)
-	if err != nil {
+	})
+	addFunc("b", []api.ValueType{i32}, nil, func(_ context.Context, _ api.Module, stack []uint64) {
+		panic(fmt.Sprintf("HiGHS wasm exited with code %d", api.DecodeU32(stack[0])))
+	})
+	addFunc("c", nil, []api.ValueType{f64}, nowMillis)
+	addFunc("d", []api.ValueType{i32, i32, i32}, []api.ValueType{i32}, func(_ context.Context, _ api.Module, stack []uint64) {
+		stack[0] = 0
+	})
+	addFunc("e", []api.ValueType{i32}, []api.ValueType{i32}, func(ctx context.Context, _ api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdClose(int32(api.DecodeU32(stack[0])))))
+	})
+	addFunc("f", []api.ValueType{i32, i32, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdRead(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
+	})
+	addFunc("g", []api.ValueType{i32, i32, i32}, []api.ValueType{i32}, func(_ context.Context, _ api.Module, stack []uint64) {
+		stack[0] = 0
+	})
+	addFunc("h", []api.ValueType{i32, i32, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).openAt(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
+	})
+	addFunc("i", []api.ValueType{i32, i32, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdWrite(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
+	})
+	addFunc("j", []api.ValueType{i32}, nil, func(_ context.Context, _ api.Module, stack []uint64) {
+		panic(fmt.Sprintf("HiGHS wasm exited with code %d", api.DecodeU32(stack[0])))
+	})
+	addFunc("k", nil, nil, func(context.Context, api.Module, []uint64) { panic("HiGHS wasm abort") })
+	addFunc("l", []api.ValueType{i32, f64}, []api.ValueType{i32}, func(_ context.Context, _ api.Module, stack []uint64) {
+		stack[0] = 0
+	})
+	addFunc("m", nil, []api.ValueType{f64}, nowMillis)
+	addFunc("n", []api.ValueType{i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).environGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])))))
+	})
+	addFunc("o", []api.ValueType{i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).environSizesGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])))))
+	})
+	addFunc("p", []api.ValueType{i32, i64, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).clockTimeGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[2])))))
+	})
+	addFunc("q", []api.ValueType{i32, i64, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdSeek(module, int32(api.DecodeU32(stack[0])), int64(stack[1]), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
+	})
+	addFunc("r", nil, nil, func(context.Context, api.Module, []uint64) { panic("HiGHS wasm abort") })
+	addFunc("s", []api.ValueType{i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).resizeHeap(module, int32(api.DecodeU32(stack[0])))))
+	})
+
+	if _, err := builder.Instantiate(ctx); err != nil {
 		return fmt.Errorf("instantiating HiGHS wasm host imports: %w", err)
 	}
 	return nil
