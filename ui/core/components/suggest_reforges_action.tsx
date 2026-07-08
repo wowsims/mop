@@ -1334,6 +1334,18 @@ export class ReforgeOptimizer {
 		// configured hard caps and soft caps.
 		let validatedWeights = ReforgeOptimizer.checkWeights(this.preCapEPs, reforgeCaps, reforgeSoftCaps);
 
+		// The Guardian Druid Crit Rating EP is pre-divided by 1.5 in preCapEPs to offset the 1.5x
+		// amount multiplier applied in applyReforgeStat(), but checkWeights() may reroute that
+		// already-divided EP into a rescaled PhysicalCritPercent weight (whenever a Crit cap is
+		// configured, regardless of whether it's actually being approached). That reroute bypasses
+		// the amount-side multiplier's offset, so re-apply it here to keep the two consistent.
+		if (this.player.getSpec() == Spec.SpecGuardianDruid) {
+			validatedWeights = validatedWeights.withPseudoStat(
+				PseudoStat.PseudoStatPhysicalCritPercent,
+				validatedWeights.getPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent) * 1.5,
+			);
+		}
+
 		if (this.relativeStatCap) {
 			validatedWeights = this.relativeStatCap.updateWeights(validatedWeights);
 		}
@@ -1760,7 +1772,7 @@ export class ReforgeOptimizer {
 			}
 
 			this.setStatCoefficient(coefficients, Stat.StatAttackPower, amount * 2);
-			this.setPseudoStatCoefficient(coefficients, PseudoStat.PseudoStatPhysicalCritPercent, amount*0.00079395);
+			this.setPseudoStatCoefficient(coefficients, PseudoStat.PseudoStatPhysicalCritPercent, amount * 0.00079395);
 			return;
 		}
 
@@ -2014,7 +2026,6 @@ export class ReforgeOptimizer {
 		for (const [unitStat, value] of reforgeStatContribution.asUnitStatArray()) {
 			const cap = reforgeCaps.getUnitStat(unitStat);
 			const statName = unitStat.getKey();
-
 			if (cap !== 0 && value > cap && !constraints.has(statName)) {
 				anyCapsExceeded = true;
 				if (isDevMode()) console.log('Cap exceeded for: %s', statName);
