@@ -55,7 +55,8 @@ func TestBuildReforgeGemOptionsFiltersAndPreservesMetadata(t *testing.T) {
 		Spec:        &proto.Player_ShadowPriest{},
 	}
 
-	options := buildReforgeGemOptions(request, player, weights, nil, nil, 1, false, playerIsHybridCaster(player))
+	coeffTable := buildStatCoefficientTable(weights, nil)
+	options := buildReforgeGemOptions(request, player, weights, nil, nil, coeffTable, false)
 	if _, ok := findGemOption(options, 102); ok {
 		t.Fatalf("expected hybrid caster hit gem to be filtered")
 	}

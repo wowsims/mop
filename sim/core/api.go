@@ -51,10 +51,12 @@ func ComputeStatsAndDeps(request *proto.ComputeStatsRequest) (*proto.ComputeStat
 	character := env.Raid.Parties[0].Players[0].GetCharacter()
 	// FillPlayerStats (called inside NewEnvironment) activates build-phase auras to
 	// compute FinalStats, then clears them — leaving dynamic deps (e.g. Bear Form's
-	// CritRating×1.5) disabled. Re-apply base-phase auras only so that starting-form
-	// multipliers are active in the returned SDM without also enabling talent/gear/buff
-	// deps that are already handled analytically in the optimizer's choice evaluation.
-	character.applyBuildPhaseAuras(CharacterBuildPhaseBase)
+	// CritRating×1.5, Mark of the Wild's Agility×1.05, Stat Amplification's dynamic
+	// multiplier) disabled. Re-apply Base/Gear/Buffs auras so those multiplicative
+	// deps are active in the returned SDM. Talent deps used by the optimizer (e.g.
+	// Heart of the Wild's Agility×1.06) are added as static deps rather than via
+	// aura, so they don't need their phase re-activated here.
+	character.applyBuildPhaseAuras(CharacterBuildPhaseBase | CharacterBuildPhaseGear | CharacterBuildPhaseBuffs)
 	sdm := character.StatDependencyManager
 	return result, &sdm
 }

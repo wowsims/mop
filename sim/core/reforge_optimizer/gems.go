@@ -12,7 +12,7 @@ import (
 
 // Builds the per-socket-color gem option lists used during slot choice construction.
 // Each socket color gets a filtered, scored, and pruned list of eligible gems.
-func buildReforgeGemOptions(request *proto.ReforgeOptimizeRequest, player *proto.Player, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, hasRelativeStatCap bool, spiritToSpellHit bool) map[proto.GemColor][]reforgeGemOption {
+func buildReforgeGemOptions(request *proto.ReforgeOptimizeRequest, player *proto.Player, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, coeffTable statCoefficientTable, hasRelativeStatCap bool) map[proto.GemColor][]reforgeGemOption {
 	options := make(map[proto.GemColor][]reforgeGemOption)
 	if !request.GetSettings().GetIncludeGems() {
 		return options
@@ -26,7 +26,7 @@ func buildReforgeGemOptions(request *proto.ReforgeOptimizeRequest, player *proto
 		proto.GemColor_GemColorBlue,
 		proto.GemColor_GemColorYellow,
 	} {
-		candidates := filteredGemCandidatesForSocket(request.GetGemOptions(), player, socketColor, weights, hardCaps, softCaps, ampModifier, spiritToSpellHit)
+		candidates := filteredGemCandidatesForSocket(request.GetGemOptions(), player, socketColor, weights, hardCaps, softCaps, coeffTable)
 		options[socketColor] = selectGemCandidates(candidates, socketColor, playerIsTankSpec(player), hardCaps, softCaps, hasRelativeStatCap)
 	}
 	return options
@@ -90,7 +90,7 @@ func gemOptionSeen(gemID int32, seenGemIDs []int32, overflowSeenGemIDs map[int32
 // the player lacks Jewelcrafting or the gem has no primary stat (for DPS), excludes
 // HitRating gems for hybrid casters (Spirit already covers hit), and sorts descending
 // by EP score.
-func filteredGemCandidatesForSocket(gems []*proto.ReforgeGemOption, player *proto.Player, socketColor proto.GemColor, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, spiritToSpellHit bool) []reforgeGemOption {
+func filteredGemCandidatesForSocket(gems []*proto.ReforgeGemOption, player *proto.Player, socketColor proto.GemColor, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, coeffTable statCoefficientTable) []reforgeGemOption {
 	candidates := make([]reforgeGemOption, 0)
 	hasJewelcrafting := playerHasProfession(player, proto.Profession_Jewelcrafting)
 	for _, gem := range gems {
@@ -106,10 +106,10 @@ func filteredGemCandidatesForSocket(gems []*proto.ReforgeGemOption, player *prot
 		}
 
 		gemStats := stats.FromProtoArray(gem.GetStats())
-		if !gemStatsAllowed(gemStats, weights, ampModifier, spiritToSpellHit) {
+		if !gemStatsAllowed(gemStats, weights, coeffTable) {
 			continue
 		}
-		delta := unitStatsFromStats(gemStats, weights, ampModifier, spiritToSpellHit)
+		delta := unitStatsFromStats(gemStats, coeffTable)
 		candidates = append(candidates, reforgeGemOption{
 			id:              gem.GetId(),
 			color:           gem.GetColor(),
@@ -171,9 +171,10 @@ func selectGemCandidates(candidates []reforgeGemOption, socketColor proto.GemCol
 	return included
 }
 
-// Returns true if at least one stat on the gem maps to a non-zero-weighted EP pseudo-stat.
-// Gems whose entire budget lands on unweighted stats are excluded from the solver.
-func gemStatsAllowed(gemStats stats.Stats, weights core.UnitStats, ampModifier float64, spiritToSpellHit bool) bool {
+// Returns true if every stat on the gem maps to a non-zero-weighted EP stat or pseudo-stat,
+// once resolved through the stat dependency graph. Gems with a stat that contributes
+// nothing to the weighted objective are excluded from the solver.
+func gemStatsAllowed(gemStats stats.Stats, weights core.UnitStats, coeffTable statCoefficientTable) bool {
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
 		if gemStats[statIdx] == 0 {
 			continue
@@ -183,7 +184,7 @@ func gemStatsAllowed(gemStats stats.Stats, weights core.UnitStats, ampModifier f
 		}
 		statValues := stats.Stats{}
 		statValues[statIdx] = gemStats[statIdx]
-		if isEmptyUnitStats(unitStatsFromStats(statValues, weights, ampModifier, spiritToSpellHit)) {
+		if dotUnitStats(unitStatsFromStats(statValues, coeffTable), weights) == 0 {
 			return false
 		}
 	}

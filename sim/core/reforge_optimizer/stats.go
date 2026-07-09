@@ -53,6 +53,82 @@ func subtractUnitStats(unitStats core.UnitStats, other core.UnitStats) core.Unit
 	return result
 }
 
+func scaleUnitStats(unitStats core.UnitStats, factor float64) core.UnitStats {
+	result := unitStats
+	result.Stats = unitStats.Stats.Multiply(factor)
+	result.PseudoStats = make([]float64, len(unitStats.PseudoStats))
+	for idx, value := range unitStats.PseudoStats {
+		result.PseudoStats[idx] = value * factor
+	}
+	return result
+}
+
+// statCoefficientTable holds, per input Stat index, the UnitStats produced by a single unit
+// of that stat, for use by unitStatsFromStats when scoring the EP objective. Building this
+// once per optimize call lets unitStatsFromStats score any candidate's raw stat delta in
+// O(stats touched) instead of recomputing per-stat conversions on every reforge/gem
+// candidate.
+type statCoefficientTable []core.UnitStats
+
+// buildStatCoefficientTable builds, for every stat, the UnitStats produced by a single unit
+// of that stat, for EP-objective scoring (unitStatsFromStats) — NOT to be confused with
+// resolveStatDelta, which additionally applies dependencies like Agility→Crit and Haste's
+// speed-multiplier scaling for cap-check accuracy. Those extra dependencies are deliberately
+// excluded here: EP weights (preCapEpWeights) are calibrated externally (via stat-weight
+// sims) assuming a "typical" raid-buffed state, and that calibration already bakes in
+// whatever multiplicative effects (e.g. haste speed multipliers) were active during the
+// calibration sim. Reapplying resolveStatDelta's speed-multiplier boost on top of an
+// already-calibrated EP weight double-counts that boost, inflating the stat's effective
+// value beyond what the weight was meant to represent — the same rating-space score ends up
+// paired with a percent-space delta computed on a different basis than the weight was.
+//
+// weights must already be the validateReforgeWeights-processed weights (its Stats[parent]
+// zeroed and the corresponding PseudoStats[child] set, for any rating stat whose child
+// pseudo-stat carries a configured cap). For such a stat, this mirrors that same flat
+// ratingPerPseudoStatPercent conversion here, so the weight and the delta being scored stay
+// on a consistent basis. Every other stat with a nonzero direct EP weight gets an identity
+// coefficient (1 unit in, 1 unit of itself out): EP presets are calibrated assuming a stat's
+// direct weight already captures its full value, so crediting a same-call derived
+// contribution too (e.g. Stamina's own weight plus its Health conversion, both nonzero)
+// would double-count it the same way.
+//
+// overrides lets a caller hardcode a specific stat's coefficient instead of taking either
+// default — e.g. Guardian Druid's Agility, whose direct EP weight is a generic placeholder
+// while its real value (2x Attack Power, plus a flat Crit% conversion) is hardcoded to
+// mirror the equivalent special case in the pre-backend JS reforge optimizer exactly. May be
+// nil.
+func buildStatCoefficientTable(weights core.UnitStats, overrides func(stats.Stat) (core.UnitStats, bool)) statCoefficientTable {
+	table := make(statCoefficientTable, stats.ProtoStatsLen)
+	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
+		stat := stats.Stat(statIdx)
+		if overrides != nil {
+			if value, ok := overrides(stat); ok {
+				table[statIdx] = value
+				continue
+			}
+		}
+
+		identity := core.NewUnitStats()
+		identity.Stats[statIdx] = 1
+
+		if weights.Stats[statIdx] != 0 {
+			table[statIdx] = identity
+			continue
+		}
+
+		coefficient := identity
+		for _, child := range childPseudoStats(stat) {
+			unitStat := stats.UnitStatFromPseudoStat(child)
+			if getUnitStat(weights, unitStat) == 0 {
+				continue
+			}
+			coefficient = setUnitStat(coefficient, unitStat, 1/ratingPerPseudoStatPercent(child))
+		}
+		table[statIdx] = coefficient
+	}
+	return table
+}
+
 func dotUnitStats(unitStats core.UnitStats, weights core.UnitStats) float64 {
 	score := 0.0
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {

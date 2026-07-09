@@ -1,5 +1,5 @@
 {
-	"requestId": "reforgeOptimizeAsync-74f367958f311b2",
+	"requestId": "reforgeOptimizeAsync-a4292b05edf0e9df",
 	"raid": {
 		"parties": [
 			{
@@ -10,35 +10,105 @@
 						"class": "ClassDruid",
 						"equipment": {
 							"items": [
-								{ "id": 99421, "gems": [95344, 76666], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105602, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105506, "enchant": 4805, "gems": [76641, 76641], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 102245, "enchant": 4422, "gems": [76659], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99419, "enchant": 4420, "gems": [76699, 76699, 76697], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105505, "enchant": 4416, "gems": [76699], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
+								{
+									"id": 99421,
+									"gems": [95344, 76659],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105602,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105506,
+									"enchant": 4805,
+									"gems": [76641, 76641],
+									"reforging": 167,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 102245,
+									"enchant": 4422,
+									"gems": [76658],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99419,
+									"enchant": 4420,
+									"gems": [76658, 76658, 76658],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105505,
+									"enchant": 4416,
+									"gems": [76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
 								{
 									"id": 99420,
 									"enchant": 4431,
-									"gems": [76697, 76699, 76699],
+									"gems": [76658, 76680, 76697],
 									"reforging": 160,
 									"upgradeStep": "UpgradeStepTwo",
 									"tinker": 4898
 								},
-								{ "id": 105635, "gems": [76641, 76641, 76699], "reforging": 144, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99422, "enchant": 4824, "gems": [76699, 76697], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 104488, "enchant": 4428, "gems": [76697], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 104455, "gems": [76641], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105483, "gems": [76699], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105568, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105527, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105408, "enchant": 4444, "gems": [76641], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
+								{
+									"id": 105635,
+									"gems": [76680, 76697, 76697],
+									"reforging": 144,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99422,
+									"enchant": 4824,
+									"gems": [76699, 76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104488,
+									"enchant": 4428,
+									"gems": [76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104455,
+									"gems": [76641],
+									"reforging": 145,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105483,
+									"gems": [76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105568,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105527,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105408,
+									"enchant": 4444,
+									"gems": [76641],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
 								{}
 							]
 						},
 						"consumables": {
+							"prepotId": 76089,
 							"potId": 76089,
-							"flaskId": 76087,
-							"foodId": 74656,
+							"flaskId": 76084,
+							"foodId": 74648,
 							"conjuredId": 5512,
 							"consumableIds": [76084, 76087, 76088, 86569, 76076, 76077, 76078, 76080, 76083, 76075, 76081]
 						},
@@ -87,14 +157,17 @@
 								"symbiosisTarget": "ClassDeathKnight"
 							}
 						},
-						"talentsString": "010101",
+						"talentsString": "313123",
 						"glyphs": {
-							"major1": 45603,
-							"major2": 40897,
-							"major3": 45604
+							"major1": 40897,
+							"major2": 45604,
+							"major3": 67485,
+							"minor1": 40900,
+							"minor2": 43332,
+							"minor3": 43334
 						},
-						"profession1": "Engineering",
-						"profession2": "Blacksmithing",
+						"profession1": "Blacksmithing",
+						"profession2": "Engineering",
 						"cooldowns": {
 							"hpPercentForDefensives": 0.3
 						},
@@ -145,7 +218,9 @@
 			"skullBannerCount": 2
 		},
 		"debuffs": {
+			"weakenedBlows": true,
 			"physicalVulnerability": true,
+			"weakenedArmor": true,
 			"lightningBreath": true
 		},
 		"tanks": [

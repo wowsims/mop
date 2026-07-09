@@ -2,19 +2,14 @@ package reforgeoptimizer
 
 import (
 	"cmp"
-	"maps"
 	"math"
 	"slices"
 	"sync"
 
-	"github.com/wowsims/mop/sim/common/mop"
-	"github.com/wowsims/mop/sim/common/shared"
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
 )
-
-var amplificationTrinketItemIDs = buildAmplificationTrinketItemIDSet()
 
 // sortedReforgeStatIDsOnce caches the sorted reforge stat IDs locally so the
 // optimizer avoids rebuilding the sorted slice on every candidate. The database
@@ -39,12 +34,52 @@ func getSortedReforgeStatIDs() []int32 {
 func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *proto.Raid, baseGear *proto.EquipmentSpec, baseStats core.UnitStats, weights core.UnitStats, gemSortWeights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, hasRelativeStatCap bool, statDeps *stats.StatDependencyManager) ([]reforgeSlotChoices, error) {
 	frozenSlots := frozenItemSlots(request.GetSettings())
 	player := request.Raid.Parties[0].Players[0]
-	ampModifier := amplificationStatModifier(baseGear)
 	if statDeps == nil {
 		statDeps = core.ComputeStatDependencies(&proto.ComputeStatsRequest{Raid: baseRaid})
 	}
+	_, isGuardianDruid := player.GetSpec().(*proto.Player_GuardianDruid)
+	var agilityMultiplier float64
+	if isGuardianDruid {
+		agilityMultiplier = resolveStatDelta(statDeps, baseStats, rawUnitStatsFromStats(stats.Stats{stats.Agility: 1})).Stats[stats.Agility]
+	}
+	spellHitUnitStat := stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellHitPercent)
+	spellHitWeight := getUnitStat(weights, spellHitUnitStat)
 	spiritToSpellHit := playerIsHybridCaster(player)
-	gemOptions := buildReforgeGemOptions(request, player, gemSortWeights, hardCaps, softCaps, ampModifier, hasRelativeStatCap, spiritToSpellHit)
+	coeffOverrides := func(stat stats.Stat) (core.UnitStats, bool) {
+		switch stat {
+		case stats.Agility:
+			// Mirrors the pre-backend JS reforge optimizer's Guardian Druid special case:
+			// Agility converts to 2x Attack Power plus a flat Crit% conversion (matching
+			// core.CritPerAgiMaxLevel[Druid]), scaled by any active same-stat Agility
+			// multiplier (Heart of the Wild, Mark of the Wild) pulled from the SDM.
+			if !isGuardianDruid {
+				return core.UnitStats{}, false
+			}
+			result := core.NewUnitStats()
+			result.Stats[stats.AttackPower] = agilityMultiplier * 2
+			result = setUnitStat(result, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalCritPercent), agilityMultiplier*core.CritPerAgiMaxLevel[proto.Class_ClassDruid])
+			return result, true
+		case stats.ExpertiseRating:
+			// Expertise has no direct combat value in the EP model; it's scored as a proxy
+			// for SpellHitPercent (mirrors the pre-backend JS optimizer) whenever hit itself
+			// carries weight.
+			if weights.Stats[stat] != 0 || spellHitWeight == 0 {
+				return core.UnitStats{}, false
+			}
+			return setUnitStat(core.NewUnitStats(), spellHitUnitStat, 1/core.SpellHitRatingPerHitPercent), true
+		case stats.Spirit:
+			// Same SpellHitPercent proxy as Expertise, but only for hybrid casters (mirrors
+			// the pre-backend JS optimizer's spiritToSpellHit gate).
+			if !spiritToSpellHit || weights.Stats[stat] != 0 || spellHitWeight == 0 {
+				return core.UnitStats{}, false
+			}
+			return setUnitStat(core.NewUnitStats(), spellHitUnitStat, 1/core.SpellHitRatingPerHitPercent), true
+		default:
+			return core.UnitStats{}, false
+		}
+	}
+	coeffTable := buildStatCoefficientTable(weights, coeffOverrides)
+	gemOptions := buildReforgeGemOptions(request, player, gemSortWeights, hardCaps, softCaps, coeffTable, hasRelativeStatCap)
 	allowedReforgeToStats := allowedReforgeDestinationStats(request.GetPreCapEpWeights())
 	reforgeIDs := getSortedReforgeStatIDs()
 	baseEquipment := core.ProtoToEquipment(baseGear)
@@ -76,7 +111,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 		for _, reforgeID := range itemReforgeIDs {
 			choice := reforgeChoice{slot: slot, hasReforge: true, reforgeID: reforgeID}
 			if reforgeID != 0 {
-				choice.objectiveDelta = reforgeDelta(*item, core.GetReforgeStatByID(reforgeID), weights, ampModifier, spiritToSpellHit)
+				choice.objectiveDelta = reforgeDelta(*item, core.GetReforgeStatByID(reforgeID), coeffTable)
 				choice.score = dotUnitStats(choice.objectiveDelta, weights)
 			}
 			choices = append(choices, choice)
@@ -87,14 +122,14 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 
 		if request.GetSettings().GetIncludeGems() {
 			socketColors := currentSocketColors(*item, playerHasProfession(player, proto.Profession_Blacksmithing), request.GetSettings())
-			forceSocketBonus := shouldForceSocketBonus(*item, socketColors, gemOptions, weights, hardCaps, softCaps, ampModifier, spiritToSpellHit)
+			forceSocketBonus := shouldForceSocketBonus(*item, socketColors, gemOptions, weights, hardCaps, softCaps, coeffTable)
 			socketBonusSocketCount := socketBonusNormalization(socketColors)
 			distributedSocketBonusDelta := core.NewUnitStats()
 			distributedSocketBonusObjectiveDelta := core.NewUnitStats()
 			if forceSocketBonus && socketBonusSocketCount > 0 {
 				distributedSocketBonus := item.SocketBonus.Multiply(1 / float64(socketBonusSocketCount))
-				distributedSocketBonusDelta = resolveStatDelta(statDeps, baseStats, rawUnitStatsFromStats(distributedSocketBonus, ampModifier))
-				distributedSocketBonusObjectiveDelta = unitStatsFromStats(distributedSocketBonus, weights, ampModifier, spiritToSpellHit)
+				distributedSocketBonusDelta = resolveStatDelta(statDeps, baseStats, rawUnitStatsFromStats(distributedSocketBonus))
+				distributedSocketBonusObjectiveDelta = unitStatsFromStats(distributedSocketBonus, coeffTable)
 			}
 			variableSocketIdxs := make([]int, 0, len(socketColors))
 			for socketIdx, socketColor := range socketColors {
@@ -116,7 +151,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 						socketChoice:   true,
 						socketIdx:      socketIdx,
 						socketMatches:  gemMatchesSocket(gemOption.color, socketColor),
-						objectiveDelta: unitStatsFromStats(gem.Stats, weights, ampModifier, spiritToSpellHit),
+						objectiveDelta: unitStatsFromStats(gem.Stats, coeffTable),
 					}
 					if forceSocketBonus && choice.socketMatches {
 						choice.forcedBonusDelta = distributedSocketBonusDelta
@@ -140,8 +175,8 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 				}
 			}
 			if !forceSocketBonus && len(variableSocketIdxs) > 0 && hasSocketBonus(*item) {
-				socketBonusDelta := resolveStatDelta(statDeps, baseStats, rawUnitStatsFromStats(item.SocketBonus, ampModifier))
-				socketBonusObjectiveDelta := unitStatsFromStats(item.SocketBonus, weights, ampModifier, spiritToSpellHit)
+				socketBonusDelta := resolveStatDelta(statDeps, baseStats, rawUnitStatsFromStats(item.SocketBonus))
+				socketBonusObjectiveDelta := unitStatsFromStats(item.SocketBonus, coeffTable)
 				allSlots = append(allSlots, reforgeSlotChoices{slot: slot, choices: []reforgeChoice{
 					{slot: slot, socketBonus: true},
 					{slot: slot, socketBonus: true, bonusSocketIdxs: variableSocketIdxs, delta: socketBonusDelta, objectiveDelta: socketBonusObjectiveDelta, score: dotUnitStats(socketBonusObjectiveDelta, weights)},
@@ -150,7 +185,7 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 		}
 	}
 
-	computeChoiceDeltas(baseGear, allSlots, statDeps, baseStats, ampModifier)
+	computeChoiceDeltas(baseGear, allSlots, statDeps, baseStats)
 
 	slices.SortFunc(allSlots, func(a, b reforgeSlotChoices) int {
 		return cmp.Compare(maxChoiceScore(b.choices), maxChoiceScore(a.choices))
@@ -198,7 +233,7 @@ func allowedReforgeDestinationStats(weights *proto.UnitStats) map[stats.Stat]boo
 // evaluator — for every non-trivial choice. Separate from choice.objectiveDelta (the MIP
 // objective) because caps are evaluated in raw stat space while the objective is in
 // weighted EP space.
-func computeChoiceDeltas(baseGear *proto.EquipmentSpec, allSlots []reforgeSlotChoices, sdm *stats.StatDependencyManager, baseStats core.UnitStats, ampModifier float64) {
+func computeChoiceDeltas(baseGear *proto.EquipmentSpec, allSlots []reforgeSlotChoices, sdm *stats.StatDependencyManager, baseStats core.UnitStats) {
 	baseEquipment := core.ProtoToEquipment(baseGear)
 	for slotIdx := range allSlots {
 		for choiceIdx := range allSlots[slotIdx].choices {
@@ -206,7 +241,7 @@ func computeChoiceDeltas(baseGear *proto.EquipmentSpec, allSlots []reforgeSlotCh
 			if choice.socketBonus || (choice.hasReforge && choice.reforgeID == 0) || (!choice.hasReforge && len(choice.gems) == 0) || (len(choice.gems) == 1 && choice.gems[0].gemID == 0) {
 				continue
 			}
-			choice.delta = resolveStatDelta(sdm, baseStats, rawChoiceDelta(baseEquipment, choice, ampModifier))
+			choice.delta = resolveStatDelta(sdm, baseStats, rawChoiceDelta(baseEquipment, choice))
 			if !isEmptyUnitStats(choice.forcedBonusDelta) {
 				choice.delta = addUnitStats(choice.delta, choice.forcedBonusDelta)
 			}
@@ -242,7 +277,7 @@ func hasSocketBonus(item core.Item) bool {
 // bonus activates): either matching gems + bonus beats the best unmatched gem, or the bonus
 // grants a capped stat and matching is therefore valuable for cap management even if the
 // raw EP gain is lower.
-func shouldForceSocketBonus(item core.Item, socketColors []proto.GemColor, gemOptions map[proto.GemColor][]reforgeGemOption, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, ampModifier float64, spiritToSpellHit bool) bool {
+func shouldForceSocketBonus(item core.Item, socketColors []proto.GemColor, gemOptions map[proto.GemColor][]reforgeGemOption, weights core.UnitStats, hardCaps []reforgeHardCap, softCaps []reforgeSoftCap, coeffTable statCoefficientTable) bool {
 	if !hasSocketBonus(item) {
 		return false
 	}
@@ -251,7 +286,7 @@ func shouldForceSocketBonus(item core.Item, socketColors []proto.GemColor, gemOp
 		return false
 	}
 	distributedSocketBonus := item.SocketBonus.Multiply(1 / float64(normalization))
-	socketBonusDelta := unitStatsFromStats(distributedSocketBonus, weights, ampModifier, spiritToSpellHit)
+	socketBonusDelta := unitStatsFromStats(distributedSocketBonus, coeffTable)
 	if isEmptyUnitStats(socketBonusDelta) {
 		return false
 	}
@@ -276,14 +311,14 @@ func shouldForceSocketBonus(item core.Item, socketColors []proto.GemColor, gemOp
 		if !ok {
 			return false
 		}
-		matchedDelta = addUnitStats(matchedDelta, unitStatsFromStats(matchedGem.Stats, weights, ampModifier, spiritToSpellHit))
+		matchedDelta = addUnitStats(matchedDelta, unitStatsFromStats(matchedGem.Stats, coeffTable))
 		matchedDelta = addUnitStats(matchedDelta, socketBonusDelta)
 
 		unmatchedGem, ok := core.GemsByID[unmatchedOptions[0].id]
 		if !ok {
 			return false
 		}
-		unmatchedDelta = addUnitStats(unmatchedDelta, unitStatsFromStats(unmatchedGem.Stats, weights, ampModifier, spiritToSpellHit))
+		unmatchedDelta = addUnitStats(unmatchedDelta, unitStatsFromStats(unmatchedGem.Stats, coeffTable))
 	}
 
 	if dotUnitStats(matchedDelta, weights) > dotUnitStats(unmatchedDelta, weights) && (normalization > 1 || (includesStatWithCap(socketBonusDelta, hardCaps, softCaps) && !includesCappedStat(socketBonusDelta, hardCaps))) {
@@ -352,9 +387,11 @@ func gemMatchesSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool 
 }
 
 // Returns the unresolved (pre-stat-dependency) stat delta for a choice, combining any
-// reforge and gem stats with the Amplification Trinket modifier applied. Passed to
-// resolveStatDelta to produce the final choice.delta used for cap checks.
-func rawChoiceDelta(equipment core.Equipment, choice *reforgeChoice, ampModifier float64) core.UnitStats {
+// reforge and gem stats. Passed to resolveStatDelta to produce the final choice.delta used
+// for cap checks; the StatDependencyManager it's resolved against already reflects any
+// active Gear/Buffs-phase multiplicative deps (e.g. Amplification Trinkets, Mark of the
+// Wild), so no manual modifier is applied here.
+func rawChoiceDelta(equipment core.Equipment, choice *reforgeChoice) core.UnitStats {
 	rawStats := stats.Stats{}
 	if choice.hasReforge && choice.reforgeID != 0 {
 		item := equipment.GetItemBySlot(choice.slot)
@@ -368,7 +405,7 @@ func rawChoiceDelta(equipment core.Equipment, choice *reforgeChoice, ampModifier
 			rawStats = rawStats.Add(gem.Stats)
 		}
 	}
-	return rawUnitStatsFromStats(rawStats, ampModifier)
+	return rawUnitStatsFromStats(rawStats)
 }
 
 // Computes the stat change a reforge produces on an item. For random-suffix items, the
@@ -386,132 +423,40 @@ func reforgeRawStats(item core.Item, reforge core.ReforgeStat) stats.Stats {
 	return delta
 }
 
-func reforgeDelta(item core.Item, reforge core.ReforgeStat, weights core.UnitStats, ampModifier float64, spiritToSpellHit bool) core.UnitStats {
-	return unitStatsFromStats(reforgeRawStats(item, reforge), weights, ampModifier, spiritToSpellHit)
+func reforgeDelta(item core.Item, reforge core.ReforgeStat, coeffTable statCoefficientTable) core.UnitStats {
+	return unitStatsFromStats(reforgeRawStats(item, reforge), coeffTable)
 }
 
-// Scales Haste, Mastery, and Spirit by the Amplification Trinket multiplier; all other
-// stats are unaffected.
-func applyAmpModifier(stat stats.Stat, amount, ampModifier float64) float64 {
-	if stat == stats.HasteRating || stat == stats.MasteryRating || stat == stats.Spirit {
-		return amount * ampModifier
-	}
-	return amount
-}
-
-// Converts stats.Stats to UnitStats with the Amplification modifier applied, but without
-// expanding ratings into percent pseudo-stats. Used for deltas that feed resolveStatDelta
-// (cap constraint space), not the EP objective.
-func rawUnitStatsFromStats(statValues stats.Stats, ampModifier float64) core.UnitStats {
+// Converts stats.Stats to UnitStats without expanding ratings into percent pseudo-stats.
+// Used for deltas that feed resolveStatDelta (cap constraint space), not the EP objective.
+func rawUnitStatsFromStats(statValues stats.Stats) core.UnitStats {
 	unitStats := core.NewUnitStats()
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
 		amount := statValues[statIdx]
 		if amount == 0 {
 			continue
 		}
-		unitStats.Stats[statIdx] += applyAmpModifier(stats.Stat(statIdx), amount, ampModifier)
+		unitStats.Stats[statIdx] += amount
 	}
 	return unitStats
 }
 
-// Converts stats to the optimizer's weighted EP representation. Rating stats are expanded
-// into their percent pseudo-stat equivalents (e.g. HitRating → PhysicalHitPercent and/or
-// SpellHitPercent) only for pseudo-stats that carry non-zero EP weight. spiritToSpellHit
-// routes Spirit into SpellHitPercent for hybrid casters.
-func unitStatsFromStats(statValues stats.Stats, weights core.UnitStats, ampModifier float64, spiritToSpellHit bool) core.UnitStats {
-	unitStats := core.NewUnitStats()
+// Converts stats to the optimizer's weighted EP representation using a precomputed
+// statCoefficientTable (see buildStatCoefficientTable) — each nonzero input stat contributes
+// its fully stat-dependency-resolved UnitStats, scaled by the input amount. This captures
+// every dependency the real sim models (Agility→Crit, Bear Form's Crit multiplier, Mark of
+// the Wild, Heart of the Wild, Amplification Trinkets, Spirit→Hit for hybrid casters, etc.)
+// at O(stats touched) per call instead of re-walking the StatDependencyManager per candidate.
+func unitStatsFromStats(statValues stats.Stats, coeffTable statCoefficientTable) core.UnitStats {
+	result := core.NewUnitStats()
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
 		amount := statValues[statIdx]
 		if amount == 0 {
 			continue
 		}
-		stat := stats.Stat(statIdx)
-		amount = applyAmpModifier(stat, amount, ampModifier)
-		if weights.Stats[statIdx] != 0 {
-			unitStats.Stats[statIdx] += amount
-			continue
-		}
-		switch stat {
-		case stats.Spirit:
-			if spiritToSpellHit && getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellHitPercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatSpellHitPercent, amount/core.SpellHitRatingPerHitPercent)
-			}
-		case stats.HitRating:
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalHitPercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatPhysicalHitPercent, amount/core.PhysicalHitRatingPerHitPercent)
-			}
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellHitPercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatSpellHitPercent, amount/core.SpellHitRatingPerHitPercent)
-			}
-		case stats.ExpertiseRating:
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellHitPercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatSpellHitPercent, amount/core.SpellHitRatingPerHitPercent)
-			}
-		case stats.CritRating:
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalCritPercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatPhysicalCritPercent, amount/core.CritRatingPerCritPercent)
-			}
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellCritPercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatSpellCritPercent, amount/core.CritRatingPerCritPercent)
-			}
-		case stats.HasteRating:
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatMeleeHastePercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatMeleeHastePercent, amount/core.HasteRatingPerHastePercent)
-			}
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatRangedHastePercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatRangedHastePercent, amount/core.HasteRatingPerHastePercent)
-			}
-			if getUnitStat(weights, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellHastePercent)) != 0 {
-				unitStats = addPseudoStat(unitStats, proto.PseudoStat_PseudoStatSpellHastePercent, amount/core.HasteRatingPerHastePercent)
-			}
-		}
+		result = addUnitStats(result, scaleUnitStats(coeffTable[statIdx], amount))
 	}
-	return unitStats
-}
-
-func addPseudoStat(unitStats core.UnitStats, pseudoStat proto.PseudoStat, value float64) core.UnitStats {
-	unitStat := stats.UnitStatFromPseudoStat(pseudoStat)
-	return setUnitStat(unitStats, unitStat, getUnitStat(unitStats, unitStat)+value)
-}
-
-// Returns the combined multiplier from any Amplification Trinkets in the player's trinket
-// slots. The two slots multiply together, so wearing two trinkets (e.g. normal + heroic
-// upgrade) compounds the modifier.
-func amplificationStatModifier(equipment *proto.EquipmentSpec) float64 {
-	modifier := 1.0
-	for _, slot := range core.TrinketSlots() {
-		if int(slot) >= len(equipment.Items) || equipment.Items[slot] == nil {
-			continue
-		}
-		itemSpec := equipment.Items[slot]
-		itemID := itemSpec.GetId()
-		if !isAmplificationTrinket(itemID) {
-			continue
-		}
-		modifier *= 1 + core.GetItemEffectScaling(itemID, 0.00176999997, itemSpec.GetUpgradeStep())/100
-	}
-	return modifier
-}
-
-func isAmplificationTrinket(itemID int32) bool {
-	_, ok := amplificationTrinketItemIDs[itemID]
-	return ok
-}
-
-// Merges the melee, caster, and healer Amplification Trinket item ID maps into a single
-// set for O(1) membership testing at runtime.
-func buildAmplificationTrinketItemIDSet() map[int32]struct{} {
-	itemIDs := make(map[int32]struct{}, len(mop.MeleeAmplificationTrinketItemIDs)+len(mop.CasterAmplificationTrinketItemIDs)+len(mop.HealerAmplificationTrinketItemIDs))
-	for _, itemVersionMap := range []shared.ItemVersionMap{
-		mop.MeleeAmplificationTrinketItemIDs,
-		mop.CasterAmplificationTrinketItemIDs,
-		mop.HealerAmplificationTrinketItemIDs,
-	} {
-		for itemID := range maps.Values(itemVersionMap) {
-			itemIDs[itemID] = struct{}{}
-		}
-	}
-	return itemIDs
+	return result
 }
 
 func maxChoiceScore(choices []reforgeChoice) float64 {
