@@ -80,82 +80,24 @@ func (editor *reforgeGearEditor) applyChoices(choices []reforgeChoice) {
 
 // Post-processes gem assignments to minimize unnecessary gem purchases.
 //
-// Meta gems are restored first (they are never touched by the optimizer).
-// If the LP output contains the same non-meta gem multiset as the original gear, all
-// non-meta gems are copied back from originalGear — this correctly resolves 2-cycles,
-// 3-cycles, and any longer permutation without tracking individual cycles.
-// When the optimizer genuinely changed which gems are present (different multiset), only
-// true 2-cycle swaps are resolved: the candidate socket must currently hold originalGemID
-// AND its original gem must be newGemID, ensuring each swap is a clean reversal.
+// For each socket, in slot-then-socket-index order: if the solver didn't touch it (same gem
+// ID), or if the solver's gem newly matches the socket's color where the original didn't
+// (a genuine improvement — never undo it), leave it alone. Otherwise, find wherever the
+// original gem ended up elsewhere in the gear and swap it back — placing the original gem
+// here, and this socket's solver-chosen gem into that other location — unless doing so would
+// undo a color-match improvement at that other socket.
+//
+// This chases the original gem to wherever it moved rather than verifying a strict
+// reciprocal 2-cycle (A's original is at B, and B's original is A). For cycles longer than
+// 2 (A's gem moved to B, B's moved to C, C's moved to A) this "walks" the original gem back
+// one step at a time in socket-visitation order rather than fully unwinding the cycle, which
+// can leave a gem shifted into a socket it never started in — a known imprecision, not fixed
+// here since a full cycle-unwind isn't worth the added complexity for how rarely it matters.
 func (editor *reforgeGearEditor) minimizeRegems() {
 	if editor == nil || editor.gear == nil || editor.originalGear == nil || editor.player == nil {
 		return
 	}
 
-	// First pass: restore meta gems.
-	for slotIdx := range editor.gear {
-		newItem := &editor.gear[slotIdx]
-		originalItem := &editor.originalGear[slotIdx]
-		if newItem.ID == 0 || originalItem.ID == 0 {
-			continue
-		}
-		if editor.frozenSlots[proto.ItemSlot(slotIdx)] {
-			continue
-		}
-		for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
-			if socketColor == proto.GemColor_GemColorMeta {
-				restoreMetaSocketGem(newItem, originalItem, socketIdx)
-			}
-		}
-	}
-
-	// Same non-meta multiset: full restore handles all permutation cycle lengths.
-	// Exception: if the LP improved any socket's color matching (e.g. moved an orange gem
-	// into a Yellow socket where the original had a non-matching Red), keep the LP's full
-	// arrangement. Partial restore would break multiset consistency and undo the LP's
-	// intentional improvement.
-	if editor.nonMetaGemMultisetUnchanged() {
-		for slotIdx := range editor.gear {
-			newItem := &editor.gear[slotIdx]
-			originalItem := &editor.originalGear[slotIdx]
-			if newItem.ID == 0 || originalItem.ID == 0 || editor.frozenSlots[proto.ItemSlot(slotIdx)] {
-				continue
-			}
-			for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
-				if socketColor == proto.GemColor_GemColorMeta {
-					continue
-				}
-				newGemID := gemIDAt(newItem, socketIdx)
-				originalGemID := gemIDAt(originalItem, socketIdx)
-				if newGemID == originalGemID {
-					continue
-				}
-				newGem, newOk := core.GetGemByID(newGemID)
-				originalGem, origOk := core.GetGemByID(originalGemID)
-				if !newOk || !origOk {
-					continue
-				}
-				if gemMatchesSocket(newGem.Color, socketColor) && !gemMatchesSocket(originalGem.Color, socketColor) {
-					return
-				}
-			}
-		}
-		for slotIdx := range editor.gear {
-			newItem := &editor.gear[slotIdx]
-			originalItem := &editor.originalGear[slotIdx]
-			if newItem.ID == 0 || originalItem.ID == 0 || editor.frozenSlots[proto.ItemSlot(slotIdx)] {
-				continue
-			}
-			for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
-				if socketColor != proto.GemColor_GemColorMeta {
-					setGemIDAt(newItem, socketIdx, gemIDAt(originalItem, socketIdx))
-				}
-			}
-		}
-		return
-	}
-
-	// Different multiset: resolve true 2-cycle swaps only.
 	finalizedSocketKeys := map[reforgeSocketKey]bool{}
 	for slotIdx := range editor.gear {
 		newItem := &editor.gear[slotIdx]
@@ -169,8 +111,7 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 		}
 		for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
 			socketKey := reforgeSocketKey{slot: slot, socketIdx: socketIdx}
-			if finalizedSocketKeys[socketKey] || socketColor == proto.GemColor_GemColorMeta {
-				finalizedSocketKeys[socketKey] = true
+			if finalizedSocketKeys[socketKey] {
 				continue
 			}
 			finalizedSocketKeys[socketKey] = true
@@ -190,7 +131,7 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 				continue
 			}
 
-			matchedSlot, matchedSocketIdx, matchedSocketColor, ok := editor.find2CyclePartner(originalGemID, newGemID, finalizedSocketKeys)
+			matchedSlot, matchedSocketIdx, matchedSocketColor, ok := editor.findGemElsewhere(originalGemID, finalizedSocketKeys)
 			if !ok {
 				continue
 			}
@@ -205,55 +146,10 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 	}
 }
 
-// Restores the original meta gem; meta sockets are never modified by the optimizer so the
-// original gem is always correct.
-func restoreMetaSocketGem(newItem *core.Item, originalItem *core.Item, socketIdx int) {
-	originalGemID := gemIDAt(originalItem, socketIdx)
-	if originalGemID != 0 || socketIdx < len(newItem.Gems) {
-		setGemIDAt(newItem, socketIdx, originalGemID)
-	}
-}
-
-// Returns true if the non-meta gem multiset across all unfrozen slots is identical between
-// the LP output (editor.gear, after meta restore) and the original gear.
-func (editor *reforgeGearEditor) nonMetaGemMultisetUnchanged() bool {
-	newGems := map[int32]int{}
-	originalGems := map[int32]int{}
-	for slotIdx := range editor.gear {
-		newItem := &editor.gear[slotIdx]
-		originalItem := &editor.originalGear[slotIdx]
-		if newItem.ID == 0 || originalItem.ID == 0 {
-			continue
-		}
-		if editor.frozenSlots[proto.ItemSlot(slotIdx)] {
-			continue
-		}
-		for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
-			if socketColor == proto.GemColor_GemColorMeta {
-				continue
-			}
-			if id := gemIDAt(newItem, socketIdx); id != 0 {
-				newGems[id]++
-			}
-			if id := gemIDAt(originalItem, socketIdx); id != 0 {
-				originalGems[id]++
-			}
-		}
-	}
-	if len(newGems) != len(originalGems) {
-		return false
-	}
-	for id, count := range newGems {
-		if originalGems[id] != count {
-			return false
-		}
-	}
-	return true
-}
-
-// Finds a socket that forms a true 2-cycle: currently holds originalGemID and whose
-// original gem is newGemID. This prevents broken resolutions of longer permutation cycles.
-func (editor *reforgeGearEditor) find2CyclePartner(originalGemID int32, newGemID int32, finalizedSocketKeys map[reforgeSocketKey]bool) (proto.ItemSlot, int, proto.GemColor, bool) {
+// Finds any not-yet-finalized socket currently holding gemID, regardless of what that
+// socket's own original gem was — this is the JS-mirrored "chase the gem to wherever it
+// moved" search, not a strict 2-cycle-partner check.
+func (editor *reforgeGearEditor) findGemElsewhere(gemID int32, finalizedSocketKeys map[reforgeSocketKey]bool) (proto.ItemSlot, int, proto.GemColor, bool) {
 	for slotIdx, item := range editor.gear {
 		if item.ID == 0 {
 			continue
@@ -262,15 +158,11 @@ func (editor *reforgeGearEditor) find2CyclePartner(originalGemID int32, newGemID
 		if editor.frozenSlots[slot] {
 			continue
 		}
-		originalItem := &editor.originalGear[slotIdx]
 		for socketIdx, socketColor := range currentSocketColors(item, editor.isBlacksmithing, editor.settings) {
-			if socketColor == proto.GemColor_GemColorMeta {
-				continue
-			}
 			if finalizedSocketKeys[reforgeSocketKey{slot: slot, socketIdx: socketIdx}] {
 				continue
 			}
-			if gemIDAt(&item, socketIdx) == originalGemID && gemIDAt(originalItem, socketIdx) == newGemID {
+			if gemIDAt(&item, socketIdx) == gemID {
 				return slot, socketIdx, socketColor, true
 			}
 		}

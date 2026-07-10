@@ -52,11 +52,149 @@ func reforgeDebug(search *reforgeSearchState) bool {
 	return search != nil && search.request != nil && search.request.GetDebug()
 }
 
+func hasStatConstraint(statConstraints []mipStatConstraint, unitStat stats.UnitStat) bool {
+	for _, constraint := range statConstraints {
+		if constraint.unitStat == unitStat {
+			return true
+		}
+	}
+	return false
+}
+
 // Iterative cap-refinement loop: solve the MIP → evaluate caps on the real sim result →
 // tighten constraints → repeat until no cap is violated or the pass limit is reached.
 // Hard caps, soft cap breakpoints, and relative caps are each handled as separate
 // constraint-tightening events within updateHiGHSCapPass.
+//
+// Pre-seeding every hard cap's constraint up front (see trySolveWithHiGHSPass) assumes
+// each one is individually reachable. When multiple hard caps are configured, they can be
+// jointly infeasible even though most are perfectly achievable on their own (e.g. an
+// Expertise floor and a Hit floor both reachable, alongside a Crit floor set above what
+// any gear combination on this character can produce). Demanding all of them
+// simultaneously makes the LP outright infeasible; the correct answer is to keep
+// enforcing every cap that IS reachable and only give up on the one that isn't — not
+// abandon cap enforcement entirely.
+//
+// So: try with every hard cap seeded. If that's infeasible, drop the single
+// largest-magnitude cap (the most likely culprit — the most demanding ask is the most
+// likely to be the unreachable one) and retry, repeating until either a solve succeeds or
+// every hard cap has been dropped. Dropped caps just float unconstrained for that solve,
+// same as if they were never configured.
 func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) ([]reforgeChoice, float64, bool, error) {
+	dropped := map[stats.UnitStat]bool{}
+	for _, hardCap := range search.hardCaps {
+		if hardCap.cap == 0 || dropped[hardCap.unitStat] {
+			continue
+		}
+		if !hardCapIndividuallyReachable(search, hardCap) {
+			dropped[hardCap.unitStat] = true
+			if reforgeDebug(search) {
+				log.Printf("[reforgeOptimize] hard cap stat=%s unreachable even in isolation (best possible falls short of cap=%.3f), dropping before HiGHS", unitStatName(hardCap.unitStat), hardCap.cap)
+			}
+		}
+	}
+	for {
+		choices, score, ok, err, infeasible := trySolveWithHiGHSPass(search, signals, dropped)
+		if !infeasible {
+			return choices, score, ok, err
+		}
+		victim, found := largestUndroppedHardCap(search.hardCaps, dropped)
+		if !found {
+			return choices, score, ok, err
+		}
+		dropped[victim] = true
+		if reforgeDebug(search) {
+			log.Printf("[reforgeOptimize] HiGHS caps infeasible, giving up on stat=%s (likely unreachable with available gear) and retrying", unitStatName(victim))
+		}
+	}
+}
+
+// Cheap, generous bound on whether a single hard cap could possibly be met on its own,
+// ignoring every other constraint (cross-stat interactions, unique-gem limits,
+// socket-bonus links) — those can only make the true achievable value worse, never better,
+// so this only ever proves a cap unreachable, never wrongly proves one reachable. It sums,
+// per slot, the best single choice's contribution to this stat (0 if the no-op choice is
+// best) — a strict overestimate of what's jointly achievable once every other constraint is
+// back in play.
+//
+// Catching a truly unreachable cap here means it never gets pre-seeded into pass 0, so
+// HiGHS never has to spend a full (potentially 1s+) infeasibility proof on a cap this
+// single pass over choices already knows can't be met.
+func hardCapIndividuallyReachable(search *reforgeSearchState, hardCap reforgeHardCap) bool {
+	extreme := 0.0
+	for _, slot := range search.slots {
+		best := 0.0 // the slot's no-op choice always contributes 0
+		for _, choice := range slot.choices {
+			if !choiceMIPActive(choice) {
+				continue
+			}
+			value := getUnitStat(choiceCoefficientDelta(choice), hardCap.unitStat)
+			if hardCap.undershoot {
+				if value < best {
+					best = value
+				}
+			} else if value > best {
+				best = value
+			}
+		}
+		extreme += best
+	}
+	if hardCap.undershoot {
+		return extreme <= hardCap.cap+1e-6
+	}
+	return extreme >= hardCap.cap-1e-6
+}
+
+// Returns the hard cap that's the most likely culprit among those still genuinely unmet
+// (cap > 0 — a floor still short of its target, or a ceiling already being pushed past).
+// A cap already satisfied at baseline (cap <= 0, e.g. a floor already exceeded before any
+// reforging) can never be the source of infeasibility and must never be a drop candidate:
+// dropping it wouldn't help feasibility, and it would also stop that stat's weight from
+// ever being reactively zeroed once over-satisfied, leaving the solver free to keep
+// dumping unlimited rating into it for no real gain.
+//
+// Gaps are compared in rating-equivalent units, not raw cap magnitude — a raw-stat floor
+// (e.g. Expertise, measured directly in rating) and a pseudo-stat floor (e.g. Crit,
+// measured in percentage points) are on completely different scales, so naively comparing
+// their cap values would pick whichever happens to use the bigger unit, not whichever is
+// actually hardest to reach.
+func largestUndroppedHardCap(hardCaps []reforgeHardCap, dropped map[stats.UnitStat]bool) (stats.UnitStat, bool) {
+	best := stats.UnitStat(0)
+	bestRatingEquivalent := -1.0
+	found := false
+	for _, hardCap := range hardCaps {
+		if dropped[hardCap.unitStat] {
+			continue
+		}
+		// Floor: only a problem if still short (cap > 0). Ceiling: only a problem if
+		// baseline is already over it (cap < 0, since cap is target-minus-baseline).
+		if hardCap.undershoot {
+			if hardCap.cap >= 0 {
+				continue
+			}
+		} else if hardCap.cap <= 0 {
+			continue
+		}
+		ratingEquivalent := hardCap.cap
+		if ratingEquivalent < 0 {
+			ratingEquivalent = -ratingEquivalent
+		}
+		if hardCap.unitStat.IsPseudoStat() {
+			ratingEquivalent *= ratingPerPseudoStatPercent(proto.PseudoStat(hardCap.unitStat.PseudoStatIdx()))
+		}
+		if ratingEquivalent > bestRatingEquivalent {
+			bestRatingEquivalent = ratingEquivalent
+			best = hardCap.unitStat
+			found = true
+		}
+	}
+	return best, found
+}
+
+// infeasible is true only when pass 1 (the very first solve, before any reactive
+// tightening) fails — the specific, narrow signal that the currently-active seeded bounds
+// are the problem, not a later, unrelated solver failure.
+func trySolveWithHiGHSPass(search *reforgeSearchState, signals simsignals.Signals, droppedHardCaps map[stats.UnitStat]bool) ([]reforgeChoice, float64, bool, error, bool) {
 	weights := search.weights
 	softCaps := cloneSoftCaps(search.softCaps)
 	relativeCaps := slices.Clone(search.relativeCaps)
@@ -66,13 +204,46 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 	deadline := time.Now().Add(highsOptimizerTimeout(search))
 	debug := reforgeDebug(search)
 
+	// Hard caps are known from settings before any solve happens — seed their LP
+	// constraints immediately instead of waiting to discover the violation reactively.
+	// Without this, pass 1 solves fully unconstrained (e.g. a floor stat still carries no
+	// lower bound at all) and can pick an arbitrary, possibly worse-than-necessary path to
+	// satisfy it once discovered reactively next pass.
+	//
+	// Weight zeroing for floor caps stays reactive (handled below, keyed off
+	// constrainedStats): the pre-cap EP weight is what makes pass 1 want to reach the
+	// floor in the first place. Zeroing it immediately here, before we know the floor is
+	// even reachable without sacrifice, would make satisfying the constraint entirely
+	// costless to the objective — the solver then has no preference among donor stats and
+	// can drain a more valuable one (e.g. Haste) simply because that reforge slot happened
+	// to be structurally available, not because it was the cheapest trade.
+	for _, hardCap := range search.hardCaps {
+		if hardCap.cap == 0 {
+			continue
+		}
+		if droppedHardCaps[hardCap.unitStat] {
+			// Given up on this one in an earlier attempt (jointly infeasible with the
+			// others) — leave it unconstrained for the rest of this solve.
+			constrainedStats[hardCap.unitStat] = true
+			continue
+		}
+		if hardCap.undershoot {
+			statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: math.Inf(-1), upper: hardCap.cap, actualUpper: hardCap.cap, hasActualUpper: true})
+		} else {
+			statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: hardCap.cap, upper: math.Inf(1), actualLower: hardCap.cap, hasActualLower: true})
+		}
+		if debug {
+			log.Printf("[reforgeOptimize] HiGHS pass=0 pre-seeding hard cap constraint stat=%s capDelta=%.3f undershoot=%v", unitStatName(hardCap.unitStat), hardCap.cap, hardCap.undershoot)
+		}
+	}
+
 	for passIdx := 0; passIdx < maxPasses; passIdx++ {
 		if signals.Abort.IsTriggered() {
-			return nil, 0, false, context.Canceled
+			return nil, 0, false, context.Canceled, false
 		}
 		remainingTimeout := highsOptimizerPassTimeout(deadline)
 		if remainingTimeout <= 0 {
-			return nil, 0, false, nil
+			return nil, 0, false, nil, false
 		}
 		var passStartedAt time.Time
 		var modelStartedAt time.Time
@@ -89,7 +260,7 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 		}
 		solution, ok, err := solveMIPWithHiGHS(model, remainingTimeout, highsOptimizerMIPRelGap(search))
 		if signals.Abort.IsTriggered() {
-			return nil, 0, false, context.Canceled
+			return nil, 0, false, context.Canceled, false
 		}
 		var solveDuration time.Duration
 		if debug {
@@ -99,7 +270,7 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 			if debug {
 				log.Printf("[reforgeOptimize] HiGHS pass=%d failure vars=%d constraints=%d err=%v", passIdx+1, len(model.variables), len(model.constraints), err)
 			}
-			return nil, 0, ok, err
+			return nil, 0, ok, err, passIdx == 0
 		}
 
 		var selectStartedAt time.Time
@@ -108,14 +279,14 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 		}
 		choices, err := choicesFromMIPSolution(search, model, solution)
 		if err != nil {
-			return nil, 0, false, err
+			return nil, 0, false, err, false
 		}
 		if !selectedChoicesValid(choices) {
-			return nil, 0, false, nil
+			return nil, 0, false, nil, false
 		}
 		delta, err := selectedChoicesCapDelta(search, choices)
 		if err != nil {
-			return nil, 0, false, err
+			return nil, 0, false, err, false
 		}
 		var selectDuration time.Duration
 		if debug {
@@ -134,7 +305,7 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 		}
 		if !updated {
 			score, ok := search.evaluate(delta)
-			return choices, score, ok, nil
+			return choices, score, ok, nil, false
 		}
 		weights = nextWeights
 		softCaps = nextSoftCaps
@@ -142,7 +313,7 @@ func trySolveWithHiGHS(search *reforgeSearchState, signals simsignals.Signals) (
 		relativeCaps = nextRelativeCaps
 	}
 
-	return nil, 0, false, fmt.Errorf("HiGHS optimizer reached cap refinement pass limit")
+	return nil, 0, false, fmt.Errorf("HiGHS optimizer reached cap refinement pass limit"), false
 }
 
 // Relative-stat-cap problems produce harder MIPs (enforcing Crit > Haste > Mastery
@@ -515,24 +686,54 @@ func updateHiGHSCapPass(search *reforgeSearchState, passIdx int, delta core.Unit
 		}
 	}
 
+	// Hard caps normally arrive here already pre-seeded (trySolveWithHiGHS adds every
+	// cap's constraint before pass 1). But when the full set of caps is jointly
+	// infeasible, trySolveWithHiGHS retries without seeding at all — so this loop must
+	// stand on its own too: for any hard cap that has no constraint yet, add one
+	// reactively here, mirroring the original discovery-based behavior (tighten toward
+	// the cap incrementally, pass by pass, via the loop above) rather than relying on it
+	// having been seeded upfront. Once a constraint exists (seeded or reactively added),
+	// floor caps still need their pre-cap EP weight zeroed once the floor is actually
+	// met — not unconditionally, since reaching it can take multiple tightening passes.
 	for _, hardCap := range search.hardCaps {
-		value := getUnitStat(delta, hardCap.unitStat)
-		if hardCap.cap == 0 || value <= hardCap.cap+1e-9 || constrainedStats[hardCap.unitStat] {
+		if hardCap.cap == 0 || constrainedStats[hardCap.unitStat] {
 			continue
 		}
+		value := getUnitStat(delta, hardCap.unitStat)
+		hasConstraint := hasStatConstraint(statConstraints, hardCap.unitStat)
 		if hardCap.undershoot {
+			if hasConstraint {
+				continue
+			}
+			if value <= hardCap.cap+1e-9 {
+				continue
+			}
 			statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: math.Inf(-1), upper: hardCap.cap, actualUpper: hardCap.cap, hasActualUpper: true})
 			if reforgeDebug(search) {
-				log.Printf("[reforgeOptimize] HiGHS pass=%d adding max cap stat=%s valueDelta=%.3f capDelta=%.3f", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
+				log.Printf("[reforgeOptimize] HiGHS pass=%d reactively adding max cap stat=%s valueDelta=%.3f capDelta=%.3f", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
 			}
-		} else {
-			statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: hardCap.cap, upper: math.Inf(1), actualLower: hardCap.cap, hasActualLower: true})
-			weights = setUnitStat(weights, hardCap.unitStat, 0)
-			if reforgeDebug(search) {
-				log.Printf("[reforgeOptimize] HiGHS pass=%d adding min cap stat=%s valueDelta=%.3f capDelta=%.3f newWeight=0", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
+			return true, weights, softCaps, statConstraints, relativeCaps
+		}
+		if !hasConstraint {
+			if value >= hardCap.cap-1e-9 {
+				// Already at/past the floor without ever needing a constraint — nothing to
+				// enforce, fall through to the weight-zero check below.
+			} else {
+				statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: hardCap.cap, upper: math.Inf(1), actualLower: hardCap.cap, hasActualLower: true})
+				if reforgeDebug(search) {
+					log.Printf("[reforgeOptimize] HiGHS pass=%d reactively adding min cap stat=%s valueDelta=%.3f capDelta=%.3f", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
+				}
+				return true, weights, softCaps, statConstraints, relativeCaps
 			}
 		}
+		if value < hardCap.cap-1e-9 {
+			continue
+		}
+		weights = setUnitStat(weights, hardCap.unitStat, 0)
 		constrainedStats[hardCap.unitStat] = true
+		if reforgeDebug(search) {
+			log.Printf("[reforgeOptimize] HiGHS pass=%d floor cap met, zeroing weight stat=%s valueDelta=%.3f capDelta=%.3f", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
+		}
 		return true, weights, softCaps, statConstraints, relativeCaps
 	}
 

@@ -30,9 +30,11 @@ func TestReforgerOptimizer(t *testing.T) {
 		{name: "multi-hardcap", fileName: "multi-hardcap.test.json"},
 		{name: "expertise", fileName: "expertise.test.json"},
 		{name: "threshold", fileName: "threshold.test.json"},
+		{name: "threshold-2", fileName: "threshold-2.test.json"},
 		{name: "breakpoint-limit", fileName: "breakpoint-limit.test.json"},
 		{name: "custom-ep", fileName: "custom-ep.test.json"},
 		{name: "crit-cap", fileName: "crit-cap.test.json"},
+		{name: "crit-softcap", fileName: "crit-softcap.test.json"},
 		{name: "relative-statcap", fileName: "relative-statcap.test.json"},
 	}
 

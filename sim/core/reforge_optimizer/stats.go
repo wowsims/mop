@@ -94,9 +94,8 @@ type statCoefficientTable []core.UnitStats
 //
 // overrides lets a caller hardcode a specific stat's coefficient instead of taking either
 // default — e.g. Guardian Druid's Agility, whose direct EP weight is a generic placeholder
-// while its real value (2x Attack Power, plus a flat Crit% conversion) is hardcoded to
-// mirror the equivalent special case in the pre-backend JS reforge optimizer exactly. May be
-// nil.
+// while its real value (2x Attack Power, plus a flat Crit% conversion) is hardcoded instead.
+// May be nil.
 func buildStatCoefficientTable(weights core.UnitStats, overrides func(stats.Stat) (core.UnitStats, bool)) statCoefficientTable {
 	table := make(statCoefficientTable, stats.ProtoStatsLen)
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {

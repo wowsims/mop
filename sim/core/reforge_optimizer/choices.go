@@ -26,6 +26,15 @@ func getSortedReforgeStatIDs() []int32 {
 	return sortedReforgeStatIDsCached
 }
 
+func softCapConfiguredFor(softCaps []reforgeSoftCap, unitStat stats.UnitStat) bool {
+	for _, softCap := range softCaps {
+		if softCap.unitStat == unitStat {
+			return true
+		}
+	}
+	return false
+}
+
 // Builds one reforgeSlotChoices entry per decision variable: each item slot gets a reforge
 // group (no-reforge vs. each valid reforge) and, when gems are enabled, one group per
 // non-meta socket (empty vs. each eligible gem) plus an optional socket-bonus group. Slots
@@ -48,8 +57,8 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 	coeffOverrides := func(stat stats.Stat) (core.UnitStats, bool) {
 		switch stat {
 		case stats.Agility:
-			// Mirrors the pre-backend JS reforge optimizer's Guardian Druid special case:
-			// Agility converts to 2x Attack Power plus a flat Crit% conversion (matching
+			// Guardian Druid special case: Agility converts to 2x Attack Power plus a flat
+			// Crit% conversion (matching
 			// core.CritPerAgiMaxLevel[Druid]), scaled by any active same-stat Agility
 			// multiplier (Heart of the Wild, Mark of the Wild) pulled from the SDM.
 			if !isGuardianDruid {
@@ -61,19 +70,39 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 			return result, true
 		case stats.ExpertiseRating:
 			// Expertise has no direct combat value in the EP model; it's scored as a proxy
-			// for SpellHitPercent (mirrors the pre-backend JS optimizer) whenever hit itself
-			// carries weight.
+			// for SpellHitPercent whenever hit itself carries weight.
 			if weights.Stats[stat] != 0 || spellHitWeight == 0 {
 				return core.UnitStats{}, false
 			}
 			return setUnitStat(core.NewUnitStats(), spellHitUnitStat, 1/core.SpellHitRatingPerHitPercent), true
 		case stats.Spirit:
-			// Same SpellHitPercent proxy as Expertise, but only for hybrid casters (mirrors
-			// the pre-backend JS optimizer's spiritToSpellHit gate).
+			// Same SpellHitPercent proxy as Expertise, but only for hybrid casters.
 			if !spiritToSpellHit || weights.Stats[stat] != 0 || spellHitWeight == 0 {
 				return core.UnitStats{}, false
 			}
 			return setUnitStat(core.NewUnitStats(), spellHitUnitStat, 1/core.SpellHitRatingPerHitPercent), true
+		case stats.HitRating, stats.CritRating, stats.HasteRating:
+			// A stat's direct EP weight normally short-circuits buildStatCoefficientTable to
+			// an identity coefficient, since only rating-space matters for scoring. But when a
+			// soft/threshold cap is configured on one of this stat's percent children, the cap
+			// pass loop (updateHiGHSCapPass) rewrites weights.PseudoStats[child] as breakpoints
+			// are crossed — and identity-only scoring never reads that slot, silently
+			// discarding the updated post-cap value for every later pass. Route through both
+			// channels so those updates take effect.
+			if weights.Stats[stat] == 0 {
+				return core.UnitStats{}, false
+			}
+			for _, child := range childPseudoStats(stat) {
+				childUnitStat := stats.UnitStatFromPseudoStat(child)
+				if !softCapConfiguredFor(softCaps, childUnitStat) {
+					continue
+				}
+				result := core.NewUnitStats()
+				result.Stats[stat] = 1
+				result = setUnitStat(result, childUnitStat, 1/ratingPerPseudoStatPercent(child))
+				return result, true
+			}
+			return core.UnitStats{}, false
 		default:
 			return core.UnitStats{}, false
 		}

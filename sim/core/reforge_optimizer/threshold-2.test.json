@@ -1,0 +1,229 @@
+{
+	"requestId": "reforgeOptimizeAsync-94324d91edec3fe6",
+	"raid": {
+		"parties": [
+			{
+				"players": [
+					{
+						"name": "Player",
+						"race": "RaceTroll",
+						"class": "ClassWarlock",
+						"equipment": {
+							"items": [
+								{
+									"id": 99425,
+									"gems": [95347, 76671],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105465,
+									"reforging": 138,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99417,
+									"enchant": 4806,
+									"gems": [76671, 76671],
+									"reforging": 147,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 102246,
+									"enchant": 4423,
+									"gems": [76671],
+									"reforging": 144,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99416,
+									"enchant": 4419,
+									"gems": [76671, 76671, 76671],
+									"reforging": 145,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105591,
+									"enchant": 4414,
+									"gems": [0],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99424,
+									"enchant": 4433,
+									"gems": [76671, 76671, 0],
+									"upgradeStep": "UpgradeStepTwo",
+									"tinker": 4898
+								},
+								{
+									"id": 105515,
+									"gems": [76671, 76643, 76700],
+									"reforging": 138,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105516,
+									"enchant": 4825,
+									"gems": [76643, 76636],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105493,
+									"enchant": 4429,
+									"gems": [76700],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105606,
+									"gems": [76671],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105628,
+									"reforging": 138,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 96930,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105422,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105550,
+									"enchant": 4442,
+									"gems": [76671],
+									"reforging": 147,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105650,
+									"enchant": 4434,
+									"gems": [76671],
+									"upgradeStep": "UpgradeStepTwo"
+								}
+							]
+						},
+						"consumables": {
+							"prepotId": 76093,
+							"potId": 76093,
+							"flaskId": 76085,
+							"foodId": 74650,
+							"consumableIds": [76085, 86569, 76076, 76078, 76080, 76083]
+						},
+						"bonusStats": {
+							"apiVersion": 4,
+							"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+							"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+						},
+						"itemSwap": {
+							"items": [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+							"prepullBonusStats": {
+								"apiVersion": 4,
+								"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+								"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+							}
+						},
+						"buffs": {},
+						"demonologyWarlock": {
+							"options": {
+								"classOptions": {
+									"summon": "Felguard"
+								}
+							}
+						},
+						"talentsString": "231221",
+						"glyphs": {
+							"major1": 42470,
+							"major2": 50077,
+							"major3": 42465,
+							"minor3": 43389
+						},
+						"profession1": "Engineering",
+						"profession2": "Herbalism",
+						"cooldowns": {},
+						"reactionTimeMs": 100,
+						"channelClipDelayMs": 150,
+						"distanceFromTarget": 25,
+						"healingModel": {}
+					},
+					{},
+					{},
+					{},
+					{}
+				],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			},
+			{
+				"players": [{}, {}, {}, {}, {}],
+				"buffs": {}
+			}
+		],
+		"numActiveParties": 5,
+		"buffs": {
+			"unholyAura": true,
+			"arcaneBrilliance": true,
+			"moonkinAura": true,
+			"leaderOfThePack": true,
+			"blessingOfMight": true,
+			"blessingOfKings": true,
+			"bloodlust": true,
+			"stormlashTotemCount": 4,
+			"skullBannerCount": 2
+		},
+		"debuffs": {
+			"physicalVulnerability": true,
+			"weakenedArmor": true,
+			"curseOfElements": true
+		}
+	},
+	"preCapEpWeights": {
+		"apiVersion": 4,
+		"stats": [0, 0, 0, 1.24, 0, 0.93, 0.6, 0.66, 0, 0, 0, 0.63, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"undershootCaps": {
+		"apiVersion": 4,
+		"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"settings": {
+		"useSoftCapBreakpoints": true,
+		"includeGems": true,
+		"includeEotbGemSocket": true,
+		"statCaps": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0]
+		},
+		"breakpointLimits": {
+			"apiVersion": 4,
+			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		}
+	},
+	"softCaps": [
+		{
+			"unitStat": {
+				"apiVersion": 4,
+				"pseudoStat": "PseudoStatSpellHastePercent"
+			},
+			"breakpoints": [25.74541],
+			"capType": "TypeThreshold",
+			"postCapEPs": [250.75]
+		}
+	]
+}

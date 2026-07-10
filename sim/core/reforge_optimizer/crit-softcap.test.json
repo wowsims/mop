@@ -1,5 +1,5 @@
 {
-	"requestId": "reforgeOptimizeAsync-5139ffb9888bf545",
+	"requestId": "reforgeOptimizeAsync-a4292b05edf0e9df",
 	"raid": {
 		"parties": [
 			{
@@ -10,28 +10,97 @@
 						"class": "ClassDruid",
 						"equipment": {
 							"items": [
-								{ "id": 99421, "gems": [95346, 76659], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105602, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99423, "enchant": 4804, "gems": [76659, 76659], "reforging": 159, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 102248, "enchant": 4424, "gems": [76659], "reforging": 165, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99419, "enchant": 4419, "gems": [76658, 76659, 76659], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105505, "enchant": 4416, "gems": [76697], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
 								{
-									"id": 105453,
+									"id": 99421,
+									"gems": [95344, 76659],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105602,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105506,
+									"enchant": 4805,
+									"gems": [76641, 76641],
+									"reforging": 167,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 102245,
+									"enchant": 4422,
+									"gems": [76658],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99419,
+									"enchant": 4420,
+									"gems": [76658, 76658, 76658],
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105505,
+									"enchant": 4416,
+									"gems": [76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99420,
 									"enchant": 4431,
-									"gems": [76659, 76641, 76697],
-									"reforging": 138,
+									"gems": [76658, 76680, 76697],
+									"reforging": 160,
 									"upgradeStep": "UpgradeStepTwo",
 									"tinker": 4898
 								},
-								{ "id": 105635, "gems": [76659, 76641, 76697], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99422, "enchant": 4822, "gems": [76641, 76641], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 104488, "enchant": 4428, "gems": [76697], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 104455, "gems": [76641], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 104562, "gems": [76659], "reforging": 167, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 104613, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105527, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105408, "enchant": 4444, "gems": [76641], "reforging": 160, "upgradeStep": "UpgradeStepTwo" },
+								{
+									"id": 105635,
+									"gems": [76680, 76697, 76697],
+									"reforging": 144,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 99422,
+									"enchant": 4824,
+									"gems": [76699, 76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104488,
+									"enchant": 4428,
+									"gems": [76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 104455,
+									"gems": [76641],
+									"reforging": 145,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105483,
+									"gems": [76699],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105568,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105527,
+									"upgradeStep": "UpgradeStepTwo"
+								},
+								{
+									"id": 105408,
+									"enchant": 4444,
+									"gems": [76641],
+									"reforging": 160,
+									"upgradeStep": "UpgradeStepTwo"
+								},
 								{}
 							]
 						},
@@ -162,8 +231,8 @@
 	},
 	"preCapEpWeights": {
 		"apiVersion": 4,
-		"stats": [0.24, 1, 0.15, 0, 0, 2.91, 1.42, 0.98, 2.91, 0.04, 0, 0.04, 0.23, 0, 0, 0, 0, 0.08, 0.02, 0.01, 0, 0],
-		"pseudoStats": [1.04, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		"stats": [0.19, 1, 1.77, 0, 0, 3.31, 1.36, 1.35, 3.31, 0.22, 0, 0.36, 0.18, 0, 0, 0, 0, 0.73, 0.17, 0.08, 0, 0],
+		"pseudoStats": [0.75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	},
 	"undershootCaps": {
 		"apiVersion": 4,
@@ -171,19 +240,29 @@
 		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	},
 	"settings": {
-		"useCustomEpValues": true,
 		"useSoftCapBreakpoints": true,
 		"includeGems": true,
 		"includeEotbGemSocket": true,
 		"statCaps": {
 			"apiVersion": 4,
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 5100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 103, 0]
+			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
 		},
 		"breakpointLimits": {
 			"apiVersion": 4,
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		}
-	}
+	},
+	"softCaps": [
+		{
+			"unitStat": {
+				"apiVersion": 4,
+				"pseudoStat": "PseudoStatPhysicalCritPercent"
+			},
+			"breakpoints": [79],
+			"capType": "TypeSoftCap",
+			"postCapEPs": [696]
+		}
+	]
 }
