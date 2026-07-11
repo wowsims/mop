@@ -192,7 +192,7 @@ export class ItemRenderer extends Component {
 			this.nameContainerElem.appendChild(this.notice.rootElem);
 		}
 
-		const reforgeData = newItem.withDynamicStats().getReforgeData();
+		const reforgeData = newItem.getReforgeData();
 		if (reforgeData) {
 			const fromText = translateStat(reforgeData.reforge?.fromStat);
 			const toText = translateStat(reforgeData.reforge?.toStat);

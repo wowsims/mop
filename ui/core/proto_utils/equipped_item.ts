@@ -170,7 +170,9 @@ export class EquippedItem {
 		reforge = reforge || this.reforge;
 		if (!reforge) return null;
 		const { id, fromStat, toStat, multiplier } = reforge;
-		const item = this.item;
+		// _item.stats holds the max-upgrade placeholder values used for EP calculations,
+		// so resolve the actual upgrade step's stats (with random-suffix substitution) first.
+		const item = this.withDynamicStats().item;
 		const fromAmount = Math.ceil(-item.stats[fromStat] * multiplier);
 		const toAmount = Math.floor(item.stats[fromStat] * multiplier);
 
@@ -434,7 +436,6 @@ export class EquippedItem {
 		const stats = new Stats([]);
 
 		if (this._randomSuffix) {
-			console.log(this.item.name, this._randomSuffix.name, this._randomSuffix.stats);
 			return this._randomSuffix!.stats.reduce<Stats>((acc, value, index) => {
 				if (value > 0) {
 					return acc.addStat(index, Math.floor((value * this._item.randPropPoints) / 10000));
