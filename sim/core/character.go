@@ -281,7 +281,7 @@ func (character *Character) applyAllEffects(agent Agent, raidBuffs *proto.RaidBu
 
 	measureStats := func() *proto.UnitStats {
 		baseStats := character.GetStats()
-		character.stats = character.SortAndApplyStatDependencies(character.stats)
+		character.stats = character.SortAndApplyStatDependencies(character.stats).FloorGameStats()
 		measuredStatsProto := &proto.UnitStats{
 			Stats:       character.GetStats().ToProtoArray(),
 			PseudoStats: character.GetPseudoStatsProto(),
