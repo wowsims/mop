@@ -10,6 +10,36 @@ import (
 
 type Stats [SimStatsLen]float64
 
+// Stats the game stores as rounded-down integers on the unit: the five
+// attributes and all combat ratings. The game floors these after resolving
+// percentage multipliers, and derived values consume the floored integers
+// (e.g. health is computed from the floored Stamina, and the Rune of
+// Re-Origination proc compares floored ratings). Verified against live
+// character sheets.
+var flooredGameStats = []Stat{
+	Strength, Agility, Stamina, Intellect, Spirit,
+	HitRating, CritRating, HasteRating, ExpertiseRating,
+	DodgeRating, ParryRating, MasteryRating,
+	PvpResilienceRating, PvpPowerRating,
+}
+
+var isFlooredGameStat = func() [SimStatsLen]bool {
+	var m [SimStatsLen]bool
+	for _, s := range flooredGameStats {
+		m[s] = true
+	}
+	return m
+}()
+
+// Rounds attributes and combat ratings down to integers, matching how the
+// game stores them. Must be applied after stat dependencies are resolved.
+func (s Stats) FloorGameStats() Stats {
+	for _, k := range flooredGameStats {
+		s[k] = math.Floor(s[k])
+	}
+	return s
+}
+
 type Stat byte
 
 // Use internal representation instead of proto.Stat so we can add functions
