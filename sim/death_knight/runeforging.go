@@ -241,7 +241,7 @@ func init() {
 			switch {
 			case itemSlot == proto.ItemSlot_ItemSlotMainHand:
 				weapon = character.GetMHWeapon()
-				procMask |= core.ProcMaskMeleeMH | core.ProcMaskMeleeProc
+				procMask |= core.ProcMaskMeleeMH
 			case itemSlot == proto.ItemSlot_ItemSlotOffHand:
 				procMask |= core.ProcMaskMeleeOH
 				weapon = character.GetOHWeapon()

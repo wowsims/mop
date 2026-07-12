@@ -96,8 +96,11 @@ func init() {
 			flurryConfig := core.SpellConfig{
 				ActionID:    core.ActionID{SpellID: 147891},
 				SpellSchool: core.SpellSchoolPhysical,
-				ProcMask:    core.ProcMaskEmpty,
-				Flags:       core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
+				// Verified on classic logs: Flurry of Xuen hits feed proc effects
+				// (e.g. Haromm's Talisman Multistrike, RPPM stat procs) but not
+				// Stormlash, which only matches direct/special masks.
+				ProcMask: core.Ternary(character.Class == proto.Class_ClassHunter, core.ProcMaskRangedProc, core.ProcMaskMeleeProc),
+				Flags:    core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell,
 
 				DamageMultiplier: 1,
 				CritMultiplier:   character.DefaultCritMultiplier(),

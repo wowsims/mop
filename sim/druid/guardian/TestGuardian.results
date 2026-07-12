@@ -888,10 +888,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 346648.39274
-  tps: 2.12772112933e+06
-  dtps: 42538.50453
-  hps: 27103.98541
+  dps: 346253.30679
+  tps: 2.12389249968e+06
+  dtps: 43229.7178
+  hps: 28255.98318
  }
 }
 dps_results: {
@@ -987,10 +987,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 351910.19286
-  tps: 2.16545970528e+06
-  dtps: 44049.37726
-  hps: 27722.15863
+  dps: 351154.22295
+  tps: 2.15958121397e+06
+  dtps: 44241.92244
+  hps: 28492.36912
  }
 }
 dps_results: {
