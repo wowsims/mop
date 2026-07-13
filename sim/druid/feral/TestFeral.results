@@ -401,8 +401,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-CraftedMalevolentGladiator'sInsigniaofConquest-98760"
  value: {
-  dps: 397107.46564
-  tps: 487880.0916
+  dps: 397103.19591
+  tps: 487874.38781
   hps: 22740.8623
  }
 }
@@ -585,8 +585,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-DreadfulGladiator'sInsigniaofConquest-84349"
  value: {
-  dps: 400566.18425
-  tps: 470268.83465
+  dps: 400569.1895
+  tps: 470272.84602
   hps: 22358.98709
  }
 }
@@ -657,8 +657,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-EmptyFruitBarrel-81133"
  value: {
-  dps: 386404.10809
-  tps: 471734.69107
+  dps: 386387.51741
+  tps: 471720.96551
   hps: 22430.44792
  }
 }
@@ -1361,8 +1361,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-MistdancerIdolofRage-101113"
  value: {
-  dps: 400598.07104
-  tps: 485732.88668
+  dps: 400594.96756
+  tps: 485728.74284
   hps: 22310.28285
  }
 }
@@ -1769,8 +1769,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-SigilofRampage-105580"
  value: {
-  dps: 423356.60477
-  tps: 500213.88988
+  dps: 423346.41668
+  tps: 500201.5644
   hps: 23317.31704
  }
 }
@@ -2009,8 +2009,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 420948.84
-  tps: 447636.92215
+  dps: 420930.6321
+  tps: 447611.82478
   hps: 23295.81822
  }
 }

@@ -89,8 +89,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-BattleplateofResoundingRings"
  value: {
-  dps: 320660.50897
-  tps: 225748.73365
+  dps: 320771.74757
+  tps: 225864.71956
  }
 }
 dps_results: {
@@ -628,8 +628,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 434989.00354
-  tps: 319598.45125
+  dps: 434765.89817
+  tps: 319522.00255
  }
 }
 dps_results: {
@@ -691,8 +691,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 419314.44413
-  tps: 309038.1585
+  dps: 419571.0228
+  tps: 309140.31025
  }
 }
 dps_results: {
@@ -2008,8 +2008,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Average-Default"
  value: {
-  dps: 439815.32513
-  tps: 323721.97916
+  dps: 439815.95105
+  tps: 323720.43994
  }
 }
 dps_results: {
@@ -2057,8 +2057,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.5902199178e+06
-  tps: 1.99242189018e+06
+  dps: 2.59029918878e+06
+  tps: 1.99244118557e+06
  }
 }
 dps_results: {
@@ -2078,15 +2078,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.20577851803e+06
-  tps: 1.65799309033e+06
+  dps: 2.2062971939e+06
+  tps: 1.65812129264e+06
  }
 }
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 362459.946
-  tps: 268328.74838
+  dps: 362353.54568
+  tps: 268296.15728
  }
 }
 dps_results: {
@@ -2141,15 +2141,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.56922803689e+06
-  tps: 1.97250719728e+06
+  dps: 2.56928786946e+06
+  tps: 1.97252147948e+06
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 437967.84626
-  tps: 321881.87642
+  dps: 437915.75404
+  tps: 321868.7416
  }
 }
 dps_results: {
@@ -2162,15 +2162,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.19376497839e+06
-  tps: 1.65126484057e+06
+  dps: 2.19395791547e+06
+  tps: 1.65131301861e+06
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 359660.12598
-  tps: 266605.21911
+  dps: 359355.58362
+  tps: 266493.51917
  }
 }
 dps_results: {
