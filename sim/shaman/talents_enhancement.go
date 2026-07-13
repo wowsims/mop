@@ -190,7 +190,10 @@ func (shaman *Shaman) ApplyEnhancementTalents() {
 
 	ppm := core.TernaryFloat64(shaman.S12Enh2pc.IsActive(), 12.0, 10.0)
 
-	dpm := shaman.NewLegacyPPMManager(ppm, core.ProcMaskMeleeOrMeleeProc)
+	// Weapon attacks only — WCL-verified (yaCDjQpWvrkA1FGY fight 15) that melee
+	// procs like Flurry of Xuen and Lightning Strike do not generate Maelstrom
+	// Weapon, unlike Flurry above which they do refresh.
+	dpm := shaman.NewLegacyPPMManager(ppm, core.ProcMaskMelee)
 
 	// This aura is hidden, just applies stacks of the proc aura.
 	shaman.MakeProcTriggerAura(core.ProcTrigger{

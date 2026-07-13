@@ -27,8 +27,8 @@ export const P2_OFFENSIVE_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS (Of
 export const P3_4_BALANCED_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Balanced)', P4_Balanced_Gear);
 export const P3_4_OFFENSIVE_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS (Offensive)', P4_Offensive_Gear);
 export const P5_PROG_GEAR_PRESET = PresetUtils.makePresetGear('P5 - Prog (Balanced)', P5_Prog_Gear);
-export const P5_BALANCED_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP - Balanced)', P5_Balanced_Gear);
-export const P5_OFFENSIVE_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (WIP - Offensive)', P5_Offensive_Gear);
+export const P5_BALANCED_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (Balanced)', P5_Balanced_Gear);
+export const P5_OFFENSIVE_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS (Offensive)', P5_Offensive_Gear);
 
 export const APL_SHA_PRESET = PresetUtils.makePresetAPLRotation('Sha of Fear', ShaApl);
 export const APL_HORRIDON_PRESET = PresetUtils.makePresetAPLRotation('Horridon', HorridonApl);

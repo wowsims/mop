@@ -13,7 +13,7 @@ import T16Gear from './gear_sets/t16.gear.json';
 export const PreraidPresetGear = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const T14PresetGear = PresetUtils.makePresetGear('T14', T14Gear);
 export const T15PresetGear = PresetUtils.makePresetGear('T15', T15Gear);
-export const T16PresetGear = PresetUtils.makePresetGear('T16 (WIP)', T16Gear);
+export const T16PresetGear = PresetUtils.makePresetGear('T16', T16Gear);
 
 export const StandardRotation = PresetUtils.makePresetAPLRotation('Standard', StandardApl);
 
@@ -43,8 +43,8 @@ export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 	}),
 );
 
-export const P4_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 560 (WIP)',
+export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Item Level >= 560',
 	Stats.fromMap({
 		[Stat.StatIntellect]: 1,
 		[Stat.StatSpirit]: 1.33,
@@ -136,13 +136,13 @@ export const T15PresetBuild = PresetUtils.makePresetBuild('T15', {
 	settings: defaultPresetSettings,
 });
 
-export const T16PresetBuild = PresetUtils.makePresetBuild('T16 (WIP)', {
+export const T16PresetBuild = PresetUtils.makePresetBuild('T16', {
 	gear: T16PresetGear,
 	talents: StandardTalents,
 	rotation: StandardRotation,
 	epWeights: P3_BIS_EP_PRESET,
 	settings: {
-		name: 'T16 (WIP)',
+		name: 'T16',
 		playerOptions: {
 			...OtherDefaults,
 			profession1: Profession.Engineering,
