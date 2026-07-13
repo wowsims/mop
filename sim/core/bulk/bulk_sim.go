@@ -628,10 +628,6 @@ func getBulkSimTargetIterations(targetErrorPct float64, metrics *proto.Distribut
 	return int32(math.Ceil(math.Pow((metrics.Stdev*combinationMultiplier)/targetError, 2)))
 }
 
-func usesUserDefinedHighStageIterations(request *proto.BulkSimRequest, config BulkSimStageConfig) bool {
-	return config.Stage == proto.BulkSimStage_BulkSimStageHigh && request.HighStageIterations > 0
-}
-
 // Keeps candidates that could still plausibly be the best result after
 // accounting for sim variance. The top MinSurvivors by mean are always
 // retained, then any candidate whose upper interval overlaps the best
