@@ -421,10 +421,10 @@ func init() {
 			core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
 				character := agent.GetCharacter()
 
-				critDamageValue := 1 + core.GetItemEffectScaling(itemID, 0.00088499999, state)/100
-				hasteValue := 1 + core.GetItemEffectScaling(itemID, 0.00176999997, state)/100
-				masteryValue := 1 + core.GetItemEffectScaling(itemID, 0.00176999997, state)/100
-				spiritValue := 1 + core.GetItemEffectScaling(itemID, 0.00176999997, state)/100
+				critDamageValue := 1 + core.GetItemEffectAmpScaling(itemID, 0.00088499999, state)/100
+				hasteValue := 1 + core.GetItemEffectAmpScaling(itemID, 0.00176999997, state)/100
+				masteryValue := 1 + core.GetItemEffectAmpScaling(itemID, 0.00176999997, state)/100
+				spiritValue := 1 + core.GetItemEffectAmpScaling(itemID, 0.00176999997, state)/100
 
 				statAura := core.MakePermanent(character.RegisterAura(core.Aura{
 					Label:      fmt.Sprintf("Amplification - %s (%s)", config.baseTrinketLabel, versionLabel),

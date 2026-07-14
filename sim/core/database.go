@@ -213,6 +213,19 @@ func ItemFromProto(pData *proto.SimItem) Item {
 	}
 }
 
+// Returns the item's random suffix stats scaled by RandPropPoints and floored
+// per stat. The multiplication must happen before the division: alloc and
+// RandPropPoints are exact integers, so alloc*rpp/10000 is exact whenever the
+// product is a multiple of 10000, while alloc*(rpp/10000) can land one ulp
+// below it and floor a point away.
+func (item *Item) ScaledRandomSuffixStats() stats.Stats {
+	scaled := item.RandomSuffix.Stats
+	for k, v := range scaled {
+		scaled[k] = math.Floor(v * float64(item.RandPropPoints) / 10000)
+	}
+	return scaled
+}
+
 func (item *Item) ToItemSpecProto() *proto.ItemSpec {
 	itemSpec := &proto.ItemSpec{
 		Id:            item.ID,
@@ -641,7 +654,7 @@ func validateReforging(item *Item, reforging ReforgeStat) bool {
 	// Validate that the item can reforge these to stats
 	reforgeableStats := stats.Stats{}
 	if item.RandomSuffix.ID != 0 {
-		reforgeableStats = reforgeableStats.Add(item.RandomSuffix.Stats.Multiply(float64(item.RandPropPoints) / 10000.).Floor())
+		reforgeableStats = reforgeableStats.Add(item.ScaledRandomSuffixStats())
 	} else {
 		reforgeableStats = reforgeableStats.Add(item.Stats)
 	}
@@ -767,12 +780,12 @@ func ItemEquipmentBaseStats(item Item) stats.Stats {
 	equipStats = equipStats.Add(item.Stats)
 
 	// Random suffix stats can be Reforged, so apply those prior to any Reforges
-	rawSuffixStats := item.RandomSuffix.Stats
-	equipStats = equipStats.Add(rawSuffixStats.Multiply(float64(item.RandPropPoints) / 10000.).Floor())
+	suffixStats := item.ScaledRandomSuffixStats()
+	equipStats = equipStats.Add(suffixStats)
 
 	// Apply reforging
 	if item.Reforging != nil {
-		itemStats := item.Stats.Add(rawSuffixStats.Multiply(float64(item.RandPropPoints) / 10000.).Floor())
+		itemStats := item.Stats.Add(suffixStats)
 		reforgingChanges := stats.Stats{}
 		fromStat := item.Reforging.FromStat
 
