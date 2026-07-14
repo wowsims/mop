@@ -251,9 +251,12 @@ func (sdm *StatDependencyManager) ApplyStatDependencies(s Stats) Stats {
 				s[dep.dst] *= dep.amount
 			} else if isFlooredGameStat[dep.src] {
 				// The dep sort guarantees the source stat is final here, and
-				// the game floors attributes/ratings before dependents consume
-				// them (e.g. health is derived from the floored Stamina).
+				// the game floors attributes before dependents consume them
+				// (e.g. health is derived from the floored Stamina).
 				s[dep.dst] += math.Floor(s[dep.src]) * dep.amount
+			} else if isRoundedGameStat[dep.src] {
+				// Ratings are stored rounded-to-nearest instead.
+				s[dep.dst] += math.Round(s[dep.src]) * dep.amount
 			} else {
 				s[dep.dst] += s[dep.src] * dep.amount
 			}

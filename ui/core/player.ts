@@ -1687,10 +1687,12 @@ export class Player<SpecType extends Spec> {
 		const trinkets = this.getAmplificationTrinkets();
 		let totalModifier = 1;
 		for (const trinket of trinkets) {
-			const randPropPoints = this.sim.db.getItemEffectRandPropPoints(trinket.ilvl)?.randPropPoints;
-			if (!randPropPoints) continue;
+			// The amp percentage uses a float budget curve, not the integer
+			// RandPropPoints table — mirrors GetItemEffectAmpScaling in
+			// sim/core/utils.go (fitted against in-game sheets at 463-580).
+			const budget = 22.78695 * Math.exp(0.00932545 * trinket.ilvl);
 			const statScalingCoeff = 0.00176999997;
-			const buffValue = 1 + (statScalingCoeff * randPropPoints) / 100;
+			const buffValue = 1 + (statScalingCoeff * budget) / 100;
 			totalModifier *= buffValue;
 		}
 		return totalModifier;

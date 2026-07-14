@@ -362,7 +362,7 @@ func (unit *Unit) AddStatsDynamic(sim *Simulation, bonus stats.Stats) {
 		// delta: floored stats are only path-independent as floor(newTotal) -
 		// floor(oldTotal), while flooring per-delta would drift on every
 		// aura gain/expire cycle.
-		newStats := unit.ApplyStatDependencies(unit.statsWithoutDeps).FloorGameStats()
+		newStats := unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
 		bonus = newStats.Subtract(unit.stats)
 		unit.stats = newStats
 	} else {
@@ -428,7 +428,7 @@ func (unit *Unit) processDynamicBonus(sim *Simulation, bonus stats.Stats) {
 func (unit *Unit) EnableDynamicStatDep(sim *Simulation, dep *stats.StatDependency) {
 	if unit.StatDependencyManager.EnableDynamicStatDep(dep) {
 		oldStats := unit.stats
-		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).FloorGameStats()
+		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
 		unit.processDynamicBonus(sim, unit.stats.Subtract(oldStats))
 
 		if sim.Log != nil {
@@ -439,7 +439,7 @@ func (unit *Unit) EnableDynamicStatDep(sim *Simulation, dep *stats.StatDependenc
 func (unit *Unit) DisableDynamicStatDep(sim *Simulation, dep *stats.StatDependency) {
 	if unit.StatDependencyManager.DisableDynamicStatDep(dep) {
 		oldStats := unit.stats
-		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).FloorGameStats()
+		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
 		unit.processDynamicBonus(sim, unit.stats.Subtract(oldStats))
 
 		if sim.Log != nil {
@@ -453,7 +453,7 @@ func (unit *Unit) UpdateDynamicStatDep(sim *Simulation, dep *stats.StatDependenc
 
 	if unit.Env.IsFinalized() {
 		oldStats := unit.stats
-		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).FloorGameStats()
+		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
 		statsChange := unit.stats.Subtract(oldStats)
 		unit.processDynamicBonus(sim, statsChange)
 
@@ -752,7 +752,7 @@ func (unit *Unit) finalize() {
 	unit.initialRangedSwingSpeed = unit.TotalRangedHasteMultiplier()
 
 	unit.StatDependencyManager.FinalizeStatDeps()
-	unit.initialStats = unit.ApplyStatDependencies(unit.initialStatsWithoutDeps).FloorGameStats()
+	unit.initialStats = unit.ApplyStatDependencies(unit.initialStatsWithoutDeps).RoundGameStats()
 	unit.statsWithoutDeps = unit.initialStatsWithoutDeps
 	unit.stats = unit.initialStats
 
