@@ -60,28 +60,28 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-ArmoroftheEternalBlossom"
  value: {
-  dps: 406929.72574
-  tps: 2.55311313606e+06
-  dtps: 39687.00941
-  hps: 18870.37797
+  dps: 405946.49568
+  tps: 2.54633556096e+06
+  dtps: 40819.53237
+  hps: 18786.78858
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-ArmoroftheHauntedForest"
  value: {
-  dps: 431116.31183
-  tps: 2.70570008561e+06
-  dtps: 42986.55867
-  hps: 19004.25204
+  dps: 428726.85737
+  tps: 2.68842601983e+06
+  dtps: 42407.12961
+  hps: 19438.64534
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-ArmoroftheShatteredVale"
  value: {
-  dps: 434574.48011
-  tps: 2.72788538927e+06
-  dtps: 36074.25755
-  hps: 42790.7496
+  dps: 434995.68267
+  tps: 2.74203164264e+06
+  dtps: 36298.81587
+  hps: 42849.53922
  }
 }
 dps_results: {
@@ -888,10 +888,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 535952.95326
-  tps: 3.38455685246e+06
-  dtps: 23737.36971
-  hps: 45684.4227
+  dps: 536539.80268
+  tps: 3.39136672439e+06
+  dtps: 23187.22419
+  hps: 45777.43279
  }
 }
 dps_results: {
@@ -978,19 +978,19 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Gladiator'sSanctuary"
  value: {
-  dps: 441346.11456
-  tps: 2.76666084363e+06
-  dtps: 39492.18967
-  hps: 19901.12088
+  dps: 436638.27272
+  tps: 2.74341822645e+06
+  dtps: 39652.45991
+  hps: 20256.51138
  }
 }
 dps_results: {
  key: "TestGuardian-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 530316.24925
-  tps: 3.34952894346e+06
-  dtps: 24871.80619
-  hps: 45563.49295
+  dps: 526789.5518
+  tps: 3.32739256767e+06
+  dtps: 25641.96692
+  hps: 45618.64828
  }
 }
 dps_results: {
@@ -1779,10 +1779,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 487101.7587
-  tps: 3.062168883e+06
-  dtps: 24157.36504
-  hps: 45854.18608
+  dps: 487552.11268
+  tps: 3.06513591489e+06
+  dtps: 24157.28467
+  hps: 45861.59353
  }
 }
 dps_results: {
@@ -2526,10 +2526,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 490425.09352
-  tps: 3.07325088718e+06
-  dtps: 25206.55782
-  hps: 45569.0308
+  dps: 489502.64658
+  tps: 3.07368288054e+06
+  dtps: 24753.73589
+  hps: 45587.91231
  }
 }
 dps_results: {
