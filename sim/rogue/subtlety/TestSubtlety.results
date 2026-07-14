@@ -698,8 +698,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 128487.65285
-  tps: 90539.98181
+  dps: 128595.48822
+  tps: 90610.3948
  }
 }
 dps_results: {
@@ -782,8 +782,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 120329.98289
-  tps: 84777.83669
+  dps: 120397.17421
+  tps: 84819.8275
  }
 }
 dps_results: {
