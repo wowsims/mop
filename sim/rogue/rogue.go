@@ -9,10 +9,9 @@ import (
 )
 
 const (
-	SpellFlagMainGauche = core.SpellFlagAgentReserved1
-	SpellFlagBuilder    = core.SpellFlagAgentReserved2
-	SpellFlagFinisher   = core.SpellFlagAgentReserved3
-	SpellFlagSealFate   = core.SpellFlagAgentReserved4
+	SpellFlagBuilder  = core.SpellFlagAgentReserved2
+	SpellFlagFinisher = core.SpellFlagAgentReserved3
+	SpellFlagSealFate = core.SpellFlagAgentReserved4
 )
 
 const RogueBleedTag = "RogueBleed"
