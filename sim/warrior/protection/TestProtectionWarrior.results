@@ -793,9 +793,9 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 416595.92352
-  tps: 2.55669007431e+06
-  dtps: 22826.88851
+  dps: 422523.32231
+  tps: 2.59210447331e+06
+  dtps: 21867.60453
  }
 }
 dps_results: {
@@ -873,9 +873,9 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-Gong-Lu,StrengthofXuen-102249"
  value: {
-  dps: 434397.07639
-  tps: 2.66848073799e+06
-  dtps: 21064.98696
+  dps: 438818.1921
+  tps: 2.69293956613e+06
+  dtps: 20078.79
  }
 }
 dps_results: {
