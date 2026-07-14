@@ -1,5 +1,5 @@
 {
-	"requestId": "reforgeOptimizeAsync-94324d91edec3fe6",
+	"requestId": "reforgeOptimizeAsync-a000e599e94fbc9",
 	"raid": {
 		"parties": [
 			{
@@ -63,13 +63,13 @@
 								{
 									"id": 105516,
 									"enchant": 4825,
-									"gems": [76643, 76636],
+									"gems": [76643, 76643],
 									"upgradeStep": "UpgradeStepTwo"
 								},
 								{
 									"id": 105493,
 									"enchant": 4429,
-									"gems": [76700],
+									"gems": [76671],
 									"upgradeStep": "UpgradeStepTwo"
 								},
 								{
@@ -192,7 +192,7 @@
 	},
 	"preCapEpWeights": {
 		"apiVersion": 4,
-		"stats": [0, 0, 0, 1.24, 0, 0.93, 0.6, 0.66, 0, 0, 0, 0.63, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+		"stats": [0, 0, 0, 1.27, 0, 1.57, 0.65, 0.9724414688710413, 0, 0, 0, 0.7339180897139935, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
 		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	},
 	"undershootCaps": {
@@ -221,9 +221,9 @@
 				"apiVersion": 4,
 				"pseudoStat": "PseudoStatSpellHastePercent"
 			},
-			"breakpoints": [25.74541],
+			"breakpoints": [40.48],
 			"capType": "TypeThreshold",
-			"postCapEPs": [250.75]
+			"postCapEPs": [304.11730842523605]
 		}
 	]
 }

@@ -6,10 +6,10 @@ character_stats_results: {
   final_stats: 47422.32
   final_stats: 33033.105
   final_stats: 305.21117
-  final_stats: 3020
+  final_stats: 2860
   final_stats: 3037
   final_stats: 15032.74024
-  final_stats: 2080
+  final_stats: 2240
   final_stats: 0
   final_stats: 0
   final_stats: 22802.54464
@@ -23,7 +23,7 @@ character_stats_results: {
   final_stats: 891347.028
   final_stats: 300000
   final_stats: 15000
-  final_stats: 8.88235
+  final_stats: 8.41176
   final_stats: 15
   final_stats: 12.68167
   final_stats: 24.7995
@@ -1385,15 +1385,15 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-RegaliaoftheHornedNightmare"
  value: {
-  dps: 340208.1197
-  tps: 208088.60594
+  dps: 340483.43472
+  tps: 208114.7606
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-RegaliaoftheThousandfoldHells"
  value: {
-  dps: 325576.20285
-  tps: 194733.64731
+  dps: 324781.67772
+  tps: 194194.05923
  }
 }
 dps_results: {
@@ -1497,15 +1497,15 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-Sha-SkinRegalia"
  value: {
-  dps: 306987.22425
-  tps: 185865.19294
+  dps: 306745.79244
+  tps: 186036.38425
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-ShadowflameRegalia"
  value: {
-  dps: 243462.72888
-  tps: 143966.59227
+  dps: 243543.96093
+  tps: 144409.2284
  }
 }
 dps_results: {

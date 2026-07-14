@@ -43,7 +43,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 		gear: Presets.P5_PRESET.gear,
 
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
+		epWeights: Presets.P5_EP_PRESET.epWeights,
 		// Default stat caps for the RPeforge optimizer
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
@@ -53,7 +53,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [25.00365],
 				capType: StatCapType.TypeThreshold,
-				postCapEPs: [(Presets.DEFAULT_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.01) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+				postCapEPs: [(Presets.P4_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.01) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
 			});
 
 			return [hasteSoftCapConfig];
@@ -96,7 +96,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	},
 
 	presets: {
-		epWeights: [Presets.DEFAULT_EP_PRESET],
+		epWeights: [Presets.P4_EP_PRESET, Presets.P5_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DemonologyTalentsDefault],
 		// Preset rotations that the user can quickly select.
@@ -130,16 +130,50 @@ export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyW
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets,
 			enableBreakpointLimits: true,
+			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 560) {
+					epWeights = Presets.P5_EP_PRESET.epWeights;
+				} else {
+					epWeights = Presets.P4_EP_PRESET.epWeights;
+				}
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+
+				return epWeights;
+			},
 			updateSoftCaps: softCaps => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				const gear = player.getGear();
 				const hasLegendaryMetaGem = gear.getMetaGem()?.id === 95347;
 
-				this.individualConfig.defaults.softCapBreakpoints!.forEach(() => {
-					const softCapToModify = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
-					if (softCapToModify && hasLegendaryMetaGem) {
-						softCapToModify.breakpoints = [25.74541];
-					}
-				});
+				if (avgIlvl >= 560) {
+					this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
+						let softCapToModifyIndex = softCaps.findIndex(sc => sc.unitStat.equals(softCap.unitStat));
+						if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModifyIndex !== -1) {
+							softCaps[softCapToModifyIndex] = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
+								breakpoints: [40.48],
+								capType: StatCapType.TypeThreshold,
+								postCapEPs: [
+									((Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) /
+										player.getTotalAmplificationTrinketStatModifier()) *
+										Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
+								],
+							});
+						}
+					});
+				} else {
+					this.individualConfig.defaults.softCapBreakpoints!.forEach(() => {
+						const softCapToModify = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
+						if (softCapToModify && hasLegendaryMetaGem) {
+							softCapToModify.breakpoints = [25.74541];
+						}
+					});
+				}
 				return softCaps;
 			},
 			additionalSoftCapTooltipInformation: {

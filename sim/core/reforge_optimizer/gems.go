@@ -147,13 +147,20 @@ func selectGemCandidates(candidates []reforgeGemOption, socketColor proto.GemCol
 		for _, cappedStat := range gem.cappedStats {
 			if numGemOptionsForStat[cappedStat] == maxGemOptionsForStat {
 				isRedundantGem = true
-			} else if !gem.isJewelcrafting {
-				numGemOptionsForStat[cappedStat]++
 			}
 		}
 
 		if (!gem.isJewelcrafting || !foundUncappedJCGem) && !isRedundantGem && (len(gem.cappedStats) == 0 || !foundUncappedNormalGem) {
 			included = append(included, gem)
+
+			// Only gems that actually made it into the candidate list consume per-stat
+			// option slots; otherwise a gem rejected for one capped stat can crowd out
+			// pure gems of its other capped stats.
+			if !gem.isJewelcrafting {
+				for _, cappedStat := range gem.cappedStats {
+					numGemOptionsForStat[cappedStat]++
+				}
+			}
 		}
 
 		if len(gem.cappedStats) == 0 && socketColor != proto.GemColor_GemColorCogwheel {
