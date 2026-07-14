@@ -411,7 +411,7 @@ func rawChoiceDelta(equipment core.Equipment, choice *reforgeChoice) core.UnitSt
 func reforgeRawStats(item core.Item, reforge core.ReforgeStat) stats.Stats {
 	itemStats := item.Stats
 	if item.RandomSuffix.ID != 0 {
-		itemStats = item.RandomSuffix.Stats.Multiply(float64(item.RandPropPoints) / 10000).Floor()
+		itemStats = item.ScaledRandomSuffixStats()
 	}
 	fromStat := stats.Stat(reforge.FromStat)
 	reduction := math.Floor(itemStats[fromStat] * reforge.Multiplier)
