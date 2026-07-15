@@ -478,7 +478,7 @@ func LoadAndWriteRawEnchants(dbHelper *DBHelper, inputsDir string) ([]dbc.Enchan
 			ELSE se.SpellID
 		END AS spellId,
 		COALESCE(ie.ParentItemID, 0) as ItemId,
-		sie.Field_1_15_3_55112_014 as professionId,
+		sie.RequiredSkillID as professionId,
 		sie.Effect as Effect,
 		sie.EffectPointsMin as EffectPoints,
 		sie.EffectArg as EffectArgs,
@@ -491,7 +491,7 @@ func LoadAndWriteRawEnchants(dbHelper *DBHelper, inputsDir string) ([]dbc.Enchan
 		COALESCE(sla.ClassMask, 0),
 		COALESCE(it.IconFileDataID, 0),
 		COALESCE(isp.OverallQualityID, 1),
-		COALESCE(sie.Field_1_15_3_55112_014, 0) as RequiredProfession,
+		COALESCE(sie.RequiredSkillID, 0) as RequiredProfession,
 		COALESCE(sie.Name_lang, "")
 		FROM SpellEffect se
 		JOIN Spell s ON se.SpellID = s.ID
@@ -506,14 +506,14 @@ func LoadAndWriteRawEnchants(dbHelper *DBHelper, inputsDir string) ([]dbc.Enchan
 WHERE se.Effect = 53
   AND (ss.MaxScalingLevel > 84 or ss.MaxScalingLevel is null)
   AND (
-       ( sie.Field_1_15_3_55112_014 > 0
+       ( sie.RequiredSkillID > 0
          AND sla.ID               IS NOT NULL
-         AND sie.Field_1_15_3_55112_015 IS NOT NULL
+         AND sie.RequiredSkillRank IS NOT NULL
        )
     OR
-       sie.Field_1_15_3_55112_014 = 0
+       sie.RequiredSkillID = 0
     OR
-       sie.Field_1_15_3_55112_014 = 773
+       sie.RequiredSkillID = 773
   )
 		GROUP BY name `
 	items, err := LoadRows(dbHelper.db, query, ScanEnchantsTable)
