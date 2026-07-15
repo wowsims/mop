@@ -89,8 +89,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-BattleplateofResoundingRings"
  value: {
-  dps: 320268.34119
-  tps: 225131.35106
+  dps: 320379.63606
+  tps: 225242.79659
  }
 }
 dps_results: {
@@ -390,8 +390,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Daelo'sFinalWords-87496"
  value: {
-  dps: 405829.98046
-  tps: 298490.93311
+  dps: 406000.94882
+  tps: 298549.19358
  }
 }
 dps_results: {
@@ -628,8 +628,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 435193.19982
-  tps: 319828.34737
+  dps: 434970.08882
+  tps: 319751.89669
  }
 }
 dps_results: {
@@ -691,8 +691,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 418497.56979
-  tps: 308708.12454
+  dps: 418754.1548
+  tps: 308810.27962
  }
 }
 dps_results: {
@@ -2008,15 +2008,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Average-Default"
  value: {
-  dps: 439799.57306
-  tps: 323812.75278
+  dps: 439794.28811
+  tps: 323811.01396
  }
 }
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.44853780908e+06
-  tps: 1.29760329794e+06
+  dps: 1.44830048901e+06
+  tps: 1.29736597787e+06
  }
 }
 dps_results: {
@@ -2036,8 +2036,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.22639586471e+06
-  tps: 1.0554105905e+06
+  dps: 1.22665332716e+06
+  tps: 1.05396312378e+06
  }
 }
 dps_results: {
@@ -2050,15 +2050,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 220628.60352
-  tps: 152185.3877
+  dps: 220592.83766
+  tps: 152191.27763
  }
 }
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.5794954569e+06
-  tps: 1.97841029381e+06
+  dps: 2.57959770169e+06
+  tps: 1.97843522288e+06
  }
 }
 dps_results: {
@@ -2078,15 +2078,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.20628051558e+06
-  tps: 1.66122424137e+06
+  dps: 2.20675056195e+06
+  tps: 1.66134045196e+06
  }
 }
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 361678.71696
-  tps: 267840.35374
+  dps: 361781.79555
+  tps: 267942.55529
  }
 }
 dps_results: {
@@ -2099,15 +2099,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.46001280619e+06
-  tps: 1.29374689435e+06
+  dps: 1.46009854652e+06
+  tps: 1.29397234971e+06
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 266433.45346
-  tps: 189200.62971
+  dps: 266246.09798
+  tps: 188966.50107
  }
 }
 dps_results: {
@@ -2120,8 +2120,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.21410162418e+06
-  tps: 1.04740991166e+06
+  dps: 1.21013333128e+06
+  tps: 1.04506420849e+06
  }
 }
 dps_results: {
@@ -2134,8 +2134,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 216722.23364
-  tps: 150962.59189
+  dps: 216678.41069
+  tps: 150960.42473
  }
 }
 dps_results: {
@@ -2162,15 +2162,15 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.19501714399e+06
-  tps: 1.65271024484e+06
+  dps: 2.19521008385e+06
+  tps: 1.65275842355e+06
  }
 }
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 358960.27235
-  tps: 266304.78319
+  dps: 358655.72764
+  tps: 266193.08278
  }
 }
 dps_results: {

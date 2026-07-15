@@ -906,10 +906,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-AllItems-Fire-CharmArmor"
  value: {
-  dps: 486506.90187
-  tps: 2.57543084125e+06
-  dtps: 47182.31775
-  hps: 79739.27937
+  dps: 486036.02355
+  tps: 2.57411403862e+06
+  dtps: 47811.01749
+  hps: 80066.19705
  }
 }
 dps_results: {
@@ -2805,28 +2805,28 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.86595050665e+06
-  tps: 1.107643617101e+07
-  dtps: 805141.94575
+  dps: 1.86595109462e+06
+  tps: 1.107644028675e+07
+  dtps: 807101.84195
   hps: 259729.43839
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 167149.26007
-  tps: 990419.49051
-  dtps: 23731.0971
-  hps: 44392.26289
+  dps: 167318.11145
+  tps: 991569.00525
+  dtps: 23325.19793
+  hps: 44338.3182
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 218906.59225
-  tps: 1.05087626845e+06
-  dtps: 14342.88191
-  hps: 39460.62596
+  dps: 218905.97161
+  tps: 1.050871924e+06
+  dtps: 14460.22405
+  hps: 39510.24399
  }
 }
 dps_results: {
@@ -2834,17 +2834,17 @@ dps_results: {
  value: {
   dps: 1.3907633071e+06
   tps: 8.270555716e+06
-  dtps: 1.09695800265e+06
+  dtps: 1.09785334535e+06
   hps: 216401.37513
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 129381.0452
-  tps: 775382.72098
-  dtps: 40265.13177
-  hps: 41633.21226
+  dps: 129433.77111
+  tps: 775731.66736
+  dtps: 40191.17435
+  hps: 41631.0971
  }
 }
 dps_results: {
@@ -2861,17 +2861,17 @@ dps_results: {
  value: {
   dps: 3.16144252351e+06
   tps: 2.196334094392e+07
-  dtps: 774250.51503
+  dtps: 774742.4372
   hps: 446990.42033
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 160768.44365
-  tps: 1.10196865459e+06
-  dtps: 31265.87002
-  hps: 46535.57422
+  dps: 160925.31111
+  tps: 1.10306672681e+06
+  dtps: 31309.87706
+  hps: 46550.69493
  }
 }
 dps_results: {
@@ -2886,28 +2886,28 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.24141376248e+06
-  tps: 1.568989633734e+07
-  dtps: 1.06083648722e+06
-  hps: 433659.96458
+  dps: 2.24140984523e+06
+  tps: 1.568986891664e+07
+  dtps: 1.06393352517e+06
+  hps: 433659.95798
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-Dungeon-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 120932.09355
-  tps: 846524.65484
-  dtps: 51499.46203
-  hps: 41529.97483
+  dps: 120622.69384
+  tps: 844358.8569
+  dtps: 51737.87927
+  hps: 41539.0648
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Orc-prebis-Dungeon-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 119366.47939
-  tps: 835565.3557
-  dtps: 43028.53595
-  hps: 39847.05328
+  dps: 119361.2963
+  tps: 835529.0741
+  dtps: 43007.13407
+  hps: 39853.54828
  }
 }
 dps_results: {
@@ -3131,17 +3131,17 @@ dps_results: {
  value: {
   dps: 1.89651014566e+06
   tps: 1.130741626182e+07
-  dtps: 812692.28251
+  dtps: 814624.6703
   hps: 262999.97942
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Troll-prebis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 167553.21863
-  tps: 995893.72229
-  dtps: 22809.17763
-  hps: 43727.90863
+  dps: 167471.16501
+  tps: 995428.82046
+  dtps: 22729.14769
+  hps: 43774.62762
  }
 }
 dps_results: {
@@ -3149,7 +3149,7 @@ dps_results: {
  value: {
   dps: 218754.03694
   tps: 1.06020542736e+06
-  dtps: 14355.40921
+  dtps: 14389.13608
   hps: 39688.9112
  }
 }
@@ -3158,44 +3158,44 @@ dps_results: {
  value: {
   dps: 1.39348374447e+06
   tps: 8.32194115904e+06
-  dtps: 1.07284170177e+06
+  dtps: 1.0757120626e+06
   hps: 215736.12293
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Troll-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 128559.84934
-  tps: 771686.50112
-  dtps: 39375.95043
-  hps: 40880.80093
+  dps: 128558.05755
+  tps: 771644.32819
+  dtps: 39401.31398
+  hps: 40982.73219
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Troll-prebis-DefaultTalents-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 153199.22319
-  tps: 762108.10717
-  dtps: 23795.32937
-  hps: 35067.7491
+  dps: 153147.77207
+  tps: 761747.94937
+  dtps: 23866.86651
+  hps: 35138.90815
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Troll-prebis-Dungeon-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 3.19832447941e+06
-  tps: 2.219438217545e+07
-  dtps: 817204.95689
-  hps: 453818.75021
+  dps: 3.19843718206e+06
+  tps: 2.219517109399e+07
+  dtps: 818464.94777
+  hps: 453837.41653
  }
 }
 dps_results: {
  key: "TestBrewmaster-Settings-Troll-prebis-Dungeon-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 162329.06829
-  tps: 1.10964131652e+06
-  dtps: 32397.87692
-  hps: 46590.57918
+  dps: 162366.44502
+  tps: 1.10990295364e+06
+  dtps: 32412.40267
+  hps: 46578.38833
  }
 }
 dps_results: {
@@ -3210,10 +3210,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-Settings-Troll-prebis-Dungeon-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.21320892759e+06
-  tps: 1.549246249316e+07
-  dtps: 1.06937538016e+06
-  hps: 439942.36484
+  dps: 2.21319744858e+06
+  tps: 1.549238214003e+07
+  dtps: 1.07095146479e+06
+  hps: 439971.76414
  }
 }
 dps_results: {
@@ -3221,8 +3221,8 @@ dps_results: {
  value: {
   dps: 120848.88611
   tps: 845942.20275
-  dtps: 51664.38823
-  hps: 42121.71389
+  dtps: 51720.95173
+  hps: 42121.2821
  }
 }
 dps_results: {
@@ -3230,8 +3230,8 @@ dps_results: {
  value: {
   dps: 122879.75467
   tps: 860158.28269
-  dtps: 40309.06551
-  hps: 40206.42345
+  dtps: 40515.58334
+  hps: 40239.30844
  }
 }
 dps_results: {

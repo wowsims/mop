@@ -401,8 +401,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-CraftedMalevolentGladiator'sInsigniaofConquest-98760"
  value: {
-  dps: 399464.24741
-  tps: 486949.07689
+  dps: 399456.78711
+  tps: 486939.10065
   hps: 22592.61848
  }
 }
@@ -585,8 +585,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-DreadfulGladiator'sInsigniaofConquest-84349"
  value: {
-  dps: 397642.66724
-  tps: 478316.22607
+  dps: 397645.67238
+  tps: 478320.23731
   hps: 22623.71088
  }
 }
@@ -1633,8 +1633,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-RelicofXuen-79328"
  value: {
-  dps: 400651.91798
-  tps: 482890.69593
+  dps: 400648.67509
+  tps: 482847.84679
   hps: 22449.51596
  }
 }
@@ -1769,8 +1769,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-SigilofRampage-105580"
  value: {
-  dps: 422556.21844
-  tps: 502919.41047
+  dps: 422552.25673
+  tps: 502914.0518
   hps: 23327.91726
  }
 }
@@ -2009,8 +2009,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 417316.38522
-  tps: 439192.53408
+  dps: 417304.19826
+  tps: 439193.95629
   hps: 23141.48623
  }
 }
@@ -2137,8 +2137,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-TyrannicalGladiator'sInsigniaofConquest-100026"
  value: {
-  dps: 404290.34959
-  tps: 493802.59812
+  dps: 404293.59954
+  tps: 493806.95419
   hps: 22685.9894
  }
 }
@@ -3545,8 +3545,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-Settings-Worgen-p5-DefaultTalents-ExternalBleed-aoe-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 378585.62629
-  tps: 573911.24073
+  dps: 378571.70746
+  tps: 573901.35836
   hps: 16403.27726
  }
 }
