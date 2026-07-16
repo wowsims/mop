@@ -10,6 +10,7 @@ the authoritative list of upstreams, licenses, and pinned revisions.
 | `wdc/` | [wowdev/DBCD](https://github.com/wowdev/DBCD) (DBCD + DBCD.IO, v2.1.2 — the version vendored as DLLs in `tools/DB2ToSqlite/references/`) | MIT, Copyright (c) 2020 wowdev | `2180edb4d08b3822b3cfa964293ba8ccd4236ac0` |
 | `dbd/` | [wowdev/WoWDBDefs](https://github.com/wowdev/WoWDBDefs) `code/C#/DBDefsLib` (**code** is BSD-3-Clause; the `.dbd` **data** files are CC BY-SA 4.0 and are fetched at build time, never vendored) | BSD-3-Clause, Copyright 2022 WoWDBDefs Contributors | `9002c532853a96d631c76dda50cb20189c27a173` (master at port time; the vendored DBDefsLib.dll is v1.0.0 with no embedded commit) |
 | `tact/` | [wowdev/TACTSharp](https://github.com/wowdev/TACTSharp) v0.0.13-alpha | MIT, Copyright (c) 2024 Martin Benjamins | `d0ab516eb98b5db35682467b6e4977d88955046d` |
+| `wdc/hotfix.go` (cache scanning + SStrHash; the XFTH reader itself derives from DBCD above) | [Marlamin/wow.tools.local](https://github.com/Marlamin/wow.tools.local) `Services/{HotfixManager,DBCacheParser}.cs`, ported via this repo's committed copies at `tools/DB2ToSqlite/Helpers/` | MIT, Copyright (c) 2022 Martin Benjamins | `0aefbece74ef4e19ce67ebe91b51a8ae424c5c11` (upstream main at port time; the in-repo copies are the direct source) |
 | `sqlite/`, `config/`, `main.go` | original repo code (ports of this repo's own `tools/DB2ToSqlite/Helpers/*.cs` and `Program.cs`) | repo MIT | — |
 
 Runtime data dependencies (fetched, never vendored — see §4 of
@@ -20,7 +21,7 @@ Runtime data dependencies (fetched, never vendored — see §4 of
 - `listfile.csv` (community listfile) — cached, gitignored.
 - No TACT keys are used; encrypted DB2 sections are skipped (plan §7 C1).
 
-## MIT License (wowdev/DBCD, wowdev/TACTSharp)
+## MIT License (wowdev/DBCD, wowdev/TACTSharp, Marlamin/wow.tools.local)
 
 MIT License
 

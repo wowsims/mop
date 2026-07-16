@@ -32,6 +32,15 @@ type fieldPlan struct {
 	isNonInlineRel bool
 	isNonInlineID  bool
 	isID           bool
+
+	// FieldCache.MetaDataFieldType view, used only by the hotfix decoder:
+	// a non-inline relation is read from a hotfix blob at its DBD-declared
+	// type (then Convert.ChangeType'd to int), while kind/size/signed above
+	// carry the typeof(int) override. Identical to kind/size/signed for
+	// every other field.
+	hfKind   colKind
+	hfSize   int
+	hfSigned bool
 }
 
 // Row is one decoded record; Values align 1:1 with Decoded.ColumnNames.
@@ -87,6 +96,9 @@ func buildFieldPlans(def dbd.DBDefinition, version dbd.VersionDefinitions, build
 		default:
 			return nil, fmt.Errorf("column %q: unable to construct field type from %q", d.Name, col.Type)
 		}
+		// Capture the DBD-declared mapping (MetaDataFieldType) before the
+		// non-inline-relation override — the hotfix decoder reads that type.
+		p.hfKind, p.hfSize, p.hfSigned = p.kind, p.size, p.signed
 		// DBCDBuilder: a non-inline relation is always typeof(int), regardless
 		// of the DBD-declared type.
 		if p.isNonInlineRel {

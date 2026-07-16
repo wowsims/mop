@@ -4,10 +4,14 @@
 // Default (Phase B) mode reads the local install named by the settings'
 // BaseDir: .build.info picks the build, files come from local CASC
 // (root → encoding → .idx → data.NNN → BLTE), .dbd definitions and the
-// community listfile are fetched/cached over plain HTTPS.
+// community listfile are fetched/cached over plain HTTPS. The client's
+// DBCache.bin hotfixes for the extracted build are applied to the decoded
+// rows (Phase D); --dbcache <file> pins specific cache files instead of the
+// default scan and --no-hotfixes disables the overlay.
 //
 // With --build (and optionally --db2dir/--dbddir), the offline Phase A mode
-// decodes pre-extracted .db2 files instead — no install required.
+// decodes pre-extracted .db2 files instead — no install required and no
+// hotfixes unless --dbcache is given.
 package main
 
 import (
@@ -33,13 +37,16 @@ func main() {
 type options struct {
 	settingsFile string
 	databaseFile string
-	db2Dir       string // offline mode only
-	dbdDir       string // offline mode override
-	buildNumber  uint32 // nonzero → offline mode
+	db2Dir       string   // offline mode only
+	dbdDir       string   // offline mode override
+	buildNumber  uint32   // nonzero → offline mode
+	dbCaches     []string // explicit DBCache files, overriding the default scan
+	noHotfixes   bool     // skip hotfix application entirely
 }
 
 // parseArgs mirrors Program.cs's pairwise scan, including the flag aliases
-// (--settings/-s, --output/-output/-o), plus the offline-mode flags.
+// (--settings/-s, --output/-output/-o), plus the offline-mode and hotfix
+// flags.
 func parseArgs(args []string) (options, error) {
 	opts := options{
 		settingsFile: "appsettings.json",
@@ -63,6 +70,13 @@ func parseArgs(args []string) (options, error) {
 			opts.db2Dir, err = next()
 		case "--dbddir":
 			opts.dbdDir, err = next()
+		case "--dbcache":
+			var f string
+			if f, err = next(); err == nil {
+				opts.dbCaches = append(opts.dbCaches, f)
+			}
+		case "--no-hotfixes":
+			opts.noHotfixes = true
 		case "--build":
 			var v string
 			if v, err = next(); err == nil {
@@ -202,6 +216,7 @@ func run(args []string) error {
 
 	type loaded struct {
 		def     sqlite.TableDef
+		table   *wdc.Table
 		decoded *wdc.Decoded
 	}
 	tables := make([]loaded, 0, len(settings.Tables))
@@ -229,7 +244,7 @@ func run(args []string) error {
 			return fmt.Errorf("table %s: %w", tableName, err)
 		}
 		td := sqlite.TableDef{Name: tableName, Def: def, Version: version}
-		tables = append(tables, loaded{def: td, decoded: decoded})
+		tables = append(tables, loaded{def: td, table: table, decoded: decoded})
 		tableDefs = append(tableDefs, td)
 	}
 
@@ -243,9 +258,34 @@ func run(args []string) error {
 		return err
 	}
 
-	// Hotfixes (Phase D) would be applied here, before the inserts.
+	// Hotfixes (Phase D): overlay the client's DBCache.bin records before the
+	// inserts, mirroring Program.cs steps 10–11. Only a cache for this exact
+	// build applies; having none is not an error (Program.cs:102's throw is
+	// commented out). --dbcache pins specific cache files (deterministic
+	// runs); with no override, local-CASC mode scans tools/db2tool/caches
+	// plus <BaseDir>/**/DBCache.bin like HotfixManager.LoadCaches, while the
+	// offline --build mode stays hotfix-free.
+	var hotfixReader *wdc.HotfixReader
+	if !opts.noHotfixes {
+		var readers map[uint32]*wdc.HotfixReader
+		if len(opts.dbCaches) > 0 {
+			if readers, err = wdc.CombineHotfixFiles(opts.dbCaches); err != nil {
+				return err
+			}
+		} else if opts.buildNumber == 0 {
+			if readers, err = wdc.LoadHotfixCaches(filepath.Join(toolHome, "caches"), settings.Settings.BaseDir); err != nil {
+				return err
+			}
+		}
+		hotfixReader = readers[buildNumber]
+	}
 
 	for _, t := range tables {
+		if hotfixReader != nil {
+			if err := hotfixReader.ApplyHotfixes(t.table, t.def.Def, t.def.Version, buildNumber, t.decoded); err != nil {
+				return fmt.Errorf("table %s: applying hotfixes: %w", t.def.Name, err)
+			}
+		}
 		if err := sqlite.InsertRows(db, t.def, t.decoded); err != nil {
 			return err
 		}
