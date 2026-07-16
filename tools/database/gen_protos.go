@@ -455,7 +455,7 @@ func GenerateProtos(dbcData *dbc.DBC, db *WowDatabase) {
 
 	allGlyphSpellIds := []*proto.GlyphID{}
 	var classesData []ClassData
-	iconsMap, _ := LoadArtTexturePaths("./tools/DB2ToSqlite/listfile.csv")
+	iconsMap, _ := LoadArtTexturePaths("./tools/db2tool/listfile.csv")
 	for _, dbcClass := range dbc.Classes {
 		className := dbc.ClassNameFromDBC(dbcClass)
 		data := ClassData{

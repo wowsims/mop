@@ -9,7 +9,7 @@ the authoritative list of upstreams, licenses, and pinned revisions.
 |---|---|---|---|
 | `wdc/` | [wowdev/DBCD](https://github.com/wowdev/DBCD) (DBCD + DBCD.IO, v2.1.2 — the version vendored as DLLs in `tools/DB2ToSqlite/references/`) | MIT, Copyright (c) 2020 wowdev | `2180edb4d08b3822b3cfa964293ba8ccd4236ac0` |
 | `dbd/` | [wowdev/WoWDBDefs](https://github.com/wowdev/WoWDBDefs) `code/C#/DBDefsLib` (**code** is BSD-3-Clause; the `.dbd` **data** files are CC BY-SA 4.0 and are fetched at build time, never vendored) | BSD-3-Clause, Copyright 2022 WoWDBDefs Contributors | `9002c532853a96d631c76dda50cb20189c27a173` (master at port time; the vendored DBDefsLib.dll is v1.0.0 with no embedded commit) |
-| `tact/` | [wowdev/TACTSharp](https://github.com/wowdev/TACTSharp) v0.0.13-alpha | MIT | `d0ab516eb98b5db35682467b6e4977d88955046d` |
+| `tact/` | [wowdev/TACTSharp](https://github.com/wowdev/TACTSharp) v0.0.13-alpha | MIT, Copyright (c) 2024 Martin Benjamins | `d0ab516eb98b5db35682467b6e4977d88955046d` |
 | `sqlite/`, `config/`, `main.go` | original repo code (ports of this repo's own `tools/DB2ToSqlite/Helpers/*.cs` and `Program.cs`) | repo MIT | — |
 
 Runtime data dependencies (fetched, never vendored — see §4 of

@@ -150,7 +150,7 @@ func main() {
 	db.Encounters = core.PresetEncounters
 	db.ReforgeStats = reforgeStats.ToProto()
 
-	iconsMap, err := database.LoadArtTexturePaths("./tools/DB2ToSqlite/listfile.csv")
+	iconsMap, err := database.LoadArtTexturePaths("./tools/db2tool/listfile.csv")
 	if err != nil {
 		panic(fmt.Sprintf("Error loading icon paths %v", err))
 	}
