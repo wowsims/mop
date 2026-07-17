@@ -297,8 +297,15 @@ func ReadDatabaseFromJson(jsonStr string) *WowDatabase {
 }
 
 func (db *WowDatabase) WriteBinaryAndJson(binFilePath, jsonFilePath string) {
+	jsonBytes := db.toJsonBytes()
+	if existing, err := os.ReadFile(jsonFilePath); err == nil && bytes.Equal(existing, jsonBytes) {
+		log.Printf("No changes detected, skipping write of %s and %s", binFilePath, jsonFilePath)
+		return
+	}
 	db.WriteBinary(binFilePath)
-	db.WriteJson(jsonFilePath)
+	if err := os.WriteFile(jsonFilePath, jsonBytes, 0666); err != nil {
+		log.Fatalf("[ERROR] Failed to write %s: %s", jsonFilePath, err.Error())
+	}
 }
 
 func (db *WowDatabase) WriteBinary(binFilePath string) {
@@ -320,8 +327,12 @@ func (db *WowDatabase) WriteBinary(binFilePath string) {
 }
 
 func (db *WowDatabase) WriteJson(jsonFilePath string) {
-	// Also write in JSON format, so we can manually inspect the contents.
-	// Write it out line-by-line, so we can have 1 line / item, making it more human-readable.
+	os.WriteFile(jsonFilePath, db.toJsonBytes(), 0666)
+}
+
+// Serializes in JSON format, so we can manually inspect the contents.
+// Written out line-by-line, so we can have 1 line / item, making it more human-readable.
+func (db *WowDatabase) toJsonBytes() []byte {
 	uidb := db.ToUIProto()
 
 	buffer := new(bytes.Buffer)
@@ -356,5 +367,5 @@ func (db *WowDatabase) WriteJson(jsonFilePath string) {
 	tools.WriteProtoArrayToBuffer(uidb.SpellEffects, buffer, "spellEffects")
 	buffer.WriteString("\n")
 	buffer.WriteString("}")
-	os.WriteFile(jsonFilePath, buffer.Bytes(), 0666)
+	return buffer.Bytes()
 }
