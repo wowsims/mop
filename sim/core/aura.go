@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"hash/maphash"
 	"math"
 	"strconv"
 	"time"
@@ -415,10 +414,13 @@ type auraTracker struct {
 	auras []*Aura
 
 	aurasByTag   map[string][]*Aura
-	aurasByLabel map[uint64]*Aura
+	aurasByLabel map[string]*Aura
 
 	// IDs of Auras that may expire and are currently active, in no particular order.
 	activeAuras []*Aura
+
+	// Reusable scratch buffer for advance(); holds auras collected for expiry.
+	expiredScratch []*Aura
 
 	// caches the minimum expires time of all active auras; might be stale (too low) after Deactivate().
 	minExpires time.Duration
@@ -442,20 +444,12 @@ func newAuraTracker() auraTracker {
 		resetEffects:           []ResetEffect{},
 		ExclusiveEffectManager: &ExclusiveEffectManager{},
 		aurasByTag:             make(map[string][]*Aura),
-		aurasByLabel:           make(map[uint64]*Aura),
+		aurasByLabel:           make(map[string]*Aura),
 	}
 }
 
-// auraLabelHash returns a hash of the label string using Go's hardware-accelerated
-// maphash (AES on x86-64). uint64 keys are pointer-free so the GC skips scanning them.
-var auraLabelHashSeed = maphash.MakeSeed()
-
-func auraLabelHash(label string) uint64 {
-	return maphash.String(auraLabelHashSeed, label)
-}
-
 func (at *auraTracker) GetAura(label string) *Aura {
-	return at.aurasByLabel[auraLabelHash(label)]
+	return at.aurasByLabel[label]
 }
 func (at *auraTracker) GetAuras() []*Aura {
 	return at.auras
@@ -521,7 +515,7 @@ func (at *auraTracker) registerAura(unit *Unit, aura Aura) *Aura {
 	newAura.onEncounterStartIndex = Inactive
 
 	at.auras = append(at.auras, newAura)
-	at.aurasByLabel[auraLabelHash(newAura.Label)] = newAura
+	at.aurasByLabel[newAura.Label] = newAura
 	if newAura.Tag != "" {
 		at.aurasByTag[newAura.Tag] = append(at.aurasByTag[newAura.Tag], newAura)
 	}
@@ -634,35 +628,33 @@ func (at *auraTracker) tryAdvance(sim *Simulation) time.Duration {
 }
 
 // advance expires all auras whose deadline has passed and returns the next
-// expiry time. One scan collects expired auras into a stack buffer while
-// simultaneously computing minExpires for survivors. A second pass calls
+// expiry time. One scan collects expired auras into a reusable scratch buffer
+// while simultaneously computing minExpires for survivors. A second pass calls
 // Deactivate on each collected aura. The outer loop handles the rare case
 // where a Deactivate callback itself expires additional auras. Common case
 // (no expirations at this timestamp) pays exactly one scan and returns.
 func (at *auraTracker) advance(sim *Simulation) time.Duration {
-	var toExpire [16]*Aura
 	for {
-		n := 0
+		at.expiredScratch = at.expiredScratch[:0]
 		at.minExpires = NeverExpires
 		// Single pass: bucket auras into expired vs. surviving, track next expiry.
 		for _, aura := range at.activeAuras {
 			if aura.expires <= sim.CurrentTime {
-				if n < len(toExpire) {
-					toExpire[n] = aura
-				}
-				n++
+				at.expiredScratch = append(at.expiredScratch, aura)
 			} else {
 				at.minExpires = min(at.minExpires, aura.expires)
 			}
 		}
-		if n == 0 {
+		if len(at.expiredScratch) == 0 {
 			return at.minExpires
 		}
-		// Deactivate collected auras. Capped at len(toExpire); any overflow auras
-		// will be picked up on the next outer iteration.
-		limit := min(n, len(toExpire))
-		for i := range limit {
-			toExpire[i].Deactivate(sim)
+		for _, aura := range at.expiredScratch {
+			// Re-check expiry: an earlier Deactivate's OnExpire may have
+			// refreshed this aura (e.g. Arcane Missiles expiry activating
+			// Arcane Charges), in which case it must not be faded.
+			if aura.expires <= sim.CurrentTime {
+				aura.Deactivate(sim)
+			}
 		}
 	}
 }

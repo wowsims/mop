@@ -123,9 +123,6 @@ func (rp *runicPowerBar) reset(sim *Simulation) {
 
 	if rp.pa != nil {
 		rp.pa.Cancel(sim)
-		// Sentinel so the at >= NextActionAt guard in launchPA doesn't skip
-		// rescheduling at the start of the next simulation iteration.
-		rp.pa.NextActionAt = NeverExpires
 	}
 
 	for i := range rp.runeMeta {
@@ -974,7 +971,9 @@ func (rp *runicPowerBar) launchRuneRegen(sim *Simulation, slot int8) {
 
 func (rp *runicPowerBar) launchPA(sim *Simulation, at time.Duration) {
 	if rp.pa != nil {
-		if at >= rp.pa.NextActionAt {
+		// A cancelled PA is by definition not scheduled, so only an active
+		// schedule that already fires at or before `at` lets us skip.
+		if !rp.pa.cancelled && at >= rp.pa.NextActionAt {
 			return
 		}
 		// New regen fires sooner — cancel the current schedule.

@@ -37,8 +37,8 @@ func BenchmarkAPLValueMath_GetFloat(b *testing.B) {
 		op:                  proto.APLValueMath_OpMul,
 		lhs:                 cooldownTime,
 		rhs:                 multiplier,
-		// lhsType:             proto.APLValueType_ValueTypeDuration,
-		// rhsType:             proto.APLValueType_ValueTypeFloat,
+		lhsType:             proto.APLValueType_ValueTypeDuration,
+		rhsType:             proto.APLValueType_ValueTypeFloat,
 	}
 
 	// Create the outer math operation: currentResource + (cooldown * 0.8)
@@ -47,8 +47,8 @@ func BenchmarkAPLValueMath_GetFloat(b *testing.B) {
 		op:                  proto.APLValueMath_OpAdd,
 		lhs:                 currentResource,
 		rhs:                 innerMath,
-		// lhsType:             proto.APLValueType_ValueTypeFloat,
-		// rhsType:             proto.APLValueType_ValueTypeDuration, // This is the problematic type mismatch!
+		lhsType:             proto.APLValueType_ValueTypeFloat,
+		rhsType:             proto.APLValueType_ValueTypeDuration, // This is the problematic type mismatch!
 	}
 
 	b.ResetTimer()
@@ -77,8 +77,7 @@ func BenchmarkAPLValueCompare_GetBool(b *testing.B) {
 		op:                  proto.APLValueCompare_OpGt,
 		lhs:                 lhsConst,
 		rhs:                 rhsConst,
-		// lhsType:             proto.APLValueType_ValueTypeFloat,
-		// rhsType:             proto.APLValueType_ValueTypeFloat,
+		lhsType:             proto.APLValueType_ValueTypeFloat,
 	}
 
 	b.ResetTimer()
@@ -136,8 +135,8 @@ func BenchmarkAPLWarlockCoercionCase(b *testing.B) {
 		op:                  proto.APLValueMath_OpAdd,
 		lhs:                 lhs,
 		rhs:                 rhs,
-		// lhsType:             lhs.Type(),
-		// rhsType:             rhs.Type(),
+		lhsType:             lhs.Type(),
+		rhsType:             rhs.Type(),
 	}
 
 	b.ResetTimer()
@@ -166,8 +165,8 @@ func BenchmarkAPLDurationMath(b *testing.B) {
 		op:                  proto.APLValueMath_OpAdd,
 		lhs:                 duration1,
 		rhs:                 duration2,
-		// lhsType:             proto.APLValueType_ValueTypeDuration,
-		// rhsType:             proto.APLValueType_ValueTypeDuration,
+		lhsType:             proto.APLValueType_ValueTypeDuration,
+		rhsType:             proto.APLValueType_ValueTypeDuration,
 	}
 
 	b.ResetTimer()

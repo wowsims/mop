@@ -98,9 +98,14 @@ func (controller *StormEarthAndFireController) CastCopySpell(sim *core.Simulatio
 	if spell.Flags.Matches(core.SpellFlagPassiveSpell) {
 		return
 	}
-	for _, pet := range controller.activeClones {
+	// Iterate the stable pets slice rather than activeClones: deactivateClone
+	// compacts activeClones in place, which would corrupt an in-flight range.
+	for _, pet := range controller.pets {
+		if !pet.IsEnabled() {
+			continue
+		}
 		if !pet.CurrentTarget.IsEnabled() {
-			pet.owner.SefController.deactivateClone(sim, pet)
+			controller.deactivateClone(sim, pet)
 			continue
 		}
 		petSpellActionID := spell.ActionID.WithTag(SEFSpellID)

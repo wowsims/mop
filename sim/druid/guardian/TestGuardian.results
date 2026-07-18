@@ -79,9 +79,9 @@ dps_results: {
  key: "TestGuardian-AllItems-ArmoroftheShatteredVale"
  value: {
   dps: 299919.4301
-  tps: 1.83293154504e+06
+  tps: 1.83293154916e+06
   dtps: 52919.99001
-  hps: 42495.95016
+  hps: 42496.69029
  }
 }
 dps_results: {
