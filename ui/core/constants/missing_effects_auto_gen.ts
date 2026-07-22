@@ -2198,6 +2198,18 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 			"Let the Frostscythe's chill flow through you.", // 46643 - https://www.wowhead.com/mop/spell=46643
 		]
 	],
+	[
+		282172, // The Horseman's Horrific Hood
+		[
+			"Let the Horseman laugh through you.", // 43873 - https://www.wowhead.com/mop/spell=43873
+		]
+	],
+	[
+		282174, // The Horseman's Sinister Slicer
+		[
+			"Summon Pumpkin Soldiers to burn your foes.", // 50070 - https://www.wowhead.com/mop/spell=50070
+		]
+	],
 ])
 
 export const MISSING_ENCHANT_EFFECTS = new Map<number, string[]>([

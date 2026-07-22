@@ -783,14 +783,29 @@ var ItemDenyList = map[int32]struct{}{
 	87575:  {}, // Bubbliest Brightbrew Charm
 	87576:  {}, // Bitterest Balebrew Charm
 	107217: {}, // Direbrew's Bloodied Shanker
+	107218: {}, // Tremendous Tankard O' Terror - 470
+	282030: {}, // Thousand-Year Pickled Egg - 502
+	282032: {}, // Mithril Wristwatch - 502
+	282034: {}, // Coren's Cold Chromium Coaster - 502
+	282036: {}, // Bitterest Balebrew Charm - 502
+	282038: {}, // Brawler's Statue - 502
+	282040: {}, // Bubbliest Brightbrew Charm - 502
+	282042: {}, // Direbrew's Bloodied Shanker - 502
+	282108: {}, // Tremendous Tankard O' Terror - 502
 
 	// MOP - Hallows End - Old items
-	87569: {}, // The Horseman's Horrific Hood
-	87570: {}, // The Horseman's Sinister Slicer
-	88166: {}, // Wicked Witch's Signet
-	88167: {}, // Band of the Petrified Pumpkin
-	88168: {}, // Seal of Ghoulish Glee
-	88169: {}, // The Horseman's Ring
+	87569:  {}, // The Horseman's Horrific Hood
+	87570:  {}, // The Horseman's Sinister Slicer
+	88166:  {}, // Wicked Witch's Signet
+	88167:  {}, // Band of the Petrified Pumpkin
+	88168:  {}, // Seal of Ghoulish Glee
+	88169:  {}, // The Horseman's Ring
+	282171: {}, // The Horseman's Horrific Hood - 502
+	282173: {}, // The Horseman's Sinister Slicer - 502
+	282175: {}, // Seal of Ghoulish Glee - 502
+	282177: {}, // Band of the Petrified Pumpkin - 502
+	282179: {}, // The Horseman's Ring - 502
+	282181: {}, // Wicked Witch's Signet - 502
 
 	// MOP - Love is in the Air - Old items
 	268554: {}, // Miniature Winter Veil Tree
