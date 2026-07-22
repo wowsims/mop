@@ -175,12 +175,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBrewmaster-AllItems-Brawler'sStatue-257885"
+ key: "TestBrewmaster-AllItems-Brawler'sStatue-282039"
  value: {
-  dps: 560090.45251
-  tps: 3.02063934629e+06
-  dtps: 38727.52343
-  hps: 80138.99559
+  dps: 561100.50054
+  tps: 3.02364943306e+06
+  dtps: 37962.05486
+  hps: 79946.10079
  }
 }
 dps_results: {
@@ -292,12 +292,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBrewmaster-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestBrewmaster-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 563133.2221
-  tps: 3.0318000608e+06
-  dtps: 42206.68533
-  hps: 82847.3616
+  dps: 566441.6511
+  tps: 3.04977384697e+06
+  dtps: 42276.9274
+  hps: 83653.63843
  }
 }
 dps_results: {
@@ -1579,12 +1579,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBrewmaster-AllItems-MithrilWristwatch-257884"
+ key: "TestBrewmaster-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 558862.55123
-  tps: 3.0093330487e+06
-  dtps: 42256.02459
-  hps: 82495.81446
+  dps: 560387.59987
+  tps: 3.01815749021e+06
+  dtps: 42277.75634
+  hps: 83040.04966
  }
 }
 dps_results: {
@@ -2308,12 +2308,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBrewmaster-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestBrewmaster-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 556447.37886
-  tps: 2.99020371147e+06
-  dtps: 41951.26651
-  hps: 80623.65702
+  dps: 553880.17778
+  tps: 2.99763772909e+06
+  dtps: 43229.15013
+  hps: 81104.91343
  }
 }
 dps_results: {

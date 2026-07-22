@@ -69,7 +69,10 @@ func RegisterAllOnUseCds() {
 	//
 	// Let the Horseman laugh through you.
 	// https://www.wowhead.com/mop/spell=43873
-	// shared.NewSimpleStatActive(263014)
+	// shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
+	// 	{ItemID: 263014, ItemName: "The Horseman's Horrific Hood"},
+	// 	{ItemID: 282172, ItemName: "The Horseman's Horrific Hood"},
+	// })
 
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -77,7 +80,10 @@ func RegisterAllOnUseCds() {
 	//
 	// Summon Pumpkin Soldiers to burn your foes.
 	// https://www.wowhead.com/mop/spell=50070
-	// shared.NewSimpleStatActive(263018)
+	// shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
+	// 	{ItemID: 263018, ItemName: "The Horseman's Sinister Slicer"},
+	// 	{ItemID: 282174, ItemName: "The Horseman's Sinister Slicer"},
+	// })
 
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -204,7 +210,10 @@ func RegisterAllOnUseCds() {
 
 	// Increases dodge by 1700 for 20s.
 	// https://www.wowhead.com/mop/spell=127967
-	shared.NewSimpleStatActive(257885)
+	shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
+		{ItemID: 257885, ItemName: "Brawler's Statue"},
+		{ItemID: 282039, ItemName: "Brawler's Statue"},
+	})
 
 	// HasteRating
 

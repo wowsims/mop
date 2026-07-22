@@ -151,7 +151,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostMasterfrost-AllItems-Brawler'sStatue-257885"
+ key: "TestFrostMasterfrost-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 392690.26393
   tps: 366516.61883
@@ -255,11 +255,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostMasterfrost-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestFrostMasterfrost-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 407858.99268
-  tps: 379699.42397
-  hps: 4628.22217
+  dps: 413489.77021
+  tps: 384703.28931
+  hps: 4657.55272
  }
 }
 dps_results: {
@@ -1391,11 +1391,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostMasterfrost-AllItems-MithrilWristwatch-257884"
+ key: "TestFrostMasterfrost-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 399455.30795
-  tps: 372439.897
-  hps: 4628.22217
+  dps: 401335.90027
+  tps: 374178.97399
+  hps: 4657.55272
  }
 }
 dps_results: {
@@ -2135,11 +2135,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostMasterfrost-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestFrostMasterfrost-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 397933.69122
-  tps: 370787.91189
-  hps: 4561.65332
+  dps: 399196.22126
+  tps: 371760.67254
+  hps: 4579.28862
  }
 }
 dps_results: {

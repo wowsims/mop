@@ -166,12 +166,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBlood-AllItems-Brawler'sStatue-257885"
+ key: "TestBlood-AllItems-Brawler'sStatue-282039"
  value: {
-  dps: 389423.50789
-  tps: 1.93402308871e+06
-  dtps: 148800.7807
-  hps: 170984.1887
+  dps: 393283.50747
+  tps: 1.95577802999e+06
+  dtps: 148575.43037
+  hps: 171686.78828
  }
 }
 dps_results: {
@@ -283,12 +283,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBlood-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestBlood-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 391797.22239
-  tps: 1.94793093153e+06
-  dtps: 151875.95791
-  hps: 173386.5155
+  dps: 396174.85242
+  tps: 1.96747604129e+06
+  dtps: 151326.71189
+  hps: 173279.76932
  }
 }
 dps_results: {
@@ -1561,12 +1561,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBlood-AllItems-MithrilWristwatch-257884"
+ key: "TestBlood-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 389721.92041
-  tps: 1.94430761993e+06
+  dps: 392152.5905
+  tps: 1.95615813365e+06
   dtps: 151772.93822
-  hps: 173443.58686
+  hps: 173455.68719
  }
 }
 dps_results: {
@@ -2407,12 +2407,12 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBlood-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestBlood-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 392198.08756
-  tps: 1.94792728815e+06
-  dtps: 150764.62915
-  hps: 173366.26884
+  dps: 390317.66256
+  tps: 1.94243622346e+06
+  dtps: 150891.20098
+  hps: 172841.51718
  }
 }
 dps_results: {

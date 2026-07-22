@@ -129,7 +129,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestSubtlety-AllItems-Brawler'sStatue-257885"
+ key: "TestSubtlety-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 101963.42052
   tps: 71858.49781
@@ -220,10 +220,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestSubtlety-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestSubtlety-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 107715.88308
-  tps: 75861.73091
+  dps: 110742.45976
+  tps: 77974.81359
  }
 }
 dps_results: {
@@ -1236,10 +1236,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestSubtlety-AllItems-MithrilWristwatch-257884"
+ key: "TestSubtlety-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 104144.93549
-  tps: 73387.71226
+  dps: 105497.08269
+  tps: 74340.63509
  }
 }
 dps_results: {
@@ -1824,7 +1824,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestSubtlety-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestSubtlety-AllItems-Thousand-YearPickledEgg-282031"
  value: {
   dps: 101963.42052
   tps: 71858.49781

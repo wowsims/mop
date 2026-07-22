@@ -143,7 +143,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBeastMastery-AllItems-Brawler'sStatue-257885"
+ key: "TestBeastMastery-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 414774.97927
   tps: 190236.92824
@@ -247,10 +247,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBeastMastery-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestBeastMastery-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 431362.44014
-  tps: 196486.95167
+  dps: 439249.06619
+  tps: 199784.69316
   hps: 17.84779
  }
 }
@@ -1383,10 +1383,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBeastMastery-AllItems-MithrilWristwatch-257884"
+ key: "TestBeastMastery-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 420378.95845
-  tps: 192857.69306
+  dps: 423303.06657
+  tps: 194467.45819
   hps: 17.84779
  }
 }
@@ -2055,10 +2055,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestBeastMastery-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestBeastMastery-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 414192.88725
-  tps: 190397.07504
+  dps: 414395.9531
+  tps: 189950.7105
   hps: 17.66285
  }
 }

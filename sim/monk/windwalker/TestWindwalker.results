@@ -159,7 +159,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestWindwalker-AllItems-Brawler'sStatue-257885"
+ key: "TestWindwalker-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 472609.76626
   tps: 458292.45324
@@ -263,11 +263,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestWindwalker-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestWindwalker-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 398829.30557
-  tps: 381097.55985
-  hps: 14659.95685
+  dps: 403007.01625
+  tps: 384912.02403
+  hps: 14920.80774
  }
 }
 dps_results: {
@@ -1399,11 +1399,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestWindwalker-AllItems-MithrilWristwatch-257884"
+ key: "TestWindwalker-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 392270.82698
-  tps: 375232.82925
-  hps: 14154.96484
+  dps: 393519.88069
+  tps: 376425.37635
+  hps: 14192.97452
  }
 }
 dps_results: {
@@ -2063,11 +2063,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestWindwalker-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestWindwalker-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 474506.9933
-  tps: 459994.09915
-  hps: 10831.82808
+  dps: 473763.50221
+  tps: 459241.58032
+  hps: 10988.54402
  }
 }
 dps_results: {

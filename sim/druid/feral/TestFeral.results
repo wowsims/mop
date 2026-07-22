@@ -151,7 +151,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFeral-AllItems-Brawler'sStatue-257885"
+ key: "TestFeral-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 383678.39769
   tps: 475013.45733
@@ -255,11 +255,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFeral-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestFeral-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 405268.28309
-  tps: 492464.88467
-  hps: 22588.22627
+  dps: 409599.0559
+  tps: 500353.53087
+  hps: 22593.75423
  }
 }
 dps_results: {
@@ -1383,11 +1383,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFeral-AllItems-MithrilWristwatch-257884"
+ key: "TestFeral-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 390623.7426
-  tps: 470815.05476
-  hps: 22422.43431
+  dps: 391336.87175
+  tps: 471067.16082
+  hps: 22501.56162
  }
 }
 dps_results: {
@@ -2047,11 +2047,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFeral-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestFeral-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 388287.87911
-  tps: 458761.35552
-  hps: 22723.28752
+  dps: 393804.18288
+  tps: 461794.60087
+  hps: 23268.41214
  }
 }
 dps_results: {
