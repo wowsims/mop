@@ -19,7 +19,7 @@ const livingBombBreakpoints = [
 	mageBombBreakpoints.get('7-tick - Living Bomb')!,
 	mageBombBreakpoints.get('8-tick - Living Bomb')!,
 ];
-const softcapBreakpoints = [mageBombBreakpoints.get('GCD Soft Cap')!];
+const gcdCapBreakpoint = mageBombBreakpoints.get('GCD Soft Cap')!;
 const netherTempestBreakpoints = [
 	mageBombBreakpoints.get('15-tick - Nether Tempest')!,
 	mageBombBreakpoints.get('16-tick - Nether Tempest')!,
@@ -37,16 +37,22 @@ const P2CritPostCapEPs = [
 	0.45 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 	0.35 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 ];
-
-const P2HastePostCapEPs = [0.46 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT, 0.44 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
+const P2HastePostCapEP = 0.46 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
 
 const P3CritPostCapEPs = [
 	0.51 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 	0.44 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 	0.38 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 ];
+const P3HastePostCapEP = 0.48 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
 
-const P3HastePostCapEPs = [0.48 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT, 0.46 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
+const P5CritPostCapEPs = [
+	0.76 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
+	0.68 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
+	0.57 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
+];
+const P5HastePostCapEP = 0.66 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
+const P5HastePostGCDCapEP = 0.52 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 	cssClass: 'frost-mage-sim-ui',
@@ -76,18 +82,20 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P2_BIS.gear,
+		gear: Presets.P5_BIS.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.P1_BIS_EP_PRESET.epWeights,
+		epWeights: Presets.P5_BIS_EP_PRESET.epWeights,
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
 		// Default soft caps for the Reforge optimizer
 		softCapBreakpoints: (() => {
+			const hasteSoftCapBreakpoints = [...livingBombBreakpoints, gcdCapBreakpoint].sort((a, b) => a - b);
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
-				breakpoints: [...livingBombBreakpoints, ...softcapBreakpoints],
-				capType: StatCapType.TypeThreshold,
-				postCapEPs: P2HastePostCapEPs,
+				breakpoints: hasteSoftCapBreakpoints,
+				capType: StatCapType.TypeSoftCap,
+				// Once the GCD soft cap is passed, the residual value of haste drops, so use the lower post-GCD EP.
+				postCapEPs: hasteSoftCapBreakpoints.map(breakpoint => (breakpoint >= gcdCapBreakpoint ? P5HastePostGCDCapEP : P5HastePostCapEP)),
 			});
 
 			const critSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellCritPercent, {
@@ -137,7 +145,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_PREBIS_EP_PRESET, Presets.P1_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET],
+		epWeights: [Presets.P1_PREBIS_EP_PRESET, Presets.P1_BIS_EP_PRESET, Presets.P3_BIS_EP_PRESET, Presets.P5_BIS_EP_PRESET],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET_DEFAULT, Presets.ROTATION_PRESET_AOE],
 		// Preset talents that the user can quickly select.
@@ -159,29 +167,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 		}
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecFrostMage,
-			talents: Presets.FrostDefaultTalents.data,
-			specOptions: Presets.DefaultFrostOptions,
-			consumables: Presets.DefaultConsumables,
-			otherDefaults: Presets.OtherDefaults,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceAlliancePandaren,
-				[Faction.Horde]: Race.RaceOrc,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P1_PREBIS.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P1_PREBIS.gear,
-				},
-			},
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {
@@ -192,43 +178,70 @@ export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {
 			statSelectionPresets: [MAGE_BREAKPOINTS],
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
+				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 517) {
-					return Presets.P3_BIS_EP_PRESET.epWeights;
+
+				if (avgIlvl >= 560) {
+					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
+				} else if (avgIlvl >= 517) {
+					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
 				} else if (avgIlvl >= 500) {
-					return Presets.P1_BIS_EP_PRESET.epWeights;
+					epWeights = Presets.P1_BIS_EP_PRESET.epWeights;
+				} else {
+					epWeights = Presets.P1_PREBIS_EP_PRESET.epWeights;
 				}
-				return Presets.P1_PREBIS_EP_PRESET.epWeights;
+
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+
+				return epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 
-				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
-					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModify) {
-						const talents = player.getTalents();
-						if (talents.livingBomb) {
-							softCapToModify.breakpoints = [...livingBombBreakpoints, ...softcapBreakpoints];
-						} else if (talents.netherTempest) {
-							softCapToModify.breakpoints = [...netherTempestBreakpoints, ...softcapBreakpoints];
-						} else {
-							softCapToModify.breakpoints = softcapBreakpoints;
-						}
-						if (avgIlvl >= 517) {
-							softCapToModify.postCapEPs = P3HastePostCapEPs;
-						} else {
-							softCapToModify.postCapEPs = P2HastePostCapEPs;
-						}
+				const hasteSoftCap = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent));
+				if (hasteSoftCap) {
+					const talents = player.getTalents();
+
+					let talentBreakpoints: number[] = [];
+					if (talents.livingBomb) {
+						talentBreakpoints = livingBombBreakpoints;
+					} else if (talents.netherTempest) {
+						talentBreakpoints = netherTempestBreakpoints;
 					}
 
-					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellCritPercent) && softCapToModify) {
-						if (avgIlvl >= 517) {
-							softCapToModify.postCapEPs = P3CritPostCapEPs;
-						} else {
-							softCapToModify.postCapEPs = P2CritPostCapEPs;
-						}
+					let postCapEP: number;
+					let postGCDCapEP: number;
+					if (avgIlvl >= 560) {
+						postCapEP = P5HastePostCapEP;
+						postGCDCapEP = P5HastePostGCDCapEP;
+					} else if (avgIlvl >= 517) {
+						postCapEP = P3HastePostCapEP;
+						postGCDCapEP = P3HastePostCapEP;
+					} else {
+						postCapEP = P2HastePostCapEP;
+						postGCDCapEP = P2HastePostCapEP;
 					}
-				});
+
+					const breakpoints = [...talentBreakpoints, gcdCapBreakpoint].sort((a, b) => a - b);
+					hasteSoftCap.breakpoints = breakpoints;
+					// Once the GCD soft cap is passed, the residual value of haste drops, so use the lower post-GCD EP.
+					hasteSoftCap.postCapEPs = breakpoints.map(breakpoint => (breakpoint >= gcdCapBreakpoint ? postGCDCapEP : postCapEP));
+				}
+
+				const critSoftCap = softCaps.find(sc => sc.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellCritPercent));
+				if (critSoftCap) {
+					if (avgIlvl >= 560) {
+						critSoftCap.postCapEPs = P5CritPostCapEPs;
+					} else if (avgIlvl >= 517) {
+						critSoftCap.postCapEPs = P3CritPostCapEPs;
+					} else {
+						critSoftCap.postCapEPs = P2CritPostCapEPs;
+					}
+				}
+
 				return softCaps;
 			},
 		});

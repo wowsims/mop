@@ -322,9 +322,10 @@ export class ReforgeOptimizer {
 		const softCaps = StatCap.cloneSoftCaps(this.softCapsConfig);
 		for (const [unitStat, limit] of this.breakpointLimits.asUnitStatArray()) {
 			if (!limit) continue;
-			const config = softCaps.find(config => config.unitStat.equals(unitStat));
-			const breakpointLimitExists = config?.breakpoints.some(breakpoint => breakpoint == limit);
-			if (config && breakpointLimitExists) {
+			// A stat can have multiple configs (e.g. a SoftCap and a Threshold for the same stat), so apply the
+			// limit to whichever config actually owns that breakpoint rather than just the first matching stat.
+			for (const config of softCaps) {
+				if (!config.unitStat.equals(unitStat) || !config.breakpoints.some(breakpoint => breakpoint == limit)) continue;
 				config.breakpoints = config.breakpoints.filter(breakpoint => breakpoint <= limit);
 				if (config.capType === StatCapType.TypeSoftCap) {
 					config.postCapEPs = config.postCapEPs.slice(0, config.breakpoints.length);

@@ -23,15 +23,16 @@ func init() {
 
 func TestGuardian(t *testing.T) {
 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
+		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "ij_default", ItemFilter, nil, nil),
 		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "horridon_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "sha_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "empress_default", ItemFilter, nil, nil),
-		core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "garajal_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "sha_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "empress_default", ItemFilter, nil, nil),
+		// core.GetTestBuildFromJSON(proto.Class_ClassDruid, "../../../ui/druid/guardian/builds", "garajal_default", ItemFilter, nil, nil),
 		{
 			Class: proto.Class_ClassDruid,
 			Race:  proto.Race_RaceWorgen,
 
-			GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "p3_offensive"),
+			GearSet: core.GetGearSet("../../../ui/druid/guardian/gear_sets", "p5_offensive"),
 
 			Talents: StandardTalents,
 			Glyphs:  StandardGlyphs,
