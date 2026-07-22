@@ -1921,9 +1921,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-StreamtalkerStoneofDestruction-101225"
  value: {
-  dps: 462569.95937
-  tps: 460505.70211
-  hps: 44363.1709
+  dps: 463168.83193
+  tps: 461104.81967
+  hps: 44422.63164
  }
 }
 dps_results: {
@@ -2289,9 +2289,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Average-Default"
  value: {
-  dps: 518014.02005
-  tps: 514789.14533
-  hps: 45737.68781
+  dps: 518024.20557
+  tps: 514798.99712
+  hps: 45736.78059
  }
 }
 dps_results: {
@@ -2521,9 +2521,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Troll-t16-FoN + HotW-Default-standard-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 324231.53819
-  tps: 306477.62119
-  hps: 12548.7197
+  dps: 323815.28168
+  tps: 306072.22551
+  hps: 12553.45758
  }
 }
 dps_results: {
@@ -2545,9 +2545,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Troll-t16-Incarnation + NV-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 524423.98198
-  tps: 520118.26957
-  hps: 15820.70683
+  dps: 524653.72519
+  tps: 520344.29778
+  hps: 15855.68018
  }
 }
 dps_results: {
@@ -2593,9 +2593,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t15-DefaultTalents-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 311992.11772
-  tps: 311374.65117
-  hps: 32976.40602
+  dps: 312093.2858
+  tps: 311466.16425
+  hps: 32853.36346
  }
 }
 dps_results: {
@@ -2713,9 +2713,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t15-Incarnation + NV-Default-standard-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 200168.20595
-  tps: 202885.50584
-  hps: 11071.52402
+  dps: 200278.82475
+  tps: 203004.15464
+  hps: 11075.76969
  }
 }
 dps_results: {
@@ -2785,9 +2785,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t16-FoN + HotW-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 514105.64638
-  tps: 480325.37624
-  hps: 14124.2917
+  dps: 513357.45186
+  tps: 479579.9134
+  hps: 14142.25224
  }
 }
 dps_results: {
@@ -2809,8 +2809,8 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t16-FoN + HotW-Default-standard-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 320570.28526
-  tps: 303467.84298
+  dps: 320936.47745
+  tps: 303861.22475
   hps: 12586.62268
  }
 }
@@ -2833,9 +2833,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-Settings-Worgen-t16-Incarnation + NV-Default-standard-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 526012.88551
-  tps: 522308.95639
-  hps: 15907.88716
+  dps: 526652.99272
+  tps: 522943.6486
+  hps: 15874.13409
  }
 }
 dps_results: {

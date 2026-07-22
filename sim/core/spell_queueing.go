@@ -80,16 +80,10 @@ func (spell *Spell) CanQueue(sim *Simulation, target *Unit) bool {
 		return false
 	}
 
-	if !spell.CanCompleteCast(sim, target, false) {
-		return false
-	}
+	// Check timers first — cheapest filters, no cost calculation needed.
 
-	if spell.Flags.Matches(SpellFlagSwapped) {
-		return false
-	}
-
-	// Apply SQW leniency to any pending hardcasts
-	if (spell.Unit.Hardcast.Expires > sim.CurrentTime+MaxSpellQueueWindow) || (spell.Unit.IsCastingDuringChannel() && !spell.CanCastDuringChannel(sim)) {
+	// Spells that are within one SQW of coming off cooldown can also be queued
+	if MaxTimeToReady(spell.CD.Timer, spell.SharedCD.Timer, sim) > MaxSpellQueueWindow {
 		return false
 	}
 
@@ -98,8 +92,16 @@ func (spell *Spell) CanQueue(sim *Simulation, target *Unit) bool {
 		return false
 	}
 
-	// Spells that are within one SQW of coming off cooldown can also be queued
-	if MaxTimeToReady(spell.CD.Timer, spell.SharedCD.Timer, sim) > MaxSpellQueueWindow {
+	// Apply SQW leniency to any pending hardcasts
+	if (spell.Unit.Hardcast.Expires > sim.CurrentTime+MaxSpellQueueWindow) || (spell.Unit.IsCastingDuringChannel() && !spell.CanCastDuringChannel(sim)) {
+		return false
+	}
+
+	if spell.Flags.Matches(SpellFlagSwapped) {
+		return false
+	}
+
+	if !spell.CanCompleteCast(sim, target, false) {
 		return false
 	}
 

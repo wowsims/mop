@@ -2577,8 +2577,8 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.01527261259e+06
-  tps: 1.98263390649e+06
+  dps: 2.01539514018e+06
+  tps: 1.98275643408e+06
   hps: 10061.74352
  }
 }
@@ -2601,24 +2601,24 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.55448149655e+06
-  tps: 1.53507064086e+06
+  dps: 1.55443190109e+06
+  tps: 1.5350210454e+06
   hps: 8671.09203
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 349841.17424
-  tps: 330424.59558
+  dps: 349838.52621
+  tps: 330421.94755
   hps: 3955.898
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-Settings-Troll-p5.masterfrost-UnholyBlight-Basic-masterfrost-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 439700.09723
-  tps: 369553.6308
+  dps: 439686.85707
+  tps: 369540.39064
   hps: 4404.52886
  }
 }

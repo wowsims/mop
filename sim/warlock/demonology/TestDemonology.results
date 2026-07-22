@@ -1014,8 +1014,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-LeiShen'sFinalOrders-87072"
  value: {
-  dps: 406860.10109
-  tps: 248184.99392
+  dps: 406454.58842
+  tps: 248004.18156
  }
 }
 dps_results: {
@@ -1770,8 +1770,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 471825.2159
-  tps: 289364.83279
+  dps: 471825.68206
+  tps: 289364.70163
  }
 }
 dps_results: {
@@ -1994,22 +1994,22 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Average-Default"
  value: {
-  dps: 475524.78911
-  tps: 292869.84263
+  dps: 475532.31593
+  tps: 292875.91792
  }
 }
 dps_results: {
  key: "TestDemonology-Settings-Orc-p5-Demonology Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.54010013899e+06
-  tps: 1.10051331236e+06
+  dps: 1.54011160747e+06
+  tps: 1.10051930083e+06
  }
 }
 dps_results: {
  key: "TestDemonology-Settings-Orc-p5-Demonology Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 472951.68963
-  tps: 290135.80017
+  dps: 472952.15634
+  tps: 290135.66853
  }
 }
 dps_results: {
@@ -2022,8 +2022,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Settings-Orc-p5-Demonology Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 969970.03552
-  tps: 686453.8896
+  dps: 974148.00727
+  tps: 690667.10753
  }
 }
 dps_results: {
@@ -2043,15 +2043,15 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Settings-Troll-p5-Demonology Warlock-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.50436477041e+06
-  tps: 1.07957258045e+06
+  dps: 1.50967149683e+06
+  tps: 1.08364230891e+06
  }
 }
 dps_results: {
  key: "TestDemonology-Settings-Troll-p5-Demonology Warlock-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 484401.63861
-  tps: 298334.77818
+  dps: 484188.46016
+  tps: 297764.68109
  }
 }
 dps_results: {
@@ -2064,8 +2064,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-Settings-Troll-p5-Demonology Warlock-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 965058.16525
-  tps: 687649.69137
+  dps: 965154.24285
+  tps: 687269.35279
  }
 }
 dps_results: {
@@ -2085,7 +2085,7 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 467400.163
-  tps: 290443.37046
+  dps: 467400.62971
+  tps: 290443.23882
  }
 }

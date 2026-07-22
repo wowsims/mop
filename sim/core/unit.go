@@ -794,12 +794,6 @@ func (unit *Unit) reset(sim *Simulation, _ Agent) {
 		spell.reset(sim)
 	}
 
-	for _, attackTable := range unit.AttackTables {
-		clear(attackTable.expectedInitialDamageCache)
-		clear(attackTable.expectedTickDamageCache)
-		clear(attackTable.expectedTickSnapshotDamageCache)
-	}
-
 	unit.manaBar.reset()
 	unit.focusBar.reset(sim)
 	unit.healthBar.reset(sim)

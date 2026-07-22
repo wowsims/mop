@@ -857,8 +857,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 399303.08454
-  tps: 293510.16683
+  dps: 399301.01576
+  tps: 293508.8713
   hps: 3876.26953
  }
 }
@@ -2097,8 +2097,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 433165.0296
-  tps: 308281.16671
+  dps: 433167.00235
+  tps: 308283.13946
   hps: 3942.91673
  }
 }
@@ -2369,9 +2369,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Average-Default"
  value: {
-  dps: 437537.8245
-  tps: 310816.97014
-  hps: 3757.31537
+  dps: 437557.02961
+  tps: 310834.14523
+  hps: 3757.28354
  }
 }
 dps_results: {
@@ -2385,8 +2385,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 429403.84664
-  tps: 308401.32258
+  dps: 429413.51786
+  tps: 308365.75221
   hps: 3877.86551
  }
 }
@@ -2449,8 +2449,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-GlyphOfOutbreak-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 817948.75477
-  tps: 714637.74286
+  dps: 817940.2685
+  tps: 714629.25659
   hps: 3292.21948
  }
 }
@@ -2473,16 +2473,16 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-PlagueLeech-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 670712.87947
-  tps: 518481.73942
+  dps: 670705.79493
+  tps: 518474.65489
   hps: 3911.15617
  }
 }
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-PlagueLeech-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 427523.92111
-  tps: 306530.0934
+  dps: 427504.52326
+  tps: 306535.16318
   hps: 3904.25139
  }
 }
@@ -2497,17 +2497,17 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-PlagueLeech-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 490705.19396
-  tps: 385978.24824
-  hps: 3331.18679
+  dps: 490398.27244
+  tps: 385625.81335
+  hps: 3327.7014
  }
 }
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-PlagueLeech-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 312260.63975
-  tps: 231507.09194
-  hps: 3331.18679
+  dps: 312225.69723
+  tps: 231492.82056
+  hps: 3327.7014
  }
 }
 dps_results: {
@@ -2521,16 +2521,16 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 673453.94435
-  tps: 519880.62642
+  dps: 673446.85981
+  tps: 519873.54189
   hps: 3884.15367
  }
 }
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-RoilingBlood-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 428343.17607
-  tps: 307236.8482
+  dps: 428342.8977
+  tps: 307236.56984
   hps: 3878.48214
  }
 }
@@ -2545,8 +2545,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-RoilingBlood-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 496256.86807
-  tps: 392427.15573
+  dps: 495628.18471
+  tps: 391824.32193
   hps: 3295.70488
  }
 }
@@ -2617,16 +2617,16 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.12183102712e+06
-  tps: 970395.08053
+  dps: 1.12182758214e+06
+  tps: 970391.63555
   hps: 3810.66756
  }
 }
 dps_results: {
  key: "TestUnholy-Settings-Troll-p5-RunicEmpowerment-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 427342.75612
-  tps: 305974.41444
+  dps: 427342.48483
+  tps: 305974.14315
   hps: 3817.57235
  }
 }
