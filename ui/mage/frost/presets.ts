@@ -28,6 +28,18 @@ export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AOE', Fros
 // export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', FrostCleaveApl);
 
 // Preset options for EP weights
+export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Item Level >= 560',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.31,
+		[Stat.StatSpellPower]: 1,
+		[Stat.StatHitRating]: 2.15,
+		[Stat.StatCritRating]: 0.77,
+		[Stat.StatHasteRating]: 0.75,
+		[Stat.StatMasteryRating]: 0.71,
+	}),
+);
+
 export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Item Level >= 517',
 	Stats.fromMap({
@@ -45,7 +57,7 @@ export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap({
 		[Stat.StatIntellect]: 1.26,
 		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 1.30,
+		[Stat.StatHitRating]: 1.3,
 		[Stat.StatCritRating]: 0.61,
 		[Stat.StatHasteRating]: 0.74,
 		[Stat.StatMasteryRating]: 0.52,
