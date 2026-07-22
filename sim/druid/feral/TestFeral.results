@@ -113,9 +113,9 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-BattlegearoftheShatteredVale"
  value: {
-  dps: 308986.24128
-  tps: 327740.82504
-  hps: 19367.70197
+  dps: 309223.96848
+  tps: 328963.4709
+  hps: 19321.82951
  }
 }
 dps_results: {
@@ -2009,8 +2009,8 @@ dps_results: {
 dps_results: {
  key: "TestFeral-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 416981.93309
-  tps: 434240.42715
+  dps: 416963.31525
+  tps: 434215.03872
   hps: 23294.00293
  }
 }

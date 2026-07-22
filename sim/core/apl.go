@@ -17,6 +17,13 @@ type APLRotation struct {
 	// Shared variable caches: all APLValueVariableRef instances for the same
 	// variable name share the same cache (but each has its own expression tree).
 	variableCaches map[string]*variableCache
+
+	// Invalidation counter for per-evaluation value caches (variableCaches and
+	// the APLValueDotIncreaseCheck cache). CONTRACT: every code path that
+	// evaluates APL values after game state may have changed must increment
+	// this first. Current bump sites: reset and getNextAction (apl.go), the
+	// channel interrupt check in DoNextAction (apl.go), and the channel tick
+	// callback (dot.go). A forgotten bump silently serves stale cached values.
 	evalGeneration uint32
 
 	// Values orphaned by compile-time constant folding (e.g. And/Or short-circuit).

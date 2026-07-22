@@ -257,6 +257,7 @@ func (action *APLActionGroupReference) replacePlaceholders(value APLValue, varia
 					op:                  v.op,
 					lhs:                 lhs,
 					rhs:                 rhs,
+					lhsType:             lhs.Type(),
 				}
 			case *APLValueMath:
 				// Re-coerce the types after replacement to ensure compatibility
@@ -269,6 +270,8 @@ func (action *APLActionGroupReference) replacePlaceholders(value APLValue, varia
 					op:                  v.op,
 					lhs:                 lhs,
 					rhs:                 rhs,
+					lhsType:             lhs.Type(),
+					rhsType:             rhs.Type(),
 				}
 			case *APLValueAnd:
 				return &APLValueAnd{
