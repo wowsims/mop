@@ -47,9 +47,9 @@ export const MASTERFROST_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatHitRating]: 0.84,
 			[Stat.StatExpertiseRating]: 0.83,
 			[Stat.StatMasteryRating]: 0.53,
-			[Stat.StatHasteRating]: 0.37,
+			[Stat.StatHasteRating]: 0.4,
 			[Stat.StatAttackPower]: 0.37,
-			[Stat.StatCritRating]: 0.36,
+			[Stat.StatCritRating]: 0.52,
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 1.58,
