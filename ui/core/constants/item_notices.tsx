@@ -76,7 +76,7 @@ export const ITEM_NOTICES = new Map<number, ItemNoticeData>([
 		},
 	]),
 
-	...[105150, 102310, 104652, 105399, 105648, 104901].map((itemID): [number, ItemNoticeData] => [
+	...[].map((itemID): [number, ItemNoticeData] => [
 		itemID,
 		[Spec.SpecFrostMage, Spec.SpecArcaneMage, Spec.SpecFireMage].reduce<ItemNoticeData>(
 			(acc, spec) => {

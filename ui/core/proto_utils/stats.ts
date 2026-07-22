@@ -610,6 +610,7 @@ export class StatCap {
 	constructor(unitStat: UnitStat, breakpoints: number[], capType: StatCapType, postCapEPs: number[]) {
 		// Check for valid inputs
 		if (capType == StatCapType.TypeSoftCap && breakpoints.length != postCapEPs.length) {
+			console.log(breakpoints, breakpoints.length, postCapEPs.length);
 			throw new Error('Breakpoint and EP counts do not match!');
 		}
 		if (capType != StatCapType.TypeSoftCap && capType != StatCapType.TypeThreshold) {
