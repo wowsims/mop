@@ -169,5 +169,5 @@ export const P1_PRESET_BUILD_AOE = PresetUtils.makePresetBuild('AoE (5+)', {
 export const T16_PRESET_BUILD = PresetUtils.makePresetBuild('T16', {
 	gear: P5_BIS,
 	rotation: ROTATION_PRESET_DEFAULT,
-	epWeights: P3_BIS_EP_PRESET,
+	epWeights: P5_BIS_EP_PRESET,
 });
