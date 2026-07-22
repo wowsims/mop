@@ -151,7 +151,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestUnholy-AllItems-Brawler'sStatue-257885"
+ key: "TestUnholy-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 370711.46347
   tps: 272452.38307
@@ -255,11 +255,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestUnholy-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestUnholy-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 380368.70103
-  tps: 279665.44361
-  hps: 3931.67337
+  dps: 385107.73121
+  tps: 282863.4375
+  hps: 3954.51822
  }
 }
 dps_results: {
@@ -1391,11 +1391,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestUnholy-AllItems-MithrilWristwatch-257884"
+ key: "TestUnholy-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 376216.50151
-  tps: 276646.09773
-  hps: 3924.78825
+  dps: 378406.92264
+  tps: 278255.62761
+  hps: 3951.3938
  }
 }
 dps_results: {
@@ -2135,11 +2135,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestUnholy-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestUnholy-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 374133.35361
-  tps: 274730.0779
-  hps: 3908.27456
+  dps: 374158.4646
+  tps: 274786.4445
+  hps: 3903.46491
  }
 }
 dps_results: {

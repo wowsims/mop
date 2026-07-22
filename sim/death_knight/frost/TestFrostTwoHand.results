@@ -151,7 +151,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostTwoHand-AllItems-Brawler'sStatue-257885"
+ key: "TestFrostTwoHand-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 376947.30612
   tps: 344692.45702
@@ -255,11 +255,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostTwoHand-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestFrostTwoHand-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 387127.93631
-  tps: 353271.56447
-  hps: 6954.03764
+  dps: 391529.67035
+  tps: 356965.5784
+  hps: 6997.41248
  }
 }
 dps_results: {
@@ -1391,11 +1391,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostTwoHand-AllItems-MithrilWristwatch-257884"
+ key: "TestFrostTwoHand-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 380908.96483
-  tps: 348244.66068
-  hps: 6954.03764
+  dps: 382582.32222
+  tps: 349716.92564
+  hps: 6997.41248
  }
 }
 dps_results: {
@@ -2143,11 +2143,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostTwoHand-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestFrostTwoHand-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 380175.10499
-  tps: 347278.77164
-  hps: 6908.41224
+  dps: 379114.87802
+  tps: 346043.91588
+  hps: 6901.37836
  }
 }
 dps_results: {

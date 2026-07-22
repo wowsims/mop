@@ -115,7 +115,7 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestDemonology-AllItems-Brawler'sStatue-257885"
+ key: "TestDemonology-AllItems-Brawler'sStatue-282039"
  value: {
   dps: 395723.91591
   tps: 240246.91055
@@ -206,10 +206,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestDemonology-AllItems-Coren'sColdChromiumCoaster-257880"
+ key: "TestDemonology-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 401058.34469
-  tps: 243325.38555
+  dps: 403051.27009
+  tps: 244619.3706
  }
 }
 dps_results: {
@@ -1201,10 +1201,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestDemonology-AllItems-MithrilWristwatch-257884"
+ key: "TestDemonology-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 410949.9945
-  tps: 249978.82717
+  dps: 416596.04274
+  tps: 253452.48329
  }
 }
 dps_results: {
@@ -1803,10 +1803,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestDemonology-AllItems-Thousand-YearPickledEgg-257881"
+ key: "TestDemonology-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 406437.98068
-  tps: 246743.48425
+  dps: 411071.71854
+  tps: 249485.92497
  }
 }
 dps_results: {
