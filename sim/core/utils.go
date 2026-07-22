@@ -287,6 +287,27 @@ func GetItemEffectScaling(itemID int32, coeff float64, state proto.ItemLevelStat
 	return GetItemEffectRandomPropPointsForItem(itemID, state) * coeff
 }
 
+// The Amplification trinket percentages are NOT computed from the integer
+// RandPropPoints table: spell 146051 carries the SpellMisc attribute
+// USE_FLOAT_VALUES_FOR_SCALING_AMOUNTS (0x200000 in Attributes[12]), while
+// the proc driver spells lack it, which is why the stat procs DO use the
+// integer table (GetItemEffectScalingStatValue). Retail game data documents
+// the mechanism: since build 9.0.5.37503 the RandPropPoints DB2 carries
+// parallel float and int budget columns (epic_points float[5] alongside
+// epic_points_int uint[5]) and the attribute selects which table a spell's
+// scaling reads. The MoP Classic client ships only the int columns, so the
+// float table is server-side only; this curve reconstructs it, fitted
+// against 67 in-game character-sheet readings at ilvls 463/528/535/542/580
+// (four characters, three classes). It reproduces every reading exactly and
+// coincides with the int table mid-range but deviates at the extremes (463:
+// ~1709.4 vs 1710, 580: ~5089.6 vs 5087); predictions at unmeasured ilvls
+// are constrained to ±0.001% amp.
+func GetItemEffectAmpScaling(itemID int32, coeff float64, state proto.ItemLevelState) float64 {
+	ilvl := float64(GetItemByID(itemID).ScalingOptions[int32(state)].Ilvl)
+	budget := 22.78695 * math.Exp(0.00932545*ilvl)
+	return budget * coeff
+}
+
 func GetItemEffectRandomPropPointsForItem(itemID int32, state proto.ItemLevelState) float64 {
 	return float64(GetItemByID(itemID).GetItemEffectRandomPropPoints(state))
 }

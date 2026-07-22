@@ -155,6 +155,13 @@ type Spell struct {
 	resultCache SpellResultCache
 	resultSlice SpellResultSlice
 
+	// Per-target expected-damage caches indexed by target.UnitIndex.
+	// Allocated in finalize() only for spells that define ExpectedTickDamage.
+	// Replaces the per-AttackTable maps to eliminate pointer hashing and lazy allocation.
+	expectedInitialDmgCache      []ExpectedDamageCalculatorCache
+	expectedTickDmgCache         []ExpectedDamageCalculatorCache
+	expectedTickSnapshotDmgCache []ExpectedDamageCalculatorCache
+
 	dots   DotArray
 	aoeDot *Dot
 
@@ -484,10 +491,17 @@ func (spell *Spell) finalize() {
 	if len(spell.splitSpellMetrics) > 1 && spell.ActionID.Tag != 0 {
 		panic(spell.ActionID.String() + " has split metrics and a non-zero tag, can only have one!")
 	}
+	numUnits := len(spell.Unit.Env.AllUnits)
 	for i := range spell.splitSpellMetrics {
-		spell.splitSpellMetrics[i] = make([]SpellMetrics, len(spell.Unit.Env.AllUnits))
+		spell.splitSpellMetrics[i] = make([]SpellMetrics, numUnits)
 	}
 	spell.SpellMetrics = spell.splitSpellMetrics[0]
+
+	if spell.expectedInitialDamageInternal != nil || spell.expectedTickDamageInternal != nil {
+		spell.expectedInitialDmgCache = make([]ExpectedDamageCalculatorCache, numUnits)
+		spell.expectedTickDmgCache = make([]ExpectedDamageCalculatorCache, numUnits)
+		spell.expectedTickSnapshotDmgCache = make([]ExpectedDamageCalculatorCache, numUnits)
+	}
 
 	// Set the "static" "default" cost here
 	if spell.Cost != nil {
@@ -507,6 +521,10 @@ func (spell *Spell) reset(sim *Simulation) {
 		spell.rechargeTimer = nil
 		spell.charges = spell.MaxCharges
 	}
+	// Clear expected-damage caches so values from the previous iteration don't bleed through.
+	clear(spell.expectedInitialDmgCache)
+	clear(spell.expectedTickDmgCache)
+	clear(spell.expectedTickSnapshotDmgCache)
 }
 
 func (spell *Spell) SetMetricsSplit(splitIdx int32) {

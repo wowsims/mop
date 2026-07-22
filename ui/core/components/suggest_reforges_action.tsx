@@ -457,9 +457,10 @@ export class ReforgeOptimizer {
 		const softCaps = StatCap.cloneSoftCaps(this.softCapsConfig);
 		for (const [unitStat, limit] of this.breakpointLimits.asUnitStatArray()) {
 			if (!limit) continue;
-			const config = softCaps.find(config => config.unitStat.equals(unitStat));
-			const breakpointLimitExists = config?.breakpoints.some(breakpoint => breakpoint == limit);
-			if (config && breakpointLimitExists) {
+			// A stat can have multiple configs (e.g. a SoftCap and a Threshold for the same stat), so apply the
+			// limit to whichever config actually owns that breakpoint rather than just the first matching stat.
+			for (const config of softCaps) {
+				if (!config.unitStat.equals(unitStat) || !config.breakpoints.some(breakpoint => breakpoint == limit)) continue;
 				config.breakpoints = config.breakpoints.filter(breakpoint => breakpoint <= limit);
 				if (config.capType === StatCapType.TypeSoftCap) {
 					config.postCapEPs = config.postCapEPs.slice(0, config.breakpoints.length);
@@ -1693,20 +1694,19 @@ export class ReforgeOptimizer {
 
 			for (const gemData of filteredGemDataForColor) {
 				const cappedStatKeys = ReforgeOptimizer.getCappedStatKeys(gemData.coefficients, reforgeCaps, reforgeSoftCaps);
-				let isRedundantGem: boolean = false;
-
-				for (const statKey of cappedStatKeys) {
-					const numExistingOptions = numGemOptionsForStat.get(statKey) || 0;
-
-					if (numExistingOptions == maxGemOptionsForStat) {
-						isRedundantGem = true;
-					} else if (!gemData.isJC) {
-						numGemOptionsForStat.set(statKey, numExistingOptions + 1);
-					}
-				}
+				const isRedundantGem = cappedStatKeys.some(statKey => (numGemOptionsForStat.get(statKey) || 0) == maxGemOptionsForStat);
 
 				if ((!gemData.isJC || !foundUncappedJCGem) && !isRedundantGem && (cappedStatKeys.length == 0 || !foundUncappedNormalGem)) {
 					includedGemDataForColor.push(gemData);
+
+					// Only gems that actually made it into the candidate list consume
+					// per-stat option slots; otherwise a gem rejected for one capped stat
+					// can crowd out pure gems of its other capped stats.
+					if (!gemData.isJC) {
+						for (const statKey of cappedStatKeys) {
+							numGemOptionsForStat.set(statKey, (numGemOptionsForStat.get(statKey) || 0) + 1);
+						}
+					}
 				}
 
 				if (cappedStatKeys.length == 0 && socketColor != GemColor.GemColorCogwheel) {

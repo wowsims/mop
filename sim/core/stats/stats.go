@@ -10,6 +10,55 @@ import (
 
 type Stats [SimStatsLen]float64
 
+// The five attributes are stored by the game as rounded-DOWN integers after
+// resolving percentage multipliers, and derived values consume the floored
+// integers (e.g. health is computed from the floored Stamina). Verified
+// against live character sheets (Amplification trinket spirit and Blessing of
+// Kings breakpoints).
+var flooredGameStats = []Stat{
+	Strength, Agility, Stamina, Intellect, Spirit,
+}
+
+// Combat ratings are stored by the game as rounded-to-NEAREST integers. Only
+// distinguishable from flooring when a rating picks up a fractional
+// multiplier — in MoP that is exclusively the Amplification trinkets — since
+// every additive rating source is already an integer. Verified against 67
+// character-sheet readings across ilvls 463-580.
+var roundedGameStats = []Stat{
+	HitRating, CritRating, HasteRating, ExpertiseRating,
+	DodgeRating, ParryRating, MasteryRating,
+	PvpResilienceRating, PvpPowerRating,
+}
+
+var isFlooredGameStat = func() [SimStatsLen]bool {
+	var m [SimStatsLen]bool
+	for _, s := range flooredGameStats {
+		m[s] = true
+	}
+	return m
+}()
+
+var isRoundedGameStat = func() [SimStatsLen]bool {
+	var m [SimStatsLen]bool
+	for _, s := range roundedGameStats {
+		m[s] = true
+	}
+	return m
+}()
+
+// Truncates stats to integers the way the game stores them: attributes round
+// down, combat ratings round to nearest. Must be applied after stat
+// dependencies are resolved.
+func (s Stats) RoundGameStats() Stats {
+	for _, k := range flooredGameStats {
+		s[k] = math.Floor(s[k])
+	}
+	for _, k := range roundedGameStats {
+		s[k] = math.Round(s[k])
+	}
+	return s
+}
+
 type Stat byte
 
 // Use internal representation instead of proto.Stat so we can add functions

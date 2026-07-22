@@ -215,6 +215,21 @@ func (item *Item) GetRandPropPoints(itemLevel int) int32 {
 	}
 	return randomProperty[item.OverallQuality.ToProto()][suffixType]
 }
+
+// ItemSocketCostPerLevel game table, collapsed to its breakpoints (constant 160
+// for all ilvls the stat-recompute path can see: upgrades and challenge mode).
+func ItemSocketCostPerLevel(itemLevel int) float64 {
+	breakpoints := [][2]float64{
+		{417, 160}, {333, 40}, {178, 20}, {100, 6}, {89, 5}, {55, 4}, {43, 3}, {31, 2}, {19, 1},
+	}
+	for _, bp := range breakpoints {
+		if float64(itemLevel) >= bp[0] {
+			return bp[1]
+		}
+	}
+	return 0
+}
+
 func (item *Item) GetScaledStat(index int, itemLevel int) float64 {
 	//Todo check if overflow array
 
@@ -234,10 +249,13 @@ func (item *Item) GetScaledStat(index int, itemLevel int) float64 {
 		if item.StatAlloc[index] > 0 && itemBudget > 0 {
 			rawValue := math.Round(item.StatAlloc[index] * itemBudget * 0.0001)
 
-			//Todo: Figure out if this does anything in MoP
-			//Not used right now in Cata
-			//socket_penalty := math.RoundNearby item.StatPercentageOfSocket[index] * SocketCost(itemLevel)
-			return rawValue - item.SocketModifier[index] // Todo: Could this be a calculated socket penalty?
+			// The StatPercentEditor DB column (SocketModifier) stores the truncated
+			// penalty, but Blizzard's own precomputed base-ilvl stats subtract the
+			// rounded product; e.g. the legendary cloaks have socket mult 0.166,
+			// StatPercentEditor 26, yet their baked stats imply round(0.166*160) = 27.
+			// Verified against a live character sheet (upgraded Fen-Yu at ilvl 608).
+			socketPenalty := math.Round(item.StatPercentageOfSocket[index] * ItemSocketCostPerLevel(itemLevel))
+			return rawValue - socketPenalty
 		} else {
 			return math.Floor(item.BonusAmountCalculated[index] * item.ApproximateScaleCoeff(item.ItemLevel, itemLevel))
 		}
