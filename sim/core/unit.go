@@ -358,14 +358,21 @@ func (unit *Unit) AddStatsDynamic(sim *Simulation, bonus stats.Stats) {
 	unit.statsWithoutDeps.AddInplace(&bonus)
 
 	if !unit.Env.MeasuringStats || unit.Env.State == Finalized {
-		bonus = unit.ApplyStatDependencies(bonus)
+		// Recompute the full total rather than applying dependencies to the
+		// delta: floored stats are only path-independent as floor(newTotal) -
+		// floor(oldTotal), while flooring per-delta would drift on every
+		// aura gain/expire cycle.
+		newStats := unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
+		bonus = newStats.Subtract(unit.stats)
+		unit.stats = newStats
+	} else {
+		unit.stats.AddInplace(&bonus)
 	}
 
 	if sim.Log != nil {
 		unit.Log(sim, "Dynamic stat change: %s", bonus.FlatString())
 	}
 
-	unit.stats.AddInplace(&bonus)
 	unit.processDynamicBonus(sim, bonus)
 }
 
@@ -421,7 +428,7 @@ func (unit *Unit) processDynamicBonus(sim *Simulation, bonus stats.Stats) {
 func (unit *Unit) EnableDynamicStatDep(sim *Simulation, dep *stats.StatDependency) {
 	if unit.StatDependencyManager.EnableDynamicStatDep(dep) {
 		oldStats := unit.stats
-		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps)
+		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
 		unit.processDynamicBonus(sim, unit.stats.Subtract(oldStats))
 
 		if sim.Log != nil {
@@ -432,7 +439,7 @@ func (unit *Unit) EnableDynamicStatDep(sim *Simulation, dep *stats.StatDependenc
 func (unit *Unit) DisableDynamicStatDep(sim *Simulation, dep *stats.StatDependency) {
 	if unit.StatDependencyManager.DisableDynamicStatDep(dep) {
 		oldStats := unit.stats
-		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps)
+		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
 		unit.processDynamicBonus(sim, unit.stats.Subtract(oldStats))
 
 		if sim.Log != nil {
@@ -446,7 +453,7 @@ func (unit *Unit) UpdateDynamicStatDep(sim *Simulation, dep *stats.StatDependenc
 
 	if unit.Env.IsFinalized() {
 		oldStats := unit.stats
-		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps)
+		unit.stats = unit.ApplyStatDependencies(unit.statsWithoutDeps).RoundGameStats()
 		statsChange := unit.stats.Subtract(oldStats)
 		unit.processDynamicBonus(sim, statsChange)
 
@@ -745,7 +752,7 @@ func (unit *Unit) finalize() {
 	unit.initialRangedSwingSpeed = unit.TotalRangedHasteMultiplier()
 
 	unit.StatDependencyManager.FinalizeStatDeps()
-	unit.initialStats = unit.ApplyStatDependencies(unit.initialStatsWithoutDeps)
+	unit.initialStats = unit.ApplyStatDependencies(unit.initialStatsWithoutDeps).RoundGameStats()
 	unit.statsWithoutDeps = unit.initialStatsWithoutDeps
 	unit.stats = unit.initialStats
 
