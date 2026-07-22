@@ -1694,20 +1694,19 @@ export class ReforgeOptimizer {
 
 			for (const gemData of filteredGemDataForColor) {
 				const cappedStatKeys = ReforgeOptimizer.getCappedStatKeys(gemData.coefficients, reforgeCaps, reforgeSoftCaps);
-				let isRedundantGem: boolean = false;
-
-				for (const statKey of cappedStatKeys) {
-					const numExistingOptions = numGemOptionsForStat.get(statKey) || 0;
-
-					if (numExistingOptions == maxGemOptionsForStat) {
-						isRedundantGem = true;
-					} else if (!gemData.isJC) {
-						numGemOptionsForStat.set(statKey, numExistingOptions + 1);
-					}
-				}
+				const isRedundantGem = cappedStatKeys.some(statKey => (numGemOptionsForStat.get(statKey) || 0) == maxGemOptionsForStat);
 
 				if ((!gemData.isJC || !foundUncappedJCGem) && !isRedundantGem && (cappedStatKeys.length == 0 || !foundUncappedNormalGem)) {
 					includedGemDataForColor.push(gemData);
+
+					// Only gems that actually made it into the candidate list consume
+					// per-stat option slots; otherwise a gem rejected for one capped stat
+					// can crowd out pure gems of its other capped stats.
+					if (!gemData.isJC) {
+						for (const statKey of cappedStatKeys) {
+							numGemOptionsForStat.set(statKey, (numGemOptionsForStat.get(statKey) || 0) + 1);
+						}
+					}
 				}
 
 				if (cappedStatKeys.length == 0 && socketColor != GemColor.GemColorCogwheel) {

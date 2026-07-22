@@ -142,11 +142,35 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecGuardianDruid, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_DEFAULT, Presets.ROTATION_HOTW, Presets.ROTATION_EMPRESS, Presets.ROTATION_SHA, Presets.ROTATION_HORRIDON, Presets.ROTATION_IJ],
+		rotations: [
+			Presets.ROTATION_DEFAULT,
+			Presets.ROTATION_HOTW,
+			Presets.ROTATION_EMPRESS,
+			Presets.ROTATION_SHA,
+			Presets.ROTATION_HORRIDON,
+			Presets.ROTATION_IJ,
+		],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET, Presets.MSV_PRESET, Presets.HOF_PRESET, Presets.P2_PRESET, Presets.P2_OFFENSIVE_PRESET, Presets.P3_PRESET, Presets.P3_OFFENSIVE_PRESET, Presets.P5_PRESET, Presets.P5_OFFENSIVE_PRESET],
+		gear: [
+			Presets.PRERAID_PRESET,
+			Presets.MSV_PRESET,
+			Presets.HOF_PRESET,
+			Presets.P2_PRESET,
+			Presets.P2_OFFENSIVE_PRESET,
+			Presets.P3_PRESET,
+			Presets.P3_OFFENSIVE_PRESET,
+			Presets.P5_PRESET,
+			Presets.P5_OFFENSIVE_PRESET,
+		],
 		itemSwaps: [Presets.ITEM_SWAP_PRESET],
-		builds: [Presets.PRESET_BUILD_DEFAULT, Presets.PRESET_BUILD_GARAJAL, Presets.PRESET_BUILD_EMPRESS, Presets.PRESET_BUILD_SHA, Presets.PRESET_BUILD_HORRIDON, Presets.PRESET_BUILD_IJ],
+		builds: [
+			Presets.PRESET_BUILD_DEFAULT,
+			Presets.PRESET_BUILD_GARAJAL,
+			Presets.PRESET_BUILD_EMPRESS,
+			Presets.PRESET_BUILD_SHA,
+			Presets.PRESET_BUILD_HORRIDON,
+			Presets.PRESET_BUILD_IJ,
+		],
 	},
 
 	autoRotation: (_player: Player<Spec.SpecGuardianDruid>): APLRotation => {
@@ -274,7 +298,6 @@ export class GuardianDruidSimUI extends IndividualSimUI<Spec.SpecGuardianDruid> 
 			},
 			updateSoftCaps: softCaps => {
 				const epWeights = this.reforger?.preCapEPs;
-				console.log(epWeights);
 
 				if (!epWeights) {
 					return softCaps;
@@ -285,7 +308,7 @@ export class GuardianDruidSimUI extends IndividualSimUI<Spec.SpecGuardianDruid> 
 						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 							breakpoints: [79.0],
 							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [1.16 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT / 1.5],
+							postCapEPs: [(1.16 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT) / 1.5],
 						}),
 					);
 				}
