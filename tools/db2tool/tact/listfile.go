@@ -14,10 +14,10 @@ import (
 
 const DefaultListfileURL = "https://github.com/wowdev/wow-listfile/releases/latest/download/community-listfile.csv"
 
-// Listfile manages the community listfile.csv: download-if-stale semantics
-// matching upstream (HEAD + Last-Modified vs local mtime; on a failed
-// freshness check upstream re-downloads, and on a failed download it falls
-// back to the existing file when one exists).
+// Listfile manages the community listfile.csv with download-if-stale
+// semantics: HEAD + Last-Modified vs local mtime; a failed freshness check
+// triggers a re-download, and a failed download falls back to the existing
+// file when one exists.
 type Listfile struct {
 	Path   string
 	URL    string

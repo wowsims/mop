@@ -1,5 +1,4 @@
-// Port of this repo's tools/DB2ToSqlite/Helpers/SqliteDataInserter.cs.
-// Original repo code (MIT), no external attribution owed.
+// Row insertion for the extracted tables.
 package sqlite
 
 import (
@@ -14,17 +13,15 @@ import (
 
 // InsertRows upserts every decoded row of one table inside one transaction.
 //
-// Contract notes (plan §5.4/§5.5, all verified against the reference DB):
+// Contract notes (the wowsims.db output format):
 //   - definition order = column order = bind order;
 //   - relation-column idx_ indexes use table-less names (idx_<col lowercased>)
 //     with IF NOT EXISTS, so only the first table processed with a given
 //     relation-column name gets the index — tables MUST be processed in
 //     settings order;
-//   - relation values of 0 stay 0 (the C# 0→NULL branch is a boxed reference
-//     comparison that is always false — dead code);
+//   - relation values of 0 stay 0, never NULLed;
 //   - arrays serialize as JSON text via encoding/json over plain numeric
-//     slices, matching C# System.Text.Json's Array-declared serialization
-//     (boxed elements — u8 arrays emit [0,0,0], never base64);
+//     slices (u8 arrays emit [0,0,0], never base64);
 //   - float scalars bind as the double-widened float32.
 func InsertRows(db *sql.DB, t TableDef, decoded *wdc.Decoded) error {
 	defs := t.Version.Definitions
@@ -71,7 +68,7 @@ func InsertRows(db *sql.DB, t TableDef, decoded *wdc.Decoded) error {
 	}
 	defer tx.Rollback()
 
-	// Relation-column indexes, created before the inserts like the C# tool.
+	// Relation-column indexes, created before the inserts.
 	for _, d := range defs {
 		if d.IsRelation {
 			stmt := fmt.Sprintf("CREATE INDEX IF NOT EXISTS idx_%s ON %s (%s);", strings.ToLower(d.Name), t.Name, d.Name)
@@ -120,7 +117,7 @@ func bindValue(value any) (any, error) {
 		}
 		return int64(v), nil
 	case float32:
-		return float64(v), nil // double-widened, same as Microsoft.Data.Sqlite
+		return float64(v), nil // REAL binds as the double-widened float32
 	case string:
 		return v, nil
 	case []int64, []uint64, []float32, []string:

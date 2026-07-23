@@ -1,7 +1,6 @@
-// Go translation of DBCD.IO's WDC4Row (the row class WDC5Reader actually
-// instantiates) plus the DBCDBuilder DBD-to-field-type mapping and the
-// BaseReader copy-row semantics (https://github.com/wowdev/DBCD, v2.1.2,
-// commit 2180edb4d08b3822b3cfa964293ba8ccd4236ac0).
+// Go translation of DBCD.IO's row decoding, DBD-to-field-type mapping and
+// copy-row semantics (https://github.com/wowdev/DBCD, v2.1.2, commit
+// 2180edb4d08b3822b3cfa964293ba8ccd4236ac0).
 // Copyright (c) 2020 wowdev. MIT License — see tools/db2tool/NOTICES.md.
 package wdc
 
@@ -21,8 +20,7 @@ const (
 	kindString // string, or locstring when locStringSize == 1 (always true for MoP builds)
 )
 
-// fieldPlan is the precomputed per-definition decode plan, mirroring what
-// DBCDBuilder encodes into the dynamic type's fields.
+// fieldPlan is the precomputed per-definition decode plan.
 type fieldPlan struct {
 	name           string
 	kind           colKind
@@ -33,21 +31,20 @@ type fieldPlan struct {
 	isNonInlineID  bool
 	isID           bool
 
-	// FieldCache.MetaDataFieldType view, used only by the hotfix decoder:
-	// a non-inline relation is read from a hotfix blob at its DBD-declared
-	// type (then Convert.ChangeType'd to int), while kind/size/signed above
-	// carry the typeof(int) override. Identical to kind/size/signed for
-	// every other field.
+	// The DBD-declared view, used only by the hotfix decoder: a non-inline
+	// relation is read from a hotfix blob at its DBD-declared type (then
+	// converted to int), while kind/size/signed above carry the int32
+	// override. Identical to kind/size/signed for every other field.
 	hfKind   colKind
 	hfSize   int
 	hfSigned bool
 }
 
 // Row is one decoded record; Values align 1:1 with Decoded.ColumnNames.
-// Value dynamic types (chosen so encoding/json output matches what C#
-// System.Text.Json emits for a value declared as Array — boxed numeric
-// elements, no byte[]→base64 special case): int64/uint64 scalars, float32,
-// string, []int64, []uint64, []float32, []string.
+// Value dynamic types are limited to int64/uint64 scalars, float32, string,
+// []int64, []uint64, []float32 and []string — never []byte, so encoding/json
+// writes every array element-by-element as numbers (no base64), the
+// wowsims.db array-text format.
 type Row struct {
 	ID     int32
 	Values []any
@@ -55,13 +52,13 @@ type Row struct {
 
 type Decoded struct {
 	ColumnNames []string
-	Rows        []Row // ascending ID (Storage<T> is a SortedDictionary)
+	Rows        []Row // ascending ID
 }
 
 func buildFieldPlans(def dbd.DBDefinition, version dbd.VersionDefinitions, buildNumber uint32) ([]fieldPlan, error) {
-	// DBCDBuilder.GetLocStringSize: 1 for post-wotlk (expansion >= 4 || build >
-	// 12340) — always the case for the builds this tool targets. A locstring
-	// therefore maps to a single string field with no _mask column.
+	// The locstring size is 1 for post-wotlk builds (build > 12340) — always
+	// the case for the builds this tool targets. A locstring therefore maps
+	// to a single string field with no _mask column.
 	if buildNumber <= 12340 {
 		return nil, fmt.Errorf("build %d predates single-locale locstrings; this port only supports locStringSize == 1", buildNumber)
 	}
@@ -96,11 +93,11 @@ func buildFieldPlans(def dbd.DBDefinition, version dbd.VersionDefinitions, build
 		default:
 			return nil, fmt.Errorf("column %q: unable to construct field type from %q", d.Name, col.Type)
 		}
-		// Capture the DBD-declared mapping (MetaDataFieldType) before the
-		// non-inline-relation override — the hotfix decoder reads that type.
+		// Capture the DBD-declared mapping before the non-inline-relation
+		// override — the hotfix decoder reads that type.
 		p.hfKind, p.hfSize, p.hfSigned = p.kind, p.size, p.signed
-		// DBCDBuilder: a non-inline relation is always typeof(int), regardless
-		// of the DBD-declared type.
+		// A non-inline relation always decodes as a signed 32-bit int,
+		// regardless of the DBD-declared type.
 		if p.isNonInlineRel {
 			p.kind = kindInt
 			p.size = 32
@@ -142,12 +139,12 @@ func (t *Table) DecodeRows(def dbd.DBDefinition, version dbd.VersionDefinitions,
 	}
 
 	// Copy-table rows: clone the source row's decoded values and rewrite the
-	// id field (BaseReader.GetCopyRows + WDC4Row.GetFields on the clone).
+	// id field.
 	if len(t.copyData) > 0 {
 		if hadInlineID {
-			// C# re-decodes clones with an off-by-one field mapping in this
-			// case; it never occurs on real data. Refuse rather than diverge.
-			return nil, fmt.Errorf("copy table present on a table with inline ids — unsupported (would diverge from C# behavior)")
+			// Never occurs on real data, and the id-field mapping would be
+			// ambiguous; refuse rather than guess.
+			return nil, fmt.Errorf("copy table present on a table with inline ids — unsupported")
 		}
 		idFieldIndex := int(t.IdFieldIndex)
 		if idFieldIndex >= len(plans) {
@@ -181,7 +178,7 @@ func (t *Table) DecodeRows(def dbd.DBDefinition, version dbd.VersionDefinitions,
 	return decoded, nil
 }
 
-// decodeRow ports WDC4Row.GetFields.
+// decodeRow decodes one raw record into values aligned with plans.
 func (t *Table) decodeRow(row rawRow, plans []fieldPlan) (int32, []any, error) {
 	r := row.data
 	r.Position = row.dataPos
@@ -233,8 +230,8 @@ func (t *Table) readScalarField(id int32, r *bitReader, fieldIndex int, p fieldP
 		if t.Flags&flagSparse != 0 {
 			return r.ReadCString(), nil
 		}
-		// getStringTableRecord: the byte position is captured BEFORE the
-		// relative offset is read (C# left-to-right evaluation).
+		// The byte position is captured BEFORE the relative offset is read —
+		// the offset is relative to the field's own position.
 		recordOffset := (int(row.recordIndex) * int(t.RecordSize)) - (int(t.RecordsCount) * int(t.RecordSize))
 		bytePos := r.Position >> 3
 		raw, err := t.getFieldRaw(id, r, fieldIndex)
@@ -263,8 +260,8 @@ func (t *Table) readScalarField(id int32, r *bitReader, fieldIndex int, p fieldP
 }
 
 // rawToInt reinterprets the low bits of the 64-bit read per the DBD-declared
-// width and signedness (Value64.GetValue<T> semantics). Unsigned 64-bit stays
-// uint64; every other case fits int64.
+// width and signedness. Unsigned 64-bit stays uint64; every other case fits
+// int64.
 func rawToInt(raw uint64, size int, signed bool) any {
 	switch size {
 	case 8:
@@ -297,8 +294,7 @@ func (t *Table) readArrayField(r *bitReader, fieldIndex int, p fieldPlan, row ra
 
 	if p.kind == kindString {
 		if t.Flags&flagSparse != 0 {
-			// C# WDC4Row routes string[] to GetFieldValueStringArray, which has
-			// no sparse path; no configured table has string arrays.
+			// No configured table has string arrays in a sparse table.
 			return nil, fmt.Errorf("string arrays in sparse tables are not supported")
 		}
 		if cm.CompressionType != compressionNone {
@@ -368,12 +364,10 @@ func (t *Table) readArrayField(r *bitReader, fieldIndex int, p fieldPlan, row ra
 		return out, nil
 	}
 
-	// C# serializes these through SqliteDataInserter's `value is Array arr →
-	// JsonSerializer.Serialize(arr)`, whose declared type is Array: STJ takes
-	// the IEnumerable path and writes each element as a boxed number. That
-	// means byte[] serializes as [0,0,0] here, NOT base64 (verified against
-	// the reference DB), so plain numeric slices reproduce the text exactly.
-	// Width/sign truncation still follows the DBD-declared element type.
+	// Byte-sized arrays must stay plain numeric slices (never []byte): the
+	// wowsims.db array-text format is element-by-element numbers, e.g.
+	// [0,0,0], NOT base64. Width/sign truncation still follows the
+	// DBD-declared element type.
 	if p.size == 64 && !p.signed {
 		out := make([]uint64, len(raws))
 		copy(out, raws)
@@ -386,7 +380,7 @@ func (t *Table) readArrayField(r *bitReader, fieldIndex int, p fieldPlan, row ra
 	return out, nil
 }
 
-// getFieldRaw ports GetFieldValue<T>'s compression dispatch, returning the
+// getFieldRaw dispatches on the column's compression type, returning the
 // raw 64-bit value before type reinterpretation.
 func (t *Table) getFieldRaw(id int32, r *bitReader, fieldIndex int) (uint64, error) {
 	fm := t.Meta[fieldIndex]

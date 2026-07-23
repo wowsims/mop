@@ -1,8 +1,6 @@
 // FDID resolution: a static path→FDID map for the configured tables/gametables
 // (primary; FDIDs are stable per path), with the community listfile.csv as the
-// fallback for paths not in the map. Replaces TACTSharp's Jenkins96-hashed
-// listfile lookup (https://github.com/wowdev/TACTSharp) with plain
-// case-normalized paths. Original repo code (MIT).
+// fallback for paths not in the map. Lookups use plain case-normalized paths.
 package tact
 
 import (
@@ -101,8 +99,7 @@ var staticFDIDs = map[string]uint32{
 
 // GetFDID resolves a game path (e.g. "dbfilesclient/Spell.db2") to its file
 // data id: static map first, then the listfile (loaded lazily). The lookup
-// key is the raw game path, lowercased — never a filesystem-resolved path
-// (plan §7 M4 carve-out).
+// key is the raw game path, lowercased — never a filesystem-resolved path.
 func (l *Listfile) GetFDID(path string) (uint32, error) {
 	key := strings.ToLower(path)
 	if fdid, ok := staticFDIDs[key]; ok {

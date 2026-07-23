@@ -33,7 +33,7 @@ func loadCascIndex(path string) (*cascIndex, error) {
 	if len(raw) < cascIdxHeaderSize {
 		return nil, fmt.Errorf("%s: too small for .idx header", path)
 	}
-	// IndexHeader layout (C# sequential struct with natural alignment):
+	// IndexHeader layout:
 	// u32 headerHashSize, u32 headerHash, u16 version, u8 bucketIndex,
 	// u8 extraBytes, u8 entrySizeBytes, u8 entryOffsetBytes, u8 entryKeyBytes,
 	// u8 entryOffsetBits, u64 maxArchiveSize @16, 8 pad, u32 entriesSize @32.

@@ -14,22 +14,21 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// Golden gate (plan §8): builds a wowsims.db from the pre-extracted snapshot
-// and diffs it against a reference produced by the .NET tool.
+// Golden gate: builds a wowsims.db from the pre-extracted build-68571
+// snapshot and diffs it against a reference database capture.
 //
 //   - Schema parity is ALWAYS strict — hotfixes never change schema.
 //   - Row parity is strict when DB2TOOL_REF_DB points at a without-hotfix
-//     reference capture (plan §8 step 1). Against the default repo reference
+//     reference capture. Against the default repo reference
 //     (tools/database/wowsims.db, built WITH hotfixes), small per-table diffs
-//     are tolerated and logged: they are the hotfix overlay Phase D will
-//     apply. A systematic decoder bug produces thousands of diff lines and
-//     still fails.
+//     are tolerated and logged: they are the hotfix overlay. A systematic
+//     decoder bug produces thousands of diff lines and still fails.
 //
 // Skips when the gitignored snapshot/reference are absent (e.g. CI).
 func TestGoldenParity(t *testing.T) {
 	const snapshotBuild = 68571
-	db2Dir := "../DB2ToSqlite/dbfilesclient"
-	dbdDir := "../DB2ToSqlite/DBDCache"
+	db2Dir := "refs/dbfilesclient"
+	dbdDir := "refs/DBDCache"
 	settingsPath := "../database/generator-settings.json"
 
 	refPath := os.Getenv("DB2TOOL_REF_DB")
@@ -118,8 +117,9 @@ func TestGoldenParity(t *testing.T) {
 		}
 	}
 
-	// 2. §5.5 float-notation risk: no critical-table float ARRAY element may
-	// fall in the C#-vs-Go divergent text ranges. Scalars are exempt: they
+	// 2. Float-notation risk: no critical-table float ARRAY element may fall
+	// in the divergent text-rendering ranges (golden.FloatDiverges). Scalars
+	// are exempt: they
 	// bind numerically as REAL and never go through text formatting (e.g.
 	// SpellEffect has ±1e17 scalar coefficients that are byte-identical in
 	// the reference).
@@ -137,7 +137,7 @@ func TestGoldenParity(t *testing.T) {
 				case []float32:
 					for _, f := range v {
 						if golden.FloatDiverges(f) {
-							t.Errorf("%s row %d: float %v in divergent notation range (implement C#-compatible formatter, §5.5)", tableName, decodedRow.ID, f)
+							t.Errorf("%s row %d: float %v in divergent notation range (needs a reference-compatible formatter)", tableName, decodedRow.ID, f)
 						}
 					}
 				}
@@ -182,7 +182,7 @@ func TestGoldenParity(t *testing.T) {
 			}
 			t.Errorf("%s: %d row diff lines", td.Name, n)
 		} else {
-			t.Logf("%s: %d diff lines (within with-hotfix tolerance — expected Phase D deltas)", td.Name, n)
+			t.Logf("%s: %d diff lines (within with-hotfix tolerance — expected hotfix-overlay deltas)", td.Name, n)
 		}
 	}
 	t.Logf("total row diff lines across all tables: %d", totalDiff)

@@ -13,7 +13,7 @@ import (
 // LoadConfig reads a build/CDN config from the local install's
 // Data/config/<xx>/<yy>/<hash> layout. Values are space-separated (typically
 // `ckey [ekey]`). All keys are kept, including the ~318 unused `vfs-*` TVFS
-// lines (plan §10 Q4) — they parse fine and are simply never consulted.
+// lines — they parse fine and are simply never consulted.
 func LoadConfig(baseDir, hash string) (map[string][]string, error) {
 	if len(hash) != 32 {
 		return nil, fmt.Errorf("invalid config hash %q", hash)

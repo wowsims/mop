@@ -1,9 +1,7 @@
-// Go translation of DBCD.IO's hotfix support — HotfixReader, HTFXReader and
-// HotfixEntryV9 (https://github.com/wowdev/DBCD, v2.1.2, commit
-// 2180edb4d08b3822b3cfa964293ba8ccd4236ac0) — plus the DBCache scanning and
-// SStrHash table-name hash ported from wow.tools.local's HotfixManager /
-// DBCacheParser (https://github.com/Marlamin/wow.tools.local, via this repo's
-// tools/DB2ToSqlite/Helpers copies).
+// Go translation of DBCD.IO's hotfix support (https://github.com/wowdev/DBCD,
+// v2.1.2, commit 2180edb4d08b3822b3cfa964293ba8ccd4236ac0), plus the DBCache
+// scanning and SStrHash table-name hash from wow.tools.local
+// (https://github.com/Marlamin/wow.tools.local).
 // Copyright (c) 2020 wowdev; Copyright (c) 2022 Martin Benjamins.
 // MIT License — see tools/db2tool/NOTICES.md.
 package wdc
@@ -37,11 +35,9 @@ type HotfixEntry struct {
 	Data      []byte
 }
 
-// hotfixIdentity is the effective HashSet<HTFXRow> identity Combine dedups
-// on. HTFXRow.Equals compares the 5-tuple, but GetHashCode also hashes the
-// record's data bytes (BitReader.GetHashCode), so records that differ only
-// in data land in different buckets and are both kept — full-record identity,
-// not the 5-tuple alone (plan §6 Phase D). RegionID/UniqueID never
+// hotfixIdentity is the identity Combine dedups on: the 5-tuple plus the
+// record's data bytes, so records that differ only in data are both kept —
+// full-record identity, not the 5-tuple alone. RegionID/UniqueID never
 // participate.
 type hotfixIdentity struct {
 	pushID    int32
@@ -72,9 +68,8 @@ type HotfixReader struct {
 }
 
 // ReadHotfixFile parses one DBCache-format file. Only XFTH version 9 (the
-// current live-client format) is supported; older versions fail loud (the C#
-// HTFXReader also handles v1–v8 for long-obsolete clients — deliberately not
-// ported, plan's minimal-surface rule).
+// current live-client format) is supported; older versions (v1–v8, written
+// only by long-obsolete clients) fail loud.
 func ReadHotfixFile(path string) (*HotfixReader, error) {
 	buf, err := os.ReadFile(path)
 	if err != nil {
@@ -136,9 +131,9 @@ func parseHotfix(buf []byte) (*HotfixReader, error) {
 	return h, nil
 }
 
-// Combine ports HTFXReader.Combine (+ HotfixReader.CombineCache's build
-// check): other's records are appended in order unless an identical record
-// is already present. Readers for a different build are ignored.
+// Combine merges another reader into this one: other's records are appended
+// in order unless an identical record is already present. Readers for a
+// different build are ignored.
 func (h *HotfixReader) Combine(other *HotfixReader) {
 	if other.BuildID != h.BuildID {
 		return
@@ -158,8 +153,7 @@ func (h *HotfixReader) Combine(other *HotfixReader) {
 
 // CombineHotfixFiles parses each file in order into readers keyed by BuildId:
 // the first file seen for a build becomes its base reader and later files
-// Combine into it — HotfixManager.LoadCaches's per-file loop. (C# also
-// re-Combines the base file into itself, a no-op under the dedup.)
+// Combine into it.
 func CombineHotfixFiles(files []string) (map[uint32]*HotfixReader, error) {
 	readers := make(map[uint32]*HotfixReader)
 	for _, f := range files {
@@ -177,12 +171,11 @@ func CombineHotfixFiles(files []string) (map[uint32]*HotfixReader, error) {
 	return readers, nil
 }
 
-// LoadHotfixCaches ports HotfixManager.LoadCaches's scan: if cachesDir
-// exists, every *.bin under it (recursively) loads first, then every file
-// named DBCache.bin anywhere under baseDir. Finding no cache file is not an
-// error (the no-hotfix throw in Program.cs:102 is commented out); a malformed
+// LoadHotfixCaches scans for cache files: if cachesDir exists, every *.bin
+// under it (recursively) loads first, then every file named DBCache.bin
+// anywhere under baseDir. Finding no cache file is not an error; a malformed
 // or unsupported-version file fails loud. Files are visited in WalkDir's
-// deterministic lexical order (.NET's enumeration order is unspecified).
+// deterministic lexical order.
 func LoadHotfixCaches(cachesDir, baseDir string) (map[uint32]*HotfixReader, error) {
 	var files []string
 	if st, err := os.Stat(cachesDir); err == nil && st.IsDir() {
@@ -214,10 +207,9 @@ func LoadHotfixCaches(cachesDir, baseDir string) (map[uint32]*HotfixReader, erro
 	return CombineHotfixFiles(files)
 }
 
-// SStrHash ports HotfixManager.Hash — the Blizzard SStrHash variant DBCache
-// table hashes use. Callers hash the UPPERCASED table name; the result equals
-// the table's WDC5 header TableHash (which ApplyHotfixes actually keys on,
-// like C# parser.TableHash).
+// SStrHash is the Blizzard SStrHash variant DBCache table hashes use.
+// Callers hash the UPPERCASED table name; the result equals the table's WDC5
+// header TableHash (which ApplyHotfixes actually keys on).
 func SStrHash(s string) uint32 {
 	sHashtable := [16]uint32{
 		0x486E26EE, 0xDCAA16B3, 0xE1918EEF, 0x202DAFDB,
@@ -236,13 +228,12 @@ func SStrHash(s string) uint32 {
 	return v
 }
 
-// ApplyHotfixes ports HotfixReader.ReadHotfixes (with DefaultProcessor) +
-// DBCDStorage.ApplyingHotfixes: this reader's records for table t overlay
-// decoded in place. Records apply in a stable ascending-PushId sort
-// (file/combine insertion order preserved within a PushId). An Add
+// ApplyHotfixes overlays this reader's records for table t onto decoded in
+// place. Records apply in a stable ascending-PushId sort (file/combine
+// insertion order preserved within a PushId). An Add
 // (IsValid && DataSize > 0) replaces or inserts the whole row decoded from
 // the blob; otherwise the row is deleted when shouldDelete. Rows come back
-// out in ascending-ID order, keeping the Phase A/B insertion contract.
+// out in ascending-ID order, the order the sqlite inserts expect.
 func (h *HotfixReader) ApplyHotfixes(t *Table, def dbd.DBDefinition, version dbd.VersionDefinitions, buildNumber uint32, decoded *Decoded) error {
 	var recs []*HotfixEntry
 	for i := range h.records {
@@ -262,8 +253,7 @@ func (h *HotfixReader) ApplyHotfixes(t *Table, def dbd.DBDefinition, version dbd
 	sort.SliceStable(recs, func(i, j int) bool { return recs[i].PushID < recs[j].PushID })
 
 	// The shouldDelete carve-out only affects TactKey (0xDF2F53CF) and
-	// BroadcastText (0x021826BB), neither of which is in Tables[] — ported
-	// faithfully anyway (plan §6 Phase D).
+	// BroadcastText (0x021826BB), neither of which is in Tables[].
 	anyValidCached := false
 	for _, r := range recs {
 		if r.IsValid && r.PushID == -1 && r.DataSize > 0 {
@@ -306,12 +296,12 @@ func (h *HotfixReader) ApplyHotfixes(t *Table, def dbd.DBDefinition, version dbd
 	return nil
 }
 
-// decodeHotfixRow ports HTFXRow.GetFields. Hotfix blobs are NOT bitpacked:
-// fields are byte-aligned little-endian values in definition order, at their
-// DBD-declared widths, with strings inline null-terminated. The non-inline ID
-// is absent from the blob (IndexMapField) and comes from RecordId; a
-// non-inline relation IS in the blob at its DBD-declared type
-// (MetaDataFieldType), then Convert.ChangeType'd to int.
+// decodeHotfixRow decodes one hotfix data blob. Hotfix blobs are NOT
+// bitpacked: fields are byte-aligned little-endian values in definition
+// order, at their DBD-declared widths, with strings inline null-terminated.
+// The non-inline ID is absent from the blob and comes from RecordId; a
+// non-inline relation IS in the blob at its DBD-declared type, then
+// converted to int.
 func decodeHotfixRow(t *Table, plans []fieldPlan, rec *HotfixEntry) ([]any, error) {
 	r := newBitReader(padRecordData(rec.Data))
 	values := make([]any, len(plans))
@@ -319,9 +309,8 @@ func decodeHotfixRow(t *Table, plans []fieldPlan, rec *HotfixEntry) ([]any, erro
 	for i := range plans {
 		p := &plans[i]
 
-		// FieldCache.IndexMapField: set at construction for a non-inline DBD
-		// id, and forced by ReadHotfixes on parser.IdFieldIndex when the
-		// Index flag is set.
+		// The record ID replaces the field for a non-inline DBD id, and for
+		// the id field when the table's Index flag is set.
 		if p.isNonInlineID || (t.Flags&flagIndex != 0 && i == int(t.IdFieldIndex)) {
 			values[i] = int64(rec.RecordID)
 			continue
@@ -329,7 +318,6 @@ func decodeHotfixRow(t *Table, plans []fieldPlan, rec *HotfixEntry) ([]any, erro
 
 		if p.isNonInlineRel {
 			if p.arrLength != 0 {
-				// C# Convert.ChangeType to int[] would throw InvalidCastException.
 				return nil, fmt.Errorf("field %s: non-inline relation arrays are not supported", p.name)
 			}
 			if p.hfKind != kindInt {
@@ -344,8 +332,6 @@ func decodeHotfixRow(t *Table, plans []fieldPlan, rec *HotfixEntry) ([]any, erro
 		}
 
 		if p.arrLength != 0 {
-			// FieldCache.Cardinality: the CardinalityAttribute arrLength when
-			// > 1, else the default 1 — arrLength elements either way.
 			switch p.kind {
 			case kindString:
 				out := make([]string, p.arrLength)
@@ -386,12 +372,12 @@ func decodeHotfixRow(t *Table, plans []fieldPlan, rec *HotfixEntry) ([]any, erro
 			values[i] = rawToInt(r.ReadValue64(p.size), p.size, p.signed)
 		}
 	}
-	// C# never validates that the blob is fully consumed; neither do we.
+	// The blob is deliberately not validated to be fully consumed.
 	return values, nil
 }
 
-// toInt32Checked mirrors Convert.ChangeType(value, typeof(int)): value-
-// preserving, overflow-checked.
+// toInt32Checked converts to the int32 range: value-preserving,
+// overflow-checked.
 func toInt32Checked(v any) (int64, error) {
 	switch x := v.(type) {
 	case int64:

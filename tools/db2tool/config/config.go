@@ -1,6 +1,5 @@
-// Settings JSON binding for tools/db2tool — mirrors the configuration shape
-// consumed by tools/DB2ToSqlite/Program.cs (generator-settings.json /
-// ptr-generator-settings.json). Original repo code (MIT).
+// Settings JSON binding for tools/db2tool (generator-settings.json /
+// ptr-generator-settings.json).
 package config
 
 import (
@@ -9,9 +8,9 @@ import (
 	"os"
 )
 
-// Settings mirrors the TACTSharp-bindable "Settings" section. Only the fields
-// the tool actually consumes are used today; the rest are bound for
-// compatibility (CacheDir is bound-but-unused in v1, plan §3.1).
+// Settings is the settings file's "Settings" section. Only the fields the
+// tool actually consumes are used today; the rest are bound so existing
+// settings files parse cleanly (CacheDir and Locale are bound-but-unused).
 type Settings struct {
 	Region      string `json:"Region"`
 	Product     string `json:"Product"`
@@ -24,11 +23,11 @@ type Settings struct {
 
 type File struct {
 	Settings Settings `json:"Settings"`
-	// TargetDirectory does double duty upstream (listfile-key prefix AND
-	// output dir — plan §7 M4); the FDID/listfile use must always see the raw
-	// value, never a filesystem-resolved path.
+	// TargetDirectory does double duty (listfile-key prefix AND output dir);
+	// the FDID/listfile use must always see the raw value, never a
+	// filesystem-resolved path.
 	TargetDirectory        string   `json:"TargetDirectory"`
-	DatabaseFile           string   `json:"DatabaseFile"` // dead code upstream (plan §10 Q7); bound, never read
+	DatabaseFile           string   `json:"DatabaseFile"` // bound, never read — the --output flag decides the path
 	GameTablesOutDirectory string   `json:"GameTablesOutDirectory"`
 	GameTables             []string `json:"GameTables"`
 	Tables                 []string `json:"Tables"`

@@ -1,5 +1,4 @@
-// Port of this repo's tools/DB2ToSqlite/Helpers/SQLiteDbCreator.cs.
-// Original repo code (MIT), no external attribution owed.
+// SQLite schema creation for the extracted tables.
 package sqlite
 
 import (
@@ -12,17 +11,17 @@ import (
 )
 
 // TableDef pairs a table name with its parsed definition and the version
-// block selected for the current build (plan §5.1 selection rule; the caller
-// selects once and both schema and inserts use the same block).
+// block selected for the current build (the caller selects once and both
+// schema and inserts use the same block).
 type TableDef struct {
 	Name    string
 	Def     dbd.DBDefinition
 	Version dbd.VersionDefinitions
 }
 
-// Open deletes any pre-existing database file (SQLiteDbCreator.cs:11 — every
-// run starts from an empty file; this is what makes post-patch re-runs and
-// db/ptrdb alternation correct, plan §5) and opens a fresh connection with
+// Open deletes any pre-existing database file — every run starts from an
+// empty file, which is what makes post-patch re-runs and db/ptrdb
+// alternation correct — and opens a fresh connection with
 // PRAGMA foreign_keys = ON.
 func Open(path string) (*sql.DB, error) {
 	if _, err := os.Stat(path); err == nil {
@@ -34,8 +33,8 @@ func Open(path string) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	// The writer is single-threaded; a single connection keeps transaction
-	// semantics identical to the C# tool's one SqliteConnection.
+	// The writer is single-threaded; a single connection keeps every
+	// statement on one session.
 	db.SetMaxOpenConns(1)
 	if _, err := db.Exec("PRAGMA foreign_keys = ON;"); err != nil {
 		db.Close()
@@ -45,7 +44,7 @@ func Open(path string) (*sql.DB, error) {
 }
 
 // CreateTables emits the schema for every table, in order, inside one
-// transaction — a transcription of SQLiteDbCreator.CreateDatabaseWithDefinitions.
+// transaction.
 func CreateTables(db *sql.DB, tables []TableDef) error {
 	tx, err := db.Begin()
 	if err != nil {

@@ -7,12 +7,11 @@ import (
 	"testing"
 )
 
-// Fixture values are frozen from the build-68571 snapshot in
-// tools/DB2ToSqlite/DBDCache (plan §8 step 2). The tests skip when the
-// gitignored snapshot is absent (e.g. CI).
+// Fixture values are frozen from the gitignored build-68571 .dbd snapshot.
+// The tests skip when the snapshot is absent (e.g. CI).
 const snapshotBuild = 68571
 
-const dbdCacheDir = "../../DB2ToSqlite/DBDCache"
+const dbdCacheDir = "../refs/DBDCache"
 
 func snapshotFiles(t *testing.T) []string {
 	t.Helper()
@@ -58,7 +57,7 @@ func TestParseSnapshotAndSelect68571(t *testing.T) {
 		}
 	}
 
-	// Frozen per-build totals for the selected 68571 blocks (plan §8 step 2).
+	// Frozen per-build totals for the selected 68571 blocks.
 	want := map[string]int{"int": 515, "float": 65, "locstring": 43, "string": 5}
 	for typ, n := range want {
 		if typeCounts[typ] != n {

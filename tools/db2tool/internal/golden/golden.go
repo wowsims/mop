@@ -1,6 +1,6 @@
-// Package golden is the validation harness for tools/db2tool (plan §8): it
-// compares a Go-built wowsims.db against a reference produced by the .NET
-// tool — schema DDL, per-table row counts, and canonical row dumps.
+// Package golden is the validation harness for tools/db2tool: it compares a
+// freshly built wowsims.db against a captured reference database — schema
+// DDL, per-table row counts, and canonical row dumps.
 package golden
 
 import (
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// CriticalTables is the §5.6 byte-exact-critical set: row + value parity
+// CriticalTables is the byte-exact-critical set: row + value parity
 // required. Slack tables must merely extract without error.
 var CriticalTables = []string{
 	"Item", "ItemSparse", "SpellEffect", "SpellItemEnchantment", "ItemRandomSuffix",
@@ -153,10 +153,10 @@ func DiffLines(ref, got []string) (refOnly, gotOnly []string) {
 	return refOnly, gotOnly
 }
 
-// FloatDivergenceRanges reports whether a float32 value falls where C#'s and
-// Go's shortest-round-trip text renderings diverge (plan §5.5): C# switches
-// to scientific notation for |v| < 1e-4 or >= 1e15, Go only below 1e-6 or at
-// >= 1e21. Zero is fine.
+// FloatDiverges reports whether a float32 value falls where the reference
+// database's shortest-round-trip text rendering and Go's diverge: the
+// reference switches to scientific notation for |v| < 1e-4 or >= 1e15, Go
+// only below 1e-6 or at >= 1e21. Zero is fine.
 func FloatDiverges(v float32) bool {
 	a := math.Abs(float64(v))
 	if a == 0 {

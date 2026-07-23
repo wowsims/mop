@@ -1,8 +1,7 @@
-// Fetch-and-cache for .dbd definitions, mirroring DBCD's GithubDBDProvider
-// (https://github.com/wowdev/DBCD, MIT): fetch from WoWDBDefs master into a
+// Fetch-and-cache for .dbd definitions: fetch from WoWDBDefs master into a
 // gitignored cache directory with a 24h-mtime freshness rule. The .dbd files
 // themselves are CC BY-SA 4.0 DATA and are deliberately cached, never
-// vendored (plan §4).
+// vendored.
 package dbd
 
 import (
@@ -18,8 +17,8 @@ const dbdURLFormat = "https://raw.githubusercontent.com/wowdev/WoWDBDefs/master/
 
 // FetchCached returns the path to a cached .dbd for tableName under cacheDir,
 // fetching from WoWDBDefs when the cached copy is absent or older than 24h.
-// On a failed refresh of an existing copy, the stale copy is used (matching
-// the provider's tolerance); a missing copy that cannot be fetched is fatal.
+// On a failed refresh of an existing copy, the stale copy is used; a missing
+// copy that cannot be fetched is fatal.
 func FetchCached(cacheDir, tableName string) (string, error) {
 	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
 		return "", err

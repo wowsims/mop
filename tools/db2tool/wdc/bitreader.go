@@ -8,13 +8,12 @@ import (
 	"math"
 )
 
-// bitReader reads unaligned little-endian bit windows exactly like the C#
-// BitReader: a raw 4/8-byte load at the current byte, shifted left then right
-// to isolate numBits. The C# code performs unchecked past-the-end loads (the
-// reader pads record buffers with 8 zero bytes); newBitReader enforces the
-// same padding so Go slice bounds are never exceeded. C# shift counts are
-// masked (&31 / &63) by the CLR; the same masking is applied here so behavior
-// is bug-for-bug identical even for degenerate widths.
+// bitReader reads unaligned little-endian bit windows: a raw 4/8-byte load
+// at the current byte, shifted left then right to isolate numBits. Loads can
+// extend past the last meaningful byte, so record buffers must carry 8 zero
+// bytes of padding (see padRecordData) to keep slice bounds safe. Shift
+// counts are masked (&31 / &63) so degenerate widths (0 or full-width)
+// behave consistently rather than panicking.
 type bitReader struct {
 	data     []byte
 	Position int // in bits, relative to Offset
@@ -27,9 +26,8 @@ func newBitReader(data []byte) *bitReader {
 	return &bitReader{data: data}
 }
 
-// padRecordData appends 8 zero bytes, mirroring WDC5Reader's
-// Array.Resize(ref data, data.Length + 8) and making unaligned loads at the
-// tail safe. The extra bytes are always masked out of results.
+// padRecordData appends 8 zero bytes, making unaligned loads at the tail
+// safe. The extra bytes are always masked out of results.
 func padRecordData(data []byte) []byte {
 	// Must copy: data may alias the file buffer, and appending in place would
 	// overwrite the bytes that follow the record block.
@@ -53,7 +51,7 @@ func (r *bitReader) ReadUInt64(numBits int) uint64 {
 }
 
 // ReadValue64 returns the raw (zero-extended) bits; the caller reinterprets
-// them per the DBD-declared field type (value64 semantics).
+// them per the DBD-declared field type.
 func (r *bitReader) ReadValue64(numBits int) uint64 {
 	return r.ReadUInt64(numBits)
 }
@@ -81,7 +79,7 @@ func (r *bitReader) clone() *bitReader {
 	return &bitReader{data: r.data}
 }
 
-// value32 mirrors C# Value32: 4 raw bytes reinterpreted on demand.
+// value32 is 4 raw bytes reinterpreted on demand.
 type value32 uint32
 
 func (v value32) Float32() float32 { return math.Float32frombits(uint32(v)) }

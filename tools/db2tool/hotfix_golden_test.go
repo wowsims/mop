@@ -15,19 +15,18 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// Phase D golden gate (plan §6/§8): builds a wowsims.db from the
-// pre-extracted snapshot WITH the refs/DBCache.68571.bin hotfix overlay
-// applied, and diffs it against refs/wowsims.hotfix.db — a .NET-tool capture
-// produced with that same cache. Row parity is strict for every table; the
-// only tolerated divergence is the documented CurvePoint Id=236585 float
-// notation (plan §5.5: .NET "[1,-6E-05]" vs Go "[1,-0.00006]") — exactly one
-// line per side.
+// Hotfix golden gate: builds a wowsims.db from the pre-extracted build-68571
+// snapshot WITH the refs/DBCache.68571.bin hotfix overlay applied, and diffs
+// it against refs/wowsims.hotfix.db — a reference capture produced with that
+// same cache. Row parity is strict for every table; the only tolerated
+// divergence is the documented CurvePoint Id=236585 float notation
+// (reference "[1,-6E-05]" vs Go "[1,-0.00006]") — exactly one line per side.
 //
 // Skips when the gitignored snapshot/refs assets are absent (e.g. CI).
 func TestHotfixGoldenParity(t *testing.T) {
 	const snapshotBuild = 68571
-	db2Dir := "../DB2ToSqlite/dbfilesclient"
-	dbdDir := "../DB2ToSqlite/DBDCache"
+	db2Dir := "refs/dbfilesclient"
+	dbdDir := "refs/DBDCache"
 	settingsPath := "../database/generator-settings.json"
 	cachePath := "refs/DBCache.68571.bin"
 	refPath := "refs/wowsims.hotfix.db"
@@ -144,7 +143,7 @@ func TestHotfixGoldenParity(t *testing.T) {
 		if td.Name == "CurvePoint" && len(refOnly) == 1 && len(goOnly) == 1 &&
 			strings.Contains(refOnly[0], "|236585|") && strings.Contains(refOnly[0], "-6E-05") &&
 			strings.Contains(goOnly[0], "|236585|") && strings.Contains(goOnly[0], "-0.00006") {
-			t.Logf("CurvePoint: known Id=236585 float-notation divergence (2 lines, plan §5.5)")
+			t.Logf("CurvePoint: known Id=236585 float-notation divergence (2 lines)")
 			continue
 		}
 		for i, l := range refOnly {

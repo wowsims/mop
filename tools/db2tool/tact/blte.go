@@ -2,9 +2,9 @@
 // v0.0.13-alpha, commit d0ab516eb98b5db35682467b6e4977d88955046d).
 // Copyright (c) 2024 Martin Benjamins. MIT License — see tools/db2tool/NOTICES.md.
 //
-// Keyless port: 'E' (encrypted) chunks are left zero-filled in the output —
-// exactly what the .NET tool produces without TACT keys, and what the WDC
-// layer's encrypted-section skip expects (plan §7 C1/M5). 'F' never occurs.
+// Keyless: no TACT keys are loaded, so 'E' (encrypted) chunks are left
+// zero-filled in the output — exactly what the WDC layer's encrypted-section
+// skip expects. 'F' never occurs.
 package tact
 
 import (
@@ -88,8 +88,7 @@ func handleDataBlock(mode byte, compData, out []byte) error {
 		_, err = io.ReadFull(zr, out)
 		return err
 	case 'E':
-		// Keyless: leave the output range zero-filled (upstream's TryDecrypt
-		// finds no key and writes nothing).
+		// Keyless: leave the output range zero-filled.
 		return nil
 	case 'F':
 		return fmt.Errorf("BLTE frame ('F') decompression not implemented (never occurs in this data)")

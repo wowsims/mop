@@ -126,8 +126,9 @@ func ReadFile(path string, validate bool) (DBDefinition, error) {
 	return def, nil
 }
 
-// Read parses a .dbd definition stream. It is a line-for-line transcription of
-// DBDReader.Read (deliberately bug-for-bug where behavior is observable).
+// Read parses a .dbd definition stream. It is a line-for-line transcription
+// of the upstream reader (deliberately faithful even where behavior is
+// quirky).
 func Read(r io.Reader, validate bool) (DBDefinition, error) {
 	raw, err := io.ReadAll(r)
 	if err != nil {
@@ -303,7 +304,8 @@ func Read(r io.Reader, validate bool) (DBDefinition, error) {
 						definition.IsRelation = true
 					}
 				}
-				// C#: line = line.Remove(annotationStart, annotationEnd + 1)
+				// Upstream removes annotationEnd+1 chars from annotationStart
+				// (not the annotation's span); replicated faithfully.
 				line = line[:annotationStart] + line[annotationStart+annotationEnd+1:]
 			}
 
@@ -387,9 +389,9 @@ func Read(r io.Reader, validate bool) (DBDefinition, error) {
 	}, nil
 }
 
-// runValidation ports the optional validate block of DBDReader.Read. Console
-// warnings become stderr prints; exceptions become errors. It also removes
-// column definitions never used by any version block, as upstream does.
+// runValidation is the optional validation pass: warnings go to stderr, hard
+// violations become errors. It also removes column definitions never used by
+// any version block, as upstream does.
 func runValidation(columnDefinitions map[string]ColumnDefinition, versionDefinitions []VersionDefinitions) error {
 	for name := range columnDefinitions {
 		found := false
@@ -506,9 +508,9 @@ func stringSlicesEqual(a, b []string) bool {
 	return true
 }
 
-// readLines splits raw file bytes exactly like C# StreamReader.ReadLine:
-// \r\n, \r, and \n all terminate a line, a terminator at EOF does not produce
-// a trailing empty line, and a leading UTF-8 BOM is stripped.
+// readLines splits raw file bytes into lines: \r\n, \r, and \n all terminate
+// a line, a terminator at EOF does not produce a trailing empty line, and a
+// leading UTF-8 BOM is stripped.
 func readLines(raw []byte) []string {
 	s := string(raw)
 	s = strings.TrimPrefix(s, "\ufeff")

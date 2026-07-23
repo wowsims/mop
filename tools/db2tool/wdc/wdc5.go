@@ -1,6 +1,6 @@
 // Go translation of DBCD.IO's WDC5Reader (https://github.com/wowdev/DBCD,
 // v2.1.2, commit 2180edb4d08b3822b3cfa964293ba8ccd4236ac0), including its
-// encrypted-section skip path (no TACT keys — plan §7 C1).
+// encrypted-section skip path (no TACT keys).
 // Copyright (c) 2020 wowdev. MIT License — see tools/db2tool/NOTICES.md.
 package wdc
 
@@ -36,7 +36,7 @@ type fieldMeta struct {
 	Offset int16
 }
 
-// columnMeta mirrors ColumnMetaData; A/B/C are the 12-byte union:
+// columnMeta's A/B/C are the 12-byte union interpreted per CompressionType:
 // Immediate{BitOffset,BitWidth,Flags} / Pallet{BitOffset,BitWidth,Cardinality} /
 // Common{DefaultValue,B,C}.
 type columnMeta struct {
@@ -65,7 +65,7 @@ type sparseEntry struct {
 }
 
 // rawRow is a not-yet-decoded record: a bit reader positioned at its data,
-// plus the identity WDC4Row captures at construction.
+// plus the row's identity captured at construction.
 type rawRow struct {
 	data        *bitReader
 	dataOffset  int
@@ -159,7 +159,7 @@ func (c *cursor) u64() (uint64, error) {
 }
 
 // ReadFile parses a WDC5 .db2 file. Only WDC5 is supported; anything else
-// (including WDC6+) fails loud, matching the plan's format stance.
+// (including WDC6+) fails loud.
 func ReadFile(path string) (*Table, error) {
 	buf, err := os.ReadFile(path)
 	if err != nil {
@@ -236,11 +236,10 @@ func read(buf []byte) (*Table, error) {
 		}
 	}
 
-	// C# BinaryReader.ReadBytes tolerates short reads, which matters for the
-	// empty ItemBonus.db2: its file ends mid-way through the meta blocks, and
-	// the early return below never consumes them. Mirror that tolerance only
-	// when the early return will be taken; otherwise a truncated file is
-	// corrupt and must fail loud.
+	// The empty ItemBonus.db2 ends mid-way through the meta blocks, and the
+	// early return below never consumes them. Tolerate short reads only when
+	// the early return will be taken; otherwise a truncated file is corrupt
+	// and must fail loud.
 	emptyTable := sectionsCount == 0 || t.RecordsCount == 0
 
 	t.Meta = make([]fieldMeta, t.FieldsCount)
@@ -287,7 +286,7 @@ func read(buf []byte) (*Table, error) {
 		}
 	}
 
-	// ItemBonus.db2 is empty: 0 sections / 0 records is valid (plan §7 C2).
+	// ItemBonus.db2 is empty: 0 sections / 0 records is valid.
 	if emptyTable {
 		return t, nil
 	}
@@ -330,8 +329,8 @@ func read(buf []byte) (*Table, error) {
 		}
 	}
 
-	// encrypted ID lists (read sequentially; content unused, like upstream's
-	// m_encryptedIDs which this tool never consults)
+	// encrypted ID lists (read sequentially; content unused — this tool
+	// never consults them)
 	for i := 0; i < sectionsCount; i++ {
 		if t.Sections[i].TactKeyLookup == 0 {
 			continue
@@ -378,8 +377,8 @@ func read(buf []byte) (*Table, error) {
 			}
 		}
 
-		// Skip encrypted sections: TACT key lookup set + record data zero-filled
-		// (plan §7 C1). The trailing guards mirror WDC5Reader exactly.
+		// Skip encrypted sections: TACT key lookup set + record data
+		// zero-filled, unless the trailing guards below find live id data.
 		if section.TactKeyLookup != 0 && allZero(recordsData) {
 			completelyZero := false
 			if section.IndexDataSize > 0 || section.CopyTableCount > 0 {
@@ -542,8 +541,8 @@ func readSparseIndexData(c *cursor, section sectionHeader, indexData []int32) ([
 	return sparseIndexData, nil
 }
 
-// readStringTable ports Extensions.ReadStringTable: NUL-separated UTF-8
-// strings keyed by byte offset (baseOffset + running offset).
+// readStringTable reads NUL-separated UTF-8 strings keyed by byte offset
+// (baseOffset + running offset).
 func readStringTable(dst map[int64]string, data []byte, baseOffset int64) {
 	if len(data) == 0 {
 		return

@@ -59,8 +59,7 @@ func ParseBuildInfo(path string) ([]AvailableBuild, error) {
 	return entries, nil
 }
 
-// SelectBuild returns the first entry for the given product (Program.cs uses
-// Entries.First(x => x.Product == settings.Product)).
+// SelectBuild returns the first entry for the given product.
 func SelectBuild(entries []AvailableBuild, product string) (AvailableBuild, error) {
 	for _, e := range entries {
 		if e.Product == product {
@@ -70,8 +69,8 @@ func SelectBuild(entries []AvailableBuild, product string) (AvailableBuild, erro
 	return AvailableBuild{}, fmt.Errorf("product %q not found in .build.info", product)
 }
 
-// BuildNumber extracts the trailing build number from a 4-part version string
-// (Program.cs: uint.Parse(Version.Split('.')[3])).
+// BuildNumber extracts the trailing build number from a 4-part version
+// string.
 func BuildNumber(version string) (uint32, error) {
 	split := strings.Split(version, ".")
 	if len(split) != 4 {

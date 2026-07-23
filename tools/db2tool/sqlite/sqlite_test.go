@@ -10,10 +10,11 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// modernc driver-marshaling smoke test (plan §8 step 7): creates the §5.2/§5.3
-// schema shapes, upserts via named params, and reads back json_extract virtual
-// columns, NULL scans, and REAL vs INTEGER marshaling — a permanent regression
-// gate for driver parity, independent of any game-data snapshot.
+// modernc driver-marshaling smoke test: creates the extractor's schema
+// shapes, upserts via named params, and reads back json_extract virtual
+// columns, NULL scans, and REAL vs INTEGER marshaling — a permanent
+// regression gate for driver behavior, independent of any game-data
+// snapshot.
 func TestModerncMarshalingContract(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "smoke.db")
 
@@ -98,12 +99,12 @@ func TestModerncMarshalingContract(t *testing.T) {
 	}
 	// json_extract parses the stored float32 shortest-round-trip TEXT ("0.1")
 	// as a double — so virtual float columns yield 0.1, NOT the widened
-	// float32 0.10000000149011612. The C# reference behaves identically.
+	// float32 0.10000000149011612.
 	if scales0 != 0.1 {
 		t.Errorf("Scales_0 = %v, want 0.1", scales0)
 	}
 
-	// All-zero arrays serialize as [0,...], never NULL/[]/"" (§5.5).
+	// All-zero arrays serialize as [0,...], never NULL/[]/"".
 	var zeroStats, zeroScales string
 	if err := db.QueryRow("SELECT Stats, Scales FROM Smoke WHERE ID=2").Scan(&zeroStats, &zeroScales); err != nil {
 		t.Fatal(err)

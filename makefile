@@ -250,14 +250,14 @@ CLIENTDATA_OUTPUT   := $(shell realpath ./tools/database/wowsims.db)
 
 .PHONY: db
 db:
-	@echo "Extracting client data (pure Go)"
+	@echo "Extracting client data"
 	go run ./tools/db2tool -s $(CLIENTDATA_SETTINGS) --output $(CLIENTDATA_OUTPUT)
 	@echo "Running DBC generation tool"
 	go run tools/database/gen_db/*.go -outDir=./assets -gen=db
 
 .PHONY: ptrdb
 ptrdb:
-	@echo "Extracting client data (pure Go)"
+	@echo "Extracting client data"
 	go run ./tools/db2tool -s $(CLIENTDATAPTR_SETTINGS) --output $(CLIENTDATA_OUTPUT)
 	@echo "Running DBC generation tool"
 	go run tools/database/gen_db/*.go -outDir=./assets -gen=db

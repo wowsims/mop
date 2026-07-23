@@ -1,17 +1,16 @@
-// db2tool extracts World of Warcraft client data into tools/database/wowsims.db,
-// replacing the .NET tools/DB2ToSqlite tool (see docs/db2tool-migration-plan.md).
+// db2tool extracts World of Warcraft client data into tools/database/wowsims.db.
 //
-// Default (Phase B) mode reads the local install named by the settings'
-// BaseDir: .build.info picks the build, files come from local CASC
+// The default mode reads the local install named by the settings' BaseDir:
+// .build.info picks the build, files come from local CASC
 // (root → encoding → .idx → data.NNN → BLTE), .dbd definitions and the
 // community listfile are fetched/cached over plain HTTPS. The client's
 // DBCache.bin hotfixes for the extracted build are applied to the decoded
-// rows (Phase D); --dbcache <file> pins specific cache files instead of the
-// default scan and --no-hotfixes disables the overlay.
+// rows; --dbcache <file> pins specific cache files instead of the default
+// scan and --no-hotfixes disables the overlay.
 //
-// With --build (and optionally --db2dir/--dbddir), the offline Phase A mode
-// decodes pre-extracted .db2 files instead — no install required and no
-// hotfixes unless --dbcache is given.
+// With --build (and optionally --db2dir/--dbddir), the offline mode decodes
+// pre-extracted .db2 files instead — no install required and no hotfixes
+// unless --dbcache is given.
 package main
 
 import (
@@ -44,9 +43,8 @@ type options struct {
 	noHotfixes   bool     // skip hotfix application entirely
 }
 
-// parseArgs mirrors Program.cs's pairwise scan, including the flag aliases
-// (--settings/-s, --output/-output/-o), plus the offline-mode and hotfix
-// flags.
+// parseArgs scans the args pairwise. --settings/-s and --output/-output/-o
+// are aliases, plus the offline-mode and hotfix flags.
 func parseArgs(args []string) (options, error) {
 	opts := options{
 		settingsFile: "appsettings.json",
@@ -97,10 +95,8 @@ func parseArgs(args []string) (options, error) {
 }
 
 // resolvePath resolves a possibly-relative settings path against the tool
-// home directory tools/db2tool (plan §7 M4). Relative settings values like
-// "../../assets/db_inputs/basestats" were written for a CWD of
-// tools/DB2ToSqlite; tools/db2tool sits at the same depth, so they keep
-// meaning what they always meant.
+// home directory tools/db2tool — relative settings values like
+// "../../assets/db_inputs/basestats" are anchored there.
 func resolvePath(toolHome, value string) string {
 	if filepath.IsAbs(value) {
 		return value
@@ -145,7 +141,7 @@ func run(args []string) error {
 	var openTable func(tableName string) (*wdc.Table, error)
 
 	if opts.buildNumber != 0 {
-		// Offline (Phase A) mode: pre-extracted .db2 files.
+		// Offline mode: pre-extracted .db2 files.
 		buildNumber = opts.buildNumber
 		db2Dir := opts.db2Dir
 		if db2Dir == "" {
@@ -192,7 +188,7 @@ func run(args []string) error {
 
 		// Tables: extract each .db2 to the target directory, then parse it.
 		// The FDID key uses the RAW settings TargetDirectory value; only the
-		// on-disk output use is resolved (plan §7 M4 carve-out).
+		// on-disk output use is resolved.
 		targetDirOnDisk := resolvePath(toolHome, settings.TargetDirectory)
 		if err := os.MkdirAll(targetDirOnDisk, 0o755); err != nil {
 			return err
@@ -258,13 +254,12 @@ func run(args []string) error {
 		return err
 	}
 
-	// Hotfixes (Phase D): overlay the client's DBCache.bin records before the
-	// inserts, mirroring Program.cs steps 10–11. Only a cache for this exact
-	// build applies; having none is not an error (Program.cs:102's throw is
-	// commented out). --dbcache pins specific cache files (deterministic
-	// runs); with no override, local-CASC mode scans tools/db2tool/caches
-	// plus <BaseDir>/**/DBCache.bin like HotfixManager.LoadCaches, while the
-	// offline --build mode stays hotfix-free.
+	// Hotfixes: overlay the client's DBCache.bin records before the inserts.
+	// Only a cache for this exact build applies; having none is not an error.
+	// --dbcache pins specific cache files (deterministic runs); with no
+	// override, local-CASC mode scans tools/db2tool/caches plus
+	// <BaseDir>/**/DBCache.bin, while the offline --build mode stays
+	// hotfix-free.
 	var hotfixReader *wdc.HotfixReader
 	if !opts.noHotfixes {
 		var readers map[uint32]*wdc.HotfixReader

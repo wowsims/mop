@@ -9,11 +9,10 @@ import (
 	"github.com/wowsims/mop/tools/db2tool/dbd"
 )
 
-// Pre-port audit fixture (plan §8 step 2), frozen from the build-68571
-// snapshot in tools/DB2ToSqlite/dbfilesclient. Tests skip when the gitignored
-// snapshot is absent.
-const db2Dir = "../../DB2ToSqlite/dbfilesclient"
-const dbdDir = "../../DB2ToSqlite/DBDCache"
+// Decoder test fixtures, frozen from the gitignored build-68571 .db2
+// snapshot. Tests skip when the snapshot is absent.
+const db2Dir = "../refs/dbfilesclient"
+const dbdDir = "../refs/DBDCache"
 const snapshotBuild = 68571
 
 func db2Files(t *testing.T) []string {
@@ -61,7 +60,7 @@ func TestParseAllHeaders(t *testing.T) {
 			t.Errorf("%s: unexpected SecondaryKey flag", base)
 		}
 	}
-	// Distinct section counts frozen in the plan (§8 step 2), plus 0 for the
+	// Distinct section counts frozen from the snapshot, plus 0 for the
 	// empty ItemBonus and 1 for plain single-section tables.
 	for _, want := range []int{36, 33, 26, 22, 16, 9, 8, 3, 2, 1, 0} {
 		if !sectionCounts[want] {
