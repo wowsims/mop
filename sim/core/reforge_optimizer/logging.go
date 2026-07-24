@@ -168,13 +168,6 @@ func formatItemSlots(slots []proto.ItemSlot) string {
 	for _, slot := range slots {
 		parts = append(parts, slot.String())
 	}
-	return formatStringList(parts)
-}
-
-func formatStringList(parts []string) string {
-	if len(parts) == 0 {
-		return "none"
-	}
 	return strings.Join(parts, ",")
 }
 

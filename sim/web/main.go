@@ -81,6 +81,14 @@ func main() {
 		}()
 	}
 
+	// Warm up the reforge optimizer's HiGHS WASM runtime in the background so the one-time
+	// module compile happens at startup instead of stalling the first /reforgeOptimizeAsync request.
+	go func() {
+		if err := reforgeoptimizer.WarmUp(); err != nil {
+			fmt.Printf("reforge optimizer warm-up failed: %v\n", err)
+		}
+	}()
+
 	s := &server{
 		progMut:         sync.RWMutex{},
 		asyncProgresses: map[string]*asyncProgress{},

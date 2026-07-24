@@ -186,7 +186,7 @@ func setUnitStat(unitStats core.UnitStats, unitStat stats.UnitStat, value float6
 // resolveStatDelta applies the character's stat dependency graph to delta, resolving
 // conversions such as Agility → PhysicalCritPercent and Intellect → SpellCritPercent.
 // It also mirrors the resolved Stats values back to their corresponding PseudoStats
-// so that LP constraint evaluation (which reads PseudoStats for crit/hit/haste caps)
+// so that LP constraint evaluation (which reads PseudoStats for crit/hit/haste/block caps)
 // sees the correct contribution.
 //
 // Haste% is multiplicative with a speed multiplier that is not captured by the dep

@@ -354,10 +354,9 @@ func includesStatWithCap(delta core.UnitStats, hardCaps []reforgeHardCap, softCa
 	return false
 }
 
-// Returns true if the delta touches a hard-cap stat that is already at or over its cap
-// (undershoot=true means we are still short; false means capped/over). Used to skip
-// forcing the socket bonus when doing so would waste the bonus on a stat where additional
-// rating has no value.
+// Returns true if the delta touches a stat that has a ceiling (undershoot=true) hard cap —
+// a stat we must stay below. Used to skip forcing the socket bonus when the bonus grants such
+// a stat, since pushing it toward its ceiling has no value (and could overshoot the cap).
 func includesCappedStat(delta core.UnitStats, hardCaps []reforgeHardCap) bool {
 	for _, hardCap := range hardCaps {
 		if hardCap.undershoot && getUnitStat(delta, hardCap.unitStat) != 0 {

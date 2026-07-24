@@ -502,9 +502,10 @@ func reforgeSlotChoicesAreSocketBonus(slot reforgeSlotChoices) bool {
 }
 
 func estimateMIPConstraintCount(search *reforgeSearchState, statConstraints []mipStatConstraint, relativeCaps []reforgeRelativeStatCap, uniqueGemLimitCount int) int {
-	count := len(search.slots) + countSocketBonusLinkConstraints(search) + len(statConstraints) + len(relativeCaps) + uniqueGemLimitCount
-	count += 2
-	return count
+	// +2 for the two global-limit constraints buildChoiceMIPModel may append: Jewelcrafting
+	// gems (<=2) and Sha-Touched gems (<=1). This is only a slice capacity hint, so over-
+	// counting when those constraints don't apply is harmless.
+	return len(search.slots) + countSocketBonusLinkConstraints(search) + len(statConstraints) + len(relativeCaps) + uniqueGemLimitCount + 2
 }
 
 func countSocketBonusLinkConstraints(search *reforgeSearchState) int {
@@ -584,7 +585,9 @@ func addRelativeStatCapConstraints(search *reforgeSearchState, choiceVarIdx [][]
 				if choiceVarIdx[slotIdx][choiceIdx] < 0 {
 					continue
 				}
-				coefficientDelta := choiceRelativeCapDelta(choice)
+				// Relative caps reuse the objective/EP delta (unlike hard/soft caps, which use
+				// choiceCoefficientDelta's dependency-resolved delta).
+				coefficientDelta := choiceObjectiveDelta(choice)
 				coefficient := getUnitStat(coefficientDelta, relativeCap.forcedStat) - getUnitStat(coefficientDelta, relativeCap.constrainedStat)
 				if coefficient != 0 {
 					constraint.addCoefficient(choiceVarIdx[slotIdx][choiceIdx], coefficient)
@@ -613,10 +616,6 @@ func choiceCoefficientDelta(choice reforgeChoice) core.UnitStats {
 	if !isEmptyUnitStats(choice.delta) {
 		return choice.delta
 	}
-	return choiceObjectiveDelta(choice)
-}
-
-func choiceRelativeCapDelta(choice reforgeChoice) core.UnitStats {
 	return choiceObjectiveDelta(choice)
 }
 

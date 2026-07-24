@@ -45,11 +45,12 @@ type highsWasmRuntime struct {
 	instance api.Module
 	memory   api.Memory
 
-	nextFD int32
-	files  map[int32]*highsWasmFile
-	paths  map[string][]byte
-	stdout bytes.Buffer
-	stderr bytes.Buffer
+	nextFD    int32
+	files     map[int32]*highsWasmFile
+	paths     map[string][]byte
+	lpScratch []byte // reused LP-text buffer, one owner per pooled runtime
+	stdout    bytes.Buffer
+	stderr    bytes.Buffer
 
 	runtimeInit              api.Function
 	runtimeInitialized       bool
@@ -80,8 +81,12 @@ func solveMIPWithHiGHS(model mipModel, timeout time.Duration, mipRelGap float64)
 	}
 	defer releaseHiGHSWasmRuntime(wasmRuntime)
 
-	wasmRuntime.paths["/m.lp"] = []byte(modelToHiGHSLP(model))
-	wasmRuntime.paths["m.lp"] = wasmRuntime.paths["/m.lp"]
+	// Reuse a per-runtime buffer for the LP text instead of allocating a fresh []byte each
+	// solve. The runtime has a single owner between acquire/release, and the wasm fully reads
+	// the bytes within this call, so the buffer is safe to overwrite on the next solve.
+	wasmRuntime.lpScratch = append(wasmRuntime.lpScratch[:0], modelToHiGHSLP(model)...)
+	wasmRuntime.paths["/m.lp"] = wasmRuntime.lpScratch
+	wasmRuntime.paths["m.lp"] = wasmRuntime.lpScratch
 
 	if !wasmRuntime.runtimeInitialized {
 		if _, err := wasmRuntime.runtimeInit.Call(wasmRuntime.ctx); err != nil {
@@ -262,6 +267,19 @@ func getHiGHSWasmModule() (*highsWasmModule, error) {
 		highsWasmModuleValue = &highsWasmModule{runtime: runtime, module: module}
 	})
 	return highsWasmModuleValue, highsWasmModuleErr
+}
+
+// WarmUp eagerly compiles the embedded HiGHS WASM module, instantiates a runtime, runs its
+// one-time init and a trivial solve, then returns the runtime to the pool ready for reuse.
+// This moves the ~1s+ module-compile/instantiate/init cost to server startup instead of the
+// first reforge-optimize request. It only primes shared lazy state (the compiled module and
+// the runtime pool) and never affects solve results, so it is safe to call at any time,
+// concurrently, and more than once.
+func WarmUp() error {
+	_, _, err := solveMIPWithHiGHS(mipModel{
+		variables: []mipVariable{{objective: 1, upper: 1, integer: true}},
+	}, 5*time.Second, 0)
+	return err
 }
 
 // Registers the HiGHS wasm host imports using wazero's stack-based

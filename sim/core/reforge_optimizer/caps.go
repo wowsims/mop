@@ -139,7 +139,7 @@ func buildReforgeSoftCaps(baseStats core.UnitStats, configs []*proto.StatCapConf
 			if len(postCapEPs) == len(breakpoints) {
 				slices.Reverse(postCapEPs)
 			} else if len(postCapEPs) > 0 {
-				postCapEPs = fillFloat64(len(breakpoints), postCapEPs[0])
+				postCapEPs = slices.Repeat([]float64{postCapEPs[0]}, len(breakpoints))
 			}
 		}
 		softCaps = append(softCaps, reforgeSoftCap{unitStat: unitStat, breakpoints: breakpoints, postCapEPs: postCapEPs, capType: config.CapType})
@@ -312,12 +312,4 @@ func unitStatFromUIStat(uiStat *proto.UIStat) (stats.UnitStat, bool) {
 	default:
 		return 0, false
 	}
-}
-
-func fillFloat64(length int, value float64) []float64 {
-	result := make([]float64, length)
-	for idx := range result {
-		result[idx] = value
-	}
-	return result
 }

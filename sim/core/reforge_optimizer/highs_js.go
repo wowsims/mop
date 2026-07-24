@@ -50,3 +50,8 @@ func solveMIPWithHiGHS(model mipModel, timeout time.Duration, mipRelGap float64)
 	}
 	return solution, true, nil
 }
+
+// WarmUp is a no-op on js/wasm: the browser compiles the HiGHS solver lazily in JavaScript,
+// and there is no Go server startup to pre-warm. Present so the exported symbol matches the
+// native build (see highswasm.go).
+func WarmUp() error { return nil }
