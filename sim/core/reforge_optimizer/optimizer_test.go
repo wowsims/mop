@@ -26,7 +26,9 @@ func TestReforgerOptimizer(t *testing.T) {
 		fileName string
 		skip     bool
 	}{
+		{name: "elemental", fileName: "elemental.test.json"},
 		{name: "multi-softcap", fileName: "multi-softcap.test.json"},
+		{name: "multi-softcap-2", fileName: "multi-softcap-2.test.json"},
 		{name: "multi-hardcap", fileName: "multi-hardcap.test.json"},
 		{name: "expertise", fileName: "expertise.test.json"},
 		{name: "threshold", fileName: "threshold.test.json"},

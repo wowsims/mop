@@ -96,7 +96,15 @@ type statCoefficientTable []core.UnitStats
 // default — e.g. Guardian Druid's Agility, whose direct EP weight is a generic placeholder
 // while its real value (2x Attack Power, plus a flat Crit% conversion) is hardcoded instead.
 // May be nil.
-func buildStatCoefficientTable(weights core.UnitStats, overrides func(stats.Stat) (core.UnitStats, bool)) statCoefficientTable {
+//
+// ampModifier is the Amplification Trinket multiplier (>1 when such a trinket is equipped,
+// else 1). The UI pre-divides the flat Haste and Mastery EP weights by this modifier (see
+// ui/mage/frost/sim.ts) so that the optimizer can re-apply it here through the same
+// multiplicative stat dependency the sim uses (NewDynamicMultiplyStat on Haste/Mastery/
+// Spirit). Without re-applying it the objective under-values those gems — pure Intellect
+// wins red sockets it shouldn't. Crit and Intellect are never divided and are never scaled
+// here, matching which stats the trinket actually amplifies.
+func buildStatCoefficientTable(weights core.UnitStats, ampModifier float64, overrides func(stats.Stat) (core.UnitStats, bool)) statCoefficientTable {
 	table := make(statCoefficientTable, stats.ProtoStatsLen)
 	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
 		stat := stats.Stat(statIdx)
@@ -124,6 +132,16 @@ func buildStatCoefficientTable(weights core.UnitStats, overrides func(stats.Stat
 			coefficient = setUnitStat(coefficient, unitStat, 1/ratingPerPseudoStatPercent(child))
 		}
 		table[statIdx] = coefficient
+	}
+
+	// Re-apply the Amplification Trinket boost the UI divided out of the flat weights. The
+	// trinket multiplies Haste, Mastery, and Spirit (not Crit, not Intellect), so only those
+	// coefficients are scaled — every downstream contribution (identity or rating→percent
+	// expansion) rides along.
+	if ampModifier != 1 {
+		for _, ampedStat := range []stats.Stat{stats.HasteRating, stats.MasteryRating, stats.Spirit} {
+			table[ampedStat] = scaleUnitStats(table[ampedStat], ampModifier)
+		}
 	}
 	return table
 }

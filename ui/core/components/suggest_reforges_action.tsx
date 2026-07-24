@@ -1115,7 +1115,10 @@ export class ReforgeOptimizer {
 			debuffs: this.sim.raid.getDebuffs(),
 		});
 		const frozenItemSlots = config.settings.freezeItemSlots && config.settings.frozenItemSlots.length ? config.settings.frozenItemSlots : undefined;
-		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots, !config.settings.includeGems), configHash);
+		// Existing gems must be part of the cache key whether or not includeGems is set: with it off
+		// the optimizer keeps the equipped gems, and with it on minimizeRegems reuses them. Either
+		// way the optimized gear depends on the equipped gems, so dropping them returns stale gear.
+		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots, true), configHash);
 		const cachedGear = await cache.get(cacheKey);
 		if (cachedGear) {
 			if (isDevMode()) console.log('Reforge optimization: cache hit.');

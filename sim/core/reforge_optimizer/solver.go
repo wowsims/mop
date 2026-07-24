@@ -204,19 +204,16 @@ func trySolveWithHiGHSPass(search *reforgeSearchState, signals simsignals.Signal
 	deadline := time.Now().Add(highsOptimizerTimeout(search))
 	debug := reforgeDebug(search)
 
-	// Hard caps are known from settings before any solve happens — seed their LP
-	// constraints immediately instead of waiting to discover the violation reactively.
-	// Without this, pass 1 solves fully unconstrained (e.g. a floor stat still carries no
-	// lower bound at all) and can pick an arbitrary, possibly worse-than-necessary path to
-	// satisfy it once discovered reactively next pass.
+	// Ceiling (undershoot) caps are known from settings before any solve — seed their LP
+	// upper bound immediately rather than waiting to discover the overshoot reactively.
 	//
-	// Weight zeroing for floor caps stays reactive (handled below, keyed off
-	// constrainedStats): the pre-cap EP weight is what makes pass 1 want to reach the
-	// floor in the first place. Zeroing it immediately here, before we know the floor is
-	// even reachable without sacrifice, would make satisfying the constraint entirely
-	// costless to the objective — the solver then has no preference among donor stats and
-	// can drain a more valuable one (e.g. Haste) simply because that reforge slot happened
-	// to be structurally available, not because it was the cheapest trade.
+	// Floor caps are deliberately NOT pre-seeded. A floor is enforced reactively, and only
+	// once the EP objective naturally overshoots it (see the floor branch in updateHiGHSCapPass),
+	// mirroring the JS optimizer: hit/expertise carry a large enough pre-cap EP weight that pass 1
+	// overshoots massively and then locks at the cap, whereas a floor whose target sits above the
+	// EP-optimal (e.g. an unreachable Mastery cap) is left EP-optimal instead of being stacked up
+	// to the cap at the expense of higher-EP choices like matching socket-bonus gems. Pre-seeding
+	// floors force-reached them regardless of EP, which is the wrong behavior for such stats.
 	for _, hardCap := range search.hardCaps {
 		if hardCap.cap == 0 {
 			continue
@@ -227,11 +224,10 @@ func trySolveWithHiGHSPass(search *reforgeSearchState, signals simsignals.Signal
 			constrainedStats[hardCap.unitStat] = true
 			continue
 		}
-		if hardCap.undershoot {
-			statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: math.Inf(-1), upper: hardCap.cap, actualUpper: hardCap.cap, hasActualUpper: true})
-		} else {
-			statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: hardCap.cap, upper: math.Inf(1), actualLower: hardCap.cap, hasActualLower: true})
+		if !hardCap.undershoot {
+			continue
 		}
+		statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: math.Inf(-1), upper: hardCap.cap, actualUpper: hardCap.cap, hasActualUpper: true})
 		if debug {
 			log.Printf("[reforgeOptimize] HiGHS pass=0 pre-seeding hard cap constraint stat=%s capDelta=%.3f undershoot=%v", unitStatName(hardCap.unitStat), hardCap.cap, hardCap.undershoot)
 		}
@@ -686,15 +682,11 @@ func updateHiGHSCapPass(search *reforgeSearchState, passIdx int, delta core.Unit
 		}
 	}
 
-	// Hard caps normally arrive here already pre-seeded (trySolveWithHiGHS adds every
-	// cap's constraint before pass 1). But when the full set of caps is jointly
-	// infeasible, trySolveWithHiGHS retries without seeding at all — so this loop must
-	// stand on its own too: for any hard cap that has no constraint yet, add one
-	// reactively here, mirroring the original discovery-based behavior (tighten toward
-	// the cap incrementally, pass by pass, via the loop above) rather than relying on it
-	// having been seeded upfront. Once a constraint exists (seeded or reactively added),
-	// floor caps still need their pre-cap EP weight zeroed once the floor is actually
-	// met — not unconditionally, since reaching it can take multiple tightening passes.
+	// Ceiling caps arrive pre-seeded (trySolveWithHiGHS adds their upper bound before pass 1);
+	// floor caps are NOT pre-seeded and are enforced entirely by this loop, reactively, once the
+	// EP objective overshoots them. Either kind can also reach here unseeded when the full cap set
+	// was jointly infeasible and trySolveWithHiGHS retried without seeding, so the loop stands on
+	// its own for both.
 	for _, hardCap := range search.hardCaps {
 		if hardCap.cap == 0 || constrainedStats[hardCap.unitStat] {
 			continue
@@ -714,25 +706,27 @@ func updateHiGHSCapPass(search *reforgeSearchState, passIdx int, delta core.Unit
 			}
 			return true, weights, softCaps, statConstraints, relativeCaps
 		}
-		if !hasConstraint {
-			if value >= hardCap.cap-1e-9 {
-				// Already at/past the floor without ever needing a constraint — nothing to
-				// enforce, fall through to the weight-zero check below.
-			} else {
-				statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: hardCap.cap, upper: math.Inf(1), actualLower: hardCap.cap, hasActualLower: true})
-				if reforgeDebug(search) {
-					log.Printf("[reforgeOptimize] HiGHS pass=%d reactively adding min cap stat=%s valueDelta=%.3f capDelta=%.3f", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
-				}
-				return true, weights, softCaps, statConstraints, relativeCaps
-			}
-		}
-		if value < hardCap.cap-1e-9 {
+		// Floor caps are enforced only once the EP objective naturally OVERSHOOTS them, mirroring
+		// the JS optimizer (which pins a floor with greaterEq(cap) + zeroed weight solely when the
+		// reforge contribution exceeds the cap). A floor stat that lands at or below its cap is
+		// left EP-optimal — we no longer force it up to the cap. Force-reaching stacked stats like
+		// Mastery to an unreachable cap, shedding EP-positive socket bonuses and Int; leaving it
+		// EP-optimal instead lets the solver keep the higher-EP mixed gems. Hit/expertise still
+		// reach their caps because their large pre-cap EP weight overshoots massively in pass 1.
+		//
+		// On overshoot: lock the floor (so later weight-zeroed passes can't shed below the cap)
+		// and zero the pre-cap weight (so the solver trims any excess back down to the cap).
+		if hasConstraint {
 			continue
 		}
+		if value <= hardCap.cap+1e-9 {
+			continue
+		}
+		statConstraints = append(statConstraints, mipStatConstraint{unitStat: hardCap.unitStat, lower: hardCap.cap, upper: math.Inf(1), actualLower: hardCap.cap, hasActualLower: true})
 		weights = setUnitStat(weights, hardCap.unitStat, 0)
 		constrainedStats[hardCap.unitStat] = true
 		if reforgeDebug(search) {
-			log.Printf("[reforgeOptimize] HiGHS pass=%d floor cap met, zeroing weight stat=%s valueDelta=%.3f capDelta=%.3f", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
+			log.Printf("[reforgeOptimize] HiGHS pass=%d floor cap overshot, locking + zeroing weight stat=%s valueDelta=%.3f capDelta=%.3f", passIdx+1, unitStatName(hardCap.unitStat), value, hardCap.cap)
 		}
 		return true, weights, softCaps, statConstraints, relativeCaps
 	}
@@ -752,12 +746,39 @@ func updateHiGHSCapPass(search *reforgeSearchState, passIdx int, delta core.Unit
 			continue
 		}
 
-		statConstraints = append(statConstraints, mipStatConstraint{unitStat: softCap.unitStat, lower: softCap.breakpoints[exceededBreakpointIdx], upper: math.Inf(1), actualLower: softCap.breakpoints[exceededBreakpointIdx], hasActualLower: true})
+		// Decide whether being past this breakpoint is worth locking in with a hard floor.
+		// The current weight (set by the previous breakpoint, or the pre-cap weight on the
+		// first) is the value of the segment just BELOW this breakpoint. If that below-segment
+		// is already worth less than the best uncapped alternative the freed rating could go to
+		// (e.g. Mastery for a caster), then forcing the stat up to this breakpoint is a net
+		// loss — don't add a floor. Just lower the weight so the solver sheds the stat back to
+		// the last beneficial floor, and stop advancing this soft cap. Without this, a stat
+		// that momentarily overshoots a breakpoint (e.g. Crit nudged past its top breakpoint by
+		// a later Haste refinement pass) gets pinned there at a post-cap rate below Mastery.
+		skipFloor := false
+		if softCap.capType == proto.StatCapType_TypeSoftCap && softCap.unitStat.IsPseudoStat() {
+			pseudo := proto.PseudoStat(softCap.unitStat.PseudoStatIdx())
+			// The below-segment value is the stat's current pre-lower weight; Haste (and its
+			// speed-multiplier siblings) are amp-boosted in the objective, so put both sides of
+			// the comparison on the same amped basis. Crit/Hit are not amped.
+			belowPerRating := getUnitStat(weights, softCap.unitStat) / ratingPerPseudoStatPercent(pseudo) * softCapStatAmpFactor(pseudo, search.ampModifier)
+			skipFloor = belowPerRating+1e-9 < bestUncappedReforgeAlternative(search, weights, search.ampModifier, softCap.unitStat)
+		}
+
+		if !skipFloor {
+			statConstraints = append(statConstraints, mipStatConstraint{unitStat: softCap.unitStat, lower: softCap.breakpoints[exceededBreakpointIdx], upper: math.Inf(1), actualLower: softCap.breakpoints[exceededBreakpointIdx], hasActualLower: true})
+		}
 		if exceededBreakpointIdx < len(softCap.postCapEPs) {
 			weights = setUnitStat(weights, softCap.unitStat, softCap.postCapEPs[exceededBreakpointIdx])
 		}
 		if reforgeDebug(search) {
-			log.Printf("[reforgeOptimize] HiGHS pass=%d adding breakpoint stat=%s valueDelta=%.3f breakpointDelta=%.3f newWeight=%.3f", passIdx+1, unitStatName(softCap.unitStat), value, softCap.breakpoints[exceededBreakpointIdx], getUnitStat(weights, softCap.unitStat))
+			log.Printf("[reforgeOptimize] HiGHS pass=%d %s breakpoint stat=%s valueDelta=%.3f breakpointDelta=%.3f newWeight=%.3f", passIdx+1, map[bool]string{true: "shedding past", false: "adding"}[skipFloor], unitStatName(softCap.unitStat), value, softCap.breakpoints[exceededBreakpointIdx], getUnitStat(weights, softCap.unitStat))
+		}
+		if skipFloor {
+			// Terminal: don't push this stat any higher. Drop it from further soft-cap
+			// processing; the lowered weight plus the existing lower floor settle it there.
+			remainingSoftCaps = append(remainingSoftCaps, softCaps[softCapIdx+1:]...)
+			return true, weights, remainingSoftCaps, statConstraints, relativeCaps
 		}
 		if softCap.capType == proto.StatCapType_TypeSoftCap {
 			softCap.breakpoints = softCap.breakpoints[exceededBreakpointIdx+1:]
@@ -787,6 +808,77 @@ func updateHiGHSCapPass(search *reforgeSearchState, passIdx int, delta core.Unit
 	}
 
 	return false, weights, softCaps, statConstraints, relativeCaps
+}
+
+// reforgeDumpStatCandidates are the secondary stats a reforge can produce — the pool of "dump"
+// targets the freed rating from shedding a soft-capped stat could go to. Primary stats
+// (Str/Agi/Int/etc.) are excluded because reforging can't create them.
+var reforgeDumpStatCandidates = []stats.Stat{
+	stats.HitRating, stats.CritRating, stats.HasteRating, stats.MasteryRating,
+	stats.Spirit, stats.ExpertiseRating, stats.DodgeRating, stats.ParryRating,
+}
+
+// bestUncappedReforgeAlternative returns the highest effective per-rating EP among the uncapped
+// secondary stats the freed rating could be reforged into — the real "dump" options for this
+// spec, not a hardcoded one. A stat qualifies only if it carries EP weight and has no hard or
+// soft cap configured (a capped stat's marginal value is bounded/position-dependent, so it's
+// not a stable alternative). Haste/Mastery/Spirit are amp-boosted to match how the objective
+// scores them. The stat being evaluated is excluded. Returns 0 when no uncapped alternative
+// exists, which disables the floor-skip — so a spec with no uncapped dump behaves as before.
+func bestUncappedReforgeAlternative(search *reforgeSearchState, weights core.UnitStats, ampModifier float64, excludeStat stats.UnitStat) float64 {
+	best := 0.0
+	for _, stat := range reforgeDumpStatCandidates {
+		unitStat := stats.UnitStatFromStat(stat)
+		if unitStat == excludeStat || statHasConfiguredCap(search, unitStat) {
+			continue
+		}
+		weight := weights.Stats[stat]
+		if weight == 0 {
+			continue
+		}
+		if stat == stats.HasteRating || stat == stats.MasteryRating || stat == stats.Spirit {
+			weight *= ampModifier
+		}
+		if weight > best {
+			best = weight
+		}
+	}
+	return best
+}
+
+// statHasConfiguredCap reports whether a stat has a hard or soft cap — directly, or via one of
+// its percent pseudo-stat children (e.g. CritRating capped through SpellCritPercent).
+func statHasConfiguredCap(search *reforgeSearchState, unitStat stats.UnitStat) bool {
+	if _, ok := search.hardCapsByStat[unitStat]; ok {
+		return true
+	}
+	if _, ok := search.softCapsByStat[unitStat]; ok {
+		return true
+	}
+	if unitStat.IsStat() {
+		for _, child := range childPseudoStats(stats.Stat(unitStat.StatIdx())) {
+			childUnit := stats.UnitStatFromPseudoStat(child)
+			if _, ok := search.hardCapsByStat[childUnit]; ok {
+				return true
+			}
+			if _, ok := search.softCapsByStat[childUnit]; ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// softCapStatAmpFactor returns the Amplification multiplier for a soft-capped pseudo-stat's
+// weight, so it can be compared on the same basis as the amp-boosted Mastery alternative.
+// Haste (all speed schools) is amplified; Crit and Hit are not.
+func softCapStatAmpFactor(pseudo proto.PseudoStat, ampModifier float64) float64 {
+	switch pseudo {
+	case proto.PseudoStat_PseudoStatMeleeHastePercent, proto.PseudoStat_PseudoStatRangedHastePercent, proto.PseudoStat_PseudoStatSpellHastePercent:
+		return ampModifier
+	default:
+		return 1
+	}
 }
 
 func selectedChoicesValid(choices []reforgeChoice) bool {

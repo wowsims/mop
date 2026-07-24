@@ -86,6 +86,7 @@ type reforgeOptimization struct {
 	softCaps     []reforgeSoftCap
 	relativeCaps []reforgeRelativeStatCap
 	slotChoices  []reforgeSlotChoices
+	ampModifier  float64
 }
 
 type normalizedReforgeOptimizeConfig struct {
@@ -105,6 +106,7 @@ type reforgeSearchState struct {
 	softCaps       []reforgeSoftCap
 	softCapsByStat map[stats.UnitStat]reforgeSoftCap
 	relativeCaps   []reforgeRelativeStatCap
+	ampModifier    float64
 
 	// Pre-allocated per-solve working state — avoids repeated allocations across solver passes.
 	workingRaid         *proto.Raid                // reused across selectedChoicesCapDelta calls

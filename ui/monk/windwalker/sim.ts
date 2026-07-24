@@ -119,14 +119,14 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 	},
 
 	presets: {
-		epWeights: [Presets.P1_BIS_EP_PRESET, Presets.RORO_BIS_EP_PRESET],
+		epWeights: [Presets.P1_BIS_EP_PRESET, Presets.RORO_P3_4_EP_PRESET, Presets.RORO_P5_EP_PRESET],
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_4_BIS_GEAR_PRESET, Presets.P3_4_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
-		builds: [Presets.P2_BUILD_PRESET, Presets.P3_4_BUILD_PRESET],
+		builds: [Presets.P2_BUILD_PRESET, Presets.P3_4_BUILD_PRESET, Presets.P5_BUILD_PRESET],
 	},
 
 	autoRotation: (_: Player<Spec.SpecWindwalkerMonk>): APLRotation => {
@@ -151,9 +151,14 @@ export class WindwalkerMonkSimUI extends IndividualSimUI<Spec.SpecWindwalkerMonk
 		this.reforger = new ReforgeOptimizer(this, {
 			defaultRelativeStatCap: Stat.StatMasteryRating,
 			getEPDefaults: (player: Player<Spec.SpecWindwalkerMonk>) => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (RelativeStatCap.hasRoRo(player)) {
 					this.reforger?.setUseSoftCapBreakpoints(TypedEvent.nextEventID(), false);
-					return Presets.RORO_BIS_EP_PRESET.epWeights;
+					if (avgIlvl >= 560) {
+						return Presets.RORO_P5_EP_PRESET.epWeights;
+					} else {
+						return Presets.RORO_P3_4_EP_PRESET.epWeights;
+					}
 				}
 				return Presets.P1_BIS_EP_PRESET.epWeights;
 			},

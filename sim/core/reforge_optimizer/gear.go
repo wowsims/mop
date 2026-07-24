@@ -81,11 +81,13 @@ func (editor *reforgeGearEditor) applyChoices(choices []reforgeChoice) {
 // Post-processes gem assignments to minimize unnecessary gem purchases.
 //
 // For each socket, in slot-then-socket-index order: if the solver didn't touch it (same gem
-// ID), or if the solver's gem newly matches the socket's color where the original didn't
-// (a genuine improvement — never undo it), leave it alone. Otherwise, find wherever the
-// original gem ended up elsewhere in the gear and swap it back — placing the original gem
-// here, and this socket's solver-chosen gem into that other location — unless doing so would
-// undo a color-match improvement at that other socket.
+// ID), leave it alone. Otherwise, find wherever the original gem ended up elsewhere in the
+// gear and swap it back — placing the original gem here and this socket's solver-chosen gem
+// into that other location — UNLESS doing so would reduce the total number of socket-color
+// matches across the two sockets involved (a genuine color-match upgrade the solver found,
+// which must not be undone). The match count is compared across BOTH sockets, so a swap that
+// merely shuffles a matching gem between two same-color sockets (net-neutral) is still undone
+// rather than left as a pointless regem.
 //
 // This chases the original gem to wherever it moved rather than verifying a strict
 // reciprocal 2-cycle (A's original is at B, and B's original is A). For cycles longer than
@@ -127,15 +129,21 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 			if !newGemOk || !originalGemOk {
 				continue
 			}
-			if gemMatchesSocket(newGem.Color, socketColor) && !gemMatchesSocket(originalGem.Color, socketColor) {
-				continue
-			}
-
 			matchedSlot, matchedSocketIdx, matchedSocketColor, ok := editor.findGemElsewhere(originalGemID, finalizedSocketKeys)
 			if !ok {
 				continue
 			}
-			if gemMatchesSocket(originalGem.Color, matchedSocketColor) && !gemMatchesSocket(newGem.Color, matchedSocketColor) {
+
+			// Restore the original gem here only if it doesn't reduce the total socket-color
+			// matches across the two sockets involved. Skipping preserves a genuine color-match
+			// upgrade the solver found (the swapped-back arrangement would match fewer sockets);
+			// but a match-neutral shuffle is still undone — e.g. two same-color sockets (identical
+			// MH/OH weapon sockets) where moving the matching gem between them changes nothing yet
+			// forces a pointless regem. Comparing both sockets (not just this one) is what the old
+			// per-socket guards missed.
+			matchesIfSwapped := boolToInt(gemMatchesSocket(originalGem.Color, socketColor)) + boolToInt(gemMatchesSocket(newGem.Color, matchedSocketColor))
+			matchesIfKept := boolToInt(gemMatchesSocket(newGem.Color, socketColor)) + boolToInt(gemMatchesSocket(originalGem.Color, matchedSocketColor))
+			if matchesIfSwapped < matchesIfKept {
 				continue
 			}
 
@@ -146,9 +154,13 @@ func (editor *reforgeGearEditor) minimizeRegems() {
 	}
 }
 
-// Finds any not-yet-finalized socket currently holding gemID, regardless of what that
-// socket's own original gem was — this is the JS-mirrored "chase the gem to wherever it
-// moved" search, not a strict 2-cycle-partner check.
+// Finds a not-yet-finalized socket into which the SOLVER moved gemID — i.e. a socket now
+// holding gemID whose own original gem was something else. Sockets the solver never changed
+// (original gem already == gemID) are skipped: they hold their rightful gem and must not be
+// disturbed. Matching such an unchanged socket would corrupt a correct socket and leave the
+// real cross-slot swap only half-undone — e.g. crit-softcap, where 76658/76659 were shuffled
+// between two Red sockets while an unrelated, untouched Red socket also happened to hold 76658;
+// the old "chase the gem anywhere" search grabbed that untouched socket as the swap partner.
 func (editor *reforgeGearEditor) findGemElsewhere(gemID int32, finalizedSocketKeys map[reforgeSocketKey]bool) (proto.ItemSlot, int, proto.GemColor, bool) {
 	for slotIdx, item := range editor.gear {
 		if item.ID == 0 {
@@ -158,16 +170,29 @@ func (editor *reforgeGearEditor) findGemElsewhere(gemID int32, finalizedSocketKe
 		if editor.frozenSlots[slot] {
 			continue
 		}
+		originalItem := &editor.originalGear[slotIdx]
 		for socketIdx, socketColor := range currentSocketColors(item, editor.isBlacksmithing, editor.settings) {
 			if finalizedSocketKeys[reforgeSocketKey{slot: slot, socketIdx: socketIdx}] {
 				continue
 			}
-			if gemIDAt(&item, socketIdx) == gemID {
-				return slot, socketIdx, socketColor, true
+			if gemIDAt(&item, socketIdx) != gemID {
+				continue
 			}
+			if gemIDAt(originalItem, socketIdx) == gemID {
+				// Unchanged socket already holding this gem — not where it moved to, skip.
+				continue
+			}
+			return slot, socketIdx, socketColor, true
 		}
 	}
 	return proto.ItemSlot_ItemSlotHead, 0, proto.GemColor_GemColorUnknown, false
+}
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
 }
 
 func gemIDAt(item *core.Item, socketIdx int) int32 {

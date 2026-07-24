@@ -76,7 +76,8 @@ func buildReforgeSlotChoices(request *proto.ReforgeOptimizeRequest, baseRaid *pr
 			return core.UnitStats{}, false
 		}
 	}
-	coeffTable := buildStatCoefficientTable(weights, coeffOverrides)
+	ampModifier := amplificationStatModifier(baseGear)
+	coeffTable := buildStatCoefficientTable(weights, ampModifier, coeffOverrides)
 	gemOptions := buildReforgeGemOptions(request, player, gemSortWeights, hardCaps, softCaps, coeffTable, hasRelativeStatCap)
 	allowedReforgeToStats := allowedReforgeDestinationStats(request.GetPreCapEpWeights())
 	reforgeIDs := getSortedReforgeStatIDs()

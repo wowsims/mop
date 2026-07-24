@@ -1,31 +1,31 @@
 {
-	"requestId": "reforgeOptimizeAsync-f4ebd7b64b0cedbb",
+	"requestId": "reforgeOptimizeAsync-c3f82b46630f1200",
 	"raid": {
 		"parties": [
 			{
 				"players": [
 					{
 						"name": "Player",
-						"race": "RaceTroll",
-						"class": "ClassDruid",
+						"race": "RaceOrc",
+						"class": "ClassMage",
 						"equipment": {
 							"items": [
-								{ "id": 105542, "gems": [95347, 76697], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105473, "reforging": 116, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99428, "enchant": 4806, "gems": [76659, 76659], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 102246, "enchant": 4423, "gems": [76659], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99427, "enchant": 4419, "gems": [76659, 76659, 76659], "reforging": 152, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105425, "enchant": 4414, "gems": [76697], "reforging": 119, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99432, "enchant": 4431, "gems": [76659, 76659, 76697], "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
-								{ "id": 105651, "gems": [76659, 76697, 76697], "reforging": 116, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 99434, "enchant": 4825, "gems": [76697, 76697], "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105576, "enchant": 4429, "gems": [76697], "reforging": 166, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105520, "gems": [76697], "reforging": 116, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105606, "gems": [76659], "reforging": 152, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105647, "gems": [95347, 76667], "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105465, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 99401, "enchant": 4806, "gems": [76672, 76667], "reforging": 147, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 102246, "enchant": 4892, "gems": [76672], "reforging": 144, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 99400, "enchant": 4419, "gems": [76667, 76667, 76681], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105591, "enchant": 4414, "gems": [0], "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 99397, "enchant": 4430, "gems": [76667, 76672, 0], "reforging": 147, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+								{ "id": 105515, "gems": [76672, 76642, 76700], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 99399, "enchant": 4895, "gems": [76700, 76700], "reforging": 145, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105493, "enchant": 4429, "gems": [76700], "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105498, "reforging": 140, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105606, "gems": [76672], "upgradeStep": "UpgradeStepTwo" },
 								{ "id": 105422, "upgradeStep": "UpgradeStepTwo" },
 								{ "id": 105540, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105627, "enchant": 4442, "gems": [76659], "reforging": 138, "upgradeStep": "UpgradeStepTwo" },
-								{ "id": 105521, "enchant": 4434, "gems": [76697], "upgradeStep": "UpgradeStepTwo" }
+								{ "id": 105627, "enchant": 4442, "gems": [76672], "reforging": 146, "upgradeStep": "UpgradeStepTwo" },
+								{ "id": 105650, "enchant": 4434, "gems": [76672], "upgradeStep": "UpgradeStepTwo" }
 							]
 						},
 						"consumables": {
@@ -33,7 +33,7 @@
 							"potId": 76093,
 							"flaskId": 76085,
 							"foodId": 74650,
-							"consumableIds": [76085, 76086, 86569, 76076, 76078, 76079, 76080, 76083]
+							"consumableIds": [76085, 86569, 76076, 76078, 76080, 76083]
 						},
 						"bonusStats": {
 							"apiVersion": 4,
@@ -49,21 +49,24 @@
 							}
 						},
 						"buffs": {},
-						"balanceDruid": {
+						"frostMage": {
 							"options": {
 								"classOptions": {
-									"innervateTarget": {}
+									"defaultMageArmor": "MageArmorFrostArmor"
 								}
 							}
 						},
-						"talentsString": "113223",
+						"talentsString": "311122",
 						"glyphs": {
-							"major1": 40914,
-							"major2": 40906,
-							"major3": 40909
+							"major1": 42745,
+							"major2": 42753,
+							"major3": 45736,
+							"minor1": 42743,
+							"minor2": 42735,
+							"minor3": 104104
 						},
 						"profession1": "Engineering",
-						"profession2": "Blacksmithing",
+						"profession2": "Tailoring",
 						"cooldowns": {},
 						"reactionTimeMs": 100,
 						"distanceFromTarget": 20,
@@ -95,11 +98,12 @@
 		],
 		"numActiveParties": 5,
 		"buffs": {
-			"darkIntent": true,
-			"moonkinAura": true,
+			"unholyAura": true,
+			"arcaneBrilliance": true,
+			"mindQuickening": true,
 			"leaderOfThePack": true,
 			"blessingOfMight": true,
-			"markOfTheWild": true,
+			"blessingOfKings": true,
 			"bloodlust": true,
 			"stormlashTotemCount": 4,
 			"skullBannerCount": 2
@@ -110,7 +114,7 @@
 	},
 	"preCapEpWeights": {
 		"apiVersion": 4,
-		"stats": [0, 0, 0, 1, 0.01, 1.27, 0.82, 0.9265328937839892, 0, 0, 0, 0.7430610336287439, 0, 0, 0.74, 0, 0, 0, 0, 0, 0, 0],
+		"stats": [0, 0, 0, 1.31, 0, 2.15, 0.77, 0.6880194755821702, 0, 0, 0, 0.651325103551121, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
 		"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	},
 	"undershootCaps": {
@@ -137,29 +141,20 @@
 		{
 			"unitStat": {
 				"apiVersion": 4,
-				"pseudoStat": "PseudoStatSpellHastePercent"
-			},
-			"breakpoints": [30.4347],
-			"capType": "TypeSoftCap",
-			"postCapEPs": [127.5]
-		},
-		{
-			"unitStat": {
-				"apiVersion": 4,
 				"pseudoStat": "PseudoStatSpellCritPercent"
 			},
-			"breakpoints": [69.505],
+			"breakpoints": [23, 26, 28],
 			"capType": "TypeSoftCap",
-			"postCapEPs": [407.79433398357406]
+			"postCapEPs": [456, 408.00000000000006, 341.99999999999994]
 		},
 		{
 			"unitStat": {
 				"apiVersion": 4,
-				"stat": "StatMasteryRating"
+				"pseudoStat": "PseudoStatSpellHastePercent"
 			},
-			"breakpoints": [22241.6],
+			"breakpoints": [37.520061, 50, 62.469546, 87.441436],
 			"capType": "TypeSoftCap",
-			"postCapEPs": [0.6234897136829606]
+			"postCapEPs": [280.5, 221, 221, 221]
 		}
 	]
 }

@@ -191,6 +191,7 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 		softCaps:     softCaps,
 		relativeCaps: relativeCaps,
 		slotChoices:  slotChoices,
+		ampModifier:  amplificationStatModifier(baseGear),
 	}, nil
 }
 
@@ -228,6 +229,7 @@ func (optimization *reforgeOptimization) searchState() *reforgeSearchState {
 		workingStatsRequest: &proto.ComputeStatsRequest{Raid: workingRaid},
 		choiceVarIdx:        choiceVarIdx,
 		uniqueGemIDs:        buildUniqueGemLimitIDs(optimization.slotChoices),
+		ampModifier:         optimization.ampModifier,
 	}
 }
 
