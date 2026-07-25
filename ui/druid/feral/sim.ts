@@ -215,21 +215,29 @@ export class FeralDruidSimUI extends IndividualSimUI<Spec.SpecFeralDruid> {
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: (player: Player<Spec.SpecFeralDruid>) => {
+				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 
 				if (avgIlvl >= 550) {
 					if (player.getTalents().heartOfTheWild) {
-						return RelativeStatCap.hasRoRo(player) ? Presets.P5_HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
+						epWeights = RelativeStatCap.hasRoRo(player) ? Presets.P5_HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
 					} else {
-						return RelativeStatCap.hasRoRo(player) ? Presets.P5_DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
+						epWeights = RelativeStatCap.hasRoRo(player) ? Presets.P5_DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
+					}
+				} else {
+					if (player.getTalents().heartOfTheWild) {
+						epWeights = RelativeStatCap.hasRoRo(player) ? Presets.HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
+					} else {
+						epWeights = RelativeStatCap.hasRoRo(player) ? Presets.DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
 					}
 				}
 
-				if (player.getTalents().heartOfTheWild) {
-					return RelativeStatCap.hasRoRo(player) ? Presets.HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
-				} else {
-					return RelativeStatCap.hasRoRo(player) ? Presets.DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
-				}
+				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
+				epWeights = epWeights
+					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
+					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
+
+				return epWeights;
 			},
 			defaultRelativeStatCap: Stat.StatMasteryRating,
 		});
