@@ -3,8 +3,8 @@ package reforgeoptimizer
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -12,11 +12,45 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/simsignals"
 	"github.com/wowsims/mop/sim/core/stats"
-	"google.golang.org/protobuf/encoding/protojson"
 	googleProto "google.golang.org/protobuf/proto"
 )
 
 var reforgeOptimizeRequestID atomic.Uint64
+
+// reforgeOptimizer holds the player/settings-derived state that the model-building methods read.
+// Built once per request by newReforgeOptimizer.
+type reforgeOptimizer struct {
+	request  *proto.ReforgeOptimizeRequest
+	settings *proto.ReforgeSettings
+	player   *proto.Player
+	signals  simsignals.Signals
+
+	includeGems     bool
+	isBlacksmithing bool
+	isHuman         bool
+	isGuardianDruid bool
+	isHybridCaster  bool
+	isTankSpec      bool
+	hasJC           bool
+
+	ampModifier       float64
+	hasHeartOfTheWild bool
+
+	epStatsSet     map[proto.Stat]bool
+	frozenSlots    map[proto.ItemSlot]bool
+	undershootCaps core.UnitStats
+	relativeCap    *relativeStatCap
+	gemOptions     []*proto.ReforgeGemOption
+
+	baseRaidProto     *proto.Raid
+	baseStrippedGear  *proto.EquipmentSpec
+	originalEquipment *core.Equipment
+	baseStats         core.UnitStats
+}
+
+func (o *reforgeOptimizer) raidBuffs() *proto.RaidBuffs {
+	return o.baseRaidProto.GetBuffs()
+}
 
 func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResult {
 	return OptimizeAsync(request, simsignals.CreateSignals())
@@ -25,32 +59,21 @@ func Optimize(request *proto.ReforgeOptimizeRequest) *proto.ReforgeOptimizeResul
 func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Signals) *proto.ReforgeOptimizeResult {
 	requestID := reforgeOptimizeRequestID.Add(1)
 	startedAt := time.Now()
-	normalizedConfig, err := validateReforgeOptimizeSettings(request)
-	if err != nil {
-		log.Printf("[reforgeOptimize:%d] failed validating settings after %s: %s", requestID, time.Since(startedAt), err.Error())
-		return optimizeError(err.Error())
-	}
-	settings := normalizedConfig.settings
+	isBulk := request.GetMode() == proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk
 	debug := request.GetDebug()
-	logAbort := request.GetMode() != proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk || debug
-	if debug {
-		log.Printf("[reforgeOptimize:%d] started includeGems=%t debug=%t", requestID, settings.GetIncludeGems(), debug)
-		logRequestInput(requestID, request, normalizedConfig)
-	}
+	logAbort := !isBulk || debug
 
 	if request.Raid == nil || len(request.Raid.Parties) == 0 || len(request.Raid.Parties[0].Players) == 0 {
-		log.Printf("[reforgeOptimize:%d] failed after %s: missing player", requestID, time.Since(startedAt))
 		return optimizeError("Reforge optimizer requires a raid with player 0.")
 	}
 	if request.Raid.Parties[0].Players[0].Equipment == nil {
-		log.Printf("[reforgeOptimize:%d] failed after %s: missing baseline gear", requestID, time.Since(startedAt))
 		return optimizeError("Reforge optimizer requires baseline gear.")
 	}
 	if signals.Abort.IsTriggered() {
 		return optimizeAborted()
 	}
 
-	optimization, err := newReforgeOptimization(request, normalizedConfig, signals)
+	optimizer, err := newReforgeOptimizer(request, signals)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			if logAbort {
@@ -58,17 +81,10 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 			}
 			return optimizeAborted()
 		}
-		log.Printf("[reforgeOptimize:%d] failed initializing after %s: %s", requestID, time.Since(startedAt), err.Error())
 		return optimizeError(err.Error())
 	}
-	if debug {
-		log.Printf("[reforgeOptimize:%d] computed baseline stats in %s", requestID, time.Since(startedAt))
-		log.Printf("[reforgeOptimize:%d] built %d choice groups / %d choices in %s", requestID, len(optimization.slotChoices), countReforgeChoices(optimization.slotChoices), time.Since(startedAt))
-	}
 
-	search := optimization.searchState()
-	solveStartedAt := time.Now()
-	choices, score, solved, err := trySolveWithHiGHS(search, signals)
+	optimizedGear, score, err := optimizer.optimizeReforges()
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			if logAbort {
@@ -76,29 +92,11 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 			}
 			return optimizeAborted()
 		}
-		gear := request.GetRaid().GetParties()[0].GetPlayers()[0].GetEquipment()
-		gearJSON, _ := protojson.Marshal(gear)
-		log.Printf("[reforgeOptimize:%d] HiGHS failed after %s: %s gear=%s", requestID, time.Since(solveStartedAt), err.Error(), gearJSON)
-		return optimizeError(fmt.Sprintf("HiGHS reforge optimizer failed: %s", err.Error()))
-	}
-	if !solved {
-		gear := request.GetRaid().GetParties()[0].GetPlayers()[0].GetEquipment()
-		gearJSON, _ := protojson.Marshal(gear)
-		log.Printf("[reforgeOptimize:%d] HiGHS did not return a solution after %s gear=%s", requestID, time.Since(solveStartedAt), gearJSON)
-		return optimizeError("HiGHS reforge optimizer did not return a solution.")
-	}
-	if debug {
-		log.Printf("[reforgeOptimize:%d] HiGHS solved in %s score=%.3f", requestID, time.Since(solveStartedAt), score)
+		return optimizeError(err.Error())
 	}
 	if signals.Abort.IsTriggered() {
-		if logAbort {
-			log.Printf("[reforgeOptimize:%d] aborted after solving in %s", requestID, time.Since(startedAt))
-		}
 		return optimizeAborted()
 	}
-
-	optimizedGear := optimization.optimizedGear(choices)
-	isBulk := request.GetMode() == proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk
 
 	// Skip the final stats computation in bulk mode — callers only use OptimizedGear.
 	var optimizedPlayerStats *proto.PlayerStats
@@ -107,25 +105,12 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 		optimizedRaid.Parties[0].Players[0].Equipment = optimizedGear
 		optimizedResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: optimizedRaid})
 		if optimizedResult.ErrorResult != "" {
-			log.Printf("[reforgeOptimize:%d] failed computing optimized stats after %s: %s", requestID, time.Since(startedAt), optimizedResult.ErrorResult)
 			return optimizeError(optimizedResult.ErrorResult)
-		}
-		if debug {
-			optimizedStats := protoToCoreUnitStats(optimizedResult.RaidStats.Parties[0].Players[0].FinalStats)
-			optimizedCapStats := optimizedStats
-			optimizedCapStats.Stats[stats.MasteryRating] += 8 * core.MasteryRatingPerMasteryPoint
-			optimizedDelta := subtractUnitStats(optimizedCapStats, optimization.capBaseStats)
-			logOptimizedGearSummary(requestID, optimizedGear)
-			logCapEvaluation(requestID, search.hardCaps, search.softCaps, optimizedDelta)
 		}
 		optimizedPlayerStats = optimizedResult.RaidStats.Parties[0].Players[0]
 	}
 	if !isBulk {
-		log.Printf("[Reforge Optimizer] Reforge optimization completed requestID=%d total=%s score=%.3f", requestID, time.Since(startedAt), score)
-	}
-	if debug {
-		log.Printf("[reforgeOptimize:%d] selectedChoices=%d reforgedItems=%d", requestID, len(choices), countSelectedReforges(choices))
-		logSelectedChoices(requestID, choices)
+		log.Printf("[Reforge Optimizer] completed requestID=%d total=%s score=%.3f", requestID, time.Since(startedAt), score)
 	}
 
 	return &proto.ReforgeOptimizeResult{
@@ -136,24 +121,30 @@ func OptimizeAsync(request *proto.ReforgeOptimizeRequest, signals simsignals.Sig
 	}
 }
 
-// Sets up the full optimization context: strips reforges/gems from base gear, computes
-// base stats and stat dependencies in a single environment call, builds hard/soft/relative
-// caps, then generates slot choices for the solver.
-func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedConfig *normalizedReforgeOptimizeConfig, signals simsignals.Signals) (*reforgeOptimization, error) {
-	request = googleProto.Clone(request).(*proto.ReforgeOptimizeRequest)
-	request.Settings = normalizedConfig.settings
-	settings := normalizedConfig.settings
-	baseRaid := googleProto.Clone(request.Raid).(*proto.Raid)
-	originalGear := cloneEquipmentSpec(baseRaid.Parties[0].Players[0].Equipment)
-	baseGear := cloneEquipmentSpec(originalGear)
-	clearReforges(baseGear, settings)
-	if settings.GetIncludeGems() {
-		clearGems(baseGear, settings)
+// newReforgeOptimizer builds the optimizer context from the request: strips reforges/gems for
+// the baseline, computes base stats, and derives the player/settings flags (including whether a
+// Guardian Druid has Heart of the Wild).
+func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsignals.Signals) (*reforgeOptimizer, error) {
+	settings := request.GetSettings()
+	if settings == nil {
+		settings = &proto.ReforgeSettings{}
+	} else {
+		settings = googleProto.Clone(settings).(*proto.ReforgeSettings)
 	}
-	player := baseRaid.Parties[0].Players[0]
-	player.Equipment = baseGear
 
-	baseResult, statDeps := computeReforgeStatsAndDeps(&proto.ComputeStatsRequest{Raid: baseRaid})
+	player := request.Raid.Parties[0].Players[0]
+
+	originalGear := cloneEquipmentSpec(player.Equipment)
+	baseStrippedGear := cloneEquipmentSpec(originalGear)
+	clearReforges(baseStrippedGear, settings)
+	if settings.GetIncludeGems() {
+		clearGems(baseStrippedGear, settings)
+	}
+
+	baseRaid := googleProto.Clone(request.Raid).(*proto.Raid)
+	baseRaid.Parties[0].Players[0].Equipment = baseStrippedGear
+
+	baseResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: baseRaid})
 	if baseResult.ErrorResult != "" {
 		return nil, errors.New(baseResult.ErrorResult)
 	}
@@ -161,38 +152,124 @@ func newReforgeOptimization(request *proto.ReforgeOptimizeRequest, normalizedCon
 		return nil, context.Canceled
 	}
 
-	basePlayerStats := baseResult.RaidStats.Parties[0].Players[0]
-	baseStats := protoToCoreUnitStats(basePlayerStats.FinalStats)
-	capBaseStats := baseStats
-	capBaseStats.Stats[stats.MasteryRating] += 8 * core.MasteryRatingPerMasteryPoint
-	weights := validateReforgeWeights(protoToCoreUnitStats(request.PreCapEpWeights), settings, normalizedConfig.softCaps)
+	// Base stats = FinalStats plus the 8 free base-mastery points every character has.
+	baseStats := protoToCoreUnitStats(baseResult.RaidStats.Parties[0].Players[0].FinalStats)
+	baseStats.Stats[stats.MasteryRating] += 8 * core.MasteryRatingPerMasteryPoint
 
-	hardCaps := buildReforgeHardCaps(capBaseStats, settings, protoToCoreUnitStats(request.UndershootCaps))
-	softCaps := buildReforgeSoftCaps(capBaseStats, normalizedConfig.softCaps)
-	relativeCaps := buildRelativeStatCaps(baseRaid, baseGear, capBaseStats, settings)
-	weights = applyRelativeStatCapWeights(weights, relativeCaps)
-	gemSortWeights := relativeStatCapGemSortWeights(weights, relativeCaps)
+	originalEquipment := equipmentFromProto(originalGear)
+	isGuardian := playerIsGuardianDruid(player)
 
-	slotChoices, err := buildReforgeSlotChoices(request, baseRaid, baseGear, baseStats, weights, gemSortWeights, hardCaps, softCaps, len(relativeCaps) > 0, statDeps)
-	if err != nil {
-		return nil, err
+	optimizer := &reforgeOptimizer{
+		request:           request,
+		settings:          settings,
+		player:            player,
+		signals:           signals,
+		includeGems:       settings.GetIncludeGems(),
+		isBlacksmithing:   playerHasProfession(player, proto.Profession_Blacksmithing),
+		isHuman:           player.GetRace() == proto.Race_RaceHuman,
+		isGuardianDruid:   isGuardian,
+		isHybridCaster:    playerIsHybridCaster(player),
+		isTankSpec:        playerIsTankSpec(player),
+		hasJC:             playerHasProfession(player, proto.Profession_Jewelcrafting),
+		ampModifier:       amplificationStatModifier(baseStrippedGear),
+		epStatsSet:        buildEPStatsSet(request.GetPreCapEpWeights()),
+		frozenSlots:       frozenItemSlots(settings),
+		undershootCaps:    protoToCoreUnitStats(request.GetUndershootCaps()),
+		gemOptions:        request.GetGemOptions(),
+		baseRaidProto:     baseRaid,
+		baseStrippedGear:  baseStrippedGear,
+		originalEquipment: originalEquipment,
+		baseStats:         baseStats,
 	}
 
-	return &reforgeOptimization{
-		request:      request,
-		settings:     settings,
-		player:       player,
-		baseRaid:     baseRaid,
-		originalGear: originalGear,
-		baseGear:     baseGear,
-		capBaseStats: capBaseStats,
-		weights:      weights,
-		hardCaps:     hardCaps,
-		softCaps:     softCaps,
-		relativeCaps: relativeCaps,
-		slotChoices:  slotChoices,
-		ampModifier:  amplificationStatModifier(baseGear),
-	}, nil
+	// Heart of the Wild talent (Guardian Agility -> AP/Crit gets an extra 1.06 multiplier).
+	// Parsed from the talent string via the shared core helper.
+	if isGuardian {
+		druidTalents := &proto.DruidTalents{}
+		core.FillTalentsProto(druidTalents.ProtoReflect(), player.GetTalentsString())
+		optimizer.hasHeartOfTheWild = druidTalents.GetHeartOfTheWild()
+	}
+
+	// Relative stat cap (forced RoRo proc), if configured and RoRo is equipped.
+	if uiStat := settings.GetRelativeStatCapStat(); uiStat != nil {
+		if unitStat, ok := unitStatFromUIStat(uiStat); ok && unitStat.IsStat() {
+			forcedStat := proto.Stat(unitStat.StatIdx())
+			if isRelevantRelativeStat(forcedStat) && relativeStatCapHasRoRo(*originalEquipment) {
+				optimizer.relativeCap = newRelativeStatCap(forcedStat, playerIsFeralDruid(player))
+			}
+		}
+	}
+
+	return optimizer, nil
+}
+
+// optimizeReforges runs the full optimization: it derives the effective reforge-only stat caps
+// and soft caps, validates the EP weights against them, builds the LP variables and constraints,
+// solves the model, and applies the solution. Returns the optimized gear and the LP objective
+// score. The pre-cap EP weights, processed stat caps, and soft-cap configs arrive ready-to-use
+// on the request.
+func (o *reforgeOptimizer) optimizeReforges() (*proto.EquipmentSpec, float64, error) {
+	// Effective stat caps for just the reforge contribution.
+	reforgeCaps := computeStatCapsDelta(o.baseStats, protoToCoreUnitStats(o.settings.GetStatCaps()))
+	if o.isGuardianDruid {
+		meleeHaste := stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatMeleeHastePercent)
+		reforgeCaps = setUnitStat(reforgeCaps, meleeHaste, getUnitStat(reforgeCaps, meleeHaste)/1.5)
+	}
+
+	var softCapConfigs []*proto.StatCapConfig
+	if o.settings.GetUseSoftCapBreakpoints() {
+		softCapConfigs = o.request.GetSoftCaps()
+	}
+	reforgeSoftCaps := computeReforgeSoftCaps(o.baseStats, softCapConfigs)
+
+	validatedWeights := checkWeights(protoToCoreUnitStats(o.request.GetPreCapEpWeights()), reforgeCaps, reforgeSoftCaps)
+	if o.relativeCap != nil {
+		validatedWeights = o.relativeCap.updateWeights(validatedWeights)
+	}
+
+	baseEquipment := equipmentFromProto(o.baseStrippedGear)
+	variables := o.buildYalpsVariables(*baseEquipment, validatedWeights, reforgeCaps, reforgeSoftCaps)
+	constraints := o.buildYalpsConstraints(*baseEquipment, o.baseStats)
+
+	// Add all-or-nothing SocketBonusLink constraints for any link key that isn't already a
+	// constraint.
+	variables.each(func(_ string, coeffs map[string]float64) {
+		for key := range coeffs {
+			if strings.HasPrefix(key, "SocketBonusLink_") && !constraints.has(key) {
+				constraints.set(key, lessEq(0))
+			}
+		}
+	})
+
+	timeoutSeconds := 30.0
+	if o.relativeCap != nil {
+		timeoutSeconds = 120.0
+	}
+	if o.request.GetMode() == proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk {
+		timeoutSeconds /= 4
+	}
+
+	selectedVars, score, err := o.solveModel(validatedWeights, reforgeCaps, reforgeSoftCaps, variables, constraints, timeoutSeconds)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return o.applyLPSolution(selectedVars), score, nil
+}
+
+// buildEPStatsSet collects the stats carrying a non-zero EP weight in the (raw, pre-checkWeights)
+// request weights. Used to filter valid reforge destinations and gem stats.
+func buildEPStatsSet(weights *proto.UnitStats) map[proto.Stat]bool {
+	set := map[proto.Stat]bool{}
+	if weights == nil {
+		return set
+	}
+	for statIdx, value := range weights.GetStats() {
+		if value != 0 {
+			set[proto.Stat(statIdx)] = true
+		}
+	}
+	return set
 }
 
 func computeReforgeStats(request *proto.ComputeStatsRequest) *proto.ComputeStatsResult {
@@ -200,73 +277,9 @@ func computeReforgeStats(request *proto.ComputeStatsRequest) *proto.ComputeStats
 	return core.ComputeStats(request)
 }
 
-func computeReforgeStatsAndDeps(request *proto.ComputeStatsRequest) (*proto.ComputeStatsResult, *stats.StatDependencyManager) {
-	request.SkipRotation = true
-	return core.ComputeStatsAndDeps(request)
-}
-
-// Creates a reforgeSearchState from the optimization, pre-allocating the working raid
-// clone and MIP index arrays to avoid repeated allocations across solver passes.
-func (optimization *reforgeOptimization) searchState() *reforgeSearchState {
-	workingRaid := googleProto.Clone(optimization.baseRaid).(*proto.Raid)
-	choiceVarIdx := make([][]int, len(optimization.slotChoices))
-	for i, slot := range optimization.slotChoices {
-		choiceVarIdx[i] = make([]int, len(slot.choices))
-	}
-	return &reforgeSearchState{
-		request:             optimization.request,
-		baseRaid:            optimization.baseRaid,
-		baseEquipment:       core.ProtoToEquipment(optimization.baseGear),
-		capBaseStats:        optimization.capBaseStats,
-		slots:               optimization.slotChoices,
-		weights:             optimization.weights,
-		hardCaps:            optimization.hardCaps,
-		hardCapsByStat:      reforgeHardCapsByStat(optimization.hardCaps),
-		softCaps:            optimization.softCaps,
-		softCapsByStat:      reforgeSoftCapsByStat(optimization.softCaps),
-		relativeCaps:        optimization.relativeCaps,
-		workingRaid:         workingRaid,
-		workingStatsRequest: &proto.ComputeStatsRequest{Raid: workingRaid},
-		choiceVarIdx:        choiceVarIdx,
-		uniqueGemIDs:        buildUniqueGemLimitIDs(optimization.slotChoices),
-		ampModifier:         optimization.ampModifier,
-	}
-}
-
-// Applies solver choices to the base gear and calls minimizeRegems to avoid unnecessary
-// gem purchases where existing gems can be reused.
-func (optimization *reforgeOptimization) optimizedGear(choices []reforgeChoice) *proto.EquipmentSpec {
-	gearEditor := newReforgeGearEditor(optimization.baseGear, optimization.originalGear, optimization.player, optimization.settings)
-	gearEditor.applyChoices(choices)
-	if optimization.settings.GetIncludeGems() {
-		gearEditor.minimizeRegems()
-	}
-	return gearEditor.equipment()
-}
-
-func countSelectedReforges(choices []reforgeChoice) int {
-	count := 0
-	for _, choice := range choices {
-		if choice.reforgeID != 0 {
-			count++
-		}
-	}
-	return count
-}
-
-func countReforgeChoices(slots []reforgeSlotChoices) int {
-	count := 0
-	for _, slot := range slots {
-		count += len(slot.choices)
-	}
-	return count
-}
-
 func optimizeError(message string) *proto.ReforgeOptimizeResult {
 	return &proto.ReforgeOptimizeResult{
-		Error: &proto.ErrorOutcome{
-			Message: message,
-		},
+		Error: &proto.ErrorOutcome{Message: message},
 	}
 }
 

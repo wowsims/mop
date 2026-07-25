@@ -16,42 +16,58 @@ type highsJSSolution struct {
 	Error  string             `json:"error"`
 }
 
-func solveMIPWithHiGHS(model mipModel, timeout time.Duration, mipRelGap float64) (mipSolution, bool, error) {
+// runHiGHSLP runs the given CPLEX LP text through the browser's highs.wasm via the
+// __wowsimsSolveHiGHSLP bridge the host page exposes. Solver options: presolve on, a time limit,
+// and no relative MIP gap (HiGHS default). Returns per-variable primal values (indexed by x{i}),
+// the HiGHS model status, and any error.
+func runHiGHSLP(lpString string, numVars int, timeout time.Duration) ([]float64, int32, error) {
 	solve := js.Global().Get("__wowsimsSolveHiGHSLP")
 	if solve.Type() != js.TypeFunction {
-		return mipSolution{}, false, fmt.Errorf("HiGHS JavaScript solver bridge is not available")
+		return nil, 0, fmt.Errorf("HiGHS JavaScript solver bridge is not available")
 	}
 
-	result := solve.Invoke(modelToHiGHSLP(model), timeout.Seconds(), mipRelGap)
+	// The bridge signature is (lpString, timeoutSeconds, mipRelGap); pass 0 to leave the gap at
+	// the HiGHS default.
+	result := solve.Invoke(lpString, timeout.Seconds(), 0.0)
 	if result.Type() != js.TypeString {
-		return mipSolution{}, false, fmt.Errorf("HiGHS JavaScript solver bridge returned %s, expected string", result.Type().String())
+		return nil, 0, fmt.Errorf("HiGHS JavaScript solver bridge returned %s, expected string", result.Type().String())
 	}
 
 	var highsSolution highsJSSolution
 	if err := json.Unmarshal([]byte(result.String()), &highsSolution); err != nil {
-		return mipSolution{}, false, fmt.Errorf("parsing HiGHS JavaScript solver result: %w", err)
+		return nil, 0, fmt.Errorf("parsing HiGHS JavaScript solver result: %w", err)
 	}
 	if highsSolution.Error != "" {
-		return mipSolution{}, false, fmt.Errorf("HiGHS JavaScript solve failed: %s", highsSolution.Error)
+		return nil, 0, fmt.Errorf("HiGHS JavaScript solve failed: %s", highsSolution.Error)
 	}
 
-	solved := highsSolution.Status == "Optimal" || strings.EqualFold(highsSolution.Status, "Time limit reached")
-	if !solved {
-		return mipSolution{}, false, nil
+	var modelStatus int32
+	switch {
+	case highsSolution.Status == "Optimal":
+		modelStatus = highsModelStatusOptimal
+	case strings.EqualFold(highsSolution.Status, "Time limit reached"):
+		modelStatus = highsModelStatusTimeLimit
+	case highsSolution.Status == "Infeasible":
+		return nil, highsModelStatusInfeasible, nil
+	default:
+		return nil, 0, nil
 	}
 
-	solution := mipSolution{values: make([]float64, len(model.variables))}
-	for variableIdx := range model.variables {
+	values := make([]float64, numVars)
+	for variableIdx := range values {
 		value, ok := highsSolution.Values[fmt.Sprintf("x%d", variableIdx)]
 		if !ok {
-			return mipSolution{}, false, fmt.Errorf("HiGHS JavaScript solution missing variable x%d", variableIdx)
+			if modelStatus == highsModelStatusTimeLimit {
+				return nil, modelStatus, nil
+			}
+			return nil, 0, fmt.Errorf("HiGHS JavaScript solution missing variable x%d", variableIdx)
 		}
-		solution.values[variableIdx] = value
+		values[variableIdx] = value
 	}
-	return solution, true, nil
+	return values, modelStatus, nil
 }
 
-// WarmUp is a no-op on js/wasm: the browser compiles the HiGHS solver lazily in JavaScript,
-// and there is no Go server startup to pre-warm. Present so the exported symbol matches the
-// native build (see highswasm.go).
+// WarmUp is a no-op on js/wasm: the browser compiles the HiGHS solver lazily, and there is no
+// Go server startup to pre-warm. Present so the exported symbol matches the native build (see
+// highswasm.go).
 func WarmUp() error { return nil }

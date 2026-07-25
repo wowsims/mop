@@ -36,51 +36,33 @@ func TestDefaultHiGHSWasmRuntimeConcurrency(t *testing.T) {
 	}
 }
 
-func TestSolveMIPWithHiGHSWASM(t *testing.T) {
-	model := tinyHiGHSWasmBenchmarkModel()
+// tinyHiGHSWasmLP maximizes x0 + 2 x1 subject to x0 + x1 <= 1 (binary), whose optimum is
+// x0=0, x1=1.
+const tinyHiGHSWasmLP = "Maximize\n obj: 1 x0 + 2 x1\nSubject To\n c0: 1 x0 + 1 x1 <= 1\nBinary\n x0\n x1\nEnd"
 
-	solution, solved, err := solveMIPWithHiGHS(model, 5*time.Second, 0)
+func TestRunHiGHSLPWASM(t *testing.T) {
+	values, modelStatus, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second)
 	if err != nil {
-		t.Fatalf("solveMIPWithHiGHS returned error: %v", err)
+		t.Fatalf("runHiGHSLP returned error: %v", err)
 	}
-	if !solved {
-		t.Fatalf("solveMIPWithHiGHS did not solve tiny MIP")
+	if modelStatus != highsModelStatusOptimal {
+		t.Fatalf("expected optimal model status %d, got %d", highsModelStatusOptimal, modelStatus)
 	}
-	if solution.values[0] < 0.5 || solution.values[1] >= 0.5 {
-		t.Fatalf("expected equality-constrained optimum x0=1, x1=0; got %v", solution.values)
+	if len(values) != 2 || values[0] >= 0.5 || values[1] < 0.5 {
+		t.Fatalf("expected optimum x0=0, x1=1; got %v", values)
 	}
 }
 
-func BenchmarkSolveMIPWithHiGHSWASM(b *testing.B) {
-	model := tinyHiGHSWasmBenchmarkModel()
+func BenchmarkRunHiGHSLPWASM(b *testing.B) {
 	b.ReportAllocs()
-	if _, solved, err := solveMIPWithHiGHS(model, 5*time.Second, 0); err != nil {
-		b.Fatalf("solveMIPWithHiGHS warmup returned error: %v", err)
-	} else if !solved {
-		b.Fatalf("solveMIPWithHiGHS warmup did not solve tiny MIP")
+	if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second); err != nil {
+		b.Fatalf("runHiGHSLP warmup returned error: %v", err)
 	}
 	b.ResetTimer()
 
 	for range b.N {
-		_, solved, err := solveMIPWithHiGHS(model, 5*time.Second, 0)
-		if err != nil {
-			b.Fatalf("solveMIPWithHiGHS returned error: %v", err)
+		if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second); err != nil {
+			b.Fatalf("runHiGHSLP returned error: %v", err)
 		}
-		if !solved {
-			b.Fatalf("solveMIPWithHiGHS did not solve tiny MIP")
-		}
-	}
-}
-
-func tinyHiGHSWasmBenchmarkModel() mipModel {
-	constraint := newMIPConstraint(1, 1, 2)
-	constraint.addCoefficient(0, 1)
-	constraint.addCoefficient(1, 1)
-	return mipModel{
-		variables: []mipVariable{
-			{objective: -1, upper: 1, integer: true},
-			{objective: -2, upper: 1, integer: true},
-		},
-		constraints: []mipConstraint{constraint},
 	}
 }

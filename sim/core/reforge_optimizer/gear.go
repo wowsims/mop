@@ -1,10 +1,24 @@
 package reforgeoptimizer
 
 import (
+	"math"
+	"strconv"
+	"strings"
+
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/stats"
 	googleProto "google.golang.org/protobuf/proto"
 )
+
+// gear.go holds the gear/gem/reforge sim-facility wrappers — these are not "the algorithm",
+// just adapters over sim/core — plus applyLPSolution and minimizeRegems, which turn a solved
+// LP back into an equipment spec.
+
+type reforgeSocketKey struct {
+	slot      proto.ItemSlot
+	socketIdx int
+}
 
 func cloneEquipmentSpec(equipment *proto.EquipmentSpec) *proto.EquipmentSpec {
 	if equipment == nil {
@@ -13,186 +27,19 @@ func cloneEquipmentSpec(equipment *proto.EquipmentSpec) *proto.EquipmentSpec {
 	return googleProto.Clone(equipment).(*proto.EquipmentSpec)
 }
 
-type reforgeGearEditor struct {
-	gear            *core.Equipment
-	originalGear    *core.Equipment
-	player          *proto.Player
-	settings        *proto.ReforgeSettings
-	frozenSlots     map[proto.ItemSlot]bool
-	isBlacksmithing bool
+func equipmentFromProto(equipment *proto.EquipmentSpec) *core.Equipment {
+	if equipment == nil {
+		return &core.Equipment{}
+	}
+	coreEquipment := core.ProtoToEquipment(equipment)
+	return &coreEquipment
 }
 
-type reforgeSocketKey struct {
-	slot      proto.ItemSlot
-	socketIdx int
-}
-
-func newReforgeGearEditor(gear *proto.EquipmentSpec, originalGear *proto.EquipmentSpec, player *proto.Player, settings *proto.ReforgeSettings) *reforgeGearEditor {
-	editor := &reforgeGearEditor{
-		gear:         equipmentFromProto(gear),
-		originalGear: optionalEquipmentFromProto(originalGear),
-		player:       player,
-		settings:     settings,
-		frozenSlots:  frozenItemSlots(settings),
+func optionalEquipmentFromProto(equipment *proto.EquipmentSpec) *core.Equipment {
+	if equipment == nil {
+		return nil
 	}
-	if player != nil {
-		editor.isBlacksmithing = playerHasProfession(player, proto.Profession_Blacksmithing)
-	}
-	return editor
-}
-
-func (editor *reforgeGearEditor) equipment() *proto.EquipmentSpec {
-	if editor == nil || editor.gear == nil {
-		return &proto.EquipmentSpec{}
-	}
-	return editor.gear.ToEquipmentSpecProto()
-}
-
-func (editor *reforgeGearEditor) applyChoice(choice reforgeChoice) {
-	if editor == nil || editor.gear == nil || int(choice.slot) < 0 || int(choice.slot) >= int(core.NumItemSlots) {
-		return
-	}
-	item := editor.gear.GetItemBySlot(choice.slot)
-	if item.ID == 0 {
-		return
-	}
-	if choice.hasReforge {
-		if choice.reforgeID == 0 {
-			item.Reforging = nil
-		} else {
-			reforge := core.GetReforgeStatByID(choice.reforgeID)
-			item.Reforging = &reforge
-		}
-	}
-	for _, gemChoice := range choice.gems {
-		for len(item.Gems) <= gemChoice.socketIdx {
-			item.Gems = append(item.Gems, core.Gem{})
-		}
-		item.Gems[gemChoice.socketIdx] = gemFromID(gemChoice.gemID)
-	}
-}
-
-func (editor *reforgeGearEditor) applyChoices(choices []reforgeChoice) {
-	for _, choice := range choices {
-		editor.applyChoice(choice)
-	}
-}
-
-// Post-processes gem assignments to minimize unnecessary gem purchases.
-//
-// For each socket, in slot-then-socket-index order: if the solver didn't touch it (same gem
-// ID), leave it alone. Otherwise, find wherever the original gem ended up elsewhere in the
-// gear and swap it back — placing the original gem here and this socket's solver-chosen gem
-// into that other location — UNLESS doing so would reduce the total number of socket-color
-// matches across the two sockets involved (a genuine color-match upgrade the solver found,
-// which must not be undone). The match count is compared across BOTH sockets, so a swap that
-// merely shuffles a matching gem between two same-color sockets (net-neutral) is still undone
-// rather than left as a pointless regem.
-//
-// This chases the original gem to wherever it moved rather than verifying a strict
-// reciprocal 2-cycle (A's original is at B, and B's original is A). For cycles longer than
-// 2 (A's gem moved to B, B's moved to C, C's moved to A) this "walks" the original gem back
-// one step at a time in socket-visitation order rather than fully unwinding the cycle, which
-// can leave a gem shifted into a socket it never started in — a known imprecision, not fixed
-// here since a full cycle-unwind isn't worth the added complexity for how rarely it matters.
-func (editor *reforgeGearEditor) minimizeRegems() {
-	if editor == nil || editor.gear == nil || editor.originalGear == nil || editor.player == nil {
-		return
-	}
-
-	finalizedSocketKeys := map[reforgeSocketKey]bool{}
-	for slotIdx := range editor.gear {
-		newItem := &editor.gear[slotIdx]
-		originalItem := &editor.originalGear[slotIdx]
-		if newItem.ID == 0 || originalItem.ID == 0 {
-			continue
-		}
-		slot := proto.ItemSlot(slotIdx)
-		if editor.frozenSlots[slot] {
-			continue
-		}
-		for socketIdx, socketColor := range currentSocketColors(*newItem, editor.isBlacksmithing, editor.settings) {
-			socketKey := reforgeSocketKey{slot: slot, socketIdx: socketIdx}
-			if finalizedSocketKeys[socketKey] {
-				continue
-			}
-			finalizedSocketKeys[socketKey] = true
-
-			newGemID := gemIDAt(newItem, socketIdx)
-			originalGemID := gemIDAt(originalItem, socketIdx)
-			if newGemID == 0 || originalGemID == 0 || newGemID == originalGemID {
-				continue
-			}
-
-			newGem, newGemOk := core.GetGemByID(newGemID)
-			originalGem, originalGemOk := core.GetGemByID(originalGemID)
-			if !newGemOk || !originalGemOk {
-				continue
-			}
-			matchedSlot, matchedSocketIdx, matchedSocketColor, ok := editor.findGemElsewhere(originalGemID, finalizedSocketKeys)
-			if !ok {
-				continue
-			}
-
-			// Restore the original gem here only if it doesn't reduce the total socket-color
-			// matches across the two sockets involved. Skipping preserves a genuine color-match
-			// upgrade the solver found (the swapped-back arrangement would match fewer sockets);
-			// but a match-neutral shuffle is still undone — e.g. two same-color sockets (identical
-			// MH/OH weapon sockets) where moving the matching gem between them changes nothing yet
-			// forces a pointless regem. Comparing both sockets (not just this one) is what the old
-			// per-socket guards missed.
-			matchesIfSwapped := boolToInt(gemMatchesSocket(originalGem.Color, socketColor)) + boolToInt(gemMatchesSocket(newGem.Color, matchedSocketColor))
-			matchesIfKept := boolToInt(gemMatchesSocket(newGem.Color, socketColor)) + boolToInt(gemMatchesSocket(originalGem.Color, matchedSocketColor))
-			if matchesIfSwapped < matchesIfKept {
-				continue
-			}
-
-			finalizedSocketKeys[reforgeSocketKey{slot: matchedSlot, socketIdx: matchedSocketIdx}] = true
-			setGemIDAt(newItem, socketIdx, originalGemID)
-			setGemIDAt(editor.gear.GetItemBySlot(matchedSlot), matchedSocketIdx, newGemID)
-		}
-	}
-}
-
-// Finds a not-yet-finalized socket into which the SOLVER moved gemID — i.e. a socket now
-// holding gemID whose own original gem was something else. Sockets the solver never changed
-// (original gem already == gemID) are skipped: they hold their rightful gem and must not be
-// disturbed. Matching such an unchanged socket would corrupt a correct socket and leave the
-// real cross-slot swap only half-undone — e.g. crit-softcap, where 76658/76659 were shuffled
-// between two Red sockets while an unrelated, untouched Red socket also happened to hold 76658;
-// the old "chase the gem anywhere" search grabbed that untouched socket as the swap partner.
-func (editor *reforgeGearEditor) findGemElsewhere(gemID int32, finalizedSocketKeys map[reforgeSocketKey]bool) (proto.ItemSlot, int, proto.GemColor, bool) {
-	for slotIdx, item := range editor.gear {
-		if item.ID == 0 {
-			continue
-		}
-		slot := proto.ItemSlot(slotIdx)
-		if editor.frozenSlots[slot] {
-			continue
-		}
-		originalItem := &editor.originalGear[slotIdx]
-		for socketIdx, socketColor := range currentSocketColors(item, editor.isBlacksmithing, editor.settings) {
-			if finalizedSocketKeys[reforgeSocketKey{slot: slot, socketIdx: socketIdx}] {
-				continue
-			}
-			if gemIDAt(&item, socketIdx) != gemID {
-				continue
-			}
-			if gemIDAt(originalItem, socketIdx) == gemID {
-				// Unchanged socket already holding this gem — not where it moved to, skip.
-				continue
-			}
-			return slot, socketIdx, socketColor, true
-		}
-	}
-	return proto.ItemSlot_ItemSlotHead, 0, proto.GemColor_GemColorUnknown, false
-}
-
-func boolToInt(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
+	return equipmentFromProto(equipment)
 }
 
 func gemIDAt(item *core.Item, socketIdx int) int32 {
@@ -212,23 +59,8 @@ func setGemIDAt(item *core.Item, socketIdx int, gemID int32) {
 	item.Gems[socketIdx] = gemFromID(gemID)
 }
 
-func equipmentFromProto(equipment *proto.EquipmentSpec) *core.Equipment {
-	if equipment == nil {
-		return &core.Equipment{}
-	}
-	coreEquipment := core.ProtoToEquipment(equipment)
-	return &coreEquipment
-}
-
-func optionalEquipmentFromProto(equipment *proto.EquipmentSpec) *core.Equipment {
-	if equipment == nil {
-		return nil
-	}
-	return equipmentFromProto(equipment)
-}
-
-// Returns the gem for the given ID, falling back to a stub {ID: gemID} if not found in
-// the database (preserves the ID so the proto round-trip doesn't silently drop it).
+// gemFromID returns the gem for the given ID, falling back to a stub {ID} if not in the DB so
+// the proto round-trip preserves the ID.
 func gemFromID(gemID int32) core.Gem {
 	if gemID == 0 {
 		return core.Gem{}
@@ -239,15 +71,47 @@ func gemFromID(gemID int32) core.Gem {
 	return core.Gem{ID: gemID}
 }
 
-// Strips reforge assignments from all unfrozen slots so baseline stats are computed
-// without any pre-existing reforges.
+// clearReforges strips reforge assignments from all unfrozen slots.
 func clearReforges(equipment *proto.EquipmentSpec, settings *proto.ReforgeSettings) {
-	frozenSlots := frozenItemSlots(settings)
+	frozen := frozenItemSlots(settings)
 	for slotIdx, item := range equipment.Items {
-		if item != nil && !frozenSlots[proto.ItemSlot(slotIdx)] {
+		if item != nil && !frozen[proto.ItemSlot(slotIdx)] {
 			item.Reforging = 0
 		}
 	}
+}
+
+// clearGems removes all non-meta gems from unfrozen slots (the head meta socket is preserved —
+// the optimizer never changes meta gems).
+func clearGems(equipment *proto.EquipmentSpec, settings *proto.ReforgeSettings) {
+	frozen := frozenItemSlots(settings)
+	for slotIdx, item := range equipment.Items {
+		slot := proto.ItemSlot(slotIdx)
+		if item == nil || frozen[slot] {
+			continue
+		}
+		for gemIdx, gemID := range item.Gems {
+			if gemID == 0 {
+				continue
+			}
+			if isHeadMetaSocket(item, slot, gemIdx) {
+				continue
+			}
+			if gem, ok := core.GetGemByID(gemID); !ok || gem.Color != proto.GemColor_GemColorMeta {
+				item.Gems[gemIdx] = 0
+			}
+		}
+	}
+}
+
+func isHeadMetaSocket(item *proto.ItemSpec, slot proto.ItemSlot, gemIdx int) bool {
+	if slot != proto.ItemSlot_ItemSlotHead {
+		return false
+	}
+	if dbItem := core.GetItemByID(item.GetId()); dbItem != nil && gemIdx < len(dbItem.GemSockets) {
+		return dbItem.GemSockets[gemIdx] == proto.GemColor_GemColorMeta
+	}
+	return gemIdx == 0
 }
 
 func frozenItemSlots(settings *proto.ReforgeSettings) map[proto.ItemSlot]bool {
@@ -259,4 +123,235 @@ func frozenItemSlots(settings *proto.ReforgeSettings) map[proto.ItemSlot]bool {
 		frozen[item] = true
 	}
 	return frozen
+}
+
+// currentSocketColors returns the item's effective socket colors: it drops the end-of-tier
+// bonus socket when disabled and appends a prismatic socket for Blacksmithing wrists/hands.
+func currentSocketColors(item core.Item, isBlacksmithing bool, settings *proto.ReforgeSettings) []proto.GemColor {
+	socketColors := append([]proto.GemColor(nil), item.GemSockets...)
+	if !settings.GetIncludeEotbGemSocket() && hasEndOfTierBonusSocket(item) && len(socketColors) > 0 {
+		socketColors = socketColors[:len(socketColors)-1]
+	}
+	if isBlacksmithing && (item.Type == proto.ItemType_ItemTypeWrist || item.Type == proto.ItemType_ItemTypeHands) {
+		socketColors = append(socketColors, proto.GemColor_GemColorPrismatic)
+	}
+	return socketColors
+}
+
+// hasEndOfTierBonusSocket detects a Throne of Thunder end-of-tier bonus socket (Sha-Touched
+// socket color, or a ", Reborn" name suffix for LFR pieces).
+func hasEndOfTierBonusSocket(item core.Item) bool {
+	for _, socketColor := range item.GemSockets {
+		if socketColor == proto.GemColor_GemColorShaTouched {
+			return true
+		}
+	}
+	return strings.HasSuffix(item.Name, ", Reborn")
+}
+
+// gemEligibleForSocket reports whether a gem of the given color class may be placed in a socket
+// of the given color (meta, cogwheel, and Sha-Touched sockets each take only their own class).
+func gemEligibleForSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
+	switch socketColor {
+	case proto.GemColor_GemColorMeta:
+		return gemColor == proto.GemColor_GemColorMeta
+	case proto.GemColor_GemColorCogwheel:
+		return gemColor == proto.GemColor_GemColorCogwheel
+	case proto.GemColor_GemColorShaTouched:
+		return gemColor == proto.GemColor_GemColorShaTouched
+	default:
+		return gemColor != proto.GemColor_GemColorMeta && gemColor != proto.GemColor_GemColorCogwheel && gemColor != proto.GemColor_GemColorShaTouched
+	}
+}
+
+// gemMatchesSocket reports whether a gem's color counts as a match for the socket's color (for
+// the purpose of earning the item's socket bonus).
+func gemMatchesSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
+	if gemColor == socketColor {
+		return true
+	}
+	switch socketColor {
+	case proto.GemColor_GemColorBlue:
+		return gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
+	case proto.GemColor_GemColorRed:
+		return gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorPrismatic
+	case proto.GemColor_GemColorYellow:
+		return gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
+	case proto.GemColor_GemColorPrismatic:
+		return gemColor == proto.GemColor_GemColorRed || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorYellow ||
+			gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorBlue || gemColor == proto.GemColor_GemColorPurple
+	default:
+		return false
+	}
+}
+
+// reforgeRawStats computes the stat change a reforge produces on an item (a fraction of the
+// fromStat moved to the toStat). Random-suffix items use their scaled suffix stats as source.
+func reforgeRawStats(item core.Item, reforge core.ReforgeStat) stats.Stats {
+	itemStats := item.Stats
+	if item.RandomSuffix.ID != 0 {
+		itemStats = item.ScaledRandomSuffixStats()
+	}
+	fromStat := stats.Stat(int32(reforge.FromStat))
+	reduction := math.Floor(itemStats[fromStat] * reforge.Multiplier)
+	delta := stats.Stats{}
+	delta[fromStat] -= reduction
+	delta[stats.Stat(int32(reforge.ToStat))] += reduction
+	return delta
+}
+
+// applyLPSolution turns the solver's selected variables into an equipment spec: it rebuilds gear
+// from the stripped base gear, applies each selected reforge/gem variable, then runs
+// minimizeRegems.
+func (o *reforgeOptimizer) applyLPSolution(selectedVars []string) *proto.EquipmentSpec {
+	gear := equipmentFromProto(o.baseStrippedGear)
+
+	for _, variableKey := range selectedVars {
+		parts := strings.Split(variableKey, "_")
+		slotIdx, err := strconv.Atoi(parts[0])
+		if err != nil || slotIdx < 0 || slotIdx >= int(core.NumItemSlots) {
+			continue
+		}
+		item := gear.GetItemBySlot(proto.ItemSlot(slotIdx))
+		if item.ID == 0 {
+			continue
+		}
+		if len(parts) > 2 {
+			socketIdx, err1 := strconv.Atoi(parts[1])
+			gemID, err2 := strconv.Atoi(parts[2])
+			if err1 != nil || err2 != nil {
+				continue
+			}
+			setGemIDAt(item, socketIdx, int32(gemID))
+			continue
+		}
+		reforgeID, err := strconv.Atoi(parts[1])
+		if err != nil {
+			continue
+		}
+		reforge := core.GetReforgeStatByID(int32(reforgeID))
+		item.Reforging = &reforge
+	}
+
+	if o.includeGems {
+		o.minimizeRegems(gear)
+	}
+	return gear.ToEquipmentSpecProto()
+}
+
+// minimizeRegems cuts the number of gems the player must actually buy. For each socket the
+// solver changed, it locates where that socket's original gem now lives (via findGem) and swaps
+// the two gems back — reusing a gem the player already owns instead of buying a new one — unless
+// doing so would drop a socket-color match the solver found.
+func (o *reforgeOptimizer) minimizeRegems(newGear *core.Equipment) {
+	originalGear := o.originalEquipment
+	if originalGear == nil {
+		return
+	}
+
+	finalizedSocketKeys := map[reforgeSocketKey]bool{}
+	for slotIdx := 0; slotIdx < int(core.NumItemSlots); slotIdx++ {
+		slot := proto.ItemSlot(slotIdx)
+		newItem := newGear.GetItemBySlot(slot)
+		originalItem := originalGear.GetItemBySlot(slot)
+		if newItem.ID == 0 || originalItem.ID == 0 {
+			continue
+		}
+
+		for socketIdx, socketColor := range currentSocketColors(*newItem, o.isBlacksmithing, o.settings) {
+			socketKey := reforgeSocketKey{slot: slot, socketIdx: socketIdx}
+			if finalizedSocketKeys[socketKey] {
+				continue
+			}
+			finalizedSocketKeys[socketKey] = true
+
+			newGemID := gemIDAt(newItem, socketIdx)
+			originalGemID := gemIDAt(originalItem, socketIdx)
+			if newGemID == 0 || originalGemID == 0 || newGemID == originalGemID {
+				continue
+			}
+			newGem, newOk := core.GetGemByID(newGemID)
+			originalGem, originalOk := core.GetGemByID(originalGemID)
+			if !newOk || !originalOk {
+				continue
+			}
+			// The decision to keep or undo this swap is left entirely to the net-match comparison
+			// below, which weighs both sockets together. A per-socket short-circuit here — keeping
+			// the swap merely because the solver's gem matches this socket — would wrongly leave a
+			// match-neutral same-color swap in place (the brm-weapon-gem-desync scenario).
+
+			for _, loc := range o.findGem(newGear, originalGemID) {
+				if o.frozenSlots[loc.slot] {
+					continue
+				}
+				matchedKey := reforgeSocketKey{slot: loc.slot, socketIdx: loc.socketIdx}
+				if finalizedSocketKeys[matchedKey] {
+					continue
+				}
+				matchedItem := newGear.GetItemBySlot(loc.slot)
+				matchedColors := currentSocketColors(*matchedItem, o.isBlacksmithing, o.settings)
+				if loc.socketIdx >= len(matchedColors) {
+					continue
+				}
+				matchedSocketColor := matchedColors[loc.socketIdx]
+				// Restore the original gem here only if it does not reduce the total socket-color
+				// matches across BOTH sockets involved. Weighing both sockets (not just the one the
+				// gem moved to) preserves a genuine color-match upgrade the solver found while still
+				// undoing a match-neutral shuffle (e.g. two same-color MH/OH weapon sockets) that
+				// would otherwise be a pointless regem.
+				matchesIfSwapped := boolToInt(gemMatchesSocket(originalGem.Color, socketColor)) + boolToInt(gemMatchesSocket(newGem.Color, matchedSocketColor))
+				matchesIfKept := boolToInt(gemMatchesSocket(newGem.Color, socketColor)) + boolToInt(gemMatchesSocket(originalGem.Color, matchedSocketColor))
+				if matchesIfSwapped < matchesIfKept {
+					continue
+				}
+
+				finalizedSocketKeys[matchedKey] = true
+				setGemIDAt(newItem, socketIdx, originalGemID)
+				setGemIDAt(matchedItem, loc.socketIdx, newGemID)
+				break
+			}
+		}
+	}
+}
+
+type gemLocation struct {
+	slot      proto.ItemSlot
+	socketIdx int
+}
+
+// findGem returns every socket into which the SOLVER moved gemID — i.e. a socket now holding
+// gemID whose own original gem was something else. Sockets the solver never changed (original
+// gem already == gemID) are skipped: they hold their rightful gem and must not be disturbed.
+// Skipping them keeps minimizeRegems from grabbing an untouched socket as the swap partner (the
+// crit-softcap decoy scenario, where an unchanged socket happens to hold the same gem).
+func (o *reforgeOptimizer) findGem(equipment *core.Equipment, gemID int32) []gemLocation {
+	var locations []gemLocation
+	for slotIdx := 0; slotIdx < int(core.NumItemSlots); slotIdx++ {
+		slot := proto.ItemSlot(slotIdx)
+		item := equipment.GetItemBySlot(slot)
+		if item.ID == 0 {
+			continue
+		}
+		var originalItem *core.Item
+		if o.originalEquipment != nil {
+			originalItem = o.originalEquipment.GetItemBySlot(slot)
+		}
+		for socketIdx := range currentSocketColors(*item, o.isBlacksmithing, o.settings) {
+			if gemIDAt(item, socketIdx) != gemID {
+				continue
+			}
+			if originalItem != nil && gemIDAt(originalItem, socketIdx) == gemID {
+				continue
+			}
+			locations = append(locations, gemLocation{slot: slot, socketIdx: socketIdx})
+		}
+	}
+	return locations
+}
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
 }

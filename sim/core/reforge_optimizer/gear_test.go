@@ -9,11 +9,21 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
+// minimizeRegemsHarness builds a reforgeOptimizer wired for the minimizeRegems gem-swap tests:
+// the original (pre-optimize) gems on originalEquipment, gems enabled, nothing frozen.
+func minimizeRegemsHarness(original *proto.EquipmentSpec) *reforgeOptimizer {
+	return &reforgeOptimizer{
+		settings:          &proto.ReforgeSettings{IncludeGems: true},
+		frozenSlots:       map[proto.ItemSlot]bool{},
+		originalEquipment: equipmentFromProto(original),
+	}
+}
+
 // A stat-neutral swap of gems between two identical (Red) weapon sockets must be undone by
-// minimizeRegems — the old per-socket color guard mistook it for an upgrade and left a
-// pointless regem (see brm-weapon-gem-desync). MH 105430 and OH 105581 both have a single Red
-// socket; Crafty (76659, Orange) matches Red, Smooth (76697, Yellow) does not, so either
-// arrangement matches exactly one socket and yields identical stats.
+// minimizeRegems, since it is a pointless regem (the brm-weapon-gem-desync scenario). MH 105430
+// and OH 105581 both have a single Red socket; Crafty (76659, Orange) matches Red, Smooth
+// (76697, Yellow) does not, so either arrangement matches exactly one socket and yields
+// identical stats — undoing the swap must be preferred.
 func TestMinimizeRegemsUndoesSameColorWeaponSwap(t *testing.T) {
 	sim.RegisterAll()
 
@@ -31,29 +41,24 @@ func TestMinimizeRegemsUndoesSameColorWeaponSwap(t *testing.T) {
 	}
 
 	original := mkSpec(smooth, crafty) // original placement: MH=Smooth, OH=Crafty
-	base := mkSpec(0, 0)               // gems stripped, as the optimizer sees it
+	solved := mkSpec(crafty, smooth)   // solver's stat-neutral swap: MH=Crafty, OH=Smooth
+	newGear := equipmentFromProto(solved)
 
-	editor := newReforgeGearEditor(base, original, &proto.Player{}, &proto.ReforgeSettings{IncludeGems: true})
-	// Solver emits the swapped (stat-neutral) arrangement: MH=Crafty, OH=Smooth.
-	editor.applyChoices([]reforgeChoice{
-		{slot: mhSlot, gems: []reforgeGemChoice{{socketIdx: 0, gemID: crafty}}},
-		{slot: ohSlot, gems: []reforgeGemChoice{{socketIdx: 0, gemID: smooth}}},
-	})
-	editor.minimizeRegems()
+	minimizeRegemsHarness(original).minimizeRegems(newGear)
 
-	eq := editor.equipment()
-	gotMH, gotOH := eq.Items[mhSlot].Gems[0], eq.Items[ohSlot].Gems[0]
+	gotMH := gemIDAt(newGear.GetItemBySlot(proto.ItemSlot(mhSlot)), 0)
+	gotOH := gemIDAt(newGear.GetItemBySlot(proto.ItemSlot(ohSlot)), 0)
 	if gotMH != smooth || gotOH != crafty {
 		t.Fatalf("pointless same-color swap not undone: got MH=%d OH=%d, want MH=%d OH=%d", gotMH, gotOH, smooth, crafty)
 	}
 }
 
 // When the gem being chased also sits in an UNCHANGED socket, minimizeRegems must ignore that
-// decoy and undo the swap against the socket the solver actually changed (see crit-softcap). The
-// chest (99419, 3 Red sockets) starts all Deadly; the solver swaps its socket 0 with the hands'
-// (105635) Red socket 0 which started Crafty — a stat-neutral cross-slot swap. The chest's other
-// two Deadly gems are untouched decoys: the old "chase the gem anywhere" search grabbed one of
-// them as the partner, corrupting an untouched socket and leaving the real swap half-undone.
+// decoy and undo the swap against the socket the solver actually changed (the crit-softcap
+// scenario). The chest (99419, 3 Red sockets) starts all Deadly; the solver swaps its socket 0
+// with the hands' (105635) Red socket 0 which started Crafty — a stat-neutral cross-slot swap.
+// The chest's other two Deadly gems are untouched decoys: matching one of them as the partner
+// would corrupt an untouched socket and leave the real swap half-undone.
 func TestMinimizeRegemsIgnoresUnchangedSocketDecoy(t *testing.T) {
 	sim.RegisterAll()
 
@@ -71,19 +76,15 @@ func TestMinimizeRegemsIgnoresUnchangedSocketDecoy(t *testing.T) {
 	}
 
 	original := mkSpec([]int32{deadly, deadly, deadly}, crafty) // decoys: chest sockets 1,2 stay Deadly
-	base := mkSpec([]int32{0, 0, 0}, 0)
+	solved := mkSpec([]int32{crafty, deadly, deadly}, deadly)   // solver swapped chest sock0 <-> hands sock0
+	newGear := equipmentFromProto(solved)
 
-	editor := newReforgeGearEditor(base, original, &proto.Player{}, &proto.ReforgeSettings{IncludeGems: true})
-	// Solver's stat-neutral cross-slot swap: chest sock0 Deadly->Crafty, hands sock0 Crafty->Deadly.
-	editor.applyChoices([]reforgeChoice{
-		{slot: chestSlot, gems: []reforgeGemChoice{{socketIdx: 0, gemID: crafty}, {socketIdx: 1, gemID: deadly}, {socketIdx: 2, gemID: deadly}}},
-		{slot: handsSlot, gems: []reforgeGemChoice{{socketIdx: 0, gemID: deadly}, {socketIdx: 1, gemID: 76697}, {socketIdx: 2, gemID: 76699}}},
-	})
-	editor.minimizeRegems()
+	minimizeRegemsHarness(original).minimizeRegems(newGear)
 
-	eq := editor.equipment()
-	chest, hands := eq.Items[chestSlot].Gems, eq.Items[handsSlot].Gems
-	if chest[0] != deadly || chest[1] != deadly || chest[2] != deadly || hands[0] != crafty {
-		t.Fatalf("swap not cleanly undone (matched an unchanged decoy socket): chest=%v hands[0]=%d, want chest=[%d %d %d] hands[0]=%d", chest, hands[0], deadly, deadly, deadly, crafty)
+	chest := newGear.GetItemBySlot(proto.ItemSlot(chestSlot))
+	hands := newGear.GetItemBySlot(proto.ItemSlot(handsSlot))
+	if gemIDAt(chest, 0) != deadly || gemIDAt(chest, 1) != deadly || gemIDAt(chest, 2) != deadly || gemIDAt(hands, 0) != crafty {
+		t.Fatalf("swap not cleanly undone (matched an unchanged decoy socket): chest=[%d %d %d] hands[0]=%d, want chest=[%d %d %d] hands[0]=%d",
+			gemIDAt(chest, 0), gemIDAt(chest, 1), gemIDAt(chest, 2), gemIDAt(hands, 0), deadly, deadly, deadly, crafty)
 	}
 }
