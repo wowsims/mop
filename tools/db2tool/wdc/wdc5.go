@@ -2,6 +2,9 @@
 // v2.1.2, commit 2180edb4d08b3822b3cfa964293ba8ccd4236ac0), including its
 // encrypted-section skip path (no TACT keys).
 // Copyright (c) 2020 wowdev. MIT License — see tools/db2tool/NOTICES.md.
+
+// Package wdc decodes WDC5 .db2 client tables into rows shaped by a .dbd
+// definition, and overlays the client's XFTH DBCache hotfix records onto them.
 package wdc
 
 import (
@@ -80,19 +83,16 @@ type copyEntry struct {
 	Src  int32
 }
 
-// Table is the parsed (but not field-decoded) WDC5 file.
+// Table is the parsed (but not field-decoded) WDC5 file. Header fields the
+// decoder does not consume (schema version/string, layout hash, max index,
+// locale) are read past rather than kept.
 type Table struct {
-	SchemaVersion   uint32
-	SchemaString    string
 	RecordsCount    int32
 	FieldsCount     int32
 	RecordSize      int32
 	StringTableSize int32
 	TableHash       uint32
-	LayoutHash      uint32
 	MinIndex        int32
-	MaxIndex        int32
-	Locale          int32
 	Flags           db2Flags
 	IdFieldIndex    uint16
 
@@ -107,8 +107,9 @@ type Table struct {
 	rows     []rawRow
 	copyData []copyEntry // file order; dest==src entries already dropped
 
-	// SkippedSections counts encrypted sections whose data was zero-filled
-	// and therefore skipped (diagnostics for the golden harness).
+	// SkippedSections counts encrypted sections whose data was zero-filled and
+	// therefore skipped, which is why the header record count exceeds the number
+	// of emitted rows.
 	SkippedSections int
 }
 
@@ -184,15 +185,16 @@ func read(buf []byte) (*Table, error) {
 	t := &Table{}
 
 	var err error
-	if t.SchemaVersion, err = c.u32(); err != nil {
+	// schema version (u32) + schema string (128 bytes): unused.
+	if _, err = c.u32(); err != nil {
 		return nil, err
 	}
-	schemaBytes, err := c.need(128)
-	if err != nil {
+	if _, err = c.need(128); err != nil {
 		return nil, err
 	}
-	t.SchemaString = strings.TrimRight(string(schemaBytes), "\x00")
 
+	// record_count, field_count, record_size, string_table_size, table_hash,
+	// layout_hash, min_id, max_id, locale
 	ints := make([]int32, 9)
 	for i := range ints {
 		if ints[i], err = c.i32(); err != nil {
@@ -200,8 +202,8 @@ func read(buf []byte) (*Table, error) {
 		}
 	}
 	t.RecordsCount, t.FieldsCount, t.RecordSize, t.StringTableSize = ints[0], ints[1], ints[2], ints[3]
-	t.TableHash, t.LayoutHash = uint32(ints[4]), uint32(ints[5])
-	t.MinIndex, t.MaxIndex, t.Locale = ints[6], ints[7], ints[8]
+	t.TableHash = uint32(ints[4])
+	t.MinIndex = ints[6]
 
 	flags, err := c.u16()
 	if err != nil {
@@ -298,7 +300,7 @@ func read(buf []byte) (*Table, error) {
 		if ct == compressionPallet || ct == compressionPalletArray {
 			n := int(t.ColumnMeta[i].AdditionalDataSize / 4)
 			t.PalletData[i] = make([]value32, n)
-			for j := 0; j < n; j++ {
+			for j := range n {
 				v, err := c.u32()
 				if err != nil {
 					return nil, err
@@ -315,7 +317,7 @@ func read(buf []byte) (*Table, error) {
 			n := int(t.ColumnMeta[i].AdditionalDataSize / 8)
 			m := make(map[int32]value32, n)
 			t.CommonData[i] = m
-			for j := 0; j < n; j++ {
+			for range n {
 				k, err := c.i32()
 				if err != nil {
 					return nil, err
@@ -331,7 +333,7 @@ func read(buf []byte) (*Table, error) {
 
 	// encrypted ID lists (read sequentially; content unused — this tool
 	// never consults them)
-	for i := 0; i < sectionsCount; i++ {
+	for i := range sectionsCount {
 		if t.Sections[i].TactKeyLookup == 0 {
 			continue
 		}
@@ -468,7 +470,7 @@ func read(buf []byte) (*Table, error) {
 			if _, err := c.need(8); err != nil { // minId, maxId
 				return nil, err
 			}
-			for i := int32(0); i < numRecords; i++ {
+			for range numRecords {
 				id, err := c.i32()
 				if err != nil {
 					return nil, err
@@ -548,7 +550,7 @@ func readStringTable(dst map[int64]string, data []byte, baseOffset int64) {
 		return
 	}
 	curOfs := 0
-	for _, str := range strings.Split(string(data), "\x00") {
+	for str := range strings.SplitSeq(string(data), "\x00") {
 		if curOfs == len(data) {
 			break
 		}

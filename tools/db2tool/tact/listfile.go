@@ -2,17 +2,32 @@
 // (https://github.com/wowdev/TACTSharp, v0.0.13-alpha, commit
 // d0ab516eb98b5db35682467b6e4977d88955046d).
 // Copyright (c) 2024 Martin Benjamins. MIT License — see tools/db2tool/NOTICES.md.
+
 package tact
 
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"time"
 )
 
-const DefaultListfileURL = "https://github.com/wowdev/wow-listfile/releases/latest/download/community-listfile.csv"
+const defaultListfileURL = "https://github.com/wowdev/wow-listfile/releases/latest/download/community-listfile.csv"
+
+// headClient bounds the freshness probe; downloadClient bounds connect and
+// response-header time but NOT the transfer, since the listfile is ~150 MB and
+// a slow-but-progressing download must not be cut off. Without these a stalled
+// connection would hang make db indefinitely.
+var (
+	headClient     = &http.Client{Timeout: 30 * time.Second}
+	downloadClient = &http.Client{Transport: &http.Transport{
+		DialContext:           (&net.Dialer{Timeout: 30 * time.Second}).DialContext,
+		TLSHandshakeTimeout:   30 * time.Second,
+		ResponseHeaderTimeout: 60 * time.Second,
+	}}
+)
 
 // Listfile manages the community listfile.csv with download-if-stale
 // semantics: HEAD + Last-Modified vs local mtime; a failed freshness check
@@ -30,11 +45,11 @@ type Listfile struct {
 func (l *Listfile) Refresh() error {
 	url := l.URL
 	if url == "" {
-		url = DefaultListfileURL
+		url = defaultListfileURL
 	}
 	info, statErr := os.Stat(l.Path)
 	if statErr == nil {
-		resp, err := http.Head(url)
+		resp, err := headClient.Head(url)
 		if err == nil {
 			lastModified, perr := time.Parse(http.TimeFormat, resp.Header.Get("Last-Modified"))
 			resp.Body.Close()
@@ -57,7 +72,7 @@ func (l *Listfile) Refresh() error {
 }
 
 func (l *Listfile) download(url string) error {
-	resp, err := http.Get(url)
+	resp, err := downloadClient.Get(url)
 	if err != nil {
 		return err
 	}

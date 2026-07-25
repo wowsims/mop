@@ -17,6 +17,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/wowsims/mop/tools/db2tool/config"
 	"github.com/wowsims/mop/tools/db2tool/dbd"
@@ -78,11 +80,18 @@ func parseArgs(args []string) (options, error) {
 		case "--build":
 			var v string
 			if v, err = next(); err == nil {
-				b, perr := dbd.ParseBuild("0.0.0." + v)
-				if perr != nil {
-					return opts, fmt.Errorf("invalid --build %q: %w", v, perr)
+				// Accept either a bare build number (68571) or a full version
+				// string (5.5.4.68571), of which only the trailing component
+				// identifies the build.
+				n := v
+				if dot := strings.LastIndexByte(n, '.'); dot >= 0 {
+					n = n[dot+1:]
 				}
-				opts.buildNumber = b.Build
+				b, perr := strconv.ParseUint(n, 10, 32)
+				if perr != nil {
+					return opts, fmt.Errorf("invalid --build %q: want a build number like 68571 or a version like 5.5.4.68571", v)
+				}
+				opts.buildNumber = uint32(b)
 			}
 		default:
 			return opts, fmt.Errorf("unknown argument %q", args[i])
@@ -273,6 +282,11 @@ func run(args []string) error {
 			}
 		}
 		hotfixReader = readers[buildNumber]
+		if hotfixReader == nil && len(opts.dbCaches) > 0 {
+			// Pinned caches that hold no records for the extracted build would
+			// otherwise silently produce a hotfix-free run.
+			fmt.Fprintf(os.Stderr, "db2tool: warning: none of the given --dbcache files hold hotfixes for build %d; continuing without the overlay\n", buildNumber)
+		}
 	}
 
 	for _, t := range tables {

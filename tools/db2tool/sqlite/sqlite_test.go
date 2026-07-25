@@ -51,17 +51,18 @@ func TestModerncMarshalingContract(t *testing.T) {
 	}
 
 	decoded := &wdc.Decoded{
-		ColumnNames: []string{"ID", "Name", "Rate", "Stats", "Scales", "ParentID"},
 		Rows: []wdc.Row{
 			{ID: 1, Values: []any{int64(1), "first", float32(0.581), []int64{1, -2, 3}, []float32{0.1, 0}, int64(0)}},
 			{ID: 2, Values: []any{int64(2), "", float32(0), []int64{0, 0, 0}, []float32{0, 0}, int64(7)}},
+			// Never upserted below, so it keeps its all-zero arrays.
+			{ID: 3, Values: []any{int64(3), "", float32(0), []int64{0, 0, 0}, []float32{0, 0}, int64(0)}},
 		},
 	}
 	if err := InsertRows(db, td, decoded); err != nil {
 		t.Fatal(err)
 	}
 	// Upsert (same PK) must update, not duplicate.
-	if err := InsertRows(db, td, &wdc.Decoded{ColumnNames: decoded.ColumnNames, Rows: []wdc.Row{
+	if err := InsertRows(db, td, &wdc.Decoded{Rows: []wdc.Row{
 		{ID: 2, Values: []any{int64(2), "second", float32(1.5), []int64{9, 9, 9}, []float32{2.5, 0}, int64(7)}},
 	}}); err != nil {
 		t.Fatal(err)
@@ -71,8 +72,8 @@ func TestModerncMarshalingContract(t *testing.T) {
 	if err := db.QueryRow("SELECT count(*) FROM Smoke").Scan(&n); err != nil {
 		t.Fatal(err)
 	}
-	if n != 2 {
-		t.Fatalf("expected 2 rows after upsert, got %d", n)
+	if n != 3 {
+		t.Fatalf("expected 3 rows after upsert, got %d", n)
 	}
 
 	// float32 scalar must store the double-widened value.
@@ -104,16 +105,27 @@ func TestModerncMarshalingContract(t *testing.T) {
 		t.Errorf("Scales_0 = %v, want 0.1", scales0)
 	}
 
-	// All-zero arrays serialize as [0,...], never NULL/[]/"".
-	var zeroStats, zeroScales string
-	if err := db.QueryRow("SELECT Stats, Scales FROM Smoke WHERE ID=2").Scan(&zeroStats, &zeroScales); err != nil {
+	// The upsert must have replaced row 2's arrays wholesale.
+	var upsertedStats, upsertedScales string
+	if err := db.QueryRow("SELECT Stats, Scales FROM Smoke WHERE ID=2").Scan(&upsertedStats, &upsertedScales); err != nil {
 		t.Fatal(err)
 	}
-	if zeroStats != "[9,9,9]" || zeroScales != "[2.5,0]" {
-		t.Errorf("upserted arrays = %q / %q, want [9,9,9] / [2.5,0]", zeroStats, zeroScales)
+	if upsertedStats != "[9,9,9]" || upsertedScales != "[2.5,0]" {
+		t.Errorf("upserted arrays = %q / %q, want [9,9,9] / [2.5,0]", upsertedStats, upsertedScales)
 	}
 
-	// Relation value 0 stays 0 — never converted to NULL (§5.4).
+	// All-zero arrays serialize as [0,...], never NULL/[]/"" — checked on the
+	// row that was never upserted.
+	var zeroStats, zeroScales string
+	if err := db.QueryRow("SELECT Stats, Scales FROM Smoke WHERE ID=3").Scan(&zeroStats, &zeroScales); err != nil {
+		t.Fatal(err)
+	}
+	if zeroStats != "[0,0,0]" || zeroScales != "[0,0]" {
+		t.Errorf("all-zero arrays = %q / %q, want [0,0,0] / [0,0]", zeroStats, zeroScales)
+	}
+
+	// Relation value 0 stays 0 — never converted to NULL. The C# original's
+	// relation-0-to-NULL branch was dead code (a boxed reference compare).
 	var parent sql.NullInt64
 	if err := db.QueryRow("SELECT ParentID FROM Smoke WHERE ID=1").Scan(&parent); err != nil {
 		t.Fatal(err)

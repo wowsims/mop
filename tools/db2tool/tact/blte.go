@@ -5,6 +5,7 @@
 // Keyless: no TACT keys are loaded, so 'E' (encrypted) chunks are left
 // zero-filled in the output — exactly what the WDC layer's encrypted-section
 // skip expects. 'F' never occurs.
+
 package tact
 
 import (
@@ -47,7 +48,7 @@ func blteDecode(data []byte, totalDecompSize uint64) ([]byte, error) {
 
 	if totalDecompSize == 0 {
 		o := infoStart + 4
-		for i := 0; i < chunkCount; i++ {
+		for range chunkCount {
 			totalDecompSize += uint64(be32(data[o:]))
 			o += blockInfoSize
 		}
@@ -58,7 +59,7 @@ func blteDecode(data []byte, totalDecompSize uint64) ([]byte, error) {
 	compOffset := headerSize
 	decompOffset := 0
 
-	for chunk := 0; chunk < chunkCount; chunk++ {
+	for chunk := range chunkCount {
 		compSize := int(be32(data[infoOffset:]))
 		decompSize := int(be32(data[infoOffset+4:]))
 		if compOffset+compSize > len(data) || decompOffset+decompSize > len(out) {

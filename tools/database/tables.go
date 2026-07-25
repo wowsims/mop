@@ -1163,7 +1163,7 @@ LEFT JOIN SpellName sn ON sn.ID = sm.SpellID
 	return iconsByID, nil
 }
 
-var iconsMap, _ = LoadArtTexturePaths("./tools/db2tool/listfile.csv")
+var iconsMap, _ = LoadArtTexturePaths(ListfilePath)
 
 func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 	var spell dbc.Spell

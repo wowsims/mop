@@ -1,6 +1,7 @@
 // FDID resolution: a static path→FDID map for the configured tables/gametables
 // (primary; FDIDs are stable per path), with the community listfile.csv as the
 // fallback for paths not in the map. Lookups use plain case-normalized paths.
+
 package tact
 
 import (

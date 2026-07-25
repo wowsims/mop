@@ -26,7 +26,7 @@ import (
 
 var outDir = flag.String("outDir", "assets", "Path to output directory for writing generated .go files.")
 var genAsset = flag.String("gen", "", "Asset to generate. Valid values are 'db', 'atlasloot', 'wowhead-items', 'wowhead-spells', 'wowhead-itemdb', 'mop-items', and 'wago-db2-items'")
-var dbPath = flag.String("dbPath", "./tools/database/wowsims.db", "Location of wowsims.db file from the DB2ToSqliteTool")
+var dbPath = flag.String("dbPath", "./tools/database/wowsims.db", "Location of the wowsims.db file produced by tools/db2tool")
 
 func main() {
 	flag.Parse()
@@ -150,7 +150,7 @@ func main() {
 	db.Encounters = core.PresetEncounters
 	db.ReforgeStats = reforgeStats.ToProto()
 
-	iconsMap, err := database.LoadArtTexturePaths("./tools/db2tool/listfile.csv")
+	iconsMap, err := database.LoadArtTexturePaths(database.ListfilePath)
 	if err != nil {
 		panic(fmt.Sprintf("Error loading icon paths %v", err))
 	}

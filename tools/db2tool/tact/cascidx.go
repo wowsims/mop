@@ -2,6 +2,7 @@
 // from CDN.TryGetLocalFile (https://github.com/wowdev/TACTSharp,
 // v0.0.13-alpha, commit d0ab516eb98b5db35682467b6e4977d88955046d).
 // Copyright (c) 2024 Martin Benjamins. MIT License — see tools/db2tool/NOTICES.md.
+
 package tact
 
 import (

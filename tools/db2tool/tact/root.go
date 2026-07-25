@@ -2,6 +2,7 @@
 // v0.0.13-alpha, commit d0ab516eb98b5db35682467b6e4977d88955046d) — Normal
 // load mode, enUS locale, FDID→CKey only.
 // Copyright (c) 2024 Martin Benjamins. MIT License — see tools/db2tool/NOTICES.md.
+
 package tact
 
 import (
@@ -90,7 +91,7 @@ func parseRoot(data []byte) (*rootTable, error) {
 
 		if !skipChunk {
 			fileDataIndex := uint32(0)
-			for i := 0; i < count; i++ {
+			for range count {
 				fdidOffset := binary.LittleEndian.Uint32(data[offsetFdid:])
 				offsetFdid += sizeFdid
 				fdid := fileDataIndex + fdidOffset

@@ -1,6 +1,7 @@
 // Go translation of TACTSharp's BuildInfo (https://github.com/wowdev/TACTSharp,
 // v0.0.13-alpha, commit d0ab516eb98b5db35682467b6e4977d88955046d).
 // Copyright (c) 2024 Martin Benjamins. MIT License — see tools/db2tool/NOTICES.md.
+
 package tact
 
 import (
@@ -10,10 +11,10 @@ import (
 	"strings"
 )
 
+// AvailableBuild is one .build.info product entry, reduced to the fields this
+// local-only reader consumes.
 type AvailableBuild struct {
 	BuildConfig string
-	CDNConfig   string
-	CDNPath     string
 	Version     string
 	Product     string
 }
@@ -27,7 +28,7 @@ func ParseBuildInfo(path string) ([]AvailableBuild, error) {
 	}
 	var entries []AvailableBuild
 	headerMap := map[string]int{}
-	for _, line := range strings.Split(strings.ReplaceAll(string(raw), "\r\n", "\n"), "\n") {
+	for line := range strings.SplitSeq(strings.ReplaceAll(string(raw), "\r\n", "\n"), "\n") {
 		if line == "" {
 			continue
 		}
@@ -47,8 +48,6 @@ func ParseBuildInfo(path string) ([]AvailableBuild, error) {
 		}
 		entries = append(entries, AvailableBuild{
 			BuildConfig: col("Build Key"),
-			CDNConfig:   col("CDN Key"),
-			CDNPath:     col("CDN Path"),
 			Version:     col("Version"),
 			Product:     col("Product"),
 		})

@@ -1,4 +1,5 @@
 // Row insertion for the extracted tables.
+
 package sqlite
 
 import (

@@ -1,13 +1,9 @@
 {
 	"Settings": {
 		"BaseDir": "/mnt/c/Program Files/World of Warcraft",
-		"BuildConfig": "buildConfig",
-		"CDNConfig": "cdnConfig",
-		"Region": "us",
 		"Product": "wow_classic"
 	},
 	"TargetDirectory": "dbfilesclient",
-	"DatabaseFile": "wowsims.db",
 	"GameTablesOutDirectory": "../../assets/db_inputs/basestats",
 	"GameTables": [
 		"chancetomeleecrit",

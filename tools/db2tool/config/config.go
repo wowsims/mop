@@ -1,5 +1,5 @@
-// Settings JSON binding for tools/db2tool (generator-settings.json /
-// ptr-generator-settings.json).
+// Package config binds the db2tool settings files, tools/database/
+// generator-settings.json and ptr-generator-settings.json.
 package config
 
 import (
@@ -8,17 +8,11 @@ import (
 	"os"
 )
 
-// Settings is the settings file's "Settings" section. Only the fields the
-// tool actually consumes are used today; the rest are bound so existing
-// settings files parse cleanly (CacheDir and Locale are bound-but-unused).
+// Settings is the settings file's "Settings" section: which product to extract
+// and the install to read it from.
 type Settings struct {
-	Region      string `json:"Region"`
-	Product     string `json:"Product"`
-	BaseDir     string `json:"BaseDir"`
-	BuildConfig string `json:"BuildConfig"`
-	CDNConfig   string `json:"CDNConfig"`
-	CacheDir    string `json:"CacheDir"`
-	Locale      string `json:"Locale"`
+	Product string `json:"Product"`
+	BaseDir string `json:"BaseDir"`
 }
 
 type File struct {
@@ -27,7 +21,6 @@ type File struct {
 	// the FDID/listfile use must always see the raw value, never a
 	// filesystem-resolved path.
 	TargetDirectory        string   `json:"TargetDirectory"`
-	DatabaseFile           string   `json:"DatabaseFile"` // bound, never read — the --output flag decides the path
 	GameTablesOutDirectory string   `json:"GameTablesOutDirectory"`
 	GameTables             []string `json:"GameTables"`
 	Tables                 []string `json:"Tables"`

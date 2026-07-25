@@ -2,12 +2,13 @@
 // copy-row semantics (https://github.com/wowdev/DBCD, v2.1.2, commit
 // 2180edb4d08b3822b3cfa964293ba8ccd4236ac0).
 // Copyright (c) 2020 wowdev. MIT License — see tools/db2tool/NOTICES.md.
+
 package wdc
 
 import (
 	"fmt"
 	"math"
-	"sort"
+	"slices"
 
 	"github.com/wowsims/mop/tools/db2tool/dbd"
 )
@@ -40,7 +41,8 @@ type fieldPlan struct {
 	hfSigned bool
 }
 
-// Row is one decoded record; Values align 1:1 with Decoded.ColumnNames.
+// Row is one decoded record; Values align 1:1 with the version block's
+// Definitions, which is also the column order the sqlite writer binds.
 // Value dynamic types are limited to int64/uint64 scalars, float32, string,
 // []int64, []uint64, []float32 and []string — never []byte, so encoding/json
 // writes every array element-by-element as numbers (no base64), the
@@ -51,8 +53,7 @@ type Row struct {
 }
 
 type Decoded struct {
-	ColumnNames []string
-	Rows        []Row // ascending ID
+	Rows []Row // ascending ID
 }
 
 func buildFieldPlans(def dbd.DBDefinition, version dbd.VersionDefinitions, buildNumber uint32) ([]fieldPlan, error) {
@@ -116,11 +117,6 @@ func (t *Table) DecodeRows(def dbd.DBDefinition, version dbd.VersionDefinitions,
 		return nil, err
 	}
 
-	columnNames := make([]string, len(plans))
-	for i, p := range plans {
-		columnNames[i] = p.name
-	}
-
 	byID := make(map[int32][]any, len(t.rows))
 
 	hadInlineID := false
@@ -150,6 +146,17 @@ func (t *Table) DecodeRows(def dbd.DBDefinition, version dbd.VersionDefinitions,
 		if idFieldIndex >= len(plans) {
 			return nil, fmt.Errorf("IdFieldIndex %d out of range for %d definitions", idFieldIndex, len(plans))
 		}
+		// Cloning the source row's decoded values is only equivalent to
+		// upstream's re-decode-with-the-destination-id while no column is
+		// COMMON-compressed: a common value is looked up BY ROW ID
+		// (getFieldRaw), so a copy row would wrongly inherit the source id's
+		// value. No table has both today; fail loud if a future build changes
+		// that rather than emit silently wrong rows.
+		for i := range t.ColumnMeta {
+			if t.ColumnMeta[i].CompressionType == compressionCommon {
+				return nil, fmt.Errorf("table has both a copy table and a COMMON-compressed column (field %d) — copy rows would resolve common data by the source id; decode copy rows per destination id instead", i)
+			}
+		}
 		for _, ce := range t.copyData {
 			src, ok := byID[ce.Src]
 			if !ok {
@@ -169,9 +176,9 @@ func (t *Table) DecodeRows(def dbd.DBDefinition, version dbd.VersionDefinitions,
 	for id := range byID {
 		ids = append(ids, id)
 	}
-	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	slices.Sort(ids)
 
-	decoded := &Decoded{ColumnNames: columnNames, Rows: make([]Row, len(ids))}
+	decoded := &Decoded{Rows: make([]Row, len(ids))}
 	for i, id := range ids {
 		decoded.Rows[i] = Row{ID: id, Values: byID[id]}
 	}
@@ -238,10 +245,7 @@ func (t *Table) readScalarField(id int32, r *bitReader, fieldIndex int, p fieldP
 		if err != nil {
 			return nil, err
 		}
-		index := recordOffset + bytePos + int(int32(uint32(raw)))
-		if index < 0 {
-			index = 0
-		}
+		index := max(recordOffset+bytePos+int(int32(uint32(raw))), 0)
 		s, ok := t.StringTable[int64(index)]
 		if !ok {
 			return nil, fmt.Errorf("string table miss at offset %d", index)
@@ -310,10 +314,7 @@ func (t *Table) readArrayField(r *bitReader, fieldIndex int, p fieldPlan, row ra
 		for i := range out {
 			bytePos := r.Position >> 3
 			raw := r.ReadValue64(bitSize)
-			index := bytePos + recordOffset + int(int32(uint32(raw)))
-			if index < 0 {
-				index = 0
-			}
+			index := max(bytePos+recordOffset+int(int32(uint32(raw))), 0)
 			s, ok := t.StringTable[int64(index)]
 			if !ok {
 				return nil, fmt.Errorf("string table miss at offset %d", index)

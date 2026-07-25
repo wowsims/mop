@@ -3,12 +3,16 @@
 // Copyright 2022 WoWDBDefs Contributors. Licensed under BSD-3-Clause; this
 // file remains BSD-3-Clause (full text, including the non-endorsement clause,
 // in tools/db2tool/NOTICES.md). Upstream commit 9002c532853a96d631c76dda50cb20189c27a173.
+
+// Package dbd parses WoWDBDefs .dbd definition files and selects the version
+// block matching an exact build number.
 package dbd
 
 import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -257,7 +261,7 @@ func Read(r io.Reader, validate bool) (DBDefinition, error) {
 		}
 
 		if strings.HasPrefix(line, "BUILD") {
-			for _, splitBuild := range strings.Split(line[6:], ", ") {
+			for splitBuild := range strings.SplitSeq(line[6:], ", ") {
 				if strings.Contains(splitBuild, "-") {
 					splitRange := strings.Split(splitBuild, "-")
 					minBuild, err := ParseBuild(splitRange[0])
@@ -293,8 +297,7 @@ func Read(r io.Reader, validate bool) (DBDefinition, error) {
 				if annotationEnd < 0 {
 					return DBDefinition{}, fmt.Errorf("unterminated annotation on line %q", line)
 				}
-				annotations := strings.Split(line[annotationStart+1:annotationEnd], ",")
-				for _, a := range annotations {
+				for a := range strings.SplitSeq(line[annotationStart+1:annotationEnd], ",") {
 					switch a {
 					case "id":
 						definition.IsID = true
@@ -470,9 +473,9 @@ func runValidation(columnDefinitions map[string]ColumnDefinition, versionDefinit
 				}
 			}
 
-			if definitionsEqual(versionDefinitions[i].Definitions, versionDefinitions[j].Definitions) {
+			if slices.Equal(versionDefinitions[i].Definitions, versionDefinitions[j].Definitions) {
 				if len(versionDefinitions[i].LayoutHashes) > 0 && len(versionDefinitions[j].LayoutHashes) > 0 &&
-					!stringSlicesEqual(versionDefinitions[i].LayoutHashes, versionDefinitions[j].LayoutHashes) {
+					!slices.Equal(versionDefinitions[i].LayoutHashes, versionDefinitions[j].LayoutHashes) {
 					// Upstream ignores this case (identical definitions, different layout hashes).
 				} else {
 					return fmt.Errorf("dbd file has 2 identical version definitions (%d and %d)", i+1, j+1)
@@ -482,30 +485,6 @@ func runValidation(columnDefinitions map[string]ColumnDefinition, versionDefinit
 	}
 
 	return nil
-}
-
-func definitionsEqual(a, b []Definition) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
-}
-
-func stringSlicesEqual(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
 }
 
 // readLines splits raw file bytes into lines: \r\n, \r, and \n all terminate

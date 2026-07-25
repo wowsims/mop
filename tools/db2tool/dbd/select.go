@@ -1,6 +1,7 @@
 // Version selection for .dbd definitions.
 // Derived from DBDefsLib types (https://github.com/wowdev/WoWDBDefs).
 // Copyright 2022 WoWDBDefs Contributors. BSD-3-Clause — see tools/db2tool/NOTICES.md.
+
 package dbd
 
 import "fmt"

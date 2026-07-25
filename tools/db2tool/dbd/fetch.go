@@ -2,6 +2,7 @@
 // gitignored cache directory with a 24h-mtime freshness rule. The .dbd files
 // themselves are CC BY-SA 4.0 DATA and are deliberately cached, never
 // vendored.
+
 package dbd
 
 import (
@@ -14,6 +15,10 @@ import (
 )
 
 const dbdURLFormat = "https://raw.githubusercontent.com/wowdev/WoWDBDefs/master/definitions/%s.dbd"
+
+// httpClient bounds the fetch so a stalled connection cannot hang make db
+// indefinitely; the fallback to a cached copy handles the timeout.
+var httpClient = &http.Client{Timeout: 60 * time.Second}
 
 // FetchCached returns the path to a cached .dbd for tableName under cacheDir,
 // fetching from WoWDBDefs when the cached copy is absent or older than 24h.
@@ -40,7 +45,7 @@ func FetchCached(cacheDir, tableName string) (string, error) {
 }
 
 func download(url, path string) error {
-	resp, err := http.Get(url)
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return err
 	}

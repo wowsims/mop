@@ -4,6 +4,7 @@
 // (https://github.com/Marlamin/wow.tools.local).
 // Copyright (c) 2020 wowdev; Copyright (c) 2022 Martin Benjamins.
 // MIT License — see tools/db2tool/NOTICES.md.
+
 package wdc
 
 import (
@@ -13,6 +14,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -286,7 +288,7 @@ func (h *HotfixReader) ApplyHotfixes(t *Table, def dbd.DBDefinition, version dbd
 	for id := range byID {
 		ids = append(ids, id)
 	}
-	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	slices.Sort(ids)
 
 	rows := make([]Row, len(ids))
 	for i, id := range ids {

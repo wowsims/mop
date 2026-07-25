@@ -1,11 +1,11 @@
 // Go translation of DBCD.IO's BitReader (https://github.com/wowdev/DBCD,
 // v2.1.2, commit 2180edb4d08b3822b3cfa964293ba8ccd4236ac0).
 // Copyright (c) 2020 wowdev. MIT License — see tools/db2tool/NOTICES.md.
+
 package wdc
 
 import (
 	"encoding/binary"
-	"math"
 )
 
 // bitReader reads unaligned little-endian bit windows: a raw 4/8-byte load
@@ -75,13 +75,6 @@ func (r *bitReader) ReadCString() string {
 	return string(bytes)
 }
 
-func (r *bitReader) clone() *bitReader {
-	return &bitReader{data: r.data}
-}
-
-// value32 is 4 raw bytes reinterpreted on demand.
+// value32 is 4 raw bytes from the pallet/common blocks, reinterpreted by the
+// caller per the DBD-declared field type.
 type value32 uint32
-
-func (v value32) Float32() float32 { return math.Float32frombits(uint32(v)) }
-func (v value32) Int32() int32     { return int32(v) }
-func (v value32) Uint32() uint32   { return uint32(v) }

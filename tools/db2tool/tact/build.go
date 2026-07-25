@@ -4,6 +4,10 @@
 // → local .idx → data.NNN → BLTE. No CDN, no group/file indices (upstream
 // consults them but the local .idx always wins for resident files).
 // Copyright (c) 2024 Martin Benjamins. MIT License — see tools/db2tool/NOTICES.md.
+
+// Package tact reads files out of a local World of Warcraft CASC install:
+// .build.info picks the build, then root → encoding → .idx → data.NNN → BLTE
+// resolves a file data id to its bytes. There is no CDN fallback.
 package tact
 
 import (
@@ -15,8 +19,6 @@ import (
 type Build struct {
 	Entry       AvailableBuild
 	BuildNumber uint32
-	BuildConfig map[string][]string
-	CDNConfig   map[string][]string
 
 	store    *cascStore
 	encoding *encodingTable
@@ -38,13 +40,12 @@ func Open(baseDir, product string) (*Build, error) {
 		return nil, err
 	}
 
+	// Only the build config is needed: it names the encoding and root files.
+	// The CDN config describes remote archives this local-only reader never
+	// touches.
 	buildConfig, err := LoadConfig(baseDir, entry.BuildConfig)
 	if err != nil {
 		return nil, fmt.Errorf("loading build config: %w", err)
-	}
-	cdnConfig, err := LoadConfig(baseDir, entry.CDNConfig)
-	if err != nil {
-		return nil, fmt.Errorf("loading cdn config: %w", err)
 	}
 
 	store, err := openCascStore(baseDir)
@@ -55,8 +56,6 @@ func Open(baseDir, product string) (*Build, error) {
 	b := &Build{
 		Entry:       entry,
 		BuildNumber: buildNumber,
-		BuildConfig: buildConfig,
-		CDNConfig:   cdnConfig,
 		store:       store,
 	}
 

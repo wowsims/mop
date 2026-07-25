@@ -298,9 +298,16 @@ func ReadDatabaseFromJson(jsonStr string) *WowDatabase {
 
 func (db *WowDatabase) WriteBinaryAndJson(binFilePath, jsonFilePath string) {
 	jsonBytes := db.toJsonBytes()
+	// The JSON covers every UIDatabase field, so unchanged JSON means unchanged
+	// contents — worth skipping because the binary's proto encoding is not
+	// byte-stable and would otherwise churn on every run. A missing binary must
+	// still be regenerated, though, so check for it before skipping.
 	if existing, err := os.ReadFile(jsonFilePath); err == nil && bytes.Equal(existing, jsonBytes) {
-		log.Printf("No changes detected, skipping write of %s and %s", binFilePath, jsonFilePath)
-		return
+		if _, err := os.Stat(binFilePath); err == nil {
+			log.Printf("No changes detected, skipping write of %s and %s", binFilePath, jsonFilePath)
+			return
+		}
+		log.Printf("%s is missing, regenerating it", binFilePath)
 	}
 	db.WriteBinary(binFilePath)
 	if err := os.WriteFile(jsonFilePath, jsonBytes, 0666); err != nil {
@@ -323,11 +330,15 @@ func (db *WowDatabase) WriteBinary(binFilePath string) {
 	if err != nil {
 		log.Fatalf("[ERROR] Failed to marshal db: %s", err.Error())
 	}
-	os.WriteFile(binFilePath, protoBytes, 0666)
+	if err := os.WriteFile(binFilePath, protoBytes, 0666); err != nil {
+		log.Fatalf("[ERROR] Failed to write %s: %s", binFilePath, err.Error())
+	}
 }
 
 func (db *WowDatabase) WriteJson(jsonFilePath string) {
-	os.WriteFile(jsonFilePath, db.toJsonBytes(), 0666)
+	if err := os.WriteFile(jsonFilePath, db.toJsonBytes(), 0666); err != nil {
+		log.Fatalf("[ERROR] Failed to write %s: %s", jsonFilePath, err.Error())
+	}
 }
 
 // Serializes in JSON format, so we can manually inspect the contents.

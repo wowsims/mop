@@ -1,4 +1,6 @@
-// SQLite schema creation for the extracted tables.
+// Package sqlite writes the extracted tables to wowsims.db: the schema (one
+// table per .dbd definition, arrays as JSON text plus generated per-element
+// columns) and the row inserts. This file is the schema half.
 package sqlite
 
 import (
