@@ -2,6 +2,7 @@ package reforgeoptimizer
 
 import (
 	"cmp"
+	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -15,14 +16,19 @@ import (
 // buildYalpsConstraints, updateReforgeScores. Variable/constraint INSERTION ORDER is
 // load-bearing, because it drives x-index assignment and therefore HiGHS tie-breaking.
 
-// gemData bundles a gem with the data the LP needs: the gem, whether it's a JC gem, its stat
-// coefficients (LP coefficient map, no 'score' key — the score is recomputed per solver pass),
-// and the pre-computed sort score (from the pre-cap weights).
+// gemData bundles a gem with the data the LP needs: the gem, whether it's a JC gem, its
+// OBJECTIVE stat coefficients (applyReforgeStat output; LP coefficient map, no 'score' key —
+// the score is recomputed per solver pass), the gem's RAW stats (fed to resolveStatDelta to
+// build the cap-space coefficients), the CAP coefficients resolved once from those raw stats
+// (a gem's stats are fixed, so this is reused for every socket instead of re-resolving), and
+// the pre-computed sort score (from the pre-cap weights).
 type gemData struct {
-	gem    *proto.ReforgeGemOption
-	isJC   bool
-	coeffs map[string]float64
-	score  float64
+	gem       *proto.ReforgeGemOption
+	isJC      bool
+	coeffs    map[string]float64
+	rawStats  stats.Stats
+	capCoeffs map[string]float64
+	score     float64
 }
 
 var gemBuildSocketColors = []proto.GemColor{
@@ -65,6 +71,7 @@ func (o *reforgeOptimizer) buildGemOptions(preCapEPs core.UnitStats, reforgeCaps
 
 			allStatsValid := true
 			coeffs := map[string]float64{}
+			var rawStats stats.Stats
 			for statIdx, statValue := range gem.GetStats() {
 				if statValue == 0 {
 					continue
@@ -74,6 +81,7 @@ func (o *reforgeOptimizer) buildGemOptions(preCapEPs core.UnitStats, reforgeCaps
 					allStatsValid = false
 					break
 				}
+				rawStats[statIdx] = statValue
 				o.applyReforgeStat(coeffs, proto.Stat(statIdx), statValue, weightsForSorting)
 			}
 			if !allStatsValid {
@@ -81,10 +89,12 @@ func (o *reforgeOptimizer) buildGemOptions(preCapEPs core.UnitStats, reforgeCaps
 			}
 
 			filtered = append(filtered, gemData{
-				gem:    gem,
-				isJC:   isJC,
-				coeffs: coeffs,
-				score:  computeCoeffScore(coeffs, weightsForSorting),
+				gem:       gem,
+				isJC:      isJC,
+				coeffs:    coeffs,
+				rawStats:  rawStats,
+				capCoeffs: o.resolveCapCoeffs(rawStats),
+				score:     computeCoeffScore(coeffs, weightsForSorting),
 			})
 		}
 
@@ -175,14 +185,14 @@ func (o *reforgeOptimizer) gemsForColorKey(socketColor proto.GemColor) []*proto.
 // routing a rating stat to its school-specific percent pseudo-stats when the root rating has no
 // direct EP weight.
 func (o *reforgeOptimizer) applyReforgeStat(coeffs map[string]float64, stat proto.Stat, amount float64, preCapEPs core.UnitStats) {
-	if stat == proto.Stat_StatSpirit && o.isHuman {
-		amount *= 1.03
+	if stat == proto.Stat_StatSpirit {
+		amount *= o.spiritSelfMult
 	}
 	if stat == proto.Stat_StatHasteRating || stat == proto.Stat_StatMasteryRating || stat == proto.Stat_StatSpirit {
 		amount *= o.ampModifier
 	}
 	if stat == proto.Stat_StatCritRating && o.isGuardianDruid {
-		amount *= 1.5
+		amount *= o.bearFormMult
 	}
 
 	// Spirit->SpellHit (hybrid casters) and Expertise->SpellHit conversions.
@@ -192,15 +202,12 @@ func (o *reforgeOptimizer) applyReforgeStat(coeffs map[string]float64, stat prot
 		o.setPseudoStatCoefficient(coeffs, spellHitPseudo, amount/core.SpellHitRatingPerHitPercent)
 	}
 
-	// Guardian Druid Agility -> Attack Power + Physical Crit%. The Mark of the Wild (1.05) and
-	// Heart of the Wild (1.06, if talented) multipliers are applied here.
+	// Guardian Druid Agility -> Attack Power + Physical Crit%, scaled by the combined Mark-of-the-Wild
+	// and Heart-of-the-Wild Agility multiplier resolved from the stat-dependency graph.
 	if stat == proto.Stat_StatAgility && o.isGuardianDruid {
-		amount *= 1.05
-		if o.hasHeartOfTheWild {
-			amount *= 1.06
-		}
+		amount *= o.guardianAgilityMult
 		o.setStatCoefficient(coeffs, proto.Stat_StatAttackPower, amount*2)
-		o.setPseudoStatCoefficient(coeffs, proto.PseudoStat_PseudoStatPhysicalCritPercent, amount*0.00079395)
+		o.setPseudoStatCoefficient(coeffs, proto.PseudoStat_PseudoStatPhysicalCritPercent, amount*core.CritPerAgiMaxLevel[proto.Class_ClassDruid])
 		return
 	}
 
@@ -230,18 +237,67 @@ func (o *reforgeOptimizer) setPseudoStatCoefficient(coeffs map[string]float64, p
 	coeffs[pseudoStatCoeffKey(pseudoStat)] += amount
 }
 
+// resolveCapCoeffs builds a variable's cap-space coefficient map from a raw stat delta by
+// resolving it through the full stat-dependency graph (resolveStatDelta) and keying every
+// nonzero resolved stat/pseudo-stat by its coefficient-key name. These feed the LP cap
+// constraint rows and checkCaps, so every dependency (e.g. Intellect -> SpellCrit%, a Guardian's
+// Agility -> Crit%, the haste speed multiplier) counts toward the caps.
+func (o *reforgeOptimizer) resolveCapCoeffs(rawDelta stats.Stats) map[string]float64 {
+	resolved := resolveStatDelta(o.statDeps, o.baseStats, rawUnitStatsFromStats(rawDelta))
+	coeffs := map[string]float64{}
+	eachUnitStat(resolved, func(unitStat stats.UnitStat, value float64) {
+		if value != 0 {
+			coeffs[coeffKeyForUnitStat(unitStat)] = value
+		}
+	})
+	return coeffs
+}
+
 // buildYalpsVariables builds the LP decision variables. Insertion order per slot: reforge
 // variables, then (if gems) per-socket gem variables, then the socket-bonus variable.
+//
+// Each variable is built in two coefficient spaces: capCoeffs (fully SDM-resolved, plus the
+// structural/constraint keys) go into byName; objCoeffs (the EP-calibrated applyReforgeStat
+// output) go into objByName. See lpVariables for how the two are consumed.
 func (o *reforgeOptimizer) buildYalpsVariables(equipment core.Equipment, preCapEPs core.UnitStats, reforgeCaps core.UnitStats, reforgeSoftCaps []*reforgeSoftCap) *lpVariables {
 	variables := newLPVariables()
 	gemsToInclude := o.buildGemOptions(preCapEPs, reforgeCaps, reforgeSoftCaps)
 	reforgeIDs := core.GetSortedReforgeStatIDs()
+
+	// setVar stores a variable's cap and objective coefficients. It first carries any non-stat
+	// constraint key applyReforgeStat emits (the relative-cap "*Minus*" ordering keys) from the
+	// objective map into the cap map, where the LP constraint rows read them; every other
+	// objective key is a stat/pseudo-stat coefficient that belongs only to the score.
+	setVar := func(key string, capCoeffs, objCoeffs map[string]float64) {
+		for k, v := range objCoeffs {
+			if _, isStat := unitStatFromCoeffKey(k); !isStat {
+				capCoeffs[k] += v
+			}
+		}
+		variables.set(key, capCoeffs)
+		variables.setObj(key, objCoeffs)
+	}
 
 	for slotIdx := 0; slotIdx < int(core.NumItemSlots); slotIdx++ {
 		slot := proto.ItemSlot(slotIdx)
 		item := equipment.GetItemBySlot(slot)
 		if item.ID == 0 || o.frozenSlots[slot] {
 			continue
+		}
+
+		// Prefer Hit over Expertise for true casters: when the same source stat can reforge to
+		// Hit, drop its Expertise-target reforge. Hit strictly dominates Expertise's spell-hit
+		// proxy, so keeping the Expertise variable only lets the solver settle a strictly worse tie
+		// (mirrors the old backend's preferHitOverExpertiseReforges).
+		var hitReforgeSources map[proto.Stat]bool
+		if o.isTrueCaster {
+			hitReforgeSources = map[proto.Stat]bool{}
+			for _, reforgeID := range reforgeIDs {
+				reforge := core.GetReforgeStatByID(reforgeID)
+				if stats.Stat(int32(reforge.ToStat)) == stats.HitRating && core.ValidateReforging(item, reforge) {
+					hitReforgeSources[reforge.FromStat] = true
+				}
+			}
 		}
 
 		// Reforge variables.
@@ -254,13 +310,17 @@ func (o *reforgeOptimizer) buildYalpsVariables(equipment core.Equipment, preCapE
 			if !core.ValidateReforging(item, reforge) {
 				continue
 			}
+			if toStat == stats.ExpertiseRating && hitReforgeSources[reforge.FromStat] {
+				continue
+			}
 			delta := reforgeRawStats(*item, reforge)
 			variableKey := strconv.Itoa(slotIdx) + "_" + strconv.Itoa(int(reforge.ID))
-			coeffs := map[string]float64{}
-			coeffs[slotCoeffKey(slot)] = 1
-			o.applyReforgeStat(coeffs, reforge.FromStat, delta[stats.Stat(int32(reforge.FromStat))], preCapEPs)
-			o.applyReforgeStat(coeffs, reforge.ToStat, delta[toStat], preCapEPs)
-			variables.set(variableKey, coeffs)
+			objCoeffs := map[string]float64{}
+			o.applyReforgeStat(objCoeffs, reforge.FromStat, delta[stats.Stat(int32(reforge.FromStat))], preCapEPs)
+			o.applyReforgeStat(objCoeffs, reforge.ToStat, delta[toStat], preCapEPs)
+			capCoeffs := o.resolveCapCoeffs(delta)
+			capCoeffs[slotCoeffKey(slot)] = 1
+			setVar(variableKey, capCoeffs, objCoeffs)
 		}
 
 		if !o.includeGems {
@@ -348,52 +408,70 @@ func (o *reforgeOptimizer) buildYalpsVariables(equipment core.Equipment, preCapE
 			for _, gemColorKey := range gemColorKeys {
 				for _, gd := range gemsToInclude[gemColorKey] {
 					variableKey := constraintKey + "_" + strconv.Itoa(int(gd.gem.GetId()))
-					coeffs := make(map[string]float64, len(gd.coeffs)+2)
+					objCoeffs := make(map[string]float64, len(gd.coeffs)+2)
 					for key, value := range gd.coeffs {
-						coeffs[key] = value
+						objCoeffs[key] = value
 					}
-					coeffs[constraintKey] = 1
+					rawStats := gd.rawStats
+					socketBonusAdded := false
 
+					useSocketBonusLink := false
 					if gemMatchesSocket(gd.gem.GetColor(), socketColor) {
 						if forceSocketBonus {
 							eachBuffedStat(distributedSocketBonus, func(stat stats.Stat, value float64) {
-								o.applyReforgeStat(coeffs, proto.Stat(int32(stat)), value, preCapEPs)
+								o.applyReforgeStat(objCoeffs, proto.Stat(int32(stat)), value, preCapEPs)
 							})
+							rawStats = rawStats.Add(distributedSocketBonus)
+							socketBonusAdded = true
 						} else {
-							coeffs["SocketBonusLink_"+constraintKey] = -1
+							useSocketBonusLink = true
 						}
 					} else if gd.isJC {
 						// Force socket-bonus matching for Jewelcrafting gems.
 						continue
 					}
 
+					// A gem's stats are fixed, so its cap coefficients are resolved once in
+					// buildGemOptions; clone them here. Only the (rare) force-socket-bonus case mutates
+					// rawStats, so it re-resolves.
+					var capCoeffs map[string]float64
+					if socketBonusAdded {
+						capCoeffs = o.resolveCapCoeffs(rawStats)
+					} else {
+						capCoeffs = maps.Clone(gd.capCoeffs)
+					}
+					capCoeffs[constraintKey] = 1
+					if useSocketBonusLink {
+						capCoeffs["SocketBonusLink_"+constraintKey] = -1
+					}
 					if gemColorKey == proto.GemColor_GemColorCogwheel {
-						coeffs[strconv.Itoa(int(gd.gem.GetId()))] = 1
+						capCoeffs[strconv.Itoa(int(gd.gem.GetId()))] = 1
 					}
 					if gemColorKey == proto.GemColor_GemColorShaTouched {
-						coeffs["ShaTouchedGem"] = 1
+						capCoeffs["ShaTouchedGem"] = 1
 					}
 					if gd.isJC {
-						coeffs["JewelcraftingGem"] = 1
+						capCoeffs["JewelcraftingGem"] = 1
 					}
 
-					variables.set(variableKey, coeffs)
+					setVar(variableKey, capCoeffs, objCoeffs)
 				}
 			}
 		}
 
 		if !forceSocketBonus && socketBonusNormalization > 0 {
 			socketBonusKey := "SocketBonus_" + strconv.Itoa(slotIdx)
-			socketBonusCoefficients := map[string]float64{}
+			objCoeffs := map[string]float64{}
 			eachBuffedStat(fullSocketBonus, func(stat stats.Stat, value float64) {
-				o.applyReforgeStat(socketBonusCoefficients, proto.Stat(int32(stat)), value, preCapEPs)
+				o.applyReforgeStat(objCoeffs, proto.Stat(int32(stat)), value, preCapEPs)
 			})
+			capCoeffs := o.resolveCapCoeffs(fullSocketBonus)
 			for socketIdx, socketColor := range socketColors {
 				if isColoredSocket(socketColor) {
-					socketBonusCoefficients["SocketBonusLink_"+strconv.Itoa(slotIdx)+"_"+strconv.Itoa(socketIdx)] = 1
+					capCoeffs["SocketBonusLink_"+strconv.Itoa(slotIdx)+"_"+strconv.Itoa(socketIdx)] = 1
 				}
 			}
-			variables.set(socketBonusKey, socketBonusCoefficients)
+			setVar(socketBonusKey, capCoeffs, objCoeffs)
 		}
 	}
 
@@ -451,8 +529,10 @@ func (o *reforgeOptimizer) buildYalpsConstraints(equipment core.Equipment, baseS
 	return constraints
 }
 
-// updateReforgeScores returns a copy of the variables with each variable's 'score' coefficient
-// set to its EP under weights.
+// updateReforgeScores returns a copy of the variables (cap coefficients + a fresh 'score'
+// coefficient) with each variable's 'score' set to its EP under weights. The score is computed
+// from the OBJECTIVE coefficients (objByName), not the cap coefficients, so the LP objective
+// stays exactly as calibrated while the constraint rows read the SDM-resolved cap coefficients.
 func (o *reforgeOptimizer) updateReforgeScores(variables *lpVariables, weights core.UnitStats) *lpVariables {
 	updated := newLPVariables()
 	variables.each(func(name string, coeffs map[string]float64) {
@@ -460,8 +540,13 @@ func (o *reforgeOptimizer) updateReforgeScores(variables *lpVariables, weights c
 		for key, value := range coeffs {
 			out[key] = value
 		}
-		out["score"] = computeCoeffScore(coeffs, weights)
+		objCoeffs := variables.getObj(name)
+		out["score"] = computeCoeffScore(objCoeffs, weights)
 		updated.set(name, out)
+		// Carry the objective coefficients forward so the cap-refinement recursion (which
+		// re-invokes updateReforgeScores on this returned value) can re-score against the
+		// tightened weights instead of collapsing every score to zero.
+		updated.setObj(name, objCoeffs)
 	})
 	return updated
 }

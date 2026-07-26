@@ -191,11 +191,6 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 				} else {
 					epWeights = Presets.P2_FURY_TG_EP_PRESET.epWeights;
 				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
 				return epWeights;
 			},
 			updateSoftCaps: softCaps => {
@@ -223,7 +218,7 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 							breakpoints: [53],
 							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [epWeights.getStat(Stat.StatMasteryRating) * 0.8 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
+							postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) / player.getTotalAmplificationTrinketStatModifier()) * 0.8 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
 						}),
 					);
 				}

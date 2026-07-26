@@ -173,11 +173,6 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 				} else {
 					epWeights = Presets.P1_EP_PRESET.epWeights;
 				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
 				return epWeights;
 			},
 			updateSoftCaps: softCaps => {
@@ -192,7 +187,7 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 							breakpoints: [hasT154P ? 43 : 49],
 							capType: StatCapType.TypeSoftCap,
 							postCapEPs: [
-								(epWeights.getStat(Stat.StatMasteryRating) * player.getTotalAmplificationTrinketStatModifier() - 0.02) *
+								(epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
 									Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 							],
 						}),

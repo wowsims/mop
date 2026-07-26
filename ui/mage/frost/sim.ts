@@ -191,11 +191,6 @@ export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {
 					epWeights = Presets.P1_PREBIS_EP_PRESET.epWeights;
 				}
 
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-
 				return epWeights;
 			},
 			updateSoftCaps: softCaps => {

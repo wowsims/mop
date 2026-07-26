@@ -260,11 +260,6 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 				} else if (avgIlvl >= 525) {
 					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
 				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
 				return epWeights;
 			},
 			updateSoftCaps: softCaps => {

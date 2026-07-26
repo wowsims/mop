@@ -27,20 +27,33 @@ type reforgeOptimizer struct {
 
 	includeGems     bool
 	isBlacksmithing bool
-	isHuman         bool
 	isGuardianDruid bool
 	isHybridCaster  bool
+	isTrueCaster    bool
 	isTankSpec      bool
 	hasJC           bool
 
-	ampModifier       float64
-	hasHeartOfTheWild bool
+	ampModifier float64
+	// Stat self-multipliers resolved from the player's StatDependencyManager (see
+	// newReforgeOptimizer): the Spirit self-multiplier (the Human racial is the only thing that makes
+	// it != 1), the Bear Form multiplier that scales a Guardian Druid's crit and haste, and the
+	// combined Mark-of-the-Wild/Heart-of-the-Wild Agility multiplier. Each is 1.0 when the
+	// corresponding effect is inactive.
+	spiritSelfMult      float64
+	bearFormMult        float64
+	guardianAgilityMult float64
 
 	epStatsSet     map[proto.Stat]bool
 	frozenSlots    map[proto.ItemSlot]bool
 	undershootCaps core.UnitStats
 	relativeCap    *relativeStatCap
 	gemOptions     []*proto.ReforgeGemOption
+
+	// statDeps is the player's build-phase StatDependencyManager (ComputeStatDependencies). It
+	// resolves every stat conversion the sim models and is used by resolveStatDelta to compute
+	// each LP variable's cap-space coefficients (the FULL dependency graph), separately from the
+	// EP-calibrated objective coefficients produced by applyReforgeStat.
+	statDeps *stats.StatDependencyManager
 
 	baseRaidProto     *proto.Raid
 	baseStrippedGear  *proto.EquipmentSpec
@@ -144,7 +157,10 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 	baseRaid := googleProto.Clone(request.Raid).(*proto.Raid)
 	baseRaid.Parties[0].Players[0].Equipment = baseStrippedGear
 
-	baseResult := computeReforgeStats(&proto.ComputeStatsRequest{Raid: baseRaid})
+	// One environment build yields both FinalStats and the finalized StatDependencyManager
+	// (ComputeStatsAndDeps uses the same skip-rotation NewEnvironment as computeReforgeStats),
+	// instead of building the character twice for the same base raid.
+	baseResult, baseSDM := core.ComputeStatsAndDeps(&proto.ComputeStatsRequest{Raid: baseRaid})
 	if baseResult.ErrorResult != "" {
 		return nil, errors.New(baseResult.ErrorResult)
 	}
@@ -159,35 +175,54 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 	originalEquipment := equipmentFromProto(originalGear)
 	isGuardian := playerIsGuardianDruid(player)
 
-	optimizer := &reforgeOptimizer{
-		request:           request,
-		settings:          settings,
-		player:            player,
-		signals:           signals,
-		includeGems:       settings.GetIncludeGems(),
-		isBlacksmithing:   playerHasProfession(player, proto.Profession_Blacksmithing),
-		isHuman:           player.GetRace() == proto.Race_RaceHuman,
-		isGuardianDruid:   isGuardian,
-		isHybridCaster:    playerIsHybridCaster(player),
-		isTankSpec:        playerIsTankSpec(player),
-		hasJC:             playerHasProfession(player, proto.Profession_Jewelcrafting),
-		ampModifier:       amplificationStatModifier(baseStrippedGear),
-		epStatsSet:        buildEPStatsSet(request.GetPreCapEpWeights()),
-		frozenSlots:       frozenItemSlots(settings),
-		undershootCaps:    protoToCoreUnitStats(request.GetUndershootCaps()),
-		gemOptions:        request.GetGemOptions(),
-		baseRaidProto:     baseRaid,
-		baseStrippedGear:  baseStrippedGear,
-		originalEquipment: originalEquipment,
-		baseStats:         baseStats,
+	// Resolve the stat conversions the reforge model needs (Human Spirit, Bear Form crit/haste,
+	// Guardian Agility) from the player's real stat-dependency graph instead of hardcoded
+	// constants. resolveStatMultiplier returns the self-multiplier the dependency graph applies to
+	// one unit of a stat (e.g. Bear Form's CritRating×1.5, Mark-of-the-Wild×Heart-of-the-Wild
+	// Agility×1.113). baseSDM (from ComputeStatsAndDeps above) already has the build-phase auras
+	// re-activated, so these multiplicative deps are live in the manager.
+	resolveStatMultiplier := func(s stats.Stat) float64 {
+		in := stats.Stats{}
+		in[s] = 1
+		return baseSDM.ApplyStatDependencies(in)[s]
+	}
+	ampModifier := amplificationStatModifier(baseStrippedGear)
+	// The Spirit self-multiplier (the Human racial is the only source in practice), isolated from the
+	// Amplification Trinket multiplier (which the graph also folds into Spirit but the model re-applies
+	// separately). 1.0 when there is no such racial.
+	spiritSelfMult := resolveStatMultiplier(stats.Spirit) / ampModifier
+	bearFormMult := 1.0
+	guardianAgilityMult := 1.0
+	if isGuardian {
+		bearFormMult = resolveStatMultiplier(stats.CritRating)
+		guardianAgilityMult = resolveStatMultiplier(stats.Agility)
 	}
 
-	// Heart of the Wild talent (Guardian Agility -> AP/Crit gets an extra 1.06 multiplier).
-	// Parsed from the talent string via the shared core helper.
-	if isGuardian {
-		druidTalents := &proto.DruidTalents{}
-		core.FillTalentsProto(druidTalents.ProtoReflect(), player.GetTalentsString())
-		optimizer.hasHeartOfTheWild = druidTalents.GetHeartOfTheWild()
+	optimizer := &reforgeOptimizer{
+		request:             request,
+		settings:            settings,
+		player:              player,
+		signals:             signals,
+		includeGems:         settings.GetIncludeGems(),
+		isBlacksmithing:     playerHasProfession(player, proto.Profession_Blacksmithing),
+		isGuardianDruid:     isGuardian,
+		isHybridCaster:      playerIsHybridCaster(player),
+		isTrueCaster:        playerIsTrueCaster(player),
+		isTankSpec:          playerIsTankSpec(player),
+		hasJC:               playerHasProfession(player, proto.Profession_Jewelcrafting),
+		ampModifier:         ampModifier,
+		spiritSelfMult:      spiritSelfMult,
+		bearFormMult:        bearFormMult,
+		guardianAgilityMult: guardianAgilityMult,
+		epStatsSet:          buildEPStatsSet(request.GetPreCapEpWeights()),
+		frozenSlots:         frozenItemSlots(settings),
+		undershootCaps:      protoToCoreUnitStats(request.GetUndershootCaps()),
+		gemOptions:          request.GetGemOptions(),
+		statDeps:            baseSDM,
+		baseRaidProto:       baseRaid,
+		baseStrippedGear:    baseStrippedGear,
+		originalEquipment:   originalEquipment,
+		baseStats:           baseStats,
 	}
 
 	// Relative stat cap (forced RoRo proc), if configured and RoRo is equipped.
@@ -203,18 +238,71 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 	return optimizer, nil
 }
 
+// rootRatingStat maps a unit stat to the rating stat whose Amplification/Bear-Form multiplier
+// governs it: a percent pseudo-stat resolves to its parent rating (SpellHaste% -> HasteRating,
+// PhysicalCrit% -> CritRating, ...); a rating stat maps to itself; anything else returns an
+// out-of-range sentinel that matches no case in epDivisor.
+func rootRatingStat(unitStat stats.UnitStat) stats.Stat {
+	if unitStat.IsStat() {
+		return stats.Stat(unitStat.StatIdx())
+	}
+	switch proto.PseudoStat(unitStat.PseudoStatIdx()) {
+	case proto.PseudoStat_PseudoStatSpellHastePercent,
+		proto.PseudoStat_PseudoStatMeleeHastePercent,
+		proto.PseudoStat_PseudoStatRangedHastePercent:
+		return stats.HasteRating
+	case proto.PseudoStat_PseudoStatPhysicalCritPercent,
+		proto.PseudoStat_PseudoStatSpellCritPercent:
+		return stats.CritRating
+	}
+	return stats.Stat(stats.ProtoStatsLen) // out-of-range sentinel: matches no case in epDivisor
+}
+
+// epDivisor returns the self-multiplier applyReforgeStat re-applies to a stat's reforge coefficient
+// and that must therefore be divided back out of the EP weight so the objective stays calibrated:
+// the Amplification-trinket modifier on Haste/Mastery (mapped from their percent pseudo-stats too),
+// and a Guardian Druid's Bear Form multiplier on crit. Every other stat returns 1. This is the ONE
+// place the "which multipliers does the backend own" question is answered; it is deliberately NOT
+// the full StatDependencyManager self-multiplier, which would wrongly fold in spec-inherent effects
+// (e.g. Fury's 1.5x haste, already baked into the calibrated EP weights).
+func (o *reforgeOptimizer) epDivisor(unitStat stats.UnitStat) float64 {
+	switch rootRatingStat(unitStat) {
+	case stats.HasteRating, stats.MasteryRating:
+		return o.ampModifier
+	case stats.CritRating:
+		if o.isGuardianDruid {
+			return o.bearFormMult
+		}
+	}
+	return 1
+}
+
+// internalizeEPOffsets divides the incoming (raw) EP weights by epDivisor. Because applyReforgeStat
+// multiplies those coefficients back up, the two cancel in the objective (coeff*mult * EP/mult =
+// coeff*EP) while the caps still see the amplified contribution. This lets the frontend send
+// un-offset EP weights: the division that used to live in each spec's getEPDefaults callback now
+// happens here, uniformly. NOTE: only PRE-cap EP weights are internalized; soft-cap post-cap EPs
+// keep their amp/1.5 offset frontend-side (they cancel against the coefficient's ×mult the same way).
+func (o *reforgeOptimizer) internalizeEPOffsets(weights core.UnitStats) core.UnitStats {
+	eachUnitStat(weights, func(unitStat stats.UnitStat, value float64) {
+		if div := o.epDivisor(unitStat); div != 1 {
+			weights = setUnitStat(weights, unitStat, value/div)
+		}
+	})
+	return weights
+}
+
 // optimizeReforges runs the full optimization: it derives the effective reforge-only stat caps
 // and soft caps, validates the EP weights against them, builds the LP variables and constraints,
 // solves the model, and applies the solution. Returns the optimized gear and the LP objective
 // score. The pre-cap EP weights, processed stat caps, and soft-cap configs arrive ready-to-use
 // on the request.
 func (o *reforgeOptimizer) optimizeReforges() (*proto.EquipmentSpec, float64, error) {
-	// Effective stat caps for just the reforge contribution.
+	// Effective stat caps for just the reforge contribution. Caps live in resolved sheet-stat
+	// space (see computeGapToCap): a Guardian's Bear Form melee-haste scaling is already folded
+	// into each variable's haste cap coefficient by resolveStatDelta (via the melee speed
+	// multiplier read from baseStats), so no separate Bear-Form cap adjustment is applied here.
 	reforgeCaps := computeStatCapsDelta(o.baseStats, protoToCoreUnitStats(o.settings.GetStatCaps()))
-	if o.isGuardianDruid {
-		meleeHaste := stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatMeleeHastePercent)
-		reforgeCaps = setUnitStat(reforgeCaps, meleeHaste, getUnitStat(reforgeCaps, meleeHaste)/1.5)
-	}
 
 	var softCapConfigs []*proto.StatCapConfig
 	if o.settings.GetUseSoftCapBreakpoints() {
@@ -222,7 +310,8 @@ func (o *reforgeOptimizer) optimizeReforges() (*proto.EquipmentSpec, float64, er
 	}
 	reforgeSoftCaps := computeReforgeSoftCaps(o.baseStats, softCapConfigs)
 
-	validatedWeights := checkWeights(protoToCoreUnitStats(o.request.GetPreCapEpWeights()), reforgeCaps, reforgeSoftCaps)
+	rawWeights := o.internalizeEPOffsets(protoToCoreUnitStats(o.request.GetPreCapEpWeights()))
+	validatedWeights := checkWeights(rawWeights, reforgeCaps, reforgeSoftCaps)
 	if o.relativeCap != nil {
 		validatedWeights = o.relativeCap.updateWeights(validatedWeights)
 	}

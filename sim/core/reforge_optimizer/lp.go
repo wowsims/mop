@@ -27,17 +27,30 @@ func greaterEq(n float64) lpConstraint { return lpConstraint{min: n, hasMin: tru
 
 // lpVariables is an insertion-ordered map name -> coefficients. Order is load-bearing: it
 // determines x-index assignment and therefore HiGHS's tie-breaking among equal-EP solutions.
+//
+// Each variable carries coefficients in TWO parallel spaces:
+//   - byName holds the CAP coefficients (fully stat-dependency-resolved via resolveStatDelta)
+//     plus the structural/constraint keys (slot, socket, SocketBonusLink_*, ShaTouchedGem,
+//     JewelcraftingGem, cogwheel IDs, relative-cap Minus keys). modelToLPFormat's constraint
+//     rows and checkCaps read byName, so every dependency counts toward caps.
+//   - objByName holds the OBJECTIVE coefficients (the EP-calibrated applyReforgeStat output).
+//     updateReforgeScores reads objByName to compute each variable's 'score' coefficient, so
+//     the LP objective stays exactly as calibrated.
 type lpVariables struct {
-	order  []string
-	byName map[string]map[string]float64
+	order     []string
+	byName    map[string]map[string]float64
+	objByName map[string]map[string]float64
 }
 
 func newLPVariables() *lpVariables {
-	return &lpVariables{byName: map[string]map[string]float64{}}
+	return &lpVariables{
+		byName:    map[string]map[string]float64{},
+		objByName: map[string]map[string]float64{},
+	}
 }
 
 // set appends a new key to the insertion order; overwriting an existing key keeps its
-// original position.
+// original position. coeffs are the CAP coefficients (byName).
 func (v *lpVariables) set(name string, coeffs map[string]float64) {
 	if _, ok := v.byName[name]; !ok {
 		v.order = append(v.order, name)
@@ -45,9 +58,19 @@ func (v *lpVariables) set(name string, coeffs map[string]float64) {
 	v.byName[name] = coeffs
 }
 
+// setObj stores a variable's OBJECTIVE coefficients (objByName). It never touches the insertion
+// order, which is owned by set.
+func (v *lpVariables) setObj(name string, coeffs map[string]float64) {
+	v.objByName[name] = coeffs
+}
+
 func (v *lpVariables) get(name string) (map[string]float64, bool) {
 	c, ok := v.byName[name]
 	return c, ok
+}
+
+func (v *lpVariables) getObj(name string) map[string]float64 {
+	return v.objByName[name]
 }
 
 func (v *lpVariables) each(fn func(name string, coeffs map[string]float64)) {

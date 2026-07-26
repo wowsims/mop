@@ -211,11 +211,6 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => {
 				let epWeights = player.getEpWeights();
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
 				return epWeights;
 			},
 			updateSoftCaps: softCaps => {

@@ -102,6 +102,69 @@ func isEmptyUnitStats(unitStats core.UnitStats) bool {
 	return true
 }
 
+// hasteRatingSpeedMultiplierPairs maps each haste% pseudo-stat to the speed multiplier
+// pseudo-stat stored by GetPseudoStatsProto (MeleeSpeedMult * AttackSpeedMult, etc.).
+var hasteRatingSpeedMultiplierPairs = [3]struct {
+	hastePS     proto.PseudoStat
+	speedMultPS proto.PseudoStat
+}{
+	{proto.PseudoStat_PseudoStatMeleeHastePercent, proto.PseudoStat_PseudoStatMeleeSpeedMultiplier},
+	{proto.PseudoStat_PseudoStatRangedHastePercent, proto.PseudoStat_PseudoStatRangedSpeedMultiplier},
+	{proto.PseudoStat_PseudoStatSpellHastePercent, proto.PseudoStat_PseudoStatCastSpeedMultiplier},
+}
+
+// rawUnitStatsFromStats converts stats.Stats to UnitStats without expanding ratings into
+// percent pseudo-stats. Used for deltas that feed resolveStatDelta (the cap-constraint
+// space), not the EP objective.
+func rawUnitStatsFromStats(statValues stats.Stats) core.UnitStats {
+	unitStats := core.NewUnitStats()
+	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
+		if statValues[statIdx] != 0 {
+			unitStats.Stats[statIdx] = statValues[statIdx]
+		}
+	}
+	return unitStats
+}
+
+// resolveStatDelta applies the character's full stat dependency graph (SDM) to delta,
+// resolving every conversion the sim models — Agility/Intellect -> Crit%, Strength -> AP/Parry,
+// rating -> % (Crit/Hit/Haste), Bear Form's crit multiplier, the Amplification Trinket, etc. —
+// so that cap constraints see EVERY contribution toward a capped stat (e.g. a caster's
+// Intellect toward its Crit% softcap). It mirrors the dual-stored resolved Stats
+// (PhysicalCritPercent, SpellCritPercent, PhysicalHitPercent, SpellHitPercent, BlockPercent)
+// back into their PseudoStats so LP constraint evaluation, which reads PseudoStat indices,
+// sees the resolved values.
+//
+// Haste% is multiplicative with a speed multiplier that the dependency manager does not model,
+// so it is read from baseStats.PseudoStats (populated by GetPseudoStatsProto):
+//
+//	Δhaste% = speedMult * ΔHasteRating / HasteRatingPerHastePercent
+func resolveStatDelta(sdm *stats.StatDependencyManager, baseStats core.UnitStats, delta core.UnitStats) core.UnitStats {
+	if isEmptyUnitStats(delta) {
+		return delta
+	}
+	delta.Stats = sdm.ApplyStatDependencies(delta.Stats)
+
+	// Mirror dual-stored stats from Stats back to PseudoStats so cap constraints that evaluate
+	// via PseudoStat indices see the resolved values.
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalCritPercent), delta.Stats[stats.PhysicalCritPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellCritPercent), delta.Stats[stats.SpellCritPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalHitPercent), delta.Stats[stats.PhysicalHitPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatSpellHitPercent), delta.Stats[stats.SpellHitPercent])
+	delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatBlockPercent), delta.Stats[stats.BlockPercent])
+
+	// Haste% pseudo-stats: Δhaste% = speedMult * ΔHasteRating / HasteRatingPerHastePercent, with
+	// speedMult read from baseStats.PseudoStats.
+	if hasteRatingDelta := delta.Stats[stats.HasteRating]; hasteRatingDelta != 0 {
+		for _, p := range hasteRatingSpeedMultiplierPairs {
+			speedMult := getUnitStat(baseStats, stats.UnitStatFromPseudoStat(p.speedMultPS))
+			delta = setUnitStat(delta, stats.UnitStatFromPseudoStat(p.hastePS), speedMult*hasteRatingDelta/core.HasteRatingPerHastePercent)
+		}
+	}
+
+	return delta
+}
+
 // computeEP is the EP dot product of a stat vector against the EP weights, over both stats and
 // pseudo-stats.
 func computeEP(vec core.UnitStats, weights core.UnitStats) float64 {
@@ -186,22 +249,14 @@ func convertRatingToPercent(pseudoStat proto.PseudoStat, ratingValue float64) fl
 // Gap-to-cap math
 // ---------------------------------------------------------------------------
 
-// computeGapToCap returns the delta needed to reach cap, with haste% pseudo-stats divided by
-// their speed multiplier (reforge haste rating enters the LP in raw percent, so the cap gap must
-// be expressed in that same pre-speed-multiplier space). Returns 1e-12 (not 0) when already at
-// cap so the resulting constraint stays active.
+// computeGapToCap returns the delta needed to reach cap, expressed in the same resolved
+// sheet-stat space that resolveStatDelta produces the variable cap coefficients in. For haste%
+// that means it is NOT divided by the speed multiplier: resolveStatDelta already scales a
+// variable's haste-rating contribution by the speed multiplier, so both sides of the cap
+// comparison live in resolved percent space. Returns 1e-12 (not 0) when already at cap so the
+// resulting constraint stays active.
 func computeGapToCap(baseStats core.UnitStats, unitStat stats.UnitStat, cap float64) float64 {
 	statDelta := cap - getUnitStat(baseStats, unitStat)
-	if unitStat.IsPseudoStat() {
-		switch proto.PseudoStat(unitStat.PseudoStatIdx()) {
-		case proto.PseudoStat_PseudoStatMeleeHastePercent:
-			statDelta /= getUnitStat(baseStats, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatMeleeSpeedMultiplier))
-		case proto.PseudoStat_PseudoStatRangedHastePercent:
-			statDelta /= getUnitStat(baseStats, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatRangedSpeedMultiplier))
-		case proto.PseudoStat_PseudoStatSpellHastePercent:
-			statDelta /= getUnitStat(baseStats, stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatCastSpeedMultiplier))
-		}
-	}
 	if statDelta == 0 {
 		return 1e-12
 	}
