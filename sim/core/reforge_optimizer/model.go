@@ -185,14 +185,20 @@ func (o *reforgeOptimizer) gemsForColorKey(socketColor proto.GemColor) []*proto.
 // routing a rating stat to its school-specific percent pseudo-stats when the root rating has no
 // direct EP weight.
 func (o *reforgeOptimizer) applyReforgeStat(coeffs map[string]float64, stat proto.Stat, amount float64, preCapEPs core.UnitStats) {
-	if stat == proto.Stat_StatSpirit {
-		amount *= o.spiritSelfMult
-	}
-	if stat == proto.Stat_StatHasteRating || stat == proto.Stat_StatMasteryRating || stat == proto.Stat_StatSpirit {
-		amount *= o.ampModifier
-	}
-	if stat == proto.Stat_StatCritRating && o.isGuardianDruid {
-		amount *= o.bearFormMult
+	// Character-specific self-multipliers + stat expansions not baked into the calibrated EP
+	// (amplification trinket, racial Spirit, Guardian Bear Form crit + Agility->AP/crit). Applied
+	// in rule order; a rule with expandTo re-expresses the stat and stops here.
+	for _, rule := range o.statRules {
+		if !slices.Contains(rule.stats, stat) {
+			continue
+		}
+		amount *= rule.mult
+		if len(rule.expandTo) > 0 {
+			for _, term := range rule.expandTo {
+				coeffs[coeffKeyForUnitStat(term.target)] += amount * term.factor
+			}
+			return
+		}
 	}
 
 	// Spirit->SpellHit (hybrid casters) and Expertise->SpellHit conversions.
@@ -200,15 +206,6 @@ func (o *reforgeOptimizer) applyReforgeStat(coeffs map[string]float64, stat prot
 	if getUnitStat(preCapEPs, stats.UnitStatFromPseudoStat(spellHitPseudo)) != 0 &&
 		((stat == proto.Stat_StatSpirit && o.isHybridCaster) || stat == proto.Stat_StatExpertiseRating) {
 		o.setPseudoStatCoefficient(coeffs, spellHitPseudo, amount/core.SpellHitRatingPerHitPercent)
-	}
-
-	// Guardian Druid Agility -> Attack Power + Physical Crit%, scaled by the combined Mark-of-the-Wild
-	// and Heart-of-the-Wild Agility multiplier resolved from the stat-dependency graph.
-	if stat == proto.Stat_StatAgility && o.isGuardianDruid {
-		amount *= o.guardianAgilityMult
-		o.setStatCoefficient(coeffs, proto.Stat_StatAttackPower, amount*2)
-		o.setPseudoStatCoefficient(coeffs, proto.PseudoStat_PseudoStatPhysicalCritPercent, amount*core.CritPerAgiMaxLevel[proto.Class_ClassDruid])
-		return
 	}
 
 	if o.relativeCap != nil {

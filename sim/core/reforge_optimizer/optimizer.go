@@ -34,14 +34,15 @@ type reforgeOptimizer struct {
 	hasJC           bool
 
 	ampModifier float64
-	// Stat self-multipliers resolved from the player's StatDependencyManager (see
-	// newReforgeOptimizer): the Spirit self-multiplier (the Human racial is the only thing that makes
-	// it != 1), the Bear Form multiplier that scales a Guardian Druid's crit and haste, and the
-	// combined Mark-of-the-Wild/Heart-of-the-Wild Agility multiplier. Each is 1.0 when the
-	// corresponding effect is inactive.
-	spiritSelfMult      float64
-	bearFormMult        float64
-	guardianAgilityMult float64
+	// bearFormMult scales a Guardian Druid's crit and haste (1.0 otherwise). Kept as a field
+	// because epDivisor (EP internalization) reads it alongside ampModifier.
+	bearFormMult float64
+
+	// statRules re-apply, per reforge/gem stat, the character-specific self-multipliers and stat
+	// expansions that are NOT baked into the calibrated EP — the amplification trinket, the
+	// Human-racial Spirit multiplier, and Guardian Bear Form (crit mult + Agility -> AP/crit%).
+	// See reforgeStatRule; assembled in newReforgeOptimizer.
+	statRules []reforgeStatRule
 
 	epStatsSet     map[proto.Stat]bool
 	frozenSlots    map[proto.ItemSlot]bool
@@ -59,6 +60,25 @@ type reforgeOptimizer struct {
 	baseStrippedGear  *proto.EquipmentSpec
 	originalEquipment *core.Equipment
 	baseStats         core.UnitStats
+}
+
+// reforgeStatRule is a configurable per-optimize modifier applied in applyReforgeStat. A
+// reforge/gem amount of any stat in `stats` is multiplied by `mult`. Rules are applied in list
+// order, and a stat may match several (e.g. Spirit gets both the racial and the amp rule) —
+// order is load-bearing because reassociating the float multiplies would change the LP text.
+// If `expandTo` is non-empty, the multiplied amount is distributed to those coefficients and
+// processing stops (the stat's own coefficient is not set) — this models Guardian Agility ->
+// AttackPower + PhysicalCrit%.
+type reforgeStatRule struct {
+	stats    []proto.Stat
+	mult     float64
+	expandTo []reforgeExpandTerm
+}
+
+// reforgeExpandTerm adds amount*factor to one objective coefficient (stat or pseudo-stat).
+type reforgeExpandTerm struct {
+	target stats.UnitStat
+	factor float64
 }
 
 func (o *reforgeOptimizer) raidBuffs() *proto.RaidBuffs {
@@ -198,31 +218,47 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 		guardianAgilityMult = resolveStatMultiplier(stats.Agility)
 	}
 
+	// Self-mult / expansion rules for applyReforgeStat. Order matches the historical apply order
+	// (racial Spirit, then amp trinket, then Bear Form crit, then the Guardian Agility expansion)
+	// so the LP coefficients stay byte-identical.
+	statRules := []reforgeStatRule{
+		{stats: []proto.Stat{proto.Stat_StatSpirit}, mult: spiritSelfMult},
+		{stats: []proto.Stat{proto.Stat_StatHasteRating, proto.Stat_StatMasteryRating, proto.Stat_StatSpirit}, mult: ampModifier},
+	}
+	if isGuardian {
+		statRules = append(statRules,
+			reforgeStatRule{stats: []proto.Stat{proto.Stat_StatCritRating}, mult: bearFormMult},
+			reforgeStatRule{stats: []proto.Stat{proto.Stat_StatAgility}, mult: guardianAgilityMult, expandTo: []reforgeExpandTerm{
+				{target: stats.UnitStatFromStat(stats.AttackPower), factor: 2},
+				{target: stats.UnitStatFromPseudoStat(proto.PseudoStat_PseudoStatPhysicalCritPercent), factor: core.CritPerAgiMaxLevel[proto.Class_ClassDruid]},
+			}},
+		)
+	}
+
 	optimizer := &reforgeOptimizer{
-		request:             request,
-		settings:            settings,
-		player:              player,
-		signals:             signals,
-		includeGems:         settings.GetIncludeGems(),
-		isBlacksmithing:     playerHasProfession(player, proto.Profession_Blacksmithing),
-		isGuardianDruid:     isGuardian,
-		isHybridCaster:      playerIsHybridCaster(player),
-		isTrueCaster:        playerIsTrueCaster(player),
-		isTankSpec:          playerIsTankSpec(player),
-		hasJC:               playerHasProfession(player, proto.Profession_Jewelcrafting),
-		ampModifier:         ampModifier,
-		spiritSelfMult:      spiritSelfMult,
-		bearFormMult:        bearFormMult,
-		guardianAgilityMult: guardianAgilityMult,
-		epStatsSet:          buildEPStatsSet(request.GetPreCapEpWeights()),
-		frozenSlots:         frozenItemSlots(settings),
-		undershootCaps:      protoToCoreUnitStats(request.GetUndershootCaps()),
-		gemOptions:          request.GetGemOptions(),
-		statDeps:            baseSDM,
-		baseRaidProto:       baseRaid,
-		baseStrippedGear:    baseStrippedGear,
-		originalEquipment:   originalEquipment,
-		baseStats:           baseStats,
+		request:           request,
+		settings:          settings,
+		player:            player,
+		signals:           signals,
+		includeGems:       settings.GetIncludeGems(),
+		isBlacksmithing:   playerHasProfession(player, proto.Profession_Blacksmithing),
+		isGuardianDruid:   isGuardian,
+		isHybridCaster:    playerIsHybridCaster(player),
+		isTrueCaster:      playerIsTrueCaster(player),
+		isTankSpec:        playerIsTankSpec(player),
+		hasJC:             playerHasProfession(player, proto.Profession_Jewelcrafting),
+		ampModifier:       ampModifier,
+		bearFormMult:      bearFormMult,
+		statRules:         statRules,
+		epStatsSet:        buildEPStatsSet(request.GetPreCapEpWeights()),
+		frozenSlots:       frozenItemSlots(settings),
+		undershootCaps:    protoToCoreUnitStats(request.GetUndershootCaps()),
+		gemOptions:        request.GetGemOptions(),
+		statDeps:          baseSDM,
+		baseRaidProto:     baseRaid,
+		baseStrippedGear:  baseStrippedGear,
+		originalEquipment: originalEquipment,
+		baseStats:         baseStats,
 	}
 
 	// Relative stat cap (forced RoRo proc), if configured and RoRo is equipped.
