@@ -1,0 +1,182 @@
+{
+	"raid":  {
+		"parties":  [
+			{
+				"players":  [
+					{
+						"race":  "RaceTroll",
+						"class":  "ClassPriest",
+						"equipment":  {
+							"items":  [
+								{
+									"id":  105420,
+									"gems":  [95347, 76651],
+									"reforging":  145,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105473,
+									"reforging":  116,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99363,
+									"enchant":  4806,
+									"gems":  [76667, 76667],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  102246,
+									"enchant":  4892,
+									"gems":  [76667],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99362,
+									"enchant":  4419,
+									"gems":  [76667, 76667, 76659],
+									"reforging":  145,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105626,
+									"enchant":  4414,
+									"gems":  [0],
+									"reforging":  147,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99359,
+									"enchant":  4430,
+									"gems":  [76667, 76668, 0],
+									"upgradeStep":  "UpgradeStepTwo",
+									"tinker":  4898
+								},
+								{
+									"id":  105646,
+									"gems":  [76667, 76699, 76697],
+									"reforging":  117,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99361,
+									"enchant":  4825,
+									"gems":  [76699, 76699],
+									"reforging":  167,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105493,
+									"enchant":  4426,
+									"gems":  [76699],
+									"reforging":  166,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105606,
+									"gems":  [76667],
+									"reforging":  166,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105520,
+									"gems":  [76699],
+									"reforging":  119,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105422,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105540,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105649,
+									"enchant":  4442,
+									"gems":  [76659],
+									"reforging":  119,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105650,
+									"enchant":  4434,
+									"gems":  [76659],
+									"reforging":  148,
+									"upgradeStep":  "UpgradeStepTwo"
+								}
+							]
+						},
+						"consumables":  {
+							"prepotId":  76093,
+							"potId":  76093,
+							"flaskId":  76085,
+							"foodId":  74650
+						},
+						"shadowPriest":  {
+							"options":  {
+								"classOptions":  {
+									"armor":  "InnerFire"
+								}
+							}
+						},
+						"talentsString":  "223113",
+						"glyphs":  {},
+						"profession1":  "Engineering"
+					}
+				],
+				"buffs":  {}
+			}
+		],
+		"buffs":  {
+			"unholyAura":  true,
+			"arcaneBrilliance":  true,
+			"mindQuickening":  true,
+			"leaderOfThePack":  true,
+			"blessingOfMight":  true,
+			"blessingOfKings":  true,
+			"bloodlust":  true,
+			"stormlashTotemCount":  4,
+			"skullBannerCount":  2
+		},
+		"debuffs":  {
+			"curseOfElements":  true
+		}
+	},
+	"preCapEpWeights":  {
+		"stats":  [0, 0, 0, 1, 0.01, 1.45, 0.74, 1, 0, 0, 0, 0.75, 0, 0, 0.73, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"undershootCaps":  {
+		"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"settings":  {
+		"useSoftCapBreakpoints":  true,
+		"includeGems":  true,
+		"includeEotbGemSocket":  true,
+		"statCaps":  {
+			"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0]
+		}
+	},
+	"softCaps":  [
+		{
+			"unitStat":  {
+				"pseudoStat":  "PseudoStatSpellHastePercent"
+			},
+			"breakpoints":  [47.50353],
+			"capType":  "TypeThreshold",
+			"postCapEPs":  [310.25]
+		},
+		{
+			"unitStat":  {
+				"stat":  "StatMasteryRating"
+			},
+			"breakpoints":  [20000],
+			"capType":  "TypeSoftCap",
+			"postCapEPs":  [0.72]
+		}
+	]
+}

@@ -9,8 +9,7 @@ import (
 // This file produces a stable, exact CPLEX LP text encoding of the model for the HiGHS solver.
 // The serialization is fully deterministic down to the byte level (including the quirk that the
 // leading space is dropped on the first wrapped line), so an unchanged model always yields the
-// same LP text and therefore the same HiGHS tie-breaking among equal-objective solutions. A
-// golden-output regression test guarding that encoding lives in lp_test.go.
+// same LP text and therefore the same HiGHS tie-breaking among equal-objective solutions.
 
 // maxLPLineLength is the maximum length of an emitted LP line before it is wrapped.
 const maxLPLineLength = 200
