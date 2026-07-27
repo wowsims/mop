@@ -69,6 +69,10 @@ func solveLPModel(model *lpModel, timeout time.Duration, mipRelGap float64) (lpS
 	}, nil
 }
 
+// minSolveSeconds is the per-pass time_limit floor for cap-refinement re-solves, so an exhausted
+// budget never yields a non-positive HiGHS time_limit. Tightened re-solves finish well under this.
+const minSolveSeconds = 1.0
+
 // solveModel scores the variables, solves, then checks caps and recurses with tightened
 // constraints/weights until no cap is exceeded. Returns the selected variable names of the final
 // solution and its objective value.
@@ -117,7 +121,10 @@ func (o *reforgeOptimizer) solveModel(
 	if !anyCapsExceeded {
 		return solution.variables, solution.result, nil
 	}
-	return o.solveModel(updatedWeights, reforgeCaps, updatedSoftCaps, updatedVariables, updatedConstraints, maxSeconds-elapsedSeconds, mipRelGap)
+	// Cap refinement consumed part of the budget; keep a positive floor so the tightened re-solve
+	// still gets a valid (non-negative) HiGHS time_limit even once the budget is spent.
+	remainingSeconds := math.Max(maxSeconds-elapsedSeconds, minSolveSeconds)
+	return o.solveModel(updatedWeights, reforgeCaps, updatedSoftCaps, updatedVariables, updatedConstraints, remainingSeconds, mipRelGap)
 }
 
 // checkCaps sums the selected variables' stat contributions, then adds a hard-cap constraint for

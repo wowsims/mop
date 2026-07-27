@@ -22,16 +22,21 @@ import (
 func TestReforgerOptimizer(t *testing.T) {
 	sim.RegisterAll()
 
-	// Runs the registered fixtures (see registerSpecFixtures); deregistering a spec drops it from
-	// both this suite and TestGenerateReforgeFixtures. Fixture JSON lives in test-fixtures/.
-	if len(fixtureSpecs) == 0 {
-		t.Fatal("no fixtures registered")
+	// Runs every committed fixture in test-fixtures/. Enumerating by glob keeps this suite
+	// self-contained: it does not depend on the fixture_*_test.go generators (not committed). If no
+	// fixtures are present, skip rather than fail so the package's other tests (gear, highswasm)
+	// still run.
+	paths, err := filepath.Glob(filepath.Join(fixturesDir, "*.test.json"))
+	if err != nil {
+		t.Fatalf("globbing fixtures: %v", err)
 	}
-	specs := append([]specFixture(nil), fixtureSpecs...)
-	sort.Slice(specs, func(i, j int) bool { return specs[i].fileName < specs[j].fileName })
+	if len(paths) == 0 {
+		t.Skip("no fixtures in " + fixturesDir)
+	}
+	sort.Strings(paths)
 
-	for _, sf := range specs {
-		fileName := sf.fileName
+	for _, path := range paths {
+		fileName := filepath.Base(path)
 		t.Run(strings.TrimSuffix(fileName, ".test.json"), func(t *testing.T) {
 			request := loadPreset(t, fileName)
 			expectedGear := request.GetRaid().GetParties()[0].GetPlayers()[0].GetEquipment()
@@ -46,11 +51,6 @@ func TestReforgerOptimizer(t *testing.T) {
 			optimizedGear := result.GetOptimizedGear()
 			if optimizedGear == nil {
 				t.Fatal("Optimize returned no optimized gear")
-			}
-
-			if os.Getenv("UPDATE_FIXTURES") != "" {
-				updateFixture(t, fileName, request, optimizedGear)
-				return
 			}
 
 			expectedRaid := protopkg.Clone(request.Raid).(*proto.Raid)
@@ -154,23 +154,10 @@ func uiGemEligibleForSocket(gemColor, socketColor proto.GemColor) bool {
 	}
 }
 
-func updateFixture(t testing.TB, fileName string, request *proto.ReforgeOptimizeRequest, optimizedGear *proto.EquipmentSpec) {
-	t.Helper()
-
-	updated := protopkg.Clone(request).(*proto.ReforgeOptimizeRequest)
-	updated.Raid.Parties[0].Players[0].Equipment = optimizedGear
-	updated.Raid.Parties[0].Players[0].Rotation = nil // optimizer computes stats only; drop the APL to save space
-	updated.GemOptions = nil                          // rebuilt from the DB on load; keep it out of the fixture (matches writeGeneratedFixture)
-
-	out, err := (protojson.MarshalOptions{Multiline: true, Indent: "\t", EmitUnpopulated: false}).Marshal(updated)
-	if err != nil {
-		t.Fatalf("failed marshalling updated fixture %s: %v", fileName, err)
-	}
-	if err := os.WriteFile(filepath.Join(fixturesDir, fileName), compactFixtureJSON(out), 0644); err != nil {
-		t.Fatalf("failed writing updated fixture %s: %v", fileName, err)
-	}
-	t.Logf("updated fixture %s", fileName)
-}
+// fixturesDir holds the committed coverage fixtures (<name>.test.json) that TestReforgerOptimizer
+// runs. It is defined here (not in the uncommitted fixture_*_test.go generators) so this suite
+// compiles and runs standalone.
+const fixturesDir = "test-fixtures"
 
 func loadPreset(t testing.TB, fileName string) *proto.ReforgeOptimizeRequest {
 	t.Helper()

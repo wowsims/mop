@@ -119,8 +119,12 @@ func runHiGHSLP(lpString string, numVars int, timeout time.Duration, mipRelGap f
 	if err := wasmRuntime.setStringOption(highs, "presolve", "on"); err != nil {
 		return nil, 0, err
 	}
-	if err := wasmRuntime.setDoubleOption(highs, "time_limit", timeout.Seconds()); err != nil {
-		return nil, 0, err
+	// HiGHS rejects a non-positive time_limit; skip it (run unbounded) rather than erroring when the
+	// caller's budget is already spent.
+	if secs := timeout.Seconds(); secs > 0 {
+		if err := wasmRuntime.setDoubleOption(highs, "time_limit", secs); err != nil {
+			return nil, 0, err
+		}
 	}
 	if mipRelGap > 0 {
 		if err := wasmRuntime.setDoubleOption(highs, "mip_rel_gap", mipRelGap); err != nil {
