@@ -143,18 +143,79 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 		},
 	})
 
-	// When the user models AMS damage intake, autocast the shell as a low-priority DPS
-	// cooldown once Runic Power is nearly empty, so the RP from the absorbed magic damage
-	// tops the bar back up without overcapping. Registered only when intake is configured,
-	// so the shell stays out of the rotation entirely when the feature is disabled. It is
-	// cast through the autocastOtherCooldowns action present in every DPS preset.
-	if dk.Inputs.AvgAMSHit > 0 {
+	// Autocast the shell as a low-priority DPS cooldown, cast through the
+	// autocastOtherCooldowns action present in every DPS preset. Registered whenever the user
+	// has configured damage-intake modeling (AvgAMSHit > 0, the pre-existing opt-in), OR
+	// whenever the encounter has a real-boss-AI target (see antiMagicShellReactiveSignal) --
+	// the latter needs AMS to autocast reactively even when the user has correctly left
+	// AvgAMSHit at 0 for those encounters (real damage happens instead of simulated damage, so
+	// the stat is otherwise meaningless there). core.AddMajorCooldown has real side effects
+	// beyond just enabling ShouldActivate: it unconditionally ORs SpellFlagMCD onto the spell
+	// (sim/core/major_cooldown.go), which measurably changed Blood's golden-output tests even
+	// with ShouldActivate always returning false -- so this must stay a real conditional
+	// registration, not "always register but never activate."
+	if dk.Inputs.AvgAMSHit > 0 || dk.encounterHasRealBossAI() {
 		dk.AddMajorCooldown(core.MajorCooldown{
 			Spell:    antiMagicShellSpell,
 			Type:     core.CooldownTypeDPS,
 			Priority: core.CooldownPriorityLow,
+
+			// ShouldActivate is ONLY consulted by getFirstReadyMCD, which only the
+			// "Autocast Other Cooldowns" APL action calls (see
+			// APLActionAutocastOtherCooldowns.IsReady in apl_actions_casting.go). A
+			// manual "Cast Spell" action targeting this spell elsewhere in the APL
+			// goes through APLActionCastSpell.IsReady instead, which never looks at
+			// ShouldActivate — so a user-authored restriction on Anti-Magic Shell
+			// always takes priority over this.
+			ShouldActivate: func(sim *core.Simulation, character *core.Character) bool {
+				if imminent, handled := antiMagicShellReactiveSignal(sim); handled {
+					return imminent
+				}
+				return dk.Inputs.AvgAMSHit > 0
+			},
 		})
 	}
+}
+
+// encounterHasRealBossAI reports whether any target in the current encounter implements
+// core.ImminentMagicAbilityProvider (see sim/core/imminent_ability.go and the real-boss-AI
+// files in sim/encounters/soo/*_ai.go). Safe to call from Character.Initialize(): target
+// construction (which sets each Target's AI field) and target.initialize() both run before the
+// player-initialize loop in Environment.initialize(), so every target's AI is already a
+// concrete, type-assertable value by this point.
+func (dk *DeathKnight) encounterHasRealBossAI() bool {
+	for _, target := range dk.Env.Encounter.AllTargets {
+		if _, ok := target.AI.(core.ImminentMagicAbilityProvider); ok {
+			return true
+		}
+	}
+	return false
+}
+
+// antiMagicShellReactionWindow is how far ahead of a boss's own next likely cast (or how far
+// into an already-started real telegraph) AMS should be proactively cast, giving the shell's own
+// activation plus normal reaction latency room to land before the incoming hit actually resolves.
+const antiMagicShellReactionWindow = 2 * time.Second
+
+// antiMagicShellReactiveSignal checks every active encounter target for
+// core.ImminentMagicAbilityProvider (implemented by the real WCL-data-driven boss AI files in
+// sim/encounters/soo/*_ai.go) and reports whether AMS should be cast right now because at least
+// one target has a harmful magic ability imminent. handled reports whether ANY target in the
+// encounter implements the interface at all: if none do (i.e. this isn't one of the real-boss-AI
+// encounters), the caller should fall back to the old heuristic instead of treating "no reactive
+// signal" as "never cast."
+func antiMagicShellReactiveSignal(sim *core.Simulation) (imminent bool, handled bool) {
+	for _, target := range sim.Encounter.ActiveTargets {
+		provider, ok := target.AI.(core.ImminentMagicAbilityProvider)
+		if !ok {
+			continue
+		}
+		handled = true
+		if provider.HasImminentMagicAbility(sim, antiMagicShellReactionWindow) {
+			return true, true
+		}
+	}
+	return false, handled
 }
 
 // antiMagicShellTickOffset returns how far into the shell's window tick i (0-indexed) of
