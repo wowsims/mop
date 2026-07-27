@@ -131,15 +131,9 @@ export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyW
 			statSelectionPresets,
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_EP_PRESET.epWeights;
-				} else {
-					epWeights = Presets.P4_EP_PRESET.epWeights;
-				}
-
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_EP_PRESET.epWeights;
+				return Presets.P4_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
@@ -154,8 +148,7 @@ export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyW
 								breakpoints: [40.48],
 								capType: StatCapType.TypeThreshold,
 								postCapEPs: [
-									((Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) /
-										player.getTotalAmplificationTrinketStatModifier()) *
+									(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
 										Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
 								],
 							});

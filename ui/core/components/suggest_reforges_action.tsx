@@ -150,6 +150,7 @@ export class ReforgeOptimizer {
 	protected previousGear: Gear | null = null;
 	relativeStatCapStat: number = -1;
 	relativeStatCap: RelativeStatCap | null = null;
+	relativeStatCapPrecision: number = 0.0001;
 
 	readonly includeGemsChangeEmitter = new TypedEvent<void>('IncludeGems');
 	readonly includeEOTBPGemSocketChangeEmitter = new TypedEvent<void>('IncludeEOTBPGemSocket');
@@ -161,6 +162,7 @@ export class ReforgeOptimizer {
 	readonly freezeItemSlotsChangeEmitter = new TypedEvent<void>('FreezeItemSlots');
 	readonly undershootCapsChangeEmitter = new TypedEvent<void>('UndershootCaps');
 	readonly relativeStatCapStatChangeEmitter = new TypedEvent<void>('RelativeStatCapStat');
+	readonly relativeStatCapPrecisionChangeEmitter = new TypedEvent<void>('RelativeStatCapPrecision');
 
 	// Emits when any of the above emitters emit.
 	readonly changeEmitter: TypedEvent<void>;
@@ -297,6 +299,7 @@ export class ReforgeOptimizer {
 				this.freezeItemSlotsChangeEmitter,
 				this.undershootCapsChangeEmitter,
 				this.relativeStatCapStatChangeEmitter,
+				this.relativeStatCapPrecisionChangeEmitter,
 			],
 			'ReforgeSettingsChange',
 		);
@@ -456,6 +459,10 @@ export class ReforgeOptimizer {
 
 		this.relativeStatCapStatChangeEmitter.emit(eventID);
 	}
+	setRelativeStatCapPrecision(eventID: EventID, newValue: number) {
+		this.relativeStatCapPrecision = newValue;
+		this.relativeStatCapPrecisionChangeEmitter.emit(eventID);
+	}
 
 	setIncludeGems(eventID: EventID, newValue: boolean) {
 		if (this.includeGems !== newValue) {
@@ -579,6 +586,26 @@ export class ReforgeOptimizer {
 					},
 				});
 
+				const relativeStatCapPrecisionInput = new EnumPicker(null, this.player, {
+					extraCssClasses: ['mb-2'],
+					id: 'reforge-optimizer-relcap-precision',
+					label: i18n.t('sidebar.buttons.suggest_reforges.relative_stat_cap_precision'),
+					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.relative_stat_cap_precision_tooltip'),
+					defaultValue: this.relativeStatCapPrecision,
+					values: [
+						{ name: i18n.t('sidebar.buttons.suggest_reforges.precision_precise'), value: 0.0001 },
+						{ name: i18n.t('sidebar.buttons.suggest_reforges.precision_balanced'), value: 0.0005 },
+						{ name: i18n.t('sidebar.buttons.suggest_reforges.precision_fast'), value: 0.005 },
+					],
+					changedEvent: () =>
+						TypedEvent.onAny([this.relativeStatCapPrecisionChangeEmitter, this.relativeStatCapStatChangeEmitter, this.player.gearChangeEmitter]),
+					getValue: () => this.relativeStatCapPrecision,
+					setValue: (_eventID, _player, newValue) => {
+						this.setRelativeStatCapPrecision(TypedEvent.nextEventID(), newValue);
+					},
+					showWhen: () => RelativeStatCap.hasRoRo(this.player) && this.relativeStatCapStat !== -1,
+				});
+
 				const includeGemsInput = new BooleanPicker(null, this.player, {
 					extraCssClasses: ['mb-2'],
 					id: 'reforge-optimizer-include-gems',
@@ -650,6 +677,7 @@ export class ReforgeOptimizer {
 						})}
 						{useSoftCapBreakpointsInput?.rootElem}
 						{forcedProcInput.rootElem}
+						{relativeStatCapPrecisionInput.rootElem}
 						{this.buildSoftCapBreakpointsLimiter({ useSoftCapBreakpointsInput })}
 						{includeGemsInput.rootElem}
 						{includeEOTBPGemSocket.rootElem}
@@ -1417,6 +1445,7 @@ export class ReforgeOptimizer {
 			if (proto.relativeStatCapStat) {
 				this.setRelativeStatCap(eventID, UnitStat.fromProto(proto.relativeStatCapStat).getStat());
 			}
+			this.setRelativeStatCapPrecision(eventID, proto.relativeStatCapMipGap || 0.0001);
 		});
 	}
 
@@ -1430,6 +1459,7 @@ export class ReforgeOptimizer {
 			frozenItemSlots: [...this.frozenItemSlots],
 			breakpointLimits: this.breakpointLimits.toProto(),
 			relativeStatCapStat: this.relativeStatCap?.forcedHighestStat.toProto(),
+			relativeStatCapMipGap: this.relativeStatCap ? this.relativeStatCapPrecision : 0,
 			statCaps: this.statCaps.toProto(),
 		});
 	}
@@ -1445,6 +1475,7 @@ export class ReforgeOptimizer {
 			this.setBreakpointLimits(eventID, this.simUI.individualConfig.defaults.breakpointLimits || new Stats());
 			this.setSoftCapBreakpoints(eventID, this.simUI.individualConfig.defaults.softCapBreakpoints || []);
 			this.setRelativeStatCap(eventID, this.relativeStatCapStat);
+			this.setRelativeStatCapPrecision(eventID, 0.0001);
 		});
 	}
 }

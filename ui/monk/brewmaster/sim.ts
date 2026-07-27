@@ -177,10 +177,7 @@ export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk
 		});
 
 		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-				return epWeights;
-			},
+			getEPDefaults: player => player.getEpWeights(),
 		});
 	}
 }

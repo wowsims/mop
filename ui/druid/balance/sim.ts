@@ -253,14 +253,10 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 			statSelectionPresets: [statSelectionHastePreset],
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
-				let epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 525) {
-					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
-				}
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_BIS_EP_PRESET.epWeights;
+				if (avgIlvl >= 525) return Presets.P3_BIS_EP_PRESET.epWeights;
+				return Presets.P2_BIS_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const gear = player.getGear();
@@ -305,7 +301,7 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 					if (!!critMasteryIntersection) {
 						const masteryStat = UnitStat.fromStat(Stat.StatMasteryRating);
 						const masteryBreakpoint = masteryStat.convertPercentToRating(critMasteryIntersection)! / player.getMasteryPerPointModifier();
-						const masteryPostCapEp = masterySoftCapEpAtPercent(critMasteryIntersection) / player.getTotalAmplificationTrinketStatModifier();
+						const masteryPostCapEp = masterySoftCapEpAtPercent(critMasteryIntersection);
 
 						const masterySoftCapConfig = StatCap.fromStat(Stat.StatMasteryRating, {
 							breakpoints: [masteryBreakpoint],

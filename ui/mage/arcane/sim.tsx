@@ -69,7 +69,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 					// hasteBreakpoints.get('12-tick - Living Bomb')!,
 				],
 				capType: StatCapType.TypeThreshold,
-				postCapEPs: [0.62 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
+				postCapEPs: [0.64 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
 			});
 
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {

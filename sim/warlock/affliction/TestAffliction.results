@@ -6,10 +6,10 @@ character_stats_results: {
   final_stats: 47948
   final_stats: 31271
   final_stats: 304
-  final_stats: 3180
+  final_stats: 3020
   final_stats: 3095
   final_stats: 18310
-  final_stats: 1920
+  final_stats: 2080
   final_stats: 0
   final_stats: 0
   final_stats: 22775
@@ -23,7 +23,7 @@ character_stats_results: {
   final_stats: 899442.5
   final_stats: 300000
   final_stats: 15000
-  final_stats: 9.35294
+  final_stats: 8.88235
   final_stats: 15
   final_stats: 12.77833
   final_stats: 24.20068
@@ -1569,17 +1569,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-RegaliaoftheHornedNightmare"
  value: {
-  dps: 325525.44937
-  tps: 227050.87118
-  hps: 3626.34518
+  dps: 326398.77045
+  tps: 227080.01413
+  hps: 3595.02614
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-RegaliaoftheThousandfoldHells"
  value: {
-  dps: 311819.4688
-  tps: 210842.00108
-  hps: 3577.26013
+  dps: 311531.45766
+  tps: 210328.21006
+  hps: 3572.65704
  }
 }
 dps_results: {
@@ -1697,17 +1697,17 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Sha-SkinRegalia"
  value: {
-  dps: 309672.71767
-  tps: 210260.23647
-  hps: 3320.54937
+  dps: 312776.51791
+  tps: 211970.34568
+  hps: 3299.53715
  }
 }
 dps_results: {
  key: "TestAffliction-AllItems-ShadowflameRegalia"
  value: {
-  dps: 238066.76427
-  tps: 160563.07033
-  hps: 2667.75385
+  dps: 237869.17632
+  tps: 160219.59731
+  hps: 2660.04358
  }
 }
 dps_results: {

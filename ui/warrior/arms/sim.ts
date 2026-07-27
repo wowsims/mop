@@ -164,16 +164,10 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 500) {
-					epWeights = Presets.P2_EP_PRESET.epWeights;
-				} else {
-					epWeights = Presets.P1_EP_PRESET.epWeights;
-				}
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_EP_PRESET.epWeights;
+				if (avgIlvl >= 500) return Presets.P2_EP_PRESET.epWeights;
+				return Presets.P1_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const gear = player.getGear();

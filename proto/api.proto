@@ -466,6 +466,10 @@ message ReforgeSettings {
 	UIStat relative_stat_cap_stat = 8;
 	UnitStats stat_caps = 9;
 	UnitStats breakpoint_limits = 10;
+	// HiGHS relative MIP gap tolerance for the relative-stat-cap (RoRo) solve. The ordering
+	// constraints make that MIP slow to prove optimal, so a looser gap trades a tiny EP difference
+	// for a large speedup. Only meaningful when relative_stat_cap_stat is set.
+	double relative_stat_cap_mip_gap = 11;
 }
 
 message StatCapConfig {

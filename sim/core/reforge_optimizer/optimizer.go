@@ -313,19 +313,31 @@ func (o *reforgeOptimizer) epDivisor(unitStat stats.UnitStat) float64 {
 	return 1
 }
 
-// internalizeEPOffsets divides the incoming (raw) EP weights by epDivisor. Because applyReforgeStat
-// multiplies those coefficients back up, the two cancel in the objective (coeff*mult * EP/mult =
-// coeff*EP) while the caps still see the amplified contribution. This lets the frontend send
-// un-offset EP weights: the division that used to live in each spec's getEPDefaults callback now
-// happens here, uniformly. NOTE: only PRE-cap EP weights are internalized; soft-cap post-cap EPs
-// keep their amp/1.5 offset frontend-side (they cancel against the coefficient's ×mult the same way).
+// internalizeEPOffset divides an EP weight by the multiplier applyReforgeStat re-applies to the
+// stat's coefficient (Amplification Haste/Mastery/Spirit, a Guardian's Bear Form crit). The ×mult
+// and ÷mult cancel in the objective (coeff*mult * ep/mult = coeff*ep) while the caps still see the
+// amplified contribution, so EP weights can be supplied un-offset. epDivisor is 1 for every other
+// stat, making this a no-op. Applied to both pre-cap weights and soft-cap post-cap EPs; without it
+// the ×mult is uncancelled (e.g. a Guardian's 79% crit soft cap would never halt crit stacking).
+func (o *reforgeOptimizer) internalizeEPOffset(unitStat stats.UnitStat, value float64) float64 {
+	return value / o.epDivisor(unitStat)
+}
+
 func (o *reforgeOptimizer) internalizeEPOffsets(weights core.UnitStats) core.UnitStats {
 	eachUnitStat(weights, func(unitStat stats.UnitStat, value float64) {
-		if div := o.epDivisor(unitStat); div != 1 {
-			weights = setUnitStat(weights, unitStat, value/div)
+		if o.epDivisor(unitStat) != 1 {
+			weights = setUnitStat(weights, unitStat, o.internalizeEPOffset(unitStat, value))
 		}
 	})
 	return weights
+}
+
+func (o *reforgeOptimizer) internalizeSoftCapEPOffsets(softCaps []*reforgeSoftCap) {
+	for _, softCap := range softCaps {
+		for i, ep := range softCap.postCapEPs {
+			softCap.postCapEPs[i] = o.internalizeEPOffset(softCap.unitStat, ep)
+		}
+	}
 }
 
 // optimizeReforges runs the full optimization: it derives the effective reforge-only stat caps
@@ -345,6 +357,7 @@ func (o *reforgeOptimizer) optimizeReforges() (*proto.EquipmentSpec, float64, er
 		softCapConfigs = o.request.GetSoftCaps()
 	}
 	reforgeSoftCaps := computeReforgeSoftCaps(o.baseStats, softCapConfigs)
+	o.internalizeSoftCapEPOffsets(reforgeSoftCaps)
 
 	rawWeights := o.internalizeEPOffsets(protoToCoreUnitStats(o.request.GetPreCapEpWeights()))
 	validatedWeights := checkWeights(rawWeights, reforgeCaps, reforgeSoftCaps)
@@ -367,14 +380,19 @@ func (o *reforgeOptimizer) optimizeReforges() (*proto.EquipmentSpec, float64, er
 	})
 
 	timeoutSeconds := 30.0
+	mipRelGap := 0.0
 	if o.relativeCap != nil {
 		timeoutSeconds = 120.0
+		// The relative-stat-cap MIP is slow to prove optimal; a looser gap accepts a solution
+		// within a relative gap of the bound for a large speedup. Configurable per request
+		// (ReforgeSettings.relative_stat_cap_mip_gap); 0 leaves the HiGHS default (~1e-4, "Precise").
+		mipRelGap = o.settings.GetRelativeStatCapMipGap()
 	}
 	if o.request.GetMode() == proto.ReforgeOptimizeMode_ReforgeOptimizeModeBulk {
 		timeoutSeconds /= 4
 	}
 
-	selectedVars, score, err := o.solveModel(validatedWeights, reforgeCaps, reforgeSoftCaps, variables, constraints, timeoutSeconds)
+	selectedVars, score, err := o.solveModel(validatedWeights, reforgeCaps, reforgeSoftCaps, variables, constraints, timeoutSeconds, mipRelGap)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -97,25 +97,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattlegearoftheLostCatacomb"
  value: {
-  dps: 328676.5521
-  tps: 299054.69118
-  hps: 4362.10921
+  dps: 329005.40413
+  tps: 299170.74777
+  hps: 4362.35489
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattleplateofCyclopeanDread"
  value: {
-  dps: 349206.0952
-  tps: 317049.5156
-  hps: 5768.60311
+  dps: 345498.92199
+  tps: 313406.16735
+  hps: 5673.52777
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 337988.82535
-  tps: 298991.46191
-  hps: 4664.41575
+  dps: 340627.48115
+  tps: 301449.93958
+  hps: 4724.2682
  }
 }
 dps_results: {
@@ -1465,25 +1465,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PlateofCyclopeanDread"
  value: {
-  dps: 322166.7066
-  tps: 293216.94362
-  hps: 4433.9142
+  dps: 321091.59321
+  tps: 292131.24652
+  hps: 4381.58988
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PlateoftheAll-ConsumingMaw"
  value: {
-  dps: 316083.84893
-  tps: 287234.31665
-  hps: 4429.72399
+  dps: 317461.02824
+  tps: 288559.91894
+  hps: 4453.80402
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PlateoftheLostCatacomb"
  value: {
-  dps: 305537.69316
-  tps: 278072.35681
-  hps: 4143.62346
+  dps: 303549.23566
+  tps: 276086.73511
+  hps: 4204.85668
  }
 }
 dps_results: {

@@ -8373,6 +8373,21 @@
 								"force_stat_proc": {
 									"type": "string"
 								},
+								"relative_stat_cap_precision": {
+									"type": "string"
+								},
+								"relative_stat_cap_precision_tooltip": {
+									"type": "string"
+								},
+								"precision_precise": {
+									"type": "string"
+								},
+								"precision_balanced": {
+									"type": "string"
+								},
+								"precision_fast": {
+									"type": "string"
+								},
 								"any": {
 									"type": "string"
 								},

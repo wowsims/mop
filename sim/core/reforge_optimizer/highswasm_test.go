@@ -41,7 +41,7 @@ func TestDefaultHiGHSWasmRuntimeConcurrency(t *testing.T) {
 const tinyHiGHSWasmLP = "Maximize\n obj: 1 x0 + 2 x1\nSubject To\n c0: 1 x0 + 1 x1 <= 1\nBinary\n x0\n x1\nEnd"
 
 func TestRunHiGHSLPWASM(t *testing.T) {
-	values, modelStatus, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second)
+	values, modelStatus, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second, 0)
 	if err != nil {
 		t.Fatalf("runHiGHSLP returned error: %v", err)
 	}
@@ -55,13 +55,13 @@ func TestRunHiGHSLPWASM(t *testing.T) {
 
 func BenchmarkRunHiGHSLPWASM(b *testing.B) {
 	b.ReportAllocs()
-	if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second); err != nil {
+	if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second, 0); err != nil {
 		b.Fatalf("runHiGHSLP warmup returned error: %v", err)
 	}
 	b.ResetTimer()
 
 	for range b.N {
-		if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second); err != nil {
+		if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second, 0); err != nil {
 			b.Fatalf("runHiGHSLP returned error: %v", err)
 		}
 	}

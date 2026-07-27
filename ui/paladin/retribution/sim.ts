@@ -179,10 +179,7 @@ export class RetributionPaladinSimUI extends IndividualSimUI<Spec.SpecRetributio
 		super(parentElem, player, SPEC_CONFIG);
 
 		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-				return epWeights;
-			},
+			getEPDefaults: player => player.getEpWeights(),
 			updateSoftCaps: softCaps => {
 				const hasteCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent));
 				if (hasteCap) {

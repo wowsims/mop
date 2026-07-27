@@ -20,15 +20,15 @@ type highsJSSolution struct {
 // __wowsimsSolveHiGHSLP bridge the host page exposes. Solver options: presolve on, a time limit,
 // and no relative MIP gap (HiGHS default). Returns per-variable primal values (indexed by x{i}),
 // the HiGHS model status, and any error.
-func runHiGHSLP(lpString string, numVars int, timeout time.Duration) ([]float64, int32, error) {
+func runHiGHSLP(lpString string, numVars int, timeout time.Duration, mipRelGap float64) ([]float64, int32, error) {
 	solve := js.Global().Get("__wowsimsSolveHiGHSLP")
 	if solve.Type() != js.TypeFunction {
 		return nil, 0, fmt.Errorf("HiGHS JavaScript solver bridge is not available")
 	}
 
-	// The bridge signature is (lpString, timeoutSeconds, mipRelGap); pass 0 to leave the gap at
-	// the HiGHS default.
-	result := solve.Invoke(lpString, timeout.Seconds(), 0.0)
+	// The bridge signature is (lpString, timeoutSeconds, mipRelGap); 0 leaves the gap at the HiGHS
+	// default (every non-relative-cap solve).
+	result := solve.Invoke(lpString, timeout.Seconds(), mipRelGap)
 	if result.Type() != js.TypeString {
 		return nil, 0, fmt.Errorf("HiGHS JavaScript solver bridge returned %s, expected string", result.Type().String())
 	}

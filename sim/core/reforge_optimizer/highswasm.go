@@ -77,7 +77,7 @@ type highsWasmFile struct {
 // status, and any error. Solver options: presolve on, a time limit, and no relative MIP gap
 // (HiGHS default). For infeasible/other terminal statuses no solution is parsed and values is
 // nil.
-func runHiGHSLP(lpString string, numVars int, timeout time.Duration) ([]float64, int32, error) {
+func runHiGHSLP(lpString string, numVars int, timeout time.Duration, mipRelGap float64) ([]float64, int32, error) {
 	wasmRuntime, err := acquireHiGHSWasmRuntime()
 	if err != nil {
 		return nil, 0, err
@@ -121,6 +121,11 @@ func runHiGHSLP(lpString string, numVars int, timeout time.Duration) ([]float64,
 	}
 	if err := wasmRuntime.setDoubleOption(highs, "time_limit", timeout.Seconds()); err != nil {
 		return nil, 0, err
+	}
+	if mipRelGap > 0 {
+		if err := wasmRuntime.setDoubleOption(highs, "mip_rel_gap", mipRelGap); err != nil {
+			return nil, 0, err
+		}
 	}
 
 	if status, err := callI32(wasmRuntime.ctx, wasmRuntime.highsRun, wasmI32(highs)); err != nil {
@@ -275,7 +280,7 @@ func getHiGHSWasmModule() (*highsWasmModule, error) {
 // concurrently, and more than once.
 func WarmUp() error {
 	const trivialLP = "Maximize\n obj: 1 x0\nBinary\n x0\nEnd"
-	_, _, err := runHiGHSLP(trivialLP, 1, 5*time.Second)
+	_, _, err := runHiGHSLP(trivialLP, 1, 5*time.Second, 0)
 	return err
 }
 

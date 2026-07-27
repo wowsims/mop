@@ -26,9 +26,9 @@ const (
 
 // solveLPModel serializes model to LP text, runs HiGHS, and returns the selected variables
 // (column primal >= 0.5), in x-index order.
-func solveLPModel(model *lpModel, timeout time.Duration) (lpSolution, error) {
+func solveLPModel(model *lpModel, timeout time.Duration, mipRelGap float64) (lpSolution, error) {
 	lpString, reverseNames := modelToLPFormat(model)
-	values, modelStatus, err := runHiGHSLP(lpString, len(reverseNames), timeout)
+	values, modelStatus, err := runHiGHSLP(lpString, len(reverseNames), timeout, mipRelGap)
 	if err != nil {
 		return lpSolution{}, err
 	}
@@ -79,6 +79,7 @@ func (o *reforgeOptimizer) solveModel(
 	variables *lpVariables,
 	constraints *lpConstraints,
 	maxSeconds float64,
+	mipRelGap float64,
 ) ([]string, float64, error) {
 	if o.signals.Abort.IsTriggered() {
 		return nil, 0, context.Canceled
@@ -94,7 +95,7 @@ func (o *reforgeOptimizer) solveModel(
 	}
 
 	startedAt := time.Now()
-	solution, err := solveLPModel(model, time.Duration(maxSeconds*float64(time.Second)))
+	solution, err := solveLPModel(model, time.Duration(maxSeconds*float64(time.Second)), mipRelGap)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -116,7 +117,7 @@ func (o *reforgeOptimizer) solveModel(
 	if !anyCapsExceeded {
 		return solution.variables, solution.result, nil
 	}
-	return o.solveModel(updatedWeights, reforgeCaps, updatedSoftCaps, updatedVariables, updatedConstraints, maxSeconds-elapsedSeconds)
+	return o.solveModel(updatedWeights, reforgeCaps, updatedSoftCaps, updatedVariables, updatedConstraints, maxSeconds-elapsedSeconds, mipRelGap)
 }
 
 // checkCaps sums the selected variables' stat contributions, then adds a hard-cap constraint for

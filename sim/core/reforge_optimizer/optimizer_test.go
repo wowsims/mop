@@ -161,6 +161,7 @@ func updateFixture(t testing.TB, fileName string, request *proto.ReforgeOptimize
 
 	updated := protopkg.Clone(request).(*proto.ReforgeOptimizeRequest)
 	updated.Raid.Parties[0].Players[0].Equipment = optimizedGear
+	updated.GemOptions = nil // rebuilt from the DB on load; keep it out of the fixture (matches writeGeneratedFixture)
 
 	out, err := (protojson.MarshalOptions{Multiline: true, Indent: "\t", EmitUnpopulated: false}).Marshal(updated)
 	if err != nil {

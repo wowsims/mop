@@ -167,10 +167,7 @@ export class ProtectionWarriorSimUI extends IndividualSimUI<Spec.SpecProtectionW
 		super(parentElem, player, SPEC_CONFIG);
 
 		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-				return epWeights;
-			},
+			getEPDefaults: player => player.getEpWeights(),
 		});
 	}
 }

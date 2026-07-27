@@ -209,10 +209,7 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 		super(parentElem, player, SPEC_CONFIG);
 
 		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-				return epWeights;
-			},
+			getEPDefaults: player => player.getEpWeights(),
 			updateSoftCaps: softCaps => {
 				const epWeights = player.getEpWeights();
 
@@ -252,7 +249,7 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 
 						softCapToModify.breakpoints = [targetPercent];
 						softCapToModify.postCapEPs = [
-							((epWeights.getStat(Stat.StatCritRating) - 0.02) / player.getTotalAmplificationTrinketStatModifier()) *
+							(epWeights.getStat(Stat.StatCritRating) - 0.02) *
 								Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
 						];
 					}

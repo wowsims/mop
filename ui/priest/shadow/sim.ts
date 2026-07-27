@@ -120,20 +120,11 @@ export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: [Presets.SHADOW_BREAKPOINTS],
 			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 525) {
-					epWeights = Presets.P3_4_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 500) {
-					epWeights = Presets.P2_EP_PRESET.epWeights;
-				} else {
-					epWeights = Presets.P1_EP_PRESET.epWeights;
-				}
-
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_EP_PRESET.epWeights;
+				if (avgIlvl >= 525) return Presets.P3_4_EP_PRESET.epWeights;
+				if (avgIlvl >= 500) return Presets.P2_EP_PRESET.epWeights;
+				return Presets.P1_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
@@ -142,7 +133,7 @@ export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 						breakpoints: [Presets.SHADOW_BREAKPOINTS.presets!.get('BL - 12-tick - DP')!],
 						capType: StatCapType.TypeThreshold,
 						postCapEPs: [
-							((Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) / player.getTotalAmplificationTrinketStatModifier()) *
+							(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
 								Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
 						],
 					});
@@ -151,7 +142,7 @@ export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 					const masterySoftCapConfig = StatCap.fromStat(Stat.StatMasteryRating, {
 						breakpoints: [UnitStat.fromStat(Stat.StatMasteryRating).convertPercentToRating(60)! / player.getMasteryPerPointModifier()],
 						capType: StatCapType.TypeSoftCap,
-						postCapEPs: [(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.02) / player.getTotalAmplificationTrinketStatModifier()],
+						postCapEPs: [Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatCritRating) - 0.02],
 					});
 					softCaps.push(masterySoftCapConfig);
 				}
