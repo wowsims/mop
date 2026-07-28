@@ -136,61 +136,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	emitBulkSimReforgeProgress(progress, 0, totalCandidates, nil)
 
 	optimizer := newBulkSimReforgeOptimizer(request)
-	var completedCandidates int32
-	var totalCandidateDuration time.Duration
-	var minCandidateDuration time.Duration
-	var maxCandidateDuration time.Duration
-	completedReforgeCandidatesByPosition := make([]*proto.BulkGearCandidate, len(request.GetCandidates()))
-	var progressMu sync.Mutex
-
-	// Track completed candidates to emit in larger cache-write batches so progress
-	// updates stay lightweight even for very large candidate counts.
-	completedCandidateBatch := make([]*proto.BulkGearCandidate, 0, bulkSimReforgeProgressOptimizedCandidateFlushSize)
-	lastProgressEmit := time.Now()
-
-	flushCandidateBatch := func() bool {
-		if len(completedCandidateBatch) == 0 {
-			return false
-		}
-		emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates, completedCandidateBatch)
-		completedCandidateBatch = completedCandidateBatch[:0]
-		return true
-	}
-
-	emitProgressUpdate := func() {
-		if progress == nil {
-			return
-		}
-		if completedCandidates < totalCandidates && time.Since(lastProgressEmit) < bulkSimReforgeProgressUpdateInterval {
-			return
-		}
-
-		emitBulkSimReforgeProgress(progress, completedCandidates, totalCandidates, nil)
-		lastProgressEmit = time.Now()
-	}
-
-	completeTask := func(task bulkSimReforgeTask, duration time.Duration, completed bool) {
-		totalCandidateDuration += duration
-		emittedCandidates := false
-		if completed {
-			completedCandidates++
-			completedReforgeCandidatesByPosition[task.position] = task.candidate
-			request.Candidates[task.position] = nil
-			completedCandidateBatch = append(completedCandidateBatch, task.candidate)
-			if completedCandidates == 1 || duration < minCandidateDuration {
-				minCandidateDuration = duration
-			}
-			if duration > maxCandidateDuration {
-				maxCandidateDuration = duration
-			}
-			if len(completedCandidateBatch) >= bulkSimReforgeProgressOptimizedCandidateFlushSize {
-				emittedCandidates = flushCandidateBatch()
-			}
-		}
-		if !emittedCandidates {
-			emitProgressUpdate()
-		}
-	}
+	accumulator := newBulkSimReforgeAccumulator(request.GetCandidates(), totalCandidates, progress != nil)
 
 	jobs := make(chan bulkSimReforgeTask, max(16, 2*concurrency))
 	var wg sync.WaitGroup
@@ -203,9 +149,10 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 				}
 
 				duration, completed := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
-				progressMu.Lock()
-				completeTask(task, duration, completed)
-				progressMu.Unlock()
+				update := accumulator.complete(task, duration, completed)
+				if update.shouldEmit() {
+					emitBulkSimReforgeProgress(progress, update.completedCandidates, totalCandidates, update.candidateBatch)
+				}
 			}
 		})
 	}
@@ -222,13 +169,11 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	close(jobs)
 	wg.Wait()
 	// Flush any remaining partial candidates at the end.
-	progressMu.Lock()
-	flushCandidateBatch()
-	progressMu.Unlock()
-	avgCandidateDuration := time.Duration(0)
-	if completedCandidates > 0 {
-		avgCandidateDuration = time.Duration(int64(totalCandidateDuration) / int64(completedCandidates))
+	if finalUpdate := accumulator.flush(); finalUpdate.shouldEmit() {
+		emitBulkSimReforgeProgress(progress, finalUpdate.completedCandidates, totalCandidates, finalUpdate.candidateBatch)
 	}
+	completedCandidates, minCandidateDuration, avgCandidateDuration, maxCandidateDuration := accumulator.timings()
+	completedReforgeCandidatesByPosition := accumulator.completedByPosition()
 	log.Printf("[Bulk Sim] Reforge optimization completed candidates=%d total=%s minCandidate=%s avgCandidate=%s maxCandidate=%s", completedCandidates, time.Since(stageStartedAt), minCandidateDuration, avgCandidateDuration, maxCandidateDuration)
 
 	baselineGear := getBulkSimRequestBaselineGear(request)
@@ -248,6 +193,129 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	// or the baseline. Without this, filtered runs (e.g. Require 4P) would always miss the
 	// cache because the matching entries were never written after the first run.
 	request.OptimizedCandidates = allReforgeCandidates
+}
+
+// Collects reforge pre-pass completions from all workers and decides what progress to
+// emit. The mutex has a single owner here, and emitting is deliberately left to the
+// caller: emitBulkSimReforgeProgress does a blocking channel send, which must not
+// happen under the lock or every worker stalls behind the holder when the consumer
+// falls behind.
+type bulkSimReforgeAccumulator struct {
+	mutex                sync.Mutex
+	candidates           []*proto.BulkGearCandidate
+	totalCandidates      int32
+	reportProgress       bool
+	completedByPositions []*proto.BulkGearCandidate
+	completedCandidates  int32
+	totalDuration        time.Duration
+	minDuration          time.Duration
+	maxDuration          time.Duration
+	// Completions are emitted in larger cache-write batches so progress updates stay
+	// lightweight even for very large candidate counts.
+	candidateBatch   []*proto.BulkGearCandidate
+	lastProgressEmit time.Time
+}
+
+// What the caller should emit after a completion. A nil batch with emitUpdate false
+// means nothing is due yet.
+type bulkSimReforgeProgressUpdate struct {
+	completedCandidates int32
+	candidateBatch      []*proto.BulkGearCandidate
+	emitUpdate          bool
+}
+
+func (update bulkSimReforgeProgressUpdate) shouldEmit() bool {
+	return update.candidateBatch != nil || update.emitUpdate
+}
+
+func newBulkSimReforgeAccumulator(candidates []*proto.BulkGearCandidate, totalCandidates int32, reportProgress bool) *bulkSimReforgeAccumulator {
+	return &bulkSimReforgeAccumulator{
+		candidates:           candidates,
+		totalCandidates:      totalCandidates,
+		reportProgress:       reportProgress,
+		completedByPositions: make([]*proto.BulkGearCandidate, len(candidates)),
+		candidateBatch:       make([]*proto.BulkGearCandidate, 0, bulkSimReforgeProgressOptimizedCandidateFlushSize),
+		lastProgressEmit:     time.Now(),
+	}
+}
+
+func (accumulator *bulkSimReforgeAccumulator) complete(task bulkSimReforgeTask, duration time.Duration, completed bool) bulkSimReforgeProgressUpdate {
+	accumulator.mutex.Lock()
+	defer accumulator.mutex.Unlock()
+
+	accumulator.totalDuration += duration
+	var batch []*proto.BulkGearCandidate
+	if completed {
+		accumulator.completedCandidates++
+		accumulator.completedByPositions[task.position] = task.candidate
+		accumulator.candidates[task.position] = nil
+		accumulator.candidateBatch = append(accumulator.candidateBatch, task.candidate)
+		if accumulator.completedCandidates == 1 || duration < accumulator.minDuration {
+			accumulator.minDuration = duration
+		}
+		if duration > accumulator.maxDuration {
+			accumulator.maxDuration = duration
+		}
+		if len(accumulator.candidateBatch) >= bulkSimReforgeProgressOptimizedCandidateFlushSize {
+			batch = accumulator.takeBatchLocked()
+		}
+	}
+
+	update := bulkSimReforgeProgressUpdate{completedCandidates: accumulator.completedCandidates, candidateBatch: batch}
+	if batch == nil {
+		update.emitUpdate = accumulator.progressUpdateDueLocked()
+	}
+	return update
+}
+
+func (accumulator *bulkSimReforgeAccumulator) flush() bulkSimReforgeProgressUpdate {
+	accumulator.mutex.Lock()
+	defer accumulator.mutex.Unlock()
+	return bulkSimReforgeProgressUpdate{
+		completedCandidates: accumulator.completedCandidates,
+		candidateBatch:      accumulator.takeBatchLocked(),
+	}
+}
+
+// Hands the accumulated batch to the caller and starts a fresh one. Ownership must
+// transfer rather than the slice being reused, because the batch is emitted after the
+// lock is released and other workers keep appending in the meantime.
+func (accumulator *bulkSimReforgeAccumulator) takeBatchLocked() []*proto.BulkGearCandidate {
+	if len(accumulator.candidateBatch) == 0 {
+		return nil
+	}
+	batch := accumulator.candidateBatch
+	accumulator.candidateBatch = make([]*proto.BulkGearCandidate, 0, bulkSimReforgeProgressOptimizedCandidateFlushSize)
+	return batch
+}
+
+func (accumulator *bulkSimReforgeAccumulator) progressUpdateDueLocked() bool {
+	if !accumulator.reportProgress {
+		return false
+	}
+	if accumulator.completedCandidates < accumulator.totalCandidates && time.Since(accumulator.lastProgressEmit) < bulkSimReforgeProgressUpdateInterval {
+		return false
+	}
+
+	accumulator.lastProgressEmit = time.Now()
+	return true
+}
+
+func (accumulator *bulkSimReforgeAccumulator) completedByPosition() []*proto.BulkGearCandidate {
+	accumulator.mutex.Lock()
+	defer accumulator.mutex.Unlock()
+	return accumulator.completedByPositions
+}
+
+func (accumulator *bulkSimReforgeAccumulator) timings() (completed int32, minDuration time.Duration, avgDuration time.Duration, maxDuration time.Duration) {
+	accumulator.mutex.Lock()
+	defer accumulator.mutex.Unlock()
+
+	avgDuration = time.Duration(0)
+	if accumulator.completedCandidates > 0 {
+		avgDuration = time.Duration(int64(accumulator.totalDuration) / int64(accumulator.completedCandidates))
+	}
+	return accumulator.completedCandidates, accumulator.minDuration, avgDuration, accumulator.maxDuration
 }
 
 func newBulkSimReforgeOptimizer(request *proto.BulkSimRequest) *bulkSimReforgeOptimizer {
@@ -409,14 +477,9 @@ func dedupeBulkSimReforgeCandidates(baselineGear *proto.EquipmentSpec, candidate
 }
 
 func compactBulkGearCandidates(candidates []*proto.BulkGearCandidate) []*proto.BulkGearCandidate {
-	compacted := make([]*proto.BulkGearCandidate, 0, len(candidates))
-	for _, candidate := range candidates {
-		if candidate == nil || candidate.Gear == nil {
-			continue
-		}
-		compacted = append(compacted, candidate)
-	}
-	return compacted
+	return core.FilterSlice(candidates, func(candidate *proto.BulkGearCandidate) bool {
+		return candidate != nil && candidate.Gear != nil
+	})
 }
 
 var deterministicProtoMarshalOptions = googleProto.MarshalOptions{Deterministic: true}

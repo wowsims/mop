@@ -4,6 +4,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
@@ -150,7 +151,10 @@ func TestMergeBulkSimDistributionMetrics(t *testing.T) {
 	}
 }
 
-func TestMergeBulkSimCandidateResultSlicesPreservesResultOrder(t *testing.T) {
+// Extra iterations are folded into the pass so far via a carry-over keyed by candidate
+// index, so a batch that completes out of order still merges each candidate with its
+// own previous metrics.
+func TestBulkSimCarryOverMergesByCandidateIndex(t *testing.T) {
 	results := []*BulkSimCandidateResult{
 		newBulkSimTestCandidateResult(2, []float64{8, 12}),
 		newBulkSimTestCandidateResult(1, []float64{18, 22}),
@@ -160,16 +164,20 @@ func TestMergeBulkSimCandidateResultSlicesPreservesResultOrder(t *testing.T) {
 		newBulkSimTestCandidateResult(2, []float64{10, 14}),
 	}
 
-	merged := mergeBulkSimCandidateResultSlices(results, additionalResults)
+	carry := bulkSimCarryOverFromResults(2, results[0], results)
+	merged := make([]*BulkSimCandidateResult, 0, len(additionalResults))
+	for _, additionalResult := range additionalResults {
+		merged = append(merged, mergeBulkSimCandidateResults(carry.candidateResult(additionalResult.Candidate.Index), additionalResult))
+	}
 
-	if len(merged) != len(results) {
-		t.Fatalf("expected %d merged results, got %d", len(results), len(merged))
+	if len(merged) != len(additionalResults) {
+		t.Fatalf("expected %d merged results, got %d", len(additionalResults), len(merged))
 	}
-	if merged[0].Candidate.Index != 2 || merged[1].Candidate.Index != 1 {
-		t.Fatalf("expected result order [2, 1], got [%d, %d]", merged[0].Candidate.Index, merged[1].Candidate.Index)
+	if merged[0].Candidate.Index != 1 || merged[1].Candidate.Index != 2 {
+		t.Fatalf("expected result order [1, 2], got [%d, %d]", merged[0].Candidate.Index, merged[1].Candidate.Index)
 	}
-	assertFloatEqual(t, "candidate 2 avg", merged[0].DpsMetrics.Avg, 11)
-	assertFloatEqual(t, "candidate 1 avg", merged[1].DpsMetrics.Avg, 21)
+	assertFloatEqual(t, "candidate 1 avg", merged[0].DpsMetrics.Avg, 21)
+	assertFloatEqual(t, "candidate 2 avg", merged[1].DpsMetrics.Avg, 11)
 }
 
 func newBulkSimTestCandidateResult(index int32, values []float64) *BulkSimCandidateResult {
@@ -205,7 +213,57 @@ func newBulkSimTestDistributionMetrics(values []float64) *proto.DistributionMetr
 
 func assertFloatEqual(t *testing.T, name string, actual float64, expected float64) {
 	t.Helper()
-	if math.Abs(actual-expected) > 1e-9 {
+	if !core.WithinToleranceFloat64(expected, actual, 1e-9) {
 		t.Fatalf("expected %s %.12f, got %.12f", name, expected, actual)
+	}
+}
+
+// Candidates share their seed sequence, so a candidate that trails the leader on every
+// single iteration is behind for real - the marginal standard errors overlap and would
+// keep it, the paired difference culls it.
+func TestBulkSimCullingUsesSharedNoise(t *testing.T) {
+	leaderValues := []float64{100, 300, 200, 400}
+	best := &proto.DistributionMetrics{Avg: 250, Stdev: math.Sqrt(12500), AllValues: leaderValues}
+	trailing := &proto.DistributionMetrics{Avg: 240, Stdev: math.Sqrt(12500), AllValues: []float64{90, 290, 190, 390}}
+
+	const iterations int32 = 4
+	const intervalMultiplier = 1.0
+	bestLowerBound := best.Avg - bulkSimDpsError(best, iterations)*intervalMultiplier
+
+	pairedError, ok := bulkSimPairedDpsError(trailing, best)
+	if !ok {
+		t.Fatal("expected the runs to be pairable")
+	}
+	assertFloatEqual(t, "paired error", pairedError, 0)
+
+	if !bulkSimCandidateIsCulled(trailing, best, bestLowerBound, iterations, intervalMultiplier) {
+		t.Fatal("expected a candidate trailing on every iteration to be culled")
+	}
+
+	// Without the per-iteration values the marginal intervals overlap, so it survives.
+	marginalTrailing := &proto.DistributionMetrics{Avg: trailing.Avg, Stdev: trailing.Stdev}
+	if bulkSimCandidateIsCulled(marginalTrailing, &proto.DistributionMetrics{Avg: best.Avg, Stdev: best.Stdev}, bestLowerBound, iterations, intervalMultiplier) {
+		t.Fatal("expected the marginal comparison to keep the candidate")
+	}
+}
+
+func TestBulkSimPairedDpsErrorRequiresAlignedValues(t *testing.T) {
+	best := &proto.DistributionMetrics{AllValues: []float64{100, 300, 200, 400}}
+
+	if _, ok := bulkSimPairedDpsError(&proto.DistributionMetrics{AllValues: []float64{100, 300}}, best); ok {
+		t.Fatal("expected differing iteration counts to be unpairable")
+	}
+	if _, ok := bulkSimPairedDpsError(&proto.DistributionMetrics{}, best); ok {
+		t.Fatal("expected missing values to be unpairable")
+	}
+
+	// Independent noise leaves a real difference variance behind.
+	noisy := &proto.DistributionMetrics{AllValues: []float64{400, 200, 300, 100}}
+	pairedError, ok := bulkSimPairedDpsError(noisy, best)
+	if !ok {
+		t.Fatal("expected the runs to be pairable")
+	}
+	if pairedError <= 0 {
+		t.Fatalf("expected a positive paired error, got %f", pairedError)
 	}
 }

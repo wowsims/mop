@@ -61,6 +61,13 @@ func (sim *Simulation) runPresims(request *proto.RaidSimRequest) *proto.RaidSimR
 		}
 	}
 
+	// Nothing to presim: skip before cloning the request, which is otherwise paid
+	// by every sim (including every bulk sim candidate) for no reason.
+	doOne := sim.Encounter.EndFightAtHealth > 0
+	if !doOne && remainingAgents == 0 {
+		return nil
+	}
+
 	// Base presim request.
 	// Define this outside the loop so that, as Agents iteratively update their
 	// settings, we keep the most recent settings even after that Agent is
@@ -74,7 +81,6 @@ func (sim *Simulation) runPresims(request *proto.RaidSimRequest) *proto.RaidSimR
 
 	var lastResult *proto.RaidSimResult
 
-	doOne := sim.Encounter.EndFightAtHealth > 0
 	for doOne || remainingAgents > 0 {
 		// ** Run a presim round. **
 
