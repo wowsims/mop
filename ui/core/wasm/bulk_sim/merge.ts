@@ -3,9 +3,10 @@ import { ConcurrentBulkSimCandidateResult } from './types';
 
 export const cleanBulkSimDpsMetrics = (metrics: DistributionMetrics | undefined): DistributionMetrics | undefined => {
 	if (!metrics) return undefined;
+	// allValues is kept: selectBulkSimSurvivors needs the per-iteration values. It is
+	// stripped again in bulkSimCandidateResultToProto, so it never reaches the frontend.
 	const cleaned = DistributionMetrics.clone(metrics);
 	cleaned.hist = [];
-	cleaned.allValues = [];
 	return cleaned;
 };
 
@@ -97,9 +98,14 @@ const getBulkSimDistributionMetricsAggregatorData = (metrics: DistributionMetric
 
 export const bulkSimCandidateResultToProto = (result: ConcurrentBulkSimCandidateResult | undefined): BulkGearResult | undefined => {
 	if (!result) return undefined;
+	let dpsMetrics = result.dpsMetrics;
+	if (dpsMetrics && dpsMetrics.allValues.length > 0) {
+		dpsMetrics = DistributionMetrics.clone(dpsMetrics);
+		dpsMetrics.allValues = [];
+	}
 	return BulkGearResult.create({
 		candidateIndex: result.candidate.index,
 		gear: result.candidate.gear,
-		dpsMetrics: result.dpsMetrics,
+		dpsMetrics,
 	});
 };

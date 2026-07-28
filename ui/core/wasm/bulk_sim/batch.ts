@@ -22,6 +22,9 @@ const makeBulkSimRequestForCandidate = (request: BulkSimRequest, candidate: Conc
 	simRequest.simOptions!.randomSeed += BigInt(seedOffset);
 	simRequest.simOptions!.debugFirstIteration = false;
 	simRequest.simOptions!.debug = false;
+	// Every candidate runs the same seed sequence, so keeping the per-iteration values
+	// lets culling compare paired differences instead of marginal errors.
+	simRequest.simOptions!.saveAllValues = true;
 	simRequest.raid!.parties[0].players[0].equipment = candidate.gear;
 	return simRequest;
 };

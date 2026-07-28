@@ -64,6 +64,55 @@ export const topBulkSimResults = (results: ConcurrentBulkSimCandidateResult[], l
 		.slice(0, limit);
 };
 
+// The marginal cull test compares the sum of both candidates' half-widths, which is
+// sqrt(2) wider than the standard error of the difference it is really testing. Keeping
+// that factor when switching to the paired estimate means pairing only removes the
+// variance the shared seeds already cancel - it does not additionally tighten the
+// interval.
+const BULK_SIM_PAIRED_INTERVAL_CONSERVATISM = Math.SQRT2;
+
+// Standard error of the mean per-iteration difference between a candidate and the
+// leader. Returns undefined when the two runs cannot be paired; zero is a valid result -
+// it means the candidate trailed the leader by the same amount every iteration, which is
+// the strongest evidence pairing can give.
+const bulkSimPairedDpsError = (metrics: DistributionMetrics | undefined, bestMetrics: DistributionMetrics | undefined): number | undefined => {
+	const values = metrics?.allValues;
+	const bestValues = bestMetrics?.allValues;
+	if (!values || !bestValues || values.length === 0 || values.length !== bestValues.length) return undefined;
+
+	let sum = 0;
+	let sumSq = 0;
+	for (let idx = 0; idx < values.length; idx++) {
+		const difference = values[idx] - bestValues[idx];
+		sum += difference;
+		sumSq += difference * difference;
+	}
+	const count = values.length;
+	const mean = sum / count;
+	return Math.sqrt(Math.max(0, sumSq / count - mean * mean) / count);
+};
+
+// Decides whether a candidate is far enough behind the leader to drop out. Every
+// candidate is simmed on the same seed sequence, so most of the per-iteration noise is
+// shared between any two of them; differencing the paired values keeps that, which
+// resolves the same gap with fewer iterations. Falls back to the marginal comparison when
+// the values are unavailable or not aligned.
+const bulkSimCandidateIsCulled = (
+	metrics: DistributionMetrics,
+	bestMetrics: DistributionMetrics | undefined,
+	bestLowerBound: number,
+	iterations: number,
+	intervalMultiplier: number,
+): boolean => {
+	const pairedError = bulkSimPairedDpsError(metrics, bestMetrics);
+	if (pairedError !== undefined && bestMetrics) {
+		return bestMetrics.avg - metrics.avg > pairedError * intervalMultiplier * BULK_SIM_PAIRED_INTERVAL_CONSERVATISM;
+	}
+
+	const candidateUpperBound = metrics.avg + bulkSimDpsError(metrics, iterations) * intervalMultiplier;
+	return candidateUpperBound < bestLowerBound;
+};
+
 export const selectBulkSimSurvivors = (
 	results: ConcurrentBulkSimCandidateResult[],
 	baseline: ConcurrentBulkSimCandidateResult,
@@ -92,8 +141,7 @@ export const selectBulkSimSurvivors = (
 	for (const result of results) {
 		if (!result.dpsMetrics || seen.has(result.candidate.index)) continue;
 
-		const candidateUpperBound = result.dpsMetrics.avg + bulkSimDpsError(result.dpsMetrics, iterations) * intervalMultiplier;
-		if (candidateUpperBound < bestLowerBound) continue;
+		if (bulkSimCandidateIsCulled(result.dpsMetrics, bestMetrics, bestLowerBound, iterations, intervalMultiplier)) continue;
 
 		survivors.push(result);
 		seen.add(result.candidate.index);
