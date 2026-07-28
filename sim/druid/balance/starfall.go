@@ -88,12 +88,21 @@ func (moonkin *BalanceDruid) registerStarfallSpell() {
 
 		ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
 			spell.RelatedSelfBuff.Activate(sim)
-
+			// Remove the OnSpellHitDealt and OnCastComplete events during prepull so that the spell doesn't trigger any procs like Yu-Lon cloak.
+			// In-game you can untarget and cast Starfall so that it doesn't proc anything, but in the sim we don't have that option.
+			// The flags are cleared again on encounter start, since SpellFlagNoOnCastComplete is only checked after applyEffects returns.
+			if sim.CurrentTime < 0 {
+				spell.Flags |= core.SpellFlagNoOnDamageDealt | core.SpellFlagNoOnCastComplete
+			}
 			result := spell.CalcAndDealOutcome(sim, target, spell.OutcomeMagicHit)
 			if result.Landed() {
 				spell.Dot(target).Apply(sim)
 			}
 		},
+	})
+
+	moonkin.RegisterOnEncounterStartEffect(func() {
+		moonkin.Starfall.Flags &= ^(core.SpellFlagNoOnDamageDealt | core.SpellFlagNoOnCastComplete)
 	})
 
 	moonkin.AddEclipseCallback(func(eclipse Eclipse, gained bool, _ *core.Simulation) {
