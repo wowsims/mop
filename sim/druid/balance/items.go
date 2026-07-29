@@ -90,7 +90,7 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 				druid.DruidSpellStarsurge
 
 			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Callback:           core.CallbackOnCastComplete,
+				Callback:           core.CallbackOnSpellHitDealt,
 				ClassSpellMask:     procTriggerSpellMask,
 				TriggerImmediately: true,
 				ExtraCondition: func(_ *core.Simulation, spell *core.Spell, _ *core.SpellResult) bool {
@@ -99,27 +99,10 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 
 				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
 					alignmentActive := moonkin.CelestialAlignment.RelatedSelfBuff.IsActive()
-					target := spell.Unit.CurrentTarget
-
-					// The bolt is launched when the triggering spell impacts, not when its cast
-					// finishes, so its total delay is the trigger's travel time plus its own.
-					launchBolts := func(sim *core.Simulation) {
-						if spell.SpellSchool.Matches(core.SpellSchoolNature) || (alignmentActive && spell.Matches(bothDuringCA)) {
-							solarBolt.Cast(sim, target)
-						}
-
-						if spell.SpellSchool.Matches(core.SpellSchoolArcane) || (alignmentActive && spell.Matches(bothDuringCA)) {
-							lunarBolt.Cast(sim, target)
-						}
-					}
-
-					if travelTime := spell.TravelTime(); travelTime > 0 {
-						pa := sim.GetConsumedPendingActionFromPool()
-						pa.NextActionAt = sim.CurrentTime + travelTime
-						pa.OnAction = launchBolts
-						sim.AddPendingAction(pa)
-					} else {
-						launchBolts(sim)
+					if spell.SpellSchool.Matches(core.SpellSchoolNature) || (alignmentActive && spell.Matches(bothDuringCA)) {
+						solarBolt.Cast(sim, spell.Unit.CurrentTarget)
+					} else if spell.SpellSchool.Matches(core.SpellSchoolArcane) || (alignmentActive && spell.Matches(bothDuringCA)) {
+						lunarBolt.Cast(sim, spell.Unit.CurrentTarget)
 					}
 				},
 			})
