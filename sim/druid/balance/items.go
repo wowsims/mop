@@ -101,7 +101,8 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 					alignmentActive := moonkin.CelestialAlignment.RelatedSelfBuff.IsActive()
 					if spell.SpellSchool.Matches(core.SpellSchoolNature) || (alignmentActive && spell.Matches(bothDuringCA)) {
 						solarBolt.Cast(sim, spell.Unit.CurrentTarget)
-					} else if spell.SpellSchool.Matches(core.SpellSchoolArcane) || (alignmentActive && spell.Matches(bothDuringCA)) {
+					}
+					if spell.SpellSchool.Matches(core.SpellSchoolArcane) || (alignmentActive && spell.Matches(bothDuringCA)) {
 						lunarBolt.Cast(sim, spell.Unit.CurrentTarget)
 					}
 				},
