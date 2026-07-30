@@ -37,13 +37,6 @@ func equipmentFromProto(equipment *proto.EquipmentSpec) *core.Equipment {
 	return &coreEquipment
 }
 
-func optionalEquipmentFromProto(equipment *proto.EquipmentSpec) *core.Equipment {
-	if equipment == nil {
-		return nil
-	}
-	return equipmentFromProto(equipment)
-}
-
 func gemIDAt(item *core.Item, socketIdx int) int32 {
 	if item == nil || socketIdx >= len(item.Gems) {
 		return 0

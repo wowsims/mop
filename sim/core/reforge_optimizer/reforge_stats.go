@@ -54,18 +54,6 @@ func setUnitStat(unitStats core.UnitStats, unitStat stats.UnitStat, value float6
 	return result
 }
 
-func addUnitStats(a core.UnitStats, b core.UnitStats) core.UnitStats {
-	result := a
-	result.Stats = a.Stats.Add(b.Stats)
-	maxLen := max(len(a.PseudoStats), len(b.PseudoStats))
-	result.PseudoStats = make([]float64, maxLen)
-	copy(result.PseudoStats, a.PseudoStats)
-	for idx, value := range b.PseudoStats {
-		result.PseudoStats[idx] += value
-	}
-	return result
-}
-
 func subtractUnitStats(a core.UnitStats, b core.UnitStats) core.UnitStats {
 	result := a
 	result.Stats = a.Stats.Subtract(b.Stats)
@@ -74,16 +62,6 @@ func subtractUnitStats(a core.UnitStats, b core.UnitStats) core.UnitStats {
 	copy(result.PseudoStats, a.PseudoStats)
 	for idx, value := range b.PseudoStats {
 		result.PseudoStats[idx] -= value
-	}
-	return result
-}
-
-func scaleUnitStats(unitStats core.UnitStats, factor float64) core.UnitStats {
-	result := unitStats
-	result.Stats = unitStats.Stats.Multiply(factor)
-	result.PseudoStats = make([]float64, len(unitStats.PseudoStats))
-	for idx, value := range unitStats.PseudoStats {
-		result.PseudoStats[idx] = value * factor
 	}
 	return result
 }
@@ -163,21 +141,6 @@ func resolveStatDelta(sdm *stats.StatDependencyManager, baseStats core.UnitStats
 	}
 
 	return delta
-}
-
-// computeEP is the EP dot product of a stat vector against the EP weights, over both stats and
-// pseudo-stats.
-func computeEP(vec core.UnitStats, weights core.UnitStats) float64 {
-	total := 0.0
-	for statIdx := 0; statIdx < int(stats.ProtoStatsLen); statIdx++ {
-		total += vec.Stats[statIdx] * weights.Stats[statIdx]
-	}
-	for idx, value := range vec.PseudoStats {
-		if idx < len(weights.PseudoStats) {
-			total += value * weights.PseudoStats[idx]
-		}
-	}
-	return total
 }
 
 // eachUnitStat iterates every stat first, then every pseudo-stat, in that order.
@@ -289,26 +252,6 @@ func computeStatCapsDelta(baseStats core.UnitStats, statCaps core.UnitStats) cor
 // ---------------------------------------------------------------------------
 // proto helpers
 // ---------------------------------------------------------------------------
-
-// getProtoUnitStat reads a stat or pseudo-stat value from proto.UnitStats by index (0 for nil
-// or out-of-range).
-func getProtoUnitStat(unitStats *proto.UnitStats, unitStat stats.UnitStat) float64 {
-	if unitStats == nil {
-		return 0
-	}
-	if unitStat.IsStat() {
-		statIdx := unitStat.StatIdx()
-		if statIdx >= len(unitStats.GetStats()) {
-			return 0
-		}
-		return unitStats.GetStats()[statIdx]
-	}
-	pseudoStatIdx := unitStat.PseudoStatIdx()
-	if pseudoStatIdx >= len(unitStats.GetPseudoStats()) {
-		return 0
-	}
-	return unitStats.GetPseudoStats()[pseudoStatIdx]
-}
 
 // unitStatFromUIStat converts the proto.UIStat oneof (Stat or PseudoStat) to stats.UnitStat.
 func unitStatFromUIStat(uiStat *proto.UIStat) (stats.UnitStat, bool) {

@@ -136,8 +136,6 @@ type lpSolution struct {
 	status    string // "optimal" | "infeasible" | "unbounded" | "timedout" | "unknown"
 	result    float64
 	variables []string
-	bounded   bool
-	feasible  bool
 }
 
 // modelToLPFormat serializes the model to CPLEX LP text for the HiGHS solver. It returns the LP

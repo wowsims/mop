@@ -86,9 +86,9 @@ func runHiGHSLP(lpString string, numVars int, timeout time.Duration, mipRelGap f
 
 	// Reuse a per-runtime buffer for the LP text; single owner between acquire/release and the
 	// wasm fully reads it within this call.
+	// Keyed by the absolute path only: openAt normalizes every lookup to a leading "/".
 	wasmRuntime.lpScratch = append(wasmRuntime.lpScratch[:0], lpString...)
 	wasmRuntime.paths["/m.lp"] = wasmRuntime.lpScratch
-	wasmRuntime.paths["m.lp"] = wasmRuntime.lpScratch
 
 	if !wasmRuntime.runtimeInitialized {
 		if _, err := wasmRuntime.runtimeInit.Call(wasmRuntime.ctx); err != nil {

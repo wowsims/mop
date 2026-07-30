@@ -401,7 +401,10 @@ func (optimizer *bulkSimReforgeOptimizer) optimizeWithKey(gear *proto.EquipmentS
 	optimizer.cacheMu.RLock()
 	if optimizedGear, ok := optimizer.optimizedGearByKey[key]; ok {
 		optimizer.cacheMu.RUnlock()
-		return optimizedGear
+		// Clone on the hit path too: the caller assigns the result to candidate.Gear, so
+		// handing out the cache's own pointer would let any later in-place edit of one
+		// candidate's gear corrupt the entry every other candidate with the same gear reads.
+		return cloneEquipmentSpecOrNil(optimizedGear)
 	}
 	optimizer.cacheMu.RUnlock()
 

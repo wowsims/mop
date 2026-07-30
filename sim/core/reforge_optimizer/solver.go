@@ -64,8 +64,6 @@ func solveLPModel(model *lpModel, timeout time.Duration, mipRelGap float64) (lpS
 		status:    status,
 		result:    result,
 		variables: selected,
-		bounded:   status == "optimal",
-		feasible:  status == "optimal",
 	}, nil
 }
 
