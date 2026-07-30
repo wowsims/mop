@@ -1,4 +1,14 @@
 OUT_DIR := dist/mop
+# On native Windows, air (and cmd.exe generally) can't launch a PE binary that's missing its
+# .exe extension -- it falls back to the "Select an app to open" file-association prompt instead
+# of just running it. Cross-compiled release builds already name their output
+# wowsimmop-windows.exe explicitly; this only affects the local dev build, which is otherwise
+# platform-agnostic.
+ifeq ($(OS),Windows_NT)
+	BIN_EXT := .exe
+else
+	BIN_EXT :=
+endif
 TS_CORE_SRC := $(shell find ui/core -name '*.ts' -type f)
 ASSETS_INPUT := $(shell find assets/ -type f)
 ASSETS := $(patsubst assets/%,$(OUT_DIR)/assets/%,$(ASSETS_INPUT))
@@ -74,6 +84,7 @@ clean:
 	rm -rf ui/core/proto/*.ts \
 	  sim/core/proto/*.pb.go \
 	  wowsimmop \
+	  wowsimmop.exe \
 	  wowsimmop-windows.exe \
 	  wowsimmop-amd64-darwin \
 	  wowsimmop-arm64-darwin \
@@ -175,7 +186,7 @@ wowsimmop: binary_dist devserver
 .PHONY: devserver
 devserver: sim/core/proto/api.pb.go sim/web/main.go binary_dist/dist.go
 	@echo "Starting server compile now..."
-	@if go build -o wowsimmop ./sim/web/main.go ; then \
+	@if go build -o wowsimmop$(BIN_EXT) ./sim/web/main.go ; then \
 		printf "\033[1;32mBuild Completed Successfully\033[0m\n"; \
 	else \
 		printf "\033[1;31mBUILD FAILED\033[0m\n"; \
@@ -194,9 +205,9 @@ endif
 rundevserver: air devserver
 ifeq ($(WATCH), 1)
 	npx tsx vite.build-workers.mts & npx vite build -m development --watch &
-	ulimit -n 10240 && air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false" -build.bin "./wowsimmop" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"
+	ulimit -n 10240 && air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false" -build.bin "./wowsimmop$(BIN_EXT)" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"
 else
-	./wowsimmop --usefs=true --launch=false --host=":3333"
+	./wowsimmop$(BIN_EXT) --usefs=true --launch=false --host=":3333"
 endif
 
 wowsimmop-windows.exe: wowsimmop
@@ -304,9 +315,9 @@ endif
 devmode: air devserver
 ifeq ($(WATCH), 1)
 	npx tsx vite.build-workers.mts & npx vite serve --host &
-	air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false --wasm=false" -build.bin "./wowsimmop" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"
+	air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false --wasm=false" -build.bin "./wowsimmop$(BIN_EXT)" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"
 else
-	./wowsimmop --usefs=true --launch=false --host=":3333"
+	./wowsimmop$(BIN_EXT) --usefs=true --launch=false --host=":3333"
 endif
 
 webworkers:

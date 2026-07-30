@@ -107,6 +107,12 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 	({
 		base: '/mop/',
 		root: BASE_PATH,
+		// This is a multi-page app (one index.html per spec, see the rollupOptions.input glob
+		// below) rather than a single-page app -- without this, Vite's dev server defaults to
+		// appType 'spa' and serves the root index.html as a fallback for every navigation
+		// request, even ones that match a real nested index.html, so every spec page silently
+		// renders the home page instead of its own.
+		appType: 'mpa',
 		build: {
 			outDir: OUT_DIR,
 			minify: mode === 'development' ? false : 'terser',
