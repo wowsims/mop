@@ -158,7 +158,7 @@
 		"targets": [
 			{
 				"id": 846,
-				"name": "Malkorok (AMS) 25 H",
+				"name": "Malkorok (DPS) 25 H",
 				"level": 93,
 				"mobType": "MobTypeHumanoid",
 				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24835, 0, 900000000, 0, 0],
