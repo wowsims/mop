@@ -130,7 +130,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		// Preset talents that the user can quickly select.
 		talents: [Presets.DefaultTalents, Presets.FesterblightTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.FESTERBLIGHT_ROTATION_PRESET],
+		rotations: [
+			Presets.DEFAULT_ROTATION_PRESET,
+			Presets.FESTERBLIGHT_ROTATION_PRESET,
+			Presets.DEFAULT_MALKOROK_ROTATION_PRESET,
+			Presets.FESTERBLIGHT_MALKOROK_ROTATION_PRESET,
+		],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
 		builds: [Presets.PREBIS_PRESET, Presets.P5_PRESET],
