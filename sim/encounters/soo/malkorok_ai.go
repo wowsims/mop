@@ -166,7 +166,7 @@ func (ai *MalkorokAI) registerAncientMiasma() {
 
 	ai.AncientMiasma = ai.Target.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 142906},
-		SpellSchool: core.SpellSchoolShadow, // TODO: verify actual spell school
+		SpellSchool: core.SpellSchoolShadow,
 		ProcMask:    core.ProcMaskSpellDamage,
 		Flags:       core.SpellFlagAPL,
 
@@ -202,15 +202,14 @@ func (ai *MalkorokAI) rollAncientMiasmaCD(sim *core.Simulation) time.Duration {
 // Imploding Energy (142986): synchronized multi-instance batch every ~23s. The CD range below
 // (19.01-30.79s) is the min/max interval observed during Phase 1 of WCL report CzZAMTXx1nW9Pygm
 // fight 27 (see createMalkorokPreset for why the sim just loops these Phase 1 timings for the
-// whole fight rather than modeling the intermission) -- the previous 18.58-63.58s range was
-// computed across the whole pull and its max was inflated by the ~34s intermission gap. Hits ~9
-// of 25 targets, flat 585000 damage with 0 variance.
+// whole fight rather than modeling the intermission). Hits ~9 of 25 targets, flat 585000 damage
+// with 0 variance.
 func (ai *MalkorokAI) registerImplodingEnergy() {
 	const numTargets = 9 // avgDistinctTargetsPerOccurrence: 8.91
 
 	ai.ImplodingEnergy = ai.Target.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 142986},
-		SpellSchool: core.SpellSchoolShadow, // TODO: verify actual spell school
+		SpellSchool: core.SpellSchoolShadow,
 		ProcMask:    core.ProcMaskSpellDamage,
 		Flags:       core.SpellFlagAPL,
 
@@ -243,26 +242,18 @@ func (ai *MalkorokAI) rollImplodingEnergyCD(sim *core.Simulation) time.Duration 
 	return core.DurationFromSeconds(sim.RollWithLabel(19.01, 30.79, "Imploding Energy Timing"))
 }
 
-// Essence of Y'Shaarj (143857): per-player soak mechanic, exactly flat damage (150000,
-// damageStddev observed as 0). Modeled as strictly single-target: the raw WCL hits include
-// occasional bursts of 2+ distinct targets within a second or two of the same spawn, which reads
-// as melee/others accidentally wandering into an orb meant for one soaker rather than a real
-// raid-wide component of the ability -- a well-played raid shouldn't have that happen, so it
-// isn't modeled here. Consequently the CD range below is timed between spawns (an accidental
-// extra hit inside ~2s of a spawn doesn't start a new one), not raw hit-to-hit gaps -- computed
-// that way, the naive gaps included nonsense sub-1s "spawns" that were really just a second
-// person catching the same orb. From WCL report CzZAMTXx1nW9Pygm fight 27, Phase 1 only (see
-// createMalkorokPreset).
+// Essence of Y'Shaarj (143857): per-player soak, flat 150000 damage. Modeled as single-target --
+// WCL occasionally shows 2+ hits per spawn from accidental splash, not a real raid-wide component
+// -- so the CD range below is spawn-to-spawn, not raw hit-to-hit gaps. From WCL report
+// CzZAMTXx1nW9Pygm fight 27, Phase 1 (see createMalkorokPreset).
 //
-// This is also the ability a DK most wants to plan Anti-Magic Shell around: holding the shell up
-// for a few seconds near an expected spawn (rather than only reacting the instant it lands) is
-// what guarantees you're the one soaking it and banking the full Runic Power gain.
+// This is the ability a DK most wants to plan Anti-Magic Shell around, to guarantee soaking it.
 func (ai *MalkorokAI) registerEssenceOfYShaarj() {
 	const numTargets = 1 // modeled as single-target -- see comment above
 
 	ai.EssenceOfYShaarj = ai.Target.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 143857},
-		SpellSchool: core.SpellSchoolShadow, // TODO: verify actual spell school
+		SpellSchool: core.SpellSchoolShadow,
 		ProcMask:    core.ProcMaskSpellDamage,
 		Flags:       core.SpellFlagAPL,
 
