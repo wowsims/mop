@@ -48,7 +48,3 @@ mop.sln
 graphify-out
 .claude
 CLAUDE.md
-
-# throwaway BiS/verification tools -- kept on disk for reuse, not tracked in git
-cmd/tmp_bis/
-cmd/tmp_verify/
