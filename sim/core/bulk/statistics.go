@@ -208,8 +208,17 @@ func topBulkSimResults(results []*BulkSimCandidateResult, limit int) []*BulkSimC
 	if limit <= 0 || len(results) == 0 {
 		return nil
 	}
+	// Both branches sort on DpsMetrics.Avg, so both drop entries that cannot supply one.
+	// The filter is inline rather than a shared pre-pass so the heap branch below keeps
+	// streaming over results within its bounded `limit` allocation.
 	if len(results) <= limit {
-		topResults := append([]*BulkSimCandidateResult(nil), results...)
+		topResults := make([]*BulkSimCandidateResult, 0, len(results))
+		for _, result := range results {
+			if result == nil || result.DpsMetrics == nil {
+				continue
+			}
+			topResults = append(topResults, result)
+		}
 		sortBulkSimResultsByDps(topResults)
 		return topResults
 	}
