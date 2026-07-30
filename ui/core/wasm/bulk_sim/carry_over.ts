@@ -1,7 +1,7 @@
 import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageResult } from './types';
 
 // Holds the previous stage's accumulated results so the next stage only has to sim
-// the iteration delta. Mirrors bulkSimStageCarryOver in sim/core/bulk/bulk_sim.go.
+// the iteration delta. Mirrors bulkSimStageCarryOver in sim/core/bulk/carry_over.go.
 export type ConcurrentBulkSimStageCarryOver = {
 	iterations: number;
 	baseline: ConcurrentBulkSimCandidateResult;

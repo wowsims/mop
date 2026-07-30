@@ -43,7 +43,7 @@ export const bulkSimStageConfigs: ConcurrentBulkSimStageConfig[] = [
 ];
 
 // Scales the survivor cap for large candidate sets, mirroring
-// getBulkSimStageMaxSurvivors in sim/core/bulk/bulk_sim.go. Returns undefined for
+// getBulkSimStageMaxSurvivors in sim/core/bulk/stage.go. Returns undefined for
 // uncapped stages.
 export const getBulkSimStageMaxSurvivors = (config: ConcurrentBulkSimStageConfig, candidateCount: number): number | undefined => {
 	if (config.maxSurvivors === undefined) return undefined;

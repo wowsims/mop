@@ -213,7 +213,6 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 // falls behind.
 type bulkSimReforgeAccumulator struct {
 	mutex                sync.Mutex
-	candidates           []*proto.BulkGearCandidate
 	totalCandidates      int32
 	reportProgress       bool
 	completedByPositions []*proto.BulkGearCandidate
@@ -241,7 +240,6 @@ func (update bulkSimReforgeProgressUpdate) shouldEmit() bool {
 
 func newBulkSimReforgeAccumulator(candidates []*proto.BulkGearCandidate, totalCandidates int32, reportProgress bool) *bulkSimReforgeAccumulator {
 	return &bulkSimReforgeAccumulator{
-		candidates:           candidates,
 		totalCandidates:      totalCandidates,
 		reportProgress:       reportProgress,
 		completedByPositions: make([]*proto.BulkGearCandidate, len(candidates)),
@@ -259,7 +257,6 @@ func (accumulator *bulkSimReforgeAccumulator) complete(task bulkSimReforgeTask, 
 	if completed {
 		accumulator.completedCandidates++
 		accumulator.completedByPositions[task.position] = task.candidate
-		accumulator.candidates[task.position] = nil
 		accumulator.candidateBatch = append(accumulator.candidateBatch, task.candidate)
 		if accumulator.completedCandidates == 1 || duration < accumulator.minDuration {
 			accumulator.minDuration = duration
