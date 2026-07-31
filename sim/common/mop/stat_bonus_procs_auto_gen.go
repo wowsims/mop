@@ -1417,9 +1417,9 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately
-	// 2.89 procs per minute)
-	// https://www.wowhead.com/mop/spell=138967
+	// Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed.
+	// Lasts 15s.
+	// https://www.wowhead.com/mop/spell=138925
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 	//	Callback:           core.CallbackEmpty,
 	//	ProcMask:           core.ProcMaskUnknown,
@@ -1437,9 +1437,9 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed.
-	// Lasts 15s.
-	// https://www.wowhead.com/mop/spell=138925
+	// Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately
+	// 2.89 procs per minute)
+	// https://www.wowhead.com/mop/spell=138967
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 	//	Callback:           core.CallbackEmpty,
 	//	ProcMask:           core.ProcMaskUnknown,

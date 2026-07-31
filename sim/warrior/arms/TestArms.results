@@ -600,8 +600,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 433464.68826
-  tps: 319458.38715
+  dps: 433606.94945
+  tps: 319470.25458
  }
 }
 dps_results: {

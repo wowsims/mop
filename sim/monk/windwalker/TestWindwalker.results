@@ -689,8 +689,8 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 510534.16384
-  tps: 494632.8162
+  dps: 510388.80329
+  tps: 494496.42346
   hps: 11686.42556
  }
 }

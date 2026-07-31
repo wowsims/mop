@@ -564,8 +564,53 @@ func GetOutcome(spell *core.Spell, outcome OutcomeType) core.OutcomeApplier {
 	}
 }
 
+// getProcFromDBC fills a trigger's proc rate, internal cooldown and proc chance
+// from the item or enchant's database entry, so that a generated effect only has to state
+// what the database cannot carry.
+func getProcFromDBC(character *core.Character, trigger *core.ProcTrigger, effectID int32, isEnchant bool) {
+	var effects []*proto.ItemEffect
+	if isEnchant {
+		if ench := core.GetEnchantByEffectID(effectID); ench != nil {
+			effects = ench.EnchantEffects
+		}
+	} else if item := core.GetItemByID(effectID); item != nil {
+		effects = item.ItemEffects
+	}
+
+	for _, effect := range effects {
+		proc := effect.GetProc()
+		if proc == nil {
+			continue
+		}
+
+		if proc.GetRppm() != nil {
+			trigger.DPM = character.NewRPPMProcManager(effectID, isEnchant, false, trigger.ProcMask, core.RppmConfigFromProcEffectProto(proc))
+		} else if proc.GetPpm() > 0 {
+			trigger.DPM = character.NewLegacyPPMManager(proc.GetPpm(), trigger.ProcMask)
+		} else {
+			trigger.ProcChance = proc.GetProcChance()
+		}
+
+		if trigger.ICD == 0 {
+			trigger.ICD = time.Millisecond * time.Duration(proc.IcdMs)
+		}
+		return
+	}
+}
+
 func NewProcDamageEffect(config ProcDamageEffect) {
 	isEnchant := config.EnchantID != 0
+
+	// Soft fail to allow for overrides for bad effects, same as factory_StatBonusEffect.
+	// Without this, hand-writing an effect that is also generated panics on the duplicate
+	// registration instead of letting the manual one win.
+	if isEnchant {
+		if core.HasEnchantEffect(config.EnchantID) {
+			return
+		}
+	} else if core.HasItemEffect(config.ItemID) {
+		return
+	}
 
 	var effectFn func(id int32, effect core.ApplyEffect)
 	var effectID int32
@@ -593,6 +638,11 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 
 		if config.TriggerDPM != nil {
 			config.Trigger.DPM = config.TriggerDPM(character)
+		} else if config.Trigger.DPM == nil && config.Trigger.ProcChance == 0 {
+			// Damage amounts are not carried in the database, but proc rates are, so a
+			// generated damage proc does not have to restate its rate. Same source as
+			// factory_StatBonusEffect uses.
+			getProcFromDBC(character, &config.Trigger, effectID, isEnchant)
 		}
 
 		damageSpell := character.RegisterSpell(core.SpellConfig{
@@ -612,8 +662,13 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 
 		triggerConfig := config.Trigger
 		triggerConfig.TriggerImmediately = true
-		triggerConfig.Handler = func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-			damageSpell.Cast(sim, character.CurrentTarget)
+		triggerConfig.Handler = func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
+			// Land the extra damage on whatever was hit, not on the primary target.
+			target := character.CurrentTarget
+			if result != nil && result.Target != nil {
+				target = result.Target
+			}
+			damageSpell.Cast(sim, target)
 		}
 		triggerAura := character.MakeProcTriggerAura(triggerConfig)
 

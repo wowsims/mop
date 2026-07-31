@@ -681,8 +681,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 455900.76203
-  tps: 202871.48508
+  dps: 455898.36271
+  tps: 202869.0339
   hps: 17.66285
  }
 }

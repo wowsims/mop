@@ -19,6 +19,11 @@ const (
 	ITEM_ENCHANTMENT_RELIC_EVIL       int = 12 // Scaling relic +ilevel, see enchant::initialize_relic
 )
 
+// Power types as used in SpellEffect.EffectMiscValue_0, see MapPowerTypeEnumToResourceType.
+const (
+	POWER_TYPE_MANA int = 0
+)
+
 const (
 	ITEM_SPELLTRIGGER_ON_USE          int = 0 // use after equip cooldown
 	ITEM_SPELLTRIGGER_ON_EQUIP        int = 1

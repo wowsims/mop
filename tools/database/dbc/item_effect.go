@@ -125,26 +125,34 @@ func assignTrigger(e *ItemEffect, statsSpellID int, pe *proto.ItemEffect) {
 	}
 }
 
-func (e *ItemEffect) ToProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
+// BuildProto assembles the proto for an effect and reports whether any stats were
+// resolved. Callers that only care about stat effects should use ToProto, which drops
+// the effect when there are none; callers that need the trigger regardless (on-use
+// enchants carry a real cooldown even when their buff is server-scripted) use this.
+func (e *ItemEffect) BuildProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
 	statsSpellID := resolveStatsSpell(e.SpellID)
 
 	pe := makeBaseProto(e, statsSpellID)
 	assignTrigger(e, statsSpellID, pe)
 
-	// build scaling properties and skip if empty
 	props := buildScalingProps(statsSpellID, itemLevel, e.SpellID)
+	pe.ScalingOptions[int32(levelState)] = props
 
-	if len(props.Stats) == 0 {
+	return pe, len(props.Stats) > 0
+}
+
+func (e *ItemEffect) ToProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
+	pe, hasStats := e.BuildProto(itemLevel, levelState)
+	if !hasStats {
 		return nil, false
 	}
-
-	pe.ScalingOptions[int32(levelState)] = props
 
 	return pe, true
 }
 
 func resolveStatsSpell(spellID int) int {
-	for _, se := range dbcInstance.SpellEffects[spellID] {
+	effects := dbcInstance.SpellEffectsInOrder(spellID)
+	for _, se := range effects {
 		switch se.EffectAura {
 		case A_MOD_STAT, A_MOD_RATING, A_MOD_RANGED_ATTACK_POWER, A_MOD_ATTACK_POWER, A_MOD_DAMAGE_DONE, A_MOD_TARGET_RESISTANCE, A_MOD_RESISTANCE, A_MOD_INCREASE_ENERGY,
 			A_MOD_INCREASE_HEALTH_2, A_PERIODIC_TRIGGER_SPELL:
@@ -153,7 +161,7 @@ func resolveStatsSpell(spellID int) int {
 	}
 
 	// If we cant resolve the spell in the first loop, we follow proc triggers downwards
-	for _, se := range dbcInstance.SpellEffects[spellID] {
+	for _, se := range effects {
 		switch se.EffectAura {
 		case A_PROC_TRIGGER_SPELL, A_PROC_TRIGGER_SPELL_WITH_VALUE:
 			return resolveStatsSpell(se.EffectTriggerSpell)
@@ -178,7 +186,7 @@ func buildScalingProps(spellID, itemLevel, itemSpellID int) *proto.ScalingItemEf
 	total := collectStats(spellID, itemLevel)
 
 	// check if spell is procced by a SPELL_WITH_VALUE
-	if effects, ok := dbcInstance.SpellEffects[itemSpellID]; ok {
+	if effects := dbcInstance.SpellEffectsInOrder(itemSpellID); len(effects) > 0 {
 		for _, se := range effects {
 			if se.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE && spellID == se.EffectTriggerSpell {
 				for idx := range total {
@@ -209,7 +217,7 @@ func collectStats(spellID, itemLevel int) stats.Stats {
 		visited[id] = true
 
 		sp := dbcInstance.Spells[id]
-		for _, se := range dbcInstance.SpellEffects[id] {
+		for _, se := range dbcInstance.SpellEffectsInOrder(id) {
 			s := se.ParseStatEffect(sp.HasAttributeAt(11, 0x4), itemLevel)
 			if s != nil && *s != emptyStats {
 				total.AddInplace(s)
@@ -241,19 +249,14 @@ func GetItemEffectSpellTooltip(itemID int, buffId int) (string, int) {
 	for _, effect := range raw {
 		spellID = effect.SpellID
 		if effect.SpellID == buffId {
-			spellID = effect.SpellID
 			break
-		} else {
-			triggerEffects := dbcInstance.SpellEffects[effect.SpellID]
-			if len(triggerEffects) == 0 {
-				continue
-			}
-			if spellEffect := GetSpellEffectRecursive(buffId, triggerEffects); spellEffect != nil {
-				if spellEffect.EffectTriggerSpell == buffId {
-					spellID = effect.SpellID
-				}
-				break
-			}
+		}
+
+		if len(dbcInstance.SpellEffects[effect.SpellID]) == 0 {
+			continue
+		}
+		if GetSpellEffectRecursive(buffId, effect.SpellID) != nil {
+			break
 		}
 	}
 	spell := dbcInstance.Spells[spellID]
@@ -267,31 +270,43 @@ func GetItemEffectForBuffID(itemID int, buffId int) *ItemEffect {
 		if effect.SpellID == buffId {
 			itemEffect = &effect
 			break
-		} else {
-			triggerEffects := dbcInstance.SpellEffects[effect.SpellID]
-			if len(triggerEffects) == 0 {
-				continue
-			}
-			if spellEffect := GetSpellEffectRecursive(buffId, triggerEffects); spellEffect != nil {
-				if spellEffect.EffectTriggerSpell == buffId {
-					return &effect
-				}
-				break
-			}
+		}
+
+		if len(dbcInstance.SpellEffects[effect.SpellID]) == 0 {
+			continue
+		}
+		if GetSpellEffectRecursive(buffId, effect.SpellID) != nil {
+			return &effect
 		}
 	}
 	return itemEffect
 }
 
-func GetSpellEffectRecursive(spellIDToMatch int, spellEffects map[int]SpellEffect) *SpellEffect {
-	for _, spellEffect := range spellEffects {
-		if spellEffect.EffectTriggerSpell != 0 {
-			if spellEffect.EffectTriggerSpell == spellIDToMatch {
-				return &spellEffect
-			} else {
-				triggerEffects := dbcInstance.SpellEffects[spellEffect.EffectTriggerSpell]
-				return GetSpellEffectRecursive(spellIDToMatch, triggerEffects)
-			}
+// GetSpellEffectRecursive walks the trigger chain below spellID and returns the
+// effect that triggers spellIDToMatch, or nil. Effects are visited in index order
+// and a branch that does not contain the match does not abort the search of its
+// siblings.
+func GetSpellEffectRecursive(spellIDToMatch int, spellID int) *SpellEffect {
+	return getSpellEffectRecursive(spellIDToMatch, spellID, map[int]bool{})
+}
+
+func getSpellEffectRecursive(spellIDToMatch int, spellID int, visited map[int]bool) *SpellEffect {
+	if visited[spellID] {
+		return nil
+	}
+	visited[spellID] = true
+
+	for _, spellEffect := range dbcInstance.SpellEffectsInOrder(spellID) {
+		if spellEffect.EffectTriggerSpell == 0 {
+			continue
+		}
+
+		if spellEffect.EffectTriggerSpell == spellIDToMatch {
+			return &spellEffect
+		}
+
+		if match := getSpellEffectRecursive(spellIDToMatch, spellEffect.EffectTriggerSpell, visited); match != nil {
+			return match
 		}
 	}
 	return nil

@@ -151,7 +151,49 @@ func RegisterAllEnchants() {
 	{{- range (.Tooltip | formatStrings 100) }}
 	// {{.}}
 	{{- end}}
+	{{- if .Damage}}
 	{{- if .Supported}}
+	shared.NewProcDamageEffect(shared.ProcDamageEffect{
+		{{with index .Variants 0 -}}
+		EnchantID: {{ .ID }},
+		{{- end}}
+		SpellID:   {{ .Damage.SpellID }},
+		School:    {{ .Damage.SchoolMask | asCoreSpellSchool }},
+		MinDmg:    {{ .Damage.MinDamage }},
+		MaxDmg:    {{ .Damage.MaxDamage }},
+		Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
+		Trigger: core.ProcTrigger{
+			{{with index .Variants 0 -}}
+			Name:               "{{ .Name }}",
+			{{- end}}
+			Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+			ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+			Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+			RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+		},
+	})
+	{{- else}}
+	// shared.NewProcDamageEffect(shared.ProcDamageEffect{
+		{{- with index .Variants 0 }}
+	//	EnchantID: {{ .ID }},
+		{{- end}}
+	//	SpellID:   {{ .Damage.SpellID }},
+	//	School:    {{ .Damage.SchoolMask | asCoreSpellSchool }},
+	//	MinDmg:    {{ .Damage.MinDamage }},
+	//	MaxDmg:    {{ .Damage.MaxDamage }},
+	//	Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
+	//	Trigger: core.ProcTrigger{
+		{{- with index .Variants 0 }}
+	//		Name:               "{{ .Name }}",
+		{{- end}}
+	//		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	//		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	//		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	//		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+	//	},
+	// })
+	{{- end}}
+	{{- else if .Supported}}
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		{{with index .Variants 0 -}}
 		Name:               "{{ .Name }}",
@@ -189,7 +231,7 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		{{.ItemID}}, // {{ .Name }}
 		[
 			{{- range .Effects }}
-			"{{ .Name }}", // {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
+			"{{ .Name | jsString }}", // {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
 			{{- end}}
 		]
 	],
@@ -198,15 +240,14 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 
 export const MISSING_ENCHANT_EFFECTS = new Map<number, string[]>([
 {{- range .EnchantEffects }}
-{{- $name := .Name }}
-{{- range .Entries }}
-{{- $tooltip := .Tooltip }}
-{{- if not .Supported}}
-{{- range .Variants }}
-	[{{.ID}}, "{{- range $tooltip }}{{.}}{{- end}}"], // {{ $name }} - {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
-{{- end}}
-{{- end }}
-{{- end }}
+	[
+		{{.ItemID}}, // {{ .Name }}
+		[
+			{{- range .Effects }}
+			"{{ .Name | jsString }}", // {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
+			{{- end}}
+		]
+	],
 {{- end }}
 ])
 `

@@ -238,6 +238,16 @@ func (effect *SpellEffect) GetScalingValue(ilvl int) float64 {
 	scale := effect.ScalingClass()
 	return dbcInstance.SpellScalings[min(spell.MaxScalingLevel, BASE_LEVEL)].Values[scale]
 }
+
+// scaledStatValue reports whether the effect's value comes from its scaling
+// coefficient rather than EffectBasePoints, and if so the resolved value.
+func (effect *SpellEffect) scaledStatValue(scalesWithIlvl bool, ilvl int) (bool, float64) {
+	if effect.Coefficient == 0 || !scalesWithIlvl {
+		return false, 0
+	}
+	return true, effect.CalcCoefficientStatValue(ilvl)
+}
+
 func (effect *SpellEffect) ParseStatEffect(scalesWithIlvl bool, ilvl int) *stats.Stats {
 	effectStats := &stats.Stats{}
 
@@ -285,28 +295,43 @@ func (effect *SpellEffect) ParseStatEffect(scalesWithIlvl bool, ilvl int) *stats
 		effectStats[proto.Stat_StatSpellPower] = float64(effect.EffectBasePoints)
 	case effect.EffectAura == A_MOD_RESISTANCE:
 		school := SpellSchool(effect.EffectMiscValues[0])
+		scaled, scaledValue := effect.scaledStatValue(scalesWithIlvl, ilvl)
 		for schoolType, stat := range SpellSchoolToStat {
-			if school.Has(schoolType) && stat > -1 {
-				if effect.Coefficient != 0 && scalesWithIlvl {
-					effectStats[stat] = effect.CalcCoefficientStatValue(ilvl)
-					break
-				}
+			if !school.Has(schoolType) || stat <= -1 {
+				continue
+			}
+			// Every school in the mask contributes. Stopping after the first one
+			// silently dropped the rest of a multi-school effect.
+			if scaled {
+				effectStats[stat] = scaledValue
+			} else {
 				effectStats[stat] += float64(effect.EffectBasePoints)
 			}
 		}
 
 	case effect.EffectAura == A_MOD_RATING:
+		scaled, scaledValue := effect.scaledStatValue(scalesWithIlvl, ilvl)
 		for _, rating := range getMatchingRatingMods(effect.EffectMiscValues[0]) {
-			if statMod := RatingModToStat[rating]; statMod != -1 {
-				if effect.Coefficient != 0 && scalesWithIlvl {
-					effectStats[statMod] = effect.CalcCoefficientStatValue(ilvl)
-					break
-				}
+			statMod := RatingModToStat[rating]
+			if statMod == -1 {
+				continue
+			}
+			// Assigned rather than accumulated: several rating bits (melee/ranged/spell
+			// hit for example) map onto the same stat and must not stack. Masks that do
+			// span different stats need every one of them set, so no early exit here.
+			if scaled {
+				effectStats[statMod] = scaledValue
+			} else {
 				effectStats[statMod] = float64(effect.EffectBasePoints)
 			}
 		}
 	case effect.EffectAura == A_MOD_INCREASE_ENERGY:
-		effectStats[proto.Stat_StatMana] = float64(effect.EffectBasePoints)
+		// MiscValue 0 is the power type. Only mana has a matching stat; rage, focus,
+		// energy and the rest are resources the sim tracks per spec, not stats, so
+		// treating every power type as mana just invents mana out of nothing.
+		if effect.EffectMiscValues[0] == POWER_TYPE_MANA {
+			effectStats[proto.Stat_StatMana] = float64(effect.EffectBasePoints)
+		}
 	case effect.EffectAura == A_MOD_INCREASE_HEALTH_2:
 		effectStats[proto.Stat_StatHealth] = float64(effect.EffectBasePoints)
 	case effect.EffectAura == A_PERIODIC_TRIGGER_SPELL && effect.EffectAuraPeriod == 10000:

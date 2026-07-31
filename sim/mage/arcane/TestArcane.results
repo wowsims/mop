@@ -593,8 +593,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 271513.10135
-  tps: 260937.71976
+  dps: 270413.59719
+  tps: 260017.79923
  }
 }
 dps_results: {

@@ -15,6 +15,7 @@ type Spell struct {
 	MaxLevel              int
 	MaxPassiveAuraLevel   int32
 	Cooldown              int32
+	CategoryRecoveryTime  int32
 	GCD                   int32
 	MinRange              float32
 	MaxRange              float32

@@ -771,10 +771,10 @@ dps_results: {
 dps_results: {
  key: "TestBrewmaster-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 575522.21466
-  tps: 3.09832501759e+06
-  dtps: 43472.68795
-  hps: 83470.46725
+  dps: 577214.95081
+  tps: 3.10944785178e+06
+  dtps: 43267.3386
+  hps: 83615.78156
  }
 }
 dps_results: {

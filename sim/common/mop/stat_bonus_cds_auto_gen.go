@@ -511,6 +511,12 @@ func RegisterAllOnUseCds() {
 	// https://www.wowhead.com/mop/spell=134954
 	shared.NewSimpleStatActive(92785)
 
+	// PvpPowerRating / PvpResilienceRating
+
+	// Increases PvP Power and PvP Resilience by 5000 for 30s.
+	// https://www.wowhead.com/mop/spell=148388
+	shared.NewSimpleStatActive(103639)
+
 	// PvpResilienceRating
 
 	// Increases PvP resilience by 10000 for 15s. Only usable in Pandaria.
@@ -520,10 +526,6 @@ func RegisterAllOnUseCds() {
 	// Increases PvP resilience by 10000 for 15s. Only usable in Pandaria.
 	// https://www.wowhead.com/mop/spell=134953
 	shared.NewSimpleStatActive(92783)
-
-	// Increases PvP Power and PvP Resilience by 5000 for 30s.
-	// https://www.wowhead.com/mop/spell=148388
-	shared.NewSimpleStatActive(103639)
 
 	// Spirit
 

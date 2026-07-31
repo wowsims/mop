@@ -457,7 +457,60 @@ func ScanEnchantsTable(rows *sql.Rows) (dbc.Enchant, error) {
 }
 
 func LoadAndWriteRawEnchants(dbHelper *DBHelper, inputsDir string) ([]dbc.Enchant, error) {
-	query := `SELECT DISTINCT
+	// Two independent dedupes, innermost first:
+	//
+	// 1. One row per SpellItemEnchantment ID, the key the DBC loader stores enchants
+	//    under. Several enchanting spells (and several parent items) can point at the
+	//    same enchantment, and grouping by display name instead let two distinct
+	//    enchantments with the same name both survive and then overwrite each other in
+	//    the Enchants map.
+	// 2. One row per display name. 5.2 and 5.4 re-issued a lot of enchants as
+	//    down-scaled copies with their own enchantment ID and their own enchanting
+	//    spell - "Enchant Boots - Pandaren's Step" exists as 4429 (140 mastery, the
+	//    level 90 enchant), 5060 (10) and 5096 (6). Only the real one is wanted, and it
+	//    is the one reachable from a parent scroll item; the scaled copies have none.
+	query := `SELECT
+		effectId,
+		name,
+		spellId,
+		ItemId,
+		professionId,
+		Effect,
+		EffectPoints,
+		EffectArgs,
+		isWeaponEnchant,
+		InvTypes,
+		subClassMask,
+		classMask,
+		fdid,
+		quality,
+		RequiredProfession,
+		effectName
+	FROM (SELECT
+		effectId,
+		name,
+		spellId,
+		ItemId,
+		professionId,
+		Effect,
+		EffectPoints,
+		EffectArgs,
+		isWeaponEnchant,
+		InvTypes,
+		subClassMask,
+		classMask,
+		fdid,
+		quality,
+		RequiredProfession,
+		effectName,
+		ROW_NUMBER() OVER (
+			PARTITION BY name
+			ORDER BY
+				CASE WHEN ItemId = 0 THEN 1 ELSE 0 END,
+				effectPointsMin0 DESC,
+				effectId
+		) AS namePick
+	FROM (SELECT
 		sie.ID as effectId,
 		CASE
 		WHEN s.NameSubtext_lang IS NOT NULL
@@ -487,12 +540,20 @@ func LoadAndWriteRawEnchants(dbHelper *DBHelper, inputsDir string) ([]dbc.Enchan
 			ELSE true
 		END AS isWeaponEnchant,
 		COALESCE(sei.EquippedItemInvTypes, 0) as InvTypes,
-		COALESCE(sei.EquippedItemSubclass, 0),
-		COALESCE(sla.ClassMask, 0),
-		COALESCE(it.IconFileDataID, 0),
-		COALESCE(isp.OverallQualityID, 1),
+		COALESCE(sei.EquippedItemSubclass, 0) as subClassMask,
+		COALESCE(sla.ClassMask, 0) as classMask,
+		COALESCE(it.IconFileDataID, 0) as fdid,
+		COALESCE(isp.OverallQualityID, 1) as quality,
 		COALESCE(sie.RequiredSkillID, 0) as RequiredProfession,
-		COALESCE(sie.Name_lang, "")
+		COALESCE(sie.Name_lang, "") as effectName,
+		COALESCE(sie.EffectPointsMin_0, 0) as effectPointsMin0,
+		ROW_NUMBER() OVER (
+			PARTITION BY sie.ID
+			ORDER BY
+				se.SpellID,
+				CASE WHEN it.ClassID = 9 THEN 1 ELSE 0 END,
+				COALESCE(ie.ParentItemID, 0)
+		) AS rowPick
 		FROM SpellEffect se
 		JOIN Spell s ON se.SpellID = s.ID
 		LEFT JOIN SpellScaling ss ON se.SpellID = ss.SpellID
@@ -515,7 +576,11 @@ WHERE se.Effect = 53
     OR
        sie.RequiredSkillID = 773
   )
-		GROUP BY name `
+	)
+	WHERE rowPick = 1
+	)
+	WHERE namePick = 1
+	ORDER BY effectId `
 	items, err := LoadRows(dbHelper.db, query, ScanEnchantsTable)
 	if err != nil {
 		return nil, fmt.Errorf("error loading items for GemTables: %w", err)
@@ -1149,6 +1214,7 @@ func ScanSpells(rows *sql.Rows) (dbc.Spell, error) {
 		&spell.MaxLevel,
 		&spell.MaxPassiveAuraLevel,
 		&spell.Cooldown,
+		&spell.CategoryRecoveryTime,
 		&spell.GCD,
 		&spell.MinRange,
 		&spell.MaxRange,
@@ -1238,6 +1304,7 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 	COALESCE(sl.MaxLevel, 0),
 	COALESCE(sl.MaxPassiveAuraLevel, 0),
 	COALESCE(sc.RecoveryTime, 0),
+	COALESCE(sc.CategoryRecoveryTime, 0),
 	COALESCE(sc.StartRecoveryTime, 0),
 	COALESCE(sr.RangeMin_0, 0.0),
 	COALESCE(sr.RangeMax_0, 0.0),
@@ -1268,23 +1335,10 @@ func LoadAndWriteSpells(dbHelper *DBHelper, inputsDir string) ([]dbc.Spell, erro
 	COALESCE(sao.CumulativeAura, 0),
 	COALESCE(str.MaxTargets, 0),
 	COALESCE(sm.SpellIconFileDataID, 0),
-	COALESCE(
-		json_group_array (
-			json_object (
-				'ModifierType',
-				sppmm.Type,
-				'Coeff',
-				sppmm.Coeff,
-				'Param',
-				sppmm.Param
-			)
-		),
-		'[]'
-	) AS RppmModifiersJson
+	COALESCE(sppmm.RppmModifiersJson, '[]') AS RppmModifiersJson
 FROM
     Spell as s
 	LEFT JOIN SpellName sn ON s.ID = sn.ID
-	LEFT JOIN SpellEffect se ON s.ID = se.SpellID
 	LEFT JOIN (
 		SELECT
 			*
@@ -1317,7 +1371,6 @@ FROM
 		GROUP BY
 			SpellID
 	) ss ON s.ID = ss.SpellID
-	LEFT JOIN SpellLabel slb ON s.ID = slb.SpellID
 	LEFT JOIN (
 		SELECT
 			*
@@ -1328,7 +1381,6 @@ FROM
 	) scs ON s.ID = scs.SpellID
 	LEFT JOIN SpellCategory ssc ON ssc.ID = scs.Category
 	LEFT JOIN SpellDuration sd ON sm.DurationIndex = sd.ID
-	LEFT JOIN SpellPower sp ON sp.SpellID = s.ID
 	LEFT JOIN SpellInterrupts si ON si.SpellID = s.ID
 	LEFT JOIN SpellEquippedItems sei ON sei.SpellID = s.ID
 	LEFT JOIN (
@@ -1353,7 +1405,27 @@ FROM
 	) str ON s.ID = str.SpellID
 	LEFT JOIN SpellRange sr ON sr.ID = sm.RangeIndex
 	LEFT JOIN SpellProcsPerMinute spm ON spm.ID = sao.SpellProcsPerMinuteID
-	LEFT JOIN SpellProcsPerMinuteMod sppmm ON sppmm.SpellProcsPerMinuteID = sao.SpellProcsPerMinuteID
+	-- Aggregate the RPPM mods on their own key. Joining SpellProcsPerMinuteMod
+	-- directly would fan out this query and repeat every mod once per joined row,
+	-- which multiplies the mod coefficients in the sim.
+	LEFT JOIN (
+		SELECT
+			SpellProcsPerMinuteID,
+			json_group_array (
+				json_object (
+					'ModifierType',
+					Type,
+					'Coeff',
+					Coeff,
+					'Param',
+					Param
+				)
+			) AS RppmModifiersJson
+		FROM
+			SpellProcsPerMinuteMod
+		GROUP BY
+			SpellProcsPerMinuteID
+	) sppmm ON sppmm.SpellProcsPerMinuteID = sao.SpellProcsPerMinuteID
 	GROUP BY s.ID
 	ORDER BY s.ID asc
 `

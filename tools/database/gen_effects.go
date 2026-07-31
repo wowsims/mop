@@ -40,6 +40,9 @@ type Entry struct {
 	Tooltip   []string
 	ProcInfo  ProcInfo
 	Supported bool
+	// Set when the effect deals flat damage rather than granting stats. Damage is not
+	// carried in the database, so the resolved amounts are emitted as literals.
+	Damage *dbc.DamageEffect
 }
 
 // Group holds a category of effects.
@@ -83,15 +86,16 @@ func GenerateEffectsFile(groups []*Group, outFile string, templateString string)
 				return !grp.Entries[i].Supported
 			}
 
-			return grp.Entries[i].Variants[0].ID < grp.Entries[j].Variants[0].ID
+			return entryOrder(grp.Entries[i], grp.Entries[j])
 		})
 	}
 
 	funcMap := map[string]any{
-		"asCoreCallback": asCoreCallback,
-		"asCoreProcMask": asCoreProcMask,
-		"asCoreOutcome":  asCoreOutcome,
-		"formatStrings":  formatStrings,
+		"asCoreCallback":    asCoreCallback,
+		"asCoreProcMask":    asCoreProcMask,
+		"asCoreOutcome":     asCoreOutcome,
+		"asCoreSpellSchool": asCoreSpellSchool,
+		"formatStrings":     formatStrings,
 	}
 	tmpl := template.Must(template.New("effects").Funcs(funcMap).Parse(templateString))
 	f, err := os.Create(outFile)
@@ -118,6 +122,7 @@ func GenerateMissingEffectsFile() error {
 		"asCoreProcMask": asCoreProcMask,
 		"asCoreOutcome":  asCoreOutcome,
 		"formatStrings":  formatStrings,
+		"jsString":       jsString,
 	}
 	tmpl := template.Must(template.New("missingEffects").Funcs(funcMap).Parse(TmplStrMissingEffects))
 	f, err := os.Create(missingEffectsFileName)
@@ -137,10 +142,19 @@ func GenerateEnchantEffects(instance *dbc.DBC, db *WowDatabase) {
 	groupMapProc := map[string]Group{}
 	enchantSpellEffects := map[int]*dbc.SpellEffect{}
 
+	// Several enchanting spells can apply the same enchantment. SpellEffectsById is a
+	// map, so keep the lowest spell ID instead of letting iteration order decide which
+	// spell the generated tooltip is read from.
 	for _, effect := range instance.SpellEffectsById {
-		if effect.EffectType == dbc.E_ENCHANT_ITEM {
-			enchantSpellEffects[effect.EffectMiscValues[0]] = &effect
+		if effect.EffectType != dbc.E_ENCHANT_ITEM {
+			continue
 		}
+
+		enchantID := effect.EffectMiscValues[0]
+		if existing, ok := enchantSpellEffects[enchantID]; ok && existing.SpellID <= effect.SpellID {
+			continue
+		}
+		enchantSpellEffects[enchantID] = &effect
 	}
 
 	for _, enchant := range instance.Enchants {
@@ -222,7 +236,7 @@ func GenerateItemEffects(instance *dbc.DBC, db *WowDatabase, itemSources map[int
 
 		// sort entries first to make grouping consistent for variants
 		sort.Slice(grp.Entries, func(i, j int) bool {
-			return grp.Entries[i].Variants[0].ID < grp.Entries[j].Variants[0].ID
+			return entryOrder(grp.Entries[i], grp.Entries[j])
 		})
 
 		for _, entry := range grp.Entries {
@@ -254,7 +268,7 @@ func GenerateItemEffects(instance *dbc.DBC, db *WowDatabase, itemSources map[int
 
 		// sort entries first to make tooltip generation consistent for variants
 		sort.Slice(grp.Entries, func(i, j int) bool {
-			return grp.Entries[i].Variants[0].ID < grp.Entries[j].Variants[0].ID
+			return entryOrder(grp.Entries[i], grp.Entries[j])
 		})
 
 		for _, entry := range grp.Entries {
@@ -480,6 +494,14 @@ func TryParseOnUseEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, ins
 }
 
 func TryParseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.ItemEffect, groupMapProc map[string]Group, instance *dbc.DBC, enchantSpellEffects map[int]*dbc.SpellEffect) EffectParseResult {
+	// On-use enchants (the engineering tinkers) are carried in the database for their
+	// cooldown and duration, but there is no shared helper to register an on-use enchant
+	// yet, so they are not generated. Without this they would fall into the proc path via
+	// EnchantHasDummyEffect and emit bogus proc stubs.
+	if enchantEffect.GetOnUse() != nil {
+		return EffectParseResultInvalid
+	}
+
 	if (enchantEffect.GetProc() != nil || EnchantHasDummyEffect(enchant, instance)) && enchant.EffectId > 4267 {
 
 		// Effect was already manually implemented
@@ -499,6 +521,7 @@ func TryParseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.ItemEf
 			renderedTooltip := tooltip.String()
 			entry := Entry{Tooltip: strings.Split(renderedTooltip, "\n"), Variants: []*Variant{{ID: int(enchant.EffectId), Name: enchant.Name}}}
 			entry.ProcInfo, entry.Supported = BuildEnchantProcInfo(enchant, instance, renderedTooltip)
+			entry.Damage = dbc.ResolveDamageEffect(int(enchant.SpellId))
 			grp.Entries = append(grp.Entries, &entry)
 			groupMapProc["Enchants"] = grp
 
@@ -808,6 +831,57 @@ func asCoreProcMask(procMask core.ProcMask) string {
 		return "core.ProcMaskUnknown"
 	}
 	return strings.Join(procs, " | ")
+}
+
+// entryOrder is a total order over entries. Sorting on the item or enchant ID alone is
+// not one: an item with two effects yields two entries sharing that ID, and sort.Slice is
+// not stable, so their order in the generated file flipped between runs.
+func entryOrder(a *Entry, b *Entry) bool {
+	if a.Variants[0].ID != b.Variants[0].ID {
+		return a.Variants[0].ID < b.Variants[0].ID
+	}
+
+	return a.Variants[0].SpellID < b.Variants[0].SpellID
+}
+
+// jsString escapes a rendered tooltip for use inside a double-quoted TypeScript string.
+// Tooltips routinely span several lines, which would otherwise produce a file that does
+// not parse.
+func jsString(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `"`, `\"`)
+	s = strings.ReplaceAll(s, "\r", "")
+	return strings.ReplaceAll(s, "\n", `\n`)
+}
+
+// asCoreSpellSchool renders a DBC school mask as a core.SpellSchool expression. The two
+// use different bit orders, so the mask cannot be passed through as a number.
+func asCoreSpellSchool(schoolMask int32) string {
+	schools := []struct {
+		dbc  dbc.SpellSchool
+		name string
+	}{
+		{dbc.PHYSICAL, "core.SpellSchoolPhysical"},
+		{dbc.HOLY, "core.SpellSchoolHoly"},
+		{dbc.FIRE, "core.SpellSchoolFire"},
+		{dbc.NATURE, "core.SpellSchoolNature"},
+		{dbc.FROST, "core.SpellSchoolFrost"},
+		{dbc.SHADOW, "core.SpellSchoolShadow"},
+		{dbc.ARCANE, "core.SpellSchoolArcane"},
+	}
+
+	names := []string{}
+	for _, school := range schools {
+		if dbc.SpellSchool(schoolMask)&school.dbc != 0 {
+			names = append(names, school.name)
+		}
+	}
+
+	if len(names) == 0 {
+		return "core.SpellSchoolNone"
+	}
+
+	return strings.Join(names, " | ")
 }
 
 func asCoreOutcome(outcome core.HitOutcome) string {

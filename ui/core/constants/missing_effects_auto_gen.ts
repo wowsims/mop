@@ -2213,4 +2213,10 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 ])
 
 export const MISSING_ENCHANT_EFFECTS = new Map<number, string[]>([
+	[
+		5001, // Ghost Iron Shield Spike
+		[
+			"Attaches a ghost iron spike to your shield that sometimes deals 209 damage when you block with it.\n\n Attaching a ghost iron spike to your shield causes it to become soulbound.", // 131465 - https://www.wowhead.com/mop/spell=131465
+		]
+	],
 ])

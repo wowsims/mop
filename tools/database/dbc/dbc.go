@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"slices"
 	"sync"
 )
 
@@ -106,6 +107,28 @@ func InitDBC() error {
 	}
 	dbcInstance.LoadSpellScaling()
 	return nil
+}
+
+// SpellEffectsInOrder returns the effects of a spell ordered by effect index.
+// SpellEffects is keyed by index, so ranging over it directly yields a random
+// order and makes any traversal that stops at the first match non-deterministic.
+func (d *DBC) SpellEffectsInOrder(spellID int) []SpellEffect {
+	effects := d.SpellEffects[spellID]
+	if len(effects) == 0 {
+		return nil
+	}
+
+	indices := make([]int, 0, len(effects))
+	for idx := range effects {
+		indices = append(indices, idx)
+	}
+	slices.Sort(indices)
+
+	ordered := make([]SpellEffect, 0, len(effects))
+	for _, idx := range indices {
+		ordered = append(ordered, effects[idx])
+	}
+	return ordered
 }
 
 // GetDBC returns the DBC singleton instance

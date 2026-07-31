@@ -129,21 +129,45 @@ func processEnchantmentEffects(
 				outStats[proto.Stat_StatRangedAttackPower] = float64(effectPoints[i])
 			}
 		case ITEM_ENCHANTMENT_EQUIP_SPELL: //Buff
-			spellEffects := dbcInstance.SpellEffects[effectArgs[i]]
-			for _, spellEffect := range spellEffects {
-				if spellEffect.EffectMiscValues[0] == -1 &&
-					spellEffect.EffectType == E_APPLY_AURA &&
-					spellEffect.EffectAura == A_MOD_STAT {
-					// Apply bonus to all stats
-					outStats[proto.Stat_StatAgility] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatIntellect] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatSpirit] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatStamina] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatStrength] += float64(spellEffect.EffectBasePoints)
+			for _, spellEffect := range dbcInstance.SpellEffectsInOrder(effectArgs[i]) {
+				if spellEffect.EffectType != E_APPLY_AURA {
 					continue
 				}
-				if spellEffect.EffectType == E_APPLY_AURA && spellEffect.EffectAura == A_MOD_STAT {
-					outStats[spellEffect.EffectMiscValues[0]] += float64(spellEffect.EffectBasePoints)
+
+				points := float64(spellEffect.EffectBasePoints)
+				switch spellEffect.EffectAura {
+				case A_MOD_STAT:
+					// -1 in MiscValue 0 means all stats
+					if spellEffect.EffectMiscValues[0] == -1 {
+						outStats[proto.Stat_StatAgility] += points
+						outStats[proto.Stat_StatIntellect] += points
+						outStats[proto.Stat_StatSpirit] += points
+						outStats[proto.Stat_StatStamina] += points
+						outStats[proto.Stat_StatStrength] += points
+						continue
+					}
+
+					// MiscValue 0 is a DBC stat index, not a proto.Stat
+					stat, match := MapMainStatToStat(spellEffect.EffectMiscValues[0])
+					if !match {
+						continue
+					}
+					outStats[stat] += points
+				case A_MOD_RATING:
+					for _, rating := range getMatchingRatingMods(spellEffect.EffectMiscValues[0]) {
+						if statMod := RatingModToStat[rating]; statMod != -1 {
+							outStats[statMod] = points
+						}
+					}
+				case A_MOD_ATTACK_POWER:
+					outStats[proto.Stat_StatAttackPower] += points
+					if addRanged {
+						outStats[proto.Stat_StatRangedAttackPower] += points
+					}
+				case A_MOD_RANGED_ATTACK_POWER:
+					outStats[proto.Stat_StatRangedAttackPower] += points
+				case A_MOD_DAMAGE_DONE:
+					outStats[proto.Stat_StatSpellPower] += points
 				}
 			}
 		case ITEM_ENCHANTMENT_COMBAT_SPELL:

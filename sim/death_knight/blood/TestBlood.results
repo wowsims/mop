@@ -771,8 +771,8 @@ dps_results: {
 dps_results: {
  key: "TestBlood-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 382226.91995
-  tps: 1.90227303759e+06
+  dps: 381592.33682
+  tps: 1.90254896783e+06
   dtps: 158060.4137
   hps: 172748.51118
  }

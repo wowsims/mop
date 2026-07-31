@@ -689,8 +689,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 393012.61836
-  tps: 281381.32409
+  dps: 391998.33325
+  tps: 280431.62101
   hps: 20.83583
  }
 }
