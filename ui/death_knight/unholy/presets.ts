@@ -20,6 +20,14 @@ import PrebisGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Prebis', PrebisGear);
 export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5Gear);
 
+// Real creature ID for the Malkorok (DPS) preset target (see sim/encounters/soo/malkorok_ai.go).
+const MALKOROK_BOSS_ID = 71454;
+
+const malkorokEncounterCheck = {
+	condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.primaryTarget.id !== MALKOROK_BOSS_ID,
+	message: "This rotation's Anti-Magic Shell timing is tuned for the Malkorok (DPS) encounter. Against any other target, that cast becomes an unconditional cast-on-cooldown instead of the intended reactive one.",
+};
+
 export const DEFAULT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Festerblight', FesterblightApl, {
 	onLoad: (player: Player<Spec.SpecUnholyDeathKnight>) =>
@@ -33,7 +41,9 @@ export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('F
 			player,
 		),
 });
-export const DEFAULT_MALKOROK_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default (Malkorok)', DefaultMalkorokApl);
+export const DEFAULT_MALKOROK_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default (Malkorok)', DefaultMalkorokApl, {
+	onLoad: (player: Player<Spec.SpecUnholyDeathKnight>) => PresetUtils.makeSpecChangeWarningToast([malkorokEncounterCheck], player),
+});
 export const FESTERBLIGHT_MALKOROK_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Festerblight (Malkorok)', FesterblightMalkorokApl, {
 	onLoad: (player: Player<Spec.SpecUnholyDeathKnight>) =>
 		PresetUtils.makeSpecChangeWarningToast(
@@ -42,6 +52,7 @@ export const FESTERBLIGHT_MALKOROK_ROTATION_PRESET = PresetUtils.makePresetAPLRo
 					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.targets.length > 1,
 					message: 'Festerblight is a single-target rotation. Use the Default rotation for multiple targets.',
 				},
+				malkorokEncounterCheck,
 			],
 			player,
 		),
@@ -110,8 +121,6 @@ export const P5_PRESET = PresetUtils.makePresetBuildFromJSON('P5', Spec.SpecUnho
 
 export const DefaultOptions = UnholyDeathKnight_Options.create({
 	classOptions: {},
-	avgAmsHit: 170000,
-	avgAmsSuccessRate: 1,
 	amsNumTicks: 1,
 });
 

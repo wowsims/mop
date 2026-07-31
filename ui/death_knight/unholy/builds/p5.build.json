@@ -339,6 +339,32 @@
 			"priorityList": [
 				{
 					"action": {
+						"condition": {
+							"cmp": {
+								"op": "OpLe",
+								"lhs": {
+									"bossSpellTimeToReady": {
+										"spellId": {
+											"spellId": 143857
+										}
+									}
+								},
+								"rhs": {
+									"const": {
+										"val": "5s"
+									}
+								}
+							}
+						},
+						"castSpell": {
+							"spellId": {
+								"spellId": 48707
+							}
+						}
+					}
+				},
+				{
+					"action": {
 						"autocastOtherCooldowns": {}
 					}
 				},
@@ -3847,7 +3873,7 @@
 		"executeProportion90": 0.9,
 		"targets": [
 			{
-				"id": 846,
+				"id": 71454,
 				"name": "Malkorok (DPS) 25 H",
 				"level": 93,
 				"mobType": "MobTypeHumanoid",
