@@ -1257,6 +1257,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestCombat-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 91176.00896
+  tps: 64198.83071
+ }
+}
+dps_results: {
  key: "TestCombat-AllItems-Nine-TailBattlegear"
  value: {
   dps: 112188.61831
@@ -1301,8 +1308,8 @@ dps_results: {
 dps_results: {
  key: "TestCombat-AllItems-PhaseFingers-4697"
  value: {
-  dps: 98258.60885
-  tps: 69165.30608
+  dps: 98939.04075
+  tps: 69677.12484
  }
 }
 dps_results: {

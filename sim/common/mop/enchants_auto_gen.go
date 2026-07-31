@@ -3,6 +3,7 @@ package mop
 import (
 	"github.com/wowsims/mop/sim/common/shared"
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func RegisterAllEnchants() {
@@ -48,6 +49,17 @@ func RegisterAllEnchants() {
 			Outcome:            core.OutcomeLanded,
 			RequireDamageDealt: false,
 		},
+	})
+
+	// Permanently enchants a melee weapon to sometimes increase your dodge by 1650 for 7s when dealing melee
+	// damage.
+	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
+		Name:               "Enchant Weapon - River's Song",
+		EnchantID:          4446,
+		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		Outcome:            core.OutcomeLanded,
+		RequireDamageDealt: false,
 	})
 
 	// Permanently attaches Lord Blastington's special scope to a ranged weapon, sometimes increasing Agility
@@ -117,4 +129,18 @@ func RegisterAllEnchants() {
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: true,
 	})
+
+	// OnUseEnchants
+
+	// Phase Fingers: map[9:2880] for 10000ms, 60000ms cooldown, category 1141
+	shared.NewActiveStatBonusEffect(shared.ActiveStatBonusEffect{
+		EnchantID:          4697,
+		RequiredProfession: proto.Profession_Engineering,
+	})
+
+	// Skipped
+	// Not simulated: Goblin Glider: "Goblin Glider" (126389) - ignored aura type 105
+	// https://www.wowhead.com/mop/spell=126389
+	// Not simulated: Watergliding Jets: "Watergliding Jets" (131459) - ignored aura type 104
+	// https://www.wowhead.com/mop/spell=131459
 }

@@ -2,9 +2,9 @@ package dbc
 
 import "slices"
 
-// DamageEffect describes a direct-damage effect reached from an item or enchant effect
-// chain. Damage procs carry no stats, so the stat-based resolution in ParseStatEffect
-// returns nothing for them and the effect is dropped before it is ever reported.
+// Describes a direct-damage effect reached from an item or enchant effect chain. Damage procs
+// carry no stats, so the stat-based resolution in ParseStatEffect returns nothing for them and
+// the effect is dropped before it is ever reported.
 type DamageEffect struct {
 	SpellID          int   // spell that deals the damage
 	SchoolMask       int32 // DBC school mask of the damage spell
@@ -14,12 +14,12 @@ type DamageEffect struct {
 	IsLeech          bool    // E_HEALTH_LEECH also heals the caster, which is not modelled here
 }
 
-// directDamageEffectTypes are the effect types whose value is flat damage.
-// E_WEAPON_PERCENT_DAMAGE is deliberately absent: it is a percentage of weapon damage
-// rather than an amount, so it needs different wiring than a flat min/max roll.
+// The effect types whose value is flat damage. E_WEAPON_PERCENT_DAMAGE is deliberately
+// absent: it is a percentage of weapon damage rather than an amount, so it needs different
+// wiring than a flat min/max roll.
 var directDamageEffectTypes = []SpellEffectType{E_SCHOOL_DAMAGE, E_HEALTH_LEECH}
 
-// DamageRange resolves the effect's damage to a min and max amount.
+// Resolves the effect's damage to a min and max amount.
 func (effect *SpellEffect) DamageRange() (float64, float64) {
 	// An explicit die roll is the amount the client displays, so it wins over the scaling
 	// coefficient. Both agree on the mean, but the coefficient's variance is wider: Iron
@@ -36,8 +36,8 @@ func (effect *SpellEffect) DamageRange() (float64, float64) {
 	return float64(effect.EffectBasePoints), float64(effect.EffectBasePoints)
 }
 
-// ResolveDamageEffect walks the trigger chain below spellID and returns the first direct
-// damage effect it reaches, or nil if the chain deals no flat damage.
+// Walks the trigger chain below spellID and returns the first direct damage effect it
+// reaches, or nil if the chain deals no flat damage.
 func ResolveDamageEffect(spellID int) *DamageEffect {
 	return resolveDamageEffect(spellID, map[int]bool{})
 }

@@ -1289,6 +1289,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestAssassination-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 104025.71407
+  tps: 73117.41545
+ }
+}
+dps_results: {
  key: "TestAssassination-AllItems-Nine-TailBattlegear"
  value: {
   dps: 121437.46405

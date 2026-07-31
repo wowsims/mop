@@ -42,7 +42,7 @@ func (gem *Gem) IsDisabledInChallengeMode() bool {
 		switch gem.Effects[idx] {
 		case ITEM_ENCHANTMENT_EQUIP_SPELL: //Buff
 			spell := dbcInstance.Spells[gem.EffectArgs[idx]]
-			if spell.HasAttributeAt(11, 0x10000) { // NOT_ACTIVE_IN_CHALLENGE_MODE
+			if spell.NotActiveInChallengeMode() {
 				return true
 			}
 		}

@@ -1423,6 +1423,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestWindwalker-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 461539.28765
+  tps: 447514.52239
+  hps: 10949.604
+ }
+}
+dps_results: {
  key: "TestWindwalker-AllItems-NitroBoosts-4223"
  value: {
   dps: 516949.99649

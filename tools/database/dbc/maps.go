@@ -18,6 +18,10 @@ var MapArmorSubclassToArmorType = map[int]proto.ArmorType{
 	0:                           proto.ArmorType_ArmorTypeUnknown,
 }
 
+// Maps a SpellEffect's MiscValue for A_MOD_STAT, which is a unit stat index
+// (0 = strength).
+// Not interchangeable with MapBonusStatIndexToStat,
+// which reads the wider item stat index where 0 means mana and 4 means strength.
 func MapMainStatToStat(index int) (proto.Stat, bool) {
 	switch index {
 	case 0:
@@ -33,6 +37,10 @@ func MapMainStatToStat(index int) (proto.Stat, bool) {
 	}
 	return 0, false
 }
+
+// Maps the item stat index used by ItemSparse.StatType,
+// SpellItemEnchantment.EffectArg and random suffix effect args.
+// See MapMainStatToStat for the unrelated unit stat index that A_MOD_STAT uses.
 func MapBonusStatIndexToStat(index int) (proto.Stat, bool) {
 	switch index {
 	case 0: // Mana

@@ -27,7 +27,7 @@ type Enchant struct {
 	EffectName         string
 }
 
-// OnUseEffect synthesises the on-use effect of an ITEM_ENCHANTMENT_USE_SPELL entry.
+// Synthesises the on-use effect of an ITEM_ENCHANTMENT_USE_SPELL entry.
 // The enchantment itself carries no trigger data, so the cooldown, spell category and
 // category cooldown come from the spell it casts. Most of these are engineering tinkers
 // whose actual buff is server-scripted and therefore not reachable from SpellEffect, but
@@ -51,6 +51,25 @@ func (enchant *Enchant) OnUseEffect() (ItemEffect, bool) {
 		SpellCategoryID:      int(spell.Category),
 		CategoryCoolDownMSec: int(spell.CategoryRecoveryTime),
 	}, true
+}
+
+// Assembles a proc effect whose stats come from an explicitly linked buff spell instead of
+// from a chain resolved out of SpellEffect. The trigger data - proc
+// rate, its modifiers and the internal cooldown - still comes from the enchant's own spell,
+// and the buff spell supplies the stats, duration and stack count.
+//
+// hasStats is false when the buff applies something that is not a stat, such as the damage
+// absorb behind Colossus.
+func (enchant *Enchant) buildLinkedProcEffect(buffSpellID int) (*proto.ItemEffect, bool) {
+	trigger := ItemEffect{TriggerType: ITEM_SPELLTRIGGER_CHANCE_ON_HIT, SpellID: enchant.SpellId}
+
+	parsedEffect := makeBaseProto(&trigger, buffSpellID)
+	assignTrigger(&trigger, buffSpellID, parsedEffect)
+
+	props := buildScalingProps(buffSpellID, 0, enchant.SpellId)
+	parsedEffect.ScalingOptions[0] = props
+
+	return parsedEffect, len(props.Stats) > 0
 }
 
 func (enchant *Enchant) HasEnchantEffect() bool {
@@ -95,6 +114,13 @@ func (enchant *Enchant) ToProto() *proto.UIEnchant {
 		parsedEffect, hasStats := eff.BuildProto(0, 0)
 		// Damage procs grant no stats, so requiring stats here dropped them without a trace.
 		if hasStats || ResolveDamageEffect(enchant.SpellId) != nil {
+			uiEnchant.EnchantEffects = append(uiEnchant.EnchantEffects, parsedEffect)
+		}
+	}
+
+	// Enchants whose buff spell is only reachable through an explicit link.
+	for _, buffSpellID := range EnchantBuffSpellOverrides[enchant.EffectId] {
+		if parsedEffect, hasStats := enchant.buildLinkedProcEffect(buffSpellID); hasStats {
 			uiEnchant.EnchantEffects = append(uiEnchant.EnchantEffects, parsedEffect)
 		}
 	}

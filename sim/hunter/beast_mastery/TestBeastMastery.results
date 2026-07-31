@@ -1407,6 +1407,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBeastMastery-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 409000.89845
+  tps: 187846.72724
+  hps: 17.66285
+ }
+}
+dps_results: {
  key: "TestBeastMastery-AllItems-NitroBoosts-4223"
  value: {
   dps: 466214.63435
@@ -1499,6 +1507,14 @@ dps_results: {
  value: {
   dps: 409000.89845
   tps: 187846.72724
+  hps: 17.66285
+ }
+}
+dps_results: {
+ key: "TestBeastMastery-AllItems-PridefulGladiator'sChainGauntlets-103417"
+ value: {
+  dps: 443153.35578
+  tps: 192196.97546
   hps: 17.66285
  }
 }

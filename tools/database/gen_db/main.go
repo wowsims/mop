@@ -94,7 +94,7 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Error loading DBC data %v", err))
 	}
-	_, err = database.LoadAndWriteItemStatEffects(helper, inputsDir)
+	_, err = database.LoadAndWriteSocketBonuses(helper, inputsDir)
 	if err != nil {
 		panic(fmt.Sprintf("Error loading DBC data %v", err))
 	}

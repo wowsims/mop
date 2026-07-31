@@ -689,7 +689,7 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 453202.93061
+  dps: 453175.53587
   tps: 428869.16698
   hps: 15.24862
  }
@@ -1399,6 +1399,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestRetribution-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 398660.86479
+  tps: 379308.2249
+  hps: 14.97429
+ }
+}
+dps_results: {
  key: "TestRetribution-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 398571.28062
@@ -1548,6 +1556,14 @@ dps_results: {
   dps: 419937.09306
   tps: 398638.76865
   hps: 14.97429
+ }
+}
+dps_results: {
+ key: "TestRetribution-AllItems-PridefulGladiator'sScaledGauntlets-103440"
+ value: {
+  dps: 422966.62231
+  tps: 399252.22559
+  hps: 15.58128
  }
 }
 dps_results: {

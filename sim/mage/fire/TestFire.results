@@ -600,7 +600,7 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 127874.58874
+  dps: 127873.99343
   tps: 124203.13228
  }
 }
@@ -1212,6 +1212,13 @@ dps_results: {
  value: {
   dps: 128024.53275
   tps: 124753.35178
+ }
+}
+dps_results: {
+ key: "TestFire-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 117334.96363
+  tps: 114152.05807
  }
 }
 dps_results: {

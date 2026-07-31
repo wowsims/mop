@@ -614,7 +614,7 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 232824.68125
+  dps: 232824.42937
   tps: 147428.0359
  }
 }
@@ -1240,6 +1240,13 @@ dps_results: {
  value: {
   dps: 219918.40481
   tps: 140006.9288
+ }
+}
+dps_results: {
+ key: "TestElemental-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 208407.57539
+  tps: 134170.46909
  }
 }
 dps_results: {

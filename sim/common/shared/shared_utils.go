@@ -52,7 +52,7 @@ func NewProcStatBonusEffectWithDamageProc(config ProcStatBonusEffect, damage Dam
 		procMask = damage.ProcMask
 	}
 
-	factory_StatBonusEffect(config, func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo {
+	factory_ProcStatBonusEffect(config, func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo {
 		character := agent.GetCharacter()
 
 		procSpell := character.RegisterSpell(core.SpellConfig{
@@ -79,7 +79,7 @@ func NewProcStatBonusEffectWithDamageProc(config ProcStatBonusEffect, damage Dam
 	})
 }
 
-func factory_StatBonusEffect(config ProcStatBonusEffect, extraSpell func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo) {
+func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo) {
 	isEnchant := config.EnchantID != 0
 
 	// Ignore empty dummy implementations
@@ -256,7 +256,7 @@ func NewProcStatBonusEffectWithVariants(config ProcStatBonusEffect, variants []I
 }
 
 func NewProcStatBonusEffect(config ProcStatBonusEffect) {
-	factory_StatBonusEffect(config, nil)
+	factory_ProcStatBonusEffect(config, nil)
 }
 
 func NewSimpleStatActiveWithVariants(variants []ItemVariant) {
@@ -274,61 +274,122 @@ func NewSimpleStatActiveWithVariants(variants []ItemVariant) {
 	core.AddEffectsToTest = true
 }
 
+// Describes an on-use effect on an item or an enchant. Only the identity and the profession
+// gate are stated here; the stats, buff duration, cooldown and shared cooldown all come from
+// the DBC
+type ActiveStatBonusEffect struct {
+	ItemID    int32
+	EnchantID int32
+
+	// Registration is skipped unless the character has this profession.
+	// ProfessionUnknown means there is no requirement.
+	RequiredProfession proto.Profession
+}
+
+// Registers an on-use effect from its database entry.
+func NewActiveStatBonusEffect(config ActiveStatBonusEffect) {
+	factory_ActiveStatBonusEffect(config)
+}
+
 func NewSimpleStatActive(itemID int32) {
+	factory_ActiveStatBonusEffect(ActiveStatBonusEffect{ItemID: itemID})
+}
+
+// The on-use counterpart to factory_ProcStatBonusEffect. The shared cooldown timer is keyed
+// on the effect's spell category, which is how core already keys them - 1141 is "Item - Burst
+// Trinket", 1283 is "Engineering - Belt Enchantment".
+func factory_ActiveStatBonusEffect(config ActiveStatBonusEffect) {
+	isEnchant := config.EnchantID != 0
+
+	var effectFn func(id int32, effect core.ApplyEffect)
+	var effectID int32
 
 	// Soft fail to allow for overrides for bad effects
-	if core.HasItemEffect(itemID) {
-		return
+	if isEnchant {
+		if core.HasEnchantEffect(config.EnchantID) {
+			return
+		}
+		effectID = config.EnchantID
+		effectFn = core.NewEnchantEffect
+	} else {
+		if core.HasItemEffect(config.ItemID) {
+			return
+		}
+		effectID = config.ItemID
+		effectFn = core.NewItemEffect
 	}
 
-	core.NewItemEffect(itemID, func(agent core.Agent, scalingSelector proto.ItemLevelState) {
-		item := core.GetItemByID(itemID)
-		if item == nil {
-			panic(fmt.Sprintf("No item with ID: %d", itemID))
+	effectFn(effectID, func(agent core.Agent, scalingSelector proto.ItemLevelState) {
+		character := agent.GetCharacter()
+		if config.RequiredProfession != proto.Profession_ProfessionUnknown && !character.HasProfession(config.RequiredProfession) {
+			return
 		}
 
-		itemEffects := item.ItemEffects
-		if len(itemEffects) == 0 {
-			panic(fmt.Sprintf("No effects data for item with ID: %d", itemID))
+		var effects []*proto.ItemEffect
+		var enchantName string
+		if isEnchant {
+			ench := core.GetEnchantByEffectID(effectID)
+			if ench == nil {
+				panic(fmt.Sprintf("No enchant with effect ID: %d", effectID))
+			}
+			effects = ench.EnchantEffects
+			enchantName = ench.Name
+			// Enchants have no upgrade levels, so they only ever carry the base state.
+			scalingSelector = proto.ItemLevelState_Base
+		} else {
+			item := core.GetItemByID(effectID)
+			if item == nil {
+				panic(fmt.Sprintf("No item with ID: %d", effectID))
+			}
+			if len(item.ItemEffects) == 0 {
+				panic(fmt.Sprintf("No effects data for item with ID: %d", effectID))
+			}
+			effects = item.ItemEffects
 		}
 
-		hasEffect := false
-		for idx, itemEffect := range itemEffects {
-
-			onUseData := itemEffect.GetOnUse()
+		registered := false
+		for _, effect := range effects {
+			onUseData := effect.GetOnUse()
 			if onUseData == nil {
-				if !hasEffect && idx == len(itemEffects)-1 {
-					panic(fmt.Sprintf("No active effects found for item with ID: %d!", itemID))
-				}
 				continue
 			}
 
-			hasEffect = true
-			spellConfig := core.SpellConfig{
-				ActionID: core.ActionID{ItemID: itemID},
+			tempStats := stats.FromProtoMap(effect.ScalingOptions[int32(scalingSelector)].Stats)
+			if isEnchant && tempStats.Equals(stats.Stats{}) {
+				continue
 			}
 
-			character := agent.GetCharacter()
+			actionID := core.ActionID{ItemID: effectID}
+			label := effect.BuffName
+			if isEnchant {
+				actionID = core.ActionID{SpellID: effect.BuffId}
+				label = enchantName
+			}
+
+			spellConfig := core.SpellConfig{ActionID: actionID}
 			spellConfig.Cast.CD = core.Cooldown{
 				Timer:    character.NewTimer(),
 				Duration: time.Duration(onUseData.CooldownMs) * time.Millisecond,
 			}
-			// if SpellCategoryID is 0 we seemingly do not share cd with anything
-			// Say Darkmoon Card: Earthquake and Ruthless Gladiator's Emblem of Cruelty even though tooltip shows as such
+
 			if onUseData.CategoryId > 0 {
 				sharedCDDuration := time.Duration(onUseData.CategoryCooldownMs) * time.Millisecond
 				if sharedCDDuration == 0 {
-					sharedCDDuration = time.Millisecond * time.Duration(itemEffect.EffectDurationMs)
+					sharedCDDuration = time.Millisecond * time.Duration(effect.EffectDurationMs)
 				}
 
-				sharedCDTimer := character.GetOrInitSpellCategoryTimer(onUseData.CategoryId)
 				spellConfig.Cast.SharedCD = core.Cooldown{
-					Timer:    sharedCDTimer,
+					Timer:    character.GetOrInitSpellCategoryTimer(onUseData.CategoryId),
 					Duration: sharedCDDuration,
 				}
 			}
 
-			core.RegisterTemporaryStatsOnUseCD(character, itemEffect.BuffName, stats.FromProtoMap(itemEffect.ScalingOptions[int32(scalingSelector)].Stats), time.Millisecond*time.Duration(itemEffect.EffectDurationMs), spellConfig)
+			core.RegisterTemporaryStatsOnUseCD(character, label, tempStats, time.Millisecond*time.Duration(effect.EffectDurationMs), spellConfig)
+			registered = true
+		}
+
+		if !registered && !isEnchant {
+			panic(fmt.Sprintf("No active effects found for item with ID: %d!", effectID))
 		}
 	})
 }
@@ -564,9 +625,9 @@ func GetOutcome(spell *core.Spell, outcome OutcomeType) core.OutcomeApplier {
 	}
 }
 
-// getProcFromDBC fills a trigger's proc rate, internal cooldown and proc chance
-// from the item or enchant's database entry, so that a generated effect only has to state
-// what the database cannot carry.
+// Fills a trigger's proc rate, internal cooldown and proc chance from the item or enchant's
+// database entry, so that a generated effect only has to state what the database cannot
+// carry.
 func getProcFromDBC(character *core.Character, trigger *core.ProcTrigger, effectID int32, isEnchant bool) {
 	var effects []*proto.ItemEffect
 	if isEnchant {
@@ -601,7 +662,7 @@ func getProcFromDBC(character *core.Character, trigger *core.ProcTrigger, effect
 func NewProcDamageEffect(config ProcDamageEffect) {
 	isEnchant := config.EnchantID != 0
 
-	// Soft fail to allow for overrides for bad effects, same as factory_StatBonusEffect.
+	// Soft fail to allow for overrides for bad effects, same as factory_ProcStatBonusEffect.
 	// Without this, hand-writing an effect that is also generated panics on the duplicate
 	// registration instead of letting the manual one win.
 	if isEnchant {
@@ -629,20 +690,21 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 	effectFn(effectID, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
+		triggerConfig := config.Trigger
 		minDmg := config.MinDmg
 		maxDmg := config.MaxDmg
 
-		if core.ActionID.IsEmptyAction(config.Trigger.ActionID) {
-			config.Trigger.ActionID = triggerActionID
+		if core.ActionID.IsEmptyAction(triggerConfig.ActionID) {
+			triggerConfig.ActionID = triggerActionID
 		}
 
 		if config.TriggerDPM != nil {
-			config.Trigger.DPM = config.TriggerDPM(character)
-		} else if config.Trigger.DPM == nil && config.Trigger.ProcChance == 0 {
+			triggerConfig.DPM = config.TriggerDPM(character)
+		} else if triggerConfig.DPM == nil && triggerConfig.ProcChance == 0 {
 			// Damage amounts are not carried in the database, but proc rates are, so a
 			// generated damage proc does not have to restate its rate. Same source as
-			// factory_StatBonusEffect uses.
-			getProcFromDBC(character, &config.Trigger, effectID, isEnchant)
+			// factory_ProcStatBonusEffect uses.
+			getProcFromDBC(character, &triggerConfig, effectID, isEnchant)
 		}
 
 		damageSpell := character.RegisterSpell(core.SpellConfig{
@@ -660,7 +722,6 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 			},
 		})
 
-		triggerConfig := config.Trigger
 		triggerConfig.TriggerImmediately = true
 		triggerConfig.Handler = func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 			// Land the extra damage on whatever was hit, not on the primary target.

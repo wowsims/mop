@@ -780,10 +780,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 498969.08725
-  tps: 3.13101477497e+06
-  dtps: 23103.38316
-  hps: 45967.33106
+  dps: 499424.48076
+  tps: 3.1343108633e+06
+  dtps: 22569.06783
+  hps: 45971.15716
  }
 }
 dps_results: {
@@ -1584,6 +1584,15 @@ dps_results: {
   dps: 458620.21754
   tps: 2.85765467879e+06
   dtps: 24398.66595
+  hps: 45637.61205
+ }
+}
+dps_results: {
+ key: "TestGuardian-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 459384.59629
+  tps: 2.85804541412e+06
+  dtps: 24899.23455
   hps: 45637.61205
  }
 }

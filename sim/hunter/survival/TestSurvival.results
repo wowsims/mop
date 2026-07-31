@@ -614,7 +614,7 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 454906.51868
+  dps: 454903.97034
   tps: 363268.09574
  }
 }
@@ -1236,6 +1236,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSurvival-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 401544.07033
+  tps: 318457.11343
+ }
+}
+dps_results: {
  key: "TestSurvival-AllItems-NitroBoosts-4223"
  value: {
   dps: 466637.78202
@@ -1317,6 +1324,13 @@ dps_results: {
  value: {
   dps: 401544.07033
   tps: 318457.11343
+ }
+}
+dps_results: {
+ key: "TestSurvival-AllItems-PridefulGladiator'sChainGauntlets-103417"
+ value: {
+  dps: 435104.01322
+  tps: 343931.26368
  }
 }
 dps_results: {

@@ -60,3 +60,21 @@ func (s *Spell) HasAttributeAt(index int, flag int) bool {
 	}
 	return (s.Attributes[index] & flag) != 0
 }
+
+// Reports whether the spell's effect amounts come from the item level of the item carrying it
+// rather than from a class curve. On such an effect EffectBasePoints is a stale snapshot and
+// only the scaling coefficient resolves the real amount.
+func (s *Spell) ScalesWithItemLevel() bool {
+	return s.HasAttributeAt(ATTR_INDEX_EX_11, ATTR_EX_11_SCALES_WITH_ITEM_LEVEL)
+}
+
+// Reports whether the spell is suppressed while challenge mode scaling applies.
+func (s *Spell) NotActiveInChallengeMode() bool {
+	return s.HasAttributeAt(ATTR_INDEX_EX_11, ATTR_EX_11_NOT_ACTIVE_IN_CHALLENGE_MODE)
+}
+
+// Reports whether the spell may be triggered by another proc, which decides whether the proc
+// masks carry their ...Proc bits.
+func (s *Spell) CanProcFromProcs() bool {
+	return s.HasAttributeAt(ATTR_INDEX_EX_3, ATTR_EX_3_CAN_PROC_FROM_PROCS)
+}

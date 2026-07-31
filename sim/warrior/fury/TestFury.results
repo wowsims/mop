@@ -1243,6 +1243,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestFury-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 273571.84997
+  tps: 174196.35179
+ }
+}
+dps_results: {
  key: "TestFury-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 273571.84997
@@ -1380,6 +1387,13 @@ dps_results: {
  value: {
   dps: 285989.8812
   tps: 181399.54359
+ }
+}
+dps_results: {
+ key: "TestFury-AllItems-PridefulGladiator'sPlateGauntlets-103526"
+ value: {
+  dps: 282281.78857
+  tps: 177366.21608
  }
 }
 dps_results: {

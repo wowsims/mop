@@ -333,9 +333,12 @@ var ItemSetGladiatorsPursuit = core.NewItemSet(core.ItemSet{
 	},
 })
 
-func (hunter *Hunter) addBloodthirstyGloves() {
-	hunter.RegisterPvPGloveMod(
-		[]int32{64991, 64709, 60424, 65544, 70534, 70260, 70441, 72369, 73717, 73583, 93495, 98821, 102737, 84841, 94453, 84409, 91577, 85020, 103220, 91224, 91225, 99848, 100320, 100683, 102934, 103417, 100123},
+// https://www.wowhead.com/mop/spell=61255
+var bloodthirstyGloveItemIDs = []int32{64991, 64709, 60424, 65544, 70534, 70260, 70441, 72369, 73717, 73583, 93495, 98821, 102737, 84841, 94453, 84409, 91577, 85020, 103220, 91224, 91225, 99848, 100320, 100683, 102934, 103417, 100123}
+
+func init() {
+	core.NewPvPGloveEffect(
+		bloodthirstyGloveItemIDs,
 		core.SpellModConfig{
 			ClassMask: HunterSpellExplosiveTrap | HunterSpellBlackArrow,
 			Kind:      core.SpellMod_Cooldown_Flat,

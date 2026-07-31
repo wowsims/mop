@@ -16,7 +16,6 @@ type ItemEffect struct {
 	CoolDownMSec         int // Cooldown in milliseconds
 	CategoryCoolDownMSec int // Category cooldown in milliseconds
 	SpellCategoryID      int // Spell category ID
-	MaxCumulativeStacks  int // Max cumulative stacks
 	SpellID              int // Spell ID
 	ChrSpecializationID  int // Character specialization ID
 	ParentItemID         int // Parent item ID
@@ -32,7 +31,6 @@ func (e *ItemEffect) ToMap() map[string]interface{} {
 		"CoolDownMSec":         e.CoolDownMSec,
 		"CategoryCoolDownMSec": e.CategoryCoolDownMSec,
 		"SpellCategoryID":      e.SpellCategoryID,
-		"MaxCumulativeStacks":  e.MaxCumulativeStacks,
 		"SpellID":              e.SpellID,
 		"ChrSpecializationID":  e.ChrSpecializationID,
 		"ParentItemID":         e.ParentItemID,
@@ -125,8 +123,8 @@ func assignTrigger(e *ItemEffect, statsSpellID int, pe *proto.ItemEffect) {
 	}
 }
 
-// BuildProto assembles the proto for an effect and reports whether any stats were
-// resolved. Callers that only care about stat effects should use ToProto, which drops
+// Assembles the proto for an effect and reports whether any stats were resolved.
+// Callers that only care about stat effects should use ToProto, which drops
 // the effect when there are none; callers that need the trigger regardless (on-use
 // enchants carry a real cooldown even when their buff is server-scripted) use this.
 func (e *ItemEffect) BuildProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
@@ -151,6 +149,17 @@ func (e *ItemEffect) ToProto(itemLevel int, levelState proto.ItemLevelState) (*p
 }
 
 func resolveStatsSpell(spellID int) int {
+	return resolveStatsSpellVisited(spellID, map[int]bool{})
+}
+
+func resolveStatsSpellVisited(spellID int, visited map[int]bool) int {
+	// A proc chain that loops back on itself would otherwise recurse until the stack dies,
+	// the same hazard getSpellEffectRecursive and collectStats already guard against.
+	if visited[spellID] {
+		return spellID
+	}
+	visited[spellID] = true
+
 	effects := dbcInstance.SpellEffectsInOrder(spellID)
 	for _, se := range effects {
 		switch se.EffectAura {
@@ -164,7 +173,7 @@ func resolveStatsSpell(spellID int) int {
 	for _, se := range effects {
 		switch se.EffectAura {
 		case A_PROC_TRIGGER_SPELL, A_PROC_TRIGGER_SPELL_WITH_VALUE:
-			return resolveStatsSpell(se.EffectTriggerSpell)
+			return resolveStatsSpellVisited(se.EffectTriggerSpell, visited)
 		}
 	}
 	return spellID
@@ -218,7 +227,7 @@ func collectStats(spellID, itemLevel int) stats.Stats {
 
 		sp := dbcInstance.Spells[id]
 		for _, se := range dbcInstance.SpellEffectsInOrder(id) {
-			s := se.ParseStatEffect(sp.HasAttributeAt(11, 0x4), itemLevel)
+			s := se.ParseStatEffect(sp.ScalesWithItemLevel(), itemLevel)
 			if s != nil && *s != emptyStats {
 				total.AddInplace(s)
 			} else if se.EffectAura == A_PROC_TRIGGER_SPELL {
@@ -282,8 +291,8 @@ func GetItemEffectForBuffID(itemID int, buffId int) *ItemEffect {
 	return itemEffect
 }
 
-// GetSpellEffectRecursive walks the trigger chain below spellID and returns the
-// effect that triggers spellIDToMatch, or nil. Effects are visited in index order
+// Walks the trigger chain below spellID and returns the effect that triggers
+// spellIDToMatch, or nil. Effects are visited in index order
 // and a branch that does not contain the match does not abort the search of its
 // siblings.
 func GetSpellEffectRecursive(spellIDToMatch int, spellID int) *SpellEffect {
@@ -325,16 +334,22 @@ func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
 		statsSpellID := resolveStatsSpell(e.SpellID)
 		statsSpell := dbcInstance.Spells[statsSpellID]
 		isValidSpell := statsSpell.ID != 0
-		props := buildScalingProps(statsSpellID, int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl), e.SpellID)
-		hasStats := len(props.Stats) > 0
+		baseProps := buildScalingProps(statsSpellID, int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl), e.SpellID)
+		hasStats := len(baseProps.Stats) > 0
 
 		if !isValidSpell {
 			continue
 		}
 
 		if triggerType == ITEM_SPELLTRIGGER_ON_EQUIP && hasStats {
-			for stat, value := range props.Stats {
-				parsed.ScalingOptions[0].Stats[int32(stat)] += value
+			// Fold into every scaling state, resolved at that state's own item level, the way
+			// the proc path below does. Writing only ScalingOptions[Base] left the stat off
+			// the challenge mode and upgrade states entirely, and copying the base value over
+			// would be wrong too since the amount scales with item level.
+			for _, opt := range parsed.ScalingOptions {
+				for stat, value := range buildScalingProps(statsSpellID, int(opt.Ilvl), e.SpellID).Stats {
+					opt.Stats[int32(stat)] += value
+				}
 			}
 			continue
 		} else if triggerType == ITEM_SPELLTRIGGER_ON_EQUIP || triggerType == ITEM_SPELLTRIGGER_CHANCE_ON_HIT || e.CoolDownMSec > 0 {

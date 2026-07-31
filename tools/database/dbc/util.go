@@ -124,56 +124,35 @@ func processEnchantmentEffects(
 				continue
 			}
 			outStats[stat] = float64(effectPoints[i])
-			// If the bonus stat is attack power, copy it to ranged attack power
-			if addRanged && stat == proto.Stat_StatAttackPower {
-				outStats[proto.Stat_StatRangedAttackPower] = float64(effectPoints[i])
-			}
-		case ITEM_ENCHANTMENT_EQUIP_SPELL: //Buff
+		case ITEM_ENCHANTMENT_EQUIP_SPELL:
+			// Buff
+			// The buff's stats come out of the same aura mapping item effects resolve
+			// through, so this only has to accumulate what ParseStatEffect returns rather
+			// than repeat that switch with a second, narrower set of aura types. An
+			// enchantment never scales off item level, hence ilvl 0.
 			for _, spellEffect := range dbcInstance.SpellEffectsInOrder(effectArgs[i]) {
 				if spellEffect.EffectType != E_APPLY_AURA {
 					continue
 				}
-
-				points := float64(spellEffect.EffectBasePoints)
-				switch spellEffect.EffectAura {
-				case A_MOD_STAT:
-					// -1 in MiscValue 0 means all stats
-					if spellEffect.EffectMiscValues[0] == -1 {
-						outStats[proto.Stat_StatAgility] += points
-						outStats[proto.Stat_StatIntellect] += points
-						outStats[proto.Stat_StatSpirit] += points
-						outStats[proto.Stat_StatStamina] += points
-						outStats[proto.Stat_StatStrength] += points
-						continue
-					}
-
-					// MiscValue 0 is a DBC stat index, not a proto.Stat
-					stat, match := MapMainStatToStat(spellEffect.EffectMiscValues[0])
-					if !match {
-						continue
-					}
-					outStats[stat] += points
-				case A_MOD_RATING:
-					for _, rating := range getMatchingRatingMods(spellEffect.EffectMiscValues[0]) {
-						if statMod := RatingModToStat[rating]; statMod != -1 {
-							outStats[statMod] = points
-						}
-					}
-				case A_MOD_ATTACK_POWER:
-					outStats[proto.Stat_StatAttackPower] += points
-					if addRanged {
-						outStats[proto.Stat_StatRangedAttackPower] += points
-					}
-				case A_MOD_RANGED_ATTACK_POWER:
-					outStats[proto.Stat_StatRangedAttackPower] += points
-				case A_MOD_DAMAGE_DONE:
-					outStats[proto.Stat_StatSpellPower] += points
-				}
+				outStats.AddInplace(spellEffect.ParseStatEffect(false, 0))
 			}
 		case ITEM_ENCHANTMENT_COMBAT_SPELL:
 			// Not processed (chance on hit, ignore for now)
 		case ITEM_ENCHANTMENT_USE_SPELL:
 			// Not processed
 		}
+	}
+
+	if addRanged {
+		mirrorAttackPower(outStats)
+	}
+}
+
+// Copies attack power onto ranged attack power. Gear that grants attack power grants both,
+// and no source in the database sets the two separately, so this is applied once over the
+// finished total rather than at each place a stat is written.
+func mirrorAttackPower(outStats *stats.Stats) {
+	if attackPower := outStats[proto.Stat_StatAttackPower]; attackPower != 0 {
+		outStats[proto.Stat_StatRangedAttackPower] = attackPower
 	}
 }

@@ -305,25 +305,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-CraftedDreadfulGladiator'sEmblemofCruelty-93485"
  value: {
-  dps: 394473.64001
-  tps: 368082.37295
-  hps: 4672.16825
+  dps: 394500.40091
+  tps: 368120.02533
+  hps: 4687.09686
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-CraftedDreadfulGladiator'sEmblemofMeditation-93487"
  value: {
-  dps: 390879.94442
-  tps: 364735.64719
-  hps: 4596.14402
+  dps: 390869.5148
+  tps: 364742.21434
+  hps: 4602.82598
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-CraftedDreadfulGladiator'sEmblemofTenacity-93486"
  value: {
-  dps: 392089.52287
-  tps: 365883.4897
-  hps: 4683.20118
+  dps: 391764.08851
+  tps: 365587.45584
+  hps: 4689.04003
  }
 }
 dps_results: {
@@ -377,25 +377,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-CraftedMalevolentGladiator'sEmblemofCruelty-98811"
  value: {
-  dps: 395048.57003
-  tps: 368620.00874
-  hps: 4679.60146
+  dps: 395193.23489
+  tps: 368759.82871
+  hps: 4709.37587
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-CraftedMalevolentGladiator'sEmblemofMeditation-98813"
  value: {
-  dps: 390879.94442
-  tps: 364735.64719
-  hps: 4596.14402
+  dps: 391040.66261
+  tps: 364888.56028
+  hps: 4617.39701
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-CraftedMalevolentGladiator'sEmblemofTenacity-98812"
  value: {
-  dps: 392215.84802
-  tps: 366025.87501
-  hps: 4687.89237
+  dps: 392135.45527
+  tps: 365938.72003
+  hps: 4712.64468
  }
 }
 dps_results: {
@@ -561,25 +561,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-DreadfulGladiator'sEmblemofCruelty-84399"
  value: {
-  dps: 394473.64001
-  tps: 368082.37295
-  hps: 4672.16825
+  dps: 394500.40091
+  tps: 368120.02533
+  hps: 4687.09686
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-DreadfulGladiator'sEmblemofMeditation-84401"
  value: {
-  dps: 390879.94442
-  tps: 364735.64719
-  hps: 4596.14402
+  dps: 390869.5148
+  tps: 364742.21434
+  hps: 4602.82598
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 392089.52287
-  tps: 365883.4897
-  hps: 4683.20118
+  dps: 391764.08851
+  tps: 365587.45584
+  hps: 4689.04003
  }
 }
 dps_results: {
@@ -841,9 +841,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-FortitudeoftheZandalari-96793"
  value: {
-  dps: 399646.2904
-  tps: 373501.99316
-  hps: 4596.14402
+  dps: 399419.72392
+  tps: 373256.40323
+  hps: 4674.05976
  }
 }
 dps_results: {
@@ -905,25 +905,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-GrievousGladiator'sEmblemofCruelty-103210"
  value: {
-  dps: 396952.83091
-  tps: 370384.56235
-  hps: 4713.01595
+  dps: 396897.87504
+  tps: 370307.86087
+  hps: 4766.36549
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-GrievousGladiator'sEmblemofMeditation-103212"
  value: {
-  dps: 390879.94442
-  tps: 364735.64719
-  hps: 4596.14402
+  dps: 390719.06783
+  tps: 364553.33888
+  hps: 4646.56478
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-GrievousGladiator'sEmblemofTenacity-103211"
  value: {
-  dps: 392300.2404
-  tps: 366086.13692
-  hps: 4777.7599
+  dps: 391994.79958
+  tps: 365841.22541
+  hps: 4849.23414
  }
 }
 dps_results: {
@@ -1257,25 +1257,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-MalevolentGladiator'sEmblemofCruelty-91562"
  value: {
-  dps: 395048.57003
-  tps: 368620.00874
-  hps: 4679.60146
+  dps: 395193.23489
+  tps: 368759.82871
+  hps: 4709.37587
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-MalevolentGladiator'sEmblemofMeditation-91564"
  value: {
-  dps: 390879.94442
-  tps: 364735.64719
-  hps: 4596.14402
+  dps: 391040.66261
+  tps: 364888.56028
+  hps: 4617.39701
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-MalevolentGladiator'sEmblemofTenacity-91563"
  value: {
-  dps: 392215.84802
-  tps: 366025.87501
-  hps: 4687.89237
+  dps: 392135.45527
+  tps: 365938.72003
+  hps: 4712.64468
  }
 }
 dps_results: {
@@ -1415,6 +1415,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestFrostMasterfrost-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 390230.88427
+  tps: 364088.97353
+  hps: 4563.52391
+ }
+}
+dps_results: {
  key: "TestFrostMasterfrost-AllItems-NitroBoosts-4223"
  value: {
   dps: 450517.36599
@@ -1537,25 +1545,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-PridefulGladiator'sEmblemofCruelty-103407"
  value: {
-  dps: 398408.62155
-  tps: 371698.26722
-  hps: 4726.36548
+  dps: 398577.86382
+  tps: 371814.51552
+  hps: 4811.84345
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-PridefulGladiator'sEmblemofMeditation-103409"
  value: {
-  dps: 390879.94442
-  tps: 364735.64719
-  hps: 4596.14402
+  dps: 390982.24334
+  tps: 364790.32986
+  hps: 4684.41688
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-PridefulGladiator'sEmblemofTenacity-103408"
  value: {
-  dps: 392150.22203
-  tps: 365954.03144
-  hps: 4806.03841
+  dps: 391972.92269
+  tps: 365840.21554
+  hps: 4912.39414
  }
 }
 dps_results: {
@@ -2201,25 +2209,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-TyrannicalGladiator'sEmblemofCruelty-100066"
  value: {
-  dps: 395782.69538
-  tps: 369301.73524
-  hps: 4696.1706
+  dps: 395557.77494
+  tps: 369050.98713
+  hps: 4716.12872
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-TyrannicalGladiator'sEmblemofMeditation-99990"
  value: {
-  dps: 390879.94442
-  tps: 364735.64719
-  hps: 4596.14402
+  dps: 390727.4254
+  tps: 364561.20667
+  hps: 4614.28514
  }
 }
 dps_results: {
  key: "TestFrostMasterfrost-AllItems-TyrannicalGladiator'sEmblemofTenacity-100092"
  value: {
-  dps: 391924.81255
-  tps: 365694.45079
-  hps: 4701.79059
+  dps: 391580.10005
+  tps: 365380.07971
+  hps: 4763.44014
  }
 }
 dps_results: {

@@ -212,44 +212,6 @@ func init() {
 		character.ItemSwap.RegisterWeaponEnchantBuff(shield.Aura, 4445)
 	})
 
-	// Permanently enchants a melee weapon to sometimes increase your dodge by 1650 for 7s when dealing melee
-	// damage.
-	core.NewEnchantEffect(4446, func(agent core.Agent, _ proto.ItemLevelState) {
-		character := agent.GetCharacter()
-		duration := time.Second * 7
-
-		aura := character.NewTemporaryStatsAura(
-			"River's Song",
-			core.ActionID{SpellID: 116660}.WithTag(1),
-			stats.Stats{stats.DodgeRating: 1650},
-			duration,
-		)
-
-		character.MakeProcTriggerAura(core.ProcTrigger{
-			Name:               "Enchant Weapon - River's Song",
-			Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-			RequireDamageDealt: true,
-			ActionID:           core.ActionID{SpellID: 104441},
-			ICD:                time.Millisecond * 250,
-			DPM: character.NewRPPMProcManager(
-				4446,
-				true,
-				false,
-				core.ProcMaskDirect|core.ProcMaskProc,
-				core.RPPMConfig{
-					PPM:         3.67,
-					Coefficient: 1.0,
-				}.WithHasteMod(),
-			),
-			Outcome: core.OutcomeLanded,
-			Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-				aura.Activate(sim)
-			},
-		})
-
-		character.ItemSwap.RegisterWeaponEnchantBuff(aura.Aura, 4446)
-	})
-
 	// Synapse Springs
 	core.NewEnchantEffect(4898, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
@@ -275,32 +237,6 @@ func init() {
 					},
 					SharedCD: core.Cooldown{
 						Timer:    character.GetOffensiveTrinketCD(),
-						Duration: 10 * time.Second,
-					},
-				},
-			})
-	})
-
-	// Phase Fingers
-	core.NewEnchantEffect(4697, func(agent core.Agent, _ proto.ItemLevelState) {
-		character := agent.GetCharacter()
-		if !character.HasProfession(proto.Profession_Engineering) {
-			return
-		}
-
-		core.RegisterTemporaryStatsOnUseCD(character,
-			"Phase Fingers",
-			stats.Stats{stats.DodgeRating: 2880},
-			10*time.Second,
-			core.SpellConfig{
-				ActionID: core.ActionID{SpellID: 108788},
-				Cast: core.CastConfig{
-					CD: core.Cooldown{
-						Timer:    character.NewTimer(),
-						Duration: time.Minute,
-					},
-					SharedCD: core.Cooldown{
-						Timer:    character.GetDefensiveTrinketCD(),
 						Duration: 10 * time.Second,
 					},
 				},

@@ -12,7 +12,7 @@ type DBC struct {
 	Items                  map[int]Item                       // Item ID
 	Gems                   map[int]Gem                        // Item ID
 	Enchants               map[int]Enchant                    // ItemEchantment ID
-	ItemStatEffects        map[int]ItemStatEffect             // ItemID? something anyway
+	SocketBonuses          map[int]SocketBonus                // Keyed on SpellItemEnchantment.ID
 	SpellEffects           map[int]map[int]SpellEffect        // Search by spellID and effect index
 	SpellEffectsById       map[int]SpellEffect                // Search by effectid
 	Spells                 map[int]Spell                      // Search by spellId
@@ -34,7 +34,7 @@ func NewDBC() *DBC {
 		Items:                  make(map[int]Item),
 		Gems:                   make(map[int]Gem),
 		Enchants:               make(map[int]Enchant),
-		ItemStatEffects:        make(map[int]ItemStatEffect),
+		SocketBonuses:          make(map[int]SocketBonus),
 		SpellEffects:           make(map[int]map[int]SpellEffect),
 		SpellEffectsById:       make(map[int]SpellEffect),
 		Spells:                 make(map[int]Spell),
@@ -69,7 +69,7 @@ func InitDBC() error {
 	if err := dbcInstance.loadEnchants("./assets/db_inputs/dbc/enchants.json"); err != nil {
 		return fmt.Errorf("loading enchants: %w", err)
 	}
-	if err := dbcInstance.loadItemStatEffects("./assets/db_inputs/dbc/item_stat_effects.json"); err != nil {
+	if err := dbcInstance.loadSocketBonuses("./assets/db_inputs/dbc/socket_bonuses.json"); err != nil {
 		return fmt.Errorf("loading item stat effects: %w", err)
 	}
 	if err := dbcInstance.loadSpellEffects("./assets/db_inputs/dbc/spell_effects.json"); err != nil {
@@ -109,9 +109,9 @@ func InitDBC() error {
 	return nil
 }
 
-// SpellEffectsInOrder returns the effects of a spell ordered by effect index.
-// SpellEffects is keyed by index, so ranging over it directly yields a random
-// order and makes any traversal that stops at the first match non-deterministic.
+// Returns the effects of a spell ordered by effect index. SpellEffects is keyed by index, so
+// ranging over it directly yields a random order and makes any traversal that stops at the
+// first match non-deterministic.
 func (d *DBC) SpellEffectsInOrder(spellID int) []SpellEffect {
 	effects := d.SpellEffects[spellID]
 	if len(effects) == 0 {
@@ -297,24 +297,24 @@ func (d *DBC) loadEnchants(filename string) error {
 	return nil
 }
 
-func (d *DBC) loadItemStatEffects(filename string) error {
+func (d *DBC) loadSocketBonuses(filename string) error {
 	data, err := ReadGzipFile(filename)
 	if err != nil {
 		return err
 	}
 
-	var effects []ItemStatEffect
-	if err = json.Unmarshal(data, &effects); err != nil {
+	var bonuses []SocketBonus
+	if err = json.Unmarshal(data, &bonuses); err != nil {
 		return ParseError{
 			Source: filename,
-			Field:  "ItemStatEffect",
+			Field:  "SocketBonus",
 			Reason: err.Error(),
 		}
 	}
 
-	for i := range effects {
-		effect := effects[i]
-		d.ItemStatEffects[effect.ID] = effect
+	for i := range bonuses {
+		bonus := bonuses[i]
+		d.SocketBonuses[bonus.ID] = bonus
 	}
 	return nil
 }

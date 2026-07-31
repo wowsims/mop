@@ -11,6 +11,14 @@ func RegisterAllOnUseCds() {
 
 	// {{ .Name }}
 {{- range .Entries }}
+	{{- if .Skipped}}
+	{{- range (.Tooltip | formatStrings 100) }}
+	// Not simulated: {{.}}
+	{{- end}}
+	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
+	{{- end}}
+	{{- else}}
 	{{if not .Supported}}
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -48,6 +56,7 @@ func RegisterAllOnUseCds() {
 	})
 	{{- end}}
 	{{- end}}
+	{{- end}}
 {{- end }}
 
 {{- end }}
@@ -64,6 +73,14 @@ func RegisterAllProcs() {
 
 	// {{ .Name }}
 {{- range .Entries }}
+	{{- if .Skipped}}
+	{{- range (.Tooltip | formatStrings 100) }}
+	// Not simulated: {{.}}
+	{{- end}}
+	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
+	{{- end}}
+	{{- else}}
 	{{if not .Supported}}
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -125,6 +142,7 @@ func RegisterAllProcs() {
 	// })
 	{{- end}}
 	{{- end}}
+	{{- end}}
 {{- end }}
 
 {{- end }}
@@ -134,6 +152,7 @@ const TmplStrEnchant = `package mop
 
 import (
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
  	"github.com/wowsims/mop/sim/common/shared"
 )
 
@@ -142,6 +161,14 @@ func RegisterAllEnchants() {
 
 	// {{ .Name }}
 {{- range .Entries }}
+	{{- if .Skipped}}
+	{{- range (.Tooltip | formatStrings 100) }}
+	// Not simulated: {{.}}
+	{{- end}}
+	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
+	{{- end}}
+	{{- else}}
 	{{if not .Supported}}
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -151,7 +178,15 @@ func RegisterAllEnchants() {
 	{{- range (.Tooltip | formatStrings 100) }}
 	// {{.}}
 	{{- end}}
-	{{- if .Damage}}
+	{{- if .OnUse}}
+	{{- $profession := .Profession }}
+	{{with index .Variants 0 -}}
+	shared.NewActiveStatBonusEffect(shared.ActiveStatBonusEffect{
+		EnchantID:          {{ .ID }},
+		RequiredProfession: proto.Profession_{{ $profession }},
+	})
+	{{- end}}
+	{{- else if .Damage}}
 	{{- if .Supported}}
 	shared.NewProcDamageEffect(shared.ProcDamageEffect{
 		{{with index .Variants 0 -}}
@@ -215,6 +250,7 @@ func RegisterAllEnchants() {
 	//	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
 	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
 	// })
+	{{- end}}
 	{{- end}}
 {{- end }}
 

@@ -1138,8 +1138,19 @@ const (
 		PROC_FLAG_DEAL_HELPFUL_SPELL
 )
 
+// Spell attribute flags, named after the Attributes column they live in: ATTR_EX_3 is a flag
+// in Attributes[3]. Read them through the Spell helpers rather than indexing Attributes.
 const (
 	ATTR_EX_3_CAN_PROC_FROM_PROCS int = 0x4000000
+
+	ATTR_EX_11_SCALES_WITH_ITEM_LEVEL       int = 0x4
+	ATTR_EX_11_NOT_ACTIVE_IN_CHALLENGE_MODE int = 0x10000
+)
+
+// Attributes index each ATTR_EX_ flag above belongs to.
+const (
+	ATTR_INDEX_EX_3  int = 3
+	ATTR_INDEX_EX_11 int = 11
 )
 
 const (

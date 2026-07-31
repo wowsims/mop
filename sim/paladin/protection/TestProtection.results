@@ -771,10 +771,10 @@ dps_results: {
 dps_results: {
  key: "TestProtection-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 583163.04033
-  tps: 3.67874239132e+06
-  dtps: 44918.78055
-  hps: 82305.54538
+  dps: 584037.0869
+  tps: 3.68601258314e+06
+  dtps: 43782.30436
+  hps: 82228.26274
  }
 }
 dps_results: {
@@ -1579,6 +1579,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestProtection-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 539459.74449
+  tps: 3.41768782859e+06
+  dtps: 46054.30563
+  hps: 80062.47136
+ }
+}
+dps_results: {
  key: "TestProtection-AllItems-NitroBoosts-4223"
  value: {
   dps: 584494.3923
@@ -1756,6 +1765,15 @@ dps_results: {
   tps: 3.46550996396e+06
   dtps: 42082.34493
   hps: 80606.95789
+ }
+}
+dps_results: {
+ key: "TestProtection-AllItems-PridefulGladiator'sScaledGauntlets-103440"
+ value: {
+  dps: 564000.41143
+  tps: 3.55643219916e+06
+  dtps: 42997.92796
+  hps: 66807.74163
  }
 }
 dps_results: {

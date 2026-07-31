@@ -12,6 +12,11 @@ import (
 type EffectMap map[int]dbc.SpellEffect
 type DBCTooltipDataProvider struct {
 	DBC *dbc.DBC
+	// Item level of the item the tooltip is being rendered for. An effect flagged as scaling
+	// off item level resolves its value against this; without it the only thing left to read
+	// is EffectBasePoints, which on such effects is a stale leftover. Zero for tooltips that
+	// have no item context, such as enchants, glyphs and talents.
+	ItemLevel int
 }
 
 func GetEffectByIndex(effects map[int]dbc.SpellEffect, index int) *dbc.SpellEffect {
@@ -233,6 +238,24 @@ func (d DBCTooltipDataProvider) GetClass(spellId int64) proto.Class {
 	}
 }
 
+// Resolves an effect whose amount is stored as a coefficient against the item level the
+// tooltip is being rendered for, using the same rule ParseStatEffect applies when it resolves
+// the stats that end up in the database. Attribute 11 bit 0x4 marks the spell as scaling off
+// item level, and on those effects EffectBasePoints holds a stale value - 1 Intellect on
+// Nazgrim's Burnished Insignia, where the proc really grants 11761.
+func (d DBCTooltipDataProvider) itemLevelScaledValue(spellId int64, effect *dbc.SpellEffect) (bool, float64) {
+	if d.ItemLevel <= 0 || effect.Coefficient == 0 || effect.ScalingType == 0 {
+		return false, 0
+	}
+
+	spell := d.DBC.Spells[int(spellId)]
+	if !spell.ScalesWithItemLevel() {
+		return false, 0
+	}
+
+	return true, effect.CalcCoefficientStatValue(d.ItemLevel)
+}
+
 // GetEffectBaseDamage implements TooltipDataProvider.
 func (d DBCTooltipDataProvider) GetEffectScaledValue(spellId int64, effectIdx int64) float64 {
 	effectEntries, ok := d.DBC.SpellEffects[int(spellId)]
@@ -254,8 +277,11 @@ func (d DBCTooltipDataProvider) GetEffectScaledValue(spellId int64, effectIdx in
 
 	baseDamage := 0.0
 
-	// using class scaling
-	if effect.Coefficient > 0 && d.ShouldUseBaseScaling(spellId) {
+	// using item level scaling
+	if scaled, value := d.itemLevelScaledValue(spellId, effect); scaled {
+		baseDamage += value
+	} else if effect.Coefficient > 0 && d.ShouldUseBaseScaling(spellId) {
+		// using class scaling
 		baseValue := 0.0
 
 		// for now use generic unk13 scaling for level 90
@@ -339,6 +365,13 @@ func (d DBCTooltipDataProvider) GetEffectBaseValue(spellId int64, effectIdx int6
 	effect := GetEffectByIndex(effectEntries, int(effectIdx))
 	if effect == nil {
 		return 0
+	}
+
+	// An item level scaled effect has no usable base points, so $m reads the same resolved
+	// amount $s does. It differs from the scaled value only in the spell power, attack power
+	// and per-level terms, none of which apply to an effect that scales off item level.
+	if scaled, value := d.itemLevelScaledValue(spellId, effect); scaled {
+		return value
 	}
 
 	return float64(effect.EffectBasePoints)
