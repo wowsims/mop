@@ -34,10 +34,8 @@ var IgnoreSpellEffectByAuraType = map[dbc.EffectAuraType][]int{
 	dbc.A_TRACK_CREATURES:                   {},
 	dbc.A_TRACK_RESOURCES:                   {},
 	dbc.A_FAR_SIGHT:                         {},
-	// Movement utility: Goblin Glider (4897) slows your fall, Watergliding Jets (5000)
-	// let you walk on water.
-	dbc.A_FEATHER_FALL: {},
-	dbc.A_WATER_WALK:   {},
+	dbc.A_WATER_WALK:                        {},
+	dbc.A_FEATHER_FALL:                      {},
 }
 
 var IgnoreSpellEffectBySpellEffectType = map[dbc.SpellEffectType][]int{
