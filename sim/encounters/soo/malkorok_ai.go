@@ -9,7 +9,7 @@ import (
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
-const malkorokBossID int32 = 846
+const malkorokBossID int32 = 71454
 
 type malkorokPresetConfig struct {
 	RaidSize int32
@@ -106,7 +106,9 @@ func (ai *MalkorokAI) Initialize(target *core.Target, config *proto.Target) {
 	ai.registerEssenceOfYShaarj()
 }
 
-func (ai *MalkorokAI) Reset(sim *core.Simulation) {}
+func (ai *MalkorokAI) Reset(sim *core.Simulation) {
+	ai.Target.RandomizeGCDTiming(sim)
+}
 
 func (ai *MalkorokAI) ExecuteCustomRotation(sim *core.Simulation) {
 	target := ai.Target.CurrentTarget
@@ -114,18 +116,20 @@ func (ai *MalkorokAI) ExecuteCustomRotation(sim *core.Simulation) {
 		target = &ai.Target.Env.Raid.Parties[0].Players[0].GetCharacter().Unit
 	}
 
+	// Independent periodic mechanics, not a single GCD-locked cast -- fire every one that's ready.
 	if ai.AncientMiasma.IsReady(sim) {
 		ai.AncientMiasma.Cast(sim, target)
-	} else if ai.ImplodingEnergy.IsReady(sim) {
+	}
+	if ai.ImplodingEnergy.IsReady(sim) {
 		ai.ImplodingEnergy.Cast(sim, target)
-	} else if ai.EssenceOfYShaarj.IsReady(sim) {
+	}
+	if ai.EssenceOfYShaarj.IsReady(sim) {
 		ai.EssenceOfYShaarj.Cast(sim, target)
 	}
 
 	ai.Target.ExtendGCDUntil(sim, sim.CurrentTime+core.BossGCD)
 }
 
-// hitRandomTargets: see immerseus_ai.go's identical helper for the full rationale.
 func (ai *MalkorokAI) hitRandomTargets(sim *core.Simulation, numTargets int32, label string, onHit func(*core.Unit)) {
 	if ai.isIndividualSim {
 		chance := float64(numTargets) / float64(ai.config.RaidSize)
@@ -158,9 +162,10 @@ func (ai *MalkorokAI) hitRandomTargets(sim *core.Simulation, numTargets int32, l
 
 // Ancient Miasma (142906): fast raid-wide tick, observed mean interval 1.91s (stddev 2.1s, with
 // a long tail up to 35s from rare movement/phase gaps -- using the full observed range would
-// grossly overweight those rare gaps, so this rolls within roughly mean+-1stddev instead of the
-// full min/max). Hits ~22 of 25 targets. Damage is a hard 44550 unmitigated -- every 25m HC log
-// shows exactly this value, no variance -- so it's dealt as a flat amount rather than rolled.
+// grossly overweight those rare gaps, so this rolls within roughly mean+-1stddev (clipped at 0,
+// since mean-stddev is negative) instead of the full min/max). Hits ~22 of 25 targets. Damage is
+// a hard 44550 unmitigated -- every 25m HC log shows exactly this value, no variance -- so it's
+// dealt as a flat amount rather than rolled.
 func (ai *MalkorokAI) registerAncientMiasma() {
 	const numTargets = 22 // avgDistinctTargetsPerOccurrence: 21.93
 
@@ -196,7 +201,13 @@ func (ai *MalkorokAI) registerAncientMiasma() {
 }
 
 func (ai *MalkorokAI) rollAncientMiasmaCD(sim *core.Simulation) time.Duration {
-	return core.DurationFromSeconds(sim.RollWithLabel(0.89, 3.93, "Ancient Miasma Timing"))
+	const observedMean, observedStdDev = 1.91, 2.1
+	raw := sim.RollWithLabel(max(0, observedMean-observedStdDev), observedMean+observedStdDev, "Ancient Miasma Timing")
+
+	// Casts only land on the boss-GCD tick, which rounds every roll up and adds ~BossGCD/2 to
+	// the realized interval on average -- bias the roll down to compensate.
+	compensated := max(0, raw-core.BossGCD.Seconds()/2)
+	return core.DurationFromSeconds(compensated)
 }
 
 // Imploding Energy (142986): synchronized multi-instance batch every ~23s. The CD range below

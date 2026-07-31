@@ -163,10 +163,6 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 			Spell:    antiMagicShellSpell,
 			Type:     core.CooldownTypeDPS,
 			Priority: core.CooldownPriorityLow,
-
-			ShouldActivate: func(sim *core.Simulation, character *core.Character) bool {
-				return dk.Inputs.AvgAMSHit > 0
-			},
 		})
 	}
 }
