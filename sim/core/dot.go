@@ -137,7 +137,25 @@ func (dot *Dot) recomputeAuraDuration(sim *Simulation) {
 	if dot.IsActive() {
 		dot.Duration += nextTick
 		dot.remainingTicks++
+	} else if rolloverAt, ok := dot.pendingChannelRollover(sim); ok {
+		// Back to back channel: the interrupted channel's pending tick carries over as a real
+		// extra tick, so the new channel's duration is extended by the rolled over tick time.
+		dot.Duration += rolloverAt - sim.CurrentTime
+		dot.remainingTicks++
 	}
+}
+
+// pendingChannelRollover returns the carried over next tick time of an interrupted channel of this
+// same spell, if the channel is being immediately recast.
+func (dot *Dot) pendingChannelRollover(sim *Simulation) (time.Duration, bool) {
+	unit := dot.Spell.Unit
+	if !dot.isChanneled || !unit.pendingChannelRollover || unit.pendingRolloverFromSpell != dot.Spell {
+		return 0, false
+	}
+	if unit.pendingRolloverNextTickAt < sim.CurrentTime {
+		return 0, false
+	}
+	return unit.pendingRolloverNextTickAt, true
 }
 
 // TickPeriod is how fast the snapshotted dot ticks.
@@ -375,19 +393,15 @@ func newDot(config Dot) *Dot {
 		sim.AddPendingAction(dot.tickAction)
 		if dot.isChanneled {
 			dot.Spell.Unit.ChanneledDot = dot
-			if dot.Spell.Unit.pendingChannelRollover {
-				sameSpell := dot.Spell.Unit.pendingRolloverFromSpell == dot.Spell
-				dot.Spell.Unit.pendingChannelRollover = false
-				dot.Spell.Unit.pendingRolloverFromSpell = nil
-				rolloverAt := dot.Spell.Unit.pendingRolloverNextTickAt
-				if sameSpell && rolloverAt >= sim.CurrentTime {
-					// Carry over the old channel's next-tick time instead of starting fresh.
-					dot.tickAction.Cancel(sim)
-					dot.tickAction.cancelled = false
-					dot.tickAction.NextActionAt = rolloverAt
-					sim.AddPendingAction(dot.tickAction)
-				}
+			if rolloverAt, ok := dot.pendingChannelRollover(sim); ok {
+				// Carry over the old channel's next-tick time instead of starting fresh.
+				dot.tickAction.Cancel(sim)
+				dot.tickAction.cancelled = false
+				dot.tickAction.NextActionAt = rolloverAt
+				sim.AddPendingAction(dot.tickAction)
 			}
+			dot.Spell.Unit.pendingChannelRollover = false
+			dot.Spell.Unit.pendingRolloverFromSpell = nil
 		}
 	})
 	dot.ApplyOnExpire(func(aura *Aura, sim *Simulation) {
