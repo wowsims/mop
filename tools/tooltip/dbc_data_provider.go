@@ -210,32 +210,10 @@ func (d DBCTooltipDataProvider) GetClass(spellId int64) proto.Class {
 		return proto.Class_ClassUnknown
 	}
 
-	switch spellEntry.SpellClassSet {
-	case 53:
-		return proto.Class_ClassMonk
-	case 15:
-		return proto.Class_ClassDeathKnight
-	case 11:
-		return proto.Class_ClassShaman
-	case 10:
-		return proto.Class_ClassPaladin
-	case 9:
-		return proto.Class_ClassHunter
-	case 8:
-		return proto.Class_ClassRogue
-	case 7:
-		return proto.Class_ClassDruid
-	case 6:
-		return proto.Class_ClassPriest
-	case 5:
-		return proto.Class_ClassWarlock
-	case 4:
-		return proto.Class_ClassWarrior
-	case 3:
-		return proto.Class_ClassMage
-	default:
-		return proto.Class_ClassUnknown
+	if class, ok := dbc.ClassBySpellClassSet(spellEntry.SpellClassSet); ok {
+		return class.ProtoClass
 	}
+	return proto.Class_ClassUnknown
 }
 
 // Resolves an effect whose amount is stored as a coefficient against the item level the

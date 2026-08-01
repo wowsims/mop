@@ -85,13 +85,12 @@ func (consumable *Consumable) GetNonStatEffectIds() []int32 {
 	slices.Sort(consumable.ItemEffects)
 	for _, effectID := range consumable.ItemEffects {
 		effect := GetItemEffect(effectID)
-		if effect.ID != 0 {
-			if spellEffects, ok := dbcInstance.SpellEffects[effect.SpellID]; ok {
-				for _, spellEffect := range spellEffects {
-					if statAuraTypes[spellEffect.EffectType] {
-						effectIds = append(effectIds, int32(spellEffect.ID))
-					}
-				}
+		if effect.ID == 0 {
+			continue
+		}
+		for _, spellEffect := range dbcInstance.SpellEffectsInOrder(effect.SpellID) {
+			if statAuraTypes[spellEffect.EffectType] {
+				effectIds = append(effectIds, int32(spellEffect.ID))
 			}
 		}
 	}
@@ -102,13 +101,12 @@ func (consumable *Consumable) GetStatModifiers() *stats.Stats {
 	stats := &stats.Stats{}
 	for _, effectID := range consumable.ItemEffects {
 		effect := GetItemEffect(effectID)
-		if effect.ID != 0 {
-			if spellEffects, ok := dbcInstance.SpellEffects[effect.SpellID]; ok {
-				for _, spellEffect := range spellEffects {
-					stat := spellEffect.ParseStatEffect(spellEffect.Coefficient != 0, 0)
-					stats.AddInplace(stat)
-				}
-			}
+		if effect.ID == 0 {
+			continue
+		}
+		for _, spellEffect := range dbcInstance.SpellEffectsInOrder(effect.SpellID) {
+			stat := spellEffect.ParseStatEffect(spellEffect.Coefficient != 0, 0)
+			stats.AddInplace(stat)
 		}
 	}
 	return stats

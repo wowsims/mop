@@ -39,16 +39,11 @@ func (effect *SpellEffect) DamageRange() (float64, float64) {
 // Walks the trigger chain below spellID and returns the first direct damage effect it
 // reaches, or nil if the chain deals no flat damage.
 func ResolveDamageEffect(spellID int) *DamageEffect {
-	return resolveDamageEffect(spellID, map[int]bool{})
+	return newChainWalker().resolveDamageEffect(spellID)
 }
 
-func resolveDamageEffect(spellID int, visited map[int]bool) *DamageEffect {
-	if visited[spellID] {
-		return nil
-	}
-	visited[spellID] = true
-
-	effects := dbcInstance.SpellEffectsInOrder(spellID)
+func (w *chainWalker) resolveDamageEffect(spellID int) *DamageEffect {
+	effects := w.effects(spellID)
 
 	for _, se := range effects {
 		// A_PROC_TRIGGER_DAMAGE carries its amount on the aura itself rather than on a
@@ -76,7 +71,7 @@ func resolveDamageEffect(spellID int, visited map[int]bool) *DamageEffect {
 		if se.EffectTriggerSpell == 0 {
 			continue
 		}
-		if damage := resolveDamageEffect(se.EffectTriggerSpell, visited); damage != nil {
+		if damage := w.resolveDamageEffect(se.EffectTriggerSpell); damage != nil {
 			return damage
 		}
 	}

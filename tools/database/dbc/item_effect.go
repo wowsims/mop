@@ -149,18 +149,11 @@ func (e *ItemEffect) ToProto(itemLevel int, levelState proto.ItemLevelState) (*p
 }
 
 func resolveStatsSpell(spellID int) int {
-	return resolveStatsSpellVisited(spellID, map[int]bool{})
+	return newChainWalker().resolveStatsSpell(spellID)
 }
 
-func resolveStatsSpellVisited(spellID int, visited map[int]bool) int {
-	// A proc chain that loops back on itself would otherwise recurse until the stack dies,
-	// the same hazard getSpellEffectRecursive and collectStats already guard against.
-	if visited[spellID] {
-		return spellID
-	}
-	visited[spellID] = true
-
-	effects := dbcInstance.SpellEffectsInOrder(spellID)
+func (w *chainWalker) resolveStatsSpell(spellID int) int {
+	effects := w.effects(spellID)
 	for _, se := range effects {
 		switch se.EffectAura {
 		case A_MOD_STAT, A_MOD_RATING, A_MOD_RANGED_ATTACK_POWER, A_MOD_ATTACK_POWER, A_MOD_DAMAGE_DONE, A_MOD_TARGET_RESISTANCE, A_MOD_RESISTANCE, A_MOD_INCREASE_ENERGY,
@@ -173,7 +166,7 @@ func resolveStatsSpellVisited(spellID int, visited map[int]bool) int {
 	for _, se := range effects {
 		switch se.EffectAura {
 		case A_PROC_TRIGGER_SPELL, A_PROC_TRIGGER_SPELL_WITH_VALUE:
-			return resolveStatsSpellVisited(se.EffectTriggerSpell, visited)
+			return w.resolveStatsSpell(se.EffectTriggerSpell)
 		}
 	}
 	return spellID
@@ -183,7 +176,7 @@ func resolveTriggerType(topType, spellID int) int {
 	if topType == ITEM_SPELLTRIGGER_ON_USE || topType == ITEM_SPELLTRIGGER_CHANCE_ON_HIT {
 		return topType
 	}
-	for _, se := range dbcInstance.SpellEffects[spellID] {
+	for _, se := range dbcInstance.SpellEffectsInOrder(spellID) {
 		if se.EffectAura == A_PROC_TRIGGER_SPELL || se.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE {
 			return ITEM_SPELLTRIGGER_CHANCE_ON_HIT
 		}
@@ -214,30 +207,22 @@ func buildScalingProps(spellID, itemLevel, itemSpellID int) *proto.ScalingItemEf
 
 func collectStats(spellID, itemLevel int) stats.Stats {
 	var total stats.Stats
+	newChainWalker().collectStats(spellID, itemLevel, &total)
+	return total
+}
 
+func (w *chainWalker) collectStats(spellID, itemLevel int, total *stats.Stats) {
 	var emptyStats = stats.Stats{}
-	visited := make(map[int]bool)
 
-	var recurse func(int)
-	recurse = func(id int) {
-		if visited[id] {
-			return
-		}
-		visited[id] = true
-
-		sp := dbcInstance.Spells[id]
-		for _, se := range dbcInstance.SpellEffectsInOrder(id) {
-			s := se.ParseStatEffect(sp.ScalesWithItemLevel(), itemLevel)
-			if s != nil && *s != emptyStats {
-				total.AddInplace(s)
-			} else if se.EffectAura == A_PROC_TRIGGER_SPELL {
-				recurse(se.EffectTriggerSpell)
-			}
+	sp := dbcInstance.Spells[spellID]
+	for _, se := range w.effects(spellID) {
+		s := se.ParseStatEffect(sp.ScalesWithItemLevel(), itemLevel)
+		if s != nil && *s != emptyStats {
+			total.AddInplace(s)
+		} else if se.EffectAura == A_PROC_TRIGGER_SPELL {
+			w.collectStats(se.EffectTriggerSpell, itemLevel, total)
 		}
 	}
-
-	recurse(spellID)
-	return total
 }
 
 func ParseItemEffects(itemID, itemLevel int, levelState proto.ItemLevelState) []*proto.ItemEffect {
@@ -296,16 +281,11 @@ func GetItemEffectForBuffID(itemID int, buffId int) *ItemEffect {
 // and a branch that does not contain the match does not abort the search of its
 // siblings.
 func GetSpellEffectRecursive(spellIDToMatch int, spellID int) *SpellEffect {
-	return getSpellEffectRecursive(spellIDToMatch, spellID, map[int]bool{})
+	return newChainWalker().findTriggerOf(spellIDToMatch, spellID)
 }
 
-func getSpellEffectRecursive(spellIDToMatch int, spellID int, visited map[int]bool) *SpellEffect {
-	if visited[spellID] {
-		return nil
-	}
-	visited[spellID] = true
-
-	for _, spellEffect := range dbcInstance.SpellEffectsInOrder(spellID) {
+func (w *chainWalker) findTriggerOf(spellIDToMatch int, spellID int) *SpellEffect {
+	for _, spellEffect := range w.effects(spellID) {
 		if spellEffect.EffectTriggerSpell == 0 {
 			continue
 		}
@@ -314,7 +294,7 @@ func getSpellEffectRecursive(spellIDToMatch int, spellID int, visited map[int]bo
 			return &spellEffect
 		}
 
-		if match := getSpellEffectRecursive(spellIDToMatch, spellEffect.EffectTriggerSpell, visited); match != nil {
+		if match := w.findTriggerOf(spellIDToMatch, spellEffect.EffectTriggerSpell); match != nil {
 			return match
 		}
 	}
