@@ -663,22 +663,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestShadow-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 445901.50778
-  tps: 411406.52321
-  hps: 4789.29457
- }
-}
-dps_results: {
- key: "TestShadow-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 445231.73184
-  tps: 411510.31422
-  hps: 4815.43044
- }
-}
-dps_results: {
  key: "TestShadow-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
   dps: 451340.07576
@@ -1412,14 +1396,6 @@ dps_results: {
   dps: 401143.84248
   tps: 371376.40284
   hps: 4786.98604
- }
-}
-dps_results: {
- key: "TestShadow-AllItems-PhaseFingers-4697"
- value: {
-  dps: 450162.20038
-  tps: 415383.29481
-  hps: 4674.52761
  }
 }
 dps_results: {

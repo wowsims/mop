@@ -679,27 +679,11 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestProtectionWarrior-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 420571.33464
-  tps: 2.56320977261e+06
-  dtps: 17530.84292
- }
-}
-dps_results: {
  key: "TestProtectionWarrior-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
   dps: 415549.40531
   tps: 2.5379066624e+06
   dtps: 17214.89377
- }
-}
-dps_results: {
- key: "TestProtectionWarrior-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 419950.91354
-  tps: 2.56828305454e+06
-  dtps: 15855.69489
  }
 }
 dps_results: {
@@ -1457,14 +1441,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestProtectionWarrior-AllItems-PhaseFingers-4697"
- value: {
-  dps: 418907.06394
-  tps: 2.55577982406e+06
-  dtps: 16241.18041
- }
-}
-dps_results: {
  key: "TestProtectionWarrior-AllItems-PlateofResoundingRings"
  value: {
   dps: 361102.02885
@@ -1583,6 +1559,14 @@ dps_results: {
   dps: 414479.28926
   tps: 2.53301300385e+06
   dtps: 15159.75576
+ }
+}
+dps_results: {
+ key: "TestProtectionWarrior-AllItems-PridefulGladiator'sPlateGauntlets-103526"
+ value: {
+  dps: 404189.81582
+  tps: 2.46503576426e+06
+  dtps: 20425.88611
  }
 }
 dps_results: {
@@ -2324,124 +2308,124 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-Average-Default"
  value: {
-  dps: 422208.28862
-  tps: 2.58169331884e+06
-  dtps: 17121.79307
+  dps: 419512.43835
+  tps: 2.56528159795e+06
+  dtps: 17447.24885
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p5_bis-Basic-default-FullBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 6.34168234791e+06
-  tps: 4.020178253665e+07
-  dtps: 225697.67678
-  hps: 161803.85501
+  dps: 6.11674390789e+06
+  tps: 3.861387726591e+07
+  dtps: 231774.87449
+  hps: 164860.81362
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p5_bis-Basic-default-FullBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 285223.89726
-  tps: 1.82828756067e+06
-  dtps: 12351.04779
-  hps: 8287.71587
+  dps: 282904.73346
+  tps: 1.82329344225e+06
+  dtps: 12643.13799
+  hps: 8336.32224
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p5_bis-Basic-default-FullBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 292165.54786
-  tps: 1.82106765165e+06
-  dtps: 14100.79703
-  hps: 7112.7713
+  dps: 286877.03932
+  tps: 1.79932790247e+06
+  dtps: 14184.34447
+  hps: 6937.79576
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p5_bis-Basic-default-NoBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 4.9966196161e+06
-  tps: 3.103681499228e+07
-  dtps: 285385.22817
-  hps: 145757.68795
+  dps: 4.90413487199e+06
+  tps: 3.038014591378e+07
+  dtps: 295589.47147
+  hps: 147947.19401
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p5_bis-Basic-default-NoBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 249318.20424
-  tps: 1.61424375928e+06
-  dtps: 12632.72137
-  hps: 8580.02658
+  dps: 244609.38446
+  tps: 1.58047916797e+06
+  dtps: 13087.58417
+  hps: 8733.8947
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Human-p5_bis-Basic-default-NoBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 240300.48324
-  tps: 1.57898618892e+06
-  dtps: 14744.63561
-  hps: 7557.47532
+  dps: 240782.1613
+  tps: 1.56698731302e+06
+  dtps: 15479.80012
+  hps: 7581.27179
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p5_bis-Basic-default-FullBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 6.34500482216e+06
-  tps: 4.021224557574e+07
-  dtps: 227003.73628
-  hps: 161852.97577
+  dps: 6.16030543453e+06
+  tps: 3.89043423796e+07
+  dtps: 230731.97723
+  hps: 164708.13465
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p5_bis-Basic-default-FullBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 286541.98066
-  tps: 1.8350296759e+06
-  dtps: 12354.93576
-  hps: 8296.91042
+  dps: 284150.41714
+  tps: 1.83010375698e+06
+  dtps: 12658.06158
+  hps: 8341.82139
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p5_bis-Basic-default-FullBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 294816.23472
-  tps: 1.83516890372e+06
-  dtps: 14093.06421
-  hps: 7117.4503
+  dps: 289503.44978
+  tps: 1.81334811989e+06
+  dtps: 14176.61315
+  hps: 6942.47351
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p5_bis-Basic-default-NoBuffs-15.0yards-LongMultiTarget"
  value: {
-  dps: 4.95104669652e+06
-  tps: 3.069527072339e+07
-  dtps: 285803.83234
-  hps: 147365.58222
+  dps: 4.92577990553e+06
+  tps: 3.051620528357e+07
+  dtps: 295604.42509
+  hps: 148083.4426
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p5_bis-Basic-default-NoBuffs-15.0yards-LongSingleTarget"
  value: {
-  dps: 249821.56716
-  tps: 1.61843874943e+06
-  dtps: 12776.45902
-  hps: 8586.55753
+  dps: 246142.97428
+  tps: 1.58519001674e+06
+  dtps: 13094.709
+  hps: 8755.80546
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-Settings-Orc-p5_bis-Basic-default-NoBuffs-15.0yards-ShortSingleTarget"
  value: {
-  dps: 243344.15755
-  tps: 1.60012378475e+06
-  dtps: 14969.75792
-  hps: 7462.75659
+  dps: 242551.05631
+  tps: 1.57931603555e+06
+  dtps: 15635.05216
+  hps: 7589.64655
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 434431.34996
-  tps: 2.66372509784e+06
-  dtps: 14053.83187
+  dps: 432486.48365
+  tps: 2.64668913768e+06
+  dtps: 14683.72582
  }
 }

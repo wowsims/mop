@@ -655,22 +655,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestAffliction-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 465274.23436
-  tps: 323015.17094
-  hps: 5052.61824
- }
-}
-dps_results: {
- key: "TestAffliction-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 465454.01901
-  tps: 323243.82134
-  hps: 5052.61824
- }
-}
-dps_results: {
  key: "TestAffliction-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
   dps: 475638.01679
@@ -1383,14 +1367,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestAffliction-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 353014.09434
-  tps: 245630.30427
-  hps: 4729.56848
- }
-}
-dps_results: {
  key: "TestAffliction-AllItems-NitroBoosts-4223"
  value: {
   dps: 463299.58609
@@ -1428,14 +1404,6 @@ dps_results: {
   dps: 367769.35613
   tps: 254560.8298
   hps: 4845.74647
- }
-}
-dps_results: {
- key: "TestAffliction-AllItems-PhaseFingers-4697"
- value: {
-  dps: 461944.6807
-  tps: 319422.29781
-  hps: 5056.36592
  }
 }
 dps_results: {

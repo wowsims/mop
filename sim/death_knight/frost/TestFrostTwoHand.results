@@ -305,25 +305,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sEmblemofCruelty-93485"
  value: {
-  dps: 380510.28449
-  tps: 347904.06026
-  hps: 7054.81993
+  dps: 380454.55353
+  tps: 347842.76005
+  hps: 7016.7789
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sEmblemofMeditation-93487"
  value: {
-  dps: 377705.76966
-  tps: 345379.64738
-  hps: 6986.56219
+  dps: 377702.76002
+  tps: 345375.03476
+  hps: 6948.97873
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sEmblemofTenacity-93486"
  value: {
-  dps: 375648.16049
-  tps: 343342.80375
-  hps: 7105.91229
+  dps: 376092.59865
+  tps: 343833.30583
+  hps: 7081.3612
  }
 }
 dps_results: {
@@ -377,25 +377,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sEmblemofCruelty-98811"
  value: {
-  dps: 380273.30737
-  tps: 347572.11462
-  hps: 7065.98562
+  dps: 380975.83702
+  tps: 348305.00344
+  hps: 7020.79696
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sEmblemofMeditation-98813"
  value: {
-  dps: 377062.88009
-  tps: 344695.27269
-  hps: 6997.29232
+  dps: 377702.76002
+  tps: 345375.03476
+  hps: 6948.97873
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sEmblemofTenacity-98812"
  value: {
-  dps: 377216.41075
-  tps: 344876.91004
-  hps: 7149.29337
+  dps: 376092.59865
+  tps: 343833.30583
+  hps: 7105.84167
  }
 }
 dps_results: {
@@ -561,25 +561,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sEmblemofCruelty-84399"
  value: {
-  dps: 380510.28449
-  tps: 347904.06026
-  hps: 7054.81993
+  dps: 380454.55353
+  tps: 347842.76005
+  hps: 7016.7789
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sEmblemofMeditation-84401"
  value: {
-  dps: 377705.76966
-  tps: 345379.64738
-  hps: 6986.56219
+  dps: 377702.76002
+  tps: 345375.03476
+  hps: 6948.97873
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 375648.16049
-  tps: 343342.80375
-  hps: 7105.91229
+  dps: 376092.59865
+  tps: 343833.30583
+  hps: 7081.3612
  }
 }
 dps_results: {
@@ -687,26 +687,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostTwoHand-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 395882.62596
-  tps: 359268.41282
-  hps: 19.47731
- }
-}
-dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
   dps: 393675.43984
   tps: 357267.96305
-  hps: 19.32952
- }
-}
-dps_results: {
- key: "TestFrostTwoHand-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 393679.84398
-  tps: 357283.97425
   hps: 19.32952
  }
 }
@@ -841,9 +825,9 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FortitudeoftheZandalari-96793"
  value: {
-  dps: 383442.34629
-  tps: 351085.82359
-  hps: 7114.11846
+  dps: 383355.52777
+  tps: 351027.80251
+  hps: 6948.97873
  }
 }
 dps_results: {
@@ -905,25 +889,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sEmblemofCruelty-103210"
  value: {
-  dps: 382852.01681
-  tps: 349943.76314
-  hps: 7190.30777
+  dps: 382925.09075
+  tps: 350023.34719
+  hps: 7062.77555
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sEmblemofMeditation-103212"
  value: {
-  dps: 377658.12371
-  tps: 345309.10939
-  hps: 7078.38759
+  dps: 377702.76002
+  tps: 345375.03476
+  hps: 6948.97873
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sEmblemofTenacity-103211"
  value: {
-  dps: 377295.10265
-  tps: 345004.42587
-  hps: 7299.20298
+  dps: 375716.21203
+  tps: 343421.00585
+  hps: 7185.9333
  }
 }
 dps_results: {
@@ -1257,25 +1241,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sEmblemofCruelty-91562"
  value: {
-  dps: 380273.30737
-  tps: 347572.11462
-  hps: 7065.98562
+  dps: 380975.83702
+  tps: 348305.00344
+  hps: 7020.79696
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sEmblemofMeditation-91564"
  value: {
-  dps: 377062.88009
-  tps: 344695.27269
-  hps: 6997.29232
+  dps: 377702.76002
+  tps: 345375.03476
+  hps: 6948.97873
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sEmblemofTenacity-91563"
  value: {
-  dps: 377216.41075
-  tps: 344876.91004
-  hps: 7149.29337
+  dps: 376092.59865
+  tps: 343833.30583
+  hps: 7105.84167
  }
 }
 dps_results: {
@@ -1415,14 +1399,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrostTwoHand-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 376947.30612
-  tps: 344692.45702
-  hps: 6867.69518
- }
-}
-dps_results: {
  key: "TestFrostTwoHand-AllItems-NitroBoosts-4223"
  value: {
   dps: 424808.83354
@@ -1460,14 +1436,6 @@ dps_results: {
   dps: 387946.32811
   tps: 354789.4647
   hps: 6867.69518
- }
-}
-dps_results: {
- key: "TestFrostTwoHand-AllItems-PhaseFingers-4697"
- value: {
-  dps: 422580.29828
-  tps: 382103.26458
-  hps: 7057.3012
  }
 }
 dps_results: {
@@ -1545,25 +1513,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sEmblemofCruelty-103407"
  value: {
-  dps: 384308.76762
-  tps: 351252.14267
-  hps: 7268.3483
+  dps: 384545.54976
+  tps: 351495.80816
+  hps: 7094.36547
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sEmblemofMeditation-103409"
  value: {
-  dps: 377553.14571
-  tps: 345200.66931
-  hps: 7120.32844
+  dps: 377702.76002
+  tps: 345375.03476
+  hps: 6948.97873
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sEmblemofTenacity-103408"
  value: {
-  dps: 376879.90786
-  tps: 344657.11571
-  hps: 7406.24221
+  dps: 375812.63111
+  tps: 343526.80032
+  hps: 7266.78277
  }
 }
 dps_results: {
@@ -2217,25 +2185,25 @@ dps_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sEmblemofCruelty-100066"
  value: {
-  dps: 381123.09425
-  tps: 348338.18927
-  hps: 7100.96946
+  dps: 381840.66869
+  tps: 349083.83038
+  hps: 7035.94782
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sEmblemofMeditation-99990"
  value: {
-  dps: 377062.88009
-  tps: 344695.27269
-  hps: 7016.70661
+  dps: 377702.76002
+  tps: 345375.03476
+  hps: 6948.97873
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sEmblemofTenacity-100092"
  value: {
-  dps: 377633.66089
-  tps: 345338.93321
-  hps: 7224.54198
+  dps: 376089.32918
+  tps: 343831.76687
+  hps: 7146.25629
  }
 }
 dps_results: {

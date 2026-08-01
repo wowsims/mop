@@ -275,7 +275,7 @@ dps_results: {
  value: {
   dps: 396511.78441
   tps: 311960.14911
-  hps: 2051.2229
+  hps: 2044.07511
  }
 }
 dps_results: {
@@ -283,7 +283,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2043.35053
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -291,7 +291,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2083.92106
+  hps: 2076.63347
  }
 }
 dps_results: {
@@ -347,7 +347,7 @@ dps_results: {
  value: {
   dps: 396104.31348
   tps: 311905.8198
-  hps: 2043.74031
+  hps: 2033.73554
  }
 }
 dps_results: {
@@ -355,7 +355,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2046.18912
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -363,7 +363,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2094.117
+  hps: 2083.99082
  }
 }
 dps_results: {
@@ -531,7 +531,7 @@ dps_results: {
  value: {
   dps: 396511.78441
   tps: 311960.14911
-  hps: 2051.2229
+  hps: 2044.07511
  }
 }
 dps_results: {
@@ -539,7 +539,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2043.35053
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -547,7 +547,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2083.92106
+  hps: 2076.63347
  }
 }
 dps_results: {
@@ -650,22 +650,6 @@ dps_results: {
  key: "TestDestruction-AllItems-EnchantWeapon-DancingSteel-4444"
  value: {
   dps: 443921.71518
-  tps: 350087.67306
-  hps: 2093.91115
- }
-}
-dps_results: {
- key: "TestDestruction-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 447395.25457
-  tps: 353226.29715
-  hps: 2096.88229
- }
-}
-dps_results: {
- key: "TestDestruction-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 443908.08683
   tps: 350087.67306
   hps: 2093.91115
  }
@@ -803,7 +787,7 @@ dps_results: {
  value: {
   dps: 399923.31231
   tps: 316098.79247
-  hps: 2061.49823
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -875,7 +859,7 @@ dps_results: {
  value: {
   dps: 399728.82273
   tps: 315000.24261
-  hps: 2064.26847
+  hps: 2044.25338
  }
 }
 dps_results: {
@@ -883,7 +867,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2056.03015
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -891,7 +875,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2129.60365
+  hps: 2109.63644
  }
 }
 dps_results: {
@@ -1227,7 +1211,7 @@ dps_results: {
  value: {
   dps: 396104.31348
   tps: 311905.8198
-  hps: 2043.74031
+  hps: 2033.73554
  }
 }
 dps_results: {
@@ -1235,7 +1219,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2046.18912
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -1243,7 +1227,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2094.117
+  hps: 2083.99082
  }
 }
 dps_results: {
@@ -1383,14 +1367,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestDestruction-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 390044.26483
-  tps: 307097.15331
-  hps: 2027.80328
- }
-}
-dps_results: {
  key: "TestDestruction-AllItems-NitroBoosts-4223"
  value: {
   dps: 453539.6288
@@ -1428,14 +1404,6 @@ dps_results: {
   dps: 398860.15955
   tps: 315163.58488
   hps: 2027.80328
- }
-}
-dps_results: {
- key: "TestDestruction-AllItems-PhaseFingers-4697"
- value: {
-  dps: 452433.47374
-  tps: 356850.54044
-  hps: 2089.45444
  }
 }
 dps_results: {
@@ -1491,7 +1459,7 @@ dps_results: {
  value: {
   dps: 400822.44912
   tps: 315731.4846
-  hps: 2073.18915
+  hps: 2044.93674
  }
 }
 dps_results: {
@@ -1499,7 +1467,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2064.4515
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -1507,7 +1475,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2159.99194
+  hps: 2131.60338
  }
 }
 dps_results: {
@@ -2123,7 +2091,7 @@ dps_results: {
  value: {
   dps: 397568.0553
   tps: 313480.26245
-  hps: 2041.5256
+  hps: 2027.79326
  }
 }
 dps_results: {
@@ -2131,7 +2099,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2049.96193
+  hps: 2036.06294
  }
 }
 dps_results: {
@@ -2139,7 +2107,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2107.73464
+  hps: 2093.83565
  }
 }
 dps_results: {

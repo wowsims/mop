@@ -687,25 +687,9 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestWindwalker-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 510388.80329
-  tps: 494496.42346
-  hps: 11686.42556
- }
-}
-dps_results: {
  key: "TestWindwalker-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
   dps: 508650.30442
-  tps: 492853.75219
-  hps: 11686.42556
- }
-}
-dps_results: {
- key: "TestWindwalker-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 508672.30408
   tps: 492853.75219
   hps: 11686.42556
  }
@@ -1423,14 +1407,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestWindwalker-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 461539.28765
-  tps: 447514.52239
-  hps: 10949.604
- }
-}
-dps_results: {
  key: "TestWindwalker-AllItems-NitroBoosts-4223"
  value: {
   dps: 516949.99649
@@ -1468,14 +1444,6 @@ dps_results: {
   dps: 469214.35503
   tps: 455001.0099
   hps: 11115.49975
- }
-}
-dps_results: {
- key: "TestWindwalker-AllItems-PhaseFingers-4697"
- value: {
-  dps: 445568.26633
-  tps: 427586.24519
-  hps: 10769.3937
  }
 }
 dps_results: {

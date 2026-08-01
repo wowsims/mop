@@ -671,26 +671,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestRetribution-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 454357.61761
-  tps: 429920.81292
-  hps: 15.24862
- }
-}
-dps_results: {
  key: "TestRetribution-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
   dps: 453238.13654
   tps: 428904.37291
-  hps: 15.24862
- }
-}
-dps_results: {
- key: "TestRetribution-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 453175.53587
-  tps: 428869.16698
   hps: 15.24862
  }
 }
@@ -1399,14 +1383,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestRetribution-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 398660.86479
-  tps: 379308.2249
-  hps: 14.97429
- }
-}
-dps_results: {
  key: "TestRetribution-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 398571.28062
@@ -1436,14 +1412,6 @@ dps_results: {
   dps: 413939.03585
   tps: 394070.14033
   hps: 14.97429
- }
-}
-dps_results: {
- key: "TestRetribution-AllItems-PhaseFingers-4697"
- value: {
-  dps: 458605.9737
-  tps: 433930.2752
-  hps: 15.24862
  }
 }
 dps_results: {

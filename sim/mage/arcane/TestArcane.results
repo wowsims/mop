@@ -591,20 +591,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestArcane-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 271585.25128
-  tps: 260834.9528
- }
-}
-dps_results: {
- key: "TestArcane-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 269567.51919
-  tps: 258823.23959
- }
-}
-dps_results: {
  key: "TestArcane-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
   dps: 277028.94026
@@ -1261,13 +1247,6 @@ dps_results: {
  value: {
   dps: 250019.86834
   tps: 240833.57185
- }
-}
-dps_results: {
- key: "TestArcane-AllItems-PhaseFingers-4697"
- value: {
-  dps: 274596.75012
-  tps: 263474.59969
  }
 }
 dps_results: {

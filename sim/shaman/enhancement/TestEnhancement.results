@@ -605,24 +605,10 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestEnhancement-AllItems-EnchantWeapon-ElementalForce-4443"
- value: {
-  dps: 227464.41621
-  tps: 192607.92833
- }
-}
-dps_results: {
  key: "TestEnhancement-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
   dps: 225962.27518
   tps: 191170.19559
- }
-}
-dps_results: {
- key: "TestEnhancement-AllItems-EnchantWeapon-River'sSong-4446"
- value: {
-  dps: 225728.44516
-  tps: 190951.88044
  }
 }
 dps_results: {
@@ -1257,13 +1243,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestEnhancement-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 209604.82489
-  tps: 178650.97181
- }
-}
-dps_results: {
  key: "TestEnhancement-AllItems-NitroBoosts-4223"
  value: {
   dps: 231574.2185
@@ -1296,13 +1275,6 @@ dps_results: {
  value: {
   dps: 217547.18942
   tps: 184802.26637
- }
-}
-dps_results: {
- key: "TestEnhancement-AllItems-PhaseFingers-4697"
- value: {
-  dps: 231054.56023
-  tps: 194966.772
  }
 }
 dps_results: {
