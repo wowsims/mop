@@ -156,7 +156,7 @@ func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(age
 					Duration:             time.Millisecond * time.Duration(effect.EffectDurationMs),
 					MaxStacks:            stackingAura.MaxCumulativeStacks,
 					TimePerStack:         time.Millisecond * time.Duration(effect.StackPeriodMs),
-					BonusPerStack:        stats.FromProtoMap(stackingAura.ScalingOptions[int32(itemLevelState)].Stats),
+					BonusPerStack:        stats.FromProtoMap(stackingAura.ScalingOptions[int32(itemLevelState)].GetStats()),
 					StackingAuraActionID: core.ActionID{SpellID: stackingAura.BuffId},
 					StackingAuraLabel:    config.Name + " Stacks",
 					TickImmediately:      true,
@@ -169,13 +169,13 @@ func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(age
 						Duration:  time.Millisecond * time.Duration(effect.EffectDurationMs),
 						MaxStacks: effect.MaxCumulativeStacks,
 					},
-					BonusPerStack: stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].Stats),
+					BonusPerStack: stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].GetStats()),
 				})
 			} else {
 				procAura = character.NewTemporaryStatsAura(
 					config.Name+" Proc",
 					procAction,
-					stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].Stats),
+					stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].GetStats()),
 					time.Millisecond*time.Duration(effect.EffectDurationMs),
 				)
 			}
@@ -379,7 +379,7 @@ func factory_ActiveStatBonusEffect(config ActiveStatBonusEffect) {
 				continue
 			}
 
-			tempStats := stats.FromProtoMap(effect.ScalingOptions[int32(scalingSelector)].Stats)
+			tempStats := stats.FromProtoMap(effect.ScalingOptions[int32(scalingSelector)].GetStats())
 			if isEnchant && tempStats.Equals(stats.Stats{}) {
 				continue
 			}

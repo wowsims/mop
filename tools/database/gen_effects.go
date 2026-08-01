@@ -493,9 +493,9 @@ func TryParseProcEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, inst
 			// A stacking trinket carries its stats on the referenced aura rather than on the
 			// one the trigger applies, so an empty ScalingOptions here is not the same as no
 			// stats.
-			hasStats := len(itemEffect.ScalingOptions[0].Stats) > 0
+			hasStats := len(itemEffect.ScalingOptions[0].GetStats()) > 0
 			if stacking := itemEffect.GetStackingAura(); stacking != nil {
-				hasStats = hasStats || len(stacking.ScalingOptions[0].Stats) > 0
+				hasStats = hasStats || len(stacking.ScalingOptions[0].GetStats()) > 0
 			}
 
 			if !hasStats || !entry.Supported {
@@ -560,7 +560,7 @@ func TryParseOnUseEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, ins
 			grp.Entries = append(grp.Entries, entry)
 			groupMap[groupName] = grp
 
-			if len(itemEffect.ScalingOptions[0].Stats) == 0 {
+			if len(itemEffect.ScalingOptions[0].GetStats()) == 0 {
 				entry.Supported = false
 				StoreMissingEffect("ItemEffects", parsed.Name, Variant{
 					ID:      int(parsed.Id),
@@ -643,7 +643,7 @@ func tryParseOnUseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.I
 		return EffectParseResultUnsupported
 	}
 
-	if len(enchantEffect.ScalingOptions[0].Stats) == 0 {
+	if len(enchantEffect.ScalingOptions[0].GetStats()) == 0 {
 		StoreMissingEffect("EnchantEffects", enchant.Name, Variant{
 			ID:      int(enchant.EffectId),
 			Name:    enchant.Name,
@@ -663,7 +663,7 @@ func tryParseOnUseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.I
 		Profession: enchant.RequiredProfession,
 		Variants:   []*Variant{{ID: int(enchant.EffectId), Name: enchant.Name, SpellID: int(enchantEffect.BuffId)}},
 		Tooltip: []string{fmt.Sprintf("%s: %v for %dms, %dms cooldown, category %d",
-			enchant.Name, enchantEffect.ScalingOptions[0].Stats, enchantEffect.EffectDurationMs,
+			enchant.Name, enchantEffect.ScalingOptions[0].GetStats(), enchantEffect.EffectDurationMs,
 			enchantEffect.GetOnUse().CooldownMs, enchantEffect.GetOnUse().CategoryId)},
 	})
 	groupMap["OnUseEnchants"] = grp
@@ -717,9 +717,9 @@ func ParseTooltipForMissingEffect(parsed *proto.UIItem, itemEffect *proto.ItemEf
 			// A stacking trinket carries its stats on the referenced aura rather than on the
 			// one the trigger applies, so an empty ScalingOptions here is not the same as no
 			// stats.
-			hasStats := len(itemEffect.ScalingOptions[0].Stats) > 0
+			hasStats := len(itemEffect.ScalingOptions[0].GetStats()) > 0
 			if stacking := itemEffect.GetStackingAura(); stacking != nil {
-				hasStats = hasStats || len(stacking.ScalingOptions[0].Stats) > 0
+				hasStats = hasStats || len(stacking.ScalingOptions[0].GetStats()) > 0
 			}
 
 			if !hasStats || !entry.Supported {

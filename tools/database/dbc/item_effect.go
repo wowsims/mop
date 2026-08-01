@@ -56,6 +56,22 @@ func makeBaseProto(e *ItemEffect, statsSpellID int) *proto.ItemEffect {
 	return base
 }
 
+// On a stacking effect the aura the trigger applies grants nothing itself, so its scaling options
+// resolve to an empty message at every item level state. ScalingItemEffectProperties holds only a
+// stats map, so those entries carry no information at all — drop the whole map rather than ship
+// one empty entry per state. Readers reach the map through GetStats(), which is nil-safe.
+//
+// A no-op when anything did resolve, which keeps this honest if an effect ever carries stats on
+// both the trigger aura and the aura it accumulates.
+func dropEmptyScalingOptions(pe *proto.ItemEffect) {
+	for _, opt := range pe.ScalingOptions {
+		if len(opt.GetStats()) > 0 {
+			return
+		}
+	}
+	pe.ScalingOptions = nil
+}
+
 func assignTrigger(e *ItemEffect, statsSpellID int, pe *proto.ItemEffect) {
 	spTop := GetDBC().Spells[e.SpellID]
 	statsSP := GetDBC().Spells[statsSpellID]
@@ -143,7 +159,8 @@ func (e *ItemEffect) BuildProto(itemLevel int, levelState proto.ItemLevelState) 
 		pe.StackPeriodMs = stackPeriodMs
 		// The stats live on the stacking aura rather than on the aura the trigger applies, so
 		// the effect is worth reporting even though scaling_options above resolved to nothing.
-		hasStats = hasStats || len(stacking.ScalingOptions[int32(levelState)].Stats) > 0
+		hasStats = hasStats || len(stacking.ScalingOptions[int32(levelState)].GetStats()) > 0
+		dropEmptyScalingOptions(pe)
 	}
 
 	return pe, hasStats
@@ -366,6 +383,7 @@ func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
 			}
 			pe.StackingAura = stacking
 			pe.StackPeriodMs = stackPeriodMs
+			dropEmptyScalingOptions(pe)
 		}
 
 		effects = append(effects, pe)

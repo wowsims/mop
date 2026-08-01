@@ -214,12 +214,12 @@ func GetEffectStatString(itemEffect *proto.ItemEffect) string {
 		return ""
 	}
 
-	stats := itemEffect.ScalingOptions[int32(0)].Stats
+	stats := itemEffect.ScalingOptions[int32(0)].GetStats()
 	// A stacking trinket grants nothing through the aura the trigger applies; the stats it is
 	// named after are the ones on the aura that accumulates.
 	if len(stats) == 0 {
 		if stacking := itemEffect.GetStackingAura(); stacking != nil {
-			stats = stacking.ScalingOptions[int32(0)].Stats
+			stats = stacking.ScalingOptions[int32(0)].GetStats()
 		}
 	}
 	statsString := make([]string, 0, len(stats))
