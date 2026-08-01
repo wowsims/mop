@@ -886,7 +886,7 @@ func BuildSpellProcInfo(procSpell *dbc.Spell, tooltip string, itemType proto.Ite
 	}
 
 	if info.ProcMask.Matches(core.ProcMaskSpellDamage) && procSpell.CanProcFromProcs() {
-		info.ProcMask |= core.ProcMaskSpellDamageProc
+		info.ProcMask |= core.ProcMaskSpellProc
 	}
 
 	if critMatcher.MatchString(tooltip) {
