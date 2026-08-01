@@ -490,7 +490,15 @@ func TryParseProcEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, inst
 			}
 			entry.ProcInfo, entry.Supported = BuildProcInfo(parsed, int(itemEffect.BuffId), instance, renderedTooltip)
 
-			if len(itemEffect.ScalingOptions[0].Stats) == 0 || !entry.Supported {
+			// A stacking trinket carries its stats on the referenced aura rather than on the
+			// one the trigger applies, so an empty ScalingOptions here is not the same as no
+			// stats.
+			hasStats := len(itemEffect.ScalingOptions[0].Stats) > 0
+			if stacking := itemEffect.GetStackingAura(); stacking != nil {
+				hasStats = hasStats || len(stacking.ScalingOptions[0].Stats) > 0
+			}
+
+			if !hasStats || !entry.Supported {
 				StoreMissingEffect("ItemEffects", parsed.Name, Variant{
 					ID:      int(parsed.Id),
 					Name:    renderedTooltip,
@@ -706,7 +714,15 @@ func ParseTooltipForMissingEffect(parsed *proto.UIItem, itemEffect *proto.ItemEf
 				return
 			}
 
-			if len(itemEffect.ScalingOptions[0].Stats) == 0 || !entry.Supported {
+			// A stacking trinket carries its stats on the referenced aura rather than on the
+			// one the trigger applies, so an empty ScalingOptions here is not the same as no
+			// stats.
+			hasStats := len(itemEffect.ScalingOptions[0].Stats) > 0
+			if stacking := itemEffect.GetStackingAura(); stacking != nil {
+				hasStats = hasStats || len(stacking.ScalingOptions[0].Stats) > 0
+			}
+
+			if !hasStats || !entry.Supported {
 				StoreMissingEffect("ItemEffects", parsed.Name, Variant{
 					ID:      int(parsed.Id),
 					Name:    renderedTooltip,

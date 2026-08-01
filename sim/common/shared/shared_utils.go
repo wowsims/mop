@@ -144,7 +144,24 @@ func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(age
 			proc := effect.GetProc()
 			procAction := core.ActionID{SpellID: effect.BuffId}
 			var procAura *core.StatBuffAura
-			if effect.MaxCumulativeStacks > 0 {
+			// Set only for the stacking trinkets, where the trigger opens a window aura that
+			// accumulates a separate stat aura on its own schedule. The handler activates the
+			// window rather than the stat aura, so a re-proc restarts the window instead of
+			// adding a stack and refreshing a duration the game does not refresh.
+			var windowAura *core.Aura
+			if stackingAura := effect.StackingAura; stackingAura != nil {
+				procAura, windowAura = character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
+					AuraLabel:            config.Name + " Proc",
+					ActionID:             procAction,
+					Duration:             time.Millisecond * time.Duration(effect.EffectDurationMs),
+					MaxStacks:            stackingAura.MaxCumulativeStacks,
+					TimePerStack:         time.Millisecond * time.Duration(effect.StackPeriodMs),
+					BonusPerStack:        stats.FromProtoMap(stackingAura.ScalingOptions[int32(itemLevelState)].Stats),
+					StackingAuraActionID: core.ActionID{SpellID: stackingAura.BuffId},
+					StackingAuraLabel:    config.Name + " Stacks",
+					TickImmediately:      true,
+				})
+			} else if effect.MaxCumulativeStacks > 0 {
 				procAura = core.MakeStackingAura(character, core.StackingStatAura{
 					Aura: core.Aura{
 						Label:     config.Name + " Proc",
@@ -201,9 +218,13 @@ func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(age
 				if customHandler != nil {
 					customHandler(sim, procAura)
 				} else {
-					procAura.Activate(sim)
-					if effect.MaxCumulativeStacks > 0 {
-						procAura.AddStack(sim)
+					if windowAura != nil {
+						windowAura.Activate(sim)
+					} else {
+						procAura.Activate(sim)
+						if effect.MaxCumulativeStacks > 0 {
+							procAura.AddStack(sim)
+						}
 					}
 					if procSpell.Spell != nil {
 						procSpell.Trigger(sim, spell, result)
@@ -224,7 +245,11 @@ func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(age
 				Handler:            handler,
 			})
 
-			if proc.IcdMs != 0 {
+			// Skipped on the stacking path. There the stat aura is applied by the window aura on
+			// its own tick schedule rather than by the trigger, so pinning the trigger's ICD onto
+			// it gates the stacks behind a cooldown that is meant to gate only the window. None of
+			// the hand-written stacking trinkets did this.
+			if proc.IcdMs != 0 && windowAura == nil {
 				procAura.Icd = triggerAura.Icd
 			}
 			if isEnchant {

@@ -598,7 +598,21 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSurvival-AllItems-EnchantWeapon-ElementalForce-4443"
+ value: {
+  dps: 456513.61875
+  tps: 364563.59358
+ }
+}
+dps_results: {
  key: "TestSurvival-AllItems-EnchantWeapon-JadeSpirit-4442"
+ value: {
+  dps: 454906.51868
+  tps: 363268.09574
+ }
+}
+dps_results: {
+ key: "TestSurvival-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
   dps: 454906.51868
   tps: 363268.09574
@@ -1222,6 +1236,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSurvival-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 401544.07033
+  tps: 318457.11343
+ }
+}
+dps_results: {
  key: "TestSurvival-AllItems-NitroBoosts-4223"
  value: {
   dps: 466637.78202
@@ -1254,6 +1275,13 @@ dps_results: {
  value: {
   dps: 406643.48736
   tps: 323199.06332
+ }
+}
+dps_results: {
+ key: "TestSurvival-AllItems-PhaseFingers-4697"
+ value: {
+  dps: 462483.6975
+  tps: 369164.99766
  }
 }
 dps_results: {
@@ -1434,8 +1462,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 428349.56275
-  tps: 338858.79395
+  dps: 431229.71168
+  tps: 341204.42453
  }
 }
 dps_results: {
@@ -1560,8 +1588,8 @@ dps_results: {
 dps_results: {
  key: "TestSurvival-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 407236.34571
-  tps: 323083.33718
+  dps: 402775.4996
+  tps: 319429.82631
  }
 }
 dps_results: {

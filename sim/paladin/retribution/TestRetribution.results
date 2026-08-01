@@ -671,10 +671,26 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestRetribution-AllItems-EnchantWeapon-ElementalForce-4443"
+ value: {
+  dps: 454339.21674
+  tps: 429999.59058
+  hps: 15.24862
+ }
+}
+dps_results: {
  key: "TestRetribution-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
   dps: 453238.13654
   tps: 428904.37291
+  hps: 15.24862
+ }
+}
+dps_results: {
+ key: "TestRetribution-AllItems-EnchantWeapon-River'sSong-4446"
+ value: {
+  dps: 453175.53587
+  tps: 428869.16698
   hps: 15.24862
  }
 }
@@ -1383,6 +1399,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestRetribution-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 398660.86479
+  tps: 379308.2249
+  hps: 14.97429
+ }
+}
+dps_results: {
  key: "TestRetribution-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 398571.28062
@@ -1412,6 +1436,14 @@ dps_results: {
   dps: 413939.03585
   tps: 394070.14033
   hps: 14.97429
+ }
+}
+dps_results: {
+ key: "TestRetribution-AllItems-PhaseFingers-4697"
+ value: {
+  dps: 458605.9737
+  tps: 433930.2752
+  hps: 15.24862
  }
 }
 dps_results: {
@@ -1633,8 +1665,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 399274.51792
-  tps: 379901.31305
+  dps: 399063.67928
+  tps: 379682.32569
   hps: 14.97429
  }
 }
@@ -1777,9 +1809,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 438931.70704
-  tps: 416844.61922
-  hps: 17.41748
+  dps: 437830.9162
+  tps: 415881.95773
+  hps: 17.8022
  }
 }
 dps_results: {
