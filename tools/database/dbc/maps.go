@@ -296,35 +296,39 @@ func ClassNameFromDBC(dbc DbcClass) string {
 	}
 	return "Unknown"
 }
-func getMatchingRatingMods(value int) []RatingModType {
-	allMods := []RatingModType{
-		RATING_MOD_DODGE,
-		RATING_MOD_PARRY,
-		RATING_MOD_HIT_MELEE,
-		RATING_MOD_HIT_RANGED,
-		RATING_MOD_HIT_SPELL,
-		RATING_MOD_CRIT_MELEE,
-		RATING_MOD_CRIT_RANGED,
-		RATING_MOD_CRIT_SPELL,
-		RATING_MOD_MULTISTRIKE,
-		RATING_MOD_READINESS,
-		RATING_MOD_SPEED,
-		RATING_MOD_RESILIENCE,
-		RATING_MOD_LEECH,
-		RATING_MOD_HASTE_MELEE,
-		RATING_MOD_HASTE_RANGED,
-		RATING_MOD_HASTE_SPELL,
-		RATING_MOD_AVOIDANCE,
-		RATING_MOD_EXPERTISE,
-		RATING_MOD_MASTERY,
-		RATING_MOD_PVP_POWER,
-		RATING_MOD_VERS_DAMAGE,
-		RATING_MOD_VERS_HEAL,
-		RATING_MOD_VERS_MITIG,
-	}
 
+// Every bit an A_MOD_RATING mask can carry, in a fixed order so the mods a mask decomposes into
+// come out the same way every run. Bits MoP does not have are listed too: they still appear in
+// the data, and RatingModToStat is what decides they map to nothing.
+var allRatingMods = []RatingModType{
+	RATING_MOD_DODGE,
+	RATING_MOD_PARRY,
+	RATING_MOD_HIT_MELEE,
+	RATING_MOD_HIT_RANGED,
+	RATING_MOD_HIT_SPELL,
+	RATING_MOD_CRIT_MELEE,
+	RATING_MOD_CRIT_RANGED,
+	RATING_MOD_CRIT_SPELL,
+	RATING_MOD_MULTISTRIKE,
+	RATING_MOD_READINESS,
+	RATING_MOD_SPEED,
+	RATING_MOD_RESILIENCE,
+	RATING_MOD_LEECH,
+	RATING_MOD_HASTE_MELEE,
+	RATING_MOD_HASTE_RANGED,
+	RATING_MOD_HASTE_SPELL,
+	RATING_MOD_AVOIDANCE,
+	RATING_MOD_EXPERTISE,
+	RATING_MOD_MASTERY,
+	RATING_MOD_PVP_POWER,
+	RATING_MOD_VERS_DAMAGE,
+	RATING_MOD_VERS_HEAL,
+	RATING_MOD_VERS_MITIG,
+}
+
+func getMatchingRatingMods(value int) []RatingModType {
 	var result []RatingModType
-	for _, mod := range allMods {
+	for _, mod := range allRatingMods {
 		if value&int(mod) != 0 {
 			result = append(result, mod)
 		}

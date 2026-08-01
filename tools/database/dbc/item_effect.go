@@ -38,11 +38,11 @@ func (e *ItemEffect) ToMap() map[string]interface{} {
 }
 
 func GetItemEffect(effectId int) ItemEffect {
-	return dbcInstance.ItemEffects[effectId]
+	return GetDBC().ItemEffects[effectId]
 }
 
 func makeBaseProto(e *ItemEffect, statsSpellID int) *proto.ItemEffect {
-	sp := dbcInstance.Spells[e.SpellID]
+	sp := GetDBC().Spells[e.SpellID]
 	base := &proto.ItemEffect{
 		BuffId:           int32(e.SpellID),
 		BuffName:         sp.NameLang,
@@ -50,15 +50,15 @@ func makeBaseProto(e *ItemEffect, statsSpellID int) *proto.ItemEffect {
 		ScalingOptions:   make(map[int32]*proto.ScalingItemEffectProperties),
 	}
 	// override duration if stats spell defines its own
-	if dur := dbcInstance.Spells[statsSpellID].Duration; dur > 0 {
+	if dur := GetDBC().Spells[statsSpellID].Duration; dur > 0 {
 		base.EffectDurationMs = int32(dur)
 	}
 	return base
 }
 
 func assignTrigger(e *ItemEffect, statsSpellID int, pe *proto.ItemEffect) {
-	spTop := dbcInstance.Spells[e.SpellID]
-	statsSP := dbcInstance.Spells[statsSpellID]
+	spTop := GetDBC().Spells[e.SpellID]
+	statsSP := GetDBC().Spells[statsSpellID]
 	switch resolveTriggerType(e.TriggerType, e.SpellID) {
 	case ITEM_SPELLTRIGGER_ON_USE:
 		pe.Effect = &proto.ItemEffect_OnUse{OnUse: &proto.OnUseEffect{
@@ -136,7 +136,17 @@ func (e *ItemEffect) BuildProto(itemLevel int, levelState proto.ItemLevelState) 
 	props := buildScalingProps(statsSpellID, itemLevel, e.SpellID)
 	pe.ScalingOptions[int32(levelState)] = props
 
-	return pe, len(props.Stats) > 0
+	hasStats := len(props.Stats) > 0
+	if stacking, stackPeriodMs := buildStackingAura(statsSpellID, itemLevel); stacking != nil {
+		stacking.ScalingOptions[int32(levelState)] = buildStackingProps(statsSpellID, int(stacking.BuffId), itemLevel, e.SpellID)
+		pe.StackingAura = stacking
+		pe.StackPeriodMs = stackPeriodMs
+		// The stats live on the stacking aura rather than on the aura the trigger applies, so
+		// the effect is worth reporting even though scaling_options above resolved to nothing.
+		hasStats = hasStats || len(stacking.ScalingOptions[int32(levelState)].Stats) > 0
+	}
+
+	return pe, hasStats
 }
 
 func (e *ItemEffect) ToProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
@@ -176,7 +186,7 @@ func resolveTriggerType(topType, spellID int) int {
 	if topType == ITEM_SPELLTRIGGER_ON_USE || topType == ITEM_SPELLTRIGGER_CHANCE_ON_HIT {
 		return topType
 	}
-	for _, se := range dbcInstance.SpellEffectsInOrder(spellID) {
+	for _, se := range GetDBC().SpellEffectsInOrder(spellID) {
 		if se.EffectAura == A_PROC_TRIGGER_SPELL || se.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE {
 			return ITEM_SPELLTRIGGER_CHANCE_ON_HIT
 		}
@@ -188,7 +198,7 @@ func buildScalingProps(spellID, itemLevel, itemSpellID int) *proto.ScalingItemEf
 	total := collectStats(spellID, itemLevel)
 
 	// check if spell is procced by a SPELL_WITH_VALUE
-	if effects := dbcInstance.SpellEffectsInOrder(itemSpellID); len(effects) > 0 {
+	if effects := GetDBC().SpellEffectsInOrder(itemSpellID); len(effects) > 0 {
 		for _, se := range effects {
 			if se.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE && spellID == se.EffectTriggerSpell {
 				for idx := range total {
@@ -214,7 +224,7 @@ func collectStats(spellID, itemLevel int) stats.Stats {
 func (w *chainWalker) collectStats(spellID, itemLevel int, total *stats.Stats) {
 	var emptyStats = stats.Stats{}
 
-	sp := dbcInstance.Spells[spellID]
+	sp := GetDBC().Spells[spellID]
 	for _, se := range w.effects(spellID) {
 		s := se.ParseStatEffect(sp.ScalesWithItemLevel(), itemLevel)
 		if s != nil && *s != emptyStats {
@@ -226,7 +236,7 @@ func (w *chainWalker) collectStats(spellID, itemLevel int, total *stats.Stats) {
 }
 
 func ParseItemEffects(itemID, itemLevel int, levelState proto.ItemLevelState) []*proto.ItemEffect {
-	raw := dbcInstance.ItemEffectsByParentID[itemID]
+	raw := GetDBC().ItemEffectsByParentID[itemID]
 	out := make([]*proto.ItemEffect, 0, len(raw))
 	for _, ie := range raw {
 		if pe, ok := ie.ToProto(itemLevel, levelState); ok {
@@ -237,7 +247,7 @@ func ParseItemEffects(itemID, itemLevel int, levelState proto.ItemLevelState) []
 }
 
 func GetItemEffectSpellTooltip(itemID int, buffId int) (string, int) {
-	raw := dbcInstance.ItemEffectsByParentID[itemID]
+	raw := GetDBC().ItemEffectsByParentID[itemID]
 	var spellID int
 
 	for _, effect := range raw {
@@ -246,19 +256,19 @@ func GetItemEffectSpellTooltip(itemID int, buffId int) (string, int) {
 			break
 		}
 
-		if len(dbcInstance.SpellEffects[effect.SpellID]) == 0 {
+		if len(GetDBC().SpellEffects[effect.SpellID]) == 0 {
 			continue
 		}
 		if GetSpellEffectRecursive(buffId, effect.SpellID) != nil {
 			break
 		}
 	}
-	spell := dbcInstance.Spells[spellID]
+	spell := GetDBC().Spells[spellID]
 	return spell.Description, spellID
 }
 
 func GetItemEffectForBuffID(itemID int, buffId int) *ItemEffect {
-	raw := dbcInstance.ItemEffectsByParentID[itemID]
+	raw := GetDBC().ItemEffectsByParentID[itemID]
 	var itemEffect *ItemEffect
 	for _, effect := range raw {
 		if effect.SpellID == buffId {
@@ -266,7 +276,7 @@ func GetItemEffectForBuffID(itemID int, buffId int) *ItemEffect {
 			break
 		}
 
-		if len(dbcInstance.SpellEffects[effect.SpellID]) == 0 {
+		if len(GetDBC().SpellEffects[effect.SpellID]) == 0 {
 			continue
 		}
 		if GetSpellEffectRecursive(buffId, effect.SpellID) != nil {
@@ -306,15 +316,16 @@ func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
 	var effects []*proto.ItemEffect
 
 	// pick a base effect that has stats if there is more than one effect on the item
-	for i := range dbcInstance.ItemEffectsByParentID[int(parsed.Id)] {
+	for i := range GetDBC().ItemEffectsByParentID[int(parsed.Id)] {
 		var baseEff *ItemEffect
 
-		e := &dbcInstance.ItemEffectsByParentID[int(parsed.Id)][i]
+		e := &GetDBC().ItemEffectsByParentID[int(parsed.Id)][i]
 		triggerType := resolveTriggerType(e.TriggerType, e.SpellID)
 		statsSpellID := resolveStatsSpell(e.SpellID)
-		statsSpell := dbcInstance.Spells[statsSpellID]
+		statsSpell := GetDBC().Spells[statsSpellID]
 		isValidSpell := statsSpell.ID != 0
-		baseProps := buildScalingProps(statsSpellID, int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl), e.SpellID)
+		baseIlvl := int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl)
+		baseProps := buildScalingProps(statsSpellID, baseIlvl, e.SpellID)
 		hasStats := len(baseProps.Stats) > 0
 
 		if !isValidSpell {
@@ -345,6 +356,16 @@ func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
 		for state, opt := range parsed.ScalingOptions {
 			ilvl := int(opt.Ilvl)
 			pe.ScalingOptions[state] = buildScalingProps(statsSpellID, ilvl, baseEff.SpellID)
+		}
+
+		// A container aura that accumulates a separate stat aura resolves its amounts at every
+		// state too, and per stack rather than in total.
+		if stacking, stackPeriodMs := buildStackingAura(statsSpellID, baseIlvl); stacking != nil {
+			for state, opt := range parsed.ScalingOptions {
+				stacking.ScalingOptions[state] = buildStackingProps(statsSpellID, int(stacking.BuffId), int(opt.Ilvl), baseEff.SpellID)
+			}
+			pe.StackingAura = stacking
+			pe.StackPeriodMs = stackPeriodMs
 		}
 
 		effects = append(effects, pe)

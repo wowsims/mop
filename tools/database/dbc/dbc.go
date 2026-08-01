@@ -52,61 +52,143 @@ func NewDBC() *DBC {
 	}
 }
 
+// The directory gen_db writes its extractions to, relative to the repo root.
+const DefaultInputsDir = "./assets/db_inputs/dbc"
+
+// One gzipped input file and how its contents fold into a DBC.
+type inputLoader struct {
+	name string
+	load func(d *DBC, path string) error
+}
+
+// Describes an input file holding a flat list of rows, and how each row is keyed.
+func indexedInput[T any](name string, typeName string, index func(*DBC, T)) inputLoader {
+	return inputLoader{name: name, load: func(d *DBC, path string) error {
+		rows, err := decodeInput[[]T](path, typeName)
+		if err != nil {
+			return err
+		}
+		for _, row := range rows {
+			index(d, row)
+		}
+		return nil
+	}}
+}
+
+// Describes an input file that is already shaped like the table it lands in.
+func wholeInput[T any](name string, typeName string, assign func(*DBC, T)) inputLoader {
+	return inputLoader{name: name, load: func(d *DBC, path string) error {
+		decoded, err := decodeInput[T](path, typeName)
+		if err != nil {
+			return err
+		}
+		assign(d, decoded)
+		return nil
+	}}
+}
+
+func decodeInput[T any](path string, typeName string) (T, error) {
+	var decoded T
+
+	data, err := ReadGzipFile(path)
+	if err != nil {
+		return decoded, err
+	}
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return decoded, ParseError{
+			Source: path,
+			Field:  typeName,
+			Reason: err.Error(),
+		}
+	}
+	return decoded, nil
+}
+
+// Every input file, in load order. The files are independent of one another, so the order is
+// kept only because it is the order the extraction writes them in.
+var dbcInputs = []inputLoader{
+	indexedInput("items", "Item", func(d *DBC, row Item) { d.Items[row.Id] = row }),
+	indexedInput("gems", "Gem", func(d *DBC, row Gem) { d.Gems[row.ItemId] = row }),
+	indexedInput("enchants", "Enchant", func(d *DBC, row Enchant) { d.Enchants[row.EffectId] = row }),
+	indexedInput("socket_bonuses", "SocketBonus", func(d *DBC, row SocketBonus) { d.SocketBonuses[row.ID] = row }),
+	wholeInput("spell_effects", "SpellEffect", func(d *DBC, decoded map[int]map[int]SpellEffect) {
+		d.SpellEffects = decoded
+		for _, spell := range decoded {
+			for _, effect := range spell {
+				d.SpellEffectsById[effect.ID] = effect
+			}
+		}
+	}),
+	indexedInput("random_suffix", "RandomSuffix", func(d *DBC, row RandomSuffix) { d.RandomSuffix[row.ID] = row }),
+	wholeInput("rand_prop_points", "RandomProps", func(d *DBC, decoded RandomPropAllocationsByIlvl) {
+		d.RandomPropertiesByIlvl = decoded
+	}),
+	wholeInput("item_damage_tables", "ItemDamage", func(d *DBC, decoded map[string]map[int]ItemDamageTable) {
+		d.ItemDamageTable = decoded
+	}),
+	wholeInput("item_armor_quality", "ItemArmorQuality", func(d *DBC, decoded map[int]ItemArmorQuality) {
+		d.ItemArmorQuality = decoded
+	}),
+	wholeInput("item_armor_total", "ItemArmorTotal", func(d *DBC, decoded map[int]ItemArmorTotal) {
+		d.ItemArmorTotal = decoded
+	}),
+	wholeInput("item_armor_shield", "ItemArmorShield", func(d *DBC, decoded map[int]ItemArmorShield) {
+		d.ItemArmorShield = decoded
+	}),
+	wholeInput("armor_location", "ArmorLocation", func(d *DBC, decoded map[int]ArmorLocation) {
+		d.ArmorLocation = decoded
+	}),
+	indexedInput("consumables", "Consumable", func(d *DBC, row Consumable) { d.Consumables[row.Id] = row }),
+	indexedInput("item_effects", "ItemEffect", func(d *DBC, row ItemEffect) {
+		// Single lookup by effect ID, plus a grouping by parent item ID.
+		d.ItemEffects[row.ID] = row
+		d.ItemEffectsByParentID[row.ParentItemID] = append(d.ItemEffectsByParentID[row.ParentItemID], row)
+	}),
+	indexedInput("spells", "Spell", func(d *DBC, row Spell) { d.Spells[int(row.ID)] = row }),
+}
+
 var (
 	dbcInstance *DBC
-	once        sync.Once
+	initOnce    sync.Once
 )
 
+// InitDBC loads the singleton from the default input directory.
 func InitDBC() error {
-	dbcInstance = NewDBC()
+	return InitDBCFrom(DefaultInputsDir)
+}
 
-	if err := dbcInstance.loadItems("./assets/db_inputs/dbc/items.json"); err != nil {
-		return fmt.Errorf("loading items: %w", err)
+// InitDBCFrom loads the singleton from inputsDir, replacing whatever was loaded before. The
+// instance is only published once every file has been read, so a failed load leaves the previous
+// one in place rather than a half-populated replacement.
+func InitDBCFrom(inputsDir string) error {
+	instance := NewDBC()
+
+	for _, input := range dbcInputs {
+		path := fmt.Sprintf("%s/%s.json", inputsDir, input.name)
+		if err := input.load(instance, path); err != nil {
+			return fmt.Errorf("loading %s: %w", input.name, err)
+		}
 	}
-	if err := dbcInstance.loadGems("./assets/db_inputs/dbc/gems.json"); err != nil {
-		return fmt.Errorf("loading gems: %w", err)
-	}
-	if err := dbcInstance.loadEnchants("./assets/db_inputs/dbc/enchants.json"); err != nil {
-		return fmt.Errorf("loading enchants: %w", err)
-	}
-	if err := dbcInstance.loadSocketBonuses("./assets/db_inputs/dbc/socket_bonuses.json"); err != nil {
-		return fmt.Errorf("loading item stat effects: %w", err)
-	}
-	if err := dbcInstance.loadSpellEffects("./assets/db_inputs/dbc/spell_effects.json"); err != nil {
-		return fmt.Errorf("loading spell effects: %w", err)
-	}
-	if err := dbcInstance.loadRandomSuffix("./assets/db_inputs/dbc/random_suffix.json"); err != nil {
-		return fmt.Errorf("loading random suffixes: %w", err)
-	}
-	if err := dbcInstance.loadRandomPropertiesByIlvl("./assets/db_inputs/dbc/rand_prop_points.json"); err != nil {
-		return fmt.Errorf("loading random properties: %w", err)
-	}
-	if err := dbcInstance.loadItemDamageTables("./assets/db_inputs/dbc/item_damage_tables.json"); err != nil {
-		return fmt.Errorf("loading item damage tables: %w", err)
-	}
-	if err := dbcInstance.LoadItemArmorQuality("./assets/db_inputs/dbc/item_armor_quality.json"); err != nil {
-		return fmt.Errorf("loading item armor quality: %w", err)
-	}
-	if err := dbcInstance.LoadItemArmorTotal("./assets/db_inputs/dbc/item_armor_total.json"); err != nil {
-		return fmt.Errorf("loading item armor total: %w", err)
-	}
-	if err := dbcInstance.LoadItemArmorShield("./assets/db_inputs/dbc/item_armor_shield.json"); err != nil {
-		return fmt.Errorf("loading item armor shield: %w", err)
-	}
-	if err := dbcInstance.LoadArmorLocation("./assets/db_inputs/dbc/armor_location.json"); err != nil {
-		return fmt.Errorf("loading armor location: %w", err)
-	}
-	if err := dbcInstance.loadConsumables("./assets/db_inputs/dbc/consumables.json"); err != nil {
-		return fmt.Errorf("loading consumables: %w", err)
-	}
-	if err := dbcInstance.loadItemEffects("./assets/db_inputs/dbc/item_effects.json"); err != nil {
-		return fmt.Errorf("loading item effects: %w", err)
-	}
-	if err := dbcInstance.loadSpells("./assets/db_inputs/dbc/spells.json"); err != nil {
-		return fmt.Errorf("loading spells: %w", err)
-	}
-	dbcInstance.LoadSpellScaling()
+	instance.LoadSpellScaling()
+
+	dbcInstance = instance
 	return nil
+}
+
+// GetDBC returns the DBC singleton instance, loading it from the default input directory on
+// first use. Every read of the singleton, inside this package and out, goes through here, so
+// code that never called InitDBC gets a populated instance rather than a nil dereference.
+func GetDBC() *DBC {
+	initOnce.Do(func() {
+		// An explicit InitDBC or InitDBCFrom may already have supplied the instance.
+		if dbcInstance != nil {
+			return
+		}
+		if err := InitDBC(); err != nil {
+			log.Fatalf("Failed to initialize DBC: %v", err)
+		}
+	})
+	return dbcInstance
 }
 
 // Returns the effects of a spell ordered by effect index. SpellEffects is keyed by index, so
@@ -129,331 +211,4 @@ func (d *DBC) SpellEffectsInOrder(spellID int) []SpellEffect {
 		ordered = append(ordered, effects[idx])
 	}
 	return ordered
-}
-
-// GetDBC returns the DBC singleton instance
-func GetDBC() *DBC {
-	once.Do(func() {
-		if err := InitDBC(); err != nil {
-			log.Fatalf("Failed to initialize DBC: %v", err)
-		}
-	})
-	return dbcInstance
-}
-
-func (d *DBC) loadConsumables(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var consumables []Consumable
-	if err = json.Unmarshal(data, &consumables); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "Consumable",
-			Reason: err.Error(),
-		}
-	}
-
-	for i := range consumables {
-		consumable := consumables[i]
-		d.Consumables[consumable.Id] = consumable
-	}
-	return nil
-}
-func (d *DBC) loadSpells(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var spells []Spell
-	if err = json.Unmarshal(data, &spells); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "Spell",
-			Reason: err.Error(),
-		}
-	}
-
-	for i := range spells {
-		spell := spells[i]
-		d.Spells[int(spell.ID)] = spell
-	}
-	return nil
-}
-func (d *DBC) loadItemEffects(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var effects []ItemEffect
-	if err = json.Unmarshal(data, &effects); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "ItemEffect",
-			Reason: err.Error(),
-		}
-	}
-
-	// Populate both maps
-	for _, effect := range effects {
-		// Single lookup by effect ID
-		d.ItemEffects[effect.ID] = effect
-		// Grouping by parent item ID
-		d.ItemEffectsByParentID[effect.ParentItemID] = append(
-			d.ItemEffectsByParentID[effect.ParentItemID],
-			effect,
-		)
-	}
-
-	return nil
-}
-
-func (d *DBC) loadRandomPropertiesByIlvl(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var properties RandomPropAllocationsByIlvl
-	if err = json.Unmarshal(data, &properties); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "RandomProps",
-			Reason: err.Error(),
-		}
-	}
-
-	d.RandomPropertiesByIlvl = properties
-	return nil
-}
-
-func (d *DBC) loadItems(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var items []Item
-	if err = json.Unmarshal(data, &items); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "Item",
-			Reason: err.Error(),
-		}
-	}
-
-	for i := range items {
-		item := items[i]
-		d.Items[item.Id] = item
-	}
-	return nil
-}
-
-func (d *DBC) loadGems(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var gems []Gem
-	if err = json.Unmarshal(data, &gems); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "Gem",
-			Reason: err.Error(),
-		}
-	}
-
-	for i := range gems {
-		gem := gems[i]
-		d.Gems[gem.ItemId] = gem
-	}
-	return nil
-}
-
-func (d *DBC) loadEnchants(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var enchants []Enchant
-	if err = json.Unmarshal(data, &enchants); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "Enchant",
-			Reason: err.Error(),
-		}
-	}
-
-	for i := range enchants {
-		enchant := enchants[i]
-		d.Enchants[enchant.EffectId] = enchant
-	}
-	return nil
-}
-
-func (d *DBC) loadSocketBonuses(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var bonuses []SocketBonus
-	if err = json.Unmarshal(data, &bonuses); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "SocketBonus",
-			Reason: err.Error(),
-		}
-	}
-
-	for i := range bonuses {
-		bonus := bonuses[i]
-		d.SocketBonuses[bonus.ID] = bonus
-	}
-	return nil
-}
-
-func (d *DBC) loadSpellEffects(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var effects map[int]map[int]SpellEffect
-	if err = json.Unmarshal(data, &effects); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "SpellEffect",
-			Reason: err.Error(),
-		}
-	}
-
-	d.SpellEffects = effects
-	for _, spell := range effects {
-		for _, effect := range spell {
-			d.SpellEffectsById[effect.ID] = effect
-		}
-	}
-	return nil
-}
-
-func (d *DBC) loadRandomSuffix(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var suffixes []RandomSuffix
-	if err = json.Unmarshal(data, &suffixes); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "RandomSuffix",
-			Reason: err.Error(),
-		}
-	}
-
-	for i := range suffixes {
-		suffix := suffixes[i]
-		d.RandomSuffix[suffix.ID] = suffix
-	}
-	return nil
-}
-
-func (d *DBC) LoadItemArmorQuality(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var tables map[int]ItemArmorQuality
-	if err = json.Unmarshal(data, &tables); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "ItemArmorQuality",
-			Reason: err.Error(),
-		}
-	}
-
-	d.ItemArmorQuality = tables
-	return nil
-}
-func (d *DBC) LoadArmorLocation(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var tables map[int]ArmorLocation
-	if err = json.Unmarshal(data, &tables); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "ArmorLocation",
-			Reason: err.Error(),
-		}
-	}
-
-	d.ArmorLocation = tables
-	return nil
-}
-func (d *DBC) LoadItemArmorShield(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var tables map[int]ItemArmorShield
-	if err = json.Unmarshal(data, &tables); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "ItemArmorShield",
-			Reason: err.Error(),
-		}
-	}
-
-	d.ItemArmorShield = tables
-	return nil
-}
-
-func (d *DBC) LoadItemArmorTotal(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var tables map[int]ItemArmorTotal
-	if err = json.Unmarshal(data, &tables); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "ItemArmorTotal",
-			Reason: err.Error(),
-		}
-	}
-
-	d.ItemArmorTotal = tables
-	return nil
-}
-
-func (d *DBC) loadItemDamageTables(filename string) error {
-	data, err := ReadGzipFile(filename)
-	if err != nil {
-		return err
-	}
-
-	var tables map[string]map[int]ItemDamageTable
-	if err = json.Unmarshal(data, &tables); err != nil {
-		return ParseError{
-			Source: filename,
-			Field:  "ItemDamage",
-			Reason: err.Error(),
-		}
-	}
-
-	d.ItemDamageTable = tables
-	return nil
 }

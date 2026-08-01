@@ -130,7 +130,7 @@ func processEnchantmentEffects(
 			// through, so this only has to accumulate what ParseStatEffect returns rather
 			// than repeat that switch with a second, narrower set of aura types. An
 			// enchantment never scales off item level, hence ilvl 0.
-			for _, spellEffect := range dbcInstance.SpellEffectsInOrder(effectArgs[i]) {
+			for _, spellEffect := range GetDBC().SpellEffectsInOrder(effectArgs[i]) {
 				if spellEffect.EffectType != E_APPLY_AURA {
 					continue
 				}

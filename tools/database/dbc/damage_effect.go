@@ -59,7 +59,7 @@ func (w *chainWalker) resolveDamageEffect(spellID int) *DamageEffect {
 
 		return &DamageEffect{
 			SpellID:          spellID,
-			SchoolMask:       dbcInstance.Spells[spellID].SchoolMask,
+			SchoolMask:       GetDBC().Spells[spellID].SchoolMask,
 			MinDamage:        minDamage,
 			MaxDamage:        maxDamage,
 			BonusCoefficient: se.EffectBonusCoefficient,

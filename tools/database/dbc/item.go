@@ -174,20 +174,6 @@ func (item *Item) GetRandPropPoints(itemLevel int) int32 {
 	return randomProperty[item.OverallQuality.ToProto()][suffixType]
 }
 
-// ItemSocketCostPerLevel game table, collapsed to its breakpoints (constant 160
-// for all ilvls the stat-recompute path can see: upgrades and challenge mode).
-func ItemSocketCostPerLevel(itemLevel int) float64 {
-	breakpoints := [][2]float64{
-		{417, 160}, {333, 40}, {178, 20}, {100, 6}, {89, 5}, {55, 4}, {43, 3}, {31, 2}, {19, 1},
-	}
-	for _, bp := range breakpoints {
-		if float64(itemLevel) >= bp[0] {
-			return bp[1]
-		}
-	}
-	return 0
-}
-
 func (item *Item) GetScaledStat(index int, itemLevel int) float64 {
 	//Todo check if overflow array
 

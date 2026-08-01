@@ -95,7 +95,7 @@ func (s *SpellEffect) Delta(pLevel int, level int) float64 {
 	}
 
 	var mScale float64
-	spell := dbcInstance.Spells[s.SpellID]
+	spell := GetDBC().Spells[s.SpellID]
 	if s.Variance != 0 && s.ScalingClass() != 0 {
 		scalingLevel := level
 		if scalingLevel == 0 {
@@ -104,7 +104,7 @@ func (s *SpellEffect) Delta(pLevel int, level int) float64 {
 		if spell.MaxScalingLevel > 0 {
 			scalingLevel = min(scalingLevel, spell.MaxScalingLevel)
 		}
-		mScale = dbcInstance.SpellScaling(s.ScalingClass(), scalingLevel)
+		mScale = GetDBC().SpellScaling(s.ScalingClass(), scalingLevel)
 	}
 
 	return s.scaledDelta(mScale)
@@ -116,13 +116,13 @@ func (s *SpellEffect) Average(pLevel int, level int) float64 {
 	}
 
 	scale := s.ScalingClass()
-	spell := dbcInstance.Spells[s.SpellID]
+	spell := GetDBC().Spells[s.SpellID]
 
 	if s.Coefficient != 0 && scale != proto.Class_ClassUnknown {
 		if spell.MaxScalingLevel > 0 {
 			level = min(level, spell.MaxScalingLevel)
 		}
-		scaler := dbcInstance.SpellScaling(scale, level)
+		scaler := GetDBC().SpellScaling(scale, level)
 		value := s.Coefficient * scaler
 		return value
 	} else if s.EffectRealPointsPerLevel != 0 {
@@ -197,12 +197,12 @@ func (effect *SpellEffect) CalcCoefficientStatValue(ilvl int) float64 {
 func (effect *SpellEffect) GetScalingValue(ilvl int) float64 {
 	if ilvl > 0 {
 		// If item we get rand prop points
-		return float64(dbcInstance.RandomPropertiesByIlvl[ilvl][proto.ItemQuality_ItemQualityEpic][0])
+		return float64(GetDBC().RandomPropertiesByIlvl[ilvl][proto.ItemQuality_ItemQualityEpic][0])
 	}
-	spell := dbcInstance.Spells[effect.SpellID]
+	spell := GetDBC().Spells[effect.SpellID]
 	if spell.ScalesFromItemLevel > 0 {
 		// If item scales from a fixed ilvl we get rand prop points
-		return float64(dbcInstance.RandomPropertiesByIlvl[int(spell.ScalesFromItemLevel)][proto.ItemQuality_ItemQualityEpic][0])
+		return float64(GetDBC().RandomPropertiesByIlvl[int(spell.ScalesFromItemLevel)][proto.ItemQuality_ItemQualityEpic][0])
 	}
 
 	// if not we get class scaling based on the spell.
@@ -214,7 +214,7 @@ func (effect *SpellEffect) GetScalingValue(ilvl int) float64 {
 	}
 
 	scale := effect.ScalingClass()
-	return dbcInstance.SpellScalings[scalingLevel].Values[scale]
+	return GetDBC().SpellScalings[scalingLevel].Values[scale]
 }
 
 // Reports whether the effect's amount comes from its scaling coefficient rather than
@@ -315,7 +315,7 @@ func (effect *SpellEffect) ParseStatEffect(scalesWithIlvl bool, ilvl int) *stats
 	case effect.EffectAura == A_MOD_INCREASE_HEALTH_2:
 		effectStats[proto.Stat_StatHealth] = effect.resolvedAmount(effect.curveScaledAmount(scalesWithIlvl, ilvl))
 	case effect.EffectAura == A_PERIODIC_TRIGGER_SPELL && effect.EffectAuraPeriod == 10000:
-		for _, sub := range dbcInstance.SpellEffectsInOrder(effect.EffectTriggerSpell) {
+		for _, sub := range GetDBC().SpellEffectsInOrder(effect.EffectTriggerSpell) {
 			effectStats.AddInplace(sub.ParseStatEffect(false, 0))
 		}
 	}

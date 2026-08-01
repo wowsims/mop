@@ -41,7 +41,7 @@ func (gem *Gem) IsDisabledInChallengeMode() bool {
 	for idx := range gem.Effects {
 		switch gem.Effects[idx] {
 		case ITEM_ENCHANTMENT_EQUIP_SPELL: //Buff
-			spell := dbcInstance.Spells[gem.EffectArgs[idx]]
+			spell := GetDBC().Spells[gem.EffectArgs[idx]]
 			if spell.NotActiveInChallengeMode() {
 				return true
 			}

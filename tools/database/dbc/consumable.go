@@ -88,7 +88,7 @@ func (consumable *Consumable) GetNonStatEffectIds() []int32 {
 		if effect.ID == 0 {
 			continue
 		}
-		for _, spellEffect := range dbcInstance.SpellEffectsInOrder(effect.SpellID) {
+		for _, spellEffect := range GetDBC().SpellEffectsInOrder(effect.SpellID) {
 			if statAuraTypes[spellEffect.EffectType] {
 				effectIds = append(effectIds, int32(spellEffect.ID))
 			}
@@ -104,7 +104,7 @@ func (consumable *Consumable) GetStatModifiers() *stats.Stats {
 		if effect.ID == 0 {
 			continue
 		}
-		for _, spellEffect := range dbcInstance.SpellEffectsInOrder(effect.SpellID) {
+		for _, spellEffect := range GetDBC().SpellEffectsInOrder(effect.SpellID) {
 			stat := spellEffect.ParseStatEffect(spellEffect.Coefficient != 0, 0)
 			stats.AddInplace(stat)
 		}

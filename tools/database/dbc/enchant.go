@@ -39,7 +39,7 @@ func (enchant *Enchant) OnUseEffect() (ItemEffect, bool) {
 	}
 
 	spellID := enchant.EffectArgs[idx]
-	spell, ok := dbcInstance.Spells[spellID]
+	spell, ok := GetDBC().Spells[spellID]
 	if !ok {
 		return ItemEffect{}, false
 	}
@@ -81,7 +81,7 @@ func (enchant *Enchant) HasEnchantEffect() bool {
 		// We apply a buff here, check if it's a trigger
 		if effect == ITEM_ENCHANTMENT_EQUIP_SPELL {
 			spellId := enchant.EffectArgs[idx]
-			for _, spellEffect := range dbcInstance.SpellEffectsInOrder(spellId) {
+			for _, spellEffect := range GetDBC().SpellEffectsInOrder(spellId) {
 				if spellEffect.EffectAura == A_PROC_TRIGGER_SPELL ||
 					spellEffect.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE ||
 					// Damage procs such as the shield spikes hang their amount straight
@@ -156,7 +156,11 @@ func (enchant *Enchant) ToProto() *proto.UIEnchant {
 			uiEnchant.EnchantType = proto.EnchantType_EnchantTypeOffHand
 			uiEnchant.Type = proto.ItemType_ItemTypeWeapon
 		}
-		if enchant.SubClassMask == ITEM_SUBCLASS_BIT_ARMOR_SHIELD || enchant.SubClassMask == 64 { // idk where the 64 comes from but shield spikes are this
+		// Matches the "Enchant Shield - ..." scrolls. Not the shield spikes: those carry
+		// ShieldValue1 and fall through to no item type at all. Adding ShieldValue1 here also
+		// needs the ItemTypeWeapon branch of BuildSpellProcInfo dealt with, which would
+		// otherwise give a block-triggered proc an outgoing-hit callback.
+		if enchant.SubClassMask == ITEM_SUBCLASS_BIT_ARMOR_SHIELD {
 			uiEnchant.EnchantType = proto.EnchantType_EnchantTypeShield
 			uiEnchant.Type = proto.ItemType_ItemTypeWeapon
 		}
