@@ -6,9 +6,7 @@ import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from '../../death_knight/unholy/apls/default.apl.json';
-import DefaultMalkorokApl from '../../death_knight/unholy/apls/default-malkorok.apl.json';
 import FesterblightApl from '../../death_knight/unholy/apls/festerblight.apl.json';
-import FesterblightMalkorokApl from '../../death_knight/unholy/apls/festerblight-malkorok.apl.json';
 import P5Build from '../../death_knight/unholy/builds/p5.build.json';
 import PrebisBuild from '../../death_knight/unholy/builds/prebis.build.json';
 import P5Gear from '../../death_knight/unholy/gear_sets/p5.gear.json';
@@ -20,14 +18,6 @@ import PrebisGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Prebis', PrebisGear);
 export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5Gear);
 
-// Real creature ID for the Malkorok (DPS) preset target (see sim/encounters/soo/malkorok_ai.go).
-const MALKOROK_BOSS_ID = 71454;
-
-const malkorokEncounterCheck = {
-	condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.primaryTarget.id !== MALKOROK_BOSS_ID,
-	message: "This rotation's Anti-Magic Shell timing is tuned for the Malkorok (DPS) encounter. Against any other target, that cast becomes an unconditional cast-on-cooldown instead of the intended reactive one.",
-};
-
 export const DEFAULT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Festerblight', FesterblightApl, {
 	onLoad: (player: Player<Spec.SpecUnholyDeathKnight>) =>
@@ -37,22 +27,6 @@ export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('F
 					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.targets.length > 1,
 					message: 'Festerblight is a single-target rotation. Use the Default rotation for multiple targets.',
 				},
-			],
-			player,
-		),
-});
-export const DEFAULT_MALKOROK_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default (Malkorok)', DefaultMalkorokApl, {
-	onLoad: (player: Player<Spec.SpecUnholyDeathKnight>) => PresetUtils.makeSpecChangeWarningToast([malkorokEncounterCheck], player),
-});
-export const FESTERBLIGHT_MALKOROK_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Festerblight (Malkorok)', FesterblightMalkorokApl, {
-	onLoad: (player: Player<Spec.SpecUnholyDeathKnight>) =>
-		PresetUtils.makeSpecChangeWarningToast(
-			[
-				{
-					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.targets.length > 1,
-					message: 'Festerblight is a single-target rotation. Use the Default rotation for multiple targets.',
-				},
-				malkorokEncounterCheck,
 			],
 			player,
 		),
