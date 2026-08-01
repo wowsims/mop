@@ -312,7 +312,7 @@ else
 	npx http-server $(OUT_DIR)/..
 endif
 
-devmode: air devserver
+devmode: air devserver $(PAGE_INDECES)
 ifeq ($(WATCH), 1)
 	npx tsx vite.build-workers.mts & npx vite serve --host &
 	air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false --wasm=false" -build.bin "./wowsimmop$(BIN_EXT)" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"
