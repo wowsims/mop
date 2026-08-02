@@ -90,7 +90,7 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 				druid.DruidSpellStarsurge
 
 			setBonusAura.AttachProcTrigger(core.ProcTrigger{
-				Callback:           core.CallbackOnCastComplete,
+				Callback:           core.CallbackOnSpellHitDealt,
 				ClassSpellMask:     procTriggerSpellMask,
 				TriggerImmediately: true,
 				ExtraCondition: func(_ *core.Simulation, spell *core.Spell, _ *core.SpellResult) bool {
@@ -99,11 +99,9 @@ var ItemSetRegaliaOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 
 				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
 					alignmentActive := moonkin.CelestialAlignment.RelatedSelfBuff.IsActive()
-
 					if spell.SpellSchool.Matches(core.SpellSchoolNature) || (alignmentActive && spell.Matches(bothDuringCA)) {
 						solarBolt.Cast(sim, spell.Unit.CurrentTarget)
 					}
-
 					if spell.SpellSchool.Matches(core.SpellSchoolArcane) || (alignmentActive && spell.Matches(bothDuringCA)) {
 						lunarBolt.Cast(sim, spell.Unit.CurrentTarget)
 					}
