@@ -6,11 +6,10 @@ import (
 )
 
 func (frost *FrostMage) registerHotfixes() {
-	// 2025-09-22 - Frostbolt/Frostfire bolt damage increased by 15%
-	// 2025-11-13 - Frostbolt/Frostfire bolt damage decreased to 5% (was 15%)
+	// 2013-09-23 Ice Lance's damage has been increased by 20%
 	frost.AddStaticMod(core.SpellModConfig{
-		ClassMask:  mage.MageSpellFrostbolt | mage.MageSpellFrostfireBolt | mage.MageSpellIceLance,
+		ClassMask:  mage.MageSpellIceLance,
 		Kind:       core.SpellMod_DamageDone_Pct,
-		FloatValue: 0.05,
+		FloatValue: 0.2,
 	})
 }
