@@ -39,6 +39,17 @@ func (w *chainWalker) effects(spellID int) []SpellEffect {
 // the shortest real spell ID, which keeps the plain $s1 / $t1 / $d tokens out.
 var descriptionSpellRef = regexp.MustCompile(`\$(\d{4,7})[a-zA-Z]`)
 
+// The first of spellID's effects carrying aura, in effect index order, or nil if it has none.
+func firstEffectWithAura(spellID int, aura EffectAuraType) *SpellEffect {
+	for _, se := range GetDBC().SpellEffectsInOrder(spellID) {
+		if se.EffectAura == aura {
+			return &se
+		}
+	}
+
+	return nil
+}
+
 // Resolves the stat aura a stacking container aura accumulates.
 //
 // The MoP stacking trinkets - Renataki's Soul Charm and the four others shaped like it - apply a
@@ -50,21 +61,11 @@ var descriptionSpellRef = regexp.MustCompile(`\$(\d{4,7})[a-zA-Z]`)
 // MiscValue is 0, which is Strength, while the referenced aura's is 1, Agility. The stat identity
 // exists only on the referenced aura.
 //
-// Returns 0 when the spell is not shaped like this, which is the overwhelming majority. Not a
-// chainWalker method because it descends exactly one level and cannot recurse.
+// Only meaningful for a spell that ticks a periodic dummy, which buildStackingAura establishes
+// before calling. Returns 0 when no referenced spell resolves to stats. Not a chainWalker method
+// because it descends exactly one level and cannot recurse.
 func referencedStatAura(containerSpellID int, itemLevel int) int {
 	d := GetDBC()
-
-	hasPeriodicDummy := false
-	for _, se := range d.SpellEffectsInOrder(containerSpellID) {
-		if se.EffectAura == A_PERIODIC_DUMMY {
-			hasPeriodicDummy = true
-			break
-		}
-	}
-	if !hasPeriodicDummy {
-		return 0
-	}
 
 	for _, match := range descriptionSpellRef.FindAllStringSubmatch(d.Spells[containerSpellID].Description, -1) {
 		referenced, err := strconv.Atoi(match[1])
@@ -90,17 +91,16 @@ func referencedStatAura(containerSpellID int, itemLevel int) int {
 // stats, which is exactly that shape. The stack period belongs to the container's dummy tick
 // rather than to the aura, so it is returned separately for the caller to put on the parent.
 func buildStackingAura(containerSpellID int, itemLevel int) (*proto.ItemEffect, int32) {
-	statAuraID := referencedStatAura(containerSpellID, itemLevel)
-	if statAuraID == 0 {
+	// The dummy tick is both what marks the spell as a container and where the stack period
+	// comes from, so it is resolved once here rather than looked for again further down.
+	dummy := firstEffectWithAura(containerSpellID, A_PERIODIC_DUMMY)
+	if dummy == nil {
 		return nil, 0
 	}
 
-	var stackPeriodMs int32
-	for _, se := range GetDBC().SpellEffectsInOrder(containerSpellID) {
-		if se.EffectAura == A_PERIODIC_DUMMY {
-			stackPeriodMs = int32(se.EffectAuraPeriod)
-			break
-		}
+	statAuraID := referencedStatAura(containerSpellID, itemLevel)
+	if statAuraID == 0 {
+		return nil, 0
 	}
 
 	statAura := GetDBC().Spells[statAuraID]
@@ -110,7 +110,7 @@ func buildStackingAura(containerSpellID int, itemLevel int) (*proto.ItemEffect, 
 		EffectDurationMs:    statAura.Duration,
 		MaxCumulativeStacks: statAura.MaxCumulativeStacks,
 		ScalingOptions:      map[int32]*proto.ScalingItemEffectProperties{},
-	}, stackPeriodMs
+	}, int32(dummy.EffectAuraPeriod)
 }
 
 // The per-stack stats of a stacking aura, at one item level.
@@ -124,6 +124,8 @@ func buildStackingAura(containerSpellID int, itemLevel int) (*proto.ItemEffect, 
 func buildStackingProps(containerSpellID, statAuraID, itemLevel, itemSpellID int) *proto.ScalingItemEffectProperties {
 	props := buildScalingProps(statAuraID, itemLevel, itemSpellID)
 
+	// Not firstEffectWithAura: what is wanted here is the first dummy tick that carries a
+	// coefficient, and a container may hold an earlier one that does not.
 	for _, se := range GetDBC().SpellEffectsInOrder(containerSpellID) {
 		if se.EffectAura != A_PERIODIC_DUMMY || se.Coefficient == 0 {
 			continue

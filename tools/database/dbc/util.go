@@ -134,7 +134,9 @@ func processEnchantmentEffects(
 				if spellEffect.EffectType != E_APPLY_AURA {
 					continue
 				}
-				outStats.AddInplace(spellEffect.ParseStatEffect(false, 0))
+				if effectStats, ok := spellEffect.ParseStatEffect(false, 0); ok {
+					outStats.AddInplace(&effectStats)
+				}
 			}
 		case ITEM_ENCHANTMENT_COMBAT_SPELL:
 			// Not processed (chance on hit, ignore for now)

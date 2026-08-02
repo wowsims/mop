@@ -139,31 +139,61 @@ func assignTrigger(e *ItemEffect, statsSpellID int, pe *proto.ItemEffect) {
 	}
 }
 
-// Assembles the proto for an effect and reports whether any stats were resolved.
-// Callers that only care about stat effects should use ToProto, which drops
-// the effect when there are none; callers that need the trigger regardless (on-use
-// enchants carry a real cooldown even when their buff is server-scripted) use this.
-func (e *ItemEffect) BuildProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
-	statsSpellID := resolveStatsSpell(e.SpellID)
+// The stats an effect grants at one item level state.
+//
+// A stacking effect grants nothing through the aura its trigger applies - the stats it is named
+// after live on the aura that accumulates - so an empty scaling option is not the same as no
+// stats, and no caller may read ScalingOptions directly to answer this question.
+func EffectStats(effect *proto.ItemEffect, levelState proto.ItemLevelState) map[int32]float64 {
+	state := int32(levelState)
+	if stats := effect.GetScalingOptions()[state].GetStats(); len(stats) > 0 {
+		return stats
+	}
 
+	return effect.GetStackingAura().GetScalingOptions()[state].GetStats()
+}
+
+// Assembles the proto for an effect: its buff, its trigger, the stats it resolves to at each of
+// ilvlByState's item levels, and the stacking aura it accumulates if it has one. Reports whether
+// any stats resolved at any state.
+//
+// identityIlvl is the item level the stacking aura is looked for at. Which state it comes from
+// does not change the answer - see referencedStatAura - only that it is not left to map
+// iteration order.
+func buildEffectProto(e *ItemEffect, statsSpellID int, ilvlByState map[int32]int, identityIlvl int) (*proto.ItemEffect, bool) {
 	pe := makeBaseProto(e, statsSpellID)
 	assignTrigger(e, statsSpellID, pe)
 
-	props := buildScalingProps(statsSpellID, itemLevel, e.SpellID)
-	pe.ScalingOptions[int32(levelState)] = props
+	for state, ilvl := range ilvlByState {
+		pe.ScalingOptions[state] = buildScalingProps(statsSpellID, ilvl, e.SpellID)
+	}
 
-	hasStats := len(props.Stats) > 0
-	if stacking, stackPeriodMs := buildStackingAura(statsSpellID, itemLevel); stacking != nil {
-		stacking.ScalingOptions[int32(levelState)] = buildStackingProps(statsSpellID, int(stacking.BuffId), itemLevel, e.SpellID)
+	// A container aura that accumulates a separate stat aura resolves its amounts at every
+	// state too, and per stack rather than in total.
+	if stacking, stackPeriodMs := buildStackingAura(statsSpellID, identityIlvl); stacking != nil {
+		for state, ilvl := range ilvlByState {
+			stacking.ScalingOptions[state] = buildStackingProps(statsSpellID, int(stacking.BuffId), ilvl, e.SpellID)
+		}
 		pe.StackingAura = stacking
 		pe.StackPeriodMs = stackPeriodMs
-		// The stats live on the stacking aura rather than on the aura the trigger applies, so
-		// the effect is worth reporting even though scaling_options above resolved to nothing.
-		hasStats = hasStats || len(stacking.ScalingOptions[int32(levelState)].GetStats()) > 0
 		dropEmptyScalingOptions(pe)
 	}
 
-	return pe, hasStats
+	for state := range ilvlByState {
+		if len(EffectStats(pe, proto.ItemLevelState(state))) > 0 {
+			return pe, true
+		}
+	}
+
+	return pe, false
+}
+
+// Assembles the proto for an effect at a single state and reports whether any stats were
+// resolved. Callers that only care about stat effects should use ToProto, which drops
+// the effect when there are none; callers that need the trigger regardless (on-use
+// enchants carry a real cooldown even when their buff is server-scripted) use this.
+func (e *ItemEffect) BuildProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
+	return buildEffectProto(e, resolveStatsSpell(e.SpellID), map[int32]int{int32(levelState): itemLevel}, itemLevel)
 }
 
 func (e *ItemEffect) ToProto(itemLevel int, levelState proto.ItemLevelState) (*proto.ItemEffect, bool) {
@@ -182,17 +212,14 @@ func resolveStatsSpell(spellID int) int {
 func (w *chainWalker) resolveStatsSpell(spellID int) int {
 	effects := w.effects(spellID)
 	for _, se := range effects {
-		switch se.EffectAura {
-		case A_MOD_STAT, A_MOD_RATING, A_MOD_RANGED_ATTACK_POWER, A_MOD_ATTACK_POWER, A_MOD_DAMAGE_DONE, A_MOD_TARGET_RESISTANCE, A_MOD_RESISTANCE, A_MOD_INCREASE_ENERGY,
-			A_MOD_INCREASE_HEALTH_2, A_PERIODIC_TRIGGER_SPELL:
+		if se.GrantsStats() {
 			return spellID
 		}
 	}
 
 	// If we cant resolve the spell in the first loop, we follow proc triggers downwards
 	for _, se := range effects {
-		switch se.EffectAura {
-		case A_PROC_TRIGGER_SPELL, A_PROC_TRIGGER_SPELL_WITH_VALUE:
+		if se.IsProcTrigger() {
 			return w.resolveStatsSpell(se.EffectTriggerSpell)
 		}
 	}
@@ -204,7 +231,7 @@ func resolveTriggerType(topType, spellID int) int {
 		return topType
 	}
 	for _, se := range GetDBC().SpellEffectsInOrder(spellID) {
-		if se.EffectAura == A_PROC_TRIGGER_SPELL || se.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE {
+		if se.IsProcTrigger() {
 			return ITEM_SPELLTRIGGER_CHANCE_ON_HIT
 		}
 	}
@@ -239,14 +266,15 @@ func collectStats(spellID, itemLevel int) stats.Stats {
 }
 
 func (w *chainWalker) collectStats(spellID, itemLevel int, total *stats.Stats) {
-	var emptyStats = stats.Stats{}
-
 	sp := GetDBC().Spells[spellID]
 	for _, se := range w.effects(spellID) {
-		s := se.ParseStatEffect(sp.ScalesWithItemLevel(), itemLevel)
-		if s != nil && *s != emptyStats {
-			total.AddInplace(s)
+		if s, resolved := se.ParseStatEffect(sp.ScalesWithItemLevel(), itemLevel); resolved {
+			total.AddInplace(&s)
 		} else if se.EffectAura == A_PROC_TRIGGER_SPELL {
+			// Deliberately narrower than IsProcTrigger: descending through a
+			// A_PROC_TRIGGER_SPELL_WITH_VALUE would collect the triggered spell's own amounts,
+			// past the point where buildScalingProps can still override them with the value
+			// the trigger carries.
 			w.collectStats(se.EffectTriggerSpell, itemLevel, total)
 		}
 	}
@@ -332,24 +360,22 @@ func (w *chainWalker) findTriggerOf(spellIDToMatch int, spellID int) *SpellEffec
 func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
 	var effects []*proto.ItemEffect
 
+	baseIlvl := int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl)
+	ilvlByState := map[int32]int{}
+	for state, opt := range parsed.ScalingOptions {
+		ilvlByState[state] = int(opt.Ilvl)
+	}
+
 	// pick a base effect that has stats if there is more than one effect on the item
 	for i := range GetDBC().ItemEffectsByParentID[int(parsed.Id)] {
-		var baseEff *ItemEffect
-
 		e := &GetDBC().ItemEffectsByParentID[int(parsed.Id)][i]
-		triggerType := resolveTriggerType(e.TriggerType, e.SpellID)
 		statsSpellID := resolveStatsSpell(e.SpellID)
-		statsSpell := GetDBC().Spells[statsSpellID]
-		isValidSpell := statsSpell.ID != 0
-		baseIlvl := int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl)
-		baseProps := buildScalingProps(statsSpellID, baseIlvl, e.SpellID)
-		hasStats := len(baseProps.Stats) > 0
-
-		if !isValidSpell {
+		if GetDBC().Spells[statsSpellID].ID == 0 {
 			continue
 		}
 
-		if triggerType == ITEM_SPELLTRIGGER_ON_EQUIP && hasStats {
+		triggerType := resolveTriggerType(e.TriggerType, e.SpellID)
+		if triggerType == ITEM_SPELLTRIGGER_ON_EQUIP && len(buildScalingProps(statsSpellID, baseIlvl, e.SpellID).Stats) > 0 {
 			// Fold into every scaling state, resolved at that state's own item level, the way
 			// the proc path below does. Writing only ScalingOptions[Base] left the stat off
 			// the challenge mode and upgrade states entirely, and copying the base value over
@@ -360,32 +386,15 @@ func MergeItemEffectsForAllStates(parsed *proto.UIItem) []*proto.ItemEffect {
 				}
 			}
 			continue
-		} else if triggerType == ITEM_SPELLTRIGGER_ON_EQUIP || triggerType == ITEM_SPELLTRIGGER_CHANCE_ON_HIT || e.CoolDownMSec > 0 {
-			baseEff = e
-		} else {
+		}
+
+		// A cooldown of -1 is "none", so it does not make an otherwise untriggered effect
+		// worth carrying.
+		if triggerType != ITEM_SPELLTRIGGER_ON_EQUIP && triggerType != ITEM_SPELLTRIGGER_CHANCE_ON_HIT && e.CoolDownMSec <= 0 {
 			continue
 		}
 
-		pe := makeBaseProto(baseEff, statsSpellID)
-		assignTrigger(baseEff, statsSpellID, pe)
-
-		// add scaling for each saved state
-		for state, opt := range parsed.ScalingOptions {
-			ilvl := int(opt.Ilvl)
-			pe.ScalingOptions[state] = buildScalingProps(statsSpellID, ilvl, baseEff.SpellID)
-		}
-
-		// A container aura that accumulates a separate stat aura resolves its amounts at every
-		// state too, and per stack rather than in total.
-		if stacking, stackPeriodMs := buildStackingAura(statsSpellID, baseIlvl); stacking != nil {
-			for state, opt := range parsed.ScalingOptions {
-				stacking.ScalingOptions[state] = buildStackingProps(statsSpellID, int(stacking.BuffId), int(opt.Ilvl), baseEff.SpellID)
-			}
-			pe.StackingAura = stacking
-			pe.StackPeriodMs = stackPeriodMs
-			dropEmptyScalingOptions(pe)
-		}
-
+		pe, _ := buildEffectProto(e, statsSpellID, ilvlByState, baseIlvl)
 		effects = append(effects, pe)
 	}
 

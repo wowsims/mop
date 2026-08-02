@@ -190,6 +190,20 @@ func (effect *SpellEffect) IsPeriodicDamageEffect() bool {
 func (data *SpellEffect) ClassFlag(index uint) uint32 {
 	return uint32(data.EffectSpellClassMasks[index/32]) & (1 << (index % 32))
 }
+
+// Reports whether the aura fires another spell when its owner procs. Both forms are the same
+// edge for the purposes of walking a trigger chain; only the amount differs, and that is
+// buildScalingProps' concern.
+func (effect *SpellEffect) IsProcTrigger() bool {
+	return effect.EffectAura == A_PROC_TRIGGER_SPELL ||
+		effect.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE
+}
+
+// Reports whether the aura resolves to nothing on its own. Either the client applies it as a
+// marker, or its real behaviour is server-scripted and not present in DBC at all.
+func (effect *SpellEffect) IsDummy() bool {
+	return effect.EffectAura == A_DUMMY || effect.EffectAura == A_PERIODIC_DUMMY
+}
 func (effect *SpellEffect) CalcCoefficientStatValue(ilvl int) float64 {
 	propPoints := effect.GetScalingValue(ilvl)
 	return math.Round(float64(propPoints) * effect.Coefficient)
@@ -233,7 +247,10 @@ func (effect *SpellEffect) itemLevelScaledAmount(scalesWithIlvl bool, ilvl int) 
 // level - GetScalingValue reads item level 0 as "use the class curve". Gating these on
 // scalesWithIlvl instead would fall back to EffectBasePoints, which is 0 on such an effect:
 // Phase Fingers' dodge is stored only as coefficient 18.0.
-func (effect *SpellEffect) curveScaledAmount(scalesWithIlvl bool, ilvl int) (float64, bool) {
+//
+// Exported because the tooltip provider resolves the amount it renders by the same rule, and
+// the two must not drift.
+func (effect *SpellEffect) CurveScaledAmount(scalesWithIlvl bool, ilvl int) (float64, bool) {
 	if effect.Coefficient == 0 || effect.ScalingType == 0 {
 		return 0, false
 	}
@@ -248,30 +265,72 @@ func (effect *SpellEffect) resolvedAmount(amount float64, scaled bool) float64 {
 	return float64(effect.EffectBasePoints)
 }
 
-func (effect *SpellEffect) ParseStatEffect(scalesWithIlvl bool, ilvl int) *stats.Stats {
-	effectStats := &stats.Stats{}
+// The amount the effect grants, by the itemLevelScaledAmount rule. For the callers that only
+// need the amount; the two that have to tell a scaled amount from a base one - because it
+// decides whether they assign or accumulate - use the pair-returning form directly.
+func (effect *SpellEffect) itemLevelAmount(scalesWithIlvl bool, ilvl int) float64 {
+	return effect.resolvedAmount(effect.itemLevelScaledAmount(scalesWithIlvl, ilvl))
+}
+
+// The amount the effect grants, by the CurveScaledAmount rule.
+func (effect *SpellEffect) curveAmount(scalesWithIlvl bool, ilvl int) float64 {
+	return effect.resolvedAmount(effect.CurveScaledAmount(scalesWithIlvl, ilvl))
+}
+
+// The stats a MiscValue of -1 on an A_MOD_STAT aura grants, which is every primary stat.
+var allStatsAuraStats = []proto.Stat{
+	proto.Stat_StatAgility, proto.Stat_StatIntellect, proto.Stat_StatSpirit,
+	proto.Stat_StatStamina, proto.Stat_StatStrength,
+}
+
+// The aura types capable of resolving to stats. resolveStatsSpell walks a trigger chain looking
+// for one of these to decide which spell an item's stats are read off, so anything ParseStatEffect
+// learns to resolve has to be listed here as well or the chain walk stops short of it.
+// TestStatAuraTypesCoverParseStatEffect holds that direction. The reverse does not have to hold:
+// A_MOD_TARGET_RESISTANCE is named here to end the walk on a spell ParseStatEffect then declines,
+// which is the existing behaviour.
+var statAuraTypes = map[EffectAuraType]bool{
+	A_MOD_STAT:                true,
+	A_MOD_RATING:              true,
+	A_MOD_RANGED_ATTACK_POWER: true,
+	A_MOD_ATTACK_POWER:        true,
+	A_MOD_DAMAGE_DONE:         true,
+	A_MOD_TARGET_RESISTANCE:   true,
+	A_MOD_RESISTANCE:          true,
+	A_MOD_INCREASE_ENERGY:     true,
+	A_MOD_INCREASE_HEALTH_2:   true,
+	A_PERIODIC_TRIGGER_SPELL:  true,
+}
+
+// Reports whether the effect's aura is one of the types that can carry stats.
+func (effect *SpellEffect) GrantsStats() bool {
+	return statAuraTypes[effect.EffectAura]
+}
+
+// The stats the effect grants, and whether it granted any. The caller needs the two apart:
+// an effect that resolves to nothing is the signal to keep walking down the trigger chain,
+// and "all zeroes" is a legitimate resolution for an aura this does not model.
+func (effect *SpellEffect) ParseStatEffect(scalesWithIlvl bool, ilvl int) (stats.Stats, bool) {
+	effectStats := stats.Stats{}
 
 	stat, _ := MapMainStatToStat(effect.EffectMiscValues[0])
 
 	switch {
 	case effect.EffectAura == A_MOD_RANGED_ATTACK_POWER:
-		effectStats[proto.Stat_StatRangedAttackPower] = effect.resolvedAmount(effect.itemLevelScaledAmount(scalesWithIlvl, ilvl))
+		effectStats[proto.Stat_StatRangedAttackPower] = effect.itemLevelAmount(scalesWithIlvl, ilvl)
 	case effect.EffectAura == A_MOD_ATTACK_POWER:
-		effectStats[proto.Stat_StatAttackPower] = effect.resolvedAmount(effect.itemLevelScaledAmount(scalesWithIlvl, ilvl))
+		effectStats[proto.Stat_StatAttackPower] = effect.itemLevelAmount(scalesWithIlvl, ilvl)
 	case effect.EffectMiscValues[0] == -1 && effect.EffectAura == A_MOD_STAT && effect.EffectType == E_APPLY_AURA:
 		// -1 represents ALL STATS if present in MiscValue 0
-		amount := effect.resolvedAmount(effect.curveScaledAmount(scalesWithIlvl, ilvl))
-		for _, s := range []proto.Stat{
-			proto.Stat_StatAgility, proto.Stat_StatIntellect, proto.Stat_StatSpirit,
-			proto.Stat_StatStamina, proto.Stat_StatStrength,
-		} {
+		amount := effect.curveAmount(scalesWithIlvl, ilvl)
+		for _, s := range allStatsAuraStats {
 			effectStats[s] = amount
 		}
 	case effect.EffectAura == A_MOD_STAT && effect.EffectType == E_APPLY_AURA:
-		effectStats[stat] = effect.resolvedAmount(effect.curveScaledAmount(scalesWithIlvl, ilvl))
+		effectStats[stat] = effect.curveAmount(scalesWithIlvl, ilvl)
 	case effect.EffectAura == A_MOD_DAMAGE_DONE && effect.EffectType == E_APPLY_AURA:
 		// Apply spell power, A_MOD_HEALING_DONE is also a possibility for healing power
-		effectStats[proto.Stat_StatSpellPower] = effect.resolvedAmount(effect.curveScaledAmount(scalesWithIlvl, ilvl))
+		effectStats[proto.Stat_StatSpellPower] = effect.curveAmount(scalesWithIlvl, ilvl)
 	case effect.EffectAura == A_MOD_RESISTANCE:
 		school := SpellSchool(effect.EffectMiscValues[0])
 		scaledValue, scaled := effect.itemLevelScaledAmount(scalesWithIlvl, ilvl)
@@ -289,7 +348,7 @@ func (effect *SpellEffect) ParseStatEffect(scalesWithIlvl bool, ilvl int) *stats
 		}
 
 	case effect.EffectAura == A_MOD_RATING:
-		scaledValue, scaled := effect.curveScaledAmount(scalesWithIlvl, ilvl)
+		scaledValue, scaled := effect.CurveScaledAmount(scalesWithIlvl, ilvl)
 
 		for _, rating := range getMatchingRatingMods(effect.EffectMiscValues[0]) {
 			statMod, mapped := RatingModToStat[rating]
@@ -313,12 +372,14 @@ func (effect *SpellEffect) ParseStatEffect(scalesWithIlvl bool, ilvl int) *stats
 			effectStats[proto.Stat_StatMana] = float64(effect.EffectBasePoints)
 		}
 	case effect.EffectAura == A_MOD_INCREASE_HEALTH_2:
-		effectStats[proto.Stat_StatHealth] = effect.resolvedAmount(effect.curveScaledAmount(scalesWithIlvl, ilvl))
+		effectStats[proto.Stat_StatHealth] = effect.curveAmount(scalesWithIlvl, ilvl)
 	case effect.EffectAura == A_PERIODIC_TRIGGER_SPELL && effect.EffectAuraPeriod == 10000:
 		for _, sub := range GetDBC().SpellEffectsInOrder(effect.EffectTriggerSpell) {
-			effectStats.AddInplace(sub.ParseStatEffect(false, 0))
+			if subStats, ok := sub.ParseStatEffect(false, 0); ok {
+				effectStats.AddInplace(&subStats)
+			}
 		}
 	}
 
-	return effectStats
+	return effectStats, effectStats != stats.Stats{}
 }

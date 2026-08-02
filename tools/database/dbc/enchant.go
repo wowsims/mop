@@ -63,13 +63,9 @@ func (enchant *Enchant) OnUseEffect() (ItemEffect, bool) {
 func (enchant *Enchant) buildLinkedProcEffect(buffSpellID int) (*proto.ItemEffect, bool) {
 	trigger := ItemEffect{TriggerType: ITEM_SPELLTRIGGER_CHANCE_ON_HIT, SpellID: enchant.SpellId}
 
-	parsedEffect := makeBaseProto(&trigger, buffSpellID)
-	assignTrigger(&trigger, buffSpellID, parsedEffect)
-
-	props := buildScalingProps(buffSpellID, 0, enchant.SpellId)
-	parsedEffect.ScalingOptions[0] = props
-
-	return parsedEffect, len(props.Stats) > 0
+	// An enchantment has no item level, so it has the one Base state at item level 0.
+	baseState := int32(proto.ItemLevelState_Base)
+	return buildEffectProto(&trigger, buffSpellID, map[int32]int{baseState: 0}, 0)
 }
 
 func (enchant *Enchant) HasEnchantEffect() bool {
@@ -82,11 +78,9 @@ func (enchant *Enchant) HasEnchantEffect() bool {
 		if effect == ITEM_ENCHANTMENT_EQUIP_SPELL {
 			spellId := enchant.EffectArgs[idx]
 			for _, spellEffect := range GetDBC().SpellEffectsInOrder(spellId) {
-				if spellEffect.EffectAura == A_PROC_TRIGGER_SPELL ||
-					spellEffect.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE ||
-					// Damage procs such as the shield spikes hang their amount straight
-					// off the aura instead of triggering a separate spell.
-					spellEffect.EffectAura == A_PROC_TRIGGER_DAMAGE {
+				// Damage procs such as the shield spikes hang their amount straight off the
+				// aura instead of triggering a separate spell.
+				if spellEffect.IsProcTrigger() || spellEffect.EffectAura == A_PROC_TRIGGER_DAMAGE {
 					return true
 				}
 			}

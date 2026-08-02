@@ -27,6 +27,11 @@ type DBC struct {
 	Consumables            map[int]Consumable   // Item ID
 	ItemEffects            map[int]ItemEffect   // Effect ID
 	ItemEffectsByParentID  map[int][]ItemEffect // ParentItemID
+
+	// SpellEffects with each spell's effects flattened into effect index order. Built once by
+	// indexSpellEffects and served by SpellEffectsInOrder, which every trigger chain walk goes
+	// through - sorting per call meant two allocations and a sort for every spell visited.
+	spellEffectsOrdered map[int][]SpellEffect
 }
 
 func NewDBC() *DBC {
@@ -170,6 +175,7 @@ func InitDBCFrom(inputsDir string) error {
 		}
 	}
 	instance.LoadSpellScaling()
+	instance.indexSpellEffects()
 
 	dbcInstance = instance
 	return nil
@@ -191,24 +197,29 @@ func GetDBC() *DBC {
 	return dbcInstance
 }
 
-// Returns the effects of a spell ordered by effect index. SpellEffects is keyed by index, so
-// ranging over it directly yields a random order and makes any traversal that stops at the
-// first match non-deterministic.
+// Flattens every spell's effects into effect index order, once, after all inputs are loaded.
+// SpellEffects is keyed by index, so ranging over it directly yields a random order and makes
+// any traversal that stops at the first match non-deterministic.
+func (d *DBC) indexSpellEffects() {
+	d.spellEffectsOrdered = make(map[int][]SpellEffect, len(d.SpellEffects))
+
+	for spellID, effects := range d.SpellEffects {
+		indices := make([]int, 0, len(effects))
+		for idx := range effects {
+			indices = append(indices, idx)
+		}
+		slices.Sort(indices)
+
+		ordered := make([]SpellEffect, 0, len(effects))
+		for _, idx := range indices {
+			ordered = append(ordered, effects[idx])
+		}
+		d.spellEffectsOrdered[spellID] = ordered
+	}
+}
+
+// Returns the effects of a spell ordered by effect index, or nil if it has none. The slice is
+// shared with every other caller, so it is to be read and not written to.
 func (d *DBC) SpellEffectsInOrder(spellID int) []SpellEffect {
-	effects := d.SpellEffects[spellID]
-	if len(effects) == 0 {
-		return nil
-	}
-
-	indices := make([]int, 0, len(effects))
-	for idx := range effects {
-		indices = append(indices, idx)
-	}
-	slices.Sort(indices)
-
-	ordered := make([]SpellEffect, 0, len(effects))
-	for _, idx := range indices {
-		ordered = append(ordered, effects[idx])
-	}
-	return ordered
+	return d.spellEffectsOrdered[spellID]
 }

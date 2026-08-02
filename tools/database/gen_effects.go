@@ -97,23 +97,34 @@ func GenerateEffectsFile(groups []*Group, outFile string, templateString string)
 	})
 
 	for _, grp := range groups {
-		sort.Slice(grp.Entries, func(i, j int) bool {
-			if grp.Entries[i].Supported != grp.Entries[j].Supported {
-				return !grp.Entries[i].Supported
+		slices.SortFunc(grp.Entries, func(a, b *Entry) int {
+			if a.Supported != b.Supported {
+				return core.TernaryInt(a.Supported, 1, -1)
 			}
 
-			return entryOrder(grp.Entries[i], grp.Entries[j])
+			return compareEntries(a, b)
 		})
 	}
 
+	// Set below, once the template it renders from exists. Lets a template emit one of its own
+	// named blocks as a string, which is what makes commentOut possible.
+	var tmpl *template.Template
 	funcMap := map[string]any{
 		"asCoreCallback":    asCoreCallback,
 		"asCoreProcMask":    asCoreProcMask,
 		"asCoreOutcome":     asCoreOutcome,
 		"asCoreSpellSchool": asCoreSpellSchool,
 		"formatStrings":     formatStrings,
+		"commentOut":        commentOut,
+		"render": func(name string, data any) (string, error) {
+			var block bytes.Buffer
+			if err := tmpl.ExecuteTemplate(&block, name, data); err != nil {
+				return "", err
+			}
+			return block.String(), nil
+		},
 	}
-	tmpl := template.Must(template.New("effects").Funcs(funcMap).Parse(templateString))
+	tmpl = template.Must(template.New("effects").Funcs(funcMap).Parse(templateString))
 
 	var rendered bytes.Buffer
 	if err := tmpl.Execute(&rendered, map[string]any{"Groups": groups}); err != nil {
@@ -195,11 +206,28 @@ func GenerateEnchantEffects(instance *dbc.DBC, db *WowDatabase) {
 		}
 	}
 
-	var procGroups []*Group
-	for _, grp := range groupMapProc {
+	// Copied out of the map explicitly, because what is appended is a pointer and the groups
+	// are stored by value. GenerateEffectsFile sorts by name, so the iteration order is free.
+	procGroups := make([]*Group, 0, len(groupMapProc))
+	for name := range groupMapProc {
+		grp := groupMapProc[name]
 		procGroups = append(procGroups, &grp)
 	}
 	GenerateEffectsFile(procGroups, "sim/common/mop/enchants_auto_gen.go", TmplStrEnchant)
+}
+
+// Appends an entry to the named group, creating the group if this is its first entry. Groups
+// are stored by value, so every caller has to write the group back after appending; doing it
+// here means no caller can forget to, and none of them has to create an empty group up front
+// just in case it turns out to have an entry.
+func appendEntry(groupMap map[string]Group, name string, entry *Entry) {
+	grp, exists := groupMap[name]
+	if !exists {
+		grp = Group{Name: name}
+	}
+
+	grp.Entries = append(grp.Entries, entry)
+	groupMap[name] = grp
 }
 
 // Names the ignore-list rule that excluded an effect, for the comment emitted in the
@@ -226,19 +254,13 @@ func ignoredEffectReason(instance *dbc.DBC, effectID int) string {
 // its own group: variant merging is per-group, so these cannot affect
 // whether a real effect's variant set is emitted live or commented.
 func storeSkippedEffect(id int32, name string, buffID int32, instance *dbc.DBC, groupMap map[string]Group) {
-	grp, exists := groupMap["Skipped"]
-	if !exists {
-		grp = Group{Name: "Skipped"}
-	}
-
 	buffName := instance.Spells[int(buffID)].NameLang
-	grp.Entries = append(grp.Entries, &Entry{
+	appendEntry(groupMap, "Skipped", &Entry{
 		Skipped:  true,
 		Variants: []*Variant{{ID: int(id), Name: name, SpellID: int(buffID)}},
 		Tooltip: []string{fmt.Sprintf("%s: %q (%d) - %s",
 			name, buffName, buffID, ignoredEffectReason(instance, int(buffID)))},
 	})
-	groupMap["Skipped"] = grp
 }
 
 func ItemEffectIsSupported(instance *dbc.DBC, effectID int) bool {
@@ -305,15 +327,14 @@ func GenerateItemEffects(instance *dbc.DBC, db *WowDatabase, itemSources map[int
 
 	// Sorting done in GenerateEffectsFile
 	// Merge on-use variants
-	var onUseGroups []*Group
-	for _, grp := range groupMapOnUse {
+	onUseGroups := make([]*Group, 0, len(groupMapOnUse))
+	for name := range groupMapOnUse {
+		grp := groupMapOnUse[name]
 		newEntries := []*Entry{}
 		entryGroupings := map[string]*Entry{}
 
 		// sort entries first to make grouping consistent for variants
-		sort.Slice(grp.Entries, func(i, j int) bool {
-			return entryOrder(grp.Entries[i], grp.Entries[j])
-		})
+		sortEntries(grp.Entries)
 
 		for _, entry := range grp.Entries {
 			added := false
@@ -336,16 +357,15 @@ func GenerateItemEffects(instance *dbc.DBC, db *WowDatabase, itemSources map[int
 	}
 
 	// Merge variants
-	var procGroups []*Group
+	procGroups := make([]*Group, 0, len(groupMapProc))
 	needsStatPostfix := map[string]bool{}
-	for _, grp := range groupMapProc {
+	for name := range groupMapProc {
+		grp := groupMapProc[name]
 		newEntries := []*Entry{}
 		entryGroupings := map[string]*Entry{}
 
 		// sort entries first to make tooltip generation consistent for variants
-		sort.Slice(grp.Entries, func(i, j int) bool {
-			return entryOrder(grp.Entries[i], grp.Entries[j])
-		})
+		sortEntries(grp.Entries)
 
 		for _, entry := range grp.Entries {
 			var idx int64 = 0
@@ -477,11 +497,6 @@ func TryParseProcEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, inst
 		provider := tooltip.DBCTooltipDataProvider{DBC: instance, ItemLevel: int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl)}
 		tooltip, _ := tooltip.ParseTooltip(tooltipString, provider, int64(id))
 
-		grp, exists := groupMapProc["Procs"]
-		if !exists {
-			grp = Group{Name: "Procs"}
-		}
-
 		if tooltip != nil {
 			renderedTooltip := tooltip.String()
 			entry := Entry{
@@ -490,15 +505,7 @@ func TryParseProcEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, inst
 			}
 			entry.ProcInfo, entry.Supported = BuildProcInfo(parsed, int(itemEffect.BuffId), instance, renderedTooltip)
 
-			// A stacking trinket carries its stats on the referenced aura rather than on the
-			// one the trigger applies, so an empty ScalingOptions here is not the same as no
-			// stats.
-			hasStats := len(itemEffect.ScalingOptions[0].GetStats()) > 0
-			if stacking := itemEffect.GetStackingAura(); stacking != nil {
-				hasStats = hasStats || len(stacking.ScalingOptions[0].GetStats()) > 0
-			}
-
-			if !hasStats || !entry.Supported {
+			if len(dbc.EffectStats(itemEffect, proto.ItemLevelState_Base)) == 0 || !entry.Supported {
 				StoreMissingEffect("ItemEffects", parsed.Name, Variant{
 					ID:      int(parsed.Id),
 					Name:    renderedTooltip,
@@ -507,8 +514,7 @@ func TryParseProcEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, inst
 				return EffectParseResultUnsupported
 			}
 
-			grp.Entries = append(grp.Entries, &entry)
-			groupMapProc["Procs"] = grp
+			appendEntry(groupMapProc, "Procs", &entry)
 
 			return EffectParseResultSuccess
 		} else {
@@ -545,10 +551,6 @@ func TryParseOnUseEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, ins
 		tooltip, _ := tooltip.ParseTooltip(tooltipString, provider, int64(id))
 
 		groupName := GetEffectStatString(itemEffect)
-		grp, exists := groupMap[groupName]
-		if !exists {
-			grp = Group{Name: groupName}
-		}
 
 		if tooltip != nil {
 			renderedTooltip := tooltip.String()
@@ -557,10 +559,9 @@ func TryParseOnUseEffect(parsed *proto.UIItem, itemEffect *proto.ItemEffect, ins
 				Variants:  []*Variant{{ID: int(parsed.Id), Name: parsed.Name, SpellID: int(itemEffect.BuffId)}},
 				Supported: true,
 			}
-			grp.Entries = append(grp.Entries, entry)
-			groupMap[groupName] = grp
+			appendEntry(groupMap, groupName, entry)
 
-			if len(itemEffect.ScalingOptions[0].GetStats()) == 0 {
+			if len(dbc.EffectStats(itemEffect, proto.ItemLevelState_Base)) == 0 {
 				entry.Supported = false
 				StoreMissingEffect("ItemEffects", parsed.Name, Variant{
 					ID:      int(parsed.Id),
@@ -597,17 +598,11 @@ func TryParseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.ItemEf
 			tooltipString := instance.Spells[enchantingSpell.SpellID].Description
 			tooltip, _ := tooltip.ParseTooltip(tooltipString, tooltip.DBCTooltipDataProvider{DBC: instance}, int64(enchantingSpell.SpellID))
 
-			grp, exists := groupMapProc["Enchants"]
-			if !exists {
-				grp = Group{Name: "Enchants"}
-			}
-
 			renderedTooltip := tooltip.String()
 			entry := Entry{Tooltip: strings.Split(renderedTooltip, "\n"), Variants: []*Variant{{ID: int(enchant.EffectId), Name: enchant.Name}}}
 			entry.ProcInfo, entry.Supported = BuildEnchantProcInfo(enchant, instance, renderedTooltip)
 			entry.Damage = dbc.ResolveDamageEffect(int(enchant.SpellId))
-			grp.Entries = append(grp.Entries, &entry)
-			groupMapProc["Enchants"] = grp
+			appendEntry(groupMapProc, "Enchants", &entry)
 
 			if !entry.Supported {
 				StoreMissingEffect("EnchantEffects", enchant.Name, Variant{
@@ -643,7 +638,8 @@ func tryParseOnUseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.I
 		return EffectParseResultUnsupported
 	}
 
-	if len(enchantEffect.ScalingOptions[0].GetStats()) == 0 {
+	effectStats := dbc.EffectStats(enchantEffect, proto.ItemLevelState_Base)
+	if len(effectStats) == 0 {
 		StoreMissingEffect("EnchantEffects", enchant.Name, Variant{
 			ID:      int(enchant.EffectId),
 			Name:    enchant.Name,
@@ -652,21 +648,15 @@ func tryParseOnUseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.I
 		return EffectParseResultUnsupported
 	}
 
-	grp, exists := groupMap["OnUseEnchants"]
-	if !exists {
-		grp = Group{Name: "OnUseEnchants"}
-	}
-
-	grp.Entries = append(grp.Entries, &Entry{
+	appendEntry(groupMap, "OnUseEnchants", &Entry{
 		Supported:  true,
 		OnUse:      true,
 		Profession: enchant.RequiredProfession,
 		Variants:   []*Variant{{ID: int(enchant.EffectId), Name: enchant.Name, SpellID: int(enchantEffect.BuffId)}},
 		Tooltip: []string{fmt.Sprintf("%s: %v for %dms, %dms cooldown, category %d",
-			enchant.Name, enchantEffect.ScalingOptions[0].GetStats(), enchantEffect.EffectDurationMs,
+			enchant.Name, effectStats, enchantEffect.EffectDurationMs,
 			enchantEffect.GetOnUse().CooldownMs, enchantEffect.GetOnUse().CategoryId)},
 	})
-	groupMap["OnUseEnchants"] = grp
 
 	return EffectParseResultSuccess
 }
@@ -681,11 +671,6 @@ func ParseTooltipForMissingEffect(parsed *proto.UIItem, itemEffect *proto.ItemEf
 		tooltipString, id := dbc.GetItemEffectSpellTooltip(int(parsed.Id), int(itemEffect.BuffId))
 		provider := tooltip.DBCTooltipDataProvider{DBC: instance, ItemLevel: int(parsed.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl)}
 		tooltip, _ := tooltip.ParseTooltip(tooltipString, provider, int64(id))
-
-		grp, exists := groupMap[groupMapName]
-		if !exists {
-			grp = Group{Name: groupMapName}
-		}
 
 		if tooltip != nil {
 			renderedTooltip := tooltip.String()
@@ -704,8 +689,7 @@ func ParseTooltipForMissingEffect(parsed *proto.UIItem, itemEffect *proto.ItemEf
 			// The entry is always kept, because the commented-out stub documents the gap and
 			// because these entries take part in the variant grouping that decides whether a
 			// whole variant set is emitted live or commented.
-			grp.Entries = append(grp.Entries, &entry)
-			groupMap[groupMapName] = grp
+			appendEntry(groupMap, groupMapName, &entry)
 
 			// A marker aura that resolves to nothing is not a missing effect though. The
 			// item's real effect is a sibling ItemEffect row, and reporting this one instead
@@ -714,15 +698,7 @@ func ParseTooltipForMissingEffect(parsed *proto.UIItem, itemEffect *proto.ItemEf
 				return
 			}
 
-			// A stacking trinket carries its stats on the referenced aura rather than on the
-			// one the trigger applies, so an empty ScalingOptions here is not the same as no
-			// stats.
-			hasStats := len(itemEffect.ScalingOptions[0].GetStats()) > 0
-			if stacking := itemEffect.GetStackingAura(); stacking != nil {
-				hasStats = hasStats || len(stacking.ScalingOptions[0].GetStats()) > 0
-			}
-
-			if !hasStats || !entry.Supported {
+			if len(dbc.EffectStats(itemEffect, proto.ItemLevelState_Base)) == 0 || !entry.Supported {
 				StoreMissingEffect("ItemEffects", parsed.Name, Variant{
 					ID:      int(parsed.Id),
 					Name:    renderedTooltip,
@@ -993,12 +969,30 @@ func asCoreProcMask(procMask core.ProcMask) string {
 // A total order over entries. Sorting on the item or enchant ID alone is not one: an item
 // with two effects yields two entries sharing that ID, and sort.Slice is
 // not stable, so their order in the generated file flipped between runs.
-func entryOrder(a *Entry, b *Entry) bool {
+func compareEntries(a *Entry, b *Entry) int {
 	if a.Variants[0].ID != b.Variants[0].ID {
-		return a.Variants[0].ID < b.Variants[0].ID
+		return a.Variants[0].ID - b.Variants[0].ID
 	}
 
-	return a.Variants[0].SpellID < b.Variants[0].SpellID
+	return a.Variants[0].SpellID - b.Variants[0].SpellID
+}
+
+// Puts a group's entries in the order they are emitted in, which has to be settled before
+// variants are merged so that grouping and tooltip selection are the same on every run.
+func sortEntries(entries []*Entry) {
+	slices.SortFunc(entries, compareEntries)
+}
+
+// Comments out a rendered block line by line, so a template can emit the same block live or
+// commented instead of carrying a second, hand-prefixed copy of it. Indentation is left to
+// gofmt, which GenerateEffectsFile runs over the finished file.
+func commentOut(block string) string {
+	lines := strings.Split(block, "\n")
+	for i, line := range lines {
+		lines[i] = "// " + line
+	}
+
+	return strings.Join(lines, "\n")
 }
 
 // Escapes a rendered tooltip for use inside a double-quoted TypeScript string.

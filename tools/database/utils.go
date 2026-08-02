@@ -201,12 +201,11 @@ func anySpellEffect(spellId int, instance *dbc.DBC, pred func(dbc.SpellEffect) b
 }
 
 func isDummyAura(effect dbc.SpellEffect) bool {
-	return effect.EffectAura == dbc.A_DUMMY || effect.EffectAura == dbc.A_PERIODIC_DUMMY
+	return effect.IsDummy()
 }
 
 func isProcTriggerAura(effect dbc.SpellEffect) bool {
-	return effect.EffectAura == dbc.A_PROC_TRIGGER_SPELL ||
-		effect.EffectAura == dbc.A_PROC_TRIGGER_SPELL_WITH_VALUE
+	return effect.IsProcTrigger()
 }
 
 func GetEffectStatString(itemEffect *proto.ItemEffect) string {
@@ -214,14 +213,7 @@ func GetEffectStatString(itemEffect *proto.ItemEffect) string {
 		return ""
 	}
 
-	stats := itemEffect.ScalingOptions[int32(0)].GetStats()
-	// A stacking trinket grants nothing through the aura the trigger applies; the stats it is
-	// named after are the ones on the aura that accumulates.
-	if len(stats) == 0 {
-		if stacking := itemEffect.GetStackingAura(); stacking != nil {
-			stats = stacking.ScalingOptions[int32(0)].GetStats()
-		}
-	}
+	stats := dbc.EffectStats(itemEffect, proto.ItemLevelState_Base)
 	statsString := make([]string, 0, len(stats))
 	for k := range stats {
 		stat := proto.Stat(k)

@@ -18,19 +18,19 @@ func RegisterAllEnchants() {
 	//
 	// Attaching a ghost iron spike to your shield causes it to become soulbound.
 	// shared.NewProcDamageEffect(shared.ProcDamageEffect{
-	//	EnchantID: 5001,
-	//	SpellID:   131465,
-	//	School:    core.SpellSchoolPhysical,
-	//	MinDmg:    600,
-	//	MaxDmg:    1000,
-	//	Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
-	//	Trigger: core.ProcTrigger{
-	//		Name:               "Ghost Iron Shield Spike",
-	//		Callback:           core.CallbackOnSpellHitTaken,
-	//		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial,
-	//		Outcome:            core.OutcomeLanded,
-	//		RequireDamageDealt: true,
-	//	},
+	// 	EnchantID: 5001,
+	// 	SpellID:   131465,
+	// 	School:    core.SpellSchoolPhysical,
+	// 	MinDmg:    600,
+	// 	MaxDmg:    1000,
+	// 	Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
+	// 	Trigger: core.ProcTrigger{
+	// 		Name:               "Ghost Iron Shield Spike",
+	// 		Callback:           core.CallbackOnSpellHitTaken,
+	// 		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial,
+	// 		Outcome:            core.OutcomeLanded,
+	// 		RequireDamageDealt: true,
+	// 	},
 	// })
 
 	// Permanently enchants a melee weapon to sometimes inflict 2774 additional Elemental damage when dealing

@@ -1,5 +1,9 @@
 package database
 
+// Each generated block is written once, as a named template, and emitted either live or fed
+// through commentOut. Carrying a hand-prefixed copy of every block meant a field added to one
+// half silently did not reach the other.
+
 const TmplStrOnUse = `package mop
 
 import (
@@ -31,36 +35,31 @@ func RegisterAllOnUseCds() {
   	{{with index .Variants 0 -}}
 	// https://www.wowhead.com/mop/spell={{.SpellID}}
 	{{- end}}
-	{{- if not .Supported}}
-	{{- if len .Variants | eq 1}}
-	{{with index .Variants 0 -}}
-	// shared.NewSimpleStatActive({{ .ID }})
-	{{- end}}
-	{{- else }}
-	// shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
-	 	{{- range .Variants }}
-	// 	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-	 	{{- end}}
-	// })
-	{{- end}}
+	{{- if .Supported}}
+	{{ render "onUseBody" . }}
 	{{- else}}
-	{{- if len .Variants | eq 1}}
-	{{with index .Variants 0 -}}
-	shared.NewSimpleStatActive({{ .ID }})
-	{{- end}}
-	{{- else }}
-	shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
-		{{- range .Variants }}
-		{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-		{{- end}}
-	})
-	{{- end}}
+	{{ render "onUseBody" . | commentOut }}
 	{{- end}}
 	{{- end}}
 {{- end }}
 
 {{- end }}
-}`
+}
+{{- define "onUseBody" -}}
+{{- if len .Variants | eq 1 -}}
+{{- with index .Variants 0 -}}
+shared.NewSimpleStatActive({{ .ID }})
+{{- end -}}
+{{- else -}}
+shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
+	{{- range .Variants }}
+	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
+	{{- end}}
+})
+{{- end -}}
+{{- end -}}
+`
+
 const TmplStrProc = `package mop
 
 import (
@@ -94,59 +93,41 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell={{.SpellID}}
 	{{- end}}
 	{{- if .Supported}}
-	{{- if len .Variants | eq 1}}
-	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		{{with index .Variants 0 -}}
-		Name:               "{{ .Name }}",
-		ItemID:             {{ .ID }},
-		{{- end}}
-		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	})
-	{{- else }}
-	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	}, []shared.ItemVariant{
-		{{- range .Variants }}
-		{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-		{{- end}}
-	})
-	{{- end}}
+	{{ render "procBody" . }}
 	{{- else}}
-	{{- if len .Variants | eq 1}}
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	 	{{with index .Variants 0 -}}
-	// 	Name:               "{{ .Name }}",
-	// 	ItemID:             {{ .ID }},
-	 	{{- end}}
-	// 	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	// 	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	// 	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	// 	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	// })
-	{{- else }}
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	//	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	//	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }}
-	// }, []shared.ItemVariant{
-		{{- range .Variants }}
-	//	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-		{{- end}}
-	// })
-	{{- end}}
+	{{ render "procBody" . | commentOut }}
 	{{- end}}
 	{{- end}}
 {{- end }}
 
 {{- end }}
-}`
+}
+{{- define "procBody" -}}
+{{- if len .Variants | eq 1 -}}
+shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
+	{{with index .Variants 0 -}}
+	Name:               "{{ .Name }}",
+	ItemID:             {{ .ID }},
+	{{- end}}
+	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+})
+{{- else -}}
+shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
+	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+}, []shared.ItemVariant{
+	{{- range .Variants }}
+	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
+	{{- end}}
+})
+{{- end -}}
+{{- end -}}
+`
 
 const TmplStrEnchant = `package mop
 
@@ -179,83 +160,66 @@ func RegisterAllEnchants() {
 	// {{.}}
 	{{- end}}
 	{{- if .OnUse}}
-	{{- $profession := .Profession }}
-	{{with index .Variants 0 -}}
-	shared.NewActiveStatBonusEffect(shared.ActiveStatBonusEffect{
-		EnchantID:          {{ .ID }},
-		RequiredProfession: proto.Profession_{{ $profession }},
-	})
-	{{- end}}
+	{{ render "enchantActiveBody" . }}
 	{{- else if .Damage}}
 	{{- if .Supported}}
-	shared.NewProcDamageEffect(shared.ProcDamageEffect{
-		{{with index .Variants 0 -}}
-		EnchantID: {{ .ID }},
-		{{- end}}
-		SpellID:   {{ .Damage.SpellID }},
-		School:    {{ .Damage.SchoolMask | asCoreSpellSchool }},
-		MinDmg:    {{ .Damage.MinDamage }},
-		MaxDmg:    {{ .Damage.MaxDamage }},
-		Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
-		Trigger: core.ProcTrigger{
-			{{with index .Variants 0 -}}
-			Name:               "{{ .Name }}",
-			{{- end}}
-			Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-			ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-			Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-			RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-		},
-	})
+	{{ render "enchantDamageBody" . }}
 	{{- else}}
-	// shared.NewProcDamageEffect(shared.ProcDamageEffect{
-		{{- with index .Variants 0 }}
-	//	EnchantID: {{ .ID }},
-		{{- end}}
-	//	SpellID:   {{ .Damage.SpellID }},
-	//	School:    {{ .Damage.SchoolMask | asCoreSpellSchool }},
-	//	MinDmg:    {{ .Damage.MinDamage }},
-	//	MaxDmg:    {{ .Damage.MaxDamage }},
-	//	Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
-	//	Trigger: core.ProcTrigger{
-		{{- with index .Variants 0 }}
-	//		Name:               "{{ .Name }}",
-		{{- end}}
-	//		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	//		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	//		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	//		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	//	},
-	// })
+	{{ render "enchantDamageBody" . | commentOut }}
 	{{- end}}
 	{{- else if .Supported}}
-	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		{{with index .Variants 0 -}}
-		Name:               "{{ .Name }}",
-		EnchantID:          {{ .ID }},
-		{{- end}}
-		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	})
+	{{ render "enchantProcBody" . }}
 	{{- else}}
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		{{- with index .Variants 0 }}
-	//	Name:               "{{ .Name }}",
-	//	EnchantID:          {{ .ID }},
-		{{- end}}
-	//	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	//	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	//	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	// })
+	{{ render "enchantProcBody" . | commentOut }}
 	{{- end}}
 	{{- end}}
 {{- end }}
 
 {{- end }}
-}`
+}
+{{- define "enchantActiveBody" -}}
+{{- $profession := .Profession -}}
+{{- with index .Variants 0 -}}
+shared.NewActiveStatBonusEffect(shared.ActiveStatBonusEffect{
+	EnchantID:          {{ .ID }},
+	RequiredProfession: proto.Profession_{{ $profession }},
+})
+{{- end -}}
+{{- end -}}
+{{- define "enchantDamageBody" -}}
+shared.NewProcDamageEffect(shared.ProcDamageEffect{
+	{{with index .Variants 0 -}}
+	EnchantID: {{ .ID }},
+	{{- end}}
+	SpellID:   {{ .Damage.SpellID }},
+	School:    {{ .Damage.SchoolMask | asCoreSpellSchool }},
+	MinDmg:    {{ .Damage.MinDamage }},
+	MaxDmg:    {{ .Damage.MaxDamage }},
+	Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
+	Trigger: core.ProcTrigger{
+		{{with index .Variants 0 -}}
+		Name:               "{{ .Name }}",
+		{{- end}}
+		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+	},
+})
+{{- end -}}
+{{- define "enchantProcBody" -}}
+shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
+	{{with index .Variants 0 -}}
+	Name:               "{{ .Name }}",
+	EnchantID:          {{ .ID }},
+	{{- end}}
+	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+})
+{{- end -}}
+`
 
 const TmplStrMissingEffects = `
 // This file is auto generated
