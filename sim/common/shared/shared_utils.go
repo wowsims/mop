@@ -103,6 +103,18 @@ func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(age
 			panic(fmt.Sprintf("Error getting proc effects for item/enchant %v", source.id))
 		}
 
+		// Several proc effects would each register their auras under the same config.Name, and
+		// GetOrRegisterAura merges by label: the last handler and the first stats would win, and
+		// every effect would run at its own full proc rate rather than a share of one roll. The
+		// multi-buff weapon enchants are shaped like this - Windsong declares three effects at
+		// 2.2 RPPM each, Dancing Steel two - and are still hand-written, so nothing reaches here
+		// today. Whoever migrates them has to decide what the combined rate means first.
+		if len(procEffects) > 1 {
+			panic(fmt.Sprintf("item/enchant %d declares %d proc effects sharing the aura label %q; "+
+				"needs per-effect labels and a decided proc rate before it can be generated",
+				source.id, len(procEffects), config.Name))
+		}
+
 		for _, effect := range procEffects {
 			proc := effect.GetProc()
 
@@ -127,41 +139,39 @@ func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(age
 				Outcome:            config.Outcome,
 				RequireDamageDealt: config.RequireDamageDealt,
 				ProcChance:         proc.GetProcChance(),
-				DPM:                procDPM(character, config, source, proc),
+				DPM:                procDPM(character, config.ProcMask, source, proc),
 				ICD:                time.Millisecond * time.Duration(proc.IcdMs),
 				Handler:            procHandler(config, effect, procAura, windowAura, procSpell),
 			})
 
-			// Skipped on the stacking path. There the stat aura is applied by the window aura on
-			// its own tick schedule rather than by the trigger, so pinning the trigger's ICD onto
-			// it gates the stacks behind a cooldown that is meant to gate only the window. None of
-			// the hand-written stacking trinkets did this.
-			if proc.IcdMs != 0 && windowAura == nil {
+			// Carried on the stacking path too. Nothing in the stacking machinery reads this -
+			// StatBuffAura.CanProc consults only IsSwapped and CustomProcCondition, and the
+			// per-tick AddStack loop never looks at Icd - so it gates nothing. What it does feed is
+			// GetMatchingItemProcAuras, which drops any aura whose Icd is nil, and with it
+			// ItemProcsMaxRemainingICD and AnyItemStatProcsAvailable.
+			if proc.IcdMs != 0 {
 				procAura.Icd = triggerAura.Icd
 			}
 
 			source.registerProc(character, triggerAura, eligibleSlots)
+			source.registerWeaponEnchantBuff(character, procAura)
 			character.AddStatProcBuff(source.id, procAura, source.isEnchant, eligibleSlots)
 		}
 	})
 }
 
-// What the proc does when it fires. A custom condition replaces the body rather than gating it:
-// when the condition refuses, the ICD is rolled back so the next opportunity still counts instead
-// of the effect being locked out by a proc that never happened.
+// What the proc does when it fires.
 func procHandler(config ProcStatBonusEffect, effect *proto.ItemEffect, procAura *core.StatBuffAura, windowAura *core.Aura, procSpell ExtraSpellInfo) func(*core.Simulation, *core.Spell, *core.SpellResult) {
-	if config.CustomProcCondition != nil {
-		return func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-			if procAura.CanProc(sim) {
-				procAura.Activate(sim)
-			} else if procAura.Icd != nil && procAura.Icd.Duration != 0 {
-				// reset ICD condition was not fulfilled
+	return func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+		// When the condition refuses, the ICD is rolled back so the next opportunity still counts
+		// instead of the effect being locked out by a proc that never happened.
+		if config.CustomProcCondition != nil && !procAura.CanProc(sim) {
+			if procAura.Icd != nil && procAura.Icd.Duration != 0 {
 				procAura.Icd.Reset()
 			}
+			return
 		}
-	}
 
-	return func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 		// Activating the window and not the stat aura is what makes a re-proc restart the window
 		// instead of refreshing stacks the game would not refresh.
 		if windowAura != nil {
@@ -216,17 +226,19 @@ func buildProcAura(character *core.Character, config ProcStatBonusEffect, effect
 	return character.NewTemporaryStatsAura(label, action, stats.FromProtoMap(effect.ScalingOptions[state].GetStats()), duration), nil
 }
 
-func procDPM(character *core.Character, config ProcStatBonusEffect, source effectSource, proc *proto.ProcEffect) *core.DynamicProcManager {
+// The proc manager an effect's database rate calls for, or nil when the rate is a flat chance the
+// caller should read off the proc instead.
+func procDPM(character *core.Character, procMask core.ProcMask, source effectSource, proc *proto.ProcEffect) *core.DynamicProcManager {
 	if proc.GetRppm() != nil {
-		return character.NewRPPMProcManager(source.id, source.isEnchant, false, config.ProcMask, core.RppmConfigFromProcEffectProto(proc))
+		return character.NewRPPMProcManager(source.id, source.isEnchant, false, procMask, core.RppmConfigFromProcEffectProto(proc))
 	}
 
 	if proc.GetPpm() <= 0 {
 		return nil
 	}
 
-	if config.ProcMask != core.ProcMaskUnknown {
-		return character.NewLegacyPPMManager(proc.GetPpm(), config.ProcMask)
+	if procMask != core.ProcMaskUnknown {
+		return character.NewLegacyPPMManager(proc.GetPpm(), procMask)
 	}
 
 	// With no mask of its own the rate has to be read off whatever the effect sits on.
@@ -567,10 +579,11 @@ func getProcFromDBC(character *core.Character, trigger *core.ProcTrigger, source
 			continue
 		}
 
-		if proc.GetRppm() != nil {
-			trigger.DPM = character.NewRPPMProcManager(source.id, source.isEnchant, false, trigger.ProcMask, core.RppmConfigFromProcEffectProto(proc))
-		} else if proc.GetPpm() > 0 {
-			trigger.DPM = character.NewLegacyPPMManager(proc.GetPpm(), trigger.ProcMask)
+		// Through procDPM rather than reading the rate again here. A second copy had already lost
+		// the ProcMaskUnknown fallback, and a legacy PPM manager built with a zero mask matches
+		// nothing and never procs at all.
+		if dpm := procDPM(character, trigger.ProcMask, source, proc); dpm != nil {
+			trigger.DPM = dpm
 		} else {
 			trigger.ProcChance = proc.GetProcChance()
 		}
@@ -635,12 +648,20 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 		})
 
 		triggerConfig.TriggerImmediately = true
-		triggerConfig.Handler = func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
+		triggerConfig.Handler = func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 			// Land the extra damage on whatever was hit, not on the primary target.
 			target := character.CurrentTarget
 			if result != nil && result.Target != nil {
 				target = result.Target
 			}
+
+			// On a hit-taken proc the wearer is what was hit - core dispatches those through
+			// result.Target.OnSpellHitTaken - so the retaliation has to go back to the attacker
+			// instead of into the wearer's own health. This is the shield spike shape.
+			if target == &character.Unit && spell != nil && spell.Unit != nil {
+				target = spell.Unit
+			}
+
 			damageSpell.Cast(sim, target)
 		}
 		triggerAura := character.MakeProcTriggerAura(triggerConfig)
@@ -993,6 +1014,23 @@ func (s effectSource) registerProc(character *core.Character, triggerAura *core.
 	} else {
 		character.ItemSwap.RegisterProcWithSlots(s.id, triggerAura, slots)
 	}
+}
+
+// A weapon enchant's buff has to drop when the weapon carrying it is swapped out. AddStatProcBuff
+// only flips IsSwapped, which gates the next proc but leaves a running buff up for the rest of its
+// duration. Gated on the enchant being a weapon enchant: RegisterWeaponEnchantBuff watches the
+// weapon slots, so handing it a cloak or shield enchant would deactivate that buff on any weapon
+// swap.
+func (s effectSource) registerWeaponEnchantBuff(character *core.Character, procAura *core.StatBuffAura) {
+	if !s.isEnchant {
+		return
+	}
+
+	if ench := core.GetEnchantByEffectID(s.id); ench == nil || ench.Type != proto.ItemType_ItemTypeWeapon {
+		return
+	}
+
+	character.ItemSwap.RegisterWeaponEnchantBuff(procAura.Aura, s.id)
 }
 
 // As registerProc, for the effects that do not narrow themselves to a set of slots.

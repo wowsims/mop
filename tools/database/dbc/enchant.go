@@ -90,7 +90,11 @@ func (enchant *Enchant) HasEnchantEffect() bool {
 	return false
 }
 
-func (enchant *Enchant) ToProto() *proto.UIEnchant {
+// buffLinks supplies the enchantment -> buff spell links that SpellEffect cannot carry, keyed by
+// enchantment ID. It is passed in rather than read from a table here because deciding which spells
+// an enchant really applies is override policy, and all of that lives together in
+// tools/database/overrides.go. Nil is valid and means every buff has to be reachable from the data.
+func (enchant *Enchant) ToProto(buffLinks map[int][]int) *proto.UIEnchant {
 	uiEnchant := &proto.UIEnchant{
 		Name:               enchant.Name,
 		ItemId:             int32(enchant.ItemId),
@@ -113,7 +117,7 @@ func (enchant *Enchant) ToProto() *proto.UIEnchant {
 	}
 
 	// Enchants whose buff spell is only reachable through an explicit link.
-	for _, buffSpellID := range EnchantBuffSpellOverrides[enchant.EffectId] {
+	for _, buffSpellID := range buffLinks[enchant.EffectId] {
 		if parsedEffect, hasStats := enchant.buildLinkedProcEffect(buffSpellID); hasStats {
 			uiEnchant.EnchantEffects = append(uiEnchant.EnchantEffects, parsedEffect)
 		}

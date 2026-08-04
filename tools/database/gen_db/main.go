@@ -170,7 +170,7 @@ func main() {
 	}
 
 	for _, enchant := range instance.Enchants {
-		parsed := enchant.ToProto()
+		parsed := enchant.ToProto(database.EnchantBuffSpellOverrides)
 
 		if parsed.Icon == "" {
 			parsed.Icon = strings.ToLower(database.GetIconName(iconsMap, enchant.FDID))

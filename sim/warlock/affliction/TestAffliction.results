@@ -1801,9 +1801,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 357514.96551
-  tps: 248032.15418
-  hps: 4834.50344
+  dps: 353355.75937
+  tps: 245316.13167
+  hps: 4735.56476
  }
 }
 dps_results: {

@@ -275,31 +275,31 @@ func (setBonusTracker *Aura) ExposeToAPL(spellID int32) *Aura {
 // The bonus keys off whatever is worn in the hands slot rather than off one specific item, so
 // the effect body builds that single character-wide mod and then lets it follow item swaps.
 func NewPvPGloveEffect(itemIDs []int32, config SpellModConfig) {
-	// These lists are hand-maintained and carry some IDs the database does not ship, which
-	// cannot be equipped and so have nothing to register.
-	registered := FilterSlice(itemIDs, func(itemID int32) bool {
+	// These lists are hand-maintained and carry some IDs the database does not ship - the pre-MoP
+	// Bloodthirsty gloves among them. Those cannot be equipped and so have nothing to register, but
+	// a typo'd or renumbered ID is indistinguishable from one of those from here, and the only
+	// symptom is a player quietly losing the bonus. So name the ones being dropped.
+	missing := FilterSlice(itemIDs, func(itemID int32) bool {
 		if !WITH_DB {
-			return true
+			return false
 		}
 		_, ok := ItemsByID[itemID]
-		return ok
+		return !ok
 	})
-
-	// Every one of these gloves grants the same bonus, so test only the newest rather than
-	// generating a near-identical case per season, as NewSimpleStatActiveWithVariants does.
-	var maxItemID int32
-	for _, itemID := range registered {
-		maxItemID = max(maxItemID, itemID)
+	if len(missing) > 0 {
+		fmt.Printf("WARN: PvP glove effect has no database item for %v, bonus not registered for those\n", missing)
 	}
 
-	for _, itemID := range registered {
-		AddEffectsToTest = itemID == maxItemID
+	registered := FilterSlice(itemIDs, func(itemID int32) bool {
+		return !slices.Contains(missing, itemID)
+	})
+
+	// Every one of these gloves grants the same bonus, so only the newest is tested.
+	ForEachItemVariant(registered, func(itemID int32) {
 		NewItemEffect(itemID, func(agent Agent, _ proto.ItemLevelState) {
 			agent.GetCharacter().registerPvPGloveMod(itemID, config)
 		})
-	}
-
-	AddEffectsToTest = true
+	})
 }
 
 // Gives each glove its own aura carrying the bonus, keyed on the item ID. A character can

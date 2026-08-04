@@ -196,7 +196,7 @@ func GenerateEnchantEffects(instance *dbc.DBC, db *WowDatabase) {
 	}
 
 	for _, enchant := range instance.Enchants {
-		parsed := enchant.ToProto()
+		parsed := enchant.ToProto(EnchantBuffSpellOverrides)
 		if _, ok := db.Enchants[parsed.EffectId]; !ok {
 			continue
 		}
@@ -763,7 +763,7 @@ func BuildEnchantProcInfo(enchant *proto.UIEnchant, instance *dbc.DBC, tooltip s
 	// A dummy effect normally means the buff is applied by server script and cannot be
 	// resolved, so the effect is refused. When EnchantBuffSpellOverrides supplies the link,
 	// that dummy is exactly what the override resolves and is no longer a reason to refuse.
-	if _, linked := dbc.EnchantBuffSpellOverrides[int(enchant.EffectId)]; !linked {
+	if _, linked := EnchantBuffSpellOverrides[int(enchant.EffectId)]; !linked {
 		if SpellHasDummyEffect(int(procSpellID), instance) {
 			return procInfo, false
 		}

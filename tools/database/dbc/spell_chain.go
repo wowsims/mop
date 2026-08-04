@@ -1,7 +1,9 @@
 package dbc
 
 import (
+	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 
 	"github.com/wowsims/mop/sim/core/proto"
@@ -64,12 +66,23 @@ func firstEffectWithAura(spellID int, aura EffectAuraType) *SpellEffect {
 // Only meaningful for a spell that ticks a periodic dummy, which buildStackingAura establishes
 // before calling. Returns 0 when no referenced spell resolves to stats. Not a chainWalker method
 // because it descends exactly one level and cannot recurse.
+// Container spells whose accumulating stat aura is stated outright instead of being mined out of
+// the description, the same way the enchant buff links in tools/database/overrides.go state a link
+// SpellEffect cannot carry. Empty because every shipping stacking trinket offers one candidate; this is where the
+// answer goes the first time one offers more, which referencedStatAura refuses to guess at.
+var StackingStatAuraOverrides = map[int]int{}
+
 func referencedStatAura(containerSpellID int, itemLevel int) int {
+	if statAuraID, ok := StackingStatAuraOverrides[containerSpellID]; ok {
+		return statAuraID
+	}
+
 	d := GetDBC()
 
+	candidates := []int{}
 	for _, match := range descriptionSpellRef.FindAllStringSubmatch(d.Spells[containerSpellID].Description, -1) {
 		referenced, err := strconv.Atoi(match[1])
-		if err != nil || referenced == containerSpellID {
+		if err != nil || referenced == containerSpellID || slices.Contains(candidates, referenced) {
 			continue
 		}
 		if d.Spells[referenced].ID == 0 {
@@ -78,10 +91,23 @@ func referencedStatAura(containerSpellID int, itemLevel int) int {
 		// A description can mention spells for all sorts of reasons. Only one that resolves to
 		// actual stats is the aura being looked for.
 		if len(collectStats(referenced, itemLevel).ToProtoMap()) > 0 {
-			return referenced
+			candidates = append(candidates, referenced)
 		}
 	}
-	return 0
+
+	if len(candidates) == 0 {
+		return 0
+	}
+	if len(candidates) == 1 {
+		return candidates[0]
+	}
+
+	// Taking the first would bake whichever spell the wording happens to mention earliest into
+	// db.json with no diagnostic, and a reworded description - this repo carries a hotfix overlay -
+	// could change that answer silently. Reading English prose is a guess; it should not be a
+	// silent one.
+	panic(fmt.Sprintf("spell %d (%q) description names %v as candidate stat auras; add the intended one to StackingStatAuraOverrides",
+		containerSpellID, d.Spells[containerSpellID].NameLang, candidates))
 }
 
 // Describes the stat aura a container aura accumulates, together with how often it gains a
@@ -130,6 +156,15 @@ func buildStackingProps(containerSpellID, statAuraID, itemLevel, itemSpellID int
 		if se.EffectAura != A_PERIODIC_DUMMY || se.Coefficient == 0 {
 			continue
 		}
+
+		// A single coefficient cannot say what each stat of a multi-stat aura is worth, and
+		// assigning it to every one of them would multiply the total rather than split it. Every
+		// shipping stacking trinket grants exactly one stat, so this is a guard, not a case.
+		if len(props.Stats) > 1 {
+			panic(fmt.Sprintf("spell %d accumulates %d stats but container %d carries one coefficient; per-stat amounts have to be resolved before this can be generated",
+				statAuraID, len(props.Stats), containerSpellID))
+		}
+
 		amount := se.CalcCoefficientStatValue(itemLevel)
 		for stat := range props.Stats {
 			props.Stats[stat] = amount
