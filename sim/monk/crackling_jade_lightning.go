@@ -70,7 +70,7 @@ func (monk *Monk) registerCracklingJadeLightning() {
 					}
 				} else {
 					monk.AutoAttacks.EnableMeleeSwing(sim)
-					monk.ExtendGCDUntil(sim, sim.CurrentTime+monk.ChannelClipDelay)
+					monk.ExtendGCDUntil(sim, max(monk.NextGCDAt(), sim.CurrentTime+monk.ChannelClipDelay))
 
 					// Deactivating within OnTick causes a panic since tickAction gets set to nil in the default OnExpire
 					pa := sim.GetConsumedPendingActionFromPool()
@@ -97,7 +97,7 @@ func (monk *Monk) registerCracklingJadeLightning() {
 				dot.Apply(sim)
 				expiresAt := dot.ExpiresAt()
 				monk.AutoAttacks.StopMeleeUntil(sim, expiresAt)
-				monk.ExtendGCDUntil(sim, expiresAt+monk.ReactionTime)
+				monk.ExtendGCDUntil(sim, max(monk.NextGCDAt(), expiresAt+monk.ReactionTime))
 			}
 
 			spell.DealOutcome(sim, result)
