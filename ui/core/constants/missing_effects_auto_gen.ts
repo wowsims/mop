@@ -246,7 +246,7 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 	[
 		88585, // Dislodged Stinger
 		[
-			"Your attacks have a chance to inflict your target with mantid poison, dealing 3526 damage every 0.0 sec for 6s.", // 128386 - https://www.wowhead.com/mop/spell=128386
+			"Your attacks have a chance to inflict your target with mantid poison, dealing 3526 damage every 1.5 sec for 6s.", // 128386 - https://www.wowhead.com/mop/spell=128386
 		]
 	],
 	[

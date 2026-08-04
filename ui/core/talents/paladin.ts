@@ -32,7 +32,7 @@ export const paladinGlyphsConfig: GlyphsConfig = {
 		},
 		[PaladinMajorGlyph.GlyphOfAvengingWrath]: {
 			name: "Glyph of Avenging Wrath",
-			description: "While Avenging Wrath is active, you are healed for 1% of your maximum health every 0.0 sec.",
+			description: "While Avenging Wrath is active, you are healed for 1% of your maximum health every 2.0 sec.",
 			iconUrl: "https://wow.zamimg.com/images/wow/icons/large/spell_holy_avenginewrath.jpg",
 		},
 		[PaladinMajorGlyph.GlyphOfConsecration]: {

@@ -618,7 +618,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your attacks have a chance to inflict your target with mantid poison, dealing 3526 damage every 0.0 sec
+	// Your attacks have a chance to inflict your target with mantid poison, dealing 3526 damage every 1.5 sec
 	// for 6s.
 	// https://www.wowhead.com/mop/spell=128386
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
