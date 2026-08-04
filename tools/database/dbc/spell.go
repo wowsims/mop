@@ -73,6 +73,11 @@ func (s *Spell) NotActiveInChallengeMode() bool {
 	return s.HasAttributeAt(ATTR_INDEX_EX_11, ATTR_EX_11_NOT_ACTIVE_IN_CHALLENGE_MODE)
 }
 
+// Reports whether the spell is barred from critically striking
+func (s *Spell) CannotCrit() bool {
+	return s.HasAttributeAt(ATTR_INDEX_EX_2, ATTR_EX_2_CANT_CRIT)
+}
+
 // Reports whether the spell may be triggered by another proc, which decides whether the proc
 // masks carry their ...Proc bits.
 func (s *Spell) CanProcFromProcs() bool {

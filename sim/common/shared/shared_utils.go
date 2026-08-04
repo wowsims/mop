@@ -32,6 +32,9 @@ type DamageEffect struct {
 	IsMelee          bool
 	ProcMask         core.ProcMask
 	Outcome          OutcomeType
+	// Set when the client bars the damage spell from critting, which the sim has no way to know:
+	// it is a spell attribute, so only the database generator can see it.
+	CannotCrit bool
 }
 
 type ExtraSpellInfo struct {
@@ -66,7 +69,7 @@ func NewProcStatBonusEffectWithDamageProc(config ProcStatBonusEffect, damage Dam
 			ThreatMultiplier:         1,
 			BonusCoefficient:         damage.BonusCoefficient,
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				spell.CalcAndDealDamage(sim, target, sim.Roll(damage.MinDmg, damage.MaxDmg), GetOutcome(spell, damage.Outcome))
+				spell.CalcAndDealDamage(sim, target, sim.Roll(damage.MinDmg, damage.MaxDmg), GetOutcome(spell, damageOutcome(damage.School, damage.IsMelee, damage.CannotCrit, damage.Outcome)))
 			},
 		})
 
@@ -546,6 +549,39 @@ type ProcDamageEffect struct {
 	IsMelee    bool
 	Flags      core.SpellFlag
 	Outcome    OutcomeType
+	// Set when the client bars the damage spell from critting, which the sim has no way to know:
+	// it is a spell attribute, so only the database generator can see it.
+	CannotCrit bool
+}
+
+// Whether a proc's damage is dealt as a melee hit. The school decides it: anything non-physical
+// rolls against the spell tables. IsMelee stays honoured on top of that for a caller that means
+// physical damage without saying so through the school.
+func isMeleeDamage(school core.SpellSchool, isMelee bool) bool {
+	return isMelee || school.Matches(core.SpellSchoolPhysical)
+}
+
+// The outcome a proc's damage rolls when the caller states none. Physical damage goes through the
+// melee table, everything else through the spell one, and a spell the client bars from critting
+// takes the no-crit variant of whichever it rolls against.
+func damageOutcome(school core.SpellSchool, isMelee bool, cannotCrit bool, outcome OutcomeType) OutcomeType {
+	if outcome != OutcomeDefault {
+		return outcome
+	}
+
+	if isMeleeDamage(school, isMelee) {
+		if cannotCrit {
+			return OutcomeMeleeNoCrit
+		}
+
+		return OutcomeMeleeCanCrit
+	}
+
+	if cannotCrit {
+		return OutcomeSpellNoCrit
+	}
+
+	return OutcomeSpellCanCrit
 }
 
 func GetOutcome(spell *core.Spell, outcome OutcomeType) core.OutcomeApplier {
@@ -643,7 +679,7 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 			ThreatMultiplier: 1,
 
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				spell.CalcAndDealDamage(sim, target, sim.Roll(minDmg, maxDmg), GetOutcome(spell, config.Outcome))
+				spell.CalcAndDealDamage(sim, target, sim.Roll(minDmg, maxDmg), GetOutcome(spell, damageOutcome(config.School, config.IsMelee, config.CannotCrit, config.Outcome)))
 			},
 		})
 

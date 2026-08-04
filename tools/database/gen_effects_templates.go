@@ -195,6 +195,9 @@ shared.NewProcDamageEffect(shared.ProcDamageEffect{
 	School:    {{ .Damage.SchoolMask | asCoreSpellSchool }},
 	MinDmg:    {{ .Damage.MinDamage }},
 	MaxDmg:    {{ .Damage.MaxDamage }},
+	{{- if .DamageCannotCrit }}
+	CannotCrit: true,
+	{{- end}}
 	Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
 	Trigger: core.ProcTrigger{
 		{{with index .Variants 0 -}}

@@ -53,6 +53,8 @@ type Entry struct {
 	// Set when the effect deals flat damage rather than granting stats. Damage is not
 	// carried in the database, so the resolved amounts are emitted as literals.
 	Damage *dbc.DamageEffect
+	// Set when the damage spell is barred from critting, which picks a no-crit outcome.
+	DamageCannotCrit bool
 	// Set for on-use enchants, which take a different helper than procs do.
 	OnUse      bool
 	Profession proto.Profession
@@ -602,6 +604,10 @@ func TryParseEnchantEffect(enchant *proto.UIEnchant, enchantEffect *proto.ItemEf
 			entry := Entry{Tooltip: strings.Split(renderedTooltip, "\n"), Variants: []*Variant{{ID: int(enchant.EffectId), Name: enchant.Name}}}
 			entry.ProcInfo, entry.Supported = BuildEnchantProcInfo(enchant, instance, renderedTooltip)
 			entry.Damage = dbc.ResolveDamageEffect(int(enchant.SpellId))
+			if entry.Damage != nil {
+				damageSpell := instance.Spells[entry.Damage.SpellID]
+				entry.DamageCannotCrit = damageSpell.CannotCrit()
+			}
 			appendEntry(groupMapProc, "Enchants", &entry)
 
 			if !entry.Supported {
