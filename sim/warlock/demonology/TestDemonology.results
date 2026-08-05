@@ -1222,6 +1222,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestDemonology-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 395723.91591
+  tps: 240246.91055
+ }
+}
+dps_results: {
  key: "TestDemonology-AllItems-NitroBoosts-4223"
  value: {
   dps: 472952.15634

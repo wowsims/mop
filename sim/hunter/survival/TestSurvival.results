@@ -1236,6 +1236,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestSurvival-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 401900.32582
+  tps: 318605.59089
+ }
+}
+dps_results: {
  key: "TestSurvival-AllItems-NitroBoosts-4223"
  value: {
   dps: 472415.86639
@@ -1317,6 +1324,13 @@ dps_results: {
  value: {
   dps: 405463.46303
   tps: 321576.80411
+ }
+}
+dps_results: {
+ key: "TestSurvival-AllItems-PridefulGladiator'sChainGauntlets-103417"
+ value: {
+  dps: 434090.12472
+  tps: 343217.07459
  }
 }
 dps_results: {

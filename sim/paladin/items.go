@@ -9,14 +9,13 @@ import (
 	"github.com/wowsims/mop/sim/core/stats"
 )
 
-// Increases the range of your Judgment by 10 yards.
-func (paladin *Paladin) addMistsPvpGloves() {
-	if paladin.Env.IsChallengeMode {
-		return
-	}
+// https://www.wowhead.com/mop/spell=61776
+var mistsPvpGloveItemIDs = []int32{84419, 84834, 85027, 91269, 91270, 91622, 93528, 94343, 98844, 99871, 100013, 100365, 100573, 102630, 102827, 103243, 103440}
 
-	paladin.RegisterPvPGloveMod(
-		[]int32{84419, 84834, 85027, 91269, 91270, 91622, 93528, 94343, 98844, 99871, 100013, 100365, 100573, 102630, 102827, 103243, 103440},
+// Increases the range of your Judgment by 10 yards.
+func init() {
+	core.NewPvPGloveEffect(
+		mistsPvpGloveItemIDs,
 		core.SpellModConfig{
 			Kind:      core.SpellMod_Custom,
 			ClassMask: SpellMaskJudgment,

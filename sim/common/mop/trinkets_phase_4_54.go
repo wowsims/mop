@@ -770,64 +770,13 @@ func init() {
 			stat:      stats.Intellect,
 		},
 	})
-
-	// Skeer's Bloodsoaked Talisman
-	// Your melee attacks have a chance to trigger Cruelty for 10 sec.
-	// While Cruelty is active, you gain 1402 Critical Strike every 0.5 sec, stacking up to 20 times.
-	// (Approximately 0.92 procs per minute)
-	shared.ItemVersionMap{
-		shared.ItemVersionLFR:             105134,
-		shared.ItemVersionNormal:          102308,
-		shared.ItemVersionHeroic:          104636,
-		shared.ItemVersionWarforged:       105383,
-		shared.ItemVersionHeroicWarforged: 105632,
-		shared.ItemVersionFlexible:        104885,
-	}.RegisterAll(func(version shared.ItemVersion, itemID int32, versionLabel string) {
-		label := "Skeer's Bloodsoaked Talisman"
-
-		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
-			character := agent.GetCharacter()
-
-			statValue := core.GetItemEffectScalingStatValue(itemID, 0.29699999094, state)
-			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
-				AuraLabel:            fmt.Sprintf("Item - Proc Critical Strike (%s)", versionLabel),
-				ActionID:             core.ActionID{SpellID: 146286},
-				StackingAuraLabel:    fmt.Sprintf("Cruelty (%s)", versionLabel),
-				StackingAuraActionID: core.ActionID{SpellID: 146285},
-				Duration:             time.Second * 10,
-				MaxStacks:            20,
-				TimePerStack:         time.Millisecond * 500,
-				BonusPerStack:        stats.Stats{stats.CritRating: statValue},
-				TickImmediately:      true,
-			})
-
-			statBuffTriggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-				Name:     fmt.Sprintf("%s (%s) - Stat Trigger", label, versionLabel),
-				Callback: core.CallbackOnSpellHitDealt,
-				Outcome:  core.OutcomeLanded,
-				ICD:      time.Second * 10,
-
-				DPM: character.NewRPPMProcManager(itemID, false, false, core.ProcMaskMeleeOrMeleeProc, core.RPPMConfig{
-					PPM: 0.92000001669,
-				}),
-
-				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
-					aura.Activate(sim)
-				},
-			})
-
-			statBuffAura.Icd = statBuffTriggerAura.Icd
-
-			eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
-			character.AddStatProcBuff(itemID, statBuffAura, false, eligibleSlots)
-			character.ItemSwap.RegisterProcWithSlots(itemID, statBuffTriggerAura, eligibleSlots)
-		})
-	})
-
 	// Black Blood of Y'Shaarj
 	// Your attacks have a chance to trigger Wrath of the Darkspear for 10 sec.
 	// While Wrath of the Darkspear is active, every 1 sec you gain 2805 Intellect, stacking up to 10 times.
 	// (Approximately 0.92 procs per minute)
+	//
+	// NOTE: This can be auto-generated, however this would break APLs that refer this manual implementation.
+	// The automatically generated version has the "Wrath" buff as a separate aura (game-like)
 	shared.ItemVersionMap{
 		shared.ItemVersionLFR:             105150,
 		shared.ItemVersionNormal:          102310,

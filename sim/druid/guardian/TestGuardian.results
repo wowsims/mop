@@ -1588,6 +1588,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestGuardian-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 459384.59629
+  tps: 2.85804541412e+06
+  dtps: 24899.23455
+  hps: 45637.61205
+ }
+}
+dps_results: {
  key: "TestGuardian-AllItems-NitroBoosts-4223"
  value: {
   dps: 504859.9649

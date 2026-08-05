@@ -1606,6 +1606,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBrewmaster-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 551461.9364
+  tps: 2.97142705262e+06
+  dtps: 43416.59525
+  hps: 81507.13913
+ }
+}
+dps_results: {
  key: "TestBrewmaster-AllItems-NitroBoosts-4223"
  value: {
   dps: 583614.06695

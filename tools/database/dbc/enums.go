@@ -19,6 +19,11 @@ const (
 	ITEM_ENCHANTMENT_RELIC_EVIL       int = 12 // Scaling relic +ilevel, see enchant::initialize_relic
 )
 
+// Power types as used in SpellEffect.EffectMiscValue_0, see MapPowerTypeEnumToResourceType.
+const (
+	POWER_TYPE_MANA int = 0
+)
+
 const (
 	ITEM_SPELLTRIGGER_ON_USE          int = 0 // use after equip cooldown
 	ITEM_SPELLTRIGGER_ON_EQUIP        int = 1
@@ -1133,8 +1138,22 @@ const (
 		PROC_FLAG_DEAL_HELPFUL_SPELL
 )
 
+// Spell attribute flags, named after the Attributes column they live in: ATTR_EX_3 is a flag
+// in Attributes[3]. Read them through the Spell helpers rather than indexing Attributes.
 const (
+	ATTR_EX_2_CANT_CRIT int = 0x20000000
+
 	ATTR_EX_3_CAN_PROC_FROM_PROCS int = 0x4000000
+
+	ATTR_EX_11_SCALES_WITH_ITEM_LEVEL       int = 0x4
+	ATTR_EX_11_NOT_ACTIVE_IN_CHALLENGE_MODE int = 0x10000
+)
+
+// Attributes index each ATTR_EX_ flag above belongs to.
+const (
+	ATTR_INDEX_EX_2  int = 2
+	ATTR_INDEX_EX_3  int = 3
+	ATTR_INDEX_EX_11 int = 11
 )
 
 const (

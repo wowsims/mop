@@ -153,53 +153,59 @@ func EnchantHasDummyEffect(enchant *proto.UIEnchant, instance *dbc.DBC) bool {
 	return SpellHasDummyEffect(int(enchant.SpellId), instance)
 }
 
-func SpellHasDummyEffect(spellId int, instance *dbc.DBC) bool {
-	if effects, ok := instance.SpellEffects[spellId]; ok {
-		for _, effect := range effects {
-			if effect.EffectAura == dbc.A_DUMMY ||
-				effect.EffectAura == dbc.A_PERIODIC_DUMMY {
-				return true
-			}
-		}
+// Reports whether a spell resolves to nothing at all: every effect is a dummy and none of
+// them trigger another spell. These are the despawn and marker auras that
+// sit alongside an item's real effect - Quilen Statuette Despawn Aura, Barnacle Crew Despawn
+// Aura, Sha-dowfiend - and reporting them as missing effects is noise. Note that their base
+// points often hold another spell's ID, so a non-zero value does not make them meaningful.
+func SpellIsPureDummy(spellId int, instance *dbc.DBC) bool {
+	effects := instance.SpellEffects[spellId]
+	if len(effects) == 0 {
+		return false
 	}
 
-	return false
+	return !anySpellEffect(spellId, instance, func(effect dbc.SpellEffect) bool {
+		return !isDummyAura(effect) || effect.EffectTriggerSpell != 0
+	})
+}
+
+func SpellHasDummyEffect(spellId int, instance *dbc.DBC) bool {
+	return anySpellEffect(spellId, instance, isDummyAura)
 }
 
 func SpellHasTriggerEffect(spellId int, instance *dbc.DBC) bool {
-	if effects, ok := instance.SpellEffects[spellId]; ok {
-		for _, effect := range effects {
-			if effect.EffectAura == dbc.A_PROC_TRIGGER_SPELL ||
-				effect.EffectAura == dbc.A_PROC_TRIGGER_SPELL_WITH_VALUE {
-				return true
-			}
-		}
-	}
-
-	return false
+	return anySpellEffect(spellId, instance, isProcTriggerAura)
 }
 
 func SpellUsesStacks(spellId int, instance *dbc.DBC) bool {
-	if spell, ok := instance.Spells[spellId]; ok {
-		if spell.MaxCumulativeStacks > 1 {
+	if instance.Spells[spellId].MaxCumulativeStacks > 1 {
+		return true
+	}
+
+	return anySpellEffect(spellId, instance, func(effect dbc.SpellEffect) bool {
+		return isProcTriggerAura(effect) &&
+			instance.Spells[effect.EffectTriggerSpell].MaxCumulativeStacks > 1
+	})
+}
+
+// Reports whether any of the spell's effects satisfies pred. Effect order does not matter to
+// a predicate, so this reads the map directly rather than paying for a sorted copy.
+func anySpellEffect(spellId int, instance *dbc.DBC, pred func(dbc.SpellEffect) bool) bool {
+	for _, effect := range instance.SpellEffects[spellId] {
+		if pred(effect) {
 			return true
 		}
 	}
 
-	if effects, ok := instance.SpellEffects[spellId]; ok {
-		for _, effect := range effects {
-			if effect.EffectAura == dbc.A_PROC_TRIGGER_SPELL ||
-				effect.EffectAura == dbc.A_PROC_TRIGGER_SPELL_WITH_VALUE {
-				if spell, ok := instance.Spells[effect.EffectTriggerSpell]; ok {
-					if spell.MaxCumulativeStacks > 1 {
-						return true
-					}
-				}
-			}
-		}
-	}
-
 	return false
+}
+
+func isDummyAura(effect dbc.SpellEffect) bool {
+	return effect.IsDummy()
+}
+
+func isProcTriggerAura(effect dbc.SpellEffect) bool {
+	return effect.IsProcTrigger()
 }
 
 func GetEffectStatString(itemEffect *proto.ItemEffect) string {
@@ -207,7 +213,7 @@ func GetEffectStatString(itemEffect *proto.ItemEffect) string {
 		return ""
 	}
 
-	stats := itemEffect.ScalingOptions[int32(0)].Stats
+	stats := dbc.EffectStats(itemEffect, proto.ItemLevelState_Base)
 	statsString := make([]string, 0, len(stats))
 	for k := range stats {
 		stat := proto.Stat(k)

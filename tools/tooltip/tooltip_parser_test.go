@@ -1,12 +1,22 @@
 package tooltip
 
 import (
+	"log"
 	"testing"
 
 	"github.com/wowsims/mop/tools/database/dbc"
 )
 
-var db = dbc.GetDBC()
+var db = loadDBC()
+
+// The default input directory is relative to the repo root, and a package-level var is
+// initialized before a test gets the chance to move there.
+func loadDBC() *dbc.DBC {
+	if err := dbc.InitDBCFrom("../../assets/db_inputs/dbc"); err != nil {
+		log.Fatalf("Failed to initialize DBC: %v", err)
+	}
+	return dbc.GetDBC()
+}
 
 func Test_WhenInvalidTernaryGiven_ThenProperlyApplyFixes(t *testing.T) {
 	tp, error := ParseTooltip("$<dam> damage every ${$16914d3/10}.2 seconds$?$w1!=0[ and movement slowed by $w1%][].",

@@ -28,21 +28,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		84409, // Dreadful Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		84413, // Dreadful Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		84419, // Dreadful Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -94,24 +82,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		84505, // Dreadful Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		84543, // Dreadful Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		84548, // Dreadful Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
 		84830, // Malevolent Gladiator's Leather Gloves
 		[
 			"Increases the healing you receive from Recuperate by 1% every 3.0 sec.", // 61249 - https://www.wowhead.com/mop/spell=61249
@@ -136,21 +106,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		84834, // Malevolent Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
-		]
-	],
-	[
 		84835, // Malevolent Gladiator's Dreadplate Gauntlets
 		[
 			"Your Chains of Ice ability now generates an additional 10 Runic Power.", // 62458 - https://www.wowhead.com/mop/spell=62458
-		]
-	],
-	[
-		84836, // Malevolent Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
 		]
 	],
 	[
@@ -163,24 +121,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		84838, // Malevolent Gladiator's Satin Gloves
 		[
 			"Reduces the cooldown of your Psychic Scream ability by 3 sec.", // 44297 - https://www.wowhead.com/mop/spell=44297
-		]
-	],
-	[
-		84839, // Malevolent Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		84840, // Malevolent Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		84841, // Malevolent Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
 		]
 	],
 	[
@@ -244,12 +184,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		85015, // Malevolent Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
 		85016, // Malevolent Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
@@ -259,24 +193,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		85017, // Malevolent Gladiator's Satin Gloves
 		[
 			"Reduces the cooldown of your Psychic Scream ability by 3 sec.", // 44297 - https://www.wowhead.com/mop/spell=44297
-		]
-	],
-	[
-		85018, // Malevolent Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		85019, // Malevolent Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		85020, // Malevolent Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
 		]
 	],
 	[
@@ -316,81 +232,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		85027, // Malevolent Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
-		]
-	],
-	[
 		85028, // Malevolent Gladiator's Dreadplate Gauntlets
 		[
 			"Your Chains of Ice ability now generates an additional 10 Runic Power.", // 62458 - https://www.wowhead.com/mop/spell=62458
-		]
-	],
-	[
-		86227, // Kri'tak, Imperial Scepter of the Swarm
-		[
-			"", // 132602 - https://www.wowhead.com/mop/spell=132602
-		]
-	],
-	[
-		86335, // Jin'ya, Orb of the Waterspeaker
-		[
-			"", // 132602 - https://www.wowhead.com/mop/spell=132602
-		]
-	],
-	[
-		86525, // Bloodsoaked Chitin Fragment
-		[
-			"Whenever you kill an enemy that rewards experience, you gain Bloodseeker's Fury, granting you 80 Agility for 2min. Stacks up to 10 times.", // 128896 - https://www.wowhead.com/mop/spell=128896
-		]
-	],
-	[
-		86526, // Swarmkeeper's Medallion
-		[
-			"Increases your movement speed by 10% while in Dread Wastes.", // 128887 - https://www.wowhead.com/mop/spell=128887
-		]
-	],
-	[
-		86529, // Manipulator's Talisman
-		[
-			"Your pet's attacks have a chance to deal an additional 50% damage as Nature, but no more than 0.", // 128853 - https://www.wowhead.com/mop/spell=128853
-		]
-	],
-	[
-		86865, // Kri'tak, Imperial Scepter of the Swarm
-		[
-			"", // 132602 - https://www.wowhead.com/mop/spell=132602
-		]
-	],
-	[
-		86893, // Jin'ya, Orb of the Waterspeaker
-		[
-			"", // 132602 - https://www.wowhead.com/mop/spell=132602
-		]
-	],
-	[
-		86990, // Kri'tak, Imperial Scepter of the Swarm
-		[
-			"", // 132602 - https://www.wowhead.com/mop/spell=132602
-		]
-	],
-	[
-		87170, // Jin'ya, Orb of the Waterspeaker
-		[
-			"", // 132602 - https://www.wowhead.com/mop/spell=132602
-		]
-	],
-	[
-		88171, // Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		88176, // Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
 		]
 	],
 	[
@@ -402,25 +246,19 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 	[
 		88585, // Dislodged Stinger
 		[
-			"Your attacks have a chance to inflict your target with mantid poison, dealing 882 damage every 0.0 sec for 6s.", // 128386 - https://www.wowhead.com/mop/spell=128386
+			"Your attacks have a chance to inflict your target with mantid poison, dealing 3526 damage every 1.5 sec for 6s.", // 128386 - https://www.wowhead.com/mop/spell=128386
 		]
 	],
 	[
 		88590, // Nurong's Gun
 		[
-			"Deals 1 Fire damage to your current target.", // 128191 - https://www.wowhead.com/mop/spell=128191
+			"Deals 20074 Fire damage to your current target.", // 128191 - https://www.wowhead.com/mop/spell=128191
 		]
 	],
 	[
 		89232, // Mogu Rune of Paralysis
 		[
 			"Place a Mogu Rune of Paralysis on the ground for 1min, which will stun the next creature that enters it for 4s.", // 129554 - https://www.wowhead.com/mop/spell=129554
-		]
-	],
-	[
-		89611, // Quilen Statuette
-		[
-			"", // 130484 - https://www.wowhead.com/mop/spell=130484
 		]
 	],
 	[
@@ -472,18 +310,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		91224, // Tyrannical Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
-		91225, // Tyrannical Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		91232, // Tyrannical Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
@@ -493,42 +319,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		91233, // Tyrannical Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		91247, // Tyrannical Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		91248, // Tyrannical Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		91257, // Tyrannical Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		91258, // Tyrannical Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		91269, // Tyrannical Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
-		]
-	],
-	[
-		91270, // Tyrannical Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -628,18 +418,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		91432, // Tyrannical Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		91433, // Tyrannical Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		91502, // Malevolent Gladiator's Dreadplate Gauntlets
 		[
 			"Your Chains of Ice ability now generates an additional 10 Runic Power.", // 62458 - https://www.wowhead.com/mop/spell=62458
@@ -664,33 +442,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		91577, // Malevolent Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		91585, // Malevolent Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		91600, // Malevolent Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		91610, // Malevolent Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		91622, // Malevolent Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -742,12 +496,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		91785, // Malevolent Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		93454, // Crafted Dreadful Gladiator's Dreadplate Gauntlets
 		[
 			"Your Chains of Ice ability now generates an additional 10 Runic Power.", // 62458 - https://www.wowhead.com/mop/spell=62458
@@ -772,45 +520,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		93495, // Crafted Dreadful Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		93499, // Crafted Dreadful Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		93507, // Crafted Dreadful Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		93508, // Crafted Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		93517, // Crafted Dreadful Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		93518, // Crafted Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		93528, // Crafted Dreadful Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -862,33 +574,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		93621, // Crafted Dreadful Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		94328, // Tyrannical Gladiator's Mooncloth Gloves
 		[
 			"Reduces the cooldown of your Psychic Scream ability by 3 sec.", // 44297 - https://www.wowhead.com/mop/spell=44297
-		]
-	],
-	[
-		94331, // Tyrannical Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		94340, // Tyrannical Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		94343, // Tyrannical Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -907,12 +595,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		94377, // Tyrannical Gladiator's Leather Gloves
 		[
 			"Increases the healing you receive from Recuperate by 1% every 3.0 sec.", // 61249 - https://www.wowhead.com/mop/spell=61249
-		]
-	],
-	[
-		94391, // Tyrannical Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
 		]
 	],
 	[
@@ -952,12 +634,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		94453, // Tyrannical Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		94455, // Tyrannical Gladiator's Dragonhide Gloves
 		[
 			"Increases the damage done by Maim by 100% and increases the duration of Bear Hug by 1 sec.", // 61252 - https://www.wowhead.com/mop/spell=61252
@@ -979,65 +655,35 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		94525, // Stolen Relic of Zuldazar
 		[
 			"Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately 2.89 procs per minute)", // 138967 - https://www.wowhead.com/mop/spell=138967
-			"Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
-		]
-	],
-	[
-		94530, // Lightning-Imbued Chalice
-		[
-			"Your healing spells have a chance to grant you Infinite Power. Once you have accumulated 6 Infinite Power, you will instantly heal the most injured nearby party member for 10387. (Approximately 5.78 procs per minute)", // 139190 - https://www.wowhead.com/mop/spell=139190
+			"Consumes all Blessings of Zuldazar to shield the target, absorbing 9339 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
 		]
 	],
 	[
 		95763, // Stolen Relic of Zuldazar
 		[
 			"Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately 2.89 procs per minute)", // 138967 - https://www.wowhead.com/mop/spell=138967
-			"Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
-		]
-	],
-	[
-		95817, // Lightning-Imbued Chalice
-		[
-			"Your healing spells have a chance to grant you Infinite Power. Once you have accumulated 6 Infinite Power, you will instantly heal the most injured nearby party member for 10387. (Approximately 5.78 procs per minute)", // 139190 - https://www.wowhead.com/mop/spell=139190
+			"Consumes all Blessings of Zuldazar to shield the target, absorbing 7754 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
 		]
 	],
 	[
 		96135, // Stolen Relic of Zuldazar
 		[
 			"Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately 2.89 procs per minute)", // 138967 - https://www.wowhead.com/mop/spell=138967
-			"Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
-		]
-	],
-	[
-		96189, // Lightning-Imbued Chalice
-		[
-			"Your healing spells have a chance to grant you Infinite Power. Once you have accumulated 6 Infinite Power, you will instantly heal the most injured nearby party member for 10387. (Approximately 5.78 procs per minute)", // 139190 - https://www.wowhead.com/mop/spell=139190
+			"Consumes all Blessings of Zuldazar to shield the target, absorbing 9878 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
 		]
 	],
 	[
 		96507, // Stolen Relic of Zuldazar
 		[
 			"Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately 2.89 procs per minute)", // 138967 - https://www.wowhead.com/mop/spell=138967
-			"Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
-		]
-	],
-	[
-		96561, // Lightning-Imbued Chalice
-		[
-			"Your healing spells have a chance to grant you Infinite Power. Once you have accumulated 6 Infinite Power, you will instantly heal the most injured nearby party member for 10387. (Approximately 5.78 procs per minute)", // 139190 - https://www.wowhead.com/mop/spell=139190
+			"Consumes all Blessings of Zuldazar to shield the target, absorbing 10543 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
 		]
 	],
 	[
 		96879, // Stolen Relic of Zuldazar
 		[
 			"Your helpful spells have a chance to grant you a Blessing of Zuldazar, which stacks up to 6 times. (Approximately 2.89 procs per minute)", // 138967 - https://www.wowhead.com/mop/spell=138967
-			"Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
-		]
-	],
-	[
-		96933, // Lightning-Imbued Chalice
-		[
-			"Your healing spells have a chance to grant you Infinite Power. Once you have accumulated 6 Infinite Power, you will instantly heal the most injured nearby party member for 10387. (Approximately 5.78 procs per minute)", // 139190 - https://www.wowhead.com/mop/spell=139190
+			"Consumes all Blessings of Zuldazar to shield the target, absorbing 11149 damage per Blessing consumed. Lasts 15s.", // 138925 - https://www.wowhead.com/mop/spell=138925
 		]
 	],
 	[
@@ -1077,33 +723,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		98821, // Crafted Malevolent Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		98825, // Crafted Malevolent Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		98833, // Crafted Malevolent Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		98838, // Crafted Malevolent Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		98844, // Crafted Malevolent Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -1155,12 +777,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		98927, // Crafted Malevolent Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		99807, // Tyrannical Gladiator's Dreadplate Gauntlets
 		[
 			"Your Chains of Ice ability now generates an additional 10 Runic Power.", // 62458 - https://www.wowhead.com/mop/spell=62458
@@ -1185,33 +801,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		99848, // Tyrannical Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		99852, // Tyrannical Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		99860, // Tyrannical Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		99865, // Tyrannical Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		99871, // Tyrannical Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -1263,33 +855,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		99958, // Tyrannical Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		99989, // Tyrannical Gladiator's Mooncloth Gloves
 		[
 			"Reduces the cooldown of your Psychic Scream ability by 3 sec.", // 44297 - https://www.wowhead.com/mop/spell=44297
-		]
-	],
-	[
-		99992, // Tyrannical Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		100010, // Tyrannical Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		100013, // Tyrannical Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -1308,12 +876,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		100047, // Tyrannical Gladiator's Leather Gloves
 		[
 			"Increases the healing you receive from Recuperate by 1% every 3.0 sec.", // 61249 - https://www.wowhead.com/mop/spell=61249
-		]
-	],
-	[
-		100061, // Tyrannical Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
 		]
 	],
 	[
@@ -1350,12 +912,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		100121, // Tyrannical Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		100123, // Tyrannical Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
 		]
 	],
 	[
@@ -1401,33 +957,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		100320, // Grievous Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		100328, // Grievous Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		100343, // Grievous Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		100353, // Grievous Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		100365, // Grievous Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -1479,33 +1011,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		100522, // Grievous Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		100558, // Grievous Gladiator's Mooncloth Gloves
 		[
 			"Reduces the cooldown of your Psychic Scream ability by 3 sec.", // 44297 - https://www.wowhead.com/mop/spell=44297
-		]
-	],
-	[
-		100561, // Grievous Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		100570, // Grievous Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		100573, // Grievous Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -1524,12 +1032,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		100607, // Grievous Gladiator's Leather Gloves
 		[
 			"Increases the healing you receive from Recuperate by 1% every 3.0 sec.", // 61249 - https://www.wowhead.com/mop/spell=61249
-		]
-	],
-	[
-		100621, // Grievous Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
 		]
 	],
 	[
@@ -1569,12 +1071,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		100683, // Grievous Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		100685, // Grievous Gladiator's Dragonhide Gloves
 		[
 			"Increases the damage done by Maim by 100% and increases the duration of Bear Hug by 1 sec.", // 61252 - https://www.wowhead.com/mop/spell=61252
@@ -1595,31 +1091,31 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 	[
 		101038, // Springrain Idol of Wisdom
 		[
-			"Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
+			"Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
 		]
 	],
 	[
 		101102, // Mistdancer Idol of Wisdom
 		[
-			"Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
+			"Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
 		]
 	],
 	[
 		101135, // Sunsoul Idol of Wisdom
 		[
-			"Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
+			"Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
 		]
 	],
 	[
 		101179, // Communal Idol of Wisdom
 		[
-			"Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
+			"Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
 		]
 	],
 	[
 		101247, // Streamtalker Idol of Wisdom
 		[
-			"Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
+			"Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)", // 126467 - https://www.wowhead.com/mop/spell=126467
 		]
 	],
 	[
@@ -1629,45 +1125,15 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		102294, // Nazgrim's Burnished Insignia
-		[
-			"Your heals have a 0.1% chance to trigger Multistrike, which causes instant additional healing to your target equal to 33% of the original healing done.", // 146176 - https://www.wowhead.com/mop/spell=146176
-		]
-	],
-	[
 		102296, // Rook's Unlucky Talisman
 		[
-			"Reduces damage taken from creature area of effect attacks by 2585% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
-		]
-	],
-	[
-		102304, // Thok's Acid-Grooved Tooth
-		[
-			"Your heals have a 0.01% chance to Cleave, dealing the same healing to up to 5 other nearby targets.", // 148233 - https://www.wowhead.com/mop/spell=148233
+			"Reduces damage taken from creature area of effect attacks by 33% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
 		]
 	],
 	[
 		102615, // Prideful Gladiator's Mooncloth Gloves
 		[
 			"Reduces the cooldown of your Psychic Scream ability by 3 sec.", // 44297 - https://www.wowhead.com/mop/spell=44297
-		]
-	],
-	[
-		102618, // Prideful Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		102627, // Prideful Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		102630, // Prideful Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -1686,12 +1152,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		102663, // Prideful Gladiator's Leather Gloves
 		[
 			"Increases the healing you receive from Recuperate by 1% every 3.0 sec.", // 61249 - https://www.wowhead.com/mop/spell=61249
-		]
-	],
-	[
-		102675, // Prideful Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
 		]
 	],
 	[
@@ -1731,12 +1191,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		102737, // Prideful Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		102739, // Prideful Gladiator's Dragonhide Gloves
 		[
 			"Increases the damage done by Maim by 100% and increases the duration of Bear Hug by 1 sec.", // 61252 - https://www.wowhead.com/mop/spell=61252
@@ -1761,24 +1215,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		102815, // Grievous Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
-		102824, // Grievous Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		102827, // Grievous Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
-		]
-	],
-	[
 		102847, // Grievous Gladiator's Dreadplate Gauntlets
 		[
 			"Your Chains of Ice ability now generates an additional 10 Runic Power.", // 62458 - https://www.wowhead.com/mop/spell=62458
@@ -1794,12 +1230,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		102860, // Grievous Gladiator's Leather Gloves
 		[
 			"Increases the healing you receive from Recuperate by 1% every 3.0 sec.", // 61249 - https://www.wowhead.com/mop/spell=61249
-		]
-	],
-	[
-		102872, // Grievous Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
 		]
 	],
 	[
@@ -1836,12 +1266,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		102932, // Grievous Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		102934, // Grievous Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
 		]
 	],
 	[
@@ -1887,33 +1311,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		103220, // Grievous Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		103224, // Grievous Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		103232, // Grievous Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		103237, // Grievous Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		103243, // Grievous Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -1965,12 +1365,6 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		103329, // Grievous Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		103377, // Prideful Gladiator's Dreadplate Gauntlets
 		[
 			"Your Chains of Ice ability now generates an additional 10 Runic Power.", // 62458 - https://www.wowhead.com/mop/spell=62458
@@ -1995,33 +1389,9 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		103417, // Prideful Gladiator's Chain Gauntlets
-		[
-			"Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.", // 61255 - https://www.wowhead.com/mop/spell=61255
-		]
-	],
-	[
 		103421, // Prideful Gladiator's Silk Handguards
 		[
 			"Reduces the global cooldown triggered by Blink by 0.5 sec.", // 44301 - https://www.wowhead.com/mop/spell=44301
-		]
-	],
-	[
-		103429, // Prideful Gladiator's Ironskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		103434, // Prideful Gladiator's Copperskin Gloves
-		[
-			"All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.", // 124489 - https://www.wowhead.com/mop/spell=124489
-		]
-	],
-	[
-		103440, // Prideful Gladiator's Scaled Gauntlets
-		[
-			"Increases the range of your Judgment by 10 yards.", // 61776 - https://www.wowhead.com/mop/spell=61776
 		]
 	],
 	[
@@ -2073,111 +1443,39 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		]
 	],
 	[
-		103526, // Prideful Gladiator's Plate Gauntlets
-		[
-			"Reduces the rage cost of your Hamstring ability by -3.0.", // 22778 - https://www.wowhead.com/mop/spell=22778
-		]
-	],
-	[
 		104313, // Golden Moss
 		[
 			"May cause extra gold to drop whenever you kill a target that yields experience or honor.", // 148557 - https://www.wowhead.com/mop/spell=148557
 		]
 	],
 	[
-		104321, // Captain Zvezdan's Lost Leg
-		[
-			"", // 148596 - https://www.wowhead.com/mop/spell=148596
-		]
-	],
-	[
 		104442, // Rook's Unlucky Talisman
 		[
-			"Reduces damage taken from creature area of effect attacks by 2585% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
-		]
-	],
-	[
-		104553, // Nazgrim's Burnished Insignia
-		[
-			"Your heals have a 0.1% chance to trigger Multistrike, which causes instant additional healing to your target equal to 33% of the original healing done.", // 146176 - https://www.wowhead.com/mop/spell=146176
-		]
-	],
-	[
-		104611, // Thok's Acid-Grooved Tooth
-		[
-			"Your heals have a 0.01% chance to Cleave, dealing the same healing to up to 5 other nearby targets.", // 148233 - https://www.wowhead.com/mop/spell=148233
+			"Reduces damage taken from creature area of effect attacks by 37% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
 		]
 	],
 	[
 		104691, // Rook's Unlucky Talisman
 		[
-			"Reduces damage taken from creature area of effect attacks by 2585% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
-		]
-	],
-	[
-		104802, // Nazgrim's Burnished Insignia
-		[
-			"Your heals have a 0.1% chance to trigger Multistrike, which causes instant additional healing to your target equal to 33% of the original healing done.", // 146176 - https://www.wowhead.com/mop/spell=146176
-		]
-	],
-	[
-		104860, // Thok's Acid-Grooved Tooth
-		[
-			"Your heals have a 0.01% chance to Cleave, dealing the same healing to up to 5 other nearby targets.", // 148233 - https://www.wowhead.com/mop/spell=148233
+			"Reduces damage taken from creature area of effect attacks by 29% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
 		]
 	],
 	[
 		104940, // Rook's Unlucky Talisman
 		[
-			"Reduces damage taken from creature area of effect attacks by 2585% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
-		]
-	],
-	[
-		105051, // Nazgrim's Burnished Insignia
-		[
-			"Your heals have a 0.1% chance to trigger Multistrike, which causes instant additional healing to your target equal to 33% of the original healing done.", // 146176 - https://www.wowhead.com/mop/spell=146176
-		]
-	],
-	[
-		105109, // Thok's Acid-Grooved Tooth
-		[
-			"Your heals have a 0.01% chance to Cleave, dealing the same healing to up to 5 other nearby targets.", // 148233 - https://www.wowhead.com/mop/spell=148233
+			"Reduces damage taken from creature area of effect attacks by 26% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
 		]
 	],
 	[
 		105189, // Rook's Unlucky Talisman
 		[
-			"Reduces damage taken from creature area of effect attacks by 2585% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
-		]
-	],
-	[
-		105300, // Nazgrim's Burnished Insignia
-		[
-			"Your heals have a 0.1% chance to trigger Multistrike, which causes instant additional healing to your target equal to 33% of the original healing done.", // 146176 - https://www.wowhead.com/mop/spell=146176
-		]
-	],
-	[
-		105358, // Thok's Acid-Grooved Tooth
-		[
-			"Your heals have a 0.01% chance to Cleave, dealing the same healing to up to 5 other nearby targets.", // 148233 - https://www.wowhead.com/mop/spell=148233
+			"Reduces damage taken from creature area of effect attacks by 35% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
 		]
 	],
 	[
 		105438, // Rook's Unlucky Talisman
 		[
-			"Reduces damage taken from creature area of effect attacks by 2585% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
-		]
-	],
-	[
-		105549, // Nazgrim's Burnished Insignia
-		[
-			"Your heals have a 0.1% chance to trigger Multistrike, which causes instant additional healing to your target equal to 33% of the original healing done.", // 146176 - https://www.wowhead.com/mop/spell=146176
-		]
-	],
-	[
-		105607, // Thok's Acid-Grooved Tooth
-		[
-			"Your heals have a 0.01% chance to Cleave, dealing the same healing to up to 5 other nearby targets.", // 148233 - https://www.wowhead.com/mop/spell=148233
+			"Reduces damage taken from creature area of effect attacks by 39% for 15s.", // 146343 - https://www.wowhead.com/mop/spell=146343
 		]
 	],
 	[
@@ -2213,4 +1511,22 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 ])
 
 export const MISSING_ENCHANT_EFFECTS = new Map<number, string[]>([
+	[
+		4698, // Incendiary Fireworks Launcher
+		[
+			"Incendiary Fireworks Launcher", // 109076 - https://www.wowhead.com/mop/spell=109076
+		]
+	],
+	[
+		4750, // Spinal Healing Injector
+		[
+			"Spinal Healing Injector", // 82184 - https://www.wowhead.com/mop/spell=82184
+		]
+	],
+	[
+		5001, // Ghost Iron Shield Spike
+		[
+			"Attaches a ghost iron spike to your shield that sometimes deals 209 damage when you block with it.\n\n Attaching a ghost iron spike to your shield causes it to become soulbound.", // 131465 - https://www.wowhead.com/mop/spell=131465
+		]
+	],
 ])
