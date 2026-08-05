@@ -75,8 +75,7 @@ ui/core/index.ts: $(TS_CORE_SRC)
 clean:
 	rm -rf ui/core/proto/*.ts \
 	  sim/core/proto/*.pb.go \
-	  wowsimmop \
-	  wowsimmop.exe \
+	  wowsimmop$(BIN_EXT) \
 	  wowsimmop-windows.exe \
 	  wowsimmop-amd64-darwin \
 	  wowsimmop-arm64-darwin \
