@@ -75,23 +75,25 @@ func (s ConsumableClass) ToProto() proto.ConsumableType {
 	return proto.ConsumableType_ConsumableTypeUnknown
 }
 
+// A consumable's effects that restore a resource rather than grant a stat, which the sim wires
+// up separately.
+var consumableRestoreEffectTypes = map[SpellEffectType]bool{
+	E_HEAL:     true,
+	E_ENERGIZE: true,
+}
+
 func (consumable *Consumable) GetNonStatEffectIds() []int32 {
 	var effectIds []int32
 
-	statAuraTypes := map[SpellEffectType]bool{
-		E_HEAL:     true,
-		E_ENERGIZE: true,
-	}
 	slices.Sort(consumable.ItemEffects)
 	for _, effectID := range consumable.ItemEffects {
 		effect := GetItemEffect(effectID)
-		if effect.ID != 0 {
-			if spellEffects, ok := dbcInstance.SpellEffects[effect.SpellID]; ok {
-				for _, spellEffect := range spellEffects {
-					if statAuraTypes[spellEffect.EffectType] {
-						effectIds = append(effectIds, int32(spellEffect.ID))
-					}
-				}
+		if effect.ID == 0 {
+			continue
+		}
+		for _, spellEffect := range GetDBC().SpellEffectsInOrder(effect.SpellID) {
+			if consumableRestoreEffectTypes[spellEffect.EffectType] {
+				effectIds = append(effectIds, int32(spellEffect.ID))
 			}
 		}
 	}
@@ -102,12 +104,12 @@ func (consumable *Consumable) GetStatModifiers() *stats.Stats {
 	stats := &stats.Stats{}
 	for _, effectID := range consumable.ItemEffects {
 		effect := GetItemEffect(effectID)
-		if effect.ID != 0 {
-			if spellEffects, ok := dbcInstance.SpellEffects[effect.SpellID]; ok {
-				for _, spellEffect := range spellEffects {
-					stat := spellEffect.ParseStatEffect(spellEffect.Coefficient != 0, 0)
-					stats.AddInplace(stat)
-				}
+		if effect.ID == 0 {
+			continue
+		}
+		for _, spellEffect := range GetDBC().SpellEffectsInOrder(effect.SpellID) {
+			if stat, ok := spellEffect.ParseStatEffect(spellEffect.Coefficient != 0, 0); ok {
+				stats.AddInplace(&stat)
 			}
 		}
 	}

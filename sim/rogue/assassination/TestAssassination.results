@@ -625,8 +625,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 110522.72989
-  tps: 77705.56994
+  dps: 110572.89826
+  tps: 77695.43338
  }
 }
 dps_results: {
@@ -1289,6 +1289,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestAssassination-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 103874.26188
+  tps: 73010.94865
+ }
+}
+dps_results: {
  key: "TestAssassination-AllItems-Nine-TailBattlegear"
  value: {
   dps: 121357.01057
@@ -1501,8 +1508,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 116903.03277
-  tps: 82017.23973
+  dps: 118382.74079
+  tps: 83062.0744
  }
 }
 dps_results: {
@@ -1620,8 +1627,8 @@ dps_results: {
 dps_results: {
  key: "TestAssassination-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 114578.79258
-  tps: 80341.3858
+  dps: 115131.00738
+  tps: 80718.62918
  }
 }
 dps_results: {

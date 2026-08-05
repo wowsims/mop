@@ -18,6 +18,10 @@ var MapArmorSubclassToArmorType = map[int]proto.ArmorType{
 	0:                           proto.ArmorType_ArmorTypeUnknown,
 }
 
+// Maps a SpellEffect's MiscValue for A_MOD_STAT, which is a unit stat index
+// (0 = strength).
+// Not interchangeable with MapBonusStatIndexToStat,
+// which reads the wider item stat index where 0 means mana and 4 means strength.
 func MapMainStatToStat(index int) (proto.Stat, bool) {
 	switch index {
 	case 0:
@@ -33,6 +37,10 @@ func MapMainStatToStat(index int) (proto.Stat, bool) {
 	}
 	return 0, false
 }
+
+// Maps the item stat index used by ItemSparse.StatType,
+// SpellItemEnchantment.EffectArg and random suffix effect args.
+// See MapMainStatToStat for the unrelated unit stat index that A_MOD_STAT uses.
 func MapBonusStatIndexToStat(index int) (proto.Stat, bool) {
 	switch index {
 	case 0: // Mana
@@ -229,12 +237,10 @@ type EnchantMetaType struct {
 	WeaponType proto.WeaponType
 }
 
+// A resistance effect only maps to a stat for the physical school; MoP has no per-school
+// resistance stats, so fire, arcane, nature, frost and shadow are deliberately absent rather
+// than present-but-unmapped.
 var SpellSchoolToStat = map[SpellSchool]proto.Stat{
-	FIRE:     -1,
-	ARCANE:   -1,
-	NATURE:   -1,
-	FROST:    -1,
-	SHADOW:   -1,
 	PHYSICAL: proto.Stat_StatArmor,
 }
 var MapInventoryTypeToEnchantMetaType = map[InventoryTypeFlag]EnchantMetaType{
@@ -285,62 +291,44 @@ var MapPowerTypeEnumToResourceType = map[int32]proto.ResourceType{
 }
 
 func ClassNameFromDBC(dbc DbcClass) string {
-	switch dbc.ID {
-	case 1:
-		return "Warrior"
-	case 2:
-		return "Paladin"
-	case 3:
-		return "Hunter"
-	case 4:
-		return "Rogue"
-	case 5:
-		return "Priest"
-	case 6:
-		return "Death_Knight"
-	case 7:
-		return "Shaman"
-	case 8:
-		return "Mage"
-	case 9:
-		return "Warlock"
-	case 10:
-		return "Monk"
-	case 11:
-		return "Druid"
-	default:
-		return "Unknown"
+	if class, ok := ClassByID(dbc.ID); ok {
+		return class.Name
 	}
+	return "Unknown"
 }
-func getMatchingRatingMods(value int) []RatingModType {
-	allMods := []RatingModType{
-		RATING_MOD_DODGE,
-		RATING_MOD_PARRY,
-		RATING_MOD_HIT_MELEE,
-		RATING_MOD_HIT_RANGED,
-		RATING_MOD_HIT_SPELL,
-		RATING_MOD_CRIT_MELEE,
-		RATING_MOD_CRIT_RANGED,
-		RATING_MOD_CRIT_SPELL,
-		RATING_MOD_MULTISTRIKE,
-		RATING_MOD_READINESS,
-		RATING_MOD_SPEED,
-		RATING_MOD_RESILIENCE,
-		RATING_MOD_LEECH,
-		RATING_MOD_HASTE_MELEE,
-		RATING_MOD_HASTE_RANGED,
-		RATING_MOD_HASTE_SPELL,
-		RATING_MOD_AVOIDANCE,
-		RATING_MOD_EXPERTISE,
-		RATING_MOD_MASTERY,
-		RATING_MOD_PVP_POWER,
-		RATING_MOD_VERS_DAMAGE,
-		RATING_MOD_VERS_HEAL,
-		RATING_MOD_VERS_MITIG,
-	}
 
+// Every bit an A_MOD_RATING mask can carry, in a fixed order so the mods a mask decomposes into
+// come out the same way every run. Bits MoP does not have are listed too: they still appear in
+// the data, and RatingModToStat is what decides they map to nothing.
+var allRatingMods = []RatingModType{
+	RATING_MOD_DODGE,
+	RATING_MOD_PARRY,
+	RATING_MOD_HIT_MELEE,
+	RATING_MOD_HIT_RANGED,
+	RATING_MOD_HIT_SPELL,
+	RATING_MOD_CRIT_MELEE,
+	RATING_MOD_CRIT_RANGED,
+	RATING_MOD_CRIT_SPELL,
+	RATING_MOD_MULTISTRIKE,
+	RATING_MOD_READINESS,
+	RATING_MOD_SPEED,
+	RATING_MOD_RESILIENCE,
+	RATING_MOD_LEECH,
+	RATING_MOD_HASTE_MELEE,
+	RATING_MOD_HASTE_RANGED,
+	RATING_MOD_HASTE_SPELL,
+	RATING_MOD_AVOIDANCE,
+	RATING_MOD_EXPERTISE,
+	RATING_MOD_MASTERY,
+	RATING_MOD_PVP_POWER,
+	RATING_MOD_VERS_DAMAGE,
+	RATING_MOD_VERS_HEAL,
+	RATING_MOD_VERS_MITIG,
+}
+
+func getMatchingRatingMods(value int) []RatingModType {
 	var result []RatingModType
-	for _, mod := range allMods {
+	for _, mod := range allRatingMods {
 		if value&int(mod) != 0 {
 			result = append(result, mod)
 		}
@@ -348,6 +336,9 @@ func getMatchingRatingMods(value int) []RatingModType {
 	return result
 }
 
+// The rating bits that map onto a stat the sim tracks. Multistrike, readiness, speed, leech,
+// avoidance and the three versatility bits exist in the rating mask but not in MoP, so they are
+// absent here; read this map with the two-value form, since the zero proto.Stat is Strength.
 var RatingModToStat = map[RatingModType]proto.Stat{
 	RATING_MOD_DODGE:        proto.Stat_StatDodgeRating,
 	RATING_MOD_PARRY:        proto.Stat_StatParryRating,
@@ -357,41 +348,87 @@ var RatingModToStat = map[RatingModType]proto.Stat{
 	RATING_MOD_CRIT_MELEE:   proto.Stat_StatCritRating,
 	RATING_MOD_CRIT_RANGED:  proto.Stat_StatCritRating,
 	RATING_MOD_CRIT_SPELL:   proto.Stat_StatCritRating,
-	RATING_MOD_MULTISTRIKE:  -1,
-	RATING_MOD_READINESS:    -1,
-	RATING_MOD_SPEED:        -1,
 	RATING_MOD_RESILIENCE:   proto.Stat_StatPvpResilienceRating,
-	RATING_MOD_LEECH:        -1,
 	RATING_MOD_HASTE_MELEE:  proto.Stat_StatHasteRating,
 	RATING_MOD_HASTE_RANGED: proto.Stat_StatHasteRating,
 	RATING_MOD_HASTE_SPELL:  proto.Stat_StatHasteRating,
-	RATING_MOD_AVOIDANCE:    -1,
 	RATING_MOD_EXPERTISE:    proto.Stat_StatExpertiseRating,
 	RATING_MOD_MASTERY:      proto.Stat_StatMasteryRating,
 	RATING_MOD_PVP_POWER:    proto.Stat_StatPvpPowerRating,
-
-	RATING_MOD_VERS_DAMAGE: -1,
-	RATING_MOD_VERS_HEAL:   -1,
-	RATING_MOD_VERS_MITIG:  -1,
 }
 
+// One row per DBC class, and the single source of truth for every class-keyed lookup here.
+//
+// ID is the ChrClasses ID. SpellEffect.ScalingType and the SpellScaling.txt column order both
+// use it, so it doubles as the scaling index. SpellClassSet is the unrelated SpellClassOptions
+// family the tooltip parser keys on. Name is the form the proto and talent generators emit.
 type DbcClass struct {
-	ProtoClass proto.Class
-	ID         int
+	ProtoClass    proto.Class
+	ID            int
+	SpellClassSet int32
+	Name          string
 }
 
 var Classes = []DbcClass{
-	{proto.Class_ClassWarrior, 1},
-	{proto.Class_ClassPaladin, 2},
-	{proto.Class_ClassHunter, 3},
-	{proto.Class_ClassRogue, 4},
-	{proto.Class_ClassPriest, 5},
-	{proto.Class_ClassDeathKnight, 6},
-	{proto.Class_ClassShaman, 7},
-	{proto.Class_ClassMage, 8},
-	{proto.Class_ClassWarlock, 9},
-	{proto.Class_ClassMonk, 10},
-	{proto.Class_ClassDruid, 11},
+	{proto.Class_ClassWarrior, 1, 4, "Warrior"},
+	{proto.Class_ClassPaladin, 2, 10, "Paladin"},
+	{proto.Class_ClassHunter, 3, 9, "Hunter"},
+	{proto.Class_ClassRogue, 4, 8, "Rogue"},
+	{proto.Class_ClassPriest, 5, 6, "Priest"},
+	{proto.Class_ClassDeathKnight, 6, 15, "Death_Knight"},
+	{proto.Class_ClassShaman, 7, 11, "Shaman"},
+	{proto.Class_ClassMage, 8, 3, "Mage"},
+	{proto.Class_ClassWarlock, 9, 5, "Warlock"},
+	{proto.Class_ClassMonk, 10, 53, "Monk"},
+	{proto.Class_ClassDruid, 11, 7, "Druid"},
+}
+
+// The generic scaling curves SpellScaling.txt carries after the class columns, in column order.
+// A SpellEffect addresses them with a negative ScalingType: -1 is the first.
+var scalingExtraClasses = []proto.Class{
+	proto.Class_ClassExtra1,
+	proto.Class_ClassExtra2,
+	proto.Class_ClassExtra3,
+	proto.Class_ClassExtra4,
+	proto.Class_ClassExtra5,
+	proto.Class_ClassExtra6,
+}
+
+func ClassByID(id int) (DbcClass, bool) {
+	for _, class := range Classes {
+		if class.ID == id {
+			return class, true
+		}
+	}
+	return DbcClass{}, false
+}
+
+func ClassBySpellClassSet(spellClassSet int32) (DbcClass, bool) {
+	for _, class := range Classes {
+		if class.SpellClassSet == spellClassSet {
+			return class, true
+		}
+	}
+	return DbcClass{}, false
+}
+
+// Resolves the negative ScalingType of a generic scaling curve.
+func ScalingExtraClass(scalingType int) (proto.Class, bool) {
+	index := -scalingType - 1
+	if index < 0 || index >= len(scalingExtraClasses) {
+		return proto.Class_ClassUnknown, false
+	}
+	return scalingExtraClasses[index], true
+}
+
+// SpellScalingColumns returns the SpellScaling.txt columns after the leading level column, in
+// file order.
+func SpellScalingColumns() []proto.Class {
+	columns := make([]proto.Class, 0, len(Classes)+len(scalingExtraClasses))
+	for _, class := range Classes {
+		columns = append(columns, class.ProtoClass)
+	}
+	return append(columns, scalingExtraClasses...)
 }
 
 // SpecByID maps the ChrSpecialization.DB2 ID to proto.Spec

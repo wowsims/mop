@@ -600,8 +600,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 433464.68826
-  tps: 319458.38715
+  dps: 433461.15391
+  tps: 319464.57768
  }
 }
 dps_results: {
@@ -1229,6 +1229,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestArms-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 400859.84935
+  tps: 296736.8054
+ }
+}
+dps_results: {
  key: "TestArms-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 400859.84935
@@ -1369,6 +1376,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestArms-AllItems-PridefulGladiator'sPlateGauntlets-103526"
+ value: {
+  dps: 397029.48146
+  tps: 289571.55452
+ }
+}
+dps_results: {
  key: "TestArms-AllItems-Primordius'TalismanofRage-96873"
  value: {
   dps: 419530.38467
@@ -1455,8 +1469,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 400071.57995
-  tps: 296031.59697
+  dps: 400711.63605
+  tps: 296615.08295
  }
 }
 dps_results: {
@@ -1581,8 +1595,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 433657.12772
-  tps: 318648.07978
+  dps: 433593.46401
+  tps: 320381.10243
  }
 }
 dps_results: {
@@ -2008,8 +2022,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Average-Default"
  value: {
-  dps: 439794.28811
-  tps: 323811.01396
+  dps: 439793.89828
+  tps: 323810.95023
  }
 }
 dps_results: {
@@ -2036,8 +2050,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.22665332716e+06
-  tps: 1.05396312378e+06
+  dps: 1.22455045294e+06
+  tps: 1.05190469166e+06
  }
 }
 dps_results: {
@@ -2057,8 +2071,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.57959770169e+06
-  tps: 1.97843522288e+06
+  dps: 2.5794958021e+06
+  tps: 1.97767784108e+06
  }
 }
 dps_results: {
@@ -2078,8 +2092,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.20675056195e+06
-  tps: 1.66134045196e+06
+  dps: 2.20452871331e+06
+  tps: 1.65974193295e+06
  }
 }
 dps_results: {
@@ -2099,8 +2113,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.46009854652e+06
-  tps: 1.29397234971e+06
+  dps: 1.45789092679e+06
+  tps: 1.29050696926e+06
  }
 }
 dps_results: {
@@ -2141,8 +2155,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.56849909553e+06
-  tps: 1.97056273998e+06
+  dps: 2.56145900744e+06
+  tps: 1.96426448986e+06
  }
 }
 dps_results: {
@@ -2162,8 +2176,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.19521008385e+06
-  tps: 1.65275842355e+06
+  dps: 2.19806423918e+06
+  tps: 1.65598288717e+06
  }
 }
 dps_results: {

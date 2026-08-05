@@ -212,91 +212,6 @@ func init() {
 		character.ItemSwap.RegisterWeaponEnchantBuff(shield.Aura, 4445)
 	})
 
-	// Permanently enchants a melee weapon to sometimes increase your dodge by 1650 for 7s when dealing melee
-	// damage.
-	core.NewEnchantEffect(4446, func(agent core.Agent, _ proto.ItemLevelState) {
-		character := agent.GetCharacter()
-		duration := time.Second * 7
-
-		aura := character.NewTemporaryStatsAura(
-			"River's Song",
-			core.ActionID{SpellID: 116660}.WithTag(1),
-			stats.Stats{stats.DodgeRating: 1650},
-			duration,
-		)
-
-		character.MakeProcTriggerAura(core.ProcTrigger{
-			Name:               "Enchant Weapon - River's Song",
-			Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-			RequireDamageDealt: true,
-			ActionID:           core.ActionID{SpellID: 104441},
-			ICD:                time.Millisecond * 250,
-			DPM: character.NewRPPMProcManager(
-				4446,
-				true,
-				false,
-				core.ProcMaskDirect|core.ProcMaskProc,
-				core.RPPMConfig{
-					PPM:         3.67,
-					Coefficient: 1.0,
-				}.WithHasteMod(),
-			),
-			Outcome: core.OutcomeLanded,
-			Handler: func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-				aura.Activate(sim)
-			},
-		})
-
-		character.ItemSwap.RegisterWeaponEnchantBuff(aura.Aura, 4446)
-	})
-
-	// Permanently enchants a melee weapon to sometimes inflict 3000 additional Elemental damage
-	// when dealing damage with spells and melee attacks.
-	core.NewEnchantEffect(4443, func(agent core.Agent, _ proto.ItemLevelState) {
-		character := agent.GetCharacter()
-
-		elementalForceSpell := character.RegisterSpell(core.SpellConfig{
-			ActionID:    core.ActionID{SpellID: 116616},
-			SpellSchool: core.SpellSchoolElemental,
-			Flags:       core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
-			ProcMask:    core.ProcMaskEmpty,
-
-			DamageMultiplier: 1,
-			CritMultiplier:   character.DefaultCritMultiplier(),
-			ThreatMultiplier: 1,
-
-			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				baseDamage := sim.Roll(2775, 2775+450)
-				spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeMagicHitAndCrit)
-			},
-		})
-
-		character.MakeProcTriggerAura(core.ProcTrigger{
-			Name:               "Enchant Weapon - Elemental Force",
-			Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-			RequireDamageDealt: true,
-			ActionID:           core.ActionID{SpellID: 104428},
-
-			DPM: character.NewRPPMProcManager(
-				4443,
-				true,
-				false,
-				core.ProcMaskDirect|core.ProcMaskProc,
-				core.RPPMConfig{
-					PPM:         9.17,
-					Coefficient: 1.0,
-				}.WithHasteMod(),
-			),
-
-			Outcome:            core.OutcomeLanded,
-			TriggerImmediately: true,
-
-			Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
-				elementalForceSpell.Cast(sim, result.Target)
-			},
-		})
-	})
-
 	// Synapse Springs
 	core.NewEnchantEffect(4898, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
@@ -328,32 +243,6 @@ func init() {
 			})
 	})
 
-	// Phase Fingers
-	core.NewEnchantEffect(4697, func(agent core.Agent, _ proto.ItemLevelState) {
-		character := agent.GetCharacter()
-		if !character.HasProfession(proto.Profession_Engineering) {
-			return
-		}
-
-		core.RegisterTemporaryStatsOnUseCD(character,
-			"Phase Fingers",
-			stats.Stats{stats.DodgeRating: 2880},
-			10*time.Second,
-			core.SpellConfig{
-				ActionID: core.ActionID{SpellID: 108788},
-				Cast: core.CastConfig{
-					CD: core.Cooldown{
-						Timer:    character.NewTimer(),
-						Duration: time.Minute,
-					},
-					SharedCD: core.Cooldown{
-						Timer:    character.GetDefensiveTrinketCD(),
-						Duration: 10 * time.Second,
-					},
-				},
-			})
-	})
-
 	// Nitro Boosts
 	core.NewEnchantEffect(4223, func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
@@ -376,6 +265,9 @@ func init() {
 			RelatedSelfBuff: buffAura,
 
 			Cast: core.CastConfig{
+				DefaultCast: core.Cast{
+					NonEmpty: true,
+				},
 				CD: core.Cooldown{
 					Timer:    character.NewTimer(),
 					Duration: time.Minute * 3,

@@ -66,7 +66,7 @@ func (arcane *ArcaneMage) registerArcaneMissilesSpell() {
 				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
 					arcane.ArcaneChargesAura.Activate(sim)
 					arcane.ArcaneChargesAura.AddStack(sim)
-					arcane.ExtendGCDUntil(sim, sim.CurrentTime+arcane.ReactionTime)
+					arcane.ExtendGCDUntil(sim, max(arcane.NextGCDAt(), sim.CurrentTime+arcane.ReactionTime))
 				},
 				OnReset: func(aura *core.Aura, sim *core.Simulation) {
 					arcane.ArcaneChargesAura.Deactivate(sim)
