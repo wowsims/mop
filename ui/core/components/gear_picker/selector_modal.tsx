@@ -560,21 +560,22 @@ export default class SelectorModal extends BaseModal {
 		const itemUpgrades = equippedItem.getUpgrades();
 		const itemUpgradesAsEntries = Object.entries(itemUpgrades);
 		const numberOfUpgrades = itemUpgradesAsEntries.length - 1;
+		const baseIlvl = itemUpgrades[ItemLevelState.Base].ilvl;
 
 		this.addTab<ItemLevelState>({
 			id: sanitizeId(`${this.options.id}-${SelectorModalTabs.Upgrades}`),
 			label: SelectorModalTabs.Upgrades,
 			gearData,
-			itemData: itemUpgradesAsEntries.map(([upgradeStepString, upgradeData], index) => {
+			itemData: itemUpgradesAsEntries.map(([upgradeStepString, upgradeData]) => {
 				const upgradeStep = Number(upgradeStepString) as ItemLevelState;
-				const upgradeItem = equippedItem.withUpgrade(upgradeStep);
 				return {
 					item: Number(upgradeStep),
 					id: Number(upgradeStep),
 					actionId: ActionId.fromItemId(itemProto.id, 0, equippedItem._randomSuffix?.id, 0, upgradeStep),
 					name: (
 						<>
-							{index > 0 ? <>+ {upgradeItem.ilvlFromPrevious * index}</> : <>Base</>}{' '}
+							{/* Steps are not evenly spaced, so read the gain straight off the step's ilvl. */}
+							{upgradeStep > ItemLevelState.Base ? <>+ {upgradeData.ilvl - baseIlvl}</> : <>Base</>}{' '}
 							<div className="selector-modal-list-item-upgrade-step-container ms-2">{`(${upgradeStep}/${numberOfUpgrades})`}</div>
 						</>
 					) as HTMLElement,

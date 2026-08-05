@@ -118,17 +118,22 @@ func (item *Item) ToScaledUIItem(itemLevel int) *proto.UIItem {
 	return uiItem
 }
 
-// AddUpgradeSteps appends additional upgrade steps to an already-built UIItem's
-// ScalingOptions, continuing from the highest existing upgrade step and reusing
-// the same ilvl increment between steps. It no-ops for items that have no
-// upgrade steps (so the upgrade disallow list is already respected) and never
-// exceeds ItemLevelState_UpgradeStepFour.
-func (item *Item) AddUpgradeSteps(uiItem *proto.UIItem, additionalSteps int) {
-	base, ok := uiItem.ScalingOptions[int32(proto.ItemLevelState_Base)]
-	if !ok {
-		return
-	}
+// Ilvl gained per additional upgrade step. Tier (set bonus) pieces gain less
+// than the rest of the gear, e.g. a heroic tier piece tops out at
+// 566 + 4 + 4 + 3 + 3 = 580 while a heroic non-tier piece reaches
+// 566 + 7 + 7 + 4 + 4 = 588.
+const (
+	TierUpgradeStepIncrement    = 3
+	NonTierUpgradeStepIncrement = 4
+)
 
+// AddUpgradeSteps appends additional upgrade steps to an already-built UIItem's
+// ScalingOptions, continuing from the highest existing upgrade step. The added
+// steps use their own ilvl increment (see above) instead of the one the earlier
+// steps used. It no-ops for items that have no upgrade steps (so the upgrade
+// disallow list is already respected) and never exceeds
+// ItemLevelState_UpgradeStepFour.
+func (item *Item) AddUpgradeSteps(uiItem *proto.UIItem, additionalSteps int) {
 	highestStep := int32(proto.ItemLevelState_Base)
 	for state := range uiItem.ScalingOptions {
 		if state > highestStep {
@@ -140,7 +145,10 @@ func (item *Item) AddUpgradeSteps(uiItem *proto.UIItem, additionalSteps int) {
 	}
 
 	top := uiItem.ScalingOptions[highestStep]
-	stepIncrement := (top.Ilvl - base.Ilvl) / highestStep
+	stepIncrement := int32(NonTierUpgradeStepIncrement)
+	if item.ItemSetId > 0 {
+		stepIncrement = TierUpgradeStepIncrement
+	}
 
 	for i := int32(1); i <= int32(additionalSteps); i++ {
 		step := highestStep + i

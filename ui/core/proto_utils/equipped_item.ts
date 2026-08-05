@@ -155,11 +155,6 @@ export class EquippedItem {
 	get ilvl(): number {
 		return this.item.scalingOptions[this.upgrade].ilvl;
 	}
-	// Returns the ilvl difference from the previous upgrade step
-	get ilvlFromPrevious(): number {
-		if (this.upgrade < 1) return 0;
-		return this.item.scalingOptions[this.upgrade].ilvl - this.item.scalingOptions[this.upgrade - 1].ilvl;
-	}
 	// Returns the ilvl difference from the base item level
 	get ilvlFromBase(): number {
 		if (this.upgrade < 1) return 0;
