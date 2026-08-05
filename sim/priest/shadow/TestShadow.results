@@ -283,7 +283,7 @@ dps_results: {
  value: {
   dps: 403036.91195
   tps: 371936.14298
-  hps: 4906.1351
+  hps: 4935.97126
  }
 }
 dps_results: {
@@ -291,7 +291,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368490.00513
-  hps: 4918.37329
+  hps: 4947.80469
  }
 }
 dps_results: {
@@ -299,7 +299,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368491.9191
-  hps: 5014.45427
+  hps: 5043.88567
  }
 }
 dps_results: {
@@ -355,7 +355,7 @@ dps_results: {
  value: {
   dps: 404088.44373
   tps: 372766.25186
-  hps: 4906.1351
+  hps: 4947.59272
  }
 }
 dps_results: {
@@ -363,7 +363,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368489.65576
-  hps: 4918.37329
+  hps: 4959.2685
  }
 }
 dps_results: {
@@ -371,7 +371,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368491.9191
-  hps: 5031.88207
+  hps: 5072.77728
  }
 }
 dps_results: {
@@ -539,7 +539,7 @@ dps_results: {
  value: {
   dps: 403036.91195
   tps: 371936.14298
-  hps: 4906.1351
+  hps: 4935.97126
  }
 }
 dps_results: {
@@ -547,7 +547,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368490.00513
-  hps: 4918.37329
+  hps: 4947.80469
  }
 }
 dps_results: {
@@ -555,7 +555,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368491.9191
-  hps: 5014.45427
+  hps: 5043.88567
  }
 }
 dps_results: {
@@ -665,9 +665,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 453221.08599
-  tps: 417635.84744
-  hps: 4786.32646
+  dps: 453216.72092
+  tps: 418003.80168
+  hps: 4809.57666
  }
 }
 dps_results: {
@@ -811,7 +811,7 @@ dps_results: {
  value: {
   dps: 407466.24749
   tps: 377102.57828
-  hps: 4887.80189
+  hps: 4990.57513
  }
 }
 dps_results: {
@@ -883,7 +883,7 @@ dps_results: {
  value: {
   dps: 407666.42474
   tps: 376045.48202
-  hps: 4903.8086
+  hps: 4984.51635
  }
 }
 dps_results: {
@@ -891,7 +891,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368488.44706
-  hps: 4918.37329
+  hps: 4999.01209
  }
 }
 dps_results: {
@@ -899,7 +899,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368491.9191
-  hps: 5092.65124
+  hps: 5173.29004
  }
 }
 dps_results: {
@@ -1219,7 +1219,7 @@ dps_results: {
  value: {
   dps: 404088.44373
   tps: 372766.25186
-  hps: 4906.1351
+  hps: 4947.59272
  }
 }
 dps_results: {
@@ -1227,7 +1227,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368489.65576
-  hps: 4918.37329
+  hps: 4959.2685
  }
 }
 dps_results: {
@@ -1235,7 +1235,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368491.9191
-  hps: 5031.88207
+  hps: 5072.77728
  }
 }
 dps_results: {
@@ -1375,6 +1375,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestShadow-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 398326.06583
+  tps: 368491.9191
+  hps: 4885.01615
+ }
+}
+dps_results: {
  key: "TestShadow-AllItems-NitroBoosts-4223"
  value: {
   dps: 459377.16103
@@ -1417,9 +1425,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-PhaseFingers-4697"
  value: {
-  dps: 454089.63219
-  tps: 417971.84699
-  hps: 4693.32565
+  dps: 452839.16907
+  tps: 417703.05824
+  hps: 4701.15816
  }
 }
 dps_results: {
@@ -1475,7 +1483,7 @@ dps_results: {
  value: {
   dps: 410575.63133
   tps: 378167.58551
-  hps: 4903.86326
+  hps: 5018.79813
  }
 }
 dps_results: {
@@ -1483,7 +1491,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368487.41196
-  hps: 4918.37329
+  hps: 5033.02223
  }
 }
 dps_results: {
@@ -1491,7 +1499,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368491.9191
-  hps: 5144.56964
+  hps: 5259.21858
  }
 }
 dps_results: {
@@ -2107,7 +2115,7 @@ dps_results: {
  value: {
   dps: 405352.12903
   tps: 373954.41627
-  hps: 4906.1351
+  hps: 4963.03898
  }
 }
 dps_results: {
@@ -2115,7 +2123,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368489.19355
-  hps: 4918.37329
+  hps: 4974.50522
  }
 }
 dps_results: {
@@ -2123,7 +2131,7 @@ dps_results: {
  value: {
   dps: 398326.06583
   tps: 368491.9191
-  hps: 5055.14954
+  hps: 5111.28147
  }
 }
 dps_results: {

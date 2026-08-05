@@ -1399,6 +1399,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestRetribution-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 403754.11683
+  tps: 384027.1731
+  hps: 14.97429
+ }
+}
+dps_results: {
  key: "TestRetribution-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 403661.72918
@@ -1433,8 +1441,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-PhaseFingers-4697"
  value: {
-  dps: 461563.42923
-  tps: 436497.31376
+  dps: 460767.72063
+  tps: 435942.31701
   hps: 15.24862
  }
 }
@@ -1551,6 +1559,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestRetribution-AllItems-PridefulGladiator'sScaledGauntlets-103440"
+ value: {
+  dps: 422966.62231
+  tps: 399252.22559
+  hps: 15.58128
+ }
+}
+dps_results: {
  key: "TestRetribution-AllItems-Primordius'TalismanofRage-96873"
  value: {
   dps: 426645.09807
@@ -1649,8 +1665,8 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 404242.94172
-  tps: 384473.2065
+  dps: 404096.3385
+  tps: 384321.61447
   hps: 14.97429
  }
 }
@@ -1793,9 +1809,9 @@ dps_results: {
 dps_results: {
  key: "TestRetribution-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 443564.18049
-  tps: 421273.64397
-  hps: 17.09428
+  dps: 441840.8071
+  tps: 419555.54772
+  hps: 17.58074
  }
 }
 dps_results: {

@@ -681,8 +681,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 459495.48775
-  tps: 203377.02275
+  dps: 459494.03353
+  tps: 203375.42567
   hps: 17.66285
  }
 }
@@ -1407,6 +1407,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBeastMastery-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 414931.85758
+  tps: 190647.8087
+  hps: 17.66285
+ }
+}
+dps_results: {
  key: "TestBeastMastery-AllItems-NitroBoosts-4223"
  value: {
   dps: 471809.85263
@@ -1449,8 +1457,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-PhaseFingers-4697"
  value: {
-  dps: 472924.41236
-  tps: 208085.23186
+  dps: 467438.85901
+  tps: 205746.08644
   hps: 17.66285
  }
 }
@@ -1499,6 +1507,14 @@ dps_results: {
  value: {
   dps: 411447.77417
   tps: 188872.23687
+  hps: 17.66285
+ }
+}
+dps_results: {
+ key: "TestBeastMastery-AllItems-PridefulGladiator'sChainGauntlets-103417"
+ value: {
+  dps: 443064.77255
+  tps: 192340.03571
   hps: 17.66285
  }
 }
@@ -1649,8 +1665,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 442362.56617
-  tps: 201224.41231
+  dps: 445558.71923
+  tps: 203278.50395
   hps: 17.66285
  }
 }
@@ -1793,9 +1809,9 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 426249.40684
-  tps: 196788.03173
-  hps: 17.95939
+  dps: 414931.85758
+  tps: 190647.8087
+  hps: 17.66285
  }
 }
 dps_results: {

@@ -593,8 +593,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 131546.32831
-  tps: 127657.88965
+  dps: 130559.83471
+  tps: 126670.56203
  }
 }
 dps_results: {
@@ -1215,6 +1215,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestFire-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 121189.80482
+  tps: 117940.67835
+ }
+}
+dps_results: {
  key: "TestFire-AllItems-NitroBoosts-4223"
  value: {
   dps: 134855.14684
@@ -1252,8 +1259,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-PhaseFingers-4697"
  value: {
-  dps: 134323.14098
-  tps: 130401.78609
+  dps: 132110.34975
+  tps: 128793.56416
  }
 }
 dps_results: {
@@ -1441,8 +1448,8 @@ dps_results: {
 dps_results: {
  key: "TestFire-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 121214.53652
-  tps: 117967.76422
+  dps: 121189.80482
+  tps: 117940.67835
  }
 }
 dps_results: {
