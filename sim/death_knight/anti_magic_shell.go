@@ -101,6 +101,11 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 				if hasRegenerativeMagic && antiMagicShellAura.ShieldStrength > 0 {
 					remainingFraction := antiMagicShellAura.ShieldStrength / currentShield
 					antiMagicShellSpell.CD.Reduce(time.Duration(0.5 * remainingFraction * float64(antiMagicShellSpell.CD.TimeToReady(sim))))
+					// CD.Reduce() changes readiness outside the normal TryActivate() path, so the
+					// cached minReady bailout in getFirstReadyMCD must be refreshed here -- otherwise
+					// autocastOtherCooldowns keeps short-circuiting past AMS until the pre-reduction
+					// ready time, silently eating the discount this glyph is supposed to grant.
+					dk.UpdateMajorCooldowns()
 				}
 			},
 		},
