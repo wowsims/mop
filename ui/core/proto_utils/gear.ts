@@ -454,7 +454,7 @@ export class Gear extends BaseGear {
 	getAverageItemLevel(canDualWield2H: boolean): number {
 		const items = this.getEquippedItems();
 		let itemSlotsToCount = this.getItemSlots().length;
-		let has2H = items?.[ItemSlot.ItemSlotMainHand]?.item?.handType === HandType.HandTypeTwoHand;
+		const has2H = items?.[ItemSlot.ItemSlotMainHand]?.item?.handType === HandType.HandTypeTwoHand;
 
 		// If user cannot dual wield 2H, then only count the main hand item as there is no off hand
 		if (has2H && !canDualWield2H) itemSlotsToCount -= 1;

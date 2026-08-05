@@ -1,52 +1,60 @@
-export default {
-	root: true,
-	parser: '@typescript-eslint/parser',
-	plugins: ['simple-import-sort'],
-	extends: [
-		'plugin:json/recommended',
-		'plugin:import/errors',
-		'plugin:import/warnings',
-		'plugin:import/typescript',
-		'plugin:@typescript-eslint/eslint-recommended',
-		'plugin:@typescript-eslint/recommended',
-		'plugin:prettier/recommended',
-	],
-	env: {
-		es6: true,
-		browser: true,
+import { defineConfig } from 'eslint/config';
+import importPlugin from 'eslint-plugin-import';
+import json from 'eslint-plugin-json';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import tseslint from 'typescript-eslint';
+
+export default defineConfig([
+	{
+		ignores: ['ui/core/proto/**', 'ui/worker/highs.js', 'dist/**', 'binary_dist/**', 'node_modules/**'],
 	},
-	parserOptions: {
-		ecmaVersion: 2021,
-		sourceType: 'module',
-		ecmaFeatures: {
-			jsx: true,
+	{
+		files: ['**/*.{js,jsx,ts,tsx}'],
+		extends: [
+			importPlugin.flatConfigs.errors,
+			importPlugin.flatConfigs.warnings,
+			importPlugin.flatConfigs.typescript,
+			tseslint.configs.recommended,
+		],
+		plugins: {
+			'simple-import-sort': simpleImportSort,
+		},
+		languageOptions: {
+			ecmaVersion: 2021,
+			sourceType: 'module',
+			parserOptions: {
+				ecmaFeatures: {
+					jsx: true,
+				},
+			},
+		},
+		rules: {
+			'@typescript-eslint/explicit-function-return-type': 'off',
+			'@typescript-eslint/explicit-module-boundary-types': 'off',
+			'@typescript-eslint/no-non-null-assertion': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-use-before-define': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+				},
+			],
+			// Successor of the old no-empty-interface, which was kept off.
+			'@typescript-eslint/no-empty-object-type': 'off',
+			'@typescript-eslint/no-unused-expressions': 'off',
+			'@typescript-eslint/no-this-alias': 'off',
+			'@typescript-eslint/ban-ts-comment': 'off',
+			'import/no-unresolved': 'off',
+			'simple-import-sort/imports': 'warn',
+			'import/named': 'off',
+			'import/namespace': 'off',
+			'arrow-parens': ['error', 'as-needed'],
 		},
 	},
-	rules: {
-		'@typescript-eslint/member-delimiter-style': 'off',
-		'@typescript-eslint/explicit-function-return-type': 'off',
-		'@typescript-eslint/explicit-module-boundary-types': 'off',
-		'@typescript-eslint/no-non-null-assertion': 'off',
-		'@typescript-eslint/no-explicit-any': 'off',
-		'@typescript-eslint/no-use-before-define': 'off',
-		'@typescript-eslint/indent': 'off',
-		'@typescript-eslint/no-unused-vars': [
-			'warn',
-			{
-				argsIgnorePattern: '^_',
-				varsIgnorePattern: '^_',
-			},
-		],
-		'@typescript-eslint/no-object-literal-type-assertion': 'off',
-		'@typescript-eslint/explicit-member-accessibility': 'off',
-		'@typescript-eslint/camelcase': 'off',
-		'@typescript-eslint/no-empty-interface': 'off',
-		'@typescript-eslint/ban-ts-comment': 'off',
-		'prettier/prettier': 'off',
-		'import/no-unresolved': 'off',
-		'simple-import-sort/imports': 'warn',
-		'import/named': 'off',
-		'import/namespace': 'off',
-		'arrow-parens': ['error', 'as-needed'],
-	}
-};
+	{
+		files: ['**/*.json'],
+		extends: [json.configs.recommended],
+	},
+]);

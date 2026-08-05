@@ -201,7 +201,7 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (avgIlvl >= 560) {
 					this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
-						let softCapToModifyIndex = softCaps.findIndex(sc => sc.unitStat.equals(softCap.unitStat));
+						const softCapToModifyIndex = softCaps.findIndex(sc => sc.unitStat.equals(softCap.unitStat));
 						if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent) && softCapToModifyIndex !== -1) {
 							softCaps[softCapToModifyIndex] = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 								breakpoints: relevantDotBreakpoints,

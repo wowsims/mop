@@ -100,11 +100,11 @@ export class CalculateCombustionThresholds extends Component {
 
 			// We limit the iterations because of the max length of the logs string object in the proto
 			const shouldUseWasmConcurrency = await this.simUI.sim.shouldUseWasmConcurrency();
-			let iterations = 50;
-			let batches = 10;
+			const iterations = 50;
+			const batches = 10;
 
 			const totalIterations = iterations * batches;
-			let completedIterations: number[] = new Array(batches).fill(0);
+			const completedIterations: number[] = new Array(batches).fill(0);
 
 			const updateProgress = () => {
 				this.progressTrackerModal.updateProgress({
