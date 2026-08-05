@@ -1415,14 +1415,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestUnholy-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 370711.46347
-  tps: 272452.38307
-  hps: 3857.44464
- }
-}
-dps_results: {
  key: "TestUnholy-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 376843.1556

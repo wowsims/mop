@@ -1399,14 +1399,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestRetribution-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 398660.86479
-  tps: 379308.2249
-  hps: 14.97429
- }
-}
-dps_results: {
  key: "TestRetribution-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 403661.72918
@@ -1556,14 +1548,6 @@ dps_results: {
   dps: 425163.12001
   tps: 403487.86846
   hps: 14.97429
- }
-}
-dps_results: {
- key: "TestRetribution-AllItems-PridefulGladiator'sScaledGauntlets-103440"
- value: {
-  dps: 422966.62231
-  tps: 399252.22559
-  hps: 15.58128
  }
 }
 dps_results: {

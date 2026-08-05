@@ -1229,13 +1229,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestArms-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 400859.84935
-  tps: 296736.8054
- }
-}
-dps_results: {
  key: "TestArms-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 403513.76652
@@ -1373,13 +1366,6 @@ dps_results: {
  value: {
   dps: 417462.19555
   tps: 308610.11794
- }
-}
-dps_results: {
- key: "TestArms-AllItems-PridefulGladiator'sPlateGauntlets-103526"
- value: {
-  dps: 397029.48146
-  tps: 289571.55452
  }
 }
 dps_results: {

@@ -593,8 +593,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 108644.9774
-  tps: 76587.52754
+  dps: 108553.07771
+  tps: 76497.70325
  }
 }
 dps_results: {
@@ -1257,13 +1257,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestSubtlety-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 101963.42052
-  tps: 71858.49781
- }
-}
-dps_results: {
  key: "TestSubtlety-AllItems-Nine-TailBattlegear"
  value: {
   dps: 121006.00263
@@ -1308,8 +1301,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-PhaseFingers-4697"
  value: {
-  dps: 111539.31607
-  tps: 78595.66674
+  dps: 111429.05781
+  tps: 78519.51015
  }
 }
 dps_results: {
@@ -1476,8 +1469,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 116018.34148
-  tps: 81635.54067
+  dps: 115724.52733
+  tps: 81424.86297
  }
 }
 dps_results: {
@@ -1602,8 +1595,8 @@ dps_results: {
 dps_results: {
  key: "TestSubtlety-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 114021.00735
-  tps: 80231.90305
+  dps: 111719.67231
+  tps: 78592.79345
  }
 }
 dps_results: {

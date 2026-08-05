@@ -1222,13 +1222,6 @@ dps_results: {
  }
 }
 dps_results: {
- key: "TestFrost-AllItems-Nazgrim'sBurnishedInsignia-105549"
- value: {
-  dps: 413655.7528
-  tps: 255306.35156
- }
-}
-dps_results: {
  key: "TestFrost-AllItems-NitroBoosts-4223"
  value: {
   dps: 477135.12824
