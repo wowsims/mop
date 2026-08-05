@@ -19,7 +19,7 @@ func (war *Warrior) registerWhirlwind() {
 			SpellSchool:    core.SpellSchoolPhysical,
 			ProcMask:       core.ProcMaskMeleeOHSpecial,
 			ClassSpellMask: SpellMaskWhirlwindOh,
-			Flags:          core.SpellFlagAoE | core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete,
+			Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagNoOnCastComplete,
 
 			DamageMultiplier: 0.85,
 			ThreatMultiplier: 1,
@@ -41,7 +41,7 @@ func (war *Warrior) registerWhirlwind() {
 		ActionID:       actionID.WithTag(1),
 		SpellSchool:    core.SpellSchoolPhysical,
 		ProcMask:       core.ProcMaskMeleeMHSpecial,
-		Flags:          core.SpellFlagAoE | core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
+		Flags:          core.SpellFlagMeleeMetrics | core.SpellFlagAPL,
 		ClassSpellMask: SpellMaskWhirlwind,
 
 		RageCost: core.RageCostOptions{
