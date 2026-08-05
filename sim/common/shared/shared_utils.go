@@ -32,6 +32,9 @@ type DamageEffect struct {
 	IsMelee          bool
 	ProcMask         core.ProcMask
 	Outcome          OutcomeType
+	// Set when the client bars the damage spell from critting, which the sim has no way to know:
+	// it is a spell attribute, so only the database generator can see it.
+	CannotCrit bool
 }
 
 type ExtraSpellInfo struct {
@@ -52,7 +55,7 @@ func NewProcStatBonusEffectWithDamageProc(config ProcStatBonusEffect, damage Dam
 		procMask = damage.ProcMask
 	}
 
-	factory_StatBonusEffect(config, func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo {
+	factory_ProcStatBonusEffect(config, func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo {
 		character := agent.GetCharacter()
 
 		procSpell := character.RegisterSpell(core.SpellConfig{
@@ -66,7 +69,7 @@ func NewProcStatBonusEffectWithDamageProc(config ProcStatBonusEffect, damage Dam
 			ThreatMultiplier:         1,
 			BonusCoefficient:         damage.BonusCoefficient,
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				spell.CalcAndDealDamage(sim, target, sim.Roll(damage.MinDmg, damage.MaxDmg), GetOutcome(spell, damage.Outcome))
+				spell.CalcAndDealDamage(sim, target, sim.Roll(damage.MinDmg, damage.MaxDmg), GetOutcome(spell, damageOutcome(damage.School, damage.IsMelee, damage.CannotCrit, damage.Outcome)))
 			},
 		})
 
@@ -79,136 +82,56 @@ func NewProcStatBonusEffectWithDamageProc(config ProcStatBonusEffect, damage Dam
 	})
 }
 
-func factory_StatBonusEffect(config ProcStatBonusEffect, extraSpell func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo) {
-	isEnchant := config.EnchantID != 0
-
+func factory_ProcStatBonusEffect(config ProcStatBonusEffect, extraSpell func(agent core.Agent, _ proto.ItemLevelState) ExtraSpellInfo) {
 	// Ignore empty dummy implementations
 	if config.Callback == core.CallbackEmpty {
 		return
 	}
 
+	source := config.effectSource()
+
 	// Soft fail to allow for overrides for bad effects
-	if isEnchant {
-		if core.HasEnchantEffect(config.EnchantID) {
-			return
-		}
-	} else {
-		if core.HasItemEffect(config.ItemID) {
-			return
-		}
+	if source.isAlreadyImplemented() {
+		return
 	}
 
-	var effectFn func(id int32, effect core.ApplyEffect)
-	var effectID int32
-	var triggerActionID core.ActionID
-	if isEnchant {
-		effectID = config.EnchantID
-		effectFn = core.NewEnchantEffect
-		triggerActionID = core.ActionID{SpellID: effectID}
-	} else {
-		effectID = config.ItemID
-		effectFn = core.NewItemEffect
-		triggerActionID = core.ActionID{ItemID: effectID}
-	}
+	triggerActionID := source.actionID()
 
-	effectFn(effectID, func(agent core.Agent, itemLevelState proto.ItemLevelState) {
+	source.registerEffect(func(agent core.Agent, itemLevelState proto.ItemLevelState) {
 		character := agent.GetCharacter()
-		var eligibleSlots []proto.ItemSlot
-		procEffects := make(map[int32]*proto.ItemEffect)
+		eligibleSlots := source.eligibleSlots(character)
 
-		if isEnchant {
-			eligibleSlots = character.ItemSwap.EligibleSlotsForEffect(effectID)
-			ench := core.GetEnchantByEffectID(effectID)
-			for _, effect := range ench.EnchantEffects {
-				if effect.GetProc() != nil {
-					procEffects[effect.BuffId] = effect
-				}
-			}
-		} else {
-			eligibleSlots = character.ItemSwap.EligibleSlotsForItem(effectID)
-			item := core.GetItemByID(effectID)
-			if item.ItemEffects != nil {
-				for _, effect := range item.ItemEffects {
-					if effect.GetProc() != nil {
-						procEffects[effect.BuffId] = effect
-					}
-				}
-			}
-		}
-
+		procEffects := source.procEffects()
 		if len(procEffects) == 0 {
-			err, _ := fmt.Printf("Error getting proc effect for item/enchant %v", effectID)
-			panic(err)
+			panic(fmt.Sprintf("Error getting proc effects for item/enchant %v", source.id))
 		}
+
+		// Several proc effects would each register their auras under the same config.Name, and
+		// GetOrRegisterAura merges by label: the last handler and the first stats would win, and
+		// every effect would run at its own full proc rate rather than a share of one roll. The
+		// multi-buff weapon enchants are shaped like this - Windsong declares three effects at
+		// 2.2 RPPM each, Dancing Steel two - and are still hand-written, so nothing reaches here
+		// today. Whoever migrates them has to decide what the combined rate means first.
+		if len(procEffects) > 1 {
+			panic(fmt.Sprintf("item/enchant %d declares %d proc effects sharing the aura label %q; "+
+				"needs per-effect labels and a decided proc rate before it can be generated",
+				source.id, len(procEffects), config.Name))
+		}
+
 		for _, effect := range procEffects {
 			proc := effect.GetProc()
-			procAction := core.ActionID{SpellID: effect.BuffId}
-			var procAura *core.StatBuffAura
-			if effect.MaxCumulativeStacks > 0 {
-				procAura = core.MakeStackingAura(character, core.StackingStatAura{
-					Aura: core.Aura{
-						Label:     config.Name + " Proc",
-						ActionID:  procAction,
-						Duration:  time.Millisecond * time.Duration(effect.EffectDurationMs),
-						MaxStacks: effect.MaxCumulativeStacks,
-					},
-					BonusPerStack: stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].Stats),
-				})
-			} else {
-				procAura = character.NewTemporaryStatsAura(
-					config.Name+" Proc",
-					procAction,
-					stats.FromProtoMap(effect.ScalingOptions[int32(itemLevelState)].Stats),
-					time.Millisecond*time.Duration(effect.EffectDurationMs),
-				)
-			}
 
-			var dpm *core.DynamicProcManager
-			if proc.GetRppm() != nil {
-				dpm = character.NewRPPMProcManager(effectID, isEnchant, false, config.ProcMask, core.RppmConfigFromProcEffectProto(proc))
-			} else if proc.GetPpm() > 0 {
-				if config.ProcMask == core.ProcMaskUnknown {
-					if isEnchant {
-						dpm = character.NewDynamicLegacyProcForEnchant(effectID, proc.GetPpm(), 0)
-					} else {
-						dpm = character.NewDynamicLegacyProcForWeapon(effectID, proc.GetPpm(), 0)
-					}
-				} else {
-					dpm = character.NewLegacyPPMManager(proc.GetPpm(), config.ProcMask)
-				}
-			}
+			// windowAura is set only for the stacking trinkets, where the trigger opens a window
+			// that accumulates a separate stat aura on its own schedule. The handler then activates
+			// the window rather than the stat aura, so a re-proc restarts the window instead of
+			// adding a stack and refreshing a duration the game does not refresh.
+			procAura, windowAura := buildProcAura(character, config, effect, itemLevelState)
 
 			procAura.CustomProcCondition = config.CustomProcCondition
-			var customHandler CustomProcHandler
-			if config.CustomProcCondition != nil {
-				customHandler = func(sim *core.Simulation, procAura *core.StatBuffAura) {
-					if procAura.CanProc(sim) {
-						procAura.Activate(sim)
-					} else {
-						// reset ICD condition was not fulfilled
-						if procAura.Icd != nil && procAura.Icd.Duration != 0 {
-							procAura.Icd.Reset()
-						}
-					}
-				}
-			}
+
 			var procSpell ExtraSpellInfo
 			if extraSpell != nil {
 				procSpell = extraSpell(agent, itemLevelState)
-			}
-
-			handler := func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
-				if customHandler != nil {
-					customHandler(sim, procAura)
-				} else {
-					procAura.Activate(sim)
-					if effect.MaxCumulativeStacks > 0 {
-						procAura.AddStack(sim)
-					}
-					if procSpell.Spell != nil {
-						procSpell.Trigger(sim, spell, result)
-					}
-				}
 			}
 
 			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
@@ -219,116 +142,201 @@ func factory_StatBonusEffect(config ProcStatBonusEffect, extraSpell func(agent c
 				Outcome:            config.Outcome,
 				RequireDamageDealt: config.RequireDamageDealt,
 				ProcChance:         proc.GetProcChance(),
-				DPM:                dpm,
+				DPM:                procDPM(character, config.ProcMask, source, proc),
 				ICD:                time.Millisecond * time.Duration(proc.IcdMs),
-				Handler:            handler,
+				Handler:            procHandler(config, effect, procAura, windowAura, procSpell),
 			})
 
+			// Carried on the stacking path too. Nothing in the stacking machinery reads this -
+			// StatBuffAura.CanProc consults only IsSwapped and CustomProcCondition, and the
+			// per-tick AddStack loop never looks at Icd - so it gates nothing. What it does feed is
+			// GetMatchingItemProcAuras, which drops any aura whose Icd is nil, and with it
+			// ItemProcsMaxRemainingICD and AnyItemStatProcsAvailable.
 			if proc.IcdMs != 0 {
 				procAura.Icd = triggerAura.Icd
 			}
-			if isEnchant {
-				character.ItemSwap.RegisterEnchantProcWithSlots(effectID, triggerAura, eligibleSlots)
-			} else {
-				character.ItemSwap.RegisterProcWithSlots(effectID, triggerAura, eligibleSlots)
-			}
 
-			character.AddStatProcBuff(effectID, procAura, isEnchant, eligibleSlots)
+			source.registerProc(character, triggerAura, eligibleSlots)
+			source.registerWeaponEnchantBuff(character, procAura)
+			character.AddStatProcBuff(source.id, procAura, source.isEnchant, eligibleSlots)
 		}
 	})
 }
 
-func NewProcStatBonusEffectWithVariants(config ProcStatBonusEffect, variants []ItemVariant) {
-	var maxItemID int32
+// What the proc does when it fires.
+func procHandler(config ProcStatBonusEffect, effect *proto.ItemEffect, procAura *core.StatBuffAura, windowAura *core.Aura, procSpell ExtraSpellInfo) func(*core.Simulation, *core.Spell, *core.SpellResult) {
+	return func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+		// When the condition refuses, the ICD is rolled back so the next opportunity still counts
+		// instead of the effect being locked out by a proc that never happened.
+		if config.CustomProcCondition != nil && !procAura.CanProc(sim) {
+			if procAura.Icd != nil && procAura.Icd.Duration != 0 {
+				procAura.Icd.Reset()
+			}
+			return
+		}
 
-	for _, variant := range variants {
-		maxItemID = max(maxItemID, variant.ItemID)
+		// Activating the window and not the stat aura is what makes a re-proc restart the window
+		// instead of refreshing stacks the game would not refresh.
+		if windowAura != nil {
+			windowAura.Activate(sim)
+		} else {
+			procAura.Activate(sim)
+			if effect.MaxCumulativeStacks > 0 {
+				procAura.AddStack(sim)
+			}
+		}
+
+		if procSpell.Spell != nil {
+			procSpell.Trigger(sim, spell, result)
+		}
+	}
+}
+
+// The three shapes a proc buff comes in. Only the first returns a second aura: there the trigger
+// opens a window and the stat aura inside it accumulates, so the caller has two things to wire.
+func buildProcAura(character *core.Character, config ProcStatBonusEffect, effect *proto.ItemEffect, itemLevelState proto.ItemLevelState) (*core.StatBuffAura, *core.Aura) {
+	label := config.Name + " Proc"
+	action := core.ActionID{SpellID: effect.BuffId}
+	duration := time.Millisecond * time.Duration(effect.EffectDurationMs)
+	state := int32(itemLevelState)
+
+	if stackingAura := effect.StackingAura; stackingAura != nil {
+		return character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
+			AuraLabel:            label,
+			ActionID:             action,
+			Duration:             duration,
+			MaxStacks:            stackingAura.MaxCumulativeStacks,
+			TimePerStack:         time.Millisecond * time.Duration(effect.StackPeriodMs),
+			BonusPerStack:        stats.FromProtoMap(stackingAura.ScalingOptions[state].GetStats()),
+			StackingAuraActionID: core.ActionID{SpellID: stackingAura.BuffId},
+			StackingAuraLabel:    config.Name + " Stacks",
+			TickImmediately:      true,
+		})
 	}
 
-	for _, variant := range variants {
+	if effect.MaxCumulativeStacks > 0 {
+		return core.MakeStackingAura(character, core.StackingStatAura{
+			Aura: core.Aura{
+				Label:     label,
+				ActionID:  action,
+				Duration:  duration,
+				MaxStacks: effect.MaxCumulativeStacks,
+			},
+			BonusPerStack: stats.FromProtoMap(effect.ScalingOptions[state].GetStats()),
+		}), nil
+	}
+
+	return character.NewTemporaryStatsAura(label, action, stats.FromProtoMap(effect.ScalingOptions[state].GetStats()), duration), nil
+}
+
+// The proc manager an effect's database rate calls for, or nil when the rate is a flat chance the
+// caller should read off the proc instead.
+func procDPM(character *core.Character, procMask core.ProcMask, source effectSource, proc *proto.ProcEffect) *core.DynamicProcManager {
+	if proc.GetRppm() != nil {
+		return character.NewRPPMProcManager(source.id, source.isEnchant, false, procMask, core.RppmConfigFromProcEffectProto(proc))
+	}
+
+	if proc.GetPpm() <= 0 {
+		return nil
+	}
+
+	if procMask != core.ProcMaskUnknown {
+		return character.NewLegacyPPMManager(proc.GetPpm(), procMask)
+	}
+
+	// With no mask of its own the rate has to be read off whatever the effect sits on.
+	if source.isEnchant {
+		return character.NewDynamicLegacyProcForEnchant(source.id, proc.GetPpm(), 0)
+	}
+
+	return character.NewDynamicLegacyProcForWeapon(source.id, proc.GetPpm(), 0)
+}
+
+func NewProcStatBonusEffectWithVariants(config ProcStatBonusEffect, variants []ItemVariant) {
+	forEachVariant(variants, func(variant ItemVariant) {
 		config.Name = variant.ItemName
 		config.ItemID = variant.ItemID
-		core.AddEffectsToTest = (config.ItemID == maxItemID)
 		NewProcStatBonusEffect(config)
-	}
-
-	core.AddEffectsToTest = true
+	})
 }
 
 func NewProcStatBonusEffect(config ProcStatBonusEffect) {
-	factory_StatBonusEffect(config, nil)
+	factory_ProcStatBonusEffect(config, nil)
 }
 
 func NewSimpleStatActiveWithVariants(variants []ItemVariant) {
-	var maxItemID int32
-
-	for _, variant := range variants {
-		maxItemID = max(maxItemID, variant.ItemID)
-	}
-
-	for _, variant := range variants {
-		core.AddEffectsToTest = (variant.ItemID == maxItemID)
+	forEachVariant(variants, func(variant ItemVariant) {
 		NewSimpleStatActive(variant.ItemID)
-	}
+	})
+}
 
-	core.AddEffectsToTest = true
+// Describes an on-use effect on an item or an enchant. Only the identity and the profession
+// gate are stated here; the stats, buff duration, cooldown and shared cooldown all come from
+// the DBC
+type ActiveStatBonusEffect struct {
+	ItemID    int32
+	EnchantID int32
+
+	// Registration is skipped unless the character has this profession.
+	// ProfessionUnknown means there is no requirement.
+	RequiredProfession proto.Profession
+}
+
+// Registers an on-use effect from its database entry.
+func NewActiveStatBonusEffect(config ActiveStatBonusEffect) {
+	factory_ActiveStatBonusEffect(config)
 }
 
 func NewSimpleStatActive(itemID int32) {
+	factory_ActiveStatBonusEffect(ActiveStatBonusEffect{ItemID: itemID})
+}
+
+// The on-use counterpart to factory_ProcStatBonusEffect.
+func factory_ActiveStatBonusEffect(config ActiveStatBonusEffect) {
+	source := config.effectSource()
 
 	// Soft fail to allow for overrides for bad effects
-	if core.HasItemEffect(itemID) {
+	if source.isAlreadyImplemented() {
 		return
 	}
 
-	core.NewItemEffect(itemID, func(agent core.Agent, scalingSelector proto.ItemLevelState) {
-		item := core.GetItemByID(itemID)
-		if item == nil {
-			panic(fmt.Sprintf("No item with ID: %d", itemID))
+	source.registerEffect(func(agent core.Agent, scalingSelector proto.ItemLevelState) {
+		character := agent.GetCharacter()
+		if config.RequiredProfession != proto.Profession_ProfessionUnknown && !character.HasProfession(config.RequiredProfession) {
+			return
 		}
 
-		itemEffects := item.ItemEffects
-		if len(itemEffects) == 0 {
-			panic(fmt.Sprintf("No effects data for item with ID: %d", itemID))
-		}
+		state := int32(source.scalingState(scalingSelector))
 
-		hasEffect := false
-		for idx, itemEffect := range itemEffects {
-
-			onUseData := itemEffect.GetOnUse()
+		registered := false
+		for _, effect := range source.declaredEffects() {
+			onUseData := effect.GetOnUse()
 			if onUseData == nil {
-				if !hasEffect && idx == len(itemEffects)-1 {
-					panic(fmt.Sprintf("No active effects found for item with ID: %d!", itemID))
-				}
 				continue
 			}
 
-			hasEffect = true
-			spellConfig := core.SpellConfig{
-				ActionID: core.ActionID{ItemID: itemID},
+			// An enchant's on-use is kept for its trigger even when no stats resolve, so the ones
+			// whose buff is server-scripted reach here with nothing to grant and are skipped.
+			tempStats := stats.FromProtoMap(effect.ScalingOptions[state].GetStats())
+			if source.isEnchant && tempStats.Equals(stats.Stats{}) {
+				continue
 			}
 
-			character := agent.GetCharacter()
+			actionID, label := source.onUseIdentity(effect)
+
+			spellConfig := core.SpellConfig{ActionID: actionID}
 			spellConfig.Cast.CD = core.Cooldown{
 				Timer:    character.NewTimer(),
 				Duration: time.Duration(onUseData.CooldownMs) * time.Millisecond,
 			}
-			// if SpellCategoryID is 0 we seemingly do not share cd with anything
-			// Say Darkmoon Card: Earthquake and Ruthless Gladiator's Emblem of Cruelty even though tooltip shows as such
-			if onUseData.CategoryId > 0 {
-				sharedCDDuration := time.Duration(onUseData.CategoryCooldownMs) * time.Millisecond
-				if sharedCDDuration == 0 {
-					sharedCDDuration = time.Millisecond * time.Duration(itemEffect.EffectDurationMs)
-				}
+			spellConfig.Cast.SharedCD = sharedCooldown(character, effect)
 
-				sharedCDTimer := character.GetOrInitSpellCategoryTimer(onUseData.CategoryId)
-				spellConfig.Cast.SharedCD = core.Cooldown{
-					Timer:    sharedCDTimer,
-					Duration: sharedCDDuration,
-				}
-			}
+			core.RegisterTemporaryStatsOnUseCD(character, label, tempStats, time.Millisecond*time.Duration(effect.EffectDurationMs), spellConfig)
+			registered = true
+		}
 
-			core.RegisterTemporaryStatsOnUseCD(character, itemEffect.BuffName, stats.FromProtoMap(itemEffect.ScalingOptions[int32(scalingSelector)].Stats), time.Millisecond*time.Duration(itemEffect.EffectDurationMs), spellConfig)
+		if !registered && !source.isEnchant {
+			panic(fmt.Sprintf("No active effects found for item with ID: %d!", source.id))
 		}
 	})
 }
@@ -541,6 +549,39 @@ type ProcDamageEffect struct {
 	IsMelee    bool
 	Flags      core.SpellFlag
 	Outcome    OutcomeType
+	// Set when the client bars the damage spell from critting, which the sim has no way to know:
+	// it is a spell attribute, so only the database generator can see it.
+	CannotCrit bool
+}
+
+// Whether a proc's damage is dealt as a melee hit. The school decides it: anything non-physical
+// rolls against the spell tables. IsMelee stays honoured on top of that for a caller that means
+// physical damage without saying so through the school.
+func isMeleeDamage(school core.SpellSchool, isMelee bool) bool {
+	return isMelee || school.Matches(core.SpellSchoolPhysical)
+}
+
+// The outcome a proc's damage rolls when the caller states none. Physical damage goes through the
+// melee table, everything else through the spell one, and a spell the client bars from critting
+// takes the no-crit variant of whichever it rolls against.
+func damageOutcome(school core.SpellSchool, isMelee bool, cannotCrit bool, outcome OutcomeType) OutcomeType {
+	if outcome != OutcomeDefault {
+		return outcome
+	}
+
+	if isMeleeDamage(school, isMelee) {
+		if cannotCrit {
+			return OutcomeMeleeNoCrit
+		}
+
+		return OutcomeMeleeCanCrit
+	}
+
+	if cannotCrit {
+		return OutcomeSpellNoCrit
+	}
+
+	return OutcomeSpellCanCrit
 }
 
 func GetOutcome(spell *core.Spell, outcome OutcomeType) core.OutcomeApplier {
@@ -564,35 +605,67 @@ func GetOutcome(spell *core.Spell, outcome OutcomeType) core.OutcomeApplier {
 	}
 }
 
+// Fills a trigger's proc rate, internal cooldown and proc chance from the item or enchant's
+// database entry, so that a generated effect only has to state what the database cannot
+// carry.
+func getProcFromDBC(character *core.Character, trigger *core.ProcTrigger, source effectSource) {
+	for _, effect := range source.declaredEffects() {
+		proc := effect.GetProc()
+		if proc == nil {
+			continue
+		}
+
+		// Through procDPM rather than reading the rate again here. A second copy had already lost
+		// the ProcMaskUnknown fallback, and a legacy PPM manager built with a zero mask matches
+		// nothing and never procs at all.
+		if dpm := procDPM(character, trigger.ProcMask, source, proc); dpm != nil {
+			trigger.DPM = dpm
+		} else {
+			trigger.ProcChance = proc.GetProcChance()
+		}
+
+		if trigger.ICD == 0 {
+			trigger.ICD = time.Millisecond * time.Duration(proc.IcdMs)
+		}
+		return
+	}
+}
+
 func NewProcDamageEffect(config ProcDamageEffect) {
-	isEnchant := config.EnchantID != 0
+	source := config.effectSource()
 
-	var effectFn func(id int32, effect core.ApplyEffect)
-	var effectID int32
-	var triggerActionID core.ActionID
-
-	if isEnchant {
-		effectID = config.EnchantID
-		effectFn = core.NewEnchantEffect
-		triggerActionID = core.ActionID{SpellID: config.SpellID}
-	} else {
-		effectID = config.ItemID
-		effectFn = core.NewItemEffect
-		triggerActionID = core.ActionID{ItemID: config.ItemID}
+	// Soft fail to allow for overrides for bad effects, same as factory_ProcStatBonusEffect.
+	// Without this, hand-writing an effect that is also generated panics on the duplicate
+	// registration instead of letting the manual one win.
+	if source.isAlreadyImplemented() {
+		return
 	}
 
-	effectFn(effectID, func(agent core.Agent, _ proto.ItemLevelState) {
+	// Not source.actionID(): an enchant's damage proc is identified by the spell it casts rather
+	// than by the enchantment, because the enchantment ID is not something the client shows.
+	triggerActionID := core.ActionID{ItemID: config.ItemID}
+	if source.isEnchant {
+		triggerActionID = core.ActionID{SpellID: config.SpellID}
+	}
+
+	source.registerEffect(func(agent core.Agent, _ proto.ItemLevelState) {
 		character := agent.GetCharacter()
 
+		triggerConfig := config.Trigger
 		minDmg := config.MinDmg
 		maxDmg := config.MaxDmg
 
-		if core.ActionID.IsEmptyAction(config.Trigger.ActionID) {
-			config.Trigger.ActionID = triggerActionID
+		if core.ActionID.IsEmptyAction(triggerConfig.ActionID) {
+			triggerConfig.ActionID = triggerActionID
 		}
 
 		if config.TriggerDPM != nil {
-			config.Trigger.DPM = config.TriggerDPM(character)
+			triggerConfig.DPM = config.TriggerDPM(character)
+		} else if triggerConfig.DPM == nil && triggerConfig.ProcChance == 0 {
+			// Damage amounts are not carried in the database, but proc rates are, so a
+			// generated damage proc does not have to restate its rate. Same source as
+			// factory_ProcStatBonusEffect uses.
+			getProcFromDBC(character, &triggerConfig, source)
 		}
 
 		damageSpell := character.RegisterSpell(core.SpellConfig{
@@ -606,22 +679,29 @@ func NewProcDamageEffect(config ProcDamageEffect) {
 			ThreatMultiplier: 1,
 
 			ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-				spell.CalcAndDealDamage(sim, target, sim.Roll(minDmg, maxDmg), GetOutcome(spell, config.Outcome))
+				spell.CalcAndDealDamage(sim, target, sim.Roll(minDmg, maxDmg), GetOutcome(spell, damageOutcome(config.School, config.IsMelee, config.CannotCrit, config.Outcome)))
 			},
 		})
 
-		triggerConfig := config.Trigger
 		triggerConfig.TriggerImmediately = true
-		triggerConfig.Handler = func(sim *core.Simulation, _ *core.Spell, _ *core.SpellResult) {
-			damageSpell.Cast(sim, character.CurrentTarget)
+		triggerConfig.Handler = func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
+			// Land the extra damage on whatever was hit, not on the primary target.
+			target := character.CurrentTarget
+			if result != nil && result.Target != nil {
+				target = result.Target
+			}
+
+			// On a hit-taken proc the wearer is what was hit - core dispatches those through
+			// result.Target.OnSpellHitTaken - so the retaliation has to go back to the attacker
+			// instead of into the wearer's own health. This is the shield spike shape.
+			if target == &character.Unit && spell != nil && spell.Unit != nil {
+				target = spell.Unit
+			}
+
+			damageSpell.Cast(sim, target)
 		}
 		triggerAura := character.MakeProcTriggerAura(triggerConfig)
-
-		if isEnchant {
-			character.ItemSwap.RegisterEnchantProc(effectID, triggerAura)
-		} else {
-			character.ItemSwap.RegisterProc(effectID, triggerAura)
-		}
+		source.registerProcAnySlot(character, triggerAura)
 	})
 }
 
@@ -835,6 +915,201 @@ func (versions ItemVersionMap) RegisterAll(fac ItemVersionFactory) {
 	for version, id := range versions {
 		core.AddEffectsToTest = (id == maxItemID)
 		fac(version, id, version.GetLabel())
+	}
+
+	core.AddEffectsToTest = true
+}
+
+///////////////////////////////////////////////////////////////////////////
+//							Item and enchant plumbing
+///////////////////////////////////////////////////////////////////////////
+
+// Which of the two registries an effect belongs to, item or enchant, and its ID within it. Those
+// are the only things the two differ in; every helper above treats them identically. Resolving it
+// once keeps the same isEnchant branch from being written out at each of the places that would
+// otherwise need it.
+type effectSource struct {
+	id        int32
+	isEnchant bool
+}
+
+// An enchant ID wins when both are set, because only a generated enchant effect fills it in.
+func newEffectSource(itemID int32, enchantID int32) effectSource {
+	if enchantID != 0 {
+		return effectSource{id: enchantID, isEnchant: true}
+	}
+
+	return effectSource{id: itemID}
+}
+
+func (config ProcStatBonusEffect) effectSource() effectSource {
+	return newEffectSource(config.ItemID, config.EnchantID)
+}
+
+func (config ActiveStatBonusEffect) effectSource() effectSource {
+	return newEffectSource(config.ItemID, config.EnchantID)
+}
+
+func (config ProcDamageEffect) effectSource() effectSource {
+	return newEffectSource(config.ItemID, config.EnchantID)
+}
+
+func (s effectSource) registerEffect(apply core.ApplyEffect) {
+	if s.isEnchant {
+		core.NewEnchantEffect(s.id, apply)
+	} else {
+		core.NewItemEffect(s.id, apply)
+	}
+}
+
+// Whether a hand-written effect already covers this. That is the soft fail letting an override win
+// over the generated registration, and it is why deleting one hands the generated version back.
+func (s effectSource) isAlreadyImplemented() bool {
+	if s.isEnchant {
+		return core.HasEnchantEffect(s.id)
+	}
+
+	return core.HasItemEffect(s.id)
+}
+
+func (s effectSource) actionID() core.ActionID {
+	if s.isEnchant {
+		return core.ActionID{SpellID: s.id}
+	}
+
+	return core.ActionID{ItemID: s.id}
+}
+
+func (s effectSource) eligibleSlots(character *core.Character) []proto.ItemSlot {
+	if s.isEnchant {
+		return character.ItemSwap.EligibleSlotsForEffect(s.id)
+	}
+
+	return character.ItemSwap.EligibleSlotsForItem(s.id)
+}
+
+// Enchants have no upgrade levels, so they only ever carry the base state.
+func (s effectSource) scalingState(state proto.ItemLevelState) proto.ItemLevelState {
+	if s.isEnchant {
+		return proto.ItemLevelState_Base
+	}
+
+	return state
+}
+
+// Every effect this item or enchant declares. A generated registration naming an entry that is not
+// in the database is a database bug rather than a runtime case, so it fails loudly and identically
+// for every caller.
+func (s effectSource) declaredEffects() []*proto.ItemEffect {
+	if s.isEnchant {
+		ench := core.GetEnchantByEffectID(s.id)
+		if ench == nil {
+			panic(fmt.Sprintf("No enchant with effect ID: %d", s.id))
+		}
+
+		return ench.EnchantEffects
+	}
+
+	item := core.GetItemByID(s.id)
+	if item == nil {
+		panic(fmt.Sprintf("No item with ID: %d", s.id))
+	}
+	if len(item.ItemEffects) == 0 {
+		panic(fmt.Sprintf("No effects data for item with ID: %d", s.id))
+	}
+
+	return item.ItemEffects
+}
+
+// The proc-carrying effects this item or enchant declares, keyed by the aura each one applies.
+func (s effectSource) procEffects() map[int32]*proto.ItemEffect {
+	procEffects := make(map[int32]*proto.ItemEffect)
+	for _, effect := range s.declaredEffects() {
+		if effect.GetProc() != nil {
+			procEffects[effect.BuffId] = effect
+		}
+	}
+
+	return procEffects
+}
+
+// How a generated on-use spell identifies itself. An item keys its cooldown on the item and labels
+// it per effect; an enchant keys on the buff it applies and carries a single name for the whole
+// enchant, which is the only name it has.
+func (s effectSource) onUseIdentity(effect *proto.ItemEffect) (core.ActionID, string) {
+	if s.isEnchant {
+		return core.ActionID{SpellID: effect.BuffId}, core.GetEnchantByEffectID(s.id).Name
+	}
+
+	return core.ActionID{ItemID: s.id}, effect.BuffName
+}
+
+func (s effectSource) registerProc(character *core.Character, triggerAura *core.Aura, slots []proto.ItemSlot) {
+	if s.isEnchant {
+		character.ItemSwap.RegisterEnchantProcWithSlots(s.id, triggerAura, slots)
+	} else {
+		character.ItemSwap.RegisterProcWithSlots(s.id, triggerAura, slots)
+	}
+}
+
+// A weapon enchant's buff has to drop when the weapon carrying it is swapped out. AddStatProcBuff
+// only flips IsSwapped, which gates the next proc but leaves a running buff up for the rest of its
+// duration. Gated on the enchant being a weapon enchant: RegisterWeaponEnchantBuff watches the
+// weapon slots, so handing it a cloak or shield enchant would deactivate that buff on any weapon
+// swap.
+func (s effectSource) registerWeaponEnchantBuff(character *core.Character, procAura *core.StatBuffAura) {
+	if !s.isEnchant {
+		return
+	}
+
+	if ench := core.GetEnchantByEffectID(s.id); ench == nil || ench.Type != proto.ItemType_ItemTypeWeapon {
+		return
+	}
+
+	character.ItemSwap.RegisterWeaponEnchantBuff(procAura.Aura, s.id)
+}
+
+// As registerProc, for the effects that do not narrow themselves to a set of slots.
+func (s effectSource) registerProcAnySlot(character *core.Character, triggerAura *core.Aura) {
+	if s.isEnchant {
+		character.ItemSwap.RegisterEnchantProc(s.id, triggerAura)
+	} else {
+		character.ItemSwap.RegisterProc(s.id, triggerAura)
+	}
+}
+
+// Share a cooldown only when the effect says it belongs to a category. One with no category shares
+// nothing, and putting it on a generic trinket timer would gate it against unrelated items. The
+// category IDs are core's own - 1141 is "Item - Burst Trinket", 1283 is "Engineering - Belt
+// Enchantment".
+func sharedCooldown(character *core.Character, effect *proto.ItemEffect) core.Cooldown {
+	onUse := effect.GetOnUse()
+	if onUse == nil || onUse.CategoryId <= 0 {
+		return core.Cooldown{}
+	}
+
+	duration := time.Millisecond * time.Duration(onUse.CategoryCooldownMs)
+	if duration <= 0 {
+		duration = time.Millisecond * time.Duration(effect.EffectDurationMs)
+	}
+
+	return core.Cooldown{
+		Timer:    character.GetOrInitSpellCategoryTimer(onUse.CategoryId),
+		Duration: duration,
+	}
+}
+
+// Registers the same effect once per item that carries it. Only the highest ID is added to the
+// test suite, so that a dozen re-issues of one trinket do not each get their own fixture entry.
+func forEachVariant(variants []ItemVariant, register func(variant ItemVariant)) {
+	var maxItemID int32
+	for _, variant := range variants {
+		maxItemID = max(maxItemID, variant.ItemID)
+	}
+
+	for _, variant := range variants {
+		core.AddEffectsToTest = (variant.ItemID == maxItemID)
+		register(variant)
 	}
 
 	core.AddEffectsToTest = true

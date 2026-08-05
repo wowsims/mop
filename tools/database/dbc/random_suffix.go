@@ -14,31 +14,29 @@ type RandomSuffix struct {
 }
 
 func (raw RandomSuffix) ToProto() *proto.ItemRandomSuffix {
+	// A suffix stores an allocation share of the item's stat budget rather than a flat amount,
+	// so what lands in Stats here is AllocationPct and the consumer scales it by rand prop
+	// points. Attack power is not mirrored onto ranged attack power: no item references a
+	// suffix that grants raw attack power, so there is nothing to decide.
+	suffixStats := stats.Stats{}
+	processEnchantmentEffects(raw.Effects, raw.EffectArgs, raw.AllocationPct, &suffixStats, false)
+
 	suffix := &proto.ItemRandomSuffix{
 		Name:  raw.Name,
 		Id:    int32(raw.ID),
-		Stats: stats.Stats{}.ToProtoArray(),
+		Stats: suffixStats.ToProtoArray(),
 	}
-	for i, effect := range raw.Effects {
-		var stat proto.Stat
-		var matchFound bool
 
-		if effect == 5 {
-			stat, matchFound = MapBonusStatIndexToStat(raw.EffectArgs[i])
-		} else if effect == 4 {
-			stat, matchFound = MapResistanceToStat(raw.EffectArgs[i])
-		}
-
-		if !matchFound {
-			continue
-		}
-
-		amount := raw.AllocationPct[i]
-		suffix.Stats[stat] = float64(amount)
-
-		if suffix.Name == "" {
-			suffix.Name = stats.Stat(stat).StatName()
+	// Some suffixes ship without a name and are known by the stat they grant. Every one of
+	// those resolves to a single stat, so the first non-zero entry is that stat.
+	if suffix.Name == "" {
+		for stat, amount := range suffixStats {
+			if amount != 0 {
+				suffix.Name = stats.Stat(stat).StatName()
+				break
+			}
 		}
 	}
+
 	return suffix
 }

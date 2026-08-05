@@ -275,7 +275,7 @@ dps_results: {
  value: {
   dps: 396511.78441
   tps: 311960.14911
-  hps: 2044.07511
+  hps: 2051.2229
  }
 }
 dps_results: {
@@ -283,7 +283,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2036.06294
+  hps: 2043.35053
  }
 }
 dps_results: {
@@ -291,7 +291,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2076.63347
+  hps: 2083.92106
  }
 }
 dps_results: {
@@ -347,7 +347,7 @@ dps_results: {
  value: {
   dps: 396104.31348
   tps: 311905.8198
-  hps: 2033.73554
+  hps: 2043.74031
  }
 }
 dps_results: {
@@ -355,7 +355,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2036.06294
+  hps: 2046.18912
  }
 }
 dps_results: {
@@ -363,7 +363,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2083.99082
+  hps: 2094.117
  }
 }
 dps_results: {
@@ -531,7 +531,7 @@ dps_results: {
  value: {
   dps: 396511.78441
   tps: 311960.14911
-  hps: 2044.07511
+  hps: 2051.2229
  }
 }
 dps_results: {
@@ -539,7 +539,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2036.06294
+  hps: 2043.35053
  }
 }
 dps_results: {
@@ -547,7 +547,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2076.63347
+  hps: 2083.92106
  }
 }
 dps_results: {
@@ -803,7 +803,7 @@ dps_results: {
  value: {
   dps: 399923.31231
   tps: 316098.79247
-  hps: 2036.06294
+  hps: 2061.49823
  }
 }
 dps_results: {
@@ -875,7 +875,7 @@ dps_results: {
  value: {
   dps: 399728.82273
   tps: 315000.24261
-  hps: 2044.25338
+  hps: 2064.26847
  }
 }
 dps_results: {
@@ -883,7 +883,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2036.06294
+  hps: 2056.03015
  }
 }
 dps_results: {
@@ -891,7 +891,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2109.63644
+  hps: 2129.60365
  }
 }
 dps_results: {
@@ -1227,7 +1227,7 @@ dps_results: {
  value: {
   dps: 396104.31348
   tps: 311905.8198
-  hps: 2033.73554
+  hps: 2043.74031
  }
 }
 dps_results: {
@@ -1235,7 +1235,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2036.06294
+  hps: 2046.18912
  }
 }
 dps_results: {
@@ -1243,7 +1243,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2083.99082
+  hps: 2094.117
  }
 }
 dps_results: {
@@ -1383,6 +1383,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestDestruction-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 390044.26483
+  tps: 307097.15331
+  hps: 2027.80328
+ }
+}
+dps_results: {
  key: "TestDestruction-AllItems-NitroBoosts-4223"
  value: {
   dps: 453539.6288
@@ -1483,7 +1491,7 @@ dps_results: {
  value: {
   dps: 400822.44912
   tps: 315731.4846
-  hps: 2044.93674
+  hps: 2073.18915
  }
 }
 dps_results: {
@@ -1491,7 +1499,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2036.06294
+  hps: 2064.4515
  }
 }
 dps_results: {
@@ -1499,7 +1507,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2131.60338
+  hps: 2159.99194
  }
 }
 dps_results: {
@@ -2115,7 +2123,7 @@ dps_results: {
  value: {
   dps: 397568.0553
   tps: 313480.26245
-  hps: 2027.79326
+  hps: 2041.5256
  }
 }
 dps_results: {
@@ -2123,7 +2131,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2036.06294
+  hps: 2049.96193
  }
 }
 dps_results: {
@@ -2131,7 +2139,7 @@ dps_results: {
  value: {
   dps: 390044.26483
   tps: 307097.15331
-  hps: 2093.83565
+  hps: 2107.73464
  }
 }
 dps_results: {

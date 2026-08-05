@@ -152,10 +152,8 @@ func (item *Item) GetStats(itemLevel int) *stats.Stats {
 			continue
 		}
 		stats[stat] = item.GetScaledStat(i, itemLevel)
-		if stat == proto.Stat_StatAttackPower {
-			stats[proto.Stat_StatRangedAttackPower] = item.GetScaledStat(i, itemLevel) // Apply RAP as well. Might not be true for 1.12 idk
-		}
 	}
+	mirrorAttackPower(stats)
 
 	armor := item.GetArmorValue(itemLevel)
 	if armor > 0 {
@@ -174,20 +172,6 @@ func (item *Item) GetRandPropPoints(itemLevel int) int32 {
 		return 0
 	}
 	return randomProperty[item.OverallQuality.ToProto()][suffixType]
-}
-
-// ItemSocketCostPerLevel game table, collapsed to its breakpoints (constant 160
-// for all ilvls the stat-recompute path can see: upgrades and challenge mode).
-func ItemSocketCostPerLevel(itemLevel int) float64 {
-	breakpoints := [][2]float64{
-		{417, 160}, {333, 40}, {178, 20}, {100, 6}, {89, 5}, {55, 4}, {43, 3}, {31, 2}, {19, 1},
-	}
-	for _, bp := range breakpoints {
-		if float64(itemLevel) >= bp[0] {
-			return bp[1]
-		}
-	}
-	return 0
 }
 
 func (item *Item) GetScaledStat(index int, itemLevel int) float64 {
@@ -236,28 +220,14 @@ func (item *Item) GetGemSlots() []proto.GemColor {
 }
 
 func (item *Item) GetGemBonus() stats.Stats {
-	stats := stats.Stats{}
+	socketBonus := stats.Stats{}
 	if item.SocketEnchantmentId == 0 {
-		return stats
+		return socketBonus
 	}
-	bonus := GetDBC().ItemStatEffects[item.SocketEnchantmentId]
 
-	for i, effectStat := range bonus.EffectArg {
-		if effectStat == 0 {
-			continue
-		}
-		stat, success := MapBonusStatIndexToStat(effectStat)
-		if !success {
-			return stats
-		}
-		value := bonus.EffectPointsMin[i]
-		stats[stat] = float64(value)
-		//Todo: check if this is always true
-		if stat == proto.Stat_StatAttackPower {
-			stats[proto.Stat_StatRangedAttackPower] = float64(value)
-		}
-	}
-	return stats
+	bonus := GetDBC().SocketBonuses[item.SocketEnchantmentId]
+	processEnchantmentEffects(bonus.Effects, bonus.EffectArgs, bonus.EffectPoints, &socketBonus, true)
+	return socketBonus
 }
 
 func (item *Item) WeaponDmgMin(itemLevel int) float64 {

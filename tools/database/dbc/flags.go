@@ -336,10 +336,13 @@ const (
 		ITEM_SUBCLASS_BIT_WEAPON_SPEAR | ITEM_SUBCLASS_BIT_WEAPON_POLEARM
 )
 
+// The whole-mask values a SpellItemEnchantment carries when it identifies an armor slot rather
+// than a weapon class.
 const (
-	OffHandValue = 65
-	ShieldValue1 = 96
-	ShieldValue2 = 64
+	OffHandValue = ITEM_SUBCLASS_BIT_ARMOR_MISC | ITEM_SUBCLASS_BIT_ARMOR_SHIELD // 65
+
+	// The shield spikes, and only they, carry the buckler bit alongside the shield bit.
+	ShieldValue1 = ITEM_SUBCLASS_BIT_ARMOR_BUCKLER | ITEM_SUBCLASS_BIT_ARMOR_SHIELD // 96
 )
 
 type RatingModType uint

@@ -13,53 +13,6 @@ import (
 const UnerringVisionBuffId = 138963
 
 func init() {
-	// Renataki's Soul Charm
-	// Your attacks  have a chance to grant Blades of Renataki, granting 1592 Agility every 1 sec for 10 sec.  (Approximately 1.21 procs per minute)
-	shared.ItemVersionMap{
-		shared.ItemVersionLFR:                 95625,
-		shared.ItemVersionNormal:              94512,
-		shared.ItemVersionHeroic:              96369,
-		shared.ItemVersionThunderforged:       95997,
-		shared.ItemVersionHeroicThunderforged: 96741,
-	}.RegisterAll(func(version shared.ItemVersion, itemID int32, versionLabel string) {
-		label := "Renataki's Soul Charm"
-
-		core.NewItemEffect(itemID, func(agent core.Agent, state proto.ItemLevelState) {
-			character := agent.GetCharacter()
-
-			statValue := core.GetItemEffectScalingStatValue(itemID, 0.44999998808, state)
-
-			statBuffAura, aura := character.NewTemporaryStatBuffWithStacks(core.TemporaryStatBuffWithStacksConfig{
-				AuraLabel:            fmt.Sprintf("Blades of Renataki (%s)", versionLabel),
-				ActionID:             core.ActionID{SpellID: 138756},
-				Duration:             time.Second * 10,
-				MaxStacks:            10,
-				TimePerStack:         time.Second * 1,
-				BonusPerStack:        stats.Stats{stats.Agility: statValue},
-				StackingAuraActionID: core.ActionID{SpellID: 138737},
-				StackingAuraLabel:    fmt.Sprintf("Item - Proc Stacking Agility (%s)", versionLabel),
-				TickImmediately:      true,
-			})
-
-			triggerAura := character.MakeProcTriggerAura(core.ProcTrigger{
-				Name: fmt.Sprintf("%s (%s)", label, versionLabel),
-				ICD:  time.Second * 10,
-				DPM: character.NewRPPMProcManager(itemID, false, false, core.ProcMaskDirect|core.ProcMaskProc, core.RPPMConfig{
-					PPM: 1.21000003815,
-				}),
-				Outcome:  core.OutcomeLanded,
-				Callback: core.CallbackOnSpellHitDealt,
-				Handler: func(sim *core.Simulation, spell *core.Spell, _ *core.SpellResult) {
-					aura.Activate(sim)
-				},
-			})
-
-			eligibleSlots := character.ItemSwap.EligibleSlotsForItem(itemID)
-			character.AddStatProcBuff(itemID, statBuffAura, false, eligibleSlots)
-			character.ItemSwap.RegisterProcWithSlots(itemID, triggerAura, eligibleSlots)
-		})
-	})
-
 	// Horridon's Last Gasp
 	// Your healing spells have a chance to grant 1375 mana per 2 sec over 10 sec.  (Approximately [0.96 + Haste] procs per minute)
 	shared.ItemVersionMap{
@@ -178,6 +131,9 @@ func init() {
 
 	// Fabled Feather of Ji-Kun
 	// Your attacks have a chance to grant Feathers of Fury, granting 1505 Strength every 1 sec for 10 sec.  (Approximately 1.21 procs per minute)
+	//
+	// NOTE: This can be auto-generated, however this would break APLs that refer this manual implementation.
+	// The automatically generated version has the "Mighty" buff as a separate aura (game-like)
 	shared.ItemVersionMap{
 		shared.ItemVersionLFR:                 95726,
 		shared.ItemVersionNormal:              94515,

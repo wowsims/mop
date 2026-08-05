@@ -600,8 +600,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 433464.68826
-  tps: 319458.38715
+  dps: 433461.15391
+  tps: 319464.57768
  }
 }
 dps_results: {
@@ -1229,6 +1229,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestArms-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 400859.84935
+  tps: 296736.8054
+ }
+}
+dps_results: {
  key: "TestArms-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 400859.84935
@@ -1369,6 +1376,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestArms-AllItems-PridefulGladiator'sPlateGauntlets-103526"
+ value: {
+  dps: 397029.48146
+  tps: 289571.55452
+ }
+}
+dps_results: {
  key: "TestArms-AllItems-Primordius'TalismanofRage-96873"
  value: {
   dps: 419530.38467
@@ -1455,8 +1469,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 400071.57995
-  tps: 296031.59697
+  dps: 400711.63605
+  tps: 296615.08295
  }
 }
 dps_results: {
@@ -1581,8 +1595,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 433657.12772
-  tps: 318648.07978
+  dps: 433593.46401
+  tps: 320381.10243
  }
 }
 dps_results: {

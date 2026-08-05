@@ -681,8 +681,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 458654.49511
-  tps: 359390.46563
+  dps: 459947.03061
+  tps: 361118.58262
   hps: 18.7682
  }
 }
@@ -697,7 +697,7 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 456458.99512
+  dps: 456505.04334
   tps: 358005.20778
   hps: 18.7682
  }
@@ -1407,6 +1407,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestMarksmanship-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 411693.07519
+  tps: 322312.2922
+  hps: 18.7682
+ }
+}
+dps_results: {
  key: "TestMarksmanship-AllItems-NitroBoosts-4223"
  value: {
   dps: 466280.31224
@@ -1499,6 +1507,14 @@ dps_results: {
  value: {
   dps: 411713.7158
   tps: 322312.2922
+  hps: 18.7682
+ }
+}
+dps_results: {
+ key: "TestMarksmanship-AllItems-PridefulGladiator'sChainGauntlets-103417"
+ value: {
+  dps: 442596.31316
+  tps: 346880.97586
   hps: 18.7682
  }
 }
@@ -1649,8 +1665,8 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 435166.34146
-  tps: 338661.87454
+  dps: 436409.97485
+  tps: 339701.11744
   hps: 18.7682
  }
 }
@@ -1793,9 +1809,9 @@ dps_results: {
 dps_results: {
  key: "TestMarksmanship-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 417299.74226
-  tps: 326987.6673
-  hps: 19.46596
+  dps: 411713.7158
+  tps: 322312.2922
+  hps: 18.7682
  }
 }
 dps_results: {

@@ -1243,6 +1243,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestFury-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 274515.69876
+  tps: 173090.59056
+ }
+}
+dps_results: {
  key: "TestFury-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 274515.69876
@@ -1383,6 +1390,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestFury-AllItems-PridefulGladiator'sPlateGauntlets-103526"
+ value: {
+  dps: 284091.22075
+  tps: 178263.33695
+ }
+}
+dps_results: {
  key: "TestFury-AllItems-Primordius'TalismanofRage-96873"
  value: {
   dps: 292360.11385
@@ -1469,8 +1483,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 277006.26206
-  tps: 174173.42728
+  dps: 275666.5092
+  tps: 173124.65755
  }
 }
 dps_results: {
@@ -1595,8 +1609,8 @@ dps_results: {
 dps_results: {
  key: "TestFury-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 290851.20091
-  tps: 182883.10414
+  dps: 294023.93611
+  tps: 183256.15575
  }
 }
 dps_results: {
@@ -2127,85 +2141,85 @@ dps_results: {
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 520897.95893
-  tps: 390362.52733
+  dps: 504576.21559
+  tps: 385072.62541
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 291256.65765
-  tps: 191637.59933
+  dps: 293597.04813
+  tps: 193033.55231
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 363434.87209
-  tps: 232062.58285
+  dps: 362039.37542
+  tps: 231359.70056
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 423250.4484
-  tps: 309187.86767
+  dps: 422545.06622
+  tps: 311731.85164
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 232267.06502
-  tps: 153614.28003
+  dps: 229569.30123
+  tps: 152749.07931
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 271641.03238
-  tps: 172715.68619
+  dps: 266176.83929
+  tps: 169552.2675
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 547727.37155
-  tps: 372495.01697
+  dps: 547361.51112
+  tps: 372540.89857
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 292814.48785
-  tps: 193258.62909
+  dps: 293846.01092
+  tps: 194474.93529
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 367079.4816
-  tps: 240963.14445
+  dps: 369651.1239
+  tps: 239500.86205
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 435996.3565
-  tps: 300349.87896
+  dps: 434076.03928
+  tps: 299928.89476
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 226171.51452
-  tps: 151203.5526
+  dps: 227806.57464
+  tps: 152970.86789
  }
 }
 dps_results: {
  key: "TestFury-Settings-Troll-preraid_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 266358.64258
-  tps: 174866.7567
+  dps: 264587.10278
+  tps: 174851.09814
  }
 }
 dps_results: {
@@ -2295,85 +2309,85 @@ dps_results: {
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 514732.37494
-  tps: 387945.59519
+  dps: 511310.39528
+  tps: 388558.35108
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 297183.83432
-  tps: 195251.59511
+  dps: 296269.59647
+  tps: 194245.71296
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 368769.06793
-  tps: 235036.76718
+  dps: 364498.62174
+  tps: 232128.71294
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 410754.89492
-  tps: 315310.52072
+  dps: 419674.56625
+  tps: 317059.37281
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 231442.29628
-  tps: 152809.15403
+  dps: 229851.43876
+  tps: 152399.26681
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-DefaultTalents-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 269383.83302
-  tps: 170038.4691
+  dps: 268957.8653
+  tps: 170129.54174
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 552474.26722
-  tps: 376695.35138
+  dps: 551635.47271
+  tps: 375426.17406
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 292280.36293
-  tps: 192118.21012
+  dps: 290801.4892
+  tps: 193259.44719
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-Single-Minded Fury-Basic-default-FullBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 369197.7104
-  tps: 240394.73052
+  dps: 364712.58618
+  tps: 238751.69613
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 435668.48673
-  tps: 300060.18927
+  dps: 435952.48006
+  tps: 298742.40652
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-LongSingleTarget"
  value: {
-  dps: 229964.71296
-  tps: 152379.72183
+  dps: 229520.14357
+  tps: 153271.67979
  }
 }
 dps_results: {
  key: "TestFury-Settings-Worgen-preraid_fury_tg-Single-Minded Fury-Basic-default-NoBuffs-25.0yards-ShortSingleTarget"
  value: {
-  dps: 268719.14496
-  tps: 174465.23328
+  dps: 266548.06331
+  tps: 173760.57925
  }
 }
 dps_results: {

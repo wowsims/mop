@@ -124,26 +124,18 @@ func processEnchantmentEffects(
 				continue
 			}
 			outStats[stat] = float64(effectPoints[i])
-			// If the bonus stat is attack power, copy it to ranged attack power
-			if addRanged && stat == proto.Stat_StatAttackPower {
-				outStats[proto.Stat_StatRangedAttackPower] = float64(effectPoints[i])
-			}
-		case ITEM_ENCHANTMENT_EQUIP_SPELL: //Buff
-			spellEffects := dbcInstance.SpellEffects[effectArgs[i]]
-			for _, spellEffect := range spellEffects {
-				if spellEffect.EffectMiscValues[0] == -1 &&
-					spellEffect.EffectType == E_APPLY_AURA &&
-					spellEffect.EffectAura == A_MOD_STAT {
-					// Apply bonus to all stats
-					outStats[proto.Stat_StatAgility] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatIntellect] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatSpirit] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatStamina] += float64(spellEffect.EffectBasePoints)
-					outStats[proto.Stat_StatStrength] += float64(spellEffect.EffectBasePoints)
+		case ITEM_ENCHANTMENT_EQUIP_SPELL:
+			// Buff
+			// The buff's stats come out of the same aura mapping item effects resolve
+			// through, so this only has to accumulate what ParseStatEffect returns rather
+			// than repeat that switch with a second, narrower set of aura types. An
+			// enchantment never scales off item level, hence ilvl 0.
+			for _, spellEffect := range GetDBC().SpellEffectsInOrder(effectArgs[i]) {
+				if spellEffect.EffectType != E_APPLY_AURA {
 					continue
 				}
-				if spellEffect.EffectType == E_APPLY_AURA && spellEffect.EffectAura == A_MOD_STAT {
-					outStats[spellEffect.EffectMiscValues[0]] += float64(spellEffect.EffectBasePoints)
+				if effectStats, ok := spellEffect.ParseStatEffect(false, 0); ok {
+					outStats.AddInplace(&effectStats)
 				}
 			}
 		case ITEM_ENCHANTMENT_COMBAT_SPELL:
@@ -151,5 +143,18 @@ func processEnchantmentEffects(
 		case ITEM_ENCHANTMENT_USE_SPELL:
 			// Not processed
 		}
+	}
+
+	if addRanged {
+		mirrorAttackPower(outStats)
+	}
+}
+
+// Copies attack power onto ranged attack power. Gear that grants attack power grants both,
+// and no source in the database sets the two separately, so this is applied once over the
+// finished total rather than at each place a stat is written.
+func mirrorAttackPower(outStats *stats.Stats) {
+	if attackPower := outStats[proto.Stat_StatAttackPower]; attackPower != 0 {
+		outStats[proto.Stat_StatRangedAttackPower] = attackPower
 	}
 }

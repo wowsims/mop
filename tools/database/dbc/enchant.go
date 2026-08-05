@@ -27,6 +27,47 @@ type Enchant struct {
 	EffectName         string
 }
 
+// Synthesises the on-use effect of an ITEM_ENCHANTMENT_USE_SPELL entry.
+// The enchantment itself carries no trigger data, so the cooldown, spell category and
+// category cooldown come from the spell it casts. Most of these are engineering tinkers
+// whose actual buff is server-scripted and therefore not reachable from SpellEffect, but
+// the trigger, cooldown and duration are all present in DBC and worth carrying.
+func (enchant *Enchant) OnUseEffect() (ItemEffect, bool) {
+	idx := slices.Index(enchant.Effects, ITEM_ENCHANTMENT_USE_SPELL)
+	if idx < 0 || idx >= len(enchant.EffectArgs) {
+		return ItemEffect{}, false
+	}
+
+	spellID := enchant.EffectArgs[idx]
+	spell, ok := GetDBC().Spells[spellID]
+	if !ok {
+		return ItemEffect{}, false
+	}
+
+	return ItemEffect{
+		TriggerType:          ITEM_SPELLTRIGGER_ON_USE,
+		SpellID:              spellID,
+		CoolDownMSec:         int(spell.Cooldown),
+		SpellCategoryID:      int(spell.Category),
+		CategoryCoolDownMSec: int(spell.CategoryRecoveryTime),
+	}, true
+}
+
+// Assembles a proc effect whose stats come from an explicitly linked buff spell instead of
+// from a chain resolved out of SpellEffect. The trigger data - proc
+// rate, its modifiers and the internal cooldown - still comes from the enchant's own spell,
+// and the buff spell supplies the stats, duration and stack count.
+//
+// hasStats is false when the buff applies something that is not a stat, such as the damage
+// absorb behind Colossus.
+func (enchant *Enchant) buildLinkedProcEffect(buffSpellID int) (*proto.ItemEffect, bool) {
+	trigger := ItemEffect{TriggerType: ITEM_SPELLTRIGGER_CHANCE_ON_HIT, SpellID: enchant.SpellId}
+
+	// An enchantment has no item level, so it has the one Base state at item level 0.
+	baseState := int32(proto.ItemLevelState_Base)
+	return buildEffectProto(&trigger, buffSpellID, map[int32]int{baseState: 0}, 0)
+}
+
 func (enchant *Enchant) HasEnchantEffect() bool {
 	for idx, effect := range enchant.Effects {
 		if effect == ITEM_ENCHANTMENT_COMBAT_SPELL {
@@ -36,10 +77,10 @@ func (enchant *Enchant) HasEnchantEffect() bool {
 		// We apply a buff here, check if it's a trigger
 		if effect == ITEM_ENCHANTMENT_EQUIP_SPELL {
 			spellId := enchant.EffectArgs[idx]
-			spellEffects := dbcInstance.SpellEffects[spellId]
-			for _, spellEffect := range spellEffects {
-				if spellEffect.EffectAura == A_PROC_TRIGGER_SPELL ||
-					spellEffect.EffectAura == A_PROC_TRIGGER_SPELL_WITH_VALUE {
+			for _, spellEffect := range GetDBC().SpellEffectsInOrder(spellId) {
+				// Damage procs such as the shield spikes hang their amount straight off the
+				// aura instead of triggering a separate spell.
+				if spellEffect.IsProcTrigger() || spellEffect.EffectAura == A_PROC_TRIGGER_DAMAGE {
 					return true
 				}
 			}
@@ -49,7 +90,11 @@ func (enchant *Enchant) HasEnchantEffect() bool {
 	return false
 }
 
-func (enchant *Enchant) ToProto() *proto.UIEnchant {
+// buffLinks supplies the enchantment -> buff spell links that SpellEffect cannot carry, keyed by
+// enchantment ID. It is passed in rather than read from a table here because deciding which spells
+// an enchant really applies is override policy, and all of that lives together in
+// tools/database/overrides.go. Nil is valid and means every buff has to be reachable from the data.
+func (enchant *Enchant) ToProto(buffLinks map[int][]int) *proto.UIEnchant {
 	uiEnchant := &proto.UIEnchant{
 		Name:               enchant.Name,
 		ItemId:             int32(enchant.ItemId),
@@ -63,14 +108,26 @@ func (enchant *Enchant) ToProto() *proto.UIEnchant {
 	}
 
 	if enchant.HasEnchantEffect() {
-		eff := ItemEffect{TriggerType: 2, SpellID: enchant.SpellId}
-		parsedEffect, hasStats := eff.ToProto(0, 0)
-		if hasStats {
+		eff := ItemEffect{TriggerType: ITEM_SPELLTRIGGER_CHANCE_ON_HIT, SpellID: enchant.SpellId}
+		parsedEffect, hasStats := eff.BuildProto(0, 0)
+		// Damage procs grant no stats, so requiring stats here dropped them without a trace.
+		if hasStats || ResolveDamageEffect(enchant.SpellId) != nil {
 			uiEnchant.EnchantEffects = append(uiEnchant.EnchantEffects, parsedEffect)
 		}
-		// if uiEnchant.EnchantEffect.GetOnUse() == nil && uiEnchant.EnchantEffect.GetProc() == nil {
-		// 	uiEnchant.EnchantEffect = nil
-		// }
+	}
+
+	// Enchants whose buff spell is only reachable through an explicit link.
+	for _, buffSpellID := range buffLinks[enchant.EffectId] {
+		if parsedEffect, hasStats := enchant.buildLinkedProcEffect(buffSpellID); hasStats {
+			uiEnchant.EnchantEffects = append(uiEnchant.EnchantEffects, parsedEffect)
+		}
+	}
+
+	// Kept regardless of whether stats resolve: the on-use trigger, its cooldown and the
+	// buff duration are real data even when the buff itself is server-scripted.
+	if useEffect, ok := enchant.OnUseEffect(); ok {
+		parsedEffect, _ := useEffect.BuildProto(0, 0)
+		uiEnchant.EnchantEffects = append(uiEnchant.EnchantEffects, parsedEffect)
 	}
 
 	if enchant.FDID == 0 {
@@ -97,7 +154,11 @@ func (enchant *Enchant) ToProto() *proto.UIEnchant {
 			uiEnchant.EnchantType = proto.EnchantType_EnchantTypeOffHand
 			uiEnchant.Type = proto.ItemType_ItemTypeWeapon
 		}
-		if enchant.SubClassMask == ITEM_SUBCLASS_BIT_ARMOR_SHIELD || enchant.SubClassMask == 64 { // idk where the 64 comes from but shield spikes are this
+		// Matches the "Enchant Shield - ..." scrolls. Not the shield spikes: those carry
+		// ShieldValue1 and fall through to no item type at all. Adding ShieldValue1 here also
+		// needs the ItemTypeWeapon branch of BuildSpellProcInfo dealt with, which would
+		// otherwise give a block-triggered proc an outgoing-hit callback.
+		if enchant.SubClassMask == ITEM_SUBCLASS_BIT_ARMOR_SHIELD {
 			uiEnchant.EnchantType = proto.EnchantType_EnchantTypeShield
 			uiEnchant.Type = proto.ItemType_ItemTypeWeapon
 		}
