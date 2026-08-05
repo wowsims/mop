@@ -2029,8 +2029,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.44830048901e+06
-  tps: 1.29736597787e+06
+  dps: 1.80833579733e+06
+  tps: 1.43516187635e+06
  }
 }
 dps_results: {
@@ -2050,8 +2050,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.22455045294e+06
-  tps: 1.05190469166e+06
+  dps: 1.43634548207e+06
+  tps: 1.15887416015e+06
  }
 }
 dps_results: {
@@ -2071,8 +2071,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.5794958021e+06
-  tps: 1.97767784108e+06
+  dps: 2.67483322086e+06
+  tps: 2.07801714107e+06
  }
 }
 dps_results: {
@@ -2092,8 +2092,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Orc-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.20452871331e+06
-  tps: 1.65974193295e+06
+  dps: 2.26723063388e+06
+  tps: 1.72475833609e+06
  }
 }
 dps_results: {
@@ -2113,8 +2113,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.45789092679e+06
-  tps: 1.29050696926e+06
+  dps: 1.77182727523e+06
+  tps: 1.40857222186e+06
  }
 }
 dps_results: {
@@ -2134,8 +2134,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p4_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 1.21013333128e+06
-  tps: 1.04506420849e+06
+  dps: 1.40377626312e+06
+  tps: 1.13171193771e+06
  }
 }
 dps_results: {
@@ -2155,8 +2155,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-FullBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.56145900744e+06
-  tps: 1.96426448986e+06
+  dps: 2.642299906e+06
+  tps: 2.05380554808e+06
  }
 }
 dps_results: {
@@ -2176,8 +2176,8 @@ dps_results: {
 dps_results: {
  key: "TestArms-Settings-Worgen-p5_arms_bis-Basic-arms-NoBuffs-25.0yards-LongMultiTarget"
  value: {
-  dps: 2.19806423918e+06
-  tps: 1.65598288717e+06
+  dps: 2.23100505564e+06
+  tps: 1.69404366053e+06
  }
 }
 dps_results: {
