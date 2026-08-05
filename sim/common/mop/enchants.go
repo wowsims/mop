@@ -376,6 +376,9 @@ func init() {
 			RelatedSelfBuff: buffAura,
 
 			Cast: core.CastConfig{
+				DefaultCast: core.Cast{
+					NonEmpty: true,
+				},
 				CD: core.Cooldown{
 					Timer:    character.NewTimer(),
 					Duration: time.Minute * 3,

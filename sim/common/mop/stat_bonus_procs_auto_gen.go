@@ -2628,7 +2628,7 @@ func RegisterAllProcs() {
 		Name:               "Relic of Yu'lon",
 		ItemID:             79331,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2639,7 +2639,7 @@ func RegisterAllProcs() {
 		Name:               "Windswept Pages (H)",
 		ItemID:             81125,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2661,7 +2661,7 @@ func RegisterAllProcs() {
 		Name:               "Carbonic Carbuncle (H)",
 		ItemID:             81138,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2673,7 +2673,7 @@ func RegisterAllProcs() {
 		Name:               "Vision of the Predator (H)",
 		ItemID:             81192,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2682,7 +2682,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126236
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -2697,7 +2697,7 @@ func RegisterAllProcs() {
 		Name:               "Searing Words (H)",
 		ItemID:             81267,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeCrit,
 		RequireDamageDealt: false,
 	})
@@ -2708,7 +2708,7 @@ func RegisterAllProcs() {
 		Name:               "Mark of the Catacombs",
 		ItemID:             83731,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2719,7 +2719,7 @@ func RegisterAllProcs() {
 		Name:               "Sigil of the Catacombs",
 		ItemID:             83732,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2763,7 +2763,7 @@ func RegisterAllProcs() {
 		Name:               "Sigil of Compassion",
 		ItemID:             83736,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2774,7 +2774,7 @@ func RegisterAllProcs() {
 		Name:               "Sigil of Fidelity",
 		ItemID:             83737,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2818,7 +2818,7 @@ func RegisterAllProcs() {
 		Name:               "Fearwurm Relic",
 		ItemID:             84070,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2829,7 +2829,7 @@ func RegisterAllProcs() {
 		Name:               "Charm of Ten Songs",
 		ItemID:             84071,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2873,7 +2873,7 @@ func RegisterAllProcs() {
 		Name:               "Relic of Kypari Zar",
 		ItemID:             84075,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2884,7 +2884,7 @@ func RegisterAllProcs() {
 		Name:               "Sigil of Kypari Zar",
 		ItemID:             84076,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2928,7 +2928,7 @@ func RegisterAllProcs() {
 		Name:               "Dreadful Gladiator's Insignia of Conquest (Season 12)",
 		ItemID:             84349,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2939,7 +2939,7 @@ func RegisterAllProcs() {
 		Name:               "Dreadful Gladiator's Insignia of Dominance (Season 12)",
 		ItemID:             84489,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2950,7 +2950,7 @@ func RegisterAllProcs() {
 		Name:               "Dreadful Gladiator's Insignia of Victory (Season 12)",
 		ItemID:             84495,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -2959,7 +2959,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -2971,7 +2971,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -2983,7 +2983,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -2995,7 +2995,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126533
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3008,7 +3008,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126554
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3022,7 +3022,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126577
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: true,
 	}, []shared.ItemVariant{
@@ -3035,7 +3035,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126582
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3061,7 +3061,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126646
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3088,7 +3088,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126649
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3101,7 +3101,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126657
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3115,7 +3115,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126659
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3150,7 +3150,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3164,7 +3164,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3178,7 +3178,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3194,7 +3194,7 @@ func RegisterAllProcs() {
 		Name:               "Crafted Dreadful Gladiator's Insignia of Conquest",
 		ItemID:             93424,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3205,7 +3205,7 @@ func RegisterAllProcs() {
 		Name:               "Crafted Dreadful Gladiator's Insignia of Dominance",
 		ItemID:             93601,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3216,7 +3216,7 @@ func RegisterAllProcs() {
 		Name:               "Crafted Dreadful Gladiator's Insignia of Victory",
 		ItemID:             93611,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3227,7 +3227,7 @@ func RegisterAllProcs() {
 		Name:               "Brutal Talisman of the Shado-Pan Assault",
 		ItemID:             94508,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3238,7 +3238,7 @@ func RegisterAllProcs() {
 		Name:               "Volatile Talisman of the Shado-Pan Assault",
 		ItemID:             94510,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3249,7 +3249,7 @@ func RegisterAllProcs() {
 		Name:               "Vicious Talisman of the Shado-Pan Assault",
 		ItemID:             94511,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3259,7 +3259,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=138870
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3275,7 +3275,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=138898
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: true,
 	}, []shared.ItemVariant{
@@ -3291,7 +3291,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=138895
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3307,7 +3307,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=138938
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3323,7 +3323,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=139170
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeCrit,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3339,7 +3339,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=139133
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeCrit,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3356,7 +3356,7 @@ func RegisterAllProcs() {
 		Name:               "Crafted Malevolent Gladiator's Insignia of Conquest",
 		ItemID:             98760,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3367,7 +3367,7 @@ func RegisterAllProcs() {
 		Name:               "Crafted Malevolent Gladiator's Insignia of Dominance",
 		ItemID:             98911,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3378,7 +3378,7 @@ func RegisterAllProcs() {
 		Name:               "Crafted Malevolent Gladiator's Insignia of Victory",
 		ItemID:             98917,
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3387,7 +3387,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3401,7 +3401,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3415,7 +3415,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3431,7 +3431,7 @@ func RegisterAllProcs() {
 		Name:               "Heart-Lesion Stone of Battle",
 		ItemID:             100990,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3442,7 +3442,7 @@ func RegisterAllProcs() {
 		Name:               "Heart-Lesion Idol of Battle",
 		ItemID:             100991,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3453,7 +3453,7 @@ func RegisterAllProcs() {
 		Name:               "Heart-Lesion Defender Idol",
 		ItemID:             100999,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3464,7 +3464,7 @@ func RegisterAllProcs() {
 		Name:               "Heart-Lesion Defender Stone",
 		ItemID:             101002,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3475,7 +3475,7 @@ func RegisterAllProcs() {
 		Name:               "Springrain Idol of Rage",
 		ItemID:             101009,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3486,7 +3486,7 @@ func RegisterAllProcs() {
 		Name:               "Springrain Stone of Rage",
 		ItemID:             101012,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3498,7 +3498,7 @@ func RegisterAllProcs() {
 		Name:               "Springrain Idol of Destruction",
 		ItemID:             101023,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3509,7 +3509,7 @@ func RegisterAllProcs() {
 		Name:               "Springrain Stone of Destruction",
 		ItemID:             101026,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3531,7 +3531,7 @@ func RegisterAllProcs() {
 		Name:               "Trailseeker Idol of Rage",
 		ItemID:             101054,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3542,7 +3542,7 @@ func RegisterAllProcs() {
 		Name:               "Trailseeker Stone of Rage",
 		ItemID:             101057,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3554,7 +3554,7 @@ func RegisterAllProcs() {
 		Name:               "Mountainsage Idol of Destruction",
 		ItemID:             101069,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3565,7 +3565,7 @@ func RegisterAllProcs() {
 		Name:               "Mountainsage Stone of Destruction",
 		ItemID:             101072,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3576,7 +3576,7 @@ func RegisterAllProcs() {
 		Name:               "Mistdancer Defender Stone",
 		ItemID:             101087,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3587,7 +3587,7 @@ func RegisterAllProcs() {
 		Name:               "Mistdancer Defender Idol",
 		ItemID:             101089,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3609,7 +3609,7 @@ func RegisterAllProcs() {
 		Name:               "Mistdancer Idol of Rage",
 		ItemID:             101113,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3620,7 +3620,7 @@ func RegisterAllProcs() {
 		Name:               "Mistdancer Stone of Rage",
 		ItemID:             101117,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3642,7 +3642,7 @@ func RegisterAllProcs() {
 		Name:               "Sunsoul Stone of Battle",
 		ItemID:             101151,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3653,7 +3653,7 @@ func RegisterAllProcs() {
 		Name:               "Sunsoul Idol of Battle",
 		ItemID:             101152,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3664,7 +3664,7 @@ func RegisterAllProcs() {
 		Name:               "Sunsoul Defender Idol",
 		ItemID:             101160,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3675,7 +3675,7 @@ func RegisterAllProcs() {
 		Name:               "Sunsoul Defender Stone",
 		ItemID:             101163,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3687,7 +3687,7 @@ func RegisterAllProcs() {
 		Name:               "Communal Idol of Destruction",
 		ItemID:             101168,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3698,7 +3698,7 @@ func RegisterAllProcs() {
 		Name:               "Communal Stone of Destruction",
 		ItemID:             101171,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3720,7 +3720,7 @@ func RegisterAllProcs() {
 		Name:               "Lightdrinker Idol of Rage",
 		ItemID:             101200,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3731,7 +3731,7 @@ func RegisterAllProcs() {
 		Name:               "Lightdrinker Stone of Rage",
 		ItemID:             101203,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3742,7 +3742,7 @@ func RegisterAllProcs() {
 		Name:               "Streamtalker Idol of Rage",
 		ItemID:             101217,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3753,7 +3753,7 @@ func RegisterAllProcs() {
 		Name:               "Streamtalker Stone of Rage",
 		ItemID:             101220,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3765,7 +3765,7 @@ func RegisterAllProcs() {
 		Name:               "Streamtalker Idol of Destruction",
 		ItemID:             101222,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3776,7 +3776,7 @@ func RegisterAllProcs() {
 		Name:               "Streamtalker Stone of Destruction",
 		ItemID:             101225,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3799,7 +3799,7 @@ func RegisterAllProcs() {
 		Name:               "Felsoul Idol of Destruction",
 		ItemID:             101263,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3810,7 +3810,7 @@ func RegisterAllProcs() {
 		Name:               "Felsoul Stone of Destruction",
 		ItemID:             101266,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3821,7 +3821,7 @@ func RegisterAllProcs() {
 		Name:               "Oathsworn Stone of Battle",
 		ItemID:             101294,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3832,7 +3832,7 @@ func RegisterAllProcs() {
 		Name:               "Oathsworn Idol of Battle",
 		ItemID:             101295,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3843,7 +3843,7 @@ func RegisterAllProcs() {
 		Name:               "Oathsworn Defender Idol",
 		ItemID:             101303,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3854,7 +3854,7 @@ func RegisterAllProcs() {
 		Name:               "Oathsworn Defender Stone",
 		ItemID:             101306,
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	})
@@ -3912,7 +3912,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3924,7 +3924,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3936,7 +3936,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellHealing | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3959,7 +3959,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=146312
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskMeleeProc | core.ProcMaskRangedProc | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -3972,7 +3972,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=146218
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
@@ -4021,7 +4021,7 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell=127923
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
-		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
+		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
 	}, []shared.ItemVariant{

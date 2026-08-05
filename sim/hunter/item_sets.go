@@ -166,6 +166,7 @@ var BattlegearOfTheUnblinkingVigil = core.NewItemSet(core.ItemSet{
 				Handler: func(sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 					if !hunter.RapidFire.CD.IsReady(sim) {
 						hunter.RapidFire.CD.Reduce(cdReduction)
+						hunter.UpdateMajorCooldowns()
 					}
 				},
 			})
