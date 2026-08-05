@@ -180,8 +180,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-ChronomancerRegalia"
  value: {
-  dps: 221186.35731
-  tps: 212560.58544
+  dps: 221394.15338
+  tps: 212752.26458
  }
 }
 dps_results: {
@@ -754,8 +754,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-Gladiator'sRegalia"
  value: {
-  dps: 233196.1686
-  tps: 224381.09899
+  dps: 233314.84719
+  tps: 224483.09325
  }
 }
 dps_results: {
@@ -1399,15 +1399,15 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-RegaliaoftheBurningScroll"
  value: {
-  dps: 215246.49754
-  tps: 207067.68219
+  dps: 215043.42767
+  tps: 206847.89568
  }
 }
 dps_results: {
  key: "TestArcane-AllItems-RegaliaoftheChromaticHydra"
  value: {
-  dps: 227456.72938
-  tps: 219090.85458
+  dps: 227374.7817
+  tps: 219001.78755
  }
 }
 dps_results: {
@@ -1770,8 +1770,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 278171.58938
-  tps: 266666.60291
+  dps: 276180.74217
+  tps: 264111.64693
  }
 }
 dps_results: {
@@ -2015,29 +2015,29 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Average-Default"
  value: {
-  dps: 283628.87951
-  tps: 271464.33304
+  dps: 283014.90661
+  tps: 270695.35984
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 717262.86909
-  tps: 707470.3691
+  dps: 727736.25006
+  tps: 717877.68534
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 273109.30838
-  tps: 261243.48074
+  dps: 276429.01651
+  tps: 264584.91458
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 477667.43853
-  tps: 423669.02789
+  dps: 478490.28066
+  tps: 424479.72319
  }
 }
 dps_results: {
@@ -2064,22 +2064,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 558186.04689
-  tps: 529485.49912
+  dps: 557254.0508
+  tps: 528708.43259
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 261306.29415
-  tps: 249745.14599
+  dps: 262199.62969
+  tps: 250610.34522
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 450321.33752
-  tps: 397934.89494
+  dps: 450079.85959
+  tps: 397508.28863
  }
 }
 dps_results: {
@@ -2106,22 +2106,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 902547.69673
-  tps: 889435.39483
+  dps: 900010.84832
+  tps: 886865.6243
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 269351.45509
-  tps: 257946.0031
+  dps: 269303.12917
+  tps: 257854.24641
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 463713.35827
-  tps: 411965.86361
+  dps: 464191.73592
+  tps: 412260.02656
  }
 }
 dps_results: {
@@ -2148,22 +2148,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 514732.81245
-  tps: 517903.79335
+  dps: 514227.29459
+  tps: 517318.03979
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 117184.057
-  tps: 109076.84173
+  dps: 117397.11642
+  tps: 109275.88206
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 397971.17366
-  tps: 356362.75632
+  dps: 397885.22732
+  tps: 356279.19703
  }
 }
 dps_results: {
@@ -2190,22 +2190,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 614018.67649
-  tps: 618033.63593
+  dps: 618164.26477
+  tps: 622238.00048
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 213574.55811
-  tps: 206063.46928
+  dps: 212329.07467
+  tps: 204811.98919
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-p3_bis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 375096.54652
-  tps: 338893.64324
+  dps: 373913.95932
+  tps: 337732.35648
  }
 }
 dps_results: {
@@ -2232,22 +2232,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 332649.53025
-  tps: 331511.22857
+  dps: 333141.18796
+  tps: 331965.70974
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 124917.85851
-  tps: 120726.82484
+  dps: 124992.53881
+  tps: 120763.01606
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 195557.39302
-  tps: 177852.07652
+  dps: 197791.54704
+  tps: 179883.90792
  }
 }
 dps_results: {
@@ -2281,15 +2281,15 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 119067.88426
-  tps: 114775.99914
+  dps: 119945.09408
+  tps: 115516.59833
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 193753.51064
-  tps: 175563.94956
+  dps: 197277.34345
+  tps: 178420.1566
  }
 }
 dps_results: {
@@ -2316,22 +2316,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 408704.44463
-  tps: 406168.78519
+  dps: 408650.75611
+  tps: 406098.58361
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 122172.60898
-  tps: 117715.9325
+  dps: 122189.90562
+  tps: 117728.38759
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 192906.15429
-  tps: 174158.80613
+  dps: 197093.37632
+  tps: 178260.53517
  }
 }
 dps_results: {
@@ -2358,22 +2358,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 234206.81772
-  tps: 242949.57731
+  dps: 234548.35666
+  tps: 243333.91182
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 51425.92269
-  tps: 49088.46514
+  dps: 51538.53257
+  tps: 49143.5466
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 172079.64476
-  tps: 159295.67769
+  dps: 173237.27966
+  tps: 160147.00602
  }
 }
 dps_results: {
@@ -2400,22 +2400,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 293901.47912
-  tps: 303550.40507
+  dps: 293536.67984
+  tps: 303220.61875
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 102205.32416
-  tps: 100588.7705
+  dps: 102369.76121
+  tps: 100717.3518
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Orc-prebis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 157714.73394
-  tps: 149281.02317
+  dps: 159667.00214
+  tps: 151001.61543
  }
 }
 dps_results: {
@@ -2442,22 +2442,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 734796.35474
-  tps: 726242.53855
+  dps: 728337.85089
+  tps: 719886.7804
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 279003.22152
-  tps: 267472.88943
+  dps: 277008.79671
+  tps: 264912.73429
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 485680.04869
-  tps: 433979.29502
+  dps: 471499.84364
+  tps: 417106.20833
  }
 }
 dps_results: {
@@ -2484,22 +2484,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 566769.07063
-  tps: 537532.73999
+  dps: 570593.88397
+  tps: 540401.48814
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 271243.2858
-  tps: 258956.50613
+  dps: 268202.91801
+  tps: 255955.3191
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 476084.35257
-  tps: 420954.14432
+  dps: 465363.73716
+  tps: 410087.10332
  }
 }
 dps_results: {
@@ -2526,22 +2526,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 919692.31223
-  tps: 906083.85019
+  dps: 920070.12979
+  tps: 907632.24325
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 270648.38828
-  tps: 258715.01146
+  dps: 270514.98567
+  tps: 259130.55752
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 460801.23584
-  tps: 407104.48273
+  dps: 459055.64158
+  tps: 407994.19482
  }
 }
 dps_results: {
@@ -2568,22 +2568,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 519814.94621
-  tps: 523598.2699
+  dps: 513390.50942
+  tps: 516442.61604
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 117054.30567
-  tps: 109502.41288
+  dps: 118134.24958
+  tps: 110100.94888
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 398266.58393
-  tps: 359669.52567
+  dps: 401889.89482
+  tps: 360869.43704
  }
 }
 dps_results: {
@@ -2610,22 +2610,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 622564.57921
-  tps: 626751.85166
+  dps: 623572.63095
+  tps: 627312.19088
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 216431.68001
-  tps: 209139.75173
+  dps: 215959.40675
+  tps: 208779.4904
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-p3_bis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 379825.66597
-  tps: 344996.39258
+  dps: 377370.45945
+  tps: 343041.30467
  }
 }
 dps_results: {
@@ -2652,22 +2652,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 333960.88249
-  tps: 332943.0028
+  dps: 333768.24252
+  tps: 332733.44844
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 125708.36244
-  tps: 121304.00123
+  dps: 126401.59895
+  tps: 121948.78333
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-DefaultTalents-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 198021.1555
-  tps: 179241.07256
+  dps: 201416.39901
+  tps: 182316.03913
  }
 }
 dps_results: {
@@ -2701,15 +2701,15 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 120376.14808
-  tps: 115931.38732
+  dps: 120426.25137
+  tps: 115940.52294
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row5_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 197313.38783
-  tps: 178290.91584
+  dps: 197791.05884
+  tps: 178547.44906
  }
 }
 dps_results: {
@@ -2736,22 +2736,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 416952.30412
-  tps: 414821.10047
+  dps: 416879.46387
+  tps: 414667.78889
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 123884.1649
-  tps: 119263.89305
+  dps: 124248.85357
+  tps: 119611.88713
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row5_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 198201.4867
-  tps: 178384.00452
+  dps: 200948.80518
+  tps: 180900.96611
  }
 }
 dps_results: {
@@ -2778,22 +2778,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 235417.29483
-  tps: 244936.87011
+  dps: 234123.96942
+  tps: 243732.28148
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 52049.26468
-  tps: 49541.51504
+  dps: 52083.30508
+  tps: 49538.28047
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row6_Talent1-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 175605.38227
-  tps: 161847.6827
+  dps: 176037.49732
+  tps: 162093.58409
  }
 }
 dps_results: {
@@ -2820,22 +2820,22 @@ dps_results: {
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 292041.38013
-  tps: 302280.85211
+  dps: 291753.84513
+  tps: 301967.10003
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 102323.12858
-  tps: 100670.38692
+  dps: 102767.85919
+  tps: 101038.18
  }
 }
 dps_results: {
  key: "TestArcane-Settings-Troll-prebis-Row6_Talent3-Arcane-arcane_t15_4pc-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 159430.00582
-  tps: 150667.79326
+  dps: 160977.68037
+  tps: 151898.80412
  }
 }
 dps_results: {
@@ -2862,7 +2862,7 @@ dps_results: {
 dps_results: {
  key: "TestArcane-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 279003.22152
-  tps: 267472.88943
+  dps: 277008.79671
+  tps: 264912.73429
  }
 }

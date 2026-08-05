@@ -443,7 +443,7 @@
 						"castSpell": { "spellId": { "spellId": 82726 } }
 					}
 				},
-				{ "action": { "castSpell": { "spellId": { "spellId": 3045 } } } },
+				{ "action": { "autocastOtherCooldowns": {} } },
 				{
 					"action": {
 						"condition": {

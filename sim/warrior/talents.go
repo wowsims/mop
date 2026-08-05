@@ -101,7 +101,7 @@ func (war *Warrior) registerDragonRoar() {
 
 	damageMultipliers := []float64{1, 0.75, 0.65, 0.55, 0.50}
 
-	flags := core.SpellFlagAPL | core.SpellFlagMeleeMetrics | core.SpellFlagIgnoreArmor
+	flags := core.SpellFlagAPL | core.SpellFlagMeleeMetrics | core.SpellFlagIgnoreArmor | core.SpellFlagAoE
 	if war.Spec != proto.Spec_SpecProtectionWarrior {
 		flags |= core.SpellFlagReadinessTrinket
 	}
@@ -230,7 +230,7 @@ func (war *Warrior) registerBladestorm() {
 			Aura: core.Aura{
 				Label: "Bladestorm",
 				OnExpire: func(aura *core.Aura, sim *core.Simulation) {
-					war.ExtendGCDUntil(sim, sim.CurrentTime+war.ReactionTime)
+					war.ExtendGCDUntil(sim, max(war.NextGCDAt(), sim.CurrentTime+war.ReactionTime))
 				},
 			},
 			NumberOfTicks: 6,

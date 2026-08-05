@@ -2329,48 +2329,48 @@ dps_results: {
 dps_results: {
  key: "TestShadow-Settings-Draenei-pre_raid-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 92667.56556
-  tps: 107173.16239
-  hps: 1600.15552
+  dps: 91250.93241
+  tps: 106397.13744
+  hps: 1604.90846
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Draenei-pre_raid-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 87162.6199
-  tps: 82522.42032
-  hps: 1600.15552
+  dps: 86618.08567
+  tps: 82104.30058
+  hps: 1604.90846
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Draenei-pre_raid-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 115608.69147
-  tps: 100296.29759
+  dps: 117502.94106
+  tps: 102245.12508
   hps: 2063.5669
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Draenei-pre_raid-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 58239.24827
-  tps: 74722.16149
-  hps: 1458.40362
+  dps: 58333.98536
+  tps: 75768.11015
+  hps: 1441.16658
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Draenei-pre_raid-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 53840.06698
-  tps: 52478.30533
-  hps: 1458.40362
+  dps: 54851.91537
+  tps: 53573.00814
+  hps: 1441.16658
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Draenei-pre_raid-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 59871.43709
-  tps: 55608.19494
+  dps: 60307.83726
+  tps: 56065.07409
   hps: 1652.5077
  }
 }
@@ -2425,48 +2425,48 @@ dps_results: {
 dps_results: {
  key: "TestShadow-Settings-Troll-pre_raid-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 95151.00784
-  tps: 109109.35589
-  hps: 1636.59471
+  dps: 95010.91113
+  tps: 109769.63367
+  hps: 1634.21824
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Troll-pre_raid-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 89775.83699
-  tps: 84267.38448
-  hps: 1636.59471
+  dps: 90538.98024
+  tps: 85091.22884
+  hps: 1634.21824
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Troll-pre_raid-Basic-default-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 126681.36272
-  tps: 107353.71683
+  dps: 129533.68692
+  tps: 110573.61719
   hps: 2221.99814
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Troll-pre_raid-Basic-default-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 61219.46088
-  tps: 78900.14861
-  hps: 1471.14405
+  dps: 60818.98689
+  tps: 78576.63907
+  hps: 1456.15531
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Troll-pre_raid-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 57017.43529
-  tps: 55243.25046
-  hps: 1471.14405
+  dps: 57184.94843
+  tps: 55416.39884
+  hps: 1456.15531
  }
 }
 dps_results: {
  key: "TestShadow-Settings-Troll-pre_raid-Basic-default-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 64798.84788
-  tps: 58942.82835
+  dps: 66212.04455
+  tps: 60656.61069
   hps: 1727.45136
  }
 }

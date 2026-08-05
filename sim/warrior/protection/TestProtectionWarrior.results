@@ -97,25 +97,25 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-BattleplateofResoundingRings"
  value: {
-  dps: 374628.20409
-  tps: 2.28291875491e+06
-  dtps: 44421.11843
+  dps: 372151.76046
+  tps: 2.26620532181e+06
+  dtps: 44686.9419
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-AllItems-BattleplateoftheLastMogu"
  value: {
-  dps: 376352.64014
-  tps: 2.28485002476e+06
-  dtps: 39292.40811
+  dps: 375885.40271
+  tps: 2.28202276583e+06
+  dtps: 39155.05373
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-AllItems-BattleplateofthePrehistoricMarauder"
  value: {
-  dps: 363631.87821
-  tps: 2.2074328431e+06
-  dtps: 44911.09533
+  dps: 366852.84649
+  tps: 2.22948112601e+06
+  dtps: 45076.49106
  }
 }
 dps_results: {
@@ -1458,34 +1458,34 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-AllItems-PhaseFingers-4697"
  value: {
-  dps: 419972.85725
-  tps: 2.56094226646e+06
-  dtps: 16072.129
+  dps: 418907.06394
+  tps: 2.55577982406e+06
+  dtps: 16241.18041
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-AllItems-PlateofResoundingRings"
  value: {
-  dps: 360894.12668
-  tps: 2.18971077052e+06
-  dtps: 41543.02843
+  dps: 361102.02885
+  tps: 2.19132566481e+06
+  dtps: 40234.22761
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-AllItems-PlateoftheLastMogu"
  value: {
-  dps: 378938.29565
-  tps: 2.29981909447e+06
-  dtps: 32269.72342
+  dps: 378762.86673
+  tps: 2.29862688528e+06
+  dtps: 32468.34519
  }
 }
 dps_results: {
  key: "TestProtectionWarrior-AllItems-PlateofthePrehistoricMarauder"
  value: {
-  dps: 370738.15762
-  tps: 2.2502646752e+06
-  dtps: 39741.50143
-  hps: 28990.9807
+  dps: 371226.32989
+  tps: 2.25285116288e+06
+  dtps: 39587.75588
+  hps: 28960.93996
  }
 }
 dps_results: {
@@ -2323,9 +2323,9 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-Average-Default"
  value: {
-  dps: 422289.65211
-  tps: 2.58234977619e+06
-  dtps: 17096.99091
+  dps: 422208.28862
+  tps: 2.58169331884e+06
+  dtps: 17121.79307
  }
 }
 dps_results: {
@@ -2439,8 +2439,8 @@ dps_results: {
 dps_results: {
  key: "TestProtectionWarrior-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 434475.50702
-  tps: 2.66360374073e+06
-  dtps: 13772.30743
+  dps: 434431.34996
+  tps: 2.66372509784e+06
+  dtps: 14053.83187
  }
 }

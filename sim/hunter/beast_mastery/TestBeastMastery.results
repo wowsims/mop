@@ -97,16 +97,16 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-BattlegearoftheSaurokStalker"
  value: {
-  dps: 336726.25632
-  tps: 133654.15906
+  dps: 337179.75715
+  tps: 133846.88451
   hps: 17.51959
  }
 }
 dps_results: {
  key: "TestBeastMastery-AllItems-BattlegearoftheUnblinkingVigil"
  value: {
-  dps: 327582.50494
-  tps: 134931.03904
+  dps: 328396.91487
+  tps: 134968.357
   hps: 17.66285
  }
 }
@@ -865,8 +865,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-Gladiator'sPursuit"
  value: {
-  dps: 345501.03749
-  tps: 136787.16463
+  dps: 345256.59708
+  tps: 136598.02596
   hps: 17.66285
  }
 }
@@ -2009,8 +2009,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 475182.2243
-  tps: 208648.19729
+  dps: 472924.41236
+  tps: 208085.23186
   hps: 17.66285
  }
 }
@@ -2281,8 +2281,8 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-AllItems-YaungolSlayerBattlegear"
  value: {
-  dps: 316302.96997
-  tps: 124694.76791
+  dps: 316266.19938
+  tps: 124701.83171
   hps: 17.51959
  }
 }
@@ -2305,23 +2305,23 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Average-Default"
  value: {
-  dps: 477190.89481
-  tps: 210860.98229
-  hps: 17.41983
+  dps: 477343.14665
+  tps: 210976.09357
+  hps: 17.42005
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-DefaultTalents-Basic-bm-FullBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 2.5822639843e+06
-  tps: 711052.18781
+  dps: 2.57333164731e+06
+  tps: 708569.5362
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-DefaultTalents-Basic-bm-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 466519.4264
-  tps: 206445.19462
+  dps: 466687.10985
+  tps: 206610.28236
  }
 }
 dps_results: {
@@ -2334,15 +2334,15 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-DefaultTalents-Basic-bm-NoBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 1.77792250387e+06
-  tps: 556059.34038
+  dps: 1.79167581352e+06
+  tps: 560007.18524
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-DefaultTalents-Basic-bm-NoBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 330162.07156
-  tps: 160708.76345
+  dps: 333339.81929
+  tps: 162081.11638
  }
 }
 dps_results: {
@@ -2355,36 +2355,36 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent1-Basic-bm-FullBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 2.69547537395e+06
-  tps: 727125.76285
+  dps: 2.67943923155e+06
+  tps: 724025.59747
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent1-Basic-bm-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 457402.5033
-  tps: 214808.25117
+  dps: 454366.71981
+  tps: 213658.15686
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent1-Basic-bm-FullBuffs-24.0yards-ShortSingleTarget"
  value: {
-  dps: 707303.32984
-  tps: 286387.98568
+  dps: 706745.89252
+  tps: 286399.04917
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent1-Basic-bm-NoBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 1.90409013864e+06
-  tps: 564283.76869
+  dps: 1.89906885063e+06
+  tps: 563491.39049
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent1-Basic-bm-NoBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 323076.08672
-  tps: 164126.26897
+  dps: 324829.81476
+  tps: 164884.15672
  }
 }
 dps_results: {
@@ -2397,36 +2397,36 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent3-Basic-bm-FullBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 2.61733312548e+06
-  tps: 752860.22694
+  dps: 2.63335348197e+06
+  tps: 752971.25219
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent3-Basic-bm-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 452237.33159
-  tps: 217085.23846
+  dps: 452564.87335
+  tps: 217337.53127
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent3-Basic-bm-FullBuffs-24.0yards-ShortSingleTarget"
  value: {
-  dps: 707571.5656
-  tps: 286998.43982
+  dps: 707622.21749
+  tps: 287049.09171
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent3-Basic-bm-NoBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 1.83911899401e+06
-  tps: 593240.51005
+  dps: 1.83561936967e+06
+  tps: 589234.42757
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row4_Talent3-Basic-bm-NoBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 324720.46247
-  tps: 170540.11917
+  dps: 324757.5869
+  tps: 170457.62372
  }
 }
 dps_results: {
@@ -2439,15 +2439,15 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent1-Basic-bm-FullBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 2.26938511877e+06
-  tps: 716244.5528
+  dps: 2.26511593442e+06
+  tps: 714943.08522
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent1-Basic-bm-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 462533.30309
-  tps: 228435.15891
+  dps: 461383.09685
+  tps: 228058.39578
  }
 }
 dps_results: {
@@ -2460,36 +2460,36 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent1-Basic-bm-NoBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 1.5500904456e+06
-  tps: 558964.80498
+  dps: 1.55695599135e+06
+  tps: 559427.45868
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent1-Basic-bm-NoBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 330790.44554
-  tps: 177394.97467
+  dps: 332416.67976
+  tps: 178397.34239
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent1-Basic-bm-NoBuffs-24.0yards-ShortSingleTarget"
  value: {
-  dps: 429796.71069
-  tps: 207471.16851
+  dps: 429786.41094
+  tps: 207474.66589
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent3-Basic-bm-FullBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 2.21311938178e+06
-  tps: 693270.01016
+  dps: 2.22443552973e+06
+  tps: 694952.63711
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent3-Basic-bm-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 448168.53875
-  tps: 203469.33563
+  dps: 448068.80896
+  tps: 203413.82894
  }
 }
 dps_results: {
@@ -2502,15 +2502,15 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent3-Basic-bm-NoBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 1.5525177697e+06
-  tps: 552451.83543
+  dps: 1.54392613609e+06
+  tps: 547830.3103
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row5_Talent3-Basic-bm-NoBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 319716.81074
-  tps: 159630.89924
+  dps: 320588.37675
+  tps: 160544.99452
  }
 }
 dps_results: {
@@ -2523,92 +2523,92 @@ dps_results: {
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent1-Basic-bm-FullBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 2.45961129069e+06
-  tps: 573563.57417
+  dps: 2.44417859626e+06
+  tps: 570231.51413
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent1-Basic-bm-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 464826.23167
-  tps: 209170.96458
+  dps: 465448.29646
+  tps: 208917.96454
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent1-Basic-bm-FullBuffs-24.0yards-ShortSingleTarget"
  value: {
-  dps: 704677.073
-  tps: 271852.41235
+  dps: 706311.93728
+  tps: 272663.13375
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent1-Basic-bm-NoBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 1.68792510374e+06
-  tps: 445273.46275
+  dps: 1.69502252108e+06
+  tps: 448565.70273
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent1-Basic-bm-NoBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 333443.09116
-  tps: 162727.63515
+  dps: 333354.37017
+  tps: 162420.63283
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent1-Basic-bm-NoBuffs-24.0yards-ShortSingleTarget"
  value: {
-  dps: 425029.46623
-  tps: 182266.9803
+  dps: 425177.42854
+  tps: 182055.71752
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent2-Basic-bm-FullBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 2.47519521843e+06
-  tps: 566942.43499
+  dps: 2.47129100373e+06
+  tps: 569954.37221
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent2-Basic-bm-FullBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 460959.33585
-  tps: 203451.91127
+  dps: 461425.5017
+  tps: 204144.33229
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent2-Basic-bm-FullBuffs-24.0yards-ShortSingleTarget"
  value: {
-  dps: 702030.91496
-  tps: 267580.9094
+  dps: 701007.83953
+  tps: 267801.76476
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent2-Basic-bm-NoBuffs-24.0yards-LongMultiTarget"
  value: {
-  dps: 1.71442297968e+06
-  tps: 450294.834
+  dps: 1.7099144302e+06
+  tps: 450275.17447
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent2-Basic-bm-NoBuffs-24.0yards-LongSingleTarget"
  value: {
-  dps: 329297.51597
-  tps: 158252.15743
+  dps: 330563.35277
+  tps: 159548.38893
  }
 }
 dps_results: {
  key: "TestBeastMastery-Settings-Orc-p5-Row6_Talent2-Basic-bm-NoBuffs-24.0yards-ShortSingleTarget"
  value: {
-  dps: 425121.90448
-  tps: 181605.55314
+  dps: 425344.29873
+  tps: 181578.12037
  }
 }
 dps_results: {
  key: "TestBeastMastery-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 457545.67127
-  tps: 207063.4864
+  dps: 456311.89749
+  tps: 206427.24114
   hps: 17.66285
  }
 }
