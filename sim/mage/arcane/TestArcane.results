@@ -593,15 +593,15 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 273507.02403
-  tps: 261893.05919
+  dps: 272842.98215
+  tps: 261297.67568
  }
 }
 dps_results: {
  key: "TestArcane-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 269643.71769
-  tps: 258079.83149
+  dps: 270222.98191
+  tps: 258639.53467
  }
 }
 dps_results: {
@@ -1229,6 +1229,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestArcane-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 245053.40888
+  tps: 235505.62906
+ }
+}
+dps_results: {
  key: "TestArcane-AllItems-NitroBoosts-4223"
  value: {
   dps: 277008.79671
@@ -1266,8 +1273,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-PhaseFingers-4697"
  value: {
-  dps: 275769.00356
-  tps: 263722.52615
+  dps: 273987.60384
+  tps: 262200.18814
  }
 }
 dps_results: {
@@ -1455,8 +1462,8 @@ dps_results: {
 dps_results: {
  key: "TestArcane-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 244571.17243
-  tps: 235035.59966
+  dps: 244975.75347
+  tps: 235435.29257
  }
 }
 dps_results: {

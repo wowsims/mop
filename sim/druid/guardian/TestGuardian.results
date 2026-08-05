@@ -780,10 +780,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 500549.31855
-  tps: 3.1408680938e+06
-  dtps: 22873.30274
-  hps: 46001.63626
+  dps: 501005.33606
+  tps: 3.14416855018e+06
+  dtps: 22491.53307
+  hps: 46005.46236
  }
 }
 dps_results: {
@@ -1588,6 +1588,15 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestGuardian-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 460767.10128
+  tps: 2.86648441439e+06
+  dtps: 24821.69979
+  hps: 45671.91725
+ }
+}
+dps_results: {
  key: "TestGuardian-AllItems-NitroBoosts-4223"
  value: {
   dps: 504859.9649
@@ -1851,10 +1860,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 470404.92485
-  tps: 2.93126509415e+06
-  dtps: 23285.11624
-  hps: 45859.7757
+  dps: 470657.65254
+  tps: 2.93160349863e+06
+  dtps: 24155.39086
+  hps: 45908.39009
  }
 }
 dps_results: {
@@ -2013,10 +2022,10 @@ dps_results: {
 dps_results: {
  key: "TestGuardian-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 475694.62288
-  tps: 2.93116931148e+06
-  dtps: 24643.98458
-  hps: 45880.99704
+  dps: 475064.93177
+  tps: 2.9328283302e+06
+  dtps: 24814.84576
+  hps: 45945.90644
  }
 }
 dps_results: {

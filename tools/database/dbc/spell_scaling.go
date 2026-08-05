@@ -18,14 +18,16 @@ type SpellScaling struct {
 }
 
 func (dbc *DBC) LoadSpellScaling() error {
+	columns := SpellScalingColumns()
 	scanner := bufio.NewScanner(strings.NewReader(spellScalingFile))
 
 	scanner.Scan() // Skip first line
 
 	for scanner.Scan() {
-		line := scanner.Text()
-		parts := strings.Fields(line)
-		if len(parts) < 14 {
+		parts := strings.Fields(scanner.Text())
+		// One level column plus one per class and per generic curve. The previous guard only
+		// required 14 fields while reading up to index 17.
+		if len(parts) < len(columns)+1 {
 			continue // consider handling or logging this situation
 		}
 
@@ -34,36 +36,14 @@ func (dbc *DBC) LoadSpellScaling() error {
 			continue // consider handling or logging this situation
 		}
 
-		scaling := SpellScaling{
-			Level: level,
-			Values: map[proto.Class]float64{
-				proto.Class_ClassWarrior:     parseScalingValue(parts[1]),
-				proto.Class_ClassPaladin:     parseScalingValue(parts[2]),
-				proto.Class_ClassHunter:      parseScalingValue(parts[3]),
-				proto.Class_ClassRogue:       parseScalingValue(parts[4]),
-				proto.Class_ClassPriest:      parseScalingValue(parts[5]),
-				proto.Class_ClassDeathKnight: parseScalingValue(parts[6]),
-				proto.Class_ClassShaman:      parseScalingValue(parts[7]),
-				proto.Class_ClassMage:        parseScalingValue(parts[8]),
-				proto.Class_ClassWarlock:     parseScalingValue(parts[9]),
-				proto.Class_ClassMonk:        parseScalingValue(parts[10]),
-				proto.Class_ClassDruid:       parseScalingValue(parts[11]),
-				proto.Class_ClassExtra1:      parseScalingValue(parts[12]),
-				proto.Class_ClassExtra2:      parseScalingValue(parts[13]),
-				proto.Class_ClassExtra3:      parseScalingValue(parts[14]),
-				proto.Class_ClassExtra4:      parseScalingValue(parts[15]),
-				proto.Class_ClassExtra5:      parseScalingValue(parts[16]),
-				proto.Class_ClassExtra6:      parseScalingValue(parts[17]),
-			},
+		values := make(map[proto.Class]float64, len(columns))
+		for i, class := range columns {
+			values[class] = parseScalingValue(parts[i+1])
 		}
-		dbc.SpellScalings[level] = scaling
+		dbc.SpellScalings[level] = SpellScaling{Level: level, Values: values}
 	}
 
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-
-	return nil
+	return scanner.Err()
 }
 
 func (dbc *DBC) SpellScaling(class proto.Class, level int) float64 {

@@ -23,6 +23,20 @@ var enchantEffectsForTest []int32
 // This value can be set before adding item effects, to control whether they are included in tests.
 var AddEffectsToTest = true
 
+func ForEachItemVariant(itemIDs []int32, register func(itemID int32)) {
+	var maxItemID int32
+	for _, itemID := range itemIDs {
+		maxItemID = max(maxItemID, itemID)
+	}
+
+	for _, itemID := range itemIDs {
+		AddEffectsToTest = itemID == maxItemID
+		register(itemID)
+	}
+
+	AddEffectsToTest = true
+}
+
 func HasItemEffect(id int32) bool {
 	_, ok := itemEffects[id]
 	return ok

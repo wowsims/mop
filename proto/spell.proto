@@ -22,6 +22,18 @@ message ScalingItemEffectProperties {
 	  ProcEffect  proc   = 4;
 	  OnUseEffect on_use = 5;
 	}
+
+	// A second aura this effect accumulates rather than applies, set only when the stats live
+	// there instead of in scaling_options above. Absent on the ordinary case.
+	//
+	// The aura named by buff_id lasts effect_duration_ms and grants nothing itself; every
+	// stack_period_ms it adds one stack of this one, up to its own max_cumulative_stacks, and
+	// its scaling_options are the stats granted *per stack*. Re-triggering restarts the outer
+	// window rather than extending it, and gaining a stack does not refresh it — which is why
+	// the two have to stay distinct instead of being flattened together.
+	ItemEffect stacking_aura = 8;
+	int32 stack_period_ms = 9; // milliseconds
+
   }
 
   message RppmProc {

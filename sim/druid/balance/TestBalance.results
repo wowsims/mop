@@ -283,7 +283,7 @@ dps_results: {
  value: {
   dps: 454790.9641
   tps: 453322.16436
-  hps: 44031.52715
+  hps: 44081.18828
  }
 }
 dps_results: {
@@ -291,7 +291,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445880.14764
-  hps: 43128.42571
+  hps: 43176.15244
  }
 }
 dps_results: {
@@ -299,7 +299,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445892.40366
-  hps: 43408.47091
+  hps: 43456.19765
  }
 }
 dps_results: {
@@ -355,7 +355,7 @@ dps_results: {
  value: {
   dps: 452248.92654
   tps: 450824.25306
-  hps: 44309.02361
+  hps: 44377.9829
  }
 }
 dps_results: {
@@ -363,7 +363,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445877.92433
-  hps: 43128.42571
+  hps: 43194.74246
  }
 }
 dps_results: {
@@ -371,7 +371,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445892.40366
-  hps: 43459.58183
+  hps: 43525.89858
  }
 }
 dps_results: {
@@ -539,7 +539,7 @@ dps_results: {
  value: {
   dps: 454790.9641
   tps: 453322.16436
-  hps: 44031.52715
+  hps: 44081.18828
  }
 }
 dps_results: {
@@ -547,7 +547,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445880.14764
-  hps: 43128.42571
+  hps: 43176.15244
  }
 }
 dps_results: {
@@ -555,7 +555,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445892.40366
-  hps: 43408.47091
+  hps: 43456.19765
  }
 }
 dps_results: {
@@ -665,8 +665,8 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 525272.55902
-  tps: 521823.0367
+  dps: 525268.68081
+  tps: 521819.15849
   hps: 46241.47137
  }
 }
@@ -811,7 +811,7 @@ dps_results: {
  value: {
   dps: 457828.37752
   tps: 456277.50346
-  hps: 43841.93367
+  hps: 44012.83609
  }
 }
 dps_results: {
@@ -891,7 +891,7 @@ dps_results: {
  value: {
   dps: 458115.05404
   tps: 456622.70187
-  hps: 44323.00953
+  hps: 44454.31656
  }
 }
 dps_results: {
@@ -899,7 +899,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445870.18442
-  hps: 43128.42571
+  hps: 43259.1917
  }
 }
 dps_results: {
@@ -907,7 +907,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445892.40366
-  hps: 43636.6066
+  hps: 43767.37259
  }
 }
 dps_results: {
@@ -1235,7 +1235,7 @@ dps_results: {
  value: {
   dps: 452248.92654
   tps: 450824.25306
-  hps: 44309.02361
+  hps: 44377.9829
  }
 }
 dps_results: {
@@ -1243,7 +1243,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445877.92433
-  hps: 43128.42571
+  hps: 43194.74246
  }
 }
 dps_results: {
@@ -1251,7 +1251,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445892.40366
-  hps: 43459.58183
+  hps: 43525.89858
  }
 }
 dps_results: {
@@ -1391,6 +1391,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestBalance-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 485850.54168
+  tps: 483996.24289
+  hps: 44820.62972
+ }
+}
+dps_results: {
  key: "TestBalance-AllItems-NitroBoosts-4223"
  value: {
   dps: 519247.38286
@@ -1433,9 +1441,9 @@ dps_results: {
 dps_results: {
  key: "TestBalance-AllItems-PhaseFingers-4697"
  value: {
-  dps: 513913.22522
-  tps: 510204.81454
-  hps: 46522.07382
+  dps: 513294.22843
+  tps: 509679.53831
+  hps: 46125.62801
  }
 }
 dps_results: {
@@ -1491,7 +1499,7 @@ dps_results: {
  value: {
   dps: 460614.54041
   tps: 459133.93124
-  hps: 44522.89455
+  hps: 44709.34774
  }
 }
 dps_results: {
@@ -1499,7 +1507,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445864.33107
-  hps: 43128.42571
+  hps: 43314.34343
  }
 }
 dps_results: {
@@ -1507,7 +1515,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445892.40366
-  hps: 43788.34212
+  hps: 43974.25984
  }
 }
 dps_results: {
@@ -2123,7 +2131,7 @@ dps_results: {
  value: {
   dps: 453039.90495
   tps: 451570.96523
-  hps: 44170.01525
+  hps: 44263.91411
  }
 }
 dps_results: {
@@ -2131,7 +2139,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445874.95065
-  hps: 43128.42571
+  hps: 43219.45072
  }
 }
 dps_results: {
@@ -2139,7 +2147,7 @@ dps_results: {
  value: {
   dps: 447314.43943
   tps: 445892.40366
-  hps: 43527.46351
+  hps: 43618.48851
  }
 }
 dps_results: {

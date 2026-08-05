@@ -102,7 +102,7 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Error loading DBC data %v", err))
 	}
-	_, err = database.LoadAndWriteItemStatEffects(helper, inputsDir)
+	_, err = database.LoadAndWriteSocketBonuses(helper, inputsDir)
 	if err != nil {
 		panic(fmt.Sprintf("Error loading DBC data %v", err))
 	}
@@ -178,7 +178,7 @@ func main() {
 	}
 
 	for _, enchant := range instance.Enchants {
-		parsed := enchant.ToProto()
+		parsed := enchant.ToProto(database.EnchantBuffSpellOverrides)
 
 		if parsed.Icon == "" {
 			parsed.Icon = strings.ToLower(database.GetIconName(iconsMap, enchant.FDID))

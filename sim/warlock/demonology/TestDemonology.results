@@ -251,21 +251,21 @@ dps_results: {
  key: "TestDemonology-AllItems-CraftedDreadfulGladiator'sEmblemofCruelty-93485"
  value: {
   dps: 405659.54674
-  tps: 245534.66952
+  tps: 245536.50452
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-CraftedDreadfulGladiator'sEmblemofMeditation-93487"
  value: {
   dps: 401259.97754
-  tps: 243384.04744
+  tps: 243385.88244
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-CraftedDreadfulGladiator'sEmblemofTenacity-93486"
  value: {
-  dps: 401568.05386
-  tps: 243664.90116
+  dps: 401497.12212
+  tps: 243559.89832
  }
 }
 dps_results: {
@@ -314,21 +314,21 @@ dps_results: {
  key: "TestDemonology-AllItems-CraftedMalevolentGladiator'sEmblemofCruelty-98811"
  value: {
   dps: 406279.6168
-  tps: 245932.64527
+  tps: 245935.19503
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-CraftedMalevolentGladiator'sEmblemofMeditation-98813"
  value: {
   dps: 401259.97754
-  tps: 243384.04744
+  tps: 243386.5972
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-CraftedMalevolentGladiator'sEmblemofTenacity-98812"
  value: {
-  dps: 401686.59158
-  tps: 243800.19069
+  dps: 401697.60057
+  tps: 243772.74263
  }
 }
 dps_results: {
@@ -475,21 +475,21 @@ dps_results: {
  key: "TestDemonology-AllItems-DreadfulGladiator'sEmblemofCruelty-84399"
  value: {
   dps: 405659.54674
-  tps: 245534.66952
+  tps: 245536.50452
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-DreadfulGladiator'sEmblemofMeditation-84401"
  value: {
   dps: 401259.97754
-  tps: 243384.04744
+  tps: 243385.88244
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 401568.05386
-  tps: 243664.90116
+  dps: 401497.12212
+  tps: 243559.89832
  }
 }
 dps_results: {
@@ -586,8 +586,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 467054.71755
-  tps: 287133.50865
+  dps: 467297.71739
+  tps: 287878.94419
  }
 }
 dps_results: {
@@ -712,8 +712,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-FortitudeoftheZandalari-96793"
  value: {
-  dps: 410601.55567
-  tps: 249730.86888
+  dps: 410629.15015
+  tps: 249728.66277
  }
 }
 dps_results: {
@@ -775,22 +775,22 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-GrievousGladiator'sEmblemofCruelty-103210"
  value: {
-  dps: 408222.14467
-  tps: 247084.33719
+  dps: 408302.28442
+  tps: 247109.72337
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-GrievousGladiator'sEmblemofMeditation-103212"
  value: {
-  dps: 401259.97754
-  tps: 243384.04744
+  dps: 401288.08645
+  tps: 243381.5016
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-GrievousGladiator'sEmblemofTenacity-103211"
  value: {
-  dps: 402430.50262
-  tps: 244250.53925
+  dps: 402601.45254
+  tps: 244393.64356
  }
 }
 dps_results: {
@@ -1085,21 +1085,21 @@ dps_results: {
  key: "TestDemonology-AllItems-MalevolentGladiator'sEmblemofCruelty-91562"
  value: {
   dps: 406279.6168
-  tps: 245932.64527
+  tps: 245935.19503
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-MalevolentGladiator'sEmblemofMeditation-91564"
  value: {
   dps: 401259.97754
-  tps: 243384.04744
+  tps: 243386.5972
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-MalevolentGladiator'sEmblemofTenacity-91563"
  value: {
-  dps: 401686.59158
-  tps: 243800.19069
+  dps: 401697.60057
+  tps: 243772.74263
  }
 }
 dps_results: {
@@ -1222,6 +1222,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestDemonology-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 401236.74914
+  tps: 243397.30783
+ }
+}
+dps_results: {
  key: "TestDemonology-AllItems-NitroBoosts-4223"
  value: {
   dps: 472952.15634
@@ -1259,8 +1266,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-PhaseFingers-4697"
  value: {
-  dps: 471825.68206
-  tps: 289364.70163
+  dps: 467625.01583
+  tps: 286957.76396
  }
 }
 dps_results: {
@@ -1308,22 +1315,22 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-PridefulGladiator'sEmblemofCruelty-103407"
  value: {
-  dps: 410416.09386
-  tps: 248448.02809
+  dps: 410495.96323
+  tps: 248475.26437
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-PridefulGladiator'sEmblemofMeditation-103409"
  value: {
-  dps: 401259.97754
-  tps: 243384.04744
+  dps: 401288.08645
+  tps: 243383.62208
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-PridefulGladiator'sEmblemofTenacity-103408"
  value: {
-  dps: 402101.00031
-  tps: 244368.01525
+  dps: 402581.55476
+  tps: 244795.35608
  }
 }
 dps_results: {
@@ -1441,7 +1448,7 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 401230.52434
+  dps: 401229.06498
   tps: 243397.30783
  }
 }
@@ -1861,22 +1868,22 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-TyrannicalGladiator'sEmblemofCruelty-100066"
  value: {
-  dps: 407080.32925
-  tps: 246349.60272
+  dps: 407148.27526
+  tps: 246373.51621
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-TyrannicalGladiator'sEmblemofMeditation-99990"
  value: {
-  dps: 401259.97754
-  tps: 243384.04744
+  dps: 401294.43821
+  tps: 243379.83421
  }
 }
 dps_results: {
  key: "TestDemonology-AllItems-TyrannicalGladiator'sEmblemofTenacity-100092"
  value: {
-  dps: 401762.55736
-  tps: 243867.61855
+  dps: 401773.56636
+  tps: 243840.62052
  }
 }
 dps_results: {

@@ -7,14 +7,13 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-// Reduces the rage cost of your Hamstring ability by 3.
-func (warrior *Warrior) addMistsPvpGloves() {
-	if warrior.Env.IsChallengeMode {
-		return
-	}
+// https://www.wowhead.com/mop/spell=22778
+var mistsPvpGloveItemIDs = []int32{72465, 73481, 73654, 84505, 84840, 85019, 91432, 91433, 91785, 93621, 94331, 98927, 99958, 99992, 100522, 100523, 100561, 102618, 102815, 103129, 103329, 103526, 137794, 143191}
 
-	warrior.RegisterPvPGloveMod(
-		[]int32{72465, 73481, 73654, 84505, 84840, 85019, 91432, 91433, 91785, 93621, 94331, 98927, 99958, 99992, 100522, 100523, 100561, 102618, 102815, 103129, 103329, 103526, 137794, 143191},
+// Reduces the rage cost of your Hamstring ability by 3.
+func init() {
+	core.NewPvPGloveEffect(
+		mistsPvpGloveItemIDs,
 		core.SpellModConfig{
 			ClassMask: SpellMaskHamstring,
 			Kind:      core.SpellMod_PowerCost_Flat,

@@ -305,25 +305,25 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-CraftedDreadfulGladiator'sEmblemofCruelty-93485"
  value: {
-  dps: 378821.13166
-  tps: 278546.4501
-  hps: 3931.52989
+  dps: 380429.50699
+  tps: 280013.9213
+  hps: 3938.21689
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-CraftedDreadfulGladiator'sEmblemofMeditation-93487"
  value: {
-  dps: 374663.29702
-  tps: 275377.67657
-  hps: 3886.25576
+  dps: 376242.86371
+  tps: 276889.04139
+  hps: 3892.94277
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-CraftedDreadfulGladiator'sEmblemofTenacity-93486"
  value: {
-  dps: 376831.73693
-  tps: 277404.6952
-  hps: 3973.06984
+  dps: 376948.786
+  tps: 277870.11136
+  hps: 3971.85396
  }
 }
 dps_results: {
@@ -377,25 +377,25 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-CraftedMalevolentGladiator'sEmblemofCruelty-98811"
  value: {
-  dps: 379786.18943
-  tps: 279287.20082
-  hps: 3943.82836
+  dps: 381539.05745
+  tps: 280948.58138
+  hps: 3956.32215
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-CraftedMalevolentGladiator'sEmblemofMeditation-98813"
  value: {
-  dps: 374663.29702
-  tps: 275377.67657
-  hps: 3886.25576
+  dps: 376344.25902
+  tps: 277115.81231
+  hps: 3898.74956
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-CraftedMalevolentGladiator'sEmblemofTenacity-98812"
  value: {
-  dps: 376803.38364
-  tps: 277371.37192
-  hps: 3970.7095
+  dps: 377350.7105
+  tps: 278165.3911
+  hps: 4001.62772
  }
 }
 dps_results: {
@@ -561,25 +561,25 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-DreadfulGladiator'sEmblemofCruelty-84399"
  value: {
-  dps: 378821.13166
-  tps: 278546.4501
-  hps: 3931.52989
+  dps: 380429.50699
+  tps: 280013.9213
+  hps: 3938.21689
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-DreadfulGladiator'sEmblemofMeditation-84401"
  value: {
-  dps: 374663.29702
-  tps: 275377.67657
-  hps: 3886.25576
+  dps: 376242.86371
+  tps: 276889.04139
+  hps: 3892.94277
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 376831.73693
-  tps: 277404.6952
-  hps: 3973.06984
+  dps: 376948.786
+  tps: 277870.11136
+  hps: 3971.85396
  }
 }
 dps_results: {
@@ -689,8 +689,8 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 397020.11051
-  tps: 284494.87526
+  dps: 396291.32035
+  tps: 283553.489
   hps: 20.83583
  }
 }
@@ -841,9 +841,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-FortitudeoftheZandalari-96793"
  value: {
-  dps: 382954.58876
-  tps: 282030.79414
-  hps: 3886.25576
+  dps: 384917.24043
+  tps: 283953.32256
+  hps: 3937.22593
  }
 }
 dps_results: {
@@ -905,25 +905,25 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-GrievousGladiator'sEmblemofCruelty-103210"
  value: {
-  dps: 381922.66665
-  tps: 280844.58863
-  hps: 3976.26837
+  dps: 383857.08734
+  tps: 282760.91057
+  hps: 4018.19163
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-GrievousGladiator'sEmblemofMeditation-103212"
  value: {
-  dps: 374663.29702
-  tps: 275377.67657
-  hps: 3886.25576
+  dps: 376890.00909
+  tps: 277612.80885
+  hps: 3929.35718
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-GrievousGladiator'sEmblemofTenacity-103211"
  value: {
-  dps: 376824.95969
-  tps: 277434.56081
-  hps: 4037.06964
+  dps: 376925.10896
+  tps: 277595.81051
+  hps: 4062.6686
  }
 }
 dps_results: {
@@ -1257,25 +1257,25 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-MalevolentGladiator'sEmblemofCruelty-91562"
  value: {
-  dps: 379786.18943
-  tps: 279287.20082
-  hps: 3943.82836
+  dps: 381539.05745
+  tps: 280948.58138
+  hps: 3956.32215
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-MalevolentGladiator'sEmblemofMeditation-91564"
  value: {
-  dps: 374663.29702
-  tps: 275377.67657
-  hps: 3886.25576
+  dps: 376344.25902
+  tps: 277115.81231
+  hps: 3898.74956
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-MalevolentGladiator'sEmblemofTenacity-91563"
  value: {
-  dps: 376803.38364
-  tps: 277371.37192
-  hps: 3970.7095
+  dps: 377350.7105
+  tps: 278165.3911
+  hps: 4001.62772
  }
 }
 dps_results: {
@@ -1415,6 +1415,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestUnholy-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 374121.84271
+  tps: 274621.8637
+  hps: 3869.38053
+ }
+}
+dps_results: {
  key: "TestUnholy-AllItems-OathswornDefenderIdol-101303"
  value: {
   dps: 376843.1556
@@ -1449,9 +1457,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-PhaseFingers-4697"
  value: {
-  dps: 433166.85311
-  tps: 308282.99022
-  hps: 3942.91673
+  dps: 431638.20021
+  tps: 307997.54425
+  hps: 3947.01622
  }
 }
 dps_results: {
@@ -1529,25 +1537,25 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-PridefulGladiator'sEmblemofCruelty-103407"
  value: {
-  dps: 384449.09107
-  tps: 282512.48285
-  hps: 3992.66633
+  dps: 386731.38984
+  tps: 285079.14686
+  hps: 4047.65044
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PridefulGladiator'sEmblemofMeditation-103409"
  value: {
-  dps: 374663.29702
-  tps: 275377.67657
-  hps: 3886.25576
+  dps: 377223.97908
+  tps: 278068.77133
+  hps: 3942.2519
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-PridefulGladiator'sEmblemofTenacity-103408"
  value: {
-  dps: 376941.18525
-  tps: 277486.79896
-  hps: 4073.66286
+  dps: 376684.94729
+  tps: 277218.38042
+  hps: 4119.17343
  }
 }
 dps_results: {
@@ -1673,9 +1681,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 375305.96579
-  tps: 275515.7593
-  hps: 3861.72418
+  dps: 375230.41148
+  tps: 275605.39566
+  hps: 3865.61983
  }
 }
 dps_results: {
@@ -1881,9 +1889,9 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 424893.39655
-  tps: 313123.89046
-  hps: 4061.16287
+  dps: 424081.96201
+  tps: 311880.13035
+  hps: 4051.31912
  }
 }
 dps_results: {
@@ -2201,25 +2209,25 @@ dps_results: {
 dps_results: {
  key: "TestUnholy-AllItems-TyrannicalGladiator'sEmblemofCruelty-100066"
  value: {
-  dps: 380567.46012
-  tps: 279855.93612
-  hps: 3953.76231
+  dps: 381852.26049
+  tps: 281022.90999
+  hps: 3981.81853
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-TyrannicalGladiator'sEmblemofMeditation-99990"
  value: {
-  dps: 374663.29702
-  tps: 275377.67657
-  hps: 3886.25576
+  dps: 376024.9606
+  tps: 276781.7311
+  hps: 3914.0378
  }
 }
 dps_results: {
  key: "TestUnholy-AllItems-TyrannicalGladiator'sEmblemofTenacity-100092"
  value: {
-  dps: 376812.69083
-  tps: 277233.16848
-  hps: 4005.1166
+  dps: 377206.84365
+  tps: 277794.07242
+  hps: 4035.96744
  }
 }
 dps_results: {

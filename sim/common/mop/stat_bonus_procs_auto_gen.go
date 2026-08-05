@@ -73,41 +73,11 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.
-	// https://www.wowhead.com/mop/spell=61255
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Dreadful Gladiator's Chain Gauntlets (Season 12)",
-	// 	ItemID:             84409,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
 	// Reduces the global cooldown triggered by Blink by 0.5 sec.
 	// https://www.wowhead.com/mop/spell=44301
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Dreadful Gladiator's Silk Handguards (Season 12)",
 	// 	ItemID:             84413,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Increases the range of your Judgment by 10 yards.
-	// https://www.wowhead.com/mop/spell=61776
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Dreadful Gladiator's Scaled Gauntlets (Season 12)",
-	// 	ItemID:             84419,
 	// 	Callback:           core.CallbackEmpty,
 	// 	ProcMask:           core.ProcMaskUnknown,
 	// 	Outcome:            core.OutcomeEmpty,
@@ -238,21 +208,6 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Reduces the rage cost of your Hamstring ability by -3.0.
-	// https://www.wowhead.com/mop/spell=22778
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Dreadful Gladiator's Plate Gauntlets (Season 12)",
-	// 	ItemID:             84505,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -286,14 +241,14 @@ func RegisterAllProcs() {
 	// Increases the healing you receive from Recuperate by 1% every 3.0 sec.
 	// https://www.wowhead.com/mop/spell=61249
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84830, ItemName: "Malevolent Gladiator's Leather Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85023, ItemName: "Malevolent Gladiator's Leather Gloves (Season 12 Elite)"},
-	//	{ItemID: 91695, ItemName: "Malevolent Gladiator's Leather Gloves (Season 13)"},
+	// 	{ItemID: 84830, ItemName: "Malevolent Gladiator's Leather Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85023, ItemName: "Malevolent Gladiator's Leather Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91695, ItemName: "Malevolent Gladiator's Leather Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -303,14 +258,14 @@ func RegisterAllProcs() {
 	// Increases the critical effect chance of your Flash of Light by 2%.
 	// https://www.wowhead.com/mop/spell=38522
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84831, ItemName: "Malevolent Gladiator's Ornamented Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85024, ItemName: "Malevolent Gladiator's Ornamented Gloves (Season 12 Elite)"},
-	//	{ItemID: 91642, ItemName: "Malevolent Gladiator's Ornamented Gloves (Season 13)"},
+	// 	{ItemID: 84831, ItemName: "Malevolent Gladiator's Ornamented Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85024, ItemName: "Malevolent Gladiator's Ornamented Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91642, ItemName: "Malevolent Gladiator's Ornamented Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -320,14 +275,14 @@ func RegisterAllProcs() {
 	// Increases the damage done by Maim by 100% and increases the duration of Bear Hug by 1 sec.
 	// https://www.wowhead.com/mop/spell=61252
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84832, ItemName: "Malevolent Gladiator's Dragonhide Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85025, ItemName: "Malevolent Gladiator's Dragonhide Gloves (Season 12 Elite)"},
-	//	{ItemID: 91510, ItemName: "Malevolent Gladiator's Dragonhide Gloves (Season 13)"},
+	// 	{ItemID: 84832, ItemName: "Malevolent Gladiator's Dragonhide Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85025, ItemName: "Malevolent Gladiator's Dragonhide Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91510, ItemName: "Malevolent Gladiator's Dragonhide Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -337,31 +292,14 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84833, ItemName: "Malevolent Gladiator's Kodohide Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85026, ItemName: "Malevolent Gladiator's Kodohide Gloves (Season 12 Elite)"},
-	//	{ItemID: 91525, ItemName: "Malevolent Gladiator's Kodohide Gloves (Season 13)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Increases the range of your Judgment by 10 yards.
-	// https://www.wowhead.com/mop/spell=61776
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 84834, ItemName: "Malevolent Gladiator's Scaled Gauntlets (LFR) (Season 12)"},
-	//	{ItemID: 85027, ItemName: "Malevolent Gladiator's Scaled Gauntlets (Season 12 Elite)"},
-	//	{ItemID: 91622, ItemName: "Malevolent Gladiator's Scaled Gauntlets (Season 13)"},
+	// 	{ItemID: 84833, ItemName: "Malevolent Gladiator's Kodohide Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85026, ItemName: "Malevolent Gladiator's Kodohide Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91525, ItemName: "Malevolent Gladiator's Kodohide Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -371,14 +309,14 @@ func RegisterAllProcs() {
 	// Your Chains of Ice ability now generates an additional 10 Runic Power.
 	// https://www.wowhead.com/mop/spell=62458
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84835, ItemName: "Malevolent Gladiator's Dreadplate Gauntlets (LFR) (Season 12)"},
-	//	{ItemID: 85028, ItemName: "Malevolent Gladiator's Dreadplate Gauntlets (Season 12 Elite)"},
-	//	{ItemID: 91502, ItemName: "Malevolent Gladiator's Dreadplate Gauntlets (Season 13)"},
+	// 	{ItemID: 84835, ItemName: "Malevolent Gladiator's Dreadplate Gauntlets (LFR) (Season 12)"},
+	// 	{ItemID: 85028, ItemName: "Malevolent Gladiator's Dreadplate Gauntlets (Season 12 Elite)"},
+	// 	{ItemID: 91502, ItemName: "Malevolent Gladiator's Dreadplate Gauntlets (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -388,14 +326,14 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84836, ItemName: "Malevolent Gladiator's Copperskin Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85015, ItemName: "Malevolent Gladiator's Copperskin Gloves (Season 12 Elite)"},
-	//	{ItemID: 91610, ItemName: "Malevolent Gladiator's Copperskin Gloves (Season 13)"},
+	// 	{ItemID: 84836, ItemName: "Malevolent Gladiator's Copperskin Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85015, ItemName: "Malevolent Gladiator's Copperskin Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91610, ItemName: "Malevolent Gladiator's Copperskin Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -405,16 +343,16 @@ func RegisterAllProcs() {
 	// Reduces the global cooldown triggered by Blink by 0.5 sec.
 	// https://www.wowhead.com/mop/spell=44301
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84837, ItemName: "Malevolent Gladiator's Silk Handguards (LFR) (Season 12)"},
-	//	{ItemID: 85016, ItemName: "Malevolent Gladiator's Silk Handguards (Season 12 Elite)"},
-	//	{ItemID: 91585, ItemName: "Malevolent Gladiator's Silk Handguards (Season 13)"},
-	//	{ItemID: 97839, ItemName: "Malevolent Gladiator's Silk Handguards (Season 12)"},
-	//	{ItemID: 97929, ItemName: "Malevolent Gladiator's Silk Handguards (Season 12)"},
+	// 	{ItemID: 84837, ItemName: "Malevolent Gladiator's Silk Handguards (LFR) (Season 12)"},
+	// 	{ItemID: 85016, ItemName: "Malevolent Gladiator's Silk Handguards (Season 12 Elite)"},
+	// 	{ItemID: 91585, ItemName: "Malevolent Gladiator's Silk Handguards (Season 13)"},
+	// 	{ItemID: 97839, ItemName: "Malevolent Gladiator's Silk Handguards (Season 12)"},
+	// 	{ItemID: 97929, ItemName: "Malevolent Gladiator's Silk Handguards (Season 12)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -424,14 +362,14 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84838, ItemName: "Malevolent Gladiator's Satin Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85017, ItemName: "Malevolent Gladiator's Satin Gloves (Season 12 Elite)"},
-	//	{ItemID: 91672, ItemName: "Malevolent Gladiator's Satin Gloves (Season 13)"},
+	// 	{ItemID: 84838, ItemName: "Malevolent Gladiator's Satin Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85017, ItemName: "Malevolent Gladiator's Satin Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91672, ItemName: "Malevolent Gladiator's Satin Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -441,48 +379,14 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84839, ItemName: "Malevolent Gladiator's Ironskin Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85018, ItemName: "Malevolent Gladiator's Ironskin Gloves (Season 12 Elite)"},
-	//	{ItemID: 91600, ItemName: "Malevolent Gladiator's Ironskin Gloves (Season 13)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the rage cost of your Hamstring ability by -3.0.
-	// https://www.wowhead.com/mop/spell=22778
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 84840, ItemName: "Malevolent Gladiator's Plate Gauntlets (LFR) (Season 12)"},
-	//	{ItemID: 85019, ItemName: "Malevolent Gladiator's Plate Gauntlets (Season 12 Elite)"},
-	//	{ItemID: 91785, ItemName: "Malevolent Gladiator's Plate Gauntlets (Season 13)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.
-	// https://www.wowhead.com/mop/spell=61255
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 84841, ItemName: "Malevolent Gladiator's Chain Gauntlets (LFR) (Season 12)"},
-	//	{ItemID: 85020, ItemName: "Malevolent Gladiator's Chain Gauntlets (Season 12 Elite)"},
-	//	{ItemID: 91577, ItemName: "Malevolent Gladiator's Chain Gauntlets (Season 13)"},
+	// 	{ItemID: 84839, ItemName: "Malevolent Gladiator's Ironskin Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85018, ItemName: "Malevolent Gladiator's Ironskin Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91600, ItemName: "Malevolent Gladiator's Ironskin Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -492,14 +396,14 @@ func RegisterAllProcs() {
 	// Reduces the cooldown on your Demonic Circle: Teleport spell by 5 sec.
 	// https://www.wowhead.com/mop/spell=33063
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84842, ItemName: "Malevolent Gladiator's Felweave Handguards (LFR) (Season 12)"},
-	//	{ItemID: 85021, ItemName: "Malevolent Gladiator's Felweave Handguards (Season 12 Elite)"},
-	//	{ItemID: 91773, ItemName: "Malevolent Gladiator's Felweave Handguards (Season 13)"},
+	// 	{ItemID: 84842, ItemName: "Malevolent Gladiator's Felweave Handguards (LFR) (Season 12)"},
+	// 	{ItemID: 85021, ItemName: "Malevolent Gladiator's Felweave Handguards (Season 12 Elite)"},
+	// 	{ItemID: 91773, ItemName: "Malevolent Gladiator's Felweave Handguards (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -509,14 +413,14 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84843, ItemName: "Malevolent Gladiator's Wyrmhide Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85022, ItemName: "Malevolent Gladiator's Wyrmhide Gloves (Season 12 Elite)"},
-	//	{ItemID: 91542, ItemName: "Malevolent Gladiator's Wyrmhide Gloves (Season 13)"},
+	// 	{ItemID: 84843, ItemName: "Malevolent Gladiator's Wyrmhide Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85022, ItemName: "Malevolent Gladiator's Wyrmhide Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91542, ItemName: "Malevolent Gladiator's Wyrmhide Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -526,14 +430,14 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84844, ItemName: "Malevolent Gladiator's Linked Gauntlets (LFR) (Season 12)"},
-	//	{ItemID: 85011, ItemName: "Malevolent Gladiator's Linked Gauntlets (Season 12 Elite)"},
-	//	{ItemID: 91723, ItemName: "Malevolent Gladiator's Linked Gauntlets (Season 13)"},
+	// 	{ItemID: 84844, ItemName: "Malevolent Gladiator's Linked Gauntlets (LFR) (Season 12)"},
+	// 	{ItemID: 85011, ItemName: "Malevolent Gladiator's Linked Gauntlets (Season 12 Elite)"},
+	// 	{ItemID: 91723, ItemName: "Malevolent Gladiator's Linked Gauntlets (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -543,14 +447,14 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84845, ItemName: "Malevolent Gladiator's Mail Gauntlets (LFR) (Season 12)"},
-	//	{ItemID: 85012, ItemName: "Malevolent Gladiator's Mail Gauntlets (Season 12 Elite)"},
-	//	{ItemID: 91735, ItemName: "Malevolent Gladiator's Mail Gauntlets (Season 13)"},
+	// 	{ItemID: 84845, ItemName: "Malevolent Gladiator's Mail Gauntlets (LFR) (Season 12)"},
+	// 	{ItemID: 85012, ItemName: "Malevolent Gladiator's Mail Gauntlets (Season 12 Elite)"},
+	// 	{ItemID: 91735, ItemName: "Malevolent Gladiator's Mail Gauntlets (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -560,14 +464,14 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84846, ItemName: "Malevolent Gladiator's Mooncloth Gloves (LFR) (Season 12)"},
-	//	{ItemID: 85013, ItemName: "Malevolent Gladiator's Mooncloth Gloves (Season 12 Elite)"},
-	//	{ItemID: 91662, ItemName: "Malevolent Gladiator's Mooncloth Gloves (Season 13)"},
+	// 	{ItemID: 84846, ItemName: "Malevolent Gladiator's Mooncloth Gloves (LFR) (Season 12)"},
+	// 	{ItemID: 85013, ItemName: "Malevolent Gladiator's Mooncloth Gloves (Season 12 Elite)"},
+	// 	{ItemID: 91662, ItemName: "Malevolent Gladiator's Mooncloth Gloves (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -577,14 +481,14 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 84847, ItemName: "Malevolent Gladiator's Ringmail Gauntlets (LFR) (Season 12)"},
-	//	{ItemID: 85014, ItemName: "Malevolent Gladiator's Ringmail Gauntlets (Season 12 Elite)"},
-	//	{ItemID: 91713, ItemName: "Malevolent Gladiator's Ringmail Gauntlets (Season 13)"},
+	// 	{ItemID: 84847, ItemName: "Malevolent Gladiator's Ringmail Gauntlets (LFR) (Season 12)"},
+	// 	{ItemID: 85014, ItemName: "Malevolent Gladiator's Ringmail Gauntlets (Season 12 Elite)"},
+	// 	{ItemID: 91713, ItemName: "Malevolent Gladiator's Ringmail Gauntlets (Season 13)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -593,14 +497,14 @@ func RegisterAllProcs() {
 	//
 	// https://www.wowhead.com/mop/spell=132602
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 86227, ItemName: "Kri'tak, Imperial Scepter of the Swarm (N)"},
-	//	{ItemID: 86865, ItemName: "Kri'tak, Imperial Scepter of the Swarm (LFR) (Celestial)"},
-	//	{ItemID: 86990, ItemName: "Kri'tak, Imperial Scepter of the Swarm (H)"},
+	// 	{ItemID: 86227, ItemName: "Kri'tak, Imperial Scepter of the Swarm (N)"},
+	// 	{ItemID: 86865, ItemName: "Kri'tak, Imperial Scepter of the Swarm (LFR) (Celestial)"},
+	// 	{ItemID: 86990, ItemName: "Kri'tak, Imperial Scepter of the Swarm (H)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -609,14 +513,14 @@ func RegisterAllProcs() {
 	//
 	// https://www.wowhead.com/mop/spell=132602
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 86335, ItemName: "Jin'ya, Orb of the Waterspeaker (N)"},
-	//	{ItemID: 86893, ItemName: "Jin'ya, Orb of the Waterspeaker (LFR) (Celestial)"},
-	//	{ItemID: 87170, ItemName: "Jin'ya, Orb of the Waterspeaker (H)"},
+	// 	{ItemID: 86335, ItemName: "Jin'ya, Orb of the Waterspeaker (N)"},
+	// 	{ItemID: 86893, ItemName: "Jin'ya, Orb of the Waterspeaker (LFR) (Celestial)"},
+	// 	{ItemID: 87170, ItemName: "Jin'ya, Orb of the Waterspeaker (H)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -654,7 +558,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your pet's attacks have a chance to deal an additional 50% damage as Nature, but no more than 0.
+	// Your pet's attacks have a chance to deal an additional 50% damage as Nature, but no more than 4999.
 	// https://www.wowhead.com/mop/spell=128853
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Manipulator's Talisman",
@@ -714,7 +618,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your attacks have a chance to inflict your target with mantid poison, dealing 882 damage every 0.0 sec
+	// Your attacks have a chance to inflict your target with mantid poison, dealing 3526 damage every 1.5 sec
 	// for 6s.
 	// https://www.wowhead.com/mop/spell=128386
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -730,7 +634,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Deals 1 Fire damage to your current target.
+	// Deals 20074 Fire damage to your current target.
 	// https://www.wowhead.com/mop/spell=128191
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Nurong's Gun",
@@ -778,16 +682,16 @@ func RegisterAllProcs() {
 	// Your Chains of Ice ability now generates an additional 10 Runic Power.
 	// https://www.wowhead.com/mop/spell=62458
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91149, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91150, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (Season 13 Elite)"},
-	//	{ItemID: 94364, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99807, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100034, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 91149, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91150, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (Season 13 Elite)"},
+	// 	{ItemID: 94364, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99807, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100034, ItemName: "Tyrannical Gladiator's Dreadplate Gauntlets (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -797,16 +701,16 @@ func RegisterAllProcs() {
 	// Increases the damage done by Maim by 100% and increases the duration of Bear Hug by 1 sec.
 	// https://www.wowhead.com/mop/spell=61252
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91157, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91158, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (Season 13 Elite)"},
-	//	{ItemID: 94455, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99811, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100125, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 91157, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91158, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94455, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99811, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100125, ItemName: "Tyrannical Gladiator's Dragonhide Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -816,16 +720,16 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91172, ItemName: "Tyrannical Gladiator's Kodohide Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91173, ItemName: "Tyrannical Gladiator's Kodohide Gloves (Season 13 Elite)"},
-	//	{ItemID: 94371, ItemName: "Tyrannical Gladiator's Kodohide Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99819, ItemName: "Tyrannical Gladiator's Kodohide Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100041, ItemName: "Tyrannical Gladiator's Kodohide Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 91172, ItemName: "Tyrannical Gladiator's Kodohide Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91173, ItemName: "Tyrannical Gladiator's Kodohide Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94371, ItemName: "Tyrannical Gladiator's Kodohide Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99819, ItemName: "Tyrannical Gladiator's Kodohide Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100041, ItemName: "Tyrannical Gladiator's Kodohide Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -835,35 +739,16 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91189, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91190, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (Season 13 Elite)"},
-	//	{ItemID: 94412, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99828, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100082, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (Season 14) (Horde)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.
-	// https://www.wowhead.com/mop/spell=61255
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 91224, ItemName: "Tyrannical Gladiator's Chain Gauntlets (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91225, ItemName: "Tyrannical Gladiator's Chain Gauntlets (Season 13 Elite)"},
-	//	{ItemID: 94453, ItemName: "Tyrannical Gladiator's Chain Gauntlets (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99848, ItemName: "Tyrannical Gladiator's Chain Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100123, ItemName: "Tyrannical Gladiator's Chain Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 91189, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91190, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94412, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99828, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100082, ItemName: "Tyrannical Gladiator's Wyrmhide Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -873,16 +758,16 @@ func RegisterAllProcs() {
 	// Reduces the global cooldown triggered by Blink by 0.5 sec.
 	// https://www.wowhead.com/mop/spell=44301
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91232, ItemName: "Tyrannical Gladiator's Silk Handguards (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91233, ItemName: "Tyrannical Gladiator's Silk Handguards (Season 13 Elite)"},
-	//	{ItemID: 94451, ItemName: "Tyrannical Gladiator's Silk Handguards (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99852, ItemName: "Tyrannical Gladiator's Silk Handguards (Season 14) (Alliance)"},
-	//	{ItemID: 100121, ItemName: "Tyrannical Gladiator's Silk Handguards (Season 14) (Horde)"},
+	// 	{ItemID: 91232, ItemName: "Tyrannical Gladiator's Silk Handguards (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91233, ItemName: "Tyrannical Gladiator's Silk Handguards (Season 13 Elite)"},
+	// 	{ItemID: 94451, ItemName: "Tyrannical Gladiator's Silk Handguards (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99852, ItemName: "Tyrannical Gladiator's Silk Handguards (Season 14) (Alliance)"},
+	// 	{ItemID: 100121, ItemName: "Tyrannical Gladiator's Silk Handguards (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -892,16 +777,16 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91247, ItemName: "Tyrannical Gladiator's Ironskin Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91248, ItemName: "Tyrannical Gladiator's Ironskin Gloves (Season 13 Elite)"},
-	//	{ItemID: 94391, ItemName: "Tyrannical Gladiator's Ironskin Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99860, ItemName: "Tyrannical Gladiator's Ironskin Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100061, ItemName: "Tyrannical Gladiator's Ironskin Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 91247, ItemName: "Tyrannical Gladiator's Ironskin Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91248, ItemName: "Tyrannical Gladiator's Ironskin Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94391, ItemName: "Tyrannical Gladiator's Ironskin Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99860, ItemName: "Tyrannical Gladiator's Ironskin Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100061, ItemName: "Tyrannical Gladiator's Ironskin Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -911,35 +796,16 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91257, ItemName: "Tyrannical Gladiator's Copperskin Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91258, ItemName: "Tyrannical Gladiator's Copperskin Gloves (Season 13 Elite)"},
-	//	{ItemID: 94340, ItemName: "Tyrannical Gladiator's Copperskin Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99865, ItemName: "Tyrannical Gladiator's Copperskin Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100010, ItemName: "Tyrannical Gladiator's Copperskin Gloves (Season 14) (Horde)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Increases the range of your Judgment by 10 yards.
-	// https://www.wowhead.com/mop/spell=61776
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 91269, ItemName: "Tyrannical Gladiator's Scaled Gauntlets (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91270, ItemName: "Tyrannical Gladiator's Scaled Gauntlets (Season 13 Elite)"},
-	//	{ItemID: 94343, ItemName: "Tyrannical Gladiator's Scaled Gauntlets (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99871, ItemName: "Tyrannical Gladiator's Scaled Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100013, ItemName: "Tyrannical Gladiator's Scaled Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 91257, ItemName: "Tyrannical Gladiator's Copperskin Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91258, ItemName: "Tyrannical Gladiator's Copperskin Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94340, ItemName: "Tyrannical Gladiator's Copperskin Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99865, ItemName: "Tyrannical Gladiator's Copperskin Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100010, ItemName: "Tyrannical Gladiator's Copperskin Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -949,16 +815,16 @@ func RegisterAllProcs() {
 	// Increases the critical effect chance of your Flash of Light by 2%.
 	// https://www.wowhead.com/mop/spell=38522
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91289, ItemName: "Tyrannical Gladiator's Ornamented Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91290, ItemName: "Tyrannical Gladiator's Ornamented Gloves (Season 13 Elite)"},
-	//	{ItemID: 94438, ItemName: "Tyrannical Gladiator's Ornamented Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99882, ItemName: "Tyrannical Gladiator's Ornamented Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100108, ItemName: "Tyrannical Gladiator's Ornamented Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 91289, ItemName: "Tyrannical Gladiator's Ornamented Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91290, ItemName: "Tyrannical Gladiator's Ornamented Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94438, ItemName: "Tyrannical Gladiator's Ornamented Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99882, ItemName: "Tyrannical Gladiator's Ornamented Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100108, ItemName: "Tyrannical Gladiator's Ornamented Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -968,16 +834,16 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91309, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91310, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (Season 13 Elite)"},
-	//	{ItemID: 94328, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99893, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 99989, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 91309, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91310, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94328, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99893, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 99989, ItemName: "Tyrannical Gladiator's Mooncloth Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -987,16 +853,16 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91319, ItemName: "Tyrannical Gladiator's Satin Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91320, ItemName: "Tyrannical Gladiator's Satin Gloves (Season 13 Elite)"},
-	//	{ItemID: 94423, ItemName: "Tyrannical Gladiator's Satin Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99898, ItemName: "Tyrannical Gladiator's Satin Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100093, ItemName: "Tyrannical Gladiator's Satin Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 91319, ItemName: "Tyrannical Gladiator's Satin Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91320, ItemName: "Tyrannical Gladiator's Satin Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94423, ItemName: "Tyrannical Gladiator's Satin Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99898, ItemName: "Tyrannical Gladiator's Satin Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100093, ItemName: "Tyrannical Gladiator's Satin Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1006,16 +872,16 @@ func RegisterAllProcs() {
 	// Increases the healing you receive from Recuperate by 1% every 3.0 sec.
 	// https://www.wowhead.com/mop/spell=61249
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91342, ItemName: "Tyrannical Gladiator's Leather Gloves (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91343, ItemName: "Tyrannical Gladiator's Leather Gloves (Season 13 Elite)"},
-	//	{ItemID: 94377, ItemName: "Tyrannical Gladiator's Leather Gloves (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99907, ItemName: "Tyrannical Gladiator's Leather Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100047, ItemName: "Tyrannical Gladiator's Leather Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 91342, ItemName: "Tyrannical Gladiator's Leather Gloves (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91343, ItemName: "Tyrannical Gladiator's Leather Gloves (Season 13 Elite)"},
+	// 	{ItemID: 94377, ItemName: "Tyrannical Gladiator's Leather Gloves (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99907, ItemName: "Tyrannical Gladiator's Leather Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100047, ItemName: "Tyrannical Gladiator's Leather Gloves (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1025,16 +891,16 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91360, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91361, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (Season 13 Elite)"},
-	//	{ItemID: 94490, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99917, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100160, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 91360, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91361, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (Season 13 Elite)"},
+	// 	{ItemID: 94490, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99917, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100160, ItemName: "Tyrannical Gladiator's Ringmail Gauntlets (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1044,16 +910,16 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91370, ItemName: "Tyrannical Gladiator's Linked Gauntlets (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91371, ItemName: "Tyrannical Gladiator's Linked Gauntlets (Season 13 Elite)"},
-	//	{ItemID: 94458, ItemName: "Tyrannical Gladiator's Linked Gauntlets (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99922, ItemName: "Tyrannical Gladiator's Linked Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100128, ItemName: "Tyrannical Gladiator's Linked Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 91370, ItemName: "Tyrannical Gladiator's Linked Gauntlets (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91371, ItemName: "Tyrannical Gladiator's Linked Gauntlets (Season 13 Elite)"},
+	// 	{ItemID: 94458, ItemName: "Tyrannical Gladiator's Linked Gauntlets (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99922, ItemName: "Tyrannical Gladiator's Linked Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100128, ItemName: "Tyrannical Gladiator's Linked Gauntlets (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1063,16 +929,16 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91382, ItemName: "Tyrannical Gladiator's Mail Gauntlets (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91383, ItemName: "Tyrannical Gladiator's Mail Gauntlets (Season 13 Elite)"},
-	//	{ItemID: 94408, ItemName: "Tyrannical Gladiator's Mail Gauntlets (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99928, ItemName: "Tyrannical Gladiator's Mail Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100078, ItemName: "Tyrannical Gladiator's Mail Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 91382, ItemName: "Tyrannical Gladiator's Mail Gauntlets (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91383, ItemName: "Tyrannical Gladiator's Mail Gauntlets (Season 13 Elite)"},
+	// 	{ItemID: 94408, ItemName: "Tyrannical Gladiator's Mail Gauntlets (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99928, ItemName: "Tyrannical Gladiator's Mail Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100078, ItemName: "Tyrannical Gladiator's Mail Gauntlets (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1082,35 +948,16 @@ func RegisterAllProcs() {
 	// Reduces the cooldown on your Demonic Circle: Teleport spell by 5 sec.
 	// https://www.wowhead.com/mop/spell=33063
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 91420, ItemName: "Tyrannical Gladiator's Felweave Handguards (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91421, ItemName: "Tyrannical Gladiator's Felweave Handguards (Season 13 Elite)"},
-	//	{ItemID: 94441, ItemName: "Tyrannical Gladiator's Felweave Handguards (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99952, ItemName: "Tyrannical Gladiator's Felweave Handguards (Season 14) (Alliance)"},
-	//	{ItemID: 100111, ItemName: "Tyrannical Gladiator's Felweave Handguards (Season 14) (Horde)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the rage cost of your Hamstring ability by -3.0.
-	// https://www.wowhead.com/mop/spell=22778
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 91432, ItemName: "Tyrannical Gladiator's Plate Gauntlets (LFR) (Season 13) (Alliance)"},
-	//	{ItemID: 91433, ItemName: "Tyrannical Gladiator's Plate Gauntlets (Season 13 Elite)"},
-	//	{ItemID: 94331, ItemName: "Tyrannical Gladiator's Plate Gauntlets (LFR) (Season 13) (Horde)"},
-	//	{ItemID: 99958, ItemName: "Tyrannical Gladiator's Plate Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 99992, ItemName: "Tyrannical Gladiator's Plate Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 91420, ItemName: "Tyrannical Gladiator's Felweave Handguards (LFR) (Season 13) (Alliance)"},
+	// 	{ItemID: 91421, ItemName: "Tyrannical Gladiator's Felweave Handguards (Season 13 Elite)"},
+	// 	{ItemID: 94441, ItemName: "Tyrannical Gladiator's Felweave Handguards (LFR) (Season 13) (Horde)"},
+	// 	{ItemID: 99952, ItemName: "Tyrannical Gladiator's Felweave Handguards (Season 14) (Alliance)"},
+	// 	{ItemID: 100111, ItemName: "Tyrannical Gladiator's Felweave Handguards (Season 14) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1167,21 +1014,6 @@ func RegisterAllProcs() {
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Crafted Dreadful Gladiator's Wyrmhide Gloves",
 	// 	ItemID:             93475,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.
-	// https://www.wowhead.com/mop/spell=61255
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Crafted Dreadful Gladiator's Chain Gauntlets",
-	// 	ItemID:             93495,
 	// 	Callback:           core.CallbackEmpty,
 	// 	ProcMask:           core.ProcMaskUnknown,
 	// 	Outcome:            core.OutcomeEmpty,
@@ -1257,21 +1089,6 @@ func RegisterAllProcs() {
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Crafted Gladiator's Copperskin Gloves (Season 12)",
 	// 	ItemID:             93518,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Increases the range of your Judgment by 10 yards.
-	// https://www.wowhead.com/mop/spell=61776
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Crafted Dreadful Gladiator's Scaled Gauntlets",
-	// 	ItemID:             93528,
 	// 	Callback:           core.CallbackEmpty,
 	// 	ProcMask:           core.ProcMaskUnknown,
 	// 	Outcome:            core.OutcomeEmpty,
@@ -1402,35 +1219,20 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Reduces the rage cost of your Hamstring ability by -3.0.
-	// https://www.wowhead.com/mop/spell=22778
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Crafted Dreadful Gladiator's Plate Gauntlets",
-	// 	ItemID:             93621,
+	// Consumes all Blessings of Zuldazar to shield the target, absorbing 9339 damage per Blessing consumed.
+	// Lasts 15s.
+	// https://www.wowhead.com/mop/spell=138925
+	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 	// 	Callback:           core.CallbackEmpty,
 	// 	ProcMask:           core.ProcMaskUnknown,
 	// 	Outcome:            core.OutcomeEmpty,
 	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Consumes all Blessings of Zuldazar to shield the target, absorbing 1000 damage per Blessing consumed.
-	// Lasts 15s.
-	// https://www.wowhead.com/mop/spell=138925
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
 	// }, []shared.ItemVariant{
-	//	{ItemID: 94525, ItemName: "Stolen Relic of Zuldazar (N)"},
-	//	{ItemID: 95763, ItemName: "Stolen Relic of Zuldazar (LFR) (Celestial)"},
-	//	{ItemID: 96135, ItemName: "Stolen Relic of Zuldazar (Thunderforged)"},
-	//	{ItemID: 96507, ItemName: "Stolen Relic of Zuldazar (H)"},
-	//	{ItemID: 96879, ItemName: "Stolen Relic of Zuldazar (Heroic Thunderforged)"},
+	// 	{ItemID: 94525, ItemName: "Stolen Relic of Zuldazar (N)"},
+	// 	{ItemID: 95763, ItemName: "Stolen Relic of Zuldazar (LFR) (Celestial)"},
+	// 	{ItemID: 96135, ItemName: "Stolen Relic of Zuldazar (Thunderforged)"},
+	// 	{ItemID: 96507, ItemName: "Stolen Relic of Zuldazar (H)"},
+	// 	{ItemID: 96879, ItemName: "Stolen Relic of Zuldazar (Heroic Thunderforged)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1441,16 +1243,16 @@ func RegisterAllProcs() {
 	// 2.89 procs per minute)
 	// https://www.wowhead.com/mop/spell=138967
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 94525, ItemName: "Stolen Relic of Zuldazar (N)"},
-	//	{ItemID: 95763, ItemName: "Stolen Relic of Zuldazar (LFR) (Celestial)"},
-	//	{ItemID: 96135, ItemName: "Stolen Relic of Zuldazar (Thunderforged)"},
-	//	{ItemID: 96507, ItemName: "Stolen Relic of Zuldazar (H)"},
-	//	{ItemID: 96879, ItemName: "Stolen Relic of Zuldazar (Heroic Thunderforged)"},
+	// 	{ItemID: 94525, ItemName: "Stolen Relic of Zuldazar (N)"},
+	// 	{ItemID: 95763, ItemName: "Stolen Relic of Zuldazar (LFR) (Celestial)"},
+	// 	{ItemID: 96135, ItemName: "Stolen Relic of Zuldazar (Thunderforged)"},
+	// 	{ItemID: 96507, ItemName: "Stolen Relic of Zuldazar (H)"},
+	// 	{ItemID: 96879, ItemName: "Stolen Relic of Zuldazar (Heroic Thunderforged)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1458,20 +1260,20 @@ func RegisterAllProcs() {
 	//       With next db run the item will be removed if implemented.
 	//
 	// Your healing spells have a chance to grant you Infinite Power. Once you have accumulated 6 Infinite Power,
-	// you will instantly heal the most injured nearby party member for 10387. (Approximately 5.78 procs per
+	// you will instantly heal the most injured nearby party member for 56024. (Approximately 5.78 procs per
 	// minute)
 	// https://www.wowhead.com/mop/spell=139190
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 94530, ItemName: "Lightning-Imbued Chalice (N)"},
-	//	{ItemID: 95817, ItemName: "Lightning-Imbued Chalice (LFR) (Celestial)"},
-	//	{ItemID: 96189, ItemName: "Lightning-Imbued Chalice (Thunderforged)"},
-	//	{ItemID: 96561, ItemName: "Lightning-Imbued Chalice (H)"},
-	//	{ItemID: 96933, ItemName: "Lightning-Imbued Chalice (Heroic Thunderforged)"},
+	// 	{ItemID: 94530, ItemName: "Lightning-Imbued Chalice (N)"},
+	// 	{ItemID: 95817, ItemName: "Lightning-Imbued Chalice (LFR) (Celestial)"},
+	// 	{ItemID: 96189, ItemName: "Lightning-Imbued Chalice (Thunderforged)"},
+	// 	{ItemID: 96561, ItemName: "Lightning-Imbued Chalice (H)"},
+	// 	{ItemID: 96933, ItemName: "Lightning-Imbued Chalice (Heroic Thunderforged)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1538,21 +1340,6 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.
-	// https://www.wowhead.com/mop/spell=61255
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Crafted Malevolent Gladiator's Chain Gauntlets",
-	// 	ItemID:             98821,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
 	// Reduces the global cooldown triggered by Blink by 0.5 sec.
 	// https://www.wowhead.com/mop/spell=44301
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -1588,21 +1375,6 @@ func RegisterAllProcs() {
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Crafted Malevolent Gladiator's Copperskin Gloves",
 	// 	ItemID:             98838,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Increases the range of your Judgment by 10 yards.
-	// https://www.wowhead.com/mop/spell=61776
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Crafted Malevolent Gladiator's Scaled Gauntlets",
-	// 	ItemID:             98844,
 	// 	Callback:           core.CallbackEmpty,
 	// 	ProcMask:           core.ProcMaskUnknown,
 	// 	Outcome:            core.OutcomeEmpty,
@@ -1733,33 +1505,18 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Reduces the rage cost of your Hamstring ability by -3.0.
-	// https://www.wowhead.com/mop/spell=22778
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "Crafted Malevolent Gladiator's Plate Gauntlets",
-	// 	ItemID:             98927,
+	// Your Chains of Ice ability now generates an additional 10 Runic Power.
+	// https://www.wowhead.com/mop/spell=62458
+	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 	// 	Callback:           core.CallbackEmpty,
 	// 	ProcMask:           core.ProcMaskUnknown,
 	// 	Outcome:            core.OutcomeEmpty,
 	// 	RequireDamageDealt: false,
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Your Chains of Ice ability now generates an additional 10 Runic Power.
-	// https://www.wowhead.com/mop/spell=62458
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100245, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100594, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 14) (Horde)"},
-	//	{ItemID: 102847, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 15) (Horde)"},
-	//	{ItemID: 103180, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 15) (Alliance)"},
+	// 	{ItemID: 100245, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100594, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 102847, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 15) (Horde)"},
+	// 	{ItemID: 103180, ItemName: "Grievous Gladiator's Dreadplate Gauntlets (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1769,15 +1526,15 @@ func RegisterAllProcs() {
 	// Increases the damage done by Maim by 100% and increases the duration of Bear Hug by 1 sec.
 	// https://www.wowhead.com/mop/spell=61252
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100253, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100685, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102936, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103184, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 15) (Alliance)"},
+	// 	{ItemID: 100253, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100685, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102936, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103184, ItemName: "Grievous Gladiator's Dragonhide Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1787,15 +1544,15 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100268, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100601, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102854, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103192, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 15) (Alliance)"},
+	// 	{ItemID: 100268, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100601, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102854, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103192, ItemName: "Grievous Gladiator's Kodohide Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1805,33 +1562,15 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100285, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100642, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102893, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103201, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 15) (Alliance)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.
-	// https://www.wowhead.com/mop/spell=61255
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 100320, ItemName: "Grievous Gladiator's Chain Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100683, ItemName: "Grievous Gladiator's Chain Gauntlets (Season 14) (Horde)"},
-	//	{ItemID: 102934, ItemName: "Grievous Gladiator's Chain Gauntlets (Season 15) (Horde)"},
-	//	{ItemID: 103220, ItemName: "Grievous Gladiator's Chain Gauntlets (Season 15) (Alliance)"},
+	// 	{ItemID: 100285, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100642, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102893, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103201, ItemName: "Grievous Gladiator's Wyrmhide Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1841,15 +1580,15 @@ func RegisterAllProcs() {
 	// Reduces the global cooldown triggered by Blink by 0.5 sec.
 	// https://www.wowhead.com/mop/spell=44301
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100328, ItemName: "Grievous Gladiator's Silk Handguards (Season 14) (Alliance)"},
-	//	{ItemID: 100681, ItemName: "Grievous Gladiator's Silk Handguards (Season 14) (Horde)"},
-	//	{ItemID: 102932, ItemName: "Grievous Gladiator's Silk Handguards (Season 15) (Horde)"},
-	//	{ItemID: 103224, ItemName: "Grievous Gladiator's Silk Handguards (Season 15) (Alliance)"},
+	// 	{ItemID: 100328, ItemName: "Grievous Gladiator's Silk Handguards (Season 14) (Alliance)"},
+	// 	{ItemID: 100681, ItemName: "Grievous Gladiator's Silk Handguards (Season 14) (Horde)"},
+	// 	{ItemID: 102932, ItemName: "Grievous Gladiator's Silk Handguards (Season 15) (Horde)"},
+	// 	{ItemID: 103224, ItemName: "Grievous Gladiator's Silk Handguards (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1859,15 +1598,15 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100343, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100621, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102872, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103232, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 15) (Alliance)"},
+	// 	{ItemID: 100343, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100621, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102872, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103232, ItemName: "Grievous Gladiator's Ironskin Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1877,33 +1616,15 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100353, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100570, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102824, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103237, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 15) (Alliance)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Increases the range of your Judgment by 10 yards.
-	// https://www.wowhead.com/mop/spell=61776
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 100365, ItemName: "Grievous Gladiator's Scaled Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100573, ItemName: "Grievous Gladiator's Scaled Gauntlets (Season 14) (Horde)"},
-	//	{ItemID: 102827, ItemName: "Grievous Gladiator's Scaled Gauntlets (Season 15) (Horde)"},
-	//	{ItemID: 103243, ItemName: "Grievous Gladiator's Scaled Gauntlets (Season 15) (Alliance)"},
+	// 	{ItemID: 100353, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100570, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102824, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103237, ItemName: "Grievous Gladiator's Copperskin Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1913,15 +1634,15 @@ func RegisterAllProcs() {
 	// Increases the critical effect chance of your Flash of Light by 2%.
 	// https://www.wowhead.com/mop/spell=38522
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100385, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100668, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102919, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103254, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 15) (Alliance)"},
+	// 	{ItemID: 100385, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100668, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102919, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103254, ItemName: "Grievous Gladiator's Ornamented Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1931,15 +1652,15 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100405, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100558, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102812, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103265, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 15) (Alliance)"},
+	// 	{ItemID: 100405, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100558, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102812, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103265, ItemName: "Grievous Gladiator's Mooncloth Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1949,15 +1670,15 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100415, ItemName: "Grievous Gladiator's Satin Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100653, ItemName: "Grievous Gladiator's Satin Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102904, ItemName: "Grievous Gladiator's Satin Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103270, ItemName: "Grievous Gladiator's Satin Gloves (Season 15) (Alliance)"},
+	// 	{ItemID: 100415, ItemName: "Grievous Gladiator's Satin Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100653, ItemName: "Grievous Gladiator's Satin Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102904, ItemName: "Grievous Gladiator's Satin Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103270, ItemName: "Grievous Gladiator's Satin Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1967,15 +1688,15 @@ func RegisterAllProcs() {
 	// Increases the healing you receive from Recuperate by 1% every 3.0 sec.
 	// https://www.wowhead.com/mop/spell=61249
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100432, ItemName: "Grievous Gladiator's Leather Gloves (Season 14) (Alliance)"},
-	//	{ItemID: 100607, ItemName: "Grievous Gladiator's Leather Gloves (Season 14) (Horde)"},
-	//	{ItemID: 102860, ItemName: "Grievous Gladiator's Leather Gloves (Season 15) (Horde)"},
-	//	{ItemID: 103279, ItemName: "Grievous Gladiator's Leather Gloves (Season 15) (Alliance)"},
+	// 	{ItemID: 100432, ItemName: "Grievous Gladiator's Leather Gloves (Season 14) (Alliance)"},
+	// 	{ItemID: 100607, ItemName: "Grievous Gladiator's Leather Gloves (Season 14) (Horde)"},
+	// 	{ItemID: 102860, ItemName: "Grievous Gladiator's Leather Gloves (Season 15) (Horde)"},
+	// 	{ItemID: 103279, ItemName: "Grievous Gladiator's Leather Gloves (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -1985,15 +1706,15 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100450, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100720, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 14) (Horde)"},
-	//	{ItemID: 102971, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 15) (Horde)"},
-	//	{ItemID: 103289, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 15) (Alliance)"},
+	// 	{ItemID: 100450, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100720, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 102971, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 15) (Horde)"},
+	// 	{ItemID: 103289, ItemName: "Grievous Gladiator's Ringmail Gauntlets (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2003,15 +1724,15 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100460, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100688, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 14) (Horde)"},
-	//	{ItemID: 102939, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 15) (Horde)"},
-	//	{ItemID: 103294, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 15) (Alliance)"},
+	// 	{ItemID: 100460, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100688, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 102939, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 15) (Horde)"},
+	// 	{ItemID: 103294, ItemName: "Grievous Gladiator's Linked Gauntlets (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2021,15 +1742,15 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100472, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100638, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 14) (Horde)"},
-	//	{ItemID: 102889, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 15) (Horde)"},
-	//	{ItemID: 103300, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 15) (Alliance)"},
+	// 	{ItemID: 100472, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 14) (Alliance)"},
+	// 	{ItemID: 100638, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 14) (Horde)"},
+	// 	{ItemID: 102889, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 15) (Horde)"},
+	// 	{ItemID: 103300, ItemName: "Grievous Gladiator's Mail Gauntlets (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2039,40 +1760,22 @@ func RegisterAllProcs() {
 	// Reduces the cooldown on your Demonic Circle: Teleport spell by 5 sec.
 	// https://www.wowhead.com/mop/spell=33063
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 100510, ItemName: "Grievous Gladiator's Felweave Handguards (Season 14) (Alliance)"},
-	//	{ItemID: 100671, ItemName: "Grievous Gladiator's Felweave Handguards (Season 14) (Horde)"},
-	//	{ItemID: 102922, ItemName: "Grievous Gladiator's Felweave Handguards (Season 15) (Horde)"},
-	//	{ItemID: 103323, ItemName: "Grievous Gladiator's Felweave Handguards (Season 15) (Alliance)"},
+	// 	{ItemID: 100510, ItemName: "Grievous Gladiator's Felweave Handguards (Season 14) (Alliance)"},
+	// 	{ItemID: 100671, ItemName: "Grievous Gladiator's Felweave Handguards (Season 14) (Horde)"},
+	// 	{ItemID: 102922, ItemName: "Grievous Gladiator's Felweave Handguards (Season 15) (Horde)"},
+	// 	{ItemID: 103323, ItemName: "Grievous Gladiator's Felweave Handguards (Season 15) (Alliance)"},
 	// })
 
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Reduces the rage cost of your Hamstring ability by -3.0.
-	// https://www.wowhead.com/mop/spell=22778
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 100522, ItemName: "Grievous Gladiator's Plate Gauntlets (Season 14) (Alliance)"},
-	//	{ItemID: 100561, ItemName: "Grievous Gladiator's Plate Gauntlets (Season 14) (Horde)"},
-	//	{ItemID: 102815, ItemName: "Grievous Gladiator's Plate Gauntlets (Season 15) (Horde)"},
-	//	{ItemID: 103329, ItemName: "Grievous Gladiator's Plate Gauntlets (Season 15) (Alliance)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)
+	// Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126467
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Springrain Idol of Wisdom",
@@ -2087,7 +1790,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)
+	// Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126467
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Mistdancer Idol of Wisdom",
@@ -2102,7 +1805,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)
+	// Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126467
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Sunsoul Idol of Wisdom",
@@ -2117,7 +1820,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)
+	// Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126467
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Communal Idol of Wisdom",
@@ -2132,7 +1835,7 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your healing spells have a chance to grant 5700 mana. ( 10% chance, 55 sec cooldown)
+	// Your healing spells have a chance to grant 6125 mana. ( 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126467
 	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 	// 	Name:               "Streamtalker Idol of Wisdom",
@@ -2164,61 +1867,61 @@ func RegisterAllProcs() {
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your heals have a 0.1% chance to trigger Multistrike, which causes instant additional healing to your
+	// Your heals have a 14.0% chance to trigger Multistrike, which causes instant additional healing to your
 	// target equal to 33% of the original healing done.
 	// https://www.wowhead.com/mop/spell=146176
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102294, ItemName: "Nazgrim's Burnished Insignia - Intellect (N)"},
-	//	{ItemID: 104553, ItemName: "Nazgrim's Burnished Insignia - Intellect (H)"},
-	//	{ItemID: 104802, ItemName: "Nazgrim's Burnished Insignia - Intellect (Flexible)"},
-	//	{ItemID: 105051, ItemName: "Nazgrim's Burnished Insignia - Intellect (LFR) (Celestial)"},
-	//	{ItemID: 105300, ItemName: "Nazgrim's Burnished Insignia - Intellect (Warforged)"},
-	//	{ItemID: 105549, ItemName: "Nazgrim's Burnished Insignia - Intellect (Heroic Warforged)"},
+	// 	{ItemID: 102294, ItemName: "Nazgrim's Burnished Insignia - Intellect (N)"},
+	// 	{ItemID: 104553, ItemName: "Nazgrim's Burnished Insignia - Intellect (H)"},
+	// 	{ItemID: 104802, ItemName: "Nazgrim's Burnished Insignia - Intellect (Flexible)"},
+	// 	{ItemID: 105051, ItemName: "Nazgrim's Burnished Insignia - Intellect (LFR) (Celestial)"},
+	// 	{ItemID: 105300, ItemName: "Nazgrim's Burnished Insignia - Intellect (Warforged)"},
+	// 	{ItemID: 105549, ItemName: "Nazgrim's Burnished Insignia - Intellect (Heroic Warforged)"},
 	// })
 
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Reduces damage taken from creature area of effect attacks by 2585% for 15s.
+	// Reduces damage taken from creature area of effect attacks by 33% for 15s.
 	// https://www.wowhead.com/mop/spell=146343
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102296, ItemName: "Rook's Unlucky Talisman (N)"},
-	//	{ItemID: 104442, ItemName: "Rook's Unlucky Talisman (H)"},
-	//	{ItemID: 104691, ItemName: "Rook's Unlucky Talisman (Flexible)"},
-	//	{ItemID: 104940, ItemName: "Rook's Unlucky Talisman (LFR) (Celestial)"},
-	//	{ItemID: 105189, ItemName: "Rook's Unlucky Talisman (Warforged)"},
-	//	{ItemID: 105438, ItemName: "Rook's Unlucky Talisman (Heroic Warforged)"},
+	// 	{ItemID: 102296, ItemName: "Rook's Unlucky Talisman (N)"},
+	// 	{ItemID: 104442, ItemName: "Rook's Unlucky Talisman (H)"},
+	// 	{ItemID: 104691, ItemName: "Rook's Unlucky Talisman (Flexible)"},
+	// 	{ItemID: 104940, ItemName: "Rook's Unlucky Talisman (LFR) (Celestial)"},
+	// 	{ItemID: 105189, ItemName: "Rook's Unlucky Talisman (Warforged)"},
+	// 	{ItemID: 105438, ItemName: "Rook's Unlucky Talisman (Heroic Warforged)"},
 	// })
 
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
 	//       With next db run the item will be removed if implemented.
 	//
-	// Your heals have a 0.01% chance to Cleave, dealing the same healing to up to 5 other nearby targets.
+	// Your heals have a 3.11% chance to Cleave, dealing the same healing to up to 5 other nearby targets.
 	// https://www.wowhead.com/mop/spell=148233
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102304, ItemName: "Thok's Acid-Grooved Tooth - Intellect (N)"},
-	//	{ItemID: 104611, ItemName: "Thok's Acid-Grooved Tooth - Intellect (H)"},
-	//	{ItemID: 104860, ItemName: "Thok's Acid-Grooved Tooth - Intellect (Flexible)"},
-	//	{ItemID: 105109, ItemName: "Thok's Acid-Grooved Tooth - Intellect (LFR) (Celestial)"},
-	//	{ItemID: 105358, ItemName: "Thok's Acid-Grooved Tooth - Intellect (Warforged)"},
-	//	{ItemID: 105607, ItemName: "Thok's Acid-Grooved Tooth - Intellect (Heroic Warforged)"},
+	// 	{ItemID: 102304, ItemName: "Thok's Acid-Grooved Tooth - Intellect (N)"},
+	// 	{ItemID: 104611, ItemName: "Thok's Acid-Grooved Tooth - Intellect (H)"},
+	// 	{ItemID: 104860, ItemName: "Thok's Acid-Grooved Tooth - Intellect (Flexible)"},
+	// 	{ItemID: 105109, ItemName: "Thok's Acid-Grooved Tooth - Intellect (LFR) (Celestial)"},
+	// 	{ItemID: 105358, ItemName: "Thok's Acid-Grooved Tooth - Intellect (Warforged)"},
+	// 	{ItemID: 105607, ItemName: "Thok's Acid-Grooved Tooth - Intellect (Heroic Warforged)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2228,29 +1931,13 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102615, ItemName: "Prideful Gladiator's Mooncloth Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103462, ItemName: "Prideful Gladiator's Mooncloth Gloves (LFR) (Season 15) (Horde)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the rage cost of your Hamstring ability by -3.0.
-	// https://www.wowhead.com/mop/spell=22778
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 102618, ItemName: "Prideful Gladiator's Plate Gauntlets (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103526, ItemName: "Prideful Gladiator's Plate Gauntlets (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102615, ItemName: "Prideful Gladiator's Mooncloth Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103462, ItemName: "Prideful Gladiator's Mooncloth Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2260,29 +1947,13 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102627, ItemName: "Prideful Gladiator's Copperskin Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103434, ItemName: "Prideful Gladiator's Copperskin Gloves (LFR) (Season 15) (Horde)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Increases the range of your Judgment by 10 yards.
-	// https://www.wowhead.com/mop/spell=61776
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 102630, ItemName: "Prideful Gladiator's Scaled Gauntlets (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103440, ItemName: "Prideful Gladiator's Scaled Gauntlets (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102627, ItemName: "Prideful Gladiator's Copperskin Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103434, ItemName: "Prideful Gladiator's Copperskin Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2292,13 +1963,13 @@ func RegisterAllProcs() {
 	// Your Chains of Ice ability now generates an additional 10 Runic Power.
 	// https://www.wowhead.com/mop/spell=62458
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102650, ItemName: "Prideful Gladiator's Dreadplate Gauntlets (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103377, ItemName: "Prideful Gladiator's Dreadplate Gauntlets (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102650, ItemName: "Prideful Gladiator's Dreadplate Gauntlets (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103377, ItemName: "Prideful Gladiator's Dreadplate Gauntlets (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2308,13 +1979,13 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102657, ItemName: "Prideful Gladiator's Kodohide Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103389, ItemName: "Prideful Gladiator's Kodohide Gloves (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102657, ItemName: "Prideful Gladiator's Kodohide Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103389, ItemName: "Prideful Gladiator's Kodohide Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2324,13 +1995,13 @@ func RegisterAllProcs() {
 	// Increases the healing you receive from Recuperate by 1% every 3.0 sec.
 	// https://www.wowhead.com/mop/spell=61249
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102663, ItemName: "Prideful Gladiator's Leather Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103476, ItemName: "Prideful Gladiator's Leather Gloves (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102663, ItemName: "Prideful Gladiator's Leather Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103476, ItemName: "Prideful Gladiator's Leather Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2340,13 +2011,13 @@ func RegisterAllProcs() {
 	// All snare effects will be cleared upon using Roll, Chi Torpedo or Flying Serpent Kick.
 	// https://www.wowhead.com/mop/spell=124489
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102675, ItemName: "Prideful Gladiator's Ironskin Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103429, ItemName: "Prideful Gladiator's Ironskin Gloves (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102675, ItemName: "Prideful Gladiator's Ironskin Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103429, ItemName: "Prideful Gladiator's Ironskin Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2356,13 +2027,13 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102692, ItemName: "Prideful Gladiator's Mail Gauntlets (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103497, ItemName: "Prideful Gladiator's Mail Gauntlets (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102692, ItemName: "Prideful Gladiator's Mail Gauntlets (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103497, ItemName: "Prideful Gladiator's Mail Gauntlets (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2372,13 +2043,13 @@ func RegisterAllProcs() {
 	// Increases the range of your Cyclone spell by 5 yards.
 	// https://www.wowhead.com/mop/spell=33830
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102696, ItemName: "Prideful Gladiator's Wyrmhide Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103398, ItemName: "Prideful Gladiator's Wyrmhide Gloves (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102696, ItemName: "Prideful Gladiator's Wyrmhide Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103398, ItemName: "Prideful Gladiator's Wyrmhide Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2388,13 +2059,13 @@ func RegisterAllProcs() {
 	// Reduces the cooldown of your Psychic Scream ability by 3 sec.
 	// https://www.wowhead.com/mop/spell=44297
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102707, ItemName: "Prideful Gladiator's Satin Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103467, ItemName: "Prideful Gladiator's Satin Gloves (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102707, ItemName: "Prideful Gladiator's Satin Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103467, ItemName: "Prideful Gladiator's Satin Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2404,13 +2075,13 @@ func RegisterAllProcs() {
 	// Increases the critical effect chance of your Flash of Light by 2%.
 	// https://www.wowhead.com/mop/spell=38522
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102722, ItemName: "Prideful Gladiator's Ornamented Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103451, ItemName: "Prideful Gladiator's Ornamented Gloves (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102722, ItemName: "Prideful Gladiator's Ornamented Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103451, ItemName: "Prideful Gladiator's Ornamented Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2420,13 +2091,13 @@ func RegisterAllProcs() {
 	// Reduces the cooldown on your Demonic Circle: Teleport spell by 5 sec.
 	// https://www.wowhead.com/mop/spell=33063
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102725, ItemName: "Prideful Gladiator's Felweave Handguards (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103520, ItemName: "Prideful Gladiator's Felweave Handguards (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102725, ItemName: "Prideful Gladiator's Felweave Handguards (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103520, ItemName: "Prideful Gladiator's Felweave Handguards (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2436,29 +2107,13 @@ func RegisterAllProcs() {
 	// Reduces the global cooldown triggered by Blink by 0.5 sec.
 	// https://www.wowhead.com/mop/spell=44301
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102735, ItemName: "Prideful Gladiator's Silk Handguards (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103421, ItemName: "Prideful Gladiator's Silk Handguards (LFR) (Season 15) (Horde)"},
-	// })
-
-	// TODO: Manual implementation required
-	//       This can be ignored if the effect has already been implemented.
-	//       With next db run the item will be removed if implemented.
-	//
-	// Reduces the cooldown of your Traps and Black Arrow by -2.0 seconds.
-	// https://www.wowhead.com/mop/spell=61255
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
-	// }, []shared.ItemVariant{
-	//	{ItemID: 102737, ItemName: "Prideful Gladiator's Chain Gauntlets (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103417, ItemName: "Prideful Gladiator's Chain Gauntlets (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102735, ItemName: "Prideful Gladiator's Silk Handguards (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103421, ItemName: "Prideful Gladiator's Silk Handguards (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2468,13 +2123,13 @@ func RegisterAllProcs() {
 	// Increases the damage done by Maim by 100% and increases the duration of Bear Hug by 1 sec.
 	// https://www.wowhead.com/mop/spell=61252
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102739, ItemName: "Prideful Gladiator's Dragonhide Gloves (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103381, ItemName: "Prideful Gladiator's Dragonhide Gloves (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102739, ItemName: "Prideful Gladiator's Dragonhide Gloves (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103381, ItemName: "Prideful Gladiator's Dragonhide Gloves (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2484,13 +2139,13 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102742, ItemName: "Prideful Gladiator's Linked Gauntlets (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103491, ItemName: "Prideful Gladiator's Linked Gauntlets (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102742, ItemName: "Prideful Gladiator's Linked Gauntlets (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103491, ItemName: "Prideful Gladiator's Linked Gauntlets (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2500,13 +2155,13 @@ func RegisterAllProcs() {
 	// Improves the range of your Shock and Wind Shear spells by 5 yards.
 	// https://www.wowhead.com/mop/spell=32973
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 102774, ItemName: "Prideful Gladiator's Ringmail Gauntlets (LFR) (Season 15) (Alliance)"},
-	//	{ItemID: 103486, ItemName: "Prideful Gladiator's Ringmail Gauntlets (LFR) (Season 15) (Horde)"},
+	// 	{ItemID: 102774, ItemName: "Prideful Gladiator's Ringmail Gauntlets (LFR) (Season 15) (Alliance)"},
+	// 	{ItemID: 103486, ItemName: "Prideful Gladiator's Ringmail Gauntlets (LFR) (Season 15) (Horde)"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2545,13 +2200,13 @@ func RegisterAllProcs() {
 	// Let the Horseman laugh through you.
 	// https://www.wowhead.com/mop/spell=43873
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 263014, ItemName: "The Horseman's Horrific Hood"},
-	//	{ItemID: 282172, ItemName: "The Horseman's Horrific Hood"},
+	// 	{ItemID: 263014, ItemName: "The Horseman's Horrific Hood"},
+	// 	{ItemID: 282172, ItemName: "The Horseman's Horrific Hood"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2561,13 +2216,13 @@ func RegisterAllProcs() {
 	// Summon Pumpkin Soldiers to burn your foes.
 	// https://www.wowhead.com/mop/spell=50070
 	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           core.CallbackEmpty,
-	//	ProcMask:           core.ProcMaskUnknown,
-	//	Outcome:            core.OutcomeEmpty,
-	//	RequireDamageDealt: false
+	// 	Callback:           core.CallbackEmpty,
+	// 	ProcMask:           core.ProcMaskUnknown,
+	// 	Outcome:            core.OutcomeEmpty,
+	// 	RequireDamageDealt: false,
 	// }, []shared.ItemVariant{
-	//	{ItemID: 263018, ItemName: "The Horseman's Sinister Slicer"},
-	//	{ItemID: 282174, ItemName: "The Horseman's Sinister Slicer"},
+	// 	{ItemID: 263018, ItemName: "The Horseman's Sinister Slicer"},
+	// 	{ItemID: 282174, ItemName: "The Horseman's Sinister Slicer"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2633,7 +2288,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 haste for 20s.
+	// When your attacks hit you have a chance to gain 3386 haste for 20s.
 	// https://www.wowhead.com/mop/spell=126483
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Windswept Pages (H)",
@@ -2644,7 +2299,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your healing spells have a chance to grant 1926 Intellect for 10s.
+	// Your healing spells have a chance to grant 3386 Intellect for 10s.
 	// https://www.wowhead.com/mop/spell=126266
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Empty Fruit Barrel (H)",
@@ -2655,7 +2310,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 critical strike for 30s. ( 15% chance, 115 sec cooldown)
+	// When your attacks hit you have a chance to gain 3386 critical strike for 30s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126513
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Carbonic Carbuncle (H)",
@@ -2666,7 +2321,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your spells deal damage you have a chance to gain 2573 critical strike for 30s. ( 15% chance, 115
+	// When your spells deal damage you have a chance to gain 3386 critical strike for 30s. ( 15% chance, 115
 	// sec cooldown)
 	// https://www.wowhead.com/mop/spell=126476
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -2678,7 +2333,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 dodge for 15s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3386 dodge for 15s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126236
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -2690,7 +2345,7 @@ func RegisterAllProcs() {
 		{ItemID: 85181, ItemName: "Iron Protector Talisman (N)"},
 	})
 
-	// When your attacks critical strike your target you have a chance to gain 2573 Agility for 25s. ( 45% chance,
+	// When your attacks critical strike your target you have a chance to gain 3386 Agility for 25s. ( 45% chance,
 	// 85 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126489
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -2702,7 +2357,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your healing and damaging spells have a chance to grant 1851 mastery for 20s.
+	// Your healing and damaging spells have a chance to grant 1852 mastery for 20s.
 	// https://www.wowhead.com/mop/spell=122309
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Mark of the Catacombs",
@@ -2713,7 +2368,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage you have a chance to gain 1851 haste for 20s.
+	// When you deal damage you have a chance to gain 1852 haste for 20s.
 	// https://www.wowhead.com/mop/spell=122310
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sigil of the Catacombs",
@@ -2724,7 +2379,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your melee and ranged attacks have a chance to grant 1851 mastery for 20s.
+	// Your melee and ranged attacks have a chance to grant 1852 mastery for 20s.
 	// https://www.wowhead.com/mop/spell=122311
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Emblem of the Catacombs",
@@ -2735,7 +2390,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// Your melee attacks have a chance to grant 1851 parry for 20s.
+	// Your melee attacks have a chance to grant 1852 parry for 20s.
 	// https://www.wowhead.com/mop/spell=122312
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Medallion of the Catacombs",
@@ -2746,7 +2401,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// Your melee and ranged attacks have a chance to grant 1851 critical strike for 20s.
+	// Your melee and ranged attacks have a chance to grant 1852 critical strike for 20s.
 	// https://www.wowhead.com/mop/spell=122313
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Symbol of the Catacombs",
@@ -2757,7 +2412,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// Your healing and damaging spells have a chance to grant 1851 spirit for 20s.
+	// Your healing and damaging spells have a chance to grant 1852 spirit for 20s.
 	// https://www.wowhead.com/mop/spell=122314
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sigil of Compassion",
@@ -2768,7 +2423,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage you have a chance to gain 1851 critical strike for 20s.
+	// When you deal damage you have a chance to gain 1852 critical strike for 20s.
 	// https://www.wowhead.com/mop/spell=122315
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sigil of Fidelity",
@@ -2779,7 +2434,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your melee and ranged attacks have a chance to grant 1851 haste for 20s.
+	// Your melee and ranged attacks have a chance to grant 1852 haste for 20s.
 	// https://www.wowhead.com/mop/spell=122316
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sigil of Grace",
@@ -2790,7 +2445,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// Your melee attacks have a chance to grant 1851 mastery for 20s.
+	// Your melee attacks have a chance to grant 1852 mastery for 20s.
 	// https://www.wowhead.com/mop/spell=122317
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sigil of Patience",
@@ -2801,7 +2456,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// Your melee and ranged attacks have a chance to grant 1851 mastery for 20s.
+	// Your melee and ranged attacks have a chance to grant 1852 mastery for 20s.
 	// https://www.wowhead.com/mop/spell=122318
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sigil of Devotion",
@@ -2922,7 +2577,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// When you deal damage you have a chance to gain 1287 Agility for 20s.
+	// When you deal damage you have a chance to gain 2853 Agility for 20s.
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Dreadful Gladiator's Insignia of Conquest (Season 12)",
@@ -2933,7 +2588,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage or heal a target you have a chance to gain 1287 Intellect for 20s.
+	// When you deal damage or heal a target you have a chance to gain 2853 Intellect for 20s.
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Dreadful Gladiator's Insignia of Dominance (Season 12)",
@@ -2944,7 +2599,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage you have a chance to gain 1287 Strength for 20s.
+	// When you deal damage you have a chance to gain 2853 Strength for 20s.
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Dreadful Gladiator's Insignia of Victory (Season 12)",
@@ -2955,7 +2610,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage you have a chance to gain 1287 Agility for 20s.
+	// When you deal damage you have a chance to gain 3603 Agility for 20s.
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -2967,7 +2622,7 @@ func RegisterAllProcs() {
 		{ItemID: 91457, ItemName: "Malevolent Gladiator's Insignia of Conquest (Season 13)"},
 	})
 
-	// When you deal damage you have a chance to gain 1287 Strength for 20s.
+	// When you deal damage you have a chance to gain 3603 Strength for 20s.
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -2979,7 +2634,7 @@ func RegisterAllProcs() {
 		{ItemID: 91768, ItemName: "Malevolent Gladiator's Insignia of Victory (Season 13)"},
 	})
 
-	// When you deal damage or heal a target you have a chance to gain 1287 Intellect for 20s.
+	// When you deal damage or heal a target you have a chance to gain 3603 Intellect for 20s.
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
@@ -2991,7 +2646,7 @@ func RegisterAllProcs() {
 		{ItemID: 91754, ItemName: "Malevolent Gladiator's Insignia of Dominance (Season 13)"},
 	})
 
-	// Your attacks have a chance to grant you 963 dodge for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3236 dodge for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126533
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3004,7 +2659,7 @@ func RegisterAllProcs() {
 		{ItemID: 87063, ItemName: "Vial of Dragon's Blood (H)"},
 	})
 
-	// Your attacks have a chance to grant you 963 Agility for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3236 Agility for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126554
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3017,8 +2672,8 @@ func RegisterAllProcs() {
 		{ItemID: 87057, ItemName: "Bottle of Infinite Stars (H)"},
 	})
 
-	// Each time you deal periodic damage you have a chance to gain 963 Intellect for 20s. ( 15% chance, 55 sec
-	// cooldown)
+	// Each time you deal periodic damage you have a chance to gain 3236 Intellect for 20s. ( 15% chance, 55
+	// sec cooldown)
 	// https://www.wowhead.com/mop/spell=126577
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnPeriodicDamageDealt,
@@ -3031,7 +2686,7 @@ func RegisterAllProcs() {
 		{ItemID: 87065, ItemName: "Light of the Cosmos (H)"},
 	})
 
-	// Your attacks have a chance to grant you 963 Strength for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3236 Strength for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126582
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3044,7 +2699,7 @@ func RegisterAllProcs() {
 		{ItemID: 87072, ItemName: "Lei Shen's Final Orders (H)"},
 	})
 
-	// Each time your spells heal you have a chance to gain 963 Intellect for 20s. ( 15% chance, 55 sec cooldown)
+	// Each time your spells heal you have a chance to gain 3236 Intellect for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126588
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
@@ -3057,7 +2712,7 @@ func RegisterAllProcs() {
 		{ItemID: 87075, ItemName: "Qin-xi's Polarizing Seal (H)"},
 	})
 
-	// Each time your attacks hit, you have a chance to gain 963 dodge for 20s. ( 15% chance, 115 sec cooldown)
+	// Each time your attacks hit, you have a chance to gain 6908 dodge for 20s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126646
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3070,7 +2725,7 @@ func RegisterAllProcs() {
 		{ItemID: 87160, ItemName: "Stuff of Nightmares (H)"},
 	})
 
-	// Each time your spells heal you have a chance to gain 963 Spirit for 20s. ( 15% chance, 115 sec cooldown)
+	// Each time your spells heal you have a chance to gain 6908 Spirit for 20s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126640
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
@@ -3083,8 +2738,8 @@ func RegisterAllProcs() {
 		{ItemID: 87163, ItemName: "Spirits of the Sun (H)"},
 	})
 
-	// Each time your attacks hit, you have a chance to gain 963 critical strike for 20s. ( 15% chance, 115 sec
-	// cooldown)
+	// Each time your attacks hit, you have a chance to gain 6908 critical strike for 20s. ( 15% chance, 115
+	// sec cooldown)
 	// https://www.wowhead.com/mop/spell=126649
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3097,7 +2752,7 @@ func RegisterAllProcs() {
 		{ItemID: 87167, ItemName: "Terror in the Mists (H)"},
 	})
 
-	// Each time your attacks hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec cooldown)
+	// Each time your attacks hit, you have a chance to gain 6908 haste for 20s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126657
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3110,7 +2765,7 @@ func RegisterAllProcs() {
 		{ItemID: 87172, ItemName: "Darkmist Vortex (H)"},
 	})
 
-	// Each time your harmful spells hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec
+	// Each time your harmful spells hit, you have a chance to gain 6908 haste for 20s. ( 15% chance, 115 sec
 	// cooldown)
 	// https://www.wowhead.com/mop/spell=126659
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3124,7 +2779,7 @@ func RegisterAllProcs() {
 		{ItemID: 87175, ItemName: "Essence of Terror (H)"},
 	})
 
-	// Your healing spells have a chance to grant 1926 spellpower for 20s. ( 15% chance, 115 sec cooldown)
+	// Your healing spells have a chance to grant 3845 spellpower for 20s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=127572
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Core of Decency",
@@ -3135,7 +2790,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// You gain an additional 375 critical strike for 10s. This effect stacks up to 3 times.
+	// You gain an additional 374 critical strike for 10s. This effect stacks up to 3 times.
 	// https://www.wowhead.com/mop/spell=127890
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "The Gloaming Blade",
@@ -3146,7 +2801,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// When you deal damage you have a chance to gain 1287 Agility for 20s.
+	// When you deal damage you have a chance to gain 4066 Agility for 20s.
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -3160,7 +2815,7 @@ func RegisterAllProcs() {
 		{ItemID: 100026, ItemName: "Tyrannical Gladiator's Insignia of Conquest (Season 14) (Horde)"},
 	})
 
-	// When you deal damage or heal a target you have a chance to gain 1287 Intellect for 20s.
+	// When you deal damage or heal a target you have a chance to gain 4066 Intellect for 20s.
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
@@ -3174,7 +2829,7 @@ func RegisterAllProcs() {
 		{ItemID: 100152, ItemName: "Tyrannical Gladiator's Insignia of Dominance (Season 14) (Horde)"},
 	})
 
-	// When you deal damage you have a chance to gain 1287 Strength for 20s.
+	// When you deal damage you have a chance to gain 4066 Strength for 20s.
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -3188,7 +2843,7 @@ func RegisterAllProcs() {
 		{ItemID: 100085, ItemName: "Tyrannical Gladiator's Insignia of Victory (Season 14) (Horde)"},
 	})
 
-	// When you deal damage you have a chance to gain 1287 Agility for 20s.
+	// When you deal damage you have a chance to gain 2853 Agility for 20s.
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Crafted Dreadful Gladiator's Insignia of Conquest",
@@ -3199,7 +2854,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage or heal a target you have a chance to gain 1287 Intellect for 20s.
+	// When you deal damage or heal a target you have a chance to gain 2853 Intellect for 20s.
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Crafted Dreadful Gladiator's Insignia of Dominance",
@@ -3210,7 +2865,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage you have a chance to gain 1287 Strength for 20s.
+	// When you deal damage you have a chance to gain 2853 Strength for 20s.
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Crafted Dreadful Gladiator's Insignia of Victory",
@@ -3221,7 +2876,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Strength for 15s. ( 15% chance, 85 sec cooldown)
+	// Your attacks have a chance to grant you 8800 Strength for 15s. ( 15% chance, 85 sec cooldown)
 	// https://www.wowhead.com/mop/spell=138702
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Brutal Talisman of the Shado-Pan Assault",
@@ -3232,7 +2887,8 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Each time your harmful spells hit, you have a chance to gain 963 haste for 10s. ( 15% chance, 55 sec cooldown)
+	// Each time your harmful spells hit, you have a chance to gain 8800 haste for 10s. ( 15% chance, 55 sec
+	// cooldown)
 	// https://www.wowhead.com/mop/spell=138703
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Volatile Talisman of the Shado-Pan Assault",
@@ -3243,7 +2899,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Agility for 20s. ( 15% chance, 115 sec cooldown)
+	// Your attacks have a chance to grant you 8800 Agility for 20s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=138699
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Vicious Talisman of the Shado-Pan Assault",
@@ -3254,7 +2910,23 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Strength for 10s. This effect can stack up to 5 times. (Approximately
+	// Your attacks have a chance to grant Blades of Renataki, granting 1333 Agility every 1.0 sec for 10s. (Approximately
+	// 1.21 procs per minute)
+	// https://www.wowhead.com/mop/spell=138756
+	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial | core.ProcMaskSpellDamage | core.ProcMaskSpellProc | core.ProcMaskMeleeProc | core.ProcMaskRangedProc,
+		Outcome:            core.OutcomeLanded,
+		RequireDamageDealt: false,
+	}, []shared.ItemVariant{
+		{ItemID: 94512, ItemName: "Renataki's Soul Charm (N)"},
+		{ItemID: 95625, ItemName: "Renataki's Soul Charm (LFR) (Celestial)"},
+		{ItemID: 95997, ItemName: "Renataki's Soul Charm (Thunderforged)"},
+		{ItemID: 96369, ItemName: "Renataki's Soul Charm (H)"},
+		{ItemID: 96741, ItemName: "Renataki's Soul Charm (Heroic Thunderforged)"},
+	})
+
+	// Your attacks have a chance to grant you 1538 Strength for 10s. This effect can stack up to 5 times. (Approximately
 	// 3.50 procs per minute)
 	// https://www.wowhead.com/mop/spell=138870
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3270,7 +2942,7 @@ func RegisterAllProcs() {
 		{ItemID: 96873, ItemName: "Primordius' Talisman of Rage (Heroic Thunderforged)"},
 	})
 
-	// Your periodic damage spells have a chance to grant 1926 Intellect for 10s. (Approximately 1.10 procs per
+	// Your periodic damage spells have a chance to grant 7333 Intellect for 10s. (Approximately 1.10 procs per
 	// minute)
 	// https://www.wowhead.com/mop/spell=138898
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3286,7 +2958,7 @@ func RegisterAllProcs() {
 		{ItemID: 96827, ItemName: "Breath of the Hydra (Heroic Thunderforged)"},
 	})
 
-	// Your attacks have a chance to grant you 963 haste for 10s. This effect can stack up to 5 times. (Approximately
+	// Your attacks have a chance to grant you 1538 haste for 10s. This effect can stack up to 5 times. (Approximately
 	// 3.50 procs per minute)
 	// https://www.wowhead.com/mop/spell=138895
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3302,7 +2974,7 @@ func RegisterAllProcs() {
 		{ItemID: 96864, ItemName: "Talisman of Bloodlust (Heroic Thunderforged)"},
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Agility and summon 3 Voodoo Gnomes for 10s. (Approximately
+	// When your attacks hit you have a chance to gain 7333 Agility and summon 3 Voodoo Gnomes for 10s. (Approximately
 	// 1.10 procs per minute)
 	// https://www.wowhead.com/mop/spell=138938
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3318,7 +2990,7 @@ func RegisterAllProcs() {
 		{ItemID: 96781, ItemName: "Bad Juju (Heroic Thunderforged)"},
 	})
 
-	// Your critical attacks have a chance to grant you 963 Critical Strike for 20s. This effect can stack up
+	// Your critical attacks have a chance to grant you 2868 Critical Strike for 20s. This effect can stack up
 	// to 3 times. (Approximately 0.72 procs per minute)
 	// https://www.wowhead.com/mop/spell=139170
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3334,7 +3006,7 @@ func RegisterAllProcs() {
 		{ItemID: 96915, ItemName: "Gaze of the Twins (Heroic Thunderforged)"},
 	})
 
-	// When your spells deal critical damage, you have a chance to gain 1926 Intellect for 10s. (Approximately
+	// When your spells deal critical damage, you have a chance to gain 7333 Intellect for 10s. (Approximately
 	// 0.85 procs per minute)
 	// https://www.wowhead.com/mop/spell=139133
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3350,7 +3022,7 @@ func RegisterAllProcs() {
 		{ItemID: 96888, ItemName: "Cha-Ye's Essence of Brilliance (Heroic Thunderforged)"},
 	})
 
-	// When you deal damage you have a chance to gain 1287 Agility for 20s.
+	// When you deal damage you have a chance to gain 3374 Agility for 20s.
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Crafted Malevolent Gladiator's Insignia of Conquest",
@@ -3361,7 +3033,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage or heal a target you have a chance to gain 1287 Intellect for 20s.
+	// When you deal damage or heal a target you have a chance to gain 3374 Intellect for 20s.
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Crafted Malevolent Gladiator's Insignia of Dominance",
@@ -3372,7 +3044,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage you have a chance to gain 1287 Strength for 20s.
+	// When you deal damage you have a chance to gain 3374 Strength for 20s.
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Crafted Malevolent Gladiator's Insignia of Victory",
@@ -3383,7 +3055,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When you deal damage you have a chance to gain 1287 Agility for 20s.
+	// When you deal damage you have a chance to gain 5179 Agility for 20s.
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -3397,7 +3069,7 @@ func RegisterAllProcs() {
 		{ItemID: 103150, ItemName: "Grievous Gladiator's Insignia of Conquest (Season 15) (Alliance)"},
 	})
 
-	// When you deal damage or heal a target you have a chance to gain 1287 Intellect for 20s.
+	// When you deal damage or heal a target you have a chance to gain 5179 Intellect for 20s.
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
@@ -3411,7 +3083,7 @@ func RegisterAllProcs() {
 		{ItemID: 103309, ItemName: "Grievous Gladiator's Insignia of Dominance (Season 15) (Alliance)"},
 	})
 
-	// When you deal damage you have a chance to gain 1287 Strength for 20s.
+	// When you deal damage you have a chance to gain 5179 Strength for 20s.
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -3425,7 +3097,7 @@ func RegisterAllProcs() {
 		{ItemID: 103319, ItemName: "Grievous Gladiator's Insignia of Victory (Season 15) (Alliance)"},
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Heart-Lesion Stone of Battle",
@@ -3436,7 +3108,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Strength for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Strength for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126582
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Heart-Lesion Idol of Battle",
@@ -3447,7 +3119,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 dodge for 15s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 4081 dodge for 15s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126236
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Heart-Lesion Defender Idol",
@@ -3458,7 +3130,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Heart-Lesion Defender Stone",
@@ -3469,7 +3141,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Agility for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Agility for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126554
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Springrain Idol of Rage",
@@ -3480,7 +3152,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Springrain Stone of Rage",
@@ -3491,7 +3163,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Each time your harmful spells hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec
+	// Each time your harmful spells hit, you have a chance to gain 6121 haste for 20s. ( 15% chance, 115 sec
 	// cooldown)
 	// https://www.wowhead.com/mop/spell=126659
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -3503,7 +3175,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Springrain Stone of Destruction",
@@ -3514,7 +3186,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your healing spells have a chance to grant 1926 Intellect for 10s.
+	// Your healing spells have a chance to grant 4081 Intellect for 10s.
 	// https://www.wowhead.com/mop/spell=126266
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Springrain Stone of Wisdom",
@@ -3525,7 +3197,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Agility for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Agility for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126554
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Trailseeker Idol of Rage",
@@ -3536,7 +3208,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Trailseeker Stone of Rage",
@@ -3547,7 +3219,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Each time your harmful spells hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec
+	// Each time your harmful spells hit, you have a chance to gain 6121 haste for 20s. ( 15% chance, 115 sec
 	// cooldown)
 	// https://www.wowhead.com/mop/spell=126659
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -3559,7 +3231,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Mountainsage Stone of Destruction",
@@ -3570,7 +3242,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Mistdancer Defender Stone",
@@ -3581,7 +3253,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 dodge for 15s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 4081 dodge for 15s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126236
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Mistdancer Defender Idol",
@@ -3592,7 +3264,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your healing spells have a chance to grant 1926 Intellect for 10s.
+	// Your healing spells have a chance to grant 4081 Intellect for 10s.
 	// https://www.wowhead.com/mop/spell=126266
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Mistdancer Stone of Wisdom",
@@ -3603,7 +3275,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Agility for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Agility for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126554
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Mistdancer Idol of Rage",
@@ -3614,7 +3286,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Mistdancer Stone of Rage",
@@ -3625,7 +3297,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your healing spells have a chance to grant 1926 Intellect for 10s.
+	// Your healing spells have a chance to grant 4081 Intellect for 10s.
 	// https://www.wowhead.com/mop/spell=126266
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sunsoul Stone of Wisdom",
@@ -3636,7 +3308,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sunsoul Stone of Battle",
@@ -3647,7 +3319,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Strength for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Strength for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126582
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sunsoul Idol of Battle",
@@ -3658,7 +3330,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 dodge for 15s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 4081 dodge for 15s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126236
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sunsoul Defender Idol",
@@ -3669,7 +3341,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Sunsoul Defender Stone",
@@ -3680,7 +3352,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Each time your harmful spells hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec
+	// Each time your harmful spells hit, you have a chance to gain 6121 haste for 20s. ( 15% chance, 115 sec
 	// cooldown)
 	// https://www.wowhead.com/mop/spell=126659
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -3692,7 +3364,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Communal Stone of Destruction",
@@ -3703,7 +3375,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your healing spells have a chance to grant 1926 Intellect for 10s.
+	// Your healing spells have a chance to grant 4081 Intellect for 10s.
 	// https://www.wowhead.com/mop/spell=126266
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Communal Stone of Wisdom",
@@ -3714,7 +3386,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Agility for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Agility for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126554
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Lightdrinker Idol of Rage",
@@ -3725,7 +3397,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Lightdrinker Stone of Rage",
@@ -3736,7 +3408,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Agility for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Agility for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126554
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Streamtalker Idol of Rage",
@@ -3747,7 +3419,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Streamtalker Stone of Rage",
@@ -3758,7 +3430,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Each time your harmful spells hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec
+	// Each time your harmful spells hit, you have a chance to gain 6121 haste for 20s. ( 15% chance, 115 sec
 	// cooldown)
 	// https://www.wowhead.com/mop/spell=126659
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -3770,7 +3442,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Streamtalker Stone of Destruction",
@@ -3781,7 +3453,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your healing spells have a chance to grant 1926 Intellect for 10s.
+	// Your healing spells have a chance to grant 4081 Intellect for 10s.
 	// https://www.wowhead.com/mop/spell=126266
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Streamtalker Stone of Wisdom",
@@ -3792,7 +3464,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Each time your harmful spells hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec
+	// Each time your harmful spells hit, you have a chance to gain 6121 haste for 20s. ( 15% chance, 115 sec
 	// cooldown)
 	// https://www.wowhead.com/mop/spell=126659
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
@@ -3804,7 +3476,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Felsoul Stone of Destruction",
@@ -3815,7 +3487,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Oathsworn Stone of Battle",
@@ -3826,7 +3498,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 Strength for 20s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 3061 Strength for 20s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126582
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Oathsworn Idol of Battle",
@@ -3837,7 +3509,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your attacks have a chance to grant you 963 dodge for 15s. ( 15% chance, 55 sec cooldown)
+	// Your attacks have a chance to grant you 4081 dodge for 15s. ( 15% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=126236
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Oathsworn Defender Idol",
@@ -3848,7 +3520,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s.
+	// When your attacks hit you have a chance to gain 6117 Mastery for 20s.
 	// https://www.wowhead.com/mop/spell=133630
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Oathsworn Defender Stone",
@@ -3859,13 +3531,13 @@ func RegisterAllProcs() {
 		RequireDamageDealt: false,
 	})
 
-	// Your helpful spells have a chance to grant 1 Intellect for 10s. (Approximately 0.92 procs per minute)
+	// Your helpful spells have a chance to grant 11761 Intellect for 10s. (Approximately 0.92 procs per minute)
 	// https://www.wowhead.com/mop/spell=148908
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-		Callback:           core.CallbackEmpty,
-		ProcMask:           core.ProcMaskUnknown,
+		Callback:           core.CallbackOnHealDealt,
+		ProcMask:           core.ProcMaskSpellHealing,
 		Outcome:            core.OutcomeLanded,
-		RequireDamageDealt: true,
+		RequireDamageDealt: false,
 	}, []shared.ItemVariant{
 		{ItemID: 102294, ItemName: "Nazgrim's Burnished Insignia - Intellect (N)"},
 		{ItemID: 104553, ItemName: "Nazgrim's Burnished Insignia - Intellect (H)"},
@@ -3875,7 +3547,7 @@ func RegisterAllProcs() {
 		{ItemID: 105549, ItemName: "Nazgrim's Burnished Insignia - Intellect (Heroic Warforged)"},
 	})
 
-	// Each time your spells heal you have a chance to gain 963 Intellect for 20s. ( 15% chance, 115 sec cooldown)
+	// Each time your spells heal you have a chance to gain 11761 Intellect for 20s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=148911
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
@@ -3891,7 +3563,24 @@ func RegisterAllProcs() {
 		{ItemID: 105607, ItemName: "Thok's Acid-Grooved Tooth - Intellect (Heroic Warforged)"},
 	})
 
-	// Your heals have a chance to grant you 19260 Spirit for 10s. Every 0.5 sec, this effect is reduced by 963
+	// Your melee attacks have a chance to trigger Cruelty for 10s. While Cruelty is active, you gain 1175 Critical
+	// Strike every 0.5 sec, stacking up to 20 times. (Approximately 0.92 procs per minute)
+	// https://www.wowhead.com/mop/spell=146285
+	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
+		Callback:           core.CallbackOnSpellHitDealt,
+		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskMeleeProc,
+		Outcome:            core.OutcomeLanded,
+		RequireDamageDealt: true,
+	}, []shared.ItemVariant{
+		{ItemID: 102308, ItemName: "Skeer's Bloodsoaked Talisman (N)"},
+		{ItemID: 104636, ItemName: "Skeer's Bloodsoaked Talisman (H)"},
+		{ItemID: 104885, ItemName: "Skeer's Bloodsoaked Talisman (Flexible)"},
+		{ItemID: 105134, ItemName: "Skeer's Bloodsoaked Talisman (LFR) (Celestial)"},
+		{ItemID: 105383, ItemName: "Skeer's Bloodsoaked Talisman (Warforged)"},
+		{ItemID: 105632, ItemName: "Skeer's Bloodsoaked Talisman (Heroic Warforged)"},
+	})
+
+	// Your heals have a chance to grant you 23520 Spirit for 10s. Every 0.5 sec, this effect is reduced by 1176
 	// Spirit. (Approximately 0.92 procs per minute)
 	// https://www.wowhead.com/mop/spell=146317
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3908,7 +3597,7 @@ func RegisterAllProcs() {
 		{ItemID: 105615, ItemName: "Dysmorphic Samophlange of Discontinuity (Heroic Warforged)"},
 	})
 
-	// When you deal damage you have a chance to gain 1287 Agility for 20s.
+	// When you deal damage you have a chance to gain 6725 Agility for 20s.
 	// https://www.wowhead.com/mop/spell=126707
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -3920,7 +3609,7 @@ func RegisterAllProcs() {
 		{ItemID: 103347, ItemName: "Prideful Gladiator's Insignia of Conquest (Season 15) (Horde)"},
 	})
 
-	// When you deal damage you have a chance to gain 1287 Strength for 20s.
+	// When you deal damage you have a chance to gain 6725 Strength for 20s.
 	// https://www.wowhead.com/mop/spell=126700
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt,
@@ -3932,7 +3621,7 @@ func RegisterAllProcs() {
 		{ItemID: 103516, ItemName: "Prideful Gladiator's Insignia of Victory (Season 15) (Horde)"},
 	})
 
-	// When you deal damage or heal a target you have a chance to gain 1287 Intellect for 20s.
+	// When you deal damage or heal a target you have a chance to gain 6725 Intellect for 20s.
 	// https://www.wowhead.com/mop/spell=126705
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt | core.CallbackOnPeriodicDamageDealt | core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
@@ -3944,7 +3633,7 @@ func RegisterAllProcs() {
 		{ItemID: 103506, ItemName: "Prideful Gladiator's Insignia of Dominance (Season 15) (Horde)"},
 	})
 
-	// Your melee and ranged attacks have a chance to grant 1149 haste for 20s.
+	// Your melee and ranged attacks have a chance to grant 3647 haste for 20s.
 	// https://www.wowhead.com/mop/spell=148447
 	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
 		Name:               "Time-Lost Artifact",
@@ -3955,7 +3644,7 @@ func RegisterAllProcs() {
 		RequireDamageDealt: true,
 	})
 
-	// When your attacks hit you have a chance to gain 2573 Mastery for 20s. ( 15% chance, 115 sec cooldown)
+	// When your attacks hit you have a chance to gain 6915 Mastery for 20s. ( 15% chance, 115 sec cooldown)
 	// https://www.wowhead.com/mop/spell=146312
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3967,7 +3656,7 @@ func RegisterAllProcs() {
 		{ItemID: 103986, ItemName: "Discipline of Xuen (Timeless)"},
 	})
 
-	// When your spells deal damage you have a chance to gain 2573 critical strike for 20s. ( 15% chance, 115
+	// When your spells deal damage you have a chance to gain 6915 critical strike for 20s. ( 15% chance, 115
 	// sec cooldown)
 	// https://www.wowhead.com/mop/spell=146218
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -3980,7 +3669,8 @@ func RegisterAllProcs() {
 		{ItemID: 103987, ItemName: "Yu'lon's Bite (Timeless)"},
 	})
 
-	// Each time your melee attacks hit, you have a chance to gain 963 haste for 20s. ( 15% chance, 115 sec cooldown)
+	// Each time your melee attacks hit, you have a chance to gain 6915 haste for 20s. ( 15% chance, 115 sec
+	// cooldown)
 	// https://www.wowhead.com/mop/spell=146296
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -3992,7 +3682,7 @@ func RegisterAllProcs() {
 		{ItemID: 103989, ItemName: "Alacrity of Xuen (Timeless)"},
 	})
 
-	// Chance on melee and ranged critical strike to increase your attack power by 4000 for 10s.
+	// Chance on melee and ranged critical strike to increase your attack power by 12952 for 10s.
 	// https://www.wowhead.com/mop/spell=127928
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -4004,7 +3694,7 @@ func RegisterAllProcs() {
 		{ItemID: 282035, ItemName: "Coren's Cold Chromium Coaster"},
 	})
 
-	// Your direct healing and heal over time spells have a chance to increase your haste by 2040 for 10s. (
+	// Your direct healing and heal over time spells have a chance to increase your haste by 6476 for 10s. (
 	// 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=127915
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
@@ -4017,7 +3707,7 @@ func RegisterAllProcs() {
 		{ItemID: 282031, ItemName: "Thousand-Year Pickled Egg"},
 	})
 
-	// Your harmful spells have a chance to increase your spell power by 2040 for 10s. ( 10% chance, 55 sec cooldown)
+	// Your harmful spells have a chance to increase your spell power by 6476 for 10s. ( 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=127923
 	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
@@ -4028,4 +3718,14 @@ func RegisterAllProcs() {
 		{ItemID: 257884, ItemName: "Mithril Wristwatch"},
 		{ItemID: 282033, ItemName: "Mithril Wristwatch"},
 	})
+
+	// Skipped
+	// Not simulated: Gurthalak, Voice of the Deeps: "Summon Tentacle of the Old Ones" (107818) - ignored effect type 28
+	// https://www.wowhead.com/mop/spell=107818
+	// Not simulated: Ghost Iron Dragonling: "Pandaren Dragonling" (131411) - ignored effect type 28
+	// https://www.wowhead.com/mop/spell=131411
+	// Not simulated: Gurthalak, Voice of the Deeps: "Summon Tentacle of the Old Ones" (109840) - ignored effect type 28
+	// https://www.wowhead.com/mop/spell=109840
+	// Not simulated: Gurthalak, Voice of the Deeps: "Summon Tentacle of the Old Ones" (109838) - ignored effect type 28
+	// https://www.wowhead.com/mop/spell=109838
 }

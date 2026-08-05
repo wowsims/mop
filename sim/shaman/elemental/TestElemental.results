@@ -1243,6 +1243,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestElemental-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 210750.49997
+  tps: 135592.25864
+ }
+}
+dps_results: {
  key: "TestElemental-AllItems-NitroBoosts-4223"
  value: {
   dps: 240001.35924
@@ -1280,8 +1287,8 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-PhaseFingers-4697"
  value: {
-  dps: 240565.23712
-  tps: 152460.36675
+  dps: 240616.2194
+  tps: 152703.90744
  }
 }
 dps_results: {
@@ -1469,7 +1476,7 @@ dps_results: {
 dps_results: {
  key: "TestElemental-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 219706.17054
+  dps: 219725.87685
   tps: 140354.55093
  }
 }
