@@ -17,7 +17,8 @@
 		"combatratings",
 		"octbasempbyclass",
 		"OCTBaseHPByClass",
-		"SpellScaling"
+		"SpellScaling",
+		"ItemSocketCostPerLevel"
 	],
 	"Tables": [
 		"Spell",

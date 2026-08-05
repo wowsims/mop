@@ -305,7 +305,14 @@ func (db *WowDatabase) WriteBinary(binFilePath string) {
 	uidb := db.ToUIProto()
 
 	// Write database as a binary file.
-	protoBytes, err := googleProto.Marshal(uidb)
+	//
+	// Deterministic sorts map entries by key. Without it, proto.Marshal emits them in Go map
+	// iteration order, which is randomised per run: the same database marshalled twice in one
+	// process produces different bytes at the same length, so every regeneration rewrote db.bin
+	// with a semantically identical file. The JSON side never showed it because protojson sorts
+	// map keys already. scaling_options and its nested stats maps are on almost every item, so
+	// this was most of the file.
+	protoBytes, err := googleProto.MarshalOptions{Deterministic: true}.Marshal(uidb)
 	if err != nil {
 		log.Fatalf("[ERROR] Failed to marshal db: %s", err.Error())
 	}

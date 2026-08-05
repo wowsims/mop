@@ -269,20 +269,67 @@ func (setBonusTracker *Aura) ExposeToAPL(spellID int32) *Aura {
 }
 
 // Adds a Spellmod to PVP GLoves
-func (character *Character) RegisterPvPGloveMod(itemIDs []int32, config SpellModConfig) {
-	spellMod := character.AddDynamicMod(config)
+// Registers the MoP PvP glove bonus as a real item effect on every glove that grants it, so
+// the items are recognised as implemented like any other item effect.
+//
+// The bonus keys off whatever is worn in the hands slot rather than off one specific item, so
+// the effect body builds that single character-wide mod and then lets it follow item swaps.
+func NewPvPGloveEffect(itemIDs []int32, config SpellModConfig) {
+	// These lists are hand-maintained and carry some IDs the database does not ship - the pre-MoP
+	// Bloodthirsty gloves among them. Those cannot be equipped and so have nothing to register, but
+	// a typo'd or renumbered ID is indistinguishable from one of those from here, and the only
+	// symptom is a player quietly losing the bonus. So name the ones being dropped.
+	missing := FilterSlice(itemIDs, func(itemID int32) bool {
+		if !WITH_DB {
+			return false
+		}
+		_, ok := ItemsByID[itemID]
+		return !ok
+	})
+	if len(missing) > 0 {
+		fmt.Printf("WARN: PvP glove effect has no database item for %v, bonus not registered for those\n", missing)
+	}
 
-	checkGloves := func() {
-		if slices.Contains(itemIDs, character.Hands().ID) {
-			spellMod.Activate()
+	registered := FilterSlice(itemIDs, func(itemID int32) bool {
+		return !slices.Contains(missing, itemID)
+	})
+
+	// Every one of these gloves grants the same bonus, so only the newest is tested.
+	ForEachItemVariant(registered, func(itemID int32) {
+		NewItemEffect(itemID, func(agent Agent, _ proto.ItemLevelState) {
+			agent.GetCharacter().registerPvPGloveMod(itemID, config)
+		})
+	})
+}
+
+// Gives each glove its own aura carrying the bonus, keyed on the item ID. A character can
+// have two of these registered at once - one worn and one in the item swap
+// set - but only the worn glove's aura is ever active, so keying per item means the two need
+// no coordination and nothing has to be registered conditionally. The aura intentionally
+// carries no ActionID, which keeps it out of the aura metrics.
+func (character *Character) registerPvPGloveMod(itemID int32, config SpellModConfig) {
+	if character.Env.IsChallengeMode {
+		return
+	}
+	var aura *Aura
+	apply := func(sim *Simulation) {
+		if character.Hands().ID == itemID {
+			aura.Activate(sim)
 		} else {
-			spellMod.Deactivate()
+			aura.Deactivate(sim)
 		}
 	}
 
-	checkGloves()
+	aura = character.GetOrRegisterAura(Aura{
+		Label:    fmt.Sprintf("PvP Glove Bonus - %d", itemID),
+		Duration: NeverExpires,
+		OnReset: func(aura *Aura, sim *Simulation) {
+			apply(sim)
+		},
+	}).
+		AttachSpellMod(config)
 
-	character.RegisterItemSwapCallback([]proto.ItemSlot{proto.ItemSlot_ItemSlotHands}, func(_ *Simulation, _ proto.ItemSlot) {
-		checkGloves()
+	character.RegisterItemSwapCallback([]proto.ItemSlot{proto.ItemSlot_ItemSlotHands}, func(sim *Simulation, _ proto.ItemSlot) {
+		apply(sim)
 	})
 }

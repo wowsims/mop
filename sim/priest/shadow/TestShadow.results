@@ -283,7 +283,7 @@ dps_results: {
  value: {
   dps: 397760.37877
   tps: 367634.98277
-  hps: 4835.32218
+  hps: 4864.0028
  }
 }
 dps_results: {
@@ -291,7 +291,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363298.18647
-  hps: 4844.87718
+  hps: 4873.84092
  }
 }
 dps_results: {
@@ -299,7 +299,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363300.10044
-  hps: 4939.52303
+  hps: 4968.48677
  }
 }
 dps_results: {
@@ -355,7 +355,7 @@ dps_results: {
  value: {
   dps: 398546.66024
   tps: 368235.30521
-  hps: 4844.54917
+  hps: 4884.39243
  }
 }
 dps_results: {
@@ -363,7 +363,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363297.8371
-  hps: 4844.87718
+  hps: 4885.12257
  }
 }
 dps_results: {
@@ -371,7 +371,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363300.10044
-  hps: 4956.69051
+  hps: 4996.9359
  }
 }
 dps_results: {
@@ -539,7 +539,7 @@ dps_results: {
  value: {
   dps: 397760.37877
   tps: 367634.98277
-  hps: 4835.32218
+  hps: 4864.0028
  }
 }
 dps_results: {
@@ -547,7 +547,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363298.18647
-  hps: 4844.87718
+  hps: 4873.84092
  }
 }
 dps_results: {
@@ -555,7 +555,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363300.10044
-  hps: 4939.52303
+  hps: 4968.48677
  }
 }
 dps_results: {
@@ -665,9 +665,9 @@ dps_results: {
 dps_results: {
  key: "TestShadow-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 445901.50778
-  tps: 411406.52321
-  hps: 4789.29457
+  dps: 445143.93302
+  tps: 410831.57251
+  hps: 4777.50457
  }
 }
 dps_results: {
@@ -811,7 +811,7 @@ dps_results: {
  value: {
   dps: 402072.52157
   tps: 372406.04293
-  hps: 4829.41626
+  hps: 4928.59562
  }
 }
 dps_results: {
@@ -883,7 +883,7 @@ dps_results: {
  value: {
   dps: 401483.69268
   tps: 370565.27945
-  hps: 4838.61295
+  hps: 4917.17746
  }
 }
 dps_results: {
@@ -891,7 +891,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363296.6284
-  hps: 4844.87718
+  hps: 4924.23463
  }
 }
 dps_results: {
@@ -899,7 +899,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363300.10044
-  hps: 5016.55199
+  hps: 5095.90944
  }
 }
 dps_results: {
@@ -1219,7 +1219,7 @@ dps_results: {
  value: {
   dps: 398546.66024
   tps: 368235.30521
-  hps: 4844.54917
+  hps: 4884.39243
  }
 }
 dps_results: {
@@ -1227,7 +1227,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363297.8371
-  hps: 4844.87718
+  hps: 4885.12257
  }
 }
 dps_results: {
@@ -1235,7 +1235,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363300.10044
-  hps: 4956.69051
+  hps: 4996.9359
  }
 }
 dps_results: {
@@ -1375,6 +1375,14 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestShadow-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 392361.52455
+  tps: 363300.10044
+  hps: 4812.05009
+ }
+}
+dps_results: {
  key: "TestShadow-AllItems-NitroBoosts-4223"
  value: {
   dps: 450970.45903
@@ -1475,7 +1483,7 @@ dps_results: {
  value: {
   dps: 404853.11488
   tps: 373302.14598
-  hps: 4838.09672
+  hps: 4950.57261
  }
 }
 dps_results: {
@@ -1483,7 +1491,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363295.59329
-  hps: 4844.87718
+  hps: 4957.70435
  }
 }
 dps_results: {
@@ -1491,7 +1499,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363300.10044
-  hps: 5067.6949
+  hps: 5180.52207
  }
 }
 dps_results: {
@@ -2107,7 +2115,7 @@ dps_results: {
  value: {
   dps: 399615.50551
   tps: 369075.8086
-  hps: 4844.54917
+  hps: 4899.2372
  }
 }
 dps_results: {
@@ -2115,7 +2123,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363297.37489
-  hps: 4844.87718
+  hps: 4900.11717
  }
 }
 dps_results: {
@@ -2123,7 +2131,7 @@ dps_results: {
  value: {
   dps: 392361.52455
   tps: 363300.10044
-  hps: 4979.61045
+  hps: 5034.85044
  }
 }
 dps_results: {

@@ -593,14 +593,14 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 464445.01224
-  tps: 295134.18175
+  dps: 466595.71341
+  tps: 297292.78463
  }
 }
 dps_results: {
  key: "TestFrost-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 463049.36831
+  dps: 463036.91502
   tps: 294227.41036
  }
 }
@@ -1222,6 +1222,13 @@ dps_results: {
  }
 }
 dps_results: {
+ key: "TestFrost-AllItems-Nazgrim'sBurnishedInsignia-105549"
+ value: {
+  dps: 413655.7528
+  tps: 255306.35156
+ }
+}
+dps_results: {
  key: "TestFrost-AllItems-NitroBoosts-4223"
  value: {
   dps: 470740.92661
@@ -1441,8 +1448,8 @@ dps_results: {
 dps_results: {
  key: "TestFrost-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 413589.29796
-  tps: 255306.35156
+  dps: 413529.55878
+  tps: 255266.24164
  }
 }
 dps_results: {

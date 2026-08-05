@@ -355,6 +355,21 @@ func (s *SpellEntryRef) Capture(values []string) error {
 	return nil
 }
 
+// The zero-based effect the selector points at. An omitted index means the first effect - the
+// client reads $t as $t1 - and leaving EffectIndex at 0 then subtracting one asked for effect -1,
+// which resolves to no effect at all and renders as zero. "$128386t sec" on Dislodged Finger's
+// mantid poison is the shape: a cross-spell reference with no index, printed as "every 0.0 sec".
+//
+// EffectIndex stays 0 for an omitted index rather than being defaulted in Capture, because the
+// range columns read that as "no index given" and answer with the spell's range instead.
+func (s SpellEntryRef) effectIdx() int64 {
+	if s.EffectIndex == 0 {
+		return 0
+	}
+
+	return s.EffectIndex - 1
+}
+
 // External lookups and references
 // Usually $<varname> variables are dynamically computed through SpellXSpellDescription references
 // While $[a-zA-Z]{2,} variables are typically statically provided to the tooltip rendering context
@@ -635,7 +650,7 @@ func (s SimpleCompute) String(ctx *TooltipContext) string {
 func (s SimpleSpellValue) Eval(ctx *TooltipContext) float64 {
 	switch strings.ToLower(s.Selector.EffectColumn) {
 	case "e":
-		return ctx.DataProvider.GetEffectAmplitude(s.getSpellId(ctx), s.Selector.EffectIndex-1)
+		return ctx.DataProvider.GetEffectAmplitude(s.getSpellId(ctx), s.Selector.effectIdx())
 	case "h":
 		return ctx.DataProvider.GetSpellProcChance(s.getSpellId(ctx))
 	case "d":
@@ -646,27 +661,29 @@ func (s SimpleSpellValue) Eval(ctx *TooltipContext) float64 {
 		// So for Buff Tooltip rendering we want to treat at probably the same as scaled effect value
 		fallthrough
 	case "s":
-		return ctx.DataProvider.GetEffectScaledValue(s.getSpellId(ctx), s.Selector.EffectIndex-1)
+		return ctx.DataProvider.GetEffectScaledValue(s.getSpellId(ctx), s.Selector.effectIdx())
 	case "M":
 		fallthrough
 	case "m":
-		return ctx.DataProvider.GetEffectBaseValue(s.getSpellId(ctx), s.Selector.EffectIndex-1)
+		return ctx.DataProvider.GetEffectBaseValue(s.getSpellId(ctx), s.Selector.effectIdx())
 	case "T":
 		fallthrough
 	case "t":
-		return float64(ctx.DataProvider.GetEffectPeriod(s.getSpellId(ctx), s.Selector.EffectIndex-1))
+		// Nanoseconds, deliberately: String divides this column by time.Second when it renders it,
+		// the same way it converts the duration column.
+		return float64(ctx.DataProvider.GetEffectPeriod(s.getSpellId(ctx), s.Selector.effectIdx()))
 	case "x":
-		return float64(ctx.DataProvider.GetEffectMaxTargets(s.getSpellId(ctx), s.Selector.EffectIndex-1))
+		return float64(ctx.DataProvider.GetEffectMaxTargets(s.getSpellId(ctx), s.Selector.effectIdx()))
 	case "i":
 		return float64(ctx.DataProvider.GetSpellMaxTargets(s.getSpellId(ctx)))
 	case "F":
 		fallthrough
 	case "f":
-		return float64(ctx.DataProvider.GetEffectChainAmplitude(s.getSpellId(ctx), s.Selector.EffectIndex-1))
+		return float64(ctx.DataProvider.GetEffectChainAmplitude(s.getSpellId(ctx), s.Selector.effectIdx()))
 	case "o":
 		spellId := s.getSpellId(ctx)
-		baseDamage := ctx.DataProvider.GetEffectScaledValue(spellId, s.Selector.EffectIndex-1)
-		period := ctx.DataProvider.GetEffectPeriod(spellId, s.Selector.EffectIndex-1)
+		baseDamage := ctx.DataProvider.GetEffectScaledValue(spellId, s.Selector.effectIdx())
+		period := ctx.DataProvider.GetEffectPeriod(spellId, s.Selector.effectIdx())
 		if period == 0 {
 			return 0
 		}
@@ -698,13 +715,13 @@ func (s SimpleSpellValue) Eval(ctx *TooltipContext) float64 {
 	case "u":
 		return float64(ctx.DataProvider.GetSpellStacks(s.getSpellId(ctx)))
 	case "b":
-		return float64(ctx.DataProvider.GetEffectPointsPerResource(s.getSpellId(ctx), s.Selector.EffectIndex-1))
+		return float64(ctx.DataProvider.GetEffectPointsPerResource(s.getSpellId(ctx), s.Selector.effectIdx()))
 	case "V":
 		fallthrough // Max Target Level SpelLTargetRestrictions.dbc
 	case "v":
 		return 0
 	case "k":
-		return ctx.DataProvider.GetEffectEnchantValue(s.getSpellId(ctx), s.Selector.EffectIndex-1)
+		return ctx.DataProvider.GetEffectEnchantValue(s.getSpellId(ctx), s.Selector.effectIdx())
 	default:
 		return 0.0
 	}

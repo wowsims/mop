@@ -1,5 +1,9 @@
 package database
 
+// Each generated block is written once, as a named template, and emitted either live or fed
+// through commentOut. Carrying a hand-prefixed copy of every block meant a field added to one
+// half silently did not reach the other.
+
 const TmplStrOnUse = `package mop
 
 import (
@@ -11,6 +15,14 @@ func RegisterAllOnUseCds() {
 
 	// {{ .Name }}
 {{- range .Entries }}
+	{{- if .Skipped}}
+	{{- range (.Tooltip | formatStrings 100) }}
+	// Not simulated: {{.}}
+	{{- end}}
+	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
+	{{- end}}
+	{{- else}}
 	{{if not .Supported}}
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -23,35 +35,31 @@ func RegisterAllOnUseCds() {
   	{{with index .Variants 0 -}}
 	// https://www.wowhead.com/mop/spell={{.SpellID}}
 	{{- end}}
-	{{- if not .Supported}}
-	{{- if len .Variants | eq 1}}
-	{{with index .Variants 0 -}}
-	// shared.NewSimpleStatActive({{ .ID }})
-	{{- end}}
-	{{- else }}
-	// shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
-	 	{{- range .Variants }}
-	// 	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-	 	{{- end}}
-	// })
-	{{- end}}
+	{{- if .Supported}}
+	{{ render "onUseBody" . }}
 	{{- else}}
-	{{- if len .Variants | eq 1}}
-	{{with index .Variants 0 -}}
-	shared.NewSimpleStatActive({{ .ID }})
-	{{- end}}
-	{{- else }}
-	shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
-		{{- range .Variants }}
-		{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-		{{- end}}
-	})
+	{{ render "onUseBody" . | commentOut }}
 	{{- end}}
 	{{- end}}
 {{- end }}
 
 {{- end }}
-}`
+}
+{{- define "onUseBody" -}}
+{{- if len .Variants | eq 1 -}}
+{{- with index .Variants 0 -}}
+shared.NewSimpleStatActive({{ .ID }})
+{{- end -}}
+{{- else -}}
+shared.NewSimpleStatActiveWithVariants([]shared.ItemVariant{
+	{{- range .Variants }}
+	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
+	{{- end}}
+})
+{{- end -}}
+{{- end -}}
+`
+
 const TmplStrProc = `package mop
 
 import (
@@ -64,6 +72,14 @@ func RegisterAllProcs() {
 
 	// {{ .Name }}
 {{- range .Entries }}
+	{{- if .Skipped}}
+	{{- range (.Tooltip | formatStrings 100) }}
+	// Not simulated: {{.}}
+	{{- end}}
+	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
+	{{- end}}
+	{{- else}}
 	{{if not .Supported}}
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -77,63 +93,47 @@ func RegisterAllProcs() {
 	// https://www.wowhead.com/mop/spell={{.SpellID}}
 	{{- end}}
 	{{- if .Supported}}
-	{{- if len .Variants | eq 1}}
-	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		{{with index .Variants 0 -}}
-		Name:               "{{ .Name }}",
-		ItemID:             {{ .ID }},
-		{{- end}}
-		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	})
-	{{- else }}
-	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	}, []shared.ItemVariant{
-		{{- range .Variants }}
-		{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-		{{- end}}
-	})
-	{{- end}}
+	{{ render "procBody" . }}
 	{{- else}}
-	{{- if len .Variants | eq 1}}
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	 	{{with index .Variants 0 -}}
-	// 	Name:               "{{ .Name }}",
-	// 	ItemID:             {{ .ID }},
-	 	{{- end}}
-	// 	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	// 	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	// 	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	// 	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	// })
-	{{- else }}
-	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
-	//	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	//	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	//	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }}
-	// }, []shared.ItemVariant{
-		{{- range .Variants }}
-	//	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
-		{{- end}}
-	// })
+	{{ render "procBody" . | commentOut }}
 	{{- end}}
 	{{- end}}
 {{- end }}
 
 {{- end }}
-}`
+}
+{{- define "procBody" -}}
+{{- if len .Variants | eq 1 -}}
+shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
+	{{with index .Variants 0 -}}
+	Name:               "{{ .Name }}",
+	ItemID:             {{ .ID }},
+	{{- end}}
+	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+})
+{{- else -}}
+shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
+	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+}, []shared.ItemVariant{
+	{{- range .Variants }}
+	{ItemID: {{.ID}}, ItemName: "{{.Name}}"},
+	{{- end}}
+})
+{{- end -}}
+{{- end -}}
+`
 
 const TmplStrEnchant = `package mop
 
 import (
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
  	"github.com/wowsims/mop/sim/common/shared"
 )
 
@@ -142,6 +142,14 @@ func RegisterAllEnchants() {
 
 	// {{ .Name }}
 {{- range .Entries }}
+	{{- if .Skipped}}
+	{{- range (.Tooltip | formatStrings 100) }}
+	// Not simulated: {{.}}
+	{{- end}}
+	{{with index .Variants 0 -}}
+	// https://www.wowhead.com/mop/spell={{.SpellID}}
+	{{- end}}
+	{{- else}}
 	{{if not .Supported}}
 	// TODO: Manual implementation required
 	//       This can be ignored if the effect has already been implemented.
@@ -151,33 +159,70 @@ func RegisterAllEnchants() {
 	{{- range (.Tooltip | formatStrings 100) }}
 	// {{.}}
 	{{- end}}
+	{{- if .OnUse}}
+	{{ render "enchantActiveBody" . }}
+	{{- else if .Damage}}
 	{{- if .Supported}}
-	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
+	{{ render "enchantDamageBody" . }}
+	{{- else}}
+	{{ render "enchantDamageBody" . | commentOut }}
+	{{- end}}
+	{{- else if .Supported}}
+	{{ render "enchantProcBody" . }}
+	{{- else}}
+	{{ render "enchantProcBody" . | commentOut }}
+	{{- end}}
+	{{- end}}
+{{- end }}
+
+{{- end }}
+}
+{{- define "enchantActiveBody" -}}
+{{- $profession := .Profession -}}
+{{- with index .Variants 0 -}}
+shared.NewActiveStatBonusEffect(shared.ActiveStatBonusEffect{
+	EnchantID:          {{ .ID }},
+	RequiredProfession: proto.Profession_{{ $profession }},
+})
+{{- end -}}
+{{- end -}}
+{{- define "enchantDamageBody" -}}
+shared.NewProcDamageEffect(shared.ProcDamageEffect{
+	{{with index .Variants 0 -}}
+	EnchantID: {{ .ID }},
+	{{- end}}
+	SpellID:   {{ .Damage.SpellID }},
+	School:    {{ .Damage.SchoolMask | asCoreSpellSchool }},
+	MinDmg:    {{ .Damage.MinDamage }},
+	MaxDmg:    {{ .Damage.MaxDamage }},
+	{{- if .DamageCannotCrit }}
+	CannotCrit: true,
+	{{- end}}
+	Flags:     core.SpellFlagNoOnCastComplete | core.SpellFlagPassiveSpell | core.SpellFlagNoOnDamageDealt,
+	Trigger: core.ProcTrigger{
 		{{with index .Variants 0 -}}
 		Name:               "{{ .Name }}",
-		EnchantID:          {{ .ID }},
 		{{- end}}
 		Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
 		ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
 		Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
 		RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	})
-	{{- else}}
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		{{- with index .Variants 0 }}
-	//	Name:               "{{ .Name }}",
-	//	EnchantID:          {{ .ID }},
-		{{- end}}
-	//	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
-	//	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
-	//	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
-	//	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
-	// })
+	},
+})
+{{- end -}}
+{{- define "enchantProcBody" -}}
+shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
+	{{with index .Variants 0 -}}
+	Name:               "{{ .Name }}",
+	EnchantID:          {{ .ID }},
 	{{- end}}
-{{- end }}
-
-{{- end }}
-}`
+	Callback:           {{ .ProcInfo.Callback | asCoreCallback }},
+	ProcMask:           {{ .ProcInfo.ProcMask | asCoreProcMask }},
+	Outcome:            {{ .ProcInfo.Outcome | asCoreOutcome }},
+	RequireDamageDealt: {{ .ProcInfo.RequireDamageDealt }},
+})
+{{- end -}}
+`
 
 const TmplStrMissingEffects = `
 // This file is auto generated
@@ -189,7 +234,7 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 		{{.ItemID}}, // {{ .Name }}
 		[
 			{{- range .Effects }}
-			"{{ .Name }}", // {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
+			"{{ .Name | jsString }}", // {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
 			{{- end}}
 		]
 	],
@@ -198,15 +243,14 @@ export const MISSING_ITEM_EFFECTS = new Map<number, string[]>([
 
 export const MISSING_ENCHANT_EFFECTS = new Map<number, string[]>([
 {{- range .EnchantEffects }}
-{{- $name := .Name }}
-{{- range .Entries }}
-{{- $tooltip := .Tooltip }}
-{{- if not .Supported}}
-{{- range .Variants }}
-	[{{.ID}}, "{{- range $tooltip }}{{.}}{{- end}}"], // {{ $name }} - {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
-{{- end}}
-{{- end }}
-{{- end }}
+	[
+		{{.ItemID}}, // {{ .Name }}
+		[
+			{{- range .Effects }}
+			"{{ .Name | jsString }}", // {{.SpellID}} - https://www.wowhead.com/mop/spell={{.SpellID}}
+			{{- end}}
+		]
+	],
 {{- end }}
 ])
 `
