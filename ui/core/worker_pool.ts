@@ -3,6 +3,12 @@ import { REPO_NAME } from './constants/other.js';
 import {
 	AbortRequest,
 	AbortResponse,
+	BulkCandidatesRequest,
+	BulkCandidatesResult,
+	BulkCombinationCountRequest,
+	BulkCombinationCountResult,
+	BulkSimRequest,
+	BulkSimResult,
 	ComputeStatsRequest,
 	ComputeStatsResult,
 	ProgressMetrics,
@@ -11,6 +17,9 @@ import {
 	RaidSimRequestSplitResult,
 	RaidSimResult,
 	RaidSimResultCombinationRequest,
+	ReforgeOptimizeRequest,
+	ReforgeOptimizeMode,
+	ReforgeOptimizeResult,
 	StatWeightRequestsData,
 	StatWeightsCalcRequest,
 	StatWeightsRequest,
@@ -67,6 +76,25 @@ export class WorkerPool {
 		return ComputeStatsResult.fromBinary(result);
 	}
 
+	async reforgeOptimizeAsync(request: ReforgeOptimizeRequest, signals?: SimSignals): Promise<ReforgeOptimizeResult> {
+		const worker = this.getLeastBusyWorker();
+		const id = request.requestId || generateRequestId(SimRequest.reforgeOptimizeAsync);
+		const shouldLog = request.mode != ReforgeOptimizeMode.ReforgeOptimizeModeBulk;
+		if (shouldLog) {
+			worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
+		}
+
+		signals?.abort.onTrigger(async () => {
+			await worker.sendAbortById(id);
+		});
+
+		const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
+		if (shouldLog) {
+			worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+		}
+		return result.finalReforgeResult!;
+	}
+
 	private getProgressName(id: string) {
 		return `${id}progress`;
 	}
@@ -116,6 +144,32 @@ export class WorkerPool {
 		return result.finalRaidResult!;
 	}
 
+	async bulkSimAsync(request: BulkSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<BulkSimResult> {
+		const worker = this.getLeastBusyWorker();
+		worker.log('Bulk sim request: ' + BulkSimRequest.toJsonString(request));
+		const id = request.requestId;
+
+		signals.abort.onTrigger(async () => {
+			await worker.sendAbortById(id);
+		});
+
+		const iterations = request.baseRequest?.simOptions?.iterations ?? 3000;
+		const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations);
+
+		worker.log('Bulk sim result: ' + BulkSimResult.toJsonString(result.finalBulkSimResult!));
+		return result.finalBulkSimResult!;
+	}
+
+	async bulkCombinationCount(request: BulkCombinationCountRequest): Promise<BulkCombinationCountResult> {
+		const result = await this.makeApiCall(SimRequest.bulkCombinationCount, BulkCombinationCountRequest.toBinary(request));
+		return BulkCombinationCountResult.fromBinary(result);
+	}
+
+	async bulkCandidates(request: BulkCandidatesRequest): Promise<BulkCandidatesResult> {
+		const result = await this.makeApiCall(SimRequest.bulkCandidates, BulkCandidatesRequest.toBinary(request));
+		return BulkCandidatesResult.fromBinary(result);
+	}
+
 	async raidSimRequestSplit(request: RaidSimRequestSplitRequest): Promise<RaidSimRequestSplitResult> {
 		const result = await this.makeApiCall(SimRequest.raidSimRequestSplit, RaidSimRequestSplitRequest.toBinary(request));
 		return RaidSimRequestSplitResult.fromBinary(result);
@@ -149,7 +203,7 @@ export class WorkerPool {
 	 * @returns The final ProgressMetrics.
 	 */
 	private async doAsyncRequest(
-		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync,
+		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync | SimRequest.reforgeOptimizeAsync,
 		request: Uint8Array,
 		id: string,
 		worker: SimWorker,
@@ -158,7 +212,6 @@ export class WorkerPool {
 	): Promise<ProgressMetrics> {
 		try {
 			worker.addSimTaskRunning(id, totalIterations);
-			worker.doApiCall(requestName, request, id);
 			const finalProgress: Promise<ProgressMetrics> = new Promise(resolve => {
 				// Add handler for the progress events
 				worker.addPromiseFunc(
@@ -167,10 +220,30 @@ export class WorkerPool {
 					noop,
 				);
 			});
-			return await finalProgress;
+			const apiCallResult = worker.doApiCall(requestName, request, id).then(outputData => {
+				// WASM async handlers deliver their final result via the progress channel and may return no payload
+				// on the request channel. In that case keep waiting for the final progress message instead of
+				// trying to decode an empty response.
+				if (!outputData?.length) {
+					return finalProgress;
+				}
+
+				const progress = ProgressMetrics.fromBinary(outputData);
+				if (this.isFinalProgress(progress)) {
+					return progress;
+				}
+
+				throw new Error(`${requestName} completed without a final progress result.`);
+			});
+			return await Promise.race([finalProgress, apiCallResult]);
 		} finally {
 			worker.updateSimTask(id, 0);
+			worker.ignoreResultId(this.getProgressName(id));
 		}
+	}
+
+	private isFinalProgress(progress: ProgressMetrics): boolean {
+		return progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null || progress.finalReforgeResult != null;
 	}
 
 	private newProgressHandler(
@@ -184,7 +257,7 @@ export class WorkerPool {
 			onProgress(progress);
 			worker.updateSimTask(id, Math.max(1, progress.totalIterations - progress.completedIterations));
 			// If we are done, stop adding the handler.
-			if (progress.finalRaidResult != null || progress.finalWeightResult != null) {
+			if (this.isFinalProgress(progress)) {
 				onFinal(progress);
 				return;
 			}
@@ -198,6 +271,7 @@ class SimWorker {
 	readonly workerId: number;
 	private readonly simTasksRunning: Record<string, { workLeft: number }>;
 	private taskIdsToPromiseFuncs: Record<string, [(result: any) => void, (error: any) => void]>;
+	private readonly ignoredResultIds: Set<string>;
 	private worker: Worker | undefined;
 	private onReady: Promise<void> | undefined;
 	private resolveReady: (() => void) | undefined;
@@ -208,6 +282,7 @@ class SimWorker {
 		this.workerId = id;
 		this.simTasksRunning = {};
 		this.taskIdsToPromiseFuncs = {};
+		this.ignoredResultIds = new Set();
 		this.wasmWorker = false;
 		this.shouldDestroy = false;
 		this.onReady = new Promise((_resolve, _reject) => {
@@ -227,7 +302,7 @@ class SimWorker {
 		this.worker = new window.Worker(SIM_WORKER_URL);
 
 		this.worker.addEventListener('message', ({ data }: MessageEvent<WorkerSendMessage>) => {
-			const { id, msg, outputData } = data;
+			const { id, msg, outputData, error } = data;
 			switch (msg) {
 				case 'ready':
 					this.wasmWorker = !!outputData && !!outputData[0];
@@ -239,13 +314,22 @@ class SimWorker {
 				case 'idConfirm':
 					break;
 				default:
+					if (!id) {
+						console.warn(`Received ${msg} worker result without an id`);
+						return;
+					}
 					const promiseFuncs = this.taskIdsToPromiseFuncs[id];
 					if (!promiseFuncs) {
+						if (this.ignoredResultIds.has(id)) return;
 						console.warn(`Unrecognized result id ${id} for msg ${msg}`);
 						return;
 					}
 					if (!id.includes('progress')) this.setTaskActive(id, false);
 					delete this.taskIdsToPromiseFuncs[id];
+					if (error) {
+						promiseFuncs[1](new Error(error));
+						return;
+					}
 					promiseFuncs[0](outputData);
 			}
 		});
@@ -304,6 +388,11 @@ class SimWorker {
 
 	addPromiseFunc(id: string, callback: (result: Uint8Array) => void, onError: (error: any) => void) {
 		this.taskIdsToPromiseFuncs[id] = [callback, onError];
+	}
+
+	ignoreResultId(id: string, durationMs = 5000) {
+		this.ignoredResultIds.add(id);
+		window.setTimeout(() => this.ignoredResultIds.delete(id), durationMs);
 	}
 
 	async doApiCall(requestName: SimRequest, request: Uint8Array, id: string): Promise<Uint8Array> {

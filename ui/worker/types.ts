@@ -4,9 +4,13 @@
 export enum SimRequest {
 	computeStats = 'computeStats',
 	computeStatsJson = 'computeStatsJson',
+	reforgeOptimizeAsync = 'reforgeOptimizeAsync',
 	raidSim = 'raidSim',
 	raidSimJson = 'raidSimJson',
 	raidSimAsync = 'raidSimAsync',
+	bulkSimAsync = 'bulkSimAsync',
+	bulkCombinationCount = 'bulkCombinationCount',
+	bulkCandidates = 'bulkCandidates',
 	statWeights = 'statWeights',
 	statWeightsAsync = 'statWeightsAsync',
 	statWeightRequests = 'statWeightRequests',
@@ -46,6 +50,7 @@ export interface WorkerSendMessageBodyBase {
 	id?: string;
 	msg: WorkerSendMessageType;
 	outputData?: Uint8Array;
+	error?: string;
 }
 
 export interface WorkerSendMessageIdConfirm extends WorkerSendMessageBodyBase {
@@ -56,12 +61,16 @@ export interface WorkerSendMessageReady extends WorkerSendMessageBodyBase {
 	msg: 'ready';
 }
 
-export interface WorkerSendMessageProgress extends Required<WorkerSendMessageBodyBase> {
+export interface WorkerSendMessageProgress extends WorkerSendMessageBodyBase {
+	id: string;
 	msg: 'progress';
+	outputData: Uint8Array;
 }
 
-export interface WorkerSendMessageSimRequest extends Required<WorkerSendMessageBodyBase>, Required<Omit<WorkerReceiveMessageSimRequest, 'inputData'>> {
+export interface WorkerSendMessageSimRequest extends WorkerSendMessageBodyBase {
+	id: string;
 	msg: SimRequest;
+	outputData: Uint8Array;
 }
 
 export type WorkerSendMessage = WorkerSendMessageReady | WorkerSendMessageIdConfirm | WorkerSendMessageProgress | WorkerSendMessageSimRequest;

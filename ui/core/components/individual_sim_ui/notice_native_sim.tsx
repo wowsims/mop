@@ -1,17 +1,18 @@
 import { LOCAL_STORAGE_PREFIX, REPO_RELEASES_URL } from '../../constants/other';
-import { isDevMode, isLocal } from '../../utils';
+import { isDevMode, isNative } from '../../utils';
 import { Component } from '../component';
 import Toast from '../toast';
 import i18n from '../../../i18n/config';
+import { Sim } from '../../sim';
 
-export class NoticeLocalSim extends Component {
+export class NoticeNativeSim extends Component {
 	container: HTMLElement;
 	toast: Toast | null = null;
-	constructor(parent: HTMLElement) {
+	constructor(parent: HTMLElement, sim: Sim) {
 		super(null);
 		this.container = parent;
 
-		if (this.hasSeenNotice || isLocal() || isDevMode()) return;
+		if (this.hasSeenNotice || sim.isNative || isDevMode()) return;
 
 		this.render();
 
@@ -38,16 +39,16 @@ export class NoticeLocalSim extends Component {
 
 	render() {
 		this.toast = new Toast({
-			additionalClasses: ['toast-notice-local-download'],
+			additionalClasses: ['toast-notice-native-download'],
 			container: this.container,
 			variant: 'info',
-			title: i18n.t('sim.notice_local_download.title'),
+			title: i18n.t('sim.notice_native_download.title'),
 			autohide: false,
 			body: (
 				<div>
-					<p>{i18n.t('sim.notice_local_download.message')}</p>
+					<p>{i18n.t('sim.notice_native_download.message')}</p>
 					<a href={REPO_RELEASES_URL} className="btn btn-outline-light" target="_blank" onclick={() => this.setHasSeenNotice()}>
-						{i18n.t('sim.notice_local_download.download_button')}
+						{i18n.t('sim.notice_native_download.download_button')}
 					</a>
 				</div>
 			),

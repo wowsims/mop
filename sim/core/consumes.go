@@ -16,7 +16,7 @@ func applyConsumeEffects(agent Agent) {
 	}
 
 	if consumables.FoodId != 0 {
-		food := ConsumablesByID[consumables.FoodId]
+		food := GetConsumableByID(consumables.FoodId)
 		isPanda := character.Race == proto.Race_RaceHordePandaren || character.Race == proto.Race_RaceAlliancePandaren
 		var foodBuffStats stats.Stats
 		if food.BuffsMainStat {
@@ -57,7 +57,7 @@ func registerNonCombatPotions(agent Agent, consumables *proto.ConsumesSpec) {
 func registerNonCombatPotion(agent Agent, elixirOrFlaskId int32) *Spell {
 	character := agent.GetCharacter()
 
-	item := ConsumablesByID[elixirOrFlaskId]
+	item := GetConsumableByID(elixirOrFlaskId)
 
 	// All non combat potions require a buff duration to create a buff aura
 	if item.BuffDuration == 0 {
@@ -208,7 +208,7 @@ func (character *Character) HasAlchStone() bool {
 }
 
 func makePotionActivationSpell(potionId int32, character *Character) MajorCooldown {
-	potion := ConsumablesByID[potionId]
+	potion := GetConsumableByID(potionId)
 	categoryCooldownDuration := TernaryDuration(potion.CategoryCooldownDuration > 0, potion.CategoryCooldownDuration, time.Minute*1)
 	mcd := makePotionActivationSpellInternal(potion, character)
 
@@ -269,7 +269,7 @@ func makePotionActivationSpellInternal(potion Consumable, character *Character) 
 	resourceMetrics := make(map[proto.ResourceType]*ResourceMetrics)
 
 	for _, effectID := range potion.EffectIds {
-		e := SpellEffectsById[effectID]
+		e := GetSpellEffectByID(effectID)
 		resourceType := e.GetResourceType()
 		if e.Type == proto.EffectType_EffectTypeResourceGain && resourceType != 0 {
 			if resourceType == proto.ResourceType_ResourceTypeMana && mcd.Type != CooldownTypeSurvival {

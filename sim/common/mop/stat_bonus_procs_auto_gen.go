@@ -2544,13 +2544,14 @@ func RegisterAllProcs() {
 	//
 	// Let the Horseman laugh through you.
 	// https://www.wowhead.com/mop/spell=43873
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "The Horseman's Horrific Hood",
-	// 	ItemID:             263014,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
+	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
+	//	Callback:           core.CallbackEmpty,
+	//	ProcMask:           core.ProcMaskUnknown,
+	//	Outcome:            core.OutcomeEmpty,
+	//	RequireDamageDealt: false
+	// }, []shared.ItemVariant{
+	//	{ItemID: 263014, ItemName: "The Horseman's Horrific Hood"},
+	//	{ItemID: 282172, ItemName: "The Horseman's Horrific Hood"},
 	// })
 
 	// TODO: Manual implementation required
@@ -2559,13 +2560,14 @@ func RegisterAllProcs() {
 	//
 	// Summon Pumpkin Soldiers to burn your foes.
 	// https://www.wowhead.com/mop/spell=50070
-	// shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-	// 	Name:               "The Horseman's Sinister Slicer",
-	// 	ItemID:             263018,
-	// 	Callback:           core.CallbackEmpty,
-	// 	ProcMask:           core.ProcMaskUnknown,
-	// 	Outcome:            core.OutcomeEmpty,
-	// 	RequireDamageDealt: false,
+	// shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
+	//	Callback:           core.CallbackEmpty,
+	//	ProcMask:           core.ProcMaskUnknown,
+	//	Outcome:            core.OutcomeEmpty,
+	//	RequireDamageDealt: false
+	// }, []shared.ItemVariant{
+	//	{ItemID: 263018, ItemName: "The Horseman's Sinister Slicer"},
+	//	{ItemID: 282174, ItemName: "The Horseman's Sinister Slicer"},
 	// })
 
 	// TODO: Manual implementation required
@@ -3992,35 +3994,38 @@ func RegisterAllProcs() {
 
 	// Chance on melee and ranged critical strike to increase your attack power by 4000 for 10s.
 	// https://www.wowhead.com/mop/spell=127928
-	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		Name:               "Coren's Cold Chromium Coaster",
-		ItemID:             257880,
+	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
 		ProcMask:           core.ProcMaskMeleeMHAuto | core.ProcMaskMeleeOHAuto | core.ProcMaskMeleeMHSpecial | core.ProcMaskMeleeOHSpecial | core.ProcMaskRangedAuto | core.ProcMaskRangedSpecial,
 		Outcome:            core.OutcomeCrit,
 		RequireDamageDealt: true,
+	}, []shared.ItemVariant{
+		{ItemID: 257880, ItemName: "Coren's Cold Chromium Coaster"},
+		{ItemID: 282035, ItemName: "Coren's Cold Chromium Coaster"},
 	})
 
 	// Your direct healing and heal over time spells have a chance to increase your haste by 2040 for 10s. (
 	// 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=127915
-	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		Name:               "Thousand-Year Pickled Egg",
-		ItemID:             257881,
+	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnHealDealt | core.CallbackOnPeriodicHealDealt,
 		ProcMask:           core.ProcMaskSpellHealing,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
+	}, []shared.ItemVariant{
+		{ItemID: 257881, ItemName: "Thousand-Year Pickled Egg"},
+		{ItemID: 282031, ItemName: "Thousand-Year Pickled Egg"},
 	})
 
 	// Your harmful spells have a chance to increase your spell power by 2040 for 10s. ( 10% chance, 55 sec cooldown)
 	// https://www.wowhead.com/mop/spell=127923
-	shared.NewProcStatBonusEffect(shared.ProcStatBonusEffect{
-		Name:               "Mithril Wristwatch",
-		ItemID:             257884,
+	shared.NewProcStatBonusEffectWithVariants(shared.ProcStatBonusEffect{
 		Callback:           core.CallbackOnSpellHitDealt,
 		ProcMask:           core.ProcMaskSpellDamage | core.ProcMaskSpellDamageProc,
 		Outcome:            core.OutcomeLanded,
 		RequireDamageDealt: false,
+	}, []shared.ItemVariant{
+		{ItemID: 257884, ItemName: "Mithril Wristwatch"},
+		{ItemID: 282033, ItemName: "Mithril Wristwatch"},
 	})
 }

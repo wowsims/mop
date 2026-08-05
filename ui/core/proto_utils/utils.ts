@@ -6,6 +6,7 @@ import { PlayerSpecs } from '../player_specs';
 import { Player } from '../proto/api.js';
 import {
 	Class,
+	EquipmentSpec,
 	EnchantType,
 	Faction,
 	HandType,
@@ -2117,4 +2118,57 @@ export function migrateOldProto<Type>(oldProto: Type, oldApiVersion: number, con
 	}
 
 	return migratedProto;
+}
+
+export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[], includeExistingGems = false): string {
+	const items = spec.items;
+	const frozenSlots = frozenItemSlots ?? [];
+	const frozenSlotMask = frozenSlots.length ? new Uint8Array(items.length) : undefined;
+	if (frozenSlotMask) {
+		for (let i = 0; i < frozenSlots.length; i++) {
+			const slot = frozenSlots[i];
+			if (slot >= 0 && slot < items.length) {
+				frozenSlotMask[slot] = 1;
+			}
+		}
+	}
+	const itemKeys = new Array<string>(items.length);
+	for (let slotIdx = 0; slotIdx < items.length; slotIdx++) {
+		const item = items[slotIdx];
+		if (!item?.id) {
+			itemKeys[slotIdx] = '';
+			continue;
+		}
+
+		const itemSlot = slotIdx as ItemSlot;
+		const isFrozen = !!frozenSlotMask?.[itemSlot];
+		const gemFingerprint = isFrozen || includeExistingGems
+			? (item.gems ?? []).map(gemId => gemId ?? 0).join(',')
+			: String(itemSlot === ItemSlot.ItemSlotHead ? (item.gems?.[0] ?? 0) : 0);
+		const reforgeFingerprint = isFrozen ? (item.reforging ?? 0) : 0;
+		itemKeys[slotIdx] = [
+			item.id,
+			item.randomSuffix ?? 0,
+			item.enchant ?? 0,
+			item.tinker ?? 0,
+			reforgeFingerprint,
+			item.upgradeStep ?? 0,
+			gemFingerprint,
+			Number(item.challengeMode ?? false),
+		].join(':');
+	}
+
+	const reorderPairedSlots = (firstSlot: ItemSlot, secondSlot: ItemSlot): void => {
+		if (itemKeys[firstSlot] > itemKeys[secondSlot]) {
+			const temp = itemKeys[firstSlot];
+			itemKeys[firstSlot] = itemKeys[secondSlot];
+			itemKeys[secondSlot] = temp;
+		}
+	};
+
+	// Normalize interchangeable slots so equivalent gear layouts share a cache key.
+	reorderPairedSlots(ItemSlot.ItemSlotFinger1, ItemSlot.ItemSlotFinger2);
+	reorderPairedSlots(ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2);
+
+	return itemKeys.join('|');
 }

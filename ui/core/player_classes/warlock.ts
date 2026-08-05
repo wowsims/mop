@@ -1,8 +1,9 @@
-import { EligibleWeaponType, IconSize, PlayerClass } from '../player_class';
+import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { AfflictionWarlock, DemonologyWarlock, DestructionWarlock } from '../player_specs/warlock';
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '../proto/common';
+import { Class } from '../proto/common';
 import { WarlockSpecs } from '../proto_utils/utils';
+import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Warlock extends PlayerClass<Class.ClassWarlock> {
 	static classID = Class.ClassWarlock as Class.ClassWarlock;
@@ -13,27 +14,10 @@ export class Warlock extends PlayerClass<Class.ClassWarlock> {
 		[DemonologyWarlock.friendlyName]: DemonologyWarlock,
 		[DestructionWarlock.friendlyName]: DestructionWarlock,
 	};
-	static races: Race[] = [
-		// [H]
-		Race.RaceOrc,
-		Race.RaceUndead,
-		Race.RaceTroll,
-		Race.RaceBloodElf,
-		Race.RaceGoblin,
-		// [A]
-		Race.RaceHuman,
-		Race.RaceDwarf,
-		Race.RaceGnome,
-		Race.RaceWorgen,
-	];
-	static armorTypes: ArmorType[] = [ArmorType.ArmorTypeCloth];
-	static weaponTypes: EligibleWeaponType[] = [
-		{ weaponType: WeaponType.WeaponTypeDagger },
-		{ weaponType: WeaponType.WeaponTypeOffHand },
-		{ weaponType: WeaponType.WeaponTypeStaff, canUseTwoHand: true },
-		{ weaponType: WeaponType.WeaponTypeSword },
-	];
-	static rangedWeaponTypes: RangedWeaponType[] = [RangedWeaponType.RangedWeaponTypeWand];
+	static races = getClassRaces(Warlock.classID);
+	static armorTypes = getClassArmorTypes(Warlock.classID);
+	static weaponTypes = getClassWeaponTypes(Warlock.classID);
+	static rangedWeaponTypes = getClassRangedWeaponTypes(Warlock.classID);
 
 	readonly classID = Warlock.classID;
 	readonly friendlyName = Warlock.name;

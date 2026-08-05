@@ -47,6 +47,33 @@ type statAmplificationTrinketConfig struct {
 	buff             *buffConfig
 }
 
+var MeleeAmplificationTrinketItemIDs = shared.ItemVersionMap{
+	shared.ItemVersionLFR:             105111,
+	shared.ItemVersionNormal:          102305,
+	shared.ItemVersionHeroic:          104613,
+	shared.ItemVersionWarforged:       105360,
+	shared.ItemVersionHeroicWarforged: 105609,
+	shared.ItemVersionFlexible:        104862,
+}
+
+var CasterAmplificationTrinketItemIDs = shared.ItemVersionMap{
+	shared.ItemVersionLFR:             104924,
+	shared.ItemVersionNormal:          102293,
+	shared.ItemVersionHeroic:          104426,
+	shared.ItemVersionWarforged:       105173,
+	shared.ItemVersionHeroicWarforged: 105422,
+	shared.ItemVersionFlexible:        104675,
+}
+
+var HealerAmplificationTrinketItemIDs = shared.ItemVersionMap{
+	shared.ItemVersionLFR:             104976,
+	shared.ItemVersionNormal:          102299,
+	shared.ItemVersionHeroic:          104478,
+	shared.ItemVersionWarforged:       105225,
+	shared.ItemVersionHeroicWarforged: 105474,
+	shared.ItemVersionFlexible:        104727,
+}
+
 func init() {
 	newReadinessTrinket := func(config *readinessTrinketConfig) {
 		config.itemVersionMap.RegisterAll(func(version shared.ItemVersion, itemID int32, versionLabel string) {
@@ -454,14 +481,7 @@ func init() {
 	// (15% chance, 115 sec cooldown) (Proc chance: 15%, 1.917m cooldown)
 	// Amplifies your Critical Strike damage and healing, Haste, Mastery, and Spirit by 1%.
 	newStatAmplificationTrinket(&statAmplificationTrinketConfig{
-		itemVersionMap: shared.ItemVersionMap{
-			shared.ItemVersionLFR:             105111,
-			shared.ItemVersionNormal:          102305,
-			shared.ItemVersionHeroic:          104613,
-			shared.ItemVersionWarforged:       105360,
-			shared.ItemVersionHeroicWarforged: 105609,
-			shared.ItemVersionFlexible:        104862,
-		},
+		itemVersionMap:   MeleeAmplificationTrinketItemIDs,
 		baseTrinketLabel: "Thok's Tail Tip",
 		buff: &buffConfig{
 			auraLabel: "Determination",
@@ -475,14 +495,7 @@ func init() {
 	// (15% chance, 115 sec cooldown) (Proc chance: 15%, 1.917m cooldown)
 	// Amplifies your Critical Strike damage and healing, Haste, Mastery, and Spirit by 1%.
 	newStatAmplificationTrinket(&statAmplificationTrinketConfig{
-		itemVersionMap: shared.ItemVersionMap{
-			shared.ItemVersionLFR:             104924,
-			shared.ItemVersionNormal:          102293,
-			shared.ItemVersionHeroic:          104426,
-			shared.ItemVersionWarforged:       105173,
-			shared.ItemVersionHeroicWarforged: 105422,
-			shared.ItemVersionFlexible:        104675,
-		},
+		itemVersionMap:   CasterAmplificationTrinketItemIDs,
 		baseTrinketLabel: "Purified Bindings of Immerseus",
 		buff: &buffConfig{
 			auraLabel:       "Expanded Mind",
@@ -497,14 +510,7 @@ func init() {
 	// (15% chance, 115 sec cooldown) (Proc chance: 15%, 1.917m cooldown)
 	// Amplifies your Critical Strike damage and healing, Haste, Mastery, and Spirit by 1%.
 	newStatAmplificationTrinket(&statAmplificationTrinketConfig{
-		itemVersionMap: shared.ItemVersionMap{
-			shared.ItemVersionLFR:             104976,
-			shared.ItemVersionNormal:          102299,
-			shared.ItemVersionHeroic:          104478,
-			shared.ItemVersionWarforged:       105225,
-			shared.ItemVersionHeroicWarforged: 105474,
-			shared.ItemVersionFlexible:        104727,
-		},
+		itemVersionMap:   HealerAmplificationTrinketItemIDs,
 		baseTrinketLabel: "Prismatic Prison of Pride",
 		buff: &buffConfig{
 			auraLabel: "Titanic Restoration",

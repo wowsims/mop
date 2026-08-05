@@ -1,0 +1,182 @@
+{
+	"raid":  {
+		"parties":  [
+			{
+				"players":  [
+					{
+						"race":  "RaceOrc",
+						"class":  "ClassMage",
+						"equipment":  {
+							"items":  [
+								{
+									"id":  105647,
+									"gems":  [95347, 76667],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105465,
+									"reforging":  138,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99401,
+									"enchant":  4806,
+									"gems":  [76667, 76667],
+									"reforging":  147,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  102246,
+									"enchant":  4892,
+									"gems":  [76667],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99400,
+									"enchant":  4419,
+									"gems":  [76667, 76667, 76667],
+									"reforging":  144,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105591,
+									"enchant":  4414,
+									"gems":  [0],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99397,
+									"enchant":  4430,
+									"gems":  [76667, 76667, 0],
+									"reforging":  147,
+									"upgradeStep":  "UpgradeStepTwo",
+									"tinker":  4898
+								},
+								{
+									"id":  105515,
+									"gems":  [76672, 76636, 76700],
+									"reforging":  138,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99399,
+									"enchant":  4895,
+									"gems":  [76700, 76700],
+									"reforging":  145,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105493,
+									"enchant":  4429,
+									"gems":  [76700],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105498,
+									"reforging":  140,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105606,
+									"gems":  [76672],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105422,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105540,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105627,
+									"enchant":  4442,
+									"gems":  [76672],
+									"reforging":  147,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105650,
+									"enchant":  4434,
+									"gems":  [76672],
+									"reforging":  152,
+									"upgradeStep":  "UpgradeStepTwo"
+								}
+							]
+						},
+						"consumables":  {
+							"prepotId":  76093,
+							"potId":  76093,
+							"flaskId":  76085,
+							"foodId":  74650
+						},
+						"frostMage":  {
+							"options":  {
+								"classOptions":  {
+									"defaultMageArmor":  "MageArmorFrostArmor"
+								}
+							}
+						},
+						"talentsString":  "111122",
+						"glyphs":  {
+							"major1":  42753,
+							"major2":  42745
+						},
+						"profession1":  "Engineering"
+					}
+				],
+				"buffs":  {}
+			}
+		],
+		"buffs":  {
+			"unholyAura":  true,
+			"arcaneBrilliance":  true,
+			"mindQuickening":  true,
+			"leaderOfThePack":  true,
+			"blessingOfMight":  true,
+			"blessingOfKings":  true,
+			"bloodlust":  true,
+			"stormlashTotemCount":  4,
+			"skullBannerCount":  2
+		},
+		"debuffs":  {
+			"curseOfElements":  true
+		}
+	},
+	"preCapEpWeights":  {
+		"stats":  [0, 0, 0, 1.31, 0, 2.15, 0.77, 0.75, 0, 0, 0, 0.71, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"undershootCaps":  {
+		"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"settings":  {
+		"useSoftCapBreakpoints":  true,
+		"includeGems":  true,
+		"includeEotbGemSocket":  true,
+		"statCaps":  {
+			"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0]
+		}
+	},
+	"softCaps":  [
+		{
+			"unitStat":  {
+				"pseudoStat":  "PseudoStatSpellCritPercent"
+			},
+			"breakpoints":  [23, 26, 28],
+			"capType":  "TypeSoftCap",
+			"postCapEPs":  [456, 408.00000000000006, 341.99999999999994]
+		},
+		{
+			"unitStat":  {
+				"pseudoStat":  "PseudoStatSpellHastePercent"
+			},
+			"breakpoints":  [37.520061, 50, 62.469546, 87.441436],
+			"capType":  "TypeSoftCap",
+			"postCapEPs":  [306, 221, 221, 221]
+		}
+	]
+}

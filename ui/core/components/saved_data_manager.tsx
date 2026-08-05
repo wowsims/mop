@@ -215,6 +215,8 @@ export class SavedDataManager<ModObject, T> extends Component {
 
 	// Load data from window.localStorage.
 	loadUserData() {
+		if (this.config.presetsOnly) return;
+
 		const dataStr = window.localStorage.getItem(this.config.storageKey);
 		if (!dataStr) return;
 

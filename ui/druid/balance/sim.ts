@@ -7,7 +7,7 @@ import { PlayerClasses } from '../../core/player_classes';
 
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
 import { Faction, ItemSlot, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
 import * as DruidInputs from '../inputs';
@@ -134,10 +134,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 		statCaps: (() => {
 			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
 		})(),
-		// Default breakpoint limits - set 12T MF/SF with 4P
-		breakpointLimits: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHastePercent, Presets.BALANCE_T14_4P_BREAKPOINTS!.presets.get('12-tick MF/SF')!);
-		})(),
 		softCapBreakpoints: (() => {
 			const hasteBreakpointConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [...Presets.BALANCE_BREAKPOINTS!.presets].map(([_, value]) => value),
@@ -257,19 +253,10 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 			statSelectionPresets: [statSelectionHastePreset],
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
-				let epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 525) {
-					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
-				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_BIS_EP_PRESET.epWeights;
+				if (avgIlvl >= 525) return Presets.P3_BIS_EP_PRESET.epWeights;
+				return Presets.P2_BIS_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const gear = player.getGear();
@@ -314,7 +301,7 @@ export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {
 					if (!!critMasteryIntersection) {
 						const masteryStat = UnitStat.fromStat(Stat.StatMasteryRating);
 						const masteryBreakpoint = masteryStat.convertPercentToRating(critMasteryIntersection)! / player.getMasteryPerPointModifier();
-						const masteryPostCapEp = masterySoftCapEpAtPercent(critMasteryIntersection) / player.getTotalAmplificationTrinketStatModifier();
+						const masteryPostCapEp = masterySoftCapEpAtPercent(critMasteryIntersection);
 
 						const masterySoftCapConfig = StatCap.fromStat(Stat.StatMasteryRating, {
 							breakpoints: [masteryBreakpoint],

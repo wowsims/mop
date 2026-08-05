@@ -216,20 +216,13 @@ export class FeralDruidSimUI extends IndividualSimUI<Spec.SpecFeralDruid> {
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: (player: Player<Spec.SpecFeralDruid>) => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-
-				if (avgIlvl >= 550) {
-					if (player.getTalents().heartOfTheWild) {
-						return RelativeStatCap.hasRoRo(player) ? Presets.P5_HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
-					} else {
-						return RelativeStatCap.hasRoRo(player) ? Presets.P5_DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
-					}
-				}
-
+				const hasRoRo = RelativeStatCap.hasRoRo(player);
 				if (player.getTalents().heartOfTheWild) {
-					return RelativeStatCap.hasRoRo(player) ? Presets.HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
-				} else {
-					return RelativeStatCap.hasRoRo(player) ? Presets.DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
+					if (avgIlvl >= 550) return hasRoRo ? Presets.P5_HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
+					return hasRoRo ? Presets.HOTW_RORO_PRESET.epWeights : Presets.HOTW_EP_PRESET.epWeights;
 				}
+				if (avgIlvl >= 550) return hasRoRo ? Presets.P5_DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
+				return hasRoRo ? Presets.DOC_RORO_PRESET.epWeights : Presets.DOC_EP_PRESET.epWeights;
 			},
 			defaultRelativeStatCap: Stat.StatMasteryRating,
 		});

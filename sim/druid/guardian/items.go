@@ -195,7 +195,7 @@ var ItemSetArmorOfTheShatteredVale = core.NewItemSet(core.ItemSet{
 	},
 })
 
-// 2PT16 : Free Frenzied Regeneration cast by the T16 2P bonus when Barkskin fades. 
+// 2PT16 : Free Frenzied Regeneration cast by the T16 2P bonus when Barkskin fades.
 // Always uses the unglyphed heal formula with a fixed 20-rage cost, regardless of glyph.
 func (bear *GuardianDruid) registerT162PFreeFrenziedRegen(_ *core.Aura) {
 	const triggeredRageCost = 20.0

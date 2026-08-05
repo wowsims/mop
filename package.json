@@ -32,18 +32,18 @@
 		"@types/pako": "^2.0.0",
 		"ajv": "^8.17.1",
 		"apexcharts": "^4.5.0",
+		"async": "^3.2.6",
 		"bootstrap": "^5.3.7",
 		"chart.js": "^4.5.0",
 		"clsx": "^2.1.1",
-		"highs": "^1.8.0",
 		"i18next": "^25.3.2",
 		"i18next-browser-languagedetector": "^8.2.0",
 		"i18next-http-backend": "^3.0.2",
+		"idb": "^8.0.3",
 		"pako": "^2.0.4",
 		"tippy.js": "^6.3.7",
 		"tsx-vanilla": "^1.2.0",
-		"uuid": "^11.1.0",
-		"yalps": "^0.5.6"
+		"uuid": "^11.1.0"
 	},
 	"devDependencies": {
 		"@bufbuild/buf": "1.55.1",
@@ -52,6 +52,7 @@
 		"@protobuf-ts/plugin-framework": "2.9.0",
 		"@protobuf-ts/protoc": "2.9.1",
 		"@protobuf-ts/runtime": "2.9.1",
+		"@types/async": "^3.2.25",
 		"@types/bootstrap": "^5.2.10",
 		"@types/eslint": "^8.56.10",
 		"@types/gtag.js": "^0.0.20",
@@ -83,6 +84,7 @@
 		"vite": "^7.0.5",
 		"vite-plugin-checker": "^0.8.0",
 		"vite-plugin-i18next-loader": "^3.1.2",
-		"vite-plugin-stylelint": "^6.0.2"
+		"vite-plugin-stylelint": "^6.0.2",
+		"vite-plugin-watch-and-run": "^1.8.2"
 	}
 }

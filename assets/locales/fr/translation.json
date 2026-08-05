@@ -245,7 +245,7 @@
         "description": "Simulations {{class}} {{spec}} pour World of Warcraft® Mists of Pandaria Classic.",
         "basic_bis_disclaimer": "<p>Les listes d'équipement prédéfinies fournie sont approximatives du meilleur équipement possible, et ne seront souvent pas la configuration optimale pour vous. Votre configuration d'équipement optimale dépendra de nombreux facteurs ; c'est pourquoi nous avons un simulateur !</p><p>Les objets peuvent également être omis des préréglages s'ils sont très contestés et clairement mieux utilisés sur d'autres classes, pour encourager un équipement équitable pour le raid dans son ensemble.</p>",
         "healing_sim_disclaimer": "*** AVERTISSEMENT - UTILISEZ À VOS PROPRES RISQUES ***\n\nLe concept entier d'un simulateur de soins est EXPÉRIMENTAL. Tous les résultats doivent être pris avec un grain de sel EXTREMEMENT important.\n\nCet outil est actuellement plus similaire à une feuille de calcul qu'à un véritable simulateur. Les options pour spécifier les profils de dégâts entrants afin d'avoir des rotations réactives appropriées n'ont pas encore été ajoutées.",
-        "notice_local_download": {
+        "notice_native_download": {
             "title": "Le saviez-vous ?",
             "message": "Vous pouvez télécharger notre simulateur en local pour accélérer considérablement vos simulations ?",
             "download_button": "Télécharger"
@@ -776,7 +776,7 @@
     "bulk_tab": {
         "title": "Lot (<span class=\"text-success\">Nouveau</span>)",
         "description": "<span className=\"bold\">Simulation par lot</span> est une nouvelle fonctionnalité similaire à la simulation <span className=\"bold\">Top Gear</span> sur <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> qui vous permet de sélectionner plusieurs objets et de les simuler pour trouver les meilleures combinaisons.<br />C'est une fonctionnalité <span className=\"text-brand\">Alpha</span>, donc si vous avez des commentaires ou trouvez un bug, veuillez le signaler !",
-        "download_local": "Téléchargez le simulateur en local pour des résultats plus rapides.",
+        "download_native": "Téléchargez le simulateur en local pour des résultats plus rapides.",
         "tabs": {
             "setup": "Configuration",
             "results": "Résultats"
@@ -800,14 +800,24 @@
             "item_unique": "{{itemName}} est unique et a déjà été ajouté."
         },
         "settings": {
-            "combinations_count": "{{count}} Combinaisons",
+            "combinations_count": "{{amount}} Combinaisons",
             "combination_singular": "1 Combinaison",
             "iterations": "Itérations",
-            "fallback_gems": "Gemmes de secours",
             "inherit_upgrades": {
                 "label": "Hériter des améliorations",
                 "tooltip": "Lorsque cette option est activée, les objets hériteront des améliorations de l'objet équipé. Sinon, les objets seront simulés sans aucune amélioration."
+			},
+			"use_legacy_bulk_sim": {
+				"label": "Utiliser la simulation mono-étape héritée",
+				"tooltip": "Par défaut, Bulk Sim exécute les lots volumineux en plusieurs étapes : une passe à faible nombre d'itérations pour trouver les candidats prometteurs, une passe de raffinement à nombre moyen d'itérations, puis une passe finale à nombre élevé d'itérations pour les meilleurs ensembles restants. Activez cette option uniquement pour forcer l'ancien comportement avec une seule passe finale."
             },
+			"required_set_bonuses": {
+				"label": "Bonus d'ensemble requis",
+				"none": "Aucune exigence",
+				"require_2p": "Exiger 2P",
+				"require_4p": "Exiger 4P",
+				"available_pieces": "({{count}} disponibles)"
+			},
             "freeze_ring": {
                 "label": "Geler un emplacement d'anneau",
                 "tooltip": "Geler un anneau équipé pour réduire le nombre de combinaisons"
@@ -827,12 +837,17 @@
             }
         },
         "progress": {
-            "total_combinations": "{{count}} combinaisons totales.",
-			"reforging_rounds": "Exécution des reforges",
+			"building_candidate_gear_sets": "Création des ensembles d'équipement candidats",
+			"restoring_reforges_from_cache": "Restauration des reforges depuis le cache",
+			"reforging_iteration_rounds": "Exécution des reforges",
 			"baseline_round": "Exécution du tour de référence",
             "refining_rounds": "Exécution des tours d'affinage",
+			"low_iteration_rounds": "Exécution des tours à faible itération",
+			"medium_iteration_rounds": "Exécution des tours à itération moyenne",
+			"high_iteration_rounds": "Exécution des tours à forte itération",
             "iterations_complete": "{{completed}} / {{total}}<br />itérations terminées",
-            "seconds_remaining": "{{seconds}} secondes restantes"
+			"seconds_remaining": "{{seconds}} secondes restantes",
+			"time_remaining": "Il reste {{time}}"
         },
         "notifications": {
             "bulk_sim_cancelled": "Simulation par lot annulée.",
@@ -852,9 +867,6 @@
             "equip_button": "Équiper",
             "gear_equipped": "Équipement du lot équipé !",
             "current_gear": "Équipement actuel"
-        },
-        "gem_selector": {
-            "title": "Choisir la gemme par défaut"
         },
         "import_modal": {
             "title": "Importation d'objets de sac",
@@ -2365,6 +2377,11 @@
 				"tooltip": "Modifier les paramètres de l'Optimiseur de retouche",
 				"use_soft_cap_breakpoints": "Utiliser les breakpoints de softcap",
 				"force_stat_proc": "Forcer le proc RoRo",
+				"relative_stat_cap_precision": "Précision",
+				"relative_stat_cap_precision_tooltip": "Une précision plus élevée donne un résultat légèrement meilleur mais prend plus de temps à calculer. Une précision plus faible est beaucoup plus rapide mais moins précise.",
+				"precision_precise": "Précise",
+				"precision_balanced": "Équilibrée",
+				"precision_fast": "Rapide",
 				"any": "N'importe lequel",
 				"optimize_gems_tooltip": "Optimiser les gemmes et les retouches simultanément.",
 				"freeze_item_slots_tooltip": "Marquer un ou plusieurs emplacements d'objets comme \"gelés\", ce qui empêchera l'optimiseur de modifier la retouche ou les gemmes dans cet emplacement de leurs paramètres actuels. Cela peut être utile pour les classes hybrides qui utilisent la même pièce d'équipement pour plusieurs rôles de raid.",
@@ -2388,9 +2405,7 @@
 				"include_gems": "Inclure les gemmes",
 				"freeze_item_slots": "Verrouiller certains emplacements",
 				"include_eotbp_socket": "Inclure le socket EotBP",
-				"include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation.",
-				"limit_execution_time": "Limiter le temps d'exécution",
-				"limit_execution_time_tooltip": "Si coché, le solveur se terminera en erreur si le temps de calcul total dépasse 30 secondes. Si décoché, le temps de calcul total sera plafonné à 1 heure."
+				"include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation."
 			}
 		},
 		"header": {

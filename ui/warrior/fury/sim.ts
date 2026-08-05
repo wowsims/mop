@@ -6,7 +6,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Class, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as WarriorInputs from '../inputs';
@@ -181,22 +181,10 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-
 				const avgIlvl = player.getGear().getAverageItemLevel(player.canDualWield2H());
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_FURY_TG_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 517) {
-					epWeights = Presets.P3_4_FURY_TG_EP_PRESET.epWeights;
-				} else {
-					epWeights = Presets.P2_FURY_TG_EP_PRESET.epWeights;
-				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_FURY_TG_EP_PRESET.epWeights;
+				if (avgIlvl >= 517) return Presets.P3_4_FURY_TG_EP_PRESET.epWeights;
+				return Presets.P2_FURY_TG_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const avgIlvl = player.getGear().getAverageItemLevel(player.canDualWield2H());
@@ -208,7 +196,6 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 				this.individualConfig.defaults.softCapBreakpoints!.forEach(softCap => {
 					const softCapToModify = softCaps.find(sc => sc.unitStat.equals(softCap.unitStat));
 					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent) && softCapToModify) {
-						console.log(avgIlvl);
 						if (avgIlvl >= 560) {
 							softCapToModify.postCapEPs = P5HitPostCapEPs;
 						} else if (avgIlvl >= 517) {
@@ -224,7 +211,7 @@ export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
 						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 							breakpoints: [53],
 							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [epWeights.getStat(Stat.StatMasteryRating) * 0.8 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
+							postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) / player.getTotalAmplificationTrinketStatModifier()) * 0.8 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
 						}),
 					);
 				}

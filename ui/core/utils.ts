@@ -98,6 +98,48 @@ export function sum(arr: Array<number>): number {
 	return arr.reduce((total, cur) => total + cur, 0);
 }
 
+export interface FormatDurationSecondsOptions {
+	showMilliseconds?: boolean;
+	millisecondDigits?: 1 | 2 | 3;
+	separatorStyle?: 'colon' | 'unit';
+	minimumUnit?: 'seconds' | 'minutes' | 'hours';
+}
+
+export function formatDurationSeconds(seconds: number, options: FormatDurationSecondsOptions = {}): string {
+	const showMilliseconds = options.showMilliseconds ?? false;
+	const millisecondDigits = options.millisecondDigits ?? 1;
+	const precision = showMilliseconds ? Math.pow(10, millisecondDigits) : 1;
+	const totalUnits = Math.max(0, Math.round(seconds * precision));
+	const totalSeconds = Math.floor(totalUnits / precision);
+	const fractionalUnits = totalUnits % precision;
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const remainingSeconds = totalSeconds % 60;
+	const secondsSuffix = showMilliseconds ? `.${String(fractionalUnits).padStart(millisecondDigits, '0')}` : '';
+	const paddedSeconds = String(remainingSeconds).padStart(2, '0');
+
+	if (options.separatorStyle === 'colon') {
+		const showHours = hours > 0 || options.minimumUnit === 'hours';
+		const showMinutes = showHours || minutes > 0 || options.minimumUnit === 'minutes';
+
+		if (showHours) {
+			return `${hours}:${String(minutes).padStart(2, '0')}:${paddedSeconds}${secondsSuffix}`;
+		}
+		if (showMinutes) {
+			return `${minutes}:${paddedSeconds}${secondsSuffix}`;
+		}
+		return `${remainingSeconds}${secondsSuffix}s`;
+	}
+
+	if (hours > 0) {
+		return `${hours}h ${String(minutes).padStart(2, '0')}m ${paddedSeconds}${secondsSuffix}s`;
+	}
+	if (minutes > 0) {
+		return `${minutes}m ${paddedSeconds}${secondsSuffix}s`;
+	}
+	return `${remainingSeconds}${secondsSuffix}s`;
+}
+
 // Returns the index of maximum value, or null if empty.
 export function maxIndex(arr: Array<number>): number | null {
 	return arr.reduce((cur, v, i, arr) => (v > arr[cur] ? i : cur), 0);
@@ -149,6 +191,16 @@ export function bucket<T>(arr: Array<T>, toString: (val: T) => string): Record<s
 
 export function stDevToConf90(stDev: number, N: number) {
 	return (1.645 * stDev) / Math.sqrt(N);
+}
+
+export function getStDev(arr: Array<number>, sample = false): number {
+	if (arr.length === 0 || (sample && arr.length === 1)) {
+		return 0;
+	}
+
+	const mean = sum(arr) / arr.length;
+	const variance = sum(arr.map(value => Math.pow(value - mean, 2))) / (sample ? arr.length - 1 : arr.length);
+	return Math.sqrt(variance);
 }
 
 // Only works for numeric enums
@@ -381,7 +433,7 @@ export const getEnvironment = (): Environments => {
 	return 'external';
 };
 
-export const isLocal = () => getEnvironment() === 'local';
+export const isNative = () => getEnvironment() === 'local';
 export const isExternal = () => getEnvironment() === 'external';
 export const isDevMode = () => {
 	return import.meta.env.DEV;
@@ -413,63 +465,4 @@ export const findInputItemForEnum = <T extends Record<string, string | number>, 
 	return items.find(item => {
 		return normalizeName(item.name) === formatName(targetEnumKey);
 	});
-};
-
-export interface PromisePoolProgress {
-	completed: number;
-	total: number;
-	pending: number;
-	fulfilled: number;
-	rejected: number;
-}
-
-export const promisePool = <T>(
-	tasks: Array<() => Promise<T>>,
-	{
-		concurrency = 5,
-		waitBetweenBatches,
-		onProgress,
-	}: { concurrency?: number; waitBetweenBatches?: number; onProgress?: (progress: PromisePoolProgress) => void },
-): Promise<PromiseSettledResult<T>[]> => {
-	return (async () => {
-		let completed = 0;
-		let fulfilled = 0;
-		let rejected = 0;
-		const total = tasks.length;
-		const results: PromiseSettledResult<T>[] = new Array(total);
-
-		for (let batchStart = 0; batchStart < total; batchStart += concurrency) {
-			if (waitBetweenBatches && batchStart > 0) await sleep(waitBetweenBatches);
-			const batchTasks = tasks.slice(batchStart, batchStart + concurrency);
-			const batchResults = await Promise.all(
-				batchTasks.map(task =>
-					Promise.resolve(task())
-						.then(value => ({ status: 'fulfilled', value }) as PromiseFulfilledResult<T>)
-						.catch(reason => ({ status: 'rejected', reason }) as PromiseRejectedResult),
-				),
-			);
-
-			batchResults.forEach((result, index) => {
-				results[batchStart + index] = result;
-				if (result.status === 'fulfilled') {
-					fulfilled++;
-				} else {
-					rejected++;
-				}
-			});
-
-			completed += batchResults.length;
-			if (onProgress) {
-				onProgress?.({
-					completed,
-					total,
-					pending: total - completed,
-					fulfilled,
-					rejected,
-				});
-			}
-		}
-
-		return results;
-	})();
 };

@@ -15,10 +15,19 @@ export const setupHttpWorker = (baseURL: string) => {
 			body: inputData,
 		});
 
-	const syncHandler: HandlerFunction = async (inputData, _, id, msg) => {
-		const response = await makeHttpApiRequest(msg, inputData, id);
+	const readHttpApiResponse = async (response: Response, endPoint: string) => {
+		if (!response.ok) {
+			const body = await response.text();
+			throw new Error(`HTTP ${response.status} from /${endPoint}: ${body.slice(0, 200)}`);
+		}
+
 		const ab = await response.arrayBuffer();
 		return new Uint8Array(ab);
+	};
+
+	const syncHandler: HandlerFunction = async (inputData, _, id, msg) => {
+		const response = await makeHttpApiRequest(msg, inputData, id);
+		return readHttpApiResponse(response, msg);
 	};
 
 	const asyncHandler: HandlerFunction = async (inputData, progress, id, msg) => {
@@ -32,8 +41,7 @@ export const setupHttpWorker = (baseURL: string) => {
 				break;
 			}
 
-			const ab = await progressResponse.arrayBuffer();
-			outputData = new Uint8Array(ab);
+			outputData = await readHttpApiResponse(progressResponse, 'asyncProgress');
 			progress(outputData);
 			await sleep(500);
 		}
@@ -49,9 +57,13 @@ export const setupHttpWorker = (baseURL: string) => {
 	new WorkerInterface({
 		computeStats: syncHandler,
 		computeStatsJson: syncHandler,
+		reforgeOptimizeAsync: asyncHandler,
 		raidSim: syncHandler,
 		raidSimJson: syncHandler,
 		raidSimAsync: asyncHandler,
+		bulkSimAsync: asyncHandler,
+		bulkCombinationCount: syncHandler,
+		bulkCandidates: syncHandler,
 		statWeights: syncHandler,
 		statWeightsAsync: asyncHandler,
 		statWeightRequests: syncHandler,

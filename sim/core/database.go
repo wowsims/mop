@@ -23,13 +23,11 @@ var ItemEffectRandPropPointsByIlvl = map[int32]ItemEffectRandPropPoints{}
 var ConsumablesByID = map[int32]Consumable{}
 var SpellEffectsById = map[int32]*proto.SpellEffect{}
 
-var mutex = &sync.Mutex{}
+var dbMu sync.RWMutex
 
 func addToDatabase(newDB *proto.SimDatabase) {
-	// create mutex lock here and lock it
-	// defer unlock it
-	mutex.Lock()
-	defer mutex.Unlock()
+	dbMu.Lock()
+	defer dbMu.Unlock()
 
 	for _, v := range newDB.Items {
 		if _, ok := ItemsByID[v.Id]; !ok {
@@ -75,6 +73,10 @@ func addToDatabase(newDB *proto.SimDatabase) {
 			SpellEffectsById[v.Id] = v
 		}
 	}
+}
+
+func AddToDatabase(newDB *proto.SimDatabase) {
+	addToDatabase(newDB)
 }
 
 type ReforgeStat struct {
@@ -163,11 +165,13 @@ type Item struct {
 	WeaponDamageMax  float64
 	SwingSpeed       float64
 
-	Name    string
-	Stats   stats.Stats // Stats applied to wearer
-	Quality proto.ItemQuality
-	SetName string // Empty string if not part of a set.
-	SetID   int32  // 0 if not part of a set.
+	Name          string
+	Stats         stats.Stats // Stats applied to wearer
+	Quality       proto.ItemQuality
+	Unique        bool
+	LimitCategory int32
+	SetName       string // Empty string if not part of a set.
+	SetID         int32  // 0 if not part of a set.
 
 	GemSockets  []proto.GemColor
 	SocketBonus stats.Stats
@@ -204,6 +208,8 @@ func ItemFromProto(pData *proto.SimItem) Item {
 		SetID:            pData.SetId,
 		ScalingOptions:   pData.ScalingOptions,
 		ItemEffects:      pData.ItemEffects,
+		Unique:           pData.Unique,
+		LimitCategory:    pData.LimitCategory,
 	}
 }
 
@@ -225,6 +231,7 @@ func (item *Item) ToItemSpecProto() *proto.ItemSpec {
 		Id:            item.ID,
 		RandomSuffix:  item.RandomSuffix.ID,
 		Enchant:       item.Enchant.EffectID,
+		Tinker:        item.Tinker.EffectID,
 		Gems:          MapSlice(item.Gems, func(gem Gem) int32 { return gem.ID }),
 		UpgradeStep:   item.UpgradeStep,
 		ChallengeMode: item.ChallengeMode,
@@ -261,6 +268,8 @@ type Enchant struct {
 	EnchantEffects []*proto.ItemEffect
 	Name           string         // Only needed for unit tests
 	Type           proto.ItemType // Only needed for unit tests
+	EnchantType    proto.EnchantType
+	ExtraTypes     []proto.ItemType
 }
 
 func EnchantFromProto(pData *proto.SimEnchant) Enchant {
@@ -270,6 +279,8 @@ func EnchantFromProto(pData *proto.SimEnchant) Enchant {
 		EnchantEffects: pData.EnchantEffects,
 		Name:           pData.Name,
 		Type:           pData.Type,
+		EnchantType:    pData.EnchantType,
+		ExtraTypes:     append([]proto.ItemType(nil), pData.ExtraTypes...),
 	}
 }
 
@@ -450,10 +461,62 @@ func (equipment *Equipment) containsGemInSlot(itemID int32, slot proto.ItemSlot)
 }
 
 func GetEnchantByEffectID(effectID int32) *Enchant {
-	if enchant, ok := EnchantsByEffectID[effectID]; ok {
-		return &enchant
+	dbMu.RLock()
+	enchant, ok := EnchantsByEffectID[effectID]
+	dbMu.RUnlock()
+	if !ok {
+		return nil
 	}
-	return nil
+	return &enchant
+}
+
+func GetGemByID(id int32) (Gem, bool) {
+	dbMu.RLock()
+	gem, ok := GemsByID[id]
+	dbMu.RUnlock()
+	return gem, ok
+}
+
+func GetReforgeStatByID(id int32) ReforgeStat {
+	dbMu.RLock()
+	r := ReforgeStatsByID[id]
+	dbMu.RUnlock()
+	return r
+}
+
+func GetSortedReforgeStatIDs() []int32 {
+	dbMu.RLock()
+	defer dbMu.RUnlock()
+	ids := make([]int32, 0, len(ReforgeStatsByID))
+	for id := range ReforgeStatsByID {
+		ids = append(ids, id)
+	}
+	slices.Sort(ids)
+	return ids
+}
+
+func GetConsumableByID(id int32) Consumable {
+	dbMu.RLock()
+	c := ConsumablesByID[id]
+	dbMu.RUnlock()
+	return c
+}
+
+func GetSpellEffectByID(id int32) *proto.SpellEffect {
+	dbMu.RLock()
+	e := SpellEffectsById[id]
+	dbMu.RUnlock()
+	return e
+}
+
+func GetItemEffectRandPropPointsByIlvl(ilvl int32) *ItemEffectRandPropPoints {
+	dbMu.RLock()
+	p, ok := ItemEffectRandPropPointsByIlvl[ilvl]
+	dbMu.RUnlock()
+	if !ok {
+		return nil
+	}
+	return &p
 }
 
 func (equipment *Equipment) ToEquipmentSpecProto() *proto.EquipmentSpec {
@@ -485,16 +548,32 @@ func ProtoToEquipmentSpec(es *proto.EquipmentSpec) EquipmentSpec {
 }
 
 func (item *Item) GetScalingState() proto.ItemLevelState {
-	if !item.ChallengeMode || item.ScalingOptions[int32(item.UpgradeStep)].Ilvl <= MaxChallengeModeIlvl {
+	if !item.ChallengeMode {
 		return item.UpgradeStep
-	} else {
-		return proto.ItemLevelState_ChallengeMode
 	}
+	option := item.ScalingOptions[int32(item.UpgradeStep)]
+	if option == nil || option.Ilvl <= MaxChallengeModeIlvl {
+		return item.UpgradeStep
+	}
+	return proto.ItemLevelState_ChallengeMode
 }
 
-// Returns the current scaling options for the item based on challenge mode and upgrade level
+// Returns the current scaling options for the item based on challenge mode and upgrade level.
+// If the exact upgrade step is not present, falls back to the highest available step below it.
 func (item *Item) GetEffectiveScalingOptions() *proto.ScalingItemProperties {
-	return item.ScalingOptions[int32(item.GetScalingState())]
+	target := int32(item.GetScalingState())
+	if option, ok := item.ScalingOptions[target]; ok {
+		return option
+	}
+	var bestKey int32 = math.MinInt32
+	var bestOpt *proto.ScalingItemProperties
+	for k, v := range item.ScalingOptions {
+		if k <= target && k > bestKey {
+			bestKey = k
+			bestOpt = v
+		}
+	}
+	return bestOpt
 }
 
 func NewItem(itemSpec ItemSpec) Item {
@@ -565,6 +644,10 @@ func NewItem(itemSpec ItemSpec) Item {
 		}
 	}
 	return item
+}
+
+func ValidateReforging(item *Item, reforging ReforgeStat) bool {
+	return validateReforging(item, reforging)
 }
 
 func validateReforging(item *Item, reforging ReforgeStat) bool {
@@ -753,10 +836,13 @@ func ItemEquipmentGemAndEnchantStats(item Item) stats.Stats {
 }
 
 func GetItemByID(id int32) *Item {
-	if item, ok := ItemsByID[id]; ok {
-		return &item
+	dbMu.RLock()
+	item, ok := ItemsByID[id]
+	dbMu.RUnlock()
+	if !ok {
+		return nil
 	}
-	return nil
+	return &item
 }
 
 func ItemTypeToSlot(it proto.ItemType) proto.ItemSlot {

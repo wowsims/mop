@@ -4,7 +4,7 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../i18n/config.js';
 import { BaseModal } from './components/base_modal.jsx';
 import { Component } from './components/component.js';
-import { NoticeLocalSim } from './components/individual_sim_ui/notice_local_sim.jsx';
+import { NoticeNativeSim } from './components/individual_sim_ui/notice_native_sim.jsx';
 import { NumberPicker } from './components/pickers/number_picker.js';
 import { ResultsViewer } from './components/results_viewer.jsx';
 import { SimHeader } from './components/sim_header.jsx';
@@ -177,7 +177,10 @@ export abstract class SimUI extends Component {
 		new SimTitleDropdown(titleElem, config.spec, { noDropdown: this.isWithinRaidSim });
 
 		this.simActionsContainer = this.rootElem.querySelector('.sim-sidebar-actions') as HTMLElement;
-		this.addNoticeForLocalSim();
+
+		this.sim.waitForInit().then(() => {
+			this.addNoticeForNativeSim();
+		});
 
 		this.iterationsPicker = new NumberPicker(this.simActionsContainer, this.sim, {
 			id: 'simui-iterations',
@@ -232,8 +235,8 @@ export abstract class SimUI extends Component {
 		}
 	}
 
-	addNoticeForLocalSim() {
-		new NoticeLocalSim(this.simActionsContainer);
+	addNoticeForNativeSim() {
+		new NoticeNativeSim(this.simActionsContainer, this.sim);
 	}
 
 	addAction(label: string, cssClass: string, onClick: (event: MouseEvent) => void): HTMLButtonElement {

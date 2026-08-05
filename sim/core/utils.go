@@ -313,7 +313,15 @@ func GetItemEffectRandomPropPointsForItem(itemID int32, state proto.ItemLevelSta
 }
 
 func (item *Item) GetItemEffectRandomPropPoints(state proto.ItemLevelState) float64 {
-	return float64(ItemEffectRandPropPointsByIlvl[item.ScalingOptions[int32(state)].Ilvl].RandPropPoints)
+	scaling := item.ScalingOptions[int32(state)]
+	if scaling == nil {
+		return 0
+	}
+	p := GetItemEffectRandPropPointsByIlvl(scaling.Ilvl)
+	if p == nil {
+		return 0
+	}
+	return float64(p.RandPropPoints)
 }
 
 type aggregator struct {

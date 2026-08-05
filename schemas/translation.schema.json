@@ -908,7 +908,7 @@
 				"healing_sim_disclaimer": {
 					"type": "string"
 				},
-				"notice_local_download": {
+				"notice_native_download": {
 					"type": "object",
 					"properties": {
 						"title": {
@@ -998,7 +998,7 @@
 				"description",
 				"basic_bis_disclaimer",
 				"healing_sim_disclaimer",
-				"notice_local_download",
+				"notice_native_download",
 				"crash_modal",
 				"unlaunched",
 				"notifications",
@@ -2750,7 +2750,7 @@
 				"description": {
 					"type": "string"
 				},
-				"download_local": {
+				"download_native": {
 					"type": "string"
 				},
 				"tabs": {
@@ -2845,9 +2845,6 @@
 						"iterations": {
 							"type": "string"
 						},
-						"fallback_gems": {
-							"type": "string"
-						},
 						"inherit_upgrades": {
 							"type": "object",
 							"properties": {
@@ -2860,6 +2857,41 @@
 							},
 							"additionalProperties": false,
 							"required": ["label", "tooltip"]
+						},
+						"use_legacy_bulk_sim": {
+							"type": "object",
+							"properties": {
+								"label": {
+									"type": "string"
+								},
+								"tooltip": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["label", "tooltip"]
+						},
+						"required_set_bonuses": {
+							"type": "object",
+							"properties": {
+								"label": {
+									"type": "string"
+								},
+								"none": {
+									"type": "string"
+								},
+								"require_2p": {
+									"type": "string"
+								},
+								"require_4p": {
+									"type": "string"
+								},
+								"available_pieces": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["label", "none", "require_2p", "require_4p", "available_pieces"]
 						},
 						"freeze_ring": {
 							"type": "object",
@@ -2922,8 +2954,9 @@
 						"combinations_count",
 						"combination_singular",
 						"iterations",
-						"fallback_gems",
 						"inherit_upgrades",
+						"use_legacy_bulk_sim",
+						"required_set_bonuses",
 						"freeze_ring",
 						"freeze_trinket",
 						"freeze_weapon",
@@ -2933,10 +2966,13 @@
 				"progress": {
 					"type": "object",
 					"properties": {
-						"total_combinations": {
+						"building_candidate_gear_sets": {
 							"type": "string"
 						},
-						"reforging_rounds": {
+						"restoring_reforges_from_cache": {
+							"type": "string"
+						},
+						"reforging_iteration_rounds": {
 							"type": "string"
 						},
 						"baseline_round": {
@@ -2945,15 +2981,39 @@
 						"refining_rounds": {
 							"type": "string"
 						},
+						"low_iteration_rounds": {
+							"type": "string"
+						},
+						"medium_iteration_rounds": {
+							"type": "string"
+						},
+						"high_iteration_rounds": {
+							"type": "string"
+						},
 						"iterations_complete": {
 							"type": "string"
 						},
 						"seconds_remaining": {
 							"type": "string"
+						},
+						"time_remaining": {
+							"type": "string"
 						}
 					},
 					"additionalProperties": false,
-					"required": ["total_combinations", "reforging_rounds", "baseline_round", "refining_rounds", "iterations_complete", "seconds_remaining"]
+					"required": [
+						"building_candidate_gear_sets",
+						"restoring_reforges_from_cache",
+						"reforging_iteration_rounds",
+						"baseline_round",
+						"refining_rounds",
+						"low_iteration_rounds",
+						"medium_iteration_rounds",
+						"high_iteration_rounds",
+						"iterations_complete",
+						"seconds_remaining",
+						"time_remaining"
+					]
 				},
 				"notifications": {
 					"type": "object",
@@ -3016,16 +3076,6 @@
 					"additionalProperties": false,
 					"required": ["run_simulation", "equip_button", "gear_equipped", "current_gear"]
 				},
-				"gem_selector": {
-					"type": "object",
-					"properties": {
-						"title": {
-							"type": "string"
-						}
-					},
-					"additionalProperties": false,
-					"required": ["title"]
-				},
 				"import_modal": {
 					"type": "object",
 					"properties": {
@@ -3047,7 +3097,7 @@
 			"required": [
 				"title",
 				"description",
-				"download_local",
+				"download_native",
 				"tabs",
 				"actions",
 				"search",
@@ -3057,7 +3107,6 @@
 				"warning",
 				"picker",
 				"results",
-				"gem_selector",
 				"import_modal"
 			]
 		},
@@ -8324,6 +8373,21 @@
 								"force_stat_proc": {
 									"type": "string"
 								},
+								"relative_stat_cap_precision": {
+									"type": "string"
+								},
+								"relative_stat_cap_precision_tooltip": {
+									"type": "string"
+								},
+								"precision_precise": {
+									"type": "string"
+								},
+								"precision_balanced": {
+									"type": "string"
+								},
+								"precision_fast": {
+									"type": "string"
+								},
 								"any": {
 									"type": "string"
 								},
@@ -8395,12 +8459,6 @@
 								},
 								"include_eotbp_socket_tooltip": {
 									"type": "string"
-								},
-								"limit_execution_time": {
-									"type": "string"
-								},
-								"limit_execution_time_tooltip": {
-									"type": "string"
 								}
 							},
 							"additionalProperties": false,
@@ -8432,9 +8490,7 @@
 								"include_gems",
 								"freeze_item_slots",
 								"include_eotbp_socket",
-								"include_eotbp_socket_tooltip",
-								"limit_execution_time",
-								"limit_execution_time_tooltip"
+								"include_eotbp_socket_tooltip"
 							]
 						}
 					},

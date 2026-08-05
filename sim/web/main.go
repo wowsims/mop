@@ -14,16 +14,15 @@ import (
 	"runtime/pprof"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"syscall"
 	"time"
 
-	uuid "github.com/google/uuid"
 	"github.com/pkg/browser"
 	dist "github.com/wowsims/mop/binary_dist"
 	"github.com/wowsims/mop/sim"
 	"github.com/wowsims/mop/sim/core"
 	proto "github.com/wowsims/mop/sim/core/proto"
+	reforgeoptimizer "github.com/wowsims/mop/sim/core/reforge_optimizer"
 	"github.com/wowsims/mop/sim/core/simsignals"
 
 	googleProto "google.golang.org/protobuf/proto"
@@ -82,6 +81,14 @@ func main() {
 		}()
 	}
 
+	// Warm up the reforge optimizer's HiGHS WASM runtime in the background so the one-time
+	// module compile happens at startup instead of stalling the first /reforgeOptimizeAsync request.
+	go func() {
+		if err := reforgeoptimizer.WarmUp(); err != nil {
+			fmt.Printf("reforge optimizer warm-up failed: %v\n", err)
+		}
+	}()
+
 	s := &server{
 		progMut:         sync.RWMutex{},
 		asyncProgresses: map[string]*asyncProgress{},
@@ -106,6 +113,12 @@ var handlers = map[string]apiHandler{
 	"/computeStats": {msg: func() googleProto.Message { return &proto.ComputeStatsRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
 		return core.ComputeStats(msg.(*proto.ComputeStatsRequest))
 	}},
+	"/bulkCombinationCount": {msg: func() googleProto.Message { return &proto.BulkCombinationCountRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
+		return BulkCombinationCount(msg.(*proto.BulkCombinationCountRequest))
+	}},
+	"/bulkCandidates": {msg: func() googleProto.Message { return &proto.BulkCandidatesRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
+		return BulkCandidates(msg.(*proto.BulkCandidatesRequest))
+	}},
 	"/abortById": {msg: func() googleProto.Message { return &proto.AbortRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
 		requestId := msg.(*proto.AbortRequest).RequestId
 		triggered := simsignals.AbortById(requestId)
@@ -120,6 +133,52 @@ var asyncAPIHandlers = map[string]asyncAPIHandler{
 	"/statWeightsAsync": {msg: func() googleProto.Message { return &proto.StatWeightsRequest{} }, handle: func(msg googleProto.Message, reporter chan *proto.ProgressMetrics, requestId string) {
 		core.StatWeightsAsync(msg.(*proto.StatWeightsRequest), reporter, requestId)
 	}},
+	"/bulkSimAsync": {msg: func() googleProto.Message { return &proto.BulkSimRequest{} }, handle: func(msg googleProto.Message, reporter chan *proto.ProgressMetrics, requestId string) {
+		BulkSimAsync(msg.(*proto.BulkSimRequest), reporter, requestId)
+	}},
+	"/reforgeOptimizeAsync": {msg: func() googleProto.Message { return &proto.ReforgeOptimizeRequest{} }, handle: func(msg googleProto.Message, reporter chan *proto.ProgressMetrics, requestId string) {
+		ReforgeOptimizeAsync(msg.(*proto.ReforgeOptimizeRequest), reporter, requestId)
+	}},
+}
+
+func ReforgeOptimizeAsync(request *proto.ReforgeOptimizeRequest, progress chan *proto.ProgressMetrics, requestId string) {
+	if requestId == "" {
+		requestId = request.GetRequestId()
+	}
+	signals, err := simsignals.RegisterWithId(requestId)
+	if err != nil {
+		progress <- &proto.ProgressMetrics{
+			FinalReforgeResult: &proto.ReforgeOptimizeResult{
+				Error: &proto.ErrorOutcome{Message: "Couldn't register for signal API: " + err.Error()},
+			},
+		}
+		close(progress)
+		return
+	}
+
+	go func() {
+		defer simsignals.UnregisterId(requestId)
+		defer close(progress)
+		// Heartbeat: the server watchdog in handleAsyncAPI drops the progress entry after
+		// 10 minutes of silence. Long-running optimizations (e.g. relative stat cap with
+		// a high solver timeout) must send periodic empty progress messages to keep it alive.
+		done := make(chan struct{})
+		go func() {
+			ticker := time.NewTicker(5 * time.Minute)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-ticker.C:
+					progress <- &proto.ProgressMetrics{}
+				case <-done:
+					return
+				}
+			}
+		}()
+		result := reforgeoptimizer.OptimizeAsync(request, signals)
+		close(done)
+		progress <- &proto.ProgressMetrics{FinalReforgeResult: result}
+	}()
 }
 
 type server struct {
@@ -134,25 +193,6 @@ type apiHandler struct {
 type asyncAPIHandler struct {
 	msg    func() googleProto.Message
 	handle func(googleProto.Message, chan *proto.ProgressMetrics, string)
-}
-
-type asyncProgress struct {
-	id             string
-	latestProgress atomic.Value
-}
-
-func (s *server) addNewSim() *asyncProgress {
-	newID := uuid.NewString()
-	simProgress := &asyncProgress{
-		id: newID,
-	}
-	simProgress.latestProgress.Store(&proto.ProgressMetrics{})
-
-	s.progMut.Lock()
-	s.asyncProgresses[newID] = simProgress
-	s.progMut.Unlock()
-
-	return simProgress
 }
 
 func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
@@ -170,8 +210,11 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 
 	msg := handler.msg()
 	if err := googleProto.Unmarshal(body, msg); err != nil {
-		log.Printf("Failed to parse request: %s", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
+		message := fmt.Sprintf("Failed to parse %s request: %s (%s)", endpoint, err.Error(), protoParsePreview(body))
+		log.Print(message)
+		simProgress := s.addNewSim()
+		simProgress.latestProgress.Store(asyncAPIParseErrorProgress(endpoint, message))
+		s.writeAsyncAPIResult(w, simProgress.id)
 		return
 	}
 
@@ -199,18 +242,36 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 				if progMetric == nil {
 					return
 				}
-				simProgress.latestProgress.Store(progMetric)
-				if progMetric.FinalRaidResult != nil || progMetric.FinalWeightResult != nil {
+				if progMetric.BulkStage == proto.BulkSimStage_BulkSimStageReforge && len(progMetric.OptimizedCandidates) > 0 {
+					simProgress.appendPendingOptimizedCandidates(progMetric.OptimizedCandidates)
+					// Build the candidate-free copy directly: cloning the message first would
+					// deep-copy the whole candidate batch just to drop it again.
+					simProgress.latestProgress.Store(&proto.ProgressMetrics{
+						BulkStage:           progMetric.BulkStage,
+						CompletedSims:       progMetric.CompletedSims,
+						TotalSims:           progMetric.TotalSims,
+						CompletedIterations: progMetric.CompletedIterations,
+						TotalIterations:     progMetric.TotalIterations,
+						Dps:                 progMetric.Dps,
+						Hps:                 progMetric.Hps,
+						PresimRunning:       progMetric.PresimRunning,
+						FinalBulkSimResult:  progMetric.FinalBulkSimResult,
+					})
+				} else {
+					simProgress.latestProgress.Store(progMetric)
+				}
+				if progMetric.FinalRaidResult != nil || progMetric.FinalWeightResult != nil || progMetric.FinalBulkSimResult != nil || progMetric.FinalReforgeResult != nil {
 					return
 				}
 			}
 		}
 	}()
 
-	protoResult := &proto.AsyncAPIResult{
-		ProgressId: simProgress.id,
-	}
+	s.writeAsyncAPIResult(w, simProgress.id)
+}
 
+func (s *server) writeAsyncAPIResult(w http.ResponseWriter, progressId string) {
+	protoResult := &proto.AsyncAPIResult{ProgressId: progressId}
 	outbytes, err := googleProto.Marshal(protoResult)
 	if err != nil {
 		log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
@@ -220,6 +281,22 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "application/x-protobuf")
 	w.Write(outbytes)
+}
+
+func asyncAPIParseErrorProgress(endpoint string, message string) *proto.ProgressMetrics {
+	errorOutcome := &proto.ErrorOutcome{Message: message}
+	switch endpoint {
+	case "/raidSimAsync":
+		return &proto.ProgressMetrics{FinalRaidResult: &proto.RaidSimResult{Error: errorOutcome}}
+	case "/statWeightsAsync":
+		return &proto.ProgressMetrics{FinalWeightResult: &proto.StatWeightsResult{Error: errorOutcome}}
+	case "/bulkSimAsync":
+		return &proto.ProgressMetrics{FinalBulkSimResult: &proto.BulkSimResult{Error: errorOutcome}}
+	case "/reforgeOptimizeAsync":
+		return &proto.ProgressMetrics{FinalReforgeResult: &proto.ReforgeOptimizeResult{Error: errorOutcome}}
+	default:
+		return &proto.ProgressMetrics{FinalRaidResult: &proto.RaidSimResult{Error: errorOutcome}}
+	}
 }
 
 func (s *server) setupAsyncServer() {
@@ -236,7 +313,7 @@ func (s *server) setupAsyncServer() {
 		}
 		msg := &proto.AsyncAPIResult{}
 		if err := googleProto.Unmarshal(body, msg); err != nil {
-			log.Printf("Failed to parse request: %s", err.Error())
+			log.Printf("Failed to parse /asyncProgress request: %s (%s)", err.Error(), protoParsePreview(body))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -250,6 +327,19 @@ func (s *server) setupAsyncServer() {
 			return
 		}
 		latest := progress.latestProgress.Load().(*proto.ProgressMetrics)
+		pendingOptimizedCandidates := progress.takePendingOptimizedCandidates()
+		if latest.FinalBulkSimResult != nil && len(latest.FinalBulkSimResult.OptimizedCandidates) > 0 {
+			remainingOptimizedCandidates := progress.filterUndeliveredOptimizedCandidates(latest.FinalBulkSimResult.OptimizedCandidates)
+			latestWithFilteredFinal := googleProto.Clone(latest).(*proto.ProgressMetrics)
+			latestWithFilteredFinal.FinalBulkSimResult = googleProto.Clone(latest.FinalBulkSimResult).(*proto.BulkSimResult)
+			latestWithFilteredFinal.FinalBulkSimResult.OptimizedCandidates = remainingOptimizedCandidates
+			latest = latestWithFilteredFinal
+		}
+		if len(pendingOptimizedCandidates) > 0 {
+			latestWithPending := googleProto.Clone(latest).(*proto.ProgressMetrics)
+			latestWithPending.OptimizedCandidates = pendingOptimizedCandidates
+			latest = latestWithPending
+		}
 		outbytes, err := googleProto.Marshal(latest)
 		if err != nil {
 			log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
@@ -258,7 +348,7 @@ func (s *server) setupAsyncServer() {
 		}
 
 		// If this was the last result, delete the cache for this simulation.
-		if latest.FinalRaidResult != nil || latest.FinalWeightResult != nil {
+		if latest.FinalRaidResult != nil || latest.FinalWeightResult != nil || latest.FinalBulkSimResult != nil || latest.FinalReforgeResult != nil {
 			s.progMut.Lock()
 			delete(s.asyncProgresses, msg.ProgressId)
 			s.progMut.Unlock()
@@ -267,6 +357,12 @@ func (s *server) setupAsyncServer() {
 		w.Write(outbytes)
 	})))
 }
+
+func protoParsePreview(body []byte) string {
+	previewLen := min(len(body), 16)
+	return fmt.Sprintf("len=%d first_bytes=% x ascii=%q", len(body), body[:previewLen], body[:previewLen])
+}
+
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
