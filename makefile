@@ -279,7 +279,7 @@ fmt: tsfmt
 
 .PHONY: tsfmt
 tsfmt:
-	npx prettier "./ui/**/*.{js,jsx,ts,tsx,scss,css,json}" --write
+	npx oxfmt ui
 
 # one time setup to install pre-commit hook for gofmt and npm install needed packages
 setup:

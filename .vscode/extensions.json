@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"oxc.oxc-vscode",
-		"esbenp.prettier-vscode",
 		"stylelint.vscode-stylelint",
 		"visualstudioexptteam.vscodeintellicode",
 		"editorconfig.editorconfig",

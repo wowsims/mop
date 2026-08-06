@@ -1,11 +1,10 @@
 const kebabCasePattern = /^([a-z][a-z0-9]*)(-[a-z0-9]+)*$/;
 
 export default {
-	plugins: ['stylelint-scss', 'stylelint-prettier', '@namics/stylelint-bem'],
+	plugins: ['stylelint-scss', '@namics/stylelint-bem'],
 	customSyntax: 'postcss-scss',
 	ignoreFiles: ['node_modules'],
 	rules: {
-		'prettier/prettier': true,
 		'max-nesting-depth': [6, { ignore: ['pseudo-classes'] }],
 		'no-empty-source': null,
 		'no-descending-specificity': null,
