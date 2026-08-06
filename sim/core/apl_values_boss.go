@@ -55,6 +55,13 @@ func (value *APLValueBossSpellTimeToReady) String() string {
 	return fmt.Sprintf("Boss Spell Time to Ready(%s)", value.spell.ActionID)
 }
 
+func (rot *APLRotation) newValueBossSpellIsKnown(config *proto.APLValueBossSpellIsKnown, uuid *proto.UUID) APLValue {
+	spell := rot.GetTargetAPLSpell(config.SpellId, rot.GetTargetUnit(config.TargetUnit))
+	return rot.newValueConst(&proto.APLValueConst{
+		Val: Ternary(spell != nil, "true", "false"),
+	}, uuid)
+}
+
 type APLValueBossCurrentTarget struct {
 	DefaultAPLValueImpl
 	player *Unit

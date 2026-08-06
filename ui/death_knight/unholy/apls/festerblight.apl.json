@@ -6,6 +6,7 @@
 		{"action":{"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}},"doAtValue":{"const":{"val":"-0.5s"}}}
 	],
 	"priorityList": [
+		{"action":{"condition":{"or":{"vals":[{"and":{"vals":[{"bossSpellIsKnown":{"spellId":{"spellId":143857}}},{"cmp":{"op":"OpLe","lhs":{"bossSpellTimeToReady":{"spellId":{"spellId":143857}}},"rhs":{"const":{"val":"5s"}}}}]}},{"not":{"val":{"bossSpellIsKnown":{"spellId":{"spellId":143857}}}}}]}},"castSpell":{"spellId":{"spellId":48707}}}},
 		{"action":{"autocastOtherCooldowns":{}}},
 		{"action":{"condition":{"and":{"vals":[{"auraIsKnown":{"auraId":{"spellId":138759}}},{"cmp":{"op":"OpLe","lhs":{"auraRemainingTime":{"auraId":{"spellId":138759}}},"rhs":{"math":{"op":"OpAdd","lhs":{"inputDelay":{}},"rhs":{"const":{"val":"1s"}}}}}},{"cmp":{"op":"OpGt","lhs":{"auraRemainingTime":{"auraId":{"spellId":138759}}},"rhs":{"const":{"val":"1s"}}}}]}},"wait":{"duration":{"inputDelay":{}}}}},
 		{"action":{"groupReference":{"groupName":"Tapes and CDs Feathey"}}},

@@ -38,11 +38,11 @@ export const DEFAULT_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.73,
-			[Stat.StatExpertiseRating]: 0.73,
-			[Stat.StatCritRating]: 0.65,
-			[Stat.StatHasteRating]: 0.52,
-			[Stat.StatMasteryRating]: 0.51,
+			[Stat.StatHitRating]: 1.15,
+			[Stat.StatExpertiseRating]: 1.13,
+			[Stat.StatCritRating]: 0.68,
+			[Stat.StatHasteRating]: 0.64,
+			[Stat.StatMasteryRating]: 0.61,
 			[Stat.StatAttackPower]: 0.3,
 		},
 		{
@@ -95,8 +95,6 @@ export const P5_PRESET = PresetUtils.makePresetBuildFromJSON('P5', Spec.SpecUnho
 
 export const DefaultOptions = UnholyDeathKnight_Options.create({
 	classOptions: {},
-	avgAmsHit: 170000,
-	avgAmsSuccessRate: 1,
 	amsNumTicks: 1,
 });
 

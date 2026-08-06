@@ -4300,6 +4300,19 @@
 									"additionalProperties": false,
 									"required": ["label", "tooltip"]
 								},
+								"boss_spell_known": {
+									"type": "object",
+									"properties": {
+										"label": {
+											"type": "string"
+										},
+										"tooltip": {
+											"type": "string"
+										}
+									},
+									"additionalProperties": false,
+									"required": ["label", "tooltip"]
+								},
 								"unit_is_moving": {
 									"type": "object",
 									"properties": {
@@ -5631,6 +5644,7 @@
 								"boss_cast",
 								"boss_cast_time_to_ready",
 								"boss_current_target",
+								"boss_spell_known",
 								"unit_is_moving",
 								"distance_to_unit",
 								"current_health",
