@@ -58,7 +58,7 @@ $(OUT_DIR)/bundle/.dirstamp: \
   tsconfig.json \
   ui/core/index.ts \
   ui/core/proto/api.ts
-	node_modules/typescript-go/bin/tsc --noEmit
+	node_modules/typescript/bin/tsc --noEmit
 	npx tsx vite.build-workers.mts
 	npx vite build
 	touch $@
