@@ -118,6 +118,7 @@ import {
 	APLValueDotTimeToNextTick,
 	APLValueSpellInFlight,
 	APLValueBossCurrentTarget,
+	APLValueBossSpellIsKnown,
 	APLValueSpellIsCasting,
 	APLValueRemainingCastTime,
 	APLValueActionGroupUsed,
@@ -703,6 +704,14 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		newValue: APLValueBossCurrentTarget.create,
 		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
 		fields: [AplHelpers.unitFieldConfig('targetUnit', 'targets')],
+	}),
+	bossSpellIsKnown: inputBuilder({
+		label: i18n.t('rotation_tab.apl.values.boss_spell_known.label'),
+		submenu: ['boss'],
+		shortDescription: i18n.t('rotation_tab.apl.values.boss_spell_known.tooltip'),
+		newValue: APLValueBossSpellIsKnown.create,
+		includeIf: (_: Player<any>, isPrepull: boolean) => !isPrepull,
+		fields: [AplHelpers.unitFieldConfig('targetUnit', 'targets'), AplHelpers.actionIdFieldConfig('spellId', 'spells', 'targetUnit', 'currentTarget')],
 	}),
 
 	// Unit

@@ -101,6 +101,11 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 				if hasRegenerativeMagic && antiMagicShellAura.ShieldStrength > 0 {
 					remainingFraction := antiMagicShellAura.ShieldStrength / currentShield
 					antiMagicShellSpell.CD.Reduce(time.Duration(0.5 * remainingFraction * float64(antiMagicShellSpell.CD.TimeToReady(sim))))
+					// CD.Reduce() changes readiness outside the normal TryActivate() path, so the
+					// cached minReady bailout in getFirstReadyMCD must be refreshed here -- otherwise
+					// autocastOtherCooldowns keeps short-circuiting past AMS until the pre-reduction
+					// ready time, silently eating the discount this glyph is supposed to grant.
+					dk.UpdateMajorCooldowns()
 				}
 			},
 		},
@@ -143,11 +148,21 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 		},
 	})
 
-	// When the user models AMS damage intake, autocast the shell as a low-priority DPS
-	// cooldown once Runic Power is nearly empty, so the RP from the absorbed magic damage
-	// tops the bar back up without overcapping. Registered only when intake is configured,
-	// so the shell stays out of the rotation entirely when the feature is disabled. It is
-	// cast through the autocastOtherCooldowns action present in every DPS preset.
+	// Autocast the shell as a low-priority DPS cooldown, cast through the
+	// autocastOtherCooldowns action present in every DPS preset. Only registered when the user
+	// has opted into damage-intake modeling (AvgAMSHit > 0): core.AddMajorCooldown has real side
+	// effects beyond just enabling ShouldActivate (it unconditionally ORs SpellFlagMCD onto the
+	// spell, sim/core/major_cooldown.go), which measurably changed Blood's golden-output tests
+	// even with ShouldActivate always returning false -- so this must stay a real conditional
+	// registration, not "always register but never activate."
+	//
+	// Reactive casting against a specific boss's real abilities (e.g. Malkorok) isn't handled
+	// here -- write it directly into the APL instead, using the existing "Boss Spell Is
+	// Casting" / "Boss Spell Time to Ready" condition nodes against that boss's SpellFlagAPL
+	// spells as a manual "Cast Spell" action (see ui/death_knight/blood/apls/iron_juggernaut.apl.json
+	// and the equivalent Frost/Unholy default rotations for the pattern). A manual "Cast Spell"
+	// action's APLActionCastSpell.IsReady never looks at ShouldActivate, so a user-authored
+	// reactive rule like that always takes priority over this flat heuristic.
 	if dk.Inputs.AvgAMSHit > 0 {
 		dk.AddMajorCooldown(core.MajorCooldown{
 			Spell:    antiMagicShellSpell,

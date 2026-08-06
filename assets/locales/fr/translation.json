@@ -1219,6 +1219,10 @@
 					"label": "Est en train de tanker",
 					"tooltip": "Vrai si le joueur est actuellement en train de tanker"
 				},
+				"boss_spell_known": {
+					"label": "Sort de boss connu",
+					"tooltip": "<b>Vrai</b> si la cible possède actuellement le sort spécifié, sinon <b>Faux</b>."
+				},
 				"unit_is_moving": {
 					"label": "Unité en mouvement",
 					"tooltip": "Vrai si l'unité se déplace"
