@@ -2417,9 +2417,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p5_bis-DefaultTalents-Basic-default-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 2.69569280705e+06
-  tps: 1.00647895794e+06
-  hps: 10041.0336
+  dps: 2.70000222609e+06
+  tps: 1.00822885828e+06
+  hps: 10018.65326
  }
 }
 dps_results: {

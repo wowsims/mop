@@ -26,12 +26,12 @@ export const TWOHAND_OBLITERATE_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.52,
-			[Stat.StatExpertiseRating]: 0.52,
-			[Stat.StatHasteRating]: 0.51,
-			[Stat.StatCritRating]: 0.44,
-			[Stat.StatAttackPower]: 0.36,
-			[Stat.StatMasteryRating]: 0.35,
+			[Stat.StatHitRating]: 1.67,
+			[Stat.StatExpertiseRating]: 1.59,
+			[Stat.StatHasteRating]: 0.49,
+			[Stat.StatCritRating]: 0.62,
+			[Stat.StatAttackPower]: 0.37,
+			[Stat.StatMasteryRating]: 0.56,
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 2.95,
@@ -44,12 +44,12 @@ export const MASTERFROST_EP_PRESET = PresetUtils.makePresetEpWeights(
 	Stats.fromMap(
 		{
 			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.84,
-			[Stat.StatExpertiseRating]: 0.83,
-			[Stat.StatMasteryRating]: 0.53,
-			[Stat.StatHasteRating]: 0.4,
+			[Stat.StatHitRating]: 1.54,
+			[Stat.StatExpertiseRating]: 1.55,
+			[Stat.StatMasteryRating]: 0.68,
+			[Stat.StatHasteRating]: 0.44,
 			[Stat.StatAttackPower]: 0.37,
-			[Stat.StatCritRating]: 0.52,
+			[Stat.StatCritRating]: 0.53,
 		},
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 1.58,
@@ -78,8 +78,6 @@ export const DefaultTalents = {
 
 export const DefaultOptions = FrostDeathKnight_Options.create({
 	classOptions: {},
-	avgAmsHit: 170000,
-	avgAmsSuccessRate: 1,
 	amsNumTicks: 1,
 });
 

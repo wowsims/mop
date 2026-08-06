@@ -1231,6 +1231,10 @@
 					"label": "Is Tanking",
 					"tooltip": "True if the player is currently tanking"
 				},
+				"boss_spell_known": {
+					"label": "Boss Spell Known",
+					"tooltip": "<b>True</b> if the target currently has the specified spell, otherwise <b>False</b>."
+				},
 				"unit_is_moving": {
 					"label": "Unit Is Moving",
 					"tooltip": "True if the unit is moving"

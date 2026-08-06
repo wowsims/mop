@@ -238,13 +238,20 @@ func (target *Target) Enable(sim *Simulation) {
 	target.AutoAttacks.EnableAutoSwing(sim)
 
 	// Randomize GCD and swing timings to prevent fake APL-Haste couplings.
-	target.ExtendGCDUntil(sim, sim.CurrentTime+DurationFromSeconds(sim.RandomFloat("Specials Timing")*BossGCD.Seconds()))
+	target.RandomizeGCDTiming(sim)
 	target.AutoAttacks.RandomizeMeleeTiming(sim)
 
 	if !target.IsEnabled() {
 		target.enabled = true
 		sim.Encounter.addActiveTarget(target)
 	}
+}
+
+// RandomizeGCDTiming rolls this target's GCD forward by a random offset within one boss-GCD
+// tick. Only called automatically from Enable(); AIs whose Reset() re-derives cast timing each
+// iteration should call it again from Reset() too.
+func (target *Target) RandomizeGCDTiming(sim *Simulation) {
+	target.ExtendGCDUntil(sim, sim.CurrentTime+DurationFromSeconds(sim.RandomFloat("Specials Timing")*BossGCD.Seconds()))
 }
 
 func (sim *Simulation) EnableTargetUnit(targetUnit *Unit) {
