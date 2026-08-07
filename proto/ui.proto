@@ -372,6 +372,7 @@ message ReforgeSettings {
 	UIStat relative_stat_cap_stat = 8;
 	UnitStats stat_caps = 9 ;
 	UnitStats breakpoint_limits = 10;
+	bool avoid_gem_hit_expertise = 11;
 }
 
 message StatCapConfig {

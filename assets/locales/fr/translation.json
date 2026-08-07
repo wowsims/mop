@@ -2394,7 +2394,9 @@
 				"include_eotbp_socket": "Inclure le socket EotBP",
 				"include_eotbp_socket_tooltip": "Permet à l'optimiseur d'inclure également le socket \"Œil du Prince Noir\" dans l'optimisation.",
 				"limit_execution_time": "Limiter le temps d'exécution",
-				"limit_execution_time_tooltip": "Si coché, le solveur se terminera en erreur si le temps de calcul total dépasse 30 secondes. Si décoché, le temps de calcul total sera plafonné à 1 heure."
+				"limit_execution_time_tooltip": "Si coché, le solveur se terminera en erreur si le temps de calcul total dépasse 30 secondes. Si décoché, le temps de calcul total sera plafonné à 1 heure.",
+				"avoid_gem_hit_expertise": "Éviter les gemmes de Toucher/Expertise",
+				"avoid_gem_hit_expertise_tooltip": "Empêche l'optimiseur d'utiliser des gemmes pour combler les besoins en Toucher/Expertise, en privilégiant les retouches. Les gemmes de Toucher/Expertise seront tout de même utilisées si un emplacement n'a aucune autre option viable (ex. Jade sauvage du Sensei)."
 			}
 		},
 		"header": {

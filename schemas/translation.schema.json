@@ -8415,6 +8415,12 @@
 								},
 								"limit_execution_time_tooltip": {
 									"type": "string"
+								},
+								"avoid_gem_hit_expertise": {
+									"type": "string"
+								},
+								"avoid_gem_hit_expertise_tooltip": {
+									"type": "string"
 								}
 							},
 							"additionalProperties": false,
@@ -8448,7 +8454,9 @@
 								"include_eotbp_socket",
 								"include_eotbp_socket_tooltip",
 								"limit_execution_time",
-								"limit_execution_time_tooltip"
+								"limit_execution_time_tooltip",
+								"avoid_gem_hit_expertise",
+								"avoid_gem_hit_expertise_tooltip"
 							]
 						}
 					},

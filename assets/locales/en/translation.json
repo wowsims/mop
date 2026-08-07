@@ -2393,7 +2393,9 @@
 				"include_eotbp_socket": "Include EotBP Socket",
 				"include_eotbp_socket_tooltip": "Allows the optimiser to also include the \"Eye of the Black Prince\" socket in the optimization.",
 				"limit_execution_time": "Limit execution time",
-				"limit_execution_time_tooltip": "If checked, the solver will error out if the total computation time exceeds 30 seconds. If unchecked, then total computation time will be capped at 1 hour instead."
+				"limit_execution_time_tooltip": "If checked, the solver will error out if the total computation time exceeds 30 seconds. If unchecked, then total computation time will be capped at 1 hour instead.",
+				"avoid_gem_hit_expertise": "Avoid Hit/Expertise gems",
+				"avoid_gem_hit_expertise_tooltip": "Prevents the optimizer from using gems to fill Hit/Expertise requirements, favoring Reforges instead. Hit/Expertise gems will still be used when a socket has no other viable gem option (e.g. Sensei's Wild Jade)."
 			}
 		},
 		"header": {

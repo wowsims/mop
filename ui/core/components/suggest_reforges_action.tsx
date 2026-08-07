@@ -242,6 +242,7 @@ export class ReforgeOptimizer {
 	protected statSelectionPresets: ReforgeOptimizerOptions['statSelectionPresets'];
 	protected includeGems = false;
 	protected includeEOTBPGemSocket = false;
+	protected avoidGemHitExpertise = false;
 	protected freezeItemSlots = false;
 	protected frozenItemSlots = new Set<ItemSlot>();
 	protected includeTimeout = true;
@@ -258,6 +259,7 @@ export class ReforgeOptimizer {
 
 	readonly includeGemsChangeEmitter = new TypedEvent<void>('IncludeGems');
 	readonly includeEOTBPGemSocketChangeEmitter = new TypedEvent<void>('IncludeEOTBPGemSocket');
+	readonly avoidGemHitExpertiseChangeEmitter = new TypedEvent<void>('AvoidGemHitExpertise');
 	readonly includeTimeoutChangeEmitter = new TypedEvent<void>('IncludeTimeout');
 	readonly statCapsChangeEmitter = new TypedEvent<void>('StatCaps');
 	readonly useCustomEPValuesChangeEmitter = new TypedEvent<void>('UseCustomEPValues');
@@ -415,6 +417,7 @@ export class ReforgeOptimizer {
 			[
 				this.includeGemsChangeEmitter,
 				this.includeEOTBPGemSocketChangeEmitter,
+				this.avoidGemHitExpertiseChangeEmitter,
 				this.includeTimeoutChangeEmitter,
 				this.statCapsChangeEmitter,
 				this.useCustomEPValuesChangeEmitter,
@@ -714,6 +717,13 @@ export class ReforgeOptimizer {
 		}
 	}
 
+	setAvoidGemHitExpertise(eventID: EventID, newValue: boolean) {
+		if (this.avoidGemHitExpertise !== newValue) {
+			this.avoidGemHitExpertise = newValue;
+			this.avoidGemHitExpertiseChangeEmitter.emit(eventID);
+		}
+	}
+
 	setFreezeItemSlots(eventID: EventID, newValue: boolean) {
 		if (this.freezeItemSlots !== newValue) {
 			this.freezeItemSlots = newValue;
@@ -865,6 +875,26 @@ export class ReforgeOptimizer {
 					},
 				});
 
+				const avoidGemHitExpertiseInput = new BooleanPicker(null, this.player, {
+					extraCssClasses: ['mb-2'],
+					id: 'reforge-optimizer-avoid-gem-hit-expertise',
+					label: i18n.t('sidebar.buttons.suggest_reforges.avoid_gem_hit_expertise'),
+					labelTooltip: i18n.t('sidebar.buttons.suggest_reforges.avoid_gem_hit_expertise_tooltip'),
+					inline: true,
+					changedEvent: () => TypedEvent.onAny([this.includeGemsChangeEmitter, this.avoidGemHitExpertiseChangeEmitter]),
+					getValue: () => this.avoidGemHitExpertise,
+					showWhen: () => this.includeGems,
+					setValue: (eventID, _player, newValue) => {
+						trackEvent({
+							action: 'settings',
+							category: 'reforging',
+							label: 'avoid_gem_hit_expertise',
+							value: newValue,
+						});
+						this.setAvoidGemHitExpertise(eventID, newValue);
+					},
+				});
+
 				const freezeItemSlotsInput = new BooleanPicker(null, this.player, {
 					extraCssClasses: ['mb-2'],
 					id: 'reforge-optimizer-freeze-item-slots',
@@ -915,6 +945,7 @@ export class ReforgeOptimizer {
 						{this.buildSoftCapBreakpointsLimiter({ useSoftCapBreakpointsInput })}
 						{includeGemsInput.rootElem}
 						{includeEOTBPGemSocket.rootElem}
+						{avoidGemHitExpertiseInput.rootElem}
 						{includeTimeoutInput.rootElem}
 						{freezeItemSlotsInput.rootElem}
 						{this.buildFrozenSlotsInputs()}
@@ -1667,6 +1698,22 @@ export class ReforgeOptimizer {
 			// Sort from highest to lowest pre-cap EP.
 			filteredGemDataForColor.sort((a, b) => b.coefficients.get('score')! - a.coefficients.get('score')!);
 
+			// When avoiding gem-sourced Hit/Expertise, drop candidates that provide either stat so the
+			// solver fills those stats via Reforges instead. Only do so if a non-Hit/Expertise gem is
+			// actually available for this socket color; otherwise fall back to the full candidate list
+			// (e.g. green sockets where the only good option is a hybrid like Sensei's Wild Jade).
+			let candidateGemDataForColor = filteredGemDataForColor;
+
+			if (this.avoidGemHitExpertise) {
+				const nonHitExpertiseGems = filteredGemDataForColor.filter(
+					({ gem }) => !gem.stats[Stat.StatHitRating] && !gem.stats[Stat.StatExpertiseRating],
+				);
+
+				if (nonHitExpertiseGems.length > 0) {
+					candidateGemDataForColor = nonHitExpertiseGems;
+				}
+			}
+
 			// Go down the list and include all gems until we find the highest EP option with zero capped stats.
 			let maxGemOptionsForStat: number = this.isTankSpec ? 3 : 4;
 
@@ -1692,7 +1739,7 @@ export class ReforgeOptimizer {
 			let numUncappedNormalGems = 0;
 			const numGemOptionsForStat = new Map<string, number>();
 
-			for (const gemData of filteredGemDataForColor) {
+			for (const gemData of candidateGemDataForColor) {
 				const cappedStatKeys = ReforgeOptimizer.getCappedStatKeys(gemData.coefficients, reforgeCaps, reforgeSoftCaps);
 				const isRedundantGem = cappedStatKeys.some(statKey => (numGemOptionsForStat.get(statKey) || 0) == maxGemOptionsForStat);
 
@@ -2386,6 +2433,7 @@ export class ReforgeOptimizer {
 			this.setIncludeTimeout(eventID, proto.includeTimeout);
 			this.setIncludeGems(eventID, proto.includeGems);
 			this.setIncludeEOTBPGemSocket(eventID, proto.includeEotbGemSocket);
+			this.setAvoidGemHitExpertise(eventID, proto.avoidGemHitExpertise);
 			this.setFreezeItemSlots(eventID, proto.freezeItemSlots);
 			this.setFrozenItemSlots(eventID, proto.frozenItemSlots);
 			this.setBreakpointLimits(eventID, Stats.fromProto(proto.breakpointLimits));
@@ -2402,6 +2450,7 @@ export class ReforgeOptimizer {
 			includeTimeout: this.includeTimeout,
 			includeGems: this.includeGems,
 			includeEotbGemSocket: this.includeEOTBPGemSocket,
+			avoidGemHitExpertise: this.avoidGemHitExpertise,
 			freezeItemSlots: this.freezeItemSlots,
 			frozenItemSlots: [...this.frozenItemSlots],
 			breakpointLimits: this.breakpointLimits.toProto(),
