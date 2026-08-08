@@ -2,7 +2,8 @@ import clsx from 'clsx';
 
 const Element = ({ children, buttonClassName, linkRef, ...props }: SimToolbarItemProps) =>
 	'href' in props && props.href ? (
-		<a ref={linkRef as JSX.HTMLElementProps<'a'>['ref']} href={props.href} target="_blank" className={clsx(buttonClassName)}>
+		// The 'a' tag exists in both the HTML and MathML tag maps, so TS intersects their ref types; the runtime just passes the ref through.
+		<a ref={linkRef as never} href={props.href} target="_blank" className={clsx(buttonClassName)}>
 			{children}
 		</a>
 	) : (

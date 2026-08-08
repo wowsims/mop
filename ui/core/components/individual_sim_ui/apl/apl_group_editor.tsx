@@ -93,7 +93,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 			extraActions: [
 				AplHelpers.extractToVariableAction(
 					player,
-					(actionIndex) => this.getSourceValue()?.actions?.[actionIndex]?.action?.condition,
+					actionIndex => this.getSourceValue()?.actions?.[actionIndex]?.action?.condition,
 					(actionIndex, ref) => {
 						this.getSourceValue()!.actions[actionIndex].action!.condition = ref;
 					},

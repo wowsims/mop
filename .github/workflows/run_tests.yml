@@ -3,17 +3,38 @@ on:
     pull_request:
         branches:
             - master
+    # Reusable from other workflows (deploy, release). Their runs on master also
+    # prime the Go/npm caches that pull request runs restore from.
+    workflow_call:
+        inputs:
+            ref:
+                description: 'Commit reference to test (defaults to the triggering ref)'
+                required: false
+                type: string
 jobs:
-    build-and-test:
+    build-ui:
         runs-on: ubuntu-latest
+        timeout-minutes: 20
         steps:
+            - name: Checkout 🛎️
+              uses: actions/checkout@v5
+              with:
+                  ref: ${{ inputs.ref }}
+
+            - name: Check commit blacklist 🔎
+              run: |
+                  if grep -q '"rollup/wasm-node"' package.json; then
+                    echo "Error: 'rollup/wasm-node' found in package.json"
+                    exit 1
+                  fi
+
             - name: Install Go
-              uses: actions/setup-go@v2
+              uses: actions/setup-go@v6
               with:
                   go-version: 1.25.x
 
             - name: Install Protoc
-              uses: arduino/setup-protoc@v1
+              uses: arduino/setup-protoc@v3
               with:
                   version: 3.x
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -22,19 +43,10 @@ jobs:
               run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
             - name: Install Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v5
               with:
                   node-version: 22
-
-            - name: Checkout 🛎️
-              uses: actions/checkout@v5
-
-            - name: Check commit blacklist 🔎
-              run: |
-                  if grep -q '"rollup/wasm-node"' package.json; then
-                    echo "Error: 'rollup/wasm-node' found in package.json"
-                    exit 1
-                  fi
+                  cache: npm
 
             - name: Test Locales 💬
               run: |
@@ -45,6 +57,48 @@ jobs:
               run: |
                   make dist/mop/.dirstamp
 
-            - name: Test
+    test:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        steps:
+            - name: Checkout 🛎️
+              uses: actions/checkout@v5
+              with:
+                  ref: ${{ inputs.ref }}
+
+            - name: Install Go
+              uses: actions/setup-go@v6
+              with:
+                  go-version: 1.25.x
+
+            - name: Install Protoc
+              uses: arduino/setup-protoc@v3
+              with:
+                  version: 3.x
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Protoc Go plugin
+              run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
+            - name: Install Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 22
+                  cache: npm
+
+            # TestProtoVersioning in sim/core shells out to `npx buf`, which needs node_modules.
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Generate proto and dist stubs
+              run: make sim/core/proto/api.pb.go binary_dist/dist.go
+
+            - name: Test (shard ${{ matrix.shard }})
+              env:
+                  GOARCH: amd64
               run: |
-                  make test
+                  go list ./sim/... | awk 'NR % 8 == ${{ matrix.shard }}' | xargs -r go test --tags=with_db

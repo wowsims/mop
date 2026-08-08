@@ -74,10 +74,9 @@ export function stringComparator(a: string, b: string): number {
 
 // Sorts an objectArray by a property. Returns a new array.
 // Can be called recursively.
-export function sortByProperty(objArray: any[], prop: string) {
+export function sortByProperty(objArray: any[], prop: string, direct = 1) {
 	if (!Array.isArray(objArray)) throw new Error('FIRST ARGUMENT NOT AN ARRAY');
 	const clone = objArray.slice(0);
-	const direct = arguments.length > 2 ? arguments[2] : 1; //Default to ascending
 	const propPath = prop.constructor === Array ? prop : prop.split('.');
 	clone.sort(function (a, b) {
 		for (const p in propPath) {

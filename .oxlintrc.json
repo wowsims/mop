@@ -1,0 +1,72 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [],
+  "categories": {
+    "correctness": "off"
+  },
+  "env": {
+    "builtin": true
+  },
+  "ignorePatterns": [
+    "ui/core/proto/**",
+    "ui/worker/highs.js",
+    "dist/**",
+    "binary_dist/**",
+    "node_modules/**"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "**/*.{js,jsx,ts,tsx}"
+      ],
+      "rules": {
+        "import/namespace": "off",
+        "import/default": "error",
+        "import/no-named-as-default": "warn",
+        "import/no-named-as-default-member": "warn",
+        "import/no-duplicates": "warn",
+        "no-array-constructor": "error",
+        "no-unused-expressions": "off",
+        "no-unused-vars": [
+          "warn",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_"
+          }
+        ],
+        "typescript/ban-ts-comment": "off",
+        "typescript/no-duplicate-enum-values": "error",
+        "typescript/no-empty-object-type": "off",
+        "typescript/no-explicit-any": "off",
+        "typescript/no-extra-non-null-assertion": "error",
+        "typescript/no-misused-new": "error",
+        "typescript/no-namespace": "error",
+        "typescript/no-non-null-asserted-optional-chain": "error",
+        "typescript/no-require-imports": "error",
+        "typescript/no-this-alias": "off",
+        "typescript/no-unnecessary-type-constraint": "error",
+        "typescript/no-unsafe-declaration-merging": "error",
+        "typescript/no-unsafe-function-type": "error",
+        "typescript/no-wrapper-object-types": "error",
+        "typescript/prefer-as-const": "error",
+        "typescript/prefer-namespace-keyword": "error",
+        "typescript/triple-slash-reference": "error",
+        "simple-import-sort/imports": "warn",
+        "no-use-before-define": "off",
+        "typescript/explicit-function-return-type": "off",
+        "typescript/explicit-module-boundary-types": "off",
+        "typescript/no-non-null-assertion": "off"
+      },
+      "plugins": [
+        "import",
+        "typescript"
+      ],
+      "jsPlugins": [
+        "eslint-plugin-simple-import-sort"
+      ],
+      "env": {
+        "es2021": true
+      }
+    }
+  ]
+}

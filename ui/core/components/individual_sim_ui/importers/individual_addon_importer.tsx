@@ -57,7 +57,7 @@ export class IndividualAddonImporter<SpecType extends Spec> extends IndividualIm
 			throw new Error('Please use a valid Addon export.');
 		}
 
-		let addonVersion = await IndividualAddonImporter.WSE_VERSION;
+		const addonVersion = await IndividualAddonImporter.WSE_VERSION;
 		if (addonVersion && ((importJson['version'] as string) || '') != addonVersion) {
 			new Toast({ variant: 'warning', body: `Addon is not up to date. Addon version : '${importJson['version']}', Latest version : '${addonVersion}'` });
 		}

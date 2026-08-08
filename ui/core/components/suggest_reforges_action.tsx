@@ -1518,7 +1518,7 @@ export class ReforgeOptimizer {
 			}
 
 			socketColors.forEach((socketColor, socketIdx) => {
-				let gemColorKeys: GemColor[] = [];
+				const gemColorKeys: GemColor[] = [];
 
 				if ([GemColor.GemColorPrismatic, GemColor.GemColorCogwheel, GemColor.GemColorShaTouched].includes(socketColor)) {
 					gemColorKeys.push(socketColor);

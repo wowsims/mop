@@ -76,6 +76,14 @@ const buildWorkers = async () => {
 					name: `${name}.js`,
 					formats: ['es'],
 				},
+				rollupOptions: {
+					// Workers must be self-contained single files: the dev server only serves
+					// the worker entry points, and rolldown otherwise splits shared/dynamic
+					// chunks (rolldown-runtime, highs) that would 404 there.
+					output: {
+						inlineDynamicImports: true,
+					},
+				},
 			},
 		});
 	});

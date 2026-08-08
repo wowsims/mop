@@ -269,11 +269,11 @@ export class Clusterize {
                 rows: rows_len ? rows : this.generateEmptyRow()
             }
         }
-        let items_start = Math.max((opts.rows_in_cluster - opts.rows_in_block) * this.getClusterNum(rows_len), 0),
+        const items_start = Math.max((opts.rows_in_cluster - opts.rows_in_block) * this.getClusterNum(rows_len), 0),
           items_end = items_start + opts.rows_in_cluster,
           top_offset = Math.max(items_start * opts.item_height, 0),
-          bottom_offset = Math.max((rows_len - items_end) * opts.item_height, 0),
-          this_cluster_rows = [],
+          bottom_offset = Math.max((rows_len - items_end) * opts.item_height, 0);
+        let this_cluster_rows = [],
           rows_above = items_start;
         if(top_offset < 1) {
             rows_above++;
@@ -293,7 +293,8 @@ export class Clusterize {
         if(!opts.tag || !opts.show_no_data_row) 
             return [];
         const empty_row = document.createElement(opts.tag);
-        let no_data_content = document.createTextNode(opts.no_data_text), td;
+        const no_data_content = document.createTextNode(opts.no_data_text);
+        let td;
         empty_row.className = opts.no_data_class;
         if(opts.tag == 'tr') {
             td = document.createElement('td');

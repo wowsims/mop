@@ -12,7 +12,7 @@ export const setupHttpWorker = (baseURL: string) => {
 	const makeHttpApiRequest = (endPoint: string, inputData: Uint8Array, requestId: string) =>
 		fetch(`${baseURL}/${endPoint}?requestId=${requestId}`, {
 			...defaultRequestOptions,
-			body: inputData,
+			body: inputData as BodyInit,
 		});
 
 	const syncHandler: HandlerFunction = async (inputData, _, id, msg) => {
