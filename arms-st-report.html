@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%8E%AF%3C%2Ftext%3E%3C%2Fsvg%3E">
+<title>Arms warrior, single-target pass</title>
+<style>
+  /* the shell the publish step normally supplies */
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; }
+  img { max-width: 100%; }
+
+  /* light/dark toggle — stamps data-theme on <html>, the same signal the page's
+     own CSS and its chart MutationObserver already listen for */
+  #themeToggle {
+    position: fixed; top: .85rem; right: .85rem; z-index: 50;
+    display: inline-flex; align-items: center; gap: .4rem;
+    font: 500 .72rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: .5rem .7rem; cursor: pointer;
+    color: #575149; background: #fcfbf8;
+    border: 1px solid #cbc5b8; border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  #themeToggle:hover { border-color: #8b8479; }
+  #themeToggle:focus-visible { outline: 2px solid #2a78d6; outline-offset: 2px; }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) #themeToggle {
+      color: #bdb6a9; background: #191714; border-color: #3a3631;
+    }
+  }
+  :root[data-theme="dark"] #themeToggle {
+    color: #bdb6a9; background: #191714; border-color: #3a3631;
+  }
+  :root[data-theme="light"] #themeToggle {
+    color: #575149; background: #fcfbf8; border-color: #cbc5b8;
+  }
+  @media print { #themeToggle { display: none; } }
+</style>
+<style>
+  /* ── tokens ───────────────────────────────────────────────────────── */
+  :root {
+    color-scheme: light;
+    --page:      #f4f2ed;
+    --surface:   #fcfbf8;
+    --sunk:      #eeebe3;
+    --ink:       #16130f;
+    --ink-2:     #575149;
+    --muted:     #8b8479;
+    --grid:      #e3dfd6;
+    --rule:      #cbc5b8;
+    --ring:      rgba(22,19,15,.10);
+    --s1:        #2a78d6;
+    --s2:        #eb6834;
+    --s3:        #1baf7a;
+    --good:      #0ca30c;
+    --bad:       #d03b3b;
+    --warn:      #fab219;
+    --window:    rgba(235,104,52,.10);
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page:    #0e0d0b;
+      --surface: #191714;
+      --sunk:    #131110;
+      --ink:     #f7f5f1;
+      --ink-2:   #bdb6a9;
+      --muted:   #8b8479;
+      --grid:    #2b2825;
+      --rule:    #3a3631;
+      --ring:    rgba(247,245,241,.12);
+      --s1:      #3987e5;
+      --s2:      #d95926;
+      --s3:      #199e70;
+      --window:  rgba(217,89,38,.14);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page:    #0e0d0b;
+    --surface: #191714;
+    --sunk:    #131110;
+    --ink:     #f7f5f1;
+    --ink-2:   #bdb6a9;
+    --muted:   #8b8479;
+    --grid:    #2b2825;
+    --rule:    #3a3631;
+    --ring:    rgba(247,245,241,.12);
+    --s1:      #3987e5;
+    --s2:      #d95926;
+    --s3:      #199e70;
+    --window:  rgba(217,89,38,.14);
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --page:    #f4f2ed;
+    --surface: #fcfbf8;
+    --sunk:    #eeebe3;
+    --ink:     #16130f;
+    --ink-2:   #575149;
+    --muted:   #8b8479;
+    --grid:    #e3dfd6;
+    --rule:    #cbc5b8;
+    --ring:    rgba(22,19,15,.10);
+    --s1:      #2a78d6;
+    --s2:      #eb6834;
+    --s3:      #1baf7a;
+    --window:  rgba(235,104,52,.10);
+  }
+
+  /* ── page ─────────────────────────────────────────────────────────── */
+  body { background: var(--page); color: var(--ink); font-family: var(--sans); }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 3.5rem 1.5rem 6rem; }
+  .col  { max-width: 68ch; }
+  p, li { font-size: 1rem; line-height: 1.65; color: var(--ink-2); margin: 0 0 1em; }
+  p strong, li strong { color: var(--ink); font-weight: 620; }
+  a { color: var(--s1); }
+  h1, h2, h3 { color: var(--ink); text-wrap: balance; margin: 0; }
+  h1 {
+    font-family: var(--mono); font-size: clamp(1.7rem, 4.2vw, 2.6rem); font-weight: 680;
+    line-height: 1.12; letter-spacing: -.03em; max-width: 30ch;
+  }
+  h2 {
+    font-family: var(--mono); font-size: 1.28rem; font-weight: 660;
+    letter-spacing: -.02em; line-height: 1.25; max-width: 34ch;
+  }
+  h3 { font-size: .95rem; font-weight: 640; letter-spacing: -.01em; }
+  .eyebrow {
+    font-family: var(--mono); font-size: .68rem; font-weight: 600;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
+  }
+  .lede { font-size: 1.09rem; line-height: 1.6; color: var(--ink-2); max-width: 62ch; }
+  code, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  code { font-size: .88em; background: var(--sunk); padding: .1em .35em; border-radius: 2px; }
+
+  header.masthead { border-bottom: 2px solid var(--ink); padding-bottom: 1.6rem; margin-bottom: 2.2rem; }
+  .masthead .eyebrow { display: block; margin-bottom: .9rem; }
+  .masthead .lede { margin-top: 1.1rem; }
+
+  section { border-top: 1px solid var(--rule); padding-top: 1.4rem; margin-top: 3.2rem; }
+  section > .eyebrow { display: block; margin-bottom: .55rem; }
+  section > h2 { margin-bottom: 1rem; }
+
+  /* ── stat tiles ───────────────────────────────────────────────────── */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 1px;
+           background: var(--rule); border: 1px solid var(--rule); margin: 1.8rem 0 0; }
+  .tile { background: var(--surface); padding: .95rem 1rem 1.05rem; }
+  .tile .k { font-family: var(--mono); font-size: .64rem; letter-spacing: .13em;
+             text-transform: uppercase; color: var(--muted); display: block; }
+  .tile .v { font-family: var(--mono); font-size: 1.55rem; font-weight: 660; letter-spacing: -.03em;
+             font-variant-numeric: tabular-nums; display: block; margin-top: .3rem; line-height: 1; }
+  .tile .n { font-size: .78rem; color: var(--ink-2); display: block; margin-top: .4rem; line-height: 1.4; }
+
+  /* ── figures ──────────────────────────────────────────────────────── */
+  figure { margin: 1.9rem 0 0; background: var(--surface); border: 1px solid var(--ring); }
+  figure .head { padding: 1rem 1.15rem .2rem; }
+  figure .head h3 { margin-bottom: .3rem; }
+  figure .head p { font-size: .84rem; margin: 0; color: var(--muted); max-width: 74ch; }
+  .plot { overflow-x: auto; padding: .5rem 1.15rem 1.15rem; }
+  figcaption { font-size: .8rem; color: var(--muted); border-top: 1px solid var(--grid);
+               padding: .65rem 1.15rem; line-height: 1.5; }
+  svg { display: block; overflow: visible; }
+  svg text { font-family: var(--mono); fill: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+  svg text.lbl { fill: var(--ink); font-size: 11px; font-weight: 620; }
+  svg .gl { stroke: var(--grid); stroke-width: 1; }
+  svg .ax { stroke: var(--rule); stroke-width: 1; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; padding: 0 1.15rem .55rem; }
+  .legend span { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--mono);
+                 font-size: .72rem; color: var(--ink-2); }
+  .legend i { width: 11px; height: 11px; border-radius: 2px; display: block; }
+
+  /* ── tables ───────────────────────────────────────────────────────── */
+  .tbl-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+  th, td { text-align: right; padding: .42rem .6rem; border-bottom: 1px solid var(--grid);
+           font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th { font-family: var(--mono); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase;
+       color: var(--muted); font-weight: 600; border-bottom-color: var(--rule); }
+  td:first-child, th:first-child { text-align: left; font-family: var(--mono); color: var(--ink); }
+  td { color: var(--ink-2); }
+  tbody tr:hover td { background: var(--sunk); }
+  .pos { color: var(--good); }
+  .neg { color: var(--bad); }
+  details { margin-top: 1rem; }
+  details summary { font-family: var(--mono); font-size: .74rem; letter-spacing: .06em;
+                    text-transform: uppercase; color: var(--muted); cursor: pointer; padding: .4rem 0; }
+  details[open] summary { margin-bottom: .6rem; }
+
+  /* ── APL line anchors ─────────────────────────────────────────────── */
+  .apl { font-family: var(--mono); font-size: .78rem; color: var(--ink-2);
+         background: var(--sunk); border-left: 3px solid var(--s2);
+         padding: .7rem .9rem; margin: 0 0 1.2rem; overflow-x: auto; }
+  .apl b { color: var(--ink); font-weight: 640; }
+  .apl .idx { color: var(--s2); }
+
+  /* ── verdict chips ────────────────────────────────────────────────── */
+  .chip { font-family: var(--mono); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase;
+          padding: .12em .45em; border: 1px solid currentColor; border-radius: 2px; white-space: nowrap; }
+  .chip.win { color: var(--good); }
+  .chip.loss { color: var(--bad); }
+  .chip.noise { color: var(--muted); }
+
+  /* ── tooltip ──────────────────────────────────────────────────────── */
+  .tip { position: fixed; z-index: 40; pointer-events: none; opacity: 0; transition: opacity .1s;
+         background: var(--surface); border: 1px solid var(--rule); box-shadow: 0 4px 14px rgba(0,0,0,.16);
+         padding: .5rem .6rem; font-family: var(--mono); font-size: .72rem; color: var(--ink);
+         font-variant-numeric: tabular-nums; line-height: 1.5; max-width: 260px; }
+  .tip b { display: block; font-weight: 660; margin-bottom: .25rem; }
+  .tip .r { display: flex; justify-content: space-between; gap: .9rem; color: var(--ink-2); }
+  .tip .r i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: .35rem; }
+
+  :focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<button id="themeToggle" type="button" aria-live="polite">Theme</button>
+<div class="wrap">
+
+<header class="masthead">
+  <span class="eyebrow">wowsims-mop · sim lab · arms warrior · p5 SoO heroic-warforged</span>
+  <h1>The Arms single-target rotation is already at a local optimum</h1>
+  <p class="lede">
+    Thirty-five candidate edits, three trinket builds, 100&nbsp;000 iterations per arm. The largest
+    honest gain is <strong>+0.08&nbsp;% to +0.14&nbsp;%</strong> — and even that one turned out to be
+    overfitted to this bed: on the repo's own gear sets it loses on three of four. <strong>Nothing
+    single-target shipped.</strong> The shipped priority list is tighter than it looks, and three of
+    its oddest-looking lines are load-bearing.
+  </p>
+</header>
+
+<div class="tiles">
+  <div class="tile"><span class="k">Best ST stack, this bed</span><span class="v pos">+0.08…0.14 %</span>
+    <span class="n">Heroic Strike floor 100→70 rage, plus Overpower during Recklessness — and it
+      does <strong>not</strong> hold up on other gear, see below</span></div>
+  <div class="tile"><span class="k">Candidates tested</span><span class="v">35</span>
+    <span class="n">6 clear the 2σ floor on all three builds; 15 are measurable losses</span></div>
+  <div class="tile"><span class="k">Heroic Strike is worth</span><span class="v">9.5–10.1 %</span>
+    <span class="n">of single-target DPS — the off-GCD rage dump is not optional</span></div>
+  <div class="tile"><span class="k">Best 1-target trinket</span><span class="v">Skeer's</span>
+    <span class="n">+0.40 % over Galakras, +3.5 % over Fusion-Fire Core</span></div>
+</div>
+
+<section>
+  <span class="eyebrow">the bed</span>
+  <h2>One character, one trinket slot changed</h2>
+  <div class="col">
+    <p>
+      Everything below runs on <code>p5-arms-fixture.test.json</code>: Orc, <strong>Xal'atoh</strong>
+      two-hander, all sixteen items at <code>UpgradeStepTwo</code>, talents <code>113132</code>
+      (Bladestorm + Bloodbath), Glyphs of Bull Rush / Unending Rage / Death from Above,
+      Engineering + Blacksmithing, 300&nbsp;s ±60&nbsp;s single target, 100&nbsp;ms reaction time.
+      The fixture's embedded rotation is byte-identical to the committed
+      <code>ui/warrior/arms/apls/arms.apl.json</code>, so there is only one baseline to argue about.
+    </p>
+    <p>
+      Two new fixtures were derived from it by swapping <strong>one item</strong> — trinket slot 2,
+      Evil Eye of Galakras (<code>105491</code>) — for Skeer's Bloodsoaked Talisman
+      (<code>105632</code>) and Fusion-Fire Core (<code>105459</code>). Thok's Tail Tip stays in slot 1
+      in all three. Because the builds differ by exactly one line of JSON, the absolute DPS numbers are
+      directly comparable.
+    </p>
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Fixture</th><th>Trinket swapped in</th><th>What it does</th><th>1-target DPS</th><th>vs Galakras</th></tr></thead>
+    <tbody>
+      <tr><td>p5-arms-fixture</td><td style="text-align:left">Evil Eye of Galakras</td>
+        <td style="text-align:left">+1 % cooldown recovery on six abilities; 11 761 Str proc</td>
+        <td>445 027</td><td>—</td></tr>
+      <tr><td>p5-arms-fixture-nocdr</td><td style="text-align:left">Skeer's Bloodsoaked Talisman</td>
+        <td style="text-align:left">Cruelty: +1 402 crit per 0.5 s, 20 stacks, 10 s</td>
+        <td>446 755</td><td class="pos">+0.39 %</td></tr>
+      <tr><td>p5-arms-fixture-ffc</td><td style="text-align:left">Fusion-Fire Core</td>
+        <td style="text-align:left">Attacks cleave to 5 nearby targets; 14 039 Str proc</td>
+        <td>431 788</td><td class="neg">−2.98 %</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:.82rem;color:var(--muted);margin-top:.7rem">
+    20 000 iterations, seed 1. SEM ≈ 102–110 DPS, so a trustworthy difference is above ~300 DPS (0.07 %).
+  </p>
+</section>
+
+<section>
+  <span class="eyebrow">where each trinket wins</span>
+  <h2>Galakras only pulls ahead once there is more than one target</h2>
+  <div class="col">
+    <p>
+      On a single target the readiness trinket is the <em>worst</em> of the three: its 1 %-per-stack
+      cooldown recovery buys extra Bloodbath and Bladestorm casts that a single target barely wants,
+      while Skeer's stacking crit rides the Colossus Smash window. From two targets up the ordering
+      inverts and never comes back — and Fusion-Fire Core's cleave only catches up around six.
+    </p>
+  </div>
+
+  <figure>
+    <div class="head">
+      <h3>Damage per second against target count</h3>
+      <p>Baseline rotation, unmodified. 20 000 iterations per point; error bars are smaller than the marks.</p>
+    </div>
+    <div class="legend" id="lg1"></div>
+    <div class="plot"><div id="c1"></div></div>
+    <figcaption>
+      Two targets is Galakras' biggest relative win (+6.3 % over Skeer's). Fusion-Fire Core crosses
+      Galakras at six targets and falls behind again by twenty.
+    </figcaption>
+  </figure>
+
+  <figure>
+    <div class="head">
+      <h3>Difference from Evil Eye of Galakras</h3>
+      <p>Same runs, expressed as a percentage. Zero is Galakras.</p>
+    </div>
+    <div class="legend" id="lg2"></div>
+    <div class="plot"><div id="c2"></div></div>
+    <figcaption>
+      The single-target column is the only place either alternative is ahead. Read together with the
+      multi-target pass: part of the gap at high target counts is a rotation bug, not the trinket.
+    </figcaption>
+  </figure>
+
+  <details>
+    <summary>Table view — baseline DPS by target count</summary>
+    <div class="tbl-wrap"><table id="t1"></table></div>
+  </details>
+</section>
+
+<section>
+  <span class="eyebrow">anatomy</span>
+  <h2>What the rotation actually does in 300 seconds</h2>
+  <div class="col">
+    <p>
+      Before changing anything: a 3 000-iteration instrumented run on the Galakras build, one target.
+      The rotation is <strong>GCD-saturated</strong> — about 218 globals in 300 s, roughly one every
+      1.37 s — and <strong>rage-balanced</strong>, spending 4 407 of the 4 480 rage it generates and
+      wasting 1.1 % to the cap. That combination is what kills most candidate edits before they start:
+      there is no spare global and no spare rage to redirect.
+    </p>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><span class="k">Colossus Smash uptime</span><span class="v">68.7 %</span>
+      <span class="n">33.0 casts × 6.5 s debuff — refresh clipping is already near zero</span></div>
+    <div class="tile"><span class="k">Enrage uptime</span><span class="v">72.7 %</span>
+      <span class="n">48.3 procs; +10 % physical while up. Crit-driven, not rotation-driven</span></div>
+    <div class="tile"><span class="k">Taste for Blood</span><span class="v">95.5 %</span>
+      <span class="n">Mortal Strike grants 2 stacks; Overpower spends 1 and cuts MS cooldown 0.5 s</span></div>
+    <div class="tile"><span class="k">Rage wasted to cap</span><span class="v">1.1 %</span>
+      <span class="n">51 of 4 480 rage — nothing to reclaim</span></div>
+  </div>
+
+  <figure>
+    <div class="head">
+      <h3>Damage by source, single target</h3>
+      <p>Share of total damage. Mastery (Strikes of Opportunity) is the single largest source and is
+         driven purely by melee hit count — which is why off-GCD filler matters more than its own tooltip.</p>
+    </div>
+    <div class="plot"><div id="c3"></div></div>
+    <figcaption>
+      Overpower is cast 96 times and Slam 12: Slam does 2.2× the damage per cast, but Overpower runs on
+      a 1.0 s global instead of 1.5 s, costs 10 rage instead of 25, and shortens Mortal Strike.
+      Reordering them costs 2.4–2.7 % (below).
+    </figcaption>
+  </figure>
+
+  <figure>
+    <div class="head">
+      <h3>Rage ledger, single target</h3>
+      <p>Rage generated and spent per 300 s fight. Heroic Strike takes 62 % of all rage spent.</p>
+    </div>
+    <div class="legend" id="lg4"></div>
+    <div class="plot"><div id="c4"></div></div>
+    <figcaption>
+      Heroic Strike returns ~4 400 damage per rage against Slam's ~16 100 and Execute's ~17 000 — but
+      it is off-GCD, so it competes for rage only, never for a global. Suppressing it costs 9.5–10.1 %.
+    </figcaption>
+  </figure>
+</section>
+
+<section>
+  <span class="eyebrow">the tuning window</span>
+  <h2>Thirty-five edits, six that beat the noise floor</h2>
+  <div class="col">
+    <p>
+      Each candidate is one edit, measured alone, on all three fixtures. The screening pass ran
+      30 000 iterations (2σ ≈ 0.053 %); everything within reach of the threshold was re-run at
+      <strong>100 000 iterations</strong> (2σ ≈ 0.030 %). A candidate is only called a win if it clears
+      2σ on <em>all three</em> builds.
+    </p>
+    <p>
+      The one that does is the Heroic Strike rage floor. Outside the Colossus Smash window the shipped
+      list demands 100 rage before dumping into Heroic Strike; <strong>65–70 rage is better on every
+      build</strong> (+0.04…0.07 % alone). Stacking it with Overpower-during-Recklessness — the other
+      marginal positive, which is only proven on two builds by itself — gives
+      <strong>+0.08 to +0.14 %</strong>, above 2σ on all three. The 65-rage variant has the higher
+      floor (+0.094 % worst build), the 70-rage variant the higher ceiling (+0.144 % on Fusion-Fire
+      Core). Pushing further loses: 55 rage is negative, and tightening the <em>in-window</em> floor to
+      45 helps Galakras and hurts Skeer's.
+    </p>
+    <p>
+      <code>combo-hs70</code> re-ran <code>hs-base-rage70</code> under a different sweep and returned
+      the same three numbers to three decimals — the seeds and iteration counts are matched, so the
+      ladder below is reproducible, not resampled.
+    </p>
+  </div>
+
+  <div class="apl">
+    <span class="idx">group "Off GCDOwO" [1]</span> — cast <b>Heroic Strike</b> (78) if<br>
+    &nbsp;&nbsp;( currentRage ≥ <b>100 → 70</b> and (!executePhase or maxRage==100) )<br>
+    &nbsp;&nbsp;or currentRage ≥ 110<br>
+    &nbsp;&nbsp;or ( Charge ready &lt; 1.5&nbsp;s and rage &gt; maxRage−35 and autoTimeToNext ≥ 1.5&nbsp;s )<br>
+    &nbsp;&nbsp;or ( <b>ColossusSmash active</b> and currentRage ≥ 50 )
+  </div>
+
+  <figure>
+    <div class="head">
+      <h3>Single-target candidates inside ±0.30 %</h3>
+      <p>Change in DPS versus the committed rotation, per trinket build. The grey band is the 2σ noise
+         floor at the iteration count each candidate was measured at — anything inside it is unproven.</p>
+    </div>
+    <div class="legend" id="lg5"></div>
+    <div class="plot"><div id="c5"></div></div>
+    <figcaption>
+      Colossus Smash refresh timing is monotone and the shipped value is the peak: refreshing at
+      ≤ 0.5 s left is −0.08 to −0.10 %, at ≤ 2 s −0.08 to −0.29 %, and casting it the instant it is off
+      cooldown −1.2 to −1.4 %.
+    </figcaption>
+  </figure>
+
+  <figure>
+    <div class="head">
+      <h3>What each line is worth — removal bounds</h3>
+      <p>Cost of switching a single mechanic off, which is how much the rest of the list depends on it.</p>
+    </div>
+    <div class="legend" id="lg6"></div>
+    <div class="plot"><div id="c6"></div></div>
+    <figcaption>
+      <strong>Pummel is not decoration.</strong> It deals zero damage and is cast 19.9 times a fight;
+      deleting it costs 0.8 %, because it is an off-GCD melee special that rolls Strikes of Opportunity
+      and the weapon/cloak procs. Same class of finding as Fury's Heroic Strike lines.
+    </figcaption>
+  </figure>
+
+  <details open>
+    <summary>Table view — every candidate, all three builds</summary>
+    <div class="tbl-wrap"><table id="t2"></table></div>
+  </details>
+</section>
+
+<section>
+  <span class="eyebrow">dead lines</span>
+  <h2>Three lines never fire on this build — and two of them must stay</h2>
+  <div class="col">
+    <p>
+      The parse validations are the same on all three fixtures. With Bladestorm and Bloodbath talented
+      (<code>113132</code>), <strong>Dragon Roar</strong> (<code>118000</code>) and
+      <strong>Storm Bolt</strong> (<code>107570</code>) are unknown, so priority lines 7 and 19 are
+      pruned at parse time and line 17's <code>!spellIsKnown(118000)</code> folds to true. Those lines
+      are live for other talent rows, so they are not deletable — the Fury pass learned that removing a
+      "dead" fallback cost 3.5–5.4 %.
+    </p>
+    <p>
+      Genuinely inert on this build: <code>castAllStatBuffCooldowns(Strength)</code> and
+      <code>castAllStatBuffCooldowns(CritRating)</code> both report
+      <em>"will not cast any spells"</em>, because every stat-buff cooldown this character owns is cast
+      manually elsewhere in the list. That matters more than it looks: the action returns
+      <code>IsReady == false</code> forever rather than being pruned, so a
+      <code>strictSequence</code> that <em>starts</em> with one can never begin. Two branches of the
+      AoE Bladestorm group are built exactly that way — see the multi-target pass.
+    </p>
+    <p>
+      Also absent on this gear and therefore folded to false: <code>58356</code> and
+      <code>58384</code> (Thunder Clap / Slam glyphs), <code>138126</code>/<code>138127</code>,
+      <code>138759</code>, <code>123142</code>, and item <code>81268</code>.
+    </p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">verdict</span>
+  <h2>The best candidate was overfitted, and nothing shipped</h2>
+  <div class="col">
+    <p>
+      Everything above is measured on the three p5 fixtures — one gear set, one talent row. The Fury
+      pass's hardest lesson was that this is not enough, so the winning stack was re-measured on the
+      repo's own committed gear sets at 60&nbsp;000 iterations (2σ&nbsp;≈&nbsp;±0.034&nbsp;%), with the
+      edits restricted to <code>numberTargets == 1</code> so nothing else could interfere:
+    </p>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Bed</th><th>Baseline DPS</th><th>Heroic Strike 70 + Overpower in Reck</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>p5-arms-fixture (Galakras)</td><td>444 999</td><td class="pos">+0.108 %</td><td><span class="chip win">win</span></td></tr>
+        <tr><td>p5-arms-fixture-nocdr (Skeer's)</td><td>446 785</td><td class="pos">+0.083 %</td><td><span class="chip win">win</span></td></tr>
+        <tr><td>p5-arms-fixture-ffc</td><td>431 694</td><td class="pos">+0.144 %</td><td><span class="chip win">win</span></td></tr>
+        <tr><td>p5_arms_bis, full buffs</td><td>439 554</td><td class="pos">+0.090 %</td><td><span class="chip win">win</span></td></tr>
+        <tr><td>p5_arms_bis, no buffs</td><td>373 630</td><td class="neg">−0.077 %</td><td><span class="chip loss">loss</span></td></tr>
+        <tr><td>p4_arms_bis, full buffs</td><td>267 496</td><td class="neg">−0.121 %</td><td><span class="chip loss">loss</span></td></tr>
+        <tr><td>p4_arms_bis, no buffs</td><td>227 579</td><td class="neg">−0.250 %</td><td><span class="chip loss">loss</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col">
+    <p style="margin-top:1.2em">
+      Four wins, three losses, all past 2σ. A +0.1&nbsp;% edit that flips sign with the buff set is not
+      a rotation improvement, it is a fit to one bed — so the single-target list was left exactly as it
+      was. The <a href="https://claude.ai/code/artifact/3eccc581-6b56-49e0-ba35-ca6193d7dcdf">multi-target pass</a> is where the real change is: one deleted condition
+      worth up to +25&nbsp;% at twenty-one targets, and provably 0.000&nbsp;% here.
+    </p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">notes and limits</span>
+  <h2>What this does not prove</h2>
+  <div class="col">
+    <ul>
+      <li>All numbers in the ladder are one gear set and one talent row — which is exactly why the
+        winner did not survive the cross-bed check above.</li>
+      <li>A +0.06 % change is real at 100 000 iterations and irrelevant in play. The honest headline is
+        that the single-target list needs no change — and the cross-bed check turned "needs no change"
+        from a shrug into a result.</li>
+      <li><code>durationVariation: 60</code> is on, so per-iteration variance is higher than a fixed
+        300 s fight would give. Same seed and iteration count on both arms of every comparison.</li>
+      <li>No fixture or <code>.results</code> file was regenerated.</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script type="module">
+const DATA = {
+  curve: {
+    eeog:   [[1,445027.123],[2,654892.307],[3,745465.552],[4,872554.633],[6,1097452.623],[10,1525101.391],[20,2603617.273]],
+    skeers: [[1,446754.547],[2,616339.948],[3,683811.377],[4,789121.138],[6, 974539.827],[10,1314694.724],[20,2172033.405]],
+    ffc:    [[1,431788.431],[2,622023.793],[3,720099.452],[4,856616.057],[6,1132199.730],[10,1522844.507],[20,2517255.905]]
+  },
+  // candidate -> {build: {d, sig}}, iters marks which sweep it came from
+  cands: [
+    ["combo-hs65-opreck",      "HS floor 65 + Overpower during Recklessness", 100, { eeog:[ 0.102,0.029], skeers:[ 0.094,0.031], ffc:[ 0.114,0.030] }],
+    ["combo-hs70-opreck",      "HS floor 70 + Overpower during Recklessness", 100, { eeog:[ 0.108,0.029], skeers:[ 0.083,0.031], ffc:[ 0.144,0.030] }],
+    ["combo-hs80-opreck",      "HS floor 80 + Overpower during Recklessness", 100, { eeog:[ 0.061,0.029], skeers:[ 0.050,0.031], ffc:[ 0.108,0.030] }],
+    ["combo-hs70-opreck-cs45", "…plus in-CS floor 50 → 45 rage",              100, { eeog:[ 0.129,0.029], skeers:[ 0.054,0.031], ffc:[ 0.121,0.030] }],
+    ["hs-base-rage70",         "Heroic Strike floor 100 → 70 rage",           100, { eeog:[ 0.039,0.029], skeers:[ 0.068,0.031], ffc:[ 0.059,0.030] }],
+    ["hs-base-rage65",         "Heroic Strike floor 100 → 65 rage",           100, { eeog:[ 0.030,0.029], skeers:[ 0.061,0.031], ffc:[ 0.041,0.030] }],
+    ["hs-base-rage80",         "Heroic Strike floor 100 → 80 rage",           100, { eeog:[ 0.021,0.029], skeers:[ 0.043,0.031], ffc:[ 0.046,0.030] }],
+    ["hs-base-rage75",         "Heroic Strike floor 100 → 75 rage",           100, { eeog:[ 0.015,0.029], skeers:[ 0.030,0.031], ffc:[ 0.038,0.030] }],
+    ["op-during-reck",         "Stop blocking Overpower under Recklessness",  100, { eeog:[ 0.028,0.029], skeers:[-0.010,0.031], ffc:[ 0.058,0.030] }],
+    ["hs-base-rage60",         "Heroic Strike floor 100 → 60 rage",           100, { eeog:[ 0.006,0.029], skeers:[ 0.043,0.031], ffc:[ 0.017,0.030] }],
+    ["hs-cs-rage45",           "In-CS Heroic Strike floor 50 → 45 rage",      100, { eeog:[ 0.050,0.029], skeers:[ 0.003,0.031], ffc:[ 0.009,0.030] }],
+    ["bloodbath-in-cs",        "Hold Bloodbath for the CS window",             30, { eeog:[ 0.000,0.053], skeers:[ 0.000,0.056], ffc:[ 0.000,0.054] }],
+    ["reck-in-cs",             "Hold Recklessness for the CS window",          30, { eeog:[-0.033,0.053], skeers:[ 0.016,0.056], ffc:[ 0.018,0.054] }],
+    ["hs-base-rage55",         "Heroic Strike floor 100 → 55 rage",           100, { eeog:[-0.035,0.029], skeers:[-0.004,0.031], ffc:[-0.046,0.030] }],
+    ["br-enrage-1s",           "Berserker Rage 1 s before Enrage drops",       30, { eeog:[-0.005,0.053], skeers:[-0.032,0.056], ffc:[-0.016,0.054] }],
+    ["slam-over-op-filler",    "Slam above Overpower in the filler",           30, { eeog:[-0.050,0.053], skeers:[-0.020,0.056], ffc:[-0.030,0.054] }],
+    ["hs-in-cs-only",          "Heroic Strike only inside the CS window",      30, { eeog:[-0.067,0.053], skeers:[-0.037,0.056], ffc:[-0.079,0.054] }],
+    ["cs-clip.5s",             "Refresh Colossus Smash at ≤ 0.5 s left",       30, { eeog:[-0.085,0.053], skeers:[-0.080,0.056], ffc:[-0.098,0.054] }],
+    ["br-no-cs-gate",          "Berserker Rage without the CS gate",           30, { eeog:[-0.101,0.053], skeers:[ 0.006,0.056], ffc:[-0.026,0.054] }],
+    ["hs-cs-rage55",           "In-CS Heroic Strike floor 50 → 55 rage",      100, { eeog:[-0.114,0.029], skeers:[-0.045,0.031], ffc:[-0.062,0.030] }],
+    ["br-no-gate-1s",          "Berserker Rage: no gate, 1 s early",           30, { eeog:[-0.117,0.053], skeers:[-0.030,0.056], ffc:[-0.060,0.054] }],
+    ["hs-cs-rage60",           "In-CS Heroic Strike floor 50 → 60 rage",       30, { eeog:[-0.071,0.053], skeers:[ 0.009,0.056], ffc:[-0.051,0.054] }],
+    ["cs-clip1.5s",            "Refresh Colossus Smash at ≤ 1.5 s left",       30, { eeog:[-0.246,0.053], skeers:[-0.087,0.056], ffc:[-0.108,0.054] }],
+    ["hs-cs-rage70",           "In-CS Heroic Strike floor 50 → 70 rage",       30, { eeog:[-0.255,0.053], skeers:[-0.183,0.056], ffc:[-0.254,0.054] }],
+    ["cs-clip2s",              "Refresh Colossus Smash at ≤ 2 s left",         30, { eeog:[-0.286,0.053], skeers:[-0.084,0.056], ffc:[-0.152,0.054] }]
+  ],
+  bounds: [
+    ["cs-clip3s",       "Refresh Colossus Smash at ≤ 3 s left",     { eeog:-0.392, skeers:-0.134, ffc:-0.223 }],
+    ["hs-cs-rage30",    "In-CS Heroic Strike floor 50 → 30 rage",   { eeog:-0.678, skeers:-0.924, ffc:-0.989 }],
+    ["bs-ticks2",       "Cap Bladestorm at 2 channel ticks",        { eeog:-0.716, skeers:-0.759, ffc:-0.858 }],
+    ["no-pummel",       "Drop the off-GCD Pummel filler",           { eeog:-0.794, skeers:-0.763, ffc:-0.830 }],
+    ["bs-ticks1",       "Cap Bladestorm at 1 channel tick",         { eeog:-0.820, skeers:-0.772, ffc:-0.850 }],
+    ["cs-clip0s",       "Only recast Colossus Smash once expired",  { eeog:-1.018, skeers:-0.767, ffc:-0.772 }],
+    ["cs-on-cd",        "Colossus Smash the moment it is ready",    { eeog:-1.392, skeers:-1.218, ffc:-1.252 }],
+    ["slam-over-op-cs", "Slam above Overpower inside the CS window",{ eeog:-2.674, skeers:-2.349, ffc:-2.685 }],
+    ["bs-off-1t",       "Never Bladestorm on a single target",      { eeog:-2.683, skeers:-2.235, ffc:-2.311 }],
+    ["hs-off-1t",       "Never Heroic Strike on a single target",   { eeog:-9.524, skeers:-10.119, ffc:-9.990 }]
+  ],
+  damage: [
+    ["Strikes of Opportunity", 16.01, "mastery proc · 199.4 hits"],
+    ["Overpower",              12.95, "96.1 casts · 179 569 / cast"],
+    ["Mortal Strike",           9.83, "56.5 casts · 231 886 / cast"],
+    ["Heroic Strike",           9.06, "91.6 casts · off-GCD"],
+    ["Melee autoattacks",       8.04, "104.1 swings"],
+    ["Deep Wounds",             7.94, "bleed · 99.7 % uptime"],
+    ["Bloodbath",               7.43, "bleed · 45.2 % uptime"],
+    ["Execute",                 6.10, "15.9 casts · 510 633 / cast"],
+    ["Bladestorm",              4.71, "7.3 casts, channel interrupted"],
+    ["Colossus Smash",          4.42, "33.0 casts"],
+    ["Flurry of Xuen (cloak)",  4.00, "legendary cloak proc"],
+    ["Slam",                    3.61, "12.0 casts · 401 757 / cast"],
+    ["Stormlash Totem",         2.48, "raid buff"],
+    ["Capacitance (meta gem)",  2.36, "lightning strike"],
+    ["Heroic Leap",             1.03, "14.0 casts · off-GCD"]
+  ],
+  rage: {
+    sources: [["T16 2pc Colossal Rage",1383],["Melee autoattacks",1312],["Charge",638],["Mortal Strike",565],["Enrage",483],["Battle Shout",99]],
+    sinks:   [["Heroic Strike",2747],["Overpower",884],["Execute",477],["Slam",299]],
+    wasted: 51
+  }
+};
+
+const BUILDS = [
+  { k: "eeog",   name: "Evil Eye of Galakras",         v: "--s1" },
+  { k: "skeers", name: "Skeer's Bloodsoaked Talisman", v: "--s2" },
+  { k: "ffc",    name: "Fusion-Fire Core",             v: "--s3" }
+];
+const cvar = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const NS = "http://www.w3.org/2000/svg";
+const fmt = n => n.toLocaleString("en-US", { maximumFractionDigits: 0 }).replace(/,/g, " ");
+const pct = n => (n >= 0 ? "+" : "") + n.toFixed(3) + " %";
+
+function el(t, a = {}, txt) {
+  const e = document.createElementNS(NS, t);
+  for (const [k, v] of Object.entries(a)) e.setAttribute(k, v);
+  if (txt != null) e.textContent = txt;
+  return e;
+}
+function svg(host, w, h) {
+  host.textContent = "";
+  const s = el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, role: "img" });
+  host.appendChild(s);
+  return s;
+}
+function legend(host, items) {
+  host.textContent = "";
+  for (const it of items) {
+    const s = document.createElement("span");
+    const i = document.createElement("i");
+    i.style.background = it.color;
+    s.append(i, document.createTextNode(it.label));
+    host.appendChild(s);
+  }
+}
+
+/* ── tooltip ── */
+const tip = document.getElementById("tip");
+function showTip(ev, title, rows) {
+  tip.textContent = "";
+  const b = document.createElement("b"); b.textContent = title; tip.appendChild(b);
+  for (const r of rows) {
+    const d = document.createElement("div"); d.className = "r";
+    const l = document.createElement("span");
+    if (r.color) { const i = document.createElement("i"); i.style.background = r.color; l.appendChild(i); }
+    l.appendChild(document.createTextNode(r.k));
+    const v = document.createElement("span"); v.textContent = r.v;
+    d.append(l, v); tip.appendChild(d);
+  }
+  tip.style.opacity = 1;
+  const pad = 14, r = tip.getBoundingClientRect();
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - pad;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const hideTip = () => { tip.style.opacity = 0; };
+
+/* ── chart 1 + 2: DPS / delta against target count ── */
+const TC = [1, 2, 3, 4, 6, 10, 20];
+
+function lineChart(host, series, opts) {
+  const W = Math.min(1000, Math.max(560, host.clientWidth || 860)), H = opts.h || 300;
+  const m = { t: 14, r: 118, b: 34, l: 58 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const s = svg(host, W, H);
+  const g = el("g", { transform: `translate(${m.l},${m.t})` }); s.appendChild(g);
+
+  const xs = i => (iw * i) / (TC.length - 1);
+  const vals = series.flatMap(d => d.pts.map(p => p[1]));
+  let lo = opts.lo != null ? opts.lo : Math.min(...vals), hi = opts.hi != null ? opts.hi : Math.max(...vals);
+  if (opts.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  const padv = (hi - lo) * .1; lo -= padv; hi += padv;
+  const ys = v => ih - ((v - lo) / (hi - lo)) * ih;
+
+  const ticks = opts.ticks || 5;
+  for (let i = 0; i <= ticks; i++) {
+    const v = lo + ((hi - lo) * i) / ticks, y = ys(v);
+    g.appendChild(el("line", { class: "gl", x1: 0, x2: iw, y1: y, y2: y }));
+    g.appendChild(el("text", { x: -9, y: y + 3.5, "text-anchor": "end" }, opts.fmtY(v)));
+  }
+  if (opts.zero) g.appendChild(el("line", { class: "ax", x1: 0, x2: iw, y1: ys(0), y2: ys(0), "stroke-width": 1.5 }));
+  g.appendChild(el("line", { class: "ax", x1: 0, x2: 0, y1: 0, y2: ih }));
+  TC.forEach((t, i) => g.appendChild(el("text", { x: xs(i), y: ih + 20, "text-anchor": "middle" }, t)));
+  g.appendChild(el("text", { x: iw / 2, y: ih + 33, "text-anchor": "middle", "font-size": 9.5 }, "ACTIVE TARGETS"));
+
+  for (const d of series) {
+    const path = d.pts.map((p, i) => `${i ? "L" : "M"}${xs(i)},${ys(p[1])}`).join("");
+    g.appendChild(el("path", { d: path, fill: "none", stroke: d.color, "stroke-width": 2,
+                              "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    d.pts.forEach((p, i) => {
+      g.appendChild(el("circle", { cx: xs(i), cy: ys(p[1]), r: 4.5, fill: d.color,
+                                   stroke: cvar("--surface"), "stroke-width": 2 }));
+    });
+  }
+  // end labels, nudged apart so near-identical series stay readable
+  const marks = series
+    .map(d => ({ d, y: ys(d.pts[d.pts.length - 1][1]) }))
+    .sort((a, b) => a.y - b.y);
+  const MIN = 14;
+  for (let i = 1; i < marks.length; i++) {
+    if (marks[i].y - marks[i - 1].y < MIN) marks[i].y = marks[i - 1].y + MIN;
+  }
+  for (const mk of marks) {
+    g.appendChild(el("text", { x: iw + 10, y: mk.y + 3.5, class: "lbl", fill: mk.d.color }, mk.d.short));
+  }
+
+  /* crosshair band per target column */
+  TC.forEach((t, i) => {
+    const x0 = i === 0 ? 0 : (xs(i - 1) + xs(i)) / 2;
+    const x1 = i === TC.length - 1 ? iw : (xs(i) + xs(i + 1)) / 2;
+    const hit = el("rect", { x: x0, y: 0, width: Math.max(1, x1 - x0), height: ih, fill: "transparent" });
+    hit.style.cursor = "crosshair";
+    hit.addEventListener("pointerenter", () => {
+      cross.setAttribute("x1", xs(i)); cross.setAttribute("x2", xs(i));
+      cross.setAttribute("opacity", 1);
+    });
+    hit.addEventListener("pointermove", ev => showTip(ev, `${t} target${t > 1 ? "s" : ""}`,
+      series.map(d => ({ k: d.short, v: opts.fmtTip(d.pts[i][1]), color: d.color }))));
+    hit.addEventListener("pointerleave", () => { cross.setAttribute("opacity", 0); hideTip(); });
+    g.appendChild(hit);
+  });
+  const cross = el("line", { class: "ax", y1: 0, y2: ih, opacity: 0, "stroke-dasharray": "3 3" });
+  g.appendChild(cross);
+}
+
+function drawCurves() {
+  const cols = { eeog: cvar("--s1"), skeers: cvar("--s2"), ffc: cvar("--s3") };
+  const shortName = { eeog: "Galakras", skeers: "Skeer's", ffc: "Fusion-Fire" };
+  legend(document.getElementById("lg1"), BUILDS.map(b => ({ label: b.name, color: cols[b.k] })));
+  legend(document.getElementById("lg2"), BUILDS.map(b => ({ label: b.name, color: cols[b.k] })));
+
+  lineChart(document.getElementById("c1"),
+    BUILDS.map(b => ({ short: shortName[b.k], color: cols[b.k], pts: DATA.curve[b.k] })),
+    { fmtY: v => (v / 1e6).toFixed(1) + "M", fmtTip: v => fmt(v) + " dps", h: 320 });
+
+  const rel = k => DATA.curve[k].map((p, i) => [p[0], 100 * (p[1] - DATA.curve.eeog[i][1]) / DATA.curve.eeog[i][1]]);
+  lineChart(document.getElementById("c2"),
+    BUILDS.map(b => ({ short: shortName[b.k], color: cols[b.k], pts: rel(b.k) })),
+    { fmtY: v => (v >= 0 ? "+" : "") + v.toFixed(0) + "%", fmtTip: v => pct(v), zero: true, h: 260 });
+
+  /* table */
+  const t = document.getElementById("t1");
+  t.textContent = "";
+  const th = document.createElement("thead");
+  th.innerHTML = "<tr><th>Targets</th>" + BUILDS.map(b => `<th>${b.name}</th>`).join("") +
+                 "<th>Best</th></tr>";
+  const tb = document.createElement("tbody");
+  TC.forEach((tc, i) => {
+    const vs = BUILDS.map(b => DATA.curve[b.k][i][1]);
+    const best = BUILDS[vs.indexOf(Math.max(...vs))].name;
+    tb.innerHTML += `<tr><td>${tc}</td>` + vs.map(v => `<td>${fmt(v)}</td>`).join("") +
+                    `<td style="text-align:left">${best}</td></tr>`;
+  });
+  t.append(th, tb);
+}
+
+/* ── chart 3: damage composition ── */
+function drawDamage() {
+  const host = document.getElementById("c3");
+  const rows = DATA.damage;
+  const W = Math.min(1000, Math.max(560, host.clientWidth || 860));
+  const rh = 22, m = { t: 8, r: 20, b: 24, l: 178 };
+  const H = m.t + m.b + rows.length * rh;
+  const iw = W - m.l - m.r;
+  const s = svg(host, W, H);
+  const g = el("g", { transform: `translate(${m.l},${m.t})` }); s.appendChild(g);
+  const max = 17, xs = v => (v / max) * iw;
+  const col = cvar("--s1");
+
+  for (let v = 0; v <= max; v += 4) {
+    g.appendChild(el("line", { class: "gl", x1: xs(v), x2: xs(v), y1: 0, y2: rows.length * rh }));
+    g.appendChild(el("text", { x: xs(v), y: rows.length * rh + 16, "text-anchor": "middle" }, v + "%"));
+  }
+  rows.forEach((r, i) => {
+    const y = i * rh + 3, bh = rh - 8;
+    const bar = el("rect", { x: 0, y, width: Math.max(2, xs(r[1])), height: bh, rx: 3, fill: col,
+                             opacity: 0.35 + 0.65 * (r[1] / max) });
+    bar.style.cursor = "pointer";
+    bar.addEventListener("pointermove", ev => showTip(ev, r[0],
+      [{ k: "share of damage", v: r[1].toFixed(2) + " %" }, { k: "", v: r[2] }]));
+    bar.addEventListener("pointerleave", hideTip);
+    g.appendChild(bar);
+    g.appendChild(el("text", { x: -10, y: y + bh / 2 + 3.5, "text-anchor": "end", class: "lbl" }, r[0]));
+    g.appendChild(el("text", { x: xs(r[1]) + 7, y: y + bh / 2 + 3.5 }, r[1].toFixed(2) + "%"));
+  });
+}
+
+/* ── chart 4: rage ledger ── */
+function drawRage() {
+  const host = document.getElementById("c4");
+  const src = DATA.rage.sources, snk = DATA.rage.sinks;
+  const W = Math.min(1000, Math.max(560, host.clientWidth || 860));
+  const rows = Math.max(src.length, snk.length);
+  const rh = 26, m = { t: 26, r: 8, b: 8, l: 8 };
+  const H = m.t + m.b + rows * rh;
+  const colW = (W - 40) / 2;
+  const s = svg(host, W, H);
+  const g = el("g", { transform: `translate(${m.l},${m.t})` }); s.appendChild(g);
+  const max = 2800;
+  const cGain = cvar("--s3"), cSpend = cvar("--s2");
+
+  g.appendChild(el("text", { x: 0, y: -12, class: "lbl", fill: cGain }, "GENERATED  4 480 rage"));
+  g.appendChild(el("text", { x: colW + 40, y: -12, class: "lbl", fill: cSpend }, "SPENT  4 407 rage"));
+
+  const draw = (list, x0, color, dir) => {
+    list.forEach((r, i) => {
+      const y = i * rh + 4, bh = rh - 11, w = Math.max(2, (r[1] / max) * (colW - 4));
+      const bx = dir > 0 ? x0 : x0 + colW - w;
+      const bar = el("rect", { x: bx, y, width: w, height: bh, rx: 3, fill: color, opacity: .85 });
+      bar.style.cursor = "pointer";
+      bar.addEventListener("pointermove", ev => showTip(ev, r[0],
+        [{ k: dir > 0 ? "generated" : "spent", v: fmt(r[1]) + " rage / fight", color }]));
+      bar.addEventListener("pointerleave", hideTip);
+      g.appendChild(bar);
+      const tx = dir > 0 ? bx + w + 8 : bx - 8;
+      g.appendChild(el("text", { x: tx, y: y + bh / 2 + 3.5, "text-anchor": dir > 0 ? "start" : "end",
+                                 class: "lbl" }, r[0]));
+      const nx = dir > 0 ? bx + 6 : bx + w - 6;
+      g.appendChild(el("text", { x: nx, y: y + bh / 2 + 3.5, "text-anchor": dir > 0 ? "start" : "end",
+                                 fill: cvar("--surface"), "font-weight": 640 }, fmt(r[1])));
+    });
+  };
+  draw(src, 0, cGain, 1);
+  draw(snk, colW + 40, cSpend, -1);
+  legend(document.getElementById("lg4"), [
+    { label: "generated", color: cGain },
+    { label: "spent", color: cSpend },
+    { label: "wasted to cap: 51 rage (1.1 %)", color: cvar("--muted") }
+  ]);
+}
+
+/* ── chart 5: candidate ladder ── */
+function drawLadder() {
+  const host = document.getElementById("c5");
+  const rows = DATA.cands;
+  const W = Math.min(1000, Math.max(600, host.clientWidth || 880));
+  const rh = 30, m = { t: 26, r: 62, b: 26, l: 322 };
+  const H = m.t + m.b + rows.length * rh;
+  const iw = W - m.l - m.r;
+  const s = svg(host, W, H);
+  const g = el("g", { transform: `translate(${m.l},${m.t})` }); s.appendChild(g);
+  const lo = -0.30, hi = 0.15, xs = v => ((v - lo) / (hi - lo)) * iw;
+  const cols = { eeog: cvar("--s1"), skeers: cvar("--s2"), ffc: cvar("--s3") };
+
+  /* 2σ band — widest of the two sweeps, drawn per row instead as a shaded strip at 0 */
+  for (let v = -0.30; v <= 0.1501; v += 0.05) {
+    const x = xs(v);
+    g.appendChild(el("line", { class: "gl", x1: x, x2: x, y1: -6, y2: rows.length * rh }));
+    g.appendChild(el("text", { x, y: -12, "text-anchor": "middle" },
+      (Math.abs(v) < 1e-9 ? "0" : (v > 0 ? "+" : "") + v.toFixed(2)) + "%"));
+  }
+  g.appendChild(el("line", { class: "ax", x1: xs(0), x2: xs(0), y1: -6, y2: rows.length * rh, "stroke-width": 1.6 }));
+
+  rows.forEach((r, i) => {
+    const [key, label, iters, per] = r;
+    const y0 = i * rh;
+    const sig = per.eeog[1];
+    g.appendChild(el("rect", { x: xs(-sig), y: y0 + 2, width: xs(sig) - xs(-sig), height: rh - 4,
+                               fill: cvar("--muted"), opacity: .11 }));
+    const bh = 6, gap = 2;
+    BUILDS.forEach((b, j) => {
+      const d = per[b.k][0];
+      const y = y0 + 4 + j * (bh + gap);
+      const x = d >= 0 ? xs(0) : xs(d);
+      const w = Math.max(1.5, Math.abs(xs(d) - xs(0)));
+      const proven = Math.abs(d) > per[b.k][1];
+      const bar = el("rect", { x, y, width: w, height: bh, rx: 2, fill: cols[b.k],
+                               opacity: proven ? 1 : .38 });
+      bar.style.cursor = "pointer";
+      bar.addEventListener("pointermove", ev => showTip(ev, label, [
+        { k: b.name, v: pct(d), color: cols[b.k] },
+        { k: "2σ threshold", v: "±" + per[b.k][1].toFixed(3) + " %" },
+        { k: "iterations", v: iters + "k" }
+      ]));
+      bar.addEventListener("pointerleave", hideTip);
+      g.appendChild(bar);
+    });
+    const allProven = BUILDS.every(b => per[b.k][0] > per[b.k][1]);
+    const allNeg = BUILDS.every(b => per[b.k][0] < -per[b.k][1]);
+    g.appendChild(el("text", { x: -12, y: y0 + rh / 2 + 3.5, "text-anchor": "end", class: "lbl" },
+      label.length > 46 ? label.slice(0, 45) + "…" : label));
+    const worst = Math.min(...BUILDS.map(b => per[b.k][0]));
+    const best = Math.max(...BUILDS.map(b => per[b.k][0]));
+    g.appendChild(el("text", { x: iw + 8, y: y0 + rh / 2 + 3.5,
+                               fill: allProven ? cvar("--good") : allNeg ? cvar("--bad") : cvar("--muted"),
+                               "font-weight": 620 },
+      allProven ? "win" : allNeg ? "loss" : "—"));
+  });
+
+  legend(document.getElementById("lg5"), [
+    ...BUILDS.map(b => ({ label: b.name, color: cols[b.k] })),
+    { label: "faded bar = inside 2σ, unproven", color: cvar("--muted") }
+  ]);
+}
+
+/* ── chart 6: removal bounds ── */
+function drawBounds() {
+  const host = document.getElementById("c6");
+  const rows = DATA.bounds;
+  const W = Math.min(1000, Math.max(600, host.clientWidth || 880));
+  const rh = 30, m = { t: 26, r: 62, b: 26, l: 322 };
+  const H = m.t + m.b + rows.length * rh;
+  const iw = W - m.l - m.r;
+  const s = svg(host, W, H);
+  const g = el("g", { transform: `translate(${m.l},${m.t})` }); s.appendChild(g);
+  const lo = -10.5, hi = 0, xs = v => ((v - lo) / (hi - lo)) * iw;
+  const cols = { eeog: cvar("--s1"), skeers: cvar("--s2"), ffc: cvar("--s3") };
+
+  for (let v = -10; v <= 0.001; v += 2) {
+    const x = xs(v);
+    g.appendChild(el("line", { class: "gl", x1: x, x2: x, y1: -6, y2: rows.length * rh }));
+    g.appendChild(el("text", { x, y: -12, "text-anchor": "middle" }, v.toFixed(0) + "%"));
+  }
+  g.appendChild(el("line", { class: "ax", x1: xs(0), x2: xs(0), y1: -6, y2: rows.length * rh, "stroke-width": 1.6 }));
+
+  rows.forEach((r, i) => {
+    const [key, label, per] = r;
+    const y0 = i * rh, bh = 6, gap = 2;
+    BUILDS.forEach((b, j) => {
+      const d = per[b.k], y = y0 + 4 + j * (bh + gap);
+      const w = Math.max(1.5, xs(0) - xs(d));
+      const bar = el("rect", { x: xs(d), y, width: w, height: bh, rx: 2, fill: cols[b.k] });
+      bar.style.cursor = "pointer";
+      bar.addEventListener("pointermove", ev => showTip(ev, label,
+        [{ k: b.name, v: pct(d), color: cols[b.k] }]));
+      bar.addEventListener("pointerleave", hideTip);
+      g.appendChild(bar);
+    });
+    g.appendChild(el("text", { x: -12, y: y0 + rh / 2 + 3.5, "text-anchor": "end", class: "lbl" },
+      label.length > 46 ? label.slice(0, 45) + "…" : label));
+    const mean = (per.eeog + per.skeers + per.ffc) / 3;
+    g.appendChild(el("text", { x: xs(0) + 9, y: y0 + rh / 2 + 3.5,
+                               fill: cvar("--bad"), "font-weight": 620 },
+      mean.toFixed(1) + "%"));
+  });
+
+  legend(document.getElementById("lg6"), BUILDS.map(b => ({ label: b.name, color: cols[b.k] })));
+}
+
+/* ── candidate table ── */
+function drawTable() {
+  const t = document.getElementById("t2");
+  t.textContent = "";
+  const th = document.createElement("thead");
+  th.innerHTML = "<tr><th>Candidate</th><th>Change</th><th>Iters</th>" +
+    BUILDS.map(b => `<th>${b.name.split(" ")[0]}</th>`).join("") + "<th>2σ</th><th>Verdict</th></tr>";
+  const tb = document.createElement("tbody");
+  const cell = (d, sig) => `<td class="${d > sig ? "pos" : d < -sig ? "neg" : ""}">${pct(d)}</td>`;
+  for (const [key, label, iters, per] of DATA.cands) {
+    const all = BUILDS.map(b => per[b.k]);
+    const v = all.every(([d, s]) => d > s) ? ["win", "WIN"]
+            : all.every(([d, s]) => d < -s) ? ["loss", "loss"]
+            : all.some(([d, s]) => Math.abs(d) > s) ? ["noise", "mixed"] : ["noise", "noise"];
+    tb.innerHTML += `<tr><td>${key}</td><td style="text-align:left">${label}</td><td>${iters}k</td>` +
+      all.map(([d, s]) => cell(d, s)).join("") +
+      `<td>±${all[0][1].toFixed(3)}</td><td><span class="chip ${v[0]}">${v[1]}</span></td></tr>`;
+  }
+  for (const [key, label, per] of DATA.bounds) {
+    tb.innerHTML += `<tr><td>${key}</td><td style="text-align:left">${label}</td><td>30k</td>` +
+      BUILDS.map(b => `<td class="neg">${pct(per[b.k])}</td>`).join("") +
+      `<td>±0.053</td><td><span class="chip loss">loss</span></td></tr>`;
+  }
+  t.append(th, tb);
+}
+
+function renderAll() {
+  drawCurves(); drawDamage(); drawRage(); drawLadder(); drawBounds(); drawTable();
+}
+renderAll();
+
+let rt;
+addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 180); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
+new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("themeToggle");
+  function effective() {
+    var s = root.getAttribute("data-theme");
+    if (s === "light" || s === "dark") return s;
+    return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function label() { btn.textContent = effective() === "dark" ? "Light" : "Dark"; }
+  try {
+    var saved = localStorage.getItem("arms-st-report-theme");
+    if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
+  } catch (e) {}
+  label();
+  btn.addEventListener("click", function () {
+    var next = effective() === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("arms-st-report-theme", next); } catch (e) {}
+    label();
+  });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", label);
+})();
+</script>
+</body>
+</html>
