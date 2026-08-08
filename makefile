@@ -263,6 +263,13 @@ ptrdb:
 	go run tools/database/gen_db/*.go -outDir=./assets -gen=db
 
 sim/core/items/all_items.go: $(call rwildcard,tools/database,*.go) $(call rwildcard,sim/core/proto,*.go)
+	@test -f tools/database/wowsims.db || { \
+		echo "ERROR: tools/database/wowsims.db is missing (gitignored, produced by 'make db')."; \
+		echo "Run 'make db' to extract it from a local WoW install."; \
+		exit 1; }
+	@test -f tools/db2tool/listfile.csv || { \
+		echo "tools/db2tool/listfile.csv is missing, downloading it..."; \
+		curl -fL -o tools/db2tool/listfile.csv https://github.com/wowdev/wow-listfile/releases/latest/download/community-listfile.csv; }
 	go run tools/database/gen_db/*.go -outDir=./assets -gen=db
 
 .PHONY: test
