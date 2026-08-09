@@ -111,8 +111,13 @@ type MalkorokAI struct {
 
 	ImplodingEnergySoakChance float64
 
-	AncientMiasma    *core.Spell
-	ImplodingEnergy  *core.Spell
+	implodingEnergyWave     int
+	scheduleImplodingEnergy func(sim *core.Simulation)
+	ImplodingEnergy         *core.Spell
+
+	AncientMiasma         *core.Spell
+	scheduleAncientMiasma func(sim *core.Simulation, delay time.Duration)
+
 	EssenceOfYShaarj *core.Spell
 }
 
@@ -134,6 +139,11 @@ func (ai *MalkorokAI) Initialize(target *core.Target, config *proto.Target) {
 
 func (ai *MalkorokAI) Reset(sim *core.Simulation) {
 	ai.Target.RandomizeGCDTiming(sim)
+
+	ai.implodingEnergyWave = 0
+	ai.scheduleImplodingEnergy(sim)
+	// Acient Miasma's first tick is ~5s after encounter start
+	ai.scheduleAncientMiasma(sim, time.Second*3)
 }
 
 func (ai *MalkorokAI) ExecuteCustomRotation(sim *core.Simulation) {
@@ -142,13 +152,6 @@ func (ai *MalkorokAI) ExecuteCustomRotation(sim *core.Simulation) {
 		target = &ai.Target.Env.Raid.Parties[0].Players[0].GetCharacter().Unit
 	}
 
-	// Independent periodic mechanics, not a single GCD-locked cast -- fire every one that's ready.
-	if ai.AncientMiasma.IsReady(sim) {
-		ai.AncientMiasma.Cast(sim, target)
-	}
-	if ai.ImplodingEnergy.IsReady(sim) {
-		ai.ImplodingEnergy.Cast(sim, target)
-	}
 	if ai.EssenceOfYShaarj.IsReady(sim) {
 		ai.EssenceOfYShaarj.Cast(sim, target)
 	}
@@ -189,56 +192,95 @@ func (ai *MalkorokAI) hitRandomTargets(sim *core.Simulation, soakChance float64,
 	}
 }
 
-// Ancient Miasma (142906): fast raid-wide tick, observed mean interval 1.91s (stddev 2.1s, with
-// a long tail up to 35s from rare movement/phase gaps -- using the full observed range would
-// grossly overweight those rare gaps, so this rolls within roughly mean+-1stddev (clipped at 0,
-// since mean-stddev is negative) instead of the full min/max). Hits ~22 of 25 targets. Damage is
-// a hard 44550 unmitigated -- every 25m HC log shows exactly this value, no variance -- so it's
-// dealt as a flat amount rather than rolled.
+// Ancient Miasma (142906): Fast raid-wide tick every 2s
 func (ai *MalkorokAI) registerAncientMiasma() {
-	const numTargets = 22 // avgDistinctTargetsPerOccurrence: 21.93
+	ai.scheduleAncientMiasma = func(sim *core.Simulation, delay time.Duration) {
+		target := ai.Target.CurrentTarget
+		if target == nil {
+			target = &ai.Target.Env.Raid.Parties[0].Players[0].GetCharacter().Unit
+		}
+
+		pa := sim.GetConsumedPendingActionFromPool()
+		pa.NextActionAt = sim.CurrentTime + time.Millisecond*2000 + delay
+		pa.Priority = core.ActionPriorityDOT
+		pa.OnAction = func(sim *core.Simulation) {
+			ai.AncientMiasma.Cast(sim, target)
+		}
+		sim.AddPendingAction(pa)
+	}
 
 	ai.AncientMiasma = ai.Target.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 142906},
 		SpellSchool: core.SpellSchoolShadow,
 		ProcMask:    core.ProcMaskSpellDamage,
-		Flags:       core.SpellFlagAPL,
 
 		DamageMultiplier: 1,
 		ThreatMultiplier: 1,
 
-		Cast: core.CastConfig{
-			IgnoreHaste: true,
-			CD: core.Cooldown{
-				Timer:    ai.Target.NewTimer(),
-				Duration: time.Millisecond * 1900,
-			},
-		},
-
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
-			ai.hitRandomTargets(sim, float64(numTargets)/float64(ai.config.RaidSize), "Ancient Miasma Target", func(target *core.Unit) {
-				spell.CalcAndDealDamage(sim, target, 44550, spell.OutcomeAlwaysHit)
-			})
+			for _, playerUnit := range sim.Raid.AllPlayerUnits {
+				spell.CalcAndDealDamage(sim, playerUnit, 44550, spell.OutcomeAlwaysHit)
+			}
 
-			spell.CD.Set(sim.CurrentTime + ai.rollAncientMiasmaCD(sim))
+			ai.scheduleAncientMiasma(sim, 0)
 		},
 	})
-
-	ai.Target.RegisterResetEffect(func(sim *core.Simulation) {
-		ai.AncientMiasma.CD.Set(sim.CurrentTime + ai.rollAncientMiasmaCD(sim))
-	})
 }
 
-func (ai *MalkorokAI) rollAncientMiasmaCD(sim *core.Simulation) time.Duration {
-	return core.DurationFromSeconds(sim.RollWithLabel(1.95, 2.05, "Ancient Miasma Timing"))
-}
-
-// Imploding Energy (142986): synchronized multi-instance batch every ~23s. The CD range below
-// (19.01-30.79s) is the min/max interval observed during Phase 1 of WCL report CzZAMTXx1nW9Pygm
-// fight 27 (see createMalkorokPreset for why the sim just loops these Phase 1 timings for the
-// whole fight rather than modeling the intermission). Hits ~9 of 25 targets (the "Imploding Energy
-// Soak %" target input's 36% default), flat 585000 damage with 0 variance.
+// Imploding Energy (142986): synchronized multi-instance batch. One wave is ~9 separate damage
+// events inside a 17ms burst, which is why it's measured wave-to-wave and modeled as a single cast
+// here. Hits ~9 of 25 targets (the "Imploding Energy Soak %" target input's 36% default), flat
+// 585000 damage with 0 variance.
+//
+// The soak is not on a random cooldown -- it runs on a fixed grid, measured over 200 SoO 25-man
+// kills (190 Heroic / 10 Normal, 1200 waves) from the pull to the first Blood Rage:
+//
+//	soak(k) = 21.010 + 20*k + 10*floor(k/3)   seconds from the pull, +-0.9s
+//
+// 20s between waves, stretching to 30s on every third one because a Breath of Y'Shaarj falls inside
+// that interval. The observed sample stops at the first Blood Rage (~144.9s) after exactly six
+// waves; past that the grid is simply continued, matching how this preset already loops Phase 1 for
+// the whole fight (see createMalkorokPreset).
+//
+// The 4s cast time is the in-game warning: the energy lingers before it detonates, so the cast bar
+// is how a player knows to react. Damage lands on cast completion, i.e. at soak(k).
 func (ai *MalkorokAI) registerImplodingEnergy() {
+	const (
+		damage         = 585000.0
+		castTime       = time.Millisecond * 4000
+		firstSoak      = 21.010 // soak(0)
+		wavePeriod     = 20.0
+		breathStretch  = 10.0 // added to the gap once every wavesPerBreath waves
+		wavesPerBreath = 3
+		jitter         = 0.9 // soak(k) is +-this; all of it inherited from Arcing Smash's own roll
+	)
+
+	soakAt := func(sim *core.Simulation, wave int) time.Duration {
+		grid := firstSoak + wavePeriod*float64(wave) + breathStretch*float64(wave/wavesPerBreath)
+		return core.DurationFromSeconds(grid + sim.RollWithLabel(-jitter, jitter, "Imploding Energy Timing"))
+	}
+
+	// The wave times are absolute, so this owns the timing outright -- the spell has no cooldown and
+	// no GCD. Going through the boss GCD instead would quantise every wave up to the next 1620ms
+	// tick and lose the grid this whole schedule exists to reproduce.
+	ai.scheduleImplodingEnergy = func(sim *core.Simulation) {
+		target := ai.Target.CurrentTarget
+		if target == nil {
+			target = &ai.Target.Env.Raid.Parties[0].Players[0].GetCharacter().Unit
+		}
+
+		// Start casting early enough that the detonation lands on the measured soak time.
+		castAt := soakAt(sim, ai.implodingEnergyWave) - castTime
+
+		pa := sim.GetConsumedPendingActionFromPool()
+		pa.NextActionAt = max(castAt, sim.CurrentTime)
+		pa.Priority = core.ActionPriorityDOT
+		pa.OnAction = func(sim *core.Simulation) {
+			ai.ImplodingEnergy.Cast(sim, target)
+		}
+		sim.AddPendingAction(pa)
+	}
+
 	ai.ImplodingEnergy = ai.Target.RegisterSpell(core.SpellConfig{
 		ActionID:    core.ActionID{SpellID: 142986},
 		SpellSchool: core.SpellSchoolShadow,
@@ -251,31 +293,19 @@ func (ai *MalkorokAI) registerImplodingEnergy() {
 		Cast: core.CastConfig{
 			IgnoreHaste: true,
 			DefaultCast: core.Cast{
-				GCD:      core.GCDDefault,
-				CastTime: time.Millisecond * 4000,
-			},
-			CD: core.Cooldown{
-				Timer:    ai.Target.NewTimer(),
-				Duration: time.Second * 21,
+				CastTime: castTime,
 			},
 		},
 
 		ApplyEffects: func(sim *core.Simulation, _ *core.Unit, spell *core.Spell) {
 			ai.hitRandomTargets(sim, ai.ImplodingEnergySoakChance, "Imploding Energy Target", func(target *core.Unit) {
-				spell.CalcAndDealDamage(sim, target, 585000, spell.OutcomeAlwaysHit)
+				spell.CalcAndDealDamage(sim, target, damage, spell.OutcomeAlwaysHit)
 			})
 
-			spell.CD.Set(sim.CurrentTime + ai.rollImplodingEnergyCD(sim))
+			ai.implodingEnergyWave++
+			ai.scheduleImplodingEnergy(sim)
 		},
 	})
-
-	ai.Target.RegisterResetEffect(func(sim *core.Simulation) {
-		ai.ImplodingEnergy.CD.Set(sim.CurrentTime + ai.rollImplodingEnergyCD(sim))
-	})
-}
-
-func (ai *MalkorokAI) rollImplodingEnergyCD(sim *core.Simulation) time.Duration {
-	return core.DurationFromSeconds(sim.RollWithLabel(15.01, 26.79, "Imploding Energy Timing"))
 }
 
 // Essence of Y'Shaarj (143857): per-player soak, flat 150000 damage. Modeled as single-target --
