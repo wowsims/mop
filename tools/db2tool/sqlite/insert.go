@@ -3,16 +3,19 @@
 package sqlite
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"math"
 	"strings"
 
 	"github.com/wowsims/mop/tools/db2tool/wdc"
+	"zombiezen.com/go/sqlite"
+	"zombiezen.com/go/sqlite/sqlitex"
 )
 
-// InsertRows upserts every decoded row of one table inside one transaction.
+// InsertRows upserts every decoded row of one table inside one transaction,
+// through a single prepared statement (prepare once, bind/step/reset per
+// row — see the package comment for why this matters).
 //
 // Contract notes (the wowsims.db output format):
 //   - definition order = column order = bind order;
@@ -24,13 +27,8 @@ import (
 //   - arrays serialize as JSON text via encoding/json over plain numeric
 //     slices (u8 arrays emit [0,0,0], never base64);
 //   - float scalars bind as the double-widened float32.
-func InsertRows(db *sql.DB, t TableDef, decoded *wdc.Decoded) error {
+func InsertRows(conn *sqlite.Conn, t TableDef, decoded *wdc.Decoded) (err error) {
 	defs := t.Version.Definitions
-
-	columnNames := make([]string, len(defs))
-	for i, d := range defs {
-		columnNames[i] = d.Name
-	}
 
 	pkColumn := ""
 	for _, d := range defs {
@@ -44,15 +42,15 @@ func InsertRows(db *sql.DB, t TableDef, decoded *wdc.Decoded) error {
 	}
 
 	var cols, vals []string
-	for _, c := range columnNames {
-		cols = append(cols, "["+c+"]")
-		vals = append(vals, "@"+c)
+	for _, d := range defs {
+		cols = append(cols, "["+d.Name+"]")
+		vals = append(vals, "?")
 	}
 
 	var updates []string
-	for _, c := range columnNames {
-		if c != pkColumn {
-			updates = append(updates, fmt.Sprintf("[%s] = excluded.[%s]", c, c))
+	for _, d := range defs {
+		if d.Name != pkColumn {
+			updates = append(updates, fmt.Sprintf("[%s] = excluded.[%s]", d.Name, d.Name))
 		}
 	}
 	updateClause := "DO NOTHING"
@@ -63,71 +61,71 @@ func InsertRows(db *sql.DB, t TableDef, decoded *wdc.Decoded) error {
 	upsertSql := fmt.Sprintf("INSERT INTO [%s] (%s) VALUES (%s) ON CONFLICT([%s]) %s;",
 		t.Name, strings.Join(cols, ", "), strings.Join(vals, ", "), pkColumn, updateClause)
 
-	tx, err := db.Begin()
+	endFn, err := sqlitex.ImmediateTransaction(conn)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer endFn(&err)
 
 	// Relation-column indexes, created before the inserts.
 	for _, d := range defs {
 		if d.IsRelation {
 			stmt := fmt.Sprintf("CREATE INDEX IF NOT EXISTS idx_%s ON %s (%s);", strings.ToLower(d.Name), t.Name, d.Name)
-			if _, err := tx.Exec(stmt); err != nil {
+			if err := sqlitex.ExecuteTransient(conn, stmt, nil); err != nil {
 				return fmt.Errorf("creating relation index on %s.%s: %w", t.Name, d.Name, err)
 			}
 		}
 	}
 
-	stmt, err := tx.Prepare(upsertSql)
+	stmt, err := conn.Prepare(upsertSql)
 	if err != nil {
 		return fmt.Errorf("preparing upsert for %s: %w", t.Name, err)
 	}
-	defer stmt.Close()
 
-	args := make([]any, len(defs))
 	for _, row := range decoded.Rows {
 		if len(row.Values) != len(defs) {
 			return fmt.Errorf("table %s row %d: %d values for %d definitions", t.Name, row.ID, len(row.Values), len(defs))
 		}
 		for i, value := range row.Values {
-			bound, err := bindValue(value)
-			if err != nil {
+			if err := bindValue(stmt, i+1, value); err != nil {
 				return fmt.Errorf("table %s row %d column %s: %w", t.Name, row.ID, defs[i].Name, err)
 			}
-			args[i] = sql.Named(defs[i].Name, bound)
 		}
-		if _, err := stmt.Exec(args...); err != nil {
+		if _, err := stmt.Step(); err != nil {
 			return fmt.Errorf("inserting row %d into %s: %w", row.ID, t.Name, err)
+		}
+		if err := stmt.Reset(); err != nil {
+			return err
 		}
 	}
 
-	return tx.Commit()
+	return nil
 }
 
-// bindValue converts a decoded value into a driver-bindable one.
-func bindValue(value any) (any, error) {
+// bindValue binds a decoded value to the statement's param-th parameter.
+func bindValue(stmt *sqlite.Stmt, param int, value any) error {
 	switch v := value.(type) {
 	case nil:
-		return nil, nil
+		stmt.BindNull(param)
 	case int64:
-		return v, nil
+		stmt.BindInt64(param, v)
 	case uint64:
 		if v > math.MaxInt64 {
-			return nil, fmt.Errorf("uint64 value %d overflows INTEGER", v)
+			return fmt.Errorf("uint64 value %d overflows INTEGER", v)
 		}
-		return int64(v), nil
+		stmt.BindInt64(param, int64(v))
 	case float32:
-		return float64(v), nil // REAL binds as the double-widened float32
+		stmt.BindFloat(param, float64(v)) // REAL binds as the double-widened float32
 	case string:
-		return v, nil
+		stmt.BindText(param, v)
 	case []int64, []uint64, []float32, []string:
 		b, err := json.Marshal(v)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		return string(b), nil
+		stmt.BindText(param, string(b))
 	default:
-		return nil, fmt.Errorf("unsupported value type %T", value)
+		return fmt.Errorf("unsupported value type %T", value)
 	}
+	return nil
 }

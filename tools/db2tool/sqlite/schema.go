@@ -1,15 +1,22 @@
 // Package sqlite writes the extracted tables to wowsims.db: the schema (one
 // table per .dbd definition, arrays as JSON text plus generated per-element
 // columns) and the row inserts. This file is the schema half.
+//
+// The writer uses zombiezen.com/go/sqlite (the same pure-Go modernc engine
+// gen_db reads with, minus database/sql) because its prepared statements are
+// persistent: the modernc database/sql driver re-parses the SQL text on every
+// Exec, which made the wide per-row upserts dominate the whole extraction
+// (~40s of a ~42s run; prepare-once brings that to ~7s).
 package sqlite
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 	"strings"
 
 	"github.com/wowsims/mop/tools/db2tool/dbd"
+	"zombiezen.com/go/sqlite"
+	"zombiezen.com/go/sqlite/sqlitex"
 )
 
 // TableDef pairs a table name with its parsed definition and the version
@@ -25,34 +32,41 @@ type TableDef struct {
 // empty file, which is what makes post-patch re-runs and db/ptrdb
 // alternation correct — and opens a fresh connection with
 // PRAGMA foreign_keys = ON.
-func Open(path string) (*sql.DB, error) {
+//
+// The journal and sync pragmas trade durability for speed: the file is a
+// regenerated build artifact, so a run that dies mid-write is repaired by the
+// next run's delete-and-rebuild, never by rollback or fsync.
+func Open(path string) (*sqlite.Conn, error) {
 	if _, err := os.Stat(path); err == nil {
 		if err := os.Remove(path); err != nil {
 			return nil, fmt.Errorf("deleting existing database: %w", err)
 		}
 	}
-	db, err := sql.Open("sqlite", path)
+	conn, err := sqlite.OpenConn(path, sqlite.OpenReadWrite|sqlite.OpenCreate)
 	if err != nil {
 		return nil, err
 	}
-	// The writer is single-threaded; a single connection keeps every
-	// statement on one session.
-	db.SetMaxOpenConns(1)
-	if _, err := db.Exec("PRAGMA foreign_keys = ON;"); err != nil {
-		db.Close()
-		return nil, err
+	for _, pragma := range []string{
+		"PRAGMA foreign_keys = ON;",
+		"PRAGMA journal_mode = MEMORY;",
+		"PRAGMA synchronous = OFF;",
+	} {
+		if err := sqlitex.ExecuteTransient(conn, pragma, nil); err != nil {
+			conn.Close()
+			return nil, err
+		}
 	}
-	return db, nil
+	return conn, nil
 }
 
 // CreateTables emits the schema for every table, in order, inside one
 // transaction.
-func CreateTables(db *sql.DB, tables []TableDef) error {
-	tx, err := db.Begin()
+func CreateTables(conn *sqlite.Conn, tables []TableDef) (err error) {
+	endFn, err := sqlitex.ImmediateTransaction(conn)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer endFn(&err)
 
 	for _, t := range tables {
 		var columnDefinitionsSql []string
@@ -99,17 +113,17 @@ func CreateTables(db *sql.DB, tables []TableDef) error {
 		}
 
 		createTableSql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS [%s] (%s);", t.Name, strings.Join(columnDefinitionsSql, ", "))
-		if _, err := tx.Exec(createTableSql); err != nil {
+		if err := sqlitex.ExecuteTransient(conn, createTableSql, nil); err != nil {
 			return fmt.Errorf("creating table %s: %w", t.Name, err)
 		}
 		for _, stmt := range indexSql {
-			if _, err := tx.Exec(stmt); err != nil {
+			if err := sqlitex.ExecuteTransient(conn, stmt, nil); err != nil {
 				return fmt.Errorf("creating index on %s: %w", t.Name, err)
 			}
 		}
 	}
 
-	return tx.Commit()
+	return nil
 }
 
 func mapToSQLiteType(colType string) (string, error) {

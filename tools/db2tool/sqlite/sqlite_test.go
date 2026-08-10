@@ -10,12 +10,13 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// modernc driver-marshaling smoke test: creates the extractor's schema
-// shapes, upserts via named params, and reads back json_extract virtual
-// columns, NULL scans, and REAL vs INTEGER marshaling — a permanent
-// regression gate for driver behavior, independent of any game-data
-// snapshot.
-func TestModerncMarshalingContract(t *testing.T) {
+// Driver-marshaling smoke test: creates the extractor's schema shapes,
+// upserts through the zombiezen writer, then reads everything back through
+// database/sql + modernc — the exact stack gen_db consumes wowsims.db with —
+// checking json_extract virtual columns, NULL scans, and REAL vs INTEGER
+// marshaling. A permanent regression gate for writer/reader behavior,
+// independent of any game-data snapshot.
+func TestMarshalingContract(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "smoke.db")
 
 	def := dbd.DBDefinition{
@@ -40,13 +41,12 @@ func TestModerncMarshalingContract(t *testing.T) {
 	}
 	td := TableDef{Name: "Smoke", Def: def, Version: version}
 
-	db, err := Open(path)
+	conn, err := Open(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer db.Close()
 
-	if err := CreateTables(db, []TableDef{td}); err != nil {
+	if err := CreateTables(conn, []TableDef{td}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -58,15 +58,25 @@ func TestModerncMarshalingContract(t *testing.T) {
 			{ID: 3, Values: []any{int64(3), "", float32(0), []int64{0, 0, 0}, []float32{0, 0}, int64(0)}},
 		},
 	}
-	if err := InsertRows(db, td, decoded); err != nil {
+	if err := InsertRows(conn, td, decoded); err != nil {
 		t.Fatal(err)
 	}
 	// Upsert (same PK) must update, not duplicate.
-	if err := InsertRows(db, td, &wdc.Decoded{Rows: []wdc.Row{
+	if err := InsertRows(conn, td, &wdc.Decoded{Rows: []wdc.Row{
 		{ID: 2, Values: []any{int64(2), "second", float32(1.5), []int64{9, 9, 9}, []float32{2.5, 0}, int64(7)}},
 	}}); err != nil {
 		t.Fatal(err)
 	}
+	if err := conn.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Read back through the consumer's stack.
+	db, err := sql.Open("sqlite", path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
 
 	var n int
 	if err := db.QueryRow("SELECT count(*) FROM Smoke").Scan(&n); err != nil {
