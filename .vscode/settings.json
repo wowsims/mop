@@ -1,15 +1,13 @@
 {
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"eslint.validate": ["javascript", "typescript"],
-	"eslint.nodePath": "./node_modules",
-	"eslint.workingDirectories": ["."],
+	"editor.defaultFormatter": "oxc.oxc-vscode",
+	"oxc.fmt.experimental": true,
 	"javascript.preferences.importModuleSpecifier": "relative",
 	"javascript.preferences.importModuleSpecifierEnding": "minimal",
 	"typescript.preferences.importModuleSpecifier": "relative",
 	"typescript.preferences.importModuleSpecifierEnding": "minimal",
 	"[javascript][javascriptreact][typescript][typescriptreact][html]": {
 		"editor.codeActionsOnSave": {
-			"source.fixAll.eslint": "always"
+			"source.fixAll.oxc": "always"
 		}
 	},
 	"css.validate": false,
@@ -133,7 +131,6 @@
 	},
 	"makefile.configureOnOpen": false,
 	"[json]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"typescript.tsdk": "node_modules/typescript/lib"
+		"editor.defaultFormatter": "oxc.oxc-vscode"
+	}
 }

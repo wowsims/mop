@@ -233,7 +233,7 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 						}
 					}
 					if (softCap.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent) && softCapToModify) {
-						const raidBuffs = player.getRaid()?.getBuffs()!;
+						const raidBuffs = player.getRaid()!.getBuffs();
 						const hasMeleeHaste = [
 							raidBuffs.unholyAura,
 							raidBuffs.cacklingHowl,

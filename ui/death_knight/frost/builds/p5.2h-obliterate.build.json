@@ -161,7 +161,15 @@
 				"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24835, 0, 900000000, 0, 0],
 				"minBaseDamage": 250000,
 				"damageSpread": 0.5,
-				"swingSpeed": 2
+				"swingSpeed": 2,
+				"targetInputs": [
+					{
+						"inputType": "Number",
+						"label": "Imploding Energy Soak %",
+						"tooltip": "Percentage of Imploding Energy batches this player soaks. The default 36% matches the ~9 of 25 players hit per batch in the reference log; raise it if you're always assigned to soak, lower it if you rarely are.",
+						"numberValue": 36
+					}
+				]
 			}
 		]
 	}

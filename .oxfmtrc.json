@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 160,
+  "useTabs": true,
+  "tabWidth": 4,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "bracketSameLine": true,
+  "arrowParens": "avoid",
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "ui/worker/highs.js",
+    "ui/**/apls/*.apl.json",
+    "ui/**/builds/*.build.json",
+    "ui/**/gear_sets/*.gear.json",
+    "ui/core/talents/trees/*.json"
+  ]
+}

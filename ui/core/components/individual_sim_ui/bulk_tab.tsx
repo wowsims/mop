@@ -1448,7 +1448,7 @@ export class BulkTab extends SimTab {
 			await this.simUI.sim.signalManager.abortType(RequestTypes.RaidSim);
 			this.simStart = new Date().getTime();
 			this.originalGear = this.simUI.player.getGear();
-			let topGearResults: TopGearResult[] = [];
+			const topGearResults: TopGearResult[] = [];
 
 			this.resetResultsTabContent();
 			this.setCandidateGearProgress();
