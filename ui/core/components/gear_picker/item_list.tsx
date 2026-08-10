@@ -381,7 +381,7 @@ export default class ItemList<T extends ItemListType> {
 				const searchQuery = formatQuery(this.searchInput.value).split(' ');
 				const name = formatQuery(listItemData.name.toString());
 				const nameDescription = formatQuery(listItemData.nameDescription.toString());
-				let sourceNames: string[] = [];
+				const sourceNames: string[] = [];
 				if ('item' in listItemData && typeof listItemData.item == 'object' && 'sources' in listItemData.item) {
 					sourceNames.push(
 						...listItemData.item.sources

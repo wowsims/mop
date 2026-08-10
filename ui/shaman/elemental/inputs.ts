@@ -1,4 +1,4 @@
-import { EventID } from 'ui/core/typed_event.js';
+import { EventID } from '../../core/typed_event.js';
 
 import * as InputHelpers from '../../core/components/input_helpers.js';
 import { Player } from '../../core/player.js';
