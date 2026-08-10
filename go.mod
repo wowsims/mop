@@ -16,7 +16,10 @@ require (
 	modernc.org/sqlite v1.37.1
 )
 
-require zombiezen.com/go/sqlite v1.4.2 // indirect
+require (
+	golang.org/x/sync v0.22.0 // indirect
+	zombiezen.com/go/sqlite v1.4.2 // indirect
+)
 
 require (
 	github.com/alecthomas/participle/v2 v2.1.4

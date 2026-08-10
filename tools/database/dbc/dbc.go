@@ -6,6 +6,8 @@ import (
 	"log"
 	"slices"
 	"sync"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type DBC struct {
@@ -164,15 +166,23 @@ func InitDBC() error {
 
 // InitDBCFrom loads the singleton from inputsDir, replacing whatever was loaded before. The
 // instance is only published once every file has been read, so a failed load leaves the previous
-// one in place rather than a half-populated replacement.
+// one in place rather than a half-populated replacement. The inputs are independent files
+// folding into disjoint DBC fields, so they load concurrently.
 func InitDBCFrom(inputsDir string) error {
 	instance := NewDBC()
 
+	var g errgroup.Group
 	for _, input := range dbcInputs {
-		path := fmt.Sprintf("%s/%s.json", inputsDir, input.name)
-		if err := input.load(instance, path); err != nil {
-			return fmt.Errorf("loading %s: %w", input.name, err)
-		}
+		g.Go(func() error {
+			path := fmt.Sprintf("%s/%s.json", inputsDir, input.name)
+			if err := input.load(instance, path); err != nil {
+				return fmt.Errorf("loading %s: %w", input.name, err)
+			}
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return err
 	}
 	instance.LoadSpellScaling()
 	instance.indexSpellEffects()
