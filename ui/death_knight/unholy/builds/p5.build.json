@@ -28,9 +28,9 @@
 					"id": 99337,
 					"gems": [
 						95346,
-						76659
+						76661
 					],
-					"reforging": 152,
+					"reforging": 166,
 					"upgradeStep": "UpgradeStepTwo"
 				},
 				{
@@ -43,7 +43,7 @@
 					"enchant": 4803,
 					"gems": [
 						76684,
-						76659
+						76661
 					],
 					"reforging": 159,
 					"upgradeStep": "UpgradeStepTwo"
@@ -52,7 +52,7 @@
 					"id": 102249,
 					"enchant": 4424,
 					"gems": [
-						76659
+						76661
 					],
 					"reforging": 168,
 					"upgradeStep": "UpgradeStepTwo",
@@ -62,8 +62,8 @@
 					"id": 99335,
 					"enchant": 4419,
 					"gems": [
-						76661,
-						76661,
+						76659,
+						76659,
 						76659
 					],
 					"reforging": 166,
@@ -75,18 +75,18 @@
 					"gems": [
 						0
 					],
-					"reforging": 167,
+					"reforging": 165,
 					"upgradeStep": "UpgradeStepTwo"
 				},
 				{
 					"id": 99336,
 					"enchant": 4432,
 					"gems": [
-						76661,
+						76659,
 						76659,
 						0
 					],
-					"reforging": 137,
+					"reforging": 166,
 					"upgradeStep": "UpgradeStepTwo",
 					"tinker": 4898
 				},
@@ -114,12 +114,11 @@
 					"upgradeStep": "UpgradeStepTwo"
 				},
 				{
-					"id": 104482,
+					"id": 104535,
 					"enchant": 4426,
 					"gems": [
-						76659
+						76641
 					],
-					"reforging": 138,
 					"upgradeStep": "UpgradeStepTwo"
 				},
 				{
@@ -146,11 +145,12 @@
 					"upgradeStep": "UpgradeStepTwo"
 				},
 				{
-					"id": 104483,
+					"id": 104648,
 					"enchant": 3368,
 					"gems": [
-						76641
+						76659
 					],
+					"reforging": 167,
 					"upgradeStep": "UpgradeStepTwo"
 				},
 				{}
