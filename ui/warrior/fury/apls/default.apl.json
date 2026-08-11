@@ -10,6 +10,7 @@
 		{"action":{"castSpell":{"spellId":{"spellId":114206,"tag":-1}}},"doAtValue":{"const":{"val":"0s"}}}
 	],
 	"priorityList": [
+		{"action":{"groupReference":{"groupName":"Encounter: Malkorok"}}},
 		{"action":{"autocastOtherCooldowns":{}}},
 		{"action":{"condition":{"and":{"vals":[{"not":{"val":{"auraIsActive":{"sourceUnit":{"type":"CurrentTarget"},"auraId":{"spellId":1249459,"tag":-1}}}}},{"cmp":{"op":"OpLt","lhs":{"currentTime":{}},"rhs":{"const":{"val":"60s"}}}}]}},"castSpell":{"spellId":{"spellId":1249459,"tag":-1}}}},
 		{"action":{"condition":{"cmp":{"op":"OpLe","lhs":{"currentRage":{}},"rhs":{"math":{"op":"OpSub","lhs":{"maxRage":{}},"rhs":{"const":{"val":"35"}}}}}},"castSpell":{"spellId":{"spellId":1250619}}}},
@@ -38,6 +39,11 @@
 		{"action":{"condition":{"const":{"val":"false"}},"castSpell":{"spellId":{"spellId":1249459}}}}
 	],
 	"groups": [
+		{"name":"Encounter: Malkorok","actions":[
+			{"action":{"condition":{"and":{"vals":[{"bossSpellIsKnown":{"spellId":{"spellId":142986}}},{"bossSpellIsCasting":{"spellId":{"spellId":142986}}}]}},"castSpell":{"spellId":{"spellId":2458}}}},
+			{"action":{"condition":{"or":{"vals":[{"not":{"val":{"bossSpellIsKnown":{"spellId":{"spellId":142986}}}}},{"not":{"val":{"bossSpellIsCasting":{"spellId":{"spellId":142986}}}}}]}},"castSpell":{"spellId":{"spellId":2457}}}},
+			{"action":{"condition":{"and":{"vals":[{"bossSpellIsKnown":{"spellId":{"spellId":142986}}},{"bossSpellIsCasting":{"spellId":{"spellId":142986}}},{"cmp":{"op":"OpGe","lhs":{"currentRage":{}},"rhs":{"const":{"val":"40"}}}}]}},"castSpell":{"spellId":{"spellId":78}}}}
+		]},
 		{"name":"CDs: Buffs","actions":[
 			{"action":{"condition":{"or":{"vals":[{"and":{"vals":[{"isExecutePhase":{"threshold":"E20"}},{"anyTrinketStatProcsActive":{"statType2":7,"statType3":-1,"minIcdSeconds":54}}]}},{"cmp":{"op":"OpLe","lhs":{"remainingTime":{}},"rhs":{"const":{"val":"25s"}}}}]}},"castSpell":{"spellId":{"otherId":"OtherActionPotion"}}}},
 			{"action":{"condition":{"not":{"val":{"auraIsActive":{"auraId":{"spellId":114206,"tag":-1}}}}},"castSpell":{"spellId":{"spellId":114206}}}},
