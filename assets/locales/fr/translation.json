@@ -1223,6 +1223,10 @@
 					"label": "Sort de boss connu",
 					"tooltip": "<b>Vrai</b> si la cible possède actuellement le sort spécifié, sinon <b>Faux</b>."
 				},
+				"boss_spell_cast_time_remaining": {
+					"label": "Temps restant du sort du boss",
+					"tooltip": "Temps restant sur le sort actuellement lancé par le boss, ou 0 s'il n'est pas en train de le lancer."
+				},
 				"unit_is_moving": {
 					"label": "Unité en mouvement",
 					"tooltip": "Vrai si l'unité se déplace"
