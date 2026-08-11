@@ -294,6 +294,7 @@ var ItemSetRegaliaOfTheHornedNightmare = core.NewItemSet(core.ItemSet{
 						return
 					}
 
+					buff.Icd.Use(sim)
 					buff.Activate(sim)
 				})
 			}
