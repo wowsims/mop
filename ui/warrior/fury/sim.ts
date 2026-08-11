@@ -5,11 +5,12 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Class, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Class, Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as WarriorInputs from '../inputs';
+import * as SharedPresets from '../shared';
 import * as FuryInputs from './inputs';
 import * as Presets from './presets';
 
@@ -128,6 +129,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFuryWarrior, {
 		talents: [Presets.FurySMFTalents, Presets.FuryTGTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.FURY_DEFAULT_ROTATION],
+		encounters: [SharedPresets.ENCOUNTER_SINGLE_TARGET, SharedPresets.ENCOUNTER_MALKOROK],
 		// Preset gear configurations that the user can quickly select.
 		gear: [
 			Presets.PRERAID_FURY_SMF_PRESET,
@@ -144,35 +146,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFuryWarrior, {
 		return Presets.FURY_DEFAULT_ROTATION.rotation.rotation!;
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecFuryWarrior,
-			talents: Presets.FurySMFTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P2_BIS_FURY_SMF_PRESET.gear,
-					2: Presets.P2_BIS_FURY_TG_PRESET.gear,
-					3: Presets.PRERAID_FURY_SMF_PRESET.gear,
-					4: Presets.PRERAID_FURY_TG_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P2_BIS_FURY_SMF_PRESET.gear,
-					2: Presets.P2_BIS_FURY_TG_PRESET.gear,
-					3: Presets.PRERAID_FURY_SMF_PRESET.gear,
-					4: Presets.PRERAID_FURY_TG_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
+	raidSimPresets: [],
 });
 
 export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {
