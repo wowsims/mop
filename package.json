@@ -7,7 +7,7 @@
 		"node": ">=22"
 	},
 	"volta": {
-		"node": "22.17.1"
+		"node": "22.23.2"
 	},
 	"scripts": {
 		"start": "cross-env WATCH=1 make devmode",
