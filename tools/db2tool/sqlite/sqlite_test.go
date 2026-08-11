@@ -1,0 +1,157 @@
+package sqlite
+
+import (
+	"database/sql"
+	"path/filepath"
+	"testing"
+
+	"github.com/wowsims/mop/tools/db2tool/dbd"
+	"github.com/wowsims/mop/tools/db2tool/wdc"
+	_ "modernc.org/sqlite"
+)
+
+// Driver-marshaling smoke test: creates the extractor's schema shapes,
+// upserts through the zombiezen writer, then reads everything back through
+// database/sql + modernc — the exact stack gen_db consumes wowsims.db with —
+// checking json_extract virtual columns, NULL scans, and REAL vs INTEGER
+// marshaling. A permanent regression gate for writer/reader behavior,
+// independent of any game-data snapshot.
+func TestMarshalingContract(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "smoke.db")
+
+	def := dbd.DBDefinition{
+		ColumnDefinitions: map[string]dbd.ColumnDefinition{
+			"ID":       {Type: "int"},
+			"Name":     {Type: "locstring"},
+			"Rate":     {Type: "float"},
+			"Stats":    {Type: "int"},
+			"Scales":   {Type: "float"},
+			"ParentID": {Type: "int", ForeignTable: "Other", ForeignColumn: "ID"},
+		},
+	}
+	version := dbd.VersionDefinitions{
+		Definitions: []dbd.Definition{
+			{Name: "ID", Size: 32, IsID: true, IsSigned: true},
+			{Name: "Name"},
+			{Name: "Rate"},
+			{Name: "Stats", Size: 32, ArrLength: 3, IsSigned: true},
+			{Name: "Scales", ArrLength: 2},
+			{Name: "ParentID", Size: 32, IsSigned: true, IsRelation: true},
+		},
+	}
+	td := TableDef{Name: "Smoke", Def: def, Version: version}
+
+	conn, err := Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := CreateTables(conn, []TableDef{td}); err != nil {
+		t.Fatal(err)
+	}
+
+	decoded := &wdc.Decoded{
+		Rows: []wdc.Row{
+			{ID: 1, Values: []any{int64(1), "first", float32(0.581), []int64{1, -2, 3}, []float32{0.1, 0}, int64(0)}},
+			{ID: 2, Values: []any{int64(2), "", float32(0), []int64{0, 0, 0}, []float32{0, 0}, int64(7)}},
+			// Never upserted below, so it keeps its all-zero arrays.
+			{ID: 3, Values: []any{int64(3), "", float32(0), []int64{0, 0, 0}, []float32{0, 0}, int64(0)}},
+		},
+	}
+	if err := InsertRows(conn, td, decoded); err != nil {
+		t.Fatal(err)
+	}
+	// Upsert (same PK) must update, not duplicate.
+	if err := InsertRows(conn, td, &wdc.Decoded{Rows: []wdc.Row{
+		{ID: 2, Values: []any{int64(2), "second", float32(1.5), []int64{9, 9, 9}, []float32{2.5, 0}, int64(7)}},
+	}}); err != nil {
+		t.Fatal(err)
+	}
+	if err := conn.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Read back through the consumer's stack.
+	db, err := sql.Open("sqlite", path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	var n int
+	if err := db.QueryRow("SELECT count(*) FROM Smoke").Scan(&n); err != nil {
+		t.Fatal(err)
+	}
+	if n != 3 {
+		t.Fatalf("expected 3 rows after upsert, got %d", n)
+	}
+
+	// float32 scalar must store the double-widened value.
+	var rate float64
+	if err := db.QueryRow("SELECT Rate FROM Smoke WHERE ID=1").Scan(&rate); err != nil {
+		t.Fatal(err)
+	}
+	if rate != float64(float32(0.581)) {
+		t.Errorf("Rate = %v, want double-widened float32 %v", rate, float64(float32(0.581)))
+	}
+
+	// Arrays: exact JSON text and virtual-column extraction (int and float).
+	var statsText string
+	var stats1 int
+	var scales0 float64
+	if err := db.QueryRow("SELECT Stats, Stats_1, Scales_0 FROM Smoke WHERE ID=1").Scan(&statsText, &stats1, &scales0); err != nil {
+		t.Fatal(err)
+	}
+	if statsText != "[1,-2,3]" {
+		t.Errorf("Stats text = %q, want [1,-2,3]", statsText)
+	}
+	if stats1 != -2 {
+		t.Errorf("Stats_1 = %d, want -2", stats1)
+	}
+	// json_extract parses the stored float32 shortest-round-trip TEXT ("0.1")
+	// as a double — so virtual float columns yield 0.1, NOT the widened
+	// float32 0.10000000149011612.
+	if scales0 != 0.1 {
+		t.Errorf("Scales_0 = %v, want 0.1", scales0)
+	}
+
+	// The upsert must have replaced row 2's arrays wholesale.
+	var upsertedStats, upsertedScales string
+	if err := db.QueryRow("SELECT Stats, Scales FROM Smoke WHERE ID=2").Scan(&upsertedStats, &upsertedScales); err != nil {
+		t.Fatal(err)
+	}
+	if upsertedStats != "[9,9,9]" || upsertedScales != "[2.5,0]" {
+		t.Errorf("upserted arrays = %q / %q, want [9,9,9] / [2.5,0]", upsertedStats, upsertedScales)
+	}
+
+	// All-zero arrays serialize as [0,...], never NULL/[]/"" — checked on the
+	// row that was never upserted.
+	var zeroStats, zeroScales string
+	if err := db.QueryRow("SELECT Stats, Scales FROM Smoke WHERE ID=3").Scan(&zeroStats, &zeroScales); err != nil {
+		t.Fatal(err)
+	}
+	if zeroStats != "[0,0,0]" || zeroScales != "[0,0]" {
+		t.Errorf("all-zero arrays = %q / %q, want [0,0,0] / [0,0]", zeroStats, zeroScales)
+	}
+
+	// Relation value 0 stays 0 — never converted to NULL. The C# original's
+	// relation-0-to-NULL branch was dead code (a boxed reference compare).
+	var parent sql.NullInt64
+	if err := db.QueryRow("SELECT ParentID FROM Smoke WHERE ID=1").Scan(&parent); err != nil {
+		t.Fatal(err)
+	}
+	if !parent.Valid || parent.Int64 != 0 {
+		t.Errorf("ParentID = %+v, want valid 0", parent)
+	}
+
+	// Schema shape: FK index + relation index + PK + generated columns exist.
+	for _, wantIdx := range []string{"IX_Smoke_ParentID", "idx_parentid"} {
+		var cnt int
+		if err := db.QueryRow("SELECT count(*) FROM sqlite_master WHERE type='index' AND name=?", wantIdx).Scan(&cnt); err != nil {
+			t.Fatal(err)
+		}
+		if cnt != 1 {
+			t.Errorf("index %s missing", wantIdx)
+		}
+	}
+}

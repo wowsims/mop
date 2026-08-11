@@ -193,7 +193,6 @@ export class Encounter {
 			mobType: MobType.MobTypeMechanical,
 			stats: Stats.fromMap({
 				[Stat.StatArmor]: 24835,
-				[Stat.StatAttackPower]: 650,
 				[Stat.StatHealth]: 120016403,
 			}).asProtoArray(),
 			minBaseDamage: 550000,
