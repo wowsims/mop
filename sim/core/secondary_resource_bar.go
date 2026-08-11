@@ -71,11 +71,10 @@ func (bar *DefaultSecondaryResourceBarImpl) Gain(sim *Simulation, amount float64
 }
 
 // Reset implements SecondaryResourceBar.
-func (bar *DefaultSecondaryResourceBarImpl) Reset(sim *Simulation) {
-	bar.value = 0
-	if bar.config.Default > 0 {
-		bar.Gain(sim, bar.config.Default, ActionID{SpellID: int32(bar.config.Type)})
-	}
+// Initialization is not a resource event: set the value directly so no metrics
+// event is recorded and no OnGain callback fires.
+func (bar *DefaultSecondaryResourceBarImpl) Reset(_ *Simulation) {
+	bar.value = bar.config.Default
 }
 
 var encounterStartActionID = ActionID{OtherID: proto.OtherAction_OtherActionEncounterStart}
