@@ -549,49 +549,99 @@ func (apl *APLRotation) nextActionWouldRecastChannel(sim *Simulation, channeledD
 	apl.unit.ChanneledDot = nil
 
 	for _, action := range apl.priorityList {
-		// Condition not met — skip.
-		if action.condition != nil && !action.condition.GetBool(sim) {
-			continue
-		}
-
-		if castAction, ok := action.impl.(*APLActionCastSpell); ok {
-			canCast := castAction.spell.CanCast(sim, castAction.target.Get())
-			if castAction.spell == channeledSpell || castAction.spell.Matches(channeledSpell.ClassSpellMask) {
-				return canCast
-			}
-			// Different cast_spell: use CanCast (not CanCastOrQueue) so SQW-queued spells
-			// don't prematurely interrupt — they'll fire after the channel's next tick.
-			if canCast {
-				return false
-			}
-			continue
-		}
-
-		if channelAction, ok := action.impl.(*APLActionChannelSpell); ok {
-			canCast := channelAction.spell.CanCast(sim, channelAction.target.Get())
-			if channelAction.spell == channeledSpell || channelAction.spell.Matches(channeledSpell.ClassSpellMask) {
-				return canCast
-			}
-			// Different channel_spell: same SQW reasoning as cast_spell above.
-			if canCast {
-				return false
-			}
-			continue
-		}
-
-		// autocast_other_cooldowns fires off-GCD MCDs alongside the main rotation
-		// rather than replacing it, so it should never block same-spell detection.
-		if _, ok := action.impl.(*APLActionAutocastOtherCooldowns); ok {
-			continue
-		}
-
-		// A different non-spell action is fully ready — it would be cast first.
-		if action.impl.IsReady(sim) {
-			return false
+		if verdict := apl.inspectForChannelRecast(sim, action, channeledSpell, 0); verdict != channelRecastUndecided {
+			return verdict == channelRecastYes
 		}
 	}
 
 	return false
+}
+
+// channelRecastVerdict is the outcome of inspecting one action during the
+// nextActionWouldRecastChannel walk.
+type channelRecastVerdict int
+
+const (
+	channelRecastUndecided channelRecastVerdict = iota // this action decides nothing; keep walking
+	channelRecastYes                                   // the same channeled spell would be re-cast
+	channelRecastNo                                    // a different action would be cast first
+)
+
+// maxChannelRecastDepth bounds the group-reference recursion. Groups are only
+// referenced from the priority list, so one level is all that occurs in practice;
+// the cap only exists so a malformed rotation cannot spin here.
+const maxChannelRecastDepth = 8
+
+// inspectForChannelRecast applies the nextActionWouldRecastChannel rules to a single
+// action, recursing into group references so that a cast folded into a group is judged
+// by the same rules as the equivalent inlined priority line.
+func (apl *APLRotation) inspectForChannelRecast(sim *Simulation, action *APLAction, channeledSpell *Spell, depth int) channelRecastVerdict {
+	// Condition not met — skip.
+	if action.condition != nil && !action.condition.GetBool(sim) {
+		return channelRecastUndecided
+	}
+
+	switch impl := action.impl.(type) {
+	case *APLActionCastSpell:
+		canCast := impl.spell.CanCast(sim, impl.target.Get())
+		if impl.spell == channeledSpell || impl.spell.Matches(channeledSpell.ClassSpellMask) {
+			return boolToChannelRecastVerdict(canCast)
+		}
+		// Different cast_spell: use CanCast (not CanCastOrQueue) so SQW-queued spells
+		// don't prematurely interrupt — they'll fire after the channel's next tick.
+		if canCast {
+			return channelRecastNo
+		}
+		return channelRecastUndecided
+
+	case *APLActionChannelSpell:
+		canCast := impl.spell.CanCast(sim, impl.target.Get())
+		if impl.spell == channeledSpell || impl.spell.Matches(channeledSpell.ClassSpellMask) {
+			return boolToChannelRecastVerdict(canCast)
+		}
+		// Different channel_spell: same SQW reasoning as cast_spell above.
+		if canCast {
+			return channelRecastNo
+		}
+		return channelRecastUndecided
+
+	case *APLActionAutocastOtherCooldowns:
+		// autocast_other_cooldowns fires off-GCD MCDs alongside the main rotation
+		// rather than replacing it, so it should never block same-spell detection.
+		return channelRecastUndecided
+
+	case *APLActionGroupReference:
+		// A group reference is ready when its condition holds and any inner action is
+		// ready, and it executes the first ready inner action — so it is exactly
+		// equivalent to those actions inlined at this position. Walk them with the same
+		// rules instead of falling through to the generic IsReady check below, which
+		// would test CanCastOrQueue rather than CanCast and so let an SQW-queued spell
+		// suppress a same-spell re-cast that an inlined line would have allowed.
+		if impl.group == nil || depth >= maxChannelRecastDepth {
+			return channelRecastUndecided
+		}
+		for _, inner := range impl.group.actions {
+			if verdict := apl.inspectForChannelRecast(sim, inner, channeledSpell, depth+1); verdict != channelRecastUndecided {
+				return verdict
+			}
+		}
+		return channelRecastUndecided
+	}
+
+	// A different non-spell action is fully ready — it would be cast first. Composite
+	// actions such as strict sequences are judged by their own readiness on purpose:
+	// unlike a group, a sequence's members are not independently castable.
+	if action.impl.IsReady(sim) {
+		return channelRecastNo
+	}
+	return channelRecastUndecided
+}
+
+func boolToChannelRecastVerdict(b bool) channelRecastVerdict {
+	if b {
+		return channelRecastYes
+	}
+	return channelRecastNo
 }
 
 func (apl *APLRotation) shouldInterruptChannel(sim *Simulation) bool {

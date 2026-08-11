@@ -368,9 +368,8 @@ export class APLActionIDPicker extends DropdownPicker<Player<any>, ActionID, Act
 			},
 			createMissingValue: value => {
 				if (value.anyId() == 0) {
-					return new Promise<DropdownValueConfig<ActionId>>(() => {
-						value: actionIdSet.defaultLabel;
-					});
+					// Intentionally never resolves; empty action ids have no value to show.
+					return new Promise<DropdownValueConfig<ActionId>>(() => {});
 				}
 
 				return value.fill().then(filledId => ({

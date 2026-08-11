@@ -60,7 +60,7 @@ $(OUT_DIR)/bundle/.dirstamp: \
   tsconfig.json \
   ui/core/index.ts \
   ui/core/proto/api.ts
-	npx tsc --noEmit
+	node_modules/typescript/bin/tsc --noEmit
 	npx tsx vite.build-workers.mts
 	npx vite build
 	touch $@
@@ -281,10 +281,7 @@ fmt: tsfmt
 
 .PHONY: tsfmt
 tsfmt:
-	for dir in $$(find ./ui -maxdepth 1 -type d -not -path "./ui" -not -path "./ui/worker"); do \
-		echo $$dir; \
-		npx tsfmt -r --useTsfmt ./tsfmt.json --baseDir $$dir; \
-	done
+	npx oxfmt ui
 
 # one time setup to install pre-commit hook for gofmt and npm install needed packages
 setup:

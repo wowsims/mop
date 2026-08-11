@@ -527,7 +527,7 @@ export function valueListFieldConfig(field: string): AplHelpers.APLPickerBuilder
 				extraActions: [
 					AplHelpers.extractToVariableAction(
 						player,
-						(index) => (config.getValue(player) as Array<APLValue | undefined>)[index],
+						index => (config.getValue(player) as Array<APLValue | undefined>)[index],
 						(index, ref) => {
 							const values = config.getValue(player) as Array<APLValue | undefined>;
 							values[index] = ref;

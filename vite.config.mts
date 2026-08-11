@@ -109,7 +109,7 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 		root: BASE_PATH,
 		build: {
 			outDir: OUT_DIR,
-			minify: mode === 'development' ? false : 'terser',
+			minify: mode === 'development' ? false : 'oxc',
 			sourcemap: command === 'serve' ? 'inline' : false,
 			target: ['es2020'],
 		},
@@ -122,7 +122,7 @@ export default defineConfig(({ command, mode }) => {
 		css: {
 			preprocessorOptions: {
 				scss: {
-					silenceDeprecations: ['import', 'global-builtin', 'color-functions'],
+					silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
 				},
 			},
 		},
@@ -131,8 +131,9 @@ export default defineConfig(({ command, mode }) => {
 			serveExternalAssets(),
 			checker({
 				root: BASE_PATH,
-				typescript: true,
-				enableBuild: true,
+				typescript: { root: __dirname, tsconfigPath: 'tsconfig.json' },
+				// Type-checking during build is redundant: the makefile runs `tsc --noEmit` right before `vite build`.
+				enableBuild: false,
 			}),
 			stylelint({
 				build: true,
@@ -141,7 +142,12 @@ export default defineConfig(({ command, mode }) => {
 				configFile: path.resolve(__dirname, 'stylelint.config.mjs'),
 			}),
 		],
-		esbuild: {
+		oxc: {
+			jsx: {
+				runtime: 'classic',
+				pragma: 'element',
+				pragmaFrag: 'fragment',
+			},
 			jsxInject: "import { element, fragment } from 'tsx-vanilla';",
 		},
 		build: {

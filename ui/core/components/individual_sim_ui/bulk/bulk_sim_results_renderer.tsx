@@ -84,7 +84,7 @@ export default class BulkSimResultRenderer extends Component {
 
 			const renderer = new ItemRenderer(items, itemContainer, simUI.player);
 
-			var shouldRenderItem: boolean;
+			let shouldRenderItem: boolean;
 
 			if (spec.id == 0) {
 				shouldRenderItem = false;
