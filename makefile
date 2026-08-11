@@ -284,6 +284,14 @@ sim/core/items/all_items.go: $(call rwildcard,tools/database,*.go) $(call rwildc
 		curl -fL -o tools/db2tool/listfile.csv https://github.com/wowdev/wow-listfile/releases/latest/download/community-listfile.csv; }
 	go run tools/database/gen_db/*.go -outDir=./assets -gen=db
 
+# Syncs the HiGHS solver artifacts from the pinned npm `highs` package: copies its wasm to
+# ui/worker/highs.wasm (which the Go backend go:embeds) and regenerates the minified-name map the
+# wazero host looks its imports and exports up through. Run after changing the pinned version in
+# package.json, and commit both outputs. TestHiGHSArtifactsMatchPinnedVersion fails if you don't.
+.PHONY: update-highs
+update-highs: node_modules
+	go run ./tools/gen_highs
+
 .PHONY: test
 test: $(OUT_DIR)/lib.wasm binary_dist/dist.go
 	GOARCH=amd64 go test --tags=with_db ./sim/...

@@ -1,19 +1,13 @@
 import { WorkerInterface } from './worker_interface';
 
-interface HighsSolutionColumn {
-	Primal: number;
-}
+type HighsLoader = typeof import('highs').default;
+type Highs = Awaited<ReturnType<HighsLoader>>;
 
-interface HighsSolution {
-	Status: string;
-	Columns: Record<string, HighsSolutionColumn>;
-}
-
-interface HighsModule {
-	solve: (problem: string, options?: Record<string, unknown>) => HighsSolution;
-}
-
-type HighsFactory = (options?: { locateFile?: (file: string) => string }) => Promise<HighsModule>;
+// highs's own solution type is a union whose every member allows Status: 'Infeasible', so it
+// cannot be narrowed to the variants that carry Primal. Read the columns through this structural
+// type instead; a variable missing from the result is already an error on the Go side (see
+// sim/core/reforge_optimizer/highs_js.go).
+type HighsSolutionColumns = Record<string, { Primal: number }>;
 
 type SimRequestAsync = (data: Uint8Array, progress: (result: Uint8Array) => void, id: string) => Uint8Array;
 type SimRequestSync = (data: Uint8Array) => Uint8Array;
@@ -23,7 +17,7 @@ const unsupportedBulkSimAsync = () => {
 	return new Uint8Array();
 };
 
-let highs: HighsModule | null = null;
+let highs: Highs | null = null;
 let highsInitPromise: Promise<void> | null = null;
 
 async function initHiGHS(): Promise<void> {
@@ -35,10 +29,12 @@ async function initHiGHS(): Promise<void> {
 	}
 
 	highsInitPromise = (async () => {
-		// @ts-ignore - Custom HiGHS build module.
-		const highsModule = await import('./highs.js');
-		const highsFactory = (highsModule.default || highsModule) as HighsFactory;
-		highs = await highsFactory({
+		// highs ships CommonJS, so which of these holds the loader depends on the interop the
+		// bundler applies.
+		const highsModule = await import('highs');
+		const loadHighs = (highsModule.default ?? highsModule) as HighsLoader;
+		// highs.wasm is copied next to this worker by vite.build-workers.mts.
+		highs = await loadHighs({
 			locateFile: file => (file.endsWith('.wasm') ? 'highs.wasm' : file),
 		});
 	})();
@@ -50,7 +46,7 @@ function solveHiGHSLP(lp: string, timeoutSeconds: number, mipRelGap: number): st
 		if (!highs) {
 			throw new Error('HiGHS has not been initialized.');
 		}
-		const options: Record<string, unknown> = { presolve: 'on' };
+		const options: { presolve: 'on'; time_limit?: number; mip_rel_gap?: number } = { presolve: 'on' };
 		if (timeoutSeconds > 0) {
 			options.time_limit = timeoutSeconds;
 		}
@@ -58,9 +54,10 @@ function solveHiGHSLP(lp: string, timeoutSeconds: number, mipRelGap: number): st
 			options.mip_rel_gap = mipRelGap;
 		}
 		const solution = highs.solve(lp, options);
+		const columns = solution.Columns as HighsSolutionColumns;
 		return JSON.stringify({
 			status: solution.Status,
-			values: Object.fromEntries(Object.entries(solution.Columns).map(([name, column]) => [name, column.Primal])),
+			values: Object.fromEntries(Object.entries(columns).map(([name, column]) => [name, column.Primal])),
 		});
 	} catch (error) {
 		return JSON.stringify({ error: error instanceof Error ? error.message : String(error) });
