@@ -1235,6 +1235,10 @@
 					"label": "Boss Spell Known",
 					"tooltip": "<b>True</b> if the target currently has the specified spell, otherwise <b>False</b>."
 				},
+				"boss_spell_cast_time_remaining": {
+					"label": "Boss Spell Cast Time Remaining",
+					"tooltip": "Time remaining on the boss's current cast of the specified spell, or 0 if it isn't being cast."
+				},
 				"unit_is_moving": {
 					"label": "Unit Is Moving",
 					"tooltip": "True if the unit is moving"
