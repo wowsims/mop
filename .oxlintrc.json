@@ -9,7 +9,6 @@
   },
   "ignorePatterns": [
     "ui/core/proto/**",
-    "ui/worker/highs.js",
     "dist/**",
     "binary_dist/**",
     "node_modules/**"

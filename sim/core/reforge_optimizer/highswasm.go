@@ -64,6 +64,11 @@ type highsWasmRuntime struct {
 	// stackAlloc is emscripten's __emscripten_stack_alloc. The npm build exports no malloc, so
 	// this is the only allocator available for the C strings the Highs_* entry points take.
 	stackAlloc api.Function
+	// stackSave and stackRestore are emscripten's _emscripten_stack_get_current and
+	// __emscripten_stack_restore. Nothing frees a stackAlloc, so each solve brackets its
+	// allocations between these two the way emscripten's own ccall does.
+	stackSave    api.Function
+	stackRestore api.Function
 }
 
 type highsWasmRuntimeContextKey struct{}
@@ -98,6 +103,16 @@ func runHiGHSLP(lpString string, numVars int, timeout time.Duration, mipRelGap f
 		}
 		wasmRuntime.runtimeInitialized = true
 	}
+
+	// Every C string this solve hands to the Highs_* entry points is allocated on emscripten's
+	// stack and never freed, so snapshot the stack pointer and put it back on the way out. Without
+	// this the pointer only ever advances, and a pooled runtime overflows its stack after enough
+	// solves.
+	stackBase, err := callI32(wasmRuntime.ctx, wasmRuntime.stackSave)
+	if err != nil {
+		return nil, 0, fmt.Errorf("reading HiGHS wasm stack pointer: %w", err)
+	}
+	defer wasmRuntime.stackRestore.Call(wasmRuntime.ctx, wasmI32(stackBase))
 
 	highs, err := callI32(wasmRuntime.ctx, wasmRuntime.highsCreate)
 	if err != nil {
@@ -255,6 +270,8 @@ func newHiGHSWasmRuntime() (*highsWasmRuntime, error) {
 	runtime.highsSetStringOption = lookup("_Highs_setStringOptionValue")
 	runtime.highsGetModelStatus = lookup("_Highs_getModelStatus")
 	runtime.stackAlloc = lookup("__emscripten_stack_alloc")
+	runtime.stackSave = lookup("_emscripten_stack_get_current")
+	runtime.stackRestore = lookup("__emscripten_stack_restore")
 	if lookupErr != nil {
 		return nil, lookupErr
 	}
