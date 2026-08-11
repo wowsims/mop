@@ -1,4 +1,3 @@
-import { stat } from 'fs/promises';
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import * as Mechanics from '../../core/constants/mechanics';
@@ -11,6 +10,7 @@ import { StatCapType } from '../../core/proto/api';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as WarriorInputs from '../inputs';
+import * as SharedPresets from '../shared';
 import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
@@ -125,6 +125,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
 		talents: [Presets.ArmsTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_ARMS],
+		encounters: [SharedPresets.ENCOUNTER_SINGLE_TARGET, SharedPresets.ENCOUNTER_MALKOROK],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PREBIS_PRESET, Presets.P2_ARMS_BIS_PRESET, Presets.P3_4_ARMS_BIS_PRESET, Presets.P5_ARMS_BIS_PRESET],
 	},
