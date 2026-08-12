@@ -56,12 +56,12 @@ export class CalculateCombustionThresholds extends Component {
 
 		this.progressTrackerModal = new ProgressTrackerModal(simUI.rootElem, {
 			id: 'combustion-thresholds-progress-tracker',
-			title: 'Calculating Combustion Thresholds',
+			title: i18n.t('fire_mage.combustion_thresholds.progress_title'),
 			hasProgressBar: true,
 			warning: (
 				<>
-					<p>Calculating combustion thresholds can be a lengthy process.</p>
-					<p className="mb-0">You may cancel this operation at any time using the button below.</p>
+					<p>{i18n.t('fire_mage.combustion_thresholds.progress_warning')}</p>
+					<p className="mb-0">{i18n.t('fire_mage.combustion_thresholds.progress_cancel_hint')}</p>
 				</>
 			),
 			onCancel: () => {
@@ -69,7 +69,7 @@ export class CalculateCombustionThresholds extends Component {
 			},
 		});
 
-		this.button = this.simUI.addAction('Calculate Combustion Thresholds', 'mage-calculate-combustion-threshold-group', async () => {
+		this.button = this.simUI.addAction(i18n.t('fire_mage.combustion_thresholds.button'), 'mage-calculate-combustion-threshold-group', async () => {
 			if (this.isRunning) return;
 
 			this.isRunning = true;
@@ -86,7 +86,7 @@ export class CalculateCombustionThresholds extends Component {
 		});
 
 		this.modal = new BaseModal(this.rootElem, clsx('combustion-thresholds-modal'), {
-			title: 'Combustion Thresholds',
+			title: i18n.t('fire_mage.combustion_thresholds.modal_title'),
 			disposeOnClose: false,
 			preventClose: true,
 			size: 'md',
@@ -193,7 +193,7 @@ export class CalculateCombustionThresholds extends Component {
 
 		this.progressTrackerModal.updateProgress({
 			stage: 'calculating',
-			message: 'Calculating thresholds',
+			message: i18n.t('fire_mage.combustion_thresholds.calculating'),
 		});
 
 		const combined = this.toCombustionStats(combinedCategoryValues);
@@ -207,7 +207,7 @@ export class CalculateCombustionThresholds extends Component {
 	private async parseLogs(logs: string[]): Promise<SimLog[]> {
 		this.progressTrackerModal.updateProgress({
 			stage: 'calculating',
-			message: `Parsing logs`,
+			message: i18n.t('fire_mage.combustion_thresholds.parsing_logs'),
 		});
 		await sleep(200);
 		return logs
@@ -422,11 +422,11 @@ export class CalculateCombustionThresholds extends Component {
 
 	private render(data: CombustionAnalysisResult) {
 		const categoryEntries: Record<keyof FireMage_Rotation, string> = {
-			combustAlwaysSend: 'Combust Threshold - Always send',
-			combustBloodlust: 'Combust Threshold - Bloodlust',
-			combustPostAlter: 'Combust Threshold - Alter Time',
-			combustNoAlter: 'Combust Threshold - No CDs',
-			combustEndOfCombat: 'Combust Threshold - End of combat',
+			combustAlwaysSend: i18n.t('fire_mage.combustion_thresholds.categories.always_send'),
+			combustBloodlust: i18n.t('fire_mage.combustion_thresholds.categories.bloodlust'),
+			combustPostAlter: i18n.t('fire_mage.combustion_thresholds.categories.alter_time'),
+			combustNoAlter: i18n.t('fire_mage.combustion_thresholds.categories.no_cds'),
+			combustEndOfCombat: i18n.t('fire_mage.combustion_thresholds.categories.end_of_combat'),
 		};
 
 		const numberFormatter = (value: number) => Math.round(value);
@@ -445,7 +445,7 @@ export class CalculateCombustionThresholds extends Component {
 			this.modal.close();
 			new Toast({
 				variant: 'success',
-				body: 'Combustion thresholds have been updated',
+				body: i18n.t('fire_mage.combustion_thresholds.updated_toast'),
 			});
 		};
 
@@ -456,10 +456,10 @@ export class CalculateCombustionThresholds extends Component {
 						<table>
 							<thead>
 								<tr>
-									<th>Threshold</th>
-									<th>Current</th>
+									<th>{i18n.t('fire_mage.combustion_thresholds.table.threshold')}</th>
+									<th>{i18n.t('fire_mage.combustion_thresholds.table.current')}</th>
 									<th></th>
-									<th>New</th>
+									<th>{i18n.t('fire_mage.combustion_thresholds.table.new')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -479,10 +479,10 @@ export class CalculateCombustionThresholds extends Component {
 					</div>
 					<div className="d-flex justify-content-end w-100 gap-3">
 						<button onclick={() => this.modal.close()} className={clsx('btn btn-outline-primary')}>
-							Close
+							{i18n.t('fire_mage.combustion_thresholds.close')}
 						</button>
 						<button onclick={updateValues} className={clsx('btn btn-primary')}>
-							Update Thresholds
+							{i18n.t('fire_mage.combustion_thresholds.update')}
 						</button>
 					</div>
 				</>

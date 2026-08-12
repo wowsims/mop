@@ -2526,5 +2526,31 @@
 		"training_dummy": "Mannequin d'entraînement",
 		"seek_back": "Reculer {{time}}s",
 		"seek_fwd": "Avancer {{time}}s"
+	},
+	"fire_mage": {
+		"combustion_thresholds": {
+			"button": "Calculer les seuils de Combustion",
+			"progress_title": "Calcul des seuils de Combustion",
+			"progress_warning": "Le calcul des seuils de Combustion peut prendre du temps.",
+			"progress_cancel_hint": "Vous pouvez annuler cette opération à tout moment avec le bouton ci-dessous.",
+			"modal_title": "Seuils de Combustion",
+			"calculating": "Calcul des seuils",
+			"parsing_logs": "Analyse des journaux",
+			"table": {
+				"threshold": "Seuil",
+				"current": "Actuel",
+				"new": "Nouveau"
+			},
+			"categories": {
+				"always_send": "Seuil de Combustion - Toujours lancer",
+				"bloodlust": "Seuil de Combustion - Furie sanguinaire",
+				"alter_time": "Seuil de Combustion - Alteration du temps",
+				"no_cds": "Seuil de Combustion - Sans CDs",
+				"end_of_combat": "Seuil de Combustion - Fin de combat"
+			},
+			"close": "Fermer",
+			"update": "Mettre à jour les seuils",
+			"updated_toast": "Les seuils de Combustion ont été mis à jour"
+		}
 	}
 }
