@@ -226,6 +226,13 @@ release: wowsimmop wowsimmop-windows.exe
 	zip wowsimcli-windows.exe.zip wowsimcli-windows.exe
 
 sim/core/proto/api.pb.go: proto/*.proto
+	@if go version -m "$$(command -v protoc-gen-go)" 2>/dev/null | grep -qE '^[[:space:]]+mod[[:space:]]+github\.com/golang/protobuf[[:space:]]'; then \
+		echo "ERROR: your protoc-gen-go is the deprecated github.com/golang/protobuf plugin;"; \
+		echo "it generates code that no longer builds against this repo's protobuf version."; \
+		echo "Fix:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest"; \
+		echo "then: rm -f sim/core/proto/*.pb.go && retry"; \
+		exit 1; \
+	fi
 	protoc -I=./proto --go_out=./sim/core ./proto/*.proto
 
 # Only useful for building the lib on a host platform that matches the target platform
