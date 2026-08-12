@@ -81,12 +81,12 @@ export class WorkerPool {
 		const id = request.requestId || generateRequestId(SimRequest.reforgeOptimizeAsync);
 		const shouldLog = request.mode != ReforgeOptimizeMode.ReforgeOptimizeModeBulk;
 		if (shouldLog) {
-			worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
+			worker.log(() => 'Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
 		}
 
 		const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1, signals);
 		if (shouldLog) {
-			worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+			worker.log(() => 'Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
 		}
 		return result.finalReforgeResult!;
 	}
@@ -97,13 +97,13 @@ export class WorkerPool {
 
 	async statWeightsAsync(request: StatWeightsRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<StatWeightsResult> {
 		const worker = this.getLeastBusyWorker();
-		worker.log('Stat weights request: ' + StatWeightsRequest.toJsonString(request));
+		worker.log(() => 'Stat weights request: ' + StatWeightsRequest.toJsonString(request));
 		const id = generateRequestId(SimRequest.statWeightsAsync);
 
 		const iterations = request.simOptions ? request.simOptions.iterations * request.statsToWeigh.length : 30000;
 		const result = await this.doAsyncRequest(SimRequest.statWeightsAsync, StatWeightsRequest.toBinary(request), id, worker, onProgress, iterations, signals);
 
-		worker.log('Stat weights result: ' + StatWeightsResult.toJsonString(result.finalWeightResult!));
+		worker.log(() => 'Stat weights result: ' + StatWeightsResult.toJsonString(result.finalWeightResult!));
 		return result.finalWeightResult!;
 	}
 
@@ -119,25 +119,28 @@ export class WorkerPool {
 
 	async raidSimAsync(request: RaidSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<RaidSimResult> {
 		const worker = this.getLeastBusyWorker();
-		worker.log('Raid sim request: ' + RaidSimRequest.toJsonString(request));
+		// A bulk run issues one of these per candidate, and the request carries the merged
+		// database, so this must stay lazy.
+		worker.log(() => 'Raid sim request: ' + RaidSimRequest.toJsonString(request));
 		const id = request.requestId;
 
 		const iterations = request.simOptions?.iterations ?? 3000;
 		const result = await this.doAsyncRequest(SimRequest.raidSimAsync, RaidSimRequest.toBinary(request), id, worker, onProgress, iterations, signals);
 
-		// Don't print the logs because it just clogs the console.
-		const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
-		delete resultJson!['logs'];
-		worker.log('Raid sim result: ' + JSON.stringify(resultJson));
+		worker.log(() => {
+			// Don't print the logs because it just clogs the console.
+			const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
+			delete resultJson!['logs'];
+			return 'Raid sim result: ' + JSON.stringify(resultJson);
+		});
 		return result.finalRaidResult!;
 	}
 
 	async bulkSimAsync(request: BulkSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<BulkSimResult> {
 		const worker = this.getLeastBusyWorker();
-		// Never render the whole request/result: they carry every candidate's EquipmentSpec
-		// plus the merged database, which for a large run is a multi-hundred-megabyte string
-		// built synchronously on the main thread. worker.log only prints in dev mode, but the
-		// argument is built either way.
+		// A summary rather than the whole request even in dev: it carries every candidate's
+		// EquipmentSpec plus the merged database, which for a large run is a
+		// multi-hundred-megabyte string no console can usefully show.
 		worker.log(`Bulk sim request: candidates=${request.candidates.length} optimizedCandidates=${request.optimizedCandidates.length}`);
 		const id = request.requestId;
 
@@ -437,8 +440,11 @@ class SimWorker {
 		this.log('Enabled.');
 	}
 
-	log(s: string) {
-		if (isDevMode()) console.log(`Worker ${this.workerId}: ${s}`);
+	// Accepts a thunk so a caller whose message is expensive to build - a request or result
+	// serialized to JSON - pays nothing outside dev mode. Prefer the thunk form for anything
+	// that is not a plain template literal.
+	log(s: string | (() => string)) {
+		if (isDevMode()) console.log(`Worker ${this.workerId}: ${typeof s === 'function' ? s() : s}`);
 	}
 
 	async sendAbortById(requestId: string) {

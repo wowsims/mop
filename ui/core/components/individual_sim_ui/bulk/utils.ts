@@ -7,7 +7,7 @@ import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../../../pro
 import { Database } from '../../../proto_utils/database';
 import { EquippedItem } from '../../../proto_utils/equipped_item';
 import { Gear } from '../../../proto_utils/gear';
-import { getGearKeyFromSpec } from '../../../proto_utils/utils';
+import { getGearIdentityKey, getReforgeCacheGearKey } from '../../../proto_utils/utils';
 import { ReforgeGearCache } from '../../../reforge_cache';
 import { sleep } from '../../../utils';
 import { ReforgeOptimizer } from '../../suggest_reforges_action';
@@ -59,13 +59,13 @@ export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): Distributi
 export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []): Gear[] => {
 	const seenGearKeys = new Set<string>();
 	for (let i = 0; i < existingGearSets.length; i++) {
-		seenGearKeys.add(getGearKeyFromSpec(existingGearSets[i].asSpec()));
+		seenGearKeys.add(getGearIdentityKey(existingGearSets[i].asSpec()));
 	}
 
 	const deduped: Gear[] = [];
 	for (let i = 0; i < gearSets.length; i++) {
 		const gear = gearSets[i];
-		const gearKey = getGearKeyFromSpec(gear.asSpec());
+		const gearKey = getGearIdentityKey(gear.asSpec());
 		if (seenGearKeys.has(gearKey)) {
 			continue;
 		}
@@ -310,7 +310,7 @@ export async function getBulkSimReforgeCacheData({
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
 		const spec = candidateSpecs?.[i] ?? gearSets![i].asSpec();
-		const gearKey = candidateGearKeys?.[i] ?? getGearKeyFromSpec(gearSets![i].asSpec(), frozenItemSlots, true);
+		const gearKey = candidateGearKeys?.[i] ?? getReforgeCacheGearKey(gearSets![i].asSpec(), frozenItemSlots);
 		const candidateIndex = candidateIndices?.[i] ?? i;
 		const cacheKey = await ReforgeGearCache.getKey(gearKey, configHash);
 		pendingEntries.push({ index: candidateIndex, spec, cacheKey });

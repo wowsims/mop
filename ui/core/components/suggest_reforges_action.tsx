@@ -15,7 +15,7 @@ import { EquippedItem } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
 import { getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
-import { getGearKeyFromSpec } from '../proto_utils/utils';
+import { getReforgeCacheGearKey } from '../proto_utils/utils';
 import { translateSlotName, translateStat } from '../../i18n/localization';
 import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
 import type { ReforgeOptimizeConfig, Sim } from '../sim';
@@ -1146,7 +1146,7 @@ export class ReforgeOptimizer {
 		// Existing gems must be part of the cache key whether or not includeGems is set: with it off
 		// the optimizer keeps the equipped gems, and with it on minimizeRegems reuses them. Either
 		// way the optimized gear depends on the equipped gems, so dropping them returns stale gear.
-		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots, true), configHash);
+		const cacheKey = await ReforgeGearCache.getKey(getReforgeCacheGearKey(previousGear.asSpec(), frozenItemSlots), configHash);
 		const cachedGear = await cache.get(cacheKey);
 		if (cachedGear) {
 			if (isDevMode()) console.log('Reforge optimization: cache hit.');

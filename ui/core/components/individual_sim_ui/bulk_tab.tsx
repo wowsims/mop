@@ -10,7 +10,7 @@ import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, 
 import { ItemSlot, ItemSpec, Spec, WeaponType } from '../../proto/common';
 import { EquippedItem } from '../../proto_utils/equipped_item';
 import { Gear } from '../../proto_utils/gear';
-import { canEquipItem, getEligibleItemSlots, getGearKeyFromSpec, isSecondaryItemSlot } from '../../proto_utils/utils';
+import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '../../proto_utils/utils';
 import { RequestTypes } from '../../sim_signal_manager';
 import { RelativeStatCap } from '../suggest_reforges_action';
 import { TypedEvent } from '../../typed_event';
@@ -1485,8 +1485,8 @@ export class BulkTab extends SimTab {
 			topGearResults = bulkSimResult.topGearResults;
 			Object.assign(batchCompleteMetrics, bulkSimResult.metrics);
 
-			const originalGearKey = getGearKeyFromSpec(this.originalGear.asSpec());
-			this.topGearResults = topGearResults.filter(result => getGearKeyFromSpec(result.gear.asSpec()) !== originalGearKey);
+			const originalGearKey = getGearIdentityKey(this.originalGear.asSpec());
+			this.topGearResults = topGearResults.filter(result => getGearIdentityKey(result.gear.asSpec()) !== originalGearKey);
 			this.originalGearResults = {
 				gear: this.originalGear,
 				dpsMetrics: referenceDpsMetrics,

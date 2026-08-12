@@ -60,7 +60,7 @@ import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
 import { StatCap, Stats } from './proto_utils/stats.js';
-import { extendPlayerProtoWithMissingEffects, getGearKeyFromSpec, hasBlacksmithing } from './proto_utils/utils';
+import { extendPlayerProtoWithMissingEffects, getReforgeCacheGearKey, hasBlacksmithing } from './proto_utils/utils';
 import { Raid } from './raid.js';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
@@ -502,7 +502,7 @@ export class Sim {
 					const preparedSpec = preparedGear.asSpec();
 					preparedCandidateIndices.push(candidate.index);
 					preparedCandidateSpecs.push(preparedSpec);
-					preparedCandidateGearKeys.push(getGearKeyFromSpec(preparedSpec, frozenItemSlots, true));
+					preparedCandidateGearKeys.push(getReforgeCacheGearKey(preparedSpec, frozenItemSlots));
 					const processedCandidates = i + 1;
 					if (processedCandidates % 1024 === 0 || processedCandidates === totalCandidates) {
 						const now = performance.now();
