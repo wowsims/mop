@@ -2510,5 +2510,31 @@
 		"training_dummy": "Training Dummy",
 		"seek_back": "Rewind {{time}}s",
 		"seek_fwd": "Forward {{time}}s"
+	},
+	"fire_mage": {
+		"combustion_thresholds": {
+			"button": "Calculate Combustion Thresholds",
+			"progress_title": "Calculating Combustion Thresholds",
+			"progress_warning": "Calculating combustion thresholds can be a lengthy process.",
+			"progress_cancel_hint": "You may cancel this operation at any time using the button below.",
+			"modal_title": "Combustion Thresholds",
+			"calculating": "Calculating thresholds",
+			"parsing_logs": "Parsing logs",
+			"table": {
+				"threshold": "Threshold",
+				"current": "Current",
+				"new": "New"
+			},
+			"categories": {
+				"always_send": "Combust Threshold - Always send",
+				"bloodlust": "Combust Threshold - Bloodlust",
+				"alter_time": "Combust Threshold - Alter Time",
+				"no_cds": "Combust Threshold - No CDs",
+				"end_of_combat": "Combust Threshold - End of combat"
+			},
+			"close": "Close",
+			"update": "Update Thresholds",
+			"updated_toast": "Combustion thresholds have been updated"
+		}
 	}
 }

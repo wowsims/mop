@@ -239,7 +239,7 @@ export class FiltersMenu extends BaseModal {
 			if (rangedweapontypes.length < 1) {
 				return;
 			}
-			const rangedWeaponTypeSection = this.newSection(i18n.t('gear_tab.gear_picker.filters.ranged_weapon_type'));
+			const rangedWeaponTypeSection = this.newSection(i18n.t('gear_tab.gear_picker.ranged_weapon_type'));
 			rangedWeaponTypeSection.classList.add('filters-menu-section-bool-list');
 
 			rangedweapontypes.forEach(rangedWeaponType => {
@@ -261,11 +261,11 @@ export class FiltersMenu extends BaseModal {
 				});
 			});
 
-			const rangedWeaponSpeedSection = this.newSection(i18n.t('gear_tab.gear_picker.filters.ranged_weapon_speed'));
+			const rangedWeaponSpeedSection = this.newSection(i18n.t('gear_tab.gear_picker.ranged_weapon_speed'));
 			rangedWeaponSpeedSection.classList.add('filters-menu-section-number-list');
 			new NumberPicker<Sim>(rangedWeaponSpeedSection, player.sim, {
 				id: 'filters-min-ranged-weapon-speed',
-				label: i18n.t('gear_tab.gear_picker.filters.min_ranged_speed'),
+				label: i18n.t('gear_tab.gear_picker.min_ranged_speed'),
 				//labelTooltip: 'Maximum speed for the ranged weapon. If 0, no maximum value is applied.',
 				float: true,
 				positive: true,
@@ -279,7 +279,7 @@ export class FiltersMenu extends BaseModal {
 			});
 			new NumberPicker<Sim>(rangedWeaponSpeedSection, player.sim, {
 				id: 'filters-max-ranged-weapon-speed',
-				label: i18n.t('gear_tab.gear_picker.filters.max_ranged_speed'),
+				label: i18n.t('gear_tab.gear_picker.max_ranged_speed'),
 				//labelTooltip: 'Maximum speed for the ranged weapon. If 0, no maximum value is applied.',
 				float: true,
 				positive: true,
