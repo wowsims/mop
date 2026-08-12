@@ -32,23 +32,35 @@ export default class BulkItemPickerGroup extends ContentBlock {
 		return !!this.pickers.get(idx);
 	}
 
-	add(idx: number, item: EquippedItem, silent = false) {
+	// True when the slot already holds as many copies of this exact item as can be worn.
+	// Finger/trinket/weapon map to two physical slots, so two copies of a non-unique item fit.
+	// A shared limit category is deliberately allowed: ilvl tiers of one trinket are distinct
+	// ids (Evil Eye of Galakras ships six, all category 326) and comparing them is the point.
+	// Keeping two out of the same combination is initGroupedSlotPairs' job.
+	private isDuplicateOfExisting(item: EquippedItem): boolean {
+		const isDualSlot =
+			this.bulkSlot == BulkSimItemSlot.ItemSlotHandWeapon ||
+			this.bulkSlot == BulkSimItemSlot.ItemSlotFinger ||
+			this.bulkSlot == BulkSimItemSlot.ItemSlotTrinket;
+		const maxCopies = isDualSlot && !item._item.unique ? 2 : 1;
+		return Array.from(this.pickers.values()).filter(picker => picker.item.id === item.id).length >= maxCopies;
+	}
+
+	// Returns false if the item was rejected, so callers can undo the entry they pushed onto
+	// the batch list; a stale one sims and counts toward combinations with no picker to remove it.
+	add(idx: number, item: EquippedItem, silent = false): boolean {
 		if (!this.pickers.size) this.bodyElement.replaceChildren();
 
-		// Block duplicate items from being added.
-		const pickers = Array.from(this.pickers.values());
-		if (
-			pickers.some(
-				picker => ((this.bulkSlot != BulkSimItemSlot.ItemSlotHandWeapon) && (picker.item.id === item.id)) || (picker.item._item.limitCategory != 0 && picker.item._item.limitCategory === item._item.limitCategory),
-			)
-		) {
+		// Equipped pickers (idx < 0) report what is worn rather than offering a choice, so they
+		// always render - the guard must never hide one.
+		if (idx >= 0 && this.isDuplicateOfExisting(item)) {
 			if (!silent)
 				new Toast({
 					delay: 1000,
 					variant: 'error',
 					body: <>{i18n.t('bulk_tab.search.item_unique', { itemName: item._item.name })}</>,
 				});
-			return;
+			return false;
 		}
 
 		if (this.pickers.has(idx)) {
@@ -65,6 +77,8 @@ export default class BulkItemPickerGroup extends ContentBlock {
 				variant: 'success',
 				body: <>{i18n.t('bulk_tab.search.item_added', { itemName: item._item.name })}</>,
 			});
+
+		return true;
 	}
 
 	update(idx: number, newItem: EquippedItem) {

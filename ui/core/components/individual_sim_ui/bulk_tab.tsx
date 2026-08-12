@@ -389,7 +389,9 @@ export class BulkTab extends SimTab {
 					const idx = this.items.push(item) - 1;
 					const bulkSlot = getBulkItemSlotFromSlot(slot, this.playerCanDualWield);
 					const group = this.pickerGroups.get(bulkSlot)!;
-					group.add(idx, equippedItem, silent);
+					if (!group.add(idx, equippedItem, silent)) {
+						this.items.pop();
+					}
 				});
 			}
 		});
@@ -405,7 +407,9 @@ export class BulkTab extends SimTab {
 
 			const idx = this.items.push(item) - 1;
 			const group = this.pickerGroups.get(bulkSlot)!;
-			group.add(idx, equippedItem);
+			if (!group.add(idx, equippedItem)) {
+				this.items.pop();
+			}
 			this.itemsChangedEmitter.emit(TypedEvent.nextEventID());
 		}
 	}
