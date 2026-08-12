@@ -577,6 +577,12 @@ func (item *Item) GetEffectiveScalingOptions() *proto.ScalingItemProperties {
 }
 
 func NewItem(itemSpec ItemSpec) Item {
+	// AddToDatabase writes these maps while other requests are mid-flight, so every
+	// lookup below has to be under the lock. Held across the whole function rather
+	// than reacquired per lookup; nothing in here takes dbMu again.
+	dbMu.RLock()
+	defer dbMu.RUnlock()
+
 	item := Item{}
 	if foundItem, ok := ItemsByID[itemSpec.ID]; ok {
 		item = foundItem

@@ -2,21 +2,17 @@ package bulk
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-// Bulk candidate/count generation temporarily mutates the shared core item database
-// using request-scoped SimDatabase payloads. Keep that mutation + generation path
-// serialized to avoid concurrent map read/write panics with parallel sim requests.
-var bulkCandidateDatabaseMu sync.Mutex
+// Bulk candidate/count generation adds the request-scoped SimDatabase payload to the
+// shared core item database. That mutation and every read of those maps is serialized
+// by core's own database lock, so generation itself runs unserialized: it can take a
+// long time for a large selection and must not block other bulk requests.
 
 func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
-	bulkCandidateDatabaseMu.Lock()
-	defer bulkCandidateDatabaseMu.Unlock()
-
 	if request == nil || request.GetBulkSettings() == nil || len(request.GetCandidates()) > 0 {
 		return nil
 	}
@@ -46,9 +42,6 @@ func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
 }
 
 func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.BulkCombinationCountResult {
-	bulkCandidateDatabaseMu.Lock()
-	defer bulkCandidateDatabaseMu.Unlock()
-
 	if request == nil {
 		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: "bulk combination count request is missing"}}
 	}
@@ -110,9 +103,6 @@ func shouldUseLegacyBulkSimForCountRequest(settings *proto.BulkSettings, candida
 }
 
 func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesResult {
-	bulkCandidateDatabaseMu.Lock()
-	defer bulkCandidateDatabaseMu.Unlock()
-
 	if request == nil {
 		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: "bulk candidates request is missing"}}
 	}

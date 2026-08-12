@@ -9,11 +9,15 @@ func (generator *bulkSimCandidateGenerator) buildRequiredSetBonusMatcher(require
 	if len(requiredSetBonuses) == 0 {
 		return nil
 	}
-	requiredIndexes := make(map[int32]int, len(requiredSetBonuses))
+	// A set may appear more than once (e.g. a 2pc and a 4pc requirement for the same set),
+	// so one set ID maps to every requirement index that tracks it.
+	requiredIndexes := make(map[int32][]int, len(requiredSetBonuses))
 	for idx, required := range requiredSetBonuses {
-		requiredIndexes[required.GetSetId()] = idx
+		setID := required.GetSetId()
+		requiredIndexes[setID] = append(requiredIndexes[setID], idx)
 	}
-	baseCounts := make([]int, len(requiredSetBonuses))
+	numRequired := len(requiredSetBonuses)
+	baseCounts := make([]int, numRequired)
 	for slot := proto.ItemSlot_ItemSlotHead; slot < core.NumItemSlots; slot++ {
 		generator.addItemToRequiredSetBonusCounts(baseCounts, requiredIndexes, generator.baseEquipment.GetItemBySlot(slot), 1)
 	}
@@ -22,7 +26,7 @@ func (generator *bulkSimCandidateGenerator) buildRequiredSetBonusMatcher(require
 	if len(weaponPairs) > 0 {
 		optionDeltas := make([][]int, 0, len(weaponPairs))
 		for _, pair := range weaponPairs {
-			optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(requiredIndexes, [][2]any{{proto.ItemSlot_ItemSlotMainHand, pair[0]}, {proto.ItemSlot_ItemSlotOffHand, pair[1]}}))
+			optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, [][2]any{{proto.ItemSlot_ItemSlotMainHand, pair[0]}, {proto.ItemSlot_ItemSlotOffHand, pair[1]}}))
 		}
 		dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 	}
@@ -39,38 +43,38 @@ func (generator *bulkSimCandidateGenerator) buildRequiredSetBonusMatcher(require
 			slots := BulkSimItemSlotToItemSlotPairs[bulkSlot]
 			optionDeltas := make([][]int, 0, len(pairs))
 			for _, pair := range pairs {
-				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(requiredIndexes, [][2]any{{slots[0], &pair[0]}, {slots[1], &pair[1]}}))
+				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, [][2]any{{slots[0], &pair[0]}, {slots[1], &pair[1]}}))
 			}
 			dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 		} else {
 			slot := BulkSimItemSlotToSingleItemSlot[bulkSlot]
 			optionDeltas := make([][]int, 0, len(options))
 			for idx := range options {
-				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(requiredIndexes, [][2]any{{slot, &options[idx]}}))
+				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, [][2]any{{slot, &options[idx]}}))
 			}
 			dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 		}
 	}
-	requiredPieces := make([]int, len(requiredSetBonuses))
+	requiredPieces := make([]int, numRequired)
 	for idx, required := range requiredSetBonuses {
 		requiredPieces[idx] = int(required.GetPieces())
 	}
 	return &bulkSimRequiredSetBonusComboMatcher{baseCounts: baseCounts, requiredPieces: requiredPieces, dimensions: dimensions}
 }
 
-func (generator *bulkSimCandidateGenerator) addItemToRequiredSetBonusCounts(counts []int, requiredIndexes map[int32]int, item *core.Item, delta int) {
+func (generator *bulkSimCandidateGenerator) addItemToRequiredSetBonusCounts(counts []int, requiredIndexes map[int32][]int, item *core.Item, delta int) {
 	if item == nil || item.SetID == 0 {
 		return
 	}
-	idx, ok := requiredIndexes[item.SetID]
-	if !ok {
-		return
+	for _, idx := range requiredIndexes[item.SetID] {
+		counts[idx] += delta
 	}
-	counts[idx] += delta
 }
 
-func (generator *bulkSimCandidateGenerator) getRequiredSetBonusOptionDeltas(requiredIndexes map[int32]int, slotItems [][2]any) []int {
-	deltas := make([]int, len(requiredIndexes))
+// numRequired is the requirement count, not len(requiredIndexes): duplicate set IDs
+// collapse in the map, and every counts slice is indexed by requirement.
+func (generator *bulkSimCandidateGenerator) getRequiredSetBonusOptionDeltas(numRequired int, requiredIndexes map[int32][]int, slotItems [][2]any) []int {
+	deltas := make([]int, numRequired)
 	for _, slotItem := range slotItems {
 		slot := slotItem[0].(proto.ItemSlot)
 		generator.addItemToRequiredSetBonusCounts(deltas, requiredIndexes, generator.baseEquipment.GetItemBySlot(slot), -1)

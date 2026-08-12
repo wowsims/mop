@@ -2156,6 +2156,9 @@ export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readon
 			gemFingerprint,
 			Number(item.challengeMode ?? false),
 		].join(':');
+		if (isFrozen) {
+			itemKeys[slotIdx] += ':frozen';
+		}
 	}
 
 	const reorderPairedSlots = (firstSlot: ItemSlot, secondSlot: ItemSlot): void => {

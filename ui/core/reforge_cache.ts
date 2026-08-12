@@ -20,6 +20,7 @@ const REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX = 'equipmentSpec:';
 const REFORGE_CACHE_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // Store reforge results for 14 days
 const REFORGE_CACHE_PRUNE_INTERVAL_MS = 60 * 60 * 1000;
 const REFORGE_CACHE_ACCESS_UPDATE_CHUNK_SIZE = 2000;
+const REFORGE_CACHE_READ_CHUNK_SIZE = 2000;
 
 interface ReforgeGearCacheRecord {
 	gear: string;
@@ -102,34 +103,42 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			let lastYieldAt = performance.now();
 			const accessUpdates: Array<{ key: string; record: ReforgeGearCacheRecord }> = [];
 
-			for (let i = 0; i < keys.length; i++) {
+			// Read in chunks that share a transaction. A bulk run passes six figures worth of
+			// keys, and one implicit transaction per key dominates the cache-restore stage.
+			for (let start = 0; start < keys.length; start += REFORGE_CACHE_READ_CHUNK_SIZE) {
 				throwIfAborted(signal);
-				const key = keys[i];
-				const record = await db.get(this.storeName, key);
-				if (!record) {
-					continue;
-				}
+				const chunk = keys.slice(start, start + REFORGE_CACHE_READ_CHUNK_SIZE);
+				const tx = db.transaction(this.storeName, 'readonly');
+				const store = tx.objectStore(this.storeName);
+				const records = await Promise.all(chunk.map(key => store.get(key)));
+				await tx.done;
 
-				const gear = this.parseCachedGear(record.gear);
-				if (!gear) {
-					continue;
-				}
-
-				accessUpdates.push({
-					key,
-					record: {
-						...record,
-						lastAccessedAt: now,
-					},
-				});
-				results.set(key, gear);
-
-				if (i % 2000 === 0) {
-					const yieldNow = performance.now();
-					if (yieldNow - lastYieldAt >= 16) {
-						await sleep(0);
-						lastYieldAt = performance.now();
+				for (let i = 0; i < chunk.length; i++) {
+					const record = records[i];
+					if (!record) {
+						continue;
 					}
+
+					const gear = this.parseCachedGear(record.gear);
+					if (!gear) {
+						continue;
+					}
+
+					const key = chunk[i];
+					accessUpdates.push({
+						key,
+						record: {
+							...record,
+							lastAccessedAt: now,
+						},
+					});
+					results.set(key, gear);
+				}
+
+				const yieldNow = performance.now();
+				if (yieldNow - lastYieldAt >= 16) {
+					await sleep(0);
+					lastYieldAt = performance.now();
 				}
 			}
 
@@ -141,6 +150,11 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 				}
 			}
 		} catch (error) {
+			// An abort must not read as a cache miss: the caller would take the partial map,
+			// treat every unread key as uncached, and launch the run the user just cancelled.
+			if (signal?.aborted) {
+				throw error;
+			}
 			console.warn('[Reforge Cache] Failed to read cached reforge results.', error);
 		} finally {
 			db?.close();
@@ -215,6 +229,9 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return IndividualLinkImporter.tryParseUrlLocation(new URL(gear, window.location.href))?.settings.player?.equipment || null;
 	}
 
+	// Deliberately a fresh connection per call rather than a pooled one: object stores are
+	// created lazily per spec via a version bump (see createStore), and a held-open
+	// connection from any other spec's cache blocks that upgrade.
 	private async getDb(): Promise<IDBPDatabase<ReforgeGearCacheDb>> {
 		await this.storeReadyPromise;
 		return ReforgeGearCache.openDb();

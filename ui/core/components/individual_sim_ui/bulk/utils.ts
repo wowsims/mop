@@ -1,6 +1,5 @@
 import type { Player } from '../../../player';
-import { ReforgeOptimizer } from '../../suggest_reforges_action';
-import { ReforgeGearCache } from '../../../reforge_cache';
+import { isSpecDualWieldCapable } from '../../../player_classes/capabilities';
 import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
 import { Class, Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../../../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../../proto/db';
@@ -9,15 +8,16 @@ import { Database } from '../../../proto_utils/database';
 import { EquippedItem } from '../../../proto_utils/equipped_item';
 import { Gear } from '../../../proto_utils/gear';
 import { getGearKeyFromSpec } from '../../../proto_utils/utils';
-import { isSpecDualWieldCapable } from '../../../player_classes/capabilities';
+import { ReforgeGearCache } from '../../../reforge_cache';
 import { sleep } from '../../../utils';
-import { OptimisationStage, STAGE_CONFIG } from './types';
+import { ReforgeOptimizer } from '../../suggest_reforges_action';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
 	BulkSimItemSlot,
 	ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT,
 } from './constants_auto_gen';
+import { OptimisationStage, STAGE_CONFIG } from './types';
 
 export { BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS };
 
@@ -310,7 +310,7 @@ export async function getBulkSimReforgeCacheData({
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
 		const spec = candidateSpecs?.[i] ?? gearSets![i].asSpec();
-		const gearKey = candidateGearKeys?.[i] ?? getGearKeyFromSpec(gearSets![i].asSpec(), frozenItemSlots);
+		const gearKey = candidateGearKeys?.[i] ?? getGearKeyFromSpec(gearSets![i].asSpec(), frozenItemSlots, true);
 		const candidateIndex = candidateIndices?.[i] ?? i;
 		const cacheKey = await ReforgeGearCache.getKey(gearKey, configHash);
 		pendingEntries.push({ index: candidateIndex, spec, cacheKey });

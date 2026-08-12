@@ -54,8 +54,8 @@ func HasEnchantEffect(id int32) bool {
 // starts, for any Agent that is wearing the item.
 func NewItemEffect(id int32, itemEffect ApplyEffect) {
 	if WITH_DB {
-		if _, hasItem := ItemsByID[id]; !hasItem {
-			if _, hasGem := GemsByID[id]; !hasGem {
+		if GetItemByID(id) == nil {
+			if _, hasGem := GetGemByID(id); !hasGem {
 				panic(fmt.Sprintf("No item with ID: %d", id))
 			}
 		}
@@ -73,7 +73,7 @@ func NewItemEffect(id int32, itemEffect ApplyEffect) {
 
 func NewEnchantEffect(id int32, enchantEffect ApplyEffect) {
 	if WITH_DB {
-		if _, ok := EnchantsByEffectID[id]; !ok {
+		if GetEnchantByEffectID(id) == nil {
 			panic(fmt.Sprintf("No enchant with ID: %d", id))
 		}
 	}

@@ -327,7 +327,7 @@ func (s *server) setupAsyncServer() {
 			return
 		}
 		latest := progress.latestProgress.Load().(*proto.ProgressMetrics)
-		pendingOptimizedCandidates := progress.takePendingOptimizedCandidates()
+		pendingOptimizedCandidates := progress.peekPendingOptimizedCandidates()
 		if latest.FinalBulkSimResult != nil && len(latest.FinalBulkSimResult.OptimizedCandidates) > 0 {
 			remainingOptimizedCandidates := progress.filterUndeliveredOptimizedCandidates(latest.FinalBulkSimResult.OptimizedCandidates)
 			latestWithFilteredFinal := googleProto.Clone(latest).(*proto.ProgressMetrics)
@@ -347,14 +347,21 @@ func (s *server) setupAsyncServer() {
 			return
 		}
 
+		w.Header().Add("Content-Type", "application/x-protobuf")
+		if _, err := w.Write(outbytes); err != nil {
+			// Nothing reached the client, so leave both the pending candidates and the
+			// cached progress in place for the next poll rather than dropping them.
+			log.Printf("[ERROR] Failed to write async progress response: %s", err.Error())
+			return
+		}
+		progress.markOptimizedCandidatesDelivered(pendingOptimizedCandidates)
+
 		// If this was the last result, delete the cache for this simulation.
 		if latest.FinalRaidResult != nil || latest.FinalWeightResult != nil || latest.FinalBulkSimResult != nil || latest.FinalReforgeResult != nil {
 			s.progMut.Lock()
 			delete(s.asyncProgresses, msg.ProgressId)
 			s.progMut.Unlock()
 		}
-		w.Header().Add("Content-Type", "application/x-protobuf")
-		w.Write(outbytes)
 	})))
 }
 

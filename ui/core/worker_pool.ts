@@ -84,15 +84,19 @@ export class WorkerPool {
 			worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
 		}
 
-		signals?.abort.onTrigger(async () => {
+		const unsubscribeAbort = signals?.abort.onTrigger(async () => {
 			await worker.sendAbortById(id);
 		});
 
-		const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
-		if (shouldLog) {
-			worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+		try {
+			const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
+			if (shouldLog) {
+				worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+			}
+			return result.finalReforgeResult!;
+		} finally {
+			unsubscribeAbort?.();
 		}
-		return result.finalReforgeResult!;
 	}
 
 	private getProgressName(id: string) {
@@ -130,34 +134,53 @@ export class WorkerPool {
 		worker.log('Raid sim request: ' + RaidSimRequest.toJsonString(request));
 		const id = request.requestId;
 
-		signals.abort.onTrigger(async () => {
+		// A bulk run issues one of these per candidate against the same signals object, so
+		// the callback has to come back off the list when the request settles.
+		const unsubscribeAbort = signals.abort.onTrigger(async () => {
 			await worker.sendAbortById(id);
 		});
 
-		const iterations = request.simOptions?.iterations ?? 3000;
-		const result = await this.doAsyncRequest(SimRequest.raidSimAsync, RaidSimRequest.toBinary(request), id, worker, onProgress, iterations);
+		try {
+			const iterations = request.simOptions?.iterations ?? 3000;
+			const result = await this.doAsyncRequest(SimRequest.raidSimAsync, RaidSimRequest.toBinary(request), id, worker, onProgress, iterations);
 
-		// Don't print the logs because it just clogs the console.
-		const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
-		delete resultJson!['logs'];
-		worker.log('Raid sim result: ' + JSON.stringify(resultJson));
-		return result.finalRaidResult!;
+			// Don't print the logs because it just clogs the console.
+			const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
+			delete resultJson!['logs'];
+			worker.log('Raid sim result: ' + JSON.stringify(resultJson));
+			return result.finalRaidResult!;
+		} finally {
+			unsubscribeAbort();
+		}
 	}
 
 	async bulkSimAsync(request: BulkSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<BulkSimResult> {
 		const worker = this.getLeastBusyWorker();
-		worker.log('Bulk sim request: ' + BulkSimRequest.toJsonString(request));
+		// Never render the whole request/result: they carry every candidate's EquipmentSpec
+		// plus the merged database, which for a large run is a multi-hundred-megabyte string
+		// built synchronously on the main thread. worker.log only prints in dev mode, but the
+		// argument is built either way.
+		worker.log(`Bulk sim request: candidates=${request.candidates.length} optimizedCandidates=${request.optimizedCandidates.length}`);
 		const id = request.requestId;
 
-		signals.abort.onTrigger(async () => {
+		const unsubscribeAbort = signals.abort.onTrigger(async () => {
 			await worker.sendAbortById(id);
 		});
 
-		const iterations = request.baseRequest?.simOptions?.iterations ?? 3000;
-		const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations);
+		try {
+			const iterations = request.baseRequest?.simOptions?.iterations ?? 3000;
+			const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations);
 
-		worker.log('Bulk sim result: ' + BulkSimResult.toJsonString(result.finalBulkSimResult!));
-		return result.finalBulkSimResult!;
+			const bulkSimResult = result.finalBulkSimResult!;
+			worker.log(
+				`Bulk sim result: topResults=${bulkSimResult.topResults.length} optimizedCandidates=${bulkSimResult.optimizedCandidates.length} error=${
+					bulkSimResult.error?.message ?? 'none'
+				}`,
+			);
+			return bulkSimResult;
+		} finally {
+			unsubscribeAbort();
+		}
 	}
 
 	async bulkCombinationCount(request: BulkCombinationCountRequest): Promise<BulkCombinationCountResult> {

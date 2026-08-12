@@ -2,6 +2,7 @@ package bulk
 
 import (
 	"fmt"
+	"math"
 	"slices"
 
 	"github.com/wowsims/mop/sim/core"
@@ -66,13 +67,10 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 func (generator *bulkSimCandidateGenerator) buildCandidates() ([]*proto.BulkGearCandidate, error) {
 	rawCombinations := generator.rawCombinationsCount()
 	matcher := generator.buildRequiredSetBonusMatcher(generator.settings.GetRequiredSetBonuses())
-	initialCapacity := rawCombinations
-	if matcher != nil && initialCapacity > 16384 {
-		// Required-set filtering can drop output cardinality by orders of magnitude.
-		// Avoid over-reserving to raw combinations in that case.
-		initialCapacity = 16384
-	}
-	candidates := make([]*proto.BulkGearCandidate, 0, initialCapacity)
+	// Never reserve the whole raw space: it can be millions of entries, required-set
+	// filtering can drop output cardinality by orders of magnitude, and append grows
+	// geometrically from here anyway.
+	candidates := make([]*proto.BulkGearCandidate, 0, min(rawCombinations, maxBulkCandidatePreallocation))
 	var scratchCounts []int
 	if matcher != nil {
 		scratchCounts = make([]int, len(matcher.baseCounts))
@@ -233,6 +231,24 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 	}
 }
 
+// The raw combination space is a plain product over the bulk slots and nothing bounds it:
+// the frontend gates on the *matching* count, and required set bonuses exist precisely so
+// a large selection can be filtered down to a runnable set. So the product is clamped only
+// to keep it inside the int32 result fields and out of overflow - never to refuse the
+// request, which would break exactly that workflow.
+const maxBulkRawCombinations = math.MaxInt32
+const maxBulkCandidatePreallocation = 1 << 16
+
+func saturatingCombinationsMul(rawCombinations int, factor int) int {
+	if rawCombinations == 0 || factor == 0 {
+		return 0
+	}
+	if rawCombinations > maxBulkRawCombinations/factor {
+		return maxBulkRawCombinations
+	}
+	return rawCombinations * factor
+}
+
 func (generator *bulkSimCandidateGenerator) rawCombinationsCount() int {
 	rawCombinations := len(generator.getAllWeaponCombos())
 	if rawCombinations == 0 {
@@ -244,9 +260,9 @@ func (generator *bulkSimCandidateGenerator) rawCombinationsCount() int {
 		}
 		numOptions := len(generator.selectedByBulkSlot[bulkSlot])
 		if numOptions > 1 && (bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket) {
-			rawCombinations *= len(generator.groupedPairsBySlot[bulkSlot])
+			rawCombinations = saturatingCombinationsMul(rawCombinations, len(generator.groupedPairsBySlot[bulkSlot]))
 		} else if numOptions > 0 {
-			rawCombinations *= numOptions
+			rawCombinations = saturatingCombinationsMul(rawCombinations, numOptions)
 		}
 	}
 	return rawCombinations

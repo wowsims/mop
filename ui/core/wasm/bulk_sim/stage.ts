@@ -3,7 +3,7 @@ import { SimSignals } from '../../sim_signal_manager';
 import { isDevMode } from '../../utils';
 import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
 import { BulkSimCandidateTransport, runBulkSimCandidateBatchOnWorkers, runSingleBulkSimCandidate } from './batch';
-import { ConcurrentBulkSimStageCarryOver, bulkSimCarriedResults, bulkSimCarryOverCovers } from './carry_over';
+import { bulkSimCarriedResults, bulkSimCarryOverCovers,ConcurrentBulkSimStageCarryOver } from './carry_over';
 import {
 	BULK_SIM_ADAPTIVE_MAX_ITERATION_MULTIPLIER,
 	BULK_SIM_CULLING_COEFFICIENT,
@@ -13,8 +13,8 @@ import {
 	BULK_SIM_MIN_COMBINATIONS,
 } from './constants';
 import { getBulkSimBaselineGear } from './index';
-import { hasBulkSimStageError, mergeBulkSimCandidateResultSlices, mergeBulkSimCandidateResults } from './merge';
-import { BulkSimStageProgressEmitter, bulkSimStageLogName, formatBulkSimStageStart, makeBulkSimStageProgressEmitter } from './progress';
+import { hasBulkSimStageError, mergeBulkSimCandidateResults,mergeBulkSimCandidateResultSlices } from './merge';
+import { bulkSimStageLogName, BulkSimStageProgressEmitter, formatBulkSimStageStart, makeBulkSimStageProgressEmitter } from './progress';
 import { bulkSimObservedStageErrorPct, getBulkSimStageTargetIterations, getBulkSimTargetIterations, topBulkSimResults } from './statistics';
 import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig, ConcurrentBulkSimStageResult } from './types';
 
@@ -346,7 +346,10 @@ export const runConcurrentBulkSimStage = async (
 		iterations,
 	);
 	baseline = adaptedStage.baseline;
-	results.splice(0, results.length, ...adaptedStage.results);
+	for (let i = 0; i < adaptedStage.results.length; i++) {
+		results[i] = adaptedStage.results[i];
+	}
+	results.length = adaptedStage.results.length;
 	if (baseline.error) {
 		return { ...bulkSimStageError(config, baseline, adaptedStage.iterations), results };
 	}

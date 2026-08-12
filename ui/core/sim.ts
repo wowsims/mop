@@ -1,22 +1,33 @@
 import { getLang } from '../i18n/locale_service';
 import { hasTouch } from '../shared/bootstrap_overrides';
 import { SimRequest } from '../worker/types';
+import {
+	type BulkSimReforgeCacheProgress,
+	getBulkSimReforgeCacheData,
+	makeBulkGearDatabase,
+	makeBulkItemDatabaseFromSpecs,
+	throwIfAborted,
+	writeBulkSimReforgeCacheResults,
+} from './components/individual_sim_ui/bulk/utils';
+import { ReforgeOptimizer } from './components/suggest_reforges_action';
 import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
-	BulkGearCandidate,
-	BulkCombinationCountRequest,
-	BulkCombinationCountResult,
 	BulkCandidatesRequest,
 	BulkCandidatesResult,
+	BulkCombinationCountRequest,
+	BulkCombinationCountResult,
+	BulkGearCandidate,
 	BulkSettings,
 	BulkSimRequest,
 	BulkSimResult,
+	BulkSimStage,
 	ComputeStatsRequest,
 	ErrorOutcome,
 	ErrorOutcomeType,
 	PlayerStats,
+	ProgressMetrics,
 	Raid as RaidProto,
 	RaidSimRequest,
 	RaidSimResult,
@@ -27,14 +38,13 @@ import {
 	SimType,
 	StatWeightsRequest,
 	StatWeightsResult,
-	BulkSimStage,
-	ProgressMetrics,
 } from './proto/api.js';
 import {
 	ArmorType,
+	EquipmentSpec,
 	Faction,
-	ItemSlot,
 	ItemQuality,
+	ItemSlot,
 	Profession,
 	PseudoStat,
 	RangedWeaponType,
@@ -43,10 +53,9 @@ import {
 	UnitReference,
 	UnitReference_Type as UnitType,
 	WeaponType,
-	EquipmentSpec,
 } from './proto/common.js';
-import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
 import { SimGem } from './proto/db.js';
+import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
 import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
@@ -57,15 +66,6 @@ import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
 import { distinct, getEnumValues, isExternal, noop, sleep } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
-import {
-	getBulkSimReforgeCacheData,
-	makeBulkItemDatabaseFromSpecs,
-	type BulkSimReforgeCacheProgress,
-	throwIfAborted,
-	makeBulkGearDatabase,
-	writeBulkSimReforgeCacheResults,
-} from './components/individual_sim_ui/bulk/utils';
-import { ReforgeOptimizer } from './components/suggest_reforges_action';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
 
 export type RaidSimData = {
@@ -502,7 +502,7 @@ export class Sim {
 					const preparedSpec = preparedGear.asSpec();
 					preparedCandidateIndices.push(candidate.index);
 					preparedCandidateSpecs.push(preparedSpec);
-					preparedCandidateGearKeys.push(getGearKeyFromSpec(preparedSpec, frozenItemSlots));
+					preparedCandidateGearKeys.push(getGearKeyFromSpec(preparedSpec, frozenItemSlots, true));
 					const processedCandidates = i + 1;
 					if (processedCandidates % 1024 === 0 || processedCandidates === totalCandidates) {
 						const now = performance.now();
