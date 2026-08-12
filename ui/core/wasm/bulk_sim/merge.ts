@@ -59,7 +59,11 @@ const mergeBulkSimDistributionMetrics = (
 		min: metrics.min,
 		minSeed: metrics.minSeed,
 		hist: { ...metrics.hist },
-		allValues: metrics.allValues.slice(),
+		// concat, not slice-then-push: one entry per iteration means this runs to six
+		// figures, so it allocates once at the final size instead of regrowing, and it
+		// takes an array rather than spread call args (which throw RangeError past the
+		// engine's argument limit).
+		allValues: metrics.allValues.concat(additionalMetrics.allValues),
 		aggregatorData: {
 			n: totalN,
 			sumSq: metricsAggregator.sumSq + additionalAggregator.sumSq,
@@ -78,9 +82,6 @@ const mergeBulkSimDistributionMetrics = (
 	}
 	for (const [roundedDps, count] of Object.entries(additionalMetrics.hist)) {
 		merged.hist[Number(roundedDps)] = (merged.hist[Number(roundedDps)] ?? 0) + count;
-	}
-	for (const value of additionalMetrics.allValues) {
-		merged.allValues.push(value);
 	}
 	merged.stdev = Math.sqrt(Math.max(0, merged.aggregatorData!.sumSq / totalN - merged.avg * merged.avg));
 	return merged;

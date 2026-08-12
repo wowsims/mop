@@ -240,7 +240,7 @@ const maxBulkRawCombinations = math.MaxInt32
 const maxBulkCandidatePreallocation = 1 << 16
 
 func saturatingCombinationsMul(rawCombinations int, factor int) int {
-	if rawCombinations == 0 || factor == 0 {
+	if factor == 0 {
 		return 0
 	}
 	if rawCombinations > maxBulkRawCombinations/factor {

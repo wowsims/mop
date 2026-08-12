@@ -84,19 +84,11 @@ export class WorkerPool {
 			worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
 		}
 
-		const unsubscribeAbort = signals?.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
-
-		try {
-			const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
-			if (shouldLog) {
-				worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
-			}
-			return result.finalReforgeResult!;
-		} finally {
-			unsubscribeAbort?.();
+		const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1, signals);
+		if (shouldLog) {
+			worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
 		}
+		return result.finalReforgeResult!;
 	}
 
 	private getProgressName(id: string) {
@@ -108,12 +100,8 @@ export class WorkerPool {
 		worker.log('Stat weights request: ' + StatWeightsRequest.toJsonString(request));
 		const id = generateRequestId(SimRequest.statWeightsAsync);
 
-		signals.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
-
 		const iterations = request.simOptions ? request.simOptions.iterations * request.statsToWeigh.length : 30000;
-		const result = await this.doAsyncRequest(SimRequest.statWeightsAsync, StatWeightsRequest.toBinary(request), id, worker, onProgress, iterations);
+		const result = await this.doAsyncRequest(SimRequest.statWeightsAsync, StatWeightsRequest.toBinary(request), id, worker, onProgress, iterations, signals);
 
 		worker.log('Stat weights result: ' + StatWeightsResult.toJsonString(result.finalWeightResult!));
 		return result.finalWeightResult!;
@@ -134,24 +122,14 @@ export class WorkerPool {
 		worker.log('Raid sim request: ' + RaidSimRequest.toJsonString(request));
 		const id = request.requestId;
 
-		// A bulk run issues one of these per candidate against the same signals object, so
-		// the callback has to come back off the list when the request settles.
-		const unsubscribeAbort = signals.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
+		const iterations = request.simOptions?.iterations ?? 3000;
+		const result = await this.doAsyncRequest(SimRequest.raidSimAsync, RaidSimRequest.toBinary(request), id, worker, onProgress, iterations, signals);
 
-		try {
-			const iterations = request.simOptions?.iterations ?? 3000;
-			const result = await this.doAsyncRequest(SimRequest.raidSimAsync, RaidSimRequest.toBinary(request), id, worker, onProgress, iterations);
-
-			// Don't print the logs because it just clogs the console.
-			const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
-			delete resultJson!['logs'];
-			worker.log('Raid sim result: ' + JSON.stringify(resultJson));
-			return result.finalRaidResult!;
-		} finally {
-			unsubscribeAbort();
-		}
+		// Don't print the logs because it just clogs the console.
+		const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
+		delete resultJson!['logs'];
+		worker.log('Raid sim result: ' + JSON.stringify(resultJson));
+		return result.finalRaidResult!;
 	}
 
 	async bulkSimAsync(request: BulkSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<BulkSimResult> {
@@ -163,24 +141,16 @@ export class WorkerPool {
 		worker.log(`Bulk sim request: candidates=${request.candidates.length} optimizedCandidates=${request.optimizedCandidates.length}`);
 		const id = request.requestId;
 
-		const unsubscribeAbort = signals.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
+		const iterations = request.baseRequest?.simOptions?.iterations ?? 3000;
+		const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations, signals);
 
-		try {
-			const iterations = request.baseRequest?.simOptions?.iterations ?? 3000;
-			const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations);
-
-			const bulkSimResult = result.finalBulkSimResult!;
-			worker.log(
-				`Bulk sim result: topResults=${bulkSimResult.topResults.length} optimizedCandidates=${bulkSimResult.optimizedCandidates.length} error=${
-					bulkSimResult.error?.message ?? 'none'
-				}`,
-			);
-			return bulkSimResult;
-		} finally {
-			unsubscribeAbort();
-		}
+		const bulkSimResult = result.finalBulkSimResult!;
+		worker.log(
+			`Bulk sim result: topResults=${bulkSimResult.topResults.length} optimizedCandidates=${bulkSimResult.optimizedCandidates.length} error=${
+				bulkSimResult.error?.message ?? 'none'
+			}`,
+		);
+		return bulkSimResult;
 	}
 
 	async bulkCombinationCount(request: BulkCombinationCountRequest): Promise<BulkCombinationCountResult> {
@@ -232,7 +202,15 @@ export class WorkerPool {
 		worker: SimWorker,
 		onProgress: WorkerProgressCallback,
 		totalIterations: number,
+		signals?: SimSignals,
 	): Promise<ProgressMetrics> {
+		// The abort subscription's lifetime is exactly this request's, so it belongs here
+		// rather than at each call site. A bulk run issues one request per candidate against
+		// the same signals object; leaving callbacks registered would grow the list for the
+		// whole run and make a cancel fan out to every request that finished long ago.
+		const unsubscribeAbort = signals?.abort.onTrigger(async () => {
+			await worker.sendAbortById(id);
+		});
 		try {
 			worker.addSimTaskRunning(id, totalIterations);
 			const finalProgress: Promise<ProgressMetrics> = new Promise(resolve => {
@@ -260,6 +238,7 @@ export class WorkerPool {
 			});
 			return await Promise.race([finalProgress, apiCallResult]);
 		} finally {
+			unsubscribeAbort?.();
 			worker.updateSimTask(id, 0);
 			worker.ignoreResultId(this.getProgressName(id));
 		}

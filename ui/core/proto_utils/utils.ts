@@ -2156,6 +2156,11 @@ export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readon
 			gemFingerprint,
 			Number(item.challengeMode ?? false),
 		].join(':');
+		// Frozen-ness has to travel with the item through the paired-slot normalization
+		// below, or swapping two rings with one of them frozen collapses to a single key
+		// while the optimizer (which freezes by slot index) must leave a different ring
+		// alone in each case. Appended rather than joined in so unfrozen keys - the ones
+		// already in users' caches - stay byte-identical.
 		if (isFrozen) {
 			itemKeys[slotIdx] += ':frozen';
 		}

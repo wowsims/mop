@@ -7,11 +7,6 @@ import (
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-// Bulk candidate/count generation adds the request-scoped SimDatabase payload to the
-// shared core item database. That mutation and every read of those maps is serialized
-// by core's own database lock, so generation itself runs unserialized: it can take a
-// long time for a large selection and must not block other bulk requests.
-
 func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
 	if request == nil || request.GetBulkSettings() == nil || len(request.GetCandidates()) > 0 {
 		return nil
@@ -27,6 +22,8 @@ func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
 		return fmt.Errorf("bulk sim request is missing player equipment")
 	}
 	if player.GetDatabase() != nil {
+		// Safe to run unserialized: core guards the shared database itself, so generation
+		// (minutes, for a large selection) does not block other bulk requests.
 		core.AddToDatabase(player.GetDatabase())
 	}
 	generator, buildErr := newBulkSimCandidateGenerator(request, player)
@@ -64,6 +61,8 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: "bulk combination count request is missing player equipment"}}
 	}
 	if player.GetDatabase() != nil {
+		// Safe to run unserialized: core guards the shared database itself, so generation
+		// (minutes, for a large selection) does not block other bulk requests.
 		core.AddToDatabase(player.GetDatabase())
 	}
 
@@ -125,6 +124,8 @@ func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesR
 		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: "bulk candidates request is missing player equipment"}}
 	}
 	if player.GetDatabase() != nil {
+		// Safe to run unserialized: core guards the shared database itself, so generation
+		// (minutes, for a large selection) does not block other bulk requests.
 		core.AddToDatabase(player.GetDatabase())
 	}
 

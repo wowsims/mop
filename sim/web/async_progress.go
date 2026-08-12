@@ -78,22 +78,19 @@ func (p *asyncProgress) markOptimizedCandidatesDelivered(delivered []*proto.Bulk
 
 	p.pendingMu.Lock()
 	defer p.pendingMu.Unlock()
-	deliveredIndices := make(map[int32]struct{}, len(delivered))
 	for _, candidate := range delivered {
 		if candidate == nil {
 			continue
 		}
 		p.deliveredCandidateIndices[candidate.Index] = struct{}{}
 		delete(p.pendingCandidateIndices, candidate.Index)
-		deliveredIndices[candidate.Index] = struct{}{}
 	}
 	// More may have been appended while the response was being written, so drop exactly
-	// the delivered ones rather than clearing the queue.
+	// the delivered ones rather than clearing the queue. Testing the delivered set is the
+	// same test as "was in this batch": appendPendingOptimizedCandidates never queues an
+	// index that is already delivered, so nothing else in the queue can match.
 	p.pendingOptimizedCandidates = slices.DeleteFunc(p.pendingOptimizedCandidates, func(candidate *proto.BulkGearCandidate) bool {
-		if candidate == nil {
-			return true
-		}
-		_, ok := deliveredIndices[candidate.Index]
+		_, ok := p.deliveredCandidateIndices[candidate.Index]
 		return ok
 	})
 }

@@ -3,7 +3,7 @@ import { SimSignals } from '../../sim_signal_manager';
 import { isDevMode } from '../../utils';
 import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
 import { BulkSimCandidateTransport, runBulkSimCandidateBatchOnWorkers, runSingleBulkSimCandidate } from './batch';
-import { bulkSimCarriedResults, bulkSimCarryOverCovers,ConcurrentBulkSimStageCarryOver } from './carry_over';
+import { bulkSimCarriedResults, bulkSimCarryOverCovers, ConcurrentBulkSimStageCarryOver } from './carry_over';
 import {
 	BULK_SIM_ADAPTIVE_MAX_ITERATION_MULTIPLIER,
 	BULK_SIM_CULLING_COEFFICIENT,
@@ -13,7 +13,7 @@ import {
 	BULK_SIM_MIN_COMBINATIONS,
 } from './constants';
 import { getBulkSimBaselineGear } from './index';
-import { hasBulkSimStageError, mergeBulkSimCandidateResults,mergeBulkSimCandidateResultSlices } from './merge';
+import { hasBulkSimStageError, mergeBulkSimCandidateResults, mergeBulkSimCandidateResultSlices } from './merge';
 import { bulkSimStageLogName, BulkSimStageProgressEmitter, formatBulkSimStageStart, makeBulkSimStageProgressEmitter } from './progress';
 import { bulkSimObservedStageErrorPct, getBulkSimStageTargetIterations, getBulkSimTargetIterations, topBulkSimResults } from './statistics';
 import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig, ConcurrentBulkSimStageResult } from './types';
@@ -346,10 +346,17 @@ export const runConcurrentBulkSimStage = async (
 		iterations,
 	);
 	baseline = adaptedStage.baseline;
-	for (let i = 0; i < adaptedStage.results.length; i++) {
-		results[i] = adaptedStage.results[i];
+	// Only a rerun produces a fresh array; every other path returns the one passed in, so
+	// the common case would copy every element onto itself. Replace in place (the callers
+	// below hold this reference) by assignment rather than a spread: the low stage runs on
+	// the full candidate list, and one argument per candidate throws RangeError past the
+	// engine's argument limit.
+	if (adaptedStage.results !== results) {
+		for (let i = 0; i < adaptedStage.results.length; i++) {
+			results[i] = adaptedStage.results[i];
+		}
+		results.length = adaptedStage.results.length;
 	}
-	results.length = adaptedStage.results.length;
 	if (baseline.error) {
 		return { ...bulkSimStageError(config, baseline, adaptedStage.iterations), results };
 	}
