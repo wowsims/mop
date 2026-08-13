@@ -233,7 +233,13 @@ sim/core/proto/api.pb.go: proto/*.proto
 		echo "then: rm -f sim/core/proto/*.pb.go && retry"; \
 		exit 1; \
 	fi
-	protoc -I=./proto --go_out=./sim/core ./proto/*.proto
+# Distro protoc packages (e.g. Ubuntu/WSL's protobuf-compiler) bundle a
+# descriptor.proto whose go_package still points at the deprecated
+# github.com/golang/protobuf path, which is no longer a dependency. Pin the
+# mapping so common.proto's MessageOptions extension resolves to descriptorpb.
+	protoc -I=./proto \
+		--go_opt=Mgoogle/protobuf/descriptor.proto=google.golang.org/protobuf/types/descriptorpb \
+		--go_out=./sim/core ./proto/*.proto
 
 # Only useful for building the lib on a host platform that matches the target platform
 .PHONY: locallib
