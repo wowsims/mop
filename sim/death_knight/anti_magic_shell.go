@@ -1,12 +1,27 @@
 package death_knight
 
 import (
+	"slices"
 	"time"
 
 	"github.com/wowsims/mop/sim/core/proto"
 
 	"github.com/wowsims/mop/sim/core"
 )
+
+// encounterModelsMagicDamage reports whether the encounter being simulated already deals
+// magic damage to the player, in which case the Avg AMS Hit settings are ignored: the
+// shell absorbs the encounter's actual spells and generates Runic Power through the
+// normal path, so the abstract intake would double-count that damage.
+func (dk *DeathKnight) encounterModelsMagicDamage() bool {
+	if dk.Env == nil {
+		return false
+	}
+
+	return slices.ContainsFunc(dk.Env.Encounter.AllTargets, func(target *core.Target) bool {
+		return target.ModelsPlayerMagicDamage
+	})
+}
 
 /*
 Surrounds the Death Knight in an Anti-Magic Shell, absorbing 75% of damage dealt by harmful spells (up to a maximum of 50% of the Death Knight's health) and preventing application of harmful magical effects.
@@ -15,6 +30,13 @@ Lasts 5 sec.
 */
 func (dk *DeathKnight) registerAntiMagicShell() {
 	actionID := core.ActionID{SpellID: 48707}
+
+	// Encounters that hit the player with real spells feed the shell through the normal
+	// absorption path, so the configured stand-in intake is dropped there.
+	avgAMSHit := dk.Inputs.AvgAMSHit
+	if dk.encounterModelsMagicDamage() {
+		avgAMSHit = 0
+	}
 
 	runicPowerMetrics := dk.NewRunicPowerMetrics(core.ActionID{SpellID: 49088})
 	currentShield := 0.0
@@ -43,7 +65,7 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 				// Only model incoming damage when the user has configured an average
 				// AMS hit. The option exists for Frost/Unholy only, so this also keeps
 				// the simulated self-damage out of the Blood (tank) sim.
-				if dk.Inputs.AvgAMSHit <= 0 {
+				if avgAMSHit <= 0 {
 					return
 				}
 
@@ -56,7 +78,7 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 						DamageMultiplier: 1,
 
 						ApplyEffects: func(sim *core.Simulation, target *core.Unit, spell *core.Spell) {
-							baseDamage := dk.Inputs.AvgAMSHit * sim.Roll(0.9, 1.1)
+							baseDamage := avgAMSHit * sim.Roll(0.9, 1.1)
 							spell.CalcAndDealDamage(sim, target, baseDamage, spell.OutcomeAlwaysHit)
 						},
 					})
@@ -149,8 +171,9 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 	})
 
 	// Autocast the shell as a low-priority DPS cooldown, cast through the
-	// autocastOtherCooldowns action present in every DPS preset. Only registered when the user
-	// has opted into damage-intake modeling (AvgAMSHit > 0): core.AddMajorCooldown has real side
+	// autocastOtherCooldowns action present in every DPS preset. Only registered when damage-intake
+	// modeling is actually in play (avgAMSHit > 0, i.e. the user opted in and the encounter does not
+	// already model magic damage itself): core.AddMajorCooldown has real side
 	// effects beyond just enabling ShouldActivate (it unconditionally ORs SpellFlagMCD onto the
 	// spell, sim/core/major_cooldown.go), which measurably changed Blood's golden-output tests
 	// even with ShouldActivate always returning false -- so this must stay a real conditional
@@ -163,7 +186,7 @@ func (dk *DeathKnight) registerAntiMagicShell() {
 	// and the equivalent Frost/Unholy default rotations for the pattern). A manual "Cast Spell"
 	// action's APLActionCastSpell.IsReady never looks at ShouldActivate, so a user-authored
 	// reactive rule like that always takes priority over this flat heuristic.
-	if dk.Inputs.AvgAMSHit > 0 {
+	if avgAMSHit > 0 {
 		dk.AddMajorCooldown(core.MajorCooldown{
 			Spell:    antiMagicShellSpell,
 			Type:     core.CooldownTypeDPS,
