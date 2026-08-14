@@ -387,12 +387,14 @@ func (sim *Simulation) runOnce(firstIteration bool) {
 	sim.Cleanup()
 }
 
+func sentinelOnAction(sim *Simulation) {
+	panic("running sentinel pending action")
+}
+
 var (
 	sentinelPendingAction = &PendingAction{
 		NextActionAt: NeverExpires,
-		OnAction: func(sim *Simulation) {
-			panic("running sentinel pending action")
-		},
+		OnAction:     sentinelOnAction,
 	}
 )
 
@@ -409,6 +411,12 @@ func (sim *Simulation) reset(firstIteration bool) {
 		sim.Duration += time.Duration(sim.RandomFloat("sim duration")*float64(variation)) - sim.DurationVariation
 	}
 
+	// The sentinel is a process-wide singleton; reset fields in case a prior
+	// iteration mutated them (shared across concurrent sims as well).
+	sentinelPendingAction.cancelled = false
+	sentinelPendingAction.consumed = false
+	sentinelPendingAction.NextActionAt = NeverExpires
+	sentinelPendingAction.OnAction = sentinelOnAction
 	sim.pendingActions = sim.pendingActions[:0]
 	sim.pendingActions = append(sim.pendingActions, sentinelPendingAction)
 
@@ -511,6 +519,9 @@ func (sim *Simulation) runPendingActions() {
 }
 
 func (sim *Simulation) Step() bool {
+	if len(sim.pendingActions) == 0 {
+		return true
+	}
 	last := len(sim.pendingActions) - 1
 	pa := sim.pendingActions[last]
 
@@ -641,6 +652,9 @@ func (sim *Simulation) AddPendingAction(pa *PendingAction) {
 	//if pa.NextActionAt < sim.CurrentTime {
 	//	panic(fmt.Sprintf("Cant add action in the past: %s", pa.NextActionAt))
 	//}
+	if len(sim.pendingActions) == 0 {
+		sim.pendingActions = append(sim.pendingActions, sentinelPendingAction)
+	}
 	pa.consumed = false
 	for index, v := range sim.pendingActions[1:] {
 		if v.NextActionAt < pa.NextActionAt || (v.NextActionAt == pa.NextActionAt && v.Priority >= pa.Priority) {

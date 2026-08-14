@@ -45,6 +45,11 @@ func (pa *PendingAction) IsConsumed() bool {
 }
 
 func (pa *PendingAction) Cancel(sim *Simulation) {
+	// The event loop keeps a shared sentinel at pendingActions[0]. Cancelling it
+	// empties or corrupts the queue and the next Step() panics with index [-1].
+	if pa == nil || pa == sentinelPendingAction {
+		return
+	}
 	if pa.cancelled {
 		return
 	}
