@@ -627,6 +627,11 @@ message Target {
         // Used in dynamic target AIs.
         bool disabled_at_start = 101;
 
+        // True if this target's AI casts real magic damage at raid players, so
+        // class mechanics that abstractly simulate incoming magic damage (e.g.
+        // the DK Avg AMS Hit setting) should be disabled to avoid double-counting.
+        bool models_player_magic_damage = 102;
+
         // Custom Target AI parameters
         repeated TargetInput target_inputs = 18;
 }

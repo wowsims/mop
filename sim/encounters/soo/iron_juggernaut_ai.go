@@ -126,6 +126,9 @@ func createIronJuggernautPreset(raidPrefix string, config ironJuggernautPresetCo
 			MinBaseDamage: config.MeleeMinDamage,
 			DamageSpread:  config.MeleeDamageSpan,
 			TargetInputs:  ironJuggernautTargetInputs(),
+
+			// Laser Burn hits random raid players with Fire damage.
+			ModelsPlayerMagicDamage: true,
 		},
 
 		AI: makeIronJuggernautAI(config),
