@@ -10,6 +10,7 @@ import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, Pseu
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import * as SharedPresets from '../shared';
 import * as DeathKnightInputs from './inputs';
 import * as Presets from './presets';
 
@@ -105,6 +106,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 			weakenedBlows: true,
 		}),
 		rotationType: APLRotation_Type.TypeAuto,
+		encounter: SharedPresets.ENCOUNTER_MALKOROK,
 	},
 
 	autoRotation: (player: Player<Spec.SpecFrostDeathKnight>): APLRotation => {
@@ -141,6 +143,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 		epWeights: [Presets.MASTERFROST_EP_PRESET, Presets.TWOHAND_OBLITERATE_EP_PRESET],
 		talents: [Presets.DefaultTalents],
 		rotations: [Presets.MASTERFROST_ROTATION_PRESET_DEFAULT, Presets.OBLITERATE_ROTATION_PRESET_DEFAULT],
+		encounters: [SharedPresets.ENCOUNTER_MALKOROK, SharedPresets.ENCOUNTER_SINGLE_TARGET],
 		gear: [
 			Presets.PREBIS_MASTERFROST_GEAR_PRESET,
 			Presets.PREBIS_2H_OBLITERATE_GEAR_PRESET,
