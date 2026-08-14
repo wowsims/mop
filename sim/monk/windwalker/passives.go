@@ -17,7 +17,7 @@ func (ww *WindwalkerMonk) registerComboBreaker() {
 		aura := core.BlockPrepull(ww.RegisterAura(core.Aura{
 			Label:    fmt.Sprintf("Combo Breaker: %s %s", labelSuffix, ww.Label),
 			ActionID: core.ActionID{SpellID: spellID},
-			Duration: time.Second * 20,
+			Duration: time.Second * 15,
 
 			OnSpellHitDealt: func(aura *core.Aura, sim *core.Simulation, spell *core.Spell, result *core.SpellResult) {
 				if !spell.Matches(triggerSpellMask) || !result.Landed() {
