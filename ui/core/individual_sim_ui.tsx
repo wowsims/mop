@@ -170,6 +170,10 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 		rotationType?: APLRotationType;
 		simpleRotation?: SpecRotation<SpecType>;
 
+		// Encounter applied by "Reset to Defaults" and on first load. Falls back to
+		// the generic single-target dummy when unset.
+		encounter?: PresetEncounter;
+
 		other?: OtherDefaults;
 	};
 
@@ -605,7 +609,11 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 				this.sim.raid.setTargetDummies(eventID, 0);
 			} else {
 				this.sim.raid.setTargetDummies(eventID, healingSpec ? 9 : 0);
-				this.sim.encounter.applyDefaults(eventID);
+				if (this.individualConfig.defaults.encounter?.encounter) {
+					this.sim.encounter.fromProto(eventID, this.individualConfig.defaults.encounter.encounter);
+				} else {
+					this.sim.encounter.applyDefaults(eventID);
+				}
 				this.sim.encounter.setExecuteProportion90(eventID, this.individualConfig.defaults.other?.highHpThreshold || 0.9);
 				this.sim.raid.setDebuffs(eventID, this.individualConfig.defaults.debuffs);
 				this.sim.applyDefaults(eventID, tankSpec, healingSpec);
