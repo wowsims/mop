@@ -158,12 +158,6 @@ func (encounter *Encounter) GetMetricsProto() *proto.EncounterMetrics {
 type Target struct {
 	Unit
 
-	// Whether this target's AI casts real magic damage at raid players, so class
-	// mechanics that abstractly simulate incoming magic damage (e.g. the DK Avg AMS
-	// Hit setting) should be disabled to avoid double-counting. See the matching
-	// field on proto.Target.
-	ModelsPlayerMagicDamage bool
-
 	AI TargetAI
 }
 
@@ -174,7 +168,6 @@ func NewTarget(options *proto.Target, targetIndex int32) *Target {
 	}
 
 	target := &Target{
-		ModelsPlayerMagicDamage: options.ModelsPlayerMagicDamage,
 		Unit: Unit{
 			Type:        EnemyUnit,
 			Index:       targetIndex,
@@ -215,11 +208,6 @@ func NewTarget(options *proto.Target, targetIndex int32) *Target {
 	preset := GetPresetTargetWithID(options.Id)
 	if preset != nil && preset.AI != nil {
 		target.AI = preset.AI()
-	}
-	// Saved settings and share links from before this flag existed carry the target
-	// proto without it, so fall back to the registered preset's current definition.
-	if preset != nil && preset.Config.ModelsPlayerMagicDamage {
-		target.ModelsPlayerMagicDamage = true
 	}
 
 	return target

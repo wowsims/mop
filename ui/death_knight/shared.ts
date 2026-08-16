@@ -5,9 +5,9 @@ import { Encounter as EncounterProto, InputType, MobType } from '../core/proto/c
 export const ENCOUNTER_SINGLE_TARGET = PresetUtils.makePresetEncounter('Default', Encounter.defaultEncounterProto());
 
 // Default encounter for the DPS DK sims: Anti-Magic Shell timing against Malkorok's
-// magic damage is a core part of the rotation, so sim it by default. Soak % defaults
-// to 0 here (rather than the log-matched 36) so the baseline models a DK who is not
-// assigned to Imploding Energy soaks; raise it to match your raid's assignments.
+// magic damage is a core part of the rotation, so sim it by default. Imploding Energy
+// Soak % defaults to 0, modeling a DK who isn't assigned to soak it; raise it to match
+// your raid's assignments.
 export const ENCOUNTER_MALKOROK = PresetUtils.makePresetEncounter(
 	'Malkorok',
 	EncounterProto.create({
@@ -29,7 +29,6 @@ export const ENCOUNTER_MALKOROK = PresetUtils.makePresetEncounter(
 				minBaseDamage: 250000,
 				damageSpread: 0.5,
 				swingSpeed: 2,
-				modelsPlayerMagicDamage: true,
 				targetInputs: [
 					{
 						inputType: InputType.Number,

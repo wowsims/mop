@@ -85,9 +85,6 @@ func createMalkorokPreset(raidPrefix string, config malkorokPresetConfig) {
 			MinBaseDamage: config.MeleeMinDamage,
 			DamageSpread:  config.MeleeDamageSpan,
 			TargetInputs:  malkorokTargetInputs(),
-
-			// Ancient Miasma / Imploding Energy / Essence of Y'Shaarj all hit raid players.
-			ModelsPlayerMagicDamage: true,
 		},
 
 		AI: makeMalkorokAI(config),

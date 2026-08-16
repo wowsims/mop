@@ -43,9 +43,6 @@ func createGarajalHeroicPreset(raidPrefix string, raidSize int32, bossHealth flo
 			MinBaseDamage: bossMinBaseDamage,
 			DamageSpread:  garajalMeleeDamageSpread,
 			TargetInputs:  garajalTargetInputs(),
-
-			// Spiritual Grasp (Shadow) hits the tank, or the simmed player in non-tank sims.
-			ModelsPlayerMagicDamage: true,
 		},
 
 		AI: makeGarajalAI(raidSize, true),

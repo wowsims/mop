@@ -9,6 +9,8 @@ import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { TypedEvent } from '../../core/typed_event';
+import * as SharedDeathKnightInputs from '../inputs';
 import * as SharedPresets from '../shared';
 import * as DeathKnightInputs from './inputs';
 import * as Presets from './presets';
@@ -145,6 +147,10 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 export class UnholyDeathKnightSimUI extends IndividualSimUI<Spec.SpecUnholyDeathKnight> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecUnholyDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
+
+		SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(TypedEvent.nextEventID(), player);
+		this.sim.encounter.changeEmitter.on(eventID => SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(eventID, player));
+
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => {
 				let epWeights = player.getEpWeights();

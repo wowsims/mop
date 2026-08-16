@@ -10,6 +10,8 @@ import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, Pseu
 import { StatCapType } from '../../core/proto/ui';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { TypedEvent } from '../../core/typed_event';
+import * as SharedDeathKnightInputs from '../inputs';
 import * as SharedPresets from '../shared';
 import * as DeathKnightInputs from './inputs';
 import * as Presets from './presets';
@@ -159,6 +161,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostDeathKnight, {
 export class FrostDeathKnightSimUI extends IndividualSimUI<Spec.SpecFrostDeathKnight> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecFrostDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
+
+		SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(TypedEvent.nextEventID(), player);
+		this.sim.encounter.changeEmitter.on(eventID => SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(eventID, player));
 
 		this.reforger = new ReforgeOptimizer(this, {
 			updateSoftCaps: (softCaps: StatCap[]) => {
