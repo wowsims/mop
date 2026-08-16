@@ -2377,9 +2377,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p4_bis-RushingJadeWindTalent-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 313255.47142
-  tps: 310826.22371
-  hps: 10032.45658
+  dps: 310998.23246
+  tps: 309347.69595
+  hps: 9797.00227
  }
 }
 dps_results: {
@@ -2401,9 +2401,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p4_bis-RushingJadeWindTalent-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 223943.08438
-  tps: 223943.08438
-  hps: 8486.16661
+  dps: 225411.39947
+  tps: 225411.39947
+  hps: 8492.96229
  }
 }
 dps_results: {
@@ -2473,9 +2473,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p5_bis-RushingJadeWindTalent-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 502700.00249
-  tps: 499735.34011
-  hps: 12428.26312
+  dps: 497271.1634
+  tps: 495057.10666
+  hps: 12193.58668
  }
 }
 dps_results: {
@@ -2497,9 +2497,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Orc-p5_bis-RushingJadeWindTalent-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 370280.08554
-  tps: 370280.08554
-  hps: 10892.367
+  dps: 374834.52126
+  tps: 374834.52126
+  hps: 10926.70895
  }
 }
 dps_results: {
@@ -2569,9 +2569,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p4_bis-RushingJadeWindTalent-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 314491.30221
-  tps: 312073.65166
-  hps: 9825.04504
+  dps: 310092.00793
+  tps: 308441.2949
+  hps: 9656.69097
  }
 }
 dps_results: {
@@ -2593,9 +2593,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p4_bis-RushingJadeWindTalent-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 226649.62815
-  tps: 226649.62815
-  hps: 8430.37335
+  dps: 227097.63553
+  tps: 227097.63553
+  hps: 8316.63044
  }
 }
 dps_results: {
@@ -2665,9 +2665,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p5_bis-RushingJadeWindTalent-Basic-default-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 493337.75784
-  tps: 490381.6806
-  hps: 12409.65143
+  dps: 506973.21446
+  tps: 504758.99748
+  hps: 12320.40132
  }
 }
 dps_results: {
@@ -2689,9 +2689,9 @@ dps_results: {
 dps_results: {
  key: "TestWindwalker-Settings-Troll-p5_bis-RushingJadeWindTalent-Basic-default-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 368131.74056
-  tps: 368131.74056
-  hps: 10548.80893
+  dps: 384004.56558
+  tps: 384004.56558
+  hps: 10543.71436
  }
 }
 dps_results: {
