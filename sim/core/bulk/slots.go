@@ -116,10 +116,6 @@ var itemTypeToSlotsMap = map[proto.ItemType][]proto.ItemSlot{
 	proto.ItemType_ItemTypeRanged:   {proto.ItemSlot_ItemSlotMainHand},
 }
 
-func isSecondaryItemSlot(slot proto.ItemSlot, playerCanDualWield bool) bool {
-	return slot == proto.ItemSlot_ItemSlotFinger2 || slot == proto.ItemSlot_ItemSlotTrinket2 || (playerCanDualWield && slot == proto.ItemSlot_ItemSlotOffHand)
-}
-
 func getBulkItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) BulkSimItemSlot {
 	if playerCanDualWield && (slot == proto.ItemSlot_ItemSlotMainHand || slot == proto.ItemSlot_ItemSlotOffHand) {
 		return BulkSimItemSlotHandWeapon

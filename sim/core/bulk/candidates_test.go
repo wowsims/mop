@@ -389,22 +389,16 @@ func newComboTableGenerator(class proto.Class, spec proto.Spec, selected []*prot
 	}
 }
 
-// Titan's Grip is the only way a two-hander leaves the mainhand, and it covers axes, maces and
-// swords only - never polearms or staves.
-func titansGripAllows(spec proto.Spec, item core.Item) bool {
-	if spec != proto.Spec_SpecFuryWarrior {
-		return false
-	}
-	switch item.WeaponType {
-	case proto.WeaponType_WeaponTypeAxe, proto.WeaponType_WeaponTypeMace, proto.WeaponType_WeaponTypeSword:
-		return true
-	}
-	return false
+// Titan's Grip is the only way a two-hander leaves the mainhand, and in MoP it covers every
+// two-hander Fury can wield - spell 46917's subclass mask includes polearms and staves.
+func titansGripAllows(spec proto.Spec) bool {
+	return spec == proto.Spec_SpecFuryWarrior
 }
 
-// Real in-game equip rules, slot aware. canEquipItem in item_rules.go is deliberately looser (it
-// never rejects a shield in the mainhand, for one), so the matrix judges legality itself instead
-// of asserting the code against itself.
+// Real in-game equip rules, slot aware, kept separate from the production predicates on purpose so
+// a wrong rule there does not silently become the expectation here. It also carries weight the
+// production side cannot: the missing-item half of the matrix needs to know which hands an item
+// *should* reach, which no generator rule implies.
 func comboSlotLegal(item core.Item, class proto.Class, spec proto.Spec, slot proto.ItemSlot) bool {
 	if item.Type == proto.ItemType_ItemTypeRanged {
 		// MoP has no ranged slot: bows and wands are worn in the mainhand.
@@ -435,7 +429,7 @@ func comboSlotLegal(item core.Item, class proto.Class, spec proto.Spec, slot pro
 		case proto.HandType_HandTypeOneHand:
 			return core.SpecCanDualWieldCapabilities[spec]
 		case proto.HandType_HandTypeTwoHand:
-			return capability.CanUseTwoHand && titansGripAllows(spec, item)
+			return capability.CanUseTwoHand && titansGripAllows(spec)
 		}
 		return false
 	}
@@ -464,7 +458,7 @@ func comboIllegalReason(combo [2]*bulkSimCandidateOption, class proto.Class, spe
 	if mh.item.Type == proto.ItemType_ItemTypeRanged && mh.item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeWand {
 		return fmt.Sprintf("%s occupies both hands, so %s cannot be worn", mh.item.Name, oh.item.Name)
 	}
-	if mh.item.HandType == proto.HandType_HandTypeTwoHand && !titansGripAllows(spec, mh.item) {
+	if mh.item.HandType == proto.HandType_HandTypeTwoHand && !titansGripAllows(spec) {
 		return fmt.Sprintf("%s is two-handed, so %s cannot be worn", mh.item.Name, oh.item.Name)
 	}
 	return ""

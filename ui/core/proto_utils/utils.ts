@@ -6,8 +6,8 @@ import { PlayerSpecs } from '../player_specs';
 import { Player } from '../proto/api.js';
 import {
 	Class,
-	EquipmentSpec,
 	EnchantType,
+	EquipmentSpec,
 	Faction,
 	HandType,
 	ItemSlot,
@@ -1907,18 +1907,11 @@ export const isSecondaryItemSlot = (slot: ItemSlot) => slot === ItemSlot.ItemSlo
 // Returns whether the given main-hand and off-hand items can be worn at the
 // same time.
 export function validWeaponCombo(mainHand: Item | null | undefined, offHand: Item | null | undefined, canDW2h: boolean): boolean {
-	if (mainHand?.handType == HandType.HandTypeTwoHand && !canDW2h) {
-		return false;
-	} else if (mainHand?.handType == HandType.HandTypeTwoHand && mainHand?.weaponType == WeaponType.WeaponTypeStaff) {
-		return false;
-	}
-	if (offHand?.handType == HandType.HandTypeTwoHand && !canDW2h) {
-		return false;
-	} else if (offHand?.handType == HandType.HandTypeTwoHand && offHand?.weaponType == WeaponType.WeaponTypeStaff) {
-		return false;
+	if (canDW2h) {
+		return true;
 	}
 
-	return true;
+	return mainHand?.handType != HandType.HandTypeTwoHand && offHand?.handType != HandType.HandTypeTwoHand;
 }
 
 export const hasBlacksmithing = (player: Player) => [player.profession1, player.profession2].includes(Profession.Blacksmithing);

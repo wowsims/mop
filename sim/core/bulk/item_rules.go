@@ -151,7 +151,7 @@ func getEligibleItemSlots(item core.Item, isFuryWarrior bool) []proto.ItemSlot {
 	return nil
 }
 
-func canEquipItem(item core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
+func canEquipItem(item *core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
 	if item.Type == proto.ItemType_ItemTypeFinger || item.Type == proto.ItemType_ItemTypeTrinket {
 		return true
 	}
@@ -181,4 +181,47 @@ func canEquipItem(item core.Item, playerClass proto.Class, playerSpec proto.Spec
 	}
 	maxArmorType := classArmorTypes[0]
 	return maxArmorType >= item.ArmorType
+}
+
+// A unique item can only be worn once, and two items never share a limit category.
+func pairIsEquippable(first *core.Item, second *core.Item) bool {
+	if first.Unique && first.ID == second.ID {
+		return false
+	}
+	return first.LimitCategory == 0 || first.LimitCategory != second.LimitCategory
+}
+
+func itemCanBeDoubled(item *core.Item) bool {
+	return !item.Unique && item.LimitCategory == 0
+}
+
+func occupiesBothHands(item *core.Item) bool {
+	return item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeUnknown &&
+		item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeWand
+}
+
+func canWearWeaponInHand(item *core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
+	isMainHand := slot == proto.ItemSlot_ItemSlotMainHand
+	isOffHand := slot == proto.ItemSlot_ItemSlotOffHand
+	if !isMainHand && !isOffHand {
+		return false
+	}
+	if item.Type == proto.ItemType_ItemTypeRanged {
+		// MoP has no ranged slot: bows and wands are worn in the mainhand.
+		return isMainHand && canEquipItem(item, playerClass, playerSpec, slot)
+	}
+	if item.Type != proto.ItemType_ItemTypeWeapon {
+		return false
+	}
+	switch item.HandType {
+	case proto.HandType_HandTypeMainHand:
+		if !isMainHand {
+			return false
+		}
+	case proto.HandType_HandTypeOffHand:
+		if !isOffHand {
+			return false
+		}
+	}
+	return canEquipItem(item, playerClass, playerSpec, slot)
 }

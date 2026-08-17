@@ -145,14 +145,19 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 				ChallengeMode: selectedItem.GetChallengeMode(),
 			}),
 		}
+		// An item is eligible for at most two slots, and when both collapse into one bulk slot
+		// (Finger1/2, Trinket1/2, or either hand for a dual wielder) it belongs there once - a
+		// second append would fake a second copy in weaponCopyCounts below.
+		lastBulkSlot := BulkSimItemSlot(-1)
 		for _, slot := range getEligibleItemSlots(option.item, generator.playerIsFuryWarrior) {
-			if isSecondaryItemSlot(slot, generator.playerCanDualWield) {
-				continue
-			}
-			if !canEquipItem(option.item, generator.playerClass, generator.playerSpec, slot) {
+			if !canEquipItem(&option.item, generator.playerClass, generator.playerSpec, slot) {
 				continue
 			}
 			bulkSlot := getBulkItemSlotFromSlot(slot, generator.playerCanDualWield)
+			if bulkSlot == lastBulkSlot {
+				continue
+			}
+			lastBulkSlot = bulkSlot
 			generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], option)
 		}
 	}
@@ -165,7 +170,7 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 		if equippedItem == nil || equippedItem.ID == 0 {
 			continue
 		}
-		if !canEquipItem(*equippedItem, generator.playerClass, generator.playerSpec, slot) {
+		if !canEquipItem(equippedItem, generator.playerClass, generator.playerSpec, slot) {
 			continue
 		}
 
@@ -201,13 +206,10 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 			pairs = make([][2]bulkSimCandidateOption, 0, len(options))
 			frozenSpec := frozenItem.ToItemSpecProto()
 			for _, option := range options {
-				if candidateOptionEqualsItem(option, *frozenItem, generator.inheritUpgrades) {
+				if candidateOptionEqualsItem(&option, frozenItem, generator.inheritUpgrades) {
 					continue
 				}
-				if frozenItem.Unique && frozenItem.ID == option.item.ID {
-					continue
-				}
-				if frozenItem.LimitCategory != 0 && frozenItem.LimitCategory == option.item.LimitCategory {
+				if !pairIsEquippable(frozenItem, &option.item) {
 					continue
 				}
 				pairs = append(pairs, [2]bulkSimCandidateOption{{spec: frozenSpec, item: *frozenItem}, option})
@@ -216,11 +218,7 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 			pairs = make([][2]bulkSimCandidateOption, 0, len(options)*(len(options)-1)/2)
 			for i := 0; i < len(options); i++ {
 				for j := i + 1; j < len(options); j++ {
-					if options[i].item.Unique && options[i].item.ID == options[j].item.ID {
-						continue
-					}
-					lc := options[i].item.LimitCategory
-					if lc != 0 && lc == options[j].item.LimitCategory {
+					if !pairIsEquippable(&options[i].item, &options[j].item) {
 						continue
 					}
 					pairs = append(pairs, [2]bulkSimCandidateOption{options[i], options[j]})
