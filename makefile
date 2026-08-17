@@ -229,7 +229,20 @@ release: wowsimmop wowsimmop-windows.exe
 	zip wowsimcli-windows.exe.zip wowsimcli-windows.exe
 
 sim/core/proto/api.pb.go: proto/*.proto
-	protoc -I=./proto --go_out=./sim/core ./proto/*.proto
+	@if go version -m "$$(command -v protoc-gen-go)" 2>/dev/null | grep -qE '^[[:space:]]+mod[[:space:]]+github\.com/golang/protobuf[[:space:]]'; then \
+		echo "ERROR: your protoc-gen-go is the deprecated github.com/golang/protobuf plugin;"; \
+		echo "it generates code that no longer builds against this repo's protobuf version."; \
+		echo "Fix:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest"; \
+		echo "then: rm -f sim/core/proto/*.pb.go && retry"; \
+		exit 1; \
+	fi
+# Distro protoc packages (e.g. Ubuntu/WSL's protobuf-compiler) bundle a
+# descriptor.proto whose go_package still points at the deprecated
+# github.com/golang/protobuf path, which is no longer a dependency. Pin the
+# mapping so common.proto's MessageOptions extension resolves to descriptorpb.
+	protoc -I=./proto \
+		--go_opt=Mgoogle/protobuf/descriptor.proto=google.golang.org/protobuf/types/descriptorpb \
+		--go_out=./sim/core ./proto/*.proto
 
 $(AUTO_GEN_FILES_TS): $(AUTO_GEN_FILES_TS_DEPS)
 	go run ./tools/database/gen_db -gen=go-to-ts
