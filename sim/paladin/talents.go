@@ -385,7 +385,7 @@ func (paladin *Paladin) registerHandOfPurity() {
 			}
 
 			incomingDamage := result.Damage
-			result.Damage *= incomingDamage * 0.2
+			result.Damage = incomingDamage * 0.2
 
 			if sim.Log != nil {
 				unit.Log(sim, "Hand of Purity absorbed %.1f damage", incomingDamage-result.Damage)
