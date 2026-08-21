@@ -1,13 +1,25 @@
 import * as InputHelpers from '../../core/components/input_helpers.js';
+import { Player } from '../../core/player.js';
 import { Spec } from '../../core/proto/common.js';
+import { TypedEvent } from '../../core/typed_event.js';
+import { encounterModelsMagicDamage } from '../inputs.js';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
+
+// The AMS intake settings are ignored by the sim on encounters that cast real magic damage
+// at the raid, so hide them there rather than leaving inputs that do nothing. Visibility is
+// re-evaluated on the encounter's change emitter as well as the usual spec options one.
+const showWhenAMSIntakeUsed = (player: Player<Spec.SpecFrostDeathKnight>) => !encounterModelsMagicDamage(player.sim);
+const amsIntakeChangeEmitter = (player: Player<Spec.SpecFrostDeathKnight>) =>
+	TypedEvent.onAny([player.specOptionsChangeEmitter, player.sim.encounter.changeEmitter]);
 
 export const AvgAMSHitInput = InputHelpers.makeSpecOptionsNumberInput<Spec.SpecFrostDeathKnight>({
 	fieldName: 'avgAmsHit',
 	label: 'Avg AMS Hit',
 	labelTooltip: 'How much on average (+-10%) the character is hit for when AMS is successful. Set to 0 to disable AMS damage intake.',
+	showWhen: showWhenAMSIntakeUsed,
+	changeEmitter: amsIntakeChangeEmitter,
 });
 
 export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<Spec.SpecFrostDeathKnight>({
@@ -15,6 +27,8 @@ export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<Sp
 	label: 'Avg AMS Success %',
 	labelTooltip: 'Chance for damage to be taken during the 5 second window of AMS.',
 	percent: true,
+	showWhen: showWhenAMSIntakeUsed,
+	changeEmitter: amsIntakeChangeEmitter,
 });
 
 export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecFrostDeathKnight, number>({
@@ -30,4 +44,6 @@ export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecF
 	],
 	// Old saved settings predate this field and deserialize to 0; show them as 1 tick.
 	getValue: player => player.getSpecOptions().amsNumTicks || 1,
+	showWhen: showWhenAMSIntakeUsed,
+	changeEmitter: amsIntakeChangeEmitter,
 });
