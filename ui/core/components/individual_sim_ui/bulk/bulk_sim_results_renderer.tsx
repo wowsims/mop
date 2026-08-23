@@ -3,18 +3,18 @@ import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
+import { ItemSlot, ItemSpec } from '../../../proto/common';
 import { TypedEvent } from '../../../typed_event';
 import { formatDeltaTextElem, formatToNumber } from '../../../utils';
 import { Component } from '../../component';
 import { ItemRenderer } from '../../gear_picker/gear_picker';
+import { RaidSimResultsManager } from '../../raid_sim_action';
 import Toast from '../../toast';
 import { TopGearResult } from './types';
-import { RaidSimResultsManager } from '../../raid_sim_action';
-import { ItemSlot, ItemSpec } from '../../../proto/common';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot } from './utils';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from './utils';
 
-const getSwappableItemSlotPair = (slot: number): [ItemSlot, ItemSlot] | undefined =>
-	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, false));
+const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
+	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, canDualWield));
 
 const itemSpecPairsEqualUnordered = (resultItems: ItemSpec[], originalItems: ItemSpec[], [slot1, slot2]: [ItemSlot, ItemSlot]): boolean =>
 	(ItemSpec.equals(resultItems[slot1], originalItems[slot1]) && ItemSpec.equals(resultItems[slot2], originalItems[slot2])) ||
@@ -79,11 +79,12 @@ export default class BulkSimResultRenderer extends Component {
 		});
 
 		const items = (<></>) as HTMLElement;
+		const canDualWield = getBulkPlayerCanDualWield(simUI.player);
 		const resultAsSpec = result.gear.asSpec();
 		const originalEquipmentSpec = baseResult.gear.asSpec();
 		for (const [idx, spec] of resultAsSpec.items.entries()) {
 			const itemContainer = (<div className="bulk-result-item" />) as HTMLElement;
-			const swappableItemSlotPair = getSwappableItemSlotPair(idx);
+			const swappableItemSlotPair = getSwappableItemSlotPair(idx, canDualWield);
 			const itemChanged = swappableItemSlotPair
 				? !itemSpecPairsEqualUnordered(resultAsSpec.items, originalEquipmentSpec.items, swappableItemSlotPair)
 				: !ItemSpec.equals(spec, originalEquipmentSpec.items[idx]);

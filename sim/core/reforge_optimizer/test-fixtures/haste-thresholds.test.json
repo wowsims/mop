@@ -172,5 +172,6 @@
 			"capType":  "TypeThreshold",
 			"postCapEPs":  [501.5, 501.5, 501.5, 501.5, 501.5, 501.5, 501.5]
 		}
-	]
+	],
+	"epStats": ["StatIntellect", "StatSpellPower", "StatHitRating", "StatCritRating", "StatHasteRating", "StatMasteryRating"]
 }

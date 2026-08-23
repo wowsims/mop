@@ -37,7 +37,10 @@ async function initHiGHS(): Promise<void> {
 		highs = await loadHighs({
 			locateFile: file => (file.endsWith('.wasm') ? 'highs.wasm' : file),
 		});
-	})();
+	})().catch(err => {
+		highsInitPromise = null;
+		throw err;
+	});
 	return highsInitPromise;
 }
 

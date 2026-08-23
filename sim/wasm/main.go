@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"runtime/debug"
 	"strings"
@@ -202,6 +203,16 @@ func reforgeOptimizeAsync(this js.Value, args []js.Value) interface{} {
 
 	reporter := make(chan *proto.ProgressMetrics, 100)
 	go func() {
+		// An unrecovered panic here kills the whole wasm instance, not just this call.
+		defer func() {
+			if err := recover(); err != nil {
+				errStr := fmt.Sprint(err) + "\nStack Trace:\n" + string(debug.Stack())
+				reporter <- &proto.ProgressMetrics{
+					FinalReforgeResult: &proto.ReforgeOptimizeResult{Error: &proto.ErrorOutcome{Message: errStr}},
+				}
+				close(reporter)
+			}
+		}()
 		signals, err := simsignals.RegisterWithId(requestId)
 		if err != nil {
 			reporter <- &proto.ProgressMetrics{

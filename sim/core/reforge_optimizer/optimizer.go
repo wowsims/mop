@@ -250,7 +250,7 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 		ampModifier:       ampModifier,
 		bearFormMult:      bearFormMult,
 		statRules:         statRules,
-		epStatsSet:        buildEPStatsSet(request.GetPreCapEpWeights()),
+		epStatsSet:        buildEPStatsSet(request.GetEpStats(), request.GetPreCapEpWeights()),
 		frozenSlots:       frozenItemSlots(settings),
 		undershootCaps:    protoToCoreUnitStats(request.GetUndershootCaps()),
 		gemOptions:        request.GetGemOptions(),
@@ -314,11 +314,14 @@ func (o *reforgeOptimizer) epDivisor(unitStat stats.UnitStat) float64 {
 }
 
 // internalizeEPOffset divides an EP weight by the multiplier applyReforgeStat re-applies to the
-// stat's coefficient (Amplification Haste/Mastery/Spirit, a Guardian's Bear Form crit). The ×mult
+// stat's coefficient (Amplification Haste/Mastery, a Guardian's Bear Form crit). The ×mult
 // and ÷mult cancel in the objective (coeff*mult * ep/mult = coeff*ep) while the caps still see the
 // amplified contribution, so EP weights can be supplied un-offset. epDivisor is 1 for every other
 // stat, making this a no-op. Applied to both pre-cap weights and soft-cap post-cap EPs; without it
 // the ×mult is uncancelled (e.g. a Guardian's 79% crit soft cap would never halt crit stacking).
+//
+// Spirit is deliberately absent: applyReforgeStat amplifies it, but its EP weights are supplied
+// already amplified, so cancelling here would double-correct.
 func (o *reforgeOptimizer) internalizeEPOffset(unitStat stats.UnitStat, value float64) float64 {
 	return value / o.epDivisor(unitStat)
 }
@@ -400,10 +403,16 @@ func (o *reforgeOptimizer) optimizeReforges() (*proto.EquipmentSpec, float64, er
 	return o.applyLPSolution(selectedVars), score, nil
 }
 
-// buildEPStatsSet collects the stats carrying a non-zero EP weight in the (raw, pre-checkWeights)
-// request weights. Used to filter valid reforge destinations and gem stats.
-func buildEPStatsSet(weights *proto.UnitStats) map[proto.Stat]bool {
+// Valid reforge destinations and gem stats. The non-zero-weight fallback is an approximation:
+// it also drops the expertise reforge paired with a zero-weight hit.
+func buildEPStatsSet(epStats []proto.Stat, weights *proto.UnitStats) map[proto.Stat]bool {
 	set := map[proto.Stat]bool{}
+	if len(epStats) > 0 {
+		for _, stat := range epStats {
+			set[stat] = true
+		}
+		return set
+	}
 	if weights == nil {
 		return set
 	}

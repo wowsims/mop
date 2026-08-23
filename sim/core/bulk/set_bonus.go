@@ -1,6 +1,9 @@
 package bulk
 
 import (
+	"slices"
+	"strconv"
+
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
@@ -124,4 +127,130 @@ type bulkSimRequiredSetBonusComboMatcher struct {
 
 type bulkSimRequiredSetBonusDimension struct {
 	optionDeltas [][]int
+}
+
+const maxRequiredSetBonusStates = 1 << 12
+
+// Walks the dimensions once carrying a distribution over piece-count vectors, rather than
+// testing each combination: the raw space is bounded only by MaxInt32. Counts stay unclamped
+// because swapping a base-gear piece out produces negative deltas. ok=false means the state
+// space was too large to pay off.
+func (matcher *bulkSimRequiredSetBonusComboMatcher) countMatchingCombos() (int, bool) {
+	numRequired := len(matcher.requiredPieces)
+
+	// Envelope of counts reachable at any point of the walk, including before it starts.
+	lo := make([]int, numRequired)
+	hi := make([]int, numRequired)
+	copy(lo, matcher.baseCounts)
+	copy(hi, matcher.baseCounts)
+	runningLo := slices.Clone(matcher.baseCounts)
+	runningHi := slices.Clone(matcher.baseCounts)
+	groupsByDimension := make([][]requiredSetBonusDeltaGroup, 0, len(matcher.dimensions))
+	for _, dimension := range matcher.dimensions {
+		if len(dimension.optionDeltas) == 0 {
+			return 0, true
+		}
+		for idx := range numRequired {
+			minDelta, maxDelta := dimension.optionDeltas[0][idx], dimension.optionDeltas[0][idx]
+			for _, deltas := range dimension.optionDeltas[1:] {
+				minDelta = min(minDelta, deltas[idx])
+				maxDelta = max(maxDelta, deltas[idx])
+			}
+			runningLo[idx] += minDelta
+			runningHi[idx] += maxDelta
+			lo[idx] = min(lo[idx], runningLo[idx])
+			hi[idx] = max(hi[idx], runningHi[idx])
+		}
+		groupsByDimension = append(groupsByDimension, groupRequiredSetBonusDeltas(dimension.optionDeltas))
+	}
+
+	strides := make([]int, numRequired)
+	numStates := 1
+	for idx := range numRequired {
+		strides[idx] = numStates
+		span := hi[idx] - lo[idx] + 1
+		if numStates > maxRequiredSetBonusStates/span {
+			return 0, false
+		}
+		numStates *= span
+	}
+
+	dp := make([]int, numStates)
+	next := make([]int, numStates)
+	counts := make([]int, numRequired)
+	baseState := 0
+	for idx, count := range matcher.baseCounts {
+		baseState += (count - lo[idx]) * strides[idx]
+	}
+	dp[baseState] = 1
+
+	for _, groups := range groupsByDimension {
+		clear(next)
+		for stateIdx, combos := range dp {
+			if combos == 0 {
+				continue
+			}
+			remainder := stateIdx
+			for idx := numRequired - 1; idx >= 0; idx-- {
+				counts[idx] = lo[idx] + remainder/strides[idx]
+				remainder %= strides[idx]
+			}
+			for _, group := range groups {
+				targetState := 0
+				for idx, delta := range group.deltas {
+					targetState += (counts[idx] + delta - lo[idx]) * strides[idx]
+				}
+				next[targetState] = saturatingCombinationsAdd(next[targetState], saturatingCombinationsMul(combos, group.options))
+			}
+		}
+		dp, next = next, dp
+	}
+
+	matching := 0
+	for stateIdx, combos := range dp {
+		if combos == 0 {
+			continue
+		}
+		remainder := stateIdx
+		satisfied := true
+		for idx := numRequired - 1; idx >= 0; idx-- {
+			count := lo[idx] + remainder/strides[idx]
+			remainder %= strides[idx]
+			if count < matcher.requiredPieces[idx] {
+				satisfied = false
+				break
+			}
+		}
+		if satisfied {
+			matching = saturatingCombinationsAdd(matching, combos)
+		}
+	}
+	return matching, true
+}
+
+type requiredSetBonusDeltaGroup struct {
+	deltas  []int
+	options int
+}
+
+// Most selected items belong to no required set, so their delta vectors are identical; this
+// keeps the inner loop proportional to distinct outcomes, not item count.
+func groupRequiredSetBonusDeltas(optionDeltas [][]int) []requiredSetBonusDeltaGroup {
+	groups := make([]requiredSetBonusDeltaGroup, 0, 4)
+	indexByKey := make(map[string]int, 4)
+	var key []byte
+	for _, deltas := range optionDeltas {
+		key = key[:0]
+		for _, delta := range deltas {
+			key = strconv.AppendInt(key, int64(delta), 10)
+			key = append(key, ',')
+		}
+		if idx, ok := indexByKey[string(key)]; ok {
+			groups[idx].options++
+			continue
+		}
+		indexByKey[string(key)] = len(groups)
+		groups = append(groups, requiredSetBonusDeltaGroup{deltas: deltas, options: 1})
+	}
+	return groups
 }

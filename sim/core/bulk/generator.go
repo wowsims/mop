@@ -61,7 +61,22 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 		return nil, err
 	}
 	generator.initGroupedSlotPairs()
+	if err := generator.validateGroupedSlots(); err != nil {
+		return nil, err
+	}
 	return generator, nil
+}
+
+func (generator *bulkSimCandidateGenerator) validateGroupedSlots() error {
+	for _, bulkSlot := range []BulkSimItemSlot{BulkSimItemSlotFinger, BulkSimItemSlotTrinket} {
+		if len(generator.selectedByBulkSlot[bulkSlot]) == 0 {
+			continue
+		}
+		if len(generator.groupedPairsBySlot[bulkSlot]) == 0 {
+			return fmt.Errorf("no equippable pair of items available for grouped bulk slot %d", bulkSlot)
+		}
+	}
+	return nil
 }
 
 func (generator *bulkSimCandidateGenerator) buildCandidates() ([]*proto.BulkGearCandidate, error) {
@@ -198,7 +213,7 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 	for _, bulkSlot := range []BulkSimItemSlot{BulkSimItemSlotFinger, BulkSimItemSlotTrinket} {
 		options := generator.selectedByBulkSlot[bulkSlot]
-		if len(options) < 2 {
+		if len(options) == 0 {
 			continue
 		}
 		var pairs [][2]bulkSimCandidateOption
@@ -237,6 +252,13 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 const maxBulkRawCombinations = math.MaxInt32
 const maxBulkCandidatePreallocation = 1 << 16
 
+func saturatingCombinationsAdd(rawCombinations int, addend int) int {
+	if rawCombinations > maxBulkRawCombinations-addend {
+		return maxBulkRawCombinations
+	}
+	return rawCombinations + addend
+}
+
 func saturatingCombinationsMul(rawCombinations int, factor int) int {
 	if factor == 0 {
 		return 0
@@ -257,9 +279,12 @@ func (generator *bulkSimCandidateGenerator) rawCombinationsCount() int {
 			continue
 		}
 		numOptions := len(generator.selectedByBulkSlot[bulkSlot])
-		if numOptions > 1 && (bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket) {
+		if numOptions == 0 {
+			continue
+		}
+		if bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket {
 			rawCombinations = saturatingCombinationsMul(rawCombinations, len(generator.groupedPairsBySlot[bulkSlot]))
-		} else if numOptions > 0 {
+		} else {
 			rawCombinations = saturatingCombinationsMul(rawCombinations, numOptions)
 		}
 	}
@@ -324,9 +349,6 @@ func (generator *bulkSimCandidateGenerator) populateItemsForCombo(comboIdx int) 
 			continue
 		}
 		if bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket {
-			if len(options) < 2 {
-				return fmt.Errorf("at least 2 items must be selected for grouped bulk slot %d", bulkSlot)
-			}
 			pairs := generator.groupedPairsBySlot[bulkSlot]
 			if len(pairs) == 0 {
 				return fmt.Errorf("no grouped candidate pairs available for bulk slot %d", bulkSlot)

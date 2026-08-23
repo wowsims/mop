@@ -176,5 +176,6 @@
 			"capType":  "TypeSoftCap",
 			"postCapEPs":  [0.53, 0]
 		}
-	]
+	],
+	"epStats": ["StatStamina", "StatStrength", "StatAgility", "StatAttackPower", "StatExpertiseRating", "StatHitRating", "StatCritRating", "StatHasteRating", "StatHealth", "StatArmor", "StatBonusArmor", "StatDodgeRating", "StatParryRating", "StatMasteryRating"]
 }

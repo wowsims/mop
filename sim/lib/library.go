@@ -125,6 +125,7 @@ func getDatabase(itemIds *int32, numItems int32, enchantIds *int32, numEnchants 
 			ItemEffects:      item.ItemEffects,
 			Unique:           item.Unique,
 			LimitCategory:    item.LimitCategory,
+			EotbGemSocket:    item.EotbGemSocket,
 		}
 	}
 	for i, enchantId := range eids {

@@ -443,6 +443,7 @@ message ReforgeOptimizeRequest {
 	ReforgeSettings settings = 6;
 	repeated StatCapConfig soft_caps = 7;
 	repeated ReforgeGemOption gem_options = 8;
+	repeated Stat ep_stats = 10;
 	bool debug = 9;
 }
 

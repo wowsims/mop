@@ -1070,6 +1070,7 @@ export class ReforgeOptimizer {
 		return {
 			gear,
 			preCapEPWeights: this.preCapEPs,
+			epStats: this.simUI.individualConfig.epStats,
 			undershootCaps: this.undershootCaps,
 			settings,
 			softCaps: this.softCapsConfigWithLimits,
@@ -1095,6 +1096,9 @@ export class ReforgeOptimizer {
 			SimSettingCategories.External,
 			SimSettingCategories.Miscellaneous,
 		]);
+		playerProto.bonusStats = player.getBonusStats().toProto();
+		playerProto.enableItemSwap = player.itemSwapSettings.getEnableItemSwap();
+		playerProto.itemSwap = player.itemSwapSettings.toProto();
 		playerProto.equipment = undefined;
 		playerProto.database = undefined;
 		playerProto.channelClipDelayMs = 0;
@@ -1208,6 +1212,7 @@ export class ReforgeOptimizer {
 	static makeReforgeConfigRequestFields(config: ReforgeOptimizeConfig, db: Database) {
 		return {
 			preCapEpWeights: config.preCapEPWeights.toProto(),
+			epStats: config.epStats.slice(),
 			undershootCaps: config.undershootCaps.toProto(),
 			settings: config.settings,
 			softCaps: config.softCaps.map(softCap => ({

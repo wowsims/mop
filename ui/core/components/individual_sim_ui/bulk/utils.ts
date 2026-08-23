@@ -37,6 +37,8 @@ export const getBulkPlayerCanDualWield = (player: Player<any>): boolean => {
 	return isSpecDualWieldCapable(player.getSpec()) && player.getClass() !== Class.ClassHunter;
 };
 
+const TWO_HAND_ONLY_WEAPON_TYPES: WeaponType[] = [WeaponType.WeaponTypePolearm, WeaponType.WeaponTypeStaff];
+
 export const getBulkFreezeWeaponTypes = (player: Player<any>, slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand): WeaponType[] => {
 	const playerCanDualWield = getBulkPlayerCanDualWield(player);
 
@@ -44,7 +46,11 @@ export const getBulkFreezeWeaponTypes = (player: Player<any>, slot: ItemSlot.Ite
 		new Set(
 			player
 				.getPlayerClass()
-				.weaponTypes.filter(eligibleWeaponType => slot === ItemSlot.ItemSlotMainHand || (playerCanDualWield && !eligibleWeaponType.canUseTwoHand))
+				.weaponTypes.filter(
+					eligibleWeaponType =>
+						slot === ItemSlot.ItemSlotMainHand ||
+						(playerCanDualWield && !TWO_HAND_ONLY_WEAPON_TYPES.includes(eligibleWeaponType.weaponType)),
+				)
 				.map(eligibleWeaponType => eligibleWeaponType.weaponType),
 		),
 	);

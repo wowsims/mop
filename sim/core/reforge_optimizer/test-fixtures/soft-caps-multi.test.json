@@ -178,5 +178,6 @@
 			"capType":  "TypeSoftCap",
 			"postCapEPs":  [306, 221, 221, 221]
 		}
-	]
+	],
+	"epStats": ["StatIntellect", "StatSpellPower", "StatHitRating", "StatCritRating", "StatHasteRating", "StatMasteryRating"]
 }

@@ -184,16 +184,18 @@ type Item struct {
 	WeaponDamageMax  float64
 	SwingSpeed       float64
 
-	Name          string
-	Stats         stats.Stats // Stats applied to wearer
-	Quality       proto.ItemQuality
-	Unique        bool
+	Name    string
+	Stats   stats.Stats // Stats applied to wearer
+	Quality proto.ItemQuality
+	Unique  bool
+
 	LimitCategory int32
 	SetName       string // Empty string if not part of a set.
 	SetID         int32  // 0 if not part of a set.
 
-	GemSockets  []proto.GemColor
-	SocketBonus stats.Stats
+	EotbGemSocket bool
+	GemSockets    []proto.GemColor
+	SocketBonus   stats.Stats
 
 	// Modified for each instance of the item.
 	RandomSuffix RandomSuffix
@@ -229,6 +231,7 @@ func ItemFromProto(pData *proto.SimItem) Item {
 		ItemEffects:      pData.ItemEffects,
 		Unique:           pData.Unique,
 		LimitCategory:    pData.LimitCategory,
+		EotbGemSocket:    pData.EotbGemSocket,
 	}
 }
 
@@ -947,6 +950,42 @@ func eligibleSlotsForItem(item *Item, isFuryWarrior bool) []proto.ItemSlot {
 	}
 
 	return nil
+}
+
+// GemEligibleForSocket reports whether a gem of the given color class may be placed in a socket
+// of the given color (meta, cogwheel, and Sha-Touched sockets each take only their own class).
+func GemEligibleForSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
+	switch socketColor {
+	case proto.GemColor_GemColorMeta:
+		return gemColor == proto.GemColor_GemColorMeta
+	case proto.GemColor_GemColorCogwheel:
+		return gemColor == proto.GemColor_GemColorCogwheel
+	case proto.GemColor_GemColorShaTouched:
+		return gemColor == proto.GemColor_GemColorShaTouched
+	default:
+		return gemColor != proto.GemColor_GemColorMeta && gemColor != proto.GemColor_GemColorCogwheel && gemColor != proto.GemColor_GemColorShaTouched
+	}
+}
+
+// GemMatchesSocket reports whether a gem's color counts as a match for the socket's color (for
+// the purpose of earning the item's socket bonus).
+func GemMatchesSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
+	if gemColor == socketColor {
+		return true
+	}
+	switch socketColor {
+	case proto.GemColor_GemColorBlue:
+		return gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
+	case proto.GemColor_GemColorRed:
+		return gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorPrismatic
+	case proto.GemColor_GemColorYellow:
+		return gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
+	case proto.GemColor_GemColorPrismatic:
+		return gemColor == proto.GemColor_GemColorRed || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorYellow ||
+			gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorBlue || gemColor == proto.GemColor_GemColorPurple
+	default:
+		return false
+	}
 }
 
 func ColorIntersects(g proto.GemColor, o proto.GemColor) bool {

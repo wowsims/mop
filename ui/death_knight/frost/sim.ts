@@ -184,16 +184,9 @@ export class FrostDeathKnightSimUI extends IndividualSimUI<Spec.SpecFrostDeathKn
 			},
 			getEPDefaults: (player: Player<Spec.SpecFrostDeathKnight>) => {
 				const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
-				let epWeights =
-					mainHand?.item?.handType === HandType.HandTypeTwoHand
-						? Presets.TWOHAND_OBLITERATE_EP_PRESET.epWeights
-						: Presets.MASTERFROST_EP_PRESET.epWeights;
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-				return epWeights;
+				return mainHand?.item?.handType === HandType.HandTypeTwoHand
+					? Presets.TWOHAND_OBLITERATE_EP_PRESET.epWeights
+					: Presets.MASTERFROST_EP_PRESET.epWeights;
 			},
 		});
 	}

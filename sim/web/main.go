@@ -11,6 +11,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"runtime/pprof"
 	"strings"
 	"sync"
@@ -97,6 +98,11 @@ func main() {
 }
 
 // Handlers to decode and handle each proto function
+const (
+	asyncProgressSilenceTimeout = 10 * time.Minute
+	heartbeatInterval           = 5 * time.Minute
+)
+
 var handlers = map[string]apiHandler{
 	"/raidSim": {msg: func() googleProto.Message { return &proto.RaidSimRequest{} }, handle: func(msg googleProto.Message) googleProto.Message {
 		return core.RunRaidSim(msg.(*proto.RaidSimRequest))
@@ -159,26 +165,60 @@ func ReforgeOptimizeAsync(request *proto.ReforgeOptimizeRequest, progress chan *
 	go func() {
 		defer simsignals.UnregisterId(requestId)
 		defer close(progress)
-		// Heartbeat: the server watchdog in handleAsyncAPI drops the progress entry after
-		// 10 minutes of silence. Long-running optimizations (e.g. relative stat cap with
-		// a high solver timeout) must send periodic empty progress messages to keep it alive.
-		done := make(chan struct{})
-		go func() {
-			ticker := time.NewTicker(5 * time.Minute)
-			defer ticker.Stop()
-			for {
-				select {
-				case <-ticker.C:
-					progress <- &proto.ProgressMetrics{}
-				case <-done:
-					return
+		stopHeartbeat := startProgressHeartbeat(progress, func() *proto.ProgressMetrics {
+			return &proto.ProgressMetrics{}
+		})
+		defer stopHeartbeat()
+		defer func() {
+			if err := recover(); err != nil {
+				errStr := fmt.Sprint(err) + "\nStack Trace:\n" + string(debug.Stack())
+				log.Printf("[ERROR] Reforge optimization panicked: %s", errStr)
+				progress <- &proto.ProgressMetrics{
+					FinalReforgeResult: &proto.ReforgeOptimizeResult{Error: &proto.ErrorOutcome{Message: errStr}},
 				}
 			}
 		}()
 		result := reforgeoptimizer.OptimizeAsync(request, signals)
-		close(done)
+		stopHeartbeat()
 		progress <- &proto.ProgressMetrics{FinalReforgeResult: result}
 	}()
+}
+
+// Keeps the handleAsyncAPI watchdog alive during a long silent phase. stop waits for the
+// goroutine to exit so the caller can then close(progress) with no send in flight; guarding
+// the send with a done channel is not enough, as select commits before the close is visible.
+func startProgressHeartbeat(progress chan *proto.ProgressMetrics, tick func() *proto.ProgressMetrics) func() {
+	if progress == nil {
+		return func() {}
+	}
+	done := make(chan struct{})
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ticker := time.NewTicker(heartbeatInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				// Nested select so a full progress buffer cannot wedge stop().
+				select {
+				case progress <- tick():
+				case <-done:
+					return
+				}
+			case <-done:
+				return
+			}
+		}
+	}()
+	var once sync.Once
+	return func() {
+		once.Do(func() {
+			close(done)
+			wg.Wait()
+		})
+	}
 }
 
 type server struct {
@@ -222,7 +262,8 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 	//  as the simulation advances it will push changes to the channel
 	//  these changes will be consumed by the goroutine below so the asyncProgress endpoint can fetch the results.
 	reporter := make(chan *proto.ProgressMetrics, 100)
-	handler.handle(msg, reporter, r.URL.Query().Get("requestId"))
+	requestId := r.URL.Query().Get("requestId")
+	handler.handle(msg, reporter, requestId)
 
 	// Generate a new async simulation
 	simProgress := s.addNewSim()
@@ -232,8 +273,12 @@ func (s *server) handleAsyncAPI(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		for {
 			select {
-			case <-time.After(time.Minute * 10):
-				// if we get no progress after 10 minutes, delete the pending sim and exit.
+			case <-time.After(asyncProgressSilenceTimeout):
+				// Nothing drains reporter after this, so the pipeline behind it would block
+				// on a full buffer for the process lifetime.
+				if requestId != "" {
+					simsignals.AbortById(requestId)
+				}
 				s.progMut.Lock()
 				delete(s.asyncProgresses, simProgress.id)
 				s.progMut.Unlock()

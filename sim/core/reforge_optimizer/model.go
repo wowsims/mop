@@ -65,7 +65,7 @@ func (o *reforgeOptimizer) buildGemOptions(preCapEPs core.UnitStats, reforgeCaps
 				// Hybrid casters use Spirit instead of hit gems.
 				(o.isHybridCaster && gemStatValue(gem, stats.HitRating) != 0) ||
 				strings.Contains(gem.GetName(), "Perfect") ||
-				!gemMatchesSocket(gem.GetColor(), socketColor) {
+				!core.GemMatchesSocket(gem.GetColor(), socketColor) {
 				continue
 			}
 
@@ -173,7 +173,7 @@ func (o *reforgeOptimizer) buildGemOptions(preCapEPs core.UnitStats, reforgeCaps
 func (o *reforgeOptimizer) gemsForColorKey(socketColor proto.GemColor) []*proto.ReforgeGemOption {
 	var out []*proto.ReforgeGemOption
 	for _, gem := range o.gemOptions {
-		if gemEligibleForSocket(gem.GetColor(), socketColor) {
+		if core.GemEligibleForSocket(gem.GetColor(), socketColor) {
 			out = append(out, gem)
 		}
 	}
@@ -413,7 +413,7 @@ func (o *reforgeOptimizer) buildYalpsVariables(equipment core.Equipment, preCapE
 					socketBonusAdded := false
 
 					useSocketBonusLink := false
-					if gemMatchesSocket(gd.gem.GetColor(), socketColor) {
+					if core.GemMatchesSocket(gd.gem.GetColor(), socketColor) {
 						if forceSocketBonus {
 							eachBuffedStat(distributedSocketBonus, func(stat stats.Stat, value float64) {
 								o.applyReforgeStat(objCoeffs, proto.Stat(int32(stat)), value, preCapEPs)

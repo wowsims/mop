@@ -291,10 +291,13 @@ func main() {
 			item.Sources = database.InferFlexibleRaidItemSource(item)
 		}
 
-		// 1. Add Belt Buckle gem socket to Waist.
+		// 1. Add Belt Buckle gem socket to Waist. Always present, so not tagged.
 		// 2. Add Eye Of The Black Prince gem socket to Sha-touched items.
-		if item.Type == proto.ItemType_ItemTypeWaist || slices.Contains(item.GemSockets, proto.GemColor_GemColorShaTouched) {
+		if item.Type == proto.ItemType_ItemTypeWaist {
 			item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+		} else if slices.Contains(item.GemSockets, proto.GemColor_GemColorShaTouched) {
+			item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+			item.EotbGemSocket = true
 		}
 
 		for _, source := range item.Sources {
@@ -303,11 +306,13 @@ func main() {
 				// "Reborn" weapons can have a Eye Of The Black Prince
 				if item.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl == 502 && strings.HasSuffix(item.Name, ", Reborn") && crafted.Profession == proto.Profession_Blacksmithing && item.Type == proto.ItemType_ItemTypeWeapon {
 					item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+					item.EotbGemSocket = true
 				}
 			}
 			// Add Eye Of The Black Prince gem socket to Throne of Thunder weapons.
 			if drop := source.GetDrop(); drop != nil && (item.Type == proto.ItemType_ItemTypeWeapon || item.Type == proto.ItemType_ItemTypeRanged) && (item.WeaponType != proto.WeaponType_WeaponTypeOffHand && item.WeaponType != proto.WeaponType_WeaponTypeShield) && drop.ZoneId == 6622 {
 				item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+				item.EotbGemSocket = true
 			}
 
 			if rep := source.GetRep(); rep != nil {

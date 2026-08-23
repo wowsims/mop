@@ -50,6 +50,7 @@ message SimItem {
 	repeated ItemEffect item_effects = 14;
 	int32 limit_category = 15;
 	bool unique = 16;
+	bool eotb_gem_socket = 17;
 }
 
 message Consumable {

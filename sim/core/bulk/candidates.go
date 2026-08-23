@@ -74,13 +74,11 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 	rawCombinations := generator.rawCombinationsCount()
 	matchingCombinations := rawCombinations
 	if matcher := generator.buildRequiredSetBonusMatcher(generator.settings.GetRequiredSetBonuses()); matcher != nil {
-		matchingCombinations = 0
-		scratchCounts := make([]int, len(matcher.baseCounts))
-		for comboIdx := 0; comboIdx < rawCombinations; comboIdx++ {
-			if generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts) {
-				matchingCombinations++
-			}
+		counted, ok := matcher.countMatchingCombos()
+		if !ok {
+			counted = generator.scanMatchingCombos(rawCombinations, matcher)
 		}
+		matchingCombinations = counted
 	}
 
 	return &proto.BulkCombinationCountResult{
@@ -89,6 +87,17 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 		Iterations:       estimateIterationsForCountRequest(request.GetBulkSettings(), matchingCombinations),
 		UseLegacyBulkSim: shouldUseLegacyBulkSimForCountRequest(request.GetBulkSettings(), matchingCombinations),
 	}
+}
+
+func (generator *bulkSimCandidateGenerator) scanMatchingCombos(rawCombinations int, matcher *bulkSimRequiredSetBonusComboMatcher) int {
+	matching := 0
+	scratchCounts := make([]int, len(matcher.baseCounts))
+	for comboIdx := range rawCombinations {
+		if generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts) {
+			matching++
+		}
+	}
+	return matching
 }
 
 func estimateIterationsForCountRequest(settings *proto.BulkSettings, candidateCount int) float64 {
