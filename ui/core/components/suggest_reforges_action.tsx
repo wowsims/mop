@@ -4,32 +4,32 @@ import { ref } from 'tsx-vanilla';
 import { Constraint, greaterEq, lessEq } from 'yalps';
 
 import i18n from '../../i18n/config.js';
+import { translateSlotName, translateStat } from '../../i18n/localization';
+import { trackEvent, trackPageView } from '../../tracking/utils';
+import type { LPModel, LPSolution, SerializedConstraints, SerializedVariables } from '../../worker/reforge_types';
 import * as Mechanics from '../constants/mechanics.js';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
 import { Class, GemColor, ItemSlot, Profession, PseudoStat, Race, Spec, Stat } from '../proto/common';
-import { UIGem as Gem, IndividualSimSettings, ReforgeSettings, StatCapType } from '../proto/ui';
+import { IndividualSimSettings, ReforgeSettings, StatCapType,UIGem as Gem } from '../proto/ui';
 import { EquippedItem, isRebornWeapon, isShaTouchedWeapon, isThroneOfThunderWeapon, ReforgeData } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
 import { gemMatchesSocket, gemMatchesStats, getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
-import { translateSlotName, translateStat } from '../../i18n/localization';
 import { pseudoStatHasCap, pseudoStatIsCapped, StatCap, statHasCap, statIsCapped, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
+import { getReforgeWorkerPool,ReforgeWorkerPool } from '../reforge_worker_pool';
 import { Sim } from '../sim';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
 import { isDevMode, sleep } from '../utils';
 import { CopyButton } from './copy_button';
+import { getEmptySlotIconUrl } from './gear_picker/utils';
 import { BooleanPicker } from './pickers/boolean_picker';
 import { EnumPicker } from './pickers/enum_picker';
 import { NumberPicker, NumberPickerConfig } from './pickers/number_picker';
+import { ProgressTrackerModal } from './progress_tracker_modal';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
 import Toast from './toast';
-import { trackEvent, trackPageView } from '../../tracking/utils';
-import { ReforgeWorkerPool, getReforgeWorkerPool } from '../reforge_worker_pool';
-import type { LPModel, LPSolution, SerializedConstraints, SerializedVariables } from '../../worker/reforge_types';
-import { ProgressTrackerModal } from './progress_tracker_modal';
-import { getEmptySlotIconUrl } from './gear_picker/utils';
 
 type YalpsCoefficients = Map<string, number>;
 type YalpsVariables = Map<string, YalpsCoefficients>;
@@ -1362,6 +1362,7 @@ export class ReforgeOptimizer {
 			constraints,
 			updatedGear,
 			(this.includeTimeout ? (this.relativeStatCap ? 120 : 30) : 3600) / (batchRun ? 4 : 1),
+			previousGear,
 		);
 
 		updatedGear = optimized.gear;
@@ -1837,6 +1838,7 @@ export class ReforgeOptimizer {
 		constraints: YalpsConstraints,
 		currentGear: Gear,
 		maxSeconds: number,
+		baselineGear: Gear,
 	): Promise<{ result: number; gear: Gear }> {
 		// Calculate EP scores for each Reforge option
 		if (isDevMode()) {
@@ -1882,7 +1884,7 @@ export class ReforgeOptimizer {
 		}
 
 		// Apply the current solution
-		const solvedGear = await this.applyLPSolution(currentGear, solution);
+		const solvedGear = await this.applyLPSolution(currentGear, solution, baselineGear);
 
 		// Check if any unconstrained stats exceeded their specified cap.
 		// If so, add these stats to the constraint list and re-run the solver.
@@ -1908,6 +1910,7 @@ export class ReforgeOptimizer {
 				updatedConstraints,
 				solvedGear,
 				maxSeconds - elapsedSeconds,
+				baselineGear,
 			);
 		}
 	}
@@ -1941,7 +1944,7 @@ export class ReforgeOptimizer {
 		return updatedVariables;
 	}
 
-	async applyLPSolution(gear: Gear, solution: LPSolution): Promise<Gear> {
+	async applyLPSolution(gear: Gear, solution: LPSolution, baselineGear: Gear): Promise<Gear> {
 		let updatedGear = gear.withoutReforges(this.player.canDualWield2H(), this.frozenItemSlots);
 
 		if (this.includeGems) {
@@ -1971,7 +1974,7 @@ export class ReforgeOptimizer {
 		}
 
 		if (this.includeGems) {
-			updatedGear = this.minimizeRegems(updatedGear);
+			updatedGear = this.minimizeRegems(updatedGear, baselineGear);
 		}
 
 		await this.updateGear(updatedGear);
@@ -2075,13 +2078,7 @@ export class ReforgeOptimizer {
 		return [anyCapsExceeded, updatedConstraints, updatedWeights];
 	}
 
-	minimizeRegems(newGear: Gear): Gear {
-		const originalGear = this.previousGear;
-
-		if (!originalGear) {
-			return newGear;
-		}
-
+	minimizeRegems(newGear: Gear, originalGear: Gear): Gear {
 		const isBlacksmithing = this.player.isBlacksmithing();
 		const finalizedSocketKeys: string[] = [];
 
@@ -2121,6 +2118,10 @@ export class ReforgeOptimizer {
 					const matchedSocketKey = `${matchedSlot}_${matchedSocketIdx}`;
 
 					if (finalizedSocketKeys.includes(matchedSocketKey)) {
+						continue;
+					}
+
+					if (originalGear.getEquippedItem(matchedSlot)?.curGems(isBlacksmithing)[matchedSocketIdx]?.id === originalGems[socketIdx]!.id) {
 						continue;
 					}
 
