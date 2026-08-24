@@ -165,7 +165,8 @@
 		"statCaps":  {
 			"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 5100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
-		}
+		},
+		"epStats": ["StatStamina", "StatStrength", "StatAgility", "StatAttackPower", "StatExpertiseRating", "StatHitRating", "StatCritRating", "StatHasteRating", "StatHealth", "StatArmor", "StatBonusArmor", "StatDodgeRating", "StatParryRating", "StatMasteryRating"]
 	},
 	"softCaps":  [
 		{
@@ -176,6 +177,5 @@
 			"capType":  "TypeSoftCap",
 			"postCapEPs":  [0.53, 0]
 		}
-	],
-	"epStats": ["StatStamina", "StatStrength", "StatAgility", "StatAttackPower", "StatExpertiseRating", "StatHitRating", "StatCritRating", "StatHasteRating", "StatHealth", "StatArmor", "StatBonusArmor", "StatDodgeRating", "StatParryRating", "StatMasteryRating"]
+	]
 }

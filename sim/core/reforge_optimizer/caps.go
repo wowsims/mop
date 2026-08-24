@@ -1,7 +1,6 @@
 package reforgeoptimizer
 
 import (
-	"log"
 	"slices"
 	"strings"
 
@@ -40,13 +39,6 @@ func computeReforgeSoftCaps(baseStats core.UnitStats, configs []*proto.StatCapCo
 		relativeBreakpoints := make([]float64, 0, len(config.GetBreakpoints()))
 		for _, breakpoint := range config.GetBreakpoints() {
 			relativeBreakpoints = append(relativeBreakpoints, computeGapToCap(baseStats, unitStat, breakpoint))
-		}
-
-		if config.GetCapType() != proto.StatCapType_TypeThreshold && len(weights) != len(relativeBreakpoints) {
-			// The solver indexes postCapEPs with a breakpoint index, so a short slice panics.
-			log.Printf("[Reforge Optimizer] Ignoring malformed soft cap for %v: %d breakpoints but %d post-cap EPs",
-				config.GetUnitStat(), len(relativeBreakpoints), len(weights))
-			continue
 		}
 
 		if config.GetCapType() == proto.StatCapType_TypeThreshold {

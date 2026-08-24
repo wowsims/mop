@@ -81,7 +81,6 @@ export type StatWeightsData = {
 export type ReforgeOptimizeConfig = {
 	gear: Gear;
 	preCapEPWeights: Stats;
-	epStats: Stat[];
 	undershootCaps: Stats;
 	settings: ReforgeSettings;
 	softCaps: StatCap[];

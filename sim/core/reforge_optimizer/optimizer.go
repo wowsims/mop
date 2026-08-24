@@ -250,7 +250,7 @@ func newReforgeOptimizer(request *proto.ReforgeOptimizeRequest, signals simsigna
 		ampModifier:       ampModifier,
 		bearFormMult:      bearFormMult,
 		statRules:         statRules,
-		epStatsSet:        buildEPStatsSet(request.GetEpStats(), request.GetPreCapEpWeights()),
+		epStatsSet:        buildEPStatsSet(request.GetSettings().GetEpStats(), request.GetPreCapEpWeights()),
 		frozenSlots:       frozenItemSlots(settings),
 		undershootCaps:    protoToCoreUnitStats(request.GetUndershootCaps()),
 		gemOptions:        request.GetGemOptions(),

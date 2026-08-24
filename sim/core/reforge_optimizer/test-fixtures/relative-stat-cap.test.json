@@ -84,7 +84,7 @@
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 2550, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
 		},
-		"relativeStatCapMipGap": 0.005
-	},
-	"epStats": ["StatStrength", "StatAgility", "StatAttackPower", "StatHitRating", "StatExpertiseRating", "StatCritRating", "StatHasteRating", "StatMasteryRating"]
+		"relativeStatCapMipGap": 0.005,
+		"epStats": ["StatStrength", "StatAgility", "StatAttackPower", "StatHitRating", "StatExpertiseRating", "StatCritRating", "StatHasteRating", "StatMasteryRating"]
+	}
 }

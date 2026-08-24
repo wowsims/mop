@@ -1066,11 +1066,11 @@ export class ReforgeOptimizer {
 	getReforgeOptimizeConfig(gear: Gear): ReforgeOptimizeConfig {
 		const settings = this.toProto();
 		settings.statCaps = this.processedStatCaps.toProto();
+		settings.epStats = this.simUI.individualConfig.epStats.slice();
 
 		return {
 			gear,
 			preCapEPWeights: this.preCapEPs,
-			epStats: this.simUI.individualConfig.epStats,
 			undershootCaps: this.undershootCaps,
 			settings,
 			softCaps: this.softCapsConfigWithLimits,
@@ -1212,7 +1212,6 @@ export class ReforgeOptimizer {
 	static makeReforgeConfigRequestFields(config: ReforgeOptimizeConfig, db: Database) {
 		return {
 			preCapEpWeights: config.preCapEPWeights.toProto(),
-			epStats: config.epStats.slice(),
 			undershootCaps: config.undershootCaps.toProto(),
 			settings: config.settings,
 			softCaps: config.softCaps.map(softCap => ({

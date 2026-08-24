@@ -77,7 +77,8 @@
 		"statCaps": {
 			"stats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0]
-		}
+		},
+		"epStats": ["StatIntellect", "StatSpirit", "StatSpellPower", "StatHitRating", "StatCritRating", "StatHasteRating", "StatMasteryRating"]
 	},
 	"softCaps": [
 		{
@@ -96,6 +97,5 @@
 			"capType": "TypeSoftCap",
 			"postCapEPs": [0.72]
 		}
-	],
-	"epStats": ["StatIntellect", "StatSpirit", "StatSpellPower", "StatHitRating", "StatCritRating", "StatHasteRating", "StatMasteryRating"]
+	]
 }

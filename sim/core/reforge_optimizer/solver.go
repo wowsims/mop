@@ -193,15 +193,24 @@ func (o *reforgeOptimizer) checkCaps(
 				continue
 			}
 
+			// A request may send fewer post-cap EPs than breakpoints; the missing ones score 0.
+			postCapEP := 0.0
+			if exceededBreakpointIdx < len(softCap.postCapEPs) {
+				postCapEP = softCap.postCapEPs[exceededBreakpointIdx]
+			}
 			updatedConstraints.set(statName, greaterEq(softCap.breakpoints[exceededBreakpointIdx]))
-			updatedWeights = setUnitStat(updatedWeights, unitStat, softCap.postCapEPs[exceededBreakpointIdx])
+			updatedWeights = setUnitStat(updatedWeights, unitStat, postCapEP)
 			anyCapsExceeded = true
 
 			// True soft caps (ascending) drop the consumed breakpoints and stay in play;
 			// threshold caps (descending) are removed entirely after the first pass.
 			if softCap.capType == proto.StatCapType_TypeSoftCap {
 				softCap.breakpoints = softCap.breakpoints[exceededBreakpointIdx+1:]
-				softCap.postCapEPs = softCap.postCapEPs[exceededBreakpointIdx+1:]
+				if exceededBreakpointIdx+1 <= len(softCap.postCapEPs) {
+					softCap.postCapEPs = softCap.postCapEPs[exceededBreakpointIdx+1:]
+				} else {
+					softCap.postCapEPs = nil
+				}
 				if len(softCap.breakpoints) > 0 {
 					remaining = append(remaining, softCap)
 				}
