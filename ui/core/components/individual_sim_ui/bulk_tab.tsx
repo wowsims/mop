@@ -47,6 +47,9 @@ import { translateWeaponType } from '../../../i18n/localization';
 import { ProgressTrackerModal } from '../progress_tracker_modal';
 import { ReforgeOptimizeConfig } from '../../sim';
 
+const BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v2';
+const LEGACY_BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v1';
+
 type BulkSetBonusOption = {
 	setId: number;
 	setName: string;
@@ -302,10 +305,12 @@ export class BulkTab extends SimTab {
 	}
 
 	private getSettingsKey(): string {
-		return this.simUI.getStorageKey('bulk-settings.v1');
+		return this.simUI.getStorageKey(BULK_SETTINGS_STORAGE_KEY);
 	}
 
 	private loadSettings() {
+		window.localStorage.removeItem(this.simUI.getStorageKey(LEGACY_BULK_SETTINGS_STORAGE_KEY));
+
 		const storedSettings = window.localStorage.getItem(this.getSettingsKey());
 		if (storedSettings != null) {
 			let settings: BulkSettings;
