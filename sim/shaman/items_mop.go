@@ -106,7 +106,7 @@ var ItemSetCelestialHarmonyRegalia = core.NewItemSet(core.ItemSet{
 					Label:     "Elemental Discharge - " + shaman.Label,
 					ActionID:  core.ActionID{SpellID: 144999},
 					Duration:  time.Second * 2,
-					MaxStacks: 6,
+					MaxStacks: 7,
 					OnStacksChange: func(aura *core.Aura, sim *core.Simulation, oldStacks, newStacks int32) {
 						aura.Duration = time.Second * 2 * time.Duration(newStacks)
 						aura.Refresh(sim)
@@ -133,7 +133,7 @@ var ItemSetCelestialHarmonyRegalia = core.NewItemSet(core.ItemSet{
 				Handler: func(sim *core.Simulation, _ *core.Spell, result *core.SpellResult) {
 					debuff := debuffAuras.Get(result.Target)
 					debuff.Activate(sim)
-					debuff.SetStacks(sim, shaman.LightningShieldAura.GetStacks()-1)
+					debuff.SetStacks(sim, shaman.LightningShieldAura.GetStacks())
 				},
 			}).ExposeToAPL(144998)
 
