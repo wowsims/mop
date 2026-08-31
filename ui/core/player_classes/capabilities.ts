@@ -1,6 +1,6 @@
 import type { EligibleWeaponType } from '../player_class';
 import { ArmorType, Class, Race, RangedWeaponType, Spec } from '../proto/common';
-import { CLASS_ARMOR_TYPES, CLASS_RACES, CLASS_RANGED_WEAPON_TYPES, CLASS_WEAPON_TYPES, SPEC_CAN_DUAL_WIELD } from './capabilities_auto_gen';
+import { CLASS_ARMOR_TYPES, CLASS_RACES, CLASS_RANGED_WEAPON_TYPES, CLASS_WEAPON_TYPES, SPEC_CAN_DUAL_WIELD, SPEC_CAN_DUAL_WIELD_2H } from './capabilities_auto_gen';
 
 const classArmorTypes = new Map<Class, ArmorType[]>(
 	Object.entries(CLASS_ARMOR_TYPES).map(([classID, armorTypes]) => [Number(classID) as Class, armorTypes]),
@@ -33,3 +33,5 @@ export const getClassRangedWeaponTypes = (classID: Class): RangedWeaponType[] =>
 export const getClassRaces = (classID: Class): Race[] => classRaces.get(classID) ?? [];
 
 export const isSpecDualWieldCapable = (spec: Spec): boolean => dualWieldSpecs.has(spec);
+
+export const isSpecDualWield2HCapable = (spec: Spec): boolean => SPEC_CAN_DUAL_WIELD_2H.has(spec);

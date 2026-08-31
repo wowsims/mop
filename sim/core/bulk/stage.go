@@ -21,14 +21,16 @@ type BulkSimStageConfig struct {
 	UseConcurrentSim   bool
 }
 
-var bulkSimStageConfigs = []BulkSimStageConfig{
+// BulkSimStageConfigs is the staging ladder; also the source for the generated TS mirror
+// (tools/database/gen_bulksim_constants.ts.go), so web and backend stay on the same tuning.
+var BulkSimStageConfigs = []BulkSimStageConfig{
 	{
 		Stage:              proto.BulkSimStage_BulkSimStageLow,
 		MinIterations:      100,
 		TargetErrorPct:     1,
 		MinSurvivors:       20,
 		MaxSurvivors:       100,
-		CullingCoefficient: bulkSimCullingCoefficient,
+		CullingCoefficient: BulkSimCullingCoefficient,
 	},
 	{
 		Stage:              proto.BulkSimStage_BulkSimStageMedium,
@@ -36,7 +38,7 @@ var bulkSimStageConfigs = []BulkSimStageConfig{
 		TargetErrorPct:     0.2,
 		MinSurvivors:       5,
 		MaxSurvivors:       25,
-		CullingCoefficient: bulkSimCullingCoefficient,
+		CullingCoefficient: BulkSimCullingCoefficient,
 	},
 	{
 		Stage:            proto.BulkSimStage_BulkSimStageHigh,
@@ -55,7 +57,7 @@ type BulkSimStageResult struct {
 
 func shouldRunBulkSimStage(config BulkSimStageConfig, candidateCount int) bool {
 	maxSurvivors := getBulkSimStageMaxSurvivors(config, candidateCount)
-	return maxSurvivors == 0 || candidateCount > maxSurvivors || candidateCount < bulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
+	return maxSurvivors == 0 || candidateCount > maxSurvivors || candidateCount < BulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
 }
 
 func GetBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimStageConfig) int {
@@ -171,7 +173,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 // completedSimsBase sims done plus this segment's iterations on top of
 // completedIterationsBase. An errored segment is returned as-is for the caller to check.
 func runBulkSimBaselineSegment(request *proto.BulkSimRequest, config BulkSimStageConfig, carried *BulkSimCandidateResult, iterations int32, seedOffset int32, emitter bulkSimStageProgressEmitter, completedSimsBase int, completedIterationsBase int32, signals simsignals.Signals) *BulkSimCandidateResult {
-	segment := runSingleBulkSimCandidate(request, BulkSimCandidate{Index: -1, Gear: getBulkSimBaselineGear(request)}, iterations, seedOffset, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+	segment := runSingleBulkSimCandidate(request, BulkSimCandidate{Index: -1, Gear: GetBulkSimBaselineGear(request)}, iterations, seedOffset, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 		if progressMetrics.TotalIterations == 0 {
 			return
 		}
@@ -217,15 +219,15 @@ func getBulkSimStageIterations(request *proto.BulkSimRequest, config BulkSimStag
 
 func getBulkSimStageMaxSurvivors(config BulkSimStageConfig, candidateCount int) int {
 	if config.MaxSurvivors == 0 {
-		return config.MaxSurvivors
+		return 0
 	}
 
 	var scaleReference int
 	switch config.Stage {
 	case proto.BulkSimStage_BulkSimStageLow:
-		scaleReference = bulkSimLowStageSurvivorScaleReference
+		scaleReference = BulkSimLowStageSurvivorScaleReference
 	case proto.BulkSimStage_BulkSimStageMedium:
-		scaleReference = bulkSimMediumStageSurvivorScaleReference
+		scaleReference = BulkSimMediumStageSurvivorScaleReference
 	default:
 		return config.MaxSurvivors
 	}
@@ -243,8 +245,8 @@ func getBulkSimStageMaxSurvivors(config BulkSimStageConfig, candidateCount int) 
 // avoiding a full rerun while still reducing standard error for the same
 // baseline/candidate set.
 func adaptBulkSimStageIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, iterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult, int32) {
-	maxAdaptiveIterations := int32(math.Ceil(float64(iterations) * bulkSimAdaptiveMaxIterationMultiplier))
-	for adaptivePass := 1; adaptivePass <= bulkSimMaxAdaptivePasses; adaptivePass++ {
+	maxAdaptiveIterations := int32(math.Ceil(float64(iterations) * BulkSimAdaptiveMaxIterationMultiplier))
+	for adaptivePass := 1; adaptivePass <= BulkSimMaxAdaptivePasses; adaptivePass++ {
 		if signals.Abort.IsTriggered() || hasBulkSimStageError(baseline, results) {
 			return baseline, results, iterations
 		}

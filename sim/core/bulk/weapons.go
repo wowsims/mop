@@ -22,7 +22,7 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 			}
 		}
 	}
-	if generator.playerIsFuryWarrior {
+	if generator.playerCanDualWield2H {
 		for i := range all2HWeapons {
 			if optionsContainEquivalent(all2HWeapons[:i], &all2HWeapons[i], generator.inheritUpgrades) {
 				continue
@@ -126,7 +126,7 @@ func (generator *bulkSimCandidateGenerator) appendWearableOrders(combos [][2]*bu
 }
 
 func (generator *bulkSimCandidateGenerator) weaponComboMatchesSettings(mhItem *bulkSimCandidateOption, ohItem *bulkSimCandidateOption) bool {
-	frozenWeaponItem := generator.getFrozenWeaponItem()
+	frozenWeaponItem := generator.frozenWeaponItem
 	if generator.frozenWeaponSlot == proto.ItemSlot_ItemSlotMainHand && frozenWeaponItem != nil && !candidateOptionEqualsItemPtr(mhItem, frozenWeaponItem, generator.inheritUpgrades) {
 		return false
 	}

@@ -1,15 +1,11 @@
-import { openDB, IDBPDatabase } from 'idb';
+import { IDBPDatabase,openDB } from 'idb';
 
-import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
-import { SimSettingCategories } from './constants/sim_settings';
 import { throwIfAborted } from './components/individual_sim_ui/bulk/utils';
+import { IndividualLinkImporter } from './components/individual_sim_ui/importers/individual_link_importer';
+import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
 import { EquipmentSpec, Spec } from './proto/common';
-import { IndividualSimSettings } from './proto/ui';
-import { IndividualLinkExporter } from './components/individual_sim_ui/exporters/individual_link_exporter';
-import { IndividualLinkImporter } from './components/individual_sim_ui/importers/individual_link_importer';
-import { IndividualSimUI } from './individual_sim_ui';
 import { sleep } from './utils';
 
 const REFORGE_CACHE_DB_NAME = `${LOCAL_STORAGE_PREFIX}_reforge-cache`;
@@ -45,7 +41,7 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 
 	private readonly storeName: ReforgeGearCacheStoreName;
 	private readonly storeReadyPromise: Promise<void>;
-	private lastPrunedAt = 0;
+	private lastPrunedAt = Date.now();
 
 	constructor(playerSpec: PlayerSpec<SpecType>) {
 		this.storeName = ReforgeGearCache.getStoreName(playerSpec);
@@ -62,13 +58,12 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return cache as ReforgeGearCache<SpecType>;
 	}
 
-	static async getHash(fingerprintParts: unknown): Promise<string> {
-		return ReforgeGearCache.digestString(JSON.stringify(fingerprintParts) ?? '');
+	static getHash(fingerprintParts: unknown): string {
+		return ReforgeGearCache.hashString(JSON.stringify(fingerprintParts) ?? '');
 	}
 
-	static async getKey(gearFingerprintParts: unknown, configHash: string): Promise<string> {
-		const gearHash = await ReforgeGearCache.getHash(gearFingerprintParts);
-		return `${REFORGE_CACHE_KEY_PREFIX}${configHash}:${gearHash}`;
+	static getKey(gearFingerprintParts: unknown, configHash: string): string {
+		return `${REFORGE_CACHE_KEY_PREFIX}${configHash}:${ReforgeGearCache.getHash(gearFingerprintParts)}`;
 	}
 
 	async get(key: string): Promise<EquipmentSpec | null> {
@@ -162,14 +157,13 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return results;
 	}
 
-	async set(key: string, optimizedGearLink: string): Promise<void> {
+	async setGear(key: string, optimizedGear: EquipmentSpec): Promise<void> {
 		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
 		try {
 			db = await this.getDb();
-			const now = Date.now();
 			await this.putRecord(db, key, {
-				gear: optimizedGearLink,
-				lastAccessedAt: now,
+				gear: ReforgeGearCache.serializeGear(optimizedGear),
+				lastAccessedAt: Date.now(),
 			});
 			await this.prune(db);
 		} catch (error) {
@@ -177,10 +171,6 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		} finally {
 			db?.close();
 		}
-	}
-
-	async setGear(key: string, optimizedGear: EquipmentSpec): Promise<void> {
-		return this.set(key, ReforgeGearCache.equipmentSpecToLinkHash(optimizedGear));
 	}
 
 	async setGearMany(entries: Array<{ key: string; optimizedGear: EquipmentSpec }>): Promise<void> {
@@ -194,7 +184,7 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 				entries.map(entry => ({
 					key: entry.key,
 					record: {
-						gear: ReforgeGearCache.equipmentSpecToLinkHash(entry.optimizedGear),
+						gear: ReforgeGearCache.serializeGear(entry.optimizedGear),
 						lastAccessedAt: Date.now(),
 					},
 				})),
@@ -251,25 +241,23 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 	}
 
 	private async putRecords(db: IDBPDatabase<ReforgeGearCacheDb>, entries: Array<{ key: string; record: ReforgeGearCacheRecord }>): Promise<void> {
+		const putAll = async () => {
+			const tx = db.transaction(this.storeName, 'readwrite');
+			const store = tx.objectStore(this.storeName);
+			// Queue every put and await only once - one microtask round-trip per entry adds up
+			// over a five-figure batch.
+			await Promise.all([...entries.map(entry => store.put(entry.record, entry.key)), tx.done]);
+		};
+
 		try {
-			let tx = db.transaction(this.storeName, 'readwrite');
-			let store = tx.objectStore(this.storeName);
-			for (const entry of entries) {
-				await store.put(entry.record, entry.key);
-			}
-			await tx.done;
+			await putAll();
 		} catch (error) {
 			if (!ReforgeGearCache.isQuotaExceededError(error)) {
 				throw error;
 			}
 
 			await this.prune(db, true);
-			const tx = db.transaction(this.storeName, 'readwrite');
-			const store = tx.objectStore(this.storeName);
-			for (const entry of entries) {
-				await store.put(entry.record, entry.key);
-			}
-			await tx.done;
+			await putAll();
 		}
 	}
 
@@ -286,13 +274,10 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			const oldestAllowedAccess = now - REFORGE_CACHE_MAX_AGE_MS;
 
 			let staleEntriesDeleted = 0;
-			let cursor = await store.openCursor();
+			let cursor = await store.index('byLastAccessedAt').openCursor(IDBKeyRange.upperBound(oldestAllowedAccess));
 			while (cursor) {
-				const record = cursor.value as ReforgeGearCacheRecord;
-				if (typeof cursor.key !== 'string' || !cursor.key.startsWith(REFORGE_CACHE_KEY_PREFIX) || record.lastAccessedAt < oldestAllowedAccess) {
-					await cursor.delete();
-					staleEntriesDeleted++;
-				}
+				await cursor.delete();
+				staleEntriesDeleted++;
 				cursor = await cursor.continue();
 			}
 
@@ -368,27 +353,18 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return error instanceof DOMException && error.name === 'QuotaExceededError';
 	}
 
-	private static async digestString(value: string): Promise<string> {
-		const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
-		return Array.from(new Uint8Array(hashBuffer))
-			.map(byte => byte.toString(16).padStart(2, '0'))
-			.join('');
+	private static hashString(value: string): string {
+		let h1 = 0x811c9dc5;
+		let h2 = 0xcbf29ce4;
+		for (let i = 0; i < value.length; i++) {
+			const charCode = value.charCodeAt(i);
+			h1 = Math.imul(h1 ^ charCode, 0x01000193) >>> 0;
+			h2 = (Math.imul(h2, 33) ^ charCode) >>> 0;
+		}
+		return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
 	}
 
-	private static equipmentSpecToLinkHash(optimizedGear: EquipmentSpec): string {
-		return new URL(
-			IndividualLinkExporter.createLink(
-				{
-					toProto: () =>
-						IndividualSimSettings.create({
-							apiVersion: CURRENT_API_VERSION,
-							player: {
-								equipment: optimizedGear,
-							},
-						}),
-				} as IndividualSimUI<any>,
-				[SimSettingCategories.Gear],
-			),
-		).hash;
+	private static serializeGear(optimizedGear: EquipmentSpec): string {
+		return REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX + EquipmentSpec.toJsonString(optimizedGear);
 	}
 }

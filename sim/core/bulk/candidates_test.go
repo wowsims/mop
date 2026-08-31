@@ -419,23 +419,23 @@ func itemsToSpecs(items []core.Item) []*proto.ItemSpec {
 // matrix exercises the real initSelectedItems / getAllWeaponCombos path.
 func newComboTableGenerator(class proto.Class, spec proto.Spec, selected []*proto.ItemSpec) *bulkSimCandidateGenerator {
 	return &bulkSimCandidateGenerator{
-		settings:            &proto.BulkSettings{Items: selected},
-		playerClass:         class,
-		playerSpec:          spec,
-		playerCanDualWield:  core.SpecCanDualWieldCapabilities[spec] && class != proto.Class_ClassHunter,
-		playerIsFuryWarrior: spec == proto.Spec_SpecFuryWarrior,
-		baseEquipment:       core.Equipment{},
-		selectedByBulkSlot:  make(map[BulkSimItemSlot][]bulkSimCandidateOption),
-		groupedPairsBySlot:  make(map[BulkSimItemSlot][][2]bulkSimCandidateOption),
-		frozenItems:         make(map[BulkSimItemSlot]*core.Item),
-		weaponTypeFilters:   make(map[proto.ItemSlot][]proto.WeaponType),
+		settings:             &proto.BulkSettings{Items: selected},
+		playerClass:          class,
+		playerSpec:           spec,
+		playerCanDualWield:   core.SpecCanDualWieldCapabilities[spec] && class != proto.Class_ClassHunter,
+		playerCanDualWield2H: core.SpecCanDualWield2HCapabilities[spec],
+		baseEquipment:        core.Equipment{},
+		selectedByBulkSlot:   make(map[BulkSimItemSlot][]bulkSimCandidateOption),
+		groupedPairsBySlot:   make(map[BulkSimItemSlot][][2]bulkSimCandidateOption),
+		frozenItems:          make(map[BulkSimItemSlot]*core.Item),
+		weaponTypeFilters:    make(map[proto.ItemSlot][]proto.WeaponType),
 	}
 }
 
 // Titan's Grip is the only way a two-hander leaves the mainhand, and in MoP it covers every
 // two-hander Fury can wield - spell 46917's subclass mask includes polearms and staves.
 func titansGripAllows(spec proto.Spec) bool {
-	return spec == proto.Spec_SpecFuryWarrior
+	return core.SpecCanDualWield2HCapabilities[spec]
 }
 
 // Real in-game equip rules, slot aware, kept separate from the production predicates on purpose so

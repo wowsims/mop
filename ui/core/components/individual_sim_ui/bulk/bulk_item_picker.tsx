@@ -94,7 +94,7 @@ export default class BulkItemPicker extends Component {
 			return null;
 		}
 
-			const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(this.bulkSlot);
+		const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(this.bulkSlot);
 		if (!slots) {
 			return null;
 		}
@@ -104,7 +104,7 @@ export default class BulkItemPicker extends Component {
 
 	private getFrozenBulkItemSlot(): ItemSlot | null {
 		const frozenItem = this.bulkUI.frozenItems.get(this.bulkSlot);
-			const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(this.bulkSlot);
+		const slots = BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(this.bulkSlot);
 		if (!frozenItem || !slots) {
 			return null;
 		}

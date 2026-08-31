@@ -29,14 +29,11 @@ func (generator *bulkSimCandidateGenerator) buildRequiredSetBonusMatcher(require
 	if len(weaponPairs) > 0 {
 		optionDeltas := make([][]int, 0, len(weaponPairs))
 		for _, pair := range weaponPairs {
-			optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, [][2]any{{proto.ItemSlot_ItemSlotMainHand, pair[0]}, {proto.ItemSlot_ItemSlotOffHand, pair[1]}}))
+			optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, []slotOption{{proto.ItemSlot_ItemSlotMainHand, pair[0]}, {proto.ItemSlot_ItemSlotOffHand, pair[1]}}))
 		}
 		dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 	}
-	for _, bulkSlot := range bulkSimSelectedOrder {
-		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
-			continue
-		}
+	for _, bulkSlot := range bulkSimNonWeaponOrder {
 		options := generator.selectedByBulkSlot[bulkSlot]
 		if len(options) == 0 {
 			continue
@@ -46,14 +43,14 @@ func (generator *bulkSimCandidateGenerator) buildRequiredSetBonusMatcher(require
 			slots := BulkSimItemSlotToItemSlotPairs[bulkSlot]
 			optionDeltas := make([][]int, 0, len(pairs))
 			for _, pair := range pairs {
-				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, [][2]any{{slots[0], &pair[0]}, {slots[1], &pair[1]}}))
+				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, []slotOption{{slots[0], &pair[0]}, {slots[1], &pair[1]}}))
 			}
 			dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 		} else {
 			slot := BulkSimItemSlotToSingleItemSlot[bulkSlot]
 			optionDeltas := make([][]int, 0, len(options))
 			for idx := range options {
-				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, [][2]any{{slot, &options[idx]}}))
+				optionDeltas = append(optionDeltas, generator.getRequiredSetBonusOptionDeltas(numRequired, requiredIndexes, []slotOption{{slot, &options[idx]}}))
 			}
 			dimensions = append(dimensions, bulkSimRequiredSetBonusDimension{optionDeltas: optionDeltas})
 		}
@@ -74,18 +71,21 @@ func (generator *bulkSimCandidateGenerator) addItemToRequiredSetBonusCounts(coun
 	}
 }
 
+// slotOption pairs a slot with the candidate option replacing its base item; a nil option means
+// the slot is emptied (e.g. the off-hand under a two-hander).
+type slotOption struct {
+	slot   proto.ItemSlot
+	option *bulkSimCandidateOption
+}
+
 // numRequired is the requirement count, not len(requiredIndexes): duplicate set IDs
 // collapse in the map, and every counts slice is indexed by requirement.
-func (generator *bulkSimCandidateGenerator) getRequiredSetBonusOptionDeltas(numRequired int, requiredIndexes map[int32][]int, slotItems [][2]any) []int {
+func (generator *bulkSimCandidateGenerator) getRequiredSetBonusOptionDeltas(numRequired int, requiredIndexes map[int32][]int, slotItems []slotOption) []int {
 	deltas := make([]int, numRequired)
 	for _, slotItem := range slotItems {
-		slot := slotItem[0].(proto.ItemSlot)
-		generator.addItemToRequiredSetBonusCounts(deltas, requiredIndexes, generator.baseEquipment.GetItemBySlot(slot), -1)
-		switch option := slotItem[1].(type) {
-		case *bulkSimCandidateOption:
-			if option != nil {
-				generator.addItemToRequiredSetBonusCounts(deltas, requiredIndexes, &option.item, 1)
-			}
+		generator.addItemToRequiredSetBonusCounts(deltas, requiredIndexes, generator.baseEquipment.GetItemBySlot(slotItem.slot), -1)
+		if slotItem.option != nil {
+			generator.addItemToRequiredSetBonusCounts(deltas, requiredIndexes, &slotItem.option.item, 1)
 		}
 	}
 	return deltas

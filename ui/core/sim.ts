@@ -2,6 +2,8 @@ import { getLang } from '../i18n/locale_service';
 import { hasTouch } from '../shared/bootstrap_overrides';
 import { SimRequest } from '../worker/types';
 import {
+	BULK_CACHE_PROGRESS_CHECK_MODULO,
+	BULK_CACHE_YIELD_BUDGET_MS,
 	type BulkSimReforgeCacheProgress,
 	getBulkSimReforgeCacheData,
 	makeBulkGearDatabase,
@@ -43,9 +45,7 @@ import {
 	ArmorType,
 	EquipmentSpec,
 	Faction,
-	ItemQuality,
-	ItemSlot,
-	Profession,
+	GemColor,
 	PseudoStat,
 	RangedWeaponType,
 	Spec,
@@ -54,8 +54,8 @@ import {
 	UnitReference_Type as UnitType,
 	WeaponType,
 } from './proto/common.js';
-import { SimGem } from './proto/db.js';
-import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption } from './proto/ui.js';
+import { SimDatabase, SimGem } from './proto/db.js';
+import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption, UIItem } from './proto/ui.js';
 import { Database } from './proto_utils/database.js';
 import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result.js';
@@ -226,7 +226,9 @@ export class Sim {
 		try {
 			this.isNative = !(await this.isWasm());
 		} catch {
-			this.isNative = isExternal();
+			// Probe failed - fall back to the hostname heuristic (a local host runs the
+			// native sim, an external one runs wasm).
+			this.isNative = !isExternal();
 		}
 	}
 
@@ -411,6 +413,41 @@ export class Sim {
 		}
 	}
 
+	// Normalizes gear for a bulk/reforge request
+	private static prepareBulkGear(gear: Gear, isBlacksmith: boolean): Gear {
+		if (gear.hasInactiveMetaGem(isBlacksmith)) {
+			gear = gear.withoutMetaGem();
+		}
+		if (!isBlacksmith) {
+			gear = gear.withoutBlacksmithSockets();
+		}
+		return gear;
+	}
+
+	// Extends a request's SimDatabase with the reforges available on the given items and with
+	// the optimizer's gem options, so the backend optimizer can resolve them.
+	private augmentDatabaseForReforge(
+		database: SimDatabase,
+		items: UIItem[],
+		gemOptions: Array<{ id: number; name: string; color: GemColor; stats: number[]; disabledInChallengeMode: boolean }>,
+	): void {
+		database.reforgeStats = distinct(database.reforgeStats.concat(items.flatMap(item => this.db.getAvailableReforges(item))), (a, b) => a.id == b.id);
+		database.gems = distinct(
+			database.gems.concat(
+				gemOptions.map(gem =>
+					SimGem.create({
+						id: gem.id,
+						name: gem.name,
+						color: gem.color,
+						stats: gem.stats.slice(),
+						disabledInChallengeMode: gem.disabledInChallengeMode,
+					}),
+				),
+			),
+			(a, b) => a.id == b.id,
+		);
+	}
+
 	async runBulkSim(
 		gearSets: Gear[],
 		onProgress: WorkerProgressCallback,
@@ -437,24 +474,14 @@ export class Sim {
 
 			const player = baseRequest.raid!.parties[0].players[0];
 			const isBlacksmith = hasBlacksmithing(player);
-			const prepareGear = (gear: Gear) => {
-				if (gear.hasInactiveMetaGem(isBlacksmith)) {
-					gear = gear.withoutMetaGem();
-				}
-				if (!isBlacksmith) {
-					gear = gear.withoutBlacksmithSockets();
-				}
-				return gear;
-			};
+			const prepareGear = (gear: Gear) => Sim.prepareBulkGear(gear, isBlacksmith);
 
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
 			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
 			const useWasmBulkSim = await this.isWasm();
 			const backendBuildCandidates = !useWasmBulkSim && !!bulkSettings;
-			let preparedGearSets = gearSets.map(prepareGear);
-			let preparedCandidateSpecs: EquipmentSpec[] | undefined = undefined;
-			let preparedCandidateGearKeys: string[] | undefined = undefined;
-			let preparedCandidateIndices: number[] | undefined = undefined;
+			const preparedGearSets = gearSets.map(prepareGear);
+			let preparedCandidates: Array<{ index: number; spec: EquipmentSpec; gearKey: string }> | undefined = undefined;
 			if (backendBuildCandidates && bulkSettings) {
 				const bulkCandidatesResult = await this.getBulkCandidates(bulkSettings);
 				if (bulkCandidatesResult.error) {
@@ -468,72 +495,59 @@ export class Sim {
 					totalCandidates,
 					restoredCandidates: 0,
 				});
-				preparedCandidateIndices = [];
-				preparedCandidateSpecs = [];
-				preparedCandidateGearKeys = [];
+				const candidates: Array<{ index: number; spec: EquipmentSpec; gearKey: string }> = [];
 				const frozenItemSlots =
 					bulkReforgeRequest?.settings?.freezeItemSlots && bulkReforgeRequest.settings.frozenItemSlots.length
 						? bulkReforgeRequest.settings.frozenItemSlots
 						: undefined;
 				let lastYieldAt = performance.now();
 				let lastProgressEmitAt = lastYieldAt;
+				const reportCandidateBuildProgress = (processedCandidates: number) => {
+					if (processedCandidates % BULK_CACHE_PROGRESS_CHECK_MODULO !== 0 && processedCandidates !== totalCandidates) return;
+					const now = performance.now();
+					if (processedCandidates !== totalCandidates && now - lastProgressEmitAt < BULK_CACHE_YIELD_BUDGET_MS) return;
+					onCacheRestoreProgress?.({
+						stage: 'candidate-build',
+						processedCandidates,
+						totalCandidates,
+						restoredCandidates: 0,
+					});
+					lastProgressEmitAt = now;
+				};
 				for (let i = 0; i < bulkCandidatesResult.candidates.length; i++) {
 					throwIfAborted(abortSignal);
 					const candidate = bulkCandidatesResult.candidates[i];
-					if (!candidate.gear) {
-						const processedCandidates = i + 1;
-						if (processedCandidates % 1024 === 0 || processedCandidates === totalCandidates) {
-							const now = performance.now();
-							if (processedCandidates === totalCandidates || now - lastProgressEmitAt >= 16) {
-								onCacheRestoreProgress?.({
-									stage: 'candidate-build',
-									processedCandidates,
-									totalCandidates,
-									restoredCandidates: 0,
-								});
-								lastProgressEmitAt = now;
-							}
-						}
-						continue;
+					if (candidate.gear) {
+						// Prepare spec (remove meta gems, blacksmith sockets) before computing cache key
+						// so cache key matches what would be computed from prepared Gear objects
+						const preparedGear = prepareGear(this.db.lookupEquipmentSpec(candidate.gear));
+						const preparedSpec = preparedGear.asSpec();
+						candidates.push({
+							index: candidate.index,
+							spec: preparedSpec,
+							gearKey: getReforgeCacheGearKey(preparedSpec, frozenItemSlots),
+						});
 					}
-					// Prepare spec (remove meta gems, blacksmith sockets) before computing cache key
-					// so cache key matches what would be computed from prepared Gear objects
-					const preparedGear = prepareGear(this.db.lookupEquipmentSpec(candidate.gear));
-					const preparedSpec = preparedGear.asSpec();
-					preparedCandidateIndices.push(candidate.index);
-					preparedCandidateSpecs.push(preparedSpec);
-					preparedCandidateGearKeys.push(getReforgeCacheGearKey(preparedSpec, frozenItemSlots));
-					const processedCandidates = i + 1;
-					if (processedCandidates % 1024 === 0 || processedCandidates === totalCandidates) {
-						const now = performance.now();
-						if (processedCandidates === totalCandidates || now - lastProgressEmitAt >= 16) {
-							onCacheRestoreProgress?.({
-								stage: 'candidate-build',
-								processedCandidates,
-								totalCandidates,
-								restoredCandidates: 0,
-							});
-							lastProgressEmitAt = now;
-						}
-					}
+					reportCandidateBuildProgress(i + 1);
 
 					// Periodically yield so large candidate lists do not block popup/UI rendering.
 					if (i % 2000 === 0) {
 						const yieldNow = performance.now();
-						if (yieldNow - lastYieldAt >= 16) {
+						if (yieldNow - lastYieldAt >= BULK_CACHE_YIELD_BUDGET_MS) {
 							await sleep(0);
 							lastYieldAt = performance.now();
 						}
 					}
 				}
+				preparedCandidates = candidates;
 			}
 			const bulkReforgeCacheData = bulkReforgeRequest
 				? await getBulkSimReforgeCacheData({
 						player: this.raid.getActivePlayers()[0],
 						gearSets: backendBuildCandidates ? undefined : preparedGearSets,
-						candidateSpecs: backendBuildCandidates ? preparedCandidateSpecs : undefined,
-						candidateGearKeys: backendBuildCandidates ? preparedCandidateGearKeys : undefined,
-						candidateIndices: preparedCandidateIndices,
+						candidateSpecs: preparedCandidates?.map(candidate => candidate.spec),
+						candidateGearKeys: preparedCandidates?.map(candidate => candidate.gearKey),
+						candidateIndices: preparedCandidates?.map(candidate => candidate.index),
 						db: this.db,
 						reforgeRequest: bulkReforgeRequest,
 						raidBuffs: this.raid.getBuffs(),
@@ -558,23 +572,10 @@ export class Sim {
 					: preparedGearSets
 							.flatMap(gearSet => gearSet.asArray())
 							.filter((equippedItem): equippedItem is NonNullable<typeof equippedItem> => equippedItem != null);
-				bulkGearDatabase.reforgeStats = distinct(
-					bulkGearDatabase.reforgeStats.concat(reforgeSourceItems.flatMap(equippedItem => this.db.getAvailableReforges(equippedItem.item))),
-					(a, b) => a.id == b.id,
-				);
-				bulkGearDatabase.gems = distinct(
-					bulkGearDatabase.gems.concat(
-						bulkReforgeRequest.gemOptions.map(gem =>
-							SimGem.create({
-								id: gem.id,
-								name: gem.name,
-								color: gem.color,
-								stats: gem.stats.slice(),
-								disabledInChallengeMode: gem.disabledInChallengeMode,
-							}),
-						),
-					),
-					(a, b) => a.id == b.id,
+				this.augmentDatabaseForReforge(
+					bulkGearDatabase,
+					reforgeSourceItems.map(equippedItem => equippedItem.item),
+					bulkReforgeRequest.gemOptions,
 				);
 			}
 			player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
@@ -583,15 +584,8 @@ export class Sim {
 			throwIfAborted(abortSignal);
 			const requestCandidates =
 				bulkReforgeCacheData?.candidates ??
-				(backendBuildCandidates
-					? (preparedCandidateSpecs ?? []).map((gear, index) => ({
-							index: preparedCandidateIndices?.[index] ?? index,
-							gear,
-						}))
-					: preparedGearSets.map((gear, index) => ({
-							index: preparedCandidateIndices?.[index] ?? index,
-							gear: gear.asSpec(),
-						})));
+				preparedCandidates?.map(candidate => ({ index: candidate.index, gear: candidate.spec })) ??
+				preparedGearSets.map((gear, index) => ({ index, gear: gear.asSpec() }));
 			const bulkRequest = BulkSimRequest.create({
 				requestId,
 				baseRequest,
@@ -603,45 +597,56 @@ export class Sim {
 				bulkSettings,
 			});
 			let result: BulkSimResult;
+			// Incremental cache writes for reforge results as candidates complete; keys written
+			// here are excluded from the final catch-all write below.
+			const cacheWrites: Promise<void>[] = [];
+			const incrementallyWrittenKeys = new Set<string>();
+			const writeCacheEntriesIncrementally = (candidates: BulkGearCandidate[]) => {
+				if (!bulkReforgeCacheData) return;
+				const cacheEntries: Array<{ key: string; optimizedGear: EquipmentSpec }> = [];
+				for (const candidate of candidates) {
+					const cacheKey = bulkReforgeCacheData.cacheKeysByCandidateIndex.get(candidate.index);
+					if (!cacheKey || !candidate.gear) {
+						continue;
+					}
+					incrementallyWrittenKeys.add(cacheKey);
+					cacheEntries.push({ key: cacheKey, optimizedGear: candidate.gear });
+				}
+				if (cacheEntries.length) {
+					cacheWrites.push(bulkReforgeCacheData.cache.setGearMany(cacheEntries));
+				}
+			};
 			// Only use worker based concurrency when running wasm. Local sim has native threading.
 			if (useWasmBulkSim) {
-				const cacheWrites: Promise<void>[] = [];
+				const pendingCandidates: BulkGearCandidate[] = [];
 				const onReforgeCandidateOptimized = (candidate: BulkGearCandidate, optimizedGear: EquipmentSpec) => {
-					const cacheKey = bulkReforgeCacheData?.cacheKeysByCandidateIndex.get(candidate.index);
-					if (cacheKey) cacheWrites.push(bulkReforgeCacheData!.cache.setGear(cacheKey, optimizedGear));
+					pendingCandidates.push(BulkGearCandidate.create({ index: candidate.index, gear: optimizedGear }));
+					if (pendingCandidates.length >= 500) {
+						writeCacheEntriesIncrementally(pendingCandidates.splice(0));
+					}
 				};
 				result = await runConcurrentBulkSim(bulkRequest, this.workerPool, onProgress, signals, onReforgeCandidateOptimized);
-				await Promise.all(cacheWrites);
-				if (bulkReforgeCacheData && result.optimizedCandidates?.length) {
-					await writeBulkSimReforgeCacheResults(result.optimizedCandidates, bulkReforgeCacheData);
-				}
+				writeCacheEntriesIncrementally(pendingCandidates.splice(0));
 			} else {
 				// Wrap onProgress to also write partial reforge candidates to cache incrementally
-				const cacheWrites: Promise<void>[] = [];
 				const wrappedOnProgress: WorkerProgressCallback = (progress: ProgressMetrics) => {
 					onProgress(progress);
-					// Write partial reforge candidates to cache as they complete
-					if (progress.optimizedCandidates?.length && bulkReforgeCacheData) {
-						const cacheEntries: Array<{ key: string; optimizedGear: EquipmentSpec }> = [];
-						for (let i = 0; i < progress.optimizedCandidates.length; i++) {
-							const candidate = progress.optimizedCandidates[i];
-							const cacheKey = bulkReforgeCacheData.cacheKeysByCandidateIndex.get(candidate.index);
-							if (!cacheKey || !candidate.gear) {
-								continue;
-							}
-							cacheEntries.push({ key: cacheKey, optimizedGear: candidate.gear });
-						}
-						if (cacheEntries.length) {
-							cacheWrites.push(bulkReforgeCacheData.cache.setGearMany(cacheEntries));
-						}
+					if (progress.optimizedCandidates?.length) {
+						writeCacheEntriesIncrementally(progress.optimizedCandidates);
 					}
 				};
 				result = await this.workerPool.bulkSimAsync(bulkRequest, wrappedOnProgress, signals);
-				// Wait for all cache writes to complete
-				await Promise.all(cacheWrites);
-				// Still handle final candidates in case any weren't sent via partial updates
-				if (bulkReforgeCacheData && result.optimizedCandidates?.length) {
-					await writeBulkSimReforgeCacheResults(result.optimizedCandidates, bulkReforgeCacheData);
+			}
+			// Wait for all incremental cache writes, then write any candidates that never came
+			// through a partial update (e.g. solves that deduplicated onto another candidate).
+			await Promise.all(cacheWrites);
+			if (bulkReforgeCacheData && result.optimizedCandidates?.length) {
+				const remainingCandidates = result.optimizedCandidates.filter(candidate => {
+					const cacheKey = bulkReforgeCacheData.cacheKeysByCandidateIndex.get(candidate.index);
+					return cacheKey && !incrementallyWrittenKeys.has(cacheKey);
+				});
+				if (remainingCandidates.length) {
+					await writeBulkSimReforgeCacheResults(remainingCandidates, bulkReforgeCacheData);
 				}
 			}
 			if (result.error) {
@@ -663,13 +668,7 @@ export class Sim {
 		const baseRequest = this.makeRaidSimRequest();
 		const player = baseRequest.raid!.parties[0].players[0];
 		const isBlacksmith = hasBlacksmithing(player);
-		let baselineGear = this.raid.getActivePlayers()[0].getGear();
-		if (baselineGear.hasInactiveMetaGem(isBlacksmith)) {
-			baselineGear = baselineGear.withoutMetaGem();
-		}
-		if (!isBlacksmith) {
-			baselineGear = baselineGear.withoutBlacksmithSockets();
-		}
+		const baselineGear = Sim.prepareBulkGear(this.raid.getActivePlayers()[0].getGear(), isBlacksmith);
 		const bulkGearDatabase = makeBulkItemDatabaseFromSpecs(this.db, baselineGear, bulkSettings.items);
 		player.database = player.database ? Database.mergeSimDatabases(player.database, bulkGearDatabase) : bulkGearDatabase;
 		player.equipment = baselineGear.asSpec();
@@ -836,25 +835,13 @@ export class Sim {
 			const raid = this.getModifiedRaidProto();
 			const player = raid.parties[0].players[0];
 			player.database = config.gear.toDatabase(this.db);
-			player.database.reforgeStats = distinct(
-				player.database.reforgeStats.concat(
-					config.gear.asArray().flatMap(equippedItem => (equippedItem ? this.db.getAvailableReforges(equippedItem.item) : [])),
-				),
-				(a, b) => a.id == b.id,
-			);
-			player.database.gems = distinct(
-				player.database.gems.concat(
-					gemOptions.map(gem =>
-						SimGem.create({
-							id: gem.id,
-							name: gem.name,
-							color: gem.color,
-							stats: gem.stats.slice(),
-							disabledInChallengeMode: gem.disabledInChallengeMode,
-						}),
-					),
-				),
-				(a, b) => a.id == b.id,
+			this.augmentDatabaseForReforge(
+				player.database,
+				config.gear
+					.asArray()
+					.filter((equippedItem): equippedItem is NonNullable<typeof equippedItem> => equippedItem != null)
+					.map(equippedItem => equippedItem.item),
+				gemOptions,
 			);
 			player.equipment = config.gear.asSpec();
 			raid.parties[0].players[0] = player;

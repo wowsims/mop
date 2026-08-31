@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"runtime/debug"
-	"strings"
 	"syscall/js"
 
 	"github.com/wowsims/mop/sim"
@@ -196,10 +195,7 @@ func reforgeOptimizeAsync(this js.Value, args []js.Value) interface{} {
 		return nil
 	}
 
-	requestId := args[2].String()
-	if strings.HasPrefix(requestId, "<T") {
-		requestId = ""
-	}
+	requestId := readRequestId(args[2])
 
 	reporter := make(chan *proto.ProgressMetrics, 100)
 	go func() {
@@ -276,10 +272,7 @@ func raidSimAsync(this js.Value, args []js.Value) interface{} {
 		return nil
 	}
 
-	requestId := args[2].String()
-	if strings.HasPrefix(requestId, "<T") {
-		requestId = "" // Make it return the error for an empty id
-	}
+	requestId := readRequestId(args[2])
 
 	reporter := make(chan *proto.ProgressMetrics, 100)
 
@@ -315,10 +308,7 @@ func statWeightsAsync(this js.Value, args []js.Value) interface{} {
 		return nil
 	}
 
-	requestId := args[2].String()
-	if strings.HasPrefix(requestId, "<T") {
-		requestId = "" // Make it return the error for an empty id
-	}
+	requestId := readRequestId(args[2])
 
 	reporter := make(chan *proto.ProgressMetrics, 100)
 	go core.StatWeightsAsync(rsr, reporter, requestId)
@@ -481,6 +471,16 @@ func abortById(this js.Value, args []js.Value) interface{} {
 }
 
 // Assumes args[0] is a Uint8Array
+// readRequestId extracts the string request id from a JS argument. A missing argument
+// renders as js.Value strings like "<undefined>", which must be treated as no id (an empty
+// id makes the signal API return its error).
+func readRequestId(arg js.Value) string {
+	if arg.Type() != js.TypeString {
+		return ""
+	}
+	return arg.String()
+}
+
 func getArgsBinary(value js.Value) []byte {
 	data := make([]byte, value.Get("length").Int())
 	js.CopyBytesToGo(data, value)

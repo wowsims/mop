@@ -8,7 +8,7 @@ func shouldUseLegacyBulkSim(settings *proto.BulkSettings, highStageIterations in
 	if settings != nil && settings.GetUseLegacyBulkSim() {
 		return true
 	}
-	if candidateCount < bulkSimMinCombinations {
+	if candidateCount < BulkSimMinCombinations {
 		return true
 	}
 
@@ -21,7 +21,7 @@ func getBulkSimOptimisationIterationsUpperBound(highStageIterations int32, candi
 	remainingCandidates := candidateCount
 	var iterations int64
 
-	for _, stageConfig := range bulkSimStageConfigs {
+	for _, stageConfig := range BulkSimStageConfigs {
 		if stageConfig.Stage == proto.BulkSimStage_BulkSimStageHigh {
 			break
 		}

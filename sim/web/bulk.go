@@ -18,7 +18,6 @@ import (
 )
 
 const bulkSimReforgeProgressOptimizedCandidateFlushSize = 250
-const bulkSimReforgeProgressUpdateInterval = 100 * time.Millisecond
 
 type bulkSimReforgeTask struct {
 	position  int
@@ -48,18 +47,6 @@ type bulkSimReforgeOptimizer struct {
 	optimizedGearByKey map[bulkSimReforgeCandidateCacheKey]*proto.EquipmentSpec
 	inFlightByKey      map[bulkSimReforgeCandidateCacheKey]*bulkSimReforgeInFlightSolve
 	cacheMu            sync.RWMutex
-}
-
-func ensureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
-	return bulk.EnsureBulkSimCandidatesGenerated(request)
-}
-
-func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.BulkCombinationCountResult {
-	return bulk.BulkCombinationCount(request)
-}
-
-func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesResult {
-	return bulk.BulkCandidates(request)
 }
 
 // Runs entirely on its own goroutine: candidate generation alone can take minutes for a
@@ -124,7 +111,7 @@ func runBulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.Progres
 		stopHeartbeat := startProgressHeartbeat(progress, func() *proto.ProgressMetrics {
 			return &proto.ProgressMetrics{}
 		})
-		generateErr := ensureBulkSimCandidatesGenerated(request)
+		generateErr := bulk.EnsureBulkSimCandidatesGenerated(request)
 		stopHeartbeat()
 		if generateErr != nil {
 			finishBulkSim(progress, proto.BulkSimStage_BulkSimStageError, &proto.BulkSimResult{
@@ -174,7 +161,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 
 	totalCandidates := countBulkSimReforgeCandidates(request.GetCandidates())
 	if totalCandidates == 0 {
-		request.Candidates = dedupeBulkSimReforgeCandidates(getBulkSimRequestBaselineGear(request), request.GetOptimizedCandidates())
+		request.Candidates = dedupeBulkSimReforgeCandidates(bulk.GetBulkSimBaselineGear(request), request.GetOptimizedCandidates())
 		request.OptimizedCandidates = nil
 		return
 	}
@@ -190,8 +177,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 
 	jobs := make(chan bulkSimReforgeTask, max(16, 2*concurrency))
 	var wg sync.WaitGroup
-	workerCount := max(1, concurrency)
-	for range workerCount {
+	for range concurrency {
 		wg.Go(func() {
 			for task := range jobs {
 				if signals.Abort.IsTriggered() {
@@ -225,7 +211,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 	completedCandidates, minCandidateDuration, avgCandidateDuration, maxCandidateDuration := accumulator.timings()
 	log.Printf("[Bulk Sim] Reforge optimization completed candidates=%d total=%s minCandidate=%s avgCandidate=%s maxCandidate=%s", completedCandidates, time.Since(stageStartedAt), minCandidateDuration, avgCandidateDuration, maxCandidateDuration)
 
-	baselineGear := getBulkSimRequestBaselineGear(request)
+	baselineGear := bulk.GetBulkSimBaselineGear(request)
 	restoredCandidates := request.GetOptimizedCandidates()
 	// Only the solves that succeeded are reported as optimized, because that list is what
 	// the frontend writes into its reforge cache.
@@ -352,7 +338,7 @@ func (accumulator *bulkSimReforgeAccumulator) progressUpdateDueLocked() bool {
 	if !accumulator.reportProgress {
 		return false
 	}
-	if accumulator.completedCandidates < accumulator.totalCandidates && time.Since(accumulator.lastProgressEmit) < bulkSimReforgeProgressUpdateInterval {
+	if accumulator.completedCandidates < accumulator.totalCandidates && time.Since(accumulator.lastProgressEmit) < bulk.BulkSimProgressThrottle {
 		return false
 	}
 
@@ -462,18 +448,6 @@ func emitBulkSimReforgeProgress(progress chan *proto.ProgressMetrics, completed 
 		TotalIterations:     total,
 		OptimizedCandidates: partialCandidates,
 	}
-}
-
-func getBulkSimRequestBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec {
-	parties := request.GetBaseRequest().GetRaid().GetParties()
-	if len(parties) == 0 || parties[0] == nil {
-		return nil
-	}
-	players := parties[0].GetPlayers()
-	if len(players) == 0 || players[0] == nil {
-		return nil
-	}
-	return players[0].GetEquipment()
 }
 
 func (optimizer *bulkSimReforgeOptimizer) optimizeWithKey(gear *proto.EquipmentSpec, gearKey bulkSimReforgeGearHash, includeGems bool, signals simsignals.Signals) *proto.EquipmentSpec {

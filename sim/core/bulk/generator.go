@@ -16,7 +16,7 @@ type bulkSimCandidateGenerator struct {
 	playerClass          proto.Class
 	playerSpec           proto.Spec
 	playerCanDualWield   bool
-	playerIsFuryWarrior  bool
+	playerCanDualWield2H bool
 	challengeModeEnabled bool
 	selectedByBulkSlot   map[BulkSimItemSlot][]bulkSimCandidateOption
 	groupedPairsBySlot   map[BulkSimItemSlot][][2]bulkSimCandidateOption
@@ -25,6 +25,7 @@ type bulkSimCandidateGenerator struct {
 	inheritUpgrades      bool
 	frozenItems          map[BulkSimItemSlot]*core.Item
 	frozenWeaponSlot     proto.ItemSlot
+	frozenWeaponItem     *core.Item
 	weaponTypeFilters    map[proto.ItemSlot][]proto.WeaponType
 	weaponCombosCached   [][2]*bulkSimCandidateOption
 	weaponCombosReady    bool
@@ -32,7 +33,7 @@ type bulkSimCandidateGenerator struct {
 }
 
 func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.Player) (*bulkSimCandidateGenerator, error) {
-	playerSpec, err := getPlayerSpec(player)
+	playerSpec, err := core.PlayerProtoToSpecSafe(player)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +44,7 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 		playerClass:          player.GetClass(),
 		playerSpec:           playerSpec,
 		playerCanDualWield:   playerCanDualWield,
-		playerIsFuryWarrior:  playerSpec == proto.Spec_SpecFuryWarrior,
+		playerCanDualWield2H: core.SpecCanDualWield2HCapabilities[playerSpec],
 		challengeModeEnabled: player.GetChallengeMode(),
 		selectedByBulkSlot:   make(map[BulkSimItemSlot][]bulkSimCandidateOption),
 		groupedPairsBySlot:   make(map[BulkSimItemSlot][][2]bulkSimCandidateOption),
@@ -123,6 +124,10 @@ func (generator *bulkSimCandidateGenerator) initFrozenSettings() {
 	}
 	if slot := generator.settings.GetFreezeWeaponSlot(); slot == int32(proto.ItemSlot_ItemSlotMainHand) || slot == int32(proto.ItemSlot_ItemSlotOffHand) {
 		generator.frozenWeaponSlot = proto.ItemSlot(slot)
+		if item := generator.baseEquipment.GetItemBySlot(generator.frozenWeaponSlot); item != nil && item.ID != 0 {
+			itemCopy := *item
+			generator.frozenWeaponItem = &itemCopy
+		}
 	}
 }
 
@@ -164,7 +169,7 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 		// (Finger1/2, Trinket1/2, or either hand for a dual wielder) it belongs there once - a
 		// second append would fake a second copy in weaponCopyCounts below.
 		lastBulkSlot := BulkSimItemSlot(-1)
-		for _, slot := range getEligibleItemSlots(option.item, generator.playerIsFuryWarrior) {
+		for _, slot := range core.EligibleSlotsForItem(&option.item, generator.playerCanDualWield2H) {
 			if !canEquipItem(&option.item, generator.playerClass, generator.playerSpec, slot) {
 				continue
 			}
@@ -274,10 +279,7 @@ func (generator *bulkSimCandidateGenerator) rawCombinationsCount() int {
 	if rawCombinations == 0 {
 		rawCombinations = 1
 	}
-	for _, bulkSlot := range bulkSimSelectedOrder {
-		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
-			continue
-		}
+	for _, bulkSlot := range bulkSimNonWeaponOrder {
 		numOptions := len(generator.selectedByBulkSlot[bulkSlot])
 		if numOptions == 0 {
 			continue
@@ -311,7 +313,7 @@ func (generator *bulkSimCandidateGenerator) buildGearForCombo(comboIdx int) (*pr
 	}
 	// Non-Fury players cannot dual-wield 2H weapons. When a 2H lands in the mainhand
 	// the offhand combo slot is nil, leaving the base gear's 1H offhand in place — clear it.
-	if !generator.playerIsFuryWarrior {
+	if !generator.playerCanDualWield2H {
 		if mh := gear.GetItemBySlot(proto.ItemSlot_ItemSlotMainHand); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
 			gear[proto.ItemSlot_ItemSlotOffHand] = core.Item{}
 		}
@@ -340,10 +342,7 @@ func (generator *bulkSimCandidateGenerator) populateItemsForCombo(comboIdx int) 
 			generator.comboSlotUsed[int(slot)] = true
 		}
 	}
-	for _, bulkSlot := range bulkSimSelectedOrder {
-		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
-			continue
-		}
+	for _, bulkSlot := range bulkSimNonWeaponOrder {
 		options := generator.selectedByBulkSlot[bulkSlot]
 		if len(options) == 0 {
 			continue

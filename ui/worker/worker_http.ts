@@ -1,3 +1,4 @@
+import { ASYNC_SIM_REQUESTS, SimRequest } from './types';
 import { noop, sleep } from './utils';
 import { HandlerFunction, WorkerInterface } from './worker_interface';
 
@@ -54,22 +55,13 @@ export const setupHttpWorker = (baseURL: string) => {
 		return new Uint8Array();
 	};
 
-	new WorkerInterface({
-		computeStats: syncHandler,
-		computeStatsJson: syncHandler,
-		reforgeOptimizeAsync: asyncHandler,
-		raidSim: syncHandler,
-		raidSimJson: syncHandler,
-		raidSimAsync: asyncHandler,
-		bulkSimAsync: asyncHandler,
-		bulkCombinationCount: syncHandler,
-		bulkCandidates: syncHandler,
-		statWeights: syncHandler,
-		statWeightsAsync: asyncHandler,
-		statWeightRequests: syncHandler,
-		statWeightCompute: syncHandler,
-		raidSimRequestSplit: noWasmConcurrency,
-		raidSimResultCombination: noWasmConcurrency,
-		abortById: syncHandler,
-	}).ready(false);
+	// Route every endpoint through the sync handler except the declared async ones, so a new
+	// async endpoint only needs its ASYNC_SIM_REQUESTS entry to poll progress correctly.
+	const handlers = Object.fromEntries(
+		Object.values(SimRequest).map(request => [request, (ASYNC_SIM_REQUESTS as readonly SimRequest[]).includes(request) ? asyncHandler : syncHandler]),
+	) as Record<SimRequest, HandlerFunction>;
+	handlers[SimRequest.raidSimRequestSplit] = noWasmConcurrency;
+	handlers[SimRequest.raidSimResultCombination] = noWasmConcurrency;
+
+	new WorkerInterface(handlers).ready(false);
 };

@@ -20,6 +20,16 @@ export enum SimRequest {
 	abortById = 'abortById',
 }
 
+// The endpoints that run asynchronously (progress-id handshake + progress polling). Single
+// source for the async/sync split; the HTTP worker derives its routing from this list.
+export const ASYNC_SIM_REQUESTS = [
+	SimRequest.raidSimAsync,
+	SimRequest.statWeightsAsync,
+	SimRequest.bulkSimAsync,
+	SimRequest.reforgeOptimizeAsync,
+] as const;
+export type AsyncSimRequest = (typeof ASYNC_SIM_REQUESTS)[number];
+
 /**
  * What the Worker receives from the UI
  */

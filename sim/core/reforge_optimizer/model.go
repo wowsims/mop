@@ -205,7 +205,7 @@ func (o *reforgeOptimizer) applyReforgeStat(coeffs map[string]float64, stat prot
 	spellHitPseudo := proto.PseudoStat_PseudoStatSpellHitPercent
 	if getUnitStat(preCapEPs, stats.UnitStatFromPseudoStat(spellHitPseudo)) != 0 &&
 		((stat == proto.Stat_StatSpirit && o.isHybridCaster) || stat == proto.Stat_StatExpertiseRating) {
-		o.setPseudoStatCoefficient(coeffs, spellHitPseudo, amount/core.SpellHitRatingPerHitPercent)
+		setPseudoStatCoefficient(coeffs, spellHitPseudo, amount/core.SpellHitRatingPerHitPercent)
 	}
 
 	if o.relativeCap != nil {
@@ -214,23 +214,23 @@ func (o *reforgeOptimizer) applyReforgeStat(coeffs map[string]float64, stat prot
 
 	// If the root stat has a direct EP weight, apply it directly and don't expand children.
 	if preCapEPs.Stats[stat] != 0 {
-		o.setStatCoefficient(coeffs, stat, amount)
+		setStatCoefficient(coeffs, stat, amount)
 		return
 	}
 
 	// Otherwise expand into any child pseudo-stat that carries an EP weight.
 	for _, child := range childPseudoStats(stats.Stat(int32(stat))) {
 		if getUnitStat(preCapEPs, stats.UnitStatFromPseudoStat(child)) != 0 {
-			o.setPseudoStatCoefficient(coeffs, child, convertRatingToPercent(child, amount))
+			setPseudoStatCoefficient(coeffs, child, convertRatingToPercent(child, amount))
 		}
 	}
 }
 
-func (o *reforgeOptimizer) setStatCoefficient(coeffs map[string]float64, stat proto.Stat, amount float64) {
+func setStatCoefficient(coeffs map[string]float64, stat proto.Stat, amount float64) {
 	coeffs[statCoeffKey(stat)] += amount
 }
 
-func (o *reforgeOptimizer) setPseudoStatCoefficient(coeffs map[string]float64, pseudoStat proto.PseudoStat, amount float64) {
+func setPseudoStatCoefficient(coeffs map[string]float64, pseudoStat proto.PseudoStat, amount float64) {
 	coeffs[pseudoStatCoeffKey(pseudoStat)] += amount
 }
 

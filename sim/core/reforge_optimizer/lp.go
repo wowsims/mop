@@ -14,11 +14,11 @@ import (
 // maxLPLineLength is the maximum length of an emitted LP line before it is wrapped.
 const maxLPLineLength = 200
 
-// lpConstraint represents an optional bound row: an equality, a lower bound (min), or an upper
-// bound (max). lessEq builds a "<=" row (max) and greaterEq builds a ">=" row (min).
+// lpConstraint represents an optional bound row: a lower bound (min), an upper bound (max), or
+// both. lessEq builds a "<=" row (max) and greaterEq builds a ">=" row (min).
 type lpConstraint struct {
-	equal, min, max          float64
-	hasEqual, hasMin, hasMax bool
+	min, max       float64
+	hasMin, hasMax bool
 }
 
 func lessEq(n float64) lpConstraint    { return lpConstraint{max: n, hasMax: true} }
@@ -185,6 +185,18 @@ func modelToLPFormat(model *lpModel) (string, []string) {
 	return strings.Join(lines, "\n"), reverseNames
 }
 
+// appendLPTerm appends one "coeff var" term with LP sign formatting: the first term is bare,
+// later terms carry an explicit "+ " / "- " with the absolute coefficient.
+func appendLPTerm(terms []string, coeff float64, escaped string) []string {
+	if len(terms) == 0 {
+		return append(terms, formatLPNumber(coeff)+" "+escaped)
+	}
+	if coeff >= 0 {
+		return append(terms, "+ "+formatLPNumber(coeff)+" "+escaped)
+	}
+	return append(terms, "- "+formatLPNumber(math.Abs(coeff))+" "+escaped)
+}
+
 func buildLPObjective(model *lpModel, varNameMap map[string]string) []string {
 	var terms []string
 	model.variables.each(func(name string, coeffs map[string]float64) {
@@ -192,14 +204,7 @@ func buildLPObjective(model *lpModel, varNameMap map[string]string) []string {
 		if !ok || score == 0 {
 			return
 		}
-		escaped := varNameMap[name]
-		if len(terms) == 0 {
-			terms = append(terms, formatLPNumber(score)+" "+escaped)
-		} else if score >= 0 {
-			terms = append(terms, "+ "+formatLPNumber(score)+" "+escaped)
-		} else {
-			terms = append(terms, "- "+formatLPNumber(math.Abs(score))+" "+escaped)
-		}
+		terms = appendLPTerm(terms, score, varNameMap[name])
 	})
 
 	if len(terms) == 0 {
@@ -212,8 +217,14 @@ func buildLPConstraints(model *lpModel, varNameMap map[string]string) []string {
 	var lines []string
 	constraintIndex := 0
 
+	nextLabel := func() string {
+		label := "c" + strconv.Itoa(constraintIndex)
+		constraintIndex++
+		return label
+	}
+
 	model.constraints.each(func(cname string, c lpConstraint) {
-		if !c.hasEqual && !c.hasMin && !c.hasMax {
+		if !c.hasMin && !c.hasMax {
 			return
 		}
 
@@ -223,14 +234,7 @@ func buildLPConstraints(model *lpModel, varNameMap map[string]string) []string {
 			if !ok || coeff == 0 {
 				return
 			}
-			escaped := varNameMap[vname]
-			if len(terms) == 0 {
-				terms = append(terms, formatLPNumber(coeff)+" "+escaped)
-			} else if coeff >= 0 {
-				terms = append(terms, "+ "+formatLPNumber(coeff)+" "+escaped)
-			} else {
-				terms = append(terms, "- "+formatLPNumber(math.Abs(coeff))+" "+escaped)
-			}
+			terms = appendLPTerm(terms, coeff, varNameMap[vname])
 		})
 
 		if len(terms) == 0 {
@@ -238,21 +242,11 @@ func buildLPConstraints(model *lpModel, varNameMap map[string]string) []string {
 		}
 		lhs := strings.Join(terms, " ")
 
-		if c.hasEqual {
-			label := "c" + strconv.Itoa(constraintIndex)
-			constraintIndex++
-			lines = append(lines, wrapLPExpression(" "+label+": "+lhs+" = "+formatLPNumber(c.equal), maxLPLineLength)...)
-			return
-		}
 		if c.hasMax {
-			label := "c" + strconv.Itoa(constraintIndex)
-			constraintIndex++
-			lines = append(lines, wrapLPExpression(" "+label+": "+lhs+" <= "+formatLPNumber(c.max), maxLPLineLength)...)
+			lines = append(lines, wrapLPExpression(" "+nextLabel()+": "+lhs+" <= "+formatLPNumber(c.max), maxLPLineLength)...)
 		}
 		if c.hasMin {
-			label := "c" + strconv.Itoa(constraintIndex)
-			constraintIndex++
-			lines = append(lines, wrapLPExpression(" "+label+": "+lhs+" >= "+formatLPNumber(c.min), maxLPLineLength)...)
+			lines = append(lines, wrapLPExpression(" "+nextLabel()+": "+lhs+" >= "+formatLPNumber(c.min), maxLPLineLength)...)
 		}
 	})
 

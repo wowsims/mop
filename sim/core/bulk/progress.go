@@ -96,7 +96,7 @@ func (tracker *BulkSimStageProgressTracker) report(position int, completedIterat
 }
 
 func (tracker *BulkSimStageProgressTracker) shouldEmitProgressLocked() bool {
-	return tracker.lastProgressEmit.IsZero() || time.Since(tracker.lastProgressEmit) >= bulkSimProgressThrottle
+	return tracker.lastProgressEmit.IsZero() || time.Since(tracker.lastProgressEmit) >= BulkSimProgressThrottle
 }
 
 func setBulkSimStageTiming(timings *proto.BulkSimTimings, stage proto.BulkSimStage, durationSeconds float64) {

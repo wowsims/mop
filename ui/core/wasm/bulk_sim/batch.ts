@@ -1,9 +1,10 @@
+import { queue } from 'async';
+
 import { BulkSimRequest, ErrorOutcome, ErrorOutcomeType, ProgressMetrics, RaidSimRequest, RaidSimResult } from '../../proto/api';
 import { SimSignals } from '../../sim_signal_manager';
 import { noop } from '../../utils';
 import { WorkerPool } from '../../worker_pool';
 import { runConcurrentSim } from '../sim';
-import { queue } from 'async';
 import { cleanBulkSimDpsMetrics, mergeBulkSimCandidateResults } from './merge';
 import { BulkSimStageProgressEmitter } from './progress';
 import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimCandidateTask } from './types';
@@ -15,11 +16,20 @@ type ConcurrentBulkSimCandidateBatchConfig = {
 	seedOffset: number;
 };
 
-const makeBulkSimRequestForCandidate = (request: BulkSimRequest, candidate: ConcurrentBulkSimCandidate, iterations: number, seedOffset = 0): RaidSimRequest => {
-	const simRequest = RaidSimRequest.clone(request.baseRequest!);
+const makeBulkSimRequestForCandidate = (
+	request: BulkSimRequest,
+	candidate: ConcurrentBulkSimCandidate,
+	iterations: number,
+	seedOffset = 0,
+	scratch?: RaidSimRequest,
+): RaidSimRequest => {
+	// The scratch request avoids one full clone of the raid + rotation + merged SimDatabase
+	// per candidate. Reuse is safe because the caller mutates and serializes it within one
+	// synchronous window (worker requests encode to binary before the first await).
+	const simRequest = scratch ?? RaidSimRequest.clone(request.baseRequest!);
 	simRequest.requestId = request.requestId;
 	simRequest.simOptions!.iterations = iterations;
-	simRequest.simOptions!.randomSeed += BigInt(seedOffset);
+	simRequest.simOptions!.randomSeed = request.baseRequest!.simOptions!.randomSeed + BigInt(seedOffset);
 	simRequest.simOptions!.debugFirstIteration = false;
 	simRequest.simOptions!.debug = false;
 	// Every candidate runs the same seed sequence, so keeping the per-iteration values
@@ -47,12 +57,13 @@ export const runSingleBulkSimCandidate = async (
 	transport: BulkSimCandidateTransport,
 	progressCallback?: (progressMetrics: ProgressMetrics) => void,
 	seedOffset = 0,
+	scratchRequest?: RaidSimRequest,
 ): Promise<ConcurrentBulkSimCandidateResult> => {
 	if (signals.abort.isTriggered()) {
 		return { candidate, error: ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }) };
 	}
 
-	const simRequest = makeBulkSimRequestForCandidate(request, candidate, iterations, seedOffset);
+	const simRequest = makeBulkSimRequestForCandidate(request, candidate, iterations, seedOffset, scratchRequest);
 	let simResult: RaidSimResult;
 	if (transport === BulkSimCandidateTransport.SplitAcrossWorkers) {
 		simResult = await runConcurrentSim(simRequest, workerPool, progressCallback ?? noop, signals);
@@ -91,6 +102,9 @@ export const runBulkSimCandidateBatchOnWorkers = async (
 		candidateIterationsDone[idx] = nextCompletedIterations;
 	};
 
+	// One scratch request shared by all queue tasks: each task mutates and serializes it in
+	// one synchronous window, so tasks never observe each other's mutations.
+	const scratchRequest = RaidSimRequest.clone(request.baseRequest!);
 	const candidateQueue = queue<ConcurrentBulkSimCandidateTask, Error>(async ({ candidate, idx }) => {
 		if (signals.abort.isTriggered()) return;
 
@@ -111,6 +125,7 @@ export const runBulkSimCandidateBatchOnWorkers = async (
 				);
 			},
 			batchConfig.seedOffset,
+			scratchRequest,
 		);
 
 		// Fold in the iterations carried over from the previous stage before reporting, so

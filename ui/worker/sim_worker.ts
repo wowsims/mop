@@ -12,9 +12,8 @@ type HighsSolutionColumns = Record<string, { Primal: number }>;
 type SimRequestAsync = (data: Uint8Array, progress: (result: Uint8Array) => void, id: string) => Uint8Array;
 type SimRequestSync = (data: Uint8Array) => Uint8Array;
 
-const unsupportedBulkSimAsync = () => {
-	console.error('bulkSimAsync is only supported by the HTTP worker.');
-	return new Uint8Array();
+const unsupportedBulkSimAsync = (): Uint8Array => {
+	throw new Error('bulkSimAsync is only supported by the HTTP worker.');
 };
 
 let highs: Highs | null = null;

@@ -9,17 +9,19 @@ import (
 )
 
 const (
-	bulkSimDefaultTopResults                         = 5
-	bulkSimMinCombinations                           = 20
-	bulkSimCullingCoefficient                        = 1.35
+	BulkSimDefaultTopResults                         = 5
+	BulkSimMinCombinations                           = 20
+	BulkSimCullingCoefficient                        = 1.35
 	bulkSimLowStageConcurrencyFactor                 = 2
-	bulkSimCombinationLogMin                 float64 = 10
-	bulkSimMaxAdaptivePasses                         = 2
-	bulkSimAdaptiveMaxIterationMultiplier            = 4
-	bulkSimSurvivorSoftCapMultiplier                 = 2
-	bulkSimLowStageSurvivorScaleReference            = 1000
-	bulkSimMediumStageSurvivorScaleReference         = 100
-	bulkSimProgressThrottle                          = 100 * time.Millisecond
+	BulkSimCombinationLogMin                 float64 = 10
+	BulkSimMaxAdaptivePasses                         = 2
+	BulkSimAdaptiveMaxIterationMultiplier            = 4
+	BulkSimSurvivorSoftCapMultiplier                 = 2
+	BulkSimLowStageSurvivorScaleReference            = 1000
+	BulkSimMediumStageSurvivorScaleReference         = 100
+	// BulkSimProgressThrottle is the minimum interval between progress emits; shared with the
+	// sim/web reforge pre-pass so both stage streams update at the same rate.
+	BulkSimProgressThrottle = 100 * time.Millisecond
 )
 
 type BulkSimCandidate struct {
@@ -85,14 +87,14 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 
 	topResults := int(request.TopResults)
 	if topResults <= 0 {
-		topResults = bulkSimDefaultTopResults
+		topResults = BulkSimDefaultTopResults
 	}
 
 	result := &proto.BulkSimResult{
 		Timings:             &proto.BulkSimTimings{},
 		OptimizedCandidates: request.GetOptimizedCandidates(),
 	}
-	baselineGear := getBulkSimBaselineGear(request)
+	baselineGear := GetBulkSimBaselineGear(request)
 
 	if len(candidates) == 0 {
 		baselineResult := runSingleBulkSim(request, BulkSimCandidate{Index: -1, Gear: baselineGear}, request.BaseRequest.SimOptions.Iterations, signals)
@@ -120,7 +122,7 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 	// gear set wins.
 	originalCandidateCount := len(candidates)
 
-	for _, stageConfig := range bulkSimStageConfigs {
+	for _, stageConfig := range BulkSimStageConfigs {
 		if signals.Abort.IsTriggered() {
 			result.Error = bulkSimAbortedError()
 			return result
@@ -226,7 +228,8 @@ func getBulkSimPlayer(raid *proto.Raid) (*proto.Player, string) {
 	return player, ""
 }
 
-func getBulkSimBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec {
+// GetBulkSimBaselineGear returns the raid's single bulk player's equipment, or nil.
+func GetBulkSimBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec {
 	player, _ := getBulkSimPlayer(request.GetBaseRequest().GetRaid())
 	if player == nil {
 		return nil

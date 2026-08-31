@@ -57,7 +57,6 @@ type highsWasmRuntime struct {
 	highsRun                 api.Function
 	highsReadModel           api.Function
 	highsWriteSolutionPretty api.Function
-	highsSetIntOption        api.Function
 	highsSetDoubleOption     api.Function
 	highsSetStringOption     api.Function
 	highsGetModelStatus      api.Function
@@ -265,7 +264,6 @@ func newHiGHSWasmRuntime() (*highsWasmRuntime, error) {
 	runtime.highsRun = lookup("_Highs_run")
 	runtime.highsReadModel = lookup("_Highs_readModel")
 	runtime.highsWriteSolutionPretty = lookup("_Highs_writeSolutionPretty")
-	runtime.highsSetIntOption = lookup("_Highs_setIntOptionValue")
 	runtime.highsSetDoubleOption = lookup("_Highs_setDoubleOptionValue")
 	runtime.highsSetStringOption = lookup("_Highs_setStringOptionValue")
 	runtime.highsGetModelStatus = lookup("_Highs_getModelStatus")
@@ -295,12 +293,8 @@ func highsExportedFunc(instance api.Module, symbol string) (api.Function, error)
 
 func (runtime *highsWasmRuntime) resetForNextSolve() {
 	runtime.nextFD = 3
-	for fd := range runtime.files {
-		delete(runtime.files, fd)
-	}
-	for path := range runtime.paths {
-		delete(runtime.paths, path)
-	}
+	clear(runtime.files)
+	clear(runtime.paths)
 	runtime.stdout.Reset()
 	runtime.stderr.Reset()
 }

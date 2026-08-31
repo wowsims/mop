@@ -1,4 +1,4 @@
-import { SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '../worker/types';
+import { AsyncSimRequest, SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '../worker/types';
 import { REPO_NAME } from './constants/other.js';
 import {
 	AbortRequest,
@@ -199,7 +199,7 @@ export class WorkerPool {
 	 * @returns The final ProgressMetrics.
 	 */
 	private async doAsyncRequest(
-		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync | SimRequest.reforgeOptimizeAsync,
+		requestName: AsyncSimRequest,
 		request: Uint8Array,
 		id: string,
 		worker: SimWorker,

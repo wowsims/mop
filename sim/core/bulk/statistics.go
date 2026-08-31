@@ -91,7 +91,7 @@ func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSim
 		seen[result.Candidate.Index] = true
 	}
 
-	softMaxSurvivors := maxSurvivors * bulkSimSurvivorSoftCapMultiplier
+	softMaxSurvivors := maxSurvivors * BulkSimSurvivorSoftCapMultiplier
 	if len(survivors) > softMaxSurvivors {
 		survivors = topBulkSimResults(survivors, softMaxSurvivors)
 	}
@@ -104,7 +104,7 @@ func selectBulkSimSurvivors(results []*BulkSimCandidateResult, baseline *BulkSim
 // that factor when switching to the paired estimate means pairing only removes the
 // variance the shared seeds already cancel - it does not additionally tighten the
 // interval.
-const bulkSimPairedIntervalConservatism = math.Sqrt2
+const BulkSimPairedIntervalConservatism = math.Sqrt2
 
 // Decides whether a candidate is far enough behind the leader to drop out.
 //
@@ -115,7 +115,7 @@ const bulkSimPairedIntervalConservatism = math.Sqrt2
 // are unavailable or not aligned (different iteration counts).
 func bulkSimCandidateIsCulled(metrics *proto.DistributionMetrics, bestMetrics *proto.DistributionMetrics, bestLowerBound float64, iterations int32, intervalMultiplier float64) bool {
 	if pairedError, ok := bulkSimPairedDpsError(metrics, bestMetrics); ok {
-		return bestMetrics.Avg-metrics.Avg > pairedError*intervalMultiplier*bulkSimPairedIntervalConservatism
+		return bestMetrics.Avg-metrics.Avg > pairedError*intervalMultiplier*BulkSimPairedIntervalConservatism
 	}
 
 	candidateUpperBound := metrics.Avg + bulkSimDpsError(metrics, iterations)*intervalMultiplier
@@ -159,7 +159,7 @@ func bulkSimDpsError(metrics *proto.DistributionMetrics, iterations int32) float
 // full ordering would require infeasible iteration counts for near-tied gear
 // sets.
 func bulkSimCombinationErrorMultiplier(candidateCount int) float64 {
-	return math.Sqrt(math.Max(1, math.Log10(math.Max(float64(candidateCount), bulkSimCombinationLogMin))))
+	return math.Sqrt(math.Max(1, math.Log10(math.Max(float64(candidateCount), BulkSimCombinationLogMin))))
 }
 
 func bulkSimSurvivorIntervalMultiplier(candidateCount int, cullingCoefficient float64) float64 {

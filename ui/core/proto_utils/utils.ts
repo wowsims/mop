@@ -171,7 +171,7 @@ import {
 	WarriorOptions,
 	WarriorTalents,
 } from '../proto/warrior.js';
-import { getEnumValues, intersection } from '../utils.js';
+import { getEnumValues, intersection, swap } from '../utils.js';
 import { Database } from './database';
 import { Stats } from './stats.js';
 
@@ -1879,13 +1879,13 @@ const itemTypeToSlotsMap: Partial<Record<ItemType, Array<ItemSlot>>> = {
 	[ItemType.ItemTypeRanged]: [ItemSlot.ItemSlotMainHand],
 };
 
-export function getEligibleItemSlots(item: Item, isFuryWarrior?: boolean): Array<ItemSlot> {
+export function getEligibleItemSlots(item: Item, canDualWield2H?: boolean): Array<ItemSlot> {
 	if (itemTypeToSlotsMap[item.type]) {
 		return itemTypeToSlotsMap[item.type]!;
 	}
 
 	if (item.type == ItemType.ItemTypeWeapon) {
-		if (isFuryWarrior) {
+		if (canDualWield2H) {
 			return [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand];
 		}
 
@@ -2181,9 +2181,7 @@ function buildGearKey(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[]
 
 	const reorderPairedSlots = (firstSlot: ItemSlot, secondSlot: ItemSlot): void => {
 		if (itemKeys[firstSlot] > itemKeys[secondSlot]) {
-			const temp = itemKeys[firstSlot];
-			itemKeys[firstSlot] = itemKeys[secondSlot];
-			itemKeys[secondSlot] = temp;
+			swap(itemKeys, firstSlot, secondSlot);
 		}
 	};
 

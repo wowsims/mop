@@ -1,5 +1,5 @@
 import { DistributionMetrics } from '../../proto/api';
-import { BULK_SIM_COMBINATION_LOG_MIN, BULK_SIM_CULLING_COEFFICIENT, BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER } from './constants';
+import { BULK_SIM_COMBINATION_LOG_MIN, BULK_SIM_CULLING_COEFFICIENT, BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER } from './constants_auto_gen';
 import { getBulkSimStageMaxSurvivors } from './stage';
 import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig } from './types';
 
@@ -59,7 +59,6 @@ export const topBulkSimResults = (results: ConcurrentBulkSimCandidateResult[], l
 	if (limit <= 0 || results.length == 0) return [];
 	return results
 		.filter(result => result.dpsMetrics)
-		.slice()
 		.sort((a, b) => b.dpsMetrics!.avg - a.dpsMetrics!.avg)
 		.slice(0, limit);
 };

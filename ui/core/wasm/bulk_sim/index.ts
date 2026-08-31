@@ -15,14 +15,14 @@ import { isDevMode } from '../../utils';
 import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
 import { BulkSimCandidateTransport, runSingleBulkSimCandidate } from './batch';
 import { ConcurrentBulkSimStageCarryOver, newBulkSimStageCarryOver } from './carry_over';
-import { BULK_SIM_DEFAULT_TOP_RESULTS } from './constants';
+import { BULK_SIM_DEFAULT_TOP_RESULTS } from './constants_auto_gen';
 import { shouldUseLegacyBulkSim } from './estimate';
 import { bulkSimCandidateResultToProto } from './merge';
 import { formatBulkSimStageSummary } from './progress';
 import { optimizeReforgeCandidates } from './reforge';
 import { bulkSimStageConfigs, runConcurrentBulkSimStage, shouldRunBulkSimStage } from './stage';
 import { selectBulkSimSurvivors, topBulkSimResults } from './statistics';
-import { ConcurrentBulkSimCandidateResult } from './types';
+import { ConcurrentBulkSimCandidateResult,getBulkSimBaselineGear } from './types';
 
 const makeAndSendBulkSimError = (
 	err: string | ErrorOutcome,
@@ -52,8 +52,6 @@ const validateBulkSimRequest = (request: BulkSimRequest): string => {
 	if (!player.equipment) return '[Bulk sim] Baseline gear is empty';
 	return '';
 };
-
-export const getBulkSimBaselineGear = (request: BulkSimRequest) => request.baseRequest!.raid!.parties[0].players[0].equipment!;
 
 export const runConcurrentBulkSim = async (
 	request: BulkSimRequest,

@@ -1,7 +1,7 @@
 import type { Player } from '../../../player';
-import { isSpecDualWieldCapable } from '../../../player_classes/capabilities';
+import { getClassWeaponTypes, isSpecDualWieldCapable } from '../../../player_classes/capabilities';
 import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
-import { Class, Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../../../proto/common';
+import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../../../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../../proto/db';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../../../proto/ui';
 import { Database } from '../../../proto_utils/database';
@@ -17,13 +17,13 @@ import {
 	BulkSimItemSlot,
 	ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT,
 } from './constants_auto_gen';
-import { OptimisationStage, STAGE_CONFIG } from './types';
+import { OptimisationStage } from './types';
 
 export { BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS };
 
 const BULK_CACHE_LOOKUP_BATCH_SIZE = 2000;
-const BULK_CACHE_PROGRESS_CHECK_MODULO = 64;
-const BULK_CACHE_YIELD_BUDGET_MS = 16;
+export const BULK_CACHE_PROGRESS_CHECK_MODULO = 64;
+export const BULK_CACHE_YIELD_BUDGET_MS = 16;
 
 export const getBulkItemSlotFromSlot = (slot: ItemSlot, canDualWield: boolean): BulkSimItemSlot => {
 	if (canDualWield && [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand].includes(slot)) {
@@ -33,8 +33,9 @@ export const getBulkItemSlotFromSlot = (slot: ItemSlot, canDualWield: boolean): 
 };
 
 export const getBulkPlayerCanDualWield = (player: Player<any>): boolean => {
-	// Hunters are intentionally excluded from bulk dual-wield grouping to match backend behavior.
-	return isSpecDualWieldCapable(player.getSpec()) && player.getClass() !== Class.ClassHunter;
+	// A class with no melee weapon capabilities (hunters) gets no dual-wield grouping either -
+	// the backend rejects its melee candidates through the same weapon table.
+	return isSpecDualWieldCapable(player.getSpec()) && getClassWeaponTypes(player.getClass()).length > 0;
 };
 
 const TWO_HAND_ONLY_WEAPON_TYPES: WeaponType[] = [WeaponType.WeaponTypePolearm, WeaponType.WeaponTypeStaff];
@@ -82,14 +83,6 @@ export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []):
 	return deduped;
 };
 
-export const shouldRunOptimisationStage = (stage: OptimisationStage, candidateCount: number): boolean => {
-	const maxSurvivors = STAGE_CONFIG[stage].maxSurvivors;
-	return maxSurvivors === undefined || candidateCount > maxSurvivors;
-};
-
-export const getOptimisationStageMinIterations = (stage: OptimisationStage, highStageIterations: number): number =>
-	STAGE_CONFIG[stage].minIterations ?? highStageIterations;
-
 export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | 'reforging' | null => {
 	switch (stage) {
 		case BulkSimStage.BulkSimStageReforge:
@@ -113,9 +106,7 @@ export const getCoreBulkSimTrackingMetrics = (result: BulkSimResult): Record<str
 	for (const stage of result.stageMetrics) {
 		const stageName = bulkSimStageToOptimisationStage(stage.stage);
 		if (!stageName) continue;
-		metrics[`${stageName}_skipped`] = 0;
 		metrics[`${stageName}_input_gear_sets`] = stage.inputGearSets;
-		metrics[`${stageName}_results`] = stage.survivors;
 		metrics[`${stageName}_survivors`] = stage.survivors;
 		metrics[`${stageName}_iterations`] = stage.iterations;
 		metrics[`${stageName}_target_error_pct`] = stage.targetErrorPct;
@@ -316,9 +307,9 @@ export async function getBulkSimReforgeCacheData({
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
 		const spec = candidateSpecs?.[i] ?? gearSets![i].asSpec();
-		const gearKey = candidateGearKeys?.[i] ?? getReforgeCacheGearKey(gearSets![i].asSpec(), frozenItemSlots);
+		const gearKey = candidateGearKeys?.[i] ?? getReforgeCacheGearKey(spec, frozenItemSlots);
 		const candidateIndex = candidateIndices?.[i] ?? i;
-		const cacheKey = await ReforgeGearCache.getKey(gearKey, configHash);
+		const cacheKey = ReforgeGearCache.getKey(gearKey, configHash);
 		pendingEntries.push({ index: candidateIndex, spec, cacheKey });
 
 		if (pendingEntries.length >= BULK_CACHE_LOOKUP_BATCH_SIZE || i + 1 === totalCandidates) {

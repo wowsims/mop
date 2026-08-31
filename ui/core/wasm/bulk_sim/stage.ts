@@ -6,41 +6,18 @@ import { BulkSimCandidateTransport, runBulkSimCandidateBatchOnWorkers, runSingle
 import { bulkSimCarriedResults, bulkSimCarryOverCovers, ConcurrentBulkSimStageCarryOver } from './carry_over';
 import {
 	BULK_SIM_ADAPTIVE_MAX_ITERATION_MULTIPLIER,
-	BULK_SIM_CULLING_COEFFICIENT,
 	BULK_SIM_LOW_STAGE_SURVIVOR_SCALE_REFERENCE,
 	BULK_SIM_MAX_ADAPTIVE_PASSES,
 	BULK_SIM_MEDIUM_STAGE_SURVIVOR_SCALE_REFERENCE,
 	BULK_SIM_MIN_COMBINATIONS,
-} from './constants';
-import { getBulkSimBaselineGear } from './index';
+	BULK_SIM_STAGE_CONFIGS,
+} from './constants_auto_gen';
 import { hasBulkSimStageError, mergeBulkSimCandidateResults, mergeBulkSimCandidateResultSlices } from './merge';
 import { bulkSimStageLogName, BulkSimStageProgressEmitter, formatBulkSimStageStart, makeBulkSimStageProgressEmitter } from './progress';
-import { bulkSimObservedStageErrorPct, getBulkSimStageTargetIterations, getBulkSimTargetIterations, topBulkSimResults } from './statistics';
-import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig, ConcurrentBulkSimStageResult } from './types';
+import { bulkSimObservedStageErrorPct, getBulkSimStageTargetIterations, getBulkSimTargetIterations } from './statistics';
+import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig, ConcurrentBulkSimStageResult,getBulkSimBaselineGear } from './types';
 
-export const bulkSimStageConfigs: ConcurrentBulkSimStageConfig[] = [
-	{
-		stage: BulkSimStage.BulkSimStageLow,
-		minIterations: 100,
-		targetErrorPct: 1,
-		minSurvivors: 20,
-		maxSurvivors: 100,
-		cullingCoefficient: BULK_SIM_CULLING_COEFFICIENT,
-	},
-	{
-		stage: BulkSimStage.BulkSimStageMedium,
-		minIterations: 1000,
-		targetErrorPct: 0.2,
-		minSurvivors: 5,
-		maxSurvivors: 25,
-		cullingCoefficient: BULK_SIM_CULLING_COEFFICIENT,
-	},
-	{
-		stage: BulkSimStage.BulkSimStageHigh,
-		minIterations: 1000,
-		targetErrorPct: 0.05,
-	},
-];
+export const bulkSimStageConfigs: ConcurrentBulkSimStageConfig[] = BULK_SIM_STAGE_CONFIGS;
 
 // Scales the survivor cap for large candidate sets, mirroring
 // getBulkSimStageMaxSurvivors in sim/core/bulk/stage.go. Returns undefined for
@@ -240,7 +217,7 @@ const buildBulkSimStageMetrics = (
 		targetErrorPct: config.targetErrorPct,
 		observedErrorPct: bulkSimObservedStageErrorPct(baseline, results, iterations, candidates.length),
 		baselineAvgDps: baseline.dpsMetrics?.avg ?? 0,
-		bestCandidateAvgDps: topBulkSimResults(results, 1)[0]?.dpsMetrics?.avg ?? 0,
+		bestCandidateAvgDps: results.reduce((best, result) => Math.max(best, result.dpsMetrics?.avg ?? 0), 0),
 	});
 
 // Iterations already simmed by the previous stage are carried over instead of being
