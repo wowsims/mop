@@ -33,2608 +33,2608 @@ character_stats_results: {
 dps_results: {
  key: "TestFrostTwoHand-AllItems-AgilePrimalDiamond"
  value: {
-  dps: 412184.83068
-  tps: 371427.83673
-  hps: 7185.23262
+  dps: 413000.85752
+  tps: 372356.48485
+  hps: 7216.03604
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-AlacrityofXuen-103989"
  value: {
-  dps: 396730.02152
-  tps: 360929.20046
-  hps: 7025.93533
+  dps: 396319.06534
+  tps: 360543.93885
+  hps: 7020.63816
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ArcaneBadgeoftheShieldwall-93347"
  value: {
-  dps: 379047.82614
-  tps: 346538.17161
-  hps: 6933.79522
+  dps: 379626.44006
+  tps: 347190.49898
+  hps: 6935.4446
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ArrowflightMedallion-93258"
  value: {
-  dps: 381544.37332
-  tps: 348818.60503
-  hps: 6995.39501
+  dps: 381599.23471
+  tps: 348919.10405
+  hps: 7020.9217
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-AssuranceofConsequence-105472"
  value: {
-  dps: 377614.03663
-  tps: 345468.96625
-  hps: 6871.29174
+  dps: 377742.12888
+  tps: 345640.52941
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-AusterePrimalDiamond"
  value: {
-  dps: 405196.48422
-  tps: 364597.18941
-  hps: 7161.78262
+  dps: 405544.89769
+  tps: 364961.6446
+  hps: 7160.41697
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BadJuju-96781"
  value: {
-  dps: 383020.85926
-  tps: 350947.78467
-  hps: 6871.29174
+  dps: 383239.78783
+  tps: 351207.31635
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BadgeofKypariZar-84079"
  value: {
-  dps: 381521.38511
-  tps: 349111.40945
-  hps: 6939.73657
+  dps: 381955.44765
+  tps: 349594.55319
+  hps: 6957.74186
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattlegearoftheLostCatacomb"
  value: {
-  dps: 327870.99956
-  tps: 298395.7348
-  hps: 4338.72079
+  dps: 327447.84355
+  tps: 297888.40876
+  hps: 4337.65431
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattleplateofCyclopeanDread"
  value: {
-  dps: 349089.89072
-  tps: 316685.77342
-  hps: 5753.42504
+  dps: 349623.79147
+  tps: 317239.60804
+  hps: 5733.90256
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BattleplateoftheAll-ConsumingMaw"
  value: {
-  dps: 337698.10985
-  tps: 298629.23122
-  hps: 4646.11308
+  dps: 337854.00621
+  tps: 298917.10605
+  hps: 4662.87728
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BlackBloodofY'Shaarj-105648"
  value: {
-  dps: 384276.83856
-  tps: 351314.94315
-  hps: 7012.23248
+  dps: 382959.11636
+  tps: 350056.59261
+  hps: 7015.56512
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BlossomofPureSnow-89081"
  value: {
-  dps: 381127.59586
-  tps: 348472.81441
-  hps: 6975.0872
+  dps: 381219.65761
+  tps: 348605.53117
+  hps: 6993.09248
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BottleofInfiniteStars-87057"
  value: {
-  dps: 381113.0613
-  tps: 349076.48704
-  hps: 6871.29174
+  dps: 381281.75292
+  tps: 349283.36999
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BraidofTenSongs-84072"
  value: {
-  dps: 380449.67468
-  tps: 347881.77532
-  hps: 6912.71352
+  dps: 381693.05769
+  tps: 349157.36563
+  hps: 6885.22951
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Brawler'sStatue-282039"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BreathoftheHydra-96827"
  value: {
-  dps: 382279.89578
-  tps: 349531.62283
-  hps: 6944.34804
+  dps: 382933.77426
+  tps: 350069.10881
+  hps: 6949.14886
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BroochofMunificentDeeds-87500"
  value: {
-  dps: 375942.04392
-  tps: 344046.54795
-  hps: 7036.82906
+  dps: 376513.18661
+  tps: 344598.46667
+  hps: 7028.58854
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BrutalTalismanoftheShado-PanAssault-94508"
  value: {
-  dps: 391234.28993
-  tps: 356044.75026
-  hps: 6871.29174
+  dps: 391347.17194
+  tps: 356201.84935
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-BurningPrimalDiamond"
  value: {
-  dps: 412171.67818
-  tps: 371421.77112
-  hps: 7185.23262
+  dps: 412926.37477
+  tps: 372286.17436
+  hps: 7216.03604
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CapacitivePrimalDiamond"
  value: {
-  dps: 424620.96408
-  tps: 384064.57461
-  hps: 7105.43185
+  dps: 426543.47037
+  tps: 385967.42178
+  hps: 7075.51035
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CarbonicCarbuncle-81138"
  value: {
-  dps: 387187.00702
-  tps: 353393.31774
-  hps: 6989.93428
+  dps: 386699.22709
+  tps: 352944.0307
+  hps: 7011.70027
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Cha-Ye'sEssenceofBrilliance-96888"
  value: {
-  dps: 383315.14047
-  tps: 350635.25311
-  hps: 7034.10324
+  dps: 383542.63905
+  tps: 350920.53702
+  hps: 7043.08283
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CharmofTenSongs-84071"
  value: {
-  dps: 380640.86574
-  tps: 347970.92439
-  hps: 6993.26697
+  dps: 381810.86719
+  tps: 349129.77469
+  hps: 6967.08145
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CommunalIdolofDestruction-101168"
  value: {
-  dps: 384032.25924
-  tps: 350887.93855
-  hps: 6913.52255
+  dps: 383389.29141
+  tps: 350289.42615
+  hps: 6943.50727
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CommunalStoneofDestruction-101171"
  value: {
-  dps: 381038.90305
-  tps: 349037.90088
-  hps: 6871.29174
+  dps: 381300.78932
+  tps: 349338.56085
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CommunalStoneofWisdom-101183"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ContemplationofChi-Ji-103988"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Coren'sColdChromiumCoaster-282035"
  value: {
-  dps: 391460.12307
-  tps: 357156.81569
-  hps: 7019.06042
+  dps: 391516.65454
+  tps: 357265.67442
+  hps: 7031.80071
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CoreofDecency-87497"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CourageousPrimalDiamond"
  value: {
-  dps: 404778.30176
-  tps: 364094.08848
-  hps: 7084.49403
+  dps: 405558.24354
+  tps: 364983.73691
+  hps: 7113.74472
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sBadgeofConquest-93419"
  value: {
-  dps: 376991.45641
-  tps: 344969.59773
-  hps: 6871.29174
+  dps: 377206.89501
+  tps: 345221.28941
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sBadgeofDominance-93600"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sBadgeofVictory-93606"
  value: {
-  dps: 382621.10996
-  tps: 349565.80775
-  hps: 6871.29174
+  dps: 382787.24788
+  tps: 349778.87481
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sEmblemofCruelty-93485"
  value: {
-  dps: 379647.98272
-  tps: 347301.07947
-  hps: 7032.70135
+  dps: 380710.68254
+  tps: 348494.81798
+  hps: 7025.21894
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sEmblemofMeditation-93487"
  value: {
-  dps: 376811.1986
-  tps: 344761.24928
-  hps: 6940.39148
+  dps: 377619.03537
+  tps: 345700.19077
+  hps: 6942.12175
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sEmblemofTenacity-93486"
  value: {
-  dps: 375594.24024
-  tps: 343676.20037
-  hps: 7114.8557
+  dps: 376649.65029
+  tps: 344760.27402
+  hps: 7041.62242
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sInsigniaofConquest-93424"
  value: {
-  dps: 377144.13433
-  tps: 345112.36086
-  hps: 6871.29174
+  dps: 377292.60655
+  tps: 345298.02313
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sInsigniaofDominance-93601"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedDreadfulGladiator'sInsigniaofVictory-93611"
  value: {
-  dps: 384911.31195
-  tps: 351491.75887
-  hps: 6871.29174
+  dps: 385141.09161
+  tps: 351762.48686
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sBadgeofConquest-98755"
  value: {
-  dps: 377069.66369
-  tps: 345042.35344
-  hps: 6871.29174
+  dps: 377273.95837
+  tps: 345283.16615
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sBadgeofDominance-98910"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sBadgeofVictory-98912"
  value: {
-  dps: 383676.21502
-  tps: 350428.27617
-  hps: 6871.29174
+  dps: 383838.58739
+  tps: 350639.06831
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sEmblemofCruelty-98811"
  value: {
-  dps: 379865.1618
-  tps: 347518.32593
-  hps: 7066.78046
+  dps: 381281.6468
+  tps: 348995.10303
+  hps: 7051.59099
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sEmblemofMeditation-98813"
  value: {
-  dps: 376560.90651
-  tps: 344561.51802
-  hps: 6962.54953
+  dps: 377708.41663
+  tps: 345774.75203
+  hps: 6952.81204
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sEmblemofTenacity-98812"
  value: {
-  dps: 376815.11979
-  tps: 344768.75407
-  hps: 7149.60499
+  dps: 376330.94442
+  tps: 344461.22713
+  hps: 7076.33266
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sInsigniaofConquest-98760"
  value: {
-  dps: 377068.92537
-  tps: 345035.10306
-  hps: 6871.29174
+  dps: 377266.06543
+  tps: 345265.76483
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sInsigniaofDominance-98911"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CraftedMalevolentGladiator'sInsigniaofVictory-98917"
  value: {
-  dps: 386484.28706
-  tps: 352777.13691
-  hps: 6871.29174
+  dps: 386762.52444
+  tps: 353086.01125
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CurseofHubris-105645"
  value: {
-  dps: 386826.891
-  tps: 353096.97364
-  hps: 7650.30108
+  dps: 387162.01864
+  tps: 353512.76964
+  hps: 7623.24761
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-CutstitcherMedallion-93255"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Daelo'sFinalWords-87496"
  value: {
-  dps: 383525.39433
-  tps: 349986.17971
-  hps: 6871.29174
+  dps: 383615.53635
+  tps: 350116.27858
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DarkglowEmbroidery(Rank3)-4893"
  value: {
-  dps: 423813.47821
-  tps: 383339.04847
-  hps: 7091.56134
+  dps: 425858.60567
+  tps: 385349.17458
+  hps: 7057.54035
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DarkmistVortex-87172"
  value: {
-  dps: 389664.40867
-  tps: 354856.68121
-  hps: 6972.61509
+  dps: 390865.36336
+  tps: 356279.27137
+  hps: 7030.5274
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DeadeyeBadgeoftheShieldwall-93346"
  value: {
-  dps: 379658.11814
-  tps: 347633.94805
-  hps: 6871.29174
+  dps: 379944.20278
+  tps: 347966.17453
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DelicateVialoftheSanguinaire-96895"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DestructivePrimalDiamond"
  value: {
-  dps: 406064.21025
-  tps: 365178.51699
-  hps: 7136.99458
+  dps: 407037.46928
+  tps: 366268.80939
+  hps: 7177.42573
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DisciplineofXuen-103986"
  value: {
-  dps: 384804.28871
-  tps: 352767.09371
-  hps: 6871.29174
+  dps: 385251.7288
+  tps: 353253.19005
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Dominator'sArcaneBadge-93342"
  value: {
-  dps: 379047.82614
-  tps: 346538.17161
-  hps: 6933.79522
+  dps: 379626.44006
+  tps: 347190.49898
+  hps: 6935.4446
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Dominator'sDeadeyeBadge-93341"
  value: {
-  dps: 379658.11814
-  tps: 347633.94805
-  hps: 6871.29174
+  dps: 379944.20278
+  tps: 347966.17453
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Dominator'sDurableBadge-93345"
  value: {
-  dps: 379590.73344
-  tps: 347589.73127
-  hps: 6871.29174
+  dps: 379835.01268
+  tps: 347872.7842
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Dominator'sKnightlyBadge-93344"
  value: {
-  dps: 384902.9434
-  tps: 352192.84562
-  hps: 6871.29174
+  dps: 385166.84099
+  tps: 352496.47772
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Dominator'sMendingBadge-93343"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sBadgeofConquest-84344"
  value: {
-  dps: 376991.45641
-  tps: 344969.59773
-  hps: 6871.29174
+  dps: 377206.89501
+  tps: 345221.28941
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sBadgeofDominance-84488"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sBadgeofVictory-84490"
  value: {
-  dps: 382621.10996
-  tps: 349565.80775
-  hps: 6871.29174
+  dps: 382787.24788
+  tps: 349778.87481
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sEmblemofCruelty-84399"
  value: {
-  dps: 379647.98272
-  tps: 347301.07947
-  hps: 7032.70135
+  dps: 380710.68254
+  tps: 348494.81798
+  hps: 7025.21894
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sEmblemofMeditation-84401"
  value: {
-  dps: 376811.1986
-  tps: 344761.24928
-  hps: 6940.39148
+  dps: 377619.03537
+  tps: 345700.19077
+  hps: 6942.12175
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sEmblemofTenacity-84400"
  value: {
-  dps: 375594.24024
-  tps: 343676.20037
-  hps: 7114.8557
+  dps: 376649.65029
+  tps: 344760.27402
+  hps: 7041.62242
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sInsigniaofConquest-84349"
  value: {
-  dps: 377166.59282
-  tps: 345135.17553
-  hps: 6871.29174
+  dps: 377262.21056
+  tps: 345266.45302
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sInsigniaofDominance-84489"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DreadfulGladiator'sInsigniaofVictory-84495"
  value: {
-  dps: 384988.88738
-  tps: 351535.6831
-  hps: 6871.29174
+  dps: 385253.95392
+  tps: 351848.6174
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DurableBadgeoftheShieldwall-93350"
  value: {
-  dps: 379590.73344
-  tps: 347589.73127
-  hps: 6871.29174
+  dps: 379835.01268
+  tps: 347872.7842
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-DysmorphicSamophlangeofDiscontinuity-105615"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EffulgentPrimalDiamond"
  value: {
-  dps: 405196.48422
-  tps: 364597.18941
-  hps: 7161.78262
+  dps: 405544.89769
+  tps: 364961.6446
+  hps: 7160.41697
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 404778.30176
-  tps: 364094.08848
-  hps: 7084.49403
+  dps: 405558.24354
+  tps: 364983.73691
+  hps: 7113.74472
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EmblemofKypariZar-84077"
  value: {
-  dps: 379736.28916
-  tps: 347005.94052
-  hps: 6895.78607
+  dps: 379373.54858
+  tps: 346480.69748
+  hps: 6966.96951
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EmblemoftheCatacombs-83733"
  value: {
-  dps: 382277.53891
-  tps: 349857.72389
-  hps: 6932.72843
+  dps: 383471.32864
+  tps: 351140.97089
+  hps: 6952.85862
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EmptyFruitBarrel-81133"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-BloodyDancingSteel-5125"
  value: {
-  dps: 399295.09579
-  tps: 362184.65338
-  hps: 19.05111
+  dps: 401152.86291
+  tps: 364035.97554
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-Colossus-4445"
  value: {
-  dps: 395043.83569
-  tps: 358693.34255
-  hps: 20.03857
+  dps: 395269.72306
+  tps: 358882.46139
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-DancingSteel-4444"
  value: {
-  dps: 399525.61829
-  tps: 362363.58975
-  hps: 19.05111
+  dps: 401422.94499
+  tps: 364244.53365
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-ElementalForce-4443"
  value: {
-  dps: 397064.51752
-  tps: 360542.73295
-  hps: 19.6758
+  dps: 396802.30954
+  tps: 360356.39939
+  hps: 19.91003
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-JadeSpirit-4442"
  value: {
-  dps: 394226.68352
-  tps: 357913.59806
-  hps: 19.05111
+  dps: 396353.16729
+  tps: 360011.15386
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-River'sSong-4446"
  value: {
-  dps: 394469.64156
-  tps: 358147.28176
-  hps: 19.05111
+  dps: 396348.95928
+  tps: 360007.51693
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-SpiritofConquest-5124"
  value: {
-  dps: 394469.64156
-  tps: 358147.28176
-  hps: 19.05111
+  dps: 396348.95928
+  tps: 360007.51693
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnchantWeapon-Windsong-4441"
  value: {
-  dps: 396538.31924
-  tps: 359700.1726
-  hps: 19.08723
+  dps: 397012.3207
+  tps: 360247.02366
+  hps: 18.98862
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EnigmaticPrimalDiamond"
  value: {
-  dps: 406064.21025
-  tps: 365178.51699
-  hps: 7136.99458
+  dps: 407037.46928
+  tps: 366268.80939
+  hps: 7177.42573
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EssenceofTerror-87175"
  value: {
-  dps: 380499.78077
-  tps: 347340.31333
-  hps: 6941.84921
+  dps: 379609.18457
+  tps: 346499.74923
+  hps: 6977.89654
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EternalPrimalDiamond"
  value: {
-  dps: 404778.30176
-  tps: 364094.08848
-  hps: 7084.49403
+  dps: 405558.24354
+  tps: 364983.73691
+  hps: 7113.74472
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-EvilEyeofGalakras-105491"
  value: {
-  dps: 408506.86901
-  tps: 371966.13727
-  hps: 7341.06916
+  dps: 409353.94476
+  tps: 372661.27213
+  hps: 7404.45874
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FabledFeatherofJi-Kun-96842"
  value: {
-  dps: 393114.2241
-  tps: 357391.62456
-  hps: 6871.29174
+  dps: 394180.18314
+  tps: 358526.46376
+  hps: 6887.0406
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FearwurmBadge-84074"
  value: {
-  dps: 381026.68052
-  tps: 348449.99417
-  hps: 7033.63585
+  dps: 382362.42539
+  tps: 349655.02926
+  hps: 6986.40274
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FearwurmRelic-84070"
  value: {
-  dps: 380423.65049
-  tps: 347781.58933
-  hps: 6937.31692
+  dps: 381663.89459
+  tps: 348972.22453
+  hps: 7001.27527
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FelsoulIdolofDestruction-101263"
  value: {
-  dps: 383827.84922
-  tps: 350451.01286
-  hps: 6934.90852
+  dps: 384690.41289
+  tps: 351277.45054
+  hps: 6972.46149
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FelsoulStoneofDestruction-101266"
  value: {
-  dps: 381020.49529
-  tps: 349019.49312
-  hps: 6871.29174
+  dps: 381323.79742
+  tps: 349361.56894
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Fen-Yu,FuryofXuen-102248"
  value: {
-  dps: 404827.22877
-  tps: 366782.2208
-  hps: 6910.89152
+  dps: 406095.28729
+  tps: 367902.86253
+  hps: 6883.58084
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FlashfrozenResinGlobule-100951"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FlashingSteelTalisman-81265"
  value: {
-  dps: 377014.02475
-  tps: 344982.0825
-  hps: 6871.29174
+  dps: 377223.45584
+  tps: 345231.90652
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FleetPrimalDiamond"
  value: {
-  dps: 406426.8782
-  tps: 365742.66492
-  hps: 7084.49403
+  dps: 407211.91881
+  tps: 366637.41217
+  hps: 7113.74472
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ForlornPrimalDiamond"
  value: {
-  dps: 404778.30176
-  tps: 364094.08848
-  hps: 7084.49403
+  dps: 405558.24354
+  tps: 364983.73691
+  hps: 7113.74472
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FortitudeoftheZandalari-96793"
  value: {
-  dps: 381377.50193
-  tps: 349412.0178
-  hps: 7008.36056
+  dps: 382997.02915
+  tps: 351069.63385
+  hps: 7036.45507
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-FrenziedCrystalofRage-105572"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Fusion-FireCore-105459"
  value: {
-  dps: 399436.40051
-  tps: 362370.27226
-  hps: 6871.29174
+  dps: 399690.91188
+  tps: 362661.46799
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GazeoftheTwins-96915"
  value: {
-  dps: 394453.55112
-  tps: 359805.34211
-  hps: 7070.17029
+  dps: 394684.92172
+  tps: 360141.68392
+  hps: 7040.47737
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Gerp'sPerfectArrow-87495"
  value: {
-  dps: 379553.76146
-  tps: 347259.18976
-  hps: 6955.12042
+  dps: 379791.5341
+  tps: 347533.05125
+  hps: 6952.8179
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sBadgeofConquest-103145"
  value: {
-  dps: 377191.7098
-  tps: 345154.48557
-  hps: 6871.29174
+  dps: 377363.99146
+  tps: 345364.76587
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sBadgeofDominance-103308"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sBadgeofVictory-103314"
  value: {
-  dps: 387332.21583
-  tps: 353416.66006
-  hps: 6871.29174
+  dps: 387481.5369
+  tps: 353619.56556
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sEmblemofCruelty-103210"
  value: {
-  dps: 381782.17107
-  tps: 349292.44628
-  hps: 7134.80156
+  dps: 383031.74599
+  tps: 350531.75005
+  hps: 7156.48142
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sEmblemofMeditation-103212"
  value: {
-  dps: 376760.46038
-  tps: 344831.72163
-  hps: 6991.29287
+  dps: 377626.01557
+  tps: 345690.43481
+  hps: 7002.91181
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sEmblemofTenacity-103211"
  value: {
-  dps: 375981.70716
-  tps: 344047.22709
-  hps: 7238.34031
+  dps: 376927.73425
+  tps: 345023.12544
+  hps: 7207.40533
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sInsigniaofConquest-103150"
  value: {
-  dps: 377313.46004
-  tps: 345258.39965
-  hps: 6871.29174
+  dps: 377506.27383
+  tps: 345487.51223
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sInsigniaofDominance-103309"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-GrievousGladiator'sInsigniaofVictory-103319"
  value: {
-  dps: 391516.89689
-  tps: 356963.6223
-  hps: 6871.29174
+  dps: 391792.25269
+  tps: 357277.8264
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Haromm'sTalisman-105527"
  value: {
-  dps: 396989.76729
-  tps: 364881.2613
-  hps: 6871.29174
+  dps: 396804.27566
+  tps: 364736.33253
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Hawkmaster'sTalon-89082"
  value: {
-  dps: 380016.64999
-  tps: 347423.7803
-  hps: 6855.95415
+  dps: 379906.64685
+  tps: 347363.0951
+  hps: 6921.30039
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Heart-LesionDefenderIdol-100999"
  value: {
-  dps: 375990.98547
-  tps: 344004.20849
-  hps: 7050.55155
+  dps: 376353.01686
+  tps: 344471.2408
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Heart-LesionDefenderStone-101002"
  value: {
-  dps: 380277.08959
-  tps: 348290.31261
-  hps: 7050.55155
+  dps: 380650.2214
+  tps: 348768.44534
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Heart-LesionIdolofBattle-100991"
  value: {
-  dps: 389312.18716
-  tps: 355386.61143
-  hps: 6974.1813
+  dps: 389477.13083
+  tps: 355602.68402
+  hps: 6979.40019
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Heart-LesionStoneofBattle-100990"
  value: {
-  dps: 387762.29885
-  tps: 354866.4825
-  hps: 6871.29174
+  dps: 388051.03382
+  tps: 355195.20537
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-HeartofFire-81181"
  value: {
-  dps: 379556.76447
-  tps: 347555.7623
-  hps: 6871.29174
+  dps: 379761.39446
+  tps: 347799.16598
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-HeartwarmerMedallion-93260"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-HelmbreakerMedallion-93261"
  value: {
-  dps: 389016.10082
-  tps: 355291.18867
-  hps: 6995.39501
+  dps: 389056.35093
+  tps: 355367.71801
+  hps: 7020.9217
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Horridon'sLastGasp-96757"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ImpassivePrimalDiamond"
  value: {
-  dps: 406064.21025
-  tps: 365178.51699
-  hps: 7136.99458
+  dps: 407037.46928
+  tps: 366268.80939
+  hps: 7177.42573
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-IndomitablePrimalDiamond"
  value: {
-  dps: 405196.48422
-  tps: 364597.18941
-  hps: 7161.78262
+  dps: 405544.89769
+  tps: 364961.6446
+  hps: 7160.41697
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-InscribedBagofHydra-Spawn-96828"
  value: {
-  dps: 376618.80762
-  tps: 344653.97852
-  hps: 6862.18341
+  dps: 376567.85542
+  tps: 344600.05675
+  hps: 6904.70459
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-InsigniaofKypariZar-84078"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-IronBellyWok-89083"
  value: {
-  dps: 386834.22544
-  tps: 353308.31051
-  hps: 6855.95415
+  dps: 386787.43697
+  tps: 353309.77013
+  hps: 6921.30039
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-IronProtectorTalisman-85181"
  value: {
-  dps: 376383.72273
-  tps: 344404.46337
-  hps: 7018.63174
+  dps: 376338.82347
+  tps: 344454.47363
+  hps: 6979.7419
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-JadeBanditFigurine-86772"
  value: {
-  dps: 380070.54249
-  tps: 347503.42227
-  hps: 6924.18361
+  dps: 381204.19404
+  tps: 348514.68225
+  hps: 6952.30465
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-JadeCharioteerFigurine-86771"
  value: {
-  dps: 386127.37617
-  tps: 352727.95132
-  hps: 6924.18361
+  dps: 387382.50988
+  tps: 353859.41999
+  hps: 6952.30465
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-JadeCourtesanFigurine-86774"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-JadeMagistrateFigurine-86773"
  value: {
-  dps: 380679.93804
-  tps: 348095.60304
-  hps: 6962.3008
+  dps: 380638.14719
+  tps: 348095.5301
+  hps: 6976.54538
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-JadeWarlordFigurine-86775"
  value: {
-  dps: 380002.42151
-  tps: 348002.77868
-  hps: 7031.78547
+  dps: 379672.86966
+  tps: 347803.4177
+  hps: 7025.32266
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Ji-Kun'sRisingWinds-96843"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Juggernaut'sFocusingCrystal-105514"
  value: {
-  dps: 377023.56906
-  tps: 345050.20693
-  hps: 17872.55287
+  dps: 377209.75667
+  tps: 345223.24006
+  hps: 17868.19678
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Kardris'ToxicTotem-105540"
  value: {
-  dps: 394903.72709
-  tps: 362902.72492
-  hps: 6871.29174
+  dps: 395439.53536
+  tps: 363477.30689
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-KnightlyBadgeoftheShieldwall-93349"
  value: {
-  dps: 384902.9434
-  tps: 352192.84562
-  hps: 6871.29174
+  dps: 385166.84099
+  tps: 352496.47772
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-KnotofTenSongs-84073"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Kor'kronBookofHurting-92785"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Lao-Chin'sLiquidCourage-89079"
  value: {
-  dps: 378506.79794
-  tps: 346570.87633
-  hps: 7046.54325
+  dps: 379987.02955
+  tps: 348079.92751
+  hps: 7058.94307
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-LeiShen'sFinalOrders-87072"
  value: {
-  dps: 390385.133
-  tps: 355859.66191
-  hps: 6927.48243
+  dps: 390342.51001
+  tps: 355821.48235
+  hps: 6947.07442
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-LessonsoftheDarkmaster-81268"
  value: {
-  dps: 385141.90867
-  tps: 350935.88688
-  hps: 6871.29174
+  dps: 385309.79365
+  tps: 351153.6043
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-LightdrinkerIdolofRage-101200"
  value: {
-  dps: 380387.19013
-  tps: 348359.37909
-  hps: 6871.29174
+  dps: 380602.33939
+  tps: 348607.01578
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-LightdrinkerStoneofRage-101203"
  value: {
-  dps: 381224.22927
-  tps: 349196.85249
-  hps: 6871.29174
+  dps: 381535.20708
+  tps: 349553.97214
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-LightoftheCosmos-87065"
  value: {
-  dps: 379974.64599
-  tps: 347307.70504
-  hps: 6927.48243
+  dps: 379890.2446
+  tps: 347222.69819
+  hps: 6947.07442
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-LightweaveEmbroidery(Rank3)-4892"
  value: {
-  dps: 423813.47821
-  tps: 383339.04847
-  hps: 7091.56134
+  dps: 425858.60567
+  tps: 385349.17458
+  hps: 7057.54035
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-LordBlastington'sScopeofDoom-4699"
  value: {
-  dps: 394469.64156
-  tps: 358147.28176
-  hps: 19.05111
+  dps: 396348.95928
+  tps: 360007.51693
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sBadgeofConquest-91452"
  value: {
-  dps: 377069.66369
-  tps: 345042.35344
-  hps: 6871.29174
+  dps: 377273.95837
+  tps: 345283.16615
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sBadgeofDominance-91753"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sBadgeofVictory-91763"
  value: {
-  dps: 383676.21502
-  tps: 350428.27617
-  hps: 6871.29174
+  dps: 383838.58739
+  tps: 350639.06831
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sEmblemofCruelty-91562"
  value: {
-  dps: 379865.1618
-  tps: 347518.32593
-  hps: 7066.78046
+  dps: 381281.6468
+  tps: 348995.10303
+  hps: 7051.59099
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sEmblemofMeditation-91564"
  value: {
-  dps: 376560.90651
-  tps: 344561.51802
-  hps: 6962.54953
+  dps: 377708.41663
+  tps: 345774.75203
+  hps: 6952.81204
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sEmblemofTenacity-91563"
  value: {
-  dps: 376815.11979
-  tps: 344768.75407
-  hps: 7149.60499
+  dps: 376330.94442
+  tps: 344461.22713
+  hps: 7076.33266
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sInsigniaofConquest-91457"
  value: {
-  dps: 377129.69525
-  tps: 345096.90722
-  hps: 6871.29174
+  dps: 377332.5843
+  tps: 345333.42586
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sInsigniaofDominance-91754"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MalevolentGladiator'sInsigniaofVictory-91768"
  value: {
-  dps: 386455.08059
-  tps: 352781.72806
-  hps: 6871.29174
+  dps: 386697.19753
+  tps: 353055.22944
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MarkoftheCatacombs-83731"
  value: {
-  dps: 381461.00264
-  tps: 349254.09052
-  hps: 6947.59901
+  dps: 381945.81546
+  tps: 349773.29826
+  hps: 6952.8179
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MarkoftheHardenedGrunt-92783"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MedallionofMystifyingVapors-93257"
  value: {
-  dps: 380757.1854
-  tps: 348756.18323
-  hps: 6871.29174
+  dps: 381025.92727
+  tps: 349063.6988
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MedallionoftheCatacombs-83734"
  value: {
-  dps: 378821.01286
-  tps: 346820.01069
-  hps: 6871.29174
+  dps: 379020.78596
+  tps: 347058.55748
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MendingBadgeoftheShieldwall-93348"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MirrorScope-4700"
  value: {
-  dps: 394469.64156
-  tps: 358147.28176
-  hps: 19.05111
+  dps: 396348.95928
+  tps: 360007.51693
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MistdancerDefenderIdol-101089"
  value: {
-  dps: 375990.98547
-  tps: 344004.20849
-  hps: 7050.55155
+  dps: 376353.01686
+  tps: 344471.2408
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MistdancerDefenderStone-101087"
  value: {
-  dps: 380450.63743
-  tps: 348470.95777
-  hps: 7054.43014
+  dps: 380574.68583
+  tps: 348688.90727
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MistdancerIdolofRage-101113"
  value: {
-  dps: 380346.86504
-  tps: 348317.81204
-  hps: 6871.29174
+  dps: 380499.9647
+  tps: 348507.41997
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MistdancerStoneofRage-101117"
  value: {
-  dps: 381176.87547
-  tps: 349149.49869
-  hps: 6871.29174
+  dps: 381421.81933
+  tps: 349440.58439
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MistdancerStoneofWisdom-101107"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MithrilWristwatch-282033"
  value: {
-  dps: 382675.56224
-  tps: 350072.18367
-  hps: 7019.06042
+  dps: 382645.53272
+  tps: 350100.54614
+  hps: 7031.80071
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MountainsageIdolofDestruction-101069"
  value: {
-  dps: 384878.00361
-  tps: 351749.06198
-  hps: 7011.30229
+  dps: 384303.49163
+  tps: 351097.46799
+  hps: 6991.99806
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-MountainsageStoneofDestruction-101072"
  value: {
-  dps: 381021.7937
-  tps: 349020.79153
-  hps: 6871.29174
+  dps: 381273.72339
+  tps: 349311.49491
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Nazgrim'sBurnishedInsignia-105549"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-NitroBoosts-4223"
  value: {
-  dps: 424620.96408
-  tps: 384064.57461
-  hps: 7105.43185
+  dps: 426543.47037
+  tps: 385967.42178
+  hps: 7075.51035
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-OathswornDefenderIdol-101303"
  value: {
-  dps: 375990.98547
-  tps: 344004.20849
-  hps: 7050.55155
+  dps: 376353.01686
+  tps: 344471.2408
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-OathswornDefenderStone-101306"
  value: {
-  dps: 380322.47852
-  tps: 348335.70154
-  hps: 7050.55155
+  dps: 380601.19953
+  tps: 348719.42347
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-OathswornIdolofBattle-101295"
  value: {
-  dps: 389331.02512
-  tps: 355409.34877
-  hps: 6974.1813
+  dps: 389510.19022
+  tps: 355633.61078
+  hps: 6979.40019
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-OathswornStoneofBattle-101294"
  value: {
-  dps: 387695.99767
-  tps: 354800.18132
-  hps: 6871.29174
+  dps: 388040.4047
+  tps: 355184.57624
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PhaseFingers-4697"
  value: {
-  dps: 423463.33234
-  tps: 383059.82732
-  hps: 7105.43185
+  dps: 425383.35483
+  tps: 384960.05399
+  hps: 7075.51035
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PlateofCyclopeanDread"
  value: {
-  dps: 322775.37978
-  tps: 293916.61118
-  hps: 4429.07419
+  dps: 321893.79836
+  tps: 292984.66227
+  hps: 4423.81607
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PlateoftheAll-ConsumingMaw"
  value: {
-  dps: 314538.4697
-  tps: 285837.49964
-  hps: 4430.33549
+  dps: 315911.77801
+  tps: 287270.22207
+  hps: 4381.75504
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PlateoftheLostCatacomb"
  value: {
-  dps: 302897.86689
-  tps: 275636.35058
-  hps: 4110.41714
+  dps: 304439.95042
+  tps: 277168.31369
+  hps: 4156.44766
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PouchofWhiteAsh-103639"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PowerfulPrimalDiamond"
  value: {
-  dps: 405196.48422
-  tps: 364597.18941
-  hps: 7161.78262
+  dps: 405544.89769
+  tps: 364961.6446
+  hps: 7160.41697
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PriceofProgress-81266"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sBadgeofConquest-103342"
  value: {
-  dps: 377333.48738
-  tps: 345279.31361
-  hps: 6871.29174
+  dps: 377514.70999
+  tps: 345504.09379
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sBadgeofDominance-103505"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sBadgeofVictory-103511"
  value: {
-  dps: 390460.26398
-  tps: 355973.55409
-  hps: 6871.29174
+  dps: 390598.42255
+  tps: 356169.71511
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sEmblemofCruelty-103407"
  value: {
-  dps: 382497.73969
-  tps: 349833.82691
-  hps: 7219.44809
+  dps: 384163.82787
+  tps: 351511.06473
+  hps: 7234.65594
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sEmblemofMeditation-103409"
  value: {
-  dps: 375930.72623
-  tps: 343971.29451
-  hps: 7042.62581
+  dps: 377354.55408
+  tps: 345427.15877
+  hps: 7051.5285
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sEmblemofTenacity-103408"
  value: {
-  dps: 376157.18495
-  tps: 344242.19809
-  hps: 7326.14312
+  dps: 376348.07622
+  tps: 344461.51615
+  hps: 7350.0383
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sInsigniaofConquest-103347"
  value: {
-  dps: 377418.8883
-  tps: 345348.29684
-  hps: 6871.29174
+  dps: 377569.86436
+  tps: 345534.92243
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sInsigniaofDominance-103506"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PridefulGladiator'sInsigniaofVictory-103516"
  value: {
-  dps: 395892.50057
-  tps: 360518.80723
-  hps: 6871.29174
+  dps: 396275.66448
+  tps: 360934.49641
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Primordius'TalismanofRage-96873"
  value: {
-  dps: 394804.56463
-  tps: 360527.84589
-  hps: 7034.10324
+  dps: 395306.18153
+  tps: 361071.76585
+  hps: 7043.08283
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PrismaticPrisonofPride-105474"
  value: {
-  dps: 393175.03726
-  tps: 360363.68884
-  hps: 7115.10542
+  dps: 394408.20574
+  tps: 361693.24435
+  hps: 7069.35603
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-PurifiedBindingsofImmerseus-105422"
  value: {
-  dps: 393175.03726
-  tps: 360363.68884
-  hps: 7115.10542
+  dps: 394408.20574
+  tps: 361693.24435
+  hps: 7069.35603
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Qian-Le,CourageofNiuzao-102245"
  value: {
-  dps: 386575.53783
-  tps: 348363.85133
-  hps: 6857.67938
+  dps: 388230.3696
+  tps: 350201.61845
+  hps: 6868.42248
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Qian-Ying,FortitudeofNiuzao-102250"
  value: {
-  dps: 393611.00947
-  tps: 354499.18331
-  hps: 6797.40048
+  dps: 395246.5301
+  tps: 356295.10617
+  hps: 6806.12715
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Qin-xi'sPolarizingSeal-87075"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RelicofChi-Ji-79330"
  value: {
-  dps: 376846.24492
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RelicofKypariZar-84075"
  value: {
-  dps: 382000.68568
-  tps: 349272.9243
-  hps: 6935.98207
+  dps: 382220.15391
+  tps: 349530.68239
+  hps: 6992.36304
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RelicofNiuzao-79329"
  value: {
-  dps: 376698.63437
-  tps: 344690.6269
-  hps: 7031.78547
+  dps: 376421.95407
+  tps: 344552.50211
+  hps: 7025.32266
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RelicofXuen-79327"
  value: {
-  dps: 389610.84673
-  tps: 355567.9224
-  hps: 6871.29174
+  dps: 389843.74583
+  tps: 355833.38056
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RelicofXuen-79328"
  value: {
-  dps: 377220.6438
-  tps: 345171.49804
-  hps: 6871.29174
+  dps: 377448.39511
+  tps: 345446.54795
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RelicofYu'lon-79331"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Renataki'sSoulCharm-96741"
  value: {
-  dps: 377241.93961
-  tps: 345168.66241
-  hps: 6871.29174
+  dps: 377551.9634
+  tps: 345507.8417
+  hps: 6874.2542
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ResolveofNiuzao-103990"
  value: {
-  dps: 382147.8897
-  tps: 350146.88753
-  hps: 6871.29174
+  dps: 382369.62439
+  tps: 350407.39591
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ReverberatingPrimalDiamond"
  value: {
-  dps: 413545.02877
-  tps: 372600.34307
-  hps: 7185.23262
+  dps: 414307.23467
+  tps: 373472.74487
+  hps: 7216.03604
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RevitalizingPrimalDiamond"
  value: {
-  dps: 412171.67818
-  tps: 371421.77112
-  hps: 7185.23262
+  dps: 412926.37477
+  tps: 372286.17436
+  hps: 7216.03604
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofCinderglacier-3369"
  value: {
-  dps: 400821.29249
-  tps: 364498.93269
-  hps: 19.05111
+  dps: 402664.8889
+  tps: 366323.44655
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofRazorice-3370"
  value: {
-  dps: 416830.8442
-  tps: 380508.4844
-  hps: 19.05111
+  dps: 418968.34353
+  tps: 382626.90118
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofRe-Origination-96918"
  value: {
-  dps: 384925.96406
-  tps: 350840.26097
-  hps: 6975.55252
+  dps: 383908.90393
+  tps: 349754.21146
+  hps: 7002.82923
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofSpellbreaking-3595"
  value: {
-  dps: 392864.82424
-  tps: 356565.27008
-  hps: 18.92463
+  dps: 395861.35512
+  tps: 359466.36761
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofSpellshattering-3367"
  value: {
-  dps: 393505.32596
-  tps: 357291.50634
+  dps: 395564.04696
+  tps: 359127.24049
   hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofSwordbreaking-3594"
  value: {
-  dps: 394469.64156
-  tps: 358147.28176
-  hps: 19.05111
+  dps: 396348.95928
+  tps: 360007.51693
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneofSwordshattering-3365"
  value: {
-  dps: 394469.64156
-  tps: 358147.28176
-  hps: 19.05111
+  dps: 396348.95928
+  tps: 360007.51693
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneoftheNerubianCarapace-3883"
  value: {
-  dps: 395486.31828
-  tps: 359187.11758
-  hps: 19.62023
+  dps: 395866.76998
+  tps: 359497.478
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-RuneoftheStoneskinGargoyle-3847"
  value: {
-  dps: 394232.35109
-  tps: 358029.27218
-  hps: 19.228
+  dps: 395734.31663
+  tps: 359353.57557
+  hps: 18.99952
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SI:7Operative'sManual-92784"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ScrollofReveredAncestors-89080"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SearingWords-81267"
  value: {
-  dps: 380259.14636
-  tps: 347898.66448
-  hps: 6962.64183
+  dps: 380451.08605
+  tps: 348146.12614
+  hps: 6956.57861
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Shock-ChargerMedallion-93259"
  value: {
-  dps: 379632.57293
-  tps: 347197.98575
-  hps: 6901.50711
+  dps: 378905.81094
+  tps: 346442.16631
+  hps: 6908.17193
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofCompassion-83736"
  value: {
-  dps: 378804.43306
-  tps: 346803.43089
-  hps: 6871.29174
+  dps: 379020.78596
+  tps: 347058.55748
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofDevotion-83740"
  value: {
-  dps: 381403.42076
-  tps: 349197.54291
-  hps: 6947.59901
+  dps: 381872.16885
+  tps: 349699.65166
+  hps: 6952.8179
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofFidelity-83737"
  value: {
-  dps: 382681.29526
-  tps: 349852.53673
-  hps: 7010.19895
+  dps: 383892.32428
+  tps: 351152.18005
+  hps: 7026.89501
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofGrace-83738"
  value: {
-  dps: 380200.66342
-  tps: 347801.31265
-  hps: 6943.11248
+  dps: 381867.48422
+  tps: 349462.0397
+  hps: 6931.32615
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofKypariZar-84076"
  value: {
-  dps: 381603.76287
-  tps: 349367.29908
-  hps: 6947.59901
+  dps: 382013.39411
+  tps: 349809.29097
+  hps: 6952.8179
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofPatience-83739"
  value: {
-  dps: 379246.57411
-  tps: 347245.57194
-  hps: 6871.29174
+  dps: 379496.72907
+  tps: 347534.50059
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigilofRampage-105580"
  value: {
-  dps: 377529.95844
-  tps: 345423.74079
-  hps: 6871.29174
+  dps: 377784.62217
+  tps: 345716.7418
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SigiloftheCatacombs-83732"
  value: {
-  dps: 381318.48553
-  tps: 348686.86044
-  hps: 6938.43417
+  dps: 382894.90598
+  tps: 350243.55131
+  hps: 7017.46923
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SinisterPrimalDiamond"
  value: {
-  dps: 405592.32825
-  tps: 364750.14718
-  hps: 7120.59662
+  dps: 406659.7611
+  tps: 365936.19567
+  hps: 7161.02777
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Skeer'sBloodsoakedTalisman-105632"
  value: {
-  dps: 404192.64464
-  tps: 368186.64334
-  hps: 7186.43882
+  dps: 404453.49857
+  tps: 368499.67525
+  hps: 7210.221
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SkullrenderMedallion-93256"
  value: {
-  dps: 389016.10082
-  tps: 355291.18867
-  hps: 6995.39501
+  dps: 389056.35093
+  tps: 355367.71801
+  hps: 7020.9217
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SoothingTalismanoftheShado-PanAssault-94509"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SoulBarrier-96927"
  value: {
-  dps: 377237.7655
-  tps: 345296.37501
-  hps: 7241.27024
+  dps: 375403.3044
+  tps: 343530.41999
+  hps: 7198.78736
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SparkofZandalar-96770"
  value: {
-  dps: 391856.64048
-  tps: 358531.4187
-  hps: 6944.34804
+  dps: 391830.17978
+  tps: 358462.57086
+  hps: 6949.14886
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SpiritsoftheSun-87163"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SpringrainIdolofDestruction-101023"
  value: {
-  dps: 383627.30953
-  tps: 350543.13626
-  hps: 6932.90933
+  dps: 383444.4159
+  tps: 350360.76617
+  hps: 6900.57169
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SpringrainIdolofRage-101009"
  value: {
-  dps: 380400.0864
-  tps: 348368.64188
-  hps: 6871.29174
+  dps: 380574.50913
+  tps: 348578.11662
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SpringrainStoneofDestruction-101026"
  value: {
-  dps: 381104.03486
-  tps: 349103.03269
-  hps: 6871.29174
+  dps: 381279.517
+  tps: 349317.28852
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SpringrainStoneofRage-101012"
  value: {
-  dps: 381203.68338
-  tps: 349176.3066
-  hps: 6871.29174
+  dps: 381468.93778
+  tps: 349487.70284
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SpringrainStoneofWisdom-101041"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Static-Caster'sMedallion-93254"
  value: {
-  dps: 379632.57293
-  tps: 347197.98575
-  hps: 6901.50711
+  dps: 378905.81094
+  tps: 346442.16631
+  hps: 6908.17193
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SteadfastFootman'sMedallion-92782"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SteadfastTalismanoftheShado-PanAssault-94507"
  value: {
-  dps: 381540.09489
-  tps: 349539.09272
-  hps: 6871.29174
+  dps: 381757.81737
+  tps: 349795.58889
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-StreamtalkerIdolofDestruction-101222"
  value: {
-  dps: 384741.94231
-  tps: 351590.0757
-  hps: 6967.92535
+  dps: 385367.46185
+  tps: 352212.56326
+  hps: 6948.67483
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-StreamtalkerIdolofRage-101217"
  value: {
-  dps: 380433.87628
-  tps: 348406.7414
-  hps: 6871.29174
+  dps: 380560.85757
+  tps: 348568.34677
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-StreamtalkerStoneofDestruction-101225"
  value: {
-  dps: 381068.11759
-  tps: 349067.11542
-  hps: 6871.29174
+  dps: 381351.11044
+  tps: 349388.88196
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-StreamtalkerStoneofRage-101220"
  value: {
-  dps: 381199.1705
-  tps: 349171.79372
-  hps: 6871.29174
+  dps: 381464.73281
+  tps: 349483.49787
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-StreamtalkerStoneofWisdom-101250"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-StuffofNightmares-87160"
  value: {
-  dps: 381005.87524
-  tps: 349004.87308
-  hps: 6871.29174
+  dps: 381220.0712
+  tps: 349257.84272
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SunsoulDefenderIdol-101160"
  value: {
-  dps: 375990.98547
-  tps: 344004.20849
-  hps: 7050.55155
+  dps: 376353.01686
+  tps: 344471.2408
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SunsoulDefenderStone-101163"
  value: {
-  dps: 380281.31705
-  tps: 348294.54007
-  hps: 7050.55155
+  dps: 380624.44523
+  tps: 348742.66918
+  hps: 7042.75965
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SunsoulIdolofBattle-101152"
  value: {
-  dps: 389379.78222
-  tps: 355450.08513
-  hps: 6974.1813
+  dps: 389519.85769
+  tps: 355654.11051
+  hps: 6979.40019
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SunsoulStoneofBattle-101151"
  value: {
-  dps: 387741.89311
-  tps: 354846.07676
-  hps: 6871.29174
+  dps: 388003.05574
+  tps: 355147.22729
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SunsoulStoneofWisdom-101138"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SwordguardEmbroidery(Rank3)-4894"
  value: {
-  dps: 426789.45468
-  tps: 385788.65305
-  hps: 7091.56134
+  dps: 428822.26614
+  tps: 387783.59221
+  hps: 7057.54035
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SymboloftheCatacombs-83735"
  value: {
-  dps: 381572.79977
-  tps: 349165.15252
-  hps: 6937.48015
+  dps: 381981.64305
+  tps: 349629.50713
+  hps: 6955.48543
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-SynapseSprings(MarkII)-4898"
  value: {
-  dps: 426540.64357
-  tps: 385561.66784
-  hps: 7113.29204
+  dps: 428405.97501
+  tps: 387393.59633
+  hps: 7075.51035
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TalismanofBloodlust-96864"
  value: {
-  dps: 385653.52655
-  tps: 352627.40899
-  hps: 7013.43909
+  dps: 384684.96081
+  tps: 351696.40032
+  hps: 7013.92447
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TerrorintheMists-87167"
  value: {
-  dps: 384573.78103
-  tps: 350899.27671
-  hps: 7088.75541
+  dps: 384519.3396
+  tps: 350889.7114
+  hps: 7081.005
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Thok'sAcid-GroovedTooth-105607"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Thok'sTailTip-105609"
  value: {
-  dps: 419969.80208
-  tps: 380034.05478
-  hps: 7115.10542
+  dps: 421264.75982
+  tps: 381425.51617
+  hps: 7069.35603
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Thousand-YearPickledEgg-282031"
  value: {
-  dps: 378818.50017
-  tps: 346096.35216
-  hps: 6901.9707
+  dps: 379804.33461
+  tps: 346954.95907
+  hps: 6953.25805
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TickingEbonDetonator-105612"
  value: {
-  dps: 385064.51406
-  tps: 352933.32699
-  hps: 6871.29174
+  dps: 385379.89301
+  tps: 353276.42401
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Time-LostArtifact-103678"
  value: {
-  dps: 384835.56832
-  tps: 352028.0698
-  hps: 6962.54664
+  dps: 384276.25521
+  tps: 351409.93919
+  hps: 6918.23365
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TrailseekerIdolofRage-101054"
  value: {
-  dps: 380414.67675
-  tps: 348381.72915
-  hps: 6871.29174
+  dps: 380566.62998
+  tps: 348574.23667
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TrailseekerStoneofRage-101057"
  value: {
-  dps: 381210.22911
-  tps: 349182.85232
-  hps: 6871.29174
+  dps: 381442.74417
+  tps: 349461.50923
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sBadgeofConquest-100043"
  value: {
-  dps: 377116.54621
-  tps: 345086.18939
-  hps: 6871.29174
+  dps: 377287.81205
+  tps: 345293.97327
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sBadgeofDominance-100016"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sBadgeofVictory-100019"
  value: {
-  dps: 385078.91596
-  tps: 351574.82961
-  hps: 6871.29174
+  dps: 385236.27969
+  tps: 351782.59487
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sEmblemofCruelty-100066"
  value: {
-  dps: 380584.83513
-  tps: 348159.05908
-  hps: 7094.39831
+  dps: 381996.41681
+  tps: 349646.10021
+  hps: 7088.27762
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sEmblemofMeditation-99990"
  value: {
-  dps: 376549.35413
-  tps: 344556.93411
-  hps: 6972.68777
+  dps: 377611.6478
+  tps: 345687.61395
+  hps: 6971.72921
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sEmblemofTenacity-100092"
  value: {
-  dps: 375759.34158
-  tps: 343791.61842
-  hps: 7095.21331
+  dps: 377346.665
+  tps: 345448.71512
+  hps: 7148.83123
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sInsigniaofConquest-100026"
  value: {
-  dps: 377282.67518
-  tps: 345239.97839
-  hps: 6871.29174
+  dps: 377473.6847
+  tps: 345467.094
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sInsigniaofDominance-100152"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalGladiator'sInsigniaofVictory-100085"
  value: {
-  dps: 388396.78725
-  tps: 354367.92185
-  hps: 6871.29174
+  dps: 388617.54532
+  tps: 354625.62797
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-TyrannicalPrimalDiamond"
  value: {
-  dps: 404778.30176
-  tps: 364094.08848
-  hps: 7084.49403
+  dps: 405558.24354
+  tps: 364983.73691
+  hps: 7113.74472
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-UnerringVisionofLeiShen-96930"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-VaporshieldMedallion-93262"
  value: {
-  dps: 380757.1854
-  tps: 348756.18323
-  hps: 6871.29174
+  dps: 381025.92727
+  tps: 349063.6988
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-VialofDragon'sBlood-87063"
  value: {
-  dps: 380743.5638
-  tps: 348742.56163
-  hps: 6871.29174
+  dps: 380956.02817
+  tps: 348993.79969
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-VialofIchorousBlood-100963"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-VialofLivingCorruption-105568"
  value: {
-  dps: 376501.77956
-  tps: 344524.15681
-  hps: 7344.76379
+  dps: 376399.13149
+  tps: 344498.25262
+  hps: 7321.74115
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ViciousTalismanoftheShado-PanAssault-94511"
  value: {
-  dps: 377380.244
-  tps: 345294.60587
-  hps: 6871.29174
+  dps: 377488.89557
+  tps: 345437.69562
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-VisionofthePredator-81192"
  value: {
-  dps: 381084.81532
-  tps: 348103.09394
-  hps: 6982.94964
+  dps: 381060.14282
+  tps: 348105.72261
+  hps: 6989.88818
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-VolatileTalismanoftheShado-PanAssault-94510"
  value: {
-  dps: 380184.00086
-  tps: 347188.98473
-  hps: 6904.37368
+  dps: 382050.97044
+  tps: 349064.74264
+  hps: 6906.95667
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-WindsweptPages-81125"
  value: {
-  dps: 381431.19112
-  tps: 348651.69796
-  hps: 6931.67175
+  dps: 380321.89281
+  tps: 347550.27544
+  hps: 6972.96476
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-WoundripperMedallion-93253"
  value: {
-  dps: 381544.37332
-  tps: 348818.60503
-  hps: 6995.39501
+  dps: 381599.23471
+  tps: 348919.10405
+  hps: 7020.9217
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Wushoolay'sFinalChoice-96785"
  value: {
-  dps: 376847.27919
-  tps: 344846.27702
-  hps: 6871.29174
+  dps: 377034.02316
+  tps: 345071.79468
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Xing-Ho,BreathofYu'lon-102246"
  value: {
-  dps: 387417.35947
-  tps: 349380.57009
-  hps: 6859.42965
+  dps: 390049.07596
+  tps: 351915.15141
+  hps: 6934.37576
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-Yu'lon'sBite-103987"
  value: {
-  dps: 385682.19414
-  tps: 351698.28489
-  hps: 7140.29835
+  dps: 386123.06897
+  tps: 352210.32262
+  hps: 7162.0312
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-AllItems-ZenAlchemistStone-75274"
  value: {
-  dps: 388810.56269
-  tps: 355101.19506
-  hps: 6871.29174
+  dps: 389112.73578
+  tps: 355444.38904
+  hps: 6878.01491
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Average-Default"
  value: {
-  dps: 428049.26539
-  tps: 386315.76349
-  hps: 6852.90347
+  dps: 429255.25265
+  tps: 387456.37719
+  hps: 6864.47474
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-DefaultTalents-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.56494291114e+06
-  tps: 1.52472890157e+06
-  hps: 12969.01051
+  dps: 1.55860302854e+06
+  tps: 1.51849378102e+06
+  hps: 13025.5161
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-DefaultTalents-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 423897.75158
-  tps: 383645.6669
-  hps: 7127.60548
+  dps: 422990.93464
+  tps: 382837.82095
+  hps: 7094.34889
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-DefaultTalents-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 613034.367
-  tps: 456762.36142
-  hps: 8236.23892
+  dps: 611517.72329
+  tps: 455136.63129
+  hps: 8256.73637
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-DefaultTalents-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.10772159533e+06
-  tps: 1.08344478586e+06
-  hps: 11320.52055
+  dps: 1.11228349598e+06
+  tps: 1.08799654014e+06
+  hps: 11430.45169
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-DefaultTalents-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 328632.71358
-  tps: 304350.96949
-  hps: 6125.34036
+  dps: 330565.40296
+  tps: 306102.84141
+  hps: 6057.57951
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-DefaultTalents-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 408832.51407
-  tps: 322512.82947
-  hps: 6546.56969
+  dps: 408371.51135
+  tps: 322077.55475
+  hps: 6527.5728
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RoilingBlood-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.52488367386e+06
-  tps: 1.48476208532e+06
-  hps: 12927.39179
+  dps: 1.53503876557e+06
+  tps: 1.49468281083e+06
+  hps: 12859.63815
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RoilingBlood-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 430504.45506
-  tps: 390194.44621
-  hps: 7253.77552
+  dps: 430971.12581
+  tps: 390785.73268
+  hps: 7236.14431
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RoilingBlood-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 620759.6368
-  tps: 464587.74377
+  dps: 620106.89674
+  tps: 464014.94505
   hps: 8290.95557
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RoilingBlood-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.08837658838e+06
-  tps: 1.06420178789e+06
-  hps: 11158.05765
+  dps: 1.08828466186e+06
+  tps: 1.06416003477e+06
+  hps: 11249.58829
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RoilingBlood-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 343388.15191
-  tps: 318552.64922
-  hps: 6193.8239
+  dps: 344597.13704
+  tps: 319761.44641
+  hps: 6213.44876
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RoilingBlood-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 417453.38541
-  tps: 330614.02257
-  hps: 6589.43112
+  dps: 418093.05231
+  tps: 331176.93525
+  hps: 6608.42801
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicCorruption-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.48716930285e+06
-  tps: 1.44695881238e+06
-  hps: 12089.57564
+  dps: 1.50294611763e+06
+  tps: 1.46280306339e+06
+  hps: 12443.78635
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicCorruption-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 420012.47224
-  tps: 379786.48799
-  hps: 7036.86102
+  dps: 421071.32468
+  tps: 380921.48066
+  hps: 7148.59767
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicCorruption-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 607816.90196
-  tps: 452091.10137
-  hps: 8221.90774
+  dps: 608161.77521
+  tps: 452339.827
+  hps: 8201.41029
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicCorruption-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.07490645464e+06
-  tps: 1.05054136605e+06
-  hps: 10770.86482
+  dps: 1.08282174938e+06
+  tps: 1.05835272648e+06
+  hps: 10848.1399
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicCorruption-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 327652.96124
-  tps: 303050.34104
-  hps: 6032.2398
+  dps: 327557.16991
+  tps: 302980.91921
+  hps: 6062.00686
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicCorruption-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 404350.40715
-  tps: 318093.26082
-  hps: 6434.15826
+  dps: 404725.48133
+  tps: 318421.5612
+  hps: 6451.58524
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.55479523123e+06
-  tps: 1.51417222894e+06
-  hps: 12875.11477
+  dps: 1.56776955039e+06
+  tps: 1.52718505677e+06
+  hps: 13034.32451
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 420879.03194
-  tps: 380697.80877
-  hps: 7051.00937
+  dps: 420845.71259
+  tps: 380717.99157
+  hps: 7075.32846
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicEmpowerment-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 607046.33166
-  tps: 451180.30745
-  hps: 8188.77304
+  dps: 607423.60876
+  tps: 451673.74521
+  hps: 8248.57146
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.11476669034e+06
-  tps: 1.0903909507e+06
-  hps: 11321.49407
+  dps: 1.12022762231e+06
+  tps: 1.09588791825e+06
+  hps: 11605.31783
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 326521.3743
-  tps: 302070.15456
-  hps: 6011.98697
+  dps: 328091.97001
+  tps: 303538.65492
+  hps: 6039.83855
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-RunicEmpowerment-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 403278.28069
-  tps: 317339.7166
-  hps: 6467.4423
+  dps: 404801.78258
+  tps: 318837.8322
+  hps: 6429.44851
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-UnholyBlight-Basic-obliterate-FullBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.53690960411e+06
-  tps: 1.49671705377e+06
-  hps: 12990.2124
+  dps: 1.54527295627e+06
+  tps: 1.50505529776e+06
+  hps: 12908.90018
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-UnholyBlight-Basic-obliterate-FullBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 432640.51178
-  tps: 392261.02304
-  hps: 7227.85032
+  dps: 431977.46331
+  tps: 391715.51717
+  hps: 7204.82542
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-UnholyBlight-Basic-obliterate-FullBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 621839.33176
-  tps: 465643.62026
-  hps: 8231.15715
+  dps: 620819.19555
+  tps: 464663.96759
+  hps: 8270.45812
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-UnholyBlight-Basic-obliterate-NoBuffs-0.0yards-LongMultiTarget"
  value: {
-  dps: 1.0935179348e+06
-  tps: 1.06931142631e+06
-  hps: 11245.82049
+  dps: 1.09688974403e+06
+  tps: 1.07267791736e+06
+  hps: 11240.10563
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-UnholyBlight-Basic-obliterate-NoBuffs-0.0yards-LongSingleTarget"
  value: {
-  dps: 342632.1421
-  tps: 317740.32606
-  hps: 6177.33888
+  dps: 343290.32432
+  tps: 318302.18781
+  hps: 6210.59133
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-Settings-Troll-p5.2h-obliterate-UnholyBlight-Basic-obliterate-NoBuffs-0.0yards-ShortSingleTarget"
  value: {
-  dps: 417962.64368
-  tps: 331040.52795
-  hps: 6462.73255
+  dps: 419049.39531
+  tps: 332071.55173
+  hps: 6481.72944
  }
 }
 dps_results: {
  key: "TestFrostTwoHand-SwitchInFrontOfTarget-Default"
  value: {
-  dps: 389582.72854
-  tps: 352025.39594
-  hps: 6569.9447
+  dps: 389215.98178
+  tps: 351721.41011
+  hps: 6590.6151
  }
 }
