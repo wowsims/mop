@@ -1,4 +1,5 @@
 import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
+import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '../../core/proto/monk';
@@ -9,7 +10,6 @@ import DefaultP2BisGear from './gear_sets/p2_bis.gear.json';
 import DefaultP4BisGear from './gear_sets/p4_bis.gear.json';
 import DefaultP5BisGear from './gear_sets/p5_bis.gear.json';
 import DefaultPrebisGear from './gear_sets/prebis.gear.json';
-import { Player } from '../../core/player';
 
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Pre-BIS', DefaultPrebisGear);
 export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS', DefaultP2BisGear, {

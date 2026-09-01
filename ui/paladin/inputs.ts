@@ -4,6 +4,7 @@ import { Spec } from '../core/proto/common';
 import { PaladinSeal } from '../core/proto/paladin';
 import { ActionId } from '../core/proto_utils/action_id';
 import { PaladinSpecs } from '../core/proto_utils/utils';
+import { subscribePlayerChange } from '../core/state/subscriptions';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
@@ -21,5 +22,5 @@ export const StartingSealSelection = <SpecType extends PaladinSpecs>() =>
 				showWhen: player => player.isSpec(Spec.SpecRetributionPaladin),
 			},
 		],
-		changeEmitter: (player: Player<SpecType>) => player.changeEmitter,
+		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerChange(player)(onChange),
 	});

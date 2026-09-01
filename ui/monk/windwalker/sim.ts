@@ -5,15 +5,15 @@ import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/api';
+import { APLRotation } from '../../core/proto/apl';
+import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import { TypedEvent } from '../../core/typed_event';
+import { nextEventID } from '../../core/state/batch';
+import { subscribePlayerField } from '../../core/state/subscriptions';
 import * as MonkUtils from '../utils';
 import * as Presets from './presets';
-
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 	cssClass: 'windwalker-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),
@@ -144,7 +144,7 @@ export class WindwalkerMonkSimUI extends IndividualSimUI<Spec.SpecWindwalkerMonk
 		super(parentElem, player, SPEC_CONFIG);
 
 		MonkUtils.setTalentBasedSettings(player);
-		player.talentsChangeEmitter.on(() => {
+		subscribePlayerField(player, 'talentsString')(() => {
 			MonkUtils.setTalentBasedSettings(player);
 		});
 
@@ -153,7 +153,7 @@ export class WindwalkerMonkSimUI extends IndividualSimUI<Spec.SpecWindwalkerMonk
 			getEPDefaults: (player: Player<Spec.SpecWindwalkerMonk>) => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
 				if (RelativeStatCap.hasRoRo(player)) {
-					this.reforger?.setUseSoftCapBreakpoints(TypedEvent.nextEventID(), false);
+					this.reforger?.setUseSoftCapBreakpoints(nextEventID(), false);
 					if (avgIlvl >= 560) {
 						return Presets.RORO_P5_EP_PRESET.epWeights;
 					} else {

@@ -5,9 +5,9 @@ import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as Retributi
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
+import P5RetBuild from './builds/p5.build.json';
 import P5_Gear from './gear_sets/p5.gear.json';
 import Preraid_Gear from './gear_sets/preraid.gear.json';
-import P5RetBuild from './builds/p5.build.json';
 
 export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5_Gear);
 export const PRERAID_GEAR_PRESET = PresetUtils.makePresetGear('Pre-raid', Preraid_Gear);

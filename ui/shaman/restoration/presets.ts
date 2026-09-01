@@ -1,6 +1,6 @@
 import * as PresetUtils from '../../core/preset_utils.js';
 import { ConsumesSpec, Stat } from '../../core/proto/common.js';
-import { RestorationShaman_Options as RestorationShamanOptions, ShamanMajorGlyph, ShamanMinorGlyph, ShamanShield } from '../../core/proto/shaman.js';
+import { RestorationShaman_Options as RestorationShamanOptions, ShamanShield } from '../../core/proto/shaman.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import P1Gear from './gear_sets/p1.gear.json';

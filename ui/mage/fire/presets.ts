@@ -1,21 +1,21 @@
 import { Encounter } from '../../core/encounter';
 import * as PresetUtils from '../../core/preset_utils';
+import { ReforgeSettings } from '../../core/proto/api';
 import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
 import {
+	FireMage_Options as MageOptions,
 	FireMage_Rotation,
 	MageArmor,
-	FireMage_Options as MageOptions,
 	MageMajorGlyph as MajorGlyph,
 	MageMinorGlyph as MinorGlyph,
 } from '../../core/proto/mage';
-import { ReforgeSettings } from '../../core/proto/api';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
+import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
 import FireApl from './apls/fire.apl.json';
 import MasteryApl from './apls/mastery_fire.apl.json';
-import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 import P3MasteryGear from './gear_sets/mastery_fire.gear.json';
+import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
 import P5BISGear from './gear_sets/p5_bis.gear.json';
 

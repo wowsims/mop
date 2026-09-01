@@ -4,10 +4,10 @@ import { AssassinationRogue_Options as RogueOptions, RogueMajorGlyph, RogueOptio
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import AssassinationApl from './apls/assassination.apl.json';
-import PreraidGear from './gear_sets/preraid_assassination.gear.json'
 import P2Gear from './gear_sets/p2_assassination.gear.json'
 import P3Gear from './gear_sets/p3_assassination.gear.json'
 import P5Gear from './gear_sets/p5_assassination.gear.json'
+import PreraidGear from './gear_sets/preraid_assassination.gear.json'
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

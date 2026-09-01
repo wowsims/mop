@@ -155,7 +155,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAfflictionWarlock, {
 	},
 
 	autoRotation: (_player: Player<Spec.SpecAfflictionWarlock>): APLRotation => {
-		const numTargets = _player.sim.encounter.targets.length;
+		const numTargets = _player.sim.encounter.getTargets().length;
 
 		if (numTargets > 1) return Presets.APL_Multitarget.rotation.rotation!;
 

@@ -1,20 +1,15 @@
 import * as PresetUtils from '../../core/preset_utils';
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
-import {
-	DestructionWarlock_Options as WarlockOptions,
-	WarlockMajorGlyph as MajorGlyph,
-	WarlockMinorGlyph as MinorGlyph,
-	WarlockOptions_Summon as Summon,
-} from '../../core/proto/warlock';
+import { DestructionWarlock_Options as WarlockOptions, WarlockMajorGlyph as MajorGlyph, WarlockOptions_Summon as Summon } from '../../core/proto/warlock';
 import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultApl from './apls/default.apl.json';
+import P1PreBisGear from './gear_sets/p1-prebis.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
-import P1PreBisGear from './gear_sets/p1-prebis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

@@ -7,7 +7,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as HunterInputs from '../inputs';
 import * as Presets from './presets';

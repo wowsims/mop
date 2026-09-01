@@ -3,8 +3,7 @@ import { Player } from '../core/player';
 import { UnitReference, UnitReference_Type as UnitType } from '../core/proto/common';
 import { ActionId } from '../core/proto_utils/action_id';
 import { DruidSpecs } from '../core/proto_utils/utils';
-import { EventID } from '../core/typed_event';
-
+import { EventID } from '../core/state/batch';
 // Configuration for class-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
 

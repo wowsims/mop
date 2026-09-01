@@ -4,10 +4,10 @@ import { CombatRogue_Options as RogueOptions, RogueOptions_PoisonOptions } from 
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import CombatApl from './apls/combat.apl.json';
-import PreraidGear from './gear_sets/preraid_combat.gear.json';
 import P2Gear from './gear_sets/p2_combat.gear.json';
 import P3Gear from './gear_sets/p3_combat.gear.json';
 import P5Gear from './gear_sets/p5_combat.gear.json';
+import PreraidGear from './gear_sets/preraid_combat.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

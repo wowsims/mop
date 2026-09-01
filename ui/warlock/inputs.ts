@@ -4,7 +4,7 @@ import { Spec } from '../core/proto/common.js';
 import { WarlockOptions_Summon as Summon } from '../core/proto/warlock.js';
 import { ActionId } from '../core/proto_utils/action_id.js';
 import { WarlockSpecs } from '../core/proto_utils/utils';
-import i18n from '../i18n/config.js';
+import { subscribePlayerChange } from '../core/state/subscriptions';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
@@ -24,6 +24,6 @@ export const PetInput = <SpecType extends WarlockSpecs>() =>
 			{ actionId: ActionId.fromSpellId(712), value: Summon.Succubus },
 			{ actionId: ActionId.fromSpellId(697), value: Summon.Voidwalker },
 		],
-		changeEmitter: (player: Player<SpecType>) => player.changeEmitter,
+		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerChange(player)(onChange),
 	});
 

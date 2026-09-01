@@ -5,15 +5,16 @@ import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat, WeaponType } from '../../core/proto/common';
-import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { StatCapType } from '../../core/proto/api';
+import { APLRotation } from '../../core/proto/apl';
+import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { nextEventID } from '../../core/state/batch';
+import { subscribeEncounterChange, subscribePlayerChange } from '../../core/state/subscriptions';
 import * as RogueInputs from '../inputs';
 import * as Presets from './presets';
-
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 	cssClass: 'combat-rogue-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Rogue),
@@ -122,7 +123,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {
 	},
 
 	autoRotation: (player: Player<Spec.SpecCombatRogue>): APLRotation => {
-		const numTargets = player.sim.encounter.targets.length;
+		const numTargets = player.sim.encounter.getTargets().length;
 		if (numTargets >= 2) {
 			return Presets.ROTATION_PRESET_COMBAT.rotation.rotation!;
 		} else {
@@ -161,14 +162,16 @@ export class CombatRogueSimUI extends IndividualSimUI<Spec.SpecCombatRogue> {
 
 		this.reforger = new ReforgeOptimizer(this, {});
 
-		this.player.changeEmitter.on(c => {
+		subscribePlayerChange(this.player)(() => {
+			const c = nextEventID();
 			const options = this.player.getSpecOptions();
 			if (!options.classOptions!.applyPoisonsManually) {
 				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
 			}
 			this.player.setSpecOptions(c, options);
 		});
-		this.sim.encounter.changeEmitter.on(c => {
+		subscribeEncounterChange(this.sim.encounter)(() => {
+			const c = nextEventID();
 			const options = this.player.getSpecOptions();
 			if (!options.classOptions!.applyPoisonsManually) {
 				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;

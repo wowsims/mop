@@ -1,7 +1,7 @@
-import { APLRotation_Type } from '../../core/proto/apl';
-import { Player } from '../../core/player';
 import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
+import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
+import { APLRotation_Type } from '../../core/proto/apl';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '../../core/proto/death_knight';
 import { SavedTalents } from '../../core/proto/ui';
@@ -25,7 +25,7 @@ export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('F
 		makeSpecChangeWarningToast(
 			[
 				{
-					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.targets.length > 1,
+					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.getTargets().length > 1,
 					message: 'Festerblight is a single-target rotation. Use the Default rotation for multiple targets.',
 				},
 			],

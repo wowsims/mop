@@ -6,9 +6,10 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { subscribePlayerField } from '../../core/state/subscriptions';
 import * as MonkUtils from '../utils';
 import * as Presets from './presets';
 
@@ -172,7 +173,7 @@ export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk
 		super(parentElem, player, SPEC_CONFIG);
 
 		MonkUtils.setTalentBasedSettings(player);
-		player.talentsChangeEmitter.on(() => {
+		subscribePlayerField(player, 'talentsString')(() => {
 			MonkUtils.setTalentBasedSettings(player);
 		});
 

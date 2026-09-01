@@ -1,40 +1,40 @@
-import { PlayerClass } from '../core/player_class';
-import { PlayerSpec } from '../core/player_spec';
-import { ArmorType, MobType, PseudoStat, Race, Profession, SpellSchool, Stat, WeaponType, RangedWeaponType, Spec, ItemSlot } from '../core/proto/common';
-import { ResourceType } from '../core/proto/spell';
-import { RaidFilterOption, SourceFilterOption } from '../core/proto/ui';
-import { LaunchStatus } from '../core/launched_sims';
 import { BulkSimItemSlot } from '../core/bulk/utils';
 import { PresetConfigurationCategory } from '../core/components/individual_sim_ui/preset_configuration_picker';
+import { LaunchStatus } from '../core/launched_sims';
+import { PlayerClass } from '../core/player_class';
+import { PlayerSpec } from '../core/player_spec';
+import { ArmorType, ItemSlot,MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '../core/proto/common';
+import { ResourceType } from '../core/proto/spell';
+import { RaidFilterOption, SourceFilterOption } from '../core/proto/ui';
+import { resourceNames } from '../core/proto_utils/names';
 import i18n from './config';
 import {
-	getClassI18nKey,
-	getMobTypeI18nKey,
-	getRaceI18nKey,
-	getProfessionI18nKey,
-	getSpecI18nKey,
-	getTargetInputI18nKey,
-	pseudoStatI18nKeys,
-	spellSchoolI18nKeys,
-	statI18nKeys,
-	getSourceFilterI18nKey,
-	getRaidFilterI18nKey,
-	getArmorTypeI18nKey,
-	getWeaponTypeI18nKey,
-	getRangedWeaponTypeI18nKey,
-	getMasterySpellNameI18nKey,
 	aplItemLabelI18nKeys,
 	backendMetricI18nKeys as resultMetricI18nKeys,
-	resourceTypeI18nKeys,
-	getStatusI18nKey,
-	getSlotNameI18nKey,
-	protoStatNameI18nKeys,
-	getBulkSlotI18nKey,
-	getPresetConfigurationCategoryI18nKey,
 	classNameToClassKey,
+	getArmorTypeI18nKey,
+	getBulkSlotI18nKey,
+	getClassI18nKey,
+	getMasterySpellNameI18nKey,
+	getMobTypeI18nKey,
+	getPresetConfigurationCategoryI18nKey,
+	getProfessionI18nKey,
+	getRaceI18nKey,
+	getRaidFilterI18nKey,
+	getRangedWeaponTypeI18nKey,
+	getSlotNameI18nKey,
+	getSourceFilterI18nKey,
+	getSpecI18nKey,
+	getStatusI18nKey,
+	getTargetInputI18nKey,
+	getWeaponTypeI18nKey,
+	protoStatNameI18nKeys,
+	pseudoStatI18nKeys,
+	resourceTypeI18nKeys,
+	spellSchoolI18nKeys,
+	statI18nKeys,
 } from './entity_mapping';
 import { getLang, setLang, supportedLanguages } from './locale_service';
-import { resourceNames } from '../core/proto_utils/names';
 
 /**
  * Entity translation functions

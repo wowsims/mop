@@ -5,24 +5,24 @@ import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyp
 import { Stats } from '../../core/proto_utils/stats';
 import GenericApl from './apls/default.apl.json';
 import GarajalApl from './apls/garajal.apl.json';
-import ShaApl from './apls/sha.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
 import IronJuggernautApl from './apls/iron_juggernaut.apl.json';
+import ShaApl from './apls/sha.apl.json';
 import GarajalBuild from './builds/garajal_encounter_only.build.json';
-import ShaBuild from './builds/sha_encounter_only.build.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
 import IronJuggernautBuild from './builds/iron_juggernaut_encounter_only.build.json';
-import PreraidBISGear from './gear_sets/preraid.gear.json';
+import ShaBuild from './builds/sha_encounter_only.build.json';
 import PreRaidItemSwapGear from './gear_sets/p1_preraid_item_swap.gear.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
-import P2BISOffensiveGear from './gear_sets/p2_bis_offensive.gear.json';
 import P2BISItemSwapGear from './gear_sets/p2_bis_item_swap.gear.json';
-import P4ProgGear from './gear_sets/p4_prog.gear.json';
+import P2BISOffensiveGear from './gear_sets/p2_bis_offensive.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
 import P4BISOffensiveGear from './gear_sets/p4_bis_offensive.gear.json';
+import P4ProgGear from './gear_sets/p4_prog.gear.json';
 import P5BISGear from './gear_sets/p5_bis.gear.json';
 import P5BISOffensiveGear from './gear_sets/p5_bis_offensive.gear.json';
 import P5ProgGear from './gear_sets/p5_prog.gear.json';
+import PreraidBISGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

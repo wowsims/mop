@@ -1,19 +1,12 @@
 import { Encounter } from '../../core/encounter';
 import * as PresetUtils from '../../core/preset_utils.js';
-import { Class, ConsumesSpec, Debuffs, Encounter as EncounterProto, Glyphs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common.js';
-import {
-	ElementalShaman_Options as ElementalShamanOptions,
-	FeleAutocastSettings,
-	ShamanImbue,
-	ShamanMajorGlyph,
-	ShamanShield,
-} from '../../core/proto/shaman.js';
+import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common.js';
+import { ElementalShaman_Options as ElementalShamanOptions, FeleAutocastSettings, ShamanMajorGlyph, ShamanShield } from '../../core/proto/shaman.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import AoEApl from './apls/aoe.apl.json';
 import CleaveApl from './apls/cleave.apl.json';
-import P4Apl from './apls/p4.apl.json';
 import P5Apl from './apls/p5.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';

@@ -1,7 +1,6 @@
 import { Player } from '../core/player';
 import { MonkTalents } from '../core/proto/monk';
-import { TypedEvent } from '../core/typed_event';
-
+import { nextEventID } from '../core/state/batch';
 /**
  * Sets talent-based settings for monk specs, particularly target dummies
  * based on talent selections that affect targeting mechanics.
@@ -21,5 +20,5 @@ export const setTalentBasedSettings = (player: Player<any>) => {
 		targetDummies = 9;
 	}
 
-	player.getRaid()?.setTargetDummies(TypedEvent.nextEventID(), targetDummies);
+	player.getRaid()?.setTargetDummies(nextEventID(), targetDummies);
 };

@@ -44,7 +44,6 @@ export const GuardianDruidRotationConfig = {
 		// 	labelTooltip: 'Activate Stampede Haste buff at the start of each pull. Models the effects of initiating the pull with Feral Charge.',
 		// 	showWhen: (player: Player<Spec.SpecGuardianDruid>) =>
 		// 		player.getTalents().stampede > 0,
-		// 	changeEmitter: (player: Player<Spec.SpecGuardianDruid>) => TypedEvent.onAny([player.rotationChangeEmitter, player.talentsChangeEmitter]),
 		// }),
 	],
 };

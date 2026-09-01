@@ -2,32 +2,30 @@ import { Encounter } from '../../core/encounter';
 import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, Race, Spec, Stat } from '../../core/proto/common';
-import { ArcaneMage_Options as MageOptions, MageMajorGlyph as MajorGlyph, MageMinorGlyph, MageArmor } from '../../core/proto/mage';
+import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
-import { TypedEvent } from '../../core/typed_event';
+import { nextEventID } from '../../core/state/batch';
 import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
-import ArcaneCleaveApl from './apls/arcane_cleave.apl.json';
 import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';
-import PreBISGear from './gear_sets/prebis.gear.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
 import P3BISGear from './gear_sets/p3_bis.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
 import P5BISGear from './gear_sets/p5_bis.gear.json';
-
+import PreBISGear from './gear_sets/prebis.gear.json';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
 const setFrostArmor = (player: Player<Spec.SpecArcaneMage>) => {
 	const specOptions = player.getSpecOptions();
 	specOptions.classOptions!.defaultMageArmor = MageArmor.MageArmorFrostArmor;
-	player.setSpecOptions(TypedEvent.nextEventID(), specOptions);
+	player.setSpecOptions(nextEventID(), specOptions);
 };
 
 const setMageArmor = (player: Player<Spec.SpecArcaneMage>) => {
 	const specOptions = player.getSpecOptions();
 	specOptions.classOptions!.defaultMageArmor = MageArmor.MageArmorMageArmor;
-	player.setSpecOptions(TypedEvent.nextEventID(), specOptions);
+	player.setSpecOptions(nextEventID(), specOptions);
 };
 
 export const PREBIS = PresetUtils.makePresetGear('Pre-BIS', PreBISGear, { onLoad: setFrostArmor });

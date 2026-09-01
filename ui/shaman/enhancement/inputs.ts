@@ -3,8 +3,8 @@ import { Player } from '../../core/player';
 import { Spec } from '../../core/proto/common.js';
 import { ShamanImbue, ShamanSyncType } from '../../core/proto/shaman.js';
 import { ActionId } from '../../core/proto_utils/action_id.js';
+import { subscribeAll, subscribePlayerField } from '../../core/state/subscriptions';
 import i18n from '../../i18n/config.js';
-import { TypedEvent } from '../../core/typed_event';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
@@ -28,7 +28,8 @@ export const ShamanImbueOHSwap = InputHelpers.makeSpecOptionsEnumIconInput<Spec.
 		{ actionId: ActionId.fromSpellId(8033), value: ShamanImbue.FrostbrandWeapon },
 	],
 	showWhen: (player: Player<Spec.SpecEnhancementShaman>) => player.itemSwapSettings.getEnableItemSwap(),
-	changeEmitter: (player: Player<Spec.SpecEnhancementShaman>) => TypedEvent.onAny([player.specOptionsChangeEmitter, player.itemSwapSettings.changeEmitter]),
+	storeSubscribe: (player: Player<Spec.SpecEnhancementShaman>, onChange: () => void) =>
+		subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')])(onChange),
 });
 
 export const SyncTypeInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecEnhancementShaman, ShamanSyncType>({

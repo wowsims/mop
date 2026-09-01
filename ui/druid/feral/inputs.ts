@@ -1,9 +1,8 @@
 import * as InputHelpers from '../../core/components/input_helpers.js';
 import { Player } from '../../core/player.js';
-import { APLRotation_Type } from '../../core/proto/apl.js';
 import { Spec } from '../../core/proto/common.js';
 import { FeralDruid_Rotation_AplType as AplType, FeralDruid_Rotation_HotwStrategy as HotwType } from '../../core/proto/druid.js';
-import { TypedEvent } from '../../core/typed_event.js';
+import { subscribeAll, subscribePlayerField } from '../../core/state/subscriptions.js';
 import i18n from '../../i18n/config.js';
 
 // Configuration for spec-specific UI elements on the settings tab.
@@ -27,10 +26,6 @@ function ShouldShowAdvParamST(player: Player<Spec.SpecFeralDruid>): boolean {
 	return rot.manualParams && rot.rotationType == AplType.SingleTarget;
 }
 
-function ShouldShowAdvParamAoe(player: Player<Spec.SpecFeralDruid>): boolean {
-	const rot = player.getSimpleRotation();
-	return rot.manualParams && rot.rotationType == AplType.Aoe;
-}
 
 export const FeralDruidRotationConfig = {
 	inputs: [
@@ -58,7 +53,8 @@ export const FeralDruidRotationConfig = {
 			label: i18n.t('rotation_tab.options.druid.feral.use_ns.label'),
 			labelTooltip: i18n.t('rotation_tab.options.druid.feral.use_ns.tooltip'),
 			showWhen: (player: Player<Spec.SpecFeralDruid>) => player.getTalents().dreamOfCenarius,
-			changeEmitter: (player: Player<Spec.SpecFeralDruid>) => TypedEvent.onAny([player.rotationChangeEmitter, player.talentsChangeEmitter]),
+			storeSubscribe: (player: Player<Spec.SpecFeralDruid>, onChange: () => void) =>
+				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')])(onChange),
 		}),
 		InputHelpers.makeRotationEnumInput<Spec.SpecFeralDruid, HotwType>({
 			fieldName: 'hotwStrategy',
@@ -70,7 +66,8 @@ export const FeralDruidRotationConfig = {
 				{ name: i18n.t('rotation_tab.options.druid.feral.hotw_strategy.values.wrath_weaving'), value: HotwType.Wrath },
 			],
 			showWhen: (player: Player<Spec.SpecFeralDruid>) => player.getTalents().heartOfTheWild,
-			changeEmitter: (player: Player<Spec.SpecFeralDruid>) => TypedEvent.onAny([player.rotationChangeEmitter, player.talentsChangeEmitter]),
+			storeSubscribe: (player: Player<Spec.SpecFeralDruid>, onChange: () => void) =>
+				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')])(onChange),
 		}),
 		InputHelpers.makeRotationBooleanInput<Spec.SpecFeralDruid>({
 			fieldName: 'allowAoeBerserk',

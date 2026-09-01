@@ -1,13 +1,6 @@
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import {
-	DruidMajorGlyph,
-	DruidMinorGlyph,
-	FeralDruid_Options as FeralDruidOptions,
-	FeralDruid_Rotation as FeralDruidRotation,
-	FeralDruid_Rotation_AplType,
-	FeralDruid_Rotation_HotwStrategy,
-} from '../../core/proto/druid';
+import { FeralDruid_Options as FeralDruidOptions, FeralDruid_Rotation as FeralDruidRotation, FeralDruid_Rotation_AplType, FeralDruid_Rotation_HotwStrategy } from '../../core/proto/druid';
 import { SavedTalents } from '../../core/proto/ui';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

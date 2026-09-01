@@ -1,18 +1,18 @@
 import { AttackSpeedBuff } from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
+import * as Mechanics from '../../core/constants/mechanics'
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
 import { Player } from '../../core/player.js';
-import * as Mechanics from '../../core/constants/mechanics'
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
-import { TypedEvent } from '../../core/typed_event';
+import { subscribeAll, subscribePlayerField } from '../../core/state/subscriptions';
+import i18n from '../../i18n/config';
 import * as ShamanInputs from '../inputs.js';
 import * as ElementalInputs from './inputs.js';
 import * as Presets from './presets.js';
-import i18n from '../../i18n/config';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	cssClass: 'elemental-shaman-sim-ui',
@@ -22,7 +22,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	warnings: [
 		simUI => {
 			return {
-				updateOn: TypedEvent.onAny([simUI.player.specOptionsChangeEmitter, simUI.player.talentsChangeEmitter]),
+				updateOn: subscribeAll([subscribePlayerField(simUI.player, 'specOptions'), subscribePlayerField(simUI.player, 'talentsString')]),
 				getContent: () => {
 					const autocast = simUI.player.getClassOptions().feleAutocast;
 					if (
@@ -109,7 +109,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	},
 
 	autoRotation: (_player: Player<Spec.SpecElementalShaman>): APLRotation => {
-		const numTargets = _player.sim.encounter.targets.length;
+		const numTargets = _player.sim.encounter.getTargets().length;
 
 		if (numTargets > 2) return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
 		if (numTargets == 2) return Presets.ROTATION_PRESET_CLEAVE.rotation.rotation!;

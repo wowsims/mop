@@ -4,7 +4,7 @@ import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Faction, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats.js';
 // import * as DruidInputs from './inputs.js';
 import * as DruidInputs from '../inputs.js';
 import * as Presets from './presets.js';

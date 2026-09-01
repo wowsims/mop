@@ -4,10 +4,10 @@ import { RogueMajorGlyph, RogueOptions_PoisonOptions, SubtletyRogue_Options as R
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import SubtletyApl from './apls/subtlety.apl.json';
-import PreraidGear from './gear_sets/preraid_subtlety.gear.json';
 import P2Gear from './gear_sets/p2_subtlety.gear.json';
 import P3Gear from './gear_sets/p3_subtlety.gear.json';
 import P5Gear from './gear_sets/p5_subtlety.gear.json';
+import PreraidGear from './gear_sets/preraid_subtlety.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

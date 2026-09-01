@@ -1,21 +1,16 @@
-import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
+import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { ReforgeOptimizer, RelativeStatCap } from '../../core/components/suggest_reforges_action';
 import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLAction, APLListItem, APLPrepullAction, APLRotation, APLRotation_Type as APLRotationType } from '../../core/proto/apl';
-import { Cooldowns, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import {
-	FeralDruid_Rotation as DruidRotation,
-	FeralDruid_Rotation_AplType as FeralRotationType,
-	FeralDruid_Rotation_HotwStrategy as HotwStrategy,
-} from '../../core/proto/druid';
+import { Cooldowns, Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { FeralDruid_Rotation as DruidRotation, FeralDruid_Rotation_AplType as FeralRotationType, FeralDruid_Rotation_HotwStrategy as HotwStrategy } from '../../core/proto/druid';
 import * as AplUtils from '../../core/proto_utils/apl_utils';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import { TypedEvent } from '../../core/typed_event';
 import * as FeralInputs from './inputs';
 import * as Presets from './presets';
 

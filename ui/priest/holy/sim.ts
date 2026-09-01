@@ -1,12 +1,10 @@
-import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs.js';
 import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
-import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
 import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
 import { Faction, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats.js';
 import * as PriestInputs from '../inputs';
 import * as Presets from './presets.js';
 
@@ -91,7 +89,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPriest, {
 	},
 
 	autoRotation: (player: Player<Spec.SpecHolyPriest>): APLRotation => {
-		const numTargets = player.sim.encounter.targets.length;
+		const numTargets = player.sim.encounter.getTargets().length;
 		if (numTargets > 4) {
 			return Presets.ROTATION_PRESET_AOE4PLUS.rotation.rotation!;
 		} else if (numTargets > 1) {

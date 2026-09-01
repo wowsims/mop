@@ -4,14 +4,14 @@ import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl';
-import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/api';
+import { APLRotation } from '../../core/proto/apl';
+import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
+import * as MageInputs from '../inputs';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import * as FrostInputs from './inputs';
 import * as Presets from './presets';
-import * as MageInputs from '../inputs';
 
 const mageBombBreakpoints = MAGE_BREAKPOINTS.presets;
 const livingBombBreakpoints = [
@@ -157,7 +157,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 	},
 
 	autoRotation: (player: Player<Spec.SpecFrostMage>): APLRotation => {
-		const numTargets = player.sim.encounter.targets.length;
+		const numTargets = player.sim.encounter.getTargets().length;
 		if (numTargets >= 5) {
 			return Presets.ROTATION_PRESET_AOE.rotation.rotation!;
 			// } else if (numTargets >= 2) {

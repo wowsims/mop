@@ -1,6 +1,6 @@
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/proto/common';
-import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph, MonkMinorGlyph, MonkStance } from '../../core/proto/monk';
+import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '../../core/proto/monk';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
 import DefaultGear from './gear_sets/default.gear.json';

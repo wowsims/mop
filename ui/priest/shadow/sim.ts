@@ -7,7 +7,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
-import { ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as PriestInputs from '../inputs';
 import * as Presets from './presets';

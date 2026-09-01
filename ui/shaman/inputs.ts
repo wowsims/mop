@@ -10,9 +10,9 @@ import { Spec } from '../core/proto/common';
 import { ShamanImbue, ShamanShield} from '../core/proto/shaman';
 import { ActionId } from '../core/proto_utils/action_id';
 import { ShamanSpecs } from '../core/proto_utils/utils';
-import { EventID, TypedEvent } from '../core/typed_event';
+import { EventID } from '../core/state/batch';
+import { subscribeAll, subscribePlayerField } from '../core/state/subscriptions';
 import i18n from '../i18n/config';
-
 // Configuration for class-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
 
@@ -46,7 +46,8 @@ export const ShamanImbueMHSwap = <SpecType extends ShamanSpecs>() =>
 			{ actionId: ActionId.fromSpellId(8024), value: ShamanImbue.FlametongueWeapon },
 	    ],
 		showWhen: (player: Player<SpecType>) => player.itemSwapSettings.getEnableItemSwap(),
-		changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.specOptionsChangeEmitter, player.itemSwapSettings.changeEmitter]),
+		storeSubscribe: (player: Player<SpecType>, onChange: () => void) =>
+			subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')])(onChange),
 });
 
 export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<any>): ContentBlock {
@@ -69,7 +70,7 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 				newOptions.feleAutocast!.autocastFireblast = newValue
 				player.setClassOptions(eventID, newOptions);
 			},
-			changeEmitter: (player: Player<SpecType>) => player.specOptionsChangeEmitter,
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
 		});
 
 	const _fireNovaPicker = <SpecType extends ShamanSpecs>() =>
@@ -82,7 +83,7 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 				newOptions.feleAutocast!.autocastFirenova = newValue
 				player.setClassOptions(eventID, newOptions);
 			},
-			changeEmitter: (player: Player<SpecType>) => player.specOptionsChangeEmitter,
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
 		});
 
 	const _ImmolationPicker = <SpecType extends ShamanSpecs>() =>
@@ -95,7 +96,7 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 				newOptions.feleAutocast!.autocastImmolate = newValue
 				player.setClassOptions(eventID, newOptions);
 			},
-			changeEmitter: (player: Player<SpecType>) => player.specOptionsChangeEmitter,
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
 		});
 
 	const _EmpowerPicker = <SpecType extends ShamanSpecs>() =>
@@ -108,7 +109,7 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 				newOptions.feleAutocast!.autocastEmpower = newValue
 				player.setClassOptions(eventID, newOptions);
 			},
-			changeEmitter: (player: Player<SpecType>) => player.specOptionsChangeEmitter,
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
 		});
 
 	buildIconInput(feleAbilities, simUI.player, _fireBlastPicker())

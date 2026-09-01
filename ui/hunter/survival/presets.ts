@@ -4,10 +4,10 @@ import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '
 import { HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType, SurvivalHunter_Options as HunterOptions } from '../../core/proto/hunter';
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
+import SvApl from './apls/sv.apl.json';
 import P5Build from './builds/p5.build.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreRaidGear from './gear_sets/preraid.gear.json';
-import SvApl from './apls/sv.apl.json';
 
 export const PRERAID_PRESET_GEAR = PresetUtils.makePresetGear('Pre-raid', PreRaidGear);
 export const P5_PRESET_GEAR = PresetUtils.makePresetGear('P5', P5Gear);

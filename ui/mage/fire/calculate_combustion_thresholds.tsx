@@ -1,19 +1,19 @@
 import clsx from 'clsx';
+
 import { BaseModal } from '../../core/components/base_modal';
 import { Component } from '../../core/components/component';
-import { IndividualSimUI } from '../../core/individual_sim_ui';
-import { Spec } from '../../core/proto/common';
-import { AuraEventLog, SimLog, SimLogParams } from '../../core/proto_utils/logs_parser';
-import { TypedEvent } from '../../core/typed_event';
-import { FireMage_Rotation } from '../../core/proto/mage';
-import Toast from '../../core/components/toast';
 import { ProgressTrackerModal } from '../../core/components/progress_tracker_modal';
-import { sleep, sum } from '../../core/utils';
+import Toast from '../../core/components/toast';
+import { IndividualSimUI } from '../../core/individual_sim_ui';
 import { ProgressMetrics, RaidSimResult } from '../../core/proto/api';
-import i18n from '../../i18n/config';
+import { Spec } from '../../core/proto/common';
+import { FireMage_Rotation } from '../../core/proto/mage';
 import { ActionId } from '../../core/proto_utils/action_id';
+import { AuraEventLog, SimLog, SimLogParams } from '../../core/proto_utils/logs_parser';
 import { RequestTypes } from '../../core/sim_signal_manager';
-
+import { nextEventID } from '../../core/state/batch';
+import { sleep, sum } from '../../core/utils';
+import i18n from '../../i18n/config';
 interface CombustionThresholdStats {
 	p25: number;
 	p50: number;
@@ -441,7 +441,7 @@ export class CalculateCombustionThresholds extends Component {
 		const currentValues = this.simUI.player.getSimpleRotation();
 
 		const updateValues = () => {
-			this.simUI.player.setSimpleRotation(TypedEvent.nextEventID(), newValues);
+			this.simUI.player.setSimpleRotation(nextEventID(), newValues);
 			this.modal.close();
 			new Toast({
 				variant: 'success',

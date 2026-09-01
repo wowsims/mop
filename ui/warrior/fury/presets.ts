@@ -1,5 +1,5 @@
-import { Player } from '../../core/player';
 import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
+import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, HandType, ItemSlot, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';

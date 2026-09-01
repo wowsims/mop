@@ -4,21 +4,17 @@ import { BrewmasterMonk_Options as BrewmasterMonkOptions, MonkMajorGlyph, MonkMi
 import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
-import OffensiveApl from './apls/offensive.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
 import IronJuggernautApl from './apls/iron_juggernaut.apl.json';
+import OffensiveApl from './apls/offensive.apl.json';
 import HorridonBuild from './builds/horridon_encounter_only.build.json';
 import IronJuggernautBuild from './builds/iron_juggernaut_encounter_only.build.json';
-import PreBISGear from './gear_sets/prebis.gear.json';
-import P1BISDWGear from './gear_sets/p1_bis_dw.gear.json';
-import P2BISDWGear from './gear_sets/p2_bis_dw.gear.json';
-import P2BISOffensiveDWGear from './gear_sets/p2_bis_offensive_dw.gear.json';
-import P2BISOffensiveTierlessDWGear from './gear_sets/p2_bis_offensive_tierless_dw.gear.json';
 import P4BISDWGear from './gear_sets/p4_bis_dw.gear.json';
 import P4BISOffensiveDWGear from './gear_sets/p4_bis_offensive_dw.gear.json';
-import P5ProgDWGear from './gear_sets/p5_prog_dw.gear.json';
 import P5BISDWGear from './gear_sets/p5_bis_dw.gear.json';
 import P5BISOffensiveDWGear from './gear_sets/p5_bis_offensive_dw.gear.json';
+import P5ProgDWGear from './gear_sets/p5_prog_dw.gear.json';
+import PreBISGear from './gear_sets/prebis.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

@@ -4,10 +4,9 @@ import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-
-import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
-import { Faction, ItemSlot, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/api';
+import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
+import { ItemSlot, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
 import * as DruidInputs from '../inputs';

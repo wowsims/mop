@@ -5,15 +5,15 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { Mage } from '../../core/player_classes/mage';
+import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/api';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
+import * as MageInputs from '../inputs';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import * as ArcaneInputs from './inputs';
 import * as Presets from './presets';
-import * as MageInputs from '../inputs';
 
 const hasteBreakpoints = MAGE_BREAKPOINTS.presets;
 const MAX_HASTE_PERCENT_BREAKPOINT_THRESHOLD = 53.85;

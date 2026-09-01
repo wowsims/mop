@@ -3,20 +3,20 @@ import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../
 import { PaladinMajorGlyph, PaladinMinorGlyph, PaladinSeal, ProtectionPaladin_Options as ProtectionPaladinOptions } from '../../core/proto/paladin.js';
 import { SavedTalents } from '../../core/proto/ui.js';
 import { Stats } from '../../core/proto_utils/stats';
-import ShaApl from './apls/sha.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
 import IronJuggernautApl from './apls/iron_juggernaut.apl.json';
+import ShaApl from './apls/sha.apl.json';
+import HorridonBuild from './builds/horridon_encounter_only.build.json';
+import IronJuggernautBuild from './builds/iron_juggernaut_encounter_only.build.json';
+import DefaultBuild from './builds/sha_default.build.json';
+import ShaBuild from './builds/sha_encounter_only.build.json';
 import P2_Balanced_Gear from './gear_sets/p2_balanced.gear.json';
 import P2_Offensive_Gear from './gear_sets/p2_offensive.gear.json';
 import P4_Balanced_Gear from './gear_sets/p4_balanced.gear.json';
 import P4_Offensive_Gear from './gear_sets/p4_offensive.gear.json';
-import P5_Prog_Gear from './gear_sets/p5_prog.gear.json';
 import P5_Balanced_Gear from './gear_sets/p5_balanced.gear.json';
 import P5_Offensive_Gear from './gear_sets/p5_offensive.gear.json';
-import DefaultBuild from './builds/sha_default.build.json';
-import ShaBuild from './builds/sha_encounter_only.build.json';
-import HorridonBuild from './builds/horridon_encounter_only.build.json';
-import IronJuggernautBuild from './builds/iron_juggernaut_encounter_only.build.json';
+import P5_Prog_Gear from './gear_sets/p5_prog.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

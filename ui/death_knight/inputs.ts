@@ -4,8 +4,7 @@
 import { Player } from '../core/player';
 import { Spec } from '../core/proto/common';
 import { Sim } from '../core/sim';
-import { EventID } from '../core/typed_event';
-
+import { EventID } from '../core/state/batch';
 // NPC IDs of encounters whose AI casts real magic damage at raid players, so Anti-Magic
 // Shell already absorbs it through the normal path and generates Runic Power from it. Keep
 // this in sync with the boss AI types checked by DeathKnight.disableAMSIntakeOnMagicDamageEncounters
@@ -17,7 +16,7 @@ const MAGIC_DAMAGE_ENCOUNTER_NPC_IDS = [
 ];
 
 export const encounterModelsMagicDamage = (sim: Sim): boolean =>
-	sim.encounter.targets.some(target => MAGIC_DAMAGE_ENCOUNTER_NPC_IDS.includes(target.id));
+	sim.encounter.getTargets().some(target => MAGIC_DAMAGE_ENCOUNTER_NPC_IDS.includes(target.id));
 
 // Zeroes the abstract AMS intake settings whenever the selected encounter already deals
 // real magic damage, so a value configured for a different encounter can't silently keep

@@ -8,10 +8,10 @@ import MasterFrostAPL from '../../death_knight/frost/apls/masterfrost.apl.json';
 import ObliterateAPL from '../../death_knight/frost/apls/obliterate.apl.json';
 import P52hObliterateBuild from '../../death_knight/frost/builds/p5.2h-obliterate.build.json';
 import P5MasterfrostBuild from '../../death_knight/frost/builds/p5.masterfrost.build.json';
-import P5MasterfrostGear from '../../death_knight/frost/gear_sets/p5.masterfrost.gear.json';
 import P52HObliterateGear from '../../death_knight/frost/gear_sets/p5.2h-obliterate.gear.json';
-import PrebisMasterfrostGear from '../../death_knight/frost/gear_sets/prebis.masterfrost.gear.json';
+import P5MasterfrostGear from '../../death_knight/frost/gear_sets/p5.masterfrost.gear.json';
 import Prebis2HObliterateGear from '../../death_knight/frost/gear_sets/prebis.2h-obliterate.gear.json';
+import PrebisMasterfrostGear from '../../death_knight/frost/gear_sets/prebis.masterfrost.gear.json';
 
 export const P5_MASTERFROST_GEAR_PRESET = PresetUtils.makePresetGear('P5 - Masterfrost', P5MasterfrostGear);
 export const P5_2H_OBLITERATE_GEAR_PRESET = PresetUtils.makePresetGear('P5 - 2h Obliterate', P52HObliterateGear);

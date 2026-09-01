@@ -9,12 +9,12 @@ import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import { TypedEvent } from '../../core/typed_event';
+import { nextEventID } from '../../core/state/batch';
+import { subscribeEncounterChange } from '../../core/state/subscriptions';
 import * as SharedDeathKnightInputs from '../inputs';
 import * as SharedPresets from '../shared';
 import * as DeathKnightInputs from './inputs';
 import * as Presets from './presets';
-
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	cssClass: 'unholy-death-knight-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.DeathKnight),
@@ -101,7 +101,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	autoRotation(player: Player<Spec.SpecUnholyDeathKnight>): APLRotation {
 		// Festerblight (single-target disease snapshot/hold) wins on single-target;
 		// the default rotation scales better on multiple targets.
-		if (player.sim.encounter.targets.length <= 1) {
+		if (player.sim.encounter.getTargets().length <= 1) {
 			return Presets.FESTERBLIGHT_ROTATION_PRESET.rotation.rotation!;
 		}
 		return Presets.DEFAULT_ROTATION_PRESET.rotation.rotation!;
@@ -148,8 +148,8 @@ export class UnholyDeathKnightSimUI extends IndividualSimUI<Spec.SpecUnholyDeath
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecUnholyDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(TypedEvent.nextEventID(), player);
-		this.sim.encounter.changeEmitter.on(eventID => SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(eventID, player));
+		SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(nextEventID(), player);
+		subscribeEncounterChange(this.sim.encounter)(() => SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(nextEventID(), player));
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => player.getEpWeights(),
