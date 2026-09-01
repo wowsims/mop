@@ -3,6 +3,8 @@ export abstract class Component {
 
 	private disposeCallbacks: Array<() => void> = [];
 	private disposed = false;
+	// Child components disposed together with this one (cascade before own callbacks).
+	protected readonly children: Array<Component> = [];
 
 	readonly rootElem: HTMLElement;
 
@@ -18,12 +20,22 @@ export abstract class Component {
 		this.disposeCallbacks.push(callback);
 	}
 
+	addChild<C extends Component>(child: C): C {
+		this.children.push(child);
+		return child;
+	}
+
+	protected get isDisposed(): boolean {
+		return this.disposed;
+	}
+
 	dispose() {
 		if (this.disposed) {
 			return;
 		}
 		this.disposed = true;
 
+		this.children.splice(0).forEach(child => child.dispose());
 		this.disposeCallbacks.forEach(callback => callback());
 		this.disposeCallbacks = [];
 	}
