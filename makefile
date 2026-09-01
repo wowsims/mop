@@ -1,3 +1,7 @@
+# A partially written target (e.g. the two-step wasm gzip recipe killed mid-write) must
+# not be treated as up to date on the next run.
+.DELETE_ON_ERROR:
+
 OUT_DIR := dist/mop
 # Windows won't launch an extensionless binary -- air just pops a file-association prompt.
 BIN_EXT := $(shell go env GOEXE)
@@ -141,7 +145,8 @@ wasm: $(OUT_DIR)/lib.wasm.gz
 
 # Builds the generic .wasm, with all items included.
 # Published gzipped: Cloudflare Pages caps files at 25 MiB and the raw module exceeds it.
-# The worker decompresses via DecompressionStream (see ui/worker/sim_worker.ts).
+# The main thread decompresses and compiles it once (see getSharedWasmModule in
+# ui/core/worker_pool.ts) and shares the compiled module with every worker.
 $(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
 	@echo "Starting webassembly compile now..."
 	@if GOOS=js GOARCH=wasm go build -ldflags "-w -s" -o ./$(OUT_DIR)/lib.wasm ./sim/wasm/; then \
@@ -167,7 +172,7 @@ binary_dist: $(OUT_DIR)/.dirstamp
 	rm -rf binary_dist
 	mkdir -p binary_dist
 	cp -r $(OUT_DIR) binary_dist/
-	rm binary_dist/mop/lib.wasm.gz
+	rm -f binary_dist/mop/lib.wasm binary_dist/mop/lib.wasm.gz
 	rm -rf binary_dist/mop/assets/db_inputs
 	rm binary_dist/mop/assets/database/db.bin
 	rm binary_dist/mop/assets/database/leftover_db.bin

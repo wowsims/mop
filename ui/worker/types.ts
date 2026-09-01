@@ -28,7 +28,7 @@ export type AsyncSimRequest = (typeof ASYNC_SIM_REQUESTS)[number];
 /**
  * What the Worker receives from the UI
  */
-export type WorkerReceiveMessageType = keyof typeof SimRequest | 'setID';
+export type WorkerReceiveMessageType = keyof typeof SimRequest | 'setID' | 'wasmModule';
 
 export interface WorkerReceiveMessageBodyBase {
 	id: string;

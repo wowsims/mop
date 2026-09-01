@@ -41,15 +41,33 @@ const SIM_WASM_URL = `/${REPO_NAME}/lib.wasm.gz`;
 let sharedWasmModule: Promise<WebAssembly.Module> | undefined;
 const getSharedWasmModule = (): Promise<WebAssembly.Module> => {
 	sharedWasmModule ??= (async () => {
+		if (typeof DecompressionStream === 'undefined') {
+			throw new Error('This browser does not support DecompressionStream; the in-browser sim requires a current browser version.');
+		}
 		const response = await fetch(SIM_WASM_URL);
-		const [peekStream, bodyStream] = response.body!.tee();
+		if (!response.ok || !response.body) {
+			throw new Error(`Failed to fetch sim wasm module: HTTP ${response.status}`);
+		}
+		const [peekStream, bodyStream] = response.body.tee();
+		// Streams guarantee no minimum chunk size, so accumulate until the two magic bytes
+		// are available (or the stream ends) before classifying.
 		const reader = peekStream.getReader();
-		const { value } = await reader.read();
-		void reader.cancel();
-		const isGzip = !!value && value[0] === 0x1f && value[1] === 0x8b;
+		const peeked: number[] = [];
+		while (peeked.length < 2) {
+			const { value, done } = await reader.read();
+			if (done) break;
+			peeked.push(...value.slice(0, 2 - peeked.length));
+		}
+		reader.cancel().catch(() => {});
+		const isGzip = peeked[0] === 0x1f && peeked[1] === 0x8b;
 		const wasmStream = isGzip ? bodyStream.pipeThrough(new DecompressionStream('gzip')) : bodyStream;
 		return WebAssembly.compileStreaming(new Response(wasmStream, { headers: { 'Content-Type': 'application/wasm' } }));
-	})();
+	})().catch(error => {
+		// Never memoize a failure: a transient fetch error must not brick every current and
+		// future worker for the page lifetime (cf. initHiGHS in ui/worker/sim_worker.ts).
+		sharedWasmModule = undefined;
+		throw error;
+	});
 	return sharedWasmModule;
 };
 export type WorkerProgressCallback = (progressMetrics: ProgressMetrics) => void;
@@ -350,9 +368,19 @@ class SimWorker {
 					break;
 				case 'idConfirm':
 					break;
-				case 'wasmModuleRequest':
-					getSharedWasmModule().then(module => this.worker?.postMessage({ msg: 'wasmModule', module }));
+				case 'wasmModuleRequest': {
+					// Reply to the worker that asked, not whichever worker the pool slot holds
+					// by the time the module resolves (the slot can be recycled meanwhile).
+					const requestingWorker = this.worker;
+					getSharedWasmModule().then(
+						module => {
+							const reply: WorkerReceiveMessage = { msg: 'wasmModule', module };
+							requestingWorker?.postMessage(reply);
+						},
+						error => console.error('Failed to load sim wasm module:', error),
+					);
 					break;
+				}
 				default:
 					if (!id) {
 						console.warn(`Received ${msg} worker result without an id`);

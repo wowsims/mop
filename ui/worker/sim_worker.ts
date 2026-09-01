@@ -140,6 +140,7 @@ requestWasmModule()
 	.then(async instance => {
 		inst = instance;
 		await go.run(inst);
-	});
+	})
+	.catch(error => console.error('Sim wasm worker failed to start:', error));
 
 export {};
