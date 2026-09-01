@@ -139,6 +139,41 @@ export function formatDurationSeconds(seconds: number, options: FormatDurationSe
 	return `${remainingSeconds}${secondsSuffix}s`;
 }
 
+// Synchronous 64-bit string hash (FNV-1a paired with a djb2 variant). Collision-resistant
+// enough for local cache keys and content-derived seeds; unlike crypto.subtle it costs no
+// async round-trip.
+export function hashString(value: string): string {
+	let h1 = 0x811c9dc5;
+	let h2 = 0xcbf29ce4;
+	for (let i = 0; i < value.length; i++) {
+		const charCode = value.charCodeAt(i);
+		h1 = Math.imul(h1 ^ charCode, 0x01000193) >>> 0;
+		h2 = (Math.imul(h2, 33) ^ charCode) >>> 0;
+	}
+	return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
+}
+
+export const Z_95 = 1.96;
+
+// The sim's standard two-sample significance test; every "are these two results actually
+// different" decision should go through this so thresholds never diverge.
+export function zTest(
+	n1: number,
+	avg1: number,
+	stdev1: number,
+	n2: number,
+	avg2: number,
+	stdev2: number,
+	preNormalized = false,
+): { z: number; isDiff: boolean } {
+	const delta = avg1 - avg2;
+	const err1 = preNormalized ? stdev1 : stdev1 / Math.sqrt(n1);
+	const err2 = preNormalized ? stdev2 : stdev2 / Math.sqrt(n2);
+	const denom = Math.sqrt(Math.pow(err1, 2) + Math.pow(err2, 2));
+	const z = Math.abs(delta / denom);
+	return { z, isDiff: z > Z_95 };
+}
+
 // Returns the index of maximum value, or null if empty.
 export function maxIndex(arr: Array<number>): number | null {
 	return arr.reduce((cur, v, i, arr) => (v > arr[cur] ? i : cur), 0);
@@ -190,6 +225,10 @@ export function bucket<T>(arr: Array<T>, toString: (val: T) => string): Record<s
 
 export function stDevToConf90(stDev: number, N: number) {
 	return (1.645 * stDev) / Math.sqrt(N);
+}
+
+export function stDevToConf95(stDev: number, N: number) {
+	return (Z_95 * stDev) / Math.sqrt(N);
 }
 
 export function getStDev(arr: Array<number>, sample = false): number {

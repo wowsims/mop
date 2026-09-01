@@ -49,8 +49,7 @@ export const getBulkFreezeWeaponTypes = (player: Player<any>, slot: ItemSlot.Ite
 				.getPlayerClass()
 				.weaponTypes.filter(
 					eligibleWeaponType =>
-						slot === ItemSlot.ItemSlotMainHand ||
-						(playerCanDualWield && !TWO_HAND_ONLY_WEAPON_TYPES.includes(eligibleWeaponType.weaponType)),
+						slot === ItemSlot.ItemSlotMainHand || (playerCanDualWield && !TWO_HAND_ONLY_WEAPON_TYPES.includes(eligibleWeaponType.weaponType)),
 				)
 				.map(eligibleWeaponType => eligibleWeaponType.weaponType),
 		),
@@ -83,7 +82,7 @@ export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []):
 	return deduped;
 };
 
-export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | 'reforging' | null => {
+export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | 'reforging' | 'finalist' | null => {
 	switch (stage) {
 		case BulkSimStage.BulkSimStageReforge:
 			return 'reforging';
@@ -93,6 +92,8 @@ export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): Optimisati
 			return 'medium';
 		case BulkSimStage.BulkSimStageHigh:
 			return 'high';
+		case BulkSimStage.BulkSimStageFinalist:
+			return 'finalist';
 		default:
 			return null;
 	}
@@ -183,9 +184,7 @@ export const makeBulkGearDatabase = (db: Database, gearSets: Gear[], extraItems:
 };
 
 export const makeBulkItemDatabaseFromSpecs = (db: Database, baselineGear: Gear, itemSpecs: readonly ItemSpec[]): SimDatabase => {
-	const extraItems = itemSpecs
-		.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null))
-		.filter((item): item is EquippedItem => item != null);
+	const extraItems = itemSpecs.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null)).filter((item): item is EquippedItem => item != null);
 	return makeBulkGearDatabase(db, [baselineGear], extraItems);
 };
 

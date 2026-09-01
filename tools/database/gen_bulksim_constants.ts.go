@@ -80,6 +80,8 @@ export const BULK_SIM_MAX_ADAPTIVE_PASSES = {{ .MaxAdaptivePasses }};
 
 export const BULK_SIM_ADAPTIVE_MAX_ITERATION_MULTIPLIER = {{ .AdaptiveMaxIterationMultiplier }};
 
+export const BULK_SIM_FINALIST_MAX_EXTRA_ITERATION_MULTIPLIER = {{ .FinalistMaxExtraIterationMultiplier }};
+
 export const BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER = {{ .SurvivorSoftCapMultiplier }};
 
 export const BULK_SIM_LOW_STAGE_SURVIVOR_SCALE_REFERENCE = {{ .LowStageSurvivorScaleReference }};
@@ -125,16 +127,17 @@ type tsBulkStageConfig struct {
 }
 
 type tsBulkTuningConstants struct {
-	DefaultTopResults                 int32
-	MinCombinations                   int
-	CullingCoefficient                float64
-	CombinationLogMin                 float64
-	MaxAdaptivePasses                 int
-	AdaptiveMaxIterationMultiplier    int32
-	SurvivorSoftCapMultiplier         int
-	LowStageSurvivorScaleReference    int
-	MediumStageSurvivorScaleReference int
-	StageConfigs                      []tsBulkStageConfig
+	DefaultTopResults                   int32
+	MinCombinations                     int
+	CullingCoefficient                  float64
+	CombinationLogMin                   float64
+	MaxAdaptivePasses                   int
+	AdaptiveMaxIterationMultiplier      int32
+	FinalistMaxExtraIterationMultiplier int32
+	SurvivorSoftCapMultiplier           int
+	LowStageSurvivorScaleReference      int
+	MediumStageSurvivorScaleReference   int
+	StageConfigs                        []tsBulkStageConfig
 }
 
 // GenerateBulkSimTuningConstantsTSFile mirrors the Go bulk-sim tuning constants and stage
@@ -161,16 +164,17 @@ func GenerateBulkSimTuningConstantsTSFile() error {
 
 	var buf bytes.Buffer
 	if err := tpl.Execute(&buf, tsBulkTuningConstants{
-		DefaultTopResults:                 bulk.BulkSimDefaultTopResults,
-		MinCombinations:                   bulk.BulkSimMinCombinations,
-		CullingCoefficient:                bulk.BulkSimCullingCoefficient,
-		CombinationLogMin:                 bulk.BulkSimCombinationLogMin,
-		MaxAdaptivePasses:                 bulk.BulkSimMaxAdaptivePasses,
-		AdaptiveMaxIterationMultiplier:    bulk.BulkSimAdaptiveMaxIterationMultiplier,
-		SurvivorSoftCapMultiplier:         bulk.BulkSimSurvivorSoftCapMultiplier,
-		LowStageSurvivorScaleReference:    bulk.BulkSimLowStageSurvivorScaleReference,
-		MediumStageSurvivorScaleReference: bulk.BulkSimMediumStageSurvivorScaleReference,
-		StageConfigs:                      stageConfigs,
+		DefaultTopResults:                   bulk.BulkSimDefaultTopResults,
+		MinCombinations:                     bulk.BulkSimMinCombinations,
+		CullingCoefficient:                  bulk.BulkSimCullingCoefficient,
+		CombinationLogMin:                   bulk.BulkSimCombinationLogMin,
+		MaxAdaptivePasses:                   bulk.BulkSimMaxAdaptivePasses,
+		AdaptiveMaxIterationMultiplier:      bulk.BulkSimAdaptiveMaxIterationMultiplier,
+		FinalistMaxExtraIterationMultiplier: bulk.BulkSimFinalistMaxExtraIterationMultiplier,
+		SurvivorSoftCapMultiplier:           bulk.BulkSimSurvivorSoftCapMultiplier,
+		LowStageSurvivorScaleReference:      bulk.BulkSimLowStageSurvivorScaleReference,
+		MediumStageSurvivorScaleReference:   bulk.BulkSimMediumStageSurvivorScaleReference,
+		StageConfigs:                        stageConfigs,
 	}); err != nil {
 		return fmt.Errorf("failed to execute bulk tuning constants TS template: %w", err)
 	}

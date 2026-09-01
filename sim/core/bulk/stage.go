@@ -21,8 +21,8 @@ type BulkSimStageConfig struct {
 	UseConcurrentSim   bool
 }
 
-// BulkSimStageConfigs is the staging ladder; also the source for the generated TS mirror
-// (tools/database/gen_bulksim_constants.ts.go), so web and backend stay on the same tuning.
+var BulkSimFinalistStageConfig = BulkSimStageConfig{Stage: proto.BulkSimStage_BulkSimStageFinalist, UseConcurrentSim: true}
+
 var BulkSimStageConfigs = []BulkSimStageConfig{
 	{
 		Stage:              proto.BulkSimStage_BulkSimStageLow,
@@ -238,6 +238,61 @@ func getBulkSimStageMaxSurvivors(config BulkSimStageConfig, candidateCount int) 
 
 	scale := math.Sqrt(float64(candidateCount) / float64(scaleReference))
 	return max(config.MaxSurvivors, int(math.Ceil(float64(config.MaxSurvivors)*scale)))
+}
+
+// runBulkSimFinalistStage adds lockstep iterations to the displayed top results (and the
+// baseline) until every adjacent pair of the final ranking is statistically separated or the
+// extra-iteration budget is spent. The stages before this one answer "which gear sets are
+// worth ranking"; this one makes the displayed ranking itself trustworthy - without it, the
+// order of near-tied top results flips between runs with different seeds.
+//
+// When the stage runs, the returned results are the refined, DPS-sorted finalists - they ARE
+// the displayed set, so callers use them directly instead of re-selecting from the full list.
+func runBulkSimFinalistStage(request *proto.BulkSimRequest, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, topResults int, progress chan *proto.ProgressMetrics, signals simsignals.Signals) (*BulkSimCandidateResult, []*BulkSimCandidateResult, *proto.BulkSimStageMetrics) {
+	finalists := topBulkSimResults(results, topResults)
+	if len(finalists) < 2 || baseline == nil || baseline.DpsMetrics == nil {
+		return baseline, results, nil
+	}
+
+	// Total iterations run so far comes from the paired value arrays themselves, which also
+	// makes the lockstep precondition explicit: every finalist and the baseline must carry
+	// the same number of per-iteration values or pairing (and this stage) cannot help.
+	iterations := int32(len(baseline.DpsMetrics.AllValues))
+	for _, finalist := range finalists {
+		if finalist.DpsMetrics == nil || int32(len(finalist.DpsMetrics.AllValues)) != iterations {
+			return baseline, results, nil
+		}
+	}
+	if iterations == 0 || !bulkSimUnresolvedFinalistPair(finalists) {
+		return baseline, results, nil
+	}
+
+	startedAt := time.Now()
+	config := BulkSimFinalistStageConfig
+	concurrency := GetBulkSimStageConcurrency(request, config)
+	candidates := make([]BulkSimCandidate, 0, len(finalists))
+	for _, finalist := range finalists {
+		candidates = append(candidates, finalist.Candidate)
+	}
+	log.Printf("[Bulk Sim] - Stage: %s - Started\n  Finalists: %d\n  Iterations so far: %d", bulkSimStageLogName(config.Stage), len(finalists), iterations)
+
+	extraBudget := iterations * BulkSimFinalistMaxExtraIterationMultiplier
+	extraUsed := int32(0)
+	for extraUsed < extraBudget && bulkSimUnresolvedFinalistPair(finalists) {
+		if signals.Abort.IsTriggered() || hasBulkSimStageError(baseline, finalists) {
+			break
+		}
+		// Double the sample each round: the paired error shrinks with sqrt(n), so smaller
+		// steps mostly re-discover that the pair is still unresolved.
+		additionalIterations := min(iterations+extraUsed, extraBudget-extraUsed)
+		baseline, finalists = rerunBulkSimStageAdditionalIterations(request, candidates, config, progress, signals, concurrency, baseline, finalists, iterations+extraUsed, additionalIterations)
+		extraUsed += additionalIterations
+		finalists = topBulkSimResults(finalists, len(finalists))
+	}
+
+	metrics := bulkSimStageMetrics(config, candidates, finalists, baseline, iterations+extraUsed, concurrency, startedAt)
+	log.Printf("[Bulk Sim] %s", formatBulkSimStageSummary("Finished", metrics, len(finalists)))
+	return baseline, finalists, metrics
 }
 
 // Adds bounded extra iterations when the completed stage missed its target

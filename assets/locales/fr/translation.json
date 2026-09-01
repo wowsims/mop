@@ -845,6 +845,7 @@
 			"low_iteration_rounds": "Exécution des tours à faible itération",
 			"medium_iteration_rounds": "Exécution des tours à itération moyenne",
 			"high_iteration_rounds": "Exécution des tours à forte itération",
+			"finalist_iteration_rounds": "Exécution des manches de départage des finalistes",
             "iterations_complete": "{{completed}} / {{total}}<br />itérations terminées",
 			"seconds_remaining": "{{seconds}} secondes restantes",
 			"time_remaining": "Il reste {{time}}"
@@ -866,7 +867,9 @@
             "run_simulation": "Exécutez une simulation pour voir les résultats",
             "equip_button": "Équiper",
             "gear_equipped": "Équipement du lot équipé !",
-            "current_gear": "Équipement actuel"
+            "current_gear": "Équipement actuel",
+            "margin_of_error": "Intervalle de confiance à 95 % du DPS moyen. Les classements plus proches que cet écart peuvent changer d'une simulation à l'autre.",
+            "tied_group": "Statistiquement à égalité — l'ordre au sein de ce groupe peut changer d'une simulation à l'autre."
         },
         "import_modal": {
             "title": "Importation d'objets de sac",

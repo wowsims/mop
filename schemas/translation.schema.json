@@ -2990,6 +2990,9 @@
 						"high_iteration_rounds": {
 							"type": "string"
 						},
+						"finalist_iteration_rounds": {
+							"type": "string"
+						},
 						"iterations_complete": {
 							"type": "string"
 						},
@@ -3010,6 +3013,7 @@
 						"low_iteration_rounds",
 						"medium_iteration_rounds",
 						"high_iteration_rounds",
+						"finalist_iteration_rounds",
 						"iterations_complete",
 						"seconds_remaining",
 						"time_remaining"
@@ -3071,10 +3075,16 @@
 						},
 						"current_gear": {
 							"type": "string"
+						},
+						"margin_of_error": {
+							"type": "string"
+						},
+						"tied_group": {
+							"type": "string"
 						}
 					},
 					"additionalProperties": false,
-					"required": ["run_simulation", "equip_button", "gear_equipped", "current_gear"]
+					"required": ["run_simulation", "equip_button", "gear_equipped", "current_gear", "margin_of_error", "tied_group"]
 				},
 				"import_modal": {
 					"type": "object",

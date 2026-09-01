@@ -12,6 +12,9 @@ export type OptimisationStage = 'low' | 'medium' | 'high';
 export interface TopGearResult {
 	gear: Gear;
 	dpsMetrics: DistributionMetrics;
+	backendRank?: number;
+	pairedErrorToNextResult?: number;
+	pairedErrorToBaseline?: number;
 }
 
 export interface BulkSimRoundConfig {

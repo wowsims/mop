@@ -17,7 +17,7 @@ import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItem
 import { ReforgeOptimizeConfig } from '../../sim';
 import { RequestTypes } from '../../sim_signal_manager';
 import { TypedEvent } from '../../typed_event';
-import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, isExternal } from '../../utils';
+import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, isExternal, Z_95, zTest } from '../../utils';
 import SelectorModal from '../gear_picker/selector_modal';
 import { BooleanPicker } from '../pickers/boolean_picker';
 import { EnumPicker } from '../pickers/enum_picker';
@@ -778,9 +778,51 @@ export class BulkTab extends SimTab {
 			return;
 		}
 
+		const iterations = Math.max(1, this.simUI.sim.getIterations());
+		const isBaselineRow = (result: TopGearResult) => result === this.originalGearResults;
+		const pairTied = (upper: TopGearResult, lower: TopGearResult): boolean => {
+			let pairedError: number | undefined;
+			if (isBaselineRow(upper)) {
+				pairedError = lower.pairedErrorToBaseline;
+			} else if (isBaselineRow(lower)) {
+				pairedError = upper.pairedErrorToBaseline;
+			} else if (upper.backendRank !== undefined && lower.backendRank === upper.backendRank + 1) {
+				pairedError = upper.pairedErrorToNextResult;
+			}
+			if (pairedError) {
+				return Math.abs(upper.dpsMetrics.avg - lower.dpsMetrics.avg) <= Z_95 * pairedError;
+			}
+			return !zTest(iterations, upper.dpsMetrics.avg, upper.dpsMetrics.stdev, iterations, lower.dpsMetrics.avg, lower.dpsMetrics.stdev).isDiff;
+		};
+		const tieChains: TopGearResult[][] = [];
 		for (const topGearResult of this.topGearResults) {
-			new BulkSimResultRenderer(this.resultsTabElem, this.simUI, topGearResult, this.originalGearResults);
+			const currentChain = tieChains[tieChains.length - 1];
+			const previousResult = currentChain?.[currentChain.length - 1];
+			if (previousResult && pairTied(previousResult, topGearResult)) {
+				currentChain.push(topGearResult);
+			} else {
+				tieChains.push([topGearResult]);
+			}
 		}
+
+		// Build everything into a detached fragment and attach once: each renderer row is a
+		// sizeable subtree, and appending them live would relayout the tab per row.
+		const resultsFragment = document.createDocumentFragment();
+		for (const chain of tieChains) {
+			let container: HTMLElement | DocumentFragment = resultsFragment;
+			if (chain.length > 1) {
+				container = (
+					<div className="bulk-results-tie-group">
+						<span className="mb-4">{i18n.t('bulk_tab.results.tied_group')}</span>
+					</div>
+				) as HTMLElement;
+				resultsFragment.appendChild(container);
+			}
+			for (const topGearResult of chain) {
+				new BulkSimResultRenderer(container, this.simUI, topGearResult, this.originalGearResults);
+			}
+		}
+		this.resultsTabElem.appendChild(resultsFragment);
 
 		this.resultsTab.show();
 	}

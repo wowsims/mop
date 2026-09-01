@@ -9,19 +9,18 @@ import (
 )
 
 const (
-	BulkSimDefaultTopResults                         = 5
-	BulkSimMinCombinations                           = 20
-	BulkSimCullingCoefficient                        = 1.35
-	bulkSimLowStageConcurrencyFactor                 = 2
-	BulkSimCombinationLogMin                 float64 = 10
-	BulkSimMaxAdaptivePasses                         = 2
-	BulkSimAdaptiveMaxIterationMultiplier            = 4
-	BulkSimSurvivorSoftCapMultiplier                 = 2
-	BulkSimLowStageSurvivorScaleReference            = 1000
-	BulkSimMediumStageSurvivorScaleReference         = 100
-	// BulkSimProgressThrottle is the minimum interval between progress emits; shared with the
-	// sim/web reforge pre-pass so both stage streams update at the same rate.
-	BulkSimProgressThrottle = 100 * time.Millisecond
+	BulkSimDefaultTopResults                           = 5
+	BulkSimMinCombinations                             = 20
+	BulkSimCullingCoefficient                          = 1.35
+	bulkSimLowStageConcurrencyFactor                   = 2
+	BulkSimCombinationLogMin                   float64 = 10
+	BulkSimMaxAdaptivePasses                           = 2
+	BulkSimAdaptiveMaxIterationMultiplier              = 4
+	BulkSimFinalistMaxExtraIterationMultiplier         = 3 // The extra iterations the finalist stage may add per finalist
+	BulkSimSurvivorSoftCapMultiplier                   = 2
+	BulkSimLowStageSurvivorScaleReference              = 1000
+	BulkSimMediumStageSurvivorScaleReference           = 100
+	BulkSimProgressThrottle                            = 100 * time.Millisecond // Minimum interval between progress emits
 )
 
 type BulkSimCandidate struct {
@@ -179,9 +178,36 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 		latestResults = []*BulkSimCandidateResult{}
 	}
 
+	// Finalist refinement: add lockstep iterations to the displayed top results until their
+	// ranking is statistically separated (or the budget runs out), so near-ties do not flip
+	// order between runs with different seeds.
+	var finalistMetrics *proto.BulkSimStageMetrics
+	latestBaseline, latestResults, finalistMetrics = runBulkSimFinalistStage(request, latestBaseline, latestResults, topResults, progress, signals)
+	if finalistMetrics != nil {
+		result.StageMetrics = append(result.StageMetrics, finalistMetrics)
+		setBulkSimStageTiming(result.Timings, proto.BulkSimStage_BulkSimStageFinalist, finalistMetrics.DurationSeconds)
+	}
+	if signals.Abort.IsTriggered() {
+		result.Error = bulkSimAbortedError()
+		return result
+	}
+
 	result.Baseline = bulkSimCandidateResultToProto(latestBaseline)
-	for _, candidateResult := range topBulkSimResults(latestResults, topResults) {
-		result.TopResults = append(result.TopResults, bulkSimCandidateResultToProto(candidateResult))
+	top := topBulkSimResults(latestResults, topResults)
+	for idx, candidateResult := range top {
+		protoResult := bulkSimCandidateResultToProto(candidateResult)
+		// Paired errors for the ranking display: candidates share seed sequences, so the
+		// uncertainty of a DPS *difference* is the paired standard error - far tighter than
+		// what the per-result stdev suggests. Computed here, before AllValues are stripped.
+		if idx+1 < len(top) {
+			if pairedError, ok := bulkSimPairedDpsError(top[idx+1].DpsMetrics, candidateResult.DpsMetrics); ok {
+				protoResult.PairedErrorToNextResult = pairedError
+			}
+		}
+		if pairedError, ok := bulkSimPairedDpsError(candidateResult.DpsMetrics, latestBaseline.DpsMetrics); ok {
+			protoResult.PairedErrorToBaseline = pairedError
+		}
+		result.TopResults = append(result.TopResults, protoResult)
 	}
 
 	result.Timings.SimmingSeconds = time.Since(simmingStartedAt).Seconds()

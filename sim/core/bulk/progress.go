@@ -107,6 +107,8 @@ func setBulkSimStageTiming(timings *proto.BulkSimTimings, stage proto.BulkSimSta
 		timings.MediumStageSeconds = durationSeconds
 	case proto.BulkSimStage_BulkSimStageHigh:
 		timings.HighStageSeconds = durationSeconds
+	case proto.BulkSimStage_BulkSimStageFinalist:
+		timings.FinalistStageSeconds = durationSeconds
 	}
 }
 
@@ -169,6 +171,8 @@ func bulkSimStageLogName(stage proto.BulkSimStage) string {
 		return "medium"
 	case proto.BulkSimStage_BulkSimStageHigh:
 		return "high"
+	case proto.BulkSimStage_BulkSimStageFinalist:
+		return "finalist"
 	default:
 		return stage.String()
 	}

@@ -20,9 +20,9 @@ import { shouldUseLegacyBulkSim } from './estimate';
 import { bulkSimCandidateResultToProto } from './merge';
 import { formatBulkSimStageSummary } from './progress';
 import { optimizeReforgeCandidates } from './reforge';
-import { bulkSimStageConfigs, runConcurrentBulkSimStage, shouldRunBulkSimStage } from './stage';
-import { selectBulkSimSurvivors, topBulkSimResults } from './statistics';
-import { ConcurrentBulkSimCandidateResult,getBulkSimBaselineGear } from './types';
+import { bulkSimStageConfigs, runConcurrentBulkSimFinalistStage, runConcurrentBulkSimStage, shouldRunBulkSimStage } from './stage';
+import { bulkSimPairedDpsError, selectBulkSimSurvivors, topBulkSimResults } from './statistics';
+import { ConcurrentBulkSimCandidateResult, getBulkSimBaselineGear } from './types';
 
 const makeAndSendBulkSimError = (
 	err: string | ErrorOutcome,
@@ -162,10 +162,31 @@ export const runConcurrentBulkSim = async (
 		if (latestBaseline.error) return makeAndSendBulkSimError(latestBaseline.error, onProgress);
 	}
 
+	// Finalist refinement: add lockstep iterations to the displayed top results until their
+	// ranking is statistically separated (or the budget runs out), so near-ties do not flip
+	// order between runs with different seeds.
+	const finalistResult = await runConcurrentBulkSimFinalistStage(request, latestBaseline, latestResults, topResults, workerPool, onProgress, signals);
+	latestBaseline = finalistResult.baseline;
+	latestResults = finalistResult.results;
+	if (finalistResult.metrics) {
+		result.stageMetrics.push(finalistResult.metrics);
+		result.timings!.finalistStageSeconds = finalistResult.metrics.durationSeconds;
+	}
+	if (signals.abort.isTriggered()) return makeAndSendBulkSimError(ErrorOutcome.create({ type: ErrorOutcomeType.ErrorOutcomeAborted }), onProgress);
+
 	result.baseline = bulkSimCandidateResultToProto(latestBaseline);
-	result.topResults = topBulkSimResults(latestResults, topResults)
-		.map(bulkSimCandidateResultToProto)
-		.filter((result): result is BulkGearResult => result != undefined);
+	// When the finalist stage ran, latestResults already IS the refined, sorted display set.
+	const top = topBulkSimResults(latestResults, topResults);
+	const finalBaseline = latestBaseline;
+	result.topResults = top.flatMap((candidateResult, idx) => {
+		const protoResult = bulkSimCandidateResultToProto(candidateResult);
+		if (!protoResult) return [];
+		if (idx + 1 < top.length) {
+			protoResult.pairedErrorToNextResult = bulkSimPairedDpsError(top[idx + 1].dpsMetrics, candidateResult.dpsMetrics) ?? 0;
+		}
+		protoResult.pairedErrorToBaseline = bulkSimPairedDpsError(candidateResult.dpsMetrics, finalBaseline.dpsMetrics) ?? 0;
+		return [protoResult];
+	});
 	result.timings!.simmingSeconds = (new Date().getTime() - simmingStartedAt) / 1000;
 	result.timings!.totalSeconds = (new Date().getTime() - startedAt) / 1000;
 

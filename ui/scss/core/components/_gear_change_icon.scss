@@ -1,0 +1,45 @@
+.gear-change-icon {
+	--reforge-glyph-size: 50%;
+	--reforge-glyph-border-size: 107.5%;
+
+	.gear-change-icon-frame {
+		position: relative;
+		width: fit-content;
+	}
+
+	.gear-change-icon-link {
+		position: absolute;
+		inset: 0;
+	}
+
+	.gear-change-icon-reforge {
+		position: absolute;
+		top: var(--spacer-1);
+		left: 50%;
+		transform: translate(-50%, 0);
+		width: var(--reforge-glyph-size);
+		height: var(--reforge-glyph-size);
+		background:
+			center / var(--reforge-glyph-border-size) url('https://wow.zamimg.com/images/Icon/medium/border/default.png') no-repeat,
+			center / contain url('https://wow.zamimg.com/images/wow/interface/cursor/crosshair/reforge.png') no-repeat;
+		background-color: var(--bs-gray-800);
+		border-radius: 3px;
+	}
+
+	.gem-socket-container {
+		--changed-socket-marker-size: calc(var(--gem-width) * 0.7);
+
+		background-size: contain;
+		background-repeat: no-repeat;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		letter-spacing: 0;
+	}
+
+	.fa-exclamation-circle {
+		margin-left: 1px;
+		font-size: var(--changed-socket-marker-size);
+		color: var(--bs-danger);
+	}
+}

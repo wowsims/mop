@@ -3,19 +3,18 @@ import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
-import { translateSlotName, translateStat } from '../../i18n/localization';
+import { translateSlotName } from '../../i18n/localization';
 import { trackEvent, trackPageView } from '../../tracking/utils';
 import * as Mechanics from '../constants/mechanics.js';
 import { SimSettingCategories } from '../constants/sim_settings';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
 import { Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '../proto/api';
-import { Class, Debuffs, GemColor, ItemQuality, ItemSlot, PartyBuffs, Profession, PseudoStat, RaidBuffs, Spec, Stat } from '../proto/common';
-import { IndividualSimSettings,UIGem as Gem } from '../proto/ui';
+import { Class, Debuffs, GemColor, ItemQuality, ItemSlot, PartyBuffs, Profession, RaidBuffs, Spec, Stat } from '../proto/common';
+import { IndividualSimSettings, UIGem as Gem } from '../proto/ui';
 import { Database } from '../proto_utils/database';
 import { EquippedItem } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
-import { getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
 import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
 import { getReforgeCacheGearKey } from '../proto_utils/utils';
@@ -26,18 +25,13 @@ import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
 import { distinct, isDevMode } from '../utils';
 import { CopyButton } from './copy_button';
-import { getEmptySlotIconUrl } from './gear_picker/utils';
+import { buildGearChangeIcon } from './gear_change_icon';
 import { BooleanPicker } from './pickers/boolean_picker';
 import { EnumPicker } from './pickers/enum_picker';
 import { NumberPicker, NumberPickerConfig } from './pickers/number_picker';
 import { ProgressTrackerModal } from './progress_tracker_modal';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
 import Toast from './toast';
-
-type GemData = {
-	gem: Gem;
-	isJC: boolean;
-};
 
 const INCLUDED_STATS = [
 	Stat.StatHitRating,
@@ -1089,10 +1083,9 @@ export class ReforgeOptimizer {
 	// The optimizer config a solve depends on: everything except per-run identity
 	// (requestId, debug, mode) and the raid, which is keyed separately. Gem options are
 	// order-normalized so equal sets hash equally.
-	private static cacheRelevantReforgeRequest(reforgeRequest: ReforgeOptimizeRequest): ReforgeOptimizeRequest {
-		const configForHash = ReforgeOptimizeRequest.clone(reforgeRequest);
+	static cacheRelevantReforgeRequest(reforgeRequest: ReforgeOptimizeRequest): ReforgeOptimizeRequest {
+		const configForHash = ReforgeOptimizeRequest.clone({ ...reforgeRequest, raid: undefined } as ReforgeOptimizeRequest);
 		configForHash.requestId = '';
-		configForHash.raid = undefined;
 		configForHash.debug = false;
 		configForHash.mode = ReforgeOptimizeMode.ReforgeOptimizeModeSingle;
 		configForHash.gemOptions = configForHash.gemOptions.sort((a, b) => a.id - b.id);
@@ -1253,109 +1246,7 @@ export class ReforgeOptimizer {
 				<ul className="suggest-reforges-gear-list list-reset">
 					{itemSlots.map(slot => {
 						const item = changedSlots.get(slot);
-						const slotName = translateSlotName(slot);
-						const iconRef = ref<HTMLDivElement>();
-						const reforgeRef = ref<HTMLDivElement>();
-						const socketsContainerRef = ref<HTMLDivElement>();
-						const itemElement = (
-							<div className="item-picker-root">
-								<div
-									ref={iconRef}
-									className="item-picker-icon-wrapper"
-									style={{
-										backgroundImage: `url('${getEmptySlotIconUrl(slot)}')`,
-									}}>
-									<div ref={reforgeRef} className="suggest-reforges-gear-reforge interactive d-none"></div>
-									<div ref={socketsContainerRef} className="item-picker-sockets-container"></div>
-								</div>
-							</div>
-						);
-
-						if (item) {
-							item.asActionId()
-								.fill(undefined)
-								.then(filledId => {
-									filledId.setBackground(iconRef.value!);
-								});
-
-							const previousItem = this.previousGear?.getEquippedItem(slot);
-							const previousReforge = previousItem?.reforge;
-							const previousGems = previousItem?.gems;
-
-							const { reforge, gems } = item;
-
-							if (reforge || previousReforge) {
-								let message: Element;
-								if (reforge) {
-									const { fromStat, toStat } = reforge;
-									const fromText = translateStat(fromStat);
-									const toText = translateStat(toStat);
-									message = (
-										<>
-											{fromText} → {toText}
-										</>
-									);
-								} else {
-									message = <>{i18n.t('gear_tab.reforge_success.removed_reforge')}</>;
-								}
-
-								reforgeRef.value?.classList.remove('d-none');
-								tippy(reforgeRef.value!, {
-									content: (
-										<>
-											<strong>{slotName}</strong>
-											<br />
-											{message}
-										</>
-									),
-								});
-							}
-
-							if (gems || previousGems) {
-								const changedGems: number[] = [];
-								previousItem?.gemSockets.forEach((_, socketIdx) => {
-									const previousGem = previousGems ? previousGems[socketIdx] : undefined;
-									const currentGem = gems ? gems[socketIdx] : undefined;
-									if (previousGem?.id !== currentGem?.id) {
-										changedGems.push(socketIdx);
-									}
-								});
-
-								item.allSocketColors().forEach((socketColor, gemIdx) => {
-									const hasChangedSocket = changedGems.includes(gemIdx);
-									const socketRef = ref<HTMLDivElement>();
-									const gemName = gems[gemIdx]?.name;
-									socketsContainerRef.value?.appendChild(
-										<div
-											ref={socketRef}
-											className={clsx('gem-socket-container', hasChangedSocket && 'interactive')}
-											style={{
-												backgroundImage: `url(${getEmptyGemSocketIconUrl(socketColor)})`,
-											}}>
-											{hasChangedSocket && (
-												<>
-													<i className={'d-block fas fa-exclamation-circle'}></i>
-												</>
-											)}
-										</div>,
-									);
-									if (hasChangedSocket && gemName)
-										tippy(socketRef.value!, {
-											content: (
-												<>
-													<strong>
-														{slotName} - Socket {gemIdx + 1}
-													</strong>
-													<br />
-													{gemName}
-												</>
-											),
-										});
-								});
-							}
-						}
-
-						return <li>{itemElement}</li>;
+						return <li>{buildGearChangeIcon(this.player, slot, item, this.previousGear?.getEquippedItem(slot) ?? undefined)}</li>;
 					})}
 				</ul>
 				<div ref={copyButtonContainerRef} />

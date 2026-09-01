@@ -64,7 +64,7 @@ import { extendPlayerProtoWithMissingEffects, getReforgeCacheGearKey, hasBlacksm
 import { Raid } from './raid.js';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { EventID, TypedEvent } from './typed_event.js';
-import { distinct, getEnumValues, isExternal, noop, sleep } from './utils.js';
+import { distinct, getEnumValues, hashString, isExternal, noop, sleep } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
 
@@ -478,6 +478,27 @@ export class Sim {
 
 			const baselineGear = prepareGear(this.raid.getActivePlayers()[0].getGear());
 			const bulkReforgeRequest = reforgeConfig ? this.makeBulkSimReforgeRequest(reforgeConfig) : undefined;
+			if (!this.getFixedRngSeed()) {
+				// Derive the seed from the run's content instead of Math.random(): the same
+				// setup then reproduces bit-identical results (the whole pipeline is
+				// deterministic given a seed), while any change to the setup draws a fresh
+				// sample. An explicit fixed RNG seed still takes precedence above. The three
+				// parts are hashed individually (they are already JSON) and the digests
+				// combined, avoiding a second full serialization pass.
+				const contentHash = hashString(
+					hashString(EquipmentSpec.toJsonString(baselineGear.asSpec())) +
+						hashString(bulkSettings ? BulkSettings.toJsonString(bulkSettings) : String(gearSets.length)) +
+						hashString(
+							bulkReforgeRequest ? ReforgeOptimizeRequest.toJsonString(ReforgeOptimizer.cacheRelevantReforgeRequest(bulkReforgeRequest)) : '',
+						),
+				);
+				const contentSeed = Number(BigInt('0x' + contentHash.slice(0, 8)));
+				baseRequest.simOptions!.randomSeed = BigInt(contentSeed);
+				// makeRaidSimRequest already drew and recorded a random seed; overwrite the
+				// record too so getLastUsedRngSeed() reflects the seed actually used.
+				this.lastUsedRngSeed = contentSeed;
+				this.lastUsedRngSeedChangeEmitter.emit(TypedEvent.nextEventID());
+			}
 			const useWasmBulkSim = await this.isWasm();
 			const backendBuildCandidates = !useWasmBulkSim && !!bulkSettings;
 			const preparedGearSets = gearSets.map(prepareGear);

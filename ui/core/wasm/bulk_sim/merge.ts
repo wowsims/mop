@@ -104,8 +104,11 @@ export const bulkSimCandidateResultToProto = (result: ConcurrentBulkSimCandidate
 	if (!result) return undefined;
 	let dpsMetrics = result.dpsMetrics;
 	if (dpsMetrics && dpsMetrics.allValues.length > 0) {
-		dpsMetrics = DistributionMetrics.clone(dpsMetrics);
+		const allValues = dpsMetrics.allValues;
 		dpsMetrics.allValues = [];
+		const clone = DistributionMetrics.clone(dpsMetrics);
+		dpsMetrics.allValues = allValues;
+		dpsMetrics = clone;
 	}
 	return BulkGearResult.create({
 		candidateIndex: result.candidate.index,

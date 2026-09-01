@@ -847,7 +847,8 @@
 			"high_iteration_rounds": "Running high iteration rounds",
 			"iterations_complete": "{{completed}} / {{total}}<br />iterations complete",
 			"seconds_remaining": "{{seconds}} seconds remaining",
-			"time_remaining": "{{time}} remaining"
+			"time_remaining": "{{time}} remaining",
+			"finalist_iteration_rounds": "Running finalist tie-breaker rounds"
 		},
 		"notifications": {
 			"bulk_sim_cancelled": "Bulk sim cancelled.",
@@ -866,7 +867,9 @@
 			"run_simulation": "Run a simulation to view results",
 			"equip_button": "Equip",
 			"gear_equipped": "Batch gear equipped!",
-			"current_gear": "Current Gear"
+			"current_gear": "Current Gear",
+			"margin_of_error": "95% confidence interval of the mean DPS. Rankings closer than this can change between runs.",
+			"tied_group": "Statistically tied — the order within this group can change between runs"
 		},
 		"import_modal": {
 			"title": "Bag Item Import",

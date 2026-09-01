@@ -414,7 +414,8 @@ enum BulkSimStage {
 	BulkSimStageLow = 3;
 	BulkSimStageMedium = 4;
 	BulkSimStageHigh = 5;
-	BulkSimStageComplete = 6;
+	BulkSimStageFinalist = 6;
+	BulkSimStageComplete = 7;
 }
 
 message BulkSimRequest {
@@ -570,6 +571,12 @@ message BulkGearResult {
 	int32 candidate_index = 1;
 	EquipmentSpec gear = 2;
 	DistributionMetrics dps_metrics = 3;
+	// Standard error of the mean per-iteration DPS difference vs the next-ranked top result
+	// (candidates share seed sequences, so ranking questions use this paired error, which is
+	// far tighter than the per-result stdev). 0 when the runs could not be paired.
+	double paired_error_to_next_result = 4;
+	// Same, vs the baseline (currently equipped) gear.
+	double paired_error_to_baseline = 5;
 }
 
 message BulkSimStageMetrics {
@@ -591,6 +598,7 @@ message BulkSimTimings {
 	double low_stage_seconds = 3;
 	double medium_stage_seconds = 4;
 	double high_stage_seconds = 5;
+	double finalist_stage_seconds = 6;
 }
 
 message AbortRequest {
