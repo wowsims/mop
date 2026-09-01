@@ -770,6 +770,7 @@ export class BulkTab extends SimTab {
 
 	private resetResultsTabContent() {
 		this.resultsTabElem.replaceChildren();
+		this.setupTab.show();
 	}
 
 	private buildResultsTabContent() {
