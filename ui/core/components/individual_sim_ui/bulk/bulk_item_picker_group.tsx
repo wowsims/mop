@@ -7,7 +7,7 @@ import { BulkTab } from '../bulk_tab';
 import BulkItemPicker from './bulk_item_picker';
 import { translateBulkSlotName } from '../../../../i18n/localization';
 import { getBulkSlotI18nKey } from '../../../../i18n/entity_mapping';
-import { BulkSimItemSlot } from './utils';
+import { BulkSimItemSlot } from '../../../bulk/utils';
 
 export default class BulkItemPickerGroup extends ContentBlock {
 	readonly simUI: IndividualSimUI<any>;

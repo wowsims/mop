@@ -24,6 +24,7 @@ import { RequestTypes } from '../sim_signal_manager';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
 import { distinct, isDevMode } from '../utils';
+import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '../state/reforge_request';
 import { CopyButton } from './copy_button';
 import { buildGearChangeIcon } from './gear_change_icon';
 import { BooleanPicker } from './pickers/boolean_picker';
@@ -1058,69 +1059,11 @@ export class ReforgeOptimizer {
 	// stale reforges are served silently - and an irrelevant field left in busts every
 	// user's cache on unrelated changes.
 
-	// The player state a reforge solve depends on: the listed setting categories, plus bonus
-	// stats and item-swap config, minus fields that are either keyed separately (equipment),
-	// derivable (database), or irrelevant to a solve.
-	private static cacheRelevantPlayerProto(player: Player<any>): PlayerProtoMessageType {
-		const playerProto = player.toProto(true, false, [
-			SimSettingCategories.Talents,
-			SimSettingCategories.Consumes,
-			SimSettingCategories.External,
-			SimSettingCategories.Miscellaneous,
-		]);
-		playerProto.bonusStats = player.getBonusStats().toProto();
-		playerProto.enableItemSwap = player.itemSwapSettings.getEnableItemSwap();
-		playerProto.itemSwap = player.itemSwapSettings.toProto();
-		playerProto.equipment = undefined;
-		playerProto.database = undefined;
-		playerProto.channelClipDelayMs = 0;
-		playerProto.inFrontOfTarget = false;
-		playerProto.distanceFromTarget = 0;
-		playerProto.healingModel = undefined;
-		return playerProto;
-	}
-
-	// The optimizer config a solve depends on: everything except per-run identity
-	// (requestId, debug, mode) and the raid, which is keyed separately. Gem options are
-	// order-normalized so equal sets hash equally.
-	static cacheRelevantReforgeRequest(reforgeRequest: ReforgeOptimizeRequest): ReforgeOptimizeRequest {
-		const configForHash = ReforgeOptimizeRequest.clone({ ...reforgeRequest, raid: undefined } as ReforgeOptimizeRequest);
-		configForHash.requestId = '';
-		configForHash.debug = false;
-		configForHash.mode = ReforgeOptimizeMode.ReforgeOptimizeModeSingle;
-		configForHash.gemOptions = configForHash.gemOptions.sort((a, b) => a.id - b.id);
-		return configForHash;
-	}
-
-	static async getConfigHash({
-		player,
-		reforgeRequest,
-		raidBuffs,
-		partyBuffs,
-		debuffs,
-	}: {
-		player: Player<any>;
-		reforgeRequest: ReforgeOptimizeRequest;
-		raidBuffs: RaidBuffs;
-		partyBuffs: PartyBuffs | undefined;
-		debuffs: Debuffs;
-	}): Promise<string> {
-		return ReforgeGearCache.getHash({
-			player: PlayerProtoMessageType.toJsonString(ReforgeOptimizer.cacheRelevantPlayerProto(player)),
-			raid: {
-				buffs: RaidBuffs.toJsonString(raidBuffs),
-				partyBuffs: partyBuffs ? PartyBuffs.toJsonString(partyBuffs) : null,
-				debuffs: Debuffs.toJsonString(debuffs),
-			},
-			optimizer: ReforgeOptimizeRequest.toJsonString(ReforgeOptimizer.cacheRelevantReforgeRequest(reforgeRequest)),
-		});
-	}
-
 	// Builds the ReforgeOptimizeRequest used as the config portion of the cache key.
 	// Excludes raid and gear — those are separate components of the cache key.
 	getReforgeRequestForHash(config: ReforgeOptimizeConfig): ReforgeOptimizeRequest {
 		return ReforgeOptimizeRequest.create({
-			...ReforgeOptimizer.makeReforgeConfigRequestFields(config, this.sim.db),
+			...makeReforgeConfigRequestFields(config, this.sim.db),
 		});
 	}
 
@@ -1131,7 +1074,7 @@ export class ReforgeOptimizer {
 
 		const config = this.getReforgeOptimizeConfig(previousGear);
 		const cache = ReforgeGearCache.get(this.player.getPlayerSpec());
-		const configHash = await ReforgeOptimizer.getConfigHash({
+		const configHash = await getReforgeConfigHash({
 			player: this.player,
 			reforgeRequest: this.getReforgeRequestForHash(config),
 			raidBuffs: this.sim.raid.getBuffs(),
@@ -1180,51 +1123,6 @@ export class ReforgeOptimizer {
 		return unitStat.equalsStat(Stat.StatMasteryRating)
 			? ((value / Mechanics.MASTERY_RATING_PER_MASTERY_POINT) * this.player.getMasteryPerPointModifier()).toFixed(2)
 			: unitStat.convertDefaultUnitsToPercent(value)!.toFixed(2);
-	}
-
-	static getReforgeGemOptions(db: Database, settings: ReforgeSettings): Gem[] {
-		return settings.includeGems
-			? distinct(
-					[
-						GemColor.GemColorPrismatic,
-						GemColor.GemColorShaTouched,
-						GemColor.GemColorCogwheel,
-						GemColor.GemColorRed,
-						GemColor.GemColorBlue,
-						GemColor.GemColorYellow,
-					]
-						.flatMap(socketColor => db.getGems(socketColor))
-						.filter(gem => !gem.name.includes('Perfect') && gem.quality >= ItemQuality.ItemQualityRare)
-						.flat(),
-					(a, b) => a.id == b.id,
-				)
-			: [];
-	}
-
-	static makeReforgeConfigRequestFields(config: ReforgeOptimizeConfig, db: Database) {
-		return {
-			preCapEpWeights: config.preCapEPWeights.toProto(),
-			undershootCaps: config.undershootCaps.toProto(),
-			settings: config.settings,
-			softCaps: config.softCaps.map(softCap => ({
-				unitStat: softCap.unitStat.toProto(),
-				breakpoints: softCap.breakpoints.slice(),
-				capType: softCap.capType,
-				postCapEPs: softCap.postCapEPs.slice(),
-			})),
-			gemOptions: ReforgeOptimizer.getReforgeGemOptions(db, config.settings).map(gem => ({
-				id: gem.id,
-				name: gem.name,
-				icon: gem.icon,
-				color: gem.color,
-				stats: gem.stats.slice(),
-				phase: gem.phase,
-				quality: gem.quality ?? ItemQuality.ItemQualityJunk,
-				unique: gem.unique,
-				requiredProfession: gem.requiredProfession ?? Profession.ProfessionUnknown,
-				disabledInChallengeMode: gem.disabledInChallengeMode,
-			})),
-		};
 	}
 
 	onReforgeDone() {

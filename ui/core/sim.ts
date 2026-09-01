@@ -10,9 +10,9 @@ import {
 	makeBulkItemDatabaseFromSpecs,
 	throwIfAborted,
 	writeBulkSimReforgeCacheResults,
-} from './components/individual_sim_ui/bulk/utils';
-import { ReforgeOptimizer } from './components/suggest_reforges_action';
+} from './bulk/utils';
 import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
+import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
 import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
@@ -489,7 +489,7 @@ export class Sim {
 					hashString(EquipmentSpec.toJsonString(baselineGear.asSpec())) +
 						hashString(bulkSettings ? BulkSettings.toJsonString(bulkSettings) : String(gearSets.length)) +
 						hashString(
-							bulkReforgeRequest ? ReforgeOptimizeRequest.toJsonString(ReforgeOptimizer.cacheRelevantReforgeRequest(bulkReforgeRequest)) : '',
+							bulkReforgeRequest ? ReforgeOptimizeRequest.toJsonString(cacheRelevantReforgeRequest(bulkReforgeRequest)) : '',
 						),
 				);
 				const contentSeed = Number(BigInt('0x' + contentHash.slice(0, 8)));
@@ -852,7 +852,7 @@ export class Sim {
 		const signals = this.signalManager.registerRunning(RequestTypes.ReforgeOptimize);
 		try {
 			await this.waitForInit();
-			const gemOptions = ReforgeOptimizer.getReforgeGemOptions(this.db, config.settings);
+			const gemOptions = getReforgeGemOptions(this.db, config.settings);
 			const raid = this.getModifiedRaidProto();
 			const player = raid.parties[0].players[0];
 			player.database = config.gear.toDatabase(this.db);
@@ -870,7 +870,7 @@ export class Sim {
 			const request = ReforgeOptimizeRequest.create({
 				requestId: generateRequestId(SimRequest.reforgeOptimizeAsync),
 				raid,
-				...ReforgeOptimizer.makeReforgeConfigRequestFields(config, this.db),
+				...makeReforgeConfigRequestFields(config, this.db),
 				debug: config.debug ?? false,
 			});
 			const result = await this.workerPool.reforgeOptimizeAsync(request, signals);
@@ -886,7 +886,7 @@ export class Sim {
 	private makeBulkSimReforgeRequest(config: ReforgeOptimizeConfig): ReforgeOptimizeRequest {
 		return ReforgeOptimizeRequest.create({
 			requestId: generateRequestId(SimRequest.reforgeOptimizeAsync),
-			...ReforgeOptimizer.makeReforgeConfigRequestFields(config, this.db),
+			...makeReforgeConfigRequestFields(config, this.db),
 		});
 	}
 

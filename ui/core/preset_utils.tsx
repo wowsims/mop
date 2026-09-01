@@ -1,6 +1,4 @@
 import i18n from '../i18n/config';
-import { IndividualLinkImporter } from './components/individual_sim_ui/importers';
-import Toast, { ToastOptions } from './components/toast';
 import { Encounter } from './encounter';
 import { Player } from './player';
 import { Player as PlayerProto } from './proto/api.js';
@@ -353,24 +351,3 @@ export const makePresetBuildFromJSON = (
 	return makePresetBuild(name, { ...buildConfig, ...customBuildOptions });
 };
 
-export type SpecCheckWarning = {
-	condition: (player: Player<any>) => boolean;
-	message: string;
-};
-
-export const makeSpecChangeWarningToast = (checks: SpecCheckWarning[], player: Player<any>, options?: Partial<ToastOptions>) => {
-	const messages: string[] = checks.map(({ condition, message }) => condition(player) && message).filter((m): m is string => !!m);
-	if (messages.length)
-		new Toast({
-			variant: 'warning',
-			body: (
-				<>
-					{messages.map(message => (
-						<p>{message}</p>
-					))}
-				</>
-			),
-			delay: 5000 * messages.length,
-			...options,
-		});
-};

@@ -1,5 +1,6 @@
 import { APLRotation_Type } from '../../core/proto/apl';
 import { Player } from '../../core/player';
+import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '../../core/proto/death_knight';
@@ -21,7 +22,7 @@ export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5Gear);
 export const DEFAULT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Festerblight', FesterblightApl, {
 	onLoad: (player: Player<Spec.SpecUnholyDeathKnight>) =>
-		PresetUtils.makeSpecChangeWarningToast(
+		makeSpecChangeWarningToast(
 			[
 				{
 					condition: (player: Player<Spec.SpecUnholyDeathKnight>) => player.sim.encounter.targets.length > 1,

@@ -6,7 +6,7 @@ import i18n from '../../i18n/config.js';
 import { CURRENT_API_VERSION } from '../constants/other';
 import { IndividualSimUI } from '../individual_sim_ui.jsx';
 import { Player } from '../player.js';
-import { ProgressMetrics, StatWeightsResult, StatWeightValues } from '../proto/api';
+import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '../proto/api';
 import { PseudoStat, Stat, UnitStats } from '../proto/common.js';
 import { SavedStatWeightSettings } from '../proto/ui';
 import { translateStat } from '../../i18n/localization';
@@ -16,6 +16,7 @@ import { SimUI } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event.js';
 import { sanitizeId, stDevToConf90 } from '../utils.js';
 import { BaseModal } from './base_modal.jsx';
+import Toast from './toast';
 import { BooleanPicker } from './pickers/boolean_picker.js';
 import { NumberPicker } from './pickers/number_picker.js';
 import { ResultsViewer } from './results_viewer.jsx';
@@ -405,15 +406,35 @@ export class EpWeightsMenu extends BaseModal {
 			const epStatsToCalc = this.epStats.filter(s => !this.settings.isStatExcludedFromCalc(s));
 			const epPseudoStatsToCalc = this.epPseudoStats.filter(ps => !this.settings.isPseudoStatExcludedFromCalc(ps));
 
-			const result = await this.simUI.player.computeStatWeights(
-				TypedEvent.nextEventID(),
-				epStatsToCalc,
-				epPseudoStatsToCalc,
-				this.epReferenceStat,
-				progress => {
-					this.setSimProgress(progress);
-				},
-			);
+			let result: StatWeightsResult | null = null;
+			try {
+				result = await this.simUI.player.computeStatWeights(
+					TypedEvent.nextEventID(),
+					epStatsToCalc,
+					epPseudoStatsToCalc,
+					this.epReferenceStat,
+					progress => {
+						this.setSimProgress(progress);
+					},
+				);
+				if (result.error) {
+					if (result.error.type == ErrorOutcomeType.ErrorOutcomeAborted) {
+						new Toast({
+							variant: 'info',
+							body: 'Statweight sim cancelled.',
+						});
+					}
+					result = null;
+				}
+			} catch (error: any) {
+				// TODO: Show crash report like for raid sim?
+				console.error(error);
+				new Toast({
+					variant: 'error',
+					body: error?.message || 'Something went wrong calculating your stat weights. Reload the page and try again.',
+				});
+				result = null;
+			}
 			this.simUI.rootElem.classList.remove('blurred');
 			pendingDiv.remove();
 			this.container.classList.remove('pending');

@@ -1,17 +1,14 @@
-import { relevantStatOptions } from './components/inputs/stat_options';
-import { ItemSwapSettings } from './components/item_swap_picker';
-import Toast from './components/toast';
+import { ItemSwapSettings } from './state/item_swap_settings';
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';
 import { SimSettingCategories } from './constants/sim_settings';
-import { IndividualSimUIConfig } from './individual_sim_ui';
+import type { PresetEpWeights } from './preset_utils';
 import { MAX_PARTY_SIZE, Party } from './party';
 import { PlayerClass } from './player_class';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
 import {
 	AuraStats as AuraStatsProto,
-	ErrorOutcomeType,
 	Player as PlayerProto,
 	PlayerStats,
 	SpellStats as SpellStatsProto,
@@ -217,6 +214,18 @@ export interface PlayerConfig<SpecType extends Spec> {
 	secondaryResource?: SecondaryResource | null;
 }
 
+// The subset of the per-spec UI config (IndividualSimUIConfig) that the domain
+// layer consumes. Spec configs registered via registerSpecConfig satisfy this
+// structurally; the full UI config type stays in individual_sim_ui.
+export interface SpecConfigData<SpecType extends Spec> extends PlayerConfig<SpecType> {
+	epStats: Array<Stat>;
+	consumableStats?: Array<Stat>;
+	gemStats?: Array<Stat>;
+	presets: {
+		epWeights: Array<PresetEpWeights>;
+	};
+}
+
 const SPEC_CONFIGS: Partial<Record<Spec, PlayerConfig<any>>> = {};
 
 export function registerSpecConfig<SpecType extends Spec>(spec: SpecType, config: PlayerConfig<SpecType>) {
@@ -225,10 +234,10 @@ export function registerSpecConfig<SpecType extends Spec>(spec: SpecType, config
 
 export function getSpecConfig<SpecType extends Spec>(spec: SpecType): PlayerConfig<SpecType> {
 	const config = SPEC_CONFIGS[spec] as PlayerConfig<SpecType>;
-	config.secondaryResource = SecondaryResource.create(spec);
 	if (!config) {
 		throw new Error('No config registered for Spec: ' + spec);
 	}
+	config.secondaryResource = SecondaryResource.create(spec);
 	return config;
 }
 
@@ -274,7 +283,7 @@ export class Player<SpecType extends Spec> {
 	private enchantEPCache = new Map<number, number>();
 	private upgradeEPCache = new Map<string, number>();
 	private talents: SpecTalents<SpecType> | null = null;
-	private specConfig: IndividualSimUIConfig<SpecType>;
+	private specConfig: SpecConfigData<SpecType>;
 
 	readonly specTypeFunctions: SpecTypeFunctions<SpecType>;
 
@@ -322,7 +331,7 @@ export class Player<SpecType extends Spec> {
 		this.specTypeFunctions = specTypeFunctions[this.getSpec()] as SpecTypeFunctions<SpecType>;
 		this.specOptions = this.specTypeFunctions.optionsCreate();
 
-		this.specConfig = getSpecConfig<SpecType>(this.getSpec()) as IndividualSimUIConfig<SpecType>;
+		this.specConfig = getSpecConfig<SpecType>(this.getSpec()) as SpecConfigData<SpecType>;
 		this.secondaryResource = this.specConfig.secondaryResource;
 
 		this.autoRotationGenerator = this.specConfig.autoRotation;
@@ -560,34 +569,16 @@ export class Player<SpecType extends Spec> {
 		return !this.getSpecConfig().presets.epWeights.some(epw => epw.epWeights.equals(this.epWeights));
 	}
 
+	// Error display (toasts) is the caller's responsibility; a result with
+	// result.error set or a thrown error must be handled by the UI layer.
 	async computeStatWeights(
 		_eventID: EventID,
 		epStats: Array<Stat>,
 		epPseudoStats: Array<PseudoStat>,
 		epReferenceStat: Stat,
 		onProgress: WorkerProgressCallback,
-	): Promise<StatWeightsResult | null> {
-		try {
-			const result = await this.sim.statWeights(this, epStats, epPseudoStats, epReferenceStat, onProgress);
-			if (result.error) {
-				if (result.error.type == ErrorOutcomeType.ErrorOutcomeAborted) {
-					new Toast({
-						variant: 'info',
-						body: 'Statweight sim cancelled.',
-					});
-				}
-				return null;
-			}
-			return result;
-		} catch (error: any) {
-			// TODO: Show crash report like for raid sim?
-			console.error(error);
-			new Toast({
-				variant: 'error',
-				body: error?.message || 'Something went wrong calculating your stat weights. Reload the page and try again.',
-			});
-			return null;
-		}
+	): Promise<StatWeightsResult> {
+		return await this.sim.statWeights(this, epStats, epPseudoStats, epReferenceStat, onProgress);
 	}
 
 	getCurrentStats(): PlayerStats {
@@ -1622,7 +1613,7 @@ export class Player<SpecType extends Spec> {
 		}
 	}
 
-	getSpecConfig(): IndividualSimUIConfig<SpecType> {
+	getSpecConfig(): SpecConfigData<SpecType> {
 		return this.specConfig;
 	}
 

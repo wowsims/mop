@@ -1,4 +1,5 @@
 import { Player } from '../../core/player';
+import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, HandType, ItemSlot, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
@@ -19,7 +20,7 @@ import PreraidFuryTGGear from './gear_sets/preraid_fury_tg.gear.json';
 // Handlers for spec specific load checks
 const FURY_SMF_PRESET_OPTIONS = {
 	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
-		PresetUtils.makeSpecChangeWarningToast(
+		makeSpecChangeWarningToast(
 			[
 				{
 					condition: (player: Player<Spec.SpecFuryWarrior>) =>
@@ -33,7 +34,7 @@ const FURY_SMF_PRESET_OPTIONS = {
 };
 const FURY_TG_PRESET_OPTIONS = {
 	onLoad: (player: Player<any>) => {
-		PresetUtils.makeSpecChangeWarningToast(
+		makeSpecChangeWarningToast(
 			[
 				{
 					condition: (player: Player<Spec.SpecFuryWarrior>) =>

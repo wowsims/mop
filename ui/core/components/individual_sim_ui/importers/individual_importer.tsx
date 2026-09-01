@@ -1,3 +1,4 @@
+import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '../../../state/sim_links';
 import { SimSettingCategories } from '../../../constants/sim_settings';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '../../../proto/common';
@@ -11,8 +12,8 @@ import Toast from '../../toast';
 // For now this just holds static helpers to match the exporter, so it doesn't extend Importer.
 export abstract class IndividualImporter<SpecType extends Spec> extends Importer {
 	// Exclude UISettings by default, since most users don't intend to export those.
-	static readonly DEFAULT_CATEGORIES = getEnumValues(SimSettingCategories).filter(c => c != SimSettingCategories.UISettings) as Array<SimSettingCategories>;
-	static readonly CATEGORY_PARAM = 'i';
+	static readonly DEFAULT_CATEGORIES = LINK_DEFAULT_CATEGORIES;
+	static readonly CATEGORY_PARAM = LINK_CATEGORY_PARAM;
 
 	protected readonly simUI: IndividualSimUI<any>;
 

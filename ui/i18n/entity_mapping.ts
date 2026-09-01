@@ -2,7 +2,7 @@ import { LaunchStatus } from '../core/launched_sims';
 import { ArmorType, Class, MobType, PseudoStat, Race, Profession, Spec, Stat, SpellSchool, WeaponType, RangedWeaponType, ItemSlot } from '../core/proto/common';
 import { ResourceType } from '../core/proto/spell';
 import { RaidFilterOption, SourceFilterOption } from '../core/proto/ui';
-import { BulkSimItemSlot } from '../core/components/individual_sim_ui/bulk/utils';
+import { BulkSimItemSlot } from '../core/bulk/utils';
 import { PresetConfigurationCategory } from '../core/components/individual_sim_ui/preset_configuration_picker';
 
 export const statI18nKeys: Record<Stat, string> = {

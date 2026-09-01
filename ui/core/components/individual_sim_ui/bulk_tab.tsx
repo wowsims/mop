@@ -36,7 +36,7 @@ import {
 	TopGearResult,
 	WEB_COMBINATIONS_LIMIT,
 	WEB_ITERATIONS_LIMIT,
-} from './bulk/types';
+} from '../../bulk/types';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
@@ -45,7 +45,7 @@ import {
 	getBulkFreezeWeaponTypes,
 	getBulkItemSlotFromSlot,
 	getBulkPlayerCanDualWield,
-} from './bulk/utils';
+} from '../../bulk/utils';
 import { BulkGearJsonImporter } from './importers';
 
 const BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v2';

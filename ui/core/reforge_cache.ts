@@ -1,7 +1,7 @@
 import { IDBPDatabase, openDB } from 'idb';
 
-import { throwIfAborted } from './components/individual_sim_ui/bulk/utils';
-import { IndividualLinkImporter } from './components/individual_sim_ui/importers/individual_link_importer';
+import { throwIfAborted } from './bulk/utils';
+import { tryParseUrlLocation } from './state/sim_links';
 import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
@@ -216,7 +216,7 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			return EquipmentSpec.fromJsonString(gear.slice(REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX.length), { ignoreUnknownFields: true });
 		}
 
-		return IndividualLinkImporter.tryParseUrlLocation(new URL(gear, window.location.href))?.settings.player?.equipment || null;
+		return tryParseUrlLocation(new URL(gear, window.location.href))?.settings.player?.equipment || null;
 	}
 
 	// Deliberately a fresh connection per call rather than a pooled one: object stores are

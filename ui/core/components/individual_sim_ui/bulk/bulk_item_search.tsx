@@ -14,7 +14,7 @@ import { ContentBlock } from '../../content_block';
 import { createNameDescriptionLabel } from '../../gear_picker/utils';
 import { NumberPicker } from '../../pickers/number_picker';
 import { BulkTab } from '../bulk_tab';
-import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from './utils';
+import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '../../../bulk/utils';
 
 const MAX_SEARCH_RESULTS = 21;
 

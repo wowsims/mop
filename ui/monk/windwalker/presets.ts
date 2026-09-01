@@ -1,3 +1,4 @@
+import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '../../core/proto/monk';
@@ -13,7 +14,7 @@ import { Player } from '../../core/player';
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Pre-BIS', DefaultPrebisGear);
 export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS', DefaultP2BisGear, {
 	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
-		PresetUtils.makeSpecChangeWarningToast(
+		makeSpecChangeWarningToast(
 			[
 				{
 					condition: (player: Player<Spec.SpecFuryWarrior>) => player.getProfessions().includes(Profession.Tailoring) === false,
@@ -27,7 +28,7 @@ export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS', Default
 
 export const P3_4_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', DefaultP4BisGear, {
 	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
-		PresetUtils.makeSpecChangeWarningToast(
+		makeSpecChangeWarningToast(
 			[
 				{
 					condition: (player: Player<Spec.SpecFuryWarrior>) => player.getProfessions().includes(Profession.Blacksmithing) === false,
@@ -40,7 +41,7 @@ export const P3_4_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', 
 });
 export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS', DefaultP5BisGear, {
 	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
-		PresetUtils.makeSpecChangeWarningToast(
+		makeSpecChangeWarningToast(
 			[
 				{
 					condition: (player: Player<Spec.SpecFuryWarrior>) => player.getProfessions().includes(Profession.Blacksmithing) === false,

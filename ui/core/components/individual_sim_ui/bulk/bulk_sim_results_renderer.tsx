@@ -12,8 +12,8 @@ import { buildGearChangeIcon } from '../../gear_change_icon';
 import { ItemRenderer } from '../../gear_picker/gear_picker';
 import { RaidSimResultsManager } from '../../raid_sim_action';
 import Toast from '../../toast';
-import { TopGearResult } from './types';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from './utils';
+import { TopGearResult } from '../../../bulk/types';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '../../../bulk/utils';
 
 const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, canDualWield));

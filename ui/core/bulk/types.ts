@@ -1,5 +1,5 @@
-import { DistributionMetrics } from '../../../proto/api';
-import { Gear } from '../../../proto_utils/gear';
+import { DistributionMetrics } from '../proto/api';
+import { Gear } from '../proto_utils/gear';
 
 export const WEB_ITERATIONS_LIMIT = 1_000_000;
 export const NATIVE_ITERATIONS_LIMIT = 10_000_000;

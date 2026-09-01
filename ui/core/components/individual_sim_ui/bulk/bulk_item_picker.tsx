@@ -12,7 +12,7 @@ import { ItemRenderer } from '../../gear_picker/gear_picker';
 import { GearData } from '../../gear_picker/item_list';
 import { SelectorModalTabs } from '../../gear_picker/selector_modal';
 import { BulkTab } from '../bulk_tab';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from './utils';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '../../../bulk/utils';
 
 export default class BulkItemPicker extends Component {
 	private readonly itemElem: ItemRenderer;

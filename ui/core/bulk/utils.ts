@@ -1,16 +1,16 @@
-import type { Player } from '../../../player';
-import { getClassWeaponTypes, isSpecDualWieldCapable } from '../../../player_classes/capabilities';
-import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
-import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../../../proto/common';
-import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../../proto/db';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../../../proto/ui';
-import { Database } from '../../../proto_utils/database';
-import { EquippedItem } from '../../../proto_utils/equipped_item';
-import { Gear } from '../../../proto_utils/gear';
-import { getGearIdentityKey, getReforgeCacheGearKey } from '../../../proto_utils/utils';
-import { ReforgeGearCache } from '../../../reforge_cache';
-import { sleep } from '../../../utils';
-import { ReforgeOptimizer } from '../../suggest_reforges_action';
+import type { Player } from '../player';
+import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player_classes/capabilities';
+import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../proto/api';
+import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../proto/common';
+import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../proto/db';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui';
+import { Database } from '../proto_utils/database';
+import { EquippedItem } from '../proto_utils/equipped_item';
+import { Gear } from '../proto_utils/gear';
+import { getGearIdentityKey, getReforgeCacheGearKey } from '../proto_utils/utils';
+import { ReforgeGearCache } from '../reforge_cache';
+import { sleep } from '../utils';
+import { getReforgeConfigHash } from '../state/reforge_request';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
@@ -238,7 +238,7 @@ export async function getBulkSimReforgeCacheData({
 	}
 
 	const cache = ReforgeGearCache.get(player.getPlayerSpec());
-	const configHash = await ReforgeOptimizer.getConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
+	const configHash = await getReforgeConfigHash({ player, reforgeRequest, raidBuffs, partyBuffs, debuffs });
 	const frozenItemSlots =
 		reforgeRequest.settings?.freezeItemSlots && reforgeRequest.settings.frozenItemSlots.length ? reforgeRequest.settings.frozenItemSlots : undefined;
 	const totalCandidates = candidateSpecs?.length ?? gearSets!.length;
