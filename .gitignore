@@ -47,7 +47,6 @@ mop.sln
 # agents
 graphify-out
 .claude
-CLAUDE.md
 tools/db2tool/listfile.csv
 tools/db2tool/DBDCache/
 tools/db2tool/dbfilesclient/
