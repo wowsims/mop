@@ -7,7 +7,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as Presets from './presets';
@@ -181,15 +181,7 @@ export class BloodDeathKnightSimUI extends IndividualSimUI<Spec.SpecBloodDeathKn
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecBloodDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
 		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-				return epWeights;
-			},
+			getEPDefaults: player => player.getEpWeights(),
 			updateSoftCaps: softCaps => {
 				const epWeights = player.getEpWeights();
 

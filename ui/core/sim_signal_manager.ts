@@ -1,6 +1,7 @@
 export const enum RequestTypes {
 	RaidSim = 0x1,
 	StatWeights = 0x2,
+	ReforgeOptimize = 0x4,
 	All = 0xf,
 }
 
@@ -18,9 +19,20 @@ class TriggerSignal {
 		return this.triggered;
 	}
 
-	onTrigger(cb: () => Promise<void>) {
+	/**
+	 * Register an abort callback.
+	 * @returns A function that removes the callback again. Callers that register per
+	 * request against long-lived signals (a bulk run registers one per candidate) must
+	 * call it when the request settles, or the list grows for the life of the run and a
+	 * cancel fans out to every request that finished long ago.
+	 */
+	onTrigger(cb: () => Promise<void>): () => void {
 		this.callbacks.push(cb);
 		if (this.triggered) cb();
+		return () => {
+			const index = this.callbacks.indexOf(cb);
+			if (index >= 0) this.callbacks.splice(index, 1);
+		};
 	}
 }
 

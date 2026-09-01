@@ -15,7 +15,7 @@ type ItemSwap struct {
 	character           *Character
 	onItemSwapCallbacks [NumItemSlots][]OnItemSwap
 
-	isFuryWarrior        bool
+	canDualWield2H       bool
 	isFeralDruid         bool
 	mhCritMultiplier     float64
 	ohCritMultiplier     float64
@@ -98,7 +98,7 @@ func (character *Character) enableItemSwap(itemSwap *proto.ItemSwap, mhCritMulti
 	}
 
 	character.ItemSwap = ItemSwap{
-		isFuryWarrior:        character.Spec == proto.Spec_SpecFuryWarrior,
+		canDualWield2H:       SpecCanDualWield2HCapabilities[character.Spec],
 		isFeralDruid:         character.Spec == proto.Spec_SpecFeralDruid || character.Spec == proto.Spec_SpecGuardianDruid,
 		mhCritMultiplier:     mhCritMultiplier,
 		ohCritMultiplier:     ohCritMultiplier,
@@ -314,7 +314,7 @@ func (swap *ItemSwap) GetUnequippedItemBySlot(slot proto.ItemSlot) *Item {
 }
 
 func (swap *ItemSwap) EligibleSlotsForItem(itemID int32) []proto.ItemSlot {
-	eligibleSlots := eligibleSlotsForItem(GetItemByID(itemID), swap.isFuryWarrior)
+	eligibleSlots := EligibleSlotsForItem(GetItemByID(itemID), swap.canDualWield2H)
 
 	if len(eligibleSlots) == 0 {
 		return []proto.ItemSlot{}

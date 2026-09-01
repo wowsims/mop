@@ -6,7 +6,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Class, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as WarriorInputs from '../inputs';
@@ -165,21 +165,10 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 500) {
-					epWeights = Presets.P2_EP_PRESET.epWeights;
-				} else {
-					epWeights = Presets.P1_EP_PRESET.epWeights;
-				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_EP_PRESET.epWeights;
+				if (avgIlvl >= 500) return Presets.P2_EP_PRESET.epWeights;
+				return Presets.P1_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const gear = player.getGear();
@@ -193,7 +182,7 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 							breakpoints: [hasT154P ? 43 : 49],
 							capType: StatCapType.TypeSoftCap,
 							postCapEPs: [
-								(epWeights.getStat(Stat.StatMasteryRating) * player.getTotalAmplificationTrinketStatModifier() - 0.02) *
+								(epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
 									Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 							],
 						}),

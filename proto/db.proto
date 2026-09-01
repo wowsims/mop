@@ -24,6 +24,8 @@ message SimEnchant {
 	ItemType type = 3; // Only needed for unit tests.
 	repeated double stats = 4;
 	repeated ItemEffect enchant_effects = 5;
+	EnchantType enchant_type = 6;
+	repeated ItemType extra_types = 7;
 }
 
 // Contains only the Item info needed by the sim.
@@ -46,6 +48,9 @@ message SimItem {
 
 	map<int32, ScalingItemProperties> scaling_options = 13; // keys are the all ItemLevelState variants that this item could potentially have
 	repeated ItemEffect item_effects = 14;
+	int32 limit_category = 15;
+	bool unique = 16;
+	bool eotb_gem_socket = 17;
 }
 
 message Consumable {

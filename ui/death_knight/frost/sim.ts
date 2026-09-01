@@ -7,7 +7,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, Faction, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { TypedEvent } from '../../core/typed_event';
@@ -184,16 +184,9 @@ export class FrostDeathKnightSimUI extends IndividualSimUI<Spec.SpecFrostDeathKn
 			},
 			getEPDefaults: (player: Player<Spec.SpecFrostDeathKnight>) => {
 				const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
-				let epWeights =
-					mainHand?.item?.handType === HandType.HandTypeTwoHand
-						? Presets.TWOHAND_OBLITERATE_EP_PRESET.epWeights
-						: Presets.MASTERFROST_EP_PRESET.epWeights;
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-				return epWeights;
+				return mainHand?.item?.handType === HandType.HandTypeTwoHand
+					? Presets.TWOHAND_OBLITERATE_EP_PRESET.epWeights
+					: Presets.MASTERFROST_EP_PRESET.epWeights;
 			},
 		});
 	}

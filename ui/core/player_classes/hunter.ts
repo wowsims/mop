@@ -1,8 +1,9 @@
-import { EligibleWeaponType, IconSize, PlayerClass } from '../player_class';
+import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { BeastMasteryHunter, MarksmanshipHunter, SurvivalHunter } from '../player_specs/hunter';
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '../proto/common';
+import { Class } from '../proto/common';
 import { HunterSpecs } from '../proto_utils/utils';
+import { getClassArmorTypes, getClassRaces, getClassRangedWeaponTypes, getClassWeaponTypes } from './capabilities';
 
 export class Hunter extends PlayerClass<Class.ClassHunter> {
 	static classID = Class.ClassHunter as Class.ClassHunter;
@@ -13,31 +14,10 @@ export class Hunter extends PlayerClass<Class.ClassHunter> {
 		[MarksmanshipHunter.friendlyName]: MarksmanshipHunter,
 		[SurvivalHunter.friendlyName]: SurvivalHunter,
 	};
-	static races: Race[] = [
-		// [A]
-
-		Race.RaceWorgen,
-		Race.RaceHuman,
-		Race.RaceDwarf,
-		Race.RaceNightElf,
-		Race.RaceDraenei,
-		Race.RaceAlliancePandaren,
-		// [H]
-		Race.RaceOrc,
-		Race.RaceUndead,
-		Race.RaceTauren,
-		Race.RaceTroll,
-		Race.RaceBloodElf,
-		Race.RaceGoblin,
-		Race.RaceHordePandaren,
-	];
-	static armorTypes: ArmorType[] = [ArmorType.ArmorTypeMail];
-	static weaponTypes: EligibleWeaponType[] = []; // hunter cannot wear weapons anymore
-	static rangedWeaponTypes: RangedWeaponType[] = [
-		RangedWeaponType.RangedWeaponTypeBow,
-		RangedWeaponType.RangedWeaponTypeCrossbow,
-		RangedWeaponType.RangedWeaponTypeGun,
-	];
+	static races = getClassRaces(Hunter.classID);
+	static armorTypes = getClassArmorTypes(Hunter.classID);
+	static weaponTypes = getClassWeaponTypes(Hunter.classID);
+	static rangedWeaponTypes = getClassRangedWeaponTypes(Hunter.classID);
 
 	readonly classID = Hunter.classID;
 	readonly friendlyName = Hunter.name;

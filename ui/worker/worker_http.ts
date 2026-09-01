@@ -1,3 +1,4 @@
+import { ASYNC_SIM_REQUESTS, SimRequest } from './types';
 import { noop, sleep } from './utils';
 import { HandlerFunction, WorkerInterface } from './worker_interface';
 
@@ -15,10 +16,19 @@ export const setupHttpWorker = (baseURL: string) => {
 			body: inputData as BodyInit,
 		});
 
-	const syncHandler: HandlerFunction = async (inputData, _, id, msg) => {
-		const response = await makeHttpApiRequest(msg, inputData, id);
+	const readHttpApiResponse = async (response: Response, endPoint: string) => {
+		if (!response.ok) {
+			const body = await response.text();
+			throw new Error(`HTTP ${response.status} from /${endPoint}: ${body.slice(0, 200)}`);
+		}
+
 		const ab = await response.arrayBuffer();
 		return new Uint8Array(ab);
+	};
+
+	const syncHandler: HandlerFunction = async (inputData, _, id, msg) => {
+		const response = await makeHttpApiRequest(msg, inputData, id);
+		return readHttpApiResponse(response, msg);
 	};
 
 	const asyncHandler: HandlerFunction = async (inputData, progress, id, msg) => {
@@ -32,8 +42,7 @@ export const setupHttpWorker = (baseURL: string) => {
 				break;
 			}
 
-			const ab = await progressResponse.arrayBuffer();
-			outputData = new Uint8Array(ab);
+			outputData = await readHttpApiResponse(progressResponse, 'asyncProgress');
 			progress(outputData);
 			await sleep(500);
 		}
@@ -46,18 +55,13 @@ export const setupHttpWorker = (baseURL: string) => {
 		return new Uint8Array();
 	};
 
-	new WorkerInterface({
-		computeStats: syncHandler,
-		computeStatsJson: syncHandler,
-		raidSim: syncHandler,
-		raidSimJson: syncHandler,
-		raidSimAsync: asyncHandler,
-		statWeights: syncHandler,
-		statWeightsAsync: asyncHandler,
-		statWeightRequests: syncHandler,
-		statWeightCompute: syncHandler,
-		raidSimRequestSplit: noWasmConcurrency,
-		raidSimResultCombination: noWasmConcurrency,
-		abortById: syncHandler,
-	}).ready(false);
+	// Route every endpoint through the sync handler except the declared async ones, so a new
+	// async endpoint only needs its ASYNC_SIM_REQUESTS entry to poll progress correctly.
+	const handlers = Object.fromEntries(
+		Object.values(SimRequest).map(request => [request, (ASYNC_SIM_REQUESTS as readonly SimRequest[]).includes(request) ? asyncHandler : syncHandler]),
+	) as Record<SimRequest, HandlerFunction>;
+	handlers[SimRequest.raidSimRequestSplit] = noWasmConcurrency;
+	handlers[SimRequest.raidSimResultCombination] = noWasmConcurrency;
+
+	new WorkerInterface(handlers).ready(false);
 };

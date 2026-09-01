@@ -4,14 +4,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"runtime/debug"
-	"strings"
 	"syscall/js"
 
 	"github.com/wowsims/mop/sim"
 	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/bulk"
 	proto "github.com/wowsims/mop/sim/core/proto"
+	reforgeoptimizer "github.com/wowsims/mop/sim/core/reforge_optimizer"
 	"github.com/wowsims/mop/sim/core/simsignals"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	googleProto "google.golang.org/protobuf/proto"
@@ -23,15 +25,19 @@ func init() {
 }
 
 func main() {
-	c := make(chan struct{}, 0)
+	c := make(chan struct{})
 
 	js.Global().Set("computeStats", js.FuncOf(computeStats))
 	js.Global().Set("computeStatsJson", js.FuncOf(computeStatsJson))
+	js.Global().Set("reforgeOptimize", js.FuncOf(reforgeOptimize))
+	js.Global().Set("reforgeOptimizeAsync", js.FuncOf(reforgeOptimizeAsync))
 	js.Global().Set("raidSim", js.FuncOf(raidSim))
 	js.Global().Set("raidSimJson", js.FuncOf(raidSimJson))
 	js.Global().Set("raidSimAsync", js.FuncOf(raidSimAsync))
 	js.Global().Set("raidSimRequestSplit", js.FuncOf(raidSimRequestSplit))
 	js.Global().Set("raidSimResultCombination", js.FuncOf(raidSimResultCombination))
+	js.Global().Set("bulkCombinationCount", js.FuncOf(bulkCombinationCount))
+	js.Global().Set("bulkCandidates", js.FuncOf(bulkCandidates))
 	js.Global().Set("statWeights", js.FuncOf(statWeights))
 	js.Global().Set("statWeightsAsync", js.FuncOf(statWeightsAsync))
 	js.Global().Set("statWeightRequests", js.FuncOf(statWeightRequests))
@@ -126,6 +132,102 @@ func computeStatsJson(this js.Value, args []js.Value) (response interface{}) {
 	return response
 }
 
+func reforgeOptimize(this js.Value, args []js.Value) (response interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			errStr := ""
+			switch errt := err.(type) {
+			case string:
+				errStr = errt
+			case error:
+				errStr = errt.Error()
+			}
+
+			errStr += "\nStack Trace:\n" + string(debug.Stack())
+			result := &proto.ReforgeOptimizeResult{Error: &proto.ErrorOutcome{Message: errStr}}
+			outbytes, err := googleProto.Marshal(result)
+			if err != nil {
+				log.Printf("[ERROR] Failed to marshal error (%s) result: %s", errStr, err.Error())
+				return
+			}
+			outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+			js.CopyBytesToJS(outArray, outbytes)
+			response = outArray
+		}
+	}()
+	req := &proto.ReforgeOptimizeRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), req); err != nil {
+		log.Printf("Failed to parse ReforgeOptimizeRequest: %s", err)
+		return nil
+	}
+	signals, err := simsignals.RegisterWithId(req.GetRequestId())
+	if err != nil {
+		result := &proto.ReforgeOptimizeResult{Error: &proto.ErrorOutcome{Message: "Couldn't register for signal API: " + err.Error()}}
+		outbytes, err := googleProto.Marshal(result)
+		if err != nil {
+			log.Printf("[ERROR] Failed to marshal ReforgeOptimizeResult: %s", err.Error())
+			return nil
+		}
+		outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+		js.CopyBytesToJS(outArray, outbytes)
+		response = outArray
+		return response
+	}
+	defer simsignals.UnregisterId(req.GetRequestId())
+	result := reforgeoptimizer.OptimizeAsync(req, signals)
+
+	outbytes, err := googleProto.Marshal(result)
+	if err != nil {
+		log.Printf("[ERROR] Failed to marshal ReforgeOptimizeResult: %s", err.Error())
+		return nil
+	}
+	outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+	js.CopyBytesToJS(outArray, outbytes)
+
+	response = outArray
+	return response
+}
+
+func reforgeOptimizeAsync(this js.Value, args []js.Value) interface{} {
+	req := &proto.ReforgeOptimizeRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), req); err != nil {
+		log.Printf("Failed to parse ReforgeOptimizeRequest: %s", err)
+		return nil
+	}
+
+	requestId := readRequestId(args[2])
+
+	reporter := make(chan *proto.ProgressMetrics, 100)
+	go func() {
+		// An unrecovered panic here kills the whole wasm instance, not just this call.
+		defer func() {
+			if err := recover(); err != nil {
+				errStr := fmt.Sprint(err) + "\nStack Trace:\n" + string(debug.Stack())
+				reporter <- &proto.ProgressMetrics{
+					FinalReforgeResult: &proto.ReforgeOptimizeResult{Error: &proto.ErrorOutcome{Message: errStr}},
+				}
+				close(reporter)
+			}
+		}()
+		signals, err := simsignals.RegisterWithId(requestId)
+		if err != nil {
+			reporter <- &proto.ProgressMetrics{
+				FinalReforgeResult: &proto.ReforgeOptimizeResult{
+					Error: &proto.ErrorOutcome{Message: "Couldn't register for signal API: " + err.Error()},
+				},
+			}
+			close(reporter)
+			return
+		}
+		defer simsignals.UnregisterId(requestId)
+		result := reforgeoptimizer.OptimizeAsync(req, signals)
+		reporter <- &proto.ProgressMetrics{FinalReforgeResult: result}
+		close(reporter)
+	}()
+	go processAsyncProgress(args[1], reporter)
+	return js.Undefined()
+}
+
 func raidSim(this js.Value, args []js.Value) interface{} {
 	rsr := &proto.RaidSimRequest{}
 	if err := googleProto.Unmarshal(getArgsBinary(args[0]), rsr); err != nil {
@@ -170,10 +272,7 @@ func raidSimAsync(this js.Value, args []js.Value) interface{} {
 		return nil
 	}
 
-	requestId := args[2].String()
-	if strings.HasPrefix(requestId, "<T") {
-		requestId = "" // Make it return the error for an empty id
-	}
+	requestId := readRequestId(args[2])
 
 	reporter := make(chan *proto.ProgressMetrics, 100)
 
@@ -209,10 +308,7 @@ func statWeightsAsync(this js.Value, args []js.Value) interface{} {
 		return nil
 	}
 
-	requestId := args[2].String()
-	if strings.HasPrefix(requestId, "<T") {
-		requestId = "" // Make it return the error for an empty id
-	}
+	requestId := readRequestId(args[2])
 
 	reporter := make(chan *proto.ProgressMetrics, 100)
 	go core.StatWeightsAsync(rsr, reporter, requestId)
@@ -315,6 +411,42 @@ func raidSimResultCombination(this js.Value, args []js.Value) interface{} {
 	return outArray
 }
 
+func bulkCombinationCount(this js.Value, args []js.Value) interface{} {
+	request := &proto.BulkCombinationCountRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), request); err != nil {
+		log.Printf("Failed to parse BulkCombinationCountRequest: %s", err)
+		return nil
+	}
+
+	result := bulk.BulkCombinationCount(request)
+	outbytes, err := googleProto.Marshal(result)
+	if err != nil {
+		log.Printf("[ERROR] Failed to marshal BulkCombinationCountResult: %s", err.Error())
+		return nil
+	}
+	outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+	js.CopyBytesToJS(outArray, outbytes)
+	return outArray
+}
+
+func bulkCandidates(this js.Value, args []js.Value) interface{} {
+	request := &proto.BulkCandidatesRequest{}
+	if err := googleProto.Unmarshal(getArgsBinary(args[0]), request); err != nil {
+		log.Printf("Failed to parse BulkCandidatesRequest: %s", err)
+		return nil
+	}
+
+	result := bulk.BulkCandidates(request)
+	outbytes, err := googleProto.Marshal(result)
+	if err != nil {
+		log.Printf("[ERROR] Failed to marshal BulkCandidatesResult: %s", err.Error())
+		return nil
+	}
+	outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+	js.CopyBytesToJS(outArray, outbytes)
+	return outArray
+}
+
 func abortById(this js.Value, args []js.Value) interface{} {
 	abortRequest := &proto.AbortRequest{}
 	if err := googleProto.Unmarshal(getArgsBinary(args[0]), abortRequest); err != nil {
@@ -339,6 +471,16 @@ func abortById(this js.Value, args []js.Value) interface{} {
 }
 
 // Assumes args[0] is a Uint8Array
+// readRequestId extracts the string request id from a JS argument. A missing argument
+// renders as js.Value strings like "<undefined>", which must be treated as no id (an empty
+// id makes the signal API return its error).
+func readRequestId(arg js.Value) string {
+	if arg.Type() != js.TypeString {
+		return ""
+	}
+	return arg.String()
+}
+
 func getArgsBinary(value js.Value) []byte {
 	data := make([]byte, value.Get("length").Int())
 	js.CopyBytesToGo(data, value)
@@ -351,25 +493,19 @@ func getArgsJson(value js.Value) []byte {
 }
 
 func processAsyncProgress(progFunc js.Value, reporter chan *proto.ProgressMetrics) {
-	for {
-		select {
-		case progMetric, ok := <-reporter:
-			if !ok {
-				return
-			}
-			outbytes, err := googleProto.Marshal(progMetric)
-			if err != nil {
-				log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
-				return
-			}
+	for progMetric := range reporter {
+		outbytes, err := googleProto.Marshal(progMetric)
+		if err != nil {
+			log.Printf("[ERROR] Failed to marshal result: %s", err.Error())
+			return
+		}
 
-			outArray := js.Global().Get("Uint8Array").New(len(outbytes))
-			js.CopyBytesToJS(outArray, outbytes)
-			progFunc.Invoke(outArray)
+		outArray := js.Global().Get("Uint8Array").New(len(outbytes))
+		js.CopyBytesToJS(outArray, outbytes)
+		progFunc.Invoke(outArray)
 
-			if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil {
-				return
-			}
+		if progMetric.FinalWeightResult != nil || progMetric.FinalRaidResult != nil || progMetric.FinalBulkSimResult != nil || progMetric.FinalReforgeResult != nil {
+			return
 		}
 	}
 }

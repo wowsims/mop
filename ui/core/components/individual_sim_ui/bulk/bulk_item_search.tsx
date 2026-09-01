@@ -1,8 +1,9 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { setItemQualityCssClass } from '../../../css_utils';
 import i18n from '../../../../i18n/config';
+import { translateBulkSlotName } from '../../../../i18n/localization';
+import { setItemQualityCssClass } from '../../../css_utils';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { ItemLevelState, ItemSpec } from '../../../proto/common';
 import { UIItem, UIItem_FactionRestriction } from '../../../proto/ui';
@@ -13,8 +14,7 @@ import { ContentBlock } from '../../content_block';
 import { createNameDescriptionLabel } from '../../gear_picker/utils';
 import { NumberPicker } from '../../pickers/number_picker';
 import { BulkTab } from '../bulk_tab';
-import { translateBulkSlotName } from '../../../../i18n/localization';
-import { itemSlotToBulkSimItemSlot } from './utils';
+import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from './utils';
 
 const MAX_SEARCH_RESULTS = 21;
 
@@ -186,7 +186,7 @@ export default class BulkItemSearch extends ContentBlock {
 									{item.factionRestriction === UIItem_FactionRestriction.HORDE_ONLY && <span className="faction-horde">(H)</span>}
 									{item.factionRestriction === UIItem_FactionRestriction.ALLIANCE_ONLY && <span className="faction-alliance">(A)</span>}
 								</div>
-								<small>{translateBulkSlotName(itemSlotToBulkSimItemSlot.get(getEligibleItemSlots(item)[0])!)}</small>
+								<small>{translateBulkSlotName(ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT.get(getEligibleItemSlots(item)[0])!)}</small>
 							</div>
 						</a>
 					</li>,

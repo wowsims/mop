@@ -28,8 +28,8 @@ export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS', P5Gear);
 export const APL_Default = PresetUtils.makePresetAPLRotation('Default', DefaultAPL);
 
 // Preset options for EP weights
-export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default',
+export const P4_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Default < 560',
 	Stats.fromMap({
 		[Stat.StatIntellect]: 1.24,
 		[Stat.StatSpellPower]: 1.0,
@@ -37,6 +37,17 @@ export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 		[Stat.StatCritRating]: 0.6,
 		[Stat.StatHasteRating]: 0.66,
 		[Stat.StatMasteryRating]: 0.63,
+	}),
+);
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'Default >= 560',
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.27,
+		[Stat.StatSpellPower]: 1.0,
+		[Stat.StatHitRating]: 1.57,
+		[Stat.StatCritRating]: 0.65,
+		[Stat.StatHasteRating]: 1.06,
+		[Stat.StatMasteryRating]: 0.8,
 	}),
 );
 

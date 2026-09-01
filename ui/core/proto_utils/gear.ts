@@ -462,6 +462,7 @@ export class Gear extends BaseGear {
 		const totalIlvl = sum(items.filter((item): item is EquippedItem => item != null).map(item => item.ilvl));
 		return totalIlvl / itemSlotsToCount;
 	}
+
 }
 
 /**

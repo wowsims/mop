@@ -4,9 +4,13 @@
 export enum SimRequest {
 	computeStats = 'computeStats',
 	computeStatsJson = 'computeStatsJson',
+	reforgeOptimizeAsync = 'reforgeOptimizeAsync',
 	raidSim = 'raidSim',
 	raidSimJson = 'raidSimJson',
 	raidSimAsync = 'raidSimAsync',
+	bulkSimAsync = 'bulkSimAsync',
+	bulkCombinationCount = 'bulkCombinationCount',
+	bulkCandidates = 'bulkCandidates',
 	statWeights = 'statWeights',
 	statWeightsAsync = 'statWeightsAsync',
 	statWeightRequests = 'statWeightRequests',
@@ -15,6 +19,16 @@ export enum SimRequest {
 	raidSimResultCombination = 'raidSimResultCombination',
 	abortById = 'abortById',
 }
+
+// The endpoints that run asynchronously (progress-id handshake + progress polling). Single
+// source for the async/sync split; the HTTP worker derives its routing from this list.
+export const ASYNC_SIM_REQUESTS = [
+	SimRequest.raidSimAsync,
+	SimRequest.statWeightsAsync,
+	SimRequest.bulkSimAsync,
+	SimRequest.reforgeOptimizeAsync,
+] as const;
+export type AsyncSimRequest = (typeof ASYNC_SIM_REQUESTS)[number];
 
 /**
  * What the Worker receives from the UI
@@ -46,6 +60,7 @@ export interface WorkerSendMessageBodyBase {
 	id?: string;
 	msg: WorkerSendMessageType;
 	outputData?: Uint8Array;
+	error?: string;
 }
 
 export interface WorkerSendMessageIdConfirm extends WorkerSendMessageBodyBase {
@@ -56,12 +71,16 @@ export interface WorkerSendMessageReady extends WorkerSendMessageBodyBase {
 	msg: 'ready';
 }
 
-export interface WorkerSendMessageProgress extends Required<WorkerSendMessageBodyBase> {
+export interface WorkerSendMessageProgress extends WorkerSendMessageBodyBase {
+	id: string;
 	msg: 'progress';
+	outputData: Uint8Array;
 }
 
-export interface WorkerSendMessageSimRequest extends Required<WorkerSendMessageBodyBase>, Required<Omit<WorkerReceiveMessageSimRequest, 'inputData'>> {
+export interface WorkerSendMessageSimRequest extends WorkerSendMessageBodyBase {
+	id: string;
 	msg: SimRequest;
+	outputData: Uint8Array;
 }
 
 export type WorkerSendMessage = WorkerSendMessageReady | WorkerSendMessageIdConfirm | WorkerSendMessageProgress | WorkerSendMessageSimRequest;

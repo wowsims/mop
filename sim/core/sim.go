@@ -188,7 +188,7 @@ func runSim(rsr *proto.RaidSimRequest, progress chan *proto.ProgressMetrics, ski
 }
 
 func NewSim(rsr *proto.RaidSimRequest, signals simsignals.Signals) *Simulation {
-	env, _, _ := NewEnvironment(rsr.Raid, rsr.Encounter, false)
+	env, _, _ := NewEnvironment(rsr.Raid, rsr.Encounter, false, false)
 	return newSimWithEnv(env, rsr.SimOptions, signals)
 }
 
@@ -370,7 +370,7 @@ func (sim *Simulation) run() *proto.RaidSimResult {
 	}
 
 	if d := sim.Options.Iterations; d > 3000 {
-		log.Printf("running %d iterations took %s", d, time.Since(t0))
+		log.Printf("Running %d iterations took %s", d, time.Since(t0))
 	}
 
 	return result

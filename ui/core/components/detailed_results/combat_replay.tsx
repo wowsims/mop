@@ -6,6 +6,7 @@ import { ResourceType } from '../../proto/spell';
 import { ActionId } from '../../proto_utils/action_id';
 import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '../../proto_utils/logs_parser';
 import { resourceColors, resourceNames } from '../../proto_utils/names';
+import { formatDurationSeconds } from '../../utils';
 import { ActionMetrics, SimResult, SimResultFilter } from '../../proto_utils/sim_result';
 import i18n from '../../../i18n/config';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
@@ -120,6 +121,11 @@ const HIT_WINDOW_SEC = 0.45;
 const DMG_WINDOW_SEC = 1.1;
 const MAX_TICKER = 10;
 const MAX_ENEMIES = 8;
+const REPLAY_TIME_FORMAT = {
+	showMilliseconds: true,
+	separatorStyle: 'colon',
+	minimumUnit: 'minutes',
+} as const;
 
 export class CombatReplay extends ResultComponent {
 	private actions: ReplayAction[] = [];
@@ -460,7 +466,15 @@ export class CombatReplay extends ResultComponent {
 				if (!id || (!id.spellId && !id.itemId) || !(id.name ?? '')) continue;
 				if (id.otherId !== OtherAction.OtherActionNone) continue;
 				if (isPermanent(aura.gainedAt, aura.fadedAt)) continue;
-				this.playerAuras.push({ gainedAt: aura.gainedAt, fadedAt: aura.fadedAt, name: id.name, iconUrl: id.iconUrl, actionId: id, targetIndex: -1, stacksChange: aura.stacksChange });
+				this.playerAuras.push({
+					gainedAt: aura.gainedAt,
+					fadedAt: aura.fadedAt,
+					name: id.name,
+					iconUrl: id.iconUrl,
+					actionId: id,
+					targetIndex: -1,
+					stacksChange: aura.stacksChange,
+				});
 			}
 		}
 
@@ -591,11 +605,18 @@ export class CombatReplay extends ResultComponent {
 		for (let i = n % 2 === 0 ? 3 : 1; i < n; i += 2) rightInner.push(i);
 
 		// Build slot list left→right with depth annotation.
-		interface Slot { idx: number; depth: number }
+		interface Slot {
+			idx: number;
+			depth: number;
+		}
 		const leftSlots: Slot[] = [...leftInner].reverse().map((idx, i) => ({ idx, depth: leftInner.length - i }));
-		const centerSlots: Slot[] = n % 2 === 0
-			? [{ idx: 0, depth: 0 }, { idx: 1, depth: 0 }]
-			: [{ idx: 0, depth: 0 }];
+		const centerSlots: Slot[] =
+			n % 2 === 0
+				? [
+						{ idx: 0, depth: 0 },
+						{ idx: 1, depth: 0 },
+					]
+				: [{ idx: 0, depth: 0 }];
 		const rightSlots: Slot[] = rightInner.map((idx, i) => ({ idx, depth: i + 1 }));
 		const slots: Slot[] = [...leftSlots, ...centerSlots, ...rightSlots];
 
@@ -637,7 +658,7 @@ export class CombatReplay extends ResultComponent {
 		const t = this.currentTime;
 
 		this.ui.scrubber.value = String(Math.round((t / Math.max(this.fightLen, 0.001)) * 1000));
-		this.ui.timeDisplay.textContent = `${this.formatReplayTime(t)} / ${this.formatReplayTime(this.fightLen)}`;
+		this.ui.timeDisplay.textContent = `${formatDurationSeconds(t, REPLAY_TIME_FORMAT)} / ${formatDurationSeconds(this.fightLen, REPLAY_TIME_FORMAT)}`;
 
 		let actionIdx = -1;
 		for (let i = 0; i < this.actions.length; i++) {
@@ -1048,10 +1069,5 @@ export class CombatReplay extends ResultComponent {
 	stopPlayback(): void {
 		this.pause();
 		this.seekTo(0);
-	}
-
-	private formatReplayTime(seconds: number): string {
-		const m = Math.floor(seconds / 60);
-		return `${m}:${(seconds % 60).toFixed(1).padStart(4, '0')}`;
 	}
 }

@@ -406,6 +406,201 @@ message RaidSimResultCombinationRequest {
 	bool debug = 2;
 }
 
+// RPC BulkSim
+enum BulkSimStage {
+	BulkSimStageUnknown = 0;
+	BulkSimStageError = 1;
+	BulkSimStageReforge = 2;
+	BulkSimStageLow = 3;
+	BulkSimStageMedium = 4;
+	BulkSimStageHigh = 5;
+	BulkSimStageFinalist = 6;
+	BulkSimStageComplete = 7;
+}
+
+message BulkSimRequest {
+	string request_id = 1;
+	RaidSimRequest base_request = 2;
+	repeated BulkGearCandidate candidates = 3;
+	repeated BulkGearCandidate optimized_candidates = 4;
+	int32 top_results = 5;
+	int32 high_stage_iterations = 6;
+	ReforgeOptimizeRequest reforge_request = 7;
+	BulkSettings bulk_settings = 8;
+}
+
+// RPC ReforgeOptimize
+enum ReforgeOptimizeMode {
+	ReforgeOptimizeModeSingle = 0;
+	ReforgeOptimizeModeBulk = 1;
+}
+
+message ReforgeOptimizeRequest {
+	string request_id = 1;
+	ReforgeOptimizeMode mode = 2;
+	Raid raid = 3;
+	UnitStats pre_cap_ep_weights = 4;
+	UnitStats undershoot_caps = 5;
+	ReforgeSettings settings = 6;
+	repeated StatCapConfig soft_caps = 7;
+	repeated ReforgeGemOption gem_options = 8;
+	bool debug = 9;
+}
+
+message ReforgeOptimizeResult {
+	EquipmentSpec optimized_gear = 1;
+	PlayerStats optimized_player_stats = 2;
+	double score = 3;
+	int32 passes_done = 4;
+	ErrorOutcome error = 5;
+}
+
+message ReforgeSettings {
+	reserved 3;
+	reserved "include_timeout";
+	bool use_custom_ep_values = 1;
+	bool use_soft_cap_breakpoints = 2;
+	bool include_gems = 4;
+	bool include_eotb_gem_socket = 5;
+	bool freeze_item_slots = 6;
+	repeated ItemSlot frozen_item_slots = 7;
+	UIStat relative_stat_cap_stat = 8;
+	UnitStats stat_caps = 9;
+	UnitStats breakpoint_limits = 10;
+	// HiGHS relative MIP gap tolerance for the relative-stat-cap (RoRo) solve. The ordering
+	// constraints make that MIP slow to prove optimal, so a looser gap trades a tiny EP difference
+	// for a large speedup. Only meaningful when relative_stat_cap_stat is set.
+	double relative_stat_cap_mip_gap = 11;
+	// Membership, not weight: a stat listed at weight 0 is a legal but worthless target.
+	// Empty falls back to the non-zero pre-cap weights.
+	repeated Stat ep_stats = 12;
+}
+
+message StatCapConfig {
+	UIStat unit_stat = 1;
+
+	// Breakpoint values in ascending order
+	repeated double breakpoints = 2;
+
+	// Should be either TypeSoftCap or TypeThreshold currently
+	StatCapType cap_type = 3;
+
+	// postCapEPs[i] is the stat weight value when between breakpoints[i]
+	// and breakpoints[i+1]. Used only for TypeSoftCap and ignored for
+	// TypeThreshold.
+	repeated double post_cap_EPs = 4;
+}
+
+// Represents a single attribute that is either a Stat or a PseudoStat.
+// Currently used only within the StatCapConfig UI message for configuring Haste
+// caps, and is therefore not versioned, since this message is not imported or
+// exported from local storage or links.
+message UIStat {
+	// Proto version at the time these stats were saved. If you make any
+	// breaking changes to the size, ordering, or interpretation of the
+	// stats or pseudoStats arrays, then make sure to increment the
+	// current_version_number option in the ProtoVersion message at the top
+	// of this file.
+	// A "breaking change" here is defined as anything that will break saved
+	// browser data or old sim links; the version need not be incremented if
+	// you simply append a new rarely-used PseudoStat to the end of the
+	// array, for example.
+	int32 api_version = 3;
+
+	// Uniquely identifies the attribute
+	oneof unit_stat {
+		Stat stat = 1;
+		PseudoStat pseudo_stat = 2;
+	}
+}
+
+// Keep in parity with UIGem in ui.proto while preserving the original
+// ReforgeGemOption field numbers for wire compatibility.
+message ReforgeGemOption {
+	int32 id = 1;
+	string name = 2;
+	GemColor color = 3;
+
+	repeated double stats = 4;
+
+	bool unique = 5;
+	Profession required_profession = 6;
+	bool disabled_in_challenge_mode = 7;
+	string icon = 8;
+	int32 phase = 9;
+	ItemQuality quality = 10;
+}
+
+enum StatCapType {
+	TypeUnknown = 0;
+
+	// Unused currently, but may be able to combine hard cap + soft cap
+	// configuration in the future.
+	TypeHardCap = 1;
+
+	// Used for stats that exhibit significant EP changes after particular
+	// breakpoint values, but where the post-cap EP remains non-zero.
+	// Examples include Spell Haste for Demonology Warlocks and Expertise
+	// for tanks.
+	TypeSoftCap = 2;
+
+	// Used for stats that exhibit discontinuities in value at discrete
+	// thresholds due to in-game rounding effects etc., but where the
+	// average value of the stat from one breakpoint to the next does not
+	// vary significantly. The most relevant example in early Cata Classic
+	// is Mastery Rating for Demonology Warlock, which gets floored in-game
+	// to the nearest integer % damage threshold.
+	TypeThreshold = 3;
+}
+
+message BulkGearCandidate {
+	int32 index = 1;
+	EquipmentSpec gear = 2;
+}
+
+message BulkSimResult {
+	BulkGearResult baseline = 1;
+	repeated BulkGearResult top_results = 2;
+	repeated BulkGearCandidate optimized_candidates = 3;
+	repeated BulkSimStageMetrics stage_metrics = 4;
+	BulkSimTimings timings = 5;
+	ErrorOutcome error = 6;
+}
+
+message BulkGearResult {
+	int32 candidate_index = 1;
+	EquipmentSpec gear = 2;
+	DistributionMetrics dps_metrics = 3;
+	// Standard error of the mean per-iteration DPS difference vs the next-ranked top result
+	// (candidates share seed sequences, so ranking questions use this paired error, which is
+	// far tighter than the per-result stdev). 0 when the runs could not be paired.
+	double paired_error_to_next_result = 4;
+	// Same, vs the baseline (currently equipped) gear.
+	double paired_error_to_baseline = 5;
+}
+
+message BulkSimStageMetrics {
+	BulkSimStage stage = 1;
+	int32 input_gear_sets = 2;
+	int32 survivors = 3;
+	int32 iterations = 4;
+	int32 concurrency = 5;
+	double duration_seconds = 6;
+	double target_error_pct = 7;
+	double observed_error_pct = 8;
+	double baseline_avg_dps = 9;
+	double best_candidate_avg_dps = 10;
+}
+
+message BulkSimTimings {
+	double total_seconds = 1;
+	double simming_seconds = 2;
+	double low_stage_seconds = 3;
+	double medium_stage_seconds = 4;
+	double high_stage_seconds = 5;
+	double finalist_stage_seconds = 6;
+}
+
 message AbortRequest {
 	string request_id = 1; // The request that should be aborted.
 }
@@ -419,6 +614,7 @@ message AbortResponse {
 message ComputeStatsRequest {
 	Raid raid = 1;
 	Encounter encounter = 2;
+	bool skip_rotation = 3; // Skip APL rotation init and attack-table setup. Faster; suitable for stat-only reads.
 }
 message AuraStats {
 	ActionID id = 1;
@@ -579,25 +775,58 @@ message ProgressMetrics {
 	// Partial Results
 	double dps = 5;
 	double hps = 9;
+	repeated BulkGearCandidate optimized_candidates = 13; // partial optimized candidates during bulk sim reforge stage
 
 	// Final Results
 	RaidSimResult final_raid_result = 6; // only set when completed
 	StatWeightsResult final_weight_result = 7;
+	BulkSimResult final_bulk_sim_result = 10;
+	ReforgeOptimizeResult final_reforge_result = 11;
+	BulkSimStage bulk_stage = 12;
 }
 
 message BulkSettings {
 	repeated ItemSpec items = 1;
 	int32 iterations_per_combo = 2;
-	int32 default_red_gem = 3;
-	int32 default_blue_gem = 4;
-	int32 default_yellow_gem = 5;
-	int32 default_meta_gem = 6;
-	int32 default_prismatic_gem = 7;
+	reserved 3 to 7;
 
 	bool inherit_upgrades = 8;
+	bool use_legacy_bulk_sim = 14;
+
 	int32 freeze_ring_slot = 9;
 	int32 freeze_trinket_slot = 10;
 	int32 freeze_weapon_slot = 11;
 	repeated WeaponType freeze_mainhand_weapon_slots = 12;
 	repeated WeaponType freeze_offhand_weapon_slots = 13;
+	repeated BulkRequiredSetBonus required_set_bonuses = 15;
+}
+
+message BulkRequiredSetBonus {
+	int32 set_id = 1;
+	int32 pieces = 2;
+}
+
+message BulkCombinationCountRequest {
+	RaidSimRequest base_request = 1;
+	BulkSettings bulk_settings = 2;
+}
+
+message BulkCombinationCountResult {
+	int32 raw_combinations = 1;
+	int32 combinations = 2;
+	double iterations = 3;
+	bool use_legacy_bulk_sim = 4;
+	ErrorOutcome error = 5;
+}
+
+message BulkCandidatesRequest {
+	RaidSimRequest base_request = 1;
+	BulkSettings bulk_settings = 2;
+}
+
+message BulkCandidatesResult {
+	repeated BulkGearCandidate candidates = 1;
+	int32 raw_combinations = 2;
+	int32 combinations = 3;
+	ErrorOutcome error = 4;
 }

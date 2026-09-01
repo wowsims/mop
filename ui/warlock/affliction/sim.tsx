@@ -5,9 +5,9 @@ import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
+import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as WarlockInputs from '../inputs';
 import * as AffInputs from './inputs';
@@ -180,22 +180,10 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 			statSelectionPresets,
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 512) {
-					epWeights = Presets.P2_BIS_EP_PRESET.epWeights;
-				} else {
-					epWeights = Presets.P1_BIS_EP_PRESET.epWeights;
-				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_BIS_EP_PRESET.epWeights;
+				if (avgIlvl >= 512) return Presets.P2_BIS_EP_PRESET.epWeights;
+				return Presets.P1_BIS_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
@@ -208,8 +196,7 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 								capType: StatCapType.TypeThreshold,
 								postCapEPs: relevantDotBreakpoints.map(
 									() =>
-										((Presets.P5_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) /
-											player.getTotalAmplificationTrinketStatModifier()) *
+										(Presets.P5_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
 										Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
 								),
 							});

@@ -59,7 +59,8 @@ import {
 	Spec,
 	Stat,
 } from './proto/common';
-import { IndividualSimSettings, ReforgeSettings, SavedTalents } from './proto/ui';
+import { ReforgeSettings } from './proto/api';
+import { IndividualSimSettings, SavedTalents } from './proto/ui';
 import { getMetaGemConditionDescription } from './proto_utils/gems';
 import { armorTypeNames, professionNames } from './proto_utils/names';
 import { pseudoStatHasCap, StatCap, Stats, UnitStat } from './proto_utils/stats';
@@ -552,6 +553,13 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 						breakpointLimits: oldProto.breakpointLimits,
 					});
 
+					return oldProto;
+				},
+			],
+			[
+				4,
+				(oldProto: IndividualSimSettings) => {
+					oldProto.apiVersion = 4;
 					return oldProto;
 				},
 			],

@@ -1,0 +1,181 @@
+{
+	"raid":  {
+		"parties":  [
+			{
+				"players":  [
+					{
+						"race":  "RaceBloodElf",
+						"class":  "ClassDeathKnight",
+						"equipment":  {
+							"items":  [
+								{
+									"id":  99323,
+									"gems":  [95346, 76695],
+									"reforging":  163,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105480,
+									"reforging":  136,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99325,
+									"enchant":  4805,
+									"gems":  [76695, 76695],
+									"reforging":  157,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  102249,
+									"enchant":  4422,
+									"gems":  [76695],
+									"reforging":  143,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105512,
+									"enchant":  4420,
+									"gems":  [76695, 76664, 76683],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105564,
+									"enchant":  4415,
+									"gems":  [76695],
+									"reforging":  156,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99331,
+									"enchant":  4430,
+									"gems":  [76695, 76683, 76695],
+									"reforging":  157,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105587,
+									"gems":  [76695, 76663, 76695],
+									"reforging":  165,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99324,
+									"enchant":  4824,
+									"gems":  [76664, 76683],
+									"reforging":  164,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105414,
+									"enchant":  4426,
+									"gems":  [76695],
+									"reforging":  135,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105492,
+									"gems":  [76683],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105620,
+									"gems":  [76695],
+									"reforging":  157,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105632,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105645,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105692,
+									"enchant":  3368,
+									"gems":  [76695, 76695],
+									"reforging":  150
+								},
+								{}
+							]
+						},
+						"consumables":  {
+							"prepotId":  76095,
+							"potId":  76095,
+							"flaskId":  76087,
+							"foodId":  74656
+						},
+						"bloodDeathKnight":  {
+							"options":  {
+								"classOptions":  {}
+							}
+						},
+						"talentsString":  "231111",
+						"glyphs":  {
+							"major1":  104047,
+							"major2":  104048,
+							"major3":  43536,
+							"minor1":  104101
+						},
+						"profession1":  "Engineering",
+						"profession2":  "Blacksmithing"
+					}
+				],
+				"buffs":  {}
+			}
+		],
+		"buffs":  {
+			"trueshotAura":  true,
+			"serpentsSwiftness":  true,
+			"elementalOath":  true,
+			"leaderOfThePack":  true,
+			"blessingOfMight":  true,
+			"blessingOfKings":  true,
+			"powerWordFortitude":  true,
+			"bloodlust":  true,
+			"stormlashTotemCount":  4,
+			"skullBannerCount":  2
+		},
+		"debuffs":  {
+			"weakenedBlows":  true,
+			"physicalVulnerability":  true,
+			"weakenedArmor":  true,
+			"curseOfElements":  true
+		},
+		"tanks":  [
+			{
+				"type":  "Player"
+			}
+		]
+	},
+	"preCapEpWeights":  {
+		"stats":  [1, 0, 1.46, 0, 0, 1.7, 1.06, 1.08, 1.93, 1.18, 1.22, 1.14, 0.21, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"undershootCaps":  {
+		"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"settings":  {
+		"useSoftCapBreakpoints":  true,
+		"includeGems":  true,
+		"includeEotbGemSocket":  true,
+		"statCaps":  {
+			"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 5100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
+		},
+		"epStats": ["StatStamina", "StatStrength", "StatAgility", "StatAttackPower", "StatExpertiseRating", "StatHitRating", "StatCritRating", "StatHasteRating", "StatHealth", "StatArmor", "StatBonusArmor", "StatDodgeRating", "StatParryRating", "StatMasteryRating"]
+	},
+	"softCaps":  [
+		{
+			"unitStat":  {
+				"stat":  "StatExpertiseRating"
+			},
+			"breakpoints":  [2550, 5100],
+			"capType":  "TypeSoftCap",
+			"postCapEPs":  [0.53, 0]
+		}
+	]
+}

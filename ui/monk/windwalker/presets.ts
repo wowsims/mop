@@ -74,7 +74,7 @@ export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const RORO_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
+export const RORO_P3_4_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'RoRo',
 	Stats.fromMap(
 		{
@@ -89,6 +89,25 @@ export const RORO_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
 		{
 			[PseudoStat.PseudoStatMainHandDps]: 2.33,
 			[PseudoStat.PseudoStatOffHandDps]: 1.17,
+		},
+	),
+);
+
+export const RORO_P5_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'RoRo >= 560',
+	Stats.fromMap(
+		{
+			[Stat.StatAgility]: 1.0,
+			[Stat.StatHitRating]: 2.46,
+			[Stat.StatCritRating]: 0.83,
+			[Stat.StatHasteRating]: 1.05,
+			[Stat.StatExpertiseRating]: 2.11,
+			[Stat.StatMasteryRating]: 0.39,
+			[Stat.StatAttackPower]: 0.34,
+		},
+		{
+			[PseudoStat.PseudoStatMainHandDps]: 2.19,
+			[PseudoStat.PseudoStatOffHandDps]: 1.1,
 		},
 	),
 );
@@ -141,6 +160,14 @@ export const P3_4_BUILD_PRESET = PresetUtils.makePresetBuild('P3 & P4 - BIS', {
 	gear: P3_4_BIS_GEAR_PRESET,
 	settings: {
 		name: 'P3 & P4 - BIS',
-		playerOptions: OtherDefaults
+		playerOptions: OtherDefaults,
+	},
+});
+
+export const P5_BUILD_PRESET = PresetUtils.makePresetBuild('P5 - BIS', {
+	gear: P5_BIS_GEAR_PRESET,
+	settings: {
+		name: 'P5 - BIS',
+		playerOptions: OtherDefaults,
 	},
 });

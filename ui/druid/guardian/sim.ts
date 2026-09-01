@@ -8,9 +8,9 @@ import { PlayerClasses } from '../../core/player_classes';
 import { APLAction, APLListItem, APLPrepullAction, APLRotation, APLRotation_Type as APLRotationType, SimpleRotation } from '../../core/proto/apl.js';
 import { Cooldowns, Debuffs, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common.js';
 import { GuardianDruid_Rotation as DruidRotation } from '../../core/proto/druid.js';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import * as AplUtils from '../../core/proto_utils/apl_utils.js';
-import { StatCap, Stats, UnitStat, pseudoStatHasCap } from '../../core/proto_utils/stats.js';
+import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as DruidInputs from './inputs.js';
 import * as Presets from './presets.js';
@@ -289,21 +289,10 @@ export class GuardianDruidSimUI extends IndividualSimUI<Spec.SpecGuardianDruid> 
 		super(parentElem, player, SPEC_CONFIG);
 
 		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
-				if (player.getEpWeights().equals(Presets.OFFENSIVE_EP_PRESET.epWeights)) {
-					epWeights = Presets.OFFENSIVE_PRECAP_EPS;
-				} else {
-					epWeights = Presets.BALANCED_PRECAP_EPS;
-				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-
-				return epWeights;
-			},
+			getEPDefaults: player =>
+				player.getEpWeights().equals(Presets.OFFENSIVE_EP_PRESET.epWeights)
+					? Presets.OFFENSIVE_PRECAP_EPS
+					: Presets.BALANCED_PRECAP_EPS,
 			updateSoftCaps: softCaps => {
 				const epWeights = this.reforger?.preCapEPs;
 
@@ -311,12 +300,12 @@ export class GuardianDruidSimUI extends IndividualSimUI<Spec.SpecGuardianDruid> 
 					return softCaps;
 				}
 
-				if (epWeights.getStat(Stat.StatCritRating) == Presets.BALANCED_PRECAP_EPS.getStat(Stat.StatCritRating) / 1.5) {
+				if (epWeights.getStat(Stat.StatCritRating) == Presets.BALANCED_PRECAP_EPS.getStat(Stat.StatCritRating)) {
 					softCaps.push(
 						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 							breakpoints: [79.0],
 							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [(1.16 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT) / 1.5],
+							postCapEPs: [1.16 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
 						}),
 					);
 				}

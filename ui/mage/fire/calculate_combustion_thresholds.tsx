@@ -519,7 +519,7 @@ export class CalculateCombustionThresholds extends Component {
 
 		try {
 			this.isCancelling = true;
-			await this.simUI.sim.signalManager.abortType(RequestTypes.All);
+			await this.simUI.sim.signalManager.abortType(RequestTypes.RaidSim);
 			if (!this.simAbortController?.signal.aborted) {
 				this.simAbortController?.abort();
 				this.simAbortController = null;

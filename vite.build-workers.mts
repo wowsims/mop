@@ -4,6 +4,7 @@ import { exec as syncExec } from 'child_process';
 import { promisify } from 'util';
 const execAsync = promisify(syncExec);
 import minimist from 'minimist';
+import { createRequire } from 'node:module';
 import path from 'path';
 import { build } from 'vite';
 
@@ -15,10 +16,30 @@ const workers = {
 	local_worker: path.resolve(WORKER_BASE_PATH, 'local_worker.ts'),
 	net_worker: path.resolve(WORKER_BASE_PATH, 'net_worker.ts'),
 	sim_worker: path.resolve(WORKER_BASE_PATH, 'sim_worker.ts'),
-	reforge_worker: path.resolve(WORKER_BASE_PATH, 'reforge_worker.ts'),
 };
 
 const args = minimist(process.argv.slice(2), { boolean: ['watch'] });
+
+// sim_worker.ts loads the HiGHS solver from the npm `highs` package but fetches its wasm by URL,
+// so the binary has to be copied next to the worker. It is taken straight from node_modules; the
+// copy committed at ui/worker/highs.wasm exists only because the Go backend go:embeds it, and is
+// checked here so the browser and the server can never end up on different HiGHS builds.
+const copyHighsWasm = async () => {
+	const require = createRequire(import.meta.url);
+	const npmWasmPath = require.resolve('highs/runtime');
+	const embeddedWasmPath = path.resolve(WORKER_BASE_PATH, 'highs.wasm');
+
+	const [npmWasm, embeddedWasm] = await Promise.all([fs.readFile(npmWasmPath), fs.readFile(embeddedWasmPath)]);
+	if (!npmWasm.equals(embeddedWasm)) {
+		throw new Error(
+			`ui/worker/highs.wasm (${embeddedWasm.length} bytes) does not match the installed highs package ` +
+				`(${npmWasm.length} bytes). Run \`make update-highs\` and commit the result.`,
+		);
+	}
+
+	await fs.writeFile(path.resolve(OUT_DIR, 'highs.wasm'), npmWasm);
+	console.log('Copied highs.wasm to output directory');
+};
 
 const buildWorkers = async () => {
 	const { stdout } = await execAsync('go env GOROOT');
@@ -40,15 +61,7 @@ const buildWorkers = async () => {
 	}
 	const wasmFile = await fs.readFile(wasmExecutablePath, 'utf8');
 
-	// Copy HiGHS WASM file to output directory
-	const highsWasmSrc = path.resolve(WORKER_BASE_PATH, 'highs.wasm');
-	const highsWasmDest = path.resolve(OUT_DIR, 'highs.wasm');
-	try {
-		await fs.copyFile(highsWasmSrc, highsWasmDest);
-		console.log('Copied highs.wasm to output directory');
-	} catch (err) {
-		console.error('Failed to copy highs.wasm:', err);
-	}
+	await copyHighsWasm();
 
 	Object.entries(workers).forEach(async ([name, sourcePath]) => {
 		const baseConfig = getBaseConfig({ command: 'build', mode: 'production' });

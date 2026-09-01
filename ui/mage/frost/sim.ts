@@ -6,7 +6,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
 import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { StatCapType } from '../../core/proto/ui';
+import { StatCapType } from '../../core/proto/api';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import * as FrostInputs from './inputs';
@@ -51,7 +51,7 @@ const P5CritPostCapEPs = [
 	0.68 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 	0.57 * Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
 ];
-const P5HastePostCapEP = 0.66 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
+const P5HastePostCapEP = 0.72 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
 const P5HastePostGCDCapEP = 0.52 * Mechanics.HASTE_RATING_PER_HASTE_PERCENT;
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
@@ -178,25 +178,11 @@ export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {
 			statSelectionPresets: [MAGE_BREAKPOINTS],
 			enableBreakpointLimits: true,
 			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
 				const avgIlvl = player.getGear().getAverageItemLevel(false);
-
-				if (avgIlvl >= 560) {
-					epWeights = Presets.P5_BIS_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 517) {
-					epWeights = Presets.P3_BIS_EP_PRESET.epWeights;
-				} else if (avgIlvl >= 500) {
-					epWeights = Presets.P1_BIS_EP_PRESET.epWeights;
-				} else {
-					epWeights = Presets.P1_PREBIS_EP_PRESET.epWeights;
-				}
-
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-
-				return epWeights;
+				if (avgIlvl >= 560) return Presets.P5_BIS_EP_PRESET.epWeights;
+				if (avgIlvl >= 517) return Presets.P3_BIS_EP_PRESET.epWeights;
+				if (avgIlvl >= 500) return Presets.P1_BIS_EP_PRESET.epWeights;
+				return Presets.P1_PREBIS_EP_PRESET.epWeights;
 			},
 			updateSoftCaps: softCaps => {
 				const avgIlvl = player.getGear().getAverageItemLevel(false);

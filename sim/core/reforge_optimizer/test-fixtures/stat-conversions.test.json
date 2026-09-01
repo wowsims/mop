@@ -1,0 +1,178 @@
+{
+	"raid":  {
+		"parties":  [
+			{
+				"players":  [
+					{
+						"race":  "RaceTroll",
+						"class":  "ClassDruid",
+						"equipment":  {
+							"items":  [
+								{
+									"id":  99421,
+									"gems":  [95344, 76680],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105602,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105506,
+									"enchant":  4805,
+									"gems":  [76641, 76641],
+									"reforging":  167,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  102245,
+									"enchant":  4422,
+									"gems":  [76658],
+									"reforging":  160,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99419,
+									"enchant":  4420,
+									"gems":  [76659, 76658, 76658],
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105505,
+									"enchant":  4416,
+									"gems":  [76699],
+									"reforging":  160,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99420,
+									"enchant":  4431,
+									"gems":  [76658, 76658, 76697],
+									"reforging":  160,
+									"upgradeStep":  "UpgradeStepTwo",
+									"tinker":  4898
+								},
+								{
+									"id":  105635,
+									"gems":  [76658, 76642, 76699],
+									"reforging":  144,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  99422,
+									"enchant":  4824,
+									"gems":  [76699, 76699],
+									"reforging":  160,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  104488,
+									"enchant":  4428,
+									"gems":  [76699],
+									"reforging":  160,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  104455,
+									"gems":  [76641],
+									"reforging":  145,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105483,
+									"gems":  [76699],
+									"reforging":  159,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105568,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105527,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{
+									"id":  105408,
+									"enchant":  4444,
+									"gems":  [76641],
+									"reforging":  160,
+									"upgradeStep":  "UpgradeStepTwo"
+								},
+								{}
+							]
+						},
+						"consumables":  {
+							"prepotId":  76090,
+							"potId":  76090,
+							"flaskId":  76087,
+							"foodId":  74656,
+							"conjuredId":  5512
+						},
+						"guardianDruid":  {
+							"options":  {
+								"symbiosisTarget":  "ClassMonk"
+							}
+						},
+						"talentsString":  "010101",
+						"glyphs":  {
+							"major1":  45603,
+							"major2":  40897
+						},
+						"profession1":  "Engineering",
+						"profession2":  "Blacksmithing"
+					}
+				],
+				"buffs":  {}
+			}
+		],
+		"buffs":  {
+			"trueshotAura":  true,
+			"unholyAura":  true,
+			"leaderOfThePack":  true,
+			"graceOfAir":  true,
+			"markOfTheWild":  true,
+			"powerWordFortitude":  true,
+			"bloodlust":  true,
+			"stormlashTotemCount":  4,
+			"skullBannerCount":  2
+		},
+		"debuffs":  {
+			"physicalVulnerability":  true,
+			"lightningBreath":  true
+		},
+		"tanks":  [
+			{
+				"type":  "Player"
+			}
+		]
+	},
+	"preCapEpWeights":  {
+		"stats":  [0.19, 1, 1.77, 0, 0, 3.31, 1.36, 1.35, 3.31, 0.22, 0, 0.36, 0.18, 0, 0, 0, 0, 0.73, 0.17, 0.08, 0, 0],
+		"pseudoStats":  [0.75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"undershootCaps":  {
+		"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	},
+	"settings":  {
+		"useSoftCapBreakpoints":  true,
+		"includeGems":  true,
+		"includeEotbGemSocket":  true,
+		"statCaps":  {
+			"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 5100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7.5, 0, 0, 0]
+		},
+		"epStats": ["StatHealth", "StatStamina", "StatAgility", "StatArmor", "StatBonusArmor", "StatDodgeRating", "StatMasteryRating", "StatStrength", "StatAttackPower", "StatHitRating", "StatExpertiseRating", "StatCritRating", "StatHasteRating"]
+	},
+	"softCaps":  [
+		{
+			"unitStat":  {
+				"pseudoStat":  "PseudoStatPhysicalCritPercent"
+			},
+			"breakpoints":  [79],
+			"capType":  "TypeSoftCap",
+			"postCapEPs":  [696]
+		}
+	]
+}

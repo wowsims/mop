@@ -1,8 +1,8 @@
 import { translatePseudoStat, translateStat } from '../../i18n/localization';
 import * as Mechanics from '../constants/mechanics.js';
 import { CURRENT_API_VERSION } from '../constants/other.js';
+import { StatCapConfig, StatCapType, UIStat as UnitStatProto } from '../proto/api.js';
 import { Class, PseudoStat, Stat, UnitStats } from '../proto/common.js';
-import { StatCapConfig, StatCapType, UIStat as UnitStatProto } from '../proto/ui.js';
 import { getEnumValues } from '../utils.js';
 import { migrateOldProto, ProtoConversionMap } from './utils.js';
 
@@ -474,31 +474,6 @@ export class Stats {
 			total += stat * epWeights.pseudoStats[idx];
 		});
 		return total;
-	}
-
-	computeGapToCap(unitStat: UnitStat, cap: number): number {
-		let statDelta = cap - this.getUnitStat(unitStat);
-
-		if (unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent)) {
-			statDelta /= this.getPseudoStat(PseudoStat.PseudoStatMeleeSpeedMultiplier);
-		} else if (unitStat.equalsPseudoStat(PseudoStat.PseudoStatRangedHastePercent)) {
-			statDelta /= this.getPseudoStat(PseudoStat.PseudoStatRangedSpeedMultiplier);
-		} else if (unitStat.equalsPseudoStat(PseudoStat.PseudoStatSpellHastePercent)) {
-			statDelta /= this.getPseudoStat(PseudoStat.PseudoStatCastSpeedMultiplier);
-		}
-
-		return statDelta == 0 ? 1e-12 : statDelta;
-	}
-
-	computeStatCapsDelta(statCaps: Stats): Stats {
-		return new Stats(
-			statCaps.stats.map((value, key) => {
-				return value > 0 ? this.computeGapToCap(UnitStat.fromStat(key), value) : 0;
-			}),
-			statCaps.pseudoStats.map((value, key) => {
-				return value > 0 ? this.computeGapToCap(UnitStat.fromPseudoStat(key), value) : 0;
-			}),
-		);
 	}
 
 	getBuffedStats(): Map<Stat, number> {

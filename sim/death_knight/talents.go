@@ -579,7 +579,7 @@ func (dk *DeathKnight) registerDrwDeathSiphon() *core.Spell {
 /*
 Continuously converts Runic Power to health, restoring 3% of maximum health every 1 sec.
 Only base Runic Power generation from spending runes may occur while Conversion is active.
-This effect lasts until canceled, or Runic Power is exhausted.
+This effect lasts until cancelled, or Runic Power is exhausted.
 */
 func (dk *DeathKnight) registerConversion() {
 	if !dk.Talents.Conversion {

@@ -56,11 +56,11 @@ import {
 } from './proto/ui';
 import { ActionId } from './proto_utils/action_id';
 import { Database } from './proto_utils/database';
-import { EquippedItem, ReforgeData, isRebornWeapon, isShaTouchedWeapon, isThroneOfThunderWeapon } from './proto_utils/equipped_item';
+import { EquippedItem, ReforgeData } from './proto_utils/equipped_item';
 import { Gear, ItemSwapGear } from './proto_utils/gear';
 import { gemMatchesSocket, isUnrestrictedGem } from './proto_utils/gems';
 import SecondaryResource from './proto_utils/secondary_resource';
-import { StatCap, Stats } from './proto_utils/stats';
+import { Stats } from './proto_utils/stats';
 import {
 	AL_CATEGORY_HARD_MODE,
 	canEquipEnchant,
@@ -1287,7 +1287,7 @@ export class Player<SpecType extends Spec> {
 	hasEotBPItemEquipped() {
 		return [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand].some(itemSlot => {
 			const item = this.getEquippedItem(itemSlot)?.item;
-			return item && (isShaTouchedWeapon(item) || isThroneOfThunderWeapon(item) || isRebornWeapon(item));
+			return !!item?.eotbGemSocket;
 		});
 	}
 

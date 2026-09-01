@@ -27,7 +27,7 @@ import (
 // go run ./tools/database/gen_db -outDir=assets -gen=db
 
 var outDir = flag.String("outDir", "assets", "Path to output directory for writing generated .go files.")
-var genAsset = flag.String("gen", "", "Asset to generate. Valid values are 'db', 'atlasloot', 'wowhead-items', 'wowhead-spells', 'wowhead-itemdb', 'mop-items', and 'wago-db2-items'")
+var genAsset = flag.String("gen", "", "Asset to generate. Valid values are 'db', 'atlasloot' and 'go-to-ts'")
 var dbPath = flag.String("dbPath", "./tools/database/wowsims.db", "Location of the wowsims.db file produced by tools/db2tool")
 
 func main() {
@@ -42,7 +42,18 @@ func main() {
 	dbDir := fmt.Sprintf("%s/database", *outDir)
 	inputsDir := fmt.Sprintf("%s/db_inputs", *outDir)
 
-	if *genAsset == "atlasloot" {
+	if *genAsset == "go-to-ts" {
+		if err := database.GenerateCharacterConstantsTSFile(); err != nil {
+			log.Fatalf("failed to generate character constants TS file: %v", err)
+		}
+		if err := database.GenerateBulkSimConstantsTSFile(); err != nil {
+			log.Fatalf("failed to generate bulk sim constants TS file: %v", err)
+		}
+		if err := database.GenerateBulkSimTuningConstantsTSFile(); err != nil {
+			log.Fatalf("failed to generate bulk sim tuning constants TS file: %v", err)
+		}
+		return
+	} else if *genAsset == "atlasloot" {
 		helper, err := database.NewDBHelper()
 		if err != nil {
 			log.Fatalf("failed to initialize database: %v", err)
@@ -283,10 +294,13 @@ func main() {
 			item.Sources = database.InferFlexibleRaidItemSource(item)
 		}
 
-		// 1. Add Belt Buckle gem socket to Waist.
+		// 1. Add Belt Buckle gem socket to Waist. Always present, so not tagged.
 		// 2. Add Eye Of The Black Prince gem socket to Sha-touched items.
-		if item.Type == proto.ItemType_ItemTypeWaist || slices.Contains(item.GemSockets, proto.GemColor_GemColorShaTouched) {
+		if item.Type == proto.ItemType_ItemTypeWaist {
 			item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+		} else if slices.Contains(item.GemSockets, proto.GemColor_GemColorShaTouched) {
+			item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+			item.EotbGemSocket = true
 		}
 
 		for _, source := range item.Sources {
@@ -295,11 +309,13 @@ func main() {
 				// "Reborn" weapons can have a Eye Of The Black Prince
 				if item.ScalingOptions[int32(proto.ItemLevelState_Base)].Ilvl == 502 && strings.HasSuffix(item.Name, ", Reborn") && crafted.Profession == proto.Profession_Blacksmithing && item.Type == proto.ItemType_ItemTypeWeapon {
 					item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+					item.EotbGemSocket = true
 				}
 			}
 			// Add Eye Of The Black Prince gem socket to Throne of Thunder weapons.
 			if drop := source.GetDrop(); drop != nil && (item.Type == proto.ItemType_ItemTypeWeapon || item.Type == proto.ItemType_ItemTypeRanged) && (item.WeaponType != proto.WeaponType_WeaponTypeOffHand && item.WeaponType != proto.WeaponType_WeaponTypeShield) && drop.ZoneId == 6622 {
 				item.GemSockets = append(item.GemSockets, proto.GemColor_GemColorPrismatic)
+				item.EotbGemSocket = true
 			}
 
 			if rep := source.GetRep(); rep != nil {
@@ -690,7 +706,7 @@ type GlyphID struct {
 
 func CreateTempAgent(r *proto.Raid) core.Agent {
 	encounter := core.MakeSingleTargetEncounter(0.0)
-	env, _, _ := core.NewEnvironment(r, encounter, false)
+	env, _, _ := core.NewEnvironment(r, encounter, false, false)
 	return env.Raid.Parties[0].Players[0]
 }
 

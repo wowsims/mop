@@ -22,39 +22,8 @@
 		gap: var(--spacer-2);
 	}
 
-	.suggest-reforges-gear-reforge {
-		position: absolute;
-		top: var(--spacer-1);
-		left: 50%;
-		transform: translate(-50%, 0);
-		width: 2rem;
-		height: 2rem;
-		background:
-			center / 2.15rem url('https://wow.zamimg.com/images/Icon/medium/border/default.png') no-repeat,
-			center / contain url('https://wow.zamimg.com/images/wow/interface/cursor/crosshair/reforge.png') no-repeat;
-		background-color: var(--bs-gray-800);
-		border-radius: 3px;
-	}
-
-	.gem-socket-container {
-		background-size: contain;
-		background-repeat: no-repeat;
-	}
-
 	.item-picker-icon-wrapper {
 		--icon-size: var(--slot-size);
-	}
-
-	.gem-socket-container {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		letter-spacing: 0;
-	}
-
-	.fa-exclamation-circle {
-		margin-left: 1px;
-		color: var(--bs-danger);
 	}
 }
 

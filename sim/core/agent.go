@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -150,6 +151,22 @@ var configSpecs = make(map[string]proto.Spec)
 func PlayerProtoToSpec(player *proto.Player) proto.Spec {
 	typeName := reflect.TypeOf(player.GetSpec()).Elem().Name()
 	return configSpecs[typeName]
+}
+
+// PlayerProtoToSpecSafe is PlayerProtoToSpec with the failure modes made explicit: it returns an
+// error instead of panicking on a missing spec oneof, and reports an unregistered agent type
+// (agent factories must have been registered, e.g. via sim.RegisterAll) instead of returning the
+// zero Spec.
+func PlayerProtoToSpecSafe(player *proto.Player) (proto.Spec, error) {
+	if player == nil || player.GetSpec() == nil {
+		return proto.Spec_SpecUnknown, fmt.Errorf("player is missing a spec")
+	}
+	typeName := reflect.TypeOf(player.GetSpec()).Elem().Name()
+	spec, ok := configSpecs[typeName]
+	if !ok {
+		return proto.Spec_SpecUnknown, fmt.Errorf("no registered agent for spec type %s", typeName)
+	}
+	return spec, nil
 }
 
 func RegisterAgentFactory(emptyOptions interface{}, spec proto.Spec, factory AgentFactory, specSetter SpecSetter) {

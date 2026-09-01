@@ -5,7 +5,7 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../../i18n/config';
 import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL } from '../constants/other';
 import { SimUI } from '../sim_ui';
-import { isLocal, noop } from '../utils';
+import { isNative, noop } from '../utils';
 import { Component } from './component';
 import { Exporter } from './exporter';
 import { SimToolbarItem } from './header/sim_toolbar_item';
@@ -169,7 +169,7 @@ export class SimHeader extends Component {
 		const icon = 'fas fa-gauge-high fa-lg';
 		const parent = this.simToolbar;
 
-		if (isLocal()) {
+		if (isNative()) {
 			fetch('/version')
 				.then(resp => {
 					resp.json()

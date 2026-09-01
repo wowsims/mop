@@ -245,7 +245,7 @@
 		"description": "{{spec}} {{class}} simulations for World of Warcraft® Mists of Pandaria Classic.",
 		"basic_bis_disclaimer": "<p>Preset gear lists are intended as rough approximations of BIS, and will often not be the absolute highest-DPS setup for you. Your optimal gear setup will depend on many factors; that's why we have a sim!</p><p>Items may also be omitted from the presets if they are highly contested and clearly better utilized on other classes, to encourage equitable gearing for the raid as a whole.</p>",
 		"healing_sim_disclaimer": "*** WARNING - USE AT YOUR OWN RISK ***\n\nThe entire concept of a healing sim is EXPERIMENTAL. All results should be taken with an EXTREMELY large grain of salt.\n\nThis tool is currently more similar to a spreadsheet than a true sim. Options for specifying incoming damage profiles in order to have proper reactive rotations have not yet been added.",
-		"notice_local_download": {
+		"notice_native_download": {
 			"title": "Did you know?",
 			"message": "You can download our local sim to speed up your simulations significantly?",
 			"download_button": "Download"
@@ -776,7 +776,7 @@
 	"bulk_tab": {
 		"title": "Batch (<span class=\"text-success\">New</span>)",
 		"description": "<span className=\"bold\">Batch Simming</span> is a new feature akin to the <span className=\"bold\">Top Gear</span> sim on <a href=\"https://raidbots.com\" target=\"_blank\">Raidbots.com</a> that allows you to select multiple items and sim them find the best combinations.<br />This is an <span className=\"text-brand\">Alpha</span> feature, so if you have feedback or find a bug, please report it!",
-		"download_local": "Download the local sim for faster results.",
+		"download_native": "Download the local sim for faster results.",
 		"tabs": {
 			"setup": "Setup",
 			"results": "Results"
@@ -800,13 +800,23 @@
 			"item_unique": "{{itemName}} is unique and already added."
 		},
 		"settings": {
-			"combinations_count": "{{count}} Combinations",
+			"combinations_count": "{{amount}} Combinations",
 			"combination_singular": "1 Combination",
 			"iterations": "Iterations",
-			"fallback_gems": "Fallback Gems",
 			"inherit_upgrades": {
 				"label": "Inherit Upgrades",
 				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
+			},
+			"use_legacy_bulk_sim": {
+				"label": "Use legacy single-stage sim",
+				"tooltip": "By default, Bulk Sim runs large batches in multiple stages: a low-iteration pass to find likely contenders, a medium-iteration refinement pass, and a final high-iteration pass for the best remaining gear sets. Enable this only to force the legacy high-stage-only behavior."
+			},
+			"required_set_bonuses": {
+				"label": "Required Set Bonuses",
+				"none": "No requirement",
+				"require_2p": "Require 2P",
+				"require_4p": "Require 4P",
+				"available_pieces": "({{count}} available)"
 			},
 			"freeze_ring": {
 				"label": "Freeze ring slot",
@@ -827,12 +837,18 @@
 			}
 		},
 		"progress": {
-			"total_combinations": "{{count}} total combinations.",
-			"reforging_rounds": "Running reforges",
+			"building_candidate_gear_sets": "Building candidate gear sets",
+			"restoring_reforges_from_cache": "Restoring reforges from cache",
+			"reforging_iteration_rounds": "Running reforges",
 			"baseline_round": "Running baseline round",
 			"refining_rounds": "Running refining rounds",
+			"low_iteration_rounds": "Running low iteration rounds",
+			"medium_iteration_rounds": "Running medium iteration rounds",
+			"high_iteration_rounds": "Running high iteration rounds",
 			"iterations_complete": "{{completed}} / {{total}}<br />iterations complete",
-			"seconds_remaining": "{{seconds}} seconds remaining"
+			"seconds_remaining": "{{seconds}} seconds remaining",
+			"time_remaining": "{{time}} remaining",
+			"finalist_iteration_rounds": "Running finalist tie-breaker rounds"
 		},
 		"notifications": {
 			"bulk_sim_cancelled": "Bulk sim cancelled.",
@@ -851,10 +867,9 @@
 			"run_simulation": "Run a simulation to view results",
 			"equip_button": "Equip",
 			"gear_equipped": "Batch gear equipped!",
-			"current_gear": "Current Gear"
-		},
-		"gem_selector": {
-			"title": "Choose fallback Gem"
+			"current_gear": "Current Gear",
+			"margin_of_error": "95% confidence interval of the mean DPS. Rankings closer than this can change between runs.",
+			"tied_group": "Statistically tied — the order within this group can change between runs"
 		},
 		"import_modal": {
 			"title": "Bag Item Import",
@@ -2372,6 +2387,11 @@
 				"tooltip": "Change Reforge Optimizer settings",
 				"use_soft_cap_breakpoints": "Use soft cap breakpoints",
 				"force_stat_proc": "Force RoRo proc",
+				"relative_stat_cap_precision": "Precision",
+				"relative_stat_cap_precision_tooltip": "Higher precision finds a slightly better result but takes longer to calculate. Lower precision is much faster but less accurate.",
+				"precision_precise": "Precise",
+				"precision_balanced": "Balanced",
+				"precision_fast": "Fast",
 				"any": "Any",
 				"optimize_gems_tooltip": "Optimize gems and Reforges simultaneously.",
 				"freeze_item_slots_tooltip": "Flag one or more item slots to be \"frozen\", which will prevent the optimizer from changing the Reforge or gems in that slot from their current settings. This can be useful for hybrid classes who use the same gear piece for multiple raid roles.",
@@ -2391,13 +2411,11 @@
 				"enable_modification": "This will enable modification of the default EP weights and setting custom stat caps.",
 				"modify_in_editor": "Ep weights can be modified in the Stat Weights editor.",
 				"hard_cap_info": "If you want to hard cap a stat make sure to put the EP for that stat higher.",
-				"edit_weights": "Edit weights",
+				"edit_weights": "Change weights",
 				"include_gems": "Include gems",
 				"freeze_item_slots": "Freeze item slots",
 				"include_eotbp_socket": "Include EotBP Socket",
-				"include_eotbp_socket_tooltip": "Allows the optimiser to also include the \"Eye of the Black Prince\" socket in the optimization.",
-				"limit_execution_time": "Limit execution time",
-				"limit_execution_time_tooltip": "If checked, the solver will error out if the total computation time exceeds 30 seconds. If unchecked, then total computation time will be capped at 1 hour instead."
+				"include_eotbp_socket_tooltip": "Allows the optimiser to also include the \"Eye of the Black Prince\" socket in the optimization."
 			}
 		},
 		"header": {

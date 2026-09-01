@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"reflect"
@@ -55,6 +54,41 @@ func SplitSimRequestForConcurrency(request *proto.RaidSimRequest, splitCount int
 type raidSimResultCombiner struct {
 	Debug    bool
 	Combined *proto.RaidSimResult
+
+	// Per-unit lookup indexes for the combined result. Without these, matching an
+	// incoming action/resource against the combined unit is a linear scan that
+	// renders every proto.ActionID to text, which dominates the merge cost.
+	actionIndexByUnit   map[*proto.UnitMetrics]map[actionMetricsKey]*proto.ActionMetrics
+	resourceIndexByUnit map[*proto.UnitMetrics]map[resourceMetricsKey]*proto.ResourceMetrics
+}
+
+// actionIDKey is a comparable stand-in for proto.ActionID.String(). kind
+// distinguishes the oneof case so a zero-valued id in one case can never alias
+// an unset id in another.
+type actionIDKey struct {
+	kind uint8
+	id   int32
+	tag  int32
+}
+
+type actionMetricsKey = actionIDKey
+
+type resourceMetricsKey struct {
+	action       actionIDKey
+	resourceType proto.ResourceType
+}
+
+func newActionIDKey(id *proto.ActionID) actionIDKey {
+	key := actionIDKey{tag: id.GetTag()}
+	switch rawID := id.GetRawId().(type) {
+	case *proto.ActionID_SpellId:
+		key.kind, key.id = 1, rawID.SpellId
+	case *proto.ActionID_ItemId:
+		key.kind, key.id = 2, rawID.ItemId
+	case *proto.ActionID_OtherId:
+		key.kind, key.id = 3, int32(rawID.OtherId)
+	}
+	return key
 }
 
 func (rsrc *raidSimResultCombiner) newDistMetrics() *proto.DistributionMetrics {
@@ -112,6 +146,14 @@ func (rsrc *raidSimResultCombiner) newPartyMetrics(baseParty *proto.PartyMetrics
 }
 
 func (rsrc *raidSimResultCombiner) combineDistMetrics(base *proto.DistributionMetrics, add *proto.DistributionMetrics, isLast bool, weight float64) {
+	CombineDistributionMetrics(base, add, isLast, weight)
+}
+
+// CombineDistributionMetrics folds `add` into `base` as a weighted contribution.
+// AggregatorData carries the sample count and sum of squares, so the standard
+// deviation can be recomputed once the last contribution is in - pass isLast on the
+// final call. `base` must be initialised with a non-nil Hist and AggregatorData.
+func CombineDistributionMetrics(base *proto.DistributionMetrics, add *proto.DistributionMetrics, isLast bool, weight float64) {
 	base.Avg += add.Avg * weight
 
 	if add.Max > base.Max {
@@ -140,15 +182,20 @@ func (rsrc *raidSimResultCombiner) combineDistMetrics(base *proto.DistributionMe
 }
 
 func (rsrc *raidSimResultCombiner) addActionMetrics(unit *proto.UnitMetrics, add *proto.ActionMetrics) {
-	var am *proto.ActionMetrics
-
-	addKey := add.Id.String()
-	for _, baseAction := range unit.Actions {
-		if baseAction.Id.String() == addKey {
-			am = baseAction
-			break
+	actionIndex, ok := rsrc.actionIndexByUnit[unit]
+	if !ok {
+		actionIndex = make(map[actionMetricsKey]*proto.ActionMetrics, len(unit.Actions))
+		for _, baseAction := range unit.Actions {
+			actionIndex[newActionIDKey(baseAction.Id)] = baseAction
 		}
+		if rsrc.actionIndexByUnit == nil {
+			rsrc.actionIndexByUnit = make(map[*proto.UnitMetrics]map[actionMetricsKey]*proto.ActionMetrics)
+		}
+		rsrc.actionIndexByUnit[unit] = actionIndex
 	}
+
+	addKey := newActionIDKey(add.Id)
+	am := actionIndex[addKey]
 
 	if am == nil {
 		am = &proto.ActionMetrics{
@@ -164,6 +211,7 @@ func (rsrc *raidSimResultCombiner) addActionMetrics(unit *proto.UnitMetrics, add
 			}
 		}
 		unit.Actions = append(unit.Actions, am)
+		actionIndex[addKey] = am
 	}
 
 	for i, baseTgt := range am.Targets {
@@ -211,18 +259,24 @@ func (rsrc *raidSimResultCombiner) combineAuraMetrics(base *proto.AuraMetrics, a
 }
 
 func (rsrc *raidSimResultCombiner) addResourceMetrics(unit *proto.UnitMetrics, add *proto.ResourceMetrics) {
-	var rm *proto.ResourceMetrics
-
-	rkey := func(r *proto.ResourceMetrics) string {
-		return fmt.Sprintf("%s-%d", r.Id.String(), r.Type)
+	rkey := func(r *proto.ResourceMetrics) resourceMetricsKey {
+		return resourceMetricsKey{action: newActionIDKey(r.Id), resourceType: r.Type}
 	}
 
-	for _, baseResource := range unit.Resources {
-		if rkey(baseResource) == rkey(add) {
-			rm = baseResource
-			break
+	resourceIndex, ok := rsrc.resourceIndexByUnit[unit]
+	if !ok {
+		resourceIndex = make(map[resourceMetricsKey]*proto.ResourceMetrics, len(unit.Resources))
+		for _, baseResource := range unit.Resources {
+			resourceIndex[rkey(baseResource)] = baseResource
 		}
+		if rsrc.resourceIndexByUnit == nil {
+			rsrc.resourceIndexByUnit = make(map[*proto.UnitMetrics]map[resourceMetricsKey]*proto.ResourceMetrics)
+		}
+		rsrc.resourceIndexByUnit[unit] = resourceIndex
 	}
+
+	addKey := rkey(add)
+	rm := resourceIndex[addKey]
 
 	if rm == nil {
 		rm = &proto.ResourceMetrics{
@@ -230,6 +284,7 @@ func (rsrc *raidSimResultCombiner) addResourceMetrics(unit *proto.UnitMetrics, a
 			Type: add.Type,
 		}
 		unit.Resources = append(unit.Resources, rm)
+		resourceIndex[addKey] = rm
 	}
 
 	rm.Events += add.Events

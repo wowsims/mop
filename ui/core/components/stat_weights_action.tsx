@@ -372,7 +372,7 @@ export class EpWeightsMenu extends BaseModal {
 			isRunning = true;
 
 			try {
-				await this.simUI.sim.signalManager.abortType(RequestTypes.All);
+				await this.simUI.sim.signalManager.abortType(RequestTypes.StatWeights);
 			} catch (error) {
 				console.error(error);
 				return;
