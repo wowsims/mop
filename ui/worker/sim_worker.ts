@@ -122,10 +122,25 @@ function setupWorkerInterface() {
 const go = new Go();
 let inst: WebAssembly.Instance | null = null;
 
-WebAssembly.instantiateStreaming(fetch('lib.wasm'), go.importObject).then(async result => {
-	inst = result.instance;
-	// console.log("loading wasm...")
-	await go.run(inst);
-});
+// The sim module is fetched and compiled ONCE on the main thread and shared with every
+// wasm worker as a compiled WebAssembly.Module (structured clone)
+const requestWasmModule = (): Promise<WebAssembly.Module> =>
+	new Promise(resolve => {
+		const onModule = ({ data }: MessageEvent<{ msg: string; module?: WebAssembly.Module }>) => {
+			if (data?.msg !== 'wasmModule' || !data.module) return;
+			removeEventListener('message', onModule);
+			resolve(data.module);
+		};
+		addEventListener('message', onModule);
+		postMessage({ msg: 'wasmModuleRequest' });
+	});
+
+requestWasmModule()
+	.then(module => WebAssembly.instantiate(module, go.importObject))
+	.then(async instance => {
+		inst = instance;
+		await go.run(inst);
+	})
+	.catch(error => console.error('Sim wasm worker failed to start:', error));
 
 export {};

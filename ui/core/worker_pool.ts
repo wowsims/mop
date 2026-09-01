@@ -1,4 +1,5 @@
 import { AsyncSimRequest, SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '../worker/types';
+import { WorkerPoolManager } from './concurrent_worker_pool';
 import { REPO_NAME } from './constants/other.js';
 import {
 	AbortRequest,
@@ -17,8 +18,8 @@ import {
 	RaidSimRequestSplitResult,
 	RaidSimResult,
 	RaidSimResultCombinationRequest,
-	ReforgeOptimizeRequest,
 	ReforgeOptimizeMode,
+	ReforgeOptimizeRequest,
 	ReforgeOptimizeResult,
 	StatWeightRequestsData,
 	StatWeightsCalcRequest,
@@ -27,9 +28,48 @@ import {
 } from './proto/api.js';
 import { SimSignals } from './sim_signal_manager';
 import { isDevMode, noop } from './utils';
-import { WorkerPoolManager } from './concurrent_worker_pool';
 
 const SIM_WORKER_URL = `/${REPO_NAME}/sim_worker.js`;
+const SIM_WASM_URL = `/${REPO_NAME}/lib.wasm.gz`;
+
+// lib.wasm ships gzipped (Cloudflare Pages caps files at 25 MiB; the raw module exceeds it)
+// and is fetched + compiled exactly once here, then shared with every wasm worker as a
+// compiled WebAssembly.Module via structured clone - spawning N workers costs one download
+// and one compile instead of N of each. Decompression streams, so compilation overlaps the
+// download. The magic-byte sniff keeps this working behind servers that set
+// Content-Encoding for .gz files and hand the browser already-decompressed bytes.
+let sharedWasmModule: Promise<WebAssembly.Module> | undefined;
+const getSharedWasmModule = (): Promise<WebAssembly.Module> => {
+	sharedWasmModule ??= (async () => {
+		if (typeof DecompressionStream === 'undefined') {
+			throw new Error('This browser does not support DecompressionStream; the in-browser sim requires a current browser version.');
+		}
+		const response = await fetch(SIM_WASM_URL);
+		if (!response.ok || !response.body) {
+			throw new Error(`Failed to fetch sim wasm module: HTTP ${response.status}`);
+		}
+		const [peekStream, bodyStream] = response.body.tee();
+		// Streams guarantee no minimum chunk size, so accumulate until the two magic bytes
+		// are available (or the stream ends) before classifying.
+		const reader = peekStream.getReader();
+		const peeked: number[] = [];
+		while (peeked.length < 2) {
+			const { value, done } = await reader.read();
+			if (done) break;
+			peeked.push(...value.slice(0, 2 - peeked.length));
+		}
+		reader.cancel().catch(() => {});
+		const isGzip = peeked[0] === 0x1f && peeked[1] === 0x8b;
+		const wasmStream = isGzip ? bodyStream.pipeThrough(new DecompressionStream('gzip')) : bodyStream;
+		return WebAssembly.compileStreaming(new Response(wasmStream, { headers: { 'Content-Type': 'application/wasm' } }));
+	})().catch(error => {
+		// Never memoize a failure: a transient fetch error must not brick every current and
+		// future worker for the page lifetime (cf. initHiGHS in ui/worker/sim_worker.ts).
+		sharedWasmModule = undefined;
+		throw error;
+	});
+	return sharedWasmModule;
+};
 export type WorkerProgressCallback = (progressMetrics: ProgressMetrics) => void;
 
 /**
@@ -101,7 +141,15 @@ export class WorkerPool {
 		const id = generateRequestId(SimRequest.statWeightsAsync);
 
 		const iterations = request.simOptions ? request.simOptions.iterations * request.statsToWeigh.length : 30000;
-		const result = await this.doAsyncRequest(SimRequest.statWeightsAsync, StatWeightsRequest.toBinary(request), id, worker, onProgress, iterations, signals);
+		const result = await this.doAsyncRequest(
+			SimRequest.statWeightsAsync,
+			StatWeightsRequest.toBinary(request),
+			id,
+			worker,
+			onProgress,
+			iterations,
+			signals,
+		);
 
 		worker.log(() => 'Stat weights result: ' + StatWeightsResult.toJsonString(result.finalWeightResult!));
 		return result.finalWeightResult!;
@@ -248,7 +296,9 @@ export class WorkerPool {
 	}
 
 	private isFinalProgress(progress: ProgressMetrics): boolean {
-		return progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null || progress.finalReforgeResult != null;
+		return (
+			progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null || progress.finalReforgeResult != null
+		);
 	}
 
 	private newProgressHandler(
@@ -318,6 +368,19 @@ class SimWorker {
 					break;
 				case 'idConfirm':
 					break;
+				case 'wasmModuleRequest': {
+					// Reply to the worker that asked, not whichever worker the pool slot holds
+					// by the time the module resolves (the slot can be recycled meanwhile).
+					const requestingWorker = this.worker;
+					getSharedWasmModule().then(
+						module => {
+							const reply: WorkerReceiveMessage = { msg: 'wasmModule', module };
+							requestingWorker?.postMessage(reply);
+						},
+						error => console.error('Failed to load sim wasm module:', error),
+					);
+					break;
+				}
 				default:
 					if (!id) {
 						console.warn(`Received ${msg} worker result without an id`);
