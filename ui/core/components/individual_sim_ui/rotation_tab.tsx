@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import i18n from '../../../i18n/config';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
@@ -10,6 +12,7 @@ import { ContentBlock } from '../content_block';
 import * as IconInputs from '../icon_inputs';
 import { Input } from '../input';
 import { BooleanPicker } from '../pickers/boolean_picker';
+import { TextDropdownPicker } from '../pickers/dropdown_picker';
 import { EnumPicker } from '../pickers/enum_picker';
 import { NumberPicker } from '../pickers/number_picker';
 import { SavedDataManager } from '../saved_data_manager';
@@ -21,8 +24,6 @@ import { APLPrePullListPicker } from './apl/pre_pull_list_picker';
 import { APLPriorityListPicker } from './apl/priority_list_picker';
 import { CooldownsPicker } from './cooldowns_picker';
 import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
-import { TextDropdownPicker } from '../pickers/dropdown_picker';
-import clsx from 'clsx';
 
 export class RotationTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
@@ -278,6 +279,7 @@ export class RotationTab extends SimTab {
 		});
 
 		this.simUI.sim.waitForInit().then(() => {
+			if (this.isDisposed) return;
 			savedRotationsManager.loadUserData();
 			(this.simUI.individualConfig.presets.rotations || []).forEach(presetRotation => {
 				const rotData = presetRotation.rotation;

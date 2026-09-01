@@ -163,7 +163,12 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 	setInputValue(newValue: Array<ItemType>): void {
 		// Add/remove pickers to make the lengths match.
 		if (newValue.length < this.itemPickerPairs.length) {
-			this.itemPickerPairs.slice(newValue.length).forEach(ipp => ipp.elem.remove());
+			this.itemPickerPairs.slice(newValue.length).forEach(ipp => {
+				const childIdx = this.children.indexOf(ipp.picker);
+				if (childIdx >= 0) this.children.splice(childIdx, 1);
+				ipp.picker.dispose();
+				ipp.elem.remove();
+			});
 			this.itemPickerPairs = this.itemPickerPairs.slice(0, newValue.length);
 		} else if (newValue.length > this.itemPickerPairs.length) {
 			const numToAdd = newValue.length - this.itemPickerPairs.length;
@@ -179,7 +184,13 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		}
 
 		// Set all the values.
-		newValue.forEach((val, i) => this.itemPickerPairs[i].picker.setInputValue(val));
+		newValue.forEach((val, i) => {
+			const picker = this.itemPickerPairs[i].picker;
+			picker.setInputValue(val);
+			// Items may not subscribe themselves (see APL child pickers); keep
+			// their enable/show state in sync from the cascade.
+			picker.update();
+		});
 	}
 
 	private actionEnabled(action: ListItemAction): boolean {
@@ -250,6 +261,12 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		});
 
 		const item: ItemPickerPair<ItemType> = { elem: itemContainer, picker: itemPicker, idx: index };
+		this.addChild(itemPicker);
+		// Per-item resources (tooltips, document-level listeners) are released
+		// with the item picker, not with the whole list.
+		const itemAbort = new AbortController();
+		const itemSignal = itemAbort.signal;
+		itemPicker.addOnDisposeCallback(() => itemAbort.abort());
 
 		if (this.actionEnabled('delete')) {
 			if (!this.config.minimumItems || index + 1 > this.config.minimumItems) {
@@ -273,7 +290,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 					},
 					{ signal: this.signal },
 				);
-				this.addOnDisposeCallback(() => deleteButtonTooltip?.destroy());
+				itemPicker.addOnDisposeCallback(() => deleteButtonTooltip?.destroy());
 				this.addHoverListeners(deleteButton);
 			}
 		}
@@ -301,7 +318,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 					},
 					{ signal: this.signal },
 				);
-				this.addOnDisposeCallback(() => extraTooltip?.destroy());
+				itemPicker.addOnDisposeCallback(() => extraTooltip?.destroy());
 				this.addHoverListeners(extraButton);
 				if (extraAction.shouldShow) {
 					extraActionButtons.push({ elem: extraButton, shouldShow: extraAction.shouldShow });
@@ -332,7 +349,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 				},
 				{ signal: this.signal },
 			);
-			this.addOnDisposeCallback(() => copyButtonTooltip?.destroy());
+			itemPicker.addOnDisposeCallback(() => copyButtonTooltip?.destroy());
 			this.addHoverListeners(copyButton);
 		}
 
@@ -394,7 +411,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						itemContainer.removeAttribute('draggable');
 					}
 				},
-				{ signal: this.signal },
+				{ signal: itemSignal },
 			);
 
 			const droppingActionOnOtherList = () => {

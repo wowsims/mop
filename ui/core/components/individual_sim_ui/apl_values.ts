@@ -1,21 +1,31 @@
-import { Player } from '../../player.js';
+import i18n from '../../../i18n/config';
 import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
+import { Player } from '../../player.js';
 import {
 	APLValue,
+	APLValueActionGroupUsed,
+	APLValueActiveItemSwapSet,
+	APLValueAfflictionCurrentSnapshot,
+	APLValueAfflictionExhaleWindow,
 	APLValueAllTrinketStatProcsActive,
-	APLValueAnyTrinketStatProcsAvailable,
 	APLValueAnd,
 	APLValueAnyStatBuffCooldownsActive,
 	APLValueAnyStatBuffCooldownsMinDuration,
 	APLValueAnyTrinketStatProcsActive,
+	APLValueAnyTrinketStatProcsAvailable,
+	APLValueAuraICDIsReady,
 	APLValueAuraInternalCooldown,
 	APLValueAuraIsActive,
+	APLValueAuraIsInactive,
 	APLValueAuraIsKnown,
 	APLValueAuraNumStacks,
 	APLValueAuraRemainingTime,
 	APLValueAuraShouldRefresh,
 	APLValueAutoTimeToNext,
+	APLValueBossCurrentTarget,
+	APLValueBossSpellCastTimeRemaining,
 	APLValueBossSpellIsCasting,
+	APLValueBossSpellIsKnown,
 	APLValueBossSpellTimeToReady,
 	APLValueCatExcessEnergy,
 	APLValueCatNewSavageRoarDuration,
@@ -42,18 +52,20 @@ import {
 	APLValueCurrentSolarEnergy,
 	APLValueCurrentTime,
 	APLValueCurrentTimePercent,
+	APLValueDotBaseDuration,
 	APLValueDotIsActive,
 	APLValueDotIsActiveOnAllTargets,
 	APLValueDotLowestRemainingTime,
 	APLValueDotPercentIncrease,
 	APLValueDotRemainingTime,
 	APLValueDotTickFrequency,
-	APLValueAfflictionCurrentSnapshot,
+	APLValueDotTimeToNextTick,
 	APLValueEnergyRegenPerSecond,
 	APLValueEnergyTimeToTarget,
 	APLValueFocusRegenPerSecond,
 	APLValueFocusTimeToTarget,
 	APLValueFrontOfTarget,
+	APLValueFullRuneCooldown,
 	APLValueGCDIsReady,
 	APLValueGCDTimeToReady,
 	APLValueInputDelay,
@@ -73,13 +85,13 @@ import {
 	APLValueMonkCurrentChi,
 	APLValueMonkMaxChi,
 	APLValueNextRuneCooldown,
-	APLValueFullRuneCooldown,
 	APLValueNot,
 	APLValueNumberTargets,
 	APLValueNumEquippedStatProcTrinkets,
 	APLValueNumStatBuffCooldowns,
 	APLValueOr,
 	APLValueProtectionPaladinDamageTakenLastGlobal,
+	APLValueRemainingCastTime,
 	APLValueRemainingTime,
 	APLValueRemainingTimePercent,
 	APLValueRuneCooldown,
@@ -93,6 +105,10 @@ import {
 	APLValueSpellChanneledTicks,
 	APLValueSpellCPM,
 	APLValueSpellCurrentCost,
+	APLValueSpellFullCooldown,
+	APLValueSpellGCDHastedDuration,
+	APLValueSpellInFlight,
+	APLValueSpellIsCasting,
 	APLValueSpellIsChanneling,
 	APLValueSpellIsKnown,
 	APLValueSpellIsReady,
@@ -108,21 +124,6 @@ import {
 	APLValueVariablePlaceholder,
 	APLValueWarlockHandOfGuldanInFlight,
 	APLValueWarlockHauntInFlight,
-	APLValueAfflictionExhaleWindow,
-	APLValueAuraIsInactive,
-	APLValueAuraICDIsReady,
-	APLValueActiveItemSwapSet,
-	APLValueDotBaseDuration,
-	APLValueSpellGCDHastedDuration,
-	APLValueSpellFullCooldown,
-	APLValueDotTimeToNextTick,
-	APLValueSpellInFlight,
-	APLValueBossCurrentTarget,
-	APLValueBossSpellIsKnown,
-	APLValueBossSpellCastTimeRemaining,
-	APLValueSpellIsCasting,
-	APLValueRemainingCastTime,
-	APLValueActionGroupUsed,
 } from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
@@ -132,7 +133,7 @@ import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import i18n from '../../../i18n/config';
+import { APL_CHILD_CHANGED_EVENT } from './apl_helpers';
 import * as AplHelpers from './apl_helpers.js';
 
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
@@ -201,7 +202,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				}),
 			),
 			equals: (a, b) => a == b,
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
 			setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
 				const sourceValue = this.getSourceValue();
@@ -346,6 +347,9 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		this.currentKind = newKind;
 
 		if (this.valuePicker) {
+			const childIdx = this.children.indexOf(this.valuePicker);
+			if (childIdx >= 0) this.children.splice(childIdx, 1);
+			this.valuePicker.dispose();
 			this.valuePicker.rootElem.remove();
 			this.valuePicker = null;
 		}
@@ -359,7 +363,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		const factory = valueKindFactories[newKind];
 		this.valuePicker = factory.factory(this.rootElem, this.modObject, {
 			id: randomUUID(),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: () => {
 				const sourceVal = this.getSourceValue();
 				return sourceVal ? (sourceVal.value as any)[newKind] || factory.newValue() : factory.newValue();
@@ -372,6 +376,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				player.rotationChangeEmitter.emit(eventID);
 			},
 		});
+		this.addChild(this.valuePicker);
 	}
 }
 

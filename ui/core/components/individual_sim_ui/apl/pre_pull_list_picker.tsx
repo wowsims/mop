@@ -9,6 +9,7 @@ import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { AdaptiveStringPicker } from '../../pickers/string_picker';
 import { APLActionPicker } from '../apl_actions';
+import { APL_CHILD_CHANGED_EVENT } from '../apl_helpers';
 import { APLValueImplStruct, APLValuePicker } from '../apl_values';
 import { APLHidePicker } from './hide_picker';
 
@@ -62,7 +63,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		ListPicker.makeListItemValidations(itemHeaderElem, player, player => player.getCurrentStats().rotationStats?.prepullActions[index]?.validations || []);
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
+			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: () => this.getItem().hide,
 			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 				this.getItem().hide = newValue;
@@ -75,7 +76,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 			label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
 			labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
 			extraCssClasses: ['apl-prepull-actions-doat'],
-			changedEvent: () => this.player.rotationChangeEmitter,
+			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: () => this.getItem().doAtValue,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
 				if (newValue) {
@@ -92,7 +93,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		});
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
+			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: () => this.getItem().action!,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
 				this.getItem().action = newValue;

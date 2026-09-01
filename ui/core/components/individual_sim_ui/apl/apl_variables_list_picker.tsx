@@ -9,6 +9,7 @@ import { randomUUID } from '../../../utils';
 import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
+import { APL_CHILD_CHANGED_EVENT } from '../apl_helpers';
 import { APLValuePicker } from '../apl_values';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLNameModal } from './apl_name_modal';
@@ -134,7 +135,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 			id: randomUUID(),
 			label: i18n.t('rotation_tab.apl.variables.attributes.value'),
 			labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: () => this.getSourceValue().value,
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const sourceValue = this.getSourceValue();
