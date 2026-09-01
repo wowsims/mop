@@ -84,10 +84,10 @@ BANNED: core/** (except components/) → core/components/**
 
 ## Phases (each independently shippable; site never broken)
 
-### Phase 0 — Safety net (S, days)
-1. Eslint restricted-path rule at **warn** (7 known violators).
-2. Golden snapshot tests via the vite-SSR node harness (memory: `reference-run-ui-ts-in-node`): per launched spec, construct sim+player, `applyDefaults`, snapshot `toProto(...).toJsonString()`; link export→import round trip; `fromProto(toProto(x)) == x`. This is the no-behavior-change oracle for every later phase.
-3. Snapshot the localStorage payload after a scripted mutation — indirectly locks the load-order contract (`individual_sim_ui.tsx:398-437`).
+### Phase 0 — Safety net (S, days) — ✅ DONE (commit 792bb2724)
+1. ✅ oxlint `no-restricted-imports` rule at **warn** — flags exactly the known violators (player.ts ×3, sim.ts ×2, reforge_cache.ts ×2, preset_utils.tsx ×2), zero noise. (The repo uses oxlint, not eslint.)
+2. ✅ Golden snapshot harness (`tools/state-snapshots/`, `npm run test:snapshots`): all 34 launched specs, Sim+Player constructed in node (vite SSR bundle + happy-dom), spec defaults applied, player/sim/raid/encounter protos snapshotted against a committed golden; `fromProto(toProto(x))` asserted as a fixed point. Deterministic across runs. Quirks encoded, not fixed: `Sim.toProto` collapses all-selected filter arrays; `Sim.fromProto` re-expands them AND mutates its argument in place; `waitForInit` never resolves under a stubbed Worker (await `Database.get()` instead).
+3. → moved to Phase 2: the `IndividualSimSettings` envelope (reforge settings, ref stats, load-order contract) is serialized by UI classes today; it gets covered when Phase 2 extracts it into `core/state/serialization.ts`.
 
 ### Phase 1 — Import inversions: make `core/` UI-free (M, ~1 wk)
 Pure file moves + callback injection, no store yet:
@@ -150,6 +150,6 @@ Verify per PR: snapshots + bridge test — mutate via facade, assert (a) selecto
 
 ## Execution notes
 
-- Work happens in a **new git worktree + feature branch** (e.g. `feature/state-ui-separation` off `master`) — keeps `feature/backend-reforge` untouched.
-- First step in the worktree: copy this plan into the repo as `STATE_UI_SEPARATION_PLAN.md` (matches the repo-root doc convention) so it lives with the code.
+- Work happens in worktree `~/personal/wowsims-mop-state`, branch `feature/state-ui-separation` (off `master`).
+- Generated artifacts (`ui/core/proto/*`, `*_auto_gen.ts`) were copied from the main checkout; verified identical generator inputs between master and backend-reforge, so the golden is branch-clean.
 - Effort: ~6–9 weeks focused work total; every PR ships green.
