@@ -12,6 +12,9 @@ Prerequisites: a Go host serving a built `dist/` (see `.github/skills/wowsims-ui
   Timeline, then swap 4×. Reports per swap: sync click cost, settle time (last DOM mutation),
   mutation count, long tasks, live tippy tooltip count in the timeline, and whether a
   timeline tooltip can still open after the swaps.
+- `spec-sweep.js` — smoke every DPS/tank spec: load, picker count, Simulate, real result, console +
+  page errors. Known noise: `Empty action id!` x2 on the hunter specs and elemental shaman (present on
+  master too; comes from result data with no spell/item id).
 - `apl-edit-timing.js` — open Rotation, apply the Unholy DK "Festerblight" preset (317 list
   items), then bump a visible numeric APL input 4×. Reports sync/settle/mutations/long tasks.
 
