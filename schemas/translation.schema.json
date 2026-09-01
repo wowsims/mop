@@ -7093,6 +7093,9 @@
 								"top_button": {
 									"type": "string"
 								},
+								"export_button": {
+									"type": "string"
+								},
 								"time_column": {
 									"type": "string"
 								},
