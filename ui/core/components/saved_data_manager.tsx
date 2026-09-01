@@ -42,6 +42,10 @@ export type SavedDataConfig<ModObject, T> = {
 type SavedData<ModObject, T> = {
 	name: string;
 	data: T;
+	// Serialized form of `data`, compared against the current value by string
+	// so an active-check costs one serialization per manager, not one deep
+	// proto equals per entry.
+	dataJson: string | null;
 	elem: HTMLElement;
 } & Pick<SavedDataConfig<ModObject, T>, 'enableWhen' | 'onLoad'>;
 
@@ -58,6 +62,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 	private saveInput?: HTMLInputElement;
 
 	private frozen: boolean;
+	private checkPending = false;
 
 	constructor(parent: HTMLElement | null, modObject: ModObject, config: SavedDataManagerConfig<ModObject, T>) {
 		super(parent, 'saved-data-manager-root');
@@ -67,6 +72,12 @@ export class SavedDataManager<ModObject, T> extends Component {
 		this.userData = [];
 		this.presets = [];
 		this.frozen = false;
+
+		// One coalesced active-check per manager per change burst, deferred to
+		// the next frame: the old per-entry deep equals on every change was the
+		// dominant cost of an APL edit (~166 ms on a large rotation).
+		const emitters = this.config.changeEmitters.map(emitter => emitter.on(() => this.scheduleChecks()));
+		this.addOnDisposeCallback(() => emitters.forEach(emitter => emitter.dispose()));
 
 		if (config.extraCssClasses) this.rootElem.classList.add(...config.extraCssClasses);
 
@@ -168,33 +179,67 @@ export class SavedDataManager<ModObject, T> extends Component {
 			});
 		}
 
-		const checkActive = () => {
-			if (this.config.equals(config.data, this.config.getData(this.modObject))) {
-				dataElem.classList.add('active');
-				if (this.saveInput) this.saveInput.value = config.name;
-			} else {
-				dataElem.classList.remove('active');
-			}
-
-			if (config.enableWhen && !config.enableWhen(this.modObject)) {
-				dataElem.classList.add('disabled');
-			} else {
-				dataElem.classList.remove('disabled');
-			}
-		};
-
-		checkActive();
-		const emitters = this.config.changeEmitters.map(emitter => emitter.on(checkActive));
-		this.addOnDisposeCallback(() => emitters.map(emitter => emitter.dispose()));
-
-		return {
+		const savedData: SavedData<ModObject, T> = {
 			name: config.name,
 			data: config.data,
+			dataJson: this.serialize(config.data),
 			elem: dataElem,
 			enableWhen: config.enableWhen,
 			onLoad: config.onLoad,
 		};
+		// Initial render is synchronous, as before.
+		this.checkEntry(savedData, this.serialize(this.config.getData(this.modObject)));
+
+		return savedData;
 	}
+
+	private serialize(data: T): string | null {
+		try {
+			return JSON.stringify(this.config.toJson(data));
+		} catch {
+			return null;
+		}
+	}
+
+	private scheduleChecks() {
+		if (this.checkPending) return;
+		this.checkPending = true;
+		const run = () => {
+			this.checkPending = false;
+			this.runChecks();
+		};
+		if (typeof requestAnimationFrame === 'function') {
+			requestAnimationFrame(run);
+		} else {
+			setTimeout(run, 0);
+		}
+	}
+
+	private runChecks() {
+		const currentJson = this.serialize(this.config.getData(this.modObject));
+		this.presets.forEach(entry => this.checkEntry(entry, currentJson));
+		this.userData.forEach(entry => this.checkEntry(entry, currentJson));
+	}
+
+	private checkEntry(entry: SavedData<ModObject, T>, currentJson: string | null) {
+		const isActive =
+			entry.dataJson != null && currentJson != null
+				? entry.dataJson === currentJson
+				: this.config.equals(entry.data, this.config.getData(this.modObject));
+		if (isActive) {
+			entry.elem.classList.add('active');
+			if (this.saveInput) this.saveInput.value = entry.name;
+		} else {
+			entry.elem.classList.remove('active');
+		}
+
+		if (entry.enableWhen && !entry.enableWhen(this.modObject)) {
+			entry.elem.classList.add('disabled');
+		} else {
+			entry.elem.classList.remove('disabled');
+		}
+	}
+
 
 	// Save data to window.localStorage.
 	private saveUserData() {

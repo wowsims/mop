@@ -427,9 +427,24 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			// This needs to go last so it doesn't re-store things as they are initialized.
 			const events = [this.changeEmitter];
 			if (this.reforger?.changeEmitter) events.push(this.reforger.changeEmitter);
-			TypedEvent.onAny(events).on(_eventID => {
+			// Debounced: serializing + storing the full settings on every keystroke
+			// cost ~50 ms per APL edit. A pending write is flushed on page hide.
+			const persist = () => {
 				const jsonStr = IndividualSimSettings.toJsonString(this.toProto());
 				window.localStorage.setItem(this.getSettingsStorageKey(), jsonStr);
+			};
+			let persistTimer: ReturnType<typeof setTimeout> | null = null;
+			const flushPersist = () => {
+				if (persistTimer == null) return;
+				clearTimeout(persistTimer);
+				persistTimer = null;
+				persist();
+			};
+			window.addEventListener('pagehide', flushPersist);
+			window.addEventListener('beforeunload', flushPersist);
+			TypedEvent.onAny(events).on(_eventID => {
+				if (persistTimer != null) clearTimeout(persistTimer);
+				persistTimer = setTimeout(flushPersist, 300);
 			});
 
 			this.statWeightActionSettings.load(initEventID);
