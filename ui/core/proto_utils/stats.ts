@@ -707,3 +707,68 @@ export const DEFAULT_GEM_STATS = [
 ];
 export const DEFAULT_CASTER_GEM_STATS = [...DEFAULT_GEM_STATS, Stat.StatIntellect, Stat.StatSpellPower];
 export const DEFAULT_HYBRID_CASTER_GEM_STATS = [...DEFAULT_CASTER_GEM_STATS, Stat.StatSpirit];
+
+// ---------------------------------------------------------------------------
+// Stat attribution (moved out of components/character_stats.tsx so the math is
+// UI-free and reusable).
+
+export type StatMods = { base?: Stats; gear?: Stats; talents?: Stats; buffs?: Stats; consumes?: Stats; final?: Stats; stats?: Array<Stat> };
+export type StatWrites = { base: Stats; gear: Stats; talents: Stats; buffs: Stats; consumes: Stats; final: Stats; stats: Array<Stat> };
+
+export interface StatAttribution {
+	base: Stats;
+	gear: Stats;
+	talents: Stats;
+	buffs: Stats;
+	consumes: Stats;
+	final: Stats;
+	masteryPoints: number;
+}
+
+// Derives the per-source stat deltas shown in the character sheet from the
+// cumulative server-computed stages (base ⊂ gear ⊂ talents ⊂ buffs ⊂ consumes).
+export function computeStatAttribution(
+	playerStats: { baseStats?: UnitStats; gearStats?: UnitStats; talentsStats?: UnitStats; buffsStats?: UnitStats; consumesStats?: UnitStats; finalStats?: UnitStats },
+	bonusStats: Stats,
+	baseMastery: number,
+	statMods: StatMods,
+	statOverwrites?: StatWrites,
+): StatAttribution {
+	const baseStats = Stats.fromProto(playerStats.baseStats);
+	const gearStats = Stats.fromProto(playerStats.gearStats);
+	const talentsStats = Stats.fromProto(playerStats.talentsStats);
+	const buffsStats = Stats.fromProto(playerStats.buffsStats);
+	const consumesStats = Stats.fromProto(playerStats.consumesStats);
+
+	let finalStats = Stats.fromProto(playerStats.finalStats)
+		.add(statMods.base || new Stats())
+		.add(statMods.gear || new Stats())
+		.add(statMods.talents || new Stats())
+		.add(statMods.buffs || new Stats())
+		.add(statMods.consumes || new Stats())
+		.add(statMods.final || new Stats());
+
+	let baseDelta = baseStats.add(statMods.base || new Stats());
+	let gearDelta = gearStats
+		.subtract(baseStats)
+		.subtract(bonusStats)
+		.add(statMods.gear || new Stats());
+	let talentsDelta = talentsStats.subtract(gearStats).add(statMods.talents || new Stats());
+	let buffsDelta = buffsStats.subtract(talentsStats).add(statMods.buffs || new Stats());
+	let consumesDelta = consumesStats.subtract(buffsStats).add(statMods.consumes || new Stats());
+
+	if (statOverwrites?.stats) {
+		statOverwrites.stats.forEach((stat, _) => {
+			baseDelta = baseDelta.withStat(stat, statOverwrites.base.getStat(stat));
+			gearDelta = gearDelta.withStat(stat, statOverwrites.gear.getStat(stat));
+			talentsDelta = talentsDelta.withStat(stat, statOverwrites.talents.getStat(stat));
+			buffsDelta = buffsDelta.withStat(stat, statOverwrites.buffs.getStat(stat));
+			consumesDelta = consumesDelta.withStat(stat, statOverwrites.consumes.getStat(stat));
+			finalStats = finalStats.withStat(stat, statOverwrites.final.getStat(stat));
+		});
+	}
+
+	const masteryPoints = baseMastery + ((playerStats.finalStats?.stats ?? [])[Stat.StatMasteryRating] || 0) / Mechanics.MASTERY_RATING_PER_MASTERY_POINT;
+
+	return { base: baseDelta, gear: gearDelta, talents: talentsDelta, buffs: buffsDelta, consumes: consumesDelta, final: finalStats, masteryPoints };
+}

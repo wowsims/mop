@@ -4,37 +4,33 @@ import { Class, PartyBuffs } from './proto/common.js';
 import { getPlayerSpecFromPlayer } from './proto_utils/utils.js';
 import { Raid } from './raid.js';
 import { Sim } from './sim.js';
-import { EventID, TypedEvent } from './typed_event.js';
-
+import { batch, EventID } from './state/batch';
 export const MAX_PARTY_SIZE = 5;
 
 // Manages all the settings for a single Party.
 export class Party {
 	readonly sim: Sim;
 	readonly raid: Raid;
-
-	private buffs: PartyBuffs = PartyBuffs.create();
-
-	// Emits when a party member is added/removed/moved.
-	readonly compChangeEmitter = new TypedEvent<void>();
-
-	readonly buffsChangeEmitter = new TypedEvent<void>();
-
-	// Emits when anything in the party changes.
-	readonly changeEmitter: TypedEvent<void>;
+	// This party's fixed index within the raid's parties array.
+	private readonly index: number;
 
 	// Should always hold exactly MAX_PARTY_SIZE elements.
 	private players: Array<Player<any> | null>;
 
-	private readonly playerChangeListener: (eventID: EventID) => void;
 
-	constructor(raid: Raid, sim: Sim) {
+	constructor(raid: Raid, sim: Sim, index: number) {
 		this.sim = sim;
 		this.raid = raid;
+		this.index = index;
 		this.players = [...Array(MAX_PARTY_SIZE).keys()].map(_i => null);
-		this.playerChangeListener = eventID => this.changeEmitter.emit(eventID);
+	}
 
-		this.changeEmitter = TypedEvent.onAny([this.compChangeEmitter, this.buffsChangeEmitter], 'PartyChange');
+	// Writes this party's slot → storeKey row (replace-on-write).
+	private writeComposition(eventID: EventID) {
+		const row = this.players.map(p => (p ? p.storeKey : null));
+		this.sim.store.setState(s => ({
+				raid: { ...s.raid, composition: s.raid.composition.map((r, i) => (i == this.index ? row : r)) },
+			}));
 	}
 
 	size(): number {
@@ -75,10 +71,10 @@ export class Party {
 			return;
 		}
 
-		TypedEvent.freezeAllAndDo(() => {
+		const displaced = newPlayer != null ? this.players[playerIndex] : null;
+		batch(() => {
 			const oldPlayer = this.players[playerIndex];
 			if (oldPlayer != null) {
-				oldPlayer.changeEmitter.off(this.playerChangeListener);
 				oldPlayer.setParty(null);
 			}
 			if (newPlayer != null) {
@@ -87,38 +83,53 @@ export class Party {
 					newPlayerOldParty.setPlayer(eventID, newPlayer.getPartyIndex(), null);
 				}
 				this.players[playerIndex] = newPlayer;
-				newPlayer.changeEmitter.on(this.playerChangeListener);
 				newPlayer.setParty(this);
 			} else {
 				this.players[playerIndex] = null;
 			}
 
-			this.compChangeEmitter.emit(eventID);
+			this.writeComposition(eventID);
 		});
+
+		// Discard detection: a player displaced by a replacement is disposed
+		// unless it gets re-placed somewhere (a move/swap) before the current
+		// task finishes. Removals (newPlayer == null) never dispose — the move
+		// path removes from the old slot first and re-places immediately.
+		if (displaced) {
+			queueMicrotask(() => {
+				if (displaced.getParty() == null && !displaced.isDisposed()) {
+					displaced.dispose();
+				}
+			});
+		}
+	}
+
+	private get storedBuffs(): PartyBuffs {
+		return this.sim.store.getState().raid.partyBuffs[this.index];
 	}
 
 	getBuffs(): PartyBuffs {
 		// Make a defensive copy
-		return PartyBuffs.clone(this.buffs);
+		return PartyBuffs.clone(this.storedBuffs);
 	}
 
 	setBuffs(eventID: EventID, newBuffs: PartyBuffs) {
-		if (PartyBuffs.equals(this.buffs, newBuffs)) return;
+		if (PartyBuffs.equals(this.storedBuffs, newBuffs)) return;
 
 		// Make a defensive copy
-		this.buffs = PartyBuffs.clone(newBuffs);
-		this.buffsChangeEmitter.emit(eventID);
+		const clone = PartyBuffs.clone(newBuffs);
+		this.sim.store.setState(s => ({ raid: { ...s.raid, partyBuffs: s.raid.partyBuffs.map((b, i) => (i == this.index ? clone : b)) } }));
 	}
 
 	toProto(forExport?: boolean, forSimming?: boolean): PartyProto {
 		return PartyProto.create({
 			players: this.players.map(player => (player == null ? PlayerProto.create() : player.toProto(forExport, forSimming))),
-			buffs: this.buffs,
+			buffs: this.storedBuffs,
 		});
 	}
 
 	fromProto(eventID: EventID, proto: PartyProto) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			this.setBuffs(eventID, proto.buffs || PartyBuffs.create());
 
 			for (let i = 0; i < MAX_PARTY_SIZE; i++) {
@@ -138,6 +149,9 @@ export class Party {
 					const newPlayer = new Player(spec, this.sim);
 					newPlayer.fromProto(eventID, playerProto);
 					this.setPlayer(eventID, i, newPlayer);
+					// The replaced instance is referenced nowhere else (pickers
+					// re-sync from the composition write above).
+					currentPlayer?.dispose();
 				}
 			}
 		});

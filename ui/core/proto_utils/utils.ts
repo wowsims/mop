@@ -177,8 +177,6 @@ import { Stats } from './stats.js';
 
 export const NUM_SPECS = getEnumValues(Spec).length;
 
-export const raidSimIcon = '/mop/assets/img/raid_icon.png';
-export const raidSimLabel = 'Full Raid Sim';
 
 // Converts '111111' to [1, 1, 1, 1, 1, 1].
 export function getTalentTreePoints(talentsString: string): Array<number> {
@@ -195,7 +193,6 @@ export function getSpecSiteUrl(classString: string, specString: string): string 
 	const specSiteUrlTemplate = new URL(`${window.location.protocol}//${window.location.host}/${REPO_NAME}/CLASS/SPEC/`).toString();
 	return specSiteUrlTemplate.replace('CLASS', classString).replace('SPEC', specString);
 }
-export const raidSimSiteUrl = new URL(`${window.location.protocol}//${window.location.host}/${REPO_NAME}/raid/`).toString();
 
 export function textCssClassForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 	return `text-${PlayerClasses.getCssClass(playerClass)}`;

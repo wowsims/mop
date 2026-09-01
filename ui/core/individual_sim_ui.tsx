@@ -18,7 +18,6 @@ import {
 	// Individual60UImporter,
 	IndividualAddonImporter,
 	IndividualJsonImporter,
-	IndividualLinkImporter,
 	IndividualWowheadGearPlannerImporter,
 } from './components/individual_sim_ui/importers';
 import { PresetConfigurationPicker } from './components/individual_sim_ui/preset_configuration_picker';
@@ -30,12 +29,11 @@ import * as OtherInputs from './components/inputs/other_inputs';
 import { ItemNotice } from './components/item_notice/item_notice';
 import { addRaidSimAction, RaidSimResultsManager } from './components/raid_sim_action';
 import { SavedDataConfig } from './components/saved_data_manager';
-import { addStatWeightsAction, EpWeightsMenu, StatWeightActionSettings } from './components/stat_weights_action';
+import { addStatWeightsAction, EpWeightsMenu } from './components/stat_weights_action';
 import { ReforgeOptimizer } from './components/suggest_reforges_action';
 import { SimSettingCategories } from './constants/sim_settings';
 import { simLaunchStatuses } from './launched_sims';
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player';
-import { PlayerSpecs } from './player_specs';
 import { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
 import { StatWeightsResult } from './proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
@@ -43,7 +41,6 @@ import {
 	ConsumesSpec,
 	Cooldowns,
 	Debuffs,
-	Encounter as EncounterProto,
 	EquipmentSpec,
 	Faction,
 	Glyphs,
@@ -59,18 +56,24 @@ import {
 	Spec,
 	Stat,
 } from './proto/common';
-import { ReforgeSettings } from './proto/api';
 import { IndividualSimSettings, SavedTalents } from './proto/ui';
 import { getMetaGemConditionDescription } from './proto_utils/gems';
 import { armorTypeNames, professionNames } from './proto_utils/names';
 import { pseudoStatHasCap, StatCap, Stats, UnitStat } from './proto_utils/stats';
-import { getTalentPoints, migrateOldProto, ProtoConversionMap, SpecOptions, SpecRotation } from './proto_utils/utils';
-import { hasRequiredTalents, getMissingTalentRows, getRequiredTalentRows } from './talents/required_talents';
+import { getTalentPoints, SpecOptions, SpecRotation } from './proto_utils/utils';
 import { SimUI, SimWarning } from './sim_ui';
-import { EventID, TypedEvent } from './typed_event';
+import { batch, EventID, nextEventID } from './state/batch';
+import { getSpecStorageKey, loadIndividualSettings } from './state/persistence';
+import {
+	applyIndividualSimSettings,
+	IndividualSimSerializationContext,
+	individualSimSettingsToProto,
+	updateIndividualSimProtoVersion,
+} from './state/serialization';
+import { StatWeightActionSettings } from './state/stat_weight_settings';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from './state/subscriptions';
+import { getMissingTalentRows, getRequiredTalentRows,hasRequiredTalents } from './talents/required_talents';
 import { isDevMode } from './utils';
-import { CURRENT_API_VERSION } from './constants/other';
-
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';
@@ -236,9 +239,59 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 
 	prevEpIterations: number;
 	prevEpSimResult: StatWeightsResult | null;
-	dpsRefStat?: Stat;
-	healRefStat?: Stat;
-	tankRefStat?: Stat;
+	// Reference stats live in the player slice so changes autosave; the
+	// serialization context reads/writes through these accessors.
+	private get refStats_() {
+		const player = this.player;
+		return {
+			get dpsRefStat() {
+				return player.getRefStat('dpsRefStat');
+			},
+			set dpsRefStat(v: Stat | undefined) {
+				player.setRefStat(nextEventID(), 'dpsRefStat', v);
+			},
+			get healRefStat() {
+				return player.getRefStat('healRefStat');
+			},
+			set healRefStat(v: Stat | undefined) {
+				player.setRefStat(nextEventID(), 'healRefStat', v);
+			},
+			get tankRefStat() {
+				return player.getRefStat('tankRefStat');
+			},
+			set tankRefStat(v: Stat | undefined) {
+				player.setRefStat(nextEventID(), 'tankRefStat', v);
+			},
+		};
+	}
+	get dpsRefStat(): Stat | undefined {
+		return this.player.getRefStat('dpsRefStat');
+	}
+	set dpsRefStat(v: Stat | undefined) {
+		this.player.setRefStat(nextEventID(), 'dpsRefStat', v);
+	}
+	get healRefStat(): Stat | undefined {
+		return this.player.getRefStat('healRefStat');
+	}
+	set healRefStat(v: Stat | undefined) {
+		this.player.setRefStat(nextEventID(), 'healRefStat', v);
+	}
+	get tankRefStat(): Stat | undefined {
+		return this.player.getRefStat('tankRefStat');
+	}
+	set tankRefStat(v: Stat | undefined) {
+		this.player.setRefStat(nextEventID(), 'tankRefStat', v);
+	}
+
+	private serializationContext(): IndividualSimSerializationContext {
+		return {
+			player: this.player,
+			sim: this.sim,
+			reforgeSettings: this.reforger?.settings,
+			defaultEpWeights: this.individualConfig.defaults.epWeights,
+			refStats: this.refStats_,
+		};
+	}
 
 	readonly bt: BulkTab | null = null;
 	reforger: ReforgeOptimizer | null = null;
@@ -257,14 +310,14 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 		this.raidSimResultsManager = null;
 		this.prevEpIterations = 0;
 		this.prevEpSimResult = null;
-		this.statWeightActionSettings = new StatWeightActionSettings(this);
+		this.statWeightActionSettings = new StatWeightActionSettings(this.player, this.getStorageKey('__statweight_settings__'));
 
 		if ((config.itemSwapSlots || []).length > 0 && !itemSwapEnabledSpecs.includes(player.getSpec())) {
 			itemSwapEnabledSpecs.push(player.getSpec());
 		}
 
 		this.addWarning({
-			updateOn: this.player.gearChangeEmitter,
+			updateOn: subscribePlayerField(this.player, 'gear'),
 			getContent: () => {
 				if (!this.player.getGear().hasInactiveMetaGem(this.player.isBlacksmithing())) {
 					return '';
@@ -278,7 +331,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			},
 		});
 		this.addWarning({
-			updateOn: TypedEvent.onAny([this.player.gearChangeEmitter, this.player.professionChangeEmitter]),
+			updateOn: subscribeAll([subscribePlayerField(this.player, 'gear'), subscribePlayerField(this.player, 'profession1'), subscribePlayerField(this.player, 'profession2')]),
 			getContent: () => {
 				const failedProfReqs = this.player.getGear().getFailedProfessionRequirements(this.player.getProfessions());
 				if (failedProfReqs.length == 0) {
@@ -294,7 +347,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			},
 		});
 		this.addWarning({
-			updateOn: this.player.gearChangeEmitter,
+			updateOn: subscribePlayerField(this.player, 'gear'),
 			getContent: () => {
 				const jcGems = this.player.getGear().getJCGems(this.player.isBlacksmithing());
 				if (jcGems.length <= 2) {
@@ -307,7 +360,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			},
 		});
 		this.addWarning({
-			updateOn: this.player.talentsChangeEmitter,
+			updateOn: subscribePlayerField(this.player, 'talentsString'),
 			getContent: () => {
 				const talentPoints = getTalentPoints(this.player.getTalentsString());
 				const requiredRows = getRequiredTalentRows(this.individualConfig);
@@ -327,7 +380,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			},
 		});
 		this.addWarning({
-			updateOn: this.player.gearChangeEmitter,
+			updateOn: subscribePlayerField(this.player, 'gear'),
 			getContent: () => {
 				if (!this.player.armorSpecializationArmorType) {
 					return '';
@@ -343,7 +396,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			},
 		});
 		this.addWarning({
-			updateOn: TypedEvent.onAny([this.player.gearChangeEmitter, this.player.talentsChangeEmitter]),
+			updateOn: subscribeAll([subscribePlayerField(this.player, 'gear'), subscribePlayerField(this.player, 'talentsString')]),
 			getContent: () => {
 				if (
 					!this.player.canDualWield2H() &&
@@ -359,18 +412,16 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 		});
 		(config.warnings || []).forEach(warning => this.addWarning(warning(this)));
 
-		if (!this.isWithinRaidSim) {
-			// This needs to go before all the UI components so that gear loading is the
-			// first callback invoked from waitForInit().
-			this.sim.waitForInit().then(() => {
-				ItemNotice.registerSetBonusNotices(this.sim.db);
-				this.loadSettings();
+		// This needs to go before all the UI components so that gear loading is the
+		// first callback invoked from waitForInit().
+		this.sim.waitForInit().then(() => {
+			ItemNotice.registerSetBonusNotices(this.sim.db);
+			this.loadSettings();
 
-				if (this.player.getPlayerSpec().isHealingSpec && !isDevMode()) {
-					alert(i18n.t('sim.healing_sim_disclaimer'));
-				}
-			});
-		}
+			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode()) {
+				alert(i18n.t('sim.healing_sim_disclaimer'));
+			}
+		});
 
 		this.addSidebarComponents();
 		this.addGearTab();
@@ -378,9 +429,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 		this.addTalentsTab();
 		this.addRotationTab();
 
-		if (!this.isWithinRaidSim) {
-			this.addDetailedResultsTab();
-		}
+		this.addDetailedResultsTab();
 
 		this.bt = this.addBulkTab();
 
@@ -396,43 +445,16 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	private loadSettings() {
-		const initEventID = TypedEvent.nextEventID();
-		TypedEvent.freezeAllAndDo(() => {
-			this.applyDefaults(initEventID);
-
-			const savedSettings = window.localStorage.getItem(this.getSettingsStorageKey());
-			if (savedSettings != null) {
-				try {
-					const settings = IndividualSimSettings.fromJsonString(savedSettings, { ignoreUnknownFields: true });
-					this.fromProto(initEventID, settings);
-				} catch (e) {
-					console.warn('Failed to parse saved settings: ' + e);
-				}
-			}
-
-			// Loading from link needs to happen after loading saved settings, so that partial link imports
-			// (e.g. rotation only) include the previous settings for other categories.
-			try {
-				const urlParseResults = IndividualLinkImporter.tryParseUrlLocation(window.location);
-				if (urlParseResults) {
-					this.fromProto(initEventID, urlParseResults.settings, urlParseResults.categories);
-				}
-			} catch (e) {
-				console.warn('Failed to parse link settings: ' + e);
-			}
-			window.location.hash = '';
-
-			this.player.setName(initEventID, 'Player');
-
-			// This needs to go last so it doesn't re-store things as they are initialized.
-			const events = [this.changeEmitter];
-			if (this.reforger?.changeEmitter) events.push(this.reforger.changeEmitter);
-			TypedEvent.onAny(events).on(_eventID => {
-				const jsonStr = IndividualSimSettings.toJsonString(this.toProto());
-				window.localStorage.setItem(this.getSettingsStorageKey(), jsonStr);
-			});
-
-			this.statWeightActionSettings.load(initEventID);
+		// Autosave sources: the sim aggregate (settings + raid + encounter, no
+		// server-derived state) plus the reforge settings.
+		const autosaveSubscribe = this.reforger
+			? subscribeAll([subscribeSimChange(this.sim), subscribeReforgeChange(this.reforger.settings)])
+			: subscribeSimChange(this.sim);
+		loadIndividualSettings(this, {
+			storageKey: this.getSettingsStorageKey(),
+			player: this.player,
+			autosaveSubscribe,
+			statWeightSettings: this.statWeightActionSettings,
 		});
 	}
 
@@ -500,7 +522,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	applyDefaultRotation(eventID: EventID) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			const defaultRotationType = this.individualConfig.defaults.rotationType || APLRotationType.TypeAuto;
 			this.player.setAplRotation(
 				eventID,
@@ -525,7 +547,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	applyEmptyAplRotation(eventID: EventID) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			this.player.setAplRotation(
 				eventID,
 				APLRotation.create({
@@ -536,44 +558,11 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	static updateProtoVersion(settingsProto: IndividualSimSettings) {
-		if (!(settingsProto.apiVersion < CURRENT_API_VERSION)) {
-			return;
-		}
-
-		const conversionMap: ProtoConversionMap<IndividualSimSettings> = new Map([
-			[
-				2,
-				(oldProto: IndividualSimSettings) => {
-					oldProto.apiVersion = 2;
-
-					oldProto.reforgeSettings = ReforgeSettings.create({
-						useCustomEpValues: oldProto.settings?.useCustomEpValues,
-						useSoftCapBreakpoints: oldProto.settings?.useSoftCapBreakpoints,
-						statCaps: oldProto.statCaps,
-						breakpointLimits: oldProto.breakpointLimits,
-					});
-
-					return oldProto;
-				},
-			],
-			[
-				4,
-				(oldProto: IndividualSimSettings) => {
-					oldProto.apiVersion = 4;
-					return oldProto;
-				},
-			],
-		]);
-
-		// Run the migration utility using the above map.
-		migrateOldProto<IndividualSimSettings>(settingsProto, settingsProto.apiVersion, conversionMap);
-
-		// Flag the version as up-to-date once all migrations are done.
-		settingsProto.apiVersion = CURRENT_API_VERSION;
+		updateIndividualSimProtoVersion(settingsProto);
 	}
 
 	applyDefaults(eventID: EventID) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			const tankSpec = this.player.getPlayerSpec().isTankSpec;
 			const healingSpec = this.player.getPlayerSpec().isHealingSpec;
 
@@ -613,31 +602,27 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 
 			this.reforger?.applyDefaults(eventID);
 
-			if (this.isWithinRaidSim) {
-				this.sim.raid.setTargetDummies(eventID, 0);
+			this.sim.raid.setTargetDummies(eventID, healingSpec ? 9 : 0);
+			if (this.individualConfig.defaults.encounter?.encounter) {
+				this.sim.encounter.fromProto(eventID, this.individualConfig.defaults.encounter.encounter);
 			} else {
-				this.sim.raid.setTargetDummies(eventID, healingSpec ? 9 : 0);
-				if (this.individualConfig.defaults.encounter?.encounter) {
-					this.sim.encounter.fromProto(eventID, this.individualConfig.defaults.encounter.encounter);
-				} else {
-					this.sim.encounter.applyDefaults(eventID);
-				}
-				this.sim.encounter.setExecuteProportion90(eventID, this.individualConfig.defaults.other?.highHpThreshold || 0.9);
-				this.sim.raid.setDebuffs(eventID, this.individualConfig.defaults.debuffs);
-				this.sim.applyDefaults(eventID, tankSpec, healingSpec);
-
-				if (this.individualConfig.defaults.other?.iterationCount) {
-					this.sim.setIterations(eventID, this.individualConfig.defaults.other!.iterationCount!);
-				}
-
-				if (tankSpec) {
-					this.sim.raid.setTanks(eventID, [this.player.makeUnitReference()]);
-				} else {
-					this.sim.raid.setTanks(eventID, []);
-				}
-
-				this.statWeightActionSettings.applyDefaults(eventID);
+				this.sim.encounter.applyDefaults(eventID);
 			}
+			this.sim.encounter.setExecuteProportion90(eventID, this.individualConfig.defaults.other?.highHpThreshold || 0.9);
+			this.sim.raid.setDebuffs(eventID, this.individualConfig.defaults.debuffs);
+			this.sim.applyDefaults(eventID, tankSpec, healingSpec);
+
+			if (this.individualConfig.defaults.other?.iterationCount) {
+				this.sim.setIterations(eventID, this.individualConfig.defaults.other!.iterationCount!);
+			}
+
+			if (tankSpec) {
+				this.sim.raid.setTanks(eventID, [this.player.makeUnitReference()]);
+			} else {
+				this.sim.raid.setTanks(eventID, []);
+			}
+
+			this.statWeightActionSettings.applyDefaults(eventID);
 
 			if (this.individualConfig.defaultBuild) {
 				PresetConfigurationPicker.applyBuild(eventID, this.individualConfig.defaultBuild, this);
@@ -646,44 +631,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	toProto(exportCategories?: Array<SimSettingCategories>): IndividualSimSettings {
-		const exportCategory = (cat: SimSettingCategories) => !exportCategories || exportCategories.length == 0 || exportCategories.includes(cat);
-
-		const proto = IndividualSimSettings.create({
-			player: this.player.toProto(true, false, exportCategories),
-			apiVersion: CURRENT_API_VERSION,
-		});
-
-		if (exportCategory(SimSettingCategories.Miscellaneous)) {
-			IndividualSimSettings.mergePartial(proto, {
-				tanks: this.sim.raid.getTanks(),
-			});
-		}
-		if (exportCategory(SimSettingCategories.Encounter)) {
-			IndividualSimSettings.mergePartial(proto, {
-				encounter: this.sim.encounter.toProto(),
-			});
-		}
-		if (exportCategory(SimSettingCategories.External)) {
-			IndividualSimSettings.mergePartial(proto, {
-				partyBuffs: this.player.getParty()?.getBuffs() || PartyBuffs.create(),
-				raidBuffs: this.sim.raid.getBuffs(),
-				debuffs: this.sim.raid.getDebuffs(),
-				targetDummies: this.sim.raid.getTargetDummies(),
-			});
-		}
-		if (exportCategory(SimSettingCategories.UISettings)) {
-			IndividualSimSettings.mergePartial(proto, {
-				settings: this.sim.toProto(),
-				epWeightsStats: this.player.getEpWeights().toProto(),
-				epRatios: this.player.getEpRatios(),
-				dpsRefStat: this.dpsRefStat,
-				healRefStat: this.healRefStat,
-				tankRefStat: this.tankRefStat,
-				reforgeSettings: this.reforger?.toProto(),
-			});
-		}
-
-		return proto;
+		return individualSimSettingsToProto(this.serializationContext(), exportCategories);
 	}
 
 	toLink(): string {
@@ -691,71 +639,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	fromProto(eventID: EventID, settings: IndividualSimSettings, includeCategories?: Array<SimSettingCategories>) {
-		const loadCategory = (cat: SimSettingCategories) => !includeCategories || includeCategories.length == 0 || includeCategories.includes(cat);
-
-		const tankSpec = this.player.getPlayerSpec().isTankSpec;
-		const healingSpec = this.player.getPlayerSpec().isHealingSpec;
-
-		TypedEvent.freezeAllAndDo(() => {
-			IndividualSimUI.updateProtoVersion(settings);
-
-			if (!settings.player) {
-				return;
-			}
-
-			this.player.fromProto(eventID, settings.player, includeCategories);
-
-			if (loadCategory(SimSettingCategories.Miscellaneous)) {
-				this.sim.raid.setTanks(eventID, settings.tanks || []);
-			}
-			if (loadCategory(SimSettingCategories.External)) {
-				this.sim.raid.setBuffs(eventID, settings.raidBuffs || RaidBuffs.create());
-				this.sim.raid.setDebuffs(eventID, settings.debuffs || Debuffs.create());
-				const party = this.player.getParty();
-				if (party) {
-					party.setBuffs(eventID, settings.partyBuffs || PartyBuffs.create());
-				}
-				this.sim.raid.setTargetDummies(eventID, settings.targetDummies);
-			}
-			if (loadCategory(SimSettingCategories.Encounter)) {
-				this.sim.encounter.fromProto(eventID, settings.encounter || EncounterProto.create());
-			}
-			if (loadCategory(SimSettingCategories.UISettings)) {
-				if (settings.epWeightsStats) {
-					this.player.setEpWeights(eventID, Stats.fromProto(settings.epWeightsStats));
-				} else {
-					this.player.setEpWeights(eventID, this.individualConfig.defaults.epWeights);
-				}
-
-				const defaultRatios = this.player.getDefaultEpRatios(tankSpec, healingSpec);
-				if (settings.epRatios) {
-					const missingRatios = new Array<number>(defaultRatios.length - settings.epRatios.length).fill(0);
-					this.player.setEpRatios(eventID, settings.epRatios.concat(missingRatios));
-				} else {
-					this.player.setEpRatios(eventID, defaultRatios);
-				}
-
-				if (settings.reforgeSettings && this.reforger) {
-					this.reforger.fromProto(eventID, settings.reforgeSettings);
-				}
-
-				if (settings.dpsRefStat) {
-					this.dpsRefStat = settings.dpsRefStat;
-				}
-				if (settings.healRefStat) {
-					this.healRefStat = settings.healRefStat;
-				}
-				if (settings.tankRefStat) {
-					this.tankRefStat = settings.tankRefStat;
-				}
-
-				if (settings.settings) {
-					this.sim.fromProto(eventID, settings.settings);
-				} else {
-					this.sim.applyDefaults(eventID, tankSpec, healingSpec);
-				}
-			}
-		});
+		applyIndividualSimSettings(eventID, this.serializationContext(), settings, includeCategories);
 	}
 
 	// Determines whether this sim has either a hard cap or soft cap configured for a particular
@@ -806,8 +690,6 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 
 	// Returns the actual key to use for local storage, based on the given key part and the site context.
 	getStorageKey(keyPart: string): string {
-		// Local storage is shared by all sites under the same domain, so we need to use
-		// different keys for each spec site.
-		return PlayerSpecs.getLocalStorageKey(this.player.getPlayerSpec()) + keyPart;
+		return getSpecStorageKey(this.player.getPlayerSpec(), keyPart);
 	}
 }

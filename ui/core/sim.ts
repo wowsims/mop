@@ -11,8 +11,7 @@ import {
 	throwIfAborted,
 	writeBulkSimReforgeCacheResults,
 } from './bulk/utils';
-import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
-import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
+import { CURRENT_PHASE } from './constants/other';
 import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
@@ -24,7 +23,6 @@ import {
 	BulkSettings,
 	BulkSimRequest,
 	BulkSimResult,
-	BulkSimStage,
 	ComputeStatsRequest,
 	ErrorOutcome,
 	ErrorOutcomeType,
@@ -63,11 +61,15 @@ import { StatCap, Stats } from './proto_utils/stats.js';
 import { extendPlayerProtoWithMissingEffects, getReforgeCacheGearKey, hasBlacksmithing } from './proto_utils/utils';
 import { Raid } from './raid.js';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
-import { EventID, TypedEvent } from './typed_event.js';
+import { batch, EventID, nextEventID } from './state/batch';
+import { Emitter } from './state/events';
+import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
+import { createSimStore } from './state/sim_store';
+import { subscribeStatsInputs, subscribeUiField } from './state/subscriptions';
+import { UISettings, WASM_CONCURRENCY_STORAGE_KEY } from './state/ui_settings';
 import { distinct, getEnumValues, hashString, isExternal, noop, sleep } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
-
 export type RaidSimData = {
 	request: RaidSimRequest;
 	result: RaidSimResult;
@@ -99,26 +101,10 @@ export type RunSimOptions = {
 	iterations?: number;
 };
 
-const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
 
 // Core Sim module which deals only with api types, no UI-related stuff.
 export class Sim {
 	private readonly workerPool: WorkerPool;
-
-	iterations = 12500;
-
-	private phase: number = CURRENT_PHASE;
-	private faction: Faction = Faction.Alliance;
-	private fixedRngSeed = 0;
-	private filters: DatabaseFilters = DatabaseFilters.create({ oneHandedWeapons: true, twoHandedWeapons: true });
-	private showDamageMetrics = true;
-	private showThreatMetrics = false;
-	private showHealingMetrics = false;
-	private showExperimental = false;
-	private wasmConcurrency = 0;
-	private showQuickSwap = true;
-	private showEPValues = false;
-	private language = '';
 
 	readonly type: SimType;
 	readonly raid: Raid;
@@ -126,37 +112,19 @@ export class Sim {
 
 	private db_: Database | null = null;
 
-	readonly iterationsChangeEmitter = new TypedEvent<void>();
-	readonly phaseChangeEmitter = new TypedEvent<void>();
-	readonly factionChangeEmitter = new TypedEvent<void>();
-	readonly fixedRngSeedChangeEmitter = new TypedEvent<void>();
-	readonly lastUsedRngSeedChangeEmitter = new TypedEvent<void>();
-	readonly filtersChangeEmitter = new TypedEvent<void>();
-	readonly showDamageMetricsChangeEmitter = new TypedEvent<void>();
-	readonly showThreatMetricsChangeEmitter = new TypedEvent<void>();
-	readonly showHealingMetricsChangeEmitter = new TypedEvent<void>();
-	readonly showExperimentalChangeEmitter = new TypedEvent<void>();
-	readonly wasmConcurrencyChangeEmitter = new TypedEvent<void>();
-	readonly showQuickSwapChangeEmitter = new TypedEvent<void>();
-	readonly showEPValuesChangeEmitter = new TypedEvent<void>();
-	readonly languageChangeEmitter = new TypedEvent<void>();
-	readonly crashEmitter = new TypedEvent<SimError>();
+	// The Zustand store backing this sim's state (see state/sim_store.ts).
+	// Declared before the facades that write it.
+	readonly store = createSimStore();
 
-	// Emits when any of the settings change (but not the raid / encounter).
-	readonly settingsChangeEmitter: TypedEvent<void>;
+	readonly uiSettings = new UISettings(this.store);
 
-	// Emits when any player, target, or pet has metadata changes (spells or auras).
-	readonly unitMetadataEmitter = new TypedEvent<void>('UnitMetadata');
-
-	// Emits when any of the above emitters emit.
-	readonly changeEmitter: TypedEvent<void>;
+	readonly crashEmitter = new Emitter<SimError>();
 
 	// Fires when a raid sim API call completes.
-	readonly simResultEmitter = new TypedEvent<SimResult>();
+	readonly simResultEmitter = new Emitter<SimResult>();
 
 	private readonly _initPromise: Promise<any>;
 	isNative: boolean | undefined = undefined;
-	private lastUsedRngSeed = 0;
 
 	// These callbacks are needed so we can apply BuffBot modifications automatically before sending requests.
 	private modifyRaidProto: (raidProto: RaidProto) => void = noop;
@@ -167,10 +135,10 @@ export class Sim {
 		this.type = type ?? SimType.SimTypeIndividual;
 
 		this.workerPool = new WorkerPool(1);
-		this.wasmConcurrencyChangeEmitter.on(async () => {
+		subscribeUiField(this, 'wasmConcurrency')(async () => {
 			// Prevent using worker concurrency when not running wasm. Local sim has native threading.
 			if (await this.workerPool.isWasm()) {
-				const nWorker = Math.max(1, Math.min(this.wasmConcurrency, navigator.hardwareConcurrency));
+				const nWorker = Math.max(1, Math.min(this.uiSettings.getWasmConcurrency(), navigator.hardwareConcurrency));
 				this.workerPool.setNumWorkers(nWorker);
 			}
 		});
@@ -184,7 +152,7 @@ export class Sim {
 				wasmConcurrencySetting = Math.min(4, Math.floor(navigator.hardwareConcurrency / 2));
 			}
 		}
-		this.setWasmConcurrency(TypedEvent.nextEventID(), wasmConcurrencySetting);
+		this.setWasmConcurrency(nextEventID(), wasmConcurrencySetting);
 
 		this.signalManager = new SimSignalManager();
 
@@ -196,26 +164,11 @@ export class Sim {
 		this.raid = new Raid(this);
 		this.encounter = new Encounter(this);
 
-		this.settingsChangeEmitter = TypedEvent.onAny([
-			this.iterationsChangeEmitter,
-			this.phaseChangeEmitter,
-			this.fixedRngSeedChangeEmitter,
-			this.filtersChangeEmitter,
-			this.showDamageMetricsChangeEmitter,
-			this.showThreatMetricsChangeEmitter,
-			this.showHealingMetricsChangeEmitter,
-			this.showExperimentalChangeEmitter,
-			this.wasmConcurrencyChangeEmitter,
-			this.showQuickSwapChangeEmitter,
-			this.showEPValuesChangeEmitter,
-			this.languageChangeEmitter,
-		]);
+		// Stats recompute on any raid/encounter change — one selector, so a batch
+		// touching both recomputes once.
+		subscribeStatsInputs(this)(() => this.updateCharacterStats(nextEventID()));
 
-		this.changeEmitter = TypedEvent.onAny([this.settingsChangeEmitter, this.raid.changeEmitter, this.encounter.changeEmitter]);
-
-		TypedEvent.onAny([this.raid.changeEmitter, this.encounter.changeEmitter]).on(eventID => this.updateCharacterStats(eventID));
-
-		this.language = getLang();
+		this.uiSettings.initLanguage(getLang());
 	}
 
 	waitForInit(): Promise<void> {
@@ -317,7 +270,7 @@ export class Sim {
 	async runRaidSim(eventID: EventID, onProgress: WorkerProgressCallback, options: RunSimOptions = {}): Promise<SimResult | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
+		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
 
@@ -342,7 +295,7 @@ export class Sim {
 
 			const simResult = await SimResult.makeNew(request, result);
 			if (!options.silent) {
-				this.simResultEmitter.emit(eventID, simResult);
+				this.simResultEmitter.emit(simResult);
 			}
 			return simResult;
 		} catch (error) {
@@ -363,7 +316,7 @@ export class Sim {
 	): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
+		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
 
@@ -458,7 +411,7 @@ export class Sim {
 	): Promise<BulkSimResult | ErrorOutcome> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
+		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
 
@@ -496,8 +449,7 @@ export class Sim {
 				baseRequest.simOptions!.randomSeed = BigInt(contentSeed);
 				// makeRaidSimRequest already drew and recorded a random seed; overwrite the
 				// record too so getLastUsedRngSeed() reflects the seed actually used.
-				this.lastUsedRngSeed = contentSeed;
-				this.lastUsedRngSeedChangeEmitter.emit(TypedEvent.nextEventID());
+				this.setLastUsedRngSeed(contentSeed);
 			}
 			const useWasmBulkSim = await this.isWasm();
 			const backendBuildCandidates = !useWasmBulkSim && !!bulkSettings;
@@ -700,7 +652,7 @@ export class Sim {
 	async getBulkCombinationCount(bulkSettings: BulkSettings): Promise<BulkCombinationCountResult> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
+		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
 
@@ -716,7 +668,7 @@ export class Sim {
 	async getBulkCandidates(bulkSettings: BulkSettings): Promise<BulkCandidatesResult> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
+		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
 
@@ -732,7 +684,7 @@ export class Sim {
 	async runRaidSimWithLogs(eventID: EventID, options: RunSimOptions = {}): Promise<SimResult | null> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
+		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
 
@@ -747,7 +699,7 @@ export class Sim {
 			}
 			const simResult = await SimResult.makeNew(request, result);
 			if (!options.silent) {
-				this.simResultEmitter.emit(eventID, simResult);
+				this.simResultEmitter.emit(simResult);
 			}
 			return simResult;
 		} catch (error) {
@@ -765,7 +717,7 @@ export class Sim {
 			// Skip the first event ID because it interferes with the loaded stats.
 			return;
 		}
-		eventID = TypedEvent.nextEventID();
+		eventID = nextEventID();
 
 		await this.waitForInit();
 		// Capture the current players so we avoid issues if something changes while
@@ -778,11 +730,11 @@ export class Sim {
 		});
 		const result = await this.workerPool.computeStats(req);
 		if (result.errorResult != '') {
-			this.crashEmitter.emit(eventID, new SimError(result.errorResult));
+			this.crashEmitter.emit(new SimError(result.errorResult));
 			return;
 		}
 
-		TypedEvent.freezeAllAndDo(async () => {
+		batch(async () => {
 			const playerUpdatePromises = result
 				.raidStats!.parties.map((partyStats, partyIndex) =>
 					partyStats.players.map((playerStats, playerIndex) => {
@@ -802,7 +754,7 @@ export class Sim {
 
 			const anyUpdates = await Promise.all(playerUpdatePromises.concat([targetUpdatePromise]));
 			if (anyUpdates.some(v => v)) {
-				this.unitMetadataEmitter.emit(eventID);
+				this.store.setState(s => ({ sim: { ...s.sim, metadataVersion: s.sim.metadataVersion + 1 } }));
 			}
 		});
 	}
@@ -842,7 +794,7 @@ export class Sim {
 
 		const result = await this.workerPool.computeStats(req);
 		if (result.errorResult != '') {
-			this.crashEmitter.emit(eventID, new SimError(result.errorResult));
+			this.crashEmitter.emit(new SimError(result.errorResult));
 		}
 
 		return result.raidStats!.parties[0].players[0];
@@ -899,7 +851,7 @@ export class Sim {
 	): Promise<StatWeightsResult> {
 		if (this.raid.isEmpty()) {
 			throw new Error('Raid is empty! Try adding some players first.');
-		} else if (this.encounter.targets.length < 1) {
+		} else if (this.encounter.getTargets().length < 1) {
 			throw new Error('Encounter has no targets! Try adding some targets first.');
 		}
 
@@ -980,161 +932,136 @@ export class Sim {
 	}
 
 	getPhase(): number {
-		return this.phase;
+		return this.store.getState().sim.phase;
 	}
 	setPhase(eventID: EventID, newPhase: number) {
-		if (newPhase != this.phase) {
-			this.phase = newPhase;
-			this.phaseChangeEmitter.emit(eventID);
+		if (newPhase != this.getPhase()) {
+			this.store.setState(s => ({ sim: { ...s.sim, phase: newPhase } }));
 		}
 	}
 
 	getFaction(): Faction {
-		return this.faction;
+		return this.store.getState().sim.faction;
 	}
 	setFaction(eventID: EventID, newFaction: Faction) {
-		if (newFaction != this.faction && !!newFaction) {
-			this.faction = newFaction;
-			this.factionChangeEmitter.emit(eventID);
+		if (newFaction != this.getFaction() && !!newFaction) {
+			this.store.setState(s => ({ sim: { ...s.sim, faction: newFaction } }));
 		}
 	}
 
 	getFixedRngSeed(): number {
-		return this.fixedRngSeed;
+		return this.store.getState().sim.fixedRngSeed;
 	}
 	setFixedRngSeed(eventID: EventID, newFixedRngSeed: number) {
-		if (newFixedRngSeed != this.fixedRngSeed) {
-			this.fixedRngSeed = newFixedRngSeed;
-			this.fixedRngSeedChangeEmitter.emit(eventID);
+		if (newFixedRngSeed != this.getFixedRngSeed()) {
+			this.store.setState(s => ({ sim: { ...s.sim, fixedRngSeed: newFixedRngSeed } }));
 		}
 	}
 
 	static MAX_RNG_SEED = Math.pow(2, 32) - 1;
 	private nextRngSeed(): number {
 		let rngSeed = 0;
-		if (this.fixedRngSeed) {
-			rngSeed = this.fixedRngSeed;
+		if (this.getFixedRngSeed()) {
+			rngSeed = this.getFixedRngSeed();
 		} else {
 			rngSeed = Math.floor(Math.random() * Sim.MAX_RNG_SEED);
 		}
 
-		this.lastUsedRngSeed = rngSeed;
-		this.lastUsedRngSeedChangeEmitter.emit(TypedEvent.nextEventID());
+		this.setLastUsedRngSeed(rngSeed);
 		return rngSeed;
 	}
+	// Counts as a change on every call (like the old unconditional write), so
+	// subscribers watch the version counter, not the value.
+	private setLastUsedRngSeed(rngSeed: number) {
+		this.store.setState(s => ({ sim: { ...s.sim, lastUsedRngSeed: rngSeed, lastUsedRngSeedVersion: s.sim.lastUsedRngSeedVersion + 1 } }));
+	}
 	getLastUsedRngSeed(): number {
-		return this.lastUsedRngSeed;
+		return this.store.getState().sim.lastUsedRngSeed;
 	}
 
 	getFilters(): DatabaseFilters {
 		// Make a defensive copy
-		return DatabaseFilters.clone(this.filters);
+		return DatabaseFilters.clone(this.store.getState().sim.filters);
 	}
 	setFilters(eventID: EventID, newFilters: DatabaseFilters) {
-		if (DatabaseFilters.equals(newFilters, this.filters)) {
+		if (DatabaseFilters.equals(newFilters, this.store.getState().sim.filters)) {
 			return;
 		}
 
-		// Make a defensive copy
-		this.filters = DatabaseFilters.clone(newFilters);
-		this.filtersChangeEmitter.emit(eventID);
+		// Make a defensive copy; replace-on-write, so subscribers can use
+		// reference equality.
+		const filters = DatabaseFilters.clone(newFilters);
+		this.store.setState(s => ({ sim: { ...s.sim, filters } }));
 	}
 
 	getShowDamageMetrics(): boolean {
-		return this.showDamageMetrics;
+		return this.uiSettings.getShowDamageMetrics();
 	}
 	setShowDamageMetrics(eventID: EventID, newShowDamageMetrics: boolean) {
-		if (newShowDamageMetrics != this.showDamageMetrics) {
-			this.showDamageMetrics = newShowDamageMetrics;
-			this.showDamageMetricsChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setShowDamageMetrics(eventID, newShowDamageMetrics);
 	}
 
 	getShowThreatMetrics(): boolean {
-		return this.showThreatMetrics;
+		return this.uiSettings.getShowThreatMetrics();
 	}
 	setShowThreatMetrics(eventID: EventID, newShowThreatMetrics: boolean) {
-		if (newShowThreatMetrics != this.showThreatMetrics) {
-			this.showThreatMetrics = newShowThreatMetrics;
-			this.showThreatMetricsChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setShowThreatMetrics(eventID, newShowThreatMetrics);
 	}
 
 	getShowHealingMetrics(): boolean {
 		return (
-			this.showHealingMetrics ||
-			(this.showThreatMetrics &&
+			this.uiSettings.getShowHealingMetrics() ||
+			(this.uiSettings.getShowThreatMetrics() &&
 				[Spec.SpecBloodDeathKnight, Spec.SpecGuardianDruid, Spec.SpecBrewmasterMonk, Spec.SpecProtectionPaladin, Spec.SpecProtectionWarrior].includes(
 					this.raid.getPlayer(0)?.playerSpec.specID,
 				))
 		);
 	}
 	setShowHealingMetrics(eventID: EventID, newShowHealingMetrics: boolean) {
-		if (newShowHealingMetrics != this.showHealingMetrics) {
-			this.showHealingMetrics = newShowHealingMetrics;
-			this.showHealingMetricsChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setShowHealingMetrics(eventID, newShowHealingMetrics);
 	}
 
 	getShowExperimental(): boolean {
-		return this.showExperimental;
+		return this.uiSettings.getShowExperimental();
 	}
 	setShowExperimental(eventID: EventID, newShowExperimental: boolean) {
-		if (newShowExperimental != this.showExperimental) {
-			this.showExperimental = newShowExperimental;
-			this.showExperimentalChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setShowExperimental(eventID, newShowExperimental);
 	}
 
 	getWasmConcurrency(): number {
-		return this.wasmConcurrency;
+		return this.uiSettings.getWasmConcurrency();
 	}
 	setWasmConcurrency(eventID: EventID, newWasmConcurrency: number) {
-		if (newWasmConcurrency != this.wasmConcurrency) {
-			this.wasmConcurrency = newWasmConcurrency;
-			window.localStorage.setItem(WASM_CONCURRENCY_STORAGE_KEY, newWasmConcurrency.toString());
-			this.wasmConcurrencyChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setWasmConcurrency(eventID, newWasmConcurrency);
 	}
 
 	getShowQuickSwap(): boolean {
-		return !hasTouch() && this.showQuickSwap;
+		return !hasTouch() && this.uiSettings.getShowQuickSwap();
 	}
 	setShowQuickSwap(eventID: EventID, newShowQuickSwap: boolean) {
-		if (newShowQuickSwap != this.showQuickSwap) {
-			this.showQuickSwap = newShowQuickSwap;
-			this.showQuickSwapChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setShowQuickSwap(eventID, newShowQuickSwap);
 	}
 
 	getShowEPValues(): boolean {
-		return this.showEPValues;
+		return this.uiSettings.getShowEPValues();
 	}
 	setShowEPValues(eventID: EventID, newShowEPValues: boolean) {
-		if (newShowEPValues != this.showEPValues) {
-			this.showEPValues = newShowEPValues;
-			this.showEPValuesChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setShowEPValues(eventID, newShowEPValues);
 	}
 
 	getLanguage(): string {
-		return this.language;
+		return this.uiSettings.getLanguage();
 	}
 	setLanguage(eventID: EventID, newLanguage: string) {
-		newLanguage = newLanguage || 'en';
-		if (newLanguage != this.language) {
-			this.language = newLanguage;
-			this.languageChangeEmitter.emit(eventID);
-		}
+		this.uiSettings.setLanguage(eventID, newLanguage);
 	}
 
 	getIterations(): number {
-		return this.iterations;
+		return this.store.getState().sim.iterations;
 	}
 	setIterations(eventID: EventID, newIterations: number) {
-		if (newIterations != this.iterations) {
-			this.iterations = newIterations;
-			this.iterationsChangeEmitter.emit(eventID);
+		if (newIterations != this.getIterations()) {
+			this.store.setState(s => ({ sim: { ...s.sim, iterations: newIterations } }));
 		}
 	}
 
@@ -1179,7 +1106,7 @@ export class Sim {
 	}
 
 	fromProto(eventID: EventID, proto: SimSettingsProto) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			this.setIterations(eventID, proto.iterations || 12500);
 			this.setPhase(eventID, proto.phase || CURRENT_PHASE);
 			this.setFixedRngSeed(eventID, Number(proto.fixedRngSeed));

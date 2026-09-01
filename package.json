@@ -44,7 +44,8 @@
 		"pako": "^2.0.4",
 		"tippy.js": "^6.3.7",
 		"tsx-vanilla": "^1.2.0",
-		"uuid": "^11.1.0"
+		"uuid": "^11.1.0",
+		"zustand": "^5.0.15"
 	},
 	"devDependencies": {
 		"@bufbuild/buf": "1.55.1",

@@ -1,11 +1,11 @@
 import { IDBPDatabase, openDB } from 'idb';
 
 import { throwIfAborted } from './bulk/utils';
-import { tryParseUrlLocation } from './state/sim_links';
 import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
 import { EquipmentSpec, Spec } from './proto/common';
+import { tryParseUrlLocation } from './state/sim_links';
 import { hashString, sleep } from './utils';
 
 const REFORGE_CACHE_DB_NAME = `${LOCAL_STORAGE_PREFIX}_reforge-cache`;

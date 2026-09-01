@@ -1,6 +1,6 @@
 import type { Player } from '../player';
 import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player_classes/capabilities';
-import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../proto/api';
+import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeRequest } from '../proto/api';
 import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../proto/db';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui';
@@ -9,14 +9,9 @@ import { EquippedItem } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
 import { getGearIdentityKey, getReforgeCacheGearKey } from '../proto_utils/utils';
 import { ReforgeGearCache } from '../reforge_cache';
-import { sleep } from '../utils';
 import { getReforgeConfigHash } from '../state/reforge_request';
-import {
-	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
-	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
-	BulkSimItemSlot,
-	ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT,
-} from './constants_auto_gen';
+import { sleep } from '../utils';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from './constants_auto_gen';
 import { OptimisationStage } from './types';
 
 export { BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS };

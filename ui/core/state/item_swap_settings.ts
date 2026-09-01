@@ -3,71 +3,60 @@ import { ItemSlot, ItemSpec, ItemSwap } from '../proto/common';
 import { EquippedItem } from '../proto_utils/equipped_item';
 import { ItemSwapGear } from '../proto_utils/gear';
 import { Stats } from '../proto_utils/stats';
-import { EventID, TypedEvent } from '../typed_event';
-
+import { EventID } from '../state/batch';
+// Facade over the player's itemSwap* store fields (one shared `itemSwap`
+// version counter, see Player.patchItemSwap).
 export class ItemSwapSettings {
 	private readonly player: Player<any>;
-	readonly changeEmitter = new TypedEvent<void>('PlayerItemSwap');
-
-	private enableItemSwap = false;
-	private gear = new ItemSwapGear({});
-	private bonusStats = new Stats();
 
 	constructor(player: Player<any>) {
 		this.player = player;
 	}
 
 	setItemSwapSettings(eventID: EventID, enableItemSwap: boolean, gear: ItemSwapGear, bonusStats?: Stats) {
-		this.enableItemSwap = enableItemSwap;
-		this.gear = gear;
-		this.bonusStats = bonusStats || new Stats();
-
-		this.changeEmitter.emit(eventID);
+		this.player.patchItemSwap(eventID, { itemSwapEnabled: enableItemSwap, itemSwapGear: gear, itemSwapBonusStats: bonusStats || new Stats() });
 	}
 
 	setBonusStats(eventID: EventID, stats: Stats) {
-		this.bonusStats = stats;
-		this.changeEmitter.emit(eventID);
+		this.player.patchItemSwap(eventID, { itemSwapBonusStats: stats });
 	}
 
-	getBonusStats() {
-		return this.bonusStats;
+	getBonusStats(): Stats {
+		return this.player.getItemSwapField('itemSwapBonusStats') as Stats;
 	}
 
 	getEnableItemSwap(): boolean {
-		return this.enableItemSwap;
+		return this.player.getItemSwapField('itemSwapEnabled') as boolean;
 	}
 
 	setEnableItemSwap(eventID: EventID, newEnableItemSwap: boolean) {
-		if (newEnableItemSwap == this.enableItemSwap) return;
-
-		this.enableItemSwap = newEnableItemSwap;
-		this.changeEmitter.emit(eventID);
+		if (newEnableItemSwap == this.getEnableItemSwap()) return;
+		this.player.patchItemSwap(eventID, { itemSwapEnabled: newEnableItemSwap });
 	}
 
 	equipItem(eventID: EventID, slot: ItemSlot, newItem: EquippedItem | null) {
-		this.setGear(eventID, this.gear.withEquippedItem(slot, newItem, this.player.canDualWield2H()));
+		this.setGear(eventID, this.getGear().withEquippedItem(slot, newItem, this.player.canDualWield2H()));
 	}
 
 	getItem(slot: ItemSlot): EquippedItem | null {
-		return this.gear.getEquippedItem(slot);
+		return this.getGear().getEquippedItem(slot);
 	}
 
 	getGear(): ItemSwapGear {
-		return this.gear;
+		return this.player.getItemSwapField('itemSwapGear') as ItemSwapGear;
 	}
 
 	setGear(eventID: EventID, newItemSwapGear: ItemSwapGear) {
-		if (newItemSwapGear.equals(this.gear)) return;
-
-		this.gear = newItemSwapGear;
-		this.changeEmitter.emit(eventID);
+		if (newItemSwapGear.equals(this.getGear())) return;
+		this.player.patchItemSwap(eventID, { itemSwapGear: newItemSwapGear });
 	}
 
 	toProto(): ItemSwap {
 		return ItemSwap.create({
-			prepullBonusStats: this.bonusStats.toProto(),
-			items: this.gear.asArray().map(ei => (ei ? ei.asSpec() : ItemSpec.create())),
+			prepullBonusStats: this.getBonusStats().toProto(),
+			items: this.getGear()
+				.asArray()
+				.map(ei => (ei ? ei.asSpec() : ItemSpec.create())),
 		});
 	}
 }

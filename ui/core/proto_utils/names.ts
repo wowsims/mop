@@ -1,6 +1,6 @@
+import { StatCapType } from '../proto/api';
 import { ArmorType, Class, Profession, Race, Spec, Stat } from '../proto/common';
 import { ResourceType, SecondaryResourceType } from '../proto/spell';
-import { StatCapType } from '../proto/api';
 import { DungeonDifficulty, RepFaction, RepLevel } from '../proto/ui';
 
 export const armorTypeNames: Map<ArmorType, string> = new Map([

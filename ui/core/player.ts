@@ -1,12 +1,11 @@
-import { ItemSwapSettings } from './state/item_swap_settings';
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';
 import { SimSettingCategories } from './constants/sim_settings';
-import type { PresetEpWeights } from './preset_utils';
 import { MAX_PARTY_SIZE, Party } from './party';
 import { PlayerClass } from './player_class';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
+import type { PresetEpWeights } from './preset_utils';
 import {
 	AuraStats as AuraStatsProto,
 	Player as PlayerProto,
@@ -81,8 +80,10 @@ import {
 } from './proto_utils/utils';
 import { Raid } from './raid';
 import { Sim } from './sim';
+import { batch, EventID, nextEventID, subscribeGated } from './state/batch';
+import { ItemSwapSettings } from './state/item_swap_settings';
+import { PLAYER_FIELDS, PlayerField } from './state/sim_store';
 import { playerTalentStringToProto } from './talents/factory';
-import { EventID, TypedEvent } from './typed_event';
 import { omitDeep, stringComparator, sum } from './utils';
 import { WorkerProgressCallback } from './worker_pool';
 
@@ -251,27 +252,18 @@ export class Player<SpecType extends Spec> {
 	readonly playerClass: PlayerClass<SpecClasses<SpecType>>;
 	readonly secondaryResource?: SecondaryResource | null;
 
-	private name = '';
-	private buffs: IndividualBuffs = IndividualBuffs.create();
-	private consumables: ConsumesSpec = ConsumesSpec.create();
-	private bonusStats: Stats = new Stats();
-	private gear: Gear = new Gear({});
+	// Settings fields live in the sim store (players[storeKey]); see PlayerSlice.
 	//private bulkEquipmentSpec: BulkEquipmentSpec = BulkEquipmentSpec.create();
 	itemSwapSettings: ItemSwapSettings;
-	private race: Race;
-	private profession1: Profession = 0;
-	private profession2: Profession = 0;
-	aplRotation: APLRotation = APLRotation.create();
-	private talentsString = '';
-	private glyphs: Glyphs = Glyphs.create();
-	private specOptions: SpecOptions<SpecType>;
-	private reactionTime = 0;
-	private channelClipDelay = 0;
-	private inFrontOfTarget = false;
-	private distanceFromTarget = 0;
-	private healingModel: HealingModel = HealingModel.create();
+	private aplRotation_: APLRotation = APLRotation.create();
+
+	// Read-only access: the returned rotation is the live object — do NOT mutate
+	// it directly; route writes through setAplRotation/modifyAplRotation.
+	get aplRotation(): APLRotation {
+		return this.aplRotation_;
+	}
+
 	private healingEnabled = false;
-	private challengeModeEnabled = false;
 
 	private readonly autoRotationGenerator: AutoRotationGenerator<SpecType> | null = null;
 	private readonly simpleRotationGenerator: SimpleRotationGenerator<SpecType> | null = null;
@@ -288,36 +280,55 @@ export class Player<SpecType extends Spec> {
 	readonly specTypeFunctions: SpecTypeFunctions<SpecType>;
 
 	private static readonly numEpRatios = 6;
-	private epRatios: Array<number> = new Array<number>(Player.numEpRatios).fill(0);
-	private epWeights: Stats = new Stats();
-	private currentStats: PlayerStats = PlayerStats.create();
 	private metadata: UnitMetadata = new UnitMetadata();
 	private petMetadatas: UnitMetadataList = new UnitMetadataList();
 
-	readonly nameChangeEmitter = new TypedEvent<void>('PlayerName');
-	readonly buffsChangeEmitter = new TypedEvent<void>('PlayerBuffs');
-	readonly consumesChangeEmitter = new TypedEvent<void>('PlayerConsumes');
-	readonly bonusStatsChangeEmitter = new TypedEvent<void>('PlayerBonusStats');
-	readonly gearChangeEmitter = new TypedEvent<void>('PlayerGear');
-	readonly professionChangeEmitter = new TypedEvent<void>('PlayerProfession');
-	readonly raceChangeEmitter = new TypedEvent<void>('PlayerRace');
-	readonly rotationChangeEmitter = new TypedEvent<void>('PlayerRotation');
-	readonly talentsChangeEmitter = new TypedEvent<void>('PlayerTalents');
-	readonly glyphsChangeEmitter = new TypedEvent<void>('PlayerGlyphs');
-	readonly specOptionsChangeEmitter = new TypedEvent<void>('PlayerSpecOptions');
-	readonly inFrontOfTargetChangeEmitter = new TypedEvent<void>('PlayerInFrontOfTarget');
-	readonly distanceFromTargetChangeEmitter = new TypedEvent<void>('PlayerDistanceFromTarget');
-	readonly healingModelChangeEmitter = new TypedEvent<void>('PlayerHealingModel');
-	readonly epWeightsChangeEmitter = new TypedEvent<void>('PlayerEpWeights');
-	readonly miscOptionsChangeEmitter = new TypedEvent<void>('PlayerMiscOptions');
-	readonly challengeModeChangeEmitter = new TypedEvent<void>('ChallengeMode');
+	private static nextStoreKey = 0;
+	// Key of this player's slice in sim.store; unique per Player instance.
+	// Call dispose() when an instance is discarded (see state/README.md).
+	readonly storeKey = Player.nextStoreKey++;
+	private readonly unsubscribers: Array<() => void> = [];
+	private disposed = false;
 
-	readonly currentStatsEmitter = new TypedEvent<void>('PlayerCurrentStats');
-	readonly epRatiosChangeEmitter = new TypedEvent<void>('PlayerEpRatios');
-	readonly epRefStatChangeEmitter = new TypedEvent<void>('PlayerEpRefStat');
+	private slice() {
+		return this.sim.store.getState().players[this.storeKey];
+	}
 
-	// Emits when any of the above emitters emit.
-	readonly changeEmitter: TypedEvent<void>;
+	// Writes one field and bumps its version; the bump is what subscribers
+	// watch, so a setter notifies exactly when it calls patch() — guard logic
+	// stays in the setters.
+	private patch(eventID: EventID, field: PlayerField, value: unknown) {
+		this.sim.store.setState(s => {
+				const p = s.players[this.storeKey];
+				return { players: { ...s.players, [this.storeKey]: { ...p, [field]: value, v: { ...p.v, [field]: p.v[field] + 1 } } } };
+			});
+	}
+
+	// Bumps a counter-only field (no single value in the store): aplRotation
+	// (class-side) and the multi-field itemSwap / epRefStat groups.
+	private bump(eventID: EventID, field: PlayerField) {
+		this.sim.store.setState(s => {
+				const p = s.players[this.storeKey];
+				return { players: { ...s.players, [this.storeKey]: { ...p, v: { ...p.v, [field]: p.v[field] + 1 } } } };
+			});
+	}
+
+	// Signals a rotation change made in place on `aplRotation` (APL editor).
+	touchRotation(eventID: EventID) {
+		this.bump(eventID, 'rotation');
+	}
+
+	// Item-swap fields share one version counter (ItemSwapSettings facade).
+	patchItemSwap(eventID: EventID, patch: { itemSwapEnabled?: boolean; itemSwapGear?: ItemSwapGear; itemSwapBonusStats?: Stats }) {
+		this.sim.store.setState(s => {
+				const p = s.players[this.storeKey];
+				return { players: { ...s.players, [this.storeKey]: { ...p, ...patch, v: { ...p.v, itemSwap: p.v.itemSwap + 1 } } } };
+			});
+	}
+
+	getItemSwapField(field: 'itemSwapEnabled' | 'itemSwapGear' | 'itemSwapBonusStats'): unknown {
+		return this.slice()[field];
+	}
 
 	constructor(spec: PlayerSpec<SpecType>, sim: Sim) {
 		this.sim = sim;
@@ -327,9 +338,45 @@ export class Player<SpecType extends Spec> {
 		this.playerSpec = spec;
 		this.playerClass = PlayerSpecs.getPlayerClass(spec);
 
-		this.race = this.playerClass.races[0];
 		this.specTypeFunctions = specTypeFunctions[this.getSpec()] as SpecTypeFunctions<SpecType>;
-		this.specOptions = this.specTypeFunctions.optionsCreate();
+
+		// Seed this player's slice (plain setState: field initialization, not a
+		// change).
+		const zeroVersions = Object.fromEntries(PLAYER_FIELDS.map(f => [f, 0])) as Record<PlayerField, number>;
+		this.sim.store.setState(s => ({
+			players: {
+				...s.players,
+				[this.storeKey]: {
+					name: '',
+					race: this.playerClass.races[0],
+					profession1: 0,
+					profession2: 0,
+					buffs: IndividualBuffs.create(),
+					consumables: ConsumesSpec.create(),
+					bonusStats: new Stats(),
+					gear: new Gear({}),
+					talentsString: '',
+					glyphs: Glyphs.create(),
+					specOptions: this.specTypeFunctions.optionsCreate(),
+					reactionTime: 0,
+					channelClipDelay: 0,
+					inFrontOfTarget: false,
+					distanceFromTarget: 0,
+					healingModel: HealingModel.create(),
+					challengeModeEnabled: false,
+					epWeights: new Stats(),
+					epRatios: new Array<number>(Player.numEpRatios).fill(0),
+					currentStats: PlayerStats.create(),
+					itemSwapEnabled: false,
+					itemSwapGear: new ItemSwapGear({}),
+					itemSwapBonusStats: new Stats(),
+					dpsRefStat: undefined,
+					healRefStat: undefined,
+					tankRefStat: undefined,
+					v: zeroVersions,
+				},
+			},
+		}));
 
 		this.specConfig = getSpecConfig<SpecType>(this.getSpec()) as SpecConfigData<SpecType>;
 		this.secondaryResource = this.specConfig.secondaryResource;
@@ -348,37 +395,61 @@ export class Player<SpecType extends Spec> {
 
 		this.itemSwapSettings = new ItemSwapSettings(this);
 
-		this.bindChallengeModeChange();
 
-		this.changeEmitter = TypedEvent.onAny(
-			[
-				this.nameChangeEmitter,
-				this.buffsChangeEmitter,
-				this.consumesChangeEmitter,
-				this.bonusStatsChangeEmitter,
-				this.gearChangeEmitter,
-				this.professionChangeEmitter,
-				this.raceChangeEmitter,
-				this.rotationChangeEmitter,
-				this.talentsChangeEmitter,
-				this.glyphsChangeEmitter,
-				this.specOptionsChangeEmitter,
-				this.miscOptionsChangeEmitter,
-				this.inFrontOfTargetChangeEmitter,
-				this.distanceFromTargetChangeEmitter,
-				this.healingModelChangeEmitter,
-				this.epWeightsChangeEmitter,
-				this.epRatiosChangeEmitter,
-				this.epRefStatChangeEmitter,
-				this.challengeModeChangeEmitter,
-			],
-			'PlayerChange',
-		);
+		this.bindChallengeModeChange();
 	}
 
 	bindChallengeModeChange() {
-		this.challengeModeChangeEmitter.on(() => {
-			this.setGear(TypedEvent.nextEventID(), this.gear, true);
+		// Re-apply gear with the new challenge-mode scaling once the write
+		// (or the batch containing it) completes.
+		this.unsubscribers.push(
+			subscribeGated(this.sim.store.subscribe, s => s.players[this.storeKey]?.v.challengeModeEnabled, () => {
+				this.setGear(nextEventID(), this.getGear(), true);
+			}),
+		);
+	}
+
+	// Releases this instance's store subscriptions and slices. Only call when
+	// the Player is genuinely discarded (replaced by a different instance and
+	// referenced nowhere else) — a player moved between parties is NOT discarded.
+	dispose() {
+		if (this.disposed) return;
+		this.disposed = true;
+		this.unsubscribers.splice(0).forEach(u => u());
+		// Drop the slices on the next tick: pickers bound to this player are
+		// replaced by the UI's own (gated) composition subscribers first, so they
+		// are already off the DOM — and self-dispose — when their selectors see
+		// the slice disappear.
+		setTimeout(() => {
+			this.sim.store.setState(s => {
+				const players = { ...s.players };
+				delete players[this.storeKey];
+				const reforge = { ...s.reforge };
+				delete reforge[this.storeKey];
+				const statWeights = { ...s.statWeights };
+				delete statWeights[this.storeKey];
+				const bulk = { ...s.bulk };
+				delete bulk[this.storeKey];
+				return { players, reforge, statWeights, bulk };
+			});
+		}, 0);
+	}
+
+	isDisposed(): boolean {
+		return this.disposed;
+	}
+
+	// Stat-weight reference stats (persisted with the settings; one shared
+	// 'epRefStat' version counter).
+	getRefStat(kind: 'dpsRefStat' | 'healRefStat' | 'tankRefStat'): Stat | undefined {
+		return this.slice()[kind] as Stat | undefined;
+	}
+
+	setRefStat(eventID: EventID, kind: 'dpsRefStat' | 'healRefStat' | 'tankRefStat', stat: Stat | undefined) {
+		if (this.slice()[kind] === stat) return;
+		this.sim.store.setState(s => {
+			const p = s.players[this.storeKey];
+			return { players: { ...s.players, [this.storeKey]: { ...p, [kind]: stat, v: { ...p.v, epRefStat: p.v.epRefStat + 1 } } } };
 		});
 	}
 
@@ -519,12 +590,11 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getEpWeights(): Stats {
-		return this.epWeights;
+		return this.slice().epWeights as Stats;
 	}
 
 	setEpWeights(eventID: EventID, newEpWeights: Stats) {
-		this.epWeights = newEpWeights;
-		this.epWeightsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'epWeights', newEpWeights);
 
 		this.gemEPCache = new Map();
 		this.enchantEPCache = new Map();
@@ -557,16 +627,15 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getEpRatios() {
-		return this.epRatios.slice();
+		return (this.slice().epRatios as Array<number>).slice();
 	}
 
 	setEpRatios(eventID: EventID, newRatios: Array<number>) {
-		this.epRatios = newRatios;
-		this.epRatiosChangeEmitter.emit(eventID);
+		this.patch(eventID, 'epRatios', newRatios);
 	}
 
 	hasCustomEPWeights(): boolean {
-		return !this.getSpecConfig().presets.epWeights.some(epw => epw.epWeights.equals(this.epWeights));
+		return !this.getSpecConfig().presets.epWeights.some(epw => epw.epWeights.equals(this.getEpWeights()));
 	}
 
 	// Error display (toasts) is the caller's responsibility; a result with
@@ -582,12 +651,11 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getCurrentStats(): PlayerStats {
-		return PlayerStats.clone(this.currentStats);
+		return PlayerStats.clone(this.slice().currentStats as PlayerStats);
 	}
 
 	setCurrentStats(eventID: EventID, newStats: PlayerStats) {
-		this.currentStats = newStats;
-		this.currentStatsEmitter.emit(eventID);
+		this.patch(eventID, 'currentStats', newStats);
 	}
 
 	getMetadata(): UnitMetadata {
@@ -599,64 +667,61 @@ export class Player<SpecType extends Spec> {
 	}
 
 	async updateMetadata(): Promise<boolean> {
-		const playerPromise = this.metadata.update(this.currentStats.metadata!);
-		const petsPromise = this.petMetadatas.update(this.currentStats.pets.map(p => p.metadata!));
+		const currentStats = this.slice().currentStats as PlayerStats;
+		const playerPromise = this.metadata.update(currentStats.metadata!);
+		const petsPromise = this.petMetadatas.update(currentStats.pets.map(p => p.metadata!));
 		const playerUpdated = await playerPromise;
 		const petsUpdated = await petsPromise;
 		return playerUpdated || petsUpdated;
 	}
 
 	getName(): string {
-		return this.name;
+		return this.slice().name;
 	}
 	setName(eventID: EventID, newName: string) {
-		if (newName != this.name) {
-			this.name = newName;
-			this.nameChangeEmitter.emit(eventID);
+		if (newName != this.getName()) {
+			this.patch(eventID, 'name', newName);
 		}
 	}
 
 	getLabel(): string {
 		if (this.party) {
-			return `${this.name} (#${this.getRaidIndex() + 1})`;
+			return `${this.getName()} (#${this.getRaidIndex() + 1})`;
 		} else {
-			return this.name;
+			return this.getName();
 		}
 	}
 
 	getRace(): Race {
-		return this.race;
+		return this.slice().race as Race;
 	}
 	setRace(eventID: EventID, newRace: Race) {
-		if (newRace != this.race) {
-			this.race = newRace;
-			this.raceChangeEmitter.emit(eventID);
+		if (newRace != this.getRace()) {
+			this.patch(eventID, 'race', newRace);
 		}
 	}
 
 	getProfession1(): Profession {
-		return this.profession1;
+		return this.slice().profession1 as Profession;
 	}
 	setProfession1(eventID: EventID, newProfession: Profession) {
-		if (newProfession != this.profession1) {
-			this.profession1 = newProfession;
-			this.professionChangeEmitter.emit(eventID);
+		if (newProfession != this.getProfession1()) {
+			this.patch(eventID, 'profession1', newProfession);
 		}
 	}
 	getProfession2(): Profession {
-		return this.profession2;
+		return this.slice().profession2 as Profession;
 	}
 	setProfession2(eventID: EventID, newProfession: Profession) {
-		if (newProfession != this.profession2) {
-			this.profession2 = newProfession;
-			this.professionChangeEmitter.emit(eventID);
+		if (newProfession != this.getProfession2()) {
+			this.patch(eventID, 'profession2', newProfession);
 		}
 	}
 	getProfessions(): Array<Profession> {
-		return [this.profession1, this.profession2].filter(p => p != Profession.ProfessionUnknown);
+		return [this.getProfession1(), this.getProfession2()].filter(p => p != Profession.ProfessionUnknown);
 	}
 	setProfessions(eventID: EventID, newProfessions: Array<Profession>) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			this.setProfession1(eventID, newProfessions[0] || Profession.ProfessionUnknown);
 			this.setProfession2(eventID, newProfessions[1] || Profession.ProfessionUnknown);
 		});
@@ -674,15 +739,14 @@ export class Player<SpecType extends Spec> {
 
 	getBuffs(): IndividualBuffs {
 		// Make a defensive copy
-		return IndividualBuffs.clone(this.buffs);
+		return IndividualBuffs.clone(this.slice().buffs as IndividualBuffs);
 	}
 
 	setBuffs(eventID: EventID, newBuffs: IndividualBuffs) {
-		if (IndividualBuffs.equals(this.buffs, newBuffs)) return;
+		if (IndividualBuffs.equals(this.slice().buffs as IndividualBuffs, newBuffs)) return;
 
 		// Make a defensive copy
-		this.buffs = IndividualBuffs.clone(newBuffs);
-		this.buffsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'buffs', IndividualBuffs.clone(newBuffs));
 	}
 
 	getConsumes(forSimming?: boolean): ConsumesSpec {
@@ -693,20 +757,19 @@ export class Player<SpecType extends Spec> {
 
 		if (forSimming) {
 			return ConsumesSpec.create({
-				...this.consumables,
+				...(this.slice().consumables as ConsumesSpec),
 				consumableIds: [...flasks, ...battleElixirs, ...guardianElixirs].map(c => c.id),
 			});
 		}
 		// Make a defensive copy
-		return ConsumesSpec.clone({ ...this.consumables, consumableIds: [] });
+		return ConsumesSpec.clone({ ...(this.slice().consumables as ConsumesSpec), consumableIds: [] });
 	}
 
 	setConsumes(eventID: EventID, newConsumes: ConsumesSpec) {
-		if (ConsumesSpec.equals(this.consumables, newConsumes)) return;
+		if (ConsumesSpec.equals(this.slice().consumables as ConsumesSpec, newConsumes)) return;
 
 		// Make a defensive copy
-		this.consumables = ConsumesSpec.clone(newConsumes);
-		this.consumesChangeEmitter.emit(eventID);
+		this.patch(eventID, 'consumables', ConsumesSpec.clone(newConsumes));
 	}
 
 	canDualWield2H(): boolean {
@@ -714,49 +777,56 @@ export class Player<SpecType extends Spec> {
 	}
 
 	equipItem(eventID: EventID, slot: ItemSlot, newItem: EquippedItem | null) {
-		this.setGear(eventID, this.gear.withEquippedItem(slot, newItem, this.canDualWield2H()));
+		this.setGear(eventID, this.getGear().withEquippedItem(slot, newItem, this.canDualWield2H()));
 	}
 
 	getEquippedItem(slot: ItemSlot): EquippedItem | null {
-		return this.gear.getEquippedItem(slot);
+		return this.getGear().getEquippedItem(slot);
 	}
 
 	getEquippedItems(): Array<EquippedItem | null> {
-		return this.gear.getEquippedItems();
+		return this.getGear().getEquippedItems();
 	}
 
 	getGear(): Gear {
-		return this.gear;
+		return this.slice().gear as Gear;
 	}
 
 	setGear(eventID: EventID, newGear: Gear, forceUpdate?: boolean) {
-		if (newGear.equals(this.gear) && !forceUpdate) return;
-		this.gear = newGear.withChallengeMode(this.challengeModeEnabled);
-		this.gearChangeEmitter.emit(eventID);
+		if (newGear.equals(this.getGear()) && !forceUpdate) return;
+		this.patch(eventID, 'gear', newGear.withChallengeMode(this.getChallengeModeEnabled()));
 	}
 
 	async setGearAsync(eventID: EventID, newGear: Gear, forceUpdate?: boolean) {
-		if (newGear.equals(this.gear) && !forceUpdate) return;
-		const statsUpdatePromise = new Promise<void>(resolve => this.currentStatsEmitter.once(() => resolve()));
+		if (newGear.equals(this.getGear()) && !forceUpdate) return;
+		const statsUpdatePromise = new Promise<void>(resolve => {
+			const unsub = this.sim.store.subscribe(
+				s => s.players[this.storeKey]?.v.currentStats,
+				() => {
+					unsub();
+					resolve();
+				},
+			);
+		});
 		this.setGear(eventID, newGear);
 		await statsUpdatePromise;
 	}
 
 	getBonusStats(): Stats {
-		return this.bonusStats;
+		return this.slice().bonusStats as Stats;
 	}
 
 	setBonusStats(eventID: EventID, newBonusStats: Stats) {
-		if (newBonusStats.equals(this.bonusStats)) return;
+		if (newBonusStats.equals(this.getBonusStats())) return;
 
-		this.bonusStats = newBonusStats;
-		this.bonusStatsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'bonusStats', newBonusStats);
 	}
 
 	getMeleeCritCapInfo(): MeleeCritCapInfo {
-		const meleeCrit = this.currentStats.finalStats?.pseudoStats[PseudoStat.PseudoStatPhysicalCritPercent] || 0.0;
-		const meleeHit = this.currentStats.finalStats?.pseudoStats[PseudoStat.PseudoStatPhysicalHitPercent] || 0.0;
-		const expertise = (this.currentStats.finalStats?.stats[Stat.StatExpertiseRating] || 0.0) / Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION / 4;
+		const currentStats = this.slice().currentStats as PlayerStats;
+		const meleeCrit = currentStats.finalStats?.pseudoStats[PseudoStat.PseudoStatPhysicalCritPercent] || 0.0;
+		const meleeHit = currentStats.finalStats?.pseudoStats[PseudoStat.PseudoStatPhysicalHitPercent] || 0.0;
+		const expertise = (currentStats.finalStats?.stats[Stat.StatExpertiseRating] || 0.0) / Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION / 4;
 		//const agility = (this.currentStats.finalStats?.stats[Stat.StatAgility] || 0.0) / this.getClass();
 		const suppression = 3.0;
 		const glancing = 24.0;
@@ -806,15 +876,22 @@ export class Player<SpecType extends Spec> {
 		return this.getMeleeCritCapInfo().playerCritCapDelta;
 	}
 
-	setAplRotation(eventID: EventID, newRotation: APLRotation) {
-		if (APLRotation.equals(newRotation, this.aplRotation)) return;
+	// In-place rotation mutation with a single change event — the write path for
+	// the APL editor's per-field edits.
+	modifyAplRotation(eventID: EventID, modify: (rotation: APLRotation) => void) {
+		modify(this.aplRotation_);
+		this.bump(eventID, 'rotation');
+	}
 
-		this.aplRotation = APLRotation.clone(newRotation);
-		this.rotationChangeEmitter.emit(eventID);
+	setAplRotation(eventID: EventID, newRotation: APLRotation) {
+		if (APLRotation.equals(newRotation, this.aplRotation_)) return;
+
+		this.aplRotation_ = APLRotation.clone(newRotation);
+		this.bump(eventID, 'rotation');
 	}
 
 	getSimpleRotation(): SpecRotation<SpecType> {
-		const jsonStr = this.aplRotation.simple?.specRotationJson || '';
+		const jsonStr = this.aplRotation_.simple?.specRotationJson || '';
 		if (!jsonStr) {
 			return this.specTypeFunctions.rotationCreate();
 		}
@@ -831,34 +908,34 @@ export class Player<SpecType extends Spec> {
 	setSimpleRotation(eventID: EventID, newRotation: SpecRotation<SpecType>) {
 		if (this.specTypeFunctions.rotationEquals(newRotation, this.getSimpleRotation())) return;
 
-		if (!this.aplRotation.simple) {
-			this.aplRotation.simple = SimpleRotation.create();
+		if (!this.aplRotation_.simple) {
+			this.aplRotation_.simple = SimpleRotation.create();
 		}
-		this.aplRotation.simple.specRotationJson = JSON.stringify(this.specTypeFunctions.rotationToJson(newRotation));
+		this.aplRotation_.simple.specRotationJson = JSON.stringify(this.specTypeFunctions.rotationToJson(newRotation));
 
-		this.rotationChangeEmitter.emit(eventID);
+		this.bump(eventID, 'rotation');
 	}
 
 	getSimpleCooldowns(): Cooldowns {
 		// Make a defensive copy
-		return Cooldowns.clone(this.aplRotation.simple?.cooldowns || Cooldowns.create());
+		return Cooldowns.clone(this.aplRotation_.simple?.cooldowns || Cooldowns.create());
 	}
 
 	setSimpleCooldowns(eventID: EventID, newCooldowns: Cooldowns) {
 		if (Cooldowns.equals(this.getSimpleCooldowns(), newCooldowns)) return;
 
-		if (!this.aplRotation.simple) {
-			this.aplRotation.simple = SimpleRotation.create();
+		if (!this.aplRotation_.simple) {
+			this.aplRotation_.simple = SimpleRotation.create();
 		}
-		this.aplRotation.simple.cooldowns = newCooldowns;
-		this.rotationChangeEmitter.emit(eventID);
+		this.aplRotation_.simple.cooldowns = newCooldowns;
+		this.bump(eventID, 'rotation');
 	}
 
 	getRotationType(): APLRotationType {
-		if (this.aplRotation.type == APLRotationType.TypeUnknown) {
+		if (this.aplRotation_.type == APLRotationType.TypeUnknown) {
 			return APLRotationType.TypeAPL;
 		} else {
-			return this.aplRotation.type;
+			return this.aplRotation_.type;
 		}
 	}
 
@@ -877,33 +954,33 @@ export class Player<SpecType extends Spec> {
 			// Clone to avoid modifying preset rotations, which are often returned directly.
 			const simpleRot = this.getSimpleRotation();
 			const rot = APLRotation.clone(this.simpleRotationGenerator(this, simpleRot, this.getSimpleCooldowns()));
-			rot.simple = this.aplRotation.simple;
+			rot.simple = this.aplRotation_.simple;
 			rot.type = APLRotationType.TypeSimple;
 			return rot;
 		} else if (forSimming) {
-			return this.aplRotation;
+			return this.aplRotation_;
 		} else {
-			return omitDeep(this.aplRotation, ['uuid']);
+			return omitDeep(this.aplRotation_, ['uuid']);
 		}
 	}
 
 	getTalents(): SpecTalents<SpecType> {
 		if (this.talents == null) {
-			this.talents = playerTalentStringToProto(this.playerSpec, this.talentsString) as SpecTalents<SpecType>;
+			this.talents = playerTalentStringToProto(this.playerSpec, this.getTalentsString()) as SpecTalents<SpecType>;
 		}
 		return this.talents!;
 	}
 
 	getTalentsString(): string {
-		return this.talentsString;
+		return this.slice().talentsString;
 	}
 
 	setTalentsString(eventID: EventID, newTalentsString: string) {
-		if (newTalentsString == this.talentsString) return;
+		if (newTalentsString == this.getTalentsString()) return;
 
-		this.talentsString = newTalentsString;
+		// Invalidate the parsed-talents cache before the emit fires.
 		this.talents = null;
-		this.talentsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'talentsString', newTalentsString);
 	}
 
 	getTalentTreePoints(): Array<number> {
@@ -916,23 +993,24 @@ export class Player<SpecType extends Spec> {
 
 	getGlyphs(): Glyphs {
 		// Make a defensive copy
-		return Glyphs.clone(this.glyphs);
+		return Glyphs.clone(this.slice().glyphs as Glyphs);
 	}
 
 	setGlyphs(eventID: EventID, newGlyphs: Glyphs) {
-		if (Glyphs.equals(this.glyphs, newGlyphs)) return;
+		if (Glyphs.equals(this.slice().glyphs as Glyphs, newGlyphs)) return;
 
 		// Make a defensive copy
-		this.glyphs = Glyphs.clone(newGlyphs);
-		this.glyphsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'glyphs', Glyphs.clone(newGlyphs));
 	}
 
 	getMajorGlyphs(): Array<number> {
-		return [this.glyphs.major1, this.glyphs.major2, this.glyphs.major3].filter(glyph => glyph != 0);
+		const glyphs = this.slice().glyphs as Glyphs;
+		return [glyphs.major1, glyphs.major2, glyphs.major3].filter(glyph => glyph != 0);
 	}
 
 	getMinorGlyphs(): Array<number> {
-		return [this.glyphs.minor1, this.glyphs.minor2, this.glyphs.minor3].filter(glyph => glyph != 0);
+		const glyphs = this.slice().glyphs as Glyphs;
+		return [glyphs.minor1, glyphs.minor2, glyphs.minor3].filter(glyph => glyph != 0);
 	}
 
 	getAllGlyphs(): Array<number> {
@@ -946,76 +1024,69 @@ export class Player<SpecType extends Spec> {
 	setClassOptions(eventID: EventID, newClassOptions: ClassOptions<SpecType>) {
 		const newSpecOptions = this.getSpecOptions();
 		newSpecOptions.classOptions = newClassOptions;
-		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.specOptions)) return;
+		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.slice().specOptions as SpecOptions<SpecType>)) return;
 
-		this.specOptions = this.specTypeFunctions.optionsCopy(newSpecOptions);
-		this.specOptionsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'specOptions', this.specTypeFunctions.optionsCopy(newSpecOptions));
 	}
 
 	getSpecOptions(): SpecOptions<SpecType> {
-		return this.specTypeFunctions.optionsCopy(this.specOptions);
+		return this.specTypeFunctions.optionsCopy(this.slice().specOptions as SpecOptions<SpecType>);
 	}
 
 	setSpecOptions(eventID: EventID, newSpecOptions: SpecOptions<SpecType>) {
-		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.specOptions)) return;
+		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.slice().specOptions as SpecOptions<SpecType>)) return;
 
-		this.specOptions = this.specTypeFunctions.optionsCopy(newSpecOptions);
-		this.specOptionsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'specOptions', this.specTypeFunctions.optionsCopy(newSpecOptions));
 	}
 
 	getReactionTime(): number {
-		return this.reactionTime;
+		return this.slice().reactionTime;
 	}
 
 	setReactionTime(eventID: EventID, newReactionTime: number) {
-		if (newReactionTime == this.reactionTime) return;
+		if (newReactionTime == this.getReactionTime()) return;
 
-		this.reactionTime = newReactionTime;
-		this.miscOptionsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'reactionTime', newReactionTime);
 	}
 
 	getChannelClipDelay(): number {
-		return this.channelClipDelay;
+		return this.slice().channelClipDelay;
 	}
 
 	setChannelClipDelay(eventID: EventID, newChannelClipDelay: number) {
-		if (newChannelClipDelay == this.channelClipDelay) return;
+		if (newChannelClipDelay == this.getChannelClipDelay()) return;
 
-		this.channelClipDelay = newChannelClipDelay;
-		this.miscOptionsChangeEmitter.emit(eventID);
+		this.patch(eventID, 'channelClipDelay', newChannelClipDelay);
 	}
 
 	getChallengeModeEnabled(): boolean {
-		return this.challengeModeEnabled;
+		return this.slice().challengeModeEnabled;
 	}
 
 	setChallengeModeEnabled(eventID: EventID, value: boolean) {
-		if (value === this.challengeModeEnabled) return;
+		if (value === this.getChallengeModeEnabled()) return;
 
-		this.challengeModeEnabled = value;
-		this.challengeModeChangeEmitter.emit(eventID);
+		this.patch(eventID, 'challengeModeEnabled', value);
 	}
 
 	getInFrontOfTarget(): boolean {
-		return this.inFrontOfTarget;
+		return this.slice().inFrontOfTarget;
 	}
 
 	setInFrontOfTarget(eventID: EventID, newInFrontOfTarget: boolean) {
-		if (newInFrontOfTarget == this.inFrontOfTarget) return;
+		if (newInFrontOfTarget == this.getInFrontOfTarget()) return;
 
-		this.inFrontOfTarget = newInFrontOfTarget;
-		this.inFrontOfTargetChangeEmitter.emit(eventID);
+		this.patch(eventID, 'inFrontOfTarget', newInFrontOfTarget);
 	}
 
 	getDistanceFromTarget(): number {
-		return this.distanceFromTarget;
+		return this.slice().distanceFromTarget;
 	}
 
 	setDistanceFromTarget(eventID: EventID, newDistanceFromTarget: number) {
-		if (newDistanceFromTarget == this.distanceFromTarget) return;
+		if (newDistanceFromTarget == this.getDistanceFromTarget()) return;
 
-		this.distanceFromTarget = newDistanceFromTarget;
-		this.distanceFromTargetChangeEmitter.emit(eventID);
+		this.patch(eventID, 'distanceFromTarget', newDistanceFromTarget);
 	}
 
 	setDefaultHealingParams(hm: HealingModel) {
@@ -1048,26 +1119,26 @@ export class Player<SpecType extends Spec> {
 
 	getHealingModel(): HealingModel {
 		// Make a defensive copy
-		return HealingModel.clone(this.healingModel);
+		return HealingModel.clone(this.slice().healingModel as HealingModel);
 	}
 
 	setHealingModel(eventID: EventID, newHealingModel: HealingModel) {
-		if (HealingModel.equals(this.healingModel, newHealingModel)) return;
+		if (HealingModel.equals(this.slice().healingModel as HealingModel, newHealingModel)) return;
 
 		// Make a defensive copy
-		this.healingModel = HealingModel.clone(newHealingModel);
+		const healingModel = HealingModel.clone(newHealingModel);
 		// If we have enabled healing model and try to set 0s cadence or 0 incoming HPS, then set intelligent defaults instead based on boss parameters.
 		if (this.healingEnabled) {
-			this.setDefaultHealingParams(this.healingModel);
+			this.setDefaultHealingParams(healingModel);
 		}
-		this.healingModelChangeEmitter.emit(eventID);
+		this.patch(eventID, 'healingModel', healingModel);
 	}
 
 	computeStatsEP(stats?: Stats): number {
 		if (stats == undefined) {
 			return 0;
 		}
-		return stats.computeEP(this.epWeights);
+		return stats.computeEP(this.getEpWeights());
 	}
 
 	computeGemEP(gem: Gem): number {
@@ -1076,7 +1147,7 @@ export class Player<SpecType extends Spec> {
 		}
 
 		const epFromStats = this.computeStatsEP(new Stats(gem.stats));
-		const epFromEffect = getMetaGemEffectEP(this.playerSpec, gem, Stats.fromProto(this.currentStats.finalStats));
+		const epFromEffect = getMetaGemEffectEP(this.playerSpec, gem, Stats.fromProto((this.slice().currentStats as PlayerStats).finalStats));
 		let bonusEP = 0;
 		// unique items are slightly worse than non-unique because you can have only one.
 		if (gem.unique) {
@@ -1117,7 +1188,7 @@ export class Player<SpecType extends Spec> {
 	}
 
 	computeUpgradeEP(equippedItem: EquippedItem, upgradeLevel: ItemLevelState, slot: ItemSlot): number {
-		const cacheKey = `${equippedItem.id}-${JSON.stringify(this.epWeights)}-${slot}-${equippedItem.randomSuffix?.id}-${upgradeLevel}`;
+		const cacheKey = `${equippedItem.id}-${JSON.stringify(this.getEpWeights())}-${slot}-${equippedItem.randomSuffix?.id}-${upgradeLevel}`;
 		if (this.upgradeEPCache.has(cacheKey)) {
 			return this.upgradeEPCache.get(cacheKey)!;
 		}
@@ -1132,14 +1203,14 @@ export class Player<SpecType extends Spec> {
 	computeItemEP(item: Item, slot: ItemSlot): number {
 		if (item == null) return 0;
 
-		const cacheKey = `${item.id}-${JSON.stringify(this.epWeights)}-${this.challengeModeEnabled}`;
+		const cacheKey = `${item.id}-${JSON.stringify(this.getEpWeights())}-${this.getChallengeModeEnabled()}`;
 
 		const cached = this.itemEPCache[slot].get(cacheKey);
 		if (cached !== undefined) return cached;
 
 		const equippedItem = new EquippedItem({
 			item,
-			challengeMode: this.challengeModeEnabled,
+			challengeMode: this.getChallengeModeEnabled(),
 		}).withDynamicStats();
 		const itemStats = equippedItem.calcStats(slot);
 
@@ -1156,7 +1227,7 @@ export class Player<SpecType extends Spec> {
 			maxReforgingEP = Math.max(...reforgingEPs);
 		}
 
-		let ep = itemStats.computeEP(this.epWeights) + maxSuffixEP + maxReforgingEP;
+		let ep = itemStats.computeEP(this.getEpWeights()) + maxSuffixEP + maxReforgingEP;
 
 		// unique items are slightly worse than non-unique because you can have only one.
 		if (item.unique) {
@@ -1205,7 +1276,7 @@ export class Player<SpecType extends Spec> {
 			enchantIds: enchantIds,
 			reforgeId: equippedItem.reforge?.id,
 			randomEnchantmentId: equippedItem.randomSuffix?.id,
-			setPieceIds: this.gear
+			setPieceIds: this.getGear()
 				.asArray()
 				.filter(ei => ei != null)
 				.map(ei => ei!.item.id),
@@ -1466,7 +1537,7 @@ export class Player<SpecType extends Spec> {
 		const exportCategory = (cat: SimSettingCategories) => !exportCategories || exportCategories.length == 0 || exportCategories.includes(cat);
 
 		const gear = this.getGear();
-		const aplRotation = forSimming ? this.getResolvedAplRotation(forSimming) : omitDeep(this.aplRotation, ['uuid']);
+		const aplRotation = forSimming ? this.getResolvedAplRotation(forSimming) : omitDeep(this.aplRotation_, ['uuid']);
 
 		let player = PlayerProto.create({
 			class: this.getClass(),
@@ -1524,10 +1595,10 @@ export class Player<SpecType extends Spec> {
 
 	fromProto(eventID: EventID, proto: PlayerProto, includeCategories?: Array<SimSettingCategories>) {
 		// Fix potential out-of-date protos before importing
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			Player.updateProtoVersion(proto);
 			const loadCategory = (cat: SimSettingCategories) => !includeCategories || includeCategories.length == 0 || includeCategories.includes(cat);
-			eventID = TypedEvent.nextEventID();
+			eventID = nextEventID();
 			if (loadCategory(SimSettingCategories.Gear)) {
 				this.setGear(eventID, proto.equipment ? this.sim.db.lookupEquipmentSpec(proto.equipment) : new Gear({}));
 				this.itemSwapSettings.setItemSwapSettings(
@@ -1581,7 +1652,7 @@ export class Player<SpecType extends Spec> {
 	}
 
 	applySharedDefaults(eventID: EventID) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			this.setReactionTime(eventID, 100);
 			this.setInFrontOfTarget(eventID, this.playerSpec.isTankSpec);
 			this.setHealingModel(

@@ -9,30 +9,14 @@ import {
 	UnitReference_Type as UnitType,
 } from './proto/common.js';
 import { Sim } from './sim.js';
-import { EventID, TypedEvent } from './typed_event.js';
+import { batch,EventID } from './state/batch';
+import type { RaidSlice } from './state/sim_store.js';
+import { shallowArrayEquals } from './state/subscriptions.js';
 import { sum } from './utils.js';
-
 export const MAX_NUM_PARTIES = 5;
 
 // Manages all the settings for a single Raid.
 export class Raid {
-	private buffs: RaidBuffs = RaidBuffs.create();
-	private debuffs: Debuffs = Debuffs.create();
-	private tanks: Array<UnitReference> = [];
-	private targetDummies = 0;
-	private numActiveParties = 5;
-
-	// Emits when a raid member is added/removed/moved.
-	readonly compChangeEmitter = new TypedEvent<void>();
-
-	readonly buffsChangeEmitter = new TypedEvent<void>();
-	readonly debuffsChangeEmitter = new TypedEvent<void>();
-	readonly tanksChangeEmitter = new TypedEvent<void>();
-	readonly targetDummiesChangeEmitter = new TypedEvent<void>();
-	readonly numActivePartiesChangeEmitter = new TypedEvent<void>();
-
-	// Emits when anything in the raid changes.
-	readonly changeEmitter: TypedEvent<void>;
 
 	// Should always hold exactly MAX_NUM_PARTIES elements.
 	private parties: Array<Party>;
@@ -46,26 +30,31 @@ export class Raid {
 		this.sim = sim;
 
 		this.parties = [...Array(MAX_NUM_PARTIES).keys()].map(i => {
-			const newParty = new Party(this, sim);
-			newParty.compChangeEmitter.on(eventID => this.compChangeEmitter.emit(eventID));
-			newParty.changeEmitter.on(eventID => this.changeEmitter.emit(eventID));
-			return newParty;
+			return new Party(this, sim, i);
 		});
 		this.activePlayers = [];
 
-		this.numActivePartiesChangeEmitter.on(eventID => this.compChangeEmitter.emit(eventID));
+		const subscribe = this.sim.store.subscribe;
 
-		this.changeEmitter = TypedEvent.onAny([
-			this.compChangeEmitter,
-			this.buffsChangeEmitter,
-			this.debuffsChangeEmitter,
-			this.tanksChangeEmitter,
-			this.targetDummiesChangeEmitter,
-		], 'RaidChange');
+		// Invalidate the active-players cache synchronously on any composition /
+		// party-count write (ungated: readers inside the same batch see fresh
+		// data; previously the cache was only cleared at thaw).
+		subscribe(
+			s => [s.raid.composition, s.raid.numActiveParties],
+			() => {
+				this.activePlayers = [];
+			},
+			{ equalityFn: shallowArrayEquals },
+		);
 
-		this.changeEmitter.on(() => {
-			this.activePlayers = [];
-		});
+	}
+
+	private get raidState() {
+		return this.sim.store.getState().raid;
+	}
+
+	private patchRaid(eventID: EventID, patch: Partial<RaidSlice>) {
+		this.sim.store.setState(s => ({ raid: { ...s.raid, ...patch } }));
 	}
 
 	size(): number {
@@ -119,70 +108,66 @@ export class Raid {
 
 	getBuffs(): RaidBuffs {
 		// Make a defensive copy
-		return RaidBuffs.clone(this.buffs);
+		return RaidBuffs.clone(this.raidState.buffs);
 	}
 
 	setBuffs(eventID: EventID, newBuffs: RaidBuffs) {
-		if (RaidBuffs.equals(this.buffs, newBuffs))
+		if (RaidBuffs.equals(this.raidState.buffs, newBuffs))
 			return;
 
 		// Make a defensive copy
-		this.buffs = RaidBuffs.clone(newBuffs);
-		this.buffsChangeEmitter.emit(eventID);
+		this.patchRaid(eventID, { buffs: RaidBuffs.clone(newBuffs) });
 	}
 
 	getDebuffs(): Debuffs {
 		// Make a defensive copy
-		return Debuffs.clone(this.debuffs);
+		return Debuffs.clone(this.raidState.debuffs);
 	}
 
 	setDebuffs(eventID: EventID, newDebuffs: Debuffs) {
-		if (Debuffs.equals(this.debuffs, newDebuffs))
+		if (Debuffs.equals(this.raidState.debuffs, newDebuffs))
 			return;
 
 		// Make a defensive copy
-		this.debuffs = Debuffs.clone(newDebuffs);
-		this.debuffsChangeEmitter.emit(eventID);
+		this.patchRaid(eventID, { debuffs: Debuffs.clone(newDebuffs) });
 	}
 
 	getTanks(): Array<UnitReference> {
 		// Make a defensive copy
-		return this.tanks.map(tank => UnitReference.clone(tank));
+		return this.raidState.tanks.map(tank => UnitReference.clone(tank));
 	}
 
 	setTanks(eventID: EventID, newTanks: Array<UnitReference>) {
-		if (this.tanks.length == newTanks.length && this.tanks.every((tank, i) => UnitReference.equals(tank, newTanks[i])))
+		const tanks = this.raidState.tanks;
+		if (tanks.length == newTanks.length && tanks.every((tank, i) => UnitReference.equals(tank, newTanks[i])))
 			return;
 
 		// Make a defensive copy
-		this.tanks = newTanks.map(tank => UnitReference.clone(tank));
-		this.tanksChangeEmitter.emit(eventID);
+		this.patchRaid(eventID, { tanks: newTanks.map(tank => UnitReference.clone(tank)) });
 	}
 
 	getTargetDummies(): number {
-		return this.targetDummies;
+		return this.raidState.targetDummies;
 	}
 
 	setTargetDummies(eventID: EventID, newTargetDummies: number) {
-		if (this.targetDummies == newTargetDummies)
+		if (this.raidState.targetDummies == newTargetDummies)
 			return;
 
-		this.targetDummies = newTargetDummies;
-		this.targetDummiesChangeEmitter.emit(eventID);
+		this.patchRaid(eventID, { targetDummies: newTargetDummies });
 	}
 
 	getNumActiveParties(): number {
-		return this.numActiveParties;
+		return this.raidState.numActiveParties;
 	}
 	setNumActiveParties(eventID: EventID, newNumActiveParties: number) {
-		if (newNumActiveParties != this.numActiveParties && newNumActiveParties > 0) {
-			this.numActiveParties = newNumActiveParties;
-			this.numActivePartiesChangeEmitter.emit(eventID);
+		if (newNumActiveParties != this.raidState.numActiveParties && newNumActiveParties > 0) {
+			this.patchRaid(eventID, { numActiveParties: newNumActiveParties });
 		}
 	}
 	getActivePlayers(): Array<Player<any>> {
 		if (this.activePlayers.length == 0) {
-			const activeParties = this.getParties().filter((party, i) => i < this.numActiveParties);
+			const activeParties = this.getParties().filter((party, i) => i < this.getNumActiveParties());
 			this.activePlayers = activeParties
 				.map(party => party.getPlayers())
 				.flat()
@@ -203,7 +188,7 @@ export class Raid {
 	}
 
 	fromProto(eventID: EventID, proto: RaidProto) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			this.setBuffs(eventID, proto.buffs || RaidBuffs.create());
 			this.setDebuffs(eventID, proto.debuffs || Debuffs.create());
 			this.setTanks(eventID, proto.tanks);
@@ -221,7 +206,7 @@ export class Raid {
 	}
 
 	clear(eventID: EventID) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			for (let i = 0; i < MAX_NUM_PARTIES; i++) {
 				this.parties[i].clear(eventID);
 			}

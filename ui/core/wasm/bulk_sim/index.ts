@@ -1,14 +1,4 @@
-import {
-	BulkGearCandidate,
-	BulkGearResult,
-	BulkSimRequest,
-	BulkSimResult,
-	BulkSimStage,
-	BulkSimTimings,
-	ErrorOutcome,
-	ErrorOutcomeType,
-	ProgressMetrics,
-} from '../../proto/api';
+import { BulkGearCandidate, BulkSimRequest, BulkSimResult, BulkSimStage, BulkSimTimings, ErrorOutcome, ErrorOutcomeType, ProgressMetrics } from '../../proto/api';
 import { EquipmentSpec } from '../../proto/common';
 import { SimSignals } from '../../sim_signal_manager';
 import { isDevMode } from '../../utils';

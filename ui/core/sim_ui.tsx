@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../i18n/config.js';
+import { trackEvent } from '../tracking/utils';
 import { BaseModal } from './components/base_modal.jsx';
 import { Component } from './components/component.js';
 import { NoticeNativeSim } from './components/individual_sim_ui/notice_native_sim.jsx';
@@ -17,21 +18,21 @@ import { LaunchStatus, SimStatus } from './launched_sims.js';
 import { PlayerSpec } from './player_spec.js';
 import { ErrorOutcomeType } from './proto/api';
 import { ActionId } from './proto_utils/action_id.js';
+import { Gear } from './proto_utils/gear';
 import { SimResult } from './proto_utils/sim_result';
 import { RunSimOptions, Sim, SimError } from './sim.js';
 import { RequestTypes } from './sim_signal_manager.js';
-import { EventID, TypedEvent } from './typed_event.js';
-import { WorkerProgressCallback } from './worker_pool';
+import { EventID, nextEventID } from './state/batch';
+import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from './state/persistence';
+import { StoreSubscribe, subscribeSimChange, subscribeSimField, subscribeUiField } from './state/subscriptions';
 import { isDevMode } from './utils';
-import { trackEvent } from '../tracking/utils';
-import { Gear } from './proto_utils/gear';
-
+import { WorkerProgressCallback } from './worker_pool';
 const URLMAXLEN = 2048;
 const globalKnownIssues: Array<string> = [];
 
 // Config for displaying a warning to the user whenever a condition is met.
 export interface SimWarning {
-	updateOn: TypedEvent<any>;
+	updateOn: StoreSubscribe;
 	getContent: () => string | Array<string>;
 }
 
@@ -41,7 +42,7 @@ export interface SimUIConfig {
 	// Scheme used for themeing on a per-class Basis or for other sims
 	cssScheme: string;
 	// The spec, if an individual sim, or null if the raid sim.
-	spec: PlayerSpec<any> | null;
+	spec: PlayerSpec<any>;
 	simStatus: SimStatus;
 	knownIssues?: Array<string>;
 	noticeText?: string;
@@ -52,10 +53,12 @@ export abstract class SimUI extends Component {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
 	readonly disabled: boolean;
-	readonly isWithinRaidSim: boolean;
 
-	// Emits when anything from the sim, raid, or encounter changes.
-	readonly changeEmitter;
+	// Store-backed replacement for changeEmitter (see ui/core/state/README.md).
+	subscribeChange(): StoreSubscribe {
+		return subscribeSimChange(this.sim);
+	}
+
 
 	readonly resultsViewer: ResultsViewer;
 	readonly simHeader: SimHeader;
@@ -71,7 +74,6 @@ export abstract class SimUI extends Component {
 		this.sim = sim;
 		this.config = config;
 		this.disabled = !isDevMode() && config.simStatus.status === LaunchStatus.Unlaunched;
-		this.isWithinRaidSim = this.rootElem.closest('.within-raid-sim') != null;
 
 		const container = (
 			<>
@@ -107,41 +109,37 @@ export abstract class SimUI extends Component {
 
 		this.rootElem.classList.add(this.config.cssClass);
 
-		if (!this.isWithinRaidSim) {
-			this.rootElem.classList.add('not-within-raid-sim');
-		}
-		if (this.config.spec?.isHealingSpec) {
+		this.rootElem.classList.add('not-within-raid-sim');
+		if (this.config.spec.isHealingSpec) {
 			this.rootElem.classList.add('sim-type--heal');
-		} else if (this.config.spec?.isTankSpec) {
+		} else if (this.config.spec.isTankSpec) {
 			this.rootElem.classList.add('sim-type--tank');
 		} else if (this.config.spec?.isMeleeDpsSpec || this.config.spec?.isRangedDpsSpec) {
 			this.rootElem.classList.add('sim-type--dps', this.config.spec?.isMeleeDpsSpec ? 'sim-type--melee' : 'sim-type--ranged');
 		}
 
-		this.changeEmitter = TypedEvent.onAny([this.sim.changeEmitter], 'SimUIChange');
-
-		this.sim.crashEmitter.on((eventID: EventID, error: SimError) => this.handleCrash(error));
+		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
 
 		const updateShowDamageMetrics = () => {
 			if (this.sim.getShowDamageMetrics()) this.rootElem.classList.remove('hide-damage-metrics');
 			else this.rootElem.classList.add('hide-damage-metrics');
 		};
 		updateShowDamageMetrics();
-		this.sim.showDamageMetricsChangeEmitter.on(updateShowDamageMetrics);
+		subscribeUiField(this.sim, 'showDamageMetrics')(updateShowDamageMetrics);
 
 		const updateShowThreatMetrics = () => {
 			if (this.sim.getShowThreatMetrics()) this.rootElem.classList.remove('hide-threat-metrics');
 			else this.rootElem.classList.add('hide-threat-metrics');
 		};
 		updateShowThreatMetrics();
-		this.sim.showThreatMetricsChangeEmitter.on(updateShowThreatMetrics);
+		subscribeUiField(this.sim, 'showThreatMetrics')(updateShowThreatMetrics);
 
 		const updateShowHealingMetrics = () => {
 			if (this.sim.getShowHealingMetrics()) this.rootElem.classList.remove('hide-healing-metrics');
 			else this.rootElem.classList.add('hide-healing-metrics');
 		};
 		updateShowHealingMetrics();
-		this.sim.showHealingMetricsChangeEmitter.on(updateShowHealingMetrics);
+		subscribeUiField(this.sim, 'showHealingMetrics')(updateShowHealingMetrics);
 
 		const updateShowEpRatios = () => {
 			// Threat metrics *always* shows multiple columns, so
@@ -158,23 +156,23 @@ export abstract class SimUI extends Component {
 		};
 
 		updateShowEpRatios();
-		this.sim.showDamageMetricsChangeEmitter.on(updateShowEpRatios);
-		this.sim.showHealingMetricsChangeEmitter.on(updateShowEpRatios);
-		this.sim.showThreatMetricsChangeEmitter.on(updateShowEpRatios);
+		subscribeUiField(this.sim, 'showDamageMetrics')(updateShowEpRatios);
+		subscribeUiField(this.sim, 'showHealingMetrics')(updateShowEpRatios);
+		subscribeUiField(this.sim, 'showThreatMetrics')(updateShowEpRatios);
 
 		const updateShowExperimental = () => {
 			if (this.sim.getShowExperimental()) this.rootElem.classList.remove('hide-experimental');
 			else this.rootElem.classList.add('hide-experimental');
 		};
 		updateShowExperimental();
-		this.sim.showExperimentalChangeEmitter.on(updateShowExperimental);
+		subscribeUiField(this.sim, 'showExperimental')(updateShowExperimental);
 
 		this.addKnownIssues(config);
 
 		// Sidebar Contents
 
 		const titleElem = this.rootElem.querySelector('.sim-title') as HTMLElement;
-		new SimTitleDropdown(titleElem, config.spec, { noDropdown: this.isWithinRaidSim });
+		new SimTitleDropdown(titleElem, config.spec);
 
 		this.simActionsContainer = this.rootElem.querySelector('.sim-sidebar-actions') as HTMLElement;
 
@@ -186,7 +184,7 @@ export abstract class SimUI extends Component {
 			id: 'simui-iterations',
 			label: i18n.t('sidebar.iterations'),
 			extraCssClasses: ['iterations-picker', 'within-raid-sim-hide'],
-			changedEvent: (sim: Sim) => sim.iterationsChangeEmitter,
+			storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'iterations')(onChange),
 			getValue: (sim: Sim) => sim.getIterations(),
 			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 				trackEvent({
@@ -223,7 +221,7 @@ export abstract class SimUI extends Component {
 						</a>
 						!
 					</p>
-					{this.config.spec?.isHealingSpec && (
+					{this.config.spec.isHealingSpec && (
 						<p>
 							{i18n.t('sim.unlaunched.healing_message')}
 							<br />
@@ -318,13 +316,13 @@ export abstract class SimUI extends Component {
 	abstract getStorageKey(postfix: string): string;
 
 	getSettingsStorageKey(): string {
-		return this.getStorageKey('__currentSettings__');
+		return this.getStorageKey(SETTINGS_STORAGE_SUFFIX);
 	}
 
 	getSavedEncounterStorageKey(): string {
 		// By skipping the call to this.getStorageKey(), saved encounters will be
 		// shared across all sims.
-		return 'sharedData__savedEncounter__';
+		return SHARED_SAVED_ENCOUNTER_STORAGE_KEY;
 	}
 
 	isIndividualSim(): boolean {
@@ -335,7 +333,7 @@ export abstract class SimUI extends Component {
 		this.resultsViewer.setPending();
 		try {
 			await this.sim.signalManager.abortType(RequestTypes.All);
-			const result = await this.sim.runRaidSim(TypedEvent.nextEventID(), onProgress, options);
+			const result = await this.sim.runRaidSim(nextEventID(), onProgress, options);
 			if (!(result instanceof SimResult) && result.type == ErrorOutcomeType.ErrorOutcomeAborted) {
 				new Toast({
 					variant: 'info',
@@ -364,7 +362,7 @@ export abstract class SimUI extends Component {
 	async runSimOnce(options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
-			return await this.sim.runRaidSimWithLogs(TypedEvent.nextEventID(), { debug: true, singleIteration: true, ...options });
+			return await this.sim.runRaidSimWithLogs(nextEventID(), { debug: true, singleIteration: true, ...options });
 		} catch (e) {
 			this.resultsViewer.hideAll();
 			this.handleCrash(e);
