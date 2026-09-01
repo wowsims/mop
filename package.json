@@ -22,7 +22,9 @@
 		"fmt": "npx oxfmt ui --check",
 		"fmt:fix": "npx oxfmt ui",
 		"type-check": "node_modules/typescript/bin/tsc --noEmit",
-		"test:locales": "node ./test-locales.mjs"
+		"test:locales": "node ./test-locales.mjs",
+		"test:snapshots": "node tools/state-snapshots/check.mjs",
+		"test:snapshots:update": "node tools/state-snapshots/check.mjs --update"
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.11.8",
@@ -46,6 +48,7 @@
 	},
 	"devDependencies": {
 		"@bufbuild/buf": "1.55.1",
+		"@happy-dom/global-registrator": "^20.12.0",
 		"@namics/stylelint-bem": "^10.1.0",
 		"@protobuf-ts/plugin": "2.9.1",
 		"@protobuf-ts/plugin-framework": "2.9.0",
@@ -60,6 +63,7 @@
 		"cross-env": "^7.0.3",
 		"eslint-plugin-simple-import-sort": "^14.0.0",
 		"glob": "^13.0.6",
+		"happy-dom": "^20.12.0",
 		"http-server": "14.1.1",
 		"oxfmt": "^0.62.0",
 		"oxlint": "^1.77.0",

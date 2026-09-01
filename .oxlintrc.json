@@ -66,6 +66,28 @@
       "env": {
         "es2021": true
       }
+    },
+    {
+      "files": [
+        "ui/core/*.ts",
+        "ui/core/preset_utils.tsx",
+        "ui/core/launched_sims.tsx",
+        "ui/core/proto_utils/**/*.{ts,tsx}",
+        "ui/core/state/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "warn",
+          {
+            "patterns": [
+              {
+                "group": ["./components/**", "../components/**", "**/core/components/**"],
+                "message": "State/domain layer must not import from the UI component layer (see STATE_UI_SEPARATION_PLAN.md)."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
