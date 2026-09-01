@@ -106,7 +106,14 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 			return;
 		}
 
-		this.valueConfigs = newValueConfigs.filter(vc => !vc.headerText);
+		const filtered = newValueConfigs.filter(vc => !vc.headerText);
+		// Keep the existing config objects when nothing changed: every APL
+		// action-id picker refreshes its options on each rotation change, and a
+		// fresh-but-equal list would force a button re-render per picker.
+		if (filtered.length === this.valueConfigs.length && filtered.every((vc, i) => this.config.equals(vc.value, this.valueConfigs[i].value))) {
+			return;
+		}
+		this.valueConfigs = filtered;
 		this.setInputValue(this.getSourceValue());
 		return;
 	}
@@ -243,7 +250,10 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 		return this.valueToSource(this.currentSelection?.value as V);
 	}
 
+	private setValueSeq = 0;
+
 	setInputValue(newSrcValue: T) {
+		const seq = ++this.setValueSeq;
 		const newValue = this.sourceToValue(newSrcValue);
 		const newSelection = this.valueConfigs.find(v => this.config.equals(v.value, newValue))!;
 		if (newSelection) {
@@ -251,13 +261,22 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 		} else if (newValue == null) {
 			this.updateValue(null);
 		} else if (this.config.createMissingValue) {
-			this.config.createMissingValue(newValue).then(newSelection => this.updateValue(newSelection));
+			this.config.createMissingValue(newValue).then(newSelection => {
+				// A newer setInputValue (or disposal) happened while awaiting.
+				if (seq !== this.setValueSeq || this.isDisposed) return;
+				this.updateValue(newSelection);
+			});
 		} else {
 			this.updateValue(null);
 		}
 	}
 
 	private updateValue(newValue: DropdownValueConfig<V> | null) {
+		// Same selection object as already rendered: nothing to do. This is the
+		// hot path when a rotation edit re-syncs every dropdown in the APL editor.
+		if (newValue && newValue === this.currentSelection) {
+			return;
+		}
 		this.currentSelection = newValue;
 
 		// Update button
