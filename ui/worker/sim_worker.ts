@@ -122,10 +122,42 @@ function setupWorkerInterface() {
 const go = new Go();
 let inst: WebAssembly.Instance | null = null;
 
-WebAssembly.instantiateStreaming(fetch('lib.wasm'), go.importObject).then(async result => {
-	inst = result.instance;
-	// console.log("loading wasm...")
-	await go.run(inst);
-});
+// lib.wasm ships gzipped (Cloudflare Pages caps files at 25 MiB; the raw module exceeds it).
+// The worker pool spawns many wasm workers at once; serializing the fetch behind a Web Lock
+// lets the first worker populate the browser HTTP cache and the rest read from it (with
+// normal HTTP revalidation semantics) instead of every worker downloading the module in
+// parallel. The magic-byte sniff keeps this working behind servers that set
+// Content-Encoding for .gz files and hand the browser already-decompressed bytes.
+const WASM_FETCH_LOCK = 'wowsims-lib-wasm-fetch';
+
+const fetchWasmBytes = async (): Promise<ArrayBuffer> => {
+	// Buffering inside the lock matters: the HTTP cache entry is only complete once the
+	// body is fully received, so releasing the lock earlier would let the next worker
+	// race past the cache and download again.
+	const download = async () => (await fetch('lib.wasm.gz')).arrayBuffer();
+	if (typeof navigator !== 'undefined' && navigator.locks) {
+		let bytes: ArrayBuffer | undefined;
+		await navigator.locks.request(WASM_FETCH_LOCK, async () => {
+			bytes = await download();
+		});
+		return bytes!;
+	}
+	return download();
+};
+
+const fetchWasm = async (): Promise<Response> => {
+	const bytes = new Uint8Array(await fetchWasmBytes());
+	const isGzip = bytes.length > 2 && bytes[0] === 0x1f && bytes[1] === 0x8b;
+	const bodyStream = new Response(bytes).body!;
+	const wasmStream = isGzip ? bodyStream.pipeThrough(new DecompressionStream('gzip')) : bodyStream;
+	return new Response(wasmStream, { headers: { 'Content-Type': 'application/wasm' } });
+};
+
+fetchWasm()
+	.then(response => WebAssembly.instantiateStreaming(response, go.importObject))
+	.then(async result => {
+		inst = result.instance;
+		await go.run(inst);
+	});
 
 export {};

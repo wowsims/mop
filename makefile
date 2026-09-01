@@ -47,7 +47,7 @@ PAGE_INDECES := ui/death_knight/blood/index.html \
 				ui/raid/full/index.html
 
 $(OUT_DIR)/.dirstamp: \
-  $(OUT_DIR)/lib.wasm \
+  $(OUT_DIR)/lib.wasm.gz \
   ui/core/proto/api.ts \
   $(ASSETS) \
   $(OUT_DIR)/bundle/.dirstamp
@@ -137,10 +137,12 @@ $(OUT_DIR)/%/index.html: ui/index_template.html $(OUT_DIR)/assets
 	cat ui/index_template.html | sed -e 's/@@CLASS@@/$(shell dirname $((@D)) | xargs basename)/g' -e 's/@@SPEC@@/$(shell basename $(@D))/g' > $@
 
 .PHONY: wasm
-wasm: $(OUT_DIR)/lib.wasm
+wasm: $(OUT_DIR)/lib.wasm.gz
 
 # Builds the generic .wasm, with all items included.
-$(OUT_DIR)/lib.wasm: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
+# Published gzipped: Cloudflare Pages caps files at 25 MiB and the raw module exceeds it.
+# The worker decompresses via DecompressionStream (see ui/worker/sim_worker.ts).
+$(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
 	@echo "Starting webassembly compile now..."
 	@if GOOS=js GOARCH=wasm go build -ldflags "-w -s" -o ./$(OUT_DIR)/lib.wasm ./sim/wasm/; then \
 		printf "\033[1;32mWASM compile successful.\033[0m\n"; \
@@ -148,6 +150,7 @@ $(OUT_DIR)/lib.wasm: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/i
 		printf "\033[1;31mWASM COMPILE FAILED\033[0m\n"; \
 		exit 1; \
 	fi
+	gzip -9 -f -n $(OUT_DIR)/lib.wasm
 
 $(OUT_DIR)/assets/%: assets/%
 	mkdir -p $(@D)
@@ -164,7 +167,7 @@ binary_dist: $(OUT_DIR)/.dirstamp
 	rm -rf binary_dist
 	mkdir -p binary_dist
 	cp -r $(OUT_DIR) binary_dist/
-	rm binary_dist/mop/lib.wasm
+	rm binary_dist/mop/lib.wasm.gz
 	rm -rf binary_dist/mop/assets/db_inputs
 	rm binary_dist/mop/assets/database/db.bin
 	rm binary_dist/mop/assets/database/leftover_db.bin
@@ -306,7 +309,7 @@ update-highs: node_modules
 	go run ./tools/gen_highs
 
 .PHONY: test
-test: $(OUT_DIR)/lib.wasm binary_dist/dist.go
+test: $(OUT_DIR)/lib.wasm.gz binary_dist/dist.go
 	GOARCH=amd64 go test --tags=with_db ./sim/...
 
 .PHONY: update-tests
