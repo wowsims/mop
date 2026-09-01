@@ -22,12 +22,7 @@ export enum SimRequest {
 
 // The endpoints that run asynchronously (progress-id handshake + progress polling). Single
 // source for the async/sync split; the HTTP worker derives its routing from this list.
-export const ASYNC_SIM_REQUESTS = [
-	SimRequest.raidSimAsync,
-	SimRequest.statWeightsAsync,
-	SimRequest.bulkSimAsync,
-	SimRequest.reforgeOptimizeAsync,
-] as const;
+export const ASYNC_SIM_REQUESTS = [SimRequest.raidSimAsync, SimRequest.statWeightsAsync, SimRequest.bulkSimAsync, SimRequest.reforgeOptimizeAsync] as const;
 export type AsyncSimRequest = (typeof ASYNC_SIM_REQUESTS)[number];
 
 /**
@@ -49,12 +44,19 @@ export interface WorkerReceiveMessageSimRequest extends Required<WorkerReceiveMe
 	msg: SimRequest;
 }
 
-export type WorkerReceiveMessage = WorkerReceiveMessageSetId | WorkerReceiveMessageSimRequest;
+// Reply to a worker's wasmModuleRequest: the compiled sim module, fetched and compiled once
+// on the main thread and shared with every wasm worker via structured clone.
+export interface WorkerReceiveMessageWasmModule {
+	msg: 'wasmModule';
+	module: WebAssembly.Module;
+}
+
+export type WorkerReceiveMessage = WorkerReceiveMessageSetId | WorkerReceiveMessageSimRequest | WorkerReceiveMessageWasmModule;
 
 /**
  * What the Worker sends to the UI
  */
-export type WorkerSendMessageType = 'ready' | 'idConfirm' | 'progress' | keyof typeof SimRequest;
+export type WorkerSendMessageType = 'ready' | 'idConfirm' | 'progress' | 'wasmModuleRequest' | keyof typeof SimRequest;
 
 export interface WorkerSendMessageBodyBase {
 	id?: string;
@@ -83,4 +85,13 @@ export interface WorkerSendMessageSimRequest extends WorkerSendMessageBodyBase {
 	outputData: Uint8Array;
 }
 
-export type WorkerSendMessage = WorkerSendMessageReady | WorkerSendMessageIdConfirm | WorkerSendMessageProgress | WorkerSendMessageSimRequest;
+export interface WorkerSendMessageWasmModuleRequest extends WorkerSendMessageBodyBase {
+	msg: 'wasmModuleRequest';
+}
+
+export type WorkerSendMessage =
+	| WorkerSendMessageReady
+	| WorkerSendMessageIdConfirm
+	| WorkerSendMessageProgress
+	| WorkerSendMessageSimRequest
+	| WorkerSendMessageWasmModuleRequest;
