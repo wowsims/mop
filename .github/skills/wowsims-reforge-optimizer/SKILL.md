@@ -1,10 +1,10 @@
 ---
-name: wowsims-reforge-optimizer-handoff
-description: 'Use when continuing, debugging, validating, or modifying the WoWSims MoP reforge optimizer, /reforgeOptimizeAsync endpoint, HiGHS solver integration, gem/socket/cap logic, softcap breakpoints, or Rune of Re-Origination relative stat caps.'
-argument-hint: 'Describe the reforge optimizer bug, fixture, or behavior to continue.'
+name: wowsims-reforge-optimizer
+description: 'Use when working on the WoWSims MoP reforge optimizer, /reforgeOptimizeAsync endpoint, HiGHS solver integration, gem/socket/cap logic, softcap breakpoints, or Rune of Re-Origination relative stat caps.'
+argument-hint: 'Describe the reforge optimizer bug, fixture, or behavior to work on.'
 ---
 
-# WoWSims Reforge Optimizer Handoff
+# WoWSims Reforge Optimizer Guide
 
 ## Scope
 - Core optimizer behavior in sim/core/reforge_optimizer.
@@ -16,7 +16,7 @@ argument-hint: 'Describe the reforge optimizer bug, fixture, or behavior to cont
 Files (all under sim/core/reforge_optimizer/):
 - Main flow + optimizer state (EP internalization, stat rules, amp/bearform multipliers): optimizer.go.
 - LP model build — decision variables, gem options, applyReforgeStat (objective coeffs) + resolveCapCoeffs (cap coeffs): model.go.
-- Byte-exact deterministic CPLEX LP text serialization for HiGHS: lp.go.
+- Byte-exact deterministic CPLEX LP text serialization for HiGHS: lp.go (rows are <=/>= only; term/sign formatting goes through appendLPTerm — the byte layout is load-bearing for HiGHS tie-breaking).
 - Solve + cap-refinement loop (solveModel, checkCaps): solver.go.
 - Soft caps / gap-to-cap conversion + cap-detection helpers: caps.go.
 - Stat/UnitStat math (resolveStatDelta, EP-internalization inputs): reforge_stats.go.
@@ -26,7 +26,7 @@ Files (all under sim/core/reforge_optimizer/):
 - HiGHS bridge:
   - Go non-browser (embedded, pooled wazero): highswasm.go. (Do NOT rename to highs_wasm.go — the `_wasm.go` suffix is an implicit GOARCH=wasm constraint that breaks the native build.)
   - Browser wasm: highs_js.go.
-- Frontend caller: ui/core/components/suggest_reforges_action.tsx.
+- Frontend caller: ui/core/components/suggest_reforges_action.tsx. The 14-day IndexedDB cache key contract lives in cacheRelevantPlayerProto / cacheRelevantReforgeRequest there — any new field that affects a solve must be reflected in those two functions, and any irrelevant field must be excluded, or caches go silently stale / get needlessly busted. Hashing is synchronous via hashString in ui/core/utils.ts.
 
 ## Key Backend Concepts (rewrite)
 - Objective/cap coefficient split: the objective uses EP-calibrated applyReforgeStat (objByName); cap-constraint rows use full-SDM resolveStatDelta (byName), so Int->crit%, Agi->crit%/AP, the haste speed multiplier, etc. all count toward caps.
@@ -63,7 +63,8 @@ Files (all under sim/core/reforge_optimizer/):
 ## Bulk Sim Integration Contract
 - Bulk Sim uses ReforgeOptimizeRequest mode for bulk operations.
 - Bulk pre-pass may call optimizer twice per candidate when includeGems fallback is enabled.
-- Cache keys should represent input identity; cached values are optimized output gear.
+- Cache keys should represent input identity; cached values are optimized output gear (plain `equipmentSpec:` proto JSON).
+- Bulk runs derive their RNG seed from content including the cache-relevant reforge config — see the wowsims-bulk-sim skill for the staged/finalist pipeline.
 
 ## Performance Guardrails
 - Keep solver model/build overhead low and allocation-aware.
