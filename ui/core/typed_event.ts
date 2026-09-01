@@ -98,7 +98,9 @@ export class TypedEvent<T> {
 	}
 
 	private fireEventInternal(eventID: EventID, event: T) {
-		this.listeners.forEach(listener => listener(eventID, event));
+		// Iterate a copy: a listener may off() itself (lazy self-dispose in Input),
+		// which would otherwise skip the next listener in the live array.
+		this.listeners.slice().forEach(listener => listener(eventID, event));
 	}
 
 	// Executes the provided callback while all TypedEvents are frozen.
