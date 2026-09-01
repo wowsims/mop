@@ -8,9 +8,15 @@ JSON. The output is compared byte-for-byte against `golden.json`. It also assert
 that `fromProto(toProto(x))` is a fixed point per spec.
 
 ```
-npm run test:snapshots          # check against golden.json
+npm run test:snapshots          # store contract test, then check against golden.json
 npm run test:snapshots:update   # regenerate golden.json — only when a diff is intended
 ```
+
+`store-contract-test.ts` runs first: it asserts the store notification contract
+(one gated subscriber fire per facade write, equal-value writes suppressed,
+unconditional setters still notifying via version counters, `batch()` deferring
+to one fire with final state, aggregate/composition selectors, satellites,
+`Emitter`, `setGearAsync`). Any failure stops the run before snapshots are compared.
 
 How it runs: `check.mjs` builds `snapshot.ts` with a throwaway vite SSR bundle
 (`vite.harness.mts` at the repo root), then executes it via `run.mjs`, which

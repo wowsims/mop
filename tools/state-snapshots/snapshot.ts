@@ -49,15 +49,15 @@ import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/core/
 import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/core/proto/common';
 import { Database } from '../../ui/core/proto_utils/database';
 import { Sim } from '../../ui/core/sim';
-import { TypedEvent } from '../../ui/core/typed_event';
-
+import { batch, nextEventID } from '../../ui/core/state/batch';
+import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/core/state/serialization';
 // Mirror of IndividualSimUI.applyDefaults (individual_sim_ui.tsx) without the
 // UI-owned satellites (reforger, statWeightActionSettings, defaultBuild).
 // When the defaults logic moves into ui/core/state/, replace this mirror with
 // a call to the real implementation — snapshot diffs then verify the move.
 function applySpecDefaults(sim: Sim, player: Player<any>, config: IndividualSimUIConfig<any>) {
-	const eventID = TypedEvent.nextEventID();
-	TypedEvent.freezeAllAndDo(() => {
+	const eventID = nextEventID();
+	batch(() => {
 		const tankSpec = player.getPlayerSpec().isTankSpec;
 		const healingSpec = player.getPlayerSpec().isHealingSpec;
 
@@ -126,8 +126,8 @@ export async function main() {
 		await Database.get();
 		const playerSpec = PlayerSpecs.fromProto(spec);
 		const player = new Player<any>(playerSpec, sim);
-		const initID = TypedEvent.nextEventID();
-		TypedEvent.freezeAllAndDo(() => {
+		const initID = nextEventID();
+		batch(() => {
 			sim.raid.setPlayer(initID, 0, player);
 		});
 
@@ -137,10 +137,10 @@ export async function main() {
 		// "all selected" filter arrays to [] and fromProto re-expands them, so
 		// the serialized form is only a fixed point from the second pass on.
 		// This is existing behavior we snapshot, not a bug we fix here.
-		const canonID = TypedEvent.nextEventID();
+		const canonID = nextEventID();
 		player.fromProto(canonID, player.toProto(false));
 		sim.fromProto(canonID, sim.toProto());
-		sim.encounter.fromProto(TypedEvent.nextEventID(), sim.encounter.toProto());
+		sim.encounter.fromProto(nextEventID(), sim.encounter.toProto());
 
 		const playerProto = player.toProto(false);
 		const simProto = sim.toProto();
@@ -155,17 +155,33 @@ export async function main() {
 		const encounterJson = JSON.stringify(encounterProto, bigintReplacer);
 
 		// fromProto(toProto) round trip must now be a fixed point.
-		const rtID = TypedEvent.nextEventID();
+		const rtID = nextEventID();
 		player.fromProto(rtID, playerProto);
 		sim.fromProto(rtID, simProto);
-		sim.encounter.fromProto(TypedEvent.nextEventID(), encounterProto);
+		sim.encounter.fromProto(nextEventID(), encounterProto);
 		const roundTripStable =
 			JSON.stringify(player.toProto(false), bigintReplacer) === playerJson &&
 			JSON.stringify(sim.toProto(), bigintReplacer) === simJson &&
 			JSON.stringify(sim.encounter.toProto(), bigintReplacer) === encounterJson;
 
+		// IndividualSimSettings envelope round trip (serialization.ts). A minimal
+		// context: no reforge settings, defaults as fallback EP weights.
+		const ctx = {
+			player,
+			sim,
+			reforgeSettings: undefined,
+			defaultEpWeights: player.getEpWeights(),
+			refStats: {},
+		};
+		const envelopeProto = individualSimSettingsToProto(ctx);
+		const envelopeJson = JSON.stringify(envelopeProto, bigintReplacer);
+		applyIndividualSimSettings(nextEventID(), ctx, envelopeProto);
+		const envelopeStable = JSON.stringify(individualSimSettingsToProto(ctx), bigintReplacer) === envelopeJson;
+
 		out[PlayerSpecs.getFullSpecName(playerSpec)] = {
 			roundTripStable,
+			envelopeStable,
+			envelope: JSON.parse(envelopeJson),
 			player: JSON.parse(playerJson),
 			sim: JSON.parse(simJson),
 			raid: JSON.parse(raidJson),

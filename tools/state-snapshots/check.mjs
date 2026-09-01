@@ -16,6 +16,24 @@ const repoRoot = path.resolve(here, '../..');
 const goldenPath = path.join(here, 'golden.json');
 const update = process.argv.includes('--update');
 
+// Store contract test first (fast fail).
+console.error('[snapshots] building store contract test...');
+execFileSync(path.join(repoRoot, 'node_modules/.bin/vite'), ['build', '-c', 'vite.harness.mts'], {
+	cwd: repoRoot,
+	env: { ...process.env, HARNESS_ENTRY: 'tools/state-snapshots/store-contract-test.ts' },
+	stdio: ['ignore', 'ignore', 'inherit'],
+});
+const contractOut = execFileSync(process.execPath, [path.join(here, 'run.mjs')], {
+	cwd: repoRoot,
+	env: { ...process.env, HARNESS_BUNDLE: 'store-contract-test.js' },
+}).toString();
+if (!contractOut.includes('STORE-CONTRACT OK')) {
+	console.error(contractOut);
+	console.error('[snapshots] FAIL: store contract test failed.');
+	process.exit(1);
+}
+console.error('[snapshots] store contract test OK.');
+
 console.error('[snapshots] building harness bundle...');
 execFileSync(path.join(repoRoot, 'node_modules/.bin/vite'), ['build', '-c', 'vite.harness.mts'], {
 	cwd: repoRoot,
@@ -31,7 +49,7 @@ const output = execFileSync(process.execPath, [path.join(here, 'run.mjs')], {
 }).toString();
 
 const parsed = JSON.parse(output);
-const unstable = Object.entries(parsed).filter(([, v]) => !v.roundTripStable);
+const unstable = Object.entries(parsed).filter(([, v]) => !v.roundTripStable || v.envelopeStable === false);
 if (unstable.length) {
 	console.error('[snapshots] FAIL: fromProto(toProto) round trip not stable for:', unstable.map(([k]) => k).join(', '));
 	process.exit(1);
