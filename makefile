@@ -1,3 +1,7 @@
+# A partially written target (e.g. the two-step wasm gzip recipe killed mid-write) must
+# not be treated as up to date on the next run.
+.DELETE_ON_ERROR:
+
 OUT_DIR := dist/mop
 # Windows won't launch an extensionless binary -- air just pops a file-association prompt.
 BIN_EXT := $(shell go env GOEXE)
@@ -8,8 +12,8 @@ ASSETS := $(patsubst assets/%,$(OUT_DIR)/assets/%,$(ASSETS_INPUT))
 rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 GOROOT := $(shell go env GOROOT)
 UI_SRC := $(shell find ui -name '*.ts' -o -name '*.tsx' -o -name '*.scss' -o -name '*.html')
-AUTO_GEN_FILES_TS := ui/core/player_classes/capabilities_auto_gen.ts ui/core/components/individual_sim_ui/bulk/constants_auto_gen.ts
-AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
+AUTO_GEN_FILES_TS := ui/core/player_classes/capabilities_auto_gen.ts ui/core/components/individual_sim_ui/bulk/constants_auto_gen.ts ui/core/wasm/bulk_sim/constants_auto_gen.ts
+AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go sim/core/bulk/bulk_sim.go sim/core/bulk/stage.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
 PAGE_INDECES := ui/death_knight/blood/index.html \
 				ui/death_knight/frost/index.html \
 				ui/death_knight/unholy/index.html \
@@ -47,7 +51,7 @@ PAGE_INDECES := ui/death_knight/blood/index.html \
 				ui/raid/full/index.html
 
 $(OUT_DIR)/.dirstamp: \
-  $(OUT_DIR)/lib.wasm \
+  $(OUT_DIR)/lib.wasm.gz \
   ui/core/proto/api.ts \
   $(ASSETS) \
   $(OUT_DIR)/bundle/.dirstamp
@@ -137,10 +141,13 @@ $(OUT_DIR)/%/index.html: ui/index_template.html $(OUT_DIR)/assets
 	cat ui/index_template.html | sed -e 's/@@CLASS@@/$(shell dirname $((@D)) | xargs basename)/g' -e 's/@@SPEC@@/$(shell basename $(@D))/g' > $@
 
 .PHONY: wasm
-wasm: $(OUT_DIR)/lib.wasm
+wasm: $(OUT_DIR)/lib.wasm.gz
 
 # Builds the generic .wasm, with all items included.
-$(OUT_DIR)/lib.wasm: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
+# Published gzipped: Cloudflare Pages caps files at 25 MiB and the raw module exceeds it.
+# The main thread decompresses and compiles it once (see getSharedWasmModule in
+# ui/core/worker_pool.ts) and shares the compiled module with every worker.
+$(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
 	@echo "Starting webassembly compile now..."
 	@if GOOS=js GOARCH=wasm go build -ldflags "-w -s" -o ./$(OUT_DIR)/lib.wasm ./sim/wasm/; then \
 		printf "\033[1;32mWASM compile successful.\033[0m\n"; \
@@ -148,6 +155,7 @@ $(OUT_DIR)/lib.wasm: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/i
 		printf "\033[1;31mWASM COMPILE FAILED\033[0m\n"; \
 		exit 1; \
 	fi
+	gzip -9 -f -n $(OUT_DIR)/lib.wasm
 
 $(OUT_DIR)/assets/%: assets/%
 	mkdir -p $(@D)
@@ -164,7 +172,7 @@ binary_dist: $(OUT_DIR)/.dirstamp
 	rm -rf binary_dist
 	mkdir -p binary_dist
 	cp -r $(OUT_DIR) binary_dist/
-	rm binary_dist/mop/lib.wasm
+	rm -f binary_dist/mop/lib.wasm binary_dist/mop/lib.wasm.gz
 	rm -rf binary_dist/mop/assets/db_inputs
 	rm binary_dist/mop/assets/database/db.bin
 	rm binary_dist/mop/assets/database/leftover_db.bin
@@ -229,7 +237,20 @@ release: wowsimmop wowsimmop-windows.exe
 	zip wowsimcli-windows.exe.zip wowsimcli-windows.exe
 
 sim/core/proto/api.pb.go: proto/*.proto
-	protoc -I=./proto --go_out=./sim/core ./proto/*.proto
+	@if go version -m "$$(command -v protoc-gen-go)" 2>/dev/null | grep -qE '^[[:space:]]+mod[[:space:]]+github\.com/golang/protobuf[[:space:]]'; then \
+		echo "ERROR: your protoc-gen-go is the deprecated github.com/golang/protobuf plugin;"; \
+		echo "it generates code that no longer builds against this repo's protobuf version."; \
+		echo "Fix:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest"; \
+		echo "then: rm -f sim/core/proto/*.pb.go && retry"; \
+		exit 1; \
+	fi
+# Distro protoc packages (e.g. Ubuntu/WSL's protobuf-compiler) bundle a
+# descriptor.proto whose go_package still points at the deprecated
+# github.com/golang/protobuf path, which is no longer a dependency. Pin the
+# mapping so common.proto's MessageOptions extension resolves to descriptorpb.
+	protoc -I=./proto \
+		--go_opt=Mgoogle/protobuf/descriptor.proto=google.golang.org/protobuf/types/descriptorpb \
+		--go_out=./sim/core ./proto/*.proto
 
 $(AUTO_GEN_FILES_TS): $(AUTO_GEN_FILES_TS_DEPS)
 	go run ./tools/database/gen_db -gen=go-to-ts
@@ -284,8 +305,16 @@ sim/core/items/all_items.go: $(call rwildcard,tools/database,*.go) $(call rwildc
 		curl -fL -o tools/db2tool/listfile.csv https://github.com/wowdev/wow-listfile/releases/latest/download/community-listfile.csv; }
 	go run tools/database/gen_db/*.go -outDir=./assets -gen=db
 
+# Syncs the HiGHS solver artifacts from the pinned npm `highs` package: copies its wasm to
+# ui/worker/highs.wasm (which the Go backend go:embeds) and regenerates the minified-name map the
+# wazero host looks its imports and exports up through. Run after changing the pinned version in
+# package.json, and commit both outputs. TestHiGHSArtifactsMatchPinnedVersion fails if you don't.
+.PHONY: update-highs
+update-highs: node_modules
+	go run ./tools/gen_highs
+
 .PHONY: test
-test: $(OUT_DIR)/lib.wasm binary_dist/dist.go
+test: $(OUT_DIR)/lib.wasm.gz binary_dist/dist.go
 	GOARCH=amd64 go test --tags=with_db ./sim/...
 
 .PHONY: update-tests
@@ -319,7 +348,7 @@ else
 	npx http-server $(OUT_DIR)/..
 endif
 
-devmode: air devserver $(AUTO_GEN_FILES_TS)
+devmode: air devserver $(AUTO_GEN_FILES_TS) $(PAGE_INDECES)
 ifeq ($(WATCH), 1)
 	npx tsx vite.build-workers.mts & npx vite serve --host &
 	air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false --wasm=false" -build.bin "./wowsimmop$(BIN_EXT)" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"

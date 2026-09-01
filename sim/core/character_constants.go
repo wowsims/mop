@@ -260,6 +260,10 @@ var ClassRaceCapabilities = map[proto.Class][]proto.Race{
 	},
 }
 
+var SpecCanDualWield2HCapabilities = map[proto.Spec]bool{
+	proto.Spec_SpecFuryWarrior: true,
+}
+
 var SpecCanDualWieldCapabilities = map[proto.Spec]bool{
 	proto.Spec_SpecBloodDeathKnight:   true,
 	proto.Spec_SpecFrostDeathKnight:   true,

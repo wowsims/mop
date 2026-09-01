@@ -313,7 +313,7 @@ func GetFakeCharacter(slots []proto.ItemSlot, withRangedWeapon bool) *Character 
 		}
 
 		character.Equipment[slots[idx]] = item
-		ItemsByID[int32(idx+1)] = item
+		itemsByID[int32(idx+1)] = item
 	}
 
 	return character

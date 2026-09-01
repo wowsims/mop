@@ -3,41 +3,35 @@ import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
+import { translateSlotName } from '../../i18n/localization';
+import { trackEvent, trackPageView } from '../../tracking/utils';
 import * as Mechanics from '../constants/mechanics.js';
 import { SimSettingCategories } from '../constants/sim_settings';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
 import { Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '../proto/api';
-import { Class, Debuffs, GemColor, ItemQuality, ItemSlot, PartyBuffs, Profession, PseudoStat, RaidBuffs, Spec, Stat } from '../proto/common';
-import { UIGem as Gem, IndividualSimSettings } from '../proto/ui';
+import { Class, Debuffs, GemColor, ItemQuality, ItemSlot, PartyBuffs, Profession, RaidBuffs, Spec, Stat } from '../proto/common';
+import { IndividualSimSettings, UIGem as Gem } from '../proto/ui';
 import { Database } from '../proto_utils/database';
 import { EquippedItem } from '../proto_utils/equipped_item';
 import { Gear } from '../proto_utils/gear';
-import { getEmptyGemSocketIconUrl } from '../proto_utils/gems';
 import { statCapTypeNames } from '../proto_utils/names';
-import { getGearKeyFromSpec } from '../proto_utils/utils';
-import { translateSlotName, translateStat } from '../../i18n/localization';
 import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
+import { getReforgeCacheGearKey } from '../proto_utils/utils';
+import { ReforgeGearCache } from '../reforge_cache';
 import type { ReforgeOptimizeConfig, Sim } from '../sim';
+import { RequestTypes } from '../sim_signal_manager';
 import { ActionGroupItem } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
 import { distinct, isDevMode } from '../utils';
 import { CopyButton } from './copy_button';
+import { buildGearChangeIcon } from './gear_change_icon';
 import { BooleanPicker } from './pickers/boolean_picker';
 import { EnumPicker } from './pickers/enum_picker';
 import { NumberPicker, NumberPickerConfig } from './pickers/number_picker';
+import { ProgressTrackerModal } from './progress_tracker_modal';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
 import Toast from './toast';
-import { trackEvent, trackPageView } from '../../tracking/utils';
-import { RequestTypes } from '../sim_signal_manager';
-import { ReforgeGearCache } from '../reforge_cache';
-import { ProgressTrackerModal } from './progress_tracker_modal';
-import { getEmptySlotIconUrl } from './gear_picker/utils';
-
-type GemData = {
-	gem: Gem;
-	isJC: boolean;
-};
 
 const INCLUDED_STATS = [
 	Stat.StatHitRating,
@@ -86,25 +80,6 @@ export type ReforgeOptimizerOptions = {
 export class RelativeStatCap {
 	static relevantStats: Stat[] = [Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating];
 	readonly forcedHighestStat: UnitStat;
-
-	// Not comprehensive, add any other relevant offsets here as needed.
-	static procTrinketOffsets: Map<Stat, Map<number, number>> = new Map([
-		[
-			Stat.StatCritRating,
-			new Map([
-				[69167, 460], // Vessel of Acceleration (H)
-				[68995, 410], // Vessel of Acceleration (N)
-			]),
-		],
-		[
-			Stat.StatHasteRating,
-			new Map([
-				[69112, 1730], // The Hungerer (H)
-				[68927, 1532], // The Hungerer (N)
-			]),
-		],
-		[Stat.StatMasteryRating, new Map([])],
-	]);
 
 	static hasRoRo(player: Player<any>): boolean {
 		return player.getGear().hasTrinketFromOptions([95802, 94532, 96546, 96174, 96918]);
@@ -1066,6 +1041,7 @@ export class ReforgeOptimizer {
 	getReforgeOptimizeConfig(gear: Gear): ReforgeOptimizeConfig {
 		const settings = this.toProto();
 		settings.statCaps = this.processedStatCaps.toProto();
+		settings.epStats = this.simUI.individualConfig.epStats.slice();
 
 		return {
 			gear,
@@ -1074,6 +1050,46 @@ export class ReforgeOptimizer {
 			settings,
 			softCaps: this.softCapsConfigWithLimits,
 		};
+	}
+
+	// THE cache-key contract for the 14-day reforge cache. The two functions below declare
+	// exactly which player/request state a solve depends on; when a new field that affects
+	// solve output is added to Player or ReforgeOptimizeRequest, it must be reflected here or
+	// stale reforges are served silently - and an irrelevant field left in busts every
+	// user's cache on unrelated changes.
+
+	// The player state a reforge solve depends on: the listed setting categories, plus bonus
+	// stats and item-swap config, minus fields that are either keyed separately (equipment),
+	// derivable (database), or irrelevant to a solve.
+	private static cacheRelevantPlayerProto(player: Player<any>): PlayerProtoMessageType {
+		const playerProto = player.toProto(true, false, [
+			SimSettingCategories.Talents,
+			SimSettingCategories.Consumes,
+			SimSettingCategories.External,
+			SimSettingCategories.Miscellaneous,
+		]);
+		playerProto.bonusStats = player.getBonusStats().toProto();
+		playerProto.enableItemSwap = player.itemSwapSettings.getEnableItemSwap();
+		playerProto.itemSwap = player.itemSwapSettings.toProto();
+		playerProto.equipment = undefined;
+		playerProto.database = undefined;
+		playerProto.channelClipDelayMs = 0;
+		playerProto.inFrontOfTarget = false;
+		playerProto.distanceFromTarget = 0;
+		playerProto.healingModel = undefined;
+		return playerProto;
+	}
+
+	// The optimizer config a solve depends on: everything except per-run identity
+	// (requestId, debug, mode) and the raid, which is keyed separately. Gem options are
+	// order-normalized so equal sets hash equally.
+	static cacheRelevantReforgeRequest(reforgeRequest: ReforgeOptimizeRequest): ReforgeOptimizeRequest {
+		const configForHash = ReforgeOptimizeRequest.clone({ ...reforgeRequest, raid: undefined } as ReforgeOptimizeRequest);
+		configForHash.requestId = '';
+		configForHash.debug = false;
+		configForHash.mode = ReforgeOptimizeMode.ReforgeOptimizeModeSingle;
+		configForHash.gemOptions = configForHash.gemOptions.sort((a, b) => a.id - b.id);
+		return configForHash;
 	}
 
 	static async getConfigHash({
@@ -1089,34 +1105,14 @@ export class ReforgeOptimizer {
 		partyBuffs: PartyBuffs | undefined;
 		debuffs: Debuffs;
 	}): Promise<string> {
-		const playerProto = player.toProto(true, false, [
-			SimSettingCategories.Talents,
-			SimSettingCategories.Consumes,
-			SimSettingCategories.External,
-			SimSettingCategories.Miscellaneous,
-		]);
-		playerProto.equipment = undefined;
-		playerProto.database = undefined;
-		playerProto.channelClipDelayMs = 0;
-		playerProto.inFrontOfTarget = false;
-		playerProto.distanceFromTarget = 0;
-		playerProto.healingModel = undefined;
-
-		const reforgeOptimizerConfigForHash = ReforgeOptimizeRequest.clone(reforgeRequest);
-		reforgeOptimizerConfigForHash.requestId = '';
-		reforgeOptimizerConfigForHash.raid = undefined;
-		reforgeOptimizerConfigForHash.debug = false;
-		reforgeOptimizerConfigForHash.mode = ReforgeOptimizeMode.ReforgeOptimizeModeSingle;
-		reforgeOptimizerConfigForHash.gemOptions = reforgeOptimizerConfigForHash.gemOptions.sort((a, b) => a.id - b.id);
-
 		return ReforgeGearCache.getHash({
-			player: PlayerProtoMessageType.toJsonString(playerProto),
+			player: PlayerProtoMessageType.toJsonString(ReforgeOptimizer.cacheRelevantPlayerProto(player)),
 			raid: {
 				buffs: RaidBuffs.toJsonString(raidBuffs),
 				partyBuffs: partyBuffs ? PartyBuffs.toJsonString(partyBuffs) : null,
 				debuffs: Debuffs.toJsonString(debuffs),
 			},
-			optimizer: ReforgeOptimizeRequest.toJsonString(reforgeOptimizerConfigForHash),
+			optimizer: ReforgeOptimizeRequest.toJsonString(ReforgeOptimizer.cacheRelevantReforgeRequest(reforgeRequest)),
 		});
 	}
 
@@ -1146,7 +1142,7 @@ export class ReforgeOptimizer {
 		// Existing gems must be part of the cache key whether or not includeGems is set: with it off
 		// the optimizer keeps the equipped gems, and with it on minimizeRegems reuses them. Either
 		// way the optimized gear depends on the equipped gems, so dropping them returns stale gear.
-		const cacheKey = await ReforgeGearCache.getKey(getGearKeyFromSpec(previousGear.asSpec(), frozenItemSlots, true), configHash);
+		const cacheKey = ReforgeGearCache.getKey(getReforgeCacheGearKey(previousGear.asSpec(), frozenItemSlots), configHash);
 		const cachedGear = await cache.get(cacheKey);
 		if (cachedGear) {
 			if (isDevMode()) console.log('Reforge optimization: cache hit.');
@@ -1250,109 +1246,7 @@ export class ReforgeOptimizer {
 				<ul className="suggest-reforges-gear-list list-reset">
 					{itemSlots.map(slot => {
 						const item = changedSlots.get(slot);
-						const slotName = translateSlotName(slot);
-						const iconRef = ref<HTMLDivElement>();
-						const reforgeRef = ref<HTMLDivElement>();
-						const socketsContainerRef = ref<HTMLDivElement>();
-						const itemElement = (
-							<div className="item-picker-root">
-								<div
-									ref={iconRef}
-									className="item-picker-icon-wrapper"
-									style={{
-										backgroundImage: `url('${getEmptySlotIconUrl(slot)}')`,
-									}}>
-									<div ref={reforgeRef} className="suggest-reforges-gear-reforge interactive d-none"></div>
-									<div ref={socketsContainerRef} className="item-picker-sockets-container"></div>
-								</div>
-							</div>
-						);
-
-						if (item) {
-							item.asActionId()
-								.fill(undefined)
-								.then(filledId => {
-									filledId.setBackground(iconRef.value!);
-								});
-
-							const previousItem = this.previousGear?.getEquippedItem(slot);
-							const previousReforge = previousItem?.reforge;
-							const previousGems = previousItem?.gems;
-
-							const { reforge, gems } = item;
-
-							if (reforge || previousReforge) {
-								let message: Element;
-								if (reforge) {
-									const { fromStat, toStat } = reforge;
-									const fromText = translateStat(fromStat);
-									const toText = translateStat(toStat);
-									message = (
-										<>
-											{fromText} → {toText}
-										</>
-									);
-								} else {
-									message = <>{i18n.t('gear_tab.reforge_success.removed_reforge')}</>;
-								}
-
-								reforgeRef.value?.classList.remove('d-none');
-								tippy(reforgeRef.value!, {
-									content: (
-										<>
-											<strong>{slotName}</strong>
-											<br />
-											{message}
-										</>
-									),
-								});
-							}
-
-							if (gems || previousGems) {
-								const changedGems: number[] = [];
-								previousItem?.gemSockets.forEach((_, socketIdx) => {
-									const previousGem = previousGems ? previousGems[socketIdx] : undefined;
-									const currentGem = gems ? gems[socketIdx] : undefined;
-									if (previousGem?.id !== currentGem?.id) {
-										changedGems.push(socketIdx);
-									}
-								});
-
-								item.allSocketColors().forEach((socketColor, gemIdx) => {
-									const hasChangedSocket = changedGems.includes(gemIdx);
-									const socketRef = ref<HTMLDivElement>();
-									const gemName = gems[gemIdx]?.name;
-									socketsContainerRef.value?.appendChild(
-										<div
-											ref={socketRef}
-											className={clsx('gem-socket-container', hasChangedSocket && 'interactive')}
-											style={{
-												backgroundImage: `url(${getEmptyGemSocketIconUrl(socketColor)})`,
-											}}>
-											{hasChangedSocket && (
-												<>
-													<i className={'d-block fas fa-exclamation-circle'}></i>
-												</>
-											)}
-										</div>,
-									);
-									if (hasChangedSocket && gemName)
-										tippy(socketRef.value!, {
-											content: (
-												<>
-													<strong>
-														{slotName} - Socket {gemIdx + 1}
-													</strong>
-													<br />
-													{gemName}
-												</>
-											),
-										});
-								});
-							}
-						}
-
-						return <li>{itemElement}</li>;
+						return <li>{buildGearChangeIcon(this.player, slot, item, this.previousGear?.getEquippedItem(slot) ?? undefined)}</li>;
 					})}
 				</ul>
 				<div ref={copyButtonContainerRef} />

@@ -76,12 +76,24 @@ export type BulkSimStageProgressEmitter = {
 	report: (completedSims: number, completedIterations: number, dps: number) => void;
 };
 
+// Throttled to the same 100ms window the Go backend uses (bulk.BulkSimProgressThrottle):
+// unthrottled per-candidate emits each allocate a ProgressMetrics and force a DOM rerender.
+// A report that completes the stage always emits.
+const BULK_SIM_PROGRESS_THROTTLE_MS = 100;
+
 export const makeBulkSimStageProgressEmitter = (
 	onProgress: WorkerProgressCallback,
 	stage: BulkSimStage,
 	totalSims: number,
 	totalIterations: number,
-): BulkSimStageProgressEmitter => ({
-	report: (completedSims, completedIterations, dps) =>
-		emitBulkSimStageProgress(onProgress, stage, completedSims, totalSims, completedIterations, totalIterations, dps),
-});
+): BulkSimStageProgressEmitter => {
+	let lastEmitAt = 0;
+	return {
+		report: (completedSims, completedIterations, dps) => {
+			const now = performance.now();
+			if (completedSims < totalSims && now - lastEmitAt < BULK_SIM_PROGRESS_THROTTLE_MS) return;
+			lastEmitAt = now;
+			emitBulkSimStageProgress(onProgress, stage, completedSims, totalSims, completedIterations, totalIterations, dps);
+		},
+	};
+};

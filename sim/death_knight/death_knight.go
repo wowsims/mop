@@ -6,6 +6,8 @@ import (
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 	"github.com/wowsims/mop/sim/core/stats"
+	"github.com/wowsims/mop/sim/encounters/msv"
+	"github.com/wowsims/mop/sim/encounters/soo"
 )
 
 // Damage Done By Caster setup
@@ -95,6 +97,7 @@ func (dk *DeathKnight) AddRaidBuffs(raidBuffs *proto.RaidBuffs) {
 }
 
 func (dk *DeathKnight) Initialize() {
+	dk.disableAMSIntakeOnMagicDamageEncounters()
 	dk.registerAntiMagicShell()
 	dk.registerArmyOfTheDead()
 	dk.registerBloodBoil()
@@ -118,6 +121,25 @@ func (dk *DeathKnight) Initialize() {
 	}
 	dk.registerRunicPowerDecay()
 	dk.registerSoulReaper()
+}
+
+// disableAMSIntakeOnMagicDamageEncounters zeroes the abstract Avg AMS Hit intake setting
+// when the encounter already deals real magic damage to the player -- Anti-Magic Shell
+// absorbs that through the normal path and generates Runic Power from it, so the abstract
+// stand-in would double-count. Matches directly on the boss AI's concrete Go type, so the
+// check always reflects which encounters actually model player magic damage.
+func (dk *DeathKnight) disableAMSIntakeOnMagicDamageEncounters() {
+	if dk.Env == nil {
+		return
+	}
+
+	for _, target := range dk.Env.Encounter.AllTargets {
+		switch target.AI.(type) {
+		case *soo.MalkorokAI, *soo.IronJuggernautAI, *msv.GarajalAI:
+			dk.Inputs.AvgAMSHit = 0
+			return
+		}
+	}
 }
 
 func (dk *DeathKnight) Reset(sim *core.Simulation) {

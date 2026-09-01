@@ -26,14 +26,6 @@ export const getWeaponDPS = (item: Item, upgradeStep: ItemLevelState = ItemLevel
 	return (weaponDamageMin + weaponDamageMax) / 2 / (item.weaponSpeed || 1);
 };
 
-export const isThroneOfThunderWeapon = (item: Item) =>
-	[ItemType.ItemTypeWeapon, ItemType.ItemTypeRanged].includes(item.type) &&
-	![WeaponType.WeaponTypeOffHand, WeaponType.WeaponTypeShield].includes(item.weaponType) &&
-	item.phase == 3 &&
-	item.sources.some(itemSource => itemSource.source.oneofKind === 'drop' && itemSource.source.drop.zoneId === 6622);
-export const isShaTouchedWeapon = (item: Item) => item.gemSockets.some(socket => socket === GemColor.GemColorShaTouched);
-export const isRebornWeapon = (item: Item) => item.name.endsWith(', Reborn') && item.scalingOptions[ItemLevelState.Base].ilvl == 502;
-
 export const getWeaponStatsBySlot = (item: Item, slot: ItemSlot, upgradeStep: ItemLevelState = ItemLevelState.Base) => {
 	let itemStats = new Stats();
 	if (item.weaponSpeed > 0) {

@@ -2,38 +2,38 @@ package bulk
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
 )
 
-// Bulk candidate/count generation temporarily mutates the shared core item database
-// using request-scoped SimDatabase payloads. Keep that mutation + generation path
-// serialized to avoid concurrent map read/write panics with parallel sim requests.
-var bulkCandidateDatabaseMu sync.Mutex
+// newGeneratorFromRequest validates the shared preconditions of every bulk entry point (player
+// present, equipment present), registers the request's database items, and builds the candidate
+// generator. Callers map the returned error into their own result type.
+func newGeneratorFromRequest(request *proto.BulkSimRequest) (*bulkSimCandidateGenerator, error) {
+	player, playerErr := getPlayer(request)
+	if playerErr != nil {
+		return nil, playerErr
+	}
+	if player.GetEquipment() == nil {
+		return nil, fmt.Errorf("bulk sim request is missing player equipment")
+	}
+	if player.GetDatabase() != nil {
+		// Safe to run unserialized: core guards the shared database itself, so generation
+		// (minutes, for a large selection) does not block other bulk requests.
+		core.AddToDatabase(player.GetDatabase())
+	}
+	return newBulkSimCandidateGenerator(request, player)
+}
 
 func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
-	bulkCandidateDatabaseMu.Lock()
-	defer bulkCandidateDatabaseMu.Unlock()
-
 	if request == nil || request.GetBulkSettings() == nil || len(request.GetCandidates()) > 0 {
 		return nil
 	}
 	if request.GetBaseRequest() == nil || request.GetBaseRequest().GetRaid() == nil {
 		return fmt.Errorf("bulk sim request is missing base raid")
 	}
-	player, playerErr := getPlayer(request)
-	if playerErr != nil {
-		return playerErr
-	}
-	if player.GetEquipment() == nil {
-		return fmt.Errorf("bulk sim request is missing player equipment")
-	}
-	if player.GetDatabase() != nil {
-		core.AddToDatabase(player.GetDatabase())
-	}
-	generator, buildErr := newBulkSimCandidateGenerator(request, player)
+	generator, buildErr := newGeneratorFromRequest(request)
 	if buildErr != nil {
 		return buildErr
 	}
@@ -46,9 +46,6 @@ func EnsureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
 }
 
 func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.BulkCombinationCountResult {
-	bulkCandidateDatabaseMu.Lock()
-	defer bulkCandidateDatabaseMu.Unlock()
-
 	if request == nil {
 		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: "bulk combination count request is missing"}}
 	}
@@ -63,18 +60,7 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 		BaseRequest:  request.GetBaseRequest(),
 		BulkSettings: request.GetBulkSettings(),
 	}
-	player, playerErr := getPlayer(bulkRequest)
-	if playerErr != nil {
-		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: playerErr.Error()}}
-	}
-	if player.GetEquipment() == nil {
-		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: "bulk combination count request is missing player equipment"}}
-	}
-	if player.GetDatabase() != nil {
-		core.AddToDatabase(player.GetDatabase())
-	}
-
-	generator, err := newBulkSimCandidateGenerator(bulkRequest, player)
+	generator, err := newGeneratorFromRequest(bulkRequest)
 	if err != nil {
 		return &proto.BulkCombinationCountResult{Error: &proto.ErrorOutcome{Message: err.Error()}}
 	}
@@ -82,21 +68,30 @@ func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.Bul
 	rawCombinations := generator.rawCombinationsCount()
 	matchingCombinations := rawCombinations
 	if matcher := generator.buildRequiredSetBonusMatcher(generator.settings.GetRequiredSetBonuses()); matcher != nil {
-		matchingCombinations = 0
-		scratchCounts := make([]int, len(matcher.baseCounts))
-		for comboIdx := 0; comboIdx < rawCombinations; comboIdx++ {
-			if generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts) {
-				matchingCombinations++
-			}
+		counted, ok := matcher.countMatchingCombos()
+		if !ok {
+			counted = generator.scanMatchingCombos(rawCombinations, matcher)
 		}
+		matchingCombinations = counted
 	}
 
 	return &proto.BulkCombinationCountResult{
 		RawCombinations:  int32(rawCombinations),
 		Combinations:     int32(matchingCombinations),
 		Iterations:       estimateIterationsForCountRequest(request.GetBulkSettings(), matchingCombinations),
-		UseLegacyBulkSim: shouldUseLegacyBulkSimForCountRequest(request.GetBulkSettings(), matchingCombinations),
+		UseLegacyBulkSim: shouldUseLegacyBulkSim(request.GetBulkSettings(), request.GetBulkSettings().GetIterationsPerCombo(), matchingCombinations),
 	}
+}
+
+func (generator *bulkSimCandidateGenerator) scanMatchingCombos(rawCombinations int, matcher *bulkSimRequiredSetBonusComboMatcher) int {
+	matching := 0
+	scratchCounts := make([]int, len(matcher.baseCounts))
+	for comboIdx := range rawCombinations {
+		if generator.comboMatchesRequiredSetBonusMatcher(comboIdx, matcher, scratchCounts) {
+			matching++
+		}
+	}
+	return matching
 }
 
 func estimateIterationsForCountRequest(settings *proto.BulkSettings, candidateCount int) float64 {
@@ -104,15 +99,7 @@ func estimateIterationsForCountRequest(settings *proto.BulkSettings, candidateCo
 	return float64(iterations)
 }
 
-func shouldUseLegacyBulkSimForCountRequest(settings *proto.BulkSettings, candidateCount int) bool {
-	useLegacyBulkSim := shouldUseLegacyBulkSim(settings, settings.GetIterationsPerCombo(), candidateCount)
-	return useLegacyBulkSim
-}
-
 func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesResult {
-	bulkCandidateDatabaseMu.Lock()
-	defer bulkCandidateDatabaseMu.Unlock()
-
 	if request == nil {
 		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: "bulk candidates request is missing"}}
 	}
@@ -127,18 +114,7 @@ func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesR
 		BaseRequest:  request.GetBaseRequest(),
 		BulkSettings: request.GetBulkSettings(),
 	}
-	player, playerErr := getPlayer(bulkRequest)
-	if playerErr != nil {
-		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: playerErr.Error()}}
-	}
-	if player.GetEquipment() == nil {
-		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: "bulk candidates request is missing player equipment"}}
-	}
-	if player.GetDatabase() != nil {
-		core.AddToDatabase(player.GetDatabase())
-	}
-
-	generator, err := newBulkSimCandidateGenerator(bulkRequest, player)
+	generator, err := newGeneratorFromRequest(bulkRequest)
 	if err != nil {
 		return &proto.BulkCandidatesResult{Error: &proto.ErrorOutcome{Message: err.Error()}}
 	}

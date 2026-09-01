@@ -6,7 +6,7 @@ export abstract class Component {
 
 	readonly rootElem: HTMLElement;
 
-	constructor(parentElem: HTMLElement | null, rootCssClass?: string, rootElem?: HTMLElement) {
+	constructor(parentElem: HTMLElement | DocumentFragment | null, rootCssClass?: string, rootElem?: HTMLElement) {
 		this.rootElem = rootElem || this.customRootElement?.() || document.createElement('div');
 		if (rootCssClass) this.rootElem.classList.add(rootCssClass);
 		if (parentElem) {

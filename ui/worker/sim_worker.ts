@@ -1,29 +1,22 @@
 import { WorkerInterface } from './worker_interface';
 
-interface HighsSolutionColumn {
-	Primal: number;
-}
+type HighsLoader = typeof import('highs').default;
+type Highs = Awaited<ReturnType<HighsLoader>>;
 
-interface HighsSolution {
-	Status: string;
-	Columns: Record<string, HighsSolutionColumn>;
-}
-
-interface HighsModule {
-	solve: (problem: string, options?: Record<string, unknown>) => HighsSolution;
-}
-
-type HighsFactory = (options?: { locateFile?: (file: string) => string }) => Promise<HighsModule>;
+// highs's own solution type is a union whose every member allows Status: 'Infeasible', so it
+// cannot be narrowed to the variants that carry Primal. Read the columns through this structural
+// type instead; a variable missing from the result is already an error on the Go side (see
+// sim/core/reforge_optimizer/highs_js.go).
+type HighsSolutionColumns = Record<string, { Primal: number }>;
 
 type SimRequestAsync = (data: Uint8Array, progress: (result: Uint8Array) => void, id: string) => Uint8Array;
 type SimRequestSync = (data: Uint8Array) => Uint8Array;
 
-const unsupportedBulkSimAsync = () => {
-	console.error('bulkSimAsync is only supported by the HTTP worker.');
-	return new Uint8Array();
+const unsupportedBulkSimAsync = (): Uint8Array => {
+	throw new Error('bulkSimAsync is only supported by the HTTP worker.');
 };
 
-let highs: HighsModule | null = null;
+let highs: Highs | null = null;
 let highsInitPromise: Promise<void> | null = null;
 
 async function initHiGHS(): Promise<void> {
@@ -35,13 +28,18 @@ async function initHiGHS(): Promise<void> {
 	}
 
 	highsInitPromise = (async () => {
-		// @ts-ignore - Custom HiGHS build module.
-		const highsModule = await import('./highs.js');
-		const highsFactory = (highsModule.default || highsModule) as HighsFactory;
-		highs = await highsFactory({
+		// highs ships CommonJS, so which of these holds the loader depends on the interop the
+		// bundler applies.
+		const highsModule = await import('highs');
+		const loadHighs = (highsModule.default ?? highsModule) as HighsLoader;
+		// highs.wasm is copied next to this worker by vite.build-workers.mts.
+		highs = await loadHighs({
 			locateFile: file => (file.endsWith('.wasm') ? 'highs.wasm' : file),
 		});
-	})();
+	})().catch(err => {
+		highsInitPromise = null;
+		throw err;
+	});
 	return highsInitPromise;
 }
 
@@ -50,7 +48,7 @@ function solveHiGHSLP(lp: string, timeoutSeconds: number, mipRelGap: number): st
 		if (!highs) {
 			throw new Error('HiGHS has not been initialized.');
 		}
-		const options: Record<string, unknown> = { presolve: 'on' };
+		const options: { presolve: 'on'; time_limit?: number; mip_rel_gap?: number } = { presolve: 'on' };
 		if (timeoutSeconds > 0) {
 			options.time_limit = timeoutSeconds;
 		}
@@ -58,9 +56,10 @@ function solveHiGHSLP(lp: string, timeoutSeconds: number, mipRelGap: number): st
 			options.mip_rel_gap = mipRelGap;
 		}
 		const solution = highs.solve(lp, options);
+		const columns = solution.Columns as HighsSolutionColumns;
 		return JSON.stringify({
 			status: solution.Status,
-			values: Object.fromEntries(Object.entries(solution.Columns).map(([name, column]) => [name, column.Primal])),
+			values: Object.fromEntries(Object.entries(columns).map(([name, column]) => [name, column.Primal])),
 		});
 	} catch (error) {
 		return JSON.stringify({ error: error instanceof Error ? error.message : String(error) });
@@ -123,10 +122,25 @@ function setupWorkerInterface() {
 const go = new Go();
 let inst: WebAssembly.Instance | null = null;
 
-WebAssembly.instantiateStreaming(fetch('lib.wasm'), go.importObject).then(async result => {
-	inst = result.instance;
-	// console.log("loading wasm...")
-	await go.run(inst);
-});
+// The sim module is fetched and compiled ONCE on the main thread and shared with every
+// wasm worker as a compiled WebAssembly.Module (structured clone)
+const requestWasmModule = (): Promise<WebAssembly.Module> =>
+	new Promise(resolve => {
+		const onModule = ({ data }: MessageEvent<{ msg: string; module?: WebAssembly.Module }>) => {
+			if (data?.msg !== 'wasmModule' || !data.module) return;
+			removeEventListener('message', onModule);
+			resolve(data.module);
+		};
+		addEventListener('message', onModule);
+		postMessage({ msg: 'wasmModuleRequest' });
+	});
+
+requestWasmModule()
+	.then(module => WebAssembly.instantiate(module, go.importObject))
+	.then(async instance => {
+		inst = instance;
+		await go.run(inst);
+	})
+	.catch(error => console.error('Sim wasm worker failed to start:', error));
 
 export {};

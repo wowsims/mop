@@ -3,6 +3,7 @@ import tippy from 'tippy.js';
 
 import i18n from '../../i18n/config.js';
 import { translateResultMetricLabel, translateResultMetricTooltip } from '../../i18n/localization';
+import { trackEvent } from '../../tracking/utils';
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '../proto/api';
 import { Encounter as EncounterProto, Spec } from '../proto/common';
 import { SimRunData } from '../proto/ui';
@@ -10,8 +11,7 @@ import { ActionMetrics, SimResult, SimResultFilter } from '../proto_utils/sim_re
 import { RequestTypes } from '../sim_signal_manager';
 import { SimUI } from '../sim_ui';
 import { EventID, TypedEvent } from '../typed_event';
-import { formatDeltaTextElem, formatToNumber, formatToPercent, isDevMode, sum } from '../utils';
-import { trackEvent } from '../../tracking/utils';
+import { formatDeltaTextElem, formatToNumber, formatToPercent, isDevMode, sum, zTest } from '../utils';
 
 export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 	const resultsViewer = simUI.resultsViewer;
@@ -397,12 +397,7 @@ export class RaidSimResultsManager {
 		stdev2: number,
 		preNormalized: boolean,
 	): boolean {
-		const delta = avg1 - avg2;
-		const err1 = preNormalized ? stdev1 : stdev1 / Math.sqrt(n1);
-		const err2 = preNormalized ? stdev2 : stdev2 / Math.sqrt(n2);
-		const denom = Math.sqrt(Math.pow(err1, 2) + Math.pow(err2, 2));
-		const z = Math.abs(delta / denom);
-		const isDiff = z > 1.96;
+		const { z, isDiff } = zTest(n1, avg1, stdev1, n2, avg2, stdev2, preNormalized);
 
 		let significance_str = '';
 		if (isDiff) {

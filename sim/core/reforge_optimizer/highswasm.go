@@ -57,11 +57,17 @@ type highsWasmRuntime struct {
 	highsRun                 api.Function
 	highsReadModel           api.Function
 	highsWriteSolutionPretty api.Function
-	highsSetIntOption        api.Function
 	highsSetDoubleOption     api.Function
 	highsSetStringOption     api.Function
 	highsGetModelStatus      api.Function
-	malloc                   api.Function
+	// stackAlloc is emscripten's __emscripten_stack_alloc. The npm build exports no malloc, so
+	// this is the only allocator available for the C strings the Highs_* entry points take.
+	stackAlloc api.Function
+	// stackSave and stackRestore are emscripten's _emscripten_stack_get_current and
+	// __emscripten_stack_restore. Nothing frees a stackAlloc, so each solve brackets its
+	// allocations between these two the way emscripten's own ccall does.
+	stackSave    api.Function
+	stackRestore api.Function
 }
 
 type highsWasmRuntimeContextKey struct{}
@@ -96,6 +102,16 @@ func runHiGHSLP(lpString string, numVars int, timeout time.Duration, mipRelGap f
 		}
 		wasmRuntime.runtimeInitialized = true
 	}
+
+	// Every C string this solve hands to the Highs_* entry points is allocated on emscripten's
+	// stack and never freed, so snapshot the stack pointer and put it back on the way out. Without
+	// this the pointer only ever advances, and a pooled runtime overflows its stack after enough
+	// solves.
+	stackBase, err := callI32(wasmRuntime.ctx, wasmRuntime.stackSave)
+	if err != nil {
+		return nil, 0, fmt.Errorf("reading HiGHS wasm stack pointer: %w", err)
+	}
+	defer wasmRuntime.stackRestore.Call(wasmRuntime.ctx, wasmI32(stackBase))
 
 	highs, err := callI32(wasmRuntime.ctx, wasmRuntime.highsCreate)
 	if err != nil {
@@ -227,33 +243,58 @@ func newHiGHSWasmRuntime() (*highsWasmRuntime, error) {
 		return nil, fmt.Errorf("instantiating HiGHS wasm: %w", err)
 	}
 	runtime.instance = instance
-	runtime.memory = instance.ExportedMemory("t")
+	runtime.memory = instance.ExportedMemory(worker.HighsWASMMemoryExport)
 	if runtime.memory == nil {
-		return nil, fmt.Errorf("HiGHS wasm export t is not memory")
+		return nil, fmt.Errorf("HiGHS wasm export %s is not memory", worker.HighsWASMMemoryExport)
 	}
 
-	runtime.runtimeInit = mustWasmFunc(instance, "u")
-	runtime.highsCreate = mustWasmFunc(instance, "v")
-	runtime.highsDestroy = mustWasmFunc(instance, "w")
-	runtime.highsRun = mustWasmFunc(instance, "x")
-	runtime.highsReadModel = mustWasmFunc(instance, "y")
-	runtime.highsWriteSolutionPretty = mustWasmFunc(instance, "A")
-	runtime.highsSetIntOption = mustWasmFunc(instance, "C")
-	runtime.highsSetDoubleOption = mustWasmFunc(instance, "D")
-	runtime.highsSetStringOption = mustWasmFunc(instance, "E")
-	runtime.highsGetModelStatus = mustWasmFunc(instance, "F")
-	runtime.malloc = mustWasmFunc(instance, "J")
+	// Every name below is emscripten's symbolic one; highsExportedFunc translates it through the
+	// generated map to whatever letter this build of highs.wasm actually exports it under.
+	var lookupErr error
+	lookup := func(symbol string) api.Function {
+		fn, err := highsExportedFunc(instance, symbol)
+		if err != nil && lookupErr == nil {
+			lookupErr = err
+		}
+		return fn
+	}
+	runtime.runtimeInit = lookup("__wasm_call_ctors")
+	runtime.highsCreate = lookup("_Highs_create")
+	runtime.highsDestroy = lookup("_Highs_destroy")
+	runtime.highsRun = lookup("_Highs_run")
+	runtime.highsReadModel = lookup("_Highs_readModel")
+	runtime.highsWriteSolutionPretty = lookup("_Highs_writeSolutionPretty")
+	runtime.highsSetDoubleOption = lookup("_Highs_setDoubleOptionValue")
+	runtime.highsSetStringOption = lookup("_Highs_setStringOptionValue")
+	runtime.highsGetModelStatus = lookup("_Highs_getModelStatus")
+	runtime.stackAlloc = lookup("__emscripten_stack_alloc")
+	runtime.stackSave = lookup("_emscripten_stack_get_current")
+	runtime.stackRestore = lookup("__emscripten_stack_restore")
+	if lookupErr != nil {
+		return nil, lookupErr
+	}
 	return runtime, nil
+}
+
+// highsExportedFunc resolves an emscripten export symbol to the function highs.wasm exports it
+// under. The npm build minifies its export names, so the mapping comes from the generated
+// ui/worker/highs_names_gen.go rather than being spelled out here.
+func highsExportedFunc(instance api.Module, symbol string) (api.Function, error) {
+	minified, ok := worker.HighsWASMExports[symbol]
+	if !ok {
+		return nil, fmt.Errorf("HiGHS wasm name map has no export %s; run `make update-highs`", symbol)
+	}
+	fn := instance.ExportedFunction(minified)
+	if fn == nil {
+		return nil, fmt.Errorf("HiGHS wasm export %s (%s) is not a function", symbol, minified)
+	}
+	return fn, nil
 }
 
 func (runtime *highsWasmRuntime) resetForNextSolve() {
 	runtime.nextFD = 3
-	for fd := range runtime.files {
-		delete(runtime.files, fd)
-	}
-	for path := range runtime.paths {
-		delete(runtime.paths, path)
-	}
+	clear(runtime.files)
+	clear(runtime.paths)
 	runtime.stdout.Reset()
 	runtime.stderr.Reset()
 }
@@ -288,76 +329,89 @@ func WarmUp() error {
 	return err
 }
 
-// Registers the HiGHS wasm host imports using wazero's stack-based
-// (GoModuleFunction) dispatch rather than reflection-based WithFunc. HiGHS calls
-// these imports (file I/O, clock, heap growth) many times per solve; reflection
-// dispatch boxed every argument via reflect.New/reflect.Value.Call, which
-// dominated allocations in bulk reforge runs. The stack convention passes params
-// as a []uint64 and writes results back in place, eliminating that per-call
-// reflection. Behavior is identical — only the calling convention changed.
-func instantiateHiGHSWasmHostModule(ctx context.Context, runtime wazero.Runtime) error {
-	const i32 = api.ValueTypeI32
-	const i64 = api.ValueTypeI64
-	const f64 = api.ValueTypeF64
-
-	builder := runtime.NewHostModuleBuilder("a")
-	addFunc := func(name string, params []api.ValueType, results []api.ValueType, fn api.GoModuleFunc) {
-		builder.NewFunctionBuilder().WithGoModuleFunction(fn, params, results).Export(name)
-	}
-
-	nowMillis := func(_ context.Context, _ api.Module, stack []uint64) {
-		stack[0] = api.EncodeF64(float64(time.Now().UnixNano()) / float64(time.Millisecond))
-	}
-
-	addFunc("a", []api.ValueType{i32, i32, i32}, nil, func(context.Context, api.Module, []uint64) {
+// highsWasmHostFuncs is the emscripten runtime HiGHS expects to be given, keyed by emscripten's
+// symbolic import name. The npm build minifies the names highs.wasm actually imports, so
+// instantiateHiGHSWasmHostModule translates through the generated ui/worker/highs_names_gen.go
+// rather than hardcoding letters that change with every upstream build.
+//
+// The handlers use wazero's stack-based (GoModuleFunction) dispatch rather than reflection-based
+// WithFunc. HiGHS calls these imports (file I/O, clock, heap growth) many times per solve;
+// reflection dispatch boxed every argument via reflect.New/reflect.Value.Call, which dominated
+// allocations in bulk reforge runs. The stack convention passes params as a []uint64 and writes
+// results back in place, eliminating that per-call reflection.
+var highsWasmHostFuncs = map[string]api.GoModuleFunc{
+	"___cxa_throw": func(context.Context, api.Module, []uint64) {
 		panic("HiGHS wasm exception handling import was called")
-	})
-	addFunc("b", []api.ValueType{i32}, nil, func(_ context.Context, _ api.Module, stack []uint64) {
+	},
+	"__abort_js": func(context.Context, api.Module, []uint64) { panic("HiGHS wasm abort") },
+	"_exit": func(_ context.Context, _ api.Module, stack []uint64) {
 		panic(fmt.Sprintf("HiGHS wasm exited with code %d", api.DecodeU32(stack[0])))
-	})
-	addFunc("c", nil, []api.ValueType{f64}, nowMillis)
-	addFunc("d", []api.ValueType{i32, i32, i32}, []api.ValueType{i32}, func(_ context.Context, _ api.Module, stack []uint64) {
-		stack[0] = 0
-	})
-	addFunc("e", []api.ValueType{i32}, []api.ValueType{i32}, func(ctx context.Context, _ api.Module, stack []uint64) {
-		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdClose(int32(api.DecodeU32(stack[0])))))
-	})
-	addFunc("f", []api.ValueType{i32, i32, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
-		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdRead(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
-	})
-	addFunc("g", []api.ValueType{i32, i32, i32}, []api.ValueType{i32}, func(_ context.Context, _ api.Module, stack []uint64) {
-		stack[0] = 0
-	})
-	addFunc("h", []api.ValueType{i32, i32, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+	},
+	"_proc_exit": func(_ context.Context, _ api.Module, stack []uint64) {
+		panic(fmt.Sprintf("HiGHS wasm exited with code %d", api.DecodeU32(stack[0])))
+	},
+	"_emscripten_get_now":  highsWasmNowMillis,
+	"_emscripten_date_now": highsWasmNowMillis,
+	// fcntl64 and ioctl only ever reach the in-memory files below, where every operation is a
+	// no-op, so report success without inspecting the request.
+	"___syscall_fcntl64": highsWasmReturnZero,
+	"___syscall_ioctl":   highsWasmReturnZero,
+	// HiGHS never sets a timer or reads the local timezone in a way that reaches the solution
+	// text, and the wasm's memory is zeroed, so leaving these unimplemented is safe.
+	"__setitimer_js":                       highsWasmReturnZero,
+	"__tzset_js":                           func(context.Context, api.Module, []uint64) {},
+	"__emscripten_runtime_keepalive_clear": func(context.Context, api.Module, []uint64) {},
+	"___syscall_openat": func(ctx context.Context, module api.Module, stack []uint64) {
 		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).openAt(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
-	})
-	addFunc("i", []api.ValueType{i32, i32, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+	},
+	"_fd_close": func(ctx context.Context, _ api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdClose(int32(api.DecodeU32(stack[0])))))
+	},
+	"_fd_read": func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdRead(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
+	},
+	"_fd_write": func(ctx context.Context, module api.Module, stack []uint64) {
 		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdWrite(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
-	})
-	addFunc("j", []api.ValueType{i32}, nil, func(_ context.Context, _ api.Module, stack []uint64) {
-		panic(fmt.Sprintf("HiGHS wasm exited with code %d", api.DecodeU32(stack[0])))
-	})
-	addFunc("k", nil, nil, func(context.Context, api.Module, []uint64) { panic("HiGHS wasm abort") })
-	addFunc("l", []api.ValueType{i32, f64}, []api.ValueType{i32}, func(_ context.Context, _ api.Module, stack []uint64) {
-		stack[0] = 0
-	})
-	addFunc("m", nil, []api.ValueType{f64}, nowMillis)
-	addFunc("n", []api.ValueType{i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
-		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).environGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])))))
-	})
-	addFunc("o", []api.ValueType{i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
-		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).environSizesGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])))))
-	})
-	addFunc("p", []api.ValueType{i32, i64, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
-		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).clockTimeGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[2])))))
-	})
-	addFunc("q", []api.ValueType{i32, i64, i32, i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+	},
+	"_fd_seek": func(ctx context.Context, module api.Module, stack []uint64) {
 		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).fdSeek(module, int32(api.DecodeU32(stack[0])), int64(stack[1]), int32(api.DecodeU32(stack[2])), int32(api.DecodeU32(stack[3])))))
-	})
-	addFunc("r", nil, nil, func(context.Context, api.Module, []uint64) { panic("HiGHS wasm abort") })
-	addFunc("s", []api.ValueType{i32}, []api.ValueType{i32}, func(ctx context.Context, module api.Module, stack []uint64) {
+	},
+	"_environ_get": func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).environGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])))))
+	},
+	"_environ_sizes_get": func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).environSizesGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[1])))))
+	},
+	"_clock_time_get": func(ctx context.Context, module api.Module, stack []uint64) {
+		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).clockTimeGet(module, int32(api.DecodeU32(stack[0])), int32(api.DecodeU32(stack[2])))))
+	},
+	"_emscripten_resize_heap": func(ctx context.Context, module api.Module, stack []uint64) {
 		stack[0] = api.EncodeU32(uint32(highsWasmRuntimeFromContext(ctx).resizeHeap(module, int32(api.DecodeU32(stack[0])))))
-	})
+	},
+}
+
+func highsWasmNowMillis(_ context.Context, _ api.Module, stack []uint64) {
+	stack[0] = api.EncodeF64(float64(time.Now().UnixNano()) / float64(time.Millisecond))
+}
+
+func highsWasmReturnZero(_ context.Context, _ api.Module, stack []uint64) {
+	stack[0] = 0
+}
+
+// instantiateHiGHSWasmHostModule registers highsWasmHostFuncs under the minified names and
+// signatures the embedded highs.wasm imports. An upstream build that adds an import fails here,
+// naming the symbol, rather than at solve time.
+func instantiateHiGHSWasmHostModule(ctx context.Context, runtime wazero.Runtime) error {
+	builder := runtime.NewHostModuleBuilder(worker.HighsWASMImportModule)
+	for _, wasmImport := range worker.HighsWASMImports {
+		hostFunc, ok := highsWasmHostFuncs[wasmImport.Symbol]
+		if !ok {
+			return fmt.Errorf("HiGHS wasm imports %s, which has no host implementation", wasmImport.Symbol)
+		}
+		builder.NewFunctionBuilder().
+			WithGoModuleFunction(hostFunc, wasmImport.Params, wasmImport.Results).
+			Export(wasmImport.Minified)
+	}
 
 	if _, err := builder.Instantiate(ctx); err != nil {
 		return fmt.Errorf("instantiating HiGHS wasm host imports: %w", err)
@@ -533,7 +587,7 @@ func (runtime *highsWasmRuntime) readCString(memory []byte, ptr int32) string {
 }
 
 func (runtime *highsWasmRuntime) writeCString(value string) (int32, error) {
-	ptr, err := callI32(runtime.ctx, runtime.malloc, wasmI32(int32(len(value)+1)))
+	ptr, err := callI32(runtime.ctx, runtime.stackAlloc, wasmI32(int32(len(value)+1)))
 	if err != nil {
 		return 0, fmt.Errorf("allocating HiGHS wasm string: %w", err)
 	}
@@ -590,14 +644,6 @@ func callI32(ctx context.Context, fn api.Function, args ...uint64) (int32, error
 
 func wasmI32(value int32) uint64 {
 	return uint64(uint32(value))
-}
-
-func mustWasmFunc(instance api.Module, name string) api.Function {
-	fn := instance.ExportedFunction(name)
-	if fn == nil {
-		panic(fmt.Sprintf("HiGHS wasm export %s is not a function", name))
-	}
-	return fn
 }
 
 func isHighsSuccess(status int32) bool {

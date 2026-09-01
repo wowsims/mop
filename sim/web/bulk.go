@@ -2,7 +2,10 @@ package main
 
 import (
 	"crypto/sha256"
+	"fmt"
 	"log"
+	"runtime/debug"
+	"slices"
 	"sync"
 	"time"
 
@@ -15,7 +18,6 @@ import (
 )
 
 const bulkSimReforgeProgressOptimizedCandidateFlushSize = 250
-const bulkSimReforgeProgressUpdateInterval = 100 * time.Millisecond
 
 type bulkSimReforgeTask struct {
 	position  int
@@ -47,19 +49,50 @@ type bulkSimReforgeOptimizer struct {
 	cacheMu            sync.RWMutex
 }
 
-func ensureBulkSimCandidatesGenerated(request *proto.BulkSimRequest) error {
-	return bulk.EnsureBulkSimCandidatesGenerated(request)
-}
-
-func BulkCombinationCount(request *proto.BulkCombinationCountRequest) *proto.BulkCombinationCountResult {
-	return bulk.BulkCombinationCount(request)
-}
-
-func BulkCandidates(request *proto.BulkCandidatesRequest) *proto.BulkCandidatesResult {
-	return bulk.BulkCandidates(request)
-}
-
+// Runs entirely on its own goroutine: candidate generation alone can take minutes for a
+// large selection, and the HTTP handler has to hand the client its progress id first or
+// there is nothing to poll and nothing to cancel.
 func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMetrics, requestId string) {
+	go runBulkSimAsync(request, progress, requestId)
+}
+
+// Terminal outcome: publishes the result and closes the progress channel.
+func finishBulkSim(progress chan *proto.ProgressMetrics, stage proto.BulkSimStage, result *proto.BulkSimResult) {
+	progress <- &proto.ProgressMetrics{BulkStage: stage, FinalBulkSimResult: result}
+	close(progress)
+}
+
+func runBulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMetrics, requestId string) {
+	defer func() {
+		if err := recover(); err != nil {
+			errStr := fmt.Sprint(err) + "\nStack Trace:\n" + string(debug.Stack())
+			log.Printf("[ERROR] Bulk sim panicked: %s", errStr)
+			finishBulkSim(progress, proto.BulkSimStage_BulkSimStageError, &proto.BulkSimResult{
+				Error: &proto.ErrorOutcome{Message: errStr},
+			})
+		}
+	}()
+
+	// Registered before generation, not after: generation can take minutes, and the
+	// client already holds its progress id, so an abort arriving in that window has to
+	// land somewhere. bulk.BulkSimAsync registers the same id itself, so the id is
+	// handed back before delegating to it.
+	signals, err := simsignals.RegisterWithId(requestId)
+	if err != nil {
+		finishBulkSim(progress, proto.BulkSimStage_BulkSimStageError, &proto.BulkSimResult{
+			Error: &proto.ErrorOutcome{Message: "Couldn't register for signal API: " + err.Error()},
+		})
+		return
+	}
+	registered := true
+	unregister := func() {
+		if registered {
+			simsignals.UnregisterId(requestId)
+			registered = false
+		}
+	}
+	defer unregister()
+
 	// When all reforge candidates are restored from cache, request.Candidates is
 	// intentionally empty and request.OptimizedCandidates is pre-populated.
 	// In this case, do not regenerate candidates from bulk settings.
@@ -74,14 +107,16 @@ func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMe
 		if shouldLogReforgeStages {
 			log.Printf("[Bulk Sim] Candidate generation started")
 		}
-		if err := ensureBulkSimCandidatesGenerated(request); err != nil {
-			progress <- &proto.ProgressMetrics{
-				BulkStage: proto.BulkSimStage_BulkSimStageError,
-				FinalBulkSimResult: &proto.BulkSimResult{
-					Error: &proto.ErrorOutcome{Message: err.Error()},
-				},
-			}
-			close(progress)
+		// Generation emits no progress of its own and can outlast the silence watchdog.
+		stopHeartbeat := startProgressHeartbeat(progress, func() *proto.ProgressMetrics {
+			return &proto.ProgressMetrics{}
+		})
+		generateErr := bulk.EnsureBulkSimCandidatesGenerated(request)
+		stopHeartbeat()
+		if generateErr != nil {
+			finishBulkSim(progress, proto.BulkSimStage_BulkSimStageError, &proto.BulkSimResult{
+				Error: &proto.ErrorOutcome{Message: generateErr.Error()},
+			})
 			return
 		}
 		if shouldLogReforgeStages {
@@ -90,41 +125,32 @@ func BulkSimAsync(request *proto.BulkSimRequest, progress chan *proto.ProgressMe
 	} else {
 		log.Printf("[Bulk Sim] Candidate generation skipped optimizedCandidates=%d", len(request.GetOptimizedCandidates()))
 	}
-	if request.GetReforgeRequest() == nil {
-		bulk.BulkSimAsync(request, progress, requestId)
+	if signals.Abort.IsTriggered() {
+		log.Printf("[Bulk Sim] Cancelled during candidate generation")
+		finishBulkSim(progress, proto.BulkSimStage_BulkSimStageError, &proto.BulkSimResult{
+			Error: &proto.ErrorOutcome{Type: proto.ErrorOutcomeType_ErrorOutcomeAborted},
+		})
 		return
 	}
-	signals, err := simsignals.RegisterWithId(requestId)
-	if err != nil {
-		progress <- &proto.ProgressMetrics{
-			BulkStage: proto.BulkSimStage_BulkSimStageError,
-			FinalBulkSimResult: &proto.BulkSimResult{
-				Error: &proto.ErrorOutcome{Message: "Couldn't register for signal API: " + err.Error()},
-			},
-		}
-		close(progress)
+	if request.GetReforgeRequest() == nil {
+		unregister()
+		bulk.BulkSimAsync(request, progress, requestId)
 		return
 	}
 
-	go func() {
-		optimizeBulkSimReforgeCandidates(request, progress, signals)
-		if signals.Abort.IsTriggered() {
-			simsignals.UnregisterId(requestId)
-			log.Printf("[Bulk Sim] Cancelled during reforge optimization")
-			progress <- &proto.ProgressMetrics{
-				BulkStage: proto.BulkSimStage_BulkSimStageReforge,
-				FinalBulkSimResult: &proto.BulkSimResult{
-					OptimizedCandidates: request.GetOptimizedCandidates(),
-					Error:               &proto.ErrorOutcome{Type: proto.ErrorOutcomeType_ErrorOutcomeAborted},
-				},
-			}
-			close(progress)
-			return
-		}
-		request.ReforgeRequest = nil
-		simsignals.UnregisterId(requestId)
-		bulk.BulkSimAsync(request, progress, requestId)
-	}()
+	optimizeBulkSimReforgeCandidates(request, progress, signals)
+	if signals.Abort.IsTriggered() {
+		unregister()
+		log.Printf("[Bulk Sim] Cancelled during reforge optimization")
+		finishBulkSim(progress, proto.BulkSimStage_BulkSimStageReforge, &proto.BulkSimResult{
+			OptimizedCandidates: request.GetOptimizedCandidates(),
+			Error:               &proto.ErrorOutcome{Type: proto.ErrorOutcomeType_ErrorOutcomeAborted},
+		})
+		return
+	}
+	request.ReforgeRequest = nil
+	unregister()
+	bulk.BulkSimAsync(request, progress, requestId)
 }
 
 func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress chan *proto.ProgressMetrics, signals simsignals.Signals) {
@@ -135,7 +161,7 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 
 	totalCandidates := countBulkSimReforgeCandidates(request.GetCandidates())
 	if totalCandidates == 0 {
-		request.Candidates = dedupeBulkSimReforgeCandidates(getBulkSimRequestBaselineGear(request), request.GetOptimizedCandidates())
+		request.Candidates = dedupeBulkSimReforgeCandidates(bulk.GetBulkSimBaselineGear(request), request.GetOptimizedCandidates())
 		request.OptimizedCandidates = nil
 		return
 	}
@@ -151,16 +177,15 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 
 	jobs := make(chan bulkSimReforgeTask, max(16, 2*concurrency))
 	var wg sync.WaitGroup
-	workerCount := max(1, concurrency)
-	for range workerCount {
+	for range concurrency {
 		wg.Go(func() {
 			for task := range jobs {
 				if signals.Abort.IsTriggered() {
 					continue
 				}
 
-				duration, completed := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
-				update := accumulator.complete(task, duration, completed)
+				duration, completed, optimized := optimizeBulkSimReforgeCandidateTask(optimizer, reforgeRequest, task.candidate, signals)
+				update := accumulator.complete(task, duration, completed, optimized)
 				if update.shouldEmit() {
 					emitBulkSimReforgeProgress(progress, update.completedCandidates, totalCandidates, update.candidateBatch)
 				}
@@ -184,26 +209,29 @@ func optimizeBulkSimReforgeCandidates(request *proto.BulkSimRequest, progress ch
 		emitBulkSimReforgeProgress(progress, finalUpdate.completedCandidates, totalCandidates, finalUpdate.candidateBatch)
 	}
 	completedCandidates, minCandidateDuration, avgCandidateDuration, maxCandidateDuration := accumulator.timings()
-	completedReforgeCandidatesByPosition := accumulator.completedByPosition()
 	log.Printf("[Bulk Sim] Reforge optimization completed candidates=%d total=%s minCandidate=%s avgCandidate=%s maxCandidate=%s", completedCandidates, time.Since(stageStartedAt), minCandidateDuration, avgCandidateDuration, maxCandidateDuration)
 
-	baselineGear := getBulkSimRequestBaselineGear(request)
-	completedReforgeCandidates := compactBulkGearCandidates(completedReforgeCandidatesByPosition)
-	allReforgeCandidates := append(request.GetOptimizedCandidates(), completedReforgeCandidates...)
+	baselineGear := bulk.GetBulkSimBaselineGear(request)
+	restoredCandidates := request.GetOptimizedCandidates()
+	// Only the solves that succeeded are reported as optimized, because that list is what
+	// the frontend writes into its reforge cache.
+	optimizedCandidates := slices.Concat(restoredCandidates, accumulator.optimizedCandidates())
 	if signals.Abort.IsTriggered() {
-		request.OptimizedCandidates = allReforgeCandidates
+		request.OptimizedCandidates = optimizedCandidates
 		request.Candidates = nil
 		return
 	}
 
-	// Deduplicate for simulation: avoid running the same reforged gear twice and exclude
-	// gear identical to the baseline (it is already simmed separately).
-	request.Candidates = dedupeBulkSimReforgeCandidates(baselineGear, allReforgeCandidates)
-	// Include ALL reforged candidates (before dedup) so the frontend can write a cache entry
+	// Everything that finished gets simmed, optimized or not. Deduplicate: avoid running
+	// the same reforged gear twice and exclude gear identical to the baseline (it is
+	// already simmed separately).
+	simCandidates := slices.Concat(restoredCandidates, compactBulkGearCandidates(accumulator.completedByPosition()))
+	request.Candidates = dedupeBulkSimReforgeCandidates(baselineGear, simCandidates)
+	// Include ALL optimized candidates (before dedup) so the frontend can write a cache entry
 	// for every input gear set, including those whose optimal reforge matched another candidate
 	// or the baseline. Without this, filtered runs (e.g. Require 4P) would always miss the
 	// cache because the matching entries were never written after the first run.
-	request.OptimizedCandidates = allReforgeCandidates
+	request.OptimizedCandidates = optimizedCandidates
 }
 
 // Collects reforge pre-pass completions from all workers and decides what progress to
@@ -216,6 +244,11 @@ type bulkSimReforgeAccumulator struct {
 	totalCandidates      int32
 	reportProgress       bool
 	completedByPositions []*proto.BulkGearCandidate
+	// Which completed positions actually produced an optimized solve. Only those may be
+	// reported as optimized candidates; completedByPositions also holds the ones that fell
+	// back to their input gear. One bit per position rather than a second pointer slice —
+	// the candidate is always the one already in completedByPositions.
+	optimizedByPositions []bool
 	completedCandidates  int32
 	totalDuration        time.Duration
 	minDuration          time.Duration
@@ -243,12 +276,13 @@ func newBulkSimReforgeAccumulator(candidates []*proto.BulkGearCandidate, totalCa
 		totalCandidates:      totalCandidates,
 		reportProgress:       reportProgress,
 		completedByPositions: make([]*proto.BulkGearCandidate, len(candidates)),
+		optimizedByPositions: make([]bool, len(candidates)),
 		candidateBatch:       make([]*proto.BulkGearCandidate, 0, bulkSimReforgeProgressOptimizedCandidateFlushSize),
 		lastProgressEmit:     time.Now(),
 	}
 }
 
-func (accumulator *bulkSimReforgeAccumulator) complete(task bulkSimReforgeTask, duration time.Duration, completed bool) bulkSimReforgeProgressUpdate {
+func (accumulator *bulkSimReforgeAccumulator) complete(task bulkSimReforgeTask, duration time.Duration, completed bool, optimized bool) bulkSimReforgeProgressUpdate {
 	accumulator.mutex.Lock()
 	defer accumulator.mutex.Unlock()
 
@@ -257,7 +291,10 @@ func (accumulator *bulkSimReforgeAccumulator) complete(task bulkSimReforgeTask, 
 	if completed {
 		accumulator.completedCandidates++
 		accumulator.completedByPositions[task.position] = task.candidate
-		accumulator.candidateBatch = append(accumulator.candidateBatch, task.candidate)
+		if optimized {
+			accumulator.optimizedByPositions[task.position] = true
+			accumulator.candidateBatch = append(accumulator.candidateBatch, task.candidate)
+		}
 		if accumulator.completedCandidates == 1 || duration < accumulator.minDuration {
 			accumulator.minDuration = duration
 		}
@@ -301,7 +338,7 @@ func (accumulator *bulkSimReforgeAccumulator) progressUpdateDueLocked() bool {
 	if !accumulator.reportProgress {
 		return false
 	}
-	if accumulator.completedCandidates < accumulator.totalCandidates && time.Since(accumulator.lastProgressEmit) < bulkSimReforgeProgressUpdateInterval {
+	if accumulator.completedCandidates < accumulator.totalCandidates && time.Since(accumulator.lastProgressEmit) < bulk.BulkSimProgressThrottle {
 		return false
 	}
 
@@ -313,6 +350,19 @@ func (accumulator *bulkSimReforgeAccumulator) completedByPosition() []*proto.Bul
 	accumulator.mutex.Lock()
 	defer accumulator.mutex.Unlock()
 	return accumulator.completedByPositions
+}
+
+// The subset of completed candidates whose solve succeeded, in position order.
+func (accumulator *bulkSimReforgeAccumulator) optimizedCandidates() []*proto.BulkGearCandidate {
+	accumulator.mutex.Lock()
+	defer accumulator.mutex.Unlock()
+	optimized := make([]*proto.BulkGearCandidate, 0, len(accumulator.completedByPositions))
+	for position, candidate := range accumulator.completedByPositions {
+		if accumulator.optimizedByPositions[position] && candidate != nil && candidate.Gear != nil {
+			optimized = append(optimized, candidate)
+		}
+	}
+	return optimized
 }
 
 func (accumulator *bulkSimReforgeAccumulator) timings() (completed int32, minDuration time.Duration, avgDuration time.Duration, maxDuration time.Duration) {
@@ -349,23 +399,30 @@ func warmBulkSimReforgeDatabase(request *proto.BulkSimRequest) {
 	}
 }
 
-func optimizeBulkSimReforgeCandidateTask(optimizer *bulkSimReforgeOptimizer, reforgeRequest *proto.ReforgeOptimizeRequest, candidate *proto.BulkGearCandidate, signals simsignals.Signals) (time.Duration, bool) {
+// Returns whether the candidate is done (and so should be simmed) and, separately, whether
+// it was actually optimized. A failed solve still sims with its original gear, but must not
+// be reported as an optimized candidate: the frontend writes those into a 14-day reforge
+// cache, and caching gear as its own optimization poisons every later run of that gear.
+func optimizeBulkSimReforgeCandidateTask(optimizer *bulkSimReforgeOptimizer, reforgeRequest *proto.ReforgeOptimizeRequest, candidate *proto.BulkGearCandidate, signals simsignals.Signals) (duration time.Duration, completed bool, optimized bool) {
 	startedAt := time.Now()
 	gearKey := bulkSimReforgeGearKey(candidate.Gear)
-	optimizedGear := optimizer.optimizeWithKey(candidate.Gear, gearKey, true, signals)
-	if optimizedGear == nil && !signals.Abort.IsTriggered() && reforgeRequest.GetSettings().GetIncludeGems() {
+	// Retry without gems: a gem-inclusive model can be infeasible where the
+	// reforge-only one is not.
+	includeGems := reforgeRequest.GetSettings().GetIncludeGems()
+	optimizedGear := optimizer.optimizeWithKey(candidate.Gear, gearKey, includeGems, signals)
+	if optimizedGear == nil && !signals.Abort.IsTriggered() && includeGems {
 		optimizedGear = optimizer.optimizeWithKey(candidate.Gear, gearKey, false, signals)
 	}
 	if optimizedGear == nil {
 		if signals.Abort.IsTriggered() {
-			return time.Since(startedAt), false
+			return time.Since(startedAt), false, false
 		}
 		log.Printf("[Bulk Sim] Reforge optimization failed for candidate %d; using original gear", candidate.Index)
-		return time.Since(startedAt), true
+		return time.Since(startedAt), true, false
 	}
 
 	candidate.Gear = optimizedGear
-	return time.Since(startedAt), true
+	return time.Since(startedAt), true, true
 }
 
 func countBulkSimReforgeCandidates(candidates []*proto.BulkGearCandidate) int32 {
@@ -391,18 +448,6 @@ func emitBulkSimReforgeProgress(progress chan *proto.ProgressMetrics, completed 
 		TotalIterations:     total,
 		OptimizedCandidates: partialCandidates,
 	}
-}
-
-func getBulkSimRequestBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec {
-	parties := request.GetBaseRequest().GetRaid().GetParties()
-	if len(parties) == 0 || parties[0] == nil {
-		return nil
-	}
-	players := parties[0].GetPlayers()
-	if len(players) == 0 || players[0] == nil {
-		return nil
-	}
-	return players[0].GetEquipment()
 }
 
 func (optimizer *bulkSimReforgeOptimizer) optimizeWithKey(gear *proto.EquipmentSpec, gearKey bulkSimReforgeGearHash, includeGems bool, signals simsignals.Signals) *proto.EquipmentSpec {

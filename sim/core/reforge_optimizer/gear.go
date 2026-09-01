@@ -124,60 +124,13 @@ func frozenItemSlots(settings *proto.ReforgeSettings) map[proto.ItemSlot]bool {
 // bonus socket when disabled and appends a prismatic socket for Blacksmithing wrists/hands.
 func currentSocketColors(item core.Item, isBlacksmithing bool, settings *proto.ReforgeSettings) []proto.GemColor {
 	socketColors := append([]proto.GemColor(nil), item.GemSockets...)
-	if !settings.GetIncludeEotbGemSocket() && hasEndOfTierBonusSocket(item) && len(socketColors) > 0 {
+	if !settings.GetIncludeEotbGemSocket() && item.EotbGemSocket && len(socketColors) > 0 {
 		socketColors = socketColors[:len(socketColors)-1]
 	}
 	if isBlacksmithing && (item.Type == proto.ItemType_ItemTypeWrist || item.Type == proto.ItemType_ItemTypeHands) {
 		socketColors = append(socketColors, proto.GemColor_GemColorPrismatic)
 	}
 	return socketColors
-}
-
-// hasEndOfTierBonusSocket detects a Throne of Thunder end-of-tier bonus socket (Sha-Touched
-// socket color, or a ", Reborn" name suffix for LFR pieces).
-func hasEndOfTierBonusSocket(item core.Item) bool {
-	for _, socketColor := range item.GemSockets {
-		if socketColor == proto.GemColor_GemColorShaTouched {
-			return true
-		}
-	}
-	return strings.HasSuffix(item.Name, ", Reborn")
-}
-
-// gemEligibleForSocket reports whether a gem of the given color class may be placed in a socket
-// of the given color (meta, cogwheel, and Sha-Touched sockets each take only their own class).
-func gemEligibleForSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
-	switch socketColor {
-	case proto.GemColor_GemColorMeta:
-		return gemColor == proto.GemColor_GemColorMeta
-	case proto.GemColor_GemColorCogwheel:
-		return gemColor == proto.GemColor_GemColorCogwheel
-	case proto.GemColor_GemColorShaTouched:
-		return gemColor == proto.GemColor_GemColorShaTouched
-	default:
-		return gemColor != proto.GemColor_GemColorMeta && gemColor != proto.GemColor_GemColorCogwheel && gemColor != proto.GemColor_GemColorShaTouched
-	}
-}
-
-// gemMatchesSocket reports whether a gem's color counts as a match for the socket's color (for
-// the purpose of earning the item's socket bonus).
-func gemMatchesSocket(gemColor proto.GemColor, socketColor proto.GemColor) bool {
-	if gemColor == socketColor {
-		return true
-	}
-	switch socketColor {
-	case proto.GemColor_GemColorBlue:
-		return gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
-	case proto.GemColor_GemColorRed:
-		return gemColor == proto.GemColor_GemColorPurple || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorPrismatic
-	case proto.GemColor_GemColorYellow:
-		return gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorPrismatic
-	case proto.GemColor_GemColorPrismatic:
-		return gemColor == proto.GemColor_GemColorRed || gemColor == proto.GemColor_GemColorOrange || gemColor == proto.GemColor_GemColorYellow ||
-			gemColor == proto.GemColor_GemColorGreen || gemColor == proto.GemColor_GemColorBlue || gemColor == proto.GemColor_GemColorPurple
-	default:
-		return false
-	}
 }
 
 // reforgeRawStats computes the stat change a reforge produces on an item (a fraction of the
@@ -294,8 +247,8 @@ func (o *reforgeOptimizer) minimizeRegems(newGear *core.Equipment) {
 				// gem moved to) preserves a genuine color-match upgrade the solver found while still
 				// undoing a match-neutral shuffle (e.g. two same-color MH/OH weapon sockets) that
 				// would otherwise be a pointless regem.
-				matchesIfSwapped := boolToInt(gemMatchesSocket(originalGem.Color, socketColor)) + boolToInt(gemMatchesSocket(newGem.Color, matchedSocketColor))
-				matchesIfKept := boolToInt(gemMatchesSocket(newGem.Color, socketColor)) + boolToInt(gemMatchesSocket(originalGem.Color, matchedSocketColor))
+				matchesIfSwapped := boolToInt(core.GemMatchesSocket(originalGem.Color, socketColor)) + boolToInt(core.GemMatchesSocket(newGem.Color, matchedSocketColor))
+				matchesIfKept := boolToInt(core.GemMatchesSocket(newGem.Color, socketColor)) + boolToInt(core.GemMatchesSocket(originalGem.Color, matchedSocketColor))
 				if matchesIfSwapped < matchesIfKept {
 					continue
 				}

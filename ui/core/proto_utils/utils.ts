@@ -6,8 +6,8 @@ import { PlayerSpecs } from '../player_specs';
 import { Player } from '../proto/api.js';
 import {
 	Class,
-	EquipmentSpec,
 	EnchantType,
+	EquipmentSpec,
 	Faction,
 	HandType,
 	ItemSlot,
@@ -171,7 +171,7 @@ import {
 	WarriorOptions,
 	WarriorTalents,
 } from '../proto/warrior.js';
-import { getEnumValues, intersection } from '../utils.js';
+import { getEnumValues, intersection, swap } from '../utils.js';
 import { Database } from './database';
 import { Stats } from './stats.js';
 
@@ -1879,13 +1879,13 @@ const itemTypeToSlotsMap: Partial<Record<ItemType, Array<ItemSlot>>> = {
 	[ItemType.ItemTypeRanged]: [ItemSlot.ItemSlotMainHand],
 };
 
-export function getEligibleItemSlots(item: Item, isFuryWarrior?: boolean): Array<ItemSlot> {
+export function getEligibleItemSlots(item: Item, canDualWield2H?: boolean): Array<ItemSlot> {
 	if (itemTypeToSlotsMap[item.type]) {
 		return itemTypeToSlotsMap[item.type]!;
 	}
 
 	if (item.type == ItemType.ItemTypeWeapon) {
-		if (isFuryWarrior) {
+		if (canDualWield2H) {
 			return [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand];
 		}
 
@@ -1907,18 +1907,11 @@ export const isSecondaryItemSlot = (slot: ItemSlot) => slot === ItemSlot.ItemSlo
 // Returns whether the given main-hand and off-hand items can be worn at the
 // same time.
 export function validWeaponCombo(mainHand: Item | null | undefined, offHand: Item | null | undefined, canDW2h: boolean): boolean {
-	if (mainHand?.handType == HandType.HandTypeTwoHand && !canDW2h) {
-		return false;
-	} else if (mainHand?.handType == HandType.HandTypeTwoHand && mainHand?.weaponType == WeaponType.WeaponTypeStaff) {
-		return false;
-	}
-	if (offHand?.handType == HandType.HandTypeTwoHand && !canDW2h) {
-		return false;
-	} else if (offHand?.handType == HandType.HandTypeTwoHand && offHand?.weaponType == WeaponType.WeaponTypeStaff) {
-		return false;
+	if (canDW2h) {
+		return true;
 	}
 
-	return true;
+	return mainHand?.handType != HandType.HandTypeTwoHand && offHand?.handType != HandType.HandTypeTwoHand;
 }
 
 export const hasBlacksmithing = (player: Player) => [player.profession1, player.profession2].includes(Profession.Blacksmithing);
@@ -2120,7 +2113,27 @@ export function migrateOldProto<Type>(oldProto: Type, oldApiVersion: number, con
 	return migratedProto;
 }
 
-export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[], includeExistingGems = false): string {
+/**
+ * Fingerprint for comparing or deduplicating gear sets: item, random suffix, enchant,
+ * tinker, upgrade step, challenge mode, plus the head meta gem. Reforges and non-meta gems
+ * are deliberately excluded — two sets differing only there are the same bulk-sim input.
+ *
+ * NOT a cache key. Use getReforgeCacheGearKey for anything that keys an optimizer result.
+ */
+export function getGearIdentityKey(spec: EquipmentSpec): string {
+	return buildGearKey(spec);
+}
+
+/**
+ * Cache key for a reforge-optimizer result: everything the optimizer's output depends on.
+ * That means every equipped gem — with includeGems off the optimizer keeps them, and with
+ * it on minimizeRegems reuses them — plus the reforge and frozen state of each frozen slot.
+ */
+export function getReforgeCacheGearKey(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[]): string {
+	return buildGearKey(spec, frozenItemSlots, true);
+}
+
+function buildGearKey(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[], includeExistingGems = false): string {
 	const items = spec.items;
 	const frozenSlots = frozenItemSlots ?? [];
 	const frozenSlotMask = frozenSlots.length ? new Uint8Array(items.length) : undefined;
@@ -2156,13 +2169,19 @@ export function getGearKeyFromSpec(spec: EquipmentSpec, frozenItemSlots?: readon
 			gemFingerprint,
 			Number(item.challengeMode ?? false),
 		].join(':');
+		// Frozen-ness has to travel with the item through the paired-slot normalization
+		// below, or swapping two rings with one of them frozen collapses to a single key
+		// while the optimizer (which freezes by slot index) must leave a different ring
+		// alone in each case. Appended rather than joined in so unfrozen keys - the ones
+		// already in users' caches - stay byte-identical.
+		if (isFrozen) {
+			itemKeys[slotIdx] += ':frozen';
+		}
 	}
 
 	const reorderPairedSlots = (firstSlot: ItemSlot, secondSlot: ItemSlot): void => {
 		if (itemKeys[firstSlot] > itemKeys[secondSlot]) {
-			const temp = itemKeys[firstSlot];
-			itemKeys[firstSlot] = itemKeys[secondSlot];
-			itemKeys[secondSlot] = temp;
+			swap(itemKeys, firstSlot, secondSlot);
 		}
 	};
 

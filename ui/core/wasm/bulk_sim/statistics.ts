@@ -1,5 +1,6 @@
 import { DistributionMetrics } from '../../proto/api';
-import { BULK_SIM_COMBINATION_LOG_MIN, BULK_SIM_CULLING_COEFFICIENT, BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER } from './constants';
+import { Z_95 } from '../../utils';
+import { BULK_SIM_COMBINATION_LOG_MIN, BULK_SIM_CULLING_COEFFICIENT, BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER } from './constants_auto_gen';
 import { getBulkSimStageMaxSurvivors } from './stage';
 import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig } from './types';
 
@@ -59,7 +60,6 @@ export const topBulkSimResults = (results: ConcurrentBulkSimCandidateResult[], l
 	if (limit <= 0 || results.length == 0) return [];
 	return results
 		.filter(result => result.dpsMetrics)
-		.slice()
 		.sort((a, b) => b.dpsMetrics!.avg - a.dpsMetrics!.avg)
 		.slice(0, limit);
 };
@@ -75,7 +75,7 @@ const BULK_SIM_PAIRED_INTERVAL_CONSERVATISM = Math.SQRT2;
 // leader. Returns undefined when the two runs cannot be paired; zero is a valid result -
 // it means the candidate trailed the leader by the same amount every iteration, which is
 // the strongest evidence pairing can give.
-const bulkSimPairedDpsError = (metrics: DistributionMetrics | undefined, bestMetrics: DistributionMetrics | undefined): number | undefined => {
+export const bulkSimPairedDpsError = (metrics: DistributionMetrics | undefined, bestMetrics: DistributionMetrics | undefined): number | undefined => {
 	const values = metrics?.allValues;
 	const bestValues = bestMetrics?.allValues;
 	if (!values || !bestValues || values.length === 0 || values.length !== bestValues.length) return undefined;
@@ -153,4 +153,21 @@ export const selectBulkSimSurvivors = (
 	}
 
 	return survivors.map(result => result.candidate);
+};
+
+// Whether any adjacent pair in the DPS-sorted finalist list is still statistically
+// unresolved: paired z inside the same Z_95 threshold the UI's significance test uses.
+// The cull's BULK_SIM_PAIRED_INTERVAL_CONSERVATISM factor is deliberately NOT applied -
+// it compensates for the cull test's sum-of-half-widths formulation, while this is a
+// plain two-sided test on the paired difference. An unpairable pair (or one with zero
+// paired error) cannot be improved by more lockstep iterations and counts as resolved.
+export const bulkSimUnresolvedFinalistPair = (sortedFinalists: ConcurrentBulkSimCandidateResult[]): boolean => {
+	for (let idx = 0; idx + 1 < sortedFinalists.length; idx++) {
+		const upper = sortedFinalists[idx];
+		const lower = sortedFinalists[idx + 1];
+		const pairedError = bulkSimPairedDpsError(lower.dpsMetrics, upper.dpsMetrics);
+		if (pairedError === undefined || pairedError === 0) continue;
+		if (Math.abs((upper.dpsMetrics?.avg ?? 0) - (lower.dpsMetrics?.avg ?? 0)) <= Z_95 * pairedError) return true;
+	}
+	return false;
 };

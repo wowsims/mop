@@ -19,7 +19,7 @@ func replaceItem(existing core.Item, option bulkSimCandidateOption, inheritUpgra
 	if !enchantAppliesToItem(itemSpec.GetTinker(), option.item) {
 		itemSpec.Tinker = 0
 	}
-	itemSpec.Gems = applyMetaGem(existing, option.item)
+	itemSpec.Gems = mergeGems(existing, option, option.item)
 	if option.spec.GetRandomSuffix() != 0 {
 		itemSpec.RandomSuffix = option.spec.GetRandomSuffix()
 	}
@@ -50,31 +50,40 @@ func createSelectedItem(option bulkSimCandidateOption, challengeModeEnabled bool
 	})
 }
 
-func applyMetaGem(item core.Item, newItem core.Item) []int32 {
+// Gems picked for the bulk item win; the replaced item's gems are re-homed into the sockets
+// still free, preferring a color match over mere eligibility. Gems with no room are dropped.
+func mergeGems(existing core.Item, option bulkSimCandidateOption, newItem core.Item) []int32 {
 	newGems := make([]int32, len(newItem.GemSockets))
 
-	if item.Type != proto.ItemType_ItemTypeHead || newItem.Type != proto.ItemType_ItemTypeHead {
-		return newGems
-	}
-
-	metaGemID := int32(0)
-	for _, gem := range item.Gems {
-		if gem.ID != 0 && gem.Color == proto.GemColor_GemColorMeta {
-			metaGemID = gem.ID
+	for socketIdx, gemID := range option.spec.GetGems() {
+		if socketIdx >= len(newGems) {
 			break
 		}
-	}
-	if metaGemID == 0 {
-		return newGems
+		newGems[socketIdx] = gemID
 	}
 
-	for socketIdx, socketColor := range newItem.GemSockets {
-		if socketColor == proto.GemColor_GemColorMeta {
-			newGems[socketIdx] = metaGemID
-			break
+	for gemIdx, gem := range existing.Gems {
+		if gemIdx >= len(existing.GemSockets) || gem.ID == 0 {
+			continue
+		}
+		socketIdx := firstFreeSocket(newItem.GemSockets, newGems, gem.Color, core.GemMatchesSocket)
+		if socketIdx == -1 {
+			socketIdx = firstFreeSocket(newItem.GemSockets, newGems, gem.Color, core.GemEligibleForSocket)
+		}
+		if socketIdx != -1 {
+			newGems[socketIdx] = gem.ID
 		}
 	}
 	return newGems
+}
+
+func firstFreeSocket(socketColors []proto.GemColor, gems []int32, gemColor proto.GemColor, accepts func(proto.GemColor, proto.GemColor) bool) int {
+	for socketIdx, socketColor := range socketColors {
+		if gems[socketIdx] == 0 && accepts(gemColor, socketColor) {
+			return socketIdx
+		}
+	}
+	return -1
 }
 
 func enchantAppliesToItem(effectID int32, item core.Item) bool {
@@ -85,7 +94,7 @@ func enchantAppliesToItem(effectID int32, item core.Item) bool {
 	if enchant == nil {
 		return false
 	}
-	if !core.CheckSliceOverlap(getEligibleEnchantSlots(*enchant), getEligibleItemSlots(item, false)) {
+	if !core.CheckSliceOverlap(getEligibleEnchantSlots(*enchant), core.EligibleSlotsForItem(&item, false)) {
 		return false
 	}
 
@@ -120,7 +129,7 @@ func getEligibleEnchantSlots(enchant core.Enchant) []proto.ItemSlot {
 	types := append([]proto.ItemType{enchant.Type}, enchant.ExtraTypes...)
 	slots := make([]proto.ItemSlot, 0, len(types)*2)
 	for _, itemType := range types {
-		if typeSlots, ok := itemTypeToSlotsMap[itemType]; ok {
+		if typeSlots, ok := core.ItemTypeToSlotsMap[itemType]; ok {
 			slots = append(slots, typeSlots...)
 			continue
 		}
@@ -131,27 +140,7 @@ func getEligibleEnchantSlots(enchant core.Enchant) []proto.ItemSlot {
 	return slots
 }
 
-func getEligibleItemSlots(item core.Item, isFuryWarrior bool) []proto.ItemSlot {
-	if slots, ok := itemTypeToSlotsMap[item.Type]; ok {
-		return slots
-	}
-	if item.Type == proto.ItemType_ItemTypeWeapon {
-		if isFuryWarrior {
-			return []proto.ItemSlot{proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand}
-		}
-		switch item.HandType {
-		case proto.HandType_HandTypeMainHand:
-			return []proto.ItemSlot{proto.ItemSlot_ItemSlotMainHand}
-		case proto.HandType_HandTypeOffHand:
-			return []proto.ItemSlot{proto.ItemSlot_ItemSlotOffHand}
-		default:
-			return []proto.ItemSlot{proto.ItemSlot_ItemSlotMainHand, proto.ItemSlot_ItemSlotOffHand}
-		}
-	}
-	return nil
-}
-
-func canEquipItem(item core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
+func canEquipItem(item *core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
 	if item.Type == proto.ItemType_ItemTypeFinger || item.Type == proto.ItemType_ItemTypeTrinket {
 		return true
 	}
@@ -167,7 +156,7 @@ func canEquipItem(item core.Item, playerClass proto.Class, playerSpec proto.Spec
 		if item.HandType == proto.HandType_HandTypeTwoHand && !eligibleWeaponType.CanUseTwoHand {
 			return false
 		}
-		if item.HandType == proto.HandType_HandTypeTwoHand && slot == proto.ItemSlot_ItemSlotOffHand && playerSpec != proto.Spec_SpecFuryWarrior {
+		if item.HandType == proto.HandType_HandTypeTwoHand && slot == proto.ItemSlot_ItemSlotOffHand && !core.SpecCanDualWield2HCapabilities[playerSpec] {
 			return false
 		}
 		return true
@@ -181,4 +170,47 @@ func canEquipItem(item core.Item, playerClass proto.Class, playerSpec proto.Spec
 	}
 	maxArmorType := classArmorTypes[0]
 	return maxArmorType >= item.ArmorType
+}
+
+// A unique item can only be worn once, and two items never share a limit category.
+func pairIsEquippable(first *core.Item, second *core.Item) bool {
+	if first.Unique && first.ID == second.ID {
+		return false
+	}
+	return first.LimitCategory == 0 || first.LimitCategory != second.LimitCategory
+}
+
+func itemCanBeDoubled(item *core.Item) bool {
+	return !item.Unique && item.LimitCategory == 0
+}
+
+func occupiesBothHands(item *core.Item) bool {
+	return item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeUnknown &&
+		item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeWand
+}
+
+func canWearWeaponInHand(item *core.Item, playerClass proto.Class, playerSpec proto.Spec, slot proto.ItemSlot) bool {
+	isMainHand := slot == proto.ItemSlot_ItemSlotMainHand
+	isOffHand := slot == proto.ItemSlot_ItemSlotOffHand
+	if !isMainHand && !isOffHand {
+		return false
+	}
+	if item.Type == proto.ItemType_ItemTypeRanged {
+		// MoP has no ranged slot: bows and wands are worn in the mainhand.
+		return isMainHand && canEquipItem(item, playerClass, playerSpec, slot)
+	}
+	if item.Type != proto.ItemType_ItemTypeWeapon {
+		return false
+	}
+	switch item.HandType {
+	case proto.HandType_HandTypeMainHand:
+		if !isMainHand {
+			return false
+		}
+	case proto.HandType_HandTypeOffHand:
+		if !isOffHand {
+			return false
+		}
+	}
+	return canEquipItem(item, playerClass, playerSpec, slot)
 }

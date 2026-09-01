@@ -4,8 +4,11 @@ import { EquipmentSpec } from '../proto/common';
 import { SimSignals } from '../sim_signal_manager';
 import { generateRequestId, WorkerPool } from '../worker_pool';
 
+// windows-1252 ('latin1') maps all 256 byte values to distinct code points, so this is an
+// injective byte-to-string encoding - one exact-length string, no intermediate array.
+const reforgeGearKeyDecoder = new TextDecoder('latin1');
 export const reforgeGearKey = (gear: EquipmentSpec): string => {
-	return Array.from(EquipmentSpec.toBinary(gear)).join(',');
+	return reforgeGearKeyDecoder.decode(EquipmentSpec.toBinary(gear));
 };
 
 export const optimizeReforgeGear = async (

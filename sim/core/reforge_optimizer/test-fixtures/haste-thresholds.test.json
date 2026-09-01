@@ -161,7 +161,8 @@
 		"statCaps":  {
 			"stats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			"pseudoStats":  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0]
-		}
+		},
+		"epStats": ["StatIntellect", "StatSpellPower", "StatHitRating", "StatCritRating", "StatHasteRating", "StatMasteryRating"]
 	},
 	"softCaps":  [
 		{

@@ -2990,6 +2990,9 @@
 						"high_iteration_rounds": {
 							"type": "string"
 						},
+						"finalist_iteration_rounds": {
+							"type": "string"
+						},
 						"iterations_complete": {
 							"type": "string"
 						},
@@ -3010,6 +3013,7 @@
 						"low_iteration_rounds",
 						"medium_iteration_rounds",
 						"high_iteration_rounds",
+						"finalist_iteration_rounds",
 						"iterations_complete",
 						"seconds_remaining",
 						"time_remaining"
@@ -3071,10 +3075,16 @@
 						},
 						"current_gear": {
 							"type": "string"
+						},
+						"margin_of_error": {
+							"type": "string"
+						},
+						"tied_group": {
+							"type": "string"
 						}
 					},
 					"additionalProperties": false,
-					"required": ["run_simulation", "equip_button", "gear_equipped", "current_gear"]
+					"required": ["run_simulation", "equip_button", "gear_equipped", "current_gear", "margin_of_error", "tied_group"]
 				},
 				"import_modal": {
 					"type": "object",
@@ -4301,6 +4311,19 @@
 									"required": ["label", "tooltip"]
 								},
 								"boss_spell_known": {
+									"type": "object",
+									"properties": {
+										"label": {
+											"type": "string"
+										},
+										"tooltip": {
+											"type": "string"
+										}
+									},
+									"additionalProperties": false,
+									"required": ["label", "tooltip"]
+								},
+								"boss_spell_cast_time_remaining": {
 									"type": "object",
 									"properties": {
 										"label": {
@@ -5645,6 +5668,7 @@
 								"boss_cast_time_to_ready",
 								"boss_current_target",
 								"boss_spell_known",
+								"boss_spell_cast_time_remaining",
 								"unit_is_moving",
 								"distance_to_unit",
 								"current_health",
@@ -8880,6 +8904,101 @@
 			},
 			"additionalProperties": false,
 			"required": ["empty_title", "empty_desc", "default_player", "training_dummy", "seek_back", "seek_fwd"]
+		},
+		"fire_mage": {
+			"type": "object",
+			"properties": {
+				"combustion_thresholds": {
+					"type": "object",
+					"properties": {
+						"button": {
+							"type": "string"
+						},
+						"progress_title": {
+							"type": "string"
+						},
+						"progress_warning": {
+							"type": "string"
+						},
+						"progress_cancel_hint": {
+							"type": "string"
+						},
+						"modal_title": {
+							"type": "string"
+						},
+						"calculating": {
+							"type": "string"
+						},
+						"parsing_logs": {
+							"type": "string"
+						},
+						"table": {
+							"type": "object",
+							"properties": {
+								"threshold": {
+									"type": "string"
+								},
+								"current": {
+									"type": "string"
+								},
+								"new": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["threshold", "current", "new"]
+						},
+						"categories": {
+							"type": "object",
+							"properties": {
+								"always_send": {
+									"type": "string"
+								},
+								"bloodlust": {
+									"type": "string"
+								},
+								"alter_time": {
+									"type": "string"
+								},
+								"no_cds": {
+									"type": "string"
+								},
+								"end_of_combat": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": false,
+							"required": ["always_send", "bloodlust", "alter_time", "no_cds", "end_of_combat"]
+						},
+						"close": {
+							"type": "string"
+						},
+						"update": {
+							"type": "string"
+						},
+						"updated_toast": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"required": [
+						"button",
+						"progress_title",
+						"progress_warning",
+						"progress_cancel_hint",
+						"modal_title",
+						"calculating",
+						"parsing_logs",
+						"table",
+						"categories",
+						"close",
+						"update",
+						"updated_toast"
+					]
+				}
+			},
+			"additionalProperties": false,
+			"required": ["combustion_thresholds"]
 		}
 	},
 	"additionalProperties": false,
@@ -8897,7 +9016,8 @@
 		"export",
 		"info",
 		"sidebar",
-		"combat_replay"
+		"combat_replay",
+		"fire_mage"
 	],
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"title": "Generated Schema",

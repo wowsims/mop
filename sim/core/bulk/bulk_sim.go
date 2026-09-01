@@ -9,17 +9,18 @@ import (
 )
 
 const (
-	bulkSimDefaultTopResults                         = 5
-	bulkSimMinCombinations                           = 20
-	bulkSimCullingCoefficient                        = 1.35
-	bulkSimLowStageConcurrencyFactor                 = 2
-	bulkSimCombinationLogMin                 float64 = 10
-	bulkSimMaxAdaptivePasses                         = 2
-	bulkSimAdaptiveMaxIterationMultiplier            = 4
-	bulkSimSurvivorSoftCapMultiplier                 = 2
-	bulkSimLowStageSurvivorScaleReference            = 1000
-	bulkSimMediumStageSurvivorScaleReference         = 100
-	bulkSimProgressThrottle                          = 100 * time.Millisecond
+	BulkSimDefaultTopResults                           = 5
+	BulkSimMinCombinations                             = 20
+	BulkSimCullingCoefficient                          = 1.35
+	bulkSimLowStageConcurrencyFactor                   = 2
+	BulkSimCombinationLogMin                   float64 = 10
+	BulkSimMaxAdaptivePasses                           = 2
+	BulkSimAdaptiveMaxIterationMultiplier              = 4
+	BulkSimFinalistMaxExtraIterationMultiplier         = 3 // The extra iterations the finalist stage may add per finalist
+	BulkSimSurvivorSoftCapMultiplier                   = 2
+	BulkSimLowStageSurvivorScaleReference              = 1000
+	BulkSimMediumStageSurvivorScaleReference           = 100
+	BulkSimProgressThrottle                            = 100 * time.Millisecond // Minimum interval between progress emits
 )
 
 type BulkSimCandidate struct {
@@ -85,14 +86,14 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 
 	topResults := int(request.TopResults)
 	if topResults <= 0 {
-		topResults = bulkSimDefaultTopResults
+		topResults = BulkSimDefaultTopResults
 	}
 
 	result := &proto.BulkSimResult{
 		Timings:             &proto.BulkSimTimings{},
 		OptimizedCandidates: request.GetOptimizedCandidates(),
 	}
-	baselineGear := getBulkSimBaselineGear(request)
+	baselineGear := GetBulkSimBaselineGear(request)
 
 	if len(candidates) == 0 {
 		baselineResult := runSingleBulkSim(request, BulkSimCandidate{Index: -1, Gear: baselineGear}, request.BaseRequest.SimOptions.Iterations, signals)
@@ -120,7 +121,7 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 	// gear set wins.
 	originalCandidateCount := len(candidates)
 
-	for _, stageConfig := range bulkSimStageConfigs {
+	for _, stageConfig := range BulkSimStageConfigs {
 		if signals.Abort.IsTriggered() {
 			result.Error = bulkSimAbortedError()
 			return result
@@ -177,9 +178,36 @@ func runBulkSim(request *proto.BulkSimRequest, progress chan *proto.ProgressMetr
 		latestResults = []*BulkSimCandidateResult{}
 	}
 
+	// Finalist refinement: add lockstep iterations to the displayed top results until their
+	// ranking is statistically separated (or the budget runs out), so near-ties do not flip
+	// order between runs with different seeds.
+	var finalistMetrics *proto.BulkSimStageMetrics
+	latestBaseline, latestResults, finalistMetrics = runBulkSimFinalistStage(request, latestBaseline, latestResults, topResults, progress, signals)
+	if finalistMetrics != nil {
+		result.StageMetrics = append(result.StageMetrics, finalistMetrics)
+		setBulkSimStageTiming(result.Timings, proto.BulkSimStage_BulkSimStageFinalist, finalistMetrics.DurationSeconds)
+	}
+	if signals.Abort.IsTriggered() {
+		result.Error = bulkSimAbortedError()
+		return result
+	}
+
 	result.Baseline = bulkSimCandidateResultToProto(latestBaseline)
-	for _, candidateResult := range topBulkSimResults(latestResults, topResults) {
-		result.TopResults = append(result.TopResults, bulkSimCandidateResultToProto(candidateResult))
+	top := topBulkSimResults(latestResults, topResults)
+	for idx, candidateResult := range top {
+		protoResult := bulkSimCandidateResultToProto(candidateResult)
+		// Paired errors for the ranking display: candidates share seed sequences, so the
+		// uncertainty of a DPS *difference* is the paired standard error - far tighter than
+		// what the per-result stdev suggests. Computed here, before AllValues are stripped.
+		if idx+1 < len(top) {
+			if pairedError, ok := bulkSimPairedDpsError(top[idx+1].DpsMetrics, candidateResult.DpsMetrics); ok {
+				protoResult.PairedErrorToNextResult = pairedError
+			}
+		}
+		if pairedError, ok := bulkSimPairedDpsError(candidateResult.DpsMetrics, latestBaseline.DpsMetrics); ok {
+			protoResult.PairedErrorToBaseline = pairedError
+		}
+		result.TopResults = append(result.TopResults, protoResult)
 	}
 
 	result.Timings.SimmingSeconds = time.Since(simmingStartedAt).Seconds()
@@ -226,7 +254,8 @@ func getBulkSimPlayer(raid *proto.Raid) (*proto.Player, string) {
 	return player, ""
 }
 
-func getBulkSimBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec {
+// GetBulkSimBaselineGear returns the raid's single bulk player's equipment, or nil.
+func GetBulkSimBaselineGear(request *proto.BulkSimRequest) *proto.EquipmentSpec {
 	player, _ := getBulkSimPlayer(request.GetBaseRequest().GetRaid())
 	if player == nil {
 		return nil

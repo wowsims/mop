@@ -41,13 +41,14 @@ func runHiGHSLP(lpString string, numVars int, timeout time.Duration, mipRelGap f
 		return nil, 0, fmt.Errorf("HiGHS JavaScript solve failed: %s", highsSolution.Error)
 	}
 
+	// The npm highs wrapper only exposes string statuses, so match them case-insensitively.
 	var modelStatus int32
 	switch {
-	case highsSolution.Status == "Optimal":
+	case strings.EqualFold(highsSolution.Status, "Optimal"):
 		modelStatus = highsModelStatusOptimal
 	case strings.EqualFold(highsSolution.Status, "Time limit reached"):
 		modelStatus = highsModelStatusTimeLimit
-	case highsSolution.Status == "Infeasible":
+	case strings.EqualFold(highsSolution.Status, "Infeasible"):
 		return nil, highsModelStatusInfeasible, nil
 	default:
 		return nil, 0, nil

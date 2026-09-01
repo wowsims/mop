@@ -1,29 +1,29 @@
 import type { Player } from '../../../player';
-import { ReforgeOptimizer } from '../../suggest_reforges_action';
-import { ReforgeGearCache } from '../../../reforge_cache';
+import { getClassWeaponTypes, isSpecDualWieldCapable } from '../../../player_classes/capabilities';
 import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../../proto/api';
-import { Class, Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../../../proto/common';
+import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '../../../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../../proto/db';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../../../proto/ui';
 import { Database } from '../../../proto_utils/database';
 import { EquippedItem } from '../../../proto_utils/equipped_item';
 import { Gear } from '../../../proto_utils/gear';
-import { getGearKeyFromSpec } from '../../../proto_utils/utils';
-import { isSpecDualWieldCapable } from '../../../player_classes/capabilities';
+import { getGearIdentityKey, getReforgeCacheGearKey } from '../../../proto_utils/utils';
+import { ReforgeGearCache } from '../../../reforge_cache';
 import { sleep } from '../../../utils';
-import { OptimisationStage, STAGE_CONFIG } from './types';
+import { ReforgeOptimizer } from '../../suggest_reforges_action';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
 	BulkSimItemSlot,
 	ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT,
 } from './constants_auto_gen';
+import { OptimisationStage } from './types';
 
 export { BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS };
 
 const BULK_CACHE_LOOKUP_BATCH_SIZE = 2000;
-const BULK_CACHE_PROGRESS_CHECK_MODULO = 64;
-const BULK_CACHE_YIELD_BUDGET_MS = 16;
+export const BULK_CACHE_PROGRESS_CHECK_MODULO = 64;
+export const BULK_CACHE_YIELD_BUDGET_MS = 16;
 
 export const getBulkItemSlotFromSlot = (slot: ItemSlot, canDualWield: boolean): BulkSimItemSlot => {
 	if (canDualWield && [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand].includes(slot)) {
@@ -33,9 +33,12 @@ export const getBulkItemSlotFromSlot = (slot: ItemSlot, canDualWield: boolean): 
 };
 
 export const getBulkPlayerCanDualWield = (player: Player<any>): boolean => {
-	// Hunters are intentionally excluded from bulk dual-wield grouping to match backend behavior.
-	return isSpecDualWieldCapable(player.getSpec()) && player.getClass() !== Class.ClassHunter;
+	// A class with no melee weapon capabilities (hunters) gets no dual-wield grouping either -
+	// the backend rejects its melee candidates through the same weapon table.
+	return isSpecDualWieldCapable(player.getSpec()) && getClassWeaponTypes(player.getClass()).length > 0;
 };
+
+const TWO_HAND_ONLY_WEAPON_TYPES: WeaponType[] = [WeaponType.WeaponTypePolearm, WeaponType.WeaponTypeStaff];
 
 export const getBulkFreezeWeaponTypes = (player: Player<any>, slot: ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand): WeaponType[] => {
 	const playerCanDualWield = getBulkPlayerCanDualWield(player);
@@ -44,7 +47,10 @@ export const getBulkFreezeWeaponTypes = (player: Player<any>, slot: ItemSlot.Ite
 		new Set(
 			player
 				.getPlayerClass()
-				.weaponTypes.filter(eligibleWeaponType => slot === ItemSlot.ItemSlotMainHand || (playerCanDualWield && !eligibleWeaponType.canUseTwoHand))
+				.weaponTypes.filter(
+					eligibleWeaponType =>
+						slot === ItemSlot.ItemSlotMainHand || (playerCanDualWield && !TWO_HAND_ONLY_WEAPON_TYPES.includes(eligibleWeaponType.weaponType)),
+				)
 				.map(eligibleWeaponType => eligibleWeaponType.weaponType),
 		),
 	);
@@ -59,13 +65,13 @@ export const cleanBulkDpsMetrics = (dpsMetrics: DistributionMetrics): Distributi
 export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []): Gear[] => {
 	const seenGearKeys = new Set<string>();
 	for (let i = 0; i < existingGearSets.length; i++) {
-		seenGearKeys.add(getGearKeyFromSpec(existingGearSets[i].asSpec()));
+		seenGearKeys.add(getGearIdentityKey(existingGearSets[i].asSpec()));
 	}
 
 	const deduped: Gear[] = [];
 	for (let i = 0; i < gearSets.length; i++) {
 		const gear = gearSets[i];
-		const gearKey = getGearKeyFromSpec(gear.asSpec());
+		const gearKey = getGearIdentityKey(gear.asSpec());
 		if (seenGearKeys.has(gearKey)) {
 			continue;
 		}
@@ -76,15 +82,7 @@ export const dedupeGearSets = (gearSets: Gear[], existingGearSets: Gear[] = []):
 	return deduped;
 };
 
-export const shouldRunOptimisationStage = (stage: OptimisationStage, candidateCount: number): boolean => {
-	const maxSurvivors = STAGE_CONFIG[stage].maxSurvivors;
-	return maxSurvivors === undefined || candidateCount > maxSurvivors;
-};
-
-export const getOptimisationStageMinIterations = (stage: OptimisationStage, highStageIterations: number): number =>
-	STAGE_CONFIG[stage].minIterations ?? highStageIterations;
-
-export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | 'reforging' | null => {
+export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): OptimisationStage | 'reforging' | 'finalist' | null => {
 	switch (stage) {
 		case BulkSimStage.BulkSimStageReforge:
 			return 'reforging';
@@ -94,6 +92,8 @@ export const bulkSimStageToOptimisationStage = (stage: BulkSimStage): Optimisati
 			return 'medium';
 		case BulkSimStage.BulkSimStageHigh:
 			return 'high';
+		case BulkSimStage.BulkSimStageFinalist:
+			return 'finalist';
 		default:
 			return null;
 	}
@@ -107,9 +107,7 @@ export const getCoreBulkSimTrackingMetrics = (result: BulkSimResult): Record<str
 	for (const stage of result.stageMetrics) {
 		const stageName = bulkSimStageToOptimisationStage(stage.stage);
 		if (!stageName) continue;
-		metrics[`${stageName}_skipped`] = 0;
 		metrics[`${stageName}_input_gear_sets`] = stage.inputGearSets;
-		metrics[`${stageName}_results`] = stage.survivors;
 		metrics[`${stageName}_survivors`] = stage.survivors;
 		metrics[`${stageName}_iterations`] = stage.iterations;
 		metrics[`${stageName}_target_error_pct`] = stage.targetErrorPct;
@@ -186,9 +184,7 @@ export const makeBulkGearDatabase = (db: Database, gearSets: Gear[], extraItems:
 };
 
 export const makeBulkItemDatabaseFromSpecs = (db: Database, baselineGear: Gear, itemSpecs: readonly ItemSpec[]): SimDatabase => {
-	const extraItems = itemSpecs
-		.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null))
-		.filter((item): item is EquippedItem => item != null);
+	const extraItems = itemSpecs.map(itemSpec => (itemSpec ? db.lookupItemSpec(itemSpec) : null)).filter((item): item is EquippedItem => item != null);
 	return makeBulkGearDatabase(db, [baselineGear], extraItems);
 };
 
@@ -310,9 +306,9 @@ export async function getBulkSimReforgeCacheData({
 	for (let i = 0; i < totalCandidates; i++) {
 		throwIfAborted(signal);
 		const spec = candidateSpecs?.[i] ?? gearSets![i].asSpec();
-		const gearKey = candidateGearKeys?.[i] ?? getGearKeyFromSpec(gearSets![i].asSpec(), frozenItemSlots);
+		const gearKey = candidateGearKeys?.[i] ?? getReforgeCacheGearKey(spec, frozenItemSlots);
 		const candidateIndex = candidateIndices?.[i] ?? i;
-		const cacheKey = await ReforgeGearCache.getKey(gearKey, configHash);
+		const cacheKey = ReforgeGearCache.getKey(gearKey, configHash);
 		pendingEntries.push({ index: candidateIndex, spec, cacheKey });
 
 		if (pendingEntries.length >= BULK_CACHE_LOOKUP_BATCH_SIZE || i + 1 === totalCandidates) {

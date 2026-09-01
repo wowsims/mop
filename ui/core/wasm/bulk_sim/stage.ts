@@ -3,44 +3,42 @@ import { SimSignals } from '../../sim_signal_manager';
 import { isDevMode } from '../../utils';
 import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
 import { BulkSimCandidateTransport, runBulkSimCandidateBatchOnWorkers, runSingleBulkSimCandidate } from './batch';
-import { ConcurrentBulkSimStageCarryOver, bulkSimCarriedResults, bulkSimCarryOverCovers } from './carry_over';
+import { bulkSimCarriedResults, bulkSimCarryOverCovers, ConcurrentBulkSimStageCarryOver } from './carry_over';
 import {
 	BULK_SIM_ADAPTIVE_MAX_ITERATION_MULTIPLIER,
-	BULK_SIM_CULLING_COEFFICIENT,
+	BULK_SIM_FINALIST_MAX_EXTRA_ITERATION_MULTIPLIER,
 	BULK_SIM_LOW_STAGE_SURVIVOR_SCALE_REFERENCE,
 	BULK_SIM_MAX_ADAPTIVE_PASSES,
 	BULK_SIM_MEDIUM_STAGE_SURVIVOR_SCALE_REFERENCE,
 	BULK_SIM_MIN_COMBINATIONS,
-} from './constants';
-import { getBulkSimBaselineGear } from './index';
-import { hasBulkSimStageError, mergeBulkSimCandidateResultSlices, mergeBulkSimCandidateResults } from './merge';
-import { BulkSimStageProgressEmitter, bulkSimStageLogName, formatBulkSimStageStart, makeBulkSimStageProgressEmitter } from './progress';
-import { bulkSimObservedStageErrorPct, getBulkSimStageTargetIterations, getBulkSimTargetIterations, topBulkSimResults } from './statistics';
-import { ConcurrentBulkSimCandidate, ConcurrentBulkSimCandidateResult, ConcurrentBulkSimStageConfig, ConcurrentBulkSimStageResult } from './types';
+	BULK_SIM_STAGE_CONFIGS,
+} from './constants_auto_gen';
+import { hasBulkSimStageError, mergeBulkSimCandidateResults, mergeBulkSimCandidateResultSlices } from './merge';
+import {
+	bulkSimStageLogName,
+	BulkSimStageProgressEmitter,
+	formatBulkSimStageStart,
+	formatBulkSimStageSummary,
+	makeBulkSimStageProgressEmitter,
+} from './progress';
+import {
+	bulkSimObservedStageErrorPct,
+	bulkSimUnresolvedFinalistPair,
+	getBulkSimStageTargetIterations,
+	getBulkSimTargetIterations,
+	topBulkSimResults,
+} from './statistics';
+import {
+	ConcurrentBulkSimCandidate,
+	ConcurrentBulkSimCandidateResult,
+	ConcurrentBulkSimStageConfig,
+	ConcurrentBulkSimStageResult,
+	getBulkSimBaselineGear,
+} from './types';
 
-export const bulkSimStageConfigs: ConcurrentBulkSimStageConfig[] = [
-	{
-		stage: BulkSimStage.BulkSimStageLow,
-		minIterations: 100,
-		targetErrorPct: 1,
-		minSurvivors: 20,
-		maxSurvivors: 100,
-		cullingCoefficient: BULK_SIM_CULLING_COEFFICIENT,
-	},
-	{
-		stage: BulkSimStage.BulkSimStageMedium,
-		minIterations: 1000,
-		targetErrorPct: 0.2,
-		minSurvivors: 5,
-		maxSurvivors: 25,
-		cullingCoefficient: BULK_SIM_CULLING_COEFFICIENT,
-	},
-	{
-		stage: BulkSimStage.BulkSimStageHigh,
-		minIterations: 1000,
-		targetErrorPct: 0.05,
-	},
-];
+export const bulkSimStageConfigs: ConcurrentBulkSimStageConfig[] = BULK_SIM_STAGE_CONFIGS;
+
+export const bulkSimFinalistStageConfig: ConcurrentBulkSimStageConfig = { stage: BulkSimStage.BulkSimStageFinalist, targetErrorPct: 0 };
 
 // Scales the survivor cap for large candidate sets, mirroring
 // getBulkSimStageMaxSurvivors in sim/core/bulk/stage.go. Returns undefined for
@@ -240,7 +238,7 @@ const buildBulkSimStageMetrics = (
 		targetErrorPct: config.targetErrorPct,
 		observedErrorPct: bulkSimObservedStageErrorPct(baseline, results, iterations, candidates.length),
 		baselineAvgDps: baseline.dpsMetrics?.avg ?? 0,
-		bestCandidateAvgDps: topBulkSimResults(results, 1)[0]?.dpsMetrics?.avg ?? 0,
+		bestCandidateAvgDps: results.reduce((best, result) => Math.max(best, result.dpsMetrics?.avg ?? 0), 0),
 	});
 
 // Iterations already simmed by the previous stage are carried over instead of being
@@ -346,7 +344,17 @@ export const runConcurrentBulkSimStage = async (
 		iterations,
 	);
 	baseline = adaptedStage.baseline;
-	results.splice(0, results.length, ...adaptedStage.results);
+	// Only a rerun produces a fresh array; every other path returns the one passed in, so
+	// the common case would copy every element onto itself. Replace in place (the callers
+	// below hold this reference) by assignment rather than a spread: the low stage runs on
+	// the full candidate list, and one argument per candidate throws RangeError past the
+	// engine's argument limit.
+	if (adaptedStage.results !== results) {
+		for (let i = 0; i < adaptedStage.results.length; i++) {
+			results[i] = adaptedStage.results[i];
+		}
+		results.length = adaptedStage.results.length;
+	}
 	if (baseline.error) {
 		return { ...bulkSimStageError(config, baseline, adaptedStage.iterations), results };
 	}
@@ -357,4 +365,69 @@ export const runConcurrentBulkSimStage = async (
 		iterations: adaptedStage.iterations,
 		metrics: buildBulkSimStageMetrics(config, candidates, results, baseline, adaptedStage.iterations, concurrency, startedAt),
 	};
+};
+
+// Mirrors runBulkSimFinalistStage in sim/core/bulk/stage.go: adds lockstep iterations to the
+// displayed top results (and the baseline) until every adjacent pair of the final ranking is
+// statistically separated or the extra-iteration budget is spent, so near-ties do not flip
+// order between runs with different seeds. When the stage runs, the returned results are the
+// refined, DPS-sorted finalists - they ARE the displayed set.
+export const runConcurrentBulkSimFinalistStage = async (
+	request: BulkSimRequest,
+	baseline: ConcurrentBulkSimCandidateResult,
+	results: ConcurrentBulkSimCandidateResult[],
+	topResults: number,
+	workerPool: WorkerPool,
+	onProgress: WorkerProgressCallback,
+	signals: SimSignals,
+): Promise<{ baseline: ConcurrentBulkSimCandidateResult; results: ConcurrentBulkSimCandidateResult[]; metrics?: BulkSimStageMetrics }> => {
+	let finalists = topBulkSimResults(results, topResults);
+	if (finalists.length < 2 || !baseline.dpsMetrics) return { baseline, results };
+
+	// Total iterations run so far comes from the paired value arrays themselves, which also
+	// makes the lockstep precondition explicit: every finalist and the baseline must carry
+	// the same number of per-iteration values or pairing (and this stage) cannot help.
+	const iterations = baseline.dpsMetrics.allValues.length;
+	if (iterations === 0 || finalists.some(finalist => (finalist.dpsMetrics?.allValues.length ?? 0) !== iterations)) {
+		return { baseline, results };
+	}
+	if (!bulkSimUnresolvedFinalistPair(finalists)) return { baseline, results };
+
+	const startedAt = new Date().getTime();
+	const config = bulkSimFinalistStageConfig;
+	const candidates = finalists.map(finalist => finalist.candidate);
+	const concurrency = Math.min(workerPool.getNumWorkers(), candidates.length);
+	if (isDevMode()) {
+		console.log(`[Bulk Sim] - Stage: ${bulkSimStageLogName(config.stage)} - Started finalists=${finalists.length} iterations=${iterations}`);
+	}
+
+	const extraBudget = iterations * BULK_SIM_FINALIST_MAX_EXTRA_ITERATION_MULTIPLIER;
+	let extraUsed = 0;
+	while (extraUsed < extraBudget && bulkSimUnresolvedFinalistPair(finalists)) {
+		if (signals.abort.isTriggered() || hasBulkSimStageError(baseline, finalists)) break;
+		// Double the sample each round: the paired error shrinks with sqrt(n), so smaller
+		// steps mostly re-discover that the pair is still unresolved.
+		const additionalIterations = Math.min(iterations + extraUsed, extraBudget - extraUsed);
+		const rerunResult = await rerunConcurrentBulkSimStageAdditionalIterations(
+			request,
+			candidates,
+			config,
+			workerPool,
+			onProgress,
+			signals,
+			baseline,
+			finalists,
+			iterations + extraUsed,
+			additionalIterations,
+		);
+		baseline = rerunResult.baseline;
+		finalists = topBulkSimResults(rerunResult.results, rerunResult.results.length);
+		extraUsed += additionalIterations;
+	}
+
+	const metrics = buildBulkSimStageMetrics(config, candidates, finalists, baseline, iterations + extraUsed, concurrency, startedAt);
+	if (isDevMode()) {
+		console.log(`[Bulk Sim] ${formatBulkSimStageSummary('Finished', metrics, finalists.length)}`);
+	}
+	return { baseline, results: finalists, metrics };
 };

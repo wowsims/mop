@@ -53,6 +53,39 @@ func TestRunHiGHSLPWASM(t *testing.T) {
 	}
 }
 
+// TestHiGHSWasmStackDoesNotGrowAcrossSolves pins the stackAlloc bracketing in runHiGHSLP. The C
+// strings each solve passes to the Highs_* entry points are allocated on emscripten's stack and
+// never freed, so a runtime coming back out of the pool must have the same stack pointer it went
+// in with; otherwise a long-lived pool overflows its stack after enough solves.
+func TestHiGHSWasmStackDoesNotGrowAcrossSolves(t *testing.T) {
+	// Prime the pool so the loop below reuses one runtime rather than instantiating new ones.
+	if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second, 0); err != nil {
+		t.Fatalf("runHiGHSLP warmup returned error: %v", err)
+	}
+
+	pooledStackPointer := func() int32 {
+		t.Helper()
+		runtime := <-highsWasmRuntimePool
+		defer func() { highsWasmRuntimePool <- runtime }()
+		stackPointer, err := callI32(runtime.ctx, runtime.stackSave)
+		if err != nil {
+			t.Fatalf("reading HiGHS wasm stack pointer: %v", err)
+		}
+		return stackPointer
+	}
+
+	before := pooledStackPointer()
+	for range 20 {
+		if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second, 0); err != nil {
+			t.Fatalf("runHiGHSLP returned error: %v", err)
+		}
+	}
+	if after := pooledStackPointer(); after != before {
+		t.Errorf("HiGHS wasm stack pointer moved %d bytes over 20 solves (%d -> %d); each solve is leaking its stackAlloc'd strings",
+			before-after, before, after)
+	}
+}
+
 func BenchmarkRunHiGHSLPWASM(b *testing.B) {
 	b.ReportAllocs()
 	if _, _, err := runHiGHSLP(tinyHiGHSWasmLP, 2, 5*time.Second, 0); err != nil {

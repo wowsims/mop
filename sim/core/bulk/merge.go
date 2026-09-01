@@ -96,8 +96,11 @@ func bulkSimCandidateResultToProto(result *BulkSimCandidateResult) *proto.BulkGe
 	}
 	dpsMetrics := result.DpsMetrics
 	if dpsMetrics != nil && len(dpsMetrics.AllValues) > 0 {
-		dpsMetrics = googleProto.Clone(dpsMetrics).(*proto.DistributionMetrics)
+		allValues := dpsMetrics.AllValues
 		dpsMetrics.AllValues = nil
+		clone := googleProto.Clone(dpsMetrics).(*proto.DistributionMetrics)
+		dpsMetrics.AllValues = allValues
+		dpsMetrics = clone
 	}
 	return &proto.BulkGearResult{
 		CandidateIndex: result.Candidate.Index,

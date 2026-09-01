@@ -17,25 +17,25 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 	for _, bulkSlot := range []BulkSimItemSlot{BulkSimItemSlotMainHand, BulkSimItemSlotHandWeapon} {
 		options := generator.selectedByBulkSlot[bulkSlot]
 		for _, option := range options {
-			if (option.item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeUnknown && option.item.RangedWeaponType != proto.RangedWeaponType_RangedWeaponTypeWand) || option.item.HandType == proto.HandType_HandTypeTwoHand {
+			if occupiesBothHands(&option.item) || option.item.HandType == proto.HandType_HandTypeTwoHand {
 				all2HWeapons = append(all2HWeapons, option)
 			}
 		}
 	}
-	if generator.playerIsFuryWarrior {
+	if generator.playerCanDualWield2H {
 		for i := range all2HWeapons {
-			if optionsContainEquivalent(all2HWeapons[:i], all2HWeapons[i], generator.inheritUpgrades) {
+			if optionsContainEquivalent(all2HWeapons[:i], &all2HWeapons[i], generator.inheritUpgrades) {
 				continue
 			}
 			allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&all2HWeapons[i], nil})
 			for j := i + 1; j < len(all2HWeapons); j++ {
-				if optionsContainEquivalent(all2HWeapons[i+1:j], all2HWeapons[j], generator.inheritUpgrades) {
+				if optionsContainEquivalent(all2HWeapons[i+1:j], &all2HWeapons[j], generator.inheritUpgrades) {
 					continue
 				}
-				allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&all2HWeapons[i], &all2HWeapons[j]})
-				if !candidateOptionsEqual(all2HWeapons[i], all2HWeapons[j], generator.inheritUpgrades) {
-					allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&all2HWeapons[j], &all2HWeapons[i]})
+				if occupiesBothHands(&all2HWeapons[i].item) || occupiesBothHands(&all2HWeapons[j].item) {
+					continue
 				}
+				allWeaponCombos = generator.appendWearableOrders(allWeaponCombos, &all2HWeapons[i], &all2HWeapons[j])
 			}
 		}
 	} else {
@@ -47,7 +47,7 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 	ohOptions := generator.selectedByBulkSlot[BulkSimItemSlotOffHand]
 	if len(mhOptions) > 0 {
 		for i := range mhOptions {
-			if optionsContainEquivalent(all2HWeapons, mhOptions[i], generator.inheritUpgrades) {
+			if optionsContainEquivalent(all2HWeapons, &mhOptions[i], generator.inheritUpgrades) {
 				continue
 			}
 			if len(ohOptions) > 0 {
@@ -65,30 +65,32 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 	}
 	oneHandOptions := generator.selectedByBulkSlot[BulkSimItemSlotHandWeapon]
 	if len(oneHandOptions) > 0 {
+		// Everything that fills both hands is in all2HWeapons by construction, so dropping the
+		// options equivalent to one of those also drops every ranged weapon here.
 		filtered := make([]bulkSimCandidateOption, 0, len(oneHandOptions))
 		for _, option := range oneHandOptions {
-			if optionsContainEquivalent(all2HWeapons, option, generator.inheritUpgrades) {
+			if optionsContainEquivalent(all2HWeapons, &option, generator.inheritUpgrades) {
 				continue
 			}
 			filtered = append(filtered, option)
 		}
 		for i := range filtered {
-			if optionsContainEquivalent(filtered[:i], filtered[i], generator.inheritUpgrades) {
+			if optionsContainEquivalent(filtered[:i], &filtered[i], generator.inheritUpgrades) {
 				continue
 			}
 			// Only wield the same 1H weapon in both hands when at least two copies exist.
 			copyCount := generator.weaponCopyCounts[buildItemSpecKey(filtered[i].spec, generator.inheritUpgrades)]
-			if filtered[i].item.WeaponType != proto.WeaponType_WeaponTypeUnknown && copyCount >= 2 {
-				allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&filtered[i], &filtered[i]})
+			if copyCount >= 2 && itemCanBeDoubled(&filtered[i].item) {
+				allWeaponCombos = generator.appendWearablePair(allWeaponCombos, &filtered[i], &filtered[i])
 			}
 			for j := i + 1; j < len(filtered); j++ {
-				if optionsContainEquivalent(filtered[i+1:j], filtered[j], generator.inheritUpgrades) {
+				if optionsContainEquivalent(filtered[i+1:j], &filtered[j], generator.inheritUpgrades) {
 					continue
 				}
-				allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&filtered[i], &filtered[j]})
-				if !candidateOptionsEqual(filtered[i], filtered[j], generator.inheritUpgrades) {
-					allWeaponCombos = append(allWeaponCombos, [2]*bulkSimCandidateOption{&filtered[j], &filtered[i]})
+				if !pairIsEquippable(&filtered[i].item, &filtered[j].item) {
+					continue
 				}
+				allWeaponCombos = generator.appendWearableOrders(allWeaponCombos, &filtered[i], &filtered[j])
 			}
 		}
 	}
@@ -104,8 +106,27 @@ func (generator *bulkSimCandidateGenerator) getAllWeaponCombos() [][2]*bulkSimCa
 	return generator.weaponCombosCached
 }
 
+// The hand bucket holds anything wieldable in either hand, so a mainhand-only weapon still has to
+// be kept out of the offhand and vice versa.
+func (generator *bulkSimCandidateGenerator) appendWearablePair(combos [][2]*bulkSimCandidateOption, mhItem *bulkSimCandidateOption, ohItem *bulkSimCandidateOption) [][2]*bulkSimCandidateOption {
+	if canWearWeaponInHand(&mhItem.item, generator.playerClass, generator.playerSpec, proto.ItemSlot_ItemSlotMainHand) &&
+		canWearWeaponInHand(&ohItem.item, generator.playerClass, generator.playerSpec, proto.ItemSlot_ItemSlotOffHand) {
+		combos = append(combos, [2]*bulkSimCandidateOption{mhItem, ohItem})
+	}
+	return combos
+}
+
+// Both hand orders of a pair, minus the mirror image when the two options are the same item.
+func (generator *bulkSimCandidateGenerator) appendWearableOrders(combos [][2]*bulkSimCandidateOption, first *bulkSimCandidateOption, second *bulkSimCandidateOption) [][2]*bulkSimCandidateOption {
+	combos = generator.appendWearablePair(combos, first, second)
+	if candidateOptionsEqual(first, second, generator.inheritUpgrades) {
+		return combos
+	}
+	return generator.appendWearablePair(combos, second, first)
+}
+
 func (generator *bulkSimCandidateGenerator) weaponComboMatchesSettings(mhItem *bulkSimCandidateOption, ohItem *bulkSimCandidateOption) bool {
-	frozenWeaponItem := generator.getFrozenWeaponItem()
+	frozenWeaponItem := generator.frozenWeaponItem
 	if generator.frozenWeaponSlot == proto.ItemSlot_ItemSlotMainHand && frozenWeaponItem != nil && !candidateOptionEqualsItemPtr(mhItem, frozenWeaponItem, generator.inheritUpgrades) {
 		return false
 	}

@@ -42,6 +42,7 @@ func init() {
 			ItemEffects:      item.ItemEffects,
 			Unique:           item.Unique,
 			LimitCategory:    item.LimitCategory,
+			EotbGemSocket:    item.EotbGemSocket,
 		}
 	}
 

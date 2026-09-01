@@ -1,6 +1,7 @@
 package main
 
 import (
+	"slices"
 	"sync"
 	"sync/atomic"
 
@@ -59,23 +60,39 @@ func (p *asyncProgress) appendPendingOptimizedCandidates(candidates []*proto.Bul
 	}
 }
 
-func (p *asyncProgress) takePendingOptimizedCandidates() []*proto.BulkGearCandidate {
+// Snapshot of the buffered candidates, still queued. They are only marked delivered once
+// the response carrying them has actually been written, so a marshal or write failure
+// leaves them for the next poll instead of dropping them: the final result filters out
+// everything already handed over, so a candidate lost here is never sent at all and the
+// frontend never writes its reforge-cache entry.
+func (p *asyncProgress) peekPendingOptimizedCandidates() []*proto.BulkGearCandidate {
 	p.pendingMu.Lock()
 	defer p.pendingMu.Unlock()
-	if len(p.pendingOptimizedCandidates) == 0 {
-		return nil
+	return slices.Clone(p.pendingOptimizedCandidates)
+}
+
+func (p *asyncProgress) markOptimizedCandidatesDelivered(delivered []*proto.BulkGearCandidate) {
+	if len(delivered) == 0 {
+		return
 	}
 
-	pending := p.pendingOptimizedCandidates
-	for _, candidate := range pending {
+	p.pendingMu.Lock()
+	defer p.pendingMu.Unlock()
+	for _, candidate := range delivered {
 		if candidate == nil {
 			continue
 		}
 		p.deliveredCandidateIndices[candidate.Index] = struct{}{}
+		delete(p.pendingCandidateIndices, candidate.Index)
 	}
-	p.pendingOptimizedCandidates = nil
-	p.pendingCandidateIndices = make(map[int32]struct{})
-	return pending
+	// More may have been appended while the response was being written, so drop exactly
+	// the delivered ones rather than clearing the queue. Testing the delivered set is the
+	// same test as "was in this batch": appendPendingOptimizedCandidates never queues an
+	// index that is already delivered, so nothing else in the queue can match.
+	p.pendingOptimizedCandidates = slices.DeleteFunc(p.pendingOptimizedCandidates, func(candidate *proto.BulkGearCandidate) bool {
+		_, ok := p.deliveredCandidateIndices[candidate.Index]
+		return ok
+	})
 }
 
 func (p *asyncProgress) filterUndeliveredOptimizedCandidates(candidates []*proto.BulkGearCandidate) []*proto.BulkGearCandidate {

@@ -845,6 +845,7 @@
 			"low_iteration_rounds": "Exécution des tours à faible itération",
 			"medium_iteration_rounds": "Exécution des tours à itération moyenne",
 			"high_iteration_rounds": "Exécution des tours à forte itération",
+			"finalist_iteration_rounds": "Exécution des manches de départage des finalistes",
             "iterations_complete": "{{completed}} / {{total}}<br />itérations terminées",
 			"seconds_remaining": "{{seconds}} secondes restantes",
 			"time_remaining": "Il reste {{time}}"
@@ -866,7 +867,9 @@
             "run_simulation": "Exécutez une simulation pour voir les résultats",
             "equip_button": "Équiper",
             "gear_equipped": "Équipement du lot équipé !",
-            "current_gear": "Équipement actuel"
+            "current_gear": "Équipement actuel",
+            "margin_of_error": "Intervalle de confiance à 95 % du DPS moyen. Les classements plus proches que cet écart peuvent changer d'une simulation à l'autre.",
+            "tied_group": "Statistiquement à égalité — l'ordre au sein de ce groupe peut changer d'une simulation à l'autre."
         },
         "import_modal": {
             "title": "Importation d'objets de sac",
@@ -1234,6 +1237,10 @@
 				"boss_spell_known": {
 					"label": "Sort de boss connu",
 					"tooltip": "<b>Vrai</b> si la cible possède actuellement le sort spécifié, sinon <b>Faux</b>."
+				},
+				"boss_spell_cast_time_remaining": {
+					"label": "Temps restant du sort du boss",
+					"tooltip": "Temps restant sur le sort actuellement lancé par le boss, ou 0 s'il n'est pas en train de le lancer."
 				},
 				"unit_is_moving": {
 					"label": "Unité en mouvement",
@@ -2522,5 +2529,31 @@
 		"training_dummy": "Mannequin d'entraînement",
 		"seek_back": "Reculer {{time}}s",
 		"seek_fwd": "Avancer {{time}}s"
+	},
+	"fire_mage": {
+		"combustion_thresholds": {
+			"button": "Calculer les seuils de Combustion",
+			"progress_title": "Calcul des seuils de Combustion",
+			"progress_warning": "Le calcul des seuils de Combustion peut prendre du temps.",
+			"progress_cancel_hint": "Vous pouvez annuler cette opération à tout moment avec le bouton ci-dessous.",
+			"modal_title": "Seuils de Combustion",
+			"calculating": "Calcul des seuils",
+			"parsing_logs": "Analyse des journaux",
+			"table": {
+				"threshold": "Seuil",
+				"current": "Actuel",
+				"new": "Nouveau"
+			},
+			"categories": {
+				"always_send": "Seuil de Combustion - Toujours lancer",
+				"bloodlust": "Seuil de Combustion - Furie sanguinaire",
+				"alter_time": "Seuil de Combustion - Alteration du temps",
+				"no_cds": "Seuil de Combustion - Sans CDs",
+				"end_of_combat": "Seuil de Combustion - Fin de combat"
+			},
+			"close": "Fermer",
+			"update": "Mettre à jour les seuils",
+			"updated_toast": "Les seuils de Combustion ont été mis à jour"
+		}
 	}
 }

@@ -15,6 +15,10 @@ export class WorkerInterface {
 		this.handlers = handlers;
 
 		addEventListener('message', async ({ data }: MessageEvent<WorkerReceiveMessage>) => {
+			// Handled by the wasm boot listener in sim_worker.ts, not by the request API.
+			if (data.msg === 'wasmModule') {
+				return;
+			}
 			const { id, msg, inputData } = data;
 
 			if (msg === 'setID') {

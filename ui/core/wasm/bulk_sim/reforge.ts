@@ -1,9 +1,11 @@
+import { queue } from 'async';
+
 import { BulkGearCandidate, BulkSimRequest, BulkSimStage, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '../../proto/api';
 import { EquipmentSpec } from '../../proto/common';
 import { SimSignals } from '../../sim_signal_manager';
+import { formatDurationSeconds } from '../../utils';
 import { WorkerPool, WorkerProgressCallback } from '../../worker_pool';
 import { optimizeReforgeGear, reforgeGearKey } from '../reforge_optimizer';
-import { queue } from 'async';
 import { makeBulkSimStageProgressEmitter } from './progress';
 import { BulkSimReforgeCandidateTask } from './types';
 
@@ -20,15 +22,10 @@ export const optimizeReforgeCandidates = async (
 	}
 
 	const candidates = request.candidates.filter(candidate => candidate.gear);
-	const optimizedCandidates: BulkGearCandidate[] = request.optimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate));
+	const optimizedCandidates: BulkGearCandidate[] = request.optimizedCandidates;
 	if (!candidates.length) {
 		return {
-			request: BulkSimRequest.create({
-				...request,
-				candidates: dedupeBulkSimReforgeCandidates(request, optimizedCandidates),
-				optimizedCandidates: [],
-				reforgeRequest: undefined,
-			}),
+			request: withReforgedCandidates(request, dedupeBulkSimReforgeCandidates(request, optimizedCandidates), []),
 			aborted: false,
 		};
 	}
@@ -40,7 +37,7 @@ export const optimizeReforgeCandidates = async (
 	emitter.report(0, 0, 0);
 
 	const gearCache = makeBulkSimReforgeGearCache(request, reforgeRequest, workerPool, signals);
-	const collector = makeBulkSimReforgeCollector(request.baseRequest.raid.parties[0]?.players[0]?.equipment);
+	const collector = makeBulkSimReforgeCollector(request.baseRequest.raid.parties[0]?.players[0]?.equipment, candidates.length);
 	const includeGems = reforgeRequest.settings?.includeGems ?? false;
 
 	const reforgeQueue = queue<BulkSimReforgeCandidateTask, Error>(async ({ candidate, position }) => {
@@ -49,9 +46,10 @@ export const optimizeReforgeCandidates = async (
 
 		// Retry without gems: a gem-inclusive model can be infeasible where the
 		// reforge-only one is not.
-		let optimizedGear = await gearCache.optimize(candidate.gear, includeGems);
+		const gearKey = reforgeGearKey(candidate.gear);
+		let optimizedGear = await gearCache.optimize(candidate.gear, gearKey, includeGems);
 		if (!optimizedGear && !signals.abort.isTriggered() && includeGems) {
-			optimizedGear = await gearCache.optimize(candidate.gear, false);
+			optimizedGear = await gearCache.optimize(candidate.gear, gearKey, false);
 		}
 		const optimizedSuccessfully = !!optimizedGear;
 		if (!optimizedGear) {
@@ -76,7 +74,7 @@ export const optimizeReforgeCandidates = async (
 
 	const outputCandidates = optimizedCandidates.length + collector.completed().length;
 	console.log(
-		`[Bulk Sim] Reforge optimization completed candidates=${collector.completedCount()} outputCandidates=${outputCandidates} total=${formatBulkSimReforgeDuration(startedAt)}`,
+		`[Bulk Sim] Reforge optimization completed candidates=${collector.completedCount()} outputCandidates=${outputCandidates} total=${formatDurationSeconds((new Date().getTime() - startedAt) / 1000, { showMilliseconds: true, millisecondDigits: 2 })}`,
 	);
 
 	return {
@@ -100,7 +98,7 @@ const dedupeBulkSimReforgeCandidates = (request: BulkSimRequest, candidates: Bul
 		if (seenGearKeys.has(gearKey)) continue;
 
 		seenGearKeys.add(gearKey);
-		deduped.push(BulkGearCandidate.clone(candidate));
+		deduped.push(candidate);
 	}
 	return deduped;
 };
@@ -108,7 +106,7 @@ const dedupeBulkSimReforgeCandidates = (request: BulkSimRequest, candidates: Bul
 // Caches optimizer results by gear key and de-duplicates concurrent work: candidates
 // with identical input gear share one solve instead of each running their own.
 type BulkSimReforgeGearCache = {
-	optimize: (gear: EquipmentSpec, includeGems: boolean) => Promise<EquipmentSpec | null>;
+	optimize: (gear: EquipmentSpec, gearKey: string, includeGems: boolean) => Promise<EquipmentSpec | null>;
 };
 
 const makeBulkSimReforgeGearCache = (
@@ -121,8 +119,8 @@ const makeBulkSimReforgeGearCache = (
 	const inFlightOptimizedGearByKey = new Map<string, Promise<EquipmentSpec | null>>();
 
 	return {
-		optimize: async (gear: EquipmentSpec, includeGems: boolean): Promise<EquipmentSpec | null> => {
-			const cacheKey = `${reforgeGearKey(gear)}:${includeGems ? 1 : 0}`;
+		optimize: async (gear: EquipmentSpec, gearKey: string, includeGems: boolean): Promise<EquipmentSpec | null> => {
+			const cacheKey = `${gearKey}:${includeGems ? 1 : 0}`;
 			if (optimizedGearByKey.has(cacheKey)) {
 				const cachedGear = optimizedGearByKey.get(cacheKey);
 				return cachedGear ? EquipmentSpec.clone(cachedGear) : null;
@@ -152,7 +150,7 @@ const makeBulkSimReforgeGearCache = (
 			try {
 				const optimizedGear = await optimizePromise;
 				optimizedGearByKey.set(cacheKey, optimizedGear ? EquipmentSpec.clone(optimizedGear) : null);
-				return optimizedGear ? EquipmentSpec.clone(optimizedGear) : null;
+				return optimizedGear;
 			} finally {
 				inFlightOptimizedGearByKey.delete(cacheKey);
 			}
@@ -162,12 +160,12 @@ const makeBulkSimReforgeGearCache = (
 
 // Collects optimized candidates, keeping the first occurrence of each distinct gear set
 // (the baseline counts as already seen) and preserving input order.
-const makeBulkSimReforgeCollector = (baselineGear: EquipmentSpec | undefined) => {
+const makeBulkSimReforgeCollector = (baselineGear: EquipmentSpec | undefined, candidateCount: number) => {
 	const seenGearKeys = new Set<string>();
 	if (baselineGear) {
 		seenGearKeys.add(reforgeGearKey(baselineGear));
 	}
-	const completedByPosition: Array<BulkGearCandidate | undefined> = [];
+	const completedByPosition: Array<BulkGearCandidate | undefined> = new Array(candidateCount);
 	let completedCandidates = 0;
 
 	return {
@@ -195,14 +193,14 @@ const buildBulkSimReforgeRequest = (
 	aborted: boolean,
 ): BulkSimRequest => {
 	const partialOptimizedCandidates = dedupeBulkSimReforgeCandidates(request, [...optimizedCandidates, ...completedCandidates]);
-	return BulkSimRequest.create({
-		...request,
-		candidates: partialOptimizedCandidates,
-		optimizedCandidates: aborted ? partialOptimizedCandidates.map(candidate => BulkGearCandidate.clone(candidate)) : [],
-		reforgeRequest: undefined,
-	});
+	return withReforgedCandidates(request, partialOptimizedCandidates, aborted ? partialOptimizedCandidates : []);
 };
 
-const formatBulkSimReforgeDuration = (startedAt: number): string => {
-	return `${((new Date().getTime() - startedAt) / 1000).toFixed(2)}s`;
-};
+const withReforgedCandidates = (request: BulkSimRequest, candidates: BulkGearCandidate[], optimizedCandidates: BulkGearCandidate[]): BulkSimRequest => ({
+	...request,
+	candidates,
+	optimizedCandidates,
+	reforgeRequest: undefined,
+});
+
+

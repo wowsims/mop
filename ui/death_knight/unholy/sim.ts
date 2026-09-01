@@ -9,6 +9,9 @@ import { APLRotation, APLRotation_Type } from '../../core/proto/apl.js';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { TypedEvent } from '../../core/typed_event';
+import * as SharedDeathKnightInputs from '../inputs';
+import * as SharedPresets from '../shared';
 import * as DeathKnightInputs from './inputs';
 import * as Presets from './presets';
 
@@ -92,6 +95,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 			weakenedBlows: true,
 		}),
 		rotationType: APLRotation_Type.TypeAuto,
+		encounter: SharedPresets.ENCOUNTER_MALKOROK,
 	},
 
 	autoRotation(player: Player<Spec.SpecUnholyDeathKnight>): APLRotation {
@@ -131,6 +135,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		talents: [Presets.DefaultTalents, Presets.FesterblightTalents],
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.FESTERBLIGHT_ROTATION_PRESET],
+		encounters: [SharedPresets.ENCOUNTER_MALKOROK, SharedPresets.ENCOUNTER_SINGLE_TARGET],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
 		builds: [Presets.PREBIS_PRESET, Presets.P5_PRESET],
@@ -142,16 +147,12 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 export class UnholyDeathKnightSimUI extends IndividualSimUI<Spec.SpecUnholyDeathKnight> {
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecUnholyDeathKnight>) {
 		super(parentElem, player, SPEC_CONFIG);
-		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				let epWeights = player.getEpWeights();
 
-				const ampModifier = player.getTotalAmplificationTrinketStatModifier();
-				epWeights = epWeights
-					.withStat(Stat.StatHasteRating, epWeights.getStat(Stat.StatHasteRating) / ampModifier)
-					.withStat(Stat.StatMasteryRating, epWeights.getStat(Stat.StatMasteryRating) / ampModifier);
-				return epWeights;
-			},
+		SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(TypedEvent.nextEventID(), player);
+		this.sim.encounter.changeEmitter.on(eventID => SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(eventID, player));
+
+		this.reforger = new ReforgeOptimizer(this, {
+			getEPDefaults: player => player.getEpWeights(),
 		});
 	}
 }

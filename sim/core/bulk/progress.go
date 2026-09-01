@@ -96,7 +96,7 @@ func (tracker *BulkSimStageProgressTracker) report(position int, completedIterat
 }
 
 func (tracker *BulkSimStageProgressTracker) shouldEmitProgressLocked() bool {
-	return tracker.lastProgressEmit.IsZero() || time.Since(tracker.lastProgressEmit) >= bulkSimProgressThrottle
+	return tracker.lastProgressEmit.IsZero() || time.Since(tracker.lastProgressEmit) >= BulkSimProgressThrottle
 }
 
 func setBulkSimStageTiming(timings *proto.BulkSimTimings, stage proto.BulkSimStage, durationSeconds float64) {
@@ -107,6 +107,8 @@ func setBulkSimStageTiming(timings *proto.BulkSimTimings, stage proto.BulkSimSta
 		timings.MediumStageSeconds = durationSeconds
 	case proto.BulkSimStage_BulkSimStageHigh:
 		timings.HighStageSeconds = durationSeconds
+	case proto.BulkSimStage_BulkSimStageFinalist:
+		timings.FinalistStageSeconds = durationSeconds
 	}
 }
 
@@ -169,6 +171,8 @@ func bulkSimStageLogName(stage proto.BulkSimStage) string {
 		return "medium"
 	case proto.BulkSimStage_BulkSimStageHigh:
 		return "high"
+	case proto.BulkSimStage_BulkSimStageFinalist:
+		return "finalist"
 	default:
 		return stage.String()
 	}

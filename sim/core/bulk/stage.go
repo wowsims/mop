@@ -21,14 +21,16 @@ type BulkSimStageConfig struct {
 	UseConcurrentSim   bool
 }
 
-var bulkSimStageConfigs = []BulkSimStageConfig{
+var BulkSimFinalistStageConfig = BulkSimStageConfig{Stage: proto.BulkSimStage_BulkSimStageFinalist, UseConcurrentSim: true}
+
+var BulkSimStageConfigs = []BulkSimStageConfig{
 	{
 		Stage:              proto.BulkSimStage_BulkSimStageLow,
 		MinIterations:      100,
 		TargetErrorPct:     1,
 		MinSurvivors:       20,
 		MaxSurvivors:       100,
-		CullingCoefficient: bulkSimCullingCoefficient,
+		CullingCoefficient: BulkSimCullingCoefficient,
 	},
 	{
 		Stage:              proto.BulkSimStage_BulkSimStageMedium,
@@ -36,7 +38,7 @@ var bulkSimStageConfigs = []BulkSimStageConfig{
 		TargetErrorPct:     0.2,
 		MinSurvivors:       5,
 		MaxSurvivors:       25,
-		CullingCoefficient: bulkSimCullingCoefficient,
+		CullingCoefficient: BulkSimCullingCoefficient,
 	},
 	{
 		Stage:            proto.BulkSimStage_BulkSimStageHigh,
@@ -55,7 +57,7 @@ type BulkSimStageResult struct {
 
 func shouldRunBulkSimStage(config BulkSimStageConfig, candidateCount int) bool {
 	maxSurvivors := getBulkSimStageMaxSurvivors(config, candidateCount)
-	return maxSurvivors == 0 || candidateCount > maxSurvivors || candidateCount < bulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
+	return maxSurvivors == 0 || candidateCount > maxSurvivors || candidateCount < BulkSimMinCombinations && config.Stage == proto.BulkSimStage_BulkSimStageHigh
 }
 
 func GetBulkSimStageConcurrency(request *proto.BulkSimRequest, config BulkSimStageConfig) int {
@@ -171,7 +173,7 @@ func runBulkSimStage(request *proto.BulkSimRequest, candidates []BulkSimCandidat
 // completedSimsBase sims done plus this segment's iterations on top of
 // completedIterationsBase. An errored segment is returned as-is for the caller to check.
 func runBulkSimBaselineSegment(request *proto.BulkSimRequest, config BulkSimStageConfig, carried *BulkSimCandidateResult, iterations int32, seedOffset int32, emitter bulkSimStageProgressEmitter, completedSimsBase int, completedIterationsBase int32, signals simsignals.Signals) *BulkSimCandidateResult {
-	segment := runSingleBulkSimCandidate(request, BulkSimCandidate{Index: -1, Gear: getBulkSimBaselineGear(request)}, iterations, seedOffset, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
+	segment := runSingleBulkSimCandidate(request, BulkSimCandidate{Index: -1, Gear: GetBulkSimBaselineGear(request)}, iterations, seedOffset, signals, config.UseConcurrentSim, func(progressMetrics *proto.ProgressMetrics) {
 		if progressMetrics.TotalIterations == 0 {
 			return
 		}
@@ -217,15 +219,15 @@ func getBulkSimStageIterations(request *proto.BulkSimRequest, config BulkSimStag
 
 func getBulkSimStageMaxSurvivors(config BulkSimStageConfig, candidateCount int) int {
 	if config.MaxSurvivors == 0 {
-		return config.MaxSurvivors
+		return 0
 	}
 
 	var scaleReference int
 	switch config.Stage {
 	case proto.BulkSimStage_BulkSimStageLow:
-		scaleReference = bulkSimLowStageSurvivorScaleReference
+		scaleReference = BulkSimLowStageSurvivorScaleReference
 	case proto.BulkSimStage_BulkSimStageMedium:
-		scaleReference = bulkSimMediumStageSurvivorScaleReference
+		scaleReference = BulkSimMediumStageSurvivorScaleReference
 	default:
 		return config.MaxSurvivors
 	}
@@ -238,13 +240,68 @@ func getBulkSimStageMaxSurvivors(config BulkSimStageConfig, candidateCount int) 
 	return max(config.MaxSurvivors, int(math.Ceil(float64(config.MaxSurvivors)*scale)))
 }
 
+// runBulkSimFinalistStage adds lockstep iterations to the displayed top results (and the
+// baseline) until every adjacent pair of the final ranking is statistically separated or the
+// extra-iteration budget is spent. The stages before this one answer "which gear sets are
+// worth ranking"; this one makes the displayed ranking itself trustworthy - without it, the
+// order of near-tied top results flips between runs with different seeds.
+//
+// When the stage runs, the returned results are the refined, DPS-sorted finalists - they ARE
+// the displayed set, so callers use them directly instead of re-selecting from the full list.
+func runBulkSimFinalistStage(request *proto.BulkSimRequest, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, topResults int, progress chan *proto.ProgressMetrics, signals simsignals.Signals) (*BulkSimCandidateResult, []*BulkSimCandidateResult, *proto.BulkSimStageMetrics) {
+	finalists := topBulkSimResults(results, topResults)
+	if len(finalists) < 2 || baseline == nil || baseline.DpsMetrics == nil {
+		return baseline, results, nil
+	}
+
+	// Total iterations run so far comes from the paired value arrays themselves, which also
+	// makes the lockstep precondition explicit: every finalist and the baseline must carry
+	// the same number of per-iteration values or pairing (and this stage) cannot help.
+	iterations := int32(len(baseline.DpsMetrics.AllValues))
+	for _, finalist := range finalists {
+		if finalist.DpsMetrics == nil || int32(len(finalist.DpsMetrics.AllValues)) != iterations {
+			return baseline, results, nil
+		}
+	}
+	if iterations == 0 || !bulkSimUnresolvedFinalistPair(finalists) {
+		return baseline, results, nil
+	}
+
+	startedAt := time.Now()
+	config := BulkSimFinalistStageConfig
+	concurrency := GetBulkSimStageConcurrency(request, config)
+	candidates := make([]BulkSimCandidate, 0, len(finalists))
+	for _, finalist := range finalists {
+		candidates = append(candidates, finalist.Candidate)
+	}
+	log.Printf("[Bulk Sim] - Stage: %s - Started\n  Finalists: %d\n  Iterations so far: %d", bulkSimStageLogName(config.Stage), len(finalists), iterations)
+
+	extraBudget := iterations * BulkSimFinalistMaxExtraIterationMultiplier
+	extraUsed := int32(0)
+	for extraUsed < extraBudget && bulkSimUnresolvedFinalistPair(finalists) {
+		if signals.Abort.IsTriggered() || hasBulkSimStageError(baseline, finalists) {
+			break
+		}
+		// Double the sample each round: the paired error shrinks with sqrt(n), so smaller
+		// steps mostly re-discover that the pair is still unresolved.
+		additionalIterations := min(iterations+extraUsed, extraBudget-extraUsed)
+		baseline, finalists = rerunBulkSimStageAdditionalIterations(request, candidates, config, progress, signals, concurrency, baseline, finalists, iterations+extraUsed, additionalIterations)
+		extraUsed += additionalIterations
+		finalists = topBulkSimResults(finalists, len(finalists))
+	}
+
+	metrics := bulkSimStageMetrics(config, candidates, finalists, baseline, iterations+extraUsed, concurrency, startedAt)
+	log.Printf("[Bulk Sim] %s", formatBulkSimStageSummary("Finished", metrics, len(finalists)))
+	return baseline, finalists, metrics
+}
+
 // Adds bounded extra iterations when the completed stage missed its target
 // error. Extra sims use seed offsets and are merged into the existing metrics,
 // avoiding a full rerun while still reducing standard error for the same
 // baseline/candidate set.
 func adaptBulkSimStageIterations(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, progress chan *proto.ProgressMetrics, signals simsignals.Signals, concurrency int, baseline *BulkSimCandidateResult, results []*BulkSimCandidateResult, iterations int32) (*BulkSimCandidateResult, []*BulkSimCandidateResult, int32) {
-	maxAdaptiveIterations := int32(math.Ceil(float64(iterations) * bulkSimAdaptiveMaxIterationMultiplier))
-	for adaptivePass := 1; adaptivePass <= bulkSimMaxAdaptivePasses; adaptivePass++ {
+	maxAdaptiveIterations := int32(math.Ceil(float64(iterations) * BulkSimAdaptiveMaxIterationMultiplier))
+	for adaptivePass := 1; adaptivePass <= BulkSimMaxAdaptivePasses; adaptivePass++ {
 		if signals.Abort.IsTriggered() || hasBulkSimStageError(baseline, results) {
 			return baseline, results, iterations
 		}

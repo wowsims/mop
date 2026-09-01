@@ -1,4 +1,5 @@
-import { SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '../worker/types';
+import { AsyncSimRequest, SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '../worker/types';
+import { WorkerPoolManager } from './concurrent_worker_pool';
 import { REPO_NAME } from './constants/other.js';
 import {
 	AbortRequest,
@@ -17,8 +18,8 @@ import {
 	RaidSimRequestSplitResult,
 	RaidSimResult,
 	RaidSimResultCombinationRequest,
-	ReforgeOptimizeRequest,
 	ReforgeOptimizeMode,
+	ReforgeOptimizeRequest,
 	ReforgeOptimizeResult,
 	StatWeightRequestsData,
 	StatWeightsCalcRequest,
@@ -27,9 +28,48 @@ import {
 } from './proto/api.js';
 import { SimSignals } from './sim_signal_manager';
 import { isDevMode, noop } from './utils';
-import { WorkerPoolManager } from './concurrent_worker_pool';
 
 const SIM_WORKER_URL = `/${REPO_NAME}/sim_worker.js`;
+const SIM_WASM_URL = `/${REPO_NAME}/lib.wasm.gz`;
+
+// lib.wasm ships gzipped (Cloudflare Pages caps files at 25 MiB; the raw module exceeds it)
+// and is fetched + compiled exactly once here, then shared with every wasm worker as a
+// compiled WebAssembly.Module via structured clone - spawning N workers costs one download
+// and one compile instead of N of each. Decompression streams, so compilation overlaps the
+// download. The magic-byte sniff keeps this working behind servers that set
+// Content-Encoding for .gz files and hand the browser already-decompressed bytes.
+let sharedWasmModule: Promise<WebAssembly.Module> | undefined;
+const getSharedWasmModule = (): Promise<WebAssembly.Module> => {
+	sharedWasmModule ??= (async () => {
+		if (typeof DecompressionStream === 'undefined') {
+			throw new Error('This browser does not support DecompressionStream; the in-browser sim requires a current browser version.');
+		}
+		const response = await fetch(SIM_WASM_URL);
+		if (!response.ok || !response.body) {
+			throw new Error(`Failed to fetch sim wasm module: HTTP ${response.status}`);
+		}
+		const [peekStream, bodyStream] = response.body.tee();
+		// Streams guarantee no minimum chunk size, so accumulate until the two magic bytes
+		// are available (or the stream ends) before classifying.
+		const reader = peekStream.getReader();
+		const peeked: number[] = [];
+		while (peeked.length < 2) {
+			const { value, done } = await reader.read();
+			if (done) break;
+			peeked.push(...value.slice(0, 2 - peeked.length));
+		}
+		reader.cancel().catch(() => {});
+		const isGzip = peeked[0] === 0x1f && peeked[1] === 0x8b;
+		const wasmStream = isGzip ? bodyStream.pipeThrough(new DecompressionStream('gzip')) : bodyStream;
+		return WebAssembly.compileStreaming(new Response(wasmStream, { headers: { 'Content-Type': 'application/wasm' } }));
+	})().catch(error => {
+		// Never memoize a failure: a transient fetch error must not brick every current and
+		// future worker for the page lifetime (cf. initHiGHS in ui/worker/sim_worker.ts).
+		sharedWasmModule = undefined;
+		throw error;
+	});
+	return sharedWasmModule;
+};
 export type WorkerProgressCallback = (progressMetrics: ProgressMetrics) => void;
 
 /**
@@ -81,16 +121,12 @@ export class WorkerPool {
 		const id = request.requestId || generateRequestId(SimRequest.reforgeOptimizeAsync);
 		const shouldLog = request.mode != ReforgeOptimizeMode.ReforgeOptimizeModeBulk;
 		if (shouldLog) {
-			worker.log('Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
+			worker.log(() => 'Reforge optimize request: ' + ReforgeOptimizeRequest.toJsonString(request));
 		}
 
-		signals?.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
-
-		const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1);
+		const result = await this.doAsyncRequest(SimRequest.reforgeOptimizeAsync, ReforgeOptimizeRequest.toBinary(request), id, worker, noop, 1, signals);
 		if (shouldLog) {
-			worker.log('Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
+			worker.log(() => 'Reforge optimize result: ' + ReforgeOptimizeResult.toJsonString(result.finalReforgeResult!));
 		}
 		return result.finalReforgeResult!;
 	}
@@ -101,17 +137,21 @@ export class WorkerPool {
 
 	async statWeightsAsync(request: StatWeightsRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<StatWeightsResult> {
 		const worker = this.getLeastBusyWorker();
-		worker.log('Stat weights request: ' + StatWeightsRequest.toJsonString(request));
+		worker.log(() => 'Stat weights request: ' + StatWeightsRequest.toJsonString(request));
 		const id = generateRequestId(SimRequest.statWeightsAsync);
 
-		signals.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
-
 		const iterations = request.simOptions ? request.simOptions.iterations * request.statsToWeigh.length : 30000;
-		const result = await this.doAsyncRequest(SimRequest.statWeightsAsync, StatWeightsRequest.toBinary(request), id, worker, onProgress, iterations);
+		const result = await this.doAsyncRequest(
+			SimRequest.statWeightsAsync,
+			StatWeightsRequest.toBinary(request),
+			id,
+			worker,
+			onProgress,
+			iterations,
+			signals,
+		);
 
-		worker.log('Stat weights result: ' + StatWeightsResult.toJsonString(result.finalWeightResult!));
+		worker.log(() => 'Stat weights result: ' + StatWeightsResult.toJsonString(result.finalWeightResult!));
 		return result.finalWeightResult!;
 	}
 
@@ -127,37 +167,41 @@ export class WorkerPool {
 
 	async raidSimAsync(request: RaidSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<RaidSimResult> {
 		const worker = this.getLeastBusyWorker();
-		worker.log('Raid sim request: ' + RaidSimRequest.toJsonString(request));
+		// A bulk run issues one of these per candidate, and the request carries the merged
+		// database, so this must stay lazy.
+		worker.log(() => 'Raid sim request: ' + RaidSimRequest.toJsonString(request));
 		const id = request.requestId;
 
-		signals.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
-
 		const iterations = request.simOptions?.iterations ?? 3000;
-		const result = await this.doAsyncRequest(SimRequest.raidSimAsync, RaidSimRequest.toBinary(request), id, worker, onProgress, iterations);
+		const result = await this.doAsyncRequest(SimRequest.raidSimAsync, RaidSimRequest.toBinary(request), id, worker, onProgress, iterations, signals);
 
-		// Don't print the logs because it just clogs the console.
-		const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
-		delete resultJson!['logs'];
-		worker.log('Raid sim result: ' + JSON.stringify(resultJson));
+		worker.log(() => {
+			// Don't print the logs because it just clogs the console.
+			const resultJson = RaidSimResult.toJson(result.finalRaidResult!) as any;
+			delete resultJson!['logs'];
+			return 'Raid sim result: ' + JSON.stringify(resultJson);
+		});
 		return result.finalRaidResult!;
 	}
 
 	async bulkSimAsync(request: BulkSimRequest, onProgress: WorkerProgressCallback, signals: SimSignals): Promise<BulkSimResult> {
 		const worker = this.getLeastBusyWorker();
-		worker.log('Bulk sim request: ' + BulkSimRequest.toJsonString(request));
+		// A summary rather than the whole request even in dev: it carries every candidate's
+		// EquipmentSpec plus the merged database, which for a large run is a
+		// multi-hundred-megabyte string no console can usefully show.
+		worker.log(`Bulk sim request: candidates=${request.candidates.length} optimizedCandidates=${request.optimizedCandidates.length}`);
 		const id = request.requestId;
 
-		signals.abort.onTrigger(async () => {
-			await worker.sendAbortById(id);
-		});
-
 		const iterations = request.baseRequest?.simOptions?.iterations ?? 3000;
-		const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations);
+		const result = await this.doAsyncRequest(SimRequest.bulkSimAsync, BulkSimRequest.toBinary(request), id, worker, onProgress, iterations, signals);
 
-		worker.log('Bulk sim result: ' + BulkSimResult.toJsonString(result.finalBulkSimResult!));
-		return result.finalBulkSimResult!;
+		const bulkSimResult = result.finalBulkSimResult!;
+		worker.log(
+			`Bulk sim result: topResults=${bulkSimResult.topResults.length} optimizedCandidates=${bulkSimResult.optimizedCandidates.length} error=${
+				bulkSimResult.error?.message ?? 'none'
+			}`,
+		);
+		return bulkSimResult;
 	}
 
 	async bulkCombinationCount(request: BulkCombinationCountRequest): Promise<BulkCombinationCountResult> {
@@ -203,13 +247,21 @@ export class WorkerPool {
 	 * @returns The final ProgressMetrics.
 	 */
 	private async doAsyncRequest(
-		requestName: SimRequest.raidSimAsync | SimRequest.statWeightsAsync | SimRequest.bulkSimAsync | SimRequest.reforgeOptimizeAsync,
+		requestName: AsyncSimRequest,
 		request: Uint8Array,
 		id: string,
 		worker: SimWorker,
 		onProgress: WorkerProgressCallback,
 		totalIterations: number,
+		signals?: SimSignals,
 	): Promise<ProgressMetrics> {
+		// The abort subscription's lifetime is exactly this request's, so it belongs here
+		// rather than at each call site. A bulk run issues one request per candidate against
+		// the same signals object; leaving callbacks registered would grow the list for the
+		// whole run and make a cancel fan out to every request that finished long ago.
+		const unsubscribeAbort = signals?.abort.onTrigger(async () => {
+			await worker.sendAbortById(id);
+		});
 		try {
 			worker.addSimTaskRunning(id, totalIterations);
 			const finalProgress: Promise<ProgressMetrics> = new Promise(resolve => {
@@ -237,13 +289,16 @@ export class WorkerPool {
 			});
 			return await Promise.race([finalProgress, apiCallResult]);
 		} finally {
+			unsubscribeAbort?.();
 			worker.updateSimTask(id, 0);
 			worker.ignoreResultId(this.getProgressName(id));
 		}
 	}
 
 	private isFinalProgress(progress: ProgressMetrics): boolean {
-		return progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null || progress.finalReforgeResult != null;
+		return (
+			progress.finalRaidResult != null || progress.finalWeightResult != null || progress.finalBulkSimResult != null || progress.finalReforgeResult != null
+		);
 	}
 
 	private newProgressHandler(
@@ -313,6 +368,19 @@ class SimWorker {
 					break;
 				case 'idConfirm':
 					break;
+				case 'wasmModuleRequest': {
+					// Reply to the worker that asked, not whichever worker the pool slot holds
+					// by the time the module resolves (the slot can be recycled meanwhile).
+					const requestingWorker = this.worker;
+					getSharedWasmModule().then(
+						module => {
+							const reply: WorkerReceiveMessage = { msg: 'wasmModule', module };
+							requestingWorker?.postMessage(reply);
+						},
+						error => console.error('Failed to load sim wasm module:', error),
+					);
+					break;
+				}
 				default:
 					if (!id) {
 						console.warn(`Received ${msg} worker result without an id`);
@@ -435,8 +503,11 @@ class SimWorker {
 		this.log('Enabled.');
 	}
 
-	log(s: string) {
-		if (isDevMode()) console.log(`Worker ${this.workerId}: ${s}`);
+	// Accepts a thunk so a caller whose message is expensive to build - a request or result
+	// serialized to JSON - pays nothing outside dev mode. Prefer the thunk form for anything
+	// that is not a plain template literal.
+	log(s: string | (() => string)) {
+		if (isDevMode()) console.log(`Worker ${this.workerId}: ${typeof s === 'function' ? s() : s}`);
 	}
 
 	async sendAbortById(requestId: string) {

@@ -2,6 +2,7 @@ package bulk
 
 import (
 	"fmt"
+	"math"
 	"slices"
 
 	"github.com/wowsims/mop/sim/core"
@@ -15,7 +16,7 @@ type bulkSimCandidateGenerator struct {
 	playerClass          proto.Class
 	playerSpec           proto.Spec
 	playerCanDualWield   bool
-	playerIsFuryWarrior  bool
+	playerCanDualWield2H bool
 	challengeModeEnabled bool
 	selectedByBulkSlot   map[BulkSimItemSlot][]bulkSimCandidateOption
 	groupedPairsBySlot   map[BulkSimItemSlot][][2]bulkSimCandidateOption
@@ -24,6 +25,7 @@ type bulkSimCandidateGenerator struct {
 	inheritUpgrades      bool
 	frozenItems          map[BulkSimItemSlot]*core.Item
 	frozenWeaponSlot     proto.ItemSlot
+	frozenWeaponItem     *core.Item
 	weaponTypeFilters    map[proto.ItemSlot][]proto.WeaponType
 	weaponCombosCached   [][2]*bulkSimCandidateOption
 	weaponCombosReady    bool
@@ -31,7 +33,7 @@ type bulkSimCandidateGenerator struct {
 }
 
 func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.Player) (*bulkSimCandidateGenerator, error) {
-	playerSpec, err := getPlayerSpec(player)
+	playerSpec, err := core.PlayerProtoToSpecSafe(player)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +44,7 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 		playerClass:          player.GetClass(),
 		playerSpec:           playerSpec,
 		playerCanDualWield:   playerCanDualWield,
-		playerIsFuryWarrior:  playerSpec == proto.Spec_SpecFuryWarrior,
+		playerCanDualWield2H: core.SpecCanDualWield2HCapabilities[playerSpec],
 		challengeModeEnabled: player.GetChallengeMode(),
 		selectedByBulkSlot:   make(map[BulkSimItemSlot][]bulkSimCandidateOption),
 		groupedPairsBySlot:   make(map[BulkSimItemSlot][][2]bulkSimCandidateOption),
@@ -60,19 +62,31 @@ func newBulkSimCandidateGenerator(request *proto.BulkSimRequest, player *proto.P
 		return nil, err
 	}
 	generator.initGroupedSlotPairs()
+	if err := generator.validateGroupedSlots(); err != nil {
+		return nil, err
+	}
 	return generator, nil
+}
+
+func (generator *bulkSimCandidateGenerator) validateGroupedSlots() error {
+	for _, bulkSlot := range []BulkSimItemSlot{BulkSimItemSlotFinger, BulkSimItemSlotTrinket} {
+		if len(generator.selectedByBulkSlot[bulkSlot]) == 0 {
+			continue
+		}
+		if len(generator.groupedPairsBySlot[bulkSlot]) == 0 {
+			return fmt.Errorf("no equippable pair of items available for grouped bulk slot %d", bulkSlot)
+		}
+	}
+	return nil
 }
 
 func (generator *bulkSimCandidateGenerator) buildCandidates() ([]*proto.BulkGearCandidate, error) {
 	rawCombinations := generator.rawCombinationsCount()
 	matcher := generator.buildRequiredSetBonusMatcher(generator.settings.GetRequiredSetBonuses())
-	initialCapacity := rawCombinations
-	if matcher != nil && initialCapacity > 16384 {
-		// Required-set filtering can drop output cardinality by orders of magnitude.
-		// Avoid over-reserving to raw combinations in that case.
-		initialCapacity = 16384
-	}
-	candidates := make([]*proto.BulkGearCandidate, 0, initialCapacity)
+	// Never reserve the whole raw space: it can be millions of entries, required-set
+	// filtering can drop output cardinality by orders of magnitude, and append grows
+	// geometrically from here anyway.
+	candidates := make([]*proto.BulkGearCandidate, 0, min(rawCombinations, maxBulkCandidatePreallocation))
 	var scratchCounts []int
 	if matcher != nil {
 		scratchCounts = make([]int, len(matcher.baseCounts))
@@ -110,6 +124,10 @@ func (generator *bulkSimCandidateGenerator) initFrozenSettings() {
 	}
 	if slot := generator.settings.GetFreezeWeaponSlot(); slot == int32(proto.ItemSlot_ItemSlotMainHand) || slot == int32(proto.ItemSlot_ItemSlotOffHand) {
 		generator.frozenWeaponSlot = proto.ItemSlot(slot)
+		if item := generator.baseEquipment.GetItemBySlot(generator.frozenWeaponSlot); item != nil && item.ID != 0 {
+			itemCopy := *item
+			generator.frozenWeaponItem = &itemCopy
+		}
 	}
 }
 
@@ -147,14 +165,19 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 				ChallengeMode: selectedItem.GetChallengeMode(),
 			}),
 		}
-		for _, slot := range getEligibleItemSlots(option.item, generator.playerIsFuryWarrior) {
-			if isSecondaryItemSlot(slot, generator.playerCanDualWield) {
-				continue
-			}
-			if !canEquipItem(option.item, generator.playerClass, generator.playerSpec, slot) {
+		// An item is eligible for at most two slots, and when both collapse into one bulk slot
+		// (Finger1/2, Trinket1/2, or either hand for a dual wielder) it belongs there once - a
+		// second append would fake a second copy in weaponCopyCounts below.
+		lastBulkSlot := BulkSimItemSlot(-1)
+		for _, slot := range core.EligibleSlotsForItem(&option.item, generator.playerCanDualWield2H) {
+			if !canEquipItem(&option.item, generator.playerClass, generator.playerSpec, slot) {
 				continue
 			}
 			bulkSlot := getBulkItemSlotFromSlot(slot, generator.playerCanDualWield)
+			if bulkSlot == lastBulkSlot {
+				continue
+			}
+			lastBulkSlot = bulkSlot
 			generator.selectedByBulkSlot[bulkSlot] = append(generator.selectedByBulkSlot[bulkSlot], option)
 		}
 	}
@@ -167,7 +190,7 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 		if equippedItem == nil || equippedItem.ID == 0 {
 			continue
 		}
-		if !canEquipItem(*equippedItem, generator.playerClass, generator.playerSpec, slot) {
+		if !canEquipItem(equippedItem, generator.playerClass, generator.playerSpec, slot) {
 			continue
 		}
 
@@ -195,7 +218,7 @@ func (generator *bulkSimCandidateGenerator) initSelectedItems() error {
 func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 	for _, bulkSlot := range []BulkSimItemSlot{BulkSimItemSlotFinger, BulkSimItemSlotTrinket} {
 		options := generator.selectedByBulkSlot[bulkSlot]
-		if len(options) < 2 {
+		if len(options) == 0 {
 			continue
 		}
 		var pairs [][2]bulkSimCandidateOption
@@ -203,13 +226,10 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 			pairs = make([][2]bulkSimCandidateOption, 0, len(options))
 			frozenSpec := frozenItem.ToItemSpecProto()
 			for _, option := range options {
-				if candidateOptionEqualsItem(option, *frozenItem, generator.inheritUpgrades) {
+				if candidateOptionEqualsItem(&option, frozenItem, generator.inheritUpgrades) {
 					continue
 				}
-				if frozenItem.Unique && frozenItem.ID == option.item.ID {
-					continue
-				}
-				if frozenItem.LimitCategory != 0 && frozenItem.LimitCategory == option.item.LimitCategory {
+				if !pairIsEquippable(frozenItem, &option.item) {
 					continue
 				}
 				pairs = append(pairs, [2]bulkSimCandidateOption{{spec: frozenSpec, item: *frozenItem}, option})
@@ -218,11 +238,7 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 			pairs = make([][2]bulkSimCandidateOption, 0, len(options)*(len(options)-1)/2)
 			for i := 0; i < len(options); i++ {
 				for j := i + 1; j < len(options); j++ {
-					if options[i].item.Unique && options[i].item.ID == options[j].item.ID {
-						continue
-					}
-					lc := options[i].item.LimitCategory
-					if lc != 0 && lc == options[j].item.LimitCategory {
+					if !pairIsEquippable(&options[i].item, &options[j].item) {
 						continue
 					}
 					pairs = append(pairs, [2]bulkSimCandidateOption{options[i], options[j]})
@@ -233,20 +249,45 @@ func (generator *bulkSimCandidateGenerator) initGroupedSlotPairs() {
 	}
 }
 
+// The raw combination space is a plain product over the bulk slots and nothing bounds it:
+// the frontend gates on the *matching* count, and required set bonuses exist precisely so
+// a large selection can be filtered down to a runnable set. So the product is clamped only
+// to keep it inside the int32 result fields and out of overflow - never to refuse the
+// request, which would break exactly that workflow.
+const maxBulkRawCombinations = math.MaxInt32
+const maxBulkCandidatePreallocation = 1 << 16
+
+func saturatingCombinationsAdd(rawCombinations int, addend int) int {
+	if rawCombinations > maxBulkRawCombinations-addend {
+		return maxBulkRawCombinations
+	}
+	return rawCombinations + addend
+}
+
+func saturatingCombinationsMul(rawCombinations int, factor int) int {
+	if factor == 0 {
+		return 0
+	}
+	if rawCombinations > maxBulkRawCombinations/factor {
+		return maxBulkRawCombinations
+	}
+	return rawCombinations * factor
+}
+
 func (generator *bulkSimCandidateGenerator) rawCombinationsCount() int {
 	rawCombinations := len(generator.getAllWeaponCombos())
 	if rawCombinations == 0 {
 		rawCombinations = 1
 	}
-	for _, bulkSlot := range bulkSimSelectedOrder {
-		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
+	for _, bulkSlot := range bulkSimNonWeaponOrder {
+		numOptions := len(generator.selectedByBulkSlot[bulkSlot])
+		if numOptions == 0 {
 			continue
 		}
-		numOptions := len(generator.selectedByBulkSlot[bulkSlot])
-		if numOptions > 1 && (bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket) {
-			rawCombinations *= len(generator.groupedPairsBySlot[bulkSlot])
-		} else if numOptions > 0 {
-			rawCombinations *= numOptions
+		if bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket {
+			rawCombinations = saturatingCombinationsMul(rawCombinations, len(generator.groupedPairsBySlot[bulkSlot]))
+		} else {
+			rawCombinations = saturatingCombinationsMul(rawCombinations, numOptions)
 		}
 	}
 	return rawCombinations
@@ -272,7 +313,7 @@ func (generator *bulkSimCandidateGenerator) buildGearForCombo(comboIdx int) (*pr
 	}
 	// Non-Fury players cannot dual-wield 2H weapons. When a 2H lands in the mainhand
 	// the offhand combo slot is nil, leaving the base gear's 1H offhand in place — clear it.
-	if !generator.playerIsFuryWarrior {
+	if !generator.playerCanDualWield2H {
 		if mh := gear.GetItemBySlot(proto.ItemSlot_ItemSlotMainHand); mh != nil && mh.HandType == proto.HandType_HandTypeTwoHand {
 			gear[proto.ItemSlot_ItemSlotOffHand] = core.Item{}
 		}
@@ -301,18 +342,12 @@ func (generator *bulkSimCandidateGenerator) populateItemsForCombo(comboIdx int) 
 			generator.comboSlotUsed[int(slot)] = true
 		}
 	}
-	for _, bulkSlot := range bulkSimSelectedOrder {
-		if bulkSlot == BulkSimItemSlotMainHand || bulkSlot == BulkSimItemSlotOffHand || bulkSlot == BulkSimItemSlotHandWeapon {
-			continue
-		}
+	for _, bulkSlot := range bulkSimNonWeaponOrder {
 		options := generator.selectedByBulkSlot[bulkSlot]
 		if len(options) == 0 {
 			continue
 		}
 		if bulkSlot == BulkSimItemSlotFinger || bulkSlot == BulkSimItemSlotTrinket {
-			if len(options) < 2 {
-				return fmt.Errorf("at least 2 items must be selected for grouped bulk slot %d", bulkSlot)
-			}
 			pairs := generator.groupedPairsBySlot[bulkSlot]
 			if len(pairs) == 0 {
 				return fmt.Errorf("no grouped candidate pairs available for bulk slot %d", bulkSlot)

@@ -1,16 +1,12 @@
-import { openDB, IDBPDatabase } from 'idb';
+import { IDBPDatabase, openDB } from 'idb';
 
-import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
-import { SimSettingCategories } from './constants/sim_settings';
 import { throwIfAborted } from './components/individual_sim_ui/bulk/utils';
+import { IndividualLinkImporter } from './components/individual_sim_ui/importers/individual_link_importer';
+import { CURRENT_API_VERSION, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
 import { EquipmentSpec, Spec } from './proto/common';
-import { IndividualSimSettings } from './proto/ui';
-import { IndividualLinkExporter } from './components/individual_sim_ui/exporters/individual_link_exporter';
-import { IndividualLinkImporter } from './components/individual_sim_ui/importers/individual_link_importer';
-import { IndividualSimUI } from './individual_sim_ui';
-import { sleep } from './utils';
+import { hashString, sleep } from './utils';
 
 const REFORGE_CACHE_DB_NAME = `${LOCAL_STORAGE_PREFIX}_reforge-cache`;
 const REFORGE_CACHE_DB_VERSION = 4;
@@ -20,6 +16,7 @@ const REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX = 'equipmentSpec:';
 const REFORGE_CACHE_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // Store reforge results for 14 days
 const REFORGE_CACHE_PRUNE_INTERVAL_MS = 60 * 60 * 1000;
 const REFORGE_CACHE_ACCESS_UPDATE_CHUNK_SIZE = 2000;
+const REFORGE_CACHE_READ_CHUNK_SIZE = 2000;
 
 interface ReforgeGearCacheRecord {
 	gear: string;
@@ -44,7 +41,7 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 
 	private readonly storeName: ReforgeGearCacheStoreName;
 	private readonly storeReadyPromise: Promise<void>;
-	private lastPrunedAt = 0;
+	private lastPrunedAt = Date.now();
 
 	constructor(playerSpec: PlayerSpec<SpecType>) {
 		this.storeName = ReforgeGearCache.getStoreName(playerSpec);
@@ -61,13 +58,12 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return cache as ReforgeGearCache<SpecType>;
 	}
 
-	static async getHash(fingerprintParts: unknown): Promise<string> {
-		return ReforgeGearCache.digestString(JSON.stringify(fingerprintParts) ?? '');
+	static getHash(fingerprintParts: unknown): string {
+		return hashString(JSON.stringify(fingerprintParts) ?? '');
 	}
 
-	static async getKey(gearFingerprintParts: unknown, configHash: string): Promise<string> {
-		const gearHash = await ReforgeGearCache.getHash(gearFingerprintParts);
-		return `${REFORGE_CACHE_KEY_PREFIX}${configHash}:${gearHash}`;
+	static getKey(gearFingerprintParts: unknown, configHash: string): string {
+		return `${REFORGE_CACHE_KEY_PREFIX}${configHash}:${ReforgeGearCache.getHash(gearFingerprintParts)}`;
 	}
 
 	async get(key: string): Promise<EquipmentSpec | null> {
@@ -102,34 +98,42 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			let lastYieldAt = performance.now();
 			const accessUpdates: Array<{ key: string; record: ReforgeGearCacheRecord }> = [];
 
-			for (let i = 0; i < keys.length; i++) {
+			// Read in chunks that share a transaction. A bulk run passes six figures worth of
+			// keys, and one implicit transaction per key dominates the cache-restore stage.
+			for (let start = 0; start < keys.length; start += REFORGE_CACHE_READ_CHUNK_SIZE) {
 				throwIfAborted(signal);
-				const key = keys[i];
-				const record = await db.get(this.storeName, key);
-				if (!record) {
-					continue;
-				}
+				const chunk = keys.slice(start, start + REFORGE_CACHE_READ_CHUNK_SIZE);
+				const tx = db.transaction(this.storeName, 'readonly');
+				const store = tx.objectStore(this.storeName);
+				const records = await Promise.all(chunk.map(key => store.get(key)));
+				await tx.done;
 
-				const gear = this.parseCachedGear(record.gear);
-				if (!gear) {
-					continue;
-				}
-
-				accessUpdates.push({
-					key,
-					record: {
-						...record,
-						lastAccessedAt: now,
-					},
-				});
-				results.set(key, gear);
-
-				if (i % 2000 === 0) {
-					const yieldNow = performance.now();
-					if (yieldNow - lastYieldAt >= 16) {
-						await sleep(0);
-						lastYieldAt = performance.now();
+				for (let i = 0; i < chunk.length; i++) {
+					const record = records[i];
+					if (!record) {
+						continue;
 					}
+
+					const gear = this.parseCachedGear(record.gear);
+					if (!gear) {
+						continue;
+					}
+
+					const key = chunk[i];
+					accessUpdates.push({
+						key,
+						record: {
+							...record,
+							lastAccessedAt: now,
+						},
+					});
+					results.set(key, gear);
+				}
+
+				const yieldNow = performance.now();
+				if (yieldNow - lastYieldAt >= 16) {
+					await sleep(0);
+					lastYieldAt = performance.now();
 				}
 			}
 
@@ -141,6 +145,11 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 				}
 			}
 		} catch (error) {
+			// An abort must not read as a cache miss: the caller would take the partial map,
+			// treat every unread key as uncached, and launch the run the user just cancelled.
+			if (signal?.aborted) {
+				throw error;
+			}
 			console.warn('[Reforge Cache] Failed to read cached reforge results.', error);
 		} finally {
 			db?.close();
@@ -148,14 +157,13 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return results;
 	}
 
-	async set(key: string, optimizedGearLink: string): Promise<void> {
+	async setGear(key: string, optimizedGear: EquipmentSpec): Promise<void> {
 		let db: IDBPDatabase<ReforgeGearCacheDb> | null = null;
 		try {
 			db = await this.getDb();
-			const now = Date.now();
 			await this.putRecord(db, key, {
-				gear: optimizedGearLink,
-				lastAccessedAt: now,
+				gear: ReforgeGearCache.serializeGear(optimizedGear),
+				lastAccessedAt: Date.now(),
 			});
 			await this.prune(db);
 		} catch (error) {
@@ -163,10 +171,6 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		} finally {
 			db?.close();
 		}
-	}
-
-	async setGear(key: string, optimizedGear: EquipmentSpec): Promise<void> {
-		return this.set(key, ReforgeGearCache.equipmentSpecToLinkHash(optimizedGear));
 	}
 
 	async setGearMany(entries: Array<{ key: string; optimizedGear: EquipmentSpec }>): Promise<void> {
@@ -180,7 +184,7 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 				entries.map(entry => ({
 					key: entry.key,
 					record: {
-						gear: ReforgeGearCache.equipmentSpecToLinkHash(entry.optimizedGear),
+						gear: ReforgeGearCache.serializeGear(entry.optimizedGear),
 						lastAccessedAt: Date.now(),
 					},
 				})),
@@ -215,6 +219,9 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return IndividualLinkImporter.tryParseUrlLocation(new URL(gear, window.location.href))?.settings.player?.equipment || null;
 	}
 
+	// Deliberately a fresh connection per call rather than a pooled one: object stores are
+	// created lazily per spec via a version bump (see createStore), and a held-open
+	// connection from any other spec's cache blocks that upgrade.
 	private async getDb(): Promise<IDBPDatabase<ReforgeGearCacheDb>> {
 		await this.storeReadyPromise;
 		return ReforgeGearCache.openDb();
@@ -234,25 +241,23 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 	}
 
 	private async putRecords(db: IDBPDatabase<ReforgeGearCacheDb>, entries: Array<{ key: string; record: ReforgeGearCacheRecord }>): Promise<void> {
+		const putAll = async () => {
+			const tx = db.transaction(this.storeName, 'readwrite');
+			const store = tx.objectStore(this.storeName);
+			// Queue every put and await only once - one microtask round-trip per entry adds up
+			// over a five-figure batch.
+			await Promise.all([...entries.map(entry => store.put(entry.record, entry.key)), tx.done]);
+		};
+
 		try {
-			let tx = db.transaction(this.storeName, 'readwrite');
-			let store = tx.objectStore(this.storeName);
-			for (const entry of entries) {
-				await store.put(entry.record, entry.key);
-			}
-			await tx.done;
+			await putAll();
 		} catch (error) {
 			if (!ReforgeGearCache.isQuotaExceededError(error)) {
 				throw error;
 			}
 
 			await this.prune(db, true);
-			const tx = db.transaction(this.storeName, 'readwrite');
-			const store = tx.objectStore(this.storeName);
-			for (const entry of entries) {
-				await store.put(entry.record, entry.key);
-			}
-			await tx.done;
+			await putAll();
 		}
 	}
 
@@ -269,13 +274,10 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 			const oldestAllowedAccess = now - REFORGE_CACHE_MAX_AGE_MS;
 
 			let staleEntriesDeleted = 0;
-			let cursor = await store.openCursor();
+			let cursor = await store.index('byLastAccessedAt').openCursor(IDBKeyRange.upperBound(oldestAllowedAccess));
 			while (cursor) {
-				const record = cursor.value as ReforgeGearCacheRecord;
-				if (typeof cursor.key !== 'string' || !cursor.key.startsWith(REFORGE_CACHE_KEY_PREFIX) || record.lastAccessedAt < oldestAllowedAccess) {
-					await cursor.delete();
-					staleEntriesDeleted++;
-				}
+				await cursor.delete();
+				staleEntriesDeleted++;
 				cursor = await cursor.continue();
 			}
 
@@ -351,27 +353,7 @@ export class ReforgeGearCache<SpecType extends Spec = Spec> {
 		return error instanceof DOMException && error.name === 'QuotaExceededError';
 	}
 
-	private static async digestString(value: string): Promise<string> {
-		const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
-		return Array.from(new Uint8Array(hashBuffer))
-			.map(byte => byte.toString(16).padStart(2, '0'))
-			.join('');
-	}
-
-	private static equipmentSpecToLinkHash(optimizedGear: EquipmentSpec): string {
-		return new URL(
-			IndividualLinkExporter.createLink(
-				{
-					toProto: () =>
-						IndividualSimSettings.create({
-							apiVersion: CURRENT_API_VERSION,
-							player: {
-								equipment: optimizedGear,
-							},
-						}),
-				} as IndividualSimUI<any>,
-				[SimSettingCategories.Gear],
-			),
-		).hash;
+	private static serializeGear(optimizedGear: EquipmentSpec): string {
+		return REFORGE_CACHE_EQUIPMENT_SPEC_PREFIX + EquipmentSpec.toJsonString(optimizedGear);
 	}
 }

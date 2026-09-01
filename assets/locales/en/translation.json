@@ -847,7 +847,8 @@
 			"high_iteration_rounds": "Running high iteration rounds",
 			"iterations_complete": "{{completed}} / {{total}}<br />iterations complete",
 			"seconds_remaining": "{{seconds}} seconds remaining",
-			"time_remaining": "{{time}} remaining"
+			"time_remaining": "{{time}} remaining",
+			"finalist_iteration_rounds": "Running finalist tie-breaker rounds"
 		},
 		"notifications": {
 			"bulk_sim_cancelled": "Bulk sim cancelled.",
@@ -866,7 +867,9 @@
 			"run_simulation": "Run a simulation to view results",
 			"equip_button": "Equip",
 			"gear_equipped": "Batch gear equipped!",
-			"current_gear": "Current Gear"
+			"current_gear": "Current Gear",
+			"margin_of_error": "95% confidence interval of the mean DPS. Rankings closer than this can change between runs.",
+			"tied_group": "Statistically tied — the order within this group can change between runs"
 		},
 		"import_modal": {
 			"title": "Bag Item Import",
@@ -1234,6 +1237,10 @@
 				"boss_spell_known": {
 					"label": "Boss Spell Known",
 					"tooltip": "<b>True</b> if the target currently has the specified spell, otherwise <b>False</b>."
+				},
+				"boss_spell_cast_time_remaining": {
+					"label": "Boss Spell Cast Time Remaining",
+					"tooltip": "Time remaining on the boss's current cast of the specified spell, or 0 if it isn't being cast."
 				},
 				"unit_is_moving": {
 					"label": "Unit Is Moving",
@@ -2521,5 +2528,31 @@
 		"training_dummy": "Training Dummy",
 		"seek_back": "Rewind {{time}}s",
 		"seek_fwd": "Forward {{time}}s"
+	},
+	"fire_mage": {
+		"combustion_thresholds": {
+			"button": "Calculate Combustion Thresholds",
+			"progress_title": "Calculating Combustion Thresholds",
+			"progress_warning": "Calculating combustion thresholds can be a lengthy process.",
+			"progress_cancel_hint": "You may cancel this operation at any time using the button below.",
+			"modal_title": "Combustion Thresholds",
+			"calculating": "Calculating thresholds",
+			"parsing_logs": "Parsing logs",
+			"table": {
+				"threshold": "Threshold",
+				"current": "Current",
+				"new": "New"
+			},
+			"categories": {
+				"always_send": "Combust Threshold - Always send",
+				"bloodlust": "Combust Threshold - Bloodlust",
+				"alter_time": "Combust Threshold - Alter Time",
+				"no_cds": "Combust Threshold - No CDs",
+				"end_of_combat": "Combust Threshold - End of combat"
+			},
+			"close": "Close",
+			"update": "Update Thresholds",
+			"updated_toast": "Combustion thresholds have been updated"
+		}
 	}
 }

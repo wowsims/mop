@@ -16,6 +16,10 @@ func (war *Warrior) registerPummel() {
 		MaxRange:       core.MaxMeleeRange,
 
 		Cast: core.CastConfig{
+			DefaultCast: core.Cast{
+				NonEmpty: true,
+			},
+			IgnoreHaste: true,
 			CD: core.Cooldown{
 				Timer:    war.NewTimer(),
 				Duration: time.Second * 15,

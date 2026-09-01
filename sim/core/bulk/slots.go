@@ -100,25 +100,9 @@ var bulkSimSelectedOrder = [...]BulkSimItemSlot{
 	BulkSimItemSlotHandWeapon,
 }
 
-var itemTypeToSlotsMap = map[proto.ItemType][]proto.ItemSlot{
-	proto.ItemType_ItemTypeHead:     {proto.ItemSlot_ItemSlotHead},
-	proto.ItemType_ItemTypeNeck:     {proto.ItemSlot_ItemSlotNeck},
-	proto.ItemType_ItemTypeShoulder: {proto.ItemSlot_ItemSlotShoulder},
-	proto.ItemType_ItemTypeBack:     {proto.ItemSlot_ItemSlotBack},
-	proto.ItemType_ItemTypeChest:    {proto.ItemSlot_ItemSlotChest},
-	proto.ItemType_ItemTypeWrist:    {proto.ItemSlot_ItemSlotWrist},
-	proto.ItemType_ItemTypeHands:    {proto.ItemSlot_ItemSlotHands},
-	proto.ItemType_ItemTypeWaist:    {proto.ItemSlot_ItemSlotWaist},
-	proto.ItemType_ItemTypeLegs:     {proto.ItemSlot_ItemSlotLegs},
-	proto.ItemType_ItemTypeFeet:     {proto.ItemSlot_ItemSlotFeet},
-	proto.ItemType_ItemTypeFinger:   {proto.ItemSlot_ItemSlotFinger1, proto.ItemSlot_ItemSlotFinger2},
-	proto.ItemType_ItemTypeTrinket:  {proto.ItemSlot_ItemSlotTrinket1, proto.ItemSlot_ItemSlotTrinket2},
-	proto.ItemType_ItemTypeRanged:   {proto.ItemSlot_ItemSlotMainHand},
-}
-
-func isSecondaryItemSlot(slot proto.ItemSlot, playerCanDualWield bool) bool {
-	return slot == proto.ItemSlot_ItemSlotFinger2 || slot == proto.ItemSlot_ItemSlotTrinket2 || (playerCanDualWield && slot == proto.ItemSlot_ItemSlotOffHand)
-}
+// bulkSimNonWeaponOrder is bulkSimSelectedOrder minus the weapon slots, which are handled
+// pairwise by getAllWeaponCombos.
+var bulkSimNonWeaponOrder = bulkSimSelectedOrder[: len(bulkSimSelectedOrder)-3 : len(bulkSimSelectedOrder)-3]
 
 func getBulkItemSlotFromSlot(slot proto.ItemSlot, playerCanDualWield bool) BulkSimItemSlot {
 	if playerCanDualWield && (slot == proto.ItemSlot_ItemSlotMainHand || slot == proto.ItemSlot_ItemSlotOffHand) {

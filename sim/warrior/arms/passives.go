@@ -32,6 +32,7 @@ func (war *ArmsWarrior) registerMastery() {
 	war.MakeProcTriggerAura(core.ProcTrigger{
 		Name:               "Strikes of Opportunity",
 		ActionID:           procAttackConfig.ActionID,
+		MetricsActionID:    procAttackConfig.ActionID,
 		Callback:           core.CallbackOnSpellHitDealt,
 		Outcome:            core.OutcomeLanded,
 		ProcMask:           core.ProcMaskMelee,

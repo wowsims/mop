@@ -176,7 +176,7 @@ export class MistweaverMonkSimUI extends IndividualSimUI<Spec.SpecMistweaverMonk
 	constructor(parentElem: HTMLElement, player: Player<Spec.SpecMistweaverMonk>) {
 		super(parentElem, player, SPEC_CONFIG);
 
-		new ReforgeOptimizer(this, {
+		this.reforger = new ReforgeOptimizer(this, {
 			statSelectionPresets: Presets.MISTWEAVER_BREAKPOINTS,
 			enableBreakpointLimits: true,
 		});

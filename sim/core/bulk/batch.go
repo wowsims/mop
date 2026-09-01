@@ -9,7 +9,7 @@ import (
 	googleProto "google.golang.org/protobuf/proto"
 )
 
-type BulkSimStageTask struct {
+type bulkSimStageTask struct {
 	Candidate BulkSimCandidate
 	Position  int
 }
@@ -31,7 +31,7 @@ type bulkSimCandidateBatchConfig struct {
 // and the adaptive extra-iteration passes go through here so their queueing, progress
 // accounting, abort handling and merging cannot drift apart.
 func runBulkSimCandidateBatch(request *proto.BulkSimRequest, candidates []BulkSimCandidate, config BulkSimStageConfig, batch bulkSimCandidateBatchConfig, signals simsignals.Signals) []*BulkSimCandidateResult {
-	jobs := make(chan BulkSimStageTask, len(candidates))
+	jobs := make(chan bulkSimStageTask, len(candidates))
 	// Results are written by position rather than collected from a channel: the slots
 	// are disjoint, so no synchronisation is needed and the output order is the
 	// candidate order instead of the completion order.
@@ -72,7 +72,7 @@ func runBulkSimCandidateBatch(request *proto.BulkSimRequest, candidates []BulkSi
 			if signals.Abort.IsTriggered() {
 				return
 			}
-			jobs <- BulkSimStageTask{Candidate: candidate, Position: idx}
+			jobs <- bulkSimStageTask{Candidate: candidate, Position: idx}
 		}
 	}()
 	wg.Wait()

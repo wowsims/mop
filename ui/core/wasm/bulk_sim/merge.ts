@@ -5,9 +5,10 @@ export const cleanBulkSimDpsMetrics = (metrics: DistributionMetrics | undefined)
 	if (!metrics) return undefined;
 	// allValues is kept: selectBulkSimSurvivors needs the per-iteration values. It is
 	// stripped again in bulkSimCandidateResultToProto, so it never reaches the frontend.
-	const cleaned = DistributionMetrics.clone(metrics);
-	cleaned.hist = [];
-	return cleaned;
+	// Mutating in place is safe - the input is a freshly decoded worker result with no
+	// other referent - and skips cloning the allValues array (one float per iteration).
+	metrics.hist = [];
+	return metrics;
 };
 
 export const hasBulkSimStageError = (baseline: ConcurrentBulkSimCandidateResult | undefined, results: ConcurrentBulkSimCandidateResult[]): boolean => {
@@ -59,7 +60,11 @@ const mergeBulkSimDistributionMetrics = (
 		min: metrics.min,
 		minSeed: metrics.minSeed,
 		hist: { ...metrics.hist },
-		allValues: metrics.allValues.slice(),
+		// concat, not slice-then-push: one entry per iteration means this runs to six
+		// figures, so it allocates once at the final size instead of regrowing, and it
+		// takes an array rather than spread call args (which throw RangeError past the
+		// engine's argument limit).
+		allValues: metrics.allValues.concat(additionalMetrics.allValues),
 		aggregatorData: {
 			n: totalN,
 			sumSq: metricsAggregator.sumSq + additionalAggregator.sumSq,
@@ -79,7 +84,6 @@ const mergeBulkSimDistributionMetrics = (
 	for (const [roundedDps, count] of Object.entries(additionalMetrics.hist)) {
 		merged.hist[Number(roundedDps)] = (merged.hist[Number(roundedDps)] ?? 0) + count;
 	}
-	merged.allValues.push(...additionalMetrics.allValues);
 	merged.stdev = Math.sqrt(Math.max(0, merged.aggregatorData!.sumSq / totalN - merged.avg * merged.avg));
 	return merged;
 };
@@ -100,8 +104,11 @@ export const bulkSimCandidateResultToProto = (result: ConcurrentBulkSimCandidate
 	if (!result) return undefined;
 	let dpsMetrics = result.dpsMetrics;
 	if (dpsMetrics && dpsMetrics.allValues.length > 0) {
-		dpsMetrics = DistributionMetrics.clone(dpsMetrics);
+		const allValues = dpsMetrics.allValues;
 		dpsMetrics.allValues = [];
+		const clone = DistributionMetrics.clone(dpsMetrics);
+		dpsMetrics.allValues = allValues;
+		dpsMetrics = clone;
 	}
 	return BulkGearResult.create({
 		candidateIndex: result.candidate.index,
