@@ -89,8 +89,8 @@ BANNED: core/** (except components/) → core/components/**
 2. ✅ Golden snapshot harness (`tools/state-snapshots/`, `npm run test:snapshots`): all 34 launched specs, Sim+Player constructed in node (vite SSR bundle + happy-dom), spec defaults applied, player/sim/raid/encounter protos snapshotted against a committed golden; `fromProto(toProto(x))` asserted as a fixed point. Deterministic across runs. Quirks encoded, not fixed: `Sim.toProto` collapses all-selected filter arrays; `Sim.fromProto` re-expands them AND mutates its argument in place; `waitForInit` never resolves under a stubbed Worker (await `Database.get()` instead).
 3. → moved to Phase 2: the `IndividualSimSettings` envelope (reforge settings, ref stats, load-order contract) is serialized by UI classes today; it gets covered when Phase 2 extracts it into `core/state/serialization.ts`.
 
-### Phase 1 — Import inversions: make `core/` UI-free (M, ~1 wk)
-Pure file moves + callback injection, no store yet:
+### Phase 1 — Import inversions: make `core/` UI-free (M) — ✅ DONE (commit 3f6430ec0)
+All 7 inverted edges fixed; lint rule at **error**, zero violations; snapshots byte-identical; full vite build clean. Notable deltas from the original table: bulk utils/types/constants_auto_gen moved wholesale to `ui/core/bulk/` (generator path updated); link parsing went to `core/state/sim_links.ts` with importer statics delegating; `Player` now consumes a narrow `SpecConfigData` interface instead of `IndividualSimUIConfig` (full type stays in the UI layer); `getSpecConfig` mutate-before-null-check fixed; `relevantStatOptions` import was dead — deleted. Original table:
 
 | Violation | Fix |
 |---|---|
@@ -101,7 +101,7 @@ Pure file moves + callback injection, no store yet:
 | `sim.ts:14` → `ReforgeOptimizer` statics (:834, :852, :868) | Extract `getConfigHash`/`getReforgeGemOptions`/`makeReforgeConfigRequestFields` → `core/state/reforge_request.ts` |
 | `sim.ts:11-13`, `reforge_cache.ts:3-4`, `preset_utils.tsx:2-3` | Move `throwIfAborted` + link-decode helpers into `core/` utility modules |
 
-Flip lint rule to **error**. Verify: snapshots green, `tsc --noEmit`, dev spot check.
+
 
 ### Phase 2 — Complete + encapsulate the state surface, extract persistence (L, 2–3 wk)
 Still no Zustand — makes Phase 3 convert one thing, not eleven.
