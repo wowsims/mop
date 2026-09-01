@@ -1,5 +1,5 @@
-import { ActionMetrics } from '../../proto_utils/sim_result.js';
 import i18n from '../../../i18n/config';
+import { ActionMetrics } from '../../proto_utils/sim_result.js';
 import { formatToCompactNumber, formatToNumber, formatToPercent } from '../../utils.js';
 import { MetricsCombinedTooltipTable } from './metrics_table/metrics_combined_tooltip_table';
 import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table.jsx';
@@ -10,7 +10,7 @@ export class HealingMetricsTable extends MetricsTable<ActionMetrics> {
 	maxHealingAmount: number | null = null;
 	constructor(config: ResultComponentConfig) {
 		config.rootCssClass = 'healing-metrics-root';
-		config.resultsEmitter.on((_, resultData) => {
+		config.resultsEmitter.on(resultData => {
 			const lastResult = resultData
 				? this.getGroupedMetrics(resultData)
 						.filter(g => g.length)

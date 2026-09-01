@@ -1,10 +1,9 @@
 import { ref } from 'tsx-vanilla';
 
 import { ActionId } from '../../proto_utils/action_id.js';
-import { TypedEvent } from '../../typed_event.js';
+import { nextEventID } from '../../state/batch';
 import { isRightClick } from '../../utils.js';
 import { Input, InputConfig } from '../input.js';
-
 // Data for creating an icon-based input component.
 //
 // E.g. one of these for arcane brilliance, another for kings, etc.
@@ -87,7 +86,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 
 		this.updateButtonImage()
 
-		const event = this.config.changedEvent(this.modObject).on(() => {
+		const unsub = this.subscribeToSource(() => {
 			this.updateButtonImage()
 
 			if (this.showWhen()) {
@@ -131,7 +130,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 			{ signal: this.signal },
 		);
 
-		this.addOnDisposeCallback(() => event.dispose());
+		this.addOnDisposeCallback(() => unsub());
 	}
 
 	updateButtonImage() {
@@ -148,11 +147,11 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 	handleLeftClick() {
 		if (this.config.states == 0 || this.currentValue + 1 < this.config.states) {
 			this.currentValue++;
-			this.inputChanged(TypedEvent.nextEventID());
+			this.inputChanged(nextEventID());
 		} else if (this.currentValue > 0) {
 			// roll over
 			this.currentValue = 0;
-			this.inputChanged(TypedEvent.nextEventID());
+			this.inputChanged(nextEventID());
 		}
 	}
 
@@ -167,7 +166,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 				this.currentValue = this.config.states - 1;
 			}
 		}
-		this.inputChanged(TypedEvent.nextEventID());
+		this.inputChanged(nextEventID());
 	}
 
 	getInputElem(): HTMLElement {
@@ -247,7 +246,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 
 		this.storedValue = this.getInputValue();
 		this.setInputValue(0 as ValueType);
-		this.inputChanged(TypedEvent.nextEventID());
+		this.inputChanged(nextEventID());
 	}
 
 	/**
@@ -257,7 +256,7 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 		if (typeof this.storedValue === 'undefined') return;
 
 		this.setInputValue(this.storedValue);
-		this.inputChanged(TypedEvent.nextEventID());
+		this.inputChanged(nextEventID());
 		this.storedValue = undefined;
 	}
 

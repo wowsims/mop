@@ -2,12 +2,12 @@ import tippy, { inlinePositioning, Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { Component } from '../components/component.js';
-import { TypedEvent } from '../typed_event.js';
+import type { StoreSubscribe } from '../state/subscriptions';
 import { SimToolbarItem } from './header/sim_toolbar_item';
 
 // Config for displaying a warning to the user whenever a condition is met.
 interface SimWarning {
-	updateOn: TypedEvent<any>;
+	updateOn: StoreSubscribe;
 	getContent: () => string | Array<string>;
 }
 
@@ -93,7 +93,8 @@ export class ResultsViewer extends Component {
 
 	addWarning(warning: SimWarning) {
 		this.warnings.push(warning);
-		warning.updateOn.on(() => this.updateWarnings());
+		const unsub = warning.updateOn(() => this.updateWarnings());
+		this.addOnDisposeCallback(unsub);
 		this.updateWarnings();
 	}
 

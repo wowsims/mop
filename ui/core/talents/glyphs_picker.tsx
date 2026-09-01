@@ -1,5 +1,7 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config';
+import { getClassI18nKey } from '../../i18n/entity_mapping';
 import { BaseModal } from '../components/base_modal.js';
 import { Component } from '../components/component.js';
 import { ContentBlock } from '../components/content_block.js';
@@ -9,11 +11,9 @@ import { Player } from '../player.js';
 import { Glyphs, ItemQuality } from '../proto/common.js';
 import { ActionId } from '../proto_utils/action_id.js';
 import { Database } from '../proto_utils/database.js';
-import { EventID, TypedEvent } from '../typed_event.js';
+import { EventID, nextEventID } from '../state/batch';
+import { subscribePlayerField } from '../state/subscriptions';
 import { stringComparator } from '../utils.js';
-import { getClassI18nKey } from '../../i18n/entity_mapping';
-import i18n from '../../i18n/config';
-
 export type GlyphConfig = {
 	name: string;
 	description: string;
@@ -142,7 +142,7 @@ class GlyphPicker extends Input<Player<any>, number> {
 		super(parent, 'glyph-picker-root', player, {
 			id: `glyph-picker-glyph-${glyphField}`,
 			inline: true,
-			changedEvent: (player: Player<any>) => player.glyphsChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'glyphs')(onChange),
 			getValue: (player: Player<any>) => player.getGlyphs()[glyphField] as number,
 			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 				const glyphs = player.getGlyphs();
@@ -295,7 +295,7 @@ class GlyphSelectorModal extends BaseModal {
 				}
 				anchorElem.value.addEventListener('click', event => {
 					event.preventDefault();
-					this.glyphPicker?.setValue(TypedEvent.nextEventID(), glyphData.id);
+					this.glyphPicker?.setValue(nextEventID(), glyphData.id);
 				});
 			}
 			if (iconElem.value) {
@@ -309,7 +309,7 @@ class GlyphSelectorModal extends BaseModal {
 		this.listItems = listItemElems;
 		this.list.appendChild(<>{this.listItems}</>);
 
-		this.glyphPicker.player.glyphsChangeEmitter.on(() => {
+		subscribePlayerField(this.glyphPicker.player, 'glyphs')(() => {
 			this.applyFilters();
 		});
 	}

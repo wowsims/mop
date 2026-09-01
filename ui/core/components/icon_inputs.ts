@@ -3,11 +3,11 @@ import { Player } from '../player';
 import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '../proto/common.js';
 import { ActionId } from '../proto_utils/action_id.js';
 import { Raid } from '../raid';
-import { EventID, TypedEvent } from '../typed_event';
+import { EventID } from '../state/batch';
+import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '../state/subscriptions';
 import * as InputHelpers from './input_helpers';
 import { IconEnumPicker } from './pickers/icon_enum_picker.jsx';
 import { IconPicker } from './pickers/icon_picker.jsx';
-
 // Component Functions
 
 export type IconInputConfig<ModObject, T> = InputHelpers.TypedIconPickerConfig<ModObject, T> | InputHelpers.TypedIconEnumPickerConfig<ModObject, T>;
@@ -45,7 +45,7 @@ export function makeBooleanRaidBuffInput<SpecType extends Spec>(
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getBuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.getRaid()!.buffsChangeEmitter, player.raceChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeAll([subscribeRaidField(player.getRaid()!, 'buffs'), subscribePlayerField(player, 'race')])(onChange),
 		},
 		config.actionId,
 		config.fieldName,
@@ -61,7 +61,7 @@ export function makeBooleanPartyBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player.getParty()!,
 			getValue: (party: Party) => party.getBuffs(),
 			setValue: (eventID: EventID, party: Party, newVal: PartyBuffs) => party.setBuffs(eventID, newVal),
-			changeEmitter: (party: Party) => party.buffsChangeEmitter,
+			storeSubscribe: (party: Party, onChange: () => void) => subscribePartyBuffs(party)(onChange),
 		},
 		config.actionId,
 		config.fieldName,
@@ -78,7 +78,7 @@ export function makeBooleanIndividualBuffInput<SpecType extends Spec>(
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.buffsChangeEmitter, player.raceChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeAll([subscribePlayerField(player, 'buffs'), subscribePlayerField(player, 'race')])(onChange),
 		},
 		config.actionId,
 		config.fieldName,
@@ -95,7 +95,7 @@ export function makeBooleanConsumeInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getConsumes(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: ConsumesSpec) => player.setConsumes(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.consumesChangeEmitter, player.professionChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeAll([subscribePlayerField(player, 'consumables'), subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')])(onChange),
 			showWhen: (player: Player<SpecType>) => !config.showWhen || config.showWhen(player),
 		},
 		config.actionId,
@@ -111,7 +111,7 @@ export function makeBooleanDebuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getDebuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: Debuffs) => player.getRaid()!.setDebuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.getRaid()!.debuffsChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeRaidField(player.getRaid()!, 'debuffs')(onChange),
 		},
 		config.actionId,
 		config.fieldName,
@@ -137,7 +137,7 @@ export function makeTristateRaidBuffInput<SpecType extends Spec>(
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getBuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.getRaid()!.buffsChangeEmitter, player.raceChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeAll([subscribeRaidField(player.getRaid()!, 'buffs'), subscribePlayerField(player, 'race')])(onChange),
 		},
 		config.actionId,
 		config.impId,
@@ -155,7 +155,7 @@ export function makeTristateIndividualBuffInput<SpecType extends Spec>(
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.buffsChangeEmitter, player.raceChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeAll([subscribePlayerField(player, 'buffs'), subscribePlayerField(player, 'race')])(onChange),
 		},
 		config.actionId,
 		config.impId,
@@ -172,7 +172,7 @@ export function makeTristateDebuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
 			getValue: (raid: Raid) => raid.getDebuffs(),
 			setValue: (eventID: EventID, raid: Raid, newVal: Debuffs) => raid.setDebuffs(eventID, newVal),
-			changeEmitter: (raid: Raid) => raid.debuffsChangeEmitter,
+			storeSubscribe: (raid: Raid, onChange: () => void) => subscribeRaidField(raid, 'debuffs')(onChange),
 		},
 		config.actionId,
 		config.impId,
@@ -197,7 +197,7 @@ export function makeQuadstateDebuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
 			getValue: (raid: Raid) => raid.getDebuffs(),
 			setValue: (eventID: EventID, raid: Raid, newVal: Debuffs) => raid.setDebuffs(eventID, newVal),
-			changeEmitter: (raid: Raid) => raid.debuffsChangeEmitter,
+			storeSubscribe: (raid: Raid, onChange: () => void) => subscribeRaidField(raid, 'debuffs')(onChange),
 		},
 		config.actionId,
 		config.impId,
@@ -224,7 +224,7 @@ export function makeMultistateRaidBuffInput<SpecType extends Spec>(
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getRaid()!.getBuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: RaidBuffs) => player.getRaid()!.setBuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.getRaid()!.buffsChangeEmitter, player.raceChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeAll([subscribeRaidField(player.getRaid()!, 'buffs'), subscribePlayerField(player, 'race')])(onChange),
 		},
 		config.actionId,
 		config.numStates,
@@ -244,7 +244,7 @@ export function makeMultistatePartyBuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player.getParty()!,
 			getValue: (party: Party) => party.getBuffs(),
 			setValue: (eventID: EventID, party: Party, newVal: PartyBuffs) => party.setBuffs(eventID, newVal),
-			changeEmitter: (party: Party) => party.buffsChangeEmitter,
+			storeSubscribe: (party: Party, onChange: () => void) => subscribePartyBuffs(party)(onChange),
 		},
 		actionId,
 		numStates,
@@ -262,7 +262,7 @@ export function makeMultistateIndividualBuffInput<SpecType extends Spec>(
 			showWhen: (player: Player<SpecType>) => !config.faction || config.faction == player.getFaction(),
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.buffsChangeEmitter, player.raceChangeEmitter]),
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribeAll([subscribePlayerField(player, 'buffs'), subscribePlayerField(player, 'race')])(onChange),
 		},
 		config.actionId,
 		config.numStates,
@@ -283,7 +283,7 @@ export function makeMultistateMultiplierIndividualBuffInput<SpecType extends Spe
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getBuffs(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
-			changeEmitter: (player: Player<SpecType>) => player.buffsChangeEmitter,
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'buffs')(onChange),
 		},
 		actionId,
 		numStates,
@@ -303,7 +303,7 @@ export function makeMultistateMultiplierDebuffInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player.getRaid()!,
 			getValue: (raid: Raid) => raid.getDebuffs(),
 			setValue: (eventID: EventID, raid: Raid, newVal: Debuffs) => raid.setDebuffs(eventID, newVal),
-			changeEmitter: (raid: Raid) => raid.debuffsChangeEmitter,
+			storeSubscribe: (raid: Raid, onChange: () => void) => subscribeRaidField(raid, 'debuffs')(onChange),
 		},
 		actionId,
 		numStates,
@@ -327,6 +327,5 @@ export function makeMultistateMultiplierDebuffInput<SpecType extends Spec>(
 // 			(!config.faction || config.faction == player.getFaction()),
 // 		getValue: (player: Player<SpecType>) => player.getBuffs(),
 // 		setValue: (eventID: EventID, player: Player<SpecType>, newVal: IndividualBuffs) => player.setBuffs(eventID, newVal),
-// 		changeEmitter: (player: Player<SpecType>) => TypedEvent.onAny([player.buffsChangeEmitter, player.raceChangeEmitter]),
 // 	}, config.fieldName, config.values, config.numColumns, config.direction || IconEnumPickerDirection.Vertical)
 // };

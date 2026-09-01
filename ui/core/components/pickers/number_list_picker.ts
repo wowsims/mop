@@ -1,7 +1,6 @@
-import { TypedEvent } from '../../typed_event.js';
+import { nextEventID } from '../../state/batch';
 import { arrayEquals } from '../../utils.js';
 import { Input, InputConfig } from '../input.js';
-
 /**
  * Data for creating a number list picker.
  */
@@ -29,7 +28,7 @@ export class NumberListPicker<ModObject> extends Input<ModObject, Array<number>>
 		this.inputElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(TypedEvent.nextEventID());
+				this.inputChanged(nextEventID());
 			},
 			{ signal: this.signal },
 		);

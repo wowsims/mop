@@ -1,14 +1,7 @@
+import i18n from '../../../i18n/config';
 import { Stat } from '../../proto/common';
 import { ActionId } from '../../proto_utils/action_id';
-import i18n from '../../../i18n/config';
-import {
-	makeBooleanDebuffInput,
-	makeBooleanIndividualBuffInput,
-	makeBooleanRaidBuffInput,
-	makeMultistateIndividualBuffInput,
-	makeMultistateRaidBuffInput,
-	makeTristateIndividualBuffInput,
-} from '../icon_inputs';
+import { makeBooleanDebuffInput, makeBooleanIndividualBuffInput, makeBooleanRaidBuffInput, makeMultistateIndividualBuffInput, makeMultistateRaidBuffInput } from '../icon_inputs';
 import * as InputHelpers from '../input_helpers';
 import { IconPicker } from '../pickers/icon_picker';
 import { MultiIconPicker } from '../pickers/multi_icon_picker';

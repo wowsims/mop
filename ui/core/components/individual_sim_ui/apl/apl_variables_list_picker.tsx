@@ -4,15 +4,16 @@ import { Player } from '../../../player';
 import { APLValueVariable } from '../../../proto/apl';
 import { UUID } from '../../../proto/common';
 import { renameAPLReference } from '../../../proto_utils/apl_utils';
-import { EventID, TypedEvent } from '../../../typed_event';
+import { EventID, nextEventID } from '../../../state/batch';
+import { subscribePlayerField } from '../../../state/subscriptions';
 import { randomUUID } from '../../../utils';
 import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
+import { aplChildSubscribe } from '../apl_helpers';
 import { APLValuePicker } from '../apl_values';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLNameModal } from './apl_name_modal';
-
 export class APLVariablesListPicker extends Component {
 	constructor(container: HTMLElement, simUI: IndividualSimUI<any>) {
 		super(container, 'apl-variables-list-picker-root');
@@ -22,11 +23,12 @@ export class APLVariablesListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.variables.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker', 'apl-value-variables-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.variables.name'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
 			getValue: (player: Player<any>) => player.aplRotation.valueVariables || [],
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLValueVariable>) => {
-				player.aplRotation.valueVariables = newValue;
-				player.rotationChangeEmitter.emit(eventID);
+				player.modifyAplRotation(eventID, rotation => {
+					rotation.valueVariables = newValue;
+				});
 			},
 			newItem: () => this.createValueVariable(i18n.t('rotation_tab.apl.variables.newVariableName')),
 			onCopyItem: (index: number) => {
@@ -41,7 +43,7 @@ export class APLVariablesListPicker extends Component {
 						const newItem = APLValueVariable.create({ name, value: oldItem.value });
 						const newList = variables.slice();
 						newList.splice(index, 0, newItem);
-						listPicker.config.setValue(TypedEvent.nextEventID(), simUI.player, newList);
+						listPicker.config.setValue(nextEventID(), simUI.player, newList);
 					},
 				});
 			},
@@ -123,9 +125,10 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 				defaultValue: sourceValue.name,
 				existingNames: () => (player.aplRotation.valueVariables || []).filter(v => v !== sourceValue).map(v => v.name),
 				onSubmit: (name: string) => {
-					renameAPLReference(player.aplRotation, { type: 'variable', oldName: sourceValue.name, newName: name });
-					sourceValue.name = name;
-					player.rotationChangeEmitter.emit(TypedEvent.nextEventID());
+					player.modifyAplRotation(nextEventID(), rotation => {
+						renameAPLReference(rotation, { type: 'variable', oldName: sourceValue.name, newName: name });
+						sourceValue.name = name;
+					});
 				},
 			});
 		});
@@ -134,7 +137,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 			id: randomUUID(),
 			label: i18n.t('rotation_tab.apl.variables.attributes.value'),
 			labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getSourceValue().value,
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const sourceValue = this.getSourceValue();

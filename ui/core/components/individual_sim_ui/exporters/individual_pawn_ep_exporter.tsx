@@ -1,8 +1,8 @@
+import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { PseudoStat, Spec, Stat } from '../../../proto/common';
 import { UnitStat } from '../../../proto_utils/stats';
 import { IndividualExporter } from './individual_exporter';
-import i18n from '../../../../i18n/config';
 
 export class IndividualPawnEPExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {
 	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {

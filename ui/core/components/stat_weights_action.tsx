@@ -3,136 +3,24 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
-import { CURRENT_API_VERSION } from '../constants/other';
+import { translateStat } from '../../i18n/localization';
+import { trackEvent, trackPageView } from '../../tracking/utils';
 import { IndividualSimUI } from '../individual_sim_ui.jsx';
 import { Player } from '../player.js';
 import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '../proto/api';
 import { PseudoStat, Stat, UnitStats } from '../proto/common.js';
-import { SavedStatWeightSettings } from '../proto/ui';
-import { translateStat } from '../../i18n/localization';
 import { Stats, UnitStat } from '../proto_utils/stats.js';
 import { RequestTypes } from '../sim_signal_manager';
-import { SimUI } from '../sim_ui';
-import { EventID, TypedEvent } from '../typed_event.js';
+import { EventID, nextEventID } from '../state/batch';
+import { StatWeightActionSettings } from '../state/stat_weight_settings';
+import { subscribePlayerField, subscribeStatWeightsChange } from '../state/subscriptions';
 import { sanitizeId, stDevToConf90 } from '../utils.js';
 import { BaseModal } from './base_modal.jsx';
-import Toast from './toast';
 import { BooleanPicker } from './pickers/boolean_picker.js';
 import { NumberPicker } from './pickers/number_picker.js';
 import { ResultsViewer } from './results_viewer.jsx';
 import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
-import { trackEvent, trackPageView } from '../../tracking/utils';
-export class StatWeightActionSettings {
-	private readonly storageKey: string;
-	readonly changeEmitter = new TypedEvent<void>();
-
-	_excludedStats: Stat[] = [];
-	_excludedPseudoStats: PseudoStat[] = [];
-
-	constructor(simUI: SimUI) {
-		this.storageKey = simUI.getStorageKey('__statweight_settings__');
-		this.changeEmitter.on(() => {
-			const json = SavedStatWeightSettings.toJsonString(this.toProto());
-			window.localStorage.setItem(this.storageKey, json);
-		});
-	}
-
-	set excludedStats(value: Stat[]) {
-		this._excludedStats = value;
-	}
-	get excludedStats(): Stat[] {
-		return this._excludedStats.slice();
-	}
-
-	set excludedPseudoStats(value: PseudoStat[]) {
-		this._excludedPseudoStats = value;
-	}
-	get excludedPseudoStats(): PseudoStat[] {
-		return this._excludedPseudoStats.slice();
-	}
-
-	static updateProtoVersion(_: SavedStatWeightSettings) {
-		// No-op, as there are no proto version migrations currently
-	}
-
-	applyDefaults(eventID: EventID) {
-		this.excludedStats = [];
-		this.excludedPseudoStats = [];
-		this.changeEmitter.emit(eventID);
-	}
-
-	load(eventID: EventID) {
-		const storageValue = window.localStorage.getItem(this.storageKey);
-		if (storageValue) {
-			const settingsProto = SavedStatWeightSettings.fromJsonString(storageValue, { ignoreUnknownFields: true });
-			StatWeightActionSettings.updateProtoVersion(settingsProto);
-
-			const { excludedStats, excludedPseudoStats } = settingsProto;
-			this.excludedStats = excludedStats || [];
-			this.excludedPseudoStats = excludedPseudoStats || [];
-			this.changeEmitter.emit(eventID);
-		}
-	}
-
-	toProto(): SavedStatWeightSettings {
-		return SavedStatWeightSettings.create({
-			apiVersion: CURRENT_API_VERSION,
-			excludedStats: this.excludedStats,
-			excludedPseudoStats: this.excludedPseudoStats,
-		});
-	}
-
-	/**
-	 * Check if a stat should be excluded from weight calculation.
-	 * @param stat
-	 * @returns true if stat should be excluded.
-	 */
-	isStatExcludedFromCalc(stat: Stat): boolean {
-		return !!this.excludedStats.includes(stat);
-	}
-
-	/**
-	 * Check if a pseudostat should be excluded from weight calculation.
-	 * @param pseudoStat
-	 * @returns true if pseudostat should be excluded.
-	 */
-	isPseudoStatExcludedFromCalc(pseudoStat: PseudoStat): boolean {
-		return !!this.excludedPseudoStats.includes(pseudoStat);
-	}
-
-	/**
-	 * Check if a unitstat should be excluded from weight calculation.
-	 * @param unitstat
-	 * @returns true if unitstat should be excluded.
-	 */
-	isUnitStatExcludedFromCalc(unitstat: UnitStat): boolean {
-		return unitstat.isStat() ? this.isStatExcludedFromCalc(unitstat.getStat()) : this.isPseudoStatExcludedFromCalc(unitstat.getPseudoStat());
-	}
-
-	/**
-	 * Set whether a stat should be excluded from calculation.
-	 * @param stat
-	 * @param exclude
-	 */
-	setStatExcluded(eventID: EventID, stat: UnitStat, exclude: boolean) {
-		const updateStatEntry = <T extends Stat | PseudoStat>(s: T, target: T[]) => {
-			const currentIdx = target.indexOf(s);
-			if (exclude) {
-				if (currentIdx === -1) target.push(s);
-			} else if (currentIdx !== -1) {
-				target.splice(currentIdx, 1);
-			}
-			return target;
-		};
-		if (stat.isStat()) {
-			this.excludedStats = updateStatEntry(stat.getStat(), this.excludedStats);
-		} else {
-			this.excludedPseudoStats = updateStatEntry(stat.getPseudoStat(), this.excludedPseudoStats);
-		}
-		this.changeEmitter.emit(eventID);
-	}
-}
-
+import Toast from './toast';
 export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);
 	simUI.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
@@ -330,7 +218,6 @@ export class EpWeightsMenu extends BaseModal {
 		updateType();
 
 		const updateEpRefStat = () => {
-			this.simUI.player.epRefStatChangeEmitter.emit(TypedEvent.nextEventID());
 			this.simUI.prevEpSimResult = this.calculateEp(this.getPrevSimResult());
 			this.updateTable();
 		};
@@ -409,7 +296,7 @@ export class EpWeightsMenu extends BaseModal {
 			let result: StatWeightsResult | null = null;
 			try {
 				result = await this.simUI.player.computeStatWeights(
-					TypedEvent.nextEventID(),
+					nextEventID(),
 					epStatsToCalc,
 					epPseudoStatsToCalc,
 					this.epReferenceStat,
@@ -487,7 +374,7 @@ export class EpWeightsMenu extends BaseModal {
 			id: 'ep-show-all-stats',
 			label: i18n.t('sidebar.buttons.stat_weights.modal.show_all_stats'),
 			inline: true,
-			changedEvent: () => new TypedEvent(),
+			storeSubscribe: () => () => {},
 			getValue: () => this.showAllStats,
 			setValue: (_eventID: EventID, _menu: EpWeightsMenu, newValue: boolean) => {
 				this.showAllStats = newValue;
@@ -501,7 +388,7 @@ export class EpWeightsMenu extends BaseModal {
 			new NumberPicker(cell, this.simUI.player, {
 				id: `ep-ratio-${idx}`,
 				float: true,
-				changedEvent: player => player.epRatiosChangeEmitter,
+				storeSubscribe: (player, onChange: () => void) => subscribePlayerField(player, 'epRatios')(onChange),
 				getValue: () => this.simUI.player.getEpRatios()[idx],
 				setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 					const epRatios = player.getEpRatios();
@@ -512,7 +399,7 @@ export class EpWeightsMenu extends BaseModal {
 		};
 		const epRatioCells = statsTable.filter(({ type, ratioRef }) => type === 'ep' && !!ratioRef?.value).map(({ ratioRef }) => ratioRef!.value!);
 		epRatioCells.forEach(makeEpRatioCell);
-		this.simUI.player.epRatiosChangeEmitter.on(_eventID => this.updateTable());
+		subscribePlayerField(this.simUI.player, 'epRatios')(() => this.updateTable());
 
 		const weightRatioCells = statsTable.filter(({ type, ratioRef }) => type === 'weight' && !!ratioRef?.value).map(({ ratioRef }) => ratioRef!.value!);
 		weightRatioCells.forEach(makeEpRatioCell);
@@ -568,7 +455,7 @@ export class EpWeightsMenu extends BaseModal {
 		for (const pseudoStat of excludedPseudoStats) {
 			newWeights = newWeights.withPseudoStat(pseudoStat, oldWeights.getPseudoStat(pseudoStat));
 		}
-		this.simUI.player.setEpWeights(TypedEvent.nextEventID(), newWeights);
+		this.simUI.player.setEpWeights(nextEventID(), newWeights);
 	}
 
 	/**
@@ -640,7 +527,7 @@ export class EpWeightsMenu extends BaseModal {
 				id: 'sw-stat-toggle-' + stat.getFullName(this.simUI.player.getClass()),
 				getValue: epWeightsModal => !epWeightsModal.settings.isUnitStatExcludedFromCalc(stat),
 				setValue: (eventID, epWeightsModal, newValue) => epWeightsModal.settings.setStatExcluded(eventID, stat, !newValue),
-				changedEvent: epWeightsModal => epWeightsModal.settings.changeEmitter,
+				storeSubscribe: (epWeightsModal, onChange: () => void) => subscribeStatWeightsChange(epWeightsModal.settings)(onChange),
 				enableWhen: epWeightsModal => !stat.isStat() || epWeightsModal.epReferenceStat != stat.getStat(),
 			});
 		}
@@ -650,7 +537,7 @@ export class EpWeightsMenu extends BaseModal {
 		new NumberPicker(currentEpCell, this.simUI.player, {
 			id: `ep-weight-stat-${sanitizeId(stat.getShortName(this.simUI.player.playerClass.classID))}`,
 			float: true,
-			changedEvent: (player: Player<any>) => player.epWeightsChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'epWeights')(onChange),
 			getValue: () => this.simUI.player.getEpWeights().getUnitStat(stat),
 			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 				const epWeights = player.getEpWeights().withUnitStat(stat, newValue);

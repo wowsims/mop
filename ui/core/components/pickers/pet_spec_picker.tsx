@@ -4,9 +4,9 @@ import { ref } from 'tsx-vanilla';
 import { Player } from '../../player';
 import { PetSpec } from '../../proto/hunter';
 import { HunterSpecs } from '../../proto_utils/utils';
-import { TypedEvent } from '../../typed_event';
+import { nextEventID } from '../../state/batch';
+import { subscribePlayerField } from '../../state/subscriptions';
 import { Component } from '../component';
-
 // Specs with corresponding icon keys
 const specs: Array<{ spec: PetSpec; label: string; iconKey: string }> = [
 	{ spec: PetSpec.Ferocity, label: 'Ferocity', iconKey: 'ability_druid_kingofthejungle' },
@@ -53,7 +53,7 @@ export class PetSpecPicker<SpecType extends HunterSpecs> extends Component {
 		this.container = containerRef.value!;
 
 		// Listen and render selection
-		player.specOptionsChangeEmitter.on(() => this.renderActive());
+		subscribePlayerField(player, 'specOptions')(() => this.renderActive());
 		this.renderActive();
 	}
 
@@ -62,7 +62,7 @@ export class PetSpecPicker<SpecType extends HunterSpecs> extends Component {
 		if (newSpec === current) return;
 		const opts = this.player.getClassOptions();
 		opts.petSpec = newSpec;
-		this.player.setClassOptions(TypedEvent.nextEventID(), opts);
+		this.player.setClassOptions(nextEventID(), opts);
 	}
 
 	private renderActive() {

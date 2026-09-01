@@ -1,6 +1,5 @@
-import { TypedEvent } from '../../typed_event.js';
+import { nextEventID } from '../../state/batch';
 import { Input, InputConfig } from '../input.jsx';
-
 export interface EnumValueConfig {
 	name: string;
 	value: number;
@@ -33,7 +32,7 @@ export class EnumPicker<ModObject> extends Input<ModObject, number> {
 		this.selectElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(TypedEvent.nextEventID());
+				this.inputChanged(nextEventID());
 			},
 			{ signal: this.signal },
 		);

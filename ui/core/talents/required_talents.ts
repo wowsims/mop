@@ -1,5 +1,5 @@
-import { Spec } from '../proto/common.js';
 import { IndividualSimUIConfig } from '../individual_sim_ui.js';
+import { Spec } from '../proto/common.js';
 
 export function getRequiredTalentRows<SpecType extends Spec>(specConfig: IndividualSimUIConfig<SpecType>): number[] {
 	if (specConfig.requiredTalentRows) {

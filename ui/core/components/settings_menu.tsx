@@ -1,18 +1,18 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { setLang, supportedLanguages } from '../../i18n/locale_service';
 import i18n from '../../i18n/config';
+import { setLang, supportedLanguages } from '../../i18n/locale_service';
+import { trackEvent } from '../../tracking/utils';
 import { Sim } from '../sim.js';
 import { SimUI } from '../sim_ui.js';
-import { EventID, TypedEvent } from '../typed_event.js';
+import { EventID, nextEventID } from '../state/batch';
+import { subscribeSimField, subscribeUiField } from '../state/subscriptions';
 import { BaseModal } from './base_modal.jsx';
 import { BooleanPicker } from './pickers/boolean_picker.js';
 import { EnumPicker, EnumValueConfig } from './pickers/enum_picker.js';
 import { NumberPicker } from './pickers/number_picker.js';
 import Toast from './toast';
-import { trackEvent } from '../../tracking/utils';
-
 export class SettingsMenu extends BaseModal {
 	private readonly simUI: SimUI;
 
@@ -78,7 +78,7 @@ export class SettingsMenu extends BaseModal {
 					category: 'restore-defaults',
 					label: 'restore',
 				});
-				this.simUI.applyDefaults(TypedEvent.nextEventID());
+				this.simUI.applyDefaults(nextEventID());
 				new Toast({
 					variant: 'success',
 					body: i18n.t('info.options.restore_defaults.success_message'),
@@ -92,7 +92,7 @@ export class SettingsMenu extends BaseModal {
 				label: i18n.t('info.options.fixed_rng_seed.label'),
 				labelTooltip: i18n.t('info.options.fixed_rng_seed.tooltip'),
 				extraCssClasses: ['mb-0'],
-				changedEvent: (sim: Sim) => sim.fixedRngSeedChangeEmitter,
+				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'fixedRngSeed')(onChange),
 				getValue: (sim: Sim) => sim.getFixedRngSeed(),
 				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 					sim.setFixedRngSeed(eventID, newValue);
@@ -101,7 +101,7 @@ export class SettingsMenu extends BaseModal {
 
 		if (lastUsedRngSeed.value) {
 			lastUsedRngSeed.value.textContent = String(this.simUI.sim.getLastUsedRngSeed());
-			this.simUI.sim.lastUsedRngSeedChangeEmitter.on(() => {
+			subscribeSimField(this.simUI.sim, 'lastUsedRngSeedVersion')(() => {
 				if (lastUsedRngSeed.value) lastUsedRngSeed.value.textContent = String(this.simUI.sim.getLastUsedRngSeed());
 			});
 		}
@@ -119,7 +119,7 @@ export class SettingsMenu extends BaseModal {
 						value: i,
 					};
 				}),
-				changedEvent: (sim: Sim) => sim.languageChangeEmitter,
+				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeUiField(sim, 'language')(onChange),
 				getValue: (sim: Sim) => {
 					const idx = langs.indexOf(sim.getLanguage());
 					return idx == -1 ? defaultLang : idx;
@@ -145,7 +145,7 @@ export class SettingsMenu extends BaseModal {
 				label: i18n.t('info.options.feature_toggles.show_threat_metrics'),
 				labelTooltip: 'Shows all options and metrics relevant to tanks, like TPS/DTPS.',
 				inline: true,
-				changedEvent: (sim: Sim) => sim.showThreatMetricsChangeEmitter,
+				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeUiField(sim, 'showThreatMetrics')(onChange),
 				getValue: (sim: Sim) => sim.getShowThreatMetrics(),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 					sim.setShowThreatMetrics(eventID, newValue);
@@ -158,7 +158,7 @@ export class SettingsMenu extends BaseModal {
 				label: i18n.t('info.options.feature_toggles.show_experimental'),
 				labelTooltip: 'Shows experimental options, if there are any active experiments.',
 				inline: true,
-				changedEvent: (sim: Sim) => sim.showExperimentalChangeEmitter,
+				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeUiField(sim, 'showExperimental')(onChange),
 				getValue: (sim: Sim) => sim.getShowExperimental(),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 					trackEvent({
@@ -176,7 +176,7 @@ export class SettingsMenu extends BaseModal {
 				label: i18n.t('info.options.feature_toggles.show_quick_swap'),
 				labelTooltip: 'Allows you to quickly swap between Gems/Enchants through your favorites. (Disabled on touch devices)',
 				inline: true,
-				changedEvent: (sim: Sim) => sim.showQuickSwapChangeEmitter,
+				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeUiField(sim, 'showQuickSwap')(onChange),
 				getValue: (sim: Sim) => sim.getShowQuickSwap(),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 					sim.setShowQuickSwap(eventID, newValue);
@@ -193,7 +193,7 @@ export class SettingsMenu extends BaseModal {
 				id: 'simui-concurrent-workers-picker',
 				label: i18n.t('info.options.use_multiple_cpu_cores.label'),
 				labelTooltip: 'Use web workers to spread sim workload over multiple CPU cores.',
-				changedEvent: (sim: Sim) => sim.wasmConcurrencyChangeEmitter,
+				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeUiField(sim, 'wasmConcurrency')(onChange),
 				getValue: (sim: Sim) => sim.getWasmConcurrency(),
 				setValue: (eventID, sim, newValue) => {
 					trackEvent({

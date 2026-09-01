@@ -1,10 +1,10 @@
 import clsx, { ClassValue } from 'clsx';
 import tippy, { Content as TippyContent } from 'tippy.js';
 
-import { EventID, TypedEvent } from '../typed_event.js';
+import { EventID } from '../state/batch';
+import { Emitter } from '../state/events.js';
 import { existsInDOM } from '../utils';
 import { Component } from './component.js';
-
 /**
  * Data for creating a new input UI element.
  */
@@ -18,8 +18,9 @@ export interface InputConfig<ModObject, T, V = T> {
 
 	defaultValue?: T;
 
-	// Returns the event indicating the mapped value has changed.
-	changedEvent: (obj: ModObject) => TypedEvent<any>;
+	// Subscribes the input to its source (a store selector or an Emitter);
+	// called with a listener, returns the unsubscribe function.
+	storeSubscribe: (obj: ModObject, onChange: () => void) => () => void;
 
 	// Get and set the mapped value.
 	getValue: (obj: ModObject) => T;
@@ -46,7 +47,7 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 	readonly modObject: ModObject;
 
 	protected enabled = true;
-	readonly changeEmitter = new TypedEvent<void>('input-change');
+	readonly changeEmitter = new Emitter<void>();
 	// Can be used to remove any events in addEventListener
 	// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#add_an_abortable_listener
 	public abortController: AbortController;
@@ -65,7 +66,7 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 		if (config.label) this.rootElem.appendChild(this.buildLabel(config));
 		if (config.description) this.rootElem.appendChild(this.buildDescription(config));
 
-		const event = config.changedEvent(this.modObject).on(() => {
+		const onSourceChange = () => {
 			const element = this.getInputElem();
 			if (!existsInDOM(element) || !existsInDOM(this.rootElem)) {
 				this.dispose();
@@ -73,12 +74,18 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 			}
 			this.setInputValue(this.getSourceValue());
 			this.update();
-		});
+		};
+		const disposeSubscription = config.storeSubscribe(this.modObject, onSourceChange);
 
 		this.addOnDisposeCallback(() => {
 			this.abortController?.abort();
-			event.dispose();
+			disposeSubscription();
 		});
+	}
+
+	// Subscribes `listener` to this input's source. Returns the unsubscribe function.
+	protected subscribeToSource(listener: () => void): () => void {
+		return this.inputConfig.storeSubscribe(this.modObject, listener);
 	}
 
 	private buildLabel(config: InputConfig<ModObject, T, V>): JSX.Element {
@@ -153,7 +160,7 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 	// Child classes should call this method when the value in the input element changes.
 	inputChanged(eventID: EventID) {
 		this.setSourceValue(eventID, this.getInputValue());
-		this.changeEmitter.emit(eventID);
+		this.changeEmitter.emit();
 	}
 
 	// Sets the underlying value directly.

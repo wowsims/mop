@@ -1,11 +1,12 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
+import { trackEvent } from '../../../tracking/utils';
 import { SortDirection } from '../../constants/other';
 import { setItemQualityCssClass } from '../../css_utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
-import i18n from '../../../i18n/config';
 import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '../../proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
@@ -15,7 +16,8 @@ import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTE
 import { getPVPSeasonFromItem, isPVPItem } from '../../proto_utils/utils';
 import { Sim } from '../../sim';
 import { SimUI } from '../../sim_ui';
-import { EventID, TypedEvent } from '../../typed_event';
+import { EventID, nextEventID } from '../../state/batch';
+import { StoreSubscribe, subscribeBulkField } from '../../state/subscriptions';
 import { formatDeltaTextElem } from '../../utils';
 import {
 	makePhaseSelector,
@@ -27,10 +29,8 @@ import {
 import { ItemNotice } from '../item_notice/item_notice';
 import { Clusterize } from '../virtual_scroll/clusterize';
 import { FiltersMenu } from './filters_menu';
-import { SelectorModalTabs, getTranslatedTabLabel } from './selector_modal';
+import { getTranslatedTabLabel,SelectorModalTabs } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
-import { trackEvent } from '../../../tracking/utils';
-
 export interface ItemData<T extends ItemListType> {
 	item: T;
 	name: string | HTMLElement;
@@ -52,7 +52,8 @@ interface ItemDataWithIdx<T extends ItemListType> {
 export interface GearData {
 	equipItem: (eventID: EventID, equippedItem: EquippedItem | null) => void;
 	getEquippedItem: () => EquippedItem | null;
-	changeEvent: TypedEvent<any>;
+	// Fires when the equipped item for this slot changes.
+	subscribe: StoreSubscribe;
 }
 
 export type ItemListType = Item | Enchant | Gem | ReforgeData | ItemRandomSuffix | ItemLevelState;
@@ -262,7 +263,7 @@ export default class ItemList<T extends ItemListType> {
 		const removeButton = removeButtonRef.value;
 		if (removeButton) {
 			removeButton.addEventListener('click', _event => {
-				onRemove(TypedEvent.nextEventID());
+				onRemove(nextEventID());
 			});
 
 			switch (label) {
@@ -597,7 +598,7 @@ export default class ItemList<T extends ItemListType> {
 			favoriteIconElem.value!.classList.toggle('fas');
 			favoriteIconElem.value!.classList.toggle('far');
 			listItemElem.dataset.fav = isFavorite.toString();
-			this.player.sim.setFilters(TypedEvent.nextEventID(), filters);
+			this.player.sim.setFilters(nextEventID(), filters);
 		};
 		favoriteElem.value!.addEventListener('click', () => toggleFavorite(listItemElem.dataset.fav === 'false'));
 
@@ -629,9 +630,8 @@ export default class ItemList<T extends ItemListType> {
 				};
 
 				toggleCompareButtonState();
-				simUI.bt?.itemsChangedEmitter.on(() => {
-					toggleCompareButtonState();
-				});
+				// ItemList has no dispose hook (parity with the old emitter listener).
+				if (simUI.bt) subscribeBulkField(simUI.bt, 'items')(() => toggleCompareButtonState());
 
 				compareButton.value!.addEventListener('click', () => {
 					const hasItem = checkHasItem();

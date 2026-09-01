@@ -1,16 +1,16 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
+import { trackEvent } from '../../../tracking/utils';
 import { setItemQualityCssClass } from '../../css_utils';
 import { Player } from '../../player';
 import { UIGem as Gem } from '../../proto/ui.js';
 import { ActionId } from '../../proto_utils/action_id';
 import { SimUI } from '../../sim_ui';
-import { TypedEvent } from '../../typed_event';
+import { nextEventID } from '../../state/batch';
+import { subscribePlayerField } from '../../state/subscriptions';
 import { Component } from '../component';
 import { ContentBlock } from '../content_block';
-import i18n from '../../../i18n/config';
-import { trackEvent } from '../../../tracking/utils';
-
 interface GemSummaryData {
 	gem: Gem;
 	count: number;
@@ -33,7 +33,7 @@ export class GemSummary extends Component {
 			header: { title: i18n.t('gear_tab.gem_summary.title'), extraCssClasses: ['summary-table--gems'] },
 			extraCssClasses: ['summary-table--gems'],
 		});
-		player.gearChangeEmitter.on(() => this.updateTable());
+		this.addOnDisposeCallback(subscribePlayerField(player, 'gear')(() => this.updateTable()));
 	}
 
 	private updateTable() {
@@ -99,7 +99,7 @@ export class GemSummary extends Component {
 							category: 'gems',
 							label: 'reset',
 						});
-						this.player.setGear(TypedEvent.nextEventID(), this.player.getGear().withoutGems(this.player.canDualWield2H()));
+						this.player.setGear(nextEventID(), this.player.getGear().withoutGems(this.player.canDualWield2H()));
 					}}>
 					<i className="fas fa-times me-1"></i>
 					{i18n.t('gear_tab.gem_summary.reset_gems')}

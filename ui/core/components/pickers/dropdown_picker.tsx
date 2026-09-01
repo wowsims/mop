@@ -3,11 +3,10 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { TypedEvent } from '../../typed_event.js';
+import i18n from '../../../i18n/config';
+import { nextEventID } from '../../state/batch';
 import { existsInDOM } from '../../utils.js';
 import { Input, InputConfig } from '../input.js';
-import i18n from '../../../i18n/config';
-
 export interface DropdownValueConfig<V> {
 	value: V;
 	submenu?: (string | V)[];
@@ -42,6 +41,8 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 	private submenus: Array<DropdownSubmenu<V>>;
 
 	private resetCallbacks: (() => void)[] = [];
+	// Guards async createMissingValue resolutions against later setInputValue calls.
+	private setValueSeq = 0;
 
 	constructor(parent: HTMLElement | null, modObject: ModObject, config: DropdownPickerConfig<ModObject, T, V>) {
 		super(parent, 'dropdown-picker-root', modObject, config);
@@ -106,7 +107,14 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 			return;
 		}
 
-		this.valueConfigs = newValueConfigs.filter(vc => !vc.headerText);
+		const filtered = newValueConfigs.filter(vc => !vc.headerText);
+		// Keep the existing config objects when nothing changed: every APL
+		// action-id picker refreshes its options on each rotation edit, and a
+		// fresh-but-equal list would force a button re-render per picker.
+		if (filtered.length === this.valueConfigs.length && filtered.every((vc, i) => this.config.equals(vc.value, this.valueConfigs[i].value))) {
+			return;
+		}
+		this.valueConfigs = filtered;
 		this.setInputValue(this.getSourceValue());
 		return;
 	}
@@ -144,7 +152,7 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 				}
 				const onButtonClick = () => {
 					this.updateValue(valueConfig);
-					this.inputChanged(TypedEvent.nextEventID());
+					this.inputChanged(nextEventID());
 				};
 				buttonRef.value!.addEventListener('click', onButtonClick);
 				this.addOnResetCallback(() => {
@@ -202,7 +210,7 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 			if (typeof submenuText === 'string' && /^[a-z_]+$/.test(submenuText)) {
 				try {
 					translatedText = i18n.t(`rotation_tab.apl.submenus.${submenuText}`);
-				} catch (e) {
+				} catch {
 					translatedText = submenuText;
 				}
 			}
@@ -244,6 +252,7 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 	}
 
 	setInputValue(newSrcValue: T) {
+		const seq = ++this.setValueSeq;
 		const newValue = this.sourceToValue(newSrcValue);
 		const newSelection = this.valueConfigs.find(v => this.config.equals(v.value, newValue))!;
 		if (newSelection) {
@@ -251,13 +260,21 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 		} else if (newValue == null) {
 			this.updateValue(null);
 		} else if (this.config.createMissingValue) {
-			this.config.createMissingValue(newValue).then(newSelection => this.updateValue(newSelection));
+			this.config.createMissingValue(newValue).then(newSelection => {
+				if (seq !== this.setValueSeq || this.isDisposed) return;
+				this.updateValue(newSelection);
+			});
 		} else {
 			this.updateValue(null);
 		}
 	}
 
 	private updateValue(newValue: DropdownValueConfig<V> | null) {
+		// Same selection object as already rendered: nothing to do. This is the
+		// hot path when a rotation edit re-syncs every dropdown in the APL editor.
+		if (newValue && newValue === this.currentSelection) {
+			return;
+		}
 		this.currentSelection = newValue;
 
 		// Update button

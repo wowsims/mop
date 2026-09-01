@@ -3,8 +3,7 @@ import { Player } from '../player.js';
 import { HunterOptions_PetType as PetType, PetSpec } from '../proto/hunter.js';
 import { ActionId } from '../proto_utils/action_id.js';
 import { HunterSpecs } from '../proto_utils/utils.js';
-import { EventID, TypedEvent } from '../typed_event.js';
-
+import { EventID } from '../state/batch';
 export function makePetTypeInputConfig<SpecType extends HunterSpecs>(): InputHelpers.TypedIconEnumPickerConfig<any, PetType> {
 	return InputHelpers.makeClassOptionsEnumIconInput<SpecType, PetType>({
 		extraCssClasses: ['pet-type-picker'],
@@ -66,12 +65,10 @@ export class HunterPet<SpecType extends HunterSpecs> {
 
 	private spec: PetSpec;
 
-	readonly specChangeEmitter: TypedEvent<void>;
 
 	constructor(player: Player<SpecType>) {
 		this.player = player;
 		this.spec = defaultSpec;
-		this.specChangeEmitter = this.player.specOptionsChangeEmitter;
 	}
 
 	getSpec(): PetSpec {

@@ -1,11 +1,10 @@
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Player } from '../../../player';
-import { TypedEvent } from '../../../typed_event';
+import { nextEventID } from '../../../state/batch';
 import { Component } from '../../component';
 import { ListPicker } from '../../pickers/list_picker';
 import { APLNameModal } from './apl_name_modal';
-
 export type AplFloatingActionBarConfig = {
 	itemName: string;
 	modalTitle?: string;
@@ -36,13 +35,13 @@ export class AplFloatingActionBar extends Component {
 					onSubmit: (name: string) => {
 						const newItem = config.createItem!(name);
 						const newList = listPicker.config.getValue(listPicker.modObject).concat([newItem]);
-						listPicker.config.setValue(TypedEvent.nextEventID(), listPicker.modObject, newList);
+						listPicker.config.setValue(nextEventID(), listPicker.modObject, newList);
 					},
 				});
 			} else {
 				const newItem = listPicker.config.newItem();
 				const newList = listPicker.config.getValue(listPicker.modObject).concat([newItem]);
-				listPicker.config.setValue(TypedEvent.nextEventID(), listPicker.modObject, newList);
+				listPicker.config.setValue(nextEventID(), listPicker.modObject, newList);
 			}
 		});
 
@@ -54,7 +53,7 @@ export class AplFloatingActionBar extends Component {
 		);
 
 		resetButton.addEventListener('click', () => {
-			simUI.applyEmptyAplRotation(TypedEvent.nextEventID());
+			simUI.applyEmptyAplRotation(nextEventID());
 		});
 
 		new IntersectionObserver(

@@ -1,9 +1,9 @@
+import i18n from '../../../i18n/config';
 import { LOCAL_STORAGE_PREFIX, REPO_RELEASES_URL } from '../../constants/other';
-import { isDevMode, isNative } from '../../utils';
+import { Sim } from '../../sim';
+import { isDevMode } from '../../utils';
 import { Component } from '../component';
 import Toast from '../toast';
-import i18n from '../../../i18n/config';
-import { Sim } from '../../sim';
 
 export class NoticeNativeSim extends Component {
 	container: HTMLElement;

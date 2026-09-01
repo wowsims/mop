@@ -1,12 +1,12 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config';
+import { trackPageView } from '../../tracking/utils';
 import { SimUI } from '../sim_ui';
-import { TypedEvent } from '../typed_event';
+import { Emitter } from '../state/events';
 import { downloadString } from '../utils';
 import { BaseModal } from './base_modal';
 import { CopyButton } from './copy_button';
-import i18n from '../../i18n/config';
-import { trackPageView } from '../../tracking/utils';
 
 export interface ExporterOptions {
 	title: string;
@@ -17,7 +17,8 @@ export interface ExporterOptions {
 export abstract class Exporter extends BaseModal {
 	protected abstract readonly simUI: SimUI;
 	private readonly textElem: Element;
-	protected readonly changedEvent: TypedEvent<void> = new TypedEvent();
+	// UI-local signal: export category checkboxes changed.
+	protected readonly changeEmitter = new Emitter<void>();
 
 	constructor(parent: HTMLElement, options: ExporterOptions) {
 		super(parent, 'exporter', { title: options.title, header: true, footer: true });
@@ -57,7 +58,7 @@ export abstract class Exporter extends BaseModal {
 	}
 
 	protected init() {
-		this.changedEvent.on(() => this.updateContent());
+		this.changeEmitter.on(() => this.updateContent());
 		this.updateContent();
 	}
 

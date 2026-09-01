@@ -1,15 +1,15 @@
 import { ref } from 'tsx-vanilla';
 
 import { Player } from '../../player';
-import { ItemSlot, ItemType } from '../../proto/common';
+import { ItemSlot } from '../../proto/common';
 import { EquippedItem } from '../../proto_utils/equipped_item';
 import { SimUI } from '../../sim_ui';
-import { EventID } from '../../typed_event';
+import { EventID } from '../../state/batch';
+import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { Component } from '../component';
 import { GearData } from './item_list';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
 import { createGemContainer, getEmptySlotIconUrl } from './utils';
-
 export default class IconItemSwapPicker extends Component {
 	private readonly iconAnchor: HTMLAnchorElement;
 	private readonly socketsContainerElem: HTMLElement;
@@ -43,7 +43,7 @@ export default class IconItemSwapPicker extends Component {
 			});
 		});
 
-		player.itemSwapSettings.changeEmitter.on(() => {
+		subscribePlayerField(player, 'itemSwap')(() => {
 			this.update(player.itemSwapSettings.getGear().getEquippedItem(slot));
 		});
 	}
@@ -65,7 +65,7 @@ export default class IconItemSwapPicker extends Component {
 							const updateProfession = () => {
 								gemContainer.classList[this.player.isBlacksmithing() ? 'remove' : 'add']('hide');
 							};
-							this.player.professionChangeEmitter.on(updateProfession);
+							subscribeAll([subscribePlayerField(this.player, 'profession1'), subscribePlayerField(this.player, 'profession2')])(updateProfession);
 							updateProfession();
 						}
 						return gemContainer;
@@ -86,7 +86,7 @@ export default class IconItemSwapPicker extends Component {
 				this.player.itemSwapSettings.equipItem(eventID, this.slot, newItem);
 			},
 			getEquippedItem: () => this.player.itemSwapSettings.getItem(this.slot),
-			changeEvent: this.player.itemSwapSettings.changeEmitter,
+			subscribe: subscribePlayerField(this.player, 'itemSwap'),
 		};
 	}
 }

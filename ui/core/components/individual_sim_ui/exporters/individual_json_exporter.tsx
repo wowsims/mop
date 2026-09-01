@@ -1,3 +1,4 @@
+import i18n from '../../../../i18n/config';
 import { SimSettingCategories } from '../../../constants/sim_settings';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Spec } from '../../../proto/common';
@@ -5,7 +6,6 @@ import { IndividualSimSettings } from '../../../proto/ui';
 import { getEnumValues, jsonStringifyWithFlattenedPaths } from '../../../utils';
 import { IndividualImporter } from '../importers/individual_importer';
 import { IndividualExporter } from './individual_exporter';
-import i18n from '../../../../i18n/config';
 
 export class IndividualJsonExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {
 	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {

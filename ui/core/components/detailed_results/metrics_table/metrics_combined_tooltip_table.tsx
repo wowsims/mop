@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import tippy, { Props as TippyProps } from 'tippy.js';
 
-import { SpellSchool } from '../../../proto/common';
 import i18n from '../../../../i18n/config';
+import { SpellSchool } from '../../../proto/common';
 import { formatToCompactNumber } from '../../../utils';
 import { MetricsTotalBar, MetricsTotalBarProps } from './metrics_total_bar';
 

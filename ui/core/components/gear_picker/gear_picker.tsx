@@ -1,17 +1,18 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
+import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
 import { MISSING_RANDOM_SUFFIX_WARNING } from '../../constants/item_notices';
 import { setItemQualityCssClass } from '../../css_utils';
 import { Player } from '../../player';
-import { ItemLevelState, ItemSlot, ItemType } from '../../proto/common';
+import { ItemLevelState, ItemSlot } from '../../proto/common';
 import { UIEnchant as Enchant, UIGem as Gem } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
 import { getEnchantDescription } from '../../proto_utils/enchants';
 import { EquippedItem } from '../../proto_utils/equipped_item';
-import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
-import i18n from '../../../i18n/config';
 import { SimUI } from '../../sim_ui';
-import { EventID } from '../../typed_event';
+import { EventID } from '../../state/batch';
+import { subscribeAll, subscribePlayerField, subscribeSimField, subscribeUiField } from '../../state/subscriptions';
 import { Component } from '../component';
 import { ItemNotice } from '../item_notice/item_notice';
 import QuickSwapList from '../quick_swap';
@@ -20,7 +21,6 @@ import { addQuickEnchantPopover } from './quick_enchant_popover';
 import { addQuickGemPopover } from './quick_gem_popover';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
 import { createGemContainer, createNameDescriptionLabel, getEmptySlotIconUrl } from './utils';
-
 export const LEFT_ITEM_PICKERS = [
 	ItemSlot.ItemSlotHead,
 	ItemSlot.ItemSlotNeck,
@@ -272,7 +272,7 @@ export class ItemRenderer extends Component {
 				const updateProfession = () => {
 					gemContainer.classList[this.player.isBlacksmithing() ? 'remove' : 'add']('hide');
 				};
-				this.player.professionChangeEmitter.on(updateProfession);
+				subscribeAll([subscribePlayerField(this.player, 'profession1'), subscribePlayerField(this.player, 'profession2')])(updateProfession);
 				updateProfession();
 			}
 			this.socketsElem.push(gemContainer);
@@ -330,7 +330,7 @@ export class ItemPicker extends Component {
 			this.addQuickEnchantHelpers();
 		});
 
-		player.gearChangeEmitter.on(() => {
+		subscribePlayerField(player, 'gear')(() => {
 			this.item = this.player.getEquippedItem(this.slot);
 			if (this._equippedItem) {
 				if (this._equippedItem !== this.quickSwapEnchantPopover?.item) {
@@ -340,19 +340,19 @@ export class ItemPicker extends Component {
 			}
 		});
 
-		player.sim.filtersChangeEmitter.on(() => {
+		subscribeSimField(player.sim, 'filters')(() => {
 			if (this._equippedItem) {
 				this.quickSwapEnchantPopover?.update({ item: this._equippedItem });
 				this.quickSwapGemPopover.forEach(quickSwap => quickSwap.update({ item: this._equippedItem! }));
 			}
 		});
 
-		player.sim.showQuickSwapChangeEmitter.on(() => {
+		subscribeUiField(player.sim, 'showQuickSwap')(() => {
 			this.quickSwapEnchantPopover?.tooltip?.[this.player.sim.getShowQuickSwap() ? 'enable' : 'disable']();
 			this.quickSwapGemPopover.forEach(quickSwap => quickSwap.tooltip?.[this.player.sim.getShowQuickSwap() ? 'enable' : 'disable']());
 		});
 
-		player.professionChangeEmitter.on(() => {
+		subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')])(() => {
 			if (!!this._equippedItem) {
 				this.player.setWowheadData(this._equippedItem, this.itemElem.iconElem);
 			}
@@ -365,7 +365,7 @@ export class ItemPicker extends Component {
 				this.player.equipItem(eventID, this.slot, equippedItem);
 			},
 			getEquippedItem: () => this.player.getEquippedItem(this.slot)?.withChallengeMode(this.player.getChallengeModeEnabled()).withDynamicStats() || null,
-			changeEvent: this.player.gearChangeEmitter,
+			subscribe: subscribePlayerField(this.player, 'gear'),
 		};
 	}
 

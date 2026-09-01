@@ -1,14 +1,13 @@
+import i18n from '../../../i18n/config';
+import { trackEvent } from '../../../tracking/utils';
+import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { Faction, ItemQuality } from '../../proto/common';
-import i18n from '../../../i18n/config';
-import { TypedEvent } from '../../typed_event';
+import { EquippedItem } from '../../proto_utils/equipped_item';
+import { nextEventID } from '../../state/batch';
+import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { Component } from '../component';
 import { ContentBlock } from '../content_block';
-import { IndividualSimUI } from '../../individual_sim_ui';
-import { EquippedItem } from '../../proto_utils/equipped_item';
-import { trackEvent } from '../../../tracking/utils';
-import { RaidFilterOption, UIItemSource } from '../../proto/ui';
-
 type UpgradeSummaryTotal = {
 	justicePoints: number;
 	honorPoints: number;
@@ -60,7 +59,7 @@ export class UpgradeCostsSummary extends Component {
 			extraCssClasses: ['summary-table--upgrade-costs'],
 		});
 
-		TypedEvent.onAny([player.gearChangeEmitter, player.raceChangeEmitter]).on(() => this.updateTable());
+		this.addOnDisposeCallback(subscribeAll([subscribePlayerField(player, 'gear'), subscribePlayerField(player, 'race')])(() => this.updateTable()));
 	}
 
 	private updateTable() {
@@ -150,7 +149,7 @@ export class UpgradeCostsSummary extends Component {
 									}
 								}
 
-								this.player.setGear(TypedEvent.nextEventID(), curGear);
+								this.player.setGear(nextEventID(), curGear);
 							}}>
 							<i className="fas fa-arrow-up me-1"></i>
 							{i18n.t('gear_tab.upgrade_summary.upgrade_all_items')}
@@ -171,7 +170,7 @@ export class UpgradeCostsSummary extends Component {
 							label: 'reset',
 						});
 						const gear = this.player.getGear().withoutUpgrades(this.player.canDualWield2H());
-						this.player.setGear(TypedEvent.nextEventID(), gear);
+						this.player.setGear(nextEventID(), gear);
 					}}>
 					<i className="fas fa-times me-1"></i>
 					{i18n.t('gear_tab.upgrade_summary.reset_upgrades')}

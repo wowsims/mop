@@ -1,6 +1,7 @@
 import { JsonObject } from '@protobuf-ts/runtime';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '../../../proto/common';
 import { Database } from '../../../proto_utils/database';
@@ -9,7 +10,6 @@ import { classGlyphsConfig } from '../../../talents/factory';
 import { GlyphConfig } from '../../../talents/glyphs_picker';
 import Toast from '../../toast';
 import { IndividualImporter } from './individual_importer';
-import i18n from '../../../../i18n/config';
 
 export class IndividualAddonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
 	static WSE_VERSION = getWSEVersion();

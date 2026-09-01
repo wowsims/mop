@@ -1,11 +1,11 @@
+import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { SavedEPWeights } from '../../proto/ui';
 import { Stats } from '../../proto_utils/stats';
-import { TypedEvent } from '../../typed_event';
+import { batch } from '../../state/batch';
+import { subscribePlayerField } from '../../state/subscriptions';
 import { SavedDataManager, SavedDataManagerConfig } from '../saved_data_manager';
-import i18n from '../../../i18n/config';
-
 export const renderSavedEPWeights = (
 	container: HTMLElement | null,
 	simUI: IndividualSimUI<any>,
@@ -21,11 +21,11 @@ export const renderSavedEPWeights = (
 				epWeights: player.getEpWeights().toProto(),
 			}),
 		setData: (eventID, player, newEPWeights) => {
-			TypedEvent.freezeAllAndDo(() => {
+			batch(() => {
 				player.setEpWeights(eventID, Stats.fromProto(newEPWeights.epWeights));
 			});
 		},
-		changeEmitters: [simUI.player.epWeightsChangeEmitter],
+		subscribe: subscribePlayerField(simUI.player, 'epWeights'),
 		equals: (a, b) => SavedEPWeights.equals(a, b),
 		toJson: a => SavedEPWeights.toJson(a),
 		fromJson: obj => SavedEPWeights.fromJson(obj),

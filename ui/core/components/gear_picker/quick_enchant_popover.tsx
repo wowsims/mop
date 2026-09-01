@@ -1,11 +1,10 @@
-import { Player } from '../../player';
 import i18n from '../../../i18n/config';
+import { Player } from '../../player';
 import { ItemSlot } from '../../proto/common';
 import { UIEnchant as Enchant } from '../../proto/ui.js';
 import { EquippedItem } from '../../proto_utils/equipped_item';
-import { TypedEvent } from '../../typed_event';
+import { nextEventID } from '../../state/batch';
 import QuickSwapList from '../quick_swap';
-
 export const addQuickEnchantPopover = (player: Player<any>, tooltipElement: HTMLElement, item: EquippedItem, itemSlot: ItemSlot, openDetailTab: () => void) => {
 	return new QuickSwapList({
 		title: i18n.t('gear_tab.gear_picker.quick_popovers.favorite_enchants.title'),
@@ -31,7 +30,7 @@ export const addQuickEnchantPopover = (player: Player<any>, tooltipElement: HTML
 			}));
 		},
 		onItemClick: clickedItem => {
-			player.equipItem(TypedEvent.nextEventID(), itemSlot, item.withEnchant(clickedItem));
+			player.equipItem(nextEventID(), itemSlot, item.withEnchant(clickedItem));
 		},
 		footerButton: {
 			label: i18n.t('gear_tab.gear_picker.quick_popovers.favorite_enchants.open_enchants'),

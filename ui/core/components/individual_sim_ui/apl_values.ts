@@ -1,140 +1,17 @@
-import { Player } from '../../player.js';
+import i18n from '../../../i18n/config';
 import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
-import {
-	APLValue,
-	APLValueAllTrinketStatProcsActive,
-	APLValueAnyTrinketStatProcsAvailable,
-	APLValueAnd,
-	APLValueAnyStatBuffCooldownsActive,
-	APLValueAnyStatBuffCooldownsMinDuration,
-	APLValueAnyTrinketStatProcsActive,
-	APLValueAuraInternalCooldown,
-	APLValueAuraIsActive,
-	APLValueAuraIsKnown,
-	APLValueAuraNumStacks,
-	APLValueAuraRemainingTime,
-	APLValueAuraShouldRefresh,
-	APLValueAutoTimeToNext,
-	APLValueBossSpellIsCasting,
-	APLValueBossSpellTimeToReady,
-	APLValueCatExcessEnergy,
-	APLValueCatNewSavageRoarDuration,
-	APLValueChannelClipDelay,
-	APLValueCompare,
-	APLValueCompare_ComparisonOperator as ComparisonOperator,
-	APLValueConst,
-	APLValueCurrentComboPoints,
-	APLValueCurrentEclipsePhase,
-	APLValueCurrentEnergy,
-	APLValueCurrentFocus,
-	APLValueCurrentGenericResource,
-	APLValueCurrentHealth,
-	APLValueCurrentHealthPercent,
-	APLValueCurrentLunarEnergy,
-	APLValueCurrentMana,
-	APLValueCurrentManaPercent,
-	APLValueCurrentNonDeathRuneCount,
-	APLValueCurrentRage,
-	APLValueCurrentRuneActive,
-	APLValueCurrentRuneCount,
-	APLValueCurrentRuneDeath,
-	APLValueCurrentRunicPower,
-	APLValueCurrentSolarEnergy,
-	APLValueCurrentTime,
-	APLValueCurrentTimePercent,
-	APLValueDotIsActive,
-	APLValueDotIsActiveOnAllTargets,
-	APLValueDotLowestRemainingTime,
-	APLValueDotPercentIncrease,
-	APLValueDotRemainingTime,
-	APLValueDotTickFrequency,
-	APLValueAfflictionCurrentSnapshot,
-	APLValueEnergyRegenPerSecond,
-	APLValueEnergyTimeToTarget,
-	APLValueFocusRegenPerSecond,
-	APLValueFocusTimeToTarget,
-	APLValueFrontOfTarget,
-	APLValueGCDIsReady,
-	APLValueGCDTimeToReady,
-	APLValueInputDelay,
-	APLValueIsExecutePhase,
-	APLValueIsExecutePhase_ExecutePhaseThreshold as ExecutePhaseThreshold,
-	APLValueMageCurrentCombustionDotEstimate,
-	APLValueMath,
-	APLValueMath_MathOperator as MathOperator,
-	APLValueMax,
-	APLValueMaxComboPoints,
-	APLValueMaxEnergy,
-	APLValueMaxFocus,
-	APLValueMaxHealth,
-	APLValueMaxRage,
-	APLValueMaxRunicPower,
-	APLValueMin,
-	APLValueMonkCurrentChi,
-	APLValueMonkMaxChi,
-	APLValueNextRuneCooldown,
-	APLValueFullRuneCooldown,
-	APLValueNot,
-	APLValueNumberTargets,
-	APLValueNumEquippedStatProcTrinkets,
-	APLValueNumStatBuffCooldowns,
-	APLValueOr,
-	APLValueProtectionPaladinDamageTakenLastGlobal,
-	APLValueRemainingTime,
-	APLValueRemainingTimePercent,
-	APLValueRuneCooldown,
-	APLValueRuneSlotCooldown,
-	APLValueSequenceIsComplete,
-	APLValueSequenceIsReady,
-	APLValueSequenceTimeToReady,
-	APLValueShamanFireElementalDuration,
-	APLValueSpellCanCast,
-	APLValueSpellCastTime,
-	APLValueSpellChanneledTicks,
-	APLValueSpellCPM,
-	APLValueSpellCurrentCost,
-	APLValueSpellIsChanneling,
-	APLValueSpellIsKnown,
-	APLValueSpellIsReady,
-	APLValueSpellNumCharges,
-	APLValueSpellTimeToCharge,
-	APLValueSpellTimeToReady,
-	APLValueSpellTravelTime,
-	APLValueTotemRemainingTime,
-	APLValueTrinketProcsMaxRemainingICD,
-	APLValueTrinketProcsMinRemainingTime,
-	APLValueUnitDistance,
-	APLValueUnitIsMoving,
-	APLValueVariablePlaceholder,
-	APLValueWarlockHandOfGuldanInFlight,
-	APLValueWarlockHauntInFlight,
-	APLValueAfflictionExhaleWindow,
-	APLValueAuraIsInactive,
-	APLValueAuraICDIsReady,
-	APLValueActiveItemSwapSet,
-	APLValueDotBaseDuration,
-	APLValueSpellGCDHastedDuration,
-	APLValueSpellFullCooldown,
-	APLValueDotTimeToNextTick,
-	APLValueSpellInFlight,
-	APLValueBossCurrentTarget,
-	APLValueBossSpellIsKnown,
-	APLValueBossSpellCastTimeRemaining,
-	APLValueSpellIsCasting,
-	APLValueRemainingCastTime,
-	APLValueActionGroupUsed,
-} from '../../proto/apl.js';
+import { Player } from '../../player.js';
+import { APLValue, APLValueActionGroupUsed, APLValueActiveItemSwapSet, APLValueAfflictionCurrentSnapshot, APLValueAfflictionExhaleWindow, APLValueAllTrinketStatProcsActive, APLValueAnd, APLValueAnyStatBuffCooldownsActive, APLValueAnyStatBuffCooldownsMinDuration, APLValueAnyTrinketStatProcsActive, APLValueAnyTrinketStatProcsAvailable, APLValueAuraICDIsReady, APLValueAuraInternalCooldown, APLValueAuraIsActive, APLValueAuraIsInactive, APLValueAuraIsKnown, APLValueAuraNumStacks, APLValueAuraRemainingTime, APLValueAuraShouldRefresh, APLValueAutoTimeToNext, APLValueBossCurrentTarget, APLValueBossSpellCastTimeRemaining, APLValueBossSpellIsCasting, APLValueBossSpellIsKnown, APLValueBossSpellTimeToReady, APLValueCatExcessEnergy, APLValueCatNewSavageRoarDuration, APLValueChannelClipDelay, APLValueCompare, APLValueCompare_ComparisonOperator as ComparisonOperator, APLValueConst, APLValueCurrentComboPoints, APLValueCurrentEclipsePhase, APLValueCurrentEnergy, APLValueCurrentFocus, APLValueCurrentGenericResource, APLValueCurrentHealth, APLValueCurrentHealthPercent, APLValueCurrentLunarEnergy, APLValueCurrentMana, APLValueCurrentManaPercent, APLValueCurrentNonDeathRuneCount, APLValueCurrentRage, APLValueCurrentRuneActive, APLValueCurrentRuneCount, APLValueCurrentRuneDeath, APLValueCurrentRunicPower, APLValueCurrentSolarEnergy, APLValueCurrentTime, APLValueCurrentTimePercent, APLValueDotBaseDuration, APLValueDotIsActive, APLValueDotIsActiveOnAllTargets, APLValueDotLowestRemainingTime, APLValueDotPercentIncrease, APLValueDotRemainingTime, APLValueDotTickFrequency, APLValueDotTimeToNextTick, APLValueEnergyRegenPerSecond, APLValueEnergyTimeToTarget, APLValueFocusRegenPerSecond, APLValueFocusTimeToTarget, APLValueFrontOfTarget, APLValueFullRuneCooldown, APLValueGCDIsReady, APLValueGCDTimeToReady, APLValueInputDelay, APLValueIsExecutePhase, APLValueIsExecutePhase_ExecutePhaseThreshold as ExecutePhaseThreshold, APLValueMageCurrentCombustionDotEstimate, APLValueMath, APLValueMath_MathOperator as MathOperator, APLValueMax, APLValueMaxComboPoints, APLValueMaxEnergy, APLValueMaxFocus, APLValueMaxHealth, APLValueMaxRage, APLValueMaxRunicPower, APLValueMin, APLValueMonkCurrentChi, APLValueMonkMaxChi, APLValueNextRuneCooldown, APLValueNot, APLValueNumberTargets, APLValueNumEquippedStatProcTrinkets, APLValueNumStatBuffCooldowns, APLValueOr, APLValueProtectionPaladinDamageTakenLastGlobal, APLValueRemainingCastTime, APLValueRemainingTime, APLValueRemainingTimePercent, APLValueRuneCooldown, APLValueRuneSlotCooldown, APLValueSequenceIsComplete, APLValueSequenceIsReady, APLValueSequenceTimeToReady, APLValueShamanFireElementalDuration, APLValueSpellCanCast, APLValueSpellCastTime, APLValueSpellChanneledTicks, APLValueSpellCPM, APLValueSpellCurrentCost, APLValueSpellFullCooldown, APLValueSpellGCDHastedDuration, APLValueSpellInFlight, APLValueSpellIsCasting, APLValueSpellIsChanneling, APLValueSpellIsKnown, APLValueSpellIsReady, APLValueSpellNumCharges, APLValueSpellTimeToCharge, APLValueSpellTimeToReady, APLValueSpellTravelTime, APLValueTotemRemainingTime, APLValueTrinketProcsMaxRemainingICD, APLValueTrinketProcsMinRemainingTime, APLValueUnitDistance, APLValueUnitIsMoving, APLValueWarlockHandOfGuldanInFlight, APLValueWarlockHauntInFlight } from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
 import SecondaryResource from '../../proto_utils/secondary_resource';
-import { EventID, TypedEvent } from '../../typed_event.js';
+import { EventID, nextEventID } from '../../state/batch';
 import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import i18n from '../../../i18n/config';
+import { aplChildSubscribe } from './apl_helpers';
 import * as AplHelpers from './apl_helpers.js';
-
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
 
 type APLValue_Value = APLValue['value'];
@@ -201,7 +78,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				}),
 			),
 			equals: (a, b) => a == b,
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
 			setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
 				const sourceValue = this.getSourceValue();
@@ -271,13 +148,14 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				} else {
 					this.setSourceValue(eventID, undefined);
 				}
-				player.rotationChangeEmitter.emit(eventID);
+				player.touchRotation(eventID);
 			},
 		});
 
 		this.currentKind = undefined;
 		this.valuePicker = null;
 
+		this.addChild(this.kindPicker);
 		this.init();
 	}
 
@@ -346,6 +224,9 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		this.currentKind = newKind;
 
 		if (this.valuePicker) {
+			const childIdx = this.children.indexOf(this.valuePicker);
+			if (childIdx >= 0) this.children.splice(childIdx, 1);
+			this.valuePicker.dispose();
 			this.valuePicker.rootElem.remove();
 			this.valuePicker = null;
 		}
@@ -359,7 +240,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		const factory = valueKindFactories[newKind];
 		this.valuePicker = factory.factory(this.rootElem, this.modObject, {
 			id: randomUUID(),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => {
 				const sourceVal = this.getSourceValue();
 				return sourceVal ? (sourceVal.value as any)[newKind] || factory.newValue() : factory.newValue();
@@ -369,9 +250,10 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				if (sourceVal) {
 					(sourceVal.value as any)[newKind] = newValue;
 				}
-				player.rotationChangeEmitter.emit(eventID);
+				player.touchRotation(eventID);
 			},
 		});
+		this.addChild(this.valuePicker);
 	}
 }
 
@@ -532,7 +414,7 @@ export function valueListFieldConfig(field: string): AplHelpers.APLPickerBuilder
 						(index, ref) => {
 							const values = config.getValue(player) as Array<APLValue | undefined>;
 							values[index] = ref;
-							config.setValue(TypedEvent.nextEventID(), player, values);
+							config.setValue(nextEventID(), player, values);
 						},
 						parent,
 					),

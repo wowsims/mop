@@ -1,10 +1,10 @@
+import i18n from '../../../i18n/config';
 import { UnitReference, UnitReference_Type as UnitType } from '../../proto/common';
 import { SimResult, SimResultFilter } from '../../proto_utils/sim_result';
-import { EventID, TypedEvent } from '../../typed_event';
-import i18n from '../../../i18n/config';
+import { EventID } from '../../state/batch';
+import { Emitter } from '../../state/events';
 import { UnitPicker, UnitValue, UnitValueConfig } from '../pickers/unit_picker';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
-
 const ALL_UNITS = -1;
 
 interface FilterData {
@@ -15,7 +15,8 @@ interface FilterData {
 export class ResultsFilter extends ResultComponent {
 	private readonly currentFilter: FilterData;
 
-	readonly changeEmitter: TypedEvent<void>;
+	// UI-local state signal (filter selection lives on this component).
+	readonly changeEmitter: Emitter<void>;
 
 	private readonly playerFilter: UnitPicker<FilterData>;
 	private readonly targetFilter: UnitPicker<FilterData>;
@@ -27,12 +28,12 @@ export class ResultsFilter extends ResultComponent {
 			player: ALL_UNITS,
 			target: ALL_UNITS,
 		};
-		this.changeEmitter = new TypedEvent<void>();
+		this.changeEmitter = new Emitter<void>();
 
 		this.playerFilter = new UnitPicker(this.rootElem, this.currentFilter, {
 			id: 'results-filter-player-filter',
 			extraCssClasses: ['player-filter-root', 'd-none'],
-			changedEvent: (_filterData: FilterData) => this.changeEmitter,
+			storeSubscribe: (_filterData: FilterData, onChange: () => void) => this.changeEmitter.on(onChange),
 			sourceToValue: (src: UnitReference | undefined) => this.refToValue(src),
 			valueToSource: (val: UnitValue) => val.value,
 			getValue: (filterData: FilterData) => this.numToRef(filterData.player, true),
@@ -43,7 +44,7 @@ export class ResultsFilter extends ResultComponent {
 		this.targetFilter = new UnitPicker(this.rootElem, this.currentFilter, {
 			id: 'results-filter-target-filter',
 			extraCssClasses: ['target-filter-root', 'd-none'],
-			changedEvent: (_filterData: FilterData) => this.changeEmitter,
+			storeSubscribe: (_filterData: FilterData, onChange: () => void) => this.changeEmitter.on(onChange),
 			sourceToValue: (src: UnitReference | undefined) => this.refToValue(src),
 			valueToSource: (val: UnitValue) => val.value,
 			getValue: (filterData: FilterData) => this.numToRef(filterData.target, false),
@@ -68,12 +69,12 @@ export class ResultsFilter extends ResultComponent {
 
 	setPlayer(eventID: EventID, newPlayer: number | null) {
 		this.currentFilter.player = newPlayer === null ? ALL_UNITS : newPlayer;
-		this.changeEmitter.emit(eventID);
+		this.changeEmitter.emit();
 	}
 
 	setTarget(eventID: EventID, newTarget: number | null) {
 		this.currentFilter.target = newTarget === null ? ALL_UNITS : newTarget;
-		this.changeEmitter.emit(eventID);
+		this.changeEmitter.emit();
 	}
 
 	private refToValue(ref: UnitReference | undefined): UnitValue {
@@ -150,7 +151,7 @@ export class ResultsFilter extends ResultComponent {
 			} else {
 				this.currentFilter.target = ALL_UNITS;
 			}
-			this.changeEmitter.emit(eventID);
+			this.changeEmitter.emit();
 		}
 
 		return options.map(o => {

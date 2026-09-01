@@ -3,11 +3,11 @@ import { ref } from 'tsx-vanilla';
 import { Player } from '../../player.js';
 import { ActionId } from '../../proto_utils/action_id.js';
 import { SimUI } from '../../sim_ui.jsx';
-import { TypedEvent } from '../../typed_event.js';
+import { batch, nextEventID } from '../../state/batch';
+import { subscribeSimChange } from '../../state/subscriptions';
 import { existsInDOM, isRightClick } from '../../utils.js';
 import { Component } from '../component.js';
 import { IconPicker, IconPickerConfig } from './icon_picker.jsx';
-
 export interface MultiIconPickerItemConfig<ModObject> extends IconPickerConfig<ModObject, any> {}
 
 export interface MultiIconPickerConfig<ModObject> {
@@ -114,7 +114,7 @@ export class MultiIconPicker<ModObject> extends Component {
 			return new IconPicker(optionContainer, modObj, pickerConfig);
 		});
 		simUI.sim.waitForInit().then(() => this.updateButtonImage());
-		const event = simUI.changeEmitter.on(() => {
+		const unsubscribe = subscribeSimChange(simUI.sim)(() => {
 			if (!existsInDOM(this.rootElem) || !existsInDOM(this.dropdownMenu) || !existsInDOM(this.buttonElem)) {
 				this.dispose();
 				return;
@@ -128,7 +128,7 @@ export class MultiIconPicker<ModObject> extends Component {
 				this.rootElem.classList.add('hide');
 			}
 		});
-		this.addOnDisposeCallback(() => event.dispose());
+		this.addOnDisposeCallback(() => unsubscribe());
 	}
 
 	private buildBlankOption() {
@@ -144,10 +144,10 @@ export class MultiIconPicker<ModObject> extends Component {
 	}
 
 	private clearPicker() {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			this.pickers.forEach(picker => {
 				picker.setInputValue(null);
-				picker.inputChanged(TypedEvent.nextEventID());
+				picker.inputChanged(nextEventID());
 			});
 			this.updateButtonImage();
 		});

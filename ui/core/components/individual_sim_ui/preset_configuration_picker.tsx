@@ -1,18 +1,18 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { IndividualSimUI } from '../../individual_sim_ui';
 import i18n from '../../../i18n/config';
 import { translatePresetConfigurationCategory } from '../../../i18n/localization';
+import { IndividualSimUI } from '../../individual_sim_ui';
 import { PresetBuild } from '../../preset_utils';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '../../proto/common';
 import { SavedTalents } from '../../proto/ui';
 import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import { Stats } from '../../proto_utils/stats';
-import { TypedEvent } from '../../typed_event';
+import { batch, nextEventID } from '../../state/batch';
+import { subscribeSimChange } from '../../state/subscriptions';
 import { Component } from '../component';
 import { ContentBlock } from '../content_block';
-
 export enum PresetConfigurationCategory {
 	EPWeights = 'epWeights',
 	Gear = 'gear',
@@ -64,7 +64,7 @@ export class PresetConfigurationPicker extends Component {
 							className="saved-data-set-name"
 							attributes={{ role: 'button' }}
 							onclick={() => {
-								const eventID = TypedEvent.nextEventID();
+								const eventID = nextEventID();
 
 								PresetConfigurationPicker.applyBuild(eventID, build, this.simUI);
 							}}>
@@ -131,12 +131,7 @@ export class PresetConfigurationPicker extends Component {
 				const checkActive = () => dataElemRef.value!.classList[this.isBuildActive(build) ? 'add' : 'remove']('active');
 
 				checkActive();
-				TypedEvent.onAny([
-					this.simUI.player.changeEmitter,
-					this.simUI.sim.settingsChangeEmitter,
-					this.simUI.sim.raid.changeEmitter,
-					this.simUI.sim.encounter.changeEmitter,
-				]).on(checkActive);
+				this.addOnDisposeCallback(subscribeSimChange(this.simUI.sim)(checkActive));
 			});
 			contentBlock.bodyElement.replaceChildren(container);
 		});
@@ -147,7 +142,7 @@ export class PresetConfigurationPicker extends Component {
 		{ gear, itemSwap, rotation, rotationType, talents, epWeights, encounter, settings, reforgeSettings }: PresetBuild,
 		simUI: IndividualSimUI<any>,
 	) {
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			if (gear) simUI.player.setGear(eventID, simUI.sim.db.lookupEquipmentSpec(gear.gear));
 			if (itemSwap) {
 				simUI.player.itemSwapSettings.setItemSwapSettings(
@@ -164,8 +159,9 @@ export class PresetConfigurationPicker extends Component {
 				if (talents.data.glyphs) simUI.player.setGlyphs(eventID, talents.data.glyphs);
 			}
 			if (rotationType) {
-				simUI.player.aplRotation.type = rotationType;
-				simUI.player.rotationChangeEmitter.emit(eventID);
+				simUI.player.modifyAplRotation(eventID, aplRotation => {
+					aplRotation.type = rotationType;
+				});
 			} else if (rotation?.rotation.rotation) {
 				simUI.player.setAplRotation(eventID, rotation.rotation.rotation);
 			}

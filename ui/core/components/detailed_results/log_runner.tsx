@@ -2,15 +2,15 @@
 import debounce from 'lodash/debounce';
 import { ref } from 'tsx-vanilla';
 
-import { SimLog } from '../../proto_utils/logs_parser';
 import i18n from '../../../i18n/config';
-import { TypedEvent } from '../../typed_event.js';
+import { SimLog } from '../../proto_utils/logs_parser';
+import { Emitter } from '../../state/events';
 import { fragmentToString } from '../../utils';
 import { BooleanPicker } from '../pickers/boolean_picker.js';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component.js';
 export class LogRunner extends ResultComponent {
 	private virtualScroll: CustomVirtualScroll | null = null;
-	readonly showDebugChangeEmitter = new TypedEvent<void>('Show Debug');
+	readonly showDebugChangeEmitter = new Emitter<void>();
 	private showDebug = false;
 	private ui: {
 		search: HTMLInputElement;
@@ -82,11 +82,11 @@ export class LogRunner extends ResultComponent {
 			label: i18n.t('results_tab.details.logs.show_debug'),
 			inline: true,
 			reverse: true,
-			changedEvent: () => this.showDebugChangeEmitter,
+			storeSubscribe: (_logRunner, onChange: () => void) => this.showDebugChangeEmitter.on(onChange),
 			getValue: () => this.showDebug,
 			setValue: (eventID, _logRunner, newValue) => {
 				this.showDebug = newValue;
-				this.showDebugChangeEmitter.emit(eventID);
+				this.showDebugChangeEmitter.emit();
 			},
 		});
 

@@ -1,11 +1,10 @@
+import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Spec } from '../../../proto/common';
 import { IndividualSimSettings } from '../../../proto/ui';
 import { Database } from '../../../proto_utils/database';
-import { TypedEvent } from '../../../typed_event';
+import { nextEventID } from '../../../state/batch';
 import { IndividualImporter } from './individual_importer';
-import i18n from '../../../../i18n/config';
-
 export class IndividualJsonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
 	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
 		super(parent, simUI, { title: i18n.t('import.json.title'), allowFileUpload: true });
@@ -28,13 +27,7 @@ export class IndividualJsonImporter<SpecType extends Spec> extends IndividualImp
 		if (proto.player?.equipment) {
 			await Database.loadLeftoversIfNecessary(proto.player.equipment);
 		}
-		if (this.simUI.isWithinRaidSim) {
-			if (proto.player) {
-				this.simUI.player.fromProto(TypedEvent.nextEventID(), proto.player);
-			}
-		} else {
-			this.simUI.fromProto(TypedEvent.nextEventID(), proto);
-		}
+		this.simUI.fromProto(nextEventID(), proto);
 		this.close();
 	}
 }

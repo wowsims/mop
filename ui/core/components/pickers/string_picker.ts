@@ -1,6 +1,5 @@
-import { TypedEvent } from '../../typed_event.js';
+import { nextEventID } from '../../state/batch';
 import { Input, InputConfig } from '../input.js';
-
 /**
  * Data for creating a string picker.
  */
@@ -26,7 +25,7 @@ export class StringPicker<ModObject> extends Input<ModObject, string> {
 		this.inputElem.addEventListener(
 			'input',
 			() => {
-				this.inputChanged(TypedEvent.nextEventID());
+				this.inputChanged(nextEventID());
 			},
 			{ signal: this.signal },
 		);
@@ -66,7 +65,7 @@ export class AdaptiveStringPicker<ModObject> extends Input<ModObject, string> {
 		this.inputElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(TypedEvent.nextEventID());
+				this.inputChanged(nextEventID());
 			},
 			{ signal: this.signal },
 		);

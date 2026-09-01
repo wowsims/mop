@@ -1,17 +1,17 @@
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Player } from '../../../player';
-import { APLAction, APLPrepullAction, APLValue, APLValueConst } from '../../../proto/apl';
-import { EventID } from '../../../typed_event';
+import { APLAction, APLPrepullAction, APLValue } from '../../../proto/apl';
+import { EventID } from '../../../state/batch';
+import { subscribePlayerField } from '../../../state/subscriptions';
 import { randomUUID } from '../../../utils';
 import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
-import { AdaptiveStringPicker } from '../../pickers/string_picker';
 import { APLActionPicker } from '../apl_actions';
-import { APLValueImplStruct, APLValuePicker } from '../apl_values';
+import { aplChildSubscribe } from '../apl_helpers';
+import { APLValuePicker } from '../apl_values';
 import { APLHidePicker } from './hide_picker';
-
 export class APLPrePullListPicker extends Component {
 	constructor(container: HTMLElement, simUI: IndividualSimUI<any>) {
 		super(container, 'apl-pre-pull-list-picker-root');
@@ -21,11 +21,12 @@ export class APLPrePullListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.prePullActions.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker', 'apl-prepull-action-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.prePullActions.name'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
 			getValue: (player: Player<any>) => player.aplRotation.prepullActions,
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLPrepullAction>) => {
-				player.aplRotation.prepullActions = newValue;
-				player.rotationChangeEmitter.emit(eventID);
+				player.modifyAplRotation(eventID, rotation => {
+					rotation.prepullActions = newValue;
+				});
 			},
 			newItem: () =>
 				APLPrepullAction.create({
@@ -62,11 +63,11 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		ListPicker.makeListItemValidations(itemHeaderElem, player, player => player.getCurrentStats().rotationStats?.prepullActions[index]?.validations || []);
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().hide,
 			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 				this.getItem().hide = newValue;
-				this.player.rotationChangeEmitter.emit(eventID);
+				this.player.touchRotation(eventID);
 			},
 		});
 
@@ -75,7 +76,7 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 			label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
 			labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
 			extraCssClasses: ['apl-prepull-actions-doat'],
-			changedEvent: () => this.player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().doAtValue,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
 				if (newValue) {
@@ -86,17 +87,17 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 						uuid: { value: randomUUID() },
 					});
 				}
-				this.player.rotationChangeEmitter.emit(eventID);
+				this.player.touchRotation(eventID);
 			},
 			inline: true,
 		});
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().action!,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
 				this.getItem().action = newValue;
-				this.player.rotationChangeEmitter.emit(eventID);
+				this.player.touchRotation(eventID);
 			},
 		});
 		this.init();

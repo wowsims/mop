@@ -2,9 +2,8 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { ActionId } from '../../proto_utils/action_id.js';
-import { TypedEvent } from '../../typed_event.js';
+import { nextEventID } from '../../state/batch';
 import { Input, InputConfig } from '../input.js';
-
 export enum IconEnumPickerDirection {
 	Vertical = 'vertical',
 	Horizontal = 'Horizontal',
@@ -59,7 +58,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 		this.config = config;
 		this.currentValue = this.config.zeroValue;
 
-		const event = this.config.changedEvent(this.modObject).on(() => {
+		const unsub = this.subscribeToSource(() => {
 			if (this.showWhen()) {
 				this.restoreValue();
 				this.rootElem.classList.remove('hide');
@@ -69,7 +68,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 			}
 		});
 
-		this.addOnDisposeCallback(() => event.dispose());
+		this.addOnDisposeCallback(unsub);
 
 		if (config.tooltip) {
 			const tooltip = tippy(this.rootElem, {
@@ -133,12 +132,12 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 					// Zero out the picker if the selected option is hidden
 					if (this.currentValue == valueConfig.value) {
 						this.setInputValue(this.config.zeroValue);
-						this.inputChanged(TypedEvent.nextEventID());
+						this.inputChanged(nextEventID());
 					}
 				}
 			};
 
-			const event = this.config.changedEvent(this.modObject).on(updateOption);
+			const unsubOption = this.subscribeToSource(updateOption);
 			updateOption();
 
 			option.addEventListener(
@@ -147,11 +146,11 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 					event.preventDefault();
 					this.currentValue = valueConfig.value;
 					this.storedValue = undefined;
-					this.inputChanged(TypedEvent.nextEventID());
+					this.inputChanged(nextEventID());
 				},
 				{ signal: this.signal },
 			);
-			this.addOnDisposeCallback(() => event.dispose());
+			this.addOnDisposeCallback(unsubOption);
 
 			if (valueConfig.tooltip) {
 				const tooltip = tippy(option, {
@@ -174,7 +173,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 
 		this.storedValue = this.getInputValue();
 		this.setInputValue(this.config.zeroValue);
-		this.inputChanged(TypedEvent.nextEventID());
+		this.inputChanged(nextEventID());
 	}
 
 	/**
@@ -191,7 +190,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 		if (this.config.equals(sourceValue, this.config.zeroValue)) {
 			// Source was zeroed by storeValue(); restore the previously saved selection.
 			this.setInputValue(this.storedValue);
-			this.inputChanged(TypedEvent.nextEventID());
+			this.inputChanged(nextEventID());
 		}
 		this.storedValue = undefined;
 	}

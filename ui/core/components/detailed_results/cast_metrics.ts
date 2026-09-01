@@ -1,6 +1,6 @@
+import i18n from '../../../i18n/config';
 import { ActionMetrics } from '../../proto_utils/sim_result.js';
 import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table.jsx';
-import i18n from '../../../i18n/config';
 import { ResultComponentConfig, SimResultData } from './result_component.js';
 
 export class CastMetricsTable extends MetricsTable<ActionMetrics> {

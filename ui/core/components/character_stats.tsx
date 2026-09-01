@@ -3,20 +3,19 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
+import { translateMasterySpellName } from '../../i18n/localization.js';
 import * as Mechanics from '../constants/mechanics.js';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player.js';
 import { ItemSlot, PseudoStat, Race, Spec, Stat, WeaponType } from '../proto/common.js';
 import { ActionId } from '../proto_utils/action_id';
 import { getStatName, masterySpellIDs } from '../proto_utils/names.js';
-import { Stats, UnitStat } from '../proto_utils/stats.js';
-import { EventID, TypedEvent } from '../typed_event.js';
+import { computeStatAttribution, StatMods, Stats, StatWrites, UnitStat } from '../proto_utils/stats.js';
+import { EventID } from '../state/batch';
+import { subscribeAll, subscribePlayerField, subscribeSimChange } from '../state/subscriptions';
 import { Component } from './component.js';
 import { NumberPicker } from './pickers/number_picker.js';
-import { translateMasterySpellName } from '../../i18n/localization.js';
-
-export type StatMods = { base?: Stats; gear?: Stats; talents?: Stats; buffs?: Stats; consumes?: Stats; final?: Stats; stats?: Array<Stat> };
-export type StatWrites = { base: Stats; gear: Stats; talents: Stats; buffs: Stats; consumes: Stats; final: Stats; stats: Array<Stat> };
+export type { StatMods, StatWrites } from '../proto_utils/stats.js';
 
 enum StatGroup {
 	Primary = 'Primary',
@@ -171,7 +170,7 @@ export class CharacterStats extends Component {
 		});
 
 		this.updateStats(player);
-		TypedEvent.onAny([player.currentStatsEmitter, player.sim.changeEmitter, player.talentsChangeEmitter]).on(() => {
+		subscribeAll([subscribePlayerField(player, 'currentStats'), subscribeSimChange(player.sim), subscribePlayerField(player, 'talentsString')])(() => {
 			this.updateStats(player);
 		});
 	}
@@ -182,46 +181,21 @@ export class CharacterStats extends Component {
 		this.hasRacialHitBonus = this.player.getRace() === Race.RaceDraenei;
 		this.activeRacialExpertiseBonuses = this.player.getActiveRacialExpertiseBonuses();
 
-		const baseStats = Stats.fromProto(playerStats.baseStats);
-		const gearStats = Stats.fromProto(playerStats.gearStats);
-		const talentsStats = Stats.fromProto(playerStats.talentsStats);
-		const buffsStats = Stats.fromProto(playerStats.buffsStats);
-		const consumesStats = Stats.fromProto(playerStats.consumesStats);
 		const bonusStats = player.getBonusStats();
-
-		let finalStats = Stats.fromProto(playerStats.finalStats)
-			.add(statMods.base || new Stats())
-			.add(statMods.gear || new Stats())
-			.add(statMods.talents || new Stats())
-			.add(statMods.buffs || new Stats())
-			.add(statMods.consumes || new Stats())
-			.add(statMods.final || new Stats());
-
-		let baseDelta = baseStats.add(statMods.base || new Stats());
-		let gearDelta = gearStats
-			.subtract(baseStats)
-			.subtract(bonusStats)
-			.add(statMods.gear || new Stats());
-		let talentsDelta = talentsStats.subtract(gearStats).add(statMods.talents || new Stats());
-		let buffsDelta = buffsStats.subtract(talentsStats).add(statMods.buffs || new Stats());
-		let consumesDelta = consumesStats.subtract(buffsStats).add(statMods.consumes || new Stats());
-
-		if (this.overwriteDisplayStats) {
-			const statOverwrites = this.overwriteDisplayStats(this.player);
-			if (statOverwrites.stats) {
-				statOverwrites.stats.forEach((stat, _) => {
-					baseDelta = baseDelta.withStat(stat, statOverwrites.base.getStat(stat));
-					gearDelta = gearDelta.withStat(stat, statOverwrites.gear.getStat(stat));
-					talentsDelta = talentsDelta.withStat(stat, statOverwrites.talents.getStat(stat));
-					buffsDelta = buffsDelta.withStat(stat, statOverwrites.buffs.getStat(stat));
-					consumesDelta = consumesDelta.withStat(stat, statOverwrites.consumes.getStat(stat));
-					finalStats = finalStats.withStat(stat, statOverwrites.final.getStat(stat));
-				});
-			}
-		}
-
-		const masteryPoints =
-			this.player.getBaseMastery() + (playerStats.finalStats?.stats[Stat.StatMasteryRating] || 0) / Mechanics.MASTERY_RATING_PER_MASTERY_POINT;
+		const attribution = computeStatAttribution(
+			playerStats,
+			bonusStats,
+			this.player.getBaseMastery(),
+			statMods,
+			this.overwriteDisplayStats ? this.overwriteDisplayStats(this.player) : undefined,
+		);
+		const baseDelta = attribution.base;
+		const gearDelta = attribution.gear;
+		const talentsDelta = attribution.talents;
+		const buffsDelta = attribution.buffs;
+		const consumesDelta = attribution.consumes;
+		const finalStats = attribution.final;
+		const masteryPoints = attribution.masteryPoints;
 
 		let idx = 0;
 		this.stats.forEach(unitStat => {
@@ -473,7 +447,7 @@ export class CharacterStats extends Component {
 					id: `character-bonus-stat-${rootStat}`,
 					label: `${i18n.t('sidebar.character_stats.bonus_prefix')} ${statName}`,
 					extraCssClasses: ['mb-0'],
-					changedEvent: (player: Player<any>) => player.bonusStatsChangeEmitter,
+					storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'bonusStats')(onChange),
 					getValue: (player: Player<any>) => player.getBonusStats().getStat(rootStat),
 					setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 						const bonusStats = player.getBonusStats().withStat(rootStat, newValue);

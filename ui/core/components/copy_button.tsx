@@ -1,8 +1,8 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { Component } from './component';
 import i18n from '../../i18n/config';
+import { Component } from './component';
 
 export interface CopyButtonConfig {
 	getContent: () => string;

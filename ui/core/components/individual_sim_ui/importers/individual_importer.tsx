@@ -1,14 +1,11 @@
-import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '../../../state/sim_links';
-import { SimSettingCategories } from '../../../constants/sim_settings';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '../../../proto/common';
 import { Database } from '../../../proto_utils/database';
 import { classNames } from '../../../proto_utils/names';
-import { TypedEvent } from '../../../typed_event';
-import { getEnumValues } from '../../../utils';
+import { batch, nextEventID } from '../../../state/batch';
+import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '../../../state/sim_links';
 import { Importer, ImporterOptions } from '../../importer';
 import Toast from '../../toast';
-
 // For now this just holds static helpers to match the exporter, so it doesn't extend Importer.
 export abstract class IndividualImporter<SpecType extends Spec> extends Importer {
 	// Exclude UISettings by default, since most users don't intend to export those.
@@ -53,8 +50,8 @@ export abstract class IndividualImporter<SpecType extends Spec> extends Importer
 		const gear = simUI.sim.db.lookupEquipmentSpec(equipmentSpec);
 
 		// Now update settings using the parsed values.
-		const eventID = TypedEvent.nextEventID();
-		TypedEvent.freezeAllAndDo(() => {
+		const eventID = nextEventID();
+		batch(() => {
 			simUI.player.setRace(eventID, race);
 			simUI.player.setGear(eventID, gear);
 			if (talentsStr && talentsStr != '--') {

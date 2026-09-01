@@ -1,11 +1,12 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { Class, ConsumableType, Spec } from '../../proto/common';
 import { Consumable } from '../../proto/db';
 import { Database } from '../../proto_utils/database';
-import { TypedEvent } from '../../typed_event';
+import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { Component } from '../component';
 import { buildIconInput } from '../icon_inputs';
 import * as ConsumablesInputs from '../inputs/consumables';
@@ -13,7 +14,6 @@ import { relevantStatOptions } from '../inputs/stat_options';
 import { IconEnumPicker } from '../pickers/icon_enum_picker';
 import { IconPicker } from '../pickers/icon_picker';
 import { SettingsTab } from './settings_tab';
-import i18n from '../../../i18n/config';
 
 export class ConsumesPicker extends Component {
 	protected settingsTab: SettingsTab;
@@ -69,10 +69,10 @@ export class ConsumesPicker extends Component {
 		const conjuredOptions = ConsumablesInputs.makeConjuredInput(relevantStatOptions(ConsumablesInputs.CONJURED_CONFIG, this.simUI));
 		const conjuredPicker = buildIconInput(potionsElem, this.simUI.player, conjuredOptions);
 
-		const events = TypedEvent.onAny([this.simUI.player.professionChangeEmitter]).on(() =>
+		const unsub = subscribeAll([subscribePlayerField(this.simUI.player, 'profession1'), subscribePlayerField(this.simUI.player, 'profession2')])(() =>
 			this.updateRow(row, [potionsPicker, conjuredPicker, prePotPicker]),
 		);
-		this.addOnDisposeCallback(() => events.dispose());
+		this.addOnDisposeCallback(() => unsub());
 
 		this.updateRow(row, [potionsPicker, conjuredPicker, prePotPicker]);
 	}
@@ -136,8 +136,10 @@ export class ConsumesPicker extends Component {
 		const explosivesoptions = ConsumablesInputs.makeExplosivesInput(relevantStatOptions(ConsumablesInputs.EXPLOSIVE_CONFIG, this.simUI), i18n.t('settings_tab.consumables.engineering.explosives'));
 		const explosivePicker = buildIconInput(engiConsumesElem, this.simUI.player, explosivesoptions);
 
-		const events = this.simUI.player.professionChangeEmitter.on(() => this.updateRow(row, [explosivePicker]));
-		this.addOnDisposeCallback(() => events.dispose());
+		const unsub = subscribeAll([subscribePlayerField(this.simUI.player, 'profession1'), subscribePlayerField(this.simUI.player, 'profession2')])(() =>
+			this.updateRow(row, [explosivePicker]),
+		);
+		this.addOnDisposeCallback(() => unsub());
 
 		// Initial update of row based on current state.
 		this.updateRow(row, [explosivePicker]);

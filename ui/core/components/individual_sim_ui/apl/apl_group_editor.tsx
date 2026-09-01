@@ -3,15 +3,15 @@ import { Player } from '../../../player';
 import { APLAction, APLGroup, APLListItem } from '../../../proto/apl';
 import { UUID } from '../../../proto/common';
 import { renameAPLReference } from '../../../proto_utils/apl_utils';
-import { EventID, TypedEvent } from '../../../typed_event';
+import { EventID, nextEventID } from '../../../state/batch';
 import { randomUUID } from '../../../utils';
 import { Input, InputConfig } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
 import * as AplHelpers from '../apl_helpers';
+import { aplChildSubscribe } from '../apl_helpers';
 import { APLNameModal } from './apl_name_modal';
 import { APLHidePicker } from './hide_picker';
-
 export interface APLGroupEditorConfig extends InputConfig<Player<any>, APLGroup> {
 	index: number;
 }
@@ -50,9 +50,10 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 				defaultValue: group.name,
 				existingNames: () => (player.aplRotation.groups || []).filter(g => g !== group).map(g => g.name),
 				onSubmit: (name: string) => {
-					renameAPLReference(player.aplRotation, { type: 'group', oldName: group.name, newName: name });
-					group.name = name;
-					player.rotationChangeEmitter.emit(TypedEvent.nextEventID());
+					player.modifyAplRotation(nextEventID(), rotation => {
+						renameAPLReference(rotation, { type: 'group', oldName: group.name, newName: name });
+						group.name = name;
+					});
 				},
 			});
 		});
@@ -71,13 +72,13 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 					useIcon: true,
 				},
 			},
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getSourceValue()?.actions || [],
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLListItem>) => {
 				const group = this.getSourceValue();
 				if (group) {
 					group.actions = newValue;
-					player.rotationChangeEmitter.emit(eventID);
+					player.touchRotation(eventID);
 				}
 			},
 			newItem: () =>
@@ -172,22 +173,22 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 		});
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().hide,
 			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 				this.getItem().hide = newValue;
-				this.player.rotationChangeEmitter.emit(eventID);
+				this.player.touchRotation(eventID);
 			},
 		});
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.modObject, {
-			changedEvent: () => this.modObject.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().action!,
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const item = this.getSourceValue();
 				if (item) {
 					this.getItem().action = newValue;
-					player.rotationChangeEmitter.emit(eventID);
+					player.touchRotation(eventID);
 				}
 			},
 		});

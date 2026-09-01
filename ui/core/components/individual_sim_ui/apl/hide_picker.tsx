@@ -1,8 +1,7 @@
 import { Player } from "../../../player";
-import { TypedEvent } from "../../../typed_event";
+import { nextEventID } from '../../../state/batch';
 import { Input, InputConfig } from "../../input";
 import { ListPicker } from "../../pickers/list_picker";
-
 export class APLHidePicker extends Input<Player<any>, boolean> {
 	private readonly inputElem: HTMLElement;
 	private readonly iconElem: HTMLElement;
@@ -18,7 +17,7 @@ export class APLHidePicker extends Input<Player<any>, boolean> {
 			'click',
 			() => {
 				this.setInputValue(!this.getInputValue());
-				this.inputChanged(TypedEvent.nextEventID());
+				this.inputChanged(nextEventID());
 			},
 			{ signal: this.signal },
 		);

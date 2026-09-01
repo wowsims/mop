@@ -2,15 +2,14 @@ import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
-import { translateStatus } from '../../i18n/localization';
-import { translatePlayerClass, translatePlayerSpec } from '../../i18n/localization';
-import { LaunchStatus, raidSimStatus, simLaunchStatuses } from '../launched_sims.js';
+import { translatePlayerClass, translatePlayerSpec,translateStatus } from '../../i18n/localization';
+import { simLaunchStatuses } from '../launched_sims.js';
 import { PlayerClass } from '../player_class.js';
 import { PlayerClasses } from '../player_classes/index.js';
 import { PlayerSpec } from '../player_spec.js';
 import { PlayerSpecs } from '../player_specs/index.js';
 import { Class, Spec } from '../proto/common.js';
-import { raidSimIcon, raidSimLabel, raidSimSiteUrl, textCssClassForClass, textCssClassForSpec } from '../proto_utils/utils.js';
+import { textCssClassForClass, textCssClassForSpec } from '../proto_utils/utils.js';
 import { Component } from './component.js';
 
 interface ClassOptions {
@@ -23,10 +22,6 @@ interface SpecOptions {
 	spec: PlayerSpec<any>;
 }
 
-interface RaidOptions {
-	type: 'Raid';
-}
-
 type SimTitleDropdownConfig = {
 	noDropdown?: boolean;
 };
@@ -35,10 +30,10 @@ type SimTitleDropdownConfig = {
 export class SimTitleDropdown extends Component {
 	private readonly dropdownMenu: HTMLElement | undefined;
 
-	constructor(parent: HTMLElement, currentSpec: PlayerSpec<any> | null, config: SimTitleDropdownConfig = {}) {
+	constructor(parent: HTMLElement, currentSpec: PlayerSpec<any>, config: SimTitleDropdownConfig = {}) {
 		super(parent, 'sim-title-dropdown-root');
 
-		const rootLinkArgs: SpecOptions | RaidOptions = !!currentSpec ? { type: 'Spec', spec: currentSpec } : { type: 'Raid' };
+		const rootLinkArgs: SpecOptions = { type: 'Spec', spec: currentSpec };
 		const rootLink = this.buildRootSimLink(rootLinkArgs);
 
 		if (config.noDropdown) {
@@ -70,9 +65,6 @@ export class SimTitleDropdown extends Component {
 	}
 
 	private buildDropdown() {
-		if (raidSimStatus.status >= LaunchStatus.Alpha) {
-			this.dropdownMenu?.appendChild(<li>{this.buildRaidLink()}</li>);
-		}
 		PlayerClasses.naturalOrder.forEach(klass => this.dropdownMenu?.appendChild(<li>{this.buildClassDropdown(klass)}</li>));
 	}
 
@@ -89,7 +81,7 @@ export class SimTitleDropdown extends Component {
 		);
 	}
 
-	private buildRootSimLink(data: SpecOptions | RaidOptions) {
+	private buildRootSimLink(data: SpecOptions) {
 		return (
 			<button
 				className={clsx('sim-link', this.getContextualKlass(data))}
@@ -100,27 +92,12 @@ export class SimTitleDropdown extends Component {
 					<div className="d-flex flex-column">
 						<span className="sim-link-label text-white">{i18n.t('sidebar.header.title')}</span>
 						<span className="sim-link-title">
-							{data.type === 'Raid' && raidSimLabel}
-							{data.type === 'Spec' && PlayerSpecs.getFullSpecName(data.spec)}
+							{PlayerSpecs.getFullSpecName(data.spec)}
 						</span>
 						{this.launchStatusLabel(data)}
 					</div>
 				</div>
 			</button>
-		);
-	}
-
-	private buildRaidLink() {
-		return (
-			<a href={raidSimSiteUrl} className={clsx('sim-link', this.getContextualKlass({ type: 'Raid' }))}>
-				<div className="sim-link-content">
-					<img src={this.getSimIconPath({ type: 'Raid' })} className="sim-link-icon" />
-					<div className="d-flex flex-column">
-						<span className="sim-link-title">{raidSimLabel}</span>
-						{this.launchStatusLabel({ type: 'Raid' })}
-					</div>
-				</div>
-			</a>
 		);
 	}
 
@@ -155,11 +132,9 @@ export class SimTitleDropdown extends Component {
 		);
 	}
 
-	private launchStatusLabel(data: SpecOptions | RaidOptions) {
-		if (data.type === 'Raid' && raidSimStatus.status === LaunchStatus.Launched) return null;
-
-		const status = data.type === 'Raid' ? raidSimStatus.status : simLaunchStatuses[data.spec.specID as Spec].status;
-		const phase = data.type === 'Raid' ? raidSimStatus.phase : simLaunchStatuses[data.spec.specID as Spec].phase;
+	private launchStatusLabel(data: SpecOptions) {
+		const status = simLaunchStatuses[data.spec.specID as Spec].status;
+		const phase = simLaunchStatuses[data.spec.specID as Spec].phase;
 
 		return (
 			<span className="launch-status-label text-brand">
@@ -171,12 +146,9 @@ export class SimTitleDropdown extends Component {
 		);
 	}
 
-	private getSimIconPath(data: ClassOptions | SpecOptions | RaidOptions): string {
+	private getSimIconPath(data: ClassOptions | SpecOptions): string {
 		let iconPath = '';
 		switch (data.type) {
-			case 'Raid':
-				iconPath = raidSimIcon;
-				break;
 			case 'Class':
 				iconPath = data.class.getIcon('large');
 				break;
@@ -187,7 +159,7 @@ export class SimTitleDropdown extends Component {
 		return iconPath;
 	}
 
-	private getContextualKlass(data: ClassOptions | SpecOptions | RaidOptions): string {
+	private getContextualKlass(data: ClassOptions | SpecOptions): string {
 		switch (data.type) {
 			case 'Class':
 				return textCssClassForClass(data.class);

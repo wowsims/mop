@@ -1,3 +1,4 @@
+import i18n from '../../../../i18n/config';
 import { CHARACTER_LEVEL } from '../../../constants/mechanics';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { ItemSlot, Spec } from '../../../proto/common';
@@ -5,7 +6,6 @@ import { raceNames } from '../../../proto_utils/names';
 import { WOWHEAD_EXPANSION_ENV } from '../../../wowhead';
 import { IndividualWowheadGearPlannerImporter } from '../importers';
 import { IndividualExporter } from './individual_exporter';
-import i18n from '../../../../i18n/config';
 
 const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 

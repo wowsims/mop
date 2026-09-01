@@ -4,12 +4,12 @@ import i18n from '../../../i18n/config';
 import { Player } from '../../player.js';
 import { ActionID as ActionIdProto, Cooldown } from '../../proto/common.js';
 import { ActionId } from '../../proto_utils/action_id.js';
-import { EventID, TypedEvent } from '../../typed_event.js';
+import { EventID, nextEventID } from '../../state/batch';
+import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '../../state/subscriptions';
 import { existsInDOM } from '../../utils';
 import { Component } from '../component.js';
 import { IconEnumPicker, IconEnumValueConfig } from '../pickers/icon_enum_picker.jsx';
 import { NumberListPicker } from '../pickers/number_list_picker.js';
-
 export class CooldownsPicker extends Component {
 	readonly player: Player<any>;
 
@@ -20,7 +20,7 @@ export class CooldownsPicker extends Component {
 		this.player = player;
 		this.cooldownPickers = [];
 
-		const events = TypedEvent.onAny([this.player.rotationChangeEmitter, this.player.sim.unitMetadataEmitter]).on(() => {
+		const unsub = subscribeAll([subscribePlayerField(this.player, 'rotation'), subscribeUnitMetadata(this.player.sim)])(() => {
 			if (!existsInDOM(this.rootElem)) {
 				this.dispose();
 				return;
@@ -30,7 +30,7 @@ export class CooldownsPicker extends Component {
 		this.addOnDisposeCallback(() => {
 			this.rootElem.remove();
 			this.cooldownPickers.forEach(picker => picker.remove());
-			events.dispose();
+			unsub();
 		});
 		this.update();
 	}
@@ -50,7 +50,7 @@ export class CooldownsPicker extends Component {
 			}
 			this.rootElem.appendChild(row);
 
-			const actionPicker = this.makeActionPicker(row, i);
+			this.makeActionPicker(row, i);
 
 			const label = document.createElement('label');
 			label.classList.add('cooldown-picker-label', 'form-label');
@@ -61,7 +61,7 @@ export class CooldownsPicker extends Component {
 			}
 			row.appendChild(label);
 
-			const timingsPicker = this.makeTimingsPicker(row, i);
+			this.makeTimingsPicker(row, i);
 
 			const deleteButtonFragment = document.createElement('fragment');
 			deleteButtonFragment.innerHTML = `
@@ -74,7 +74,7 @@ export class CooldownsPicker extends Component {
 			deleteButton.addEventListener('click', () => {
 				const newCooldowns = this.player.getSimpleCooldowns();
 				newCooldowns.cooldowns.splice(i, 1);
-				this.player.setSimpleCooldowns(TypedEvent.nextEventID(), newCooldowns);
+				this.player.setSimpleCooldowns(nextEventID(), newCooldowns);
 				deleteButtonTooltip.hide();
 			});
 			row.appendChild(deleteButton);
@@ -107,7 +107,7 @@ export class CooldownsPicker extends Component {
 			equals: (a: ActionIdProto, b: ActionIdProto) => ActionIdProto.equals(a, b),
 			zeroValue: ActionIdProto.create(),
 			backupIconUrl: (value: ActionIdProto) => ActionId.fromProto(value),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
 			getValue: (player: Player<any>) => player.getSimpleCooldowns().cooldowns[cooldownIndex]?.id || ActionIdProto.create(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: ActionIdProto) => {
 				if (!newValue.rawId.oneofKind) return;
@@ -132,7 +132,7 @@ export class CooldownsPicker extends Component {
 			id: `cooldown-timings-${cooldownIndex}`,
 			extraCssClasses: ['cooldown-timings-picker'],
 			placeholder: i18n.t('rotation_tab.cooldowns.timings_placeholder'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
 			getValue: (player: Player<any>) => {
 				return player.getSimpleCooldowns().cooldowns[cooldownIndex]?.timings || [];
 			},

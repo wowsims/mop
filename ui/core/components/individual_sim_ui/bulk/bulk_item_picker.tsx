@@ -2,17 +2,18 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../i18n/config';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '../../../bulk/utils';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { ItemSlot } from '../../../proto/common';
 import { EquippedItem } from '../../../proto_utils/equipped_item';
 import { getEligibleItemSlots } from '../../../proto_utils/utils';
-import { TypedEvent } from '../../../typed_event';
+import { Emitter } from '../../../state/events';
+import { subscribeBulkChange } from '../../../state/subscriptions';
 import { Component } from '../../component';
 import { ItemRenderer } from '../../gear_picker/gear_picker';
 import { GearData } from '../../gear_picker/item_list';
 import { SelectorModalTabs } from '../../gear_picker/selector_modal';
 import { BulkTab } from '../bulk_tab';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '../../../bulk/utils';
 
 export default class BulkItemPicker extends Component {
 	private readonly itemElem: ItemRenderer;
@@ -62,8 +63,8 @@ export default class BulkItemPicker extends Component {
 		};
 
 		updatePickerState();
-		const events = TypedEvent.onAny([this.bulkUI.settingsChangedEmitter, this.bulkUI.itemsChangedEmitter]).on(() => updatePickerState());
-		this.addOnDisposeCallback(() => events.dispose());
+		const unsub = subscribeBulkChange(this.bulkUI)(() => updatePickerState());
+		this.addOnDisposeCallback(unsub);
 	}
 
 	setItem(newItem: EquippedItem) {
@@ -175,16 +176,16 @@ export default class BulkItemPicker extends Component {
 	}
 
 	private createGearData(): GearData {
-		const changeEvent = new TypedEvent<void>();
+		const changeEvent = new Emitter<void>();
 		return {
 			equipItem: (_, newItem: EquippedItem | null) => {
 				if (newItem) {
 					this.bulkUI.updateItem(this.index, newItem.asSpec());
-					changeEvent.emit(TypedEvent.nextEventID());
+					changeEvent.emit();
 				}
 			},
 			getEquippedItem: () => this.item,
-			changeEvent: changeEvent,
+			subscribe: onChange => changeEvent.on(onChange),
 		};
 	}
 

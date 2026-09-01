@@ -4,14 +4,14 @@ import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { Class, Glyphs, Spec } from '../../proto/common';
 import { SavedTalents } from '../../proto/ui';
+import { batch,EventID } from '../../state/batch';
+import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { classTalentsConfig } from '../../talents/factory';
 import { TalentsPicker } from '../../talents/talents_picker';
-import { EventID, TypedEvent } from '../../typed_event';
 import { PetSpecPicker } from '../pickers/pet_spec_picker';
 import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
 import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
-
 export class TalentsTab<SpecType extends Spec> extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 
@@ -49,7 +49,7 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 			playerClass: this.simUI.player.getClass(),
 			playerSpec: this.simUI.player.getSpec(),
 			tree: classTalentsConfig[this.simUI.player.getClass()]!,
-			changedEvent: (player: Player<any>) => player.talentsChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'talentsString')(onChange),
 			getValue: (player: Player<any>) => player.getTalentsString(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
 				trackEvent({
@@ -77,12 +77,12 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 					glyphs: player.getGlyphs(),
 				}),
 			setData: (eventID: EventID, player: Player<any>, newTalents: SavedTalents) => {
-				TypedEvent.freezeAllAndDo(() => {
+				batch(() => {
 					player.setTalentsString(eventID, newTalents.talentsString);
 					player.setGlyphs(eventID, newTalents.glyphs || Glyphs.create());
 				});
 			},
-			changeEmitters: [this.simUI.player.talentsChangeEmitter, this.simUI.player.glyphsChangeEmitter],
+			subscribe: subscribeAll([subscribePlayerField(this.simUI.player, 'talentsString'), subscribePlayerField(this.simUI.player, 'glyphs')]),
 			equals: (a: SavedTalents, b: SavedTalents) => SavedTalents.equals(a, b),
 			toJson: (a: SavedTalents) => SavedTalents.toJson(a),
 			fromJson: (obj: any) => SavedTalents.fromJson(obj),

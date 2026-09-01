@@ -1,19 +1,16 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
-import i18n from '../../i18n/config';
 
+import i18n from '../../i18n/config';
 import { Player } from '../player';
-import { ItemSlot, ItemSpec, ItemSwap, Spec } from '../proto/common';
-import { EquippedItem } from '../proto_utils/equipped_item';
-import { ItemSwapGear } from '../proto_utils/gear';
-import { Stats } from '../proto_utils/stats';
+import { ItemSlot, Spec } from '../proto/common';
 import { SimUI } from '../sim_ui';
-import { EventID, TypedEvent } from '../typed_event';
+import { batch, EventID, nextEventID } from '../state/batch';
+import { subscribePlayerField } from '../state/subscriptions';
 import { Component } from './component';
 import IconItemSwapPicker from './gear_picker/icon_item_swap_picker';
 import { Input } from './input';
 import { BooleanPicker } from './pickers/boolean_picker';
-
 export interface ItemSwapPickerConfig {
 	itemSlots: Array<ItemSlot>;
 	note?: string;
@@ -36,7 +33,7 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 			setValue(eventID: EventID, player: Player<SpecType>, newValue: boolean) {
 				player.itemSwapSettings.setEnableItemSwap(eventID, newValue);
 			},
-			changedEvent: (player: Player<SpecType>) => player.itemSwapSettings.changeEmitter,
+			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'itemSwap')(onChange),
 		});
 
 		const swapPickerContainerRef = ref<HTMLDivElement>();
@@ -70,11 +67,11 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 				noteRef.value?.classList.remove('hide');
 			}
 		};
-		player.itemSwapSettings.changeEmitter.on(toggleEnabled);
+		subscribePlayerField(player, 'itemSwap')(toggleEnabled);
 		toggleEnabled();
 
 		if (swapButtonRef.value) {
-			swapButtonRef.value.addEventListener('click', _event => this.swapWithGear(TypedEvent.nextEventID(), player));
+			swapButtonRef.value.addEventListener('click', _event => this.swapWithGear(nextEventID(), player));
 			tippy(swapButtonRef.value, {
 				content: i18n.t('settings_tab.other.item_swap.tooltip'),
 			});
@@ -100,7 +97,7 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 			newIsg = newIsg.withEquippedItem(slot, gearItem, player.canDualWield2H());
 		});
 
-		TypedEvent.freezeAllAndDo(() => {
+		batch(() => {
 			player.setGear(eventID, newGear);
 			player.itemSwapSettings.setGear(eventID, newIsg);
 		});

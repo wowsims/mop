@@ -1,5 +1,5 @@
-import { ActionMetrics } from '../../proto_utils/sim_result';
 import i18n from '../../../i18n/config';
+import { ActionMetrics } from '../../proto_utils/sim_result';
 import { formatToCompactNumber, formatToNumber, formatToPercent } from '../../utils';
 import { MetricsCombinedTooltipTable } from './metrics_table/metrics_combined_tooltip_table';
 import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table';
@@ -10,7 +10,7 @@ export class DtpsMetricsTable extends MetricsTable<ActionMetrics> {
 	maxDtpsAmount: number | null = null;
 	constructor(config: ResultComponentConfig) {
 		config.rootCssClass = 'dtps-metrics-root';
-		config.resultsEmitter.on((_, resultData) => {
+		config.resultsEmitter.on(resultData => {
 			const lastResult = resultData
 				? this.getGroupedMetrics(resultData)
 						.filter(g => g.length)

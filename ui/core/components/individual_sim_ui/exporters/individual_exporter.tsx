@@ -1,13 +1,12 @@
+import i18n from '../../../../i18n/config';
 import { SimSettingCategories } from '../../../constants/sim_settings';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Spec } from '../../../proto/common';
-import { EventID } from '../../../typed_event';
+import { EventID } from '../../../state/batch';
 import { getEnumValues } from '../../../utils';
 import { Exporter, ExporterOptions } from '../../exporter';
 import { BooleanPicker } from '../../pickers/boolean_picker';
 import { IndividualImporter } from '../importers/individual_importer';
-import i18n from '../../../../i18n/config';
-
 interface IndividualExporterOptions extends ExporterOptions {
 	selectCategories?: boolean;
 }
@@ -84,9 +83,9 @@ export abstract class IndividualExporter<SpecType extends Spec> extends Exporter
 					getValue: () => this.exportCategories[category],
 					setValue: (eventID: EventID, _modObj: IndividualExporter<SpecType>, newValue: boolean) => {
 						this.exportCategories[category] = newValue;
-						this.changedEvent.emit(eventID);
+						this.changeEmitter.emit();
 					},
-					changedEvent: () => this.changedEvent,
+					storeSubscribe: (_modObj, onChange: () => void) => this.changeEmitter.on(onChange),
 				});
 			});
 		}

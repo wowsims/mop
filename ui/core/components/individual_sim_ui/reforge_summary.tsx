@@ -1,15 +1,15 @@
-import { Player } from '../../player.js';
-import { Stat } from '../../proto/common.js';
-import { IndividualSimSettings } from '../../proto/ui.js';
-import { TypedEvent } from '../../typed_event.js';
-import { Component } from '../component.js';
-import { ContentBlock } from '../content_block.jsx';
-import { CopyButton } from '../copy_button';
-import { IndividualSimUI } from '../../individual_sim_ui.jsx';
 import i18n from '../../../i18n/config';
 import { translateStat } from '../../../i18n/localization';
 import { trackEvent } from '../../../tracking/utils';
-
+import { IndividualSimUI } from '../../individual_sim_ui.jsx';
+import { Player } from '../../player.js';
+import { Stat } from '../../proto/common.js';
+import { IndividualSimSettings } from '../../proto/ui.js';
+import { nextEventID } from '../../state/batch';
+import { subscribePlayerField } from '../../state/subscriptions';
+import { Component } from '../component.js';
+import { ContentBlock } from '../content_block.jsx';
+import { CopyButton } from '../copy_button';
 type ReforgeSummaryTotal = {
 	[key in Stat]?: number;
 };
@@ -32,7 +32,7 @@ export class ReforgeSummary extends Component {
 			extraCssClasses: ['summary-table--reforge'],
 		});
 
-		player.gearChangeEmitter.on(() => this.updateTable());
+		this.addOnDisposeCallback(subscribePlayerField(player, 'gear')(() => this.updateTable()));
 	}
 
 	private updateTable() {
@@ -94,7 +94,7 @@ export class ReforgeSummary extends Component {
 						const proto = this.simUI.toProto();
 						const jsonObj = proto ? IndividualSimSettings.toJson(proto) : {};
 						return JSON.stringify(jsonObj);
-					} catch (_e) {
+					} catch {
 						return '';
 					}
 				},
@@ -115,7 +115,7 @@ export class ReforgeSummary extends Component {
 							label: 'reset',
 						});
 						const gear = this.player.getGear().withoutReforges(this.player.canDualWield2H());
-						this.player.setGear(TypedEvent.nextEventID(), gear);
+						this.player.setGear(nextEventID(), gear);
 					}}>
 					<i className="fas fa-times me-1"></i>
 					{i18n.t('gear_tab.reforge_summary.reset_reforges')}

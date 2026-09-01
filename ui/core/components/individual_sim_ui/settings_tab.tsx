@@ -1,11 +1,12 @@
 import i18n from '../../../i18n/config';
+import { translateProfession,translateRace } from '../../../i18n/localization.js';
 import { Encounter } from '../../encounter.js';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui.jsx';
 import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common.js';
 import { SavedEncounter, SavedSettings } from '../../proto/ui.js';
-import { translateRace, translateProfession } from '../../../i18n/localization.js';
 import { Stats } from '../../proto_utils/stats.js';
-import { EventID, TypedEvent } from '../../typed_event.js';
+import { batch,EventID } from '../../state/batch';
+import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '../../state/subscriptions';
 import { getEnumValues } from '../../utils.js';
 import { ContentBlock } from '../content_block.jsx';
 import { EncounterPicker } from '../encounter_picker.js';
@@ -22,7 +23,6 @@ import { SavedDataManager } from '../saved_data_manager.jsx';
 import { SimTab } from '../sim_tab.js';
 import { ConsumesPicker } from './consumes_picker.jsx';
 import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker.jsx';
-
 export class SettingsTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 
@@ -32,7 +32,6 @@ export class SettingsTab extends SimTab {
 	readonly column1: HTMLElement = this.buildColumn(1, 'settings-left-col');
 	readonly column2: HTMLElement = this.buildColumn(2, 'settings-left-col');
 	readonly column3: HTMLElement = this.buildColumn(3, 'settings-left-col');
-	readonly column4?: HTMLElement;
 
 	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
 		super(parentElem, simUI, { identifier: 'settings-tab', title: i18n.t('settings_tab.title') });
@@ -45,12 +44,6 @@ export class SettingsTab extends SimTab {
 		this.leftPanel.appendChild(this.column2);
 		this.leftPanel.appendChild(this.column3);
 
-		// The 4th column is only used in the raid sim player editor to spread out player settings
-		if (this.simUI.isWithinRaidSim) {
-			this.column4 = this.buildColumn(4, 'settings-left-col');
-			this.leftPanel.appendChild(this.column4);
-		}
-
 		this.rightPanel = document.createElement('div');
 		this.rightPanel.classList.add('settings-tab-right', 'tab-panel-right', 'within-raid-sim-hide');
 
@@ -62,26 +55,17 @@ export class SettingsTab extends SimTab {
 	}
 
 	protected buildTabContent() {
-		if (!this.simUI.isWithinRaidSim) {
-			this.buildEncounterSettings();
-		}
-
+		this.buildEncounterSettings();
 		this.buildPlayerSettings();
 		this.buildCustomSettingsSections();
 		this.buildConsumesSection();
 		this.buildOtherSettings();
-
-		if (!this.simUI.isWithinRaidSim) {
-			this.buildBuffsSettings();
-			this.raidExternalDamageCooldowns();
-			this.raidExternalDefensiveCooldowns();
-			this.buildDebuffsSettings();
-		}
-
-		if (!this.simUI.isWithinRaidSim) {
-			this.buildPresetConfigurationPicker();
-			this.buildSavedDataPickers();
-		}
+		this.buildBuffsSettings();
+		this.raidExternalDamageCooldowns();
+		this.raidExternalDefensiveCooldowns();
+		this.buildDebuffsSettings();
+		this.buildPresetConfigurationPicker();
+		this.buildSavedDataPickers();
 	}
 
 	private buildEncounterSettings() {
@@ -118,7 +102,7 @@ export class SettingsTab extends SimTab {
 					value: race,
 				};
 			}),
-			changedEvent: sim => sim.raceChangeEmitter,
+			storeSubscribe: (sim, onChange) => subscribePlayerField(sim, 'race')(onChange),
 			getValue: sim => sim.getRace(),
 			setValue: (eventID, sim, newValue) => sim.setRace(eventID, newValue),
 		});
@@ -140,7 +124,7 @@ export class SettingsTab extends SimTab {
 					value: p,
 				};
 			}),
-			changedEvent: sim => sim.professionChangeEmitter,
+			storeSubscribe: (sim, onChange) => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')])(onChange),
 			getValue: sim => sim.getProfession1(),
 			setValue: (eventID, sim, newValue) => sim.setProfession1(eventID, newValue),
 		});
@@ -154,7 +138,7 @@ export class SettingsTab extends SimTab {
 					value: p,
 				};
 			}),
-			changedEvent: sim => sim.professionChangeEmitter,
+			storeSubscribe: (sim, onChange) => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')])(onChange),
 			getValue: sim => sim.getProfession2(),
 			setValue: (eventID, sim, newValue) => sim.setProfession2(eventID, newValue),
 		});
@@ -168,8 +152,7 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildConsumesSection() {
-		const column = this.simUI.isWithinRaidSim ? this.column3 : this.column2;
-		const contentBlock = new ContentBlock(column, 'consumes-settings', {
+		const contentBlock = new ContentBlock(this.column2, 'consumes-settings', {
 			header: { title: i18n.t('settings_tab.consumables.title') },
 		});
 		ConsumesPicker.create(contentBlock.bodyElement, this, this.simUI);
@@ -298,7 +281,7 @@ export class SettingsTab extends SimTab {
 			storageKey: this.simUI.getSavedEncounterStorageKey(),
 			getData: (encounter: Encounter) => SavedEncounter.create({ encounter: encounter.toProto() }),
 			setData: (eventID: EventID, encounter: Encounter, newEncounter: SavedEncounter) => encounter.fromProto(eventID, newEncounter.encounter!),
-			changeEmitters: [this.simUI.sim.encounter.changeEmitter],
+			subscribe: subscribeEncounterChange(this.simUI.sim.encounter),
 			equals: (a: SavedEncounter, b: SavedEncounter) => SavedEncounter.equals(a, b),
 			toJson: (a: SavedEncounter) => SavedEncounter.toJson(a),
 			fromJson: (obj: any) => SavedEncounter.fromJson(obj),
@@ -314,7 +297,7 @@ export class SettingsTab extends SimTab {
 				return this.getCurrentSavedSettings();
 			},
 			setData: (eventID: EventID, simUI: IndividualSimUI<any>, newSettings: SavedSettings) => {
-				TypedEvent.freezeAllAndDo(() => {
+				batch(() => {
 					simUI.sim.raid.setBuffs(eventID, newSettings.raidBuffs || RaidBuffs.create());
 					simUI.sim.raid.setDebuffs(eventID, newSettings.debuffs || Debuffs.create());
 					const party = simUI.player.getParty();
@@ -341,20 +324,22 @@ export class SettingsTab extends SimTab {
 					simUI.player.setChallengeModeEnabled(eventID, newSettings.challengeMode);
 				});
 			},
-			changeEmitters: [
-				this.simUI.sim.raid.buffsChangeEmitter,
-				this.simUI.sim.raid.debuffsChangeEmitter,
-				this.simUI.player.getParty()!.buffsChangeEmitter,
-				this.simUI.player.buffsChangeEmitter,
-				this.simUI.player.consumesChangeEmitter,
-				this.simUI.player.raceChangeEmitter,
-				this.simUI.player.professionChangeEmitter,
-				this.simUI.player.itemSwapSettings.changeEmitter,
-				this.simUI.player.miscOptionsChangeEmitter,
-				this.simUI.player.inFrontOfTargetChangeEmitter,
-				this.simUI.player.distanceFromTargetChangeEmitter,
-				this.simUI.player.healingModelChangeEmitter,
-			],
+			subscribe: subscribeAll([
+				subscribeRaidField(this.simUI.sim.raid, 'buffs'),
+				subscribeRaidField(this.simUI.sim.raid, 'debuffs'),
+				subscribePartyBuffs(this.simUI.player.getParty()!),
+				subscribePlayerField(this.simUI.player, 'buffs'),
+				subscribePlayerField(this.simUI.player, 'consumables'),
+				subscribePlayerField(this.simUI.player, 'race'),
+				subscribePlayerField(this.simUI.player, 'profession1'),
+				subscribePlayerField(this.simUI.player, 'profession2'),
+				subscribePlayerField(this.simUI.player, 'itemSwap'),
+				subscribePlayerField(this.simUI.player, 'reactionTime'),
+				subscribePlayerField(this.simUI.player, 'channelClipDelay'),
+				subscribePlayerField(this.simUI.player, 'inFrontOfTarget'),
+				subscribePlayerField(this.simUI.player, 'distanceFromTarget'),
+				subscribePlayerField(this.simUI.player, 'healingModel'),
+			]),
 			equals: (a: SavedSettings, b: SavedSettings) => SavedSettings.equals(a, b),
 			toJson: (a: SavedSettings) => SavedSettings.toJson(a),
 			fromJson: (obj: any) => SavedSettings.fromJson(obj),

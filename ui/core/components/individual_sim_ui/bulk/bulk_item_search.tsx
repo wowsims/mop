@@ -3,19 +3,19 @@ import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../i18n/config';
 import { translateBulkSlotName } from '../../../../i18n/localization';
+import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '../../../bulk/utils';
 import { setItemQualityCssClass } from '../../../css_utils';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { ItemLevelState, ItemSpec } from '../../../proto/common';
 import { UIItem, UIItem_FactionRestriction } from '../../../proto/ui';
 import { ActionId } from '../../../proto_utils/action_id';
 import { canEquipItem, getEligibleItemSlots } from '../../../proto_utils/utils';
-import { EventID, TypedEvent } from '../../../typed_event';
+import { EventID } from '../../../state/batch';
+import { Emitter } from '../../../state/events';
 import { ContentBlock } from '../../content_block';
 import { createNameDescriptionLabel } from '../../gear_picker/utils';
 import { NumberPicker } from '../../pickers/number_picker';
 import { BulkTab } from '../bulk_tab';
-import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '../../../bulk/utils';
-
 const MAX_SEARCH_RESULTS = 21;
 
 export default class BulkItemSearch extends ContentBlock {
@@ -31,7 +31,7 @@ export default class BulkItemSearch extends ContentBlock {
 	private readonly cancelSearchElem: HTMLButtonElement;
 	private readonly searchResultElem: HTMLElement;
 
-	readonly filtersChangeEmitter = new TypedEvent<void>();
+	readonly filtersChangeEmitter = new Emitter<void>();
 
 	private allItems: Array<UIItem> = [];
 
@@ -83,11 +83,11 @@ export default class BulkItemSearch extends ContentBlock {
 			id: 'bulkGearSearchMinIlvl',
 			label: i18n.t('bulk_tab.search.min_ilvl'),
 			showZeroes: false,
-			changedEvent: _ => this.filtersChangeEmitter,
+			storeSubscribe: (_, onChange: () => void) => this.filtersChangeEmitter.on(onChange),
 			getValue: _ => this.minIlvl,
 			setValue: (eventID: EventID, _, newValue: number) => {
 				this.minIlvl = newValue;
-				this.filtersChangeEmitter.emit(eventID);
+				this.filtersChangeEmitter.emit();
 			},
 		});
 
@@ -97,11 +97,11 @@ export default class BulkItemSearch extends ContentBlock {
 			id: 'bulkGearSearchMaxIlvl',
 			label: i18n.t('bulk_tab.search.max_ilvl'),
 			showZeroes: false,
-			changedEvent: _ => this.filtersChangeEmitter,
+			storeSubscribe: (_, onChange: () => void) => this.filtersChangeEmitter.on(onChange),
 			getValue: _ => this.maxIlvl,
 			setValue: (eventID: EventID, _, newValue: number) => {
 				this.maxIlvl = newValue;
-				this.filtersChangeEmitter.emit(eventID);
+				this.filtersChangeEmitter.emit();
 			},
 		});
 
@@ -134,7 +134,7 @@ export default class BulkItemSearch extends ContentBlock {
 	private set searchString(newString: string) {
 		this._searchString = newString;
 		this.inputElem.value = newString;
-		this.filtersChangeEmitter.emit(TypedEvent.nextEventID());
+		this.filtersChangeEmitter.emit();
 	}
 
 	private performSearch() {

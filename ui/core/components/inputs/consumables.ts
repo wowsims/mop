@@ -1,13 +1,13 @@
+import i18n from '../../../i18n/config.js';
 import { Player } from '../../player';
 import { Class, ConsumesSpec, Profession, Spec, Stat } from '../../proto/common';
 import { Consumable } from '../../proto/db';
 import { ActionId } from '../../proto_utils/action_id';
-import { EventID, TypedEvent } from '../../typed_event';
+import { batch,EventID } from '../../state/batch';
+import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import * as InputHelpers from '../input_helpers';
 import { IconEnumValueConfig } from '../pickers/icon_enum_picker';
 import { ActionInputConfig, ItemStatOption } from './stat_options';
-import i18n from '../../../i18n/config.js';
-
 export interface ConsumableInputConfig<T> extends ActionInputConfig<T> {
 	value: T;
 }
@@ -43,7 +43,7 @@ function makeConsumeInputFactory<T extends number, SpecType extends Spec>(
 			values: [{ value: 0, iconUrl: '', tooltip: i18n.t('common.none') } as unknown as IconEnumValueConfig<Player<SpecType>, T>].concat(valueOptions),
 			equals: (a: T, b: T) => a == b,
 			zeroValue: 0 as T,
-			changedEvent: (player: Player<any>) => TypedEvent.onAny([player.consumesChangeEmitter, player.gearChangeEmitter, player.professionChangeEmitter]),
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribeAll([subscribePlayerField(player, 'consumables'), subscribePlayerField(player, 'gear'), subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')])(onChange),
 			showWhen: (player: Player<any>) => (!args.showWhen || args.showWhen(player)) && valueOptions.some(option => option.showWhen?.(player)),
 			getValue: (player: Player<any>) => player.getConsumes()[args.consumesFieldName] as T,
 			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
@@ -53,7 +53,7 @@ function makeConsumeInputFactory<T extends number, SpecType extends Spec>(
 				}
 
 				(newConsumes[args.consumesFieldName] as number) = newValue;
-				TypedEvent.freezeAllAndDo(() => {
+				batch(() => {
 					player.setConsumes(eventID, newConsumes);
 					if (args.onSet) {
 						args.onSet(eventID, player, newValue as T);
@@ -131,7 +131,7 @@ export function makeConsumableInput(
 		values: [{ value: 0, iconUrl: '', tooltip: i18n.t('common.none') }].concat(valueOptions),
 		equals: (a: number, b: number) => a === b,
 		zeroValue: 0,
-		changedEvent: (player: Player<any>) => player.consumesChangeEmitter,
+		storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'consumables')(onChange),
 		getValue: (player: Player<any>) => player.getConsumes()[options.consumesFieldName] as number,
 		showWhen: (_: Player<any>) => !!valueOptions.length,
 		setValue: (eventID: EventID, player: Player<any>, newValue: number) => {

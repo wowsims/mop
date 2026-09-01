@@ -1,9 +1,10 @@
+import { t } from 'i18next';
+
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { EquipmentSpec, Spec } from '../../../proto/common';
 import { Database } from '../../../proto_utils/database';
 import { BulkTab } from '../bulk_tab';
 import { IndividualImporter } from './individual_importer';
-import { t } from 'i18next';
 
 export class BulkGearJsonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
 	private readonly bulkUI: BulkTab;

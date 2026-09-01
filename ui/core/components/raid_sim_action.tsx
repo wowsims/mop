@@ -10,9 +10,9 @@ import { SimRunData } from '../proto/ui';
 import { ActionMetrics, SimResult, SimResultFilter } from '../proto_utils/sim_result';
 import { RequestTypes } from '../sim_signal_manager';
 import { SimUI } from '../sim_ui';
-import { EventID, TypedEvent } from '../typed_event';
-import { formatDeltaTextElem, formatToNumber, formatToPercent, isDevMode, sum, zTest } from '../utils';
-
+import { batch, EventID, nextEventID } from '../state/batch';
+import { Emitter } from '../state/events';
+import { formatDeltaTextElem, formatToNumber, formatToPercent, sum, zTest } from '../utils';
 export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 	const resultsViewer = simUI.resultsViewer;
 	let isRunning = false;
@@ -55,8 +55,8 @@ export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 	});
 
 	const resultsManager = new RaidSimResultsManager(simUI);
-	simUI.sim.simResultEmitter.on((eventID, simResult) => {
-		resultsManager.setSimResult(eventID, simResult);
+	simUI.sim.simResultEmitter.on(simResult => {
+		resultsManager.setSimResult(nextEventID(), simResult);
 	});
 	return resultsManager;
 }
@@ -123,10 +123,13 @@ export class RaidSimResultsManager {
 		threat: 'threat-metrics',
 	};
 
-	readonly currentChangeEmitter: TypedEvent<void> = new TypedEvent<void>();
-	readonly referenceChangeEmitter: TypedEvent<void> = new TypedEvent<void>();
+	// Events (results arrived / reference set or swapped), not state.
+	readonly currentChangeEmitter = new Emitter<void>();
+	readonly referenceChangeEmitter = new Emitter<void>();
 
-	readonly changeEmitter: TypedEvent<void> = new TypedEvent<void>();
+	// Fires once per current/reference change; emitted explicitly (no relay)
+	// so a swap — which changes both — notifies once.
+	readonly changeEmitter = new Emitter<void>();
 
 	private readonly simUI: SimUI;
 
@@ -138,10 +141,10 @@ export class RaidSimResultsManager {
 	constructor(simUI: SimUI) {
 		this.simUI = simUI;
 
-		[this.currentChangeEmitter, this.referenceChangeEmitter].forEach(emitter => emitter.on(eventID => this.changeEmitter.emit(eventID)));
 	}
 
 	setSimProgress(progress: ProgressMetrics) {
+		this.reset();
 		if (progress.finalRaidResult && progress.finalRaidResult.error) {
 			this.simUI.resultsViewer.hideAll();
 			return;
@@ -167,7 +170,9 @@ export class RaidSimResultsManager {
 		);
 	}
 
-	setSimResult(eventID: EventID, simResult: SimResult) {
+	// `partOfSwap`: the caller emits the aggregate changeEmitter itself, once.
+	setSimResult(eventID: EventID, simResult: SimResult, partOfSwap = false) {
+		this.reset();
 		this.currentData = {
 			simResult: simResult,
 			settings: {
@@ -178,7 +183,8 @@ export class RaidSimResultsManager {
 			encounterProto: EncounterProto.clone(simResult.request.encounter || EncounterProto.create()),
 		};
 
-		this.currentChangeEmitter.emit(eventID);
+		this.currentChangeEmitter.emit();
+		if (!partOfSwap) this.changeEmitter.emit();
 
 		this.simUI.resultsViewer.setContent(
 			<div className="results-sim">
@@ -247,7 +253,8 @@ export class RaidSimResultsManager {
 		if (simReferenceSetButton) {
 			const onSetReferenceClickHandler = () => {
 				this.referenceData = this.currentData;
-				this.referenceChangeEmitter.emit(TypedEvent.nextEventID());
+				this.referenceChangeEmitter.emit();
+				this.changeEmitter.emit();
 				this.updateReference();
 			};
 			simReferenceSetButton.addEventListener('click', onSetReferenceClickHandler);
@@ -261,18 +268,19 @@ export class RaidSimResultsManager {
 		const simReferenceSwapButton = this.simUI.resultsViewer.contentElem.querySelector<HTMLSpanElement>('.results-sim-reference-swap');
 		if (simReferenceSwapButton) {
 			const onSwapClickHandler = () => {
-				TypedEvent.freezeAllAndDo(() => {
+				batch(() => {
 					if (this.currentData && this.referenceData) {
-						const swapEventID = TypedEvent.nextEventID();
+						const swapEventID = nextEventID();
 						const tmpData = this.currentData;
 						this.currentData = this.referenceData;
 						this.referenceData = tmpData;
 
 						this.simUI.sim.raid.fromProto(swapEventID, this.currentData.raidProto);
 						this.simUI.sim.encounter.fromProto(swapEventID, this.currentData.encounterProto);
-						this.setSimResult(swapEventID, this.currentData.simResult);
+						this.setSimResult(swapEventID, this.currentData.simResult, true);
 
-						this.referenceChangeEmitter.emit(swapEventID);
+						this.referenceChangeEmitter.emit();
+						this.changeEmitter.emit();
 						this.updateReference();
 					}
 				});
@@ -291,7 +299,8 @@ export class RaidSimResultsManager {
 		if (simReferenceDeleteButton) {
 			const onDeleteReferenceClickHandler = () => {
 				this.referenceData = null;
-				this.referenceChangeEmitter.emit(TypedEvent.nextEventID());
+				this.referenceChangeEmitter.emit();
+				this.changeEmitter.emit();
 				this.updateReference();
 			};
 			simReferenceDeleteButton.addEventListener('click', onDeleteReferenceClickHandler);

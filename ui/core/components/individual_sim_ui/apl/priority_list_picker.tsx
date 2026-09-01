@@ -2,15 +2,16 @@ import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Player } from '../../../player';
 import { APLAction, APLListItem } from '../../../proto/apl';
-import { EventID } from '../../../typed_event';
+import { EventID } from '../../../state/batch';
+import { subscribePlayerField } from '../../../state/subscriptions';
 import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
 import * as AplHelpers from '../apl_helpers';
+import { aplChildSubscribe } from '../apl_helpers';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLHidePicker } from './hide_picker';
-
 export class APLPriorityListPicker extends Component {
 	constructor(container: HTMLElement, simUI: IndividualSimUI<any>) {
 		super(container, 'apl-priority-list-picker-root');
@@ -20,11 +21,12 @@ export class APLPriorityListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.priorityList.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.priorityList.name'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
 			getValue: (player: Player<any>) => player.aplRotation.priorityList,
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLListItem>) => {
-				player.aplRotation.priorityList = newValue;
-				player.rotationChangeEmitter.emit(eventID);
+				player.modifyAplRotation(eventID, rotation => {
+					rotation.priorityList = newValue;
+				});
 			},
 			newItem: () => APLListItem.create({ action: {} }),
 			copyItem: (oldItem: APLListItem) => APLListItem.clone(oldItem),
@@ -81,20 +83,20 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 		});
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().hide,
 			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 				this.getItem().hide = newValue;
-				this.player.rotationChangeEmitter.emit(eventID);
+				this.player.touchRotation(eventID);
 			},
 		});
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().action!,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
 				this.getItem().action = newValue;
-				this.player.rotationChangeEmitter.emit(eventID);
+				this.player.touchRotation(eventID);
 			},
 		});
 		this.init();

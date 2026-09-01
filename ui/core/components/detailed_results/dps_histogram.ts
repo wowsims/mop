@@ -1,7 +1,7 @@
 import { Chart } from 'chart.js';
 
-import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component.js';
 import i18n from '../../../i18n/config';
+import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component.js';
 
 export class DpsHistogram extends ResultComponent {
 	constructor(config: ResultComponentConfig) {

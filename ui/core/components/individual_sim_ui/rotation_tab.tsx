@@ -1,15 +1,19 @@
+import clsx from 'clsx';
+
 import i18n from '../../../i18n/config';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
 import { SavedRotation } from '../../proto/ui';
 import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
-import { EventID, TypedEvent } from '../../typed_event';
+import { batch,EventID } from '../../state/batch';
+import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { omitDeep } from '../../utils';
 import { ContentBlock } from '../content_block';
 import * as IconInputs from '../icon_inputs';
 import { Input } from '../input';
 import { BooleanPicker } from '../pickers/boolean_picker';
+import { TextDropdownPicker } from '../pickers/dropdown_picker';
 import { EnumPicker } from '../pickers/enum_picker';
 import { NumberPicker } from '../pickers/number_picker';
 import { SavedDataManager } from '../saved_data_manager';
@@ -21,9 +25,6 @@ import { APLPrePullListPicker } from './apl/pre_pull_list_picker';
 import { APLPriorityListPicker } from './apl/priority_list_picker';
 import { CooldownsPicker } from './cooldowns_picker';
 import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
-import { TextDropdownPicker } from '../pickers/dropdown_picker';
-import clsx from 'clsx';
-
 export class RotationTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 
@@ -46,7 +47,7 @@ export class RotationTab extends SimTab {
 		this.buildTabContent();
 
 		this.updateSections();
-		this.simUI.player.rotationChangeEmitter.on(() => this.updateSections());
+		this.addOnDisposeCallback(subscribePlayerField(this.simUI.player, 'rotation')(() => this.updateSections()));
 	}
 
 	protected buildTabContent() {
@@ -235,11 +236,12 @@ export class RotationTab extends SimTab {
 						{ value: APLRotationType.TypeAPL, label: i18n.t('rotation_tab.common.rotation_type.apl') },
 					],
 			equals: (a, b) => a === b,
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
 			getValue: (player: Player<any>) => player.getRotationType(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
-				player.aplRotation.type = newValue;
-				player.rotationChangeEmitter.emit(eventID);
+				player.modifyAplRotation(eventID, rotation => {
+					rotation.type = newValue;
+				});
 			},
 		});
 	}
@@ -258,10 +260,10 @@ export class RotationTab extends SimTab {
 					rotation: player.getResolvedAplRotation(),
 				}),
 			setData: (eventID: EventID, player: Player<any>, newRotation: SavedRotation) =>
-				TypedEvent.freezeAllAndDo(() => {
+				batch(() => {
 					player.setAplRotation(eventID, newRotation.rotation || APLRotation.create());
 				}),
-			changeEmitters: [this.simUI.player.rotationChangeEmitter, this.simUI.player.talentsChangeEmitter],
+			subscribe: subscribeAll([subscribePlayerField(this.simUI.player, 'rotation'), subscribePlayerField(this.simUI.player, 'talentsString')]),
 			equals: (a: SavedRotation, b: SavedRotation) => {
 				// Uncomment this to debug equivalence checks with preset rotations (e.g. the chip doesn't highlight)
 				// console.log(`Rot A: ${SavedRotation.toJsonString(a, { prettySpaces: 2 })}\n\nRot B: ${SavedRotation.toJsonString(b, { prettySpaces: 2 })}`);
@@ -278,6 +280,7 @@ export class RotationTab extends SimTab {
 		});
 
 		this.simUI.sim.waitForInit().then(() => {
+			if (this.isDisposed) return;
 			savedRotationsManager.loadUserData();
 			(this.simUI.individualConfig.presets.rotations || []).forEach(presetRotation => {
 				const rotData = presetRotation.rotation;

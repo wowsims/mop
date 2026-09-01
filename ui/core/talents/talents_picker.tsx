@@ -2,8 +2,8 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config';
-import { translatePlayerSpec } from '../../i18n/localization';
 import { getClassI18nKey } from '../../i18n/entity_mapping';
+import { translatePlayerSpec } from '../../i18n/localization';
 import { Component } from '../components/component.js';
 import { CopyButton } from '../components/copy_button.js';
 import { Input, InputConfig } from '../components/input.js';
@@ -11,11 +11,10 @@ import { Player } from '../player.js';
 import { PlayerSpecs } from '../player_specs';
 import { Class, Spec } from '../proto/common.js';
 import { ActionId } from '../proto_utils/action_id.js';
-import { TypedEvent } from '../typed_event.js';
+import { nextEventID } from '../state/batch';
 import { isRightClick } from '../utils.js';
 import { classGlyphsConfig } from './factory';
 import { GlyphsPicker } from './glyphs_picker';
-
 export interface TalentsPickerConfig<ModObject, TalentsProto> extends InputConfig<ModObject, string> {
 	playerClass: Class;
 	playerSpec: Spec;
@@ -152,7 +151,7 @@ class TalentTreePicker<TalentsProto> extends Component {
 
 	resetPoints() {
 		this.rows.forEach(row => row.forEach(talent => talent.setSelected(false)));
-		this.picker.inputChanged(TypedEvent.nextEventID());
+		this.picker.inputChanged(nextEventID());
 	}
 
 	private getTreeIcon(playerSpec: number): string {
@@ -203,7 +202,7 @@ class TalentPicker<TalentsProto> extends Component {
 			event.preventDefault();
 			this.longTouchTimer = window.setTimeout(() => {
 				this.setSelected(false);
-				this.tree.picker.inputChanged(TypedEvent.nextEventID());
+				this.tree.picker.inputChanged(nextEventID());
 				this.longTouchTimer = undefined;
 			}, 750);
 		});
@@ -216,12 +215,12 @@ class TalentPicker<TalentsProto> extends Component {
 				return;
 			}
 			this.setSelected(true);
-			this.tree.picker.inputChanged(TypedEvent.nextEventID());
+			this.tree.picker.inputChanged(nextEventID());
 		});
 		this.rootElem.addEventListener('mousedown', event => {
 			const shouldAdd = !isRightClick(event);
 			this.setSelected(shouldAdd);
-			this.tree.picker.inputChanged(TypedEvent.nextEventID());
+			this.tree.picker.inputChanged(nextEventID());
 		});
 	}
 

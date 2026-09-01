@@ -2,23 +2,23 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
+import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
 import { Player } from '../../player';
-import { GemColor, ItemLevelState, ItemRandomSuffix, ItemSlot, Profession, ItemQuality } from '../../proto/common';
+import { GemColor, ItemLevelState, ItemQuality,ItemRandomSuffix, ItemSlot, Profession } from '../../proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
 import { EquippedItem, ReforgeData } from '../../proto_utils/equipped_item';
 import { gemMatchesSocket, getEmptyGemSocketIconUrl } from '../../proto_utils/gems';
-import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
 import { Stats } from '../../proto_utils/stats';
 import { SimUI } from '../../sim_ui';
-import { EventID, TypedEvent } from '../../typed_event';
+import { EventID, nextEventID } from '../../state/batch';
+import { subscribeSimField, subscribeUiField } from '../../state/subscriptions';
 import { mod, randomUUID, sanitizeId } from '../../utils';
 import { BaseModal } from '../base_modal';
 import GearPicker from './gear_picker';
 import ItemList, { GearData, ItemData, ItemListType } from './item_list';
 import { createGemContainer, getEmptySlotIconUrl } from './utils';
-import i18n from '../../../i18n/config';
-
 export enum SelectorModalTabs {
 	Items = 'Items',
 	RandomSuffixes = 'Random Suffix',
@@ -434,8 +434,7 @@ export default class SelectorModal extends BaseModal {
 						}
 					};
 
-					gearData.changeEvent.on(updateGemIcon);
-					this.addOnDisposeCallback(() => gearData.changeEvent.off(updateGemIcon));
+					this.addOnDisposeCallback(gearData.subscribe(updateGemIcon));
 					updateGemIcon();
 				},
 				socketColor,
@@ -675,7 +674,7 @@ export default class SelectorModal extends BaseModal {
 			itemData => {
 				const prevItem = gearData.getEquippedItem();
 				const item = itemData;
-				itemData.onEquip(TypedEvent.nextEventID(), item.item);
+				itemData.onEquip(nextEventID(), item.item);
 
 				const isItemChange = Item.is(item.item);
 				const newItem = gearData.getEquippedItem() || null;
@@ -712,17 +711,17 @@ export default class SelectorModal extends BaseModal {
 			ilist.hideOrShowEPValues();
 		};
 		// Add event handlers
-		gearData.changeEvent.on(invokeUpdate);
+		const unsubGear = gearData.subscribe(invokeUpdate);
 
-		this.player.sim.phaseChangeEmitter.on(applyFilter);
-		this.player.sim.filtersChangeEmitter.on(applyFilter);
-		this.player.sim.showEPValuesChangeEmitter.on(hideOrShowEPValues);
+		const unsubPhase = subscribeSimField(this.player.sim, 'phase')(applyFilter);
+		const unsubFilters = subscribeSimField(this.player.sim, 'filters')(applyFilter);
+		const unsubEPValues = subscribeUiField(this.player.sim, 'showEPValues')(hideOrShowEPValues);
 
 		this.addOnDisposeCallback(() => {
-			gearData.changeEvent.off(invokeUpdate);
-			this.player.sim.phaseChangeEmitter.off(applyFilter);
-			this.player.sim.filtersChangeEmitter.off(applyFilter);
-			this.player.sim.showEPValuesChangeEmitter.off(hideOrShowEPValues);
+			unsubGear();
+			unsubPhase();
+			unsubFilters();
+			unsubEPValues();
 			ilist.dispose();
 		});
 

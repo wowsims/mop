@@ -2,13 +2,13 @@ import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Player } from '../../../player';
 import { APLGroup } from '../../../proto/apl';
-import { EventID, TypedEvent } from '../../../typed_event';
+import { EventID, nextEventID } from '../../../state/batch';
+import { subscribePlayerField } from '../../../state/subscriptions';
 import { Component } from '../../component';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLGroupEditor } from './apl_group_editor';
 import { APLNameModal } from './apl_name_modal';
-
 export class APLGroupListPicker extends Component {
 	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>) {
 		super(parent, 'apl-group-list-picker-root');
@@ -18,11 +18,12 @@ export class APLGroupListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker', 'apl-groups-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.actionGroups.name'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
 			getValue: (player: Player<any>) => player.aplRotation.groups || [],
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLGroup>) => {
-				player.aplRotation.groups = newValue;
-				player.rotationChangeEmitter.emit(eventID);
+				player.modifyAplRotation(eventID, rotation => {
+					rotation.groups = newValue;
+				});
 			},
 			newItem: () =>
 				APLGroup.create({
@@ -43,7 +44,7 @@ export class APLGroupListPicker extends Component {
 						newItem.name = name;
 						const newList = groups.slice();
 						newList.splice(index, 0, newItem);
-						listPicker.config.setValue(TypedEvent.nextEventID(), simUI.player, newList);
+						listPicker.config.setValue(nextEventID(), simUI.player, newList);
 					},
 				});
 			},

@@ -1,6 +1,5 @@
-import { TypedEvent } from '../../typed_event.js';
+import { nextEventID } from '../../state/batch';
 import { Input, InputConfig } from '../input.js';
-
 /**
  * Data for creating a boolean picker (checkbox).
  */
@@ -35,7 +34,7 @@ export class BooleanPicker<ModObject> extends Input<ModObject, boolean> {
 		this.inputElem.addEventListener(
 			'change',
 			() => {
-				this.inputChanged(TypedEvent.nextEventID());
+				this.inputChanged(nextEventID());
 			},
 			{ signal: this.signal },
 		);

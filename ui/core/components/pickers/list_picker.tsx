@@ -1,17 +1,17 @@
 import clsx from 'clsx';
-import i18n from '../../../i18n/config';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 
+import i18n from '../../../i18n/config';
 import { translateItemLabel } from '../../../i18n/localization';
 import { Player } from '../../player';
 import { APLValidation } from '../../proto/api';
 import { LogLevel } from '../../proto/common';
 import { ActionId } from '../../proto_utils/action_id';
-import { EventID, TypedEvent } from '../../typed_event.js';
+import { EventID, nextEventID } from '../../state/batch';
+import { subscribePlayerField } from '../../state/subscriptions';
 import { existsInDOM } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TooltipButton } from '../tooltip_button';
-
 export type ListItemAction = 'create' | 'delete' | 'move' | 'copy';
 
 export interface ListPickerActionsConfig {
@@ -138,7 +138,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 				() => {
 					const newItem = this.config.newItem();
 					const newList = this.config.getValue(this.modObject).concat([newItem]);
-					this.config.setValue(TypedEvent.nextEventID(), this.modObject, newList);
+					this.config.setValue(nextEventID(), this.modObject, newList);
 					if (newButtonTooltip) {
 						newButtonTooltip.hide();
 					}
@@ -163,7 +163,12 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 	setInputValue(newValue: Array<ItemType>): void {
 		// Add/remove pickers to make the lengths match.
 		if (newValue.length < this.itemPickerPairs.length) {
-			this.itemPickerPairs.slice(newValue.length).forEach(ipp => ipp.elem.remove());
+			this.itemPickerPairs.slice(newValue.length).forEach(ipp => {
+				const childIdx = this.children.indexOf(ipp.picker);
+				if (childIdx >= 0) this.children.splice(childIdx, 1);
+				ipp.picker.dispose();
+				ipp.elem.remove();
+			});
 			this.itemPickerPairs = this.itemPickerPairs.slice(0, newValue.length);
 		} else if (newValue.length > this.itemPickerPairs.length) {
 			const numToAdd = newValue.length - this.itemPickerPairs.length;
@@ -179,7 +184,13 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		}
 
 		// Set all the values.
-		newValue.forEach((val, i) => this.itemPickerPairs[i].picker.setInputValue(val));
+		newValue.forEach((val, i) => {
+			const picker = this.itemPickerPairs[i].picker;
+			picker.setInputValue(val);
+			// Items may not subscribe themselves (see APL child pickers); keep
+			// their enable/show state in sync from the cascade.
+			picker.update();
+		});
 	}
 
 	private actionEnabled(action: ListItemAction): boolean {
@@ -240,7 +251,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		}
 
 		const itemPicker = this.config.newItemPicker(itemElem, this, index, {
-			changedEvent: this.config.changedEvent,
+			storeSubscribe: this.config.storeSubscribe,
 			getValue: () => this.getSourceValue()[index],
 			setValue: (eventID: EventID, modObj: ModObject, newValue: ItemType) => {
 				const newList = this.getSourceValue();
@@ -250,6 +261,11 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		});
 
 		const item: ItemPickerPair<ItemType> = { elem: itemContainer, picker: itemPicker, idx: index };
+		this.addChild(itemPicker);
+		// Per-item resources (tooltips, the document-level mouseup listener) die
+		// with the item picker, not with the whole list.
+		const itemAbort = new AbortController();
+		itemPicker.addOnDisposeCallback(() => itemAbort.abort());
 
 		if (this.actionEnabled('delete')) {
 			if (!this.config.minimumItems || index + 1 > this.config.minimumItems) {
@@ -268,12 +284,12 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 					() => {
 						const newList = this.config.getValue(this.modObject);
 						newList.splice(index, 1);
-						this.config.setValue(TypedEvent.nextEventID(), this.modObject, newList);
+						this.config.setValue(nextEventID(), this.modObject, newList);
 						deleteButtonTooltip.hide();
 					},
 					{ signal: this.signal },
 				);
-				this.addOnDisposeCallback(() => deleteButtonTooltip?.destroy());
+				itemPicker.addOnDisposeCallback(() => deleteButtonTooltip?.destroy());
 				this.addHoverListeners(deleteButton);
 			}
 		}
@@ -295,13 +311,13 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						extraTooltip.hide();
 						try {
 							popover.hidePopover();
-						} catch (_) {
+						} catch {
 							// popover may already be hidden
 						}
 					},
 					{ signal: this.signal },
 				);
-				this.addOnDisposeCallback(() => extraTooltip?.destroy());
+				itemPicker.addOnDisposeCallback(() => extraTooltip?.destroy());
 				this.addHoverListeners(extraButton);
 				if (extraAction.shouldShow) {
 					extraActionButtons.push({ elem: extraButton, shouldShow: extraAction.shouldShow });
@@ -326,13 +342,13 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 					} else if ('copyItem' in this.config && this.config.copyItem) {
 						const newList = this.config.getValue(this.modObject).slice();
 						newList.splice(index, 0, this.config.copyItem(newList[index]));
-						this.config.setValue(TypedEvent.nextEventID(), this.modObject, newList);
+						this.config.setValue(nextEventID(), this.modObject, newList);
 					}
 					copyButtonTooltip.hide();
 				},
 				{ signal: this.signal },
 			);
-			this.addOnDisposeCallback(() => copyButtonTooltip?.destroy());
+			itemPicker.addOnDisposeCallback(() => copyButtonTooltip?.destroy());
 			this.addHoverListeners(copyButton);
 		}
 
@@ -394,7 +410,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						itemContainer.removeAttribute('draggable');
 					}
 				},
-				{ signal: this.signal },
+				{ signal: itemAbort.signal },
 			);
 
 			const droppingActionOnOtherList = () => {
@@ -529,14 +545,14 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						const oldList = curDragData.listPicker.config.getValue(curDragData.listPicker.modObject);
 						arrElem = oldList[srcIdx];
 						oldList.splice(srcIdx, 1);
-						curDragData.listPicker.config.setValue(TypedEvent.nextEventID(), curDragData.listPicker.modObject, oldList);
+						curDragData.listPicker.config.setValue(nextEventID(), curDragData.listPicker.modObject, oldList);
 					} else {
 						arrElem = newList[srcIdx];
 						newList.splice(srcIdx, 1);
 					}
 
 					newList.splice(dstIdx, 0, arrElem);
-					this.config.setValue(TypedEvent.nextEventID(), this.modObject, newList);
+					this.config.setValue(nextEventID(), this.modObject, newList);
 
 					curDragData = null;
 				},
@@ -629,11 +645,12 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 
 		const iconElem = validationElem.querySelector('i');
 
+		let unsubValidations: () => void = () => {};
 		const updateValidations = async () => {
 			if (!existsInDOM(validationElem)) {
 				validationTooltip?.destroy();
 				validationElem?.remove();
-				player.currentStatsEmitter.off(updateValidations);
+				unsubValidations();
 				return;
 			}
 			validationTooltip.setContent('');
@@ -691,6 +708,6 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 			}
 		};
 		updateValidations();
-		player.currentStatsEmitter.on(updateValidations);
+		unsubValidations = subscribePlayerField(player, 'currentStats')(updateValidations);
 	}
 }

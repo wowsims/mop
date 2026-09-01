@@ -1,15 +1,23 @@
+import { ref } from 'tsx-vanilla';
+
+import i18n from '../../i18n/config';
+import { trackEvent } from '../../tracking/utils';
+import { IndividualSimUI } from '../individual_sim_ui';
 import { SimRun, SimRunData } from '../proto/ui';
 import { SimResult } from '../proto_utils/sim_result';
 import { SimUI } from '../sim_ui';
-import { TypedEvent } from '../typed_event';
+import { nextEventID } from '../state/batch';
+import { Emitter } from '../state/events';
+import { subscribeSimSettingsChange } from '../state/subscriptions';
+import { isDevMode } from '../utils';
 import { Component } from './component';
 import { AuraMetricsTable } from './detailed_results/aura_metrics';
 import { CastMetricsTable } from './detailed_results/cast_metrics';
+import { CombatReplay } from './detailed_results/combat_replay';
 import { DamageMetricsTable } from './detailed_results/damage_metrics';
 import { DpsHistogram } from './detailed_results/dps_histogram';
 import { DtpsMetricsTable } from './detailed_results/dtps_metrics';
 import { HealingMetricsTable } from './detailed_results/healing_metrics';
-import { CombatReplay } from './detailed_results/combat_replay';
 import { LogRunner } from './detailed_results/log_runner';
 import { PlayerDamageMetricsTable } from './detailed_results/player_damage';
 import { PlayerDamageTakenMetricsTable } from './detailed_results/player_damage_taken';
@@ -20,12 +28,6 @@ import { Timeline } from './detailed_results/timeline';
 import { ToplineResults } from './detailed_results/topline_results';
 import { RaidSimResultsManager } from './raid_sim_action';
 import { StickyToolbar } from './sticky_toolbar';
-import i18n from '../../i18n/config';
-import { ref } from 'tsx-vanilla';
-import { isDevMode } from '../utils';
-import { IndividualSimUI } from '../individual_sim_ui';
-import { trackEvent } from '../../tracking/utils';
-
 type Tab = {
 	isActive?: boolean;
 	targetId: string;
@@ -87,7 +89,8 @@ export class DetailedResults extends Component {
 	protected recentlyEditedSeed: boolean = false;
 
 	private currentSimResult: SimResult | null = null;
-	private resultsEmitter: TypedEvent<SimResultData | null> = new TypedEvent<SimResultData | null>();
+	// Event: a (possibly filtered) result is ready for the sub-views.
+	private resultsEmitter = new Emitter<SimResultData | null>();
 	private resultsFilter: ResultsFilter;
 	private rootDiv: Element;
 
@@ -216,7 +219,7 @@ export class DetailedResults extends Component {
 			</>,
 		);
 
-		this.simUI.sim.settingsChangeEmitter.on(() => this.updateSettings());
+		subscribeSimSettingsChange(this.simUI.sim)(() => this.updateSettings());
 
 		// Allow styling the sticky toolbar
 		const toolbar = document.querySelector<HTMLElement>('.dr-toolbar')!;
@@ -312,7 +315,7 @@ export class DetailedResults extends Component {
 
 		this.resultsFilter.changeEmitter.on(async () => await this.updateResults(this.latestRun));
 
-		this.resultsEmitter.on((_, resultData) => {
+		this.resultsEmitter.on(resultData => {
 			if (resultData?.filter.player || resultData?.filter.player === 0) {
 				this.rootDiv.classList.remove('all-players');
 				this.rootDiv.classList.add('single-player');
@@ -340,7 +343,7 @@ export class DetailedResults extends Component {
 				label: 'death',
 			});
 			if (this.latestDeathSeeds.length > 1) {
-				this.simUI?.sim.setFixedRngSeed(TypedEvent.nextEventID(), Number(this.latestDeathSeeds.pop()));
+				this.simUI?.sim.setFixedRngSeed(nextEventID(), Number(this.latestDeathSeeds.pop()));
 				this.recentlyEditedSeed = true;
 
 				if (isDevMode()) {
@@ -365,7 +368,7 @@ export class DetailedResults extends Component {
 
 	private updateSettings() {
 		if (this.recentlyEditedSeed) {
-			this.simUI.sim.setFixedRngSeed(TypedEvent.nextEventID(), 0);
+			this.simUI.sim.setFixedRngSeed(nextEventID(), 0);
 			this.recentlyEditedSeed = false;
 		}
 
@@ -419,13 +422,13 @@ export class DetailedResults extends Component {
 			}
 		}
 
-		const eventID = TypedEvent.nextEventID();
+		const eventID = nextEventID();
 		if (this.currentSimResult == null) {
 			this.rootDiv.classList.add('dr-no-results');
-			this.resultsEmitter.emit(eventID, null);
+			this.resultsEmitter.emit(null);
 		} else {
 			this.rootDiv.classList.remove('dr-no-results');
-			this.resultsEmitter.emit(eventID, {
+			this.resultsEmitter.emit({
 				eventID: eventID,
 				result: this.currentSimResult,
 				filter: this.resultsFilter.getFilter(),

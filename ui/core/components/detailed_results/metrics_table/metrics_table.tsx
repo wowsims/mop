@@ -1,10 +1,11 @@
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
+
+import i18n from '../../../../i18n/config';
 import { CacheHandler } from '../../../cache_handler';
 import { ActionId } from '../../../proto_utils/action_id';
-import i18n from '../../../../i18n/config';
 import { ActionMetrics, AuraMetrics, ResourceMetrics, UnitMetrics } from '../../../proto_utils/sim_result';
-import { TypedEvent } from '../../../typed_event';
+import { Emitter } from '../../../state/events';
 import { ResultComponent, ResultComponentConfig, SimResultData } from '../result_component';
 import { TableSorter } from './table_sorter';
 
@@ -37,7 +38,7 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 	protected readonly bodyElem: HTMLTableSectionElement;
 	private readonly sorter: TableSorter;
 
-	readonly onUpdate = new TypedEvent<void>('MetricsTableUpdate');
+	readonly onUpdate = new Emitter<void>();
 
 	constructor(config: ResultComponentConfig, columnConfigs: Array<MetricsColumnConfig<T>>) {
 		super(config);
@@ -169,13 +170,13 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 			this.rootElem.classList.remove('hide');
 		} else {
 			this.rootElem.classList.add('hide');
-			this.onUpdate.emit(resultData.eventID);
+			this.onUpdate.emit();
 			return;
 		}
 
 		groupedMetrics.forEach(group => this.addGroup(group));
 		this.sorter.update();
-		this.onUpdate.emit(resultData.eventID);
+		this.onUpdate.emit();
 	}
 
 	reset() {

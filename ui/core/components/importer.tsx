@@ -1,10 +1,10 @@
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../i18n/config';
+import { trackPageView } from '../../tracking/utils';
 import { SimUI } from '../sim_ui';
 import { BaseModal } from './base_modal';
 import Toast from './toast';
-import i18n from '../../i18n/config';
-import { trackPageView } from '../../tracking/utils';
 
 export interface ImporterOptions {
 	title: string;

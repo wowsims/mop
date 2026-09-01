@@ -1,3 +1,4 @@
+import i18n from '../../../i18n/config';
 import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
 import { Player } from '../../player.js';
 import {
@@ -7,6 +8,7 @@ import {
 	APLActionActivateAuraWithStacks,
 	APLActionAutocastOtherCooldowns,
 	APLActionCancelAura,
+	APLActionCancelSpellCast,
 	APLActionCastAllStatBuffCooldowns,
 	APLActionCastFriendlySpell,
 	APLActionCastSpell,
@@ -14,6 +16,7 @@ import {
 	APLActionChangeTarget,
 	APLActionChannelSpell,
 	APLActionCustomRotation,
+	APLActionDamageAmplifier,
 	APLActionGroupReference,
 	APLActionGuardianHotwDpsRotation,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
@@ -29,25 +32,22 @@ import {
 	APLActionStrictMultidot,
 	APLActionStrictSequence,
 	APLActionTriggerICD,
-	APLActionDamageAmplifier,
 	APLActionWait,
 	APLActionWaitUntil,
-	APLValue,
 	APLActionWarlockNextExhaleTarget,
-	APLActionCancelSpellCast,
+	APLValue,
 } from '../../proto/apl.js';
 import { Spec } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
-import { EventID } from '../../typed_event.js';
+import { EventID } from '../../state/batch';
 import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
-import i18n from '../../../i18n/config';
 import { TextDropdownPicker } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
+import { aplChildSubscribe } from './apl_helpers';
 import * as AplHelpers from './apl_helpers.js';
 import { itemSwapSetFieldConfig } from './apl_helpers.js';
 import * as AplValues from './apl_values.js';
-
 export interface APLActionPickerConfig extends InputConfig<Player<any>, APLAction> {}
 
 export type APLActionKind = APLAction['action']['oneofKind'];
@@ -71,13 +71,13 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 
 		this.conditionPicker = new AplValues.APLValuePicker(this.rootElem, this.modObject, {
 			label: i18n.t('rotation_tab.apl.priority_list.if_label'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.condition,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
 				const srcVal = this.getSourceValue();
 				if (srcVal) {
 					srcVal.condition = newValue;
-					player.rotationChangeEmitter.emit(eventID);
+					player.touchRotation(eventID);
 				} else {
 					this.setSourceValue(
 						eventID,
@@ -113,7 +113,7 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 				};
 			}),
 			equals: (a, b) => a == b,
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.action.oneofKind,
 			setValue: (eventID: EventID, player: Player<any>, newKind: APLActionKind) => {
 				const sourceValue = this.getSourceValue();
@@ -165,13 +165,15 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 						oneofKind: newKind,
 					};
 				}
-				player.rotationChangeEmitter.emit(eventID);
+				player.touchRotation(eventID);
 			},
 		});
 
 		this.currentKind = undefined;
 		this.actionPicker = null;
 
+		this.addChild(this.conditionPicker);
+		this.addChild(this.kindPicker);
 		this.init();
 	}
 
@@ -233,6 +235,9 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 		this.currentKind = newActionKind;
 
 		if (this.actionPicker) {
+			const childIdx = this.children.indexOf(this.actionPicker);
+			if (childIdx >= 0) this.children.splice(childIdx, 1);
+			this.actionPicker.dispose();
 			this.actionPicker.rootElem.remove();
 			this.actionPicker = null;
 		}
@@ -245,17 +250,18 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 
 		const factory = actionKindFactories[newActionKind];
 		this.actionPicker = factory.factory(this.actionDiv, this.modObject, {
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
+			storeSubscribe: aplChildSubscribe,
 			getValue: () => (this.getSourceValue()?.action as any)?.[newActionKind] || factory.newValue(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const sourceValue = this.getSourceValue();
 				if (sourceValue) {
 					(sourceValue?.action as any)[newActionKind] = newValue;
 				}
-				player.rotationChangeEmitter.emit(eventID);
+				player.touchRotation(eventID);
 			},
 		});
 		this.actionPicker.rootElem.classList.add('apl-action-' + newActionKind);
+		this.addChild(this.actionPicker);
 	}
 }
 
