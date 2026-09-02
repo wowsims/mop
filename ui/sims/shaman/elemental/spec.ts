@@ -6,7 +6,7 @@ import { PlayerClasses } from '@domain/player_classes';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { AttackSpeedBuff } from '@features/settings/model/buffs_debuffs';
-import * as OtherInputs from '@features/settings/view/other_inputs';
+import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
 import i18n from '@i18n/config';
 

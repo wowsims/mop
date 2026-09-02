@@ -5,7 +5,7 @@ import { PlayerClasses } from '@domain/player_classes';
 import * as StatCaps from '@domain/presets/stat_caps';
 import { UnitStat } from '@domain/proto_utils/stats';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
-import * as OtherInputs from '@features/settings/view/other_inputs';
+import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { talentBasedSettingsRule } from '../shared/derived';

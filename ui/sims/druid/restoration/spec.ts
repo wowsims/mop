@@ -3,7 +3,7 @@ import { PseudoStat, Spec, Stat } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '@domain/proto_utils/stats';
-import * as OtherInputs from '@features/settings/view/other_inputs';
+import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 // import * as DruidInputs from './inputs';

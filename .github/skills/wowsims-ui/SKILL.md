@@ -518,3 +518,15 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   (enhancement *and* elemental) old vs. new via an SSR harness entry through `vite.harness.mts` +
   `tools/state-snapshots/run.mjs`. Rendered in the same slot as before (before Consumes/Other),
   not appended after the standard sections, so nothing moves on screen.
+- 2026-09-02 UI restructure PR F1: `other_inputs.ts` split by role (the "split pending" noted under
+  PR 5c). The 12 DOM-free picker config constants (`InputDelay`, `ChallengeMode`, `ChannelClipDelay`,
+  `InFrontOfTarget`, `DistanceFromTarget`, `TankAssignment`, `IncomingHps`, `HealingCadence`,
+  `HealingCadenceVariation`, `AbsorbFrac`, `BurstWindow`, `HpPercentForDefensives`) moved verbatim to
+  `features/settings/model/other_inputs.ts`; the five `make*Selector(parent, sim)` DOM constructors
+  (`makeShow1hWeaponsSelector`, `makeShow2hWeaponsSelector`, `makeShowMatchingGemsSelector`,
+  `makeShowEPValuesSelector`, `makePhaseSelector`) stay in `features/settings/view/other_inputs.ts`.
+  Nothing is re-exported from `view/` for convenience: the 35 alias importers (all 34 `spec.ts` plus
+  `app/individual_sim_ui.tsx`, every one a constants-only `import * as OtherInputs`) now point at
+  `@features/settings/model/other_inputs`, and `features/gear/view/item_list.tsx` — the only consumer
+  of the constructors — keeps its `view/` import. The two halves are disjoint: view imports nothing
+  from model.

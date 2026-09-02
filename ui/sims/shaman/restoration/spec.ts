@@ -4,7 +4,7 @@ import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
-import * as OtherInputs from '@features/settings/view/other_inputs';
+import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import * as ShamanInputs from '../shared/inputs';

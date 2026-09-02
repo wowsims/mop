@@ -13,7 +13,7 @@ import { UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import { RelativeStatCap } from '@domain/reforge_settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
-import * as OtherInputs from '@features/settings/view/other_inputs';
+import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import * as FeralInputs from './inputs';

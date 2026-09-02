@@ -24,8 +24,8 @@ ui/
                      talents/, item-swap/ (view/, item_swap_picker),
                      character-stats/ (view/, character_stats), encounter/ (view/,
                      encounter_picker), settings/ (model/ buffs_debuffs/consumables/
-                     stat_options, view/ cooldowns_picker + consumes_picker + other_inputs +
-                     spec_change_warning_toast), bulk/ (model/ core_sim, view/
+                     stat_options/other_inputs, view/ cooldowns_picker + consumes_picker +
+                     other_inputs + spec_change_warning_toast), bulk/ (model/ core_sim, view/
                      bulk_tab + bulk_item_search/bulk_item_picker/bulk_item_picker_group/
                      bulk_sim_results_renderer flattened), import-export/ (view/
                      importer/exporter + importers/ + exporters/); plus two top-level
@@ -51,7 +51,10 @@ ui/
 
 - `domain/`: if it needs `window`/`document`, it doesn't belong here — inject an `Env` adapter instead.
 - `ui-kit/`: reusable widgets with zero knowledge of sims (no `Player`/`Sim` types except through generic params).
-- `features/<x>/model/`: DOM-free logic of one capability; `features/<x>/view/`: its tsx-vanilla rendering. Features never import another feature's `view/`.
+- `features/<x>/model/`: DOM-free logic of one capability; `features/<x>/view/`: its tsx-vanilla rendering. Features never import another feature's `view/`. The two halves may share a
+  filename when a capability has both: `settings/model/other_inputs.ts` holds the picker config
+  constants (`InputDelay`, `TankAssignment`, the healing-model inputs — data a spec declares),
+  `settings/view/other_inputs.ts` the `make*Selector(parent, sim)` DOM constructors.
 - `app/`: composes features; the only place that knows the tab layout.
 - `sims/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
 

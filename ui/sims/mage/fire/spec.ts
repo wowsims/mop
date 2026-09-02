@@ -6,7 +6,7 @@ import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import * as StatCaps from '@domain/presets/stat_caps';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, UnitStat } from '@domain/proto_utils/stats';
-import * as OtherInputs from '@features/settings/view/other_inputs';
+import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import * as MageInputs from '../shared/inputs';
