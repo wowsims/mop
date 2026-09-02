@@ -164,6 +164,24 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 9a: shared lift. Every class now has fixed-name
+  `<class>/shared/{inputs,presets}.ts` (root `<class>/inputs.ts` / `<class>/shared.ts` /
+  `<class>/presets.ts` moved in via the move tool; DK's split inputs.ts merged into one file,
+  monk's `utils.ts` folded into `shared/derived.ts`, its only caller). Added
+  `ui/domain/presets/stat_caps.ts` (`meleeHitExpertiseCaps`/`expertiseCap`/`spellHitCap`) and
+  `ui/domain/presets/encounters.ts` (`singleTargetEncounterProto`/`malkorokEncounterProto`) for
+  the byte-identical `statCaps`/encounter-proto copies across specs — 19 `statCaps` copies and
+  both Malkorok proto builders (warrior 144s/5s/100% vs. death knight 300s/30s/0%, kept
+  divergent on purpose) converted; 6 `statCaps` variants left inline (monk/windwalker,
+  mage/arcane, shaman/enhancement, shaman/elemental, druid/guardian, death_knight/frost).
+  Added per-class `DefaultRaidBuffs` to `shared/presets.ts` for the 8 raid-buff literal groups
+  that were byte-identical across a class's specs (hunter x3, rogue x3, warlock x3, paladin x2,
+  monk x2, warrior x2, death knight x2 frost/unholy); death_knight/blood, warrior/protection,
+  druid/{feral,guardian,balance,restoration}, monk/mistweaver, paladin/holy,
+  priest/{discipline,holy,shadow}, shaman/{elemental,enhancement,restoration}, mage's shared
+  presets kept their own inline blocks (either singletons or cross-class matches left
+  unconsolidated — cross-class raid-buff sharing is riskier and out of scope here).
+  `npm run test:snapshots` (34/34 golden) is unchanged throughout.
 - 2026-09-02 UI restructure PR 7c: the last 7 hand-written specs converted — **zero
   `extends IndividualSimUI` remain, and 34 of 34 specs are `spec.ts`**. `IndividualSimUI`'s
   constructor now takes `SpecDefinition<S>` (the `& SpecBehaviors` union is gone; nothing else

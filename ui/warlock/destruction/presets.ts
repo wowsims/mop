@@ -1,11 +1,11 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Stats } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, Race, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
 import { DestructionWarlock_Options as WarlockOptions, WarlockMajorGlyph as MajorGlyph, WarlockOptions_Summon as Summon } from '../../core/proto/warlock';
-import { WARLOCK_BREAKPOINTS } from '../presets';
+export { DefaultRaidBuffs } from '../shared/presets';
+import { WARLOCK_BREAKPOINTS } from '../shared/presets';
 import DefaultApl from './apls/default.apl.json';
 import P1PreBisGear from './gear_sets/p1-prebis.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
@@ -74,16 +74,6 @@ export const DefaultConsumables = ConsumesSpec.create({
 	prepotId: 76093, // Potion of the Jade Serpent
 });
 
-export const DefaultRaidBuffs = RaidBuffs.create({
-	...defaultRaidBuffMajorDamageCooldowns(),
-	arcaneBrilliance: true,
-	blessingOfKings: true,
-	leaderOfThePack: true,
-	blessingOfMight: true,
-	bloodlust: true,
-	moonkinAura: true,
-	unholyAura: true,
-});
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});
 

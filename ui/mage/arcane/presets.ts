@@ -7,7 +7,7 @@ import { nextEventID } from '@domain/state/batch';
 import { ConsumesSpec, Glyphs, Profession, Race, Spec, Stat } from '../../core/proto/common';
 import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';
-import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
+import { DefaultDebuffs, DefaultRaidBuffs } from '../shared/presets';
 import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
 import P3BISGear from './gear_sets/p3_bis.gear.json';

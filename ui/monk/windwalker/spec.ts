@@ -2,7 +2,6 @@ import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import { RelativeStatCap } from '@domain/reforge_settings';
 import { nextEventID } from '@domain/state/batch';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
@@ -11,12 +10,14 @@ import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { talentBasedSettingsRule } from '../shared/derived';
 import * as Presets from './presets';
 
 const hasTwoHandMainHand = (player: Player<Spec.SpecWindwalkerMonk>): boolean =>
 	player.getEquippedItem(ItemSlot.ItemSlotMainHand)?.item?.handType === HandType.HandTypeTwoHand;
+
+import * as MonkPresets from '../shared/presets';
 
 export default defineSpec<Spec.SpecWindwalkerMonk>({
 	spec: Spec.SpecWindwalkerMonk,
@@ -89,17 +90,7 @@ export default defineSpec<Spec.SpecWindwalkerMonk>({
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			legacyOfTheEmperor: true,
-			legacyOfTheWhiteTiger: true,
-			darkIntent: true,
-			trueshotAura: true,
-			unleashedRage: true,
-			moonkinAura: true,
-			blessingOfMight: true,
-			bloodlust: true,
-		}),
+		raidBuffs: MonkPresets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({

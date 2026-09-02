@@ -1,6 +1,17 @@
+import { PseudoStat, RaidBuffs } from '@core/proto/common';
 import { UnitStat } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { PseudoStat } from '../core/proto/common';
+export const DefaultRaidBuffs = RaidBuffs.create({
+	...defaultRaidBuffMajorDamageCooldowns(),
+	arcaneBrilliance: true,
+	blessingOfKings: true,
+	leaderOfThePack: true,
+	blessingOfMight: true,
+	bloodlust: true,
+	moonkinAura: true,
+	unholyAura: true,
+});
 
 export const WARLOCK_BREAKPOINTS = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),

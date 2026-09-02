@@ -1,6 +1,7 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
+import * as StatCaps from '@domain/presets/stat_caps';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
@@ -9,7 +10,7 @@ import { defineSpec } from '@features/spec_config';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import * as PriestInputs from '../inputs';
+import * as PriestInputs from '../shared/inputs';
 import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecShadowPriest>({
@@ -61,9 +62,7 @@ export default defineSpec<Spec.SpecShadowPriest>({
 		gear: Presets.P3_4_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P3_4_EP_PRESET.epWeights,
-		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
-		})(),
+		statCaps: StatCaps.spellHitCap(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default talents.

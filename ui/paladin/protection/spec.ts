@@ -1,16 +1,16 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
+import * as StatCaps from '@domain/presets/stat_caps';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
-import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common';
-import * as PaladinInputs from '../inputs';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat, UnitStats } from '../../core/proto/common';
+import * as PaladinInputs from '../shared/inputs';
 import * as Presets from './presets';
 
 const P2ExpertisePostCapEPs = [0.6, 0];
@@ -21,6 +21,8 @@ const P3OffensiveExpertisePostCapEPs = [0.91, 0];
 
 const P5ExpertisePostCapEPs = [1.08, 0];
 const P5OffensiveExpertisePostCapEPs = [1.21, 0];
+
+import * as PaladinPresets from '../shared/presets';
 
 export default defineSpec<Spec.SpecProtectionPaladin>({
 	spec: Spec.SpecProtectionPaladin,
@@ -108,12 +110,7 @@ export default defineSpec<Spec.SpecProtectionPaladin>({
 		// Values for now are pre-Cata initial WAG
 		epWeights: Presets.P3_4_BALANCED_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
-		statCaps: (() => {
-			const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
-			const expCap = new Stats().withStat(Stat.StatExpertiseRating, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
-
-			return hitCap.add(expCap);
-		})(),
+		statCaps: StatCaps.meleeHitExpertiseCaps(15),
 		softCapBreakpoints: (() => {
 			return [
 				StatCap.fromPseudoStat(PseudoStat.PseudoStatMeleeHastePercent, {
@@ -136,17 +133,7 @@ export default defineSpec<Spec.SpecProtectionPaladin>({
 		specOptions: Presets.DefaultOptions,
 		other: Presets.OtherDefaults,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			arcaneBrilliance: true,
-			blessingOfKings: true,
-			blessingOfMight: true,
-			bloodlust: true,
-			elementalOath: true,
-			powerWordFortitude: true,
-			serpentsSwiftness: true,
-			trueshotAura: true,
-		}),
+		raidBuffs: PaladinPresets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({

@@ -215,6 +215,16 @@ A shared `DerivedSetting` is declared `DerivedSetting<any>` because `Player<S>` 
 `S`, so a rule typed against a spec union is not assignable into any one spec's
 `derivedSettings`; annotate the callback parameters to keep the bodies checked.
 
+Every class now has fixed-name class-level shared files: `<class>/shared/{inputs,presets}.ts`
+(plus `derived.ts` and, for monk, `settings.ts`/`derived.ts` where a class-level helper only had
+one caller) hold what used to sit at `<class>/inputs.ts`, `<class>/shared.ts`, or
+`<class>/presets.ts`. `presets.ts` holds encounter presets, EP-breakpoint tables, and a class's
+`DefaultRaidBuffs` where all (or a class-consistent subset of) that class's specs share one
+raid-buff default. Cross-spec constants used by more than one class (the melee hit/expertise and
+spell-hit `statCaps` builders, the single-target and Malkorok encounter protos) live in
+`ui/domain/presets/{stat_caps,encounters}.ts` instead — `domain/` can't import `@app`, so these
+export raw protos/`Stats` for a class's `shared/presets.ts` to wrap with `PresetUtils`.
+
 ## How to move a file
 
 Use the move tool — it does the `git mv` (or a plain rename for a gitignored generated file)

@@ -10,8 +10,8 @@ import { defineSpec } from '@features/spec_config';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import * as MageInputs from '../inputs';
-import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
+import * as MageInputs from '../shared/inputs';
+import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../shared/presets';
 import * as ArcaneInputs from './inputs';
 import * as Presets from './presets';
 

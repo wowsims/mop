@@ -12,7 +12,7 @@ import {
 	MageMinorGlyph as MinorGlyph,
 } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';
-import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
+import { DefaultDebuffs, DefaultRaidBuffs } from '../shared/presets';
 import FireApl from './apls/fire.apl.json';
 import MasteryApl from './apls/mastery_fire.apl.json';
 import P3MasteryGear from './gear_sets/mastery_fire.gear.json';

@@ -1,6 +1,7 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
+import * as StatCaps from '@domain/presets/stat_caps';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
@@ -62,9 +63,7 @@ export default defineSpec<Spec.SpecMistweaverMonk>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
-		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
-		})(),
+		statCaps: StatCaps.spellHitCap(),
 		// Default soft caps for the Reforge optimizer
 		softCapBreakpoints: (() => {
 			const spellHitSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHitPercent, {

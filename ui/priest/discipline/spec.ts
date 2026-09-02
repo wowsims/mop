@@ -6,7 +6,7 @@ import { defineSpec } from '@features/spec_config';
 
 import { APLRotation } from '../../core/proto/apl';
 import { PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import * as PriestInputs from '../inputs';
+import * as PriestInputs from '../shared/inputs';
 import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecDisciplinePriest>({

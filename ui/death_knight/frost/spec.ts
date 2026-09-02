@@ -2,17 +2,16 @@ import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
-import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import * as SharedPresets from '../shared';
+import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { amsIntakeRule } from '../shared/derived';
 import * as DeathKnightInputs from '../shared/inputs';
+import * as SharedPresets from '../shared/presets';
 import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecFrostDeathKnight>({
@@ -90,16 +89,7 @@ export default defineSpec<Spec.SpecFrostDeathKnight>({
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			blessingOfKings: true,
-			blessingOfMight: true,
-			bloodlust: true,
-			elementalOath: true,
-			leaderOfThePack: true,
-			trueshotAura: true,
-			unholyAura: true,
-		}),
+		raidBuffs: SharedPresets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({

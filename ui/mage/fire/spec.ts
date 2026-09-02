@@ -1,15 +1,16 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
-import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
+import * as StatCaps from '@domain/presets/stat_caps';
+import { DEFAULT_CASTER_GEM_STATS, StatCap, UnitStat } from '@domain/proto_utils/stats';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '../../core/proto/apl';
 import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import * as MageInputs from '../inputs';
-import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
+import * as MageInputs from '../shared/inputs';
+import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../shared/presets';
 import { CalculateCombustionThresholds } from './calculate_combustion_thresholds';
 import * as FireInputs from './inputs';
 import * as Presets from './presets';
@@ -118,9 +119,7 @@ export default defineSpec<Spec.SpecFireMage>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
-		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
-		})(),
+		statCaps: StatCaps.spellHitCap(),
 		// Default soft caps for the Reforge optimizer
 		softCapBreakpoints: (() => {
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {

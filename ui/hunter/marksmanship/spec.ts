@@ -2,14 +2,14 @@ import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { Stats, UnitStat } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import * as HunterInputs from '../inputs';
+import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
+import * as HunterInputs from '../shared/inputs';
+import * as HunterPresets from '../shared/presets';
 import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecMarksmanshipHunter>({
@@ -70,16 +70,7 @@ export default defineSpec<Spec.SpecMarksmanshipHunter>({
 		// Default spec-specific settings.
 		specOptions: Presets.MMDefaultOptions,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			blessingOfKings: true,
-			trueshotAura: true,
-			leaderOfThePack: true,
-			blessingOfMight: true,
-			commandingShout: true,
-			unholyAura: true,
-			bloodlust: true,
-		}),
+		raidBuffs: HunterPresets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({

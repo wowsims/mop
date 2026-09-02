@@ -1,17 +1,18 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
-import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import * as StatCaps from '@domain/presets/stat_caps';
+import { StatCap, UnitStat } from '@domain/proto_utils/stats';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import * as RogueInputs from '../inputs';
+import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { lethalPoisonRule } from '../shared/derived';
+import * as RogueInputs from '../shared/inputs';
+import * as RoguePresets from '../shared/presets';
 import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecCombatRogue>({
@@ -39,10 +40,7 @@ export default defineSpec<Spec.SpecCombatRogue>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.CBAT_STANDARD_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
-		statCaps: (() => {
-			const expCap = new Stats().withStat(Stat.StatExpertiseRating, 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
-			return expCap;
-		})(),
+		statCaps: StatCaps.expertiseCap(),
 		softCapBreakpoints: (() => {
 			const meleeHitSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, {
 				breakpoints: [7.5, 26.5],
@@ -60,15 +58,7 @@ export default defineSpec<Spec.SpecCombatRogue>({
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			blessingOfKings: true,
-			trueshotAura: true,
-			swiftbladesCunning: true,
-			legacyOfTheWhiteTiger: true,
-			blessingOfMight: true,
-			bloodlust: true,
-		}),
+		raidBuffs: RoguePresets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({

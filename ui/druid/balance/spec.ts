@@ -1,6 +1,7 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
+import * as StatCaps from '@domain/presets/stat_caps';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { formatToNumber } from '@domain/utils';
 import * as OtherInputs from '@features/settings/view/other_inputs';
@@ -9,7 +10,7 @@ import { defineSpec } from '@features/spec_config';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
 import { ItemSlot, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import * as DruidInputs from '../inputs';
+import * as DruidInputs from '../shared/inputs';
 import * as BalanceInputs from './inputs';
 import * as Presets from './presets';
 
@@ -182,9 +183,7 @@ export default defineSpec<Spec.SpecBalanceDruid>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P5_BIS_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
-		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
-		})(),
+		statCaps: StatCaps.spellHitCap(),
 		softCapBreakpoints: (() => {
 			const hasteBreakpointConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 				breakpoints: [...Presets.BALANCE_BREAKPOINTS!.presets].map(([_, value]) => value),

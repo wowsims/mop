@@ -1,10 +1,9 @@
+import { UnitReference, UnitReference_Type as UnitType } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { DruidSpecs } from '@domain/proto_utils/utils';
 import { EventID } from '@domain/state/batch';
 import * as InputHelpers from '@ui-kit/input_helpers';
-
-import { UnitReference, UnitReference_Type as UnitType } from '../core/proto/common';
 // Configuration for class-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
 

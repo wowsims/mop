@@ -1,16 +1,16 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
-import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import * as StatCaps from '@domain/presets/stat_caps';
+import { StatCap, UnitStat } from '@domain/proto_utils/stats';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
-import { Class, Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import * as WarriorInputs from '../inputs';
-import * as SharedPresets from '../shared';
+import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
+import * as WarriorInputs from '../shared/inputs';
+import * as SharedPresets from '../shared/presets';
 import * as FuryInputs from './inputs';
 import * as Presets from './presets';
 
@@ -62,10 +62,7 @@ export default defineSpec<Spec.SpecFuryWarrior>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P2_FURY_TG_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
-		statCaps: (() => {
-			const expCap = new Stats().withStat(Stat.StatExpertiseRating, 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
-			return expCap;
-		})(),
+		statCaps: StatCaps.expertiseCap(),
 		softCapBreakpoints: (() => {
 			const meleeHitSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, {
 				breakpoints: [7.5, 27],
@@ -83,17 +80,7 @@ export default defineSpec<Spec.SpecFuryWarrior>({
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(Class.ClassWarrior),
-			legacyOfTheEmperor: true,
-			legacyOfTheWhiteTiger: true,
-			darkIntent: true,
-			trueshotAura: true,
-			unleashedRage: true,
-			moonkinAura: true,
-			blessingOfMight: true,
-			bloodlust: true,
-		}),
+		raidBuffs: SharedPresets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({

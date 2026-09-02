@@ -1,7 +1,8 @@
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
-import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
+import * as StatCaps from '@domain/presets/stat_caps';
+import { DEFAULT_CASTER_GEM_STATS, StatCap, UnitStat } from '@domain/proto_utils/stats';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
@@ -9,7 +10,7 @@ import { defineSpec } from '@features/spec_config';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import * as WarlockInputs from '../inputs';
+import * as WarlockInputs from '../shared/inputs';
 import * as AffInputs from './inputs';
 import * as Presets from './presets';
 
@@ -90,9 +91,7 @@ export default defineSpec<Spec.SpecAfflictionWarlock>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P5_BIS_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
-		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
-		})(),
+		statCaps: StatCaps.spellHitCap(),
 		// Default soft caps for the Reforge optimizer
 		softCapBreakpoints: (() => {
 			const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {

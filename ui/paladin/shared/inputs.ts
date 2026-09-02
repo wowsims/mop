@@ -1,11 +1,10 @@
+import { Spec } from '@core/proto/common';
+import { PaladinSeal } from '@core/proto/paladin';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { PaladinSpecs } from '@domain/proto_utils/utils';
 import { subscribePlayerChange } from '@domain/state/subscriptions';
 import * as InputHelpers from '@ui-kit/input_helpers';
-
-import { Spec } from '../core/proto/common';
-import { PaladinSeal } from '../core/proto/paladin';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.

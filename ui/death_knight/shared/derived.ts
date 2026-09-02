@@ -3,7 +3,7 @@ import { subscribeEncounterChange } from '@domain/state/subscriptions';
 import type { DerivedSetting } from '@features/spec_config';
 
 import type { Spec } from '../../core/proto/common';
-import { disableAMSIntakeOnMagicDamageEncounters } from '../inputs';
+import { disableAMSIntakeOnMagicDamageEncounters } from './inputs';
 
 // The abstract AMS intake settings are zeroed on encounters that already deal real
 // magic damage. Both DPS death knight constructors applied this once and re-applied

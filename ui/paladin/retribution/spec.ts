@@ -2,15 +2,15 @@ import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
-import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common';
-import * as PaladinInputs from '../inputs';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat, UnitStats } from '../../core/proto/common';
+import * as PaladinInputs from '../shared/inputs';
+import * as PaladinPresets from '../shared/presets';
 import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecRetributionPaladin>({
@@ -123,17 +123,7 @@ export default defineSpec<Spec.SpecRetributionPaladin>({
 		specOptions: Presets.DefaultOptions,
 		other: Presets.OtherDefaults,
 		// Default raid/party buffs settings.
-		raidBuffs: RaidBuffs.create({
-			...defaultRaidBuffMajorDamageCooldowns(),
-			arcaneBrilliance: true,
-			blessingOfKings: true,
-			blessingOfMight: true,
-			bloodlust: true,
-			elementalOath: true,
-			powerWordFortitude: true,
-			serpentsSwiftness: true,
-			trueshotAura: true,
-		}),
+		raidBuffs: PaladinPresets.DefaultRaidBuffs,
 		partyBuffs: PartyBuffs.create({}),
 		individualBuffs: IndividualBuffs.create({}),
 		debuffs: Debuffs.create({

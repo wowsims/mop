@@ -1,7 +1,7 @@
-import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
-import { Stats, UnitStat } from '@domain/proto_utils/stats';
+import * as StatCaps from '@domain/presets/stat_caps';
+import { UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
@@ -72,12 +72,7 @@ export default defineSpec<Spec.SpecProtectionWarrior>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.P3_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
-		statCaps: (() => {
-			const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
-			const expCap = new Stats().withStat(Stat.StatExpertiseRating, 15 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
-
-			return hitCap.add(expCap);
-		})(),
+		statCaps: StatCaps.meleeHitExpertiseCaps(15),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,

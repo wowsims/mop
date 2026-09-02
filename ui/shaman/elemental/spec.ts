@@ -10,7 +10,7 @@ import i18n from '@i18n/config';
 
 import { APLRotation } from '../../core/proto/apl';
 import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import * as ShamanInputs from '../inputs';
+import * as ShamanInputs from '../shared/inputs';
 import * as ElementalInputs from './inputs';
 import * as Presets from './presets';
 

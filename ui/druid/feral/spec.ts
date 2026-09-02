@@ -1,8 +1,8 @@
-import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
+import * as StatCaps from '@domain/presets/stat_caps';
 import * as AplUtils from '@domain/proto_utils/apl_utils';
-import { Stats, UnitStat } from '@domain/proto_utils/stats';
+import { UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import { RelativeStatCap } from '@domain/reforge_settings';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
@@ -56,12 +56,7 @@ export default defineSpec<Spec.SpecFeralDruid>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DOC_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
-		statCaps: (() => {
-			const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
-			const expCap = new Stats().withStat(Stat.StatExpertiseRating, 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
-
-			return hitCap.add(expCap);
-		})(),
+		statCaps: StatCaps.meleeHitExpertiseCaps(),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,

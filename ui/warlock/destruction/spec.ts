@@ -1,6 +1,7 @@
 import { HASTE_RATING_PER_HASTE_PERCENT } from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
+import * as StatCaps from '@domain/presets/stat_caps';
 import { DEFAULT_CASTER_GEM_STATS, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { batch } from '@domain/state/batch';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
@@ -9,7 +10,7 @@ import { defineSpec } from '@features/spec_config';
 
 import { APLRotation } from '../../core/proto/apl';
 import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import * as WarlockInputs from '../inputs';
+import * as WarlockInputs from '../shared/inputs';
 import * as Presets from './presets';
 const modifyDisplayStats = (player: Player<Spec.SpecDestructionWarlock>) => {
 	let stats = new Stats();
@@ -64,9 +65,7 @@ export default defineSpec<Spec.SpecDestructionWarlock>({
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge optimizer
-		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15);
-		})(),
+		statCaps: StatCaps.spellHitCap(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 
