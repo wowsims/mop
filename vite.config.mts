@@ -1,7 +1,6 @@
 /** @type {import('vite').UserConfig} */
 
 import fs from 'fs';
-import { glob } from 'glob';
 import { IncomingMessage, ServerResponse } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,6 +9,8 @@ import { watchAndRun } from 'vite-plugin-watch-and-run';
 import { checker } from 'vite-plugin-checker';
 import i18nextLoader from 'vite-plugin-i18next-loader';
 import stylelint from 'vite-plugin-stylelint';
+
+import { SPEC_PAGE_TEMPLATE, specPages } from './tools/vite/spec_pages.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -150,6 +151,7 @@ export default defineConfig(({ command, mode }) => {
 				},
 			]),
 			serveExternalAssets(),
+			specPages(BASE_PATH),
 			checker({
 				root: BASE_PATH,
 				typescript: { root: __dirname, tsconfigPath: 'tsconfig.json' },
@@ -175,12 +177,11 @@ export default defineConfig(({ command, mode }) => {
 			...baseConfig.build,
 			rollupOptions: {
 				input: {
-					...glob.sync(path.resolve(BASE_PATH, '**/index.html').replace(/\\/g, '/')).reduce<Record<string, string>>((acc, cur) => {
-						const name = path.relative(__dirname, cur).split(path.sep).join('/');
-						acc[name] = cur;
-						return acc;
-					}, {}),
-					// Add shared.scss as a separate entry if needed or handle it separately
+					'ui/index.html': path.resolve(BASE_PATH, 'index.html'),
+					// The single spec page. `specPages` copies the processed result to
+					// `<class>/<spec>/index.html` and drops this path from the bundle; the key only
+					// names the page's js/css ([name] in the *FileNames below), not its html output.
+					spec_entry: path.resolve(BASE_PATH, SPEC_PAGE_TEMPLATE),
 				},
 				output: {
 					assetFileNames: () => 'bundle/[name]-[hash].style.css',

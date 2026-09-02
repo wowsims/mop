@@ -13,7 +13,6 @@ GOROOT := $(shell go env GOROOT)
 UI_SRC := $(shell find ui -name '*.ts' -o -name '*.tsx' -o -name '*.scss' -o -name '*.html')
 AUTO_GEN_FILES_TS := ui/domain/player_classes/capabilities_auto_gen.ts ui/domain/bulk/constants_auto_gen.ts ui/domain/wasm/bulk_sim/constants_auto_gen.ts
 AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go sim/core/bulk/bulk_sim.go sim/core/bulk/stage.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
-PAGE_INDECES := $(patsubst ui/sims/%/spec.ts,ui/%/index.html,$(wildcard ui/sims/*/*/spec.ts)) $(patsubst ui/sims/%/spec.tsx,ui/%/index.html,$(wildcard ui/sims/*/*/spec.tsx))
 
 $(OUT_DIR)/.dirstamp: \
   $(OUT_DIR)/lib.wasm.gz \
@@ -24,10 +23,10 @@ $(OUT_DIR)/.dirstamp: \
 
 $(OUT_DIR)/bundle/.dirstamp: \
   $(UI_SRC) \
-  $(PAGE_INDECES) \
   $(AUTO_GEN_FILES_TS) \
   vite.config.mts \
   vite.build-workers.mts \
+  tools/vite/spec_pages.mts \
   node_modules \
   tsconfig.json \
   ui/generated/proto/api.ts
@@ -48,18 +47,13 @@ clean:
 	  dist \
 	  binary_dist \
 	  ui/generated/proto/*.ts \
-	  node_modules \
-	  $(PAGE_INDECES)
+	  node_modules
 	find . -name "*.results.tmp" -type f -delete
 
 ui/generated/proto/api.ts: proto/*.proto node_modules
 	npx protoc --ts_opt generate_dependencies --ts_out ui/generated/proto --proto_path proto proto/api.proto
 	npx protoc --ts_out ui/generated/proto --proto_path proto proto/test.proto
 	npx protoc --ts_out ui/generated/proto --proto_path proto proto/ui.proto
-
-ui/%/index.html: ui/index_template.html
-	mkdir -p $(@D)
-	cat ui/index_template.html | sed -e 's/@@CLASS@@/$(shell dirname $(@D) | xargs basename)/g' -e 's/@@SPEC@@/$(shell basename $(@D))/g' > $@
 
 .PHONY: package.json
 
@@ -90,13 +84,6 @@ node_modules: package-lock.json
 .PHONY: host_%
 host_%: $(OUT_DIR) node_modules $(AUTO_GEN_FILES_TS)
 	npx http-server $(OUT_DIR)/..
-
-# Generic rule for building index.html for any class directory
-$(OUT_DIR)/%/index.html: ui/index_template.html $(OUT_DIR)/assets
-	$(eval title := $(shell echo $(shell basename $(@D)) | sed -r 's/(^|_)([a-z])/\U \2/g' | cut -c 2-))
-	echo $(title)
-	mkdir -p $(@D)
-	cat ui/index_template.html | sed -e 's/@@CLASS@@/$(shell dirname $((@D)) | xargs basename)/g' -e 's/@@SPEC@@/$(shell basename $(@D))/g' > $@
 
 .PHONY: wasm
 wasm: $(OUT_DIR)/lib.wasm.gz
@@ -306,7 +293,7 @@ else
 	npx http-server $(OUT_DIR)/..
 endif
 
-devmode: air devserver $(AUTO_GEN_FILES_TS) $(PAGE_INDECES)
+devmode: air devserver $(AUTO_GEN_FILES_TS)
 ifeq ($(WATCH), 1)
 	npx tsx vite.build-workers.mts & npx vite serve --host &
 	air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false --wasm=false" -build.bin "./wowsimmop$(BIN_EXT)" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"

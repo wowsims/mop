@@ -41,8 +41,9 @@ ui/
   i18n/              LEAF: framework-agnostic i18next config + localization tables
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
                      the top level rather than under app/. alias @i18n
-  sims/<class>/<spec>/   spec data, presets. alias @specs. Generated index.html still lands
-                     at ui/<class>/<spec>/index.html (URL /mop/<class>/<spec>/ unchanged)
+  sims/<class>/<spec>/   spec data, presets. alias @specs. No html on disk: the one page at
+                     ui/index_template.html is served (dev) and emitted (build) at every
+                     /mop/<class>/<spec>/ by tools/vite/spec_pages.mts
   scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
                      replace the 34 per-spec sims/<class>/<spec>/{index,_sim}.scss (PR 8a)
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged
@@ -216,17 +217,25 @@ subclass anywhere. Adding a spec is:
    single source of truth for launch status, read by the sim dropdown and the landing page
    (`ui/index.ts` renders the landing page's sim links from `PlayerSpecs`, no hand-written list).
 3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class color, background
-   image), which the generated `index.html` links unconditionally.
+   image), which the spec page links unconditionally.
 
-Everything else is derived: `makefile`'s `PAGE_INDECES` globs `ui/sims/*/*/spec.ts(x)` and generates
-`ui/<class>/<spec>/index.html` from `ui/index_template.html`, and `spec_entry.ts`'s
-`import.meta.glob` picks the module up from the URL. Running `make` is safe — it regenerates all
-34 `index.html` from the one template.
+The page itself is not one of the steps: there is no per-spec `index.html`, in the source tree or
+anywhere else. `ui/index_template.html` is the *one* spec page, and `tools/vite/spec_pages.mts`
+(the `spec-pages` vite plugin) puts it at all 34 URLs — `configureServer` answers
+`/mop/<class>/<spec>/` and `.../index.html` with it through `transformIndexHtml` in dev, and a
+`post` `generateBundle` takes the page vite already processed, drops its own output path from the
+bundle, and re-emits it as `<class>/<spec>/index.html` for every spec. Both halves discover the
+spec list from `ui/sims/*/*/spec.ts(x)` (`discoverSpecPages`) — the same glob `PAGE_INDECES` used
+before the makefile stopped generating pages — and `spec_entry.ts`'s `import.meta.glob` then picks
+the spec module up from the URL. A new spec's page therefore appears with no build-config edit.
 
-`ui/index_template.html` is a constant — it carries no `@@CLASS@@`/`@@SPEC@@` placeholders and every
-asset reference is root-absolute (`/scss/...`, `/index.ts`, `/app/spec_entry.ts`,
-`/i18n/localization.tsx`), so the makefile's `sed` substitution is a no-op and all 34 generated
-pages are byte-identical. `ui/i18n/localization.tsx`'s `extractClassAndSpecFromDataAttributes`
+Copying one page 34× is only sound because the page is constant: `ui/index_template.html` carries
+no `@@CLASS@@`/`@@SPEC@@` placeholders and every asset reference is root-absolute (`/scss/...`,
+`/index.ts`, `/app/spec_entry.ts`, `/i18n/localization.tsx`), so vite rewrites them all to
+`/mop/...` and nothing in the built page depends on where it is served from. It is also the reason
+the 34 pages share one entry chunk (`bundle/spec_entry-<hash>.entry.js`, from the `spec_entry` key
+in `rollupOptions.input`) instead of the 34 near-identical ones the old per-page inputs produced.
+`ui/i18n/localization.tsx`'s `extractClassAndSpecFromDataAttributes`
 derives class/spec from `location.pathname` the same way `specModuleKey` does above, falling back
 to `data-class`/`data-spec` attributes only if present (the landing page has neither and keeps its
 `data-i18n` behaviour).

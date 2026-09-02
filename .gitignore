@@ -2,7 +2,6 @@
 node_modules
 
 ui/**/*_auto_gen.ts
-ui/*/*/index.html
 .dirstamp
 
 # IDE folders
