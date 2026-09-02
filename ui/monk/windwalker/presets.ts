@@ -1,16 +1,18 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
 
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Spec } from '../../core/proto/common';
 import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '../../core/proto/monk';
-import { SavedTalents } from '../../core/proto/ui';
 import DefaultApl from './apls/default.apl.json';
 import DefaultP2BisGear from './gear_sets/p2_bis.gear.json';
 import DefaultP4BisGear from './gear_sets/p4_bis.gear.json';
 import DefaultP5BisGear from './gear_sets/p5_bis.gear.json';
 import DefaultPrebisGear from './gear_sets/prebis.gear.json';
+import P1BisEpJson from './presets/ep/p1_bis.ep.json';
+import RoroP34EpJson from './presets/ep/roro_p3_4.ep.json';
+import RoroP5EpJson from './presets/ep/roro_p5.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Pre-BIS', DefaultPrebisGear);
 export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS', DefaultP2BisGear, {
@@ -57,77 +59,16 @@ export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS', Default
 export const ROTATION_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
 // Preset options for EP weights
-export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatHitRating]: 1.41,
-			[Stat.StatCritRating]: 0.44,
-			[Stat.StatHasteRating]: 0.49,
-			[Stat.StatExpertiseRating]: 0.99,
-			[Stat.StatMasteryRating]: 0.39,
-			[Stat.StatAttackPower]: 0.36,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.62,
-			[PseudoStat.PseudoStatOffHandDps]: 1.31,
-		},
-	),
-);
+export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1BisEpJson);
 
-export const RORO_P3_4_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'RoRo',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatHitRating]: 1.79,
-			[Stat.StatCritRating]: 0.74,
-			[Stat.StatHasteRating]: 0.89,
-			[Stat.StatExpertiseRating]: 1.49,
-			[Stat.StatMasteryRating]: 0.34,
-			[Stat.StatAttackPower]: 0.35,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.33,
-			[PseudoStat.PseudoStatOffHandDps]: 1.17,
-		},
-	),
-);
+export const RORO_P3_4_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(RoroP34EpJson);
 
-export const RORO_P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'RoRo >= 560',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatHitRating]: 2.46,
-			[Stat.StatCritRating]: 0.83,
-			[Stat.StatHasteRating]: 1.05,
-			[Stat.StatExpertiseRating]: 2.11,
-			[Stat.StatMasteryRating]: 0.39,
-			[Stat.StatAttackPower]: 0.34,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.19,
-			[PseudoStat.PseudoStatOffHandDps]: 1.1,
-		},
-	),
-);
+export const RORO_P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(RoroP5EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop/talent-calc and copy the numbers in the url.
 
-export const DefaultTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '213322',
-		glyphs: Glyphs.create({
-			major1: MonkMajorGlyph.GlyphOfSpinningCraneKick,
-			major2: MonkMajorGlyph.GlyphOfTouchOfKarma,
-			minor1: MonkMinorGlyph.GlyphOfBlackoutKick,
-		}),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MonkMajorGlyph, minor: MonkMinorGlyph });
 
 export const DefaultOptions = MonkOptions.create({
 	classOptions: {},

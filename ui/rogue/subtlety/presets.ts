@@ -1,14 +1,14 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Glyphs, PseudoStat, Stat } from '../../core/proto/common';
+import { ConsumesSpec } from '../../core/proto/common';
 import { RogueMajorGlyph, RogueOptions_PoisonOptions, SubtletyRogue_Options as RogueOptions } from '../../core/proto/rogue';
-import { SavedTalents } from '../../core/proto/ui';
 import SubtletyApl from './apls/subtlety.apl.json';
 import P2Gear from './gear_sets/p2_subtlety.gear.json';
 import P3Gear from './gear_sets/p3_subtlety.gear.json';
 import P5Gear from './gear_sets/p5_subtlety.gear.json';
 import PreraidGear from './gear_sets/preraid_subtlety.gear.json';
+import P1EpJson from './presets/ep/p1.ep.json';
+import SubtletyTalentsJson from './presets/talents/subtlety.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -22,36 +22,12 @@ export const P5_GEARSET = PresetUtils.makePresetGear('P5', P5Gear);
 export const ROTATION_PRESET_SUBTLETY = PresetUtils.makePresetAPLRotation('Subtlety', SubtletyApl);
 
 // Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Sub',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatCritRating]: 0.31,
-			[Stat.StatHitRating]: 0.54,
-			[Stat.StatHasteRating]: 0.32,
-			[Stat.StatMasteryRating]: 0.26,
-			[Stat.StatExpertiseRating]: 0.35,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.43,
-			[PseudoStat.PseudoStatOffHandDps]: 0.26,
-		},
-	),
-);
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
 
-export const SubtletyTalents = {
-	name: 'Subtlety',
-	data: SavedTalents.create({
-		talentsString: '321233',
-		glyphs: Glyphs.create({
-			major1: RogueMajorGlyph.GlyphOfHemorraghingVeins,
-		}),
-	}),
-};
+export const SubtletyTalents = PresetUtils.makePresetTalentsFromJSON(SubtletyTalentsJson, { major: RogueMajorGlyph });
 
 export const DefaultOptions = RogueOptions.create({
 	classOptions: {

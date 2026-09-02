@@ -1,14 +1,14 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Glyphs, PseudoStat, Stat } from '../../core/proto/common';
+import { ConsumesSpec } from '../../core/proto/common';
 import { CombatRogue_Options as RogueOptions, RogueOptions_PoisonOptions } from '../../core/proto/rogue';
-import { SavedTalents } from '../../core/proto/ui';
 import CombatApl from './apls/combat.apl.json';
 import P2Gear from './gear_sets/p2_combat.gear.json';
 import P3Gear from './gear_sets/p3_combat.gear.json';
 import P5Gear from './gear_sets/p5_combat.gear.json';
 import PreraidGear from './gear_sets/preraid_combat.gear.json';
+import CombatEpJson from './presets/ep/combat.ep.json';
+import CombatTalentsJson from './presets/talents/combat.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -22,34 +22,12 @@ export const P5_GEARSET = PresetUtils.makePresetGear('P5', P5Gear);
 export const ROTATION_PRESET_COMBAT = PresetUtils.makePresetAPLRotation('Combat', CombatApl);
 
 // Preset options for EP weights
-export const CBAT_STANDARD_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Combat',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatCritRating]: 0.42,
-			[Stat.StatHitRating]: 1.26,
-			[Stat.StatHasteRating]: 0.51,
-			[Stat.StatMasteryRating]: 0.46,
-			[Stat.StatExpertiseRating]: 1.07,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.43,
-			[PseudoStat.PseudoStatOffHandDps]: 0.39,
-		},
-	),
-);
+export const CBAT_STANDARD_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(CombatEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
 
-export const CombatTalents = {
-	name: 'Combat',
-	data: SavedTalents.create({
-		talentsString: '321233',
-		glyphs: Glyphs.create({}),
-	}),
-};
+export const CombatTalents = PresetUtils.makePresetTalentsFromJSON(CombatTalentsJson, {});
 
 export const DefaultOptions = RogueOptions.create({
 	classOptions: {

@@ -1,0 +1,15 @@
+{
+	"name": "Asn",
+	"stats": {
+		"StatAgility": 1.0,
+		"StatCritRating": 0.37,
+		"StatHitRating": 0.46,
+		"StatHasteRating": 0.35,
+		"StatMasteryRating": 0.41,
+		"StatExpertiseRating": 0.42
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 1.37,
+		"PseudoStatOffHandDps": 0.3
+	}
+}

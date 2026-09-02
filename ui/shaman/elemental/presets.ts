@@ -1,9 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@domain/encounter';
-import { Stats } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common';
+import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, Race, RaidBuffs } from '../../core/proto/common';
 import { ElementalShaman_Options as ElementalShamanOptions, FeleAutocastSettings, ShamanMajorGlyph, ShamanShield } from '../../core/proto/shaman';
 import { SavedTalents } from '../../core/proto/ui';
 import AoEApl from './apls/aoe.apl.json';
@@ -16,6 +15,11 @@ import P4BiSGear from './gear_sets/p4bis.gear.json';
 import P4P3UpgradedGear from './gear_sets/p4p3upgraded.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
+import EpAoeJson from './presets/ep/aoe.ep.json';
+import EpP2Json from './presets/ep/p2.ep.json';
+import EpP3Json from './presets/ep/p3.ep.json';
+import TalentsP2Json from './presets/talents/p2.talents.json';
+import TalentsP3Json from './presets/talents/p3.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -34,66 +38,17 @@ export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave'
 export const ROTATION_PRESET_AOE = PresetUtils.makePresetAPLRotation('AoE (3+)', AoEApl);
 
 // Preset options for EP weights
-export const EP_PRESET_P3 = PresetUtils.makePresetEpWeights(
-	'Default',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpellPower]: 0.82,
-		[Stat.StatCritRating]: 0.41,
-		[Stat.StatHasteRating]: 0.46,
-		[Stat.StatHitRating]: 1.25,
-		[Stat.StatSpirit]: 1.25,
-		[Stat.StatMasteryRating]: 0.51,
-	}),
-);
+export const EP_PRESET_P3 = PresetUtils.makePresetEpWeightsFromJSON(EpP3Json);
 
-export const EP_PRESET_P2 = PresetUtils.makePresetEpWeights(
-	'P2',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpellPower]: 0.82,
-		[Stat.StatCritRating]: 0.37,
-		[Stat.StatHasteRating]: 0.47,
-		[Stat.StatHitRating]: 1.1,
-		[Stat.StatSpirit]: 1.1,
-		[Stat.StatMasteryRating]: 0.44,
-	}),
-);
+export const EP_PRESET_P2 = PresetUtils.makePresetEpWeightsFromJSON(EpP2Json);
 
-export const EP_PRESET_AOE = PresetUtils.makePresetEpWeights(
-	'AoE (4+)',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpellPower]: 0.74,
-		[Stat.StatCritRating]: 0.71,
-		[Stat.StatHasteRating]: 0.48,
-		[Stat.StatHitRating]: 1.18,
-		[Stat.StatSpirit]: 1.18,
-		[Stat.StatMasteryRating]: 0.73,
-	}),
-);
+export const EP_PRESET_AOE = PresetUtils.makePresetEpWeightsFromJSON(EpAoeJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const P2_TALENTS = {
-	name: 'P2',
-	data: SavedTalents.create({
-		talentsString: '333121',
-		glyphs: Glyphs.create({
-			major1: ShamanMajorGlyph.GlyphOfSpiritwalkersGrace,
-		}),
-	}),
-};
+export const P2_TALENTS = PresetUtils.makePresetTalentsFromJSON(TalentsP2Json, { major: ShamanMajorGlyph });
 
-export const P3_TALENTS = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '333322',
-		glyphs: Glyphs.create({
-			major1: ShamanMajorGlyph.GlyphOfSpiritwalkersGrace,
-		}),
-	}),
-};
+export const P3_TALENTS = PresetUtils.makePresetTalentsFromJSON(TalentsP3Json, { major: ShamanMajorGlyph });
 
 export const TalentsCleave = {
 	name: 'Cleave',

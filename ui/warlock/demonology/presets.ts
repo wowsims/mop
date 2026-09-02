@@ -1,8 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats, UnitStat } from '@domain/proto_utils/stats';
+import { UnitStat } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat, Race, Stat } from '../../core/proto/common';
-import { SavedTalents } from '../../core/proto/ui';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, Race } from '../../core/proto/common';
 import {
 	DemonologyWarlock_Options as WarlockOptions,
 	WarlockMajorGlyph as MajorGlyph,
@@ -16,6 +15,9 @@ import P2Gear from './gear_sets/p2.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
+import P4EpJson from './presets/ep/p4.ep.json';
+import P5EpJson from './presets/ep/p5.ep.json';
+import DemonologyTalentsDefaultJson from './presets/talents/default.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -29,43 +31,12 @@ export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS', P5Gear);
 export const APL_Default = PresetUtils.makePresetAPLRotation('Default', DefaultAPL);
 
 // Preset options for EP weights
-export const P4_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default < 560',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.24,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 0.93,
-		[Stat.StatCritRating]: 0.6,
-		[Stat.StatHasteRating]: 0.66,
-		[Stat.StatMasteryRating]: 0.63,
-	}),
-);
-export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default >= 560',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.27,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 1.57,
-		[Stat.StatCritRating]: 0.65,
-		[Stat.StatHasteRating]: 1.06,
-		[Stat.StatMasteryRating]: 0.8,
-	}),
-);
+export const P4_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P4EpJson);
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
-export const DemonologyTalentsDefault = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '231221',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfSoulstone,
-			major2: MajorGlyph.GlyphOfEternalResolve,
-			major3: MajorGlyph.GlyphOfImpSwarm,
-			minor3: MinorGlyph.GlyphOfUnendingBreath,
-		}),
-	}),
-};
+export const DemonologyTalentsDefault = PresetUtils.makePresetTalentsFromJSON(DemonologyTalentsDefaultJson, { major: MajorGlyph, minor: MinorGlyph });
 
 export const DefaultOptions = WarlockOptions.create({
 	classOptions: {

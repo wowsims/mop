@@ -3,7 +3,7 @@ import * as Mechanics from '@domain/constants/mechanics';
 import { Stats } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common';
+import { Class, ConsumesSpec, Debuffs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,
 	FeleAutocastSettings,
@@ -12,7 +12,6 @@ import {
 	ShamanShield,
 	ShamanSyncType,
 } from '../../core/proto/shaman';
-import { SavedTalents } from '../../core/proto/ui';
 import P1Apl from './apls/default.apl.json';
 import P3Apl from './apls/p3.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
@@ -21,6 +20,8 @@ import P3Gear from './gear_sets/p3.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
+import P3TalentsJson from './presets/talents/p3.talents.json';
+import StandardTalentsJson from './presets/talents/standard.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -84,29 +85,9 @@ export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'Standard',
-	data: SavedTalents.create({
-		talentsString: '313133',
-		glyphs: Glyphs.create({
-			major1: ShamanMajorGlyph.GlyphOfLightningShield,
-			major2: ShamanMajorGlyph.GlyphOfFireElementalTotem,
-			major3: ShamanMajorGlyph.GlyphOfFireNova,
-		}),
-	}),
-};
+export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(StandardTalentsJson, { major: ShamanMajorGlyph });
 
-export const P3Talents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '313122',
-		glyphs: Glyphs.create({
-			major1: ShamanMajorGlyph.GlyphOfLightningShield,
-			major2: ShamanMajorGlyph.GlyphOfFireElementalTotem,
-			major3: ShamanMajorGlyph.GlyphOfFireNova,
-		}),
-	}),
-};
+export const P3Talents = PresetUtils.makePresetTalentsFromJSON(P3TalentsJson, { major: ShamanMajorGlyph });
 
 export const DefaultOptions = EnhancementShamanOptions.create({
 	classOptions: {

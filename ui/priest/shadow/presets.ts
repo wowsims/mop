@@ -1,14 +1,18 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+import { UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, RaidBuffs } from '../../core/proto/common';
 import { PriestOptions_Armor, ShadowPriest_Options as Options } from '../../core/proto/priest';
-import { SavedTalents } from '../../core/proto/ui';
 import DefaultApl from './apls/default.apl.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreRaidGear from './gear_sets/pre_raid.gear.json';
+import P1EpJson from './presets/ep/p1.ep.json';
+import P2EpJson from './presets/ep/p2.ep.json';
+import P34EpJson from './presets/ep/p3_4.ep.json';
+import P5EpJson from './presets/ep/p5.ep.json';
+import StandardTalentsJson from './presets/talents/standard.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -19,54 +23,10 @@ export const P5_PRESET = PresetUtils.makePresetGear('P5 Preset', P5Gear);
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
 // Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level < 500',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpirit]: 0.9,
-		[Stat.StatSpellPower]: 0.98,
-		[Stat.StatHitRating]: 0.85,
-		[Stat.StatCritRating]: 0.46,
-		[Stat.StatHasteRating]: 0.49,
-		[Stat.StatMasteryRating]: 0.44,
-	}),
-);
-export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 500',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpirit]: 0.9,
-		[Stat.StatSpellPower]: 0.98,
-		[Stat.StatHitRating]: 0.85,
-		[Stat.StatCritRating]: 0.46,
-		[Stat.StatHasteRating]: 0.59,
-		[Stat.StatMasteryRating]: 0.44,
-	}),
-);
-export const P3_4_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 525',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpirit]: 0.9,
-		[Stat.StatSpellPower]: 0.98,
-		[Stat.StatHitRating]: 0.85,
-		[Stat.StatCritRating]: 0.49,
-		[Stat.StatHasteRating]: 0.75,
-		[Stat.StatMasteryRating]: 0.51,
-	}),
-);
-export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 560',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpirit]: 1.51,
-		[Stat.StatSpellPower]: 0.73,
-		[Stat.StatHitRating]: 1.45,
-		[Stat.StatCritRating]: 0.74,
-		[Stat.StatHasteRating]: 1.0,
-		[Stat.StatMasteryRating]: 0.75,
-	}),
-);
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
+export const P2_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2EpJson);
+export const P3_4_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P34EpJson);
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5EpJson);
 
 export const SHADOW_BREAKPOINTS: UnitStatPresets = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
@@ -147,13 +107,7 @@ export const SHADOW_BREAKPOINTS: UnitStatPresets = {
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://www.wowhead.com/mop-classic/talent-calc/priest and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'Standard',
-	data: SavedTalents.create({
-		talentsString: '223113',
-		glyphs: Glyphs.create({}),
-	}),
-};
+export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(StandardTalentsJson, {});
 
 export const DefaultOptions = Options.create({
 	classOptions: {

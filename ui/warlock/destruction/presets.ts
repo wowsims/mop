@@ -1,8 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, Race, Stat } from '../../core/proto/common';
-import { SavedTalents } from '../../core/proto/ui';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, Race } from '../../core/proto/common';
 import { DestructionWarlock_Options as WarlockOptions, WarlockMajorGlyph as MajorGlyph, WarlockOptions_Summon as Summon } from '../../core/proto/warlock';
 export { DefaultRaidBuffs } from '../shared/presets';
 import { WARLOCK_BREAKPOINTS } from '../shared/presets';
@@ -11,6 +9,9 @@ import P1PreBisGear from './gear_sets/p1-prebis.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
+import DefaultEpJson from './presets/ep/default.ep.json';
+import P3EpJson from './presets/ep/p3.ep.json';
+import DestructionTalentsJson from './presets/talents/destruction.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -23,42 +24,14 @@ export const P5_PRESET = PresetUtils.makePresetGear('P5 - BIS', P5Gear);
 export const DEFAULT_APL = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
 // Preset options for EP weights
-export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level < 517',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.24,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 0.93,
-		[Stat.StatCritRating]: 0.55,
-		[Stat.StatHasteRating]: 0.5,
-		[Stat.StatMasteryRating]: 0.61,
-	}),
-);
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DefaultEpJson);
 
-export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 517',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.25,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 0.93,
-		[Stat.StatCritRating]: 0.71,
-		[Stat.StatHasteRating]: 0.71,
-		[Stat.StatMasteryRating]: 0.74,
-	}),
-);
+export const P3_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P3EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
 
-export const DestructionTalents = {
-	name: 'Destruction',
-	data: SavedTalents.create({
-		talentsString: '221211',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfSiphonLife,
-		}),
-	}),
-};
+export const DestructionTalents = PresetUtils.makePresetTalentsFromJSON(DestructionTalentsJson, { major: MajorGlyph });
 
 export const DefaultOptions = WarlockOptions.create({
 	classOptions: {

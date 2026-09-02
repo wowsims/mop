@@ -1,14 +1,14 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Glyphs, PseudoStat, Stat } from '../../core/proto/common';
+import { ConsumesSpec } from '../../core/proto/common';
 import { AssassinationRogue_Options as RogueOptions, RogueMajorGlyph, RogueOptions_PoisonOptions } from '../../core/proto/rogue';
-import { SavedTalents } from '../../core/proto/ui';
 import AssassinationApl from './apls/assassination.apl.json';
 import P2Gear from './gear_sets/p2_assassination.gear.json';
 import P3Gear from './gear_sets/p3_assassination.gear.json';
 import P5Gear from './gear_sets/p5_assassination.gear.json';
 import PreraidGear from './gear_sets/preraid_assassination.gear.json';
+import AsnEpJson from './presets/ep/asn.ep.json';
+import AssassinationTalentsJson from './presets/talents/assassination.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -22,36 +22,12 @@ export const P5_GEARSET = PresetUtils.makePresetGear('P5', P5Gear);
 export const ROTATION_PRESET_ASSASSINATION = PresetUtils.makePresetAPLRotation('Assassination', AssassinationApl);
 
 // Preset options for EP weights
-export const ASN_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Asn',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatCritRating]: 0.37,
-			[Stat.StatHitRating]: 0.46,
-			[Stat.StatHasteRating]: 0.35,
-			[Stat.StatMasteryRating]: 0.41,
-			[Stat.StatExpertiseRating]: 0.42,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.37,
-			[PseudoStat.PseudoStatOffHandDps]: 0.3,
-		},
-	),
-);
+export const ASN_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(AsnEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
-export const AssassinationTalentsDefault = {
-	name: 'Assassination',
-	data: SavedTalents.create({
-		talentsString: '321232',
-		glyphs: Glyphs.create({
-			major1: RogueMajorGlyph.GlyphOfVendetta,
-		}),
-	}),
-};
+export const AssassinationTalentsDefault = PresetUtils.makePresetTalentsFromJSON(AssassinationTalentsJson, { major: RogueMajorGlyph });
 
 export const DefaultOptions = RogueOptions.create({
 	classOptions: {

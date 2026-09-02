@@ -1,9 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@domain/encounter';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, Race, Stat } from '../../core/proto/common';
-import { SavedTalents } from '../../core/proto/ui';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, Race } from '../../core/proto/common';
 import {
 	AfflictionWarlock_Options as WarlockOptions,
 	WarlockMajorGlyph as MajorGlyph,
@@ -19,6 +17,10 @@ import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
+import P1EpJson from './presets/ep/p1.ep.json';
+import P2EpJson from './presets/ep/p2.ep.json';
+import P5EpJson from './presets/ep/p5.ep.json';
+import AfflictionTalentsJson from './presets/talents/affliction.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -34,57 +36,16 @@ export const APL_Default = PresetUtils.makePresetAPLRotation('Single Target', De
 export const APL_Multitarget = PresetUtils.makePresetAPLRotation('Multi Target', MultiTargetApl);
 
 // Preset options for EP weights
-export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level < 512',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.23,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 0.93,
-		[Stat.StatCritRating]: 0.54,
-		[Stat.StatHasteRating]: 0.83,
-		[Stat.StatMasteryRating]: 0.67,
-	}),
-);
+export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
-export const P2_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 512',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.23,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 0.9,
-		[Stat.StatCritRating]: 0.56,
-		[Stat.StatHasteRating]: 0.73,
-		[Stat.StatMasteryRating]: 0.68,
-	}),
-);
+export const P2_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2EpJson);
 
-export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 560',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.38,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 1.89,
-		[Stat.StatCritRating]: 1.07,
-		[Stat.StatHasteRating]: 1.38,
-		[Stat.StatMasteryRating]: 1.2,
-	}),
-);
+export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
 
-export const AfflictionTalents = {
-	name: 'Affliction',
-	data: SavedTalents.create({
-		talentsString: '231211',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfUnstableAffliction,
-			major2: MajorGlyph.GlyphOfSiphonLife,
-			major3: MajorGlyph.GlyphOfEternalResolve,
-			minor3: MinorGlyph.GlyphOfUnendingBreath,
-		}),
-	}),
-};
+export const AfflictionTalents = PresetUtils.makePresetTalentsFromJSON(AfflictionTalentsJson, { major: MajorGlyph, minor: MinorGlyph });
 
 export const DefaultOptions = WarlockOptions.create({
 	classOptions: {

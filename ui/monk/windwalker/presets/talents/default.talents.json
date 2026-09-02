@@ -1,0 +1,9 @@
+{
+	"name": "Default",
+	"talentsString": "213322",
+	"glyphs": {
+		"major1": "GlyphOfSpinningCraneKick",
+		"major2": "GlyphOfTouchOfKarma",
+		"minor1": "GlyphOfBlackoutKick"
+	}
+}

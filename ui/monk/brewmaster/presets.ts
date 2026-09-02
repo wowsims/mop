@@ -1,9 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Spec } from '../../core/proto/common';
 import { BrewmasterMonk_Options as BrewmasterMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '../../core/proto/monk';
-import { SavedTalents } from '../../core/proto/ui';
 import DefaultApl from './apls/default.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
 import IronJuggernautApl from './apls/iron_juggernaut.apl.json';
@@ -16,6 +14,14 @@ import P5BISDWGear from './gear_sets/p5_bis_dw.gear.json';
 import P5BISOffensiveDWGear from './gear_sets/p5_bis_offensive_dw.gear.json';
 import P5ProgDWGear from './gear_sets/p5_prog_dw.gear.json';
 import PreBISGear from './gear_sets/prebis.gear.json';
+import P2BalancedEpJson from './presets/ep/p2_balanced.ep.json';
+import P2OffensiveEpJson from './presets/ep/p2_offensive.ep.json';
+import P34BalancedEpJson from './presets/ep/p3_4_balanced.ep.json';
+import P34OffensiveEpJson from './presets/ep/p3_4_offensive.ep.json';
+import P5BalancedEpJson from './presets/ep/p5_balanced.ep.json';
+import P5OffensiveEpJson from './presets/ep/p5_offensive.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
+import DungeonTalentsJson from './presets/talents/dungeon.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -40,182 +46,24 @@ export const ROTATION_HORRIDON_PRESET = PresetUtils.makePresetAPLRotation('Horri
 export const ROTATION_IRON_JUGGERNAUT_PRESET = PresetUtils.makePresetAPLRotation('Iron Juggernaut', IronJuggernautApl);
 
 // Preset options for EP weights
-export const P2_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2 - Balanced',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1,
-			[Stat.StatStamina]: 0.81,
-			[Stat.StatHitRating]: 1.28,
-			[Stat.StatCritRating]: 0.67,
-			[Stat.StatHasteRating]: 0.42,
-			[Stat.StatExpertiseRating]: 0.96,
-			[Stat.StatDodgeRating]: 0.2,
-			[Stat.StatParryRating]: 0.23,
-			[Stat.StatMasteryRating]: 0.65,
-			[Stat.StatAttackPower]: 0.24,
-			[Stat.StatArmor]: 0.41,
-			[Stat.StatBonusArmor]: 0.41,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.5,
-			[PseudoStat.PseudoStatOffHandDps]: 0.74,
-		},
-	),
-);
+export const P2_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2BalancedEpJson);
 
-export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2 - Offensive',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1,
-			[Stat.StatStamina]: 0.35,
-			[Stat.StatHitRating]: 1.66,
-			[Stat.StatCritRating]: 0.68,
-			[Stat.StatHasteRating]: 0.4,
-			[Stat.StatExpertiseRating]: 1.24,
-			[Stat.StatDodgeRating]: 0.09,
-			[Stat.StatParryRating]: 0.11,
-			[Stat.StatMasteryRating]: 0.24,
-			[Stat.StatAttackPower]: 0.3,
-			[Stat.StatArmor]: 0.17,
-			[Stat.StatBonusArmor]: 0.17,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.96,
-			[PseudoStat.PseudoStatOffHandDps]: 0.97,
-		},
-	),
-);
+export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2OffensiveEpJson);
 
-export const P3_4_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 & P4 - Balanced',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1,
-			[Stat.StatStamina]: 0.53,
-			[Stat.StatHitRating]: 1.31,
-			[Stat.StatCritRating]: 0.71,
-			[Stat.StatHasteRating]: 0.61,
-			[Stat.StatExpertiseRating]: 0.95,
-			[Stat.StatDodgeRating]: 0.32,
-			[Stat.StatParryRating]: 0.41,
-			[Stat.StatMasteryRating]: 0.69,
-			[Stat.StatAttackPower]: 0.18,
-			[Stat.StatArmor]: 0.4,
-			[Stat.StatBonusArmor]: 0.4,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.79,
-			[PseudoStat.PseudoStatOffHandDps]: 1.38,
-		},
-	),
-);
+export const P3_4_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P34BalancedEpJson);
 
-export const P3_4_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 & P4 - Offensive',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1,
-			[Stat.StatStamina]: 0.35,
-			[Stat.StatHitRating]: 1.56,
-			[Stat.StatCritRating]: 0.8,
-			[Stat.StatHasteRating]: 0.65,
-			[Stat.StatExpertiseRating]: 1.1,
-			[Stat.StatDodgeRating]: 0.21,
-			[Stat.StatParryRating]: 0.3,
-			[Stat.StatMasteryRating]: 0.42,
-			[Stat.StatAttackPower]: 0.22,
-			[Stat.StatArmor]: 0.26,
-			[Stat.StatBonusArmor]: 0.26,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.78,
-			[PseudoStat.PseudoStatOffHandDps]: 1.24,
-		},
-	),
-);
+export const P3_4_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P34OffensiveEpJson);
 
-export const P5_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P5 - Balanced',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatStamina]: 1.11,
-			[Stat.StatHitRating]: 2.56,
-			[Stat.StatCritRating]: 0.85,
-			[Stat.StatHasteRating]: 0.79,
-			[Stat.StatExpertiseRating]: 1.56,
-			[Stat.StatDodgeRating]: 0.27,
-			[Stat.StatParryRating]: 0.39,
-			[Stat.StatMasteryRating]: 0.55,
-			[Stat.StatAttackPower]: 0.2,
-			[Stat.StatArmor]: 0.32,
-			[Stat.StatBonusArmor]: 0.32,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.98,
-			[PseudoStat.PseudoStatOffHandDps]: 0.47,
-		},
-	),
-);
+export const P5_BALANCED_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5BalancedEpJson);
 
-export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P5 - Offensive',
-	Stats.fromMap(
-		{
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatStamina]: 0.35,
-			[Stat.StatHitRating]: 3.25,
-			[Stat.StatCritRating]: 1.02,
-			[Stat.StatHasteRating]: 1.01,
-			[Stat.StatExpertiseRating]: 1.91,
-			[Stat.StatDodgeRating]: 0.1,
-			[Stat.StatParryRating]: 0.24,
-			[Stat.StatMasteryRating]: 0.52,
-			[Stat.StatAttackPower]: 0.24,
-			[Stat.StatArmor]: 0.1,
-			[Stat.StatBonusArmor]: 0.1,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.28,
-			[PseudoStat.PseudoStatOffHandDps]: 0.72,
-		},
-	),
-);
+export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5OffensiveEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop/talent-calc and copy the numbers in the url.
 
-export const DefaultTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '213322',
-		glyphs: Glyphs.create({
-			major1: MonkMajorGlyph.GlyphOfFortifyingBrew,
-			major2: MonkMajorGlyph.GlyphOfEnduringHealingSphere,
-			major3: MonkMajorGlyph.GlyphOfFortuitousSpheres,
-			minor1: MonkMinorGlyph.GlyphOfSpiritRoll,
-			minor2: MonkMinorGlyph.GlyphOfJab,
-			minor3: MonkMinorGlyph.GlyphOfWaterRoll,
-		}),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MonkMajorGlyph, minor: MonkMinorGlyph });
 
-export const DungeonTalents = {
-	name: 'Dungeon',
-	data: SavedTalents.create({
-		talentsString: '213321',
-		glyphs: Glyphs.create({
-			major1: MonkMajorGlyph.GlyphOfFortifyingBrew,
-			major2: MonkMajorGlyph.GlyphOfBreathOfFire,
-			major3: MonkMajorGlyph.GlyphOfRapidRolling,
-			minor1: MonkMinorGlyph.GlyphOfSpiritRoll,
-			minor2: MonkMinorGlyph.GlyphOfJab,
-			minor3: MonkMinorGlyph.GlyphOfWaterRoll,
-		}),
-	}),
-};
+export const DungeonTalents = PresetUtils.makePresetTalentsFromJSON(DungeonTalentsJson, { major: MonkMajorGlyph, minor: MonkMinorGlyph });
 
 export const DefaultOptions = BrewmasterMonkOptions.create({
 	classOptions: {},

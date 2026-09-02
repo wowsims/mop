@@ -1,0 +1,12 @@
+{
+	"name": "AoE (4+)",
+	"stats": {
+		"StatIntellect": 1.0,
+		"StatSpellPower": 0.74,
+		"StatCritRating": 0.71,
+		"StatHasteRating": 0.48,
+		"StatHitRating": 1.18,
+		"StatSpirit": 1.18,
+		"StatMasteryRating": 0.73
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"name": "Dungeon",
+	"talentsString": "213321",
+	"glyphs": {
+		"major1": "GlyphOfFortifyingBrew",
+		"major2": "GlyphOfBreathOfFire",
+		"major3": "GlyphOfRapidRolling",
+		"minor1": "GlyphOfSpiritRoll",
+		"minor2": "GlyphOfJab",
+		"minor3": "GlyphOfWaterRoll"
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"name": "Default",
+	"talentsString": "313122",
+	"glyphs": {
+		"major1": "GlyphOfLightningShield",
+		"major2": "GlyphOfFireElementalTotem",
+		"major3": "GlyphOfFireNova"
+	}
+}

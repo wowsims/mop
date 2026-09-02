@@ -1,15 +1,15 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { ConsumesSpec, Debuffs, Glyphs, Profession, RaidBuffs, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, Profession, RaidBuffs } from '../../core/proto/common';
 import {
 	HolyPaladin_Options as Paladin_Options,
 	PaladinMajorGlyph as MajorGlyph,
 	PaladinSeal,
 } from '../../core/proto/paladin';
-import { SavedTalents } from '../../core/proto/ui';
 import P1Gear from './gear_sets/p1.gear.json';
+import P1EpJson from './presets/ep/p1.ep.json';
+import StandardTalentsJson from './presets/talents/standard.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -18,31 +18,12 @@ import P1Gear from './gear_sets/p1.gear.json';
 export const P1_GEAR_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
 
 // Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P1',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.375,
-		[Stat.StatSpirit]: 1.125,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatCritRating]: 0.75,
-		[Stat.StatHasteRating]: 0.85,
-		[Stat.StatMasteryRating]: 0.5,
-	}),
-);
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
-export const StandardTalents = {
-	name: 'Standard',
-	data: SavedTalents.create({
-		talentsString: '',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfDivinePlea,
-			major2: MajorGlyph.GlyphOfDivinity,
-		}),
-	}),
-};
+export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(StandardTalentsJson, { major: MajorGlyph });
 
 export const DefaultOptions = Paladin_Options.create({
 	classOptions: {

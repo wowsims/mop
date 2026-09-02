@@ -1,10 +1,11 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+import { UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, PseudoStat } from '../../core/proto/common';
 import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '../../core/proto/monk';
-import { SavedTalents } from '../../core/proto/ui';
 import DefaultGear from './gear_sets/default.gear.json';
+import DefaultEpJson from './presets/ep/default.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -13,36 +14,12 @@ import DefaultGear from './gear_sets/default.gear.json';
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Default', DefaultGear);
 
 // Preset options for EP weights
-export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.0,
-		[Stat.StatSpirit]: 0.9,
-		[Stat.StatSpellPower]: 0.79,
-		[Stat.StatHitRating]: 0.9,
-		[Stat.StatCritRating]: 0.42,
-		[Stat.StatHasteRating]: 1.0,
-		[Stat.StatMasteryRating]: 0.13,
-	}),
-);
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DefaultEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop/talent-calc and copy the numbers in the url.
 
-export const DefaultTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '',
-		glyphs: Glyphs.create({
-			major1: MonkMajorGlyph.GlyphOfSpinningCraneKick,
-			major2: MonkMajorGlyph.GlyphOfTouchOfKarma,
-			major3: MonkMajorGlyph.GlyphOfZenMeditation,
-			minor1: MonkMinorGlyph.GlyphOfBlackoutKick,
-			minor2: MonkMinorGlyph.GlyphOfJab,
-			minor3: MonkMinorGlyph.GlyphOfWaterRoll,
-		}),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MonkMajorGlyph, minor: MonkMinorGlyph });
 
 export const DefaultOptions = MistweaverMonkOptions.create({
 	classOptions: {},

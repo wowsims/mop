@@ -1,8 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs } from '../../core/proto/common';
 import { HolyPriest_Options as Options, PriestOptions_Armor } from '../../core/proto/priest';
 import { SavedTalents } from '../../core/proto/ui';
 import AOE24Apl from './apls/aoe_2_4.apl.json';
@@ -13,6 +12,7 @@ import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
+import P1EpJson from './presets/ep/p1.ep.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -29,18 +29,7 @@ export const ROTATION_PRESET_AOE24 = PresetUtils.makePresetAPLRotation('AOE (2 t
 export const ROTATION_PRESET_AOE4PLUS = PresetUtils.makePresetAPLRotation('AOE (4+ targets)', AOE4PlusApl);
 
 // Preset options for EP weights
-export const P1_EP_WEIGHTS = PresetUtils.makePresetEpWeights(
-	'P1',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 0.11,
-		[Stat.StatSpirit]: 0.47,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 0.87,
-		[Stat.StatCritRating]: 0.74,
-		[Stat.StatHasteRating]: 1.65,
-		[Stat.StatMP5]: 0.0,
-	}),
-);
+export const P1_EP_WEIGHTS = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.

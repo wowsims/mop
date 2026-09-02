@@ -165,6 +165,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 ## Change log (keep current — this skill documents itself)
 
 - 2026-09-02 UI restructure PR 9b (part 1): EP-weight and talent presets become JSON under `ui/<class>/<spec>/presets/{ep,talents}/` (enum NAMES as keys; `makePresetEpWeightsFromJSON` / `makePresetTalentsFromJSON` in `app/preset_utils.tsx`); computed presets (`.withStat`, glyph spreads, `onLoad`) stay in TS. Done: warrior, death_knight, druid, hunter, mage; the other six classes follow the same recipe.
+- 2026-09-02 UI restructure PR 9b (part 2): same recipe applied to monk, paladin, priest, rogue, shaman, warlock — all 12 specs converted. Presets left in TS: shaman/enhancement P1/P3 EP (pseudoStat values computed via `Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT`/`PHYSICAL_HIT_RATING_PER_HIT_PERCENT` multipliers); shaman/elemental `TalentsCleave`/`TalentsAoE` (spread another preset's glyphs); priest discipline/holy `StandardTalents`/`EnlightenmentTalents` and shaman/restoration `TankHealingTalents`/`RaidHealingTalents` (fully commented-out talentsString/glyphs, nothing literal to move). All 34 golden specs still match; `tsc`/`oxlint`/`vite build` clean.
 - 2026-09-02 UI restructure PR 9a: shared lift. Every class now has fixed-name
   `<class>/shared/{inputs,presets}.ts` (root `<class>/inputs.ts` / `<class>/shared.ts` /
   `<class>/presets.ts` moved in via the move tool; DK's split inputs.ts merged into one file,

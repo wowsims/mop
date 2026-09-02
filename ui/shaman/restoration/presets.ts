@@ -1,7 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Stat } from '../../core/proto/common';
+import { ConsumesSpec } from '../../core/proto/common';
 import { RestorationShaman_Options as RestorationShamanOptions, ShamanShield } from '../../core/proto/shaman';
 import { SavedTalents } from '../../core/proto/ui';
 import P1Gear from './gear_sets/p1.gear.json';
@@ -9,6 +8,7 @@ import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
+import P1EpJson from './presets/ep/p1.ep.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -21,17 +21,7 @@ export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
 export const P4_PRESET = PresetUtils.makePresetGear('P4 Preset', P4Gear);
 
 // Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P1',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 0.22,
-		[Stat.StatSpirit]: 0.05,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatCritRating]: 0.67,
-		[Stat.StatHasteRating]: 1.29,
-		[Stat.StatMP5]: 0.08,
-	}),
-);
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.

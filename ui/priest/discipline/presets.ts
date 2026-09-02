@@ -1,12 +1,12 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs } from '../../core/proto/common';
 import { DisciplinePriest_Options as Options, PriestOptions_Armor } from '../../core/proto/priest';
 import { SavedTalents } from '../../core/proto/ui';
 import DefaultApl from './apls/default.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';
+import P1EpJson from './presets/ep/p1.ep.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -16,18 +16,7 @@ export const P1_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
 export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
 // Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P1',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 0.11,
-		[Stat.StatSpirit]: 0.47,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 0.87,
-		[Stat.StatCritRating]: 0.74,
-		[Stat.StatHasteRating]: 1.65,
-		[Stat.StatMP5]: 0.0,
-	}),
-);
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.

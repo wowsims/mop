@@ -1,67 +1,26 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
 import { APLRotation_Type as APLRotationType } from '../../core/proto/apl';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Race, Spec } from '../../core/proto/common';
 import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as RetributionPaladinOptions } from '../../core/proto/paladin';
-import { SavedTalents } from '../../core/proto/ui';
 import DefaultApl from './apls/default.apl.json';
 import P5RetBuild from './builds/p5.build.json';
 import P5_Gear from './gear_sets/p5.gear.json';
 import Preraid_Gear from './gear_sets/preraid.gear.json';
+import P5EpJson from './presets/ep/p5.ep.json';
+import PreraidEpJson from './presets/ep/preraid.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 
 export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5', P5_Gear);
 export const PRERAID_GEAR_PRESET = PresetUtils.makePresetGear('Pre-raid', Preraid_Gear);
 
 export const APL_PRESET = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
 
-export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P5',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.68,
-			[Stat.StatExpertiseRating]: 0.68,
-			[Stat.StatHasteRating]: 0.67,
-			[Stat.StatMasteryRating]: 0.62,
-			[Stat.StatCritRating]: 0.56,
-			[Stat.StatAttackPower]: 0.44,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.86,
-		},
-	),
-);
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5EpJson);
 
-export const PRERAID_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Pre-raid',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 0.72,
-			[Stat.StatExpertiseRating]: 0.63,
-			[Stat.StatHasteRating]: 0.56,
-			[Stat.StatAttackPower]: 0.44,
-			[Stat.StatMasteryRating]: 0.41,
-			[Stat.StatCritRating]: 0.38,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.77,
-		},
-	),
-);
+export const PRERAID_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(PreraidEpJson);
 
-export const DefaultTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '221223',
-		glyphs: Glyphs.create({
-			major1: PaladinMajorGlyph.GlyphOfTemplarsVerdict,
-			major2: PaladinMajorGlyph.GlyphOfDoubleJeopardy,
-			major3: PaladinMajorGlyph.GlyphOfMassExorcism,
-		}),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: PaladinMajorGlyph });
 
 export const P5_BUILD_PRESET = PresetUtils.makePresetBuildFromJSON('P5', Spec.SpecRetributionPaladin, P5RetBuild, {
 	epWeights: P5_EP_PRESET,
