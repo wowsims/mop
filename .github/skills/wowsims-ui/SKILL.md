@@ -26,7 +26,8 @@ domain dirs to that list, don't use `!`.
 ## State: one Zustand store per page
 
 `Sim.store` (`createSimStore()` in `ui/core/state/sim_store.ts`, `subscribeWithSelector`).
-Slices: `ui` (UISettings), `sim`, `encounter`, `raid` (+ `partyBuffs[5]`), `players[storeKey]`.
+Slices: `ui`, `sim` (both owned by `Sim`), `encounter`, `raid` (+ `partyBuffs[5]`, `composition`), `players[storeKey]`,
+`reforge[storeKey]`, `statWeights[storeKey]`, `bulk[storeKey]` (counters only).
 Read `ui/core/state/README.md` before adding a field — it has the add-a-field recipe
 (player fields must also be appended to `PLAYER_FIELDS` in sim_store.ts).
 
@@ -34,23 +35,27 @@ Pickers that hand a list to `ListPicker` must return a COPY from `getValue` (`.s
 the live store array — ListPicker splices its input in place.
 
 Write path: facade setter keeps `setX(eventID, v)` (eventID = opaque action id from
-`state/batch.ts`, unused by the store), guards equality exactly as before, then
-`store.setState(...)`. Unconditional notifications use per-field version counters (`v`):
+`state/batch.ts`, unused by the store), guards equality exactly as before, then writes ONCE via
+`patchSlice` / `patchKeyed` (`sim_store.ts`) — value and counter bump in the same setState. Unconditional notifications use per-field version counters (`v`):
 epWeights/epRatios/currentStats/rotation/itemSwap/lastUsedRngSeed, reforge + stat-weight slices.
 `TypedEvent` is GONE — `batch()` replaced `freezeAllAndDo`; consumers use the `subscribe*`
 helpers (batch-gated) or `Emitter<T>` for events.
 
 Class-side by design: the Party↔Player object graph (composition lives in the store), `aplRotation`
-(tracked by the `rotation` counter — call `player.touchRotation(id)` after mutating it), caches, metadata objects.
+(tracked by the `rotation` counter), caches, metadata objects.
 
-Writes to targets/rotation go through `encounter.modifyTarget(eventID, i, draft => ...)` /
-`player.modifyAplRotation(eventID, r => ...)`. Mutate ONLY the draft inside `modifyTarget`
+Rotation writes: `player.modifyAplRotation(eventID, r => ...)` is sugar for "mutate, then
+`player.touchRotation(eventID)`". The APL pickers hold references INTO the rotation tree, so they
+mutate in place and call `touchRotation` — either form is fine, a missed `touchRotation` is silently
+stale. Target writes go through `encounter.modifyTarget(eventID, i, draft => ...)`. Mutate ONLY the draft inside `modifyTarget`
 (targets are replace-on-write; re-reading state inside the closure edits a stale object).
 
-React seam: `InputConfig.storeSubscribe(obj, onChange)` replaces `changedEvent` for a picker.
+React seam: `InputConfig.storeSubscribe: obj => StoreSubscribe` replaces `changedEvent` for a picker
+(`storeSubscribe: player => subscribePlayerField(player, 'gear')`; omit it for parent-synced inputs).
 Field helpers live in `ui/core/state/subscriptions.ts` (`subscribePlayerField(player, 'gear')`,
 `subscribeSimField`, `subscribeEncounterField`, `subscribeRaidField`, `subscribeUiField`) and the
-`input_helpers.ts` factories already pass them. Direct store subscribers go through
+`input_helpers.ts` factories already pass them. `subscribeAll([...])` folds selector sources into one
+selector (one notification per write/batch) — prefer it over hand-written combined selectors. Direct store subscribers go through
 `subscribeGated` (`ui/core/state/batch.ts`): deferred while a `batch()` is open,
 fired once at the end with final state. React later: `useStore(sim.store, selector)`.
 
@@ -127,6 +132,16 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 /simplify pass (4 review angles): `storeSubscribe` is curried `obj => StoreSubscribe` and
+  optional (141 eta-wrappers deleted); `subscribeAll` composes selectors (fixed a stats-sidebar double
+  fire); raid tuple memoized; `patchSlice`/`patchKeyed`/`seedKeyed`/`deleteKeyed` replace 10 hand-rolled
+  setState shapes and merge write+bump into one write; slice fields typed (28 casts gone); UISettings
+  folded into Sim; `Component.disposeChild`; SavedDataManager compares JSON only (`equals` config
+  dropped); results-manager `changeEmitter`/`partOfSwap` deleted (no subscribers); bulk slice keeps
+  counters only; dead exports/markers removed (`isBatching`, `onAnyEmitter`, `subscribeRaidComp`,
+  `within-raid-sim-hide`, `undershootCaps` counter, reforge forwarders/shim). `Emitter.on` is an arrow
+  property so `storeSubscribe: () => this.changeEmitter.on` is valid; the rotation SavedDataManager keeps a
+  semantic `equals` (Auto/APL types match) — every other manager compares `toJson` strings.
 - 2026-09-02 perf pass + Timeline live-subtree cache: `tools/browser-perf/` Playwright protocols
   (reference swap, APL edit) with master vs branch numbers; Timeline `RotationSlot` LRU replaces
   the DOM-clone cache (tooltips survive swaps, ~3× faster); APL edit ~15× faster (dropdown memo,

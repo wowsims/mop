@@ -19,7 +19,7 @@ export default defineConfig({
 	},
 	ssr: { noExternal: true },
 	build: {
-		ssr: process.env.HARNESS_ENTRY ?? 'tools/state-snapshots/probe.ts',
+		ssr: process.env.HARNESS_ENTRY!,
 		outDir: 'tmp/harness',
 		emptyOutDir: true,
 		minify: false,
