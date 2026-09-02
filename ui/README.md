@@ -11,7 +11,7 @@ ui/
                      wasm/, constants, presets/. alias @domain
   ui-kit/            sim-agnostic widgets + base classes. alias @ui-kit
   features/<name>/   one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
-                     alias @features
+                     Exists today: gear/, reforge/, results/, stat-weights/, talents/. alias @features
   app/               shells + chrome that compose features; i18n/. alias @app
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged

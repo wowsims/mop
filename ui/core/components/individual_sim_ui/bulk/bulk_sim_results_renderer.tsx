@@ -1,3 +1,4 @@
+import { SimResultsManager } from '@features/results/view/results_action';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -12,7 +13,6 @@ import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '../../../uti
 import { Component } from '../../component';
 import { buildGearChangeIcon } from '../../gear_change_icon';
 import { ItemRenderer } from '../../gear_picker/gear_picker';
-import { RaidSimResultsManager } from '../../raid_sim_action';
 import Toast from '../../toast';
 const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, canDualWield));
@@ -75,7 +75,7 @@ export default class BulkSimResultRenderer extends Component {
 		if (isBaseResult) return;
 
 		if (dpsDeltaRef.value) {
-			const isDiff = RaidSimResultsManager.applyZTestTooltip(
+			const isDiff = SimResultsManager.applyZTestTooltip(
 				dpsDeltaRef.value,
 				iterations,
 				result.dpsMetrics.avg,

@@ -1,5 +1,6 @@
+import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
-import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';

@@ -1,5 +1,5 @@
 // Persisted reforge-optimizer settings, extracted from the ReforgeOptimizer
-// component (suggest_reforges_action.tsx) so the state surface is UI-free.
+// component (ui/features/reforge/view/reforge_panel.tsx) so the state surface is UI-free.
 // Values live in the sim store (`reforge[player.storeKey]`) with per-field
 // version counters; this class is the facade over that slice.
 // Serialization lands in IndividualSimSettings.reforgeSettings.

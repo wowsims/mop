@@ -1,3 +1,7 @@
+import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
+import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
+
 import i18n from '../i18n/config';
 import { CharacterStats } from './components/character_stats';
 import { ContentBlock } from './components/content_block';
@@ -27,10 +31,7 @@ import { TalentsTab } from './components/individual_sim_ui/talents_tab';
 import * as InputHelpers from './components/input_helpers';
 import * as OtherInputs from './components/inputs/other_inputs';
 import { ItemNotice } from './components/item_notice/item_notice';
-import { addRaidSimAction, RaidSimResultsManager } from './components/raid_sim_action';
 import { SavedDataConfig } from './components/saved_data_manager';
-import { addStatWeightsAction, EpWeightsMenu } from './components/stat_weights_action';
-import { ReforgeOptimizer } from './components/suggest_reforges_action';
 import { SimSettingCategories } from './constants/sim_settings';
 import { simLaunchStatuses } from './launched_sims';
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player';
@@ -219,7 +220,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	private readonly statWeightActionSettings: StatWeightActionSettings;
 
-	raidSimResultsManager: RaidSimResultsManager | null;
+	raidSimResultsManager: SimResultsManager | null;
 	epWeightsModal: EpWeightsMenu | null = null;
 
 	prevEpIterations: number;
@@ -422,7 +423,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	private addSidebarComponents() {
-		this.raidSimResultsManager = addRaidSimAction(this);
+		this.raidSimResultsManager = addSimResultsAction(this);
 		this.sim.waitForInit().then(() => {
 			this.epWeightsModal = addStatWeightsAction(this, this.statWeightActionSettings);
 		});

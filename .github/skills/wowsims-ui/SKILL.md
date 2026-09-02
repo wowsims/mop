@@ -137,6 +137,21 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 2 "split the action files": the three sim-orchestrating
+  `ui/core/components/*_action.tsx` files are gone. `suggest_reforges_action.tsx` →
+  `features/reforge/model/reforge_optimizer.ts` (`ReforgeOptimizerModel`: settings, EP/soft-cap
+  math, the solve + cache + abort) plus `features/reforge/view/reforge_panel.tsx`, which keeps
+  `export class ReforgeOptimizer(simUI, options)` and every member spec configs use, delegating
+  to `.model`; `ReforgeOptimizerOptions.getEPDefaults` / `updateSoftCaps` now also receive
+  `ctx = { player, reforger, defaults }` as a trailing argument (`reforger` is the MODEL, not the
+  panel) so spec configs can stop closing over `this`. `stat_weights_action.tsx` →
+  `features/stat-weights/view/stat_weights_panel.tsx` with `scaledEpValue` lifted to
+  `proto_utils/stats.ts`. `raid_sim_action.tsx` → `features/results/model/sim_results.ts`
+  (`ReferenceData`, the `ResultMetric*` types, the `results-sim-*` class maps) +
+  `features/results/view/results_action.tsx` (`addSimResultsAction`, `SimResultsManager` — both
+  renamed off "raid"). The toasts / progress modal / `onReforge*` handlers stayed in the view: they
+  are DOM. Feature `model/` files must stay browser-global-free (lint) and must not import a `view/`.
+
 - 2026-09-02 UI restructure PR 1 "layer truth": `ui/core/state/**` is now browser-free
   (`no-restricted-globals` on window/document/localStorage/location/navigator) — it reads an
   injected `Env` (`state/env.ts`; `ui/core/browser_env.ts` in the browser, `sim.env`,

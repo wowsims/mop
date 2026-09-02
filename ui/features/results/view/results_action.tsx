@@ -1,19 +1,21 @@
+import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '@core/proto/api';
+import { Encounter as EncounterProto, Spec } from '@core/proto/common';
+import { SimRunData } from '@core/proto/ui';
+import { ActionMetrics, SimResult, SimResultFilter } from '@core/proto_utils/sim_result';
+import { RequestTypes } from '@core/sim_signal_manager';
+import { SimUI } from '@core/sim_ui';
+import { batch, EventID, nextEventID } from '@core/state/batch';
+import { Emitter } from '@core/state/events';
+import { formatDeltaTextElem, formatToNumber, formatToPercent, sum, zTest } from '@core/utils';
+import { metricsClasses, ReferenceData, resultMetricCategories, resultMetricClasses, ResultMetrics } from '@features/results/model/sim_results';
+import i18n from '@i18n/config';
+import { translateResultMetricLabel, translateResultMetricTooltip } from '@i18n/localization';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 
-import i18n from '../../i18n/config';
-import { translateResultMetricLabel, translateResultMetricTooltip } from '../../i18n/localization';
-import { trackEvent } from '../../tracking/utils';
-import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '../proto/api';
-import { Encounter as EncounterProto, Spec } from '../proto/common';
-import { SimRunData } from '../proto/ui';
-import { ActionMetrics, SimResult, SimResultFilter } from '../proto_utils/sim_result';
-import { RequestTypes } from '../sim_signal_manager';
-import { SimUI } from '../sim_ui';
-import { batch, EventID, nextEventID } from '../state/batch';
-import { Emitter } from '../state/events';
-import { formatDeltaTextElem, formatToNumber, formatToPercent, sum, zTest } from '../utils';
-export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
+import { trackEvent } from '../../../tracking/utils';
+
+export function addSimResultsAction(simUI: SimUI): SimResultsManager {
 	const resultsViewer = simUI.resultsViewer;
 	let isRunning = false;
 	let waitAbort = false;
@@ -54,74 +56,19 @@ export function addRaidSimAction(simUI: SimUI): RaidSimResultsManager {
 		}
 	});
 
-	const resultsManager = new RaidSimResultsManager(simUI);
+	const resultsManager = new SimResultsManager(simUI);
 	simUI.sim.simResultEmitter.on(simResult => {
 		resultsManager.setSimResult(nextEventID(), simResult);
 	});
 	return resultsManager;
 }
 
-export type ReferenceData = {
-	simResult: SimResult;
-	settings: any;
-	raidProto: RaidProto;
-	encounterProto: EncounterProto;
-};
+export class SimResultsManager {
+	static resultMetricCategories = resultMetricCategories;
 
-export interface ResultMetrics {
-	cod: string;
-	dps: string;
-	dtps: string;
-	tmi: string;
-	dur: string;
-	hps: string;
-	tps: string;
-	tto: string;
-	oom: string;
-}
+	static resultMetricClasses = resultMetricClasses;
 
-export interface ResultMetricCategories {
-	damage: string;
-	demo: string;
-	healing: string;
-	threat: string;
-}
-
-export interface ResultsLineArgs {
-	average: number;
-	stdev?: number;
-	classes?: string;
-}
-
-export class RaidSimResultsManager {
-	static resultMetricCategories: { [ResultMetrics: string]: keyof ResultMetricCategories } = {
-		dps: 'damage',
-		tps: 'threat',
-		dtps: 'threat',
-		tmi: 'threat',
-		cod: 'threat',
-		tto: 'healing',
-		hps: 'healing',
-	};
-
-	static resultMetricClasses: { [ResultMetrics: string]: string } = {
-		cod: 'results-sim-cod',
-		dps: 'results-sim-dps',
-		dtps: 'results-sim-dtps',
-		tmi: 'results-sim-tmi',
-		dur: 'results-sim-dur',
-		hps: 'results-sim-hps',
-		tps: 'results-sim-tps',
-		tto: 'results-sim-tto',
-		oom: 'results-sim-oom',
-	};
-
-	static metricsClasses: { [ResultMetricCategories: string]: string } = {
-		damage: 'damage-metrics',
-		demo: 'demo-metrics',
-		healing: 'healing-metrics',
-		threat: 'threat-metrics',
-	};
+	static metricsClasses = metricsClasses;
 
 	// Events (results arrived / reference set or swapped), not state.
 	readonly currentChangeEmitter = new Emitter<void>();
@@ -184,7 +131,7 @@ export class RaidSimResultsManager {
 
 		this.simUI.resultsViewer.setContent(
 			<div className="results-sim">
-				{RaidSimResultsManager.makeToplineResultsContent(simResult, undefined, { asList: true })}
+				{SimResultsManager.makeToplineResultsContent(simResult, undefined, { asList: true })}
 				<div className="results-sim-reference">
 					<button className="results-sim-set-reference">
 						<i className={`fa fa-map-pin fa-lg text-${this.simUI.config.cssScheme} me-2`} />
@@ -211,14 +158,14 @@ export class RaidSimResultsManager {
 				this.addOnResetCallback(() => tooltip.destroy());
 			}
 		};
-		setResultTooltip(`.${RaidSimResultsManager.resultMetricClasses['dps']}`, i18n.t('sidebar.results.metrics.dps.tooltip'));
-		setResultTooltip(`.${RaidSimResultsManager.resultMetricClasses['tto']}`, i18n.t('sidebar.results.metrics.tto.tooltip'));
-		setResultTooltip(`.${RaidSimResultsManager.resultMetricClasses['hps']}`, i18n.t('sidebar.results.metrics.hps.tooltip'));
-		setResultTooltip(`.${RaidSimResultsManager.resultMetricClasses['tps']}`, i18n.t('sidebar.results.metrics.tps.tooltip'));
-		setResultTooltip(`.${RaidSimResultsManager.resultMetricClasses['dtps']}`, i18n.t('sidebar.results.metrics.dtps.tooltip'));
-		setResultTooltip(`.${RaidSimResultsManager.resultMetricClasses['dur']}`, i18n.t('sidebar.results.metrics.dur.tooltip'));
+		setResultTooltip(`.${SimResultsManager.resultMetricClasses['dps']}`, i18n.t('sidebar.results.metrics.dps.tooltip'));
+		setResultTooltip(`.${SimResultsManager.resultMetricClasses['tto']}`, i18n.t('sidebar.results.metrics.tto.tooltip'));
+		setResultTooltip(`.${SimResultsManager.resultMetricClasses['hps']}`, i18n.t('sidebar.results.metrics.hps.tooltip'));
+		setResultTooltip(`.${SimResultsManager.resultMetricClasses['tps']}`, i18n.t('sidebar.results.metrics.tps.tooltip'));
+		setResultTooltip(`.${SimResultsManager.resultMetricClasses['dtps']}`, i18n.t('sidebar.results.metrics.dtps.tooltip'));
+		setResultTooltip(`.${SimResultsManager.resultMetricClasses['dur']}`, i18n.t('sidebar.results.metrics.dur.tooltip'));
 		setResultTooltip(
-			`.${RaidSimResultsManager.resultMetricClasses['tmi']}`,
+			`.${SimResultsManager.resultMetricClasses['tmi']}`,
 			<>
 				<p>{i18n.t('sidebar.results.metrics.tmi.tooltip.title')}</p>
 				<p>{i18n.t('sidebar.results.metrics.tmi.tooltip.description')}</p>
@@ -228,7 +175,7 @@ export class RaidSimResultsManager {
 			</>,
 		);
 		setResultTooltip(
-			`.${RaidSimResultsManager.resultMetricClasses['cod']}`,
+			`.${SimResultsManager.resultMetricClasses['cod']}`,
 			<>
 				<p>{i18n.t('sidebar.results.metrics.cod.tooltip.title')}</p>
 				<p>{i18n.t('sidebar.results.metrics.cod.tooltip.description')}</p>
@@ -237,12 +184,12 @@ export class RaidSimResultsManager {
 		);
 
 		if (!this.simUI.isIndividualSim()) {
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${RaidSimResultsManager.resultMetricClasses['tto']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${RaidSimResultsManager.resultMetricClasses['hps']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${RaidSimResultsManager.resultMetricClasses['tps']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${RaidSimResultsManager.resultMetricClasses['dtps']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${RaidSimResultsManager.resultMetricClasses['tmi']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${RaidSimResultsManager.resultMetricClasses['cod']}`)].forEach(e => e.remove());
+			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['tto']}`)].forEach(e => e.remove());
+			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['hps']}`)].forEach(e => e.remove());
+			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['tps']}`)].forEach(e => e.remove());
+			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['dtps']}`)].forEach(e => e.remove());
+			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['tmi']}`)].forEach(e => e.remove());
+			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['cod']}`)].forEach(e => e.remove());
 		}
 
 		const simReferenceSetButton = this.simUI.resultsViewer.contentElem.querySelector<HTMLSpanElement>('.results-sim-set-reference');
@@ -323,20 +270,15 @@ export class RaidSimResultsManager {
 			this.simUI.resultsViewer.contentElem.querySelectorAll('.results-reference').forEach(e => e.classList.remove('hide'));
 		}
 
-		this.formatToplineResult(`.${RaidSimResultsManager.resultMetricClasses['dps']} .results-reference-diff`, res => res.raidMetrics.dps, 2);
+		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['dps']} .results-reference-diff`, res => res.raidMetrics.dps, 2);
 		if (this.simUI.isIndividualSim()) {
-			this.formatToplineResult(`.${RaidSimResultsManager.resultMetricClasses['hps']} .results-reference-diff`, res => res.raidMetrics.hps, 2);
-			this.formatToplineResult(`.${RaidSimResultsManager.resultMetricClasses['tto']} .results-reference-diff`, res => res.getFirstPlayer()!.tto, 2);
-			this.formatToplineResult(`.${RaidSimResultsManager.resultMetricClasses['tps']} .results-reference-diff`, res => res.getFirstPlayer()!.tps, 2);
+			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['hps']} .results-reference-diff`, res => res.raidMetrics.hps, 2);
+			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tto']} .results-reference-diff`, res => res.getFirstPlayer()!.tto, 2);
+			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tps']} .results-reference-diff`, res => res.getFirstPlayer()!.tps, 2);
+			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['dtps']} .results-reference-diff`, res => res.getFirstPlayer()!.dtps, 2, true);
+			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tmi']} .results-reference-diff`, res => res.getFirstPlayer()!.tmi, 2, true);
 			this.formatToplineResult(
-				`.${RaidSimResultsManager.resultMetricClasses['dtps']} .results-reference-diff`,
-				res => res.getFirstPlayer()!.dtps,
-				2,
-				true,
-			);
-			this.formatToplineResult(`.${RaidSimResultsManager.resultMetricClasses['tmi']} .results-reference-diff`, res => res.getFirstPlayer()!.tmi, 2, true);
-			this.formatToplineResult(
-				`.${RaidSimResultsManager.resultMetricClasses['cod']} .results-reference-diff`,
+				`.${SimResultsManager.resultMetricClasses['cod']} .results-reference-diff`,
 				res => res.getFirstPlayer()!.chanceOfDeath,
 				2,
 				true,
@@ -344,7 +286,7 @@ export class RaidSimResultsManager {
 			);
 		} else {
 			this.formatToplineResult(
-				`.${RaidSimResultsManager.resultMetricClasses['dtps']} .results-reference-diff`,
+				`.${SimResultsManager.resultMetricClasses['dtps']} .results-reference-diff`,
 				res => sum(res.getPlayers()!.map(player => player.dtps.avg)) / res.getPlayers().length,
 				2,
 				true,
@@ -375,7 +317,7 @@ export class RaidSimResultsManager {
 		} else {
 			const curMetrics = curMetricsTemp as DistributionMetricsProto;
 			const refMetrics = refMetricsTemp as DistributionMetricsProto;
-			const isDiff = RaidSimResultsManager.applyZTestTooltip(
+			const isDiff = SimResultsManager.applyZTestTooltip(
 				elem,
 				ref.iterations,
 				refMetrics.avg,

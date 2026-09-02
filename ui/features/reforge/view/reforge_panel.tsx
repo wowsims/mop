@@ -1,38 +1,39 @@
+import { CopyButton } from '@core/components/copy_button';
+import { buildGearChangeIcon } from '@core/components/gear_change_icon';
+import { BooleanPicker } from '@core/components/pickers/boolean_picker';
+import { EnumPicker } from '@core/components/pickers/enum_picker';
+import { NumberPicker, NumberPickerConfig } from '@core/components/pickers/number_picker';
+import { ProgressTrackerModal } from '@core/components/progress_tracker_modal';
+import { renderSavedEPWeights } from '@core/components/saved_data_managers/ep_weights';
+import Toast from '@core/components/toast';
+import type { IndividualSimUI } from '@core/individual_sim_ui';
+import { Player } from '@core/player';
+import { ReforgeSettings, StatCapType } from '@core/proto/api';
+import { ItemSlot, Stat } from '@core/proto/common';
+import { IndividualSimSettings } from '@core/proto/ui';
+import { EquippedItem } from '@core/proto_utils/equipped_item';
+import { Gear } from '@core/proto_utils/gear';
+import { statCapTypeNames } from '@core/proto_utils/names';
+import { StatCap, Stats, UnitStat } from '@core/proto_utils/stats';
+import { RelativeStatCap } from '@core/reforge_settings';
+import { ActionGroupItem } from '@core/sim_ui';
+import { batch, EventID, nextEventID } from '@core/state/batch';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '@core/state/subscriptions';
+import { isDevMode } from '@core/utils';
+import { ReforgeOptimizerContext, ReforgeOptimizerModel, ReforgeOptimizerOptions, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
+import i18n from '@i18n/config';
+import { translateSlotName } from '@i18n/localization';
 import clsx from 'clsx';
 import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config';
-import { translateSlotName } from '../../i18n/localization';
-import { trackEvent, trackPageView } from '../../tracking/utils';
-import * as Mechanics from '../constants/mechanics';
-import { IndividualSimUI } from '../individual_sim_ui';
-import { Player } from '../player';
-import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '../proto/api';
-import { Class, ItemSlot, Spec, Stat } from '../proto/common';
-import { IndividualSimSettings } from '../proto/ui';
-import { EquippedItem } from '../proto_utils/equipped_item';
-import { Gear } from '../proto_utils/gear';
-import { statCapTypeNames } from '../proto_utils/names';
-import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
-import { getReforgeCacheGearKey } from '../proto_utils/utils';
-import { ReforgeGearCache } from '../reforge_cache';
-import { ReforgeSettings as ReforgeSettingsState, RelativeStatCap } from '../reforge_settings';
-import type { ReforgeOptimizeConfig, Sim } from '../sim';
-import { RequestTypes } from '../sim_signal_manager';
-import { ActionGroupItem } from '../sim_ui';
-import { batch, EventID, nextEventID } from '../state/batch';
-import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '../state/reforge_request';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '../state/subscriptions';
-import { isDevMode } from '../utils';
-import { CopyButton } from './copy_button';
-import { buildGearChangeIcon } from './gear_change_icon';
-import { BooleanPicker } from './pickers/boolean_picker';
-import { EnumPicker } from './pickers/enum_picker';
-import { NumberPicker, NumberPickerConfig } from './pickers/number_picker';
-import { ProgressTrackerModal } from './progress_tracker_modal';
-import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
-import Toast from './toast';
+import { trackEvent, trackPageView } from '../../../tracking/utils';
+
+// The model types are part of the panel's public surface — spec configs import
+// `ReforgeOptimizer` and `ReforgeOptimizerOptions` from this module.
+export { ReforgeOptimizerModel };
+export type { ReforgeOptimizerContext, ReforgeOptimizerOptions, StatTooltipContent };
+
 const INCLUDED_STATS = [
 	Stat.StatHitRating,
 	Stat.StatCritRating,
@@ -42,8 +43,6 @@ const INCLUDED_STATS = [
 	Stat.StatDodgeRating,
 	Stat.StatParryRating,
 ];
-
-type StatTooltipContent = { [key in Stat]?: () => Element | string };
 
 const STAT_TOOLTIPS: StatTooltipContent = {
 	[Stat.StatMasteryRating]: () => (
@@ -58,62 +57,27 @@ const STAT_TOOLTIPS: StatTooltipContent = {
 	),
 };
 
-export type ReforgeOptimizerOptions = {
-	statTooltips?: StatTooltipContent;
-	statSelectionPresets?: UnitStatPresets[];
-	// Allows you to enable breakpoint limits for Treshold type caps
-	enableBreakpointLimits?: boolean;
-	// Allows you to get alternate default EPs
-	// For example for Fury where you have SMF and TG EPs
-	getEPDefaults?: (player: Player<any>) => Stats;
-	// Allows you to modify default softCaps
-	// For example you wish to add breakpoints for Berserking / Bloodlust if enabled
-	updateSoftCaps?: (softCaps: StatCap[], player: Player<any>) => StatCap[];
-	// Allows you to specifiy additional information for the soft cap tooltips
-	additionalSoftCapTooltipInformation?: StatTooltipContent;
-	// Sets the default stat to be the highest for relative stat cap calculations
-	// Defaults to Any
-	defaultRelativeStatCap?: Stat | null;
-};
-
 export class ReforgeOptimizer {
+	readonly model: ReforgeOptimizerModel;
 	protected readonly simUI: IndividualSimUI<any>;
 	protected readonly player: Player<any>;
-	protected readonly playerClass: Class;
-	protected readonly isHybridCaster: boolean;
-	protected readonly isTankSpec: boolean;
-	protected readonly sim: Sim;
-	protected readonly defaults: IndividualSimUI<any>['individualConfig']['defaults'];
 	protected reforgeDoneToast: Toast | null = null;
-	protected getEPDefaults: ReforgeOptimizerOptions['getEPDefaults'];
-	readonly settings: ReforgeSettingsState;
-	protected _softCapsConfig: StatCap[];
 	protected progressTrackerModal: ProgressTrackerModal;
-	protected updateSoftCaps: ReforgeOptimizerOptions['updateSoftCaps'];
-	protected enableBreakpointLimits: ReforgeOptimizerOptions['enableBreakpointLimits'];
 	protected statTooltips: StatTooltipContent = {};
 	protected additionalSoftCapTooltipInformation: StatTooltipContent = {};
-	protected statSelectionPresets: ReforgeOptimizerOptions['statSelectionPresets'];
 	protected wasCM: boolean = false;
 	protected isCancelling: boolean = false;
-	protected previousGear: Gear | null = null;
 
 	constructor(simUI: IndividualSimUI<any>, options?: ReforgeOptimizerOptions) {
 		this.simUI = simUI;
 		this.player = simUI.player;
-		this.playerClass = this.player.getClass();
-		this.isHybridCaster = [Spec.SpecBalanceDruid, Spec.SpecShadowPriest, Spec.SpecElementalShaman, Spec.SpecMistweaverMonk].includes(this.player.getSpec());
-		this.isTankSpec = this.player.getPlayerSpec().isTankSpec;
-		this.sim = simUI.sim;
-		this.defaults = simUI.individualConfig.defaults;
-		this.getEPDefaults = options?.getEPDefaults;
-		this.updateSoftCaps = options?.updateSoftCaps;
-		this._softCapsConfig = this.defaults.softCapBreakpoints || [];
 		this.statTooltips = { ...STAT_TOOLTIPS, ...options?.statTooltips };
 		this.additionalSoftCapTooltipInformation = { ...options?.additionalSoftCapTooltipInformation };
-		this.statSelectionPresets = options?.statSelectionPresets;
-		this.enableBreakpointLimits = !!options?.enableBreakpointLimits;
-		this.settings = new ReforgeSettingsState(this.player, this.defaults, options?.defaultRelativeStatCap);
+		this.model = new ReforgeOptimizerModel(simUI.sim, simUI.player, {
+			...options,
+			defaults: simUI.individualConfig.defaults,
+			epStats: simUI.individualConfig.epStats,
+		});
 		this.progressTrackerModal = new ProgressTrackerModal(simUI.rootElem, {
 			id: 'reforge-optimizer-progress-tracker',
 			title: 'Optimizing Reforges',
@@ -216,68 +180,111 @@ export class ReforgeOptimizer {
 		});
 
 		this.buildContextMenu(contextMenuButton);
+	}
 
-		subscribeAll([
-			subscribeReforgeField(this.settings, 'useCustomEPValues'),
-			subscribePlayerField(this.player, 'epWeights'),
-			subscribeReforgeField(this.settings, 'statCaps'),
-		])(() => {
-			if (
-				this.settings.useCustomEPValues &&
-				(this.player.hasCustomEPWeights() || !this.settings._statCaps.equals(this.defaults.statCaps || new Stats()))
-			) {
-				this.setUseSoftCapBreakpoints(nextEventID(), false);
-			}
-		});
+	// Model surface kept on the panel, so `simUI.reforger` reads the same as before
+	// the model/view split.
+	get settings() {
+		return this.model.settings;
+	}
 
-		subscribePlayerField(
-			this.player,
-			'gear',
-		)(() => {
-			this.setRelativeStatCap(nextEventID(), this.settings.relativeStatCapStat);
-		});
+	get defaults() {
+		return this.model.defaults;
+	}
+
+	get previousGear() {
+		return this.model.previousGear;
 	}
 
 	get softCapsConfig() {
-		return this.updateSoftCaps?.(StatCap.cloneSoftCaps(this._softCapsConfig), this.player) || this._softCapsConfig;
+		return this.model.softCapsConfig;
 	}
 
 	get softCapsConfigWithLimits() {
-		if (!this.enableBreakpointLimits || !this.settings.useSoftCapBreakpoints) return this.softCapsConfig;
-
-		const softCaps = StatCap.cloneSoftCaps(this.softCapsConfig);
-		for (const [unitStat, limit] of this.settings.breakpointLimits.asUnitStatArray()) {
-			if (!limit) continue;
-			// A stat can have multiple configs (e.g. a SoftCap and a Threshold for the same stat), so apply the
-			// limit to whichever config actually owns that breakpoint rather than just the first matching stat.
-			for (const config of softCaps) {
-				if (!config.unitStat.equals(unitStat) || !config.breakpoints.some(breakpoint => breakpoint == limit)) continue;
-				config.breakpoints = config.breakpoints.filter(breakpoint => breakpoint <= limit);
-				if (config.capType === StatCapType.TypeSoftCap) {
-					config.postCapEPs = config.postCapEPs.slice(0, config.breakpoints.length);
-				}
-			}
-		}
-		return softCaps;
+		return this.model.softCapsConfigWithLimits;
 	}
 
 	get preCapEPs(): Stats {
-		let weights = this.player.getEpWeights();
+		return this.model.preCapEPs;
+	}
 
-		if (!this.settings.useCustomEPValues) {
-			if (this.getEPDefaults) {
-				weights = this.getEPDefaults?.(this.player);
-			} else if (this.player.hasCustomEPWeights()) {
-				weights = this.defaults.epWeights;
-			}
-		}
+	get statCaps() {
+		return this.model.statCaps;
+	}
 
-		// Replace Spirit EP for hybrid casters with a small value in order to break ties between Spirit and Hit Reforges
-		if (this.isHybridCaster) {
-			weights = weights.withStat(Stat.StatSpirit, 0.01);
-		}
+	get isAllowedToOverrideStatCaps() {
+		return this.model.isAllowedToOverrideStatCaps;
+	}
 
-		return weights;
+	get processedStatCaps() {
+		return this.model.processedStatCaps;
+	}
+
+	setStatCaps(eventID: EventID, newStatCaps: Stats) {
+		this.model.setStatCaps(eventID, newStatCaps);
+	}
+
+	setUseCustomEPValues(eventID: EventID, newUseCustomEPValues: boolean) {
+		this.model.setUseCustomEPValues(eventID, newUseCustomEPValues);
+	}
+
+	setUseSoftCapBreakpoints(eventID: EventID, newUseSoftCapBreakpoints: boolean) {
+		this.model.setUseSoftCapBreakpoints(eventID, newUseSoftCapBreakpoints);
+	}
+
+	setBreakpointLimits(eventID: EventID, newLimits: Stats) {
+		this.model.setBreakpointLimits(eventID, newLimits);
+	}
+
+	setRelativeStatCap(eventID: EventID, newValue: number) {
+		this.model.setRelativeStatCap(eventID, newValue);
+	}
+	setRelativeStatCapPrecision(eventID: EventID, newValue: number) {
+		this.model.setRelativeStatCapPrecision(eventID, newValue);
+	}
+
+	setIncludeGems(eventID: EventID, newValue: boolean) {
+		this.model.setIncludeGems(eventID, newValue);
+	}
+
+	setIncludeEOTBPGemSocket(eventID: EventID, newValue: boolean) {
+		this.model.setIncludeEOTBPGemSocket(eventID, newValue);
+	}
+
+	setFreezeItemSlots(eventID: EventID, newValue: boolean) {
+		this.model.setFreezeItemSlots(eventID, newValue);
+	}
+
+	setFrozenItemSlot(eventID: EventID, slot: ItemSlot, frozen: boolean) {
+		this.model.setFrozenItemSlot(eventID, slot, frozen);
+	}
+
+	getFrozenItemSlot(slot: ItemSlot): boolean {
+		return this.model.getFrozenItemSlot(slot);
+	}
+
+	getReforgeOptimizeConfig(gear: Gear) {
+		return this.model.getReforgeOptimizeConfig(gear);
+	}
+
+	optimizeReforges(gear?: Gear) {
+		return this.model.optimizeReforges(gear);
+	}
+
+	async abortReforgeOptimization() {
+		await this.model.abortReforgeOptimization();
+	}
+
+	fromProto(eventID: EventID, proto: ReforgeSettings) {
+		this.model.fromProto(eventID, proto);
+	}
+
+	toProto(): ReforgeSettings {
+		return this.model.toProto();
+	}
+
+	applyDefaults(eventID: EventID) {
+		this.model.applyDefaults(eventID);
 	}
 
 	buildReforgeButtonTooltip(softCapsConfigWithLimits: StatCap[]) {
@@ -290,7 +297,7 @@ export class ReforgeOptimizer {
 							<>
 								<tr>
 									<th className="text-nowrap" colSpan={2}>
-										{unitStat.getShortName(this.playerClass)}
+										{unitStat.getShortName(this.model.playerClass)}
 									</th>
 									<td className="text-end">{statCapTypeNames.get(capType)}</td>
 								</tr>
@@ -314,7 +321,7 @@ export class ReforgeOptimizer {
 								</tr>
 								{breakpoints.map((breakpoint, breakpointIndex) => (
 									<tr>
-										<td className="text-end">{this.breakpointValueToDisplayPercentage(breakpoint, unitStat)}</td>
+										<td className="text-end">{this.model.breakpointValueToDisplayPercentage(breakpoint, unitStat)}</td>
 										<td colSpan={2} className="text-end">
 											{unitStat
 												.convertEpToRatingScale(capType === StatCapType.TypeThreshold ? postCapEPs[0] : postCapEPs[breakpointIndex])
@@ -338,54 +345,6 @@ export class ReforgeOptimizer {
 				</table>
 			</>
 		);
-	}
-
-	// Settings API — delegates to this.settings (ui/core/reforge_settings.ts).
-	setStatCaps(eventID: EventID, newStatCaps: Stats) {
-		this.settings.setStatCaps(eventID, newStatCaps);
-	}
-
-	get statCaps() {
-		return this.settings.statCaps;
-	}
-
-	setUseCustomEPValues(eventID: EventID, newUseCustomEPValues: boolean) {
-		this.settings.setUseCustomEPValues(eventID, newUseCustomEPValues);
-	}
-
-	setUseSoftCapBreakpoints(eventID: EventID, newUseSoftCapBreakpoints: boolean) {
-		this.settings.setUseSoftCapBreakpoints(eventID, newUseSoftCapBreakpoints);
-	}
-
-	setBreakpointLimits(eventID: EventID, newLimits: Stats) {
-		this.settings.setBreakpointLimits(eventID, newLimits);
-	}
-
-	setRelativeStatCap(eventID: EventID, newValue: number) {
-		this.settings.setRelativeStatCap(eventID, newValue);
-	}
-	setRelativeStatCapPrecision(eventID: EventID, newValue: number) {
-		this.settings.setRelativeStatCapPrecision(eventID, newValue);
-	}
-
-	setIncludeGems(eventID: EventID, newValue: boolean) {
-		this.settings.setIncludeGems(eventID, newValue);
-	}
-
-	setIncludeEOTBPGemSocket(eventID: EventID, newValue: boolean) {
-		this.settings.setIncludeEOTBPGemSocket(eventID, newValue);
-	}
-
-	setFreezeItemSlots(eventID: EventID, newValue: boolean) {
-		this.settings.setFreezeItemSlots(eventID, newValue);
-	}
-
-	setFrozenItemSlot(eventID: EventID, slot: ItemSlot, frozen: boolean) {
-		this.settings.setFrozenItemSlot(eventID, slot, frozen);
-	}
-
-	getFrozenItemSlot(slot: ItemSlot): boolean {
-		return this.settings.getFrozenItemSlot(slot);
 	}
 
 	buildContextMenu(button: HTMLButtonElement) {
@@ -444,7 +403,7 @@ export class ReforgeOptimizer {
 						{ name: i18n.t('sidebar.buttons.suggest_reforges.any'), value: -1 },
 						...[...RelativeStatCap.relevantStats].map(stat => {
 							return {
-								name: UnitStat.fromStat(stat).getShortName(this.playerClass),
+								name: UnitStat.fromStat(stat).getShortName(this.model.playerClass),
 								value: stat,
 							};
 						}),
@@ -682,10 +641,10 @@ export class ReforgeOptimizer {
 
 						const sharedStatInputConfig: Pick<NumberPickerConfig<Player<any>>, 'getValue' | 'setValue'> = {
 							getValue: () => {
-								return this.toVisualUnitStatPercentage(this.statCaps.getUnitStat(unitStat), unitStat);
+								return this.model.toVisualUnitStatPercentage(this.statCaps.getUnitStat(unitStat), unitStat);
 							},
 							setValue: (_eventID, _player, newValue) => {
-								this.setStatCaps(nextEventID(), this.statCaps.withUnitStat(unitStat, this.toDefaultUnitStatValue(newValue, unitStat)));
+								this.setStatCaps(nextEventID(), this.statCaps.withUnitStat(unitStat, this.model.toDefaultUnitStatValue(newValue, unitStat)));
 							},
 						};
 
@@ -712,7 +671,7 @@ export class ReforgeOptimizer {
 							},
 						});
 
-						const statPresets = this.statSelectionPresets?.find(entry => entry.unitStat.equals(unitStat))?.presets;
+						const statPresets = this.model.statSelectionPresets?.find(entry => entry.unitStat.equals(unitStat))?.presets;
 						const presets = !!statPresets
 							? new EnumPicker(null, this.player, {
 									id: `reforge-optimizer-${statName}-presets`,
@@ -846,7 +805,7 @@ export class ReforgeOptimizer {
 	}
 
 	buildSoftCapBreakpointsLimiter({ useSoftCapBreakpointsInput }: { useSoftCapBreakpointsInput: BooleanPicker<Player<any>> | null }) {
-		if (!this.enableBreakpointLimits || !useSoftCapBreakpointsInput) return null;
+		if (!this.model.enableBreakpointLimits || !useSoftCapBreakpointsInput) return null;
 
 		const tableRef = ref<HTMLTableElement>();
 		const breakpointsLimitTooltipRef = ref<HTMLButtonElement>();
@@ -886,7 +845,7 @@ export class ReforgeOptimizer {
 										values: [
 											{ name: i18n.t('sidebar.buttons.suggest_reforges.no_limit_set'), value: 0 },
 											...breakpoints.map(breakpoint => ({
-												name: `${this.breakpointValueToDisplayPercentage(breakpoint, unitStat)}%`,
+												name: `${this.model.breakpointValueToDisplayPercentage(breakpoint, unitStat)}%`,
 												value: breakpoint,
 											})),
 										].sort((a, b) => a.value - b.value),
@@ -946,106 +905,6 @@ export class ReforgeOptimizer {
 		});
 
 		return content;
-	}
-
-	get isAllowedToOverrideStatCaps() {
-		return !(this.settings.useSoftCapBreakpoints && this.softCapsConfig);
-	}
-
-	get processedStatCaps() {
-		let statCaps = this.statCaps;
-		if (!this.isAllowedToOverrideStatCaps)
-			this.softCapsConfigWithLimits.forEach(({ unitStat }) => {
-				statCaps = statCaps.withUnitStat(unitStat, 0);
-			});
-
-		return statCaps;
-	}
-
-	getReforgeOptimizeConfig(gear: Gear): ReforgeOptimizeConfig {
-		const settings = this.toProto();
-		settings.statCaps = this.processedStatCaps.toProto();
-		settings.epStats = this.simUI.individualConfig.epStats.slice();
-
-		return {
-			gear,
-			preCapEPWeights: this.preCapEPs,
-			undershootCaps: this.settings.undershootCaps,
-			settings,
-			softCaps: this.softCapsConfigWithLimits,
-		};
-	}
-
-	// THE cache-key contract for the 14-day reforge cache. The two functions below declare
-	// exactly which player/request state a solve depends on; when a new field that affects
-	// solve output is added to Player or ReforgeOptimizeRequest, it must be reflected here or
-	// stale reforges are served silently - and an irrelevant field left in busts every
-	// user's cache on unrelated changes.
-
-	// Builds the ReforgeOptimizeRequest used as the config portion of the cache key.
-	// Excludes raid and gear — those are separate components of the cache key.
-	getReforgeRequestForHash(config: ReforgeOptimizeConfig): ReforgeOptimizeRequest {
-		return ReforgeOptimizeRequest.create({
-			...makeReforgeConfigRequestFields(config, this.sim.db),
-		});
-	}
-
-	async optimizeReforges(gear?: Gear) {
-		if (isDevMode()) console.log('Starting Reforge optimization...');
-		const previousGear = gear || this.player.getGear();
-		this.previousGear = previousGear;
-
-		const config = this.getReforgeOptimizeConfig(previousGear);
-		const cache = ReforgeGearCache.get(this.player.getPlayerSpec());
-		const configHash = await getReforgeConfigHash({
-			player: this.player,
-			reforgeRequest: this.getReforgeRequestForHash(config),
-			raidBuffs: this.sim.raid.getBuffs(),
-			partyBuffs: this.player.getParty()?.getBuffs(),
-			debuffs: this.sim.raid.getDebuffs(),
-		});
-		const frozenItemSlots = config.settings.freezeItemSlots && config.settings.frozenItemSlots.length ? config.settings.frozenItemSlots : undefined;
-		// Existing gems must be part of the cache key whether or not includeGems is set: with it off
-		// the optimizer keeps the equipped gems, and with it on minimizeRegems reuses them. Either
-		// way the optimized gear depends on the equipped gems, so dropping them returns stale gear.
-		const cacheKey = ReforgeGearCache.getKey(getReforgeCacheGearKey(previousGear.asSpec(), frozenItemSlots), configHash);
-		const cachedGear = await cache.get(cacheKey);
-		if (cachedGear) {
-			if (isDevMode()) console.log('Reforge optimization: cache hit.');
-			return this.sim.db.lookupEquipmentSpec(cachedGear);
-		}
-
-		const result = await this.sim.reforgeOptimize(config);
-		if (!result.optimizedGear) {
-			throw new Error('Native Go reforge optimizer did not return optimized gear.');
-		}
-
-		await cache.setGear(cacheKey, result.optimizedGear);
-
-		return this.sim.db.lookupEquipmentSpec(result.optimizedGear);
-	}
-
-	private toVisualUnitStatPercentage(statValue: number, unitStat: UnitStat) {
-		const rawStatValue = statValue;
-		let percentOrPointsValue = unitStat.convertDefaultUnitsToPercent(rawStatValue)!;
-		if (unitStat.equalsStat(Stat.StatMasteryRating)) {
-			const baseMastery = this.player.getBaseMastery() * Mechanics.MASTERY_RATING_PER_MASTERY_POINT;
-			percentOrPointsValue = rawStatValue - baseMastery <= 0 ? 0 : percentOrPointsValue * this.player.getMasteryPerPointModifier();
-		}
-
-		return percentOrPointsValue;
-	}
-
-	private toDefaultUnitStatValue(value: number, unitStat: UnitStat) {
-		let statValue = unitStat.convertPercentToDefaultUnits(value)!;
-		if (unitStat.equalsStat(Stat.StatMasteryRating)) statValue /= this.player.getMasteryPerPointModifier();
-		return statValue;
-	}
-
-	private breakpointValueToDisplayPercentage(value: number, unitStat: UnitStat) {
-		return unitStat.equalsStat(Stat.StatMasteryRating)
-			? ((value / Mechanics.MASTERY_RATING_PER_MASTERY_POINT) * this.player.getMasteryPerPointModifier()).toFixed(2)
-			: unitStat.convertDefaultUnitsToPercent(value)!.toFixed(2);
 	}
 
 	onReforgeDone() {
@@ -1141,21 +1000,5 @@ export class ReforgeOptimizer {
 			label: 'suggest_duration',
 			value: Math.ceil(completionTimeInMs / 1000),
 		});
-	}
-
-	async abortReforgeOptimization() {
-		await this.sim.signalManager.abortType(RequestTypes.ReforgeOptimize);
-	}
-
-	fromProto(eventID: EventID, proto: ReforgeSettings) {
-		this.settings.fromProto(eventID, proto);
-	}
-
-	toProto(): ReforgeSettings {
-		return this.settings.toProto();
-	}
-
-	applyDefaults(eventID: EventID) {
-		this.settings.applyDefaults(eventID);
 	}
 }

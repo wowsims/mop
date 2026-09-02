@@ -1,26 +1,27 @@
+import { BaseModal } from '@core/components/base_modal';
+import { BooleanPicker } from '@core/components/pickers/boolean_picker';
+import { NumberPicker } from '@core/components/pickers/number_picker';
+import { ResultsViewer } from '@core/components/results_viewer';
+import { renderSavedEPWeights } from '@core/components/saved_data_managers/ep_weights';
+import Toast from '@core/components/toast';
+import type { IndividualSimUI } from '@core/individual_sim_ui';
+import { Player } from '@core/player';
+import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '@core/proto/api';
+import { PseudoStat, Stat, UnitStats } from '@core/proto/common';
+import { scaledEpValue, Stats, UnitStat } from '@core/proto_utils/stats';
+import { RequestTypes } from '@core/sim_signal_manager';
+import { StatWeightActionSettings } from '@core/stat_weight_settings';
+import { EventID, nextEventID } from '@core/state/batch';
+import { subscribePlayerField, subscribeStatWeightsChange } from '@core/state/subscriptions';
+import { sanitizeId, stDevToConf90 } from '@core/utils';
+import i18n from '@i18n/config';
+import { translateStat } from '@i18n/localization';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config';
-import { translateStat } from '../../i18n/localization';
-import { trackEvent, trackPageView } from '../../tracking/utils';
-import { IndividualSimUI } from '../individual_sim_ui';
-import { Player } from '../player';
-import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '../proto/api';
-import { PseudoStat, Stat, UnitStats } from '../proto/common';
-import { Stats, UnitStat } from '../proto_utils/stats';
-import { RequestTypes } from '../sim_signal_manager';
-import { StatWeightActionSettings } from '../stat_weight_settings';
-import { EventID, nextEventID } from '../state/batch';
-import { subscribePlayerField, subscribeStatWeightsChange } from '../state/subscriptions';
-import { sanitizeId, stDevToConf90 } from '../utils';
-import { BaseModal } from './base_modal';
-import { BooleanPicker } from './pickers/boolean_picker';
-import { NumberPicker } from './pickers/number_picker';
-import { ResultsViewer } from './results_viewer';
-import { renderSavedEPWeights } from './saved_data_managers/ep_weights';
-import Toast from './toast';
+import { trackEvent, trackPageView } from '../../../tracking/utils';
+
 export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);
 	simUI.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
@@ -38,19 +39,6 @@ const getModalConfig = (simUI: IndividualSimUI<any>) => {
 	const baseConfig = { footer: true, scrollContents: true };
 	if (simUI.sim.getShowThreatMetrics()) return { size: 'xl' as const, ...baseConfig };
 	return baseConfig;
-};
-
-export const scaledEpValue = (stat: UnitStat, epRatios: number[], result: StatWeightsResult | null): number => {
-	if (!result) return 0;
-
-	return (
-		(result.dps?.epValues ? epRatios[0] * stat.getProtoValue(result.dps.epValues) : 0) +
-		(result.hps?.epValues ? epRatios[1] * stat.getProtoValue(result.hps.epValues) : 0) +
-		(result.tps?.epValues ? epRatios[2] * stat.getProtoValue(result.tps.epValues) : 0) +
-		(result.dtps?.epValues ? epRatios[3] * stat.getProtoValue(result.dtps.epValues) : 0) +
-		(result.tmi?.epValues ? epRatios[4] * stat.getProtoValue(result.tmi.epValues) : 0) +
-		(result.pDeath?.epValues ? epRatios[5] * stat.getProtoValue(result.pDeath.epValues) : 0)
-	);
 };
 
 export class EpWeightsMenu extends BaseModal {

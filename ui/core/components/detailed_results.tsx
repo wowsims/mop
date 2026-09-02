@@ -1,3 +1,4 @@
+import { SimResultsManager } from '@features/results/view/results_action';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config';
@@ -26,7 +27,6 @@ import { SimResultData } from './detailed_results/result_component';
 import { ResultsFilter } from './detailed_results/results_filter';
 import { Timeline } from './detailed_results/timeline';
 import { ToplineResults } from './detailed_results/topline_results';
-import { RaidSimResultsManager } from './raid_sim_action';
 import { StickyToolbar } from './sticky_toolbar';
 type Tab = {
 	isActive?: boolean;
@@ -94,7 +94,7 @@ export class DetailedResults extends Component {
 	private resultsFilter: ResultsFilter;
 	private rootDiv: Element;
 
-	constructor(parent: HTMLElement, simUI: SimUI, simResultsManager: RaidSimResultsManager) {
+	constructor(parent: HTMLElement, simUI: SimUI, simResultsManager: SimResultsManager) {
 		super(parent, 'detailed-results-manager-root');
 
 		this.simUI = simUI;

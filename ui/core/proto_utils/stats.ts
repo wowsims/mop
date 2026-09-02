@@ -1,7 +1,7 @@
 import { translatePseudoStat, translateStat } from '../../i18n/localization';
 import * as Mechanics from '../constants/mechanics';
 import { CURRENT_API_VERSION } from '../constants/other';
-import { StatCapConfig, StatCapType, UIStat as UnitStatProto } from '../proto/api';
+import { StatCapConfig, StatCapType, StatWeightsResult, UIStat as UnitStatProto } from '../proto/api';
 import { Class, PseudoStat, Stat, UnitStats } from '../proto/common';
 import { getEnumValues } from '../utils';
 import { migrateOldProto, ProtoConversionMap } from './utils';
@@ -560,6 +560,21 @@ export class Stats {
 		return migratedProto;
 	}
 }
+
+// Folds a stat weights result down to a single EP number, weighted by the
+// player's EP ratios (dps, hps, tps, dtps, tmi, pDeath — in that order).
+export const scaledEpValue = (stat: UnitStat, epRatios: number[], result: StatWeightsResult | null): number => {
+	if (!result) return 0;
+
+	return (
+		(result.dps?.epValues ? epRatios[0] * stat.getProtoValue(result.dps.epValues) : 0) +
+		(result.hps?.epValues ? epRatios[1] * stat.getProtoValue(result.hps.epValues) : 0) +
+		(result.tps?.epValues ? epRatios[2] * stat.getProtoValue(result.tps.epValues) : 0) +
+		(result.dtps?.epValues ? epRatios[3] * stat.getProtoValue(result.dtps.epValues) : 0) +
+		(result.tmi?.epValues ? epRatios[4] * stat.getProtoValue(result.tmi.epValues) : 0) +
+		(result.pDeath?.epValues ? epRatios[5] * stat.getProtoValue(result.pDeath.epValues) : 0)
+	);
+};
 
 // Used for spec specific stat presets to be used
 // as a easy to access reference
