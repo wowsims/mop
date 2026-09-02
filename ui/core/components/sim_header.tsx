@@ -1,5 +1,7 @@
 import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL } from '@domain/constants/other';
 import { noop } from '@domain/utils';
+import { Exporter } from '@features/import-export/view/exporter';
+import { Importer } from '@features/import-export/view/importer';
 import { Component } from '@ui-kit/component';
 import { isNative } from '@ui-kit/dom_utils';
 import { SimTab } from '@ui-kit/sim_tab';
@@ -10,9 +12,7 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../../i18n/config';
 import { trackPageView } from '../../tracking/utils';
 import { SimUI } from '../sim_ui';
-import { Exporter } from './exporter';
 import { SimToolbarItem } from './header/sim_toolbar_item';
-import { Importer } from './importer';
 import { SettingsMenu } from './settings_menu';
 import { SocialLinks } from './social_links';
 

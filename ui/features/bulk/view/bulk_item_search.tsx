@@ -1,22 +1,22 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { ItemLevelState, ItemSpec } from '@core/proto/common';
+import { UIItem, UIItem_FactionRestriction } from '@core/proto/ui';
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/utils';
 import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
-import { setActionIdBackground, setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
-import { createNameDescriptionLabel } from '@features/gear/view/utils';
+import i18n from '@i18n/config';
+import { translateBulkSlotName } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../../../i18n/config';
-import { translateBulkSlotName } from '../../../../i18n/localization';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { ItemLevelState, ItemSpec } from '../../../proto/common';
-import { UIItem, UIItem_FactionRestriction } from '../../../proto/ui';
-import { BulkTab } from '../bulk_tab';
+import { setActionIdBackground, setActionIdWowheadHref } from '../../gear/view/action_id_dom';
+import { createNameDescriptionLabel } from '../../gear/view/utils';
+import { BulkTab } from './bulk_tab';
 const MAX_SEARCH_RESULTS = 21;
 
 export default class BulkItemSearch extends ContentBlock {

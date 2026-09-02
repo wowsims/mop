@@ -1,10 +1,10 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { Spec } from '@core/proto/common';
+import { IndividualSimSettings } from '@core/proto/ui';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { getEnumValues, jsonStringifyWithFlattenedPaths } from '@domain/utils';
+import i18n from '@i18n/config';
 
-import i18n from '../../../../i18n/config';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { Spec } from '../../../proto/common';
-import { IndividualSimSettings } from '../../../proto/ui';
 import { IndividualImporter } from '../importers/individual_importer';
 import { IndividualExporter } from './individual_exporter';
 

@@ -1,12 +1,12 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '@core/proto/common';
 import { Database } from '@domain/proto_utils/database';
 import { classNames } from '@domain/proto_utils/names';
 import { batch, nextEventID } from '@domain/state/batch';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
 import Toast from '@ui-kit/toast';
 
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '../../../proto/common';
-import { Importer, ImporterOptions } from '../../importer';
+import { Importer, ImporterOptions } from '../importer';
 // For now this just holds static helpers to match the exporter, so it doesn't extend Importer.
 export abstract class IndividualImporter<SpecType extends Spec> extends Importer {
 	// Exclude UISettings by default, since most users don't intend to export those.

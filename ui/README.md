@@ -21,7 +21,10 @@ ui/
                      reforge/, results/, stat-weights/, talents/, item-swap/ (view/,
                      item_swap_picker, PR 5a), character-stats/ (view/, character_stats, PR 5a),
                      encounter/ (view/, encounter_picker, PR 5a), settings/ (view/,
-                     cooldowns_picker + consumes_picker, PR 5a). alias @features
+                     cooldowns_picker + consumes_picker, PR 5a), bulk/ (model/ core_sim, view/
+                     bulk_tab + bulk_item_search/bulk_item_picker/bulk_item_picker_group/
+                     bulk_sim_results_renderer flattened, PR 5b), import-export/ (view/
+                     importer/exporter + importers/ + exporters/, PR 5b). alias @features
   app/               shells + chrome that compose features; i18n/. Today: browser_env.ts only —
                      sim_ui/individual_sim_ui/preset_utils/launched_sims and the rest of
                      components/ are still under ui/core/ (PR 4–6). alias @app
@@ -31,7 +34,10 @@ ui/
                      apl actionIdSets/unitSets to features/apl/model, PR 4c; gear_picker/,
                      item_swap_picker.tsx, character_stats.tsx, encounter_picker.ts,
                      item_notice/, and the gem/reforge/upgrade_costs summaries +
-                     cooldowns_picker/consumes_picker moved out to features/, PR 5a),
+                     cooldowns_picker/consumes_picker moved out to features/, PR 5a;
+                     individual_sim_ui/bulk/, individual_sim_ui/bulk_tab.tsx,
+                     individual_sim_ui/importers/, individual_sim_ui/exporters/, importer.tsx,
+                     exporter.tsx moved out to features/bulk + features/import-export, PR 5b),
                      sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx. alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged

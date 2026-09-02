@@ -1,12 +1,12 @@
+import { SimUI } from '@core/sim_ui';
 import { Emitter } from '@domain/state/events';
+import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { CopyButton } from '@ui-kit/copy_button';
 import { downloadString } from '@ui-kit/dom_utils';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config';
-import { trackPageView } from '../../tracking/utils';
-import { SimUI } from '../sim_ui';
+import { trackPageView } from '../../../tracking/utils';
 
 export interface ExporterOptions {
 	title: string;

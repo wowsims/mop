@@ -1,7 +1,8 @@
-import i18n from '../../../../i18n/config';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { RaidSimRequest } from '../../../proto/api';
-import { Spec } from '../../../proto/common';
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { RaidSimRequest } from '@core/proto/api';
+import { Spec } from '@core/proto/common';
+import i18n from '@i18n/config';
+
 import { IndividualExporter } from './individual_exporter';
 
 export class IndividualCLIExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {

@@ -18,9 +18,24 @@ import {
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/required_talents';
 import { isDevMode } from '@domain/utils';
+import { BulkTab } from '@features/bulk/view/bulk_tab';
 import { CharacterStats } from '@features/character-stats/view/character_stats';
 import { EncounterPickerConfig } from '@features/encounter/view/encounter_picker';
 import { ItemNotice } from '@features/gear/view/item_notice';
+import {
+	// Individual60UEPExporter,
+	IndividualCLIExporter,
+	IndividualJsonExporter,
+	IndividualLinkExporter,
+	IndividualPawnEPExporter,
+	IndividualWowheadGearPlannerExporter,
+} from '@features/import-export/view/exporters';
+import {
+	// Individual60UImporter,
+	IndividualAddonImporter,
+	IndividualJsonImporter,
+	IndividualWowheadGearPlannerImporter,
+} from '@features/import-export/view/importers';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
@@ -31,22 +46,7 @@ import * as InputHelpers from '@ui-kit/input_helpers';
 import { SavedDataConfig } from '@ui-kit/saved_data_manager';
 
 import i18n from '../i18n/config';
-import { BulkTab } from './components/individual_sim_ui/bulk_tab';
-import {
-	// Individual60UEPExporter,
-	IndividualCLIExporter,
-	IndividualJsonExporter,
-	IndividualLinkExporter,
-	IndividualPawnEPExporter,
-	IndividualWowheadGearPlannerExporter,
-} from './components/individual_sim_ui/exporters';
 import { GearTab } from './components/individual_sim_ui/gear_tab';
-import {
-	// Individual60UImporter,
-	IndividualAddonImporter,
-	IndividualJsonImporter,
-	IndividualWowheadGearPlannerImporter,
-} from './components/individual_sim_ui/importers';
 import { PresetConfigurationPicker } from './components/individual_sim_ui/preset_configuration_picker';
 import { RotationTab } from './components/individual_sim_ui/rotation_tab';
 import { SettingsTab } from './components/individual_sim_ui/settings_tab';

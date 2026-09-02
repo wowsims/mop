@@ -1,19 +1,19 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { ItemSlot } from '@core/proto/common';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '@domain/bulk/utils';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEligibleItemSlots } from '@domain/proto_utils/utils';
 import { Emitter } from '@domain/state/events';
 import { subscribeBulkChange } from '@domain/state/subscriptions';
-import { ItemRenderer } from '@features/gear/view/gear_picker';
-import { GearData } from '@features/gear/view/item_list';
-import { SelectorModalTabs } from '@features/gear/view/selector_modal';
+import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../../../i18n/config';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { ItemSlot } from '../../../proto/common';
-import { BulkTab } from '../bulk_tab';
+import { ItemRenderer } from '../../gear/view/gear_picker';
+import { GearData } from '../../gear/view/item_list';
+import { SelectorModalTabs } from '../../gear/view/selector_modal';
+import { BulkTab } from './bulk_tab';
 
 export default class BulkItemPicker extends Component {
 	private readonly itemElem: ItemRenderer;

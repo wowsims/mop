@@ -1,10 +1,10 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@core/proto/common';
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
+import i18n from '@i18n/config';
 import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../../../i18n/config';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '../../../proto/common';
 import { IndividualImporter } from './individual_importer';
 
 const i = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';

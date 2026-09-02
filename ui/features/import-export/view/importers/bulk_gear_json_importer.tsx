@@ -1,9 +1,9 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { EquipmentSpec, Spec } from '@core/proto/common';
 import { Database } from '@domain/proto_utils/database';
 import { t } from 'i18next';
 
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { EquipmentSpec, Spec } from '../../../proto/common';
-import { BulkTab } from '../bulk_tab';
+import { BulkTab } from '../../../bulk/view/bulk_tab';
 import { IndividualImporter } from './individual_importer';
 
 export class BulkGearJsonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {

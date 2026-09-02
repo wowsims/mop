@@ -1,14 +1,14 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import i18n from '@i18n/config';
+import { getBulkSlotI18nKey } from '@i18n/entity_mapping';
+import { translateBulkSlotName } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';
 import Toast from '@ui-kit/toast';
 
-import i18n from '../../../../i18n/config';
-import { getBulkSlotI18nKey } from '../../../../i18n/entity_mapping';
-import { translateBulkSlotName } from '../../../../i18n/localization';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { BulkTab } from '../bulk_tab';
 import BulkItemPicker from './bulk_item_picker';
+import { BulkTab } from './bulk_tab';
 
 export default class BulkItemPickerGroup extends ContentBlock {
 	readonly simUI: IndividualSimUI<any>;

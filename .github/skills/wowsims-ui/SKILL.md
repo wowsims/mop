@@ -203,6 +203,16 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   still resolve since only the `.ts`/`.tsx` moved. Gate note: the move disturbed import order in
   every touched file — `oxlint --fix` on `ui tools` cleared all of it, no manual sorting needed.
 
+- 2026-09-02 UI restructure PR 5b "bulk + import-export move": whole-file moves via
+  `tools/restructure/move.mjs` (24 files, 93 specifiers in 23 files) — `bulk/core_sim.ts` (DOM-free)
+  → `features/bulk/model/`; the rest of `bulk/` plus `bulk_tab.tsx` → `features/bulk/view/`
+  (flattened); `importers/`, `exporters/`, `importer.tsx`, `exporter.tsx` →
+  `features/import-export/view/`. Lint: added `ui/features/**` to the `no-restricted-imports`
+  block that bans direct store-writer imports (`patchSlice`/`patchKeyed`/`seedKeyed`/
+  `deleteKeyed`), since that ban was previously keyed only on `ui/core/components/**` and
+  `bulk_tab.tsx` moved out of that path. `oxlint --fix` on the touched files cleared the
+  import-order warnings the rewrite introduced.
+
 - 2026-09-02 UI restructure PR 4c "apl model": the `actionIdSets` and `unitSets` registries (plus their
   `ACTION_ID_SET` / `UNIT_SET` key types) moved verbatim out of `features/apl/view/apl_helpers.tsx` into
   `features/apl/model/{action_id_sets,unit_sets}.ts`; the view imports them back. Nothing else in the apl

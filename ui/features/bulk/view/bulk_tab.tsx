@@ -1,3 +1,6 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '@core/proto/api';
+import { ItemSlot, ItemSpec, WeaponType } from '@core/proto/common';
 import {
 	BulkSimProgressConfig,
 	NATIVE_COMBINATIONS_LIMIT,
@@ -27,7 +30,8 @@ import { RequestTypes } from '@domain/sim_signal_manager';
 import { nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '@domain/state/subscriptions';
 import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, Z_95, zTest } from '@domain/utils';
-import SelectorModal from '@features/gear/view/selector_modal';
+import i18n from '@i18n/config';
+import { translateWeaponType } from '@i18n/localization';
 import { isExternal } from '@ui-kit/dom_utils';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { EnumPicker } from '@ui-kit/pickers/enum_picker';
@@ -39,17 +43,13 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../../i18n/config';
-import { translateWeaponType } from '../../../i18n/localization';
 import { trackEvent } from '../../../tracking/utils';
-import { IndividualSimUI } from '../../individual_sim_ui';
-import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '../../proto/api';
-import { ItemSlot, ItemSpec, WeaponType } from '../../proto/common';
-import BulkItemPickerGroup from './bulk/bulk_item_picker_group';
-import BulkItemSearch from './bulk/bulk_item_search';
-import BulkSimResultRenderer from './bulk/bulk_sim_results_renderer';
-import { runCoreBulkSim as runCoreBulkSimImpl } from './bulk/core_sim';
-import { BulkGearJsonImporter } from './importers';
+import SelectorModal from '../../gear/view/selector_modal';
+import { BulkGearJsonImporter } from '../../import-export/view/importers';
+import { runCoreBulkSim as runCoreBulkSimImpl } from '../model/core_sim';
+import BulkItemPickerGroup from './bulk_item_picker_group';
+import BulkItemSearch from './bulk_item_search';
+import BulkSimResultRenderer from './bulk_sim_results_renderer';
 type BulkSetBonusOption = {
 	setId: number;
 	setName: string;

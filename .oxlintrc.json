@@ -85,7 +85,7 @@
       }
     },
     {
-      "files": ["ui/core/components/**/*.{ts,tsx}"],
+      "files": ["ui/core/components/**/*.{ts,tsx}", "ui/features/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
           "error",
