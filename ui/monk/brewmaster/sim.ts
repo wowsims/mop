@@ -5,9 +5,9 @@ import { Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
-import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';

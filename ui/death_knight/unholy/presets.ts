@@ -1,7 +1,7 @@
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
+import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
 
-import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
 import * as PresetUtils from '../../core/preset_utils';
 import { APLRotation_Type } from '../../core/proto/apl';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';

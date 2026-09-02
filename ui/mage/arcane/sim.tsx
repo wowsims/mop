@@ -5,8 +5,8 @@ import { Mage } from '@domain/player_classes/mage';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { formatToNumber } from '@domain/utils';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';

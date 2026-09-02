@@ -1,10 +1,3 @@
-import {
-	makePhaseSelector,
-	makeShow1hWeaponsSelector,
-	makeShow2hWeaponsSelector,
-	makeShowEPValuesSelector,
-	makeShowMatchingGemsSelector,
-} from '@core/components/inputs/other_inputs';
 import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '@core/proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@core/proto/ui';
@@ -27,6 +20,13 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../../../tracking/utils';
+import {
+	makePhaseSelector,
+	makeShow1hWeaponsSelector,
+	makeShow2hWeaponsSelector,
+	makeShowEPValuesSelector,
+	makeShowMatchingGemsSelector,
+} from '../../settings/view/other_inputs';
 import { setActionIdWowheadHref } from './action_id_dom';
 import { FiltersMenu } from './filters_menu';
 import { ItemNotice } from './item_notice';

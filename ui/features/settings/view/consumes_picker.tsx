@@ -1,6 +1,4 @@
 import { SettingsTab } from '@core/components/individual_sim_ui/settings_tab';
-import * as ConsumablesInputs from '@core/components/inputs/consumables';
-import { relevantStatOptions } from '@core/components/inputs/stat_options';
 import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, ConsumableType, Spec } from '@core/proto/common';
 import { Consumable } from '@core/proto/db';
@@ -13,6 +11,9 @@ import { buildIconInput } from '@ui-kit/icon_inputs';
 import { IconEnumPicker } from '@ui-kit/pickers/icon_enum_picker';
 import { IconPicker } from '@ui-kit/pickers/icon_picker';
 import { ref } from 'tsx-vanilla';
+
+import * as ConsumablesInputs from '../model/consumables';
+import { relevantStatOptions } from '../model/stat_options';
 
 export class ConsumesPicker extends Component {
 	protected settingsTab: SettingsTab;

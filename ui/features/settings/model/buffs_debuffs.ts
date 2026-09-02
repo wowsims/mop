@@ -1,4 +1,6 @@
+import { Stat } from '@core/proto/common';
 import { ActionId } from '@domain/proto_utils/action_id';
+import i18n from '@i18n/config';
 import {
 	makeBooleanDebuffInput,
 	makeBooleanIndividualBuffInput,
@@ -10,8 +12,6 @@ import * as InputHelpers from '@ui-kit/input_helpers';
 import { IconPicker } from '@ui-kit/pickers/icon_picker';
 import { MultiIconPicker } from '@ui-kit/pickers/multi_icon_picker';
 
-import i18n from '../../../i18n/config';
-import { Stat } from '../../proto/common';
 import { IconPickerStatOption, PickerStatOptions } from './stat_options';
 
 ///////////////////////////////////////////////////////////////////////////

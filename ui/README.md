@@ -17,11 +17,14 @@ ui/
                      css_utils, dom_utils, action_id_dom, pickers/, vendor/. alias @ui-kit
   features/<name>/   EXISTS. one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
                      Today: apl/ (model/ + view/), gear/ (gear_picker/* flattened in, plus
-                     gem_summary/reforge_summary/upgrade_costs_summary/item_notice, PR 5a),
-                     reforge/, results/, stat-weights/, talents/, item-swap/ (view/,
-                     item_swap_picker, PR 5a), character-stats/ (view/, character_stats, PR 5a),
-                     encounter/ (view/, encounter_picker, PR 5a), settings/ (view/,
-                     cooldowns_picker + consumes_picker, PR 5a), bulk/ (model/ core_sim, view/
+                     gem_summary/reforge_summary/upgrade_costs_summary/item_notice, PR 5a; plus
+                     quick_swap/gear_change_icon, PR 5c), reforge/, results/ (plus
+                     view/results_viewer, PR 5c), stat-weights/ (plus view/saved_ep_weights,
+                     PR 5c), talents/, item-swap/ (view/, item_swap_picker, PR 5a),
+                     character-stats/ (view/, character_stats, PR 5a), encounter/ (view/,
+                     encounter_picker, PR 5a), settings/ (model/ buffs_debuffs/consumables/
+                     stat_options, view/ cooldowns_picker + consumes_picker + other_inputs +
+                     spec_change_warning_toast, PR 5a/5c), bulk/ (model/ core_sim, view/
                      bulk_tab + bulk_item_search/bulk_item_picker/bulk_item_picker_group/
                      bulk_sim_results_renderer flattened, PR 5b), import-export/ (view/
                      importer/exporter + importers/ + exporters/, PR 5b). alias @features
@@ -37,8 +40,13 @@ ui/
                      cooldowns_picker/consumes_picker moved out to features/, PR 5a;
                      individual_sim_ui/bulk/, individual_sim_ui/bulk_tab.tsx,
                      individual_sim_ui/importers/, individual_sim_ui/exporters/, importer.tsx,
-                     exporter.tsx moved out to features/bulk + features/import-export, PR 5b),
-                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx. alias @core
+                     exporter.tsx moved out to features/bulk + features/import-export, PR 5b;
+                     inputs/buffs_debuffs.ts, inputs/consumables.ts, inputs/stat_options.ts,
+                     inputs/other_inputs.ts, saved_data_managers/ep_weights.ts, quick_swap.tsx,
+                     gear_change_icon.tsx, results_viewer.tsx, spec_change_warning_toast.tsx
+                     moved out to features/settings, features/stat-weights, features/gear,
+                     features/results, PR 5c), sim_ui.tsx, individual_sim_ui.tsx,
+                     preset_utils.tsx, launched_sims.tsx. alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged

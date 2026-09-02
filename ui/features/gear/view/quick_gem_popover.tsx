@@ -1,9 +1,10 @@
-import QuickSwapList from '@core/components/quick_swap';
 import { ItemSlot } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { nextEventID } from '@domain/state/batch';
 import i18n from '@i18n/config';
+
+import QuickSwapList from './quick_swap';
 export const addQuickGemPopover = (
 	player: Player<any>,
 	tooltipElement: HTMLElement,

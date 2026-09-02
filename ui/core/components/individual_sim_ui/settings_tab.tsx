@@ -6,6 +6,8 @@ import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribeP
 import { getEnumValues } from '@domain/utils';
 import { EncounterPicker } from '@features/encounter/view/encounter_picker';
 import { ItemSwapPicker } from '@features/item-swap/view/item_swap_picker';
+import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { ConsumesPicker } from '@features/settings/view/consumes_picker';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
@@ -22,8 +24,6 @@ import { translateProfession, translateRace } from '../../../i18n/localization';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common';
 import { SavedEncounter, SavedSettings } from '../../proto/ui';
-import * as BuffDebuffInputs from '../inputs/buffs_debuffs';
-import { relevantStatOptions } from '../inputs/stat_options';
 import { PresetConfigurationPicker } from './preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;

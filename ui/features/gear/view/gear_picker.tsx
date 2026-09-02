@@ -1,4 +1,3 @@
-import QuickSwapList from '@core/components/quick_swap';
 import { ItemLevelState, ItemSlot } from '@core/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem } from '@core/proto/ui';
 import { SimUI } from '@core/sim_ui';
@@ -20,6 +19,7 @@ import { ItemNotice } from './item_notice';
 import { MISSING_RANDOM_SUFFIX_WARNING } from './item_notices';
 import { addQuickEnchantPopover } from './quick_enchant_popover';
 import { addQuickGemPopover } from './quick_gem_popover';
+import QuickSwapList from './quick_swap';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
 import { createGemContainer, createNameDescriptionLabel, getEmptySlotIconUrl } from './utils';
 export const LEFT_ITEM_PICKERS = [

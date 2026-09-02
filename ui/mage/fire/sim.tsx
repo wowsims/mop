@@ -3,8 +3,8 @@ import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '../../core/proto/apl';

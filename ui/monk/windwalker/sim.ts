@@ -7,9 +7,9 @@ import { RelativeStatCap } from '@domain/reforge_settings';
 import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
-import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';

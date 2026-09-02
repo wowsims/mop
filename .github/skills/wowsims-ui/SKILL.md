@@ -146,6 +146,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 5c: picker config data (`buffs_debuffs`, `consumables`, `stat_options`) → `features/settings/model`; `other_inputs.ts` moved whole into `features/settings/view` (still mixes constants with five `make*Selector` DOM constructors — split pending); saved EP weights → `features/stat-weights/view`; quick_swap/gear_change_icon → `features/gear/view`; results_viewer → `features/results/view`; spec_change_warning_toast → `features/settings/view`.
 - 2026-09-02 UI restructure PR 2 "split the action files": the three sim-orchestrating
   `ui/core/components/*_action.tsx` files are gone. `suggest_reforges_action.tsx` →
   `features/reforge/model/reforge_optimizer.ts` (`ReforgeOptimizerModel`: settings, EP/soft-cap

@@ -1,5 +1,3 @@
-import { buildGearChangeIcon } from '@core/components/gear_change_icon';
-import { renderSavedEPWeights } from '@core/components/saved_data_managers/ep_weights';
 import type { IndividualSimUI } from '@core/individual_sim_ui';
 import { ReforgeSettings, StatCapType } from '@core/proto/api';
 import { ItemSlot, Stat } from '@core/proto/common';
@@ -28,6 +26,8 @@ import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent, trackPageView } from '../../../tracking/utils';
+import { buildGearChangeIcon } from '../../gear/view/gear_change_icon';
+import { renderSavedEPWeights } from '../../stat-weights/view/saved_ep_weights';
 
 // The model types are part of the panel's public surface — spec configs import
 // `ReforgeOptimizer` and `ReforgeOptimizerOptions` from this module.

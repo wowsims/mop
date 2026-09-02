@@ -1,5 +1,3 @@
-import { ResultsViewer } from '@core/components/results_viewer';
-import { renderSavedEPWeights } from '@core/components/saved_data_managers/ep_weights';
 import type { IndividualSimUI } from '@core/individual_sim_ui';
 import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '@core/proto/api';
 import { PseudoStat, Stat, UnitStats } from '@core/proto/common';
@@ -21,6 +19,8 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent, trackPageView } from '../../../tracking/utils';
+import { ResultsViewer } from '../../results/view/results_viewer';
+import { renderSavedEPWeights } from './saved_ep_weights';
 
 export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);

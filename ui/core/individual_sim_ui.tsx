@@ -39,6 +39,7 @@ import {
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
+import * as OtherInputs from '@features/settings/view/other_inputs';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
@@ -51,7 +52,6 @@ import { PresetConfigurationPicker } from './components/individual_sim_ui/preset
 import { RotationTab } from './components/individual_sim_ui/rotation_tab';
 import { SettingsTab } from './components/individual_sim_ui/settings_tab';
 import { TalentsTab } from './components/individual_sim_ui/talents_tab';
-import * as OtherInputs from './components/inputs/other_inputs';
 import { simLaunchStatuses } from './launched_sims';
 import { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
 import { StatWeightsResult } from './proto/api';

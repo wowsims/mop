@@ -1,13 +1,13 @@
+import { Class, ConsumesSpec, Profession, Spec, Stat } from '@core/proto/common';
+import { Consumable } from '@core/proto/db';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { batch, EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 import { IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 
-import i18n from '../../../i18n/config';
-import { Class, ConsumesSpec, Profession, Spec, Stat } from '../../proto/common';
-import { Consumable } from '../../proto/db';
 import { ActionInputConfig, ItemStatOption } from './stat_options';
 export interface ConsumableInputConfig<T> extends ActionInputConfig<T> {
 	value: T;

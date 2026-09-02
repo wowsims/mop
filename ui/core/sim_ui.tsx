@@ -10,6 +10,7 @@ import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@do
 import { StoreSubscribe, subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
 import { WorkerProgressCallback } from '@domain/worker_pool';
+import { ResultsViewer } from '@features/results/view/results_viewer';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
@@ -21,7 +22,6 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../i18n/config';
 import { trackEvent } from '../tracking/utils';
 import { NoticeNativeSim } from './components/individual_sim_ui/notice_native_sim';
-import { ResultsViewer } from './components/results_viewer';
 import { SimHeader } from './components/sim_header';
 import { SimTitleDropdown } from './components/sim_title_dropdown';
 import { SocialLinks } from './components/social_links';

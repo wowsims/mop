@@ -1,4 +1,3 @@
-import { buildGearChangeIcon } from '@core/components/gear_change_icon';
 import { IndividualSimUI } from '@core/individual_sim_ui';
 import { ItemSlot, ItemSpec } from '@core/proto/common';
 import { TopGearResult } from '@domain/bulk/types';
@@ -12,6 +11,7 @@ import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import { buildGearChangeIcon } from '../../gear/view/gear_change_icon';
 import { ItemRenderer } from '../../gear/view/gear_picker';
 import { SimResultsManager } from '../../results/view/results_action';
 const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
