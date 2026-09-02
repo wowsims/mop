@@ -20,12 +20,16 @@ import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetI
 import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
+import type { Sim } from '@domain/sim';
+import type { EventID } from '@domain/state/batch';
+import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
 import * as InputHelpers from '@ui-kit/input_helpers';
 import { SavedDataConfig } from '@ui-kit/saved_data_manager';
 
 import type { EncounterPickerConfig } from './encounter/view/encounter_picker';
+import type { ReforgeOptimizerOptions } from './reforge/model/reforge_optimizer';
 import type { IndividualSimHost, SimWarning } from './sim_host';
 
 export type InputConfig<ModObject> =
@@ -142,6 +146,41 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 		builds?: Array<PresetBuild>;
 		itemSwaps?: Array<PresetItemSwap>;
 	};
+}
+
+// A setting whose value is derived from other settings (e.g. Monk stance from
+// talents, DK AMS intake from the encounter). `apply` runs once at startup and
+// again whenever `subscribe`'s source fires.
+export interface DerivedSetting<SpecType extends Spec> {
+	subscribe: (player: Player<SpecType>, sim: Sim) => StoreSubscribe;
+	apply: (eventID: EventID, player: Player<SpecType>, sim: Sim) => void;
+}
+
+// The behaviour slots a spec declares on top of its config data. Everything
+// here is optional so a plain `IndividualSimUIConfig` (the specs that still use
+// a hand-written `IndividualSimUI` subclass) remains a valid constructor
+// argument for `IndividualSimUI`.
+export interface SpecBehaviors<SpecType extends Spec> {
+	// Wires the Reforge Optimizer. A function form receives the sim host, for
+	// options that need to call back into it.
+	reforge?: ReforgeOptimizerOptions | ((host: IndividualSimHost<SpecType>) => ReforgeOptimizerOptions);
+	// Healing specs that sim their own output (tanks included) opt in here.
+	enableHealing?: boolean;
+	derivedSettings?: Array<DerivedSetting<SpecType>>;
+	// Spec-local escape hatch: anything else that needs constructing with the host.
+	features?: Array<(host: IndividualSimHost<SpecType>) => unknown>;
+}
+
+// A whole spec as data. `ui/app/spec_entry.ts` loads one of these per page.
+export interface SpecDefinition<SpecType extends Spec> extends IndividualSimUIConfig<SpecType>, SpecBehaviors<SpecType> {
+	spec: SpecType;
+}
+
+// Identity function; exists purely so `ui/<class>/<spec>/spec.ts` gets the
+// config checked against `SpecDefinition` without an `as` cast or a type
+// annotation that would widen the literal spec type.
+export function defineSpec<SpecType extends Spec>(def: SpecDefinition<SpecType>): SpecDefinition<SpecType> {
+	return def;
 }
 
 export function registerSpecConfig<SpecType extends Spec>(spec: SpecType, config: IndividualSimUIConfig<SpecType>): IndividualSimUIConfig<SpecType> {

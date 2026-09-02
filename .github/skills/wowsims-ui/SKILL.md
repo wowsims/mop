@@ -148,12 +148,41 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 - Tabs, single quotes, `simple-import-sort` (run `npm run lint:js:fix` on touched files).
 - Never commit fixtures/goldens without asking; never run `gen_db` concurrently.
-- Spec configs (`ui/<class>/<spec>/sim.ts`) are pure data registered via `registerSpecConfig`;
-  `Player` consumes only the narrow `SpecConfigData` subset.
+- Spec configs are pure data; `Player` consumes only the narrow `SpecConfigData` subset.
+  Converted specs (so far `warrior/arms`, `priest/discipline`) are a single
+  `ui/<class>/<spec>/spec.ts` default-exporting `defineSpec({ spec, ...config, reforge?,
+  enableHealing?, derivedSettings?, features? })` — no `sim.ts`, no `index.ts`, no
+  `IndividualSimUI` subclass; `ui/app/spec_entry.ts` loads it from the URL. The other 32 still
+  register from `sim.ts` via `registerSpecConfig` and boot from their own `index.ts`.
+  See "How to author a spec" in `ui/README.md`.
 - `PartyBuffs` is an empty proto message in MoP — party-buff code paths are vestigial.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 7a: **a spec is now DATA.** `@features/spec_config` gained
+  `SpecDefinition<S>` (= `IndividualSimUIConfig<S>` + `spec: S` + `SpecBehaviors<S>`),
+  `SpecBehaviors` (`reforge`, `enableHealing`, `derivedSettings`, `features` — all optional),
+  `DerivedSetting` and the identity helper `defineSpec()`. `IndividualSimUI` is no longer
+  `abstract`: its constructor takes `IndividualSimUIConfig & SpecBehaviors` and runs the
+  behaviour slots (reforge → derivedSettings → features) as its LAST statements — that is
+  precisely where a subclass constructor body ran, i.e. after every tab exists but still
+  synchronously, so `loadSettings()` (queued on `waitForInit`) still sees `this.reforger`.
+  `SpecBehaviors` is a separate optional-only interface rather than folding everything into
+  `SpecDefinition` because the 32 unconverted `super(parentElem, player, SPEC_CONFIG)` calls
+  pass a bare `IndividualSimUIConfig`.
+  New `ui/app/spec_entry.ts`: one page entry for all specs. Lazy
+  `import.meta.glob('../*/*/spec.ts')` keyed off `location.pathname` minus
+  `import.meta.env.BASE_URL` (`/mop/`), so each spec gets its own chunk. It is the ONE place
+  the register-before-`new Player()` ordering is expressed (`Player`'s constructor calls
+  `getSpecConfig`). Body is an async IIFE, not top-level await — vite's build target reports
+  TLA as a TOLERATED_TRANSFORM.
+  Piloted on `warrior/arms` (with `reforge`) and `priest/discipline` (without); their `sim.ts`
+  + `index.ts` are deleted. `ui/index_template.html` now points at `../../app/spec_entry.ts`,
+  but only those two `index.html` were regenerated — **`make` regenerates all 34 from the
+  template and would break the other 32; regenerate individually until PR 7b converts them.**
+  `tools/state-snapshots/{snapshot,store-contract-test}.ts` import those two spec modules and
+  call `registerSpecConfig` explicitly instead of relying on `sim.ts` side effects; goldens
+  stayed byte-identical (34 specs).
 - 2026-09-02 UI restructure PR 6c: `ui/app/i18n/**` → `ui/i18n/**` (by hand: `git mv` + repoint
   `@i18n/*` in `tsconfig.json`/`vite.config.mts`/`vite.harness.mts`; `ui/index.html` +
   `ui/index_template.html` entry script; the 34 gitignored `ui/*/*/index.html` regenerated).

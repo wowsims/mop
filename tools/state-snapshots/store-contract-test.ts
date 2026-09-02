@@ -5,7 +5,6 @@
 // aggregate selectors firing once per write. Run via the harness:
 // HARNESS_ENTRY=tools/state-snapshots/store-contract-test.ts vite build -c vite.harness.mts
 // && HARNESS_BUNDLE=store-contract-test.js node tools/state-snapshots/run.mjs
-import '../../ui/warrior/arms/sim';
 
 import { APLRotation } from '../../ui/core/proto/apl';
 import { Race, Spec, Stat } from '../../ui/core/proto/common';
@@ -35,7 +34,11 @@ import {
 	subscribeStatWeightsChange,
 	subscribeUnitMetadata,
 } from '../../ui/domain/state/subscriptions';
+import { registerSpecConfig } from '../../ui/features/spec_config';
+import armsWarriorSpec from '../../ui/warrior/arms/spec';
 import { makeMemoryEnv } from './memory_env';
+
+registerSpecConfig(armsWarriorSpec.spec, armsWarriorSpec);
 
 let failures = 0;
 function check(cond: boolean, label: string) {

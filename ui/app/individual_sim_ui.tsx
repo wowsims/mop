@@ -43,6 +43,7 @@ import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import type { IndividualSimHost } from '@features/sim_host';
+import type { SpecBehaviors } from '@features/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
 import i18n from '@i18n/config';
@@ -55,8 +56,17 @@ import { RotationTab } from './tabs/rotation_tab';
 import { SettingsTab } from './tabs/settings_tab';
 import { TalentsTab } from './tabs/talents_tab';
 
-export type { IndividualSimUIConfig, InputConfig, InputSection, OtherDefaults, Settings } from '@features/spec_config';
-export { itemSwapEnabledSpecs, registerSpecConfig } from '@features/spec_config';
+export type {
+	DerivedSetting,
+	IndividualSimUIConfig,
+	InputConfig,
+	InputSection,
+	OtherDefaults,
+	Settings,
+	SpecBehaviors,
+	SpecDefinition,
+} from '@features/spec_config';
+export { defineSpec, itemSwapEnabledSpecs, registerSpecConfig } from '@features/spec_config';
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';
@@ -64,7 +74,7 @@ const SAVED_SETTINGS_STORAGE_KEY = '__savedSettings__';
 const SAVED_TALENTS_STORAGE_KEY = '__savedTalents__';
 
 // Extended shared UI for all individual player sims.
-export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI implements IndividualSimHost<SpecType> {
+export class IndividualSimUI<SpecType extends Spec> extends SimUI implements IndividualSimHost<SpecType> {
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	private readonly statWeightActionSettings: StatWeightActionSettings;
@@ -105,7 +115,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI imple
 	readonly bt: BulkTab | null = null;
 	reforger: ReforgeOptimizer | null = null;
 
-	constructor(parentElem: HTMLElement, player: Player<SpecType>, config: IndividualSimUIConfig<SpecType>) {
+	constructor(parentElem: HTMLElement, player: Player<SpecType>, config: IndividualSimUIConfig<SpecType> & SpecBehaviors<SpecType>) {
 		super(parentElem, player.sim, {
 			cssClass: config.cssClass,
 			cssScheme: config.cssScheme,
@@ -249,6 +259,21 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI imple
 		this.sim.waitForInit().then(() => {
 			this.addTopbarComponents();
 		});
+
+		// Declarative behaviour slots. These run last, exactly where a spec
+		// subclass' constructor body used to run: after every tab and sidebar
+		// component exists, but still synchronously, so `loadSettings()` (queued
+		// on waitForInit above) already sees `this.reforger`.
+		if (config.reforge) {
+			this.reforger = new ReforgeOptimizer(this, typeof config.reforge === 'function' ? config.reforge(this) : config.reforge);
+		}
+		for (const derived of config.derivedSettings || []) {
+			derived.apply(nextEventID(), this.player, this.sim);
+			derived.subscribe(this.player, this.sim)(() => derived.apply(nextEventID(), this.player, this.sim));
+		}
+		for (const feature of config.features || []) {
+			feature(this);
+		}
 	}
 
 	applyDefaultConfigOptions(config: IndividualSimUIConfig<SpecType>): IndividualSimUIConfig<SpecType> {

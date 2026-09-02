@@ -1,11 +1,10 @@
-import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
-import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
@@ -14,7 +13,9 @@ import * as WarriorInputs from '../inputs';
 import * as SharedPresets from '../shared';
 import * as Presets from './presets';
 
-const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
+export default defineSpec<Spec.SpecArmsWarrior>({
+	spec: Spec.SpecArmsWarrior,
+
 	cssClass: 'arms-warrior-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warrior),
 	// List any known bugs / issues here and they'll be shown on the site.
@@ -134,37 +135,31 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArmsWarrior, {
 	autoRotation: (_player: Player<Spec.SpecArmsWarrior>): APLRotation => {
 		return Presets.ROTATION_ARMS.rotation.rotation!;
 	},
+
+	reforge: {
+		getEPDefaults: player => {
+			const avgIlvl = player.getGear().getAverageItemLevel(false);
+			if (avgIlvl >= 560) return Presets.P5_EP_PRESET.epWeights;
+			if (avgIlvl >= 500) return Presets.P2_EP_PRESET.epWeights;
+			return Presets.P1_EP_PRESET.epWeights;
+		},
+		updateSoftCaps: (softCaps, player, ctx) => {
+			const gear = player.getGear();
+			// const avgIlvl = gear.getAverageItemLevel(false);
+			const hasT154P = gear.getItemSetCount('Battleplate of the Last Mogu') >= 4;
+			const epWeights = ctx.reforger.preCapEPs;
+
+			if (epWeights) {
+				softCaps.push(
+					StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
+						breakpoints: [hasT154P ? 43 : 49],
+						capType: StatCapType.TypeSoftCap,
+						postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
+					}),
+				);
+			}
+
+			return softCaps;
+		},
+	},
 });
-
-export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
-	constructor(parentElem: HTMLElement, player: Player<Spec.SpecArmsWarrior>) {
-		super(parentElem, player, SPEC_CONFIG);
-
-		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => {
-				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (avgIlvl >= 560) return Presets.P5_EP_PRESET.epWeights;
-				if (avgIlvl >= 500) return Presets.P2_EP_PRESET.epWeights;
-				return Presets.P1_EP_PRESET.epWeights;
-			},
-			updateSoftCaps: softCaps => {
-				const gear = player.getGear();
-				// const avgIlvl = gear.getAverageItemLevel(false);
-				const hasT154P = gear.getItemSetCount('Battleplate of the Last Mogu') >= 4;
-				const epWeights = this.reforger?.preCapEPs;
-
-				if (epWeights) {
-					softCaps.push(
-						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
-							breakpoints: [hasT154P ? 43 : 49],
-							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
-						}),
-					);
-				}
-
-				return softCaps;
-			},
-		});
-	}
-}

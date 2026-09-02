@@ -1,15 +1,17 @@
-import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '@domain/proto_utils/stats';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
 
 import { APLRotation } from '../../core/proto/apl';
 import { PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import * as PriestInputs from '../inputs';
 import * as Presets from './presets';
 
-const SPEC_CONFIG = registerSpecConfig(Spec.SpecDisciplinePriest, {
+export default defineSpec<Spec.SpecDisciplinePriest>({
+	spec: Spec.SpecDisciplinePriest,
+
 	cssClass: 'discipline-priest-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Priest),
 	// List any known bugs / issues here and they'll be shown on the site.
@@ -93,9 +95,3 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDisciplinePriest, {
 		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
 });
-
-export class DisciplinePriestSimUI extends IndividualSimUI<Spec.SpecDisciplinePriest> {
-	constructor(parentElem: HTMLElement, player: Player<Spec.SpecDisciplinePriest>) {
-		super(parentElem, player, SPEC_CONFIG);
-	}
-}

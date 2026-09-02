@@ -6,7 +6,8 @@
 // settings protos. The output must stay byte-identical across refactor PRs —
 // any diff means behavior changed.
 //
-// Spec registration happens via module side effects:
+// Spec registration happens via module side effects, except for specs already
+// converted to a declarative `spec.ts` (PR 7), which are registered explicitly.
 import '../../ui/death_knight/blood/sim';
 import '../../ui/death_knight/frost/sim';
 import '../../ui/death_knight/unholy/sim';
@@ -26,7 +27,6 @@ import '../../ui/monk/windwalker/sim';
 import '../../ui/paladin/holy/sim';
 import '../../ui/paladin/protection/sim';
 import '../../ui/paladin/retribution/sim';
-import '../../ui/priest/discipline/sim';
 import '../../ui/priest/holy/sim';
 import '../../ui/priest/shadow/sim';
 import '../../ui/rogue/assassination/sim';
@@ -38,7 +38,6 @@ import '../../ui/shaman/restoration/sim';
 import '../../ui/warlock/affliction/sim';
 import '../../ui/warlock/demonology/sim';
 import '../../ui/warlock/destruction/sim';
-import '../../ui/warrior/arms/sim';
 import '../../ui/warrior/fury/sim';
 import '../../ui/warrior/protection/sim';
 
@@ -51,7 +50,14 @@ import { Database } from '../../ui/domain/proto_utils/database';
 import { Sim } from '../../ui/domain/sim';
 import { batch, nextEventID } from '../../ui/domain/state/batch';
 import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/domain/state/serialization';
+import { registerSpecConfig } from '../../ui/features/spec_config';
+import disciplinePriestSpec from '../../ui/priest/discipline/spec';
+import armsWarriorSpec from '../../ui/warrior/arms/spec';
 import { makeMemoryEnv } from './memory_env';
+
+registerSpecConfig(armsWarriorSpec.spec, armsWarriorSpec);
+registerSpecConfig(disciplinePriestSpec.spec, disciplinePriestSpec);
+
 // Mirror of IndividualSimUI.applyDefaults (individual_sim_ui.tsx) without the
 // UI-owned satellites (reforger, statWeightActionSettings, defaultBuild).
 // When the defaults logic moves into ui/domain/state/, replace this mirror with

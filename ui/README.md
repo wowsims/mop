@@ -81,7 +81,9 @@ shells declare `implements SimHost` / `implements IndividualSimHost` so the inte
 honest. The per-spec config schema lives in `@features/spec_config` (`IndividualSimUIConfig`,
 `InputSection`, `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it
 cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
-`app/individual_sim_ui.tsx` re-exports it for the 34 spec `sim.ts` files. The preset shapes
+It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
+`defineSpec` — see "How to author a spec"). `app/individual_sim_ui.tsx` re-exports all of it for
+the 32 spec `sim.ts` files not yet converted to `spec.ts`. The preset shapes
 (`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
 holds the `make*` builders and re-exports the types.
 
@@ -108,6 +110,66 @@ Configured via `tsconfig.json` (`paths`) and `resolve.alias` in `vite.config.mts
 `imports` field was tried first but rejected: `tsc` under `moduleResolution: "bundler"` does not
 resolve `#foo/*` subpaths (it only works under `node16`/`nodenext`, and even then requires an
 explicit extension on every specifier).
+
+## How to author a spec
+
+A spec is data. `ui/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` call and is
+the only code file the spec owns (besides `presets.ts` / `inputs.ts`):
+
+```ts
+import { defineSpec } from '@features/spec_config';
+
+export default defineSpec<Spec.SpecArmsWarrior>({
+    spec: Spec.SpecArmsWarrior,          // identity
+    cssClass, cssScheme, epStats, displayStats, …,   // everything IndividualSimUIConfig declares
+    defaults: { … },
+    presets: { … },
+    reforge: { getEPDefaults, updateSoftCaps },      // optional — wires ReforgeOptimizer
+    enableHealing: true,                             // optional — tanks / healers
+    derivedSettings: [{ subscribe, apply }],         // optional — settings derived from others
+    features: [host => new Thing(host)],             // optional — spec-local escape hatch
+});
+```
+
+`SpecDefinition` is `IndividualSimUIConfig` plus `spec` plus the optional `SpecBehaviors`
+(`reforge`, `enableHealing`, `derivedSettings`, `features`) — the four things spec constructors
+used to do by hand. `defineSpec` is an identity function; it exists only so the object is
+checked without an annotation that would widen the literal spec type. Pass the spec as an
+explicit type argument so `Player<Spec.SpecX>` callbacks keep their narrow type.
+
+`reforge` may also be a function of the sim host, for options that need to call back into it.
+The `getEPDefaults` / `updateSoftCaps` callbacks receive `(…, player, ctx)` where
+`ctx = { player, reforger, defaults }` — that is how a spec reads `ctx.reforger.preCapEPs` or
+`ctx.defaults` without a `this`.
+
+### The entry flow
+
+`ui/app/spec_entry.ts` is the single page entry for every spec, referenced from
+`ui/index_template.html`. It derives the module key from `location.pathname`
+(`/mop/<class>/<spec>/` → `../<class>/<spec>/spec.ts`), loads it from a lazy
+`import.meta.glob('../*/*/spec.ts')` — so each spec ships its own chunk and only the visited
+one is fetched — then:
+
+```
+registerSpecConfig(def.spec, def)  →  new Sim  →  new Player  →  (enableHealing)  →
+sim.raid.setPlayer  →  new IndividualSimUI(document.body, player, def)
+```
+
+**Ordering constraint:** `registerSpecConfig` must run *before* `new Player()`, which resolves
+the spec's config out of the registry in its own constructor. This is the only place that
+ordering matters, and `spec_entry.ts` is the only place it is expressed.
+
+`IndividualSimUI` is concrete — a spec does not subclass it. Its constructor takes
+`IndividualSimUIConfig & SpecBehaviors`, and runs the behaviour slots (reforge →
+derivedSettings → features) as its last statements, exactly where a subclass constructor body
+used to run.
+
+> Migration state: only `warrior/arms` and `priest/discipline` are converted so far. The other
+> 32 specs still have `sim.ts` (an `IndividualSimUI` subclass) + `index.ts`, and their generated
+> `index.html` still points at `./index.ts`. `ui/index_template.html` already points at
+> `app/spec_entry.ts`, so **do not run `make` (which regenerates all 34 `index.html` from the
+> template) until every spec has a `spec.ts`** — regenerate individually with the makefile's
+> `sed` recipe instead.
 
 ## How to move a file
 
