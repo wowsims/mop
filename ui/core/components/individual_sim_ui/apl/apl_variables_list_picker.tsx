@@ -75,7 +75,6 @@ export class APLVariablesListPicker extends Component {
 			value: undefined,
 		});
 	}
-
 }
 
 class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
@@ -116,7 +115,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 		nameContainer.querySelector('.apl-name-rename')!.addEventListener('click', () => {
 			const sourceValue = this.getSourceValue();
 			if (!sourceValue) return;
-			new APLNameModal(this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body, {
+			new APLNameModal((this.rootElem.closest('.individual-sim-ui') as HTMLElement) ?? document.body, {
 				title: i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.variables.name') }),
 				inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
 				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.renameConfirm'),
@@ -130,18 +129,19 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 			});
 		});
 
-		this.valuePicker = new APLValuePicker(container, player, {
-			id: randomUUID(),
-			label: i18n.t('rotation_tab.apl.variables.attributes.value'),
-			labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
-			getValue: () => this.getSourceValue().value,
-			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
-				const sourceValue = this.getSourceValue();
-				sourceValue.value = newValue;
-				this.config.setValue(eventID, player, this.config.getValue(player));
-			},
-		});
+		this.valuePicker = this.addChild(
+			new APLValuePicker(container, player, {
+				id: randomUUID(),
+				label: i18n.t('rotation_tab.apl.variables.attributes.value'),
+				labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
+				getValue: () => this.getSourceValue().value,
+				setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+					const sourceValue = this.getSourceValue();
+					sourceValue.value = newValue;
+					this.config.setValue(eventID, player, this.config.getValue(player));
+				},
+			}),
+		);
 
 		this.init();
 	}

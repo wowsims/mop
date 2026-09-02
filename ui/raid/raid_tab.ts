@@ -55,9 +55,6 @@ export class RaidTab extends SimTab {
 				});
 			},
 			changeEmitters: [this.simUI.changeEmitter, this.simUI.sim.changeEmitter],
-			equals: (a: SavedRaid, b: SavedRaid) => {
-				return SavedRaid.equals(a, b);
-			},
 			toJson: (a: SavedRaid) => SavedRaid.toJson(a),
 			fromJson: (obj: any) => SavedRaid.fromJson(obj),
 		});

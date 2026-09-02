@@ -15,7 +15,9 @@ export type SavedDataManagerConfig<ModObject, T> = {
 	loadOnly?: boolean;
 	storageKey: string;
 	changeEmitters: TypedEvent<any>[];
-	equals: (a: T, b: T) => boolean;
+	// Optional semantic equality (e.g. rotations, where the type/uuids may differ);
+	// without it entries compare by their `toJson` string.
+	equals?: (a: T, b: T) => boolean;
 	getData: (modObject: ModObject) => T;
 	setData: (eventID: EventID, modObject: ModObject, data: T) => void;
 	toJson: (a: T) => any;
@@ -42,6 +44,10 @@ export type SavedDataConfig<ModObject, T> = {
 type SavedData<ModObject, T> = {
 	name: string;
 	data: T;
+	// Serialized form of `data` (only when the manager has no semantic `equals`),
+	// compared against the current value by string so an active-check costs one
+	// serialization per manager, not one deep proto equals per entry.
+	dataJson?: string;
 	elem: HTMLElement;
 } & Pick<SavedDataConfig<ModObject, T>, 'enableWhen' | 'onLoad'>;
 
@@ -58,6 +64,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 	private saveInput?: HTMLInputElement;
 
 	private frozen: boolean;
+	private pendingCheckFrame: number | null = null;
 
 	constructor(parent: HTMLElement | null, modObject: ModObject, config: SavedDataManagerConfig<ModObject, T>) {
 		super(parent, 'saved-data-manager-root');
@@ -67,6 +74,12 @@ export class SavedDataManager<ModObject, T> extends Component {
 		this.userData = [];
 		this.presets = [];
 		this.frozen = false;
+
+		// One coalesced active-check per manager per change burst, deferred to
+		// the next frame: the old per-entry deep equals on every change was the
+		// dominant cost of an APL edit (~166 ms on a large rotation).
+		const emitters = this.config.changeEmitters.map(emitter => emitter.on(() => this.scheduleChecks()));
+		this.addOnDisposeCallback(() => emitters.forEach(emitter => emitter.dispose()));
 
 		if (config.extraCssClasses) this.rootElem.classList.add(...config.extraCssClasses);
 
@@ -109,6 +122,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 			dataArr[oldIdx].elem.replaceWith(newData.elem);
 			dataArr[oldIdx] = newData;
 		}
+		this.scheduleChecks();
 	}
 
 	private makeSavedData(config: SavedDataConfig<ModObject, T>): SavedData<ModObject, T> {
@@ -127,6 +141,8 @@ export class SavedDataManager<ModObject, T> extends Component {
 		dataElem?.addEventListener('click', () => {
 			this.config.setData(TypedEvent.nextEventID(), this.modObject, config.data);
 			config.onLoad?.(this.modObject);
+			// Run the deferred check now so the clicked entry's name is the one left in the input.
+			this.flushChecks();
 			if (this.saveInput) this.saveInput.value = config.name;
 			trackEvent({
 				action: 'settings',
@@ -168,32 +184,59 @@ export class SavedDataManager<ModObject, T> extends Component {
 			});
 		}
 
-		const checkActive = () => {
-			if (this.config.equals(config.data, this.config.getData(this.modObject))) {
-				dataElem.classList.add('active');
-				if (this.saveInput) this.saveInput.value = config.name;
-			} else {
-				dataElem.classList.remove('active');
-			}
-
-			if (config.enableWhen && !config.enableWhen(this.modObject)) {
-				dataElem.classList.add('disabled');
-			} else {
-				dataElem.classList.remove('disabled');
-			}
-		};
-
-		checkActive();
-		const emitters = this.config.changeEmitters.map(emitter => emitter.on(checkActive));
-		this.addOnDisposeCallback(() => emitters.map(emitter => emitter.dispose()));
-
-		return {
+		const savedData: SavedData<ModObject, T> = {
 			name: config.name,
 			data: config.data,
+			dataJson: this.serialize(config.data),
 			elem: dataElem,
 			enableWhen: config.enableWhen,
 			onLoad: config.onLoad,
 		};
+		return savedData;
+	}
+
+	private serialize(data: T): string | undefined {
+		return this.config.equals ? undefined : JSON.stringify(this.config.toJson(data));
+	}
+
+	private scheduleChecks() {
+		if (this.pendingCheckFrame != null) return;
+		this.pendingCheckFrame = requestAnimationFrame(() => {
+			this.pendingCheckFrame = null;
+			this.runChecks();
+		});
+	}
+
+	private flushChecks() {
+		if (this.pendingCheckFrame == null) return;
+		cancelAnimationFrame(this.pendingCheckFrame);
+		this.pendingCheckFrame = null;
+		this.runChecks();
+	}
+
+	private runChecks() {
+		if (!this.presets.length && !this.userData.length) return;
+		const current = this.config.getData(this.modObject);
+		const currentJson = this.serialize(current);
+		// Presets last so, with identical data, the preset's name wins in the save input (as before).
+		this.userData.forEach(entry => this.checkEntry(entry, current, currentJson));
+		this.presets.forEach(entry => this.checkEntry(entry, current, currentJson));
+	}
+
+	private checkEntry(entry: SavedData<ModObject, T>, current: T, currentJson: string | undefined) {
+		const isActive = this.config.equals ? this.config.equals(entry.data, current) : entry.dataJson === currentJson;
+		if (isActive) {
+			entry.elem.classList.add('active');
+			if (this.saveInput) this.saveInput.value = entry.name;
+		} else {
+			entry.elem.classList.remove('active');
+		}
+
+		if (entry.enableWhen && !entry.enableWhen(this.modObject)) {
+			entry.elem.classList.add('disabled');
+		} else {
+			entry.elem.classList.remove('disabled');
+		}
 	}
 
 	// Save data to window.localStorage.

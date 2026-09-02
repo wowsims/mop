@@ -1,9 +1,11 @@
 import { ref } from 'tsx-vanilla';
 
-import { CacheHandler } from '../../cache_handler';
 import i18n from '../../../i18n/config';
+import { translateStat } from '../../../i18n/localization.js';
+import { CacheHandler } from '../../cache_handler';
 import { Player, UnitMetadata } from '../../player.js';
 import {
+	APLActionDamageAmplifier_AmplificationType,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
 	APLActionItemSwap_SwapSet as ItemSwapSet,
 	APLValue,
@@ -11,14 +13,12 @@ import {
 	APLValueRuneSlot,
 	APLValueRuneType,
 	APLValueVariable,
-	APLActionDamageAmplifier_AmplificationType,
 } from '../../proto/apl.js';
 import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common.js';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
 import { ActionId, defaultTargetIcon, getPetIconFromName } from '../../proto_utils/action_id.js';
 import { renameAPLReference } from '../../proto_utils/apl_utils.js';
 import { getStatName } from '../../proto_utils/names.js';
-import { translateStat } from '../../../i18n/localization.js';
 import { EventID, TypedEvent } from '../../typed_event.js';
 import { bucket, getEnumValues, randomUUID } from '../../utils.js';
 import { Input, InputConfig } from '../input.jsx';
@@ -316,8 +316,10 @@ const actionIdSets: Record<
 
 export type DEFAULT_UNIT_REF = 'self' | 'currentTarget';
 
-export interface APLActionIDPickerConfig<ModObject>
-	extends Omit<DropdownPickerConfig<ModObject, ActionID, ActionId>, 'defaultLabel' | 'equals' | 'setOptionContent' | 'values' | 'getValue' | 'setValue'> {
+export interface APLActionIDPickerConfig<ModObject> extends Omit<
+	DropdownPickerConfig<ModObject, ActionID, ActionId>,
+	'defaultLabel' | 'equals' | 'setOptionContent' | 'values' | 'getValue' | 'setValue'
+> {
 	actionIdSet: ACTION_ID_SET;
 	getUnitRef: (player: Player<any>) => UnitReference;
 	defaultUnitRef: DEFAULT_UNIT_REF;
@@ -383,17 +385,25 @@ export class APLActionIDPicker extends DropdownPicker<Player<any>, ActionID, Act
 		const defaultRef =
 			config.defaultUnitRef == 'self' ? UnitReference.create({ type: UnitType.Self }) : UnitReference.create({ type: UnitType.CurrentTarget });
 		const getActionIDs = actionIdSet.getActionIDs;
-		const updateValues = async () => {
+		let updateSeq = 0;
+		let lastMetadata: UnitMetadata | undefined;
+		const updateValues = async (force: boolean) => {
+			const seq = ++updateSeq;
 			const unitRef = getUnitRef(player);
 			const metadata = player.sim.getUnitMetadata(unitRef, player, defaultRef);
-			if (metadata) {
-				const values = await getActionIDs(metadata);
-				this.setOptions(values);
-			}
+			if (!metadata) return;
+			// The option list depends only on which metadata instance backs the
+			// unit; a rotation edit that leaves the unit alone has nothing to do.
+			if (!force && metadata === lastMetadata) return;
+			lastMetadata = metadata;
+			const values = await getActionIDs(metadata);
+			// A newer update (or disposal) happened while awaiting: drop this one.
+			if (seq !== updateSeq || this.isDisposed) return;
+			this.setOptions(values);
 		};
-		updateValues();
-		const unitMetaEvent = player.sim.unitMetadataEmitter.on(updateValues);
-		const rotationChangeEvent = player.rotationChangeEmitter.on(updateValues);
+		updateValues(true);
+		const unitMetaEvent = player.sim.unitMetadataEmitter.on(() => updateValues(true));
+		const rotationChangeEvent = player.rotationChangeEmitter.on(() => updateValues(false));
 		this.addOnDisposeCallback(() => {
 			unitMetaEvent.dispose();
 			rotationChangeEvent.dispose();
@@ -630,27 +640,28 @@ export class APLPickerBuilder<T> extends Input<Player<any>, T> {
 		fieldConfig: APLPickerBuilderFieldConfig<T, F>,
 	): APLPickerBuilderField<T, F> {
 		const field: F = fieldConfig.field;
-		const picker = fieldConfig.factory(
-			builder.rootElem,
-			builder.modObject,
-			{
-				label: fieldConfig.label,
-				labelTooltip: fieldConfig.labelTooltip,
-				id: randomUUID(),
-				changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
-				getValue: () => {
-					const source = builder.getSourceValue();
-					if (!source[field]) {
-						source[field] = fieldConfig.newValue();
-					}
-					return source[field];
+		const picker = builder.addChild(
+			fieldConfig.factory(
+				builder.rootElem,
+				builder.modObject,
+				{
+					label: fieldConfig.label,
+					labelTooltip: fieldConfig.labelTooltip,
+					id: randomUUID(),
+					getValue: () => {
+						const source = builder.getSourceValue();
+						if (!source[field]) {
+							source[field] = fieldConfig.newValue();
+						}
+						return source[field];
+					},
+					setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+						builder.getSourceValue()[field] = newValue;
+						player.rotationChangeEmitter.emit(eventID);
+					},
 				},
-				setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
-					builder.getSourceValue()[field] = newValue;
-					player.rotationChangeEmitter.emit(eventID);
-				},
-			},
-			() => builder.getSourceValue(),
+				() => builder.getSourceValue(),
+			),
 		);
 
 		if (field === 'vals' || field === 'actions') {
@@ -780,7 +791,6 @@ export function variableNameFieldConfig(field: string, options?: Partial<APLPick
 				defaultLabel: i18n.t('rotation_tab.apl.helpers.select_variable'),
 				equals: (a, b) => a === b,
 				values: [],
-				changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			});
 
 			const updateValues = () => {
@@ -803,7 +813,8 @@ export function variableNameFieldConfig(field: string, options?: Partial<APLPick
 
 			// Update values initially and when rotation changes
 			updateValues();
-			player.rotationChangeEmitter.on(updateValues);
+			const rotationEvent = player.rotationChangeEmitter.on(updateValues);
+			picker.addOnDisposeCallback(() => rotationEvent.dispose());
 
 			return picker;
 		},
@@ -973,7 +984,6 @@ export function groupNameFieldConfig(field: string, options?: Partial<APLPickerB
 				defaultLabel: i18n.t('rotation_tab.apl.helpers.select_group'),
 				equals: (a, b) => a === b,
 				values: [],
-				changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			});
 
 			const updateValues = () => {
@@ -996,7 +1006,8 @@ export function groupNameFieldConfig(field: string, options?: Partial<APLPickerB
 
 			// Update values initially and when rotation changes
 			updateValues();
-			player.rotationChangeEmitter.on(updateValues);
+			const rotationEvent = player.rotationChangeEmitter.on(updateValues);
+			picker.addOnDisposeCallback(() => rotationEvent.dispose());
 
 			return picker;
 		},
@@ -1012,25 +1023,37 @@ export function groupReferenceVariablesFieldConfig(
 	return {
 		field: field,
 		newValue: () => [],
-		factory: (parent, player, config, getParentValue) => {
-			// Create a simple container
-			const container = document.createElement('div');
-			container.classList.add('group-reference-variables-container');
-			parent.appendChild(container);
+		factory: (parent, player, config, getParentValue) => new APLGroupVariablesPicker(parent, player, config, getParentValue, groupNameField),
+		...(options || {}),
+	};
+}
 
-			// Create a ListPicker for the variables
-			const listPicker = new ListPicker(container, player, {
+// Auto-populated list of the variables a group reference passes to its group.
+class APLGroupVariablesPicker extends Input<Player<any>, any[]> {
+	private readonly listPicker: ListPicker<Player<any>, any>;
+	private readonly getParentValue: () => any;
+	private readonly groupNameField: string;
+
+	constructor(parent: HTMLElement, player: Player<any>, config: any, getParentValue: () => any, groupNameField: string) {
+		// The inner ListPicker renders the title; don't let Input render a second label.
+		const { label: _label, labelTooltip: _labelTooltip, ...inputConfig } = config;
+		super(parent, 'group-reference-variables-container', player, inputConfig);
+		this.getParentValue = getParentValue;
+		this.groupNameField = groupNameField;
+
+		// Reconcile once up front so the ListPicker's init() builds the final item set.
+		this.reconcile();
+
+		this.listPicker = this.addChild(
+			new ListPicker(this.rootElem, player, {
 				title: 'Group Variables',
 				titleTooltip: "Variables to pass to the group. These will override the group's internal variables.",
 				itemLabel: 'Variable',
-				changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
-				getValue: () => {
-					const parentValue = getParentValue();
-					return parentValue?.variables || [];
-				},
+				// Copy: ListPicker splices its input in place before calling setValue.
+				getValue: () => this.getInputValue(),
 				setValue: (eventID: EventID, player: Player<any>, newValue: any[]) => {
-					const parentValue = getParentValue();
-					parentValue.variables = newValue;
+					const parentValue = this.getParentValue();
+					if (parentValue) parentValue.variables = newValue;
 					config.setValue(eventID, player, newValue);
 				},
 				newItem: () => {
@@ -1042,115 +1065,95 @@ export function groupReferenceVariablesFieldConfig(
 				}),
 				newItemPicker: (
 					parent: HTMLElement,
-					listPicker: ListPicker<Player<any>, any>,
+					_listPicker: ListPicker<Player<any>, any>,
 					index: number,
 					itemConfig: ListItemPickerConfig<Player<any>, any>,
 				) => {
-					const currentVariables = getParentValue()?.variables || [];
+					const currentVariables = this.getParentValue()?.variables || [];
 					const variableName = currentVariables[index]?.__uiVarName || currentVariables[index]?.name || '';
-					return new APLGroupVariablePicker(parent, player, itemConfig, getParentValue, groupNameField, variableName);
+					return new APLGroupVariablePicker(parent, player, itemConfig, this.getParentValue, this.groupNameField, variableName);
 				},
 				inlineMenuBar: false, // Hide the add/remove buttons since we auto-populate
 				allowedActions: ['delete', 'copy'], // Only allow delete and copy, not create
-			});
+			}),
+		);
+	}
 
-			// Function to update the list based on the selected group
-			const updateVariableList = () => {
-				const parentValue = getParentValue();
-				const selectedGroupName = parentValue[groupNameField];
+	// Scans the selected group for variable placeholders and syncs
+	// parentValue.variables to that set (keeping existing assignments). Returns
+	// the parent value, or null when there is nothing to show.
+	private reconcile(): any | null {
+		const parentValue = this.getParentValue();
+		const selectedGroupName = parentValue?.[this.groupNameField];
+		if (!selectedGroupName) {
+			this.rootElem.classList.add('d-none');
+			return null;
+		}
+		const groups = this.modObject.aplRotation?.groups || [];
+		const selectedGroup = groups.find((group: any) => group.name === selectedGroupName);
+		if (!selectedGroup) {
+			this.rootElem.classList.add('d-none');
+			return null;
+		}
 
-				if (!selectedGroupName) {
-					listPicker.setInputValue([]);
-					container.classList.add('d-none');
-					return;
-				}
+		const placeholderVariables = new Set<string>();
+		const scanForPlaceholders = (obj: any) => {
+			if (!obj || typeof obj !== 'object') return;
+			if (obj?.value?.oneofKind === 'variablePlaceholder') {
+				const name = obj.value.variablePlaceholder?.name;
+				if (name) placeholderVariables.add(name);
+			}
+			if (Array.isArray(obj)) {
+				obj.forEach(child => scanForPlaceholders(child));
+			} else {
+				Object.values(obj).forEach(child => scanForPlaceholders(child));
+			}
+		};
+		selectedGroup.actions?.forEach((actionItem: any) => scanForPlaceholders(actionItem));
 
-				// Find the selected group
-				const groups = player.aplRotation?.groups || [];
-				const selectedGroup = groups.find((group: any) => group.name === selectedGroupName);
+		if (placeholderVariables.size === 0) {
+			this.rootElem.classList.add('d-none');
+			return null;
+		}
+		this.rootElem.classList.remove('d-none');
 
-				if (!selectedGroup) {
-					listPicker.setInputValue([]);
-					container.classList.add('d-none');
-					return;
-				}
-
-				// Prepare a set and recursive scanner for VariablePlaceholder values.
-				const placeholderVariables = new Set<string>();
-				const scanForPlaceholders = (obj: any) => {
-					if (!obj || typeof obj !== 'object') return;
-					// Detect a variable placeholder APLValue.
-					if (obj?.value?.oneofKind === 'variablePlaceholder') {
-						const name = obj.value.variablePlaceholder?.name;
-						if (name) placeholderVariables.add(name);
-					}
-					// Recurse through arrays and object properties.
-					if (Array.isArray(obj)) {
-						obj.forEach(child => scanForPlaceholders(child));
-					} else {
-						Object.values(obj).forEach(child => scanForPlaceholders(child));
-					}
+		const existing: any[] = parentValue.variables || [];
+		const reconciled = Array.from(placeholderVariables).map(varName => {
+			let variableItem = existing.find((v: any) => v.name === varName);
+			if (!variableItem) {
+				variableItem = {
+					name: varName,
+					value: {
+						uuid: { value: randomUUID() },
+						value: {
+							oneofKind: 'variableRef',
+							variableRef: { name: '' },
+						},
+					},
 				};
+			}
+			variableItem.__uiVarName = varName;
+			return variableItem;
+		});
+		parentValue.variables = reconciled;
+		return parentValue;
+	}
 
-				// Perform a full recursive scan on every action in the group.
-				selectedGroup.actions?.forEach((actionItem: any) => {
-					scanForPlaceholders(actionItem);
-				});
+	getInputElem(): HTMLElement | null {
+		return this.rootElem;
+	}
 
-				// Hide the container if no placeholder variables found
-				if (placeholderVariables.size === 0) {
-					container.classList.add('d-none');
-					listPicker.setInputValue([]);
-					return;
-				}
+	getInputValue(): any[] {
+		return (this.getParentValue()?.variables || []).slice();
+	}
 
-				// Show the container and populate variables
-				container.classList.remove('d-none');
-
-				parentValue.variables = Array.from(placeholderVariables).map(varName => {
-					// Find existing variable or create new one
-					let variableItem = parentValue?.variables.find((v: any) => v.name === varName);
-					if (!variableItem) {
-						variableItem = {
-							name: varName,
-							value: {
-								uuid: { value: randomUUID() },
-								value: {
-									oneofKind: 'variableRef',
-									variableRef: { name: '' },
-								},
-							},
-						};
-					}
-					// Attach UI variable name for label
-					variableItem.__uiVarName = varName;
-					return variableItem;
-				});
-
-				// Clear first to force picker recreation — labels are set in
-				// the constructor and won't update on reuse.
-				listPicker.setInputValue([]);
-				listPicker.setInputValue(parentValue.variables);
-			};
-
-			// Listen for group name changes and rotation changes
-			player.rotationChangeEmitter.on(updateVariableList);
-			updateVariableList();
-
-			return {
-				rootElem: container,
-				getInputValue: () => {
-					const parentValue = getParentValue();
-					return parentValue?.variables || [];
-				},
-				setInputValue: (newValue: any[]) => {
-					const parentValue = getParentValue();
-					parentValue.variables = newValue;
-				},
-			} as any;
-		},
-		...(options || {}),
-	};
+	setInputValue(newValue: any[]) {
+		const parentValue = this.getParentValue();
+		if (parentValue) parentValue.variables = newValue;
+		this.reconcile();
+		// Cascade to the nested list (its items no longer self-subscribe).
+		this.listPicker.setInputValue(this.getInputValue());
+	}
 }
 
 // Simple picker for individual group variables
@@ -1158,7 +1161,8 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 	private readonly valuePicker: TextDropdownPicker<Player<any>, string>;
 	private readonly getParentValue: () => any;
 	private readonly groupNameField: string;
-	private readonly variableName: string;
+	private readonly nameLabel: HTMLElement;
+	private variableName: string;
 
 	constructor(
 		parent: HTMLElement,
@@ -1173,42 +1177,42 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 		this.groupNameField = groupNameField;
 		this.variableName = variableName;
 
-		// Create label for the variable name
-		const label = document.createElement('label');
-		label.textContent = `${this.variableName}:`;
-		label.classList.add('group-variable-label', 'fw-bold', 'd-block');
-		this.rootElem.appendChild(label);
+		// Label for the variable name (kept current by setInputValue when the row is reused).
+		this.nameLabel = document.createElement('label');
+		this.nameLabel.classList.add('group-variable-label', 'fw-bold', 'd-block');
+		this.rootElem.appendChild(this.nameLabel);
 
 		// Variable value picker
-		this.valuePicker = new TextDropdownPicker(this.rootElem, this.modObject, {
-			id: randomUUID(),
-			label: '',
-			labelTooltip: i18n.t('rotation_tab.apl.helpers.field_configs.variable_assignment_tooltip', { variableName: this.variableName }),
-			defaultLabel: i18n.t('rotation_tab.apl.helpers.select_variable'),
-			equals: (a, b) => a === b,
-			values: [],
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
-			getValue: () => {
-				const item = this.getSourceValue();
-				if (item?.value?.value?.variableRef?.name) {
-					return item.value.value.variableRef.name;
-				}
-				return '';
-			},
-			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
-				const item = this.getSourceValue();
-				if (item && newValue) {
-					item.value = {
-						uuid: { value: randomUUID() },
-						value: {
-							oneofKind: 'variableRef',
-							variableRef: { name: newValue },
-						},
-					};
-					player.rotationChangeEmitter.emit(eventID);
-				}
-			},
-		});
+		this.valuePicker = this.addChild(
+			new TextDropdownPicker(this.rootElem, this.modObject, {
+				id: randomUUID(),
+				label: '',
+				labelTooltip: i18n.t('rotation_tab.apl.helpers.field_configs.variable_assignment_tooltip', { variableName: this.variableName }),
+				defaultLabel: i18n.t('rotation_tab.apl.helpers.select_variable'),
+				equals: (a, b) => a === b,
+				values: [],
+				getValue: () => {
+					const item = this.getSourceValue();
+					if (item?.value?.value?.variableRef?.name) {
+						return item.value.value.variableRef.name;
+					}
+					return '';
+				},
+				setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
+					const item = this.getSourceValue();
+					if (item && newValue) {
+						item.value = {
+							uuid: { value: randomUUID() },
+							value: {
+								oneofKind: 'variableRef',
+								variableRef: { name: newValue },
+							},
+						};
+						player.rotationChangeEmitter.emit(eventID);
+					}
+				},
+			}),
+		);
 
 		// Update available variables when group changes
 		const updateAvailableVariables = () => {
@@ -1231,7 +1235,8 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 		};
 
 		// Listen for group name changes
-		this.modObject.rotationChangeEmitter.on(updateAvailableVariables);
+		const rotationEvent = this.modObject.rotationChangeEmitter.on(updateAvailableVariables);
+		this.addOnDisposeCallback(() => rotationEvent.dispose());
 		updateAvailableVariables();
 
 		this.init();
@@ -1250,7 +1255,9 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 
 	setInputValue(newValue: any) {
 		if (!newValue) return;
-		// The value picker will be updated via the change event
+		this.variableName = newValue.__uiVarName || newValue.name || this.variableName;
+		this.nameLabel.textContent = `${this.variableName}:`;
+		this.valuePicker.setInputValue(newValue.value?.value?.variableRef?.name || '');
 	}
 }
 

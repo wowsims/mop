@@ -80,7 +80,6 @@ export class GearTab extends SimTab {
 				});
 			},
 			changeEmitters: [this.simUI.player.changeEmitter],
-			equals: (a: SavedGearSet, b: SavedGearSet) => SavedGearSet.equals(a, b),
 			toJson: (a: SavedGearSet) => SavedGearSet.toJson(a),
 			fromJson: (obj: any) => SavedGearSet.fromJson(obj),
 		});

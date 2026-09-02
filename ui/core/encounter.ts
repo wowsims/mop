@@ -160,7 +160,7 @@ export class Encounter {
 			this.setExecuteProportion45(eventID, proto.executeProportion45);
 			this.setExecuteProportion90(eventID, proto.executeProportion90);
 			this.setUseHealth(eventID, proto.useHealth);
-			this.targets = proto.targets;
+			this.targets = proto.targets.map(t => TargetProto.clone(t));
 			this.targetsChangeEmitter.emit(eventID);
 		});
 	}

@@ -11,6 +11,7 @@ import { Input, InputConfig } from '../input.js';
 // ModObject is the object being modified (Sim, Player, or Target).
 // ValueType is either number or boolean.
 export interface IconPickerConfig<ModObject, ValueType> extends InputConfig<ModObject, ValueType> {
+	changedEvent: (obj: ModObject) => TypedEvent<any>;
 	actionId: ActionId;
 
 	// The number of possible 'states' this icon can have. Most inputs will use 2
@@ -85,10 +86,10 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 		this.improvedAnchor2 = ia2.value!;
 		this.counterElem = ce.value!;
 
-		this.updateButtonImage()
+		this.updateButtonImage();
 
 		const event = this.config.changedEvent(this.modObject).on(() => {
-			this.updateButtonImage()
+			this.updateButtonImage();
 
 			if (this.showWhen()) {
 				this.rootElem.classList.remove('hide');

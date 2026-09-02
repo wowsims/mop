@@ -1,10 +1,11 @@
 import { Dropdown } from 'bootstrap';
 import clsx from 'clsx';
+import { shallowEqualArrays, shallowEqualObjects } from 'shallow-equal';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { TypedEvent } from '../../typed_event.js';
-import { existsInDOM } from '../../utils.js';
+import { arrayEquals, existsInDOM } from '../../utils.js';
 import { Input, InputConfig } from '../input.js';
 import i18n from '../../../i18n/config';
 
@@ -106,9 +107,29 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 			return;
 		}
 
-		this.valueConfigs = newValueConfigs.filter(vc => !vc.headerText);
+		const filtered = newValueConfigs.filter(vc => !vc.headerText);
+		// Keep the existing config objects when nothing changed: every APL
+		// action-id picker refreshes its options on each rotation change, and a
+		// fresh-but-equal list would force a button re-render per picker.
+		if (arrayEquals(filtered, this.valueConfigs, (a, b) => this.isSameOption(a, b))) {
+			return;
+		}
+		this.valueConfigs = filtered;
 		this.setInputValue(this.getSourceValue());
 		return;
+	}
+
+	// True when two option configs would render identically: equal values plus
+	// identical display fields, including those of an object value (e.g. a
+	// UnitValue's text/icon/color, which `equals` deliberately ignores).
+	private isSameOption(a: DropdownValueConfig<V>, b: DropdownValueConfig<V>): boolean {
+		const { value: aValue, submenu: aSubmenu, extraCssClasses: aClasses, ...aRest } = a;
+		const { value: bValue, submenu: bSubmenu, extraCssClasses: bClasses, ...bRest } = b;
+		if (!this.config.equals(aValue, bValue)) return false;
+		// The array fields are rebuilt per refresh, so compare them by content.
+		if (!shallowEqualObjects(aRest, bRest) || !shallowEqualArrays(aSubmenu, bSubmenu) || !shallowEqualArrays(aClasses, bClasses)) return false;
+		if (aValue === bValue || typeof aValue !== 'object' || aValue === null || typeof bValue !== 'object' || bValue === null) return true;
+		return shallowEqualObjects(aValue as Record<string, unknown>, bValue as Record<string, unknown>);
 	}
 
 	resetDropdown() {
@@ -243,7 +264,10 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 		return this.valueToSource(this.currentSelection?.value as V);
 	}
 
+	private setValueSeq = 0;
+
 	setInputValue(newSrcValue: T) {
+		const seq = ++this.setValueSeq;
 		const newValue = this.sourceToValue(newSrcValue);
 		const newSelection = this.valueConfigs.find(v => this.config.equals(v.value, newValue))!;
 		if (newSelection) {
@@ -251,13 +275,22 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 		} else if (newValue == null) {
 			this.updateValue(null);
 		} else if (this.config.createMissingValue) {
-			this.config.createMissingValue(newValue).then(newSelection => this.updateValue(newSelection));
+			this.config.createMissingValue(newValue).then(newSelection => {
+				// A newer setInputValue (or disposal) happened while awaiting.
+				if (seq !== this.setValueSeq || this.isDisposed) return;
+				this.updateValue(newSelection);
+			});
 		} else {
 			this.updateValue(null);
 		}
 	}
 
 	private updateValue(newValue: DropdownValueConfig<V> | null) {
+		// Same selection object as already rendered: nothing to do. This is the
+		// hot path when a rotation edit re-syncs every dropdown in the APL editor.
+		if (newValue && newValue === this.currentSelection) {
+			return;
+		}
 		this.currentSelection = newValue;
 
 		// Update button

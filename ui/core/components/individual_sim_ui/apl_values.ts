@@ -1,21 +1,31 @@
-import { Player } from '../../player.js';
+import i18n from '../../../i18n/config';
 import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
+import { Player } from '../../player.js';
 import {
 	APLValue,
+	APLValueActionGroupUsed,
+	APLValueActiveItemSwapSet,
+	APLValueAfflictionCurrentSnapshot,
+	APLValueAfflictionExhaleWindow,
 	APLValueAllTrinketStatProcsActive,
-	APLValueAnyTrinketStatProcsAvailable,
 	APLValueAnd,
 	APLValueAnyStatBuffCooldownsActive,
 	APLValueAnyStatBuffCooldownsMinDuration,
 	APLValueAnyTrinketStatProcsActive,
+	APLValueAnyTrinketStatProcsAvailable,
+	APLValueAuraICDIsReady,
 	APLValueAuraInternalCooldown,
 	APLValueAuraIsActive,
+	APLValueAuraIsInactive,
 	APLValueAuraIsKnown,
 	APLValueAuraNumStacks,
 	APLValueAuraRemainingTime,
 	APLValueAuraShouldRefresh,
 	APLValueAutoTimeToNext,
+	APLValueBossCurrentTarget,
+	APLValueBossSpellCastTimeRemaining,
 	APLValueBossSpellIsCasting,
+	APLValueBossSpellIsKnown,
 	APLValueBossSpellTimeToReady,
 	APLValueCatExcessEnergy,
 	APLValueCatNewSavageRoarDuration,
@@ -42,18 +52,20 @@ import {
 	APLValueCurrentSolarEnergy,
 	APLValueCurrentTime,
 	APLValueCurrentTimePercent,
+	APLValueDotBaseDuration,
 	APLValueDotIsActive,
 	APLValueDotIsActiveOnAllTargets,
 	APLValueDotLowestRemainingTime,
 	APLValueDotPercentIncrease,
 	APLValueDotRemainingTime,
 	APLValueDotTickFrequency,
-	APLValueAfflictionCurrentSnapshot,
+	APLValueDotTimeToNextTick,
 	APLValueEnergyRegenPerSecond,
 	APLValueEnergyTimeToTarget,
 	APLValueFocusRegenPerSecond,
 	APLValueFocusTimeToTarget,
 	APLValueFrontOfTarget,
+	APLValueFullRuneCooldown,
 	APLValueGCDIsReady,
 	APLValueGCDTimeToReady,
 	APLValueInputDelay,
@@ -73,13 +85,13 @@ import {
 	APLValueMonkCurrentChi,
 	APLValueMonkMaxChi,
 	APLValueNextRuneCooldown,
-	APLValueFullRuneCooldown,
 	APLValueNot,
 	APLValueNumberTargets,
 	APLValueNumEquippedStatProcTrinkets,
 	APLValueNumStatBuffCooldowns,
 	APLValueOr,
 	APLValueProtectionPaladinDamageTakenLastGlobal,
+	APLValueRemainingCastTime,
 	APLValueRemainingTime,
 	APLValueRemainingTimePercent,
 	APLValueRuneCooldown,
@@ -93,6 +105,10 @@ import {
 	APLValueSpellChanneledTicks,
 	APLValueSpellCPM,
 	APLValueSpellCurrentCost,
+	APLValueSpellFullCooldown,
+	APLValueSpellGCDHastedDuration,
+	APLValueSpellInFlight,
+	APLValueSpellIsCasting,
 	APLValueSpellIsChanneling,
 	APLValueSpellIsKnown,
 	APLValueSpellIsReady,
@@ -108,21 +124,6 @@ import {
 	APLValueVariablePlaceholder,
 	APLValueWarlockHandOfGuldanInFlight,
 	APLValueWarlockHauntInFlight,
-	APLValueAfflictionExhaleWindow,
-	APLValueAuraIsInactive,
-	APLValueAuraICDIsReady,
-	APLValueActiveItemSwapSet,
-	APLValueDotBaseDuration,
-	APLValueSpellGCDHastedDuration,
-	APLValueSpellFullCooldown,
-	APLValueDotTimeToNextTick,
-	APLValueSpellInFlight,
-	APLValueBossCurrentTarget,
-	APLValueBossSpellIsKnown,
-	APLValueBossSpellCastTimeRemaining,
-	APLValueSpellIsCasting,
-	APLValueRemainingCastTime,
-	APLValueActionGroupUsed,
 } from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
@@ -132,7 +133,6 @@ import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import i18n from '../../../i18n/config';
 import * as AplHelpers from './apl_helpers.js';
 
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
@@ -178,102 +178,105 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 			);
 		}
 
-		this.kindPicker = new TextDropdownPicker(this.rootElem, player, {
-			defaultLabel: i18n.t('rotation_tab.apl.values.no_condition'),
-			id: randomUUID(),
-			values: [
-				{
-					value: undefined,
-					label: i18n.t('rotation_tab.apl.values.none'),
-				} as TextDropdownValueConfig<APLValueKind>,
-			].concat(
-				allValueKinds.map(kind => {
-					const factory = valueKindFactories[kind];
-					const resolveString = factory.dynamicStringResolver || ((value: string) => value);
-					return {
-						value: kind,
-						label: resolveString(factory.label, player),
-						submenu: factory.submenu,
-						tooltip: factory.fullDescription
-							? `<p>${resolveString(factory.shortDescription, player)}</p> ${resolveString(factory.fullDescription, player)}`
-							: resolveString(factory.shortDescription, player),
-					};
-				}),
-			),
-			equals: (a, b) => a == b,
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
-			getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
-			setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
-				const sourceValue = this.getSourceValue();
-				const oldKind = sourceValue?.value.oneofKind;
-				if (oldKind == newKind) {
-					return;
-				}
+		this.kindPicker = this.addChild(
+			new TextDropdownPicker(this.rootElem, player, {
+				defaultLabel: i18n.t('rotation_tab.apl.values.no_condition'),
+				id: randomUUID(),
+				values: [
+					{
+						value: undefined,
+						label: i18n.t('rotation_tab.apl.values.none'),
+					} as TextDropdownValueConfig<APLValueKind>,
+				].concat(
+					allValueKinds.map(kind => {
+						const factory = valueKindFactories[kind];
+						const resolveString = factory.dynamicStringResolver || ((value: string) => value);
+						return {
+							value: kind,
+							label: resolveString(factory.label, player),
+							submenu: factory.submenu,
+							tooltip: factory.fullDescription
+								? `<p>${resolveString(factory.shortDescription, player)}</p> ${resolveString(factory.fullDescription, player)}`
+								: resolveString(factory.shortDescription, player),
+						};
+					}),
+				),
+				equals: (a, b) => a == b,
+				getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
+				setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
+					const sourceValue = this.getSourceValue();
+					const oldKind = sourceValue?.value.oneofKind;
+					if (oldKind == newKind) {
+						return;
+					}
 
-				if (newKind) {
-					const factory = valueKindFactories[newKind];
-					let newSourceValue = this.makeAPLValue(newKind, factory.newValue());
-					if (sourceValue) {
-						// Some pre-fill logic when swapping kinds.
-						if (oldKind && this.valuePicker) {
-							if (newKind == 'not') {
-								(newSourceValue.value as APLValueImplStruct<'not'>).not.val = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
-							} else if (sourceValue.value.oneofKind == 'not' && sourceValue.value.not.val?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.not.val;
-							} else if (newKind == 'and') {
-								if (sourceValue.value.oneofKind == 'or') {
-									(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = sourceValue.value.or.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = [
-										this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
-									];
+					if (newKind) {
+						const factory = valueKindFactories[newKind];
+						let newSourceValue = this.makeAPLValue(newKind, factory.newValue());
+						if (sourceValue) {
+							// Some pre-fill logic when swapping kinds.
+							if (oldKind && this.valuePicker) {
+								if (newKind == 'not') {
+									(newSourceValue.value as APLValueImplStruct<'not'>).not.val = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
+								} else if (sourceValue.value.oneofKind == 'not' && sourceValue.value.not.val?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.not.val;
+								} else if (newKind == 'and') {
+									if (sourceValue.value.oneofKind == 'or') {
+										(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = sourceValue.value.or.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (newKind == 'or') {
+									if (sourceValue.value.oneofKind == 'and') {
+										(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = sourceValue.value.and.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (newKind == 'min') {
+									if (sourceValue.value.oneofKind == 'max') {
+										(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = sourceValue.value.max.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (newKind == 'max') {
+									if (sourceValue.value.oneofKind == 'min') {
+										(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = sourceValue.value.min.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (sourceValue.value.oneofKind == 'and' && sourceValue.value.and.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.and.vals[0];
+								} else if (sourceValue.value.oneofKind == 'or' && sourceValue.value.or.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.or.vals[0];
+								} else if (sourceValue.value.oneofKind == 'min' && sourceValue.value.min.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.min.vals[0];
+								} else if (sourceValue.value.oneofKind == 'max' && sourceValue.value.max.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.max.vals[0];
+								} else if (newKind == 'cmp') {
+									(newSourceValue.value as APLValueImplStruct<'cmp'>).cmp.lhs = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
 								}
-							} else if (newKind == 'or') {
-								if (sourceValue.value.oneofKind == 'and') {
-									(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = sourceValue.value.and.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = [this.makeAPLValue(oldKind, this.valuePicker.getInputValue())];
-								}
-							} else if (newKind == 'min') {
-								if (sourceValue.value.oneofKind == 'max') {
-									(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = sourceValue.value.max.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = [
-										this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
-									];
-								}
-							} else if (newKind == 'max') {
-								if (sourceValue.value.oneofKind == 'min') {
-									(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = sourceValue.value.min.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = [
-										this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
-									];
-								}
-							} else if (sourceValue.value.oneofKind == 'and' && sourceValue.value.and.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.and.vals[0];
-							} else if (sourceValue.value.oneofKind == 'or' && sourceValue.value.or.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.or.vals[0];
-							} else if (sourceValue.value.oneofKind == 'min' && sourceValue.value.min.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.min.vals[0];
-							} else if (sourceValue.value.oneofKind == 'max' && sourceValue.value.max.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.max.vals[0];
-							} else if (newKind == 'cmp') {
-								(newSourceValue.value as APLValueImplStruct<'cmp'>).cmp.lhs = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
 							}
 						}
-					}
-					if (sourceValue) {
-						sourceValue.value = newSourceValue.value;
+						if (sourceValue) {
+							sourceValue.value = newSourceValue.value;
+						} else {
+							this.setSourceValue(eventID, newSourceValue);
+						}
 					} else {
-						this.setSourceValue(eventID, newSourceValue);
+						this.setSourceValue(eventID, undefined);
 					}
-				} else {
-					this.setSourceValue(eventID, undefined);
-				}
-				player.rotationChangeEmitter.emit(eventID);
-			},
-		});
+					player.rotationChangeEmitter.emit(eventID);
+				},
+			}),
+		);
 
 		this.currentKind = undefined;
 		this.valuePicker = null;
@@ -344,9 +347,10 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 			return;
 		}
 		this.currentKind = newKind;
+		this.kindPicker.setInputValue(newKind);
 
 		if (this.valuePicker) {
-			this.valuePicker.rootElem.remove();
+			this.removeChild(this.valuePicker);
 			this.valuePicker = null;
 		}
 
@@ -354,12 +358,9 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 			return;
 		}
 
-		this.kindPicker.setInputValue(newKind);
-
 		const factory = valueKindFactories[newKind];
 		this.valuePicker = factory.factory(this.rootElem, this.modObject, {
 			id: randomUUID(),
-			changedEvent: (player: Player<any>) => player.rotationChangeEmitter,
 			getValue: () => {
 				const sourceVal = this.getSourceValue();
 				return sourceVal ? (sourceVal.value as any)[newKind] || factory.newValue() : factory.newValue();
@@ -372,6 +373,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				player.rotationChangeEmitter.emit(eventID);
 			},
 		});
+		this.addChild(this.valuePicker);
 	}
 }
 
@@ -955,7 +957,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		submenu: ['resources', 'eclipse'],
 		shortDescription: i18n.t('rotation_tab.apl.values.solar_energy.tooltip'),
 		newValue: APLValueCurrentSolarEnergy.create,
-		includeIf: (player: Player<any>, _isPrepull: boolean) =>  player.getSpec() == Spec.SpecBalanceDruid,
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecBalanceDruid,
 		fields: [],
 	}),
 	currentLunarEnergy: inputBuilder({
@@ -963,7 +965,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		submenu: ['resources', 'eclipse'],
 		shortDescription: i18n.t('rotation_tab.apl.values.lunar_energy.tooltip'),
 		newValue: APLValueCurrentLunarEnergy.create,
-		includeIf: (player: Player<any>, _isPrepull: boolean) =>  player.getSpec() == Spec.SpecBalanceDruid,
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecBalanceDruid,
 		fields: [],
 	}),
 	druidCurrentEclipsePhase: inputBuilder({
@@ -971,7 +973,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		submenu: ['resources', 'eclipse'],
 		shortDescription: i18n.t('rotation_tab.apl.values.current_eclipse_phase.tooltip'),
 		newValue: APLValueCurrentEclipsePhase.create,
-		includeIf: (player: Player<any>, _isPrepull: boolean) =>  player.getSpec() == Spec.SpecBalanceDruid,
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecBalanceDruid,
 		fields: [AplHelpers.eclipseTypeFieldConfig('eclipsePhase')],
 	}),
 	currentGenericResource: inputBuilder({

@@ -28,6 +28,7 @@ export interface IconEnumValueConfig<ModObject, T> {
 }
 
 export interface IconEnumPickerConfig<ModObject, T> extends InputConfig<ModObject, T> {
+	changedEvent: (obj: ModObject) => TypedEvent<any>;
 	numColumns?: number;
 	values: Array<IconEnumValueConfig<ModObject, T>>;
 	// Value that will be considered inactive.

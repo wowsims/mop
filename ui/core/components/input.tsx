@@ -18,8 +18,9 @@ export interface InputConfig<ModObject, T, V = T> {
 
 	defaultValue?: T;
 
-	// Returns the event indicating the mapped value has changed.
-	changedEvent: (obj: ModObject) => TypedEvent<any>;
+	// Returns the event indicating the mapped value has changed. Omit for inputs
+	// whose parent keeps them in sync via refresh() (e.g. nested APL pickers).
+	changedEvent?: (obj: ModObject) => TypedEvent<any>;
 
 	// Get and set the mapped value.
 	getValue: (obj: ModObject) => T;
@@ -65,19 +66,18 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 		if (config.label) this.rootElem.appendChild(this.buildLabel(config));
 		if (config.description) this.rootElem.appendChild(this.buildDescription(config));
 
-		const event = config.changedEvent(this.modObject).on(() => {
+		const event = config.changedEvent?.(this.modObject).on(() => {
 			const element = this.getInputElem();
 			if (!existsInDOM(element) || !existsInDOM(this.rootElem)) {
 				this.dispose();
 				return;
 			}
-			this.setInputValue(this.getSourceValue());
-			this.update();
+			this.refresh();
 		});
 
 		this.addOnDisposeCallback(() => {
 			this.abortController?.abort();
-			event.dispose();
+			event?.dispose();
 		});
 	}
 
@@ -120,6 +120,12 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 		} else {
 			this.rootElem.classList.add('hide');
 		}
+	}
+
+	// Re-reads the mapped value from the source and re-applies enable/show state.
+	refresh() {
+		this.setInputValue(this.getSourceValue());
+		this.update();
 	}
 
 	// Can't call abstract functions in constructor, so need an init() call.
