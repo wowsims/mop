@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class AssassinationRogue extends PlayerSpec<Spec.SpecAssassinationRogue> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class AssassinationRogue extends PlayerSpec<Spec.SpecAssassinationRogue> 
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = AssassinationRogue.specIndex;
 	readonly specID = AssassinationRogue.specID;
 	readonly classID = AssassinationRogue.classID;
@@ -30,6 +35,8 @@ export class AssassinationRogue extends PlayerSpec<Spec.SpecAssassinationRogue> 
 	readonly isMeleeDpsSpec = AssassinationRogue.isMeleeDpsSpec;
 
 	readonly canDualWield = AssassinationRogue.canDualWield;
+
+	readonly launch = AssassinationRogue.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_rogue_eviscerate.jpg`;
@@ -54,6 +61,11 @@ export class CombatRogue extends PlayerSpec<Spec.SpecCombatRogue> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = CombatRogue.specIndex;
 	readonly specID = CombatRogue.specID;
 	readonly classID = CombatRogue.classID;
@@ -66,6 +78,8 @@ export class CombatRogue extends PlayerSpec<Spec.SpecCombatRogue> {
 	readonly isMeleeDpsSpec = CombatRogue.isMeleeDpsSpec;
 
 	readonly canDualWield = CombatRogue.canDualWield;
+
+	readonly launch = CombatRogue.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_backstab.jpg`;
@@ -90,6 +104,11 @@ export class SubtletyRogue extends PlayerSpec<Spec.SpecSubtletyRogue> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = SubtletyRogue.specIndex;
 	readonly specID = SubtletyRogue.specID;
 	readonly classID = SubtletyRogue.classID;
@@ -102,6 +121,8 @@ export class SubtletyRogue extends PlayerSpec<Spec.SpecSubtletyRogue> {
 	readonly isMeleeDpsSpec = SubtletyRogue.isMeleeDpsSpec;
 
 	readonly canDualWield = SubtletyRogue.canDualWield;
+
+	readonly launch = SubtletyRogue.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_stealth.jpg`;

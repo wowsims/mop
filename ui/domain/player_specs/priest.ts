@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class DisciplinePriest extends PlayerSpec<Spec.SpecDisciplinePriest> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class DisciplinePriest extends PlayerSpec<Spec.SpecDisciplinePriest> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase1,
+		status: LaunchStatus.Unlaunched,
+	};
+
 	readonly specIndex = DisciplinePriest.specIndex;
 	readonly specID = DisciplinePriest.specID;
 	readonly classID = DisciplinePriest.classID;
@@ -30,6 +35,8 @@ export class DisciplinePriest extends PlayerSpec<Spec.SpecDisciplinePriest> {
 	readonly isMeleeDpsSpec = DisciplinePriest.isMeleeDpsSpec;
 
 	readonly canDualWield = DisciplinePriest.canDualWield;
+
+	readonly launch = DisciplinePriest.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_holy_powerwordshield.jpg`;
@@ -54,6 +61,11 @@ export class HolyPriest extends PlayerSpec<Spec.SpecHolyPriest> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase1,
+		status: LaunchStatus.Unlaunched,
+	};
+
 	readonly specIndex = HolyPriest.specIndex;
 	readonly specID = HolyPriest.specID;
 	readonly classID = HolyPriest.classID;
@@ -66,6 +78,8 @@ export class HolyPriest extends PlayerSpec<Spec.SpecHolyPriest> {
 	readonly isMeleeDpsSpec = HolyPriest.isMeleeDpsSpec;
 
 	readonly canDualWield = HolyPriest.canDualWield;
+
+	readonly launch = HolyPriest.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_holy_guardianspirit.jpg`;
@@ -90,6 +104,11 @@ export class ShadowPriest extends PlayerSpec<Spec.SpecShadowPriest> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = ShadowPriest.specIndex;
 	readonly specID = ShadowPriest.specID;
 	readonly classID = ShadowPriest.classID;
@@ -102,6 +121,8 @@ export class ShadowPriest extends PlayerSpec<Spec.SpecShadowPriest> {
 	readonly isMeleeDpsSpec = ShadowPriest.isMeleeDpsSpec;
 
 	readonly canDualWield = ShadowPriest.canDualWield;
+
+	readonly launch = ShadowPriest.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_shadow_shadowwordpain.jpg`;

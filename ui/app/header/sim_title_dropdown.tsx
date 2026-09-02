@@ -1,4 +1,4 @@
-import { Class, Spec } from '@core/proto/common';
+import { Class } from '@core/proto/common';
 import { PlayerClass } from '@domain/player_class';
 import { PlayerClasses } from '@domain/player_classes/index';
 import { PlayerSpec } from '@domain/player_spec';
@@ -9,8 +9,6 @@ import { translatePlayerClass, translatePlayerSpec, translateStatus } from '@i18
 import { Component } from '@ui-kit/component';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
-
-import { simLaunchStatuses } from '../launched_sims';
 
 interface ClassOptions {
 	type: 'Class';
@@ -133,8 +131,8 @@ export class SimTitleDropdown extends Component {
 	}
 
 	private launchStatusLabel(data: SpecOptions) {
-		const status = simLaunchStatuses[data.spec.specID as Spec].status;
-		const phase = simLaunchStatuses[data.spec.specID as Spec].phase;
+		const status = data.spec.launch.status;
+		const phase = data.spec.launch.phase;
 
 		return (
 			<span className="launch-status-label text-brand">

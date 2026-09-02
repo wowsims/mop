@@ -35,7 +35,7 @@ ui/
                      header/ (sim_header, sim_title_dropdown, social_links), settings_menu.tsx,
                      tabs/ (gear_tab, talents_tab, rotation_tab, settings_tab),
                      notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a),
-                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx
+                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx
                      (PR 6b). alias @app
   i18n/              EXISTS. LEAF: framework-agnostic i18next config + localization tables
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
@@ -172,7 +172,10 @@ subclass anywhere. Adding a spec is:
 
 1. `ui/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
    `presets.ts` / `inputs.ts`.
-2. An entry in `ui/domain/player_specs/index.ts` and a launch status in `app/launched_sims.tsx`.
+2. An entry in `ui/domain/player_specs/index.ts`, i.e. a `PlayerSpec` class (in
+   `ui/domain/player_specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
+   single source of truth for launch status, read by the sim dropdown and the landing page
+   (`ui/index.ts` renders the landing page's sim links from `PlayerSpecs`, no hand-written list).
 3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class color, background
    image), which the generated `index.html` links unconditionally.
 

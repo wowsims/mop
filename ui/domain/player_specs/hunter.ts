@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class BeastMasteryHunter extends PlayerSpec<Spec.SpecBeastMasteryHunter> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class BeastMasteryHunter extends PlayerSpec<Spec.SpecBeastMasteryHunter> 
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = BeastMasteryHunter.specIndex;
 	readonly specID = BeastMasteryHunter.specID;
 	readonly classID = BeastMasteryHunter.classID;
@@ -30,6 +35,8 @@ export class BeastMasteryHunter extends PlayerSpec<Spec.SpecBeastMasteryHunter> 
 	readonly isMeleeDpsSpec = BeastMasteryHunter.isMeleeDpsSpec;
 
 	readonly canDualWield = BeastMasteryHunter.canDualWield;
+
+	readonly launch = BeastMasteryHunter.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_hunter_bestialdiscipline.jpg`;
@@ -54,6 +61,11 @@ export class MarksmanshipHunter extends PlayerSpec<Spec.SpecMarksmanshipHunter> 
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = MarksmanshipHunter.specIndex;
 	readonly specID = MarksmanshipHunter.specID;
 	readonly classID = MarksmanshipHunter.classID;
@@ -66,6 +78,8 @@ export class MarksmanshipHunter extends PlayerSpec<Spec.SpecMarksmanshipHunter> 
 	readonly isMeleeDpsSpec = MarksmanshipHunter.isMeleeDpsSpec;
 
 	readonly canDualWield = MarksmanshipHunter.canDualWield;
+
+	readonly launch = MarksmanshipHunter.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_hunter_focusedaim.jpg`;
@@ -90,6 +104,11 @@ export class SurvivalHunter extends PlayerSpec<Spec.SpecSurvivalHunter> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = SurvivalHunter.specIndex;
 	readonly specID = SurvivalHunter.specID;
 	readonly classID = SurvivalHunter.classID;
@@ -102,6 +121,8 @@ export class SurvivalHunter extends PlayerSpec<Spec.SpecSurvivalHunter> {
 	readonly isMeleeDpsSpec = SurvivalHunter.isMeleeDpsSpec;
 
 	readonly canDualWield = SurvivalHunter.canDualWield;
+
+	readonly launch = SurvivalHunter.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_hunter_camouflage.jpg`;

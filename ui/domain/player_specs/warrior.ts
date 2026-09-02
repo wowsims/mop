@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class ArmsWarrior extends PlayerSpec<Spec.SpecArmsWarrior> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class ArmsWarrior extends PlayerSpec<Spec.SpecArmsWarrior> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = ArmsWarrior.specIndex;
 	readonly specID = ArmsWarrior.specID;
 	readonly classID = ArmsWarrior.classID;
@@ -30,6 +35,8 @@ export class ArmsWarrior extends PlayerSpec<Spec.SpecArmsWarrior> {
 	readonly isMeleeDpsSpec = ArmsWarrior.isMeleeDpsSpec;
 
 	readonly canDualWield = ArmsWarrior.canDualWield;
+
+	readonly launch = ArmsWarrior.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_warrior_savageblow.jpg`;
@@ -54,6 +61,11 @@ export class FuryWarrior extends PlayerSpec<Spec.SpecFuryWarrior> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = FuryWarrior.specIndex;
 	readonly specID = FuryWarrior.specID;
 	readonly classID = FuryWarrior.classID;
@@ -66,6 +78,8 @@ export class FuryWarrior extends PlayerSpec<Spec.SpecFuryWarrior> {
 	readonly isMeleeDpsSpec = FuryWarrior.isMeleeDpsSpec;
 
 	readonly canDualWield = FuryWarrior.canDualWield;
+
+	readonly launch = FuryWarrior.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_warrior_innerrage.jpg`;
@@ -90,6 +104,11 @@ export class ProtectionWarrior extends PlayerSpec<Spec.SpecProtectionWarrior> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = ProtectionWarrior.specIndex;
 	readonly specID = ProtectionWarrior.specID;
 	readonly classID = ProtectionWarrior.classID;
@@ -102,6 +121,8 @@ export class ProtectionWarrior extends PlayerSpec<Spec.SpecProtectionWarrior> {
 	readonly isMeleeDpsSpec = ProtectionWarrior.isMeleeDpsSpec;
 
 	readonly canDualWield = ProtectionWarrior.canDualWield;
+
+	readonly launch = ProtectionWarrior.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_warrior_defensivestance.jpg`;

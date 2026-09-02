@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class ElementalShaman extends PlayerSpec<Spec.SpecElementalShaman> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class ElementalShaman extends PlayerSpec<Spec.SpecElementalShaman> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = ElementalShaman.specIndex;
 	readonly specID = ElementalShaman.specID;
 	readonly classID = ElementalShaman.classID;
@@ -30,6 +35,8 @@ export class ElementalShaman extends PlayerSpec<Spec.SpecElementalShaman> {
 	readonly isMeleeDpsSpec = ElementalShaman.isMeleeDpsSpec;
 
 	readonly canDualWield = ElementalShaman.canDualWield;
+
+	readonly launch = ElementalShaman.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_nature_lightning.jpg`;
@@ -54,6 +61,11 @@ export class EnhancementShaman extends PlayerSpec<Spec.SpecEnhancementShaman> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = EnhancementShaman.specIndex;
 	readonly specID = EnhancementShaman.specID;
 	readonly classID = EnhancementShaman.classID;
@@ -66,6 +78,8 @@ export class EnhancementShaman extends PlayerSpec<Spec.SpecEnhancementShaman> {
 	readonly isMeleeDpsSpec = EnhancementShaman.isMeleeDpsSpec;
 
 	readonly canDualWield = EnhancementShaman.canDualWield;
+
+	readonly launch = EnhancementShaman.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_nature_lightningshield.jpg`;
@@ -90,6 +104,11 @@ export class RestorationShaman extends PlayerSpec<Spec.SpecRestorationShaman> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase1,
+		status: LaunchStatus.Unlaunched,
+	};
+
 	readonly specIndex = RestorationShaman.specIndex;
 	readonly specID = RestorationShaman.specID;
 	readonly classID = RestorationShaman.classID;
@@ -102,6 +121,8 @@ export class RestorationShaman extends PlayerSpec<Spec.SpecRestorationShaman> {
 	readonly isMeleeDpsSpec = RestorationShaman.isMeleeDpsSpec;
 
 	readonly canDualWield = RestorationShaman.canDualWield;
+
+	readonly launch = RestorationShaman.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_nature_magicimmunity.jpg`;

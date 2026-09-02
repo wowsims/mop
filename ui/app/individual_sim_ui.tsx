@@ -48,7 +48,6 @@ import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_conf
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
 import i18n from '@i18n/config';
 
-import { simLaunchStatuses } from './launched_sims';
 import { PresetConfigurationPicker } from './preset_configuration_picker';
 import { SimUI } from './sim_ui';
 import { GearTab } from './tabs/gear_tab';
@@ -121,7 +120,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 			cssScheme: config.cssScheme,
 			spec: player.getPlayerSpec(),
 			knownIssues: config.knownIssues,
-			simStatus: simLaunchStatuses[player.getSpec()],
+			simStatus: player.getPlayerSpec().launch,
 		});
 		this.rootElem.classList.add('individual-sim-ui');
 		this.player = player;

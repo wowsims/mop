@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class ArcaneMage extends PlayerSpec<Spec.SpecArcaneMage> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class ArcaneMage extends PlayerSpec<Spec.SpecArcaneMage> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = ArcaneMage.specIndex;
 	readonly specID = ArcaneMage.specID;
 	readonly classID = ArcaneMage.classID;
@@ -30,6 +35,8 @@ export class ArcaneMage extends PlayerSpec<Spec.SpecArcaneMage> {
 	readonly isMeleeDpsSpec = ArcaneMage.isMeleeDpsSpec;
 
 	readonly canDualWield = ArcaneMage.canDualWield;
+
+	readonly launch = ArcaneMage.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_holy_magicalsentry.jpg`;
@@ -54,6 +61,11 @@ export class FireMage extends PlayerSpec<Spec.SpecFireMage> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = FireMage.specIndex;
 	readonly specID = FireMage.specID;
 	readonly classID = FireMage.classID;
@@ -66,6 +78,8 @@ export class FireMage extends PlayerSpec<Spec.SpecFireMage> {
 	readonly isMeleeDpsSpec = FireMage.isMeleeDpsSpec;
 
 	readonly canDualWield = FireMage.canDualWield;
+
+	readonly launch = FireMage.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_fire_firebolt02.jpg`;
@@ -90,6 +104,11 @@ export class FrostMage extends PlayerSpec<Spec.SpecFrostMage> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = FrostMage.specIndex;
 	readonly specID = FrostMage.specID;
 	readonly classID = FrostMage.classID;
@@ -102,6 +121,8 @@ export class FrostMage extends PlayerSpec<Spec.SpecFrostMage> {
 	readonly isMeleeDpsSpec = FrostMage.isMeleeDpsSpec;
 
 	readonly canDualWield = FrostMage.canDualWield;
+
+	readonly launch = FrostMage.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_frost_frostbolt02.jpg`;

@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class BloodDeathKnight extends PlayerSpec<Spec.SpecBloodDeathKnight> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class BloodDeathKnight extends PlayerSpec<Spec.SpecBloodDeathKnight> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = BloodDeathKnight.specIndex;
 	readonly specID = BloodDeathKnight.specID;
 	readonly classID = BloodDeathKnight.classID;
@@ -30,6 +35,8 @@ export class BloodDeathKnight extends PlayerSpec<Spec.SpecBloodDeathKnight> {
 	readonly isMeleeDpsSpec = BloodDeathKnight.isMeleeDpsSpec;
 
 	readonly canDualWield = BloodDeathKnight.canDualWield;
+
+	readonly launch = BloodDeathKnight.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_deathknight_bloodpresence.jpg`;
@@ -54,6 +61,11 @@ export class FrostDeathKnight extends PlayerSpec<Spec.SpecFrostDeathKnight> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = FrostDeathKnight.specIndex;
 	readonly specID = FrostDeathKnight.specID;
 	readonly classID = FrostDeathKnight.classID;
@@ -66,6 +78,8 @@ export class FrostDeathKnight extends PlayerSpec<Spec.SpecFrostDeathKnight> {
 	readonly isMeleeDpsSpec = FrostDeathKnight.isMeleeDpsSpec;
 
 	readonly canDualWield = FrostDeathKnight.canDualWield;
+
+	readonly launch = FrostDeathKnight.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_deathknight_frostpresence.jpg`;
@@ -90,6 +104,11 @@ export class UnholyDeathKnight extends PlayerSpec<Spec.SpecUnholyDeathKnight> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = UnholyDeathKnight.specIndex;
 	readonly specID = UnholyDeathKnight.specID;
 	readonly classID = UnholyDeathKnight.classID;
@@ -102,6 +121,8 @@ export class UnholyDeathKnight extends PlayerSpec<Spec.SpecUnholyDeathKnight> {
 	readonly isMeleeDpsSpec = UnholyDeathKnight.isMeleeDpsSpec;
 
 	readonly canDualWield = UnholyDeathKnight.canDualWield;
+
+	readonly launch = UnholyDeathKnight.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_deathknight_unholypresence.jpg`;

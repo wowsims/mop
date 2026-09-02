@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class HolyPaladin extends PlayerSpec<Spec.SpecHolyPaladin> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class HolyPaladin extends PlayerSpec<Spec.SpecHolyPaladin> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase1,
+		status: LaunchStatus.Unlaunched,
+	};
+
 	readonly specIndex = HolyPaladin.specIndex;
 	readonly specID = HolyPaladin.specID;
 	readonly classID = HolyPaladin.classID;
@@ -30,6 +35,8 @@ export class HolyPaladin extends PlayerSpec<Spec.SpecHolyPaladin> {
 	readonly isMeleeDpsSpec = HolyPaladin.isMeleeDpsSpec;
 
 	readonly canDualWield = HolyPaladin.canDualWield;
+
+	readonly launch = HolyPaladin.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_holy_holybolt.jpg`;
@@ -54,6 +61,11 @@ export class ProtectionPaladin extends PlayerSpec<Spec.SpecProtectionPaladin> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = ProtectionPaladin.specIndex;
 	readonly specID = ProtectionPaladin.specID;
 	readonly classID = ProtectionPaladin.classID;
@@ -66,6 +78,8 @@ export class ProtectionPaladin extends PlayerSpec<Spec.SpecProtectionPaladin> {
 	readonly isMeleeDpsSpec = ProtectionPaladin.isMeleeDpsSpec;
 
 	readonly canDualWield = ProtectionPaladin.canDualWield;
+
+	readonly launch = ProtectionPaladin.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_paladin_shieldofthetemplar.jpg`;
@@ -90,6 +104,11 @@ export class RetributionPaladin extends PlayerSpec<Spec.SpecRetributionPaladin> 
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = RetributionPaladin.specIndex;
 	readonly specID = RetributionPaladin.specID;
 	readonly classID = RetributionPaladin.classID;
@@ -102,6 +121,8 @@ export class RetributionPaladin extends PlayerSpec<Spec.SpecRetributionPaladin> 
 	readonly isMeleeDpsSpec = RetributionPaladin.isMeleeDpsSpec;
 
 	readonly canDualWield = RetributionPaladin.canDualWield;
+
+	readonly launch = RetributionPaladin.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_holy_auraoflight.jpg`;

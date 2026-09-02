@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class BrewmasterMonk extends PlayerSpec<Spec.SpecBrewmasterMonk> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class BrewmasterMonk extends PlayerSpec<Spec.SpecBrewmasterMonk> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = BrewmasterMonk.specIndex;
 	readonly specID = BrewmasterMonk.specID;
 	readonly classID = BrewmasterMonk.classID;
@@ -30,6 +35,8 @@ export class BrewmasterMonk extends PlayerSpec<Spec.SpecBrewmasterMonk> {
 	readonly isMeleeDpsSpec = BrewmasterMonk.isMeleeDpsSpec;
 
 	readonly canDualWield = BrewmasterMonk.canDualWield;
+
+	readonly launch = BrewmasterMonk.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_monk_brewmaster_spec.jpg`;
@@ -54,6 +61,11 @@ export class MistweaverMonk extends PlayerSpec<Spec.SpecMistweaverMonk> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase1,
+		status: LaunchStatus.Unlaunched,
+	};
+
 	readonly specIndex = MistweaverMonk.specIndex;
 	readonly specID = MistweaverMonk.specID;
 	readonly classID = MistweaverMonk.classID;
@@ -66,6 +78,8 @@ export class MistweaverMonk extends PlayerSpec<Spec.SpecMistweaverMonk> {
 	readonly isMeleeDpsSpec = MistweaverMonk.isMeleeDpsSpec;
 
 	readonly canDualWield = MistweaverMonk.canDualWield;
+
+	readonly launch = MistweaverMonk.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_monk_mistweaver_spec.jpg`;
@@ -90,6 +104,11 @@ export class WindwalkerMonk extends PlayerSpec<Spec.SpecWindwalkerMonk> {
 
 	static canDualWield = true;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = WindwalkerMonk.specIndex;
 	readonly specID = WindwalkerMonk.specID;
 	readonly classID = WindwalkerMonk.classID;
@@ -102,6 +121,8 @@ export class WindwalkerMonk extends PlayerSpec<Spec.SpecWindwalkerMonk> {
 	readonly isMeleeDpsSpec = WindwalkerMonk.isMeleeDpsSpec;
 
 	readonly canDualWield = WindwalkerMonk.canDualWield;
+
+	readonly launch = WindwalkerMonk.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_monk_windwalker_spec.jpg`;

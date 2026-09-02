@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class BalanceDruid extends PlayerSpec<Spec.SpecBalanceDruid> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class BalanceDruid extends PlayerSpec<Spec.SpecBalanceDruid> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = BalanceDruid.specIndex;
 	readonly specID = BalanceDruid.specID;
 	readonly classID = BalanceDruid.classID;
@@ -30,6 +35,8 @@ export class BalanceDruid extends PlayerSpec<Spec.SpecBalanceDruid> {
 	readonly isMeleeDpsSpec = BalanceDruid.isMeleeDpsSpec;
 
 	readonly canDualWield = BalanceDruid.canDualWield;
+
+	readonly launch = BalanceDruid.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_nature_starfall.jpg`;
@@ -54,6 +61,11 @@ export class FeralDruid extends PlayerSpec<Spec.SpecFeralDruid> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = FeralDruid.specIndex;
 	readonly specID = FeralDruid.specID;
 	readonly classID = FeralDruid.classID;
@@ -66,6 +78,8 @@ export class FeralDruid extends PlayerSpec<Spec.SpecFeralDruid> {
 	readonly isMeleeDpsSpec = FeralDruid.isMeleeDpsSpec;
 
 	readonly canDualWield = FeralDruid.canDualWield;
+
+	readonly launch = FeralDruid.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_druid_catform.jpg`;
@@ -90,6 +104,11 @@ export class GuardianDruid extends PlayerSpec<Spec.SpecGuardianDruid> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = GuardianDruid.specIndex;
 	readonly specID = GuardianDruid.specID;
 	readonly classID = GuardianDruid.classID;
@@ -102,6 +121,8 @@ export class GuardianDruid extends PlayerSpec<Spec.SpecGuardianDruid> {
 	readonly isMeleeDpsSpec = GuardianDruid.isMeleeDpsSpec;
 
 	readonly canDualWield = GuardianDruid.canDualWield;
+
+	readonly launch = GuardianDruid.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/ability_racial_bearform.jpg`;
@@ -126,6 +147,11 @@ export class RestorationDruid extends PlayerSpec<Spec.SpecRestorationDruid> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase1,
+		status: LaunchStatus.Unlaunched,
+	};
+
 	readonly specIndex = RestorationDruid.specIndex;
 	readonly specID = RestorationDruid.specID;
 	readonly classID = RestorationDruid.classID;
@@ -138,6 +164,8 @@ export class RestorationDruid extends PlayerSpec<Spec.SpecRestorationDruid> {
 	readonly isMeleeDpsSpec = RestorationDruid.isMeleeDpsSpec;
 
 	readonly canDualWield = RestorationDruid.canDualWield;
+
+	readonly launch = RestorationDruid.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_nature_healingtouch.jpg`;

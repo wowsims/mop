@@ -30,7 +30,7 @@ ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
 ui/app/                              composition root; browser_env.ts, header/, tabs/ (incl. settings_tab),
                                      settings_menu.tsx, notice_native_sim.tsx,
                                      preset_configuration_picker.tsx, sim_ui.tsx,
-                                     individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx (PR 6b/6c)
+                                     individual_sim_ui.tsx, preset_utils.tsx (PR 6b/6c, PR 8b)
 ui/<class>/<spec>/                   spec data + SimUI subclass — may import everything
 BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/**
 BANNED: ui/domain/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
@@ -458,3 +458,19 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   UI-free, satellites + persistence extracted to `ui/core/state/`, Zustand store with
   emitter bridges for all five slices, `storeSubscribe` seam. Phases 2–4 uncommitted on
   `feature/state-ui-separation` pending review. Skill lives in `.github/skills/` (shared).
+- 2026-09-02 PR 8b: one spec registry. `ui/app/launched_sims.tsx` (hand-maintained
+  `Record<Spec, {phase, status}>`) deleted; every `PlayerSpec` class now carries its own
+  `readonly launch: { phase: Phase; status: LaunchStatus }` (base type in `ui/domain/player_spec.ts`).
+  Consumers (`sim_ui.tsx`, `individual_sim_ui.tsx`, `sim_title_dropdown.tsx`) read
+  `spec.launch`/`player.getPlayerSpec().launch` instead of the old lookup table. The landing page
+  (`ui/index.html`) no longer hand-writes its ~34 `<a href="/mop/<class>/<spec>/">` sim-link
+  anchors; `ui/index.ts` now renders them into an empty `#sim-links` container from `PlayerSpecs`,
+  guarded so it's a no-op on every other page that also loads `index.ts`. Verified structurally
+  byte-identical (whitespace-normalized, launch-status text masked) against the old static markup
+  via a vite lib-mode build of the generator run in Node. USER-VISIBLE CHANGE: the old landing
+  markup was stale vs. the registry (18 specs said "Beta" but were already `Launched`: DK
+  blood/unholy, priest shadow, druid balance, all 3 rogue, all 3 hunter, all 3 mage, all 3
+  warlock, paladin protection/retribution) — these now correctly show "Launched". Class-level
+  badges (aggregate per class, not spec data) are re-derived as all-launched→launched,
+  all-unlaunched→unlaunched, mixed→beta, which flips 7 classes (death_knight/rogue/hunter/
+  mage/warlock beta→launched; shaman/monk launched→beta, since each has one still-unlaunched spec).

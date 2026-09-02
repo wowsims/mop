@@ -1,8 +1,8 @@
 import { Class, Spec } from '@core/proto/common';
 
-import { getSpecSitePath } from '../constants/other';
+import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';
-import { PlayerSpec } from '../player_spec';
+import { PlayerSpec, SimStatus } from '../player_spec';
 
 export class AfflictionWarlock extends PlayerSpec<Spec.SpecAfflictionWarlock> {
 	static specIndex = 0;
@@ -18,6 +18,11 @@ export class AfflictionWarlock extends PlayerSpec<Spec.SpecAfflictionWarlock> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = AfflictionWarlock.specIndex;
 	readonly specID = AfflictionWarlock.specID;
 	readonly classID = AfflictionWarlock.classID;
@@ -30,6 +35,8 @@ export class AfflictionWarlock extends PlayerSpec<Spec.SpecAfflictionWarlock> {
 	readonly isMeleeDpsSpec = AfflictionWarlock.isMeleeDpsSpec;
 
 	readonly canDualWield = AfflictionWarlock.canDualWield;
+
+	readonly launch = AfflictionWarlock.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_shadow_deathcoil.jpg`;
@@ -54,6 +61,11 @@ export class DemonologyWarlock extends PlayerSpec<Spec.SpecDemonologyWarlock> {
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = DemonologyWarlock.specIndex;
 	readonly specID = DemonologyWarlock.specID;
 	readonly classID = DemonologyWarlock.classID;
@@ -66,6 +78,8 @@ export class DemonologyWarlock extends PlayerSpec<Spec.SpecDemonologyWarlock> {
 	readonly isMeleeDpsSpec = DemonologyWarlock.isMeleeDpsSpec;
 
 	readonly canDualWield = DemonologyWarlock.canDualWield;
+
+	readonly launch = DemonologyWarlock.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_shadow_metamorphosis.jpg`;
@@ -90,6 +104,11 @@ export class DestructionWarlock extends PlayerSpec<Spec.SpecDestructionWarlock> 
 
 	static canDualWield = false;
 
+	static launch: SimStatus = {
+		phase: Phase.Phase5,
+		status: LaunchStatus.Launched,
+	};
+
 	readonly specIndex = DestructionWarlock.specIndex;
 	readonly specID = DestructionWarlock.specID;
 	readonly classID = DestructionWarlock.classID;
@@ -102,6 +121,8 @@ export class DestructionWarlock extends PlayerSpec<Spec.SpecDestructionWarlock> 
 	readonly isMeleeDpsSpec = DestructionWarlock.isMeleeDpsSpec;
 
 	readonly canDualWield = DestructionWarlock.canDualWield;
+
+	readonly launch = DestructionWarlock.launch;
 
 	static getIcon = (size: IconSize): string => {
 		return `https://wow.zamimg.com/images/wow/icons/${size}/spell_shadow_rainoffire.jpg`;

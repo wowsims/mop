@@ -1,6 +1,6 @@
 import { ErrorOutcomeType } from '@core/proto/api';
-import { REPO_NEW_ISSUE_URL } from '@domain/constants/other';
-import { PlayerSpec } from '@domain/player_spec';
+import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@domain/constants/other';
+import { PlayerSpec, SimStatus } from '@domain/player_spec';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { Gear } from '@domain/proto_utils/gear';
 import { SimResult } from '@domain/proto_utils/sim_result';
@@ -26,7 +26,6 @@ import { trackEvent } from '../tracking/utils';
 import { SimHeader } from './header/sim_header';
 import { SimTitleDropdown } from './header/sim_title_dropdown';
 import { SocialLinks } from './header/social_links';
-import { LaunchStatus, SimStatus } from './launched_sims';
 import { NoticeNativeSim } from './notice_native_sim';
 const URLMAXLEN = 2048;
 const globalKnownIssues: Array<string> = [];
