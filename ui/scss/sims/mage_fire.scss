@@ -1,7 +1,5 @@
-// Set color variables which control the site theme.
+// Fire Mage has extra rules beyond the shared theme in sim.scss.
 .fire-mage-sim-ui {
-	@include theme-color($mage, 0.95, '/mop/assets/img/mage_background.jpg');
-
 	.number-picker-input[id^='combust'] {
 		width: 7rem;
 		text-align: right;

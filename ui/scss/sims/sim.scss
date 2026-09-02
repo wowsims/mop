@@ -1,0 +1,190 @@
+/* stylelint-disable plugin/stylelint-bem-namics */
+@use 'sass:map';
+
+@import '../core/individual_sim_ui/common';
+@import '../core/components/totem_inputs';
+
+// Set color variables which control the site theme.
+// One table drives every spec's `.<cssClass>-sim-ui { @include theme-color(...) }` rule
+// (previously 34 near-identical per-spec `_sim.scss` files).
+$sim-themes: (
+	'blood-death-knight-sim-ui': (
+		'color': death-knight,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/death_knight_background.jpg',
+	),
+	'frost-death-knight-sim-ui': (
+		'color': death-knight,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/death_knight_background.jpg',
+	),
+	'unholy-death-knight-sim-ui': (
+		'color': death-knight,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/death_knight_background.jpg',
+	),
+	'balance-druid-sim-ui': (
+		'color': druid,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/balance_druid_background.jpg',
+	),
+	'feral-druid-sim-ui': (
+		'color': druid,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/feral_druid_background.jpg',
+	),
+	'guardian-druid-sim-ui': (
+		'color': druid,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/feral_druid_tank_background.jpg',
+	),
+	'restoration-druid-sim-ui': (
+		'color': druid,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/resto_druid_background.jpg',
+	),
+	'beast-mastery-hunter-sim-ui': (
+		'color': hunter,
+		'opacity': 0.9,
+		'image': '/mop/assets/img/hunter_background.jpg',
+	),
+	'marksmanship-hunter-sim-ui': (
+		'color': hunter,
+		'opacity': 0.9,
+		'image': '/mop/assets/img/hunter_background.jpg',
+	),
+	'survival-hunter-sim-ui': (
+		'color': hunter,
+		'opacity': 0.9,
+		'image': '/mop/assets/img/hunter_background.jpg',
+	),
+	'arcane-mage-sim-ui': (
+		'color': mage,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/mage_background.jpg',
+	),
+	'fire-mage-sim-ui': (
+		'color': mage,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/mage_background.jpg',
+	),
+	'frost-mage-sim-ui': (
+		'color': mage,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/mage_background.jpg',
+	),
+	'brewmaster-monk-sim-ui': (
+		'color': monk,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/monk_background.jpg',
+	),
+	'mistweaver-monk-sim-ui': (
+		'color': monk,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/monk_background.jpg',
+	),
+	'windwalker-monk-sim-ui': (
+		'color': monk,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/monk_background.jpg',
+	),
+	'holy-paladin-sim-ui': (
+		'color': paladin,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/holy_paladin_background.jpg',
+	),
+	'protection-paladin-sim-ui': (
+		'color': paladin,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/prot_paladin.jpg',
+	),
+	'retribution-paladin-sim-ui': (
+		'color': paladin,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/retribution_paladin.jpg',
+	),
+	'discipline-priest-sim-ui': (
+		'color': priest,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/smite_priest_background.jpg',
+	),
+	'holy-priest-sim-ui': (
+		'color': priest,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/healing_priest_background.jpg',
+	),
+	'shadow-priest-sim-ui': (
+		'color': priest,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/shadow_priest_background.jpg',
+	),
+	'assassination-rogue-sim-ui': (
+		'color': rogue,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/rogue_background.jpg',
+	),
+	'combat-rogue-sim-ui': (
+		'color': rogue,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/rogue_background.jpg',
+	),
+	'subtlety-rogue-sim-ui': (
+		'color': rogue,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/rogue_background.jpg',
+	),
+	'elemental-shaman-sim-ui': (
+		'color': shaman,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/elemental_shaman_background.jpg',
+	),
+	'enhancement-shaman-sim-ui': (
+		'color': shaman,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/enhancement_shaman_background.jpg',
+	),
+	'restoration-shaman-sim-ui': (
+		'color': shaman,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/resto_shaman_background.jpg',
+	),
+	'affliction-warlock-sim-ui': (
+		'color': warlock,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/warlock_background.jpg',
+	),
+	'demonology-warlock-sim-ui': (
+		'color': warlock,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/warlock_background.jpg',
+	),
+	'destruction-warlock-sim-ui': (
+		'color': warlock,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/warlock_background.jpg',
+	),
+	'arms-warrior-sim-ui': (
+		'color': warrior,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/warrior_background.jpg',
+	),
+	'fury-warrior-sim-ui': (
+		'color': warrior,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/warrior_background.jpg',
+	),
+	'protection-warrior-sim-ui': (
+		'color': warrior,
+		'opacity': 0.95,
+		'image': '/mop/assets/img/protection_warrior_background.jpg',
+	),
+);
+
+@each $css-class, $theme in $sim-themes {
+	.#{$css-class} {
+		@include theme-color(map.get($class-colors, map.get($theme, 'color')), map.get($theme, 'opacity'), map.get($theme, 'image'));
+	}
+}
+
+// Fire Mage has extra rules beyond the shared theme.
+@import 'mage_fire';

@@ -153,9 +153,11 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `warlock/demonology`, whose reforge tooltips need real JSX) default-exporting
   `defineSpec({ spec, ...config, reforge?, enableHealing?, derivedSettings?, features? })` — no
   `sim.ts`, no `index.ts`, no `IndividualSimUI` subclass anywhere; `ui/app/spec_entry.ts` loads
-  it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/domain/player_specs`, and
-  `ui/scss/sims/<class>/<spec>/index.scss`; `makefile`'s `PAGE_INDECES` globs `ui/*/*/spec.ts(x)`
-  so `index.html` and the vite entry follow automatically, and `make` is safe to run.
+  it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/domain/player_specs`, and a
+  `$sim-themes` map entry in `ui/scss/sims/sim.scss` (PR 8a: 68 per-spec scss files collapsed
+  into one shared `sim.scss` + `mage_fire.scss` for fire mage's extra rules); `makefile`'s
+  `PAGE_INDECES` globs `ui/*/*/spec.ts(x)` so `index.html` and the vite entry follow
+  automatically, and `make` is safe to run.
   Rules shared by several specs of one class live in `ui/<class>/shared/`.
   See "How to author a spec" in `ui/README.md`.
 - `PartyBuffs` is an empty proto message in MoP — party-buff code paths are vestigial.
@@ -443,6 +445,15 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `state/blessings.ts`, `isWithinRaidSim` plumbing, landing/dropdown links) — unsupported for
   complexity reasons; `Raid`/`Party` domain classes stay (individual sims use a 1-party raid).
   All pre-existing lint warnings cleaned (oxlint now reports zero). CLAUDE.md points here.
+- 2026-09-02 PR 8a: SCSS collapse. 68 per-spec `ui/scss/sims/<class>/<spec>/{index,_sim}.scss`
+  files (plus the dead unimported `ui/scss/sims/index.scss`) replaced by one
+  `ui/scss/sims/sim.scss` driving a `$sim-themes` map (cssClass → class color, opacity, bg image)
+  built programmatically from the old files, plus `ui/scss/sims/mage_fire.scss` for fire mage's
+  extra combustion-threshold rules. `totem_inputs` is now imported unconditionally (its rules are
+  namespaced under `.totems-settings`) instead of being duplicated per shaman/hunter/rogue spec.
+  `ui/index_template.html` now links `../../scss/sims/sim.scss` for every spec. Verified
+  byte-identical (whitespace-normalized) compiled CSS per `.<cssClass>-sim-ui` selector, old vs.
+  new, across all 34 specs.
 - 2026-09-01 Phases 0–4 of the state/UI separation: lint guard, golden harness, core made
   UI-free, satellites + persistence extracted to `ui/core/state/`, Zustand store with
   emitter bridges for all five slices, `storeSubscribe` seam. Phases 2–4 uncommitted on

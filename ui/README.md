@@ -42,7 +42,8 @@ ui/
                      the top level rather than under app/ (PR 6c). alias @i18n
   core/              LEGACY, proto only: ui/core/proto/ (generated). alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
-  scss/              unchanged
+  scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
+                     replace the 34 per-spec sims/<class>/<spec>/{index,_sim}.scss (PR 8a)
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged
 ```
 
@@ -172,7 +173,8 @@ subclass anywhere. Adding a spec is:
 1. `ui/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
    `presets.ts` / `inputs.ts`.
 2. An entry in `ui/domain/player_specs/index.ts` and a launch status in `app/launched_sims.tsx`.
-3. `ui/scss/sims/<class>/<spec>/index.scss`, which the generated `index.html` links.
+3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class color, background
+   image), which the generated `index.html` links unconditionally.
 
 Everything else is derived: `makefile`'s `PAGE_INDECES` globs `ui/*/*/spec.ts(x)` and generates
 `index.html` from `ui/index_template.html`, and `spec_entry.ts`'s `import.meta.glob` picks the
