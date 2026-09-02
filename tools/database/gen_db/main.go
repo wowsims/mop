@@ -673,7 +673,7 @@ func getSpellIdsFromTalentJson(infile *string) []int32 {
 }
 
 func GetAllTalentSpellIds(inputsDir *string) map[string][]int32 {
-	talentsDir := fmt.Sprintf("%s/../../ui/core/talents/trees", *inputsDir)
+	talentsDir := fmt.Sprintf("%s/../../ui/domain/talents/trees", *inputsDir)
 	specFiles := []string{
 		"death_knight.json",
 		"druid.json",

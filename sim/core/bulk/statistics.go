@@ -123,7 +123,7 @@ func bulkSimCandidateIsCulled(metrics *proto.DistributionMetrics, bestMetrics *p
 }
 
 // bulkSimZ95 is the two-sided 95% z threshold; the same value the UI's significance test
-// (zTest in ui/core/utils.ts) uses, so backend separation decisions and frontend display
+// (zTest in ui/domain/utils.ts) uses, so backend separation decisions and frontend display
 // agree on what counts as "different".
 const bulkSimZ95 = 1.96
 

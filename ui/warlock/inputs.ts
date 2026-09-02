@@ -1,10 +1,11 @@
-import * as InputHelpers from '../core/components/input_helpers';
-import { Player } from '../core/player';
+import { Player } from '@domain/player';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { WarlockSpecs } from '@domain/proto_utils/utils';
+import { subscribePlayerChange } from '@domain/state/subscriptions';
+import * as InputHelpers from '@ui-kit/input_helpers';
+
 import { Spec } from '../core/proto/common';
 import { WarlockOptions_Summon as Summon } from '../core/proto/warlock';
-import { ActionId } from '../core/proto_utils/action_id';
-import { WarlockSpecs } from '../core/proto_utils/utils';
-import { subscribePlayerChange } from '../core/state/subscriptions';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.

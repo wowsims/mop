@@ -1,6 +1,7 @@
+import { UnitStat } from '@domain/proto_utils/stats';
+
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { PseudoStat, Spec, Stat } from '../../../proto/common';
-import { UnitStat } from '../../../proto_utils/stats';
 import { IndividualExporter } from './individual_exporter';
 
 export class Individual60UEPExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {

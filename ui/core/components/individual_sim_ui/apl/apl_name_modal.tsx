@@ -1,7 +1,7 @@
+import { BaseModal } from '@ui-kit/base_modal';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../i18n/config';
-import { BaseModal } from '../../base_modal';
 
 type APLNameModalConfig = {
 	title: string;

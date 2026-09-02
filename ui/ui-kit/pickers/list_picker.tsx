@@ -1,0 +1,709 @@
+import { APLValidation } from '@core/proto/api';
+import { LogLevel } from '@core/proto/common';
+import { Player } from '@domain/player';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { subscribePlayerField } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
+import { translateItemLabel } from '@i18n/localization';
+import clsx from 'clsx';
+import tippy, { Instance as TippyInstance } from 'tippy.js';
+
+import { existsInDOM } from '../dom_utils';
+import { Input, InputConfig } from '../input';
+import { TooltipButton } from '../tooltip_button';
+export type ListItemAction = 'create' | 'delete' | 'move' | 'copy';
+
+export interface ListPickerActionsConfig {
+	create?: {
+		// Whether or not to use an icon for the create action button
+		// defaults to FALSE
+		useIcon?: boolean;
+	};
+}
+
+export interface ListPickerExtraAction {
+	cssClass: string;
+	icon: string;
+	tooltip: string;
+	onClick: (index: number) => void;
+	shouldShow?: (index: number) => boolean;
+}
+
+type CopyItemConfig<ItemType> = { copyItem: (oldItem: ItemType) => ItemType; onCopyItem?: never } | { copyItem?: never; onCopyItem: (index: number) => void };
+
+export type ListPickerConfig<ModObject, ItemType> = Omit<InputConfig<ModObject, Array<ItemType>>, 'id'> &
+	CopyItemConfig<ItemType> & {
+		itemLabel: string;
+		newItem: () => ItemType;
+		newItemPicker: (
+			parent: HTMLElement,
+			listPicker: ListPicker<ModObject, ItemType>,
+			index: number,
+			config: ListItemPickerConfig<ModObject, ItemType>,
+		) => Input<ModObject, ItemType>;
+		actions?: ListPickerActionsConfig;
+		title?: string;
+		titleTooltip?: string;
+		inlineMenuBar?: boolean;
+		hideUi?: boolean;
+		horizontalLayout?: boolean;
+		// if set, will remove the border and padding of the list items
+		isCompact?: boolean;
+		// If set, will disable the delete button if the list is at the minimum.
+		minimumItems?: number;
+		// If set, only actions included in the list are allowed. Otherwise, all actions are allowed.
+		allowedActions?: Array<ListItemAction>;
+		dragGroup?: string;
+		// Additional custom action buttons to add to the popover menu
+		extraActions?: Array<ListPickerExtraAction>;
+	};
+
+const DEFAULT_CONFIG = {
+	actions: {
+		create: {
+			useIcon: false,
+		},
+	},
+};
+
+export interface ListItemPickerConfig<ModObject, ItemType> extends InputConfig<ModObject, ItemType> {}
+
+interface ItemPickerPair<ItemType> {
+	elem: HTMLElement;
+	picker: Input<any, ItemType>;
+	idx: number;
+}
+
+interface ListDragData<ModObject, ItemType> {
+	listPicker: ListPicker<ModObject, ItemType>;
+	item: ItemPickerPair<ItemType>;
+}
+
+let curDragData: ListDragData<any, any> | null = null;
+
+export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<ItemType>> {
+	readonly config: ListPickerConfig<ModObject, ItemType>;
+	private readonly itemsDiv: HTMLElement;
+
+	private itemPickerPairs: Array<ItemPickerPair<ItemType>>;
+
+	constructor(parent: HTMLElement, modObject: ModObject, config: ListPickerConfig<ModObject, ItemType>) {
+		if (config.isCompact) config.extraCssClasses = [...(config.extraCssClasses || []), 'list-picker-compact'];
+
+		super(parent, 'list-picker-root', modObject, config);
+		this.config = { ...DEFAULT_CONFIG, ...config };
+		this.itemPickerPairs = [];
+
+		if (config.title) {
+			this.rootElem.appendChild(<label className="list-picker-title form-label">{config.title}</label>);
+		}
+		this.itemsDiv = this.rootElem.appendChild(<div className="list-picker-items hide" />) as HTMLElement;
+
+		if (this.config.hideUi) {
+			this.rootElem.classList.add('d-none');
+		}
+		if (this.config.horizontalLayout) {
+			this.config.inlineMenuBar = true;
+			this.rootElem.classList.add('horizontal');
+		}
+
+		if (this.config.titleTooltip) {
+			new TooltipButton(this.rootElem.querySelector('.list-picker-title') as HTMLElement, this.config.titleTooltip, ['ms-2']);
+		}
+
+		if (this.actionEnabled('create')) {
+			let newItemButton: HTMLElement | null = null;
+			let newButtonTooltip: TippyInstance | null = null;
+			if (this.config.actions?.create?.useIcon) {
+				newItemButton = ListPicker.makeActionElem('link-success', 'fa-plus');
+				newButtonTooltip = tippy(newItemButton, {
+					allowHTML: false,
+					content: i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName: config.itemLabel }),
+				});
+				this.addOnDisposeCallback(() => newButtonTooltip?.destroy());
+			} else {
+				newItemButton = (
+					<button className="btn btn-primary">
+						<i className="fa fa-plus me-2" />
+						{i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName: config.itemLabel })}
+					</button>
+				) as HTMLButtonElement;
+			}
+			newItemButton.classList.add('list-picker-new-button');
+			newItemButton.addEventListener(
+				'click',
+				() => {
+					const newItem = this.config.newItem();
+					const newList = this.config.getValue(this.modObject).concat([newItem]);
+					this.config.setValue(nextEventID(), this.modObject, newList);
+					if (newButtonTooltip) {
+						newButtonTooltip.hide();
+					}
+				},
+				{ signal: this.signal },
+			);
+
+			this.rootElem.appendChild(newItemButton);
+		}
+
+		this.init();
+	}
+
+	getInputElem(): HTMLElement {
+		return this.rootElem;
+	}
+
+	getInputValue(): Array<ItemType> {
+		return this.itemPickerPairs.map(pair => pair.picker.getInputValue());
+	}
+
+	setInputValue(newValue: Array<ItemType>): void {
+		// Add/remove pickers to make the lengths match.
+		if (newValue.length < this.itemPickerPairs.length) {
+			this.itemPickerPairs.slice(newValue.length).forEach(ipp => {
+				this.disposeChild(ipp.picker);
+				ipp.elem.remove();
+			});
+			this.itemPickerPairs = this.itemPickerPairs.slice(0, newValue.length);
+		} else if (newValue.length > this.itemPickerPairs.length) {
+			const numToAdd = newValue.length - this.itemPickerPairs.length;
+			for (let i = 0; i < numToAdd; i++) {
+				this.addNewPicker();
+			}
+		}
+
+		if (newValue.length === 0) {
+			this.itemsDiv.classList.add('hide');
+		} else if (this.itemsDiv.classList.contains('hide')) {
+			this.itemsDiv.classList.remove('hide');
+		}
+
+		// Set all the values.
+		newValue.forEach((val, i) => {
+			const picker = this.itemPickerPairs[i].picker;
+			picker.setInputValue(val);
+			// Items may not subscribe themselves (see APL child pickers); keep
+			// their enable/show state in sync from the cascade.
+			picker.update();
+		});
+	}
+
+	private actionEnabled(action: ListItemAction): boolean {
+		return !this.config.allowedActions || this.config.allowedActions.includes(action);
+	}
+
+	private addHoverListeners(button: HTMLButtonElement) {
+		button.addEventListener(
+			'mouseenter',
+			() => {
+				button.classList.add('hover');
+			},
+			{ signal: this.signal },
+		);
+
+		button.addEventListener(
+			'mouseleave',
+			() => {
+				button.classList.remove('hover');
+			},
+			{ signal: this.signal },
+		);
+	}
+
+	private addNewPicker() {
+		const index = this.itemPickerPairs.length;
+		const itemContainer = document.createElement('div');
+		itemContainer.classList.add('list-picker-item-container');
+		if (this.config.inlineMenuBar) {
+			itemContainer.classList.add('inline');
+		}
+		this.itemsDiv.appendChild(itemContainer);
+
+		const itemElem = document.createElement('div');
+		itemElem.classList.add('list-picker-item');
+
+		const itemHeader = document.createElement('div');
+		itemHeader.classList.add('list-picker-item-header');
+
+		const popover = document.createElement('div');
+		popover.classList.add('list-picker-item-popover');
+		popover.setAttribute('popover', 'auto');
+		itemHeader.appendChild(popover);
+		let hasActions = false;
+
+		if (this.config.inlineMenuBar) {
+			itemContainer.appendChild(itemElem);
+			itemContainer.appendChild(itemHeader);
+		} else {
+			itemContainer.appendChild(itemHeader);
+			itemContainer.appendChild(itemElem);
+			if (this.config.itemLabel) {
+				const itemLabel = document.createElement('h6');
+				itemLabel.classList.add('list-picker-item-title');
+				itemLabel.textContent = `${this.config.itemLabel} ${this.itemPickerPairs.length + 1}`;
+				itemHeader.appendChild(itemLabel);
+			}
+		}
+
+		const itemPicker = this.config.newItemPicker(itemElem, this, index, {
+			storeSubscribe: this.config.storeSubscribe,
+			getValue: () => this.getSourceValue()[index],
+			setValue: (eventID: EventID, modObj: ModObject, newValue: ItemType) => {
+				const newList = this.getSourceValue();
+				newList[index] = newValue;
+				this.config.setValue(eventID, modObj, newList);
+			},
+		});
+
+		const item: ItemPickerPair<ItemType> = { elem: itemContainer, picker: itemPicker, idx: index };
+		this.addChild(itemPicker);
+		// Per-item resources (tooltips, the document-level mouseup listener) die
+		// with the item picker, not with the whole list.
+		const itemAbort = new AbortController();
+		itemPicker.addOnDisposeCallback(() => itemAbort.abort());
+
+		if (this.actionEnabled('delete')) {
+			if (!this.config.minimumItems || index + 1 > this.config.minimumItems) {
+				hasActions = true;
+				const deleteButton = ListPicker.makeActionElem('list-picker-item-delete', 'fa-times');
+				deleteButton.classList.add('link-danger');
+				popover.appendChild(deleteButton);
+
+				const deleteButtonTooltip = tippy(deleteButton, {
+					allowHTML: false,
+					content: i18n.t('common.list_picker.delete_item', { itemLabel: translateItemLabel(this.config.itemLabel) }),
+				});
+
+				deleteButton.addEventListener(
+					'click',
+					() => {
+						const newList = this.config.getValue(this.modObject);
+						newList.splice(index, 1);
+						this.config.setValue(nextEventID(), this.modObject, newList);
+						deleteButtonTooltip.hide();
+					},
+					{ signal: this.signal },
+				);
+				itemPicker.addOnDisposeCallback(() => deleteButtonTooltip?.destroy());
+				this.addHoverListeners(deleteButton);
+			}
+		}
+
+		const extraActionButtons: Array<{ elem: HTMLElement; shouldShow?: (index: number) => boolean }> = [];
+		if (this.config.extraActions?.length) {
+			for (const extraAction of this.config.extraActions) {
+				hasActions = true;
+				const extraButton = ListPicker.makeActionElem(extraAction.cssClass, extraAction.icon);
+				popover.appendChild(extraButton);
+				const extraTooltip = tippy(extraButton, {
+					allowHTML: false,
+					content: extraAction.tooltip,
+				});
+				extraButton.addEventListener(
+					'click',
+					() => {
+						extraAction.onClick(index);
+						extraTooltip.hide();
+						try {
+							popover.hidePopover();
+						} catch {
+							// popover may already be hidden
+						}
+					},
+					{ signal: this.signal },
+				);
+				itemPicker.addOnDisposeCallback(() => extraTooltip?.destroy());
+				this.addHoverListeners(extraButton);
+				if (extraAction.shouldShow) {
+					extraActionButtons.push({ elem: extraButton, shouldShow: extraAction.shouldShow });
+				}
+			}
+		}
+
+		if (this.actionEnabled('copy')) {
+			hasActions = true;
+			const copyButton = ListPicker.makeActionElem('list-picker-item-copy', 'fa-copy');
+			popover.appendChild(copyButton);
+			const copyButtonTooltip = tippy(copyButton, {
+				allowHTML: false,
+				content: i18n.t('common.list_picker.copy_to_new', { itemLabel: translateItemLabel(this.config.itemLabel) }),
+			});
+
+			copyButton.addEventListener(
+				'click',
+				() => {
+					if ('onCopyItem' in this.config && this.config.onCopyItem) {
+						this.config.onCopyItem(index);
+					} else if ('copyItem' in this.config && this.config.copyItem) {
+						const newList = this.config.getValue(this.modObject).slice();
+						newList.splice(index, 0, this.config.copyItem(newList[index]));
+						this.config.setValue(nextEventID(), this.modObject, newList);
+					}
+					copyButtonTooltip.hide();
+				},
+				{ signal: this.signal },
+			);
+			itemPicker.addOnDisposeCallback(() => copyButtonTooltip?.destroy());
+			this.addHoverListeners(copyButton);
+		}
+
+		if (this.actionEnabled('move')) {
+			itemContainer.classList.add('draggable');
+			if (this.config.itemLabel) {
+				itemContainer.classList.add(this.config.itemLabel.toLowerCase().replace(' ', '-'));
+			}
+
+			// Direct drag on the container itself
+			const isInteractiveTarget = (target: HTMLElement): boolean => {
+				const interactiveTags = new Set(['INPUT', 'TEXTAREA']);
+				let el: HTMLElement | null = target;
+				while (el && el !== itemContainer) {
+					if (interactiveTags.has(el.tagName)) return true;
+					if (el.getAttribute('contenteditable') === 'true') return true;
+					el = el.parentElement;
+				}
+				return false;
+			};
+
+			itemContainer.addEventListener(
+				'mousedown',
+				event => {
+					const target = event.target as HTMLElement;
+					// Don't start drag if clicking within a nested list-picker-item-container
+					const closestContainer = target.closest('.list-picker-item-container');
+					if (closestContainer !== itemContainer) return;
+					// Don't start drag on interactive elements
+					if (isInteractiveTarget(target)) return;
+					itemContainer.setAttribute('draggable', 'true');
+				},
+				{ signal: this.signal },
+			);
+
+			itemContainer.addEventListener(
+				'dragstart',
+				event => {
+					// Skip if drag was already initiated
+					if (curDragData) return;
+					if (event.target !== itemContainer) return;
+					const rect = itemContainer.getBoundingClientRect();
+					event.dataTransfer!.setDragImage(itemContainer, 0, event.clientY - rect.top);
+					event.dataTransfer!.dropEffect = 'move';
+					event.dataTransfer!.effectAllowed = 'move';
+					itemContainer.classList.add('dragfrom');
+					curDragData = {
+						listPicker: this,
+						item: item,
+					};
+				},
+				{ signal: this.signal },
+			);
+
+			document.addEventListener(
+				'mouseup',
+				() => {
+					if (!curDragData) {
+						itemContainer.removeAttribute('draggable');
+					}
+				},
+				{ signal: itemAbort.signal },
+			);
+
+			const droppingActionOnOtherList = () => {
+				if (!curDragData || curDragData.listPicker === this) return false;
+				if (this.config.itemLabel !== 'Action') return false;
+				if (this.config.dragGroup && curDragData.listPicker.config.dragGroup === this.config.dragGroup) return false;
+				return true;
+			};
+			const targetIsSelf = () => curDragData && curDragData.listPicker === this && curDragData.item.idx === index;
+			const targetIsChild = () => curDragData && curDragData.item.elem.contains(itemContainer);
+
+			const invalidDropTarget = (checkSelf = true) => {
+				// Only allow dropping on the same type of list, Value -> Value, Action -> Action
+				if (!curDragData || curDragData.listPicker.config.itemLabel !== this.config.itemLabel) {
+					return true;
+				}
+
+				// Only allow dropping Actions within the same list
+				if (droppingActionOnOtherList()) {
+					return true;
+				}
+
+				// Just skip trying to drop on itself?
+				if (checkSelf && targetIsSelf()) {
+					return true;
+				}
+
+				// Can't drop within itself
+				if (checkSelf && targetIsChild()) {
+					return true;
+				}
+
+				return false;
+			};
+
+			let dragEnterCounter = 0;
+			itemContainer.addEventListener(
+				'dragenter',
+				event => {
+					if (invalidDropTarget()) {
+						return;
+					}
+					event.stopPropagation();
+					dragEnterCounter++;
+					itemContainer.classList.add('dragto');
+				},
+				{ signal: this.signal },
+			);
+
+			itemContainer.addEventListener(
+				'dragleave',
+				event => {
+					if (invalidDropTarget()) {
+						return;
+					}
+					event.preventDefault();
+					dragEnterCounter--;
+					if (dragEnterCounter <= 0) {
+						itemContainer.classList.remove('dragto');
+					}
+				},
+				{ signal: this.signal },
+			);
+
+			itemContainer.addEventListener(
+				'dragover',
+				event => {
+					if (invalidDropTarget()) {
+						if (droppingActionOnOtherList() || targetIsSelf()) {
+							event.dataTransfer!.dropEffect = 'none';
+						}
+
+						return;
+					}
+					event.dataTransfer!.dropEffect = 'move';
+					event.stopPropagation();
+					event.preventDefault();
+				},
+				{ signal: this.signal },
+			);
+
+			const cleanupAfterDrag = () => {
+				if (!curDragData) {
+					return;
+				}
+				itemContainer.removeAttribute('draggable');
+				curDragData.item.elem.removeAttribute('draggable');
+				[...document.querySelectorAll('.dragfrom,.dragto')].forEach(elem => {
+					elem.classList.remove('dragfrom');
+					elem.classList.remove('dragto');
+				});
+			};
+
+			itemContainer.addEventListener(
+				'dragend',
+				event => {
+					if (invalidDropTarget(false)) {
+						return;
+					}
+					event.stopPropagation();
+					cleanupAfterDrag();
+					curDragData = null;
+				},
+				{ signal: this.signal },
+			);
+
+			itemContainer.addEventListener(
+				'drop',
+				event => {
+					if (!curDragData || invalidDropTarget()) {
+						if (targetIsSelf()) {
+							event.stopPropagation();
+							cleanupAfterDrag();
+						}
+						return;
+					}
+					event.stopPropagation();
+					cleanupAfterDrag();
+
+					const srcIdx = curDragData.item.idx;
+					let dstIdx = index;
+
+					const targetRect = itemContainer.getBoundingClientRect();
+					if (event.clientY > targetRect.top + targetRect.height / 2) {
+						dstIdx++;
+					}
+
+					const newList = this.config.getValue(this.modObject);
+					let arrElem;
+
+					if (curDragData.listPicker !== this) {
+						const oldList = curDragData.listPicker.config.getValue(curDragData.listPicker.modObject);
+						arrElem = oldList[srcIdx];
+						oldList.splice(srcIdx, 1);
+						curDragData.listPicker.config.setValue(nextEventID(), curDragData.listPicker.modObject, oldList);
+					} else {
+						arrElem = newList[srcIdx];
+						newList.splice(srcIdx, 1);
+					}
+
+					newList.splice(dstIdx, 0, arrElem);
+					this.config.setValue(nextEventID(), this.modObject, newList);
+
+					curDragData = null;
+				},
+				{ signal: this.signal },
+			);
+		}
+
+		if (hasActions) {
+			const actionsButton = ListPicker.makeActionElem('list-picker-item-actions', 'fa-ellipsis');
+			itemHeader.appendChild(actionsButton);
+			actionsButton.addEventListener(
+				'mouseover',
+				() => {
+					for (const { elem, shouldShow } of extraActionButtons) {
+						elem.style.display = shouldShow!(index) ? '' : 'none';
+					}
+					popover.showPopover();
+					const actionsButtonRect = actionsButton.getBoundingClientRect();
+					const popoverRect = popover.getBoundingClientRect();
+					const diff = (popoverRect.height - actionsButtonRect.height) / 2;
+					popover.style.top = actionsButtonRect.top - diff + 'px';
+					popover.style.left = actionsButtonRect.right - popoverRect.width + 10 + 'px';
+					popover.classList.add('hover');
+				},
+				{ signal: this.signal },
+			);
+			popover.addEventListener(
+				'mouseleave',
+				() => {
+					popover.classList.remove('hover');
+					popover.hidePopover();
+				},
+				{ signal: this.signal },
+			);
+		}
+
+		this.itemPickerPairs.push(item);
+	}
+
+	static makeActionElem(cssClass: string, iconCssClass: string): HTMLButtonElement {
+		return (
+			<button type="button" className={clsx('list-picker-item-action', cssClass)}>
+				<i className={clsx('fa', 'fa-xl', iconCssClass)} />
+			</button>
+		) as HTMLButtonElement;
+	}
+
+	static getItemHeaderElem(itemPicker: Input<any, any>): HTMLElement {
+		const itemElem = itemPicker.rootElem.parentElement!;
+		const headerElem = itemElem.nextElementSibling || itemElem.previousElementSibling;
+		if (!headerElem?.classList.contains('list-picker-item-header')) {
+			throw new Error('Could not find list item header');
+		}
+		return headerElem as HTMLElement;
+	}
+
+	static logLevelDisplayData = new Map([
+		[
+			LogLevel.Information,
+			{
+				icon: 'fa-info-circle',
+				header: i18n.t('common.list_picker.additional_information'),
+			},
+		],
+		[
+			LogLevel.Warning,
+			{
+				icon: 'fa-exclamation-triangle',
+				header: i18n.t('common.list_picker.action_has_warnings'),
+			},
+		],
+		[
+			LogLevel.Error,
+			{
+				icon: 'fa-exclamation-triangle',
+				header: i18n.t('common.list_picker.action_has_errors'),
+			},
+		],
+	]);
+
+	static makeListItemValidations(itemHeaderElem: HTMLElement, player: Player<any>, getValidations: (player: Player<any>) => Array<APLValidation>) {
+		const validationElem = ListPicker.makeActionElem('apl-validations', 'fa-exclamation-triangle');
+		validationElem.setAttribute('data-bs-html', 'true');
+		const validationTooltip = tippy(validationElem, {
+			theme: 'dropdown-tooltip',
+			content: i18n.t('common.list_picker.warnings'),
+		});
+
+		itemHeaderElem.appendChild(validationElem);
+
+		const iconElem = validationElem.querySelector('i');
+
+		let unsubValidations: () => void = () => {};
+		const updateValidations = async () => {
+			if (!existsInDOM(validationElem)) {
+				validationTooltip?.destroy();
+				validationElem?.remove();
+				unsubValidations();
+				return;
+			}
+			validationTooltip.setContent('');
+			const validations = getValidations(player);
+			if (!validations.length) {
+				validationElem.style.display = 'none';
+			} else {
+				validationElem.style.removeProperty('display');
+				const formattedValidations = await Promise.all(
+					validations.map(async w => {
+						return { ...w, validation: await ActionId.replaceAllInString(w.validation) };
+					}),
+				);
+				let maxLogLevel = LogLevel.Undefined;
+				const groupedValidations = formattedValidations.reduce((groups, curr) => {
+					const logLevel = curr.logLevel;
+					maxLogLevel = Math.max(logLevel, maxLogLevel);
+
+					const group = groups.get(logLevel);
+					if (group) {
+						group.push(curr.validation);
+					} else {
+						groups.set(logLevel, [curr.validation]);
+					}
+
+					return groups;
+				}, new Map<LogLevel, string[]>());
+
+				for (const [_logLevel, displayData] of this.logLevelDisplayData) {
+					iconElem!.classList.remove(displayData.icon);
+				}
+
+				// New icon is set outside loop so log levels can share the same icon without risk of removing each other
+				const newIcon = this.logLevelDisplayData.get(maxLogLevel)?.icon;
+				if (newIcon) {
+					iconElem!.classList.add(newIcon);
+				}
+
+				for (const [key, value] of Object.entries(LogLevel)) {
+					validationElem.classList[value === maxLogLevel ? 'add' : 'remove'](`apl-validation-${key.toLowerCase()}`);
+				}
+
+				let content = '';
+				for (const [logLevel, validations] of groupedValidations) {
+					content =
+						content +
+						`
+						<p>${this.logLevelDisplayData.get(logLevel)?.header}</p>
+						<ul>
+							${validations.map(v => `<li>${v}</li>`).join('')}
+						</ul>
+					`;
+				}
+				validationTooltip.setContent(content);
+			}
+		};
+		updateValidations();
+		unsubValidations = subscribePlayerField(player, 'currentStats')(updateValidations);
+	}
+}

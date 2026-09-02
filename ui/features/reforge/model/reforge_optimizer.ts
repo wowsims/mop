@@ -1,22 +1,22 @@
 // DOM-free half of the reforge optimizer: settings access, EP / soft-cap math and
 // the solve itself (cache lookup, sim request, abort). The rendering half lives in
 // ../view/reforge_panel.tsx and owns every button, tooltip, toast and modal.
-import * as Mechanics from '@core/constants/mechanics';
 import type { IndividualSimUIConfig } from '@core/individual_sim_ui';
-import { Player } from '@core/player';
 import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '@core/proto/api';
 import { Class, ItemSlot, Spec, Stat } from '@core/proto/common';
-import { Gear } from '@core/proto_utils/gear';
-import { StatCap, Stats, UnitStat, UnitStatPresets } from '@core/proto_utils/stats';
-import { getReforgeCacheGearKey } from '@core/proto_utils/utils';
-import { ReforgeGearCache } from '@core/reforge_cache';
-import { ReforgeSettings as ReforgeSettingsState } from '@core/reforge_settings';
-import type { ReforgeOptimizeConfig, Sim } from '@core/sim';
-import { RequestTypes } from '@core/sim_signal_manager';
-import { EventID, nextEventID } from '@core/state/batch';
-import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@core/state/reforge_request';
-import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@core/state/subscriptions';
-import { isDevMode } from '@core/utils';
+import * as Mechanics from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { Gear } from '@domain/proto_utils/gear';
+import { StatCap, Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+import { getReforgeCacheGearKey } from '@domain/proto_utils/utils';
+import { ReforgeGearCache } from '@domain/reforge_cache';
+import { ReforgeSettings as ReforgeSettingsState } from '@domain/reforge_settings';
+import type { ReforgeOptimizeConfig, Sim } from '@domain/sim';
+import { RequestTypes } from '@domain/sim_signal_manager';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@domain/state/reforge_request';
+import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@domain/state/subscriptions';
+import { isDevMode } from '@domain/utils';
 
 export type StatTooltipContent = { [key in Stat]?: () => Element | string };
 
@@ -148,7 +148,7 @@ export class ReforgeOptimizerModel {
 		return weights;
 	}
 
-	// Settings API — delegates to this.settings (ui/core/reforge_settings.ts).
+	// Settings API — delegates to this.settings (ui/domain/reforge_settings.ts).
 	setStatCaps(eventID: EventID, newStatCaps: Stats) {
 		this.settings.setStatCaps(eventID, newStatCaps);
 	}
@@ -244,7 +244,7 @@ export class ReforgeOptimizerModel {
 		this.previousGear = previousGear;
 
 		const config = this.getReforgeOptimizeConfig(previousGear);
-		const cache = ReforgeGearCache.get(this.player.getPlayerSpec());
+		const cache = ReforgeGearCache.get(this.player.getPlayerSpec(), this.player.sim.env);
 		const configHash = await getReforgeConfigHash({
 			player: this.player,
 			reforgeRequest: this.getReforgeRequestForHash(config),

@@ -1,14 +1,14 @@
-import { GlyphConfig } from '@features/talents/view/glyphs_picker';
+import { Database } from '@domain/proto_utils/database';
+import { nameToClass, nameToProfession, nameToRace } from '@domain/proto_utils/names';
+import { GlyphConfig } from '@domain/talents/config';
+import { classGlyphsConfig } from '@domain/talents/factory';
 import { JsonObject } from '@protobuf-ts/runtime';
+import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '../../../proto/common';
-import { Database } from '../../../proto_utils/database';
-import { nameToClass, nameToProfession, nameToRace } from '../../../proto_utils/names';
-import { classGlyphsConfig } from '../../../talents/factory';
-import Toast from '../../toast';
 import { IndividualImporter } from './individual_importer';
 
 export class IndividualAddonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {

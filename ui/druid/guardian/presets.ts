@@ -38,7 +38,8 @@ export const DefaultSimpleRotation = DruidRotation.create({
 	prepullStampede: true,
 });
 
-import { Stats } from '../../core/proto_utils/stats';
+import { Stats } from '@domain/proto_utils/stats';
+
 import DefaultApl from './apls/default.apl.json';
 import EmpressApl from './apls/empress.apl.json';
 import HorridonApl from './apls/horridon.apl.json';

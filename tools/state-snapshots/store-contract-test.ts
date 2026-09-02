@@ -7,17 +7,17 @@
 // && HARNESS_BUNDLE=store-contract-test.js node tools/state-snapshots/run.mjs
 import '../../ui/warrior/arms/sim';
 
-import { Player } from '../../ui/core/player';
-import { PlayerSpecs } from '../../ui/core/player_specs';
 import { APLRotation } from '../../ui/core/proto/apl';
 import { Race, Spec, Stat } from '../../ui/core/proto/common';
-import { Database } from '../../ui/core/proto_utils/database';
-import { ItemSwapGear } from '../../ui/core/proto_utils/gear';
-import { ReforgeSettings } from '../../ui/core/reforge_settings';
-import { Sim } from '../../ui/core/sim';
-import { StatWeightActionSettings } from '../../ui/core/stat_weight_settings';
-import { batch, nextEventID } from '../../ui/core/state/batch';
-import { Emitter } from '../../ui/core/state/events';
+import { Player } from '../../ui/domain/player';
+import { PlayerSpecs } from '../../ui/domain/player_specs';
+import { Database } from '../../ui/domain/proto_utils/database';
+import { ItemSwapGear } from '../../ui/domain/proto_utils/gear';
+import { ReforgeSettings } from '../../ui/domain/reforge_settings';
+import { Sim } from '../../ui/domain/sim';
+import { StatWeightActionSettings } from '../../ui/domain/stat_weight_settings';
+import { batch, nextEventID } from '../../ui/domain/state/batch';
+import { Emitter } from '../../ui/domain/state/events';
 import {
 	subscribeAll,
 	subscribeEncounterChange,
@@ -34,7 +34,7 @@ import {
 	subscribeStatsInputs,
 	subscribeStatWeightsChange,
 	subscribeUnitMetadata,
-} from '../../ui/core/state/subscriptions';
+} from '../../ui/domain/state/subscriptions';
 import { makeMemoryEnv } from './memory_env';
 
 let failures = 0;

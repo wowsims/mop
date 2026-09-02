@@ -6,7 +6,7 @@
 // and timing protocols in tools/browser-perf select on `.results-sim-*`.
 import type { Raid as RaidProto } from '@core/proto/api';
 import type { Encounter as EncounterProto } from '@core/proto/common';
-import type { SimResult } from '@core/proto_utils/sim_result';
+import type { SimResult } from '@domain/proto_utils/sim_result';
 
 export type ReferenceData = {
 	simResult: SimResult;

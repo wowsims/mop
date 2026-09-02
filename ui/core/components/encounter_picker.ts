@@ -1,13 +1,7 @@
-import i18n from '../../i18n/config';
-import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '../../i18n/localization';
-import { trackEvent, TrackEventProps } from '../../tracking/utils';
-import { Encounter } from '../encounter';
-import { IndividualSimUI } from '../individual_sim_ui';
-import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common';
-import { Stats } from '../proto_utils/stats';
-import { Raid } from '../raid';
-import { SimUI } from '../sim_ui';
-import { EventID, nextEventID } from '../state/batch';
+import { Encounter } from '@domain/encounter';
+import { Stats } from '@domain/proto_utils/stats';
+import { Raid } from '@domain/raid';
+import { EventID, nextEventID } from '@domain/state/batch';
 import {
 	subscribeAll,
 	subscribeEncounterChange,
@@ -15,15 +9,22 @@ import {
 	subscribePlayerChange,
 	subscribePlayerField,
 	subscribeRaidField,
-} from '../state/subscriptions';
-import { randomUUID } from '../utils';
-import { BaseModal } from './base_modal';
-import { Component } from './component';
-import { Input } from './input';
-import { BooleanPicker } from './pickers/boolean_picker';
-import { EnumPicker } from './pickers/enum_picker';
-import { ListItemPickerConfig, ListPicker } from './pickers/list_picker';
-import { NumberPicker } from './pickers/number_picker';
+} from '@domain/state/subscriptions';
+import { randomUUID } from '@domain/utils';
+import { BaseModal } from '@ui-kit/base_modal';
+import { Component } from '@ui-kit/component';
+import { Input } from '@ui-kit/input';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { EnumPicker } from '@ui-kit/pickers/enum_picker';
+import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
+import { NumberPicker } from '@ui-kit/pickers/number_picker';
+
+import i18n from '../../i18n/config';
+import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '../../i18n/localization';
+import { trackEvent, TrackEventProps } from '../../tracking/utils';
+import { IndividualSimUI } from '../individual_sim_ui';
+import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common';
+import { SimUI } from '../sim_ui';
 export interface EncounterPickerConfig {
 	showExecuteProportion: boolean;
 }

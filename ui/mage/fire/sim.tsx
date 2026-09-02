@@ -1,14 +1,14 @@
+import * as Mechanics from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { PlayerClasses } from '@domain/player_classes';
+import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
-import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
-import { Player } from '../../core/player';
-import { PlayerClasses } from '../../core/player_classes';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '../../core/proto/apl';
 import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as MageInputs from '../inputs';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import { CalculateCombustionThresholds } from './calculate_combustion_thresholds';

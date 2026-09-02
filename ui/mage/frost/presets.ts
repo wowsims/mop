@@ -1,9 +1,10 @@
-import { Encounter } from '../../core/encounter';
+import { Encounter } from '@domain/encounter';
+import { Stats } from '@domain/proto_utils/stats';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, Race, Stat } from '../../core/proto/common';
 import { FrostMage_Options as MageOptions, MageArmor, MageMajorGlyph, MageMinorGlyph } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
 import FrostApl from './apls/frost.apl.json';
 import FrostAoeApl from './apls/frost_aoe.apl.json';
 import P1BISGear from './gear_sets/p1_bis.gear.json';

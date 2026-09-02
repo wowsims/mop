@@ -35,7 +35,7 @@ snapshots encode current behavior):
   wasm); await `Database.get()` instead.
 - `applySpecDefaults` in `snapshot.ts` mirrors `IndividualSimUI.applyDefaults`
   minus the UI-owned satellites (reforger, stat-weight settings, defaultBuild).
-  When defaults application moves into `ui/core/state/`, replace the mirror with
+  When defaults application moves into `ui/domain/state/`, replace the mirror with
   the real implementation — the snapshot diff then verifies the move.
 
 Not yet covered: the `IndividualSimSettings` envelope (reforge settings,

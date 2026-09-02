@@ -1,15 +1,15 @@
+import * as Mechanics from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { PlayerClasses } from '@domain/player_classes';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 
 import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
-import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
-import { Player } from '../../core/player';
-import { PlayerClasses } from '../../core/player_classes';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as PriestInputs from '../inputs';
 import * as Presets from './presets';
 

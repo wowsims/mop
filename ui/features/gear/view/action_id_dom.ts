@@ -1,61 +1,19 @@
-// DOM writers for an ActionId — the icon background, the Wowhead href and the
-// Wowhead tooltip dataset. These used to be methods on ActionId itself, which
-// made a pure value object (ui/core/proto_utils/action_id.ts) depend on the
-// DOM; ActionId is data now and the rendering lives here.
-import type { Player } from '@core/player';
+// The gear-specific ActionId rendering. The generic writers moved to
+// @ui-kit/action_id_dom (ui-kit may not import a feature, and the pickers use
+// them); they are re-exported here so existing importers keep one entry point
+// until the components/ split lands.
 import { Profession } from '@core/proto/common';
-import { ActionId } from '@core/proto_utils/action_id';
-import type { EquippedItem } from '@core/proto_utils/equipped_item';
-import type { WowheadTooltipItemParams, WowheadTooltipSpellParams } from '@core/wowhead';
+import type { Player } from '@domain/player';
+import type { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { setActionIdWowheadDataset } from '@ui-kit/action_id_dom';
 
-export function setActionIdBackground(actionId: ActionId, elem: HTMLElement) {
-	if (actionId.iconUrl) {
-		elem.style.backgroundImage = `url('${actionId.iconUrl}')`;
-	}
-}
-
-export function setActionIdWowheadHref(actionId: ActionId, elem: HTMLAnchorElement) {
-	if (actionId.itemId) {
-		elem.href = ActionId.makeItemUrl(actionId.itemId, actionId.randomSuffixId, actionId.reforgeId, actionId.upgradeStep);
-	} else if (actionId.spellId) {
-		elem.href = ActionId.makeSpellUrl(actionId.spellIdTooltipOverride || actionId.spellId);
-	}
-}
-
-export async function setActionIdWowheadDataset(
-	actionId: ActionId,
-	elem: HTMLElement,
-	params?: Omit<WowheadTooltipItemParams, 'itemId'> | Omit<WowheadTooltipSpellParams, 'spellId'>,
-) {
-	(actionId.itemId
-		? ActionId.makeItemTooltipData(actionId.itemId, params)
-		: ActionId.makeSpellTooltipData(actionId.spellIdTooltipOverride || actionId.spellId, params)
-	).then(url => {
-		if (elem) elem.dataset.wowhead = url;
-	});
-}
-
-export function setActionIdBackgroundAndHref(actionId: ActionId, elem: HTMLAnchorElement) {
-	setActionIdBackground(actionId, elem);
-	setActionIdWowheadHref(actionId, elem);
-}
-
-export async function fillAndSetActionId(
-	actionId: ActionId,
-	elem: HTMLAnchorElement,
-	setHref: boolean,
-	setBackground: boolean,
-	options: { signal?: AbortSignal } = {},
-): Promise<ActionId> {
-	const filled = await actionId.fill(undefined, options);
-	if (setHref) {
-		setActionIdWowheadHref(filled, elem);
-	}
-	if (setBackground) {
-		setActionIdBackground(filled, elem);
-	}
-	return filled;
-}
+export {
+	fillAndSetActionId,
+	setActionIdBackground,
+	setActionIdBackgroundAndHref,
+	setActionIdWowheadDataset,
+	setActionIdWowheadHref,
+} from '@ui-kit/action_id_dom';
 
 // Writes the full Wowhead tooltip dataset for one equipped item (gems, enchants,
 // set pieces, upgrade step). Was Player.setWowheadData.

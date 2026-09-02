@@ -1,20 +1,20 @@
+import { Player } from '@domain/player';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { getEnchantDescription } from '@domain/proto_utils/enchants';
+import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { EventID } from '@domain/state/batch';
+import { subscribeAll, subscribePlayerField, subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from '@features/gear/view/action_id_dom';
 import { MISSING_RANDOM_SUFFIX_WARNING } from '@features/gear/view/item_notices';
+import { Component } from '@ui-kit/component';
+import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
-import { setItemQualityCssClass } from '../../css_utils';
-import { Player } from '../../player';
 import { ItemLevelState, ItemSlot } from '../../proto/common';
 import { UIEnchant as Enchant, UIGem as Gem } from '../../proto/ui';
-import { ActionId } from '../../proto_utils/action_id';
-import { getEnchantDescription } from '../../proto_utils/enchants';
-import { EquippedItem } from '../../proto_utils/equipped_item';
 import { SimUI } from '../../sim_ui';
-import { EventID } from '../../state/batch';
-import { subscribeAll, subscribePlayerField, subscribeSimField, subscribeUiField } from '../../state/subscriptions';
-import { Component } from '../component';
 import { ItemNotice } from '../item_notice/item_notice';
 import QuickSwapList from '../quick_swap';
 import { GearData } from './item_list';

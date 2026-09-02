@@ -1,10 +1,12 @@
-import { Player } from '../../core/player';
-import { PlayerSpecs } from '../../core/player_specs';
+import { browserEnv } from '@app/browser_env';
+import { Player } from '@domain/player';
+import { PlayerSpecs } from '@domain/player_specs';
+import { Sim } from '@domain/sim';
+import { nextEventID } from '@domain/state/batch';
+
 import { Spec } from '../../core/proto/common';
-import { Sim } from '../../core/sim';
-import { nextEventID } from '../../core/state/batch';
 import { ShadowPriestSimUI } from './sim';
-const sim = new Sim();
+const sim = new Sim({ env: browserEnv });
 const player = new Player<Spec.SpecShadowPriest>(PlayerSpecs.ShadowPriest, sim);
 sim.raid.setPlayer(nextEventID(), 0, player);
 

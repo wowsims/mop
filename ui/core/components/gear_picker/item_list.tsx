@@ -1,25 +1,26 @@
+import { SortDirection } from '@domain/constants/other';
+import { Player } from '@domain/player';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { getUniqueEnchantString } from '@domain/proto_utils/enchants';
+import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
+import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '@domain/proto_utils/names';
+import { getPVPSeasonFromItem, isPVPItem } from '@domain/proto_utils/utils';
+import { Sim } from '@domain/sim';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { StoreSubscribe, subscribeBulkField } from '@domain/state/subscriptions';
+import { formatDeltaTextElem } from '@domain/utils';
 import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
+import { setItemQualityCssClass } from '@ui-kit/css_utils';
+import { Clusterize } from '@ui-kit/vendor/clusterize';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { trackEvent } from '../../../tracking/utils';
-import { SortDirection } from '../../constants/other';
-import { setItemQualityCssClass } from '../../css_utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { Player } from '../../player';
 import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '../../proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '../../proto/ui';
-import { ActionId } from '../../proto_utils/action_id';
-import { getUniqueEnchantString } from '../../proto_utils/enchants';
-import { EquippedItem, ReforgeData } from '../../proto_utils/equipped_item';
-import { difficultyNames, professionNames, REP_FACTION_NAMES, REP_FACTION_QUARTERMASTERS, REP_LEVEL_NAMES } from '../../proto_utils/names';
-import { getPVPSeasonFromItem, isPVPItem } from '../../proto_utils/utils';
-import { Sim } from '../../sim';
 import { SimUI } from '../../sim_ui';
-import { EventID, nextEventID } from '../../state/batch';
-import { StoreSubscribe, subscribeBulkField } from '../../state/subscriptions';
-import { formatDeltaTextElem } from '../../utils';
 import {
 	makePhaseSelector,
 	makeShow1hWeaponsSelector,
@@ -28,7 +29,6 @@ import {
 	makeShowMatchingGemsSelector,
 } from '../inputs/other_inputs';
 import { ItemNotice } from '../item_notice/item_notice';
-import { Clusterize } from '../virtual_scroll/clusterize';
 import { FiltersMenu } from './filters_menu';
 import { getTranslatedTabLabel, SelectorModalTabs } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';

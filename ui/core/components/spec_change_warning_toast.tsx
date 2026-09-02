@@ -1,5 +1,5 @@
-import { Player } from '../player';
-import Toast, { ToastOptions } from './toast';
+import { Player } from '@domain/player';
+import Toast, { ToastOptions } from '@ui-kit/toast';
 
 export type SpecCheckWarning = {
 	condition: (player: Player<any>) => boolean;

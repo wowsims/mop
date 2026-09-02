@@ -1,18 +1,18 @@
+import { Player } from '@domain/player';
+import { Database } from '@domain/proto_utils/database';
+import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { Component } from '@ui-kit/component';
+import { buildIconInput } from '@ui-kit/icon_inputs';
+import { IconEnumPicker } from '@ui-kit/pickers/icon_enum_picker';
+import { IconPicker } from '@ui-kit/pickers/icon_picker';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { Player } from '../../player';
 import { Class, ConsumableType, Spec } from '../../proto/common';
 import { Consumable } from '../../proto/db';
-import { Database } from '../../proto_utils/database';
-import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
-import { Component } from '../component';
-import { buildIconInput } from '../icon_inputs';
 import * as ConsumablesInputs from '../inputs/consumables';
 import { relevantStatOptions } from '../inputs/stat_options';
-import { IconEnumPicker } from '../pickers/icon_enum_picker';
-import { IconPicker } from '../pickers/icon_picker';
 import { SettingsTab } from './settings_tab';
 
 export class ConsumesPicker extends Component {

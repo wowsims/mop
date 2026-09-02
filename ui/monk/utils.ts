@@ -1,6 +1,7 @@
-import { Player } from '../core/player';
+import { Player } from '@domain/player';
+import { nextEventID } from '@domain/state/batch';
+
 import { MonkTalents } from '../core/proto/monk';
-import { nextEventID } from '../core/state/batch';
 /**
  * Sets talent-based settings for monk specs, particularly target dummies
  * based on talent selections that affect targeting mechanics.

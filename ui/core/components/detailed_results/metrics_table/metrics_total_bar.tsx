@@ -1,8 +1,8 @@
+import { spellSchoolNames } from '@domain/proto_utils/names';
+import { formatToCompactNumber, formatToPercent } from '@domain/utils';
 import clsx from 'clsx';
 
 import { SpellSchool } from '../../../proto/common';
-import { spellSchoolNames } from '../../../proto_utils/names';
-import { formatToCompactNumber, formatToPercent } from '../../../utils';
 
 export type MetricsTotalBarProps = {
 	percentage: number | undefined | null;

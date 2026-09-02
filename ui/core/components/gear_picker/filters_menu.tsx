@@ -1,16 +1,17 @@
+import { Player } from '@domain/player';
+import { Sim } from '@domain/sim';
+import { EventID } from '@domain/state/batch';
+import { subscribeSimField } from '@domain/state/subscriptions';
+import { BaseModal } from '@ui-kit/base_modal';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { EnumPicker } from '@ui-kit/pickers/enum_picker';
+import { NumberPicker } from '@ui-kit/pickers/number_picker';
+
 import i18n from '../../../i18n/config';
 import { sourceFilterI18nKeys } from '../../../i18n/entity_mapping';
 import { translateArmorType, translateRaidFilter, translateRangedWeaponType, translateSourceFilter, translateWeaponType } from '../../../i18n/localization';
-import { Player } from '../../player';
 import { ItemSlot } from '../../proto/common';
 import { SourceFilterOption, UIItem_FactionRestriction } from '../../proto/ui';
-import { Sim } from '../../sim';
-import { EventID } from '../../state/batch';
-import { subscribeSimField } from '../../state/subscriptions';
-import { BaseModal } from '../base_modal';
-import { BooleanPicker } from '../pickers/boolean_picker';
-import { EnumPicker } from '../pickers/enum_picker';
-import { NumberPicker } from '../pickers/number_picker';
 const factionRestrictionsToLabels: Record<UIItem_FactionRestriction, string> = {
 	[UIItem_FactionRestriction.UNSPECIFIED]: i18n.t('gear_tab.gear_picker.filters.faction_labels.none'),
 	[UIItem_FactionRestriction.ALLIANCE_ONLY]: i18n.t('gear_tab.gear_picker.filters.faction_labels.alliance_only'),

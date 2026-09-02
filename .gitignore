@@ -1,7 +1,7 @@
 # nodejs modules
 node_modules
 
-ui/core/**/*_auto_gen.ts
+ui/**/*_auto_gen.ts
 ui/*/*/index.html
 .dirstamp
 

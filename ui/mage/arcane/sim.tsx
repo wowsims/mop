@@ -1,16 +1,16 @@
+import * as Mechanics from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { PlayerClasses } from '@domain/player_classes';
+import { Mage } from '@domain/player_classes/mage';
+import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
+import { formatToNumber } from '@domain/utils';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
-import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
-import { Player } from '../../core/player';
-import { PlayerClasses } from '../../core/player_classes';
-import { Mage } from '../../core/player_classes/mage';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { formatToNumber } from '../../core/utils';
 import * as MageInputs from '../inputs';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
 import * as ArcaneInputs from './inputs';

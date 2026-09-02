@@ -1,8 +1,9 @@
+import { Stats } from '@domain/proto_utils/stats';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Stat } from '../../core/proto/common';
 import { RestorationShaman_Options as RestorationShamanOptions, ShamanShield } from '../../core/proto/shaman';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
 import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';
 import P3Gear from './gear_sets/p3.gear.json';

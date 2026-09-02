@@ -150,7 +150,7 @@ func GenerateEffectsFile(groups []*Group, outFile string, templateString string)
 	return nil
 }
 
-const missingEffectsFileName = "ui/core/constants/missing_effects_auto_gen.ts"
+const missingEffectsFileName = "ui/domain/constants/missing_effects_auto_gen.ts"
 
 func GenerateMissingEffectsFile() error {
 	if _, err := os.Stat(missingEffectsFileName); err != nil && !os.IsNotExist(err) {

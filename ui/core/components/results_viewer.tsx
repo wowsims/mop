@@ -1,8 +1,8 @@
+import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { Component } from '@ui-kit/component';
 import tippy, { inlinePositioning, Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { Component } from '../components/component';
-import type { StoreSubscribe } from '../state/subscriptions';
 import { SimToolbarItem } from './header/sim_toolbar_item';
 
 // Config for displaying a warning to the user whenever a condition is met.

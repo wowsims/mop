@@ -636,7 +636,7 @@ message Encounter {
 	// make any changes to this proto that will break saved browser data or
 	// old sim links, then make sure to increment the current_version_number
 	// option within the ProtoVersion message at the top of this file, and
-	// also modify the updateProtoVersion() method of ui/core/encounter.ts .
+	// also modify the updateProtoVersion() method of ui/domain/encounter.ts .
 	int32 api_version = 9;
 
 	double duration = 1;

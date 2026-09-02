@@ -1,17 +1,17 @@
+import { Player } from '@domain/player';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { nextEventID } from '@domain/state/batch';
+import { subscribePlayerField } from '@domain/state/subscriptions';
 import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
+import { Component } from '@ui-kit/component';
+import { ContentBlock } from '@ui-kit/content_block';
+import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { trackEvent } from '../../../tracking/utils';
-import { setItemQualityCssClass } from '../../css_utils';
-import { Player } from '../../player';
 import { UIGem as Gem } from '../../proto/ui';
-import { ActionId } from '../../proto_utils/action_id';
 import { SimUI } from '../../sim_ui';
-import { nextEventID } from '../../state/batch';
-import { subscribePlayerField } from '../../state/subscriptions';
-import { Component } from '../component';
-import { ContentBlock } from '../content_block';
 interface GemSummaryData {
 	gem: Gem;
 	count: number;

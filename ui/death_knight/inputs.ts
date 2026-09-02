@@ -1,10 +1,11 @@
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
 
-import { Player } from '../core/player';
+import { Player } from '@domain/player';
+import { Sim } from '@domain/sim';
+import { EventID } from '@domain/state/batch';
+
 import { Spec } from '../core/proto/common';
-import { Sim } from '../core/sim';
-import { EventID } from '../core/state/batch';
 // NPC IDs of encounters whose AI casts real magic damage at raid players, so Anti-Magic
 // Shell already absorbs it through the normal path and generates Runic Power from it. Keep
 // this in sync with the boss AI types checked by DeathKnight.disableAMSIntakeOnMagicDamageEncounters

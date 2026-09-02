@@ -26,7 +26,7 @@ Files (all under sim/core/reforge_optimizer/):
 - HiGHS bridge:
   - Go non-browser (embedded, pooled wazero): highswasm.go. (Do NOT rename to highs_wasm.go — the `_wasm.go` suffix is an implicit GOARCH=wasm constraint that breaks the native build.)
   - Browser wasm: highs_js.go.
-- Frontend caller: ui/features/reforge/model/reforge_optimizer.ts (panel: ui/features/reforge/view/reforge_panel.tsx). The 14-day IndexedDB cache key contract lives in cacheRelevantPlayerProto / cacheRelevantReforgeRequest there — any new field that affects a solve must be reflected in those two functions, and any irrelevant field must be excluded, or caches go silently stale / get needlessly busted. Hashing is synchronous via hashString in ui/core/utils.ts.
+- Frontend caller: ui/features/reforge/model/reforge_optimizer.ts (panel: ui/features/reforge/view/reforge_panel.tsx). The 14-day IndexedDB cache key contract lives in cacheRelevantPlayerProto / cacheRelevantReforgeRequest there — any new field that affects a solve must be reflected in those two functions, and any irrelevant field must be excluded, or caches go silently stale / get needlessly busted. Hashing is synchronous via hashString in ui/domain/utils.ts.
 
 ## Key Backend Concepts (rewrite)
 - Objective/cap coefficient split: the objective uses EP-calibrated applyReforgeStat (objByName); cap-constraint rows use full-SDM resolveStatDelta (byName), so Int->crit%, Agi->crit%/AP, the haste speed multiplier, etc. all count toward caps.

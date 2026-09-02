@@ -1,21 +1,23 @@
-import { Component } from '@core/components/component';
-import { CopyButton } from '@core/components/copy_button';
-import { Input, InputConfig } from '@core/components/input';
-import { Player } from '@core/player';
-import { PlayerSpecs } from '@core/player_specs';
 import { Class, Spec } from '@core/proto/common';
-import { ActionId } from '@core/proto_utils/action_id';
-import { nextEventID } from '@core/state/batch';
-import { classGlyphsConfig } from '@core/talents/factory';
-import { isRightClick } from '@core/utils';
+import { Player } from '@domain/player';
+import { PlayerSpecs } from '@domain/player_specs';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { nextEventID } from '@domain/state/batch';
+import type { TalentConfig, TalentLocation, TalentsConfig, TalentTreeConfig } from '@domain/talents/config';
+import { classGlyphsConfig } from '@domain/talents/factory';
+import { isRightClick } from '@domain/utils';
 import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import i18n from '@i18n/config';
 import { getClassI18nKey } from '@i18n/entity_mapping';
 import { translatePlayerSpec } from '@i18n/localization';
+import { Component } from '@ui-kit/component';
+import { CopyButton } from '@ui-kit/copy_button';
+import { Input, InputConfig } from '@ui-kit/input';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { GlyphsPicker } from './glyphs_picker';
+
 export interface TalentsPickerConfig<ModObject, TalentsProto> extends InputConfig<ModObject, string> {
 	playerClass: Class;
 	playerSpec: Spec;
@@ -261,42 +263,4 @@ class TalentPicker<TalentsProto> extends Component {
 				this.icon.style.backgroundImage = `url('${actionId.iconUrl}')`;
 			});
 	}
-}
-
-export type TalentsConfig<TalentsProto> = TalentTreeConfig<TalentsProto>;
-
-export type TalentTreeConfig<TalentsProto> = {
-	backgroundUrl: string;
-	talents: Array<TalentConfig<TalentsProto>>;
-};
-
-export type TalentLocation = {
-	// 0-indexed row in the tree
-	rowIdx: number;
-	// 0-indexed column in the tree
-	colIdx: number;
-};
-
-export type TalentConfig<TalentsProto> = {
-	fieldName: keyof TalentsProto | string;
-	fancyName: string;
-	location: TalentLocation;
-	spellId: number;
-};
-
-export function newTalentsConfig<TalentsProto>(talentConfig: TalentsConfig<TalentsProto>): TalentsConfig<TalentsProto> {
-	talentConfig.talents.forEach((talent, i) => {
-		// Validate that talents are given in the correct order (left-to-right top-to-bottom).
-		if (i != 0) {
-			const prevTalent = talentConfig.talents[i - 1];
-			if (
-				talent.location.rowIdx < prevTalent.location.rowIdx ||
-				(talent.location.rowIdx == prevTalent.location.rowIdx && talent.location.colIdx <= prevTalent.location.colIdx)
-			) {
-				throw new Error(`Out-of-order talent: ${String(talent.fancyName)}`);
-			}
-		}
-	});
-
-	return talentConfig;
 }

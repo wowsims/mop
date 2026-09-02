@@ -1,11 +1,12 @@
+import { BulkSimItemSlot } from '@domain/bulk/utils';
+import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { ContentBlock } from '@ui-kit/content_block';
+import Toast from '@ui-kit/toast';
+
 import i18n from '../../../../i18n/config';
 import { getBulkSlotI18nKey } from '../../../../i18n/entity_mapping';
 import { translateBulkSlotName } from '../../../../i18n/localization';
-import { BulkSimItemSlot } from '../../../bulk/utils';
 import { IndividualSimUI } from '../../../individual_sim_ui';
-import { EquippedItem } from '../../../proto_utils/equipped_item';
-import { ContentBlock } from '../../content_block';
-import Toast from '../../toast';
 import { BulkTab } from '../bulk_tab';
 import BulkItemPicker from './bulk_item_picker';
 

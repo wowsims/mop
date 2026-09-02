@@ -1,12 +1,13 @@
-import { SimLog } from '@features/results/model/logs_parser';
+import { SimLog } from '@domain/proto_utils/logs';
+import { Emitter } from '@domain/state/events';
+import { renderLog } from '@features/results/view/log_lines';
 import i18n from '@i18n/config';
+import { fragmentToString } from '@ui-kit/dom_utils';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 // @ts-expect-error
 import debounce from 'lodash/debounce';
 import { ref } from 'tsx-vanilla';
 
-import { Emitter } from '../../state/events';
-import { fragmentToString } from '../../utils';
-import { BooleanPicker } from '../pickers/boolean_picker';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 export class LogRunner extends ResultComponent {
 	private virtualScroll: CustomVirtualScroll | null = null;
@@ -156,7 +157,7 @@ export class LogRunner extends ResultComponent {
 		return (
 			<tr>
 				<td className="log-timestamp">{log.formattedTimestamp()}</td>
-				<td className="log-evdsfent">{log.toHTML(false).cloneNode(true)}</td>
+				<td className="log-evdsfent">{renderLog(log, false).cloneNode(true)}</td>
 			</tr>
 		) as HTMLTableRowElement;
 	}

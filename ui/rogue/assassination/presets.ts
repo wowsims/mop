@@ -1,8 +1,9 @@
+import { Stats } from '@domain/proto_utils/stats';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, PseudoStat, Stat } from '../../core/proto/common';
 import { AssassinationRogue_Options as RogueOptions, RogueMajorGlyph, RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
 import AssassinationApl from './apls/assassination.apl.json';
 import P2Gear from './gear_sets/p2_assassination.gear.json';
 import P3Gear from './gear_sets/p3_assassination.gear.json';

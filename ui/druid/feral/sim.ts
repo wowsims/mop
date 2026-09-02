@@ -1,11 +1,15 @@
+import * as Mechanics from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { PlayerClasses } from '@domain/player_classes';
+import * as AplUtils from '@domain/proto_utils/apl_utils';
+import { Stats, UnitStat } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { RelativeStatCap } from '@domain/reforge_settings';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 
 import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
-import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
-import { Player } from '../../core/player';
-import { PlayerClasses } from '../../core/player_classes';
 import { APLAction, APLListItem, APLPrepullAction, APLRotation, APLRotation_Type as APLRotationType } from '../../core/proto/apl';
 import { Cooldowns, Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import {
@@ -13,10 +17,6 @@ import {
 	FeralDruid_Rotation_AplType as FeralRotationType,
 	FeralDruid_Rotation_HotwStrategy as HotwStrategy,
 } from '../../core/proto/druid';
-import * as AplUtils from '../../core/proto_utils/apl_utils';
-import { Stats, UnitStat } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import { RelativeStatCap } from '../../core/reforge_settings';
 import * as FeralInputs from './inputs';
 import * as Presets from './presets';
 

@@ -1,22 +1,24 @@
+import { CacheHandler } from '@domain/cache_handler';
+import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '@domain/proto_utils/action_id';
+import { AuraUptimeLog, CastLog, DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '@domain/proto_utils/logs';
+import { resourceNames } from '@domain/proto_utils/names';
+import SecondaryResource from '@domain/proto_utils/secondary_resource';
+import { UnitMetrics } from '@domain/proto_utils/sim_result';
+import { orderedResourceTypes } from '@domain/proto_utils/utils';
+import { Emitter } from '@domain/state/events';
+import { bucket, distinct, maxIndex, stringComparator } from '@domain/utils';
 import { setActionIdBackground, setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
-import { AuraUptimeLog, CastLog, DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '@features/results/model/logs_parser';
+import { renderDamageResult } from '@features/results/view/log_lines';
+import { fragmentToString } from '@ui-kit/dom_utils';
 import ApexCharts from 'apexcharts';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
-import { CacheHandler } from '../../cache_handler';
 import { APLActionItemSwap_SwapSet } from '../../proto/apl';
 import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
-import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '../../proto_utils/action_id';
-import { resourceNames } from '../../proto_utils/names';
-import SecondaryResource from '../../proto_utils/secondary_resource';
-import { UnitMetrics } from '../../proto_utils/sim_result';
-import { orderedResourceTypes } from '../../proto_utils/utils';
-import { Emitter } from '../../state/events';
-import { bucket, distinct, fragmentToString, maxIndex, stringComparator } from '../../utils';
 import { actionColors } from './color_settings';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 
@@ -956,7 +958,7 @@ export class Timeline extends ResultComponent {
 							{castLog.damageDealtLogs.map(ddl => (
 								<li>
 									<span>
-										{ddl.timestamp.toFixed(2)}s - {ddl.result()}
+										{ddl.timestamp.toFixed(2)}s - {renderDamageResult(ddl)}
 									</span>
 									{ddl.source?.isTarget && (
 										<span className="threat-metrics">
@@ -993,7 +995,7 @@ export class Timeline extends ResultComponent {
 					const tt = (
 						<div className="timeline-tooltip">
 							<span>
-								{ddl.timestamp.toFixed(2)}s - {ddl.actionId!.name} {ddl.result()}
+								{ddl.timestamp.toFixed(2)}s - {ddl.actionId!.name} {renderDamageResult(ddl)}
 							</span>
 							{ddl.source?.isTarget && (
 								<span className="threat-metrics">
@@ -1154,7 +1156,7 @@ export class Timeline extends ResultComponent {
 					<span className="bold">{log.timestamp.toFixed(2)}s</span>
 				</div>
 				<div className="timeline-tooltip-body">
-					<ul className="timeline-dps-events">{log.damageLogs.map(damageLog => this.tooltipLogItem(damageLog, damageLog.result()))}</ul>
+					<ul className="timeline-dps-events">{log.damageLogs.map(damageLog => this.tooltipLogItem(damageLog, renderDamageResult(damageLog)))}</ul>
 					<div className="timeline-tooltip-body-row">
 						<span className="series-color">
 							{i18n.t('results_tab.details.timeline.tooltips.dps')}: {log.dps.toFixed(2)}

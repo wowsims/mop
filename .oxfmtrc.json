@@ -15,6 +15,6 @@
     "ui/**/apls/*.apl.json",
     "ui/**/builds/*.build.json",
     "ui/**/gear_sets/*.gear.json",
-    "ui/core/talents/trees/*.json"
+    "ui/domain/talents/trees/*.json"
   ]
 }

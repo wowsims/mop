@@ -1,9 +1,10 @@
+import { Stats } from '@domain/proto_utils/stats';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { APLRotation_Type as APLRotationType } from '../../core/proto/apl';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as RetributionPaladinOptions } from '../../core/proto/paladin';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import P5RetBuild from './builds/p5.build.json';
 import P5_Gear from './gear_sets/p5.gear.json';

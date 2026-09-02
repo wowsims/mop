@@ -1,11 +1,12 @@
+import { SimSettingCategories } from '@domain/constants/sim_settings';
+import { EventID } from '@domain/state/batch';
+import { getEnumValues } from '@domain/utils';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+
 import i18n from '../../../../i18n/config';
-import { SimSettingCategories } from '../../../constants/sim_settings';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Spec } from '../../../proto/common';
-import { EventID } from '../../../state/batch';
-import { getEnumValues } from '../../../utils';
 import { Exporter, ExporterOptions } from '../../exporter';
-import { BooleanPicker } from '../../pickers/boolean_picker';
 import { IndividualImporter } from '../importers/individual_importer';
 interface IndividualExporterOptions extends ExporterOptions {
 	selectCategories?: boolean;

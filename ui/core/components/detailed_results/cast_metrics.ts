@@ -1,5 +1,6 @@
+import { ActionMetrics } from '@domain/proto_utils/sim_result';
+
 import i18n from '../../../i18n/config';
-import { ActionMetrics } from '../../proto_utils/sim_result';
 import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table';
 import { ResultComponentConfig, SimResultData } from './result_component';
 

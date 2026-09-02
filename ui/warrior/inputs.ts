@@ -1,4 +1,5 @@
-import * as InputHelpers from '../core/components/input_helpers';
+import * as InputHelpers from '@ui-kit/input_helpers';
+
 import { Spec } from '../core/proto/common';
 import i18n from '../i18n/config';
 

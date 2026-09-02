@@ -1,13 +1,14 @@
+import { Player } from '@domain/player';
+import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { nextEventID } from '@domain/state/batch';
+import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { Component } from '@ui-kit/component';
+import { ContentBlock } from '@ui-kit/content_block';
+
 import i18n from '../../../i18n/config';
 import { trackEvent } from '../../../tracking/utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { Player } from '../../player';
 import { Faction, ItemQuality } from '../../proto/common';
-import { EquippedItem } from '../../proto_utils/equipped_item';
-import { nextEventID } from '../../state/batch';
-import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
-import { Component } from '../component';
-import { ContentBlock } from '../content_block';
 type UpgradeSummaryTotal = {
 	justicePoints: number;
 	honorPoints: number;

@@ -1,5 +1,6 @@
-import * as InputHelpers from '../../core/components/input_helpers';
-import { Player } from '../../core/player';
+import { Player } from '@domain/player';
+import * as InputHelpers from '@ui-kit/input_helpers';
+
 import { Class, Spec } from '../../core/proto/common';
 import i18n from '../../i18n/config';
 

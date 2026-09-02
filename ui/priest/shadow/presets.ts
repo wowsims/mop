@@ -1,9 +1,10 @@
+import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, PseudoStat, RaidBuffs, Stat } from '../../core/proto/common';
 import { PriestOptions_Armor, ShadowPriest_Options as Options } from '../../core/proto/priest';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import DefaultApl from './apls/default.apl.json';
 import P4Gear from './gear_sets/p4.gear.json';
 import P5Gear from './gear_sets/p5.gear.json';

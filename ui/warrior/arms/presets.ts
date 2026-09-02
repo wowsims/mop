@@ -1,8 +1,9 @@
+import { Stats } from '@domain/proto_utils/stats';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
 import { ArmsWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior';
-import { Stats } from '../../core/proto_utils/stats';
 import ArmsApl from './apls/arms.apl.json';
 import P2ArmsBisGear from './gear_sets/p2_arms_bis.gear.json';
 import P4ArmsBisGear from './gear_sets/p4_arms_bis.gear.json';

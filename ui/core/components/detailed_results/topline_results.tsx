@@ -1,10 +1,10 @@
+import { DeathKnight } from '@domain/player_classes/death_knight';
+import { Hunter } from '@domain/player_classes/hunter';
+import { Rogue } from '@domain/player_classes/rogue';
+import { Warrior } from '@domain/player_classes/warrior';
+import { PlayerSpecs } from '@domain/player_specs/index';
 import { SimResultsManager } from '@features/results/view/results_action';
 
-import { DeathKnight } from '../../player_classes/death_knight';
-import { Hunter } from '../../player_classes/hunter';
-import { Rogue } from '../../player_classes/rogue';
-import { Warrior } from '../../player_classes/warrior';
-import { PlayerSpecs } from '../../player_specs/index';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 
 export class ToplineResults extends ResultComponent {

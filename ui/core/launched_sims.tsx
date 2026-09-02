@@ -1,5 +1,6 @@
-import { Phase } from './constants/other';
-import { Player } from './player';
+import { Phase } from '@domain/constants/other';
+import { Player } from '@domain/player';
+
 import { Spec } from './proto/common';
 
 // This file is for anything related to launching a new sim. DO NOT touch this

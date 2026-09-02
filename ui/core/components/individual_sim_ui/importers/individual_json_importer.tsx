@@ -1,9 +1,10 @@
+import { Database } from '@domain/proto_utils/database';
+import { nextEventID } from '@domain/state/batch';
+
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Spec } from '../../../proto/common';
 import { IndividualSimSettings } from '../../../proto/ui';
-import { Database } from '../../../proto_utils/database';
-import { nextEventID } from '../../../state/batch';
 import { IndividualImporter } from './individual_importer';
 export class IndividualJsonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
 	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {

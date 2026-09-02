@@ -1,10 +1,11 @@
+import { Player } from '@domain/player';
+import { Stats } from '@domain/proto_utils/stats';
+
 import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
-import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '../../core/proto/monk';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import DefaultP2BisGear from './gear_sets/p2_bis.gear.json';
 import DefaultP4BisGear from './gear_sets/p4_bis.gear.json';

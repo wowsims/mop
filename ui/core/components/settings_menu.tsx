@@ -1,18 +1,18 @@
+import { Sim } from '@domain/sim';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
+import { BaseModal } from '@ui-kit/base_modal';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { EnumPicker, EnumValueConfig } from '@ui-kit/pickers/enum_picker';
+import { NumberPicker } from '@ui-kit/pickers/number_picker';
+import Toast from '@ui-kit/toast';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config';
 import { setLang, supportedLanguages } from '../../i18n/locale_service';
 import { trackEvent } from '../../tracking/utils';
-import { Sim } from '../sim';
 import { SimUI } from '../sim_ui';
-import { EventID, nextEventID } from '../state/batch';
-import { subscribeSimField, subscribeUiField } from '../state/subscriptions';
-import { BaseModal } from './base_modal';
-import { BooleanPicker } from './pickers/boolean_picker';
-import { EnumPicker, EnumValueConfig } from './pickers/enum_picker';
-import { NumberPicker } from './pickers/number_picker';
-import Toast from './toast';
 export class SettingsMenu extends BaseModal {
 	private readonly simUI: SimUI;
 

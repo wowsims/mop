@@ -1,11 +1,11 @@
+import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@domain/constants/sim_settings';
+import { arrayEquals, getEnumValues } from '@domain/utils';
 import { default as pako } from 'pako';
 
 import i18n from '../../../../i18n/config';
-import { SIM_CATEGORY_KEYS, SimSettingCategories } from '../../../constants/sim_settings';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Spec } from '../../../proto/common';
 import { IndividualSimSettings } from '../../../proto/ui';
-import { arrayEquals, getEnumValues } from '../../../utils';
 import { IndividualImporter } from '../importers/individual_importer';
 import { IndividualExporter } from './individual_exporter';
 

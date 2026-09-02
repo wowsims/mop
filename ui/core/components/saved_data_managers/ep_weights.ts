@@ -1,11 +1,12 @@
+import { Player } from '@domain/player';
+import { Stats } from '@domain/proto_utils/stats';
+import { batch } from '@domain/state/batch';
+import { subscribePlayerField } from '@domain/state/subscriptions';
+import { SavedDataManager, SavedDataManagerConfig } from '@ui-kit/saved_data_manager';
+
 import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { Player } from '../../player';
 import { SavedEPWeights } from '../../proto/ui';
-import { Stats } from '../../proto_utils/stats';
-import { batch } from '../../state/batch';
-import { subscribePlayerField } from '../../state/subscriptions';
-import { SavedDataManager, SavedDataManagerConfig } from '../saved_data_manager';
 export const renderSavedEPWeights = (
 	container: HTMLElement | null,
 	simUI: IndividualSimUI<any>,

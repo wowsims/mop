@@ -1,19 +1,19 @@
+import { TopGearResult } from '@domain/bulk/types';
+import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@domain/bulk/utils';
+import { nextEventID } from '@domain/state/batch';
+import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '@domain/utils';
 import { SimResultsManager } from '@features/results/view/results_action';
+import { Component } from '@ui-kit/component';
+import Toast from '@ui-kit/toast';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../i18n/config';
-import { TopGearResult } from '../../../bulk/types';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '../../../bulk/utils';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { ItemSlot, ItemSpec } from '../../../proto/common';
-import { nextEventID } from '../../../state/batch';
-import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '../../../utils';
-import { Component } from '../../component';
 import { buildGearChangeIcon } from '../../gear_change_icon';
 import { ItemRenderer } from '../../gear_picker/gear_picker';
-import Toast from '../../toast';
 const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, canDualWield));
 

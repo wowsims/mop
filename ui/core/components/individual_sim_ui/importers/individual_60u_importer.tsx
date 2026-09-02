@@ -1,8 +1,9 @@
+import { nameToClass, nameToRace } from '@domain/proto_utils/names';
+import { talentSpellIdsToTalentString } from '@domain/talents/factory';
+import Toast from '@ui-kit/toast';
+
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { Class, EquipmentSpec, ItemSpec, Race, Spec } from '../../../proto/common';
-import { nameToClass, nameToRace } from '../../../proto_utils/names';
-import { talentSpellIdsToTalentString } from '../../../talents/factory';
-import Toast from '../../toast';
 import { IndividualImporter } from './individual_importer';
 
 export class Individual60UImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {

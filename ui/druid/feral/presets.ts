@@ -34,7 +34,7 @@ export const PRESET_BUILD_ST = PresetUtils.makePresetBuildFromJSON('Single-Targe
 import SustainedCleaveBuild from './builds/sustained_cleave.build.json';
 export const PRESET_BUILD_CLEAVE = PresetUtils.makePresetBuildFromJSON('4-Target Cleave', Spec.SpecFeralDruid, SustainedCleaveBuild);
 
-import { Stats } from '../../core/proto_utils/stats';
+import { Stats } from '@domain/proto_utils/stats';
 
 // Preset options for EP weights
 export const DOC_EP_PRESET = PresetUtils.makePresetEpWeights(

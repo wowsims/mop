@@ -1,15 +1,16 @@
+import { Player } from '@domain/player';
+import { nextEventID } from '@domain/state/batch';
+import { subscribePlayerField } from '@domain/state/subscriptions';
+import { Component } from '@ui-kit/component';
+import { ContentBlock } from '@ui-kit/content_block';
+import { CopyButton } from '@ui-kit/copy_button';
+
 import i18n from '../../../i18n/config';
 import { translateStat } from '../../../i18n/localization';
 import { trackEvent } from '../../../tracking/utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { Player } from '../../player';
 import { Stat } from '../../proto/common';
 import { IndividualSimSettings } from '../../proto/ui';
-import { nextEventID } from '../../state/batch';
-import { subscribePlayerField } from '../../state/subscriptions';
-import { Component } from '../component';
-import { ContentBlock } from '../content_block';
-import { CopyButton } from '../copy_button';
 type ReforgeSummaryTotal = {
 	[key in Stat]?: number;
 };

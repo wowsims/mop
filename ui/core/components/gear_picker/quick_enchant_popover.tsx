@@ -1,9 +1,10 @@
+import { Player } from '@domain/player';
+import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { nextEventID } from '@domain/state/batch';
+
 import i18n from '../../../i18n/config';
-import { Player } from '../../player';
 import { ItemSlot } from '../../proto/common';
 import { UIEnchant as Enchant } from '../../proto/ui';
-import { EquippedItem } from '../../proto_utils/equipped_item';
-import { nextEventID } from '../../state/batch';
 import QuickSwapList from '../quick_swap';
 export const addQuickEnchantPopover = (player: Player<any>, tooltipElement: HTMLElement, item: EquippedItem, itemSlot: ItemSlot, openDetailTab: () => void) => {
 	return new QuickSwapList({

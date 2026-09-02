@@ -1,5 +1,8 @@
+import { Player } from '@domain/player';
+import { Stats } from '@domain/proto_utils/stats';
+import { SpecOptions, SpecRotation, specTypeFunctions } from '@domain/proto_utils/utils';
+
 import i18n from '../i18n/config';
-import { Player } from './player';
 import { Player as PlayerProto, ReforgeSettings } from './proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
 import {
@@ -19,8 +22,6 @@ import {
 	UnitReference,
 } from './proto/common';
 import { IndividualSimSettings, SavedRotation, SavedTalents } from './proto/ui';
-import { Stats } from './proto_utils/stats';
-import { SpecOptions, SpecRotation, specTypeFunctions } from './proto_utils/utils';
 
 interface PresetBase {
 	name: string;

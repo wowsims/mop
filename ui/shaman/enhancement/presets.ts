@@ -1,4 +1,7 @@
-import * as Mechanics from '../../core/constants/mechanics';
+import * as Mechanics from '@domain/constants/mechanics';
+import { Stats } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common';
 import {
@@ -10,8 +13,6 @@ import {
 	ShamanSyncType,
 } from '../../core/proto/shaman';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import P1Apl from './apls/default.apl.json';
 import P3Apl from './apls/p3.apl.json';
 import P1Gear from './gear_sets/p1.gear.json';

@@ -1,4 +1,4 @@
-import { tryParseUrlLocation, UrlParseData } from '../../../state/sim_links';
+import { tryParseUrlLocation, UrlParseData } from '@domain/state/sim_links';
 
 // For now this just holds static helpers to match the exporter, so it doesn't extend Importer.
 export class IndividualLinkImporter {

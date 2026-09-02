@@ -1,7 +1,7 @@
-import { Component } from '../../components/component';
-import { SimResult, SimResultFilter } from '../../proto_utils/sim_result';
-import { EventID } from '../../state/batch';
-import { Emitter } from '../../state/events';
+import { SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
+import { EventID } from '@domain/state/batch';
+import { Emitter } from '@domain/state/events';
+import { Component } from '@ui-kit/component';
 export interface SimResultData {
 	eventID: EventID;
 	result: SimResult;

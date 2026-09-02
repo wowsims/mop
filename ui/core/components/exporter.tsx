@@ -1,12 +1,12 @@
+import { Emitter } from '@domain/state/events';
+import { BaseModal } from '@ui-kit/base_modal';
+import { CopyButton } from '@ui-kit/copy_button';
+import { downloadString } from '@ui-kit/dom_utils';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config';
 import { trackPageView } from '../../tracking/utils';
 import { SimUI } from '../sim_ui';
-import { Emitter } from '../state/events';
-import { downloadString } from '../utils';
-import { BaseModal } from './base_modal';
-import { CopyButton } from './copy_button';
 
 export interface ExporterOptions {
 	title: string;

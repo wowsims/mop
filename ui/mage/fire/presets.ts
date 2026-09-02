@@ -1,4 +1,6 @@
-import { Encounter } from '../../core/encounter';
+import { Encounter } from '@domain/encounter';
+import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ReforgeSettings } from '../../core/proto/api';
 import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
@@ -10,7 +12,6 @@ import {
 	MageMinorGlyph as MinorGlyph,
 } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats, UnitStat, UnitStatPresets } from '../../core/proto_utils/stats';
 import { DefaultDebuffs, DefaultRaidBuffs } from '../presets';
 import FireApl from './apls/fire.apl.json';
 import MasteryApl from './apls/mastery_fire.apl.json';

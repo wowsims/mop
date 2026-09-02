@@ -1,6 +1,6 @@
 ---
 name: wowsims-ui
-description: "Work on the wowsims MoP frontend (ui/). Use when touching ui/core (Sim/Player/Raid/Encounter facades, the Zustand sim store in ui/core/state, batching, persistence/serialization), components/pickers, spec configs, or when a UI change needs verifying (golden snapshot harness, bridge test, dev-server smoke). Self-documenting: update the 'Change log' section whenever the architecture described here changes."
+description: "Work on the wowsims MoP frontend (ui/). Use when touching ui/domain (Sim/Player/Raid/Encounter facades, the Zustand sim store in ui/domain/state, batching, persistence/serialization), ui/ui-kit (base classes/pickers), ui/features, ui/core/components, spec configs, or when a UI change needs verifying (golden snapshot harness, bridge test, dev-server smoke). Self-documenting: update the 'Change log' section whenever the architecture described here changes."
 ---
 
 # wowsims-ui
@@ -12,28 +12,37 @@ Full plan + history: `STATE_UI_SEPARATION_PLAN.md` (repo root).
 ## Layer map (dependency direction is enforced by oxlint)
 
 ```
-ui/core/proto, ui/core/proto_utils   pure data + value objects (Gear, Stats, EquippedItem are immutable)
-ui/core/state/                       UI-free AND browser-free state layer (Zustand store, persistence, Env)
-ui/core/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
+generated → worker → domain → ui-kit → features → app → specs → pages
+
+ui/core/proto                        generated protobuf (still under core/; alias @core/proto)
+ui/domain/proto_utils                pure data + value objects (Gear, Stats, EquippedItem are immutable)
+ui/domain/state/                     UI-free AND browser-free state layer (Zustand store, persistence, Env)
+ui/domain/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
                                      facade classes over the store; public API unchanged
-ui/features/<x>/{model,view}/        per-capability code (see ui/README.md); DOM that used to sit in
-                                     proto_utils / constants / talents lives here
-ui/core/components/, ui/core/*_ui.tsx, ui/<class>/<spec>/   UI — may import everything
-BANNED: ui/core/** (except components/, sim_ui.tsx, individual_sim_ui.tsx) → ui/core/components/**
-BANNED: ui/core/state/** → window/document/localStorage/location/navigator (use `sim.env`)
+ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,utils,worker_pool,…}
+ui/ui-kit/                           sim-agnostic widgets + base classes (Component, Input, pickers/,
+                                     modals, action_id_dom, dom_utils, css_utils)
+ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
+ui/app/                              composition root; today only browser_env.ts
+ui/core/components/, ui/core/*_ui.tsx, ui/<class>/<spec>/   UI not yet placed — may import everything
+BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/** @core/components/**
+BANNED: ui/domain/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
+BANNED: ui/ui-kit/** → @features/** @app/** @specs/**;  ui/features/** → @app/** @specs/**
 BANNED: ui/core/components/** → patchSlice/patchKeyed/seedKeyed/deleteKeyed (use a facade)
 ```
 
-The rule lives in `.oxlintrc.json` (`no-restricted-imports`, error level). Scoping is an
-explicit file list — negated globs in oxlint `overrides.files` break scoping, so add new
-domain dirs to that list, don't use `!`.
+The rule lives in `.oxlintrc.json` (`no-restricted-imports`, error level), keyed on the
+top-level directory. Patterns must use `**`, not `*`: oxlint matches one path segment per `*`,
+so `@features/*` silently misses `@features/gear/view/action_id_dom`. Scoping is an explicit
+file list — negated globs in oxlint `overrides.files` break scoping, so add new dirs to that
+list, don't use `!`.
 
 ## State: one Zustand store per page
 
-`Sim.store` (`createSimStore()` in `ui/core/state/sim_store.ts`, `subscribeWithSelector`).
+`Sim.store` (`createSimStore()` in `ui/domain/state/sim_store.ts`, `subscribeWithSelector`).
 Slices: `ui`, `sim` (both owned by `Sim`), `encounter`, `raid` (+ `partyBuffs[5]`, `composition`), `players[storeKey]`,
 `reforge[storeKey]`, `statWeights[storeKey]`, `bulk[storeKey]` (counters only).
-Read `ui/core/state/README.md` before adding a field — it has the add-a-field recipe
+Read `ui/domain/state/README.md` before adding a field — it has the add-a-field recipe
 (player fields must also be appended to `PLAYER_FIELDS` in sim_store.ts).
 
 Pickers that hand a list to `ListPicker` must return a COPY from `getValue` (`.slice()`), never
@@ -57,11 +66,11 @@ stale. Target writes go through `encounter.modifyTarget(eventID, i, draft => ...
 
 React seam: `InputConfig.storeSubscribe: obj => StoreSubscribe` replaces `changedEvent` for a picker
 (`storeSubscribe: player => subscribePlayerField(player, 'gear')`; omit it for parent-synced inputs).
-Field helpers live in `ui/core/state/subscriptions.ts` (`subscribePlayerField(player, 'gear')`,
+Field helpers live in `ui/domain/state/subscriptions.ts` (`subscribePlayerField(player, 'gear')`,
 `subscribeSimField`, `subscribeEncounterField`, `subscribeRaidField`, `subscribeUiField`) and the
 `input_helpers.ts` factories already pass them. `subscribeAll([...])` folds selector sources into one
 selector (one notification per write/batch) — prefer it over hand-written combined selectors. Direct store subscribers go through
-`subscribeGated` (`ui/core/state/batch.ts`): deferred while a `batch()` is open,
+`subscribeGated` (`ui/domain/state/batch.ts`): deferred while a `batch()` is open,
 fired once at the end with final state. React later: `useStore(sim.store, selector)`.
 
 ## Notifications: state vs events (the rule the next dev gets wrong)
@@ -71,8 +80,8 @@ fired once at the end with final state. React later: `useStore(sim.store, select
   stat-weight settings) are tracked by version counters in their slice — bump the counter where
   the old emitter fired; never content-hash.
 - **Events** (something happened: sim result, crash, reference set, progress) → `Emitter<T>` in
-  `ui/core/state/events.ts`. No EventID, no batching, no dedup. Never put these in the store.
-- `EventID` / `nextEventID()` live in `ui/core/state/batch.ts`; setters keep the `eventID` param
+  `ui/domain/state/events.ts`. No EventID, no batching, no dedup. Never put these in the store.
+- `EventID` / `nextEventID()` live in `ui/domain/state/batch.ts`; setters keep the `eventID` param
   as an opaque action id (oxlint `no-unused-vars` has `args: "none"` for exactly this reason).
   `batch()` replaced `freezeAllAndDo`.
 
@@ -120,7 +129,7 @@ Then `http://localhost:3333/mop/<class>/<spec>/` runs sims natively (stats, Simu
 swap, timeline tooltips all work). Without `dist/mop/assets` the page half-renders with JSON
 parse errors from the DB fetch.
 
-## Persistence contract (ui/core/state/persistence.ts)
+## Persistence contract (ui/domain/state/persistence.ts)
 
 Load order, do not reorder: defaults → localStorage → URL-hash link (partial categories keep
 the rest) → clear hash → `setName('Player')` → subscribe autosave LAST → stat-weight load.
@@ -151,6 +160,36 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `features/results/view/results_action.tsx` (`addSimResultsAction`, `SimResultsManager` — both
   renamed off "raid"). The toasts / progress modal / `onReforge*` handlers stayed in the view: they
   are DOM. Feature `model/` files must stay browser-global-free (lint) and must not import a `view/`.
+
+- 2026-09-02 UI restructure PR 3 "physical moves": `ui/domain/` and `ui/ui-kit/` now exist (140 files
+  moved, 1261 import specifiers rewritten by `tools/restructure/move.mjs` — the reusable move tool;
+  `from -> to` list, `--dry-run`, alias form across layers, relative within). `ui/core/` keeps only
+  `proto/`, `components/`, `sim_ui.tsx`, `individual_sim_ui.tsx`, `preset_utils.tsx`,
+  `launched_sims.tsx`. `browser_env.ts` → `ui/app/`, so `Sim` no longer defaults its `Env`:
+  `SimProps.env` is REQUIRED and the 34 `ui/<c>/<s>/index.ts` pass `browserEnv` (PR 7 folds this into
+  `spec_entry.ts`). `Env` gained `location.href`, `location.hostname` and `hardwareConcurrency` —
+  `sim.ts` reads wasm-concurrency storage + core count through it, `reforge_cache.ts` takes an `Env`
+  (`ReforgeGearCache.get(spec, env)`). DOM-free splits: talent/glyph config types + `newTalentsConfig`
+  → `ui/domain/talents/config.ts`; the SimLog classes + parsing → `ui/domain/proto_utils/logs.ts` with
+  the JSX in `ui/features/results/view/log_lines.tsx` (`renderLog` / `renderDamageResult` /
+  `renderEntity` replace `log.toHTML()` / `.result()`); the generic ActionId DOM writers →
+  `ui/ui-kit/action_id_dom.ts` (gear's `setEquippedItemWowheadData` stays and re-exports them);
+  the `document`/`location` helpers out of `utils.ts` → `ui/ui-kit/dom_utils.ts` (`getEnvironment`
+  keeps the browser probe; `environmentOf(hostname)` is the pure half in domain). `worker_pool.ts`
+  uses bare `Worker` / `setTimeout` (`window.Worker` would throw in a worker context anyway); dead
+  `SPEC_DIRECTORY` deleted from `constants/other.ts` (it read `window.location.pathname` at module
+  scope). Lint: the layer `no-restricted-imports` groups went `*` → `**` (see the layer map) and
+  `ui/domain/**` also bans `@core/components/**`, keeping the guarantee the old `ui/core/*` scope
+  had. Generator output paths, `AUTO_GEN_FILES_TS`, `.gitignore`, `.oxfmtrc.json` follow the moves.
+  **Module-evaluation-order trap** (cost an afternoon): `getSpecSitePath` moved from
+  `proto_utils/utils.ts` to `constants/other.ts`. `player_specs/<class>.ts` calls it at module scope,
+  and `proto_utils/utils.ts` imports `player_specs/index` back — a cycle. Re-sorting imports flipped
+  rolldown's evaluation order so `index.ts`'s `specToPlayerSpec` literal was built before
+  `BloodDeathKnight` existed, and every `PlayerSpecs.fromProto` returned `undefined` (the golden
+  harness died in `new Player`). Rule: `player_specs/*` and `player_classes/*` must import only leaf
+  modules — never a *value* from `proto_utils/utils`. Check with
+  `grep -nE '^//#region ' tmp/harness/snapshot.js` after a harness build: every
+  `player_specs/<class>.ts` must be emitted before `player_specs/index.ts`.
 
 - 2026-09-02 UI restructure PR 1 "layer truth": `ui/core/state/**` is now browser-free
   (`no-restricted-globals` on window/document/localStorage/location/navigator) — it reads an

@@ -1,12 +1,12 @@
+import { CacheHandler } from '@domain/cache_handler';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { ActionMetrics, AuraMetrics, ResourceMetrics, UnitMetrics } from '@domain/proto_utils/sim_result';
+import { Emitter } from '@domain/state/events';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../../i18n/config';
-import { CacheHandler } from '../../../cache_handler';
-import { ActionId } from '../../../proto_utils/action_id';
-import { ActionMetrics, AuraMetrics, ResourceMetrics, UnitMetrics } from '../../../proto_utils/sim_result';
-import { Emitter } from '../../../state/events';
 import { ResultComponent, ResultComponentConfig, SimResultData } from '../result_component';
 import { TableSorter } from './table_sorter';
 

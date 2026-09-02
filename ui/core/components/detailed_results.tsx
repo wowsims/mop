@@ -1,17 +1,18 @@
+import { SimResult } from '@domain/proto_utils/sim_result';
+import { nextEventID } from '@domain/state/batch';
+import { Emitter } from '@domain/state/events';
+import { subscribeSimSettingsChange } from '@domain/state/subscriptions';
+import { isDevMode } from '@domain/utils';
 import { SimResultsManager } from '@features/results/view/results_action';
+import { Component } from '@ui-kit/component';
+import { StickyToolbar } from '@ui-kit/sticky_toolbar';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config';
 import { trackEvent } from '../../tracking/utils';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { SimRun, SimRunData } from '../proto/ui';
-import { SimResult } from '../proto_utils/sim_result';
 import { SimUI } from '../sim_ui';
-import { nextEventID } from '../state/batch';
-import { Emitter } from '../state/events';
-import { subscribeSimSettingsChange } from '../state/subscriptions';
-import { isDevMode } from '../utils';
-import { Component } from './component';
 import { AuraMetricsTable } from './detailed_results/aura_metrics';
 import { CastMetricsTable } from './detailed_results/cast_metrics';
 import { CombatReplay } from './detailed_results/combat_replay';
@@ -27,7 +28,6 @@ import { SimResultData } from './detailed_results/result_component';
 import { ResultsFilter } from './detailed_results/results_filter';
 import { Timeline } from './detailed_results/timeline';
 import { ToplineResults } from './detailed_results/topline_results';
-import { StickyToolbar } from './sticky_toolbar';
 type Tab = {
 	isActive?: boolean;
 	targetId: string;

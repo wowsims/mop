@@ -1,4 +1,7 @@
-import { Encounter } from '../../core/encounter';
+import { Encounter } from '@domain/encounter';
+import { Stats } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, Profession, Race, RaidBuffs, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
@@ -8,8 +11,6 @@ import {
 	WarlockMinorGlyph as MinorGlyph,
 	WarlockOptions_Summon as Summon,
 } from '../../core/proto/warlock';
-import { Stats } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { WARLOCK_BREAKPOINTS } from '../presets';
 import DefaultApl from './apls/default.apl.json';
 import MultiTargetApl from './apls/multitarget.apl.json';

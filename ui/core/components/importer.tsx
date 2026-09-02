@@ -1,10 +1,10 @@
+import { BaseModal } from '@ui-kit/base_modal';
+import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config';
 import { trackPageView } from '../../tracking/utils';
 import { SimUI } from '../sim_ui';
-import { BaseModal } from './base_modal';
-import Toast from './toast';
 
 export interface ImporterOptions {
 	title: string;

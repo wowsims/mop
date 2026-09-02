@@ -1,17 +1,18 @@
-import { ContentBlock } from '../core/components/content_block';
-import { buildIconInput } from '../core/components/icon_inputs';
-import { Input } from '../core/components/input';
-import * as InputHelpers from '../core/components/input_helpers';
-import { BooleanPicker } from '../core/components/pickers/boolean_picker';
-import { NumberPicker } from '../core/components/pickers/number_picker';
+import { Player } from '@domain/player';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { ShamanSpecs } from '@domain/proto_utils/utils';
+import { EventID } from '@domain/state/batch';
+import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { ContentBlock } from '@ui-kit/content_block';
+import { buildIconInput } from '@ui-kit/icon_inputs';
+import { Input } from '@ui-kit/input';
+import * as InputHelpers from '@ui-kit/input_helpers';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { NumberPicker } from '@ui-kit/pickers/number_picker';
+
 import { IndividualSimUI } from '../core/individual_sim_ui';
-import { Player } from '../core/player';
 import { Spec } from '../core/proto/common';
 import { ShamanImbue, ShamanShield } from '../core/proto/shaman';
-import { ActionId } from '../core/proto_utils/action_id';
-import { ShamanSpecs } from '../core/proto_utils/utils';
-import { EventID } from '../core/state/batch';
-import { subscribeAll, subscribePlayerField } from '../core/state/subscriptions';
 import i18n from '../i18n/config';
 // Configuration for class-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.

@@ -1,13 +1,13 @@
+import { Player } from '@domain/player';
+import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { EventID } from '@domain/state/batch';
+import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { fillAndSetActionId, setEquippedItemWowheadData } from '@features/gear/view/action_id_dom';
+import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';
 
-import { Player } from '../../player';
 import { ItemSlot } from '../../proto/common';
-import { EquippedItem } from '../../proto_utils/equipped_item';
 import { SimUI } from '../../sim_ui';
-import { EventID } from '../../state/batch';
-import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
-import { Component } from '../component';
 import { GearData } from './item_list';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
 import { createGemContainer, getEmptySlotIconUrl } from './utils';

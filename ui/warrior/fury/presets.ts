@@ -1,10 +1,11 @@
+import { Player } from '@domain/player';
+import { Stats } from '@domain/proto_utils/stats';
+
 import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
-import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, HandType, ItemSlot, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
 import { FuryWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior';
-import { Stats } from '../../core/proto_utils/stats';
 import DefaultFuryApl from './apls/default.apl.json';
 import P2FurySMFGear from './gear_sets/p2_fury_smf.gear.json';
 import P2FuryTGGear from './gear_sets/p2_fury_tg.gear.json';

@@ -1,15 +1,16 @@
+import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
+import { Player } from '@domain/player';
+import { Stats } from '@domain/proto_utils/stats';
+import { batch, EventID } from '@domain/state/batch';
+import { subscribePlayerChange } from '@domain/state/subscriptions';
+import { SavedDataManager } from '@ui-kit/saved_data_manager';
+import { SimTab } from '@ui-kit/sim_tab';
+
 import i18n from '../../../i18n/config';
-import { PresetConfigurationCategory } from '../../constants/preset_categories';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { Player } from '../../player';
 import { EquipmentSpec, UnitStats } from '../../proto/common';
 import { SavedGearSet } from '../../proto/ui';
-import { Stats } from '../../proto_utils/stats';
-import { batch, EventID } from '../../state/batch';
-import { subscribePlayerChange } from '../../state/subscriptions';
 import GearPicker from '../gear_picker/gear_picker';
-import { SavedDataManager } from '../saved_data_manager';
-import { SimTab } from '../sim_tab';
 import { GemSummary } from './gem_summary';
 import { PresetConfigurationPicker } from './preset_configuration_picker';
 import { ReforgeSummary } from './reforge_summary';

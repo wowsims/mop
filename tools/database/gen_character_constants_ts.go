@@ -162,7 +162,7 @@ func GenerateCharacterConstantsTSFile() error {
 		return fmt.Errorf("failed to execute character constants TS template: %w", err)
 	}
 
-	if err := os.WriteFile("ui/core/player_classes/capabilities_auto_gen.ts", buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile("ui/domain/player_classes/capabilities_auto_gen.ts", buf.Bytes(), 0644); err != nil {
 		return fmt.Errorf("failed to write generated capabilities TS file: %w", err)
 	}
 

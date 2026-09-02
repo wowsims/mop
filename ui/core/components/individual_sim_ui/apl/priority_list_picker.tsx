@@ -1,12 +1,13 @@
+import { Player } from '@domain/player';
+import { EventID } from '@domain/state/batch';
+import { subscribePlayerField } from '@domain/state/subscriptions';
+import { Component } from '@ui-kit/component';
+import { Input } from '@ui-kit/input';
+import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
+
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
-import { Player } from '../../../player';
 import { APLAction, APLListItem } from '../../../proto/apl';
-import { EventID } from '../../../state/batch';
-import { subscribePlayerField } from '../../../state/subscriptions';
-import { Component } from '../../component';
-import { Input } from '../../input';
-import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
 import * as AplHelpers from '../apl_helpers';
 import { AplFloatingActionBar } from './apl_floating_action_bar';

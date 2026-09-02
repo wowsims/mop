@@ -1,5 +1,6 @@
+import { UnitStat } from '@domain/proto_utils/stats';
+
 import { PseudoStat } from '../core/proto/common';
-import { UnitStat } from '../core/proto_utils/stats';
 
 export const WARLOCK_BREAKPOINTS = {
 	unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),

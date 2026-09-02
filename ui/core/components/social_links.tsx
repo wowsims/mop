@@ -1,8 +1,8 @@
+import { REPO_URL } from '@domain/constants/other';
+import { Component } from '@ui-kit/component';
 import tippy from 'tippy.js';
 
 import i18n from '../../i18n/config';
-import { REPO_URL } from '../constants/other';
-import { Component } from './component';
 
 export class SocialLinks extends Component {
 	static buildDiscordLink(): Element {

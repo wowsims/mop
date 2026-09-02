@@ -1,29 +1,19 @@
-import { BaseModal } from '@core/components/base_modal';
-import { Component } from '@core/components/component';
-import { ContentBlock } from '@core/components/content_block';
-import { Input } from '@core/components/input';
-import { setItemQualityCssClass } from '@core/css_utils';
-import { Player } from '@core/player';
 import { Glyphs, ItemQuality } from '@core/proto/common';
-import { ActionId } from '@core/proto_utils/action_id';
-import { Database } from '@core/proto_utils/database';
-import { EventID, nextEventID } from '@core/state/batch';
-import { subscribePlayerField } from '@core/state/subscriptions';
-import { stringComparator } from '@core/utils';
+import { Player } from '@domain/player';
+import { ActionId } from '@domain/proto_utils/action_id';
+import { Database } from '@domain/proto_utils/database';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { GlyphsConfig } from '@domain/talents/config';
+import { stringComparator } from '@domain/utils';
 import i18n from '@i18n/config';
 import { getClassI18nKey } from '@i18n/entity_mapping';
+import { BaseModal } from '@ui-kit/base_modal';
+import { Component } from '@ui-kit/component';
+import { ContentBlock } from '@ui-kit/content_block';
+import { setItemQualityCssClass } from '@ui-kit/css_utils';
+import { Input } from '@ui-kit/input';
 import { ref } from 'tsx-vanilla';
-export type GlyphConfig = {
-	name: string;
-	description: string;
-	iconUrl: string;
-};
-
-export type GlyphsConfig = {
-	majorGlyphs: Record<number, GlyphConfig>;
-	minorGlyphs: Record<number, GlyphConfig>;
-};
-
 interface GlyphData {
 	id: number;
 	name: string;

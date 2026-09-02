@@ -1,8 +1,8 @@
+import { ActionMetrics } from '@domain/proto_utils/sim_result';
+import { sum } from '@domain/utils';
+import { Component } from '@ui-kit/component';
 import { Chart } from 'chart.js';
 
-import { Component } from '../../components/component';
-import { ActionMetrics } from '../../proto_utils/sim_result';
-import { sum } from '../../utils';
 import { actionColors } from './color_settings';
 
 export class SourceChart extends Component {

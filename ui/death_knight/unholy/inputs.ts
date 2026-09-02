@@ -1,7 +1,8 @@
-import * as InputHelpers from '../../core/components/input_helpers';
-import { Player } from '../../core/player';
+import { Player } from '@domain/player';
+import { subscribeAll, subscribeEncounterChange, subscribePlayerField } from '@domain/state/subscriptions';
+import * as InputHelpers from '@ui-kit/input_helpers';
+
 import { Spec } from '../../core/proto/common';
-import { subscribeAll, subscribeEncounterChange, subscribePlayerField } from '../../core/state/subscriptions';
 import { encounterModelsMagicDamage } from '../inputs';
 
 // Configuration for spec-specific UI elements on the settings tab.

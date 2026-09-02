@@ -1,4 +1,5 @@
-import { Encounter } from '../core/encounter';
+import { Encounter } from '@domain/encounter';
+
 import * as PresetUtils from '../core/preset_utils';
 import { Encounter as EncounterProto, InputType, MobType } from '../core/proto/common';
 

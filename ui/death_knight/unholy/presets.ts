@@ -1,11 +1,12 @@
+import { Player } from '@domain/player';
+import { Stats } from '@domain/proto_utils/stats';
+
 import { makeSpecChangeWarningToast } from '../../core/components/spec_change_warning_toast';
-import { Player } from '../../core/player';
 import * as PresetUtils from '../../core/preset_utils';
 import { APLRotation_Type } from '../../core/proto/apl';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '../../core/proto/death_knight';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from '../../death_knight/unholy/apls/default.apl.json';
 import FesterblightApl from '../../death_knight/unholy/apls/festerblight.apl.json';
 import P5Build from '../../death_knight/unholy/builds/p5.build.json';

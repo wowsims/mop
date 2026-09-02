@@ -1,7 +1,7 @@
+import { HunterSpecs } from '@domain/proto_utils/utils';
 import { makePetTypeInputConfig } from '@features/talents/view/hunter_pet';
+import * as InputHelpers from '@ui-kit/input_helpers';
 
-import * as InputHelpers from '../core/components/input_helpers';
-import { HunterSpecs } from '../core/proto_utils/utils';
 import i18n from '../i18n/config';
 
 // // Configuration for class-specific UI elements on the settings tab.

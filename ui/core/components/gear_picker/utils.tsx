@@ -1,10 +1,10 @@
+import { ActionId } from '@domain/proto_utils/action_id';
+import { getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import { GemColor, ItemSlot } from '../../proto/common';
 import { UIGem as Gem } from '../../proto/ui';
-import { ActionId } from '../../proto_utils/action_id';
-import { getEmptyGemSocketIconUrl } from '../../proto_utils/gems';
 
 const emptySlotIcons: Record<ItemSlot, string> = {
 	[ItemSlot.ItemSlotHead]: '/mop/assets/item_slots/head.jpg',

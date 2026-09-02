@@ -1,9 +1,10 @@
+import { Player } from '@domain/player';
+import { nextEventID } from '@domain/state/batch';
+import { Component } from '@ui-kit/component';
+import { ListPicker } from '@ui-kit/pickers/list_picker';
+
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
-import { Player } from '../../../player';
-import { nextEventID } from '../../../state/batch';
-import { Component } from '../../component';
-import { ListPicker } from '../../pickers/list_picker';
 import { APLNameModal } from './apl_name_modal';
 export type AplFloatingActionBarConfig = {
 	itemName: string;

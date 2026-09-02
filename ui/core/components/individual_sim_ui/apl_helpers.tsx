@@ -1,10 +1,22 @@
+import { CacheHandler } from '@domain/cache_handler';
+import { Player, UnitMetadata } from '@domain/player';
+import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
+import { renameAPLReference } from '@domain/proto_utils/apl_utils';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
+import { bucket, getEnumValues, randomUUID } from '@domain/utils';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
+import { Input, InputConfig } from '@ui-kit/input';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig, TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';
+import { ListItemPickerConfig, ListPicker, ListPickerExtraAction } from '@ui-kit/pickers/list_picker';
+import { NumberPicker, NumberPickerConfig } from '@ui-kit/pickers/number_picker';
+import { AdaptiveStringPicker } from '@ui-kit/pickers/string_picker';
+import { UnitPicker, UnitPickerConfig, UnitValue } from '@ui-kit/pickers/unit_picker';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { translateStat } from '../../../i18n/localization';
-import { CacheHandler } from '../../cache_handler';
-import { Player, UnitMetadata } from '../../player';
 import {
 	APLActionDamageAmplifier_AmplificationType,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
@@ -17,18 +29,6 @@ import {
 } from '../../proto/apl';
 import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common';
 import { FeralDruid_Rotation_AplType } from '../../proto/druid';
-import { ActionId, defaultTargetIcon, getPetIconFromName } from '../../proto_utils/action_id';
-import { renameAPLReference } from '../../proto_utils/apl_utils';
-import { EventID, nextEventID } from '../../state/batch';
-import { subscribePlayerField, subscribeUnitMetadata } from '../../state/subscriptions';
-import { bucket, getEnumValues, randomUUID } from '../../utils';
-import { Input, InputConfig } from '../input';
-import { BooleanPicker } from '../pickers/boolean_picker';
-import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig, TextDropdownPicker } from '../pickers/dropdown_picker';
-import { ListItemPickerConfig, ListPicker, ListPickerExtraAction } from '../pickers/list_picker';
-import { NumberPicker, NumberPickerConfig } from '../pickers/number_picker';
-import { AdaptiveStringPicker } from '../pickers/string_picker';
-import { UnitPicker, UnitPickerConfig, UnitValue } from '../pickers/unit_picker';
 import { APLNameModal } from './apl/apl_name_modal';
 
 export type ACTION_ID_SET =

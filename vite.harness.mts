@@ -1,5 +1,5 @@
 // SSR build config for the state-snapshot harness (tools/state-snapshots).
-// Bundles ui/core code for execution in node; not part of the site build.
+// Bundles ui/ code for execution in node; not part of the site build.
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';

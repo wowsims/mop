@@ -1,19 +1,19 @@
+import * as Mechanics from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { PlayerClasses } from '@domain/player_classes';
+import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { nextEventID } from '@domain/state/batch';
+import { subscribeEncounterChange, subscribePlayerChange } from '@domain/state/subscriptions';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 
 import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
-import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
-import { Player } from '../../core/player';
-import { PlayerClasses } from '../../core/player_classes';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
-import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import { nextEventID } from '../../core/state/batch';
-import { subscribeEncounterChange, subscribePlayerChange } from '../../core/state/subscriptions';
 import * as RogueInputs from '../inputs';
 import * as Presets from './presets';
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecCombatRogue, {

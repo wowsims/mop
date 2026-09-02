@@ -179,7 +179,7 @@ func GenerateBulkSimTuningConstantsTSFile() error {
 		return fmt.Errorf("failed to execute bulk tuning constants TS template: %w", err)
 	}
 
-	if err := os.WriteFile("ui/core/wasm/bulk_sim/constants_auto_gen.ts", buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile("ui/domain/wasm/bulk_sim/constants_auto_gen.ts", buf.Bytes(), 0644); err != nil {
 		return fmt.Errorf("failed to write generated bulk tuning constants TS file: %w", err)
 	}
 
@@ -247,7 +247,7 @@ func GenerateBulkSimConstantsTSFile() error {
 		return fmt.Errorf("failed to execute bulk constants TS template: %w", err)
 	}
 
-	if err := os.WriteFile("ui/core/bulk/constants_auto_gen.ts", buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile("ui/domain/bulk/constants_auto_gen.ts", buf.Bytes(), 0644); err != nil {
 		return fmt.Errorf("failed to write generated bulk constants TS file: %w", err)
 	}
 

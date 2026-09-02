@@ -1,6 +1,6 @@
-import { PresetConfigurationCategory } from '@core/constants/preset_categories';
+import { BulkSimItemSlot } from '@domain/bulk/utils';
+import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 
-import { BulkSimItemSlot } from '../core/bulk/utils';
 import { LaunchStatus } from '../core/launched_sims';
 import { ArmorType, Class, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '../core/proto/common';
 import { ResourceType } from '../core/proto/spell';

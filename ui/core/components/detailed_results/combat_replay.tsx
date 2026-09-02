@@ -1,15 +1,15 @@
+import { ActionId } from '@domain/proto_utils/action_id';
+import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '@domain/proto_utils/logs';
+import { resourceColors, resourceNames } from '@domain/proto_utils/names';
+import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
+import { formatDurationSeconds } from '@domain/utils';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
-import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '@features/results/model/logs_parser';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
-import { ActionId } from '../../proto_utils/action_id';
-import { resourceColors, resourceNames } from '../../proto_utils/names';
-import { ActionMetrics, SimResult, SimResultFilter } from '../../proto_utils/sim_result';
-import { formatDurationSeconds } from '../../utils';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 
 interface ReplayAction {

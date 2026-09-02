@@ -69,16 +69,7 @@
       }
     },
     {
-      "files": [
-        "ui/core/*.ts",
-        "ui/core/preset_utils.tsx",
-        "ui/core/launched_sims.tsx",
-        "ui/core/proto_utils/**/*.{ts,tsx}",
-        "ui/core/state/**/*.{ts,tsx}",
-        "ui/core/bulk/**/*.{ts,tsx}",
-        "ui/core/talents/**/*.{ts,tsx}",
-        "ui/core/constants/**/*.{ts,tsx}"
-      ],
+      "files": ["ui/core/preset_utils.tsx", "ui/core/launched_sims.tsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -94,12 +85,6 @@
       }
     },
     {
-      "files": ["ui/core/state/**/*.{ts,tsx}"],
-      "rules": {
-        "no-restricted-globals": ["error", "window", "document", "localStorage", "location", "navigator"]
-      }
-    },
-    {
       "files": ["ui/core/components/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
@@ -109,7 +94,7 @@
               {
                 "group": ["**/state/sim_store*"],
                 "importNames": ["patchSlice", "patchKeyed", "seedKeyed", "deleteKeyed"],
-                "message": "Components must not write the store directly — go through a facade (e.g. ui/core/bulk_settings.ts)."
+                "message": "Components must not write the store directly — go through a facade (e.g. ui/domain/bulk_settings.ts)."
               }
             ]
           }
@@ -124,7 +109,18 @@
           {
             "patterns": [
               {
-                "group": ["@ui-kit", "@ui-kit/*", "@features", "@features/*", "@app", "@app/*", "@specs", "@specs/*"],
+                "group": [
+                  "@ui-kit",
+                  "@ui-kit/**",
+                  "@features",
+                  "@features/**",
+                  "@app",
+                  "@app/**",
+                  "@specs",
+                  "@specs/**",
+                  "@core/components",
+                  "@core/components/**"
+                ],
                 "message": "ui/domain must not depend on ui-kit/features/app/specs (see ui/README.md dependency direction)."
               }
             ]
@@ -147,7 +143,7 @@
           {
             "patterns": [
               {
-                "group": ["@features", "@features/*", "@app", "@app/*", "@specs", "@specs/*"],
+                "group": ["@features", "@features/**", "@app", "@app/**", "@specs", "@specs/**"],
                 "message": "ui/ui-kit must not depend on features/app/specs (see ui/README.md dependency direction)."
               }
             ]
@@ -163,7 +159,7 @@
           {
             "patterns": [
               {
-                "group": ["@app", "@app/*", "@specs", "@specs/*"],
+                "group": ["@app", "@app/**", "@specs", "@specs/**"],
                 "message": "ui/features must not depend on app/specs (see ui/README.md dependency direction)."
               }
             ]
@@ -179,7 +175,7 @@
           {
             "patterns": [
               {
-                "group": ["@specs", "@specs/*"],
+                "group": ["@specs", "@specs/**"],
                 "message": "ui/app must not depend on specs (see ui/README.md dependency direction)."
               }
             ]

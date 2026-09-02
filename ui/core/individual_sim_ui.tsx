@@ -1,13 +1,35 @@
+import { SimSettingCategories } from '@domain/constants/sim_settings';
+import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from '@domain/player';
+import { PlayerSpecs } from '@domain/player_specs';
+import { getMetaGemConditionDescription } from '@domain/proto_utils/gems';
+import { armorTypeNames, professionNames } from '@domain/proto_utils/names';
+import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
+import { pseudoStatHasCap, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
+import { getTalentPoints, SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
+import { StatWeightActionSettings } from '@domain/stat_weight_settings';
+import { batch, EventID, nextEventID } from '@domain/state/batch';
+import { loadIndividualSettings } from '@domain/state/persistence';
+import {
+	applyIndividualSimSettings,
+	IndividualSimSerializationContext,
+	individualSimSettingsToProto,
+	updateIndividualSimProtoVersion,
+} from '@domain/state/serialization';
+import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
+import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/required_talents';
+import { isDevMode } from '@domain/utils';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
+import { ContentBlock } from '@ui-kit/content_block';
+import * as IconInputs from '@ui-kit/icon_inputs';
+import * as InputHelpers from '@ui-kit/input_helpers';
+import { SavedDataConfig } from '@ui-kit/saved_data_manager';
 
 import i18n from '../i18n/config';
 import { CharacterStats } from './components/character_stats';
-import { ContentBlock } from './components/content_block';
 import { DetailedResults } from './components/detailed_results';
 import { EncounterPickerConfig } from './components/encounter_picker';
-import * as IconInputs from './components/icon_inputs';
 import { BulkTab } from './components/individual_sim_ui/bulk_tab';
 import {
 	// Individual60UEPExporter,
@@ -28,14 +50,9 @@ import { PresetConfigurationPicker } from './components/individual_sim_ui/preset
 import { RotationTab } from './components/individual_sim_ui/rotation_tab';
 import { SettingsTab } from './components/individual_sim_ui/settings_tab';
 import { TalentsTab } from './components/individual_sim_ui/talents_tab';
-import * as InputHelpers from './components/input_helpers';
 import * as OtherInputs from './components/inputs/other_inputs';
 import { ItemNotice } from './components/item_notice/item_notice';
-import { SavedDataConfig } from './components/saved_data_manager';
-import { SimSettingCategories } from './constants/sim_settings';
 import { simLaunchStatuses } from './launched_sims';
-import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player';
-import { PlayerSpecs } from './player_specs';
 import { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
 import { StatWeightsResult } from './proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
@@ -58,24 +75,7 @@ import {
 	Stat,
 } from './proto/common';
 import { IndividualSimSettings, SavedTalents } from './proto/ui';
-import { getMetaGemConditionDescription } from './proto_utils/gems';
-import { armorTypeNames, professionNames } from './proto_utils/names';
-import type { StatMods, StatWrites } from './proto_utils/stats';
-import { pseudoStatHasCap, StatCap, Stats, UnitStat } from './proto_utils/stats';
-import { getTalentPoints, SpecOptions, SpecRotation } from './proto_utils/utils';
 import { SimUI, SimWarning } from './sim_ui';
-import { StatWeightActionSettings } from './stat_weight_settings';
-import { batch, EventID, nextEventID } from './state/batch';
-import { loadIndividualSettings } from './state/persistence';
-import {
-	applyIndividualSimSettings,
-	IndividualSimSerializationContext,
-	individualSimSettingsToProto,
-	updateIndividualSimProtoVersion,
-} from './state/serialization';
-import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from './state/subscriptions';
-import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from './talents/required_talents';
-import { isDevMode } from './utils';
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';

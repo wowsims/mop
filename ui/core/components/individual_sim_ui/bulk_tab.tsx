@@ -1,11 +1,3 @@
-import { Tab } from 'bootstrap';
-import clsx from 'clsx';
-import tippy from 'tippy.js';
-import { ref } from 'tsx-vanilla';
-
-import i18n from '../../../i18n/config';
-import { translateWeaponType } from '../../../i18n/localization';
-import { trackEvent } from '../../../tracking/utils';
 import {
 	BulkSimProgressConfig,
 	NATIVE_COMBINATIONS_LIMIT,
@@ -13,7 +5,7 @@ import {
 	TopGearResult,
 	WEB_COMBINATIONS_LIMIT,
 	WEB_ITERATIONS_LIMIT,
-} from '../../bulk/types';
+} from '@domain/bulk/types';
 import {
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
 	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
@@ -22,28 +14,37 @@ import {
 	getBulkFreezeWeaponTypes,
 	getBulkItemSlotFromSlot,
 	getBulkPlayerCanDualWield,
-} from '../../bulk/utils';
-import { BulkSettingsStore } from '../../bulk_settings';
-import { REPO_RELEASES_URL } from '../../constants/other';
+} from '@domain/bulk/utils';
+import { BulkSettingsStore } from '@domain/bulk_settings';
+import { REPO_RELEASES_URL } from '@domain/constants/other';
+import { isSpecDualWield2HCapable } from '@domain/player_classes/capabilities';
+import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { Gear } from '@domain/proto_utils/gear';
+import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '@domain/proto_utils/utils';
+import { RelativeStatCap } from '@domain/reforge_settings';
+import { ReforgeOptimizeConfig } from '@domain/sim';
+import { RequestTypes } from '@domain/sim_signal_manager';
+import { nextEventID } from '@domain/state/batch';
+import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '@domain/state/subscriptions';
+import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, Z_95, zTest } from '@domain/utils';
+import { isExternal } from '@ui-kit/dom_utils';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { EnumPicker } from '@ui-kit/pickers/enum_picker';
+import { ProgressTrackerModal } from '@ui-kit/progress_tracker_modal';
+import { SimTab } from '@ui-kit/sim_tab';
+import Toast from '@ui-kit/toast';
+import { Tab } from 'bootstrap';
+import clsx from 'clsx';
+import tippy from 'tippy.js';
+import { ref } from 'tsx-vanilla';
+
+import i18n from '../../../i18n/config';
+import { translateWeaponType } from '../../../i18n/localization';
+import { trackEvent } from '../../../tracking/utils';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { isSpecDualWield2HCapable } from '../../player_classes/capabilities';
 import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '../../proto/api';
 import { ItemSlot, ItemSpec, WeaponType } from '../../proto/common';
-import { EquippedItem } from '../../proto_utils/equipped_item';
-import { Gear } from '../../proto_utils/gear';
-import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '../../proto_utils/utils';
-import { RelativeStatCap } from '../../reforge_settings';
-import { ReforgeOptimizeConfig } from '../../sim';
-import { RequestTypes } from '../../sim_signal_manager';
-import { nextEventID } from '../../state/batch';
-import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '../../state/subscriptions';
-import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, isExternal, Z_95, zTest } from '../../utils';
 import SelectorModal from '../gear_picker/selector_modal';
-import { BooleanPicker } from '../pickers/boolean_picker';
-import { EnumPicker } from '../pickers/enum_picker';
-import { ProgressTrackerModal } from '../progress_tracker_modal';
-import { SimTab } from '../sim_tab';
-import Toast from '../toast';
 import BulkItemPickerGroup from './bulk/bulk_item_picker_group';
 import BulkItemSearch from './bulk/bulk_item_search';
 import BulkSimResultRenderer from './bulk/bulk_sim_results_renderer';

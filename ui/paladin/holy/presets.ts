@@ -1,3 +1,6 @@
+import { Stats } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+
 import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Debuffs, Glyphs, Profession, RaidBuffs, Stat } from '../../core/proto/common';
 import {
@@ -6,8 +9,6 @@ import {
 	PaladinSeal,
 } from '../../core/proto/paladin';
 import { SavedTalents } from '../../core/proto/ui';
-import { Stats } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import P1Gear from './gear_sets/p1.gear.json';
 
 // Preset options for this spec.

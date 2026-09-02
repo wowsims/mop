@@ -1,12 +1,12 @@
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '@core/proto/api';
 import { Encounter as EncounterProto, Spec } from '@core/proto/common';
 import { SimRunData } from '@core/proto/ui';
-import { ActionMetrics, SimResult, SimResultFilter } from '@core/proto_utils/sim_result';
-import { RequestTypes } from '@core/sim_signal_manager';
 import { SimUI } from '@core/sim_ui';
-import { batch, EventID, nextEventID } from '@core/state/batch';
-import { Emitter } from '@core/state/events';
-import { formatDeltaTextElem, formatToNumber, formatToPercent, sum, zTest } from '@core/utils';
+import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
+import { RequestTypes } from '@domain/sim_signal_manager';
+import { batch, EventID, nextEventID } from '@domain/state/batch';
+import { Emitter } from '@domain/state/events';
+import { formatDeltaTextElem, formatToNumber, formatToPercent, sum, zTest } from '@domain/utils';
 import { metricsClasses, ReferenceData, resultMetricCategories, resultMetricClasses, ResultMetrics } from '@features/results/model/sim_results';
 import i18n from '@i18n/config';
 import { translateResultMetricLabel, translateResultMetricTooltip } from '@i18n/localization';

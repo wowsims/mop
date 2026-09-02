@@ -43,18 +43,18 @@ import '../../ui/warrior/fury/sim';
 import '../../ui/warrior/protection/sim';
 
 import { IndividualSimUIConfig } from '../../ui/core/individual_sim_ui';
-import { getSpecConfig, Player } from '../../ui/core/player';
-import { PlayerSpecs } from '../../ui/core/player_specs';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/core/proto/apl';
 import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/core/proto/common';
-import { Database } from '../../ui/core/proto_utils/database';
-import { Sim } from '../../ui/core/sim';
-import { batch, nextEventID } from '../../ui/core/state/batch';
-import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/core/state/serialization';
+import { getSpecConfig, Player } from '../../ui/domain/player';
+import { PlayerSpecs } from '../../ui/domain/player_specs';
+import { Database } from '../../ui/domain/proto_utils/database';
+import { Sim } from '../../ui/domain/sim';
+import { batch, nextEventID } from '../../ui/domain/state/batch';
+import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/domain/state/serialization';
 import { makeMemoryEnv } from './memory_env';
 // Mirror of IndividualSimUI.applyDefaults (individual_sim_ui.tsx) without the
 // UI-owned satellites (reforger, statWeightActionSettings, defaultBuild).
-// When the defaults logic moves into ui/core/state/, replace this mirror with
+// When the defaults logic moves into ui/domain/state/, replace this mirror with
 // a call to the real implementation — snapshot diffs then verify the move.
 function applySpecDefaults(sim: Sim, player: Player<any>, config: IndividualSimUIConfig<any>) {
 	const eventID = nextEventID();

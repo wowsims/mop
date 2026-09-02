@@ -1,18 +1,18 @@
+import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
+import { Player } from '@domain/player';
+import { batch, EventID } from '@domain/state/batch';
+import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { classTalentsConfig } from '@domain/talents/factory';
 import { TalentsPicker } from '@features/talents/view/talents_picker';
+import { PetSpecPicker } from '@ui-kit/pickers/pet_spec_picker';
+import { SavedDataManager } from '@ui-kit/saved_data_manager';
+import { SimTab } from '@ui-kit/sim_tab';
 
 import i18n from '../../../i18n/config';
 import { trackEvent } from '../../../tracking/utils';
-import { PresetConfigurationCategory } from '../../constants/preset_categories';
 import { IndividualSimUI } from '../../individual_sim_ui';
-import { Player } from '../../player';
 import { Class, Glyphs, Spec } from '../../proto/common';
 import { SavedTalents } from '../../proto/ui';
-import { batch, EventID } from '../../state/batch';
-import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
-import { classTalentsConfig } from '../../talents/factory';
-import { PetSpecPicker } from '../pickers/pet_spec_picker';
-import { SavedDataManager } from '../saved_data_manager';
-import { SimTab } from '../sim_tab';
 import { PresetConfigurationPicker } from './preset_configuration_picker';
 export class TalentsTab<SpecType extends Spec> extends SimTab {
 	protected simUI: IndividualSimUI<any>;

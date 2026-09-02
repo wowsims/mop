@@ -1,15 +1,16 @@
+import { Player } from '@domain/player';
+import { renameAPLReference } from '@domain/proto_utils/apl_utils';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { subscribePlayerField } from '@domain/state/subscriptions';
+import { randomUUID } from '@domain/utils';
+import { Component } from '@ui-kit/component';
+import { Input } from '@ui-kit/input';
+import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
+
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
-import { Player } from '../../../player';
 import { APLValueVariable } from '../../../proto/apl';
 import { UUID } from '../../../proto/common';
-import { renameAPLReference } from '../../../proto_utils/apl_utils';
-import { EventID, nextEventID } from '../../../state/batch';
-import { subscribePlayerField } from '../../../state/subscriptions';
-import { randomUUID } from '../../../utils';
-import { Component } from '../../component';
-import { Input } from '../../input';
-import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLValuePicker } from '../apl_values';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLNameModal } from './apl_name_modal';
