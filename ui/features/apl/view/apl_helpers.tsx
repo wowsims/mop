@@ -55,7 +55,12 @@ export class APLActionIDPicker extends DropdownPicker<Player<any>, ActionID, Act
 		super(parent, player, {
 			...config,
 			sourceToValue: (src: ActionID) => (src ? ActionId.fromProto(src) : ActionId.fromEmpty()),
-			valueToSource: (val: ActionId) => val.toProto(),
+			// A field the user never filled in has no selection at all: an empty ActionID matches no
+			// option and `createMissingValue` deliberately never resolves for it, so
+			// `getInputValue()` reads `undefined` here. The action-kind swap pre-fill reads the old
+			// kind's fields that way (Cast without a spell -> Sequence), so hand back the same empty
+			// proto that `actionIdFieldConfig`'s `newValue()` makes instead of throwing.
+			valueToSource: (val: ActionId | undefined) => (val ? val.toProto() : ActionID.create()),
 			defaultLabel: actionIdSet.defaultLabel,
 			equals: (a, b) => (a == null) == (b == null) && (!a || a.equals(b!)),
 			setOptionContent: (button, valueConfig) => {
