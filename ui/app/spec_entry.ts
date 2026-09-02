@@ -33,7 +33,7 @@ void (async () => {
 	const key = specModuleKey(location.pathname);
 	const loadSpec = modules[`${key}.ts`] || modules[`${key}.tsx`];
 	if (!loadSpec) {
-		throw new Error(`No spec module for ${location.pathname} (looked for ${key}.ts(x)). Specs not yet converted to spec.ts still ship their own index.ts.`);
+		throw new Error(`No spec module for ${location.pathname} (looked for ${key}.ts(x)).`);
 	}
 
 	const def = (await loadSpec()).default;

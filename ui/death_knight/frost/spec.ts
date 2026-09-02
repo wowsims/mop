@@ -1,23 +1,24 @@
-import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
-import { Stats, UnitStat } from '@domain/proto_utils/stats';
+import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
-import { nextEventID } from '@domain/state/batch';
-import { subscribeEncounterChange } from '@domain/state/subscriptions';
-import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
 
+import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
-import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import * as SharedDeathKnightInputs from '../inputs';
+import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import * as SharedPresets from '../shared';
-import * as DeathKnightInputs from './inputs';
+import { amsIntakeRule } from '../shared/derived';
+import * as DeathKnightInputs from '../shared/inputs';
 import * as Presets from './presets';
-const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
-	cssClass: 'unholy-death-knight-sim-ui',
+
+export default defineSpec<Spec.SpecFrostDeathKnight>({
+	spec: Spec.SpecFrostDeathKnight,
+
+	cssClass: 'frost-death-knight-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.DeathKnight),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
@@ -32,7 +33,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		Stat.StatHasteRating,
 		Stat.StatMasteryRating,
 	],
-	epPseudoStats: [PseudoStat.PseudoStatMainHandDps],
+	epPseudoStats: [PseudoStat.PseudoStatMainHandDps, PseudoStat.PseudoStatOffHandDps],
 	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
 	epReferenceStat: Stat.StatStrength,
 	consumableStats: [Stat.StatStrength, Stat.StatHitRating, Stat.StatHasteRating, Stat.StatCritRating, Stat.StatExpertiseRating, Stat.StatMasteryRating],
@@ -59,21 +60,33 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	),
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.P5_BIS_GEAR_PRESET.gear,
+		gear: Presets.P5_MASTERFROST_GEAR_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.DEFAULT_UNHOLY_EP_PRESET.epWeights,
+		epWeights: Presets.MASTERFROST_EP_PRESET.epWeights,
 		// Default stat caps for the Reforge Optimizer
 		statCaps: (() => {
-			const hitCap = new Stats().withPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, 7.5);
-			const expCap = new Stats().withStat(Stat.StatExpertiseRating, 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
+			return new Stats();
+		})(),
+		softCapBreakpoints: (() => {
+			const physicalHitPercentSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, {
+				breakpoints: [7.5, 27],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [0, 0],
+			});
 
-			return hitCap.add(expCap);
+			const expertiseRatingSoftCapConfig = StatCap.fromStat(Stat.StatExpertiseRating, {
+				breakpoints: [7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [0],
+			});
+
+			return [physicalHitPercentSoftCapConfig, expertiseRatingSoftCapConfig];
 		})(),
 		other: Presets.OtherDefaults,
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default talents.
-		talents: Presets.FesterblightTalents.data,
+		talents: Presets.DefaultTalents.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
@@ -99,13 +112,13 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		encounter: SharedPresets.ENCOUNTER_MALKOROK,
 	},
 
-	autoRotation(player: Player<Spec.SpecUnholyDeathKnight>): APLRotation {
-		// Festerblight (single-target disease snapshot/hold) wins on single-target;
-		// the default rotation scales better on multiple targets.
-		if (player.sim.encounter.getTargets().length <= 1) {
-			return Presets.FESTERBLIGHT_ROTATION_PRESET.rotation.rotation!;
+	autoRotation: (player: Player<Spec.SpecFrostDeathKnight>): APLRotation => {
+		const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
+		if (mainHand?.item?.handType === HandType.HandTypeTwoHand) {
+			return Presets.OBLITERATE_ROTATION_PRESET_DEFAULT.rotation.rotation!;
+		} else {
+			return Presets.MASTERFROST_ROTATION_PRESET_DEFAULT.rotation.rotation!;
 		}
-		return Presets.DEFAULT_ROTATION_PRESET.rotation.rotation!;
 	},
 
 	// IconInputs to include in the 'Player' section on the settings tab.
@@ -126,32 +139,46 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 	},
 	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
-		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: true,
 	},
 
 	presets: {
-		epWeights: [Presets.DEFAULT_UNHOLY_EP_PRESET],
-		// Preset talents that the user can quickly select.
-		talents: [Presets.DefaultTalents, Presets.FesterblightTalents],
-		// Preset rotations that the user can quickly select.
-		rotations: [Presets.DEFAULT_ROTATION_PRESET, Presets.FESTERBLIGHT_ROTATION_PRESET],
+		epWeights: [Presets.MASTERFROST_EP_PRESET, Presets.TWOHAND_OBLITERATE_EP_PRESET],
+		talents: [Presets.DefaultTalents],
+		rotations: [Presets.MASTERFROST_ROTATION_PRESET_DEFAULT, Presets.OBLITERATE_ROTATION_PRESET_DEFAULT],
 		encounters: [SharedPresets.ENCOUNTER_MALKOROK, SharedPresets.ENCOUNTER_SINGLE_TARGET],
-		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
-		builds: [Presets.PREBIS_PRESET, Presets.P5_PRESET],
+		gear: [
+			Presets.PREBIS_MASTERFROST_GEAR_PRESET,
+			Presets.PREBIS_2H_OBLITERATE_GEAR_PRESET,
+			Presets.P5_MASTERFROST_GEAR_PRESET,
+			Presets.P5_2H_OBLITERATE_GEAR_PRESET,
+		],
+		builds: [Presets.PRESET_BUILD_P5_MASTERFROST, Presets.PRESET_BUILD_P5_2H_OBLITERATE],
 	},
+
+	reforge: {
+		updateSoftCaps: (softCaps: StatCap[], player: Player<Spec.SpecFrostDeathKnight>) => {
+			const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
+			if (mainHand?.item?.handType === HandType.HandTypeTwoHand) {
+				const physicalHitCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent));
+				if (physicalHitCap) {
+					physicalHitCap.breakpoints = [7.5];
+					physicalHitCap.postCapEPs = [0];
+				}
+			} else {
+				const physicalHitCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent));
+				if (physicalHitCap) {
+					physicalHitCap.postCapEPs[0] = player.getEpWeights().getStat(Stat.StatHitRating) * 0.3 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT;
+				}
+			}
+			return softCaps;
+		},
+		getEPDefaults: (player: Player<Spec.SpecFrostDeathKnight>) => {
+			const mainHand = player.getEquippedItem(ItemSlot.ItemSlotMainHand);
+			return mainHand?.item?.handType === HandType.HandTypeTwoHand
+				? Presets.TWOHAND_OBLITERATE_EP_PRESET.epWeights
+				: Presets.MASTERFROST_EP_PRESET.epWeights;
+		},
+	},
+	derivedSettings: [amsIntakeRule],
 });
-
-export class UnholyDeathKnightSimUI extends IndividualSimUI<Spec.SpecUnholyDeathKnight> {
-	constructor(parentElem: HTMLElement, player: Player<Spec.SpecUnholyDeathKnight>) {
-		super(parentElem, player, SPEC_CONFIG);
-
-		SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(nextEventID(), player);
-		subscribeEncounterChange(this.sim.encounter)(() => SharedDeathKnightInputs.disableAMSIntakeOnMagicDamageEncounters(nextEventID(), player));
-
-		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => player.getEpWeights(),
-		});
-	}
-}

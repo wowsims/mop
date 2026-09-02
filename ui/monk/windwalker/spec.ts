@@ -1,4 +1,3 @@
-import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -6,17 +5,22 @@ import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import { RelativeStatCap } from '@domain/reforge_settings';
 import { nextEventID } from '@domain/state/batch';
-import { subscribePlayerField } from '@domain/state/subscriptions';
-import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import * as MonkUtils from '../utils';
+import { talentBasedSettingsRule } from '../shared/derived';
 import * as Presets from './presets';
-const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
+
+const hasTwoHandMainHand = (player: Player<Spec.SpecWindwalkerMonk>): boolean =>
+	player.getEquippedItem(ItemSlot.ItemSlotMainHand)?.item?.handType === HandType.HandTypeTwoHand;
+
+export default defineSpec<Spec.SpecWindwalkerMonk>({
+	spec: Spec.SpecWindwalkerMonk,
+
 	cssClass: 'windwalker-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),
 	// List any known bugs / issues here and they'll be shown on the site.
@@ -134,50 +138,37 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 	autoRotation: (_: Player<Spec.SpecWindwalkerMonk>): APLRotation => {
 		return Presets.ROTATION_PRESET.rotation.rotation!;
 	},
+
+	// `host.reforger` is still null while this runs (the sim UI assigns it only
+	// once the optimizer is constructed), exactly as the old `this.reforger?.` in
+	// the spec constructor was — the callbacks below run later, when it is set.
+	reforge: host => ({
+		defaultRelativeStatCap: Stat.StatMasteryRating,
+		getEPDefaults: (player: Player<Spec.SpecWindwalkerMonk>) => {
+			const avgIlvl = player.getGear().getAverageItemLevel(false);
+			if (RelativeStatCap.hasRoRo(player)) {
+				host.reforger?.setUseSoftCapBreakpoints(nextEventID(), false);
+				if (avgIlvl >= 560) {
+					return Presets.RORO_P5_EP_PRESET.epWeights;
+				} else {
+					return Presets.RORO_P3_4_EP_PRESET.epWeights;
+				}
+			}
+			return Presets.P1_BIS_EP_PRESET.epWeights;
+		},
+		updateSoftCaps: (softCaps: StatCap[], player: Player<Spec.SpecWindwalkerMonk>) => {
+			if (RelativeStatCap.hasRoRo(player)) {
+				return [];
+			}
+			if (hasTwoHandMainHand(player)) {
+				const hasteSoftCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent));
+				if (hasteSoftCap) {
+					// Two-Handed Windwalkers need to adjust for Way of the Monk 40% Melee Haste
+					hasteSoftCap.breakpoints = hasteSoftCap.breakpoints.map(v => v + 40);
+				}
+			}
+			return softCaps;
+		},
+	}),
+	derivedSettings: [talentBasedSettingsRule],
 });
-
-const hasTwoHandMainHand = (player: Player<Spec.SpecWindwalkerMonk>): boolean =>
-	player.getEquippedItem(ItemSlot.ItemSlotMainHand)?.item?.handType === HandType.HandTypeTwoHand;
-
-export class WindwalkerMonkSimUI extends IndividualSimUI<Spec.SpecWindwalkerMonk> {
-	constructor(parentElem: HTMLElement, player: Player<Spec.SpecWindwalkerMonk>) {
-		super(parentElem, player, SPEC_CONFIG);
-
-		MonkUtils.setTalentBasedSettings(player);
-		subscribePlayerField(
-			player,
-			'talentsString',
-		)(() => {
-			MonkUtils.setTalentBasedSettings(player);
-		});
-
-		this.reforger = new ReforgeOptimizer(this, {
-			defaultRelativeStatCap: Stat.StatMasteryRating,
-			getEPDefaults: (player: Player<Spec.SpecWindwalkerMonk>) => {
-				const avgIlvl = player.getGear().getAverageItemLevel(false);
-				if (RelativeStatCap.hasRoRo(player)) {
-					this.reforger?.setUseSoftCapBreakpoints(nextEventID(), false);
-					if (avgIlvl >= 560) {
-						return Presets.RORO_P5_EP_PRESET.epWeights;
-					} else {
-						return Presets.RORO_P3_4_EP_PRESET.epWeights;
-					}
-				}
-				return Presets.P1_BIS_EP_PRESET.epWeights;
-			},
-			updateSoftCaps: (softCaps: StatCap[]) => {
-				if (RelativeStatCap.hasRoRo(player)) {
-					return [];
-				}
-				if (hasTwoHandMainHand(player)) {
-					const hasteSoftCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent));
-					if (hasteSoftCap) {
-						// Two-Handed Windwalkers need to adjust for Way of the Monk 40% Melee Haste
-						hasteSoftCap.breakpoints = hasteSoftCap.breakpoints.map(v => v + 40);
-					}
-				}
-				return softCaps;
-			},
-		});
-	}
-}

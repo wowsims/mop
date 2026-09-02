@@ -43,7 +43,7 @@ import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 import type { IndividualSimHost } from '@features/sim_host';
-import type { SpecBehaviors } from '@features/spec_config';
+import type { SpecDefinition } from '@features/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
 import i18n from '@i18n/config';
@@ -115,7 +115,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	readonly bt: BulkTab | null = null;
 	reforger: ReforgeOptimizer | null = null;
 
-	constructor(parentElem: HTMLElement, player: Player<SpecType>, config: IndividualSimUIConfig<SpecType> & SpecBehaviors<SpecType>) {
+	constructor(parentElem: HTMLElement, player: Player<SpecType>, config: SpecDefinition<SpecType>) {
 		super(parentElem, player.sim, {
 			cssClass: config.cssClass,
 			cssScheme: config.cssScheme,

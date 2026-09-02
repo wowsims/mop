@@ -1,20 +1,20 @@
-import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
-import { subscribePlayerField } from '@domain/state/subscriptions';
-import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
 
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import * as MonkUtils from '../utils';
+import { talentBasedSettingsRule } from '../shared/derived';
 import * as Presets from './presets';
 
-const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
+export default defineSpec<Spec.SpecBrewmasterMonk>({
+	spec: Spec.SpecBrewmasterMonk,
+
 	cssClass: 'brewmaster-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),
 	// List any known bugs / issues here and they'll be shown on the site.
@@ -165,22 +165,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBrewmasterMonk, {
 	autoRotation: (_: Player<Spec.SpecBrewmasterMonk>): APLRotation => {
 		return Presets.ROTATION_PRESET.rotation.rotation!;
 	},
+
+	reforge: {
+		getEPDefaults: player => player.getEpWeights(),
+	},
+	derivedSettings: [talentBasedSettingsRule],
 });
-
-export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk> {
-	constructor(parentElem: HTMLElement, player: Player<Spec.SpecBrewmasterMonk>) {
-		super(parentElem, player, SPEC_CONFIG);
-
-		MonkUtils.setTalentBasedSettings(player);
-		subscribePlayerField(
-			player,
-			'talentsString',
-		)(() => {
-			MonkUtils.setTalentBasedSettings(player);
-		});
-
-		this.reforger = new ReforgeOptimizer(this, {
-			getEPDefaults: player => player.getEpWeights(),
-		});
-	}
-}

@@ -8,13 +8,15 @@ import { encounterModelsMagicDamage } from '../inputs';
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
 
+type AMSIntakeSpecs = Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight;
+
 // The AMS intake settings are ignored by the sim on encounters that cast real magic damage
 // at the raid, so hide them there rather than leaving inputs that do nothing. Visibility is
 // re-evaluated on encounter changes as well as the usual spec options one.
-const showWhenAMSIntakeUsed = (player: Player<Spec.SpecUnholyDeathKnight>) => !encounterModelsMagicDamage(player.sim);
+const showWhenAMSIntakeUsed = (player: Player<AMSIntakeSpecs>) => !encounterModelsMagicDamage(player.sim);
 const amsIntakeSubscribe = (player: Player<any>) => subscribeAll([subscribePlayerField(player, 'specOptions'), subscribeEncounterChange(player.sim.encounter)]);
 
-export const AvgAMSHitInput = InputHelpers.makeSpecOptionsNumberInput<Spec.SpecUnholyDeathKnight>({
+export const AvgAMSHitInput = InputHelpers.makeSpecOptionsNumberInput<AMSIntakeSpecs>({
 	fieldName: 'avgAmsHit',
 	label: 'Avg AMS Hit',
 	labelTooltip: 'How much on average (+-10%) the character is hit for when AMS is successful. Set to 0 to disable AMS damage intake.',
@@ -22,7 +24,7 @@ export const AvgAMSHitInput = InputHelpers.makeSpecOptionsNumberInput<Spec.SpecU
 	storeSubscribe: amsIntakeSubscribe,
 });
 
-export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<Spec.SpecUnholyDeathKnight>({
+export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<AMSIntakeSpecs>({
 	fieldName: 'avgAmsSuccessRate',
 	label: 'Avg AMS Success %',
 	labelTooltip: 'Chance for damage to be taken during the 5 second window of AMS.',
@@ -31,7 +33,7 @@ export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<Sp
 	storeSubscribe: amsIntakeSubscribe,
 });
 
-export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecUnholyDeathKnight, number>({
+export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<AMSIntakeSpecs, number>({
 	fieldName: 'amsNumTicks',
 	label: 'AMS Damage Ticks',
 	labelTooltip:

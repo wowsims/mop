@@ -1,23 +1,23 @@
-import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
-import { nextEventID } from '@domain/state/batch';
-import { subscribeEncounterChange, subscribePlayerChange } from '@domain/state/subscriptions';
-import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import * as RogueInputs from '../inputs';
+import { lethalPoisonRule } from '../shared/derived';
 import * as SubInputs from './inputs';
 import * as Presets from './presets';
-const SPEC_CONFIG = registerSpecConfig(Spec.SpecSubtletyRogue, {
+
+export default defineSpec<Spec.SpecSubtletyRogue>({
+	spec: Spec.SpecSubtletyRogue,
+
 	cssClass: 'subtlety-rogue-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Rogue),
 	// List any known bugs / issues here and they'll be shown on the site.
@@ -133,30 +133,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSubtletyRogue, {
 			return Presets.ROTATION_PRESET_SUBTLETY.rotation.rotation!;
 		}
 	},
+
+	reforge: {},
+	derivedSettings: [lethalPoisonRule],
 });
-
-export class SubtletyRogueSimUI extends IndividualSimUI<Spec.SpecSubtletyRogue> {
-	constructor(parentElem: HTMLElement, player: Player<Spec.SpecSubtletyRogue>) {
-		super(parentElem, player, SPEC_CONFIG);
-
-		// Auto Reforging
-		this.reforger = new ReforgeOptimizer(this, {});
-
-		subscribePlayerChange(this.player)(() => {
-			const c = nextEventID();
-			const options = this.player.getSpecOptions();
-			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
-			}
-			this.player.setSpecOptions(c, options);
-		});
-		subscribeEncounterChange(this.sim.encounter)(() => {
-			const c = nextEventID();
-			const options = this.player.getSpecOptions();
-			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
-			}
-			this.player.setSpecOptions(c, options);
-		});
-	}
-}

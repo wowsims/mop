@@ -82,8 +82,8 @@ honest. The per-spec config schema lives in `@features/spec_config` (`Individual
 `InputSection`, `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it
 cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
 It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
-`defineSpec` — see "How to author a spec"). `app/individual_sim_ui.tsx` re-exports all of it for
-the 7 spec `sim.ts` files not yet converted to `spec.ts`. The preset shapes
+`defineSpec` — see "How to author a spec"); `app/individual_sim_ui.tsx` re-exports all of it as a
+convenience. The preset shapes
 (`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
 holds the `make*` builders and re-exports the types.
 
@@ -160,19 +160,30 @@ sim.raid.setPlayer  →  new IndividualSimUI(document.body, player, def)
 the spec's config out of the registry in its own constructor. This is the only place that
 ordering matters, and `spec_entry.ts` is the only place it is expressed.
 
-`IndividualSimUI` is concrete — a spec does not subclass it. Its constructor takes
-`IndividualSimUIConfig & SpecBehaviors`, and runs the behaviour slots (reforge →
-derivedSettings → features) as its last statements, exactly where a subclass constructor body
-used to run.
+`IndividualSimUI` is concrete — a spec does not subclass it. Its constructor takes a
+`SpecDefinition<S>`, and runs the behaviour slots (reforge → derivedSettings → features) as its
+last statements, exactly where a subclass constructor body used to run. `derivedSettings` runs
+`apply` once there (before defaults load, mirroring the old constructor timing) and then again
+whenever `subscribe`'s source fires — including when the defaults land.
 
-> Migration state: 27 of 34 specs are converted (`warrior/arms`, `priest/discipline`, and the
-> 25 specs converted in PR 7b). The remaining 7 — `death_knight/frost`, `death_knight/unholy`,
-> `monk/brewmaster`, `monk/windwalker`, `rogue/assassination`, `rogue/combat`, `rogue/subtlety`
-> — still have `sim.ts` (an `IndividualSimUI` subclass) + `index.ts`, and their generated
-> `index.html` still points at `./index.ts`. `ui/index_template.html` already points at
-> `app/spec_entry.ts`, so **do not run `make` (which regenerates all 34 `index.html` from the
-> template) until every spec has a `spec.ts`** — regenerate individually with the makefile's
-> `sed` recipe instead.
+All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no `IndividualSimUI`
+subclass anywhere. Adding a spec is:
+
+1. `ui/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
+   `presets.ts` / `inputs.ts`.
+2. An entry in `ui/domain/player_specs/index.ts` and a launch status in `app/launched_sims.tsx`.
+3. `ui/scss/sims/<class>/<spec>/index.scss`, which the generated `index.html` links.
+
+Everything else is derived: `makefile`'s `PAGE_INDECES` globs `ui/*/*/spec.ts(x)` and generates
+`index.html` from `ui/index_template.html`, and `spec_entry.ts`'s `import.meta.glob` picks the
+module up from the URL. Running `make` is safe — it regenerates all 34 `index.html` from the one
+template.
+
+Rules shared by several specs of the same class live in `ui/<class>/shared/` (e.g.
+`rogue/shared/derived.ts`, `monk/shared/derived.ts`, `death_knight/shared/{derived,inputs}.ts`).
+A shared `DerivedSetting` is declared `DerivedSetting<any>` because `Player<S>` is invariant in
+`S`, so a rule typed against a spec union is not assignable into any one spec's
+`derivedSettings`; annotate the callback parameters to keep the bodies checked.
 
 ## How to move a file
 

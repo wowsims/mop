@@ -13,40 +13,7 @@ GOROOT := $(shell go env GOROOT)
 UI_SRC := $(shell find ui -name '*.ts' -o -name '*.tsx' -o -name '*.scss' -o -name '*.html')
 AUTO_GEN_FILES_TS := ui/domain/player_classes/capabilities_auto_gen.ts ui/domain/bulk/constants_auto_gen.ts ui/domain/wasm/bulk_sim/constants_auto_gen.ts
 AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go sim/core/bulk/bulk_sim.go sim/core/bulk/stage.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
-PAGE_INDECES := ui/death_knight/blood/index.html \
-				ui/death_knight/frost/index.html \
-				ui/death_knight/unholy/index.html \
-				ui/druid/balance/index.html \
-				ui/druid/feral/index.html \
-				ui/druid/guardian/index.html \
-				ui/druid/restoration/index.html \
-				ui/hunter/beast_mastery/index.html \
-				ui/hunter/marksmanship/index.html \
-				ui/hunter/survival/index.html \
-				ui/mage/arcane/index.html \
-				ui/mage/fire/index.html \
-				ui/mage/frost/index.html \
-				ui/monk/brewmaster/index.html \
-				ui/monk/mistweaver/index.html \
-				ui/monk/windwalker/index.html \
-				ui/paladin/holy/index.html \
-				ui/paladin/protection/index.html \
-				ui/paladin/retribution/index.html \
-				ui/priest/discipline/index.html \
-				ui/priest/holy/index.html \
-				ui/priest/shadow/index.html \
-				ui/rogue/assassination/index.html \
-				ui/rogue/combat/index.html \
-				ui/rogue/subtlety/index.html \
-				ui/shaman/elemental/index.html \
-				ui/shaman/enhancement/index.html \
-				ui/shaman/restoration/index.html \
-				ui/warlock/affliction/index.html \
-				ui/warlock/demonology/index.html \
-				ui/warlock/destruction/index.html \
-				ui/warrior/arms/index.html \
-				ui/warrior/fury/index.html \
-				ui/warrior/protection/index.html
+PAGE_INDECES := $(patsubst %/spec.ts,%/index.html,$(wildcard ui/*/*/spec.ts)) $(patsubst %/spec.tsx,%/index.html,$(wildcard ui/*/*/spec.tsx))
 
 $(OUT_DIR)/.dirstamp: \
   $(OUT_DIR)/lib.wasm.gz \

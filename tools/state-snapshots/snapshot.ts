@@ -6,20 +6,13 @@
 // settings protos. The output must stay byte-identical across refactor PRs —
 // any diff means behavior changed.
 //
-// Spec registration happens via module side effects, except for specs already
-// converted to a declarative `spec.ts` (PR 7), which are registered explicitly.
-import '../../ui/death_knight/frost/sim';
-import '../../ui/death_knight/unholy/sim';
-import '../../ui/monk/brewmaster/sim';
-import '../../ui/monk/windwalker/sim';
-import '../../ui/rogue/assassination/sim';
-import '../../ui/rogue/combat/sim';
-import '../../ui/rogue/subtlety/sim';
-
+// Every spec is a declarative `spec.ts` default export, registered explicitly below.
 import { IndividualSimUIConfig } from '../../ui/app/individual_sim_ui';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/core/proto/apl';
 import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/core/proto/common';
 import bloodDeathKnightSpec from '../../ui/death_knight/blood/spec';
+import frostDeathKnightSpec from '../../ui/death_knight/frost/spec';
+import unholyDeathKnightSpec from '../../ui/death_knight/unholy/spec';
 import { getSpecConfig, Player } from '../../ui/domain/player';
 import { PlayerSpecs } from '../../ui/domain/player_specs';
 import { Database } from '../../ui/domain/proto_utils/database';
@@ -37,13 +30,18 @@ import survivalHunterSpec from '../../ui/hunter/survival/spec';
 import arcaneMageSpec from '../../ui/mage/arcane/spec';
 import fireMageSpec from '../../ui/mage/fire/spec';
 import frostMageSpec from '../../ui/mage/frost/spec';
+import brewmasterMonkSpec from '../../ui/monk/brewmaster/spec';
 import mistweaverMonkSpec from '../../ui/monk/mistweaver/spec';
+import windwalkerMonkSpec from '../../ui/monk/windwalker/spec';
 import holyPaladinSpec from '../../ui/paladin/holy/spec';
 import protectionPaladinSpec from '../../ui/paladin/protection/spec';
 import retributionPaladinSpec from '../../ui/paladin/retribution/spec';
 import disciplinePriestSpec from '../../ui/priest/discipline/spec';
 import holyPriestSpec from '../../ui/priest/holy/spec';
 import shadowPriestSpec from '../../ui/priest/shadow/spec';
+import assassinationRogueSpec from '../../ui/rogue/assassination/spec';
+import combatRogueSpec from '../../ui/rogue/combat/spec';
+import subtletyRogueSpec from '../../ui/rogue/subtlety/spec';
 import elementalShamanSpec from '../../ui/shaman/elemental/spec';
 import enhancementShamanSpec from '../../ui/shaman/enhancement/spec';
 import restorationShamanSpec from '../../ui/shaman/restoration/spec';
@@ -57,6 +55,8 @@ import { makeMemoryEnv } from './memory_env';
 
 registerSpecConfig(armsWarriorSpec.spec, armsWarriorSpec);
 registerSpecConfig(bloodDeathKnightSpec.spec, bloodDeathKnightSpec);
+registerSpecConfig(frostDeathKnightSpec.spec, frostDeathKnightSpec);
+registerSpecConfig(unholyDeathKnightSpec.spec, unholyDeathKnightSpec);
 registerSpecConfig(balanceDruidSpec.spec, balanceDruidSpec);
 registerSpecConfig(feralDruidSpec.spec, feralDruidSpec);
 registerSpecConfig(guardianDruidSpec.spec, guardianDruidSpec);
@@ -67,7 +67,9 @@ registerSpecConfig(survivalHunterSpec.spec, survivalHunterSpec);
 registerSpecConfig(arcaneMageSpec.spec, arcaneMageSpec);
 registerSpecConfig(fireMageSpec.spec, fireMageSpec);
 registerSpecConfig(frostMageSpec.spec, frostMageSpec);
+registerSpecConfig(brewmasterMonkSpec.spec, brewmasterMonkSpec);
 registerSpecConfig(mistweaverMonkSpec.spec, mistweaverMonkSpec);
+registerSpecConfig(windwalkerMonkSpec.spec, windwalkerMonkSpec);
 registerSpecConfig(holyPaladinSpec.spec, holyPaladinSpec);
 registerSpecConfig(protectionPaladinSpec.spec, protectionPaladinSpec);
 registerSpecConfig(retributionPaladinSpec.spec, retributionPaladinSpec);
@@ -82,6 +84,9 @@ registerSpecConfig(destructionWarlockSpec.spec, destructionWarlockSpec);
 registerSpecConfig(furyWarriorSpec.spec, furyWarriorSpec);
 registerSpecConfig(protectionWarriorSpec.spec, protectionWarriorSpec);
 registerSpecConfig(disciplinePriestSpec.spec, disciplinePriestSpec);
+registerSpecConfig(assassinationRogueSpec.spec, assassinationRogueSpec);
+registerSpecConfig(combatRogueSpec.spec, combatRogueSpec);
+registerSpecConfig(subtletyRogueSpec.spec, subtletyRogueSpec);
 
 // Mirror of IndividualSimUI.applyDefaults (individual_sim_ui.tsx) without the
 // UI-owned satellites (reforger, statWeightActionSettings, defaultBuild).

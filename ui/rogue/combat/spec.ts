@@ -1,23 +1,23 @@
-import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
-import { nextEventID } from '@domain/state/batch';
-import { subscribeEncounterChange, subscribePlayerChange } from '@domain/state/subscriptions';
-import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
 
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
-import { RogueOptions_PoisonOptions } from '../../core/proto/rogue';
 import * as RogueInputs from '../inputs';
+import { lethalPoisonRule } from '../shared/derived';
 import * as Presets from './presets';
-const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
-	cssClass: 'assassination-rogue-sim-ui',
+
+export default defineSpec<Spec.SpecCombatRogue>({
+	spec: Spec.SpecCombatRogue,
+
+	cssClass: 'combat-rogue-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Rogue),
 	// List any known bugs / issues here and they'll be shown on the site.
 	knownIssues: [],
@@ -37,7 +37,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 		// Default equipped gear.
 		gear: Presets.P5_GEARSET.gear,
 		// Default EP weights for sorting gear in the gear picker.
-		epWeights: Presets.ASN_EP_PRESET.epWeights,
+		epWeights: Presets.CBAT_STANDARD_EP_PRESET.epWeights,
 		// Stat caps for reforge optimizer
 		statCaps: (() => {
 			const expCap = new Stats().withStat(Stat.StatExpertiseRating, 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION);
@@ -47,7 +47,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 			const meleeHitSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalHitPercent, {
 				breakpoints: [7.5, 26.5],
 				capType: StatCapType.TypeSoftCap,
-				postCapEPs: [0.21 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT, 0],
+				postCapEPs: [0.26 * Mechanics.PHYSICAL_HIT_RATING_PER_HIT_PERCENT, 0],
 			});
 
 			return [meleeHitSoftCapConfig];
@@ -56,7 +56,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,
 		// Default talents.
-		talents: Presets.AssassinationTalentsDefault.data,
+		talents: Presets.CombatTalents.data,
 		// Default spec-specific settings.
 		specOptions: Presets.DefaultOptions,
 		// Default raid/party buffs settings.
@@ -110,51 +110,28 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAssassinationRogue, {
 	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
-		showExecuteProportion: true,
+		showExecuteProportion: false,
 	},
 
 	presets: {
-		epWeights: [Presets.ASN_EP_PRESET],
+		epWeights: [Presets.CBAT_STANDARD_EP_PRESET],
 		// Preset talents that the user can quickly select.
-		talents: [Presets.AssassinationTalentsDefault],
+		talents: [Presets.CombatTalents],
 		// Preset rotations that the user can quickly select.
-		rotations: [Presets.ROTATION_PRESET_ASSASSINATION],
+		rotations: [Presets.ROTATION_PRESET_COMBAT],
 		// Preset gear configurations that the user can quickly select.
 		gear: [Presets.PRERAID_GEARSET, Presets.P2_GEARSET, Presets.P3_GEARSET, Presets.P5_GEARSET],
 	},
 
-	autoRotation: (player: Player<Spec.SpecAssassinationRogue>): APLRotation => {
+	autoRotation: (player: Player<Spec.SpecCombatRogue>): APLRotation => {
 		const numTargets = player.sim.encounter.getTargets().length;
-		if (numTargets >= 5) {
-			return Presets.ROTATION_PRESET_ASSASSINATION.rotation.rotation!;
+		if (numTargets >= 2) {
+			return Presets.ROTATION_PRESET_COMBAT.rotation.rotation!;
 		} else {
-			return Presets.ROTATION_PRESET_ASSASSINATION.rotation.rotation!;
+			return Presets.ROTATION_PRESET_COMBAT.rotation.rotation!;
 		}
 	},
+
+	reforge: {},
+	derivedSettings: [lethalPoisonRule],
 });
-
-export class AssassinationRogueSimUI extends IndividualSimUI<Spec.SpecAssassinationRogue> {
-	constructor(parentElem: HTMLElement, player: Player<Spec.SpecAssassinationRogue>) {
-		super(parentElem, player, SPEC_CONFIG);
-
-		this.reforger = new ReforgeOptimizer(this);
-
-		// Poison selection
-		subscribePlayerChange(this.player)(() => {
-			const c = nextEventID();
-			const options = this.player.getSpecOptions();
-			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
-			}
-			this.player.setSpecOptions(c, options);
-		});
-		subscribeEncounterChange(this.sim.encounter)(() => {
-			const c = nextEventID();
-			const options = this.player.getSpecOptions();
-			if (!options.classOptions!.applyPoisonsManually) {
-				options.classOptions!.lethalPoison = RogueOptions_PoisonOptions.DeadlyPoison;
-			}
-			this.player.setSpecOptions(c, options);
-		});
-	}
-}

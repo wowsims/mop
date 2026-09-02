@@ -149,18 +149,49 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 - Tabs, single quotes, `simple-import-sort` (run `npm run lint:js:fix` on touched files).
 - Never commit fixtures/goldens without asking; never run `gen_db` concurrently.
 - Spec configs are pure data; `Player` consumes only the narrow `SpecConfigData` subset.
-  27 of 34 specs are converted to a single `ui/<class>/<spec>/spec.ts` (or `.tsx` for
-  `mage/arcane` and `warlock/demonology`, whose reforge tooltips need real JSX) default-exporting
+  All 34 specs are a single `ui/<class>/<spec>/spec.ts` (or `.tsx` for `mage/arcane` and
+  `warlock/demonology`, whose reforge tooltips need real JSX) default-exporting
   `defineSpec({ spec, ...config, reforge?, enableHealing?, derivedSettings?, features? })` — no
-  `sim.ts`, no `index.ts`, no `IndividualSimUI` subclass; `ui/app/spec_entry.ts` loads it from
-  the URL. The remaining 7 (`death_knight/frost`, `death_knight/unholy`, `monk/brewmaster`,
-  `monk/windwalker`, `rogue/assassination`, `rogue/combat`, `rogue/subtlety`) still register
-  from `sim.ts` via `registerSpecConfig` and boot from their own `index.ts`.
+  `sim.ts`, no `index.ts`, no `IndividualSimUI` subclass anywhere; `ui/app/spec_entry.ts` loads
+  it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/domain/player_specs`, and
+  `ui/scss/sims/<class>/<spec>/index.scss`; `makefile`'s `PAGE_INDECES` globs `ui/*/*/spec.ts(x)`
+  so `index.html` and the vite entry follow automatically, and `make` is safe to run.
+  Rules shared by several specs of one class live in `ui/<class>/shared/`.
   See "How to author a spec" in `ui/README.md`.
 - `PartyBuffs` is an empty proto message in MoP — party-buff code paths are vestigial.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 7c: the last 7 hand-written specs converted — **zero
+  `extends IndividualSimUI` remain, and 34 of 34 specs are `spec.ts`**. `IndividualSimUI`'s
+  constructor now takes `SpecDefinition<S>` (the `& SpecBehaviors` union is gone; nothing else
+  called it). Constructor bodies that were more than a reforger became shared per-class rules:
+  `ui/rogue/shared/derived.ts` (`lethalPoisonRule` — Deadly Poison unless
+  `applyPoisonsManually`, used by all 3 rogues), `ui/monk/shared/derived.ts`
+  (`talentBasedSettingsRule` — `MonkUtils.setTalentBasedSettings` on `talentsString`) and
+  `ui/death_knight/shared/derived.ts` (`amsIntakeRule` — `disableAMSIntakeOnMagicDamageEncounters`
+  on encounter change). A shared rule must be typed `DerivedSetting<any>`: `Player<S>` is
+  invariant in `S`, so `DerivedSetting<A | B>` is NOT assignable to `DerivedSetting<A>` (tsc
+  rejects it via `autoRotationGenerator`); annotate the callback's `player` param to keep the
+  body checked against the union. `ui/death_knight/{frost,unholy}/inputs.ts` were byte-identical
+  modulo the spec type argument and folded into `ui/death_knight/shared/inputs.ts` typed
+  `Spec.SpecFrostDeathKnight | Spec.SpecUnholyDeathKnight` (the input helpers ARE generic-friendly
+  across the union — only `DerivedSetting` is not). `monk/windwalker` keeps the
+  `reforge: host => ({...})` form deliberately: its `getEPDefaults` called `this.reforger?.` when
+  `this.reforger` was still null during the optimizer's own construction, and `host.reforger?.`
+  reproduces that exactly, where `ctx.reforger` (never null) would not.
+  Behaviour deltas, both verified benign and neither visible to the goldens (the snapshot tool
+  never builds a UI): (1) the 3 rogues gain one `apply` at construction that the old ctors did
+  not have — safe because `optionsCreate()` seeds `classOptions: {}` and `applyDefaults`
+  overwrites it moments later; (2) `derivedSettings` run AFTER the reforger, where the old monk
+  and DK ctors ran them before — nothing the optimizer's constructor reads depends on them.
+  `makefile`'s `PAGE_INDECES` is now
+  `$(patsubst %/spec.ts,%/index.html,$(wildcard ui/*/*/spec.ts)) $(patsubst %/spec.tsx,…)`
+  (still 34) and all 34 `index.html` were regenerated — `make` is no longer a footgun.
+  **Found and fixed a latent bug from `b4a3d0a0f` (the ui/domain move):** `tools/database/gen_{bulksim_constants.ts,
+  character_constants_ts}.go` still emitted `'../proto/common'` / `'../../proto/api'` in the
+  three `*_auto_gen.ts` files after their output paths moved to `ui/domain/**`, so any `make`
+  run broke `tsc`; they now emit `@core/proto/{common,api}`.
 - 2026-09-02 UI restructure PR 7b: converted 25 more specs to `spec.ts`/`spec.tsx` (27 of 34
   total, on top of the two PR 7a pilots). `spec_entry.ts`'s glob is now
   `import.meta.glob('../*/*/spec.{ts,tsx}')` — `mage/arcane` and `warlock/demonology` keep real
