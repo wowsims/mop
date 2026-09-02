@@ -88,6 +88,17 @@ convenience. The preset shapes
 (`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
 holds the `make*` builders and re-exports the types.
 
+Proto-serialisable preset data lives as JSON, never as a TS literal: gear (`gear_sets/*.gear.json`),
+APLs (`apls/*.apl.json`), builds (`builds/*.build.json`), EP weights (`presets/ep/*.ep.json`) and
+talents (`presets/talents/*.talents.json`) under `ui/<class>/<spec>/`. EP/talent JSON stores enum
+fields by name (e.g. `"StatCritRating"`, `"GlyphOfBullRush"`) rather than numeric value, so the
+file stays stable across proto regenerations; `PresetUtils.makePresetEpWeightsFromJSON` /
+`makePresetTalentsFromJSON` resolve the names back through the enum (`Stat`/`PseudoStat`, and the
+per-class glyph enums passed in as `{ major, minor }`) and build the preset the same way the old
+literal call did. Anything that references a TS symbol or a callback (a computed EP preset built
+from another via `.withStat()`, an `onLoad` handler, talents that spread another preset's glyphs)
+stays a TS literal instead.
+
 `@i18n/*` resolves into `ui/i18n/*`, a top-level leaf (not owned by `app/`) — domain, ui-kit and
 features reach it through that alias. `ui/i18n/**/*.{ts,tsx}` has its own `no-restricted-imports`
 override banning `@app`/`@features`/`@ui-kit`/`@specs/**` (domain is allowed).

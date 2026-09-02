@@ -1,10 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
 import { APLRotation_Type } from '../../core/proto/apl';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Race, Spec } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, FrostDeathKnight_Options } from '../../core/proto/death_knight';
-import { SavedTalents } from '../../core/proto/ui';
 import MasterFrostAPL from '../../death_knight/frost/apls/masterfrost.apl.json';
 import ObliterateAPL from '../../death_knight/frost/apls/obliterate.apl.json';
 import P52hObliterateBuild from '../../death_knight/frost/builds/p5.2h-obliterate.build.json';
@@ -13,6 +11,9 @@ import P52HObliterateGear from '../../death_knight/frost/gear_sets/p5.2h-obliter
 import P5MasterfrostGear from '../../death_knight/frost/gear_sets/p5.masterfrost.gear.json';
 import Prebis2HObliterateGear from '../../death_knight/frost/gear_sets/prebis.2h-obliterate.gear.json';
 import PrebisMasterfrostGear from '../../death_knight/frost/gear_sets/prebis.masterfrost.gear.json';
+import TwohandObliterateEpJson from './presets/ep/2h_obliterate.ep.json';
+import MasterfrostEpJson from './presets/ep/masterfrost.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 
 export const P5_MASTERFROST_GEAR_PRESET = PresetUtils.makePresetGear('P5 - Masterfrost', P5MasterfrostGear);
 export const P5_2H_OBLITERATE_GEAR_PRESET = PresetUtils.makePresetGear('P5 - 2h Obliterate', P52HObliterateGear);
@@ -22,60 +23,17 @@ export const PREBIS_2H_OBLITERATE_GEAR_PRESET = PresetUtils.makePresetGear('Preb
 export const OBLITERATE_ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Obliterate', ObliterateAPL);
 export const MASTERFROST_ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Masterfrost', MasterFrostAPL);
 
-export const TWOHAND_OBLITERATE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'2h Obliterate',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 1.67,
-			[Stat.StatExpertiseRating]: 1.59,
-			[Stat.StatHasteRating]: 0.49,
-			[Stat.StatCritRating]: 0.62,
-			[Stat.StatAttackPower]: 0.37,
-			[Stat.StatMasteryRating]: 0.56,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.95,
-		},
-	),
-);
+export const TWOHAND_OBLITERATE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(TwohandObliterateEpJson);
 
-export const MASTERFROST_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Masterfrost',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 1.54,
-			[Stat.StatExpertiseRating]: 1.55,
-			[Stat.StatMasteryRating]: 0.68,
-			[Stat.StatHasteRating]: 0.44,
-			[Stat.StatAttackPower]: 0.37,
-			[Stat.StatCritRating]: 0.53,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.58,
-			[PseudoStat.PseudoStatOffHandDps]: 0.76,
-		},
-	),
-);
+export const MASTERFROST_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(MasterfrostEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
 
-export const DefaultTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '221111',
-		glyphs: Glyphs.create({
-			major1: DeathKnightMajorGlyph.GlyphOfRegenerativeMagic,
-			major2: DeathKnightMajorGlyph.GlyphOfDeathGrip,
-			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
-			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
-			minor2: DeathKnightMinorGlyph.GlyphOfTranquilGrip,
-			minor3: DeathKnightMinorGlyph.GlyphOfTheLongWinter,
-		}),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, {
+	major: DeathKnightMajorGlyph,
+	minor: DeathKnightMinorGlyph,
+});
 
 export const DefaultOptions = FrostDeathKnight_Options.create({
 	classOptions: {},

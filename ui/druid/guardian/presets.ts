@@ -1,8 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
 
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Spec, Stat } from '../../core/proto/common';
 import { DruidMajorGlyph, GuardianDruid_Options as DruidOptions, GuardianDruid_Rotation as DruidRotation } from '../../core/proto/druid';
-import { SavedTalents } from '../../core/proto/ui';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
@@ -39,8 +38,6 @@ export const DefaultSimpleRotation = DruidRotation.create({
 	prepullStampede: true,
 });
 
-import { Stats } from '@domain/proto_utils/stats';
-
 import DefaultApl from './apls/default.apl.json';
 import EmpressApl from './apls/empress.apl.json';
 import HorridonApl from './apls/horridon.apl.json';
@@ -53,6 +50,10 @@ import HorridonBuild from './builds/horridon_encounter_only.build.json';
 import DefaultBuild from './builds/ij_default.build.json';
 import IJBuild from './builds/ij_encounter_only.build.json';
 import ShaBuild from './builds/sha_encounter_only.build.json';
+import BalancedEpJson from './presets/ep/balanced.ep.json';
+import OffensiveEpJson from './presets/ep/offensive.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
+
 export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal Default", DefaultApl);
 export const ROTATION_HOTW = PresetUtils.makePresetAPLRotation("Gara'jal Offensive HotW", OffensiveHotwApl);
 export const ROTATION_EMPRESS = PresetUtils.makePresetAPLRotation('Empress Adds', EmpressApl);
@@ -63,29 +64,7 @@ export const ROTATION_IJ = PresetUtils.makePresetAPLRotation('Iron Juggernaut', 
 //export const ROTATION_PRESET_SIMPLE = PresetUtils.makePresetSimpleRotation('Simple Default', Spec.SpecGuardianDruid, DefaultSimpleRotation);
 
 // Preset options for EP weights
-export const BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Balanced Post-Caps',
-	Stats.fromMap(
-		{
-			[Stat.StatHealth]: 0.08,
-			[Stat.StatStamina]: 1.77,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatArmor]: 0.73,
-			[Stat.StatBonusArmor]: 0.17,
-			[Stat.StatDodgeRating]: 0.22,
-			[Stat.StatMasteryRating]: 0.36,
-			[Stat.StatStrength]: 0.19,
-			[Stat.StatAttackPower]: 0.18,
-			[Stat.StatHitRating]: 0.0,
-			[Stat.StatExpertiseRating]: 0.0,
-			[Stat.StatCritRating]: 1.16,
-			[Stat.StatHasteRating]: 1.35,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.75,
-		},
-	),
-);
+export const BALANCED_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(BalancedEpJson);
 
 export const BALANCED_PRECAP_EPS = BALANCED_EP_PRESET.epWeights
 	.withStat(Stat.StatCritRating, 1.36)
@@ -94,29 +73,7 @@ export const BALANCED_PRECAP_EPS = BALANCED_EP_PRESET.epWeights
 
 export const BALANCED_PRECAP_EP_PRESET = PresetUtils.makePresetEpWeights('Balanced Pre-Caps', BALANCED_PRECAP_EPS);
 
-export const OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Offensive Post-Caps',
-	Stats.fromMap(
-		{
-			[Stat.StatHealth]: 0.01,
-			[Stat.StatStamina]: 0.15,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatArmor]: 0.08,
-			[Stat.StatBonusArmor]: 0.02,
-			[Stat.StatDodgeRating]: 0.04,
-			[Stat.StatMasteryRating]: 0.04,
-			[Stat.StatStrength]: 0.24,
-			[Stat.StatAttackPower]: 0.23,
-			[Stat.StatHitRating]: 0.0,
-			[Stat.StatExpertiseRating]: 0.0,
-			[Stat.StatCritRating]: 1.42,
-			[Stat.StatHasteRating]: 0.98,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.04,
-		},
-	),
-);
+export const OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(OffensiveEpJson);
 
 export const OFFENSIVE_PRECAP_EPS = OFFENSIVE_EP_PRESET.epWeights.withStat(Stat.StatHitRating, 2.91).withStat(Stat.StatExpertiseRating, 2.91);
 
@@ -124,17 +81,7 @@ export const OFFENSIVE_PRECAP_EP_PRESET = PresetUtils.makePresetEpWeights('Offen
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const DefaultTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '010101',
-		glyphs: Glyphs.create({
-			major1: DruidMajorGlyph.GlyphOfMightOfUrsoc,
-			major2: DruidMajorGlyph.GlyphOfMaul,
-			major3: DruidMajorGlyph.GlyphOfStampedingRoar,
-		}),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: DruidMajorGlyph });
 
 export const DefaultOptions = DruidOptions.create({});
 

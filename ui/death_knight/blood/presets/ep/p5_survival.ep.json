@@ -1,0 +1,18 @@
+{
+	"name": "P5 - Survival",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatStamina": 1.67,
+		"StatHitRating": 1.62,
+		"StatCritRating": 0.99,
+		"StatHasteRating": 1.07,
+		"StatExpertiseRating": 1.81,
+		"StatDodgeRating": 1.16,
+		"StatParryRating": 1.22,
+		"StatMasteryRating": 1.25,
+		"StatAttackPower": 0.19,
+		"StatArmor": 0.3,
+		"StatBonusArmor": 0.3
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 1.94 }
+}

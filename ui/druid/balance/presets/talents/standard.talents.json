@@ -1,0 +1,9 @@
+{
+	"name": "Standard",
+	"talentsString": "113223",
+	"glyphs": {
+		"major1": "GlyphOfHealingTouch",
+		"major2": "GlyphOfStampede",
+		"major3": "GlyphOfRebirth"
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"name": "Default",
+	"talentsString": "231111",
+	"glyphs": {
+		"major1": "GlyphOfLoudHorn",
+		"major2": "GlyphOfRegenerativeMagic",
+		"major3": "GlyphOfIceboundFortitude",
+		"minor1": "GlyphOfTheLongWinter",
+		"minor2": "GlyphOfArmyOfTheDead",
+		"minor3": "GlyphOfResilientGrip"
+	}
+}

@@ -1,18 +1,19 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
 
 import { APLRotation_Type } from '../../core/proto/apl';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Race, Spec } from '../../core/proto/common';
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '../../core/proto/death_knight';
-import { SavedTalents } from '../../core/proto/ui';
 import DefaultApl from '../../death_knight/unholy/apls/default.apl.json';
 import FesterblightApl from '../../death_knight/unholy/apls/festerblight.apl.json';
 import P5Build from '../../death_knight/unholy/builds/p5.build.json';
 import PrebisBuild from '../../death_knight/unholy/builds/prebis.build.json';
 import P5Gear from '../../death_knight/unholy/gear_sets/p5.gear.json';
 import PrebisGear from '../../death_knight/unholy/gear_sets/prebis.gear.json';
+import DefaultEpJson from './presets/ep/default.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
+import FesterblightTalentsJson from './presets/talents/festerblight.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -35,56 +36,20 @@ export const FESTERBLIGHT_ROTATION_PRESET = PresetUtils.makePresetAPLRotation('F
 });
 
 // Preset options for EP weights
-export const DEFAULT_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Default',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatHitRating]: 1.15,
-			[Stat.StatExpertiseRating]: 1.13,
-			[Stat.StatCritRating]: 0.68,
-			[Stat.StatHasteRating]: 0.64,
-			[Stat.StatMasteryRating]: 0.61,
-			[Stat.StatAttackPower]: 0.3,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.67,
-		},
-	),
-);
+export const DEFAULT_UNHOLY_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DefaultEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wotlk.wowhead.com/talent-calc and copy the numbers in the url.
 
-export const DefaultTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '221111',
-		glyphs: Glyphs.create({
-			major1: DeathKnightMajorGlyph.GlyphOfRegenerativeMagic,
-			major2: DeathKnightMajorGlyph.GlyphOfPestilence,
-			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
-			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
-			minor2: DeathKnightMinorGlyph.GlyphOfTranquilGrip,
-			minor3: DeathKnightMinorGlyph.GlyphOfDeathsEmbrace,
-		}),
-	}),
-};
+export const DefaultTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, {
+	major: DeathKnightMajorGlyph,
+	minor: DeathKnightMinorGlyph,
+});
 
-export const FesterblightTalents = {
-	name: 'Festerblight',
-	data: SavedTalents.create({
-		talentsString: '321111',
-		glyphs: Glyphs.create({
-			major1: DeathKnightMajorGlyph.GlyphOfRegenerativeMagic,
-			major2: DeathKnightMajorGlyph.GlyphOfPestilence,
-			major3: DeathKnightMajorGlyph.GlyphOfLoudHorn,
-			minor1: DeathKnightMinorGlyph.GlyphOfArmyOfTheDead,
-			minor2: DeathKnightMinorGlyph.GlyphOfTranquilGrip,
-			minor3: DeathKnightMinorGlyph.GlyphOfDeathsEmbrace,
-		}),
-	}),
-};
+export const FesterblightTalents = PresetUtils.makePresetTalentsFromJSON(FesterblightTalentsJson, {
+	major: DeathKnightMajorGlyph,
+	minor: DeathKnightMinorGlyph,
+});
 
 export const PREBIS_PRESET = PresetUtils.makePresetBuildFromJSON('Prebis', Spec.SpecUnholyDeathKnight, PrebisBuild, {
 	epWeights: DEFAULT_UNHOLY_EP_PRESET,

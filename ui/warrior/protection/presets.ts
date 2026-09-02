@@ -1,8 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
-import { SavedTalents } from '../../core/proto/ui';
+import { ConsumesSpec, Profession, Spec } from '../../core/proto/common';
 import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior';
 import GenericApl from './apls/default.apl.json';
 import GarajalApl from './apls/garajal.apl.json';
@@ -24,6 +22,13 @@ import P5BISGear from './gear_sets/p5_bis.gear.json';
 import P5BISOffensiveGear from './gear_sets/p5_bis_offensive.gear.json';
 import P5ProgGear from './gear_sets/p5_prog.gear.json';
 import PreraidBISGear from './gear_sets/preraid.gear.json';
+import P2EpJson from './presets/ep/p2.ep.json';
+import P2OffensiveEpJson from './presets/ep/p2_offensive.ep.json';
+import P3EpJson from './presets/ep/p3.ep.json';
+import P3OffensiveEpJson from './presets/ep/p3_offensive.ep.json';
+import P5EpJson from './presets/ep/p5.ep.json';
+import P5OffensiveEpJson from './presets/ep/p5_offensive.ep.json';
+import StandardTalentsJson from './presets/talents/standard.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -49,157 +54,21 @@ export const ROTATION_HORRIDON = PresetUtils.makePresetAPLRotation('Horridon', H
 export const ROTATION_IRON_JUGGERNAUT = PresetUtils.makePresetAPLRotation('Iron Juggernaut', IronJuggernautApl);
 
 // Preset options for EP weights
-export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2 - Default',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1,
-			[Stat.StatStamina]: 1.07,
-			[Stat.StatHitRating]: 1.78,
-			[Stat.StatCritRating]: 0.7,
-			[Stat.StatHasteRating]: 0.11,
-			[Stat.StatExpertiseRating]: 1.77,
-			[Stat.StatDodgeRating]: 0.82,
-			[Stat.StatParryRating]: 0.82,
-			[Stat.StatMasteryRating]: 0.19,
-			[Stat.StatAttackPower]: 0.33,
-			[Stat.StatArmor]: 0.55,
-			[Stat.StatBonusArmor]: 0.55,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.96,
-		},
-	),
-);
+export const P2_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2EpJson);
 
-export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2 - Offensive',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1,
-			[Stat.StatStamina]: 0.36,
-			[Stat.StatHitRating]: 1.62,
-			[Stat.StatCritRating]: 0.82,
-			[Stat.StatHasteRating]: 0.18,
-			[Stat.StatExpertiseRating]: 1.61,
-			[Stat.StatDodgeRating]: 0.6,
-			[Stat.StatParryRating]: 0.63,
-			[Stat.StatMasteryRating]: 0.07,
-			[Stat.StatAttackPower]: 0.4,
-			[Stat.StatArmor]: 0.18,
-			[Stat.StatBonusArmor]: 0.18,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 1.37,
-		},
-	),
-);
+export const P2_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2OffensiveEpJson);
 
-export const P3_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 & P4 - Balanced',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatStamina]: 0.75,
-			[Stat.StatHitRating]: 2.19,
-			[Stat.StatCritRating]: 0.82,
-			[Stat.StatHasteRating]: 0.17,
-			[Stat.StatExpertiseRating]: 2.23,
-			[Stat.StatDodgeRating]: 1.09,
-			[Stat.StatParryRating]: 1.15,
-			[Stat.StatMasteryRating]: 0.16,
-			[Stat.StatAttackPower]: 0.28,
-			[Stat.StatArmor]: 0.62,
-			[Stat.StatBonusArmor]: 0.62,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.68,
-		},
-	),
-);
+export const P3_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P3EpJson);
 
-export const P3_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 & P4 - Offensive',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatStamina]: 0.31,
-			[Stat.StatHitRating]: 2.4,
-			[Stat.StatCritRating]: 1.13,
-			[Stat.StatHasteRating]: 0.28,
-			[Stat.StatExpertiseRating]: 2.44,
-			[Stat.StatDodgeRating]: 1.0,
-			[Stat.StatParryRating]: 1.11,
-			[Stat.StatMasteryRating]: 0.07,
-			[Stat.StatAttackPower]: 0.34,
-			[Stat.StatArmor]: 0.24,
-			[Stat.StatBonusArmor]: 0.24,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.91,
-		},
-	),
-);
+export const P3_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P3OffensiveEpJson);
 
-export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P5 - Balanced',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatStamina]: 1.91,
-			[Stat.StatHitRating]: 3.73,
-			[Stat.StatCritRating]: 1.04,
-			[Stat.StatHasteRating]: 0.12,
-			[Stat.StatExpertiseRating]: 2.58,
-			[Stat.StatDodgeRating]: 1.48,
-			[Stat.StatParryRating]: 1.49,
-			[Stat.StatMasteryRating]: 0.36,
-			[Stat.StatAttackPower]: 0.25,
-			[Stat.StatArmor]: 0.56,
-			[Stat.StatBonusArmor]: 0.56,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.35,
-		},
-	),
-);
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5EpJson);
 
-export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P5 - Offensive',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatStamina]: 0.35,
-			[Stat.StatHitRating]: 4.1,
-			[Stat.StatCritRating]: 1.9,
-			[Stat.StatHasteRating]: 0.43,
-			[Stat.StatExpertiseRating]: 3.27,
-			[Stat.StatDodgeRating]: 1.48,
-			[Stat.StatParryRating]: 1.64,
-			[Stat.StatMasteryRating]: 0.12,
-			[Stat.StatAttackPower]: 0.35,
-			[Stat.StatArmor]: 0.11,
-			[Stat.StatBonusArmor]: 0.11,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.86,
-		},
-	),
-);
+export const P5_OFFENSIVE_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5OffensiveEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'Standard',
-	data: SavedTalents.create({
-		talentsString: '213332',
-		glyphs: Glyphs.create({
-			major1: WarriorMajorGlyph.GlyphOfHeavyRepercussions,
-			major2: WarriorMajorGlyph.GlyphOfIncite,
-			major3: WarriorMajorGlyph.GlyphOfHoldTheLine,
-		}),
-	}),
-};
+export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(StandardTalentsJson, { major: WarriorMajorGlyph });
 
 export const DefaultOptions = ProtectionWarriorOptions.create({
 	classOptions: {},

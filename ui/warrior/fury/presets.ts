@@ -1,10 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
 
-import { ConsumesSpec, Glyphs, HandType, ItemSlot, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
-import { SavedTalents } from '../../core/proto/ui';
+import { ConsumesSpec, HandType, ItemSlot, Profession, Race, Spec } from '../../core/proto/common';
 import { FuryWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior';
 import DefaultFuryApl from './apls/default.apl.json';
 import P2FurySMFGear from './gear_sets/p2_fury_smf.gear.json';
@@ -13,6 +11,12 @@ import P4FuryTGGear from './gear_sets/p4_fury_tg.gear.json';
 import P5FuryTGGear from './gear_sets/p5_fury_tg.gear.json';
 import PreraidFurySMFGear from './gear_sets/preraid_fury_smf.gear.json';
 import PreraidFuryTGGear from './gear_sets/preraid_fury_tg.gear.json';
+import P2FurySmfEpJson from './presets/ep/p2_smf.ep.json';
+import P2FuryTgEpJson from './presets/ep/p2_tg.ep.json';
+import P3_4FuryTgEpJson from './presets/ep/p3_4_tg.ep.json';
+import P5FuryTgEpJson from './presets/ep/p5_tg.ep.json';
+import FurySmfTalentsJson from './presets/talents/smf.talents.json';
+import FuryTgTalentsJson from './presets/talents/tg.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -58,116 +62,24 @@ export const P5_BIS_FURY_TG_PRESET = PresetUtils.makePresetGear('P5 - 2H', P5Fur
 export const FURY_DEFAULT_ROTATION = PresetUtils.makePresetAPLRotation('Default', DefaultFuryApl);
 
 // Preset options for EP weights
-export const P2_FURY_SMF_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2 - SMF',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatAgility]: 0.06,
-			[Stat.StatAttackPower]: 0.45,
-			[Stat.StatExpertiseRating]: 1.19,
-			[Stat.StatHitRating]: 1.37,
-			[Stat.StatCritRating]: 0.94,
-			[Stat.StatHasteRating]: 0.41,
-			[Stat.StatMasteryRating]: 0.59,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.15,
-			[PseudoStat.PseudoStatOffHandDps]: 1.31,
-		},
-	),
-	FURY_SMF_PRESET_OPTIONS,
-);
+export const P2_FURY_SMF_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2FurySmfEpJson, FURY_SMF_PRESET_OPTIONS);
 
-export const P2_FURY_TG_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P2 - TG',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatAgility]: 0.07,
-			[Stat.StatAttackPower]: 0.45,
-			[Stat.StatExpertiseRating]: 1.42,
-			[Stat.StatHitRating]: 1.62,
-			[Stat.StatCritRating]: 1.07,
-			[Stat.StatHasteRating]: 0.41,
-			[Stat.StatMasteryRating]: 0.7,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.59,
-			[PseudoStat.PseudoStatOffHandDps]: 1.11,
-		},
-	),
-	FURY_TG_PRESET_OPTIONS,
-);
+export const P2_FURY_TG_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2FuryTgEpJson, FURY_TG_PRESET_OPTIONS);
 
-export const P3_4_FURY_TG_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P3 & P4 - TG',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatAgility]: 0.07,
-			[Stat.StatAttackPower]: 0.45,
-			[Stat.StatExpertiseRating]: 1.89,
-			[Stat.StatHitRating]: 2.15,
-			[Stat.StatCritRating]: 0.96,
-			[Stat.StatHasteRating]: 0.53,
-			[Stat.StatMasteryRating]: 0.9,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.56,
-			[PseudoStat.PseudoStatOffHandDps]: 1.3,
-		},
-	),
-	FURY_TG_PRESET_OPTIONS,
-);
+export const P3_4_FURY_TG_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P3_4FuryTgEpJson, FURY_TG_PRESET_OPTIONS);
 
-export const P5_FURY_TG_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P5 - TG',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1.0,
-			[Stat.StatAgility]: 0.12,
-			[Stat.StatAttackPower]: 0.45,
-			[Stat.StatExpertiseRating]: 3.04,
-			[Stat.StatHitRating]: 3.61,
-			[Stat.StatCritRating]: 1.86,
-			[Stat.StatHasteRating]: 0.84,
-			[Stat.StatMasteryRating]: 1.28,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 2.58,
-			[PseudoStat.PseudoStatOffHandDps]: 1.26,
-		},
-	),
-	FURY_TG_PRESET_OPTIONS,
-);
+export const P5_FURY_TG_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5FuryTgEpJson, FURY_TG_PRESET_OPTIONS);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
 
 export const FurySMFTalents = {
-	name: 'SMF',
-	data: SavedTalents.create({
-		talentsString: '133333',
-		glyphs: Glyphs.create({
-			major1: WarriorMajorGlyph.GlyphOfBullRush,
-			major2: WarriorMajorGlyph.GlyphOfDeathFromAbove,
-			major3: WarriorMajorGlyph.GlyphOfUnendingRage,
-		}),
-	}),
+	...PresetUtils.makePresetTalentsFromJSON(FurySmfTalentsJson, { major: WarriorMajorGlyph }),
 	...FURY_SMF_PRESET_OPTIONS,
 };
 
 export const FuryTGTalents = {
-	name: 'TG',
-	data: SavedTalents.create({
-		talentsString: '133133',
-		glyphs: Glyphs.create({
-			major1: WarriorMajorGlyph.GlyphOfBullRush,
-			major2: WarriorMajorGlyph.GlyphOfDeathFromAbove,
-			major3: WarriorMajorGlyph.GlyphOfUnendingRage,
-		}),
-	}),
+	...PresetUtils.makePresetTalentsFromJSON(FuryTgTalentsJson, { major: WarriorMajorGlyph }),
 	...FURY_TG_PRESET_OPTIONS,
 };
 

@@ -1,0 +1,17 @@
+{
+	"name": "P2 - TG",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatAgility": 0.07,
+		"StatAttackPower": 0.45,
+		"StatExpertiseRating": 1.42,
+		"StatHitRating": 1.62,
+		"StatCritRating": 1.07,
+		"StatHasteRating": 0.41,
+		"StatMasteryRating": 0.7
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 2.59,
+		"PseudoStatOffHandDps": 1.11
+	}
+}

@@ -164,6 +164,7 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 9b (part 1): EP-weight and talent presets become JSON under `ui/<class>/<spec>/presets/{ep,talents}/` (enum NAMES as keys; `makePresetEpWeightsFromJSON` / `makePresetTalentsFromJSON` in `app/preset_utils.tsx`); computed presets (`.withStat`, glyph spreads, `onLoad`) stay in TS. Done: warrior, death_knight, druid, hunter, mage; the other six classes follow the same recipe.
 - 2026-09-02 UI restructure PR 9a: shared lift. Every class now has fixed-name
   `<class>/shared/{inputs,presets}.ts` (root `<class>/inputs.ts` / `<class>/shared.ts` /
   `<class>/presets.ts` moved in via the move tool; DK's split inputs.ts merged into one file,

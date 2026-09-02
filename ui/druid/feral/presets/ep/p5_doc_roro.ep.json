@@ -1,0 +1,14 @@
+{
+	"name": "DoC RoRo - ilvl >= 550",
+	"stats": {
+		"StatStrength": 0.37,
+		"StatAgility": 1.0,
+		"StatAttackPower": 0.35,
+		"StatHitRating": 0.62,
+		"StatExpertiseRating": 0.58,
+		"StatCritRating": 0.57,
+		"StatHasteRating": 0.53,
+		"StatMasteryRating": 0.41
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 0.54 }
+}

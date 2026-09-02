@@ -1,14 +1,16 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats } from '@domain/proto_utils/stats';
 
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Stat } from '../../core/proto/common';
-import { SavedTalents } from '../../core/proto/ui';
+import { ConsumesSpec, Profession, Race } from '../../core/proto/common';
 import { ArmsWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior';
 import ArmsApl from './apls/arms.apl.json';
 import P2ArmsBisGear from './gear_sets/p2_arms_bis.gear.json';
 import P4ArmsBisGear from './gear_sets/p4_arms_bis.gear.json';
 import P5ArmsBisGear from './gear_sets/p5_arms_bis.gear.json';
 import PreBisGear from './gear_sets/prebis.gear.json';
+import ArmsP1EpJson from './presets/ep/p1.ep.json';
+import ArmsP2EpJson from './presets/ep/p2.ep.json';
+import ArmsP5EpJson from './presets/ep/p5.ep.json';
+import ArmsDefaultTalentsJson from './presets/talents/default.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -22,77 +24,16 @@ export const P5_ARMS_BIS_PRESET = PresetUtils.makePresetGear('P5 - BIS', P5ArmsB
 export const ROTATION_ARMS = PresetUtils.makePresetAPLRotation('Default', ArmsApl);
 
 // Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level < 500',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1,
-			[Stat.StatAttackPower]: 0.45,
-			[Stat.StatExpertiseRating]: 1.2,
-			[Stat.StatHitRating]: 1.4,
-			[Stat.StatCritRating]: 0.59,
-			[Stat.StatHasteRating]: 0.32,
-			[Stat.StatMasteryRating]: 0.39,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 3.71,
-			[PseudoStat.PseudoStatOffHandDps]: 0,
-		},
-	),
-);
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(ArmsP1EpJson);
 
-export const P2_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 500',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1,
-			[Stat.StatAttackPower]: 0.45,
-			[Stat.StatExpertiseRating]: 1.39,
-			[Stat.StatHitRating]: 1.88,
-			[Stat.StatCritRating]: 0.6,
-			[Stat.StatHasteRating]: 0.3,
-			[Stat.StatMasteryRating]: 0.49,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 3.54,
-			[PseudoStat.PseudoStatOffHandDps]: 0,
-		},
-	),
-);
+export const P2_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(ArmsP2EpJson);
 
-export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 560',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 1,
-			[Stat.StatAttackPower]: 0.45,
-			[Stat.StatExpertiseRating]: 2.83,
-			[Stat.StatHitRating]: 3.8,
-			[Stat.StatCritRating]: 0.92,
-			[Stat.StatHasteRating]: 0.82,
-			[Stat.StatMasteryRating]: 0.91,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 3.54,
-			[PseudoStat.PseudoStatOffHandDps]: 0,
-		},
-	),
-);
+export const P5_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(ArmsP5EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
 
-export const ArmsTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '113132',
-		glyphs: Glyphs.create({
-			major1: WarriorMajorGlyph.GlyphOfBullRush,
-			major2: WarriorMajorGlyph.GlyphOfUnendingRage,
-			major3: WarriorMajorGlyph.GlyphOfDeathFromAbove,
-		}),
-	}),
-};
+export const ArmsTalents = PresetUtils.makePresetTalentsFromJSON(ArmsDefaultTalentsJson, { major: WarriorMajorGlyph });
 
 export const DefaultOptions = WarriorOptions.create({
 	classOptions: {},

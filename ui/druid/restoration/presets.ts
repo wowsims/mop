@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
 
-import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, RaidBuffs, Stat, UnitReference } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, RaidBuffs, UnitReference } from '../../core/proto/common';
 import { RestorationDruid_Options as RestorationDruidOptions } from '../../core/proto/druid';
 import { SavedTalents } from '../../core/proto/ui';
 // Preset options for this spec.
@@ -14,23 +14,13 @@ import P2Gear from './gear_sets/p2.gear.json';
 export const P2_PRESET = PresetUtils.makePresetGear('P2 Preset', P2Gear);
 import P3Gear from './gear_sets/p3.gear.json';
 export const P3_PRESET = PresetUtils.makePresetGear('P3 Preset', P3Gear);
-import { Stats } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
 import P4Gear from './gear_sets/p4.gear.json';
 export const P4_PRESET = PresetUtils.makePresetGear('P4 Preset', P4Gear);
+import P1EpJson from './presets/ep/p1.ep.json';
 
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P1',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 0.38,
-		[Stat.StatSpirit]: 0.34,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatCritRating]: 0.69,
-		[Stat.StatHasteRating]: 0.77,
-		[Stat.StatMP5]: 0.0,
-	}),
-);
+export const P1_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1EpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.

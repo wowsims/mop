@@ -1,0 +1,20 @@
+{
+	"name": "P3 & P4 - Balanced",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatStamina": 0.75,
+		"StatHitRating": 2.19,
+		"StatCritRating": 0.82,
+		"StatHasteRating": 0.17,
+		"StatExpertiseRating": 2.23,
+		"StatDodgeRating": 1.09,
+		"StatParryRating": 1.15,
+		"StatMasteryRating": 0.16,
+		"StatAttackPower": 0.28,
+		"StatArmor": 0.62,
+		"StatBonusArmor": 0.62
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 0.68
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"name": "Masterfrost",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatHitRating": 1.54,
+		"StatExpertiseRating": 1.55,
+		"StatMasteryRating": 0.68,
+		"StatHasteRating": 0.44,
+		"StatAttackPower": 0.37,
+		"StatCritRating": 0.53
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 1.58,
+		"PseudoStatOffHandDps": 0.76
+	}
+}

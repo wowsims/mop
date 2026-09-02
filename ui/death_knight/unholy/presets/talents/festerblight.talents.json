@@ -1,0 +1,12 @@
+{
+	"name": "Festerblight",
+	"talentsString": "321111",
+	"glyphs": {
+		"major1": "GlyphOfRegenerativeMagic",
+		"major2": "GlyphOfPestilence",
+		"major3": "GlyphOfLoudHorn",
+		"minor1": "GlyphOfArmyOfTheDead",
+		"minor2": "GlyphOfTranquilGrip",
+		"minor3": "GlyphOfDeathsEmbrace"
+	}
+}

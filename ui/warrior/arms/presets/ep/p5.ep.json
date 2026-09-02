@@ -1,0 +1,16 @@
+{
+	"name": "Item Level >= 560",
+	"stats": {
+		"StatStrength": 1,
+		"StatAttackPower": 0.45,
+		"StatExpertiseRating": 2.83,
+		"StatHitRating": 3.8,
+		"StatCritRating": 0.92,
+		"StatHasteRating": 0.82,
+		"StatMasteryRating": 0.91
+	},
+	"pseudoStats": {
+		"PseudoStatMainHandDps": 3.54,
+		"PseudoStatOffHandDps": 0
+	}
+}

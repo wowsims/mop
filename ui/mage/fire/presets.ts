@@ -3,7 +3,7 @@ import { Encounter } from '@domain/encounter';
 import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
 
 import { ReforgeSettings } from '../../core/proto/api';
-import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec } from '../../core/proto/common';
 import {
 	FireMage_Options as MageOptions,
 	FireMage_Rotation,
@@ -19,6 +19,11 @@ import P3MasteryGear from './gear_sets/mastery_fire.gear.json';
 import P1PreBISGear from './gear_sets/p1_prebis.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
 import P5BISGear from './gear_sets/p5_bis.gear.json';
+import DefaultEpJson from './presets/ep/default.ep.json';
+import MasteryEpJson from './presets/ep/mastery.ep.json';
+import P1PrebisEpJson from './presets/ep/p1_prebis.ep.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
+import MasteryTalentsJson from './presets/talents/mastery.talents.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
@@ -96,58 +101,17 @@ export const MASTERY_ROTATION_PRESET_APL = PresetUtils.makePresetAPLRotation('Ma
 // export const FIRE_ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', FireCleaveApl);
 
 // Preset options for EP weights
-export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level > 500',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.37,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 1.2,
-		[Stat.StatCritRating]: 1.05,
-		[Stat.StatHasteRating]: 0.62,
-		[Stat.StatMasteryRating]: 0.79,
-	}),
-);
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DefaultEpJson);
 
-export const P1_PREBIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level < 500',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.37,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 1.21,
-		[Stat.StatCritRating]: 0.94,
-		[Stat.StatHasteRating]: 0.95,
-		[Stat.StatMasteryRating]: 0.59,
-	}),
-);
-export const MASTERY_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Mastery',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.37,
-		[Stat.StatSpellPower]: 1.0,
-		[Stat.StatHitRating]: 1.2,
-		[Stat.StatCritRating]: 0.55,
-		[Stat.StatHasteRating]: 0.62,
-		[Stat.StatMasteryRating]: 1.05,
-	}),
-);
+export const P1_PREBIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1PrebisEpJson);
+
+export const MASTERY_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(MasteryEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/wotlk/talent-calc and copy the numbers in the url.
-export const FireTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '111121',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfCombustion,
-			major2: MajorGlyph.GlyphOfInfernoBlast,
-			major3: MajorGlyph.GlyphOfRapidDisplacement,
-			minor1: MinorGlyph.GlyphOfMomentum,
-			minor2: MinorGlyph.GlyphOfLooseMana,
-			minor3: MinorGlyph.GlyphOfRapidTeleportation,
-		}),
-	}),
-};
+export const FireTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MajorGlyph, minor: MinorGlyph });
 
+// Computed preset: reuses FireTalents' glyphs, so it stays in TS rather than its own JSON file.
 export const FireTalentsCleave = {
 	name: 'Cleave',
 	data: SavedTalents.create({
@@ -158,20 +122,7 @@ export const FireTalentsCleave = {
 	}),
 };
 
-export const FireTalentsMastery = {
-	name: 'Mastery',
-	data: SavedTalents.create({
-		talentsString: '111121',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfCombustion,
-			major2: MajorGlyph.GlyphOfInfernoBlast,
-			major3: MajorGlyph.GlyphOfArmors,
-			minor1: MinorGlyph.GlyphOfMomentum,
-			minor2: MinorGlyph.GlyphOfLooseMana,
-			minor3: MinorGlyph.GlyphOfRapidTeleportation,
-		}),
-	}),
-};
+export const FireTalentsMastery = PresetUtils.makePresetTalentsFromJSON(MasteryTalentsJson, { major: MajorGlyph, minor: MinorGlyph });
 
 export const DefaultFireOptions = MageOptions.create({
 	classOptions: {

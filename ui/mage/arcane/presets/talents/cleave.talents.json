@@ -1,0 +1,12 @@
+{
+	"name": "Cleave",
+	"talentsString": "311112",
+	"glyphs": {
+		"major1": "GlyphOfArcanePower",
+		"major2": "GlyphOfRapidDisplacement",
+		"major3": "GlyphOfManaGem",
+		"minor1": "GlyphOfMomentum",
+		"minor2": "GlyphOfRapidTeleportation",
+		"minor3": "GlyphOfLooseMana"
+	}
+}

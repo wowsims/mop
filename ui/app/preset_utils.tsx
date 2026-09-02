@@ -1,5 +1,16 @@
 import { APLRotation, APLRotation_Type as APLRotationType } from '@core/proto/apl';
-import { Cooldowns, Encounter as EncounterProto, EquipmentSpec, HealingModel, ItemSwap, Spec, UnitReference } from '@core/proto/common';
+import {
+	Cooldowns,
+	Encounter as EncounterProto,
+	EquipmentSpec,
+	Glyphs,
+	HealingModel,
+	ItemSwap,
+	PseudoStat,
+	Spec,
+	Stat,
+	UnitReference,
+} from '@core/proto/common';
 import { IndividualSimSettings, SavedRotation, SavedTalents } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import type {
@@ -95,6 +106,65 @@ const makePresetEpWeightHelper = (name: string, epWeights: Stats, options?: Pres
 		enableWhen: !!conditions.length ? (player: Player<any>) => conditions.every(cond => cond(player)) : undefined,
 		onLoad: options?.onLoad,
 	};
+};
+
+// JSON shape for presets/ep/*.ep.json. Enum keys are stored as names (e.g. "StatCritRating") so
+// they stay stable across proto regenerations, rather than as the numeric enum values.
+export type PresetEpWeightsJson = {
+	name: string;
+	stats?: Partial<Record<keyof typeof Stat, number>>;
+	pseudoStats?: Partial<Record<keyof typeof PseudoStat, number>>;
+};
+
+export const makePresetEpWeightsFromJSON = (json: PresetEpWeightsJson, options?: PresetEpWeightsOptions): PresetEpWeights => {
+	const statsMap: Partial<Record<Stat, number>> = {};
+	Object.entries(json.stats ?? {}).forEach(([key, value]) => {
+		statsMap[Stat[key as keyof typeof Stat]] = value;
+	});
+
+	const pseudoStatsMap: Partial<Record<PseudoStat, number>> = {};
+	Object.entries(json.pseudoStats ?? {}).forEach(([key, value]) => {
+		pseudoStatsMap[PseudoStat[key as keyof typeof PseudoStat]] = value;
+	});
+
+	return makePresetEpWeights(json.name, Stats.fromMap(statsMap, pseudoStatsMap), options);
+};
+
+// JSON shape for presets/talents/*.talents.json. Glyph values are stored as enum names (e.g.
+// "GlyphOfBullRush") so they stay stable across proto regenerations.
+export type PresetTalentsJson = {
+	name: string;
+	talentsString?: string;
+	// A glyph value is normally the glyph enum's name (e.g. "GlyphOfBullRush"). A raw numeric spell
+	// id is also accepted for glyphs that aren't represented in the enum.
+	glyphs?: Partial<Record<keyof Glyphs, string | number>>;
+};
+
+export type PresetTalentsGlyphEnums = {
+	major?: { [key: string]: number | string };
+	minor?: { [key: string]: number | string };
+};
+
+export const makePresetTalentsFromJSON = (
+	json: PresetTalentsJson,
+	glyphEnums: PresetTalentsGlyphEnums,
+	options?: PresetTalentsOptions,
+): PresetTalents => {
+	let glyphs: Glyphs | undefined;
+	if (json.glyphs) {
+		const glyphFields: Record<string, number> = {};
+		Object.entries(json.glyphs).forEach(([slot, glyphValue]) => {
+			if (typeof glyphValue === 'number') {
+				glyphFields[slot] = glyphValue;
+				return;
+			}
+			const enumTable = slot.startsWith('major') ? glyphEnums.major : glyphEnums.minor;
+			glyphFields[slot] = Number(enumTable?.[glyphValue] ?? 0);
+		});
+		glyphs = Glyphs.create(glyphFields);
+	}
+
+	return makePresetTalents(json.name, SavedTalents.create({ talentsString: json.talentsString, glyphs }), options);
 };
 
 export const makePresetAPLRotation = (name: string, rotationJson: any, options?: PresetRotationOptions): PresetRotation => {

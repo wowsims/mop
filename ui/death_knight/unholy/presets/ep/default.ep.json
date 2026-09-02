@@ -1,0 +1,13 @@
+{
+	"name": "Default",
+	"stats": {
+		"StatStrength": 1.0,
+		"StatHitRating": 1.15,
+		"StatExpertiseRating": 1.13,
+		"StatCritRating": 0.68,
+		"StatHasteRating": 0.64,
+		"StatMasteryRating": 0.61,
+		"StatAttackPower": 0.3
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 0.67 }
+}

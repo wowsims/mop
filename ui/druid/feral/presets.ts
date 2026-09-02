@@ -1,13 +1,12 @@
 import * as PresetUtils from '@app/preset_utils';
 
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Race, Spec } from '../../core/proto/common';
 import {
 	FeralDruid_Options as FeralDruidOptions,
 	FeralDruid_Rotation as FeralDruidRotation,
 	FeralDruid_Rotation_AplType,
 	FeralDruid_Rotation_HotwStrategy,
 } from '../../core/proto/druid';
-import { SavedTalents } from '../../core/proto/ui';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
@@ -35,122 +34,27 @@ export const PRESET_BUILD_ST = PresetUtils.makePresetBuildFromJSON('Single-Targe
 import SustainedCleaveBuild from './builds/sustained_cleave.build.json';
 export const PRESET_BUILD_CLEAVE = PresetUtils.makePresetBuildFromJSON('4-Target Cleave', Spec.SpecFeralDruid, SustainedCleaveBuild);
 
-import { Stats } from '@domain/proto_utils/stats';
+import DocEpJson from './presets/ep/doc.ep.json';
+import DocRoroEpJson from './presets/ep/doc_roro.ep.json';
+import HotwEpJson from './presets/ep/hotw.ep.json';
+import HotwRoroEpJson from './presets/ep/hotw_roro.ep.json';
+import P5DocRoroEpJson from './presets/ep/p5_doc_roro.ep.json';
+import P5HotwRoroEpJson from './presets/ep/p5_hotw_roro.ep.json';
+import DocTalentsJson from './presets/talents/doc.talents.json';
+import HotwTalentsJson from './presets/talents/hotw.talents.json';
 
 // Preset options for EP weights
-export const DOC_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'DoC Bear-Weave',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 0.39,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatAttackPower]: 0.37,
-			[Stat.StatHitRating]: 0.45,
-			[Stat.StatExpertiseRating]: 0.45,
-			[Stat.StatCritRating]: 0.36,
-			[Stat.StatHasteRating]: 0.27,
-			[Stat.StatMasteryRating]: 0.42,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.73,
-		},
-	),
-);
+export const DOC_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DocEpJson);
 
-export const DOC_RORO_PRESET = PresetUtils.makePresetEpWeights(
-	'DoC RoRo - ilvl < 550',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 0.39,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatAttackPower]: 0.37,
-			[Stat.StatHitRating]: 0.44,
-			[Stat.StatExpertiseRating]: 0.44,
-			[Stat.StatCritRating]: 0.49,
-			[Stat.StatHasteRating]: 0.42,
-			[Stat.StatMasteryRating]: 0.39,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.74,
-		},
-	),
-);
+export const DOC_RORO_PRESET = PresetUtils.makePresetEpWeightsFromJSON(DocRoroEpJson);
 
-export const P5_DOC_RORO_PRESET = PresetUtils.makePresetEpWeights(
-	'DoC RoRo - ilvl >= 550',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 0.37,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatAttackPower]: 0.35,
-			[Stat.StatHitRating]: 0.62,
-			[Stat.StatExpertiseRating]: 0.58,
-			[Stat.StatCritRating]: 0.57,
-			[Stat.StatHasteRating]: 0.53,
-			[Stat.StatMasteryRating]: 0.41,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.54,
-		},
-	),
-);
+export const P5_DOC_RORO_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5DocRoroEpJson);
 
-export const HOTW_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'HotW Wrath-Weave',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 0.34,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatAttackPower]: 0.32,
-			[Stat.StatHitRating]: 0.37,
-			[Stat.StatExpertiseRating]: 0.37,
-			[Stat.StatCritRating]: 0.36,
-			[Stat.StatHasteRating]: 0.25,
-			[Stat.StatMasteryRating]: 0.37,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.72,
-		},
-	),
-);
+export const HOTW_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(HotwEpJson);
 
-export const HOTW_RORO_PRESET = PresetUtils.makePresetEpWeights(
-	'HotW RoRo - ilvl < 550',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 0.34,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatAttackPower]: 0.32,
-			[Stat.StatHitRating]: 0.36,
-			[Stat.StatExpertiseRating]: 0.36,
-			[Stat.StatCritRating]: 0.54,
-			[Stat.StatHasteRating]: 0.35,
-			[Stat.StatMasteryRating]: 0.35,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.72,
-		},
-	),
-);
+export const HOTW_RORO_PRESET = PresetUtils.makePresetEpWeightsFromJSON(HotwRoroEpJson);
 
-export const P5_HOTW_RORO_PRESET = PresetUtils.makePresetEpWeights(
-	'HotW RoRo - ilvl >= 550',
-	Stats.fromMap(
-		{
-			[Stat.StatStrength]: 0.33,
-			[Stat.StatAgility]: 1.0,
-			[Stat.StatAttackPower]: 0.32,
-			[Stat.StatHitRating]: 0.55,
-			[Stat.StatExpertiseRating]: 0.51,
-			[Stat.StatCritRating]: 0.54,
-			[Stat.StatHasteRating]: 0.51,
-			[Stat.StatMasteryRating]: 0.38,
-		},
-		{
-			[PseudoStat.PseudoStatMainHandDps]: 0.54,
-		},
-	),
-);
+export const P5_HOTW_RORO_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5HotwRoroEpJson);
 
 export const DefaultRotation = FeralDruidRotation.create({
 	rotationType: FeralDruid_Rotation_AplType.SingleTarget,
@@ -182,29 +86,9 @@ export const SIMPLE_ROTATION_DEFAULT = PresetUtils.makePresetSimpleRotation('Sin
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'DoC',
-	data: SavedTalents.create({
-		talentsString: '100302',
-		glyphs: Glyphs.create({
-			major1: 40923,
-			major2: 40914,
-			major3: 40897,
-		}),
-	}),
-};
+export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(DocTalentsJson, {});
 
-export const HotWTalents = {
-	name: 'HotW',
-	data: SavedTalents.create({
-		talentsString: '100301',
-		glyphs: Glyphs.create({
-			major1: 40923,
-			major2: 40914,
-			major3: 40897,
-		}),
-	}),
-};
+export const HotWTalents = PresetUtils.makePresetTalentsFromJSON(HotwTalentsJson, {});
 
 export const DefaultOptions = FeralDruidOptions.create({
 	assumeBleedActive: true,

@@ -1,12 +1,10 @@
 import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
-import { Stats } from '@domain/proto_utils/stats';
 import { nextEventID } from '@domain/state/batch';
 
-import { ConsumesSpec, Glyphs, Profession, Race, Spec, Stat } from '../../core/proto/common';
+import { ConsumesSpec, Profession, Race, Spec } from '../../core/proto/common';
 import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '../../core/proto/mage';
-import { SavedTalents } from '../../core/proto/ui';
 import { DefaultDebuffs, DefaultRaidBuffs } from '../shared/presets';
 import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';
 import P2BISGear from './gear_sets/p2_bis.gear.json';
@@ -14,6 +12,11 @@ import P3BISGear from './gear_sets/p3_bis.gear.json';
 import P4BISGear from './gear_sets/p4_bis.gear.json';
 import P5BISGear from './gear_sets/p5_bis.gear.json';
 import PreBISGear from './gear_sets/prebis.gear.json';
+import P1BisEpJson from './presets/ep/p1_bis.ep.json';
+import P1PrebisEpJson from './presets/ep/p1_prebis.ep.json';
+import P3BisEpJson from './presets/ep/p3_bis.ep.json';
+import CleaveTalentsJson from './presets/talents/cleave.talents.json';
+import DefaultTalentsJson from './presets/talents/default.talents.json';
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
@@ -39,73 +42,17 @@ export const ROTATION_PRESET_T15_4PC = PresetUtils.makePresetAPLRotation('Defaul
 // export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', ArcaneCleaveApl);
 
 // Preset options for EP weights
-export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 525',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.23,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 1.71,
-		[Stat.StatCritRating]: 0.61,
-		[Stat.StatHasteRating]: 0.9,
-		[Stat.StatMasteryRating]: 0.74,
-	}),
-);
+export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P3BisEpJson);
 
-export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 495',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.24,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 1.45,
-		[Stat.StatCritRating]: 0.59,
-		[Stat.StatHasteRating]: 0.64,
-		[Stat.StatMasteryRating]: 0.7,
-	}),
-);
+export const P1_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1BisEpJson);
 
-export const P1_PREBIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level < 495',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1.24,
-		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 1.31,
-		[Stat.StatCritRating]: 0.52,
-		[Stat.StatHasteRating]: 0.62,
-		[Stat.StatMasteryRating]: 0.6,
-	}),
-);
+export const P1_PREBIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P1PrebisEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const ArcaneTalents = {
-	name: 'Default',
-	data: SavedTalents.create({
-		talentsString: '311122',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfArcanePower,
-			major2: MajorGlyph.GlyphOfRapidDisplacement,
-			major3: MajorGlyph.GlyphOfManaGem,
-			minor1: MageMinorGlyph.GlyphOfMomentum,
-			minor2: MageMinorGlyph.GlyphOfRapidTeleportation,
-			minor3: MageMinorGlyph.GlyphOfLooseMana,
-		}),
-	}),
-};
+export const ArcaneTalents = PresetUtils.makePresetTalentsFromJSON(DefaultTalentsJson, { major: MajorGlyph, minor: MageMinorGlyph });
 
-export const ArcaneTalentsCleave = {
-	name: 'Cleave',
-	data: SavedTalents.create({
-		talentsString: '311112',
-		glyphs: Glyphs.create({
-			major1: MajorGlyph.GlyphOfArcanePower,
-			major2: MajorGlyph.GlyphOfRapidDisplacement,
-			major3: MajorGlyph.GlyphOfManaGem,
-			minor1: MageMinorGlyph.GlyphOfMomentum,
-			minor2: MageMinorGlyph.GlyphOfRapidTeleportation,
-			minor3: MageMinorGlyph.GlyphOfLooseMana,
-		}),
-	}),
-};
+export const ArcaneTalentsCleave = PresetUtils.makePresetTalentsFromJSON(CleaveTalentsJson, { major: MajorGlyph, minor: MageMinorGlyph });
 
 export const ENCOUNTER_SINGLE_TARGET = PresetUtils.makePresetEncounter('Single Target', Encounter.defaultEncounterProto());
 export const ENCOUNTER_CLEAVE = PresetUtils.makePresetEncounter('Cleave (2 targets)', Encounter.defaultEncounterProto(2));

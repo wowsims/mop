@@ -1,0 +1,14 @@
+{
+	"name": "HotW RoRo - ilvl < 550",
+	"stats": {
+		"StatStrength": 0.34,
+		"StatAgility": 1.0,
+		"StatAttackPower": 0.32,
+		"StatHitRating": 0.36,
+		"StatExpertiseRating": 0.36,
+		"StatCritRating": 0.54,
+		"StatHasteRating": 0.35,
+		"StatMasteryRating": 0.35
+	},
+	"pseudoStats": { "PseudoStatMainHandDps": 0.72 }
+}

@@ -1,15 +1,18 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+import { UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import { ConsumesSpec, Debuffs, Glyphs, IndividualBuffs, PartyBuffs, Profession, PseudoStat, RaidBuffs, Stat, UnitReference } from '../../core/proto/common';
+import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, Profession, PseudoStat, RaidBuffs, UnitReference } from '../../core/proto/common';
 import { BalanceDruid_Options as BalanceDruidOptions, DruidMajorGlyph } from '../../core/proto/druid';
-import { SavedTalents } from '../../core/proto/ui';
 import StandardApl from './apls/standard.apl.json';
 import PreraidGear from './gear_sets/preraid.gear.json';
 import T14Gear from './gear_sets/t14.gear.json';
 import T15Gear from './gear_sets/t15.gear.json';
 import T16Gear from './gear_sets/t16.gear.json';
+import P2BisEpJson from './presets/ep/p2_bis.ep.json';
+import P3BisEpJson from './presets/ep/p3_bis.ep.json';
+import P5BisEpJson from './presets/ep/p5_bis.ep.json';
+import StandardTalentsJson from './presets/talents/standard.talents.json';
 
 export const PreraidPresetGear = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
 export const T14PresetGear = PresetUtils.makePresetGear('T14', T14Gear);
@@ -18,58 +21,15 @@ export const T16PresetGear = PresetUtils.makePresetGear('T16', T16Gear);
 
 export const StandardRotation = PresetUtils.makePresetAPLRotation('Standard', StandardApl);
 
-export const P2_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level < 525',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1,
-		[Stat.StatSpirit]: 0.88,
-		[Stat.StatHitRating]: 0.88,
-		[Stat.StatCritRating]: 0.54,
-		[Stat.StatHasteRating]: 0.55,
-		[Stat.StatMasteryRating]: 0.46,
-		[Stat.StatSpellPower]: 0.8,
-	}),
-);
+export const P2_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P2BisEpJson);
 
-export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 525',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1,
-		[Stat.StatSpirit]: 1.0,
-		[Stat.StatHitRating]: 1.0,
-		[Stat.StatCritRating]: 0.57,
-		[Stat.StatHasteRating]: 0.64,
-		[Stat.StatMasteryRating]: 0.53,
-		[Stat.StatSpellPower]: 0.79,
-	}),
-);
+export const P3_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P3BisEpJson);
 
-export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'Item Level >= 560',
-	Stats.fromMap({
-		[Stat.StatIntellect]: 1,
-		[Stat.StatSpirit]: 1.33,
-		[Stat.StatHitRating]: 1.27,
-		[Stat.StatCritRating]: 0.82,
-		[Stat.StatHasteRating]: 1.01,
-		[Stat.StatMasteryRating]: 0.81,
-		[Stat.StatSpellPower]: 0.74,
-	}),
-);
+export const P5_BIS_EP_PRESET = PresetUtils.makePresetEpWeightsFromJSON(P5BisEpJson);
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'Standard',
-	data: SavedTalents.create({
-		talentsString: '113223',
-		glyphs: Glyphs.create({
-			major1: DruidMajorGlyph.GlyphOfHealingTouch,
-			major2: DruidMajorGlyph.GlyphOfStampede,
-			major3: DruidMajorGlyph.GlyphOfRebirth,
-		}),
-	}),
-};
+export const StandardTalents = PresetUtils.makePresetTalentsFromJSON(StandardTalentsJson, { major: DruidMajorGlyph });
 
 export const DefaultOptions = BalanceDruidOptions.create({
 	classOptions: {
