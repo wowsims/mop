@@ -5,12 +5,22 @@ import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const uiRoot = path.resolve(here, 'ui');
 
 export default defineConfig({
 	root: '.',
 	resolve: {
 		alias: {
 			'virtual:i18next-loader': path.resolve(here, 'tools/state-snapshots/stub-i18n.js'),
+			'@domain': path.resolve(uiRoot, 'domain'),
+			'@generated': path.resolve(uiRoot, 'generated'),
+			'@worker': path.resolve(uiRoot, 'worker'),
+			'@ui-kit': path.resolve(uiRoot, 'ui-kit'),
+			'@features': path.resolve(uiRoot, 'features'),
+			'@app': path.resolve(uiRoot, 'app'),
+			'@specs': path.resolve(uiRoot, 'specs'),
+			'@i18n': path.resolve(uiRoot, 'i18n'),
+			'@core': path.resolve(uiRoot, 'core'),
 		},
 	},
 	oxc: {

@@ -5,14 +5,13 @@
 OUT_DIR := dist/mop
 # Windows won't launch an extensionless binary -- air just pops a file-association prompt.
 BIN_EXT := $(shell go env GOEXE)
-TS_CORE_SRC := $(shell find ui/core -name '*.ts' -type f)
 ASSETS_INPUT := $(shell find assets/ -type f)
 ASSETS := $(patsubst assets/%,$(OUT_DIR)/assets/%,$(ASSETS_INPUT))
 # Recursive wildcard function. Needs to be '=' instead of ':=' because of recursion.
 rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 GOROOT := $(shell go env GOROOT)
 UI_SRC := $(shell find ui -name '*.ts' -o -name '*.tsx' -o -name '*.scss' -o -name '*.html')
-AUTO_GEN_FILES_TS := ui/core/player_classes/capabilities_auto_gen.ts ui/core/components/individual_sim_ui/bulk/constants_auto_gen.ts ui/core/wasm/bulk_sim/constants_auto_gen.ts
+AUTO_GEN_FILES_TS := ui/core/player_classes/capabilities_auto_gen.ts ui/core/bulk/constants_auto_gen.ts ui/core/wasm/bulk_sim/constants_auto_gen.ts
 AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go sim/core/bulk/bulk_sim.go sim/core/bulk/stage.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
 PAGE_INDECES := ui/death_knight/blood/index.html \
 				ui/death_knight/frost/index.html \
@@ -64,18 +63,11 @@ $(OUT_DIR)/bundle/.dirstamp: \
   vite.build-workers.mts \
   node_modules \
   tsconfig.json \
-  ui/core/index.ts \
   ui/core/proto/api.ts
 	node_modules/typescript/bin/tsc --noEmit
 	npx tsx vite.build-workers.mts
 	npx vite build
 	touch $@
-
-ui/core/index.ts: $(TS_CORE_SRC)
-	find ui/core -name '*.ts' | \
-	  awk -F 'ui/core/' '{ print "import \x22./" $$2 "\x22;" }' | \
-	  sed 's/\.ts";$$/";/' | \
-	  grep -v 'import "./index";' > $@
 
 .PHONY: clean
 clean:
@@ -88,7 +80,6 @@ clean:
 	  wowsimmop-amd64-linux \
 	  dist \
 	  binary_dist \
-	  ui/core/index.ts \
 	  ui/core/proto/*.ts \
 	  node_modules \
 	  $(PAGE_INDECES)

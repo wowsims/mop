@@ -1,8 +1,8 @@
 // @ts-expect-error
+import i18n from '@i18n/config';
 import debounce from 'lodash/debounce';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../../i18n/config';
 import { SimLog } from '../../proto_utils/logs_parser';
 import { Emitter } from '../../state/events';
 import { fragmentToString } from '../../utils';

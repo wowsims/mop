@@ -14,8 +14,19 @@
 		"jsx": "preserve",
 		"jsxFactory": "element",
 		"jsxFragmentFactory": "fragment",
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"paths": {
+			"@domain/*": ["./ui/domain/*"],
+			"@generated/*": ["./ui/generated/*"],
+			"@worker/*": ["./ui/worker/*"],
+			"@ui-kit/*": ["./ui/ui-kit/*"],
+			"@features/*": ["./ui/features/*"],
+			"@app/*": ["./ui/app/*"],
+			"@specs/*": ["./ui/specs/*"],
+			"@i18n/*": ["./ui/i18n/*"],
+			"@core/*": ["./ui/core/*"]
+		}
 	},
 	"include": ["."],
-	"exclude": ["node_modules", "dist", "binary_dist", ".history", "ui/core/index.ts", "ui/core/proto/*"]
+	"exclude": ["node_modules", "dist", "binary_dist", ".history", "ui/core/proto/*"]
 }

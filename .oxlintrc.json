@@ -90,6 +90,84 @@
           }
         ]
       }
+    },
+    {
+      "files": ["ui/domain/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@ui-kit", "@ui-kit/*", "@features", "@features/*", "@app", "@app/*", "@specs", "@specs/*"],
+                "message": "ui/domain must not depend on ui-kit/features/app/specs (see ui/README.md dependency direction)."
+              }
+            ]
+          }
+        ],
+        "no-restricted-globals": ["error", "window", "document", "localStorage", "location", "navigator"]
+      }
+    },
+    {
+      "files": ["ui/features/*/model/**"],
+      "rules": {
+        "no-restricted-globals": ["error", "window", "document", "localStorage", "location", "navigator"]
+      }
+    },
+    {
+      "files": ["ui/ui-kit/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@features", "@features/*", "@app", "@app/*", "@specs", "@specs/*"],
+                "message": "ui/ui-kit must not depend on features/app/specs (see ui/README.md dependency direction)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["ui/features/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@app", "@app/*", "@specs", "@specs/*"],
+                "message": "ui/features must not depend on app/specs (see ui/README.md dependency direction)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["ui/app/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@specs", "@specs/*"],
+                "message": "ui/app must not depend on specs (see ui/README.md dependency direction)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["ui/**/*.{js,jsx,ts,tsx}"],
+      "rules": {
+        "import/extensions": ["warn", "never", { "json": "always" }]
+      },
+      "plugins": ["import"]
     }
   ]
 }

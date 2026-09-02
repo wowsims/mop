@@ -99,6 +99,19 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 	({
 		base: '/mop/',
 		root: BASE_PATH,
+		resolve: {
+			alias: {
+				'@domain': path.resolve(BASE_PATH, 'domain'),
+				'@generated': path.resolve(BASE_PATH, 'generated'),
+				'@worker': path.resolve(BASE_PATH, 'worker'),
+				'@ui-kit': path.resolve(BASE_PATH, 'ui-kit'),
+				'@features': path.resolve(BASE_PATH, 'features'),
+				'@app': path.resolve(BASE_PATH, 'app'),
+				'@specs': path.resolve(BASE_PATH, 'specs'),
+				'@i18n': path.resolve(BASE_PATH, 'i18n'),
+				'@core': path.resolve(BASE_PATH, 'core'),
+			},
+		},
 		build: {
 			outDir: OUT_DIR,
 			minify: mode === 'development' ? false : 'oxc',
