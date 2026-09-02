@@ -1,9 +1,9 @@
+import { SpellSchool } from '@core/proto/common';
 import { formatToCompactNumber } from '@domain/utils';
+import i18n from '@i18n/config';
 import clsx from 'clsx';
 import tippy, { Props as TippyProps } from 'tippy.js';
 
-import i18n from '../../../../i18n/config';
-import { SpellSchool } from '../../../proto/common';
 import { MetricsTotalBar, MetricsTotalBarProps } from './metrics_total_bar';
 
 type MetricsCombinedGroup = {

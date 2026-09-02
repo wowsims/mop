@@ -1,10 +1,10 @@
+import { UnitReference, UnitReference_Type as UnitType } from '@core/proto/common';
 import { SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
 import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
+import i18n from '@i18n/config';
 import { UnitPicker, UnitValue, UnitValueConfig } from '@ui-kit/pickers/unit_picker';
 
-import i18n from '../../../i18n/config';
-import { UnitReference, UnitReference_Type as UnitType } from '../../proto/common';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 const ALL_UNITS = -1;
 

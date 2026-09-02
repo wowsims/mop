@@ -3,7 +3,7 @@ import { sum } from '@domain/utils';
 import { Component } from '@ui-kit/component';
 import { Chart } from 'chart.js';
 
-import { actionColors } from './color_settings';
+import { actionColors } from '../model/color_settings';
 
 export class SourceChart extends Component {
 	constructor(parentElem: HTMLElement, allActionMetrics: Array<ActionMetrics>) {

@@ -1,11 +1,11 @@
+import { ResourceType } from '@core/proto/spell';
 import { resourceNames } from '@domain/proto_utils/names';
 import SecondaryResource from '@domain/proto_utils/secondary_resource';
 import { ResourceMetrics } from '@domain/proto_utils/sim_result';
 import { orderedResourceTypes } from '@domain/proto_utils/utils';
+import i18n from '@i18n/config';
+import { translateResourceType } from '@i18n/localization';
 
-import i18n from '../../../i18n/config';
-import { translateResourceType } from '../../../i18n/localization';
-import { ResourceType } from '../../proto/spell';
 import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 

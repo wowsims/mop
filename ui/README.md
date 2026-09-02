@@ -20,7 +20,8 @@ ui/
   app/               shells + chrome that compose features; i18n/. Today: browser_env.ts only —
                      sim_ui/individual_sim_ui/preset_utils/launched_sims and the rest of
                      components/ are still under ui/core/ (PR 4–6). alias @app
-  core/              LEGACY. what has not been placed yet: proto/ (generated), components/,
+  core/              LEGACY. what has not been placed yet: proto/ (generated), components/
+                     (detailed_results moved to features/results, PR 4a),
                      sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx. alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged

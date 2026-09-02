@@ -191,6 +191,17 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `grep -nE '^//#region ' tmp/harness/snapshot.js` after a harness build: every
   `player_specs/<class>.ts` must be emitted before `player_specs/index.ts`.
 
+- 2026-09-02 UI restructure PR 4a "detailed_results move": `ui/core/components/detailed_results.tsx`
+  and `ui/core/components/detailed_results/` (incl. `metrics_table/`) moved to
+  `ui/features/results/view/` via `tools/restructure/move.mjs` (22 files, 52 specifiers rewritten).
+  The three `@features/gear/view/action_id_dom` re-export imports (`combat_replay.tsx`,
+  `timeline.tsx`, `metrics_table.tsx`) now import `setActionIdBackground(AndHref)` /
+  `setActionIdWowheadDataset` straight from `@ui-kit/action_id_dom` instead of the gear re-export.
+  Two DOM-free extractions: `timeline.tsx`'s trailing spell-category tables (`MELEE/SPELL/
+  DEFAULT_ACTION_CATEGORY`, `auraAsResource`, `idToCategoryMap`, `idsToGroupForRotation`,
+  `percentageResources`) → `ui/features/results/model/timeline_categories.ts`; `color_settings.ts`
+  (pure data, no DOM) → `ui/features/results/model/`.
+
 - 2026-09-02 UI restructure PR 1 "layer truth": `ui/core/state/**` is now browser-free
   (`no-restricted-globals` on window/document/localStorage/location/navigator) — it reads an
   injected `Env` (`state/env.ts`; `ui/core/browser_env.ts` in the browser, `sim.env`,

@@ -1,8 +1,8 @@
 import { UnitMetrics } from '@domain/proto_utils/sim_result';
 import { maxIndex, sum } from '@domain/utils';
+import i18n from '@i18n/config';
 import tippy from 'tippy.js';
 
-import i18n from '../../../i18n/config';
 import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table';
 import { MetricsTotalBar } from './metrics_table/metrics_total_bar';
 import { ResultComponentConfig, SimResultData } from './result_component';

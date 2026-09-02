@@ -1,6 +1,6 @@
+import i18n from '@i18n/config';
 import { Chart } from 'chart.js';
 
-import i18n from '../../../i18n/config';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 
 export class DpsHistogram extends ResultComponent {

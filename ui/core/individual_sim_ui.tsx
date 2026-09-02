@@ -19,6 +19,7 @@ import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSi
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/required_talents';
 import { isDevMode } from '@domain/utils';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
+import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
 import { ContentBlock } from '@ui-kit/content_block';
@@ -28,7 +29,6 @@ import { SavedDataConfig } from '@ui-kit/saved_data_manager';
 
 import i18n from '../i18n/config';
 import { CharacterStats } from './components/character_stats';
-import { DetailedResults } from './components/detailed_results';
 import { EncounterPickerConfig } from './components/encounter_picker';
 import { BulkTab } from './components/individual_sim_ui/bulk_tab';
 import {
