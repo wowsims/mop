@@ -64,7 +64,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 	private saveInput?: HTMLInputElement;
 
 	private frozen: boolean;
-	private checkPending = false;
+	private pendingCheckFrame: number | null = null;
 
 	constructor(parent: HTMLElement | null, modObject: ModObject, config: SavedDataManagerConfig<ModObject, T>) {
 		super(parent, 'saved-data-manager-root');
@@ -140,6 +140,8 @@ export class SavedDataManager<ModObject, T> extends Component {
 		dataElem?.addEventListener('click', () => {
 			this.config.setData(TypedEvent.nextEventID(), this.modObject, config.data);
 			config.onLoad?.(this.modObject);
+			// Run the deferred check now so the clicked entry's name is the one left in the input.
+			this.flushChecks();
 			if (this.saveInput) this.saveInput.value = config.name;
 			trackEvent({
 				action: 'settings',
@@ -196,25 +198,33 @@ export class SavedDataManager<ModObject, T> extends Component {
 		return savedData;
 	}
 
+	// Only consumed by the JSON-equality path; managers with a semantic `equals` skip the cost.
 	private serialize(data: T): string {
-		return JSON.stringify(this.config.toJson(data));
+		return this.config.equals ? '' : JSON.stringify(this.config.toJson(data));
 	}
 
 	private scheduleChecks() {
-		if (this.checkPending) return;
-		this.checkPending = true;
-		const run = () => {
-			this.checkPending = false;
+		if (this.pendingCheckFrame != null) return;
+		this.pendingCheckFrame = requestAnimationFrame(() => {
+			this.pendingCheckFrame = null;
 			this.runChecks();
-		};
-		requestAnimationFrame(run);
+		});
+	}
+
+	private flushChecks() {
+		if (this.pendingCheckFrame == null) return;
+		cancelAnimationFrame(this.pendingCheckFrame);
+		this.pendingCheckFrame = null;
+		this.runChecks();
 	}
 
 	private runChecks() {
+		if (!this.presets.length && !this.userData.length) return;
 		const current = this.config.getData(this.modObject);
 		const currentJson = this.serialize(current);
-		this.presets.forEach(entry => this.checkEntry(entry, current, currentJson));
+		// Presets last so, with identical data, the preset's name wins in the save input (as before).
 		this.userData.forEach(entry => this.checkEntry(entry, current, currentJson));
+		this.presets.forEach(entry => this.checkEntry(entry, current, currentJson));
 	}
 
 	private checkEntry(entry: SavedData<ModObject, T>, current: T, currentJson: string) {
@@ -232,7 +242,6 @@ export class SavedDataManager<ModObject, T> extends Component {
 			entry.elem.classList.remove('disabled');
 		}
 	}
-
 
 	// Save data to window.localStorage.
 	private saveUserData() {

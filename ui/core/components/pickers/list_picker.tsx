@@ -30,36 +30,34 @@ export interface ListPickerExtraAction {
 	shouldShow?: (index: number) => boolean;
 }
 
-type CopyItemConfig<ItemType> =
-	| { copyItem: (oldItem: ItemType) => ItemType; onCopyItem?: never }
-	| { copyItem?: never; onCopyItem: (index: number) => void };
+type CopyItemConfig<ItemType> = { copyItem: (oldItem: ItemType) => ItemType; onCopyItem?: never } | { copyItem?: never; onCopyItem: (index: number) => void };
 
 export type ListPickerConfig<ModObject, ItemType> = Omit<InputConfig<ModObject, Array<ItemType>>, 'id'> &
 	CopyItemConfig<ItemType> & {
-	itemLabel: string;
-	newItem: () => ItemType;
-	newItemPicker: (
-		parent: HTMLElement,
-		listPicker: ListPicker<ModObject, ItemType>,
-		index: number,
-		config: ListItemPickerConfig<ModObject, ItemType>,
-	) => Input<ModObject, ItemType>;
-	actions?: ListPickerActionsConfig;
-	title?: string;
-	titleTooltip?: string;
-	inlineMenuBar?: boolean;
-	hideUi?: boolean;
-	horizontalLayout?: boolean;
-	// if set, will remove the border and padding of the list items
-	isCompact?: boolean;
-	// If set, will disable the delete button if the list is at the minimum.
-	minimumItems?: number;
-	// If set, only actions included in the list are allowed. Otherwise, all actions are allowed.
-	allowedActions?: Array<ListItemAction>;
-	dragGroup?: string;
-	// Additional custom action buttons to add to the popover menu
-	extraActions?: Array<ListPickerExtraAction>;
-}
+		itemLabel: string;
+		newItem: () => ItemType;
+		newItemPicker: (
+			parent: HTMLElement,
+			listPicker: ListPicker<ModObject, ItemType>,
+			index: number,
+			config: ListItemPickerConfig<ModObject, ItemType>,
+		) => Input<ModObject, ItemType>;
+		actions?: ListPickerActionsConfig;
+		title?: string;
+		titleTooltip?: string;
+		inlineMenuBar?: boolean;
+		hideUi?: boolean;
+		horizontalLayout?: boolean;
+		// if set, will remove the border and padding of the list items
+		isCompact?: boolean;
+		// If set, will disable the delete button if the list is at the minimum.
+		minimumItems?: number;
+		// If set, only actions included in the list are allowed. Otherwise, all actions are allowed.
+		allowedActions?: Array<ListItemAction>;
+		dragGroup?: string;
+		// Additional custom action buttons to add to the popover menu
+		extraActions?: Array<ListPickerExtraAction>;
+	};
 
 const DEFAULT_CONFIG = {
 	actions: {
@@ -281,10 +279,11 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 				deleteButton.addEventListener(
 					'click',
 					() => {
+						// Hide before setValue: the shrink below may dispose this item (and its tooltip) synchronously.
+						deleteButtonTooltip.hide();
 						const newList = this.config.getValue(this.modObject);
 						newList.splice(index, 1);
 						this.config.setValue(TypedEvent.nextEventID(), this.modObject, newList);
-						deleteButtonTooltip.hide();
 					},
 					{ signal: this.signal },
 				);

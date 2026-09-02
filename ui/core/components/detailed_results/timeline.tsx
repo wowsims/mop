@@ -33,6 +33,9 @@ interface TimelineConfig extends ResultComponentConfig {
 
 interface RotationSlot {
 	key: string;
+	// True for a single-player result (rotation chart available); false for a
+	// multi-player one, whose slot only caches the plot options.
+	rotation: boolean;
 	labels: Array<Node>;
 	timeline: Array<Node>;
 	hiddenIdsNodes: Array<Node>;
@@ -61,7 +64,9 @@ export class Timeline extends ResultComponent {
 	// slot's reset callbacks (tooltip destroy, listener removal).
 	private liveSlot: RotationSlot | null = null;
 	private cachedSlots: Array<RotationSlot> = [];
-	private static readonly MAX_CACHED_SLOTS = 2;
+	// One parked slot covers the current <-> reference swap; each parked slot keeps
+	// its full tippy instance set alive, so don't hold more than needed.
+	private static readonly MAX_CACHED_SLOTS = 1;
 
 	private hiddenIds: Array<ActionId>;
 
@@ -199,9 +204,17 @@ export class Timeline extends ResultComponent {
 			return;
 		}
 
-		// Fast path: this (result, filter, chart) was rendered before and its live
-		// subtree is either on screen or parked in the cache.
-		const key = this.resultKey();
+		const players = this.resultData.result.getRaidIndexedPlayers(this.resultData.filter);
+		const singlePlayer = players.length == 1;
+		if (!singlePlayer && this.chartPicker.value == 'rotation') {
+			// Programmatic select changes fire no 'change' event: sync the plot containers by hand.
+			this.chartPicker.value = 'dps';
+			this.onChartPickerSelectHandler();
+		}
+
+		// Fast path: this result was rendered before and its slot is either live
+		// or parked in the cache.
+		const key = this.resultKey(!singlePlayer);
 		const hit = this.liveSlot?.key === key ? this.liveSlot : this.cachedSlots.find(slot => slot.key === key);
 		if (hit?.plotOptions) {
 			if (hit !== this.liveSlot) {
@@ -209,7 +222,7 @@ export class Timeline extends ResultComponent {
 				this.stashLiveSlot();
 				this.attachSlot(hit);
 			}
-			this.setRotationOptionVisible(true);
+			this.setRotationOptionVisible(hit.rotation);
 			this.dpsResourcesPlot.updateOptions(hit.plotOptions);
 			return;
 		}
@@ -263,8 +276,7 @@ export class Timeline extends ResultComponent {
 			},
 		};
 
-		const players = this.resultData!.result.getRaidIndexedPlayers(this.resultData!.filter);
-		if (players.length == 1) {
+		if (singlePlayer) {
 			const player = players[0];
 
 			this.setRotationOptionVisible(true);
@@ -283,16 +295,13 @@ export class Timeline extends ResultComponent {
 			tooltipHandlers = tooltipHandlers.filter(handler => !!handler);
 
 			this.addMajorCooldownAnnotations(player, options);
-			if (this.liveSlot && this.liveSlot.key === key) this.liveSlot.plotOptions = options;
 		} else {
-			if (this.chartPicker.value == 'rotation') {
-				this.chartPicker.value = 'dps';
-				return;
-			}
 			this.setRotationOptionVisible(false);
 
 			this.stashLiveSlot();
 			this.clearRotationChart();
+			// No rotation subtree, but the (expensive) per-player series are worth caching for swaps.
+			this.liveSlot = Timeline.newSlot(key, false);
 
 			if (this.chartPicker.value == 'dps') {
 				let maxDps = 0;
@@ -313,8 +322,8 @@ export class Timeline extends ResultComponent {
 			}
 		}
 
+		if (this.liveSlot?.key === key) this.liveSlot.plotOptions = options;
 		this.dpsResourcesPlot.updateOptions(options);
-
 	}
 
 	private addDpsYAxis(maxDps: number, options: any) {
@@ -526,10 +535,9 @@ export class Timeline extends ResultComponent {
 
 	private clearRotationChart() {
 		this.rotationLabels.replaceChildren(<div className="rotation-label-header"></div>);
-		const canvasRef = ref<HTMLCanvasElement>();
 		this.rotationTimeline.replaceChildren(
 			<div className="rotation-timeline-header">
-				<canvas ref={canvasRef} className="rotation-timeline-canvas" />
+				<canvas className="rotation-timeline-canvas" />
 			</div>,
 		);
 		this.rotationHiddenIdsContainer.replaceChildren();
@@ -545,13 +553,14 @@ export class Timeline extends ResultComponent {
 		if (this.liveSlot?.key === key) {
 			return;
 		}
-		this.stashLiveSlot();
+		// Take before stashing so the stash's eviction can't drop the slot we want.
 		const cached = this.takeCachedSlot(key);
+		this.stashLiveSlot();
 		if (cached) {
 			this.attachSlot(cached);
 			return;
 		}
-		this.liveSlot = { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null };
+		this.liveSlot = Timeline.newSlot(key, true);
 		this.clearRotationChart();
 
 		try {
@@ -610,11 +619,12 @@ export class Timeline extends ResultComponent {
 		}
 
 		// Don't add a row for buffs that were already visualized in a cast row or are prioritized.
-		const buffsToShow = buffsById.filter(auraUptimeLogs =>
-			!playerCastsByAbility.some(casts => {
-				const actionId = auraUptimeLogs[0].actionId;
-				return actionId && (casts[0].actionId!.equalsIgnoringTag(actionId) || auraAsResource.find(auraId => auraId.equals(actionId)));
-			}),
+		const buffsToShow = buffsById.filter(
+			auraUptimeLogs =>
+				!playerCastsByAbility.some(casts => {
+					const actionId = auraUptimeLogs[0].actionId;
+					return actionId && (casts[0].actionId!.equalsIgnoringTag(actionId) || auraAsResource.find(auraId => auraId.equals(actionId)));
+				}),
 		);
 		if (buffsToShow.length > 0) {
 			this.addSeparatorRow(duration);
@@ -1301,15 +1311,21 @@ export class Timeline extends ResultComponent {
 		}
 	}
 
-	private resultKey(): string {
+	// A single player's slot holds the rotation subtree plus every series, so the
+	// chart choice is irrelevant to it; multi-player options depend on the chart.
+	private resultKey(includeChart = false): string {
 		const rd = this.resultData!;
-		return [rd.result.request.requestId, JSON.stringify(rd.filter), this.chartPicker.value].join('|');
+		return [rd.result.request.requestId, JSON.stringify(rd.filter), includeChart ? this.chartPicker.value : ''].join('|');
 	}
 
 	// Single-player results offer the rotation chart; multi-player ones the threat chart.
 	private setRotationOptionVisible(visible: boolean) {
 		this.rootElem.querySelector('.rotation-option')!.classList.toggle('hide', !visible);
 		this.rootElem.querySelector('.threat-option')!.classList.toggle('hide', visible);
+	}
+
+	private static newSlot(key: string, rotation: boolean): RotationSlot {
+		return { key, rotation, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null };
 	}
 
 	private takeCachedSlot(key: string): RotationSlot | null {
