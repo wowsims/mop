@@ -1,12 +1,4 @@
-import { Player } from '@domain/player';
-import { EventID } from '@domain/state/batch';
-import { randomUUID } from '@domain/utils';
-import { Input, InputConfig } from '@ui-kit/input';
-import { TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';
-import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
-
-import i18n from '../../../i18n/config';
-import { itemSwapEnabledSpecs } from '../../individual_sim_ui';
+import { itemSwapEnabledSpecs } from '@core/individual_sim_ui';
 import {
 	APLAction,
 	APLActionActivateAllStatBuffProcAuras,
@@ -42,9 +34,17 @@ import {
 	APLActionWaitUntil,
 	APLActionWarlockNextExhaleTarget,
 	APLValue,
-} from '../../proto/apl';
-import { Spec } from '../../proto/common';
-import { FeralDruid_Rotation_AplType } from '../../proto/druid';
+} from '@core/proto/apl';
+import { Spec } from '@core/proto/common';
+import { FeralDruid_Rotation_AplType } from '@core/proto/druid';
+import { Player } from '@domain/player';
+import { EventID } from '@domain/state/batch';
+import { randomUUID } from '@domain/utils';
+import i18n from '@i18n/config';
+import { Input, InputConfig } from '@ui-kit/input';
+import { TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';
+import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
+
 import * as AplHelpers from './apl_helpers';
 import { itemSwapSetFieldConfig } from './apl_helpers';
 import * as AplValues from './apl_values';

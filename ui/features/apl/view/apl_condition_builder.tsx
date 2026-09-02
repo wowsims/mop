@@ -1,8 +1,8 @@
+import { APLValue } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { Component } from '@ui-kit/component';
 import { Input, InputConfig } from '@ui-kit/input';
 
-import { APLValue } from '../../proto/apl';
 import { APLValuePicker } from './apl_values';
 
 export interface APLConditionBuilderConfig extends InputConfig<Player<any>, APLValue | undefined> {}

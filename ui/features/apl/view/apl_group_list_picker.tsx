@@ -1,12 +1,12 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { APLGroup } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 
-import i18n from '../../../../i18n/config';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { APLGroup } from '../../../proto/apl';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLGroupEditor } from './apl_group_editor';
 import { APLNameModal } from './apl_name_modal';

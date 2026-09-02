@@ -1,15 +1,15 @@
+import { APLAction, APLGroup, APLListItem } from '@core/proto/apl';
+import { UUID } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
+import i18n from '@i18n/config';
 import { Input, InputConfig } from '@ui-kit/input';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 
-import i18n from '../../../../i18n/config';
-import { APLAction, APLGroup, APLListItem } from '../../../proto/apl';
-import { UUID } from '../../../proto/common';
-import { APLActionPicker } from '../apl_actions';
-import * as AplHelpers from '../apl_helpers';
+import { APLActionPicker } from './apl_actions';
+import * as AplHelpers from './apl_helpers';
 import { APLNameModal } from './apl_name_modal';
 import { APLHidePicker } from './hide_picker';
 export interface APLGroupEditorConfig extends InputConfig<Player<any>, APLGroup> {

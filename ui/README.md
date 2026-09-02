@@ -16,12 +16,14 @@ ui/
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
                      css_utils, dom_utils, action_id_dom, pickers/, vendor/. alias @ui-kit
   features/<name>/   EXISTS. one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
-                     Today: gear/, reforge/, results/, stat-weights/, talents/. alias @features
+                     Today: apl/ (view only so far), gear/, reforge/, results/, stat-weights/,
+                     talents/. alias @features
   app/               shells + chrome that compose features; i18n/. Today: browser_env.ts only —
                      sim_ui/individual_sim_ui/preset_utils/launched_sims and the rest of
                      components/ are still under ui/core/ (PR 4–6). alias @app
   core/              LEGACY. what has not been placed yet: proto/ (generated), components/
-                     (detailed_results moved to features/results, PR 4a),
+                     (detailed_results moved to features/results, PR 4a; apl_values/apl_actions/
+                     apl_helpers/apl_condition_builder/apl/ moved to features/apl/view, PR 4b),
                      sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx. alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged

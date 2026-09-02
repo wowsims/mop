@@ -1,16 +1,16 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { APLAction, APLListItem } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 
-import i18n from '../../../../i18n/config';
-import { IndividualSimUI } from '../../../individual_sim_ui';
-import { APLAction, APLListItem } from '../../../proto/apl';
-import { APLActionPicker } from '../apl_actions';
-import * as AplHelpers from '../apl_helpers';
+import { APLActionPicker } from './apl_actions';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
+import * as AplHelpers from './apl_helpers';
 import { APLHidePicker } from './hide_picker';
 export class APLPriorityListPicker extends Component {
 	constructor(container: HTMLElement, simUI: IndividualSimUI<any>) {

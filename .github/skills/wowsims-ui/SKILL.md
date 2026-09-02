@@ -191,6 +191,15 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `grep -nE '^//#region ' tmp/harness/snapshot.js` after a harness build: every
   `player_specs/<class>.ts` must be emitted before `player_specs/index.ts`.
 
+- 2026-09-02 UI restructure PR 4b "apl move (view only)": `apl_values.ts`, `apl_actions.ts`,
+  `apl_helpers.tsx`, `apl_condition_builder.tsx` and the `apl/` subdir (8 files, flattened) moved
+  from `ui/core/components/individual_sim_ui/` to `ui/features/apl/view/` via
+  `tools/restructure/move.mjs` (12 files, 48 specifiers rewritten). `apl_helpers.tsx`'s
+  `@features/gear/view/action_id_dom` import became relative (both files now under `features/`).
+  `rotation_tab.tsx` stays in `ui/core/components/individual_sim_ui/` and now imports the four
+  moved list pickers via `@features/apl/view/...`. This is a whole-file move only — the model/view
+  split for `apl/` is a later step.
+
 - 2026-09-02 UI restructure PR 4a "detailed_results move": `ui/core/components/detailed_results.tsx`
   and `ui/core/components/detailed_results/` (incl. `metrics_table/`) moved to
   `ui/features/results/view/` via `tools/restructure/move.mjs` (22 files, 52 specifiers rewritten).

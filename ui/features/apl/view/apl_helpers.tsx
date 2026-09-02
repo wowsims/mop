@@ -1,22 +1,3 @@
-import { CacheHandler } from '@domain/cache_handler';
-import { Player, UnitMetadata } from '@domain/player';
-import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
-import { renameAPLReference } from '@domain/proto_utils/apl_utils';
-import { EventID, nextEventID } from '@domain/state/batch';
-import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
-import { bucket, getEnumValues, randomUUID } from '@domain/utils';
-import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
-import { Input, InputConfig } from '@ui-kit/input';
-import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
-import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig, TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';
-import { ListItemPickerConfig, ListPicker, ListPickerExtraAction } from '@ui-kit/pickers/list_picker';
-import { NumberPicker, NumberPickerConfig } from '@ui-kit/pickers/number_picker';
-import { AdaptiveStringPicker } from '@ui-kit/pickers/string_picker';
-import { UnitPicker, UnitPickerConfig, UnitValue } from '@ui-kit/pickers/unit_picker';
-import { ref } from 'tsx-vanilla';
-
-import i18n from '../../../i18n/config';
-import { translateStat } from '../../../i18n/localization';
 import {
 	APLActionDamageAmplifier_AmplificationType,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
@@ -26,10 +7,29 @@ import {
 	APLValueRuneSlot,
 	APLValueRuneType,
 	APLValueVariable,
-} from '../../proto/apl';
-import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common';
-import { FeralDruid_Rotation_AplType } from '../../proto/druid';
-import { APLNameModal } from './apl/apl_name_modal';
+} from '@core/proto/apl';
+import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '@core/proto/common';
+import { FeralDruid_Rotation_AplType } from '@core/proto/druid';
+import { CacheHandler } from '@domain/cache_handler';
+import { Player, UnitMetadata } from '@domain/player';
+import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
+import { renameAPLReference } from '@domain/proto_utils/apl_utils';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
+import { bucket, getEnumValues, randomUUID } from '@domain/utils';
+import i18n from '@i18n/config';
+import { translateStat } from '@i18n/localization';
+import { Input, InputConfig } from '@ui-kit/input';
+import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
+import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig, TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';
+import { ListItemPickerConfig, ListPicker, ListPickerExtraAction } from '@ui-kit/pickers/list_picker';
+import { NumberPicker, NumberPickerConfig } from '@ui-kit/pickers/number_picker';
+import { AdaptiveStringPicker } from '@ui-kit/pickers/string_picker';
+import { UnitPicker, UnitPickerConfig, UnitValue } from '@ui-kit/pickers/unit_picker';
+import { ref } from 'tsx-vanilla';
+
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '../../gear/view/action_id_dom';
+import { APLNameModal } from './apl_name_modal';
 
 export type ACTION_ID_SET =
 	| 'auras'

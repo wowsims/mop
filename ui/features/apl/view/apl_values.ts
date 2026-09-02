@@ -1,13 +1,4 @@
-import { Player } from '@domain/player';
-import SecondaryResource from '@domain/proto_utils/secondary_resource';
-import { EventID, nextEventID } from '@domain/state/batch';
-import { randomUUID } from '@domain/utils';
-import { Input, InputConfig } from '@ui-kit/input';
-import { TextDropdownPicker, TextDropdownValueConfig } from '@ui-kit/pickers/dropdown_picker';
-import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
-
-import i18n from '../../../i18n/config';
-import { itemSwapEnabledSpecs } from '../../individual_sim_ui';
+import { itemSwapEnabledSpecs } from '@core/individual_sim_ui';
 import {
 	APLValue,
 	APLValueActionGroupUsed,
@@ -130,9 +121,18 @@ import {
 	APLValueUnitIsMoving,
 	APLValueWarlockHandOfGuldanInFlight,
 	APLValueWarlockHauntInFlight,
-} from '../../proto/apl';
-import { Class, Spec } from '../../proto/common';
-import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman';
+} from '@core/proto/apl';
+import { Class, Spec } from '@core/proto/common';
+import { ShamanTotems_TotemType as TotemType } from '@core/proto/shaman';
+import { Player } from '@domain/player';
+import SecondaryResource from '@domain/proto_utils/secondary_resource';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { randomUUID } from '@domain/utils';
+import i18n from '@i18n/config';
+import { Input, InputConfig } from '@ui-kit/input';
+import { TextDropdownPicker, TextDropdownValueConfig } from '@ui-kit/pickers/dropdown_picker';
+import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
+
 import * as AplHelpers from './apl_helpers';
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
 
