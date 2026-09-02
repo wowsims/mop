@@ -9,7 +9,7 @@ import { TypedEvent } from '../../../typed_event';
 import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '../../../utils';
 import { Component } from '../../component';
 import { buildGearChangeIcon } from '../../gear_change_icon';
-import { ItemRenderer } from '../../gear_picker/gear_picker';
+import { ItemRenderer } from '../../gear_picker/item_renderer';
 import { RaidSimResultsManager } from '../../raid_sim_action';
 import Toast from '../../toast';
 import { TopGearResult } from './types';
@@ -123,13 +123,8 @@ export default class BulkSimResultRenderer extends Component {
 				continue;
 			}
 
-			const renderer = new ItemRenderer(items, itemContainer, simUI.player);
-			if (itemChanged && spec.id !== 0) {
-				const item = simUI.sim.db.lookupItemSpec(spec);
-				renderer.update(item!);
-			} else {
-				renderer.clear(idx);
-			}
+			const renderer = new ItemRenderer(items, itemContainer, simUI.player, idx);
+			renderer.render(itemChanged && spec.id !== 0 ? simUI.sim.db.lookupItemSpec(spec) : null);
 			items.appendChild(itemContainer);
 		}
 		itemsContainerRef.value!.appendChild(items);

@@ -4,17 +4,18 @@ import { Player } from '../../player';
 import { ItemSlot, ItemType } from '../../proto/common';
 import { EquippedItem } from '../../proto_utils/equipped_item';
 import { SimUI } from '../../sim_ui';
-import { EventID } from '../../typed_event';
+import { Disposable, EventID } from '../../typed_event';
 import { Component } from '../component';
 import { GearData } from './item_list';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
-import { createGemContainer, getEmptySlotIconUrl } from './utils';
+import { createItemSockets, getEmptySlotIconUrl } from './utils';
 
 export default class IconItemSwapPicker extends Component {
 	private readonly iconAnchor: HTMLAnchorElement;
 	private readonly socketsContainerElem: HTMLElement;
 	private readonly player: Player<any>;
 	private readonly slot: ItemSlot;
+	private professionSubscription: Disposable | null = null;
 
 	constructor(parent: HTMLElement, simUI: SimUI, player: Player<any>, slot: ItemSlot) {
 		super(parent, 'icon-picker-root');
@@ -49,6 +50,8 @@ export default class IconItemSwapPicker extends Component {
 	}
 
 	update(newItem: EquippedItem | null) {
+		this.professionSubscription?.dispose();
+		this.professionSubscription = null;
 		this.iconAnchor.style.backgroundImage = `url('${getEmptySlotIconUrl(this.slot)}')`;
 		this.iconAnchor.removeAttribute('data-wowhead');
 		this.iconAnchor.href = '#';
@@ -57,21 +60,9 @@ export default class IconItemSwapPicker extends Component {
 			newItem.asActionId().fillAndSet(this.iconAnchor, true, true);
 			this.player.setWowheadData(newItem, this.iconAnchor);
 
-			this.socketsContainerElem.replaceChildren(
-				<>
-					{newItem.allSocketColors().map((socketColor, gemIdx) => {
-						const gemContainer = createGemContainer(socketColor, newItem.gems[gemIdx], gemIdx);
-						if (gemIdx === newItem.numPossibleSockets - 1 && newItem.couldHaveExtraSocket()) {
-							const updateProfession = () => {
-								gemContainer.classList[this.player.isBlacksmithing() ? 'remove' : 'add']('hide');
-							};
-							this.player.professionChangeEmitter.on(updateProfession);
-							updateProfession();
-						}
-						return gemContainer;
-					})}
-				</>,
-			);
+			const sockets = createItemSockets(this.player, newItem);
+			this.professionSubscription = sockets.professionSubscription;
+			this.socketsContainerElem.replaceChildren(...sockets.elems);
 
 			this.iconAnchor.classList.add('active');
 		} else {

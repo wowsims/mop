@@ -1,25 +1,18 @@
 import { ref } from 'tsx-vanilla';
 
-import { MISSING_RANDOM_SUFFIX_WARNING } from '../../constants/item_notices';
-import { setItemQualityCssClass } from '../../css_utils';
 import { Player } from '../../player';
-import { ItemLevelState, ItemSlot, ItemType } from '../../proto/common';
+import { ItemSlot } from '../../proto/common';
 import { UIEnchant as Enchant, UIGem as Gem } from '../../proto/ui';
-import { ActionId } from '../../proto_utils/action_id';
-import { getEnchantDescription } from '../../proto_utils/enchants';
 import { EquippedItem } from '../../proto_utils/equipped_item';
-import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
-import i18n from '../../../i18n/config';
 import { SimUI } from '../../sim_ui';
 import { EventID } from '../../typed_event';
 import { Component } from '../component';
-import { ItemNotice } from '../item_notice/item_notice';
 import QuickSwapList from '../quick_swap';
+import { ItemRenderer } from './item_renderer';
 import { GearData } from './item_list';
 import { addQuickEnchantPopover } from './quick_enchant_popover';
 import { addQuickGemPopover } from './quick_gem_popover';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
-import { createGemContainer, createNameDescriptionLabel, getEmptySlotIconUrl } from './utils';
 
 export const LEFT_ITEM_PICKERS = [
 	ItemSlot.ItemSlotHead,
@@ -71,216 +64,6 @@ export default class GearPicker extends Component {
 	}
 }
 
-export class ItemRenderer extends Component {
-	private readonly player: Player<any>;
-
-	readonly iconElem: HTMLAnchorElement;
-	readonly nameContainerElem: HTMLDivElement;
-	readonly nameElem: HTMLAnchorElement;
-	readonly ilvlElem: HTMLSpanElement;
-	readonly tinkerElem: HTMLAnchorElement;
-	readonly enchantElem: HTMLAnchorElement;
-	readonly reforgeElem: HTMLAnchorElement;
-	readonly socketsContainerElem: HTMLElement;
-	private notice: ItemNotice | null = null;
-	socketsElem: HTMLAnchorElement[] = [];
-
-	// Can be used to remove any events in addEventListener
-	// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#add_an_abortable_listener
-	public abortController?: AbortController;
-	public signal?: AbortSignal;
-
-	constructor(parent: HTMLElement, root: HTMLElement, player: Player<any>) {
-		super(parent, 'item-picker-root', root);
-		this.player = player;
-
-		const iconElem = ref<HTMLAnchorElement>();
-		const nameContainerElem = ref<HTMLDivElement>();
-		const nameElem = ref<HTMLAnchorElement>();
-		const ilvlElem = ref<HTMLSpanElement>();
-		const enchantElem = ref<HTMLAnchorElement>();
-		const tinkerElem = ref<HTMLAnchorElement>();
-		const reforgeElem = ref<HTMLAnchorElement>();
-		const sce = ref<HTMLDivElement>();
-
-		this.rootElem.appendChild(
-			<>
-				<div className="item-picker-icon-wrapper">
-					<span className="item-picker-ilvl" ref={ilvlElem} />
-					<a ref={iconElem} className="item-picker-icon" href="javascript:void(0)" attributes={{ role: 'button' }} />
-					<div ref={sce} className="item-picker-sockets-container"></div>
-				</div>
-				<div className="item-picker-labels-container">
-					<div ref={nameContainerElem} className="item-picker-name-row d-flex gap-1">
-						<a ref={nameElem} className="item-picker-name-container" href="javascript:void(0)" attributes={{ role: 'button' }} />
-					</div>
-					<a ref={enchantElem} className="item-picker-enchant hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
-					<a ref={tinkerElem} className="item-picker-tinker hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
-					<a ref={reforgeElem} className="item-picker-reforge hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
-				</div>
-			</>,
-		);
-
-		this.iconElem = iconElem.value!;
-		this.nameContainerElem = nameContainerElem.value!;
-		this.nameElem = nameElem.value!;
-		this.ilvlElem = ilvlElem.value!;
-		this.reforgeElem = reforgeElem.value!;
-		this.enchantElem = enchantElem.value!;
-		this.tinkerElem = tinkerElem.value!;
-		this.socketsContainerElem = sce.value!;
-	}
-
-	clear(slot: ItemSlot) {
-		this.abortController?.abort();
-		this.nameElem.removeAttribute('data-wowhead');
-		this.nameElem.removeAttribute('href');
-		this.notice?.dispose();
-		this.notice = null;
-		this.iconElem.removeAttribute('data-wowhead');
-		this.iconElem.removeAttribute('href');
-		this.enchantElem.removeAttribute('data-wowhead');
-		this.enchantElem.removeAttribute('href');
-		this.tinkerElem.removeAttribute('data-wowhead');
-		this.tinkerElem.removeAttribute('href');
-		this.enchantElem.classList.add('hide');
-		this.reforgeElem.classList.add('hide');
-
-		this.iconElem.style.backgroundImage = `url('${getEmptySlotIconUrl(slot)}')`;
-
-		this.enchantElem.replaceChildren();
-		this.tinkerElem.replaceChildren();
-		this.reforgeElem.replaceChildren();
-		this.socketsContainerElem.replaceChildren();
-		this.nameElem.replaceChildren();
-		this.ilvlElem.replaceChildren();
-
-		this.socketsElem = [];
-	}
-
-	update(newItem: EquippedItem) {
-		this.abortController = new AbortController();
-		this.signal = this.abortController.signal;
-
-		const nameSpan = <span className="item-picker-name">{newItem.item.name}</span>;
-		const isEligibleForRandomSuffix = !!newItem.hasRandomSuffixOptions();
-		const hasRandomSuffix = !!newItem.randomSuffix;
-		this.nameElem.replaceChildren(nameSpan);
-		this.ilvlElem.replaceChildren(
-			<>
-				{newItem.ilvl.toString()}
-				{!!(newItem.upgrade !== ItemLevelState.ChallengeMode && newItem.ilvlFromBase) && (
-					<span className="item-quality-uncommon">+{newItem.ilvlFromBase}</span>
-				)}
-			</>,
-		);
-
-		if (hasRandomSuffix) {
-			nameSpan.textContent += ' ' + translateProtoStatName(newItem.randomSuffix.name);
-		}
-
-		if (newItem.item.nameDescription) {
-			this.nameElem.appendChild(createNameDescriptionLabel(newItem.item.nameDescription));
-		}
-
-		this.notice = new ItemNotice(this.player, {
-			itemId: newItem.item.id,
-			additionalNoticeData: isEligibleForRandomSuffix && !hasRandomSuffix ? MISSING_RANDOM_SUFFIX_WARNING : undefined,
-		});
-
-		if (this.notice.hasNotice) {
-			this.nameContainerElem.appendChild(this.notice.rootElem);
-		}
-
-		const reforgeData = newItem.getReforgeData();
-		if (reforgeData) {
-			const fromText = translateStat(reforgeData.reforge?.fromStat);
-			const toText = translateStat(reforgeData.reforge?.toStat);
-			this.reforgeElem.innerText = i18n.t('gear_tab.gear_picker.reforge_text', {
-				fromAmount: Math.abs(reforgeData.fromAmount),
-				fromStat: fromText,
-				toAmount: reforgeData.toAmount,
-				toStat: toText,
-			});
-			this.reforgeElem.classList.remove('hide');
-		} else {
-			this.reforgeElem.innerText = '';
-			this.reforgeElem.classList.add('hide');
-		}
-
-		setItemQualityCssClass(this.nameElem, newItem.item.quality);
-
-		this.player.setWowheadData(newItem, this.iconElem);
-		this.player.setWowheadData(newItem, this.nameElem);
-
-		newItem
-			.asActionId()
-			.fill(undefined, { signal: this.signal })
-			.then(filledId => {
-				if (this.signal?.aborted) return;
-				filledId.setBackgroundAndHref(this.iconElem);
-				filledId.setWowheadHref(this.nameElem);
-			});
-
-		if (newItem.enchant) {
-			getEnchantDescription(newItem.enchant).then(description => {
-				this.enchantElem.textContent = description;
-			});
-			// Make enchant text hover have a tooltip.
-			if (newItem.enchant.spellId) {
-				this.enchantElem.href = ActionId.makeSpellUrl(newItem.enchant.spellId);
-				ActionId.makeSpellTooltipData(newItem.enchant.spellId).then(url => {
-					this.enchantElem.dataset.wowhead = url;
-				});
-			} else {
-				this.enchantElem.href = ActionId.makeItemUrl(newItem.enchant.itemId);
-				ActionId.makeItemTooltipData(newItem.enchant.itemId).then(url => {
-					this.enchantElem.dataset.wowhead = url;
-				});
-			}
-			this.enchantElem.dataset.whtticon = 'false';
-			this.enchantElem.classList.remove('hide');
-		} else {
-			this.enchantElem.classList.add('hide');
-		}
-
-		if (newItem.tinker) {
-			getEnchantDescription(newItem.tinker).then(description => {
-				this.tinkerElem.textContent = description;
-			});
-			// Make enchant text hover have a tooltip.
-			if (newItem.tinker.spellId) {
-				this.tinkerElem.href = ActionId.makeSpellUrl(newItem.tinker.spellId);
-				ActionId.makeSpellTooltipData(newItem.tinker.spellId).then(url => {
-					this.tinkerElem.dataset.wowhead = url;
-				});
-			} else {
-				this.enchantElem.href = ActionId.makeItemUrl(newItem.tinker.itemId);
-				ActionId.makeItemTooltipData(newItem.tinker.itemId).then(url => {
-					this.tinkerElem.dataset.wowhead = url;
-				});
-			}
-			this.tinkerElem.dataset.whtticon = 'false';
-			this.tinkerElem.classList.remove('hide');
-		} else {
-			this.tinkerElem.classList.add('hide');
-		}
-
-		newItem.allSocketColors().forEach((socketColor, gemIdx) => {
-			const gemContainer = createGemContainer(socketColor, newItem.gems[gemIdx], gemIdx);
-			if (gemIdx === newItem.numPossibleSockets - 1 && newItem.couldHaveExtraSocket()) {
-				const updateProfession = () => {
-					gemContainer.classList[this.player.isBlacksmithing() ? 'remove' : 'add']('hide');
-				};
-				this.player.professionChangeEmitter.on(updateProfession);
-				updateProfession();
-			}
-			this.socketsElem.push(gemContainer);
-			this.socketsContainerElem.appendChild(gemContainer);
-		});
-	}
-}
-
 export class ItemPicker extends Component {
 	readonly slot: ItemSlot;
 
@@ -305,7 +88,7 @@ export class ItemPicker extends Component {
 		this.simUI = simUI;
 		this.player = player;
 		this.slot = slot;
-		this.itemElem = new ItemRenderer(parent, this.rootElem, player);
+		this.itemElem = new ItemRenderer(parent, this.rootElem, player, slot);
 
 		this.item = player.getEquippedItem(slot);
 
@@ -354,7 +137,7 @@ export class ItemPicker extends Component {
 
 		player.professionChangeEmitter.on(() => {
 			if (!!this._equippedItem) {
-				this.player.setWowheadData(this._equippedItem, this.itemElem.iconElem);
+				this.player.setWowheadData(this._equippedItem, [this.itemElem.iconElem, this.itemElem.nameElem]);
 			}
 		});
 	}
@@ -374,16 +157,9 @@ export class ItemPicker extends Component {
 	}
 
 	set item(newItem: EquippedItem | null) {
-		// Clear everything first
-		this.itemElem.clear(this.slot);
 		// Clear quick swap gems array since gem sockets are rerendered every time
 		this.quickSwapGemPopover = [];
-		this.itemElem.nameElem.textContent = translateSlotName(this.slot);
-		setItemQualityCssClass(this.itemElem.nameElem, null);
-
-		if (!!newItem) {
-			this.itemElem.update(newItem);
-		}
+		this.itemElem.render(newItem);
 
 		this._equippedItem = newItem;
 		this.onUpdateCallbacks.forEach(callback => callback());
