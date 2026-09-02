@@ -23,5 +23,11 @@ export const ENCOUNTER_SINGLE_TARGET = PresetUtils.makePresetEncounter('Default'
 // your raid's assignments.
 export const ENCOUNTER_MALKOROK = PresetUtils.makePresetEncounter(
 	'Malkorok',
-	malkorokEncounterProto({ duration: 300, durationVariation: 30, soakNumberValue: 0 }),
+	malkorokEncounterProto({
+		duration: 300,
+		durationVariation: 30,
+		soakNumberValue: 0,
+		soakTooltip:
+			"Percentage of Imploding Energy batches this player soaks. This preset ships 0%, modelling a death knight who isn't assigned to soak; raise it to match your raid assignments — the reference log has ~9 of 25 players hit per batch, i.e. 36%.",
+	}),
 );

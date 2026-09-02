@@ -6940,7 +6940,7 @@
 							{
 								"inputType": 1,
 								"label": "Imploding Energy Soak %",
-								"tooltip": "Percentage of Imploding Energy batches this player soaks. The default 36% matches the ~9 of 25 players hit per batch in the reference log; raise it if you're always assigned to soak, lower it if you rarely are.",
+								"tooltip": "Percentage of Imploding Energy batches this player soaks. This preset ships 0%, modelling a death knight who isn't assigned to soak; raise it to match your raid assignments — the reference log has ~9 of 25 players hit per batch, i.e. 36%.",
 								"boolValue": false,
 								"numberValue": 0,
 								"enumValue": 0,
@@ -13067,7 +13067,7 @@
 						{
 							"inputType": 1,
 							"label": "Imploding Energy Soak %",
-							"tooltip": "Percentage of Imploding Energy batches this player soaks. The default 36% matches the ~9 of 25 players hit per batch in the reference log; raise it if you're always assigned to soak, lower it if you rarely are.",
+							"tooltip": "Percentage of Imploding Energy batches this player soaks. This preset ships 0%, modelling a death knight who isn't assigned to soak; raise it to match your raid assignments — the reference log has ~9 of 25 players hit per batch, i.e. 36%.",
 							"boolValue": false,
 							"numberValue": 0,
 							"enumValue": 0,
@@ -13679,7 +13679,7 @@
 							{
 								"inputType": 1,
 								"label": "Imploding Energy Soak %",
-								"tooltip": "Percentage of Imploding Energy batches this player soaks. The default 36% matches the ~9 of 25 players hit per batch in the reference log; raise it if you're always assigned to soak, lower it if you rarely are.",
+								"tooltip": "Percentage of Imploding Energy batches this player soaks. This preset ships 0%, modelling a death knight who isn't assigned to soak; raise it to match your raid assignments — the reference log has ~9 of 25 players hit per batch, i.e. 36%.",
 								"boolValue": false,
 								"numberValue": 0,
 								"enumValue": 0,
@@ -19992,7 +19992,7 @@
 						{
 							"inputType": 1,
 							"label": "Imploding Energy Soak %",
-							"tooltip": "Percentage of Imploding Energy batches this player soaks. The default 36% matches the ~9 of 25 players hit per batch in the reference log; raise it if you're always assigned to soak, lower it if you rarely are.",
+							"tooltip": "Percentage of Imploding Energy batches this player soaks. This preset ships 0%, modelling a death knight who isn't assigned to soak; raise it to match your raid assignments — the reference log has ~9 of 25 players hit per batch, i.e. 36%.",
 							"boolValue": false,
 							"numberValue": 0,
 							"enumValue": 0,

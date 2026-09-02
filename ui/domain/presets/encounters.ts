@@ -9,14 +9,18 @@ export const singleTargetEncounterProto = (): EncounterProto => Encounter.defaul
 // are left as parameters because the warrior and death knight presets currently ship different
 // values on purpose (warrior: 144s/5s/100%; death knight: 300s/30s/0%, since AMS timing against
 // Malkorok's magic damage needs the full fight) — reconciling them is a later, golden-changing PR.
+// `soakTooltip` comes with them: each preset has to describe the soak value it actually ships,
+// not the sim's own 36% default (sim/encounters/soo/malkorok_ai.go).
 export const malkorokEncounterProto = ({
 	duration,
 	durationVariation,
 	soakNumberValue,
+	soakTooltip,
 }: {
 	duration: number;
 	durationVariation: number;
 	soakNumberValue: number;
+	soakTooltip: string;
 }): EncounterProto =>
 	EncounterProto.create({
 		apiVersion: 3,
@@ -41,8 +45,7 @@ export const malkorokEncounterProto = ({
 					{
 						inputType: InputType.Number,
 						label: 'Imploding Energy Soak %',
-						tooltip:
-							"Percentage of Imploding Energy batches this player soaks. The default 36% matches the ~9 of 25 players hit per batch in the reference log; raise it if you're always assigned to soak, lower it if you rarely are.",
+						tooltip: soakTooltip,
 						numberValue: soakNumberValue,
 					},
 				],
