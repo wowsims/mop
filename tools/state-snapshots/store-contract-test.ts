@@ -18,7 +18,23 @@ import { batch, nextEventID } from '../../ui/core/state/batch';
 import { Emitter } from '../../ui/core/state/events';
 import { ReforgeSettings } from '../../ui/core/state/reforge_settings';
 import { StatWeightActionSettings } from '../../ui/core/state/stat_weight_settings';
-import { subscribeEncounterChange, subscribeEncounterField, subscribePartyChange, subscribePlayerChange, subscribePlayerField, subscribeRaidChange, subscribeRaidField, subscribeReforgeChange, subscribeReforgeField, subscribeSimChange, subscribeSimField, subscribeStatsInputs, subscribeStatWeightsChange, subscribeUnitMetadata } from '../../ui/core/state/subscriptions';
+import {
+	subscribeAll,
+	subscribeEncounterChange,
+	subscribeEncounterField,
+	subscribePartyChange,
+	subscribePlayerChange,
+	subscribePlayerField,
+	subscribeRaidChange,
+	subscribeRaidField,
+	subscribeReforgeChange,
+	subscribeReforgeField,
+	subscribeSimChange,
+	subscribeSimField,
+	subscribeStatsInputs,
+	subscribeStatWeightsChange,
+	subscribeUnitMetadata,
+} from '../../ui/core/state/subscriptions';
 
 let failures = 0;
 function check(cond: boolean, label: string) {
@@ -102,7 +118,10 @@ export async function main() {
 	// 7. Batch gate mechanics on a gated field subscriber.
 	let gatedFires = 0;
 	let seenDuringBatch = -1;
-	const unsubGated = subscribePlayerField(player, 'name')(() => {
+	const unsubGated = subscribePlayerField(
+		player,
+		'name',
+	)(() => {
 		gatedFires++;
 		seenDuringBatch = player.getName() === 'Batched2' ? 1 : 0;
 	});
@@ -154,7 +173,10 @@ export async function main() {
 	const unsubSim = subscribeSimChange(sim)(() => simAgg++);
 	const unsubEnc = subscribeEncounterChange(sim.encounter)(() => encAgg++);
 	player.setDistanceFromTarget(nextEventID(), 7);
-	check(partyAgg === 1 && raidAgg === 1 && simAgg === 1 && encAgg === 0, `player field change → party/raid/sim aggregates once (${partyAgg}/${raidAgg}/${simAgg}/${encAgg})`);
+	check(
+		partyAgg === 1 && raidAgg === 1 && simAgg === 1 && encAgg === 0,
+		`player field change → party/raid/sim aggregates once (${partyAgg}/${raidAgg}/${simAgg}/${encAgg})`,
+	);
 	const player2 = new Player<any>(PlayerSpecs.fromProto(Spec.SpecArmsWarrior), sim);
 	partyAgg = raidAgg = simAgg = 0;
 	party0.setPlayer(nextEventID(), 1, player2);
@@ -226,13 +248,17 @@ export async function main() {
 	// Server-derived stats must NOT count as a player/raid/sim change (old
 	// Player.changeEmitter excluded currentStats; including it would loop
 	// updateCharacterStats → setCurrentStats → change → updateCharacterStats).
-	let derivedPlayerFires = 0, derivedRaidFires = 0, derivedSimFires = 0;
+	let derivedPlayerFires = 0,
+		derivedRaidFires = 0,
+		derivedSimFires = 0;
 	const unsubDP = subscribePlayerChange(player)(() => derivedPlayerFires++);
 	const unsubDR = subscribeRaidChange(sim.raid)(() => derivedRaidFires++);
 	const unsubDS = subscribeSimChange(sim)(() => derivedSimFires++);
 	player.setCurrentStats(nextEventID(), player.getCurrentStats());
 	check(derivedPlayerFires === 0 && derivedRaidFires === 0 && derivedSimFires === 0, 'setCurrentStats does not fire player/raid/sim aggregates');
-	unsubDP(); unsubDR(); unsubDS();
+	unsubDP();
+	unsubDR();
+	unsubDS();
 
 	// Stats-input selector: one batch touching raid + encounter → one fire.
 	let statsFires = 0;
@@ -242,6 +268,31 @@ export async function main() {
 		sim.encounter.setDuration(nextEventID(), 321);
 	});
 	check(statsFires === 1, 'subscribeStatsInputs fires once for a batch touching raid + encounter');
+
+	// subscribeAll folds selector sources into one selector: one fire per write
+	// or batch even when several sources changed (talentsString is also part of
+	// the raid tuple).
+	let allFires = 0;
+	const unsubAll = subscribeAll([subscribePlayerField(player, 'talentsString'), subscribeRaidChange(sim.raid)])(() => allFires++);
+	player.setTalentsString(nextEventID(), player.getTalentsString() + '1');
+	check(allFires === 1, 'subscribeAll fires once for a single write hitting two of its sources');
+	allFires = 0;
+	batch(() => {
+		player.setTalentsString(nextEventID(), player.getTalentsString() + '2');
+		sim.raid.setTargetDummies(nextEventID(), sim.raid.getTargetDummies() + 1);
+	});
+	check(allFires === 1, 'subscribeAll fires once for a batch touching two of its sources');
+	unsubAll();
+
+	// Emitter.on is an arrow property: pickers pass it unbound as their source.
+	const ev = new Emitter<void>();
+	const unboundOn = ev.on;
+	let evFires = 0;
+	const unsubEv = unboundOn(() => evFires++);
+	ev.emit();
+	unsubEv();
+	ev.emit();
+	check(evFires === 1, 'Emitter.on works unbound and its unsubscribe detaches');
 	unsubStats();
 
 	// epRefStat write is a player change (autosave) and fires the field counter.
@@ -285,7 +336,9 @@ export async function main() {
 	check(a.isDisposed() && !c.isDisposed(), 'replaced player is disposed, replacement is not');
 	await new Promise(r => setTimeout(r, 0));
 	check(sim.store.getState().players[a.storeKey] === undefined, 'replaced player slice removed');
-	p0.setPlayer(nextEventID(), 1, null); p0.setPlayer(nextEventID(), 2, null); p0.setPlayer(nextEventID(), 3, null);
+	p0.setPlayer(nextEventID(), 1, null);
+	p0.setPlayer(nextEventID(), 2, null);
+	p0.setPlayer(nextEventID(), 3, null);
 
 	console.log(failures === 0 ? 'STORE-CONTRACT OK' : `STORE-CONTRACT FAILED (${failures})`);
 	if (failures > 0) process.exitCode = 1;

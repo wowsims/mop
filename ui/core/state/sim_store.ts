@@ -9,8 +9,22 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
 import { CURRENT_PHASE } from '../constants/other';
-import { Debuffs, Faction, PartyBuffs, RaidBuffs, Target as TargetProto, UnitReference } from '../proto/common';
+import type { PlayerStats } from '../proto/api';
+import {
+	ConsumesSpec,
+	Debuffs,
+	Faction,
+	Glyphs,
+	HealingModel,
+	IndividualBuffs,
+	PartyBuffs,
+	RaidBuffs,
+	Target as TargetProto,
+	UnitReference,
+} from '../proto/common';
 import { DatabaseFilters } from '../proto/ui';
+import type { Gear, ItemSwapGear } from '../proto_utils/gear';
+import type { StatCap, Stats } from '../proto_utils/stats';
 
 // Presentation flags (owned by UISettings).
 export interface UISlice {
@@ -68,7 +82,7 @@ export interface SimSettingsSlice {
 	lastUsedRngSeed: number;
 	lastUsedRngSeedVersion: number;
 	// Bumped when any unit's metadata (spells/auras) changed after a
-	// compute-stats round trip; drives sim.unitMetadataEmitter.
+	// compute-stats round trip; drives subscribeUnitMetadata().
 	metadataVersion: number;
 }
 
@@ -82,26 +96,27 @@ export interface PlayerSlice {
 	race: number;
 	profession1: number;
 	profession2: number;
-	buffs: unknown;
-	consumables: unknown;
-	bonusStats: unknown;
-	gear: unknown;
+	buffs: IndividualBuffs;
+	consumables: ConsumesSpec;
+	bonusStats: Stats;
+	gear: Gear;
 	talentsString: string;
-	glyphs: unknown;
+	glyphs: Glyphs;
+	// Per-spec proto; the generic is only known on Player<SpecType>.
 	specOptions: unknown;
 	reactionTime: number;
 	channelClipDelay: number;
 	inFrontOfTarget: boolean;
 	distanceFromTarget: number;
-	healingModel: unknown;
+	healingModel: HealingModel;
 	challengeModeEnabled: boolean;
-	epWeights: unknown;
+	epWeights: Stats;
 	epRatios: Array<number>;
-	currentStats: unknown;
+	currentStats: PlayerStats;
 	// Item-swap settings (facade: ItemSwapSettings).
 	itemSwapEnabled: boolean;
-	itemSwapGear: unknown;
-	itemSwapBonusStats: unknown;
+	itemSwapGear: ItemSwapGear;
+	itemSwapBonusStats: Stats;
 	// Stat-weight reference stats (persisted in the settings envelope).
 	dpsRefStat: number | undefined;
 	healRefStat: number | undefined;
@@ -152,23 +167,23 @@ export const REFORGE_FIELDS = [
 	'softCapBreakpoints',
 	'breakpointLimits',
 	'freezeItemSlots',
-	'undershootCaps',
 	'relativeStatCapStat',
 	'relativeStatCapPrecision',
 ] as const;
 export type ReforgeField = (typeof REFORGE_FIELDS)[number];
 
 export interface ReforgeSlice {
-	statCaps: unknown;
-	breakpointLimits: unknown;
+	statCaps: Stats;
+	breakpointLimits: Stats;
 	useCustomEPValues: boolean;
 	useSoftCapBreakpoints: boolean;
-	softCapBreakpoints: Array<unknown>;
+	softCapBreakpoints: Array<StatCap>;
 	includeGems: boolean;
 	includeEOTBPGemSocket: boolean;
 	freezeItemSlots: boolean;
 	frozenItemSlots: Array<number>;
-	undershootCaps: unknown;
+	// Written silently by the optimizer (no counter, like the old bare field).
+	undershootCaps: Stats;
 	relativeStatCapStat: number;
 	relativeStatCapPrecision: number;
 	v: Record<ReforgeField, number>;
@@ -178,15 +193,12 @@ export interface ReforgeSlice {
 export interface StatWeightsSlice {
 	excludedStats: Array<number>;
 	excludedPseudoStats: Array<number>;
-	version: number;
+	v: { settings: number };
 }
 
-// Bulk (batch) sim tab state per player: the persisted settings snapshot and
-// the candidate item list, with version counters the tab bumps where it used
-// to emit (see BulkTab.bump).
+// Bulk (batch) sim tab: version counters the tab bumps where it used to emit
+// (see BulkTab.bump). The values themselves stay on the tab.
 export interface BulkSlice {
-	settings: unknown;
-	items: Array<unknown>;
 	v: { settings: number; items: number };
 }
 
@@ -255,4 +267,56 @@ export type SimStore = ReturnType<typeof createSimStore>;
 
 export function createSimStore() {
 	return createStore<SimState>()(subscribeWithSelector(() => initialState()));
+}
+
+// ---------------------------------------------------------------------------
+// Write helpers shared by the facades. Every logical change is ONE setState so
+// subscribers see it once.
+
+type UnkeyedSlice = 'sim' | 'ui' | 'encounter' | 'raid';
+export function patchSlice<N extends UnkeyedSlice>(store: SimStore, slice: N, patch: Partial<SimState[N]>) {
+	store.setState(s => ({ [slice]: { ...s[slice], ...patch } }) as Partial<SimState>);
+}
+
+type KeyedSlice = 'players' | 'reforge' | 'statWeights' | 'bulk';
+type KeyedEntry<N extends KeyedSlice> = SimState[N][number];
+
+export function zeroVersions<F extends string>(fields: ReadonlyArray<F>): Record<F, number> {
+	return Object.fromEntries(fields.map(f => [f, 0])) as Record<F, number>;
+}
+
+// Seeds store[slice][key] (initialization, not a change).
+export function seedKeyed<N extends KeyedSlice>(store: SimStore, slice: N, key: number, entry: KeyedEntry<N>) {
+	store.setState(s => ({ [slice]: { ...s[slice], [key]: entry } }) as Partial<SimState>);
+}
+
+// Writes `patch` into store[slice][key] and bumps the given version counters.
+// A bump with an empty patch is the old bare emit; a patch with no bumps is
+// the old silent field write.
+export function patchKeyed<N extends KeyedSlice>(
+	store: SimStore,
+	slice: N,
+	key: number,
+	patch: Partial<Omit<KeyedEntry<N>, 'v'>>,
+	bumps: ReadonlyArray<keyof KeyedEntry<N>['v']> = [],
+) {
+	store.setState(s => {
+		const cur = s[slice][key] as KeyedEntry<N>;
+		const v = { ...cur.v } as Record<string, number>;
+		for (const f of bumps) v[f as string] = (v[f as string] ?? 0) + 1;
+		return { [slice]: { ...s[slice], [key]: { ...cur, ...patch, v } } } as Partial<SimState>;
+	});
+}
+
+// Removes a player's entries from every keyed slice (Player.dispose).
+export function deleteKeyed(store: SimStore, key: number) {
+	store.setState(s => {
+		const out: Partial<SimState> = {};
+		for (const slice of ['players', 'reforge', 'statWeights', 'bulk'] as const) {
+			const copy = { ...s[slice] } as Record<number, unknown>;
+			delete copy[key];
+			(out as Record<string, unknown>)[slice] = copy;
+		}
+		return out;
+	});
 }

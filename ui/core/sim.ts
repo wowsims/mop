@@ -11,7 +11,7 @@ import {
 	throwIfAborted,
 	writeBulkSimReforgeCacheResults,
 } from './bulk/utils';
-import { CURRENT_PHASE } from './constants/other';
+import { CURRENT_PHASE, LOCAL_STORAGE_PREFIX } from './constants/other';
 import { Encounter } from './encounter';
 import { Player, UnitMetadata } from './player';
 import {
@@ -64,12 +64,13 @@ import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { batch, EventID, nextEventID } from './state/batch';
 import { Emitter } from './state/events';
 import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
-import { createSimStore } from './state/sim_store';
+import { createSimStore, patchSlice, SimSettingsSlice, UISlice } from './state/sim_store';
 import { subscribeStatsInputs, subscribeUiField } from './state/subscriptions';
-import { UISettings, WASM_CONCURRENCY_STORAGE_KEY } from './state/ui_settings';
 import { distinct, getEnumValues, hashString, isExternal, noop, sleep } from './utils.js';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
+
+export const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
 export type RaidSimData = {
 	request: RaidSimRequest;
 	result: RaidSimResult;
@@ -101,7 +102,6 @@ export type RunSimOptions = {
 	iterations?: number;
 };
 
-
 // Core Sim module which deals only with api types, no UI-related stuff.
 export class Sim {
 	private readonly workerPool: WorkerPool;
@@ -116,7 +116,9 @@ export class Sim {
 	// Declared before the facades that write it.
 	readonly store = createSimStore();
 
-	readonly uiSettings = new UISettings(this.store);
+	private set(patch: Partial<SimSettingsSlice>) {
+		patchSlice(this.store, 'sim', patch);
+	}
 
 	readonly crashEmitter = new Emitter<SimError>();
 
@@ -135,10 +137,13 @@ export class Sim {
 		this.type = type ?? SimType.SimTypeIndividual;
 
 		this.workerPool = new WorkerPool(1);
-		subscribeUiField(this, 'wasmConcurrency')(async () => {
+		subscribeUiField(
+			this,
+			'wasmConcurrency',
+		)(async () => {
 			// Prevent using worker concurrency when not running wasm. Local sim has native threading.
 			if (await this.workerPool.isWasm()) {
-				const nWorker = Math.max(1, Math.min(this.uiSettings.getWasmConcurrency(), navigator.hardwareConcurrency));
+				const nWorker = Math.max(1, Math.min(this.getWasmConcurrency(), navigator.hardwareConcurrency));
 				this.workerPool.setNumWorkers(nWorker);
 			}
 		});
@@ -168,7 +173,8 @@ export class Sim {
 		// touching both recomputes once.
 		subscribeStatsInputs(this)(() => this.updateCharacterStats(nextEventID()));
 
-		this.uiSettings.initLanguage(getLang());
+		// Initial language write: initialization, not a change.
+		this.store.setState(s => ({ ui: { ...s.ui, language: getLang() } }));
 	}
 
 	waitForInit(): Promise<void> {
@@ -441,9 +447,7 @@ export class Sim {
 				const contentHash = hashString(
 					hashString(EquipmentSpec.toJsonString(baselineGear.asSpec())) +
 						hashString(bulkSettings ? BulkSettings.toJsonString(bulkSettings) : String(gearSets.length)) +
-						hashString(
-							bulkReforgeRequest ? ReforgeOptimizeRequest.toJsonString(cacheRelevantReforgeRequest(bulkReforgeRequest)) : '',
-						),
+						hashString(bulkReforgeRequest ? ReforgeOptimizeRequest.toJsonString(cacheRelevantReforgeRequest(bulkReforgeRequest)) : ''),
 				);
 				const contentSeed = Number(BigInt('0x' + contentHash.slice(0, 8)));
 				baseRequest.simOptions!.randomSeed = BigInt(contentSeed);
@@ -936,7 +940,7 @@ export class Sim {
 	}
 	setPhase(eventID: EventID, newPhase: number) {
 		if (newPhase != this.getPhase()) {
-			this.store.setState(s => ({ sim: { ...s.sim, phase: newPhase } }));
+			this.set({ phase: newPhase });
 		}
 	}
 
@@ -945,7 +949,7 @@ export class Sim {
 	}
 	setFaction(eventID: EventID, newFaction: Faction) {
 		if (newFaction != this.getFaction() && !!newFaction) {
-			this.store.setState(s => ({ sim: { ...s.sim, faction: newFaction } }));
+			this.set({ faction: newFaction });
 		}
 	}
 
@@ -954,7 +958,7 @@ export class Sim {
 	}
 	setFixedRngSeed(eventID: EventID, newFixedRngSeed: number) {
 		if (newFixedRngSeed != this.getFixedRngSeed()) {
-			this.store.setState(s => ({ sim: { ...s.sim, fixedRngSeed: newFixedRngSeed } }));
+			this.set({ fixedRngSeed: newFixedRngSeed });
 		}
 	}
 
@@ -991,69 +995,80 @@ export class Sim {
 		// Make a defensive copy; replace-on-write, so subscribers can use
 		// reference equality.
 		const filters = DatabaseFilters.clone(newFilters);
-		this.store.setState(s => ({ sim: { ...s.sim, filters } }));
+		this.set({ filters });
+	}
+
+	private get ui(): UISlice {
+		return this.store.getState().ui;
+	}
+	private setUi(patch: Partial<UISlice>) {
+		patchSlice(this.store, 'ui', patch);
 	}
 
 	getShowDamageMetrics(): boolean {
-		return this.uiSettings.getShowDamageMetrics();
+		return this.ui.showDamageMetrics;
 	}
 	setShowDamageMetrics(eventID: EventID, newShowDamageMetrics: boolean) {
-		this.uiSettings.setShowDamageMetrics(eventID, newShowDamageMetrics);
+		if (newShowDamageMetrics != this.ui.showDamageMetrics) this.setUi({ showDamageMetrics: newShowDamageMetrics });
 	}
 
 	getShowThreatMetrics(): boolean {
-		return this.uiSettings.getShowThreatMetrics();
+		return this.ui.showThreatMetrics;
 	}
 	setShowThreatMetrics(eventID: EventID, newShowThreatMetrics: boolean) {
-		this.uiSettings.setShowThreatMetrics(eventID, newShowThreatMetrics);
+		if (newShowThreatMetrics != this.ui.showThreatMetrics) this.setUi({ showThreatMetrics: newShowThreatMetrics });
 	}
 
 	getShowHealingMetrics(): boolean {
 		return (
-			this.uiSettings.getShowHealingMetrics() ||
-			(this.uiSettings.getShowThreatMetrics() &&
+			this.ui.showHealingMetrics ||
+			(this.ui.showThreatMetrics &&
 				[Spec.SpecBloodDeathKnight, Spec.SpecGuardianDruid, Spec.SpecBrewmasterMonk, Spec.SpecProtectionPaladin, Spec.SpecProtectionWarrior].includes(
 					this.raid.getPlayer(0)?.playerSpec.specID,
 				))
 		);
 	}
 	setShowHealingMetrics(eventID: EventID, newShowHealingMetrics: boolean) {
-		this.uiSettings.setShowHealingMetrics(eventID, newShowHealingMetrics);
+		if (newShowHealingMetrics != this.ui.showHealingMetrics) this.setUi({ showHealingMetrics: newShowHealingMetrics });
 	}
 
 	getShowExperimental(): boolean {
-		return this.uiSettings.getShowExperimental();
+		return this.ui.showExperimental;
 	}
 	setShowExperimental(eventID: EventID, newShowExperimental: boolean) {
-		this.uiSettings.setShowExperimental(eventID, newShowExperimental);
+		if (newShowExperimental != this.ui.showExperimental) this.setUi({ showExperimental: newShowExperimental });
 	}
 
 	getWasmConcurrency(): number {
-		return this.uiSettings.getWasmConcurrency();
+		return this.ui.wasmConcurrency;
 	}
 	setWasmConcurrency(eventID: EventID, newWasmConcurrency: number) {
-		this.uiSettings.setWasmConcurrency(eventID, newWasmConcurrency);
+		if (newWasmConcurrency != this.ui.wasmConcurrency) {
+			window.localStorage.setItem(WASM_CONCURRENCY_STORAGE_KEY, newWasmConcurrency.toString());
+			this.setUi({ wasmConcurrency: newWasmConcurrency });
+		}
 	}
 
 	getShowQuickSwap(): boolean {
-		return !hasTouch() && this.uiSettings.getShowQuickSwap();
+		return !hasTouch() && this.ui.showQuickSwap;
 	}
 	setShowQuickSwap(eventID: EventID, newShowQuickSwap: boolean) {
-		this.uiSettings.setShowQuickSwap(eventID, newShowQuickSwap);
+		if (newShowQuickSwap != this.ui.showQuickSwap) this.setUi({ showQuickSwap: newShowQuickSwap });
 	}
 
 	getShowEPValues(): boolean {
-		return this.uiSettings.getShowEPValues();
+		return this.ui.showEPValues;
 	}
 	setShowEPValues(eventID: EventID, newShowEPValues: boolean) {
-		this.uiSettings.setShowEPValues(eventID, newShowEPValues);
+		if (newShowEPValues != this.ui.showEPValues) this.setUi({ showEPValues: newShowEPValues });
 	}
 
 	getLanguage(): string {
-		return this.uiSettings.getLanguage();
+		return this.ui.language;
 	}
 	setLanguage(eventID: EventID, newLanguage: string) {
-		this.uiSettings.setLanguage(eventID, newLanguage);
+		newLanguage = newLanguage || 'en';
+		if (newLanguage != this.ui.language) this.setUi({ language: newLanguage });
 	}
 
 	getIterations(): number {
@@ -1061,7 +1076,7 @@ export class Sim {
 	}
 	setIterations(eventID: EventID, newIterations: number) {
 		if (newIterations != this.getIterations()) {
-			this.store.setState(s => ({ sim: { ...s.sim, iterations: newIterations } }));
+			this.set({ iterations: newIterations });
 		}
 	}
 

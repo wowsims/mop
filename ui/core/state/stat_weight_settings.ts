@@ -3,9 +3,9 @@ import { Player } from '../player';
 import { PseudoStat, Stat } from '../proto/common';
 import { SavedStatWeightSettings } from '../proto/ui';
 import { UnitStat } from '../proto_utils/stats';
-import { EventID } from '../state/batch';
-import { subscribeGated } from './batch';
-import { SimState, SimStore, StatWeightsSlice } from './sim_store';
+import { EventID } from './batch';
+import { patchKeyed, seedKeyed, SimStore, StatWeightsSlice } from './sim_store';
+import { subscribeStatWeightsChange } from './subscriptions';
 // Stat-weight modal settings. Values live in the sim store
 // (`statWeights[player.storeKey]`) with a version counter; persists itself to
 // localStorage on every change.
@@ -19,45 +19,26 @@ export class StatWeightActionSettings {
 		this.store = player.sim.store;
 		this.storeKey = player.storeKey;
 
-		const seed: StatWeightsSlice = { excludedStats: [], excludedPseudoStats: [], version: 0 };
-		this.store.setState(s => ({ statWeights: { ...s.statWeights, [this.storeKey]: seed } }));
-
-		subscribeGated(
-			this.store.subscribe,
-			(s: SimState) => s.statWeights[this.storeKey]?.version,
-			() => {
-				const json = SavedStatWeightSettings.toJsonString(this.toProto());
-				window.localStorage.setItem(this.storageKey, json);
-			},
-		);
+		seedKeyed(this.store, 'statWeights', this.storeKey, { excludedStats: [], excludedPseudoStats: [], v: { settings: 0 } });
+		subscribeStatWeightsChange(this)(() => {
+			window.localStorage.setItem(this.storageKey, SavedStatWeightSettings.toJsonString(this.toProto()));
+		});
 	}
 
 	private get slice(): StatWeightsSlice {
 		return this.store.getState().statWeights[this.storeKey];
 	}
 
-	// Silent writes (the old setters assigned without emitting).
-	private write(patch: Partial<StatWeightsSlice>) {
-		this.store.setState(s => ({ statWeights: { ...s.statWeights, [this.storeKey]: { ...s.statWeights[this.storeKey], ...patch } } }));
+	// One store write per logical change (the old code assigned the fields
+	// silently and then emitted once).
+	private write(patch: Partial<Omit<StatWeightsSlice, 'v'>>) {
+		patchKeyed(this.store, 'statWeights', this.storeKey, patch, ['settings']);
 	}
 
-	private bump(eventID: EventID) {
-		this.store.setState(s => {
-				const sw = s.statWeights[this.storeKey];
-				return { statWeights: { ...s.statWeights, [this.storeKey]: { ...sw, version: sw.version + 1 } } };
-			});
-	}
-
-	set excludedStats(value: Stat[]) {
-		this.write({ excludedStats: value });
-	}
 	get excludedStats(): Stat[] {
 		return this.slice.excludedStats.slice();
 	}
 
-	set excludedPseudoStats(value: PseudoStat[]) {
-		this.write({ excludedPseudoStats: value });
-	}
 	get excludedPseudoStats(): PseudoStat[] {
 		return this.slice.excludedPseudoStats.slice();
 	}
@@ -67,9 +48,7 @@ export class StatWeightActionSettings {
 	}
 
 	applyDefaults(eventID: EventID) {
-		this.excludedStats = [];
-		this.excludedPseudoStats = [];
-		this.bump(eventID);
+		this.write({ excludedStats: [], excludedPseudoStats: [] });
 	}
 
 	load(eventID: EventID) {
@@ -78,10 +57,7 @@ export class StatWeightActionSettings {
 			const settingsProto = SavedStatWeightSettings.fromJsonString(storageValue, { ignoreUnknownFields: true });
 			StatWeightActionSettings.updateProtoVersion(settingsProto);
 
-			const { excludedStats, excludedPseudoStats } = settingsProto;
-			this.excludedStats = excludedStats || [];
-			this.excludedPseudoStats = excludedPseudoStats || [];
-			this.bump(eventID);
+			this.write({ excludedStats: settingsProto.excludedStats || [], excludedPseudoStats: settingsProto.excludedPseudoStats || [] });
 		}
 	}
 
@@ -136,10 +112,9 @@ export class StatWeightActionSettings {
 			return target;
 		};
 		if (stat.isStat()) {
-			this.excludedStats = updateStatEntry(stat.getStat(), this.excludedStats);
+			this.write({ excludedStats: updateStatEntry(stat.getStat(), this.excludedStats) });
 		} else {
-			this.excludedPseudoStats = updateStatEntry(stat.getPseudoStat(), this.excludedPseudoStats);
+			this.write({ excludedPseudoStats: updateStatEntry(stat.getPseudoStat(), this.excludedPseudoStats) });
 		}
-		this.bump(eventID);
 	}
 }

@@ -3,7 +3,7 @@ import { ItemSlot, ItemSpec, ItemSwap } from '../proto/common';
 import { EquippedItem } from '../proto_utils/equipped_item';
 import { ItemSwapGear } from '../proto_utils/gear';
 import { Stats } from '../proto_utils/stats';
-import { EventID } from '../state/batch';
+import { EventID } from './batch';
 // Facade over the player's itemSwap* store fields (one shared `itemSwap`
 // version counter, see Player.patchItemSwap).
 export class ItemSwapSettings {
@@ -22,11 +22,11 @@ export class ItemSwapSettings {
 	}
 
 	getBonusStats(): Stats {
-		return this.player.getItemSwapField('itemSwapBonusStats') as Stats;
+		return this.player.getItemSwapField('itemSwapBonusStats');
 	}
 
 	getEnableItemSwap(): boolean {
-		return this.player.getItemSwapField('itemSwapEnabled') as boolean;
+		return this.player.getItemSwapField('itemSwapEnabled');
 	}
 
 	setEnableItemSwap(eventID: EventID, newEnableItemSwap: boolean) {
@@ -43,7 +43,7 @@ export class ItemSwapSettings {
 	}
 
 	getGear(): ItemSwapGear {
-		return this.player.getItemSwapField('itemSwapGear') as ItemSwapGear;
+		return this.player.getItemSwapField('itemSwapGear');
 	}
 
 	setGear(eventID: EventID, newItemSwapGear: ItemSwapGear) {

@@ -19,11 +19,11 @@ export function nextEventID(): EventID {
 let depth = 0;
 let pending = new Set<() => void>();
 
-export function beginBatch() {
+function beginBatch() {
 	depth++;
 }
 
-export function endBatch() {
+function endBatch() {
 	depth--;
 	if (depth > 0) return;
 	if (depth < 0) depth = 0;
@@ -53,11 +53,11 @@ export function batch<T>(func: () => T): T | undefined {
 	}
 }
 
-export function isBatching(): boolean {
-	return depth > 0;
-}
-
-type SubscribeWithSelector<S> = <U>(selector: (state: S) => U, listener: (value: U, prev: U) => void, options?: { equalityFn?: (a: U, b: U) => boolean }) => () => void;
+type SubscribeWithSelector<S> = <U>(
+	selector: (state: S) => U,
+	listener: (value: U, prev: U) => void,
+	options?: { equalityFn?: (a: U, b: U) => boolean },
+) => () => void;
 
 // Subscribes to selector(state) changes; the listener is deferred to the end
 // of the enclosing batch (once), or fires immediately when no batch is open.

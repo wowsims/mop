@@ -17,7 +17,6 @@ export class Party {
 	// Should always hold exactly MAX_PARTY_SIZE elements.
 	private players: Array<Player<any> | null>;
 
-
 	constructor(raid: Raid, sim: Sim, index: number) {
 		this.sim = sim;
 		this.raid = raid;
@@ -29,8 +28,8 @@ export class Party {
 	private writeComposition(eventID: EventID) {
 		const row = this.players.map(p => (p ? p.storeKey : null));
 		this.sim.store.setState(s => ({
-				raid: { ...s.raid, composition: s.raid.composition.map((r, i) => (i == this.index ? row : r)) },
-			}));
+			raid: { ...s.raid, composition: s.raid.composition.map((r, i) => (i == this.index ? row : r)) },
+		}));
 	}
 
 	size(): number {
@@ -50,7 +49,7 @@ export class Party {
 
 	// Returns this party's index within the raid [0-4].
 	getIndex(): number {
-		return this.raid.getParties().indexOf(this);
+		return this.index;
 	}
 
 	getPlayers(): Array<Player<any> | null> {

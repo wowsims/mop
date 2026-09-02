@@ -7,8 +7,8 @@ import { Player } from '../player';
 import { ReforgeSettings as ReforgeSettingsProto } from '../proto/api';
 import { ItemSlot, Stat } from '../proto/common';
 import { StatCap, Stats, UnitStat } from '../proto_utils/stats';
-import { batch,EventID } from '../state/batch';
-import { REFORGE_FIELDS, ReforgeField, ReforgeSlice, SimStore } from './sim_store';
+import { batch, EventID } from './batch';
+import { patchKeyed, REFORGE_FIELDS, ReforgeField, ReforgeSlice, seedKeyed, SimStore, zeroVersions } from './sim_store';
 // Used to force a particular proc from trinkets like Matrix Restabilizer and Apparatus of Khaz'goroth.
 export class RelativeStatCap {
 	static relevantStats: Stat[] = [Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating];
@@ -48,9 +48,8 @@ export class ReforgeSettings {
 		this.store = player.sim.store;
 		this.storeKey = player.storeKey;
 
-		// Seed the slice (plain setState: emit-less, like the old field initializers).
-		const zeroVersions = Object.fromEntries(REFORGE_FIELDS.map(f => [f, 0])) as Record<ReforgeField, number>;
-		const seed: ReforgeSlice = {
+		// Seed the slice (emit-less, like the old field initializers).
+		seedKeyed(this.store, 'reforge', this.storeKey, {
 			statCaps: defaults.statCaps || new Stats(),
 			breakpointLimits: new Stats(),
 			useCustomEPValues: false,
@@ -63,44 +62,26 @@ export class ReforgeSettings {
 			undershootCaps: new Stats(),
 			relativeStatCapStat: defaultRelativeStatCap ?? -1,
 			relativeStatCapPrecision: 0.0001,
-			v: zeroVersions,
-		};
-		this.store.setState(s => ({ reforge: { ...s.reforge, [this.storeKey]: seed } }));
-
-
+			v: zeroVersions(REFORGE_FIELDS),
+		});
 	}
 
 	private get slice(): ReforgeSlice {
 		return this.store.getState().reforge[this.storeKey];
 	}
 
-	// Writes a field and bumps its version (= the old "assign + emit").
-	private patch(eventID: EventID, field: ReforgeField, value: unknown) {
-		this.store.setState(s => {
-				const r = s.reforge[this.storeKey];
-				return { reforge: { ...s.reforge, [this.storeKey]: { ...r, [field]: value, v: { ...r.v, [field]: r.v[field] + 1 } } } };
-			});
-	}
-
-	// Writes without bumping (= the old silent field assignment).
-	private write(patch: Partial<ReforgeSlice>) {
-		this.store.setState(s => ({ reforge: { ...s.reforge, [this.storeKey]: { ...s.reforge[this.storeKey], ...patch } } }));
-	}
-
-	// Bumps a version without changing values (= the old bare emit).
-	private bump(eventID: EventID, field: ReforgeField) {
-		this.store.setState(s => {
-				const r = s.reforge[this.storeKey];
-				return { reforge: { ...s.reforge, [this.storeKey]: { ...r, v: { ...r.v, [field]: r.v[field] + 1 } } } };
-			});
+	// Writes `patch` and bumps the given counters in one store write. No bumps
+	// = the old silent field assignment.
+	private write(patch: Partial<Omit<ReforgeSlice, 'v'>>, bumps: ReadonlyArray<ReforgeField> = []) {
+		patchKeyed(this.store, 'reforge', this.storeKey, patch, bumps);
 	}
 
 	// ---- field accessors (property-style, as before)
 	get _statCaps(): Stats {
-		return this.slice.statCaps as Stats;
+		return this.slice.statCaps;
 	}
 	get breakpointLimits(): Stats {
-		return this.slice.breakpointLimits as Stats;
+		return this.slice.breakpointLimits;
 	}
 	get useCustomEPValues(): boolean {
 		return this.slice.useCustomEPValues;
@@ -109,7 +90,7 @@ export class ReforgeSettings {
 		return this.slice.useSoftCapBreakpoints;
 	}
 	get softCapBreakpoints(): StatCap[] {
-		return this.slice.softCapBreakpoints as StatCap[];
+		return this.slice.softCapBreakpoints;
 	}
 	get includeGems(): boolean {
 		return this.slice.includeGems;
@@ -125,7 +106,7 @@ export class ReforgeSettings {
 		return new Set(this.slice.frozenItemSlots as ItemSlot[]);
 	}
 	get undershootCaps(): Stats {
-		return this.slice.undershootCaps as Stats;
+		return this.slice.undershootCaps;
 	}
 	// Silent assignment (no emit), matching the old direct field write.
 	set undershootCaps(value: Stats) {
@@ -139,7 +120,7 @@ export class ReforgeSettings {
 	}
 
 	setStatCaps(eventID: EventID, newStatCaps: Stats) {
-		this.patch(eventID, 'statCaps', newStatCaps);
+		this.write({ statCaps: newStatCaps }, ['statCaps']);
 	}
 
 	get statCaps() {
@@ -148,52 +129,46 @@ export class ReforgeSettings {
 
 	setUseCustomEPValues(eventID: EventID, newUseCustomEPValues: boolean) {
 		if (newUseCustomEPValues !== this.useCustomEPValues) {
-			this.patch(eventID, 'useCustomEPValues', newUseCustomEPValues);
+			this.write({ useCustomEPValues: newUseCustomEPValues }, ['useCustomEPValues']);
 		}
 	}
 
 	setUseSoftCapBreakpoints(eventID: EventID, newUseSoftCapBreakpoints: boolean) {
 		if (newUseSoftCapBreakpoints !== this.useSoftCapBreakpoints) {
-			this.patch(eventID, 'useSoftCapBreakpoints', newUseSoftCapBreakpoints);
+			this.write({ useSoftCapBreakpoints: newUseSoftCapBreakpoints }, ['useSoftCapBreakpoints']);
 		}
 	}
 
 	setBreakpointLimits(eventID: EventID, newLimits: Stats) {
-		this.patch(eventID, 'breakpointLimits', newLimits);
+		this.write({ breakpointLimits: newLimits }, ['breakpointLimits']);
 	}
 
 	setSoftCapBreakpoints(eventID: EventID, newSoftCapBreakpoints: StatCap[]) {
-		this.patch(eventID, 'softCapBreakpoints', newSoftCapBreakpoints);
+		this.write({ softCapBreakpoints: newSoftCapBreakpoints }, ['softCapBreakpoints']);
 	}
 	setRelativeStatCap(eventID: EventID, newValue: number) {
-		this.write({ relativeStatCapStat: newValue });
-		if (newValue === -1 || !RelativeStatCap.hasRoRo(this.player)) {
-			this.relativeStatCap = null;
-		} else {
-			this.relativeStatCap = new RelativeStatCap(newValue);
-		}
-		this.bump(eventID, 'relativeStatCapStat');
+		this.relativeStatCap = newValue === -1 || !RelativeStatCap.hasRoRo(this.player) ? null : new RelativeStatCap(newValue);
+		this.write({ relativeStatCapStat: newValue }, ['relativeStatCapStat']);
 	}
 	setRelativeStatCapPrecision(eventID: EventID, newValue: number) {
-		this.patch(eventID, 'relativeStatCapPrecision', newValue);
+		this.write({ relativeStatCapPrecision: newValue }, ['relativeStatCapPrecision']);
 	}
 
 	setIncludeGems(eventID: EventID, newValue: boolean) {
 		if (this.includeGems !== newValue) {
-			this.patch(eventID, 'includeGems', newValue);
+			this.write({ includeGems: newValue }, ['includeGems']);
 		}
 	}
 
 	setIncludeEOTBPGemSocket(eventID: EventID, newValue: boolean) {
 		if (this.includeEOTBPGemSocket !== newValue) {
-			this.patch(eventID, 'includeEOTBPGemSocket', newValue);
+			this.write({ includeEOTBPGemSocket: newValue }, ['includeEOTBPGemSocket']);
 		}
 	}
 
 	setFreezeItemSlots(eventID: EventID, newValue: boolean) {
 		if (this.freezeItemSlots !== newValue) {
-			this.write({ frozenItemSlots: [] });
-			this.patch(eventID, 'freezeItemSlots', newValue);
+			this.write({ frozenItemSlots: [], freezeItemSlots: newValue }, ['freezeItemSlots']);
 		}
 	}
 
@@ -201,15 +176,13 @@ export class ReforgeSettings {
 		if (this.getFrozenItemSlot(slot) !== frozen) {
 			const next = new Set(this.slice.frozenItemSlots as ItemSlot[]);
 			next[frozen ? 'add' : 'delete'](slot);
-			this.write({ frozenItemSlots: [...next] });
-			this.bump(eventID, 'freezeItemSlots');
+			this.write({ frozenItemSlots: [...next] }, ['freezeItemSlots']);
 		}
 	}
 
 	// Sets all frozen item slots at once
 	setFrozenItemSlots(eventID: EventID, slots: ItemSlot[]) {
-		this.write({ frozenItemSlots: [...new Set(slots)] });
-		this.bump(eventID, 'freezeItemSlots');
+		this.write({ frozenItemSlots: [...new Set(slots)] }, ['freezeItemSlots']);
 	}
 
 	getFrozenItemSlot(slot: ItemSlot): boolean {

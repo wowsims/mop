@@ -8,9 +8,7 @@ import { IndividualSimSettings } from '../proto/ui';
 import { getEnumValues } from '../utils';
 
 export const LINK_CATEGORY_PARAM = 'i';
-export const LINK_DEFAULT_CATEGORIES = getEnumValues(SimSettingCategories).filter(
-	c => c != SimSettingCategories.UISettings,
-) as Array<SimSettingCategories>;
+export const LINK_DEFAULT_CATEGORIES = getEnumValues(SimSettingCategories).filter(c => c != SimSettingCategories.UISettings) as Array<SimSettingCategories>;
 
 export interface UrlParseData {
 	settings: IndividualSimSettings;

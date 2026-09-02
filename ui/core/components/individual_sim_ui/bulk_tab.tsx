@@ -34,6 +34,8 @@ import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItem
 import { ReforgeOptimizeConfig } from '../../sim';
 import { RequestTypes } from '../../sim_signal_manager';
 import { nextEventID } from '../../state/batch';
+import { RelativeStatCap } from '../../state/reforge_settings';
+import { patchKeyed } from '../../state/sim_store';
 import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '../../state/subscriptions';
 import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, isExternal, Z_95, zTest } from '../../utils';
 import SelectorModal from '../gear_picker/selector_modal';
@@ -41,7 +43,6 @@ import { BooleanPicker } from '../pickers/boolean_picker';
 import { EnumPicker } from '../pickers/enum_picker';
 import { ProgressTrackerModal } from '../progress_tracker_modal';
 import { SimTab } from '../sim_tab';
-import { RelativeStatCap } from '../suggest_reforges_action';
 import Toast from '../toast';
 import BulkItemPickerGroup from './bulk/bulk_item_picker_group';
 import BulkItemSearch from './bulk/bulk_item_search';
@@ -129,7 +130,7 @@ export class BulkTab extends SimTab {
 		this.playerCanDualWield2H = isSpecDualWield2HCapable(this.simUI.player.getSpec());
 		// Seed this player's bulk slice before any subscriber exists (emit-less).
 		this.sim.store.setState(st => ({
-			bulk: { ...st.bulk, [this.storeKey]: { settings: BulkSettings.create(), items: [], v: { settings: 0, items: 0 } } },
+			bulk: { ...st.bulk, [this.storeKey]: { v: { settings: 0, items: 0 } } },
 		}));
 		this.addOnDisposeCallback(
 			subscribeBulkChange(this)(() => {
@@ -314,7 +315,9 @@ export class BulkTab extends SimTab {
 			};
 
 			this.addOnDisposeCallback(
-				subscribeAll([subscribePlayerField(this.simUI.player, 'challengeModeEnabled'), subscribePlayerField(this.simUI.player, 'gear')])(() => loadEquippedItems()),
+				subscribeAll([subscribePlayerField(this.simUI.player, 'challengeModeEnabled'), subscribePlayerField(this.simUI.player, 'gear')])(() =>
+					loadEquippedItems(),
+				),
 			);
 			this.addOnDisposeCallback(subscribeBulkChange(this)(() => this.storeSettings()));
 			this.addOnDisposeCallback(subscribeBulkChange(this)(() => updateCombinationsCount()));
@@ -325,22 +328,10 @@ export class BulkTab extends SimTab {
 		});
 	}
 
-	// Writes the current settings snapshot + item list into the store and bumps
-	// the given version counter — the one write path where the tab used to emit.
+	// Bumps a version counter — the one write path where the tab used to emit.
+	// The values themselves stay on the tab (nothing reads them from the store).
 	private bump(field: 'settings' | 'items') {
-		this.sim.store.setState(st => {
-			const prev = st.bulk[this.storeKey];
-			return {
-				bulk: {
-					...st.bulk,
-					[this.storeKey]: {
-						settings: this.createBulkSettings(),
-						items: this.items.slice(),
-						v: { ...prev.v, [field]: prev.v[field] + 1 },
-					},
-				},
-			};
-		});
+		patchKeyed(this.sim.store, 'bulk', this.storeKey, {}, [field]);
 	}
 
 	private getSettingsKey(): string {
@@ -897,7 +888,7 @@ export class BulkTab extends SimTab {
 				id: `bulk-${slot}-weapon-type-${weaponType}`,
 				label: translateWeaponType(weaponType),
 				inline: true,
-				storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkField(this, 'settings')(onChange),
+				storeSubscribe: () => subscribeBulkField(this, 'settings'),
 				getValue: _modObj => this.weaponTypeFilters.get(slot)!.includes(weaponType),
 				setValue: (eventID, _modObj, newValue: boolean) => {
 					const filter = this.weaponTypeFilters.get(slot)!;
@@ -913,11 +904,7 @@ export class BulkTab extends SimTab {
 		});
 	}
 
-	private setFrozenItem(
-		bulkSlot: BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotTrinket,
-		item: EquippedItem | null,
-		_eventID = nextEventID(),
-	) {
+	private setFrozenItem(bulkSlot: BulkSimItemSlot.ItemSlotFinger | BulkSimItemSlot.ItemSlotTrinket, item: EquippedItem | null, _eventID = nextEventID()) {
 		if (item === this.frozenItems.get(bulkSlot)) {
 			return;
 		}
@@ -974,7 +961,7 @@ export class BulkTab extends SimTab {
 		return this.setWeaponTypeFilter(slot, [], undefined, false);
 	}
 
-	private setFrozenWeaponSlot(itemSlot: number | null, _eventID = nextEventID()): boolean {
+	private setFrozenWeaponSlot(itemSlot: number | null): boolean {
 		const newSlot = [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand].includes(itemSlot ?? -1)
 			? (itemSlot as ItemSlot.ItemSlotMainHand | ItemSlot.ItemSlotOffHand)
 			: undefined;
@@ -994,7 +981,7 @@ export class BulkTab extends SimTab {
 		this.bump('settings');
 	}
 
-	private setRequiredSetBonus(setBonus: BulkSetBonusOption, pieces: number, _eventID = nextEventID()) {
+	private setRequiredSetBonus(setBonus: BulkSetBonusOption, pieces: number) {
 		const currentValue = this.requiredSetBonuses.get(setBonus.setId)?.pieces ?? 0;
 		if (currentValue === pieces) return;
 
@@ -1011,7 +998,7 @@ export class BulkTab extends SimTab {
 		this.bump('settings');
 	}
 
-	private setRequiredSetBonuses(requiredSetBonuses: BulkRequiredSetBonus[], _eventID = nextEventID()) {
+	private setRequiredSetBonuses(requiredSetBonuses: BulkRequiredSetBonus[]) {
 		this.requiredSetBonuses.clear();
 		const requiredFourPieceSetBonus = requiredSetBonuses.find(requiredSetBonus => requiredSetBonus.setId > 0 && requiredSetBonus.pieces === 4);
 		const requiredSetBonusesToStore = requiredFourPieceSetBonus ? [requiredFourPieceSetBonus] : requiredSetBonuses;
@@ -1048,11 +1035,11 @@ export class BulkTab extends SimTab {
 						id: `${setBonusId}-2p`,
 						label: i18n.t('bulk_tab.settings.required_set_bonuses.require_2p'),
 						inline: true,
-						storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkChange(this)(onChange),
+						storeSubscribe: () => subscribeBulkChange(this),
 						enableWhen: _modObj => this.canEnableRequiredTwoPiece(setBonus.setId),
 						getValue: _modObj => this.requiredSetBonuses.get(setBonus.setId)?.pieces === 2,
 						setValue: (eventID, _modObj, newValue) => {
-							this.setRequiredSetBonus(setBonus, newValue ? 2 : 0, eventID);
+							this.setRequiredSetBonus(setBonus, newValue ? 2 : 0);
 							trackEvent({
 								action: 'settings',
 								category: 'batch_sim',
@@ -1069,11 +1056,11 @@ export class BulkTab extends SimTab {
 						label: i18n.t('bulk_tab.settings.required_set_bonuses.require_4p'),
 						inline: true,
 						extraCssClasses: ['bulk-required-set-bonus'],
-						storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkChange(this)(onChange),
+						storeSubscribe: () => subscribeBulkChange(this),
 						enableWhen: _modObj => this.canEnableRequiredFourPiece(setBonus),
 						getValue: _modObj => this.requiredSetBonuses.get(setBonus.setId)?.pieces === 4,
 						setValue: (eventID, _modObj, newValue) => {
-							this.setRequiredSetBonus(setBonus, newValue ? 4 : 0, eventID);
+							this.setRequiredSetBonus(setBonus, newValue ? 4 : 0);
 							trackEvent({
 								action: 'settings',
 								category: 'batch_sim',
@@ -1127,7 +1114,7 @@ export class BulkTab extends SimTab {
 				label: i18n.t('bulk_tab.settings.inherit_upgrades.label'),
 				labelTooltip: i18n.t('bulk_tab.settings.inherit_upgrades.tooltip'),
 				inline: true,
-				storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkField(this, 'settings')(onChange),
+				storeSubscribe: () => subscribeBulkField(this, 'settings'),
 				getValue: _modObj => this.inheritUpgrades,
 				setValue: (_, _modObj, newValue: boolean) => {
 					this.setInheritUpgrades(newValue);
@@ -1146,7 +1133,7 @@ export class BulkTab extends SimTab {
 				label: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.label'),
 				labelTooltip: i18n.t('bulk_tab.settings.use_legacy_bulk_sim.tooltip'),
 				inline: true,
-				storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkField(this, 'settings')(onChange),
+				storeSubscribe: () => subscribeBulkField(this, 'settings'),
 				getValue: _modObj => this.useLegacyBulkSim,
 				setValue: (_, _modObj, newValue: boolean) => {
 					this.setUseLegacyBulkSim(newValue);
@@ -1171,7 +1158,7 @@ export class BulkTab extends SimTab {
 					{ name: i18n.t('slots.finger_1', { ns: 'character' }), value: ItemSlot.ItemSlotFinger1 },
 					{ name: i18n.t('slots.finger_2', { ns: 'character' }), value: ItemSlot.ItemSlotFinger2 },
 				],
-				storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkChange(this)(onChange),
+				storeSubscribe: () => subscribeBulkChange(this),
 				getValue: _modObj => {
 					const frozenRing = this.frozenItems.get(BulkSimItemSlot.ItemSlotFinger);
 
@@ -1217,7 +1204,7 @@ export class BulkTab extends SimTab {
 					{ name: i18n.t('slots.trinket_1', { ns: 'character' }), value: ItemSlot.ItemSlotTrinket1 },
 					{ name: i18n.t('slots.trinket_2', { ns: 'character' }), value: ItemSlot.ItemSlotTrinket2 },
 				],
-				storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkChange(this)(onChange),
+				storeSubscribe: () => subscribeBulkChange(this),
 				getValue: _modObj => {
 					const frozenTrinket = this.frozenItems.get(BulkSimItemSlot.ItemSlotTrinket);
 
@@ -1264,7 +1251,7 @@ export class BulkTab extends SimTab {
 						{ name: i18n.t('slots.main_hand', { ns: 'character' }), value: ItemSlot.ItemSlotMainHand },
 						{ name: i18n.t('slots.off_hand', { ns: 'character' }), value: ItemSlot.ItemSlotOffHand },
 					],
-					storeSubscribe: (_modObj, onChange: () => void) => subscribeBulkChange(this)(onChange),
+					storeSubscribe: () => subscribeBulkChange(this),
 					getValue: _modObj => {
 						if (!this.frozenWeaponSlot) {
 							return -1;
@@ -1273,7 +1260,7 @@ export class BulkTab extends SimTab {
 						return this.frozenWeaponSlot;
 					},
 					setValue: (eventID, _modObj, newValue) => {
-						this.setFrozenWeaponSlot(newValue === -1 ? null : newValue, eventID);
+						this.setFrozenWeaponSlot(newValue === -1 ? null : newValue);
 						trackEvent({
 							action: 'settings',
 							category: 'batch_sim',
@@ -1448,8 +1435,8 @@ export class BulkTab extends SimTab {
 			return;
 		}
 
-		if (RelativeStatCap.hasRoRo(this.simUI.player) && this.simUI.reforger.relativeStatCapStat !== -1) {
-			this.simUI.reforger.relativeStatCap = new RelativeStatCap(this.simUI.reforger.relativeStatCapStat);
+		if (RelativeStatCap.hasRoRo(this.simUI.player) && this.simUI.reforger.settings.relativeStatCapStat !== -1) {
+			this.simUI.reforger.settings.relativeStatCap = new RelativeStatCap(this.simUI.reforger.settings.relativeStatCapStat);
 		}
 	}
 

@@ -1,15 +1,9 @@
-import { MAX_PARTY_SIZE,Party } from './party.js';
+import { MAX_PARTY_SIZE, Party } from './party.js';
 import { Player } from './player.js';
 import { Raid as RaidProto } from './proto/api.js';
-import {
-	Class,
-	Debuffs,
-	RaidBuffs,
-	UnitReference,
-	UnitReference_Type as UnitType,
-} from './proto/common.js';
+import { Class, Debuffs, RaidBuffs, UnitReference, UnitReference_Type as UnitType } from './proto/common.js';
 import { Sim } from './sim.js';
-import { batch,EventID } from './state/batch';
+import { batch, EventID } from './state/batch';
 import type { RaidSlice } from './state/sim_store.js';
 import { shallowArrayEquals } from './state/subscriptions.js';
 import { sum } from './utils.js';
@@ -17,7 +11,6 @@ export const MAX_NUM_PARTIES = 5;
 
 // Manages all the settings for a single Raid.
 export class Raid {
-
 	// Should always hold exactly MAX_NUM_PARTIES elements.
 	private parties: Array<Party>;
 
@@ -46,7 +39,6 @@ export class Raid {
 			},
 			{ equalityFn: shallowArrayEquals },
 		);
-
 	}
 
 	private get raidState() {
@@ -85,7 +77,7 @@ export class Raid {
 		return party.getPlayer(index % MAX_PARTY_SIZE);
 	}
 
-	getPlayerFromUnitReference(raidTarget: UnitReference|undefined, contextPlayer?: Player<any>|null): Player<any> | null {
+	getPlayerFromUnitReference(raidTarget: UnitReference | undefined, contextPlayer?: Player<any> | null): Player<any> | null {
 		if (!raidTarget || raidTarget.type == UnitType.Unknown) {
 			return null;
 		} else if (raidTarget.type == UnitType.Player) {
@@ -112,8 +104,7 @@ export class Raid {
 	}
 
 	setBuffs(eventID: EventID, newBuffs: RaidBuffs) {
-		if (RaidBuffs.equals(this.raidState.buffs, newBuffs))
-			return;
+		if (RaidBuffs.equals(this.raidState.buffs, newBuffs)) return;
 
 		// Make a defensive copy
 		this.patchRaid(eventID, { buffs: RaidBuffs.clone(newBuffs) });
@@ -125,8 +116,7 @@ export class Raid {
 	}
 
 	setDebuffs(eventID: EventID, newDebuffs: Debuffs) {
-		if (Debuffs.equals(this.raidState.debuffs, newDebuffs))
-			return;
+		if (Debuffs.equals(this.raidState.debuffs, newDebuffs)) return;
 
 		// Make a defensive copy
 		this.patchRaid(eventID, { debuffs: Debuffs.clone(newDebuffs) });
@@ -139,8 +129,7 @@ export class Raid {
 
 	setTanks(eventID: EventID, newTanks: Array<UnitReference>) {
 		const tanks = this.raidState.tanks;
-		if (tanks.length == newTanks.length && tanks.every((tank, i) => UnitReference.equals(tank, newTanks[i])))
-			return;
+		if (tanks.length == newTanks.length && tanks.every((tank, i) => UnitReference.equals(tank, newTanks[i]))) return;
 
 		// Make a defensive copy
 		this.patchRaid(eventID, { tanks: newTanks.map(tank => UnitReference.clone(tank)) });
@@ -151,8 +140,7 @@ export class Raid {
 	}
 
 	setTargetDummies(eventID: EventID, newTargetDummies: number) {
-		if (this.raidState.targetDummies == newTargetDummies)
-			return;
+		if (this.raidState.targetDummies == newTargetDummies) return;
 
 		this.patchRaid(eventID, { targetDummies: newTargetDummies });
 	}

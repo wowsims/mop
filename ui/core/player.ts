@@ -80,9 +80,10 @@ import {
 } from './proto_utils/utils';
 import { Raid } from './raid';
 import { Sim } from './sim';
-import { batch, EventID, nextEventID, subscribeGated } from './state/batch';
+import { batch, EventID, nextEventID } from './state/batch';
 import { ItemSwapSettings } from './state/item_swap_settings';
-import { PLAYER_FIELDS, PlayerField } from './state/sim_store';
+import { deleteKeyed, patchKeyed, PLAYER_FIELDS, PlayerField, PlayerSlice, seedKeyed, zeroVersions } from './state/sim_store';
+import { subscribePlayerField } from './state/subscriptions';
 import { playerTalentStringToProto } from './talents/factory';
 import { omitDeep, stringComparator, sum } from './utils';
 import { WorkerProgressCallback } from './worker_pool';
@@ -294,39 +295,30 @@ export class Player<SpecType extends Spec> {
 		return this.sim.store.getState().players[this.storeKey];
 	}
 
-	// Writes one field and bumps its version; the bump is what subscribers
-	// watch, so a setter notifies exactly when it calls patch() — guard logic
-	// stays in the setters.
-	private patch(eventID: EventID, field: PlayerField, value: unknown) {
-		this.sim.store.setState(s => {
-				const p = s.players[this.storeKey];
-				return { players: { ...s.players, [this.storeKey]: { ...p, [field]: value, v: { ...p.v, [field]: p.v[field] + 1 } } } };
-			});
+	// Writes `patch` and bumps the given version counters in one store write.
+	// The bump is what subscribers watch, so a setter notifies exactly when it
+	// calls write() — guard logic stays in the setters. Counter-only fields
+	// (rotation, itemSwap, epRefStat) are bumped with an empty patch.
+	private write(patch: Partial<Omit<PlayerSlice, 'v'>>, bumps: ReadonlyArray<PlayerField>) {
+		patchKeyed(this.sim.store, 'players', this.storeKey, patch, bumps);
 	}
 
-	// Bumps a counter-only field (no single value in the store): aplRotation
-	// (class-side) and the multi-field itemSwap / epRefStat groups.
-	private bump(eventID: EventID, field: PlayerField) {
-		this.sim.store.setState(s => {
-				const p = s.players[this.storeKey];
-				return { players: { ...s.players, [this.storeKey]: { ...p, v: { ...p.v, [field]: p.v[field] + 1 } } } };
-			});
+	// Writes one field and bumps its version.
+	private patch<F extends Exclude<PlayerField, 'rotation' | 'itemSwap' | 'epRefStat'>>(field: F, value: PlayerSlice[F]) {
+		this.write({ [field]: value } as Partial<Omit<PlayerSlice, 'v'>>, [field]);
 	}
 
 	// Signals a rotation change made in place on `aplRotation` (APL editor).
 	touchRotation(eventID: EventID) {
-		this.bump(eventID, 'rotation');
+		this.write({}, ['rotation']);
 	}
 
 	// Item-swap fields share one version counter (ItemSwapSettings facade).
 	patchItemSwap(eventID: EventID, patch: { itemSwapEnabled?: boolean; itemSwapGear?: ItemSwapGear; itemSwapBonusStats?: Stats }) {
-		this.sim.store.setState(s => {
-				const p = s.players[this.storeKey];
-				return { players: { ...s.players, [this.storeKey]: { ...p, ...patch, v: { ...p.v, itemSwap: p.v.itemSwap + 1 } } } };
-			});
+		this.write(patch, ['itemSwap']);
 	}
 
-	getItemSwapField(field: 'itemSwapEnabled' | 'itemSwapGear' | 'itemSwapBonusStats'): unknown {
+	getItemSwapField<F extends 'itemSwapEnabled' | 'itemSwapGear' | 'itemSwapBonusStats'>(field: F): PlayerSlice[F] {
 		return this.slice()[field];
 	}
 
@@ -340,43 +332,36 @@ export class Player<SpecType extends Spec> {
 
 		this.specTypeFunctions = specTypeFunctions[this.getSpec()] as SpecTypeFunctions<SpecType>;
 
-		// Seed this player's slice (plain setState: field initialization, not a
-		// change).
-		const zeroVersions = Object.fromEntries(PLAYER_FIELDS.map(f => [f, 0])) as Record<PlayerField, number>;
-		this.sim.store.setState(s => ({
-			players: {
-				...s.players,
-				[this.storeKey]: {
-					name: '',
-					race: this.playerClass.races[0],
-					profession1: 0,
-					profession2: 0,
-					buffs: IndividualBuffs.create(),
-					consumables: ConsumesSpec.create(),
-					bonusStats: new Stats(),
-					gear: new Gear({}),
-					talentsString: '',
-					glyphs: Glyphs.create(),
-					specOptions: this.specTypeFunctions.optionsCreate(),
-					reactionTime: 0,
-					channelClipDelay: 0,
-					inFrontOfTarget: false,
-					distanceFromTarget: 0,
-					healingModel: HealingModel.create(),
-					challengeModeEnabled: false,
-					epWeights: new Stats(),
-					epRatios: new Array<number>(Player.numEpRatios).fill(0),
-					currentStats: PlayerStats.create(),
-					itemSwapEnabled: false,
-					itemSwapGear: new ItemSwapGear({}),
-					itemSwapBonusStats: new Stats(),
-					dpsRefStat: undefined,
-					healRefStat: undefined,
-					tankRefStat: undefined,
-					v: zeroVersions,
-				},
-			},
-		}));
+		// Seed this player's slice (field initialization, not a change).
+		seedKeyed(this.sim.store, 'players', this.storeKey, {
+			name: '',
+			race: this.playerClass.races[0],
+			profession1: 0,
+			profession2: 0,
+			buffs: IndividualBuffs.create(),
+			consumables: ConsumesSpec.create(),
+			bonusStats: new Stats(),
+			gear: new Gear({}),
+			talentsString: '',
+			glyphs: Glyphs.create(),
+			specOptions: this.specTypeFunctions.optionsCreate(),
+			reactionTime: 0,
+			channelClipDelay: 0,
+			inFrontOfTarget: false,
+			distanceFromTarget: 0,
+			healingModel: HealingModel.create(),
+			challengeModeEnabled: false,
+			epWeights: new Stats(),
+			epRatios: new Array<number>(Player.numEpRatios).fill(0),
+			currentStats: PlayerStats.create(),
+			itemSwapEnabled: false,
+			itemSwapGear: new ItemSwapGear({}),
+			itemSwapBonusStats: new Stats(),
+			dpsRefStat: undefined,
+			healRefStat: undefined,
+			tankRefStat: undefined,
+			v: zeroVersions(PLAYER_FIELDS),
+		});
 
 		this.specConfig = getSpecConfig<SpecType>(this.getSpec()) as SpecConfigData<SpecType>;
 		this.secondaryResource = this.specConfig.secondaryResource;
@@ -395,7 +380,6 @@ export class Player<SpecType extends Spec> {
 
 		this.itemSwapSettings = new ItemSwapSettings(this);
 
-
 		this.bindChallengeModeChange();
 	}
 
@@ -403,7 +387,10 @@ export class Player<SpecType extends Spec> {
 		// Re-apply gear with the new challenge-mode scaling once the write
 		// (or the batch containing it) completes.
 		this.unsubscribers.push(
-			subscribeGated(this.sim.store.subscribe, s => s.players[this.storeKey]?.v.challengeModeEnabled, () => {
+			subscribePlayerField(
+				this,
+				'challengeModeEnabled',
+			)(() => {
 				this.setGear(nextEventID(), this.getGear(), true);
 			}),
 		);
@@ -420,19 +407,7 @@ export class Player<SpecType extends Spec> {
 		// replaced by the UI's own (gated) composition subscribers first, so they
 		// are already off the DOM — and self-dispose — when their selectors see
 		// the slice disappear.
-		setTimeout(() => {
-			this.sim.store.setState(s => {
-				const players = { ...s.players };
-				delete players[this.storeKey];
-				const reforge = { ...s.reforge };
-				delete reforge[this.storeKey];
-				const statWeights = { ...s.statWeights };
-				delete statWeights[this.storeKey];
-				const bulk = { ...s.bulk };
-				delete bulk[this.storeKey];
-				return { players, reforge, statWeights, bulk };
-			});
-		}, 0);
+		setTimeout(() => deleteKeyed(this.sim.store, this.storeKey), 0);
 	}
 
 	isDisposed(): boolean {
@@ -447,10 +422,7 @@ export class Player<SpecType extends Spec> {
 
 	setRefStat(eventID: EventID, kind: 'dpsRefStat' | 'healRefStat' | 'tankRefStat', stat: Stat | undefined) {
 		if (this.slice()[kind] === stat) return;
-		this.sim.store.setState(s => {
-			const p = s.players[this.storeKey];
-			return { players: { ...s.players, [this.storeKey]: { ...p, [kind]: stat, v: { ...p.v, epRefStat: p.v.epRefStat + 1 } } } };
-		});
+		this.write({ [kind]: stat }, ['epRefStat']);
 	}
 
 	getSpecIcon(): string {
@@ -590,11 +562,11 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getEpWeights(): Stats {
-		return this.slice().epWeights as Stats;
+		return this.slice().epWeights;
 	}
 
 	setEpWeights(eventID: EventID, newEpWeights: Stats) {
-		this.patch(eventID, 'epWeights', newEpWeights);
+		this.patch('epWeights', newEpWeights);
 
 		this.gemEPCache = new Map();
 		this.enchantEPCache = new Map();
@@ -627,11 +599,11 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getEpRatios() {
-		return (this.slice().epRatios as Array<number>).slice();
+		return this.slice().epRatios.slice();
 	}
 
 	setEpRatios(eventID: EventID, newRatios: Array<number>) {
-		this.patch(eventID, 'epRatios', newRatios);
+		this.patch('epRatios', newRatios);
 	}
 
 	hasCustomEPWeights(): boolean {
@@ -651,11 +623,11 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getCurrentStats(): PlayerStats {
-		return PlayerStats.clone(this.slice().currentStats as PlayerStats);
+		return PlayerStats.clone(this.slice().currentStats);
 	}
 
 	setCurrentStats(eventID: EventID, newStats: PlayerStats) {
-		this.patch(eventID, 'currentStats', newStats);
+		this.patch('currentStats', newStats);
 	}
 
 	getMetadata(): UnitMetadata {
@@ -667,7 +639,7 @@ export class Player<SpecType extends Spec> {
 	}
 
 	async updateMetadata(): Promise<boolean> {
-		const currentStats = this.slice().currentStats as PlayerStats;
+		const currentStats = this.slice().currentStats;
 		const playerPromise = this.metadata.update(currentStats.metadata!);
 		const petsPromise = this.petMetadatas.update(currentStats.pets.map(p => p.metadata!));
 		const playerUpdated = await playerPromise;
@@ -680,7 +652,7 @@ export class Player<SpecType extends Spec> {
 	}
 	setName(eventID: EventID, newName: string) {
 		if (newName != this.getName()) {
-			this.patch(eventID, 'name', newName);
+			this.patch('name', newName);
 		}
 	}
 
@@ -693,11 +665,11 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getRace(): Race {
-		return this.slice().race as Race;
+		return this.slice().race;
 	}
 	setRace(eventID: EventID, newRace: Race) {
 		if (newRace != this.getRace()) {
-			this.patch(eventID, 'race', newRace);
+			this.patch('race', newRace);
 		}
 	}
 
@@ -706,7 +678,7 @@ export class Player<SpecType extends Spec> {
 	}
 	setProfession1(eventID: EventID, newProfession: Profession) {
 		if (newProfession != this.getProfession1()) {
-			this.patch(eventID, 'profession1', newProfession);
+			this.patch('profession1', newProfession);
 		}
 	}
 	getProfession2(): Profession {
@@ -714,7 +686,7 @@ export class Player<SpecType extends Spec> {
 	}
 	setProfession2(eventID: EventID, newProfession: Profession) {
 		if (newProfession != this.getProfession2()) {
-			this.patch(eventID, 'profession2', newProfession);
+			this.patch('profession2', newProfession);
 		}
 	}
 	getProfessions(): Array<Profession> {
@@ -739,14 +711,14 @@ export class Player<SpecType extends Spec> {
 
 	getBuffs(): IndividualBuffs {
 		// Make a defensive copy
-		return IndividualBuffs.clone(this.slice().buffs as IndividualBuffs);
+		return IndividualBuffs.clone(this.slice().buffs);
 	}
 
 	setBuffs(eventID: EventID, newBuffs: IndividualBuffs) {
-		if (IndividualBuffs.equals(this.slice().buffs as IndividualBuffs, newBuffs)) return;
+		if (IndividualBuffs.equals(this.slice().buffs, newBuffs)) return;
 
 		// Make a defensive copy
-		this.patch(eventID, 'buffs', IndividualBuffs.clone(newBuffs));
+		this.patch('buffs', IndividualBuffs.clone(newBuffs));
 	}
 
 	getConsumes(forSimming?: boolean): ConsumesSpec {
@@ -757,19 +729,19 @@ export class Player<SpecType extends Spec> {
 
 		if (forSimming) {
 			return ConsumesSpec.create({
-				...(this.slice().consumables as ConsumesSpec),
+				...this.slice().consumables,
 				consumableIds: [...flasks, ...battleElixirs, ...guardianElixirs].map(c => c.id),
 			});
 		}
 		// Make a defensive copy
-		return ConsumesSpec.clone({ ...(this.slice().consumables as ConsumesSpec), consumableIds: [] });
+		return ConsumesSpec.clone({ ...this.slice().consumables, consumableIds: [] });
 	}
 
 	setConsumes(eventID: EventID, newConsumes: ConsumesSpec) {
-		if (ConsumesSpec.equals(this.slice().consumables as ConsumesSpec, newConsumes)) return;
+		if (ConsumesSpec.equals(this.slice().consumables, newConsumes)) return;
 
 		// Make a defensive copy
-		this.patch(eventID, 'consumables', ConsumesSpec.clone(newConsumes));
+		this.patch('consumables', ConsumesSpec.clone(newConsumes));
 	}
 
 	canDualWield2H(): boolean {
@@ -789,12 +761,12 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getGear(): Gear {
-		return this.slice().gear as Gear;
+		return this.slice().gear;
 	}
 
 	setGear(eventID: EventID, newGear: Gear, forceUpdate?: boolean) {
 		if (newGear.equals(this.getGear()) && !forceUpdate) return;
-		this.patch(eventID, 'gear', newGear.withChallengeMode(this.getChallengeModeEnabled()));
+		this.patch('gear', newGear.withChallengeMode(this.getChallengeModeEnabled()));
 	}
 
 	async setGearAsync(eventID: EventID, newGear: Gear, forceUpdate?: boolean) {
@@ -813,17 +785,17 @@ export class Player<SpecType extends Spec> {
 	}
 
 	getBonusStats(): Stats {
-		return this.slice().bonusStats as Stats;
+		return this.slice().bonusStats;
 	}
 
 	setBonusStats(eventID: EventID, newBonusStats: Stats) {
 		if (newBonusStats.equals(this.getBonusStats())) return;
 
-		this.patch(eventID, 'bonusStats', newBonusStats);
+		this.patch('bonusStats', newBonusStats);
 	}
 
 	getMeleeCritCapInfo(): MeleeCritCapInfo {
-		const currentStats = this.slice().currentStats as PlayerStats;
+		const currentStats = this.slice().currentStats;
 		const meleeCrit = currentStats.finalStats?.pseudoStats[PseudoStat.PseudoStatPhysicalCritPercent] || 0.0;
 		const meleeHit = currentStats.finalStats?.pseudoStats[PseudoStat.PseudoStatPhysicalHitPercent] || 0.0;
 		const expertise = (currentStats.finalStats?.stats[Stat.StatExpertiseRating] || 0.0) / Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION / 4;
@@ -880,14 +852,14 @@ export class Player<SpecType extends Spec> {
 	// the APL editor's per-field edits.
 	modifyAplRotation(eventID: EventID, modify: (rotation: APLRotation) => void) {
 		modify(this.aplRotation_);
-		this.bump(eventID, 'rotation');
+		this.write({}, ['rotation']);
 	}
 
 	setAplRotation(eventID: EventID, newRotation: APLRotation) {
 		if (APLRotation.equals(newRotation, this.aplRotation_)) return;
 
 		this.aplRotation_ = APLRotation.clone(newRotation);
-		this.bump(eventID, 'rotation');
+		this.write({}, ['rotation']);
 	}
 
 	getSimpleRotation(): SpecRotation<SpecType> {
@@ -913,7 +885,7 @@ export class Player<SpecType extends Spec> {
 		}
 		this.aplRotation_.simple.specRotationJson = JSON.stringify(this.specTypeFunctions.rotationToJson(newRotation));
 
-		this.bump(eventID, 'rotation');
+		this.write({}, ['rotation']);
 	}
 
 	getSimpleCooldowns(): Cooldowns {
@@ -928,7 +900,7 @@ export class Player<SpecType extends Spec> {
 			this.aplRotation_.simple = SimpleRotation.create();
 		}
 		this.aplRotation_.simple.cooldowns = newCooldowns;
-		this.bump(eventID, 'rotation');
+		this.write({}, ['rotation']);
 	}
 
 	getRotationType(): APLRotationType {
@@ -980,7 +952,7 @@ export class Player<SpecType extends Spec> {
 
 		// Invalidate the parsed-talents cache before the emit fires.
 		this.talents = null;
-		this.patch(eventID, 'talentsString', newTalentsString);
+		this.patch('talentsString', newTalentsString);
 	}
 
 	getTalentTreePoints(): Array<number> {
@@ -993,23 +965,23 @@ export class Player<SpecType extends Spec> {
 
 	getGlyphs(): Glyphs {
 		// Make a defensive copy
-		return Glyphs.clone(this.slice().glyphs as Glyphs);
+		return Glyphs.clone(this.slice().glyphs);
 	}
 
 	setGlyphs(eventID: EventID, newGlyphs: Glyphs) {
-		if (Glyphs.equals(this.slice().glyphs as Glyphs, newGlyphs)) return;
+		if (Glyphs.equals(this.slice().glyphs, newGlyphs)) return;
 
 		// Make a defensive copy
-		this.patch(eventID, 'glyphs', Glyphs.clone(newGlyphs));
+		this.patch('glyphs', Glyphs.clone(newGlyphs));
 	}
 
 	getMajorGlyphs(): Array<number> {
-		const glyphs = this.slice().glyphs as Glyphs;
+		const glyphs = this.slice().glyphs;
 		return [glyphs.major1, glyphs.major2, glyphs.major3].filter(glyph => glyph != 0);
 	}
 
 	getMinorGlyphs(): Array<number> {
-		const glyphs = this.slice().glyphs as Glyphs;
+		const glyphs = this.slice().glyphs;
 		return [glyphs.minor1, glyphs.minor2, glyphs.minor3].filter(glyph => glyph != 0);
 	}
 
@@ -1026,7 +998,7 @@ export class Player<SpecType extends Spec> {
 		newSpecOptions.classOptions = newClassOptions;
 		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.slice().specOptions as SpecOptions<SpecType>)) return;
 
-		this.patch(eventID, 'specOptions', this.specTypeFunctions.optionsCopy(newSpecOptions));
+		this.patch('specOptions', this.specTypeFunctions.optionsCopy(newSpecOptions));
 	}
 
 	getSpecOptions(): SpecOptions<SpecType> {
@@ -1036,7 +1008,7 @@ export class Player<SpecType extends Spec> {
 	setSpecOptions(eventID: EventID, newSpecOptions: SpecOptions<SpecType>) {
 		if (this.specTypeFunctions.optionsEquals(newSpecOptions, this.slice().specOptions as SpecOptions<SpecType>)) return;
 
-		this.patch(eventID, 'specOptions', this.specTypeFunctions.optionsCopy(newSpecOptions));
+		this.patch('specOptions', this.specTypeFunctions.optionsCopy(newSpecOptions));
 	}
 
 	getReactionTime(): number {
@@ -1046,7 +1018,7 @@ export class Player<SpecType extends Spec> {
 	setReactionTime(eventID: EventID, newReactionTime: number) {
 		if (newReactionTime == this.getReactionTime()) return;
 
-		this.patch(eventID, 'reactionTime', newReactionTime);
+		this.patch('reactionTime', newReactionTime);
 	}
 
 	getChannelClipDelay(): number {
@@ -1056,7 +1028,7 @@ export class Player<SpecType extends Spec> {
 	setChannelClipDelay(eventID: EventID, newChannelClipDelay: number) {
 		if (newChannelClipDelay == this.getChannelClipDelay()) return;
 
-		this.patch(eventID, 'channelClipDelay', newChannelClipDelay);
+		this.patch('channelClipDelay', newChannelClipDelay);
 	}
 
 	getChallengeModeEnabled(): boolean {
@@ -1066,7 +1038,7 @@ export class Player<SpecType extends Spec> {
 	setChallengeModeEnabled(eventID: EventID, value: boolean) {
 		if (value === this.getChallengeModeEnabled()) return;
 
-		this.patch(eventID, 'challengeModeEnabled', value);
+		this.patch('challengeModeEnabled', value);
 	}
 
 	getInFrontOfTarget(): boolean {
@@ -1076,7 +1048,7 @@ export class Player<SpecType extends Spec> {
 	setInFrontOfTarget(eventID: EventID, newInFrontOfTarget: boolean) {
 		if (newInFrontOfTarget == this.getInFrontOfTarget()) return;
 
-		this.patch(eventID, 'inFrontOfTarget', newInFrontOfTarget);
+		this.patch('inFrontOfTarget', newInFrontOfTarget);
 	}
 
 	getDistanceFromTarget(): number {
@@ -1086,7 +1058,7 @@ export class Player<SpecType extends Spec> {
 	setDistanceFromTarget(eventID: EventID, newDistanceFromTarget: number) {
 		if (newDistanceFromTarget == this.getDistanceFromTarget()) return;
 
-		this.patch(eventID, 'distanceFromTarget', newDistanceFromTarget);
+		this.patch('distanceFromTarget', newDistanceFromTarget);
 	}
 
 	setDefaultHealingParams(hm: HealingModel) {
@@ -1119,11 +1091,11 @@ export class Player<SpecType extends Spec> {
 
 	getHealingModel(): HealingModel {
 		// Make a defensive copy
-		return HealingModel.clone(this.slice().healingModel as HealingModel);
+		return HealingModel.clone(this.slice().healingModel);
 	}
 
 	setHealingModel(eventID: EventID, newHealingModel: HealingModel) {
-		if (HealingModel.equals(this.slice().healingModel as HealingModel, newHealingModel)) return;
+		if (HealingModel.equals(this.slice().healingModel, newHealingModel)) return;
 
 		// Make a defensive copy
 		const healingModel = HealingModel.clone(newHealingModel);
@@ -1131,7 +1103,7 @@ export class Player<SpecType extends Spec> {
 		if (this.healingEnabled) {
 			this.setDefaultHealingParams(healingModel);
 		}
-		this.patch(eventID, 'healingModel', healingModel);
+		this.patch('healingModel', healingModel);
 	}
 
 	computeStatsEP(stats?: Stats): number {
@@ -1147,7 +1119,7 @@ export class Player<SpecType extends Spec> {
 		}
 
 		const epFromStats = this.computeStatsEP(new Stats(gem.stats));
-		const epFromEffect = getMetaGemEffectEP(this.playerSpec, gem, Stats.fromProto((this.slice().currentStats as PlayerStats).finalStats));
+		const epFromEffect = getMetaGemEffectEP(this.playerSpec, gem, Stats.fromProto(this.slice().currentStats.finalStats));
 		let bonusEP = 0;
 		// unique items are slightly worse than non-unique because you can have only one.
 		if (gem.unique) {

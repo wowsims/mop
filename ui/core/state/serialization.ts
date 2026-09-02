@@ -6,12 +6,12 @@ import { CURRENT_API_VERSION } from '../constants/other';
 import { SimSettingCategories } from '../constants/sim_settings';
 import { Player } from '../player';
 import { ReforgeSettings as ReforgeSettingsProto } from '../proto/api';
-import { Debuffs, Encounter as EncounterProto, PartyBuffs, RaidBuffs, Stat } from '../proto/common';
+import { Debuffs, Encounter as EncounterProto, PartyBuffs, RaidBuffs } from '../proto/common';
 import { IndividualSimSettings } from '../proto/ui';
 import { Stats } from '../proto_utils/stats';
 import { migrateOldProto, ProtoConversionMap } from '../proto_utils/utils';
 import { Sim } from '../sim';
-import { batch,EventID } from '../state/batch';
+import { batch, EventID } from './batch';
 import { ReforgeSettings } from './reforge_settings';
 // The state surface the envelope serializes besides Player/Sim: the reforge
 // settings model and the EP reference-stat selections owned by the sim UI.
@@ -22,7 +22,6 @@ export interface IndividualSimSerializationContext {
 	// Fallback EP weights applied when a loaded proto carries none.
 	defaultEpWeights: Stats;
 	// Mutable holder; loads write the ref stats back into it.
-	refStats: { dpsRefStat?: Stat; healRefStat?: Stat; tankRefStat?: Stat };
 }
 
 export function updateIndividualSimProtoVersion(settingsProto: IndividualSimSettings) {
@@ -62,10 +61,7 @@ export function updateIndividualSimProtoVersion(settingsProto: IndividualSimSett
 	settingsProto.apiVersion = CURRENT_API_VERSION;
 }
 
-export function individualSimSettingsToProto(
-	ctx: IndividualSimSerializationContext,
-	exportCategories?: Array<SimSettingCategories>,
-): IndividualSimSettings {
+export function individualSimSettingsToProto(ctx: IndividualSimSerializationContext, exportCategories?: Array<SimSettingCategories>): IndividualSimSettings {
 	const exportCategory = (cat: SimSettingCategories) => !exportCategories || exportCategories.length == 0 || exportCategories.includes(cat);
 
 	const proto = IndividualSimSettings.create({
@@ -96,9 +92,9 @@ export function individualSimSettingsToProto(
 			settings: ctx.sim.toProto(),
 			epWeightsStats: ctx.player.getEpWeights().toProto(),
 			epRatios: ctx.player.getEpRatios(),
-			dpsRefStat: ctx.refStats.dpsRefStat,
-			healRefStat: ctx.refStats.healRefStat,
-			tankRefStat: ctx.refStats.tankRefStat,
+			dpsRefStat: ctx.player.getRefStat('dpsRefStat'),
+			healRefStat: ctx.player.getRefStat('healRefStat'),
+			tankRefStat: ctx.player.getRefStat('tankRefStat'),
 			reforgeSettings: ctx.reforgeSettings?.toProto(),
 		});
 	}
@@ -160,14 +156,8 @@ export function applyIndividualSimSettings(
 				ctx.reforgeSettings.fromProto(eventID, settings.reforgeSettings);
 			}
 
-			if (settings.dpsRefStat) {
-				ctx.refStats.dpsRefStat = settings.dpsRefStat;
-			}
-			if (settings.healRefStat) {
-				ctx.refStats.healRefStat = settings.healRefStat;
-			}
-			if (settings.tankRefStat) {
-				ctx.refStats.tankRefStat = settings.tankRefStat;
+			for (const kind of ['dpsRefStat', 'healRefStat', 'tankRefStat'] as const) {
+				if (settings[kind]) ctx.player.setRefStat(eventID, kind, settings[kind]);
 			}
 
 			if (settings.settings) {

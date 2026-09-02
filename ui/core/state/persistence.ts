@@ -11,7 +11,7 @@ import { Player } from '../player';
 import { PlayerSpec } from '../player_spec';
 import { PlayerSpecs } from '../player_specs';
 import { IndividualSimSettings } from '../proto/ui';
-import { batch, EventID, nextEventID } from '../state/batch';
+import { batch, EventID, nextEventID } from './batch';
 import { tryParseUrlLocation } from './sim_links';
 import { StatWeightActionSettings } from './stat_weight_settings';
 import type { StoreSubscribe } from './subscriptions';
@@ -99,7 +99,6 @@ export function loadIndividualSettings(
 		persist();
 	}
 	window.addEventListener('pagehide', flushPersist);
-	window.addEventListener('beforeunload', flushPersist);
 
 	function persist() {
 		const jsonStr = IndividualSimSettings.toJsonString(host.toProto());

@@ -4,7 +4,7 @@ import { UnitMetadataList } from './player';
 import { Encounter as EncounterProto, MobType, PresetEncounter, PresetTarget, SpellSchool, Stat, Target as TargetProto, TargetInput } from './proto/common';
 import { Stats } from './proto_utils/stats';
 import { Sim } from './sim';
-import { batch,EventID } from './state/batch';
+import { batch, EventID } from './state/batch';
 import { EncounterSlice, SimStore } from './state/sim_store';
 // Manages all the settings for an Encounter. State lives in the Zustand
 // store's `encounter` slice.
@@ -20,7 +20,6 @@ export class Encounter {
 		// Seed the default target (initialization, not a change).
 		this.store.setState(s => ({ encounter: { ...s.encounter, targets: [Encounter.defaultTargetProto()] } }));
 		this.targetsMetadata = new UnitMetadataList();
-
 	}
 
 	private get enc(): EncounterSlice {
@@ -133,10 +132,7 @@ export class Encounter {
 	}
 
 	applyPreset(eventID: EventID, preset: PresetEncounter) {
-		this.set(
-			eventID,
-			{ targets: preset.targets.map(presetTarget => presetTarget.target || TargetProto.create()) },
-		);
+		this.set(eventID, { targets: preset.targets.map(presetTarget => presetTarget.target || TargetProto.create()) });
 	}
 
 	applyPresetTarget(eventID: EventID, preset: PresetTarget, index: number) {

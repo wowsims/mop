@@ -4,12 +4,14 @@
 export class Emitter<T = void> {
 	private listeners: Array<(value: T) => void> = [];
 
-	on(listener: (value: T) => void): () => void {
+	// Arrow property so `emitter.on` can be passed around unbound (e.g. as a
+	// picker's storeSubscribe source).
+	readonly on = (listener: (value: T) => void): (() => void) => {
 		this.listeners.push(listener);
 		return () => this.off(listener);
-	}
+	};
 
-	off(listener: (value: T) => void) {
+	private off(listener: (value: T) => void) {
 		const idx = this.listeners.indexOf(listener);
 		if (idx != -1) this.listeners.splice(idx, 1);
 	}
@@ -17,10 +19,4 @@ export class Emitter<T = void> {
 	emit(value: T) {
 		this.listeners.slice().forEach(listener => listener(value));
 	}
-}
-
-// Subscribes one listener to several emitters; returns a combined unsubscribe.
-export function onAnyEmitter(emitters: Array<Emitter<any>>, listener: () => void): () => void {
-	const unsubs = emitters.map(e => e.on(listener));
-	return () => unsubs.forEach(u => u());
 }
