@@ -728,7 +728,14 @@ export interface StatAttribution {
 // Derives the per-source stat deltas shown in the character sheet from the
 // cumulative server-computed stages (base ⊂ gear ⊂ talents ⊂ buffs ⊂ consumes).
 export function computeStatAttribution(
-	playerStats: { baseStats?: UnitStats; gearStats?: UnitStats; talentsStats?: UnitStats; buffsStats?: UnitStats; consumesStats?: UnitStats; finalStats?: UnitStats },
+	playerStats: {
+		baseStats?: UnitStats;
+		gearStats?: UnitStats;
+		talentsStats?: UnitStats;
+		buffsStats?: UnitStats;
+		consumesStats?: UnitStats;
+		finalStats?: UnitStats;
+	},
 	bonusStats: Stats,
 	baseMastery: number,
 	statMods: StatMods,

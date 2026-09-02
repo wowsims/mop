@@ -142,7 +142,7 @@ class GlyphPicker extends Input<Player<any>, number> {
 		super(parent, 'glyph-picker-root', player, {
 			id: `glyph-picker-glyph-${glyphField}`,
 			inline: true,
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'glyphs')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'glyphs'),
 			getValue: (player: Player<any>) => player.getGlyphs()[glyphField] as number,
 			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 				const glyphs = player.getGlyphs();
@@ -309,7 +309,10 @@ class GlyphSelectorModal extends BaseModal {
 		this.listItems = listItemElems;
 		this.list.appendChild(<>{this.listItems}</>);
 
-		subscribePlayerField(this.glyphPicker.player, 'glyphs')(() => {
+		subscribePlayerField(
+			this.glyphPicker.player,
+			'glyphs',
+		)(() => {
 			this.applyFilters();
 		});
 	}

@@ -3,7 +3,22 @@ import { Player } from './player';
 import { ReforgeSettings } from './proto/api';
 import { Player as PlayerProto } from './proto/api.js';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
-import { ConsumesSpec, Cooldowns, Debuffs, Encounter as EncounterProto, EquipmentSpec, Faction, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Race, RaidBuffs, Spec, UnitReference } from './proto/common';
+import {
+	ConsumesSpec,
+	Cooldowns,
+	Debuffs,
+	Encounter as EncounterProto,
+	EquipmentSpec,
+	Faction,
+	HealingModel,
+	IndividualBuffs,
+	ItemSwap,
+	PartyBuffs,
+	Race,
+	RaidBuffs,
+	Spec,
+	UnitReference,
+} from './proto/common';
 import { IndividualSimSettings, SavedRotation, SavedTalents } from './proto/ui';
 import { Stats } from './proto_utils/stats';
 import { SpecOptions, SpecRotation, specTypeFunctions } from './proto_utils/utils';
@@ -333,4 +348,3 @@ export const makePresetBuildFromJSON = (
 
 	return makePresetBuild(name, { ...buildConfig, ...customBuildOptions });
 };
-

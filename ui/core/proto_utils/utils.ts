@@ -177,7 +177,6 @@ import { Stats } from './stats.js';
 
 export const NUM_SPECS = getEnumValues(Spec).length;
 
-
 // Converts '111111' to [1, 1, 1, 1, 1, 1].
 export function getTalentTreePoints(talentsString: string): Array<number> {
 	const talents = talentsString.split('');
@@ -2152,9 +2151,10 @@ function buildGearKey(spec: EquipmentSpec, frozenItemSlots?: readonly ItemSlot[]
 
 		const itemSlot = slotIdx as ItemSlot;
 		const isFrozen = !!frozenSlotMask?.[itemSlot];
-		const gemFingerprint = isFrozen || includeExistingGems
-			? (item.gems ?? []).map(gemId => gemId ?? 0).join(',')
-			: String(itemSlot === ItemSlot.ItemSlotHead ? (item.gems?.[0] ?? 0) : 0);
+		const gemFingerprint =
+			isFrozen || includeExistingGems
+				? (item.gems ?? []).map(gemId => gemId ?? 0).join(',')
+				: String(itemSlot === ItemSlot.ItemSlotHead ? (item.gems?.[0] ?? 0) : 0);
 		const reforgeFingerprint = isFrozen ? (item.reforging ?? 0) : 0;
 		itemKeys[slotIdx] = [
 			item.id,

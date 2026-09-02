@@ -1,4 +1,3 @@
-import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import clsx from 'clsx';
 
 import i18n from '../../../i18n/config';
@@ -6,6 +5,7 @@ import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
 import { SavedRotation } from '../../proto/ui';
+import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import { batch, EventID } from '../../state/batch';
 import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { omitDeep } from '../../utils';

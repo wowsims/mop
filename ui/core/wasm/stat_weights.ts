@@ -10,7 +10,7 @@ import {
 } from '../proto/api';
 import { SimSignals } from '../sim_signal_manager';
 import { isDevMode } from '../utils';
-import { generateRequestId,WorkerPool, WorkerProgressCallback } from '../worker_pool';
+import { generateRequestId, WorkerPool, WorkerProgressCallback } from '../worker_pool';
 import { runConcurrentSim } from './sim';
 
 const makeAndSendWeightsError = (err: string | ErrorOutcome, onProgress: WorkerProgressCallback): StatWeightsResult => {

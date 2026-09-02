@@ -65,7 +65,6 @@ export class HunterPet<SpecType extends HunterSpecs> {
 
 	private spec: PetSpec;
 
-
 	constructor(player: Player<SpecType>) {
 		this.player = player;
 		this.spec = defaultSpec;

@@ -1,5 +1,18 @@
 import { MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
-import { GemColor, ItemLevelState, ItemRandomSuffix, ItemSlot, ItemSpec, ItemType, Profession, PseudoStat, RangedWeaponType, ReforgeStat, ScalingItemProperties, Stat } from '../proto/common.js';
+import {
+	GemColor,
+	ItemLevelState,
+	ItemRandomSuffix,
+	ItemSlot,
+	ItemSpec,
+	ItemType,
+	Profession,
+	PseudoStat,
+	RangedWeaponType,
+	ReforgeStat,
+	ScalingItemProperties,
+	Stat,
+} from '../proto/common.js';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui.js';
 import { distinct } from '../utils.js';
 import { ActionId } from './action_id.js';

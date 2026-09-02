@@ -11,7 +11,12 @@ import { getGearIdentityKey, getReforgeCacheGearKey } from '../proto_utils/utils
 import { ReforgeGearCache } from '../reforge_cache';
 import { getReforgeConfigHash } from '../state/reforge_request';
 import { sleep } from '../utils';
-import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from './constants_auto_gen';
+import {
+	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS,
+	BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT,
+	BulkSimItemSlot,
+	ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT,
+} from './constants_auto_gen';
 import { OptimisationStage } from './types';
 
 export { BulkSimItemSlot, ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_SINGLE_ITEM_SLOT, BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS };
