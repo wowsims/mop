@@ -51,9 +51,18 @@ export function specPages(uiRoot: string): Plugin {
 		configureServer(server) {
 			const base = server.config.base;
 			const pages = new Set(specs.flatMap(spec => [`${base}${spec}/`, `${base}${spec}/index.html`]));
+			// The production static host answers the bare `${base}<class>/<spec>` with a 301 to the
+			// trailing-slash form. Dev has to do the same: an unredirected bare url misses `pages`
+			// and falls through to vite's SPA fallback, which serves the *landing* page.
+			const bare = new Set(specs.map(spec => `${base}${spec}`));
 
 			server.middlewares.use((req, res, next) => {
-				const pathname = new URL(req.url!, 'http://localhost').pathname;
+				const { pathname, search } = new URL(req.url!, 'http://localhost');
+				if (bare.has(pathname)) {
+					res.writeHead(301, { Location: `${pathname}/${search}` });
+					res.end();
+					return;
+				}
 				if (!pages.has(pathname)) {
 					next();
 					return;
