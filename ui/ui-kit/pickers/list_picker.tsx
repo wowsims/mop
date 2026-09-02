@@ -180,13 +180,8 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		}
 
 		// Set all the values.
-		newValue.forEach((val, i) => {
-			const picker = this.itemPickerPairs[i].picker;
-			picker.setInputValue(val);
-			// Items may not subscribe themselves (see APL child pickers); keep
-			// their enable/show state in sync from the cascade.
-			picker.update();
-		});
+		// Items without their own store subscription (APL pickers) are kept in sync from here.
+		newValue.forEach((_val, i) => this.itemPickerPairs[i].picker.refresh());
 	}
 
 	private actionEnabled(action: ListItemAction): boolean {
@@ -259,9 +254,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		const item: ItemPickerPair<ItemType> = { elem: itemContainer, picker: itemPicker, idx: index };
 		this.addChild(itemPicker);
 		// Per-item resources (tooltips, the document-level mouseup listener) die
-		// with the item picker, not with the whole list.
-		const itemAbort = new AbortController();
-		itemPicker.addOnDisposeCallback(() => itemAbort.abort());
+		// with the item picker (its dispose callbacks / signal), not with the whole list.
 
 		if (this.actionEnabled('delete')) {
 			if (!this.config.minimumItems || index + 1 > this.config.minimumItems) {
@@ -278,10 +271,11 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 				deleteButton.addEventListener(
 					'click',
 					() => {
+						// Hide before setValue: the shrink below may dispose this item (and its tooltip) synchronously.
+						deleteButtonTooltip.hide();
 						const newList = this.config.getValue(this.modObject);
 						newList.splice(index, 1);
 						this.config.setValue(nextEventID(), this.modObject, newList);
-						deleteButtonTooltip.hide();
 					},
 					{ signal: this.signal },
 				);
@@ -406,7 +400,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						itemContainer.removeAttribute('draggable');
 					}
 				},
-				{ signal: itemAbort.signal },
+				{ signal: itemPicker.signal },
 			);
 
 			const droppingActionOnOtherList = () => {

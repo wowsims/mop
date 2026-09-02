@@ -1,4 +1,13 @@
-import { Encounter as EncounterProto, MobType, PresetEncounter, PresetTarget, SpellSchool, Stat, Target as TargetProto, TargetInput } from '@generated/proto/common';
+import {
+	Encounter as EncounterProto,
+	MobType,
+	PresetEncounter,
+	PresetTarget,
+	SpellSchool,
+	Stat,
+	Target as TargetProto,
+	TargetInput,
+} from '@generated/proto/common';
 
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';
@@ -171,9 +180,12 @@ export class Encounter {
 			this.setExecuteProportion45(eventID, proto.executeProportion45);
 			this.setExecuteProportion90(eventID, proto.executeProportion90);
 			this.setUseHealth(eventID, proto.useHealth);
-			// The stored array intentionally shares proto.targets with the
-			// caller, matching the old assignment semantics.
-			this.setTargets(eventID, proto.targets);
+			// Clone so edits in the Advanced Encounter picker cannot mutate the
+			// saved entry's (or the config default's) own target protos.
+			this.setTargets(
+				eventID,
+				proto.targets.map(t => TargetProto.clone(t)),
+			);
 		});
 	}
 

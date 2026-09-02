@@ -74,8 +74,7 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 				this.dispose();
 				return;
 			}
-			this.setInputValue(this.getSourceValue());
-			this.update();
+			this.refresh();
 		};
 		const disposeSubscription = this.subscribeToSource(onSourceChange);
 
@@ -130,6 +129,12 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 		} else {
 			this.rootElem.classList.add('hide');
 		}
+	}
+
+	// Re-reads the mapped value from the source and re-applies enable/show state.
+	refresh() {
+		this.setInputValue(this.getSourceValue());
+		this.update();
 	}
 
 	// Can't call abstract functions in constructor, so need an init() call.

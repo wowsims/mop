@@ -132,17 +132,19 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 			});
 		});
 
-		this.valuePicker = new APLValuePicker(container, player, {
-			id: randomUUID(),
-			label: i18n.t('rotation_tab.apl.variables.attributes.value'),
-			labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
-			getValue: () => this.getSourceValue().value,
-			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
-				const sourceValue = this.getSourceValue();
-				sourceValue.value = newValue;
-				this.config.setValue(eventID, player, this.config.getValue(player));
-			},
-		});
+		this.valuePicker = this.addChild(
+			new APLValuePicker(container, player, {
+				id: randomUUID(),
+				label: i18n.t('rotation_tab.apl.variables.attributes.value'),
+				labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
+				getValue: () => this.getSourceValue().value,
+				setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
+					const sourceValue = this.getSourceValue();
+					sourceValue.value = newValue;
+					this.config.setValue(eventID, player, this.config.getValue(player));
+				},
+			}),
+		);
 
 		this.init();
 	}

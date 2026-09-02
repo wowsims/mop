@@ -2021,6 +2021,7 @@
 			},
 			"logs": {
 				"top_button": "Haut",
+				"export_button": "Exporter le Journal",
 				"time_column": "Temps",
 				"event_column": "Événement",
 				"show_debug": "Afficher les messages de débogage"

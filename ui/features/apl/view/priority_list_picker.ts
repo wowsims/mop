@@ -82,21 +82,25 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 			return validations;
 		});
 
-		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			getValue: () => this.getItem().hide,
-			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
-				this.getItem().hide = newValue;
-				this.player.touchRotation(eventID);
-			},
-		});
+		this.hidePicker = this.addChild(
+			new APLHidePicker(itemHeaderElem, player, {
+				getValue: () => this.getItem().hide,
+				setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
+					this.getItem().hide = newValue;
+					this.player.touchRotation(eventID);
+				},
+			}),
+		);
 
-		this.actionPicker = new APLActionPicker(this.rootElem, this.player, {
-			getValue: () => this.getItem().action!,
-			setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
-				this.getItem().action = newValue;
-				this.player.touchRotation(eventID);
-			},
-		});
+		this.actionPicker = this.addChild(
+			new APLActionPicker(this.rootElem, this.player, {
+				getValue: () => this.getItem().action!,
+				setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
+					this.getItem().action = newValue;
+					this.player.touchRotation(eventID);
+				},
+			}),
+		);
 		this.init();
 	}
 

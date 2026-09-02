@@ -189,18 +189,16 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 			return;
 		}
 		this.currentKind = newActionKind;
+		this.kindPicker.setInputValue(newActionKind);
 
 		if (this.actionPicker) {
-			this.disposeChild(this.actionPicker);
-			this.actionPicker.rootElem.remove();
+			this.removeChild(this.actionPicker);
 			this.actionPicker = null;
 		}
 
 		if (!newActionKind) {
 			return;
 		}
-
-		this.kindPicker.setInputValue(newActionKind);
 
 		const factory = actionKindFactories[newActionKind];
 		this.actionPicker = factory.factory(this.actionDiv, this.modObject, {
@@ -213,8 +211,8 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 				player.touchRotation(eventID);
 			},
 		});
-		this.actionPicker.rootElem.classList.add('apl-action-' + newActionKind);
 		this.addChild(this.actionPicker);
+		this.actionPicker.rootElem.classList.add('apl-action-' + newActionKind);
 	}
 }
 

@@ -470,7 +470,8 @@ export function makeBooleanIconInput<SpecType extends Spec, Message, ModObject>(
 		actionId,
 		label,
 		states: 2,
-		storeSubscribe: config.storeSubscribe,
+		// The icon pickers require a change source; the wrapper config's is optional.
+		storeSubscribe: config.storeSubscribe!,
 		showWhen: config.showWhen,
 		getValue:
 			config.getFieldValue ||
@@ -551,7 +552,8 @@ function makeNumberIconInput<SpecType extends Spec, Message, ModObject>(
 		actionId,
 		label,
 		states: 0, // Must be assigned externally.
-		storeSubscribe: config.storeSubscribe,
+		// The icon pickers require a change source; the wrapper config's is optional.
+		storeSubscribe: config.storeSubscribe!,
 		getValue: (modObj: ModObject) => config.getValue(modObj)[fieldName] as unknown as number,
 		setValue: (eventID: EventID, modObj: ModObject, newValue: number) => {
 			const newMessage = config.getValue(modObj);

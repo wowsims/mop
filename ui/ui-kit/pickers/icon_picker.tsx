@@ -1,5 +1,6 @@
 import { ActionId } from '@domain/proto_utils/action_id';
 import { nextEventID } from '@domain/state/batch';
+import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { isRightClick } from '@domain/utils';
 import { fillAndSetActionId } from '@ui-kit/action_id_dom';
 import { ref } from 'tsx-vanilla';
@@ -11,6 +12,8 @@ import { Input, InputConfig } from '../input';
 // ModObject is the object being modified (Sim, Player, or Target).
 // ValueType is either number or boolean.
 export interface IconPickerConfig<ModObject, ValueType> extends InputConfig<ModObject, ValueType> {
+	// Required here: an icon picker has no parent that refreshes it.
+	storeSubscribe: (obj: ModObject) => StoreSubscribe;
 	actionId: ActionId;
 
 	// The number of possible 'states' this icon can have. Most inputs will use 2

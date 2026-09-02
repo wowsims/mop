@@ -1,7 +1,9 @@
 import { nextEventID } from '@domain/state/batch';
+import { arrayEquals } from '@domain/utils';
 import i18n from '@i18n/config';
 import { Dropdown } from 'bootstrap';
 import clsx from 'clsx';
+import { shallowEqualArrays, shallowEqualObjects } from 'shallow-equal';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -111,12 +113,25 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 		// Keep the existing config objects when nothing changed: every APL
 		// action-id picker refreshes its options on each rotation edit, and a
 		// fresh-but-equal list would force a button re-render per picker.
-		if (filtered.length === this.valueConfigs.length && filtered.every((vc, i) => this.config.equals(vc.value, this.valueConfigs[i].value))) {
+		if (arrayEquals(filtered, this.valueConfigs, (a, b) => this.isSameOption(a, b))) {
 			return;
 		}
 		this.valueConfigs = filtered;
 		this.setInputValue(this.getSourceValue());
 		return;
+	}
+
+	// True when two option configs would render identically: equal values plus
+	// identical display fields, including those of an object value (e.g. a
+	// UnitValue's text/icon/color, which `equals` deliberately ignores).
+	private isSameOption(a: DropdownValueConfig<V>, b: DropdownValueConfig<V>): boolean {
+		const { value: aValue, submenu: aSubmenu, extraCssClasses: aClasses, ...aRest } = a;
+		const { value: bValue, submenu: bSubmenu, extraCssClasses: bClasses, ...bRest } = b;
+		if (!this.config.equals(aValue, bValue)) return false;
+		// The array fields are rebuilt per refresh, so compare them by content.
+		if (!shallowEqualObjects(aRest, bRest) || !shallowEqualArrays(aSubmenu, bSubmenu) || !shallowEqualArrays(aClasses, bClasses)) return false;
+		if (aValue === bValue || typeof aValue !== 'object' || aValue === null || typeof bValue !== 'object' || bValue === null) return true;
+		return shallowEqualObjects(aValue as Record<string, unknown>, bValue as Record<string, unknown>);
 	}
 
 	resetDropdown() {

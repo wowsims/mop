@@ -7093,6 +7093,9 @@
 								"top_button": {
 									"type": "string"
 								},
+								"export_button": {
+									"type": "string"
+								},
 								"time_column": {
 									"type": "string"
 								},
@@ -7104,7 +7107,7 @@
 								}
 							},
 							"additionalProperties": false,
-							"required": ["top_button", "time_column", "event_column", "show_debug"]
+							"required": ["top_button", "export_button", "time_column", "event_column", "show_debug"]
 						},
 						"tabs": {
 							"type": "object",

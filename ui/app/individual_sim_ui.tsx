@@ -28,6 +28,7 @@ import {
 	IndividualPawnEPExporter,
 	IndividualWowheadGearPlannerExporter,
 } from '@features/import-export/view/exporters';
+import { LogExporter } from '@features/import-export/view/exporters/detailed_log_exporter';
 import {
 	// Individual60UImporter,
 	IndividualAddonImporter,
@@ -342,7 +343,7 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
 		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', detailedResults);
 
-		new DetailedResults(detailedResults, this, this.raidSimResultsManager!);
+		new DetailedResults(detailedResults, this, this.raidSimResultsManager!, getLogData => new LogExporter(this.rootElem, this, getLogData));
 	}
 
 	private addTopbarComponents() {

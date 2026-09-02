@@ -1,5 +1,6 @@
 import { ActionId } from '@domain/proto_utils/action_id';
 import { nextEventID } from '@domain/state/batch';
+import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { fillAndSetActionId } from '@ui-kit/action_id_dom';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -28,6 +29,8 @@ export interface IconEnumValueConfig<ModObject, T> {
 }
 
 export interface IconEnumPickerConfig<ModObject, T> extends InputConfig<ModObject, T> {
+	// Required here: an icon enum picker has no parent that refreshes it.
+	storeSubscribe: (obj: ModObject) => StoreSubscribe;
 	numColumns?: number;
 	values: Array<IconEnumValueConfig<ModObject, T>>;
 	// Value that will be considered inactive.

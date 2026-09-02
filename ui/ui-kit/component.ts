@@ -5,7 +5,7 @@ export abstract class Component {
 	private disposed = false;
 	// Child components disposed together with this one (explicit registration
 	// via addChild; parentElem is a raw element so it cannot be inferred).
-	protected readonly children: Array<Component> = [];
+	private readonly children: Array<Component> = [];
 
 	readonly rootElem: HTMLElement;
 
@@ -31,6 +31,12 @@ export abstract class Component {
 		const idx = this.children.indexOf(child);
 		if (idx >= 0) this.children.splice(idx, 1);
 		child.dispose();
+	}
+
+	// Disposes a registered child and removes its root element from the DOM.
+	removeChild(child: Component) {
+		this.disposeChild(child);
+		child.rootElem.remove();
 	}
 
 	protected get isDisposed(): boolean {

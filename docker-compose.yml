@@ -1,0 +1,37 @@
+# Production deployment for the MoP sim.
+#
+#   docker compose up -d        # build + start
+#   ./upgrade.sh                # pull, rebuild, restart
+#
+# TLS/HTTPS is expected to be handled by a reverse proxy on the host (e.g.
+# Caddy or nginx) forwarding to 127.0.0.1:18791. This container is bound to
+# localhost only, so nothing reaches the sim except the proxy on the same host.
+#
+# The sim is stateless: no volume needed, runs fully read-only.
+
+services:
+  sim:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    image: wowsimmop:local
+    restart: unless-stopped
+    # The server exits cleanly on SIGINT (its only handled signal).
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+
+    # --- hardening ---------------------------------------------------------
+    read_only: true            # no writable layer; app writes nothing to disk
+    tmpfs:
+      - /tmp                   # only scratch space the Go runtime might want
+    cap_drop:
+      - ALL                    # binds 8080 as non-root, needs no capabilities
+    security_opt:
+      - no-new-privileges:true
+    # -----------------------------------------------------------------------
+
+    # Published on the loopback interface only — reachable by the host's
+    # reverse proxy, never on the LAN/VPN/internet directly.
+    ports:
+      - "127.0.0.1:18791:8080"

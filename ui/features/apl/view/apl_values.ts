@@ -211,18 +211,16 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 			return;
 		}
 		this.currentKind = newKind;
+		this.kindPicker.setInputValue(newKind);
 
 		if (this.valuePicker) {
-			this.disposeChild(this.valuePicker);
-			this.valuePicker.rootElem.remove();
+			this.removeChild(this.valuePicker);
 			this.valuePicker = null;
 		}
 
 		if (!newKind) {
 			return;
 		}
-
-		this.kindPicker.setInputValue(newKind);
 
 		const factory = valueKindFactories[newKind];
 		this.valuePicker = factory.factory(this.rootElem, this.modObject, {
