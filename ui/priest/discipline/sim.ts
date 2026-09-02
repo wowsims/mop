@@ -5,7 +5,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
-import { Faction, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
+import { PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common.js';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import * as PriestInputs from '../inputs';
 import * as Presets from './presets.js';
@@ -94,29 +94,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDisciplinePriest, {
 	autoRotation: (player: Player<Spec.SpecDisciplinePriest>): APLRotation => {
 		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
-
-	raidSimPresets: [
-		{
-			spec: Spec.SpecDisciplinePriest,
-			talents: Presets.StandardTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceDwarf,
-				[Faction.Horde]: Race.RaceUndead,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P1_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P1_PRESET.gear,
-				},
-			},
-		},
-	],
 });
 
 export class DisciplinePriestSimUI extends IndividualSimUI<Spec.SpecDisciplinePriest> {

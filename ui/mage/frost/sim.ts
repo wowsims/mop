@@ -166,8 +166,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFrostMage, {
 			return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 		}
 	},
-
-	raidSimPresets: [],
 });
 
 export class FrostMageSimUI extends IndividualSimUI<Spec.SpecFrostMage> {

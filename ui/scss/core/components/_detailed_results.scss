@@ -38,11 +38,11 @@
 	display: none;
 }
 
-.individual-sim-ui .single-player-only {
+.sim-ui .single-player-only {
 	display: initial;
 }
 
-.individual-sim-ui .all-players-only {
+.sim-ui .all-players-only {
 	display: none;
 }
 
@@ -100,7 +100,7 @@
 	align-items: center;
 }
 
-.individual-sim-ui .player-filter-root {
+.sim-ui .player-filter-root {
 	display: none !important;
 }
 

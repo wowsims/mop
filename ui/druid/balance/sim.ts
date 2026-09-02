@@ -198,8 +198,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBalanceDruid, {
 	autoRotation: (_player: Player<Spec.SpecBalanceDruid>): APLRotation => {
 		return Presets.StandardRotation.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class BalanceDruidSimUI extends IndividualSimUI<Spec.SpecBalanceDruid> {

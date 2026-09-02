@@ -170,8 +170,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRetributionPaladin, {
 	autoRotation: (_: Player<Spec.SpecRetributionPaladin>): APLRotation => {
 		return Presets.APL_PRESET.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class RetributionPaladinSimUI extends IndividualSimUI<Spec.SpecRetributionPaladin> {

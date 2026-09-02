@@ -43,7 +43,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 		nameContainer.querySelector('.apl-name-rename')!.addEventListener('click', () => {
 			const group = this.getSourceValue();
 			if (!group) return;
-			new APLNameModal((this.rootElem.closest('.individual-sim-ui') as HTMLElement) ?? document.body, {
+			new APLNameModal((this.rootElem.closest('.sim-ui') as HTMLElement) ?? document.body, {
 				title: i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.actionGroups.name') }),
 				inputLabel: i18n.t('rotation_tab.apl.actionGroups.attributes.name'),
 				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.renameConfirm'),
@@ -97,7 +97,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 						(actionIndex, ref) => {
 							this.getSourceValue()!.actions[actionIndex].action!.condition = ref;
 						},
-						(this.rootElem.closest('.individual-sim-ui') as HTMLElement) ?? document.body,
+						(this.rootElem.closest('.sim-ui') as HTMLElement) ?? document.body,
 					),
 				],
 			}),

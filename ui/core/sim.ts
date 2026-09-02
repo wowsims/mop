@@ -68,11 +68,6 @@ import { distinct, getEnumValues, hashString, isExternal, noop, sleep } from './
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
 
-export type RaidSimData = {
-	request: RaidSimRequest;
-	result: RaidSimResult;
-};
-
 export type StatWeightsData = {
 	request: StatWeightsRequest;
 	result: StatWeightsResult;

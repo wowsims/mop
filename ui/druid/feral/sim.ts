@@ -206,7 +206,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 
 	hiddenMCDs: [126734, 106737, 76089, 26297, 106952, 132158, 108292, 55004],
 
-	raidSimPresets: [],
 });
 
 export class FeralDruidSimUI extends IndividualSimUI<Spec.SpecFeralDruid> {

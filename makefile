@@ -47,8 +47,7 @@ PAGE_INDECES := ui/death_knight/blood/index.html \
 				ui/warlock/destruction/index.html \
 				ui/warrior/arms/index.html \
 				ui/warrior/fury/index.html \
-				ui/warrior/protection/index.html \
-				ui/raid/full/index.html
+				ui/warrior/protection/index.html
 
 $(OUT_DIR)/.dirstamp: \
   $(OUT_DIR)/lib.wasm.gz \

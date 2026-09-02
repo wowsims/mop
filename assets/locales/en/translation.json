@@ -6,9 +6,6 @@
 			"about": "About",
 			"toggle": "Toggle navigation"
 		},
-		"simulations": {
-			"full_raid": "Full Raid Sim"
-		},
 		"home": {
 			"title": "WoWSims - Mists of Pandaria",
 			"description": "A powerful simulation tool for World of Warcraft: Mists of Pandaria",
@@ -35,7 +32,6 @@
 			"5": "Phase 5 (5.4 - T16)"
 		},
 		"tanks": {
-			"title": "Tanks",
 			"main_tank": "Main Tank",
 			"tank_2": "Tank 2",
 			"tank_3": "Tank 3",
@@ -262,7 +258,7 @@
 			"qe_live_message": "Check out QE Live!"
 		},
 		"notifications": {
-			"raid_sim_cancelled": "Raid sim cancelled.",
+			"sim_cancelled": "Sim cancelled.",
 			"simulation_failed": "The Simulation failed. Generated an error report.",
 			"failed_to_file_report": "Failed to file report... try again another time:"
 		},
@@ -663,10 +659,6 @@
 				"tooltip": "Selects a preset encounter configuration."
 			},
 			"advanced": "Advanced",
-			"use_health": {
-				"label": "Use Health",
-				"tooltip": "Uses a damage limit in place of a duration limit. Damage limit is equal to sum of all targets health."
-			},
 			"target": "Target",
 			"num_allies": {
 				"label": "Num Allies",
@@ -735,10 +727,6 @@
 			"settings": "Settings",
 			"settings_name": "Settings Name",
 			"save_settings": "Save Settings"
-		},
-		"external_buffs": {
-			"title": "External Buffs",
-			"tooltip": "Buffs provided by <strong>other</strong> party/raid members."
 		}
 	},
 	"talents_tab": {

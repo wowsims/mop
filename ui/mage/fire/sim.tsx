@@ -5,7 +5,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '../../core/proto/apl';
-import { Cooldowns, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/api';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
@@ -262,29 +262,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 		33697,
 	],
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecFireMage,
-			talents: Presets.FireTalents.data,
-			specOptions: Presets.DefaultFireOptions,
-			consumables: Presets.DefaultFireConsumables,
-			otherDefaults: Presets.OtherDefaults,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P4_BIS.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P4_BIS.gear,
-				},
-			},
-		},
-	],
 });
 
 export class FireMageSimUI extends IndividualSimUI<Spec.SpecFireMage> {

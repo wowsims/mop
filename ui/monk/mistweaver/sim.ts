@@ -6,7 +6,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/api';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
@@ -140,36 +140,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMistweaverMonk, {
 	autoRotation: (_: Player<Spec.SpecMistweaverMonk>): APLRotation => {
 		return APLRotation.create();
 	},
-
-	raidSimPresets: [
-		{
-			spec: Spec.SpecWindwalkerMonk,
-			talents: Presets.DefaultTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceAlliancePandaren,
-				[Faction.Horde]: Race.RaceHordePandaren,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PREBIS_GEAR_PRESET.gear,
-					2: Presets.PREBIS_GEAR_PRESET.gear,
-					3: Presets.PREBIS_GEAR_PRESET.gear,
-					4: Presets.PREBIS_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PREBIS_GEAR_PRESET.gear,
-					2: Presets.PREBIS_GEAR_PRESET.gear,
-					3: Presets.PREBIS_GEAR_PRESET.gear,
-					4: Presets.PREBIS_GEAR_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
 });
 
 export class MistweaverMonkSimUI extends IndividualSimUI<Spec.SpecMistweaverMonk> {

@@ -13,7 +13,6 @@ export const AssumeBleedActive = InputHelpers.makeSpecOptionsBooleanInput<Spec.S
 	fieldName: 'assumeBleedActive',
 	label: i18n.t('settings_tab.other.assume_bleed_active.label'),
 	labelTooltip: i18n.t('settings_tab.other.assume_bleed_active.tooltip'),
-	extraCssClasses: ['within-raid-sim-hide'],
 });
 
 export const CannotShredTarget = InputHelpers.makeSpecOptionsBooleanInput<Spec.SpecFeralDruid>({

@@ -28,13 +28,7 @@ export class IndividualJsonImporter<SpecType extends Spec> extends IndividualImp
 		if (proto.player?.equipment) {
 			await Database.loadLeftoversIfNecessary(proto.player.equipment);
 		}
-		if (this.simUI.isWithinRaidSim) {
-			if (proto.player) {
-				this.simUI.player.fromProto(TypedEvent.nextEventID(), proto.player);
-			}
-		} else {
-			this.simUI.fromProto(TypedEvent.nextEventID(), proto);
-		}
+		this.simUI.fromProto(TypedEvent.nextEventID(), proto);
 		this.close();
 	}
 }
