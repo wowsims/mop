@@ -180,13 +180,8 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		}
 
 		// Set all the values.
-		newValue.forEach((val, i) => {
-			const picker = this.itemPickerPairs[i].picker;
-			picker.setInputValue(val);
-			// Items may not subscribe themselves (see APL child pickers); keep
-			// their enable/show state in sync from the cascade.
-			picker.update();
-		});
+		// Items without their own changedEvent (APL pickers) are kept in sync from here.
+		newValue.forEach((_val, i) => this.itemPickerPairs[i].picker.refresh());
 	}
 
 	private actionEnabled(action: ListItemAction): boolean {
@@ -259,10 +254,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		const item: ItemPickerPair<ItemType> = { elem: itemContainer, picker: itemPicker, idx: index };
 		this.addChild(itemPicker);
 		// Per-item resources (tooltips, document-level listeners) are released
-		// with the item picker, not with the whole list.
-		const itemAbort = new AbortController();
-		const itemSignal = itemAbort.signal;
-		itemPicker.addOnDisposeCallback(() => itemAbort.abort());
+		// with the item picker (its dispose callbacks / signal), not with the whole list.
 
 		if (this.actionEnabled('delete')) {
 			if (!this.config.minimumItems || index + 1 > this.config.minimumItems) {
@@ -408,7 +400,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 						itemContainer.removeAttribute('draggable');
 					}
 				},
-				{ signal: itemSignal },
+				{ signal: itemPicker.signal },
 			);
 
 			const droppingActionOnOtherList = () => {

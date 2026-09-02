@@ -44,10 +44,10 @@ export type SavedDataConfig<ModObject, T> = {
 type SavedData<ModObject, T> = {
 	name: string;
 	data: T;
-	// Serialized form of `data`, compared against the current value by string
-	// so an active-check costs one serialization per manager, not one deep
-	// proto equals per entry.
-	dataJson: string;
+	// Serialized form of `data` (only when the manager has no semantic `equals`),
+	// compared against the current value by string so an active-check costs one
+	// serialization per manager, not one deep proto equals per entry.
+	dataJson?: string;
 	elem: HTMLElement;
 } & Pick<SavedDataConfig<ModObject, T>, 'enableWhen' | 'onLoad'>;
 
@@ -122,6 +122,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 			dataArr[oldIdx].elem.replaceWith(newData.elem);
 			dataArr[oldIdx] = newData;
 		}
+		this.scheduleChecks();
 	}
 
 	private makeSavedData(config: SavedDataConfig<ModObject, T>): SavedData<ModObject, T> {
@@ -191,16 +192,11 @@ export class SavedDataManager<ModObject, T> extends Component {
 			enableWhen: config.enableWhen,
 			onLoad: config.onLoad,
 		};
-		// Initial render is synchronous, as before.
-		const current = this.config.getData(this.modObject);
-		this.checkEntry(savedData, current, this.serialize(current));
-
 		return savedData;
 	}
 
-	// Only consumed by the JSON-equality path; managers with a semantic `equals` skip the cost.
-	private serialize(data: T): string {
-		return this.config.equals ? '' : JSON.stringify(this.config.toJson(data));
+	private serialize(data: T): string | undefined {
+		return this.config.equals ? undefined : JSON.stringify(this.config.toJson(data));
 	}
 
 	private scheduleChecks() {
@@ -227,7 +223,7 @@ export class SavedDataManager<ModObject, T> extends Component {
 		this.presets.forEach(entry => this.checkEntry(entry, current, currentJson));
 	}
 
-	private checkEntry(entry: SavedData<ModObject, T>, current: T, currentJson: string) {
+	private checkEntry(entry: SavedData<ModObject, T>, current: T, currentJson: string | undefined) {
 		const isActive = this.config.equals ? this.config.equals(entry.data, current) : entry.dataJson === currentJson;
 		if (isActive) {
 			entry.elem.classList.add('active');

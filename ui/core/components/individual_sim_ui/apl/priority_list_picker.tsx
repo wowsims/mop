@@ -8,7 +8,6 @@ import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
 import * as AplHelpers from '../apl_helpers';
-import { APL_CHILD_CHANGED_EVENT } from '../apl_helpers';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLHidePicker } from './hide_picker';
 
@@ -83,7 +82,6 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 
 		this.hidePicker = this.addChild(
 			new APLHidePicker(itemHeaderElem, player, {
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: () => this.getItem().hide,
 				setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 					this.getItem().hide = newValue;
@@ -94,7 +92,6 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 
 		this.actionPicker = this.addChild(
 			new APLActionPicker(this.rootElem, this.player, {
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: () => this.getItem().action!,
 				setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
 					this.getItem().action = newValue;

@@ -9,7 +9,6 @@ import { Input, InputConfig } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
 import * as AplHelpers from '../apl_helpers';
-import { APL_CHILD_CHANGED_EVENT } from '../apl_helpers';
 import { APLNameModal } from './apl_name_modal';
 import { APLHidePicker } from './hide_picker';
 
@@ -73,7 +72,6 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 						useIcon: true,
 					},
 				},
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: () => this.getSourceValue()?.actions || [],
 				setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLListItem>) => {
 					const group = this.getSourceValue();
@@ -176,7 +174,6 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 
 		this.hidePicker = this.addChild(
 			new APLHidePicker(itemHeaderElem, player, {
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: () => this.getItem().hide,
 				setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 					this.getItem().hide = newValue;
@@ -187,7 +184,6 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 
 		this.actionPicker = this.addChild(
 			new APLActionPicker(this.rootElem, this.modObject, {
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: () => this.getItem().action!,
 				setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 					const item = this.getSourceValue();

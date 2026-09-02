@@ -44,7 +44,6 @@ import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import { APL_CHILD_CHANGED_EVENT } from './apl_helpers';
 import * as AplHelpers from './apl_helpers.js';
 import { itemSwapSetFieldConfig } from './apl_helpers.js';
 import * as AplValues from './apl_values.js';
@@ -73,7 +72,6 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 		this.conditionPicker = this.addChild(
 			new AplValues.APLValuePicker(this.rootElem, this.modObject, {
 				label: i18n.t('rotation_tab.apl.priority_list.if_label'),
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: (_player: Player<any>) => this.getSourceValue()?.condition,
 				setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
 					const srcVal = this.getSourceValue();
@@ -117,7 +115,6 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 					};
 				}),
 				equals: (a, b) => a == b,
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: (_player: Player<any>) => this.getSourceValue()?.action.oneofKind,
 				setValue: (eventID: EventID, player: Player<any>, newKind: APLActionKind) => {
 					const sourceValue = this.getSourceValue();
@@ -242,8 +239,7 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 		this.kindPicker.setInputValue(newActionKind);
 
 		if (this.actionPicker) {
-			this.disposeChild(this.actionPicker);
-			this.actionPicker.rootElem.remove();
+			this.removeChild(this.actionPicker);
 			this.actionPicker = null;
 		}
 
@@ -253,7 +249,6 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 
 		const factory = actionKindFactories[newActionKind];
 		this.actionPicker = factory.factory(this.actionDiv, this.modObject, {
-			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: () => (this.getSourceValue()?.action as any)?.[newActionKind] || factory.newValue(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const sourceValue = this.getSourceValue();

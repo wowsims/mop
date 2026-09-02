@@ -33,15 +33,12 @@ interface TimelineConfig extends ResultComponentConfig {
 
 interface RotationSlot {
 	key: string;
-	// True for a single-player result (rotation chart available); false for a
-	// multi-player one, whose slot only caches the plot options.
-	rotation: boolean;
 	labels: Array<Node>;
 	timeline: Array<Node>;
 	hiddenIdsNodes: Array<Node>;
 	emitter: TypedEvent<void>;
 	resetCallbacks: Array<() => void>;
-	plotOptions: any | null;
+	plotOptions: any;
 }
 
 export class Timeline extends ResultComponent {
@@ -63,10 +60,9 @@ export class Timeline extends ResultComponent {
 	// switch between the current result and a saved reference. Eviction runs the
 	// slot's reset callbacks (tooltip destroy, listener removal).
 	private liveSlot: RotationSlot | null = null;
-	private cachedSlots: Array<RotationSlot> = [];
-	// One parked slot covers the current <-> reference swap; each parked slot keeps
-	// its full tippy instance set alive, so don't hold more than needed.
-	private static readonly MAX_CACHED_SLOTS = 1;
+	// The most recently stashed slot. One is enough for the current <-> reference
+	// swap, and each parked slot keeps its full tippy instance set alive.
+	private parkedSlot: RotationSlot | null = null;
 
 	private hiddenIds: Array<ActionId>;
 
@@ -215,14 +211,14 @@ export class Timeline extends ResultComponent {
 		// Fast path: this result was rendered before and its slot is either live
 		// or parked in the cache.
 		const key = this.resultKey(!singlePlayer);
-		const hit = this.liveSlot?.key === key ? this.liveSlot : this.cachedSlots.find(slot => slot.key === key);
+		const hit = this.liveSlot?.key === key ? this.liveSlot : this.parkedSlot?.key === key ? this.parkedSlot : null;
 		if (hit?.plotOptions) {
 			if (hit !== this.liveSlot) {
-				this.takeCachedSlot(key);
+				this.parkedSlot = null;
 				this.stashLiveSlot();
 				this.attachSlot(hit);
 			}
-			this.setRotationOptionVisible(hit.rotation);
+			this.setRotationOptionVisible(singlePlayer);
 			this.dpsResourcesPlot.updateOptions(hit.plotOptions);
 			return;
 		}
@@ -301,7 +297,7 @@ export class Timeline extends ResultComponent {
 			this.stashLiveSlot();
 			this.clearRotationChart();
 			// No rotation subtree, but the (expensive) per-player series are worth caching for swaps.
-			this.liveSlot = Timeline.newSlot(key, false);
+			this.liveSlot = Timeline.newSlot(key);
 
 			if (this.chartPicker.value == 'dps') {
 				let maxDps = 0;
@@ -553,14 +549,14 @@ export class Timeline extends ResultComponent {
 		if (this.liveSlot?.key === key) {
 			return;
 		}
-		// Take before stashing so the stash's eviction can't drop the slot we want.
-		const cached = this.takeCachedSlot(key);
+		// Take before stashing so the stash can't evict the slot we want.
+		const parked = this.takeParkedSlot(key);
 		this.stashLiveSlot();
-		if (cached) {
-			this.attachSlot(cached);
+		if (parked) {
+			this.attachSlot(parked);
 			return;
 		}
-		this.liveSlot = Timeline.newSlot(key, true);
+		this.liveSlot = Timeline.newSlot(key);
 		this.clearRotationChart();
 
 		try {
@@ -1302,13 +1298,10 @@ export class Timeline extends ResultComponent {
 	}
 
 	// Per-render resources (tooltips, listeners) belong to the slot being
-	// rendered so a parked slot can be destroyed independently.
+	// rendered so a parked slot can be destroyed independently. Rows are only
+	// ever built under a live slot (see updateRotationChart).
 	addOnResetCallback(callback: () => void) {
-		if (this.liveSlot) {
-			this.liveSlot.resetCallbacks.push(callback);
-		} else {
-			super.addOnResetCallback(callback);
-		}
+		this.liveSlot!.resetCallbacks.push(callback);
 	}
 
 	// A single player's slot holds the rotation subtree plus every series, so the
@@ -1324,17 +1317,19 @@ export class Timeline extends ResultComponent {
 		this.rootElem.querySelector('.threat-option')!.classList.toggle('hide', visible);
 	}
 
-	private static newSlot(key: string, rotation: boolean): RotationSlot {
-		return { key, rotation, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null };
+	private static newSlot(key: string): RotationSlot {
+		return { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null };
 	}
 
-	private takeCachedSlot(key: string): RotationSlot | null {
-		const idx = this.cachedSlots.findIndex(slot => slot.key === key);
-		return idx < 0 ? null : this.cachedSlots.splice(idx, 1)[0];
+	private takeParkedSlot(key: string): RotationSlot | null {
+		if (this.parkedSlot?.key !== key) return null;
+		const slot = this.parkedSlot;
+		this.parkedSlot = null;
+		return slot;
 	}
 
-	// Parks the on-screen subtree (nodes moved, tooltips kept alive) and evicts
-	// the least recently used slot beyond the cache size.
+	// Parks the on-screen subtree (nodes moved, tooltips kept alive), destroying
+	// the previously parked slot.
 	private stashLiveSlot() {
 		const slot = this.liveSlot;
 		if (!slot) return;
@@ -1345,10 +1340,8 @@ export class Timeline extends ResultComponent {
 		this.rotationTimeline.replaceChildren();
 		this.rotationHiddenIdsContainer.replaceChildren();
 		this.liveSlot = null;
-		this.cachedSlots.push(slot);
-		while (this.cachedSlots.length > Timeline.MAX_CACHED_SLOTS) {
-			this.destroySlot(this.cachedSlots.shift()!);
-		}
+		if (this.parkedSlot) this.destroySlot(this.parkedSlot);
+		this.parkedSlot = slot;
 	}
 
 	private attachSlot(slot: RotationSlot) {
@@ -1362,7 +1355,6 @@ export class Timeline extends ResultComponent {
 
 	private destroySlot(slot: RotationSlot) {
 		slot.resetCallbacks.forEach(callback => callback());
-		slot.resetCallbacks = [];
 	}
 
 	render() {
@@ -1372,9 +1364,9 @@ export class Timeline extends ResultComponent {
 
 	reset() {
 		if (this.liveSlot) this.destroySlot(this.liveSlot);
-		this.cachedSlots.forEach(slot => this.destroySlot(slot));
+		if (this.parkedSlot) this.destroySlot(this.parkedSlot);
 		this.liveSlot = null;
-		this.cachedSlots = [];
+		this.parkedSlot = null;
 		super.reset();
 	}
 }

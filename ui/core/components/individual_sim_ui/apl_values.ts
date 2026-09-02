@@ -133,7 +133,6 @@ import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import { APL_CHILD_CHANGED_EVENT } from './apl_helpers';
 import * as AplHelpers from './apl_helpers.js';
 
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
@@ -203,7 +202,6 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 					}),
 				),
 				equals: (a, b) => a == b,
-				changedEvent: () => APL_CHILD_CHANGED_EVENT,
 				getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
 				setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
 					const sourceValue = this.getSourceValue();
@@ -352,8 +350,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		this.kindPicker.setInputValue(newKind);
 
 		if (this.valuePicker) {
-			this.disposeChild(this.valuePicker);
-			this.valuePicker.rootElem.remove();
+			this.removeChild(this.valuePicker);
 			this.valuePicker = null;
 		}
 
@@ -364,7 +361,6 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		const factory = valueKindFactories[newKind];
 		this.valuePicker = factory.factory(this.rootElem, this.modObject, {
 			id: randomUUID(),
-			changedEvent: () => APL_CHILD_CHANGED_EVENT,
 			getValue: () => {
 				const sourceVal = this.getSourceValue();
 				return sourceVal ? (sourceVal.value as any)[newKind] || factory.newValue() : factory.newValue();

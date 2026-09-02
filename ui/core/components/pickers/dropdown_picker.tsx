@@ -5,7 +5,7 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { TypedEvent } from '../../typed_event.js';
-import { existsInDOM } from '../../utils.js';
+import { arrayEquals, existsInDOM } from '../../utils.js';
 import { Input, InputConfig } from '../input.js';
 import i18n from '../../../i18n/config';
 
@@ -111,7 +111,7 @@ export class DropdownPicker<ModObject, T, V = T> extends Input<ModObject, T, V> 
 		// Keep the existing config objects when nothing changed: every APL
 		// action-id picker refreshes its options on each rotation change, and a
 		// fresh-but-equal list would force a button re-render per picker.
-		if (filtered.length === this.valueConfigs.length && filtered.every((vc, i) => this.isSameOption(vc, this.valueConfigs[i]))) {
+		if (arrayEquals(filtered, this.valueConfigs, (a, b) => this.isSameOption(a, b))) {
 			return;
 		}
 		this.valueConfigs = filtered;
