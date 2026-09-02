@@ -17,7 +17,9 @@ ui/
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
                      css_utils, dom_utils, action_id_dom, pickers/, vendor/. alias @ui-kit
   features/<name>/   one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
-                     apl/ (model/ + view/), gear/ (gear_picker/* flattened in, plus
+                     apl/ (model/ action_id_sets + unit_sets + field_descriptors +
+                     the value_kinds/action_kinds registries, view/ the pickers),
+                     gear/ (gear_picker/* flattened in, plus
                      gem_summary/reforge_summary/upgrade_costs_summary/item_notice; plus
                      quick_swap/gear_change_icon), reforge/, results/ (plus
                      view/results_viewer), stat-weights/ (plus view/saved_ep_weights),

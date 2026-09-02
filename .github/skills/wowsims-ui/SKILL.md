@@ -538,3 +538,28 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `@features/settings/model/other_inputs`, and `features/gear/view/item_list.tsx` — the only consumer
   of the constructors — keeps its `view/` import. The two halves are disjoint: view imports nothing
   from model.
+- 2026-09-02 UI restructure PR F3: the two APL kind registries are now DOM-free data.
+  `features/apl/model/field_descriptors.ts` defines `APLFieldDescriptor` (a `type`-tagged
+  plain-object union) plus constructors whose names and argument order match the old
+  `*FieldConfig` picker factories one-for-one; `model/value_kinds.ts` (`valueKinds`, 125
+  entries) and `model/action_kinds.ts` (`actionKinds`, 30 entries) hold label / submenu /
+  short+fullDescription / includeIf / newValue / dynamicStringResolver / `fields` descriptors
+  and the kind type aliases (`APLValueKind`, `APLValueImplMap`, `APLActionImplStruct`, ...).
+  The view keeps every picker: `apl_helpers.tsx` gained `makeCommonFieldConfig` (21 tags),
+  `apl_values.ts` a `makeFieldConfig` that adds cmp/math/executePhase/totem/value/valueList
+  and delegates the rest, `apl_actions.ts` one that adds action/actionList and delegates to
+  `AplValues.makeFieldConfig`. `valueKindFactories`/`actionKindFactories` are still built at
+  module load — now by spreading the model entry and attaching
+  `aplInputBuilder(newValue, fields.map(makeFieldConfig))` — so `Object.keys` order (= kind
+  dropdown order), field order and option order are unchanged. All 155 entries moved; none
+  stayed behind. The tables are byte-identical to the old ones modulo the removed
+  `AplHelpers.`/`AplValues.` qualifiers. Pass/fail check (`norm` absorbs oxfmt re-joining
+  15 `fields:` arrays that got shorter once the qualifier was dropped, which also drops
+  their trailing comma):
+  `norm() { sed 's/AplHelpers\.//g; s/AplValues\.//g' | tr -d '[:space:]' | sed 's/,\]/]/g'; }`
+  `L=$(git show <base>:ui/features/apl/view/apl_values.ts | sed -n '562,1771p' | norm)`
+  `R=$(sed -n '186,$p' ui/features/apl/model/value_kinds.ts | norm); [ "$L" = "$R" ]`
+  (48565 chars; actions is the same recipe with `339,793p` / `85,$p` on `action_kinds.ts`,
+  16144 chars). Drop the `norm` pipe and `diff` the two side by side to *see* the 15 reflow
+  hunks. `DEFAULT_UNIT_REF` moved to `field_descriptors.ts` and is re-exported from
+  `apl_helpers.tsx`.

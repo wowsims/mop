@@ -30,10 +30,11 @@ import { ref } from 'tsx-vanilla';
 
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '../../gear/view/action_id_dom';
 import { ACTION_ID_SET, actionIdSets } from '../model/action_id_sets';
+import { CommonFieldDescriptor, DEFAULT_UNIT_REF } from '../model/field_descriptors';
 import { UNIT_SET, unitSets } from '../model/unit_sets';
 import { APLNameModal } from './apl_name_modal';
 
-export type DEFAULT_UNIT_REF = 'self' | 'currentTarget';
+export type { DEFAULT_UNIT_REF };
 
 export interface APLActionIDPickerConfig<ModObject> extends Omit<
 	DropdownPickerConfig<ModObject, ActionID, ActionId>,
@@ -1148,6 +1149,54 @@ export function itemSwapSetFieldConfig(field: string): APLPickerBuilderFieldConf
 				],
 			}),
 	};
+}
+
+/** Maps the DOM-free field descriptors in `model/` onto the picker factories above. */
+export function makeCommonFieldConfig(descriptor: CommonFieldDescriptor): APLPickerBuilderFieldConfig<any, any> {
+	switch (descriptor.type) {
+		case 'actionId':
+			return actionIdFieldConfig(descriptor.field, descriptor.actionIdSet, descriptor.unitRefField, descriptor.defaultUnitRef, descriptor.options);
+		case 'unit':
+			return unitFieldConfig(descriptor.field, descriptor.unitSet, descriptor.options);
+		case 'boolean':
+			return booleanFieldConfig(descriptor.field, descriptor.label, descriptor.options);
+		case 'number':
+			return numberFieldConfig(descriptor.field, descriptor.float, descriptor.options);
+		case 'string':
+			return stringFieldConfig(descriptor.field, descriptor.options);
+		case 'variableName':
+			return variableNameFieldConfig(descriptor.field, descriptor.options);
+		case 'placeholderName':
+			return placeholderNameFieldConfig(descriptor.field, descriptor.options);
+		case 'groupName':
+			return groupNameFieldConfig(descriptor.field, descriptor.options);
+		case 'groupReferenceVariables':
+			return groupReferenceVariablesFieldConfig(descriptor.field, descriptor.groupNameField, descriptor.options);
+		case 'eclipseType':
+			return eclipseTypeFieldConfig(descriptor.field);
+		case 'runeType':
+			return runeTypeFieldConfig(descriptor.field, descriptor.includeDeath);
+		case 'runeSlot':
+			return runeSlotFieldConfig(descriptor.field);
+		case 'rotationType':
+			return rotationTypeFieldConfig(descriptor.field);
+		case 'hotwStrategy':
+			return hotwStrategyFieldConfig(descriptor.field);
+		case 'statType':
+			return statTypeFieldConfig(descriptor.field);
+		case 'damageAmpType':
+			return damageAmpTypeFieldConfig(descriptor.field);
+		case 'itemSwapSet':
+			return itemSwapSetFieldConfig(descriptor.field);
+		case 'minIcd':
+			return minIcdInput;
+		case 'reactionTime':
+			return reactionTimeCheckbox();
+		case 'useDotBaseValue':
+			return useDotBaseValueCheckbox();
+		case 'useRuneRegenBaseValue':
+			return useRuneRegenBaseValueCheckbox();
+	}
 }
 
 /**
