@@ -1,13 +1,13 @@
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '@core/proto/api';
 import { Encounter as EncounterProto, Spec } from '@core/proto/common';
 import { SimRunData } from '@core/proto/ui';
-import { SimUI } from '@core/sim_ui';
 import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { batch, EventID, nextEventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import { formatDeltaTextElem, formatToNumber, formatToPercent, sum, zTest } from '@domain/utils';
 import { metricsClasses, ReferenceData, resultMetricCategories, resultMetricClasses, ResultMetrics } from '@features/results/model/sim_results';
+import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateResultMetricLabel, translateResultMetricTooltip } from '@i18n/localization';
 import clsx from 'clsx';
@@ -15,7 +15,7 @@ import tippy from 'tippy.js';
 
 import { trackEvent } from '../../../tracking/utils';
 
-export function addSimResultsAction(simUI: SimUI): SimResultsManager {
+export function addSimResultsAction(simUI: SimHost): SimResultsManager {
 	const resultsViewer = simUI.resultsViewer;
 	let isRunning = false;
 	let waitAbort = false;
@@ -77,14 +77,14 @@ export class SimResultsManager {
 	// Fires once per current/reference change; emitted explicitly (no relay)
 	// so a swap — which changes both — notifies once.
 
-	private readonly simUI: SimUI;
+	private readonly simUI: SimHost;
 
 	currentData: ReferenceData | null = null;
 	referenceData: ReferenceData | null = null;
 
 	private resetCallbacks: (() => void)[] = [];
 
-	constructor(simUI: SimUI) {
+	constructor(simUI: SimHost) {
 		this.simUI = simUI;
 	}
 

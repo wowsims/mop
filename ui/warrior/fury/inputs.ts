@@ -1,11 +1,11 @@
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
 
+import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 import { Spec } from '../../core/proto/common';
 import { WarriorSyncType } from '../../core/proto/warrior';
-import i18n from '../../i18n/config';
 
 export const SyncTypeInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecFuryWarrior, WarriorSyncType>({
 	fieldName: 'syncType',

@@ -1,6 +1,6 @@
+import * as PresetUtils from '@app/preset_utils';
 import { Stats } from '@domain/proto_utils/stats';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { PaladinMajorGlyph, PaladinMinorGlyph, PaladinSeal, ProtectionPaladin_Options as ProtectionPaladinOptions } from '../../core/proto/paladin';
 import { SavedTalents } from '../../core/proto/ui';

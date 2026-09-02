@@ -1,10 +1,10 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { ItemSlot } from '@core/proto/common';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '@domain/bulk/utils';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEligibleItemSlots } from '@domain/proto_utils/utils';
 import { Emitter } from '@domain/state/events';
 import { subscribeBulkChange } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import tippy from 'tippy.js';
@@ -18,7 +18,7 @@ import { BulkTab } from './bulk_tab';
 export default class BulkItemPicker extends Component {
 	private readonly itemElem: ItemRenderer;
 	private removeBtn: HTMLButtonElement | null = null;
-	readonly simUI: IndividualSimUI<any>;
+	readonly simUI: IndividualSimHost<any>;
 	readonly bulkUI: BulkTab;
 	readonly bulkSlot: BulkSimItemSlot;
 	// If less than 0, the item is currently equipped and not stored in the batch sim's item array
@@ -30,7 +30,7 @@ export default class BulkItemPicker extends Component {
 	public abortController: AbortController;
 	public signal: AbortSignal;
 
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>, bulkUI: BulkTab, item: EquippedItem, bulkSlot: BulkSimItemSlot, index: number) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>, bulkUI: BulkTab, item: EquippedItem, bulkSlot: BulkSimItemSlot, index: number) {
 		super(parent, 'bulk-item-picker');
 
 		this.simUI = simUI;

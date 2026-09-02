@@ -1,5 +1,5 @@
-import { SimUI } from '@core/sim_ui';
 import { Emitter } from '@domain/state/events';
+import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { CopyButton } from '@ui-kit/copy_button';
@@ -15,7 +15,7 @@ export interface ExporterOptions {
 }
 
 export abstract class Exporter extends BaseModal {
-	protected abstract readonly simUI: SimUI;
+	protected abstract readonly simUI: SimHost;
 	private readonly textElem: Element;
 	// UI-local signal: export category checkboxes changed.
 	protected readonly changeEmitter = new Emitter<void>();

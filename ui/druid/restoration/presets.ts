@@ -1,4 +1,5 @@
-import * as PresetUtils from '../../core/preset_utils';
+import * as PresetUtils from '@app/preset_utils';
+
 import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, RaidBuffs, Stat, UnitReference } from '../../core/proto/common';
 import { RestorationDruid_Options as RestorationDruidOptions } from '../../core/proto/druid';
 import { SavedTalents } from '../../core/proto/ui';

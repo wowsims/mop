@@ -1,4 +1,3 @@
-import type { IndividualSimUI } from '@core/individual_sim_ui';
 import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '@core/proto/api';
 import { PseudoStat, Stat, UnitStats } from '@core/proto/common';
 import { Player } from '@domain/player';
@@ -8,6 +7,7 @@ import { StatWeightActionSettings } from '@domain/stat_weight_settings';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField, subscribeStatWeightsChange } from '@domain/state/subscriptions';
 import { sanitizeId, stDevToConf90 } from '@domain/utils';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
 import { BaseModal } from '@ui-kit/base_modal';
@@ -22,7 +22,7 @@ import { trackEvent, trackPageView } from '../../../tracking/utils';
 import { ResultsViewer } from '../../results/view/results_viewer';
 import { renderSavedEPWeights } from './saved_ep_weights';
 
-export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) => {
+export const addStatWeightsAction = (simUI: IndividualSimHost<any>, settings: StatWeightActionSettings) => {
 	const epWeightsModal = new EpWeightsMenu(simUI, settings);
 	simUI.addAction(i18n.t('sidebar.buttons.stat_weights.title'), 'ep-weights-action', () => {
 		trackPageView('Stat Weights', '/stat-weights');
@@ -35,14 +35,14 @@ export const addStatWeightsAction = (simUI: IndividualSimUI<any>, settings: Stat
 // Create the config for modal in separate function, as constructor cannot
 // contain any logic before `super' call. Use modal-xl to accommodate the extra
 // TMI & p(death) EP in the UI.
-const getModalConfig = (simUI: IndividualSimUI<any>) => {
+const getModalConfig = (simUI: IndividualSimHost<any>) => {
 	const baseConfig = { footer: true, scrollContents: true };
 	if (simUI.sim.getShowThreatMetrics()) return { size: 'xl' as const, ...baseConfig };
 	return baseConfig;
 };
 
 export class EpWeightsMenu extends BaseModal {
-	private readonly simUI: IndividualSimUI<any>;
+	private readonly simUI: IndividualSimHost<any>;
 	private readonly container: HTMLElement;
 	private readonly sidebar: HTMLElement;
 	private readonly table: HTMLElement;
@@ -56,7 +56,7 @@ export class EpWeightsMenu extends BaseModal {
 	private epReferenceStat: Stat;
 	private showAllStats = false;
 
-	constructor(simUI: IndividualSimUI<any>, settings: StatWeightActionSettings) {
+	constructor(simUI: IndividualSimHost<any>, settings: StatWeightActionSettings) {
 		super(simUI.rootElem, 'ep-weights-menu', { ...getModalConfig(simUI), disposeOnClose: false });
 		this.header?.insertAdjacentElement('afterbegin', <h5 className="modal-title">{i18n.t('sidebar.buttons.stat_weights.modal.title')}</h5>);
 

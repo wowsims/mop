@@ -1,15 +1,15 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Spec } from '@core/proto/common';
 import { IndividualSimSettings } from '@core/proto/ui';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { getEnumValues, jsonStringifyWithFlattenedPaths } from '@domain/utils';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 
 import { IndividualImporter } from '../importers/individual_importer';
 import { IndividualExporter } from './individual_exporter';
 
 export class IndividualJsonExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: i18n.t('export.json.title'), allowDownload: true, selectCategories: true });
 	}
 
@@ -20,7 +20,7 @@ export class IndividualJsonExporter<SpecType extends Spec> extends IndividualExp
 		);
 	}
 
-	static getData(simUI: IndividualSimUI<any>, exportCategories?: Array<SimSettingCategories>): string {
+	static getData(simUI: IndividualSimHost<any>, exportCategories?: Array<SimSettingCategories>): string {
 		if (!exportCategories) {
 			exportCategories = IndividualImporter.DEFAULT_CATEGORIES;
 		}

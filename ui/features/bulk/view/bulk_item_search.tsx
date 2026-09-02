@@ -1,4 +1,3 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { ItemLevelState, ItemSpec } from '@core/proto/common';
 import { UIItem, UIItem_FactionRestriction } from '@core/proto/ui';
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
@@ -6,6 +5,7 @@ import { ActionId } from '@domain/proto_utils/action_id';
 import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/utils';
 import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateBulkSlotName } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';
@@ -20,7 +20,7 @@ import { BulkTab } from './bulk_tab';
 const MAX_SEARCH_RESULTS = 21;
 
 export default class BulkItemSearch extends ContentBlock {
-	readonly simUI: IndividualSimUI<any>;
+	readonly simUI: IndividualSimHost<any>;
 	readonly bulkUI: BulkTab;
 
 	// Can be used to remove any events in addEventListener
@@ -40,7 +40,7 @@ export default class BulkItemSearch extends ContentBlock {
 	private minIlvl = 0;
 	private maxIlvl = 0;
 
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>, bulkUI: BulkTab) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>, bulkUI: BulkTab) {
 		super(parent, 'bulk-item-search-root', { header: { title: i18n.t('bulk_tab.search.title') } });
 
 		this.simUI = simUI;

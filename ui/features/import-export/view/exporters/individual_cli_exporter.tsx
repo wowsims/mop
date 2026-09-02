@@ -1,12 +1,12 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { RaidSimRequest } from '@core/proto/api';
 import { Spec } from '@core/proto/common';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 
 import { IndividualExporter } from './individual_exporter';
 
 export class IndividualCLIExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: i18n.t('export.cli.title'), allowDownload: true });
 	}
 

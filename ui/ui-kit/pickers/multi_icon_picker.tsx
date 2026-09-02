@@ -1,4 +1,3 @@
-import { SimUI } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { batch, nextEventID } from '@domain/state/batch';
@@ -9,6 +8,7 @@ import { ref } from 'tsx-vanilla';
 
 import { Component } from '../component';
 import { existsInDOM } from '../dom_utils';
+import type { SimUIHost } from '../sim_host';
 import { IconPicker, IconPickerConfig } from './icon_picker';
 export interface MultiIconPickerItemConfig<ModObject> extends IconPickerConfig<ModObject, any> {}
 
@@ -36,7 +36,7 @@ export class MultiIconPicker<ModObject> extends Component {
 	public abortController: AbortController;
 	public signal: AbortSignal;
 
-	constructor(parent: HTMLElement, modObj: ModObject, config: MultiIconPickerConfig<ModObject>, simUI: SimUI) {
+	constructor(parent: HTMLElement, modObj: ModObject, config: MultiIconPickerConfig<ModObject>, simUI: SimUIHost) {
 		super(parent, 'multi-icon-picker-root');
 		this.rootElem.classList.add('icon-picker');
 		this.abortController = new AbortController();

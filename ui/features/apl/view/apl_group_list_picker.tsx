@@ -1,8 +1,8 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { APLGroup } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
@@ -11,7 +11,7 @@ import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLGroupEditor } from './apl_group_editor';
 import { APLNameModal } from './apl_name_modal';
 export class APLGroupListPicker extends Component {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>) {
 		super(parent, 'apl-group-list-picker-root');
 
 		const listPicker = new ListPicker<Player<any>, APLGroup>(this.rootElem, simUI.player, {

@@ -1,8 +1,8 @@
 import { ItemSlot, Spec } from '@core/proto/common';
-import { SimUI } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { batch, EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';
@@ -19,7 +19,7 @@ export interface ItemSwapPickerConfig {
 export class ItemSwapPicker<SpecType extends Spec> extends Component {
 	private readonly itemSlots: Array<ItemSlot>;
 
-	constructor(parentElem: HTMLElement, simUI: SimUI, player: Player<SpecType>, config: ItemSwapPickerConfig) {
+	constructor(parentElem: HTMLElement, simUI: SimHost, player: Player<SpecType>, config: ItemSwapPickerConfig) {
 		super(parentElem, 'item-swap-picker-root');
 		this.itemSlots = config.itemSlots;
 

@@ -1,4 +1,3 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { EquipmentSpec, UnitStats } from '@core/proto/common';
 import { SavedGearSet } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
@@ -14,6 +13,7 @@ import i18n from '@i18n/config';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
+import { IndividualSimUI } from '../individual_sim_ui';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class GearTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;

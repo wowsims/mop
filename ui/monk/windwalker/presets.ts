@@ -1,8 +1,8 @@
+import * as PresetUtils from '@app/preset_utils';
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '../../core/proto/monk';
 import { SavedTalents } from '../../core/proto/ui';

@@ -23,13 +23,18 @@ ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,utils,worker_
 ui/ui-kit/                           sim-agnostic widgets + base classes (Component, Input, pickers/,
                                      modals, action_id_dom, dom_utils, css_utils)
 ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
-ui/app/                              composition root; browser_env.ts, header/, tabs/, settings_menu.tsx,
-                                     notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a)
-ui/core/components/, ui/core/*_ui.tsx, ui/<class>/<spec>/   UI not yet placed — may import everything
-BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/** @core/components/**
+ui/app/                              composition root; browser_env.ts, header/, tabs/ (incl. settings_tab),
+                                     settings_menu.tsx, notice_native_sim.tsx,
+                                     preset_configuration_picker.tsx, sim_ui.tsx,
+                                     individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx,
+                                     i18n/ (alias @i18n) (PR 6a/6b)
+ui/<class>/<spec>/                   spec data + SimUI subclass — may import everything
+BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/**
 BANNED: ui/domain/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
 BANNED: ui/ui-kit/** → @features/** @app/** @specs/**;  ui/features/** → @app/** @specs/**
-BANNED: ui/core/components/** → patchSlice/patchKeyed/seedKeyed/deleteKeyed (use a facade)
+BANNED: ui/features/** → patchSlice/patchKeyed/seedKeyed/deleteKeyed (use a facade)
+NOTE: `@i18n/*` now resolves into `ui/app/i18n/*`. domain/ui-kit/features import it through the
+alias, which the layer lint does not see — an app edge that is deliberate, not enforced.
 ```
 
 The rule lives in `.oxlintrc.json` (`no-restricted-imports`, error level), keyed on the
@@ -147,6 +152,35 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 6b: `ui/core/` is now **proto only**. The shells moved to
+  `ui/app/`: `sim_ui.tsx`, `individual_sim_ui.tsx`, `preset_utils.tsx`, `launched_sims.tsx`;
+  `ui/i18n/**` → `ui/app/i18n/**` (`@i18n/*` alias repointed in `tsconfig.json`,
+  `vite.config.mts`, `vite.harness.mts`; `ui/index.html` + `ui/index_template.html` entry
+  script; the 34 gitignored `ui/*/*/index.html` regenerated with the makefile sed).
+  `ui/core/components/` is deleted — `sim_toolbar_item.tsx` → `ui/ui-kit/` (it is generic),
+  `settings_tab.tsx` → `ui/app/tabs/`; `ConsumesPicker` stored a `SettingsTab` it never read,
+  so the parameter was dropped rather than an interface invented.
+  To cut features/ui-kit/domain off the shells, **narrow host interfaces** replaced the classes
+  in every downstream signature (`import type` is not enough — the lint bans the specifier):
+  `ui/ui-kit/sim_host.ts` (`SimUIHost`, `SimHeaderHost`) and `ui/features/sim_host.ts`
+  (`SimHost`, `IndividualSimHost<Spec>`, `SimWarning`, `ActionGroupItem`, `isIndividualSimHost`).
+  `SimUI implements SimHost`, `IndividualSimUI implements IndividualSimHost` — the `implements`
+  clause is what keeps the interfaces honest. The spec-config schema moved to
+  `ui/features/spec_config.ts` (`IndividualSimUIConfig`, `InputConfig`, `InputSection`,
+  `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it could **not**
+  go to `ui/domain` as planned because it names `@ui-kit` types (`InputHelpers`, `IconInputs`,
+  `ContentBlock`, `SavedDataConfig`) and `@features/encounter`'s `EncounterPickerConfig`.
+  `app/individual_sim_ui.tsx` re-exports it so the 34 spec `sim.ts` files are untouched.
+  The preset types (`PresetGear`/`PresetEpWeights`/…) moved to `ui/domain/presets/types.ts`
+  (`preset_utils.tsx` re-exports them) so domain can name them; `required_talents.ts` now takes
+  `Pick<SpecConfigData, 'requiredTalentRows'>` instead of the whole UI config, and
+  `requiredTalentRows` was added to `SpecConfigData` — there is still ONE registry
+  (`domain/player.ts` `SPEC_CONFIGS`), no `domain/spec_config.ts` was created.
+  Gotcha: `ui/features/gear/view/item_list.tsx` used `instanceof IndividualSimUI`, a runtime
+  import an interface cannot replace — it now calls the `isIndividualSimHost()` predicate.
+  Gotcha: `tools/restructure/move.mjs` rewrites `@i18n/*` → `@app/i18n/*`, which would break the
+  layer lint in domain/features — the i18n move must be done by hand (`git mv` + repoint the
+  alias), not with the move tool.
 - 2026-09-02 UI restructure PR 6a: `ui/app/` gains `header/` (`sim_header`, `sim_title_dropdown`,
   `social_links`), `settings_menu.tsx`, `tabs/` (`gear_tab`, `talents_tab`, `rotation_tab`),
   `notice_native_sim.tsx`, `preset_configuration_picker.tsx` — moved from `ui/core/components/`

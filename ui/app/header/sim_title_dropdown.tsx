@@ -1,4 +1,3 @@
-import { simLaunchStatuses } from '@core/launched_sims';
 import { Class, Spec } from '@core/proto/common';
 import { PlayerClass } from '@domain/player_class';
 import { PlayerClasses } from '@domain/player_classes/index';
@@ -10,6 +9,8 @@ import { translatePlayerClass, translatePlayerSpec, translateStatus } from '@i18
 import { Component } from '@ui-kit/component';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
+
+import { simLaunchStatuses } from '../launched_sims';
 
 interface ClassOptions {
 	type: 'Class';

@@ -1,8 +1,8 @@
+import * as PresetUtils from '@app/preset_utils';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Stats } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,

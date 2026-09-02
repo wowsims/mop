@@ -69,23 +69,7 @@
       }
     },
     {
-      "files": ["ui/core/preset_utils.tsx", "ui/core/launched_sims.tsx"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["./components/**", "../components/**", "**/core/components/**"],
-                "message": "State/domain layer must not import from the UI component layer (see STATE_UI_SEPARATION_PLAN.md)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["ui/core/components/**/*.{ts,tsx}", "ui/features/**/*.{ts,tsx}"],
+      "files": ["ui/features/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -94,7 +78,7 @@
               {
                 "group": ["**/state/sim_store*"],
                 "importNames": ["patchSlice", "patchKeyed", "seedKeyed", "deleteKeyed"],
-                "message": "Components must not write the store directly — go through a facade (e.g. ui/domain/bulk_settings.ts)."
+                "message": "Features must not write the store directly — go through a facade (e.g. ui/domain/bulk_settings.ts)."
               }
             ]
           }
@@ -117,9 +101,7 @@
                   "@app",
                   "@app/**",
                   "@specs",
-                  "@specs/**",
-                  "@core/components",
-                  "@core/components/**"
+                  "@specs/**"
                 ],
                 "message": "ui/domain must not depend on ui-kit/features/app/specs (see ui/README.md dependency direction)."
               }

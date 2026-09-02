@@ -1,9 +1,9 @@
 import { ItemSlot } from '@core/proto/common';
-import { SimUI } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import type { SimHost } from '@features/sim_host';
 import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';
 
@@ -17,7 +17,7 @@ export default class IconItemSwapPicker extends Component {
 	private readonly player: Player<any>;
 	private readonly slot: ItemSlot;
 
-	constructor(parent: HTMLElement, simUI: SimUI, player: Player<any>, slot: ItemSlot) {
+	constructor(parent: HTMLElement, simUI: SimHost, player: Player<any>, slot: ItemSlot) {
 		super(parent, 'icon-picker-root');
 		this.rootElem.classList.add('icon-picker');
 		this.player = player;

@@ -1,3 +1,4 @@
+import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import { HASTE_RATING_PER_HASTE_PERCENT } from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -7,7 +8,6 @@ import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { APLRotation } from '../../core/proto/apl';
 import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import * as WarlockInputs from '../inputs';

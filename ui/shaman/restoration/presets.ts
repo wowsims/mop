@@ -1,6 +1,6 @@
+import * as PresetUtils from '@app/preset_utils';
 import { Stats } from '@domain/proto_utils/stats';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Stat } from '../../core/proto/common';
 import { RestorationShaman_Options as RestorationShamanOptions, ShamanShield } from '../../core/proto/shaman';
 import { SavedTalents } from '../../core/proto/ui';

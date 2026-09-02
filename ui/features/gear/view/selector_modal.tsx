@@ -1,6 +1,5 @@
 import { GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, Profession } from '@core/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@core/proto/ui';
-import { SimUI } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
@@ -9,6 +8,7 @@ import { Stats } from '@domain/proto_utils/stats';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { mod, randomUUID, sanitizeId } from '@domain/utils';
+import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
 import { BaseModal } from '@ui-kit/base_modal';
@@ -65,7 +65,7 @@ type SelectorModalOptions = {
 	disabledTabs?: SelectorModalTabs[];
 };
 export default class SelectorModal extends BaseModal {
-	private readonly simUI: SimUI;
+	private readonly simUI: SimHost;
 	private player: Player<any>;
 	private gearPicker: GearPicker | undefined;
 	private ilists: ItemList<ItemListType>[] = [];
@@ -80,7 +80,7 @@ export default class SelectorModal extends BaseModal {
 	private disabledTabs: SelectorModalTabs[] = [];
 	private options: SelectorModalOptions;
 
-	constructor(parent: HTMLElement, simUI: SimUI, player: Player<any>, gearPicker?: GearPicker, options?: Partial<SelectorModalOptions>) {
+	constructor(parent: HTMLElement, simUI: SimHost, player: Player<any>, gearPicker?: GearPicker, options?: Partial<SelectorModalOptions>) {
 		super(parent, 'selector-modal', { disposeOnClose: false, size: 'xl' });
 
 		this.simUI = simUI;

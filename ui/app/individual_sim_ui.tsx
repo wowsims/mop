@@ -1,15 +1,14 @@
-import { PresetConfigurationPicker } from '@app/preset_configuration_picker';
-import { GearTab } from '@app/tabs/gear_tab';
-import { RotationTab } from '@app/tabs/rotation_tab';
-import { TalentsTab } from '@app/tabs/talents_tab';
+import { StatWeightsResult } from '@core/proto/api';
+import { APLRotation, APLRotation_Type as APLRotationType } from '@core/proto/apl';
+import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@core/proto/common';
+import { IndividualSimSettings } from '@core/proto/ui';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
-import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from '@domain/player';
+import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
 import { getMetaGemConditionDescription } from '@domain/proto_utils/gems';
 import { armorTypeNames, professionNames } from '@domain/proto_utils/names';
-import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
-import { pseudoStatHasCap, StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { getTalentPoints, SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
+import { pseudoStatHasCap, StatCap, Stats } from '@domain/proto_utils/stats';
+import { getTalentPoints } from '@domain/proto_utils/utils';
 import { StatWeightActionSettings } from '@domain/stat_weight_settings';
 import { batch, EventID, nextEventID } from '@domain/state/batch';
 import { loadIndividualSettings } from '@domain/state/persistence';
@@ -24,7 +23,6 @@ import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from 
 import { isDevMode } from '@domain/utils';
 import { BulkTab } from '@features/bulk/view/bulk_tab';
 import { CharacterStats } from '@features/character-stats/view/character_stats';
-import { EncounterPickerConfig } from '@features/encounter/view/encounter_picker';
 import { ItemNotice } from '@features/gear/view/item_notice';
 import {
 	// Individual60UEPExporter,
@@ -44,178 +42,29 @@ import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import type { IndividualSimHost } from '@features/sim_host';
+import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
-import { ContentBlock } from '@ui-kit/content_block';
-import * as IconInputs from '@ui-kit/icon_inputs';
-import * as InputHelpers from '@ui-kit/input_helpers';
-import { SavedDataConfig } from '@ui-kit/saved_data_manager';
+import i18n from '@i18n/config';
 
-import i18n from '../i18n/config';
-import { SettingsTab } from './components/individual_sim_ui/settings_tab';
 import { simLaunchStatuses } from './launched_sims';
-import { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
-import { StatWeightsResult } from './proto/api';
-import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
-import {
-	ConsumesSpec,
-	Cooldowns,
-	Debuffs,
-	EquipmentSpec,
-	Glyphs,
-	HandType,
-	IndividualBuffs,
-	ItemSlot,
-	ItemSwap,
-	PartyBuffs,
-	Profession,
-	PseudoStat,
-	Race,
-	RaidBuffs,
-	Spec,
-	Stat,
-} from './proto/common';
-import { IndividualSimSettings, SavedTalents } from './proto/ui';
-import { SimUI, SimWarning } from './sim_ui';
+import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { SimUI } from './sim_ui';
+import { GearTab } from './tabs/gear_tab';
+import { RotationTab } from './tabs/rotation_tab';
+import { SettingsTab } from './tabs/settings_tab';
+import { TalentsTab } from './tabs/talents_tab';
+
+export type { IndividualSimUIConfig, InputConfig, InputSection, OtherDefaults, Settings } from '@features/spec_config';
+export { itemSwapEnabledSpecs, registerSpecConfig } from '@features/spec_config';
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
 const SAVED_ROTATION_STORAGE_KEY = '__savedRotation__';
 const SAVED_SETTINGS_STORAGE_KEY = '__savedSettings__';
 const SAVED_TALENTS_STORAGE_KEY = '__savedTalents__';
 
-export type InputConfig<ModObject> =
-	| InputHelpers.TypedBooleanPickerConfig<ModObject>
-	| InputHelpers.TypedNumberPickerConfig<ModObject>
-	| InputHelpers.TypedEnumPickerConfig<ModObject>;
-
-export interface InputSection {
-	tooltip?: string;
-	inputs: Array<InputConfig<Player<any>>>;
-}
-
-export interface OtherDefaults {
-	profession1?: Profession;
-	profession2?: Profession;
-	distanceFromTarget?: number;
-	channelClipDelay?: number;
-	reactionTime?: number;
-	highHpThreshold?: number;
-	iterationCount?: number;
-	race?: Race;
-}
-
-export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConfig<SpecType> {
-	// Override for required talent rows. If not specified, defaults to requiring all rows [0, 1, 2, 3, 4, 5]
-	requiredTalentRows?: number[];
-	// Additional css class to add to the root element.
-	cssClass: string;
-	// Used to generate schemed components. E.g. 'shaman', 'druid', 'raid'
-	cssScheme: string;
-
-	knownIssues?: Array<string>;
-	warnings?: Array<(simUI: IndividualSimUI<SpecType>) => SimWarning>;
-	consumableStats?: Array<Stat>;
-	gemStats?: Array<Stat>;
-	epStats: Array<Stat>;
-	epPseudoStats?: Array<PseudoStat>;
-	epReferenceStat: Stat;
-	displayStats: Array<UnitStat>;
-	modifyDisplayStats?: (player: Player<SpecType>) => StatMods;
-	overwriteDisplayStats?: (player: Player<SpecType>) => StatWrites;
-
-	// This can be used as a shorthand for setting "defaults".
-	// Useful for when the defaults should be the same as the preset build options
-	defaultBuild?: PresetBuild;
-	defaults: {
-		gear: EquipmentSpec;
-		itemSwap?: ItemSwap;
-
-		epWeights: Stats;
-		// Used for Reforge Optimizer
-		statCaps?: Stats;
-		/**
-		 * Allows specification of soft cap breakpoints for one or more stats.
-		 *
-		 * @remarks
-		 * These function differently from the hard caps taken from the sim UI in a few ways:
-		 *
-		 * Firstly, the specified breakpoints are lower priority than hard caps, and
-		 * evaluated only after the hard cap constraints have been solved first.
-		 *
-		 * Secondly, these constraints are evaluated in the order specified by the configuration
-		 * Array rather than all at once. So once the hard caps have been respected, the
-		 * closest breakpoint for the *first* listed soft capped stat is optimized against
-		 * while ignoring any others. Then the solution is used to identify the closest
-		 * breakpoint for the second listed stat (if present), etc.
-		 */
-		softCapBreakpoints?: StatCap[];
-		breakpointLimits?: Stats;
-		consumables: ConsumesSpec;
-		talents: SavedTalents;
-		specOptions: SpecOptions<SpecType>;
-
-		raidBuffs: RaidBuffs;
-		partyBuffs: PartyBuffs;
-		individualBuffs: IndividualBuffs;
-
-		debuffs: Debuffs;
-
-		rotationType?: APLRotationType;
-		simpleRotation?: SpecRotation<SpecType>;
-
-		// Encounter applied by "Reset to Defaults" and on first load. Falls back to
-		// the generic single-target dummy when unset.
-		encounter?: PresetEncounter;
-
-		other?: OtherDefaults;
-	};
-
-	playerInputs?: InputSection;
-	playerIconInputs: Array<IconInputs.IconInputConfig<Player<SpecType>, any>>;
-	petConsumeInputs?: Array<IconInputs.IconInputConfig<Player<SpecType>, any>>;
-	rotationInputs?: InputSection;
-	rotationIconInputs?: Array<IconInputs.IconInputConfig<Player<SpecType>, any>>;
-	includeBuffDebuffInputs: Array<any>;
-	excludeBuffDebuffInputs: Array<any>;
-	otherInputs: InputSection;
-	// Currently, many classes don't support item swapping, and only in certain slots.
-	// So enable it only where it is supported.
-	itemSwapSlots?: Array<ItemSlot>;
-
-	// For when extra sections are needed (e.g. Shaman totems)
-	customSections?: Array<(parentElem: HTMLElement, simUI: IndividualSimUI<SpecType>) => ContentBlock>;
-
-	encounterPicker: EncounterPickerConfig;
-
-	presets: {
-		epWeights: Array<PresetEpWeights>;
-		gear: Array<PresetGear>;
-		talents: Array<SavedDataConfig<Player<SpecType>, SavedTalents>>;
-		rotations: Array<PresetRotation>;
-		encounters?: Array<PresetEncounter>;
-		settings?: Array<PresetSettings>;
-		builds?: Array<PresetBuild>;
-		itemSwaps?: Array<PresetItemSwap>;
-	};
-}
-
-export function registerSpecConfig<SpecType extends Spec>(spec: SpecType, config: IndividualSimUIConfig<SpecType>): IndividualSimUIConfig<SpecType> {
-	registerPlayerConfig(spec, config);
-	return config;
-}
-
-export const itemSwapEnabledSpecs: Array<any> = [];
-
-export interface Settings {
-	raidBuffs: RaidBuffs;
-	partyBuffs: PartyBuffs;
-	individualBuffs: IndividualBuffs;
-	consumables: ConsumesSpec;
-	race: Race;
-	professions?: Array<Profession>;
-}
-
 // Extended shared UI for all individual player sims.
-export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
+export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI implements IndividualSimHost<SpecType> {
 	readonly player: Player<SpecType>;
 	readonly individualConfig: IndividualSimUIConfig<SpecType>;
 	private readonly statWeightActionSettings: StatWeightActionSettings;

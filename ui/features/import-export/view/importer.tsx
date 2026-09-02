@@ -1,4 +1,4 @@
-import { SimUI } from '@core/sim_ui';
+import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import Toast from '@ui-kit/toast';
@@ -12,7 +12,7 @@ export interface ImporterOptions {
 }
 
 export abstract class Importer extends BaseModal {
-	protected abstract readonly simUI: SimUI;
+	protected abstract readonly simUI: SimHost;
 
 	protected readonly textElem: HTMLTextAreaElement;
 	protected readonly descriptionElem: HTMLElement;

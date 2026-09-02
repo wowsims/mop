@@ -1,9 +1,9 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '@core/proto/common';
 import { Database } from '@domain/proto_utils/database';
 import { nameToClass, nameToProfession, nameToRace } from '@domain/proto_utils/names';
 import { GlyphConfig } from '@domain/talents/config';
 import { classGlyphsConfig } from '@domain/talents/factory';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { JsonObject } from '@protobuf-ts/runtime';
 import Toast from '@ui-kit/toast';
@@ -13,7 +13,7 @@ import { IndividualImporter } from './individual_importer';
 
 export class IndividualAddonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
 	static WSE_VERSION = getWSEVersion();
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: i18n.t('import.addon.title'), allowFileUpload: true });
 
 		const warningRef = ref<HTMLDivElement>();

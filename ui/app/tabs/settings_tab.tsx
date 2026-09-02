@@ -1,4 +1,5 @@
-import { PresetConfigurationPicker } from '@app/preset_configuration_picker';
+import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '@core/proto/common';
+import { SavedEncounter, SavedSettings } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
@@ -10,6 +11,8 @@ import { ItemSwapPicker } from '@features/item-swap/view/item_swap_picker';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { ConsumesPicker } from '@features/settings/view/consumes_picker';
+import i18n from '@i18n/config';
+import { translateProfession, translateRace } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
 import { Input } from '@ui-kit/input';
@@ -20,11 +23,8 @@ import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
-import i18n from '../../../i18n/config';
-import { translateProfession, translateRace } from '../../../i18n/localization';
-import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
-import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common';
-import { SavedEncounter, SavedSettings } from '../../proto/ui';
+import { IndividualSimUI, InputSection } from '../individual_sim_ui';
+import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 
@@ -157,7 +157,7 @@ export class SettingsTab extends SimTab {
 		const contentBlock = new ContentBlock(this.column2, 'consumes-settings', {
 			header: { title: i18n.t('settings_tab.consumables.title') },
 		});
-		ConsumesPicker.create(contentBlock.bodyElement, this, this.simUI);
+		ConsumesPicker.create(contentBlock.bodyElement, this.simUI);
 	}
 
 	private buildOtherSettings() {

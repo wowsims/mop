@@ -1,8 +1,8 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Spec } from '@core/proto/common';
 import { IndividualSimSettings } from '@core/proto/ui';
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@domain/constants/sim_settings';
 import { arrayEquals, getEnumValues } from '@domain/utils';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { default as pako } from 'pako';
 
@@ -10,7 +10,7 @@ import { IndividualImporter } from '../importers/individual_importer';
 import { IndividualExporter } from './individual_exporter';
 
 export class IndividualLinkExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: i18n.t('export.link.title'), selectCategories: true });
 	}
 
@@ -21,7 +21,7 @@ export class IndividualLinkExporter<SpecType extends Spec> extends IndividualExp
 		);
 	}
 
-	static createLink(simUI: IndividualSimUI<any>, exportCategories?: Array<SimSettingCategories>): string {
+	static createLink(simUI: IndividualSimHost<any>, exportCategories?: Array<SimSettingCategories>): string {
 		if (!exportCategories) {
 			exportCategories = IndividualImporter.DEFAULT_CATEGORIES;
 		}

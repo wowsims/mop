@@ -1,4 +1,3 @@
-import { IndividualSimUI, InputSection } from '@core/individual_sim_ui';
 import { APLRotation, APLRotation_Type as APLRotationType } from '@core/proto/apl';
 import { SavedRotation } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
@@ -25,6 +24,7 @@ import { SimTab } from '@ui-kit/sim_tab';
 import { StickyToolbar } from '@ui-kit/sticky_toolbar';
 import clsx from 'clsx';
 
+import { IndividualSimUI, InputSection } from '../individual_sim_ui';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class RotationTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;

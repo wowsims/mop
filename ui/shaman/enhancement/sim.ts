@@ -1,3 +1,4 @@
+import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -6,11 +7,10 @@ import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions'
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/view/other_inputs';
+import i18n from '@i18n/config';
 
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { APLRotation } from '../../core/proto/apl';
 import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat, UnitStats } from '../../core/proto/common';
-import i18n from '../../i18n/config';
 import * as ShamanInputs from '../inputs';
 import * as EnhancementInputs from './inputs';
 import * as Presets from './presets';

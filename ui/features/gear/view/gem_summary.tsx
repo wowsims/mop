@@ -1,9 +1,9 @@
 import { UIGem as Gem } from '@core/proto/ui';
-import { SimUI } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
@@ -18,12 +18,12 @@ interface GemSummaryData {
 }
 
 export class GemSummary extends Component {
-	private readonly simUI: SimUI;
+	private readonly simUI: SimHost;
 	private readonly player: Player<any>;
 
 	private readonly container: ContentBlock;
 
-	constructor(parent: HTMLElement, simUI: SimUI, player: Player<any>) {
+	constructor(parent: HTMLElement, simUI: SimHost, player: Player<any>) {
 		super(parent, 'summary-table-root');
 		this.rootElem.classList.add('hide');
 

@@ -1,7 +1,6 @@
-import { SimUI } from '@core/sim_ui';
-
 import { trackPageView } from '../tracking/utils';
 import { Component } from './component';
+import type { SimUIHost } from './sim_host';
 
 export interface SimTabConfig {
 	identifier: string;
@@ -9,14 +8,14 @@ export interface SimTabConfig {
 }
 
 export abstract class SimTab extends Component {
-	protected simUI: SimUI;
+	protected simUI: SimUIHost;
 	protected config: SimTabConfig;
 
 	readonly navItem: HTMLElement;
 	readonly navLink: HTMLElement;
 	readonly contentContainer: HTMLElement;
 
-	constructor(parentElem: HTMLElement, simUI: SimUI, config: SimTabConfig) {
+	constructor(parentElem: HTMLElement, simUI: SimUIHost, config: SimTabConfig) {
 		super(parentElem, 'sim-tab');
 
 		this.rootElem.classList.add(config.identifier);

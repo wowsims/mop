@@ -1,9 +1,9 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Stat } from '@core/proto/common';
 import { IndividualSimSettings } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
 import { Component } from '@ui-kit/component';
@@ -16,12 +16,12 @@ type ReforgeSummaryTotal = {
 };
 
 export class ReforgeSummary extends Component {
-	private readonly simUI: IndividualSimUI<any>;
+	private readonly simUI: IndividualSimHost<any>;
 	private readonly player: Player<any>;
 
 	private readonly container: ContentBlock;
 
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>, player: Player<any>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>, player: Player<any>) {
 		super(parent, 'summary-table-root');
 		this.rootElem.classList.add('hide');
 

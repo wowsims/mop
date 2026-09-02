@@ -1,9 +1,8 @@
-import { SimUI } from '@core/sim_ui';
-
 import { Component } from './component';
+import type { SimUIHost } from './sim_host';
 
 export class StickyToolbar extends Component {
-	constructor(rootElem: HTMLElement, simUI: SimUI | null) {
+	constructor(rootElem: HTMLElement, simUI: SimUIHost | null) {
 		super(null, 'sticky-toolbar-root', rootElem);
 
 		new IntersectionObserver(

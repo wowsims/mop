@@ -1,9 +1,9 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { ItemSlot, ItemSpec } from '@core/proto/common';
 import { TopGearResult } from '@domain/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@domain/bulk/utils';
 import { nextEventID } from '@domain/state/batch';
 import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '@domain/utils';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import Toast from '@ui-kit/toast';
@@ -22,9 +22,9 @@ const itemSpecPairsEqualUnordered = (resultItems: ItemSpec[], originalItems: Ite
 	(ItemSpec.equals(resultItems[slot1], originalItems[slot2]) && ItemSpec.equals(resultItems[slot2], originalItems[slot1]));
 
 export default class BulkSimResultRenderer extends Component {
-	readonly simUI: IndividualSimUI<any>;
+	readonly simUI: IndividualSimHost<any>;
 
-	constructor(parent: HTMLElement | DocumentFragment, simUI: IndividualSimUI<any>, result: TopGearResult, baseResult: TopGearResult) {
+	constructor(parent: HTMLElement | DocumentFragment, simUI: IndividualSimHost<any>, result: TopGearResult, baseResult: TopGearResult) {
 		super(parent, 'bulk-sim-result-root');
 
 		this.simUI = simUI;

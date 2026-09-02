@@ -1,10 +1,9 @@
-import { SettingsTab } from '@core/components/individual_sim_ui/settings_tab';
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, ConsumableType, Spec } from '@core/proto/common';
 import { Consumable } from '@core/proto/db';
 import { Player } from '@domain/player';
 import { Database } from '@domain/proto_utils/database';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { buildIconInput } from '@ui-kit/icon_inputs';
@@ -16,13 +15,11 @@ import * as ConsumablesInputs from '../model/consumables';
 import { relevantStatOptions } from '../model/stat_options';
 
 export class ConsumesPicker extends Component {
-	protected settingsTab: SettingsTab;
-	protected simUI: IndividualSimUI<any>;
+	protected simUI: IndividualSimHost<any>;
 	protected db: Database;
 
-	constructor(parentElem: HTMLElement, settingsTab: SettingsTab, simUI: IndividualSimUI<any>, db: Database) {
+	constructor(parentElem: HTMLElement, simUI: IndividualSimHost<any>, db: Database) {
 		super(parentElem, 'consumes-picker-root');
-		this.settingsTab = settingsTab;
 		this.simUI = simUI;
 		this.db = db;
 	}
@@ -31,8 +28,8 @@ export class ConsumesPicker extends Component {
 		return this.db.getConsumablesByTypeAndStats(type, this.simUI.individualConfig.consumableStats ?? this.simUI.individualConfig.epStats);
 	}
 
-	public static create(parentElem: HTMLElement, settingsTab: SettingsTab, simUI: IndividualSimUI<any>): ConsumesPicker {
-		const instance = new ConsumesPicker(parentElem, settingsTab, simUI, Database.getSync());
+	public static create(parentElem: HTMLElement, simUI: IndividualSimHost<any>): ConsumesPicker {
+		const instance = new ConsumesPicker(parentElem, simUI, Database.getSync());
 		instance.init();
 		return instance;
 	}

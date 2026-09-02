@@ -12,6 +12,7 @@ ui/
                      bulk request builders, wasm/, constants, utils, worker_pool, reforge_cache,
                      wowhead, cache_handler. alias @domain
   ui-kit/            EXISTS. sim-agnostic widgets + base classes: component, input, sim_tab,
+                     sim_host (SimUIHost/SimHeaderHost — the shell slice ui-kit is allowed to name),
                      base_modal, content_block, toast, copy_button, tooltip_button, sticky_toolbar,
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
                      css_utils, dom_utils, action_id_dom, pickers/, vendor/. alias @ui-kit
@@ -27,36 +28,16 @@ ui/
                      spec_change_warning_toast, PR 5a/5c), bulk/ (model/ core_sim, view/
                      bulk_tab + bulk_item_search/bulk_item_picker/bulk_item_picker_group/
                      bulk_sim_results_renderer flattened, PR 5b), import-export/ (view/
-                     importer/exporter + importers/ + exporters/, PR 5b). alias @features
-  app/               EXISTS (in progress). shells + chrome that compose features; i18n/. Today:
-                     browser_env.ts, header/ (sim_header, sim_title_dropdown, social_links),
-                     settings_menu.tsx, tabs/ (gear_tab, talents_tab, rotation_tab),
-                     notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a) —
-                     sim_ui/individual_sim_ui/preset_utils/launched_sims and the rest of
-                     components/ are still under ui/core/ (PR 6b+). alias @app
-  core/              LEGACY. what has not been placed yet: proto/ (generated), components/
-                     (detailed_results moved to features/results, PR 4a; apl_values/apl_actions/
-                     apl_helpers/apl_condition_builder/apl/ moved to features/apl/view, PR 4b,
-                     apl actionIdSets/unitSets to features/apl/model, PR 4c; gear_picker/,
-                     item_swap_picker.tsx, character_stats.tsx, encounter_picker.ts,
-                     item_notice/, and the gem/reforge/upgrade_costs summaries +
-                     cooldowns_picker/consumes_picker moved out to features/, PR 5a;
-                     individual_sim_ui/bulk/, individual_sim_ui/bulk_tab.tsx,
-                     individual_sim_ui/importers/, individual_sim_ui/exporters/, importer.tsx,
-                     exporter.tsx moved out to features/bulk + features/import-export, PR 5b;
-                     inputs/buffs_debuffs.ts, inputs/consumables.ts, inputs/stat_options.ts,
-                     inputs/other_inputs.ts, saved_data_managers/ep_weights.ts, quick_swap.tsx,
-                     gear_change_icon.tsx, results_viewer.tsx, spec_change_warning_toast.tsx
-                     moved out to features/settings, features/stat-weights, features/gear,
-                     features/results, PR 5c; sim_header.tsx, sim_title_dropdown.tsx,
-                     social_links.tsx, settings_menu.tsx, individual_sim_ui/gear_tab.ts,
-                     individual_sim_ui/talents_tab.tsx, individual_sim_ui/rotation_tab.tsx,
-                     individual_sim_ui/notice_native_sim.tsx,
-                     individual_sim_ui/preset_configuration_picker.tsx moved out to ui/app/,
-                     PR 6a — components/ now holds only header/sim_toolbar_item.tsx and
-                     individual_sim_ui/settings_tab.tsx, kept back because features still import
-                     them (results_viewer.tsx, consumes_picker.tsx); PR 6b), sim_ui.tsx,
-                     individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx. alias @core
+                     importer/exporter + importers/ + exporters/, PR 5b); plus two top-level
+                     type files: sim_host.ts (SimHost/IndividualSimHost) and spec_config.ts
+                     (IndividualSimUIConfig + registerSpecConfig, PR 6b). alias @features
+  app/               EXISTS. shells + chrome that compose features. Today: browser_env.ts,
+                     header/ (sim_header, sim_title_dropdown, social_links), settings_menu.tsx,
+                     tabs/ (gear_tab, talents_tab, rotation_tab, settings_tab),
+                     notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a),
+                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx,
+                     i18n/ (PR 6b). alias @app; i18n keeps its own alias @i18n
+  core/              LEGACY, proto only: ui/core/proto/ (generated). alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged
@@ -83,11 +64,24 @@ location/navigator) on `ui/domain/**` and `ui/features/*/model/**`.
 
 The `no-restricted-imports` groups use `**` (not `*`): oxlint matches these patterns one
 path segment at a time, so `@features/*` would not catch `@features/gear/view/action_id_dom`.
-`ui/domain/**` additionally bans `@core/components/**`, which is where the legacy UI still lives.
+`ui/features/**` may not import the store writers (`patchSlice` / `patchKeyed` / `seedKeyed` /
+`deleteKeyed`) — go through a facade.
 
-What is left under `ui/core/` keeps its old rules: `ui/core/{preset_utils,launched_sims}.tsx`
-may not import `ui/core/components/**`, and `ui/core/components/**` may not import the store
-writers (`patchSlice` / `patchKeyed` / `seedKeyed` / `deleteKeyed`) — go through a facade.
+Features, ui-kit and domain must not name the app shells (`SimUI`, `IndividualSimUI`) even as a
+type: `import type` is erased at runtime but the lint bans the specifier either way. They use
+narrow host interfaces instead — `@ui-kit/sim_host` (`SimUIHost`, `SimHeaderHost`) and
+`@features/sim_host` (`SimHost`, `IndividualSimHost<Spec>`, `SimWarning`, `ActionGroupItem`,
+plus the `isIndividualSimHost()` predicate that replaces `instanceof IndividualSimUI`). The
+shells declare `implements SimHost` / `implements IndividualSimHost` so the interfaces stay
+honest. The per-spec config schema lives in `@features/spec_config` (`IndividualSimUIConfig`,
+`InputSection`, `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it
+cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
+`app/individual_sim_ui.tsx` re-exports it for the 34 spec `sim.ts` files. The preset shapes
+(`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
+holds the `make*` builders and re-exports the types.
+
+`@i18n/*` resolves into `ui/app/i18n/*`. domain/ui-kit/features reach it through that alias,
+which `no-restricted-imports` does not see — a deliberate, unenforced app edge.
 
 ## Aliases
 
@@ -100,8 +94,8 @@ writers (`patchSlice` / `patchKeyed` / `seedKeyed` / `deleteKeyed`) — go throu
 | `@features/*` | `ui/features/*` |
 | `@app/*` | `ui/app/*` |
 | `@specs/*` | `ui/specs/*` |
-| `@i18n/*` | `ui/i18n/*` |
-| `@core/*` | `ui/core/*` |
+| `@i18n/*` | `ui/app/i18n/*` |
+| `@core/*` | `ui/core/*` (proto only) |
 
 Configured via `tsconfig.json` (`paths`) and `resolve.alias` in `vite.config.mts`
 (`getBaseConfig`, inherited by worker builds) and `vite.harness.mts`. Node's `package.json`

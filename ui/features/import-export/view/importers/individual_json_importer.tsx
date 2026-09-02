@@ -1,13 +1,13 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Spec } from '@core/proto/common';
 import { IndividualSimSettings } from '@core/proto/ui';
 import { Database } from '@domain/proto_utils/database';
 import { nextEventID } from '@domain/state/batch';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 
 import { IndividualImporter } from './individual_importer';
 export class IndividualJsonImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: i18n.t('import.json.title'), allowFileUpload: true });
 
 		this.descriptionElem.appendChild(

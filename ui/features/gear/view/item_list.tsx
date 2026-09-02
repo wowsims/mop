@@ -1,7 +1,5 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '@core/proto/common';
 import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@core/proto/ui';
-import { SimUI } from '@core/sim_ui';
 import { SortDirection } from '@domain/constants/other';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -13,6 +11,8 @@ import { Sim } from '@domain/sim';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { StoreSubscribe, subscribeBulkField } from '@domain/state/subscriptions';
 import { formatDeltaTextElem } from '@domain/utils';
+import type { SimHost } from '@features/sim_host';
+import { isIndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { Clusterize } from '@ui-kit/vendor/clusterize';
@@ -65,7 +65,7 @@ enum ItemListSortBy {
 
 export default class ItemList<T extends ItemListType> {
 	private listElem: HTMLElement;
-	private readonly simUI: SimUI;
+	private readonly simUI: SimHost;
 	private readonly player: Player<any>;
 	public id: string;
 	public label: string;
@@ -88,7 +88,7 @@ export default class ItemList<T extends ItemListType> {
 	constructor(
 		id: string,
 		parent: HTMLElement,
-		simUI: SimUI,
+		simUI: SimHost,
 		currentSlot: ItemSlot,
 		currentTab: SelectorModalTabs,
 		player: Player<any>,
@@ -621,7 +621,7 @@ export default class ItemList<T extends ItemListType> {
 			const batchSimTooltip = tippy(compareButton.value!);
 
 			this.bindToggleCompare(compareContainer.value!);
-			const simUI = this.simUI instanceof IndividualSimUI ? this.simUI : null;
+			const simUI = isIndividualSimHost(this.simUI) ? this.simUI : null;
 			if (simUI) {
 				const checkHasItem = () => simUI.bt?.hasItem(ItemSpec.create({ id: itemData.id }));
 				const toggleCompareButtonState = () => {

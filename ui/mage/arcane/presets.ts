@@ -1,9 +1,9 @@
+import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
 import { nextEventID } from '@domain/state/batch';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, Race, Spec, Stat } from '../../core/proto/common';
 import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';

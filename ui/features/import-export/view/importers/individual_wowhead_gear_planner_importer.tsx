@@ -1,6 +1,6 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@core/proto/common';
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';
@@ -190,7 +190,7 @@ function parseWowheadGearLink(link: string): WowheadGearPlannerImportJSON {
 }
 
 export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: i18n.t('import.wowhead.title'), allowFileUpload: true });
 
 		const warningRef = ref<HTMLDivElement>();

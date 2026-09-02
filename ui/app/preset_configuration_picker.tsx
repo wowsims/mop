@@ -1,5 +1,3 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
-import { PresetBuild } from '@core/preset_utils';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '@core/proto/common';
 import { SavedTalents } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
@@ -13,6 +11,9 @@ import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
+
+import { IndividualSimUI } from './individual_sim_ui';
+import { PresetBuild } from './preset_utils';
 export class PresetConfigurationPicker extends Component {
 	readonly simUI: IndividualSimUI<Spec>;
 	readonly builds: Array<PresetBuild>;

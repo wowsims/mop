@@ -1,8 +1,6 @@
-import type { IndividualSimUI } from '@core/individual_sim_ui';
 import { ReforgeSettings, StatCapType } from '@core/proto/api';
 import { ItemSlot, Stat } from '@core/proto/common';
 import { IndividualSimSettings } from '@core/proto/ui';
-import { ActionGroupItem } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { Gear } from '@domain/proto_utils/gear';
@@ -13,6 +11,7 @@ import { batch, EventID, nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
 import { ReforgeOptimizerContext, ReforgeOptimizerModel, ReforgeOptimizerOptions, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
+import type { ActionGroupItem, IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateSlotName } from '@i18n/localization';
 import { CopyButton } from '@ui-kit/copy_button';
@@ -59,7 +58,7 @@ const STAT_TOOLTIPS: StatTooltipContent = {
 
 export class ReforgeOptimizer {
 	readonly model: ReforgeOptimizerModel;
-	protected readonly simUI: IndividualSimUI<any>;
+	protected readonly simUI: IndividualSimHost<any>;
 	protected readonly player: Player<any>;
 	protected reforgeDoneToast: Toast | null = null;
 	protected progressTrackerModal: ProgressTrackerModal;
@@ -68,7 +67,7 @@ export class ReforgeOptimizer {
 	protected wasCM: boolean = false;
 	protected isCancelling: boolean = false;
 
-	constructor(simUI: IndividualSimUI<any>, options?: ReforgeOptimizerOptions) {
+	constructor(simUI: IndividualSimHost<any>, options?: ReforgeOptimizerOptions) {
 		this.simUI = simUI;
 		this.player = simUI.player;
 		this.statTooltips = { ...STAT_TOOLTIPS, ...options?.statTooltips };

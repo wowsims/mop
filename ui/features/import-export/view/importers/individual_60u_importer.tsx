@@ -1,13 +1,13 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, EquipmentSpec, ItemSpec, Race, Spec } from '@core/proto/common';
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
 import { talentSpellIdsToTalentString } from '@domain/talents/factory';
+import type { IndividualSimHost } from '@features/sim_host';
 import Toast from '@ui-kit/toast';
 
 import { IndividualImporter } from './individual_importer';
 
 export class Individual60UImporter<SpecType extends Spec> extends IndividualImporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: 'Sixty Upgrades Cataclysm Import', allowFileUpload: true });
 
 		this.descriptionElem.appendChild(

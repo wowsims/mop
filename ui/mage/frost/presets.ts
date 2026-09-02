@@ -1,7 +1,7 @@
+import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, Profession, Race, Stat } from '../../core/proto/common';
 import { FrostMage_Options as MageOptions, MageArmor, MageMajorGlyph, MageMinorGlyph } from '../../core/proto/mage';
 import { SavedTalents } from '../../core/proto/ui';

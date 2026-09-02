@@ -1,4 +1,3 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { ItemSlot, PseudoStat, Race, Spec, Stat, WeaponType } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
@@ -7,6 +6,7 @@ import { getStatName, masterySpellIDs } from '@domain/proto_utils/names';
 import { computeStatAttribution, StatMods, Stats, StatWrites, UnitStat } from '@domain/proto_utils/stats';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateMasterySpellName } from '@i18n/localization';
 import { Component } from '@ui-kit/component';
@@ -37,7 +37,7 @@ export class CharacterStats extends Component {
 
 	constructor(
 		parent: HTMLElement,
-		simUI: IndividualSimUI<any>,
+		simUI: IndividualSimHost<any>,
 		player: Player<any>,
 		statList: Array<UnitStat>,
 		modifyDisplayStats?: (player: Player<any>) => StatMods,

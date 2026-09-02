@@ -42,7 +42,7 @@ import '../../ui/warrior/arms/sim';
 import '../../ui/warrior/fury/sim';
 import '../../ui/warrior/protection/sim';
 
-import { IndividualSimUIConfig } from '../../ui/core/individual_sim_ui';
+import { IndividualSimUIConfig } from '../../ui/app/individual_sim_ui';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/core/proto/apl';
 import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/core/proto/common';
 import { getSpecConfig, Player } from '../../ui/domain/player';

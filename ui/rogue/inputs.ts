@@ -1,9 +1,9 @@
 import { ActionId } from '@domain/proto_utils/action_id';
 import { RogueSpecs } from '@domain/proto_utils/utils';
+import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 import { RogueOptions_PoisonOptions as Poison } from '../core/proto/rogue';
-import i18n from '../i18n/config';
 
 // Configuration for class-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.

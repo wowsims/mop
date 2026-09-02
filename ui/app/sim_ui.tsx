@@ -1,7 +1,4 @@
-import { SimHeader } from '@app/header/sim_header';
-import { SimTitleDropdown } from '@app/header/sim_title_dropdown';
-import { SocialLinks } from '@app/header/social_links';
-import { NoticeNativeSim } from '@app/notice_native_sim';
+import { ErrorOutcomeType } from '@core/proto/api';
 import { REPO_NEW_ISSUE_URL } from '@domain/constants/other';
 import { PlayerSpec } from '@domain/player_spec';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -11,10 +8,12 @@ import { RunSimOptions, Sim, SimError } from '@domain/sim';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from '@domain/state/persistence';
-import { StoreSubscribe, subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
+import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
 import { WorkerProgressCallback } from '@domain/worker_pool';
 import { ResultsViewer } from '@features/results/view/results_viewer';
+import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
+import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
@@ -23,18 +22,14 @@ import Toast from '@ui-kit/toast';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../i18n/config';
 import { trackEvent } from '../tracking/utils';
+import { SimHeader } from './header/sim_header';
+import { SimTitleDropdown } from './header/sim_title_dropdown';
+import { SocialLinks } from './header/social_links';
 import { LaunchStatus, SimStatus } from './launched_sims';
-import { ErrorOutcomeType } from './proto/api';
+import { NoticeNativeSim } from './notice_native_sim';
 const URLMAXLEN = 2048;
 const globalKnownIssues: Array<string> = [];
-
-// Config for displaying a warning to the user whenever a condition is met.
-export interface SimWarning {
-	updateOn: StoreSubscribe;
-	getContent: () => string | Array<string>;
-}
 
 export interface SimUIConfig {
 	// Additional css class to add to the root element.
@@ -48,8 +43,10 @@ export interface SimUIConfig {
 	noticeText?: string;
 }
 
+export type { ActionGroupItem, SimWarning } from '@features/sim_host';
+
 // Shared UI for all individual sims and the raid sim.
-export abstract class SimUI extends Component {
+export abstract class SimUI extends Component implements SimHost {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
 	readonly disabled: boolean;
@@ -458,5 +455,3 @@ class CrashModal extends BaseModal {
 		);
 	}
 }
-
-export type ActionGroupItem = { label?: string; children?: Element; cssClass?: string; onClick?: (event: MouseEvent) => void };

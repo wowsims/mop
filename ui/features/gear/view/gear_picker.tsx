@@ -1,12 +1,12 @@
 import { ItemLevelState, ItemSlot } from '@core/proto/common';
 import { UIEnchant as Enchant, UIGem as Gem } from '@core/proto/ui';
-import { SimUI } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { getEnchantDescription } from '@domain/proto_utils/enchants';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
+import type { SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
 import { Component } from '@ui-kit/component';
@@ -49,7 +49,7 @@ export default class GearPicker extends Component {
 	readonly itemPickers: Array<ItemPicker>;
 	readonly selectorModal: SelectorModal;
 
-	constructor(parent: HTMLElement, simUI: SimUI, player: Player<any>) {
+	constructor(parent: HTMLElement, simUI: SimHost, player: Player<any>) {
 		super(parent, 'gear-picker-root');
 
 		const leftSideRef = ref<HTMLDivElement>();
@@ -285,7 +285,7 @@ export class ItemRenderer extends Component {
 export class ItemPicker extends Component {
 	readonly slot: ItemSlot;
 
-	private readonly simUI: SimUI;
+	private readonly simUI: SimHost;
 	private readonly player: Player<any>;
 
 	private readonly onUpdateCallbacks: (() => void)[] = [];
@@ -299,7 +299,7 @@ export class ItemPicker extends Component {
 	private quickSwapEnchantPopover: QuickSwapList<Enchant> | null = null;
 	private quickSwapGemPopover: QuickSwapList<Gem>[] = [];
 
-	constructor(parent: HTMLElement, gearPicker: GearPicker, simUI: SimUI, player: Player<any>, slot: ItemSlot) {
+	constructor(parent: HTMLElement, gearPicker: GearPicker, simUI: SimHost, player: Player<any>, slot: ItemSlot) {
 		super(parent, 'item-picker-root');
 
 		this.gearPicker = gearPicker;

@@ -1,6 +1,6 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Player } from '@domain/player';
 import { nextEventID } from '@domain/state/batch';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ListPicker } from '@ui-kit/pickers/list_picker';
@@ -16,7 +16,7 @@ export type AplFloatingActionBarConfig = {
 };
 
 export class AplFloatingActionBar extends Component {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>, listPicker: ListPicker<Player<any>, any>, config: AplFloatingActionBarConfig) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>, listPicker: ListPicker<Player<any>, any>, config: AplFloatingActionBarConfig) {
 		super(parent, 'apl-floating-action-bar-root');
 
 		const newButton = this.rootElem.appendChild(

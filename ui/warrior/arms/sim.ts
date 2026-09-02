@@ -1,3 +1,4 @@
+import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -6,7 +7,6 @@ import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation } from '../../core/proto/apl';
 import { Class, Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';

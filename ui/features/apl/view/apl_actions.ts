@@ -1,4 +1,3 @@
-import { itemSwapEnabledSpecs } from '@core/individual_sim_ui';
 import {
 	APLAction,
 	APLActionActivateAllStatBuffProcAuras,
@@ -40,6 +39,7 @@ import { FeralDruid_Rotation_AplType } from '@core/proto/druid';
 import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
+import { itemSwapEnabledSpecs } from '@features/spec_config';
 import i18n from '@i18n/config';
 import { Input, InputConfig } from '@ui-kit/input';
 import { TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';

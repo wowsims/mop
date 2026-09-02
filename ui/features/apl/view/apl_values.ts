@@ -1,4 +1,3 @@
-import { itemSwapEnabledSpecs } from '@core/individual_sim_ui';
 import {
 	APLValue,
 	APLValueActionGroupUsed,
@@ -128,6 +127,7 @@ import { Player } from '@domain/player';
 import SecondaryResource from '@domain/proto_utils/secondary_resource';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
+import { itemSwapEnabledSpecs } from '@features/spec_config';
 import i18n from '@i18n/config';
 import { Input, InputConfig } from '@ui-kit/input';
 import { TextDropdownPicker, TextDropdownValueConfig } from '@ui-kit/pickers/dropdown_picker';

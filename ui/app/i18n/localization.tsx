@@ -1,13 +1,13 @@
+import { ArmorType, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '@core/proto/common';
+import { ResourceType } from '@core/proto/spell';
+import { RaidFilterOption, SourceFilterOption } from '@core/proto/ui';
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { PlayerClass } from '@domain/player_class';
 import { PlayerSpec } from '@domain/player_spec';
 import { resourceNames } from '@domain/proto_utils/names';
 
-import { LaunchStatus } from '../core/launched_sims';
-import { ArmorType, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '../core/proto/common';
-import { ResourceType } from '../core/proto/spell';
-import { RaidFilterOption, SourceFilterOption } from '../core/proto/ui';
+import { LaunchStatus } from '../launched_sims';
 import i18n from './config';
 import {
 	aplItemLabelI18nKeys,

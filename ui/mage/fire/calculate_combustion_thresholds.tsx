@@ -1,19 +1,19 @@
+import { IndividualSimUI } from '@app/individual_sim_ui';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { AuraEventLog, SimLog, SimLogParams } from '@domain/proto_utils/logs';
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { nextEventID } from '@domain/state/batch';
 import { sleep, sum } from '@domain/utils';
+import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';
 import { ProgressTrackerModal } from '@ui-kit/progress_tracker_modal';
 import Toast from '@ui-kit/toast';
 import clsx from 'clsx';
 
-import { IndividualSimUI } from '../../core/individual_sim_ui';
 import { ProgressMetrics, RaidSimResult } from '../../core/proto/api';
 import { Spec } from '../../core/proto/common';
 import { FireMage_Rotation } from '../../core/proto/mage';
-import i18n from '../../i18n/config';
 interface CombustionThresholdStats {
 	p25: number;
 	p50: number;

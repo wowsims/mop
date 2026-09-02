@@ -1,4 +1,3 @@
-import type { PresetEpWeights } from '@core/preset_utils';
 import {
 	AuraStats as AuraStatsProto,
 	Player as PlayerProto,
@@ -52,6 +51,7 @@ import { MAX_PARTY_SIZE, Party } from './party';
 import { PlayerClass } from './player_class';
 import { PlayerSpec } from './player_spec';
 import { PlayerSpecs } from './player_specs';
+import type { PresetEpWeights } from './presets/types';
 import { ActionId } from './proto_utils/action_id';
 import { Database } from './proto_utils/database';
 import { EquippedItem, ReforgeData } from './proto_utils/equipped_item';
@@ -221,6 +221,8 @@ export interface PlayerConfig<SpecType extends Spec> {
 // layer consumes. Spec configs registered via registerSpecConfig satisfy this
 // structurally; the full UI config type stays in individual_sim_ui.
 export interface SpecConfigData<SpecType extends Spec> extends PlayerConfig<SpecType> {
+	// Override for required talent rows. If unset, all rows [0..5] are required.
+	requiredTalentRows?: number[];
 	epStats: Array<Stat>;
 	consumableStats?: Array<Stat>;
 	gemStats?: Array<Stat>;

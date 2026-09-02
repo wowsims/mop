@@ -1,6 +1,4 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@core/proto/common';
-import { SimUI } from '@core/sim_ui';
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
 import { Raid } from '@domain/raid';
@@ -14,6 +12,7 @@ import {
 	subscribeRaidField,
 } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
+import type { IndividualSimHost, SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '@i18n/localization';
 import { BaseModal } from '@ui-kit/base_modal';
@@ -30,7 +29,7 @@ export interface EncounterPickerConfig {
 }
 
 export class EncounterPicker extends Component {
-	constructor(parent: HTMLElement, modEncounter: Encounter, config: EncounterPickerConfig, simUI: SimUI) {
+	constructor(parent: HTMLElement, modEncounter: Encounter, config: EncounterPickerConfig, simUI: SimHost) {
 		super(parent, 'encounter-picker-root');
 
 		addEncounterFieldPickers(this.rootElem, modEncounter, config.showExecuteProportion);
@@ -123,8 +122,8 @@ export class EncounterPicker extends Component {
 			//	});
 			//}
 
-			if (simUI.isIndividualSim() && (simUI as IndividualSimUI<any>).player.canEnableTargetDummies()) {
-				const player = (simUI as IndividualSimUI<any>).player;
+			if (simUI.isIndividualSim() && (simUI as IndividualSimHost<any>).player.canEnableTargetDummies()) {
+				const player = (simUI as IndividualSimHost<any>).player;
 				new NumberPicker(this.rootElem, simUI.sim.raid, {
 					id: 'encounter-num-allies',
 					label: i18n.t('settings_tab.encounter.num_allies.label'),
@@ -151,7 +150,7 @@ export class EncounterPicker extends Component {
 				});
 			}
 
-			if (simUI.isIndividualSim() && (simUI as IndividualSimUI<any>).player.getPlayerSpec().isTankSpec) {
+			if (simUI.isIndividualSim() && (simUI as IndividualSimHost<any>).player.getPlayerSpec().isTankSpec) {
 				new NumberPicker(this.rootElem, modEncounter, {
 					id: 'encounter-min-base-damage',
 					label: i18n.t('settings_tab.encounter.min_base_damage.label'),
@@ -193,7 +192,7 @@ export class EncounterPicker extends Component {
 class AdvancedEncounterModal extends BaseModal {
 	private readonly encounter: Encounter;
 
-	constructor(parent: HTMLElement, simUI: SimUI, encounter: Encounter) {
+	constructor(parent: HTMLElement, simUI: SimHost, encounter: Encounter) {
 		super(parent, 'advanced-encounter-picker-modal', { disposeOnClose: false });
 
 		this.encounter = encounter;

@@ -1,14 +1,14 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { SavedEPWeights } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
 import { batch } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { SavedDataManager, SavedDataManagerConfig } from '@ui-kit/saved_data_manager';
 export const renderSavedEPWeights = (
 	container: HTMLElement | null,
-	simUI: IndividualSimUI<any>,
+	simUI: IndividualSimHost<any>,
 	options?: Partial<SavedDataManagerConfig<Player<any>, SavedEPWeights>>,
 ) => {
 	const savedEPWeightsManager = new SavedDataManager<Player<any>, SavedEPWeights>(container, simUI.player, {

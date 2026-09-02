@@ -1,4 +1,3 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, Glyphs, Spec } from '@core/proto/common';
 import { SavedTalents } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
@@ -13,6 +12,7 @@ import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
 import { trackEvent } from '../../tracking/utils';
+import { IndividualSimUI } from '../individual_sim_ui';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class TalentsTab<SpecType extends Spec> extends SimTab {
 	protected simUI: IndividualSimUI<any>;

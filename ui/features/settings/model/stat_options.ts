@@ -1,7 +1,7 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Faction, Stat } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
+import type { IndividualSimHost } from '@features/sim_host';
 import { IconEnumPicker, IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { IconPicker, IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { MultiIconPicker, MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';
@@ -38,7 +38,7 @@ export type StatOptions<T, Options extends ItemStatOptions<T> | PickerStatOption
 
 export function relevantStatOptions<T, OptionsType extends ItemStatOptions<T> | PickerStatOptions>(
 	options: StatOptions<T, OptionsType>,
-	simUI: IndividualSimUI<any>,
+	simUI: IndividualSimHost<any>,
 ): StatOptions<T, OptionsType> {
 	return options
 		.filter(

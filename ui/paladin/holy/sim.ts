@@ -1,9 +1,9 @@
+import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '@domain/proto_utils/stats';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { APLRotation } from '../../core/proto/apl';
 import { IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import * as HolyInputs from '../../paladin/holy/inputs';

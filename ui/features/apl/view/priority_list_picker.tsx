@@ -1,8 +1,8 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { APLAction, APLListItem } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';
@@ -13,7 +13,7 @@ import { AplFloatingActionBar } from './apl_floating_action_bar';
 import * as AplHelpers from './apl_helpers';
 import { APLHidePicker } from './hide_picker';
 export class APLPriorityListPicker extends Component {
-	constructor(container: HTMLElement, simUI: IndividualSimUI<any>) {
+	constructor(container: HTMLElement, simUI: IndividualSimHost<any>) {
 		super(container, 'apl-priority-list-picker-root');
 
 		const listPicker = new ListPicker<Player<any>, APLListItem>(this.rootElem, simUI.player, {

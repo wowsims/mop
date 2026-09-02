@@ -1,8 +1,8 @@
+import * as PresetUtils from '@app/preset_utils';
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { ConsumesSpec, Glyphs, HandType, ItemSlot, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { SavedTalents } from '../../core/proto/ui';
 import { FuryWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '../../core/proto/warrior';

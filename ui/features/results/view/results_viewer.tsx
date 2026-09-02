@@ -1,6 +1,6 @@
-import { SimToolbarItem } from '@core/components/header/sim_toolbar_item';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { Component } from '@ui-kit/component';
+import { SimToolbarItem } from '@ui-kit/sim_toolbar_item';
 import tippy, { inlinePositioning, Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 

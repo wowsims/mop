@@ -1,11 +1,11 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { PseudoStat, Spec, Stat } from '@core/proto/common';
 import { UnitStat } from '@domain/proto_utils/stats';
+import type { IndividualSimHost } from '@features/sim_host';
 
 import { IndividualExporter } from './individual_exporter';
 
 export class Individual60UEPExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>) {
 		super(parent, simUI, { title: 'Sixty Upgrades Cataclysm EP Export', allowDownload: true });
 	}
 

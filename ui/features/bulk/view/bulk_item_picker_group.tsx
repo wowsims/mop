@@ -1,6 +1,6 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { getBulkSlotI18nKey } from '@i18n/entity_mapping';
 import { translateBulkSlotName } from '@i18n/localization';
@@ -11,13 +11,13 @@ import BulkItemPicker from './bulk_item_picker';
 import { BulkTab } from './bulk_tab';
 
 export default class BulkItemPickerGroup extends ContentBlock {
-	readonly simUI: IndividualSimUI<any>;
+	readonly simUI: IndividualSimHost<any>;
 	readonly bulkUI: BulkTab;
 	readonly bulkSlot: BulkSimItemSlot;
 
 	readonly pickers: Map<number, BulkItemPicker> = new Map();
 
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>, bulkUI: BulkTab, bulkSlot: BulkSimItemSlot) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>, bulkUI: BulkTab, bulkSlot: BulkSimItemSlot) {
 		const slotName = translateBulkSlotName(bulkSlot);
 		super(parent, 'bulk-item-picker-group-root', { header: { title: slotName } });
 		const slotKey = getBulkSlotI18nKey(bulkSlot);

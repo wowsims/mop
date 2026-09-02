@@ -1,11 +1,10 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { SimRun, SimRunData } from '@core/proto/ui';
-import { SimUI } from '@core/sim_ui';
 import { SimResult } from '@domain/proto_utils/sim_result';
 import { nextEventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import { subscribeSimSettingsChange } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
+import type { IndividualSimHost, SimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { StickyToolbar } from '@ui-kit/sticky_toolbar';
@@ -83,7 +82,7 @@ const tabs: Tab[] = [
 ];
 
 export class DetailedResults extends Component {
-	protected readonly simUI: SimUI;
+	protected readonly simUI: SimHost;
 	protected latestRun: SimRunData | null = null;
 	protected latestDeathSeeds: bigint[] = [];
 	protected recentlyEditedSeed: boolean = false;
@@ -94,7 +93,7 @@ export class DetailedResults extends Component {
 	private resultsFilter: ResultsFilter;
 	private rootDiv: Element;
 
-	constructor(parent: HTMLElement, simUI: SimUI, simResultsManager: SimResultsManager) {
+	constructor(parent: HTMLElement, simUI: SimHost, simResultsManager: SimResultsManager) {
 		super(parent, 'detailed-results-manager-root');
 
 		this.simUI = simUI;
@@ -250,7 +249,7 @@ export class DetailedResults extends Component {
 		new ResourceMetricsTable({
 			parent: this.rootElem.querySelector('.resource-metrics')!,
 			resultsEmitter: this.resultsEmitter,
-			secondaryResource: (simUI as IndividualSimUI<any>)?.player?.secondaryResource,
+			secondaryResource: (simUI as IndividualSimHost<any>)?.player?.secondaryResource,
 		});
 		new PlayerDamageMetricsTable(
 			{ parent: this.rootElem.querySelector('.player-damage-metrics')!, resultsEmitter: this.resultsEmitter },
@@ -288,7 +287,7 @@ export class DetailedResults extends Component {
 		const timeline = new Timeline({
 			parent: this.rootElem.querySelector('.timeline')!,
 			resultsEmitter: this.resultsEmitter,
-			secondaryResource: (simUI as IndividualSimUI<any>)?.player?.secondaryResource,
+			secondaryResource: (simUI as IndividualSimHost<any>)?.player?.secondaryResource,
 		});
 
 		const tabEl = document.querySelector('button[data-bs-target="#timelineTab"]');

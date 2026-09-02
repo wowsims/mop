@@ -1,3 +1,4 @@
+import { IndividualSimUI, registerSpecConfig } from '@app/individual_sim_ui';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -5,7 +6,6 @@ import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@domain/prot
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import * as OtherInputs from '@features/settings/view/other_inputs';
 
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '../../core/proto/apl';
 import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';

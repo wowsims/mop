@@ -1,9 +1,9 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Faction, ItemQuality } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
@@ -43,12 +43,12 @@ export const COSTS = new Map<keyof UpgradeSummaryTotal, Map<ItemQuality, number>
 ]);
 
 export class UpgradeCostsSummary extends Component {
-	private readonly simUI: IndividualSimUI<any>;
+	private readonly simUI: IndividualSimHost<any>;
 	private readonly player: Player<any>;
 
 	private readonly container: ContentBlock;
 
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<any>, player: Player<any>) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<any>, player: Player<any>) {
 		super(parent, 'summary-table-root');
 		this.rootElem.classList.add('hide');
 

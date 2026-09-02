@@ -1,10 +1,10 @@
+import { ArmorType, Class, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '@core/proto/common';
+import { ResourceType } from '@core/proto/spell';
+import { RaidFilterOption, SourceFilterOption } from '@core/proto/ui';
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 
-import { LaunchStatus } from '../core/launched_sims';
-import { ArmorType, Class, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '../core/proto/common';
-import { ResourceType } from '../core/proto/spell';
-import { RaidFilterOption, SourceFilterOption } from '../core/proto/ui';
+import { LaunchStatus } from '../launched_sims';
 
 export const statI18nKeys: Record<Stat, string> = {
 	[Stat.StatStrength]: 'strength',

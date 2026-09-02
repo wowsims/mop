@@ -1,7 +1,7 @@
+import * as PresetUtils from '@app/preset_utils';
 import { Encounter } from '@domain/encounter';
 import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
 
-import * as PresetUtils from '../../core/preset_utils';
 import { ReforgeSettings } from '../../core/proto/api';
 import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import {

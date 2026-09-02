@@ -1,4 +1,5 @@
-import * as PresetUtils from '../../core/preset_utils';
+import * as PresetUtils from '@app/preset_utils';
+
 import { ConsumesSpec, Glyphs, Profession, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DruidMajorGlyph, GuardianDruid_Options as DruidOptions, GuardianDruid_Rotation as DruidRotation } from '../../core/proto/druid';
 import { SavedTalents } from '../../core/proto/ui';

@@ -3,6 +3,8 @@ import { ActionId } from '@domain/proto_utils/action_id';
 import { ShamanSpecs } from '@domain/proto_utils/utils';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import type { IndividualSimHost } from '@features/sim_host';
+import i18n from '@i18n/config';
 import { ContentBlock } from '@ui-kit/content_block';
 import { buildIconInput } from '@ui-kit/icon_inputs';
 import { Input } from '@ui-kit/input';
@@ -10,10 +12,8 @@ import * as InputHelpers from '@ui-kit/input_helpers';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 
-import { IndividualSimUI } from '../core/individual_sim_ui';
 import { Spec } from '../core/proto/common';
 import { ShamanImbue, ShamanShield } from '../core/proto/shaman';
-import i18n from '../i18n/config';
 // Configuration for class-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.
 
@@ -50,7 +50,7 @@ export const ShamanImbueMHSwap = <SpecType extends ShamanSpecs>() =>
 		storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')]),
 	});
 
-export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<any>): ContentBlock {
+export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimHost<any>): ContentBlock {
 	const contentBlock = new ContentBlock(parentElem, 'totems-settings', {
 		header: { title: 'Totems' },
 	});

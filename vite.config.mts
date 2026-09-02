@@ -108,7 +108,7 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 				'@features': path.resolve(BASE_PATH, 'features'),
 				'@app': path.resolve(BASE_PATH, 'app'),
 				'@specs': path.resolve(BASE_PATH, 'specs'),
-				'@i18n': path.resolve(BASE_PATH, 'i18n'),
+				'@i18n': path.resolve(BASE_PATH, 'app/i18n'),
 				'@core': path.resolve(BASE_PATH, 'core'),
 			},
 		},

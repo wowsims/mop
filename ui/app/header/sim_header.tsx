@@ -1,5 +1,3 @@
-import { SimToolbarItem } from '@core/components/header/sim_toolbar_item';
-import { SimUI } from '@core/sim_ui';
 import { REPO_CHOOSE_NEW_ISSUE_URL, REPO_RELEASES_URL } from '@domain/constants/other';
 import { noop } from '@domain/utils';
 import { Exporter } from '@features/import-export/view/exporter';
@@ -8,12 +6,14 @@ import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { isNative } from '@ui-kit/dom_utils';
 import { SimTab } from '@ui-kit/sim_tab';
+import { SimToolbarItem } from '@ui-kit/sim_toolbar_item';
 import clsx from 'clsx';
 import tippy, { ReferenceElement as TippyReferenceElement } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { trackPageView } from '../../tracking/utils';
 import { SettingsMenu } from '../settings_menu';
+import { SimUI } from '../sim_ui';
 import { SocialLinks } from './social_links';
 
 interface ToolbarLinkArgs {

@@ -1,8 +1,8 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Spec } from '@core/proto/common';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { EventID } from '@domain/state/batch';
 import { getEnumValues } from '@domain/utils';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 
@@ -57,10 +57,10 @@ export abstract class IndividualExporter<SpecType extends Spec> extends Exporter
 		// never intend to export them and it messes with other users' settings.
 		// If they REALLY want to export UISettings, just use the JSON exporter.
 	];
-	protected readonly simUI: IndividualSimUI<SpecType>;
+	protected readonly simUI: IndividualSimHost<SpecType>;
 	protected readonly exportCategories: Record<SimSettingCategories, boolean>;
 
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>, options: IndividualExporterOptions) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>, options: IndividualExporterOptions) {
 		super(parent, options as ExporterOptions);
 
 		this.simUI = simUI;

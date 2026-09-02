@@ -1,4 +1,3 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { BulkRequiredSetBonus, BulkSettings, BulkSimStage, DistributionMetrics, ProgressMetrics } from '@core/proto/api';
 import { ItemSlot, ItemSpec, WeaponType } from '@core/proto/common';
 import {
@@ -30,6 +29,7 @@ import { RequestTypes } from '@domain/sim_signal_manager';
 import { nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '@domain/state/subscriptions';
 import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, Z_95, zTest } from '@domain/utils';
+import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { translateWeaponType } from '@i18n/localization';
 import { isExternal } from '@ui-kit/dom_utils';
@@ -57,7 +57,7 @@ type BulkSetBonusOption = {
 };
 
 export class BulkTab extends SimTab {
-	readonly simUI: IndividualSimUI<any>;
+	readonly simUI: IndividualSimHost<any>;
 	private readonly settingsStore: BulkSettingsStore;
 	playerCanDualWield: boolean;
 	readonly playerCanDualWield2H: boolean;
@@ -121,7 +121,7 @@ export class BulkTab extends SimTab {
 	private availableSetBonusesMemo: BulkSetBonusOption[] | null = null;
 	private canSatisfySetBonusMemo = new Map<string, boolean>();
 
-	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
+	constructor(parentElem: HTMLElement, simUI: IndividualSimHost<any>) {
 		super(parentElem, simUI, { identifier: 'bulk-tab', title: i18n.t('bulk_tab.title') });
 
 		this.simUI = simUI;

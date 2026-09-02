@@ -1,9 +1,9 @@
-import { IndividualSimUI } from '@core/individual_sim_ui';
 import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '@core/proto/common';
 import { Database } from '@domain/proto_utils/database';
 import { classNames } from '@domain/proto_utils/names';
 import { batch, nextEventID } from '@domain/state/batch';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
+import type { IndividualSimHost } from '@features/sim_host';
 import Toast from '@ui-kit/toast';
 
 import { Importer, ImporterOptions } from '../importer';
@@ -13,15 +13,15 @@ export abstract class IndividualImporter<SpecType extends Spec> extends Importer
 	static readonly DEFAULT_CATEGORIES = LINK_DEFAULT_CATEGORIES;
 	static readonly CATEGORY_PARAM = LINK_CATEGORY_PARAM;
 
-	protected readonly simUI: IndividualSimUI<any>;
+	protected readonly simUI: IndividualSimHost<any>;
 
-	constructor(parent: HTMLElement, simUI: IndividualSimUI<SpecType>, options: ImporterOptions) {
+	constructor(parent: HTMLElement, simUI: IndividualSimHost<SpecType>, options: ImporterOptions) {
 		super(parent, options);
 		this.simUI = simUI;
 	}
 
 	protected async finishIndividualImport<SpecType extends Spec>(
-		simUI: IndividualSimUI<SpecType>,
+		simUI: IndividualSimHost<SpecType>,
 		{
 			charClass,
 			race,

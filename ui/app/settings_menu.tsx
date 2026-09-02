@@ -1,4 +1,3 @@
-import { SimUI } from '@core/sim_ui';
 import { Sim } from '@domain/sim';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
@@ -13,6 +12,7 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { trackEvent } from '../tracking/utils';
+import { SimUI } from './sim_ui';
 export class SettingsMenu extends BaseModal {
 	private readonly simUI: SimUI;
 
