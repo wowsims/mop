@@ -32,7 +32,6 @@ export class SettingsTab extends SimTab {
 	readonly column1: HTMLElement = this.buildColumn(1, 'settings-left-col');
 	readonly column2: HTMLElement = this.buildColumn(2, 'settings-left-col');
 	readonly column3: HTMLElement = this.buildColumn(3, 'settings-left-col');
-	readonly column4?: HTMLElement;
 
 	constructor(parentElem: HTMLElement, simUI: IndividualSimUI<any>) {
 		super(parentElem, simUI, { identifier: 'settings-tab', title: i18n.t('settings_tab.title') });
@@ -45,14 +44,8 @@ export class SettingsTab extends SimTab {
 		this.leftPanel.appendChild(this.column2);
 		this.leftPanel.appendChild(this.column3);
 
-		// The 4th column is only used in the raid sim player editor to spread out player settings
-		if (this.simUI.isWithinRaidSim) {
-			this.column4 = this.buildColumn(4, 'settings-left-col');
-			this.leftPanel.appendChild(this.column4);
-		}
-
 		this.rightPanel = document.createElement('div');
-		this.rightPanel.classList.add('settings-tab-right', 'tab-panel-right', 'within-raid-sim-hide');
+		this.rightPanel.classList.add('settings-tab-right', 'tab-panel-right');
 
 		this.contentContainer.appendChild(this.leftPanel);
 		this.contentContainer.appendChild(this.rightPanel);
@@ -62,26 +55,18 @@ export class SettingsTab extends SimTab {
 	}
 
 	protected buildTabContent() {
-		if (!this.simUI.isWithinRaidSim) {
-			this.buildEncounterSettings();
-		}
-
+		this.buildEncounterSettings();
 		this.buildPlayerSettings();
 		this.buildCustomSettingsSections();
 		this.buildConsumesSection();
 		this.buildOtherSettings();
 
-		if (!this.simUI.isWithinRaidSim) {
-			this.buildBuffsSettings();
-			this.raidExternalDamageCooldowns();
-			this.raidExternalDefensiveCooldowns();
-			this.buildDebuffsSettings();
-		}
-
-		if (!this.simUI.isWithinRaidSim) {
-			this.buildPresetConfigurationPicker();
-			this.buildSavedDataPickers();
-		}
+		this.buildBuffsSettings();
+		this.raidExternalDamageCooldowns();
+		this.raidExternalDefensiveCooldowns();
+		this.buildDebuffsSettings();
+		this.buildPresetConfigurationPicker();
+		this.buildSavedDataPickers();
 	}
 
 	private buildEncounterSettings() {
@@ -168,15 +153,14 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildConsumesSection() {
-		const column = this.simUI.isWithinRaidSim ? this.column3 : this.column2;
-		const contentBlock = new ContentBlock(column, 'consumes-settings', {
+		const contentBlock = new ContentBlock(this.column2, 'consumes-settings', {
 			header: { title: i18n.t('settings_tab.consumables.title') },
 		});
 		ConsumesPicker.create(contentBlock.bodyElement, this, this.simUI);
 	}
 
 	private buildOtherSettings() {
-		const settings = this.simUI.individualConfig.otherInputs?.inputs.filter(inputs => !inputs.extraCssClasses?.includes('within-raid-sim-hide') || true);
+		const settings = this.simUI.individualConfig.otherInputs?.inputs;
 
 		const swapSlots = this.simUI.individualConfig.itemSwapSlots || [];
 		if (settings.length > 0 || swapSlots.length > 0) {

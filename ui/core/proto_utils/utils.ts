@@ -91,7 +91,6 @@ import {
 	WindwalkerMonk_Rotation,
 } from '../proto/monk.js';
 import {
-	Blessings,
 	HolyPaladin,
 	HolyPaladin_Options,
 	HolyPaladin_Rotation,
@@ -144,7 +143,7 @@ import {
 	ShamanTalents,
 } from '../proto/shaman.js';
 import { ResourceType, SpellEffect } from '../proto/spell';
-import { BlessingsAssignment, BlessingsAssignments, UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui.js';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui.js';
 import {
 	AfflictionWarlock,
 	AfflictionWarlock_Options,
@@ -177,9 +176,6 @@ import { Stats } from './stats.js';
 
 export const NUM_SPECS = getEnumValues(Spec).length;
 
-export const raidSimIcon = '/mop/assets/img/raid_icon.png';
-export const raidSimLabel = 'Full Raid Sim';
-
 // Converts '111111' to [1, 1, 1, 1, 1, 1].
 export function getTalentTreePoints(talentsString: string): Array<number> {
 	const talents = talentsString.split('');
@@ -195,7 +191,6 @@ export function getSpecSiteUrl(classString: string, specString: string): string 
 	const specSiteUrlTemplate = new URL(`${window.location.protocol}//${window.location.host}/${REPO_NAME}/CLASS/SPEC/`).toString();
 	return specSiteUrlTemplate.replace('CLASS', classString).replace('SPEC', specString);
 }
-export const raidSimSiteUrl = new URL(`${window.location.protocol}//${window.location.host}/${REPO_NAME}/raid/`).toString();
 
 export function textCssClassForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 	return `text-${PlayerClasses.getCssClass(playerClass)}`;
@@ -1994,40 +1989,6 @@ export function newUnitReference(raidIndex: number): UnitReference {
 
 export function emptyUnitReference(): UnitReference {
 	return UnitReference.create();
-}
-
-// Makes a new set of assignments with everything 0'd out.
-export function makeBlankBlessingsAssignments(numPaladins: number): BlessingsAssignments {
-	const assignments = BlessingsAssignments.create();
-	for (let i = 0; i < numPaladins; i++) {
-		assignments.paladins.push(
-			BlessingsAssignment.create({
-				blessings: new Array(NUM_SPECS).fill(Blessings.BlessingUnknown),
-			}),
-		);
-	}
-	return assignments;
-}
-
-export function makeBlessingsAssignments(numPaladins: number): BlessingsAssignments {
-	const assignments = makeBlankBlessingsAssignments(numPaladins);
-	for (let i = 1; i < Object.keys(Spec).length; i++) {
-		const spec = i;
-		const blessings = [Blessings.BlessingOfKings, Blessings.BlessingOfMight];
-		for (let j = 0; j < blessings.length; j++) {
-			if (j >= assignments.paladins.length) {
-				// Can't assign more blessings since we ran out of paladins
-				break;
-			}
-			assignments.paladins[j].blessings[spec] = blessings[j];
-		}
-	}
-	return assignments;
-}
-
-// Default blessings settings in the raid sim UI.
-export function makeDefaultBlessings(numPaladins: number): BlessingsAssignments {
-	return makeBlessingsAssignments(numPaladins);
 }
 
 export const orderedResourceTypes: Array<ResourceType> = [

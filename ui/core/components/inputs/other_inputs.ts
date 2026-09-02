@@ -153,7 +153,7 @@ export const DistanceFromTarget = {
 export const TankAssignment = {
 	id: 'tank-assignment',
 	type: 'enum' as const,
-	extraCssClasses: ['tank-selector', 'threat-metrics', 'within-raid-sim-hide'],
+	extraCssClasses: ['tank-selector', 'threat-metrics'],
 	label: i18n.t('settings_tab.other.tank_assignment.label'),
 	labelTooltip: i18n.t('settings_tab.other.tank_assignment.tooltip'),
 	values: [

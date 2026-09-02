@@ -23,16 +23,6 @@
 					"additionalProperties": false,
 					"required": ["home", "simulations", "about", "toggle"]
 				},
-				"simulations": {
-					"type": "object",
-					"properties": {
-						"full_raid": {
-							"type": "string"
-						}
-					},
-					"additionalProperties": false,
-					"required": ["full_raid"]
-				},
 				"home": {
 					"type": "object",
 					"properties": {
@@ -67,7 +57,7 @@
 				}
 			},
 			"additionalProperties": false,
-			"required": ["navigation", "simulations", "home", "header"]
+			"required": ["navigation", "home", "header"]
 		},
 		"common": {
 			"type": "object",
@@ -115,9 +105,6 @@
 				"tanks": {
 					"type": "object",
 					"properties": {
-						"title": {
-							"type": "string"
-						},
 						"main_tank": {
 							"type": "string"
 						},
@@ -132,7 +119,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["title", "main_tank", "tank_2", "tank_3", "tank_4"]
+					"required": ["main_tank", "tank_2", "tank_3", "tank_4"]
 				},
 				"status": {
 					"type": "object",
@@ -2606,19 +2593,6 @@
 					},
 					"additionalProperties": false,
 					"required": ["title", "settings", "settings_name", "save_settings"]
-				},
-				"external_buffs": {
-					"type": "object",
-					"properties": {
-						"title": {
-							"type": "string"
-						},
-						"tooltip": {
-							"type": "string"
-						}
-					},
-					"additionalProperties": false,
-					"required": ["title", "tooltip"]
 				}
 			},
 			"additionalProperties": false,
@@ -2633,8 +2607,7 @@
 				"encounter",
 				"player",
 				"saved_encounters",
-				"saved_settings",
-				"external_buffs"
+				"saved_settings"
 			]
 		},
 		"talents_tab": {

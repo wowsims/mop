@@ -6,7 +6,7 @@ import { Player } from '../../core/player.js';
 import * as Mechanics from '../../core/constants/mechanics'
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
-import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
+import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common.js';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import { TypedEvent } from '../../core/typed_event';
 import * as ShamanInputs from '../inputs.js';
@@ -116,30 +116,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 
 		return Presets.ROTATION_PRESET_P5.rotation.rotation!;
 	},
-
-	raidSimPresets: [
-		{
-			spec: Spec.SpecElementalShaman,
-			talents: Presets.P3_TALENTS.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceDraenei,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P5_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P5_GEAR_PRESET.gear,
-				},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
 });
 
 export class ElementalShamanSimUI extends IndividualSimUI<Spec.SpecElementalShaman> {

@@ -40,8 +40,8 @@ export interface SimUIConfig {
 	cssClass: string;
 	// Scheme used for themeing on a per-class Basis or for other sims
 	cssScheme: string;
-	// The spec, if an individual sim, or null if the raid sim.
-	spec: PlayerSpec<any> | null;
+	// The spec of the individual sim.
+	spec: PlayerSpec<any>;
 	simStatus: SimStatus;
 	knownIssues?: Array<string>;
 	noticeText?: string;
@@ -52,7 +52,6 @@ export abstract class SimUI extends Component {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
 	readonly disabled: boolean;
-	readonly isWithinRaidSim: boolean;
 
 	// Emits when anything from the sim, raid, or encounter changes.
 	readonly changeEmitter;
@@ -71,21 +70,20 @@ export abstract class SimUI extends Component {
 		this.sim = sim;
 		this.config = config;
 		this.disabled = !isDevMode() && config.simStatus.status === LaunchStatus.Unlaunched;
-		this.isWithinRaidSim = this.rootElem.closest('.within-raid-sim') != null;
 
 		const container = (
 			<>
 				<div className="sim-root">
 					<div className="sim-bg" />
 					{config.noticeText ? (
-						<div className="notices-banner alert border-bottom mb-0 text-center within-raid-sim-hide">{config.noticeText}</div>
+						<div className="notices-banner alert border-bottom mb-0 text-center">{config.noticeText}</div>
 					) : null}
 					<div className="sim-container">
 						<aside className="sim-sidebar">
 							<div className="sim-title" />
 							<div className="sim-sidebar-content">
-								<div className="sim-sidebar-actions within-raid-sim-hide" />
-								<div className="sim-sidebar-results within-raid-sim-hide" />
+								<div className="sim-sidebar-actions" />
+								<div className="sim-sidebar-results" />
 								<div className="sim-sidebar-stats" />
 								<div className="sim-sidebar-socials" />
 							</div>
@@ -107,9 +105,6 @@ export abstract class SimUI extends Component {
 
 		this.rootElem.classList.add(this.config.cssClass);
 
-		if (!this.isWithinRaidSim) {
-			this.rootElem.classList.add('not-within-raid-sim');
-		}
 		if (this.config.spec?.isHealingSpec) {
 			this.rootElem.classList.add('sim-type--heal');
 		} else if (this.config.spec?.isTankSpec) {
@@ -174,7 +169,7 @@ export abstract class SimUI extends Component {
 		// Sidebar Contents
 
 		const titleElem = this.rootElem.querySelector('.sim-title') as HTMLElement;
-		new SimTitleDropdown(titleElem, config.spec, { noDropdown: this.isWithinRaidSim });
+		new SimTitleDropdown(titleElem, config.spec);
 
 		this.simActionsContainer = this.rootElem.querySelector('.sim-sidebar-actions') as HTMLElement;
 
@@ -185,7 +180,7 @@ export abstract class SimUI extends Component {
 		this.iterationsPicker = new NumberPicker(this.simActionsContainer, this.sim, {
 			id: 'simui-iterations',
 			label: i18n.t('sidebar.iterations'),
-			extraCssClasses: ['iterations-picker', 'within-raid-sim-hide'],
+			extraCssClasses: ['iterations-picker'],
 			changedEvent: (sim: Sim) => sim.iterationsChangeEmitter,
 			getValue: (sim: Sim) => sim.getIterations(),
 			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
@@ -415,10 +410,6 @@ export abstract class SimUI extends Component {
 
 							const maxBodyLength = URLMAXLEN - url.toString().length;
 							let issueBody = `Link:\n${link}\n\nRNG Seed: ${rngSeed}\n\n${errorStr}`;
-							if (link.includes('/raid/')) {
-								// Move the actual error before the link, as it will likely get truncated.
-								issueBody = `${errorStr}\nRNG Seed: ${rngSeed}\nLink:\n${link}`;
-							}
 							let truncated = false;
 							while (issueBody.length > maxBodyLength - (truncated ? 3 : 0)) {
 								issueBody = issueBody.slice(0, issueBody.lastIndexOf('%')); // Avoid truncating in the middle of a URLencoded segment.
@@ -426,7 +417,6 @@ export abstract class SimUI extends Component {
 							}
 							if (truncated) {
 								issueBody += '...';
-								// The raid links are too large and will always cause truncation.
 								// Prompt the user to add more information to the issue.
 								new CrashModal(this.rootElem, link).open();
 							}

@@ -6,7 +6,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { Mage } from '../../core/player_classes/mage';
 import { APLRotation } from '../../core/proto/apl';
-import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
 import { StatCapType } from '../../core/proto/api';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { formatToNumber } from '../../core/utils';
@@ -134,30 +134,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecArcaneMage, {
 	autoRotation: (player: Player<Spec.SpecArcaneMage>): APLRotation => {
 		return Presets.ROTATION_PRESET_T15_4PC.rotation.rotation!;
 	},
-
-	raidSimPresets: [
-		{
-			spec: Spec.SpecArcaneMage,
-			talents: Presets.ArcaneTalents.data,
-			specOptions: Presets.DefaultArcaneOptions,
-			consumables: Presets.DefaultConsumables,
-			otherDefaults: Presets.OtherDefaults,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceAlliancePandaren,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.PREBIS.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.PREBIS.gear,
-				},
-			},
-		},
-	],
 });
 
 export class ArcaneMageSimUI extends IndividualSimUI<Spec.SpecArcaneMage> {

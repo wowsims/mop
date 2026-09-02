@@ -173,8 +173,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBloodDeathKnight, {
 	autoRotation: (_player: Player<Spec.SpecBloodDeathKnight>): APLRotation => {
 		return Presets.BLOOD_ROTATION_PRESET_HORRIDON.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class BloodDeathKnightSimUI extends IndividualSimUI<Spec.SpecBloodDeathKnight> {

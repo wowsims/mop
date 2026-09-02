@@ -109,8 +109,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecShadowPriest, {
 	autoRotation: (_: Player<Spec.SpecShadowPriest>): APLRotation => {
 		return Presets.ROTATION_PRESET_DEFAULT.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {

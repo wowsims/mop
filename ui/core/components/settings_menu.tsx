@@ -43,7 +43,7 @@ export class SettingsMenu extends BaseModal {
 							</span>
 						</div>
 					</div>
-					<div ref={language} className="language-picker within-raid-sim-hide"></div>
+					<div ref={language} className="language-picker"></div>
 				</div>
 				<div ref={showThreatMetrics} className="show-threat-metrics-picker w-50 pe-2"></div>
 				<div ref={showExperimental} className="show-experimental-picker w-50 pe-2"></div>
