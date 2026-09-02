@@ -142,9 +142,11 @@ export class EncounterPicker extends Component {
 					},
 				});
 				// Reset the dummy count when the setting stops applying (previously a
-				// side effect inside showWhen).
+				// side effect inside showWhen). Monks are exempt: their count is
+				// talent-driven (see monk/shared/derived.ts), not user-facing.
+				const talentDrivenDummies = [Spec.SpecBrewmasterMonk, Spec.SpecWindwalkerMonk].includes(player.getSpec());
 				subscribePlayerChange(player)(() => {
-					if (!player.shouldEnableTargetDummies() && simUI.sim.raid.getTargetDummies() != 0) {
+					if (!talentDrivenDummies && !player.shouldEnableTargetDummies() && simUI.sim.raid.getTargetDummies() != 0) {
 						simUI.sim.raid.setTargetDummies(nextEventID(), 0);
 					}
 				});

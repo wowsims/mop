@@ -176,7 +176,7 @@ The full raid sim UI (`ui/raid/**`, its scss, `raid_target_picker`, `state/bless
 ## Accepted behavior changes (from self-review, 2026-09-01)
 
 1. `Encounter.modifyTarget` clones before writing. The old picker code mutated the *aliased* preset/default `TargetProto` objects in place (i.e. corrupted `sim.db` preset encounters and the spec's `defaults.encounter`), so `matchesPreset` stayed true after edits and re-applying a preset silently didn't restore edited fields. Now edits mark the encounter as "no preset" and presets restore correctly. Latent-bug fix, kept.
-2. Target-dummies reset moved out of `showWhen` to a guarded `player.changeEmitter` subscription: broader trigger set, no longer skipped for monks; end state converges via `shouldEnableTargetDummies()`.
+2. Target-dummies reset moved out of `showWhen` to a guarded `player.changeEmitter` subscription: broader trigger set, no longer skipped for monks; end state converges via `shouldEnableTargetDummies()`. **Correction 2026-09-02:** dropping the monk skip was a regression — Windwalker's talent-driven dummy count (2 for Zen Sphere) was zeroed by the reset on every talent change; the exemption is restored (fix on feature/ui-restructure).
 3. `Encounter.fromProto` still stores the caller's `targets` array by reference, but later edits no longer reflect into the caller's proto (replace-on-write).
 
 ## Not touched (deliberate)
