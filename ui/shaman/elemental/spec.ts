@@ -93,7 +93,7 @@ export default defineSpec<Spec.SpecElementalShaman>({
 		inputs: [ElementalInputs.InThunderstormRange, OtherInputs.InputDelay, OtherInputs.TankAssignment, OtherInputs.DistanceFromTarget],
 	},
 	itemSwapSlots: [ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2, ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand],
-	customSections: [ShamanInputs.TotemsSection],
+	sections: [ShamanInputs.totemsSection<Spec.SpecElementalShaman>()],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: false,

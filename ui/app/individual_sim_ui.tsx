@@ -56,6 +56,7 @@ import { SettingsTab } from './tabs/settings_tab';
 import { TalentsTab } from './tabs/talents_tab';
 
 export type {
+	CustomSection,
 	DerivedSetting,
 	IndividualSimUIConfig,
 	InputConfig,

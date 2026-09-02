@@ -474,3 +474,15 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   badges (aggregate per class, not spec data) are re-derived as all-launched→launched,
   all-unlaunched→unlaunched, mixed→beta, which flips 7 classes (death_knight/rogue/hunter/
   mage/warlock beta→launched; shaman/monk launched→beta, since each has one still-unlaunched spec).
+- 2026-09-02 PR 8c: declarative custom sections. `IndividualSimUIConfig.sections?: Array<CustomSection>`
+  (`id`, `title`, `tooltip?`, `cssClass?`, `iconGroupCssClass?`, `iconInputs?`, `inputs?`, `when?`)
+  added to `@features/spec_config`; `customSections` (the function-returning-a-ContentBlock form) is
+  deprecated, still rendered, and now has no callers. `app/tabs/settings_tab.tsx` grew a module-level
+  `buildCustomSection()` on top of a hoisted `buildInputPickers()` (the old private
+  `configureInputSection` body, now a one-line delegate) — one renderer, not two. Shaman's
+  `TotemsSection` DOM builder is gone: `ShamanInputs.totemsSection<S>()` / `enhancementTotemsSection()`
+  are plain data, and the three shaman `spec.ts` files declare `sections` (restoration's empty
+  `customSections: []` deleted — it never rendered totems). Verified byte-identical `outerHTML`
+  (enhancement *and* elemental) old vs. new via an SSR harness entry through `vite.harness.mts` +
+  `tools/state-snapshots/run.mjs`. Rendered in the same slot as before (before Consumes/Other),
+  not appended after the standard sections, so nothing moves on screen.

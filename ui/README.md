@@ -83,7 +83,7 @@ honest. The per-spec config schema lives in `@features/spec_config` (`Individual
 `InputSection`, `OtherDefaults`, `Settings`, `registerSpecConfig`, `itemSwapEnabledSpecs`); it
 cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
 It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
-`defineSpec` — see "How to author a spec"); `app/individual_sim_ui.tsx` re-exports all of it as a
+`CustomSection`, `defineSpec` — see "How to author a spec"); `app/individual_sim_ui.tsx` re-exports all of it as a
 convenience. The preset shapes
 (`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
 holds the `make*` builders and re-exports the types.
@@ -137,6 +137,31 @@ export default defineSpec<Spec.SpecArmsWarrior>({
 used to do by hand. `defineSpec` is an identity function; it exists only so the object is
 checked without an annotation that would widen the literal spec type. Pass the spec as an
 explicit type argument so `Player<Spec.SpecX>` callbacks keep their narrow type.
+
+### Custom settings sections
+
+A custom section is data, never DOM. A spec that needs an extra block on the settings tab
+declares it as a `CustomSection` in `sections`, and `app/tabs/settings_tab.tsx`
+(`buildCustomSection`) renders it through the same `ContentBlock` + picker path the standard
+sections use:
+
+```ts
+sections: [{
+    id: 'totems',                                    // ContentBlock css class when cssClass is unset
+    title: 'Totems',
+    tooltip: '…',                                    // optional — header tooltip button
+    cssClass: 'totems-settings',                     // what the stylesheet hooks on
+    iconGroupCssClass: 'totem-dropdowns-container',  // layout hook for the icon row
+    iconInputs: [ … ],                               // same configs as `playerIconInputs`
+    inputs: [ … ],                                   // same configs as `otherInputs.inputs`
+    when: player => …,                               // optional — hides the section, like `showWhen`
+}],
+```
+
+`iconInputs` land in a `picker-group icon-group` container above `inputs`, and every
+`.input-root` in the body then gets `input-inline` — exactly what the Other Settings block does.
+`when` is re-evaluated on `subscribePlayerChange`. The older `customSections` (an array of
+functions returning a `ContentBlock`) is deprecated and now unused; do not add to it.
 
 `reforge` may also be a function of the sim host, for options that need to call back into it.
 The `getEPDefaults` / `updateSoftCaps` callbacks receive `(…, player, ctx)` where

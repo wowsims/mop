@@ -71,7 +71,6 @@ export default defineSpec<Spec.SpecRestorationShaman>({
 			OtherInputs.InputDelay,
 		],
 	},
-	customSections: [],
 	encounterPicker: {
 		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
 		showExecuteProportion: false,

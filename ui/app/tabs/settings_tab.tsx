@@ -1,10 +1,18 @@
-import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '@core/proto/common';
+import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs, Spec } from '@core/proto/common';
 import { SavedEncounter, SavedSettings } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';
+import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
 import { batch, EventID } from '@domain/state/batch';
-import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
+import {
+	subscribeAll,
+	subscribeEncounterChange,
+	subscribePartyBuffs,
+	subscribePlayerChange,
+	subscribePlayerField,
+	subscribeRaidField,
+} from '@domain/state/subscriptions';
 import { getEnumValues } from '@domain/utils';
 import { EncounterPicker } from '@features/encounter/view/encounter_picker';
 import { ItemSwapPicker } from '@features/item-swap/view/item_swap_picker';
@@ -23,7 +31,7 @@ import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
-import { IndividualSimUI, InputSection } from '../individual_sim_ui';
+import { CustomSection, IndividualSimUI, InputConfig, InputSection } from '../individual_sim_ui';
 import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
@@ -147,6 +155,10 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildCustomSettingsSections() {
+		(this.simUI.individualConfig.sections || []).forEach(section => {
+			buildCustomSection(this.column2, this.simUI.player, section).rootElem.classList.add('custom-section');
+		});
+		// Deprecated function form; specs should declare `sections` instead.
 		(this.simUI.individualConfig.customSections || []).forEach(customSection => {
 			const section = customSection(this.column2, this.simUI);
 			section.rootElem.classList.add('custom-section');
@@ -418,15 +430,7 @@ export class SettingsTab extends SimTab {
 	}
 
 	private configureInputSection(sectionElem: HTMLElement, sectionConfig: InputSection) {
-		sectionConfig.inputs.forEach(inputConfig => {
-			if (inputConfig.type == 'number') {
-				new NumberPicker(sectionElem, this.simUI.player, inputConfig);
-			} else if (inputConfig.type == 'boolean') {
-				new BooleanPicker(sectionElem, this.simUI.player, { ...inputConfig, reverse: true });
-			} else if (inputConfig.type == 'enum') {
-				new EnumPicker(sectionElem, this.simUI.player, inputConfig);
-			}
-		});
+		buildInputPickers(sectionElem, this.simUI.player, sectionConfig.inputs);
 	}
 
 	private configureIconSection(sectionElem: HTMLElement, iconPickers: Array<any>, adjustColumns?: boolean) {
@@ -440,4 +444,49 @@ export class SettingsTab extends SimTab {
 			}
 		}
 	}
+}
+
+// Instantiates the picker for each `InputSection`-shaped config. Shared by the
+// standard sections and by the declarative `sections` renderer below.
+function buildInputPickers(sectionElem: HTMLElement, player: Player<any>, inputs: Array<InputConfig<Player<any>>>) {
+	inputs.forEach(inputConfig => {
+		if (inputConfig.type == 'number') {
+			new NumberPicker(sectionElem, player, inputConfig);
+		} else if (inputConfig.type == 'boolean') {
+			new BooleanPicker(sectionElem, player, { ...inputConfig, reverse: true });
+		} else if (inputConfig.type == 'enum') {
+			new EnumPicker(sectionElem, player, inputConfig);
+		}
+	});
+}
+
+// Renders a spec's declarative `CustomSection` (see @features/spec_config).
+export function buildCustomSection<SpecType extends Spec>(parentElem: HTMLElement, player: Player<SpecType>, section: CustomSection<SpecType>): ContentBlock {
+	const contentBlock = new ContentBlock(parentElem, section.cssClass || section.id, {
+		header: { title: section.title, tooltip: section.tooltip },
+	});
+
+	if (section.iconInputs?.length) {
+		const iconGroup = Input.newGroupContainer(section.iconGroupCssClass);
+		iconGroup.classList.add('icon-group');
+		contentBlock.bodyElement.appendChild(iconGroup);
+		section.iconInputs.forEach(iconInput => IconInputs.buildIconInput(iconGroup, player, iconInput));
+	}
+
+	if (section.inputs?.length) {
+		buildInputPickers(contentBlock.bodyElement, player, section.inputs);
+	}
+
+	contentBlock.bodyElement.querySelectorAll('.input-root').forEach(elem => {
+		elem.classList.add('input-inline');
+	});
+
+	const when = section.when;
+	if (when) {
+		const applyVisibility = () => contentBlock.rootElem.classList.toggle('hide', !when(player));
+		applyVisibility();
+		subscribePlayerChange(player)(applyVisibility);
+	}
+
+	return contentBlock;
 }

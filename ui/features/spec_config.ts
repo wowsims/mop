@@ -42,6 +42,28 @@ export interface InputSection {
 	inputs: Array<InputConfig<Player<any>>>;
 }
 
+// An extra settings-tab section, declared as data. Core renders it (see
+// `SettingsTab.buildCustomSettingsSections`) with the same ContentBlock and
+// picker construction path the standard sections use — a spec never builds DOM.
+export interface CustomSection<SpecType extends Spec> {
+	// Stable identifier. Doubles as the ContentBlock css class when `cssClass`
+	// is not given.
+	id: string;
+	title: string;
+	tooltip?: string;
+	// Css class for the section's ContentBlock; this is what stylesheets hook on.
+	cssClass?: string;
+	// Hides the whole section when this evaluates to false, mirroring `showWhen`
+	// on an individual input.
+	when?: (player: Player<SpecType>) => boolean;
+	// Icon pickers, rendered into a group container above `inputs`.
+	iconInputs?: Array<IconInputs.IconInputConfig<Player<SpecType>, any>>;
+	// Extra css class for that group container; the layout hook for the icon row.
+	iconGroupCssClass?: string;
+	// Non-icon pickers, same shape as `otherInputs.inputs`.
+	inputs?: Array<InputConfig<Player<any>>>;
+}
+
 export interface OtherDefaults {
 	profession1?: Profession;
 	profession2?: Profession;
@@ -131,7 +153,9 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 	// So enable it only where it is supported.
 	itemSwapSlots?: Array<ItemSlot>;
 
-	// For when extra sections are needed (e.g. Shaman totems)
+	// Extra settings-tab sections, as data (e.g. Shaman totems).
+	sections?: Array<CustomSection<SpecType>>;
+	/** @deprecated Declare `sections` instead — a spec should never build DOM. */
 	customSections?: Array<(parentElem: HTMLElement, simUI: IndividualSimHost<SpecType>) => ContentBlock>;
 
 	encounterPicker: EncounterPickerConfig;
