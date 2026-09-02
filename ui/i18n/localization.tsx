@@ -246,7 +246,14 @@ export const updateDataI18nElements = (): void => {
 		const key = element.getAttribute('data-i18n');
 		const ns = element.getAttribute('data-i18n-ns');
 		if (key) {
-			element.textContent = i18n.t(key, { ns: ns || undefined });
+			const text = i18n.t(key, { ns: ns || undefined });
+			// The landing page tags its `<meta name="description">` with data-i18n, and a meta
+			// element carries its text in `content`, not as a child text node.
+			if (element instanceof HTMLMetaElement) {
+				element.setAttribute('content', text);
+			} else {
+				element.textContent = text;
+			}
 		}
 	});
 };
@@ -263,7 +270,8 @@ export const updateSimPageMetadata = (): void => {
 	};
 
 	document.querySelector('title')!.textContent = i18n.t('sim.title', translationData);
-	document.querySelector('meta[name="description"]')!.textContent = i18n.t('sim.description', translationData);
+	// A <meta>'s text is its `content` attribute; `textContent` on it is invisible to crawlers.
+	document.querySelector('meta[name="description"]')?.setAttribute('content', i18n.t('sim.description', translationData));
 };
 
 export const updateSimLinks = (): void => {
