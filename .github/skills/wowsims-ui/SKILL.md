@@ -191,6 +191,15 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `grep -nE '^//#region ' tmp/harness/snapshot.js` after a harness build: every
   `player_specs/<class>.ts` must be emitted before `player_specs/index.ts`.
 
+- 2026-09-02 UI restructure PR 4c "apl model": the `actionIdSets` and `unitSets` registries (plus their
+  `ACTION_ID_SET` / `UNIT_SET` key types) moved verbatim out of `features/apl/view/apl_helpers.tsx` into
+  `features/apl/model/{action_id_sets,unit_sets}.ts`; the view imports them back. Nothing else in the apl
+  files is DOM-free: `extractToVariableAction` opens an `APLNameModal` and defaults to `document.body`,
+  every `*FieldConfig` carries a picker `factory`, and the `valueKindFactories`/`actionKindFactories`
+  entries interleave their metadata with `fields` descriptors that are themselves picker factories — so
+  splitting those tables is a ~170-call-site rewrite, not a data move. These are the first
+  `features/*/model/**` files to import `@i18n/config` and a `@ui-kit` type (`DropdownValueConfig`).
+
 - 2026-09-02 UI restructure PR 4b "apl move (view only)": `apl_values.ts`, `apl_actions.ts`,
   `apl_helpers.tsx`, `apl_condition_builder.tsx` and the `apl/` subdir (8 files, flattened) moved
   from `ui/core/components/individual_sim_ui/` to `ui/features/apl/view/` via
