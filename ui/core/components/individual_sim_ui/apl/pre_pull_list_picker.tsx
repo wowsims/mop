@@ -61,44 +61,47 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		const itemHeaderElem = ListPicker.getItemHeaderElem(this);
 		ListPicker.makeListItemValidations(itemHeaderElem, player, player => player.getCurrentStats().rotationStats?.prepullActions[index]?.validations || []);
 
-		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
-			getValue: () => this.getItem().hide,
-			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
-				this.getItem().hide = newValue;
-				this.player.rotationChangeEmitter.emit(eventID);
-			},
-		});
+		this.hidePicker = this.addChild(
+			new APLHidePicker(itemHeaderElem, player, {
+				getValue: () => this.getItem().hide,
+				setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
+					this.getItem().hide = newValue;
+					this.player.rotationChangeEmitter.emit(eventID);
+				},
+			}),
+		);
 
-		this.doAtPicker = new APLValuePicker(this.rootElem, this.player, {
-			id: randomUUID(),
-			label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
-			labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
-			extraCssClasses: ['apl-prepull-actions-doat'],
-			changedEvent: () => this.player.rotationChangeEmitter,
-			getValue: () => this.getItem().doAtValue,
-			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
-				if (newValue) {
-					this.getItem().doAtValue = newValue;
-				} else {
-					this.getItem().doAtValue = APLValue.create({
-						value: { oneofKind: 'const', const: { val: '-1s' } },
-						uuid: { value: randomUUID() },
-					});
-				}
-				this.player.rotationChangeEmitter.emit(eventID);
-			},
-			inline: true,
-		});
+		this.doAtPicker = this.addChild(
+			new APLValuePicker(this.rootElem, this.player, {
+				id: randomUUID(),
+				label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
+				labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
+				extraCssClasses: ['apl-prepull-actions-doat'],
+				getValue: () => this.getItem().doAtValue,
+				setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
+					if (newValue) {
+						this.getItem().doAtValue = newValue;
+					} else {
+						this.getItem().doAtValue = APLValue.create({
+							value: { oneofKind: 'const', const: { val: '-1s' } },
+							uuid: { value: randomUUID() },
+						});
+					}
+					this.player.rotationChangeEmitter.emit(eventID);
+				},
+				inline: true,
+			}),
+		);
 
-		this.actionPicker = new APLActionPicker(this.rootElem, this.player, {
-			changedEvent: () => this.player.rotationChangeEmitter,
-			getValue: () => this.getItem().action!,
-			setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
-				this.getItem().action = newValue;
-				this.player.rotationChangeEmitter.emit(eventID);
-			},
-		});
+		this.actionPicker = this.addChild(
+			new APLActionPicker(this.rootElem, this.player, {
+				getValue: () => this.getItem().action!,
+				setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
+					this.getItem().action = newValue;
+					this.player.rotationChangeEmitter.emit(eventID);
+				},
+			}),
+		);
 		this.init();
 	}
 

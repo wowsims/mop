@@ -31,6 +31,16 @@ interface TimelineConfig extends ResultComponentConfig {
 	secondaryResource?: SecondaryResource | null;
 }
 
+interface RotationSlot {
+	key: string;
+	labels: Array<Node>;
+	timeline: Array<Node>;
+	hiddenIdsNodes: Array<Node>;
+	emitter: TypedEvent<void>;
+	resetCallbacks: Array<() => void>;
+	plotOptions: any;
+}
+
 export class Timeline extends ResultComponent {
 	private readonly dpsResourcesPlotElem: HTMLElement;
 	private dpsResourcesPlot: any;
@@ -38,26 +48,25 @@ export class Timeline extends ResultComponent {
 	private readonly rotationPlotElem: HTMLElement;
 	private readonly rotationLabels: HTMLElement;
 	private readonly rotationTimeline: HTMLElement;
-	private rotationTimelineTimeRulerElem: HTMLCanvasElement | null = null;
 	private readonly rotationHiddenIdsContainer: HTMLElement;
 	private readonly chartPicker: HTMLSelectElement;
 
-	private prevResultData: SimResultData | null;
 	private resultData: SimResultData | null;
 	rendered: boolean;
 
-	private hiddenIds: Array<ActionId>;
-	private hiddenIdsChangeEmitter;
-	private cacheHandler = new CacheHandler<{
-		dpsResourcesPlotOptions: any;
-		rotationLabels: Timeline['rotationLabels'];
-		rotationTimeline: Timeline['rotationTimeline'];
-		rotationHiddenIdsContainer: Timeline['rotationHiddenIdsContainer'];
-		rotationTimelineTimeRulerElem: Timeline['rotationTimelineTimeRulerElem'];
-		rotationTimelineTimeRulerImage: ImageData | undefined;
-	}>({
-		keysToKeep: 2,
-	});
+	// A rendered rotation timeline for one (result, filter, chart) key. The DOM
+	// nodes are kept LIVE (moved in and out of the containers, never cloned) so
+	// their tippy instances, click handlers and emitter subscriptions survive a
+	// switch between the current result and a saved reference. Eviction runs the
+	// slot's reset callbacks (tooltip destroy, listener removal).
+	private liveSlot: RotationSlot | null = null;
+	// The most recently stashed slot. One is enough for the current <-> reference
+	// swap, and each parked slot keeps its full tippy instance set alive.
+	private parkedSlot: RotationSlot | null = null;
+
+	// Hidden rows are keyed by section (player '', pet name, target label) plus
+	// action, so ids shared across sections (e.g. main-hand Attack) hide independently.
+	private hiddenIds: Array<{ scope: string; actionId: ActionId }>;
 
 	private secondaryResource?: SecondaryResource | null;
 
@@ -65,10 +74,9 @@ export class Timeline extends ResultComponent {
 		config.rootCssClass = 'timeline-root';
 		super(config);
 		this.resultData = null;
-		this.prevResultData = null;
 		this.rendered = false;
 		this.hiddenIds = [];
-		this.hiddenIdsChangeEmitter = new TypedEvent<void>();
+		this.addOnDisposeCallback(() => this.reset());
 		this.secondaryResource = config.secondaryResource;
 
 		this.rootElem.appendChild(
@@ -185,7 +193,6 @@ export class Timeline extends ResultComponent {
 	}
 
 	onSimResult(resultData: SimResultData) {
-		this.prevResultData = this.resultData;
 		this.resultData = resultData;
 		this.update();
 	}
@@ -195,22 +202,26 @@ export class Timeline extends ResultComponent {
 			return;
 		}
 
-		const cachedData = this.cacheHandler.get(this.resultData.result.request.requestId);
-		if (cachedData) {
-			const { dpsResourcesPlotOptions, rotationLabels, rotationTimeline, rotationHiddenIdsContainer, rotationTimelineTimeRulerImage } = cachedData;
-			this.rotationLabels.replaceChildren(...rotationLabels.cloneNode(true).childNodes);
-			this.rotationTimeline.replaceChildren(...rotationTimeline.cloneNode(true).childNodes);
-
-			this.rotationHiddenIdsContainer.replaceChildren(...rotationHiddenIdsContainer.cloneNode(true).childNodes);
-			this.dpsResourcesPlot.updateOptions(dpsResourcesPlotOptions);
-
-			if (rotationTimelineTimeRulerImage)
-				this.rotationTimeline
-					.querySelector<HTMLCanvasElement>('.rotation-timeline-canvas')
-					?.getContext('2d')
-					?.putImageData(rotationTimelineTimeRulerImage, 0, 0);
-
+		const players = this.resultData.result.getRaidIndexedPlayers(this.resultData.filter);
+		const singlePlayer = players.length == 1;
+		if (!singlePlayer && this.chartPicker.value == 'rotation') {
+			// Programmatic select changes fire no 'change' event: sync the plot containers by hand.
+			this.chartPicker.value = 'dps';
 			this.onChartPickerSelectHandler();
+		}
+
+		// Fast path: this result was rendered before and its slot is either live
+		// or parked in the cache.
+		const key = this.resultKey(!singlePlayer);
+		const hit = this.liveSlot?.key === key ? this.liveSlot : this.parkedSlot?.key === key ? this.parkedSlot : null;
+		if (hit?.plotOptions) {
+			if (hit !== this.liveSlot) {
+				this.parkedSlot = null;
+				this.stashLiveSlot();
+				this.attachSlot(hit);
+			}
+			this.setRotationOptionVisible(singlePlayer);
+			this.dpsResourcesPlot.updateOptions(hit.plotOptions);
 			return;
 		}
 
@@ -263,14 +274,10 @@ export class Timeline extends ResultComponent {
 			},
 		};
 
-		const players = this.resultData!.result.getRaidIndexedPlayers(this.resultData!.filter);
-		if (players.length == 1) {
+		if (singlePlayer) {
 			const player = players[0];
 
-			const rotationOption = this.rootElem.querySelector('.rotation-option')!;
-			rotationOption.classList.remove('hide');
-			const threatOption = this.rootElem.querySelector('.threat-option')!;
-			threatOption.classList.add('hide');
+			this.setRotationOptionVisible(true);
 
 			try {
 				this.updateRotationChart(player, duration);
@@ -287,16 +294,12 @@ export class Timeline extends ResultComponent {
 
 			this.addMajorCooldownAnnotations(player, options);
 		} else {
-			if (this.chartPicker.value == 'rotation') {
-				this.chartPicker.value = 'dps';
-				return;
-			}
-			const rotationOption = this.rootElem.querySelector('.rotation-option')!;
-			rotationOption.classList.add('hide');
-			const threatOption = this.rootElem.querySelector('.threat-option')!;
-			threatOption.classList.remove('hide');
+			this.setRotationOptionVisible(false);
 
+			this.stashLiveSlot();
 			this.clearRotationChart();
+			// No rotation subtree, but the (expensive) per-player series are worth caching for swaps.
+			this.liveSlot = Timeline.newSlot(key);
 
 			if (this.chartPicker.value == 'dps') {
 				let maxDps = 0;
@@ -317,20 +320,8 @@ export class Timeline extends ResultComponent {
 			}
 		}
 
+		if (this.liveSlot?.key === key) this.liveSlot.plotOptions = options;
 		this.dpsResourcesPlot.updateOptions(options);
-
-		this.rotationTimelineTimeRulerElem?.toBlob(() => {
-			this.cacheHandler.set(this.resultData!.result.request.requestId, {
-				dpsResourcesPlotOptions: options,
-				rotationLabels: this.rotationLabels.cloneNode(true) as HTMLElement,
-				rotationTimeline: this.rotationTimeline.cloneNode(true) as HTMLElement,
-				rotationHiddenIdsContainer: this.rotationHiddenIdsContainer.cloneNode(true) as HTMLElement,
-				rotationTimelineTimeRulerElem: this.rotationTimelineTimeRulerElem?.cloneNode(true) as HTMLCanvasElement,
-				rotationTimelineTimeRulerImage: this.rotationTimelineTimeRulerElem
-					?.getContext('2d')
-					?.getImageData(0, 0, this.rotationTimelineTimeRulerElem.width, this.rotationTimelineTimeRulerElem.height),
-			});
-		});
 	}
 
 	private addDpsYAxis(maxDps: number, options: any) {
@@ -542,15 +533,12 @@ export class Timeline extends ResultComponent {
 
 	private clearRotationChart() {
 		this.rotationLabels.replaceChildren(<div className="rotation-label-header"></div>);
-		const canvasRef = ref<HTMLCanvasElement>();
 		this.rotationTimeline.replaceChildren(
 			<div className="rotation-timeline-header">
-				<canvas ref={canvasRef} className="rotation-timeline-canvas" />
+				<canvas className="rotation-timeline-canvas" />
 			</div>,
 		);
-		this.rotationTimelineTimeRulerElem = canvasRef.value || null;
 		this.rotationHiddenIdsContainer.replaceChildren();
-		this.hiddenIdsChangeEmitter = new TypedEvent<void>();
 	}
 
 	private updateRotationChart(player: UnitMetrics, duration: number) {
@@ -559,6 +547,18 @@ export class Timeline extends ResultComponent {
 			return;
 		}
 
+		const key = this.resultKey();
+		if (this.liveSlot?.key === key) {
+			return;
+		}
+		// Take before stashing so the stash can't evict the slot we want.
+		const parked = this.takeParkedSlot(key);
+		this.stashLiveSlot();
+		if (parked) {
+			this.attachSlot(parked);
+			return;
+		}
+		this.liveSlot = Timeline.newSlot(key);
 		this.clearRotationChart();
 
 		try {
@@ -612,16 +612,17 @@ export class Timeline extends ResultComponent {
 				this.addPetRow(pet.name, duration);
 				orderedResourceTypes.forEach(resourceType => this.addResourceRow(resourceType, pet.groupedResourceLogs[resourceType], duration));
 				const petCastsByAbility = this.getSortedCastsByAbility(pet);
-				petCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration));
+				petCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration, pet.name));
 			});
 		}
 
 		// Don't add a row for buffs that were already visualized in a cast row or are prioritized.
-		const buffsToShow = buffsById.filter(auraUptimeLogs =>
-			!playerCastsByAbility.some(casts => {
-				const actionId = auraUptimeLogs[0].actionId;
-				return actionId && (casts[0].actionId!.equalsIgnoringTag(actionId) || auraAsResource.find(auraId => auraId.equals(actionId)));
-			}),
+		const buffsToShow = buffsById.filter(
+			auraUptimeLogs =>
+				!playerCastsByAbility.some(casts => {
+					const actionId = auraUptimeLogs[0].actionId;
+					return actionId && (casts[0].actionId!.equalsIgnoringTag(actionId) || auraAsResource.find(auraId => auraId.equals(actionId)));
+				}),
 		);
 		if (buffsToShow.length > 0) {
 			this.addSeparatorRow(duration);
@@ -633,7 +634,7 @@ export class Timeline extends ResultComponent {
 			if (targetCastsByAbility.length > 0) {
 				this.addSeparatorRow(duration);
 				this.addTargetRow(target.label, duration);
-				targetCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration));
+				targetCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration, target.label));
 			}
 		});
 
@@ -642,7 +643,7 @@ export class Timeline extends ResultComponent {
 			if (debuffsToShow.length > 0) {
 				this.addSeparatorRow(duration);
 				this.addTargetRow(targets?.[index]?.label, duration);
-				debuffsToShow.forEach(auraUptimeLogs => this.addAuraRow(auraUptimeLogs, duration));
+				debuffsToShow.forEach(auraUptimeLogs => this.addAuraRow(auraUptimeLogs, duration, targets?.[index]?.label ?? ''));
 			}
 		});
 	}
@@ -688,8 +689,14 @@ export class Timeline extends ResultComponent {
 		return castsByAbility;
 	}
 
-	private makeLabelElem(actionId: ActionId, isHiddenLabel: boolean, isAura?: boolean): JSX.Element {
-		const labelText = idsToGroupForRotation.includes(actionId.spellId) ? actionId.baseName : actionId.name;
+	private hiddenIndex(scope: string, actionId: ActionId): number {
+		return this.hiddenIds.findIndex(hidden => hidden.scope === scope && hidden.actionId.equals(actionId));
+	}
+
+	private makeLabelElem(actionId: ActionId, isHiddenLabel: boolean, isAura: boolean, scope: string): JSX.Element {
+		const baseText = idsToGroupForRotation.includes(actionId.spellId) ? actionId.baseName : actionId.name;
+		// Hidden chips for pet/target rows name their section so two "Attack" chips are telling apart.
+		const labelText = isHiddenLabel && scope ? `${baseText} (${scope})` : baseText;
 		const labelIcon = ref<HTMLAnchorElement>();
 		const hideElem = ref<HTMLElement>();
 		const labelElem = (
@@ -699,18 +706,22 @@ export class Timeline extends ResultComponent {
 				<span className="rotation-label-text">{labelText}</span>
 			</div>
 		);
-		const onClickHandler = () => {
+		// The whole hidden chip un-hides; on the visible label only the eye hides.
+		const clickTarget = isHiddenLabel ? labelElem : hideElem.value!;
+		const onClickHandler = (event: Event) => {
+			// The spell icon keeps its own link + Wowhead tooltip.
+			if (isHiddenLabel && (event.target as Element).closest('.rotation-label-icon')) return;
 			if (isHiddenLabel) {
-				const index = this.hiddenIds.findIndex(hiddenId => hiddenId.equals(actionId));
+				const index = this.hiddenIndex(scope, actionId);
 				if (index != -1) {
 					this.hiddenIds.splice(index, 1);
 				}
 			} else {
-				this.hiddenIds.push(actionId);
+				this.hiddenIds.push({ scope, actionId });
 			}
-			this.hiddenIdsChangeEmitter.emit(TypedEvent.nextEventID());
+			this.liveSlot?.emitter.emit(TypedEvent.nextEventID());
 		};
-		hideElem.value!.addEventListener('click', onClickHandler);
+		clickTarget.addEventListener('click', onClickHandler);
 		const tooltip = tippy(hideElem.value!, {
 			theme: 'timeline-tooltip',
 			placement: 'auto-end',
@@ -718,19 +729,19 @@ export class Timeline extends ResultComponent {
 		});
 
 		const updateHidden = () => {
-			if (isHiddenLabel == Boolean(this.hiddenIds.find(hiddenId => hiddenId.equals(actionId)))) {
+			if (isHiddenLabel == (this.hiddenIndex(scope, actionId) != -1)) {
 				labelElem.classList.remove('hide');
 			} else {
 				labelElem.classList.add('hide');
 			}
 		};
-		const event = this.hiddenIdsChangeEmitter.on(updateHidden);
+		const event = this.liveSlot!.emitter.on(updateHidden);
 		updateHidden();
 		actionId.setBackgroundAndHref(labelIcon.value!);
 		actionId.setWowheadDataset(labelIcon.value!, { useBuffAura: isAura });
 
 		this.addOnResetCallback(() => {
-			hideElem.value?.removeEventListener('click', onClickHandler);
+			clickTarget.removeEventListener('click', onClickHandler);
 			tooltip.destroy();
 			event.dispose();
 		});
@@ -738,23 +749,28 @@ export class Timeline extends ResultComponent {
 		return labelElem;
 	}
 
-	private makeRowElem(actionId: ActionId, duration: number): JSX.Element {
-		const rowElem = (
+	// A timeline row that is never hidden (section headers: pet name, target name).
+	private makePlainRowElem(duration: number): JSX.Element {
+		return (
 			<div
 				className="rotation-timeline-row rotation-row"
 				style={{
 					width: this.timeToPx(duration),
 				}}></div>
 		);
+	}
+
+	private makeRowElem(actionId: ActionId, duration: number, scope: string): JSX.Element {
+		const rowElem = this.makePlainRowElem(duration);
 
 		const updateHidden = () => {
-			if (this.hiddenIds.find(hiddenId => hiddenId.equals(actionId))) {
+			if (this.hiddenIndex(scope, actionId) != -1) {
 				rowElem.classList.add('hide');
 			} else {
 				rowElem.classList.remove('hide');
 			}
 		};
-		const event = this.hiddenIdsChangeEmitter.on(updateHidden);
+		const event = this.liveSlot!.emitter.on(updateHidden);
 		updateHidden();
 		this.addOnResetCallback(() => event.dispose());
 		return rowElem;
@@ -762,7 +778,10 @@ export class Timeline extends ResultComponent {
 
 	private addPetRow(petName: string, duration: number) {
 		const actionId = ActionId.fromPetName(petName);
-		const rowElem = this.makeRowElem(actionId, duration);
+		// Header row: must not follow hiddenIds. fromPetName resolves to the summon
+		// spell's id, so hiding e.g. the "Dire Beast" cast row used to hide this
+		// row but not its label, shifting every row below it.
+		const rowElem = this.makePlainRowElem(duration);
 
 		const iconElem = document.createElement('div');
 		this.rotationLabels.appendChild(iconElem);
@@ -784,7 +803,7 @@ export class Timeline extends ResultComponent {
 	}
 
 	private addTargetRow(targetName: string, duration: number) {
-		const rowElem = this.makeRowElem(ActionId.fromEmpty(), duration);
+		const rowElem = this.makePlainRowElem(duration);
 		this.rotationLabels.appendChild(
 			<div>
 				<div className="rotation-label rotation-row">
@@ -882,13 +901,13 @@ export class Timeline extends ResultComponent {
 		this.rotationTimeline.appendChild(rowElem);
 	}
 
-	private addCastRow(castLogs: Array<CastLog>, aurasById: Array<Array<AuraUptimeLog>>, duration: number) {
+	private addCastRow(castLogs: Array<CastLog>, aurasById: Array<Array<AuraUptimeLog>>, duration: number, scope = '') {
 		const actionId = castLogs[0].actionId!;
 
-		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false));
-		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true));
+		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false, false, scope));
+		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, false, scope));
 
-		const rowElem = this.makeRowElem(actionId, duration);
+		const rowElem = this.makeRowElem(actionId, duration, scope);
 		castLogs.forEach(castLog => {
 			const castElem = (
 				<div
@@ -1030,12 +1049,12 @@ export class Timeline extends ResultComponent {
 		this.rotationTimeline.appendChild(rowElem);
 	}
 
-	private addAuraRow(auraUptimeLogs: Array<AuraUptimeLog>, duration: number) {
+	private addAuraRow(auraUptimeLogs: Array<AuraUptimeLog>, duration: number, scope = '') {
 		const actionId = auraUptimeLogs[0].actionId!;
 
-		const rowElem = this.makeRowElem(actionId, duration);
-		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false, true));
-		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, true));
+		const rowElem = this.makeRowElem(actionId, duration, scope);
+		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false, true, scope));
+		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, true, scope));
 		this.rotationTimeline.appendChild(rowElem);
 
 		this.applyAuraUptimeLogsToRow(auraUptimeLogs, rowElem, false);
@@ -1293,10 +1312,69 @@ export class Timeline extends ResultComponent {
 	}
 
 	update() {
-		this.reset();
 		if (!this.rendered) this.dpsResourcesPlot.render();
 		this.updatePlot();
 		this.rendered = true;
+	}
+
+	// Per-render resources (tooltips, listeners) belong to the slot being
+	// rendered so a parked slot can be destroyed independently. Rows are only
+	// ever built under a live slot (see updateRotationChart).
+	addOnResetCallback(callback: () => void) {
+		this.liveSlot!.resetCallbacks.push(callback);
+	}
+
+	// A single player's slot holds the rotation subtree plus every series, so the
+	// chart choice is irrelevant to it; multi-player options depend on the chart.
+	private resultKey(includeChart = false): string {
+		const rd = this.resultData!;
+		return [rd.result.request.requestId, JSON.stringify(rd.filter), includeChart ? this.chartPicker.value : ''].join('|');
+	}
+
+	// Single-player results offer the rotation chart; multi-player ones the threat chart.
+	private setRotationOptionVisible(visible: boolean) {
+		this.rootElem.querySelector('.rotation-option')!.classList.toggle('hide', !visible);
+		this.rootElem.querySelector('.threat-option')!.classList.toggle('hide', visible);
+	}
+
+	private static newSlot(key: string): RotationSlot {
+		return { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null };
+	}
+
+	private takeParkedSlot(key: string): RotationSlot | null {
+		if (this.parkedSlot?.key !== key) return null;
+		const slot = this.parkedSlot;
+		this.parkedSlot = null;
+		return slot;
+	}
+
+	// Parks the on-screen subtree (nodes moved, tooltips kept alive), destroying
+	// the previously parked slot.
+	private stashLiveSlot() {
+		const slot = this.liveSlot;
+		if (!slot) return;
+		slot.labels = Array.from(this.rotationLabels.childNodes);
+		slot.timeline = Array.from(this.rotationTimeline.childNodes);
+		slot.hiddenIdsNodes = Array.from(this.rotationHiddenIdsContainer.childNodes);
+		this.rotationLabels.replaceChildren();
+		this.rotationTimeline.replaceChildren();
+		this.rotationHiddenIdsContainer.replaceChildren();
+		this.liveSlot = null;
+		if (this.parkedSlot) this.destroySlot(this.parkedSlot);
+		this.parkedSlot = slot;
+	}
+
+	private attachSlot(slot: RotationSlot) {
+		this.rotationLabels.replaceChildren(...slot.labels);
+		this.rotationTimeline.replaceChildren(...slot.timeline);
+		this.rotationHiddenIdsContainer.replaceChildren(...slot.hiddenIdsNodes);
+		this.liveSlot = slot;
+		// hiddenIds is global across results: re-apply it to the restored rows.
+		slot.emitter.emit(TypedEvent.nextEventID());
+	}
+
+	private destroySlot(slot: RotationSlot) {
+		slot.resetCallbacks.forEach(callback => callback());
 	}
 
 	render() {
@@ -1305,8 +1383,10 @@ export class Timeline extends ResultComponent {
 	}
 
 	reset() {
-		const previousResultRequestId = this.prevResultData?.result.request.requestId;
-		if (previousResultRequestId && !this.cacheHandler.get(previousResultRequestId)) return;
+		if (this.liveSlot) this.destroySlot(this.liveSlot);
+		if (this.parkedSlot) this.destroySlot(this.parkedSlot);
+		this.liveSlot = null;
+		this.parkedSlot = null;
 		super.reset();
 	}
 }

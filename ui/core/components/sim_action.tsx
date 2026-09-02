@@ -136,6 +136,8 @@ export class SimResultsManager {
 	}
 
 	setSimProgress(progress: ProgressMetrics) {
+		// Content is replaced below; release the previous content's tooltips/listeners.
+		this.reset();
 		if (progress.finalRaidResult && progress.finalRaidResult.error) {
 			this.simUI.resultsViewer.hideAll();
 			return;
@@ -160,6 +162,7 @@ export class SimResultsManager {
 	}
 
 	setSimResult(eventID: EventID, simResult: SimResult) {
+		this.reset();
 		this.currentData = {
 			simResult: simResult,
 			settings: {
