@@ -737,14 +737,19 @@ export class Timeline extends ResultComponent {
 		return labelElem;
 	}
 
-	private makeRowElem(actionId: ActionId, duration: number): JSX.Element {
-		const rowElem = (
+	// A timeline row that is never hidden (section headers: pet name, target name).
+	private makePlainRowElem(duration: number): JSX.Element {
+		return (
 			<div
 				className="rotation-timeline-row rotation-row"
 				style={{
 					width: this.timeToPx(duration),
 				}}></div>
 		);
+	}
+
+	private makeRowElem(actionId: ActionId, duration: number): JSX.Element {
+		const rowElem = this.makePlainRowElem(duration);
 
 		const updateHidden = () => {
 			if (this.hiddenIds.find(hiddenId => hiddenId.equals(actionId))) {
@@ -761,7 +766,10 @@ export class Timeline extends ResultComponent {
 
 	private addPetRow(petName: string, duration: number) {
 		const actionId = ActionId.fromPetName(petName);
-		const rowElem = this.makeRowElem(actionId, duration);
+		// Header row: must not follow hiddenIds. fromPetName resolves to the summon
+		// spell's id, so hiding e.g. the "Dire Beast" cast row used to hide this
+		// row but not its label, shifting every row below it.
+		const rowElem = this.makePlainRowElem(duration);
 
 		const iconElem = document.createElement('div');
 		this.rotationLabels.appendChild(iconElem);
@@ -783,7 +791,7 @@ export class Timeline extends ResultComponent {
 	}
 
 	private addTargetRow(targetName: string, duration: number) {
-		const rowElem = this.makeRowElem(ActionId.fromEmpty(), duration);
+		const rowElem = this.makePlainRowElem(duration);
 		this.rotationLabels.appendChild(
 			<div>
 				<div className="rotation-label rotation-row">
