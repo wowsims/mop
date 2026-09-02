@@ -28,9 +28,12 @@ ui/
                      bulk_tab + bulk_item_search/bulk_item_picker/bulk_item_picker_group/
                      bulk_sim_results_renderer flattened, PR 5b), import-export/ (view/
                      importer/exporter + importers/ + exporters/, PR 5b). alias @features
-  app/               shells + chrome that compose features; i18n/. Today: browser_env.ts only —
+  app/               EXISTS (in progress). shells + chrome that compose features; i18n/. Today:
+                     browser_env.ts, header/ (sim_header, sim_title_dropdown, social_links),
+                     settings_menu.tsx, tabs/ (gear_tab, talents_tab, rotation_tab),
+                     notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a) —
                      sim_ui/individual_sim_ui/preset_utils/launched_sims and the rest of
-                     components/ are still under ui/core/ (PR 4–6). alias @app
+                     components/ are still under ui/core/ (PR 6b+). alias @app
   core/              LEGACY. what has not been placed yet: proto/ (generated), components/
                      (detailed_results moved to features/results, PR 4a; apl_values/apl_actions/
                      apl_helpers/apl_condition_builder/apl/ moved to features/apl/view, PR 4b,
@@ -45,8 +48,15 @@ ui/
                      inputs/other_inputs.ts, saved_data_managers/ep_weights.ts, quick_swap.tsx,
                      gear_change_icon.tsx, results_viewer.tsx, spec_change_warning_toast.tsx
                      moved out to features/settings, features/stat-weights, features/gear,
-                     features/results, PR 5c), sim_ui.tsx, individual_sim_ui.tsx,
-                     preset_utils.tsx, launched_sims.tsx. alias @core
+                     features/results, PR 5c; sim_header.tsx, sim_title_dropdown.tsx,
+                     social_links.tsx, settings_menu.tsx, individual_sim_ui/gear_tab.ts,
+                     individual_sim_ui/talents_tab.tsx, individual_sim_ui/rotation_tab.tsx,
+                     individual_sim_ui/notice_native_sim.tsx,
+                     individual_sim_ui/preset_configuration_picker.tsx moved out to ui/app/,
+                     PR 6a — components/ now holds only header/sim_toolbar_item.tsx and
+                     individual_sim_ui/settings_tab.tsx, kept back because features still import
+                     them (results_viewer.tsx, consumes_picker.tsx); PR 6b), sim_ui.tsx,
+                     individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx. alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged

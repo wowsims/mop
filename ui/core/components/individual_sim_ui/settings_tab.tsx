@@ -1,3 +1,4 @@
+import { PresetConfigurationPicker } from '@app/preset_configuration_picker';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
@@ -24,7 +25,6 @@ import { translateProfession, translateRace } from '../../../i18n/localization';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common';
 import { SavedEncounter, SavedSettings } from '../../proto/ui';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 

@@ -1,19 +1,18 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { PresetBuild } from '@core/preset_utils';
+import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '@core/proto/common';
+import { SavedTalents } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
 import { Stats } from '@domain/proto_utils/stats';
 import { batch, nextEventID } from '@domain/state/batch';
 import { subscribeSimChange } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
+import { translatePresetConfigurationCategory } from '@i18n/localization';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
-
-import i18n from '../../../i18n/config';
-import { translatePresetConfigurationCategory } from '../../../i18n/localization';
-import { IndividualSimUI } from '../../individual_sim_ui';
-import { PresetBuild } from '../../preset_utils';
-import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '../../proto/common';
-import { SavedTalents } from '../../proto/ui';
 export class PresetConfigurationPicker extends Component {
 	readonly simUI: IndividualSimUI<Spec>;
 	readonly builds: Array<PresetBuild>;

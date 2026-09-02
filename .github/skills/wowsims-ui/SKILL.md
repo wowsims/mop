@@ -23,7 +23,8 @@ ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,utils,worker_
 ui/ui-kit/                           sim-agnostic widgets + base classes (Component, Input, pickers/,
                                      modals, action_id_dom, dom_utils, css_utils)
 ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
-ui/app/                              composition root; today only browser_env.ts
+ui/app/                              composition root; browser_env.ts, header/, tabs/, settings_menu.tsx,
+                                     notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a)
 ui/core/components/, ui/core/*_ui.tsx, ui/<class>/<spec>/   UI not yet placed — may import everything
 BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/** @core/components/**
 BANNED: ui/domain/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
@@ -146,6 +147,15 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 6a: `ui/app/` gains `header/` (`sim_header`, `sim_title_dropdown`,
+  `social_links`), `settings_menu.tsx`, `tabs/` (`gear_tab`, `talents_tab`, `rotation_tab`),
+  `notice_native_sim.tsx`, `preset_configuration_picker.tsx` — moved from `ui/core/components/`
+  via `tools/restructure/move.mjs` (9 files, 45 import specifiers rewritten). Left behind for
+  PR 6b because a feature imports them: `ui/core/components/header/sim_toolbar_item.tsx`
+  (`features/results/view/results_viewer.tsx`) and
+  `ui/core/components/individual_sim_ui/settings_tab.tsx`
+  (`features/settings/view/consumes_picker.tsx`). `ui/core/components/` now holds only those two
+  files.
 - 2026-09-02 UI restructure PR 5c: picker config data (`buffs_debuffs`, `consumables`, `stat_options`) → `features/settings/model`; `other_inputs.ts` moved whole into `features/settings/view` (still mixes constants with five `make*Selector` DOM constructors — split pending); saved EP weights → `features/stat-weights/view`; quick_swap/gear_change_icon → `features/gear/view`; results_viewer → `features/results/view`; spec_change_warning_toast → `features/settings/view`.
 - 2026-09-02 UI restructure PR 2 "split the action files": the three sim-orchestrating
   `ui/core/components/*_action.tsx` files are gone. `suggest_reforges_action.tsx` →

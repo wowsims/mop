@@ -1,3 +1,6 @@
+import { IndividualSimUI, InputSection } from '@core/individual_sim_ui';
+import { APLRotation, APLRotation_Type as APLRotationType } from '@core/proto/apl';
+import { SavedRotation } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
 import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
@@ -9,6 +12,7 @@ import { APLVariablesListPicker } from '@features/apl/view/apl_variables_list_pi
 import { APLPrePullListPicker } from '@features/apl/view/pre_pull_list_picker';
 import { APLPriorityListPicker } from '@features/apl/view/priority_list_picker';
 import { CooldownsPicker } from '@features/settings/view/cooldowns_picker';
+import i18n from '@i18n/config';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
 import { Input } from '@ui-kit/input';
@@ -21,11 +25,7 @@ import { SimTab } from '@ui-kit/sim_tab';
 import { StickyToolbar } from '@ui-kit/sticky_toolbar';
 import clsx from 'clsx';
 
-import i18n from '../../../i18n/config';
-import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
-import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
-import { SavedRotation } from '../../proto/ui';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class RotationTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 

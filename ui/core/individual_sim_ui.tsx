@@ -1,3 +1,7 @@
+import { PresetConfigurationPicker } from '@app/preset_configuration_picker';
+import { GearTab } from '@app/tabs/gear_tab';
+import { RotationTab } from '@app/tabs/rotation_tab';
+import { TalentsTab } from '@app/tabs/talents_tab';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
@@ -47,11 +51,7 @@ import * as InputHelpers from '@ui-kit/input_helpers';
 import { SavedDataConfig } from '@ui-kit/saved_data_manager';
 
 import i18n from '../i18n/config';
-import { GearTab } from './components/individual_sim_ui/gear_tab';
-import { PresetConfigurationPicker } from './components/individual_sim_ui/preset_configuration_picker';
-import { RotationTab } from './components/individual_sim_ui/rotation_tab';
 import { SettingsTab } from './components/individual_sim_ui/settings_tab';
-import { TalentsTab } from './components/individual_sim_ui/talents_tab';
 import { simLaunchStatuses } from './launched_sims';
 import { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
 import { StatWeightsResult } from './proto/api';

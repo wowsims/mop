@@ -1,3 +1,7 @@
+import { SimHeader } from '@app/header/sim_header';
+import { SimTitleDropdown } from '@app/header/sim_title_dropdown';
+import { SocialLinks } from '@app/header/social_links';
+import { NoticeNativeSim } from '@app/notice_native_sim';
 import { REPO_NEW_ISSUE_URL } from '@domain/constants/other';
 import { PlayerSpec } from '@domain/player_spec';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -21,10 +25,6 @@ import { ref } from 'tsx-vanilla';
 
 import i18n from '../i18n/config';
 import { trackEvent } from '../tracking/utils';
-import { NoticeNativeSim } from './components/individual_sim_ui/notice_native_sim';
-import { SimHeader } from './components/sim_header';
-import { SimTitleDropdown } from './components/sim_title_dropdown';
-import { SocialLinks } from './components/social_links';
 import { LaunchStatus, SimStatus } from './launched_sims';
 import { ErrorOutcomeType } from './proto/api';
 const URLMAXLEN = 2048;

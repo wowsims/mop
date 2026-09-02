@@ -1,3 +1,6 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { EquipmentSpec, UnitStats } from '@core/proto/common';
+import { SavedGearSet } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
@@ -7,14 +10,11 @@ import GearPicker from '@features/gear/view/gear_picker';
 import { GemSummary } from '@features/gear/view/gem_summary';
 import { ReforgeSummary } from '@features/gear/view/reforge_summary';
 import { UpgradeCostsSummary } from '@features/gear/view/upgrade_costs_summary';
+import i18n from '@i18n/config';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
-import i18n from '../../../i18n/config';
-import { IndividualSimUI } from '../../individual_sim_ui';
-import { EquipmentSpec, UnitStats } from '../../proto/common';
-import { SavedGearSet } from '../../proto/ui';
-import { PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationPicker } from '../preset_configuration_picker';
 export class GearTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 
