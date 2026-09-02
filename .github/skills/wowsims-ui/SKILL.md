@@ -165,6 +165,14 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02: fixed the "Empty action id!" console error + broken pet icon on the hunter "No Pet"
+  picker entry. `ActionId` (`ui/domain/proto_utils/action_id.ts`) gained a `static empty(name,
+  iconUrl?)` factory (sets a private `isEmptyPlaceholder` flag) for INTENTIONALLY empty ids —
+  `toStringIgnoringTag()` skips its `console.error` only for those, so accidental empties (e.g. a
+  bad `fromPetName`/`fromProto` call) still log. `hunter_pet.ts`'s "No Pet" entry now uses
+  `ActionId.empty('No Pet', '.../inv_misc_questionmark.jpg')` instead of `fromPetName('')`.
+  Evaluated `import/no-cycle` for `.oxlintrc.json`: 188 warnings across `ui/`, so it was left off
+  (not added).
 - 2026-09-02 UI restructure PR 11a: cleanup pass. 21 `.tsx` files with no JSX renamed to `.ts`
   via the move tool (`preset_utils.ts`, the apl list-picker/condition-builder views, the
   import-export importer/exporter views, `sticky_toolbar.ts`, `topline_results.ts`,

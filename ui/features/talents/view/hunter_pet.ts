@@ -10,7 +10,11 @@ export function makePetTypeInputConfig<SpecType extends HunterSpecs>(): InputHel
 		fieldName: 'petType',
 		numColumns: 5,
 		values: [
-			{ value: PetType.PetNone, actionId: ActionId.fromPetName(''), tooltip: 'No Pet' },
+			{
+				value: PetType.PetNone,
+				actionId: ActionId.empty('No Pet', 'https://wow.zamimg.com/images/wow/icons/medium/inv_misc_questionmark.jpg'),
+				tooltip: 'No Pet',
+			},
 			{ value: PetType.Bat, actionId: ActionId.fromPetName('Bat'), tooltip: 'Bat' },
 			{ value: PetType.Bear, actionId: ActionId.fromPetName('Bear'), tooltip: 'Bear' },
 			{ value: PetType.BirdOfPrey, actionId: ActionId.fromPetName('Bird of Prey'), tooltip: 'Bird of Prey' },

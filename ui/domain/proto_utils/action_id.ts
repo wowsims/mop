@@ -21,6 +21,7 @@ type ActionIdOptions = {
 	randomSuffixId?: number;
 	reforgeId?: number;
 	upgradeStep?: number;
+	isEmptyPlaceholder?: boolean;
 };
 
 // Uniquely identifies a specific item / spell / thing in WoW. This object is immutable.
@@ -37,8 +38,24 @@ export class ActionId {
 	readonly name: string;
 	readonly iconUrl: string;
 	readonly spellIdTooltipOverride: number | null;
+	// True when this ActionId was created via ActionId.empty() to represent an intentional
+	// placeholder (e.g. "No Pet") rather than a missing/unresolved id. Suppresses the
+	// "Empty action id!" error logged by toStringIgnoringTag() for accidental empties.
+	private readonly isEmptyPlaceholder: boolean;
 
-	private constructor({ itemId, spellId, otherId, tag, baseName, name, iconUrl, randomSuffixId, reforgeId, upgradeStep }: ActionIdOptions = {}) {
+	private constructor({
+		itemId,
+		spellId,
+		otherId,
+		tag,
+		baseName,
+		name,
+		iconUrl,
+		randomSuffixId,
+		reforgeId,
+		upgradeStep,
+		isEmptyPlaceholder,
+	}: ActionIdOptions = {}) {
 		this.itemId = itemId ?? 0;
 		this.randomSuffixId = randomSuffixId ?? 0;
 		this.reforgeId = reforgeId ?? 0;
@@ -46,6 +63,7 @@ export class ActionId {
 		this.spellId = spellId ?? 0;
 		this.otherId = otherId ?? OtherAction.OtherActionNone;
 		this.tag = tag ?? 0;
+		this.isEmptyPlaceholder = isEmptyPlaceholder ?? false;
 
 		switch (otherId) {
 			case OtherAction.OtherActionNone:
@@ -979,7 +997,9 @@ export class ActionId {
 		} else if (this.otherId) {
 			return 'other-' + this.otherId;
 		} else {
-			console.error('Empty action id!');
+			if (!this.isEmptyPlaceholder) {
+				console.error('Empty action id!');
+			}
 			return this.name;
 		}
 	}
@@ -1028,6 +1048,17 @@ export class ActionId {
 
 	static fromEmpty(): ActionId {
 		return new ActionId();
+	}
+
+	// Use this for an INTENTIONALLY empty action id, e.g. a "None" placeholder entry in a
+	// picker. Unlike fromEmpty()/an accidentally-empty ActionId, this does not log
+	// 'Empty action id!' when stringified.
+	static empty(name: string, iconUrl?: string): ActionId {
+		return new ActionId({
+			baseName: name,
+			iconUrl,
+			isEmptyPlaceholder: true,
+		});
 	}
 
 	static fromItemId(itemId: number, tag?: number, randomSuffixId?: number, reforgeId?: number, upgradeStep?: ItemLevelState): ActionId {
