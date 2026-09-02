@@ -35,7 +35,7 @@ import {
 	subscribeUnitMetadata,
 } from '../../ui/domain/state/subscriptions';
 import { registerSpecConfig } from '../../ui/features/spec_config';
-import armsWarriorSpec from '../../ui/warrior/arms/spec';
+import armsWarriorSpec from '../../ui/sims/warrior/arms/spec';
 import { makeMemoryEnv } from './memory_env';
 
 registerSpecConfig(armsWarriorSpec.spec, armsWarriorSpec);

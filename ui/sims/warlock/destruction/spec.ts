@@ -1,0 +1,138 @@
+import { APLRotation } from '@core/proto/apl';
+import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@core/proto/common';
+import { HASTE_RATING_PER_HASTE_PERCENT } from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { PlayerClasses } from '@domain/player_classes';
+import * as StatCaps from '@domain/presets/stat_caps';
+import { DEFAULT_CASTER_GEM_STATS, Stats, UnitStat } from '@domain/proto_utils/stats';
+import { batch } from '@domain/state/batch';
+import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
+
+import * as WarlockInputs from '../shared/inputs';
+import * as Presets from './presets';
+const modifyDisplayStats = (player: Player<Spec.SpecDestructionWarlock>) => {
+	let stats = new Stats();
+
+	batch(() => {
+		const currentStats = player.getCurrentStats().finalStats?.stats;
+		if (currentStats === undefined) {
+			return {};
+		}
+
+		stats = stats.addStat(Stat.StatMP5, (currentStats[Stat.StatMP5] * currentStats[Stat.StatHasteRating]) / HASTE_RATING_PER_HASTE_PERCENT / 100);
+	});
+
+	return {
+		talents: stats,
+	};
+};
+
+export default defineSpec<Spec.SpecDestructionWarlock>({
+	spec: Spec.SpecDestructionWarlock,
+
+	cssClass: 'destruction-warlock-sim-ui',
+	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Warlock),
+	// List any known bugs / issues here and they'll be shown on the site.
+	knownIssues: [],
+
+	// All stats for which EP should be calculated.
+	epStats: [Stat.StatIntellect, Stat.StatSpellPower, Stat.StatHitRating, Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating],
+	// Reference stat against which to calculate EP. DPS classes use either spell power or attack power.
+	epReferenceStat: Stat.StatSpellPower,
+	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
+	displayStats: UnitStat.createDisplayStatArray(
+		[
+			Stat.StatHealth,
+			Stat.StatMana,
+			Stat.StatStamina,
+			Stat.StatIntellect,
+			Stat.StatSpellPower,
+			Stat.StatMasteryRating,
+			Stat.StatExpertiseRating,
+			Stat.StatMP5,
+		],
+		[PseudoStat.PseudoStatSpellHitPercent, PseudoStat.PseudoStatSpellCritPercent, PseudoStat.PseudoStatSpellHastePercent],
+	),
+	gemStats: DEFAULT_CASTER_GEM_STATS,
+
+	modifyDisplayStats,
+	defaults: {
+		// Default equipped gear.
+		gear: Presets.P2_PRESET.gear,
+
+		// Default EP weights for sorting gear in the gear picker.
+		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
+		// Default stat caps for the Reforge optimizer
+		statCaps: StatCaps.spellHitCap(),
+		// Default consumes settings.
+		consumables: Presets.DefaultConsumables,
+
+		// Default talents.
+		talents: Presets.DestructionTalents.data,
+		// Default spec-specific settings.
+		specOptions: Presets.DefaultOptions,
+
+		// Default buffs and debuffs settings.
+		raidBuffs: Presets.DefaultRaidBuffs,
+
+		partyBuffs: PartyBuffs.create({}),
+
+		individualBuffs: Presets.DefaultIndividualBuffs,
+
+		debuffs: Presets.DefaultDebuffs,
+
+		other: Presets.OtherDefaults,
+	},
+
+	// IconInputs to include in the 'Player' section on the settings tab.
+	playerIconInputs: [WarlockInputs.PetInput()],
+
+	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
+	includeBuffDebuffInputs: [BuffDebuffInputs.AttackSpeedBuff, BuffDebuffInputs.PhysicalDamageDebuff, BuffDebuffInputs.MajorArmorDebuff],
+	excludeBuffDebuffInputs: [],
+	petConsumeInputs: [],
+	// Inputs to include in the 'Other' section on the settings tab.
+	otherInputs: {
+		inputs: [OtherInputs.InputDelay, OtherInputs.DistanceFromTarget, OtherInputs.TankAssignment, OtherInputs.ChannelClipDelay],
+	},
+	itemSwapSlots: [ItemSlot.ItemSlotMainHand, ItemSlot.ItemSlotOffHand, ItemSlot.ItemSlotTrinket1, ItemSlot.ItemSlotTrinket2],
+	encounterPicker: {
+		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
+		showExecuteProportion: false,
+	},
+
+	presets: {
+		epWeights: [Presets.DEFAULT_EP_PRESET, Presets.P3_EP_PRESET],
+		// Preset talents that the user can quickly select.
+		talents: [Presets.DestructionTalents],
+		// Preset rotations that the user can quickly select.
+		rotations: [Presets.DEFAULT_APL],
+
+		// Preset gear configurations that the user can quickly select.
+		gear: [Presets.P1_PREBIS_PRESET, Presets.P2_PRESET, Presets.P3_4_PRESET, Presets.P5_PRESET],
+		itemSwaps: [],
+	},
+
+	autoRotation: (_player: Player<Spec.SpecDestructionWarlock>): APLRotation => {
+		return Presets.DEFAULT_APL.rotation.rotation!;
+	},
+
+	reforge: {
+		statSelectionPresets: [
+			{
+				unitStat: UnitStat.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent),
+				presets: Presets.DESTRUCTION_BREAKPOINTS.presets,
+			},
+		],
+		getEPDefaults: player => {
+			const avgIlvl = player.getGear().getAverageItemLevel(false);
+			if (avgIlvl >= 517) {
+				return Presets.P3_EP_PRESET.epWeights;
+			}
+
+			return Presets.DEFAULT_EP_PRESET.epWeights;
+		},
+	},
+});

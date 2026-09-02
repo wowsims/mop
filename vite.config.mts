@@ -107,7 +107,7 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 				'@ui-kit': path.resolve(BASE_PATH, 'ui-kit'),
 				'@features': path.resolve(BASE_PATH, 'features'),
 				'@app': path.resolve(BASE_PATH, 'app'),
-				'@specs': path.resolve(BASE_PATH, 'specs'),
+				'@specs': path.resolve(BASE_PATH, 'sims'),
 				'@i18n': path.resolve(BASE_PATH, 'i18n'),
 				'@core': path.resolve(BASE_PATH, 'core'),
 			},

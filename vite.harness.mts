@@ -18,7 +18,7 @@ export default defineConfig({
 			'@ui-kit': path.resolve(uiRoot, 'ui-kit'),
 			'@features': path.resolve(uiRoot, 'features'),
 			'@app': path.resolve(uiRoot, 'app'),
-			'@specs': path.resolve(uiRoot, 'specs'),
+			'@specs': path.resolve(uiRoot, 'sims'),
 			'@i18n': path.resolve(uiRoot, 'i18n'),
 			'@core': path.resolve(uiRoot, 'core'),
 		},

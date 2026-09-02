@@ -31,7 +31,8 @@ ui/app/                              composition root; browser_env.ts, header/, 
                                      settings_menu.tsx, notice_native_sim.tsx,
                                      preset_configuration_picker.tsx, sim_ui.tsx,
                                      individual_sim_ui.tsx, preset_utils.tsx (PR 6b/6c, PR 8b)
-ui/<class>/<spec>/                   spec data + SimUI subclass — may import everything
+ui/sims/<class>/<spec>/               spec data + SimUI subclass — may import everything
+                                     (generated page still lands at ui/<class>/<spec>/index.html)
 BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/**
 BANNED: ui/domain/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
 BANNED: ui/i18n/** → @app/** @features/** @ui-kit/** @specs/** (domain is allowed)
@@ -149,21 +150,22 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 - Tabs, single quotes, `simple-import-sort` (run `npm run lint:js:fix` on touched files).
 - Never commit fixtures/goldens without asking; never run `gen_db` concurrently.
 - Spec configs are pure data; `Player` consumes only the narrow `SpecConfigData` subset.
-  All 34 specs are a single `ui/<class>/<spec>/spec.ts` (or `.tsx` for `mage/arcane` and
+  All 34 specs are a single `ui/sims/<class>/<spec>/spec.ts` (or `.tsx` for `mage/arcane` and
   `warlock/demonology`, whose reforge tooltips need real JSX) default-exporting
   `defineSpec({ spec, ...config, reforge?, enableHealing?, derivedSettings?, features? })` — no
   `sim.ts`, no `index.ts`, no `IndividualSimUI` subclass anywhere; `ui/app/spec_entry.ts` loads
   it from the URL. Adding a spec = the `spec.ts`, an entry in `ui/domain/player_specs`, and a
   `$sim-themes` map entry in `ui/scss/sims/sim.scss` (PR 8a: 68 per-spec scss files collapsed
   into one shared `sim.scss` + `mage_fire.scss` for fire mage's extra rules); `makefile`'s
-  `PAGE_INDECES` globs `ui/*/*/spec.ts(x)` so `index.html` and the vite entry follow
+  `PAGE_INDECES` globs `ui/sims/*/*/spec.ts(x)` so `index.html` and the vite entry follow
   automatically, and `make` is safe to run.
-  Rules shared by several specs of one class live in `ui/<class>/shared/`.
+  Rules shared by several specs of one class live in `ui/sims/<class>/shared/`.
   See "How to author a spec" in `ui/README.md`.
 - `PartyBuffs` is an empty proto message in MoP — party-buff code paths are vestigial.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 9c: the 11 class source dirs moved `ui/<class>/` → `ui/sims/<class>/` via the move tool (`@specs` alias in `tsconfig.json`/`vite.config.mts`/`vite.harness.mts` now resolves to `ui/sims`; `move.mjs`'s `DIR_TO_ALIAS` table key renamed `specs` → `sims`). The generated page location and URL are unchanged: `makefile`'s `PAGE_INDECES` now derives `ui/<class>/<spec>/index.html` from `ui/sims/*/*/spec.ts(x)` (the `ui/%/index.html` rule gained a `mkdir -p $(@D)` since the class/spec dirs no longer pre-exist), and `spec_entry.ts`'s glob/module-key both gained a `sims/` segment. 34/34 golden specs still match.
 - 2026-09-02 UI restructure PR 9b (part 1): EP-weight and talent presets become JSON under `ui/<class>/<spec>/presets/{ep,talents}/` (enum NAMES as keys; `makePresetEpWeightsFromJSON` / `makePresetTalentsFromJSON` in `app/preset_utils.tsx`); computed presets (`.withStat`, glyph spreads, `onLoad`) stay in TS. Done: warrior, death_knight, druid, hunter, mage; the other six classes follow the same recipe.
 - 2026-09-02 UI restructure PR 9b (part 2): same recipe applied to monk, paladin, priest, rogue, shaman, warlock — all 12 specs converted. Presets left in TS: shaman/enhancement P1/P3 EP (pseudoStat values computed via `Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT`/`PHYSICAL_HIT_RATING_PER_HIT_PERCENT` multipliers); shaman/elemental `TalentsCleave`/`TalentsAoE` (spread another preset's glyphs); priest discipline/holy `StandardTalents`/`EnlightenmentTalents` and shaman/restoration `TankHealingTalents`/`RaidHealingTalents` (fully commented-out talentsString/glyphs, nothing literal to move). All 34 golden specs still match; `tsc`/`oxlint`/`vite build` clean.
 - 2026-09-02 UI restructure PR 9a: shared lift. Every class now has fixed-name

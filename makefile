@@ -13,7 +13,7 @@ GOROOT := $(shell go env GOROOT)
 UI_SRC := $(shell find ui -name '*.ts' -o -name '*.tsx' -o -name '*.scss' -o -name '*.html')
 AUTO_GEN_FILES_TS := ui/domain/player_classes/capabilities_auto_gen.ts ui/domain/bulk/constants_auto_gen.ts ui/domain/wasm/bulk_sim/constants_auto_gen.ts
 AUTO_GEN_FILES_TS_DEPS := sim/core/character_constants.go sim/core/bulk/candidates.go sim/core/bulk/bulk_sim.go sim/core/bulk/stage.go tools/database/gen_character_constants_ts.go tools/database/gen_bulksim_constants.ts.go sim/core/proto/api.pb.go
-PAGE_INDECES := $(patsubst %/spec.ts,%/index.html,$(wildcard ui/*/*/spec.ts)) $(patsubst %/spec.tsx,%/index.html,$(wildcard ui/*/*/spec.tsx))
+PAGE_INDECES := $(patsubst ui/sims/%/spec.ts,ui/%/index.html,$(wildcard ui/sims/*/*/spec.ts)) $(patsubst ui/sims/%/spec.tsx,ui/%/index.html,$(wildcard ui/sims/*/*/spec.tsx))
 
 $(OUT_DIR)/.dirstamp: \
   $(OUT_DIR)/lib.wasm.gz \
@@ -58,6 +58,7 @@ ui/core/proto/api.ts: proto/*.proto node_modules
 	npx protoc --ts_out ui/core/proto --proto_path proto proto/ui.proto
 
 ui/%/index.html: ui/index_template.html
+	mkdir -p $(@D)
 	cat ui/index_template.html | sed -e 's/@@CLASS@@/$(shell dirname $(@D) | xargs basename)/g' -e 's/@@SPEC@@/$(shell basename $(@D))/g' > $@
 
 .PHONY: package.json

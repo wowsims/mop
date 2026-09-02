@@ -41,7 +41,8 @@ ui/
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
                      the top level rather than under app/ (PR 6c). alias @i18n
   core/              LEGACY, proto only: ui/core/proto/ (generated). alias @core
-  <class>/<spec>/    spec data, presets, generated index.html. alias @specs
+  sims/<class>/<spec>/   spec data, presets. alias @specs. Generated index.html still lands
+                     at ui/<class>/<spec>/index.html (URL /mop/<class>/<spec>/ unchanged)
   scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
                      replace the 34 per-spec sims/<class>/<spec>/{index,_sim}.scss (PR 8a)
   index.ts, index.html, index_template.html, shared/, types/, tracking/   root, unchanged
@@ -53,7 +54,7 @@ ui/
 - `ui-kit/`: reusable widgets with zero knowledge of sims (no `Player`/`Sim` types except through generic params).
 - `features/<x>/model/`: DOM-free logic of one capability; `features/<x>/view/`: its tsx-vanilla rendering. Features never import another feature's `view/`.
 - `app/`: composes features; the only place that knows the tab layout.
-- `<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
+- `sims/<class>/<spec>/`: data; the only code allowed is `features/` escape hatches and `shared/derived.ts` rules.
 
 ## Dependency direction
 
@@ -90,7 +91,7 @@ holds the `make*` builders and re-exports the types.
 
 Proto-serialisable preset data lives as JSON, never as a TS literal: gear (`gear_sets/*.gear.json`),
 APLs (`apls/*.apl.json`), builds (`builds/*.build.json`), EP weights (`presets/ep/*.ep.json`) and
-talents (`presets/talents/*.talents.json`) under `ui/<class>/<spec>/`. EP/talent JSON stores enum
+talents (`presets/talents/*.talents.json`) under `ui/sims/<class>/<spec>/`. EP/talent JSON stores enum
 fields by name (e.g. `"StatCritRating"`, `"GlyphOfBullRush"`) rather than numeric value, so the
 file stays stable across proto regenerations; `PresetUtils.makePresetEpWeightsFromJSON` /
 `makePresetTalentsFromJSON` resolve the names back through the enum (`Stat`/`PseudoStat`, and the
@@ -125,7 +126,7 @@ explicit extension on every specifier).
 
 ## How to author a spec
 
-A spec is data. `ui/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` call and is
+A spec is data. `ui/sims/<class>/<spec>/spec.ts` default-exports one `defineSpec({...})` call and is
 the only code file the spec owns (besides `presets.ts` / `inputs.ts`):
 
 ```ts
@@ -183,8 +184,8 @@ The `getEPDefaults` / `updateSoftCaps` callbacks receive `(…, player, ctx)` wh
 
 `ui/app/spec_entry.ts` is the single page entry for every spec, referenced from
 `ui/index_template.html`. It derives the module key from `location.pathname`
-(`/mop/<class>/<spec>/` → `../<class>/<spec>/spec`), loads it from a lazy
-`import.meta.glob('../*/*/spec.{ts,tsx}')` — `.tsx` is only for the two specs whose reforge
+(`/mop/<class>/<spec>/` → `../sims/<class>/<spec>/spec`), loads it from a lazy
+`import.meta.glob('../sims/*/*/spec.{ts,tsx}')` — `.tsx` is only for the two specs whose reforge
 tooltips need real JSX — so each spec ships its own chunk and only the visited one is fetched
 — then:
 
@@ -206,7 +207,7 @@ whenever `subscribe`'s source fires — including when the defaults land.
 All 34 specs are converted: there is no `sim.ts`, no per-spec `index.ts` and no `IndividualSimUI`
 subclass anywhere. Adding a spec is:
 
-1. `ui/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
+1. `ui/sims/<class>/<spec>/spec.ts` (or `.tsx`) default-exporting `defineSpec({...})`, plus its
    `presets.ts` / `inputs.ts`.
 2. An entry in `ui/domain/player_specs/index.ts`, i.e. a `PlayerSpec` class (in
    `ui/domain/player_specs/<class>.ts`) with a `launch: { phase, status }` field — this is the
@@ -215,12 +216,12 @@ subclass anywhere. Adding a spec is:
 3. An entry in the `$sim-themes` map in `ui/scss/sims/sim.scss` (cssClass, class color, background
    image), which the generated `index.html` links unconditionally.
 
-Everything else is derived: `makefile`'s `PAGE_INDECES` globs `ui/*/*/spec.ts(x)` and generates
-`index.html` from `ui/index_template.html`, and `spec_entry.ts`'s `import.meta.glob` picks the
-module up from the URL. Running `make` is safe — it regenerates all 34 `index.html` from the one
-template.
+Everything else is derived: `makefile`'s `PAGE_INDECES` globs `ui/sims/*/*/spec.ts(x)` and generates
+`ui/<class>/<spec>/index.html` from `ui/index_template.html`, and `spec_entry.ts`'s
+`import.meta.glob` picks the module up from the URL. Running `make` is safe — it regenerates all
+34 `index.html` from the one template.
 
-Rules shared by several specs of the same class live in `ui/<class>/shared/` (e.g.
+Rules shared by several specs of the same class live in `ui/sims/<class>/shared/` (e.g.
 `rogue/shared/derived.ts`, `monk/shared/derived.ts`, `death_knight/shared/{derived,inputs}.ts`).
 A shared `DerivedSetting` is declared `DerivedSetting<any>` because `Player<S>` is invariant in
 `S`, so a rule typed against a spec union is not assignable into any one spec's

@@ -14,9 +14,9 @@ import { registerSpecConfig } from '@features/spec_config';
 
 import { IndividualSimUI } from './individual_sim_ui';
 
-const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../*/*/spec.{ts,tsx}');
+const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../sims/*/*/spec.{ts,tsx}');
 
-// '/mop/warrior/arms/' -> '../warrior/arms/spec' (then tried as .ts and .tsx —
+// '/mop/warrior/arms/' -> '../sims/warrior/arms/spec' (then tried as .ts and .tsx —
 // a couple of specs need real JSX for their reforge tooltips).
 function specModuleKey(pathname: string): string {
 	const base = import.meta.env.BASE_URL || '/';
@@ -24,7 +24,7 @@ function specModuleKey(pathname: string): string {
 		.replace(/^\/+/, '')
 		.replace(/index\.html$/, '')
 		.replace(/\/+$/, '');
-	return `../${rel}/spec`;
+	return `../sims/${rel}/spec`;
 }
 
 // An async IIFE rather than top-level await: the vite build target does not

@@ -22,7 +22,7 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const UI_ROOT = path.join(REPO_ROOT, 'ui');
 
 // Top-level ui/ directory -> import alias. Directories missing from this table
-// (shared/, types/, tracking/, the per-class spec dirs) are always relative.
+// (shared/, types/, tracking/) are always relative.
 const DIR_TO_ALIAS = {
 	domain: '@domain',
 	generated: '@generated',
@@ -30,7 +30,7 @@ const DIR_TO_ALIAS = {
 	'ui-kit': '@ui-kit',
 	features: '@features',
 	app: '@app',
-	specs: '@specs',
+	sims: '@specs',
 	i18n: '@i18n',
 	core: '@core',
 };
