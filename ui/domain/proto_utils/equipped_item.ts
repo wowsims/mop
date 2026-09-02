@@ -11,8 +11,8 @@ import {
 	ReforgeStat,
 	ScalingItemProperties,
 	Stat,
-} from '@core/proto/common';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@core/proto/ui';
+} from '@generated/proto/common';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 
 import { MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
 import { distinct } from '../utils';

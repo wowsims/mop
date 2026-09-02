@@ -1,4 +1,4 @@
-import { DistributionMetrics } from '@core/proto/api';
+import { DistributionMetrics } from '@generated/proto/api';
 
 import { Z_95 } from '../../utils';
 import { BULK_SIM_COMBINATION_LOG_MIN, BULK_SIM_CULLING_COEFFICIENT, BULK_SIM_SURVIVOR_SOFT_CAP_MULTIPLIER } from './constants_auto_gen';

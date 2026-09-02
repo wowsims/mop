@@ -1,7 +1,7 @@
-import { APLActionItemSwap_SwapSet } from '@core/proto/apl';
-import { ActionID as ActionIdProto, ItemLevelState, ItemRandomSuffix, OtherAction, ReforgeStat } from '@core/proto/common';
-import { ResourceType } from '@core/proto/spell';
-import { IconData, UIItem as Item } from '@core/proto/ui';
+import { APLActionItemSwap_SwapSet } from '@generated/proto/apl';
+import { ActionID as ActionIdProto, ItemLevelState, ItemRandomSuffix, OtherAction, ReforgeStat } from '@generated/proto/common';
+import { ResourceType } from '@generated/proto/spell';
+import { IconData, UIItem as Item } from '@generated/proto/ui';
 
 import { CHARACTER_LEVEL, MAX_CHALLENGE_MODE_ILVL } from '../constants/mechanics';
 import { buildWowheadTooltipDataset, getWowheadLanguagePrefix, WowheadTooltipItemParams, WowheadTooltipSpellParams } from '../wowhead';

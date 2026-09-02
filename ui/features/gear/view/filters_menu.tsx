@@ -1,9 +1,9 @@
-import { ItemSlot } from '@core/proto/common';
-import { SourceFilterOption, UIItem_FactionRestriction } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { Sim } from '@domain/sim';
 import { EventID } from '@domain/state/batch';
 import { subscribeSimField } from '@domain/state/subscriptions';
+import { ItemSlot } from '@generated/proto/common';
+import { SourceFilterOption, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { sourceFilterI18nKeys } from '@i18n/entity_mapping';
 import { translateArmorType, translateRaidFilter, translateRangedWeaponType, translateSourceFilter, translateWeaponType } from '@i18n/localization';

@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec } from '@core/proto/common';
-import { RogueMajorGlyph, RogueOptions_PoisonOptions, SubtletyRogue_Options as RogueOptions } from '@core/proto/rogue';
+import { ConsumesSpec } from '@generated/proto/common';
+import { RogueMajorGlyph, RogueOptions_PoisonOptions, SubtletyRogue_Options as RogueOptions } from '@generated/proto/rogue';
 
 import SubtletyApl from './apls/subtlety.apl.json';
 import P2Gear from './gear_sets/p2_subtlety.gear.json';

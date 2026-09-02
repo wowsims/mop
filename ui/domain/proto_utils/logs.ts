@@ -1,9 +1,9 @@
 // Parsed sim combat log: the log line classes, their regex parsers and the
 // grouping/derivation helpers. DOM-free — the JSX that renders a line lives in
 // ui/features/results/view/log_lines.tsx.
-import { RaidSimResult } from '@core/proto/api';
-import { SpellSchool } from '@core/proto/common';
-import { ResourceType, SecondaryResourceType } from '@core/proto/spell';
+import { RaidSimResult } from '@generated/proto/api';
+import { SpellSchool } from '@generated/proto/common';
+import { ResourceType, SecondaryResourceType } from '@generated/proto/spell';
 
 import { bucket, getEnumValues, stringComparator, sum } from '../utils';
 import { ActionId } from './action_id';

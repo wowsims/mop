@@ -1,9 +1,9 @@
-import { ItemSlot, ItemSpec } from '@core/proto/common';
 import { TopGearResult } from '@domain/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@domain/bulk/utils';
 import { nextEventID } from '@domain/state/batch';
 import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
+import { ItemSlot, ItemSpec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import Toast from '@ui-kit/toast';

@@ -1,9 +1,9 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, Race, RaidBuffs } from '@core/proto/common';
-import { ElementalShaman_Options as ElementalShamanOptions, FeleAutocastSettings, ShamanMajorGlyph, ShamanShield } from '@core/proto/shaman';
-import { SavedTalents } from '@core/proto/ui';
 import { Encounter } from '@domain/encounter';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, Race, RaidBuffs } from '@generated/proto/common';
+import { ElementalShaman_Options as ElementalShamanOptions, FeleAutocastSettings, ShamanMajorGlyph, ShamanShield } from '@generated/proto/shaman';
+import { SavedTalents } from '@generated/proto/ui';
 
 import AoEApl from './apls/aoe.apl.json';
 import CleaveApl from './apls/cleave.apl.json';

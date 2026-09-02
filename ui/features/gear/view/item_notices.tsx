@@ -1,5 +1,5 @@
-import { Spec } from '@core/proto/common';
 import { MISSING_ITEM_EFFECTS } from '@domain/constants/missing_effects_auto_gen';
+import { Spec } from '@generated/proto/common';
 
 import { ItemNoticeData, SetBonusNoticeData } from './item_notice';
 

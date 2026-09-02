@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { RaidBuffs } from '@core/proto/common';
 import { malkorokEncounterProto, singleTargetEncounterProto } from '@domain/presets/encounters';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { RaidBuffs } from '@generated/proto/common';
 
 // Shared by the frost and unholy DPS specs; blood tanks want a different mix.
 export const DefaultRaidBuffs = RaidBuffs.create({

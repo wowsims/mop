@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { Class, RaidBuffs } from '@core/proto/common';
 import { malkorokEncounterProto, singleTargetEncounterProto } from '@domain/presets/encounters';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { Class, RaidBuffs } from '@generated/proto/common';
 
 // Shared by the arms and fury DPS specs; protection tanks want a different mix.
 export const DefaultRaidBuffs = RaidBuffs.create({

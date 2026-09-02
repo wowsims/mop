@@ -1,4 +1,4 @@
-import { BulkSimRequest, BulkSimStage, BulkSimStageMetrics, DistributionMetrics, ErrorOutcome } from '@core/proto/api';
+import { BulkSimRequest, BulkSimStage, BulkSimStageMetrics, DistributionMetrics, ErrorOutcome } from '@generated/proto/api';
 
 import { SimSignals } from '../../sim_signal_manager';
 import { isDevMode } from '../../utils';

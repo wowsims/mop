@@ -1,4 +1,4 @@
-import { BulkSimRequest, BulkSimStage } from '@core/proto/api';
+import { BulkSimRequest, BulkSimStage } from '@generated/proto/api';
 
 import { BULK_SIM_MIN_COMBINATIONS } from './constants_auto_gen';
 import { bulkSimStageConfigs, getBulkSimStageMaxSurvivors, getBulkSimStageMinIterations, shouldRunBulkSimStage } from './stage';

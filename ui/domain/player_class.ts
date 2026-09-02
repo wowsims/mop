@@ -1,4 +1,4 @@
-import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '@core/proto/common';
+import { ArmorType, Class, Race, RangedWeaponType, WeaponType } from '@generated/proto/common';
 
 import { PlayerSpec } from './player_spec';
 export type IconSize = 'small' | 'medium' | 'large';

@@ -1,7 +1,7 @@
-import { Spec } from '@core/proto/common';
-import { ElementalShaman_Options_ThunderstormRange } from '@core/proto/shaman';
 import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
+import { Spec } from '@generated/proto/common';
+import { ElementalShaman_Options_ThunderstormRange } from '@generated/proto/shaman';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 // Configuration for spec-specific UI elements on the settings tab.

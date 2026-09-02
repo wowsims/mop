@@ -22,7 +22,7 @@ import {
 	SimType,
 	StatWeightsRequest,
 	StatWeightsResult,
-} from '@core/proto/api';
+} from '@generated/proto/api';
 import {
 	ArmorType,
 	EquipmentSpec,
@@ -35,9 +35,9 @@ import {
 	UnitReference,
 	UnitReference_Type as UnitType,
 	WeaponType,
-} from '@core/proto/common';
-import { SimDatabase, SimGem } from '@core/proto/db';
-import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption, UIItem } from '@core/proto/ui';
+} from '@generated/proto/common';
+import { SimDatabase, SimGem } from '@generated/proto/db';
+import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption, UIItem } from '@generated/proto/ui';
 import { getLang } from '@i18n/locale_service';
 import { SimRequest } from '@worker/types';
 

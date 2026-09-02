@@ -1,5 +1,5 @@
-import { BulkGearCandidate, BulkSimRequest, BulkSimStage, BulkSimStageMetrics, DistributionMetrics, ErrorOutcome } from '@core/proto/api';
-import { EquipmentSpec } from '@core/proto/common';
+import { BulkGearCandidate, BulkSimRequest, BulkSimStage, BulkSimStageMetrics, DistributionMetrics, ErrorOutcome } from '@generated/proto/api';
+import { EquipmentSpec } from '@generated/proto/common';
 
 export const getBulkSimBaselineGear = (request: BulkSimRequest) => request.baseRequest!.raid!.parties[0].players[0].equipment!;
 

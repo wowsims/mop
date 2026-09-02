@@ -32,7 +32,6 @@ const DIR_TO_ALIAS = {
 	app: '@app',
 	sims: '@specs',
 	i18n: '@i18n',
-	core: '@core',
 };
 const ALIAS_TO_DIR = Object.fromEntries(Object.entries(DIR_TO_ALIAS).map(([dir, alias]) => [alias, dir]));
 

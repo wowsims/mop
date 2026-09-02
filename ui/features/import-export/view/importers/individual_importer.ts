@@ -1,8 +1,8 @@
-import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '@core/proto/common';
 import { Database } from '@domain/proto_utils/database';
 import { classNames } from '@domain/proto_utils/names';
 import { batch, nextEventID } from '@domain/state/batch';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
+import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '@generated/proto/common';
 import Toast from '@ui-kit/toast';
 
 import type { IndividualSimHost } from '../../../sim_host';

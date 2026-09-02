@@ -1,8 +1,8 @@
-import { Spec } from '@core/proto/common';
-import { IndividualSimSettings } from '@core/proto/ui';
 import { Database } from '@domain/proto_utils/database';
 import { nextEventID } from '@domain/state/batch';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Spec } from '@generated/proto/common';
+import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
 import { IndividualImporter } from './individual_importer';

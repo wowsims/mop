@@ -1,8 +1,8 @@
-import { MonkTalents } from '@core/proto/monk';
 import { Player } from '@domain/player';
 import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { DerivedSetting } from '@features/spec_config';
+import { MonkTalents } from '@generated/proto/monk';
 
 /**
  * Sets talent-based settings for monk specs, particularly target dummies

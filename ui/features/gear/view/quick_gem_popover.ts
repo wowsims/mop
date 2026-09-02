@@ -1,7 +1,7 @@
-import { ItemSlot } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { nextEventID } from '@domain/state/batch';
+import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
 import QuickSwapList from './quick_swap';

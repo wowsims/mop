@@ -1,6 +1,3 @@
-import { StatCapType } from '@core/proto/api';
-import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '@core/proto/apl';
-import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -8,6 +5,9 @@ import * as StatCaps from '@domain/presets/stat_caps';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, UnitStat } from '@domain/proto_utils/stats';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { StatCapType } from '@generated/proto/api';
+import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '@generated/proto/apl';
+import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
 
 import * as MageInputs from '../shared/inputs';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../shared/presets';

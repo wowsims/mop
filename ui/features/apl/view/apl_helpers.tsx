@@ -1,3 +1,10 @@
+import { CacheHandler } from '@domain/cache_handler';
+import { Player } from '@domain/player';
+import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
+import { renameAPLReference } from '@domain/proto_utils/apl_utils';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
+import { getEnumValues, randomUUID } from '@domain/utils';
 import {
 	APLActionDamageAmplifier_AmplificationType,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
@@ -7,16 +14,9 @@ import {
 	APLValueRuneSlot,
 	APLValueRuneType,
 	APLValueVariable,
-} from '@core/proto/apl';
-import { ActionID, Stat, UnitReference, UnitReference_Type as UnitType } from '@core/proto/common';
-import { FeralDruid_Rotation_AplType } from '@core/proto/druid';
-import { CacheHandler } from '@domain/cache_handler';
-import { Player } from '@domain/player';
-import { ActionId, defaultTargetIcon, getPetIconFromName } from '@domain/proto_utils/action_id';
-import { renameAPLReference } from '@domain/proto_utils/apl_utils';
-import { EventID, nextEventID } from '@domain/state/batch';
-import { subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
-import { getEnumValues, randomUUID } from '@domain/utils';
+} from '@generated/proto/apl';
+import { ActionID, Stat, UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
+import { FeralDruid_Rotation_AplType } from '@generated/proto/druid';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
 import { Input, InputConfig } from '@ui-kit/input';

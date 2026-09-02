@@ -6,8 +6,6 @@
 // HARNESS_ENTRY=tools/state-snapshots/store-contract-test.ts vite build -c vite.harness.mts
 // && HARNESS_BUNDLE=store-contract-test.js node tools/state-snapshots/run.mjs
 
-import { APLRotation } from '../../ui/core/proto/apl';
-import { Race, Spec, Stat } from '../../ui/core/proto/common';
 import { Player } from '../../ui/domain/player';
 import { PlayerSpecs } from '../../ui/domain/player_specs';
 import { Database } from '../../ui/domain/proto_utils/database';
@@ -35,6 +33,8 @@ import {
 	subscribeUnitMetadata,
 } from '../../ui/domain/state/subscriptions';
 import { registerSpecConfig } from '../../ui/features/spec_config';
+import { APLRotation } from '../../ui/generated/proto/apl';
+import { Race, Spec, Stat } from '../../ui/generated/proto/common';
 import armsWarriorSpec from '../../ui/sims/warrior/arms/spec';
 import { makeMemoryEnv } from './memory_env';
 

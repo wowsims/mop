@@ -1,11 +1,11 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Debuffs, Profession, RaidBuffs } from '@core/proto/common';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { ConsumesSpec, Debuffs, Profession, RaidBuffs } from '@generated/proto/common';
 import {
 	HolyPaladin_Options as Paladin_Options,
 	PaladinMajorGlyph as MajorGlyph,
 	PaladinSeal,
-} from '@core/proto/paladin';
-import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+} from '@generated/proto/paladin';
 
 import P1Gear from './gear_sets/p1.gear.json';
 import P1EpJson from './presets/ep/p1.ep.json';

@@ -1,10 +1,10 @@
-import { OtherAction } from '@core/proto/common';
-import { ResourceType } from '@core/proto/spell';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '@domain/proto_utils/logs';
 import { resourceColors, resourceNames } from '@domain/proto_utils/names';
 import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
 import { formatDurationSeconds } from '@domain/utils';
+import { OtherAction } from '@generated/proto/common';
+import { ResourceType } from '@generated/proto/spell';
 import i18n from '@i18n/config';
 import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@ui-kit/action_id_dom';
 import clsx from 'clsx';

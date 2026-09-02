@@ -1,7 +1,7 @@
-import { APLAction, APLListItem } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import { APLAction, APLListItem } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';

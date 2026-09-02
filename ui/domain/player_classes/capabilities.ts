@@ -1,4 +1,4 @@
-import { ArmorType, Class, Race, RangedWeaponType, Spec } from '@core/proto/common';
+import { ArmorType, Class, Race, RangedWeaponType, Spec } from '@generated/proto/common';
 
 import type { EligibleWeaponType } from '../player_class';
 import { CLASS_ARMOR_TYPES, CLASS_RACES, CLASS_RANGED_WEAPON_TYPES, CLASS_WEAPON_TYPES, SPEC_CAN_DUAL_WIELD, SPEC_CAN_DUAL_WIELD_2H } from './capabilities_auto_gen';

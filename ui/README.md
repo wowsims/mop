@@ -6,7 +6,7 @@ Target tree:
 ui/
   worker/            NOT MOVED (Go package, go:embed highs.wasm). alias @worker
   generated/         proto/*, *_auto_gen.ts — tool output only. alias @generated
-                     (not yet: proto/ is still ui/core/proto, *_auto_gen.ts sit beside their consumers)
+                     (*_auto_gen.ts still sit beside their consumers)
   domain/            DOM-free, node-runnable model: sim/player/raid/party/encounter facades,
                      state/, proto_utils/, player_classes/, player_specs/, talents data + trees,
                      bulk request builders, wasm/, constants, utils, worker_pool, reforge_cache,
@@ -41,7 +41,6 @@ ui/
   i18n/              LEAF: framework-agnostic i18next config + localization tables
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
                      the top level rather than under app/. alias @i18n
-  core/              proto/ only (generated): ui/core/proto/. alias @core
   sims/<class>/<spec>/   spec data, presets. alias @specs. Generated index.html still lands
                      at ui/<class>/<spec>/index.html (URL /mop/<class>/<spec>/ unchanged)
   scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
@@ -120,7 +119,6 @@ override banning `@app`/`@features`/`@ui-kit`/`@specs/**` (domain is allowed).
 | `@app/*` | `ui/app/*` |
 | `@specs/*` | `ui/specs/*` |
 | `@i18n/*` | `ui/i18n/*` |
-| `@core/*` | `ui/core/*` (proto only) |
 
 Configured via `tsconfig.json` (`paths`) and `resolve.alias` in `vite.config.mts`
 (`getBaseConfig`, inherited by worker builds) and `vite.harness.mts`. Node's `package.json`

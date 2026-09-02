@@ -17,7 +17,7 @@ PAGE_INDECES := $(patsubst ui/sims/%/spec.ts,ui/%/index.html,$(wildcard ui/sims/
 
 $(OUT_DIR)/.dirstamp: \
   $(OUT_DIR)/lib.wasm.gz \
-  ui/core/proto/api.ts \
+  ui/generated/proto/api.ts \
   $(ASSETS) \
   $(OUT_DIR)/bundle/.dirstamp
 	touch $@
@@ -30,7 +30,7 @@ $(OUT_DIR)/bundle/.dirstamp: \
   vite.build-workers.mts \
   node_modules \
   tsconfig.json \
-  ui/core/proto/api.ts
+  ui/generated/proto/api.ts
 	node_modules/typescript/bin/tsc --noEmit
 	npx tsx vite.build-workers.mts
 	npx vite build
@@ -38,7 +38,7 @@ $(OUT_DIR)/bundle/.dirstamp: \
 
 .PHONY: clean
 clean:
-	rm -rf ui/core/proto/*.ts \
+	rm -rf ui/generated/proto/*.ts \
 	  sim/core/proto/*.pb.go \
 	  wowsimmop$(BIN_EXT) \
 	  wowsimmop-windows.exe \
@@ -47,15 +47,15 @@ clean:
 	  wowsimmop-amd64-linux \
 	  dist \
 	  binary_dist \
-	  ui/core/proto/*.ts \
+	  ui/generated/proto/*.ts \
 	  node_modules \
 	  $(PAGE_INDECES)
 	find . -name "*.results.tmp" -type f -delete
 
-ui/core/proto/api.ts: proto/*.proto node_modules
-	npx protoc --ts_opt generate_dependencies --ts_out ui/core/proto --proto_path proto proto/api.proto
-	npx protoc --ts_out ui/core/proto --proto_path proto proto/test.proto
-	npx protoc --ts_out ui/core/proto --proto_path proto proto/ui.proto
+ui/generated/proto/api.ts: proto/*.proto node_modules
+	npx protoc --ts_opt generate_dependencies --ts_out ui/generated/proto --proto_path proto proto/api.proto
+	npx protoc --ts_out ui/generated/proto --proto_path proto proto/test.proto
+	npx protoc --ts_out ui/generated/proto --proto_path proto proto/ui.proto
 
 ui/%/index.html: ui/index_template.html
 	mkdir -p $(@D)
@@ -137,7 +137,7 @@ binary_dist: $(OUT_DIR)/.dirstamp
 
 # Rebuild the protobuf generated code.
 .PHONY: proto
-proto: sim/core/proto/api.pb.go ui/core/proto/api.ts
+proto: sim/core/proto/api.pb.go ui/generated/proto/api.ts
 
 # Builds the web server with the compiled client.
 .PHONY: wowsimmop

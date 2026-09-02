@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Spec } from '@core/proto/common';
-import { BloodDeathKnight_Options, DeathKnightMajorGlyph, DeathKnightMinorGlyph } from '@core/proto/death_knight';
+import { ConsumesSpec, Profession, Spec } from '@generated/proto/common';
+import { BloodDeathKnight_Options, DeathKnightMajorGlyph, DeathKnightMinorGlyph } from '@generated/proto/death_knight';
 
 import HorridonApl from './apls/horridon.apl.json';
 import IronJuggernautApl from './apls/iron_juggernaut.apl.json';

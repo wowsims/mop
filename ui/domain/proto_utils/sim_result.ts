@@ -13,10 +13,10 @@ import {
 	ResourceMetrics as ResourceMetricsProto,
 	TargetedActionMetrics as TargetedActionMetricsProto,
 	UnitMetrics as UnitMetricsProto,
-} from '@core/proto/api';
-import { Class, Encounter as EncounterProto, SpellSchool, Target as TargetProto } from '@core/proto/common';
-import { ResourceType } from '@core/proto/spell';
-import { SimRun } from '@core/proto/ui';
+} from '@generated/proto/api';
+import { Class, Encounter as EncounterProto, SpellSchool, Target as TargetProto } from '@generated/proto/common';
+import { ResourceType } from '@generated/proto/spell';
+import { SimRun } from '@generated/proto/ui';
 
 import { CacheHandler } from '../cache_handler';
 import { PlayerSpec } from '../player_spec';

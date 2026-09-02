@@ -1,4 +1,3 @@
-import { Glyphs, ItemQuality } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { Database } from '@domain/proto_utils/database';
@@ -6,6 +5,7 @@ import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { GlyphsConfig } from '@domain/talents/config';
 import { stringComparator } from '@domain/utils';
+import { Glyphs, ItemQuality } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { getClassI18nKey } from '@i18n/entity_mapping';
 import { BaseModal } from '@ui-kit/base_modal';

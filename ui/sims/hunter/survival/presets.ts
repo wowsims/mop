@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { APLRotation_Type as APLRotationType } from '@core/proto/apl';
-import { ConsumesSpec, Profession, Race, Spec } from '@core/proto/common';
-import { HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType, SurvivalHunter_Options as HunterOptions } from '@core/proto/hunter';
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
+import { HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType, SurvivalHunter_Options as HunterOptions } from '@generated/proto/hunter';
 
 import SvApl from './apls/sv.apl.json';
 import P5Build from './builds/p5.build.json';

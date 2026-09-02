@@ -1,6 +1,6 @@
-import { Spec } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { Database } from '@domain/proto_utils/database';
+import { Spec } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';

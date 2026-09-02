@@ -1,8 +1,8 @@
-import { ActionID as ActionIdProto, Cooldown } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
+import { ActionID as ActionIdProto, Cooldown } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { existsInDOM } from '@ui-kit/dom_utils';

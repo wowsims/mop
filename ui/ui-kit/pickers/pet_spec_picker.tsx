@@ -1,8 +1,8 @@
-import { PetSpec } from '@core/proto/hunter';
 import { Player } from '@domain/player';
 import { HunterSpecs } from '@domain/proto_utils/utils';
 import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import { PetSpec } from '@generated/proto/hunter';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 

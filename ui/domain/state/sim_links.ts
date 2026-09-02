@@ -1,7 +1,7 @@
 // URL-hash link parsing for individual sim settings, extracted from
 // IndividualLinkImporter so domain code (reforge_cache) can use it without
 // depending on ui/core/components.
-import { IndividualSimSettings } from '@core/proto/ui';
+import { IndividualSimSettings } from '@generated/proto/ui';
 import pako from 'pako';
 
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '../constants/sim_settings';

@@ -1,5 +1,5 @@
-import { PseudoStat, Stat } from '@core/proto/common';
-import { SavedStatWeightSettings } from '@core/proto/ui';
+import { PseudoStat, Stat } from '@generated/proto/common';
+import { SavedStatWeightSettings } from '@generated/proto/ui';
 
 import { CURRENT_API_VERSION } from './constants/other';
 import type { Player } from './player';

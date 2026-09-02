@@ -1,7 +1,7 @@
-import { APLGroup } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import { APLGroup } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';

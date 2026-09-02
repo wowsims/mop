@@ -1,6 +1,6 @@
-import { EquipmentSpec, GemColor, HandType, ItemSlot, ItemSpec, Profession } from '@core/proto/common';
-import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '@core/proto/db';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@core/proto/ui';
+import { EquipmentSpec, GemColor, HandType, ItemSlot, ItemSpec, Profession } from '@generated/proto/common';
+import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '@generated/proto/db';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 
 import { distinct, equalsOrBothNull, getEnumValues, sum } from '../utils';
 import { Database } from './database';

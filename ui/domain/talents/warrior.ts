@@ -1,4 +1,4 @@
-import { WarriorMajorGlyph, WarriorMinorGlyph, WarriorTalents } from '@core/proto/warrior';
+import { WarriorMajorGlyph, WarriorMinorGlyph, WarriorTalents } from '@generated/proto/warrior';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import WarriorTalentJson from './trees/warrior.json';export const warriorTalentsConfig: TalentsConfig<WarriorTalents> = newTalentsConfig(WarriorTalentJson);

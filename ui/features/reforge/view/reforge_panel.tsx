@@ -1,6 +1,3 @@
-import { ReforgeSettings, StatCapType } from '@core/proto/api';
-import { ItemSlot, Stat } from '@core/proto/common';
-import { IndividualSimSettings } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { Gear } from '@domain/proto_utils/gear';
@@ -12,6 +9,9 @@ import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeRe
 import { isDevMode } from '@domain/utils';
 import { ReforgeOptimizerContext, ReforgeOptimizerModel, ReforgeOptimizerOptions, StatTooltipContent } from '@features/reforge/model/reforge_optimizer';
 import type { ActionGroupItem, IndividualSimHost } from '@features/sim_host';
+import { ReforgeSettings, StatCapType } from '@generated/proto/api';
+import { ItemSlot, Stat } from '@generated/proto/common';
+import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateSlotName } from '@i18n/localization';
 import { CopyButton } from '@ui-kit/copy_button';

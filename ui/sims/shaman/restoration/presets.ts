@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec } from '@core/proto/common';
-import { RestorationShaman_Options as RestorationShamanOptions, ShamanShield } from '@core/proto/shaman';
-import { SavedTalents } from '@core/proto/ui';
+import { ConsumesSpec } from '@generated/proto/common';
+import { RestorationShaman_Options as RestorationShamanOptions, ShamanShield } from '@generated/proto/shaman';
+import { SavedTalents } from '@generated/proto/ui';
 
 import P1Gear from './gear_sets/p1.gear.json';
 import P2Gear from './gear_sets/p2.gear.json';

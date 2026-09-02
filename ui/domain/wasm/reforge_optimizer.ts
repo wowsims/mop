@@ -1,5 +1,5 @@
-import { ErrorOutcomeType, Raid as RaidProto, ReforgeOptimizeMode, ReforgeOptimizeRequest, ReforgeSettings } from '@core/proto/api';
-import { EquipmentSpec } from '@core/proto/common';
+import { ErrorOutcomeType, Raid as RaidProto, ReforgeOptimizeMode, ReforgeOptimizeRequest, ReforgeSettings } from '@generated/proto/api';
+import { EquipmentSpec } from '@generated/proto/common';
 import { SimRequest } from '@worker/types';
 
 import { SimSignals } from '../sim_signal_manager';

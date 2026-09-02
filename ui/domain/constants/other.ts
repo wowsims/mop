@@ -1,4 +1,4 @@
-import { ProtoVersion } from '@core/proto/common';
+import { ProtoVersion } from '@generated/proto/common';
 import { readMessageOption } from '@protobuf-ts/runtime';
 
 export enum Phase {

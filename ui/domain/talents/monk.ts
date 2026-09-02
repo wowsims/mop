@@ -1,4 +1,4 @@
-import { MonkMajorGlyph, MonkMinorGlyph, MonkTalents } from '@core/proto/monk';
+import { MonkMajorGlyph, MonkMinorGlyph, MonkTalents } from '@generated/proto/monk';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import MonkTalentJson from './trees/monk.json';export const monkTalentsConfig: TalentsConfig<MonkTalents> = newTalentsConfig(MonkTalentJson);

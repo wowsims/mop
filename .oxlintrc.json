@@ -8,7 +8,7 @@
     "builtin": true
   },
   "ignorePatterns": [
-    "ui/core/proto/**",
+    "ui/generated/proto/**",
     "dist/**",
     "binary_dist/**",
     "node_modules/**"

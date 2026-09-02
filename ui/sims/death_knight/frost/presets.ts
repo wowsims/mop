@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { APLRotation_Type } from '@core/proto/apl';
-import { ConsumesSpec, Profession, Race, Spec } from '@core/proto/common';
-import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, FrostDeathKnight_Options } from '@core/proto/death_knight';
+import { APLRotation_Type } from '@generated/proto/apl';
+import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
+import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, FrostDeathKnight_Options } from '@generated/proto/death_knight';
 
 import MasterFrostAPL from './apls/masterfrost.apl.json';
 import ObliterateAPL from './apls/obliterate.apl.json';

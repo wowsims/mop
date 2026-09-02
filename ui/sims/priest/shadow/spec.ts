@@ -1,6 +1,3 @@
-import { StatCapType } from '@core/proto/api';
-import { APLRotation } from '@core/proto/apl';
-import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -9,6 +6,9 @@ import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@doma
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { StatCapType } from '@generated/proto/api';
+import { APLRotation } from '@generated/proto/apl';
+import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
 
 import * as PriestInputs from '../shared/inputs';
 import * as Presets from './presets';

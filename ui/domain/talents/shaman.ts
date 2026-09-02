@@ -1,4 +1,4 @@
-import { ShamanMajorGlyph, ShamanMinorGlyph, ShamanTalents } from '@core/proto/shaman';
+import { ShamanMajorGlyph, ShamanMinorGlyph, ShamanTalents } from '@generated/proto/shaman';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import ShamanTalentJson from './trees/shaman.json';export const shamanTalentsConfig: TalentsConfig<ShamanTalents> = newTalentsConfig(ShamanTalentJson);

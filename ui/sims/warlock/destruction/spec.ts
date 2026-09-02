@@ -1,5 +1,3 @@
-import { APLRotation } from '@core/proto/apl';
-import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@core/proto/common';
 import { HASTE_RATING_PER_HASTE_PERCENT } from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -9,6 +7,8 @@ import { batch } from '@domain/state/batch';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { APLRotation } from '@generated/proto/apl';
+import { ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
 
 import * as WarlockInputs from '../shared/inputs';
 import * as Presets from './presets';

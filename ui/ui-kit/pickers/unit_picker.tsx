@@ -1,5 +1,5 @@
-import { UnitReference } from '@core/proto/common';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { UnitReference } from '@generated/proto/common';
 import clsx from 'clsx';
 
 import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig } from './dropdown_picker';

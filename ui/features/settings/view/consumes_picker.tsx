@@ -1,9 +1,9 @@
-import { Class, ConsumableType, Spec } from '@core/proto/common';
-import { Consumable } from '@core/proto/db';
 import { Player } from '@domain/player';
 import { Database } from '@domain/proto_utils/database';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Class, ConsumableType, Spec } from '@generated/proto/common';
+import { Consumable } from '@generated/proto/db';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { buildIconInput } from '@ui-kit/icon_inputs';

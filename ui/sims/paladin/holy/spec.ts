@@ -1,10 +1,10 @@
-import { APLRotation } from '@core/proto/apl';
-import { IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '@domain/proto_utils/stats';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { APLRotation } from '@generated/proto/apl';
+import { IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
 
 import * as HolyInputs from './inputs';
 import * as Presets from './presets';

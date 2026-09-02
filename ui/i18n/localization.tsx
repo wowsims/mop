@@ -1,12 +1,12 @@
-import { ArmorType, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '@core/proto/common';
-import { ResourceType } from '@core/proto/spell';
-import { RaidFilterOption, SourceFilterOption } from '@core/proto/ui';
 import { BulkSimItemSlot } from '@domain/bulk/utils';
 import { LaunchStatus } from '@domain/constants/other';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { PlayerClass } from '@domain/player_class';
 import { PlayerSpec } from '@domain/player_spec';
 import { resourceNames } from '@domain/proto_utils/names';
+import { ArmorType, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '@generated/proto/common';
+import { ResourceType } from '@generated/proto/spell';
+import { RaidFilterOption, SourceFilterOption } from '@generated/proto/ui';
 
 import i18n from './config';
 import {

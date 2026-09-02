@@ -7,8 +7,8 @@ import {
 	ErrorOutcome,
 	ErrorOutcomeType,
 	ProgressMetrics,
-} from '@core/proto/api';
-import { EquipmentSpec } from '@core/proto/common';
+} from '@generated/proto/api';
+import { EquipmentSpec } from '@generated/proto/common';
 
 import { SimSignals } from '../../sim_signal_manager';
 import { isDevMode } from '../../utils';

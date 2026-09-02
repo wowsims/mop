@@ -1,5 +1,5 @@
-import { APLValue } from '@core/proto/apl';
 import { Player } from '@domain/player';
+import { APLValue } from '@generated/proto/apl';
 import { Component } from '@ui-kit/component';
 import { Input, InputConfig } from '@ui-kit/input';
 

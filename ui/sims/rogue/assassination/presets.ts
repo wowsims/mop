@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec } from '@core/proto/common';
-import { AssassinationRogue_Options as RogueOptions, RogueMajorGlyph, RogueOptions_PoisonOptions } from '@core/proto/rogue';
+import { ConsumesSpec } from '@generated/proto/common';
+import { AssassinationRogue_Options as RogueOptions, RogueMajorGlyph, RogueOptions_PoisonOptions } from '@generated/proto/rogue';
 
 import AssassinationApl from './apls/assassination.apl.json';
 import P2Gear from './gear_sets/p2_assassination.gear.json';

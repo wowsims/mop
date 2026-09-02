@@ -1,5 +1,3 @@
-import { APLRotation, APLRotation_Type as APLRotationType } from '@core/proto/apl';
-import { SavedRotation } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
 import { isEqualAPLRotation } from '@domain/proto_utils/apl_utils';
@@ -11,6 +9,8 @@ import { APLVariablesListPicker } from '@features/apl/view/apl_variables_list_pi
 import { APLPrePullListPicker } from '@features/apl/view/pre_pull_list_picker';
 import { APLPriorityListPicker } from '@features/apl/view/priority_list_picker';
 import { CooldownsPicker } from '@features/settings/view/cooldowns_picker';
+import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import { SavedRotation } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';

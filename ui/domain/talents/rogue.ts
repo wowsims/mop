@@ -1,4 +1,4 @@
-import { RogueMajorGlyph, RogueMinorGlyph, RogueTalents } from '@core/proto/rogue';
+import { RogueMajorGlyph, RogueMinorGlyph, RogueTalents } from '@generated/proto/rogue';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import RogueTalentJson from './trees/rogue.json';export const rogueTalentsConfig: TalentsConfig<RogueTalents> = newTalentsConfig(RogueTalentJson);

@@ -1,8 +1,8 @@
-import { UnitReference } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { emptyUnitReference } from '@domain/proto_utils/utils';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
+import { UnitReference } from '@generated/proto/common';
 import i18n from '@i18n/config';
 export const InputDelay = {
 	id: 'input-delay',

@@ -1,5 +1,5 @@
-import { Spec } from '@core/proto/common';
-import { SecondaryResourceType } from '@core/proto/spell';
+import { Spec } from '@generated/proto/common';
+import { SecondaryResourceType } from '@generated/proto/spell';
 
 export interface SecondaryResourceConfig {
 	name: string;

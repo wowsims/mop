@@ -1,5 +1,5 @@
-import { Raid as RaidProto } from '@core/proto/api';
-import { Class, Debuffs, RaidBuffs, UnitReference, UnitReference_Type as UnitType } from '@core/proto/common';
+import { Raid as RaidProto } from '@generated/proto/api';
+import { Class, Debuffs, RaidBuffs, UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 
 import { MAX_PARTY_SIZE, Party } from './party';
 import { Player } from './player';

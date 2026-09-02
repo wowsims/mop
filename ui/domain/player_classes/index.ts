@@ -1,4 +1,4 @@
-import { Class } from '@core/proto/common';
+import { Class } from '@generated/proto/common';
 
 import { PlayerClass } from '../player_class';
 import { DeathKnight } from './death_knight';

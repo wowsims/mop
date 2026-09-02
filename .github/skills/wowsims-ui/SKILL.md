@@ -1,6 +1,6 @@
 ---
 name: wowsims-ui
-description: "Work on the wowsims MoP frontend (ui/). Use when touching ui/domain (Sim/Player/Raid/Encounter facades, the Zustand sim store in ui/domain/state, batching, persistence/serialization), ui/ui-kit (base classes/pickers), ui/features, ui/core/components, spec configs, or when a UI change needs verifying (golden snapshot harness, bridge test, dev-server smoke). Self-documenting: update the 'Change log' section whenever the architecture described here changes."
+description: "Work on the wowsims MoP frontend (ui/). Use when touching ui/domain (Sim/Player/Raid/Encounter facades, the Zustand sim store in ui/domain/state, batching, persistence/serialization), ui/ui-kit (base classes/pickers), ui/features, ui/generated/proto, spec configs, or when a UI change needs verifying (golden snapshot harness, bridge test, dev-server smoke). Self-documenting: update the 'Change log' section whenever the architecture described here changes."
 ---
 
 # wowsims-ui
@@ -14,7 +14,7 @@ Full plan + history: `STATE_UI_SEPARATION_PLAN.md` (repo root).
 ```
 generated → worker → {domain, i18n} → ui-kit → features → app → specs → pages
 
-ui/core/proto                        generated protobuf (still under core/; alias @core/proto)
+ui/generated/proto                   generated protobuf (alias @generated/proto)
 ui/domain/proto_utils                pure data + value objects (Gear, Stats, EquippedItem are immutable)
 ui/domain/state/                     UI-free AND browser-free state layer (Zustand store, persistence, Env)
 ui/domain/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
@@ -23,7 +23,7 @@ ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,utils,worker_
 ui/i18n/                             LEAF, top-level (alias @i18n): framework-agnostic i18next
                                      config + localization tables (config.ts, entity_mapping.ts,
                                      locale_service.ts, localization.tsx). May import @domain and
-                                     @core/proto; may NOT import @app/@features/@ui-kit/@specs (PR 6c)
+                                     @generated/proto; may NOT import @app/@features/@ui-kit/@specs (PR 6c)
 ui/ui-kit/                           sim-agnostic widgets + base classes (Component, Input, pickers/,
                                      modals, action_id_dom, dom_utils, css_utils)
 ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
@@ -121,7 +121,7 @@ Plain `vite --port N` half-renders spec pages with ZERO console errors unless yo
    (otherwise the worker probe hangs and `waitForInit()` never resolves → `loadSettings`
    never runs → defaults never applied).
 Then `/mop/warrior/arms/` should show ~121 pickers / 156 icon buttons.
-Other generated files a fresh worktree needs from a built checkout: `ui/core/proto/*`, `*_auto_gen.ts`.
+Other generated files a fresh worktree needs from a built checkout: `ui/generated/proto/*`, `*_auto_gen.ts`.
 
 ## Running REAL sims locally for QA (the only way sims run outside production)
 
@@ -165,6 +165,14 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure F4 "proto into ui/generated": `ui/core/proto/**` moved to
+  `ui/generated/proto/**` (protobuf-ts output, incl. `google/protobuf/`); `ui/core/` is now gone.
+  `@core/*` alias dropped from `tsconfig.json`/`vite.config.mts`/`vite.harness.mts`; `move.mjs`'s
+  `DIR_TO_ALIAS` lost its `core` entry. ~400 `@core/proto/...` import sites repointed to
+  `@generated/proto/...` via the move tool. Updated: `makefile` (`protoc --ts_out`, clean rule,
+  `ui/core/proto/api.ts` target), `tsconfig.json` `exclude`, `.oxlintrc.json` `ignorePatterns`,
+  `tools/database/gen_bulksim_constants.ts.go` + `gen_character_constants_ts.go` (emitted import
+  strings), `ui/README.md`.
 - 2026-09-02: fixed the "Empty action id!" console error + broken pet icon on the hunter "No Pet"
   picker entry. `ActionId` (`ui/domain/proto_utils/action_id.ts`) gained a `static empty(name,
   iconUrl?)` factory (sets a private `isEmptyPlaceholder` flag) for INTENTIONALLY empty ids —

@@ -1,4 +1,4 @@
-import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, DeathKnightTalents } from '@core/proto/death_knight';
+import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, DeathKnightTalents } from '@generated/proto/death_knight';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import DeathKnightTalentJson from './trees/death_knight.json';export const deathKnightTalentsConfig: TalentsConfig<DeathKnightTalents> = newTalentsConfig(DeathKnightTalentJson);

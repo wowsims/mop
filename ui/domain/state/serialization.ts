@@ -2,9 +2,9 @@
 // (IndividualSimSettings), extracted from IndividualSimUI so the assembly and
 // category filtering live in the UI-free state layer. IndividualSimUI.toProto /
 // fromProto are thin wrappers over these functions.
-import { ReforgeSettings as ReforgeSettingsProto } from '@core/proto/api';
-import { Debuffs, Encounter as EncounterProto, PartyBuffs, RaidBuffs } from '@core/proto/common';
-import { IndividualSimSettings } from '@core/proto/ui';
+import { ReforgeSettings as ReforgeSettingsProto } from '@generated/proto/api';
+import { Debuffs, Encounter as EncounterProto, PartyBuffs, RaidBuffs } from '@generated/proto/common';
+import { IndividualSimSettings } from '@generated/proto/ui';
 
 import { CURRENT_API_VERSION } from '../constants/other';
 import { SimSettingCategories } from '../constants/sim_settings';

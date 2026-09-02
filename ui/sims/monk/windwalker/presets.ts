@@ -1,8 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Spec } from '@core/proto/common';
-import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '@core/proto/monk';
 import { Player } from '@domain/player';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
+import { ConsumesSpec, Profession, Spec } from '@generated/proto/common';
+import { MonkMajorGlyph, MonkMinorGlyph, MonkOptions } from '@generated/proto/monk';
 
 import DefaultApl from './apls/default.apl.json';
 import DefaultP2BisGear from './gear_sets/p2_bis.gear.json';

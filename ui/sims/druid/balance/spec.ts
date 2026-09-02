@@ -1,6 +1,3 @@
-import { StatCapType } from '@core/proto/api';
-import { APLRotation, APLRotation_Type } from '@core/proto/apl';
-import { ItemSlot, PseudoStat, Spec, Stat } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -9,6 +6,9 @@ import { DEFAULT_HYBRID_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '@doma
 import { formatToNumber } from '@domain/utils';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { StatCapType } from '@generated/proto/api';
+import { APLRotation, APLRotation_Type } from '@generated/proto/apl';
+import { ItemSlot, PseudoStat, Spec, Stat } from '@generated/proto/common';
 
 import * as DruidInputs from '../shared/inputs';
 import * as BalanceInputs from './inputs';

@@ -1,5 +1,5 @@
-import { APLAction, APLPrepullAction, APLRotation, APLRotation_Type } from '@core/proto/apl';
-import { ActionID as ActionIdProto, Cooldowns, Spec } from '@core/proto/common';
+import { APLAction, APLPrepullAction, APLRotation, APLRotation_Type } from '@generated/proto/apl';
+import { ActionID as ActionIdProto, Cooldowns, Spec } from '@generated/proto/common';
 
 import { Player } from '../player';
 

@@ -1,3 +1,6 @@
+import { Player } from '@domain/player';
+import SecondaryResource from '@domain/proto_utils/secondary_resource';
+import { itemSwapEnabledSpecs } from '@features/spec_config';
 import {
 	APLValue,
 	APLValueActionGroupUsed,
@@ -117,11 +120,8 @@ import {
 	APLValueUnitIsMoving,
 	APLValueWarlockHandOfGuldanInFlight,
 	APLValueWarlockHauntInFlight,
-} from '@core/proto/apl';
-import { Class, Spec } from '@core/proto/common';
-import { Player } from '@domain/player';
-import SecondaryResource from '@domain/proto_utils/secondary_resource';
-import { itemSwapEnabledSpecs } from '@features/spec_config';
+} from '@generated/proto/apl';
+import { Class, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
 import {

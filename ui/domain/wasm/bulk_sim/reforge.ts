@@ -1,5 +1,5 @@
-import { BulkGearCandidate, BulkSimRequest, BulkSimStage, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '@core/proto/api';
-import { EquipmentSpec } from '@core/proto/common';
+import { BulkGearCandidate, BulkSimRequest, BulkSimStage, ReforgeOptimizeMode, ReforgeOptimizeRequest } from '@generated/proto/api';
+import { EquipmentSpec } from '@generated/proto/common';
 import { queue } from 'async';
 
 import { SimSignals } from '../../sim_signal_manager';

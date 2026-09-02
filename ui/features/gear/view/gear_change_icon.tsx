@@ -1,7 +1,7 @@
-import { ItemSlot } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
+import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateSlotName, translateStat } from '@i18n/localization';
 import clsx from 'clsx';

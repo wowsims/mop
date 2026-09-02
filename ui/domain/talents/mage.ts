@@ -1,4 +1,4 @@
-import { MageMajorGlyph, MageMinorGlyph, MageTalents } from '@core/proto/mage';
+import { MageMajorGlyph, MageMinorGlyph, MageTalents } from '@generated/proto/mage';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import MageTalentJson from './trees/mage.json';export const mageTalentsConfig: TalentsConfig<MageTalents> = newTalentsConfig(MageTalentJson);

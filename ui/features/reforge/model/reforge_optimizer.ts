@@ -1,8 +1,6 @@
 // DOM-free half of the reforge optimizer: settings access, EP / soft-cap math and
 // the solve itself (cache lookup, sim request, abort). The rendering half lives in
 // ../view/reforge_panel.tsx and owns every button, tooltip, toast and modal.
-import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '@core/proto/api';
-import { Class, ItemSlot, Spec, Stat } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { Gear } from '@domain/proto_utils/gear';
@@ -17,6 +15,8 @@ import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '@domain/st
 import { subscribeAll, subscribePlayerField, subscribeReforgeField } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
 import type { IndividualSimUIConfig } from '@features/spec_config';
+import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '@generated/proto/api';
+import { Class, ItemSlot, Spec, Stat } from '@generated/proto/common';
 
 export type StatTooltipContent = { [key in Stat]?: () => Element | string };
 

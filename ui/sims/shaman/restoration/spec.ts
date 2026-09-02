@@ -1,11 +1,11 @@
-import { APLRotation } from '@core/proto/apl';
-import { Class, Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import { UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { APLRotation } from '@generated/proto/apl';
+import { Class, Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '@generated/proto/common';
 
 import * as ShamanInputs from '../shared/inputs';
 import * as Presets from './presets';

@@ -8,8 +8,6 @@
 //
 // Every spec is a declarative `spec.ts` default export, registered explicitly below.
 import { IndividualSimUIConfig } from '../../ui/app/individual_sim_ui';
-import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/core/proto/apl';
-import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/core/proto/common';
 import { getSpecConfig, Player } from '../../ui/domain/player';
 import { PlayerSpecs } from '../../ui/domain/player_specs';
 import { Database } from '../../ui/domain/proto_utils/database';
@@ -17,6 +15,8 @@ import { Sim } from '../../ui/domain/sim';
 import { batch, nextEventID } from '../../ui/domain/state/batch';
 import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/domain/state/serialization';
 import { registerSpecConfig } from '../../ui/features/spec_config';
+import { APLRotation, APLRotation_Type as APLRotationType } from '../../ui/generated/proto/apl';
+import { Cooldowns, Glyphs, Profession, Spec } from '../../ui/generated/proto/common';
 import bloodDeathKnightSpec from '../../ui/sims/death_knight/blood/spec';
 import frostDeathKnightSpec from '../../ui/sims/death_knight/frost/spec';
 import unholyDeathKnightSpec from '../../ui/sims/death_knight/unholy/spec';

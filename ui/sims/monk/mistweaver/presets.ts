@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, PseudoStat } from '@core/proto/common';
-import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '@core/proto/monk';
 import { UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+import { ConsumesSpec, Profession, PseudoStat } from '@generated/proto/common';
+import { MistweaverMonk_Options as MistweaverMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '@generated/proto/monk';
 
 import DefaultGear from './gear_sets/default.gear.json';
 import DefaultEpJson from './presets/ep/default.ep.json';

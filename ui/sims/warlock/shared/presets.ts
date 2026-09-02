@@ -1,6 +1,6 @@
-import { PseudoStat, RaidBuffs } from '@core/proto/common';
 import { UnitStat } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { PseudoStat, RaidBuffs } from '@generated/proto/common';
 
 export const DefaultRaidBuffs = RaidBuffs.create({
 	...defaultRaidBuffMajorDamageCooldowns(),

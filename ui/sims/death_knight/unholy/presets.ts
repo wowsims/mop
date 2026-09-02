@@ -1,9 +1,9 @@
 import * as PresetUtils from '@app/preset_utils';
-import { APLRotation_Type } from '@core/proto/apl';
-import { ConsumesSpec, Profession, Race, Spec } from '@core/proto/common';
-import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '@core/proto/death_knight';
 import { Player } from '@domain/player';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
+import { APLRotation_Type } from '@generated/proto/apl';
+import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
+import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, UnholyDeathKnight_Options } from '@generated/proto/death_knight';
 
 import DefaultApl from './apls/default.apl.json';
 import FesterblightApl from './apls/festerblight.apl.json';

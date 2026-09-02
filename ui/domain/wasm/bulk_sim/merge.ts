@@ -1,4 +1,4 @@
-import { BulkGearResult, DistributionMetrics } from '@core/proto/api';
+import { BulkGearResult, DistributionMetrics } from '@generated/proto/api';
 
 import { ConcurrentBulkSimCandidateResult } from './types';
 

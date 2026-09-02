@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Spec } from '@core/proto/common';
-import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '@core/proto/warrior';
+import { ConsumesSpec, Profession, Spec } from '@generated/proto/common';
+import { ProtectionWarrior_Options as ProtectionWarriorOptions, WarriorMajorGlyph } from '@generated/proto/warrior';
 
 import GenericApl from './apls/default.apl.json';
 import GarajalApl from './apls/garajal.apl.json';

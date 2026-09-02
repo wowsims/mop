@@ -1,4 +1,4 @@
-import { Spec } from '@core/proto/common';
+import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 

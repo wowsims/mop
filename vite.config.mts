@@ -109,7 +109,6 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 				'@app': path.resolve(BASE_PATH, 'app'),
 				'@specs': path.resolve(BASE_PATH, 'sims'),
 				'@i18n': path.resolve(BASE_PATH, 'i18n'),
-				'@core': path.resolve(BASE_PATH, 'core'),
 			},
 		},
 		build: {

@@ -1,5 +1,3 @@
-import { GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, Profession } from '@core/proto/common';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EquippedItem, ReforgeData } from '@domain/proto_utils/equipped_item';
@@ -9,6 +7,8 @@ import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import { mod, randomUUID, sanitizeId } from '@domain/utils';
 import type { SimHost } from '@features/sim_host';
+import { GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, Profession } from '@generated/proto/common';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
 import { BaseModal } from '@ui-kit/base_modal';

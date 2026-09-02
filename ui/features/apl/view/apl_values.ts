@@ -1,13 +1,13 @@
+import { Player } from '@domain/player';
+import { EventID, nextEventID } from '@domain/state/batch';
+import { randomUUID } from '@domain/utils';
 import {
 	APLValue,
 	APLValueCompare_ComparisonOperator as ComparisonOperator,
 	APLValueIsExecutePhase_ExecutePhaseThreshold as ExecutePhaseThreshold,
 	APLValueMath_MathOperator as MathOperator,
-} from '@core/proto/apl';
-import { ShamanTotems_TotemType as TotemType } from '@core/proto/shaman';
-import { Player } from '@domain/player';
-import { EventID, nextEventID } from '@domain/state/batch';
-import { randomUUID } from '@domain/utils';
+} from '@generated/proto/apl';
+import { ShamanTotems_TotemType as TotemType } from '@generated/proto/shaman';
 import i18n from '@i18n/config';
 import { Input, InputConfig } from '@ui-kit/input';
 import { TextDropdownPicker, TextDropdownValueConfig } from '@ui-kit/pickers/dropdown_picker';

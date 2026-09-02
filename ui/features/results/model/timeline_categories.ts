@@ -1,7 +1,7 @@
-import { APLActionItemSwap_SwapSet } from '@core/proto/apl';
-import { OtherAction } from '@core/proto/common';
-import { ResourceType } from '@core/proto/spell';
 import { ActionId } from '@domain/proto_utils/action_id';
+import { APLActionItemSwap_SwapSet } from '@generated/proto/apl';
+import { OtherAction } from '@generated/proto/common';
+import { ResourceType } from '@generated/proto/spell';
 
 export const MELEE_ACTION_CATEGORY = 1;
 export const SPELL_ACTION_CATEGORY = 2;

@@ -11,10 +11,10 @@ import {
 	PresetTarget,
 	ReforgeStat,
 	Stat,
-} from '@core/proto/common';
-import { Consumable, ItemEffectRandPropPoints, SimDatabase } from '@core/proto/db';
-import { SpellEffect } from '@core/proto/spell';
-import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '@core/proto/ui';
+} from '@generated/proto/common';
+import { Consumable, ItemEffectRandPropPoints, SimDatabase } from '@generated/proto/db';
+import { SpellEffect } from '@generated/proto/spell';
+import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '@generated/proto/ui';
 
 import { CacheHandler } from '../cache_handler';
 import { CHARACTER_LEVEL } from '../constants/mechanics';

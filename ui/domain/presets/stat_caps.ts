@@ -1,4 +1,4 @@
-import { PseudoStat, Stat } from '@core/proto/common';
+import { PseudoStat, Stat } from '@generated/proto/common';
 
 import * as Mechanics from '../constants/mechanics';
 import { Stats } from '../proto_utils/stats';

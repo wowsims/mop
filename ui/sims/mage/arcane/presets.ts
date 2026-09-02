@@ -1,9 +1,9 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Race, Spec } from '@core/proto/common';
-import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '@core/proto/mage';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
 import { nextEventID } from '@domain/state/batch';
+import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
+import { ArcaneMage_Options as MageOptions, MageArmor, MageMajorGlyph as MajorGlyph, MageMinorGlyph } from '@generated/proto/mage';
 
 import { DefaultDebuffs, DefaultRaidBuffs } from '../shared/presets';
 import ArcaneP3APL from './apls/arcane_t15_4pc.apl.json';

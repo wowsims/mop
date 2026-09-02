@@ -22,7 +22,7 @@ import {
 	StatWeightsCalcRequest,
 	StatWeightsRequest,
 	StatWeightsResult,
-} from '@core/proto/api';
+} from '@generated/proto/api';
 import { AsyncSimRequest, SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '@worker/types';
 
 import { WorkerPoolManager } from './concurrent_worker_pool';

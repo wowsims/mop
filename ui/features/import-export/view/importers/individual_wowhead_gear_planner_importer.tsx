@@ -1,6 +1,6 @@
-import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@core/proto/common';
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Class, EquipmentSpec, Glyphs, ItemLevelState, ItemSlot, ItemSpec, Profession, Race, Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import Toast from '@ui-kit/toast';
 import { ref } from 'tsx-vanilla';

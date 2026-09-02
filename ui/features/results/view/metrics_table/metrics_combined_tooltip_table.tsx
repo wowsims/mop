@@ -1,5 +1,5 @@
-import { SpellSchool } from '@core/proto/common';
 import { formatToCompactNumber } from '@domain/utils';
+import { SpellSchool } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import clsx from 'clsx';
 import tippy, { Props as TippyProps } from 'tippy.js';

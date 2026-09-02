@@ -1,7 +1,7 @@
-import { APLAction, APLValue } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
+import { APLAction, APLValue } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { Input, InputConfig } from '@ui-kit/input';
 import { TextDropdownPicker } from '@ui-kit/pickers/dropdown_picker';

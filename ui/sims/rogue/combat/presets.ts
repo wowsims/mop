@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec } from '@core/proto/common';
-import { CombatRogue_Options as RogueOptions, RogueOptions_PoisonOptions } from '@core/proto/rogue';
+import { ConsumesSpec } from '@generated/proto/common';
+import { CombatRogue_Options as RogueOptions, RogueOptions_PoisonOptions } from '@generated/proto/rogue';
 
 import CombatApl from './apls/combat.apl.json';
 import P2Gear from './gear_sets/p2_combat.gear.json';

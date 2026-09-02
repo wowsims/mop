@@ -1,5 +1,3 @@
-import { ItemLevelState, ItemSlot } from '@core/proto/common';
-import { UIEnchant as Enchant, UIGem as Gem } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { getEnchantDescription } from '@domain/proto_utils/enchants';
@@ -7,6 +5,8 @@ import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimField, subscribeUiField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
+import { ItemLevelState, ItemSlot } from '@generated/proto/common';
+import { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '@i18n/localization';
 import { Component } from '@ui-kit/component';

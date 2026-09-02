@@ -1,4 +1,4 @@
-import { Class } from '@core/proto/common';
+import { Class } from '@generated/proto/common';
 
 import { IconSize, PlayerClass } from '../player_class';
 import { PlayerSpec } from '../player_spec';

@@ -1,7 +1,7 @@
-import { Class, EquipmentSpec, ItemSpec, Race, Spec } from '@core/proto/common';
 import { nameToClass, nameToRace } from '@domain/proto_utils/names';
 import { talentSpellIdsToTalentString } from '@domain/talents/factory';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Class, EquipmentSpec, ItemSpec, Race, Spec } from '@generated/proto/common';
 import Toast from '@ui-kit/toast';
 
 import { IndividualImporter } from './individual_importer';

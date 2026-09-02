@@ -1,7 +1,7 @@
-import { Faction, Stat } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Faction, Stat } from '@generated/proto/common';
 import { IconEnumPicker, IconEnumPickerConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { IconPicker, IconPickerConfig } from '@ui-kit/pickers/icon_picker';
 import { MultiIconPicker, MultiIconPickerConfig } from '@ui-kit/pickers/multi_icon_picker';

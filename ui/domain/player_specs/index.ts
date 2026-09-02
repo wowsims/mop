@@ -1,4 +1,4 @@
-import { Spec } from '@core/proto/common';
+import { Spec } from '@generated/proto/common';
 import { translatePlayerClass, translatePlayerSpec } from '@i18n/localization';
 
 import { LOCAL_STORAGE_PREFIX } from '../constants/other';

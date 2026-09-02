@@ -1,7 +1,7 @@
-import { UnitReference, UnitReference_Type as UnitType } from '@core/proto/common';
 import { SimResult, SimResultFilter } from '@domain/proto_utils/sim_result';
 import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
+import { UnitReference, UnitReference_Type as UnitType } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { UnitPicker, UnitValue, UnitValueConfig } from '@ui-kit/pickers/unit_picker';
 

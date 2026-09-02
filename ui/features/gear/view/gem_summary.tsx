@@ -1,9 +1,9 @@
-import { UIGem as Gem } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
+import { UIGem as Gem } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';

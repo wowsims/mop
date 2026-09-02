@@ -1,9 +1,9 @@
-import { Faction, ItemQuality } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Faction, ItemQuality } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { ContentBlock } from '@ui-kit/content_block';

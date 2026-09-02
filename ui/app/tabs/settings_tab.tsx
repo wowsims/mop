@@ -1,5 +1,3 @@
-import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs, Spec } from '@core/proto/common';
-import { SavedEncounter, SavedSettings } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Encounter } from '@domain/encounter';
 import { Player } from '@domain/player';
@@ -19,6 +17,8 @@ import { ItemSwapPicker } from '@features/item-swap/view/item_swap_picker';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import { relevantStatOptions } from '@features/settings/model/stat_options';
 import { ConsumesPicker } from '@features/settings/view/consumes_picker';
+import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs, Spec } from '@generated/proto/common';
+import { SavedEncounter, SavedSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateProfession, translateRace } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';

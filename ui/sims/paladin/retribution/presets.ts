@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { APLRotation_Type as APLRotationType } from '@core/proto/apl';
-import { ConsumesSpec, Profession, Race, Spec } from '@core/proto/common';
-import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as RetributionPaladinOptions } from '@core/proto/paladin';
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
+import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as RetributionPaladinOptions } from '@generated/proto/paladin';
 
 import DefaultApl from './apls/default.apl.json';
 import P5RetBuild from './builds/p5.build.json';

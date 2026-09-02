@@ -1,6 +1,6 @@
-import { UIEnchant as Enchant, UIGem as Gem } from '@core/proto/ui';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { UIEnchant as Enchant, UIGem as Gem } from '@generated/proto/ui';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import tippy, { hideAll, Instance as TippyInstance, Props as TippyProps } from 'tippy.js';
 import { ref } from 'tsx-vanilla';

@@ -1,11 +1,11 @@
-import { Class, Glyphs, Spec } from '@core/proto/common';
-import { SavedTalents } from '@core/proto/ui';
 import { PresetConfigurationCategory } from '@domain/constants/preset_categories';
 import { Player } from '@domain/player';
 import { batch, EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import { classTalentsConfig } from '@domain/talents/factory';
 import { TalentsPicker } from '@features/talents/view/talents_picker';
+import { Class, Glyphs, Spec } from '@generated/proto/common';
+import { SavedTalents } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { PetSpecPicker } from '@ui-kit/pickers/pet_spec_picker';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';

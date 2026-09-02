@@ -1,10 +1,10 @@
-import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '@core/proto/common';
 import { Party } from '@domain/party';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { Raid } from '@domain/raid';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
+import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '@generated/proto/common';
 
 import * as InputHelpers from './input_helpers';
 import { IconEnumPicker } from './pickers/icon_enum_picker';

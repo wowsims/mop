@@ -1,7 +1,7 @@
-import { Spec } from '@core/proto/common';
-import { IndividualSimSettings } from '@core/proto/ui';
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@domain/constants/sim_settings';
 import { arrayEquals, getEnumValues } from '@domain/utils';
+import { Spec } from '@generated/proto/common';
+import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { default as pako } from 'pako';
 

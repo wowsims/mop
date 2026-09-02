@@ -1,12 +1,12 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, Race } from '@core/proto/common';
+import { UnitStat } from '@domain/proto_utils/stats';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, Race } from '@generated/proto/common';
 import {
 	DemonologyWarlock_Options as WarlockOptions,
 	WarlockMajorGlyph as MajorGlyph,
 	WarlockMinorGlyph as MinorGlyph,
 	WarlockOptions_Summon as Summon,
-} from '@core/proto/warlock';
-import { UnitStat } from '@domain/proto_utils/stats';
+} from '@generated/proto/warlock';
 export { DefaultRaidBuffs } from '../shared/presets';
 import { WARLOCK_BREAKPOINTS } from '../shared/presets';
 import DefaultAPL from './apls/default.apl.json';

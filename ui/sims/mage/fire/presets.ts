@@ -1,16 +1,16 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ReforgeSettings } from '@core/proto/api';
-import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec } from '@core/proto/common';
+import { Encounter } from '@domain/encounter';
+import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+import { ReforgeSettings } from '@generated/proto/api';
+import { ConsumesSpec, Encounter as EncounterProto, Glyphs, Profession, PseudoStat, Race, Spec } from '@generated/proto/common';
 import {
 	FireMage_Options as MageOptions,
 	FireMage_Rotation,
 	MageArmor,
 	MageMajorGlyph as MajorGlyph,
 	MageMinorGlyph as MinorGlyph,
-} from '@core/proto/mage';
-import { SavedTalents } from '@core/proto/ui';
-import { Encounter } from '@domain/encounter';
-import { Stats, UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
+} from '@generated/proto/mage';
+import { SavedTalents } from '@generated/proto/ui';
 
 import { DefaultDebuffs, DefaultRaidBuffs } from '../shared/presets';
 import FireApl from './apls/fire.apl.json';

@@ -5,7 +5,7 @@
 //
 // Slices are added here as each facade is converted; a slice absent from this
 // file still lives in its class.
-import type { PlayerStats } from '@core/proto/api';
+import type { PlayerStats } from '@generated/proto/api';
 import {
 	ConsumesSpec,
 	Debuffs,
@@ -17,8 +17,8 @@ import {
 	RaidBuffs,
 	Target as TargetProto,
 	UnitReference,
-} from '@core/proto/common';
-import { DatabaseFilters } from '@core/proto/ui';
+} from '@generated/proto/common';
+import { DatabaseFilters } from '@generated/proto/ui';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 

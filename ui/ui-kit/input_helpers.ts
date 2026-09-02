@@ -1,4 +1,3 @@
-import { Spec } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { ClassOptions, SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
@@ -6,6 +5,7 @@ import { EventID } from '@domain/state/batch';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { formatToNumber, randomUUID } from '@domain/utils';
+import { Spec } from '@generated/proto/common';
 
 import { BooleanPickerConfig } from './pickers/boolean_picker';
 import { EnumPickerConfig, EnumValueConfig } from './pickers/enum_picker';

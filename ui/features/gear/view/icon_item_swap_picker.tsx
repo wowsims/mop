@@ -1,9 +1,9 @@
-import { ItemSlot } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
+import { ItemSlot } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';
 import { ref } from 'tsx-vanilla';
 

@@ -1,5 +1,3 @@
-import { APLRotation, APLRotation_Type } from '@core/proto/apl';
-import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
 import * as StatCaps from '@domain/presets/stat_caps';
@@ -7,6 +5,8 @@ import { UnitStat } from '@domain/proto_utils/stats';
 import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { APLRotation, APLRotation_Type } from '@generated/proto/apl';
+import { Debuffs, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
 
 import { amsIntakeRule } from '../shared/derived';
 import * as DeathKnightInputs from '../shared/inputs';

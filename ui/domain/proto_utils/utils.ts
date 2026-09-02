@@ -1,4 +1,4 @@
-import { Player } from '@core/proto/api';
+import { Player } from '@generated/proto/api';
 import {
 	Class,
 	EnchantType,
@@ -15,8 +15,8 @@ import {
 	UnitReference,
 	UnitReference_Type,
 	WeaponType,
-} from '@core/proto/common';
-import { Consumable } from '@core/proto/db';
+} from '@generated/proto/common';
+import { Consumable } from '@generated/proto/db';
 import {
 	BloodDeathKnight,
 	BloodDeathKnight_Options,
@@ -29,7 +29,7 @@ import {
 	UnholyDeathKnight,
 	UnholyDeathKnight_Options,
 	UnholyDeathKnight_Rotation,
-} from '@core/proto/death_knight';
+} from '@generated/proto/death_knight';
 import {
 	BalanceDruid,
 	BalanceDruid_Options,
@@ -45,7 +45,7 @@ import {
 	RestorationDruid,
 	RestorationDruid_Options,
 	RestorationDruid_Rotation,
-} from '@core/proto/druid';
+} from '@generated/proto/druid';
 import {
 	BeastMasteryHunter,
 	BeastMasteryHunter_Options,
@@ -58,7 +58,7 @@ import {
 	SurvivalHunter,
 	SurvivalHunter_Options,
 	SurvivalHunter_Rotation,
-} from '@core/proto/hunter';
+} from '@generated/proto/hunter';
 import {
 	ArcaneMage,
 	ArcaneMage_Options,
@@ -71,7 +71,7 @@ import {
 	FrostMage_Rotation,
 	MageOptions,
 	MageTalents,
-} from '@core/proto/mage';
+} from '@generated/proto/mage';
 import {
 	BrewmasterMonk,
 	BrewmasterMonk_Options,
@@ -84,7 +84,7 @@ import {
 	WindwalkerMonk,
 	WindwalkerMonk_Options,
 	WindwalkerMonk_Rotation,
-} from '@core/proto/monk';
+} from '@generated/proto/monk';
 import {
 	HolyPaladin,
 	HolyPaladin_Options,
@@ -97,7 +97,7 @@ import {
 	RetributionPaladin,
 	RetributionPaladin_Options,
 	RetributionPaladin_Rotation,
-} from '@core/proto/paladin';
+} from '@generated/proto/paladin';
 import {
 	DisciplinePriest,
 	DisciplinePriest_Options,
@@ -110,7 +110,7 @@ import {
 	ShadowPriest,
 	ShadowPriest_Options,
 	ShadowPriest_Rotation,
-} from '@core/proto/priest';
+} from '@generated/proto/priest';
 import {
 	AssassinationRogue,
 	AssassinationRogue_Options,
@@ -123,7 +123,7 @@ import {
 	SubtletyRogue,
 	SubtletyRogue_Options,
 	SubtletyRogue_Rotation,
-} from '@core/proto/rogue';
+} from '@generated/proto/rogue';
 import {
 	ElementalShaman,
 	ElementalShaman_Options,
@@ -136,9 +136,9 @@ import {
 	RestorationShaman_Rotation,
 	ShamanOptions,
 	ShamanTalents,
-} from '@core/proto/shaman';
-import { ResourceType, SpellEffect } from '@core/proto/spell';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@core/proto/ui';
+} from '@generated/proto/shaman';
+import { ResourceType, SpellEffect } from '@generated/proto/spell';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 import {
 	AfflictionWarlock,
 	AfflictionWarlock_Options,
@@ -151,7 +151,7 @@ import {
 	DestructionWarlock_Rotation,
 	WarlockOptions,
 	WarlockTalents,
-} from '@core/proto/warlock';
+} from '@generated/proto/warlock';
 import {
 	ArmsWarrior,
 	ArmsWarrior_Options,
@@ -164,7 +164,7 @@ import {
 	ProtectionWarrior_Rotation,
 	WarriorOptions,
 	WarriorTalents,
-} from '@core/proto/warrior';
+} from '@generated/proto/warrior';
 
 import { CURRENT_API_VERSION } from '../constants/other';
 import { PlayerClass } from '../player_class';

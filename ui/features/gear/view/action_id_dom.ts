@@ -2,9 +2,9 @@
 // @ui-kit/action_id_dom (ui-kit may not import a feature, and the pickers use
 // them); they are re-exported here so existing importers keep one entry point
 // until the components/ split lands.
-import { Profession } from '@core/proto/common';
 import type { Player } from '@domain/player';
 import type { EquippedItem } from '@domain/proto_utils/equipped_item';
+import { Profession } from '@generated/proto/common';
 import { setActionIdWowheadDataset } from '@ui-kit/action_id_dom';
 
 export {

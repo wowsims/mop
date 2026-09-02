@@ -1,4 +1,4 @@
-import { Class, Spec } from '@core/proto/common';
+import { Class, Spec } from '@generated/proto/common';
 
 import { PlayerSpec } from '../player_spec';
 import { SpecTalents, specTypeFunctions } from '../proto_utils/utils';

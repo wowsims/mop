@@ -3,8 +3,8 @@
 // Values live in the sim store (`reforge[player.storeKey]`) with per-field
 // version counters; this class is the facade over that slice.
 // Serialization lands in IndividualSimSettings.reforgeSettings.
-import { ReforgeSettings as ReforgeSettingsProto } from '@core/proto/api';
-import { ItemSlot, Stat } from '@core/proto/common';
+import { ReforgeSettings as ReforgeSettingsProto } from '@generated/proto/api';
+import { ItemSlot, Stat } from '@generated/proto/common';
 
 import type { Player } from './player';
 import { StatCap, Stats, UnitStat } from './proto_utils/stats';

@@ -4,7 +4,7 @@
 //
 // The slice holds version counters only: the values themselves stay on the tab
 // (nothing reads them from the store), so `touch` is the tab's one write path.
-import { BulkSettings as BulkSettingsProto } from '@core/proto/api';
+import { BulkSettings as BulkSettingsProto } from '@generated/proto/api';
 
 import type { Player } from './player';
 import type { Env } from './state/env';

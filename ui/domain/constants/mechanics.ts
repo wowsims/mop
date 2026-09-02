@@ -1,4 +1,4 @@
-import { Spec } from '@core/proto/common';
+import { Spec } from '@generated/proto/common';
 
 export const CHARACTER_LEVEL = 90;
 export const BOSS_LEVEL = CHARACTER_LEVEL + 3;

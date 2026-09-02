@@ -23,10 +23,9 @@
 			"@features/*": ["./ui/features/*"],
 			"@app/*": ["./ui/app/*"],
 			"@specs/*": ["./ui/sims/*"],
-			"@i18n/*": ["./ui/i18n/*"],
-			"@core/*": ["./ui/core/*"]
+			"@i18n/*": ["./ui/i18n/*"]
 		}
 	},
 	"include": ["."],
-	"exclude": ["node_modules", "dist", "binary_dist", ".history", "ui/core/proto/*"]
+	"exclude": ["node_modules", "dist", "binary_dist", ".history", "ui/generated/proto/*"]
 }

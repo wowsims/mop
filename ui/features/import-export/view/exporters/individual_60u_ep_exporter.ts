@@ -1,5 +1,5 @@
-import { PseudoStat, Spec, Stat } from '@core/proto/common';
 import { UnitStat } from '@domain/proto_utils/stats';
+import { PseudoStat, Spec, Stat } from '@generated/proto/common';
 
 import type { IndividualSimHost } from '../../../sim_host';
 import { IndividualExporter } from './individual_exporter';

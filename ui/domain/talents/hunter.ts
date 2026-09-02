@@ -1,4 +1,4 @@
-import { HunterMajorGlyph, HunterMinorGlyph, HunterTalents } from '@core/proto/hunter';
+import { HunterMajorGlyph, HunterMinorGlyph, HunterTalents } from '@generated/proto/hunter';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import HunterTalentJson from './trees/hunter.json';export const hunterTalentsConfig: TalentsConfig<HunterTalents> = newTalentsConfig(HunterTalentJson);

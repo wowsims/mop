@@ -1,4 +1,4 @@
-import { WarlockMajorGlyph, WarlockMinorGlyph, WarlockTalents } from '@core/proto/warlock';
+import { WarlockMajorGlyph, WarlockMinorGlyph, WarlockTalents } from '@generated/proto/warlock';
 
 import { GlyphsConfig, newTalentsConfig, TalentsConfig } from './config';
 import WarlockTalentJson from './trees/warlock.json';export const warlockTalentsConfig: TalentsConfig<WarlockTalents> = newTalentsConfig(WarlockTalentJson);

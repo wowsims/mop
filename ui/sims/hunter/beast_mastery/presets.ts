@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { APLRotation_Type as APLRotationType } from '@core/proto/apl';
-import { ConsumesSpec, Profession, Race, Spec } from '@core/proto/common';
-import { BeastMasteryHunter_Options as BeastMasteryOptions, HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType } from '@core/proto/hunter';
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
+import { BeastMasteryHunter_Options as BeastMasteryOptions, HunterMajorGlyph as MajorGlyph, HunterOptions_PetType as PetType } from '@generated/proto/hunter';
 
 import BmApl from './apls/bm.apl.json';
 import P5Build from './builds/p5.build.json';

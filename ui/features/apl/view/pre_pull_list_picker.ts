@@ -1,8 +1,8 @@
-import { APLAction, APLPrepullAction, APLValue } from '@core/proto/apl';
 import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
+import { APLAction, APLPrepullAction, APLValue } from '@generated/proto/apl';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';

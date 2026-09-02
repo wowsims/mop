@@ -1,9 +1,9 @@
-import { APLAction, APLGroup, APLListItem } from '@core/proto/apl';
-import { UUID } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { randomUUID } from '@domain/utils';
+import { APLAction, APLGroup, APLListItem } from '@generated/proto/apl';
+import { UUID } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Input, InputConfig } from '@ui-kit/input';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';

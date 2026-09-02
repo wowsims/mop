@@ -1,6 +1,6 @@
-import { SpellSchool } from '@core/proto/common';
 import { spellSchoolNames } from '@domain/proto_utils/names';
 import { formatToCompactNumber, formatToPercent } from '@domain/utils';
+import { SpellSchool } from '@generated/proto/common';
 import clsx from 'clsx';
 
 export type MetricsTotalBarProps = {

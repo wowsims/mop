@@ -1,7 +1,6 @@
 // Rendering of one parsed combat log line. These were `toHTML()` / `result()`
 // methods on the log classes; the classes are data now (ui/domain/proto_utils/logs.ts)
 // and the JSX lives here.
-import { ResourceType } from '@core/proto/spell';
 import { CacheHandler } from '@domain/cache_handler';
 import {
 	AuraEventLog,
@@ -20,6 +19,7 @@ import {
 } from '@domain/proto_utils/logs';
 import { resourceNames, spellSchoolNames } from '@domain/proto_utils/names';
 import { SECONDARY_RESOURCES } from '@domain/proto_utils/secondary_resource';
+import { ResourceType } from '@generated/proto/spell';
 import { setActionIdBackground, setActionIdWowheadDataset, setActionIdWowheadHref } from '@ui-kit/action_id_dom';
 import clsx from 'clsx';
 

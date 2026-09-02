@@ -1,5 +1,5 @@
-import { Player as PlayerProto, ReforgeSettings } from '@core/proto/api';
-import { APLRotation_Type as APLRotationType } from '@core/proto/apl';
+import { Player as PlayerProto, ReforgeSettings } from '@generated/proto/api';
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
 	ConsumesSpec,
 	Debuffs,
@@ -13,8 +13,8 @@ import {
 	Race,
 	RaidBuffs,
 	UnitReference,
-} from '@core/proto/common';
-import { SavedRotation, SavedTalents } from '@core/proto/ui';
+} from '@generated/proto/common';
+import { SavedRotation, SavedTalents } from '@generated/proto/ui';
 
 import type { Player } from '../player';
 import type { Stats } from '../proto_utils/stats';

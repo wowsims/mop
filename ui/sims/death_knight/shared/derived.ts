@@ -1,7 +1,7 @@
-import type { Spec } from '@core/proto/common';
 import type { Player } from '@domain/player';
 import { subscribeEncounterChange } from '@domain/state/subscriptions';
 import type { DerivedSetting } from '@features/spec_config';
+import type { Spec } from '@generated/proto/common';
 
 import { disableAMSIntakeOnMagicDamageEncounters } from './inputs';
 

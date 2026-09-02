@@ -1,5 +1,5 @@
-import { Spec } from '@core/proto/common';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import { Spec } from '@generated/proto/common';
 import * as InputHelpers from '@ui-kit/input_helpers';
 
 // Configuration for spec-specific UI elements on the settings tab.

@@ -1,4 +1,4 @@
-import { ItemSlot, ItemSpec, ItemSwap } from '@core/proto/common';
+import { ItemSlot, ItemSpec, ItemSwap } from '@generated/proto/common';
 
 import type { Player } from './player';
 import { EquippedItem } from './proto_utils/equipped_item';

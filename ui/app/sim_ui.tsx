@@ -1,4 +1,3 @@
-import { ErrorOutcomeType } from '@core/proto/api';
 import { LaunchStatus, REPO_NEW_ISSUE_URL } from '@domain/constants/other';
 import { PlayerSpec, SimStatus } from '@domain/player_spec';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -13,6 +12,7 @@ import { isDevMode } from '@domain/utils';
 import { WorkerProgressCallback } from '@domain/worker_pool';
 import { ResultsViewer } from '@features/results/view/results_viewer';
 import type { ActionGroupItem, SimHost, SimWarning } from '@features/sim_host';
+import { ErrorOutcomeType } from '@generated/proto/api';
 import i18n from '@i18n/config';
 import { BaseModal } from '@ui-kit/base_modal';
 import { Component } from '@ui-kit/component';

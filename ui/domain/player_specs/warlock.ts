@@ -1,4 +1,4 @@
-import { Class, Spec } from '@core/proto/common';
+import { Class, Spec } from '@generated/proto/common';
 
 import { getSpecSitePath, LaunchStatus, Phase } from '../constants/other';
 import { IconSize } from '../player_class';

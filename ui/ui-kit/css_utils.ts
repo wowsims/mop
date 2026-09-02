@@ -1,4 +1,4 @@
-import { ItemQuality } from '@core/proto/common';
+import { ItemQuality } from '@generated/proto/common';
 
 const itemQualityCssClasses: Record<ItemQuality, string> = {
 	[ItemQuality.ItemQualityJunk]: 'text-junk',

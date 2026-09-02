@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Spec, Stat } from '@core/proto/common';
-import { DruidMajorGlyph, GuardianDruid_Options as DruidOptions, GuardianDruid_Rotation as DruidRotation } from '@core/proto/druid';
+import { ConsumesSpec, Profession, Spec, Stat } from '@generated/proto/common';
+import { DruidMajorGlyph, GuardianDruid_Options as DruidOptions, GuardianDruid_Rotation as DruidRotation } from '@generated/proto/druid';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

@@ -1,11 +1,11 @@
-import { ItemLevelState, ItemSpec } from '@core/proto/common';
-import { UIItem, UIItem_FactionRestriction } from '@core/proto/ui';
 import { ITEM_SLOT_TO_BULK_SIM_ITEM_SLOT } from '@domain/bulk/utils';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { canEquipItem, getEligibleItemSlots } from '@domain/proto_utils/utils';
 import { EventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import type { IndividualSimHost } from '@features/sim_host';
+import { ItemLevelState, ItemSpec } from '@generated/proto/common';
+import { UIItem, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateBulkSlotName } from '@i18n/localization';
 import { ContentBlock } from '@ui-kit/content_block';

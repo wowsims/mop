@@ -1,4 +1,4 @@
-import { BulkSimRequest, ErrorOutcome, ErrorOutcomeType, ProgressMetrics, RaidSimRequest, RaidSimResult } from '@core/proto/api';
+import { BulkSimRequest, ErrorOutcome, ErrorOutcomeType, ProgressMetrics, RaidSimRequest, RaidSimResult } from '@generated/proto/api';
 import { queue } from 'async';
 
 import { SimSignals } from '../../sim_signal_manager';

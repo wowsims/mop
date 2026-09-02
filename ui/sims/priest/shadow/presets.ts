@@ -1,8 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, RaidBuffs } from '@core/proto/common';
-import { PriestOptions_Armor, ShadowPriest_Options as Options } from '@core/proto/priest';
 import { UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, PseudoStat, RaidBuffs } from '@generated/proto/common';
+import { PriestOptions_Armor, ShadowPriest_Options as Options } from '@generated/proto/priest';
 
 import DefaultApl from './apls/default.apl.json';
 import P4Gear from './gear_sets/p4.gear.json';

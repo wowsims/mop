@@ -1,9 +1,9 @@
-import { APLValidation } from '@core/proto/api';
-import { LogLevel } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import { APLValidation } from '@generated/proto/api';
+import { LogLevel } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateItemLabel } from '@i18n/localization';
 import clsx from 'clsx';

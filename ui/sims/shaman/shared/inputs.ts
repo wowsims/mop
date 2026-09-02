@@ -1,11 +1,11 @@
-import { Spec } from '@core/proto/common';
-import { ShamanImbue, ShamanShield } from '@core/proto/shaman';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { ShamanSpecs } from '@domain/proto_utils/utils';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
 import type { CustomSection } from '@features/spec_config';
+import { Spec } from '@generated/proto/common';
+import { ShamanImbue, ShamanShield } from '@generated/proto/shaman';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 // Configuration for class-specific UI elements on the settings tab.

@@ -20,7 +20,6 @@ export default defineConfig({
 			'@app': path.resolve(uiRoot, 'app'),
 			'@specs': path.resolve(uiRoot, 'sims'),
 			'@i18n': path.resolve(uiRoot, 'i18n'),
-			'@core': path.resolve(uiRoot, 'core'),
 		},
 	},
 	oxc: {

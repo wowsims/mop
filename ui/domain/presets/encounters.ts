@@ -1,4 +1,4 @@
-import { Encounter as EncounterProto, InputType, MobType } from '@core/proto/common';
+import { Encounter as EncounterProto, InputType, MobType } from '@generated/proto/common';
 
 import { Encounter } from '../encounter';
 

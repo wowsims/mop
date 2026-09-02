@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Spec } from '@core/proto/common';
-import { PaladinMajorGlyph, PaladinMinorGlyph, PaladinSeal, ProtectionPaladin_Options as ProtectionPaladinOptions } from '@core/proto/paladin';
+import { ConsumesSpec, Profession, Spec } from '@generated/proto/common';
+import { PaladinMajorGlyph, PaladinMinorGlyph, PaladinSeal, ProtectionPaladin_Options as ProtectionPaladinOptions } from '@generated/proto/paladin';
 
 import HorridonApl from './apls/horridon.apl.json';
 import IronJuggernautApl from './apls/iron_juggernaut.apl.json';

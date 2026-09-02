@@ -1,5 +1,3 @@
-import { APLRotation } from '@core/proto/apl';
-import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { PlayerClasses } from '@domain/player_classes';
@@ -8,6 +6,8 @@ import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions'
 import { AttackSpeedBuff } from '@features/settings/model/buffs_debuffs';
 import * as OtherInputs from '@features/settings/model/other_inputs';
 import { defineSpec } from '@features/spec_config';
+import { APLRotation } from '@generated/proto/apl';
+import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
 import * as ShamanInputs from '../shared/inputs';

@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Race } from '@core/proto/common';
-import { ArmsWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '@core/proto/warrior';
+import { ConsumesSpec, Profession, Race } from '@generated/proto/common';
+import { ArmsWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '@generated/proto/warrior';
 
 import ArmsApl from './apls/arms.apl.json';
 import P2ArmsBisGear from './gear_sets/p2_arms_bis.gear.json';

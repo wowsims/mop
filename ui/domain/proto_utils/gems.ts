@@ -1,5 +1,5 @@
-import { GemColor, Profession, Stat } from '@core/proto/common';
-import { UIGem as Gem } from '@core/proto/ui';
+import { GemColor, Profession, Stat } from '@generated/proto/common';
+import { UIGem as Gem } from '@generated/proto/ui';
 
 import { getEnumValues } from '../utils';
 

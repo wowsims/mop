@@ -1,4 +1,3 @@
-import { ItemSlot, PseudoStat, Race, Spec, Stat, WeaponType } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -7,6 +6,7 @@ import { computeStatAttribution, StatMods, Stats, StatWrites, UnitStat } from '@
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
+import { ItemSlot, PseudoStat, Race, Spec, Stat, WeaponType } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMasterySpellName } from '@i18n/localization';
 import { Component } from '@ui-kit/component';

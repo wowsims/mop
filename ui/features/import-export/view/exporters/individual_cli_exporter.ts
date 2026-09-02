@@ -1,5 +1,5 @@
-import { RaidSimRequest } from '@core/proto/api';
-import { Spec } from '@core/proto/common';
+import { RaidSimRequest } from '@generated/proto/api';
+import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 
 import type { IndividualSimHost } from '../../../sim_host';

@@ -1,8 +1,8 @@
-import { Spec } from '@core/proto/common';
-import { ShamanImbue, ShamanSyncType } from '@core/proto/shaman';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { Spec } from '@generated/proto/common';
+import { ShamanImbue, ShamanSyncType } from '@generated/proto/shaman';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 

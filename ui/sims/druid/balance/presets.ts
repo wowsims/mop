@@ -1,8 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, Profession, PseudoStat, RaidBuffs, UnitReference } from '@core/proto/common';
-import { BalanceDruid_Options as BalanceDruidOptions, DruidMajorGlyph } from '@core/proto/druid';
 import { UnitStat, UnitStatPresets } from '@domain/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, Profession, PseudoStat, RaidBuffs, UnitReference } from '@generated/proto/common';
+import { BalanceDruid_Options as BalanceDruidOptions, DruidMajorGlyph } from '@generated/proto/druid';
 
 import StandardApl from './apls/standard.apl.json';
 import PreraidGear from './gear_sets/preraid.gear.json';

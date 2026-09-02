@@ -1,9 +1,9 @@
-import { Stat } from '@core/proto/common';
-import { IndividualSimSettings } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import { nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Stat } from '@generated/proto/common';
+import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
 import { Component } from '@ui-kit/component';

@@ -1,5 +1,5 @@
-import { StatCapConfig, StatCapType, StatWeightsResult, UIStat as UnitStatProto } from '@core/proto/api';
-import { Class, PseudoStat, Stat, UnitStats } from '@core/proto/common';
+import { StatCapConfig, StatCapType, StatWeightsResult, UIStat as UnitStatProto } from '@generated/proto/api';
+import { Class, PseudoStat, Stat, UnitStats } from '@generated/proto/common';
 import { translatePseudoStat, translateStat } from '@i18n/localization';
 
 import * as Mechanics from '../constants/mechanics';

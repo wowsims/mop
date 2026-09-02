@@ -1,11 +1,11 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Race, Spec } from '@core/proto/common';
+import { ConsumesSpec, Profession, Race, Spec } from '@generated/proto/common';
 import {
 	FeralDruid_Options as FeralDruidOptions,
 	FeralDruid_Rotation as FeralDruidRotation,
 	FeralDruid_Rotation_AplType,
 	FeralDruid_Rotation_HotwStrategy,
-} from '@core/proto/druid';
+} from '@generated/proto/druid';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

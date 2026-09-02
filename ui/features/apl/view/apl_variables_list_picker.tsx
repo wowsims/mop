@@ -1,11 +1,11 @@
-import { APLValueVariable } from '@core/proto/apl';
-import { UUID } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { renameAPLReference } from '@domain/proto_utils/apl_utils';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
+import { APLValueVariable } from '@generated/proto/apl';
+import { UUID } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';

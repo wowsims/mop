@@ -1,7 +1,7 @@
-import { Spec } from '@core/proto/common';
-import { FeralDruid_Rotation_AplType as AplType, FeralDruid_Rotation_HotwStrategy as HotwType } from '@core/proto/druid';
 import { Player } from '@domain/player';
 import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { Spec } from '@generated/proto/common';
+import { FeralDruid_Rotation_AplType as AplType, FeralDruid_Rotation_HotwStrategy as HotwType } from '@generated/proto/druid';
 import i18n from '@i18n/config';
 import * as InputHelpers from '@ui-kit/input_helpers';
 

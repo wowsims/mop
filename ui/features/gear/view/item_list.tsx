@@ -1,5 +1,3 @@
-import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '@core/proto/common';
-import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@core/proto/ui';
 import { SortDirection } from '@domain/constants/other';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -13,6 +11,8 @@ import { StoreSubscribe, subscribeBulkField } from '@domain/state/subscriptions'
 import { formatDeltaTextElem } from '@domain/utils';
 import type { SimHost } from '@features/sim_host';
 import { isIndividualSimHost } from '@features/sim_host';
+import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '@generated/proto/common';
+import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { Clusterize } from '@ui-kit/vendor/clusterize';

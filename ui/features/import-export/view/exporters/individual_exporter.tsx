@@ -1,8 +1,8 @@
-import { Spec } from '@core/proto/common';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { EventID } from '@domain/state/batch';
 import { getEnumValues } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
+import { Spec } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 

@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, RaidBuffs, UnitReference } from '@core/proto/common';
-import { RestorationDruid_Options as RestorationDruidOptions } from '@core/proto/druid';
-import { SavedTalents } from '@core/proto/ui';
+import { ConsumesSpec, Debuffs, IndividualBuffs, PartyBuffs, RaidBuffs, UnitReference } from '@generated/proto/common';
+import { RestorationDruid_Options as RestorationDruidOptions } from '@generated/proto/druid';
+import { SavedTalents } from '@generated/proto/ui';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to

@@ -1,4 +1,12 @@
-import { APLRotation_Type as APLRotationType } from '@core/proto/apl';
+import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from '@domain/player';
+import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from '@domain/presets/types';
+import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
+import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
+import { SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
+import type { Sim } from '@domain/sim';
+import type { EventID } from '@domain/state/batch';
+import type { StoreSubscribe } from '@domain/state/subscriptions';
+import { APLRotation_Type as APLRotationType } from '@generated/proto/apl';
 import {
 	ConsumesSpec,
 	Debuffs,
@@ -13,16 +21,8 @@ import {
 	RaidBuffs,
 	Spec,
 	Stat,
-} from '@core/proto/common';
-import { SavedTalents } from '@core/proto/ui';
-import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from '@domain/player';
-import type { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from '@domain/presets/types';
-import type { StatMods, StatWrites } from '@domain/proto_utils/stats';
-import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
-import { SpecOptions, SpecRotation } from '@domain/proto_utils/utils';
-import type { Sim } from '@domain/sim';
-import type { EventID } from '@domain/state/batch';
-import type { StoreSubscribe } from '@domain/state/subscriptions';
+} from '@generated/proto/common';
+import { SavedTalents } from '@generated/proto/ui';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
 import * as InputHelpers from '@ui-kit/input_helpers';

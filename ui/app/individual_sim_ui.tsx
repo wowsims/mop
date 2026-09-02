@@ -1,7 +1,3 @@
-import { StatWeightsResult } from '@core/proto/api';
-import { APLRotation, APLRotation_Type as APLRotationType } from '@core/proto/apl';
-import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@core/proto/common';
-import { IndividualSimSettings } from '@core/proto/ui';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { Player } from '@domain/player';
 import { PlayerSpecs } from '@domain/player_specs';
@@ -46,6 +42,10 @@ import type { IndividualSimHost } from '@features/sim_host';
 import type { SpecDefinition } from '@features/spec_config';
 import { IndividualSimUIConfig, itemSwapEnabledSpecs } from '@features/spec_config';
 import { addStatWeightsAction, EpWeightsMenu } from '@features/stat-weights/view/stat_weights_panel';
+import { StatWeightsResult } from '@generated/proto/api';
+import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import { Cooldowns, Glyphs, HandType, ItemSlot, ItemSwap, Profession, PseudoStat, Spec, Stat } from '@generated/proto/common';
+import { IndividualSimSettings } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
 import { PresetConfigurationPicker } from './preset_configuration_picker';

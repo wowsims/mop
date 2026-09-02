@@ -1,4 +1,4 @@
-import { Encounter as EncounterProto, MobType, PresetEncounter, PresetTarget, SpellSchool, Stat, Target as TargetProto, TargetInput } from '@core/proto/common';
+import { Encounter as EncounterProto, MobType, PresetEncounter, PresetTarget, SpellSchool, Stat, Target as TargetProto, TargetInput } from '@generated/proto/common';
 
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';

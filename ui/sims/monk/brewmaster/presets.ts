@@ -1,6 +1,6 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Spec } from '@core/proto/common';
-import { BrewmasterMonk_Options as BrewmasterMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '@core/proto/monk';
+import { ConsumesSpec, Profession, Spec } from '@generated/proto/common';
+import { BrewmasterMonk_Options as BrewmasterMonkOptions, MonkMajorGlyph, MonkMinorGlyph } from '@generated/proto/monk';
 
 import DefaultApl from './apls/default.apl.json';
 import HorridonApl from './apls/horridon.apl.json';

@@ -1,7 +1,7 @@
-import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeRequest } from '@core/proto/api';
-import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '@core/proto/common';
-import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '@core/proto/db';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@core/proto/ui';
+import { BulkGearCandidate, BulkSimResult, BulkSimStage, DistributionMetrics, ReforgeOptimizeRequest } from '@generated/proto/api';
+import { Debuffs, EquipmentSpec, ItemRandomSuffix, ItemSlot, ItemSpec, PartyBuffs, RaidBuffs, ReforgeStat, WeaponType } from '@generated/proto/common';
+import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '@generated/proto/db';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '@generated/proto/ui';
 
 import type { Player } from '../player';
 import { getClassWeaponTypes, isSpecDualWieldCapable } from '../player_classes/capabilities';

@@ -1,17 +1,3 @@
-import { APLRotation, APLRotation_Type as APLRotationType } from '@core/proto/apl';
-import {
-	Cooldowns,
-	Encounter as EncounterProto,
-	EquipmentSpec,
-	Glyphs,
-	HealingModel,
-	ItemSwap,
-	PseudoStat,
-	Spec,
-	Stat,
-	UnitReference,
-} from '@core/proto/common';
-import { IndividualSimSettings, SavedRotation, SavedTalents } from '@core/proto/ui';
 import { Player } from '@domain/player';
 import type {
 	PresetBuild,
@@ -32,6 +18,20 @@ import type {
 } from '@domain/presets/types';
 import { Stats } from '@domain/proto_utils/stats';
 import { SpecRotation, specTypeFunctions } from '@domain/proto_utils/utils';
+import { APLRotation, APLRotation_Type as APLRotationType } from '@generated/proto/apl';
+import {
+	Cooldowns,
+	Encounter as EncounterProto,
+	EquipmentSpec,
+	Glyphs,
+	HealingModel,
+	ItemSwap,
+	PseudoStat,
+	Spec,
+	Stat,
+	UnitReference,
+} from '@generated/proto/common';
+import { IndividualSimSettings, SavedRotation, SavedTalents } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 
 export type {

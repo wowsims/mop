@@ -1,4 +1,4 @@
-import { DistributionMetrics } from '@core/proto/api';
+import { DistributionMetrics } from '@generated/proto/api';
 
 import { Gear } from '../proto_utils/gear';
 

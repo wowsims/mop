@@ -8,7 +8,7 @@
 //   defaults → saved localStorage settings → URL-hash link import (partial
 //   imports keep the rest) → clear hash → default player name → subscribe
 //   autosave LAST (so initialization doesn't re-store) → stat-weight settings.
-import { IndividualSimSettings } from '@core/proto/ui';
+import { IndividualSimSettings } from '@generated/proto/ui';
 
 import type { SimSettingCategories } from '../constants/sim_settings';
 import type { Player } from '../player';

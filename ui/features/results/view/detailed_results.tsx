@@ -1,10 +1,10 @@
-import { SimRun, SimRunData } from '@core/proto/ui';
 import { SimResult } from '@domain/proto_utils/sim_result';
 import { nextEventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
 import { subscribeSimSettingsChange } from '@domain/state/subscriptions';
 import { isDevMode } from '@domain/utils';
 import type { IndividualSimHost, SimHost } from '@features/sim_host';
+import { SimRun, SimRunData } from '@generated/proto/ui';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { StickyToolbar } from '@ui-kit/sticky_toolbar';

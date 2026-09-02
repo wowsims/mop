@@ -1,4 +1,3 @@
-import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@core/proto/common';
 import { Encounter } from '@domain/encounter';
 import { Stats } from '@domain/proto_utils/stats';
 import { Raid } from '@domain/raid';
@@ -13,6 +12,7 @@ import {
 } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
 import type { IndividualSimHost, SimHost } from '@features/sim_host';
+import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '@i18n/localization';
 import { BaseModal } from '@ui-kit/base_modal';

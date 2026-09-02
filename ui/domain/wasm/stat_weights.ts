@@ -6,7 +6,7 @@ import {
 	StatWeightsRequest,
 	StatWeightsResult,
 	StatWeightsStatResultData,
-} from '@core/proto/api';
+} from '@generated/proto/api';
 import { SimRequest } from '@worker/types';
 
 import { SimSignals } from '../sim_signal_manager';

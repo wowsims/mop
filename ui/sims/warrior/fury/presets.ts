@@ -1,8 +1,8 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, HandType, ItemSlot, Profession, Race, Spec } from '@core/proto/common';
-import { FuryWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '@core/proto/warrior';
 import { Player } from '@domain/player';
 import { makeSpecChangeWarningToast } from '@features/settings/view/spec_change_warning_toast';
+import { ConsumesSpec, HandType, ItemSlot, Profession, Race, Spec } from '@generated/proto/common';
+import { FuryWarrior_Options as WarriorOptions, WarriorMajorGlyph } from '@generated/proto/warrior';
 
 import DefaultFuryApl from './apls/default.apl.json';
 import P2FurySMFGear from './gear_sets/p2_fury_smf.gear.json';

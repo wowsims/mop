@@ -1,10 +1,10 @@
-import { ItemSlot } from '@core/proto/common';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, BulkSimItemSlot } from '@domain/bulk/utils';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEligibleItemSlots } from '@domain/proto_utils/utils';
 import { Emitter } from '@domain/state/events';
 import { subscribeBulkChange } from '@domain/state/subscriptions';
 import type { IndividualSimHost } from '@features/sim_host';
+import { ItemSlot } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import tippy from 'tippy.js';

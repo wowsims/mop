@@ -1,4 +1,4 @@
-import { Spec } from '@core/proto/common';
+import { Spec } from '@generated/proto/common';
 
 import type { SpecConfigData } from '../player';
 

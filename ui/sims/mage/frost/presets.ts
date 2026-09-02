@@ -1,7 +1,7 @@
 import * as PresetUtils from '@app/preset_utils';
-import { ConsumesSpec, Profession, Race } from '@core/proto/common';
-import { FrostMage_Options as MageOptions, MageArmor, MageMajorGlyph, MageMinorGlyph } from '@core/proto/mage';
 import { Encounter } from '@domain/encounter';
+import { ConsumesSpec, Profession, Race } from '@generated/proto/common';
+import { FrostMage_Options as MageOptions, MageArmor, MageMajorGlyph, MageMinorGlyph } from '@generated/proto/mage';
 
 import FrostApl from './apls/frost.apl.json';
 import FrostAoeApl from './apls/frost_aoe.apl.json';

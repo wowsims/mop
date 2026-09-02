@@ -1,4 +1,4 @@
-import { ArmorType, Class, Race, RangedWeaponType, Spec } from '@core/proto/common';
+import { ArmorType, Class, Race, RangedWeaponType, Spec } from '@generated/proto/common';
 
 import { LaunchStatus, Phase } from './constants/other';
 import { EligibleWeaponType, IconSize } from './player_class';

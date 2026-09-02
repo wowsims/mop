@@ -1,6 +1,3 @@
-import type { ErrorOutcome, RaidSimRequest, RaidSimResult, StatWeightsResult } from '@core/proto/api';
-import type { Spec, Stat } from '@core/proto/common';
-import type { IndividualSimSettings } from '@core/proto/ui';
 import type { SimSettingCategories } from '@domain/constants/sim_settings';
 import type { Player } from '@domain/player';
 import type { Gear } from '@domain/proto_utils/gear';
@@ -9,6 +6,9 @@ import type { RunSimOptions } from '@domain/sim';
 import type { EventID } from '@domain/state/batch';
 import type { StoreSubscribe } from '@domain/state/subscriptions';
 import type { WorkerProgressCallback } from '@domain/worker_pool';
+import type { ErrorOutcome, RaidSimRequest, RaidSimResult, StatWeightsResult } from '@generated/proto/api';
+import type { Spec, Stat } from '@generated/proto/common';
+import type { IndividualSimSettings } from '@generated/proto/ui';
 import type { SimUIHost } from '@ui-kit/sim_host';
 
 import type { BulkTab } from './bulk/view/bulk_tab';

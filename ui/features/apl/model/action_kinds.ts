@@ -1,3 +1,5 @@
+import { Player } from '@domain/player';
+import { itemSwapEnabledSpecs } from '@features/spec_config';
 import {
 	APLAction,
 	APLActionActivateAllStatBuffProcAuras,
@@ -32,11 +34,9 @@ import {
 	APLActionWait,
 	APLActionWaitUntil,
 	APLActionWarlockNextExhaleTarget,
-} from '@core/proto/apl';
-import { Spec } from '@core/proto/common';
-import { FeralDruid_Rotation_AplType } from '@core/proto/druid';
-import { Player } from '@domain/player';
-import { itemSwapEnabledSpecs } from '@features/spec_config';
+} from '@generated/proto/apl';
+import { Spec } from '@generated/proto/common';
+import { FeralDruid_Rotation_AplType } from '@generated/proto/druid';
 import i18n from '@i18n/config';
 
 import {

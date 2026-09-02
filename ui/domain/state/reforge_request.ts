@@ -1,9 +1,9 @@
 // Reforge-solve request/cache-key helpers, extracted from the ReforgeOptimizer
 // component so the domain layer (sim.ts, bulk sim, reforge cache) does not
 // depend on ui/core/components.
-import { Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeRequest, ReforgeSettings } from '@core/proto/api';
-import { Debuffs, GemColor, ItemQuality, PartyBuffs, Profession, RaidBuffs } from '@core/proto/common';
-import { UIGem as Gem } from '@core/proto/ui';
+import { Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeRequest, ReforgeSettings } from '@generated/proto/api';
+import { Debuffs, GemColor, ItemQuality, PartyBuffs, Profession, RaidBuffs } from '@generated/proto/common';
+import { UIGem as Gem } from '@generated/proto/ui';
 
 import { SimSettingCategories } from '../constants/sim_settings';
 import type { Player } from '../player';

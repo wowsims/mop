@@ -1,7 +1,7 @@
-import { GemColor, ItemSlot } from '@core/proto/common';
-import { UIGem as Gem } from '@core/proto/ui';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
+import { GemColor, ItemSlot } from '@generated/proto/common';
+import { UIGem as Gem } from '@generated/proto/ui';
 import { ref } from 'tsx-vanilla';
 
 import { setActionIdWowheadHref } from './action_id_dom';

@@ -1,5 +1,3 @@
-import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '@core/proto/api';
-import { PseudoStat, Stat, UnitStats } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { scaledEpValue, Stats, UnitStat } from '@domain/proto_utils/stats';
 import { RequestTypes } from '@domain/sim_signal_manager';
@@ -8,6 +6,8 @@ import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField, subscribeStatWeightsChange } from '@domain/state/subscriptions';
 import { sanitizeId, stDevToConf90 } from '@domain/utils';
 import type { IndividualSimHost } from '@features/sim_host';
+import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues } from '@generated/proto/api';
+import { PseudoStat, Stat, UnitStats } from '@generated/proto/common';
 import i18n from '@i18n/config';
 import { translateStat } from '@i18n/localization';
 import { BaseModal } from '@ui-kit/base_modal';

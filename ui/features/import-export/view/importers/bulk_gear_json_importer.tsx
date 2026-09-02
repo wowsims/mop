@@ -1,6 +1,6 @@
-import { EquipmentSpec, Spec } from '@core/proto/common';
 import { Database } from '@domain/proto_utils/database';
 import type { IndividualSimHost } from '@features/sim_host';
+import { EquipmentSpec, Spec } from '@generated/proto/common';
 import { t } from 'i18next';
 
 import { BulkTab } from '../../../bulk/view/bulk_tab';

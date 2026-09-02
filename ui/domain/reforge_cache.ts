@@ -1,4 +1,4 @@
-import { EquipmentSpec, Spec } from '@core/proto/common';
+import { EquipmentSpec, Spec } from '@generated/proto/common';
 import { IDBPDatabase, openDB } from 'idb';
 
 import { throwIfAborted } from './bulk/utils';

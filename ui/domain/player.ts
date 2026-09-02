@@ -5,8 +5,8 @@ import {
 	SpellStats as SpellStatsProto,
 	StatWeightsResult,
 	UnitMetadata as UnitMetadataProto,
-} from '@core/proto/api';
-import { APLRotation, APLRotation_Type as APLRotationType, SimpleRotation } from '@core/proto/apl';
+} from '@generated/proto/api';
+import { APLRotation, APLRotation_Type as APLRotationType, SimpleRotation } from '@generated/proto/apl';
 import {
 	Class,
 	ConsumableType,
@@ -31,8 +31,8 @@ import {
 	UnitReference,
 	UnitStats,
 	WeaponType,
-} from '@core/proto/common';
-import { SimDatabase } from '@core/proto/db';
+} from '@generated/proto/common';
+import { SimDatabase } from '@generated/proto/db';
 import {
 	DungeonDifficulty,
 	RaidFilterOption,
@@ -41,7 +41,7 @@ import {
 	UIGem as Gem,
 	UIItem as Item,
 	UIItem_FactionRestriction,
-} from '@core/proto/ui';
+} from '@generated/proto/ui';
 
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';

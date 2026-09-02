@@ -6,7 +6,7 @@ import {
 	RaidSimRequestSplitRequest,
 	RaidSimResult,
 	RaidSimResultCombinationRequest,
-} from '@core/proto/api';
+} from '@generated/proto/api';
 
 import { SimSignals } from '../sim_signal_manager';
 import { isDevMode } from '../utils';
