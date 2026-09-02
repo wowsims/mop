@@ -37,7 +37,7 @@ export default class BulkItemPicker extends Component {
 		this.bulkSlot = bulkSlot;
 		this.index = index;
 		this.item = item;
-		this.itemElem = new ItemRenderer(parent, this.rootElem, simUI.player, getEligibleItemSlots(item.item)[0]);
+		this.itemElem = new ItemRenderer(parent, this.rootElem, simUI.player, { slot: getEligibleItemSlots(item.item)[0] });
 		this.abortController = new AbortController();
 		this.signal = this.abortController.signal;
 

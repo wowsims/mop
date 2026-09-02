@@ -6,6 +6,7 @@ import { MISSING_RANDOM_SUFFIX_WARNING } from '../../constants/item_notices';
 import { setItemQualityCssClass } from '../../css_utils';
 import { Player } from '../../player';
 import { ItemLevelState, ItemSlot } from '../../proto/common';
+import { UIEnchant as Enchant } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
 import { getEnchantDescription } from '../../proto_utils/enchants';
 import { EquippedItem } from '../../proto_utils/equipped_item';
@@ -14,8 +15,21 @@ import { Component } from '../component';
 import { ItemNotice } from '../item_notice/item_notice';
 import { createItemSockets, createNameDescriptionLabel, getEmptySlotIconUrl } from './utils';
 
-// Renders one equipped item: icon, item level, name, enchant, tinker, reforge and gem sockets.
-// Consumers attach their own listeners and popovers to the exposed elements.
+export type ItemRendererConfig = {
+	/** Slot this cell belongs to. Drives the empty-state icon and the empty-state name. */
+	slot: ItemSlot;
+	/** Root class, for consumers whose SCSS keys off something other than the gear picker's. */
+	rootCssClass?: string;
+};
+
+/**
+ * Renders one equipped item: icon, item level, name, enchant, tinker, reforge and gem sockets.
+ *
+ * Consumers attach their own listeners and popovers to the exposed elements. The cell is built
+ * from one protected method per concern -- icon, item level, labels, sockets -- each paired with
+ * the reset that clears it, so a variant subclasses and overrides the one piece it needs instead
+ * of reimplementing the whole cell.
+ */
 export class ItemRenderer extends Component {
 	readonly iconElem: HTMLAnchorElement;
 	readonly nameElem: HTMLAnchorElement;
@@ -24,24 +38,24 @@ export class ItemRenderer extends Component {
 	readonly reforgeElem: HTMLAnchorElement;
 	socketsElem: HTMLAnchorElement[] = [];
 
-	private readonly player: Player<any>;
-	private readonly slot: ItemSlot;
+	protected readonly player: Player<any>;
+	protected readonly slot: ItemSlot;
+
 	private readonly nameContainerElem: HTMLDivElement;
 	private readonly ilvlElem: HTMLSpanElement;
 	private readonly socketsContainerElem: HTMLElement;
 	private notice: ItemNotice | null = null;
 	private professionSubscription: Disposable | null = null;
 
-	// Guards the async icon/enchant lookups so a slow response for a previous item cannot land
-	// on top of the current one.
-	// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#add_an_abortable_listener
+	// Guards the async icon, enchant and tooltip lookups so a slow response for a previous item
+	// cannot land on top of the current one.
 	private abortController?: AbortController;
-	private signal?: AbortSignal;
+	protected signal?: AbortSignal;
 
-	constructor(parent: HTMLElement, root: HTMLElement, player: Player<any>, slot: ItemSlot) {
-		super(parent, 'item-picker-root', root);
+	constructor(parent: HTMLElement, root: HTMLElement, player: Player<any>, config: ItemRendererConfig) {
+		super(parent, config.rootCssClass ?? 'item-picker-root', root);
 		this.player = player;
-		this.slot = slot;
+		this.slot = config.slot;
 
 		const iconElem = ref<HTMLAnchorElement>();
 		const nameContainerElem = ref<HTMLDivElement>();
@@ -50,124 +64,78 @@ export class ItemRenderer extends Component {
 		const enchantElem = ref<HTMLAnchorElement>();
 		const tinkerElem = ref<HTMLAnchorElement>();
 		const reforgeElem = ref<HTMLAnchorElement>();
-		const sce = ref<HTMLDivElement>();
+		const socketsContainerElem = ref<HTMLDivElement>();
 
 		this.rootElem.appendChild(
 			<>
 				<div className="item-picker-icon-wrapper">
 					<span className="item-picker-ilvl" ref={ilvlElem} />
 					<a ref={iconElem} className="item-picker-icon" href="javascript:void(0)" attributes={{ role: 'button' }} />
-					<div ref={sce} className="item-picker-sockets-container"></div>
+					<div ref={socketsContainerElem} className="item-picker-sockets-container"></div>
 				</div>
 				<div className="item-picker-labels-container">
-					<div ref={nameContainerElem} className="item-picker-name-row d-flex gap-1">
-						<a ref={nameElem} className="item-picker-name-container" href="javascript:void(0)" attributes={{ role: 'button' }} />
-					</div>
-					<a ref={enchantElem} className="item-picker-enchant hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
-					<a ref={tinkerElem} className="item-picker-tinker hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
+						<div ref={nameContainerElem} className="item-picker-name-row d-flex gap-1">
+							<a ref={nameElem} className="item-picker-name-container" href="javascript:void(0)" attributes={{ role: 'button' }} />
+						</div>
+						<a ref={enchantElem} className="item-picker-enchant hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
+						<a ref={tinkerElem} className="item-picker-tinker hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
 					<a ref={reforgeElem} className="item-picker-reforge hide" href="javascript:void(0)" attributes={{ role: 'button' }} />
 				</div>
 			</>,
 		);
 
 		this.iconElem = iconElem.value!;
+		this.ilvlElem = ilvlElem.value!;
+		this.socketsContainerElem = socketsContainerElem.value!;
 		this.nameContainerElem = nameContainerElem.value!;
 		this.nameElem = nameElem.value!;
-		this.ilvlElem = ilvlElem.value!;
-		this.reforgeElem = reforgeElem.value!;
 		this.enchantElem = enchantElem.value!;
 		this.tinkerElem = tinkerElem.value!;
-		this.socketsContainerElem = sce.value!;
+		this.reforgeElem = reforgeElem.value!;
 	}
 
-	// Renders the given item, or the empty state when there is none.
+	/** Renders the given item, or the empty state when there is none. */
 	render(newItem: EquippedItem | null) {
 		this.reset();
 		if (newItem) this.apply(newItem);
 	}
 
-	private reset() {
+	/**
+	 * Returns the cell to its empty state.
+	 *
+	 * This is a separate phase on purpose: apply() only ever sets what the new item has, so
+	 * clearing what the previous one left behind has to happen here.
+	 */
+	protected reset() {
 		this.abortController?.abort();
 		this.professionSubscription?.dispose();
 		this.professionSubscription = null;
 		this.notice?.dispose();
 		this.notice = null;
 
-		this.nameElem.removeAttribute('data-wowhead');
-		this.nameElem.removeAttribute('href');
-		this.iconElem.removeAttribute('data-wowhead');
-		this.iconElem.removeAttribute('href');
-		this.enchantElem.removeAttribute('data-wowhead');
-		this.enchantElem.removeAttribute('href');
-		this.tinkerElem.removeAttribute('data-wowhead');
-		this.tinkerElem.removeAttribute('href');
-		this.enchantElem.classList.add('hide');
-		this.tinkerElem.classList.add('hide');
-		this.reforgeElem.classList.add('hide');
-
-		this.iconElem.style.backgroundImage = `url('${getEmptySlotIconUrl(this.slot)}')`;
-
-		this.enchantElem.replaceChildren();
-		this.tinkerElem.replaceChildren();
-		this.reforgeElem.replaceChildren();
-		this.socketsContainerElem.replaceChildren();
+		this.resetIcon();
 		this.ilvlElem.replaceChildren();
-
-		this.nameElem.textContent = translateSlotName(this.slot);
-		setItemQualityCssClass(this.nameElem, null);
-
-		this.socketsElem = [];
+		this.resetSockets();
+		this.resetLabels();
 	}
 
-	private apply(newItem: EquippedItem) {
+	protected apply(newItem: EquippedItem) {
 		this.abortController = new AbortController();
 		this.signal = this.abortController.signal;
 
-		const nameSpan = <span className="item-picker-name">{newItem.item.name}</span>;
-		const isEligibleForRandomSuffix = !!newItem.hasRandomSuffixOptions();
-		const hasRandomSuffix = !!newItem.randomSuffix;
-		this.nameElem.replaceChildren(nameSpan);
-		this.ilvlElem.replaceChildren(
-			<>
-				{newItem.ilvl.toString()}
-				{!!(newItem.upgrade !== ItemLevelState.ChallengeMode && newItem.ilvlFromBase) && (
-					<span className="item-quality-uncommon">+{newItem.ilvlFromBase}</span>
-				)}
-			</>,
-		);
+		this.renderIcon(newItem);
+		this.renderIlvl(newItem);
+		this.renderLabels(newItem);
+		this.renderSockets(newItem);
+	}
 
-		if (hasRandomSuffix) {
-			nameSpan.textContent += ' ' + translateProtoStatName(newItem.randomSuffix.name);
-		}
+	protected resetIcon() {
+		this.iconElem.removeAttribute('data-wowhead');
+		this.iconElem.removeAttribute('href');
+		this.iconElem.style.backgroundImage = `url('${getEmptySlotIconUrl(this.slot)}')`;
+	}
 
-		if (newItem.item.nameDescription) {
-			this.nameElem.appendChild(createNameDescriptionLabel(newItem.item.nameDescription));
-		}
-
-		this.notice = new ItemNotice(this.player, {
-			itemId: newItem.item.id,
-			additionalNoticeData: isEligibleForRandomSuffix && !hasRandomSuffix ? MISSING_RANDOM_SUFFIX_WARNING : undefined,
-		});
-
-		if (this.notice.hasNotice) {
-			this.nameContainerElem.appendChild(this.notice.rootElem);
-		}
-
-		const reforgeData = newItem.getReforgeData();
-		if (reforgeData) {
-			const fromText = translateStat(reforgeData.reforge?.fromStat);
-			const toText = translateStat(reforgeData.reforge?.toStat);
-			this.reforgeElem.innerText = i18n.t('gear_tab.gear_picker.reforge_text', {
-				fromAmount: Math.abs(reforgeData.fromAmount),
-				fromStat: fromText,
-				toAmount: reforgeData.toAmount,
-				toStat: toText,
-			});
-			this.reforgeElem.classList.remove('hide');
-		}
-
-		setItemQualityCssClass(this.nameElem, newItem.item.quality);
-
+	protected renderIcon(newItem: EquippedItem) {
 		this.player.setWowheadData(newItem, [this.iconElem, this.nameElem]);
 
 		newItem
@@ -178,36 +146,106 @@ export class ItemRenderer extends Component {
 				filledId.setBackgroundAndHref(this.iconElem);
 				filledId.setWowheadHref(this.nameElem);
 			});
+	}
 
-		if (newItem.enchant) this.applyEnchantLabel(this.enchantElem, newItem.enchant);
-		if (newItem.tinker) this.applyEnchantLabel(this.tinkerElem, newItem.tinker);
+	protected renderIlvl(newItem: EquippedItem) {
+		this.ilvlElem.replaceChildren(
+			<>
+				{newItem.ilvl.toString()}
+				{!!(newItem.upgrade !== ItemLevelState.ChallengeMode && newItem.ilvlFromBase) && (
+					<span className="item-quality-uncommon">+{newItem.ilvlFromBase}</span>
+				)}
+			</>,
+		);
+	}
 
+	protected resetSockets() {
+		this.socketsContainerElem.replaceChildren();
+		this.socketsElem = [];
+	}
+
+	protected renderSockets(newItem: EquippedItem) {
 		const sockets = createItemSockets(this.player, newItem);
 		this.professionSubscription = sockets.professionSubscription;
 		this.socketsElem = sockets.elems;
 		this.socketsContainerElem.replaceChildren(...sockets.elems);
 	}
 
-	private applyEnchantLabel(elem: HTMLAnchorElement, enchant: EquippedItem['enchant'] & {}) {
+	protected resetLabels() {
+		for (const elem of [this.nameElem, this.enchantElem, this.tinkerElem]) {
+			elem.removeAttribute('data-wowhead');
+			elem.removeAttribute('href');
+		}
+		this.enchantElem.replaceChildren();
+		this.tinkerElem.replaceChildren();
+		this.reforgeElem.replaceChildren();
+		this.enchantElem.classList.add('hide');
+		this.tinkerElem.classList.add('hide');
+		this.reforgeElem.classList.add('hide');
+
+		this.nameElem.textContent = translateSlotName(this.slot);
+		setItemQualityCssClass(this.nameElem, null);
+	}
+
+	protected renderLabels(newItem: EquippedItem) {
+		this.renderName(newItem);
+		if (newItem.enchant) this.renderEnchantLabel(this.enchantElem, newItem.enchant);
+		if (newItem.tinker) this.renderEnchantLabel(this.tinkerElem, newItem.tinker);
+		this.renderReforge(newItem);
+	}
+
+	protected renderName(newItem: EquippedItem) {
+		const nameSpan = <span className="item-picker-name">{newItem.item.name}</span>;
+		const isEligibleForRandomSuffix = !!newItem.hasRandomSuffixOptions();
+		const hasRandomSuffix = !!newItem.randomSuffix;
+
+		this.nameElem.replaceChildren(nameSpan);
+		if (hasRandomSuffix) {
+			nameSpan.textContent += ' ' + translateProtoStatName(newItem.randomSuffix.name);
+		}
+		if (newItem.item.nameDescription) {
+			this.nameElem.appendChild(createNameDescriptionLabel(newItem.item.nameDescription));
+		}
+		setItemQualityCssClass(this.nameElem, newItem.item.quality);
+
+		this.notice = new ItemNotice(this.player, {
+			itemId: newItem.item.id,
+			additionalNoticeData: isEligibleForRandomSuffix && !hasRandomSuffix ? MISSING_RANDOM_SUFFIX_WARNING : undefined,
+		});
+		if (this.notice.hasNotice) {
+			this.nameContainerElem.appendChild(this.notice.rootElem);
+		}
+	}
+
+	protected renderReforge(newItem: EquippedItem) {
+		const reforgeData = newItem.getReforgeData();
+		if (!reforgeData) return;
+
+		this.reforgeElem.innerText = i18n.t('gear_tab.gear_picker.reforge_text', {
+			fromAmount: Math.abs(reforgeData.fromAmount),
+			fromStat: translateStat(reforgeData.reforge?.fromStat),
+			toAmount: reforgeData.toAmount,
+			toStat: translateStat(reforgeData.reforge?.toStat),
+		});
+		this.reforgeElem.classList.remove('hide');
+	}
+
+	protected renderEnchantLabel(elem: HTMLAnchorElement, enchant: Enchant) {
 		getEnchantDescription(enchant).then(description => {
 			if (this.signal?.aborted) return;
 			elem.textContent = description;
 		});
 
 		// Make the label hover have a tooltip.
-		if (enchant.spellId) {
-			elem.href = ActionId.makeSpellUrl(enchant.spellId);
-			ActionId.makeSpellTooltipData(enchant.spellId).then(url => {
-				if (this.signal?.aborted) return;
-				elem.dataset.wowhead = url;
-			});
-		} else {
-			elem.href = ActionId.makeItemUrl(enchant.itemId);
-			ActionId.makeItemTooltipData(enchant.itemId).then(url => {
-				if (this.signal?.aborted) return;
-				elem.dataset.wowhead = url;
-			});
-		}
+		const [url, tooltipData] = enchant.spellId
+			? [ActionId.makeSpellUrl(enchant.spellId), ActionId.makeSpellTooltipData(enchant.spellId)]
+			: [ActionId.makeItemUrl(enchant.itemId), ActionId.makeItemTooltipData(enchant.itemId)];
+
+		elem.href = url;
+		tooltipData.then(dataset => {
+			if (this.signal?.aborted) return;
+			elem.dataset.wowhead = dataset;
+		});
 		elem.dataset.whtticon = 'false';
 		elem.classList.remove('hide');
 	}

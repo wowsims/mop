@@ -8,8 +8,8 @@ import { SimUI } from '../../sim_ui';
 import { EventID } from '../../typed_event';
 import { Component } from '../component';
 import QuickSwapList from '../quick_swap';
-import { ItemRenderer } from './item_renderer';
 import { GearData } from './item_list';
+import { ItemRenderer } from './item_renderer';
 import { addQuickEnchantPopover } from './quick_enchant_popover';
 import { addQuickGemPopover } from './quick_gem_popover';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
@@ -88,7 +88,7 @@ export class ItemPicker extends Component {
 		this.simUI = simUI;
 		this.player = player;
 		this.slot = slot;
-		this.itemElem = new ItemRenderer(parent, this.rootElem, player, slot);
+		this.itemElem = new ItemRenderer(parent, this.rootElem, player, { slot });
 
 		this.item = player.getEquippedItem(slot);
 

@@ -123,7 +123,7 @@ export default class BulkSimResultRenderer extends Component {
 				continue;
 			}
 
-			const renderer = new ItemRenderer(items, itemContainer, simUI.player, idx);
+			const renderer = new ItemRenderer(items, itemContainer, simUI.player, { slot: idx });
 			renderer.render(itemChanged && spec.id !== 0 ? simUI.sim.db.lookupItemSpec(spec) : null);
 			items.appendChild(itemContainer);
 		}
