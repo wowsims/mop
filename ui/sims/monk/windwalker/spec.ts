@@ -122,7 +122,7 @@ export default defineSpec<Spec.SpecWindwalkerMonk>({
 		// Preset rotations that the user can quickly select.
 		rotations: [Presets.ROTATION_PRESET],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_4_BIS_GEAR_PRESET, Presets.P3_4_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
+		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P2_BIS_GEAR_PRESET, Presets.P3_4_BIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
 		builds: [Presets.P2_BUILD_PRESET, Presets.P3_4_BUILD_PRESET, Presets.P5_BUILD_PRESET],
 	},
 

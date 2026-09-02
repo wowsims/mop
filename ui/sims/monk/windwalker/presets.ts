@@ -16,11 +16,11 @@ import DefaultTalentsJson from './presets/talents/default.talents.json';
 
 export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Pre-BIS', DefaultPrebisGear);
 export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS', DefaultP2BisGear, {
-	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
+	onLoad: (player: Player<Spec.SpecWindwalkerMonk>) => {
 		makeSpecChangeWarningToast(
 			[
 				{
-					condition: (player: Player<Spec.SpecFuryWarrior>) => player.getProfessions().includes(Profession.Tailoring) === false,
+					condition: (player: Player<Spec.SpecWindwalkerMonk>) => player.getProfessions().includes(Profession.Tailoring) === false,
 					message: 'This preset assumes tailoring. Please reforge/regem for optimal results.',
 				},
 			],
@@ -30,11 +30,11 @@ export const P2_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P2 - BIS', Default
 });
 
 export const P3_4_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', DefaultP4BisGear, {
-	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
+	onLoad: (player: Player<Spec.SpecWindwalkerMonk>) => {
 		makeSpecChangeWarningToast(
 			[
 				{
-					condition: (player: Player<Spec.SpecFuryWarrior>) => player.getProfessions().includes(Profession.Blacksmithing) === false,
+					condition: (player: Player<Spec.SpecWindwalkerMonk>) => player.getProfessions().includes(Profession.Blacksmithing) === false,
 					message: 'This preset assumes blacksmithing for the Rune of Re-Origination proc. Please reforge/regem for optimal results.',
 				},
 			],
@@ -43,11 +43,11 @@ export const P3_4_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P3 & P4 - BIS', 
 	},
 });
 export const P5_BIS_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BIS', DefaultP5BisGear, {
-	onLoad: (player: Player<Spec.SpecFuryWarrior>) => {
+	onLoad: (player: Player<Spec.SpecWindwalkerMonk>) => {
 		makeSpecChangeWarningToast(
 			[
 				{
-					condition: (player: Player<Spec.SpecFuryWarrior>) => player.getProfessions().includes(Profession.Blacksmithing) === false,
+					condition: (player: Player<Spec.SpecWindwalkerMonk>) => player.getProfessions().includes(Profession.Blacksmithing) === false,
 					message: 'This preset assumes blacksmithing for the Rune of Re-Origination proc. Please reforge/regem for optimal results.',
 				},
 			],
