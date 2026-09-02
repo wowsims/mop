@@ -28,8 +28,8 @@ export const ShamanImbueOHSwap = InputHelpers.makeSpecOptionsEnumIconInput<Spec.
 		{ actionId: ActionId.fromSpellId(8033), value: ShamanImbue.FrostbrandWeapon },
 	],
 	showWhen: (player: Player<Spec.SpecEnhancementShaman>) => player.itemSwapSettings.getEnableItemSwap(),
-	storeSubscribe: (player: Player<Spec.SpecEnhancementShaman>, onChange: () => void) =>
-		subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')])(onChange),
+	storeSubscribe: (player: Player<Spec.SpecEnhancementShaman>) =>
+		subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')]),
 });
 
 export const SyncTypeInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecEnhancementShaman, ShamanSyncType>({

@@ -330,7 +330,10 @@ export class ItemPicker extends Component {
 			this.addQuickEnchantHelpers();
 		});
 
-		subscribePlayerField(player, 'gear')(() => {
+		subscribePlayerField(
+			player,
+			'gear',
+		)(() => {
 			this.item = this.player.getEquippedItem(this.slot);
 			if (this._equippedItem) {
 				if (this._equippedItem !== this.quickSwapEnchantPopover?.item) {
@@ -340,14 +343,20 @@ export class ItemPicker extends Component {
 			}
 		});
 
-		subscribeSimField(player.sim, 'filters')(() => {
+		subscribeSimField(
+			player.sim,
+			'filters',
+		)(() => {
 			if (this._equippedItem) {
 				this.quickSwapEnchantPopover?.update({ item: this._equippedItem });
 				this.quickSwapGemPopover.forEach(quickSwap => quickSwap.update({ item: this._equippedItem! }));
 			}
 		});
 
-		subscribeUiField(player.sim, 'showQuickSwap')(() => {
+		subscribeUiField(
+			player.sim,
+			'showQuickSwap',
+		)(() => {
 			this.quickSwapEnchantPopover?.tooltip?.[this.player.sim.getShowQuickSwap() ? 'enable' : 'disable']();
 			this.quickSwapGemPopover.forEach(quickSwap => quickSwap.tooltip?.[this.player.sim.getShowQuickSwap() ? 'enable' : 'disable']());
 		});

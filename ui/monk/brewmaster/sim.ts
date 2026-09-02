@@ -173,7 +173,10 @@ export class BrewmasterMonkSimUI extends IndividualSimUI<Spec.SpecBrewmasterMonk
 		super(parentElem, player, SPEC_CONFIG);
 
 		MonkUtils.setTalentBasedSettings(player);
-		subscribePlayerField(player, 'talentsString')(() => {
+		subscribePlayerField(
+			player,
+			'talentsString',
+		)(() => {
 			MonkUtils.setTalentBasedSettings(player);
 		});
 

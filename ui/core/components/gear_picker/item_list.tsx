@@ -29,7 +29,7 @@ import {
 import { ItemNotice } from '../item_notice/item_notice';
 import { Clusterize } from '../virtual_scroll/clusterize';
 import { FiltersMenu } from './filters_menu';
-import { getTranslatedTabLabel,SelectorModalTabs } from './selector_modal';
+import { getTranslatedTabLabel, SelectorModalTabs } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
 export interface ItemData<T extends ItemListType> {
 	item: T;

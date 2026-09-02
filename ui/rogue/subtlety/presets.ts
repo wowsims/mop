@@ -47,7 +47,7 @@ export const SubtletyTalents = {
 	data: SavedTalents.create({
 		talentsString: '321233',
 		glyphs: Glyphs.create({
-			major1: RogueMajorGlyph.GlyphOfHemorraghingVeins
+			major1: RogueMajorGlyph.GlyphOfHemorraghingVeins,
 		}),
 	}),
 };

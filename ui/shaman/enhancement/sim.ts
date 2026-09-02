@@ -198,13 +198,13 @@ export class EnhancementShamanSimUI extends IndividualSimUI<Spec.SpecEnhancement
 		super(parentElem, player, SPEC_CONFIG);
 
 		this.reforger = new ReforgeOptimizer(this, {
-					getEPDefaults: player => {
-						const avgIlvl = player.getGear().getAverageItemLevel(false);
-						if (avgIlvl >= 522) {
-							return Presets.P3_EP_PRESET.epWeights;
-						}
-						return Presets.P1_EP_PRESET.epWeights;
-					},
-				});
+			getEPDefaults: player => {
+				const avgIlvl = player.getGear().getAverageItemLevel(false);
+				if (avgIlvl >= 522) {
+					return Presets.P3_EP_PRESET.epWeights;
+				}
+				return Presets.P1_EP_PRESET.epWeights;
+			},
+		});
 	}
 }

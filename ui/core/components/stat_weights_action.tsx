@@ -295,15 +295,9 @@ export class EpWeightsMenu extends BaseModal {
 
 			let result: StatWeightsResult | null = null;
 			try {
-				result = await this.simUI.player.computeStatWeights(
-					nextEventID(),
-					epStatsToCalc,
-					epPseudoStatsToCalc,
-					this.epReferenceStat,
-					progress => {
-						this.setSimProgress(progress);
-					},
-				);
+				result = await this.simUI.player.computeStatWeights(nextEventID(), epStatsToCalc, epPseudoStatsToCalc, this.epReferenceStat, progress => {
+					this.setSimProgress(progress);
+				});
 				if (result.error) {
 					if (result.error.type == ErrorOutcomeType.ErrorOutcomeAborted) {
 						new Toast({
@@ -320,7 +314,6 @@ export class EpWeightsMenu extends BaseModal {
 					variant: 'error',
 					body: error?.message || 'Something went wrong calculating your stat weights. Reload the page and try again.',
 				});
-				result = null;
 			}
 			this.simUI.rootElem.classList.remove('blurred');
 			pendingDiv.remove();
@@ -374,7 +367,6 @@ export class EpWeightsMenu extends BaseModal {
 			id: 'ep-show-all-stats',
 			label: i18n.t('sidebar.buttons.stat_weights.modal.show_all_stats'),
 			inline: true,
-			storeSubscribe: () => () => {},
 			getValue: () => this.showAllStats,
 			setValue: (_eventID: EventID, _menu: EpWeightsMenu, newValue: boolean) => {
 				this.showAllStats = newValue;
@@ -388,7 +380,7 @@ export class EpWeightsMenu extends BaseModal {
 			new NumberPicker(cell, this.simUI.player, {
 				id: `ep-ratio-${idx}`,
 				float: true,
-				storeSubscribe: (player, onChange: () => void) => subscribePlayerField(player, 'epRatios')(onChange),
+				storeSubscribe: player => subscribePlayerField(player, 'epRatios'),
 				getValue: () => this.simUI.player.getEpRatios()[idx],
 				setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 					const epRatios = player.getEpRatios();
@@ -527,7 +519,7 @@ export class EpWeightsMenu extends BaseModal {
 				id: 'sw-stat-toggle-' + stat.getFullName(this.simUI.player.getClass()),
 				getValue: epWeightsModal => !epWeightsModal.settings.isUnitStatExcludedFromCalc(stat),
 				setValue: (eventID, epWeightsModal, newValue) => epWeightsModal.settings.setStatExcluded(eventID, stat, !newValue),
-				storeSubscribe: (epWeightsModal, onChange: () => void) => subscribeStatWeightsChange(epWeightsModal.settings)(onChange),
+				storeSubscribe: epWeightsModal => subscribeStatWeightsChange(epWeightsModal.settings),
 				enableWhen: epWeightsModal => !stat.isStat() || epWeightsModal.epReferenceStat != stat.getStat(),
 			});
 		}
@@ -537,7 +529,7 @@ export class EpWeightsMenu extends BaseModal {
 		new NumberPicker(currentEpCell, this.simUI.player, {
 			id: `ep-weight-stat-${sanitizeId(stat.getShortName(this.simUI.player.playerClass.classID))}`,
 			float: true,
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'epWeights')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'epWeights'),
 			getValue: () => this.simUI.player.getEpWeights().getUnitStat(stat),
 			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 				const epWeights = player.getEpWeights().withUnitStat(stat, newValue);

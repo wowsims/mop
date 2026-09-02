@@ -288,9 +288,7 @@ export class GuardianDruidSimUI extends IndividualSimUI<Spec.SpecGuardianDruid> 
 
 		this.reforger = new ReforgeOptimizer(this, {
 			getEPDefaults: player =>
-				player.getEpWeights().equals(Presets.OFFENSIVE_EP_PRESET.epWeights)
-					? Presets.OFFENSIVE_PRECAP_EPS
-					: Presets.BALANCED_PRECAP_EPS,
+				player.getEpWeights().equals(Presets.OFFENSIVE_EP_PRESET.epWeights) ? Presets.OFFENSIVE_PRECAP_EPS : Presets.BALANCED_PRECAP_EPS,
 			updateSoftCaps: softCaps => {
 				const epWeights = this.reforger?.preCapEPs;
 

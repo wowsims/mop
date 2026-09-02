@@ -77,6 +77,5 @@ export abstract class Importer extends BaseModal {
 		super.open();
 	}
 
-
 	abstract onImport(data: string): Promise<void>;
 }

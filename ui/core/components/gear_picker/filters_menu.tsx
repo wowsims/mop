@@ -1,6 +1,6 @@
 import i18n from '../../../i18n/config';
 import { sourceFilterI18nKeys } from '../../../i18n/entity_mapping';
-import { translateArmorType, translateRaidFilter, translateRangedWeaponType,translateSourceFilter, translateWeaponType } from '../../../i18n/localization';
+import { translateArmorType, translateRaidFilter, translateRangedWeaponType, translateSourceFilter, translateWeaponType } from '../../../i18n/localization';
 import { Player } from '../../player';
 import { ItemSlot } from '../../proto/common';
 import { SourceFilterOption, UIItem_FactionRestriction } from '../../proto/ui';
@@ -30,7 +30,7 @@ export class FiltersMenu extends BaseModal {
 			id: 'filters-min-ilvl',
 			label: i18n.t('gear_tab.gear_picker.filters.min_ilvl'),
 			showZeroes: false,
-			storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 			getValue: (sim: Sim) => sim.getFilters().minIlvl,
 			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 				const newFilters = sim.getFilters();
@@ -45,7 +45,7 @@ export class FiltersMenu extends BaseModal {
 			id: 'filters-max-ilvl',
 			label: i18n.t('gear_tab.gear_picker.filters.max_ilvl'),
 			showZeroes: false,
-			storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 			getValue: (sim: Sim) => sim.getFilters().maxIlvl,
 			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 				const newFilters = sim.getFilters();
@@ -63,7 +63,7 @@ export class FiltersMenu extends BaseModal {
 					value: restriction,
 				};
 			}),
-			storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 			getValue: (sim: Sim) => sim.getFilters().factionRestriction,
 			setValue: (eventID: EventID, sim: Sim, newValue: UIItem_FactionRestriction) => {
 				const newFilters = sim.getFilters();
@@ -86,7 +86,7 @@ export class FiltersMenu extends BaseModal {
 				id: `filters-source-${source}`,
 				label,
 				inline: true,
-				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().sources.includes(source),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 					const filters = sim.getFilters();
@@ -107,7 +107,7 @@ export class FiltersMenu extends BaseModal {
 				id: `filters-raid-${raid}`,
 				label: translateRaidFilter(raid),
 				inline: true,
-				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().raids.includes(raid),
 				setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 					const filters = sim.getFilters();
@@ -133,7 +133,7 @@ export class FiltersMenu extends BaseModal {
 						id: `filters-armor-type-${armorType}`,
 						label: translateArmorType(armorType),
 						inline: true,
-						storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().armorTypes.includes(armorType),
 						setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 							const filters = sim.getFilters();
@@ -158,7 +158,7 @@ export class FiltersMenu extends BaseModal {
 						id: `filters-weapon-type-${weaponType}`,
 						label: translateWeaponType(weaponType),
 						inline: true,
-						storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().weaponTypes.includes(weaponType),
 						setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 							const filters = sim.getFilters();
@@ -180,7 +180,7 @@ export class FiltersMenu extends BaseModal {
 					//labelTooltip: 'Maximum speed for the mainhand weapon. If 0, no maximum value is applied.',
 					float: true,
 					positive: true,
-					storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+					storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 					getValue: (sim: Sim) => sim.getFilters().minMhWeaponSpeed,
 					setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 						const filters = sim.getFilters();
@@ -194,7 +194,7 @@ export class FiltersMenu extends BaseModal {
 					//labelTooltip: 'Maximum speed for the mainhand weapon. If 0, no maximum value is applied.',
 					float: true,
 					positive: true,
-					storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+					storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 					getValue: (sim: Sim) => sim.getFilters().maxMhWeaponSpeed,
 					setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 						const filters = sim.getFilters();
@@ -210,7 +210,7 @@ export class FiltersMenu extends BaseModal {
 						//labelTooltip: 'Minimum speed for the offhand weapon. If 0, no minimum value is applied.',
 						float: true,
 						positive: true,
-						storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().minOhWeaponSpeed,
 						setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 							const filters = sim.getFilters();
@@ -224,7 +224,7 @@ export class FiltersMenu extends BaseModal {
 						//labelTooltip: 'Maximum speed for the offhand weapon. If 0, no maximum value is applied.',
 						float: true,
 						positive: true,
-						storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+						storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 						getValue: (sim: Sim) => sim.getFilters().maxOhWeaponSpeed,
 						setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 							const filters = sim.getFilters();
@@ -247,7 +247,7 @@ export class FiltersMenu extends BaseModal {
 					id: `filter-ranged-weapon-type-${rangedWeaponType}`,
 					label: translateRangedWeaponType(rangedWeaponType),
 					inline: true,
-					storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+					storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 					getValue: (sim: Sim) => sim.getFilters().rangedWeaponTypes.includes(rangedWeaponType),
 					setValue: (eventID: EventID, sim: Sim, newValue: boolean) => {
 						const filters = sim.getFilters();
@@ -269,7 +269,7 @@ export class FiltersMenu extends BaseModal {
 				//labelTooltip: 'Maximum speed for the ranged weapon. If 0, no maximum value is applied.',
 				float: true,
 				positive: true,
-				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().minRangedWeaponSpeed,
 				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 					const filters = sim.getFilters();
@@ -283,7 +283,7 @@ export class FiltersMenu extends BaseModal {
 				//labelTooltip: 'Maximum speed for the ranged weapon. If 0, no maximum value is applied.',
 				float: true,
 				positive: true,
-				storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'filters')(onChange),
+				storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'filters'),
 				getValue: (sim: Sim) => sim.getFilters().maxRangedWeaponSpeed,
 				setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 					const filters = sim.getFilters();

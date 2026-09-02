@@ -18,7 +18,7 @@ export class APLGroupListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.actionGroups.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker', 'apl-groups-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.actionGroups.name'),
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.groups || [],
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLGroup>) => {
 				player.modifyAplRotation(eventID, rotation => {

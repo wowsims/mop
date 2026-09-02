@@ -43,7 +43,10 @@ export default class IconItemSwapPicker extends Component {
 			});
 		});
 
-		subscribePlayerField(player, 'itemSwap')(() => {
+		subscribePlayerField(
+			player,
+			'itemSwap',
+		)(() => {
 			this.update(player.itemSwapSettings.getGear().getEquippedItem(slot));
 		});
 	}
@@ -65,7 +68,9 @@ export default class IconItemSwapPicker extends Component {
 							const updateProfession = () => {
 								gemContainer.classList[this.player.isBlacksmithing() ? 'remove' : 'add']('hide');
 							};
-							subscribeAll([subscribePlayerField(this.player, 'profession1'), subscribePlayerField(this.player, 'profession2')])(updateProfession);
+							subscribeAll([subscribePlayerField(this.player, 'profession1'), subscribePlayerField(this.player, 'profession2')])(
+								updateProfession,
+							);
 							updateProfession();
 						}
 						return gemContainer;

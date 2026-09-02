@@ -133,7 +133,10 @@ export class ConsumesPicker extends Component {
 		);
 		const engiConsumesElem = engiConsumesRef.value!;
 
-		const explosivesoptions = ConsumablesInputs.makeExplosivesInput(relevantStatOptions(ConsumablesInputs.EXPLOSIVE_CONFIG, this.simUI), i18n.t('settings_tab.consumables.engineering.explosives'));
+		const explosivesoptions = ConsumablesInputs.makeExplosivesInput(
+			relevantStatOptions(ConsumablesInputs.EXPLOSIVE_CONFIG, this.simUI),
+			i18n.t('settings_tab.consumables.engineering.explosives'),
+		);
 		const explosivePicker = buildIconInput(engiConsumesElem, this.simUI.player, explosivesoptions);
 
 		const unsub = subscribeAll([subscribePlayerField(this.simUI.player, 'profession1'), subscribePlayerField(this.simUI.player, 'profession2')])(() =>

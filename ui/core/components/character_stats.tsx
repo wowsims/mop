@@ -15,7 +15,6 @@ import { EventID } from '../state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '../state/subscriptions';
 import { Component } from './component.js';
 import { NumberPicker } from './pickers/number_picker.js';
-export type { StatMods, StatWrites } from '../proto_utils/stats.js';
 
 enum StatGroup {
 	Primary = 'Primary',
@@ -447,7 +446,7 @@ export class CharacterStats extends Component {
 					id: `character-bonus-stat-${rootStat}`,
 					label: `${i18n.t('sidebar.character_stats.bonus_prefix')} ${statName}`,
 					extraCssClasses: ['mb-0'],
-					storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'bonusStats')(onChange),
+					storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'bonusStats'),
 					getValue: (player: Player<any>) => player.getBonusStats().getStat(rootStat),
 					setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 						const bonusStats = player.getBonusStats().withStat(rootStat, newValue);

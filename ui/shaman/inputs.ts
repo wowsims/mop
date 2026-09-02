@@ -7,7 +7,7 @@ import { NumberPicker } from '../core/components/pickers/number_picker';
 import { IndividualSimUI } from '../core/individual_sim_ui';
 import { Player } from '../core/player';
 import { Spec } from '../core/proto/common';
-import { ShamanImbue, ShamanShield} from '../core/proto/shaman';
+import { ShamanImbue, ShamanShield } from '../core/proto/shaman';
 import { ActionId } from '../core/proto_utils/action_id';
 import { ShamanSpecs } from '../core/proto_utils/utils';
 import { EventID } from '../core/state/batch';
@@ -44,11 +44,10 @@ export const ShamanImbueMHSwap = <SpecType extends ShamanSpecs>() =>
 			{ value: ShamanImbue.NoImbue, tooltip: 'No Main Hand Swap Enchant' },
 			{ actionId: ActionId.fromSpellId(8232), value: ShamanImbue.WindfuryWeapon },
 			{ actionId: ActionId.fromSpellId(8024), value: ShamanImbue.FlametongueWeapon },
-	    ],
+		],
 		showWhen: (player: Player<SpecType>) => player.itemSwapSettings.getEnableItemSwap(),
-		storeSubscribe: (player: Player<SpecType>, onChange: () => void) =>
-			subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')])(onChange),
-});
+		storeSubscribe: (player: Player<SpecType>) => subscribeAll([subscribePlayerField(player, 'specOptions'), subscribePlayerField(player, 'itemSwap')]),
+	});
 
 export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<any>): ContentBlock {
 	const contentBlock = new ContentBlock(parentElem, 'totems-settings', {
@@ -67,10 +66,10 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 			getValue: (player: Player<SpecType>) => player.getClassOptions().feleAutocast!.autocastFireblast,
 			setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => {
 				const newOptions = player.getClassOptions();
-				newOptions.feleAutocast!.autocastFireblast = newValue
+				newOptions.feleAutocast!.autocastFireblast = newValue;
 				player.setClassOptions(eventID, newOptions);
 			},
-			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
+			storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'specOptions'),
 		});
 
 	const _fireNovaPicker = <SpecType extends ShamanSpecs>() =>
@@ -80,10 +79,10 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 			getValue: (player: Player<SpecType>) => player.getClassOptions().feleAutocast!.autocastFirenova,
 			setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => {
 				const newOptions = player.getClassOptions();
-				newOptions.feleAutocast!.autocastFirenova = newValue
+				newOptions.feleAutocast!.autocastFirenova = newValue;
 				player.setClassOptions(eventID, newOptions);
 			},
-			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
+			storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'specOptions'),
 		});
 
 	const _ImmolationPicker = <SpecType extends ShamanSpecs>() =>
@@ -93,10 +92,10 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 			getValue: (player: Player<SpecType>) => player.getClassOptions().feleAutocast!.autocastImmolate,
 			setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => {
 				const newOptions = player.getClassOptions();
-				newOptions.feleAutocast!.autocastImmolate = newValue
+				newOptions.feleAutocast!.autocastImmolate = newValue;
 				player.setClassOptions(eventID, newOptions);
 			},
-			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
+			storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'specOptions'),
 		});
 
 	const _EmpowerPicker = <SpecType extends ShamanSpecs>() =>
@@ -106,30 +105,30 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 			getValue: (player: Player<SpecType>) => player.getClassOptions().feleAutocast!.autocastEmpower,
 			setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => {
 				const newOptions = player.getClassOptions();
-				newOptions.feleAutocast!.autocastEmpower = newValue
+				newOptions.feleAutocast!.autocastEmpower = newValue;
 				player.setClassOptions(eventID, newOptions);
 			},
-			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange),
+			storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'specOptions'),
 		});
 
-	buildIconInput(feleAbilities, simUI.player, _fireBlastPicker())
-	buildIconInput(feleAbilities, simUI.player, _fireNovaPicker())
-	buildIconInput(feleAbilities, simUI.player, _ImmolationPicker())
-	buildIconInput(feleAbilities, simUI.player, _EmpowerPicker())
+	buildIconInput(feleAbilities, simUI.player, _fireBlastPicker());
+	buildIconInput(feleAbilities, simUI.player, _fireNovaPicker());
+	buildIconInput(feleAbilities, simUI.player, _ImmolationPicker());
+	buildIconInput(feleAbilities, simUI.player, _EmpowerPicker());
 
-	if(simUI.player.getSpec()==Spec.SpecEnhancementShaman){
+	if (simUI.player.getSpec() == Spec.SpecEnhancementShaman) {
 		const _DisableImmolateDuringWFUnleash = InputHelpers.makeClassOptionsBooleanInput<ShamanSpecs>({
 			fieldName: 'feleAutocast',
 			label: i18n.t('settings_tab.other.shaman_disable_immolate.label'),
 			labelTooltip: i18n.t('settings_tab.other.shaman_disable_immolate.tooltip'),
 			getValue: player => player.getClassOptions().feleAutocast?.noImmolateWfunleash || false,
-			setValue:(eventID, player, newVal) => {
+			setValue: (eventID, player, newVal) => {
 				const newOptions = player.getClassOptions();
 				newOptions.feleAutocast!.noImmolateWfunleash = newVal;
 				player.setClassOptions(eventID, newOptions);
 			},
 		});
-		new BooleanPicker(contentBlock.bodyElement, simUI.player, {..._DisableImmolateDuringWFUnleash, reverse: true});
+		new BooleanPicker(contentBlock.bodyElement, simUI.player, { ..._DisableImmolateDuringWFUnleash, reverse: true });
 
 		const _DisableImmolateDuration = InputHelpers.makeClassOptionsNumberInput<ShamanSpecs>({
 			fieldName: 'feleAutocast',
@@ -137,12 +136,12 @@ export function TotemsSection(parentElem: HTMLElement, simUI: IndividualSimUI<an
 			labelTooltip: i18n.t('settings_tab.other.shaman_disable_immolate_duration.tooltip'),
 			float: true,
 			getValue: player => player.getClassOptions().feleAutocast?.noImmolateDuration || 0,
-			setValue:(eventID, player, newVal) => {
+			setValue: (eventID, player, newVal) => {
 				const newOptions = player.getClassOptions();
 				newOptions.feleAutocast!.noImmolateDuration = newVal;
 				player.setClassOptions(eventID, newOptions);
 			},
-			showWhen: player => player.getClassOptions().feleAutocast!.noImmolateWfunleash
+			showWhen: player => player.getClassOptions().feleAutocast!.noImmolateWfunleash,
 		});
 		new NumberPicker(contentBlock.bodyElement, simUI.player, _DisableImmolateDuration);
 	}

@@ -1,6 +1,6 @@
 import * as BuffDebuffInputs from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs';
-import { ReforgeOptimizer, RelativeStatCap } from '../../core/components/suggest_reforges_action';
+import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import * as Mechanics from '../../core/constants/mechanics.js';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
 import { Player } from '../../core/player';
@@ -11,6 +11,7 @@ import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, R
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import { nextEventID } from '../../core/state/batch';
+import { RelativeStatCap } from '../../core/state/reforge_settings';
 import { subscribePlayerField } from '../../core/state/subscriptions';
 import * as MonkUtils from '../utils';
 import * as Presets from './presets';
@@ -144,7 +145,10 @@ export class WindwalkerMonkSimUI extends IndividualSimUI<Spec.SpecWindwalkerMonk
 		super(parentElem, player, SPEC_CONFIG);
 
 		MonkUtils.setTalentBasedSettings(player);
-		subscribePlayerField(player, 'talentsString')(() => {
+		subscribePlayerField(
+			player,
+			'talentsString',
+		)(() => {
 			MonkUtils.setTalentBasedSettings(player);
 		});
 

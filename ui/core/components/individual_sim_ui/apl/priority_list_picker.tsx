@@ -9,7 +9,6 @@ import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
 import * as AplHelpers from '../apl_helpers';
-import { aplChildSubscribe } from '../apl_helpers';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLHidePicker } from './hide_picker';
 export class APLPriorityListPicker extends Component {
@@ -21,7 +20,7 @@ export class APLPriorityListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.priorityList.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.priorityList.name'),
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.priorityList,
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLListItem>) => {
 				player.modifyAplRotation(eventID, rotation => {
@@ -83,7 +82,6 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 		});
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().hide,
 			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 				this.getItem().hide = newValue;
@@ -92,7 +90,6 @@ class APLListItemPicker extends Input<Player<any>, APLListItem> {
 		});
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.player, {
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().action!,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
 				this.getItem().action = newValue;

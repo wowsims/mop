@@ -1,5 +1,5 @@
 import i18n from '../i18n/config';
-import { CharacterStats, StatMods, StatWrites } from './components/character_stats';
+import { CharacterStats } from './components/character_stats';
 import { ContentBlock } from './components/content_block';
 import { DetailedResults } from './components/detailed_results';
 import { EncounterPickerConfig } from './components/encounter_picker';
@@ -59,6 +59,7 @@ import {
 import { IndividualSimSettings, SavedTalents } from './proto/ui';
 import { getMetaGemConditionDescription } from './proto_utils/gems';
 import { armorTypeNames, professionNames } from './proto_utils/names';
+import type { StatMods, StatWrites } from './proto_utils/stats';
 import { pseudoStatHasCap, StatCap, Stats, UnitStat } from './proto_utils/stats';
 import { getTalentPoints, SpecOptions, SpecRotation } from './proto_utils/utils';
 import { SimUI, SimWarning } from './sim_ui';
@@ -72,7 +73,7 @@ import {
 } from './state/serialization';
 import { StatWeightActionSettings } from './state/stat_weight_settings';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from './state/subscriptions';
-import { getMissingTalentRows, getRequiredTalentRows,hasRequiredTalents } from './talents/required_talents';
+import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from './talents/required_talents';
 import { isDevMode } from './utils';
 const SAVED_GEAR_STORAGE_KEY = '__savedGear__';
 const SAVED_EP_WEIGHTS_STORAGE_KEY = '__savedEPWeights__';
@@ -239,31 +240,6 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 
 	prevEpIterations: number;
 	prevEpSimResult: StatWeightsResult | null;
-	// Reference stats live in the player slice so changes autosave; the
-	// serialization context reads/writes through these accessors.
-	private get refStats_() {
-		const player = this.player;
-		return {
-			get dpsRefStat() {
-				return player.getRefStat('dpsRefStat');
-			},
-			set dpsRefStat(v: Stat | undefined) {
-				player.setRefStat(nextEventID(), 'dpsRefStat', v);
-			},
-			get healRefStat() {
-				return player.getRefStat('healRefStat');
-			},
-			set healRefStat(v: Stat | undefined) {
-				player.setRefStat(nextEventID(), 'healRefStat', v);
-			},
-			get tankRefStat() {
-				return player.getRefStat('tankRefStat');
-			},
-			set tankRefStat(v: Stat | undefined) {
-				player.setRefStat(nextEventID(), 'tankRefStat', v);
-			},
-		};
-	}
 	get dpsRefStat(): Stat | undefined {
 		return this.player.getRefStat('dpsRefStat');
 	}
@@ -289,7 +265,6 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			sim: this.sim,
 			reforgeSettings: this.reforger?.settings,
 			defaultEpWeights: this.individualConfig.defaults.epWeights,
-			refStats: this.refStats_,
 		};
 	}
 
@@ -331,7 +306,11 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			},
 		});
 		this.addWarning({
-			updateOn: subscribeAll([subscribePlayerField(this.player, 'gear'), subscribePlayerField(this.player, 'profession1'), subscribePlayerField(this.player, 'profession2')]),
+			updateOn: subscribeAll([
+				subscribePlayerField(this.player, 'gear'),
+				subscribePlayerField(this.player, 'profession1'),
+				subscribePlayerField(this.player, 'profession2'),
+			]),
 			getContent: () => {
 				const failedProfReqs = this.player.getGear().getFailedProfessionRequirements(this.player.getProfessions());
 				if (failedProfReqs.length == 0) {

@@ -12,7 +12,6 @@ export const AssumeBleedActive = InputHelpers.makeSpecOptionsBooleanInput<Spec.S
 	fieldName: 'assumeBleedActive',
 	label: i18n.t('settings_tab.other.assume_bleed_active.label'),
 	labelTooltip: i18n.t('settings_tab.other.assume_bleed_active.tooltip'),
-	extraCssClasses: ['within-raid-sim-hide'],
 });
 
 export const CannotShredTarget = InputHelpers.makeSpecOptionsBooleanInput<Spec.SpecFeralDruid>({
@@ -25,7 +24,6 @@ function ShouldShowAdvParamST(player: Player<Spec.SpecFeralDruid>): boolean {
 	const rot = player.getSimpleRotation();
 	return rot.manualParams && rot.rotationType == AplType.SingleTarget;
 }
-
 
 export const FeralDruidRotationConfig = {
 	inputs: [
@@ -53,8 +51,8 @@ export const FeralDruidRotationConfig = {
 			label: i18n.t('rotation_tab.options.druid.feral.use_ns.label'),
 			labelTooltip: i18n.t('rotation_tab.options.druid.feral.use_ns.tooltip'),
 			showWhen: (player: Player<Spec.SpecFeralDruid>) => player.getTalents().dreamOfCenarius,
-			storeSubscribe: (player: Player<Spec.SpecFeralDruid>, onChange: () => void) =>
-				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')])(onChange),
+			storeSubscribe: (player: Player<Spec.SpecFeralDruid>) =>
+				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')]),
 		}),
 		InputHelpers.makeRotationEnumInput<Spec.SpecFeralDruid, HotwType>({
 			fieldName: 'hotwStrategy',
@@ -66,8 +64,8 @@ export const FeralDruidRotationConfig = {
 				{ name: i18n.t('rotation_tab.options.druid.feral.hotw_strategy.values.wrath_weaving'), value: HotwType.Wrath },
 			],
 			showWhen: (player: Player<Spec.SpecFeralDruid>) => player.getTalents().heartOfTheWild,
-			storeSubscribe: (player: Player<Spec.SpecFeralDruid>, onChange: () => void) =>
-				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')])(onChange),
+			storeSubscribe: (player: Player<Spec.SpecFeralDruid>) =>
+				subscribeAll([subscribePlayerField(player, 'rotation'), subscribePlayerField(player, 'talentsString')]),
 		}),
 		InputHelpers.makeRotationBooleanInput<Spec.SpecFeralDruid>({
 			fieldName: 'allowAoeBerserk',
@@ -103,15 +101,13 @@ export const FeralDruidRotationConfig = {
 			fieldName: 'biteTime',
 			label: i18n.t('rotation_tab.options.druid.feral.bite_time.label'),
 			labelTooltip: i18n.t('rotation_tab.options.druid.feral.bite_time.tooltip'),
-			showWhen: (player: Player<Spec.SpecFeralDruid>) =>
-				ShouldShowAdvParamST(player) && player.getSimpleRotation().useBite,
+			showWhen: (player: Player<Spec.SpecFeralDruid>) => ShouldShowAdvParamST(player) && player.getSimpleRotation().useBite,
 		}),
 		InputHelpers.makeRotationNumberInput<Spec.SpecFeralDruid>({
 			fieldName: 'berserkBiteTime',
 			label: i18n.t('rotation_tab.options.druid.feral.berserk_bite_time.label'),
 			labelTooltip: i18n.t('rotation_tab.options.druid.feral.berserk_bite_time.tooltip'),
-			showWhen: (player: Player<Spec.SpecFeralDruid>) =>
-				ShouldShowAdvParamST(player) && player.getSimpleRotation().useBite,
+			showWhen: (player: Player<Spec.SpecFeralDruid>) => ShouldShowAdvParamST(player) && player.getSimpleRotation().useBite,
 		}),
 	],
 };

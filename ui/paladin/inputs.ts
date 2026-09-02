@@ -22,5 +22,5 @@ export const StartingSealSelection = <SpecType extends PaladinSpecs>() =>
 				showWhen: player => player.isSpec(Spec.SpecRetributionPaladin),
 			},
 		],
-		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerChange(player)(onChange),
+		storeSubscribe: (player: Player<SpecType>) => subscribePlayerChange(player),
 	});

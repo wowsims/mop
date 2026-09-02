@@ -82,7 +82,7 @@ export class LogRunner extends ResultComponent {
 			label: i18n.t('results_tab.details.logs.show_debug'),
 			inline: true,
 			reverse: true,
-			storeSubscribe: (_logRunner, onChange: () => void) => this.showDebugChangeEmitter.on(onChange),
+			storeSubscribe: () => this.showDebugChangeEmitter.on,
 			getValue: () => this.showDebug,
 			setValue: (eventID, _logRunner, newValue) => {
 				this.showDebug = newValue;

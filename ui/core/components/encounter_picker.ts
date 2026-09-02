@@ -1,6 +1,6 @@
 import i18n from '../../i18n/config.js';
-import { translateMobType,translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '../../i18n/localization.js';
-import { trackEvent,TrackEventProps } from '../../tracking/utils';
+import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '../../i18n/localization.js';
+import { trackEvent, TrackEventProps } from '../../tracking/utils';
 import { Encounter } from '../encounter.js';
 import { IndividualSimUI } from '../individual_sim_ui.js';
 import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common.js';
@@ -8,7 +8,14 @@ import { Stats } from '../proto_utils/stats.js';
 import { Raid } from '../raid.js';
 import { SimUI } from '../sim_ui.js';
 import { EventID, nextEventID } from '../state/batch';
-import { subscribeAll, subscribeEncounterChange, subscribeEncounterField, subscribePlayerChange, subscribePlayerField, subscribeRaidField } from '../state/subscriptions';
+import {
+	subscribeAll,
+	subscribeEncounterChange,
+	subscribeEncounterField,
+	subscribePlayerChange,
+	subscribePlayerField,
+	subscribeRaidField,
+} from '../state/subscriptions';
 import { randomUUID } from '../utils';
 import { BaseModal } from './base_modal.js';
 import { Component } from './component.js';
@@ -66,7 +73,7 @@ export class EncounterPicker extends Component {
 						};
 					}),
 				),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+				storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 				getValue: (encounter: Encounter) => presetEncounters.findIndex(pe => encounter.matchesPreset(pe)),
 				setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 					if (newValue != -1) {
@@ -121,7 +128,7 @@ export class EncounterPicker extends Component {
 					id: 'encounter-num-allies',
 					label: i18n.t('settings_tab.encounter.num_allies.label'),
 					labelTooltip: i18n.t('settings_tab.encounter.num_allies.tooltip'),
-					storeSubscribe: (raid: Raid, onChange: () => void) => subscribeAll([subscribeRaidField(raid, 'targetDummies'), subscribePlayerField(player, 'itemSwap')])(onChange),
+					storeSubscribe: (raid: Raid) => subscribeAll([subscribeRaidField(raid, 'targetDummies'), subscribePlayerField(player, 'itemSwap')]),
 					getValue: (raid: Raid) => raid.getTargetDummies(),
 					setValue: (eventID: EventID, raid: Raid, newValue: number) => {
 						raid.setTargetDummies(eventID, newValue);
@@ -148,7 +155,7 @@ export class EncounterPicker extends Component {
 					id: 'encounter-min-base-damage',
 					label: i18n.t('settings_tab.encounter.min_base_damage.label'),
 					labelTooltip: i18n.t('settings_tab.encounter.min_base_damage.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+					storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 					getValue: (encounter: Encounter) => encounter.primaryTarget.minBaseDamage,
 					setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 						encounter.modifyTarget(eventID, 0, target => {
@@ -206,7 +213,7 @@ class AdvancedEncounterModal extends BaseModal {
 				label: i18n.t('settings_tab.encounter.use_health.label'),
 				labelTooltip: i18n.t('settings_tab.encounter.use_health.tooltip'),
 				inline: true,
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+				storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 				getValue: (encounter: Encounter) => encounter.getUseHealth(),
 				setValue: (eventID: EventID, encounter: Encounter, newValue: boolean) => {
 					encounter.setUseHealth(eventID, newValue);
@@ -216,7 +223,7 @@ class AdvancedEncounterModal extends BaseModal {
 		new ListPicker<Encounter, TargetProto>(targetsElem, this.encounter, {
 			extraCssClasses: ['targets-picker', 'mb-0'],
 			itemLabel: i18n.t('settings_tab.encounter.target'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: (encounter: Encounter) => subscribeEncounterField(encounter, 'targets'),
 			getValue: (encounter: Encounter) => encounter.getTargets().slice(),
 			setValue: (eventID: EventID, encounter: Encounter, newValue: Array<TargetProto>) => {
 				trackEvent({
@@ -253,7 +260,7 @@ class AdvancedEncounterModal extends BaseModal {
 					};
 				}),
 			),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => presetEncounters.findIndex(pe => encounter.matchesPreset(pe)),
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 				if (newValue != -1) {
@@ -321,7 +328,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 					};
 				}),
 			),
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => presetTargets.findIndex(pe => equalTargetsIgnoreInputs(this.getTarget(), pe.target)),
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				if (newValue != -1) {
@@ -350,7 +357,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 					};
 				}),
 			),
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().id,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				encounter.modifyTarget(eventID, this.targetIndex, target => {
@@ -378,7 +385,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 				{ name: '90', value: 90 },
 				{ name: '88', value: 88 },
 			],
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().level,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				trackEvent({
@@ -396,7 +403,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			id: 'target-picker-mob-type',
 			label: i18n.t('settings_tab.encounter.mob_type'),
 			values: mobTypeEnumValues,
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().mobType,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				trackEvent({
@@ -422,7 +429,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 				{ name: i18n.t('common.tanks.tank_3'), value: 2 },
 				{ name: i18n.t('common.tanks.tank_4'), value: 3 },
 			],
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().tankIndex,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				trackEvent({
@@ -447,7 +454,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 				extraCssClasses: statData.extraCssClasses,
 				label: translateStat(stat),
 				labelTooltip: statData.tooltip,
-				storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+				storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 				getValue: () => this.getTarget().stats[stat],
 				setValue: (eventID: EventID, _: null, newValue: number) => {
 					encounter.modifyTarget(eventID, this.targetIndex, target => {
@@ -462,7 +469,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			label: i18n.t('settings_tab.encounter.swing_speed.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.swing_speed.tooltip'),
 			float: true,
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().swingSpeed,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				trackEvent({
@@ -480,7 +487,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			id: `target-${this.targetIndex}-picker-min-base-damage`,
 			label: i18n.t('settings_tab.encounter.min_base_damage.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.min_base_damage.tooltip'),
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().minBaseDamage,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				trackEvent({
@@ -499,7 +506,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			label: i18n.t('settings_tab.encounter.damage_spread.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.damage_spread.tooltip'),
 			float: true,
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().damageSpread,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				trackEvent({
@@ -519,7 +526,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			labelTooltip: i18n.t('settings_tab.encounter.dual_wield.tooltip'),
 			inline: true,
 			reverse: true,
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().dualWield,
 			setValue: (eventID: EventID, _: null, newValue: boolean) => {
 				trackEvent({
@@ -539,7 +546,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			labelTooltip: i18n.t('settings_tab.encounter.dual_wield_penalty.tooltip'),
 			inline: true,
 			reverse: true,
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().dualWieldPenalty,
 			setValue: (eventID: EventID, _: null, newValue: boolean) => {
 				trackEvent({
@@ -560,7 +567,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 			labelTooltip: i18n.t('settings_tab.encounter.parry_haste.tooltip'),
 			inline: true,
 			reverse: true,
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().parryHaste,
 			setValue: (eventID: EventID, _: null, newValue: boolean) => {
 				trackEvent({
@@ -587,7 +594,7 @@ class TargetPicker extends Input<Encounter, TargetProto> {
 				{ name: translateSpellSchool(SpellSchool.SpellSchoolNature), value: SpellSchool.SpellSchoolNature },
 				{ name: translateSpellSchool(SpellSchool.SpellSchoolShadow), value: SpellSchool.SpellSchoolShadow },
 			],
-			storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+			storeSubscribe: () => subscribeEncounterField(encounter, 'targets'),
 			getValue: () => this.getTarget().spellSchool,
 			setValue: (eventID: EventID, _: null, newValue: number) => {
 				trackEvent({
@@ -727,7 +734,7 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 				float: true,
 				label: translateTargetInputLabel(newTargetValue.label),
 				labelTooltip: translateTargetInputTooltip(newTargetValue.label, newTargetValue.tooltip),
-				storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(this.encounter, 'targets')(onChange),
+				storeSubscribe: () => subscribeEncounterField(this.encounter, 'targets'),
 				getValue: () => this.getTargetInput().numberValue,
 				setValue: (eventID: EventID, _: null, newValue: number) => {
 					trackEvent({
@@ -753,7 +760,7 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 				label: translateTargetInputLabel(newTargetValue.label),
 				labelTooltip: translateTargetInputTooltip(newTargetValue.label, newTargetValue.tooltip),
 				extraCssClasses: ['input-inline'],
-				storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(this.encounter, 'targets')(onChange),
+				storeSubscribe: () => subscribeEncounterField(this.encounter, 'targets'),
 				getValue: () => this.getTargetInput().boolValue,
 				setValue: (eventID: EventID, _: null, newValue: boolean) => {
 					trackEvent({
@@ -776,7 +783,7 @@ class TargetInputPicker extends Input<Encounter, TargetInput> {
 				values: newTargetValue.enumOptions.map((option, index) => {
 					return { value: index, name: option };
 				}),
-				storeSubscribe: (_: null, onChange: () => void) => subscribeEncounterField(this.encounter, 'targets')(onChange),
+				storeSubscribe: () => subscribeEncounterField(this.encounter, 'targets'),
 				getValue: () => this.getTargetInput().enumValue,
 				setValue: (eventID: EventID, _: null, newValue: number) => {
 					trackEvent({
@@ -802,7 +809,7 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 		id: 'encounter-duration',
 		label: i18n.t('settings_tab.encounter.duration.label'),
 		labelTooltip: i18n.t('settings_tab.encounter.duration.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+		storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 		getValue: (encounter: Encounter) => encounter.getDuration(),
 		setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 			trackEvent({
@@ -821,7 +828,7 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 		id: 'encounter-duration-variation',
 		label: i18n.t('settings_tab.encounter.duration_variation.label'),
 		labelTooltip: i18n.t('settings_tab.encounter.duration_variation.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+		storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 		getValue: (encounter: Encounter) => encounter.getDurationVariation(),
 		setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 			trackEvent({
@@ -846,7 +853,7 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			id: 'encounter-execute-proportion',
 			label: i18n.t('settings_tab.encounter.execute_duration_20.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_20.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion20() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 				trackEvent({
@@ -865,7 +872,7 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			id: 'encounter-execute-proportion-25',
 			label: i18n.t('settings_tab.encounter.execute_duration_25.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_25.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion25() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 				trackEvent({
@@ -884,7 +891,7 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			id: 'encounter-execute-proportion-35',
 			label: i18n.t('settings_tab.encounter.execute_duration_35.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_35.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion35() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 				trackEvent({
@@ -903,7 +910,7 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			id: 'encounter-execute-proportion-45',
 			label: i18n.t('settings_tab.encounter.execute_duration_45.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.execute_duration_45.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion45() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 				trackEvent({
@@ -922,7 +929,7 @@ function addEncounterFieldPickers(rootElem: HTMLElement, encounter: Encounter, s
 			id: 'encounter-execute-proportion-90',
 			label: i18n.t('settings_tab.encounter.duration_below_high_hp.label'),
 			labelTooltip: i18n.t('settings_tab.encounter.duration_below_high_hp.tooltip'),
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterChange(encounter)(onChange),
+			storeSubscribe: (encounter: Encounter) => subscribeEncounterChange(encounter),
 			getValue: (encounter: Encounter) => encounter.getExecuteProportion90() * 100,
 			setValue: (eventID: EventID, encounter: Encounter, newValue: number) => {
 				trackEvent({
@@ -946,7 +953,7 @@ function makeTargetInputsPicker(parent: HTMLElement, encounter: Encounter, targe
 		itemLabel: i18n.t('settings_tab.encounter.target_inputs.label'),
 		extraCssClasses: ['mt-2'],
 		isCompact: true,
-		storeSubscribe: (encounter: Encounter, onChange: () => void) => subscribeEncounterField(encounter, 'targets')(onChange),
+		storeSubscribe: (encounter: Encounter) => subscribeEncounterField(encounter, 'targets'),
 		getValue: (encounter: Encounter) => encounter.getTargets()[targetIndex].targetInputs.slice(),
 		setValue: (eventID: EventID, encounter: Encounter, newValue: Array<TargetInput>) => {
 			trackEvent({

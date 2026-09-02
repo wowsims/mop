@@ -11,8 +11,7 @@ import { encounterModelsMagicDamage } from '../inputs.js';
 // at the raid, so hide them there rather than leaving inputs that do nothing. Visibility is
 // re-evaluated on encounter changes as well as the usual spec options one.
 const showWhenAMSIntakeUsed = (player: Player<Spec.SpecFrostDeathKnight>) => !encounterModelsMagicDamage(player.sim);
-const amsIntakeSubscribe = (player: Player<any>, onChange: () => void) =>
-	subscribeAll([subscribePlayerField(player, 'specOptions'), subscribeEncounterChange(player.sim.encounter)])(onChange);
+const amsIntakeSubscribe = (player: Player<any>) => subscribeAll([subscribePlayerField(player, 'specOptions'), subscribeEncounterChange(player.sim.encounter)]);
 
 export const AvgAMSHitInput = InputHelpers.makeSpecOptionsNumberInput<Spec.SpecFrostDeathKnight>({
 	fieldName: 'avgAmsHit',
@@ -34,7 +33,8 @@ export const AvgAMSSuccessRateInput = InputHelpers.makeSpecOptionsNumberInput<Sp
 export const AMSNumTicksInput = InputHelpers.makeSpecOptionsEnumInput<Spec.SpecFrostDeathKnight, number>({
 	fieldName: 'amsNumTicks',
 	label: 'AMS Damage Ticks',
-	labelTooltip: 'Number of magic hits taken per AMS window — 1 lands at a random time, 2+ are evenly spaced. Each tick independently rolls Avg AMS Success %.',
+	labelTooltip:
+		'Number of magic hits taken per AMS window — 1 lands at a random time, 2+ are evenly spaced. Each tick independently rolls Avg AMS Success %.',
 	values: [
 		{ name: '1', value: 1 },
 		{ name: '2', value: 2 },

@@ -24,7 +24,7 @@ import { RunSimOptions, Sim, SimError } from './sim.js';
 import { RequestTypes } from './sim_signal_manager.js';
 import { EventID, nextEventID } from './state/batch';
 import { SETTINGS_STORAGE_SUFFIX, SHARED_SAVED_ENCOUNTER_STORAGE_KEY } from './state/persistence';
-import { StoreSubscribe, subscribeSimChange, subscribeSimField, subscribeUiField } from './state/subscriptions';
+import { StoreSubscribe, subscribeSimField, subscribeUiField } from './state/subscriptions';
 import { isDevMode } from './utils';
 import { WorkerProgressCallback } from './worker_pool';
 const URLMAXLEN = 2048;
@@ -53,12 +53,6 @@ export abstract class SimUI extends Component {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
 	readonly disabled: boolean;
-
-	// Store-backed replacement for changeEmitter (see ui/core/state/README.md).
-	subscribeChange(): StoreSubscribe {
-		return subscribeSimChange(this.sim);
-	}
-
 
 	readonly resultsViewer: ResultsViewer;
 	readonly simHeader: SimHeader;
@@ -109,13 +103,12 @@ export abstract class SimUI extends Component {
 
 		this.rootElem.classList.add(this.config.cssClass);
 
-		this.rootElem.classList.add('not-within-raid-sim');
 		if (this.config.spec.isHealingSpec) {
 			this.rootElem.classList.add('sim-type--heal');
 		} else if (this.config.spec.isTankSpec) {
 			this.rootElem.classList.add('sim-type--tank');
-		} else if (this.config.spec?.isMeleeDpsSpec || this.config.spec?.isRangedDpsSpec) {
-			this.rootElem.classList.add('sim-type--dps', this.config.spec?.isMeleeDpsSpec ? 'sim-type--melee' : 'sim-type--ranged');
+		} else if (this.config.spec.isMeleeDpsSpec || this.config.spec.isRangedDpsSpec) {
+			this.rootElem.classList.add('sim-type--dps', this.config.spec.isMeleeDpsSpec ? 'sim-type--melee' : 'sim-type--ranged');
 		}
 
 		this.sim.crashEmitter.on((error: SimError) => this.handleCrash(error));
@@ -183,8 +176,8 @@ export abstract class SimUI extends Component {
 		this.iterationsPicker = new NumberPicker(this.simActionsContainer, this.sim, {
 			id: 'simui-iterations',
 			label: i18n.t('sidebar.iterations'),
-			extraCssClasses: ['iterations-picker', 'within-raid-sim-hide'],
-			storeSubscribe: (sim: Sim, onChange: () => void) => subscribeSimField(sim, 'iterations')(onChange),
+			extraCssClasses: ['iterations-picker'],
+			storeSubscribe: (sim: Sim) => subscribeSimField(sim, 'iterations'),
 			getValue: (sim: Sim) => sim.getIterations(),
 			setValue: (eventID: EventID, sim: Sim, newValue: number) => {
 				trackEvent({

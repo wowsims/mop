@@ -26,7 +26,7 @@ export const P2_GEAR_PRESET = PresetUtils.makePresetGear('P2 - Default', P2Gear)
 export const P3_GEAR_PRESET = PresetUtils.makePresetGear('P3 - Default', P3Gear);
 export const P4BiS_GEAR_PRESET = PresetUtils.makePresetGear('P4 - BiS', P4BiSGear);
 export const P4P3U_GEAR_PRESET = PresetUtils.makePresetGear('P4 - P3 Upgraded', P4P3UpgradedGear);
-export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BiS', P5Gear)
+export const P5_GEAR_PRESET = PresetUtils.makePresetGear('P5 - BiS', P5Gear);
 
 export const ROTATION_PRESET_P5 = PresetUtils.makePresetAPLRotation('Default', P5Apl);
 export const ROTATION_PRESET_CLEAVE = PresetUtils.makePresetAPLRotation('Cleave', CleaveApl);

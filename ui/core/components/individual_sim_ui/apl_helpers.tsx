@@ -30,10 +30,6 @@ import { AdaptiveStringPicker } from '../pickers/string_picker.js';
 import { UnitPicker, UnitPickerConfig, UnitValue } from '../pickers/unit_picker.jsx';
 import { APLNameModal } from './apl/apl_name_modal';
 
-// Nested APL pickers are re-synced by their parent's setInputValue cascade;
-// they must not subscribe to the rotation themselves (that made every edit
-// O(n·depth) twice over).
-export const aplChildSubscribe = (_obj: unknown, _onChange: () => void) => () => {};
 export type ACTION_ID_SET =
 	| 'auras'
 	| 'stackable_auras'
@@ -320,8 +316,10 @@ const actionIdSets: Record<
 
 export type DEFAULT_UNIT_REF = 'self' | 'currentTarget';
 
-export interface APLActionIDPickerConfig<ModObject>
-	extends Omit<DropdownPickerConfig<ModObject, ActionID, ActionId>, 'defaultLabel' | 'equals' | 'setOptionContent' | 'values' | 'getValue' | 'setValue'> {
+export interface APLActionIDPickerConfig<ModObject> extends Omit<
+	DropdownPickerConfig<ModObject, ActionID, ActionId>,
+	'defaultLabel' | 'equals' | 'setOptionContent' | 'values' | 'getValue' | 'setValue'
+> {
 	actionIdSet: ACTION_ID_SET;
 	getUnitRef: (player: Player<any>) => UnitReference;
 	defaultUnitRef: DEFAULT_UNIT_REF;
@@ -393,8 +391,7 @@ export class APLActionIDPicker extends DropdownPicker<Player<any>, ActionID, Act
 			const unitRef = getUnitRef(player);
 			const metadata = player.sim.getUnitMetadata(unitRef, player, defaultRef);
 			if (metadata) {
-				const valuesPromise = getActionIDs(metadata);
-				const values = await valuesPromise;
+				const values = await getActionIDs(metadata);
 				// A newer update (or disposal) happened while awaiting: drop this one.
 				if (seq !== updateSeq || this.isDisposed) return;
 				this.setOptions(values);
@@ -646,7 +643,6 @@ export class APLPickerBuilder<T> extends Input<Player<any>, T> {
 				label: fieldConfig.label,
 				labelTooltip: fieldConfig.labelTooltip,
 				id: randomUUID(),
-			storeSubscribe: aplChildSubscribe,
 				getValue: () => {
 					const source = builder.getSourceValue();
 					if (!source[field]) {
@@ -789,7 +785,6 @@ export function variableNameFieldConfig(field: string, options?: Partial<APLPick
 				defaultLabel: i18n.t('rotation_tab.apl.helpers.select_variable'),
 				equals: (a, b) => a === b,
 				values: [],
-			storeSubscribe: aplChildSubscribe,
 			});
 
 			const updateValues = () => {
@@ -983,7 +978,6 @@ export function groupNameFieldConfig(field: string, options?: Partial<APLPickerB
 				defaultLabel: i18n.t('rotation_tab.apl.helpers.select_group'),
 				equals: (a, b) => a === b,
 				values: [],
-			storeSubscribe: aplChildSubscribe,
 			});
 
 			const updateValues = () => {
@@ -1044,7 +1038,6 @@ class APLGroupVariablesPicker extends Input<Player<any>, any[]> {
 			title: 'Group Variables',
 			titleTooltip: "Variables to pass to the group. These will override the group's internal variables.",
 			itemLabel: 'Variable',
-			storeSubscribe: aplChildSubscribe,
 			// Reconciliation happens on read, not in a listener. Return a copy:
 			// ListPicker splices its input in place.
 			getValue: () => (this.reconcile()?.variables ?? []).slice(),
@@ -1093,10 +1086,23 @@ class APLGroupVariablesPicker extends Input<Player<any>, any[]> {
 
 	// Scans the selected group for VariablePlaceholder values, syncs
 	// parentValue.variables to that set (keeping existing entries) and toggles
-	// visibility. Returns null when nothing should be shown.
+	// visibility. Returns null when nothing should be shown. Memoized per
+	// (rotation version, group, variables array): getValue() and the cascade
+	// call it several times per edit.
+	private reconcileKey: Array<unknown> = [];
+	private reconcileResult: { names: Array<string>; variables: any[] } | null = null;
 	private reconcile(): { names: Array<string>; variables: any[] } | null {
 		const parentValue = this.getParentValue();
 		const selectedGroupName = parentValue?.[this.groupNameField];
+		const key = [this.modObject.sim.store.getState().players[this.modObject.storeKey]?.v.rotation, selectedGroupName, parentValue?.variables];
+		if (key.every((k, i) => Object.is(k, this.reconcileKey[i]))) return this.reconcileResult;
+		this.reconcileResult = this.reconcileUncached(parentValue, selectedGroupName);
+		// parentValue.variables may have been replaced by the sync above.
+		this.reconcileKey = [key[0], key[1], parentValue?.variables];
+		return this.reconcileResult;
+	}
+
+	private reconcileUncached(parentValue: any, selectedGroupName: string | undefined): { names: Array<string>; variables: any[] } | null {
 		const groups = this.modObject.aplRotation?.groups || [];
 		const selectedGroup = selectedGroupName ? groups.find((group: any) => group.name === selectedGroupName) : undefined;
 
@@ -1141,10 +1147,7 @@ class APLGroupVariablesPicker extends Input<Player<any>, any[]> {
 			variableItem.__uiVarName = varName;
 			return variableItem;
 		});
-		const changed =
-			!before ||
-			before.length !== reconciled.length ||
-			reconciled.some((v: any, i: number) => v !== before[i] || v.__uiVarName !== before[i]?.__uiVarName);
+		const changed = !before || before.length !== reconciled.length || reconciled.some((v: any, i: number) => v !== before[i]);
 		if (changed) {
 			// Silent in-place sync, exactly like the original code: reconcile() runs
 			// from getValue() (a read path invoked by rotation notifications), so
@@ -1205,7 +1208,6 @@ class APLGroupVariablePicker extends Input<Player<any>, any> {
 			defaultLabel: i18n.t('rotation_tab.apl.helpers.select_variable'),
 			equals: (a, b) => a === b,
 			values: [],
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => {
 				const item = this.getSourceValue();
 				if (item?.value?.value?.variableRef?.name) {

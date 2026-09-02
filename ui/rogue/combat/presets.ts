@@ -46,8 +46,7 @@ export const CombatTalents = {
 	name: 'Combat',
 	data: SavedTalents.create({
 		talentsString: '321233',
-		glyphs: Glyphs.create({
-		}),
+		glyphs: Glyphs.create({}),
 	}),
 };
 

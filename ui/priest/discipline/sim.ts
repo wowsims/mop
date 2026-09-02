@@ -85,8 +85,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDisciplinePriest, {
 		talents: [Presets.StandardTalents, Presets.EnlightenmentTalents],
 		rotations: [Presets.ROTATION_PRESET_DEFAULT],
 		// Preset gear configurations that the user can quickly select.
-		gear: [
-			Presets.P1_PRESET],
+		gear: [Presets.P1_PRESET],
 	},
 
 	autoRotation: (player: Player<Spec.SpecDisciplinePriest>): APLRotation => {

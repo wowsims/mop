@@ -300,7 +300,9 @@ export class DtpsMetricsTable extends MetricsTable<ActionMetrics> {
 				getValue: (metric: ActionMetrics) => metric.critPercent + metric.critBlockPercent || metric.critTickPercent,
 				getDisplayString: (metric: ActionMetrics) =>
 					`${formatToPercent(metric.critPercent + metric.critBlockPercent || metric.critTickPercent, { fallbackString: '-' })}${
-						metric.critPercent + metric.critBlockPercent && metric.critTickPercent ? ` (${formatToPercent(metric.critTickPercent, { fallbackString: '-' })})` : ''
+						metric.critPercent + metric.critBlockPercent && metric.critTickPercent
+							? ` (${formatToPercent(metric.critTickPercent, { fallbackString: '-' })})`
+							: ''
 					}`,
 			},
 			{

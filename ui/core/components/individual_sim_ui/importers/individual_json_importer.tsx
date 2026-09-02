@@ -13,7 +13,7 @@ export class IndividualJsonImporter<SpecType extends Spec> extends IndividualImp
 			<div>
 				<p>{i18n.t('import.json.description')}</p>
 				<p>{i18n.t('import.json.instructions')}</p>
-			</div>
+			</div>,
 		);
 	}
 

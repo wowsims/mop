@@ -1,11 +1,11 @@
 import i18n from '../../../i18n/config';
-import { translateProfession,translateRace } from '../../../i18n/localization.js';
+import { translateProfession, translateRace } from '../../../i18n/localization.js';
 import { Encounter } from '../../encounter.js';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui.jsx';
 import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common.js';
 import { SavedEncounter, SavedSettings } from '../../proto/ui.js';
 import { Stats } from '../../proto_utils/stats.js';
-import { batch,EventID } from '../../state/batch';
+import { batch, EventID } from '../../state/batch';
 import { subscribeAll, subscribeEncounterChange, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '../../state/subscriptions';
 import { getEnumValues } from '../../utils.js';
 import { ContentBlock } from '../content_block.jsx';
@@ -45,7 +45,7 @@ export class SettingsTab extends SimTab {
 		this.leftPanel.appendChild(this.column3);
 
 		this.rightPanel = document.createElement('div');
-		this.rightPanel.classList.add('settings-tab-right', 'tab-panel-right', 'within-raid-sim-hide');
+		this.rightPanel.classList.add('settings-tab-right', 'tab-panel-right');
 
 		this.contentContainer.appendChild(this.leftPanel);
 		this.contentContainer.appendChild(this.rightPanel);
@@ -102,7 +102,7 @@ export class SettingsTab extends SimTab {
 					value: race,
 				};
 			}),
-			storeSubscribe: (sim, onChange) => subscribePlayerField(sim, 'race')(onChange),
+			storeSubscribe: sim => subscribePlayerField(sim, 'race'),
 			getValue: sim => sim.getRace(),
 			setValue: (eventID, sim, newValue) => sim.setRace(eventID, newValue),
 		});
@@ -124,7 +124,7 @@ export class SettingsTab extends SimTab {
 					value: p,
 				};
 			}),
-			storeSubscribe: (sim, onChange) => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')])(onChange),
+			storeSubscribe: sim => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')]),
 			getValue: sim => sim.getProfession1(),
 			setValue: (eventID, sim, newValue) => sim.setProfession1(eventID, newValue),
 		});
@@ -138,7 +138,7 @@ export class SettingsTab extends SimTab {
 					value: p,
 				};
 			}),
-			storeSubscribe: (sim, onChange) => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')])(onChange),
+			storeSubscribe: sim => subscribeAll([subscribePlayerField(sim, 'profession1'), subscribePlayerField(sim, 'profession2')]),
 			getValue: sim => sim.getProfession2(),
 			setValue: (eventID, sim, newValue) => sim.setProfession2(eventID, newValue),
 		});
@@ -159,13 +159,13 @@ export class SettingsTab extends SimTab {
 	}
 
 	private buildOtherSettings() {
-		const settings = this.simUI.individualConfig.otherInputs?.inputs.filter(inputs => !inputs.extraCssClasses?.includes('within-raid-sim-hide') || true);
+		const settings = this.simUI.individualConfig.otherInputs?.inputs;
 
 		const swapSlots = this.simUI.individualConfig.itemSwapSlots || [];
 		if (settings.length > 0 || swapSlots.length > 0) {
 			const contentBlock = new ContentBlock(this.column2, 'other-settings', {
-			header: { title: i18n.t('settings_tab.other.title') },
-		});
+				header: { title: i18n.t('settings_tab.other.title') },
+			});
 
 			if (settings.length > 0) {
 				this.configureInputSection(contentBlock.bodyElement, this.simUI.individualConfig.otherInputs);
@@ -186,11 +186,7 @@ export class SettingsTab extends SimTab {
 		const contentBlock = new ContentBlock(this.column3, 'buffs-settings', {
 			header: { title: i18n.t('settings_tab.raid_buffs.title'), tooltip: i18n.t('settings_tab.raid_buffs.tooltip') },
 		});
-		contentBlock.headerElement?.appendChild(
-			<p className="fs-body">
-				{i18n.t('settings_tab.raid_buffs.description')}
-			</p>,
-		);
+		contentBlock.headerElement?.appendChild(<p className="fs-body">{i18n.t('settings_tab.raid_buffs.description')}</p>);
 
 		const buffOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_CONFIG, this.simUI);
 		this.configureIconSection(
@@ -231,7 +227,10 @@ export class SettingsTab extends SimTab {
 		const externalDefensiveCooldownOptions = relevantStatOptions(BuffDebuffInputs.RAID_BUFFS_EXTERNAL_DEFENSIVE_COOLDOWN, this.simUI);
 		if (externalDefensiveCooldownOptions.length > 0) {
 			const contentBlock = new ContentBlock(this.column3, 'buffs-settings', {
-				header: { title: i18n.t('settings_tab.external_defensive_cooldowns.title'), tooltip: i18n.t('settings_tab.external_defensive_cooldowns.tooltip') },
+				header: {
+					title: i18n.t('settings_tab.external_defensive_cooldowns.title'),
+					tooltip: i18n.t('settings_tab.external_defensive_cooldowns.tooltip'),
+				},
 			});
 
 			this.configureIconSection(
@@ -282,7 +281,6 @@ export class SettingsTab extends SimTab {
 			getData: (encounter: Encounter) => SavedEncounter.create({ encounter: encounter.toProto() }),
 			setData: (eventID: EventID, encounter: Encounter, newEncounter: SavedEncounter) => encounter.fromProto(eventID, newEncounter.encounter!),
 			subscribe: subscribeEncounterChange(this.simUI.sim.encounter),
-			equals: (a: SavedEncounter, b: SavedEncounter) => SavedEncounter.equals(a, b),
 			toJson: (a: SavedEncounter) => SavedEncounter.toJson(a),
 			fromJson: (obj: any) => SavedEncounter.fromJson(obj),
 		});
@@ -340,7 +338,6 @@ export class SettingsTab extends SimTab {
 				subscribePlayerField(this.simUI.player, 'distanceFromTarget'),
 				subscribePlayerField(this.simUI.player, 'healingModel'),
 			]),
-			equals: (a: SavedSettings, b: SavedSettings) => SavedSettings.equals(a, b),
 			toJson: (a: SavedSettings) => SavedSettings.toJson(a),
 			fromJson: (obj: any) => SavedSettings.fromJson(obj),
 		});
@@ -369,9 +366,10 @@ export class SettingsTab extends SimTab {
 						playerBuffs: settings.buffs,
 						debuffs: settings.debuffs,
 						consumables: settings.consumables,
-						professions: settings.playerOptions?.profession1 && settings.playerOptions?.profession2
-							? [settings.playerOptions.profession1, settings.playerOptions.profession2]
-							: undefined,
+						professions:
+							settings.playerOptions?.profession1 && settings.playerOptions?.profession2
+								? [settings.playerOptions.profession1, settings.playerOptions.profession2]
+								: undefined,
 						distanceFromTarget: settings.playerOptions?.distanceFromTarget,
 						reactionTimeMs: settings.playerOptions?.reactionTimeMs,
 						channelClipDelayMs: settings.playerOptions?.channelClipDelayMs,

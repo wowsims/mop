@@ -44,7 +44,6 @@ import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import { aplChildSubscribe } from './apl_helpers';
 import * as AplHelpers from './apl_helpers.js';
 import { itemSwapSetFieldConfig } from './apl_helpers.js';
 import * as AplValues from './apl_values.js';
@@ -71,7 +70,6 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 
 		this.conditionPicker = new AplValues.APLValuePicker(this.rootElem, this.modObject, {
 			label: i18n.t('rotation_tab.apl.priority_list.if_label'),
-			storeSubscribe: aplChildSubscribe,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.condition,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
 				const srcVal = this.getSourceValue();
@@ -113,7 +111,6 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 				};
 			}),
 			equals: (a, b) => a == b,
-			storeSubscribe: aplChildSubscribe,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.action.oneofKind,
 			setValue: (eventID: EventID, player: Player<any>, newKind: APLActionKind) => {
 				const sourceValue = this.getSourceValue();
@@ -235,9 +232,7 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 		this.currentKind = newActionKind;
 
 		if (this.actionPicker) {
-			const childIdx = this.children.indexOf(this.actionPicker);
-			if (childIdx >= 0) this.children.splice(childIdx, 1);
-			this.actionPicker.dispose();
+			this.disposeChild(this.actionPicker);
 			this.actionPicker.rootElem.remove();
 			this.actionPicker = null;
 		}
@@ -250,7 +245,6 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 
 		const factory = actionKindFactories[newActionKind];
 		this.actionPicker = factory.factory(this.actionDiv, this.modObject, {
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => (this.getSourceValue()?.action as any)?.[newActionKind] || factory.newValue(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const sourceValue = this.getSourceValue();
@@ -644,7 +638,7 @@ const actionKindFactories: { [f in NonNullable<APLActionKind>]: ActionKindConfig
 			AplHelpers.numberFieldConfig('amount', false, {
 				label: i18n.t('rotation_tab.apl.actions.damage_amplification.amount.label'),
 			}),
-			AplHelpers.damageAmpTypeFieldConfig('ampType')
+			AplHelpers.damageAmpTypeFieldConfig('ampType'),
 		],
 	}),
 	['itemSwap']: inputBuilder({

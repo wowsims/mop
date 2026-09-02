@@ -9,7 +9,6 @@ import { Input, InputConfig } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
 import * as AplHelpers from '../apl_helpers';
-import { aplChildSubscribe } from '../apl_helpers';
 import { APLNameModal } from './apl_name_modal';
 import { APLHidePicker } from './hide_picker';
 export interface APLGroupEditorConfig extends InputConfig<Player<any>, APLGroup> {
@@ -43,7 +42,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 		nameContainer.querySelector('.apl-name-rename')!.addEventListener('click', () => {
 			const group = this.getSourceValue();
 			if (!group) return;
-			new APLNameModal(this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body, {
+			new APLNameModal((this.rootElem.closest('.individual-sim-ui') as HTMLElement) ?? document.body, {
 				title: i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.actionGroups.name') }),
 				inputLabel: i18n.t('rotation_tab.apl.actionGroups.attributes.name'),
 				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.renameConfirm'),
@@ -72,7 +71,6 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 					useIcon: true,
 				},
 			},
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getSourceValue()?.actions || [],
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLListItem>) => {
 				const group = this.getSourceValue();
@@ -98,7 +96,7 @@ export class APLGroupEditor extends Input<Player<any>, APLGroup> {
 					(actionIndex, ref) => {
 						this.getSourceValue()!.actions[actionIndex].action!.condition = ref;
 					},
-					this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body,
+					(this.rootElem.closest('.individual-sim-ui') as HTMLElement) ?? document.body,
 				),
 			],
 		});
@@ -173,7 +171,6 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 		});
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().hide,
 			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 				this.getItem().hide = newValue;
@@ -182,7 +179,6 @@ class APLGroupActionPicker extends Input<Player<any>, APLListItem> {
 		});
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.modObject, {
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().action!,
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const item = this.getSourceValue();

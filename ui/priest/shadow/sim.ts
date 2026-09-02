@@ -132,10 +132,7 @@ export class ShadowPriestSimUI extends IndividualSimUI<Spec.SpecShadowPriest> {
 					const hasteSoftCapConfig = StatCap.fromPseudoStat(PseudoStat.PseudoStatSpellHastePercent, {
 						breakpoints: [Presets.SHADOW_BREAKPOINTS.presets!.get('BL - 12-tick - DP')!],
 						capType: StatCapType.TypeThreshold,
-						postCapEPs: [
-							(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
-								Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
-						],
+						postCapEPs: [(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT],
 					});
 					softCaps.push(hasteSoftCapConfig);
 

@@ -16,7 +16,9 @@ export type SavedDataManagerConfig<ModObject, T> = {
 	storageKey: string;
 	// Store subscription that fires when the managed data may have changed.
 	subscribe: StoreSubscribe;
-	equals: (a: T, b: T) => boolean;
+	// Optional semantic equality (e.g. rotations, where the type/uuids may differ);
+	// without it entries compare by their `toJson` string.
+	equals?: (a: T, b: T) => boolean;
 	getData: (modObject: ModObject) => T;
 	setData: (eventID: EventID, modObject: ModObject, data: T) => void;
 	toJson: (a: T) => any;
@@ -46,7 +48,7 @@ type SavedData<ModObject, T> = {
 	// Serialized form of `data`, compared against the current value by string
 	// so an active-check costs one serialization per manager, not one deep
 	// proto equals per entry.
-	dataJson: string | null;
+	dataJson: string;
 	elem: HTMLElement;
 } & Pick<SavedDataConfig<ModObject, T>, 'enableWhen' | 'onLoad'>;
 
@@ -189,17 +191,14 @@ export class SavedDataManager<ModObject, T> extends Component {
 			onLoad: config.onLoad,
 		};
 		// Initial render is synchronous, as before.
-		this.checkEntry(savedData, this.serialize(this.config.getData(this.modObject)));
+		const current = this.config.getData(this.modObject);
+		this.checkEntry(savedData, current, this.serialize(current));
 
 		return savedData;
 	}
 
-	private serialize(data: T): string | null {
-		try {
-			return JSON.stringify(this.config.toJson(data));
-		} catch {
-			return null;
-		}
+	private serialize(data: T): string {
+		return JSON.stringify(this.config.toJson(data));
 	}
 
 	private scheduleChecks() {
@@ -209,24 +208,18 @@ export class SavedDataManager<ModObject, T> extends Component {
 			this.checkPending = false;
 			this.runChecks();
 		};
-		if (typeof requestAnimationFrame === 'function') {
-			requestAnimationFrame(run);
-		} else {
-			setTimeout(run, 0);
-		}
+		requestAnimationFrame(run);
 	}
 
 	private runChecks() {
-		const currentJson = this.serialize(this.config.getData(this.modObject));
-		this.presets.forEach(entry => this.checkEntry(entry, currentJson));
-		this.userData.forEach(entry => this.checkEntry(entry, currentJson));
+		const current = this.config.getData(this.modObject);
+		const currentJson = this.serialize(current);
+		this.presets.forEach(entry => this.checkEntry(entry, current, currentJson));
+		this.userData.forEach(entry => this.checkEntry(entry, current, currentJson));
 	}
 
-	private checkEntry(entry: SavedData<ModObject, T>, currentJson: string | null) {
-		const isActive =
-			entry.dataJson != null && currentJson != null
-				? entry.dataJson === currentJson
-				: this.config.equals(entry.data, this.config.getData(this.modObject));
+	private checkEntry(entry: SavedData<ModObject, T>, current: T, currentJson: string) {
+		const isActive = this.config.equals ? this.config.equals(entry.data, current) : entry.dataJson === currentJson;
 		if (isActive) {
 			entry.elem.classList.add('active');
 			if (this.saveInput) this.saveInput.value = entry.name;
@@ -240,7 +233,6 @@ export class SavedDataManager<ModObject, T> extends Component {
 			entry.elem.classList.remove('disabled');
 		}
 	}
-
 
 	// Save data to window.localStorage.
 	private saveUserData() {

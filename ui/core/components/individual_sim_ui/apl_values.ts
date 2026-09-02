@@ -1,7 +1,129 @@
 import i18n from '../../../i18n/config';
 import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
 import { Player } from '../../player.js';
-import { APLValue, APLValueActionGroupUsed, APLValueActiveItemSwapSet, APLValueAfflictionCurrentSnapshot, APLValueAfflictionExhaleWindow, APLValueAllTrinketStatProcsActive, APLValueAnd, APLValueAnyStatBuffCooldownsActive, APLValueAnyStatBuffCooldownsMinDuration, APLValueAnyTrinketStatProcsActive, APLValueAnyTrinketStatProcsAvailable, APLValueAuraICDIsReady, APLValueAuraInternalCooldown, APLValueAuraIsActive, APLValueAuraIsInactive, APLValueAuraIsKnown, APLValueAuraNumStacks, APLValueAuraRemainingTime, APLValueAuraShouldRefresh, APLValueAutoTimeToNext, APLValueBossCurrentTarget, APLValueBossSpellCastTimeRemaining, APLValueBossSpellIsCasting, APLValueBossSpellIsKnown, APLValueBossSpellTimeToReady, APLValueCatExcessEnergy, APLValueCatNewSavageRoarDuration, APLValueChannelClipDelay, APLValueCompare, APLValueCompare_ComparisonOperator as ComparisonOperator, APLValueConst, APLValueCurrentComboPoints, APLValueCurrentEclipsePhase, APLValueCurrentEnergy, APLValueCurrentFocus, APLValueCurrentGenericResource, APLValueCurrentHealth, APLValueCurrentHealthPercent, APLValueCurrentLunarEnergy, APLValueCurrentMana, APLValueCurrentManaPercent, APLValueCurrentNonDeathRuneCount, APLValueCurrentRage, APLValueCurrentRuneActive, APLValueCurrentRuneCount, APLValueCurrentRuneDeath, APLValueCurrentRunicPower, APLValueCurrentSolarEnergy, APLValueCurrentTime, APLValueCurrentTimePercent, APLValueDotBaseDuration, APLValueDotIsActive, APLValueDotIsActiveOnAllTargets, APLValueDotLowestRemainingTime, APLValueDotPercentIncrease, APLValueDotRemainingTime, APLValueDotTickFrequency, APLValueDotTimeToNextTick, APLValueEnergyRegenPerSecond, APLValueEnergyTimeToTarget, APLValueFocusRegenPerSecond, APLValueFocusTimeToTarget, APLValueFrontOfTarget, APLValueFullRuneCooldown, APLValueGCDIsReady, APLValueGCDTimeToReady, APLValueInputDelay, APLValueIsExecutePhase, APLValueIsExecutePhase_ExecutePhaseThreshold as ExecutePhaseThreshold, APLValueMageCurrentCombustionDotEstimate, APLValueMath, APLValueMath_MathOperator as MathOperator, APLValueMax, APLValueMaxComboPoints, APLValueMaxEnergy, APLValueMaxFocus, APLValueMaxHealth, APLValueMaxRage, APLValueMaxRunicPower, APLValueMin, APLValueMonkCurrentChi, APLValueMonkMaxChi, APLValueNextRuneCooldown, APLValueNot, APLValueNumberTargets, APLValueNumEquippedStatProcTrinkets, APLValueNumStatBuffCooldowns, APLValueOr, APLValueProtectionPaladinDamageTakenLastGlobal, APLValueRemainingCastTime, APLValueRemainingTime, APLValueRemainingTimePercent, APLValueRuneCooldown, APLValueRuneSlotCooldown, APLValueSequenceIsComplete, APLValueSequenceIsReady, APLValueSequenceTimeToReady, APLValueShamanFireElementalDuration, APLValueSpellCanCast, APLValueSpellCastTime, APLValueSpellChanneledTicks, APLValueSpellCPM, APLValueSpellCurrentCost, APLValueSpellFullCooldown, APLValueSpellGCDHastedDuration, APLValueSpellInFlight, APLValueSpellIsCasting, APLValueSpellIsChanneling, APLValueSpellIsKnown, APLValueSpellIsReady, APLValueSpellNumCharges, APLValueSpellTimeToCharge, APLValueSpellTimeToReady, APLValueSpellTravelTime, APLValueTotemRemainingTime, APLValueTrinketProcsMaxRemainingICD, APLValueTrinketProcsMinRemainingTime, APLValueUnitDistance, APLValueUnitIsMoving, APLValueWarlockHandOfGuldanInFlight, APLValueWarlockHauntInFlight } from '../../proto/apl.js';
+import {
+	APLValue,
+	APLValueActionGroupUsed,
+	APLValueActiveItemSwapSet,
+	APLValueAfflictionCurrentSnapshot,
+	APLValueAfflictionExhaleWindow,
+	APLValueAllTrinketStatProcsActive,
+	APLValueAnd,
+	APLValueAnyStatBuffCooldownsActive,
+	APLValueAnyStatBuffCooldownsMinDuration,
+	APLValueAnyTrinketStatProcsActive,
+	APLValueAnyTrinketStatProcsAvailable,
+	APLValueAuraICDIsReady,
+	APLValueAuraInternalCooldown,
+	APLValueAuraIsActive,
+	APLValueAuraIsInactive,
+	APLValueAuraIsKnown,
+	APLValueAuraNumStacks,
+	APLValueAuraRemainingTime,
+	APLValueAuraShouldRefresh,
+	APLValueAutoTimeToNext,
+	APLValueBossCurrentTarget,
+	APLValueBossSpellCastTimeRemaining,
+	APLValueBossSpellIsCasting,
+	APLValueBossSpellIsKnown,
+	APLValueBossSpellTimeToReady,
+	APLValueCatExcessEnergy,
+	APLValueCatNewSavageRoarDuration,
+	APLValueChannelClipDelay,
+	APLValueCompare,
+	APLValueCompare_ComparisonOperator as ComparisonOperator,
+	APLValueConst,
+	APLValueCurrentComboPoints,
+	APLValueCurrentEclipsePhase,
+	APLValueCurrentEnergy,
+	APLValueCurrentFocus,
+	APLValueCurrentGenericResource,
+	APLValueCurrentHealth,
+	APLValueCurrentHealthPercent,
+	APLValueCurrentLunarEnergy,
+	APLValueCurrentMana,
+	APLValueCurrentManaPercent,
+	APLValueCurrentNonDeathRuneCount,
+	APLValueCurrentRage,
+	APLValueCurrentRuneActive,
+	APLValueCurrentRuneCount,
+	APLValueCurrentRuneDeath,
+	APLValueCurrentRunicPower,
+	APLValueCurrentSolarEnergy,
+	APLValueCurrentTime,
+	APLValueCurrentTimePercent,
+	APLValueDotBaseDuration,
+	APLValueDotIsActive,
+	APLValueDotIsActiveOnAllTargets,
+	APLValueDotLowestRemainingTime,
+	APLValueDotPercentIncrease,
+	APLValueDotRemainingTime,
+	APLValueDotTickFrequency,
+	APLValueDotTimeToNextTick,
+	APLValueEnergyRegenPerSecond,
+	APLValueEnergyTimeToTarget,
+	APLValueFocusRegenPerSecond,
+	APLValueFocusTimeToTarget,
+	APLValueFrontOfTarget,
+	APLValueFullRuneCooldown,
+	APLValueGCDIsReady,
+	APLValueGCDTimeToReady,
+	APLValueInputDelay,
+	APLValueIsExecutePhase,
+	APLValueIsExecutePhase_ExecutePhaseThreshold as ExecutePhaseThreshold,
+	APLValueMageCurrentCombustionDotEstimate,
+	APLValueMath,
+	APLValueMath_MathOperator as MathOperator,
+	APLValueMax,
+	APLValueMaxComboPoints,
+	APLValueMaxEnergy,
+	APLValueMaxFocus,
+	APLValueMaxHealth,
+	APLValueMaxRage,
+	APLValueMaxRunicPower,
+	APLValueMin,
+	APLValueMonkCurrentChi,
+	APLValueMonkMaxChi,
+	APLValueNextRuneCooldown,
+	APLValueNot,
+	APLValueNumberTargets,
+	APLValueNumEquippedStatProcTrinkets,
+	APLValueNumStatBuffCooldowns,
+	APLValueOr,
+	APLValueProtectionPaladinDamageTakenLastGlobal,
+	APLValueRemainingCastTime,
+	APLValueRemainingTime,
+	APLValueRemainingTimePercent,
+	APLValueRuneCooldown,
+	APLValueRuneSlotCooldown,
+	APLValueSequenceIsComplete,
+	APLValueSequenceIsReady,
+	APLValueSequenceTimeToReady,
+	APLValueShamanFireElementalDuration,
+	APLValueSpellCanCast,
+	APLValueSpellCastTime,
+	APLValueSpellChanneledTicks,
+	APLValueSpellCPM,
+	APLValueSpellCurrentCost,
+	APLValueSpellFullCooldown,
+	APLValueSpellGCDHastedDuration,
+	APLValueSpellInFlight,
+	APLValueSpellIsCasting,
+	APLValueSpellIsChanneling,
+	APLValueSpellIsKnown,
+	APLValueSpellIsReady,
+	APLValueSpellNumCharges,
+	APLValueSpellTimeToCharge,
+	APLValueSpellTimeToReady,
+	APLValueSpellTravelTime,
+	APLValueTotemRemainingTime,
+	APLValueTrinketProcsMaxRemainingICD,
+	APLValueTrinketProcsMinRemainingTime,
+	APLValueUnitDistance,
+	APLValueUnitIsMoving,
+	APLValueWarlockHandOfGuldanInFlight,
+	APLValueWarlockHauntInFlight,
+} from '../../proto/apl.js';
 import { Class, Spec } from '../../proto/common.js';
 import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
 import SecondaryResource from '../../proto_utils/secondary_resource';
@@ -10,7 +132,6 @@ import { randomUUID } from '../../utils';
 import { Input, InputConfig } from '../input.js';
 import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
 import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import { aplChildSubscribe } from './apl_helpers';
 import * as AplHelpers from './apl_helpers.js';
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
 
@@ -78,7 +199,6 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 				}),
 			),
 			equals: (a, b) => a == b,
-			storeSubscribe: aplChildSubscribe,
 			getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
 			setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
 				const sourceValue = this.getSourceValue();
@@ -224,9 +344,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		this.currentKind = newKind;
 
 		if (this.valuePicker) {
-			const childIdx = this.children.indexOf(this.valuePicker);
-			if (childIdx >= 0) this.children.splice(childIdx, 1);
-			this.valuePicker.dispose();
+			this.disposeChild(this.valuePicker);
 			this.valuePicker.rootElem.remove();
 			this.valuePicker = null;
 		}
@@ -240,7 +358,6 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		const factory = valueKindFactories[newKind];
 		this.valuePicker = factory.factory(this.rootElem, this.modObject, {
 			id: randomUUID(),
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => {
 				const sourceVal = this.getSourceValue();
 				return sourceVal ? (sourceVal.value as any)[newKind] || factory.newValue() : factory.newValue();
@@ -837,7 +954,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		submenu: ['resources', 'eclipse'],
 		shortDescription: i18n.t('rotation_tab.apl.values.solar_energy.tooltip'),
 		newValue: APLValueCurrentSolarEnergy.create,
-		includeIf: (player: Player<any>, _isPrepull: boolean) =>  player.getSpec() == Spec.SpecBalanceDruid,
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecBalanceDruid,
 		fields: [],
 	}),
 	currentLunarEnergy: inputBuilder({
@@ -845,7 +962,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		submenu: ['resources', 'eclipse'],
 		shortDescription: i18n.t('rotation_tab.apl.values.lunar_energy.tooltip'),
 		newValue: APLValueCurrentLunarEnergy.create,
-		includeIf: (player: Player<any>, _isPrepull: boolean) =>  player.getSpec() == Spec.SpecBalanceDruid,
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecBalanceDruid,
 		fields: [],
 	}),
 	druidCurrentEclipsePhase: inputBuilder({
@@ -853,7 +970,7 @@ const valueKindFactories: { [f in ValidAPLValueKind]: ValueKindConfig<APLValueIm
 		submenu: ['resources', 'eclipse'],
 		shortDescription: i18n.t('rotation_tab.apl.values.current_eclipse_phase.tooltip'),
 		newValue: APLValueCurrentEclipsePhase.create,
-		includeIf: (player: Player<any>, _isPrepull: boolean) =>  player.getSpec() == Spec.SpecBalanceDruid,
+		includeIf: (player: Player<any>, _isPrepull: boolean) => player.getSpec() == Spec.SpecBalanceDruid,
 		fields: [AplHelpers.eclipseTypeFieldConfig('eclipsePhase')],
 	}),
 	currentGenericResource: inputBuilder({

@@ -29,17 +29,13 @@ export class IndividualAddonImporter<SpecType extends Spec> extends IndividualIm
 				<p>{i18n.t('import.addon.feature_description')}</p>
 				<p>{i18n.t('import.addon.instructions')}</p>
 				<div ref={warningRef} />
-			</div>
+			</div>,
 		);
 
 		if (warningRef.value)
 			new Toast({
 				title: i18n.t('import.addon.reforge_warning.title'),
-				body: (
-					<div>
-						{i18n.t('import.addon.reforge_warning.message')}
-					</div>
-				),
+				body: <div>{i18n.t('import.addon.reforge_warning.message')}</div>,
 				additionalClasses: ['toast-import-warning'],
 				container: warningRef.value,
 				variant: 'warning',
@@ -141,14 +137,14 @@ function glyphToID(glyph: string | JsonObject, db: Database, glyphsConfig: Recor
 	return db.glyphSpellToItemId(glyph.spellID as number);
 }
 
-function getWSEVersion(): Promise<string|null> {
+function getWSEVersion(): Promise<string | null> {
 	return fetch('https://api.github.com/repos/wowsims/exporter/releases/latest')
 		.then(resp => {
 			return resp.json().then(json => {
 				return json.tag_name as string;
-			})
+			});
 		})
 		.catch(_ => {
 			return null;
-		})
+		});
 }

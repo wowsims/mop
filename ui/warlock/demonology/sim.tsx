@@ -148,8 +148,7 @@ export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyW
 								breakpoints: [40.48],
 								capType: StatCapType.TypeThreshold,
 								postCapEPs: [
-									(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
-										Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
+									(Presets.P5_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
 								],
 							});
 						}

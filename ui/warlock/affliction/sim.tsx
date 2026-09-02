@@ -196,8 +196,7 @@ export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionW
 								capType: StatCapType.TypeThreshold,
 								postCapEPs: relevantDotBreakpoints.map(
 									() =>
-										(Presets.P5_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
-										Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
+										(Presets.P5_BIS_EP_PRESET.epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
 								),
 							});
 						}

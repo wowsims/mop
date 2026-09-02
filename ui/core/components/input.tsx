@@ -3,6 +3,7 @@ import tippy, { Content as TippyContent } from 'tippy.js';
 
 import { EventID } from '../state/batch';
 import { Emitter } from '../state/events.js';
+import type { StoreSubscribe } from '../state/subscriptions';
 import { existsInDOM } from '../utils';
 import { Component } from './component.js';
 /**
@@ -18,9 +19,10 @@ export interface InputConfig<ModObject, T, V = T> {
 
 	defaultValue?: T;
 
-	// Subscribes the input to its source (a store selector or an Emitter);
-	// called with a listener, returns the unsubscribe function.
-	storeSubscribe: (obj: ModObject, onChange: () => void) => () => void;
+	// The input's change source: given the mod object, returns a subscribe
+	// function (see state/subscriptions.ts). Omit for inputs that are re-synced
+	// by their parent (nested APL pickers, UI-local toggles).
+	storeSubscribe?: (obj: ModObject) => StoreSubscribe;
 
 	// Get and set the mapped value.
 	getValue: (obj: ModObject) => T;
@@ -75,7 +77,7 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 			this.setInputValue(this.getSourceValue());
 			this.update();
 		};
-		const disposeSubscription = config.storeSubscribe(this.modObject, onSourceChange);
+		const disposeSubscription = this.subscribeToSource(onSourceChange);
 
 		this.addOnDisposeCallback(() => {
 			this.abortController?.abort();
@@ -83,9 +85,10 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 		});
 	}
 
-	// Subscribes `listener` to this input's source. Returns the unsubscribe function.
+	// Subscribes `listener` to this input's source (no-op without one). Returns
+	// the unsubscribe function.
 	protected subscribeToSource(listener: () => void): () => void {
-		return this.inputConfig.storeSubscribe(this.modObject, listener);
+		return this.inputConfig.storeSubscribe ? this.inputConfig.storeSubscribe(this.modObject)(listener) : () => {};
 	}
 
 	private buildLabel(config: InputConfig<ModObject, T, V>): JSX.Element {

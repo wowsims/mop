@@ -51,7 +51,9 @@ export const MetricsCombinedTooltipTable = ({
 						<tr className="metrics-table-header-row">
 							<th className="metrics-table-header-cell">{headerValues?.[0] || i18n.t('results_tab.details.tooltip_table.type')}</th>
 							<th className="metrics-table-header-cell">{headerValues?.[1] || i18n.t('results_tab.details.tooltip_table.count')}</th>
-							{hasAverageColumn ? <th className="metrics-table-header-cell">{headerValues?.[2] || i18n.t('results_tab.details.tooltip_table.average')}</th> : undefined}
+							{hasAverageColumn ? (
+								<th className="metrics-table-header-cell">{headerValues?.[2] || i18n.t('results_tab.details.tooltip_table.average')}</th>
+							) : undefined}
 						</tr>
 					</thead>
 					<tbody className="metrics-table-body">

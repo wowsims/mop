@@ -1,7 +1,7 @@
 import { AttackSpeedBuff } from '../../core/components/inputs/buffs_debuffs';
 import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
-import * as Mechanics from '../../core/constants/mechanics'
+import * as Mechanics from '../../core/constants/mechanics';
 import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
 import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
@@ -64,8 +64,9 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 		epWeights: Presets.EP_PRESET_P3.epWeights,
 		// Default stat caps for the Reforge optimizer
 		statCaps: (() => {
-			return new Stats().withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15)
-			.withStat(Stat.StatMasteryRating, 100*Mechanics.MASTERY_RATING_PER_MASTERY_POINT/2);
+			return new Stats()
+				.withPseudoStat(PseudoStat.PseudoStatSpellHitPercent, 15)
+				.withStat(Stat.StatMasteryRating, (100 * Mechanics.MASTERY_RATING_PER_MASTERY_POINT) / 2);
 		})(),
 		// Default consumes settings.
 		consumables: Presets.DefaultConsumables,

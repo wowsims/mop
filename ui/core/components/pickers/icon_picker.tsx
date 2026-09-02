@@ -84,10 +84,10 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 		this.improvedAnchor2 = ia2.value!;
 		this.counterElem = ce.value!;
 
-		this.updateButtonImage()
+		this.updateButtonImage();
 
 		const unsub = this.subscribeToSource(() => {
-			this.updateButtonImage()
+			this.updateButtonImage();
 
 			if (this.showWhen()) {
 				this.rootElem.classList.remove('hide');

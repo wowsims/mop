@@ -88,7 +88,7 @@ function readHash(e: string): WowheadGearPlannerImportJSON {
 		c >= 4 && (t.specIndex = readBits(f));
 		const e = [parseTalentString(f)];
 		let n = readBits(f);
-		for (; n-- > 0; ) {
+		for (; n-- > 0;) {
 			const t = readBits(f);
 			e.push(
 				f
@@ -103,7 +103,7 @@ function readHash(e: string): WowheadGearPlannerImportJSON {
 	}
 	{
 		let e = readBits(f);
-		for (; e--; ) {
+		for (; e--;) {
 			const e: any = {};
 			let n = !1,
 				s = !1,
@@ -113,28 +113,28 @@ function readHash(e: string): WowheadGearPlannerImportJSON {
 			switch (c) {
 				case 0: {
 					const e = f.shift();
-					(n = 0 != ((e! >> 5) & 1)), (l = (e! >> 2) & 7), (a = 3 & e!);
+					((n = 0 != ((e! >> 5) & 1)), (l = (e! >> 2) & 7), (a = 3 & e!));
 					break;
 				}
 				case 1:
 				case 2: {
 					const e = readBits(f);
-					(n = 0 != ((e >> 6) & 1)), (r = 0 != ((e >> 5) & 1)), (l = (e >> 2) & 7), (a = 3 & e);
+					((n = 0 != ((e >> 6) & 1)), (r = 0 != ((e >> 5) & 1)), (l = (e >> 2) & 7), (a = 3 & e));
 					break;
 				}
 				default: {
 					const e = readBits(f);
-					(n = 0 != ((e >> 7) & 1)), (s = 0 != ((e >> 6) & 1)), (r = 0 != ((e >> 5) & 1)), (l = (e >> 2) & 7), (a = 3 & e);
+					((n = 0 != ((e >> 7) & 1)), (s = 0 != ((e >> 6) & 1)), (r = 0 != ((e >> 5) & 1)), (l = (e >> 2) & 7), (a = 3 & e));
 					break;
 				}
 			}
 			if (((e.slotId = readBits(f)), (e.itemId = readBits(f)), n)) {
 				let t = readBits(f);
 				const n = 1 & t;
-				(t >>= 1), n && (t *= -1), (e.randomEnchantId = t);
+				((t >>= 1), n && (t *= -1), (e.randomEnchantId = t));
 			}
-			for (s && (e.upgradeRank = readBits(f)), r && (e.reforge = readBits(f)); l--; ) (e.gemItemIds ??= []).push(readBits(f));
-			for (; a--; ) (e.enchantIds ??= []).push(readBits(f));
+			for (s && (e.upgradeRank = readBits(f)), r && (e.reforge = readBits(f)); l--;) (e.gemItemIds ??= []).push(readBits(f));
+			for (; a--;) (e.enchantIds ??= []).push(readBits(f));
 			(t.items ??= []).push(e);
 		}
 	}
@@ -166,7 +166,7 @@ function parseGlyphs(glyphStr: string): number[] {
 		if (e > l) {
 			continue;
 		}
-		glyphIds[e] = t
+		glyphIds[e] = t;
 	}
 
 	return glyphIds;
@@ -175,7 +175,7 @@ function parseGlyphs(glyphStr: string): number[] {
 function parseTalentString(e: number[]) {
 	let t = '',
 		n = readBits(e);
-	for (; 0 !== n; ) (t += '' + (3 & n)), (n >>= 2);
+	for (; 0 !== n;) ((t += '' + (3 & n)), (n >>= 2));
 	return t;
 }
 
@@ -206,17 +206,13 @@ export class IndividualWowheadGearPlannerImporter<SpecType extends Spec> extends
 				<p>{i18n.t('import.wowhead.feature_description')}</p>
 				<p>{i18n.t('import.wowhead.instructions')}</p>
 				<div ref={warningRef} />
-			</div>
+			</div>,
 		);
 
 		if (warningRef.value)
 			new Toast({
 				title: i18n.t('import.wowhead.tinker_warning.title'),
-				body: (
-					<div>
-						{i18n.t('import.wowhead.tinker_warning.message')}
-					</div>
-				),
+				body: <div>{i18n.t('import.wowhead.tinker_warning.message')}</div>,
 				additionalClasses: ['toast-import-warning'],
 				container: warningRef.value,
 				variant: 'warning',

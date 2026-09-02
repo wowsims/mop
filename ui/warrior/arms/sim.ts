@@ -181,10 +181,7 @@ export class ArmsWarriorSimUI extends IndividualSimUI<Spec.SpecArmsWarrior> {
 						StatCap.fromPseudoStat(PseudoStat.PseudoStatPhysicalCritPercent, {
 							breakpoints: [hasT154P ? 43 : 49],
 							capType: StatCapType.TypeSoftCap,
-							postCapEPs: [
-								(epWeights.getStat(Stat.StatMasteryRating) - 0.02) *
-									Mechanics.CRIT_RATING_PER_CRIT_PERCENT,
-							],
+							postCapEPs: [(epWeights.getStat(Stat.StatMasteryRating) - 0.02) * Mechanics.CRIT_RATING_PER_CRIT_PERCENT],
 						}),
 					);
 				}

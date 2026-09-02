@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config.js';
-import { translatePlayerClass, translatePlayerSpec,translateStatus } from '../../i18n/localization';
+import { translatePlayerClass, translatePlayerSpec, translateStatus } from '../../i18n/localization';
 import { simLaunchStatuses } from '../launched_sims.js';
 import { PlayerClass } from '../player_class.js';
 import { PlayerClasses } from '../player_classes/index.js';
@@ -91,9 +91,7 @@ export class SimTitleDropdown extends Component {
 					<img src={this.getSimIconPath(data)} className="sim-link-icon" />
 					<div className="d-flex flex-column">
 						<span className="sim-link-label text-white">{i18n.t('sidebar.header.title')}</span>
-						<span className="sim-link-title">
-							{PlayerSpecs.getFullSpecName(data.spec)}
-						</span>
+						<span className="sim-link-title">{PlayerSpecs.getFullSpecName(data.spec)}</span>
 						{this.launchStatusLabel(data)}
 					</div>
 				</div>

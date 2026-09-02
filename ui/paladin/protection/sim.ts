@@ -248,10 +248,7 @@ export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionP
 						}
 
 						softCapToModify.breakpoints = [targetPercent];
-						softCapToModify.postCapEPs = [
-							(epWeights.getStat(Stat.StatCritRating) - 0.02) *
-								Mechanics.HASTE_RATING_PER_HASTE_PERCENT,
-						];
+						softCapToModify.postCapEPs = [(epWeights.getStat(Stat.StatCritRating) - 0.02) * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
 					}
 				});
 

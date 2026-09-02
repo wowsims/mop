@@ -1,3 +1,4 @@
+import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import clsx from 'clsx';
 
 import i18n from '../../../i18n/config';
@@ -5,8 +6,7 @@ import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
 import { SavedRotation } from '../../proto/ui';
-import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
-import { batch,EventID } from '../../state/batch';
+import { batch, EventID } from '../../state/batch';
 import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { omitDeep } from '../../utils';
 import { ContentBlock } from '../content_block';
@@ -236,7 +236,7 @@ export class RotationTab extends SimTab {
 						{ value: APLRotationType.TypeAPL, label: i18n.t('rotation_tab.common.rotation_type.apl') },
 					],
 			equals: (a, b) => a === b,
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.getRotationType(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 				player.modifyAplRotation(eventID, rotation => {
@@ -264,11 +264,8 @@ export class RotationTab extends SimTab {
 					player.setAplRotation(eventID, newRotation.rotation || APLRotation.create());
 				}),
 			subscribe: subscribeAll([subscribePlayerField(this.simUI.player, 'rotation'), subscribePlayerField(this.simUI.player, 'talentsString')]),
-			equals: (a: SavedRotation, b: SavedRotation) => {
-				// Uncomment this to debug equivalence checks with preset rotations (e.g. the chip doesn't highlight)
-				// console.log(`Rot A: ${SavedRotation.toJsonString(a, { prettySpaces: 2 })}\n\nRot B: ${SavedRotation.toJsonString(b, { prettySpaces: 2 })}`);
-				return isEqualAPLRotation(this.simUI.player, a.rotation, b.rotation);
-			},
+			// Semantic: Auto and APL types match, simple rotations compare by content.
+			equals: (a: SavedRotation, b: SavedRotation) => isEqualAPLRotation(this.simUI.player, a.rotation, b.rotation),
 			toJson: (a: SavedRotation) => SavedRotation.toJson(a),
 			fromJson: (obj: any) => omitDeep(SavedRotation.fromJson(obj), ['uuid']),
 			nameLabel: i18n.t('rotation_tab.saved_rotations.name_label'),

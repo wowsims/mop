@@ -53,10 +53,10 @@ import IJBuild from './builds/ij_encounter_only.build.json';
 import ShaBuild from './builds/sha_encounter_only.build.json';
 export const ROTATION_DEFAULT = PresetUtils.makePresetAPLRotation("Gara'jal Default", DefaultApl);
 export const ROTATION_HOTW = PresetUtils.makePresetAPLRotation("Gara'jal Offensive HotW", OffensiveHotwApl);
-export const ROTATION_EMPRESS = PresetUtils.makePresetAPLRotation("Empress Adds", EmpressApl);
-export const ROTATION_SHA = PresetUtils.makePresetAPLRotation("Sha Hybrid HotW", ShaApl);
-export const ROTATION_HORRIDON = PresetUtils.makePresetAPLRotation("Horridon Tank 2", HorridonApl);
-export const ROTATION_IJ = PresetUtils.makePresetAPLRotation("Iron Juggernaut", IJApl);
+export const ROTATION_EMPRESS = PresetUtils.makePresetAPLRotation('Empress Adds', EmpressApl);
+export const ROTATION_SHA = PresetUtils.makePresetAPLRotation('Sha Hybrid HotW', ShaApl);
+export const ROTATION_HORRIDON = PresetUtils.makePresetAPLRotation('Horridon Tank 2', HorridonApl);
+export const ROTATION_IJ = PresetUtils.makePresetAPLRotation('Iron Juggernaut', IJApl);
 
 //export const ROTATION_PRESET_SIMPLE = PresetUtils.makePresetSimpleRotation('Simple Default', Spec.SpecGuardianDruid, DefaultSimpleRotation);
 
@@ -85,7 +85,10 @@ export const BALANCED_EP_PRESET = PresetUtils.makePresetEpWeights(
 	),
 );
 
-export const BALANCED_PRECAP_EPS = BALANCED_EP_PRESET.epWeights.withStat(Stat.StatCritRating, 1.36).withStat(Stat.StatHitRating, 3.31).withStat(Stat.StatExpertiseRating, 3.31);
+export const BALANCED_PRECAP_EPS = BALANCED_EP_PRESET.epWeights
+	.withStat(Stat.StatCritRating, 1.36)
+	.withStat(Stat.StatHitRating, 3.31)
+	.withStat(Stat.StatExpertiseRating, 3.31);
 
 export const BALANCED_PRECAP_EP_PRESET = PresetUtils.makePresetEpWeights('Balanced Pre-Caps', BALANCED_PRECAP_EPS);
 
@@ -146,9 +149,9 @@ export const OtherDefaults = {
 	profession2: Profession.ProfessionUnknown,
 };
 
-export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON("All Defaults", Spec.SpecGuardianDruid, DefaultBuild);
+export const PRESET_BUILD_DEFAULT = PresetUtils.makePresetBuildFromJSON('All Defaults', Spec.SpecGuardianDruid, DefaultBuild);
 export const PRESET_BUILD_GARAJAL = PresetUtils.makePresetBuildFromJSON("Gara'jal", Spec.SpecGuardianDruid, GarajalBuild);
-export const PRESET_BUILD_EMPRESS = PresetUtils.makePresetBuildFromJSON("Empress P2 Adds", Spec.SpecGuardianDruid, EmpressBuild);
-export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON("Sha of Fear P2", Spec.SpecGuardianDruid, ShaBuild);
-export const PRESET_BUILD_HORRIDON = PresetUtils.makePresetBuildFromJSON("Horridon P2", Spec.SpecGuardianDruid, HorridonBuild);
-export const PRESET_BUILD_IJ = PresetUtils.makePresetBuildFromJSON("Iron Juggernaut P1", Spec.SpecGuardianDruid, IJBuild);
+export const PRESET_BUILD_EMPRESS = PresetUtils.makePresetBuildFromJSON('Empress P2 Adds', Spec.SpecGuardianDruid, EmpressBuild);
+export const PRESET_BUILD_SHA = PresetUtils.makePresetBuildFromJSON('Sha of Fear P2', Spec.SpecGuardianDruid, ShaBuild);
+export const PRESET_BUILD_HORRIDON = PresetUtils.makePresetBuildFromJSON('Horridon P2', Spec.SpecGuardianDruid, HorridonBuild);
+export const PRESET_BUILD_IJ = PresetUtils.makePresetBuildFromJSON('Iron Juggernaut P1', Spec.SpecGuardianDruid, IJBuild);

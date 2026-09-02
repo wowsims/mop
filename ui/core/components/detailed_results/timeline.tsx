@@ -36,7 +36,6 @@ interface RotationSlot {
 	labels: Array<Node>;
 	timeline: Array<Node>;
 	hiddenIdsNodes: Array<Node>;
-	timeRuler: HTMLCanvasElement | null;
 	emitter: Emitter<void>;
 	resetCallbacks: Array<() => void>;
 	plotOptions: any | null;
@@ -49,11 +48,9 @@ export class Timeline extends ResultComponent {
 	private readonly rotationPlotElem: HTMLElement;
 	private readonly rotationLabels: HTMLElement;
 	private readonly rotationTimeline: HTMLElement;
-	private rotationTimelineTimeRulerElem: HTMLCanvasElement | null = null;
 	private readonly rotationHiddenIdsContainer: HTMLElement;
 	private readonly chartPicker: HTMLSelectElement;
 
-	private prevResultData: SimResultData | null;
 	private resultData: SimResultData | null;
 	rendered: boolean;
 
@@ -67,7 +64,6 @@ export class Timeline extends ResultComponent {
 	private static readonly MAX_CACHED_SLOTS = 2;
 
 	private hiddenIds: Array<ActionId>;
-	private hiddenIdsChangeEmitter: Emitter<void>;
 
 	private secondaryResource?: SecondaryResource | null;
 
@@ -75,10 +71,8 @@ export class Timeline extends ResultComponent {
 		config.rootCssClass = 'timeline-root';
 		super(config);
 		this.resultData = null;
-		this.prevResultData = null;
 		this.rendered = false;
 		this.hiddenIds = [];
-		this.hiddenIdsChangeEmitter = new Emitter<void>();
 		this.addOnDisposeCallback(() => this.reset());
 		this.secondaryResource = config.secondaryResource;
 
@@ -196,7 +190,6 @@ export class Timeline extends ResultComponent {
 	}
 
 	onSimResult(resultData: SimResultData) {
-		this.prevResultData = this.resultData;
 		this.resultData = resultData;
 		this.update();
 	}
@@ -209,20 +202,16 @@ export class Timeline extends ResultComponent {
 		// Fast path: this (result, filter, chart) was rendered before and its live
 		// subtree is either on screen or parked in the cache.
 		const key = this.resultKey();
-		const hit = this.liveSlot?.key === key ? this.liveSlot : this.takeCachedSlot(key);
-		if (hit && hit.plotOptions) {
+		const hit = this.liveSlot?.key === key ? this.liveSlot : this.cachedSlots.find(slot => slot.key === key);
+		if (hit?.plotOptions) {
 			if (hit !== this.liveSlot) {
+				this.takeCachedSlot(key);
 				this.stashLiveSlot();
 				this.attachSlot(hit);
 			}
-			this.rootElem.querySelector('.rotation-option')!.classList.remove('hide');
-			this.rootElem.querySelector('.threat-option')!.classList.add('hide');
+			this.setRotationOptionVisible(true);
 			this.dpsResourcesPlot.updateOptions(hit.plotOptions);
 			return;
-		}
-		if (hit && hit !== this.liveSlot) {
-			// Rendered subtree without cached chart options: keep it parked.
-			this.cachedSlots.push(hit);
 		}
 
 		const duration = this.resultData!.result.result.firstIterationDuration || 1;
@@ -278,10 +267,7 @@ export class Timeline extends ResultComponent {
 		if (players.length == 1) {
 			const player = players[0];
 
-			const rotationOption = this.rootElem.querySelector('.rotation-option')!;
-			rotationOption.classList.remove('hide');
-			const threatOption = this.rootElem.querySelector('.threat-option')!;
-			threatOption.classList.add('hide');
+			this.setRotationOptionVisible(true);
 
 			try {
 				this.updateRotationChart(player, duration);
@@ -303,10 +289,7 @@ export class Timeline extends ResultComponent {
 				this.chartPicker.value = 'dps';
 				return;
 			}
-			const rotationOption = this.rootElem.querySelector('.rotation-option')!;
-			rotationOption.classList.add('hide');
-			const threatOption = this.rootElem.querySelector('.threat-option')!;
-			threatOption.classList.remove('hide');
+			this.setRotationOptionVisible(false);
 
 			this.stashLiveSlot();
 			this.clearRotationChart();
@@ -548,9 +531,7 @@ export class Timeline extends ResultComponent {
 				<canvas ref={canvasRef} className="rotation-timeline-canvas" />
 			</div>,
 		);
-		this.rotationTimelineTimeRulerElem = canvasRef.value || null;
 		this.rotationHiddenIdsContainer.replaceChildren();
-		this.hiddenIdsChangeEmitter = this.liveSlot ? this.liveSlot.emitter : new Emitter<void>();
 	}
 
 	private updateRotationChart(player: UnitMetrics, duration: number) {
@@ -569,7 +550,7 @@ export class Timeline extends ResultComponent {
 			this.attachSlot(cached);
 			return;
 		}
-		this.liveSlot = { key, labels: [], timeline: [], hiddenIdsNodes: [], timeRuler: null, emitter: new Emitter<void>(), resetCallbacks: [], plotOptions: null };
+		this.liveSlot = { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new Emitter<void>(), resetCallbacks: [], plotOptions: null };
 		this.clearRotationChart();
 
 		try {
@@ -628,11 +609,12 @@ export class Timeline extends ResultComponent {
 		}
 
 		// Don't add a row for buffs that were already visualized in a cast row or are prioritized.
-		const buffsToShow = buffsById.filter(auraUptimeLogs =>
-			!playerCastsByAbility.some(casts => {
-				const actionId = auraUptimeLogs[0].actionId;
-				return actionId && (casts[0].actionId!.equalsIgnoringTag(actionId) || auraAsResource.find(auraId => auraId.equals(actionId)));
-			}),
+		const buffsToShow = buffsById.filter(
+			auraUptimeLogs =>
+				!playerCastsByAbility.some(casts => {
+					const actionId = auraUptimeLogs[0].actionId;
+					return actionId && (casts[0].actionId!.equalsIgnoringTag(actionId) || auraAsResource.find(auraId => auraId.equals(actionId)));
+				}),
 		);
 		if (buffsToShow.length > 0) {
 			this.addSeparatorRow(duration);
@@ -719,7 +701,7 @@ export class Timeline extends ResultComponent {
 			} else {
 				this.hiddenIds.push(actionId);
 			}
-			this.hiddenIdsChangeEmitter.emit();
+			this.liveSlot?.emitter.emit();
 		};
 		hideElem.value!.addEventListener('click', onClickHandler);
 		const tooltip = tippy(hideElem.value!, {
@@ -735,7 +717,7 @@ export class Timeline extends ResultComponent {
 				labelElem.classList.add('hide');
 			}
 		};
-		const unsubHidden = this.hiddenIdsChangeEmitter.on(updateHidden);
+		const unsubHidden = this.liveSlot!.emitter.on(updateHidden);
 		updateHidden();
 		actionId.setBackgroundAndHref(labelIcon.value!);
 		actionId.setWowheadDataset(labelIcon.value!, { useBuffAura: isAura });
@@ -765,7 +747,7 @@ export class Timeline extends ResultComponent {
 				rowElem.classList.remove('hide');
 			}
 		};
-		const unsubHidden = this.hiddenIdsChangeEmitter.on(updateHidden);
+		const unsubHidden = this.liveSlot!.emitter.on(updateHidden);
 		updateHidden();
 		this.addOnResetCallback(() => unsubHidden());
 		return rowElem;
@@ -1324,6 +1306,12 @@ export class Timeline extends ResultComponent {
 		return [rd.result.request.requestId, JSON.stringify(rd.filter), this.chartPicker.value].join('|');
 	}
 
+	// Single-player results offer the rotation chart; multi-player ones the threat chart.
+	private setRotationOptionVisible(visible: boolean) {
+		this.rootElem.querySelector('.rotation-option')!.classList.toggle('hide', !visible);
+		this.rootElem.querySelector('.threat-option')!.classList.toggle('hide', visible);
+	}
+
 	private takeCachedSlot(key: string): RotationSlot | null {
 		const idx = this.cachedSlots.findIndex(slot => slot.key === key);
 		return idx < 0 ? null : this.cachedSlots.splice(idx, 1)[0];
@@ -1337,7 +1325,6 @@ export class Timeline extends ResultComponent {
 		slot.labels = Array.from(this.rotationLabels.childNodes);
 		slot.timeline = Array.from(this.rotationTimeline.childNodes);
 		slot.hiddenIdsNodes = Array.from(this.rotationHiddenIdsContainer.childNodes);
-		slot.timeRuler = this.rotationTimelineTimeRulerElem;
 		this.rotationLabels.replaceChildren();
 		this.rotationTimeline.replaceChildren();
 		this.rotationHiddenIdsContainer.replaceChildren();
@@ -1352,8 +1339,6 @@ export class Timeline extends ResultComponent {
 		this.rotationLabels.replaceChildren(...slot.labels);
 		this.rotationTimeline.replaceChildren(...slot.timeline);
 		this.rotationHiddenIdsContainer.replaceChildren(...slot.hiddenIdsNodes);
-		this.rotationTimelineTimeRulerElem = slot.timeRuler;
-		this.hiddenIdsChangeEmitter = slot.emitter;
 		this.liveSlot = slot;
 		// hiddenIds is global across results: re-apply it to the restored rows.
 		slot.emitter.emit();

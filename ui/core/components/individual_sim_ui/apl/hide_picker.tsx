@@ -1,7 +1,7 @@
-import { Player } from "../../../player";
+import { Player } from '../../../player';
 import { nextEventID } from '../../../state/batch';
-import { Input, InputConfig } from "../../input";
-import { ListPicker } from "../../pickers/list_picker";
+import { Input, InputConfig } from '../../input';
+import { ListPicker } from '../../pickers/list_picker';
 export class APLHidePicker extends Input<Player<any>, boolean> {
 	private readonly inputElem: HTMLElement;
 	private readonly iconElem: HTMLElement;

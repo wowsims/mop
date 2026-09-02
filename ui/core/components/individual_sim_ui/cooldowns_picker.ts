@@ -107,7 +107,7 @@ export class CooldownsPicker extends Component {
 			equals: (a: ActionIdProto, b: ActionIdProto) => ActionIdProto.equals(a, b),
 			zeroValue: ActionIdProto.create(),
 			backupIconUrl: (value: ActionIdProto) => ActionId.fromProto(value),
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.getSimpleCooldowns().cooldowns[cooldownIndex]?.id || ActionIdProto.create(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: ActionIdProto) => {
 				if (!newValue.rawId.oneofKind) return;
@@ -132,7 +132,7 @@ export class CooldownsPicker extends Component {
 			id: `cooldown-timings-${cooldownIndex}`,
 			extraCssClasses: ['cooldown-timings-picker'],
 			placeholder: i18n.t('rotation_tab.cooldowns.timings_placeholder'),
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => {
 				return player.getSimpleCooldowns().cooldowns[cooldownIndex]?.timings || [];
 			},

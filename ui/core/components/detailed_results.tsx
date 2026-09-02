@@ -183,17 +183,17 @@ export class DetailedResults extends Component {
 							<div className="resource-metrics" />
 						</div>
 					</div>
-				<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
-					<div className="dr-row">
-						<div className="timeline" />
+					<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
+						<div className="dr-row">
+							<div className="timeline" />
+						</div>
 					</div>
-				</div>
-				<div id="replayTab" className="tab-pane dr-tab-content replay-content fade">
-					<div className="dr-row">
-						<div className="combat-replay" />
+					<div id="replayTab" className="tab-pane dr-tab-content replay-content fade">
+						<div className="dr-row">
+							<div className="combat-replay" />
+						</div>
 					</div>
-				</div>
-				<div id="logTab" className="tab-pane dr-tab-content log-content fade">
+					<div id="logTab" className="tab-pane dr-tab-content log-content fade">
 						<div className="dr-row">
 							<div className="log" />
 						</div>

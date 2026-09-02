@@ -33,7 +33,7 @@ export class ResultsFilter extends ResultComponent {
 		this.playerFilter = new UnitPicker(this.rootElem, this.currentFilter, {
 			id: 'results-filter-player-filter',
 			extraCssClasses: ['player-filter-root', 'd-none'],
-			storeSubscribe: (_filterData: FilterData, onChange: () => void) => this.changeEmitter.on(onChange),
+			storeSubscribe: () => this.changeEmitter.on,
 			sourceToValue: (src: UnitReference | undefined) => this.refToValue(src),
 			valueToSource: (val: UnitValue) => val.value,
 			getValue: (filterData: FilterData) => this.numToRef(filterData.player, true),
@@ -44,7 +44,7 @@ export class ResultsFilter extends ResultComponent {
 		this.targetFilter = new UnitPicker(this.rootElem, this.currentFilter, {
 			id: 'results-filter-target-filter',
 			extraCssClasses: ['target-filter-root', 'd-none'],
-			storeSubscribe: (_filterData: FilterData, onChange: () => void) => this.changeEmitter.on(onChange),
+			storeSubscribe: () => this.changeEmitter.on,
 			sourceToValue: (src: UnitReference | undefined) => this.refToValue(src),
 			valueToSource: (val: UnitValue) => val.value,
 			getValue: (filterData: FilterData) => this.numToRef(filterData.target, false),

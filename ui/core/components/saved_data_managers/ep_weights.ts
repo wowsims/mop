@@ -26,7 +26,6 @@ export const renderSavedEPWeights = (
 			});
 		},
 		subscribe: subscribePlayerField(simUI.player, 'epWeights'),
-		equals: (a, b) => SavedEPWeights.equals(a, b),
 		toJson: a => SavedEPWeights.toJson(a),
 		fromJson: obj => SavedEPWeights.fromJson(obj),
 		...options,

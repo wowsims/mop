@@ -4,7 +4,7 @@ import { Player } from '../../player';
 import { EquipmentSpec, UnitStats } from '../../proto/common';
 import { SavedGearSet } from '../../proto/ui';
 import { Stats } from '../../proto_utils/stats';
-import { batch,EventID } from '../../state/batch';
+import { batch, EventID } from '../../state/batch';
 import { subscribePlayerChange } from '../../state/subscriptions';
 import GearPicker from '../gear_picker/gear_picker';
 import { SavedDataManager } from '../saved_data_manager';
@@ -80,7 +80,6 @@ export class GearTab extends SimTab {
 				});
 			},
 			subscribe: subscribePlayerChange(this.simUI.player),
-			equals: (a: SavedGearSet, b: SavedGearSet) => SavedGearSet.equals(a, b),
 			toJson: (a: SavedGearSet) => SavedGearSet.toJson(a),
 			fromJson: (obj: any) => SavedGearSet.fromJson(obj),
 		});

@@ -10,7 +10,6 @@ import { randomUUID } from '../../../utils';
 import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
-import { aplChildSubscribe } from '../apl_helpers';
 import { APLValuePicker } from '../apl_values';
 import { AplFloatingActionBar } from './apl_floating_action_bar';
 import { APLNameModal } from './apl_name_modal';
@@ -23,7 +22,7 @@ export class APLVariablesListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.variables.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker', 'apl-value-variables-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.variables.name'),
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.valueVariables || [],
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLValueVariable>) => {
 				player.modifyAplRotation(eventID, rotation => {
@@ -77,7 +76,6 @@ export class APLVariablesListPicker extends Component {
 			value: undefined,
 		});
 	}
-
 }
 
 class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
@@ -118,7 +116,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 		nameContainer.querySelector('.apl-name-rename')!.addEventListener('click', () => {
 			const sourceValue = this.getSourceValue();
 			if (!sourceValue) return;
-			new APLNameModal(this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body, {
+			new APLNameModal((this.rootElem.closest('.individual-sim-ui') as HTMLElement) ?? document.body, {
 				title: i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.variables.name') }),
 				inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
 				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.renameConfirm'),
@@ -137,7 +135,6 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 			id: randomUUID(),
 			label: i18n.t('rotation_tab.apl.variables.attributes.value'),
 			labelTooltip: i18n.t('rotation_tab.apl.variables.attributes.valueTooltip'),
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getSourceValue().value,
 			setValue: (eventID: EventID, player: Player<any>, newValue: any) => {
 				const sourceValue = this.getSourceValue();

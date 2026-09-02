@@ -33,7 +33,7 @@ export class ItemSwapPicker<SpecType extends Spec> extends Component {
 			setValue(eventID: EventID, player: Player<SpecType>, newValue: boolean) {
 				player.itemSwapSettings.setEnableItemSwap(eventID, newValue);
 			},
-			storeSubscribe: (player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'itemSwap')(onChange),
+			storeSubscribe: (player: Player<SpecType>) => subscribePlayerField(player, 'itemSwap'),
 		});
 
 		const swapPickerContainerRef = ref<HTMLDivElement>();

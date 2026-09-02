@@ -3,6 +3,7 @@ import { Spec } from '../proto/common.js';
 import { ActionId } from '../proto_utils/action_id.js';
 import { ClassOptions, SpecOptions, SpecRotation } from '../proto_utils/utils.js';
 import { EventID } from '../state/batch';
+import type { StoreSubscribe } from '../state/subscriptions';
 import { subscribePlayerField } from '../state/subscriptions.js';
 import { formatToNumber, randomUUID } from '../utils';
 import { BooleanPickerConfig } from './pickers/boolean_picker.js';
@@ -28,7 +29,7 @@ export function makeMultiIconInput<ModObject>(
 interface BasePlayerConfig<SpecType extends Spec, T> {
 	getValue?: (player: Player<SpecType>) => T;
 	setValue?: (eventID: EventID, player: Player<SpecType>, newVal: T) => void;
-	storeSubscribe?: (player: Player<SpecType>, onChange: () => void) => () => void;
+	storeSubscribe?: (player: Player<SpecType>) => StoreSubscribe;
 	extraCssClasses?: Array<string>;
 	showWhen?: (player: Player<SpecType>) => boolean;
 }
@@ -53,7 +54,7 @@ export function makeWrappedBooleanInput<SpecType extends Spec, ModObject>(
 		label: config.label,
 		labelTooltip: config.labelTooltip,
 		description: config.description,
-		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => config.storeSubscribe(getModObject(player), onChange),
+		storeSubscribe: config.storeSubscribe && (player => config.storeSubscribe!(getModObject(player))),
 		getValue: (player: Player<SpecType>) => config.getValue(getModObject(player)),
 		setValue: (eventID: EventID, player: Player<SpecType>, newValue: boolean) => config.setValue(eventID, getModObject(player), newValue),
 		enableWhen: config.enableWhen ? (player: Player<SpecType>) => config.enableWhen!(getModObject(player)) : undefined,
@@ -86,7 +87,7 @@ export function makeClassOptionsBooleanInput<SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as boolean) = newVal;
 				player.setClassOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
@@ -109,7 +110,7 @@ export function makeSpecOptionsBooleanInput<SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as boolean) = newVal;
 				player.setSpecOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
@@ -132,7 +133,7 @@ export function makeRotationBooleanInput<SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as boolean) = newVal;
 				player.setSimpleRotation(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'rotation')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
@@ -163,7 +164,7 @@ function makeWrappedNumberInput<SpecType extends Spec, ModObject>(
 		showZeroes: config.showZeroes,
 		maxDecimalDigits: config.maxDecimalDigits,
 		positive: config.positive,
-		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => config.storeSubscribe(getModObject(player), onChange),
+		storeSubscribe: config.storeSubscribe && (player => config.storeSubscribe!(getModObject(player))),
 		getValue: (player: Player<SpecType>) => config.getValue(getModObject(player)),
 		setValue: (eventID: EventID, player: Player<SpecType>, newValue: number) => config.setValue(eventID, getModObject(player), newValue),
 		enableWhen: config.enableWhen ? (player: Player<SpecType>) => config.enableWhen!(getModObject(player)) : undefined,
@@ -172,7 +173,8 @@ function makeWrappedNumberInput<SpecType extends Spec, ModObject>(
 	};
 }
 export interface PlayerNumberInputConfig<SpecType extends Spec, Message>
-	extends BasePlayerConfig<SpecType, number>,
+	extends
+		BasePlayerConfig<SpecType, number>,
 		Pick<NumberPickerConfig<Player<SpecType>>, 'labelTooltip' | 'description' | 'showZeroes' | 'maxDecimalDigits' | 'float' | 'positive'> {
 	fieldName: keyof Message;
 	label: string;
@@ -180,7 +182,7 @@ export interface PlayerNumberInputConfig<SpecType extends Spec, Message>
 	max?: number;
 	enableWhen?: (player: Player<SpecType>) => boolean;
 	showWhen?: (player: Player<SpecType>) => boolean;
-	storeSubscribe?: (player: Player<SpecType>, onChange: () => void) => () => void;
+	storeSubscribe?: (player: Player<SpecType>) => StoreSubscribe;
 }
 
 export const numberInputValueToPercentage = (value: number, config: PlayerNumberInputConfig<any, any>) =>
@@ -213,7 +215,7 @@ export function makeClassOptionsNumberInput<SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setClassOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
@@ -251,7 +253,7 @@ export function makeSpecOptionsNumberInput<SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSpecOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
@@ -289,7 +291,7 @@ export function makeRotationNumberInput<SpecType extends Spec>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSimpleRotation(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'rotation')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 		extraCssClasses: config.extraCssClasses,
@@ -323,7 +325,7 @@ function makeWrappedEnumInput<SpecType extends Spec, ModObject>(config: WrappedE
 		labelTooltip: config.labelTooltip,
 		description: config.description,
 		values: config.values,
-		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => config.storeSubscribe(getModObject(player), onChange),
+		storeSubscribe: config.storeSubscribe && (player => config.storeSubscribe!(getModObject(player))),
 		getValue: (player: Player<SpecType>) => config.getValue(getModObject(player)),
 		setValue: (eventID: EventID, player: Player<SpecType>, newValue: number) => config.setValue(eventID, getModObject(player), newValue),
 		enableWhen: config.enableWhen ? (player: Player<SpecType>) => config.enableWhen!(getModObject(player)) : undefined,
@@ -341,7 +343,7 @@ export interface PlayerEnumInputConfig<SpecType extends Spec, Message> {
 	setValue?: (eventID: EventID, player: Player<SpecType>, newValue: number) => void;
 	enableWhen?: (player: Player<SpecType>) => boolean;
 	showWhen?: (player: Player<SpecType>) => boolean;
-	storeSubscribe?: (player: Player<SpecType>, onChange: () => void) => () => void;
+	storeSubscribe?: (player: Player<SpecType>) => StoreSubscribe;
 }
 // T is unused, but kept to have the same interface as the icon enum inputs.
 export function makeClassOptionsEnumInput<SpecType extends Spec, _T>(
@@ -362,7 +364,7 @@ export function makeClassOptionsEnumInput<SpecType extends Spec, _T>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setClassOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
@@ -386,7 +388,7 @@ export function makeSpecOptionsEnumInput<SpecType extends Spec, _T>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSpecOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
@@ -410,7 +412,7 @@ export function makeRotationEnumInput<SpecType extends Spec, _T>(
 				(newMessage[config.fieldName] as unknown as number) = newVal;
 				player.setSimpleRotation(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'rotation')),
 		enableWhen: config.enableWhen,
 		showWhen: config.showWhen,
 	});
@@ -435,7 +437,7 @@ function makeWrappedIconInput<SpecType extends Spec, ModObject, T>(
 		actionId: config.actionId,
 		label: config.label,
 		states: config.states,
-		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => config.storeSubscribe(getModObject(player), onChange),
+		storeSubscribe: config.storeSubscribe && (player => config.storeSubscribe!(getModObject(player))),
 		showWhen: (player: Player<SpecType>) => !config.showWhen || (config.showWhen(getModObject(player)) as any),
 		getValue: (player: Player<SpecType>) => config.getValue(getModObject(player)),
 		setValue: (eventID: EventID, player: Player<SpecType>, newValue: T) => config.setValue(eventID, getModObject(player), newValue),
@@ -447,7 +449,7 @@ interface WrappedTypedInputConfig<Message, ModObject, T> {
 	getModObject: (player: Player<any>) => ModObject;
 	getValue: (modObj: ModObject) => Message;
 	setValue: (eventID: EventID, modObj: ModObject, messageVal: Message) => void;
-	storeSubscribe: (modObj: ModObject, onChange: () => void) => () => void;
+	storeSubscribe?: (modObj: ModObject) => StoreSubscribe;
 	extraCssClasses?: Array<string>;
 
 	showWhen?: (obj: ModObject) => boolean;
@@ -505,7 +507,7 @@ export function makeClassOptionsBooleanIconInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getClassOptions(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: ClassOptions<SpecType>) => player.setClassOptions(eventID, newVal),
-			storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+			storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 			extraCssClasses: config.extraCssClasses,
 			getFieldValue: config.getValue,
 			setFieldValue: config.setValue,
@@ -524,7 +526,7 @@ export function makeSpecOptionsBooleanIconInput<SpecType extends Spec>(
 			getModObject: (player: Player<SpecType>) => player,
 			getValue: (player: Player<SpecType>) => player.getSpecOptions(),
 			setValue: (eventID: EventID, player: Player<SpecType>, newVal: SpecOptions<SpecType>) => player.setSpecOptions(eventID, newVal),
-			storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+			storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 			extraCssClasses: config.extraCssClasses,
 			getFieldValue: config.getValue,
 			setFieldValue: config.setValue,
@@ -626,7 +628,7 @@ function makeWrappedEnumIconInput<SpecType extends Spec, ModObject, T>(
 		equals: config.equals,
 		showWhen: (player: Player<SpecType>): boolean => !config.showWhen || (config.showWhen(getModObject(player)) as any),
 		zeroValue: config.zeroValue,
-		storeSubscribe: (player: Player<SpecType>, onChange: () => void) => config.storeSubscribe(getModObject(player), onChange),
+		storeSubscribe: config.storeSubscribe && (player => config.storeSubscribe!(getModObject(player))),
 		getValue: (player: Player<SpecType>) => config.getValue(getModObject(player)),
 		setValue: (eventID: EventID, player: Player<SpecType>, newValue: T) => config.setValue(eventID, getModObject(player), newValue),
 		extraCssClasses: config.extraCssClasses,
@@ -656,7 +658,7 @@ export function makeClassOptionsEnumIconInput<SpecType extends Spec, T>(
 				(newMessage[config.fieldName] as unknown as T) = newVal;
 				player.setClassOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		extraCssClasses: config.extraCssClasses,
 	});
 }
@@ -678,7 +680,7 @@ export function makeSpecOptionsEnumIconInput<SpecType extends Spec, T>(
 				(newMessage[config.fieldName] as unknown as T) = newVal;
 				player.setSpecOptions(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'specOptions')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'specOptions')),
 		extraCssClasses: config.extraCssClasses,
 	});
 }
@@ -700,7 +702,7 @@ export function makeRotationEnumIconInput<SpecType extends Spec, T>(
 				(newMessage[config.fieldName] as unknown as T) = newVal;
 				player.setSimpleRotation(eventID, newMessage);
 			}),
-		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange)),
+		storeSubscribe: config.storeSubscribe ?? ((player: Player<SpecType>) => subscribePlayerField(player, 'rotation')),
 		extraCssClasses: config.extraCssClasses,
 	});
 }

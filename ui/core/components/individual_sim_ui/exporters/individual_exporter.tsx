@@ -85,7 +85,7 @@ export abstract class IndividualExporter<SpecType extends Spec> extends Exporter
 						this.exportCategories[category] = newValue;
 						this.changeEmitter.emit();
 					},
-					storeSubscribe: (_modObj, onChange: () => void) => this.changeEmitter.on(onChange),
+					storeSubscribe: () => this.changeEmitter.on,
 				});
 			});
 		}

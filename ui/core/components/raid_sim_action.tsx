@@ -129,7 +129,6 @@ export class RaidSimResultsManager {
 
 	// Fires once per current/reference change; emitted explicitly (no relay)
 	// so a swap — which changes both — notifies once.
-	readonly changeEmitter = new Emitter<void>();
 
 	private readonly simUI: SimUI;
 
@@ -140,7 +139,6 @@ export class RaidSimResultsManager {
 
 	constructor(simUI: SimUI) {
 		this.simUI = simUI;
-
 	}
 
 	setSimProgress(progress: ProgressMetrics) {
@@ -170,8 +168,7 @@ export class RaidSimResultsManager {
 		);
 	}
 
-	// `partOfSwap`: the caller emits the aggregate changeEmitter itself, once.
-	setSimResult(eventID: EventID, simResult: SimResult, partOfSwap = false) {
+	setSimResult(eventID: EventID, simResult: SimResult) {
 		this.reset();
 		this.currentData = {
 			simResult: simResult,
@@ -184,7 +181,6 @@ export class RaidSimResultsManager {
 		};
 
 		this.currentChangeEmitter.emit();
-		if (!partOfSwap) this.changeEmitter.emit();
 
 		this.simUI.resultsViewer.setContent(
 			<div className="results-sim">
@@ -254,7 +250,6 @@ export class RaidSimResultsManager {
 			const onSetReferenceClickHandler = () => {
 				this.referenceData = this.currentData;
 				this.referenceChangeEmitter.emit();
-				this.changeEmitter.emit();
 				this.updateReference();
 			};
 			simReferenceSetButton.addEventListener('click', onSetReferenceClickHandler);
@@ -277,10 +272,9 @@ export class RaidSimResultsManager {
 
 						this.simUI.sim.raid.fromProto(swapEventID, this.currentData.raidProto);
 						this.simUI.sim.encounter.fromProto(swapEventID, this.currentData.encounterProto);
-						this.setSimResult(swapEventID, this.currentData.simResult, true);
+						this.setSimResult(swapEventID, this.currentData.simResult);
 
 						this.referenceChangeEmitter.emit();
-						this.changeEmitter.emit();
 						this.updateReference();
 					}
 				});
@@ -300,7 +294,6 @@ export class RaidSimResultsManager {
 			const onDeleteReferenceClickHandler = () => {
 				this.referenceData = null;
 				this.referenceChangeEmitter.emit();
-				this.changeEmitter.emit();
 				this.updateReference();
 			};
 			simReferenceDeleteButton.addEventListener('click', onDeleteReferenceClickHandler);

@@ -86,7 +86,7 @@ export const DefaultConsumables = ConsumesSpec.create({
 	prepotId: 58091, // Volcanic Potion
 });
 export const DefaultRaidBuffs = RaidBuffs.create({
-	...defaultRaidBuffMajorDamageCooldowns()
+	...defaultRaidBuffMajorDamageCooldowns(),
 });
 
 export const DefaultIndividualBuffs = IndividualBuffs.create({});

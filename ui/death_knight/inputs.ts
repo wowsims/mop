@@ -15,8 +15,7 @@ const MAGIC_DAMAGE_ENCOUNTER_NPC_IDS = [
 	60143, // Gara'jal the Spiritbinder (Mogu'shan Vaults)
 ];
 
-export const encounterModelsMagicDamage = (sim: Sim): boolean =>
-	sim.encounter.getTargets().some(target => MAGIC_DAMAGE_ENCOUNTER_NPC_IDS.includes(target.id));
+export const encounterModelsMagicDamage = (sim: Sim): boolean => sim.encounter.getTargets().some(target => MAGIC_DAMAGE_ENCOUNTER_NPC_IDS.includes(target.id));
 
 // Zeroes the abstract AMS intake settings whenever the selected encounter already deals
 // real magic damage, so a value configured for a different encounter can't silently keep

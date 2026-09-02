@@ -9,7 +9,6 @@ import { Component } from '../../component';
 import { Input } from '../../input';
 import { ListItemPickerConfig, ListPicker } from '../../pickers/list_picker';
 import { APLActionPicker } from '../apl_actions';
-import { aplChildSubscribe } from '../apl_helpers';
 import { APLValuePicker } from '../apl_values';
 import { APLHidePicker } from './hide_picker';
 export class APLPrePullListPicker extends Component {
@@ -21,7 +20,7 @@ export class APLPrePullListPicker extends Component {
 			titleTooltip: i18n.t('rotation_tab.apl.prePullActions.tooltips.overview'),
 			extraCssClasses: ['apl-list-item-picker', 'apl-prepull-action-picker'],
 			itemLabel: i18n.t('rotation_tab.apl.prePullActions.name'),
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'rotation')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'rotation'),
 			getValue: (player: Player<any>) => player.aplRotation.prepullActions,
 			setValue: (eventID: EventID, player: Player<any>, newValue: Array<APLPrepullAction>) => {
 				player.modifyAplRotation(eventID, rotation => {
@@ -63,7 +62,6 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		ListPicker.makeListItemValidations(itemHeaderElem, player, player => player.getCurrentStats().rotationStats?.prepullActions[index]?.validations || []);
 
 		this.hidePicker = new APLHidePicker(itemHeaderElem, player, {
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().hide,
 			setValue: (eventID: EventID, player: Player<any>, newValue: boolean) => {
 				this.getItem().hide = newValue;
@@ -76,7 +74,6 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 			label: i18n.t('rotation_tab.apl.prepull_actions.do_at.label'),
 			labelTooltip: i18n.t('rotation_tab.apl.prepull_actions.do_at.tooltip'),
 			extraCssClasses: ['apl-prepull-actions-doat'],
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().doAtValue,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLValue | undefined) => {
 				if (newValue) {
@@ -93,7 +90,6 @@ class APLPrepullActionPicker extends Input<Player<any>, APLPrepullAction> {
 		});
 
 		this.actionPicker = new APLActionPicker(this.rootElem, this.player, {
-			storeSubscribe: aplChildSubscribe,
 			getValue: () => this.getItem().action!,
 			setValue: (eventID: EventID, player: Player<any>, newValue: APLAction) => {
 				this.getItem().action = newValue;

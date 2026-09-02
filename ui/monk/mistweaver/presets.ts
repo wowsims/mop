@@ -14,17 +14,15 @@ export const PREBIS_GEAR_PRESET = PresetUtils.makePresetGear('Default', DefaultG
 // Preset options for EP weights
 export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
 	'Default',
-	Stats.fromMap(
-		{
-			[Stat.StatIntellect]: 1.0,
-			[Stat.StatSpirit]: 0.9,
-			[Stat.StatSpellPower]: 0.79,
-			[Stat.StatHitRating]: 0.9,
-			[Stat.StatCritRating]: 0.42,
-			[Stat.StatHasteRating]: 1.0,
-			[Stat.StatMasteryRating]: 0.13,
-		}
-	),
+	Stats.fromMap({
+		[Stat.StatIntellect]: 1.0,
+		[Stat.StatSpirit]: 0.9,
+		[Stat.StatSpellPower]: 0.79,
+		[Stat.StatHitRating]: 0.9,
+		[Stat.StatCritRating]: 0.42,
+		[Stat.StatHasteRating]: 1.0,
+		[Stat.StatMasteryRating]: 0.13,
+	}),
 );
 
 // Default talents. Uses the wowhead calculator format, make the talents on

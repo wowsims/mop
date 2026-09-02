@@ -1,7 +1,13 @@
 import i18n from '../../../i18n/config';
 import { Stat } from '../../proto/common';
 import { ActionId } from '../../proto_utils/action_id';
-import { makeBooleanDebuffInput, makeBooleanIndividualBuffInput, makeBooleanRaidBuffInput, makeMultistateIndividualBuffInput, makeMultistateRaidBuffInput } from '../icon_inputs';
+import {
+	makeBooleanDebuffInput,
+	makeBooleanIndividualBuffInput,
+	makeBooleanRaidBuffInput,
+	makeMultistateIndividualBuffInput,
+	makeMultistateRaidBuffInput,
+} from '../icon_inputs';
 import * as InputHelpers from '../input_helpers';
 import { IconPicker } from '../pickers/icon_picker';
 import { MultiIconPicker } from '../pickers/multi_icon_picker';
@@ -96,7 +102,11 @@ export const StaminaBuff = InputHelpers.makeMultiIconInput(
 export const ManaTideTotem = makeMultistateRaidBuffInput({ actionId: ActionId.fromSpellId(16190), numStates: 5, fieldName: 'manaTideTotemCount' });
 
 // External Damage Cooldowns
-export const MajorHasteBuff = makeBooleanRaidBuffInput({ actionId: ActionId.fromSpellId(2825), fieldName: 'bloodlust', label: i18n.t('settings_tab.external_damage_cooldowns.bloodlust') });
+export const MajorHasteBuff = makeBooleanRaidBuffInput({
+	actionId: ActionId.fromSpellId(2825),
+	fieldName: 'bloodlust',
+	label: i18n.t('settings_tab.external_damage_cooldowns.bloodlust'),
+});
 export const Skullbanner = makeMultistateRaidBuffInput({
 	actionId: ActionId.fromSpellId(114207),
 	numStates: 11,
@@ -158,9 +168,17 @@ export const RallyingCryCount = makeMultistateIndividualBuffInput({
 //                                 DEBUFFS
 ///////////////////////////////////////////////////////////////////////////
 
-export const MajorArmorDebuff = makeBooleanDebuffInput({ actionId: ActionId.fromSpellId(113746), fieldName: 'weakenedArmor', label: i18n.t('settings_tab.debuffs.armor_reduction') });
+export const MajorArmorDebuff = makeBooleanDebuffInput({
+	actionId: ActionId.fromSpellId(113746),
+	fieldName: 'weakenedArmor',
+	label: i18n.t('settings_tab.debuffs.armor_reduction'),
+});
 
-export const DamageReduction = makeBooleanDebuffInput({ actionId: ActionId.fromSpellId(115798), fieldName: 'weakenedBlows', label: i18n.t('settings_tab.debuffs.phys_dmg_reduction') });
+export const DamageReduction = makeBooleanDebuffInput({
+	actionId: ActionId.fromSpellId(115798),
+	fieldName: 'weakenedBlows',
+	label: i18n.t('settings_tab.debuffs.phys_dmg_reduction'),
+});
 
 export const CastSpeedDebuff = InputHelpers.makeMultiIconInput(
 	[

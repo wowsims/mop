@@ -4,7 +4,7 @@ import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { Class, Glyphs, Spec } from '../../proto/common';
 import { SavedTalents } from '../../proto/ui';
-import { batch,EventID } from '../../state/batch';
+import { batch, EventID } from '../../state/batch';
 import { subscribeAll, subscribePlayerField } from '../../state/subscriptions';
 import { classTalentsConfig } from '../../talents/factory';
 import { TalentsPicker } from '../../talents/talents_picker';
@@ -49,7 +49,7 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 			playerClass: this.simUI.player.getClass(),
 			playerSpec: this.simUI.player.getSpec(),
 			tree: classTalentsConfig[this.simUI.player.getClass()]!,
-			storeSubscribe: (player: Player<any>, onChange: () => void) => subscribePlayerField(player, 'talentsString')(onChange),
+			storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'talentsString'),
 			getValue: (player: Player<any>) => player.getTalentsString(),
 			setValue: (eventID: EventID, player: Player<any>, newValue: string) => {
 				trackEvent({
@@ -83,7 +83,6 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 				});
 			},
 			subscribe: subscribeAll([subscribePlayerField(this.simUI.player, 'talentsString'), subscribePlayerField(this.simUI.player, 'glyphs')]),
-			equals: (a: SavedTalents, b: SavedTalents) => SavedTalents.equals(a, b),
 			toJson: (a: SavedTalents) => SavedTalents.toJson(a),
 			fromJson: (obj: any) => SavedTalents.fromJson(obj),
 			nameLabel: i18n.t('talents_tab.saved_talents.name_label'),

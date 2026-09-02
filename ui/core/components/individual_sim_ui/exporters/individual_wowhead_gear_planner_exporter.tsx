@@ -35,7 +35,7 @@ function writeBits(value: number): number[] {
 
 function writeTalents(talentStr: string): number[] {
 	let t = 0;
-	for (let n = talentStr.length - 1; n >= 0; n--) (t <<= 2), (t |= 3 & Math.min(4, parseInt(talentStr.substring(n, n + 1))));
+	for (let n = talentStr.length - 1; n >= 0; n--) ((t <<= 2), (t |= 3 & Math.min(4, parseInt(talentStr.substring(n, n + 1)))));
 	return writeBits(t);
 }
 
@@ -98,13 +98,13 @@ function writeHash(data: WowheadGearPlannerData): string {
 			t |= 1;
 			let s = e.randomEnchantId;
 			const r = s < 0 ? 1 : 0;
-			r && (s *= -1), (s <<= 1), (s |= r), n.push(...writeBits(s));
+			(r && (s *= -1), (s <<= 1), (s |= r), n.push(...writeBits(s)));
 		}
-		(t <<= 1), e.upgradeRank && ((t |= 1), n.push(...writeBits(e.upgradeRank))), (t <<= 1), e.reforge && ((t |= 1), n.push(...writeBits(e.reforge)));
+		((t <<= 1), e.upgradeRank && ((t |= 1), n.push(...writeBits(e.upgradeRank))), (t <<= 1), e.reforge && ((t |= 1), n.push(...writeBits(e.reforge))));
 		const r: number[] = removeTrailingZeros((e.gemItemIds ?? []).slice(0, 8));
-		(t <<= 3), (t |= r.length), r.forEach(e => n.push(...writeBits(e)));
+		((t <<= 3), (t |= r.length), r.forEach(e => n.push(...writeBits(e))));
 		const l: number[] = removeTrailingZeros((e.enchantIds ?? []).slice(0, 4));
-		(t <<= 2), (t |= l.length), l.forEach(e => n.push(...writeBits(e))), bits.push(...writeBits(t)), bits.push(...n);
+		((t <<= 2), (t |= l.length), l.forEach(e => n.push(...writeBits(e))), bits.push(...writeBits(t)), bits.push(...n));
 	});
 
 	// Encode bits into characters

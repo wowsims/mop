@@ -83,7 +83,7 @@ export default class BulkItemSearch extends ContentBlock {
 			id: 'bulkGearSearchMinIlvl',
 			label: i18n.t('bulk_tab.search.min_ilvl'),
 			showZeroes: false,
-			storeSubscribe: (_, onChange: () => void) => this.filtersChangeEmitter.on(onChange),
+			storeSubscribe: () => this.filtersChangeEmitter.on,
 			getValue: _ => this.minIlvl,
 			setValue: (eventID: EventID, _, newValue: number) => {
 				this.minIlvl = newValue;
@@ -97,7 +97,7 @@ export default class BulkItemSearch extends ContentBlock {
 			id: 'bulkGearSearchMaxIlvl',
 			label: i18n.t('bulk_tab.search.max_ilvl'),
 			showZeroes: false,
-			storeSubscribe: (_, onChange: () => void) => this.filtersChangeEmitter.on(onChange),
+			storeSubscribe: () => this.filtersChangeEmitter.on,
 			getValue: _ => this.maxIlvl,
 			setValue: (eventID: EventID, _, newValue: number) => {
 				this.maxIlvl = newValue;

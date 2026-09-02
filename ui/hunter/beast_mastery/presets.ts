@@ -34,7 +34,7 @@ export const P5_EP_PRESET = PresetUtils.makePresetEpWeights(
 			[Stat.StatExpertiseRating]: 0.42,
 			[Stat.StatHasteRating]: 0.41,
 			[Stat.StatCritRating]: 0.39,
-			[Stat.StatMasteryRating]: 0.40,
+			[Stat.StatMasteryRating]: 0.4,
 		},
 		{
 			[PseudoStat.PseudoStatRangedDps]: 0.7,

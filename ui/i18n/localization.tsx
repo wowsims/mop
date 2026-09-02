@@ -3,7 +3,7 @@ import { PresetConfigurationCategory } from '../core/components/individual_sim_u
 import { LaunchStatus } from '../core/launched_sims';
 import { PlayerClass } from '../core/player_class';
 import { PlayerSpec } from '../core/player_spec';
-import { ArmorType, ItemSlot,MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '../core/proto/common';
+import { ArmorType, ItemSlot, MobType, Profession, PseudoStat, Race, RangedWeaponType, Spec, SpellSchool, Stat, WeaponType } from '../core/proto/common';
 import { ResourceType } from '../core/proto/spell';
 import { RaidFilterOption, SourceFilterOption } from '../core/proto/ui';
 import { resourceNames } from '../core/proto_utils/names';

@@ -5,7 +5,7 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../../../i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
 import { Player } from '../../player';
-import { GemColor, ItemLevelState, ItemQuality,ItemRandomSuffix, ItemSlot, Profession } from '../../proto/common';
+import { GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, Profession } from '../../proto/common';
 import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
 import { EquippedItem, ReforgeData } from '../../proto_utils/equipped_item';
