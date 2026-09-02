@@ -1,16 +1,16 @@
+import { ItemSlot, Spec } from '@core/proto/common';
+import { SimUI } from '@core/sim_ui';
 import { Player } from '@domain/player';
 import { batch, EventID, nextEventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';
 import { BooleanPicker } from '@ui-kit/pickers/boolean_picker';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config';
-import { ItemSlot, Spec } from '../proto/common';
-import { SimUI } from '../sim_ui';
-import IconItemSwapPicker from './gear_picker/icon_item_swap_picker';
+import IconItemSwapPicker from '../../gear/view/icon_item_swap_picker';
 export interface ItemSwapPickerConfig {
 	itemSlots: Array<ItemSlot>;
 	note?: string;

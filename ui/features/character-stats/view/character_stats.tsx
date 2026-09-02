@@ -1,3 +1,5 @@
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { ItemSlot, PseudoStat, Race, Spec, Stat, WeaponType } from '@core/proto/common';
 import * as Mechanics from '@domain/constants/mechanics';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -5,16 +7,13 @@ import { getStatName, masterySpellIDs } from '@domain/proto_utils/names';
 import { computeStatAttribution, StatMods, Stats, StatWrites, UnitStat } from '@domain/proto_utils/stats';
 import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeSimChange } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
+import { translateMasterySpellName } from '@i18n/localization';
 import { Component } from '@ui-kit/component';
 import { NumberPicker } from '@ui-kit/pickers/number_picker';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
-
-import i18n from '../../i18n/config';
-import { translateMasterySpellName } from '../../i18n/localization';
-import { IndividualSimUI } from '../individual_sim_ui';
-import { ItemSlot, PseudoStat, Race, Spec, Stat, WeaponType } from '../proto/common';
 
 enum StatGroup {
 	Primary = 'Primary',

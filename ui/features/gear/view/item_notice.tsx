@@ -1,11 +1,11 @@
+import { Spec } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { Database } from '@domain/proto_utils/database';
-import { GENERIC_MISSING_SET_BONUS_NOTICE_DATA, ITEM_NOTICES, SET_BONUS_NOTICES } from '@features/gear/view/item_notices';
 import { Component } from '@ui-kit/component';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { Spec } from '../../proto/common';
+import { GENERIC_MISSING_SET_BONUS_NOTICE_DATA, ITEM_NOTICES, SET_BONUS_NOTICES } from './item_notices';
 
 export type ItemNoticeData = {
 	// SpecUnknown is used as default and should always be present

@@ -1,3 +1,14 @@
+import {
+	makePhaseSelector,
+	makeShow1hWeaponsSelector,
+	makeShow2hWeaponsSelector,
+	makeShowEPValuesSelector,
+	makeShowMatchingGemsSelector,
+} from '@core/components/inputs/other_inputs';
+import { IndividualSimUI } from '@core/individual_sim_ui';
+import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '@core/proto/common';
+import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '@core/proto/ui';
+import { SimUI } from '@core/sim_ui';
 import { SortDirection } from '@domain/constants/other';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
@@ -9,27 +20,16 @@ import { Sim } from '@domain/sim';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { StoreSubscribe, subscribeBulkField } from '@domain/state/subscriptions';
 import { formatDeltaTextElem } from '@domain/utils';
-import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
+import i18n from '@i18n/config';
 import { setItemQualityCssClass } from '@ui-kit/css_utils';
 import { Clusterize } from '@ui-kit/vendor/clusterize';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../../i18n/config';
 import { trackEvent } from '../../../tracking/utils';
-import { IndividualSimUI } from '../../individual_sim_ui';
-import { Class, GemColor, ItemLevelState, ItemQuality, ItemRandomSuffix, ItemSlot, ItemSpec } from '../../proto/common';
-import { DatabaseFilters, RepFaction, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UIItem_FactionRestriction } from '../../proto/ui';
-import { SimUI } from '../../sim_ui';
-import {
-	makePhaseSelector,
-	makeShow1hWeaponsSelector,
-	makeShow2hWeaponsSelector,
-	makeShowEPValuesSelector,
-	makeShowMatchingGemsSelector,
-} from '../inputs/other_inputs';
-import { ItemNotice } from '../item_notice/item_notice';
+import { setActionIdWowheadHref } from './action_id_dom';
 import { FiltersMenu } from './filters_menu';
+import { ItemNotice } from './item_notice';
 import { getTranslatedTabLabel, SelectorModalTabs } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
 export interface ItemData<T extends ItemListType> {

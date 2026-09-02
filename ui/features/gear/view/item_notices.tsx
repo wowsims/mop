@@ -1,6 +1,7 @@
-import { ItemNoticeData, SetBonusNoticeData } from '@core/components/item_notice/item_notice';
 import { Spec } from '@core/proto/common';
 import { MISSING_ITEM_EFFECTS } from '@domain/constants/missing_effects_auto_gen';
+
+import { ItemNoticeData, SetBonusNoticeData } from './item_notice';
 
 const WantToHelpMessage = () => <p className="mb-0">Want to help out by providing additional information? Contact us on our Discord!</p>;
 

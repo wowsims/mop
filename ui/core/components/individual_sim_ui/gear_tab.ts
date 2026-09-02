@@ -3,6 +3,10 @@ import { Player } from '@domain/player';
 import { Stats } from '@domain/proto_utils/stats';
 import { batch, EventID } from '@domain/state/batch';
 import { subscribePlayerChange } from '@domain/state/subscriptions';
+import GearPicker from '@features/gear/view/gear_picker';
+import { GemSummary } from '@features/gear/view/gem_summary';
+import { ReforgeSummary } from '@features/gear/view/reforge_summary';
+import { UpgradeCostsSummary } from '@features/gear/view/upgrade_costs_summary';
 import { SavedDataManager } from '@ui-kit/saved_data_manager';
 import { SimTab } from '@ui-kit/sim_tab';
 
@@ -10,11 +14,7 @@ import i18n from '../../../i18n/config';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { EquipmentSpec, UnitStats } from '../../proto/common';
 import { SavedGearSet } from '../../proto/ui';
-import GearPicker from '../gear_picker/gear_picker';
-import { GemSummary } from './gem_summary';
 import { PresetConfigurationPicker } from './preset_configuration_picker';
-import { ReforgeSummary } from './reforge_summary';
-import { UpgradeCostsSummary } from './upgrade_costs_summary';
 export class GearTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 

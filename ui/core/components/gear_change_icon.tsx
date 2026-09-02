@@ -2,6 +2,7 @@ import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEmptyGemSocketIconUrl } from '@domain/proto_utils/gems';
 import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from '@features/gear/view/action_id_dom';
+import { getEmptySlotIconUrl } from '@features/gear/view/utils';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -9,7 +10,6 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../../i18n/config';
 import { translateSlotName, translateStat } from '../../i18n/localization';
 import { ItemSlot } from '../proto/common';
-import { getEmptySlotIconUrl } from './gear_picker/utils';
 
 export const buildGearChangeIcon = (
 	player: Player<any>,

@@ -16,15 +16,22 @@ ui/
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
                      css_utils, dom_utils, action_id_dom, pickers/, vendor/. alias @ui-kit
   features/<name>/   EXISTS. one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
-                     Today: apl/ (model/ + view/), gear/, reforge/, results/, stat-weights/,
-                     talents/. alias @features
+                     Today: apl/ (model/ + view/), gear/ (gear_picker/* flattened in, plus
+                     gem_summary/reforge_summary/upgrade_costs_summary/item_notice, PR 5a),
+                     reforge/, results/, stat-weights/, talents/, item-swap/ (view/,
+                     item_swap_picker, PR 5a), character-stats/ (view/, character_stats, PR 5a),
+                     encounter/ (view/, encounter_picker, PR 5a), settings/ (view/,
+                     cooldowns_picker + consumes_picker, PR 5a). alias @features
   app/               shells + chrome that compose features; i18n/. Today: browser_env.ts only —
                      sim_ui/individual_sim_ui/preset_utils/launched_sims and the rest of
                      components/ are still under ui/core/ (PR 4–6). alias @app
   core/              LEGACY. what has not been placed yet: proto/ (generated), components/
                      (detailed_results moved to features/results, PR 4a; apl_values/apl_actions/
                      apl_helpers/apl_condition_builder/apl/ moved to features/apl/view, PR 4b,
-                     apl actionIdSets/unitSets to features/apl/model, PR 4c),
+                     apl actionIdSets/unitSets to features/apl/model, PR 4c; gear_picker/,
+                     item_swap_picker.tsx, character_stats.tsx, encounter_picker.ts,
+                     item_notice/, and the gem/reforge/upgrade_costs summaries +
+                     cooldowns_picker/consumes_picker moved out to features/, PR 5a),
                      sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx. alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged

@@ -191,6 +191,18 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   `grep -nE '^//#region ' tmp/harness/snapshot.js` after a harness build: every
   `player_specs/<class>.ts` must be emitted before `player_specs/index.ts`.
 
+- 2026-09-02 UI restructure PR 5a "gear/settings move (view only)": whole-file moves via
+  `tools/restructure/move.mjs` (17 files, 97 specifiers in 27 files) — `gear_picker/` (8 files,
+  flattened) plus `gem_summary.tsx`/`reforge_summary.tsx`/`upgrade_costs_summary.tsx` (all three
+  turned out to be gear summaries, not settings-tab) and `item_notice/item_notice.tsx` all landed
+  in `ui/features/gear/view/` alongside the pre-existing `action_id_dom.ts`/`item_notices.tsx` (no
+  collisions); `item_swap_picker.tsx` → `features/item-swap/view/`; `character_stats.tsx` →
+  `features/character-stats/view/`; `encounter_picker.ts` → `features/encounter/view/`;
+  `cooldowns_picker.ts` + `consumes_picker.tsx` → `features/settings/view/`. scss under
+  `ui/scss/core/components/` is untouched (scss stays in place per README) and its `@import`s
+  still resolve since only the `.ts`/`.tsx` moved. Gate note: the move disturbed import order in
+  every touched file — `oxlint --fix` on `ui tools` cleared all of it, no manual sorting needed.
+
 - 2026-09-02 UI restructure PR 4c "apl model": the `actionIdSets` and `unitSets` registries (plus their
   `ACTION_ID_SET` / `UNIT_SET` key types) moved verbatim out of `features/apl/view/apl_helpers.tsx` into
   `features/apl/model/{action_id_sets,unit_sets}.ts`; the view imports them back. Nothing else in the apl

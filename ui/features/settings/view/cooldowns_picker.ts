@@ -1,15 +1,14 @@
+import { ActionID as ActionIdProto, Cooldown } from '@core/proto/common';
 import { Player } from '@domain/player';
 import { ActionId } from '@domain/proto_utils/action_id';
 import { EventID, nextEventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeUnitMetadata } from '@domain/state/subscriptions';
+import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { existsInDOM } from '@ui-kit/dom_utils';
 import { IconEnumPicker, IconEnumValueConfig } from '@ui-kit/pickers/icon_enum_picker';
 import { NumberListPicker } from '@ui-kit/pickers/number_list_picker';
 import tippy from 'tippy.js';
-
-import i18n from '../../../i18n/config';
-import { ActionID as ActionIdProto, Cooldown } from '../../proto/common';
 export class CooldownsPicker extends Component {
 	readonly player: Player<any>;
 

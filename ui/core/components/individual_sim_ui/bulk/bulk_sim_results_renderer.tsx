@@ -2,6 +2,7 @@ import { TopGearResult } from '@domain/bulk/types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from '@domain/bulk/utils';
 import { nextEventID } from '@domain/state/batch';
 import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '@domain/utils';
+import { ItemRenderer } from '@features/gear/view/gear_picker';
 import { SimResultsManager } from '@features/results/view/results_action';
 import { Component } from '@ui-kit/component';
 import Toast from '@ui-kit/toast';
@@ -13,7 +14,6 @@ import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { ItemSlot, ItemSpec } from '../../../proto/common';
 import { buildGearChangeIcon } from '../../gear_change_icon';
-import { ItemRenderer } from '../../gear_picker/gear_picker';
 const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, canDualWield));
 

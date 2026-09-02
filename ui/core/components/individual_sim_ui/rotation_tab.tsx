@@ -8,6 +8,7 @@ import { APLGroupListPicker } from '@features/apl/view/apl_group_list_picker';
 import { APLVariablesListPicker } from '@features/apl/view/apl_variables_list_picker';
 import { APLPrePullListPicker } from '@features/apl/view/pre_pull_list_picker';
 import { APLPriorityListPicker } from '@features/apl/view/priority_list_picker';
+import { CooldownsPicker } from '@features/settings/view/cooldowns_picker';
 import { ContentBlock } from '@ui-kit/content_block';
 import * as IconInputs from '@ui-kit/icon_inputs';
 import { Input } from '@ui-kit/input';
@@ -24,7 +25,6 @@ import i18n from '../../../i18n/config';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
 import { SavedRotation } from '../../proto/ui';
-import { CooldownsPicker } from './cooldowns_picker';
 import { PresetConfigurationPicker } from './preset_configuration_picker';
 export class RotationTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;

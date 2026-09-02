@@ -3,6 +3,9 @@ import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { getEligibleItemSlots } from '@domain/proto_utils/utils';
 import { Emitter } from '@domain/state/events';
 import { subscribeBulkChange } from '@domain/state/subscriptions';
+import { ItemRenderer } from '@features/gear/view/gear_picker';
+import { GearData } from '@features/gear/view/item_list';
+import { SelectorModalTabs } from '@features/gear/view/selector_modal';
 import { Component } from '@ui-kit/component';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -10,9 +13,6 @@ import { ref } from 'tsx-vanilla';
 import i18n from '../../../../i18n/config';
 import { IndividualSimUI } from '../../../individual_sim_ui';
 import { ItemSlot } from '../../../proto/common';
-import { ItemRenderer } from '../../gear_picker/gear_picker';
-import { GearData } from '../../gear_picker/item_list';
-import { SelectorModalTabs } from '../../gear_picker/selector_modal';
 import { BulkTab } from '../bulk_tab';
 
 export default class BulkItemPicker extends Component {

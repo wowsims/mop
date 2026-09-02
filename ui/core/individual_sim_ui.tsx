@@ -18,6 +18,9 @@ import {
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from '@domain/state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from '@domain/talents/required_talents';
 import { isDevMode } from '@domain/utils';
+import { CharacterStats } from '@features/character-stats/view/character_stats';
+import { EncounterPickerConfig } from '@features/encounter/view/encounter_picker';
+import { ItemNotice } from '@features/gear/view/item_notice';
 import { ReforgeOptimizer } from '@features/reforge/view/reforge_panel';
 import { DetailedResults } from '@features/results/view/detailed_results';
 import { addSimResultsAction, SimResultsManager } from '@features/results/view/results_action';
@@ -28,8 +31,6 @@ import * as InputHelpers from '@ui-kit/input_helpers';
 import { SavedDataConfig } from '@ui-kit/saved_data_manager';
 
 import i18n from '../i18n/config';
-import { CharacterStats } from './components/character_stats';
-import { EncounterPickerConfig } from './components/encounter_picker';
 import { BulkTab } from './components/individual_sim_ui/bulk_tab';
 import {
 	// Individual60UEPExporter,
@@ -51,7 +52,6 @@ import { RotationTab } from './components/individual_sim_ui/rotation_tab';
 import { SettingsTab } from './components/individual_sim_ui/settings_tab';
 import { TalentsTab } from './components/individual_sim_ui/talents_tab';
 import * as OtherInputs from './components/inputs/other_inputs';
-import { ItemNotice } from './components/item_notice/item_notice';
 import { simLaunchStatuses } from './launched_sims';
 import { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
 import { StatWeightsResult } from './proto/api';
