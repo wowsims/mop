@@ -15,7 +15,6 @@ import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecGuardianDruid>({
 	spec: Spec.SpecGuardianDruid,
-	enableHealing: true,
 
 	cssClass: 'guardian-druid-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),

@@ -11,7 +11,6 @@ import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecHolyPaladin>({
 	spec: Spec.SpecHolyPaladin,
-	enableHealing: true,
 
 	cssClass: 'holy-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),

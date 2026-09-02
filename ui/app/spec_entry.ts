@@ -44,8 +44,12 @@ void (async () => {
 	registerSpecConfig(def.spec, def);
 
 	const sim = new Sim({ env: browserEnv });
-	const player = new Player(PlayerSpecs.fromProto(def.spec), sim);
-	if (def.enableHealing) player.enableHealing();
+	const playerSpec = PlayerSpecs.fromProto(def.spec);
+	const player = new Player(playerSpec, sim);
+	// Tanks and healers sim their own healing output. That follows from the spec
+	// itself, so it is derived from the registry rather than restated per spec;
+	// `enableHealing` on the definition is the override for the exceptions.
+	if (def.enableHealing ?? (playerSpec.isTankSpec || playerSpec.isHealingSpec)) player.enableHealing();
 
 	sim.raid.setPlayer(nextEventID(), 0, player);
 

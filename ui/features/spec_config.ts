@@ -187,7 +187,8 @@ export interface SpecBehaviors<SpecType extends Spec> {
 	// Wires the Reforge Optimizer. A function form receives the sim host, for
 	// options that need to call back into it.
 	reforge?: ReforgeOptimizerOptions | ((host: IndividualSimHost<SpecType>) => ReforgeOptimizerOptions);
-	// Healing specs that sim their own output (tanks included) opt in here.
+	// Whether the player sims incoming healing. Defaults to `isTankSpec ||
+	// isHealingSpec` from the spec's registry entry; set it only to override that.
 	enableHealing?: boolean;
 	derivedSettings?: Array<DerivedSetting<SpecType>>;
 	// Spec-local escape hatch: anything else that needs constructing with the host.

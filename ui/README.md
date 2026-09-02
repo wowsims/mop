@@ -137,7 +137,7 @@ export default defineSpec<Spec.SpecArmsWarrior>({
     defaults: { … },
     presets: { … },
     reforge: { getEPDefaults, updateSoftCaps },      // optional — wires ReforgeOptimizer
-    enableHealing: true,                             // optional — tanks / healers
+    enableHealing: false,                            // optional — overrides the tank/healer default
     derivedSettings: [{ subscribe, apply }],         // optional — settings derived from others
     features: [host => new Thing(host)],             // optional — spec-local escape hatch
 });

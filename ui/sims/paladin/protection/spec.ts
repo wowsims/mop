@@ -26,7 +26,6 @@ import * as PaladinPresets from '../shared/presets';
 
 export default defineSpec<Spec.SpecProtectionPaladin>({
 	spec: Spec.SpecProtectionPaladin,
-	enableHealing: true,
 
 	cssClass: 'protection-paladin-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
