@@ -1,6 +1,6 @@
-import { DruidMajorGlyph, DruidMinorGlyph, DruidTalents } from '../proto/druid.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { newTalentsConfig, TalentsConfig } from './talents_picker.js';
+import { DruidMajorGlyph, DruidMinorGlyph, DruidTalents } from '../proto/druid';
+import { GlyphsConfig } from './glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import DruidTalentJson from './trees/druid.json';export const druidTalentsConfig: TalentsConfig<DruidTalents> = newTalentsConfig(DruidTalentJson);
 
 export const druidGlyphsConfig: GlyphsConfig = {

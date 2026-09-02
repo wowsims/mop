@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 
-import i18n from '../../i18n/config.js';
+import i18n from '../../i18n/config';
 import { translateResultMetricLabel, translateResultMetricTooltip } from '../../i18n/localization';
 import { trackEvent } from '../../tracking/utils';
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '../proto/api';

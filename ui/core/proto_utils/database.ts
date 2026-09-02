@@ -1,6 +1,6 @@
 import { Stats } from '../../core/proto_utils/stats';
 import { CacheHandler } from '../cache_handler';
-import { CHARACTER_LEVEL } from '../constants/mechanics.js';
+import { CHARACTER_LEVEL } from '../constants/mechanics';
 import {
 	ConsumableType,
 	EquipmentSpec,
@@ -14,16 +14,16 @@ import {
 	PresetTarget,
 	ReforgeStat,
 	Stat,
-} from '../proto/common.js';
+} from '../proto/common';
 import { Consumable, ItemEffectRandPropPoints, SimDatabase } from '../proto/db';
 import { SpellEffect } from '../proto/spell';
-import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '../proto/ui.js';
-import { distinct } from '../utils.js';
+import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '../proto/ui';
+import { distinct } from '../utils';
 import { WOWHEAD_EXPANSION_ENV } from '../wowhead';
-import { EquippedItem } from './equipped_item.js';
-import { Gear, ItemSwapGear } from './gear.js';
-import { gemEligibleForSocket, gemMatchesSocket } from './gems.js';
-import { getEligibleEnchantSlots, getEligibleItemSlots } from './utils.js';
+import { EquippedItem } from './equipped_item';
+import { Gear, ItemSwapGear } from './gear';
+import { gemEligibleForSocket, gemMatchesSocket } from './gems';
+import { getEligibleEnchantSlots, getEligibleItemSlots } from './utils';
 
 const dbUrlJson = '/mop/assets/database/db.json';
 const dbUrlBin = '/mop/assets/database/db.bin';

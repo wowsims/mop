@@ -1,12 +1,12 @@
-import i18n from '../../../i18n/config.js';
-import { Player } from '../../player.js';
-import { UnitReference } from '../../proto/common.js';
-import { emptyUnitReference } from '../../proto_utils/utils.js';
-import { Sim } from '../../sim.js';
+import i18n from '../../../i18n/config';
+import { Player } from '../../player';
+import { UnitReference } from '../../proto/common';
+import { emptyUnitReference } from '../../proto_utils/utils';
+import { Sim } from '../../sim';
 import { EventID } from '../../state/batch';
 import { subscribeAll, subscribePlayerField, subscribeRaidField, subscribeSimField, subscribeUiField } from '../../state/subscriptions';
-import { BooleanPicker } from '../pickers/boolean_picker.js';
-import { EnumPicker } from '../pickers/enum_picker.js';
+import { BooleanPicker } from '../pickers/boolean_picker';
+import { EnumPicker } from '../pickers/enum_picker';
 export function makeShow1hWeaponsSelector(parent: HTMLElement, sim: Sim): BooleanPicker<Sim> {
 	parent.classList.remove('hide');
 	return new BooleanPicker<Sim>(parent, sim, {

@@ -1,17 +1,17 @@
-import { Player } from '../player.js';
-import { Spec } from '../proto/common.js';
-import { ActionId } from '../proto_utils/action_id.js';
-import { ClassOptions, SpecOptions, SpecRotation } from '../proto_utils/utils.js';
+import { Player } from '../player';
+import { Spec } from '../proto/common';
+import { ActionId } from '../proto_utils/action_id';
+import { ClassOptions, SpecOptions, SpecRotation } from '../proto_utils/utils';
 import { EventID } from '../state/batch';
 import type { StoreSubscribe } from '../state/subscriptions';
-import { subscribePlayerField } from '../state/subscriptions.js';
+import { subscribePlayerField } from '../state/subscriptions';
 import { formatToNumber, randomUUID } from '../utils';
-import { BooleanPickerConfig } from './pickers/boolean_picker.js';
-import { EnumPickerConfig, EnumValueConfig } from './pickers/enum_picker.js';
-import { IconEnumPickerConfig, IconEnumValueConfig } from './pickers/icon_enum_picker.jsx';
-import { IconPickerConfig } from './pickers/icon_picker.jsx';
-import { MultiIconPickerConfig } from './pickers/multi_icon_picker.js';
-import { NumberPickerConfig } from './pickers/number_picker.js';
+import { BooleanPickerConfig } from './pickers/boolean_picker';
+import { EnumPickerConfig, EnumValueConfig } from './pickers/enum_picker';
+import { IconEnumPickerConfig, IconEnumValueConfig } from './pickers/icon_enum_picker';
+import { IconPickerConfig } from './pickers/icon_picker';
+import { MultiIconPickerConfig } from './pickers/multi_icon_picker';
+import { NumberPickerConfig } from './pickers/number_picker';
 export function makeMultiIconInput<ModObject>(
 	inputs: Array<IconPickerConfig<ModObject, any>>,
 	label: string,

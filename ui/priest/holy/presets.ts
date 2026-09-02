@@ -1,7 +1,7 @@
-import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs, Stat } from '../../core/proto/common.js';
-import { HolyPriest_Options as Options, PriestOptions_Armor } from '../../core/proto/priest.js';
-import { SavedTalents } from '../../core/proto/ui.js';
+import * as PresetUtils from '../../core/preset_utils';
+import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs, Stat } from '../../core/proto/common';
+import { HolyPriest_Options as Options, PriestOptions_Armor } from '../../core/proto/priest';
+import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import AOE24Apl from './apls/aoe_2_4.apl.json';

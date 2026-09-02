@@ -1,13 +1,13 @@
-import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
-import { Player } from '../../core/player.js';
+import * as OtherInputs from '../../core/components/inputs/other_inputs';
+import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
+import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl.js';
-import { Class, Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common.js';
-import { UnitStat } from '../../core/proto_utils/stats.js';
+import { APLRotation } from '../../core/proto/apl';
+import { Class, Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import * as ShamanInputs from '../inputs.js';
-import * as Presets from './presets.js';
+import * as ShamanInputs from '../inputs';
+import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecRestorationShaman, {
 	cssClass: 'restoration-shaman-sim-ui',

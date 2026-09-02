@@ -1,9 +1,9 @@
 import { Chart } from 'chart.js';
 
-import { Component } from '../../components/component.js';
-import { ActionMetrics } from '../../proto_utils/sim_result.js';
-import { sum } from '../../utils.js';
-import { actionColors } from './color_settings.js';
+import { Component } from '../../components/component';
+import { ActionMetrics } from '../../proto_utils/sim_result';
+import { sum } from '../../utils';
+import { actionColors } from './color_settings';
 
 export class SourceChart extends Component {
 	constructor(parentElem: HTMLElement, allActionMetrics: Array<ActionMetrics>) {

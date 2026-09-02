@@ -1,8 +1,8 @@
-import * as InputHelpers from '../core/components/input_helpers.js';
-import { Player } from '../core/player.js';
-import { Spec } from '../core/proto/common.js';
-import { WarlockOptions_Summon as Summon } from '../core/proto/warlock.js';
-import { ActionId } from '../core/proto_utils/action_id.js';
+import * as InputHelpers from '../core/components/input_helpers';
+import { Player } from '../core/player';
+import { Spec } from '../core/proto/common';
+import { WarlockOptions_Summon as Summon } from '../core/proto/warlock';
+import { ActionId } from '../core/proto_utils/action_id';
 import { WarlockSpecs } from '../core/proto_utils/utils';
 import { subscribePlayerChange } from '../core/state/subscriptions';
 

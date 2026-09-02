@@ -1,8 +1,8 @@
-import * as InputHelpers from '../../core/components/input_helpers.js';
-import { Player } from '../../core/player.js';
-import { Spec } from '../../core/proto/common.js';
-import { subscribeAll, subscribeEncounterChange, subscribePlayerField } from '../../core/state/subscriptions.js';
-import { encounterModelsMagicDamage } from '../inputs.js';
+import * as InputHelpers from '../../core/components/input_helpers';
+import { Player } from '../../core/player';
+import { Spec } from '../../core/proto/common';
+import { subscribeAll, subscribeEncounterChange, subscribePlayerField } from '../../core/state/subscriptions';
+import { encounterModelsMagicDamage } from '../inputs';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.

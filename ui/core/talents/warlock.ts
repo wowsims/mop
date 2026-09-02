@@ -1,6 +1,6 @@
-import { WarlockMajorGlyph, WarlockMinorGlyph, WarlockTalents } from '../proto/warlock.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { newTalentsConfig, TalentsConfig } from './talents_picker.js';
+import { WarlockMajorGlyph, WarlockMinorGlyph, WarlockTalents } from '../proto/warlock';
+import { GlyphsConfig } from './glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import WarlockTalentJson from './trees/warlock.json';export const warlockTalentsConfig: TalentsConfig<WarlockTalents> = newTalentsConfig(WarlockTalentJson);
 
 export const warlockGlyphsConfig: GlyphsConfig = {

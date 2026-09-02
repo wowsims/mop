@@ -1,6 +1,6 @@
 import { ref } from 'tsx-vanilla';
 
-import { Component } from './component.js';
+import { Component } from './component';
 import { TooltipButton } from './tooltip_button';
 
 export interface ContentBlockHeaderConfig {

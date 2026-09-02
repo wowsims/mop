@@ -1,7 +1,7 @@
 import i18n from '../../../i18n/config';
 import { Player } from '../../player';
 import { ItemSlot } from '../../proto/common';
-import { UIEnchant as Enchant } from '../../proto/ui.js';
+import { UIEnchant as Enchant } from '../../proto/ui';
 import { EquippedItem } from '../../proto_utils/equipped_item';
 import { nextEventID } from '../../state/batch';
 import QuickSwapList from '../quick_swap';

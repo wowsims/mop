@@ -1,13 +1,13 @@
-import { Party } from '../party.js';
+import { Party } from '../party';
 import { Player } from '../player';
-import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '../proto/common.js';
-import { ActionId } from '../proto_utils/action_id.js';
+import { ConsumesSpec, Debuffs, Faction, IndividualBuffs, PartyBuffs, RaidBuffs, Spec } from '../proto/common';
+import { ActionId } from '../proto_utils/action_id';
 import { Raid } from '../raid';
 import { EventID } from '../state/batch';
 import { subscribeAll, subscribePartyBuffs, subscribePlayerField, subscribeRaidField } from '../state/subscriptions';
 import * as InputHelpers from './input_helpers';
-import { IconEnumPicker } from './pickers/icon_enum_picker.jsx';
-import { IconPicker } from './pickers/icon_picker.jsx';
+import { IconEnumPicker } from './pickers/icon_enum_picker';
+import { IconPicker } from './pickers/icon_picker';
 // Component Functions
 
 export type IconInputConfig<ModObject, T> = InputHelpers.TypedIconPickerConfig<ModObject, T> | InputHelpers.TypedIconEnumPickerConfig<ModObject, T>;

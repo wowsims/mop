@@ -1,19 +1,19 @@
-import { PlayerSpec } from '../player_spec.js';
-import { Class, Spec } from '../proto/common.js';
-import { SpecTalents, specTypeFunctions } from '../proto_utils/utils.js';
-import { deathKnightGlyphsConfig, deathKnightTalentsConfig } from './death_knight.js';
-import { druidGlyphsConfig, druidTalentsConfig } from './druid.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { hunterGlyphsConfig, hunterTalentsConfig } from './hunter.js';
-import { mageGlyphsConfig, mageTalentsConfig } from './mage.js';
-import { monkGlyphsConfig, monkTalentsConfig } from './monk.js';
-import { paladinGlyphsConfig, paladinTalentsConfig } from './paladin.js';
-import { priestGlyphsConfig, priestTalentsConfig } from './priest.js';
-import { rogueGlyphsConfig, rogueTalentsConfig } from './rogue.js';
-import { shamanGlyphsConfig, shamanTalentsConfig } from './shaman.js';
-import { TalentsConfig } from './talents_picker.js';
-import { warlockGlyphsConfig, warlockTalentsConfig } from './warlock.js';
-import { warriorGlyphsConfig, warriorTalentsConfig } from './warrior.js';
+import { PlayerSpec } from '../player_spec';
+import { Class, Spec } from '../proto/common';
+import { SpecTalents, specTypeFunctions } from '../proto_utils/utils';
+import { deathKnightGlyphsConfig, deathKnightTalentsConfig } from './death_knight';
+import { druidGlyphsConfig, druidTalentsConfig } from './druid';
+import { GlyphsConfig } from './glyphs_picker';
+import { hunterGlyphsConfig, hunterTalentsConfig } from './hunter';
+import { mageGlyphsConfig, mageTalentsConfig } from './mage';
+import { monkGlyphsConfig, monkTalentsConfig } from './monk';
+import { paladinGlyphsConfig, paladinTalentsConfig } from './paladin';
+import { priestGlyphsConfig, priestTalentsConfig } from './priest';
+import { rogueGlyphsConfig, rogueTalentsConfig } from './rogue';
+import { shamanGlyphsConfig, shamanTalentsConfig } from './shaman';
+import { TalentsConfig } from './talents_picker';
+import { warlockGlyphsConfig, warlockTalentsConfig } from './warlock';
+import { warriorGlyphsConfig, warriorTalentsConfig } from './warrior';
 
 export const classTalentsConfig: Record<Class, TalentsConfig<any> | null> = {
 	[Class.ClassUnknown]: null,

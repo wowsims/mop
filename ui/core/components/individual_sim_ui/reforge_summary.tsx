@@ -1,14 +1,14 @@
 import i18n from '../../../i18n/config';
 import { translateStat } from '../../../i18n/localization';
 import { trackEvent } from '../../../tracking/utils';
-import { IndividualSimUI } from '../../individual_sim_ui.jsx';
-import { Player } from '../../player.js';
-import { Stat } from '../../proto/common.js';
-import { IndividualSimSettings } from '../../proto/ui.js';
+import { IndividualSimUI } from '../../individual_sim_ui';
+import { Player } from '../../player';
+import { Stat } from '../../proto/common';
+import { IndividualSimSettings } from '../../proto/ui';
 import { nextEventID } from '../../state/batch';
 import { subscribePlayerField } from '../../state/subscriptions';
-import { Component } from '../component.js';
-import { ContentBlock } from '../content_block.jsx';
+import { Component } from '../component';
+import { ContentBlock } from '../content_block';
 import { CopyButton } from '../copy_button';
 type ReforgeSummaryTotal = {
 	[key in Stat]?: number;

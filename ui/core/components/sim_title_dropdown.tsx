@@ -1,16 +1,16 @@
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config.js';
+import i18n from '../../i18n/config';
 import { translatePlayerClass, translatePlayerSpec, translateStatus } from '../../i18n/localization';
-import { simLaunchStatuses } from '../launched_sims.js';
-import { PlayerClass } from '../player_class.js';
-import { PlayerClasses } from '../player_classes/index.js';
-import { PlayerSpec } from '../player_spec.js';
-import { PlayerSpecs } from '../player_specs/index.js';
-import { Class, Spec } from '../proto/common.js';
-import { textCssClassForClass, textCssClassForSpec } from '../proto_utils/utils.js';
-import { Component } from './component.js';
+import { simLaunchStatuses } from '../launched_sims';
+import { PlayerClass } from '../player_class';
+import { PlayerClasses } from '../player_classes/index';
+import { PlayerSpec } from '../player_spec';
+import { PlayerSpecs } from '../player_specs/index';
+import { Class, Spec } from '../proto/common';
+import { textCssClassForClass, textCssClassForSpec } from '../proto_utils/utils';
+import { Component } from './component';
 
 interface ClassOptions {
 	type: 'Class';

@@ -1,11 +1,11 @@
-import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Debuffs, Glyphs, Profession, RaidBuffs, Stat } from '../../core/proto/common.js';
+import * as PresetUtils from '../../core/preset_utils';
+import { ConsumesSpec, Debuffs, Glyphs, Profession, RaidBuffs, Stat } from '../../core/proto/common';
 import {
 	HolyPaladin_Options as Paladin_Options,
 	PaladinMajorGlyph as MajorGlyph,
 	PaladinSeal,
-} from '../../core/proto/paladin.js';
-import { SavedTalents } from '../../core/proto/ui.js';
+} from '../../core/proto/paladin';
+import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import P1Gear from './gear_sets/p1.gear.json';

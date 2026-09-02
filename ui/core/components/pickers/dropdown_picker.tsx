@@ -5,8 +5,8 @@ import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { nextEventID } from '../../state/batch';
-import { existsInDOM } from '../../utils.js';
-import { Input, InputConfig } from '../input.js';
+import { existsInDOM } from '../../utils';
+import { Input, InputConfig } from '../input';
 export interface DropdownValueConfig<V> {
 	value: V;
 	submenu?: (string | V)[];

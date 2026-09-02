@@ -1,4 +1,4 @@
-import { UIEnchant as Enchant } from '../proto/ui.js';
+import { UIEnchant as Enchant } from '../proto/ui';
 
 let descriptionsPromise: Promise<Record<number, string>> | null = null;
 function fetchEnchantDescriptions(): Promise<Record<number, string>> {

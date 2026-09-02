@@ -1,6 +1,6 @@
-import { WarriorMajorGlyph, WarriorMinorGlyph, WarriorTalents } from '../proto/warrior.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { newTalentsConfig, TalentsConfig } from './talents_picker.js';
+import { WarriorMajorGlyph, WarriorMinorGlyph, WarriorTalents } from '../proto/warrior';
+import { GlyphsConfig } from './glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import WarriorTalentJson from './trees/warrior.json';export const warriorTalentsConfig: TalentsConfig<WarriorTalents> = newTalentsConfig(WarriorTalentJson);
 
 export const warriorGlyphsConfig: GlyphsConfig = {

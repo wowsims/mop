@@ -1,12 +1,12 @@
 import clsx from 'clsx';
 
 import { CacheHandler } from '../cache_handler';
-import { RaidSimResult } from '../proto/api.js';
+import { RaidSimResult } from '../proto/api';
 import { SpellSchool } from '../proto/common';
 import { ResourceType, SecondaryResourceType } from '../proto/spell';
-import { bucket, getEnumValues, stringComparator, sum } from '../utils.js';
-import { ActionId } from './action_id.js';
-import { resourceNames, spellSchoolNames, stringToResourceType } from './names.js';
+import { bucket, getEnumValues, stringComparator, sum } from '../utils';
+import { ActionId } from './action_id';
+import { resourceNames, spellSchoolNames, stringToResourceType } from './names';
 import { SECONDARY_RESOURCES } from './secondary_resource';
 
 export class Entity {

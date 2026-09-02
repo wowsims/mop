@@ -2,18 +2,18 @@ import { ref } from 'tsx-vanilla';
 
 import i18n from '../../i18n/config';
 import { getClassI18nKey } from '../../i18n/entity_mapping';
-import { BaseModal } from '../components/base_modal.js';
-import { Component } from '../components/component.js';
-import { ContentBlock } from '../components/content_block.js';
-import { Input } from '../components/input.js';
-import { setItemQualityCssClass } from '../css_utils.js';
-import { Player } from '../player.js';
-import { Glyphs, ItemQuality } from '../proto/common.js';
-import { ActionId } from '../proto_utils/action_id.js';
-import { Database } from '../proto_utils/database.js';
+import { BaseModal } from '../components/base_modal';
+import { Component } from '../components/component';
+import { ContentBlock } from '../components/content_block';
+import { Input } from '../components/input';
+import { setItemQualityCssClass } from '../css_utils';
+import { Player } from '../player';
+import { Glyphs, ItemQuality } from '../proto/common';
+import { ActionId } from '../proto_utils/action_id';
+import { Database } from '../proto_utils/database';
 import { EventID, nextEventID } from '../state/batch';
 import { subscribePlayerField } from '../state/subscriptions';
-import { stringComparator } from '../utils.js';
+import { stringComparator } from '../utils';
 export type GlyphConfig = {
 	name: string;
 	description: string;

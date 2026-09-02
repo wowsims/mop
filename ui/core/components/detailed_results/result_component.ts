@@ -1,5 +1,5 @@
-import { Component } from '../../components/component.js';
-import { SimResult, SimResultFilter } from '../../proto_utils/sim_result.js';
+import { Component } from '../../components/component';
+import { SimResult, SimResultFilter } from '../../proto_utils/sim_result';
 import { EventID } from '../../state/batch';
 import { Emitter } from '../../state/events';
 export interface SimResultData {

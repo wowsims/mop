@@ -1,9 +1,9 @@
 import { ref } from 'tsx-vanilla';
 
-import { ActionId } from '../../proto_utils/action_id.js';
+import { ActionId } from '../../proto_utils/action_id';
 import { nextEventID } from '../../state/batch';
-import { isRightClick } from '../../utils.js';
-import { Input, InputConfig } from '../input.js';
+import { isRightClick } from '../../utils';
+import { Input, InputConfig } from '../input';
 // Data for creating an icon-based input component.
 //
 // E.g. one of these for arcane brilliance, another for kings, etc.

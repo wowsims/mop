@@ -1,13 +1,13 @@
-import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
-import { Player } from '../../core/player.js';
+import * as OtherInputs from '../../core/components/inputs/other_inputs';
+import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
+import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl.js';
-import { Faction, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats.js';
-// import * as DruidInputs from './inputs.js';
-import * as DruidInputs from '../inputs.js';
-import * as Presets from './presets.js';
+import { APLRotation } from '../../core/proto/apl';
+import { Faction, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats';
+// import * as DruidInputs from './inputs';
+import * as DruidInputs from '../inputs';
+import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecRestorationDruid, {
 	cssClass: 'restoration-druid-sim-ui',

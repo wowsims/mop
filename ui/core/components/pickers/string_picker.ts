@@ -1,5 +1,5 @@
 import { nextEventID } from '../../state/batch';
-import { Input, InputConfig } from '../input.js';
+import { Input, InputConfig } from '../input';
 /**
  * Data for creating a string picker.
  */

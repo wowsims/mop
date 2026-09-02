@@ -1,6 +1,6 @@
-import { ShamanMajorGlyph, ShamanMinorGlyph, ShamanTalents } from '../proto/shaman.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { newTalentsConfig, TalentsConfig } from './talents_picker.js';
+import { ShamanMajorGlyph, ShamanMinorGlyph, ShamanTalents } from '../proto/shaman';
+import { GlyphsConfig } from './glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import ShamanTalentJson from './trees/shaman.json';export const shamanTalentsConfig: TalentsConfig<ShamanTalents> = newTalentsConfig(ShamanTalentJson);
 
 export const shamanGlyphsConfig: GlyphsConfig = {

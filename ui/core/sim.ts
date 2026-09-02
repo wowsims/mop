@@ -38,7 +38,7 @@ import {
 	SimType,
 	StatWeightsRequest,
 	StatWeightsResult,
-} from './proto/api.js';
+} from './proto/api';
 import {
 	ArmorType,
 	EquipmentSpec,
@@ -51,24 +51,24 @@ import {
 	UnitReference,
 	UnitReference_Type as UnitType,
 	WeaponType,
-} from './proto/common.js';
-import { SimDatabase, SimGem } from './proto/db.js';
-import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption, UIItem } from './proto/ui.js';
-import { Database } from './proto_utils/database.js';
+} from './proto/common';
+import { SimDatabase, SimGem } from './proto/db';
+import { DatabaseFilters, RaidFilterOption, SimSettings as SimSettingsProto, SourceFilterOption, UIItem } from './proto/ui';
+import { Database } from './proto_utils/database';
 import { Gear } from './proto_utils/gear';
-import { SimResult } from './proto_utils/sim_result.js';
-import { StatCap, Stats } from './proto_utils/stats.js';
+import { SimResult } from './proto_utils/sim_result';
+import { StatCap, Stats } from './proto_utils/stats';
 import { extendPlayerProtoWithMissingEffects, getReforgeCacheGearKey, hasBlacksmithing } from './proto_utils/utils';
-import { Raid } from './raid.js';
+import { Raid } from './raid';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { batch, EventID, nextEventID } from './state/batch';
 import { Emitter } from './state/events';
 import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
 import { createSimStore, patchSlice, SimSettingsSlice, UISlice } from './state/sim_store';
 import { subscribeStatsInputs, subscribeUiField } from './state/subscriptions';
-import { distinct, getEnumValues, hashString, isExternal, noop, sleep } from './utils.js';
+import { distinct, getEnumValues, hashString, isExternal, noop, sleep } from './utils';
 import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from './wasm';
-import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
+import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool';
 
 export const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
 export type RaidSimData = {

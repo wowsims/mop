@@ -1,9 +1,9 @@
-import { Player } from '../../core/player.js';
+import { Player } from '../../core/player';
 import { PlayerSpecs } from '../../core/player_specs';
-import { Spec } from '../../core/proto/common.js';
-import { Sim } from '../../core/sim.js';
+import { Spec } from '../../core/proto/common';
+import { Sim } from '../../core/sim';
 import { nextEventID } from '../../core/state/batch';
-import { HolyPaladinSimUI } from './sim.js';
+import { HolyPaladinSimUI } from './sim';
 const sim = new Sim();
 const player = new Player<Spec.SpecHolyPaladin>(PlayerSpecs.HolyPaladin, sim);
 player.enableHealing();

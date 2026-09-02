@@ -1,12 +1,12 @@
-import i18n from '../../i18n/config.js';
-import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '../../i18n/localization.js';
+import i18n from '../../i18n/config';
+import { translateMobType, translateSpellSchool, translateStat, translateTargetInputLabel, translateTargetInputTooltip } from '../../i18n/localization';
 import { trackEvent, TrackEventProps } from '../../tracking/utils';
-import { Encounter } from '../encounter.js';
-import { IndividualSimUI } from '../individual_sim_ui.js';
-import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common.js';
-import { Stats } from '../proto_utils/stats.js';
-import { Raid } from '../raid.js';
-import { SimUI } from '../sim_ui.js';
+import { Encounter } from '../encounter';
+import { IndividualSimUI } from '../individual_sim_ui';
+import { InputType, MobType, Spec, SpellSchool, Stat, Target, Target as TargetProto, TargetInput } from '../proto/common';
+import { Stats } from '../proto_utils/stats';
+import { Raid } from '../raid';
+import { SimUI } from '../sim_ui';
 import { EventID, nextEventID } from '../state/batch';
 import {
 	subscribeAll,
@@ -17,13 +17,13 @@ import {
 	subscribeRaidField,
 } from '../state/subscriptions';
 import { randomUUID } from '../utils';
-import { BaseModal } from './base_modal.js';
-import { Component } from './component.js';
-import { Input } from './input.js';
-import { BooleanPicker } from './pickers/boolean_picker.js';
-import { EnumPicker } from './pickers/enum_picker.js';
-import { ListItemPickerConfig, ListPicker } from './pickers/list_picker.jsx';
-import { NumberPicker } from './pickers/number_picker.js';
+import { BaseModal } from './base_modal';
+import { Component } from './component';
+import { Input } from './input';
+import { BooleanPicker } from './pickers/boolean_picker';
+import { EnumPicker } from './pickers/enum_picker';
+import { ListItemPickerConfig, ListPicker } from './pickers/list_picker';
+import { NumberPicker } from './pickers/number_picker';
 export interface EncounterPickerConfig {
 	showExecuteProportion: boolean;
 }

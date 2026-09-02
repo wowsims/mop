@@ -2,7 +2,7 @@ import tippy, { hideAll, Instance as TippyInstance, Props as TippyProps } from '
 import { ref } from 'tsx-vanilla';
 
 import { setItemQualityCssClass } from '../css_utils';
-import { UIEnchant as Enchant, UIGem as Gem } from '../proto/ui.js';
+import { UIEnchant as Enchant, UIGem as Gem } from '../proto/ui';
 import { ActionId } from '../proto_utils/action_id';
 import { EquippedItem } from '../proto_utils/equipped_item';
 

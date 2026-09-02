@@ -2,10 +2,10 @@ import clsx from 'clsx';
 import tippy, { hideAll } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config.js';
+import i18n from '../../i18n/config';
 import { translateSlotName } from '../../i18n/localization';
 import { trackEvent, trackPageView } from '../../tracking/utils';
-import * as Mechanics from '../constants/mechanics.js';
+import * as Mechanics from '../constants/mechanics';
 import { IndividualSimUI } from '../individual_sim_ui';
 import { Player } from '../player';
 import { ReforgeOptimizeRequest, ReforgeSettings, StatCapType } from '../proto/api';

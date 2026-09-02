@@ -1,5 +1,5 @@
 import { nextEventID } from '../../state/batch';
-import { Input, InputConfig } from '../input.jsx';
+import { Input, InputConfig } from '../input';
 export interface EnumValueConfig {
 	name: string;
 	value: number;

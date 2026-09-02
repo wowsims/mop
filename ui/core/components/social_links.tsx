@@ -1,6 +1,6 @@
 import tippy from 'tippy.js';
 
-import i18n from '../../i18n/config.js';
+import i18n from '../../i18n/config';
 import { REPO_URL } from '../constants/other';
 import { Component } from './component';
 

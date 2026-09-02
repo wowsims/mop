@@ -4,7 +4,7 @@ import i18n from '../../../i18n/config';
 import { trackEvent } from '../../../tracking/utils';
 import { setItemQualityCssClass } from '../../css_utils';
 import { Player } from '../../player';
-import { UIGem as Gem } from '../../proto/ui.js';
+import { UIGem as Gem } from '../../proto/ui';
 import { ActionId } from '../../proto_utils/action_id';
 import { SimUI } from '../../sim_ui';
 import { nextEventID } from '../../state/batch';

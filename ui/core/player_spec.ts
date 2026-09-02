@@ -1,5 +1,5 @@
-import { EligibleWeaponType, IconSize } from './player_class.js';
-import { ArmorType, Class, Race, RangedWeaponType, Spec } from './proto/common.js';
+import { EligibleWeaponType, IconSize } from './player_class';
+import { ArmorType, Class, Race, RangedWeaponType, Spec } from './proto/common';
 import { SpecClasses } from './proto_utils/utils';
 
 export abstract class PlayerSpec<SpecType extends Spec> {

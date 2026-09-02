@@ -1,5 +1,5 @@
 import { CacheHandler } from '../cache_handler';
-import { PlayerSpec } from '../player_spec.js';
+import { PlayerSpec } from '../player_spec';
 import { PlayerSpecs } from '../player_specs';
 import {
 	ActionMetrics as ActionMetricsProto,
@@ -16,13 +16,13 @@ import {
 	ResourceMetrics as ResourceMetricsProto,
 	TargetedActionMetrics as TargetedActionMetricsProto,
 	UnitMetrics as UnitMetricsProto,
-} from '../proto/api.js';
-import { Class, Encounter as EncounterProto, SpellSchool, Target as TargetProto } from '../proto/common.js';
+} from '../proto/api';
+import { Class, Encounter as EncounterProto, SpellSchool, Target as TargetProto } from '../proto/common';
 import { ResourceType } from '../proto/spell';
-import { SimRun } from '../proto/ui.js';
-import { ActionId, defaultTargetIcon } from '../proto_utils/action_id.js';
-import { getPlayerSpecFromPlayer } from '../proto_utils/utils.js';
-import { bucket, sum } from '../utils.js';
+import { SimRun } from '../proto/ui';
+import { ActionId, defaultTargetIcon } from '../proto_utils/action_id';
+import { getPlayerSpecFromPlayer } from '../proto_utils/utils';
+import { bucket, sum } from '../utils';
 import {
 	AuraUptimeLog,
 	CastLog,
@@ -33,7 +33,7 @@ import {
 	ResourceChangedLogGroup,
 	SimLog,
 	ThreatLogGroup,
-} from './logs_parser.js';
+} from './logs_parser';
 
 const simResultsCache = new CacheHandler<SimResult>({
 	keysToKeep: 2,

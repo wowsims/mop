@@ -1,13 +1,13 @@
 import { ref } from 'tsx-vanilla';
 
-import { Player } from '../../player.js';
-import { ActionId } from '../../proto_utils/action_id.js';
-import { SimUI } from '../../sim_ui.jsx';
+import { Player } from '../../player';
+import { ActionId } from '../../proto_utils/action_id';
+import { SimUI } from '../../sim_ui';
 import { batch, nextEventID } from '../../state/batch';
 import { subscribeSimChange } from '../../state/subscriptions';
-import { existsInDOM, isRightClick } from '../../utils.js';
-import { Component } from '../component.js';
-import { IconPicker, IconPickerConfig } from './icon_picker.jsx';
+import { existsInDOM, isRightClick } from '../../utils';
+import { Component } from '../component';
+import { IconPicker, IconPickerConfig } from './icon_picker';
 export interface MultiIconPickerItemConfig<ModObject> extends IconPickerConfig<ModObject, any> {}
 
 export interface MultiIconPickerConfig<ModObject> {

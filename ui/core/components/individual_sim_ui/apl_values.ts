@@ -1,6 +1,6 @@
 import i18n from '../../../i18n/config';
-import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
-import { Player } from '../../player.js';
+import { itemSwapEnabledSpecs } from '../../individual_sim_ui';
+import { Player } from '../../player';
 import {
 	APLValue,
 	APLValueActionGroupUsed,
@@ -123,16 +123,16 @@ import {
 	APLValueUnitIsMoving,
 	APLValueWarlockHandOfGuldanInFlight,
 	APLValueWarlockHauntInFlight,
-} from '../../proto/apl.js';
-import { Class, Spec } from '../../proto/common.js';
-import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman.js';
+} from '../../proto/apl';
+import { Class, Spec } from '../../proto/common';
+import { ShamanTotems_TotemType as TotemType } from '../../proto/shaman';
 import SecondaryResource from '../../proto_utils/secondary_resource';
 import { EventID, nextEventID } from '../../state/batch';
 import { randomUUID } from '../../utils';
-import { Input, InputConfig } from '../input.js';
-import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker.jsx';
-import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import * as AplHelpers from './apl_helpers.js';
+import { Input, InputConfig } from '../input';
+import { TextDropdownPicker, TextDropdownValueConfig } from '../pickers/dropdown_picker';
+import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker';
+import * as AplHelpers from './apl_helpers';
 export interface APLValuePickerConfig extends InputConfig<Player<any>, APLValue | undefined> {}
 
 type APLValue_Value = APLValue['value'];

@@ -1,6 +1,6 @@
 import { AsyncSimRequest, SimRequest, WorkerReceiveMessage, WorkerSendMessage } from '../worker/types';
 import { WorkerPoolManager } from './concurrent_worker_pool';
-import { REPO_NAME } from './constants/other.js';
+import { REPO_NAME } from './constants/other';
 import {
 	AbortRequest,
 	AbortResponse,
@@ -25,7 +25,7 @@ import {
 	StatWeightsCalcRequest,
 	StatWeightsRequest,
 	StatWeightsResult,
-} from './proto/api.js';
+} from './proto/api';
 import { SimSignals } from './sim_signal_manager';
 import { isDevMode, noop } from './utils';
 

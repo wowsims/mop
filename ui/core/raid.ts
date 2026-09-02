@@ -1,12 +1,12 @@
-import { MAX_PARTY_SIZE, Party } from './party.js';
-import { Player } from './player.js';
-import { Raid as RaidProto } from './proto/api.js';
-import { Class, Debuffs, RaidBuffs, UnitReference, UnitReference_Type as UnitType } from './proto/common.js';
-import { Sim } from './sim.js';
+import { MAX_PARTY_SIZE, Party } from './party';
+import { Player } from './player';
+import { Raid as RaidProto } from './proto/api';
+import { Class, Debuffs, RaidBuffs, UnitReference, UnitReference_Type as UnitType } from './proto/common';
+import { Sim } from './sim';
 import { batch, EventID } from './state/batch';
-import type { RaidSlice } from './state/sim_store.js';
-import { shallowArrayEquals } from './state/subscriptions.js';
-import { sum } from './utils.js';
+import type { RaidSlice } from './state/sim_store';
+import { shallowArrayEquals } from './state/subscriptions';
+import { sum } from './utils';
 export const MAX_NUM_PARTIES = 5;
 
 // Manages all the settings for a single Raid.

@@ -1,6 +1,6 @@
 import i18n from '../../../i18n/config';
-import { itemSwapEnabledSpecs } from '../../individual_sim_ui.js';
-import { Player } from '../../player.js';
+import { itemSwapEnabledSpecs } from '../../individual_sim_ui';
+import { Player } from '../../player';
 import {
 	APLAction,
 	APLActionActivateAllStatBuffProcAuras,
@@ -36,17 +36,17 @@ import {
 	APLActionWaitUntil,
 	APLActionWarlockNextExhaleTarget,
 	APLValue,
-} from '../../proto/apl.js';
-import { Spec } from '../../proto/common.js';
-import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
+} from '../../proto/apl';
+import { Spec } from '../../proto/common';
+import { FeralDruid_Rotation_AplType } from '../../proto/druid';
 import { EventID } from '../../state/batch';
 import { randomUUID } from '../../utils';
-import { Input, InputConfig } from '../input.js';
-import { TextDropdownPicker } from '../pickers/dropdown_picker.jsx';
-import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker.jsx';
-import * as AplHelpers from './apl_helpers.js';
-import { itemSwapSetFieldConfig } from './apl_helpers.js';
-import * as AplValues from './apl_values.js';
+import { Input, InputConfig } from '../input';
+import { TextDropdownPicker } from '../pickers/dropdown_picker';
+import { ListItemPickerConfig, ListPicker } from '../pickers/list_picker';
+import * as AplHelpers from './apl_helpers';
+import { itemSwapSetFieldConfig } from './apl_helpers';
+import * as AplValues from './apl_values';
 export interface APLActionPickerConfig extends InputConfig<Player<any>, APLAction> {}
 
 export type APLActionKind = APLAction['action']['oneofKind'];

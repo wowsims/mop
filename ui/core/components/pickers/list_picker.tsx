@@ -10,7 +10,7 @@ import { ActionId } from '../../proto_utils/action_id';
 import { EventID, nextEventID } from '../../state/batch';
 import { subscribePlayerField } from '../../state/subscriptions';
 import { existsInDOM } from '../../utils';
-import { Input, InputConfig } from '../input.js';
+import { Input, InputConfig } from '../input';
 import { TooltipButton } from '../tooltip_button';
 export type ListItemAction = 'create' | 'delete' | 'move' | 'copy';
 

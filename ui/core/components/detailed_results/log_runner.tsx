@@ -6,8 +6,8 @@ import i18n from '../../../i18n/config';
 import { SimLog } from '../../proto_utils/logs_parser';
 import { Emitter } from '../../state/events';
 import { fragmentToString } from '../../utils';
-import { BooleanPicker } from '../pickers/boolean_picker.js';
-import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component.js';
+import { BooleanPicker } from '../pickers/boolean_picker';
+import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
 export class LogRunner extends ResultComponent {
 	private virtualScroll: CustomVirtualScroll | null = null;
 	readonly showDebugChangeEmitter = new Emitter<void>();

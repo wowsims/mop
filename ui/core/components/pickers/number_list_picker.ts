@@ -1,6 +1,6 @@
 import { nextEventID } from '../../state/batch';
-import { arrayEquals } from '../../utils.js';
-import { Input, InputConfig } from '../input.js';
+import { arrayEquals } from '../../utils';
+import { Input, InputConfig } from '../input';
 /**
  * Data for creating a number list picker.
  */

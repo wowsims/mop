@@ -1,6 +1,6 @@
-import { MonkMajorGlyph, MonkMinorGlyph, MonkTalents } from '../proto/monk.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { newTalentsConfig, TalentsConfig } from './talents_picker.js';
+import { MonkMajorGlyph, MonkMinorGlyph, MonkTalents } from '../proto/monk';
+import { GlyphsConfig } from './glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import MonkTalentJson from './trees/monk.json';export const monkTalentsConfig: TalentsConfig<MonkTalents> = newTalentsConfig(MonkTalentJson);
 
 export const monkGlyphsConfig: GlyphsConfig = {

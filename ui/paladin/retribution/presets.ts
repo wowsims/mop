@@ -1,8 +1,8 @@
-import * as PresetUtils from '../../core/preset_utils.js';
-import { APLRotation_Type as APLRotationType } from '../../core/proto/apl.js';
-import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
-import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as RetributionPaladinOptions } from '../../core/proto/paladin.js';
-import { SavedTalents } from '../../core/proto/ui.js';
+import * as PresetUtils from '../../core/preset_utils';
+import { APLRotation_Type as APLRotationType } from '../../core/proto/apl';
+import { ConsumesSpec, Glyphs, Profession, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { PaladinMajorGlyph, PaladinSeal, RetributionPaladin_Options as RetributionPaladinOptions } from '../../core/proto/paladin';
+import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import DefaultApl from './apls/default.apl.json';
 import P5RetBuild from './builds/p5.build.json';

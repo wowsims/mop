@@ -1,7 +1,7 @@
 import i18n from '../../../i18n/config';
-import { ActionMetrics } from '../../proto_utils/sim_result.js';
-import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table.jsx';
-import { ResultComponentConfig, SimResultData } from './result_component.js';
+import { ActionMetrics } from '../../proto_utils/sim_result';
+import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table';
+import { ResultComponentConfig, SimResultData } from './result_component';
 
 export class CastMetricsTable extends MetricsTable<ActionMetrics> {
 	constructor(config: ResultComponentConfig) {

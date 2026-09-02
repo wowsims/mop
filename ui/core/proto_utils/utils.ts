@@ -1,9 +1,9 @@
-import { CURRENT_API_VERSION, REPO_NAME } from '../constants/other.js';
-import { PlayerClass } from '../player_class.js';
+import { CURRENT_API_VERSION, REPO_NAME } from '../constants/other';
+import { PlayerClass } from '../player_class';
 import { PlayerClasses } from '../player_classes';
-import { PlayerSpec } from '../player_spec.js';
+import { PlayerSpec } from '../player_spec';
 import { PlayerSpecs } from '../player_specs';
-import { Player } from '../proto/api.js';
+import { Player } from '../proto/api';
 import {
 	Class,
 	EnchantType,
@@ -20,7 +20,7 @@ import {
 	UnitReference,
 	UnitReference_Type,
 	WeaponType,
-} from '../proto/common.js';
+} from '../proto/common';
 import { Consumable } from '../proto/db';
 import {
 	BloodDeathKnight,
@@ -34,7 +34,7 @@ import {
 	UnholyDeathKnight,
 	UnholyDeathKnight_Options,
 	UnholyDeathKnight_Rotation,
-} from '../proto/death_knight.js';
+} from '../proto/death_knight';
 import {
 	BalanceDruid,
 	BalanceDruid_Options,
@@ -50,7 +50,7 @@ import {
 	RestorationDruid,
 	RestorationDruid_Options,
 	RestorationDruid_Rotation,
-} from '../proto/druid.js';
+} from '../proto/druid';
 import {
 	BeastMasteryHunter,
 	BeastMasteryHunter_Options,
@@ -63,7 +63,7 @@ import {
 	SurvivalHunter,
 	SurvivalHunter_Options,
 	SurvivalHunter_Rotation,
-} from '../proto/hunter.js';
+} from '../proto/hunter';
 import {
 	ArcaneMage,
 	ArcaneMage_Options,
@@ -76,7 +76,7 @@ import {
 	FrostMage_Rotation,
 	MageOptions,
 	MageTalents,
-} from '../proto/mage.js';
+} from '../proto/mage';
 import {
 	BrewmasterMonk,
 	BrewmasterMonk_Options,
@@ -89,7 +89,7 @@ import {
 	WindwalkerMonk,
 	WindwalkerMonk_Options,
 	WindwalkerMonk_Rotation,
-} from '../proto/monk.js';
+} from '../proto/monk';
 import {
 	Blessings,
 	HolyPaladin,
@@ -103,7 +103,7 @@ import {
 	RetributionPaladin,
 	RetributionPaladin_Options,
 	RetributionPaladin_Rotation,
-} from '../proto/paladin.js';
+} from '../proto/paladin';
 import {
 	DisciplinePriest,
 	DisciplinePriest_Options,
@@ -116,7 +116,7 @@ import {
 	ShadowPriest,
 	ShadowPriest_Options,
 	ShadowPriest_Rotation,
-} from '../proto/priest.js';
+} from '../proto/priest';
 import {
 	AssassinationRogue,
 	AssassinationRogue_Options,
@@ -129,7 +129,7 @@ import {
 	SubtletyRogue,
 	SubtletyRogue_Options,
 	SubtletyRogue_Rotation,
-} from '../proto/rogue.js';
+} from '../proto/rogue';
 import {
 	ElementalShaman,
 	ElementalShaman_Options,
@@ -142,9 +142,9 @@ import {
 	RestorationShaman_Rotation,
 	ShamanOptions,
 	ShamanTalents,
-} from '../proto/shaman.js';
+} from '../proto/shaman';
 import { ResourceType, SpellEffect } from '../proto/spell';
-import { BlessingsAssignment, BlessingsAssignments, UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui.js';
+import { BlessingsAssignment, BlessingsAssignments, UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui';
 import {
 	AfflictionWarlock,
 	AfflictionWarlock_Options,
@@ -157,7 +157,7 @@ import {
 	DestructionWarlock_Rotation,
 	WarlockOptions,
 	WarlockTalents,
-} from '../proto/warlock.js';
+} from '../proto/warlock';
 import {
 	ArmsWarrior,
 	ArmsWarrior_Options,
@@ -170,10 +170,10 @@ import {
 	ProtectionWarrior_Rotation,
 	WarriorOptions,
 	WarriorTalents,
-} from '../proto/warrior.js';
-import { getEnumValues, intersection, swap } from '../utils.js';
+} from '../proto/warrior';
+import { getEnumValues, intersection, swap } from '../utils';
 import { Database } from './database';
-import { Stats } from './stats.js';
+import { Stats } from './stats';
 
 export const NUM_SPECS = getEnumValues(Spec).length;
 

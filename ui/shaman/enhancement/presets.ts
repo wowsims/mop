@@ -1,6 +1,6 @@
 import * as Mechanics from '../../core/constants/mechanics';
-import * as PresetUtils from '../../core/preset_utils.js';
-import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common.js';
+import * as PresetUtils from '../../core/preset_utils';
+import { Class, ConsumesSpec, Debuffs, Glyphs, Profession, PseudoStat, Race, RaidBuffs, Stat } from '../../core/proto/common';
 import {
 	EnhancementShaman_Options as EnhancementShamanOptions,
 	FeleAutocastSettings,
@@ -8,8 +8,8 @@ import {
 	ShamanMajorGlyph,
 	ShamanShield,
 	ShamanSyncType,
-} from '../../core/proto/shaman.js';
-import { SavedTalents } from '../../core/proto/ui.js';
+} from '../../core/proto/shaman';
+import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import P1Apl from './apls/default.apl.json';

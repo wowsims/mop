@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config.js';
-import { formatDurationSeconds } from '../utils.js';
-import { BaseModal } from './base_modal.js';
-import { Component } from './component.js';
+import i18n from '../../i18n/config';
+import { formatDurationSeconds } from '../utils';
+import { BaseModal } from './base_modal';
+import { Component } from './component';
 
 export interface ProgressTrackerModalState {
 	stage: 'initializing' | 'complete' | 'error' | string;

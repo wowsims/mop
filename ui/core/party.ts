@@ -1,9 +1,9 @@
-import { Player } from './player.js';
-import { Party as PartyProto, Player as PlayerProto } from './proto/api.js';
-import { Class, PartyBuffs } from './proto/common.js';
-import { getPlayerSpecFromPlayer } from './proto_utils/utils.js';
-import { Raid } from './raid.js';
-import { Sim } from './sim.js';
+import { Player } from './player';
+import { Party as PartyProto, Player as PlayerProto } from './proto/api';
+import { Class, PartyBuffs } from './proto/common';
+import { getPlayerSpecFromPlayer } from './proto_utils/utils';
+import { Raid } from './raid';
+import { Sim } from './sim';
 import { batch, EventID } from './state/batch';
 export const MAX_PARTY_SIZE = 5;
 

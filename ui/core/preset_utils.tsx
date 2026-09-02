@@ -1,7 +1,6 @@
 import i18n from '../i18n/config';
 import { Player } from './player';
-import { ReforgeSettings } from './proto/api';
-import { Player as PlayerProto } from './proto/api.js';
+import { Player as PlayerProto, ReforgeSettings } from './proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
 import {
 	ConsumesSpec,

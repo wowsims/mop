@@ -12,13 +12,13 @@ import {
 	ReforgeStat,
 	ScalingItemProperties,
 	Stat,
-} from '../proto/common.js';
-import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui.js';
-import { distinct } from '../utils.js';
-import { ActionId } from './action_id.js';
-import { gemEligibleForSocket, gemMatchesSocket } from './gems.js';
-import { Stats } from './stats.js';
-import { enchantAppliesToItem } from './utils.js';
+} from '../proto/common';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui';
+import { distinct } from '../utils';
+import { ActionId } from './action_id';
+import { gemEligibleForSocket, gemMatchesSocket } from './gems';
+import { Stats } from './stats';
+import { enchantAppliesToItem } from './utils';
 
 export const getWeaponDPS = (item: Item, upgradeStep: ItemLevelState = ItemLevelState.Base): number => {
 	const { weaponDamageMin, weaponDamageMax } = item.scalingOptions[upgradeStep];

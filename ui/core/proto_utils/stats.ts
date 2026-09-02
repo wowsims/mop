@@ -1,10 +1,10 @@
 import { translatePseudoStat, translateStat } from '../../i18n/localization';
-import * as Mechanics from '../constants/mechanics.js';
-import { CURRENT_API_VERSION } from '../constants/other.js';
-import { StatCapConfig, StatCapType, UIStat as UnitStatProto } from '../proto/api.js';
-import { Class, PseudoStat, Stat, UnitStats } from '../proto/common.js';
-import { getEnumValues } from '../utils.js';
-import { migrateOldProto, ProtoConversionMap } from './utils.js';
+import * as Mechanics from '../constants/mechanics';
+import { CURRENT_API_VERSION } from '../constants/other';
+import { StatCapConfig, StatCapType, UIStat as UnitStatProto } from '../proto/api';
+import { Class, PseudoStat, Stat, UnitStats } from '../proto/common';
+import { getEnumValues } from '../utils';
+import { migrateOldProto, ProtoConversionMap } from './utils';
 
 const STATS_LEN = getEnumValues(Stat).length;
 const PSEUDOSTATS_LEN = getEnumValues(PseudoStat).length;

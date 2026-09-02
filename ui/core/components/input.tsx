@@ -2,10 +2,10 @@ import clsx, { ClassValue } from 'clsx';
 import tippy, { Content as TippyContent } from 'tippy.js';
 
 import { EventID } from '../state/batch';
-import { Emitter } from '../state/events.js';
+import { Emitter } from '../state/events';
 import type { StoreSubscribe } from '../state/subscriptions';
 import { existsInDOM } from '../utils';
-import { Component } from './component.js';
+import { Component } from './component';
 /**
  * Data for creating a new input UI element.
  */

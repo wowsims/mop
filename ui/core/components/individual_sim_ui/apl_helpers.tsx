@@ -1,9 +1,9 @@
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
-import { translateStat } from '../../../i18n/localization.js';
+import { translateStat } from '../../../i18n/localization';
 import { CacheHandler } from '../../cache_handler';
-import { Player, UnitMetadata } from '../../player.js';
+import { Player, UnitMetadata } from '../../player';
 import {
 	APLActionDamageAmplifier_AmplificationType,
 	APLActionGuardianHotwDpsRotation_Strategy as HotwStrategy,
@@ -13,21 +13,21 @@ import {
 	APLValueRuneSlot,
 	APLValueRuneType,
 	APLValueVariable,
-} from '../../proto/apl.js';
-import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common.js';
-import { FeralDruid_Rotation_AplType } from '../../proto/druid.js';
-import { ActionId, defaultTargetIcon, getPetIconFromName } from '../../proto_utils/action_id.js';
-import { renameAPLReference } from '../../proto_utils/apl_utils.js';
+} from '../../proto/apl';
+import { ActionID, OtherAction, Stat, UnitReference, UnitReference_Type as UnitType } from '../../proto/common';
+import { FeralDruid_Rotation_AplType } from '../../proto/druid';
+import { ActionId, defaultTargetIcon, getPetIconFromName } from '../../proto_utils/action_id';
+import { renameAPLReference } from '../../proto_utils/apl_utils';
 import { EventID, nextEventID } from '../../state/batch';
 import { subscribePlayerField, subscribeUnitMetadata } from '../../state/subscriptions';
-import { bucket, getEnumValues, randomUUID } from '../../utils.js';
-import { Input, InputConfig } from '../input.jsx';
-import { BooleanPicker } from '../pickers/boolean_picker.js';
-import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig, TextDropdownPicker } from '../pickers/dropdown_picker.jsx';
-import { ListItemPickerConfig, ListPicker, ListPickerExtraAction } from '../pickers/list_picker.jsx';
-import { NumberPicker, NumberPickerConfig } from '../pickers/number_picker.js';
-import { AdaptiveStringPicker } from '../pickers/string_picker.js';
-import { UnitPicker, UnitPickerConfig, UnitValue } from '../pickers/unit_picker.jsx';
+import { bucket, getEnumValues, randomUUID } from '../../utils';
+import { Input, InputConfig } from '../input';
+import { BooleanPicker } from '../pickers/boolean_picker';
+import { DropdownPicker, DropdownPickerConfig, DropdownValueConfig, TextDropdownPicker } from '../pickers/dropdown_picker';
+import { ListItemPickerConfig, ListPicker, ListPickerExtraAction } from '../pickers/list_picker';
+import { NumberPicker, NumberPickerConfig } from '../pickers/number_picker';
+import { AdaptiveStringPicker } from '../pickers/string_picker';
+import { UnitPicker, UnitPickerConfig, UnitValue } from '../pickers/unit_picker';
 import { APLNameModal } from './apl/apl_name_modal';
 
 export type ACTION_ID_SET =

@@ -1,6 +1,6 @@
-import { MageMajorGlyph, MageMinorGlyph, MageTalents } from '../proto/mage.js';
-import { GlyphsConfig } from './glyphs_picker.js';
-import { newTalentsConfig, TalentsConfig } from './talents_picker.js';
+import { MageMajorGlyph, MageMinorGlyph, MageTalents } from '../proto/mage';
+import { GlyphsConfig } from './glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import MageTalentJson from './trees/mage.json';export const mageTalentsConfig: TalentsConfig<MageTalents> = newTalentsConfig(MageTalentJson);
 
 export const mageGlyphsConfig: GlyphsConfig = {

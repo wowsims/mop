@@ -1,4 +1,4 @@
-import i18n from '../../../i18n/config.js';
+import i18n from '../../../i18n/config';
 import { Player } from '../../player';
 import { Class, ConsumesSpec, Profession, Spec, Stat } from '../../proto/common';
 import { Consumable } from '../../proto/db';

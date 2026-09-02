@@ -1,18 +1,18 @@
 import { AttackSpeedBuff } from '../../core/components/inputs/buffs_debuffs';
-import * as OtherInputs from '../../core/components/inputs/other_inputs.js';
+import * as OtherInputs from '../../core/components/inputs/other_inputs';
 import { ReforgeOptimizer } from '../../core/components/suggest_reforges_action';
 import * as Mechanics from '../../core/constants/mechanics';
-import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui.js';
-import { Player } from '../../core/player.js';
+import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_ui';
+import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
-import { APLRotation } from '../../core/proto/apl.js';
-import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common.js';
-import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats.js';
+import { APLRotation } from '../../core/proto/apl';
+import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { DEFAULT_HYBRID_CASTER_GEM_STATS, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { subscribeAll, subscribePlayerField } from '../../core/state/subscriptions';
 import i18n from '../../i18n/config';
-import * as ShamanInputs from '../inputs.js';
-import * as ElementalInputs from './inputs.js';
-import * as Presets from './presets.js';
+import * as ShamanInputs from '../inputs';
+import * as ElementalInputs from './inputs';
+import * as Presets from './presets';
 
 const SPEC_CONFIG = registerSpecConfig(Spec.SpecElementalShaman, {
 	cssClass: 'elemental-shaman-sim-ui',

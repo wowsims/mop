@@ -1,9 +1,9 @@
-import * as InputHelpers from '../../core/components/input_helpers.js';
-import { Player } from '../../core/player.js';
-import { Spec } from '../../core/proto/common.js';
-import { FeralDruid_Rotation_AplType as AplType, FeralDruid_Rotation_HotwStrategy as HotwType } from '../../core/proto/druid.js';
-import { subscribeAll, subscribePlayerField } from '../../core/state/subscriptions.js';
-import i18n from '../../i18n/config.js';
+import * as InputHelpers from '../../core/components/input_helpers';
+import { Player } from '../../core/player';
+import { Spec } from '../../core/proto/common';
+import { FeralDruid_Rotation_AplType as AplType, FeralDruid_Rotation_HotwStrategy as HotwType } from '../../core/proto/druid';
+import { subscribeAll, subscribePlayerField } from '../../core/state/subscriptions';
+import i18n from '../../i18n/config';
 
 // Configuration for spec-specific UI elements on the settings tab.
 // These don't need to be in a separate file but it keeps things cleaner.

@@ -1,13 +1,13 @@
 import tippy from 'tippy.js';
 
 import i18n from '../../../i18n/config';
-import { UnitMetrics } from '../../proto_utils/sim_result.js';
-import { maxIndex, sum } from '../../utils.js';
-import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table.js';
+import { UnitMetrics } from '../../proto_utils/sim_result';
+import { maxIndex, sum } from '../../utils';
+import { ColumnSortType, MetricsTable } from './metrics_table/metrics_table';
 import { MetricsTotalBar } from './metrics_table/metrics_total_bar';
-import { ResultComponentConfig, SimResultData } from './result_component.js';
-import { ResultsFilter } from './results_filter.js';
-import { SourceChart } from './source_chart.js';
+import { ResultComponentConfig, SimResultData } from './result_component';
+import { ResultsFilter } from './results_filter';
+import { SourceChart } from './source_chart';
 
 export class PlayerDamageMetricsTable extends MetricsTable<UnitMetrics> {
 	private readonly resultsFilter: ResultsFilter;

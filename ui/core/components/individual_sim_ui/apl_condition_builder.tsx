@@ -1,8 +1,8 @@
-import { Player } from '../../player.js';
-import { APLValue } from '../../proto/apl.js';
-import { Component } from '../component.js';
-import { Input, InputConfig } from '../input.js';
-import { APLValuePicker } from './apl_values.js';
+import { Player } from '../../player';
+import { APLValue } from '../../proto/apl';
+import { Component } from '../component';
+import { Input, InputConfig } from '../input';
+import { APLValuePicker } from './apl_values';
 
 export interface APLConditionBuilderConfig extends InputConfig<Player<any>, APLValue | undefined> {}
 
