@@ -116,7 +116,7 @@ class APLValueVariablePicker extends Input<Player<any>, APLValueVariable> {
 		nameContainer.querySelector('.apl-name-rename')!.addEventListener('click', () => {
 			const sourceValue = this.getSourceValue();
 			if (!sourceValue) return;
-			new APLNameModal(this.rootElem.closest('.individual-sim-ui') as HTMLElement ?? document.body, {
+			new APLNameModal(this.rootElem.closest('.sim-ui') as HTMLElement ?? document.body, {
 				title: i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.variables.name') }),
 				inputLabel: i18n.t('rotation_tab.apl.variables.attributes.name'),
 				confirmButtonLabel: i18n.t('rotation_tab.apl.nameModal.renameConfirm'),

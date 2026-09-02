@@ -47,7 +47,7 @@ export interface SimUIConfig {
 	noticeText?: string;
 }
 
-// Shared UI for all individual sims and the raid sim.
+// Shared UI for all individual sims.
 export abstract class SimUI extends Component {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
@@ -322,10 +322,6 @@ export abstract class SimUI extends Component {
 		return 'sharedData__savedEncounter__';
 	}
 
-	isIndividualSim(): boolean {
-		return this.rootElem.classList.contains('individual-sim-ui');
-	}
-
 	async runSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
@@ -334,7 +330,7 @@ export abstract class SimUI extends Component {
 			if (!(result instanceof SimResult) && result.type == ErrorOutcomeType.ErrorOutcomeAborted) {
 				new Toast({
 					variant: 'info',
-					body: i18n.t('sim.notifications.raid_sim_cancelled'),
+					body: i18n.t('sim.notifications.sim_cancelled'),
 				});
 				this.resultsViewer.hideAll();
 			}

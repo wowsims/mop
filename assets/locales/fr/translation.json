@@ -258,7 +258,7 @@
             "qe_live_message": "Consultez QE Live !"
         },
         "notifications": {
-            "raid_sim_cancelled": "Simulation annulée.",
+            "sim_cancelled": "Simulation annulée.",
             "simulation_failed": "La simulation a échoué. Un rapport d'erreur a été généré.",
             "failed_to_file_report": "Échec du rapport... réessayez une autre fois :"
         },
@@ -659,10 +659,6 @@
                 "tooltip": "Sélectionne une configuration de rencontre prédéfinie."
             },
             "advanced": "Avancé",
-            "use_health": {
-                "label": "Utiliser les PVs",
-                "tooltip": "Utilise une limite de dégâts au lieu d'une limite de durée. La limite de dégâts est égale à la somme de la vie de toutes les cibles."
-            },
             "target": "Cible",
             "num_allies": {
                 "label": "Nombre d'alliés",

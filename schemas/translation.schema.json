@@ -949,7 +949,7 @@
 				"notifications": {
 					"type": "object",
 					"properties": {
-						"raid_sim_cancelled": {
+						"sim_cancelled": {
 							"type": "string"
 						},
 						"simulation_failed": {
@@ -960,7 +960,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["raid_sim_cancelled", "simulation_failed", "failed_to_file_report"]
+					"required": ["sim_cancelled", "simulation_failed", "failed_to_file_report"]
 				},
 				"crash_report": {
 					"type": "object",
@@ -2329,19 +2329,6 @@
 						"advanced": {
 							"type": "string"
 						},
-						"use_health": {
-							"type": "object",
-							"properties": {
-								"label": {
-									"type": "string"
-								},
-								"tooltip": {
-									"type": "string"
-								}
-							},
-							"additionalProperties": false,
-							"required": ["label", "tooltip"]
-						},
 						"target": {
 							"type": "string"
 						},
@@ -2517,7 +2504,6 @@
 						"duration_below_high_hp",
 						"encounter_preset",
 						"advanced",
-						"use_health",
 						"target",
 						"num_allies",
 						"min_base_damage",
