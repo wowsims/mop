@@ -165,6 +165,17 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure P1 "spec page template constant": `ui/index_template.html` no longer
+  has `@@CLASS@@`/`@@SPEC@@` placeholders and every asset reference is root-absolute (`/scss/...`,
+  `/index.ts`, `/app/spec_entry.ts`, `/i18n/localization.tsx` — vite's root is `ui/`, so a leading
+  `/` resolves correctly in dev and build). The makefile's `sed` substitution is now a no-op, so all
+  34 generated `ui/<class>/<spec>/index.html` are byte-identical (`md5sum ui/*/*/index.html | sort
+  -u | wc -l` == 1) — this sets up a later step to emit one built page and copy it to all 34 URLs.
+  `ui/i18n/localization.tsx`'s `extractClassAndSpecFromDataAttributes` now derives class/spec from
+  `location.pathname` the same way `spec_entry.ts`'s `specModuleKey` does, falling back to
+  `data-class`/`data-spec` attributes (kept for any non-URL caller); `initLocalization`'s branch
+  that used to check for `title[data-class]`/`meta[data-class]` now checks that derivation instead,
+  so the landing page (no class/spec segments) still gets its `data-i18n` link-localization path.
 - 2026-09-02 UI restructure F4 "proto into ui/generated": `ui/core/proto/**` moved to
   `ui/generated/proto/**` (protobuf-ts output, incl. `google/protobuf/`); `ui/core/` is now gone.
   `@core/*` alias dropped from `tsconfig.json`/`vite.config.mts`/`vite.harness.mts`; `move.mjs`'s

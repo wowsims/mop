@@ -223,6 +223,14 @@ Everything else is derived: `makefile`'s `PAGE_INDECES` globs `ui/sims/*/*/spec.
 `import.meta.glob` picks the module up from the URL. Running `make` is safe — it regenerates all
 34 `index.html` from the one template.
 
+`ui/index_template.html` is a constant — it carries no `@@CLASS@@`/`@@SPEC@@` placeholders and every
+asset reference is root-absolute (`/scss/...`, `/index.ts`, `/app/spec_entry.ts`,
+`/i18n/localization.tsx`), so the makefile's `sed` substitution is a no-op and all 34 generated
+pages are byte-identical. `ui/i18n/localization.tsx`'s `extractClassAndSpecFromDataAttributes`
+derives class/spec from `location.pathname` the same way `specModuleKey` does above, falling back
+to `data-class`/`data-spec` attributes only if present (the landing page has neither and keeps its
+`data-i18n` behaviour).
+
 Rules shared by several specs of the same class live in `ui/sims/<class>/shared/` (e.g.
 `rogue/shared/derived.ts`, `monk/shared/derived.ts`, `death_knight/shared/{derived,inputs}.ts`).
 A shared `DerivedSetting` is declared `DerivedSetting<any>` because `Player<S>` is invariant in

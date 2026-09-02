@@ -179,22 +179,37 @@ export const extractClassAndSpecFromLink = (link: HTMLAnchorElement): { classNam
 	return {};
 };
 
+// The spec page template is identical for every spec (see ui/index_template.html),
+// so class/spec are no longer baked in as data-class/data-spec attributes; derive
+// them from the URL the same way ui/app/spec_entry.ts derives its spec module key
+// ('/mop/warrior/arms/' -> ['warrior', 'arms']). Data attributes are kept as a
+// fallback for any caller that isn't served from a real spec URL.
 export const extractClassAndSpecFromDataAttributes = (): { className: string; specName: string } | null => {
+	const base = import.meta.env.BASE_URL || '/';
+	const rel = (location.pathname.startsWith(base) ? location.pathname.slice(base.length) : location.pathname)
+		.replace(/^\/+/, '')
+		.replace(/index\.html$/, '')
+		.replace(/\/+$/, '');
+	const [className, specName] = rel.split('/');
+	if (className && specName) {
+		return { className, specName };
+	}
+
 	const titleElement = document.querySelector('title');
 	if (titleElement) {
-		const className = titleElement.getAttribute('data-class');
-		const specName = titleElement.getAttribute('data-spec');
-		if (className && specName) {
-			return { className, specName };
+		const attrClassName = titleElement.getAttribute('data-class');
+		const attrSpecName = titleElement.getAttribute('data-spec');
+		if (attrClassName && attrSpecName) {
+			return { className: attrClassName, specName: attrSpecName };
 		}
 	}
 
 	const metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement;
 	if (metaDescription) {
-		const className = metaDescription.getAttribute('data-class');
-		const specName = metaDescription.getAttribute('data-spec');
-		if (className && specName) {
-			return { className, specName };
+		const attrClassName = metaDescription.getAttribute('data-class');
+		const attrSpecName = metaDescription.getAttribute('data-spec');
+		if (attrClassName && attrSpecName) {
+			return { className: attrClassName, specName: attrSpecName };
 		}
 	}
 	return null;
@@ -354,10 +369,7 @@ export const updateTranslations = (options: LocalizationOptions = {}): void => {
 
 export const initLocalization = (options?: LocalizationOptions): void => {
 	const finalOptions =
-		options ||
-		(document.querySelector('title[data-class]') || document.querySelector('meta[data-class]')
-			? { updateSimMetadata: true }
-			: { updateSimLinks: true, updateLanguageDropdown: true });
+		options || (extractClassAndSpecFromDataAttributes() ? { updateSimMetadata: true } : { updateSimLinks: true, updateLanguageDropdown: true });
 
 	const initialize = () => {
 		if (!i18n.isInitialized) {
