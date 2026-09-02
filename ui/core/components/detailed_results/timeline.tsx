@@ -64,7 +64,9 @@ export class Timeline extends ResultComponent {
 	// swap, and each parked slot keeps its full tippy instance set alive.
 	private parkedSlot: RotationSlot | null = null;
 
-	private hiddenIds: Array<ActionId>;
+	// Hidden rows are keyed by section (player '', pet name, target label) plus
+	// action, so ids shared across sections (e.g. main-hand Attack) hide independently.
+	private hiddenIds: Array<{ scope: string; actionId: ActionId }>;
 
 	private secondaryResource?: SecondaryResource | null;
 
@@ -610,7 +612,7 @@ export class Timeline extends ResultComponent {
 				this.addPetRow(pet.name, duration);
 				orderedResourceTypes.forEach(resourceType => this.addResourceRow(resourceType, pet.groupedResourceLogs[resourceType], duration));
 				const petCastsByAbility = this.getSortedCastsByAbility(pet);
-				petCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration));
+				petCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration, pet.name));
 			});
 		}
 
@@ -632,7 +634,7 @@ export class Timeline extends ResultComponent {
 			if (targetCastsByAbility.length > 0) {
 				this.addSeparatorRow(duration);
 				this.addTargetRow(target.label, duration);
-				targetCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration));
+				targetCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration, target.label));
 			}
 		});
 
@@ -641,7 +643,7 @@ export class Timeline extends ResultComponent {
 			if (debuffsToShow.length > 0) {
 				this.addSeparatorRow(duration);
 				this.addTargetRow(targets?.[index]?.label, duration);
-				debuffsToShow.forEach(auraUptimeLogs => this.addAuraRow(auraUptimeLogs, duration));
+				debuffsToShow.forEach(auraUptimeLogs => this.addAuraRow(auraUptimeLogs, duration, targets?.[index]?.label ?? ''));
 			}
 		});
 	}
@@ -687,8 +689,14 @@ export class Timeline extends ResultComponent {
 		return castsByAbility;
 	}
 
-	private makeLabelElem(actionId: ActionId, isHiddenLabel: boolean, isAura?: boolean): JSX.Element {
-		const labelText = idsToGroupForRotation.includes(actionId.spellId) ? actionId.baseName : actionId.name;
+	private hiddenIndex(scope: string, actionId: ActionId): number {
+		return this.hiddenIds.findIndex(hidden => hidden.scope === scope && hidden.actionId.equals(actionId));
+	}
+
+	private makeLabelElem(actionId: ActionId, isHiddenLabel: boolean, isAura: boolean, scope: string): JSX.Element {
+		const baseText = idsToGroupForRotation.includes(actionId.spellId) ? actionId.baseName : actionId.name;
+		// Hidden chips for pet/target rows name their section so two "Attack" chips are telling apart.
+		const labelText = isHiddenLabel && scope ? `${baseText} (${scope})` : baseText;
 		const labelIcon = ref<HTMLAnchorElement>();
 		const hideElem = ref<HTMLElement>();
 		const labelElem = (
@@ -698,18 +706,22 @@ export class Timeline extends ResultComponent {
 				<span className="rotation-label-text">{labelText}</span>
 			</div>
 		);
-		const onClickHandler = () => {
+		// The whole hidden chip un-hides; on the visible label only the eye hides.
+		const clickTarget = isHiddenLabel ? labelElem : hideElem.value!;
+		const onClickHandler = (event: Event) => {
+			// The spell icon keeps its own link + Wowhead tooltip.
+			if (isHiddenLabel && (event.target as Element).closest('.rotation-label-icon')) return;
 			if (isHiddenLabel) {
-				const index = this.hiddenIds.findIndex(hiddenId => hiddenId.equals(actionId));
+				const index = this.hiddenIndex(scope, actionId);
 				if (index != -1) {
 					this.hiddenIds.splice(index, 1);
 				}
 			} else {
-				this.hiddenIds.push(actionId);
+				this.hiddenIds.push({ scope, actionId });
 			}
 			this.liveSlot?.emitter.emit(TypedEvent.nextEventID());
 		};
-		hideElem.value!.addEventListener('click', onClickHandler);
+		clickTarget.addEventListener('click', onClickHandler);
 		const tooltip = tippy(hideElem.value!, {
 			theme: 'timeline-tooltip',
 			placement: 'auto-end',
@@ -717,7 +729,7 @@ export class Timeline extends ResultComponent {
 		});
 
 		const updateHidden = () => {
-			if (isHiddenLabel == Boolean(this.hiddenIds.find(hiddenId => hiddenId.equals(actionId)))) {
+			if (isHiddenLabel == (this.hiddenIndex(scope, actionId) != -1)) {
 				labelElem.classList.remove('hide');
 			} else {
 				labelElem.classList.add('hide');
@@ -729,7 +741,7 @@ export class Timeline extends ResultComponent {
 		actionId.setWowheadDataset(labelIcon.value!, { useBuffAura: isAura });
 
 		this.addOnResetCallback(() => {
-			hideElem.value?.removeEventListener('click', onClickHandler);
+			clickTarget.removeEventListener('click', onClickHandler);
 			tooltip.destroy();
 			event.dispose();
 		});
@@ -748,11 +760,11 @@ export class Timeline extends ResultComponent {
 		);
 	}
 
-	private makeRowElem(actionId: ActionId, duration: number): JSX.Element {
+	private makeRowElem(actionId: ActionId, duration: number, scope: string): JSX.Element {
 		const rowElem = this.makePlainRowElem(duration);
 
 		const updateHidden = () => {
-			if (this.hiddenIds.find(hiddenId => hiddenId.equals(actionId))) {
+			if (this.hiddenIndex(scope, actionId) != -1) {
 				rowElem.classList.add('hide');
 			} else {
 				rowElem.classList.remove('hide');
@@ -889,13 +901,13 @@ export class Timeline extends ResultComponent {
 		this.rotationTimeline.appendChild(rowElem);
 	}
 
-	private addCastRow(castLogs: Array<CastLog>, aurasById: Array<Array<AuraUptimeLog>>, duration: number) {
+	private addCastRow(castLogs: Array<CastLog>, aurasById: Array<Array<AuraUptimeLog>>, duration: number, scope = '') {
 		const actionId = castLogs[0].actionId!;
 
-		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false));
-		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true));
+		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false, false, scope));
+		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, false, scope));
 
-		const rowElem = this.makeRowElem(actionId, duration);
+		const rowElem = this.makeRowElem(actionId, duration, scope);
 		castLogs.forEach(castLog => {
 			const castElem = (
 				<div
@@ -1037,12 +1049,12 @@ export class Timeline extends ResultComponent {
 		this.rotationTimeline.appendChild(rowElem);
 	}
 
-	private addAuraRow(auraUptimeLogs: Array<AuraUptimeLog>, duration: number) {
+	private addAuraRow(auraUptimeLogs: Array<AuraUptimeLog>, duration: number, scope = '') {
 		const actionId = auraUptimeLogs[0].actionId!;
 
-		const rowElem = this.makeRowElem(actionId, duration);
-		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false, true));
-		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, true));
+		const rowElem = this.makeRowElem(actionId, duration, scope);
+		this.rotationLabels.appendChild(this.makeLabelElem(actionId, false, true, scope));
+		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, true, scope));
 		this.rotationTimeline.appendChild(rowElem);
 
 		this.applyAuraUptimeLogsToRow(auraUptimeLogs, rowElem, false);
