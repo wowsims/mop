@@ -14,25 +14,26 @@ import { registerSpecConfig } from '@features/spec_config';
 
 import { IndividualSimUI } from './individual_sim_ui';
 
-const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../*/*/spec.ts');
+const modules = import.meta.glob<{ default: SpecDefinition<any> }>('../*/*/spec.{ts,tsx}');
 
-// '/mop/warrior/arms/' -> '../warrior/arms/spec.ts'
+// '/mop/warrior/arms/' -> '../warrior/arms/spec' (then tried as .ts and .tsx —
+// a couple of specs need real JSX for their reforge tooltips).
 function specModuleKey(pathname: string): string {
 	const base = import.meta.env.BASE_URL || '/';
 	const rel = (pathname.startsWith(base) ? pathname.slice(base.length) : pathname)
 		.replace(/^\/+/, '')
 		.replace(/index\.html$/, '')
 		.replace(/\/+$/, '');
-	return `../${rel}/spec.ts`;
+	return `../${rel}/spec`;
 }
 
 // An async IIFE rather than top-level await: the vite build target does not
 // support TLA and downgrades it to a tolerated transform.
 void (async () => {
 	const key = specModuleKey(location.pathname);
-	const loadSpec = modules[key];
+	const loadSpec = modules[`${key}.ts`] || modules[`${key}.tsx`];
 	if (!loadSpec) {
-		throw new Error(`No spec module for ${location.pathname} (looked for ${key}). Specs not yet converted to spec.ts still ship their own index.ts.`);
+		throw new Error(`No spec module for ${location.pathname} (looked for ${key}.ts(x)). Specs not yet converted to spec.ts still ship their own index.ts.`);
 	}
 
 	const def = (await loadSpec()).default;

@@ -1,0 +1,190 @@
+import * as Mechanics from '@domain/constants/mechanics';
+import { Player } from '@domain/player';
+import { PlayerClasses } from '@domain/player_classes';
+import { StatCap, Stats, UnitStat } from '@domain/proto_utils/stats';
+import { defaultRaidBuffMajorDamageCooldowns } from '@domain/proto_utils/utils';
+import * as BuffDebuffInputs from '@features/settings/model/buffs_debuffs';
+import * as OtherInputs from '@features/settings/view/other_inputs';
+import { defineSpec } from '@features/spec_config';
+
+import { StatCapType } from '../../core/proto/api';
+import { APLRotation, APLRotation_Type } from '../../core/proto/apl';
+import { Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat, UnitStats } from '../../core/proto/common';
+import * as PaladinInputs from '../inputs';
+import * as Presets from './presets';
+
+export default defineSpec<Spec.SpecRetributionPaladin>({
+	spec: Spec.SpecRetributionPaladin,
+
+	cssClass: 'retribution-paladin-sim-ui',
+	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Paladin),
+	// List any known bugs / issues here and they'll be shown on the site.
+	knownIssues: [
+		'If reforging times out, click the gear icon next to the reforge button, check "Use custom EP weights" and then check Max for the hit cap to undershoot',
+	],
+
+	overwriteDisplayStats: (player: Player<Spec.SpecRetributionPaladin>) => {
+		const playerStats = player.getCurrentStats();
+
+		const statMod = (current: UnitStats, previous?: UnitStats) => {
+			return new Stats().withStat(Stat.StatSpellPower, Stats.fromProto(current).subtract(Stats.fromProto(previous)).getStat(Stat.StatAttackPower) * 0.5);
+		};
+
+		const base = statMod(playerStats.baseStats!);
+		const gear = statMod(playerStats.gearStats!, playerStats.baseStats);
+		const talents = statMod(playerStats.talentsStats!, playerStats.gearStats);
+		const buffs = statMod(playerStats.buffsStats!, playerStats.talentsStats);
+		const consumes = statMod(playerStats.consumesStats!, playerStats.buffsStats);
+		const final = new Stats().withStat(Stat.StatSpellPower, Stats.fromProto(playerStats.finalStats).getStat(Stat.StatAttackPower) * 0.5);
+
+		return {
+			base: base,
+			gear: gear,
+			talents: talents,
+			buffs: buffs,
+			consumes: consumes,
+			final: final,
+			stats: [Stat.StatSpellPower],
+		};
+	},
+
+	// All stats for which EP should be calculated.
+	epStats: [
+		Stat.StatStrength,
+		Stat.StatAttackPower,
+		Stat.StatHitRating,
+		Stat.StatCritRating,
+		Stat.StatHasteRating,
+		Stat.StatExpertiseRating,
+		Stat.StatMasteryRating,
+	],
+	gemStats: [
+		Stat.StatStamina,
+		Stat.StatStrength,
+		Stat.StatHitRating,
+		Stat.StatCritRating,
+		Stat.StatHasteRating,
+		Stat.StatExpertiseRating,
+		Stat.StatMasteryRating,
+	],
+	epPseudoStats: [PseudoStat.PseudoStatMainHandDps],
+	// Reference stat against which to calculate EP. I think all classes use either spell power or attack power.
+	epReferenceStat: Stat.StatStrength,
+	// Which stats to display in the Character Stats section, at the bottom of the left-hand sidebar.
+	displayStats: UnitStat.createDisplayStatArray(
+		[
+			Stat.StatStrength,
+			Stat.StatAgility,
+			Stat.StatIntellect,
+			Stat.StatAttackPower,
+			Stat.StatExpertiseRating,
+			Stat.StatSpellPower,
+			Stat.StatMana,
+			Stat.StatHealth,
+			Stat.StatStamina,
+			Stat.StatMasteryRating,
+		],
+		[
+			PseudoStat.PseudoStatPhysicalHitPercent,
+			PseudoStat.PseudoStatPhysicalCritPercent,
+			PseudoStat.PseudoStatMeleeHastePercent,
+			PseudoStat.PseudoStatSpellHastePercent,
+			PseudoStat.PseudoStatSpellCritPercent,
+			PseudoStat.PseudoStatSpellHitPercent,
+		],
+	),
+
+	defaults: {
+		// Default equipped gear.
+		gear: Presets.P5_GEAR_PRESET.gear,
+		// Default EP weights for sorting gear in the gear picker.
+		epWeights: Presets.P5_EP_PRESET.epWeights,
+		// Default stat caps for the Reforge Optimizer
+		statCaps: Stats.fromMap(
+			{
+				[Stat.StatExpertiseRating]: 7.5 * 4 * Mechanics.EXPERTISE_PER_QUARTER_PERCENT_REDUCTION,
+			},
+			{
+				[PseudoStat.PseudoStatPhysicalHitPercent]: 7.5,
+			},
+		),
+		softCapBreakpoints: [
+			StatCap.fromPseudoStat(PseudoStat.PseudoStatMeleeHastePercent, {
+				breakpoints: [50],
+				capType: StatCapType.TypeSoftCap,
+				postCapEPs: [0],
+			}),
+		],
+		// Default consumes settings.
+		consumables: Presets.DefaultConsumables,
+		// Default talents.
+		talents: Presets.DefaultTalents.data,
+		// Default spec-specific settings.
+		specOptions: Presets.DefaultOptions,
+		other: Presets.OtherDefaults,
+		// Default raid/party buffs settings.
+		raidBuffs: RaidBuffs.create({
+			...defaultRaidBuffMajorDamageCooldowns(),
+			arcaneBrilliance: true,
+			blessingOfKings: true,
+			blessingOfMight: true,
+			bloodlust: true,
+			elementalOath: true,
+			powerWordFortitude: true,
+			serpentsSwiftness: true,
+			trueshotAura: true,
+		}),
+		partyBuffs: PartyBuffs.create({}),
+		individualBuffs: IndividualBuffs.create({}),
+		debuffs: Debuffs.create({
+			curseOfElements: true,
+			physicalVulnerability: true,
+			weakenedArmor: true,
+			weakenedBlows: true,
+		}),
+		rotationType: APLRotation_Type.TypeAuto,
+	},
+
+	// IconInputs to include in the 'Player' section on the settings tab.
+	playerIconInputs: [PaladinInputs.StartingSealSelection()],
+	// Buff and Debuff inputs to include/exclude, overriding the EP-based defaults.
+	includeBuffDebuffInputs: [BuffDebuffInputs.StaminaBuff, BuffDebuffInputs.SpellHasteBuff],
+	excludeBuffDebuffInputs: [],
+	// Inputs to include in the 'Other' section on the settings tab.
+	otherInputs: {
+		inputs: [OtherInputs.InputDelay, OtherInputs.TankAssignment, OtherInputs.InFrontOfTarget],
+	},
+	encounterPicker: {
+		// Whether to include 'Execute Duration (%)' in the 'Encounter' section of the settings tab.
+		showExecuteProportion: false,
+	},
+
+	presets: {
+		epWeights: [Presets.P5_EP_PRESET, Presets.PRERAID_EP_PRESET],
+		rotations: [Presets.APL_PRESET],
+		// Preset talents that the user can quickly select.
+		talents: [Presets.DefaultTalents],
+		// Preset gear configurations that the user can quickly select.
+		gear: [Presets.P5_GEAR_PRESET, Presets.PRERAID_GEAR_PRESET],
+		builds: [Presets.P5_BUILD_PRESET],
+	},
+
+	autoRotation: (_: Player<Spec.SpecRetributionPaladin>): APLRotation => {
+		return Presets.APL_PRESET.rotation.rotation!;
+	},
+
+	reforge: {
+		getEPDefaults: player => player.getEpWeights(),
+		updateSoftCaps: (softCaps, player) => {
+			const hasteCap = softCaps.find(v => v.unitStat.equalsPseudoStat(PseudoStat.PseudoStatMeleeHastePercent));
+			if (hasteCap) {
+				const hasteWeights = player.getEpWeights().getStat(Stat.StatHasteRating);
+				const critWeights = player.getEpWeights().getStat(Stat.StatCritRating);
+				const masteryWeights = player.getEpWeights().getStat(Stat.StatMasteryRating);
+				const postCap = Math.max(0.01, Math.min(hasteWeights, critWeights, masteryWeights) - 0.01);
+				hasteCap.postCapEPs = [postCap * Mechanics.HASTE_RATING_PER_HASTE_PERCENT];
+			}
+			return softCaps;
+		},
+	},
+});

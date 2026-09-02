@@ -83,7 +83,7 @@ honest. The per-spec config schema lives in `@features/spec_config` (`Individual
 cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPickerConfig`.
 It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
 `defineSpec` — see "How to author a spec"). `app/individual_sim_ui.tsx` re-exports all of it for
-the 32 spec `sim.ts` files not yet converted to `spec.ts`. The preset shapes
+the 7 spec `sim.ts` files not yet converted to `spec.ts`. The preset shapes
 (`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
 holds the `make*` builders and re-exports the types.
 
@@ -146,9 +146,10 @@ The `getEPDefaults` / `updateSoftCaps` callbacks receive `(…, player, ctx)` wh
 
 `ui/app/spec_entry.ts` is the single page entry for every spec, referenced from
 `ui/index_template.html`. It derives the module key from `location.pathname`
-(`/mop/<class>/<spec>/` → `../<class>/<spec>/spec.ts`), loads it from a lazy
-`import.meta.glob('../*/*/spec.ts')` — so each spec ships its own chunk and only the visited
-one is fetched — then:
+(`/mop/<class>/<spec>/` → `../<class>/<spec>/spec`), loads it from a lazy
+`import.meta.glob('../*/*/spec.{ts,tsx}')` — `.tsx` is only for the two specs whose reforge
+tooltips need real JSX — so each spec ships its own chunk and only the visited one is fetched
+— then:
 
 ```
 registerSpecConfig(def.spec, def)  →  new Sim  →  new Player  →  (enableHealing)  →
@@ -164,8 +165,10 @@ ordering matters, and `spec_entry.ts` is the only place it is expressed.
 derivedSettings → features) as its last statements, exactly where a subclass constructor body
 used to run.
 
-> Migration state: only `warrior/arms` and `priest/discipline` are converted so far. The other
-> 32 specs still have `sim.ts` (an `IndividualSimUI` subclass) + `index.ts`, and their generated
+> Migration state: 27 of 34 specs are converted (`warrior/arms`, `priest/discipline`, and the
+> 25 specs converted in PR 7b). The remaining 7 — `death_knight/frost`, `death_knight/unholy`,
+> `monk/brewmaster`, `monk/windwalker`, `rogue/assassination`, `rogue/combat`, `rogue/subtlety`
+> — still have `sim.ts` (an `IndividualSimUI` subclass) + `index.ts`, and their generated
 > `index.html` still points at `./index.ts`. `ui/index_template.html` already points at
 > `app/spec_entry.ts`, so **do not run `make` (which regenerates all 34 `index.html` from the
 > template) until every spec has a `spec.ts`** — regenerate individually with the makefile's

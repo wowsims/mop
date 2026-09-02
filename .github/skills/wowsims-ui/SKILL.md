@@ -149,16 +149,41 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 - Tabs, single quotes, `simple-import-sort` (run `npm run lint:js:fix` on touched files).
 - Never commit fixtures/goldens without asking; never run `gen_db` concurrently.
 - Spec configs are pure data; `Player` consumes only the narrow `SpecConfigData` subset.
-  Converted specs (so far `warrior/arms`, `priest/discipline`) are a single
-  `ui/<class>/<spec>/spec.ts` default-exporting `defineSpec({ spec, ...config, reforge?,
-  enableHealing?, derivedSettings?, features? })` — no `sim.ts`, no `index.ts`, no
-  `IndividualSimUI` subclass; `ui/app/spec_entry.ts` loads it from the URL. The other 32 still
-  register from `sim.ts` via `registerSpecConfig` and boot from their own `index.ts`.
+  27 of 34 specs are converted to a single `ui/<class>/<spec>/spec.ts` (or `.tsx` for
+  `mage/arcane` and `warlock/demonology`, whose reforge tooltips need real JSX) default-exporting
+  `defineSpec({ spec, ...config, reforge?, enableHealing?, derivedSettings?, features? })` — no
+  `sim.ts`, no `index.ts`, no `IndividualSimUI` subclass; `ui/app/spec_entry.ts` loads it from
+  the URL. The remaining 7 (`death_knight/frost`, `death_knight/unholy`, `monk/brewmaster`,
+  `monk/windwalker`, `rogue/assassination`, `rogue/combat`, `rogue/subtlety`) still register
+  from `sim.ts` via `registerSpecConfig` and boot from their own `index.ts`.
   See "How to author a spec" in `ui/README.md`.
 - `PartyBuffs` is an empty proto message in MoP — party-buff code paths are vestigial.
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 7b: converted 25 more specs to `spec.ts`/`spec.tsx` (27 of 34
+  total, on top of the two PR 7a pilots). `spec_entry.ts`'s glob is now
+  `import.meta.glob('../*/*/spec.{ts,tsx}')` — `mage/arcane` and `warlock/demonology` keep real
+  JSX in their reforge `additionalSoftCapTooltipInformation`, so they stayed `.tsx`; every other
+  converted spec is plain `.ts`. A ctor body's `this.reforger?.foo` became `ctx.reforger.foo`,
+  `this.individualConfig.defaults` became `ctx.defaults`, and a callback's captured outer
+  `player` became the callback's own `player` parameter — except where a callback (e.g.
+  `additionalSoftCapTooltipInformation`) has no `player` param of its own, which needed
+  `reforge: host => ({ ... })` closing over `host.player` instead (mage/arcane, demonology).
+  Pure ctor precomputes (`statSelectionPresets` for balance/arcane/fire/affliction/demonology/
+  destruction) were hoisted to module scope above `defineSpec`. `mage/fire`'s
+  `new CalculateCombustionThresholds(this.rootElem, this)` became
+  `features: [host => new CalculateCombustionThresholds(host.rootElem, host)]`; its constructor's
+  `simUI` param is now `IndividualSimHost<Spec.SpecFireMage>` (from `@features/sim_host`), which
+  required adding `runSimLightweight` to the `SimHost` interface (it used a lightweight sim call
+  IndividualSimHost didn't expose). 5 specs (`death_knight/blood`, `druid/guardian`,
+  `paladin/holy`, `paladin/protection`, `warrior/protection`) gained `enableHealing: true`
+  (verified against their old `index.ts` calling `player.enableHealing()`). Skipped 7 for hand
+  work: `death_knight/{frost,unholy}`, `monk/{brewmaster,windwalker}`,
+  `rogue/{assassination,combat,subtlety}`. `tools/state-snapshots/snapshot.ts` updated to
+  explicit `registerSpecConfig` imports for all 27; goldens stayed byte-identical (34 specs).
+  `npx vite build`: 35 entries, 27 `spec-*.chunk.js` (one per converted spec — not "+2", that
+  was this task's estimate before the pilots' baseline was known).
 - 2026-09-02 UI restructure PR 7a: **a spec is now DATA.** `@features/spec_config` gained
   `SpecDefinition<S>` (= `IndividualSimUIConfig<S>` + `spec: S` + `SpecBehaviors<S>`),
   `SpecBehaviors` (`reforge`, `enableHealing`, `derivedSettings`, `features` — all optional),

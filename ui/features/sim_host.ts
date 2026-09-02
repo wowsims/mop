@@ -1,8 +1,9 @@
-import type { ErrorOutcome, StatWeightsResult } from '@core/proto/api';
+import type { ErrorOutcome, RaidSimRequest, RaidSimResult, StatWeightsResult } from '@core/proto/api';
 import type { Spec, Stat } from '@core/proto/common';
 import type { IndividualSimSettings } from '@core/proto/ui';
 import type { SimSettingCategories } from '@domain/constants/sim_settings';
 import type { Player } from '@domain/player';
+import type { Gear } from '@domain/proto_utils/gear';
 import type { SimResult } from '@domain/proto_utils/sim_result';
 import type { RunSimOptions } from '@domain/sim';
 import type { EventID } from '@domain/state/batch';
@@ -37,6 +38,11 @@ export interface SimHost extends SimUIHost {
 	addActionGroup(groups: ActionGroupItem[], groupOptions?: { cssClass?: string }): { group: HTMLDivElement; children: HTMLButtonElement[] };
 	isIndividualSim(): boolean;
 	runSim(onProgress: WorkerProgressCallback, options?: RunSimOptions): Promise<SimResult | ErrorOutcome | undefined>;
+	runSimLightweight(
+		gear: Gear,
+		onProgress: WorkerProgressCallback,
+		options?: RunSimOptions,
+	): Promise<[RaidSimRequest, RaidSimResult] | ErrorOutcome | undefined>;
 	runSimOnce(options?: RunSimOptions): Promise<SimResult | null | undefined>;
 	handleCrash(error: any): Promise<void>;
 }
