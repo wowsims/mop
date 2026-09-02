@@ -598,3 +598,20 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
   16144 chars). Drop the `norm` pipe and `diff` the two side by side to *see* the 15 reflow
   hunks. `DEFAULT_UNIT_REF` moved to `field_descriptors.ts` and is re-exported from
   `apl_helpers.tsx`.
+- 2026-09-02 Three independent fixes. (1) `tools/vite/spec_pages.mts`: the dev middleware now 301s
+  the bare `${base}<class>/<spec>` (query string preserved) to the trailing-slash form, matching the
+  production static host; without it the bare url missed the `pages` set and fell through to vite's
+  SPA fallback, which served the *landing* page. Unknown specs still fall through untouched and the
+  built output is unchanged. (2) `features/apl/view/apl_helpers.tsx`: `APLActionIDPicker`'s
+  `valueToSource` threw on an unset spell field. An empty `ActionID` matches no dropdown option and
+  `createMissingValue` deliberately never resolves for it, so `currentSelection` stays `null` and
+  `DropdownPicker.getInputValue()` calls `valueToSource(undefined)`. The action-kind swap pre-fill
+  (`apl_actions.ts` line ~92, Cast-without-a-spell -> Sequence) reads the old kind's fields that way,
+  so the `TypeError` escaped *before* `player.touchRotation()` — which is why the field pickers also
+  never rebuilt (the priority ListPicker's `subscribePlayerField(player, 'rotation')` refresh is the
+  only thing that calls `updateActionPicker`). It now returns `ActionID.create()`, the same empty
+  proto `actionIdFieldConfig`'s `newValue()` produces. (3) `i18n/localization.tsx`: a localized
+  description was written with `element.textContent` on a `<meta>`, which leaves `content` empty and
+  is invisible to crawlers — both `updateSimPageMetadata` (spec pages) and `updateDataI18nElements`
+  (the landing page's `data-i18n` meta) now use `setAttribute('content', ...)`. `<title>` is
+  unaffected; there are no `og:`/`twitter:` tags in either html root.
