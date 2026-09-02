@@ -1,3 +1,4 @@
+import { fillAndSetActionId } from '@features/gear/view/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import { Player } from '../../player';
@@ -159,14 +160,14 @@ export class MultiIconPicker<ModObject> extends Component {
 		if (this.currentValue) {
 			this.buttonElem.classList.add('active');
 			if (this.config.categoryId != null) {
-				this.config.categoryId.fillAndSet(this.buttonElem, false, true, { signal: this.signal });
+				fillAndSetActionId(this.config.categoryId, this.buttonElem, false, true, { signal: this.signal });
 			} else {
-				this.currentValue.fillAndSet(this.buttonElem, false, true, { signal: this.signal });
+				fillAndSetActionId(this.currentValue, this.buttonElem, false, true, { signal: this.signal });
 			}
 		} else {
 			this.buttonElem.classList.remove('active');
 			if (this.config.categoryId != null) {
-				this.config.categoryId.fillAndSet(this.buttonElem, false, true, { signal: this.signal });
+				fillAndSetActionId(this.config.categoryId, this.buttonElem, false, true, { signal: this.signal });
 			} else {
 				this.buttonElem.style.backgroundImage = '';
 			}

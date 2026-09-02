@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class BeastMasteryHunter extends PlayerSpec<Spec.SpecBeastMasteryHunter> {
 	static specIndex = 0;
 	static specID = Spec.SpecBeastMasteryHunter as Spec.SpecBeastMasteryHunter;
 	static classID = Class.ClassHunter as Class.ClassHunter;
 	static friendlyName = 'Beast Mastery';
-	static simLink = getSpecSiteUrl('hunter', 'beast_mastery');
+	static simLink = getSpecSitePath('hunter', 'beast_mastery');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class MarksmanshipHunter extends PlayerSpec<Spec.SpecMarksmanshipHunter> 
 	static specID = Spec.SpecMarksmanshipHunter as Spec.SpecMarksmanshipHunter;
 	static classID = Class.ClassHunter as Class.ClassHunter;
 	static friendlyName = 'Marksmanship';
-	static simLink = getSpecSiteUrl('hunter', 'marksmanship');
+	static simLink = getSpecSitePath('hunter', 'marksmanship');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class SurvivalHunter extends PlayerSpec<Spec.SpecSurvivalHunter> {
 	static specID = Spec.SpecSurvivalHunter as Spec.SpecSurvivalHunter;
 	static classID = Class.ClassHunter as Class.ClassHunter;
 	static friendlyName = 'Survival';
-	static simLink = getSpecSiteUrl('hunter', 'survival');
+	static simLink = getSpecSitePath('hunter', 'survival');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;

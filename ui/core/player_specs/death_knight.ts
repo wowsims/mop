@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class BloodDeathKnight extends PlayerSpec<Spec.SpecBloodDeathKnight> {
 	static specIndex = 0;
 	static specID = Spec.SpecBloodDeathKnight as Spec.SpecBloodDeathKnight;
 	static classID = Class.ClassDeathKnight as Class.ClassDeathKnight;
 	static friendlyName = 'Blood';
-	static simLink = getSpecSiteUrl('death_knight', 'blood');
+	static simLink = getSpecSitePath('death_knight', 'blood');
 
 	static isTankSpec = true;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class FrostDeathKnight extends PlayerSpec<Spec.SpecFrostDeathKnight> {
 	static specID = Spec.SpecFrostDeathKnight as Spec.SpecFrostDeathKnight;
 	static classID = Class.ClassDeathKnight as Class.ClassDeathKnight;
 	static friendlyName = 'Frost';
-	static simLink = getSpecSiteUrl('death_knight', 'frost');
+	static simLink = getSpecSitePath('death_knight', 'frost');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class UnholyDeathKnight extends PlayerSpec<Spec.SpecUnholyDeathKnight> {
 	static specID = Spec.SpecUnholyDeathKnight as Spec.SpecUnholyDeathKnight;
 	static classID = Class.ClassDeathKnight as Class.ClassDeathKnight;
 	static friendlyName = 'Unholy';
-	static simLink = getSpecSiteUrl('death_knight', 'unholy');
+	static simLink = getSpecSitePath('death_knight', 'unholy');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;

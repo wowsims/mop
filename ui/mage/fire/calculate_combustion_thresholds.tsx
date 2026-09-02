@@ -1,3 +1,4 @@
+import { AuraEventLog, SimLog, SimLogParams } from '@features/results/model/logs_parser';
 import clsx from 'clsx';
 
 import { BaseModal } from '../../core/components/base_modal';
@@ -9,7 +10,6 @@ import { ProgressMetrics, RaidSimResult } from '../../core/proto/api';
 import { Spec } from '../../core/proto/common';
 import { FireMage_Rotation } from '../../core/proto/mage';
 import { ActionId } from '../../core/proto_utils/action_id';
-import { AuraEventLog, SimLog, SimLogParams } from '../../core/proto_utils/logs_parser';
 import { RequestTypes } from '../../core/sim_signal_manager';
 import { nextEventID } from '../../core/state/batch';
 import { sleep, sum } from '../../core/utils';

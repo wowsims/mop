@@ -1,3 +1,4 @@
+import { fillAndSetActionId, setEquippedItemWowheadData } from '@features/gear/view/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import { Player } from '../../player';
@@ -57,8 +58,8 @@ export default class IconItemSwapPicker extends Component {
 		this.iconAnchor.href = '#';
 
 		if (newItem) {
-			newItem.asActionId().fillAndSet(this.iconAnchor, true, true);
-			this.player.setWowheadData(newItem, this.iconAnchor);
+			fillAndSetActionId(newItem.asActionId(), this.iconAnchor, true, true);
+			setEquippedItemWowheadData(this.player, newItem, this.iconAnchor);
 
 			this.socketsContainerElem.replaceChildren(
 				<>

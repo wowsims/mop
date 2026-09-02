@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class BalanceDruid extends PlayerSpec<Spec.SpecBalanceDruid> {
 	static specIndex = 0;
 	static specID = Spec.SpecBalanceDruid as Spec.SpecBalanceDruid;
 	static classID = Class.ClassDruid as Class.ClassDruid;
 	static friendlyName = 'Balance';
-	static simLink = getSpecSiteUrl('druid', 'balance');
+	static simLink = getSpecSitePath('druid', 'balance');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class FeralDruid extends PlayerSpec<Spec.SpecFeralDruid> {
 	static specID = Spec.SpecFeralDruid as Spec.SpecFeralDruid;
 	static classID = Class.ClassDruid as Class.ClassDruid;
 	static friendlyName = 'Feral';
-	static simLink = getSpecSiteUrl('druid', 'feral');
+	static simLink = getSpecSitePath('druid', 'feral');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class GuardianDruid extends PlayerSpec<Spec.SpecGuardianDruid> {
 	static specID = Spec.SpecGuardianDruid as Spec.SpecGuardianDruid;
 	static classID = Class.ClassDruid as Class.ClassDruid;
 	static friendlyName = 'Guardian';
-	static simLink = getSpecSiteUrl('druid', 'guardian');
+	static simLink = getSpecSitePath('druid', 'guardian');
 
 	static isTankSpec = true;
 	static isHealingSpec = false;
@@ -116,7 +116,7 @@ export class RestorationDruid extends PlayerSpec<Spec.SpecRestorationDruid> {
 	static specID = Spec.SpecRestorationDruid as Spec.SpecRestorationDruid;
 	static classID = Class.ClassDruid as Class.ClassDruid;
 	static friendlyName = 'Restoration';
-	static simLink = getSpecSiteUrl('druid', 'restoration');
+	static simLink = getSpecSitePath('druid', 'restoration');
 
 	static isTankSpec = false;
 	static isHealingSpec = true;

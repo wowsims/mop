@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class AfflictionWarlock extends PlayerSpec<Spec.SpecAfflictionWarlock> {
 	static specIndex = 0;
 	static specID = Spec.SpecAfflictionWarlock as Spec.SpecAfflictionWarlock;
 	static classID = Class.ClassWarlock as Class.ClassWarlock;
 	static friendlyName = 'Affliction';
-	static simLink = getSpecSiteUrl('warlock', 'affliction');
+	static simLink = getSpecSitePath('warlock', 'affliction');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class DemonologyWarlock extends PlayerSpec<Spec.SpecDemonologyWarlock> {
 	static specID = Spec.SpecDemonologyWarlock as Spec.SpecDemonologyWarlock;
 	static classID = Class.ClassWarlock as Class.ClassWarlock;
 	static friendlyName = 'Demonology';
-	static simLink = getSpecSiteUrl('warlock', 'demonology');
+	static simLink = getSpecSitePath('warlock', 'demonology');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class DestructionWarlock extends PlayerSpec<Spec.SpecDestructionWarlock> 
 	static specID = Spec.SpecDestructionWarlock as Spec.SpecDestructionWarlock;
 	static classID = Class.ClassWarlock as Class.ClassWarlock;
 	static friendlyName = 'Destruction';
-	static simLink = getSpecSiteUrl('warlock', 'destruction');
+	static simLink = getSpecSitePath('warlock', 'destruction');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;

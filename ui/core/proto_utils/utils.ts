@@ -91,7 +91,6 @@ import {
 	WindwalkerMonk_Rotation,
 } from '../proto/monk';
 import {
-	Blessings,
 	HolyPaladin,
 	HolyPaladin_Options,
 	HolyPaladin_Rotation,
@@ -144,7 +143,7 @@ import {
 	ShamanTalents,
 } from '../proto/shaman';
 import { ResourceType, SpellEffect } from '../proto/spell';
-import { BlessingsAssignment, BlessingsAssignments, UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui';
+import { UIEnchant as Enchant, UIGem as Gem, UIItem as Item } from '../proto/ui';
 import {
 	AfflictionWarlock,
 	AfflictionWarlock_Options,
@@ -175,8 +174,6 @@ import { getEnumValues, intersection, swap } from '../utils';
 import { Database } from './database';
 import { Stats } from './stats';
 
-export const NUM_SPECS = getEnumValues(Spec).length;
-
 // Converts '111111' to [1, 1, 1, 1, 1, 1].
 export function getTalentTreePoints(talentsString: string): Array<number> {
 	const talents = talentsString.split('');
@@ -187,10 +184,11 @@ export function getTalentPoints(talentsString: string): number {
 	return getTalentTreePoints(talentsString).filter(Boolean).length;
 }
 
-// Gets the URL for the individual sim corresponding to the given spec.
-export function getSpecSiteUrl(classString: string, specString: string): string {
-	const specSiteUrlTemplate = new URL(`${window.location.protocol}//${window.location.host}/${REPO_NAME}/CLASS/SPEC/`).toString();
-	return specSiteUrlTemplate.replace('CLASS', classString).replace('SPEC', specString);
+// Root-relative path of the individual sim page for the given spec. Resolve it
+// against the page origin at the point of use (see SimTitleDropdown) — this
+// layer has no `window`.
+export function getSpecSitePath(classString: string, specString: string): string {
+	return `/${REPO_NAME}/${classString}/${specString}/`;
 }
 
 export function textCssClassForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
@@ -1990,40 +1988,6 @@ export function newUnitReference(raidIndex: number): UnitReference {
 
 export function emptyUnitReference(): UnitReference {
 	return UnitReference.create();
-}
-
-// Makes a new set of assignments with everything 0'd out.
-export function makeBlankBlessingsAssignments(numPaladins: number): BlessingsAssignments {
-	const assignments = BlessingsAssignments.create();
-	for (let i = 0; i < numPaladins; i++) {
-		assignments.paladins.push(
-			BlessingsAssignment.create({
-				blessings: new Array(NUM_SPECS).fill(Blessings.BlessingUnknown),
-			}),
-		);
-	}
-	return assignments;
-}
-
-export function makeBlessingsAssignments(numPaladins: number): BlessingsAssignments {
-	const assignments = makeBlankBlessingsAssignments(numPaladins);
-	for (let i = 1; i < Object.keys(Spec).length; i++) {
-		const spec = i;
-		const blessings = [Blessings.BlessingOfKings, Blessings.BlessingOfMight];
-		for (let j = 0; j < blessings.length; j++) {
-			if (j >= assignments.paladins.length) {
-				// Can't assign more blessings since we ran out of paladins
-				break;
-			}
-			assignments.paladins[j].blessings[spec] = blessings[j];
-		}
-	}
-	return assignments;
-}
-
-// Default blessings settings in the raid sim UI.
-export function makeDefaultBlessings(numPaladins: number): BlessingsAssignments {
-	return makeBlessingsAssignments(numPaladins);
 }
 
 export const orderedResourceTypes: Array<ResourceType> = [

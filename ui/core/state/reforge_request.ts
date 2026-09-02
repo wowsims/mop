@@ -2,7 +2,7 @@
 // component so the domain layer (sim.ts, bulk sim, reforge cache) does not
 // depend on ui/core/components.
 import { SimSettingCategories } from '../constants/sim_settings';
-import { Player } from '../player';
+import type { Player } from '../player';
 import { Player as PlayerProtoMessageType, ReforgeOptimizeMode, ReforgeOptimizeRequest, ReforgeSettings } from '../proto/api';
 import { Debuffs, GemColor, ItemQuality, PartyBuffs, Profession, RaidBuffs } from '../proto/common';
 import { UIGem as Gem } from '../proto/ui';

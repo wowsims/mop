@@ -1,6 +1,7 @@
 import { getLang } from '../i18n/locale_service';
 import { hasTouch } from '../shared/bootstrap_overrides';
 import { SimRequest } from '../worker/types';
+import { browserEnv } from './browser_env';
 import {
 	BULK_CACHE_PROGRESS_CHECK_MODULO,
 	BULK_CACHE_YIELD_BUDGET_MS,
@@ -62,6 +63,7 @@ import { extendPlayerProtoWithMissingEffects, getReforgeCacheGearKey, hasBlacksm
 import { Raid } from './raid';
 import { RequestTypes, SimSignalManager } from './sim_signal_manager';
 import { batch, EventID, nextEventID } from './state/batch';
+import type { Env } from './state/env';
 import { Emitter } from './state/events';
 import { cacheRelevantReforgeRequest, getReforgeGemOptions, makeReforgeConfigRequestFields } from './state/reforge_request';
 import { createSimStore, patchSlice, SimSettingsSlice, UISlice } from './state/sim_store';
@@ -93,6 +95,9 @@ export type ReforgeOptimizeConfig = {
 interface SimProps {
 	// The type of sim. Default `SimType.SimTypeIndividual`
 	type?: SimType;
+	// Browser adapter used by the state layer (storage / location / page hide).
+	// Defaults to `browserEnv`; test harnesses pass an in-memory one.
+	env?: Env;
 }
 
 export type RunSimOptions = {
@@ -107,6 +112,8 @@ export class Sim {
 	private readonly workerPool: WorkerPool;
 
 	readonly type: SimType;
+	// Browser adapter for the state layer; see state/env.ts.
+	readonly env: Env;
 	readonly raid: Raid;
 	readonly encounter: Encounter;
 
@@ -133,8 +140,9 @@ export class Sim {
 
 	readonly signalManager: SimSignalManager;
 
-	constructor({ type }: SimProps = {}) {
+	constructor({ type, env }: SimProps = {}) {
 		this.type = type ?? SimType.SimTypeIndividual;
+		this.env = env ?? browserEnv;
 
 		this.workerPool = new WorkerPool(1);
 		subscribeUiField(

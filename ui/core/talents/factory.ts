@@ -1,9 +1,11 @@
+import { GlyphsConfig } from '@features/talents/view/glyphs_picker';
+import { TalentsConfig } from '@features/talents/view/talents_picker';
+
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
 import { SpecTalents, specTypeFunctions } from '../proto_utils/utils';
 import { deathKnightGlyphsConfig, deathKnightTalentsConfig } from './death_knight';
 import { druidGlyphsConfig, druidTalentsConfig } from './druid';
-import { GlyphsConfig } from './glyphs_picker';
 import { hunterGlyphsConfig, hunterTalentsConfig } from './hunter';
 import { mageGlyphsConfig, mageTalentsConfig } from './mage';
 import { monkGlyphsConfig, monkTalentsConfig } from './monk';
@@ -11,7 +13,6 @@ import { paladinGlyphsConfig, paladinTalentsConfig } from './paladin';
 import { priestGlyphsConfig, priestTalentsConfig } from './priest';
 import { rogueGlyphsConfig, rogueTalentsConfig } from './rogue';
 import { shamanGlyphsConfig, shamanTalentsConfig } from './shaman';
-import { TalentsConfig } from './talents_picker';
 import { warlockGlyphsConfig, warlockTalentsConfig } from './warlock';
 import { warriorGlyphsConfig, warriorTalentsConfig } from './warrior';
 

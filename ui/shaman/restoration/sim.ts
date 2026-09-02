@@ -3,7 +3,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Class, Debuffs, Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, RaidBuffs, Spec, Stat } from '../../core/proto/common';
+import { Class, Debuffs, IndividualBuffs, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
 import * as ShamanInputs from '../inputs';
@@ -87,34 +87,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecRestorationShaman, {
 		return APLRotation.create();
 	},
 
-	raidSimPresets: [
-		{
-			spec: Spec.SpecRestorationShaman,
-			talents: Presets.RaidHealingTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceDraenei,
-				[Faction.Horde]: Race.RaceOrc,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P1_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-					3: Presets.P3_PRESET.gear,
-					4: Presets.P4_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P1_PRESET.gear,
-					2: Presets.P2_PRESET.gear,
-					3: Presets.P3_PRESET.gear,
-					4: Presets.P4_PRESET.gear,
-				},
-			},
-		},
-	],
 });
 
 export class RestorationShamanSimUI extends IndividualSimUI<Spec.SpecRestorationShaman> {

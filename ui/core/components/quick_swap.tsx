@@ -1,3 +1,4 @@
+import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import tippy, { hideAll, Instance as TippyInstance, Props as TippyProps } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -100,7 +101,7 @@ const buildList = <T extends QuickSwapAllowedItem>(data: QuickSwapListConfig<T>)
 						);
 						if (labelElem.value) setItemQualityCssClass(labelElem.value, item.item.quality);
 						('spellId' in item.item ? ActionId.fromSpellId(item.item.spellId) : ActionId.fromItemId(item.item.id)).fill().then(filledId => {
-							filledId.setWowheadHref(anchorElem.value!);
+							setActionIdWowheadHref(filledId, anchorElem.value!);
 							iconElem.value!.src = filledId.iconUrl;
 						});
 

@@ -1,3 +1,4 @@
+import { setActionIdBackground, setActionIdWowheadHref, setEquippedItemWowheadData } from '@features/gear/view/action_id_dom';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -42,10 +43,10 @@ export const buildGearChangeIcon = (
 		item.asActionId()
 			.fill(undefined)
 			.then(filledId => {
-				filledId.setBackground(iconRef.value!);
-				filledId.setWowheadHref(linkRef.value!);
+				setActionIdBackground(filledId, iconRef.value!);
+				setActionIdWowheadHref(filledId, linkRef.value!);
 			});
-		player.setWowheadData(item, linkRef.value!);
+		setEquippedItemWowheadData(player, item, linkRef.value!);
 
 		const previousReforge = previousItem?.reforge;
 		const previousGems = previousItem?.gems;

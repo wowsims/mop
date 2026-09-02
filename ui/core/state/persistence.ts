@@ -1,31 +1,26 @@
-// Settings persistence for individual sims: localStorage key derivation, the
-// initial load sequence, and the autosave subscription — extracted from
-// IndividualSimUI/SimUI so the load-order contract lives in the state layer.
+// Settings persistence for individual sims: the initial load sequence and the
+// autosave subscription — extracted from IndividualSimUI/SimUI so the
+// load-order contract lives in the state layer. The localStorage key is built
+// by the caller (IndividualSimUI.getStorageKey) and the browser surface comes
+// in through the sim's `Env` adapter (state/env.ts).
 //
 // Load order is a contract; do not reorder:
 //   defaults → saved localStorage settings → URL-hash link import (partial
 //   imports keep the rest) → clear hash → default player name → subscribe
 //   autosave LAST (so initialization doesn't re-store) → stat-weight settings.
-import { SimSettingCategories } from '../constants/sim_settings';
-import { Player } from '../player';
-import { PlayerSpec } from '../player_spec';
-import { PlayerSpecs } from '../player_specs';
+import type { SimSettingCategories } from '../constants/sim_settings';
+import type { Player } from '../player';
 import { IndividualSimSettings } from '../proto/ui';
+import type { StatWeightActionSettings } from '../stat_weight_settings';
 import { batch, EventID, nextEventID } from './batch';
 import { tryParseUrlLocation } from './sim_links';
-import { StatWeightActionSettings } from './stat_weight_settings';
 import type { StoreSubscribe } from './subscriptions';
+
 export const SETTINGS_STORAGE_SUFFIX = '__currentSettings__';
 const AUTOSAVE_DEBOUNCE_MS = 300;
 // Saved encounters deliberately skip the per-spec prefix so they are shared
 // across all sims.
 export const SHARED_SAVED_ENCOUNTER_STORAGE_KEY = 'sharedData__savedEncounter__';
-
-// Local storage is shared by all sites under the same domain, so each spec
-// site prefixes its keys.
-export function getSpecStorageKey(playerSpec: PlayerSpec<any>, keyPart: string): string {
-	return PlayerSpecs.getLocalStorageKey(playerSpec) + keyPart;
-}
 
 // The pieces of the sim UI the load sequence drives. toProto/fromProto are the
 // (wrapper) envelope serializers; applyDefaults stays UI-owned.
@@ -45,13 +40,14 @@ export function loadIndividualSettings(
 		statWeightSettings: StatWeightActionSettings;
 	},
 ) {
+	const env = opts.player.sim.env;
 	const initEventID = nextEventID();
 	// Declared before the batch: its flush can already schedule a persist.
 	let persistTimer: ReturnType<typeof setTimeout> | null = null;
 	batch(() => {
 		host.applyDefaults(initEventID);
 
-		const savedSettings = window.localStorage.getItem(opts.storageKey);
+		const savedSettings = env.storage.getItem(opts.storageKey);
 		if (savedSettings != null) {
 			try {
 				const settings = IndividualSimSettings.fromJsonString(savedSettings, { ignoreUnknownFields: true });
@@ -64,14 +60,14 @@ export function loadIndividualSettings(
 		// Loading from link needs to happen after loading saved settings, so that partial link imports
 		// (e.g. rotation only) include the previous settings for other categories.
 		try {
-			const urlParseResults = tryParseUrlLocation(window.location);
+			const urlParseResults = tryParseUrlLocation(env.location);
 			if (urlParseResults) {
 				host.fromProto(initEventID, urlParseResults.settings, urlParseResults.categories);
 			}
 		} catch (e) {
 			console.warn('Failed to parse link settings: ' + e);
 		}
-		window.location.hash = '';
+		env.location.setHash('');
 
 		opts.player.setName(initEventID, 'Player');
 
@@ -98,10 +94,10 @@ export function loadIndividualSettings(
 		persistTimer = null;
 		persist();
 	}
-	window.addEventListener('pagehide', flushPersist);
+	env.onPageHide(flushPersist);
 
 	function persist() {
 		const jsonStr = IndividualSimSettings.toJsonString(host.toProto());
-		window.localStorage.setItem(opts.storageKey, jsonStr);
+		env.storage.setItem(opts.storageKey, jsonStr);
 	}
 }

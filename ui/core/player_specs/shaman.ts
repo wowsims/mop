@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class ElementalShaman extends PlayerSpec<Spec.SpecElementalShaman> {
 	static specIndex = 0;
 	static specID = Spec.SpecElementalShaman as Spec.SpecElementalShaman;
 	static classID = Class.ClassShaman as Class.ClassShaman;
 	static friendlyName = 'Elemental';
-	static simLink = getSpecSiteUrl('shaman', 'elemental');
+	static simLink = getSpecSitePath('shaman', 'elemental');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class EnhancementShaman extends PlayerSpec<Spec.SpecEnhancementShaman> {
 	static specID = Spec.SpecEnhancementShaman as Spec.SpecEnhancementShaman;
 	static classID = Class.ClassShaman as Class.ClassShaman;
 	static friendlyName = 'Enhancement';
-	static simLink = getSpecSiteUrl('shaman', 'enhancement');
+	static simLink = getSpecSitePath('shaman', 'enhancement');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class RestorationShaman extends PlayerSpec<Spec.SpecRestorationShaman> {
 	static specID = Spec.SpecRestorationShaman as Spec.SpecRestorationShaman;
 	static classID = Class.ClassShaman as Class.ClassShaman;
 	static friendlyName = 'Restoration';
-	static simLink = getSpecSiteUrl('shaman', 'restoration');
+	static simLink = getSpecSitePath('shaman', 'restoration');
 
 	static isTankSpec = false;
 	static isHealingSpec = true;

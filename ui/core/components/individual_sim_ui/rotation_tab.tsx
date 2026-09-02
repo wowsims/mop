@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 
 import i18n from '../../../i18n/config';
+import { PresetConfigurationCategory } from '../../constants/preset_categories';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
@@ -24,7 +25,7 @@ import { APLVariablesListPicker } from './apl/apl_variables_list_picker';
 import { APLPrePullListPicker } from './apl/pre_pull_list_picker';
 import { APLPriorityListPicker } from './apl/priority_list_picker';
 import { CooldownsPicker } from './cooldowns_picker';
-import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationPicker } from './preset_configuration_picker';
 export class RotationTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 

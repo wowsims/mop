@@ -1,3 +1,4 @@
+import { GlyphConfig } from '@features/talents/view/glyphs_picker';
 import { JsonObject } from '@protobuf-ts/runtime';
 import { ref } from 'tsx-vanilla';
 
@@ -7,7 +8,6 @@ import { Class, EquipmentSpec, Glyphs, Profession, Race, Spec } from '../../../p
 import { Database } from '../../../proto_utils/database';
 import { nameToClass, nameToProfession, nameToRace } from '../../../proto_utils/names';
 import { classGlyphsConfig } from '../../../talents/factory';
-import { GlyphConfig } from '../../../talents/glyphs_picker';
 import Toast from '../../toast';
 import { IndividualImporter } from './individual_importer';
 

@@ -1,6 +1,7 @@
+import { GlyphsConfig } from '@features/talents/view/glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from '@features/talents/view/talents_picker';
+
 import { RogueMajorGlyph, RogueMinorGlyph, RogueTalents } from '../proto/rogue';
-import { GlyphsConfig } from './glyphs_picker';
-import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import RogueTalentJson from './trees/rogue.json';export const rogueTalentsConfig: TalentsConfig<RogueTalents> = newTalentsConfig(RogueTalentJson);
 
 export const rogueGlyphsConfig: GlyphsConfig = {

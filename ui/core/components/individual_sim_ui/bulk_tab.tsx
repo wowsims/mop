@@ -23,6 +23,7 @@ import {
 	getBulkItemSlotFromSlot,
 	getBulkPlayerCanDualWield,
 } from '../../bulk/utils';
+import { BulkSettingsStore } from '../../bulk_settings';
 import { REPO_RELEASES_URL } from '../../constants/other';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { isSpecDualWield2HCapable } from '../../player_classes/capabilities';
@@ -31,11 +32,10 @@ import { ItemSlot, ItemSpec, WeaponType } from '../../proto/common';
 import { EquippedItem } from '../../proto_utils/equipped_item';
 import { Gear } from '../../proto_utils/gear';
 import { canEquipItem, getEligibleItemSlots, getGearIdentityKey, isSecondaryItemSlot } from '../../proto_utils/utils';
+import { RelativeStatCap } from '../../reforge_settings';
 import { ReforgeOptimizeConfig } from '../../sim';
 import { RequestTypes } from '../../sim_signal_manager';
 import { nextEventID } from '../../state/batch';
-import { RelativeStatCap } from '../../state/reforge_settings';
-import { patchKeyed } from '../../state/sim_store';
 import { subscribeAll, subscribeBulkChange, subscribeBulkField, subscribePlayerField, subscribeSimField } from '../../state/subscriptions';
 import { formatDurationSeconds, formatToNumber, getEnumValues, isDevMode, isExternal, Z_95, zTest } from '../../utils';
 import SelectorModal from '../gear_picker/selector_modal';
@@ -49,9 +49,6 @@ import BulkItemSearch from './bulk/bulk_item_search';
 import BulkSimResultRenderer from './bulk/bulk_sim_results_renderer';
 import { runCoreBulkSim as runCoreBulkSimImpl } from './bulk/core_sim';
 import { BulkGearJsonImporter } from './importers';
-const BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v2';
-const LEGACY_BULK_SETTINGS_STORAGE_KEY = 'bulk-settings.v1';
-
 type BulkSetBonusOption = {
 	setId: number;
 	setName: string;
@@ -60,6 +57,7 @@ type BulkSetBonusOption = {
 
 export class BulkTab extends SimTab {
 	readonly simUI: IndividualSimUI<any>;
+	private readonly settingsStore: BulkSettingsStore;
 	playerCanDualWield: boolean;
 	readonly playerCanDualWield2H: boolean;
 
@@ -128,10 +126,7 @@ export class BulkTab extends SimTab {
 		this.simUI = simUI;
 		this.playerCanDualWield = getBulkPlayerCanDualWield(this.simUI.player);
 		this.playerCanDualWield2H = isSpecDualWield2HCapable(this.simUI.player.getSpec());
-		// Seed this player's bulk slice before any subscriber exists (emit-less).
-		this.sim.store.setState(st => ({
-			bulk: { ...st.bulk, [this.storeKey]: { v: { settings: 0, items: 0 } } },
-		}));
+		this.settingsStore = new BulkSettingsStore(this.simUI.player, this.simUI.getStorageKey(''));
 		this.addOnDisposeCallback(
 			subscribeBulkChange(this)(() => {
 				this.availableSetBonusesMemo = null;
@@ -331,27 +326,12 @@ export class BulkTab extends SimTab {
 	// Bumps a version counter — the one write path where the tab used to emit.
 	// The values themselves stay on the tab (nothing reads them from the store).
 	private bump(field: 'settings' | 'items') {
-		patchKeyed(this.sim.store, 'bulk', this.storeKey, {}, [field]);
-	}
-
-	private getSettingsKey(): string {
-		return this.simUI.getStorageKey(BULK_SETTINGS_STORAGE_KEY);
+		this.settingsStore.touch(field);
 	}
 
 	private loadSettings() {
-		window.localStorage.removeItem(this.simUI.getStorageKey(LEGACY_BULK_SETTINGS_STORAGE_KEY));
-
-		const storedSettings = window.localStorage.getItem(this.getSettingsKey());
-		if (storedSettings != null) {
-			let settings: BulkSettings;
-			try {
-				settings = BulkSettings.fromJsonString(storedSettings, {
-					ignoreUnknownFields: true,
-				});
-			} catch {
-				settings = BulkSettings.create();
-			}
-
+		const settings = this.settingsStore.load();
+		if (settings != null) {
 			this.addItems(settings.items, true);
 			this.setInheritUpgrades(settings.inheritUpgrades);
 			this.setUseLegacyBulkSim(settings.useLegacyBulkSim);
@@ -370,9 +350,7 @@ export class BulkTab extends SimTab {
 	}
 
 	private storeSettings() {
-		const settings = this.createBulkSettings();
-		const setStr = BulkSettings.toJsonString(settings, { enumAsInteger: true });
-		window.localStorage.setItem(this.getSettingsKey(), setStr);
+		this.settingsStore.save(this.createBulkSettings());
 	}
 
 	protected createBulkSettings(): BulkSettings {

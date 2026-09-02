@@ -1,19 +1,18 @@
+import { BaseModal } from '@core/components/base_modal';
+import { Component } from '@core/components/component';
+import { ContentBlock } from '@core/components/content_block';
+import { Input } from '@core/components/input';
+import { setItemQualityCssClass } from '@core/css_utils';
+import { Player } from '@core/player';
+import { Glyphs, ItemQuality } from '@core/proto/common';
+import { ActionId } from '@core/proto_utils/action_id';
+import { Database } from '@core/proto_utils/database';
+import { EventID, nextEventID } from '@core/state/batch';
+import { subscribePlayerField } from '@core/state/subscriptions';
+import { stringComparator } from '@core/utils';
+import i18n from '@i18n/config';
+import { getClassI18nKey } from '@i18n/entity_mapping';
 import { ref } from 'tsx-vanilla';
-
-import i18n from '../../i18n/config';
-import { getClassI18nKey } from '../../i18n/entity_mapping';
-import { BaseModal } from '../components/base_modal';
-import { Component } from '../components/component';
-import { ContentBlock } from '../components/content_block';
-import { Input } from '../components/input';
-import { setItemQualityCssClass } from '../css_utils';
-import { Player } from '../player';
-import { Glyphs, ItemQuality } from '../proto/common';
-import { ActionId } from '../proto_utils/action_id';
-import { Database } from '../proto_utils/database';
-import { EventID, nextEventID } from '../state/batch';
-import { subscribePlayerField } from '../state/subscriptions';
-import { stringComparator } from '../utils';
 export type GlyphConfig = {
 	name: string;
 	description: string;

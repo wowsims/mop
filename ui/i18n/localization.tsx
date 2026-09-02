@@ -1,5 +1,6 @@
+import { PresetConfigurationCategory } from '@core/constants/preset_categories';
+
 import { BulkSimItemSlot } from '../core/bulk/utils';
-import { PresetConfigurationCategory } from '../core/components/individual_sim_ui/preset_configuration_picker';
 import { LaunchStatus } from '../core/launched_sims';
 import { PlayerClass } from '../core/player_class';
 import { PlayerSpec } from '../core/player_spec';

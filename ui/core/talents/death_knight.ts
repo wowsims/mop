@@ -1,6 +1,7 @@
+import { GlyphsConfig } from '@features/talents/view/glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from '@features/talents/view/talents_picker';
+
 import { DeathKnightMajorGlyph, DeathKnightMinorGlyph, DeathKnightTalents } from '../proto/death_knight';
-import { GlyphsConfig } from './glyphs_picker';
-import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import DeathKnightTalentJson from './trees/death_knight.json';export const deathKnightTalentsConfig: TalentsConfig<DeathKnightTalents> = newTalentsConfig(DeathKnightTalentJson);
 
 export const deathKnightGlyphsConfig: GlyphsConfig = {

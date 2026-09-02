@@ -1,3 +1,4 @@
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
@@ -363,8 +364,8 @@ export class APLActionIDPicker extends DropdownPicker<Player<any>, ActionID, Act
 				);
 				button.appendChild(content);
 
-				actionId.setBackgroundAndHref(iconRef.value!);
-				actionId.setWowheadDataset(iconRef.value!, { useBuffAura: isAuraType });
+				setActionIdBackgroundAndHref(actionId, iconRef.value!);
+				setActionIdWowheadDataset(actionId, iconRef.value!, { useBuffAura: isAuraType });
 
 				cachedAPLActionIDPickerContent.set(cacheKey, content);
 			},

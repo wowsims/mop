@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class DisciplinePriest extends PlayerSpec<Spec.SpecDisciplinePriest> {
 	static specIndex = 0;
 	static specID = Spec.SpecDisciplinePriest as Spec.SpecDisciplinePriest;
 	static classID = Class.ClassPriest as Class.ClassPriest;
 	static friendlyName = 'Discipline';
-	static simLink = getSpecSiteUrl('priest', 'discipline');
+	static simLink = getSpecSitePath('priest', 'discipline');
 
 	static isTankSpec = false;
 	static isHealingSpec = true;
@@ -44,7 +44,7 @@ export class HolyPriest extends PlayerSpec<Spec.SpecHolyPriest> {
 	static specID = Spec.SpecHolyPriest as Spec.SpecHolyPriest;
 	static classID = Class.ClassPriest as Class.ClassPriest;
 	static friendlyName = 'Holy';
-	static simLink = getSpecSiteUrl('priest', 'holy');
+	static simLink = getSpecSitePath('priest', 'holy');
 
 	static isTankSpec = false;
 	static isHealingSpec = true;
@@ -80,7 +80,7 @@ export class ShadowPriest extends PlayerSpec<Spec.SpecShadowPriest> {
 	static specID = Spec.SpecShadowPriest as Spec.SpecShadowPriest;
 	static classID = Class.ClassPriest as Class.ClassPriest;
 	static friendlyName = 'Shadow';
-	static simLink = getSpecSiteUrl('priest', 'shadow');
+	static simLink = getSpecSitePath('priest', 'shadow');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;

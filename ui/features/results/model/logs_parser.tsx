@@ -1,13 +1,13 @@
+import { CacheHandler } from '@core/cache_handler';
+import { RaidSimResult } from '@core/proto/api';
+import { SpellSchool } from '@core/proto/common';
+import { ResourceType, SecondaryResourceType } from '@core/proto/spell';
+import { ActionId } from '@core/proto_utils/action_id';
+import { resourceNames, spellSchoolNames, stringToResourceType } from '@core/proto_utils/names';
+import { SECONDARY_RESOURCES } from '@core/proto_utils/secondary_resource';
+import { bucket, getEnumValues, stringComparator, sum } from '@core/utils';
+import { setActionIdBackground, setActionIdWowheadDataset, setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import clsx from 'clsx';
-
-import { CacheHandler } from '../cache_handler';
-import { RaidSimResult } from '../proto/api';
-import { SpellSchool } from '../proto/common';
-import { ResourceType, SecondaryResourceType } from '../proto/spell';
-import { bucket, getEnumValues, stringComparator, sum } from '../utils';
-import { ActionId } from './action_id';
-import { resourceNames, spellSchoolNames, stringToResourceType } from './names';
-import { SECONDARY_RESOURCES } from './secondary_resource';
 
 export class Entity {
 	readonly name: string;
@@ -201,9 +201,11 @@ export class SimLog {
 				</span>
 			</a>
 		) as HTMLAnchorElement;
-		this.actionId?.setBackground(iconElem);
-		this.actionId?.setWowheadHref(actionAnchor);
-		this.actionId?.setWowheadDataset(actionAnchor, { useBuffAura: isAura });
+		if (this.actionId) {
+			setActionIdBackground(this.actionId, iconElem);
+			setActionIdWowheadHref(this.actionId, actionAnchor);
+			setActionIdWowheadDataset(this.actionId, actionAnchor, { useBuffAura: isAura });
+		}
 		if (cacheKey) cachedActionIdLink.set(cacheKey, actionAnchor.cloneNode(true) as HTMLAnchorElement);
 		return actionAnchor;
 	}

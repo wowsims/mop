@@ -146,7 +146,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFuryWarrior, {
 		return Presets.FURY_DEFAULT_ROTATION.rotation.rotation!;
 	},
 
-	raidSimPresets: [],
 });
 
 export class FuryWarriorSimUI extends IndividualSimUI<Spec.SpecFuryWarrior> {

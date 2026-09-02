@@ -1,6 +1,7 @@
 import * as Mechanics from './constants/mechanics';
 import { CURRENT_API_VERSION } from './constants/other';
 import { SimSettingCategories } from './constants/sim_settings';
+import { ItemSwapSettings } from './item_swap_settings';
 import { MAX_PARTY_SIZE, Party } from './party';
 import { PlayerClass } from './player_class';
 import { PlayerSpec } from './player_spec';
@@ -81,7 +82,6 @@ import {
 import { Raid } from './raid';
 import { Sim } from './sim';
 import { batch, EventID, nextEventID } from './state/batch';
-import { ItemSwapSettings } from './state/item_swap_settings';
 import { deleteKeyed, patchKeyed, PLAYER_FIELDS, PlayerField, PlayerSlice, seedKeyed, zeroVersions } from './state/sim_store';
 import { subscribePlayerField } from './state/subscriptions';
 import { playerTalentStringToProto } from './talents/factory';
@@ -1236,27 +1236,6 @@ export class Player<SpecType extends Spec> {
 
 		this.itemEPCache[slot].set(cacheKey, ep);
 		return ep;
-	}
-
-	async setWowheadData(equippedItem: EquippedItem, elem: HTMLElement) {
-		const isBlacksmithing = this.hasProfession(Profession.Blacksmithing);
-		const gemIds = equippedItem.gems.length ? equippedItem.curGems(isBlacksmithing).map(gem => (gem ? gem.id : 0)) : [];
-		const enchantIds = [equippedItem.enchant?.effectId, equippedItem.tinker?.effectId].filter((id): id is number => id !== undefined);
-		equippedItem.asActionId().setWowheadDataset(elem, {
-			gemIds,
-			itemLevel: Number(equippedItem.ilvl),
-			enchantIds: enchantIds,
-			reforgeId: equippedItem.reforge?.id,
-			randomEnchantmentId: equippedItem.randomSuffix?.id,
-			setPieceIds: this.getGear()
-				.asArray()
-				.filter(ei => ei != null)
-				.map(ei => ei!.item.id),
-			hasExtraSocket: equippedItem.hasExtraSocket(isBlacksmithing),
-			upgradeStep: equippedItem.upgrade,
-		});
-
-		elem.dataset.whtticon = 'false';
 	}
 
 	static ARMOR_SLOTS: Array<ItemSlot> = [

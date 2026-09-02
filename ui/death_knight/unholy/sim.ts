@@ -140,8 +140,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecUnholyDeathKnight, {
 		gear: [Presets.PREBIS_GEAR_PRESET, Presets.P5_BIS_GEAR_PRESET],
 		builds: [Presets.PREBIS_PRESET, Presets.P5_PRESET],
 	},
-
-	raidSimPresets: [],
 });
 
 export class UnholyDeathKnightSimUI extends IndividualSimUI<Spec.SpecUnholyDeathKnight> {

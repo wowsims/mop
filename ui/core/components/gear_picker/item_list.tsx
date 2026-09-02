@@ -1,3 +1,4 @@
+import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -652,7 +653,7 @@ export default class ItemList<T extends ItemListType> {
 		});
 
 		itemData.actionId.fill().then(filledId => {
-			filledId.setWowheadHref(anchorElem.value!);
+			setActionIdWowheadHref(filledId, anchorElem.value!);
 			iconElem.value!.src = filledId.iconUrl;
 		});
 

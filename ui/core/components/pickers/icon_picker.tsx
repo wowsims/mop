@@ -1,3 +1,4 @@
+import { fillAndSetActionId } from '@features/gear/view/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import { ActionId } from '../../proto_utils/action_id';
@@ -134,13 +135,13 @@ export class IconPicker<ModObject, ValueType> extends Input<ModObject, ValueType
 	}
 
 	updateButtonImage() {
-		this.config.actionId.fillAndSet(this.rootAnchor, true, true);
+		fillAndSetActionId(this.config.actionId, this.rootAnchor, true, true);
 
 		if (this.config.states >= 3 && this.config.improvedId) {
-			this.config.improvedId.fillAndSet(this.improvedAnchor, true, true, { signal: this.signal });
+			fillAndSetActionId(this.config.improvedId, this.improvedAnchor, true, true, { signal: this.signal });
 		}
 		if (this.config.states >= 4 && this.config.improvedId2) {
-			this.config.improvedId2.fillAndSet(this.improvedAnchor2, true, true, { signal: this.signal });
+			fillAndSetActionId(this.config.improvedId2, this.improvedAnchor2, true, true, { signal: this.signal });
 		}
 	}
 

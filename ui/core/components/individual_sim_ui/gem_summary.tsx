@@ -1,3 +1,4 @@
+import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
@@ -82,7 +83,7 @@ export class GemSummary extends Component {
 					.fill()
 					.then(filledId => {
 						iconElem.src = filledId.iconUrl;
-						filledId.setWowheadHref(itemLinkElem);
+						setActionIdWowheadHref(filledId, itemLinkElem);
 					});
 			}
 

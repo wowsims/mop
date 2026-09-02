@@ -4,15 +4,15 @@
 // fromProto are thin wrappers over these functions.
 import { CURRENT_API_VERSION } from '../constants/other';
 import { SimSettingCategories } from '../constants/sim_settings';
-import { Player } from '../player';
+import type { Player } from '../player';
 import { ReforgeSettings as ReforgeSettingsProto } from '../proto/api';
 import { Debuffs, Encounter as EncounterProto, PartyBuffs, RaidBuffs } from '../proto/common';
 import { IndividualSimSettings } from '../proto/ui';
 import { Stats } from '../proto_utils/stats';
 import { migrateOldProto, ProtoConversionMap } from '../proto_utils/utils';
-import { Sim } from '../sim';
+import type { ReforgeSettings } from '../reforge_settings';
+import type { Sim } from '../sim';
 import { batch, EventID } from './batch';
-import { ReforgeSettings } from './reforge_settings';
 // The state surface the envelope serializes besides Player/Sim: the reforge
 // settings model and the EP reference-stat selections owned by the sim UI.
 export interface IndividualSimSerializationContext {

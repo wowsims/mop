@@ -1,3 +1,4 @@
+import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import { ref } from 'tsx-vanilla';
 
 import { GemColor, ItemSlot } from '../../proto/common';
@@ -45,7 +46,7 @@ export const createGemContainer = (socketColor: GemColor, gem: Gem | null, index
 		ActionId.fromItemId(gem.id)
 			.fill()
 			.then(filledId => {
-				filledId.setWowheadHref(gemContainerElem.value!);
+				setActionIdWowheadHref(filledId, gemContainerElem.value!);
 				gemIconElem.value!.src = filledId.iconUrl;
 			});
 	}

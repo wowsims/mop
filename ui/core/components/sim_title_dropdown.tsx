@@ -117,7 +117,9 @@ export class SimTitleDropdown extends Component {
 
 	private buildSpecLink(spec: PlayerSpec<any>) {
 		return (
-			<a href={spec.simLink} className={clsx('sim-link', this.getContextualKlass({ type: 'Spec', spec: spec }))}>
+			<a
+				href={new URL(spec.simLink, window.location.href).toString()}
+				className={clsx('sim-link', this.getContextualKlass({ type: 'Spec', spec: spec }))}>
 				<div className="sim-link-content">
 					<img src={this.getSimIconPath({ type: 'Spec', spec: spec })} className="sim-link-icon" />
 					<div className="d-flex flex-column">

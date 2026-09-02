@@ -1,6 +1,7 @@
+import { GlyphsConfig } from '@features/talents/view/glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from '@features/talents/view/talents_picker';
+
 import { PriestMajorGlyph, PriestMinorGlyph, PriestTalents } from '../proto/priest';
-import { GlyphsConfig } from './glyphs_picker';
-import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import PriestTalentJson from './trees/priest.json';export const priestTalentsConfig: TalentsConfig<PriestTalents> = newTalentsConfig(PriestTalentJson);
 
 export const priestGlyphsConfig: GlyphsConfig = {

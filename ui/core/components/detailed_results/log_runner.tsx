@@ -1,9 +1,9 @@
-// @ts-expect-error
+import { SimLog } from '@features/results/model/logs_parser';
 import i18n from '@i18n/config';
+// @ts-expect-error
 import debounce from 'lodash/debounce';
 import { ref } from 'tsx-vanilla';
 
-import { SimLog } from '../../proto_utils/logs_parser';
 import { Emitter } from '../../state/events';
 import { fragmentToString } from '../../utils';
 import { BooleanPicker } from '../pickers/boolean_picker';

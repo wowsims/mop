@@ -1,3 +1,5 @@
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
+import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '@features/results/model/logs_parser';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
@@ -5,7 +7,6 @@ import i18n from '../../../i18n/config';
 import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
 import { ActionId } from '../../proto_utils/action_id';
-import { AuraStacksChangeLog, CastBeganLog, DamageDealtLog, Entity, ResourceChangedLog } from '../../proto_utils/logs_parser';
 import { resourceColors, resourceNames } from '../../proto_utils/names';
 import { ActionMetrics, SimResult, SimResultFilter } from '../../proto_utils/sim_result';
 import { formatDurationSeconds } from '../../utils';
@@ -528,8 +529,8 @@ export class CombatReplay extends ResultComponent {
 			this.ui.actionGridEl.appendChild(<a ref={iconRef} className="cr-action-icon" dataset={{ key: action.name }} />);
 			const el = iconRef.value!;
 			if (action.actionId) {
-				action.actionId.setBackgroundAndHref(el);
-				action.actionId.setWowheadDataset(el);
+				setActionIdBackgroundAndHref(action.actionId, el);
+				setActionIdWowheadDataset(action.actionId, el);
 			}
 			this.actionIconByKey.set(action.name, el);
 		}
@@ -706,8 +707,8 @@ export class CombatReplay extends ResultComponent {
 				slot.dataset['key'] = key;
 
 				if (cast.actionId) {
-					cast.actionId.setBackgroundAndHref(slot as HTMLAnchorElement);
-					cast.actionId.setWowheadDataset(slot as HTMLAnchorElement);
+					setActionIdBackgroundAndHref(cast.actionId, slot as HTMLAnchorElement);
+					setActionIdWowheadDataset(cast.actionId, slot as HTMLAnchorElement);
 				}
 
 				if (cast.isCrit) {
@@ -885,8 +886,8 @@ export class CombatReplay extends ResultComponent {
 				);
 				const el = iconRef.value!;
 				if (aura.actionId) {
-					aura.actionId.setBackgroundAndHref(el);
-					aura.actionId.setWowheadDataset(el, { useBuffAura: true });
+					setActionIdBackgroundAndHref(aura.actionId, el);
+					setActionIdWowheadDataset(aura.actionId, el, { useBuffAura: true });
 				}
 				badges.push(badgeRef.value!);
 				stackBadges.push(stackBadgeRef.value!);

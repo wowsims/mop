@@ -1,3 +1,5 @@
+import { setActionIdBackground, setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
+import { AuraUptimeLog, CastLog, DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '@features/results/model/logs_parser';
 import ApexCharts from 'apexcharts';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
@@ -9,7 +11,6 @@ import { APLActionItemSwap_SwapSet } from '../../proto/apl';
 import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '../../proto_utils/action_id';
-import { AuraUptimeLog, CastLog, DpsLog, ResourceChangedLogGroup, SimLog, ThreatLogGroup } from '../../proto_utils/logs_parser';
 import { resourceNames } from '../../proto_utils/names';
 import SecondaryResource from '../../proto_utils/secondary_resource';
 import { UnitMetrics } from '../../proto_utils/sim_result';
@@ -719,8 +720,8 @@ export class Timeline extends ResultComponent {
 		};
 		const unsubHidden = this.liveSlot!.emitter.on(updateHidden);
 		updateHidden();
-		actionId.setBackgroundAndHref(labelIcon.value!);
-		actionId.setWowheadDataset(labelIcon.value!, { useBuffAura: isAura });
+		setActionIdBackgroundAndHref(actionId, labelIcon.value!);
+		setActionIdWowheadDataset(actionId, labelIcon.value!, { useBuffAura: isAura });
 
 		this.addOnResetCallback(() => {
 			hideElem.value?.removeEventListener('click', onClickHandler);
@@ -769,7 +770,7 @@ export class Timeline extends ResultComponent {
 					<span className="rotation-label-text">{labelText}</span>
 				</div>
 			);
-			filledActionId.setBackgroundAndHref(labelIcon.value!);
+			setActionIdBackgroundAndHref(filledActionId, labelIcon.value!);
 			iconElem.appendChild(labelElem);
 		});
 
@@ -927,7 +928,7 @@ export class Timeline extends ResultComponent {
 			let iconElem = cachedIconElem;
 			if (!iconElem) {
 				iconElem = (<a className="rotation-timeline-cast-icon" />) as HTMLAnchorElement;
-				actionId.setBackground(iconElem);
+				setActionIdBackground(actionId, iconElem);
 				cachedSpellCastIcon.set(actionIdAsString, iconElem);
 			}
 			castElem.appendChild(iconElem);

@@ -16,6 +16,7 @@ export abstract class PlayerSpec<SpecType extends Spec> {
 	abstract readonly specID: SpecType;
 	abstract readonly classID: SpecClasses<SpecType>;
 	abstract readonly friendlyName: string;
+	// Root-relative path of this spec's sim page (see getSpecSitePath).
 	abstract readonly simLink: string;
 
 	abstract readonly isTankSpec: boolean;

@@ -3,7 +3,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl';
-import { Faction, IndividualBuffs, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { IndividualBuffs, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_HYBRID_CASTER_GEM_STATS, UnitStat } from '../../core/proto_utils/stats';
 import * as HolyInputs from '../../paladin/holy/inputs';
 import * as Presets from './presets';
@@ -73,30 +73,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 	autoRotation: (_player: Player<Spec.SpecHolyPaladin>): APLRotation => {
 		return APLRotation.create();
 	},
-
-	raidSimPresets: [
-		{
-			spec: Spec.SpecHolyPaladin,
-			talents: Presets.StandardTalents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			otherDefaults: Presets.OtherDefaults,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceHuman,
-				[Faction.Horde]: Race.RaceBloodElf,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P1_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P1_GEAR_PRESET.gear,
-				},
-			},
-		},
-	],
 });
 
 export class HolyPaladinSimUI extends IndividualSimUI<Spec.SpecHolyPaladin> {

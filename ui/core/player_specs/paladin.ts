@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class HolyPaladin extends PlayerSpec<Spec.SpecHolyPaladin> {
 	static specIndex = 0;
 	static specID = Spec.SpecHolyPaladin as Spec.SpecHolyPaladin;
 	static classID = Class.ClassPaladin as Class.ClassPaladin;
 	static friendlyName = 'Holy';
-	static simLink = getSpecSiteUrl('paladin', 'holy');
+	static simLink = getSpecSitePath('paladin', 'holy');
 
 	static isTankSpec = false;
 	static isHealingSpec = true;
@@ -44,7 +44,7 @@ export class ProtectionPaladin extends PlayerSpec<Spec.SpecProtectionPaladin> {
 	static specID = Spec.SpecProtectionPaladin as Spec.SpecProtectionPaladin;
 	static classID = Class.ClassPaladin as Class.ClassPaladin;
 	static friendlyName = 'Protection';
-	static simLink = getSpecSiteUrl('paladin', 'protection');
+	static simLink = getSpecSitePath('paladin', 'protection');
 
 	static isTankSpec = true;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class RetributionPaladin extends PlayerSpec<Spec.SpecRetributionPaladin> 
 	static specID = Spec.SpecRetributionPaladin as Spec.SpecRetributionPaladin;
 	static classID = Class.ClassPaladin as Class.ClassPaladin;
 	static friendlyName = 'Retribution';
-	static simLink = getSpecSiteUrl('paladin', 'retribution');
+	static simLink = getSpecSitePath('paladin', 'retribution');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;

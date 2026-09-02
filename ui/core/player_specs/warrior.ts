@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class ArmsWarrior extends PlayerSpec<Spec.SpecArmsWarrior> {
 	static specIndex = 0;
 	static specID = Spec.SpecArmsWarrior as Spec.SpecArmsWarrior;
 	static classID = Class.ClassWarrior as Class.ClassWarrior;
 	static friendlyName = 'Arms';
-	static simLink = getSpecSiteUrl('warrior', 'arms');
+	static simLink = getSpecSitePath('warrior', 'arms');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class FuryWarrior extends PlayerSpec<Spec.SpecFuryWarrior> {
 	static specID = Spec.SpecFuryWarrior as Spec.SpecFuryWarrior;
 	static classID = Class.ClassWarrior as Class.ClassWarrior;
 	static friendlyName = 'Fury';
-	static simLink = getSpecSiteUrl('warrior', 'fury');
+	static simLink = getSpecSitePath('warrior', 'fury');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class ProtectionWarrior extends PlayerSpec<Spec.SpecProtectionWarrior> {
 	static specID = Spec.SpecProtectionWarrior as Spec.SpecProtectionWarrior;
 	static classID = Class.ClassWarrior as Class.ClassWarrior;
 	static friendlyName = 'Protection';
-	static simLink = getSpecSiteUrl('warrior', 'protection');
+	static simLink = getSpecSitePath('warrior', 'protection');
 
 	static isTankSpec = true;
 	static isHealingSpec = false;

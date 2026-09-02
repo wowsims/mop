@@ -13,11 +13,11 @@ import { APLRotation } from '../../ui/core/proto/apl';
 import { Race, Spec, Stat } from '../../ui/core/proto/common';
 import { Database } from '../../ui/core/proto_utils/database';
 import { ItemSwapGear } from '../../ui/core/proto_utils/gear';
+import { ReforgeSettings } from '../../ui/core/reforge_settings';
 import { Sim } from '../../ui/core/sim';
+import { StatWeightActionSettings } from '../../ui/core/stat_weight_settings';
 import { batch, nextEventID } from '../../ui/core/state/batch';
 import { Emitter } from '../../ui/core/state/events';
-import { ReforgeSettings } from '../../ui/core/state/reforge_settings';
-import { StatWeightActionSettings } from '../../ui/core/state/stat_weight_settings';
 import {
 	subscribeAll,
 	subscribeEncounterChange,
@@ -35,6 +35,7 @@ import {
 	subscribeStatWeightsChange,
 	subscribeUnitMetadata,
 } from '../../ui/core/state/subscriptions';
+import { makeMemoryEnv } from './memory_env';
 
 let failures = 0;
 function check(cond: boolean, label: string) {
@@ -47,7 +48,8 @@ function check(cond: boolean, label: string) {
 }
 
 export async function main() {
-	const sim = new Sim();
+	const env = makeMemoryEnv();
+	const sim = new Sim({ env });
 	await Database.get();
 	const player = new Player<any>(PlayerSpecs.fromProto(Spec.SpecArmsWarrior), sim);
 	batch(() => sim.raid.setPlayer(nextEventID(), 0, player));
@@ -227,7 +229,7 @@ export async function main() {
 	const unsubSw = subscribeStatWeightsChange(sw)(() => swSub++);
 	sw.setStatExcluded(nextEventID(), player.getEpWeights().asUnitStatArray()[0][0], true);
 	check(swSub === 1, 'stat-weight exclusion notifies once');
-	check(!!window.localStorage.getItem('__store_contract_sw__'), 'stat-weight settings persisted to localStorage');
+	check(!!env.storage.getItem('__store_contract_sw__'), 'stat-weight settings persisted through the Env storage');
 	unsubSw();
 
 	let metaSub = 0;

@@ -115,8 +115,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecMarksmanshipHunter, {
 	autoRotation: (_: Player<Spec.SpecMarksmanshipHunter>): APLRotation => {
 		return Presets.ROTATION_PRESET_MM.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class MarksmanshipHunterSimUI extends IndividualSimUI<Spec.SpecMarksmanshipHunter> {

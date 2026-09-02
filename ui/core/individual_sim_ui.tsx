@@ -34,6 +34,7 @@ import { ReforgeOptimizer } from './components/suggest_reforges_action';
 import { SimSettingCategories } from './constants/sim_settings';
 import { simLaunchStatuses } from './launched_sims';
 import { Player, PlayerConfig, registerSpecConfig as registerPlayerConfig } from './player';
+import { PlayerSpecs } from './player_specs';
 import { PresetBuild, PresetEncounter, PresetEpWeights, PresetGear, PresetItemSwap, PresetRotation, PresetSettings } from './preset_utils';
 import { StatWeightsResult } from './proto/api';
 import { APLRotation, APLRotation_Type as APLRotationType } from './proto/apl';
@@ -42,7 +43,6 @@ import {
 	Cooldowns,
 	Debuffs,
 	EquipmentSpec,
-	Faction,
 	Glyphs,
 	HandType,
 	IndividualBuffs,
@@ -63,15 +63,15 @@ import type { StatMods, StatWrites } from './proto_utils/stats';
 import { pseudoStatHasCap, StatCap, Stats, UnitStat } from './proto_utils/stats';
 import { getTalentPoints, SpecOptions, SpecRotation } from './proto_utils/utils';
 import { SimUI, SimWarning } from './sim_ui';
+import { StatWeightActionSettings } from './stat_weight_settings';
 import { batch, EventID, nextEventID } from './state/batch';
-import { getSpecStorageKey, loadIndividualSettings } from './state/persistence';
+import { loadIndividualSettings } from './state/persistence';
 import {
 	applyIndividualSimSettings,
 	IndividualSimSerializationContext,
 	individualSimSettingsToProto,
 	updateIndividualSimProtoVersion,
 } from './state/serialization';
-import { StatWeightActionSettings } from './state/stat_weight_settings';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeSimChange } from './state/subscriptions';
 import { getMissingTalentRows, getRequiredTalentRows, hasRequiredTalents } from './talents/required_talents';
 import { isDevMode } from './utils';
@@ -100,20 +100,6 @@ export interface OtherDefaults {
 	highHpThreshold?: number;
 	iterationCount?: number;
 	race?: Race;
-}
-
-export interface RaidSimPreset<SpecType extends Spec> {
-	spec: Spec;
-	talents: SavedTalents;
-	specOptions: SpecOptions<SpecType>;
-	consumables: ConsumesSpec;
-	defaultName?: string;
-	defaultFactionRaces: Record<Faction, Race>;
-	defaultGear: Record<Faction, Record<number, EquipmentSpec>>;
-	otherDefaults?: OtherDefaults;
-
-	tooltip?: string;
-	iconUrl?: string;
 }
 
 export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConfig<SpecType> {
@@ -209,8 +195,6 @@ export interface IndividualSimUIConfig<SpecType extends Spec> extends PlayerConf
 		builds?: Array<PresetBuild>;
 		itemSwaps?: Array<PresetItemSwap>;
 	};
-
-	raidSimPresets: Array<RaidSimPreset<SpecType>>;
 }
 
 export function registerSpecConfig<SpecType extends Spec>(spec: SpecType, config: IndividualSimUIConfig<SpecType>): IndividualSimUIConfig<SpecType> {
@@ -668,7 +652,9 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	// Returns the actual key to use for local storage, based on the given key part and the site context.
+	// Local storage is shared by all sites under the same domain, so each spec
+	// site prefixes its keys.
 	getStorageKey(keyPart: string): string {
-		return getSpecStorageKey(this.player.getPlayerSpec(), keyPart);
+		return PlayerSpecs.getLocalStorageKey(this.player.getPlayerSpec()) + keyPart;
 	}
 }

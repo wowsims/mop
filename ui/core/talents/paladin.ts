@@ -1,6 +1,7 @@
+import { GlyphsConfig } from '@features/talents/view/glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from '@features/talents/view/talents_picker';
+
 import { PaladinMajorGlyph, PaladinMinorGlyph, PaladinTalents } from '../proto/paladin';
-import { GlyphsConfig } from './glyphs_picker';
-import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import PaladinTalentJson from './trees/paladin.json';export const paladinTalentsConfig: TalentsConfig<PaladinTalents> = newTalentsConfig(PaladinTalentJson);
 
 export const paladinGlyphsConfig: GlyphsConfig = {

@@ -1,3 +1,15 @@
+import {
+	AuraUptimeLog,
+	CastLog,
+	DamageDealtLog,
+	DpsLog,
+	Entity,
+	MajorCooldownUsedLog,
+	ResourceChangedLogGroup,
+	SimLog,
+	ThreatLogGroup,
+} from '@features/results/model/logs_parser';
+
 import { CacheHandler } from '../cache_handler';
 import { PlayerSpec } from '../player_spec';
 import { PlayerSpecs } from '../player_specs';
@@ -23,17 +35,6 @@ import { SimRun } from '../proto/ui';
 import { ActionId, defaultTargetIcon } from '../proto_utils/action_id';
 import { getPlayerSpecFromPlayer } from '../proto_utils/utils';
 import { bucket, sum } from '../utils';
-import {
-	AuraUptimeLog,
-	CastLog,
-	DamageDealtLog,
-	DpsLog,
-	Entity,
-	MajorCooldownUsedLog,
-	ResourceChangedLogGroup,
-	SimLog,
-	ThreatLogGroup,
-} from './logs_parser';
 
 const simResultsCache = new CacheHandler<SimResult>({
 	keysToKeep: 2,

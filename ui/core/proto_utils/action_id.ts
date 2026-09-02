@@ -198,12 +198,6 @@ export class ActionId {
 		);
 	}
 
-	setBackground(elem: HTMLElement) {
-		if (this.iconUrl) {
-			elem.style.backgroundImage = `url('${this.iconUrl}')`;
-		}
-	}
-
 	static makeItemUrl(id: number, randomSuffixId?: number, reforgeId?: number, upgradeStep?: ItemLevelState): string {
 		const langPrefix = getWowheadLanguagePrefix();
 		const url = new URL(`https://wowhead.com/mop-classic/${langPrefix}item=${id}`);
@@ -254,39 +248,6 @@ export class ActionId {
 		} else {
 			return `https://wowhead.com/mop-classic/${langPrefix}zone=${id}`;
 		}
-	}
-
-	setWowheadHref(elem: HTMLAnchorElement) {
-		if (this.itemId) {
-			elem.href = ActionId.makeItemUrl(this.itemId, this.randomSuffixId, this.reforgeId, this.upgradeStep);
-		} else if (this.spellId) {
-			elem.href = ActionId.makeSpellUrl(this.spellIdTooltipOverride || this.spellId);
-		}
-	}
-
-	async setWowheadDataset(elem: HTMLElement, params?: Omit<WowheadTooltipItemParams, 'itemId'> | Omit<WowheadTooltipSpellParams, 'spellId'>) {
-		(this.itemId
-			? ActionId.makeItemTooltipData(this.itemId, params)
-			: ActionId.makeSpellTooltipData(this.spellIdTooltipOverride || this.spellId, params)
-		).then(url => {
-			if (elem) elem.dataset.wowhead = url;
-		});
-	}
-
-	setBackgroundAndHref(elem: HTMLAnchorElement) {
-		this.setBackground(elem);
-		this.setWowheadHref(elem);
-	}
-
-	async fillAndSet(elem: HTMLAnchorElement, setHref: boolean, setBackground: boolean, options: { signal?: AbortSignal } = {}): Promise<ActionId> {
-		const filled = await this.fill(undefined, options);
-		if (setHref) {
-			filled.setWowheadHref(elem);
-		}
-		if (setBackground) {
-			filled.setBackground(elem);
-		}
-		return filled;
 	}
 
 	// Returns an ActionId with the name and iconUrl fields filled.

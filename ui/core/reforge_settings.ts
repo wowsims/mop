@@ -3,12 +3,12 @@
 // Values live in the sim store (`reforge[player.storeKey]`) with per-field
 // version counters; this class is the facade over that slice.
 // Serialization lands in IndividualSimSettings.reforgeSettings.
-import { Player } from '../player';
-import { ReforgeSettings as ReforgeSettingsProto } from '../proto/api';
-import { ItemSlot, Stat } from '../proto/common';
-import { StatCap, Stats, UnitStat } from '../proto_utils/stats';
-import { batch, EventID } from './batch';
-import { patchKeyed, REFORGE_FIELDS, ReforgeField, ReforgeSlice, seedKeyed, SimStore, zeroVersions } from './sim_store';
+import type { Player } from './player';
+import { ReforgeSettings as ReforgeSettingsProto } from './proto/api';
+import { ItemSlot, Stat } from './proto/common';
+import { StatCap, Stats, UnitStat } from './proto_utils/stats';
+import { batch, EventID } from './state/batch';
+import { patchKeyed, REFORGE_FIELDS, ReforgeField, ReforgeSlice, seedKeyed, SimStore, zeroVersions } from './state/sim_store';
 // Used to force a particular proc from trinkets like Matrix Restabilizer and Apparatus of Khaz'goroth.
 export class RelativeStatCap {
 	static relevantStats: Stat[] = [Stat.StatCritRating, Stat.StatHasteRating, Stat.StatMasteryRating];

@@ -37,6 +37,12 @@ Each layer may only import from layers to its left. `.oxlintrc.json` enforces th
 `ui/features/**`, `ui/app/**`), plus `no-restricted-globals` (window/document/localStorage/
 location/navigator) on `ui/domain/**` and `ui/features/*/model/**`.
 
+While the big directories still live under `ui/core/`, the same rules are enforced on their
+current paths: `ui/core/{state,proto_utils,talents,constants,bulk}/**` and `ui/core/*.ts` may not
+import `ui/core/components/**`; `ui/core/state/**` may not touch a browser global (it takes an
+`Env`, see `ui/core/state/env.ts`); `ui/core/components/**` may not import the store writers
+(`patchSlice` / `patchKeyed` / `seedKeyed` / `deleteKeyed`) — go through a facade.
+
 ## Aliases
 
 | Alias | Resolves to |

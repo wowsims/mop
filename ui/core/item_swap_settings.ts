@@ -1,9 +1,9 @@
-import { Player } from '../player';
-import { ItemSlot, ItemSpec, ItemSwap } from '../proto/common';
-import { EquippedItem } from '../proto_utils/equipped_item';
-import { ItemSwapGear } from '../proto_utils/gear';
-import { Stats } from '../proto_utils/stats';
-import { EventID } from './batch';
+import type { Player } from './player';
+import { ItemSlot, ItemSpec, ItemSwap } from './proto/common';
+import { EquippedItem } from './proto_utils/equipped_item';
+import { ItemSwapGear } from './proto_utils/gear';
+import { Stats } from './proto_utils/stats';
+import { EventID } from './state/batch';
 // Facade over the player's itemSwap* store fields (one shared `itemSwap`
 // version counter, see Player.patchItemSwap).
 export class ItemSwapSettings {

@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class AssassinationRogue extends PlayerSpec<Spec.SpecAssassinationRogue> {
 	static specIndex = 0;
 	static specID = Spec.SpecAssassinationRogue as Spec.SpecAssassinationRogue;
 	static classID = Class.ClassRogue as Class.ClassRogue;
 	static friendlyName = 'Assassination';
-	static simLink = getSpecSiteUrl('rogue', 'assassination');
+	static simLink = getSpecSitePath('rogue', 'assassination');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class CombatRogue extends PlayerSpec<Spec.SpecCombatRogue> {
 	static specID = Spec.SpecCombatRogue as Spec.SpecCombatRogue;
 	static classID = Class.ClassRogue as Class.ClassRogue;
 	static friendlyName = 'Combat';
-	static simLink = getSpecSiteUrl('rogue', 'combat');
+	static simLink = getSpecSitePath('rogue', 'combat');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class SubtletyRogue extends PlayerSpec<Spec.SpecSubtletyRogue> {
 	static specID = Spec.SpecSubtletyRogue as Spec.SpecSubtletyRogue;
 	static classID = Class.ClassRogue as Class.ClassRogue;
 	static friendlyName = 'Subtlety';
-	static simLink = getSpecSiteUrl('rogue', 'subtlety');
+	static simLink = getSpecSitePath('rogue', 'subtlety');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;

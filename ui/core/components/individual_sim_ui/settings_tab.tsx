@@ -1,5 +1,6 @@
 import i18n from '../../../i18n/config';
 import { translateProfession, translateRace } from '../../../i18n/localization';
+import { PresetConfigurationCategory } from '../../constants/preset_categories';
 import { Encounter } from '../../encounter';
 import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { ConsumesSpec, Debuffs, HealingModel, IndividualBuffs, ItemSwap, PartyBuffs, Profession, RaidBuffs } from '../../proto/common';
@@ -22,7 +23,7 @@ import { NumberPicker } from '../pickers/number_picker';
 import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
 import { ConsumesPicker } from './consumes_picker';
-import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationPicker } from './preset_configuration_picker';
 export class SettingsTab extends SimTab {
 	protected simUI: IndividualSimUI<any>;
 

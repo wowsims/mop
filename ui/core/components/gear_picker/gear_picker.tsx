@@ -1,8 +1,9 @@
+import { setActionIdBackgroundAndHref, setActionIdWowheadHref, setEquippedItemWowheadData } from '@features/gear/view/action_id_dom';
+import { MISSING_RANDOM_SUFFIX_WARNING } from '@features/gear/view/item_notices';
 import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { translateProtoStatName, translateSlotName, translateStat } from '../../../i18n/localization';
-import { MISSING_RANDOM_SUFFIX_WARNING } from '../../constants/item_notices';
 import { setItemQualityCssClass } from '../../css_utils';
 import { Player } from '../../player';
 import { ItemLevelState, ItemSlot } from '../../proto/common';
@@ -210,16 +211,16 @@ export class ItemRenderer extends Component {
 
 		setItemQualityCssClass(this.nameElem, newItem.item.quality);
 
-		this.player.setWowheadData(newItem, this.iconElem);
-		this.player.setWowheadData(newItem, this.nameElem);
+		setEquippedItemWowheadData(this.player, newItem, this.iconElem);
+		setEquippedItemWowheadData(this.player, newItem, this.nameElem);
 
 		newItem
 			.asActionId()
 			.fill(undefined, { signal: this.signal })
 			.then(filledId => {
 				if (this.signal?.aborted) return;
-				filledId.setBackgroundAndHref(this.iconElem);
-				filledId.setWowheadHref(this.nameElem);
+				setActionIdBackgroundAndHref(filledId, this.iconElem);
+				setActionIdWowheadHref(filledId, this.nameElem);
 			});
 
 		if (newItem.enchant) {
@@ -363,7 +364,7 @@ export class ItemPicker extends Component {
 
 		subscribeAll([subscribePlayerField(player, 'profession1'), subscribePlayerField(player, 'profession2')])(() => {
 			if (!!this._equippedItem) {
-				this.player.setWowheadData(this._equippedItem, this.itemElem.iconElem);
+				setEquippedItemWowheadData(this.player, this._equippedItem, this.itemElem.iconElem);
 			}
 		});
 	}

@@ -6,7 +6,7 @@ import { Player } from '../../core/player';
 import { PlayerClasses } from '../../core/player_classes';
 import { StatCapType } from '../../core/proto/api';
 import { APLRotation, APLRotation_Type, APLValueVariable, SimpleRotation } from '../../core/proto/apl';
-import { Cooldowns, Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat } from '../../core/proto/common';
+import { Cooldowns, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat } from '../../core/proto/common';
 import { DEFAULT_CASTER_GEM_STATS, StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import * as MageInputs from '../inputs';
 import { DefaultDebuffs, DefaultRaidBuffs, MAGE_BREAKPOINTS } from '../presets';
@@ -260,30 +260,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFireMage, {
 		28730,
 		// Bloodfury
 		33697,
-	],
-
-	raidSimPresets: [
-		{
-			spec: Spec.SpecFireMage,
-			talents: Presets.FireTalents.data,
-			specOptions: Presets.DefaultFireOptions,
-			consumables: Presets.DefaultFireConsumables,
-			otherDefaults: Presets.OtherDefaults,
-			defaultFactionRaces: {
-				[Faction.Unknown]: Race.RaceUnknown,
-				[Faction.Alliance]: Race.RaceWorgen,
-				[Faction.Horde]: Race.RaceTroll,
-			},
-			defaultGear: {
-				[Faction.Unknown]: {},
-				[Faction.Alliance]: {
-					1: Presets.P4_BIS.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P4_BIS.gear,
-				},
-			},
-		},
 	],
 });
 

@@ -1,3 +1,4 @@
+import { fillAndSetActionId } from '@features/gear/view/action_id_dom';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -196,7 +197,7 @@ export class IconEnumPicker<ModObject, T> extends Input<ModObject, T> {
 	}
 
 	private setActionImage(elem: HTMLAnchorElement, actionId: ActionId) {
-		actionId.fillAndSet(elem, true, true);
+		fillAndSetActionId(actionId, elem, true, true);
 	}
 
 	private setImage(elem: HTMLAnchorElement, valueConfig: IconEnumValueConfig<ModObject, T>) {

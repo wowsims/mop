@@ -1,7 +1,15 @@
 # ui/core/state — the framework-agnostic state layer
 
 Everything in this directory is UI-free (a lint rule bans imports from
-`ui/core/components`). The sim's data state lives in one Zustand vanilla store
+`ui/core/components`) **and browser-free**: `no-restricted-globals` bans
+`window` / `document` / `localStorage` / `location` / `navigator` here, so
+anything that needs one goes through the injected `Env` adapter (`env.ts`,
+reachable as `sim.env`; browser implementation in `ui/core/browser_env.ts`,
+memory implementation in `tools/state-snapshots/memory_env.ts`).
+Imports of the facades (`../player`, `../sim`, the satellites) are
+`import type` — the one remaining runtime edge out of this directory is
+`reforge_request.ts` → `ReforgeGearCache` (`../reforge_cache`).
+The sim's data state lives in one Zustand vanilla store
 per page, consumed from plain TS today and from React later (`useStore(sim.store, selector)`)
 with no store changes. There is no separate event system any more.
 
@@ -19,7 +27,7 @@ with no store changes. There is no separate event system any more.
 | `players[storeKey]` | `Player` / `ItemSwapSettings` | 23 settings fields + per-field version counters (`v`) |
 | `reforge[storeKey]` | `ReforgeSettings` | 12 reforge-optimizer settings + counters |
 | `statWeights[storeKey]` | `StatWeightActionSettings` | excluded stats + counter |
-| `bulk[storeKey]` | `BulkTab` | version counters only (the tab keeps the values) |
+| `bulk[storeKey]` | `BulkSettingsStore` (`ui/core/bulk_settings.ts`) | version counters only (the `BulkTab` keeps the values) |
 
 Class-side by design: the Party↔Player object graph (composition in the store is
 the notification source; the objects stay on the classes), `aplRotation`
@@ -87,9 +95,17 @@ No batching, no dedup, fires synchronously. Never put these in the store.
 
 ## Also here
 
-`persistence.ts` (load-order contract + autosave), `serialization.ts`
-(IndividualSimSettings envelope, golden-tested), `sim_links.ts`,
-`reforge_request.ts`, `item_swap_settings.ts`.
+`persistence.ts` (load-order contract + autosave; the localStorage key is built
+by the caller and handed in), `serialization.ts` (IndividualSimSettings
+envelope, golden-tested), `sim_links.ts`, `reforge_request.ts`, `env.ts`.
+
+## Not here (facades, one level up in `ui/core/`)
+
+`reforge_settings.ts`, `stat_weight_settings.ts`, `item_swap_settings.ts` and
+`bulk_settings.ts` hold a `Player` and write the store — they are facades over
+the slices, not state, so they live beside `player.ts` / `sim.ts`. This
+directory is exactly: `sim_store`, `batch`, `events`, `subscriptions`,
+`serialization`, `sim_links`, `reforge_request`, `persistence`, `env`.
 
 ## Player lifetime
 

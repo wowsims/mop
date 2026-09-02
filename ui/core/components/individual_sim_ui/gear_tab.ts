@@ -1,4 +1,5 @@
 import i18n from '../../../i18n/config';
+import { PresetConfigurationCategory } from '../../constants/preset_categories';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { EquipmentSpec, UnitStats } from '../../proto/common';
@@ -10,7 +11,7 @@ import GearPicker from '../gear_picker/gear_picker';
 import { SavedDataManager } from '../saved_data_manager';
 import { SimTab } from '../sim_tab';
 import { GemSummary } from './gem_summary';
-import { PresetConfigurationCategory, PresetConfigurationPicker } from './preset_configuration_picker';
+import { PresetConfigurationPicker } from './preset_configuration_picker';
 import { ReforgeSummary } from './reforge_summary';
 import { UpgradeCostsSummary } from './upgrade_costs_summary';
 export class GearTab extends SimTab {

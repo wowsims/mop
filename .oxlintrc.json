@@ -75,7 +75,9 @@
         "ui/core/launched_sims.tsx",
         "ui/core/proto_utils/**/*.{ts,tsx}",
         "ui/core/state/**/*.{ts,tsx}",
-        "ui/core/bulk/**/*.{ts,tsx}"
+        "ui/core/bulk/**/*.{ts,tsx}",
+        "ui/core/talents/**/*.{ts,tsx}",
+        "ui/core/constants/**/*.{ts,tsx}"
       ],
       "rules": {
         "no-restricted-imports": [
@@ -85,6 +87,29 @@
               {
                 "group": ["./components/**", "../components/**", "**/core/components/**"],
                 "message": "State/domain layer must not import from the UI component layer (see STATE_UI_SEPARATION_PLAN.md)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["ui/core/state/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-globals": ["error", "window", "document", "localStorage", "location", "navigator"]
+      }
+    },
+    {
+      "files": ["ui/core/components/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/state/sim_store*"],
+                "importNames": ["patchSlice", "patchKeyed", "seedKeyed", "deleteKeyed"],
+                "message": "Components must not write the store directly — go through a facade (e.g. ui/core/bulk_settings.ts)."
               }
             ]
           }

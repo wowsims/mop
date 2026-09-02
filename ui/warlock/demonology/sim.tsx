@@ -112,8 +112,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDemonologyWarlock, {
 	autoRotation: (_: Player<Spec.SpecDemonologyWarlock>): APLRotation => {
 		return Presets.APL_Default.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class DemonologyWarlockSimUI extends IndividualSimUI<Spec.SpecDemonologyWarlock> {

@@ -1,7 +1,7 @@
+import { GENERIC_MISSING_SET_BONUS_NOTICE_DATA, ITEM_NOTICES, SET_BONUS_NOTICES } from '@features/gear/view/item_notices';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { GENERIC_MISSING_SET_BONUS_NOTICE_DATA, ITEM_NOTICES, SET_BONUS_NOTICES } from '../../constants/item_notices';
 import { Player } from '../../player';
 import { Spec } from '../../proto/common';
 import { Database } from '../../proto_utils/database';

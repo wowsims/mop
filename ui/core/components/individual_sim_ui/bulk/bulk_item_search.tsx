@@ -1,3 +1,4 @@
+import { setActionIdBackground, setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -195,8 +196,8 @@ export default class BulkItemSearch extends ContentBlock {
 				ActionId.fromItem(item)
 					.fill()
 					.then(id => {
-						id.setBackground(iconRef.value!);
-						id.setWowheadHref(itemRef.value!);
+						setActionIdBackground(id, iconRef.value!);
+						setActionIdWowheadHref(id, itemRef.value!);
 					});
 				setItemQualityCssClass(itemNameRef.value!, item.quality);
 

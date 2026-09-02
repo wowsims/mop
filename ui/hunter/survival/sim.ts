@@ -124,8 +124,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecSurvivalHunter, {
 	autoRotation: (player: Player<Spec.SpecSurvivalHunter>): APLRotation => {
 		return Presets.ROTATION_PRESET_SV.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class SurvivalHunterSimUI extends IndividualSimUI<Spec.SpecSurvivalHunter> {

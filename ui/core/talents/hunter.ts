@@ -1,6 +1,7 @@
+import { GlyphsConfig } from '@features/talents/view/glyphs_picker';
+import { newTalentsConfig, TalentsConfig } from '@features/talents/view/talents_picker';
+
 import { HunterMajorGlyph, HunterMinorGlyph, HunterTalents } from '../proto/hunter';
-import { GlyphsConfig } from './glyphs_picker';
-import { newTalentsConfig, TalentsConfig } from './talents_picker';
 import HunterTalentJson from './trees/hunter.json';export const hunterTalentsConfig: TalentsConfig<HunterTalents> = newTalentsConfig(HunterTalentJson);
 
 export const hunterGlyphsConfig: GlyphsConfig = {

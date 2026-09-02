@@ -51,6 +51,7 @@ import { Database } from '../../ui/core/proto_utils/database';
 import { Sim } from '../../ui/core/sim';
 import { batch, nextEventID } from '../../ui/core/state/batch';
 import { applyIndividualSimSettings, individualSimSettingsToProto } from '../../ui/core/state/serialization';
+import { makeMemoryEnv } from './memory_env';
 // Mirror of IndividualSimUI.applyDefaults (individual_sim_ui.tsx) without the
 // UI-owned satellites (reforger, statWeightActionSettings, defaultBuild).
 // When the defaults logic moves into ui/core/state/, replace this mirror with
@@ -122,7 +123,7 @@ export async function main() {
 			continue; // spec not launched/registered
 		}
 
-		const sim = new Sim();
+		const sim = new Sim({ env: makeMemoryEnv() });
 		await Database.get();
 		const playerSpec = PlayerSpecs.fromProto(spec);
 		const player = new Player<any>(playerSpec, sim);

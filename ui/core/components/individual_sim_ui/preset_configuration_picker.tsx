@@ -3,6 +3,7 @@ import { ref } from 'tsx-vanilla';
 
 import i18n from '../../../i18n/config';
 import { translatePresetConfigurationCategory } from '../../../i18n/localization';
+import { PresetConfigurationCategory } from '../../constants/preset_categories';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import { PresetBuild } from '../../preset_utils';
 import { ConsumesSpec, Debuffs, Encounter, EquipmentSpec, HealingModel, IndividualBuffs, ItemSwap, RaidBuffs, Spec } from '../../proto/common';
@@ -13,15 +14,6 @@ import { batch, nextEventID } from '../../state/batch';
 import { subscribeSimChange } from '../../state/subscriptions';
 import { Component } from '../component';
 import { ContentBlock } from '../content_block';
-export enum PresetConfigurationCategory {
-	EPWeights = 'epWeights',
-	Gear = 'gear',
-	Talents = 'talents',
-	Rotation = 'rotation',
-	Encounter = 'encounter',
-	Settings = 'settings',
-}
-
 export class PresetConfigurationPicker extends Component {
 	readonly simUI: IndividualSimUI<Spec>;
 	readonly builds: Array<PresetBuild>;

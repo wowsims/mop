@@ -17,12 +17,12 @@ import { statCapTypeNames } from '../proto_utils/names';
 import { StatCap, Stats, UnitStat, UnitStatPresets } from '../proto_utils/stats';
 import { getReforgeCacheGearKey } from '../proto_utils/utils';
 import { ReforgeGearCache } from '../reforge_cache';
+import { ReforgeSettings as ReforgeSettingsState, RelativeStatCap } from '../reforge_settings';
 import type { ReforgeOptimizeConfig, Sim } from '../sim';
 import { RequestTypes } from '../sim_signal_manager';
 import { ActionGroupItem } from '../sim_ui';
 import { batch, EventID, nextEventID } from '../state/batch';
 import { getReforgeConfigHash, makeReforgeConfigRequestFields } from '../state/reforge_request';
-import { ReforgeSettings as ReforgeSettingsState, RelativeStatCap } from '../state/reforge_settings';
 import { subscribeAll, subscribePlayerField, subscribeReforgeChange, subscribeReforgeField } from '../state/subscriptions';
 import { isDevMode } from '../utils';
 import { CopyButton } from './copy_button';
@@ -340,7 +340,7 @@ export class ReforgeOptimizer {
 		);
 	}
 
-	// Settings API — delegates to this.settings (ui/core/state/reforge_settings.ts).
+	// Settings API — delegates to this.settings (ui/core/reforge_settings.ts).
 	setStatCaps(eventID: EventID, newStatCaps: Stats) {
 		this.settings.setStatCaps(eventID, newStatCaps);
 	}

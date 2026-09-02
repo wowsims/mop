@@ -1,3 +1,4 @@
+import { setActionIdBackgroundAndHref, setEquippedItemWowheadData } from '@features/gear/view/action_id_dom';
 import clsx from 'clsx';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -319,12 +320,12 @@ export default class SelectorModal extends BaseModal {
 
 					const setItemData = () => {
 						if (picker.item) {
-							this.player.setWowheadData(picker.item, anchorRef.value!);
+							setEquippedItemWowheadData(this.player, picker.item, anchorRef.value!);
 							picker.item
 								.asActionId()
 								.fill()
 								.then(filledId => {
-									filledId.setBackgroundAndHref(anchorRef.value!);
+									setActionIdBackgroundAndHref(filledId, anchorRef.value!);
 								});
 						} else {
 							anchorRef.value!.style.backgroundImage = `url('${getEmptySlotIconUrl(picker.slot)}')`;

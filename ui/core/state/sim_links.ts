@@ -15,8 +15,16 @@ export interface UrlParseData {
 	categories: Array<SimSettingCategories>;
 }
 
-export function tryParseUrlLocation(location: Location | URL): UrlParseData | null {
-	let hash = location.hash;
+// Structural subset of `Location` / `URL` / `Env['location']`.
+export interface UrlLocation {
+	readonly hash: string;
+	readonly search: string;
+}
+
+// `loc` is any location-shaped source: `sim.env.location`, `window.location`
+// or a parsed `URL`.
+export function tryParseUrlLocation(loc: UrlLocation): UrlParseData | null {
+	let hash = loc.hash;
 	if (hash.length <= 1) {
 		return null;
 	}
@@ -33,7 +41,7 @@ export function tryParseUrlLocation(location: Location | URL): UrlParseData | nu
 	const settings = IndividualSimSettings.fromBinary(settingsBytes);
 
 	let exportCategories = LINK_DEFAULT_CATEGORIES;
-	const urlParams = new URLSearchParams(window.location.search);
+	const urlParams = new URLSearchParams(loc.search);
 	if (urlParams.has(LINK_CATEGORY_PARAM)) {
 		const categoryChars = urlParams.get(LINK_CATEGORY_PARAM)!.split('');
 		exportCategories = categoryChars

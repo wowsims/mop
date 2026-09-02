@@ -15,7 +15,7 @@ import {
 import * as AplUtils from '../../core/proto_utils/apl_utils';
 import { Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import { RelativeStatCap } from '../../core/state/reforge_settings';
+import { RelativeStatCap } from '../../core/reforge_settings';
 import * as FeralInputs from './inputs';
 import * as Presets from './presets';
 
@@ -205,8 +205,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecFeralDruid, {
 	},
 
 	hiddenMCDs: [126734, 106737, 76089, 26297, 106952, 132158, 108292, 55004],
-
-	raidSimPresets: [],
 });
 
 export class FeralDruidSimUI extends IndividualSimUI<Spec.SpecFeralDruid> {

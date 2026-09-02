@@ -1,14 +1,14 @@
 import { IconSize } from '../player_class';
 import { PlayerSpec } from '../player_spec';
 import { Class, Spec } from '../proto/common';
-import { getSpecSiteUrl } from '../proto_utils/utils';
+import { getSpecSitePath } from '../proto_utils/utils';
 
 export class ArcaneMage extends PlayerSpec<Spec.SpecArcaneMage> {
 	static specIndex = 0;
 	static specID = Spec.SpecArcaneMage as Spec.SpecArcaneMage;
 	static classID = Class.ClassMage as Class.ClassMage;
 	static friendlyName = 'Arcane';
-	static simLink = getSpecSiteUrl('mage', 'arcane');
+	static simLink = getSpecSitePath('mage', 'arcane');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -44,7 +44,7 @@ export class FireMage extends PlayerSpec<Spec.SpecFireMage> {
 	static specID = Spec.SpecFireMage as Spec.SpecFireMage;
 	static classID = Class.ClassMage as Class.ClassMage;
 	static friendlyName = 'Fire';
-	static simLink = getSpecSiteUrl('mage', 'fire');
+	static simLink = getSpecSitePath('mage', 'fire');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;
@@ -80,7 +80,7 @@ export class FrostMage extends PlayerSpec<Spec.SpecFrostMage> {
 	static specID = Spec.SpecFrostMage as Spec.SpecFrostMage;
 	static classID = Class.ClassMage as Class.ClassMage;
 	static friendlyName = 'Frost';
-	static simLink = getSpecSiteUrl('mage', 'frost');
+	static simLink = getSpecSitePath('mage', 'frost');
 
 	static isTankSpec = false;
 	static isHealingSpec = false;

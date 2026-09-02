@@ -10,8 +10,8 @@ import { APLRotation } from '../../core/proto/apl';
 import { Debuffs, HandType, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, RaidBuffs, Spec, Stat } from '../../core/proto/common';
 import { StatCap, Stats, UnitStat } from '../../core/proto_utils/stats';
 import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
+import { RelativeStatCap } from '../../core/reforge_settings';
 import { nextEventID } from '../../core/state/batch';
-import { RelativeStatCap } from '../../core/state/reforge_settings';
 import { subscribePlayerField } from '../../core/state/subscriptions';
 import * as MonkUtils from '../utils';
 import * as Presets from './presets';
@@ -133,8 +133,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 	autoRotation: (_: Player<Spec.SpecWindwalkerMonk>): APLRotation => {
 		return Presets.ROTATION_PRESET.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 const hasTwoHandMainHand = (player: Player<Spec.SpecWindwalkerMonk>): boolean =>

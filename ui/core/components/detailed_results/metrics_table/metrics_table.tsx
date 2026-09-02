@@ -1,3 +1,4 @@
+import { setActionIdBackgroundAndHref, setActionIdWowheadDataset } from '@features/gear/view/action_id_dom';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
@@ -226,8 +227,8 @@ export abstract class MetricsTable<T extends ActionMetrics | AuraMetrics | UnitM
 					</div>,
 				);
 				if (!iconElem && iconElemRef.value) {
-					data.actionId.setBackgroundAndHref(iconElemRef.value);
-					data.actionId.setWowheadDataset(iconElemRef.value, {
+					setActionIdBackgroundAndHref(data.actionId, iconElemRef.value);
+					setActionIdWowheadDataset(data.actionId, iconElemRef.value, {
 						useBuffAura: data.metricType === 'AuraMetrics',
 					});
 					cachedMetricsTableIcon.set(actionIdAsString, iconElemRef.value);

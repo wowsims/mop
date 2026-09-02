@@ -1,19 +1,20 @@
+import { Component } from '@core/components/component';
+import { CopyButton } from '@core/components/copy_button';
+import { Input, InputConfig } from '@core/components/input';
+import { Player } from '@core/player';
+import { PlayerSpecs } from '@core/player_specs';
+import { Class, Spec } from '@core/proto/common';
+import { ActionId } from '@core/proto_utils/action_id';
+import { nextEventID } from '@core/state/batch';
+import { classGlyphsConfig } from '@core/talents/factory';
+import { isRightClick } from '@core/utils';
+import { setActionIdWowheadHref } from '@features/gear/view/action_id_dom';
+import i18n from '@i18n/config';
+import { getClassI18nKey } from '@i18n/entity_mapping';
+import { translatePlayerSpec } from '@i18n/localization';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import i18n from '../../i18n/config';
-import { getClassI18nKey } from '../../i18n/entity_mapping';
-import { translatePlayerSpec } from '../../i18n/localization';
-import { Component } from '../components/component';
-import { CopyButton } from '../components/copy_button';
-import { Input, InputConfig } from '../components/input';
-import { Player } from '../player';
-import { PlayerSpecs } from '../player_specs';
-import { Class, Spec } from '../proto/common';
-import { ActionId } from '../proto_utils/action_id';
-import { nextEventID } from '../state/batch';
-import { isRightClick } from '../utils';
-import { classGlyphsConfig } from './factory';
 import { GlyphsPicker } from './glyphs_picker';
 export interface TalentsPickerConfig<ModObject, TalentsProto> extends InputConfig<ModObject, string> {
 	playerClass: Class;
@@ -256,7 +257,7 @@ class TalentPicker<TalentsProto> extends Component {
 		ActionId.fromSpellId(this.config.spellId)
 			.fill()
 			.then(actionId => {
-				actionId.setWowheadHref(this.rootElem as HTMLAnchorElement);
+				setActionIdWowheadHref(actionId, this.rootElem as HTMLAnchorElement);
 				this.icon.style.backgroundImage = `url('${actionId.iconUrl}')`;
 			});
 	}

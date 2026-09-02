@@ -11,8 +11,8 @@ import { ErrorOutcomeType, ProgressMetrics, StatWeightsResult, StatWeightValues 
 import { PseudoStat, Stat, UnitStats } from '../proto/common';
 import { Stats, UnitStat } from '../proto_utils/stats';
 import { RequestTypes } from '../sim_signal_manager';
+import { StatWeightActionSettings } from '../stat_weight_settings';
 import { EventID, nextEventID } from '../state/batch';
-import { StatWeightActionSettings } from '../state/stat_weight_settings';
 import { subscribePlayerField, subscribeStatWeightsChange } from '../state/subscriptions';
 import { sanitizeId, stDevToConf90 } from '../utils';
 import { BaseModal } from './base_modal';

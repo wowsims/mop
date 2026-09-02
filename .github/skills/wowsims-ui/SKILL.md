@@ -13,10 +13,15 @@ Full plan + history: `STATE_UI_SEPARATION_PLAN.md` (repo root).
 
 ```
 ui/core/proto, ui/core/proto_utils   pure data + value objects (Gear, Stats, EquippedItem are immutable)
-ui/core/state/                       UI-free state layer (Zustand store, bridges, persistence, satellites)
-ui/core/{sim,raid,party,encounter,player}.ts   facade classes over the store; public API unchanged
+ui/core/state/                       UI-free AND browser-free state layer (Zustand store, persistence, Env)
+ui/core/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
+                                     facade classes over the store; public API unchanged
+ui/features/<x>/{model,view}/        per-capability code (see ui/README.md); DOM that used to sit in
+                                     proto_utils / constants / talents lives here
 ui/core/components/, ui/core/*_ui.tsx, ui/<class>/<spec>/   UI — may import everything
 BANNED: ui/core/** (except components/, sim_ui.tsx, individual_sim_ui.tsx) → ui/core/components/**
+BANNED: ui/core/state/** → window/document/localStorage/location/navigator (use `sim.env`)
+BANNED: ui/core/components/** → patchSlice/patchKeyed/seedKeyed/deleteKeyed (use a facade)
 ```
 
 The rule lives in `.oxlintrc.json` (`no-restricted-imports`, error level). Scoping is an
@@ -132,6 +137,25 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 1 "layer truth": `ui/core/state/**` is now browser-free
+  (`no-restricted-globals` on window/document/localStorage/location/navigator) — it reads an
+  injected `Env` (`state/env.ts`; `ui/core/browser_env.ts` in the browser, `sim.env`,
+  `tools/state-snapshots/memory_env.ts` in the harness). `Sim` takes `{ env }`. Facade imports in
+  `state/` are `import type` (the one runtime edge left is `reforge_request` → `ReforgeGearCache`);
+  `getSpecStorageKey` is gone — `IndividualSimUI.getStorageKey` builds the key and passes it in.
+  `reforge_settings.ts` / `stat_weight_settings.ts` / `item_swap_settings.ts` moved
+  `state/` → `ui/core/` (they hold a Player and write the store: facades, not state), joined by the
+  new `ui/core/bulk_settings.ts` (`BulkSettingsStore`: `touch('settings'|'items')` + the
+  `bulk-settings.v2` blob) — `ui/core/components/**` is now lint-banned from importing
+  `patchSlice/patchKeyed/seedKeyed/deleteKeyed`. DOM left the pure layers: `ActionId`'s 5 DOM
+  methods and `Player.setWowheadData` are free functions in `ui/features/gear/view/action_id_dom.ts`;
+  `logs_parser.tsx` → `ui/features/results/model/`, `item_notices.tsx` → `ui/features/gear/view/`,
+  talents/glyphs/hunter-pet pickers → `ui/features/talents/view/`; the components ban now also
+  covers `ui/core/talents/**` + `ui/core/constants/**`. `getSpecSiteUrl` → `getSpecSitePath` (pure;
+  `SimTitleDropdown` resolves it against `window.location.href`). `PresetConfigurationCategory`
+  moved to `ui/core/constants/preset_categories.ts` so `ui/i18n` imports no component. Deleted:
+  `RaidSimPreset` + all 34 `raidSimPresets` config keys, `makeBlessingsAssignments` /
+  `makeBlankBlessingsAssignments` / `makeDefaultBlessings` / `NUM_SPECS`.
 - 2026-09-02 /simplify pass (4 review angles): `storeSubscribe` is curried `obj => StoreSubscribe` and
   optional (141 eta-wrappers deleted); `subscribeAll` composes selectors (fixed a stats-sidebar double
   fire); raid tuple memoized; `patchSlice`/`patchKeyed`/`seedKeyed`/`deleteKeyed` replace 10 hand-rolled

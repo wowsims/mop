@@ -1,27 +1,30 @@
-import { CURRENT_API_VERSION } from '../constants/other';
-import { Player } from '../player';
-import { PseudoStat, Stat } from '../proto/common';
-import { SavedStatWeightSettings } from '../proto/ui';
-import { UnitStat } from '../proto_utils/stats';
-import { EventID } from './batch';
-import { patchKeyed, seedKeyed, SimStore, StatWeightsSlice } from './sim_store';
-import { subscribeStatWeightsChange } from './subscriptions';
+import { CURRENT_API_VERSION } from './constants/other';
+import type { Player } from './player';
+import { PseudoStat, Stat } from './proto/common';
+import { SavedStatWeightSettings } from './proto/ui';
+import { UnitStat } from './proto_utils/stats';
+import { EventID } from './state/batch';
+import type { Env } from './state/env';
+import { patchKeyed, seedKeyed, SimStore, StatWeightsSlice } from './state/sim_store';
+import { subscribeStatWeightsChange } from './state/subscriptions';
 // Stat-weight modal settings. Values live in the sim store
 // (`statWeights[player.storeKey]`) with a version counter; persists itself to
 // localStorage on every change.
 export class StatWeightActionSettings {
 	private readonly storageKey: string;
+	private readonly env: Env;
 	readonly store: SimStore;
 	readonly storeKey: number;
 
 	constructor(player: Player<any>, storageKey: string) {
 		this.storageKey = storageKey;
+		this.env = player.sim.env;
 		this.store = player.sim.store;
 		this.storeKey = player.storeKey;
 
 		seedKeyed(this.store, 'statWeights', this.storeKey, { excludedStats: [], excludedPseudoStats: [], v: { settings: 0 } });
 		subscribeStatWeightsChange(this)(() => {
-			window.localStorage.setItem(this.storageKey, SavedStatWeightSettings.toJsonString(this.toProto()));
+			this.env.storage.setItem(this.storageKey, SavedStatWeightSettings.toJsonString(this.toProto()));
 		});
 	}
 
@@ -52,7 +55,7 @@ export class StatWeightActionSettings {
 	}
 
 	load(eventID: EventID) {
-		const storageValue = window.localStorage.getItem(this.storageKey);
+		const storageValue = this.env.storage.getItem(this.storageKey);
 		if (storageValue) {
 			const settingsProto = SavedStatWeightSettings.fromJsonString(storageValue, { ignoreUnknownFields: true });
 			StatWeightActionSettings.updateProtoVersion(settingsProto);
