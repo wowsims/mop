@@ -1978,7 +1978,6 @@
 			"sim_1_iteration": "Sim 1 itération",
 			"sim_1_death": "Simuler une mort",
 			"all_targets": "Toutes les cibles",
-			"all_players": "Tous les joueurs",
 			"target_number": "Cible {{number}}",
 			"damage": {
 				"dps_histogram": "Histogramme DPS"
@@ -2041,7 +2040,6 @@
 				"cast_time": "Temps d'incantaton",
 				"hpm": "SPS",
 				"hpet": "SPET",
-				"amount": "Montant",
 				"dtps": "DTPS",
 				"avg_heal": "Soin Moyen",
 				"hps": "SPS",
@@ -2084,8 +2082,6 @@
 			},
 			"tooltips": {
 				"damage_avg_cast": "Dégâts moyens par lancé",
-				"player_damage": "Dégâts du Joueur / Dégâts du Raid",
-				"player_damage_taken": "Dégâts subis par le Joueur / Dégâts subis par le Raid",
 				"damage_taken_per_encounter": "Dégâts subis / Durée de l'affrontement",
 				"healing_per_encounter": "Soins / Durée de l'affrontement",
 				"threat_per_encounter": "Menace / Durée de l'affrontement",

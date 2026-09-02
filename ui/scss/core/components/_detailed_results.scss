@@ -1,7 +1,6 @@
 @import './detailed_results/combat_replay';
 @import './detailed_results/dps_histogram';
 @import './detailed_results/log_runner';
-@import './detailed_results/player_damage';
 @import './detailed_results/resource_metrics';
 @import './detailed_results/results_filter';
 @import './detailed_results/source_chart';
@@ -28,22 +27,6 @@
 	.detailed-results-death-iteration-button {
 		margin-left: var(--block-spacer);
 	}
-}
-
-.all-players .single-player-only {
-	display: none;
-}
-
-.single-player .all-players-only {
-	display: none;
-}
-
-.sim-ui .single-player-only {
-	display: initial;
-}
-
-.sim-ui .all-players-only {
-	display: none;
 }
 
 .dr-root {
@@ -98,10 +81,6 @@
 .results-filter {
 	display: flex !important;
 	align-items: center;
-}
-
-.sim-ui .player-filter-root {
-	display: none !important;
 }
 
 .tabs-filler {

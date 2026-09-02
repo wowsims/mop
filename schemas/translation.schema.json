@@ -6954,9 +6954,6 @@
 						"all_targets": {
 							"type": "string"
 						},
-						"all_players": {
-							"type": "string"
-						},
 						"target_number": {
 							"type": "string"
 						},
@@ -7150,9 +7147,6 @@
 								"hpet": {
 									"type": "string"
 								},
-								"amount": {
-									"type": "string"
-								},
 								"dtps": {
 									"type": "string"
 								},
@@ -7287,7 +7281,6 @@
 								"cast_time",
 								"hpm",
 								"hpet",
-								"amount",
 								"dtps",
 								"avg_heal",
 								"hps",
@@ -7335,12 +7328,6 @@
 								"damage_avg_cast": {
 									"type": "string"
 								},
-								"player_damage": {
-									"type": "string"
-								},
-								"player_damage_taken": {
-									"type": "string"
-								},
 								"damage_taken_per_encounter": {
 									"type": "string"
 								},
@@ -7374,9 +7361,6 @@
 							},
 							"additionalProperties": false,
 							"required": [
-								"damage_avg_cast",
-								"player_damage",
-								"player_damage_taken",
 								"damage_taken_per_encounter",
 								"healing_per_encounter",
 								"threat_per_encounter",
@@ -7472,7 +7456,6 @@
 						"sim_1_iteration",
 						"sim_1_death",
 						"all_targets",
-						"all_players",
 						"target_number",
 						"damage",
 						"timeline",
