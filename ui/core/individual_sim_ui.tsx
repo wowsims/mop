@@ -441,7 +441,6 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 				persist();
 			};
 			window.addEventListener('pagehide', flushPersist);
-			window.addEventListener('beforeunload', flushPersist);
 			TypedEvent.onAny(events).on(_eventID => {
 				if (persistTimer != null) clearTimeout(persistTimer);
 				persistTimer = setTimeout(flushPersist, 300);

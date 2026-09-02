@@ -164,9 +164,7 @@ export class ListPicker<ModObject, ItemType> extends Input<ModObject, Array<Item
 		// Add/remove pickers to make the lengths match.
 		if (newValue.length < this.itemPickerPairs.length) {
 			this.itemPickerPairs.slice(newValue.length).forEach(ipp => {
-				const childIdx = this.children.indexOf(ipp.picker);
-				if (childIdx >= 0) this.children.splice(childIdx, 1);
-				ipp.picker.dispose();
+				this.disposeChild(ipp.picker);
 				ipp.elem.remove();
 			});
 			this.itemPickerPairs = this.itemPickerPairs.slice(0, newValue.length);

@@ -1,3 +1,4 @@
+import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import clsx from 'clsx';
 
 import i18n from '../../../i18n/config';
@@ -5,7 +6,6 @@ import { IndividualSimUI, InputSection } from '../../individual_sim_ui';
 import { Player } from '../../player';
 import { APLRotation, APLRotation_Type as APLRotationType } from '../../proto/apl';
 import { SavedRotation } from '../../proto/ui';
-import { isEqualAPLRotation } from '../../proto_utils/apl_utils';
 import { EventID, TypedEvent } from '../../typed_event';
 import { omitDeep } from '../../utils';
 import { ContentBlock } from '../content_block';
@@ -263,11 +263,8 @@ export class RotationTab extends SimTab {
 					player.setAplRotation(eventID, newRotation.rotation || APLRotation.create());
 				}),
 			changeEmitters: [this.simUI.player.rotationChangeEmitter, this.simUI.player.talentsChangeEmitter],
-			equals: (a: SavedRotation, b: SavedRotation) => {
-				// Uncomment this to debug equivalence checks with preset rotations (e.g. the chip doesn't highlight)
-				// console.log(`Rot A: ${SavedRotation.toJsonString(a, { prettySpaces: 2 })}\n\nRot B: ${SavedRotation.toJsonString(b, { prettySpaces: 2 })}`);
-				return isEqualAPLRotation(this.simUI.player, a.rotation, b.rotation);
-			},
+			// Semantic: Auto and APL types match, simple rotations compare by content.
+			equals: (a: SavedRotation, b: SavedRotation) => isEqualAPLRotation(this.simUI.player, a.rotation, b.rotation),
 			toJson: (a: SavedRotation) => SavedRotation.toJson(a),
 			fromJson: (obj: any) => omitDeep(SavedRotation.fromJson(obj), ['uuid']),
 			nameLabel: i18n.t('rotation_tab.saved_rotations.name_label'),

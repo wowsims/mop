@@ -26,7 +26,6 @@ export const renderSavedEPWeights = (
 			});
 		},
 		changeEmitters: [simUI.player.epWeightsChangeEmitter],
-		equals: (a, b) => SavedEPWeights.equals(a, b),
 		toJson: a => SavedEPWeights.toJson(a),
 		fromJson: obj => SavedEPWeights.fromJson(obj),
 		...options,

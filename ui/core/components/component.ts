@@ -25,6 +25,13 @@ export abstract class Component {
 		return child;
 	}
 
+	// Disposes a registered child ahead of this component's own disposal.
+	disposeChild(child: Component) {
+		const idx = this.children.indexOf(child);
+		if (idx >= 0) this.children.splice(idx, 1);
+		child.dispose();
+	}
+
 	protected get isDisposed(): boolean {
 		return this.disposed;
 	}

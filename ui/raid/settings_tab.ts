@@ -134,7 +134,6 @@ export class SettingsTab extends SimTab {
 			getData: (encounter: Encounter) => SavedEncounter.create({ encounter: encounter.toProto() }),
 			setData: (eventID: EventID, encounter: Encounter, newEncounter: SavedEncounter) => encounter.fromProto(eventID, newEncounter.encounter!),
 			changeEmitters: [this.simUI.sim.encounter.changeEmitter],
-			equals: (a: SavedEncounter, b: SavedEncounter) => SavedEncounter.equals(a, b),
 			toJson: (a: SavedEncounter) => SavedEncounter.toJson(a),
 			fromJson: (obj: any) => SavedEncounter.fromJson(obj),
 		});

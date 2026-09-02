@@ -234,9 +234,7 @@ export class APLActionPicker extends Input<Player<any>, APLAction> {
 		this.currentKind = newActionKind;
 
 		if (this.actionPicker) {
-			const childIdx = this.children.indexOf(this.actionPicker);
-			if (childIdx >= 0) this.children.splice(childIdx, 1);
-			this.actionPicker.dispose();
+			this.disposeChild(this.actionPicker);
 			this.actionPicker.rootElem.remove();
 			this.actionPicker = null;
 		}

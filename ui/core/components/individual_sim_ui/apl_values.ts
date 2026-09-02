@@ -347,9 +347,7 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 		this.currentKind = newKind;
 
 		if (this.valuePicker) {
-			const childIdx = this.children.indexOf(this.valuePicker);
-			if (childIdx >= 0) this.children.splice(childIdx, 1);
-			this.valuePicker.dispose();
+			this.disposeChild(this.valuePicker);
 			this.valuePicker.rootElem.remove();
 			this.valuePicker = null;
 		}
