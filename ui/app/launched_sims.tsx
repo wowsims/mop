@@ -1,16 +1,11 @@
 import { Spec } from '@core/proto/common';
-import { Phase } from '@domain/constants/other';
+import { LaunchStatus, Phase } from '@domain/constants/other';
 import { Player } from '@domain/player';
 
 // This file is for anything related to launching a new sim. DO NOT touch this
 // file until your sim is ready to launch!
 
-export enum LaunchStatus {
-	Unlaunched,
-	Alpha,
-	Beta,
-	Launched,
-}
+export { LaunchStatus };
 
 export type SimStatus = {
 	phase: Phase;

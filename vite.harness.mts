@@ -19,7 +19,7 @@ export default defineConfig({
 			'@features': path.resolve(uiRoot, 'features'),
 			'@app': path.resolve(uiRoot, 'app'),
 			'@specs': path.resolve(uiRoot, 'specs'),
-			'@i18n': path.resolve(uiRoot, 'app/i18n'),
+			'@i18n': path.resolve(uiRoot, 'i18n'),
 			'@core': path.resolve(uiRoot, 'core'),
 		},
 	},

@@ -11,6 +11,13 @@ export enum Phase {
 
 export const CURRENT_PHASE = Phase.Phase5;
 
+export enum LaunchStatus {
+	Unlaunched,
+	Alpha,
+	Beta,
+	Launched,
+}
+
 export const CURRENT_API_VERSION: number = readMessageOption(ProtoVersion, 'proto.current_version_number')! as number;
 
 // Github pages serves our site under the /mop directory (because the repo name is mop)

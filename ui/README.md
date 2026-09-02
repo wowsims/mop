@@ -35,8 +35,11 @@ ui/
                      header/ (sim_header, sim_title_dropdown, social_links), settings_menu.tsx,
                      tabs/ (gear_tab, talents_tab, rotation_tab, settings_tab),
                      notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a),
-                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx,
-                     i18n/ (PR 6b). alias @app; i18n keeps its own alias @i18n
+                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx
+                     (PR 6b). alias @app
+  i18n/              EXISTS. LEAF: framework-agnostic i18next config + localization tables
+                     (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
+                     the top level rather than under app/ (PR 6c). alias @i18n
   core/              LEGACY, proto only: ui/core/proto/ (generated). alias @core
   <class>/<spec>/    spec data, presets, generated index.html. alias @specs
   scss/              unchanged
@@ -54,10 +57,12 @@ ui/
 ## Dependency direction
 
 ```
-generated → worker → domain → ui-kit → features → app → specs → pages
+generated → worker → {domain, i18n} → ui-kit → features → app → specs → pages
 ```
 
-Each layer may only import from layers to its left. `.oxlintrc.json` enforces this with
+`domain` and `i18n` are peers: both are leaves everything above them may depend on, and each
+may depend on the other (i18n's entity/status label maps name domain enums; domain in turn calls
+into i18n for label lookups). Each layer may only import from layers to its left. `.oxlintrc.json` enforces this with
 `no-restricted-imports` on the alias forms (see overrides for `ui/domain/**`, `ui/ui-kit/**`,
 `ui/features/**`, `ui/app/**`), plus `no-restricted-globals` (window/document/localStorage/
 location/navigator) on `ui/domain/**` and `ui/features/*/model/**`.
@@ -80,8 +85,9 @@ cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPic
 (`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
 holds the `make*` builders and re-exports the types.
 
-`@i18n/*` resolves into `ui/app/i18n/*`. domain/ui-kit/features reach it through that alias,
-which `no-restricted-imports` does not see — a deliberate, unenforced app edge.
+`@i18n/*` resolves into `ui/i18n/*`, a top-level leaf (not owned by `app/`) — domain, ui-kit and
+features reach it through that alias. `ui/i18n/**/*.{ts,tsx}` has its own `no-restricted-imports`
+override banning `@app`/`@features`/`@ui-kit`/`@specs/**` (domain is allowed).
 
 ## Aliases
 
@@ -94,7 +100,7 @@ which `no-restricted-imports` does not see — a deliberate, unenforced app edge
 | `@features/*` | `ui/features/*` |
 | `@app/*` | `ui/app/*` |
 | `@specs/*` | `ui/specs/*` |
-| `@i18n/*` | `ui/app/i18n/*` |
+| `@i18n/*` | `ui/i18n/*` |
 | `@core/*` | `ui/core/*` (proto only) |
 
 Configured via `tsconfig.json` (`paths`) and `resolve.alias` in `vite.config.mts`

@@ -12,7 +12,7 @@ Full plan + history: `STATE_UI_SEPARATION_PLAN.md` (repo root).
 ## Layer map (dependency direction is enforced by oxlint)
 
 ```
-generated → worker → domain → ui-kit → features → app → specs → pages
+generated → worker → {domain, i18n} → ui-kit → features → app → specs → pages
 
 ui/core/proto                        generated protobuf (still under core/; alias @core/proto)
 ui/domain/proto_utils                pure data + value objects (Gear, Stats, EquippedItem are immutable)
@@ -20,21 +20,23 @@ ui/domain/state/                     UI-free AND browser-free state layer (Zusta
 ui/domain/{sim,raid,party,encounter,player}.ts + {reforge,stat_weight,item_swap,bulk}_settings.ts
                                      facade classes over the store; public API unchanged
 ui/domain/{talents,constants,bulk,wasm,player_classes,player_specs,utils,worker_pool,…}
+ui/i18n/                             LEAF, top-level (alias @i18n): framework-agnostic i18next
+                                     config + localization tables (config.ts, entity_mapping.ts,
+                                     locale_service.ts, localization.tsx). May import @domain and
+                                     @core/proto; may NOT import @app/@features/@ui-kit/@specs (PR 6c)
 ui/ui-kit/                           sim-agnostic widgets + base classes (Component, Input, pickers/,
                                      modals, action_id_dom, dom_utils, css_utils)
 ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
 ui/app/                              composition root; browser_env.ts, header/, tabs/ (incl. settings_tab),
                                      settings_menu.tsx, notice_native_sim.tsx,
                                      preset_configuration_picker.tsx, sim_ui.tsx,
-                                     individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx,
-                                     i18n/ (alias @i18n) (PR 6a/6b)
+                                     individual_sim_ui.tsx, preset_utils.tsx, launched_sims.tsx (PR 6b/6c)
 ui/<class>/<spec>/                   spec data + SimUI subclass — may import everything
 BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/**
 BANNED: ui/domain/** → window/document/localStorage/location/navigator (use `sim.env`, an `Env`)
+BANNED: ui/i18n/** → @app/** @features/** @ui-kit/** @specs/** (domain is allowed)
 BANNED: ui/ui-kit/** → @features/** @app/** @specs/**;  ui/features/** → @app/** @specs/**
 BANNED: ui/features/** → patchSlice/patchKeyed/seedKeyed/deleteKeyed (use a facade)
-NOTE: `@i18n/*` now resolves into `ui/app/i18n/*`. domain/ui-kit/features import it through the
-alias, which the layer lint does not see — an app edge that is deliberate, not enforced.
 ```
 
 The rule lives in `.oxlintrc.json` (`no-restricted-imports`, error level), keyed on the
@@ -152,6 +154,17 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 6c: `ui/app/i18n/**` → `ui/i18n/**` (by hand: `git mv` + repoint
+  `@i18n/*` in `tsconfig.json`/`vite.config.mts`/`vite.harness.mts`; `ui/index.html` +
+  `ui/index_template.html` entry script; the 34 gitignored `ui/*/*/index.html` regenerated).
+  i18n is a LEAF and lives at the top level rather than under `ui/app/` — PR 6b's alias made
+  `@i18n` a back door letting domain/ui-kit/features reach app-owned code through an alias the
+  layer lint could not see. `.oxlintrc.json` gained an `ui/i18n/**/*.{ts,tsx}` override banning
+  `@app`/`@features`/`@ui-kit`/`@specs/**` (domain allowed) — this is now enforced, not
+  "deliberate but unenforced" as PR 6b left it. `ui/i18n/entity_mapping.ts` imported
+  `LaunchStatus` from `../launched_sims` (a relative reach into `ui/app/`, broken by the move
+  and disallowed either way); `LaunchStatus` moved to `ui/domain/constants/other.ts` next to
+  `Phase`, and `ui/app/launched_sims.tsx` re-exports it so its other consumers are untouched.
 - 2026-09-02 UI restructure PR 6b: `ui/core/` is now **proto only**. The shells moved to
   `ui/app/`: `sim_ui.tsx`, `individual_sim_ui.tsx`, `preset_utils.tsx`, `launched_sims.tsx`;
   `ui/i18n/**` → `ui/app/i18n/**` (`@i18n/*` alias repointed in `tsconfig.json`,

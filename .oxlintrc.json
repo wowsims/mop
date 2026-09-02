@@ -86,6 +86,30 @@
       }
     },
     {
+      "files": ["ui/i18n/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@app",
+                  "@app/**",
+                  "@features",
+                  "@features/**",
+                  "@ui-kit",
+                  "@ui-kit/**",
+                  "@specs/**"
+                ],
+                "message": "ui/i18n is a leaf and must not depend on app/features/ui-kit/specs (see ui/README.md dependency direction)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["ui/domain/**"],
       "rules": {
         "no-restricted-imports": [

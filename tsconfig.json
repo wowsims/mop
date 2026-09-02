@@ -23,7 +23,7 @@
 			"@features/*": ["./ui/features/*"],
 			"@app/*": ["./ui/app/*"],
 			"@specs/*": ["./ui/specs/*"],
-			"@i18n/*": ["./ui/app/i18n/*"],
+			"@i18n/*": ["./ui/i18n/*"],
 			"@core/*": ["./ui/core/*"]
 		}
 	},
