@@ -30,7 +30,7 @@ ui/features/<x>/{model,view}/        per-capability code (see ui/README.md)
 ui/app/                              composition root; browser_env.ts, header/, tabs/ (incl. settings_tab),
                                      settings_menu.tsx, notice_native_sim.tsx,
                                      preset_configuration_picker.tsx, sim_ui.tsx,
-                                     individual_sim_ui.tsx, preset_utils.tsx (PR 6b/6c, PR 8b)
+                                     individual_sim_ui.tsx, preset_utils.ts (PR 6b/6c, PR 8b)
 ui/sims/<class>/<spec>/               spec data + SimUI subclass — may import everything
                                      (generated page still lands at ui/<class>/<spec>/index.html)
 BANNED: ui/domain/** → @ui-kit/** @features/** @app/** @specs/**
@@ -165,6 +165,16 @@ Envelope serialization is `serialization.ts` (`individualSimSettingsToProto` /
 
 ## Change log (keep current — this skill documents itself)
 
+- 2026-09-02 UI restructure PR 11a: cleanup pass. 21 `.tsx` files with no JSX renamed to `.ts`
+  via the move tool (`preset_utils.ts`, the apl list-picker/condition-builder views, the
+  import-export importer/exporter views, `sticky_toolbar.ts`, `topline_results.ts`,
+  `table_sorter.ts`, `hunter_pet.ts`, `quick_gem_popover.ts`/`quick_enchant_popover.ts`,
+  `mage/fire/inputs.ts`); the two `spec.tsx` files (`mage/arcane`, `warlock/demonology`) keep
+  `.tsx` (real JSX). `.oxlintrc.json`'s overrides were audited — every block's `files` glob still
+  matches a live directory, nothing removed; probed the domain/features/i18n/ui-kit/app layer
+  blocks with a throwaway violating file each (all five fired, then deleted). `ui/README.md`
+  dropped the "in progress"/`EXISTS` framing (the tree is final) and the `core/` row now reads
+  "proto/ only (generated)". No empty directories found under `ui/`.
 - 2026-09-02 UI restructure PR 9c: the 11 class source dirs moved `ui/<class>/` → `ui/sims/<class>/` via the move tool (`@specs` alias in `tsconfig.json`/`vite.config.mts`/`vite.harness.mts` now resolves to `ui/sims`; `move.mjs`'s `DIR_TO_ALIAS` table key renamed `specs` → `sims`). The generated page location and URL are unchanged: `makefile`'s `PAGE_INDECES` now derives `ui/<class>/<spec>/index.html` from `ui/sims/*/*/spec.ts(x)` (the `ui/%/index.html` rule gained a `mkdir -p $(@D)` since the class/spec dirs no longer pre-exist), and `spec_entry.ts`'s glob/module-key both gained a `sims/` segment. 34/34 golden specs still match.
 - 2026-09-02 UI restructure PR 9b (part 1): EP-weight and talent presets become JSON under `ui/<class>/<spec>/presets/{ep,talents}/` (enum NAMES as keys; `makePresetEpWeightsFromJSON` / `makePresetTalentsFromJSON` in `app/preset_utils.tsx`); computed presets (`.withStat`, glyph spreads, `onLoad`) stay in TS. Done: warrior, death_knight, druid, hunter, mage; the other six classes follow the same recipe.
 - 2026-09-02 UI restructure PR 9b (part 2): same recipe applied to monk, paladin, priest, rogue, shaman, warlock — all 12 specs converted. Presets left in TS: shaman/enhancement P1/P3 EP (pseudoStat values computed via `Mechanics.SPELL_HIT_RATING_PER_HIT_PERCENT`/`PHYSICAL_HIT_RATING_PER_HIT_PERCENT` multipliers); shaman/elemental `TalentsCleave`/`TalentsAoE` (spread another preset's glyphs); priest discipline/holy `StandardTalents`/`EnlightenmentTalents` and shaman/restoration `TankHealingTalents`/`RaidHealingTalents` (fully commented-out talentsString/glyphs, nothing literal to move). All 34 golden specs still match; `tsc`/`oxlint`/`vite build` clean.

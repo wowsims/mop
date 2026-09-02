@@ -2,9 +2,9 @@ import { Spec } from '@core/proto/common';
 import { IndividualSimSettings } from '@core/proto/ui';
 import { SimSettingCategories } from '@domain/constants/sim_settings';
 import { getEnumValues, jsonStringifyWithFlattenedPaths } from '@domain/utils';
-import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 
+import type { IndividualSimHost } from '../../../sim_host';
 import { IndividualImporter } from '../importers/individual_importer';
 import { IndividualExporter } from './individual_exporter';
 

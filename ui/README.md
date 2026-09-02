@@ -1,46 +1,45 @@
 # ui/ layout
 
-Target tree (in progress; `EXISTS` marks what is already in place):
+Target tree:
 
 ```
 ui/
-  worker/            EXISTS. NOT MOVED (Go package, go:embed highs.wasm). alias @worker
+  worker/            NOT MOVED (Go package, go:embed highs.wasm). alias @worker
   generated/         proto/*, *_auto_gen.ts — tool output only. alias @generated
                      (not yet: proto/ is still ui/core/proto, *_auto_gen.ts sit beside their consumers)
-  domain/            EXISTS. DOM-free, node-runnable model: sim/player/raid/party/encounter facades,
+  domain/            DOM-free, node-runnable model: sim/player/raid/party/encounter facades,
                      state/, proto_utils/, player_classes/, player_specs/, talents data + trees,
                      bulk request builders, wasm/, constants, utils, worker_pool, reforge_cache,
                      wowhead, cache_handler. alias @domain
-  ui-kit/            EXISTS. sim-agnostic widgets + base classes: component, input, sim_tab,
+  ui-kit/            sim-agnostic widgets + base classes: component, input, sim_tab,
                      sim_host (SimUIHost/SimHeaderHost — the shell slice ui-kit is allowed to name),
                      base_modal, content_block, toast, copy_button, tooltip_button, sticky_toolbar,
                      saved_data_manager, progress_tracker_modal, input_helpers, icon_inputs,
                      css_utils, dom_utils, action_id_dom, pickers/, vendor/. alias @ui-kit
-  features/<name>/   EXISTS. one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
-                     Today: apl/ (model/ + view/), gear/ (gear_picker/* flattened in, plus
-                     gem_summary/reforge_summary/upgrade_costs_summary/item_notice, PR 5a; plus
-                     quick_swap/gear_change_icon, PR 5c), reforge/, results/ (plus
-                     view/results_viewer, PR 5c), stat-weights/ (plus view/saved_ep_weights,
-                     PR 5c), talents/, item-swap/ (view/, item_swap_picker, PR 5a),
-                     character-stats/ (view/, character_stats, PR 5a), encounter/ (view/,
-                     encounter_picker, PR 5a), settings/ (model/ buffs_debuffs/consumables/
+  features/<name>/   one folder per capability, split model/ (DOM-free) + view/ (tsx-vanilla).
+                     apl/ (model/ + view/), gear/ (gear_picker/* flattened in, plus
+                     gem_summary/reforge_summary/upgrade_costs_summary/item_notice; plus
+                     quick_swap/gear_change_icon), reforge/, results/ (plus
+                     view/results_viewer), stat-weights/ (plus view/saved_ep_weights),
+                     talents/, item-swap/ (view/, item_swap_picker),
+                     character-stats/ (view/, character_stats), encounter/ (view/,
+                     encounter_picker), settings/ (model/ buffs_debuffs/consumables/
                      stat_options, view/ cooldowns_picker + consumes_picker + other_inputs +
-                     spec_change_warning_toast, PR 5a/5c), bulk/ (model/ core_sim, view/
+                     spec_change_warning_toast), bulk/ (model/ core_sim, view/
                      bulk_tab + bulk_item_search/bulk_item_picker/bulk_item_picker_group/
-                     bulk_sim_results_renderer flattened, PR 5b), import-export/ (view/
-                     importer/exporter + importers/ + exporters/, PR 5b); plus two top-level
+                     bulk_sim_results_renderer flattened), import-export/ (view/
+                     importer/exporter + importers/ + exporters/); plus two top-level
                      type files: sim_host.ts (SimHost/IndividualSimHost) and spec_config.ts
-                     (IndividualSimUIConfig + registerSpecConfig, PR 6b). alias @features
-  app/               EXISTS. shells + chrome that compose features. Today: browser_env.ts,
+                     (IndividualSimUIConfig + registerSpecConfig). alias @features
+  app/               shells + chrome that compose features. browser_env.ts,
                      header/ (sim_header, sim_title_dropdown, social_links), settings_menu.tsx,
                      tabs/ (gear_tab, talents_tab, rotation_tab, settings_tab),
-                     notice_native_sim.tsx, preset_configuration_picker.tsx (PR 6a),
-                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.tsx
-                     (PR 6b). alias @app
-  i18n/              EXISTS. LEAF: framework-agnostic i18next config + localization tables
+                     notice_native_sim.tsx, preset_configuration_picker.tsx,
+                     sim_ui.tsx, individual_sim_ui.tsx, preset_utils.ts. alias @app
+  i18n/              LEAF: framework-agnostic i18next config + localization tables
                      (config.ts, entity_mapping.ts, locale_service.ts, localization.tsx), at
-                     the top level rather than under app/ (PR 6c). alias @i18n
-  core/              LEGACY, proto only: ui/core/proto/ (generated). alias @core
+                     the top level rather than under app/. alias @i18n
+  core/              proto/ only (generated): ui/core/proto/. alias @core
   sims/<class>/<spec>/   spec data, presets. alias @specs. Generated index.html still lands
                      at ui/<class>/<spec>/index.html (URL /mop/<class>/<spec>/ unchanged)
   scss/              unchanged, except sims/: one shared sims/sim.scss + sims/mage_fire.scss
@@ -86,7 +85,7 @@ cannot sit in `domain/` because it names ui-kit picker configs and `EncounterPic
 It also holds the declarative spec surface (`SpecDefinition`, `SpecBehaviors`, `DerivedSetting`,
 `CustomSection`, `defineSpec` — see "How to author a spec"); `app/individual_sim_ui.tsx` re-exports all of it as a
 convenience. The preset shapes
-(`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.tsx`
+(`PresetGear`, `PresetEpWeights`, …) live in `domain/presets/types.ts`; `app/preset_utils.ts`
 holds the `make*` builders and re-exports the types.
 
 Proto-serialisable preset data lives as JSON, never as a TS literal: gear (`gear_sets/*.gear.json`),

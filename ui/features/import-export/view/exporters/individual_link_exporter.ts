@@ -2,10 +2,10 @@ import { Spec } from '@core/proto/common';
 import { IndividualSimSettings } from '@core/proto/ui';
 import { SIM_CATEGORY_KEYS, SimSettingCategories } from '@domain/constants/sim_settings';
 import { arrayEquals, getEnumValues } from '@domain/utils';
-import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { default as pako } from 'pako';
 
+import type { IndividualSimHost } from '../../../sim_host';
 import { IndividualImporter } from '../importers/individual_importer';
 import { IndividualExporter } from './individual_exporter';
 

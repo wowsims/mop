@@ -3,9 +3,9 @@ import { Database } from '@domain/proto_utils/database';
 import { classNames } from '@domain/proto_utils/names';
 import { batch, nextEventID } from '@domain/state/batch';
 import { LINK_CATEGORY_PARAM, LINK_DEFAULT_CATEGORIES } from '@domain/state/sim_links';
-import type { IndividualSimHost } from '@features/sim_host';
 import Toast from '@ui-kit/toast';
 
+import type { IndividualSimHost } from '../../../sim_host';
 import { Importer, ImporterOptions } from '../importer';
 // For now this just holds static helpers to match the exporter, so it doesn't extend Importer.
 export abstract class IndividualImporter<SpecType extends Spec> extends Importer {

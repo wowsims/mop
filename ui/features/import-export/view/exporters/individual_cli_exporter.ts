@@ -1,8 +1,8 @@
 import { RaidSimRequest } from '@core/proto/api';
 import { Spec } from '@core/proto/common';
-import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 
+import type { IndividualSimHost } from '../../../sim_host';
 import { IndividualExporter } from './individual_exporter';
 
 export class IndividualCLIExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {

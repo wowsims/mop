@@ -1,8 +1,8 @@
 import { PseudoStat, Spec, Stat } from '@core/proto/common';
 import { UnitStat } from '@domain/proto_utils/stats';
-import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 
+import type { IndividualSimHost } from '../../../sim_host';
 import { IndividualExporter } from './individual_exporter';
 
 export class IndividualPawnEPExporter<SpecType extends Spec> extends IndividualExporter<SpecType> {

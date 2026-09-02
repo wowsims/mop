@@ -2,9 +2,9 @@ import { ItemSlot, Spec } from '@core/proto/common';
 import { CHARACTER_LEVEL } from '@domain/constants/mechanics';
 import { raceNames } from '@domain/proto_utils/names';
 import { WOWHEAD_EXPANSION_ENV } from '@domain/wowhead';
-import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 
+import type { IndividualSimHost } from '../../../sim_host';
 import { IndividualWowheadGearPlannerImporter } from '../importers';
 import { IndividualExporter } from './individual_exporter';
 

@@ -3,12 +3,12 @@ import { Player } from '@domain/player';
 import { EventID } from '@domain/state/batch';
 import { subscribePlayerField } from '@domain/state/subscriptions';
 import { randomUUID } from '@domain/utils';
-import type { IndividualSimHost } from '@features/sim_host';
 import i18n from '@i18n/config';
 import { Component } from '@ui-kit/component';
 import { Input } from '@ui-kit/input';
 import { ListItemPickerConfig, ListPicker } from '@ui-kit/pickers/list_picker';
 
+import type { IndividualSimHost } from '../../sim_host';
 import { APLActionPicker } from './apl_actions';
 import { APLValuePicker } from './apl_values';
 import { APLHidePicker } from './hide_picker';
