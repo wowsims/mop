@@ -1,6 +1,6 @@
 import ApexCharts from 'apexcharts';
 import clsx from 'clsx';
-import tippy, { Instance, Props } from 'tippy.js';
+import tippy, { delegate, Instance, Props } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { CacheHandler } from '../../cache_handler';
@@ -28,21 +28,36 @@ const threatColor = '#b56d07';
 // Bounded: this holds detached DOM, and an unbounded CacheHandler never evicts.
 const cachedSpellCastIcon = new CacheHandler<HTMLAnchorElement>({ keysToKeep: 512 });
 
-// Builds tooltip content on first hover. Building it up front meant a single cast with ten
-// damage logs allocated ~50 nodes for a tooltip that in almost every case is never shown,
-// and the detached tooltip DOM ended up larger than the chart it described.
-function lazyTippy(reference: Element, props: Partial<Props>, buildContent: () => Element): Instance {
-	let content: Element | null = null;
-	return tippy(reference, {
-		...props,
+// Tooltips are delegated per row rather than instantiated per element, and their content is
+// built on first hover. Before, a rotation created one tippy instance - and its listeners -
+// for every cast, tick, aura window and resource block, several thousand of them, each
+// carrying a fully built subtree for a tooltip that in almost every case is never shown.
+const TOOLTIP_TARGET_ATTR = 'data-timeline-tooltip';
+const tooltipBuilders = new WeakMap<Element, () => Element>();
+
+// Marks an element as a tooltip target for the delegate on its row.
+function addTooltip(reference: Element, buildContent: () => Element) {
+	reference.setAttribute(TOOLTIP_TARGET_ATTR, '');
+	tooltipBuilders.set(reference, buildContent);
+}
+
+function delegateTooltips(container: Element): Instance {
+	const built = new WeakSet<Element>();
+	return delegate(container, {
+		target: `[${TOOLTIP_TARGET_ATTR}]`,
+		placement: 'bottom',
 		content: '',
 		onShow(instance) {
-			if (!content) {
-				content = buildContent();
-				instance.setContent(content);
+			const reference = instance.reference;
+			const buildContent = tooltipBuilders.get(reference);
+			if (!buildContent) return false;
+			if (!built.has(reference)) {
+				built.add(reference);
+				instance.setContent(buildContent());
 			}
+			return undefined;
 		},
-	});
+	} as Partial<Props> & { target: string });
 }
 
 interface TimelineConfig extends ResultComponentConfig {
@@ -782,13 +797,17 @@ export class Timeline extends ResultComponent {
 
 	// A timeline row that is never hidden (section headers: pet name, target name).
 	private makePlainRowElem(duration: number): JSX.Element {
-		return (
+		const rowElem = (
 			<div
 				className="rotation-timeline-row rotation-row"
 				style={{
 					width: this.timeToPx(duration),
 				}}></div>
 		);
+		// One delegate per row, covering however many tooltip targets the row ends up holding.
+		const delegated = delegateTooltips(rowElem);
+		this.addOnResetCallback(() => delegated.destroy());
+		return rowElem;
 	}
 
 	private makeRowElem(actionId: ActionId, duration: number, scope: string): JSX.Element {
@@ -884,13 +903,9 @@ export class Timeline extends ResultComponent {
 
 		this.rotationLabels.appendChild(labelElem);
 
-		const rowElem = (
-			<div
-				className="rotation-timeline-row rotation-row"
-				style={{
-					width: this.timeToPx(duration),
-				}}></div>
-		);
+		// Identical to what makePlainRowElem builds, and going through it is what attaches this
+		// row's tooltip delegate.
+		const rowElem = this.makePlainRowElem(duration);
 
 		resourceLogs.forEach((resourceLogGroup, i) => {
 			const cNames = resourceNames.get(resourceType)!.toLowerCase().replaceAll(' ', '-');
@@ -923,10 +938,7 @@ export class Timeline extends ResultComponent {
 			}
 			rowElem.appendChild(resourceElem);
 
-			const tooltip = lazyTippy(resourceElem, { placement: 'bottom' }, () =>
-				this.resourceTooltipElem(resourceLogGroup, startValue(resourceLogGroup), false),
-			);
-			this.addOnResetCallback(() => tooltip.destroy());
+			addTooltip(resourceElem, () => this.resourceTooltipElem(resourceLogGroup, startValue(resourceLogGroup), false));
 		});
 		this.rotationTimeline.appendChild(rowElem);
 	}
@@ -1026,8 +1038,7 @@ export class Timeline extends ResultComponent {
 				</div>
 			);
 
-			const tooltip = lazyTippy(castElem, { placement: 'bottom' }, buildCastTooltip);
-			this.addOnResetCallback(() => tooltip.destroy());
+			addTooltip(castElem, buildCastTooltip);
 
 			castLog.damageDealtLogs
 				.filter(ddl => ddl.tick)
@@ -1056,8 +1067,7 @@ export class Timeline extends ResultComponent {
 						</div>
 					);
 
-					const tooltip = lazyTippy(tickElem, { placement: 'bottom' }, buildTickTooltip);
-					this.addOnResetCallback(() => tooltip.destroy());
+					addTooltip(tickElem, buildTickTooltip);
 				});
 		});
 
@@ -1097,14 +1107,13 @@ export class Timeline extends ResultComponent {
 			);
 			rowElem.appendChild(auraElem);
 
-			const tooltip = lazyTippy(auraElem, { placement: 'bottom' }, () => (
+			addTooltip(auraElem, () => (
 				<div className="timeline-tooltip">
 					<span>
 						{aul.actionId!.name}: {aul.gainedAt.toFixed(2)}s - {aul.fadedAt.toFixed(2)}s
 					</span>
 				</div>
 			));
-			this.addOnResetCallback(() => tooltip.destroy());
 
 			aul.stacksChange.forEach((scl, i) => {
 				if (scl.timestamp == aul.fadedAt) {
