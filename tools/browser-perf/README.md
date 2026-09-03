@@ -63,3 +63,24 @@ Log tab: 50 rows in the DOM (the hardcoded window at `log_runner.tsx:212`), whil
 is held as a detached `<tr>` plus a serialised HTML string in the JS heap
 (`log_runner.tsx:183-184`). Scrolling is smooth at this fixture size — 17 ms median frame, no
 drops — so the log-runner rewrite is a memory and first-paint fix, not a scroll-jank fix.
+
+## Result — full stack, Unholy DK, pinned seed
+
+| metric | master | after |
+|---|---|---|
+| Simulate long task (Damage tab active) | 1,117 / 1,157 / 1,142 ms | **176 / 216 / 208 ms** |
+| Rotation built while the Timeline tab is hidden | 96 rows, 13,326 nodes, 7,376 tippies | **0 / 0 / 0** |
+| Log rows built at Simulate | 50 in the DOM, ~20k detached `<tr>` + strings | **0** |
+| Search keystroke | 65–84 ms long task | **no long task** |
+| Opening the Log tab | — | 2 ms |
+| Opening the Timeline tab | 5 ms (already built) | 40 ms (builds everything) |
+| Rotation nodes once open | 13,326 | **763** |
+| tippy instances once open | 7,802 | **667** |
+| JS heap | 131 MB | **93 MB** |
+
+The Timeline figure moved from Simulate to tab-open on purpose: master built it on every
+result whether or not anyone looked. Opening it now costs 40 ms against the ~1.1 s it used to
+add to every single Simulate press.
+
+Counts are exactly reproducible between runs; the millisecond figures are not, and the first
+Simulate after a page load carries worker warm-up. Compare counts, sample timings.

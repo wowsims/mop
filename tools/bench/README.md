@@ -102,3 +102,22 @@ The browser's Simulate long task is ~1.2–1.6 s before and after. Phase A remov
 parse from it; the rest is the timeline building 95 rows, 13k nodes and 7.4k tippy instances
 into a hidden tab, which is branch 4's work. Note also that the in-browser figure varies run to
 run because the sim seed does — compare node numbers for the parser, not browser ones.
+
+## Result — full stack, node
+
+| fixture | parse ms | lines/s | promises | parse heap MB | makeNew ms | derives ms |
+|---|---|---|---|---|---|---|
+| unholy | 68.9 | 296,182 | 1,060 | 7.9 | 2.3 | 24.0 |
+| demonology | 63.4 | 256,593 | 604 | 6.4 | 0 | 19.4 |
+| raid25 | 2,227.2 | 222,711 | 25,496 | 191.7 | 69.0 | 1,283.2 |
+
+| raid25 | master | after | |
+|---|---|---|---|
+| parse | 5,749.8 ms | 2,227.2 ms | 2.6× |
+| promises | 992,032 | 25,496 | 39× fewer |
+| blocking before a tab renders | 9,387 ms | 2,296 ms | **4.1×** |
+| ...with every derived view read | 9,387 ms | 3,579 ms | 2.6× |
+| parse heap | 266 MB | 192 MB | |
+
+The parity dump over the unholy and demonology fixtures is byte-identical to master across
+the whole stack, including the discriminating per-subclass fields and active-aura ordering.
