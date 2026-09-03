@@ -50,6 +50,10 @@ func (holyPriest *HolyPriest) GetPriest() *priest.Priest {
 func (holyPriest *HolyPriest) Initialize() {
 	holyPriest.Priest.Initialize()
 
+	// Meditation (95861): 50% of mana regeneration from Spirit continues in combat.
+	// Healing spells are not implemented; this spec is a gear planner only.
+	holyPriest.PseudoStats.SpiritRegenRateCombat = 0.5
+
 	// holyPriest.RegisterHolyFireSpell()
 	// holyPriest.RegisterSmiteSpell()
 	// holyPriest.RegisterPenanceSpell()

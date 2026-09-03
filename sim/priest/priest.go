@@ -88,7 +88,8 @@ func (priest *Priest) Initialize() {
 		}))
 	}
 
-	priest.MultiplyStat(stats.Intellect, 1.05)
+	// Mysticism (89745): +5% Intellect while wearing only cloth.
+	priest.ApplyArmorSpecializationEffect(stats.Intellect, proto.ArmorType_ArmorTypeCloth, 89745)
 	priest.registerShadowWordPainSpell()
 	priest.registerShadowfiendSpell()
 	priest.registerVampiricTouchSpell()

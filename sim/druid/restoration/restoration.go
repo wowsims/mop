@@ -3,6 +3,7 @@ package restoration
 import (
 	"github.com/wowsims/mop/sim/core"
 	"github.com/wowsims/mop/sim/core/proto"
+	"github.com/wowsims/mop/sim/core/stats"
 	"github.com/wowsims/mop/sim/druid"
 )
 
@@ -49,9 +50,23 @@ func (resto *RestorationDruid) GetDruid() *druid.Druid {
 
 func (resto *RestorationDruid) Initialize() {
 	resto.Druid.Initialize()
+	resto.registerPassives()
 }
 
-func (resto *RestorationDruid) ApplyTalents() {}
+func (resto *RestorationDruid) ApplyTalents() {
+	resto.Druid.ApplyTalents()
+	resto.ApplyArmorSpecializationEffect(stats.Intellect, proto.ArmorType_ArmorTypeLeather, 86093)
+}
+
+// Stat-affecting Restoration passives. Healing spells are not implemented;
+// this spec is a gear planner only.
+func (resto *RestorationDruid) registerPassives() {
+	// Natural Insight (112857): increases mana pool by 400%.
+	resto.MultiplyStat(stats.Mana, 5)
+
+	// Meditation (85101): 50% of mana regeneration from Spirit continues in combat.
+	resto.PseudoStats.SpiritRegenRateCombat = 0.5
+}
 
 func (resto *RestorationDruid) Reset(sim *core.Simulation) {
 	resto.Druid.Reset(sim)

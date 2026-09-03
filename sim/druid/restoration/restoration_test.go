@@ -1,65 +1,64 @@
 package restoration
 
 import (
-	_ "github.com/wowsims/mop/sim/common" // imported to get caster sets included. (we use spellfire here)
+	"testing"
+
+	_ "github.com/wowsims/mop/sim/common" // imported to get item effects included.
+	"github.com/wowsims/mop/sim/core"
+	"github.com/wowsims/mop/sim/core/proto"
 )
 
 func init() {
 	RegisterRestorationDruid()
 }
 
-// func TestRestoration(t *testing.T) {
-// 	core.RunTestSuite(t, t.Name(), core.FullCharacterTestSuiteGenerator([]core.CharacterSuiteConfig{
-// 		Class: proto.Class_ClassDruid,
-// 		Race:  proto.Race_RaceTauren,
+// Stats-only suite: this spec is a gear planner, it has no healing rotation.
+// Pins the final character stats for each gear preset so the passives stay covered.
+func TestRestorationDruid(t *testing.T) {
+	var generators []core.TestGenerator
+	for _, gearSet := range []string{"preraid", "p5"} {
+		player := core.WithSpec(
+			&proto.Player{
+				Class:         proto.Class_ClassDruid,
+				Race:          proto.Race_RaceTauren,
+				Equipment:     core.GetGearSet("../../../ui/druid/restoration/gear_sets", gearSet).GearSet,
+				Consumables:   FullConsumes,
+				Buffs:         core.FullIndividualBuffs,
+				TalentsString: StandardTalents,
+				Glyphs:        StandardGlyphs,
+				Profession1:   proto.Profession_Engineering,
+				Profession2:   proto.Profession_Jewelcrafting,
+			},
+			PlayerOptions,
+		)
+		generators = append(generators, &core.SingleCharacterStatsTestGenerator{
+			Name: gearSet,
+			Request: &proto.ComputeStatsRequest{
+				Raid:         core.SinglePlayerRaidProto(player, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
+				SkipRotation: true,
+			},
+		})
+	}
+	core.RunTestSuite(t, t.Name(), generators)
+}
 
-// 		GearSet:     core.GetGearSet("../../../ui/restoration_druid/gear_sets", "p1"),
-// 		Talents:     StandardTalents,
-// 		Glyphs:      StandardGlyphs,
-// 		Consumes:    FullConsumes,
-// 		SpecOptions: core.SpecOptionsCombo{Label: "Standard", SpecOptions: PlayerOptionsStandard},
-// 		Rotation:    core.RotationCombo{Label: "Default", Rotation: DefaultRotation},
+var StandardTalents = "113222"
+var StandardGlyphs = &proto.Glyphs{
+	Major1: int32(proto.DruidMajorGlyph_GlyphOfWildGrowth),
+	Major2: int32(proto.DruidMajorGlyph_GlyphOfRejuvenation),
+	Major3: int32(proto.DruidMajorGlyph_GlyphOfRegrowth),
+}
 
-// 		ItemFilter: core.ItemFilter{
-// 			WeaponTypes: []proto.WeaponType{
-// 				proto.WeaponType_WeaponTypeDagger,
-// 				proto.WeaponType_WeaponTypeMace,
-// 				proto.WeaponType_WeaponTypeOffHand,
-// 				proto.WeaponType_WeaponTypeStaff,
-// 				proto.WeaponType_WeaponTypePolearm,
-// 			},
-// 			ArmorType: proto.ArmorType_ArmorTypeLeather,
-// 			RangedWeaponTypes: []proto.RangedWeaponType{},
-// 		},
-// 	}))
-// }
+var FullConsumes = &proto.ConsumesSpec{
+	FlaskId: 76085, // Flask of the Warm Sun
+	FoodId:  74650, // Mogu Fish Stew
+	PotId:   76093, // Potion of the Jade Serpent
+}
 
-// var StandardTalents = "05320031103--230023312131502331050313051"
-// var StandardGlyphs = &proto.Glyphs{
-// 	Major1: int32(proto.DruidMajorGlyph_GlyphOfWildGrowth),
-// 	Major2: int32(proto.DruidMajorGlyph_GlyphOfSwiftmend),
-// 	Major3: int32(proto.DruidMajorGlyph_GlyphOfNourish),
-// }
-
-// var FullConsumes = &proto.Consumes{
-// 	Flask:           proto.Flask_FlaskOfBlindingLight,
-// 	Food:            proto.Food_FoodBlackenedBasilisk,
-// 	DefaultPotion:   proto.Potions_SuperManaPotion,
-// 	PrepopPotion:    proto.Potions_DestructionPotion,
-// 	DefaultConjured: proto.Conjured_ConjuredDarkRune,
-// }
-
-// var PlayerOptionsStandard = &proto.Player_RestorationDruid{
-// 	RestorationDruid: &proto.RestorationDruid{
-// 		Options: &proto.RestorationDruid_Options{
-// 			InnervateTarget: &proto.UnitReference{Type: proto.UnitReference_Player, Index: 0}, // self innervate
-// 		},
-// 	},
-// }
-
-// var DefaultRotation = core.APLRotationFromJsonString(`{
-// 	"type": "TypeAPL",
-// 	"priorityList": [
-// 		{"action":{"autocastOtherCooldowns":{}}}
-// 	]
-// }`)
+var PlayerOptions = &proto.Player_RestorationDruid{
+	RestorationDruid: &proto.RestorationDruid{
+		Options: &proto.RestorationDruid_Options{
+			ClassOptions: &proto.DruidOptions{},
+		},
+	},
+}

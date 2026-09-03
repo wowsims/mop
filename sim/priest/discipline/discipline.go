@@ -68,6 +68,10 @@ func (discPriest *DisciplinePriest) GetMainTarget() *core.Unit {
 func (discPriest *DisciplinePriest) Initialize() {
 	discPriest.CurrentTarget = discPriest.GetMainTarget()
 	discPriest.Priest.Initialize()
+
+	// Meditation (95860): 50% of mana regeneration from Spirit continues in combat.
+	// Healing spells are not implemented; this spec is a gear planner only.
+	discPriest.PseudoStats.SpiritRegenRateCombat = 0.5
 	// discPriest.Priest.RegisterHealingSpells()
 
 	// // discPriest.ApplyRapture(discPriest.Options.RapturesPerMinute)
