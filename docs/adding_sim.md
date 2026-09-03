@@ -23,7 +23,9 @@ The UI and sim can be done in either order, but it is generally recommended to b
   - Copy+paste from another spec's UI code.
   - Modify all the files for your spec; most of the settings are fairly obvious, if you need anything complex just ask and we can help!
 
-No .html and no `makefile` rule are needed. `tools/vite/spec_pages.mts` generates the page for
+No .html and no `makefile` rule are needed (they used to be; see
+[Sim pages are not files](commands.md#sim-pages-are-not-files) if an older checkout left
+generated pages behind). `tools/vite/spec_pages.mts` generates the page for
 `/mop/$CLASS/$SPEC/` from `ui/index_template.html`, in both `vite build` and the dev server. A
 directory is picked up as a sim page as soon as it has both of the things the template references:
 an entry point at `ui/$CLASS/$SPEC/index.ts` and a stylesheet at
