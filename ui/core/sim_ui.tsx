@@ -235,8 +235,9 @@ export abstract class SimUI extends Component {
 				</div>,
 			);
 		} else if (this.simDisabled) {
-			resultsViewerElem.appendChild(
-				<div className="sim-ui-unlaunched-container d-flex flex-column align-items-center text-center mt-auto mb-auto ms-auto me-auto">
+			// Goes into the results viewer's content area so it stacks above the warnings icon.
+			this.resultsViewer.setContent(
+				<div className="d-flex flex-column align-items-center text-center">
 					<i className="fas fa-tools fa-3x mb-2" />
 					<h6>{i18n.t('sim.gear_planner.title')}</h6>
 					<p>{i18n.t('sim.gear_planner.message')}</p>
@@ -244,7 +245,9 @@ export abstract class SimUI extends Component {
 						<p>
 							{i18n.t('sim.unlaunched.healing_message')}
 							<br />
-							{i18n.t('sim.unlaunched.qe_live_message')} <a href="https://questionablyepic.com/live/">QE Live</a>!
+							<a href="https://questionablyepic.com/live/" target="_blank">
+								{i18n.t('sim.unlaunched.qe_live_message')}
+							</a>
 						</p>
 					)}
 				</div>,
