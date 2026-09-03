@@ -1162,9 +1162,7 @@ var SharedSpellsIcons = []int32{
 
 	30708,
 
-	// Raid buffs, debuffs and shared consumables rendered by the buff pickers in the Settings
-	// tab. The rotation probe in GetAllRotationSpellIds runs with empty gear and no talents, so
-	// it never registers these and the UI would fall back to a nether.wowhead.com lookup.
+	// Raid buffs, debuffs and shared consumables.
 	1126,   // Mark of the Wild
 	5761,   // Mind-numbing Poison
 	19740,  // Blessing of Might
