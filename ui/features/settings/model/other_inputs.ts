@@ -4,6 +4,13 @@ import { EventID } from '@domain/state/batch';
 import { subscribeAll, subscribePlayerField, subscribeRaidField } from '@domain/state/subscriptions';
 import { UnitReference } from '@generated/proto/common';
 import i18n from '@i18n/config';
+
+// The healing-model inputs below are enabled only while the player is one of the
+// raid's tanks, so they have to re-evaluate on a tank-assignment change as well as
+// on their own value (the old `raid.changeEmitter` source covered both).
+const subscribeHealingModelAndTanks = (player: Player<any>) =>
+	subscribeAll([subscribePlayerField(player, 'healingModel'), subscribeRaidField(player.getRaid()!, 'tanks')]);
+
 export const InputDelay = {
 	id: 'input-delay',
 	type: 'number' as const,
@@ -96,7 +103,7 @@ export const IncomingHps = {
 	type: 'number' as const,
 	label: i18n.t('settings_tab.other.incoming_hps.label'),
 	labelTooltip: i18n.t('settings_tab.other.incoming_hps.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'healingModel'),
+	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().hps,
 	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -112,7 +119,7 @@ export const HealingCadence = {
 	float: true,
 	label: i18n.t('settings_tab.other.healing_cadence.label'),
 	labelTooltip: i18n.t('settings_tab.other.healing_cadence.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'healingModel'),
+	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().cadenceSeconds,
 	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -128,7 +135,7 @@ export const HealingCadenceVariation = {
 	float: true,
 	label: i18n.t('settings_tab.other.healing_cadence_variation.label'),
 	labelTooltip: i18n.t('settings_tab.other.healing_cadence_variation.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'healingModel'),
+	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().cadenceVariation,
 	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();
@@ -159,7 +166,7 @@ export const BurstWindow = {
 	float: false,
 	label: i18n.t('settings_tab.other.burst_window.label'),
 	labelTooltip: i18n.t('settings_tab.other.burst_window.tooltip'),
-	storeSubscribe: (player: Player<any>) => subscribePlayerField(player, 'healingModel'),
+	storeSubscribe: subscribeHealingModelAndTanks,
 	getValue: (player: Player<any>) => player.getHealingModel().burstWindow,
 	setValue: (eventID: EventID, player: Player<any>, newValue: number) => {
 		const healingModel = player.getHealingModel();

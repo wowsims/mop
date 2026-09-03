@@ -301,7 +301,11 @@ export function patchKeyed<N extends KeyedSlice>(
 	bumps: ReadonlyArray<keyof KeyedEntry<N>['v']> = [],
 ) {
 	store.setState(s => {
-		const cur = s[slice][key] as KeyedEntry<N>;
+		const cur = s[slice][key] as KeyedEntry<N> | undefined;
+		// The entry is gone (deleteKeyed ran for a disposed player). A late write from an
+		// in-flight callback must be a no-op, not a TypeError. Returning the current state
+		// object unchanged makes Zustand skip the notification entirely.
+		if (!cur) return s;
 		const v = { ...cur.v } as Record<string, number>;
 		for (const f of bumps) v[f as string] = (v[f as string] ?? 0) + 1;
 		return { [slice]: { ...s[slice], [key]: { ...cur, ...patch, v } } } as Partial<SimState>;

@@ -18,6 +18,20 @@ const __dirname = path.dirname(__filename);
 export const BASE_PATH = path.resolve(__dirname, 'ui');
 export const OUT_DIR = path.join(__dirname, 'dist', 'mop');
 
+// The ui/ path aliases. Mirrored by `compilerOptions.paths` in tsconfig.json and by the
+// layering rules in .oxlintrc.json; shared with vite.harness.mts from here so the two vite
+// configs cannot drift.
+export const UI_ALIASES: Record<string, string> = {
+	'@domain': path.resolve(BASE_PATH, 'domain'),
+	'@generated': path.resolve(BASE_PATH, 'generated'),
+	'@worker': path.resolve(BASE_PATH, 'worker'),
+	'@ui-kit': path.resolve(BASE_PATH, 'ui-kit'),
+	'@features': path.resolve(BASE_PATH, 'features'),
+	'@app': path.resolve(BASE_PATH, 'app'),
+	'@specs': path.resolve(BASE_PATH, 'sims'),
+	'@i18n': path.resolve(BASE_PATH, 'i18n'),
+};
+
 function serveExternalAssets() {
 	const workerMappings = {
 		'/mop/sim_worker.js': '/mop/local_worker.js',
@@ -101,16 +115,7 @@ export const getBaseConfig = ({ command, mode }: ConfigEnv) =>
 		base: '/mop/',
 		root: BASE_PATH,
 		resolve: {
-			alias: {
-				'@domain': path.resolve(BASE_PATH, 'domain'),
-				'@generated': path.resolve(BASE_PATH, 'generated'),
-				'@worker': path.resolve(BASE_PATH, 'worker'),
-				'@ui-kit': path.resolve(BASE_PATH, 'ui-kit'),
-				'@features': path.resolve(BASE_PATH, 'features'),
-				'@app': path.resolve(BASE_PATH, 'app'),
-				'@specs': path.resolve(BASE_PATH, 'sims'),
-				'@i18n': path.resolve(BASE_PATH, 'i18n'),
-			},
+			alias: { ...UI_ALIASES },
 		},
 		build: {
 			outDir: OUT_DIR,

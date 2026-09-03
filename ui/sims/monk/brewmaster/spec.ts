@@ -14,6 +14,10 @@ import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecBrewmasterMonk>({
 	spec: Spec.SpecBrewmasterMonk,
+	// This spec never called player.enableHealing() before the restructure; the
+	// derived default in spec_entry.ts (isTankSpec || isHealingSpec) would turn it
+	// on and change the simulated incoming-healing model.
+	enableHealing: false,
 
 	cssClass: 'brewmaster-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),

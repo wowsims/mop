@@ -17,7 +17,7 @@ export {
 
 // Writes the full Wowhead tooltip dataset for one equipped item (gems, enchants,
 // set pieces, upgrade step). Was Player.setWowheadData.
-export async function setEquippedItemWowheadData(player: Player<any>, equippedItem: EquippedItem, elem: HTMLElement | HTMLElement[]) {
+export function setEquippedItemWowheadData(player: Player<any>, equippedItem: EquippedItem, elem: HTMLElement | HTMLElement[]) {
 	const isBlacksmithing = player.hasProfession(Profession.Blacksmithing);
 	const gemIds = equippedItem.gems.length ? equippedItem.curGems(isBlacksmithing).map(gem => (gem ? gem.id : 0)) : [];
 	const enchantIds = [equippedItem.enchant?.effectId, equippedItem.tinker?.effectId].filter((id): id is number => id !== undefined);

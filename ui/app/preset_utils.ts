@@ -117,14 +117,20 @@ export type PresetEpWeightsJson = {
 };
 
 export const makePresetEpWeightsFromJSON = (json: PresetEpWeightsJson, options?: PresetEpWeightsOptions): PresetEpWeights => {
+	// A key that is not an enum member resolves to `undefined` and would otherwise silently drop
+	// that weight — TypeScript cannot check an imported .json's key strings against the enum.
 	const statsMap: Partial<Record<Stat, number>> = {};
 	Object.entries(json.stats ?? {}).forEach(([key, value]) => {
-		statsMap[Stat[key as keyof typeof Stat]] = value;
+		const stat: Stat | undefined = Stat[key as keyof typeof Stat];
+		if (stat === undefined) throw new Error(`Unknown stat '${key}' in EP preset '${json.name}'.`);
+		statsMap[stat] = value;
 	});
 
 	const pseudoStatsMap: Partial<Record<PseudoStat, number>> = {};
 	Object.entries(json.pseudoStats ?? {}).forEach(([key, value]) => {
-		pseudoStatsMap[PseudoStat[key as keyof typeof PseudoStat]] = value;
+		const pseudoStat: PseudoStat | undefined = PseudoStat[key as keyof typeof PseudoStat];
+		if (pseudoStat === undefined) throw new Error(`Unknown pseudo stat '${key}' in EP preset '${json.name}'.`);
+		pseudoStatsMap[pseudoStat] = value;
 	});
 
 	return makePresetEpWeights(json.name, Stats.fromMap(statsMap, pseudoStatsMap), options);
@@ -159,7 +165,13 @@ export const makePresetTalentsFromJSON = (
 				return;
 			}
 			const enumTable = slot.startsWith('major') ? glyphEnums.major : glyphEnums.minor;
-			glyphFields[slot] = Number(enumTable?.[glyphValue] ?? 0);
+			const resolved = enumTable?.[glyphValue];
+			// A missing enum table (the call site passed only `major`, say) or a misspelled name
+			// would otherwise resolve to glyph id 0 — i.e. silently no glyph at all.
+			if (typeof resolved !== 'number') {
+				throw new Error(`Unknown glyph '${glyphValue}' for slot '${slot}' in talents preset '${json.name}'.`);
+			}
+			glyphFields[slot] = resolved;
 		});
 		glyphs = Glyphs.create(glyphFields);
 	}

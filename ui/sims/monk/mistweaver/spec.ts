@@ -17,6 +17,10 @@ const hasteBreakpoints = Presets.MISTWEAVER_BREAKPOINTS.find(entry => entry.unit
 
 export default defineSpec<Spec.SpecMistweaverMonk>({
 	spec: Spec.SpecMistweaverMonk,
+	// This spec never called player.enableHealing() before the restructure; the
+	// derived default in spec_entry.ts (isTankSpec || isHealingSpec) would turn it
+	// on and change the simulated incoming-healing model.
+	enableHealing: false,
 
 	cssClass: 'mistweaver-monk-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Monk),

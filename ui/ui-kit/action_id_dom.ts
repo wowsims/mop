@@ -20,7 +20,10 @@ export function setActionIdWowheadHref(actionId: ActionId, elem: HTMLAnchorEleme
 	}
 }
 
-export async function setActionIdWowheadDataset(
+// Fire-and-forget: the dataset lands once the tooltip data resolves. Deliberately NOT `async` —
+// it used to be, and awaiting the call resolved before the write, which reads as a guarantee the
+// function cannot give.
+export function setActionIdWowheadDataset(
 	actionId: ActionId,
 	elem: HTMLElement | HTMLElement[],
 	params?: Omit<WowheadTooltipItemParams, 'itemId'> | Omit<WowheadTooltipSpellParams, 'spellId'>,

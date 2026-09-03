@@ -12,6 +12,10 @@ import * as Presets from './presets';
 
 export default defineSpec<Spec.SpecRestorationDruid>({
 	spec: Spec.SpecRestorationDruid,
+	// This spec never called player.enableHealing() before the restructure; the
+	// derived default in spec_entry.ts (isTankSpec || isHealingSpec) would turn it
+	// on and change the simulated incoming-healing model.
+	enableHealing: false,
 
 	cssClass: 'restoration-druid-sim-ui',
 	cssScheme: PlayerClasses.getCssClass(PlayerClasses.Druid),
