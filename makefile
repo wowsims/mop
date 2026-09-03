@@ -101,13 +101,20 @@ wasm: $(OUT_DIR)/lib.wasm.gz
 # Published gzipped: Cloudflare Pages caps files at 25 MiB and the raw module exceeds it.
 # The main thread decompresses and compiles it once (see getSharedWasmModule in
 # ui/core/worker_pool.ts) and shares the compiled module with every worker.
+WASM_FEATURES := --enable-sign-ext --enable-nontrapping-float-to-int --enable-mutable-globals --enable-bulk-memory
 $(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
 	@echo "Starting webassembly compile now..."
-	@if GOOS=js GOARCH=wasm go build -ldflags "-w -s" -o ./$(OUT_DIR)/lib.wasm ./sim/wasm/; then \
+	@if GOWASM=satconv,signext GOOS=js GOARCH=wasm go build -ldflags "-w -s" -o ./$(OUT_DIR)/lib.wasm ./sim/wasm/; then \
 		printf "\033[1;32mWASM compile successful.\033[0m\n"; \
 	else \
 		printf "\033[1;31mWASM COMPILE FAILED\033[0m\n"; \
 		exit 1; \
+	fi
+	@if command -v wasm-opt >/dev/null 2>&1; then \
+		echo "Optimizing wasm with wasm-opt..."; \
+		wasm-opt -O3 $(WASM_FEATURES) $(OUT_DIR)/lib.wasm -o $(OUT_DIR)/lib.wasm.tmp && mv -f $(OUT_DIR)/lib.wasm.tmp $(OUT_DIR)/lib.wasm; \
+	else \
+		printf "\033[1;33mwasm-opt not found -- skipping optimization (install binaryen to enable).\033[0m\n"; \
 	fi
 	gzip -9 -f -n $(OUT_DIR)/lib.wasm
 
