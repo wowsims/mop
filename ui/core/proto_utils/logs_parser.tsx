@@ -118,8 +118,6 @@ export class SimLog {
 	// This is only filled if populateActiveAuras() is called.
 	activeAuras: Array<AuraUptimeLog>;
 
-	cachedHTML: Record<string | number, Element | null> = {};
-
 	constructor(params: SimLogParams) {
 		this.raw = params.raw;
 		this.logIndex = params.logIndex;
@@ -136,30 +134,25 @@ export class SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => {
-			let html = <>{this.raw}</>;
-			// Base logs already have the timestamp appended by default
-			if (!includeTimestamp) {
-				const regexp = /(\[[0-9.-]+\]) (\[[0-9a-zA-Z\s\-()#]+\])?(.*)/;
-				if (this.raw.match(regexp)) {
-					// TypeScript doesn't handle regex capture typing well
-					const captureArr = regexp.exec(this.raw);
-
-					if (captureArr && captureArr.length == 4) {
-						html = <>{captureArr[3]}</>;
-					}
-				}
+		let html = <>{this.raw}</>;
+		// Base logs already have the timestamp appended by default
+		if (!includeTimestamp) {
+			// One exec: this used to match and then exec the same pattern over the same string.
+			// It now runs per visible row rather than once per log for the life of the result.
+			const captureArr = TIMESTAMP_PREFIX_REGEX.exec(this.raw);
+			if (captureArr && captureArr.length == 4) {
+				html = <>{captureArr[3]}</>;
 			}
+		}
 
-			if (this.source) {
-				html = (
-					<>
-						{this.source.toHTML()} {html}
-					</>
-				);
-			}
-			return html;
-		});
+		if (this.source) {
+			html = (
+				<>
+					{this.source.toHTML()} {html}
+				</>
+			);
+		}
+		return html;
 	}
 
 	toPrefix(includeTimestamp = true) {
@@ -340,12 +333,6 @@ export class SimLog {
 
 		return grouped;
 	}
-
-	cacheOutput(cacheKey: string | number | boolean, fn: () => Element) {
-		if (this.cachedHTML[String(cacheKey)]) return this.cachedHTML[String(cacheKey)] as Element;
-		this.cachedHTML[String(cacheKey)] = fn();
-		return this.cachedHTML[String(cacheKey)]! as Element;
-	}
 }
 
 export class DamageDealtLog extends SimLog {
@@ -473,15 +460,13 @@ export class DamageDealtLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => {
-			const threatPostfix = this.source?.isTarget ? '' : ` (${this.threat.toFixed(2)} Threat)`;
-			return (
-				<>
-					{this.toPrefix(includeTimestamp)} {this.newActionIdLink()} {this.result()}
-					{threatPostfix}
-				</>
-			);
-		});
+		const threatPostfix = this.source?.isTarget ? '' : ` (${this.threat.toFixed(2)} Threat)`;
+		return (
+			<>
+				{this.toPrefix(includeTimestamp)} {this.newActionIdLink()} {this.result()}
+				{threatPostfix}
+			</>
+		);
 	}
 
 	static build(params: SimLogParams, match: RegExpExecArray): DamageDealtLog {
@@ -620,13 +605,13 @@ export class AuraEventLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)}
 				{`  Aura  `}
 				{this.isGained ? 'gained' : this.isFaded ? 'faded' : 'refreshed'}: {this.newActionIdLink(true)}.
 			</>
-		));
+		);
 	}
 
 	static build(params: SimLogParams, match: RegExpExecArray): AuraEventLog {
@@ -646,11 +631,11 @@ export class AuraStacksChangeLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)} {this.newActionIdLink(true)} stacks: {this.oldStacks} &rarr; {this.newStacks}.
 			</>
-		));
+		);
 	}
 
 	static build(params: SimLogParams, match: RegExpExecArray): AuraStacksChangeLog {
@@ -824,25 +809,23 @@ export class ResourceChangedLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => {
-			const signedDiff = (this.valueAfter - this.valueBefore) * (this.isSpend ? -1 : 1);
-			const isHealth = this.resourceType == ResourceType.ResourceTypeHealth;
-			const verb = isHealth ? (this.isSpend ? 'Lost' : 'Recovered') : this.isSpend ? 'Spent' : 'Gained';
-			const resourceName =
-				this.secondaryResourceType !== undefined ? SECONDARY_RESOURCES.get(this.secondaryResourceType)!.name : resourceNames.get(this.resourceType)!;
-			const resourceClass = `resource-${resourceName.replace(/\s/g, '-').toLowerCase()}`;
+		const signedDiff = (this.valueAfter - this.valueBefore) * (this.isSpend ? -1 : 1);
+		const isHealth = this.resourceType == ResourceType.ResourceTypeHealth;
+		const verb = isHealth ? (this.isSpend ? 'Lost' : 'Recovered') : this.isSpend ? 'Spent' : 'Gained';
+		const resourceName =
+			this.secondaryResourceType !== undefined ? SECONDARY_RESOURCES.get(this.secondaryResourceType)!.name : resourceNames.get(this.resourceType)!;
+		const resourceClass = `resource-${resourceName.replace(/\s/g, '-').toLowerCase()}`;
 
-			return (
-				<>
-					{this.toPrefix(includeTimestamp)} {verb}{' '}
-					<strong className={resourceClass}>
-						{signedDiff.toFixed(1)} {resourceName}
-					</strong>
-					{` from `}
-					{this.newActionIdLink()}. ({this.valueBefore.toFixed(1)} &rarr; {this.valueAfter.toFixed(1)})
-				</>
-			);
-		});
+		return (
+			<>
+				{this.toPrefix(includeTimestamp)} {verb}{' '}
+				<strong className={resourceClass}>
+					{signedDiff.toFixed(1)} {resourceName}
+				</strong>
+				{` from `}
+				{this.newActionIdLink()}. ({this.valueBefore.toFixed(1)} &rarr; {this.valueAfter.toFixed(1)})
+			</>
+		);
 	}
 
 	resultString(): string {
@@ -878,11 +861,11 @@ export class ResourceChangedLogGroup extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)} {resourceNames.get(this.resourceType)}: {this.valueBefore.toFixed(1)} &rarr; {this.valueAfter.toFixed(1)}
 			</>
-		));
+		);
 	}
 
 	static fromLogs(logs: Array<SimLog>): Record<ResourceType, Array<ResourceChangedLogGroup>> {
@@ -944,11 +927,11 @@ export class MajorCooldownUsedLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)} Major cooldown used: {this.newActionIdLink()}.
 			</>
-		));
+		);
 	}
 
 	static build(params: SimLogParams): MajorCooldownUsedLog {
@@ -969,12 +952,12 @@ export class CastBeganLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)} Casting {this.newActionIdLink()} (Cast time: {this.castTime.toFixed(2)}s, Cost: {this.manaCost.toFixed(1)}{' '}
 				Mana).
 			</>
-		));
+		);
 	}
 
 	static build(params: SimLogParams, match: RegExpExecArray): CastBeganLog {
@@ -999,11 +982,11 @@ export class CastCancelledLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)} Cancelled {this.newActionIdLink()} after {this.cancelTime.toFixed(2)}s.
 			</>
-		));
+		);
 	}
 
 	static build(params: SimLogParams, match: RegExpExecArray): CastCancelledLog {
@@ -1021,11 +1004,11 @@ export class CastCompletedLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)} Completed cast {this.actionId!.name}.
 			</>
-		));
+		);
 	}
 
 	static build(params: SimLogParams): CastCompletedLog {
@@ -1091,11 +1074,11 @@ export class CastLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => (
+		return (
 			<>
 				{this.toPrefix(includeTimestamp)} Casting {this.actionId!.name} (Cast time = {this.castTime.toFixed(2)}s).
 			</>
-		));
+		);
 	}
 
 	totalDamage(): number {
@@ -1203,21 +1186,19 @@ export class StatChangeLog extends SimLog {
 	}
 
 	toHTML(includeTimestamp = true) {
-		return this.cacheOutput(includeTimestamp, () => {
-			if (this.isGain) {
-				return (
-					<>
-						{this.toPrefix(includeTimestamp)} Gained {this.stats} from {this.newActionIdLink()}.
-					</>
-				);
-			} else {
-				return (
-					<>
-						{this.toPrefix(includeTimestamp)} Lost {this.stats} from fading {this.newActionIdLink()}.
-					</>
-				);
-			}
-		});
+		if (this.isGain) {
+			return (
+				<>
+					{this.toPrefix(includeTimestamp)} Gained {this.stats} from {this.newActionIdLink()}.
+				</>
+			);
+		} else {
+			return (
+				<>
+					{this.toPrefix(includeTimestamp)} Lost {this.stats} from fading {this.newActionIdLink()}.
+				</>
+			);
+		}
 	}
 
 	static build(params: SimLogParams, match: RegExpExecArray): StatChangeLog {
@@ -1228,6 +1209,8 @@ export class StatChangeLog extends SimLog {
 
 // Preamble patterns, hoisted so parseAll does not allocate a fresh RegExp per line.
 const RESOURCE_TYPES = (getEnumValues(ResourceType) as Array<ResourceType>).filter(val => val != ResourceType.ResourceTypeNone);
+
+const TIMESTAMP_PREFIX_REGEX = /(\[[0-9.-]+\]) (\[[0-9a-zA-Z\s\-()#]+\])?(.*)/;
 
 const SPELL_SCHOOL_REGEX = / \(SpellSchool: (-?[0-9]+)\)/;
 const THREAT_REGEX = / \(Threat: (-?[0-9]+\.[0-9]+)\)/;

@@ -2,17 +2,29 @@
 import debounce from 'lodash/debounce';
 import { ref } from 'tsx-vanilla';
 
-import { SimLog } from '../../proto_utils/logs_parser';
 import i18n from '../../../i18n/config';
-import { TypedEvent } from '../../typed_event.js';
-import { fragmentToString } from '../../utils';
-import { BooleanPicker } from '../pickers/boolean_picker.js';
-import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component.js';
-import { LogExporter } from '../individual_sim_ui/exporters/detailed_log_exporter';
+import { SimLog } from '../../proto_utils/logs_parser';
 import { SimUI } from '../../sim_ui';
+import { TypedEvent } from '../../typed_event.js';
+import { LogExporter } from '../individual_sim_ui/exporters/detailed_log_exporter';
+import { BooleanPicker } from '../pickers/boolean_picker.js';
+import { VirtualList } from '../virtual_scroll/virtual_list';
+import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component.js';
+
+const DEBUG_MARKER = '[DEBUG]';
+
+// One entry per displayable log line. `searchText` is the raw log line plus the resolved
+// ability name, lowercased. The raw line names abilities by id ("{SpellID: 55090}"), so the
+// name has to be appended for "scourge strike" to match; building the corpus out of rendered
+// markup instead, as this used to, also made "span", "icon" and "http" match every row.
+type LogEntry = {
+	log: SimLog;
+	searchText: string;
+	isDebug: boolean;
+};
 
 export class LogRunner extends ResultComponent {
-	private virtualScroll: CustomVirtualScroll | null = null;
+	private virtualList: VirtualList | null = null;
 	readonly showDebugChangeEmitter = new TypedEvent<void>('Show Debug');
 	private showDebug = false;
 	private ui: {
@@ -21,14 +33,14 @@ export class LogRunner extends ResultComponent {
 		buttonToTop: HTMLButtonElement;
 		exportLog: HTMLButtonElement;
 		scrollContainer: HTMLDivElement;
-		contentContainer: HTMLTableSectionElement;
+		contentContainer: HTMLDivElement;
 	};
-	cacheOutput: {
-		cacheKey: string | null;
-		logs: SimLog[] | null;
-		logsAsHTML: Element[] | null;
-		logsAsText: string[] | null;
-	} = { cacheKey: null, logs: null, logsAsHTML: null, logsAsText: null };
+
+	// Logs are held as data, not as DOM. Rows are built when they scroll into view.
+	private cacheKey: string | null = null;
+	private entries: Array<LogEntry> = [];
+	// Indexes into `entries` that pass the current search, in order.
+	private visibleIndexes: Array<number> = [];
 
 	constructor(config: ResultComponentConfig, simUi: SimUI) {
 		config.rootCssClass = 'log-runner-root';
@@ -39,13 +51,9 @@ export class LogRunner extends ResultComponent {
 		const buttonToTopRef = ref<HTMLButtonElement>();
 		const exportLogRef = ref<HTMLButtonElement>();
 		const scrollContainerRef = ref<HTMLDivElement>();
-		const contentContainerRef = ref<HTMLTableSectionElement>();
+		const contentContainerRef = ref<HTMLDivElement>();
 
-		const logExporter = new LogExporter(
-			simUi.rootElem,
-			simUi,
-			() => getCombinedText()
-		)
+		const logExporter = new LogExporter(simUi.rootElem, simUi, () => this.getCombinedText());
 
 		this.rootElem.appendChild(
 			<>
@@ -59,17 +67,13 @@ export class LogRunner extends ResultComponent {
 					</button>
 				</div>
 				<div ref={scrollContainerRef} className="log-runner-scroll">
-					<table className="metrics-table log-runner-table">
-						<thead>
-							<tr className="metrics-table-header-row">
-								<th>{i18n.t('results_tab.details.logs.time_column')}</th>
-								<th>
-									<div className="d-flex align-items-end">{i18n.t('results_tab.details.logs.event_column')}</div>
-								</th>
-							</tr>
-						</thead>
-						<tbody ref={contentContainerRef} className="log-runner-logs"></tbody>
-					</table>
+					<div className="log-runner-list">
+						<div className="log-runner-header">
+							<div>{i18n.t('results_tab.details.logs.time_column')}</div>
+							<div>{i18n.t('results_tab.details.logs.event_column')}</div>
+						</div>
+						<div ref={contentContainerRef} className="log-runner-logs"></div>
+					</div>
 				</div>
 			</>,
 		);
@@ -89,23 +93,11 @@ export class LogRunner extends ResultComponent {
 		};
 		this.ui.search?.addEventListener('input', debounce(onSearchHandler, 150));
 		this.ui.buttonToTop?.addEventListener('click', () => {
-			this.virtualScroll?.scrollToTop();
+			this.virtualList?.scrollToTop();
 		});
 
-		const getCombinedText = (): string => {
-			return this.cacheOutput.logsAsHTML!
-				.map( element => {
-					const cells = element.querySelectorAll('td');
-					return Array.from(cells)
-						.map(td => td.textContent?.trim() || '')
-						.join(';');
-			})
-			.filter(text => text.length > 0)
-			.join('\n')
-		};
-
 		this.ui.exportLog?.addEventListener('click', () => {
-			logExporter.open()
+			logExporter.open();
 		});
 
 		new BooleanPicker<LogRunner>(this.ui.actions, this, {
@@ -125,44 +117,39 @@ export class LogRunner extends ResultComponent {
 		this.showDebugChangeEmitter.on(() => {
 			onSearchHandler();
 		});
-		this.initializeClusterize();
-	}
 
-	private initializeClusterize(): void {
-		this.virtualScroll = new CustomVirtualScroll({
-			scrollContainer: this.ui.scrollContainer,
-			contentContainer: this.ui.contentContainer,
-			itemHeight: 32,
+		this.virtualList = new VirtualList({
+			scrollElem: this.ui.scrollContainer,
+			contentElem: this.ui.contentContainer,
+			dataSource: {
+				count: () => this.visibleIndexes.length,
+				renderRow: position => this.renderRow(this.entries[this.visibleIndexes[position]].log),
+			},
 		});
+		this.addOnDisposeCallback(() => this.virtualList?.dispose());
 	}
 
 	searchLogs(searchQuery: string): void {
 		// Regular expression to match quoted phrases or words
 		const matchQuotesRegex = /"([^"]+)"|\S+/g;
 		let match;
-		const keywords: any[] = [];
+		const keywords: Array<string> = [];
 		// Extract keywords and quoted phrases from the search query
 		while ((match = matchQuotesRegex.exec(searchQuery))) {
 			keywords.push(match[1] ? match[1].toLowerCase() : match[0].toLowerCase());
 		}
-		const filteredLogs = this.cacheOutput.logsAsHTML?.filter((_, index) => {
-			const logText = this.cacheOutput.logsAsText![index];
-			const logRaw = this.cacheOutput.logs![index].raw;
 
-			if (!this.showDebug && logRaw.match(/.*\[DEBUG\].*/)) return false;
-
-			return keywords.every(keyword => {
-				if (keyword.startsWith('"') && keyword.endsWith('"')) {
-					// Remove quotes for exact phrase match
-					return logText.includes(keyword.slice(1, -1));
-				}
-				return logText.includes(keyword);
-			});
-		});
-
-		if (filteredLogs) {
-			this.virtualScroll?.setItems(filteredLogs);
+		// Filtering produces indexes, not elements, so a keystroke never builds a row.
+		this.visibleIndexes = [];
+		for (let i = 0; i < this.entries.length; i++) {
+			const entry = this.entries[i];
+			if (!this.showDebug && entry.isDebug) continue;
+			if (keywords.every(keyword => entry.searchText.includes(keyword))) {
+				this.visibleIndexes.push(i);
+			}
 		}
+
+		this.virtualList?.scrollToTop();
 	}
 
 	onSimResult(resultData: SimResultData): void {
@@ -171,91 +158,39 @@ export class LogRunner extends ResultComponent {
 	}
 
 	getLogs(resultData: SimResultData) {
-		if (!resultData) return [];
+		if (!resultData) return;
 		const cacheKey = resultData.result.request.requestId;
-		if (this.cacheOutput.cacheKey === cacheKey) {
-			return this.cacheOutput.logsAsHTML;
-		}
+		if (this.cacheKey === cacheKey) return;
 
-		const validLogs = resultData.result.logs.filter(log => !log.isCastCompleted());
-		this.cacheOutput.cacheKey = cacheKey;
-		this.cacheOutput.logs = validLogs;
-		this.cacheOutput.logsAsHTML = validLogs.map(log => this.renderItem(log));
-		this.cacheOutput.logsAsText = this.cacheOutput.logsAsHTML.map(element => fragmentToString(element).trim().toLowerCase());
+		this.cacheKey = cacheKey;
+		this.entries = resultData.result.logs
+			// The explicit predicate keeps SimLog: negating a `this is X` guard otherwise
+			// narrows the element type to never.
+			.filter((log): log is SimLog => !log.isCastCompleted())
+			.map(log => ({
+				log,
+				searchText: `${log.raw} ${log.actionId?.name ?? ''}`.toLowerCase(),
+				isDebug: log.raw.includes(DEBUG_MARKER),
+			}));
 	}
 
-	renderItem(log: SimLog) {
+	private renderRow(log: SimLog) {
 		return (
-			<tr>
-				<td className="log-timestamp">{log.formattedTimestamp()}</td>
-				<td className="log-evdsfent">{log.toHTML(false).cloneNode(true)}</td>
-			</tr>
-		) as HTMLTableRowElement;
-	}
-}
-
-class CustomVirtualScroll {
-	private scrollContainer: HTMLElement;
-	private contentContainer: HTMLElement;
-	private items: Element[];
-	private itemHeight: number;
-	private visibleItemsCount: number;
-	private startIndex: number;
-	private placeholderTop: HTMLElement;
-	private placeholderBottom: HTMLElement;
-
-	constructor({ scrollContainer, contentContainer, itemHeight }: { scrollContainer: HTMLElement; contentContainer: HTMLElement; itemHeight: number }) {
-		this.scrollContainer = scrollContainer;
-		this.contentContainer = contentContainer;
-		this.items = [];
-		this.itemHeight = itemHeight;
-		this.visibleItemsCount = 50; // +1 for buffer
-		this.startIndex = 0;
-
-		this.placeholderTop = document.createElement('div');
-		this.placeholderBottom = document.createElement('div');
-		contentContainer.prepend(this.placeholderTop);
-		contentContainer.append(this.placeholderBottom);
-
-		this.attachScrollListener();
+			<div className="log-runner-row">
+				<div className="log-timestamp">{log.formattedTimestamp()}</div>
+				<div className="log-event">{log.toHTML(false)}</div>
+			</div>
+		) as HTMLDivElement;
 	}
 
-	scrollToTop(): void {
-		this.scrollContainer.scrollTop = 0;
-		this.startIndex = 0; // Reset startIndex to ensure items are updated correctly
-		this.updateVisibleItems(); // Update the visible items after scrolling to top
-	}
-
-	setItems(newItems: CustomVirtualScroll['items']): void {
-		// Adjust the type of newItems as needed
-		this.items = newItems;
-		this.scrollToTop();
-	}
-
-	private attachScrollListener(): void {
-		this.scrollContainer.addEventListener('scroll', () => {
-			const newIndex = Math.floor(this.scrollContainer.scrollTop / this.itemHeight);
-			if (newIndex !== this.startIndex) {
-				this.startIndex = newIndex;
-				this.updateVisibleItems();
-			}
-		});
-	}
-
-	private updateVisibleItems(): void {
-		const endIndex = this.startIndex + this.visibleItemsCount;
-		const visibleItems = this.items.slice(this.startIndex, endIndex);
-		const remainingItems = this.items.length - endIndex;
-
-		// Update the height of the placeholders before it's placed in the dom to prevent rerender
-		this.placeholderTop.style.height = `${this.startIndex * this.itemHeight}px`;
-		this.placeholderBottom.style.height = `${remainingItems * this.itemHeight}px`;
-		this.contentContainer.replaceChildren(
-			<>
-				{this.placeholderTop}
-				{visibleItems.map(item => item)}
-				{this.placeholderBottom}
-			</>,
-		);
+	// Built from the log objects. This used to scrape textContent out of the cached row
+	// elements, so it threw if the export button was pressed before a sim had run.
+	private getCombinedText(): string {
+		return this.visibleIndexes
+			.map(index => {
+				const { log } = this.entries[index];
+				return `${log.formattedTimestamp()};${log.raw}`;
+			})
+			.join('\n');
 	}
 }

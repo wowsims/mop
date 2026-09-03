@@ -63,6 +63,10 @@ async page => {
 	await page.goto(URL);
 	await page.waitForSelector('.dps-action');
 	await page.waitForTimeout(3000);
+	// The detailed-results tabs live inside the Results tab; without activating it first the
+	// panes stay display:none and anything measuring layout reads zero.
+	await page.evaluate(() => [...document.querySelectorAll('.nav-link')].find(a => (a.textContent || '').trim() === 'Results').click());
+	await page.waitForTimeout(1000);
 
 	// Pin the RNG seed, then reload so the app picks it up. Without this the rotation
 	// differs run to run and row/node counts move by a few percent on their own, which is
@@ -112,7 +116,7 @@ async page => {
 
 	// 2-3. Log tab: first paint, then one search keystroke.
 	out.openLogTab = await measure(CLICK_RESULTS_TAB, clickTab('Log'));
-	out.logRows = await page.evaluate(() => document.querySelectorAll('.log-runner-logs tr').length);
+	out.logRows = await page.evaluate(() => document.querySelectorAll('.log-runner-row').length);
 
 	out.searchKeystroke = await measure(() => {
 		const input = document.querySelector('.log-search-input');
