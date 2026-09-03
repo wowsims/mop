@@ -6,7 +6,7 @@ import { IndividualSimUI, registerSpecConfig } from '../../core/individual_sim_u
 import { Player } from '../../core/player.js';
 import { PlayerClasses } from '../../core/player_classes';
 import { APLRotation } from '../../core/proto/apl.js';
-import { Faction, IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Race, Spec, Stat, UnitStats } from '../../core/proto/common.js';
+import { IndividualBuffs, ItemSlot, PartyBuffs, PseudoStat, Spec, Stat, UnitStats } from '../../core/proto/common.js';
 import { Stats, UnitStat } from '../../core/proto_utils/stats.js';
 import { TypedEvent } from '../../core/typed_event';
 import i18n from '../../i18n/config';
@@ -167,30 +167,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecEnhancementShaman, {
 	autoRotation: (_: Player<Spec.SpecEnhancementShaman>): APLRotation => {
 		return Presets.ROTATION_PRESET_P3.rotation.rotation!;
 	},
-
-	raidSimPresets: [
-		{
-			spec: Spec.SpecEnhancementShaman,
-			talents: Presets.P3Talents.data,
-			specOptions: Presets.DefaultOptions,
-			consumables: Presets.DefaultConsumables,
-			defaultFactionRaces: {
-				[Faction.Alliance]: Race.RaceDraenei,
-				[Faction.Horde]: Race.RaceTroll,
-				[Faction.Unknown]: Race.RaceUnknown,
-			},
-			defaultGear: {
-				[Faction.Alliance]: {
-					1: Presets.P5_GEAR_PRESET.gear,
-				},
-				[Faction.Horde]: {
-					1: Presets.P5_GEAR_PRESET.gear,
-				},
-				[Faction.Unknown]: {},
-			},
-			otherDefaults: Presets.OtherDefaults,
-		},
-	],
 });
 
 export class EnhancementShamanSimUI extends IndividualSimUI<Spec.SpecEnhancementShaman> {

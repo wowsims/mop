@@ -118,8 +118,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecDestructionWarlock, {
 	autoRotation: (_player: Player<Spec.SpecDestructionWarlock>): APLRotation => {
 		return Presets.DEFAULT_APL.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class DestructionWarlockSimUI extends IndividualSimUI<Spec.SpecDestructionWarlock> {

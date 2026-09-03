@@ -23,16 +23,6 @@
 					"additionalProperties": false,
 					"required": ["home", "simulations", "about", "toggle"]
 				},
-				"simulations": {
-					"type": "object",
-					"properties": {
-						"full_raid": {
-							"type": "string"
-						}
-					},
-					"additionalProperties": false,
-					"required": ["full_raid"]
-				},
 				"home": {
 					"type": "object",
 					"properties": {
@@ -67,7 +57,7 @@
 				}
 			},
 			"additionalProperties": false,
-			"required": ["navigation", "simulations", "home", "header"]
+			"required": ["navigation", "home", "header"]
 		},
 		"common": {
 			"type": "object",
@@ -115,9 +105,6 @@
 				"tanks": {
 					"type": "object",
 					"properties": {
-						"title": {
-							"type": "string"
-						},
 						"main_tank": {
 							"type": "string"
 						},
@@ -132,7 +119,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["title", "main_tank", "tank_2", "tank_3", "tank_4"]
+					"required": ["main_tank", "tank_2", "tank_3", "tank_4"]
 				},
 				"status": {
 					"type": "object",
@@ -962,7 +949,7 @@
 				"notifications": {
 					"type": "object",
 					"properties": {
-						"raid_sim_cancelled": {
+						"sim_cancelled": {
 							"type": "string"
 						},
 						"simulation_failed": {
@@ -973,7 +960,7 @@
 						}
 					},
 					"additionalProperties": false,
-					"required": ["raid_sim_cancelled", "simulation_failed", "failed_to_file_report"]
+					"required": ["sim_cancelled", "simulation_failed", "failed_to_file_report"]
 				},
 				"crash_report": {
 					"type": "object",
@@ -2342,19 +2329,6 @@
 						"advanced": {
 							"type": "string"
 						},
-						"use_health": {
-							"type": "object",
-							"properties": {
-								"label": {
-									"type": "string"
-								},
-								"tooltip": {
-									"type": "string"
-								}
-							},
-							"additionalProperties": false,
-							"required": ["label", "tooltip"]
-						},
 						"target": {
 							"type": "string"
 						},
@@ -2530,7 +2504,6 @@
 						"duration_below_high_hp",
 						"encounter_preset",
 						"advanced",
-						"use_health",
 						"target",
 						"num_allies",
 						"min_base_damage",
@@ -2606,19 +2579,6 @@
 					},
 					"additionalProperties": false,
 					"required": ["title", "settings", "settings_name", "save_settings"]
-				},
-				"external_buffs": {
-					"type": "object",
-					"properties": {
-						"title": {
-							"type": "string"
-						},
-						"tooltip": {
-							"type": "string"
-						}
-					},
-					"additionalProperties": false,
-					"required": ["title", "tooltip"]
 				}
 			},
 			"additionalProperties": false,
@@ -2633,8 +2593,7 @@
 				"encounter",
 				"player",
 				"saved_encounters",
-				"saved_settings",
-				"external_buffs"
+				"saved_settings"
 			]
 		},
 		"talents_tab": {
@@ -6995,9 +6954,6 @@
 						"all_targets": {
 							"type": "string"
 						},
-						"all_players": {
-							"type": "string"
-						},
 						"target_number": {
 							"type": "string"
 						},
@@ -7191,9 +7147,6 @@
 								"hpet": {
 									"type": "string"
 								},
-								"amount": {
-									"type": "string"
-								},
 								"dtps": {
 									"type": "string"
 								},
@@ -7328,7 +7281,6 @@
 								"cast_time",
 								"hpm",
 								"hpet",
-								"amount",
 								"dtps",
 								"avg_heal",
 								"hps",
@@ -7376,12 +7328,6 @@
 								"damage_avg_cast": {
 									"type": "string"
 								},
-								"player_damage": {
-									"type": "string"
-								},
-								"player_damage_taken": {
-									"type": "string"
-								},
 								"damage_taken_per_encounter": {
 									"type": "string"
 								},
@@ -7415,9 +7361,6 @@
 							},
 							"additionalProperties": false,
 							"required": [
-								"damage_avg_cast",
-								"player_damage",
-								"player_damage_taken",
 								"damage_taken_per_encounter",
 								"healing_per_encounter",
 								"threat_per_encounter",
@@ -7513,7 +7456,6 @@
 						"sim_1_iteration",
 						"sim_1_death",
 						"all_targets",
-						"all_players",
 						"target_number",
 						"damage",
 						"timeline",

@@ -10,7 +10,7 @@ import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '../../../uti
 import { Component } from '../../component';
 import { buildGearChangeIcon } from '../../gear_change_icon';
 import { ItemRenderer } from '../../gear_picker/item_renderer';
-import { RaidSimResultsManager } from '../../raid_sim_action';
+import { SimResultsManager } from '../../sim_action';
 import Toast from '../../toast';
 import { TopGearResult } from './types';
 import { BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS, getBulkItemSlotFromSlot, getBulkPlayerCanDualWield } from './utils';
@@ -76,7 +76,7 @@ export default class BulkSimResultRenderer extends Component {
 		if (isBaseResult) return;
 
 		if (dpsDeltaRef.value) {
-			const isDiff = RaidSimResultsManager.applyZTestTooltip(
+			const isDiff = SimResultsManager.applyZTestTooltip(
 				dpsDeltaRef.value,
 				iterations,
 				result.dpsMetrics.avg,
