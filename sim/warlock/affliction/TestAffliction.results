@@ -601,9 +601,9 @@ dps_results: {
 dps_results: {
  key: "TestAffliction-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 440530.51735
-  tps: 305612.61882
-  hps: 4523.44624
+  dps: 440789.21943
+  tps: 304981.53505
+  hps: 4530.19206
  }
 }
 dps_results: {

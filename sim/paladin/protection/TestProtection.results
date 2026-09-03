@@ -700,7 +700,7 @@ dps_results: {
  key: "TestProtection-AllItems-EmberPrimalDiamond"
  value: {
   dps: 556279.44454
-  tps: 3.47979482393e+06
+  tps: 3.47979501493e+06
   dtps: 44009.53663
   hps: 82107.59576
  }

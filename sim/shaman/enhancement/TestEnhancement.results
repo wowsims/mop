@@ -566,7 +566,7 @@ dps_results: {
  key: "TestEnhancement-AllItems-EmberPrimalDiamond"
  value: {
   dps: 220693.95115
-  tps: 183957.08015
+  tps: 183958.8429
  }
 }
 dps_results: {

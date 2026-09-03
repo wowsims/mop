@@ -626,7 +626,7 @@ dps_results: {
  key: "TestRetribution-AllItems-EmberPrimalDiamond"
  value: {
   dps: 447401.33334
-  tps: 422321.41934
+  tps: 422321.85534
   hps: 15.24862
  }
 }
