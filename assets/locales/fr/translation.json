@@ -6,9 +6,6 @@
 			"about": "À propos",
 			"toggle": "Basculer la navigation"
 		},
-		"simulations": {
-			"full_raid": "Simulation de raid complet"
-		},
 		"home": {
 			"title": "WoWSims - Mists of Pandaria",
 			"description": "Un puissant outil de simulation pour World of Warcraft: Mists of Pandaria",
@@ -35,7 +32,6 @@
             "5": "Phase 5 (5.4 - T16)"
         },
         "tanks": {
-            "title": "Tanks",
             "main_tank": "Tank Principal",
             "tank_2": "Tank 2",
             "tank_3": "Tank 3",
@@ -262,7 +258,7 @@
             "qe_live_message": "Consultez QE Live !"
         },
         "notifications": {
-            "raid_sim_cancelled": "Simulation annulée.",
+            "sim_cancelled": "Simulation annulée.",
             "simulation_failed": "La simulation a échoué. Un rapport d'erreur a été généré.",
             "failed_to_file_report": "Échec du rapport... réessayez une autre fois :"
         },
@@ -663,10 +659,6 @@
                 "tooltip": "Sélectionne une configuration de rencontre prédéfinie."
             },
             "advanced": "Avancé",
-            "use_health": {
-                "label": "Utiliser les PVs",
-                "tooltip": "Utilise une limite de dégâts au lieu d'une limite de durée. La limite de dégâts est égale à la somme de la vie de toutes les cibles."
-            },
             "target": "Cible",
             "num_allies": {
                 "label": "Nombre d'alliés",
@@ -735,10 +727,6 @@
             "settings": "Paramètres",
             "settings_name": "Nom des paramètres",
             "save_settings": "Sauvegarder les paramètres"
-        },
-        "external_buffs": {
-            "title": "Buffs externes",
-            "tooltip": "Buffs fournis par <strong>d'autres</strong> membres du groupe/raid."
         }
     },
     "talents_tab": {
@@ -1990,7 +1978,6 @@
 			"sim_1_iteration": "Sim 1 itération",
 			"sim_1_death": "Simuler une mort",
 			"all_targets": "Toutes les cibles",
-			"all_players": "Tous les joueurs",
 			"target_number": "Cible {{number}}",
 			"damage": {
 				"dps_histogram": "Histogramme DPS"
@@ -2021,6 +2008,7 @@
 			},
 			"logs": {
 				"top_button": "Haut",
+				"export_button": "Exporter le Journal",
 				"time_column": "Temps",
 				"event_column": "Événement",
 				"show_debug": "Afficher les messages de débogage"
@@ -2052,7 +2040,6 @@
 				"cast_time": "Temps d'incantaton",
 				"hpm": "SPS",
 				"hpet": "SPET",
-				"amount": "Montant",
 				"dtps": "DTPS",
 				"avg_heal": "Soin Moyen",
 				"hps": "SPS",
@@ -2095,8 +2082,6 @@
 			},
 			"tooltips": {
 				"damage_avg_cast": "Dégâts moyens par lancé",
-				"player_damage": "Dégâts du Joueur / Dégâts du Raid",
-				"player_damage_taken": "Dégâts subis par le Joueur / Dégâts subis par le Raid",
 				"damage_taken_per_encounter": "Dégâts subis / Durée de l'affrontement",
 				"healing_per_encounter": "Soins / Durée de l'affrontement",
 				"threat_per_encounter": "Menace / Durée de l'affrontement",

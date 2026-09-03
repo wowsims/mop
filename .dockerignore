@@ -1,3 +1,13 @@
 .git
 coverage
 node_modules
+.history
+
+# Build artifacts — must be regenerated inside the image, never copied from host
+dist
+binary_dist
+wowsimmop
+wowsimmop-*
+*.so
+*.dll
+*.wasm

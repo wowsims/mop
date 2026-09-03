@@ -60,6 +60,7 @@ export class SettingsTab extends SimTab {
 		this.buildCustomSettingsSections();
 		this.buildConsumesSection();
 		this.buildOtherSettings();
+
 		this.buildBuffsSettings();
 		this.raidExternalDamageCooldowns();
 		this.raidExternalDefensiveCooldowns();

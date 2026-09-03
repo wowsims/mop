@@ -133,8 +133,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecWindwalkerMonk, {
 	autoRotation: (_: Player<Spec.SpecWindwalkerMonk>): APLRotation => {
 		return Presets.ROTATION_PRESET.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 const hasTwoHandMainHand = (player: Player<Spec.SpecWindwalkerMonk>): boolean =>

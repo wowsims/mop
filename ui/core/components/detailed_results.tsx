@@ -19,14 +19,12 @@ import { DpsHistogram } from './detailed_results/dps_histogram';
 import { DtpsMetricsTable } from './detailed_results/dtps_metrics';
 import { HealingMetricsTable } from './detailed_results/healing_metrics';
 import { LogRunner } from './detailed_results/log_runner';
-import { PlayerDamageMetricsTable } from './detailed_results/player_damage';
-import { PlayerDamageTakenMetricsTable } from './detailed_results/player_damage_taken';
 import { ResourceMetricsTable } from './detailed_results/resource_metrics';
 import { SimResultData } from './detailed_results/result_component';
 import { ResultsFilter } from './detailed_results/results_filter';
 import { Timeline } from './detailed_results/timeline';
 import { ToplineResults } from './detailed_results/topline_results';
-import { RaidSimResultsManager } from './raid_sim_action';
+import { SimResultsManager } from './sim_action';
 import { StickyToolbar } from './sticky_toolbar';
 type Tab = {
 	isActive?: boolean;
@@ -94,7 +92,7 @@ export class DetailedResults extends Component {
 	private resultsFilter: ResultsFilter;
 	private rootDiv: Element;
 
-	constructor(parent: HTMLElement, simUI: SimUI, simResultsManager: RaidSimResultsManager) {
+	constructor(parent: HTMLElement, simUI: SimUI, simResultsManager: SimResultsManager) {
 		super(parent, 'detailed-results-manager-root');
 
 		this.simUI = simUI;
@@ -132,36 +130,30 @@ export class DetailedResults extends Component {
 					</div>
 					<div id="damageTab" className="tab-pane dr-tab-content damage-content fade active show">
 						<div className="dr-row topline-results" />
-						<div className="dr-row all-players-only">
-							<div className="player-damage-metrics" />
-						</div>
-						<div className="dr-row single-player-only">
+						<div className="dr-row">
 							<div className="damage-metrics" />
 						</div>
-						{/* <div className="dr-row single-player-only">
+						{/* <div className="dr-row">
 							<div className="melee-metrics" />
 						</div>
-						<div className="dr-row single-player-only">
+						<div className="dr-row">
 							<div className="spell-metrics" />
 						</div> */}
 						<div className="dr-row dps-histogram" />
 					</div>
 					<div id="healingTab" className="tab-pane dr-tab-content healing-content fade">
 						<div className="dr-row topline-results" />
-						<div className="dr-row single-player-only">
+						<div className="dr-row">
 							<div className="healing-spell-metrics" />
 						</div>
 						<div className="dr-row hps-histogram" />
 					</div>
 					<div id="damageTakenTab" className="tab-pane dr-tab-content damage-taken-content fade">
 						<div className="dr-row topline-results" />
-						<div className="dr-row all-players-only">
-							<div className="player-damage-taken-metrics" />
-						</div>
-						<div className="dr-row single-player-only">
+						<div className="dr-row">
 							<div className="dtps-metrics" />
 						</div>
-						<div className="dr-row damage-taken-histogram single-player-only" />
+						<div className="dr-row damage-taken-histogram" />
 					</div>
 					<div id="buffsTab" className="tab-pane dr-tab-content buffs-content fade">
 						<div className="dr-row">
@@ -252,14 +244,6 @@ export class DetailedResults extends Component {
 			resultsEmitter: this.resultsEmitter,
 			secondaryResource: (simUI as IndividualSimUI<any>)?.player?.secondaryResource,
 		});
-		new PlayerDamageMetricsTable(
-			{ parent: this.rootElem.querySelector('.player-damage-metrics')!, resultsEmitter: this.resultsEmitter },
-			this.resultsFilter,
-		);
-		new PlayerDamageTakenMetricsTable(
-			{ parent: this.rootElem.querySelector('.player-damage-taken-metrics')!, resultsEmitter: this.resultsEmitter },
-			this.resultsFilter,
-		);
 		new AuraMetricsTable(
 			{
 				parent: this.rootElem.querySelector('.buff-aura-metrics')!,
@@ -309,21 +293,11 @@ export class DetailedResults extends Component {
 		new LogRunner({
 			parent: this.rootElem.querySelector('.log')!,
 			resultsEmitter: this.resultsEmitter,
-		});
+		}, this.simUI);
 
 		this.rootElem.classList.add('hide-threat-metrics');
 
 		this.resultsFilter.changeEmitter.on(async () => await this.updateResults(this.latestRun));
-
-		this.resultsEmitter.on(resultData => {
-			if (resultData?.filter.player || resultData?.filter.player === 0) {
-				this.rootDiv.classList.remove('all-players');
-				this.rootDiv.classList.add('single-player');
-			} else {
-				this.rootDiv.classList.add('all-players');
-				this.rootDiv.classList.remove('single-player');
-			}
-		});
 
 		const simButton = simButtonRef.value!;
 		simButton?.addEventListener('click', () => {

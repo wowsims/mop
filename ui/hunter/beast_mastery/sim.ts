@@ -125,8 +125,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecBeastMasteryHunter, {
 	autoRotation: (_: Player<Spec.SpecBeastMasteryHunter>): APLRotation => {
 		return Presets.ROTATION_PRESET_BM.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class BeastMasteryHunterSimUI extends IndividualSimUI<Spec.SpecBeastMasteryHunter> {

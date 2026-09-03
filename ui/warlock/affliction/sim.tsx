@@ -161,8 +161,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecAfflictionWarlock, {
 
 		return Presets.APL_Default.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class AfflictionWarlockSimUI extends IndividualSimUI<Spec.SpecAfflictionWarlock> {

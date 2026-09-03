@@ -33,6 +33,12 @@ export abstract class Component {
 		child.dispose();
 	}
 
+	// Disposes a registered child and removes its root element from the DOM.
+	removeChild(child: Component) {
+		this.disposeChild(child);
+		child.rootElem.remove();
+	}
+
 	protected get isDisposed(): boolean {
 		return this.disposed;
 	}

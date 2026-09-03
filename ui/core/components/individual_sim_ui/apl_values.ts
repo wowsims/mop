@@ -176,106 +176,109 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 			);
 		}
 
-		this.kindPicker = new TextDropdownPicker(this.rootElem, player, {
-			defaultLabel: i18n.t('rotation_tab.apl.values.no_condition'),
-			id: randomUUID(),
-			values: [
-				{
-					value: undefined,
-					label: i18n.t('rotation_tab.apl.values.none'),
-				} as TextDropdownValueConfig<APLValueKind>,
-			].concat(
-				allValueKinds.map(kind => {
-					const factory = valueKindFactories[kind];
-					const resolveString = factory.dynamicStringResolver || ((value: string) => value);
-					return {
-						value: kind,
-						label: resolveString(factory.label, player),
-						submenu: factory.submenu,
-						tooltip: factory.fullDescription
-							? `<p>${resolveString(factory.shortDescription, player)}</p> ${resolveString(factory.fullDescription, player)}`
-							: resolveString(factory.shortDescription, player),
-					};
-				}),
-			),
-			equals: (a, b) => a == b,
-			getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
-			setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
-				const sourceValue = this.getSourceValue();
-				const oldKind = sourceValue?.value.oneofKind;
-				if (oldKind == newKind) {
-					return;
-				}
+		this.kindPicker = this.addChild(
+			new TextDropdownPicker(this.rootElem, player, {
+				defaultLabel: i18n.t('rotation_tab.apl.values.no_condition'),
+				id: randomUUID(),
+				values: [
+					{
+						value: undefined,
+						label: i18n.t('rotation_tab.apl.values.none'),
+					} as TextDropdownValueConfig<APLValueKind>,
+				].concat(
+					allValueKinds.map(kind => {
+						const factory = valueKindFactories[kind];
+						const resolveString = factory.dynamicStringResolver || ((value: string) => value);
+						return {
+							value: kind,
+							label: resolveString(factory.label, player),
+							submenu: factory.submenu,
+							tooltip: factory.fullDescription
+								? `<p>${resolveString(factory.shortDescription, player)}</p> ${resolveString(factory.fullDescription, player)}`
+								: resolveString(factory.shortDescription, player),
+						};
+					}),
+				),
+				equals: (a, b) => a == b,
+				getValue: (_player: Player<any>) => this.getSourceValue()?.value.oneofKind,
+				setValue: (eventID: EventID, player: Player<any>, newKind: APLValueKind) => {
+					const sourceValue = this.getSourceValue();
+					const oldKind = sourceValue?.value.oneofKind;
+					if (oldKind == newKind) {
+						return;
+					}
 
-				if (newKind) {
-					const factory = valueKindFactories[newKind];
-					let newSourceValue = this.makeAPLValue(newKind, factory.newValue());
-					if (sourceValue) {
-						// Some pre-fill logic when swapping kinds.
-						if (oldKind && this.valuePicker) {
-							if (newKind == 'not') {
-								(newSourceValue.value as APLValueImplStruct<'not'>).not.val = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
-							} else if (sourceValue.value.oneofKind == 'not' && sourceValue.value.not.val?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.not.val;
-							} else if (newKind == 'and') {
-								if (sourceValue.value.oneofKind == 'or') {
-									(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = sourceValue.value.or.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = [
-										this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
-									];
+					if (newKind) {
+						const factory = valueKindFactories[newKind];
+						let newSourceValue = this.makeAPLValue(newKind, factory.newValue());
+						if (sourceValue) {
+							// Some pre-fill logic when swapping kinds.
+							if (oldKind && this.valuePicker) {
+								if (newKind == 'not') {
+									(newSourceValue.value as APLValueImplStruct<'not'>).not.val = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
+								} else if (sourceValue.value.oneofKind == 'not' && sourceValue.value.not.val?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.not.val;
+								} else if (newKind == 'and') {
+									if (sourceValue.value.oneofKind == 'or') {
+										(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = sourceValue.value.or.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'and'>).and.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (newKind == 'or') {
+									if (sourceValue.value.oneofKind == 'and') {
+										(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = sourceValue.value.and.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (newKind == 'min') {
+									if (sourceValue.value.oneofKind == 'max') {
+										(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = sourceValue.value.max.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (newKind == 'max') {
+									if (sourceValue.value.oneofKind == 'min') {
+										(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = sourceValue.value.min.vals;
+									} else {
+										(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = [
+											this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
+										];
+									}
+								} else if (sourceValue.value.oneofKind == 'and' && sourceValue.value.and.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.and.vals[0];
+								} else if (sourceValue.value.oneofKind == 'or' && sourceValue.value.or.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.or.vals[0];
+								} else if (sourceValue.value.oneofKind == 'min' && sourceValue.value.min.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.min.vals[0];
+								} else if (sourceValue.value.oneofKind == 'max' && sourceValue.value.max.vals?.[0]?.value.oneofKind == newKind) {
+									newSourceValue = sourceValue.value.max.vals[0];
+								} else if (newKind == 'cmp') {
+									(newSourceValue.value as APLValueImplStruct<'cmp'>).cmp.lhs = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
 								}
-							} else if (newKind == 'or') {
-								if (sourceValue.value.oneofKind == 'and') {
-									(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = sourceValue.value.and.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'or'>).or.vals = [this.makeAPLValue(oldKind, this.valuePicker.getInputValue())];
-								}
-							} else if (newKind == 'min') {
-								if (sourceValue.value.oneofKind == 'max') {
-									(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = sourceValue.value.max.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'min'>).min.vals = [
-										this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
-									];
-								}
-							} else if (newKind == 'max') {
-								if (sourceValue.value.oneofKind == 'min') {
-									(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = sourceValue.value.min.vals;
-								} else {
-									(newSourceValue.value as APLValueImplStruct<'max'>).max.vals = [
-										this.makeAPLValue(oldKind, this.valuePicker.getInputValue()),
-									];
-								}
-							} else if (sourceValue.value.oneofKind == 'and' && sourceValue.value.and.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.and.vals[0];
-							} else if (sourceValue.value.oneofKind == 'or' && sourceValue.value.or.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.or.vals[0];
-							} else if (sourceValue.value.oneofKind == 'min' && sourceValue.value.min.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.min.vals[0];
-							} else if (sourceValue.value.oneofKind == 'max' && sourceValue.value.max.vals?.[0]?.value.oneofKind == newKind) {
-								newSourceValue = sourceValue.value.max.vals[0];
-							} else if (newKind == 'cmp') {
-								(newSourceValue.value as APLValueImplStruct<'cmp'>).cmp.lhs = this.makeAPLValue(oldKind, this.valuePicker.getInputValue());
 							}
 						}
-					}
-					if (sourceValue) {
-						sourceValue.value = newSourceValue.value;
+						if (sourceValue) {
+							sourceValue.value = newSourceValue.value;
+						} else {
+							this.setSourceValue(eventID, newSourceValue);
+						}
 					} else {
-						this.setSourceValue(eventID, newSourceValue);
+						this.setSourceValue(eventID, undefined);
 					}
-				} else {
-					this.setSourceValue(eventID, undefined);
-				}
-				player.touchRotation(eventID);
-			},
-		});
+					player.touchRotation(eventID);
+				},
+			}),
+		);
 
 		this.currentKind = undefined;
 		this.valuePicker = null;
 
-		this.addChild(this.kindPicker);
 		this.init();
 	}
 
@@ -342,18 +345,16 @@ export class APLValuePicker extends Input<Player<any>, APLValue | undefined> {
 			return;
 		}
 		this.currentKind = newKind;
+		this.kindPicker.setInputValue(newKind);
 
 		if (this.valuePicker) {
-			this.disposeChild(this.valuePicker);
-			this.valuePicker.rootElem.remove();
+			this.removeChild(this.valuePicker);
 			this.valuePicker = null;
 		}
 
 		if (!newKind) {
 			return;
 		}
-
-		this.kindPicker.setInputValue(newKind);
 
 		const factory = valueKindFactories[newKind];
 		this.valuePicker = factory.factory(this.rootElem, this.modObject, {

@@ -200,8 +200,6 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecProtectionPaladin, {
 	autoRotation: (_player: Player<Spec.SpecProtectionPaladin>): APLRotation => {
 		return Presets.APL_HORRIDON_PRESET.rotation.rotation!;
 	},
-
-	raidSimPresets: [],
 });
 
 export class ProtectionPaladinSimUI extends IndividualSimUI<Spec.SpecProtectionPaladin> {

@@ -170,9 +170,11 @@ export class Encounter {
 			this.setExecuteProportion45(eventID, proto.executeProportion45);
 			this.setExecuteProportion90(eventID, proto.executeProportion90);
 			this.setUseHealth(eventID, proto.useHealth);
-			// The stored array intentionally shares proto.targets with the
-			// caller, matching the old assignment semantics.
-			this.setTargets(eventID, proto.targets);
+			// Clone so the stored targets do not alias the caller's proto.
+			this.setTargets(
+				eventID,
+				proto.targets.map(t => TargetProto.clone(t)),
+			);
 		});
 	}
 

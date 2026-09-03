@@ -22,11 +22,35 @@ The UI and sim can be done in either order, but it is generally recommended to b
   - Create a directory `ui/$SPEC`. So if your Spec enum value was named, `elemental_shaman`, create a directory, `ui/elemental_shaman`.
   - Copy+paste from another spec's UI code.
   - Modify all the files for your spec; most of the settings are fairly obvious, if you need anything complex just ask and we can help!
-  - Finally, add a rule to the `makefile` for the new sim site. Just copy from the other site rules already there and change the `$SPEC` names.
 
-No .html is needed, it will be generated based on `ui/index_template.html` and the `$SPEC` name.
+No .html and no `makefile` rule are needed (they used to be; see
+[Sim pages are not files](adding_sim.md#sim-pages-are-not-real-files) if an older checkout left
+generated pages behind). `tools/vite/spec_pages.mts` generates the page for
+`/mop/$CLASS/$SPEC/` from `ui/index_template.html`, in both `vite build` and the dev server. A
+directory is picked up as a sim page as soon as it has both of the things the template references:
+an entry point at `ui/$CLASS/$SPEC/index.ts` and a stylesheet at
+`ui/scss/sims/$CLASS/$SPEC/index.scss`.
 
 When you're ready to try out the site, run `make host` and navigate to `http://localhost:8080/mop/$SPEC`.
+### Sim pages are not "real" files
+Each sim is served at `/mop/$CLASS/$SPEC/` and these pages used to be written into the repository.
+
+Vite builds those pages now (`tools/vite/spec_pages.mts`), in both `vite build` and the dev
+server, so there is nothing to generate or list. A directory becomes a sim page as soon as it has
+the two files the template points at: `ui/$CLASS/$SPEC/index.ts` and
+`ui/scss/sims/$CLASS/$SPEC/index.scss`.
+
+**Changing a sim**
+If you built the site before this change, your working tree still holds those generated pages.
+They stay gitignored, and they are inert: in both `vite build` and the dev server the plugin
+answers before the file on disk is ever looked at. You can leave them. `make clean` no longer
+removes them, so if you want them gone, do it once:
+
+```sh
+rm -f ui/*/*/index.html
+```
+
+*Do not delete `ui/index.html`: that is the landing page.*
 
 ## Implement the Sim
 This step is where most of the magic happens. A few highlights to start understanding the sim code:
@@ -45,11 +69,7 @@ Don't forget to write unit tests! Again, look at existing tests for examples. Ru
 # Launch the site
 When everything is ready for release, modify `ui/core/launched_sims.ts` and `ui/index.html` to include the new spec value. This will add the sim to the dropdown menu so anyone can find it from the existing sims. This will also remove the UI warning that the sim is under development. Now tell everyone about your new sim!
 
-# Add your spec to the raid sim
-Don't touch the raid sim until the individual sim is ready for launch; anything in the raid sim is publicly accessible. To add your new spec to the raid sim, do the following:
- - Add a reference to the individual sim in `ui/raid/tsconfig.json`. DO NOT FORGET THIS STEP or Typescipt will silently do very bad things.
- - Import the individual sim's css file from `ui/raid/index.scss`.
- - Update `ui/raid/presets.ts` to include a constructor factory in the `specSimFactories` variable and add configurations for new Players in the `playerPresets` variable.
-
 # Deployment
 Thanks to the workflow defined in `.github/workflows/deploy.yml`, pushes to `master` automatically build and deploy a new site so there's nothing to do here. Sit back and appreciate your new sim!
+
+

@@ -132,6 +132,12 @@ export abstract class Input<ModObject, T, V = T> extends Component {
 		}
 	}
 
+	// Re-reads the mapped value from the source and re-applies enable/show state.
+	refresh() {
+		this.setInputValue(this.getSourceValue());
+		this.update();
+	}
+
 	// Can't call abstract functions in constructor, so need an init() call.
 	init() {
 		const initialValue = this.inputConfig.defaultValue ? this.inputConfig.defaultValue : this.inputConfig.getValue(this.modObject);

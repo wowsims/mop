@@ -71,11 +71,6 @@ import { runConcurrentBulkSim, runConcurrentSim, runConcurrentStatWeights } from
 import { generateRequestId, WorkerPool, WorkerProgressCallback } from './worker_pool.js';
 
 export const WASM_CONCURRENCY_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}_wasmconcurrency`;
-export type RaidSimData = {
-	request: RaidSimRequest;
-	result: RaidSimResult;
-};
-
 export type StatWeightsData = {
 	request: StatWeightsRequest;
 	result: StatWeightsResult;

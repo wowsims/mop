@@ -65,7 +65,7 @@ export class GlyphsPicker extends Component {
 		const minorGlyphsBlock = new ContentBlock(this.rootElem, 'minor-glyphs', {
 			header: { title: i18n.t('talents_tab.glyphs.minor'), extraCssClasses: ['border-0'] },
 		});
-		this.selectorModal = new GlyphSelectorModal(this.rootElem.closest('.individual-sim-ui')!);
+		this.selectorModal = new GlyphSelectorModal(this.rootElem.closest('.sim-ui')!);
 
 		Database.get().then(db => {
 			const majorGlyphsData = majorGlyphs.map(glyph => this.getGlyphData(glyph, db));
