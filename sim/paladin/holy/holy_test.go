@@ -16,7 +16,7 @@ func init() {
 // Pins the final character stats for each gear preset so the passives stay covered.
 func TestHolyPaladin(t *testing.T) {
 	var generators []core.TestGenerator
-	for _, gearSet := range []string{"preraid"} {
+	for _, gearSet := range []string{"preraid", "p5"} {
 		player := core.WithSpec(
 			&proto.Player{
 				Class:         proto.Class_ClassPaladin,

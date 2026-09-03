@@ -38,7 +38,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 
 	defaults: {
 		// Default equipped gear.
-		gear: Presets.PRERAID_PRESET.gear,
+		gear: Presets.P5_PRESET.gear,
 		// Default EP weights for sorting gear in the gear picker.
 		epWeights: Presets.DEFAULT_EP_PRESET.epWeights,
 		other: Presets.OtherDefaults,
@@ -83,7 +83,7 @@ const SPEC_CONFIG = registerSpecConfig(Spec.SpecHolyPaladin, {
 		// Preset rotations that the user can quickly select.
 		rotations: [],
 		// Preset gear configurations that the user can quickly select.
-		gear: [Presets.PRERAID_PRESET],
+		gear: [Presets.PRERAID_PRESET, Presets.P5_PRESET],
 	},
 
 	autoRotation: (_: Player<Spec.SpecHolyPaladin>): APLRotation => {
