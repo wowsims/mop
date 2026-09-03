@@ -7,7 +7,7 @@ import { Connect, normalizePath, PluginOption, ViteDevServer } from 'vite';
  * Generates one HTML page per sim from `ui/index_template.html`, so that no per-spec
  * `index.html` has to exist in the source tree.
  *
- * A directory `ui/<class>/<spec>` is a sim page iff it has both an `index.ts` entry point
+ * A directory `ui/<class>/<spec>` is a sim page if it has both an `index.ts` entry point
  * and a stylesheet at `ui/scss/sims/<class>/<spec>/index.scss` -- exactly the two things the
  * template references per spec.
  */
