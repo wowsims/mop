@@ -22,9 +22,12 @@ The UI and sim can be done in either order, but it is generally recommended to b
   - Create a directory `ui/$SPEC`. So if your Spec enum value was named, `elemental_shaman`, create a directory, `ui/elemental_shaman`.
   - Copy+paste from another spec's UI code.
   - Modify all the files for your spec; most of the settings are fairly obvious, if you need anything complex just ask and we can help!
-  - Finally, add a rule to the `makefile` for the new sim site. Just copy from the other site rules already there and change the `$SPEC` names.
 
-No .html is needed, it will be generated based on `ui/index_template.html` and the `$SPEC` name.
+No .html and no `makefile` rule are needed. `tools/vite/spec_pages.mts` generates the page for
+`/mop/$CLASS/$SPEC/` from `ui/index_template.html`, in both `vite build` and the dev server. A
+directory is picked up as a sim page as soon as it has both of the things the template references:
+an entry point at `ui/$CLASS/$SPEC/index.ts` and a stylesheet at
+`ui/scss/sims/$CLASS/$SPEC/index.scss`.
 
 When you're ready to try out the site, run `make host` and navigate to `http://localhost:8080/mop/$SPEC`.
 
