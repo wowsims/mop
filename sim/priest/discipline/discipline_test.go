@@ -30,7 +30,7 @@ func TestDisciplinePriest(t *testing.T) {
 				Glyphs:        StandardGlyphs,
 				Profession1:   proto.Profession_Engineering,
 				Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
-				Profession2:   proto.Profession_Tailoring,
+				Profession2:   proto.Profession_Leatherworking,
 			},
 			PlayerOptions,
 		)
