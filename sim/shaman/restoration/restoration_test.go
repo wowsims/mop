@@ -13,7 +13,9 @@ func init() {
 }
 
 // Stats-only suite: this spec is a gear planner, it has no healing rotation.
-// Pins the final character stats for each gear preset so the passives stay covered.
+// Pins the final character stats for each gear preset so the passives stay covered. The empty APL
+// rotation and the fake prepull (no SkipRotation) make it exercise a full environment reset, the
+// path the UI's stats request takes.
 func TestRestorationShaman(t *testing.T) {
 	var generators []core.TestGenerator
 	for _, gearSet := range []string{"preraid", "p5"} {
@@ -27,6 +29,7 @@ func TestRestorationShaman(t *testing.T) {
 				TalentsString: StandardTalents,
 				Glyphs:        StandardGlyphs,
 				Profession1:   proto.Profession_Engineering,
+				Rotation:      &proto.APLRotation{Type: proto.APLRotation_TypeAPL},
 				Profession2:   proto.Profession_Jewelcrafting,
 			},
 			PlayerOptions,
@@ -34,8 +37,7 @@ func TestRestorationShaman(t *testing.T) {
 		generators = append(generators, &core.SingleCharacterStatsTestGenerator{
 			Name: gearSet,
 			Request: &proto.ComputeStatsRequest{
-				Raid:         core.SinglePlayerRaidProto(player, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
-				SkipRotation: true,
+				Raid: core.SinglePlayerRaidProto(player, core.FullPartyBuffs, core.FullRaidBuffs, core.FullDebuffs),
 			},
 		})
 	}
