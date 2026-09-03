@@ -19,10 +19,6 @@ export const BASE_PATH = path.resolve(__dirname, 'ui');
 export const OUT_DIR = path.join(__dirname, 'dist', 'mop');
 
 function serveExternalAssets() {
-	// The dev server normally swaps the wasm worker for the HTTP one, so sims run on the
-	// Go backend at :3333. Set WASM_WORKER=1 to serve the real wasm worker instead -- the
-	// only way to exercise the in-browser sim path locally. Needs `make wasm webworkers`
-	// first, since both artifacts are served straight off dist/.
 	const simWorker = process.env.WASM_WORKER ? '/mop/sim_worker.js' : '/mop/local_worker.js';
 	const workerMappings = {
 		'/mop/sim_worker.js': simWorker,

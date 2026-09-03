@@ -101,14 +101,6 @@ wasm: $(OUT_DIR)/lib.wasm.gz
 # Published gzipped: Cloudflare Pages caps files at 25 MiB and the raw module exceeds it.
 # The main thread decompresses and compiles it once (see getSharedWasmModule in
 # ui/core/worker_pool.ts) and shares the compiled module with every worker.
-#
-# GOWASM=satconv,signext lets the compiler emit the non-trapping float->int and
-# sign-extension opcodes instead of emulating them. Both are baseline in every browser
-# the sim supports (Chrome 75+, Firefox 64+, Safari 15+).
-#
-# WASM_FEATURES must stay in step with GOWASM: wasm-opt refuses a module that uses an
-# opcode it was not told to enable, and enabling more than the module needs would let it
-# introduce opcodes the browser baseline above does not cover.
 WASM_FEATURES := --enable-sign-ext --enable-nontrapping-float-to-int --enable-mutable-globals --enable-bulk-memory
 $(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/core/items/all_items.go, $(call rwildcard,sim,*.go))
 	@echo "Starting webassembly compile now..."
@@ -118,8 +110,6 @@ $(OUT_DIR)/lib.wasm.gz: sim/wasm/* sim/core/proto/api.pb.go $(filter-out sim/cor
 		printf "\033[1;31mWASM COMPILE FAILED\033[0m\n"; \
 		exit 1; \
 	fi
-	@# Go never runs its wasm output through a wasm optimizer. Optional so a checkout
-	@# without binaryen still builds -- the module is only unoptimized, never wrong.
 	@if command -v wasm-opt >/dev/null 2>&1; then \
 		echo "Optimizing wasm with wasm-opt..."; \
 		wasm-opt -O3 $(WASM_FEATURES) $(OUT_DIR)/lib.wasm -o $(OUT_DIR)/lib.wasm.tmp && mv -f $(OUT_DIR)/lib.wasm.tmp $(OUT_DIR)/lib.wasm; \
