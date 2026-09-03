@@ -25,7 +25,7 @@ import {
 	makeShowMatchingGemsSelector,
 } from '../inputs/other_inputs';
 import { ItemNotice } from '../item_notice/item_notice';
-import { Clusterize } from '../virtual_scroll/clusterize';
+import { VirtualList } from '../virtual_scroll/virtual_list';
 import { FiltersMenu } from './filters_menu';
 import { SelectorModalTabs, getTranslatedTabLabel } from './selector_modal';
 import { createNameDescriptionLabel } from './utils';
@@ -78,7 +78,7 @@ export default class ItemList<T extends ItemListType> {
 	private gearData: GearData;
 	private tabContent: Element;
 	private onItemClick: (itemData: ItemData<T>) => void;
-	private scroller: Clusterize;
+	private scroller: VirtualList;
 
 	private sortBy = ItemListSortBy.ILVL;
 	private sortDirection = SortDirection.DESC;
@@ -232,32 +232,18 @@ export default class ItemList<T extends ItemListType> {
 		this.listElem = modalListRef.value!;
 		this.itemsToDisplay = [];
 
-		this.scroller = new Clusterize(
-			{
-				getNumberOfRows: () => {
-					return this.itemsToDisplay.length;
-				},
-				generateRows: (startIdx, endIdx) => {
-					const items = [];
-					for (let i = startIdx; i < endIdx; ++i) {
-						if (i >= this.itemsToDisplay.length) break;
-						items.push(this.createItemElem({ idx: this.itemsToDisplay[i], data: this.itemData[this.itemsToDisplay[i]] }));
-					}
-					return items;
-				},
+		this.scroller = new VirtualList({
+			scrollElem: this.listElem,
+			contentElem: this.listElem,
+			dataSource: {
+				count: () => this.itemsToDisplay.length,
+				renderRow: index => this.createItemElem({ idx: this.itemsToDisplay[index], data: this.itemData[this.itemsToDisplay[index]] }),
 			},
-			{
-				rows: [],
-				scroll_elem: this.listElem,
-				content_elem: this.listElem,
-				item_height: 56,
-				show_no_data_row: false,
-				no_data_text: '',
-				tag: 'li',
-				rows_in_block: 16,
-				blocks_in_cluster: 2,
-			},
-		);
+			estimatedRowHeight: 56,
+			rowTag: 'li',
+			// The list is striped with :nth-child, so the window has to keep its parity.
+			keepParity: true,
+		});
 
 		const removeButton = removeButtonRef.value;
 		if (removeButton) {
@@ -296,7 +282,7 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	public sizeRefresh() {
-		this.scroller.refresh(true);
+		this.scroller.update();
 		this.applyFilters();
 	}
 
@@ -331,7 +317,7 @@ export default class ItemList<T extends ItemListType> {
 		const newItemId = this.getItemIdByItemType(newItem);
 		const newEP = newItem !== undefined && newItem !== null ? this.computeEP(newItem) : 0;
 
-		this.scroller.elementUpdate(item => {
+		this.scroller.updateVisible(item => {
 			const idx = (item as HTMLElement).dataset.idx!;
 			const itemData = this.itemData[parseFloat(idx)];
 
