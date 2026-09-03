@@ -19,7 +19,7 @@ import { ref } from 'tsx-vanilla';
 import { setActionIdBackgroundAndHref, setEquippedItemWowheadData } from './action_id_dom';
 import GearPicker from './gear_picker';
 import ItemList, { GearData, ItemData, ItemListType } from './item_list';
-import { createGemContainer, getEmptySlotIconUrl } from './utils';
+import { createGemContainer, getEmptySlotIconUrl, setGemInContainer } from './utils';
 export enum SelectorModalTabs {
 	Items = 'Items',
 	RandomSuffixes = 'Random Suffix',
@@ -415,24 +415,10 @@ export default class SelectorModal extends BaseModal {
 					tabButton.appendChild(gemContainer);
 					tabButton.classList.add('selector-modal-tab-gem');
 
-					const gemElem = tabButton.querySelector<HTMLElement>('.gem-icon')!;
 					const emptySocketUrl = getEmptyGemSocketIconUrl(socketColor);
 
 					const updateGemIcon = () => {
-						const equippedItem = gearData.getEquippedItem();
-						const gem = equippedItem?.gems[socketIdx];
-
-						if (gem) {
-							gemElem.classList.remove('hide');
-							ActionId.fromItemId(gem.id)
-								.fill()
-								.then(filledId => {
-									gemElem.setAttribute('src', filledId.iconUrl);
-								});
-						} else {
-							gemElem.classList.add('hide');
-							gemElem.setAttribute('src', emptySocketUrl);
-						}
+						setGemInContainer(gemContainer, gearData.getEquippedItem()?.gems[socketIdx] ?? null, emptySocketUrl);
 					};
 
 					this.addOnDisposeCallback(gearData.subscribe(updateGemIcon));

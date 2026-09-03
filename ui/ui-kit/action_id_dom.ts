@@ -22,14 +22,17 @@ export function setActionIdWowheadHref(actionId: ActionId, elem: HTMLAnchorEleme
 
 export async function setActionIdWowheadDataset(
 	actionId: ActionId,
-	elem: HTMLElement,
+	elem: HTMLElement | HTMLElement[],
 	params?: Omit<WowheadTooltipItemParams, 'itemId'> | Omit<WowheadTooltipSpellParams, 'spellId'>,
 ) {
+	// One dataset build feeds every element that shows the same tooltip.
 	(actionId.itemId
 		? ActionId.makeItemTooltipData(actionId.itemId, params)
 		: ActionId.makeSpellTooltipData(actionId.spellIdTooltipOverride || actionId.spellId, params)
 	).then(url => {
-		if (elem) elem.dataset.wowhead = url;
+		(Array.isArray(elem) ? elem : [elem]).forEach(e => {
+			if (e) e.dataset.wowhead = url;
+		});
 	});
 }
 

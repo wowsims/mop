@@ -10,8 +10,8 @@ import { Component } from '@ui-kit/component';
 import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
-import { ItemRenderer } from '../../gear/view/gear_picker';
 import { GearData } from '../../gear/view/item_list';
+import { ItemRenderer } from '../../gear/view/item_renderer';
 import { SelectorModalTabs } from '../../gear/view/selector_modal';
 import { BulkTab } from './bulk_tab';
 
@@ -38,7 +38,7 @@ export default class BulkItemPicker extends Component {
 		this.bulkSlot = bulkSlot;
 		this.index = index;
 		this.item = item;
-		this.itemElem = new ItemRenderer(parent, this.rootElem, simUI.player);
+		this.itemElem = new ItemRenderer(parent, this.rootElem, simUI.player, { slot: getEligibleItemSlots(item.item)[0] });
 		this.abortController = new AbortController();
 		this.signal = this.abortController.signal;
 
@@ -68,8 +68,7 @@ export default class BulkItemPicker extends Component {
 	}
 
 	setItem(newItem: EquippedItem) {
-		this.itemElem.clear(ItemSlot.ItemSlotHead);
-		this.itemElem.update(newItem);
+		this.itemElem.render(newItem);
 		this.item = newItem;
 		this.setupHandlers();
 	}

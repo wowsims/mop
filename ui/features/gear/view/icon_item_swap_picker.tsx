@@ -1,7 +1,7 @@
 import { Player } from '@domain/player';
 import { EquippedItem } from '@domain/proto_utils/equipped_item';
 import { EventID } from '@domain/state/batch';
-import { subscribeAll, subscribePlayerField } from '@domain/state/subscriptions';
+import { subscribePlayerField } from '@domain/state/subscriptions';
 import type { SimHost } from '@features/sim_host';
 import { ItemSlot } from '@generated/proto/common';
 import { Component } from '@ui-kit/component';
@@ -10,12 +10,13 @@ import { ref } from 'tsx-vanilla';
 import { fillAndSetActionId, setEquippedItemWowheadData } from './action_id_dom';
 import { GearData } from './item_list';
 import SelectorModal, { SelectorModalTabs } from './selector_modal';
-import { createGemContainer, getEmptySlotIconUrl } from './utils';
+import { createItemSockets, getEmptySlotIconUrl } from './utils';
 export default class IconItemSwapPicker extends Component {
 	private readonly iconAnchor: HTMLAnchorElement;
 	private readonly socketsContainerElem: HTMLElement;
 	private readonly player: Player<any>;
 	private readonly slot: ItemSlot;
+	private professionSubscription: (() => void) | null = null;
 
 	constructor(parent: HTMLElement, simUI: SimHost, player: Player<any>, slot: ItemSlot) {
 		super(parent, 'icon-picker-root');
@@ -53,6 +54,8 @@ export default class IconItemSwapPicker extends Component {
 	}
 
 	update(newItem: EquippedItem | null) {
+		this.professionSubscription?.();
+		this.professionSubscription = null;
 		this.iconAnchor.style.backgroundImage = `url('${getEmptySlotIconUrl(this.slot)}')`;
 		this.iconAnchor.removeAttribute('data-wowhead');
 		this.iconAnchor.href = '#';
@@ -61,23 +64,9 @@ export default class IconItemSwapPicker extends Component {
 			fillAndSetActionId(newItem.asActionId(), this.iconAnchor, true, true);
 			setEquippedItemWowheadData(this.player, newItem, this.iconAnchor);
 
-			this.socketsContainerElem.replaceChildren(
-				<>
-					{newItem.allSocketColors().map((socketColor, gemIdx) => {
-						const gemContainer = createGemContainer(socketColor, newItem.gems[gemIdx], gemIdx);
-						if (gemIdx === newItem.numPossibleSockets - 1 && newItem.couldHaveExtraSocket()) {
-							const updateProfession = () => {
-								gemContainer.classList[this.player.isBlacksmithing() ? 'remove' : 'add']('hide');
-							};
-							subscribeAll([subscribePlayerField(this.player, 'profession1'), subscribePlayerField(this.player, 'profession2')])(
-								updateProfession,
-							);
-							updateProfession();
-						}
-						return gemContainer;
-					})}
-				</>,
-			);
+			const sockets = createItemSockets(this.player, newItem);
+			this.professionSubscription = sockets.professionSubscription;
+			this.socketsContainerElem.replaceChildren(...sockets.elems);
 
 			this.iconAnchor.classList.add('active');
 		} else {

@@ -12,7 +12,7 @@ import tippy from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { buildGearChangeIcon } from '../../gear/view/gear_change_icon';
-import { ItemRenderer } from '../../gear/view/gear_picker';
+import { ItemRenderer } from '../../gear/view/item_renderer';
 import { SimResultsManager } from '../../results/view/results_action';
 const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
 	BULK_SIM_ITEM_SLOT_TO_ITEM_SLOT_PAIRS.get(getBulkItemSlotFromSlot(slot, canDualWield));
@@ -122,13 +122,8 @@ export default class BulkSimResultRenderer extends Component {
 				continue;
 			}
 
-			const renderer = new ItemRenderer(items, itemContainer, simUI.player);
-			if (itemChanged && spec.id !== 0) {
-				const item = simUI.sim.db.lookupItemSpec(spec);
-				renderer.update(item!);
-			} else {
-				renderer.clear(idx);
-			}
+			const renderer = new ItemRenderer(items, itemContainer, simUI.player, { slot: idx });
+			renderer.render(itemChanged && spec.id !== 0 ? simUI.sim.db.lookupItemSpec(spec) : null);
 			items.appendChild(itemContainer);
 		}
 		itemsContainerRef.value!.appendChild(items);
