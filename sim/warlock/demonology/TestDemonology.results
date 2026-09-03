@@ -537,8 +537,8 @@ dps_results: {
 dps_results: {
  key: "TestDemonology-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 444141.59607
-  tps: 274401.79286
+  dps: 442552.76515
+  tps: 273572.29927
  }
 }
 dps_results: {

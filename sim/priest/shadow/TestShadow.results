@@ -610,7 +610,7 @@ dps_results: {
  key: "TestShadow-AllItems-EmberPrimalDiamond"
  value: {
   dps: 430119.92111
-  tps: 396293.53841
+  tps: 396303.55841
   hps: 4376.56223
  }
 }

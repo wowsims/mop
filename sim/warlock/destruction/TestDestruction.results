@@ -601,9 +601,9 @@ dps_results: {
 dps_results: {
  key: "TestDestruction-AllItems-EmberPrimalDiamond"
  value: {
-  dps: 430785.6579
-  tps: 337900.99421
-  hps: 2152.59117
+  dps: 429603.61328
+  tps: 337027.4296
+  hps: 2153.33396
  }
 }
 dps_results: {
