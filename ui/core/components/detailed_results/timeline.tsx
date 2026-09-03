@@ -639,7 +639,10 @@ export class Timeline extends ResultComponent {
 		playerCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration));
 
 		if (player.pets.length > 0) {
-			const playerPets = new Map<string, UnitMetrics>();
+			// Keep the casts from the first pass rather than sorting each pet's twice - the
+			// first pass only needed to know whether the list was empty. Demonology fields 27
+			// pets, so that was 54 bucket-and-sort passes.
+			const playerPets = new Map<string, { pet: UnitMetrics; castsByAbility: Array<Array<CastLog>> }>();
 			player.pets.forEach(petsLog => {
 				const petCastsByAbility = this.getSortedCastsByAbility(petsLog);
 				if (petCastsByAbility.length > 0) {
@@ -648,17 +651,16 @@ export class Timeline extends ResultComponent {
 					// with the same name. Because of this we can just grab the first pet
 					// of each name and visualize only that.
 					if (!playerPets.has(petsLog.name)) {
-						playerPets.set(petsLog.name, petsLog);
+						playerPets.set(petsLog.name, { pet: petsLog, castsByAbility: petCastsByAbility });
 					}
 				}
 			});
 
-			playerPets.forEach(pet => {
+			playerPets.forEach(({ pet, castsByAbility }) => {
 				this.addSeparatorRow(duration);
 				this.addPetRow(pet.name, duration);
 				orderedResourceTypes.forEach(resourceType => this.addResourceRow(resourceType, pet.groupedResourceLogs[resourceType], duration));
-				const petCastsByAbility = this.getSortedCastsByAbility(pet);
-				petCastsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration, pet.name));
+				castsByAbility.forEach(castLogs => this.addCastRow(castLogs, buffsAndDebuffsById, duration, pet.name));
 			});
 		}
 
@@ -695,15 +697,18 @@ export class Timeline extends ResultComponent {
 	}
 
 	private getSortedCastsByAbility(player: UnitMetrics): Array<Array<CastLog>> {
-		const meleeActionIds = player.getMeleeActions().map(action => action.actionId);
-		const spellActionIds = player.getSpellActions().map(action => action.actionId);
+		// Keyed on every field ActionId.equals() compares, so the two linear scans the sort
+		// comparator used to run for each comparison become lookups.
+		const actionKey = (id: ActionId) => `${id.itemId}|${id.randomSuffixId}|${id.spellId}|${id.otherId}|${id.upgradeStep}|${id.tag}`;
+		const meleeActionKeys = new Set(player.getMeleeActions().map(action => actionKey(action.actionId)));
+		const spellActionKeys = new Set(player.getSpellActions().map(action => actionKey(action.actionId)));
 		const getActionCategory = (actionId: ActionId): number => {
 			const fixedCategory = idToCategoryMap[actionId.anyId()];
 			if (fixedCategory != null) {
 				return fixedCategory;
-			} else if (meleeActionIds.find(meleeActionId => meleeActionId.equals(actionId))) {
+			} else if (meleeActionKeys.has(actionKey(actionId))) {
 				return MELEE_ACTION_CATEGORY;
-			} else if (spellActionIds.find(spellActionId => spellActionId.equals(actionId))) {
+			} else if (spellActionKeys.has(actionKey(actionId))) {
 				return SPELL_ACTION_CATEGORY;
 			} else {
 				return DEFAULT_ACTION_CATEGORY;
@@ -720,9 +725,13 @@ export class Timeline extends ResultComponent {
 			}),
 		);
 
+		// Category once per bucket rather than once per comparison.
+		const categories = new Map<Array<CastLog>, number>();
+		castsByAbility.forEach(casts => categories.set(casts, getActionCategory(casts[0].actionId!)));
+
 		castsByAbility.sort((a, b) => {
-			const categoryA = getActionCategory(a[0].actionId!);
-			const categoryB = getActionCategory(b[0].actionId!);
+			const categoryA = categories.get(a)!;
+			const categoryB = categories.get(b)!;
 			if (categoryA != categoryB) {
 				return categoryA - categoryB;
 			} else if (a[0].actionId!.anyId() == b[0].actionId!.anyId()) {
