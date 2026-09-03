@@ -32,6 +32,66 @@ const cachedSpellCastIcon = new CacheHandler<HTMLAnchorElement>({ keysToKeep: 51
 // built on first hover. Before, a rotation created one tippy instance - and its listeners -
 // for every cast, tick, aura window and resource block, several thousand of them, each
 // carrying a fully built subtree for a tooltip that in almost every case is never shown.
+// How far beyond the viewport rows stay populated, so a fast horizontal scroll does not
+// show gaps before the next frame lands.
+const ROW_WINDOW_PADDING_PX = 600;
+
+// The rotation is drawn at a fixed 100px per second, so a 300s fight is a ~30,000px wide row
+// against a viewport a few hundred px across. Items are built when their x-range first comes
+// on screen and detached (not discarded) when it leaves, so scrolling back is free.
+class WindowedRow {
+	private readonly items: Array<{ left: number; right: number; build: () => Element; elem?: Element }> = [];
+	private readonly mounted = new Set<number>();
+	private widest = 0;
+	private sorted = false;
+
+	constructor(private readonly rowElem: Element) {}
+
+	add(left: number, width: number, build: () => Element) {
+		this.items.push({ left, right: left + width, build });
+		if (width > this.widest) this.widest = width;
+		this.sorted = false;
+	}
+
+	mount(windowLeft: number, windowRight: number) {
+		if (!this.sorted) {
+			// A DoT's ticks can outlast the next cast, so items are not added in x order.
+			this.items.sort((a, b) => a.left - b.left);
+			this.sorted = true;
+		}
+
+		// An aura can span the whole fight, so the scan has to begin `widest` before the
+		// window or a wide item whose left edge is far off screen would be dropped.
+		let lo = 0;
+		let hi = this.items.length;
+		const from = windowLeft - this.widest;
+		while (lo < hi) {
+			const mid = (lo + hi) >> 1;
+			if (this.items[mid].left < from) lo = mid + 1;
+			else hi = mid;
+		}
+
+		const wanted = new Set<number>();
+		for (let i = lo; i < this.items.length && this.items[i].left <= windowRight; i++) {
+			if (this.items[i].right >= windowLeft) wanted.add(i);
+		}
+
+		this.mounted.forEach(index => {
+			if (!wanted.has(index)) {
+				this.items[index].elem!.remove();
+				this.mounted.delete(index);
+			}
+		});
+		wanted.forEach(index => {
+			if (this.mounted.has(index)) return;
+			const item = this.items[index];
+			item.elem ??= item.build();
+			this.rowElem.appendChild(item.elem);
+			this.mounted.add(index);
+		});
+	}
+}
+
 const TOOLTIP_TARGET_ATTR = 'data-timeline-tooltip';
 const tooltipBuilders = new WeakMap<Element, () => Element>();
 
@@ -72,6 +132,8 @@ interface RotationSlot {
 	emitter: TypedEvent<void>;
 	resetCallbacks: Array<() => void>;
 	plotOptions: any;
+	// Rows whose contents are populated from the horizontal scroll position.
+	windowedRows: Array<WindowedRow>;
 }
 
 export class Timeline extends ResultComponent {
@@ -105,6 +167,8 @@ export class Timeline extends ResultComponent {
 	// action, so ids shared across sections (e.g. main-hand Attack) hide independently.
 	private hiddenIds: Array<{ scope: string; actionId: ActionId }>;
 
+	private rowWindowFrame: number | null = null;
+
 	private secondaryResource?: SecondaryResource | null;
 
 	constructor(config: TimelineConfig) {
@@ -115,7 +179,10 @@ export class Timeline extends ResultComponent {
 		this.tabShown = false;
 		this.pendingResult = false;
 		this.hiddenIds = [];
-		this.addOnDisposeCallback(() => this.reset());
+		this.addOnDisposeCallback(() => {
+			if (this.rowWindowFrame != null) cancelAnimationFrame(this.rowWindowFrame);
+			this.reset();
+		});
 		this.secondaryResource = config.secondaryResource;
 
 		this.rootElem.appendChild(
@@ -195,6 +262,9 @@ export class Timeline extends ResultComponent {
 
 		let isMouseDown = false;
 		let startX = 0;
+		// Covers drag-to-pan too: the handler below writes scrollLeft, which fires 'scroll'.
+		this.rotationTimeline.addEventListener('scroll', () => this.scheduleRowWindow(), { passive: true });
+
 		let scrollLeft = 0;
 		this.rotationTimeline.addEventListener('dragstart', event => {
 			event.preventDefault();
@@ -694,6 +764,9 @@ export class Timeline extends ResultComponent {
 				debuffsToShow.forEach(auraUptimeLogs => this.addAuraRow(auraUptimeLogs, duration, targets?.[index]?.label ?? ''));
 			}
 		});
+
+		// Rows are registered empty; this fills whatever the viewport currently covers.
+		this.applyRowWindow();
 	}
 
 	private getSortedCastsByAbility(player: UnitMetrics): Array<Array<CastLog>> {
@@ -805,6 +878,30 @@ export class Timeline extends ResultComponent {
 	}
 
 	// A timeline row that is never hidden (section headers: pet name, target name).
+	// Rows built through here have their items mounted and unmounted by the horizontal
+	// window; call it for any row that positions children along the time axis.
+	private makeWindowedRow(rowElem: Element): WindowedRow {
+		const windowed = new WindowedRow(rowElem);
+		this.liveSlot!.windowedRows.push(windowed);
+		return windowed;
+	}
+
+	private scheduleRowWindow() {
+		if (this.rowWindowFrame != null) return;
+		this.rowWindowFrame = requestAnimationFrame(() => {
+			this.rowWindowFrame = null;
+			this.applyRowWindow();
+		});
+	}
+
+	private applyRowWindow() {
+		const rows = this.liveSlot?.windowedRows;
+		if (!rows?.length) return;
+		const left = this.rotationTimeline.scrollLeft - ROW_WINDOW_PADDING_PX;
+		const right = this.rotationTimeline.scrollLeft + this.rotationTimeline.clientWidth + ROW_WINDOW_PADDING_PX;
+		for (const row of rows) row.mount(left, right);
+	}
+
 	private makePlainRowElem(duration: number): JSX.Element {
 		const rowElem = (
 			<div
@@ -915,39 +1012,43 @@ export class Timeline extends ResultComponent {
 		// Identical to what makePlainRowElem builds, and going through it is what attaches this
 		// row's tooltip delegate.
 		const rowElem = this.makePlainRowElem(duration);
+		const windowed = this.makeWindowedRow(rowElem);
 
 		resourceLogs.forEach((resourceLogGroup, i) => {
 			const cNames = resourceNames.get(resourceType)!.toLowerCase().replaceAll(' ', '-');
-			const resourceElem = (
-				<div
-					className={`rotation-timeline-resource series-color ${cNames}`}
-					style={{
-						left: this.timeToPx(resourceLogGroup.timestamp),
-						width: this.timeToPx((resourceLogs[i + 1]?.timestamp || duration) - resourceLogGroup.timestamp),
-					}}></div>
-			);
+			const left = this.timeToPxValue(resourceLogGroup.timestamp);
+			const width = this.timeToPxValue((resourceLogs[i + 1]?.timestamp || duration) - resourceLogGroup.timestamp);
+			windowed.add(left, width, () => {
+				const resourceElem = (
+					<div
+						className={`rotation-timeline-resource series-color ${cNames}`}
+						style={{
+							left: `${left}px`,
+							width: `${width}px`,
+						}}></div>
+				);
 
-			if (percentageResources.includes(resourceType)) {
-				resourceElem.textContent = ((resourceLogGroup.valueAfter / startValue(resourceLogGroup)) * 100).toFixed(0) + '%';
-			} else {
-				if (
-					resourceType == ResourceType.ResourceTypeEnergy ||
-					resourceType == ResourceType.ResourceTypeFocus ||
-					resourceType == ResourceType.ResourceTypeSolarEnergy ||
-					resourceType == ResourceType.ResourceTypeLunarEnergy
-				) {
-					const bgElem = document.createElement('div');
-					bgElem.classList.add('rotation-timeline-resource-fill');
-					bgElem.classList.add(cNames);
-					bgElem.style.height = ((resourceLogGroup.valueAfter / startValue(resourceLogGroup)) * 100).toFixed(0) + '%';
-					resourceElem.appendChild(bgElem);
+				if (percentageResources.includes(resourceType)) {
+					resourceElem.textContent = ((resourceLogGroup.valueAfter / startValue(resourceLogGroup)) * 100).toFixed(0) + '%';
 				} else {
-					resourceElem.textContent = Math.floor(resourceLogGroup.valueAfter).toFixed(0);
+					if (
+						resourceType == ResourceType.ResourceTypeEnergy ||
+						resourceType == ResourceType.ResourceTypeFocus ||
+						resourceType == ResourceType.ResourceTypeSolarEnergy ||
+						resourceType == ResourceType.ResourceTypeLunarEnergy
+					) {
+						const bgElem = document.createElement('div');
+						bgElem.classList.add('rotation-timeline-resource-fill');
+						bgElem.classList.add(cNames);
+						bgElem.style.height = ((resourceLogGroup.valueAfter / startValue(resourceLogGroup)) * 100).toFixed(0) + '%';
+						resourceElem.appendChild(bgElem);
+					} else {
+						resourceElem.textContent = Math.floor(resourceLogGroup.valueAfter).toFixed(0);
+					}
 				}
-			}
-			rowElem.appendChild(resourceElem);
-
-			addTooltip(resourceElem, () => this.resourceTooltipElem(resourceLogGroup, startValue(resourceLogGroup), false));
+				addTooltip(resourceElem, () => this.resourceTooltipElem(resourceLogGroup, startValue(resourceLogGroup), false));
+				return resourceElem;
+			});
 		});
 		this.rotationTimeline.appendChild(rowElem);
 	}
@@ -959,124 +1060,132 @@ export class Timeline extends ResultComponent {
 		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, false, scope));
 
 		const rowElem = this.makeRowElem(actionId, duration, scope);
+		const windowed = this.makeWindowedRow(rowElem);
 		castLogs.forEach(castLog => {
-			const castElem = (
-				<div
-					className="rotation-timeline-cast"
-					style={{
-						left: this.timeToPx(castLog.timestamp),
-						minWidth: this.timeToPx(castLog.cancelTime || castLog.castTime + castLog.travelTime),
-					}}
-				/>
-			);
-			rowElem.appendChild(castElem);
-
-			if (castLog.cancelTime) {
-				castElem.classList.add('cast-cancelled');
-			} else if (castLog.travelTime != 0) {
-				const travelTimeElem = (
+			const castLeft = this.timeToPxValue(castLog.timestamp);
+			const castWidth = this.timeToPxValue(castLog.cancelTime || castLog.castTime + castLog.travelTime);
+			windowed.add(castLeft, castWidth, () => {
+				const castElem = (
 					<div
-						className="rotation-timeline-travel-time"
+						className="rotation-timeline-cast"
 						style={{
-							left: this.timeToPx(castLog.castTime),
-							minWidth: this.timeToPx(castLog.travelTime),
+							left: `${castLeft}px`,
+							minWidth: `${castWidth}px`,
 						}}
 					/>
 				);
-				castElem.appendChild(travelTimeElem);
-			}
 
-			if (castLog.damageDealtLogs.length > 0) {
-				const ddl = castLog.damageDealtLogs[0];
-				if (ddl.miss || ddl.dodge || ddl.parry) {
-					castElem.classList.add('outcome-miss');
-				} else if (ddl.glance || ddl.block || ddl.partialResist1_4 || ddl.partialResist2_4 || ddl.partialResist3_4) {
-					castElem.classList.add('outcome-partial');
-				} else if (ddl.crit) {
-					castElem.classList.add('outcome-crit');
-				} else {
-					castElem.classList.add('outcome-hit');
+				if (castLog.cancelTime) {
+					castElem.classList.add('cast-cancelled');
+				} else if (castLog.travelTime != 0) {
+					const travelTimeElem = (
+						<div
+							className="rotation-timeline-travel-time"
+							style={{
+								left: this.timeToPx(castLog.castTime),
+								minWidth: this.timeToPx(castLog.travelTime),
+							}}
+						/>
+					);
+					castElem.appendChild(travelTimeElem);
 				}
-			}
 
-			const actionIdAsString = actionId.toString();
-			const cachedIconElem = cachedSpellCastIcon.get(actionIdAsString)?.cloneNode() as HTMLAnchorElement | undefined;
-			let iconElem = cachedIconElem;
-			if (!iconElem) {
-				iconElem = (<a className="rotation-timeline-cast-icon" />) as HTMLAnchorElement;
-				actionId.setBackground(iconElem);
-				cachedSpellCastIcon.set(actionIdAsString, iconElem);
-			}
-			castElem.appendChild(iconElem);
+				if (castLog.damageDealtLogs.length > 0) {
+					const ddl = castLog.damageDealtLogs[0];
+					if (ddl.miss || ddl.dodge || ddl.parry) {
+						castElem.classList.add('outcome-miss');
+					} else if (ddl.glance || ddl.block || ddl.partialResist1_4 || ddl.partialResist2_4 || ddl.partialResist3_4) {
+						castElem.classList.add('outcome-partial');
+					} else if (ddl.crit) {
+						castElem.classList.add('outcome-crit');
+					} else {
+						castElem.classList.add('outcome-hit');
+					}
+				}
 
-			const travelTimeStr = castLog.travelTime == 0 ? '' : ` + ${castLog.travelTime.toFixed(2)}s travel time`;
-			const totalDamage = castLog.totalDamage();
+				const actionIdAsString = actionId.toString();
+				const cachedIconElem = cachedSpellCastIcon.get(actionIdAsString)?.cloneNode() as HTMLAnchorElement | undefined;
+				let iconElem = cachedIconElem;
+				if (!iconElem) {
+					iconElem = (<a className="rotation-timeline-cast-icon" />) as HTMLAnchorElement;
+					actionId.setBackground(iconElem);
+					cachedSpellCastIcon.set(actionIdAsString, iconElem);
+				}
+				castElem.appendChild(iconElem);
 
-			const buildCastTooltip = () => (
-				<div className="timeline-tooltip">
-					<span>
-						{castLog.actionId!.name} from {castLog.timestamp.toFixed(2)}s to{' '}
-						{(castLog.castCancelledLog?.timestamp || castLog.timestamp + castLog.castTime).toFixed(2)}s
-						{castLog.castCancelledLog?.timestamp
-							? ` (Cancelled after ${castLog.cancelTime.toFixed(2)}s)`
-							: ` (${castLog.castTime > 0 ? `${castLog.castTime.toFixed(2)}s, ` : ''}${castLog.effectiveTime.toFixed(2)}s GCD Time)`}
-						{travelTimeStr.length > 0 && travelTimeStr}
-					</span>
-					{totalDamage > 0 && (
+				const travelTimeStr = castLog.travelTime == 0 ? '' : ` + ${castLog.travelTime.toFixed(2)}s travel time`;
+				const totalDamage = castLog.totalDamage();
+
+				const buildCastTooltip = () => (
+					<div className="timeline-tooltip">
 						<span>
-							Total: {totalDamage.toFixed(2)} ({(totalDamage / (castLog.effectiveTime || 1)).toFixed(2)} DPET)
+							{castLog.actionId!.name} from {castLog.timestamp.toFixed(2)}s to{' '}
+							{(castLog.castCancelledLog?.timestamp || castLog.timestamp + castLog.castTime).toFixed(2)}s
+							{castLog.castCancelledLog?.timestamp
+								? ` (Cancelled after ${castLog.cancelTime.toFixed(2)}s)`
+								: ` (${castLog.castTime > 0 ? `${castLog.castTime.toFixed(2)}s, ` : ''}${castLog.effectiveTime.toFixed(2)}s GCD Time)`}
+							{travelTimeStr.length > 0 && travelTimeStr}
 						</span>
-					)}
-					{castLog.damageDealtLogs.length > 0 && (
-						<ul className="rotation-timeline-cast-damage-list">
-							{castLog.damageDealtLogs.map(ddl => (
-								<li>
-									<span>
-										{ddl.timestamp.toFixed(2)}s - {ddl.result()}
-									</span>
-									{ddl.source?.isTarget && (
-										<span className="threat-metrics">
-											{' '}
-											({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
+						{totalDamage > 0 && (
+							<span>
+								Total: {totalDamage.toFixed(2)} ({(totalDamage / (castLog.effectiveTime || 1)).toFixed(2)} DPET)
+							</span>
+						)}
+						{castLog.damageDealtLogs.length > 0 && (
+							<ul className="rotation-timeline-cast-damage-list">
+								{castLog.damageDealtLogs.map(ddl => (
+									<li>
+										<span>
+											{ddl.timestamp.toFixed(2)}s - {ddl.result()}
 										</span>
-									)}
-								</li>
-							))}
-						</ul>
-					)}
-				</div>
-			);
+										{ddl.source?.isTarget && (
+											<span className="threat-metrics">
+												{' '}
+												({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
+											</span>
+										)}
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
+				);
 
-			addTooltip(castElem, buildCastTooltip);
+				addTooltip(castElem, buildCastTooltip);
+				return castElem;
+			});
 
 			castLog.damageDealtLogs
 				.filter(ddl => ddl.tick)
 				.forEach(ddl => {
-					const tickElem = (
-						<div
-							className="rotation-timeline-tick"
-							style={{
-								left: this.timeToPx(ddl.timestamp),
-							}}
-						/>
-					);
-					rowElem.appendChild(tickElem);
+					const tickLeft = this.timeToPxValue(ddl.timestamp);
+					windowed.add(tickLeft, 0, () => {
+						const tickElem = (
+							<div
+								className="rotation-timeline-tick"
+								style={{
+									left: `${tickLeft}px`,
+								}}
+							/>
+						);
 
-					const buildTickTooltip = () => (
-						<div className="timeline-tooltip">
-							<span>
-								{ddl.timestamp.toFixed(2)}s - {ddl.actionId!.name} {ddl.result()}
-							</span>
-							{ddl.source?.isTarget && (
-								<span className="threat-metrics">
-									{' '}
-									({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
+						const buildTickTooltip = () => (
+							<div className="timeline-tooltip">
+								<span>
+									{ddl.timestamp.toFixed(2)}s - {ddl.actionId!.name} {ddl.result()}
 								</span>
-							)}
-						</div>
-					);
+								{ddl.source?.isTarget && (
+									<span className="threat-metrics">
+										{' '}
+										({ddl.threat.toFixed(1)} {i18n.t('results_tab.details.timeline.tooltips.threat')})
+									</span>
+								)}
+							</div>
+						);
 
-					addTooltip(tickElem, buildTickTooltip);
+						addTooltip(tickElem, buildTickTooltip);
+						return tickElem;
+					});
 				});
 		});
 
@@ -1087,7 +1196,7 @@ export class Timeline extends ResultComponent {
 					? actionId.equalsIgnoringTag(buffAuraToSpellIdMap[auraUptimeLogs[0].actionId!.spellId] ?? auraUptimeLogs[0].actionId!)
 					: actionId.equals(buffAuraToSpellIdMap[auraUptimeLogs[0].actionId!.spellId] ?? auraUptimeLogs[0].actionId!);
 			})
-			.forEach(auraUptimeLogs => this.applyAuraUptimeLogsToRow(auraUptimeLogs, rowElem, true));
+			.forEach(auraUptimeLogs => this.applyAuraUptimeLogsToRow(auraUptimeLogs, windowed, true));
 
 		this.rotationTimeline.appendChild(rowElem);
 	}
@@ -1100,47 +1209,52 @@ export class Timeline extends ResultComponent {
 		this.rotationHiddenIdsContainer.appendChild(this.makeLabelElem(actionId, true, true, scope));
 		this.rotationTimeline.appendChild(rowElem);
 
-		this.applyAuraUptimeLogsToRow(auraUptimeLogs, rowElem, false);
+		this.applyAuraUptimeLogsToRow(auraUptimeLogs, this.makeWindowedRow(rowElem), false);
 	}
 
-	private applyAuraUptimeLogsToRow(auraUptimeLogs: Array<AuraUptimeLog>, rowElem: JSX.Element, hasCast: boolean) {
+	private applyAuraUptimeLogsToRow(auraUptimeLogs: Array<AuraUptimeLog>, windowed: WindowedRow, hasCast: boolean) {
 		auraUptimeLogs.forEach(aul => {
-			const auraElem = (
-				<div
-					className="rotation-timeline-aura"
-					style={{
-						left: this.timeToPx(aul.gainedAt),
-						minWidth: this.timeToPx(aul.fadedAt === aul.gainedAt ? 0.001 : aul.fadedAt - aul.gainedAt),
-					}}
-				/>
-			);
-			rowElem.appendChild(auraElem);
-
-			addTooltip(auraElem, () => (
-				<div className="timeline-tooltip">
-					<span>
-						{aul.actionId!.name}: {aul.gainedAt.toFixed(2)}s - {aul.fadedAt.toFixed(2)}s
-					</span>
-				</div>
-			));
-
-			aul.stacksChange.forEach((scl, i) => {
-				if (scl.timestamp == aul.fadedAt) {
-					return;
-				}
-
-				const stacksChangeElem = (
+			const auraLeft = this.timeToPxValue(aul.gainedAt);
+			const auraWidth = this.timeToPxValue(aul.fadedAt === aul.gainedAt ? 0.001 : aul.fadedAt - aul.gainedAt);
+			windowed.add(auraLeft, auraWidth, () => {
+				const auraElem = (
 					<div
-						className="rotation-timeline-stacks-change"
+						className="rotation-timeline-aura"
 						style={{
-							left: this.timeToPx(scl.timestamp - aul.timestamp),
-							width: this.timeToPx(aul.stacksChange[i + 1] ? aul.stacksChange[i + 1].timestamp - scl.timestamp : aul.fadedAt - scl.timestamp),
-							textIndent: hasCast ? '30px' : undefined,
-						}}>
-						{String(scl.newStacks)}
-					</div>
+							left: `${auraLeft}px`,
+							minWidth: `${auraWidth}px`,
+						}}
+					/>
 				);
-				auraElem.appendChild(stacksChangeElem);
+
+				addTooltip(auraElem, () => (
+					<div className="timeline-tooltip">
+						<span>
+							{aul.actionId!.name}: {aul.gainedAt.toFixed(2)}s - {aul.fadedAt.toFixed(2)}s
+						</span>
+					</div>
+				));
+
+				aul.stacksChange.forEach((scl, i) => {
+					if (scl.timestamp == aul.fadedAt) {
+						return;
+					}
+
+					const stacksChangeElem = (
+						<div
+							className="rotation-timeline-stacks-change"
+							style={{
+								left: this.timeToPx(scl.timestamp - aul.timestamp),
+								width: this.timeToPx(aul.stacksChange[i + 1] ? aul.stacksChange[i + 1].timestamp - scl.timestamp : aul.fadedAt - scl.timestamp),
+								textIndent: hasCast ? '30px' : undefined,
+							}}>
+							{String(scl.newStacks)}
+						</div>
+					);
+					auraElem.appendChild(stacksChangeElem);
+				});
+				// Stack markers live inside the aura element, so they come and go with it.
+				return auraElem;
 			});
 		});
 	}
@@ -1379,7 +1493,7 @@ export class Timeline extends ResultComponent {
 	}
 
 	private static newSlot(key: string): RotationSlot {
-		return { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null };
+		return { key, labels: [], timeline: [], hiddenIdsNodes: [], emitter: new TypedEvent<void>(), resetCallbacks: [], plotOptions: null, windowedRows: [] };
 	}
 
 	private takeParkedSlot(key: string): RotationSlot | null {
@@ -1412,6 +1526,7 @@ export class Timeline extends ResultComponent {
 		this.liveSlot = slot;
 		// hiddenIds is global across results: re-apply it to the restored rows.
 		slot.emitter.emit(TypedEvent.nextEventID());
+		this.applyRowWindow();
 	}
 
 	private destroySlot(slot: RotationSlot) {
