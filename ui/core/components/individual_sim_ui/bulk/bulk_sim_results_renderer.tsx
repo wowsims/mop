@@ -11,7 +11,7 @@ import { nextEventID } from '../../../state/batch';
 import { formatDeltaTextElem, formatToNumber, stDevToConf95 } from '../../../utils';
 import { Component } from '../../component';
 import { buildGearChangeIcon } from '../../gear_change_icon';
-import { ItemRenderer } from '../../gear_picker/gear_picker';
+import { ItemRenderer } from '../../gear_picker/item_renderer';
 import { SimResultsManager } from '../../sim_action';
 import Toast from '../../toast';
 const getSwappableItemSlotPair = (slot: number, canDualWield: boolean): [ItemSlot, ItemSlot] | undefined =>
@@ -122,13 +122,8 @@ export default class BulkSimResultRenderer extends Component {
 				continue;
 			}
 
-			const renderer = new ItemRenderer(items, itemContainer, simUI.player);
-			if (itemChanged && spec.id !== 0) {
-				const item = simUI.sim.db.lookupItemSpec(spec);
-				renderer.update(item!);
-			} else {
-				renderer.clear(idx);
-			}
+			const renderer = new ItemRenderer(items, itemContainer, simUI.player, { slot: idx });
+			renderer.render(itemChanged && spec.id !== 0 ? simUI.sim.db.lookupItemSpec(spec) : null);
 			items.appendChild(itemContainer);
 		}
 		itemsContainerRef.value!.appendChild(items);

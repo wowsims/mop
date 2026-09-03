@@ -264,12 +264,17 @@ export class ActionId {
 		}
 	}
 
-	async setWowheadDataset(elem: HTMLElement, params?: Omit<WowheadTooltipItemParams, 'itemId'> | Omit<WowheadTooltipSpellParams, 'spellId'>) {
+	async setWowheadDataset(
+		elem: HTMLElement | HTMLElement[],
+		params?: Omit<WowheadTooltipItemParams, 'itemId'> | Omit<WowheadTooltipSpellParams, 'spellId'>,
+	) {
 		(this.itemId
 			? ActionId.makeItemTooltipData(this.itemId, params)
 			: ActionId.makeSpellTooltipData(this.spellIdTooltipOverride || this.spellId, params)
 		).then(url => {
-			if (elem) elem.dataset.wowhead = url;
+			(Array.isArray(elem) ? elem : [elem]).forEach(e => {
+				if (e) e.dataset.wowhead = url;
+			});
 		});
 	}
 

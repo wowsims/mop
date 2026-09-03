@@ -58,7 +58,7 @@ export class MultiIconPicker<ModObject> extends Component {
 						}}
 						dataset={{
 							bsToggle: 'dropdown',
-							disableWowheadTouchTtooltip: true,
+							disableWowheadTouchTooltip: true,
 						}}></a>
 					<ul ref={dropdownRef} className="dropdown-menu"></ul>
 				</div>

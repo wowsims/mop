@@ -10,8 +10,8 @@ import { getEligibleItemSlots } from '../../../proto_utils/utils';
 import { Emitter } from '../../../state/events';
 import { subscribeBulkChange } from '../../../state/subscriptions';
 import { Component } from '../../component';
-import { ItemRenderer } from '../../gear_picker/gear_picker';
 import { GearData } from '../../gear_picker/item_list';
+import { ItemRenderer } from '../../gear_picker/item_renderer';
 import { SelectorModalTabs } from '../../gear_picker/selector_modal';
 import { BulkTab } from '../bulk_tab';
 
@@ -38,7 +38,7 @@ export default class BulkItemPicker extends Component {
 		this.bulkSlot = bulkSlot;
 		this.index = index;
 		this.item = item;
-		this.itemElem = new ItemRenderer(parent, this.rootElem, simUI.player);
+		this.itemElem = new ItemRenderer(parent, this.rootElem, simUI.player, { slot: getEligibleItemSlots(item.item)[0] });
 		this.abortController = new AbortController();
 		this.signal = this.abortController.signal;
 
@@ -68,8 +68,7 @@ export default class BulkItemPicker extends Component {
 	}
 
 	setItem(newItem: EquippedItem) {
-		this.itemElem.clear(ItemSlot.ItemSlotHead);
-		this.itemElem.update(newItem);
+		this.itemElem.render(newItem);
 		this.item = newItem;
 		this.setupHandlers();
 	}

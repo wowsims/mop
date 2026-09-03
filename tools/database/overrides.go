@@ -1161,6 +1161,39 @@ var SharedSpellsIcons = []int32{
 	49071,
 
 	30708,
+
+	// Raid buffs, debuffs and shared consumables.
+	1126,   // Mark of the Wild
+	5761,   // Mind-numbing Poison
+	19740,  // Blessing of Might
+	20217,  // Blessing of Kings
+	20574,  // Axe Specialization
+	21562,  // Power Word: Fortitude
+	24604,  // Furious Howl
+	24844,  // Lightning Breath
+	31589,  // Slow
+	33697,  // Blood Fury
+	34889,  // Fire Breath
+	47788,  // Guardian Spirit
+	50274,  // Spore Cloud
+	58604,  // Lava Breath
+	73975,  // Necrotic Strike
+	81326,  // Physical Vulnerability
+	90309,  // Terrifying Roar
+	90363,  // Embrace of the Shale Spider
+	90364,  // Qiraji Fortitude
+	93435,  // Roar of Courage
+	109466, // Curse of Enfeeblement
+	109773, // Dark Intent
+	113742, // Swiftblade's Cunning
+	113746, // Weakened Armor
+	114207, // Skull Banner
+	115798, // Weakened Blows
+	126309, // Still Water
+	126734, // Synapse Springs
+	128432, // Cackling Howl
+	128433, // Serpent's Swiftness
+	128997, // Spirit Beast Blessing
 }
 
 // If any of these match the item name, don't include it.
