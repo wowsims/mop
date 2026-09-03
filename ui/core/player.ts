@@ -1204,11 +1204,12 @@ export class Player<SpecType extends Spec> {
 		return ep;
 	}
 
-	async setWowheadData(equippedItem: EquippedItem, elem: HTMLElement) {
+	async setWowheadData(equippedItem: EquippedItem, elem: HTMLElement | HTMLElement[]) {
 		const isBlacksmithing = this.hasProfession(Profession.Blacksmithing);
 		const gemIds = equippedItem.gems.length ? equippedItem.curGems(isBlacksmithing).map(gem => (gem ? gem.id : 0)) : [];
 		const enchantIds = [equippedItem.enchant?.effectId, equippedItem.tinker?.effectId].filter((id): id is number => id !== undefined);
-		equippedItem.asActionId().setWowheadDataset(elem, {
+		const elems = Array.isArray(elem) ? elem : [elem];
+		equippedItem.asActionId().setWowheadDataset(elems, {
 			gemIds,
 			itemLevel: Number(equippedItem.ilvl),
 			enchantIds: enchantIds,
@@ -1222,7 +1223,7 @@ export class Player<SpecType extends Spec> {
 			upgradeStep: equippedItem.upgrade,
 		});
 
-		elem.dataset.whtticon = 'false';
+		elems.forEach(e => (e.dataset.whtticon = 'false'));
 	}
 
 	static ARMOR_SLOTS: Array<ItemSlot> = [

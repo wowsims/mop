@@ -18,6 +18,10 @@ export class CacheHandler<T> {
 		return this.data.get(id);
 	}
 
+	delete(id: string): boolean {
+		return this.data.delete(id);
+	}
+
 	set(id: string, result: T) {
 		this.data.set(id, result);
 		if (this.keysToKeep) this.keepMostRecent();
