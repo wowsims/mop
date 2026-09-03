@@ -1,95 +1,59 @@
-import * as PresetUtils from '../../core/preset_utils.js';
-import { ConsumesSpec, Debuffs, IndividualBuffs, Profession, RaidBuffs, Stat } from '../../core/proto/common.js';
-import { DisciplinePriest_Options as Options, PriestOptions_Armor } from '../../core/proto/priest.js';
-import { SavedTalents } from '../../core/proto/ui.js';
+import * as PresetUtils from '../../core/preset_utils';
+import { ConsumesSpec, Glyphs, Profession, Stat } from '../../core/proto/common';
+import { DisciplinePriest_Options as DisciplinePriestOptions, PriestMajorGlyph, PriestOptions_Armor } from '../../core/proto/priest';
+import { SavedTalents } from '../../core/proto/ui';
 import { Stats } from '../../core/proto_utils/stats';
-import { defaultRaidBuffMajorDamageCooldowns } from '../../core/proto_utils/utils';
-import DefaultApl from './apls/default.apl.json';
-import P1Gear from './gear_sets/p1.gear.json';
+import P5Gear from './gear_sets/p5.gear.json';
+import PreraidGear from './gear_sets/preraid.gear.json';
 
 // Preset options for this spec.
 // Eventually we will import these values for the raid sim too, so its good to
 // keep them in a separate file.
-export const P1_PRESET = PresetUtils.makePresetGear('P1 Preset', P1Gear);
+export const PRERAID_PRESET = PresetUtils.makePresetGear('Pre-raid', PreraidGear);
+export const P5_PRESET = PresetUtils.makePresetGear('P5 BiS', P5Gear);
 
-export const ROTATION_PRESET_DEFAULT = PresetUtils.makePresetAPLRotation('Default', DefaultApl);
-
-// Preset options for EP weights
-export const P1_EP_PRESET = PresetUtils.makePresetEpWeights(
-	'P1',
+// Stat weights from QE Live's MoP Classic model, spell power = 1:
+// https://github.com/Voulk/QuestionablyEpic/blob/dev/src/General/Modules/Player/ClassDefaults/Classic/Priest/DisciplinePriestClassic.js
+export const DEFAULT_EP_PRESET = PresetUtils.makePresetEpWeights(
+	'QE Live',
 	Stats.fromMap({
-		[Stat.StatIntellect]: 0.11,
-		[Stat.StatSpirit]: 0.47,
+		[Stat.StatIntellect]: 1.28,
+		[Stat.StatSpirit]: 0.43,
 		[Stat.StatSpellPower]: 1,
-		[Stat.StatHitRating]: 0.87,
-		[Stat.StatCritRating]: 0.74,
-		[Stat.StatHasteRating]: 1.65,
-		[Stat.StatMP5]: 0.0,
+		[Stat.StatCritRating]: 0.91,
+		[Stat.StatHasteRating]: 0,
+		[Stat.StatMasteryRating]: 0.924,
 	}),
 );
 
 // Default talents. Uses the wowhead calculator format, make the talents on
 // https://wowhead.com/mop-classic/talent-calc and copy the numbers in the url.
-export const StandardTalents = {
-	name: 'Standard',
+export const DefaultTalents = {
+	name: 'Default',
 	data: SavedTalents.create({
-		// talentsString: '05032031--325023051223010323151301351',
-		// glyphs: Glyphs.create({
-		// 	major1: MajorGlyph.GlyphOfShadow,
-		// 	major2: MajorGlyph.GlyphOfMindFlay,
-		// 	major3: MajorGlyph.GlyphOfDispersion,
-		// 	minor1: MinorGlyph.GlyphOfFortitude,
-		// 	minor2: MinorGlyph.GlyphOfShadowProtection,
-		// 	minor3: MinorGlyph.GlyphOfShadowfiend,
-		// }),
+		talentsString: '113113',
+		glyphs: Glyphs.create({
+			major1: PriestMajorGlyph.GlyphOfPenance,
+			major2: PriestMajorGlyph.GlyphOfPowerWordShield,
+			major3: PriestMajorGlyph.GlyphOfHolyFire,
+		}),
 	}),
 };
 
-export const EnlightenmentTalents = {
-	name: 'Enlightenment',
-	data: SavedTalents.create({
-		// talentsString: '05032031303005022--3250230012230101231513011',
-		// glyphs: Glyphs.create({
-		// 	major1: MajorGlyph.GlyphOfShadow,
-		// 	major2: MajorGlyph.GlyphOfMindFlay,
-		// 	major3: MajorGlyph.GlyphOfShadowWordDeath,
-		// 	minor1: MinorGlyph.GlyphOfFortitude,
-		// 	minor2: MinorGlyph.GlyphOfShadowProtection,
-		// 	minor3: MinorGlyph.GlyphOfShadowfiend,
-		// }),
-	}),
-};
-
-export const DefaultOptions = Options.create({
+export const DefaultOptions = DisciplinePriestOptions.create({
 	classOptions: {
 		armor: PriestOptions_Armor.InnerFire,
 	},
 });
 
 export const DefaultConsumables = ConsumesSpec.create({
-	flaskId: 123, // Flask of the Frost Wyrm (not found in list)
-	foodId: 62290, // Seafood Magnifique Feast
-	potId: 58091, // Volcanic Potion
-	prepotId: 58091, // Volcanic Potion
-});
-export const DefaultRaidBuffs = RaidBuffs.create({
-	...defaultRaidBuffMajorDamageCooldowns()
-});
-
-export const DefaultIndividualBuffs = IndividualBuffs.create({});
-
-export const DefaultDebuffs = Debuffs.create({
-	// bloodFrenzy: true,
-	// sunderArmor: true,
-	// ebonPlaguebringer: true,
-	// mangle: true,
-	// criticalMass: true,
-	// demoralizingShout: true,
-	// frostFever: true,
+	flaskId: 76085, // Flask of the Warm Sun
+	foodId: 74650, // Mogu Fish Stew
+	potId: 76093, // Potion of the Jade Serpent
 });
 
 export const OtherDefaults = {
-	channelClipDelay: 100,
 	profession1: Profession.Engineering,
 	profession2: Profession.Tailoring,
+	distanceFromTarget: 18,
 };
