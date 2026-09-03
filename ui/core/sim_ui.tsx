@@ -53,8 +53,9 @@ export abstract class SimUI extends Component {
 	readonly config: SimUIConfig;
 	// Unlaunched sim outside dev mode: every action is off and the results panel shows the unlaunched notice.
 	readonly disabled: boolean;
-	// Simulation controls (Simulate, iterations, stat weights, bulk sim, results) are hidden. True for
-	// unlaunched sims outside dev mode and always for gear-planner sims.
+	// Simulation controls (Simulate, iterations, stat weight calculation, bulk sim, results) are hidden.
+	// True for unlaunched sims outside dev mode and always for gear-planner sims. Stat weights can
+	// still be edited by hand.
 	readonly simDisabled: boolean;
 
 	// Emits when anything from the sim, raid, or encounter changes.
@@ -257,10 +258,7 @@ export abstract class SimUI extends Component {
 
 	addAction(label: string, cssClass: string, onClick: (event: MouseEvent) => void): HTMLButtonElement {
 		const button = this.simActionsContainer.appendChild(
-			<button
-				className={clsx('sim-sidebar-action-button btn btn-primary w-100', cssClass, this.simDisabled && 'd-none')}
-				onclick={onClick}
-				disabled={this.simDisabled}>
+			<button className={clsx('sim-sidebar-action-button btn btn-primary w-100', cssClass)} onclick={onClick} disabled={this.disabled}>
 				{label}
 				<span className="sim-sidebar-action-button-loading-icon">
 					<i className="fas fa-spinner fa-spin"></i>
