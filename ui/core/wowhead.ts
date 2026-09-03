@@ -2,6 +2,22 @@ import { getLang } from '../i18n/locale_service';
 import { CHARACTER_LEVEL } from './constants/mechanics';
 import { Database } from './proto_utils/database';
 
+const DEFAULT_LANG_ID = 0;
+
+//refer to Wowhead locale Ids
+const LANG_ID_MAP: Record<string, number> = {
+  ko: 1,
+  fr: 2,
+  de: 3,
+  cn: 4,
+  es: 6,
+  ru: 7,
+  pt: 8,
+  it: 9,
+  tw: 10,
+  mx: 11,
+} as const;
+
 export type WowheadTooltipItemParams = {
 	/**
 	 * @description Item ID
@@ -142,3 +158,9 @@ export function getWowheadLanguagePrefix(): string {
 	const lang = getLang();
 	return lang === 'en' ? '' : `${lang}/`;
 }
+
+// Map language code to numeric Id
+export const getWowheadLanguageId = (lang: string = getLang()): number => {
+	const normalized = lang.toLowerCase();
+	return LANG_ID_MAP[normalized] ?? DEFAULT_LANG_ID;
+};

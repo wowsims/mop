@@ -19,7 +19,7 @@ import { Consumable, ItemEffectRandPropPoints, SimDatabase } from '../proto/db';
 import { SpellEffect } from '../proto/spell';
 import { GlyphID, IconData, UIDatabase, UIEnchant as Enchant, UIGem as Gem, UIItem as Item, UINPC as Npc, UIZone as Zone } from '../proto/ui.js';
 import { distinct } from '../utils.js';
-import { WOWHEAD_EXPANSION_ENV } from '../wowhead';
+import { WOWHEAD_EXPANSION_ENV, getWowheadLanguageId } from '../wowhead';
 import { EquippedItem } from './equipped_item.js';
 import { Gear, ItemSwapGear } from './gear.js';
 import { gemEligibleForSocket, gemMatchesSocket } from './gems.js';
@@ -400,7 +400,7 @@ export class Database {
 		return Database.getWowheadTooltipData(id, 'spell', { signal: options?.signal });
 	}
 	private static async getWowheadTooltipData(id: number, tooltipPostfix: string, options: { signal?: AbortSignal } = {}): Promise<IconData> {
-		const url = `https://nether.wowhead.com/mop-classic/tooltip/${tooltipPostfix}/${id}?lvl=${CHARACTER_LEVEL}&dataEnv=${WOWHEAD_EXPANSION_ENV}`;
+		const url = `https://nether.wowhead.com/mop-classic/tooltip/${tooltipPostfix}/${id}?lvl=${CHARACTER_LEVEL}&dataEnv=${WOWHEAD_EXPANSION_ENV}&locale=${getWowheadLanguageId()}`;
 		try {
 			const response = await fetch(url, { signal: options?.signal });
 			const json = await response.json();
