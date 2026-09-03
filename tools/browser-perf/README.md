@@ -119,10 +119,22 @@ The cache still hits: a per-target mutation breakdown shows 96 rows added and 96
 `.rotation-timeline` with **zero** child mutations inside any row, i.e. rows are moved, and
 horizontal windowing adds no churn to a swap.
 
-**The swap's remaining cost is the chart, not the rotation.** Mutation counts are identical
-across both sides because they are dominated by the ApexCharts `updateOptions` redraw and the
-hidden-row emitter, neither of which this stack touches. That is where a future swap
-optimisation would have to go; there is nothing left to win in the rotation DOM.
+**The swap's remaining cost is the other result tabs, not the rotation and not the chart.**
+That was worth measuring rather than assuming - the first guess here was ApexCharts, and it
+was wrong. Attributing each mutation to its target during a swap gives, per swap:
+
+| target | mutations |
+|---|---|
+| `tbody.metrics-table-body` | 740 |
+| `tr.` | 694 |
+| `div.rotation-labels` / `div.rotation-timeline` / `div.rotation-hidden-ids` | 191 / 191 / 151 |
+| `tr.child-metric` | 163 |
+| `td.character-stats-table-value` | 88 |
+
+The rotation entries are the expected row move. Everything above them is the damage, healing,
+cast and resource metrics tables plus character stats rebuilding themselves, because those
+components still take every result eagerly. Giving them `deferUntilShown` the way Timeline and
+LogRunner now have it is where a future swap win is; there is nothing left in the rotation DOM.
 
 Swapping while scrolled was checked separately: `scrollLeft` is preserved (12,000 and 24,000),
 the correct window is mounted on the newly attached slot, nothing is mounted more than the
@@ -131,3 +143,30 @@ padding outside it, and swapping back restores identical mounted/in-view counts.
 To A/B against another checkout: `git worktree add ../wowsims-mop-master master`, symlink
 `node_modules`, `make dist/mop/.dirstamp`, serve it on another port, and pass that port to
 `run.cjs` — the protocol's `localhost:3333` is substituted.
+
+## The chart
+
+Measured after the question "can the chart be optimised too?". Short answer: not at runtime.
+
+- Single player defaults to the rotation view, so the chart was being **rendered into a hidden,
+  zero-width container** and its series built for something nobody was looking at.
+- When shown, it is 233 nodes and 2 series of ~740 points against a 914px-wide plot — about
+  1.25 points per pixel, so downsampling would buy nothing visible.
+- The multi-player branch, which builds one series per raider, is unreachable: the Raid Sim UI
+  was removed in `fa854570a` and `/mop/raid/full/` is a stub with no script.
+
+Skipping the series build while the chart is hidden is therefore a **null result** for time:
+re-simulating with the Timeline tab open and the rotation view selected is 236-253 ms before
+and 236-253 ms after. It is kept because it deletes work rather than adding a mechanism.
+
+The real win is load, not runtime. ApexCharts is only needed once someone switches the
+Timeline away from the rotation, so it is now a dynamic import:
+
+| initial JS for a spec page | before | after |
+|---|---|---|
+| raw | 3,034 KB | **2,480 KB** |
+| gzip | — | **561 KB** |
+
+ApexCharts becomes a 554 KB / 148 KB-gzip chunk fetched on first chart view. Verified by
+watching network requests: nothing on page load, nothing on opening the Timeline tab, and the
+chunk requested exactly when the picker switches to DPS.

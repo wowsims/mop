@@ -1,4 +1,3 @@
-import ApexCharts from 'apexcharts';
 import clsx from 'clsx';
 import tippy, { delegate, Instance, Props } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
@@ -149,7 +148,10 @@ interface RotationSlot {
 
 export class Timeline extends ResultComponent {
 	private readonly dpsResourcesPlotElem: HTMLElement;
+	// Built on first use. ApexCharts is ~560 KB of the per-page chunk and is only needed once
+	// someone switches the Timeline away from the rotation view, so it is imported then.
 	private dpsResourcesPlot: any;
+	private chartPromise: Promise<any> | null = null;
 
 	private readonly rotationPlotElem: HTMLElement;
 	private readonly rotationLabels: HTMLElement;
@@ -232,35 +234,6 @@ export class Timeline extends ResultComponent {
 		this.chartPicker.addEventListener('change', () => this.onChartPickerSelectHandler());
 
 		this.dpsResourcesPlotElem = this.rootElem.querySelector('.dps-resources-plot')!;
-		this.dpsResourcesPlot = new ApexCharts(this.dpsResourcesPlotElem, {
-			chart: {
-				animations: {
-					enabled: false,
-				},
-				background: 'transparent',
-				foreColor: 'white',
-				height: '100%',
-				id: 'dpsResources',
-				type: 'line',
-				zoom: {
-					enabled: true,
-					allowMouseWheelZoom: false,
-				},
-			},
-			series: [], // Set dynamically
-			xaxis: {
-				title: {
-					text: i18n.t('results_tab.details.timeline.chart_options.time_axis'),
-				},
-			},
-			noData: {
-				text: i18n.t('results_tab.details.timeline.chart_options.waiting_for_data'),
-			},
-			stroke: {
-				width: 2,
-				curve: 'straight',
-			},
-		});
 
 		this.rotationPlotElem = this.rootElem.querySelector('.rotation-plot')!;
 		this.rotationLabels = this.rootElem.querySelector('.rotation-labels')!;
@@ -305,7 +278,18 @@ export class Timeline extends ResultComponent {
 		} else {
 			this.dpsResourcesPlotElem.classList.remove('hide');
 			this.rotationPlotElem.classList.add('hide');
+			// Series are not built while the chart is hidden, so build them now. updatePlot is
+			// keyed and cached, so this is a no-op if they are already current.
+			this.update();
 		}
+	}
+
+	// The rotation view and the chart are alternatives, and the rotation is the default for a
+	// single player. Building the chart's series while it is hidden costs a pass over the
+	// unit's dps logs, mana group and threat logs - and forces those lazy derives to
+	// materialise - for something nobody is looking at.
+	private isChartVisible(): boolean {
+		return this.chartPicker.value !== 'rotation';
 	}
 
 	onSimResult(resultData: SimResultData) {
@@ -337,7 +321,7 @@ export class Timeline extends ResultComponent {
 				this.attachSlot(hit);
 			}
 			this.setRotationOptionVisible(singlePlayer);
-			this.dpsResourcesPlot.updateOptions(hit.plotOptions);
+			this.applyChartOptions(hit.plotOptions);
 			return;
 		}
 
@@ -401,6 +385,11 @@ export class Timeline extends ResultComponent {
 				console.log('Failed to update rotation chart: ', e);
 			}
 
+			if (!this.isChartVisible()) {
+				// Nothing else to do: the rotation is what is on screen.
+				return;
+			}
+
 			const dpsData = this.addDpsSeries(player, options, '');
 			this.addDpsYAxis(dpsData.maxDps, options);
 			tooltipHandlers.push(dpsData.tooltipHandler);
@@ -437,7 +426,7 @@ export class Timeline extends ResultComponent {
 		}
 
 		if (this.liveSlot?.key === key) this.liveSlot.plotOptions = options;
-		this.dpsResourcesPlot.updateOptions(options);
+		this.applyChartOptions(options);
 	}
 
 	private addDpsYAxis(maxDps: number, options: any) {
@@ -1457,11 +1446,59 @@ export class Timeline extends ResultComponent {
 	}
 
 	update() {
-		if (!this.chartRendered) {
-			this.dpsResourcesPlot.render();
-			this.chartRendered = true;
-		}
 		this.updatePlot();
+	}
+
+	// Loads, constructs and renders the chart the first time it is actually shown. Rendering
+	// it into the hidden container used to lay it out at zero width, and importing ApexCharts
+	// eagerly put it in every page's bundle whether or not the chart was ever opened.
+	private chartReady(): Promise<any> {
+		if (!this.chartPromise) {
+			this.chartPromise = import('apexcharts').then(module => {
+				const ApexCharts = module.default;
+				this.dpsResourcesPlot = new ApexCharts(this.dpsResourcesPlotElem, {
+					chart: {
+						animations: {
+							enabled: false,
+						},
+						background: 'transparent',
+						foreColor: 'white',
+						height: '100%',
+						id: 'dpsResources',
+						type: 'line',
+						zoom: {
+							enabled: true,
+							allowMouseWheelZoom: false,
+						},
+					},
+					series: [], // Set dynamically
+					xaxis: {
+						title: {
+							text: i18n.t('results_tab.details.timeline.chart_options.time_axis'),
+						},
+					},
+					noData: {
+						text: i18n.t('results_tab.details.timeline.chart_options.waiting_for_data'),
+					},
+					stroke: {
+						width: 2,
+						curve: 'straight',
+					},
+				});
+				this.dpsResourcesPlot.render();
+				this.chartRendered = true;
+				return this.dpsResourcesPlot;
+			});
+		}
+		return this.chartPromise;
+	}
+
+	// Applies options once the chart exists, keeping updates in order.
+	private applyChartOptions(options: any) {
+		this.chartPromise = this.chartReady().then(chart => {
+			chart.updateOptions(options);
+			return chart;
+		});
 	}
 
 	// Per-render resources (tooltips, listeners) belong to the slot being
