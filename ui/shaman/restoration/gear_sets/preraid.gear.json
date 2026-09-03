@@ -1,19 +1,20 @@
-{"items": [
-    {"id":42555,"enchant":3820,"gems":[41401,40017]},
-    {"id":40681},
-    {"id":37875,"enchant":3838,"gems":[40017]},
-    {"id":37291,"enchant":3859},
-    {"id":44180,"enchant":2381},
-    {"id":37788,"enchant":3758,"gems":[0]},
-    {"id":37623,"enchant":3604,"gems":[0]},
-    {"id":40693,"gems":[40051,0]},
-    {"id":37791,"enchant":3721},
-    {"id":44202,"enchant":4223,"gems":[40105]},
-    {"id":44283},
-    {"id":37694},
-    {"id":37111},
-    {"id":37657},
-    {"id":37169,"enchant":3834},
-    {"id":40700,"enchant":1128},
-    {"id":40709}
-]}
+{
+	"items": [
+		{ "id": 98989, "gems": [95347, 76668], "reforging": 116, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105095, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 98991, "enchant": 4806, "gems": [76668, 76668], "reforging": 117, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 102247, "enchant": 4892, "gems": [76668], "reforging": 116 },
+		{ "id": 99011, "enchant": 4419, "gems": [76668, 76668, 76668], "reforging": 117, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105026, "enchant": 4414, "reforging": 117, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105003, "enchant": 4433, "gems": [76672, 76700], "reforging": 141, "upgradeStep": "UpgradeStepTwo", "tinker": 4898 },
+		{ "id": 105099, "gems": [76672, 76700, 76700], "reforging": 117, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 98990, "enchant": 4826, "gems": [76699, 76699], "reforging": 117, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105120, "enchant": 4426, "gems": [76672], "reforging": 148, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105108, "gems": [76672], "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105022, "gems": [76700], "reforging": 119, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105109, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 104976, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105151, "enchant": 4442, "gems": [76672], "reforging": 119, "upgradeStep": "UpgradeStepTwo" },
+		{ "id": 105152, "enchant": 4434, "gems": [76672], "upgradeStep": "UpgradeStepTwo" }
+	]
+}
