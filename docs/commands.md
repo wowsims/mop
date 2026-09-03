@@ -24,8 +24,6 @@ npm start
 WATCH=1 make host
 
 # Delete all generated files (.pb.go and .ts proto files, and dist/)
-# Note: sim pages are no longer generated into ui/, so `make clean` has nothing to remove there.
-# See "Sim pages are not files" below if you have leftovers from an older checkout.
 make clean
 
 # Recompiles the ts only for the given spec (e.g. make host_elemental_shaman)
@@ -82,24 +80,3 @@ make db
 # Uses tools/database/ptr-generator-settings.json for settings
 make ptrdb
 ```
-
-## Sim pages are not files
-
-Each sim is served at `/mop/$CLASS/$SPEC/`, and that page used to be written into the repo: a
-makefile rule expanded `ui/index_template.html` into a gitignored `ui/$CLASS/$SPEC/index.html`
-for every sim, listed one by one in the makefile.
-
-Vite builds those pages now (`tools/vite/spec_pages.mts`), in both `vite build` and the dev
-server, so there is nothing to generate, list or ignore. A directory becomes a sim page as soon
-as it has the two files the template points at: `ui/$CLASS/$SPEC/index.ts` and
-`ui/scss/sims/$CLASS/$SPEC/index.scss`.
-
-**Upgrading an existing checkout.** If you built the site before this change, your working tree
-still holds those generated pages. They are no longer ignored, so they now show up as untracked
-files, and `make clean` no longer deletes them. Remove them once:
-
-```sh
-rm -f ui/*/*/index.html
-```
-
-Do not delete `ui/index.html` — that is the landing page and it is a real, tracked file.
