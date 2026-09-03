@@ -458,6 +458,9 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	private addDetailedResultsTab() {
+		// Nothing to show without a simulation.
+		if (this.simDisabled) return;
+
 		const detailedResults = (<div className="detailed-results"></div>) as HTMLElement;
 		this.addTab(i18n.t('results_tab.title'), 'detailed-results-tab', detailedResults);
 
