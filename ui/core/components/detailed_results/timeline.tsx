@@ -1,6 +1,6 @@
 import ApexCharts from 'apexcharts';
 import clsx from 'clsx';
-import tippy from 'tippy.js';
+import tippy, { Instance, Props } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
 import { CacheHandler } from '../../cache_handler';
@@ -27,6 +27,23 @@ const threatColor = '#b56d07';
 
 // Bounded: this holds detached DOM, and an unbounded CacheHandler never evicts.
 const cachedSpellCastIcon = new CacheHandler<HTMLAnchorElement>({ keysToKeep: 512 });
+
+// Builds tooltip content on first hover. Building it up front meant a single cast with ten
+// damage logs allocated ~50 nodes for a tooltip that in almost every case is never shown,
+// and the detached tooltip DOM ended up larger than the chart it described.
+function lazyTippy(reference: Element, props: Partial<Props>, buildContent: () => Element): Instance {
+	let content: Element | null = null;
+	return tippy(reference, {
+		...props,
+		content: '',
+		onShow(instance) {
+			if (!content) {
+				content = buildContent();
+				instance.setContent(content);
+			}
+		},
+	});
+}
 
 interface TimelineConfig extends ResultComponentConfig {
 	secondaryResource?: SecondaryResource | null;
@@ -906,10 +923,9 @@ export class Timeline extends ResultComponent {
 			}
 			rowElem.appendChild(resourceElem);
 
-			const tooltip = tippy(resourceElem, {
-				placement: 'bottom',
-				content: this.resourceTooltipElem(resourceLogGroup, startValue(resourceLogGroup), false),
-			});
+			const tooltip = lazyTippy(resourceElem, { placement: 'bottom' }, () =>
+				this.resourceTooltipElem(resourceLogGroup, startValue(resourceLogGroup), false),
+			);
 			this.addOnResetCallback(() => tooltip.destroy());
 		});
 		this.rotationTimeline.appendChild(rowElem);
@@ -975,7 +991,7 @@ export class Timeline extends ResultComponent {
 			const travelTimeStr = castLog.travelTime == 0 ? '' : ` + ${castLog.travelTime.toFixed(2)}s travel time`;
 			const totalDamage = castLog.totalDamage();
 
-			const tt = (
+			const buildCastTooltip = () => (
 				<div className="timeline-tooltip">
 					<span>
 						{castLog.actionId!.name} from {castLog.timestamp.toFixed(2)}s to{' '}
@@ -1010,10 +1026,7 @@ export class Timeline extends ResultComponent {
 				</div>
 			);
 
-			const tooltip = tippy(castElem, {
-				placement: 'bottom',
-				content: tt,
-			});
+			const tooltip = lazyTippy(castElem, { placement: 'bottom' }, buildCastTooltip);
 			this.addOnResetCallback(() => tooltip.destroy());
 
 			castLog.damageDealtLogs
@@ -1029,7 +1042,7 @@ export class Timeline extends ResultComponent {
 					);
 					rowElem.appendChild(tickElem);
 
-					const tt = (
+					const buildTickTooltip = () => (
 						<div className="timeline-tooltip">
 							<span>
 								{ddl.timestamp.toFixed(2)}s - {ddl.actionId!.name} {ddl.result()}
@@ -1043,10 +1056,7 @@ export class Timeline extends ResultComponent {
 						</div>
 					);
 
-					const tooltip = tippy(tickElem, {
-						placement: 'bottom',
-						content: tt,
-					});
+					const tooltip = lazyTippy(tickElem, { placement: 'bottom' }, buildTickTooltip);
 					this.addOnResetCallback(() => tooltip.destroy());
 				});
 		});
@@ -1087,18 +1097,13 @@ export class Timeline extends ResultComponent {
 			);
 			rowElem.appendChild(auraElem);
 
-			const tt = (
+			const tooltip = lazyTippy(auraElem, { placement: 'bottom' }, () => (
 				<div className="timeline-tooltip">
 					<span>
 						{aul.actionId!.name}: {aul.gainedAt.toFixed(2)}s - {aul.fadedAt.toFixed(2)}s
 					</span>
 				</div>
-			);
-
-			const tooltip = tippy(auraElem, {
-				placement: 'bottom',
-				content: tt,
-			});
+			));
 			this.addOnResetCallback(() => tooltip.destroy());
 
 			aul.stacksChange.forEach((scl, i) => {
