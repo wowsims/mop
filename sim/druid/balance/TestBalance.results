@@ -610,7 +610,7 @@ dps_results: {
  key: "TestBalance-AllItems-EmberPrimalDiamond"
  value: {
   dps: 480508.26585
-  tps: 477123.71476
+  tps: 477123.82476
   hps: 44500.45387
  }
 }

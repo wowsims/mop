@@ -634,7 +634,7 @@ dps_results: {
  key: "TestFeral-AllItems-EmberPrimalDiamond"
  value: {
   dps: 450480.63916
-  tps: 556521.93446
+  tps: 556522.87246
   hps: 21421.6219
  }
 }

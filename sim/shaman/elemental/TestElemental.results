@@ -559,7 +559,7 @@ dps_results: {
  key: "TestElemental-AllItems-EmberPrimalDiamond"
  value: {
   dps: 223311.36057
-  tps: 140586.26495
+  tps: 140604.29707
  }
 }
 dps_results: {
