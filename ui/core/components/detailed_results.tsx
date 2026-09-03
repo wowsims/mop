@@ -12,7 +12,7 @@ import { HealingMetricsTable } from './detailed_results/healing_metrics';
 import { CombatReplay } from './detailed_results/combat_replay';
 import { LogRunner } from './detailed_results/log_runner';
 import { ResourceMetricsTable } from './detailed_results/resource_metrics';
-import { SimResultData } from './detailed_results/result_component';
+import { ResultComponent, SimResultData } from './detailed_results/result_component';
 import { ResultsFilter } from './detailed_results/results_filter';
 import { Timeline } from './detailed_results/timeline';
 import { ToplineResults } from './detailed_results/topline_results';
@@ -172,17 +172,17 @@ export class DetailedResults extends Component {
 							<div className="resource-metrics" />
 						</div>
 					</div>
-				<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
-					<div className="dr-row">
-						<div className="timeline" />
+					<div id="timelineTab" className="tab-pane dr-tab-content timeline-content fade">
+						<div className="dr-row">
+							<div className="timeline" />
+						</div>
 					</div>
-				</div>
-				<div id="replayTab" className="tab-pane dr-tab-content replay-content fade">
-					<div className="dr-row">
-						<div className="combat-replay" />
+					<div id="replayTab" className="tab-pane dr-tab-content replay-content fade">
+						<div className="dr-row">
+							<div className="combat-replay" />
+						</div>
 					</div>
-				</div>
-				<div id="logTab" className="tab-pane dr-tab-content log-content fade">
+					<div id="logTab" className="tab-pane dr-tab-content log-content fade">
 						<div className="dr-row">
 							<div className="log" />
 						</div>
@@ -266,16 +266,19 @@ export class DetailedResults extends Component {
 			resultsEmitter: this.resultsEmitter,
 		});
 
+		// Tabs whose contents are expensive hold their results until first shown; see
+		// ResultComponent's deferUntilShown.
+		const deferUntilShown = (component: ResultComponent, tabId: string) => {
+			document.querySelector(`button[data-bs-target="#${tabId}"]`)?.addEventListener('shown.bs.tab', () => component.onTabShown());
+		};
+
 		const timeline = new Timeline({
 			parent: this.rootElem.querySelector('.timeline')!,
 			resultsEmitter: this.resultsEmitter,
 			secondaryResource: (simUI as IndividualSimUI<any>)?.player?.secondaryResource,
+			deferUntilShown: true,
 		});
-
-		const tabEl = document.querySelector('button[data-bs-target="#timelineTab"]');
-		tabEl?.addEventListener('shown.bs.tab', () => {
-			timeline.render();
-		});
+		deferUntilShown(timeline, 'timelineTab');
 
 		const combatReplay = new CombatReplay({
 			parent: this.rootElem.querySelector('.combat-replay')!,
@@ -287,10 +290,15 @@ export class DetailedResults extends Component {
 			combatReplay.stopPlayback();
 		});
 
-		new LogRunner({
-			parent: this.rootElem.querySelector('.log')!,
-			resultsEmitter: this.resultsEmitter,
-		}, this.simUI);
+		const logRunner = new LogRunner(
+			{
+				parent: this.rootElem.querySelector('.log')!,
+				resultsEmitter: this.resultsEmitter,
+				deferUntilShown: true,
+			},
+			this.simUI,
+		);
+		deferUntilShown(logRunner, 'logTab');
 
 		this.rootElem.classList.add('hide-threat-metrics');
 

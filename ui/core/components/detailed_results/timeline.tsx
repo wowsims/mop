@@ -3,7 +3,9 @@ import clsx from 'clsx';
 import tippy, { delegate, Instance, Props } from 'tippy.js';
 import { ref } from 'tsx-vanilla';
 
+import i18n from '../../../i18n/config';
 import { CacheHandler } from '../../cache_handler';
+import { APLActionItemSwap_SwapSet } from '../../proto/apl';
 import { OtherAction } from '../../proto/common';
 import { ResourceType } from '../../proto/spell';
 import { ActionId, buffAuraToSpellIdMap, resourceTypeToIcon } from '../../proto_utils/action_id';
@@ -15,9 +17,7 @@ import { orderedResourceTypes } from '../../proto_utils/utils';
 import { TypedEvent } from '../../typed_event';
 import { bucket, distinct, fragmentToString, maxIndex, stringComparator } from '../../utils';
 import { actionColors } from './color_settings';
-import i18n from '../../../i18n/config';
 import { ResultComponent, ResultComponentConfig, SimResultData } from './result_component';
-import { APLActionItemSwap_SwapSet } from '../../proto/apl';
 
 type TooltipHandler = (dataPointIndex: number) => Element;
 
@@ -28,10 +28,6 @@ const threatColor = '#b56d07';
 // Bounded: this holds detached DOM, and an unbounded CacheHandler never evicts.
 const cachedSpellCastIcon = new CacheHandler<HTMLAnchorElement>({ keysToKeep: 512 });
 
-// Tooltips are delegated per row rather than instantiated per element, and their content is
-// built on first hover. Before, a rotation created one tippy instance - and its listeners -
-// for every cast, tick, aura window and resource block, several thousand of them, each
-// carrying a fully built subtree for a tooltip that in almost every case is never shown.
 // How far beyond the viewport rows stay populated, so a fast horizontal scroll does not
 // show gaps before the next frame lands.
 const ROW_WINDOW_PADDING_PX = 600;
@@ -42,37 +38,48 @@ const ROW_WINDOW_PADDING_PX = 600;
 class WindowedRow {
 	private readonly items: Array<{ left: number; right: number; build: () => Element; elem?: Element }> = [];
 	private readonly mounted = new Set<number>();
-	private widest = 0;
+	// Reused across frames: mount() runs for every row on every animation frame.
+	private readonly wanted = new Set<number>();
+	// Running max of `right` over items[0..i], so the back-scan can stop as soon as no
+	// earlier item can still reach the window. Without it a single fight-long aura makes
+	// `widest` the whole row and the binary search degenerates into a full scan every frame.
+	private readonly maxRightUpTo: Array<number> = [];
 	private sorted = false;
 
 	constructor(private readonly rowElem: Element) {}
 
 	add(left: number, width: number, build: () => Element) {
 		this.items.push({ left, right: left + width, build });
-		if (width > this.widest) this.widest = width;
 		this.sorted = false;
 	}
 
-	mount(windowLeft: number, windowRight: number) {
-		if (!this.sorted) {
-			// A DoT's ticks can outlast the next cast, so items are not added in x order.
-			this.items.sort((a, b) => a.left - b.left);
-			this.sorted = true;
+	private sort() {
+		// A DoT's ticks can outlast the next cast, so items are not added in x order.
+		this.items.sort((a, b) => a.left - b.left);
+		this.maxRightUpTo.length = 0;
+		let max = -Infinity;
+		for (const item of this.items) {
+			max = Math.max(max, item.right);
+			this.maxRightUpTo.push(max);
 		}
+		this.sorted = true;
+	}
 
-		// An aura can span the whole fight, so the scan has to begin `widest` before the
-		// window or a wide item whose left edge is far off screen would be dropped.
+	mount(windowLeft: number, windowRight: number) {
+		if (!this.sorted) this.sort();
+
+		// First item whose left edge is past the window; everything at or after it is out.
 		let lo = 0;
 		let hi = this.items.length;
-		const from = windowLeft - this.widest;
 		while (lo < hi) {
 			const mid = (lo + hi) >> 1;
-			if (this.items[mid].left < from) lo = mid + 1;
+			if (this.items[mid].left <= windowRight) lo = mid + 1;
 			else hi = mid;
 		}
 
-		const wanted = new Set<number>();
-		for (let i = lo; i < this.items.length && this.items[i].left <= windowRight; i++) {
+		const wanted = this.wanted;
+		wanted.clear();
+		for (let i = lo - 1; i >= 0 && this.maxRightUpTo[i] >= windowLeft; i--) {
 			if (this.items[i].right >= windowLeft) wanted.add(i);
 		}
 
@@ -92,6 +99,10 @@ class WindowedRow {
 	}
 }
 
+// Tooltips are delegated per row rather than instantiated per element, and their content is
+// built on first hover. Before, a rotation created one tippy instance - and its listeners -
+// for every cast, tick, aura window and resource block, several thousand of them, each
+// carrying a fully built subtree for a tooltip that in almost every case is never shown.
 const TOOLTIP_TARGET_ATTR = 'data-timeline-tooltip';
 const tooltipBuilders = new WeakMap<Element, () => Element>();
 
@@ -147,11 +158,9 @@ export class Timeline extends ResultComponent {
 	private readonly chartPicker: HTMLSelectElement;
 
 	private resultData: SimResultData | null;
+	// The ApexCharts instance renders once for the life of the component; the rotation
+	// rebuilds per result. Deferral until the tab is shown lives in ResultComponent.
 	chartRendered: boolean;
-	// Whether the Timeline tab has ever been shown, and whether a result arrived while it
-	// was not.
-	tabShown: boolean;
-	pendingResult: boolean;
 
 	// A rendered rotation timeline for one (result, filter, chart) key. The DOM
 	// nodes are kept LIVE (moved in and out of the containers, never cloned) so
@@ -176,8 +185,6 @@ export class Timeline extends ResultComponent {
 		super(config);
 		this.resultData = null;
 		this.chartRendered = false;
-		this.tabShown = false;
-		this.pendingResult = false;
 		this.hiddenIds = [];
 		this.addOnDisposeCallback(() => {
 			if (this.rowWindowFrame != null) cancelAnimationFrame(this.rowWindowFrame);
@@ -303,14 +310,7 @@ export class Timeline extends ResultComponent {
 
 	onSimResult(resultData: SimResultData) {
 		this.resultData = resultData;
-		// Every result reached here and built the whole rotation - ~95 rows, 13k nodes and
-		// 7.4k tooltip instances - into a container that is display:none until the user opens
-		// the Timeline tab. Hold the result instead and build when the tab is actually shown.
-		if (this.tabShown) {
-			this.update();
-		} else {
-			this.pendingResult = true;
-		}
+		this.update();
 	}
 
 	private updatePlot() {
@@ -770,22 +770,17 @@ export class Timeline extends ResultComponent {
 	}
 
 	private getSortedCastsByAbility(player: UnitMetrics): Array<Array<CastLog>> {
-		// Keyed on every field ActionId.equals() compares, so the two linear scans the sort
-		// comparator used to run for each comparison become lookups.
-		const actionKey = (id: ActionId) => `${id.itemId}|${id.randomSuffixId}|${id.spellId}|${id.otherId}|${id.upgradeStep}|${id.tag}`;
-		const meleeActionKeys = new Set(player.getMeleeActions().map(action => actionKey(action.actionId)));
-		const spellActionKeys = new Set(player.getSpellActions().map(action => actionKey(action.actionId)));
+		// Sets, so the two linear scans the sort comparator used to run per comparison become
+		// lookups.
+		const meleeActionKeys = new Set(player.getMeleeActions().map(action => action.actionId.equalityKey()));
+		const spellActionKeys = new Set(player.getSpellActions().map(action => action.actionId.equalityKey()));
 		const getActionCategory = (actionId: ActionId): number => {
 			const fixedCategory = idToCategoryMap[actionId.anyId()];
-			if (fixedCategory != null) {
-				return fixedCategory;
-			} else if (meleeActionKeys.has(actionKey(actionId))) {
-				return MELEE_ACTION_CATEGORY;
-			} else if (spellActionKeys.has(actionKey(actionId))) {
-				return SPELL_ACTION_CATEGORY;
-			} else {
-				return DEFAULT_ACTION_CATEGORY;
-			}
+			if (fixedCategory != null) return fixedCategory;
+			const key = actionId.equalityKey();
+			if (meleeActionKeys.has(key)) return MELEE_ACTION_CATEGORY;
+			if (spellActionKeys.has(key)) return SPELL_ACTION_CATEGORY;
+			return DEFAULT_ACTION_CATEGORY;
 		};
 
 		const castsByAbility = Object.values(
@@ -883,6 +878,10 @@ export class Timeline extends ResultComponent {
 	private makeWindowedRow(rowElem: Element): WindowedRow {
 		const windowed = new WindowedRow(rowElem);
 		this.liveSlot!.windowedRows.push(windowed);
+		// Rows that position content along the time axis are exactly the rows that hold
+		// tooltip targets; separator, pet-name and target-name rows hold neither.
+		const delegated = delegateTooltips(rowElem);
+		this.addOnResetCallback(() => delegated.destroy());
 		return windowed;
 	}
 
@@ -903,17 +902,13 @@ export class Timeline extends ResultComponent {
 	}
 
 	private makePlainRowElem(duration: number): JSX.Element {
-		const rowElem = (
+		return (
 			<div
 				className="rotation-timeline-row rotation-row"
 				style={{
 					width: this.timeToPx(duration),
 				}}></div>
 		);
-		// One delegate per row, covering however many tooltip targets the row ends up holding.
-		const delegated = delegateTooltips(rowElem);
-		this.addOnResetCallback(() => delegated.destroy());
-		return rowElem;
 	}
 
 	private makeRowElem(actionId: ActionId, duration: number, scope: string): JSX.Element {
@@ -1009,13 +1004,11 @@ export class Timeline extends ResultComponent {
 
 		this.rotationLabels.appendChild(labelElem);
 
-		// Identical to what makePlainRowElem builds, and going through it is what attaches this
-		// row's tooltip delegate.
 		const rowElem = this.makePlainRowElem(duration);
 		const windowed = this.makeWindowedRow(rowElem);
 
+		const cNames = resourceNames.get(resourceType)!.toLowerCase().replaceAll(' ', '-');
 		resourceLogs.forEach((resourceLogGroup, i) => {
-			const cNames = resourceNames.get(resourceType)!.toLowerCase().replaceAll(' ', '-');
 			const left = this.timeToPxValue(resourceLogGroup.timestamp);
 			const width = this.timeToPxValue((resourceLogs[i + 1]?.timestamp || duration) - resourceLogGroup.timestamp);
 			windowed.add(left, width, () => {
@@ -1061,6 +1054,8 @@ export class Timeline extends ResultComponent {
 
 		const rowElem = this.makeRowElem(actionId, duration, scope);
 		const windowed = this.makeWindowedRow(rowElem);
+		// Invariant for the row; it was recomputed inside every cast's build closure.
+		const actionIdAsString = actionId.toString();
 		castLogs.forEach(castLog => {
 			const castLeft = this.timeToPxValue(castLog.timestamp);
 			const castWidth = this.timeToPxValue(castLog.cancelTime || castLog.castTime + castLog.travelTime);
@@ -1103,7 +1098,6 @@ export class Timeline extends ResultComponent {
 					}
 				}
 
-				const actionIdAsString = actionId.toString();
 				const cachedIconElem = cachedSpellCastIcon.get(actionIdAsString)?.cloneNode() as HTMLAnchorElement | undefined;
 				let iconElem = cachedIconElem;
 				if (!iconElem) {
@@ -1463,8 +1457,6 @@ export class Timeline extends ResultComponent {
 	}
 
 	update() {
-		// ApexCharts is rendered once for the life of the component; the rotation rebuilds per
-		// result. These were one flag, which is why the deferral below never fired twice.
 		if (!this.chartRendered) {
 			this.dpsResourcesPlot.render();
 			this.chartRendered = true;
@@ -1531,15 +1523,6 @@ export class Timeline extends ResultComponent {
 
 	private destroySlot(slot: RotationSlot) {
 		slot.resetCallbacks.forEach(callback => callback());
-	}
-
-	// Wired to the Timeline tab's shown.bs.tab in detailed_results.tsx.
-	render() {
-		this.tabShown = true;
-		if (this.pendingResult || !this.chartRendered) {
-			this.pendingResult = false;
-			this.update();
-		}
 	}
 
 	reset() {

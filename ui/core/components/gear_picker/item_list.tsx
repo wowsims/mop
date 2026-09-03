@@ -282,7 +282,7 @@ export default class ItemList<T extends ItemListType> {
 	}
 
 	public sizeRefresh() {
-		this.scroller.update();
+		// applyFilters() ends in scroller.update(), which is a full rebuild.
 		this.applyFilters();
 	}
 

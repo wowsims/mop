@@ -27,11 +27,15 @@ export class CacheHandler<T> {
 		if (this.keysToKeep) this.keepMostRecent();
 	}
 
+	// Map iterates in insertion order, so the oldest key is simply the first one. Building
+	// the full key array here cost an allocation on every set once the cap was reached.
+	// Note this is insertion-order eviction, not LRU: get() does not refresh recency.
 	private keepMostRecent() {
-		if (this.keysToKeep && this.data.size > this.keysToKeep) {
-			const keys = [...this.data.keys()];
-			const keysToRemove = keys.slice(0, keys.length - this.keysToKeep);
-			keysToRemove.forEach(key => this.data.delete(key));
+		if (!this.keysToKeep) return;
+		while (this.data.size > this.keysToKeep) {
+			const oldest = this.data.keys().next();
+			if (oldest.done) return;
+			this.data.delete(oldest.value);
 		}
 	}
 }

@@ -50,9 +50,7 @@ async page => {
 		return page.evaluate(COLLECT);
 	}
 
-	const clickTab = label => ({ label });
-
-	const CLICK_RESULTS_TAB = ({ label }) => {
+	const CLICK_RESULTS_TAB = label => {
 		const link = [...document.querySelectorAll('.nav-link')].find(a => (a.textContent || '').trim() === label);
 		const t = performance.now();
 		link.click();
@@ -110,12 +108,12 @@ async page => {
 			rotationRows: scope('.rotation-timeline > div'),
 			rotationNodes: scope('.rotation-timeline *'),
 			timelineTippies: tab ? [...tab.querySelectorAll('*')].filter(e => e._tippy).length : -1,
-			logRowsBuilt: document.querySelectorAll('.log-runner-logs tr').length,
+			logRowsBuilt: document.querySelectorAll('.log-runner-row').length,
 		};
 	});
 
 	// 2-3. Log tab: first paint, then one search keystroke.
-	out.openLogTab = await measure(CLICK_RESULTS_TAB, clickTab('Log'));
+	out.openLogTab = await measure(CLICK_RESULTS_TAB, 'Log');
 	out.logRows = await page.evaluate(() => document.querySelectorAll('.log-runner-row').length);
 
 	out.searchKeystroke = await measure(() => {
@@ -149,7 +147,7 @@ async page => {
 	});
 
 	// 5. Timeline tab: this is where the eager tooltip DOM lands.
-	out.openTimelineTab = await measure(CLICK_RESULTS_TAB, clickTab('Timeline'));
+	out.openTimelineTab = await measure(CLICK_RESULTS_TAB, 'Timeline');
 	out.timelineNodes = await page.evaluate(() => ({
 		rotationRows: document.querySelectorAll('.rotation-timeline > div').length,
 		rotationNodes: document.querySelectorAll('.rotation-timeline *').length,

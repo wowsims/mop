@@ -236,7 +236,7 @@ export class SimLog {
 
 			const match = TIMESTAMP_REGEX.exec(line);
 			if (!match || !match[1]) {
-				pending[lineIndex] = { params, matcher: null, match: null };
+				pending[lineIndex] = { params, matcher: null, match: null, key: '' };
 				continue;
 			}
 
@@ -248,12 +248,17 @@ export class SimLog {
 			params.target = entities[1] || null;
 
 			const matched = matchLogLine(params.raw);
-			pending[lineIndex] = matched ? { params, ...matched } : { params, matcher: null, match: null };
-			if (matched) {
-				const key = actionIdKey(params, matched);
-				if (!distinctIds.has(key)) {
-					distinctIds.set(key, { logString: matched.matcher.idString(matched.match), playerIndex: params.source?.index });
-				}
+			if (!matched) {
+				pending[lineIndex] = { params, matcher: null, match: null, key: '' };
+				continue;
+			}
+			// Keep the key: the build pass needs it, and recomputing it there means a second
+			// idString() call and a second string per matched line.
+			const logString = matched.matcher.idString(matched.match);
+			const key = `${params.source?.index ?? -1}|${logString}`;
+			pending[lineIndex] = { params, ...matched, key };
+			if (!distinctIds.has(key)) {
+				distinctIds.set(key, { logString, playerIndex: params.source?.index });
 			}
 		}
 
@@ -273,7 +278,7 @@ export class SimLog {
 			if (!entry.matcher) {
 				return new SimLog(entry.params);
 			}
-			entry.params.actionId = actionIds.get(actionIdKey(entry.params, entry))!;
+			entry.params.actionId = actionIds.get(entry.key)!;
 			return entry.matcher.build(entry.params, entry.match!);
 		});
 	}
@@ -1216,18 +1221,14 @@ const SPELL_SCHOOL_REGEX = / \(SpellSchool: (-?[0-9]+)\)/;
 const THREAT_REGEX = / \(Threat: (-?[0-9]+\.[0-9]+)\)/;
 const TIMESTAMP_REGEX = /\[(-?[0-9]+\.[0-9]+)\]\w*(.*)/;
 
-// A necessary condition of the damage pattern: it can only match if one of its outcome
-// words is present. A flat literal alternation, unlike the pattern itself, has no lazy
-// prefix to backtrack over.
-const DAMAGE_OUTCOME_REGEX = /Miss|Hit|Crit|Crush|Glance|Dodge|Parry|Block/;
-
 type LogMatcher = {
-	// A substring (or trivial alternation) the pattern itself requires. Skipping a matcher
-	// whose guard fails can therefore never skip a match the pattern would have made, which
-	// is what keeps this dispatch equivalent to running every pattern in order - it just
-	// stops paying for the ones that cannot match. The damage pattern is both the first
-	// tried and the most expensive, so guarding it is most of the win.
-	guard: (raw: string) => boolean;
+	// Literals the pattern requires: a line must contain at least one of them to be worth
+	// testing. Skipping a matcher whose guard fails can therefore never skip a match the
+	// pattern would have made, which is what keeps this dispatch equivalent to running every
+	// pattern in order - it just stops paying for the ones that cannot match. The damage
+	// pattern is both the first tried and the most expensive, so guarding it is most of the
+	// win. assertGuardsAreNecessary() below checks each literal really is in its pattern.
+	guard: Array<string>;
 	regex: RegExp;
 	// Some patterns match lines they cannot actually build from; those fall through to the
 	// next matcher, exactly as the old `parse` chain did by returning null.
@@ -1240,57 +1241,57 @@ type LogMatcher = {
 // Order is load-bearing: first match wins, and it runs most to least common.
 const LOG_MATCHERS: Array<LogMatcher> = [
 	{
-		guard: raw => DAMAGE_OUTCOME_REGEX.test(raw),
+		guard: ['Miss', 'Hit', 'Crit', 'Crush', 'Glance', 'Dodge', 'Parry', 'Block'],
 		regex: /] (.*?) (tick )?((Miss)|(Hit)|(CriticalBlock)|(Crit)|(Crush)|(GlanceBlock)|(Glance)|(Dodge)|(Parry)|(Block))( \((\d+)% Resist\))?( for (\d+\.\d+) ((damage)|(healing)|(shielding)))?/,
 		idString: match => match[1],
 		build: (params, match) => DamageDealtLog.build(params, match),
 	},
 	{
-		guard: raw => raw.includes(' from '),
+		guard: [' from '],
 		regex: /(Gained|Spent) (\d+\.?\d*) (\S.+?\S) from (.*?) \((\d+\.?\d*) --> (\d+\.?\d*)\)( of (\d+\.?\d*) total)?/,
 		idString: match => match[4],
 		build: (params, match) => ResourceChangedLog.build(params, match),
 	},
 	{
-		guard: raw => raw.includes('Aura '),
+		guard: ['Aura '],
 		regex: /Aura ((gained)|(faded)|(refreshed)): (.*)/,
 		valid: match => Boolean(match[5]),
 		idString: match => match[5],
 		build: (params, match) => AuraEventLog.build(params, match),
 	},
 	{
-		guard: raw => raw.includes(' stacks: '),
+		guard: [' stacks: '],
 		regex: /(.*) stacks: ([0-9]+) --> ([0-9]+)/,
 		valid: match => Boolean(match[1]),
 		idString: match => match[1],
 		build: (params, match) => AuraStacksChangeLog.build(params, match),
 	},
 	{
-		guard: raw => raw.includes('Major cooldown used: '),
+		guard: ['Major cooldown used: '],
 		regex: /Major cooldown used: (.*)/,
 		idString: match => match[1],
 		build: params => MajorCooldownUsedLog.build(params),
 	},
 	{
-		guard: raw => raw.includes('Casting '),
+		guard: ['Casting '],
 		regex: /Casting (.*) \(Cost = (\d+\.?\d*), Cast Time = (\d+\.?\d*)(m?s), Effective Time = (\d+\.?\d*)(m?s)\)/,
 		idString: match => match[1],
 		build: (params, match) => CastBeganLog.build(params, match),
 	},
 	{
-		guard: raw => raw.includes('Cancelled '),
+		guard: ['Cancelled '],
 		regex: /Cancelled (.*) after (\d+\.?\d*)(m?s)/,
 		idString: match => match[1],
 		build: (params, match) => CastCancelledLog.build(params, match),
 	},
 	{
-		guard: raw => raw.includes('Completed cast '),
+		guard: ['Completed cast '],
 		regex: /Completed cast (.*)/,
 		idString: match => match[1],
 		build: params => CastCompletedLog.build(params),
 	},
 	{
-		guard: raw => raw.includes(' from '),
+		guard: [' from '],
 		regex: /((Gained)|(Lost)) ({.*}) from (fading )?(.*)/,
 		idString: match => match[6],
 		build: (params, match) => StatChangeLog.build(params, match),
@@ -1298,12 +1299,33 @@ const LOG_MATCHERS: Array<LogMatcher> = [
 ];
 
 type MatchedLine = { matcher: LogMatcher; match: RegExpExecArray };
-type PendingLog = { params: SimLogParams; matcher: LogMatcher | null; match: RegExpExecArray | null };
+type PendingLog = { params: SimLogParams; matcher: LogMatcher | null; match: RegExpExecArray | null; key: string };
 type ActionIdRequest = { logString: string; playerIndex: number | undefined };
+
+// The dispatch is only equivalent to trying every pattern in order if each guard literal is
+// something its own pattern requires. That is a property of the table, so check it here
+// rather than trusting the comment. Necessary, not sufficient: a literal inside an optional
+// group would pass this and still not be required, so guards stay hand-reviewed too.
+function assertGuardsAreNecessary() {
+	for (const matcher of LOG_MATCHERS) {
+		for (const literal of matcher.guard) {
+			if (!matcher.regex.source.includes(literal)) {
+				throw new Error(`Log matcher guard '${literal}' is absent from its pattern ${matcher.regex.source}`);
+			}
+		}
+	}
+}
 
 function matchLogLine(raw: string): MatchedLine | null {
 	for (const matcher of LOG_MATCHERS) {
-		if (!matcher.guard(raw)) continue;
+		let possible = false;
+		for (const literal of matcher.guard) {
+			if (raw.includes(literal)) {
+				possible = true;
+				break;
+			}
+		}
+		if (!possible) continue;
 		const match = matcher.regex.exec(raw);
 		if (match && (!matcher.valid || matcher.valid(match))) {
 			return { matcher, match };
@@ -1312,9 +1334,4 @@ function matchLogLine(raw: string): MatchedLine | null {
 	return null;
 }
 
-// ActionId.fill() resolves differently per player index (pet names), so that is part of
-// the identity of a request.
-function actionIdKey(params: SimLogParams, matched: MatchedLine | PendingLog): string {
-	const matcher = matched.matcher!;
-	return `${params.source?.index ?? -1}|${matcher.idString(matched.match!)}`;
-}
+assertGuardsAreNecessary();

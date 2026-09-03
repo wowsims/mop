@@ -6,6 +6,10 @@
  * than declared, and re-measured when the container resizes.
  */
 
+// Rows kept above and below the viewport so a fast scroll does not show gaps before the
+// next frame lands.
+const OVERSCAN_ROWS = 10;
+
 export interface VirtualListDataSource {
 	count(): number;
 	// Builds the row at `index`. Called only for rows entering the window.
@@ -17,8 +21,6 @@ export interface VirtualListOptions {
 	// Where rows are written. May be the same element as scrollElem.
 	contentElem: HTMLElement;
 	dataSource: VirtualListDataSource;
-	// Rows kept above and below the viewport so a fast scroll does not show gaps.
-	overscan?: number;
 	// Used until a real row has been rendered and measured.
 	estimatedRowHeight?: number;
 	// Tag for the spacer elements. Must be a legal child of contentElem: 'li' inside a <ul>,
@@ -33,7 +35,6 @@ export class VirtualList {
 	private readonly scrollElem: HTMLElement;
 	private readonly contentElem: HTMLElement;
 	private readonly dataSource: VirtualListDataSource;
-	private readonly overscan: number;
 	private readonly keepParity: boolean;
 	private readonly topSpacer: HTMLElement;
 	private readonly bottomSpacer: HTMLElement;
@@ -54,7 +55,6 @@ export class VirtualList {
 		this.scrollElem = options.scrollElem;
 		this.contentElem = options.contentElem;
 		this.dataSource = options.dataSource;
-		this.overscan = options.overscan ?? 10;
 		this.keepParity = options.keepParity ?? false;
 		this.rowHeight = options.estimatedRowHeight ?? 32;
 
@@ -79,9 +79,7 @@ export class VirtualList {
 
 	// Re-reads the row count. Call after the data source's contents change.
 	update() {
-		this.rendered.clear();
-		this.firstIndex = -1;
-		this.lastIndex = -1;
+		this.invalidate();
 		this.render();
 	}
 
@@ -92,8 +90,8 @@ export class VirtualList {
 
 	// Runs `callback` over the rows currently on screen, for state that depends on something
 	// other than the row's own index.
-	updateVisible(callback: (row: Element, index: number) => void) {
-		this.rendered.forEach((row, index) => callback(row, index));
+	updateVisible(callback: (row: Element) => void) {
+		this.rendered.forEach(row => callback(row));
 	}
 
 	dispose() {
@@ -115,16 +113,14 @@ export class VirtualList {
 	private render() {
 		const total = this.dataSource.count();
 		if (total === 0) {
-			this.rendered.clear();
-			this.firstIndex = -1;
-			this.lastIndex = -1;
+			this.invalidate();
 			this.contentElem.replaceChildren();
 			return;
 		}
 
 		const viewportHeight = this.scrollElem.clientHeight || this.rowHeight;
-		const visibleCount = Math.ceil(viewportHeight / this.rowHeight) + this.overscan * 2;
-		const first = Math.max(0, Math.floor(this.scrollElem.scrollTop / this.rowHeight) - this.overscan);
+		const visibleCount = Math.ceil(viewportHeight / this.rowHeight) + OVERSCAN_ROWS * 2;
+		const first = Math.max(0, Math.floor(this.scrollElem.scrollTop / this.rowHeight) - OVERSCAN_ROWS);
 		const last = Math.min(total - 1, first + visibleCount);
 
 		if (this.measured && first === this.firstIndex && last === this.lastIndex) return;
@@ -143,12 +139,21 @@ export class VirtualList {
 		this.topSpacer.style.height = `${first * this.rowHeight}px`;
 		this.bottomSpacer.style.height = `${Math.max(0, total - 1 - last) * this.rowHeight}px`;
 
+		// The whole window is re-inserted rather than diffed. It is bounded by the viewport
+		// plus overscan (~43 rows), and measured scrolling holds 17ms frames with no drops,
+		// so diffing entered/left rows would add branching for no observed gain.
 		const children: Array<Element> = [];
 		if (this.keepParity && first % 2 === 1) children.push(this.parityFiller);
 		children.push(this.topSpacer, ...rows, this.bottomSpacer);
 		this.contentElem.replaceChildren(...children);
 
 		if (!this.measured) this.measureRowHeight(rows[0]);
+	}
+
+	private invalidate() {
+		this.rendered.clear();
+		this.firstIndex = -1;
+		this.lastIndex = -1;
 	}
 
 	// Measures a real row rather than trusting the estimate. If it disagrees, the offsets
@@ -160,9 +165,7 @@ export class VirtualList {
 		this.measured = true;
 		if (Math.abs(height - this.rowHeight) < 0.5) return;
 		this.rowHeight = height;
-		this.rendered.clear();
-		this.firstIndex = -1;
-		this.lastIndex = -1;
+		this.invalidate();
 		this.render();
 	}
 }

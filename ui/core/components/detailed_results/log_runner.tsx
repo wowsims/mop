@@ -24,7 +24,7 @@ type LogEntry = {
 };
 
 export class LogRunner extends ResultComponent {
-	private virtualList: VirtualList | null = null;
+	private readonly virtualList: VirtualList;
 	readonly showDebugChangeEmitter = new TypedEvent<void>('Show Debug');
 	private showDebug = false;
 	private ui: {
@@ -39,8 +39,12 @@ export class LogRunner extends ResultComponent {
 	// Logs are held as data, not as DOM. Rows are built when they scroll into view.
 	private cacheKey: string | null = null;
 	private entries: Array<LogEntry> = [];
-	// Indexes into `entries` that pass the current search, in order.
+	// Indexes into `entries` that pass the current search, in order. `allIndexes` and
+	// `nonDebugIndexes` are the two results an empty query produces, so the common case
+	// assigns a reference instead of rebuilding half a million integers per keystroke.
 	private visibleIndexes: Array<number> = [];
+	private allIndexes: Array<number> = [];
+	private nonDebugIndexes: Array<number> = [];
 
 	constructor(config: ResultComponentConfig, simUi: SimUI) {
 		config.rootCssClass = 'log-runner-root';
@@ -93,7 +97,7 @@ export class LogRunner extends ResultComponent {
 		};
 		this.ui.search?.addEventListener('input', debounce(onSearchHandler, 150));
 		this.ui.buttonToTop?.addEventListener('click', () => {
-			this.virtualList?.scrollToTop();
+			this.virtualList.scrollToTop();
 		});
 
 		this.ui.exportLog?.addEventListener('click', () => {
@@ -114,10 +118,6 @@ export class LogRunner extends ResultComponent {
 			},
 		});
 
-		this.showDebugChangeEmitter.on(() => {
-			onSearchHandler();
-		});
-
 		this.virtualList = new VirtualList({
 			scrollElem: this.ui.scrollContainer,
 			contentElem: this.ui.contentContainer,
@@ -126,7 +126,11 @@ export class LogRunner extends ResultComponent {
 				renderRow: position => this.renderRow(this.entries[this.visibleIndexes[position]].log),
 			},
 		});
-		this.addOnDisposeCallback(() => this.virtualList?.dispose());
+		this.addOnDisposeCallback(() => this.virtualList.dispose());
+
+		this.showDebugChangeEmitter.on(() => {
+			onSearchHandler();
+		});
 	}
 
 	searchLogs(searchQuery: string): void {
@@ -140,25 +144,36 @@ export class LogRunner extends ResultComponent {
 		}
 
 		// Filtering produces indexes, not elements, so a keystroke never builds a row.
-		this.visibleIndexes = [];
-		for (let i = 0; i < this.entries.length; i++) {
-			const entry = this.entries[i];
-			if (!this.showDebug && entry.isDebug) continue;
-			if (keywords.every(keyword => entry.searchText.includes(keyword))) {
-				this.visibleIndexes.push(i);
+		if (keywords.length === 0) {
+			this.visibleIndexes = this.showDebug ? this.allIndexes : this.nonDebugIndexes;
+		} else {
+			const matches: Array<number> = [];
+			for (let i = 0; i < this.entries.length; i++) {
+				const entry = this.entries[i];
+				if (!this.showDebug && entry.isDebug) continue;
+				let matchesAll = true;
+				for (const keyword of keywords) {
+					if (!entry.searchText.includes(keyword)) {
+						matchesAll = false;
+						break;
+					}
+				}
+				if (matchesAll) matches.push(i);
 			}
+			this.visibleIndexes = matches;
 		}
 
-		this.virtualList?.scrollToTop();
+		this.virtualList.scrollToTop();
 	}
 
 	onSimResult(resultData: SimResultData): void {
-		this.getLogs(resultData);
+		this.rebuildEntries(resultData);
 		this.searchLogs(this.ui.search.value);
 	}
 
-	getLogs(resultData: SimResultData) {
-		if (!resultData) return;
+	// `entries` and the index lists are one state transition; they are rebuilt together and
+	// searchLogs() is always what follows, via onSimResult.
+	private rebuildEntries(resultData: SimResultData) {
 		const cacheKey = resultData.result.request.requestId;
 		if (this.cacheKey === cacheKey) return;
 
@@ -172,6 +187,8 @@ export class LogRunner extends ResultComponent {
 				searchText: `${log.raw} ${log.actionId?.name ?? ''}`.toLowerCase(),
 				isDebug: log.raw.includes(DEBUG_MARKER),
 			}));
+		this.allIndexes = this.entries.map((_, i) => i);
+		this.nonDebugIndexes = this.allIndexes.filter(i => !this.entries[i].isDebug);
 	}
 
 	private renderRow(log: SimLog) {

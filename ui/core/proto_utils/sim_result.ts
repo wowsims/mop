@@ -40,40 +40,50 @@ import {
 // of the same half-million-entry array, and every pet added two more scans of its owner's
 // slice on top.
 class UnitLogIndex {
-	private readonly buckets = new Map<string, Array<SimLog>>();
+	// Players and targets are keyed by index alone, which is safe because raid index and
+	// target index are unique per unit - Entity.equals() also compares name, but only
+	// because it cannot assume that. Pets share their owner's raid index, so they are the
+	// one case that needs the name, and the one case that allocates a key.
+	private readonly players = new Map<number, Array<SimLog>>();
+	private readonly targets = new Map<number, Array<SimLog>>();
+	private readonly pets = new Map<number, Map<string, Array<SimLog>>>();
 
 	constructor(logs: Array<SimLog>) {
 		for (const log of logs) {
 			const source = log.source;
 			if (!source) continue;
-			const key = UnitLogIndex.key(source);
-			const bucket = this.buckets.get(key);
-			if (bucket) {
-				bucket.push(log);
+			if (source.isPet) {
+				let byName = this.pets.get(source.index);
+				if (!byName) {
+					byName = new Map();
+					this.pets.set(source.index, byName);
+				}
+				UnitLogIndex.push(byName, source.name, log);
 			} else {
-				this.buckets.set(key, [log]);
+				UnitLogIndex.push(source.isTarget ? this.targets : this.players, source.index, log);
 			}
 		}
 	}
 
-	private static key(source: Entity): string {
-		if (source.isTarget) return `t|${source.index}`;
-		// Pets share their owner's raid index, so the name is what separates them - and the
-		// name is what the old per-pet filter compared against too.
-		if (source.isPet) return `pet|${source.index}|${source.name}`;
-		return `p|${source.index}`;
+	private static push<K>(bucket: Map<K, Array<SimLog>>, key: K, log: SimLog) {
+		const existing = bucket.get(key);
+		if (existing) {
+			existing.push(log);
+		} else {
+			bucket.set(key, [log]);
+		}
 	}
 
 	player(raidIndex: number): Array<SimLog> {
-		return this.buckets.get(`p|${raidIndex}`) ?? [];
+		return this.players.get(raidIndex) ?? [];
 	}
 
 	pet(raidIndex: number, name: string): Array<SimLog> {
-		return this.buckets.get(`pet|${raidIndex}|${name}`) ?? [];
+		return this.pets.get(raidIndex)?.get(name) ?? [];
 	}
 
 	target(index: number): Array<SimLog> {
-		return this.buckets.get(`t|${index}`) ?? [];
+		return this.targets.get(index) ?? [];
 	}
 }
 
@@ -436,12 +446,8 @@ export class UnitMetrics {
 	// major cooldown.
 	get majorCooldownAuraUptimeLogs(): Array<AuraUptimeLog> {
 		if (!this.memoMajorCooldownAuraUptimeLogs) {
-			// Keyed on every field ActionId.equals() compares. toString() would be wrong here:
-			// it reports only the first non-zero of itemId/spellId/otherId and drops
-			// randomSuffixId and upgradeStep entirely.
-			const key = (id: ActionId) => `${id.itemId}|${id.randomSuffixId}|${id.spellId}|${id.otherId}|${id.upgradeStep}|${id.tag}`;
-			const mcdIds = new Set(this.majorCooldownLogs.map(mcdLog => key(mcdLog.actionId!)));
-			this.memoMajorCooldownAuraUptimeLogs = this.auraUptimeLogs.filter(auraLog => mcdIds.has(key(auraLog.actionId!)));
+			const mcdIds = new Set(this.majorCooldownLogs.map(mcdLog => mcdLog.actionId!.equalityKey()));
+			this.memoMajorCooldownAuraUptimeLogs = this.auraUptimeLogs.filter(auraLog => mcdIds.has(auraLog.actionId!.equalityKey()));
 		}
 		return this.memoMajorCooldownAuraUptimeLogs;
 	}

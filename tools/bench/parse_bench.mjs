@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
-const SKIP_FIELDS = new Set(['raw', 'cachedHTML', 'activeAuras', 'source', 'target', 'actionId', 'logIndex']);
+const SKIP_FIELDS = new Set(['raw', 'activeAuras', 'source', 'target', 'actionId', 'logIndex']);
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -238,10 +238,11 @@ async function retainedHeapMb(fn) {
 	globalThis.gc();
 	const before = process.memoryUsage().heapUsed;
 	const held = await fn();
+	// Touch the result before the second gc(), so it is provably still reachable when the
+	// measurement is taken.
+	void (Array.isArray(held) ? held.length : held);
 	globalThis.gc();
 	const after = process.memoryUsage().heapUsed;
-	// Touch the result so it cannot be collected before the measurement.
-	void (Array.isArray(held) ? held.length : held);
 	return round((after - before) / 1024 / 1024, 1);
 }
 

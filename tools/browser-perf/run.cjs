@@ -21,12 +21,10 @@ function findModule(name) {
 	try {
 		return require(name);
 	} catch {}
-	const roots = [path.join(os.homedir(), '.npm/_npx')];
-	for (const root of roots) {
-		for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
-			const candidate = path.join(root, entry.name, 'node_modules', name);
-			if (fs.existsSync(candidate)) return require(candidate);
-		}
+	const npxCache = path.join(os.homedir(), '.npm/_npx');
+	for (const entry of fs.readdirSync(npxCache, { withFileTypes: true })) {
+		const candidate = path.join(npxCache, entry.name, 'node_modules', name);
+		if (fs.existsSync(candidate)) return require(candidate);
 	}
 	throw new Error(`could not resolve ${name}; run "npx playwright-core --version" once to populate the npx cache`);
 }

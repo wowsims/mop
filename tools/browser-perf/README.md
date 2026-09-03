@@ -71,6 +71,7 @@ drops — so the log-runner rewrite is a memory and first-paint fix, not a scrol
 | Simulate long task (Damage tab active) | 1,117 / 1,157 / 1,142 ms | **176 / 216 / 208 ms** |
 | Rotation built while the Timeline tab is hidden | 96 rows, 13,326 nodes, 7,376 tippies | **0 / 0 / 0** |
 | Log rows built at Simulate | 50 in the DOM, ~20k detached `<tr>` + strings | **0** |
+| Opening the Log tab | — | 9 ms |
 | Search keystroke | 65–84 ms long task | **no long task** |
 | Opening the Log tab | — | 2 ms |
 | Opening the Timeline tab | 5 ms (already built) | 40 ms (builds everything) |
@@ -84,3 +85,15 @@ add to every single Simulate press.
 
 Counts are exactly reproducible between runs; the millisecond figures are not, and the first
 Simulate after a page load carries worker warm-up. Compare counts, sample timings.
+
+### A correction
+
+The `logRowsBuilt` figure above was briefly wrong. The protocol kept counting
+`.log-runner-logs tr` after the log table became a grid of divs, so it read 0 for a state
+that was really 22 — the Log tab still rebuilt its window on every result. The selector is
+fixed, `LogRunner` now genuinely defers via `ResultComponent`'s `deferUntilShown`, and the 0
+is measured rather than an artefact of a stale selector.
+
+Worth generalising: a metric that reads 0 because its selector matches nothing looks
+identical to a metric that reads 0 because the work stopped. Prefer assertions that fail
+loudly (a non-zero "before" in the same run) over bare counts.
