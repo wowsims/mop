@@ -25,7 +25,8 @@ const dpsColor = '#ed5653';
 const manaColor = '#2E93fA';
 const threatColor = '#b56d07';
 
-const cachedSpellCastIcon = new CacheHandler<HTMLAnchorElement>();
+// Bounded: this holds detached DOM, and an unbounded CacheHandler never evicts.
+const cachedSpellCastIcon = new CacheHandler<HTMLAnchorElement>({ keysToKeep: 512 });
 
 interface TimelineConfig extends ResultComponentConfig {
 	secondaryResource?: SecondaryResource | null;

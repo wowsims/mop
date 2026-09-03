@@ -71,3 +71,34 @@ per-unit fan-out and the eager derives. Both run on every Simulate press, becaus
 Two promises per log line: `ActionId.fromLogString(...).fill()` plus the `.then()` that builds
 the log object. A 25-man raid sim therefore blocks the main thread for **~9.4 seconds** and
 allocates **992k promises** and **830 MB** before a single tab renders.
+
+## After branch 2 — `perf/log-data-pipeline`
+
+| fixture | parse ms | lines/s | promises | parse heap MB | makeNew ms | derives ms | heap MB |
+|---|---|---|---|---|---|---|---|
+| unholy | 78.6 | 259,483 | 1,060 | 9.1 | 0 | 25.0 | 0 |
+| demonology | 59.8 | 272,076 | 604 | 7.4 | 8.2 | 19.2 | 0 |
+| raid25 | 2,346.5 | 211,382 | 25,496 | 222 | 0 | 1,003.2 | 274 |
+
+| | master | branch 2 | |
+|---|---|---|---|
+| raid25 parse | 5,750 ms | 2,346 ms | 2.45× |
+| raid25 promises | 992,032 | 25,496 | 39× fewer |
+| raid25 blocking total | 9,387 ms | 2,347 ms (nothing read) / 3,350 ms (everything read) | 4.0× / 2.8× |
+| raid25 heap | 563 MB | 274 MB | |
+| unholy parse | 209.7 ms | 78.6 ms | 2.7× |
+| unholy derive | 66.5 ms eager | 25.0 ms on read, 0 if unread | |
+
+`derives ms` is new and exists so the lazy getters cannot flatter the result: it times reading
+every derived view on every unit, which is exactly what the old constructor did up front. Even
+paying all of it, the total beats master; a tab that reads none of it pays nothing.
+
+Promises no longer scale with line count. They are now one per distinct `(action id, player
+index)` pair — 1,060 for a fight with 20,394 log lines.
+
+### What did not move
+
+The browser's Simulate long task is ~1.2–1.6 s before and after. Phase A removes ~140 ms of
+parse from it; the rest is the timeline building 95 rows, 13k nodes and 7.4k tippy instances
+into a hidden tab, which is branch 4's work. Note also that the in-browser figure varies run to
+run because the sim seed does — compare node numbers for the parser, not browser ones.

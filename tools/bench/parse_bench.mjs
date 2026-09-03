@@ -74,9 +74,17 @@ function scalars(obj) {
 
 function dumpLog(log) {
 	const entity = e => (e ? `${e.name}/${e.index}/${e.isTarget ? 'T' : 'P'}${e.isPet ? 'p' : ''}` : '-');
-	return [log.constructor.name, log.timestamp.toFixed(6), log.actionIdAsString ?? '-', entity(log.source), entity(log.target), scalars(log), log.raw].join(
-		'|',
-	);
+	return [
+		log.constructor.name,
+		log.timestamp.toFixed(6),
+		log.actionIdAsString ?? '-',
+		entity(log.source),
+		entity(log.target),
+		scalars(log),
+		// Order, not just count: populateActiveAuras sorts this by name.
+		log.activeAuras.map(a => a.actionId?.name ?? '?').join(';'),
+		log.raw,
+	].join('|');
 }
 
 async function dumpParity(fixtures, outPath) {
@@ -166,8 +174,33 @@ async function benchFixture(name) {
 		};
 		row.makeNewMs = Math.max(0, (await median(RUNS, fresh)) - row.parseMs);
 		row.makeNewHeapMb = await retainedHeapMb(fresh);
+		// The derived views are built on first read, so makeNew alone no longer tells the
+		// whole story. Time reading every one of them for every unit as well: that is the
+		// work the old constructor did eagerly, and what a tab that displays everything pays.
+		row.derivesMs = await median(RUNS, async () => {
+			const simResult = await fresh();
+			touchDerives(simResult);
+		});
+		row.derivesMs = Math.max(0, row.derivesMs - row.parseMs - row.makeNewMs);
 	}
 	return row;
+}
+
+// Reads every derived view on every unit, so the lazy getters actually run.
+function touchDerives(simResult) {
+	const visit = unit => {
+		void unit.damageDealtLogs.length;
+		void unit.dpsLogs.length;
+		void unit.castLogs.length;
+		void unit.threatLogs.length;
+		void unit.auraUptimeLogs.length;
+		void unit.majorCooldownLogs.length;
+		void unit.majorCooldownAuraUptimeLogs.length;
+		void Object.keys(unit.groupedResourceLogs).length;
+		unit.pets.forEach(visit);
+	};
+	simResult.getPlayers().forEach(visit);
+	simResult.getTargets().forEach(visit);
 }
 
 async function median(runs, fn) {
@@ -228,6 +261,7 @@ function report(rows) {
 	];
 	if (values.full) {
 		cols.push(['makeNew ms', r => round(r.makeNewMs, 1).toString()]);
+		cols.push(['derives ms', r => round(r.derivesMs ?? 0, 1).toString()]);
 		cols.push(['makeNew heap MB', r => (r.makeNewHeapMb ?? '—').toString()]);
 	}
 
