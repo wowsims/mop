@@ -51,7 +51,10 @@ export interface SimUIConfig {
 export abstract class SimUI extends Component {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
+	// Unlaunched sim outside dev mode: every action is off and the results panel shows the unlaunched notice.
 	readonly disabled: boolean;
+	// Simulation actions (Simulate, stat weights, bulk sim) are off. True for unlaunched and gear-planner sims.
+	readonly simDisabled: boolean;
 
 	// Emits when anything from the sim, raid, or encounter changes.
 	readonly changeEmitter;
@@ -70,6 +73,7 @@ export abstract class SimUI extends Component {
 		this.sim = sim;
 		this.config = config;
 		this.disabled = !isDevMode() && config.simStatus.status === LaunchStatus.Unlaunched;
+		this.simDisabled = this.disabled || (!isDevMode() && config.simStatus.status === LaunchStatus.GearPlanner);
 
 		const container = (
 			<>
@@ -227,6 +231,21 @@ export abstract class SimUI extends Component {
 					)}
 				</div>,
 			);
+		} else if (this.simDisabled) {
+			resultsViewerElem.appendChild(
+				<div className="sim-ui-unlaunched-container d-flex flex-column align-items-center text-center mt-auto mb-auto ms-auto me-auto">
+					<i className="fas fa-tools fa-3x mb-2" />
+					<h6>{i18n.t('sim.gear_planner.title')}</h6>
+					<p>{i18n.t('sim.gear_planner.message')}</p>
+					{this.config.spec?.isHealingSpec && (
+						<p>
+							{i18n.t('sim.unlaunched.healing_message')}
+							<br />
+							{i18n.t('sim.unlaunched.qe_live_message')} <a href="https://questionablyepic.com/live/">QE Live</a>!
+						</p>
+					)}
+				</div>,
+			);
 		}
 	}
 
@@ -236,7 +255,7 @@ export abstract class SimUI extends Component {
 
 	addAction(label: string, cssClass: string, onClick: (event: MouseEvent) => void): HTMLButtonElement {
 		const button = this.simActionsContainer.appendChild(
-			<button className={clsx('sim-sidebar-action-button btn btn-primary w-100', cssClass)} onclick={onClick} disabled={this.disabled}>
+			<button className={clsx('sim-sidebar-action-button btn btn-primary w-100', cssClass)} onclick={onClick} disabled={this.simDisabled}>
 				{label}
 				<span className="sim-sidebar-action-button-loading-icon">
 					<i className="fas fa-spinner fa-spin"></i>
@@ -293,6 +312,9 @@ export abstract class SimUI extends Component {
 		switch (config.simStatus.status) {
 			case LaunchStatus.Unlaunched:
 				statusStr = i18n.t('info.status.unlaunched');
+				break;
+			case LaunchStatus.GearPlanner:
+				statusStr = i18n.t('info.status.gear_planner');
 				break;
 			case LaunchStatus.Alpha:
 				statusStr = i18n.t('info.status.alpha');

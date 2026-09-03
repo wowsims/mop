@@ -332,7 +332,8 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 			ItemNotice.registerSetBonusNotices(this.sim.db);
 			this.loadSettings();
 
-			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode()) {
+			// Gear-planner specs never simulate, so the healing-sim disclaimer does not apply to them.
+			if (this.player.getPlayerSpec().isHealingSpec && !isDevMode() && !this.simDisabled) {
 				alert(i18n.t('sim.healing_sim_disclaimer'));
 			}
 		});
@@ -439,6 +440,7 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 		//this.sim.showExperimentalChangeEmitter.on(() => {
 		//	bulkTab.navLink.hidden = !this.sim.getShowExperimental();
 		//});
+		if (this.simDisabled) bulkTab.navItem.classList.add('d-none');
 		return bulkTab;
 	}
 
@@ -451,7 +453,8 @@ export abstract class IndividualSimUI<SpecType extends Spec> extends SimUI {
 	}
 
 	private addRotationTab() {
-		new RotationTab(this.simTabContentsContainer, this);
+		const rotationTab = new RotationTab(this.simTabContentsContainer, this);
+		if (this.simDisabled) rotationTab.navItem.classList.add('d-none');
 	}
 
 	private addDetailedResultsTab() {
