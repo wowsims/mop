@@ -93,13 +93,13 @@ export class SimHeader extends Component {
 		this.simTabsContainer.appendChild(tab.navItem);
 	}
 
-	addImportLink(label: string, importer: Importer, hideInRaidSim?: boolean, isUnsupported = false) {
-		this.addImportExportLink('.import-dropdown', label, importer, hideInRaidSim, isUnsupported);
+	addImportLink(label: string, importer: Importer, isUnsupported = false) {
+		this.addImportExportLink('.import-dropdown', label, importer, isUnsupported);
 	}
-	addExportLink(label: string, exporter: Exporter, hideInRaidSim?: boolean, isUnsupported = false) {
-		this.addImportExportLink('.export-dropdown', label, exporter, hideInRaidSim, isUnsupported);
+	addExportLink(label: string, exporter: Exporter, isUnsupported = false) {
+		this.addImportExportLink('.export-dropdown', label, exporter, isUnsupported);
 	}
-	private addImportExportLink(cssClass: string, label: string, importerExporter: Importer | Exporter, _hideInRaidSim?: boolean, isUnsupported?: boolean) {
+	private addImportExportLink(cssClass: string, label: string, importerExporter: Importer | Exporter, isUnsupported?: boolean) {
 		const dropdownElem = this.rootElem.querySelector<HTMLElement>(cssClass)!;
 		const menuElem = dropdownElem.querySelector<HTMLElement>('.dropdown-menu')!;
 		const buttonRef = ref<HTMLButtonElement>();
@@ -241,7 +241,7 @@ export class SimHeader extends Component {
 			<header className="sim-header">
 				<div className="sim-header-container">
 					<ul className="sim-tabs nav nav-tabs" attributes={{ role: 'tablist' }}></ul>
-					<div className="import-export nav within-raid-sim-hide">
+					<div className="import-export nav">
 						<div className="dropdown sim-dropdown-menu import-dropdown">
 							<button className="import-link" attributes={{ 'aria-expanded': 'false' }} dataset={{ bsToggle: 'dropdown', bsDisplay: 'dynamic' }}>
 								<i className="fa fa-download"></i> {i18n.t('import.title')}

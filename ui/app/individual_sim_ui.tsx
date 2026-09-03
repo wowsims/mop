@@ -347,17 +347,17 @@ export class IndividualSimUI<SpecType extends Spec> extends SimUI implements Ind
 	}
 
 	private addTopbarComponents() {
-		this.simHeader.addImportLink('JSON', new IndividualJsonImporter(this.rootElem, this), true);
-		// this.simHeader.addImportLink('60U Cata', new Individual60UImporter(this.rootElem, this), true);
-		this.simHeader.addImportLink('WoWHead', new IndividualWowheadGearPlannerImporter(this.rootElem, this), false, false);
-		this.simHeader.addImportLink('Addon', new IndividualAddonImporter(this.rootElem, this), true);
+		this.simHeader.addImportLink('JSON', new IndividualJsonImporter(this.rootElem, this));
+		// this.simHeader.addImportLink('60U Cata', new Individual60UImporter(this.rootElem, this));
+		this.simHeader.addImportLink('WoWHead', new IndividualWowheadGearPlannerImporter(this.rootElem, this));
+		this.simHeader.addImportLink('Addon', new IndividualAddonImporter(this.rootElem, this));
 
-		this.simHeader.addExportLink('Link', new IndividualLinkExporter(this.rootElem, this), false);
-		this.simHeader.addExportLink('JSON', new IndividualJsonExporter(this.rootElem, this), true);
-		this.simHeader.addExportLink('WoWHead', new IndividualWowheadGearPlannerExporter(this.rootElem, this), false, false);
-		// this.simHeader.addExportLink('60U Cata EP', new Individual60UEPExporter(this.rootElem, this), false);
-		this.simHeader.addExportLink('Pawn EP', new IndividualPawnEPExporter(this.rootElem, this), false);
-		this.simHeader.addExportLink('CLI', new IndividualCLIExporter(this.rootElem, this), true);
+		this.simHeader.addExportLink('Link', new IndividualLinkExporter(this.rootElem, this));
+		this.simHeader.addExportLink('JSON', new IndividualJsonExporter(this.rootElem, this));
+		this.simHeader.addExportLink('WoWHead', new IndividualWowheadGearPlannerExporter(this.rootElem, this));
+		// this.simHeader.addExportLink('60U Cata EP', new Individual60UEPExporter(this.rootElem, this));
+		this.simHeader.addExportLink('Pawn EP', new IndividualPawnEPExporter(this.rootElem, this));
+		this.simHeader.addExportLink('CLI', new IndividualCLIExporter(this.rootElem, this));
 	}
 
 	applyDefaultRotation(eventID: EventID) {

@@ -10,6 +10,7 @@ import { Component } from '@ui-kit/component';
 import clsx from 'clsx';
 import { ref } from 'tsx-vanilla';
 
+
 interface ClassOptions {
 	type: 'Class';
 	class: PlayerClass<Class>;
@@ -20,24 +21,14 @@ interface SpecOptions {
 	spec: PlayerSpec<any>;
 }
 
-type SimTitleDropdownConfig = {
-	noDropdown?: boolean;
-};
-
 // Dropdown menu for selecting a player.
 export class SimTitleDropdown extends Component {
 	private readonly dropdownMenu: HTMLElement | undefined;
 
-	constructor(parent: HTMLElement, currentSpec: PlayerSpec<any>, config: SimTitleDropdownConfig = {}) {
+	constructor(parent: HTMLElement, currentSpec: PlayerSpec<any>) {
 		super(parent, 'sim-title-dropdown-root');
 
-		const rootLinkArgs: SpecOptions = { type: 'Spec', spec: currentSpec };
-		const rootLink = this.buildRootSimLink(rootLinkArgs);
-
-		if (config.noDropdown) {
-			this.rootElem.replaceChildren(rootLink);
-			return;
-		}
+		const rootLink = this.buildRootSimLink({ type: 'Spec', spec: currentSpec });
 
 		const dropdownMenuRef = ref<HTMLUListElement>();
 		this.rootElem.replaceChildren(
@@ -163,8 +154,6 @@ export class SimTitleDropdown extends Component {
 				return textCssClassForClass(data.class);
 			case 'Spec':
 				return textCssClassForSpec(data.spec);
-			default:
-				return 'text-white';
 		}
 	}
 }

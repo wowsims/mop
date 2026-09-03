@@ -570,7 +570,7 @@ class APLPlaceholderNamePicker extends Input<Player<any>, string> {
 	private openNameModal(player: Player<any>, getParentValue: () => any, isNew = false) {
 		const currentName = this.getSourceValue();
 		const group = this.findContainingGroup(player, getParentValue());
-		new APLNameModal((this.rootElem.closest('.individual-sim-ui') as HTMLElement) ?? document.body, {
+		new APLNameModal((this.rootElem.closest('.sim-ui') as HTMLElement) ?? document.body, {
 			title: currentName
 				? i18n.t('rotation_tab.apl.nameModal.rename', { itemName: i18n.t('rotation_tab.apl.variablePlaceholder.name') })
 				: i18n.t('rotation_tab.apl.floatingActionBar.new', { itemName: i18n.t('rotation_tab.apl.variablePlaceholder.name') }),

@@ -176,6 +176,7 @@ export default defineConfig(({ command, mode }) => {
 		build: {
 			...baseConfig.build,
 			rollupOptions: {
+				// The per-spec pages are added by the specPages plugin.
 				input: {
 					'ui/index.html': path.resolve(BASE_PATH, 'index.html'),
 					// The single spec page. `specPages` copies the processed result to

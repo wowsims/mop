@@ -185,6 +185,7 @@ export function getTalentPoints(talentsString: string): number {
 	return getTalentTreePoints(talentsString).filter(Boolean).length;
 }
 
+
 export function textCssClassForClass<ClassType extends Class>(playerClass: PlayerClass<ClassType>): string {
 	return `text-${PlayerClasses.getCssClass(playerClass)}`;
 }

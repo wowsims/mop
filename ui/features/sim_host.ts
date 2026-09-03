@@ -36,7 +36,6 @@ export interface SimHost extends SimUIHost {
 	readonly simTabContentsContainer: HTMLElement;
 	addAction(label: string, cssClass: string, onClick: (event: MouseEvent) => void): HTMLButtonElement;
 	addActionGroup(groups: ActionGroupItem[], groupOptions?: { cssClass?: string }): { group: HTMLDivElement; children: HTMLButtonElement[] };
-	isIndividualSim(): boolean;
 	runSim(onProgress: WorkerProgressCallback, options?: RunSimOptions): Promise<SimResult | ErrorOutcome | undefined>;
 	runSimLightweight(
 		gear: Gear,
@@ -66,7 +65,8 @@ export interface IndividualSimHost<SpecType extends Spec> extends SimHost {
 }
 
 // `instanceof IndividualSimUI` is not available to features (the shell lives in
-// app/); narrow on the shell's own predicate instead.
+// app/); narrow structurally instead. With the raid sim gone every host is an
+// individual one, but features still must not name the shell.
 export function isIndividualSimHost(simUI: SimHost): simUI is IndividualSimHost<any> {
-	return simUI.isIndividualSim();
+	return 'player' in simUI;
 }

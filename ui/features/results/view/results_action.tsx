@@ -2,7 +2,7 @@ import { ActionMetrics, SimResult, SimResultFilter } from '@domain/proto_utils/s
 import { RequestTypes } from '@domain/sim_signal_manager';
 import { batch, EventID, nextEventID } from '@domain/state/batch';
 import { Emitter } from '@domain/state/events';
-import { formatDeltaTextElem, formatToNumber, formatToPercent, sum, zTest } from '@domain/utils';
+import { formatDeltaTextElem, formatToNumber, formatToPercent, zTest } from '@domain/utils';
 import { metricsClasses, ReferenceData, resultMetricCategories, resultMetricClasses, ResultMetrics } from '@features/results/model/sim_results';
 import type { SimHost } from '@features/sim_host';
 import { DistributionMetrics as DistributionMetricsProto, ProgressMetrics, Raid as RaidProto } from '@generated/proto/api';
@@ -99,11 +99,9 @@ export class SimResultsManager {
 				<div className="results-sim-dps damage-metrics">
 					<span className="topline-result-avg">{progress.dps.toFixed(2)}</span>
 				</div>
-				{this.simUI.isIndividualSim() && (
-					<div className="results-sim-hps healing-metrics">
-						<span className="topline-result-avg">{progress.hps.toFixed(2)}</span>
-					</div>
-				)}
+				<div className="results-sim-hps healing-metrics">
+					<span className="topline-result-avg">{progress.hps.toFixed(2)}</span>
+				</div>
 				<div>
 					{progress.presimRunning
 						? i18n.t('sidebar.results.progress.presim_running')
@@ -182,15 +180,6 @@ export class SimResultsManager {
 				<p>{i18n.t('sidebar.results.metrics.cod.tooltip.note')}</p>
 			</>,
 		);
-
-		if (!this.simUI.isIndividualSim()) {
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['tto']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['hps']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['tps']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['dtps']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['tmi']}`)].forEach(e => e.remove());
-			[...this.simUI.resultsViewer.contentElem.querySelectorAll(`.${SimResultsManager.resultMetricClasses['cod']}`)].forEach(e => e.remove());
-		}
 
 		const simReferenceSetButton = this.simUI.resultsViewer.contentElem.querySelector<HTMLSpanElement>('.results-sim-set-reference');
 		if (simReferenceSetButton) {
@@ -271,27 +260,18 @@ export class SimResultsManager {
 		}
 
 		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['dps']} .results-reference-diff`, res => res.raidMetrics.dps, 2);
-		if (this.simUI.isIndividualSim()) {
-			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['hps']} .results-reference-diff`, res => res.raidMetrics.hps, 2);
-			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tto']} .results-reference-diff`, res => res.getFirstPlayer()!.tto, 2);
-			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tps']} .results-reference-diff`, res => res.getFirstPlayer()!.tps, 2);
-			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['dtps']} .results-reference-diff`, res => res.getFirstPlayer()!.dtps, 2, true);
-			this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tmi']} .results-reference-diff`, res => res.getFirstPlayer()!.tmi, 2, true);
-			this.formatToplineResult(
-				`.${SimResultsManager.resultMetricClasses['cod']} .results-reference-diff`,
-				res => res.getFirstPlayer()!.chanceOfDeath,
-				2,
-				true,
-				true,
-			);
-		} else {
-			this.formatToplineResult(
-				`.${SimResultsManager.resultMetricClasses['dtps']} .results-reference-diff`,
-				res => sum(res.getPlayers()!.map(player => player.dtps.avg)) / res.getPlayers().length,
-				2,
-				true,
-			);
-		}
+		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['hps']} .results-reference-diff`, res => res.raidMetrics.hps, 2);
+		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tto']} .results-reference-diff`, res => res.getFirstPlayer()!.tto, 2);
+		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tps']} .results-reference-diff`, res => res.getFirstPlayer()!.tps, 2);
+		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['dtps']} .results-reference-diff`, res => res.getFirstPlayer()!.dtps, 2, true);
+		this.formatToplineResult(`.${SimResultsManager.resultMetricClasses['tmi']} .results-reference-diff`, res => res.getFirstPlayer()!.tmi, 2, true);
+		this.formatToplineResult(
+			`.${SimResultsManager.resultMetricClasses['cod']} .results-reference-diff`,
+			res => res.getFirstPlayer()!.chanceOfDeath,
+			2,
+			true,
+			true,
+		);
 	}
 
 	private formatToplineResult(
@@ -403,123 +383,17 @@ export class SimResultsManager {
 
 		const resultColumns: ResultMetric[] = [];
 
-		if (players.length === 1) {
-			const playerMetrics = players[0];
-			const showHPSMetricsForTanks = [
-				Spec.SpecBloodDeathKnight,
-				Spec.SpecGuardianDruid,
-				Spec.SpecBrewmasterMonk,
-				Spec.SpecProtectionPaladin,
-				Spec.SpecProtectionWarrior,
-			].includes(players[0].spec?.specID);
+		const playerMetrics = players[0];
+		const showHPSMetricsForTanks = [
+			Spec.SpecBloodDeathKnight,
+			Spec.SpecGuardianDruid,
+			Spec.SpecBrewmasterMonk,
+			Spec.SpecProtectionPaladin,
+			Spec.SpecProtectionWarrior,
+		].includes(players[0].spec?.specID);
 
-			if (playerMetrics.getTargetIndex(filter) === null) {
-				const { chanceOfDeath, dps: dpsMetrics, tps: tpsMetrics, dtps: dtpsMetrics, tmi: tmiMetrics } = playerMetrics;
-
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.dps.label'),
-					average: dpsMetrics.avg,
-					stdev: dpsMetrics.stdev,
-					classes: this.getResultsLineClasses('dps'),
-				});
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.tps.label'),
-					average: tpsMetrics.avg,
-					stdev: tpsMetrics.stdev,
-					classes: this.getResultsLineClasses('tps'),
-				});
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.dtps.label'),
-					average: dtpsMetrics.avg,
-					stdev: dtpsMetrics.stdev,
-					classes: this.getResultsLineClasses('dtps'),
-				});
-
-				if (showHPSMetricsForTanks) {
-					const { hps } = playerMetrics;
-					resultColumns.push({
-						name: i18n.t('sidebar.results.metrics.hps.label'),
-						average: hps.avg,
-						stdev: hps.stdev,
-						classes: this.getResultsLineClasses('hps'),
-					});
-				}
-
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.tmi.label'),
-					average: tmiMetrics.avg,
-					stdev: tmiMetrics.stdev,
-					classes: this.getResultsLineClasses('tmi'),
-					unit: 'percentage',
-				});
-
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.cod.label'),
-					average: chanceOfDeath.avg,
-					stdev: chanceOfDeath.stdev,
-					classes: this.getResultsLineClasses('cod'),
-					unit: 'percentage',
-				});
-			} else {
-				const actions = simResult.getRaidIndexedActionMetrics(filter);
-				if (!!actions.length) {
-					const { dps, tps } = ActionMetrics.merge(actions);
-					resultColumns.push({
-						name: i18n.t('sidebar.results.metrics.dps.label'),
-						average: dps,
-						classes: this.getResultsLineClasses('dps'),
-					});
-
-					resultColumns.push({
-						name: i18n.t('sidebar.results.metrics.tps.label'),
-						average: tps,
-						classes: this.getResultsLineClasses('tps'),
-					});
-				}
-
-				const targetActions = simResult
-					.getTargets(filter)
-					.map(target => target.actions)
-					.flat()
-					.map(action => action.forTarget({ player: playerMetrics.unitIndex }));
-				if (!!targetActions.length) {
-					const { dps: dtps } = ActionMetrics.merge(targetActions);
-
-					resultColumns.push({
-						name: i18n.t('sidebar.results.metrics.dtps.label'),
-						average: dtps,
-						classes: this.getResultsLineClasses('dtps'),
-					});
-				}
-
-				if (showHPSMetricsForTanks) {
-					resultColumns.push({
-						name: i18n.t('sidebar.results.metrics.hps.label'),
-						average: playerMetrics.hps.avg,
-						stdev: playerMetrics.hps.stdev,
-						classes: this.getResultsLineClasses('hps'),
-					});
-				}
-			}
-
-			if (!showHPSMetricsForTanks) {
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.tto.label'),
-					average: playerMetrics.tto.avg,
-					stdev: playerMetrics.tto.stdev,
-					classes: this.getResultsLineClasses('tto'),
-					unit: 'seconds',
-				});
-
-				resultColumns.push({
-					name: i18n.t('sidebar.results.metrics.hps.label'),
-					average: playerMetrics.hps.avg,
-					stdev: playerMetrics.hps.stdev,
-					classes: this.getResultsLineClasses('hps'),
-				});
-			}
-		} else {
-			const dpsMetrics = simResult.raidMetrics.dps;
+		if (playerMetrics.getTargetIndex(filter) === null) {
+			const { chanceOfDeath, dps: dpsMetrics, tps: tpsMetrics, dtps: dtpsMetrics, tmi: tmiMetrics } = playerMetrics;
 
 			resultColumns.push({
 				name: i18n.t('sidebar.results.metrics.dps.label'),
@@ -527,26 +401,99 @@ export class SimResultsManager {
 				stdev: dpsMetrics.stdev,
 				classes: this.getResultsLineClasses('dps'),
 			});
+			resultColumns.push({
+				name: i18n.t('sidebar.results.metrics.tps.label'),
+				average: tpsMetrics.avg,
+				stdev: tpsMetrics.stdev,
+				classes: this.getResultsLineClasses('tps'),
+			});
+			resultColumns.push({
+				name: i18n.t('sidebar.results.metrics.dtps.label'),
+				average: dtpsMetrics.avg,
+				stdev: dtpsMetrics.stdev,
+				classes: this.getResultsLineClasses('dtps'),
+			});
+
+			if (showHPSMetricsForTanks) {
+				const { hps } = playerMetrics;
+				resultColumns.push({
+					name: i18n.t('sidebar.results.metrics.hps.label'),
+					average: hps.avg,
+					stdev: hps.stdev,
+					classes: this.getResultsLineClasses('hps'),
+				});
+			}
+
+			resultColumns.push({
+				name: i18n.t('sidebar.results.metrics.tmi.label'),
+				average: tmiMetrics.avg,
+				stdev: tmiMetrics.stdev,
+				classes: this.getResultsLineClasses('tmi'),
+				unit: 'percentage',
+			});
+
+			resultColumns.push({
+				name: i18n.t('sidebar.results.metrics.cod.label'),
+				average: chanceOfDeath.avg,
+				stdev: chanceOfDeath.stdev,
+				classes: this.getResultsLineClasses('cod'),
+				unit: 'percentage',
+			});
+		} else {
+			const actions = simResult.getRaidIndexedActionMetrics(filter);
+			if (!!actions.length) {
+				const { dps, tps } = ActionMetrics.merge(actions);
+				resultColumns.push({
+					name: i18n.t('sidebar.results.metrics.dps.label'),
+					average: dps,
+					classes: this.getResultsLineClasses('dps'),
+				});
+
+				resultColumns.push({
+					name: i18n.t('sidebar.results.metrics.tps.label'),
+					average: tps,
+					classes: this.getResultsLineClasses('tps'),
+				});
+			}
 
 			const targetActions = simResult
 				.getTargets(filter)
 				.map(target => target.actions)
 				.flat()
-				.map(action => action.forTarget(filter));
+				.map(action => action.forTarget({ player: playerMetrics.unitIndex }));
 			if (!!targetActions.length) {
-				const mergedTargetActions = ActionMetrics.merge(targetActions);
+				const { dps: dtps } = ActionMetrics.merge(targetActions);
+
 				resultColumns.push({
 					name: i18n.t('sidebar.results.metrics.dtps.label'),
-					average: mergedTargetActions.dps,
+					average: dtps,
 					classes: this.getResultsLineClasses('dtps'),
 				});
 			}
 
-			const hpsMetrics = simResult.raidMetrics.hps;
+			if (showHPSMetricsForTanks) {
+				resultColumns.push({
+					name: i18n.t('sidebar.results.metrics.hps.label'),
+					average: playerMetrics.hps.avg,
+					stdev: playerMetrics.hps.stdev,
+					classes: this.getResultsLineClasses('hps'),
+				});
+			}
+		}
+
+		if (!showHPSMetricsForTanks) {
+			resultColumns.push({
+				name: i18n.t('sidebar.results.metrics.tto.label'),
+				average: playerMetrics.tto.avg,
+				stdev: playerMetrics.tto.stdev,
+				classes: this.getResultsLineClasses('tto'),
+				unit: 'seconds',
+			});
+
 			resultColumns.push({
 				name: i18n.t('sidebar.results.metrics.hps.label'),
-				average: hpsMetrics.avg,
-				stdev: hpsMetrics.stdev,
+				average: playerMetrics.hps.avg,
+				stdev: playerMetrics.hps.stdev,
 				classes: this.getResultsLineClasses('hps'),
 			});
 		}

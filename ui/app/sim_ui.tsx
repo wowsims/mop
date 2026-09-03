@@ -35,7 +35,7 @@ export interface SimUIConfig {
 	cssClass: string;
 	// Scheme used for themeing on a per-class Basis or for other sims
 	cssScheme: string;
-	// The spec, if an individual sim, or null if the raid sim.
+	// The spec of the individual sim.
 	spec: PlayerSpec<any>;
 	simStatus: SimStatus;
 	knownIssues?: Array<string>;
@@ -44,7 +44,7 @@ export interface SimUIConfig {
 
 export type { ActionGroupItem, SimWarning } from '@features/sim_host';
 
-// Shared UI for all individual sims and the raid sim.
+// Shared UI for all individual sims.
 export abstract class SimUI extends Component implements SimHost {
 	readonly sim: Sim;
 	readonly config: SimUIConfig;
@@ -70,14 +70,14 @@ export abstract class SimUI extends Component implements SimHost {
 				<div className="sim-root">
 					<div className="sim-bg" />
 					{config.noticeText ? (
-						<div className="notices-banner alert border-bottom mb-0 text-center within-raid-sim-hide">{config.noticeText}</div>
+						<div className="notices-banner alert border-bottom mb-0 text-center">{config.noticeText}</div>
 					) : null}
 					<div className="sim-container">
 						<aside className="sim-sidebar">
 							<div className="sim-title" />
 							<div className="sim-sidebar-content">
-								<div className="sim-sidebar-actions within-raid-sim-hide" />
-								<div className="sim-sidebar-results within-raid-sim-hide" />
+								<div className="sim-sidebar-actions" />
+								<div className="sim-sidebar-results" />
 								<div className="sim-sidebar-stats" />
 								<div className="sim-sidebar-socials" />
 							</div>
@@ -314,10 +314,6 @@ export abstract class SimUI extends Component implements SimHost {
 		return SHARED_SAVED_ENCOUNTER_STORAGE_KEY;
 	}
 
-	isIndividualSim(): boolean {
-		return this.rootElem.classList.contains('individual-sim-ui');
-	}
-
 	async runSim(onProgress: WorkerProgressCallback, options: RunSimOptions = {}) {
 		this.resultsViewer.setPending();
 		try {
@@ -326,7 +322,7 @@ export abstract class SimUI extends Component implements SimHost {
 			if (!(result instanceof SimResult) && result.type == ErrorOutcomeType.ErrorOutcomeAborted) {
 				new Toast({
 					variant: 'info',
-					body: i18n.t('sim.notifications.raid_sim_cancelled'),
+					body: i18n.t('sim.notifications.sim_cancelled'),
 				});
 				this.resultsViewer.hideAll();
 			}
@@ -402,10 +398,6 @@ export abstract class SimUI extends Component implements SimHost {
 
 							const maxBodyLength = URLMAXLEN - url.toString().length;
 							let issueBody = `Link:\n${link}\n\nRNG Seed: ${rngSeed}\n\n${errorStr}`;
-							if (link.includes('/raid/')) {
-								// Move the actual error before the link, as it will likely get truncated.
-								issueBody = `${errorStr}\nRNG Seed: ${rngSeed}\nLink:\n${link}`;
-							}
 							let truncated = false;
 							while (issueBody.length > maxBodyLength - (truncated ? 3 : 0)) {
 								issueBody = issueBody.slice(0, issueBody.lastIndexOf('%')); // Avoid truncating in the middle of a URLencoded segment.
@@ -413,7 +405,6 @@ export abstract class SimUI extends Component implements SimHost {
 							}
 							if (truncated) {
 								issueBody += '...';
-								// The raid links are too large and will always cause truncation.
 								// Prompt the user to add more information to the issue.
 								new CrashModal(this.rootElem, link).open();
 							}

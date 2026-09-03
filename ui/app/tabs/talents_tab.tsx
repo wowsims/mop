@@ -25,7 +25,7 @@ export class TalentsTab<SpecType extends Spec> extends SimTab {
 		this.simUI = simUI;
 
 		this.leftPanel = (<div className="talents-tab-left tab-panel-left" />) as HTMLElement;
-		this.rightPanel = (<div className="talents-tab-right tab-panel-right within-raid-sim-hide" />) as HTMLElement;
+		this.rightPanel = (<div className="talents-tab-right tab-panel-right" />) as HTMLElement;
 
 		this.contentContainer.appendChild(this.leftPanel);
 		this.contentContainer.appendChild(this.rightPanel);
