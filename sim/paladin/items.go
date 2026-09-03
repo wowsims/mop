@@ -451,16 +451,22 @@ var ItemSetVestmentsOfWingedTriumph = core.NewItemSet(core.ItemSet{
 				return
 			}
 
+			// Auras must be registered before the environment is finalized, so not inside OnInit.
+			unyieldingFaith := paladin.RegisterAura(core.Aura{
+				Label:    "Unyielding Faith" + paladin.Label,
+				ActionID: core.ActionID{SpellID: 144624},
+				Duration: time.Second * 15,
+			}).AttachSpellMod(core.SpellModConfig{
+				Kind:       core.SpellMod_DamageDone_Pct,
+				ClassMask:  SpellMaskDivineLight | SpellMaskHolyLight | SpellMaskHolyRadiance,
+				FloatValue: 0.25,
+			})
+
 			setBonusAura.ApplyOnInit(func(aura *core.Aura, sim *core.Simulation) {
-				paladin.InfusionOfLightAura.AttachDependentAura(paladin.RegisterAura(core.Aura{
-					Label:    "Unyielding Faith" + paladin.Label,
-					ActionID: core.ActionID{SpellID: 144624},
-					Duration: time.Second * 15,
-				}).AttachSpellMod(core.SpellModConfig{
-					Kind:       core.SpellMod_DamageDone_Pct,
-					ClassMask:  SpellMaskDivineLight | SpellMaskHolyLight | SpellMaskHolyRadiance,
-					FloatValue: 0.25,
-				}))
+				// Infusion of Light is not implemented while Holy is a gear planner.
+				if paladin.InfusionOfLightAura != nil {
+					paladin.InfusionOfLightAura.AttachDependentAura(unyieldingFaith)
+				}
 			}).ExposeToAPL(144625)
 		},
 		/*
@@ -479,12 +485,18 @@ var ItemSetVestmentsOfWingedTriumph = core.NewItemSet(core.ItemSet{
 				TimeValue: time.Second * -60,
 			})
 
+			// Auras must be registered before the environment is finalized, so not inside OnInit.
+			favorOfTheKings := paladin.RegisterAura(core.Aura{
+				Label:    "Favor of the Kings" + paladin.Label,
+				ActionID: core.ActionID{SpellID: 144622},
+				Duration: time.Second * 20,
+			}).AttachStatBuff(stats.MasteryRating, 4500)
+
 			setBonusAura.ApplyOnInit(func(aura *core.Aura, sim *core.Simulation) {
-				paladin.DivineFavorAura.AttachDependentAura(paladin.RegisterAura(core.Aura{
-					Label:    "Favor of the Kings" + paladin.Label,
-					ActionID: core.ActionID{SpellID: 144622},
-					Duration: time.Second * 20,
-				}).AttachStatBuff(stats.MasteryRating, 4500))
+				// Divine Favor is not implemented while Holy is a gear planner.
+				if paladin.DivineFavorAura != nil {
+					paladin.DivineFavorAura.AttachDependentAura(favorOfTheKings)
+				}
 			}).ExposeToAPL(144613)
 		},
 	},
