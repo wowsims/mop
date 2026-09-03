@@ -1,0 +1,6 @@
+# Bench inputs, not test fixtures. Regenerate with:
+#   go run -tags with_db ./tools/bench/gen_logs --spec unholy      --out tools/bench/logs/unholy.log      --json tools/bench/logs/unholy.json
+#   go run -tags with_db ./tools/bench/gen_logs --spec demonology  --out tools/bench/logs/demonology.log  --json tools/bench/logs/demonology.json
+#   go run -tags with_db ./tools/bench/gen_logs --spec unholy --players 25 --out tools/bench/logs/raid25.log --json tools/bench/logs/raid25.json
+*.log
+*.json
